@@ -94,6 +94,24 @@ binding_rules_invoked:
 
 ---
 
+## Pre-conditions
+
+Before Stream A starts:
+- Fix 1 (walker FR-22-3 #3 ordering) shipped on origin/main as commit `5731dc36`. Verified by: `git log --oneline | grep 5731dc36`.
+- Post-Fix-1 baseline measurement captured at `pipeline-state/mamas-munches-homepage-2026-05-27-193804/stage-11-pixel-diff.json` (mean 58.6%). Stream A's Step A5 compares against this.
+- R-22-14 binding rule active in Spec 22 §6 (commit `37dd2c79`).
+- 4 captured lessons indexed in MEMORY.md.
+- TEMP header-hide CSS override deployed (commit `9a1bb252`) — removes when Phase 2 sibling spec ships, not in this phase.
+
+## Parking lot
+
+Items deliberately deferred from this phase plan (do NOT add to Stream A scope):
+- Phase 2.5 noise-floor work (≤1% pixel-diff bridge) — separate phase after Phase 2 closes.
+- Header/footer cloner Phase 2 sibling spec (`.claude/plans/2026-05-24-phase-2-header-footer-cloner.md`) — blocked on Phase 2 hybrid migration close.
+- Removing the TEMP header-hide CSS override — tied to header/footer cloner ship date.
+- 5 pre-existing duplicate parking slugs from prior sessions — separate cleanup pass.
+- Mirror-DB divergence root-cause investigation BEYOND Step A3 verification (Stream A's A3 surfaces it; deeper investigation is a separate parking entry if it persists).
+
 ## Streams overview
 
 Phase 2 splits into four streams. **Active scope (Bean directive 2026-05-27): STREAM A ONLY.** Streams B/C/D are STRICTLY DEPENDENT on Stream A and are NOT yet in active scope. Their detailed step blocks below are PLACEHOLDER for future activation — they document the work shape so future-Bean knows what's coming, but they don't dispatch until Stream A's empirical measurement (Step A5) closes successfully.

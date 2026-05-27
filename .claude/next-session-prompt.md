@@ -1,208 +1,215 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-spec-22-phase-1.5-systematic-debugging-class-of-failure
+session_tag: small-giants-wp-2026-05-28-phase-2-stream-a-db-quality-pre-pass
 generated: 2026-05-27
-parent_session: small-giants-wp-2026-05-27-spec-22-phase-1.5-measured-empirical-FAILED
-primary_goal: "Phase 1.5 dispatched 0/21 body cells PASS ≤5% — universal walker structurally correct but renders ~81.55% mean mismatch (regression +17.94pp from pre-walker 63.61%). Run /systematic-debugging across parallel dispatched agents to find the class-of-failure root causes per section, with full debug-trace artefacts captured at pipeline-state/mamas-munches-144-2026-05-27-124306/. Likely conclusion: Phase 2 (61-block hybrid render.php migration roster) is the path to gap closure; this session diagnoses + confirms."
+parent_session: small-giants-wp-2026-05-27-phase-1.5-CLOSED-phase-2-stream-a-handoff
+primary_goal: "Execute Stream A of Phase 2 (Hybrid Block Migration plan) — 5 sequential steps: DB-quality pre-pass + corrected Fix 2b slot_synonyms rows + verify both DBs + /sgs-update downstream + re-baseline /sgs-clone measurement. Stream A QA gate is the decision point for activating Stream B next-next session. NO Stream B/C/D work this session."
 ---
 
-# Next session — Spec 22 Phase 1.5 /systematic-debugging on the empirical FAIL
+# Next Session — Spec 22 Phase 2 Stream A (DB-quality pre-pass + corrected Fix 2b)
 
-The universal walker shipped architecturally clean (Phase 1.4b, commit `da3de993`) but Phase 1.5 measurement (run on `2026-05-27-124306`) shows ZERO of 21 body cells hit the ≤5% acceptance gate. Mean mismatch 81.55%, a +17.94pp regression from the pre-walker 63.61% baseline. This is the empirical evidence Phase 1.5 was designed to surface — Spec 16's hardcoded per-block cheats were hiding the gap; the universal walker exposes it.
+You are coordinating the active Stream A of Phase 2 (Hybrid Block Migration). The walker is shipped (Fix 1 commit `5731dc36`, mean 81.55% → 58.6%); what's blocking further pixel-diff progress is (a) missing slot_synonyms rows for section-internal BEM wrappers (`__content`, `__media`, etc.) causing the walker to collapse them, and (b) 61 hybrid blocks whose render.php ignores `$content`. Stream A addresses (a); Streams B/C/D (currently deferred) address (b).
 
-Per-cell breakdown (sorted worst → best):
+## State recap (plain English, no assumed pretext)
 
-| Section | 375 | 768 | 1440 | Verdict |
-|---|---|---|---|---|
-| sgs/trust-bar | 99.94 | 93.25 | 99.99 | FAIL all 3 |
-| sgs/brand | 95.87 | 99.80 | 95.32 | FAIL all 3 |
-| sgs/social-proof | 89.57 | 80.01 | 91.07 | FAIL all 3 |
-| sgs/hero | 88.90 | 62.67 | 58.19 | FAIL all 3 (least bad) |
-| sgs/gift-section | 84.00 | 93.32 | 77.86 | FAIL all 3 |
-| sgs/ingredients-section | 69.06 | 83.77 | 65.13 | FAIL all 3 |
-| sgs/featured-product | 72.89 | 79.67 | 81.55 | FAIL all 3 |
+Phase 1.5 closed with just Fix 1 shipped — the walker now correctly wraps top-level sections in `sgs/container` per FR-22-4 when no SGS block matches the section's BEM root. Mean pixel-diff dropped 22.9pp. Three things came up that block further progress:
 
-Chrome (out of Phase 1 scope): header 20-82%, footer 94-99% — Phase 2 sibling spec.
+1. **Walker collapses BEM wrappers** inside sections (e.g. `<div class="sgs-hero__content">`, `<div class="sgs-featured-product__products">`) because no `slot_synonyms` row maps those tokens to `sgs/container`. The walker flattens them. Result: hero's split-image lands in the wrong DOM position; featured-product's responsive grid has no recipient block.
+2. **Fix 2 attempted directly** but caused +2.34pp regression (wrong rows + mirror-DB divergence + no per-row measurement). Rolled back fully.
+3. **Bean's question forced grep-verification** of the canonical row-adding flow. Corrected understanding: `seed-slot-synonyms.py` writes to BOTH DBs by design (`.claude/` + `.agents/`); `/sgs-update` runs downstream refresh stages, doesn't add rows. Lesson `db-rows-canonical-flow` updated.
 
-## State recap (plain English)
+The new rule from Fix 4's BLOCKED attempt: **R-22-14 — FR-22-6 migrations never carry server-side legacy fallback hacks** (Bean P1 locked). The FR-22-6 hybrid problem is exclusively SGS framework debt; never add per-block scalar guards. Stream B/C/D in the deferred plan would honour this when they activate.
 
-The walker IS shipped + correct structurally (R-22-3 PASS, 145+ tests PASS, AST self-test runs in `convert.py __main__`). It emits valid WordPress block markup. Stage 10 deploy machinery had a bug (`upload_and_patch.py` aborted when 0 relative URLs existed) that was fixed mid-session. The current `page 144` on sandybrown DOES carry the new walker's output (`extract.patched.json` shipped). The pixel-diff regression is real and reflects the **removed Spec 16 cheats**: the old walker had per-block hardcoded CSS lifting + inner-block synthesis + F1 fallback paths that compensated for missing block infrastructure. The universal walker doesn't cheat — so the gaps that were always there now show up in the pixel-diff measurement.
+## Mandatory READING
 
-Next session's work is to **diagnose the class-of-failure per section** + decide whether the right response is (a) Phase 2 hybrid render.php migration (the spec's planned path), (b) walker-level adjustments that don't violate R-22-3, or (c) a hybrid of both.
+Before Step A1, read in this order:
+1. This file (you are reading it)
+2. `.claude/handoff.md` — last session full context
+3. `.claude/state.md` — current_phase: spec-22-phase-2-hybrid-block-migration-STREAM-A-ACTIVE
+4. `.claude/plans/2026-05-28-phase-2-hybrid-block-migration.md` — full Phase 2 plan; Stream A is active scope
+5. `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §6 R-22-9 + R-22-14 binding rules; §FR-22-2 + §FR-22-2.2 role-exclusion; §FR-22-4 + §FR-22-6 contracts
+6. Project memory (4 lessons in `C:/Users/Bean/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/`): `db-rows-canonical-flow`, `row-by-row-measurement-gate-per-db-change`, `section-root-aliases-target-sgs-container-only`, `fr22_6_hybrid_problem_is_sgs_only_no_legacy_fallback_hacks`
 
-## Mandatory reading (in order)
+## First action
 
-1. This file
-2. `.claude/handoff.md` — last session full context (8 substantive commits + 3 drift fix rounds + Phase 1.5 measurement run)
-3. `.claude/state.md` — current state snapshot (Phase 1.5 MEASURED 0/21 body cells PASS)
-4. `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §FR-22-6 (hybrid render.php migration), §FR-22-7 (acceptance gate), §11 success criteria, §6 R-22-1 through R-22-13 binding rules
-5. `pipeline-state/mamas-munches-144-2026-05-27-124306/stage-11-pixel-diff.json` — measured per-cell results
-6. `pipeline-state/mamas-munches-144-2026-05-27-124306/leftover-buckets.json` — 579 leftover entries across 3 buckets (the cv2 walker's classification of what it couldn't lift)
-7. `pipeline-state/mamas-munches-144-2026-05-27-124306/extract.json` + `extract.patched.json` — walker's emitted block markup
-8. `pipeline-state/mamas-munches-144-2026-05-27-124306/convert-trace-b1.jsonl` through `convert-trace-b9.jsonl` — per-boundary trace logs (9 boundaries = 9 mockup sections)
-9. `pipeline-state/mamas-munches-144-2026-05-27-124306/pixel-diff/` — cropped-pair PNGs (mockup vs sgs) per cell, plus diff.json + heatmap.png
-10. `.claude/reports/2026-05-27-hybrid-block-roster.md` — Phase 0.4 audit (61 hybrid blocks needing render.php migration)
-11. `.claude/specs/common-wp-styling-errors.md` — sections A-R catalogue (check BEFORE filing new "I've seen this" tickets)
+After reading the above, dispatch Task 1 (Step A1) inline — run the SQL query in the Phase 2 plan Step A1 block to produce the (block × content-bearing-attr × proposed-target-block) triples CSV at `.claude/reports/2026-05-28-hybrid-migration-triples.csv`. ~15 min generate; then Bean reviews and flags suspicious rows. The smallest first action per ADHD Rule 2.
+
+## Tool bindings
+
+Per the Tooling Index in the Phase 2 plan. Critical bindings for Stream A:
+- `sgs-db.py` — query both `~/.claude/skills/sgs-wp-engine/sgs-framework.db` AND `~/.agents/skills/sgs-wp-engine/sgs-framework.db` (Step A3 independent verification)
+- `seed-slot-synonyms.py` — canonical declarative source for slot_synonyms rows + alias extensions (writes both DBs by design)
+- `sgs-update-v2.py` — downstream refresh stages (Step A4)
+- `sgs-clone-orchestrator.py` — Step A5 baseline + Stage 11 measurement
+- `pixel-diff.py --selector .sgs-{section}` — per-section cropped diff (blub.db 256)
 
 ## Skills to Invoke
 
 | Skill | When to use |
 |-------|-------------|
-| `/brainstorming` | ALWAYS — Phase 1.5 → Phase 2 decision is architectural |
-| `/gap-analysis` | ALWAYS — grade root-cause analysis before delivery |
-| `/lifecycle` | ALWAYS — start pipeline before any skill/agent edits |
-| `/research` | ALWAYS — auto-routes for unfamiliar failure classes |
-| `/strategic-plan` | ALWAYS — if Phase 2 dispatch needs sequencing across 61-block roster |
-| `/systematic-debugging` | **PRIMARY** — root-cause investigation BEFORE proposing fixes. 4-phase protocol (Root Cause → Pattern Analysis → Hypothesis → Implementation). No fixes without root cause first. |
-| `/sgs-wp-engine` | Any framework code touch |
-| `/qc-council` | **MANDATORY** pre-commit gate for any walker/converter edit (blub.db 255) |
-| `/qc-inline` | Smaller artefacts; section-by-section readouts |
-| `/dispatching-parallel-agents` | Per-section /systematic-debugging — dispatch 7 parallel agents (one per body section) for class-of-failure diagnosis |
-| `/subagent-driven-development` | If fix-shape commits are dispatched — 1 implementer + 2 reviewers per blub.db 240 |
-| `/delegate` | Pick model per task — Sonnet for diagnosis, Haiku for mechanical traces |
-| `/verify-loop` | 2-attestation per load-bearing claim |
-| `/capture-lesson` | New corrective rules surfaced |
-| `/sgs-clone` | Re-measure after any walker change |
+| `/brainstorming` | When Step A2's row decisions need discussion (suspicious rows in the A1 CSV) |
+| `/gap-analysis` | If Stream A measurement underperforms — grade Stream A output before deciding on Stream B activation |
+| `/lifecycle` | If any skill / agent / pipeline needs editing during Stream A |
+| `/research` | If A1 surfaces unknown BEM-target mappings worth checking against WP-core / SGS framework norms |
+| `/strategic-plan` | Defer until Stream B activation — Stream A is single-flow execution |
+| `/sgs-wp-engine` | ALWAYS — Stream A operates on SGS DB; framework context required |
+| `/qc-inline` | Per-row sanity check between A2 row edits and A3 seed run |
+| `/capture-lesson` | If anything surfaces a new corrective rule (mirror-DB divergence root cause is a candidate) |
 | `/handoff` | Session close |
 
 ## MCP Servers & Tools
 
 | Tool | What to use it for |
 |------|-------------------|
-| `playwright` | Live-page DOM verification per R-22-11 (canonical); inspect rendered output cell-by-cell |
-| `chrome-devtools-mcp` | Browser inspection for CSS / layout / box-model investigation per section |
-| `wp-blocks.py` | DB schema queries (FR-22-8 — block attributes, slot_synonyms, html_tag_to_core_block) |
-| `sgs-db.py block <slug>` | Block-level schema lookup |
-| `scripts/pixel-diff.py --selector .sgs-{section}` | Per-section re-measurement after fix dispatch (FR-22-7) |
+| `playwright` | A5 measurement — live-page DOM verification per R-22-11 |
+| `wp-blocks.py` | Schema queries against sgs-framework.db per blub.db 272 |
+| `sgs-db.py` | DB queries — run against BOTH `~/.claude/skills/sgs-wp-engine/sgs-framework.db` AND `~/.agents/skills/sgs-wp-engine/sgs-framework.db` (Step A3 independent-verify) |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
-| `wp-sgs-developer` | Heavy framework work if walker logic needs adjustment |
-| Sonnet via /delegate | Per-section /systematic-debugging dispatch (parallel) |
-| Haiku via /delegate | Mechanical trace-file parsing |
-| Gemini Flash | Independent cross-family eye on hypotheses |
+| `wp-sgs-developer` | If Step A2 row-edit volume is large; bulk row edits via dispatch |
+| Sonnet via /delegate | For mechanical CSV row enumeration in A1 (if Bean prefers offloading vs inline) |
+
+## Research Approach
+
+Stream A is execution-mode, not research-mode. Skip /research unless a row decision in A2 needs verification (e.g. "what's the correct target for `__price-row`?"). If a question surfaces, use `/research-check` (2-agent parallel Sonnet, ~2 min).
 
 ---
 
-## Task 1 — Parallel /systematic-debugging per FAIL section (7 sections)
+## Task 1 — Step A1 DB-quality pre-pass: produce + review the triples CSV
 
-**What:** Dispatch 7 parallel /systematic-debugging agents (one per body section) via `/dispatching-parallel-agents`. Each agent has:
-- The section's per-cell pixel-diff numbers (3 viewports)
-- The section's cropped mockup + sgs PNGs (`pipeline-state/.../pixel-diff/<sel>-<vp>/{mockup,sgs}.png`)
-- The section's convert-trace JSONL (`convert-trace-bN.jsonl` where N is the section's boundary index 1-9)
-- The section's emitted block markup (`extract.json` section entry)
-- The section's leftover-buckets entries (`leftover-buckets.json` filtered by section)
-- The section's expected-rules baseline (`expected-rules-bN.jsonl`)
-- Read access to the SGS block source code for the blocks the section emits
-
-**Why:** /systematic-debugging's iron law — no fixes without root cause first. 7 sections × class-of-failure diagnosis surfaces whether the regression is (a) CSS routing (FR-22-5), (b) lift-attr coverage (FR-22-2 — block_attributes incomplete for the slug), (c) atomic-emission semantics (FR-22-3 exception 1 — emit_atomic wrong attrs for the resolved slug), (d) pass-through routing (FR-22-11 — walker_passthrough subtree dropping content), (e) sibling-class container resolution (FR-22-2.5 — array-of-objects not finding container), OR (f) the deeper "hybrid block render.php still uses hardcoded attrs not echo $content" class which is exactly what FR-22-6 + Phase 2 migration roster addresses.
-
-**Estimated time:** Per-section diagnosis 30-60 min; 7 agents dispatched in parallel = ~60-90 min wall-time.
+**What:** Generate CSV of all `(block × content-bearing-attr × proposed-target-block)` triples by querying sgs-framework.db; Bean reviews + marks suspicious rows.
+**Why:** Catches wrong slot_synonyms rows (the Fix 2 failure mode — ~30% of new rows were wrong) BEFORE they cause regressions in Stream B parallel dispatch. Pre-empts the row-by-row attribution problem.
+**Estimated time:** 30-45 min (15 min generate + 15-30 min Bean review)
 
 **Orchestration:**
-- Execution: 7 parallel subagents via /dispatching-parallel-agents
-- Model: Sonnet via /delegate (each agent)
-- Cold prompt MUST contain (per /subagent-prompt skill):
-  - The specific section's pixel-diff numbers + cropped-pair PNG paths
-  - The full debug-trace + extract paths the agent should read
-  - Class-of-failure taxonomy (5 classes named in Spec 22)
-  - Iron-law gate: "NO fix proposals before root cause stated in plain English"
-- Per-section agent returns: (i) Root cause stated in plain English; (ii) Class-of-failure label; (iii) Evidence cited (file:line OR pixel-diff PNG observation); (iv) Recommended fix shape (HYPOTHESIS, not spec)
+- Execution: inline (main thread Opus + Bean sense-checking)
+- Brief: Run the SQL query in the Phase 2 plan Step A1; export to `.claude/reports/2026-05-28-hybrid-migration-triples.csv`; Bean reviews row-by-row and adds BEAN_FLAG column (✓/⚠/✗)
+- Depends on: none
+- Parallel with: none (Stream A is strictly sequential)
+- /qc gate after: no — Bean's review IS the gate
 
-**Acceptance:**
-- 7 root-cause statements (one per section)
-- Class-of-failure distribution surfaces — e.g. "5 of 7 sections are Class F (hybrid block render.php), 2 are Class A (CSS routing)"
-- No fix-shape commits made (those go through /qc-council in Task 3)
+**Acceptance:** CSV produced with 180-200 rows; every suspicious row (⚠ or ✗) carries Bean's reasoning in a notes column. Feeds Task 2.
 
-## Task 2 — Synthesise + decide direction
+---
 
-**What:** Read the 7 per-section diagnoses. Synthesise into a Phase 1 → Phase 2 transition decision document at `.claude/reports/2026-05-27-phase-1.5-systematic-debugging-synthesis.md`. Decide:
-- **Path A — Phase 2 hybrid render.php migrations** (the spec's planned path; Phase 0.4 roster = 61 blocks)
-- **Path B — Walker-level adjustments** (only if root causes point at walker bugs not covered by R-22-3 binding rules)
-- **Path C — Hybrid path** (some sections need walker work; others need block migrations)
+## Task 2 — Step A2 fix suspicious slot_synonyms rows + add section-internal BEM rows
 
-**Why:** Avoid jumping to a Path that doesn't actually address what the diagnoses surface. R-22-10: read full spec + state architectural primitive in plain English before proposing fix-shape.
-
-**Estimated time:** 30-45 min inline.
+**What:** For each suspicious row from A1, edit `seed-slot-synonyms.py` to correct it; add new canonical_slot rows for section-internal BEM wrappers (`__content`, `__media`, `__inner`, `__products`, `__pill-group`, `__price-row`, `__cards`, `__card-inner` → `sgs/container`); extend `text`/`label` aliases for `disclaimer`/`card-tag`/`card-description`/`card-price`.
+**Why:** Walker can preserve wrapper structure once the DB rows exist. This is the corrected Fix 2 — no `section-social-proof → sgs/testimonial-slider`; no blanket `split` aliases.
+**Estimated time:** 45-90 min (depends on suspicious-row count)
 
 **Orchestration:**
-- Execution: inline (main thread, Opus)
+- Execution: inline (Opus + Bean for decisions; Haiku via /delegate for mechanical bulk edits if row count > 20)
+- Brief: per the lesson `section-root-aliases-target-sgs-container-only` — section roots → sgs/container only, never content-block primitives. Per `row-by-row-measurement-gate` — group rows by leverage (largest impact first).
 - Depends on: Task 1
-- /qc gate after: /qc-inline on the synthesis report
+- Parallel with: none
+- /qc gate after: yes — `/qc-inline` on the seed-script diff before running it (catches typos + ensures canonical row shape)
 
-**Acceptance:** Synthesis report exists with: (i) per-section root cause table; (ii) Path decision (A/B/C) with reasoning; (iii) ranked fix-shape priorities; (iv) re-measurement plan.
+**Acceptance:** seed-slot-synonyms.py edits land cleanly; diff is reviewable; no row violates the section-root-→-container lesson. Feeds Task 3.
 
-## Task 3 — Dispatch Path-A or Path-C fix-shapes (only if Task 2 decision is A or C)
+---
 
-**What:** Per Path-A: parallel dispatch /subagent-driven-development on top-priority block render.php migrations (hero, trust-bar, brand based on which has the biggest expected-impact). Per the Phase 1 plan's Phase 2 row, this is the canonical work. Per blub.db 255: /qc-council 4-rater MANDATORY before each commit.
+## Task 3 — Step A3 run seed + INDEPENDENTLY verify BOTH DBs
 
-**Estimated time:** ~30-45 min per block × 3-5 blocks = 2-3 hours, parallel-eligible.
-
-**Orchestration:**
-- Execution: /subagent-driven-development per block (1 implementer + 2 reviewers)
-- Model: Sonnet via /delegate per agent
-- Dispatch pattern: parallel via /dispatching-parallel-agents (per FR-22-6.1 coordination protocol — no shared-file edits in parallel)
-- Brief: per-block render.php migration to `echo $content` for block-equivalent slots; deprecated.js for old attrs; editor smoke test
-- /qc gate after: /qc-council ⚡ 4-rater BEFORE every commit + Stage 11 re-measurement after each block
-
-**Acceptance:** Per block: render.php uses `echo $content` for content-bearing slots; deprecated.js covers attr shape changes; Stage 11 cell for that section drops measurably (predicted -20 to -40pp per top-priority block).
-
-## Task 4 — Phase 1.5 re-measurement after Path-A/B/C fixes
-
-**What:** Full `/sgs-clone --auto-section --debug-trace --converter-v2 --spec-22-acceptance` run after each fix-shape commit. Compare per-cell pre/post. Capture delta. If all 21 cells now ≤5%, Phase 1 CLOSES.
-
-**Estimated time:** 5 min per re-measurement (Stage 1-11 of /sgs-clone) × N runs.
+**What:** Run `python plugins/sgs-blocks/scripts/uimax-tools/seed-slot-synonyms.py`; query BOTH `~/.claude/skills/sgs-wp-engine/sgs-framework.db` AND `~/.agents/skills/sgs-wp-engine/sgs-framework.db` via sgs-db.py to confirm both have identical row counts + the new rows are present.
+**Why:** The Fix 2 mirror-DB divergence was caused by implementer-verification error (claimed both DBs got rows; didn't query .agents). This step is the structural defence against that failure mode.
+**Estimated time:** 10-15 min
 
 **Orchestration:**
-- Execution: inline (main thread)
-- /qc gate after: /qc-council Stage 5 multi-rater on the synthesised measurement interpretation
+- Execution: inline
+- Brief: run the seed; then for each DB query `SELECT COUNT(*), canonical_slot, aliases, standalone_block FROM slot_synonyms WHERE canonical_slot IN (...)`; counts MUST match between DBs; new rows MUST be present in BOTH.
+- Depends on: Task 2
+- Parallel with: none
+- /qc gate after: yes — `/qc-inline` on the verification output (counts match? spot-checked rows match? mirror-DB divergence surfaced?)
 
-**Acceptance:** Either Phase 1 closes (all 21 cells PASS) OR a clear halt-point with remaining-work scope.
+**Acceptance:** Both DBs report identical row count + identical values for the new rows. If divergence detected → root-cause investigation (the pre-existing bug surfaced during this session). Feeds Task 4.
+
+---
+
+## Task 4 — Step A4 /sgs-update downstream stage refresh
+
+**What:** Run `python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 5` then `--stage 6` then `--stage 7` then `--stage 9` to refresh block_replacement_mapping + spec_doc_regen + drift_gate.
+**Why:** /sgs-update doesn't add rows but DOES refresh dependent stages. Without this, downstream consumers (spec doc, block_replacement table) drift from the new slot_synonyms state.
+**Estimated time:** 15-25 min
+
+**Orchestration:**
+- Execution: inline
+- Brief: per the CORRECTED lesson `db-rows-canonical-flow` — /sgs-update is downstream refresh, not row-add. Stage 5 auto-fills missing standalone_block on existing rows; Stage 6 verifies block.replaces; Stage 7 regenerates spec doc; Stage 9 drift gate.
+- Depends on: Task 3
+- Parallel with: none
+- /qc gate after: no — /sgs-update has its own internal validation
+
+**Acceptance:** All 4 stages green; spec doc regenerated; drift gate PASS. Feeds Task 5.
+
+---
+
+## Task 5 — Step A5 re-baseline /sgs-clone measurement (Stream A QA gate)
+
+**What:** Run `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --client mamas-munches --page homepage --auto-section --converter-v2 --debug-trace --spec-22-acceptance --deploy-target page:144`. Compare per-cell vs post-Fix-1 baseline 58.65%.
+**Why:** Empirical gate for Stream A close + decision point for Stream B activation. Expected: hero/featured-product/gift-section/ingredients-section cells improve substantially with `__content`/`__media` wrappers preserved.
+**Estimated time:** 10 min (5 min /sgs-clone + 5 min comparison)
+
+**Orchestration:**
+- Execution: inline
+- Brief: deploy-included; per-cell pre/post table; capture aggregate mean drop. Per blub.db 256 — per-section cropped pixel-diff via `--selector .sgs-{section}`, never full-page.
+- Depends on: Task 4
+- Parallel with: none
+- /qc gate after: yes — Stream A QA gate. Mean must drop further from 58.6% AND no per-cell regression > 5pp.
+
+**Acceptance:** PASS: Stream A closes; commit with R-22-4 predicted-vs-actual cite; surface measurement results to Bean; deferred-decision on Stream B activation taken next-next session. FAIL: investigate which rows caused regression; revert specific rows; re-measure.
 
 ---
 
 ## Dependency graph
 
 ```
-Task 1 — 7 parallel /systematic-debugging agents (Sonnet, 60-90 min wall-time)
+Task 1 (inline, Opus + Bean)
   ↓
-Task 2 — Synthesise + Path A/B/C decision (inline Opus, 30-45 min)
+Task 2 (inline, Opus + Bean; optional Haiku for bulk edits)
+  ↓ /qc-inline gate on seed-script diff
+Task 3 (inline)
+  ↓ /qc-inline gate on both-DB verification
+Task 4 (inline)
   ↓
-  ├─ Path A → Task 3 parallel block-migration dispatch (2-3 hr) → Task 4 re-measure
-  ├─ Path B → walker-level fix-shape (must clear R-22-3 PASS test) → Task 4 re-measure
-  └─ Path C → hybrid; sequence per Task 2 plan → Task 4 re-measure
+Task 5 (inline) — Stream A QA gate
+  ↓ if PASS: commit + /handoff
+  ↓ if FAIL: revert + investigate
 ```
 
-Total Phase 1.5 closure time: best case ~3 hr if Path A clean; worst case multi-session if Class F is the wrong direction.
+---
 
 ## Methodology guardrails (do not skip)
 
-- **/systematic-debugging iron law** — NO fix proposals before root cause stated in plain English. Per-section agents MUST surface root cause first.
-- **R-22-3 PASS test** — convert.py `__main__` AST self-test asserts EXACTLY 3 routing branches, ZERO illegal block-slug literals. Any walker-level fix-shape MUST keep this passing.
-- **/qc-council 4-rater BEFORE every converter/walker/SGS-block commit** (blub.db 255)
-- **Stage 11 per-section measurement** via `pixel-diff.py --selector .sgs-{section}`, never full-page (blub.db 256)
-- **R-22-13** — Bean visual sign-off co-authoritative with script number
-- **Root cause before instance fix** — R-22-9 universal mechanisms, not per-block hyperfocus
-- **No git stash/reset/restore/checkout** in subagents (blub.db 230)
-- **Deploy before measure** — `npm run build` + tar deploy + OPcache reset BEFORE Stage 11 re-runs
-- **Read leftover-buckets.json FIRST** before conjecturing about pipeline failures (blub.db 254)
-- **Grep-verify spec claims** before dispatch (feedback_grep_verify_handoff_diagnostic_premises + feedback_spec_22_fr_22_2_5_priority_list_drift)
+- **R-22-9 universal mechanism, no per-block hyperfocus** — section-root aliases route to `sgs/container` only (lesson `section-root-aliases-target-sgs-container-only`).
+- **R-22-14 no legacy fallback hacks** — Stream A doesn't touch render.php so this doesn't apply directly, but it does apply to ALL future Stream B work that may be discussed.
+- **Per-row /sgs-clone measurement gating** — if Task 2's row count is large, consider splitting Task 5 into Task 5a (subset of rows measured) and Task 5b (remaining rows) per the captured `row-by-row-measurement-gate` lesson.
+- **Independent verification of BOTH DBs** in Task 3 — implementer-verification error caused Fix 2 mirror-DB divergence. Query each DB separately; don't assume the seed iterated both correctly.
+- **Deploy before measure** — Task 5's /sgs-clone deploys to sandybrown via Stage 10 before Stage 11 measurement; that's automatic.
+- **/qc multi-rater BEFORE any commit touching converter/walker/SGS-block code** (blub.db 255) — Stream A doesn't touch those directly (only DB rows + downstream-refresh-script output) so single-rater /qc-inline is sufficient. Per blub.db 288 — split commits where attribution matters.
+- **Per-section cropped pixel-diff via `--selector .sgs-{section}`** (blub.db 256) — never full-page.
+- **WP_DEBUG_DISPLAY stays false** on sandybrown staging (blub.db 282) — debug notices contaminate measurement.
 
-## Guardrails — what must not break
+---
 
-- 145+/145+ test suite MUST stay PASS through every commit
-- R-22-3 AST self-test MUST keep passing (3 routing branches, 0 illegal block-slug literals)
-- Triple-NULL DB baseline 1101 MUST hold (no behavioural-attr drift)
-- `_retired/convert_pre_spec22.py` MUST stay byte-identical (rollback reference)
-- `pipeline-state/mamas-munches-144-2026-05-27-124306/` is the **canonical Phase 1.5 baseline** — DO NOT delete or overwrite; future re-measurements compare against this
+## Hard constraints (carried forward)
+
+- **NO new bespoke blocks** (R-22-9). Stream A is DB rows + downstream refresh; ZERO new SGS block directories.
+- **NO `git stash` / `git reset` / `git restore` / `git checkout`** in dispatched subagents (blub.db 230).
+- **Phase 1.5 is CLOSED.** Don't reopen pixel-diff targets in Stream A — Stream A's goal is structural prerequisite for Stream B, not ≤5% closure.
+- **Streams B/C/D are DEFERRED.** Do not dispatch implementers from those streams during this session.
+- **TEMP header-hide override** stays in place until Phase 2 sibling spec (header/footer cloner) ships; commit 9a1bb252 cites the removal condition.
+
+---
 
 ## Out-of-scope this session
 
-- Phase 2 dispatch of all 61 hybrid blocks (only top-priority 3-5 per Task 3; the rest after Phase 1 closes)
-- Header/footer cloner (Phase 2 sibling spec; chrome cells 20-99% are not in Phase 1 scope)
-- P-TEAM-MEMBER-SCHEMA-ORG-SAMEAS-RESTORATION — SEO regression, separate work
-- Dashboard at port 5050 restart — separate ops task
-- 5 pre-existing duplicate parking slugs — separate parking cleanup pass
+- Streams B/C/D of the Phase 2 plan (deferred per Bean directive)
+- Phase 2.5 noise-floor work (≤1% pixel-diff)
+- Header/footer cloner Phase 2 sibling spec
+- Removing the TEMP header-hide CSS override
+- Mirror-DB divergence investigation BEYOND the Task 3 verification (if it surfaces, capture as parking entry)
+- 5 pre-existing duplicate parking slugs (separate cleanup pass)

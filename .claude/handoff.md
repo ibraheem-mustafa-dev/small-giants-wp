@@ -1,66 +1,76 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-27-spec-22-phase-1-architectural-CLOSED
+session_tag: small-giants-wp-2026-05-27-phase-1.5-CLOSED-phase-2-stream-a-handoff
 generated: 2026-05-27
-parent_session: small-giants-wp-2026-05-27-spec-22-phase-1-walker-rewrite
+parent_session: small-giants-wp-2026-05-27-spec-22-phase-1-architectural-CLOSED
+primary_goal: "Phase 1.5 CLOSED with just Fix 1 shipped (walker FR-22-3 #3 ordering, commit 5731dc36; mean pixel-diff 81.55% → 58.6% = −22.9pp aggregate). Phase 2 plan written + Stream A scoped active. R-22-14 captured. Next session: Stream A only (DB-quality pre-pass + corrected Fix 2b + verify both DBs + /sgs-update downstream + re-baseline measurement)."
 ---
 
 # Session Handoff — 2026-05-27
 
-## Completed This Session
+## TL;DR
 
-1. **Phase 1.1** (`507d4f57`) — pre-rewrite snapshot. `convert.py` renamed to `_retired/convert_pre_spec22.py` as rollback reference per F-RA-2.
-2. **Phase 1.2** (`0ba53c72`) — `atomic_tag_map()` DB-driven via `html_tag_to_core_block` table + `blocks.replaces` reverse-walk. 14 entries; html-canonical (h1-h6→sgs/heading, button/a→sgs/button, etc.).
-3. **Phase 1.2a** (`d4bfa41d`) — R-22-1 hardening: `_HTML_TAG_TO_CORE_SLUG` constant deleted; runtime path queries DB only. 5 conflicting `slot_synonyms.html_semantic_tag` rows NULL'd (subheading/tab/review/step/items).
-4. **sgs/heading γ-rebuild** (`35fdab62`) — composite (130+ attrs, label/headline/sub) → single-element + `headingRole` enum (heading/subheading). deprecated.js migration + 2 patterns (label-heading-subheading-cluster + heading-subheading-cluster).
-5. **Phase 1.3a** (`909c971a`) — array-attr backfill (product-card.packSizes→button, gallery.mediaItems→media, form-field-address.fields→options, form-field-tiles.tiles→options) + `array_item_slot_for()` helper (17/17 tests) + Spec 22 §FR-22-2.5 drift fix (D89 — 3 of 4 priority entries didn't grep-verify against codebase).
-6. **sgs/team-member InnerBlocks** (`cd3bef5e`) — flat `socialLinks` array → InnerBlocks slot defaulting to sgs/social-icons. sgs/social-icons gains `label` field (WCAG 2.2 SC 4.1.2). One known SEO regression parked.
-7. **Phase 1.4a** (`b58e5ca3`) — walker helpers in db_lookup.py: `resolve_slug_from_bem` + `lift_behavioural_attrs` + `emit_sgs_container_wrapping`. 26 unit tests PASS.
-8. **Phase 1.4b** (`da3de993`) — universal walker rewrite in new `convert.py` (**1873 LoC, 61% reduction from retired 4803**). EXACTLY 3 routing branches per R-22-3. /qc-council 4-rater (Sonnet + Haiku + Gemini Flash + main-thread) surfaced 5 real diagnostics; all 5 fixed in-flight (D1 CSS-loss / D2 ImportError / D3 wrong attr names / D4 dead D1 sidecar / D5 chrome-skip ordering). 16 fix-tests added.
+Phase 1.5 CLOSED with just Fix 1 shipped (walker FR-22-3 #3 ordering, commit 5731dc36; mean pixel-diff 81.55% → 58.6% = −22.9pp). Fix 2 attempted + rolled back. Fix 4 BLOCKED at /qc-council → Bean reframed as R-22-14 binding rule (FR-22-6 migrations never carry legacy fallback hacks). Phase 2 hybrid block migration plan written (Stream A scoped active; B/C/D deferred). 4 captured lessons indexed.
 
-## Current State
+## Completed this session
 
-- **Branch:** main at `da3de993` (18 commits pushed to origin/main this session)
-- **Tests:** 145+/145+ PASS (convert.py self-tests + 6 guardrail suites + 3 convert-importing tests + 16 council-fix tests)
-- **Build:** passes (`npm run build` exit 0)
-- **Uncommitted changes:** `plugins/sgs-blocks/includes/lucide-icons.php` (auto-regen timestamp drift, will overwrite itself on next icon-build — leave alone)
-- **DB state:** 1101 triple-NULL baseline recaptured (legitimate /sgs-update drift from 18 new sgs/heading attrs); 4 array attrs backfilled; 5 slot_synonyms cleaned
+1. **7-agent /systematic-debugging Round 1** on Phase 1.5 0/21 cell PASS catastrophe → recommended building 5 bespoke section blocks. Bean rejected as R-22-9 violation (per-block hyperfocus).
+2. **7-agent /systematic-debugging Round 2** anchored on FR-22-4 unconditional `sgs/container` wrap + full Spec 21 mandatory diagnostic artefact set. Identified exact bug at convert.py:1559-1561 (slug=None pass-through preempts FR-22-3 #3 container wrap).
+3. **Fix 1 shipped (commit 5731dc36)** — walker FR-22-3 #3 ordering fix. Implementer dispatched + 3-rater /qc-council APPROVE + R-22-3 AST PASS + 40/40 pytest. Mean pixel-diff 81.55% → 58.6% (−22.9pp aggregate); 17 of 18 non-hero body cells improved (trust-bar −72pp, social-proof −53pp, brand −33pp, gift-section −33pp).
+4. **Fix 2 attempted + rolled back** — direct seed-slot-synonyms.py execution attempted; net regressed +2.34pp (wrong rows: `section-social-proof → sgs/testimonial-slider` collapsed siblings; `split` blanket aliases routed wrong shapes). Full rollback to pre-Fix-2 state (mean back at 58.6%).
+5. **Sticking-icon bug diagnosed + TEMP fix shipped (commit 9a1bb252)** — Fix 1 surfaced the mockup's intended `.sgs-header { position: sticky }` CSS on the now-correctly-wrapped header (chrome out-of-scope for Phase 1). One-line CSS override in `sites/mamas-munches/theme-snapshot.json` hides the malformed wrap; removal condition tied to Phase 2 sibling spec.
+6. **Fix 4 attempted + BLOCKED at /qc-council** — hero render.php FR-22-6 migration. Implementer returned clean diff; 3-rater council BLOCKED: walker collapses `__content`/`__media` BEM wrappers (Fix 2b prerequisite); Rater B demanded server-side legacy fallback. Worktree intact at `.claude/worktrees/agent-adf7827adc88aea77`.
+7. **Bean reframed Rater B's fallback demand** — FR-22-6 hybrid problem is exclusively SGS framework debt (zero core blocks on Phase 0.4 roster); never add per-block fallback hacks (~600-1200 lines across 61 blocks = R-22-9 violation at operational layer); full 61-block roster migration + WP-CLI batch existing-post migration is the canonical path. Captured as **R-22-14 binding rule** (commit 37dd2c79).
+8. **/sgs-update vs seed-script claim corrected** — Bean's question forced grep-verification; corrected lesson `db-rows-canonical-flow` (seed-slot-synonyms.py writes to both DBs by design; /sgs-update is downstream refresh, not row-add).
+9. **Phase 2 plan written (commit 37dd2c79)** — `.claude/plans/2026-05-28-phase-2-hybrid-block-migration.md` via /phase-planner. 4 streams; Stream A ACTIVE; B/C/D deferred placeholders per Bean directive. Stream A total: 3-5 hr.
+10. **Living docs updated (commit 37dd2c79)** — state.md current_phase + spec_22_implementation block; decisions.md D90/D91/D92 prepended; docs-registry.yaml moved Phase 2 plan IN + Phase 1.5 archived; MEMORY.md indexed 4 new lessons.
+
+## Current state
+
+- **Branch:** `main` at `37dd2c79` (gates-prep commit; pushed)
+- **Session commits on main:** `5731dc36` (Fix 1) + `9a1bb252` (TEMP header-hide) + `37dd2c79` (Phase 1.5 close + Phase 2 plan + R-22-14)
+- **Tests:** converter_v2 pytest 40/40 PASS; R-22-3 AST self-test PASS; no project-level test suite
+- **Build:** `npm run build` succeeds; build dir intact
+- **Uncommitted:** `plugins/sgs-blocks/includes/lucide-icons.php` (auto-regen timestamp, never committed per project CLAUDE.md)
+- **Live canary:** https://sandybrown-nightingale-600381.hostingersite.com/rc-fix-verification-mamas-munches/
 
 ## Known Issues / Blockers
 
-- **Dashboard at port 5050 is DOWN** — Gate 4b/4c.5 dashboard POSTs failed throughout session. Lessons captured with `pending_upload: true` flag in workspace files. Restart dashboard before next dashboard-dependent work.
-- **5 pre-existing duplicate parking slugs** (P-FR1-VARIATION-BUF-CONSISTENCY, P-G1-EXTEND-TO-OTHER-CONTAINER-SHAPED-COMPOSITES, P-G1-HERO-INNERBLOCKS, P-G3-STAGE-3-VISUAL-SLOT-MAPPING, P-G5-PER-BLOCK-DOM-SHAPE-FIXES) — appear in 2026-05-26 closure notice + as older entries below. NOT introduced this session. Future parking cleanup pass should de-duplicate.
-- **P-TEAM-MEMBER-SCHEMA-ORG-SAMEAS-RESTORATION (OPEN, SEO bucket)** — team-member's pre-1.3b Schema.org JSON-LD `sameAs` array was lost in the InnerBlocks refactor. Trigger: Phase 2 OR if a team-member-using client surfaces an SEO Schema audit issue.
+- **Mirror-DB divergence surfaced as pre-existing bug** — Fix 2's rollback agent found `.agents/skills/sgs-wp-engine/sgs-framework.db` never had the Fix 2 rows. `.claude/` and `.agents/` DBs get written by different scripts (seed-slot-synonyms.py writes both by design; /sgs-update writes only .agents). Worth investigating in Stream A's verification step.
+- **Fix 4 worktree** at `.claude/worktrees/agent-adf7827adc88aea77` remains uncommitted; reference for Stream B when Stream A closes. Worktree auto-cleanup may purge it; if so reconstruct from git reflog or product-card commit a757ff1c.
+- **5 pre-existing duplicate parking slugs** — not introduced this session; future cleanup pass.
 
-## Next Priorities (in order)
+## Next priorities (in order)
 
-1. **Phase 1.5 ran THIS session (2026-05-27).** Walker deployed to sandybrown + page 144 patched + Stage 11 measured. **RESULT: 0/21 body cells PASS ≤5%; mean 81.55%; regression +17.94pp vs pre-walker 63.61% baseline.** This is the empirical Phase 1 → Phase 2 transition signal. Universal walker is structurally correct (R-22-3 PASS, 145+ tests PASS) but Spec 16's hardcoded per-block cheats were hiding the gap; walker exposes it. Per-cell breakdown captured at `pipeline-state/mamas-munches-144-2026-05-27-124306/`. Stage 10 deploy machinery bug (`upload_and_patch.py` abort-on-zero-uploads) was fixed mid-session.
-2. **Next session: /systematic-debugging dispatch.** 7 parallel agents (one per body section) read pixel-diff PNGs + convert-trace + leftover-buckets to surface class-of-failure per section. Synthesise → decide Path A (Phase 2 hybrid render.php migrations) / Path B (walker-level adjustments) / Path C (hybrid). See `.claude/next-session-prompt.md` for full 4-task orchestration plan.
-3. **Most-likely conclusion:** Phase 2 (61-block hybrid render.php migration roster per `reports/2026-05-27-hybrid-block-roster.md`) is the path. Migrations to `echo $content` for content-bearing slots close the gap. Phase 0.4 audit predicted this.
-4. **Restart dashboard at port 5050** for blub.db corrections sync (Gate 4b/4c.5 retries).
+1. **Step A1 DB-quality pre-pass.** SQL query produces CSV of 180-200 `(block × content-bearing-attr × proposed-target-block)` triples; Bean reviews + flags suspicious rows. ~30-45 min.
+2. **Step A2 fix suspicious slot_synonyms rows** via seed-slot-synonyms.py (corrected Fix 2; row-by-row gating). Adds section-internal BEM wrappers (`__content`/`__media`/`__inner`/etc.).
+3. **Step A3 run seed + INDEPENDENTLY verify BOTH DBs** (the implementer-verification step Fix 2 failed at). Mirror-DB divergence check.
+4. **Step A4 /sgs-update downstream stage refresh** (Stages 5/6/7/9).
+5. **Step A5 re-baseline /sgs-clone measurement.** Per-cell compare vs post-Fix-1 baseline 58.6%; expected `__content`/`__media` preservation drops hero/featured-product/gift-section. QA gate; if PASS, Stream B activation decision deferred to next-next session.
 
-## Files Modified
+## Files modified
 
-| File | What changed |
-|---|---|
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | NEW **1873-LoC** universal walker (replaces retired **4803-LoC** Spec 16 walker, **61% reduction**) |
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | +3 walker helpers + html_tag_to_core_block table migration + array_item_slot_for helper |
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/__init__.py` | flush_essence_matches wrapper added; seed_d1_sidecar reduced to no-op stub; D1_SIDECAR removed from __all__ |
-| `plugins/sgs-blocks/scripts/orchestrator/_retired/convert_pre_spec22.py` | NEW (renamed from converter_v2/convert.py — frozen byte-identical reference) |
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/tests/test_walker_helpers.py` | NEW 26 tests for Pass 1 helpers |
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/tests/test_array_item_slot_for.py` | NEW 17 tests for array routing helper |
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/tests/test_atomic_tag_map.py` | NEW 28 tests for DB-driven atomic_tag_map |
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/tests/test_qc_council_fixes.py` | NEW 16 tests for D1-D5 council fixes |
-| `plugins/sgs-blocks/src/blocks/heading/*` | γ-rebuild: composite → single-element + headingRole enum + deprecated.js (2 versions) |
-| `plugins/sgs-blocks/src/blocks/social-icons/*` | per-item `label` field added (WCAG aria-label) |
-| `plugins/sgs-blocks/src/blocks/team-member/*` | socialLinks attribute → InnerBlocks slot + deprecated.js migration |
-| `theme/sgs-theme/patterns/{heading,label-heading}-subheading-cluster.php` | NEW 2 patterns reconstructing old composite heading visual cluster |
-| `.claude/state.md` / `.claude/decisions.md` / `.claude/parking.md` / `.claude/specs/22-*.md` | Spec drift fix (D89/D90) + parking entries + state snapshot updates |
+| File path | What changed | Commit |
+|---|---|---|
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | Fix 1 — walker FR-22-3 #3 ordering | `5731dc36` |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | Fix 1 — `emit_sgs_container_wrapping` accepts slug=None | `5731dc36` |
+| `sites/mamas-munches/theme-snapshot.json` | TEMP CSS override hiding malformed sticky header | `9a1bb252` |
+| `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` | R-22-14 binding rule added | `37dd2c79` |
+| `.claude/plans/2026-05-28-phase-2-hybrid-block-migration.md` | NEW — Phase 2 plan, Stream A active | `37dd2c79` |
+| `.claude/plans/archive/2026-05-26-phase-1-spec-22-implementation-closed-2026-05-27.md` | Phase 1.5 plan archived (renamed) | `37dd2c79` |
+| `.claude/state.md` | current_phase + spec_22_implementation block updated | `37dd2c79` |
+| `.claude/decisions.md` | D90/D91/D92 prepended | `37dd2c79` |
+| `.claude/docs-registry.yaml` | Phase 2 plan IN; Phase 1.5 archive trail | `37dd2c79` |
+| `.claude/reports/2026-05-27-phase-1.5-systematic-debugging-synthesis.md` | NEW — Round 2 corrected synthesis | `5731dc36` |
 
 ## Notes for Next Session
 
-- The /qc-council 4-rater gate is the binding rule for converter/walker/SGS-block commits (blub.db 255 + lesson `feedback_qc_council_cross_family_triangulation_finds_bugs.md`). Same-family tests pass green AND miss real bugs. Cross-family diversity (Anthropic Sonnet + Google Gemini Flash + main-thread inline) is the lever.
-- The walker's R-22-3 PASS test self-runs in `__main__` (convert.py:1740-1810) — AST-walks `walk()` and asserts zero illegal block-slug literals. Will fail if anyone adds a per-block conditional. Structural enforcement floor.
-- emit_atomic now has per-(slug, tag) attr maps aligned to current block.json. Future block schema changes for atomic-target blocks must update emit_atomic OR rely on the DB-driven fallback (queries `block_attrs(slug)` for first content-role string attr).
-- Bean's standing directives: minimise time / no hardcoded routing dicts (R-22-1) / never amend commits (always new commit) / always merge to main / no co-author tags / UK English / phases never ship as single commits (R-22-5).
+- **Bean directive: Stream A ONLY** — do not dispatch Stream B implementers until Stream A measurement closes. Streams B/C/D in plan are documentation, not active scope.
+- **4 captured lessons worth re-reading** (in `C:/Users/Bean/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/`, indexed in MEMORY.md): `db-rows-canonical-flow` (CORRECTED), `row-by-row-measurement-gate-per-db-change`, `section-root-aliases-target-sgs-container-only`, `fr22_6_hybrid_problem_is_sgs_only_no_legacy_fallback_hacks`.
+- **R-22-14 is Bean P1 locked** — never propose server-side legacy fallback hacks in any Phase 2 block migration. WP-CLI batch existing-post migration is the canonical backwards-compat path.
+- **TEMP header-hide override** removes when Phase 2 sibling spec (header/footer cloner) ships. Comment cites condition.
+
+## Next Session Prompt
+
+See `.claude/next-session-prompt.md` (canonical lowercase path) for the full orchestration plan.
