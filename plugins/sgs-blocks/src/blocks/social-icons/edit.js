@@ -67,6 +67,13 @@ export default function Edit( { attributes, setAttributes } ) {
 									placeholder="https://…"
 									__nextHasNoMarginBottom
 								/>
+								<TextControl
+									value={ icon.label || '' }
+									onChange={ ( val ) => updateIcon( index, 'label', val ) }
+									placeholder={ __( 'Accessible label (optional)', 'sgs-blocks' ) }
+									help={ __( 'aria-label for screen readers. Leave empty to use the platform name.', 'sgs-blocks' ) }
+									__nextHasNoMarginBottom
+								/>
 							</FlexBlock>
 							<FlexItem>
 								<Button icon="trash" isDestructive onClick={ () => removeIcon( index ) } label={ __( 'Remove', 'sgs-blocks' ) } />

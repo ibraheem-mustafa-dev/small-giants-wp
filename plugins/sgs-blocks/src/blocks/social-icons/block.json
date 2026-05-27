@@ -2,10 +2,10 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/social-icons",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"title": "SGS Social Icons",
 	"category": "sgs-content",
-	"description": "Row of social media platform icons with links. Supports Facebook, Instagram, LinkedIn, X, YouTube, TikTok, and more. Configurable size, style, and hover colour.",
+	"description": "Row of social media platform icons with links. Supports Facebook, Instagram, LinkedIn, X, YouTube, TikTok, and more. Configurable size, style, and hover colour. Each icon item shape: { platform: string, url: string, label?: string }. The label field is used as the aria-label for accessibility (WCAG 2.2 SC 4.1.2). When label is empty the platform display name is used as the fallback.",
 	"keywords": [
 		"social",
 		"icons",

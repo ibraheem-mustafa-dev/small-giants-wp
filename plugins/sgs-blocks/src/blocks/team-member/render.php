@@ -37,7 +37,6 @@ if ( ! empty( $member_media['url'] ) ) {
 $name               = $attributes['name'] ?? '';
 $role               = $attributes['role'] ?? '';
 $bio                = $attributes['bio'] ?? '';
-$social_links       = $attributes['socialLinks'] ?? array();
 $name_colour        = $attributes['nameColour'] ?? '';
 $role_colour        = $attributes['roleColour'] ?? 'primary';
 $card_style         = $attributes['cardStyle'] ?? 'elevated';
@@ -134,41 +133,9 @@ $role_html = $role ? sprintf( '<p class="sgs-team-member__role"%s>%s</p>', $role
 // Bio.
 $bio_html = $bio ? sprintf( '<p class="sgs-team-member__bio">%s</p>', wp_kses_post( $bio ) ) : '';
 
-// Social links.
-$social_html = '';
-if ( ! empty( $social_links ) ) {
-	$social_items = '';
-	$platform_labels = array(
-		'facebook'  => 'Facebook',
-		'twitter'   => 'X (Twitter)',
-		'linkedin'  => 'LinkedIn',
-		'instagram' => 'Instagram',
-		'youtube'   => 'YouTube',
-		'tiktok'    => 'TikTok',
-		'github'    => 'GitHub',
-		'email'     => 'Email',
-		'website'   => 'Website',
-	);
-
-	foreach ( $social_links as $link ) {
-		if ( empty( $link['url'] ) ) continue;
-		$platform = $link['platform'] ?? 'website';
-		$label    = $platform_labels[ $platform ] ?? ucfirst( $platform );
-		$href     = 'email' === $platform ? 'mailto:' . esc_attr( $link['url'] ) : esc_url( $link['url'] );
-
-		$social_items .= sprintf(
-			'<a href="%s" class="sgs-team-member__social-link sgs-team-member__social--%s" target="_blank" rel="noopener noreferrer" aria-label="%s">%s</a>',
-			$href,
-			esc_attr( $platform ),
-			esc_attr( $label ),
-			esc_html( $label )
-		);
-	}
-
-	if ( $social_items ) {
-		$social_html = '<div class="sgs-team-member__social">' . $social_items . '</div>';
-	}
-}
+// Social icons — rendered via InnerBlocks (sgs/social-icons children).
+// do_blocks() processes the serialised inner block content from $content.
+$social_html = do_blocks( $content );
 
 // Schema.org/Person markup (feature #252).
 $schema_html = '';
@@ -187,16 +154,6 @@ if ( $name ) {
 	if ( $schema_image_url ) {
 		$schema['image'] = $schema_image_url;
 	}
-	// Map social link URLs to sameAs (exclude email links).
-	$same_as = array();
-	foreach ( $social_links as $link ) {
-		if ( ! empty( $link['url'] ) && 'email' !== ( $link['platform'] ?? '' ) ) {
-			$same_as[] = esc_url_raw( $link['url'] );
-		}
-	}
-	if ( $same_as ) {
-		$schema['sameAs'] = $same_as;
-	}
 	$schema_html = sprintf(
 		'<script type="application/ld+json">%s</script>',
 		wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE )
@@ -204,7 +161,7 @@ if ( $name ) {
 }
 
 $inner_html = sprintf(
-	'<div %s>%s<div class="sgs-team-member__content">%s%s%s%s</div>%s</div>',
+	'<div %s>%s<div class="sgs-team-member__content">%s%s%s</div>%s%s</div>',
 	$wrapper_attributes,
 	$photo_html,
 	$name_html,

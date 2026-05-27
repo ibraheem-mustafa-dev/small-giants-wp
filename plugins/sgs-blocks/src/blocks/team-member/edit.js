@@ -1,18 +1,14 @@
 import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
+	useInnerBlocksProps,
 	InspectorControls,
 	RichText,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	SelectControl,
-	TextControl,
 	ToggleControl,
-	Button,
-	Flex,
-	FlexItem,
-	FlexBlock,
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
@@ -31,9 +27,14 @@ const PHOTO_SHAPES = [
 	{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
 ];
 
-const SOCIAL_PLATFORMS = [
-	'facebook', 'twitter', 'linkedin', 'instagram', 'youtube', 'tiktok', 'github', 'email', 'website',
-];
+/**
+ * InnerBlocks template: default to one sgs/social-icons child.
+ * Social links are now composed via InnerBlocks rather than a flat
+ * socialLinks array attribute — allows full block editor control over
+ * each sgs/social-icons instance including its own icon/label/style
+ * controls without bespoke inspector UI here.
+ */
+const TEMPLATE = [ [ 'sgs/social-icons' ] ];
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -42,7 +43,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		name,
 		role,
 		bio,
-		socialLinks,
 		nameColour,
 		roleColour,
 		cardStyle,
@@ -83,22 +83,16 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const blockProps = useBlockProps( { className } );
 
-	const updateSocialLink = ( index, field, value ) => {
-		const updated = [ ...socialLinks ];
-		updated[ index ] = { ...updated[ index ], [ field ]: value };
-		setAttributes( { socialLinks: updated } );
-	};
-
-	const addSocialLink = () => {
-		setAttributes( {
-			socialLinks: [ ...socialLinks, { platform: 'website', url: '' } ],
-		} );
-	};
-
-	const removeSocialLink = ( index ) => {
-		const updated = socialLinks.filter( ( _, i ) => i !== index );
-		setAttributes( { socialLinks: updated } );
-	};
+	// Social icons rendered as InnerBlocks — editors use the sgs/social-icons
+	// block inspector directly for platform/URL/label/style controls.
+	const innerBlocksProps = useInnerBlocksProps(
+		{ className: 'sgs-team-member__social' },
+		{
+			template: TEMPLATE,
+			templateLock: false,
+			allowedBlocks: [ 'sgs/social-icons' ],
+		}
+	);
 
 	return (
 		<>
@@ -139,40 +133,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { roleColour: val } ) }
 					/>
 				</PanelBody>
-
-				<PanelBody title={ __( 'Social Links', 'sgs-blocks' ) } initialOpen={ false }>
-					{ socialLinks.map( ( link, index ) => (
-						<Flex key={ index } style={ { marginBottom: '8px' } }>
-							<FlexItem>
-								<SelectControl
-									value={ link.platform }
-									options={ SOCIAL_PLATFORMS.map( ( p ) => ( { label: p, value: p } ) ) }
-									onChange={ ( val ) => updateSocialLink( index, 'platform', val ) }
-									__nextHasNoMarginBottom
-								/>
-							</FlexItem>
-							<FlexBlock>
-								<TextControl
-									value={ link.url }
-									onChange={ ( val ) => updateSocialLink( index, 'url', val ) }
-									placeholder="https://…"
-									__nextHasNoMarginBottom
-								/>
-							</FlexBlock>
-							<FlexItem>
-								<Button
-									icon="trash"
-									isDestructive
-									onClick={ () => removeSocialLink( index ) }
-									label={ __( 'Remove', 'sgs-blocks' ) }
-								/>
-							</FlexItem>
-						</Flex>
-					) ) }
-					<Button variant="secondary" onClick={ addSocialLink }>
-						{ __( 'Add social link', 'sgs-blocks' ) }
-					</Button>
-				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>
@@ -209,6 +169,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					onChange={ ( val ) => setAttributes( { bio: val } ) }
 					placeholder={ __( 'Short bio…', 'sgs-blocks' ) }
 				/>
+				<div { ...innerBlocksProps } />
 			</div>
 		</>
 	);
