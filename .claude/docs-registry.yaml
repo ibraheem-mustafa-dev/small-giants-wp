@@ -4,7 +4,7 @@
 
 generated: 2026-05-15
 last_trimmed: 2026-05-21
-last_updated: 2026-05-26
+last_updated: 2026-05-27
 project: small-giants-wp
 
 canonical_docs:
@@ -25,8 +25,8 @@ canonical_docs:
   - {path: .claude/parking.md,                                         scope: forever_append_only_with_status,  doc_type: parking}
   - {path: .claude/plan.md,                                            scope: forever_master,                   doc_type: master-plan}
   - {path: .claude/plans/2026-05-24-strategic-plan.md,                 scope: forever_until_recovery_complete,  doc_type: strategic-plan, note: "Phase 1 scope superseded by Spec 22; Phases 2-4 still active"}
-  - {path: .claude/plans/2026-05-26-phase-1-spec-22-implementation.md, scope: forever_until_phase_1_shipped,    doc_type: phase-plan, canonical_spec: ".claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md", supersedes: ".claude/plans/archive/2026-05-25-phase-1-universal-extraction-superseded-by-spec-22.md"}
-  - {path: .claude/plans/2026-05-24-phase-2-header-footer-cloner.md,   scope: forever_until_phase_2_shipped,    doc_type: phase-plan, blocked_by: "phase-1.5 per-section ≤1% gate"}
+  - {path: .claude/plans/2026-05-28-phase-2-hybrid-block-migration.md, scope: forever_until_phase_2_shipped,    doc_type: phase-plan, canonical_spec: ".claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md", active_scope: "STREAM_A_ONLY 2026-05-27 per Bean directive — Streams B/C/D deferred placeholders", note: "Active phase 2026-05-28; Phase 1.5 closed via D90/D91/D92"}
+  - {path: .claude/plans/2026-05-24-phase-2-header-footer-cloner.md,   scope: forever_until_header_footer_cloner_shipped,    doc_type: phase-plan, note: "Phase 2 sibling spec — header/footer cloner; renumbered from 'Phase 2' since the active Phase 2 is now hybrid-block-migration. Blocked on Phase 2 hybrid migration close."}
   - {path: .claude/plans/2026-05-24-phase-3-parking-sweep.md,          scope: forever_until_phase_3_shipped,    doc_type: phase-plan}
   - {path: .claude/plans/2026-05-24-phase-4-skill-optimisation.md,     scope: forever_until_phase_4_shipped,    doc_type: phase-plan}
   - {path: .claude/reports/2026-05-25-qc-council-issue-register.md,    scope: forever_until_phase_1_shipped,    doc_type: reference, sot_note: "Canonical register for Phase 1 — ~110 items across Sections A-R; Section P = 27 binding design principles; Section Q = 20-cheat inventory; Section R = consolidated phase plan"}
@@ -41,6 +41,11 @@ canonical_docs:
   - {path: .claude/specs/19-SGS-CLI-COMMANDS.md,                       scope: spec_version_canonical,           doc_type: spec, spec_version: 19}
   - {path: .claude/specs/20-STRUCTURED-PIPELINE-LOG-SURFACING.md,      scope: spec_version_canonical,           doc_type: spec, spec_version: 20}
   - {path: .claude/specs/common-wp-styling-errors.md,                  scope: forever_append_only,              doc_type: errors-catalogue}
+
+  # MOVED 2026-05-27: plans/2026-05-26-phase-1-spec-22-implementation.md →
+  # plans/archive/ (Phase 1.5 CLOSED per D90; new active phase plan is
+  # plans/2026-05-28-phase-2-hybrid-block-migration.md). Archived entry NOT
+  # tracked in canonical_docs — git-blame only; archive dir is scope-excluded.
 
   # REMOVED 2026-05-21: tooling-map.md / skills-commands-map.md / db-tables-map.md
   # → absorbed into cloning-pipeline-flow.md.

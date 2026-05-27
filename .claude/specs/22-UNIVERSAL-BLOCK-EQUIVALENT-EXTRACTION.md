@@ -471,6 +471,7 @@ Retired scripts move to `plugins/sgs-blocks/scripts/orchestrator/_retired/` so t
 11. **R-22-11 — Verify rendered output, not internal metrics** (blub.db 194). Live Playwright DOM check is canonical; extract.json is corroborating evidence.
 12. **R-22-12 — QC gates are structural, not prompt** (blub.db 281). `/qc-council` pre-commit gate enforced via `pipeline-stage-gate.py` hook.
 13. **R-22-13 — Bean visual sign-off is co-authoritative with pixel-diff** (per FR-22-7 + measurement-vs-eye rule `~/.claude/rules/measurement-vs-eye.md`). Script numbers + Bean's eye + visual cropped-pair artefacts together close a section. Numbers alone don't close; eye alone doesn't close.
+14. **R-22-14 — FR-22-6 migrations never carry server-side legacy fallback hacks** (Bean P1, locked 2026-05-27). The "render.php reads scalar attrs and builds inner HTML, ignoring `$content`" problem is exclusively SGS-framework debt; core/Gutenberg blocks never had it. NEVER add `if (empty($content) && !empty($legacy_attr)) { ...legacy scalar render... }` to a migrated render.php. The temptation appears when migrating a single block (e.g. Fix 4 hero attempt 2026-05-27) where unedited production posts would otherwise render blank between deploy and editor-open. The correct response is: (a) batch-migrate the full 61-block roster via Phase 2 parallel /subagent-driven-development per FR-22-6.1, (b) ship a WP-CLI batch existing-post migration script that walks every post on every production site + forces deprecated.js v(N+1) migration via headless block-parser, (c) delay the deploy if (b) isn't ready — never add the per-block fallback hack which would be ~10-20 lines × 61 blocks = 600-1200 lines of dead-but-load-bearing scalar guard code permanently in the codebase. The fallback hack violates R-22-9 (universal mechanism, no per-block hyperfocus) at the operational layer. Captured after Fix 4 hit /qc-council BLOCK with Rater B demanding the fallback; Bean reframed the problem as SGS-exclusive + correctly chose roster migration + WP-CLI sweep over per-block hacks. Sibling lesson: `feedback_fr22_6_hybrid_problem_is_sgs_only_no_legacy_fallback_hacks.md`. Operationalised in `.claude/plans/2026-05-28-phase-2-hybrid-block-migration.md`.
 
 ## 7. Implementation phases
 
@@ -558,7 +559,7 @@ Phase 1.5 work is empirically scoped after Phase 1 measurements arrive. May be i
 | `.claude/plans/2026-05-24-strategic-plan.md` | Rewrite or retire post-Spec-22 ratification | Commit 0.0 or Phase 4.3 |
 | `.claude/state.md` | Phase + status + latest_commit through every commit | Every commit |
 | `.claude/handoff.md` | Final close at Phase 4.3 | Commit 4.3 |
-| Root `CLAUDE.md` | "11 binding rules" updates to reference R-22-1 through R-22-13 | Commit 1.4 |
+| Root `CLAUDE.md` | "binding rules" updates to reference R-22-1 through R-22-14 (R-22-14 added 2026-05-27 per Fix 4 reframing) | Commit 1.4 + Phase 2 update |
 | `.claude/CLAUDE.md` (working area) | Authoritative-pointers table gains Spec 22 entry | Commit 0.0 |
 | `plugins/sgs-blocks/CLAUDE.md` | "Block customisation standard" gains hybrid-block migration reference | Commit 2.1 |
 | `~/.claude/skills/sgs-wp-engine/SKILL.md` | Spec 22 referenced as canonical Stage 4 spec | Commit 0.0 |
