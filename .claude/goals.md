@@ -1,6 +1,6 @@
 # small-giants-wp — Goals
 
-**Last updated:** 2026-05-27 (Spec 22 Phase 1 ARCHITECTURAL CLOSED — 8 substantive commits + handoff; Phase 1.5 empirical pixel-diff measurement opens next session)
+**Last updated:** 2026-05-27 (Spec 22 Phase 1 ARCHITECTURAL CLOSED + Phase 1.5 MEASURED: 0/21 body cells PASS ≤5%, mean 81.55% with regression +17.94pp from pre-walker baseline — Phase 2 hybrid migrations is the path to gap closure)
 
 ## Primary near-term goal (2026-05-26 onwards — gates everything until met)
 

@@ -35,9 +35,9 @@ parent_session: small-giants-wp-2026-05-27-spec-22-phase-1-walker-rewrite
 
 ## Next Priorities (in order)
 
-1. **Phase 1.5 — Stage 11 pixel-diff measurement** (THE empirical gate for Phase 1 acceptance). Build + tar deploy + OPcache reset → `/sgs-clone --auto-section --debug-trace --converter-v2 --spec-22-acceptance` against Mama's canary page 144 → measure 7 body sections × 3 viewports → halt-or-proceed decision per R-22-13 (Bean visual sign-off co-authoritative).
-2. **If Phase 1.5 PASSES** (≤5% per section × 3 viewports) — close Phase 1, open Phase 2 (hybrid render.php migrations across 61-block roster per Phase 0.4 audit).
-3. **If Phase 1.5 FAILS** — diagnose root cause. The walker is structurally correct (council-gated, 145+ tests PASS) — failures will be class-of-issue (CSS routing, lift-attr coverage, atomic-emission semantics) not per-section bugs.
+1. **Phase 1.5 ran THIS session (2026-05-27).** Walker deployed to sandybrown + page 144 patched + Stage 11 measured. **RESULT: 0/21 body cells PASS ≤5%; mean 81.55%; regression +17.94pp vs pre-walker 63.61% baseline.** This is the empirical Phase 1 → Phase 2 transition signal. Universal walker is structurally correct (R-22-3 PASS, 145+ tests PASS) but Spec 16's hardcoded per-block cheats were hiding the gap; walker exposes it. Per-cell breakdown captured at `pipeline-state/mamas-munches-144-2026-05-27-124306/`. Stage 10 deploy machinery bug (`upload_and_patch.py` abort-on-zero-uploads) was fixed mid-session.
+2. **Next session: /systematic-debugging dispatch.** 7 parallel agents (one per body section) read pixel-diff PNGs + convert-trace + leftover-buckets to surface class-of-failure per section. Synthesise → decide Path A (Phase 2 hybrid render.php migrations) / Path B (walker-level adjustments) / Path C (hybrid). See `.claude/next-session-prompt.md` for full 4-task orchestration plan.
+3. **Most-likely conclusion:** Phase 2 (61-block hybrid render.php migration roster per `reports/2026-05-27-hybrid-block-roster.md`) is the path. Migrations to `echo $content` for content-bearing slots close the gap. Phase 0.4 audit predicted this.
 4. **Restart dashboard at port 5050** for blub.db corrections sync (Gate 4b/4c.5 retries).
 
 ## Files Modified

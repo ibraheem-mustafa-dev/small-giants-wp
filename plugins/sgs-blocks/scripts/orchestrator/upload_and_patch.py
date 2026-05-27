@@ -137,9 +137,11 @@ def main():
     d = json.loads(extract_path.read_text(encoding="utf-8"))
     bm = d.get("block_markup", "")
 
-    # Find every mockup-relative image URL in block_markup
+    # Find every mockup-relative image URL in block_markup. Matches any image
+    # path under `../../research/<subfolder>/` (photography, brand, etc.) per
+    # the repo's mockup-asset layout (sites/<client>/mockups/ -> ../../research/).
     urls = sorted(set(re.findall(
-        r'\.\./\.\./research/photography/wp-media-library/[\w\-.]+\.(?:jpe?g|png|webp|gif|svg)',
+        r'\.\./\.\./research/[\w\-./]+?\.(?:jpe?g|png|webp|gif|svg)',
         bm, re.IGNORECASE,
     )))
     print(f"Found {len(urls)} unique relative image URL(s)")
@@ -173,9 +175,18 @@ def main():
         except Exception as e:  # noqa: BLE001
             print(f"  ERROR on {local.name}: {e}")
 
-    if not url_map:
+    # Abort path: only fire when we found relative URLs to upload AND every
+    # upload failed. When the mockup has 0 relative URLs (all images are
+    # absolute / already in WP media library / atomic blocks with no images),
+    # there's nothing to upload — proceed with the patch unchanged. The
+    # previous abort-on-empty-url_map was a logic bug that blocked Stage 11
+    # measurement whenever the markup had zero matches for the relative-URL
+    # regex. (Fix per Phase 1.5 deploy-machinery audit 2026-05-27.)
+    if urls and not url_map:
         print("\nNo uploads succeeded; aborting patch + post update.")
         sys.exit(1)
+    if not urls:
+        print("(no relative image URLs to upload — proceeding to patch)")
 
     # Patch block_markup
     new_bm = bm
