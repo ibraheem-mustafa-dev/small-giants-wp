@@ -1,7 +1,7 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-28-spec-22-phase-1.5-pixel-diff-measurement
+session_tag: small-giants-wp-spec-22-phase-1.5-pixel-diff-measurement
 generated: 2026-05-27
 parent_session: small-giants-wp-2026-05-27-spec-22-phase-1-architectural-CLOSED
 primary_goal: "Phase 1.5 — Stage 11 pixel-diff measurement. Empirical gate for Phase 1 acceptance: every body section ≤5% × 3 viewports (Phase 1) with R-22-13 Bean visual sign-off co-authoritative. Walker rewrite is shipped + council-gated + 145+ tests PASS; now measure rendered output against Mama's canary page 144."
@@ -9,11 +9,11 @@ primary_goal: "Phase 1.5 — Stage 11 pixel-diff measurement. Empirical gate for
 
 # Next session — Spec 22 Phase 1.5 (Stage 11 pixel-diff measurement)
 
-You are the SGS framework architect closing Spec 22 Phase 1. The universal walker rewrite is **shipped + architecturally gated** (Phase 1.4a + 1.4b committed yesterday). What remains is the **empirical gate**: measure the rendered cloning-pipeline output against the Mama's Munches canary page 144 at sandybrown staging. Decide halt-or-proceed based on the per-section pixel-diff results AND Bean's visual sign-off (R-22-13 co-authoritative).
+You are the SGS framework architect closing Spec 22 Phase 1. The universal walker rewrite is **shipped + architecturally gated** (Phase 1.4a + 1.4b committed in the prior session, 2026-05-27, on `main`). What remains is the **empirical gate**: measure the rendered cloning-pipeline output against the Mama's Munches canary page 144 at sandybrown staging. Decide halt-or-proceed based on the per-section pixel-diff results AND Bean's visual sign-off (R-22-13 co-authoritative).
 
 ## State recap (plain English)
 
-The Spec 16 walker was retired and replaced by a single universal walker in `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` (1842 LoC, ~50% reduction). The walker has EXACTLY 3 routing branches per R-22-3, no per-block conditionals, no hardcoded routing dicts. It consumes 8 new DB-driven helpers shipped this session. /qc-council 4-rater multi-model gate found and fixed 5 real bugs before the walker commit. 145+/145+ test suite PASS.
+The Spec 16 walker was retired and replaced by a single universal walker in `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` (**1873 LoC**, **61% reduction** from retired 4803 LoC). The walker has EXACTLY 3 routing branches per R-22-3, no per-block conditionals, no hardcoded routing dicts. It consumes 5 public + 4 private DB-driven helpers shipped in the prior session (resolve_slug_from_bem + lift_behavioural_attrs + emit_sgs_container_wrapping + array_item_slot_for + atomic_tag_map + private support helpers). /qc-council 4-rater multi-model gate found and fixed 5 real bugs before the walker commit. 145+/145+ test suite PASS.
 
 **Now we test it against reality.** The acceptance criterion is per-section ≤5% pixel-diff × 3 viewports (375/768/1440) across 7 body sections (Phase 1 gate). If all 21 cells (7 sections × 3 viewports) hit ≤5% AND Bean visually signs off → Phase 1 closes, Phase 2 opens (61-block hybrid render.php migration roster). If any cell exceeds ≤5% → diagnose root cause; walker is structurally correct so failures are class-of-issue, not per-section bugs.
 
@@ -24,7 +24,7 @@ The Spec 16 walker was retired and replaced by a single universal walker in `plu
 3. `.claude/state.md` — current state snapshot
 4. `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §11 success criteria + §6 R-22-13 visual sign-off rule + §FR-22-7 body section enumeration
 5. `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md` Task 5 (Phase 1.5 measurement)
-6. `pipeline-state/mamas-munches-144-2026-05-26-122349/stage-11-pixel-diff.json` (Wave B baseline, mean 58.91% — for predicted-vs-actual delta comparison)
+6. `pipeline-state/mamas-munches-144-2026-05-26-122349/stage-11-pixel-diff.json` (Wave B pre-walker baseline; **`mean_mismatch_percent: 63.61%`** per file — corrected 2026-05-27 post-handoff audit; the earlier "58.91%" claim that propagated through prior handoffs was unverifiable drift and didn't match the cited file)
 7. `.claude/cloning-pipeline-stages.md` Stage 11 detail
 
 ## Skills to Invoke
@@ -68,7 +68,7 @@ The Spec 16 walker was retired and replaced by a single universal walker in `plu
 
 ## Task 1 — Build + deploy walker to sandybrown staging
 
-**What:** `npm run build` + tar deploy + OPcache reset on sandybrown staging (`sandybrown-nightingale-600381.hostingersite.com`). The Phase 1.4 walker code is currently sitting on origin/main but the staging server still has the pre-walker code.
+**What:** `npm run build` + tar deploy + OPcache reset on sandybrown staging (`sandybrown-nightingale-600381.hostingersite.com`). The Phase 1.4 walker code is currently sitting on origin/main but the staging server still has the pre-walker code. Note: the WALKER itself is Python (`plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py`) — runs locally during /sgs-clone — but the block changes (sgs/heading γ-rebuild, sgs/team-member InnerBlocks, sgs/social-icons label field) require the WP plugin to be redeployed for the pixel-diff to compare against the right rendered output.
 **Why:** Pixel-diff measurement against stale code measures stale output — captured rule (`feedback_wp_debug_display_contaminates_pixel_diff`). Deploy MUST precede measurement.
 **Estimated time:** 10 min.
 
@@ -82,7 +82,7 @@ The Spec 16 walker was retired and replaced by a single universal walker in `plu
 
 ## Task 2 — Stage 11 pixel-diff measurement (full body sections × 3 viewports)
 
-**What:** `python plugins/sgs-blocks/scripts/orchestrator/sgs-clone-orchestrator.py --client mamas-munches --target page:144 --auto-section --debug-trace --converter-v2 --spec-22-acceptance` against sandybrown. Captures pre/post pixel-diff for 7 body sections × 3 viewports (375/768/1440) = 21 cells.
+**What:** `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --client mamas-munches --target page:144 --auto-section --debug-trace --converter-v2 --spec-22-acceptance` against sandybrown. (Note: orchestrator is at `scripts/sgs-clone-orchestrator.py`, NOT under `scripts/orchestrator/` — common drift; verified path 2026-05-27.) Captures pre/post pixel-diff for 7 body sections × 3 viewports (375/768/1440) = 21 cells.
 **Why:** Empirical gate for Phase 1 acceptance per R-22-4 + R-22-13.
 **Estimated time:** 30-45 min wall-time (the pipeline + Playwright + per-section crop measurements).
 
@@ -111,7 +111,7 @@ Per R-22-13, ALSO surface cropped-pair artefacts (sgs.png + mockup.png + diff.pn
 - Parallel with: none
 
 **Acceptance:**
-- If all 21 cells PASS measurement AND Bean signs off visually → **Phase 1 CLOSED**, Phase 2 opens (hybrid render.php migration roster from Phase 0.4 audit). Update state.md current_phase to `spec-22-phase-1-closed-2026-05-28`. Commit a small Phase 1.5 close-note commit. Open next-session-prompt for Phase 2.
+- If all 21 cells PASS measurement AND Bean signs off visually → **Phase 1 CLOSED**, Phase 2 opens (hybrid render.php migration roster from Phase 0.4 audit — 61 blocks). Update state.md current_phase to `spec-22-phase-1-closed-<YYYY-MM-DD>`. Commit a small Phase 1.5 close-note commit. Open next-session-prompt for Phase 2.
 - If any cell FAILS → escalate to Task 4 (root cause diagnosis).
 
 ## Task 4 — Root cause diagnosis (only if Task 3 surfaces FAILs)

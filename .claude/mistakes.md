@@ -1,9 +1,21 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-24 (Phase 6a — keyword-stub migration)
+**Last updated:** 2026-05-27 (Phase 1.4 close — /qc-council cross-family triangulation + Spec 22 §FR-22-2.5 priority list drift)
 
 <!-- ACTIVE — recent 30 mistakes as keyword stubs. Full body in blub.db `learnings` table or feedback_*.md files. Archive: memory/mistakes-archive.md. Search: grep -r KEYWORD memory/ + curl localhost:5050/api/learning?search=KEYWORD -->
 
 ## Active stubs (most recent 30)
+
+### [2026-05-27] /qc-council 4-rater cross-family triangulation catches bugs same-family tests miss
+- **Pattern key:** `qc-council-cross-family-triangulation-finds-bugs`
+- **Feedback file:** `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_qc_council_cross_family_triangulation_finds_bugs.md`
+- **Evidence:** Spec 22 Phase 1.4 walker — 129+ same-family tests PASSED, /qc-council 4-rater (Sonnet + Haiku + Gemini Flash + main-thread inline) then surfaced 5 real bugs (D1 CSS-loss in walk_passthrough, D2 ImportError on documented `flush_essence_matches` API, D3 emit_atomic emitting wrong attr names post-γ-rebuild for sgs/heading/sgs/media/sgs/quote/sgs/icon-list, D4 dead Spec 16 D1 sidecar code, D5 chrome-skip dropping SGS-classed `<header>`). All 5 fixed in-flight before Phase 1.4b commit (`da3de993`).
+- **Rule:** Run /qc-council BEFORE every converter/walker/SGS-block/DB-routing commit (blub.db 255 binding rule). Cross-family diversity (Anthropic Sonnet + Google Gemini + main-thread inline) is the single biggest quality lever.
+
+### [2026-05-27] Spec 22 §FR-22-2.5 "Phase 0.1 backfill priority list" drift — 3 of 4 entries didn't grep-verify against codebase
+- **Pattern key:** `spec-22-fr-22-2-5-priority-list-drift`
+- **Feedback file:** `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_spec_22_fr_22_2_5_priority_list_drift.md`
+- **Evidence:** Spec listed `sgs/social-proof.testimonials` (block doesn't exist), `sgs/info-box.items` (attr doesn't exist), `sgs/certification-bar.badges` (wrong attr name). Only `product-card.packSizes` grep-verified. Caught at Phase 1.3 dispatch by main-thread grep before Sonnet ran. Decision D89.
+- **Rule:** Every load-bearing target name in any spec / next-session-prompt / cold-prompt MUST grep-verify against current codebase BEFORE dispatching action.
 
 ### [2026-05-25] Phases never ship as single commits; major-task cadence with /qc-council + /sgs-clone + predicted/actual delta per commit
 - **Pattern key:** `phases-never-ship-as-single-commits`

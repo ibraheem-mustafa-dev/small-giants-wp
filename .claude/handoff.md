@@ -17,7 +17,7 @@ parent_session: small-giants-wp-2026-05-27-spec-22-phase-1-walker-rewrite
 5. **Phase 1.3a** (`909c971a`) — array-attr backfill (product-card.packSizes→button, gallery.mediaItems→media, form-field-address.fields→options, form-field-tiles.tiles→options) + `array_item_slot_for()` helper (17/17 tests) + Spec 22 §FR-22-2.5 drift fix (D89 — 3 of 4 priority entries didn't grep-verify against codebase).
 6. **sgs/team-member InnerBlocks** (`cd3bef5e`) — flat `socialLinks` array → InnerBlocks slot defaulting to sgs/social-icons. sgs/social-icons gains `label` field (WCAG 2.2 SC 4.1.2). One known SEO regression parked.
 7. **Phase 1.4a** (`b58e5ca3`) — walker helpers in db_lookup.py: `resolve_slug_from_bem` + `lift_behavioural_attrs` + `emit_sgs_container_wrapping`. 26 unit tests PASS.
-8. **Phase 1.4b** (`da3de993`) — universal walker rewrite in new `convert.py` (1842 LoC, ~50% reduction from retired 4700). EXACTLY 3 routing branches per R-22-3. /qc-council 4-rater (Sonnet + Haiku + Gemini Flash + main-thread) surfaced 5 real diagnostics; all 5 fixed in-flight (D1 CSS-loss / D2 ImportError / D3 wrong attr names / D4 dead D1 sidecar / D5 chrome-skip ordering). 16 fix-tests added.
+8. **Phase 1.4b** (`da3de993`) — universal walker rewrite in new `convert.py` (**1873 LoC, 61% reduction from retired 4803**). EXACTLY 3 routing branches per R-22-3. /qc-council 4-rater (Sonnet + Haiku + Gemini Flash + main-thread) surfaced 5 real diagnostics; all 5 fixed in-flight (D1 CSS-loss / D2 ImportError / D3 wrong attr names / D4 dead D1 sidecar / D5 chrome-skip ordering). 16 fix-tests added.
 
 ## Current State
 
@@ -44,7 +44,7 @@ parent_session: small-giants-wp-2026-05-27-spec-22-phase-1-walker-rewrite
 
 | File | What changed |
 |---|---|
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | NEW 1842-LoC universal walker (replaces retired 4700-LoC Spec 16 walker) |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | NEW **1873-LoC** universal walker (replaces retired **4803-LoC** Spec 16 walker, **61% reduction**) |
 | `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | +3 walker helpers + html_tag_to_core_block table migration + array_item_slot_for helper |
 | `plugins/sgs-blocks/scripts/orchestrator/converter_v2/__init__.py` | flush_essence_matches wrapper added; seed_d1_sidecar reduced to no-op stub; D1_SIDECAR removed from __all__ |
 | `plugins/sgs-blocks/scripts/orchestrator/_retired/convert_pre_spec22.py` | NEW (renamed from converter_v2/convert.py — frozen byte-identical reference) |
