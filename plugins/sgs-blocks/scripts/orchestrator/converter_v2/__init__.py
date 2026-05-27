@@ -17,10 +17,11 @@ __all__ = [
     "seed_pipeline_context",
     "seed_gap_context",
     "seed_theme_json",
-    "seed_d1_sidecar",
     "reset_pipeline_seed",
     "flush_essence_matches",
 ]
+# seed_d1_sidecar removed from __all__ 2026-05-27 (/qc-council D4) — Spec 16
+# sidecar mechanism retired; superseded by DB-driven role classification.
 
 
 # Module-level pipeline-seed state. The orchestrator calls `convert_section`
@@ -112,25 +113,30 @@ def seed_theme_json(theme_json: dict) -> None:
     v3._LIFT_CONTEXT["theme_json"] = theme_json if isinstance(theme_json, dict) else {}
 
 
-def seed_d1_sidecar(run_dir: "str | object | None") -> bool:
-    """Load css-d1-assignments.json from run_dir into the cv2 D1 sidecar cache.
+def flush_essence_matches() -> list[dict]:
+    """Return + clear the per-section essence-match log.
 
-    Call this from the orchestrator ONCE before the per-section loop fires, after
-    stage_0_7_css_lift has written the css-d1-assignments.json sidecar.
-
-    When the sidecar is loaded, ``_lift_root_supports_to_style`` and
-    ``_lift_core_block_style`` will MERGE the pre-classified D1 assignments into
-    ``base_decls`` so typed attrs get the router's richer CSS context in addition
-    to what ``_collect_css_decls_for_element`` finds at runtime.
-
-    Graceful-degradation: if run_dir is None or the file doesn't exist, the
-    module cache stays empty and cv2 falls back to _collect_css_decls_for_element
-    exclusively (same behaviour as before P1.B).
-
-    Returns True if the sidecar was loaded, False otherwise.
+    Called by the orchestrator once per section emit to ship the per-section
+    essence-match diagnostics into the run's pipeline-state. Proxies to
+    ``convert.flush_essence_matches()``. The wrapper exists so callers can
+    ``from orchestrator.converter_v2 import flush_essence_matches`` directly —
+    earlier sessions advertised this name in ``__all__`` without exporting it,
+    producing an ImportError when consumers tried the documented import path
+    (caught by /qc-council 2026-05-27, fixed in Phase 1.4b).
     """
     from . import convert as v3
-    return v3.seed_d1_sidecar(run_dir)
+    return v3.flush_essence_matches()
+
+
+def seed_d1_sidecar(run_dir: "str | object | None") -> bool:
+    """DEPRECATED no-op stub. The D1 sidecar mechanism was retired with Spec 16
+    (2026-05-26). Assignments now live in the DB via slot_synonyms +
+    block_attributes role classification + equivalent_block_for routing.
+    Returns False unconditionally. Kept temporarily so legacy orchestrator
+    callers don't AttributeError; safe to remove in a future cleanup pass once
+    every caller is verified migrated.
+    """
+    return False
 
 
 def ensure_root_section_class(block_markup: str, section_id: str) -> str:
