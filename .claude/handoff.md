@@ -67,7 +67,11 @@ Phase 1.5 CLOSED with just Fix 1 shipped (walker FR-22-3 #3 ordering, commit 573
 ## Notes for Next Session
 
 - **Bean directive: Stream A ONLY** — do not dispatch Stream B implementers until Stream A measurement closes. Streams B/C/D in plan are documentation, not active scope.
-- **4 captured lessons worth re-reading** (in `C:/Users/Bean/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/`, indexed in MEMORY.md): `db-rows-canonical-flow` (CORRECTED), `row-by-row-measurement-gate-per-db-change`, `section-root-aliases-target-sgs-container-only`, `fr22_6_hybrid_problem_is_sgs_only_no_legacy_fallback_hacks`.
+- **4 captured lessons worth re-reading** (in `C:/Users/Bean/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/`, indexed in MEMORY.md):
+  - `feedback_db_rows_via_sgs_update_not_direct_seed.md` (CORRECTED 2026-05-27 after Bean's /sgs-update grep-verify question — seed-slot-synonyms.py IS the canonical row-add path; /sgs-update is downstream refresh)
+  - `feedback_row_by_row_measurement_gate_per_db_change.md` (Fix 2's batched 25-row regression evidence)
+  - `feedback_section_root_aliases_target_sgs_container_only.md` (Fix 2's `section-social-proof → testimonial-slider` regression evidence)
+  - `feedback_fr22_6_hybrid_problem_is_sgs_only_no_legacy_fallback_hacks.md` (Fix 4 BLOCKED-then-reframed evidence; R-22-14 source)
 - **R-22-14 is Bean P1 locked** — never propose server-side legacy fallback hacks in any Phase 2 block migration. WP-CLI batch existing-post migration is the canonical backwards-compat path.
 - **TEMP header-hide override** removes when Phase 2 sibling spec (header/footer cloner) ships. Comment cites condition.
 

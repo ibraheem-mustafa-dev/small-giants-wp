@@ -29,7 +29,11 @@ Before Step A1, read in this order:
 3. `.claude/state.md` — current_phase: spec-22-phase-2-hybrid-block-migration-STREAM-A-ACTIVE
 4. `.claude/plans/2026-05-28-phase-2-hybrid-block-migration.md` — full Phase 2 plan; Stream A is active scope
 5. `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §6 R-22-9 + R-22-14 binding rules; §FR-22-2 + §FR-22-2.2 role-exclusion; §FR-22-4 + §FR-22-6 contracts
-6. Project memory (4 lessons in `C:/Users/Bean/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/`): `db-rows-canonical-flow`, `row-by-row-measurement-gate-per-db-change`, `section-root-aliases-target-sgs-container-only`, `fr22_6_hybrid_problem_is_sgs_only_no_legacy_fallback_hacks`
+6. Project memory (4 lessons in `C:/Users/Bean/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/`) — READ ALL FOUR explicitly before Step A1:
+   - `feedback_db_rows_via_sgs_update_not_direct_seed.md` — CORRECTED canonical row-add flow (seed-slot-synonyms.py writes both DBs; /sgs-update is downstream refresh)
+   - `feedback_row_by_row_measurement_gate_per_db_change.md` — per-row measurement attribution; Fix 2's batched-25-rows failure mode
+   - `feedback_section_root_aliases_target_sgs_container_only.md` — section roots → sgs/container ONLY (Fix 2's section-social-proof regression)
+   - `feedback_fr22_6_hybrid_problem_is_sgs_only_no_legacy_fallback_hacks.md` — R-22-14 source; FR-22-6 migration constraint
 
 ## First action
 
