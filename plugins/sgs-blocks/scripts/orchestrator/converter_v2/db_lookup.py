@@ -1422,7 +1422,7 @@ def _emit_wp_block_markup(slug: str, attrs: dict, children: list[str]) -> str:
 
 
 def emit_sgs_container_wrapping(
-    slug: str,
+    slug: str | None,
     attrs: dict,
     children_markup: list[str],
     css: str,
@@ -1433,9 +1433,18 @@ def emit_sgs_container_wrapping(
     Every top-level section's base is sgs/container (FR-22-4); non-container
     top-level sections are wrapped rather than emitted bare.
 
+    When slug is None (top-level node had no BEM-resolved block slug per FR-22-11),
+    no inner block is emitted — the walked children become direct InnerBlocks of
+    the sgs/container wrapper. This preserves FR-22-4's invariant ("every top-level
+    section is based on sgs/container") for sections whose root class is unknown
+    to the slot_synonyms table, while keeping FR-22-11 pass-through semantics for
+    non-top-level slug-None nodes (which never reach this function).
+
     Args:
-        slug: Resolved block slug for the inner block (e.g. 'sgs/hero')
-        attrs: Block attrs dict to set on the inner block
+        slug: Resolved block slug for the inner block (e.g. 'sgs/hero'), or None
+              when the top-level section had no BEM-resolved block (children
+              become direct container InnerBlocks).
+        attrs: Block attrs dict to set on the inner block (ignored when slug=None)
         children_markup: List of child block markup strings (inner blocks)
         css: Section-scoped CSS string; appended as <style> inside the container
              div when non-empty (Spec 22 §FR-22-5 routing)
@@ -1457,11 +1466,17 @@ def emit_sgs_container_wrapping(
 
     _trace("section_wrap", slug=slug, children_count=len(children_markup))
 
-    # Build the inner block markup (the resolved slug + its attrs + children)
-    inner_markup = _emit_wp_block_markup(slug, attrs, children_markup)
-
-    # Build the container's inner HTML: inner block + optional CSS
-    container_parts: list[str] = [inner_markup]
+    # Build the container's inner HTML.
+    # When slug is not None: emit inner resolved block (+ its attrs + children),
+    # then optional CSS.
+    # When slug is None (top-level FR-22-11 pass-through): children become direct
+    # InnerBlocks of the container (no synthetic inner block emitted).
+    container_parts: list[str] = []
+    if slug is not None:
+        inner_markup = _emit_wp_block_markup(slug, attrs, children_markup)
+        container_parts.append(inner_markup)
+    else:
+        container_parts.extend(c for c in children_markup if c)
     if css and css.strip():
         container_parts.append(f"<style>{css.strip()}</style>")
     container_inner = "\n".join(container_parts)

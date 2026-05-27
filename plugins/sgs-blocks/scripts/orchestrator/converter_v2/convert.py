@@ -1556,17 +1556,31 @@ def walk(
     # ---- Universal path — BEM → DB → emit ----
     slug = db.resolve_slug_from_bem(sgs_classes)  # FR-22-1 with multi-class disambiguation
 
-    if slug is None:
-        # Pass-through (FR-22-11) — recurse, bubble children's emit
+    # FR-22-11 pass-through, scoped to NON-top-level only.
+    # When slug is None AND is_top_level=True we must still wrap the section
+    # in sgs/container (FR-22-4 invariant: every top-level section is based on
+    # sgs/container). Falling through to exception 3 below handles that case;
+    # the wrap function accepts slug=None and emits walked children as direct
+    # container InnerBlocks. Truly transparent pass-through (walk_passthrough)
+    # only applies to non-top-level slug-None nodes per FR-22-11.
+    if slug is None and not is_top_level:
         return walk_passthrough(node, css_rules, depth, variation_buf)
 
-    attrs = db.lift_behavioural_attrs(node, slug)    # FR-22-2 (NULL equivalent_block only)
+    # When slug is None at top level, skip attr-lifting + root-supports-lift
+    # (no resolved block to lift onto); CSS collection + child recursion still
+    # run so the section's classes and content flow into the synthesised
+    # sgs/container wrap below.
+    if slug is None:
+        attrs = {}
+    else:
+        attrs = db.lift_behavioural_attrs(node, slug)    # FR-22-2 (NULL equivalent_block only)
     css = collect_css_for_classes(classes, css_rules)  # FR-22-5
     if css and variation_buf is not None:
         variation_buf.append(css)
 
     # Lift block-root WP native supports (spacing/border/colour → style.*)
-    _lift_root_supports_to_style(node, slug, css_rules, attrs)
+    if slug is not None:
+        _lift_root_supports_to_style(node, slug, css_rules, attrs)
 
     # Recursively walk children for InnerBlocks
     children_markup: list[str] = []
@@ -1577,7 +1591,9 @@ def walk(
 
     # ---- Permitted exception 3 — top-level section container wrap ----
     # FR-22-4: every top-level section is based on sgs/container.
-    # Non-container top-level slugs are wrapped (not emitted bare).
+    # Non-container top-level slugs (including slug=None) are wrapped, not
+    # emitted bare. The wrap function emits walked children as direct
+    # container InnerBlocks when slug is None.
     # NOTE: 'sgs/container' is the ONLY block-slug literal in this file.
     # It is explicitly permitted by FR-22-4 as the container-base exception.
     if is_top_level and slug != "sgs/container":
