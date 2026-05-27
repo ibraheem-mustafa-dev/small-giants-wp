@@ -1178,6 +1178,304 @@ def array_item_slot_for(block_slug: str, attr_name: str) -> str | None:
     return canonical_slot  # May be None (Tier B fallback) or populated (Tier A)
 
 
+# ============================================================================
+# Phase 1.4 Pass 1 — Universal walker helper functions
+# ============================================================================
+# These three helpers are consumed by the universal walker (Pass 2).
+# They encode the three core walker operations without any per-block branches:
+#   1. resolve_slug_from_bem  — FR-22-1 BEM→slug resolution
+#   2. lift_behavioural_attrs — FR-22-2 scalar attr lifting
+#   3. emit_sgs_container_wrapping — FR-22-3 exception 3 + FR-22-4
+#
+# R-22-1 compliance: no hardcoded SGS routing dicts; every routing decision
+# queries the DB or delegates to existing helpers. No `if slug == 'sgs/X'`
+# conditionals anywhere in this section.
+# ============================================================================
+
+
+# ----------------------------------------------------------------------------
+# Helper 1 — resolve_slug_from_bem
+# Spec 22 §FR-22-1 multi-class BEM→slug resolution
+# ----------------------------------------------------------------------------
+
+@functools.lru_cache(maxsize=4096)
+def _resolve_slug_from_bem_tuple(classes_tuple: tuple[str, ...]) -> str | None:
+    """Core resolution logic — operates on a frozen sorted tuple for caching.
+
+    Multi-class disambiguation rule (FR-22-1):
+      Path 1 — bare block class (no __element suffix) present:
+        Each class whose BemParse.element is None is a block-root candidate.
+        Filter to those where `sgs/<block>` is a registered built slug.
+        If exactly one → return it.
+        If multiple → pick alphabetically first (determinism) + emit trace warning.
+      Path 2 — all classes are __element-suffixed (inner element of a parent):
+        Walk each class's BemParse.block + every known slot synonym alias.
+        Find the first canonical_slot whose standalone_block is non-NULL.
+        Return that standalone_block slug.
+      Neither path resolves → return None.
+    """
+    if not classes_tuple:
+        return None
+
+    registered = registered_block_slugs()
+    slot_alias_map = _slot_alias_to_standalone()
+
+    # Parse all sgs- classes via BEM
+    parsed: list[tuple[str, BemParse]] = []  # (original_class, parse)
+    for cls in classes_tuple:
+        if not cls.startswith("sgs-"):
+            continue
+        bem = parse_sgs_bem(cls)
+        if bem is not None:
+            parsed.append((cls, bem))
+
+    if not parsed:
+        return None
+
+    # ---- Path 1: bare block classes (no __element suffix) ----
+    bare_block_slugs: list[str] = []
+    for _cls, bem in parsed:
+        if bem.element is None and bem.block is not None:
+            candidate = f"sgs/{bem.block}"
+            if candidate in registered:
+                bare_block_slugs.append(candidate)
+
+    if bare_block_slugs:
+        bare_block_slugs.sort()  # deterministic tiebreaker
+        if len(bare_block_slugs) > 1:
+            _trace("bem_resolve_ambiguous",
+                   classes=list(classes_tuple),
+                   candidates=bare_block_slugs,
+                   chosen=bare_block_slugs[0])
+        return bare_block_slugs[0]
+
+    # ---- Path 2: element-only classes — slot fallback ----
+    # Walk in sorted order (deterministic) through parsed classes and try to
+    # resolve each BEM element/block segment against slot_synonyms.
+    for cls, bem in sorted(parsed, key=lambda x: x[0]):
+        # Try the element name first (most specific)
+        if bem.element is not None:
+            standalone = slot_alias_map.get(bem.element.lower())
+            if standalone:
+                _trace("bem_resolve_slot_fallback",
+                       class_=cls,
+                       slot=bem.element,
+                       slug=standalone)
+                return standalone
+        # Try the block segment (e.g. sgs-product-card__badge → 'product-card'
+        # is block, 'badge' is element — already tried above; but the block
+        # itself might also be a known slot alias in edge cases)
+        if bem.block is not None:
+            standalone = slot_alias_map.get(bem.block.lower())
+            if standalone:
+                _trace("bem_resolve_slot_fallback",
+                       class_=cls,
+                       slot=bem.block,
+                       slug=standalone)
+                return standalone
+
+    return None
+
+
+def resolve_slug_from_bem(sgs_classes: list[str]) -> str | None:
+    """Return the canonical SGS block slug for a list of sgs-* BEM classes, or None.
+
+    Spec 22 §FR-22-1 — multi-class disambiguation:
+      - Path 1: a class whose BEM block segment maps to a registered built
+        slug (no __element suffix). Multiple matches → alphabetically first
+        wins (determinism) + trace warning emitted.
+      - Path 2: all classes carry __element (inner element). Walk slot_synonyms
+        aliases; return the first canonical_slot whose standalone_block is set.
+      - Neither → None.
+
+    Non-sgs-* classes are silently filtered out. Safe to call with a node's
+    full class list — the walker should pre-filter but this helper is defensive.
+    """
+    return _resolve_slug_from_bem_tuple(tuple(sorted(sgs_classes)))
+
+
+# ----------------------------------------------------------------------------
+# Helper 2 — lift_behavioural_attrs
+# Spec 22 §FR-22-2 — scalar attr lifting (NULL equivalent_block only)
+# ----------------------------------------------------------------------------
+
+def lift_behavioural_attrs(node: object, slug: str) -> dict:
+    """Return a dict of scalar block attrs inferred from node's DOM attributes and classes.
+
+    # TODO: FR-22-2 scalar lift — refine in Pass 2 as walker discovers attrs that
+    # need lifting beyond the simple cases handled here. Current implementation
+    # covers: (a) explicit data-sgs-X="Y" attributes, and (b) sgs-block--modifier
+    # class patterns that map to known property_suffixes / modifier_suffixes rows.
+    # Array attrs (FR-22-2.5) and equivalent_block-routed attrs (FR-22-2.1) are
+    # walker concerns — this helper does NOT lift those.
+
+    Args:
+        node: BeautifulSoup Tag (or any object with .get() and .get('class') interface)
+        slug: Resolved SGS block slug (e.g. 'sgs/hero')
+
+    Returns:
+        dict of attr_name → value for scalar behavioural attrs that can be
+        inferred from the node without requiring content extraction.
+        Empty dict when no scalar attrs are found.
+    """
+    result: dict = {}
+
+    # ---- (a) Explicit data-sgs-X="Y" attributes ----
+    # Mockup authors (or the pipeline's Stage 4 Playwright pass) may annotate
+    # nodes with `data-sgs-<attrName>="<value>"` for unambiguous attr injection.
+    # These override any derived value. We check ALL attrs on the node for the
+    # data-sgs- prefix and lift any that have a matching attr on this block slug.
+    attrs = block_attrs(slug)
+    # Access node's HTML attributes — BeautifulSoup Tag.attrs is a dict.
+    # We accept any object with a .get(key) interface as a duck-type contract.
+    try:
+        node_attrs: dict = node.attrs if hasattr(node, "attrs") else {}
+    except Exception:
+        node_attrs = {}
+
+    for html_attr, value in node_attrs.items():
+        if not isinstance(html_attr, str):
+            continue
+        if html_attr.startswith("data-sgs-"):
+            attr_name = html_attr[len("data-sgs-"):]
+            # Only lift if the attr exists on this block AND is scalar (not array)
+            if attr_name in attrs and attrs[attr_name].get("attr_type") != "array":
+                # Only lift if equivalent_block_for returns None (scalar, not block-equiv)
+                if equivalent_block_for(slug, attr_name) is None:
+                    # Value may be a list when BS4 parses multi-value attrs; take first
+                    lifted_val = value[0] if isinstance(value, list) else value
+                    result[attr_name] = lifted_val
+                    _trace("scalar_lift", slug=slug, attr=attr_name,
+                           source="data-sgs-attr", value=lifted_val)
+
+    # ---- (b) sgs-block--modifier class patterns ----
+    # A modifier class like `sgs-cta-section--large` carries potential attr info.
+    # We parse the modifier, look it up in modifier_suffixes (kind=variant/state)
+    # and also probe property_suffixes for block-level CSS class probes.
+    # The block_attributes table's derived_selector column can carry
+    # `--modifier` patterns — we scan for matches.
+    try:
+        css_classes: list[str] = node.get("class") or []
+        if isinstance(css_classes, str):
+            css_classes = css_classes.split()
+    except Exception:
+        css_classes = []
+
+    # Check each sgs- class for a modifier segment
+    canonical_modifiers = _canonical_modifiers()
+    for cls in css_classes:
+        if not cls.startswith("sgs-"):
+            continue
+        bem = parse_sgs_bem(cls)
+        if bem is None or bem.modifier is None:
+            continue
+        modifier = bem.modifier.lower()
+        # Check if the modifier maps to a known modifier_suffixes kind
+        mod_kind = canonical_modifiers.get(modifier)
+        if mod_kind not in ("variant", "state"):
+            continue
+        # Now look for a block_attribute on this slug whose derived_selector
+        # ends with `--<modifier>` OR whose attr_name encodes the modifier.
+        # We scan attrs looking for a match; this is the "enum-class-probe" pattern.
+        for attr_name, attr_info in attrs.items():
+            role = attr_info.get("role")
+            if role not in ("select-from-enum", "enum-class-probe", "behaviour"):
+                continue
+            derived = attr_info.get("canonical_slot") or ""
+            # Heuristic: the modifier matches if the attr_name normalised == modifier
+            # or if derived_selector-like naming carries the modifier.
+            norm_mod = _normalise(modifier)
+            norm_attr = _normalise(attr_name)
+            if norm_attr == norm_mod or norm_attr.endswith(norm_mod):
+                if equivalent_block_for(slug, attr_name) is None:
+                    result[attr_name] = modifier
+                    _trace("scalar_lift", slug=slug, attr=attr_name,
+                           source="modifier-class", value=modifier)
+                    break
+
+    return result
+
+
+# ----------------------------------------------------------------------------
+# Helper 3 — emit_sgs_container_wrapping
+# Spec 22 §FR-22-3 exception 3 + §FR-22-4 (top-level section container wrap)
+# ----------------------------------------------------------------------------
+
+def _emit_wp_block_markup(slug: str, attrs: dict, children: list[str]) -> str:
+    """Private helper — emit a single WP block markup string.
+
+    Mirrors emit_wp_block() shape from _retired/convert_pre_spec22.py:964.
+    Strips private underscore-prefixed keys from attrs (routing hints).
+    Produces open+close form; never self-closing (section containers always
+    have children or empty inner content).
+    """
+    import json as _json
+    clean = {
+        k: v for k, v in attrs.items()
+        if v not in (None, "", [], {}) and not k.startswith("_")
+    }
+    attr_json = ""
+    if clean:
+        attr_json = " " + _json.dumps(clean, separators=(",", ":"), ensure_ascii=False)
+    inner_str = "\n".join(children) if children else ""
+    return f"<!-- wp:{slug}{attr_json} -->\n{inner_str}\n<!-- /wp:{slug} -->"
+
+
+def emit_sgs_container_wrapping(
+    slug: str,
+    attrs: dict,
+    children_markup: list[str],
+    css: str,
+) -> str:
+    """Wrap a resolved block in a sgs/container parent (FR-22-3 exception 3 + FR-22-4).
+
+    Called by the walker when: is_top_level=True AND resolved slug != 'sgs/container'.
+    Every top-level section's base is sgs/container (FR-22-4); non-container
+    top-level sections are wrapped rather than emitted bare.
+
+    Args:
+        slug: Resolved block slug for the inner block (e.g. 'sgs/hero')
+        attrs: Block attrs dict to set on the inner block
+        children_markup: List of child block markup strings (inner blocks)
+        css: Section-scoped CSS string; appended as <style> inside the container
+             div when non-empty (Spec 22 §FR-22-5 routing)
+
+    Returns:
+        WP block serialisation string with sgs/container as the outer wrapper.
+
+    Example output shape:
+        <!-- wp:sgs/container {} -->
+        <div class="wp-block-sgs-container">
+        <!-- wp:sgs/hero {"level":"h1"} -->
+        <p>x</p>
+        <!-- /wp:sgs/hero -->
+        <style>a{color:red}</style>
+        </div>
+        <!-- /wp:sgs/container -->
+    """
+    import json as _json
+
+    _trace("section_wrap", slug=slug, children_count=len(children_markup))
+
+    # Build the inner block markup (the resolved slug + its attrs + children)
+    inner_markup = _emit_wp_block_markup(slug, attrs, children_markup)
+
+    # Build the container's inner HTML: inner block + optional CSS
+    container_parts: list[str] = [inner_markup]
+    if css and css.strip():
+        container_parts.append(f"<style>{css.strip()}</style>")
+    container_inner = "\n".join(container_parts)
+
+    # Wrap in sgs/container (FR-22-4: always an empty attrs dict — styling
+    # lives on the inner block; the container is a structural wrapper only)
+    wrapper_div = (
+        f'<div class="wp-block-sgs-container">\n'
+        f"{container_inner}\n"
+        f"</div>"
+    )
+    return f"<!-- wp:sgs/container {{}} -->\n{wrapper_div}\n<!-- /wp:sgs/container -->"
+
+
 # ----------------------------------------------------------------------------
 # Smoke test
 # ----------------------------------------------------------------------------
