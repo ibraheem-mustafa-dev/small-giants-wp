@@ -68,7 +68,7 @@ Implements Spec 22's universal block-equivalent extraction architecture. Stage 4
 3. `.claude/specs/00-naming-conventions.md` §3.1 — BEM canonical signal
 4. `.claude/cloning-pipeline-flow.md` + `.claude/cloning-pipeline-stages.md` — stage map (post Commit 0.0 update)
 5. `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` — diagnostic artefacts
-6. `pipeline-state/mamas-munches-144-2026-05-26-122349/` — current empirical baseline (Wave B re-capture 2026-05-27; overall mean 58.91%). Earlier `pipeline-state/mamas-munches-homepage-2026-05-26-012625/` (mean 63.0%) retained as historical reference per D88 — partially stale on chrome-affected cells.
+6. `pipeline-state/mamas-munches-144-2026-05-26-122349/` — pre-walker-rewrite empirical baseline (Wave B re-capture 2026-05-27; **mean_mismatch_percent: 63.61%** per file — corrected 2026-05-27 post-handoff audit; earlier "58.91%" claim was unverifiable drift). Earlier `pipeline-state/mamas-munches-homepage-2026-05-26-012625/` (mean 63.0%) retained as historical reference per D88 — partially stale on chrome-affected cells.
 7. Recent feedback files in `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/` — `feedback_phases_never_ship_as_single_commits.md` (blub.db 288) + `feedback_grep_verify_handoff_diagnostic_premises.md` (output-only inference trap)
 
 ## Binding rules (every commit obeys all R-22-1 through R-22-13)

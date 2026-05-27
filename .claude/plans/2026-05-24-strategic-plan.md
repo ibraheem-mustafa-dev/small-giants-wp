@@ -129,7 +129,7 @@ Phase 4 (Skill optimisation) — dedicated session
 2. `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md` — active Phase 1 phase-plan (5-commit cadence + per-commit model routing)
 3. `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` — diagnostic artefact map (read BEFORE conjecturing about pipeline failures)
 4. `.claude/cloning-pipeline-flow.md` + `.claude/cloning-pipeline-stages.md` — pipeline flow with Stage 11 + per-stage R/W tables
-5. `pipeline-state/mamas-munches-144-2026-05-26-122349/` — current Wave B baseline (mean 58.91%); also `pipeline-state/mamas-munches-homepage-2026-05-26-012625/` for the pre-chrome-hide reference per D88
+5. `pipeline-state/mamas-munches-144-2026-05-26-122349/` — pre-walker-rewrite Wave B baseline (**`mean_mismatch_percent: 63.61%`** per file — corrected 2026-05-27 post-handoff audit; the earlier "58.91%" claim was unverifiable drift); also `pipeline-state/mamas-munches-homepage-2026-05-26-012625/` for the pre-chrome-hide reference per D88
 6. `.claude/decisions.md` D78-D88 — Spec 22 ratification chain + Phase 0 lessons (D84 scope correction, D85 role-exclusion fix, D86 Tier C delete, D87 pixel-diff divergence, D88 baseline staleness)
 
 **Mandatory before Phase 2:**
