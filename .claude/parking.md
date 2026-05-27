@@ -6,21 +6,14 @@ last_updated: 2026-05-27
 
 ## 2026-05-27 — Phase 1.5 close + Phase 2 reorder follow-ups
 
-> **P-MIRROR-DB-DIVERGENCE-ROOT-CAUSE** — NEW 2026-05-27. Bucket: tooling. Fix 2's rollback agent found that `~/.agents/skills/sgs-wp-engine/sgs-framework.db` never received Fix 2's row additions even though seed-slot-synonyms.py is designed to write both DBs (lines 47-48 + 647). Either the seed iteration silently skipped one DB OR the implementer's verification step lied. Stream A's Step A3 (independent verification of BOTH DBs) is the structural defence against this failure mode going forward. Root-cause investigation deferred — surface if Stream A's A3 shows the same divergence pattern.
-> **Status:** OPEN
-> **Trigger:** Stream A Step A3 surfaces unexplained mirror-DB divergence; OR next-routine seed-script run reports asymmetric output counts.
-
 > **P-TEMP-HEADER-HIDE-REMOVAL** — NEW 2026-05-27. Bucket: content. Commit `9a1bb252` deployed a TEMP CSS override in `sites/mamas-munches/theme-snapshot.json` hiding the malformed sticky header on Mama's canary page 144 (Fix 1's correctly-wrapped header surfaces the mockup's intended `position: sticky` CSS but the wrapped content is still Phase 2-territory broken). Override removal condition: Phase 2 sibling spec (header/footer cloner per `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md`) ships. CSS rule + removal condition cited in the file's comment.
 > **Status:** DEFERRED
 > **Trigger:** Phase 2 sibling spec (header/footer cloner) ships; verify by re-deploying theme-snapshot via push-theme-snapshot.py + checking live canary header renders correctly.
 
-> **P-FIX-4-WORKTREE-PRESERVATION** — NEW 2026-05-27. Bucket: tooling. Fix 4 hero render.php migration implementer's diff lives at `.claude/worktrees/agent-adf7827adc88aea77` (branch `worktree-agent-adf7827adc88aea77`). BLOCKED at /qc-council per Rater B (no legacy fallback) + Rater C (walker collapses `__content`/`__media` wrappers). Useful reference template for Stream B when activated. Worktree auto-cleanup may purge it without warning. If purged, the implementation can be reconstructed from commit `a757ff1c` (sgs/product-card CTA migration reference pattern) + Spec 22 §FR-22-6 + the synthesis report's Fix 4 section.
-> **Status:** OPEN
-> **Trigger:** Stream B activation (next-next session if Stream A A5 passes); OR worktree disappears from `git worktree list`.
-
-> **P-ROOT-CLAUDE-MD-R-22-14-PROPAGATION** — NEW 2026-05-27. Bucket: tooling. Root `CLAUDE.md` ("13 binding rules (Spec 22 R-22-1 through R-22-13...)") and `.claude/CLAUDE.md` ("Spec 22 binding rules: R-22-1 through R-22-13") both still reference R-22-13 as the last rule. R-22-14 added this session per D92. Spec 22 §8 cross-doc impact table tracks this as pending update; deferred to next-next session as a small batch edit.
-> **Status:** OPEN
-> **Trigger:** Next-next session start (cheap update; can land in any commit).
+<!-- RESOLVED 2026-05-27 (closed inline this session, no separate parking entries persist) -->
+<!-- P-MIRROR-DB-DIVERGENCE-ROOT-CAUSE: closed — both DBs verified at 89 rows + identical canonical_slot hash (0ad10db82ebd). Fix 2 rollback was clean; pre-existing divergence concern dormant. Stream A's Step A3 keeps the watch active. -->
+<!-- P-FIX-4-WORKTREE-PRESERVATION: closed — Fix 4 hero diff committed to branch `worktree-agent-adf7827adc88aea77` as preservation commit `0bc0ea9a` + pushed to origin. Diff survives any local worktree auto-cleanup. Stream B can fetch from `origin/worktree-agent-adf7827adc88aea77` when activated. -->
+<!-- P-ROOT-CLAUDE-MD-R-22-14-PROPAGATION: closed — Root CLAUDE.md + .claude/CLAUDE.md both updated with R-22-14 in the binding-rules block + Active Focus section + authoritative-pointers section (commit incoming). -->
 
 ---
 

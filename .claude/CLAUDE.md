@@ -28,9 +28,9 @@
 ## Authoritative pointers
 
 - **Canonical cloning-pipeline spec:** `specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` (Spec 22; replaces Spec 16 retired 2026-05-26)
-- **Active Phase 1 plan:** `plans/2026-05-26-phase-1-spec-22-implementation.md`
+- **Active Phase 2 plan:** `plans/2026-05-28-phase-2-hybrid-block-migration.md` (Stream A active; B/C/D deferred. Phase 1.5 closed 2026-05-27 per D90 — archived at `plans/archive/2026-05-26-phase-1-spec-22-implementation-closed-2026-05-27.md`.)
 - **Pipeline overview:** `cloning-pipeline-flow.md` (stage-index + cross-cutting principles); per-stage detail → `cloning-pipeline-stages.md`
-- **Binding methodology rules:** `decisions.md` (search for "binding" + recent D-numbers) — DO NOT restate inline here. Spec 22 binding rules: R-22-1 through R-22-13.
+- **Binding methodology rules:** `decisions.md` (search for "binding" + recent D-numbers) — DO NOT restate inline here. Spec 22 binding rules: R-22-1 through R-22-14 (R-22-14 added 2026-05-27 per D92 — no legacy fallback hacks in FR-22-6 migrations).
 - **Pipeline-state artefacts:** `specs/21-PIPELINE-STATE-ARTEFACTS.md` (mandatory read before conjecturing about pipeline failures)
 - **Doc-op canonical templates:** `~/.agents/skills/shared-references/doc-templates/`
 - **Registry:** `docs-registry.yaml` — every canonical doc is tracked there + walked by `/handoff` Gate 4.5

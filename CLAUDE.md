@@ -4,19 +4,20 @@
 
 A custom WordPress block framework built by Claude Code: theme + blocks plugin (with forms) + booking plugin + client-notes plugin. Competes with Kadence / Spectra / GenerateBlocks. Used to deliver 5 priority client builds with Bean as QC only.
 
-## Active focus (2026-05-25 onwards — gates everything until met)
+## Active focus (2026-05-27 onwards — Phase 2 hybrid block migration)
 
-**Cloning pipeline delivers ≤5% pixel-diff per body section × 3 viewports (375/768/1440) — Phase 1 acceptance. Phase 1.5 stretch closes to ≤1% via measurement-script hardening.**
+**Phase 1.5 CLOSED 2026-05-27 per D90 with just Fix 1 shipped (walker FR-22-3 #3 ordering, commit `5731dc36`; mean pixel-diff 81.55% → 58.6% = −22.9pp aggregate). Phase 2 reordered ahead of pixel-diff target per D91. Phase 2.5 = bridge to ≤1% (was original Phase 1.5 stretch).**
 
 - **Canonical spec:** [Spec 22 — Universal Block-Equivalent Extraction](.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md). Replaces Spec 16 (archived 2026-05-26).
-- **Phase 1 plan:** [`.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`](.claude/plans/2026-05-26-phase-1-spec-22-implementation.md) — 5-commit walker rewrite (1.1 pre-rewrite snapshot, 1.2 atomic-tag map migration, 1.3 array-of-objects resolution, 1.4 universal walker, 1.5 measurement+decide).
-- **Phase 1 acceptance:** per-section ≤5% × 3 viewports (7 body sections, 21 cells) + Bean visual sign-off (R-22-13 co-authoritative).
-- **Phase 1.5 stretch:** per-section ≤1% via pixel-diff.py vertical-anchor fix + chrome cropping + font-load timing.
-- **Phase 2:** header + footer cloner (parked until Phase 1 closes).
-- **Baseline (2026-05-26):** mean 63.0% across 9 sections × 3 viewports on Mama's Munches canary page 144. See `pipeline-state/mamas-munches-homepage-2026-05-26-012625/`.
+- **Active Phase 2 plan:** [`.claude/plans/2026-05-28-phase-2-hybrid-block-migration.md`](.claude/plans/2026-05-28-phase-2-hybrid-block-migration.md) — 4 streams; **Stream A scoped active** (DB-quality pre-pass + Fix 2b slot_synonyms + /sgs-update downstream + re-baseline measurement). Streams B/C/D deferred placeholders pending Stream A QA gate.
+- **Phase 2 scope:** migrate 61 SGS hybrid blocks (per Phase 0.4 audit roster) to FR-22-6 InnerBlocks (`echo $content`) pattern via parallel /subagent-driven-development per FR-22-6.1.
+- **Phase 2 acceptance:** per-section ≤5% × 3 viewports (7 body sections, 21 cells) + Bean visual sign-off (R-22-13 co-authoritative).
+- **Phase 2.5:** bridge to ≤1% pixel-diff via pixel-diff.py vertical-anchor fix + chrome cropping + font-load timing (was original Phase 1.5 stretch).
+- **Phase 2 sibling spec:** header/footer cloner at [`.claude/plans/2026-05-24-phase-2-header-footer-cloner.md`](.claude/plans/2026-05-24-phase-2-header-footer-cloner.md) — blocked on hybrid migration close.
+- **Post-Fix-1 baseline (2026-05-27):** mean 58.6% across 27 captures (9 sections × 3 viewports) on Mama's Munches canary page 144. See `pipeline-state/mamas-munches-homepage-2026-05-27-193804/`.
 - **Visual POC:** [`/hero-clone-poc/` page 29](https://sandybrown-nightingale-600381.hostingersite.com/hero-clone-poc/) — visual parity proof (54.5% script number is 60px chrome-bleed alignment artefact, not visual divergence).
 
-## 13 binding rules (Spec 22 R-22-1 through R-22-13; gate every commit)
+## 14 binding rules (Spec 22 R-22-1 through R-22-14; gate every commit)
 
 Full text in Spec 22 §6. Headlines:
 
@@ -33,6 +34,7 @@ Full text in Spec 22 §6. Headlines:
 11. **Verify rendered output, not internal metrics (R-22-11)** — live Playwright DOM is canonical.
 12. **QC gates are structural, not prompt (R-22-12)** — `pipeline-stage-gate.py` hook enforces /qc-council.
 13. **Bean visual sign-off is co-authoritative (R-22-13)** — script measurement + Bean's eye + visual cropped-pair BOTH consulted; numbers alone don't close, eye alone doesn't close.
+14. **FR-22-6 migrations never carry server-side legacy fallback hacks (R-22-14)** — added 2026-05-27 per D92. The hybrid render.php problem is exclusively SGS framework debt (zero core blocks on Phase 0.4 roster). Never add `if (empty($content) && !empty($legacy_attr)) { ...legacy scalar render... }` to a migrated render.php. Canonical backwards-compat: full 61-block roster migration + WP-CLI batch existing-post migration via deprecated.js. Bean P1 locked.
 
 Sibling rules: blub.db 254 (read leftover-buckets first), 255 (multi-model /qc per converter commit), 256 (per-section cropped pixel-diff), 260 (db-first-no-hardcoded-dicts), 272 (schema enumeration before "missing X"), 276 (council fix-shapes are HYPOTHESES not specs), 281 (qc gate must be structural), 288 (phases never ship as single commits).
 
@@ -59,7 +61,7 @@ Each sub-project + each client site has its own CLAUDE.md. Read the relevant one
 |---|---|
 | [`.claude/reports/2026-05-25-qc-council-issue-register.md`](.claude/reports/2026-05-25-qc-council-issue-register.md) | THE current cloning-pipeline register (~110 items, Sections A-R) |
 | [`.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`](.claude/plans/2026-05-26-phase-1-spec-22-implementation.md) | Active phase plan (5-commit walker rewrite + 4-phase implementation) |
-| [`.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`](.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) | Canonical pipeline spec; single-path universal walker; FR-22-1 through FR-22-13; R-22-1 through R-22-13 binding rules. (Spec 16 retired 2026-05-26 — archived at `.claude/specs/archive/`.) |
+| [`.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`](.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) | Canonical pipeline spec; single-path universal walker; FR-22-1 through FR-22-13; R-22-1 through R-22-14 binding rules (R-22-14 added 2026-05-27 per D92 — no legacy fallback hacks). (Spec 16 retired 2026-05-26 — archived at `.claude/specs/archive/`.) |
 | [`.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md`](.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md) | Pipeline-state artefact map (read BEFORE conjecturing) |
 | [`.claude/cloning-pipeline-flow.md`](.claude/cloning-pipeline-flow.md) + [`-stages.md`](.claude/cloning-pipeline-stages.md) | Stage map + per-stage detail |
 | [`.claude/dev-setup.md`](.claude/dev-setup.md) | Build / deploy / SSH / local environment / gotchas |
