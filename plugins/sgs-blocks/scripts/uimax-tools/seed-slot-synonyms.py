@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
-"""Seed sgs-framework.db `slot_synonyms` with BEM element → canonical slot mappings.
+"""Seed sgs-framework.db `slots` table with BEM element → standalone_block mappings
+at element scope.
+
+Ported 2026-05-30 from the retired `slot_synonyms` table to the post-D99 `slots`
+table (composite PK on (slot_name, scope); this script only writes scope='element').
+Column mapping: canonical_slot → slot_name; description → notes. The dropped
+`role` and `html_semantic_tag` columns are intentionally not carried over —
+roles now live in the `roles` table (per role_name) and at the per-attribute
+level in `block_attributes.role`; HTML semantic tag is no longer a slot-level
+concept (R-22-1 universal walker resolves by BEM class, not by tag).
 
 Discovers missing aliases by walking block.json + save.js + render.php for every
 SGS block and inserting BEM element names that are NOT yet covered by any existing
-canonical_slot or alias in slot_synonyms.
-
-Fixes RC-3: composite BEM element names like `split-image`, `side-image`, `bg-img`,
-`bg-media` currently return None from `canonical_slot_for()`, causing
-`_lift_styling_attrs` to silently drop every CSS rule on those elements.
+slot row at element scope.
 
 Idempotent semantics:
-- Uses INSERT OR IGNORE for new rows (canonical_slots that don't exist yet).
-- Uses UPDATE to extend the `aliases` JSON array of EXISTING canonical rows
-  (e.g. adding "split-image" to the existing `media` canonical's aliases).
+- Uses INSERT OR IGNORE for new rows (slot_names that don't exist yet at element scope).
+- Uses UPDATE to extend the `aliases` JSON array of EXISTING element-scope rows
+  (e.g. adding "split-image" to the existing `media` slot's aliases).
 - Re-running is a no-op once all rows are present.
 
 The strategy for aliases-extension (rather than new rows) is intentional:
@@ -21,10 +26,9 @@ The strategy for aliases-extension (rather than new rows) is intentional:
   `image`, `photo`, `picture` aliases work. Similarly `bg-img`/`bg-media` are
   aliases of `backgroundMedia`.
 
-Writes to BOTH sgs-framework.db instances (same dual-DB pattern as
-seed-legacy-role-lookup.py):
-  - ~/.claude/skills/sgs-wp-engine/sgs-framework.db (claude path — read by db_lookup.py)
-  - ~/.agents/skills/sgs-wp-engine/sgs-framework.db  (agents path — read by update-db.py)
+Writes to the single canonical sgs-framework.db; the .claude/ and .agents/ paths
+are the same physical file via NTFS junction post-2026-05-29 verification
+(see memory/feedback_dbs_are_junction_not_mirror.md).
 
 Run:
     python plugins/sgs-blocks/scripts/uimax-tools/seed-slot-synonyms.py
@@ -42,10 +46,9 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 
 # ---------------------------------------------------------------------------
-# DB paths — mirrors seed-legacy-role-lookup.py dual-write pattern exactly
+# DB path — single canonical file (matches db_lookup.SGS_DB)
 # ---------------------------------------------------------------------------
-_CLAUDE_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
-_AGENTS_DB = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
 # ---------------------------------------------------------------------------
 # Canonical data — new alias extensions to EXISTING canonical rows.
@@ -132,7 +135,7 @@ ALIAS_EXTENSIONS: list[tuple[str, list[str]]] = [
     # ----- quote slot aliases (added 2026-05-24 — moved from text canonical) ----
     # Spec 00 §3.4: quote is a first-class canonical slot. BEM element __quote
     # (or __blockquote, __pullquote) on a draft routes to sgs/quote standalone
-    # block via slot_synonyms.standalone_block lookup. HTML tag is NOT used for
+    # block via slots.standalone_block lookup. HTML tag is NOT used for
     # recognition — pure BEM-canonical path.
     ("quote", [
         "quote",              # primary BEM element name
@@ -403,9 +406,10 @@ AMBIGUOUS: list[tuple[str, list[str], str]] = [
 # ---------------------------------------------------------------------------
 
 def _current_aliases(conn: sqlite3.Connection, canonical: str) -> list[str]:
-    """Return the current aliases list for a canonical slot."""
+    """Return the current aliases list for an element-scope slot."""
     row = conn.execute(
-        "SELECT aliases FROM slot_synonyms WHERE canonical_slot = ?", (canonical,)
+        "SELECT aliases FROM slots WHERE slot_name = ? AND scope = 'element'",
+        (canonical,),
     ).fetchone()
     if not row or not row[0]:
         return []
@@ -437,7 +441,7 @@ def _extend_aliases(
 
     if not dry_run:
         conn.execute(
-            "UPDATE slot_synonyms SET aliases = ? WHERE canonical_slot = ?",
+            "UPDATE slots SET aliases = ? WHERE slot_name = ? AND scope = 'element'",
             (merged_json, canonical),
         )
         conn.commit()
@@ -449,30 +453,35 @@ def _insert_canonical_row(
     conn: sqlite3.Connection,
     canonical: str,
     aliases: list[str],
-    role: str | None,
+    role: str | None,  # kept in signature for NEW_CANONICAL_ROWS compat; not written
     description: str,
-    html_tag: str | None,
+    html_tag: str | None,  # kept in signature for NEW_CANONICAL_ROWS compat; not written
     dry_run: bool,
 ) -> tuple[int, int]:
-    """INSERT OR IGNORE a new canonical_slot row.
+    """INSERT OR IGNORE a new element-scope slot row.
+
+    `role` and `html_tag` are accepted for backwards-compat with
+    NEW_CANONICAL_ROWS tuples but NOT written — those columns were dropped
+    when slot_synonyms unified into slots at D99 (2026-05-29).
 
     Returns (inserted, skipped) counts.
     """
     if not dry_run:
         cur = conn.execute(
             """
-            INSERT OR IGNORE INTO slot_synonyms
-                (canonical_slot, aliases, role, description, html_semantic_tag)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT OR IGNORE INTO slots
+                (slot_name, scope, aliases, notes)
+            VALUES (?, 'element', ?, ?)
             """,
-            (canonical, json.dumps(aliases, ensure_ascii=False), role, description, html_tag),
+            (canonical, json.dumps(aliases, ensure_ascii=False), description),
         )
         conn.commit()
         inserted = cur.rowcount
     else:
-        # In dry-run, check if it already exists
+        # In dry-run, check if it already exists at element scope
         exists = conn.execute(
-            "SELECT 1 FROM slot_synonyms WHERE canonical_slot = ?", (canonical,)
+            "SELECT 1 FROM slots WHERE slot_name = ? AND scope = 'element'",
+            (canonical,),
         ).fetchone()
         inserted = 0 if exists else 1
 
@@ -490,14 +499,15 @@ def seed_db(db_path: Path, dry_run: bool) -> dict:
     stats = {"alias_added": 0, "alias_skipped": 0, "canonical_inserted": 0, "canonical_skipped": 0}
 
     try:
-        # Pass 1: extend aliases on existing canonical rows
+        # Pass 1: extend aliases on existing element-scope slot rows
         for canonical, new_aliases in ALIAS_EXTENSIONS:
-            # Check the canonical exists
+            # Check the slot exists at element scope
             exists = conn.execute(
-                "SELECT 1 FROM slot_synonyms WHERE canonical_slot = ?", (canonical,)
+                "SELECT 1 FROM slots WHERE slot_name = ? AND scope = 'element'",
+                (canonical,),
             ).fetchone()
             if not exists:
-                print(f"  WARNING: canonical '{canonical}' not found — skipping alias extension {new_aliases[:3]!r}...")
+                print(f"  WARNING: slot '{canonical}' (element scope) not found — skipping alias extension {new_aliases[:3]!r}...")
                 continue
             added, skipped = _extend_aliases(conn, canonical, new_aliases, dry_run)
             stats["alias_added"] += added
@@ -571,11 +581,13 @@ def _verify_coverage(db_path: Path, repo_path: Path | None) -> tuple[int, int, l
 
     conn = sqlite3.connect(str(db_path))
     try:
-        rows = conn.execute("SELECT canonical_slot, aliases FROM slot_synonyms").fetchall()
+        rows = conn.execute(
+            "SELECT slot_name, aliases FROM slots WHERE scope = 'element'"
+        ).fetchall()
     finally:
         conn.close()
 
-    # Build lookup set: all known keys (canonicals + aliases)
+    # Build lookup set: all known keys (slot names + aliases)
     known: set[str] = set()
     for canonical, aliases_json in rows:
         known.add(canonical)
@@ -603,7 +615,7 @@ def _verify_coverage(db_path: Path, repo_path: Path | None) -> tuple[int, int, l
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Seed slot_synonyms with BEM element → canonical slot mappings (RC-3 fix)"
+        description="Seed slots table (element scope) with BEM element → slot_name mappings"
     )
     parser.add_argument(
         "--dry-run",
@@ -639,46 +651,36 @@ def main(argv: list[str] | None = None) -> int:
         print(f"       Reason: {reason}")
     print("=" * 60)
 
-    total_alias_added = 0
-    total_alias_skipped = 0
-    total_canonical_inserted = 0
-    total_canonical_skipped = 0
-
-    for label, db_path in [("~/.claude DB", _CLAUDE_DB), ("~/.agents DB", _AGENTS_DB)]:
-        print(f"\nSeeding {label}: {db_path}")
-        stats = seed_db(db_path, dry_run)
-        print(f"  alias_added       : {stats['alias_added']}")
-        print(f"  alias_skipped     : {stats['alias_skipped']}  (already present)")
-        print(f"  canonical_inserted: {stats['canonical_inserted']}")
-        print(f"  canonical_skipped : {stats['canonical_skipped']}  (already present)")
-        total_alias_added += stats["alias_added"]
-        total_alias_skipped += stats["alias_skipped"]
-        total_canonical_inserted += stats["canonical_inserted"]
-        total_canonical_skipped += stats["canonical_skipped"]
+    print(f"\nSeeding sgs-framework.db: {SGS_DB}")
+    stats = seed_db(SGS_DB, dry_run)
+    print(f"  alias_added       : {stats['alias_added']}")
+    print(f"  alias_skipped     : {stats['alias_skipped']}  (already present)")
+    print(f"  canonical_inserted: {stats['canonical_inserted']}")
+    print(f"  canonical_skipped : {stats['canonical_skipped']}  (already present)")
 
     print()
-    print("slot_synonyms seed complete:")
-    total_new = total_alias_added + total_canonical_inserted
-    print(f"  alias_added       : {total_alias_added}")
-    print(f"  alias_skipped     : {total_alias_skipped}")
-    print(f"  canonical_inserted: {total_canonical_inserted}")
-    print(f"  canonical_skipped : {total_canonical_skipped}")
+    print("slots (element-scope) seed complete:")
+    print(f"  alias_added       : {stats['alias_added']}")
+    print(f"  alias_skipped     : {stats['alias_skipped']}")
+    print(f"  canonical_inserted: {stats['canonical_inserted']}")
+    print(f"  canonical_skipped : {stats['canonical_skipped']}")
 
     # Row counts
     print()
-    for label, db_path in [("~/.claude DB", _CLAUDE_DB), ("~/.agents DB", _AGENTS_DB)]:
-        if db_path.exists():
-            conn = sqlite3.connect(str(db_path))
-            count = conn.execute("SELECT COUNT(*) FROM slot_synonyms").fetchone()[0]
-            conn.close()
-            verb = "would be" if dry_run else "now"
-            print(f"  {label} slot_synonyms row count {verb}: {count}")
+    if SGS_DB.exists():
+        conn = sqlite3.connect(str(SGS_DB))
+        count = conn.execute(
+            "SELECT COUNT(*) FROM slots WHERE scope = 'element'"
+        ).fetchone()[0]
+        conn.close()
+        verb = "would be" if dry_run else "now"
+        print(f"  slots (element-scope) row count {verb}: {count}")
 
     # Coverage check
-    if repo_path and _CLAUDE_DB.exists():
+    if repo_path and SGS_DB.exists():
         print()
-        print("Coverage verification (BEM elements discoverable via slot_synonyms):")
-        resolved, unresolved_count, unresolved_list = _verify_coverage(_CLAUDE_DB, repo_path)
+        print("Coverage verification (BEM elements discoverable via slots WHERE scope='element'):")
+        resolved, unresolved_count, unresolved_list = _verify_coverage(SGS_DB, repo_path)
         print(f"  Resolved  : {resolved}")
         print(f"  Unresolved: {unresolved_count}")
         if unresolved_list:

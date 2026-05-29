@@ -2212,11 +2212,13 @@ def main():
              "additional explicit confirmation.",
     )
     parser.add_argument(
-        "--debug-trace", action="store_true", default=False,
+        "--debug-trace", action=argparse.BooleanOptionalAction, default=True,
         help="Emit per-section convert-trace-<boundary>.jsonl files capturing "
              "walker_branch_taken, attr_skipped, and db_lookup_miss events. "
-             "Adds ~5%% runtime overhead; OFF in production register-tail runs, "
-             "recommended ON for /sgs-clone debugging walkdowns.",
+             "DEFAULT ON 2026-05-30 (Bean directive) so per-section evidence is "
+             "always preserved for /qc-council + /systematic-debugging walkdowns. "
+             "Adds ~5%% runtime overhead. Pass --no-debug-trace to opt out for "
+             "production register-tail runs where runtime matters.",
     )
     parser.add_argument(
         "--converter-v2", action="store_true", default=True,
