@@ -329,18 +329,36 @@ def route_extraction_failed(slot_lists: dict, extract: dict, buckets: dict[str, 
         )
 
     # Source 1 — Stage 3 declared slots (classic matched-block path).
+    #
+    # XS-8 noise filter (2026-05-30 — diagnostic register):
+    # Skip auto-derived slots that have a non-empty default. These represent
+    # block_attributes columns that legitimately use their default when no
+    # mockup CSS rule provides an explicit value — they are NOT real gaps.
+    # Without this filter every section gets ~69 noise entries (69 sgs/container
+    # auto-derived slots × N sections), drowning out real defects. Real signals
+    # preserved: (a) explicitly-declared slots (canonical_source != "auto-derived"),
+    # (b) auto-derived slots without a meaningful default (None or empty string).
     for boundary_id, scaffold in (slot_lists or {}).items():
         section_id = scaffold.get("section_id", boundary_id)
         for slot in scaffold.get("slots", []):
             name = slot["slot_name"]
-            if not _is_filled(name, section_id, boundary_id):
-                buckets[bucket].append(_enrich_item({
-                    "section_id": section_id,
-                    "boundary_id": boundary_id,
-                    "slot": name,
-                    "reason": "no value extracted",
-                    "source": "stage_3_slot_list",
-                }, bucket))
+            if _is_filled(name, section_id, boundary_id):
+                continue
+            # XS-8 noise filter
+            is_auto_derived = (
+                slot.get("attribute_role") == "auto-derived"
+                or slot.get("canonical_source") == "auto-derived"
+            )
+            has_meaningful_default = slot.get("default") not in (None, "", [])
+            if is_auto_derived and has_meaningful_default:
+                continue
+            buckets[bucket].append(_enrich_item({
+                "section_id": section_id,
+                "boundary_id": boundary_id,
+                "slot": name,
+                "reason": "no value extracted",
+                "source": "stage_3_slot_list",
+            }, bucket))
 
     # Source 2 — cv2-emitted typed blocks (dynamic slot-list per emission).
     # Skip sections that already appeared in Stage 3 slot_lists with slots
