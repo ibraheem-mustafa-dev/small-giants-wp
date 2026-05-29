@@ -4,7 +4,7 @@ project: small-giants-wp
 purpose: Overview of the SGS Cloning Pipeline — stage-index table, entry-point chain, cross-cutting principles, and pointers to per-stage detail. Per-stage annotated blocks live in cloning-pipeline-stages.md.
 session_date: 2026-05-13
 last_annotated: 2026-05-24 (split into overview + stages file)
-last_consolidated: 2026-05-24
+last_consolidated: 2026-05-29 (D99 architectural batch — slot_synonyms + legacy_role_lookup unified into `slots` table; `roles` table replaces slot_synonyms.role_classification; capability-aware tiebreaker FR-22-15 added; walker now queries slots/roles tables for resolution)
 registry_entry: docs-registry.yaml canonical_docs (cloning-pipeline-flow.md)
 companion_docs:
   - .claude/cloning-pipeline-stages.md - per-stage annotated blocks (scripts, files, DB, skills, status)
@@ -15,6 +15,19 @@ update_triggers:
   - DB schema change affecting any pipeline stage
   - Skill dispatch change at any stage
 ---
+
+> **2026-05-29 D99 architectural cleanup batch** — recogniser/walker layer table changes:
+> - `slot_synonyms` table RETIRED → unified into new `slots` table with composite PK `(slot_name, scope)`; 89 element + 16 section = 105 rows
+> - `legacy_role_lookup` table RETIRED → migrated into `slots` table as scope='section' rows
+> - NEW `roles` table (20 rows) replaces `slot_synonyms.role_classification` — fixes link-href bug at gate (`_content_bearing_roles()` now returns all 5 spec-defined roles)
+> - NEW `property_suffixes.kind_override` column replaces `_KIND_BY_SUFFIX` hardcoded Python dict (17 rows)
+> - `html_tag_to_core_block` seed switched from INSERT OR IGNORE → INSERT OR REPLACE (prevents seed/DB divergence)
+> - `block_capabilities` wired into walker as FR-22-15 capability-aware BEM tiebreaker (replaces alphabetical fallback for multi-class disambiguation)
+> - 4 retired blocks deleted from `blocks` table (sgs/back-to-top, sgs/data-display, sgs/icon-block, sgs/reading-progress)
+> - sgs/svg-background, sgs/certification-bar retired (merged into container + trust-badges respectively)
+> - /sgs-update Stage 1 gained UPDATE-on-drift; Stage 10 gained aggressive-prune default + attr-orphan detection + retired-blocks cleanup
+> - Hard-link / NTFS-junction finding: .claude/.agents DB paths share inode = same physical file; real two DBs are sgs-framework + ui-ux-pro-max
+> See `.claude/decisions.md` D93-D100 for full per-decision detail.
 
 # SGS Cloning Pipeline — Overview
 

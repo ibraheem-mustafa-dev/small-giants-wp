@@ -7,8 +7,25 @@ plan_label: "[PLAN: opus] — main session coordinates parallel Sonnet implement
 parent_spec: .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md
 parent_session: small-giants-wp-2026-05-27-spec-22-phase-1.5-fix-1-shipped
 generated: 2026-05-28
-active_scope: STREAM_A_ONLY
+last_updated: 2026-05-29
+active_scope: STREAM_A_RESHAPED_POST_D99
 active_scope_note: |
+  2026-05-29 UPDATE — D93-D100 architectural cleanup batch SHIPPED (commit bcbafe09).
+  Stream A's original premise (fix slot_synonyms rows + verify both DBs) is MASSIVELY
+  RESHAPED:
+    - slot_synonyms TABLE GONE (D99) — replaced by unified `slots` table; row corrections
+      now apply via UPDATE on `slots WHERE scope='element'`
+    - "both DBs" framing was wrong (junction = same physical file); verify one suffices
+    - Stream A2 partial: price slot fixed inline (sgs/text); items/social/section-roots
+      deferred pending empirical measurement priorities
+    - Stream A3 obsolete (same file)
+    - Stream A4 ran as part of /sgs-update full sweep + populate-db.py refresh
+    - Stream A5 (canary measurement) is the only major task remaining, plus 3 cleanups:
+      sgs/media.videoUrl canonical_slot backfill, seed-slot-synonyms.py porting, remaining
+      row corrections based on measurement results
+  See .claude/next-session-prompt.md for the 5-task next-session plan.
+
+  ORIGINAL active_scope_note (2026-05-27, pre-D99) for git-blame continuity:
   Per Bean directive 2026-05-27: Streams B/C/D are STRICTLY DEPENDENT on Stream A
   (walker can't preserve wrappers correctly until Fix 2b DB rows land; per-block
   migrations can't proceed without that). Active focus is Stream A only — make

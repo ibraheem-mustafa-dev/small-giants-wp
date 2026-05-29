@@ -1,9 +1,25 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-27 (Phase 1.4 close — /qc-council cross-family triangulation + Spec 22 §FR-22-2.5 priority list drift)
+**Last updated:** 2026-05-29 (D93-D100 architectural batch — link-href gate bug closed via roles table + mirror-DB framing corrected via NTFS-junction discovery)
 
 <!-- ACTIVE — recent 30 mistakes as keyword stubs. Full body in blub.db `learnings` table or feedback_*.md files. Archive: memory/mistakes-archive.md. Search: grep -r KEYWORD memory/ + curl localhost:5050/api/learning?search=KEYWORD -->
 
 ## Active stubs (most recent 30)
+
+### [2026-05-29] `.claude` and `.agents` DB paths share inode (NTFS junction) — not two DBs to mirror; real two DBs are sgs-framework + ui-ux-pro-max
+- **Pattern key:** `dbs-are-junction-not-mirror`
+- **Feedback file:** `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_dbs_are_junction_not_mirror.md`
+- **Evidence:** ls -la confirmed identical inode (8162774328448631), identical size (12.8MB), identical timestamp on both paths. os.path.realpath() returns .agents path for both. Most consistent with NTFS junction. Effect: one write to either path updates the same physical file. Prior "mirror-DB divergence" lessons (Fix 2 attributed to "implementer verification error") were structurally impossible at the file-system level.
+- **Rule:** When a script/skill mentions "writing to both DBs" or "verifying mirror state between .claude and .agents", treat as redundant — both paths resolve to the same file. Real divergence concern = sgs-framework.db ↔ ui-ux-pro-max.db (different physical files), bridged by /sgs-update Stage 8.
+
+### [2026-05-29] Hardcoded role-classification frozenset moved to DB but migration only UPDATEd existing slot_synonyms rows — never INSERTed missing role classifications → `link-href` silently absent from gate
+- **Pattern key:** `db-migration-update-only-misses-spec-defined-rows`
+- **Evidence (D99):** `_migrate_role_classification()` populated `slot_synonyms.role_classification` via `UPDATE slot_synonyms SET role_classification=? WHERE canonical_slot=?` per row. Since no slot_synonyms row had `role='link-href'`, the link-href classification never landed in DB. `_content_bearing_roles()` query against slot_synonyms returned 4 of 5 spec-defined roles. 32 block_attributes rows with role=link-href silently failed the walker gate (most were correctly-scalar attrs that fell through Tier A/B; 1 was a real bug — sgs/media.videoUrl). Fix: new `roles` lookup table seeded by INSERT OR REPLACE from _ROLE_CLASSIFICATION_MAP — per-role row exists for every spec-defined role, not just the ones that happen to have slot rows.
+- **Rule:** When migrating a hardcoded enum/lookup to DB, the migration target must be the ENUM SCOPE (per-key table) not a DERIVED scope (per-row column on a different table). Migration target mismatch creates silent data gaps.
+
+### [2026-05-29] `INSERT OR IGNORE` for code-seeded DB rows creates seed/DB divergence — use `INSERT OR REPLACE`
+- **Pattern key:** `insert-or-ignore-creates-seed-divergence`
+- **Evidence (D96 + D99):** `populate-db.py:CAPABILITY_RULES` and `html_tag_to_core_block` seed migration both used INSERT OR IGNORE. After first run, subsequent edits to the Python seed dict NEVER propagated to DB — IGNORE silently preserved old rows. Subagent C fixed CAPABILITY_RULES (added pre-pass DELETE for orphaned tags + switched to OR REPLACE); Subagent E fixed html_tag_to_core_block (OR REPLACE). Both fixes verified clean.
+- **Rule:** For DB tables seeded from Python dicts at module load, use `INSERT OR REPLACE` so the Python dict stays authoritative. `INSERT OR IGNORE` is correct ONLY when the DB row is user-curated and the seed is just an initial value (i.e. operator edits should NOT be overwritten).
 
 ### [2026-05-27] /qc-council 4-rater cross-family triangulation catches bugs same-family tests miss
 - **Pattern key:** `qc-council-cross-family-triangulation-finds-bugs`
