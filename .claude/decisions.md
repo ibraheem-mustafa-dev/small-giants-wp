@@ -6,6 +6,24 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-05-30 — XS-1 / XS-8 / XS-9 / XS-10 mechanical cv2 fixes; XS-11 retracted as subagent false positive (D102-D106)
+
+**D102 — XS-1 CSS serialiser sentinel leak (`'@media ... :: .selector'` → proper @media nesting).** `_parse_css()` at convert.py:352 flattens nested @media rules into dict keys with `' :: '` internal sentinel. `collect_css_for_classes` at line 417 emitted these keys verbatim into inline `<style>` blocks, producing invalid CSS browsers refused. Fix: detect sentinel + reconstruct `@media (...) { .selector { ... } }`. Empirical: 57.96% → 56.85% mean (-1.11pp), 19 → 0 sentinel leaks in extract.json, sgs-featured-product -9.00pp (the only large win because most sections target wrappers that don't render — XS-3 gating). Commit `80cfc9ad`.
+
+**D103 — XS-8 leftover-bucket noise filter (Stage 9 extraction_failed).** `route_extraction_failed()` enumerated every Stage 3 declared slot as "extraction_failed" when not filled, producing ~69 noise entries per section (sgs/container's 69 default-bearing attrs) drowning real defects. Fix: skip emission when both `attribute_role == 'auto-derived'` AND `default not in {None, '', []}`. Empirical: leftover-bucket extraction_failed 723 → 387 (-336 entries, -46%), 0pp pixel-diff (observability only). Commit `6087594f`.
+
+**D104 — XS-9 rich-text preservation in core/* atomic-tag swaps + XSS hardening.** `_atomic_attrs_for` used `node.get_text(strip=True)` collapsing inline tags (`<br>`, `<strong>`, `<a>`). New `_rich_text_content` helper preserves bounded inline-tag allowlist for core/heading / core/paragraph / core/quote / core/button. **SGS atomic emissions (sgs/heading, sgs/text, sgs/button, sgs/quote) retain get_text behaviour pending render.php audit** — parked at P-SGS-ATOMIC-RICH-TEXT-AUDIT. XSS hardening: HTML-escape text nodes, scheme-allowlist `<a href>` ({http, https, mailto, tel, relative}), attribute-escape href value, drop all other attrs. Empirical: 0pp impact on Mama's canary because hero H1 routes via sgs/heading (excluded by conservative scope), not core/heading. Architecturally correct + benefits future core/* mockups. Commit `fec91c5d`.
+
+**D105 — XS-10 walker skips bs4 Comment before NavigableString check.** HTML comments (`<!-- Main product -->`) leaked as bare text because `Comment` is subclass of `NavigableString`; the walker's Exception 0 matched Comment via NavigableString branch and emitted `str(node).strip()` (the comment's inner text). Fix: explicit Comment check returning None placed BEFORE NavigableString branch. Empirical: sgs-featured-product -5.47pp (the only section with HTML comments in mockup). Commit `943e52b2`.
+
+**D106 — XS-11 RETRACTED: subagent false positive on emoji mojibake.** Gift-section subagent in 2026-05-30 diagnostic register claimed `🏥` → `🏥` mojibake in extract.json. Byte-level verification proved otherwise: raw bytes `\xf0\x9f\x8f\xa5` = correct UTF-8 encoding of U+1F3E5. The subagent saw mojibake-shaped text in its tool output because its rendering environment misinterpreted UTF-8 as cp1252; the file itself is correctly encoded. sgs-clone-orchestrator.py + convert.py file reads already use `encoding="utf-8"` explicitly. New captured lesson: `feedback_subagent_evidence_must_be_byte_verified_for_encoding.md` — any encoding-related defect claim from a subagent must be byte-verified via `open(p, 'rb').read()` + `.hex()` before treating as a real bug. R-22-11 extension: "verify rendered output, not internal metrics" extends to "verify the bytes, not the rendering of the bytes."
+
+**Empirical lesson from XS-1 + XS-8 + XS-9 + XS-10 measurement cycle:** subagent fix-shape predictions (range -15 to -30pp aggregate) overshot real impact by ~10× (actual aggregate -1.59pp from 57.96% to 56.37%). Per blub.db 276 council-predictions-need-empirical-validation: fix-shapes are HYPOTHESES, not specs; predicted impact must be empirically measured. Going forward: each fix-cycle records pre/post + predicted vs actual ratio for calibration accumulation. After 5-7 calibration points the ratio will inform future predictions.
+
+**Per-section pixel-diff noise floor observed:** sgs-social-proof showed +2.04pp delta from XS-8/9/10 measurement run even though block_markup is byte-identical pre/post. Confirms inherent per-section pixel-diff variability of ~±2pp from font rendering / screenshot timing / browser state. Future fix-cycles must interpret per-section deltas with this noise floor when isolating impact.
+
+---
+
 ## 2026-05-29 — slot_synonyms + legacy_role_lookup unified into `slots`; new `roles` table; html_tag_to_core_block INSERT OR REPLACE; property_suffixes.kind_override (D99)
 
 **D99 — slot_synonyms + legacy_role_lookup unified into new `slots` table; new `roles` table replaces slot_synonyms.role_classification; html_tag_to_core_block seed switched to INSERT OR REPLACE; property_suffixes.kind_override column replaces _KIND_BY_SUFFIX hardcoded dict.**

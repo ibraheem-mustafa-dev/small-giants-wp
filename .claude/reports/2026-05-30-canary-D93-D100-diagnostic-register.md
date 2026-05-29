@@ -340,3 +340,67 @@ The D93-D100 architectural batch did exactly what it claimed (closed the link-hr
 Twelve distinct universal mechanism bugs were identified by independent diagnostic subagents per body section. The single biggest win available — fixing the CSS `:: ` serialiser bug — is a one-character change that affects every responsive media query in every section's emitted `<style>` block. The next largest wins come from the Stage 1 voter short-circuit (forcing voter to consult section-scope DB rows) and adding slot rows for layout-bearing wrapper divs (`.sgs-products`, `__card-inner`, `__cards`, `__trustpilot-bar`, `__inner`).
 
 If next session ships Waves 1-4 (predicted ~22-28% mean pixel-diff), the canary is within striking distance of the ≤5% per-section Phase 2 acceptance gate after Waves 5-6. That's 2-3 sessions of disciplined work, not the 5-6 the inflated estimate framework would suggest.
+
+---
+
+# Empirical results — fix-cycles shipped
+
+## XS-11 — RETRACTED (2026-05-30)
+
+**Original claim:** Gift-section subagent reported emoji mojibake `🏥` → `🏥` in extract.json.
+
+**Verification:** Byte-level inspection via `open(extract.json, 'rb').read()` returned hex `\xf0\x9f\x8f\xa5` which IS the correct UTF-8 encoding of U+1F3E5 (🏥 hospital emoji). The file is byte-clean. The subagent's tool-output rendered the UTF-8 bytes through its environment's cp1252 codec, producing the appearance of mojibake — but the file itself is correctly encoded. False positive.
+
+**Lesson captured:** `feedback_subagent_evidence_must_be_byte_verified_for_encoding.md` — encoding claims must be byte-verified before accepting (D106). Extends R-22-11 ("verify rendered output, not internal metrics") to "verify the bytes, not the rendering of the bytes."
+
+**Status:** XS-11 dropped from the fix sequence. P-UTF8-MOJIBAKE-IN-CONVERTER parking entry updated to PARTIAL with narrowed scope: any remaining mojibake on the live page must be downstream of extract.json (Stage 10 deploy / WP REST receive / WP render).
+
+## XS-1 — CSS sentinel leak fix (shipped 2026-05-30, commit `80cfc9ad`)
+
+| Metric | Pre | Post | Delta |
+|---|---|---|---|
+| Mean pixel-diff | 57.96% | 56.85% | **-1.11pp** |
+| `':: '` sentinel leaks in extract.json | 19 | 0 | -100% |
+| sgs-featured-product | 60.19% | 51.18% | -9.00pp (the only large win — CSS targets the one wrapper class that survived emission) |
+| All other sections | <±1pp drift |  |  |
+
+**Predicted vs actual:** subagent confidence 0.95, predicted -15 to -30pp aggregate. Actual -1.11pp aggregate. **Accuracy ratio ~3%.** XS-1 unlocks CSS parseability but XS-3 (missing layout-bearing wrapper divs) means parseable rules have no DOM targets in 6 of 7 sections.
+
+## XS-8 + XS-9 + XS-10 — bundled measurement (shipped 2026-05-30, commits `943e52b2`, `fec91c5d`, `6087594f`)
+
+| Metric | Pre (post-XS-1) | Post (XS-8/9/10) | Delta |
+|---|---|---|---|
+| Mean pixel-diff | 56.85% | 56.37% | **-0.48pp** |
+| Leftover `extraction_failed` entries | 723 | 387 | **-336 (-46%)** (XS-8 noise filter) |
+| sgs-featured-product | 51.18% | 45.71% | **-5.47pp** (XS-10 comment-skip win — "Main product" + "Trial pack" comment text no longer leaks as visible body content) |
+| sgs-brand | 65.31% | 65.13% | -0.18pp |
+| sgs-ingredients-section | 56.39% | 55.74% | -0.65pp |
+| sgs-hero | 67.76% | 67.76% | **0.00pp** (XS-9 zero impact — Mama's hero H1 routes via sgs/heading, excluded by conservative scope; parked at P-SGS-ATOMIC-RICH-TEXT-AUDIT) |
+| sgs-gift-section | 56.98% | 56.93% | -0.06pp |
+| sgs-trust-bar | 23.33% | 23.33% | 0.00pp |
+| sgs-social-proof | 43.62% | 45.67% | **+2.04pp NOISE** (block_markup byte-identical pre/post — pixel-diff per-section variability confirmed at ~±2pp from font rendering / screenshot timing) |
+
+**Predicted vs actual:**
+- XS-9 predicted -2pp, actual 0pp on hero (conservative scope skip)
+- XS-10 predicted -2pp, actual -5.47pp on featured-product (only section with comments)
+- XS-8 predicted 0pp pixel-diff, actual 0pp (observability gain: -336 noise entries)
+- Aggregate: predicted -4pp, actual -0.48pp. **Accuracy ratio ~12%** — better than XS-1's ~3% because the predictions were more conservative.
+
+**Calibration accumulation:** 2 measurement points so far. XS-1 and XS-8/9/10 both undershot prediction by 7-30×. The pattern: subagent predictions assume each fix can be evaluated in isolation, but the defects depend on each other (XS-1's CSS gains gated by XS-3's missing wrappers; XS-9's atomic-tag rich-text gated by SGS render.php audit).
+
+**Empirical noise floor confirmed:** per-section pixel-diff varies ±2pp at single viewport level from non-emission factors (font rendering / screenshot timing / browser state). Future fix-cycles should report per-section deltas within ±2pp as "no significant change" rather than "improvement/regression". Parking entry P-PIXEL-DIFF-PER-SECTION-NOISE-FLOOR opened to formalise this.
+
+## Revised pixel-diff trajectory (empirically-corrected)
+
+| Stage | Cumulative fixes | Mean pixel-diff | Delta from baseline (57.96%) |
+|---|---|---|---|
+| Baseline | None | 57.96% | 0 |
+| Post-XS-1 | XS-1 | 56.85% | -1.11pp |
+| Post-XS-8/9/10 (now) | XS-1, XS-8, XS-9, XS-10 | **56.37%** | -1.59pp |
+| Projected post-Wave 2 (XS-2 + XS-5 retirements per Bean's reframe) | + voter fix + section-row deletes | ~50-55% | ~-2-7pp additional |
+| Projected post-Wave 3 (XS-3 universal walker condition per Bean's reframe) | + wrapper-emit-when-CSS-targets | **~25-35%** | ~-20-30pp additional (the dominant lever) |
+| Projected post-Wave 4 (XS-7 walker mechanism) | + container-shape detection | ~20-30% | -5pp additional |
+| Projected post-Wave 5 (XS-4 data backfill) | + assign-canonical hero + product-card | ~10-15% | -10pp additional |
+| Phase 2 acceptance gate | ≤5% per-section × 3 viewports | R-22-13 Bean visual sign-off | Co-authoritative |
+
+The empirical lesson: **XS-3 (Bean's revised universal walker condition for layout-bearing wrappers with CSS rules) is the dominant pixel-diff lever**, not XS-1's CSS fix. XS-1 unlocks CSS parseability; XS-3 creates the DOM nodes for the parsed CSS to apply to. Both are needed; XS-3 carries the bigger empirical weight.

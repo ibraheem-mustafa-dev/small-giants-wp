@@ -223,18 +223,56 @@ _60 entries._
 
 **Trigger:** alongside P-FOOTER-WRAPPER-CLASS-MISSING.
 
-### P-UTF8-MOJIBAKE-IN-CONVERTER — gift-section promo bar shows `ƒÄë New product launch ÖÇö get 20% off` mojibake (~30 min)
-**Status:** OPEN
+### P-UTF8-MOJIBAKE-IN-CONVERTER — rendered output shows mojibake despite extract.json being byte-clean (~30 min)
+**Status:** PARTIAL — XS-11 investigation 2026-05-30 narrows the search
 
 
 **What:** The rendered SGS output of the gift-section promo bar shows characters that look like CP-1252-as-UTF-8 mojibake — smart-quote / em-dash / emoji bytes have been double-encoded somewhere in the converter pipeline. Mockup source likely contains the correct UTF-8 characters; converter or render is corrupting them.
 
-**Fix shape:**
-1. Inspect the raw mockup source to confirm the canonical characters
-2. Trace the path from mockup HTML → BeautifulSoup parse → extract → block_markup serialise → WP REST update → render. Find where the encoding gets mishandled.
-3. Likely culprits: `convert.py` reading file without explicit `encoding='utf-8'`, or `block_markup` being passed through a Python str→bytes that defaults to cp1252 on Windows.
+**XS-11 byte-verification 2026-05-30 (D106):**
+- extract.json IS byte-clean: raw bytes `\xf0\x9f\x8f\xa5` confirmed = proper UTF-8 encoding of `🏥` U+1F3E5
+- sgs-clone-orchestrator.py file reads already use `encoding="utf-8"` explicitly (lines 351, 378, 868)
+- convert.py file reads use UTF-8 (line 1807 reads __file__ with encoding=utf-8)
+- Subagent's initial claim of mojibake in extract.json was a FALSE POSITIVE — subagent's tool output rendered the UTF-8 bytes as cp1252 in its environment; the file bytes are correct
+- → Corruption (if real on the live page) is happening DOWNSTREAM of extract.json: either in stage-10 deploy (upload_and_patch.py REST PATCH) OR in WP REST API receive OR in WP render
 
-**Trigger:** intra-section closure work on gift-section.
+**Updated fix shape:**
+1. Verify the live page actually shows mojibake currently (visit sandybrown URL) — confirm the parking entry observation is still true post-2026-05-30
+2. If YES: trace stage-10 deploy path — upload_and_patch.py JSON serialisation + REST PATCH headers + WP REST receive
+3. If NO: close this entry (was a transient earlier-version artefact)
+
+**Trigger:** intra-section closure work on gift-section OR Stream A deploy-path verification.
+
+### P-SGS-ATOMIC-RICH-TEXT-AUDIT — SGS atomic emissions (sgs/heading, sgs/text, sgs/button, sgs/quote) don't preserve inline rich-text (~60 min)
+**Status:** OPEN
+
+
+**What:** XS-9 (2026-05-30 D104) added rich-text preservation for `<br>`, `<strong>`, `<em>`, `<a>` etc. in core/* atomic-tag swaps (core/heading, core/paragraph, core/quote, core/button). SGS atomic emissions retain `node.get_text(strip=True)` behaviour pending render.php audit because their content escape policy is unknown — applying rich-text without confirming `wp_kses_post()` wrap on render could either (a) lose tags to `esc_html()` escaping or (b) introduce XSS.
+
+**Empirical evidence the gap matters:** Mama's hero H1 (`<h1>Made for the mum<br>who needs it most</h1>`) is processed via sgs/heading atomic-tag swap, so XS-9 fix doesn't reach it. Hero pixel-diff unchanged at 67.76% pre/post XS-9 measurement.
+
+**Fix shape:**
+1. Read render.php for sgs/heading, sgs/text, sgs/button, sgs/quote
+2. Identify which use `esc_html()` (strip tags) vs `wp_kses_post()` (preserve safe HTML) on content
+3. For blocks using `esc_html()`: either (a) migrate to `wp_kses_post()` per WP standards then enable rich-text preservation in `_atomic_attrs_for`, OR (b) leave them as plain-text emissions
+4. For blocks already using `wp_kses_post()` (if any): extend XS-9 `_rich_text_content` helper coverage to those slugs
+5. Document the per-block decision in `.claude/specs/02-SGS-BLOCKS.md`
+
+**Trigger:** Wave 6 of the diagnostic register fix sequence OR when hero pixel-diff needs to drop below ~50% (sgs/heading rich-text restoration is one of the constraints).
+
+### P-PIXEL-DIFF-PER-SECTION-NOISE-FLOOR — confirm ±2pp variability (~30 min)
+**Status:** OPEN
+
+
+**What:** XS-8/9/10 measurement run (2026-05-30) showed sgs-social-proof pixel-diff moved +2.04pp despite block_markup being byte-identical pre/post (verified). This indicates inherent per-section pixel-diff variability of ~±2pp from font rendering / screenshot timing / browser state. Need to formalise this noise floor so future fix-cycles correctly attribute small per-section deltas.
+
+**Fix shape:**
+1. Run /sgs-clone 3-5 times on identical code state
+2. Compute per-section pixel-diff variance across runs
+3. Document the ±N noise floor in .claude/specs/21-PIPELINE-STATE-ARTEFACTS.md Stage 11 section
+4. Update diagnostic register methodology: per-section deltas within noise floor are reported as "no significant change" not "improvement/regression"
+
+**Trigger:** Before Wave 4 (XS-3) measurement cycle, since wrapper-slot fixes are predicted to produce per-section deltas large enough to need noise floor calibration to distinguish signal from variance.
 
 ### P-HEADING-DEFAULTS-NORMALISE-FOR-SERIF — `headlineLetterSpacing: -0.01em` default not universal (~20 min)
 **Status:** OPEN
