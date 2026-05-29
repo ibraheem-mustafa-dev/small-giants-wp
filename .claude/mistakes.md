@@ -1,9 +1,14 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-29 (D93-D100 architectural batch — link-href gate bug closed via roles table + mirror-DB framing corrected via NTFS-junction discovery)
+**Last updated:** 2026-05-29 (post-D100 session-close — handoff-docs structural-defence regression caught + ruled)
 
 <!-- ACTIVE — recent 30 mistakes as keyword stubs. Full body in blub.db `learnings` table or feedback_*.md files. Archive: memory/mistakes-archive.md. Search: grep -r KEYWORD memory/ + curl localhost:5050/api/learning?search=KEYWORD -->
 
 ## Active stubs (most recent 30)
+
+### [2026-05-29] Handoff docs carry forward structural defences — never drop them when overwriting
+- **Pattern key:** `handoff-docs-carry-forward-structural-defences`
+- **blub.db row:** 290
+- **Feedback file:** [feedback_handoff_docs_carry_forward_structural_defences.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_handoff_docs_carry_forward_structural_defences.md)
 
 ### [2026-05-29] `.claude` and `.agents` DB paths share inode (NTFS junction) — not two DBs to mirror; real two DBs are sgs-framework + ui-ux-pro-max
 - **Pattern key:** `dbs-are-junction-not-mirror`
