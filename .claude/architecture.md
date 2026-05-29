@@ -5,7 +5,9 @@ title: SGS WordPress Framework — System Architecture
 split_note: "2026-05-24 — split into 3 parts: architecture.md (this file, system design), .claude/dev-setup.md (build/deploy/SSH), .claude/plans/archive/2026-02-21-feature-audit.md (354-feature graded roadmap)"
 ---
 
-> Last updated: 2026-05-27 (Spec 22 Phase 1 ARCHITECTURAL CLOSED — 8 task-commits + handoff shipped; Phase 1.5 empirical pixel-diff measurement pending). Architecture programme CLOSED (2026-05-22, 31 decisions). Cloning-pipeline canonical spec is **Spec 22 (Universal Block-Equivalent Extraction)** — Spec 16 retired and archived. NEW universal walker at `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` (1873 LoC vs retired 4803 = 61% reduction); R-22-3 PASS test self-runs in `__main__`. See `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` + `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`.
+> Last updated: 2026-05-29 (D93-D100 architectural cleanup batch SHIPPED — commit `bcbafe09` on origin/main). Architecture programme CLOSED (2026-05-22, 31 decisions). Cloning-pipeline canonical spec is **Spec 22 (Universal Block-Equivalent Extraction)** — Spec 16 retired and archived. NEW universal walker at `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` (1873 LoC vs retired 4803 = 61% reduction); R-22-3 PASS test self-runs in `__main__`. See `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` + `.claude/handoff.md` for D93-D100 detail.
+>
+> **2026-05-29 D99 DATA LAYER UPDATE:** This document still references `slot_synonyms` table at lines 96/105/126/174 — those references describe the LOGICAL concept (per-slot routing data). The PHYSICAL table was retired 2026-05-29 D99 and replaced by `slots` table (composite PK on `slot_name + scope`; 89 element-scope + 16 section-scope rows). `slot_synonyms.role_classification` column retired into new `roles` table (20 rows). See Spec 22 §4 data layer for current table inventory. Walker functions like `_slot_synonyms()` retain their names but query the `slots` table internally.
 
 # SGS WordPress Framework — System Architecture
 

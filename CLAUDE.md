@@ -148,7 +148,7 @@ No block feature is complete until it has full block-editor UI controls. Clients
 Walker is a single recursive function with exactly 3 permitted exceptions (atomic-tag swap / top-level chrome-skip / top-level container wrap). Every BEM-classed DOM node resolves to a block slug via `slot_synonyms.standalone_block` lookup; per-block behaviour comes from DB rows, not code branches. Block-equivalent attrs (FR-22-2) become child InnerBlocks rather than scalar attrs (eliminates double-render). Spec 16's layered FR1/FR4/lift_subtree/F1/9-branch architecture retired 2026-05-26.
 
 ### DB-first, no hardcoded dicts (blub.db 260)
-Before adding any hardcoded lookup dict in pipeline scripts, check sgs-framework.db: `property_suffixes` (117), `block_supports` (1216), `modifier_suffixes` (19), `slot_synonyms` (89), `block_attributes` (2246), `block_capabilities` (85). Refactor to `db_lookup.py` reads.
+Before adding any hardcoded lookup dict in pipeline scripts, check sgs-framework.db: `property_suffixes` (117) + `kind_override` column (17 populated, replaces `_KIND_BY_SUFFIX` dict per D99), `block_supports` (1160 active post-D100 prune), `modifier_suffixes` (19), `slots` (105 = 89 element + 16 section, replaces retired `slot_synonyms` + `legacy_role_lookup` per D99), `roles` (20, replaces `slot_synonyms.role_classification` per D99), `block_attributes` (2074), `block_capabilities` (88). Refactor to `db_lookup.py` reads.
 
 ### Rosetta Stone discipline (uimax cross-platform translation)
 Every uimax row describing a design artefact MUST carry equivalent-name mappings across SGS blocks + vanilla HTML/CSS + Bootstrap + shadcn/Radix + Tailwind + React + AI-builder. Missing SGS equivalent = gap candidate, never silently dropped. `uimax` = DB/data layer; `/ui-ux-pro-max` = intelligence skill that USES the DB. Captured 2026-05-06 blub.db 213.
@@ -192,9 +192,9 @@ Architectural record: `.claude/decisions.md` D57-D65. Canonical templates: `~/.a
 3. **mistakes.md** is a keyword-stub index only — body links to `feedback_*.md` + blub.db row
 4. **plans** use strategic-plan + phase-plan templates (timebox / ROAM / 16-field step block)
 
-## Framework stats (2026-05-25, post architecture programme + trust-bar retirement)
+## Framework stats (2026-05-29, post-D93-D100 architectural cleanup batch)
 
-69 blocks (all dynamic); 2246 block attributes; 89 slot_synonyms rows; 117 property_suffixes; 19 modifier_suffixes (incl. Hover/Active/Focus/Disabled state-kind); 85 block_capabilities; 184 design tokens; 35 patterns; WP 7.0 compatible (`Sgs_Ai_Connector` + `wp_set_script_module_translations()` wired). `/sgs-update` rebuilt as 9-stage v2. Style-variation system retired (per-client `theme-snapshot.json`).
+67 sgs blocks (all dynamic) + 121 core/wp blocks indexed = 188 blocks total; 2074 block_attributes; **0 slot_synonyms rows (table RETIRED D99 — replaced by `slots` table: 89 element + 16 section = 105 rows)**; **20 roles (new D99 — replaces slot_synonyms.role_classification)**; 117 property_suffixes (with 17 `kind_override` populated per D99); 19 modifier_suffixes (incl. Hover/Active/Focus/Disabled state-kind); 88 block_capabilities (wired into walker as FR-22-15 capability-aware tiebreaker per D96); 47 patterns; WP 7.0 compatible (`Sgs_Ai_Connector` + `wp_set_script_module_translations()` wired). `/sgs-update` rebuilt as 10-stage v3 (Stage 10 v3 includes aggressive prune-orphans default + attr-level orphan detection + retired-blocks deletion per D94/D100). Style-variation system retired (per-client `theme-snapshot.json`).
 
 ## Design context for current client builds
 

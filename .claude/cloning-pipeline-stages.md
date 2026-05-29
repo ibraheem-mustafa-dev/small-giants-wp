@@ -3,7 +3,7 @@ doc_type: reference
 project: small-giants-wp
 purpose: Per-stage annotated blocks for the SGS Cloning Pipeline. Every stage shows scripts that run, files read/written, DB tables touched, skills dispatched, and wiring status. Also contains the absorbed script inventory, skill dispatch chain (full), and DB heat-map (full). Overview and stage-index table are in cloning-pipeline-flow.md.
 session_date: 2026-05-13
-last_annotated: 2026-05-24 (split from cloning-pipeline-flow.md)
+last_annotated: 2026-05-29 (D99 architectural cleanup batch — annotation added below)
 last_consolidated: 2026-05-21 (tooling-map + skills-commands-map + db-tables-map absorbed)
 line_number_policy: Line numbers cited are accurate as of 2026-05-13 against sgs-clone-orchestrator.py HEAD (1277 lines). If they drift, grep for the function or constant name instead.
 qc_consensus: 4 reviewers agree on all wiring-status claims. Material errors patched 2026-05-13.
@@ -13,6 +13,8 @@ update_triggers:
   - DB schema change affecting any pipeline stage
   - Skill dispatch change at any stage
 ---
+
+> **2026-05-29 D99 DATA LAYER UPDATE** — annotations throughout this document reference `slot_synonyms` and `legacy_role_lookup` tables. Those tables were RETIRED 2026-05-29 D99 (commit `bcbafe09`) and unified into a single `slots` table with composite PK on `(slot_name, scope)`. Element-scope rows in `slots` are the former slot_synonyms data; section-scope rows are the former legacy_role_lookup data. `slot_synonyms.role_classification` column retired into new `roles` table (20 rows). Walker queries `slots WHERE scope='element'` for BEM-element resolution; per-section-convention-voter.py queries `slots WHERE scope='section'` for --legacy mode. Read every `slot_synonyms` / `legacy_role_lookup` reference below as the LOGICAL concept; the PHYSICAL table is `slots`. See `decisions.md` D99 + Spec 22 §4 data layer for full migration detail.
 
 # SGS Cloning Pipeline — Per-Stage Annotated Blocks
 

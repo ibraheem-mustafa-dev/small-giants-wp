@@ -1249,7 +1249,7 @@ Global floating UI elements (Back to Top button, Reading Progress bar) live in `
 
 **Reading Progress settings (9):** enabled, mode (bar/countdown/both), position (top/bottom), target selector, words-per-minute (default 225), bar colour, bar height, post types to show on, show when finished.
 
-**Deprecated blocks:** `sgs/back-to-top` block remains for backward compat but renders empty — editor shows a deprecation notice pointing to Customiser. The `sgs/reading-progress` block was built but never deployed; its render.php now returns empty.
+**Retired blocks:** `sgs/back-to-top` and `sgs/reading-progress` both FULLY RETIRED 2026-05-29 (D100 Stage 10 v3 cleanup): src directories deleted (since Spec 17 Wave 2 Polish 1b 2026-05-18), DB `blocks` table rows DELETED via /sgs-update Stage 10 v3 aggressive prune (D100). Existing post content carrying `wp:sgs/back-to-top` or `wp:sgs/reading-progress` markers renders WordPress's generic "block has been deleted" placeholder; operators reconfigure via Customiser at *Appearance → Customise → SGS Floating UI*. Also retired in the D100 cleanup pass: `sgs/data-display` and `sgs/icon-block` (both were already deleted from src; D100 cleaned the lingering blocks-table rows).
 
 **Why not a settings admin page:** Customiser has live preview — clients see button reposition / change colour as they drag sliders. Save-and-refresh on a settings page kills the design-iteration feel.
 

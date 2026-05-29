@@ -41,6 +41,8 @@ gap_analysis_council:
 
 # Spec 22 — SGS Cloning Pipeline (Universal Block-Equivalent Extraction)
 
+> **2026-05-29 D99 architectural cleanup** — DATA LAYER CHANGES. Throughout this document, prior references to `slot_synonyms` (table) describe the PRE-D99 architecture. POST-D99 the table is RETIRED — its element-scope rows live in `slots WHERE scope='element'` (composite PK on `(slot_name, scope)`); `legacy_role_lookup` similarly retired into `slots WHERE scope='section'`. `slot_synonyms.role_classification` column retired into new `roles` table (per-role catalogue, seeded by `_migrate_roles_table()` via INSERT OR REPLACE from `_ROLE_CLASSIFICATION_MAP` Python dict — fixes link-href content-bearing gap). Walker function `_slot_synonyms()` retained as name but queries `slots WHERE scope='element'` internally. Read `slot_synonyms` references below as describing the LOGICAL concept (per-slot routing data); the PHYSICAL home is `slots` table. See §4 data layer for the current table inventory; see decisions.md D99 + this document's §FR-22-2.2 amendment + Spec 22 §4 data-layer rows for full migration detail.
+
 ## 0. Purpose
 
 Replace the layered Spec 16 architecture with a single universal extraction path inside the cloning pipeline. Every BEM-class div in any mockup becomes its own emitted WP block, nested where the mockup nests it, with CSS attributed to its direct owner. The DB has all the metadata needed; the converter just consults it consistently.
@@ -380,9 +382,9 @@ When `resolve_slug_from_bem` Path 1 yields two or more bare-block candidates (i.
 | Table | Rows | Spec 22 role |
 |---|---|---|
 | `blocks` | 194 (68 sgs-built) | Block roster |
-| `block_attributes` | 2,246 | Central for FR-22-2. Walker reads `canonical_slot` + `derived_selector` + `role` to resolve equivalent_block at query time. |
-| `block_supports` | 1,216 | Block-level supports |
-| `block_capabilities` | 85 | Capability declarations. FR-22-15: queried by `capabilities_for()` / `blocks_with_capability()` / `_capability_rank()` in `db_lookup.py` for capability-aware tiebreaking in multi-candidate BEM resolution. Seed propagation fixed 2026-05-29 (D96): `populate-db.py` now uses `INSERT OR REPLACE` + pre-pass DELETE so edits to `CAPABILITY_RULES` propagate on every re-run. |
+| `block_attributes` | 2,074 (post-D100 cleanup) | Central for FR-22-2. Walker reads `canonical_slot` + `derived_selector` + `role` to resolve equivalent_block at query time. |
+| `block_supports` | 1,160 (post-D100 cleanup) | Block-level supports |
+| `block_capabilities` | 88 | Capability declarations. FR-22-15: queried by `capabilities_for()` / `blocks_with_capability()` / `_capability_rank()` in `db_lookup.py` for capability-aware tiebreaking in multi-candidate BEM resolution. Seed propagation fixed 2026-05-29 (D96): `populate-db.py` now uses `INSERT OR REPLACE` + pre-pass DELETE so edits to `CAPABILITY_RULES` propagate on every re-run. |
 | `block_selectors` | 72 | Block-slug → element → selector mapping |
 | `block_styles` | 63 | Block style variations |
 | `block_changes` | 2,719 | Audit log |
