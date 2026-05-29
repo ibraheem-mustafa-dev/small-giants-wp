@@ -1395,6 +1395,80 @@ def emit_atomic(node: Tag) -> str:
     return emit_wp_block(slug, attrs, [])
 
 
+# Safe inline-tag allowlist for rich-text Gutenberg attrs (core blocks only).
+# Bounded set matches the standard WP core rich-text spec. SGS blocks excluded
+# pending per-block render.php audit (their escape policy is currently unknown
+# — applying rich-text to sgs/heading etc. without confirming wp_kses_post()
+# wrap could either lose tags to escaping OR introduce XSS).
+_RICH_TEXT_INLINE_TAGS = frozenset({"br", "strong", "b", "em", "i", "a", "span", "code"})
+
+# Safe URL schemes for <a href>. Empty string covers relative URLs (/about/).
+# Excludes javascript:, data:, vbscript:, file: per WP wp_allowed_protocols defaults.
+_SAFE_HREF_SCHEMES = frozenset({"http", "https", "mailto", "tel", ""})
+
+
+def _safe_href(value: str) -> str | None:
+    """Validate href scheme against allowlist. Returns trimmed value or None."""
+    if not value:
+        return None
+    try:
+        from urllib.parse import urlparse
+        scheme = urlparse(value).scheme.lower()
+    except ValueError:
+        return None
+    return value if scheme in _SAFE_HREF_SCHEMES else None
+
+
+def _rich_text_content(node: Tag) -> str:
+    """Extract inner content preserving safe inline HTML tags with XSS hardening.
+
+    Used for core/* atomic-tag swaps where the target block natively accepts
+    rich-text (core/heading, core/paragraph, core/quote, core/button). Preserves
+    `<br>`, `<strong>`, `<em>`, `<a>`, `<span>`, `<b>`, `<i>`, `<code>`; strips
+    disallowed tags to text content. Defence-in-depth:
+    1. Text nodes are HTML-escaped (prevents `<script>` etc. in NavigableString)
+    2. <a href> values are scheme-allowlisted then attribute-escaped
+    3. All other tag attributes are dropped (only href on <a> survives)
+
+    Defence-in-depth is needed even though mockup HTML is author-controlled,
+    because mockups may be scraped from external sites via /uimax-scrape +
+    /uimax-sgs-scrape-pattern. Downstream WP render still applies wp_kses_post
+    as a second layer.
+
+    XS-9 fix 2026-05-30 — diagnostic register hero F3: mockup `<h1>Made for
+    the mum<br>who needs it most</h1>` was collapsing to "Made for the mumwho
+    needs it most" because node.get_text(strip=True) dropped the <br>.
+    """
+    from html import escape
+    parts: list[str] = []
+    for child in node.children:
+        if isinstance(child, Comment):
+            continue
+        if isinstance(child, NavigableString):
+            # Escape ampersand + angle-brackets in literal text (prevents
+            # raw HTML injection via text content)
+            parts.append(escape(str(child), quote=False))
+            continue
+        if isinstance(child, Tag):
+            if child.name in _RICH_TEXT_INLINE_TAGS:
+                if child.name == "br":
+                    parts.append("<br>")
+                    continue
+                attrs_str = ""
+                if child.name == "a":
+                    safe = _safe_href(child.get("href", ""))
+                    if safe is not None:
+                        # quote=True escapes both " and & so the attr value
+                        # cannot break out of the surrounding href=" ... "
+                        attrs_str = f' href="{escape(safe, quote=True)}"'
+                inner = _rich_text_content(child)
+                parts.append(f"<{child.name}{attrs_str}>{inner}</{child.name}>")
+            else:
+                # Disallowed tag — strip to text content (recurse)
+                parts.append(_rich_text_content(child))
+    return "".join(parts).strip()
+
+
 def _atomic_attrs_for(node: Tag, slug: str) -> dict:
     """Return the attrs dict for a node emitted as `slug` via the atomic-tag swap.
 
@@ -1405,20 +1479,22 @@ def _atomic_attrs_for(node: Tag, slug: str) -> dict:
     tag = node.name
 
     # sgs/heading — current schema: content (string), level (enum h1..h6)
+    # NOTE: SGS blocks retain get_text behaviour pending render.php audit
+    # for rich-text safety (XS-9 conservative cut).
     if slug == "sgs/heading" and tag in ("h1", "h2", "h3", "h4", "h5", "h6"):
         return {"content": node.get_text(strip=True), "level": tag}
 
-    # core/heading — WP core schema: level (int 1..6), content (string)
+    # core/heading — WP core schema: level (int 1..6), content (rich-text)
     if slug == "core/heading" and tag in ("h1", "h2", "h3", "h4", "h5", "h6"):
-        return {"level": int(tag[1]), "content": node.get_text(strip=True)}
+        return {"level": int(tag[1]), "content": _rich_text_content(node)}
 
     # sgs/text — current schema: text (string)
     if slug == "sgs/text" and tag in ("p", "span", "div"):
         return {"text": node.get_text(strip=True)}
 
-    # core/paragraph — WP core schema: content (string)
+    # core/paragraph — WP core schema: content (rich-text)
     if slug == "core/paragraph" and tag in ("p", "span", "div"):
-        return {"content": node.get_text(strip=True)}
+        return {"content": _rich_text_content(node)}
 
     # sgs/media — current schema: imageUrl, imageAlt
     if slug == "sgs/media" and tag == "img":
@@ -1438,16 +1514,17 @@ def _atomic_attrs_for(node: Tag, slug: str) -> dict:
     # core/button — WP core schema: text, url
     if slug == "sgs/button" and tag in ("a", "button"):
         return {"label": node.get_text(strip=True), "url": node.get("href", "")}
+    # core/button — WP core schema: text (rich-text), url
     if slug == "core/button" and tag in ("a", "button"):
-        return {"text": node.get_text(strip=True), "url": node.get("href", "")}
+        return {"text": _rich_text_content(node), "url": node.get("href", "")}
 
     # sgs/quote — current schema: body (array of strings)
     if slug == "sgs/quote" and tag == "blockquote":
         return {"body": [node.get_text(strip=True)]}
 
-    # core/quote — WP core schema: value (string)
+    # core/quote — WP core schema: value (rich-text)
     if slug == "core/quote" and tag == "blockquote":
-        return {"value": node.get_text(strip=True)}
+        return {"value": _rich_text_content(node)}
 
     # sgs/icon-list — current schema: items (array of {icon, text})
     if slug == "sgs/icon-list" and tag in ("ul", "ol"):
