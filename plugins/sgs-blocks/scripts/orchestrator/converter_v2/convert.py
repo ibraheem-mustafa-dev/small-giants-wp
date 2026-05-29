@@ -414,7 +414,15 @@ def collect_css_for_classes(classes: list[str], css_rules: dict) -> str:
     for sel, decls in css_rules.items():
         if any(s in sel for s in selectors):
             decl_str = "; ".join(f"{k}: {v}" for k, v in decls.items())
-            out_lines.append(f"{sel} {{ {decl_str} }}")
+            # Media-scoped rules are keyed as "@media (...) :: .selector" by
+            # _parse_css() line 352 — the " :: " is an INTERNAL sentinel, never
+            # valid CSS. Reconstruct proper @media nesting on emit (XS-1 fix
+            # 2026-05-30, per pipeline-state/.../diagnostic-register XS-1).
+            if " :: " in sel:
+                media_cond, real_sel = sel.split(" :: ", 1)
+                out_lines.append(f"{media_cond} {{ {real_sel} {{ {decl_str} }} }}")
+            else:
+                out_lines.append(f"{sel} {{ {decl_str} }}")
     return "\n".join(out_lines)
 
 
