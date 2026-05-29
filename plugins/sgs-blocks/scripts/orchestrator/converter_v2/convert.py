@@ -27,7 +27,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from bs4 import BeautifulSoup, NavigableString, Tag
+from bs4 import BeautifulSoup, Comment, NavigableString, Tag
 
 sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
@@ -1532,7 +1532,14 @@ def walk(
 
     Returns: WP block markup string, or None for chrome-skipped / text-only-none nodes.
     """
-    # Exception 0 — text nodes (precondition check, not a routing branch)
+    # Exception 0a — HTML comments are not content. Must check BEFORE
+    # NavigableString since Comment is a subclass of NavigableString and
+    # would otherwise have its comment text leaked into block markup
+    # (XS-10 fix 2026-05-30 — diagnostic register featured-product F4).
+    if isinstance(node, Comment):
+        return None
+
+    # Exception 0b — text nodes (precondition check, not a routing branch)
     if isinstance(node, NavigableString):
         text = str(node).strip()
         return text if text else None
