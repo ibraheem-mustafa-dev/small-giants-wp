@@ -1,28 +1,42 @@
 """
-sgs-update-v2.py — 9-stage holistic refresh of the SGS framework knowledge base.
+sgs-update-v2.py — 10-stage holistic refresh of the SGS framework knowledge base.
 
 Phase 4 of the architecture programme. Co-exists with the legacy 3-script setup
 (update-db.py + generate-block-reference.py + sgs-update-uimax-sync.py) until
-all 9 stages pass the Phase 4 gate, at which point the slash command entrypoint
+all 10 stages pass the Phase 4 gate, at which point the slash command entrypoint
 swaps to this script.
 
 Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
   1. sgs_codebase_scan      — walk src/blocks/*/block.json into sgs-framework.db
+                              (INSERT new rows + UPDATE drifted rows when block.json changes)
   2. core_gutenberg_cache_refresh — pull from 10 canonical upstream sources (Decision 30)
-  3. wpcli_handbook_refresh — refresh wp-cli/handbook docs
+  3. wpcli_handbook_refresh — refresh wp-cli/handbook docs [RETIRED — merged into Stage 2]
   4. style_variation_sync   — walk sites/*/theme-snapshot.json (no-op pre-Phase-5a)
   5. slot_synonym_auto_seed — heuristic slot → block mapping
   6. block_replacement_mapping — verify blocks.replaces validity
   7. spec_doc_regen         — regenerate .claude/specs/02-SGS-BLOCKS-REFERENCE.md
   8. uimax_mirror           — mirror sgs-blocks → uimax CSV
   9. drift_gate             — warn on MAJOR.MINOR WP version mismatch
+ 10. prune_orphans          — delete orphan rows across three categories:
+                              (a) BLOCK-LEVEL: block_slug absent from `blocks` table
+                                  (block retired/renamed — deletes stale attrs/supports/caps)
+                              (b) STALE-SUPPORTS: block exists but support_name removed from
+                                  block.json (default: DELETE; opt-in conservative: mark is_stale=1)
+                              (c) ATTR-LEVEL: block exists but attr_name removed from block.json
+                                  (ghost rows Stage 1 never removes — always deleted regardless
+                                  of prune_mode; block_attributes has no is_stale column)
+                              Operates on both .agents + .claude DBs.
 
 Usage:
-    python sgs-update-v2.py [--stage N] [--dry-run] [--wp-version X.Y]
+    python sgs-update-v2.py [--stage N] [--dry-run] [--wp-version X.Y] [--prune-mode MODE]
 
-    --stage N          Run only stage N (1-9; stage 3 is retired). Omit to run all.
-    --dry-run          Compute row counts without writing to DB or files
-    --wp-version X.Y   WP version tag for Stage 2 (default: 7.0)
+    --stage N               Run only stage N (1-10; stage 3 is retired). Omit to run all.
+    --dry-run               Compute row counts without writing to DB or files
+    --wp-version X.Y        WP version tag for Stage 2 (default: 7.0)
+    --prune-mode MODE       Stage 10 only: 'aggressive' (default) DELETEs stale support rows.
+                            'conservative' sets is_stale=1 instead (opt-in cautious mode).
+                            Attr-level orphans are always deleted regardless of prune_mode
+                            (block_attributes has no is_stale column).
 """
 
 import argparse
@@ -142,19 +156,40 @@ def _parent_for_block(block_dir_name: str) -> str | None:
 # Stage 1 — SGS codebase scan
 # PORTED FROM: ~/.agents/skills/sgs-wp-engine/scripts/update-db.py
 #              (check_blocks + full-population logic via populate-db.py)
-# Key difference: uses INSERT OR IGNORE throughout (not INSERT OR REPLACE)
-# so idempotency is guaranteed — a second run produces zero new rows.
+# Key difference: uses INSERT OR IGNORE for new rows + UPDATE for drifted rows.
+# Second run produces zero new rows AND updates any row whose block.json changed.
 # ---------------------------------------------------------------------------
+
+# Fields in `blocks` that are derived directly from block.json and must stay
+# in sync when block.json is edited.  `source` and `status` are intentionally
+# excluded — they are operator-managed metadata, not block.json fields.
+_BLOCKS_TRACKED_FIELDS = (
+    "title", "category", "type", "description",
+    "has_view_script", "has_render_php", "parent_block",
+)
+
+# Fields in `block_attributes` that are derived from block.json attribute defs.
+_ATTRS_TRACKED_FIELDS = (
+    "attr_type", "default_value", "enum_values", "description", "is_responsive",
+)
+
 
 def _index_sgs_block_files(
     blocks_dir: Path,
     c: sqlite3.Cursor,
     dry_run: bool,
 ) -> dict:
-    """Walk blocks_dir/*/block.json, INSERT OR IGNORE blocks/attrs/supports rows.
+    """Walk blocks_dir/*/block.json, INSERT-or-UPDATE blocks/attrs/supports rows.
+
+    INSERT logic:    INSERT OR IGNORE — only fires for genuinely new rows.
+    UPDATE logic:    for each existing row, compare every tracked field; if any
+                     have drifted (block.json edited since last run), UPDATE the
+                     row and increment the updated_* counter.
 
     Also updates indexed_files mtime + content_hash per block.json processed.
+
     Returns counters dict: scanned, new_blocks, new_attrs, new_supports,
+    updated_blocks, updated_attrs, updated_supports,
     indexed_inserted, indexed_updated, indexed_skipped.
 
     The caller (`stage_1_sgs_codebase_scan`) owns `conn.commit()` after this
@@ -165,6 +200,9 @@ def _index_sgs_block_files(
     new_blocks = 0
     new_attrs = 0
     new_supports = 0
+    updated_blocks = 0
+    updated_attrs = 0
+    updated_supports = 0
     indexed_inserted = 0
     indexed_updated = 0
     indexed_skipped = 0
@@ -196,26 +234,53 @@ def _index_sgs_block_files(
         )
         block_type = "dynamic" if has_render else "static"
         parent = _parent_for_block(block_dir.name)
+        attrs = data.get("attributes", {})
+        supports = data.get("supports", {})
 
         if dry_run:
-            # In dry-run: count what EXISTS vs what WOULD be inserted
+            # In dry-run: count what EXISTS vs what WOULD be inserted / updated
             existing = c.execute(
-                "SELECT slug FROM blocks WHERE slug = ? AND source = 'sgs'", (slug,)
+                "SELECT title, category, type, description, has_view_script, "
+                "has_render_php, parent_block FROM blocks WHERE slug = ? AND source = 'sgs'",
+                (slug,),
             ).fetchone()
             if existing is None:
                 new_blocks += 1
+            else:
+                scraped_vals = (
+                    title, category, block_type, description,
+                    1 if has_view else 0, 1 if has_render else 0, parent,
+                )
+                if tuple(existing) != scraped_vals:
+                    updated_blocks += 1
             scanned += 1
-            # Count attributes that WOULD be new
-            attrs = data.get("attributes", {})
+
             for attr_name, attr_def in attrs.items():
                 if not isinstance(attr_def, dict):
                     continue
                 ex_attr = c.execute(
-                    "SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ? AND source = 'sgs'",
+                    "SELECT attr_type, default_value, enum_values, description, "
+                    "is_responsive FROM block_attributes "
+                    "WHERE block_slug = ? AND attr_name = ? AND source = 'sgs'",
                     (slug, attr_name),
                 ).fetchone()
+                attr_type = attr_def.get("type", "string")
+                default = attr_def.get("default")
+                enum_vals = attr_def.get("enum")
+                is_responsive = (
+                    1 if f"{attr_name}Tablet" in attrs or f"{attr_name}Mobile" in attrs else 0
+                )
+                scraped_attr = (
+                    attr_type,
+                    json.dumps(default) if default is not None else None,
+                    json.dumps(enum_vals) if enum_vals else None,
+                    attr_def.get("description", ""),
+                    is_responsive,
+                )
                 if ex_attr is None:
                     new_attrs += 1
+                elif tuple(ex_attr) != scraped_attr:
+                    updated_attrs += 1
             continue
 
         # --- INSERT OR IGNORE block ---
@@ -232,11 +297,40 @@ def _index_sgs_block_files(
                 parent, datetime.now(timezone.utc).isoformat(),
             ),
         )
-        new_blocks += result.rowcount
+        if result.rowcount:
+            new_blocks += 1
+        else:
+            # Row exists — check for drift and UPDATE if any tracked field changed
+            existing = c.execute(
+                "SELECT title, category, type, description, has_view_script, "
+                "has_render_php, parent_block FROM blocks WHERE slug = ? AND source = 'sgs'",
+                (slug,),
+            ).fetchone()
+            if existing is not None:
+                scraped_vals = (
+                    title, category, block_type, description,
+                    1 if has_view else 0, 1 if has_render else 0, parent,
+                )
+                if tuple(existing) != scraped_vals:
+                    c.execute(
+                        """
+                        UPDATE blocks
+                        SET title = ?, category = ?, type = ?, description = ?,
+                            has_view_script = ?, has_render_php = ?, parent_block = ?,
+                            updated_at = ?
+                        WHERE slug = ? AND source = 'sgs'
+                        """,
+                        (
+                            title, category, block_type, description,
+                            1 if has_view else 0, 1 if has_render else 0, parent,
+                            datetime.now(timezone.utc).isoformat(),
+                            slug,
+                        ),
+                    )
+                    updated_blocks += 1
         scanned += 1
 
-        # --- INSERT OR IGNORE attributes ---
-        attrs = data.get("attributes", {})
+        # --- INSERT OR IGNORE attributes; UPDATE on drift ---
         for attr_name, attr_def in attrs.items():
             if not isinstance(attr_def, dict):
                 continue
@@ -246,6 +340,10 @@ def _index_sgs_block_files(
             is_responsive = (
                 1 if f"{attr_name}Tablet" in attrs or f"{attr_name}Mobile" in attrs else 0
             )
+            default_json = json.dumps(default) if default is not None else None
+            enum_json = json.dumps(enum_vals) if enum_vals else None
+            attr_desc = attr_def.get("description", "")
+
             result = c.execute(
                 """
                 INSERT OR IGNORE INTO block_attributes
@@ -253,28 +351,64 @@ def _index_sgs_block_files(
                      description, is_responsive, source)
                 VALUES (?, ?, ?, ?, ?, ?, ?, 'sgs')
                 """,
-                (
-                    slug, attr_name, attr_type,
-                    json.dumps(default) if default is not None else None,
-                    json.dumps(enum_vals) if enum_vals else None,
-                    attr_def.get("description", ""),
-                    is_responsive,
-                ),
+                (slug, attr_name, attr_type, default_json, enum_json, attr_desc, is_responsive),
             )
-            new_attrs += result.rowcount
+            if result.rowcount:
+                new_attrs += 1
+            else:
+                # Check for drift on tracked fields
+                existing_attr = c.execute(
+                    "SELECT attr_type, default_value, enum_values, description, "
+                    "is_responsive FROM block_attributes "
+                    "WHERE block_slug = ? AND attr_name = ? AND source = 'sgs'",
+                    (slug, attr_name),
+                ).fetchone()
+                if existing_attr is not None:
+                    scraped_attr = (attr_type, default_json, enum_json, attr_desc, is_responsive)
+                    if tuple(existing_attr) != scraped_attr:
+                        c.execute(
+                            """
+                            UPDATE block_attributes
+                            SET attr_type = ?, default_value = ?, enum_values = ?,
+                                description = ?, is_responsive = ?
+                            WHERE block_slug = ? AND attr_name = ? AND source = 'sgs'
+                            """,
+                            (
+                                attr_type, default_json, enum_json, attr_desc,
+                                is_responsive, slug, attr_name,
+                            ),
+                        )
+                        updated_attrs += 1
 
-        # --- INSERT OR IGNORE supports ---
-        supports = data.get("supports", {})
+        # --- INSERT OR IGNORE supports; UPDATE support_value on drift ---
         for support_name, support_val in supports.items():
+            support_json = json.dumps(support_val)
             result = c.execute(
                 """
                 INSERT OR IGNORE INTO block_supports
                     (block_slug, support_name, support_value, source)
                 VALUES (?, ?, ?, 'sgs')
                 """,
-                (slug, support_name, json.dumps(support_val)),
+                (slug, support_name, support_json),
             )
-            new_supports += result.rowcount
+            if result.rowcount:
+                new_supports += 1
+            else:
+                existing_sup = c.execute(
+                    "SELECT support_value FROM block_supports "
+                    "WHERE block_slug = ? AND support_name = ? AND source = 'sgs'",
+                    (slug, support_name),
+                ).fetchone()
+                if existing_sup is not None and existing_sup[0] != support_json:
+                    c.execute(
+                        """
+                        UPDATE block_supports
+                        SET support_value = ?, is_stale = 0
+                        WHERE block_slug = ? AND support_name = ? AND source = 'sgs'
+                        """,
+                        (support_json, slug, support_name),
+                    )
+                    updated_supports += 1
 
         # --- Update indexed_files for this block.json ---
         try:
@@ -319,6 +453,9 @@ def _index_sgs_block_files(
         "new_blocks": new_blocks,
         "new_attrs": new_attrs,
         "new_supports": new_supports,
+        "updated_blocks": updated_blocks,
+        "updated_attrs": updated_attrs,
+        "updated_supports": updated_supports,
         "indexed_inserted": indexed_inserted,
         "indexed_updated": indexed_updated,
         "indexed_skipped": indexed_skipped,
@@ -356,12 +493,16 @@ def _run_canonical_assignment(conn: sqlite3.Connection) -> None:
 
 
 def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
-    """Walk src/blocks/*/block.json → INSERT OR IGNORE into blocks + block_attributes.
+    """Walk src/blocks/*/block.json → INSERT-or-UPDATE blocks + block_attributes.
+
+    New rows:     INSERT OR IGNORE fires when the slug/attr_name is absent.
+    Drifted rows: if any tracked field has changed since last run, the row is
+                  UPDATEd so description, title, category, attr types etc. stay
+                  current with block.json.
 
     Updates indexed_files mtime + content_hash.
     Updates schema_metadata.indexed_blocks_count after scan.
 
-    Idempotent: second run produces zero new rows (INSERT OR IGNORE throughout).
     PORTED FROM: ~/.agents/skills/sgs-wp-engine/scripts/update-db.py + populate-db.py
     """
     blocks_dir = REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
@@ -374,6 +515,9 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
     new_blocks = counts["new_blocks"]
     new_attrs = counts["new_attrs"]
     new_supports = counts["new_supports"]
+    updated_blocks = counts["updated_blocks"]
+    updated_attrs = counts["updated_attrs"]
+    updated_supports = counts["updated_supports"]
     indexed_inserted = counts["indexed_inserted"]
     indexed_updated = counts["indexed_updated"]
     indexed_skipped = counts["indexed_skipped"]
@@ -389,17 +533,22 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         total_sgs_blocks = count_row[0]
         upsert_metadata(conn, "indexed_blocks_count", str(total_sgs_blocks))
 
-        if new_blocks == 0 and new_attrs == 0 and new_supports == 0:
+        no_changes = (
+            new_blocks == 0 and new_attrs == 0 and new_supports == 0
+            and updated_blocks == 0 and updated_attrs == 0 and updated_supports == 0
+        )
+        if no_changes:
             summary = (
-                f"Stage 1: {scanned} blocks scanned, 0 new rows inserted (DB current). "
+                f"Stage 1: {scanned} blocks scanned, 0 new or drifted rows (DB current). "
                 f"indexed_files: {indexed_inserted} inserted, {indexed_updated} updated, "
                 f"{indexed_skipped} unchanged."
             )
         else:
             summary = (
-                f"Stage 1: {scanned} blocks scanned, "
-                f"{new_blocks} new block rows, {new_attrs} new attr rows, "
-                f"{new_supports} new support rows inserted. "
+                f"Stage 1: {scanned} blocks scanned. "
+                f"Inserted: {new_blocks} block rows, {new_attrs} attr rows, {new_supports} support rows. "
+                f"Updated (drift): {updated_blocks} block rows, {updated_attrs} attr rows, "
+                f"{updated_supports} support rows. "
                 f"indexed_files: {indexed_inserted} inserted, {indexed_updated} updated, "
                 f"{indexed_skipped} unchanged."
             )
@@ -407,7 +556,8 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
     else:
         print(
             f"Stage 1 [dry-run]: {scanned} blocks scanned. "
-            f"Would insert: {new_blocks} new block rows, {new_attrs} new attr rows."
+            f"Would insert: {new_blocks} block rows, {new_attrs} attr rows. "
+            f"Would update (drift): {updated_blocks} block rows, {updated_attrs} attr rows."
         )
 
     return {
@@ -415,6 +565,9 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         "new_blocks": new_blocks,
         "new_attrs": new_attrs,
         "new_supports": new_supports,
+        "updated_blocks": updated_blocks,
+        "updated_attrs": updated_attrs,
+        "updated_supports": updated_supports,
         "indexed_inserted": indexed_inserted,
         "indexed_updated": indexed_updated,
         "indexed_skipped": indexed_skipped,
@@ -1841,8 +1994,12 @@ def stage_4_style_variation_sync(
 # ---------------------------------------------------------------------------
 # Stage 5 — Slot synonym auto-seed (Step 4.5)
 #
-# For every slot_synonyms row where standalone_block IS NULL or empty, runs
-# a heuristic name-match against the sgs blocks table to propose an
+# D99 2026-05-29: queries `slots WHERE scope='element'` (was slot_synonyms).
+# slot_synonyms was retired in D99; all 89 element-scope rows migrated to the
+# unified `slots` table.
+#
+# For every element-scope slot row where standalone_block IS NULL or empty,
+# runs a heuristic name-match against the sgs blocks table to propose an
 # SGS block mapping.
 #
 # Heuristic confidence levels:
@@ -1914,10 +2071,13 @@ def _match_slot_to_block(cursor, normalised: str) -> tuple:
 
 
 def _apply_high_confidence_match(cursor, row_id: int, slug: str, dry_run: bool) -> None:
-    """Isolate the single UPDATE write for a high-confidence match."""
+    """Isolate the single UPDATE write for a high-confidence match.
+
+    D99 2026-05-29: queries `slots WHERE scope='element'` (was slot_synonyms).
+    """
     if not dry_run:
         cursor.execute(
-            "UPDATE slot_synonyms SET standalone_block=? WHERE rowid=?",
+            "UPDATE slots SET standalone_block=? WHERE rowid=? AND scope='element'",
             (slug, row_id),
         )
 
@@ -1983,12 +2143,13 @@ def stage_5_slot_synonym_auto_seed(
     c = conn.cursor()
     report_path = REPO_ROOT / "reports" / "phase4-slot-synonym-proposals.txt"
 
-    # Fetch all unmapped slot_synonyms (using rowid for reliable UPDATE targeting)
+    # Fetch all unmapped element-scope slots (using rowid for reliable UPDATE targeting).
+    # D99 2026-05-29: queries `slots WHERE scope='element'` (was slot_synonyms).
     rows = c.execute(
         """
-        SELECT rowid, canonical_slot
-        FROM slot_synonyms
-        WHERE standalone_block IS NULL OR standalone_block = ''
+        SELECT rowid, slot_name
+        FROM slots
+        WHERE scope='element' AND (standalone_block IS NULL OR standalone_block = '')
         """
     ).fetchall()
 
@@ -2495,6 +2656,430 @@ def stage_9_drift_gate(
 
 
 # ---------------------------------------------------------------------------
+# Stage 10 — Prune orphans
+#
+# Cleans rows in block_supports / block_capabilities / block_attributes whose
+# block_slug no longer exists in the `blocks` table (i.e. the block was retired
+# or renamed since those rows were written).
+#
+# For block_supports rows whose block_slug DOES still exist in `blocks` but
+# whose support_name is no longer present in the current block.json file, the
+# default behaviour is to mark them `is_stale = 1` rather than delete.  The
+# operator can pass `--prune-mode aggressive` to DELETE those rows instead.
+#
+# Operates on BOTH DBs (.agents + .claude) to keep them in sync, mirroring
+# the dual-path pattern used by seed-slot-synonyms.py.
+# ---------------------------------------------------------------------------
+
+# Second DB path (.claude) — the .agents DB is the canonical primary and is
+# opened by `open_db()` / the `conn` argument.  Stage 10 also writes to this
+# secondary path so both stores stay in sync.
+_CLAUDE_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+
+# Prune mode constants
+# 'aggressive'   — DELETE stale support rows (default; source of truth is block.json).
+# 'conservative' — set is_stale=1 instead of deleting (opt-in cautious mode).
+# Legacy alias kept so any external callers using 'mark-stale' still work.
+_PRUNE_MODE_AGGRESSIVE   = "aggressive"
+_PRUNE_MODE_CONSERVATIVE = "conservative"
+_PRUNE_MODE_MARK_STALE   = "conservative"  # legacy alias
+
+
+def _open_claude_db() -> sqlite3.Connection | None:
+    """Open the .claude DB if it exists and is a distinct file from .agents; return None otherwise.
+
+    The two DB paths are typically hard-linked to the same inode on this machine.
+    When they share an inode, opening both connections concurrently would create
+    a second write-lock on the same file, which is unnecessary and risks busy
+    errors.  In that case we return None (the primary conn already covers both paths).
+    """
+    if not _CLAUDE_DB.exists():
+        print(f"  WARNING: .claude DB not found at {_CLAUDE_DB} — skipping secondary DB writes.")
+        return None
+    # Check whether the two paths point to the same physical file (hard link)
+    try:
+        agents_inode = SGS_DB.stat().st_ino
+        claude_inode = _CLAUDE_DB.stat().st_ino
+        if agents_inode == claude_inode:
+            # Same inode — primary conn already covers .claude; no second connection needed
+            return None
+    except OSError:
+        pass
+    conn = sqlite3.connect(str(_CLAUDE_DB))
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL")
+    return conn
+
+
+def _ensure_blocks_is_stale_column(conn: sqlite3.Connection) -> None:
+    """Add is_stale column to blocks table if absent (idempotent DDL)."""
+    cols = {row[1] for row in conn.execute("PRAGMA table_info(blocks)").fetchall()}
+    if "is_stale" not in cols:
+        conn.execute("ALTER TABLE blocks ADD COLUMN is_stale INTEGER DEFAULT 0")
+        conn.commit()
+
+
+def _prune_orphans_on_conn(
+    conn: sqlite3.Connection,
+    db_label: str,
+    live_slugs: frozenset[str],
+    live_supports: dict[str, frozenset[str]],
+    live_attrs: dict[str, frozenset[str]],
+    prune_mode: str,
+    dry_run: bool,
+) -> dict:
+    """Run the prune logic against a single open DB connection.
+
+    Parameters
+    ----------
+    conn          : open DB connection to operate on
+    db_label      : short label for log output ('.agents' or '.claude')
+    live_slugs    : set of block slugs currently in src/blocks/*/block.json
+    live_supports : mapping slug -> frozenset of support_names from block.json
+    live_attrs    : mapping slug -> frozenset of attr_names from block.json
+    prune_mode    : _PRUNE_MODE_AGGRESSIVE (default) or _PRUNE_MODE_CONSERVATIVE
+    dry_run       : if True, count affected rows without writing
+
+    Four categories of stale rows are handled:
+
+    (a) BLOCK-LEVEL ORPHANS — block_slug absent from `blocks` table (block retired/renamed).
+        All child rows (block_supports, block_capabilities, block_attributes) are always deleted.
+
+    (b) STALE SUPPORTS — block exists but support_name removed from block.json.
+        aggressive   → DELETE the row.
+        conservative → set is_stale=1 (leaves the row for manual inspection).
+
+    (c) ATTR-LEVEL ORPHANS — block exists but attr_name removed from block.json.
+        Always deleted regardless of prune_mode (block_attributes has no is_stale column).
+        Conservative mode logs a warning but still deletes (no-op alternative would silently
+        accumulate ghost rows that Stage 1 can never clean up).
+
+    (d) RETIRED BLOCKS IN blocks TABLE — sgs/* slug in blocks table but no corresponding
+        block.json exists in src/blocks/<basename>/.  Core blocks (non-sgs/* prefix) are
+        skipped — they are managed by Stage 2.
+        aggressive   → DELETE the row from blocks.
+        conservative → set is_stale=1 on the blocks row (column added if absent).
+
+    Returns counters dict.
+    """
+    c = conn.cursor()
+
+    # ---- (d) Retired blocks in `blocks` table (sgs/* slug, no block.json on disk) ----
+    # Must run BEFORE (a) so child-row orphan queries still find the parent slugs to act on.
+    _ensure_blocks_is_stale_column(conn)
+
+    retired_block_slugs: list[str] = []
+    for (slug,) in c.execute(
+        "SELECT slug FROM blocks WHERE source = 'sgs' AND slug LIKE 'sgs/%'"
+    ).fetchall():
+        if slug not in live_slugs:
+            retired_block_slugs.append(slug)
+
+    if not dry_run and retired_block_slugs:
+        if prune_mode == _PRUNE_MODE_AGGRESSIVE:
+            c.executemany(
+                "DELETE FROM blocks WHERE slug = ?",
+                [(s,) for s in retired_block_slugs],
+            )
+        else:
+            # conservative: mark is_stale=1 — leaves rows for manual inspection
+            c.executemany(
+                "UPDATE blocks SET is_stale = 1 WHERE slug = ?",
+                [(s,) for s in retired_block_slugs],
+            )
+        conn.commit()
+
+    stale_d_verb = "deleted" if prune_mode == _PRUNE_MODE_AGGRESSIVE else "marked_stale"
+    print(
+        f"  [{db_label}] orphan_blocks_{stale_d_verb}={len(retired_block_slugs)}"
+        + (f" {retired_block_slugs}" if retired_block_slugs else "")
+        + (" [DRY-RUN — no writes]" if dry_run else "")
+    )
+
+    # ---- (a) Block-level orphan rows (block_slug absent from `blocks`) ----
+
+    orphan_supports_q = """
+        SELECT id FROM block_supports
+        WHERE source = 'sgs'
+          AND block_slug NOT IN (SELECT slug FROM blocks WHERE source = 'sgs')
+    """
+    orphan_caps_q = """
+        SELECT id FROM block_capabilities
+        WHERE block_slug NOT IN (SELECT slug FROM blocks WHERE source = 'sgs')
+    """
+    orphan_attrs_block_level_q = """
+        SELECT id FROM block_attributes
+        WHERE source = 'sgs'
+          AND block_slug NOT IN (SELECT slug FROM blocks WHERE source = 'sgs')
+    """
+
+    orphan_support_ids      = [r[0] for r in c.execute(orphan_supports_q).fetchall()]
+    orphan_cap_ids          = [r[0] for r in c.execute(orphan_caps_q).fetchall()]
+    orphan_attr_ids         = [r[0] for r in c.execute(orphan_attrs_block_level_q).fetchall()]
+
+    if not dry_run:
+        if orphan_support_ids:
+            c.executemany(
+                "DELETE FROM block_supports WHERE id = ?",
+                [(rid,) for rid in orphan_support_ids],
+            )
+        if orphan_cap_ids:
+            c.executemany(
+                "DELETE FROM block_capabilities WHERE id = ?",
+                [(rid,) for rid in orphan_cap_ids],
+            )
+        if orphan_attr_ids:
+            c.executemany(
+                "DELETE FROM block_attributes WHERE id = ?",
+                [(rid,) for rid in orphan_attr_ids],
+            )
+
+    # ---- (b) Stale supports (slug exists in blocks but support_name removed from block.json) ----
+    # Only applies to SGS-source rows; native_wp rows are managed by Stage 2.
+    # Also catches:
+    #   - pre-existing is_stale=1 rows whose support is still absent from block.json
+    #   - rows where the block is in the `blocks` table but no block.json exists on disk
+    #     (retired blocks that weren't pruned from the blocks table — their supports are stale)
+
+    stale_support_ids: list[int] = []
+    extant_q = """
+        SELECT bs.id, bs.block_slug, bs.support_name
+        FROM block_supports bs
+        WHERE bs.source = 'sgs'
+          AND bs.block_slug IN (SELECT slug FROM blocks WHERE source = 'sgs')
+    """
+    for row in c.execute(extant_q).fetchall():
+        row_id, b_slug, s_name = row[0], row[1], row[2]
+        if b_slug not in live_supports:
+            # Block is in DB but has no block.json on disk — all its supports are stale
+            stale_support_ids.append(row_id)
+        elif s_name not in live_supports[b_slug]:
+            # Block exists and has block.json but this specific support was removed
+            stale_support_ids.append(row_id)
+
+    if not dry_run and stale_support_ids:
+        if prune_mode == _PRUNE_MODE_AGGRESSIVE:
+            c.executemany(
+                "DELETE FROM block_supports WHERE id = ?",
+                [(rid,) for rid in stale_support_ids],
+            )
+        else:
+            # conservative: mark is_stale=1 — leaves rows for manual inspection
+            c.executemany(
+                "UPDATE block_supports SET is_stale = 1 WHERE id = ?",
+                [(rid,) for rid in stale_support_ids],
+            )
+
+    # ---- (c) Attr-level orphans (block exists but attr_name removed from block.json) ----
+    # block_attributes has no is_stale column, so conservative mode is a no-op here.
+    # These ghost rows are always deleted — Stage 1 only INSERTs/UPDATEs, never removes.
+
+    ghost_attr_ids: list[int] = []
+    extant_attrs_q = """
+        SELECT ba.id, ba.block_slug, ba.attr_name
+        FROM block_attributes ba
+        WHERE ba.source = 'sgs'
+          AND ba.block_slug IN (SELECT slug FROM blocks WHERE source = 'sgs')
+    """
+    for row in c.execute(extant_attrs_q).fetchall():
+        row_id, b_slug, a_name = row[0], row[1], row[2]
+        if b_slug not in live_attrs:
+            # Block is in DB but has no block.json on disk — all its attrs are ghost rows
+            ghost_attr_ids.append(row_id)
+        elif a_name not in live_attrs[b_slug]:
+            # Block exists and has block.json but this specific attr was removed
+            ghost_attr_ids.append(row_id)
+
+    if prune_mode == _PRUNE_MODE_CONSERVATIVE and ghost_attr_ids:
+        print(
+            f"  [{db_label}] NOTE: conservative prune_mode requested but "
+            f"{len(ghost_attr_ids)} attr-level ghost row(s) will still be deleted "
+            f"(block_attributes has no is_stale column — no alternative)."
+        )
+
+    if not dry_run and ghost_attr_ids:
+        c.executemany(
+            "DELETE FROM block_attributes WHERE id = ?",
+            [(rid,) for rid in ghost_attr_ids],
+        )
+
+    if not dry_run:
+        conn.commit()
+
+    stale_verb = "deleted" if prune_mode == _PRUNE_MODE_AGGRESSIVE else "marked_stale"
+    label_prefix = f"  [{db_label}]"
+    print(
+        f"{label_prefix} orphan_block_supports_deleted={len(orphan_support_ids)}, "
+        f"orphan_capabilities_deleted={len(orphan_cap_ids)}, "
+        f"orphan_attributes_deleted={len(orphan_attr_ids)}, "
+        f"stale_supports_{stale_verb}={len(stale_support_ids)}, "
+        f"orphan_attributes_deleted_attr_level={len(ghost_attr_ids)}"
+        + (" [DRY-RUN — no writes]" if dry_run else "")
+    )
+
+    return {
+        "db": db_label,
+        "orphan_block_supports_deleted": len(orphan_support_ids),
+        "orphan_capabilities_deleted": len(orphan_cap_ids),
+        "orphan_attributes_deleted": len(orphan_attr_ids),
+        f"stale_supports_{stale_verb}": len(stale_support_ids),
+        "stale_supports_actioned": len(stale_support_ids),
+        "orphan_attributes_deleted_attr_level": len(ghost_attr_ids),
+        f"orphan_blocks_{stale_d_verb}": len(retired_block_slugs),
+        "orphan_blocks_actioned": len(retired_block_slugs),
+        "prune_mode": prune_mode,
+    }
+
+
+def stage_10_prune_orphans(
+    conn: sqlite3.Connection,
+    dry_run: bool = False,
+    prune_mode: str = _PRUNE_MODE_AGGRESSIVE,
+) -> dict:
+    """Delete orphan rows and clean up stale support/attr rows across both DBs.
+
+    Four categories are handled (see _prune_orphans_on_conn docstring for detail):
+
+    (a) BLOCK-LEVEL ORPHANS — block_slug absent from `blocks` table.  All child rows in
+        block_supports, block_capabilities, and block_attributes are always deleted.
+
+    (b) STALE SUPPORTS — block exists but support_name removed from block.json.
+        Default (aggressive) deletes them.  Pass --prune-mode conservative to mark
+        is_stale=1 instead (opt-in cautious mode).
+
+    (c) ATTR-LEVEL ORPHANS — block exists but attr_name removed from block.json.
+        Always deleted.  Stage 1 only INSERTs/UPDATEs attrs; it never removes them.
+        block_attributes has no is_stale column so conservative mode is a no-op here.
+
+    (d) RETIRED BLOCKS IN blocks TABLE — sgs/* slug in blocks table but no corresponding
+        block.json on disk.  Default (aggressive) DELETEs the blocks row; conservative marks
+        is_stale=1.  Non-sgs/* slugs (core/*, etc.) are skipped — they have a different
+        lifecycle managed by Stage 2.
+
+    Parameters
+    ----------
+    conn       : primary DB connection (.agents)
+    dry_run    : if True, count affected rows without writing any changes
+    prune_mode : 'aggressive' (default) — DELETE stale supports + retired blocks.
+                 'conservative'         — set is_stale=1 instead.
+
+    Both DBs (.agents + .claude) are processed.  Counts from each are reported
+    separately, then aggregated in the returned dict.  Result key ``orphan_blocks_deleted``
+    always present (0 when nothing was deleted).
+    """
+    blocks_dir = REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
+    if not blocks_dir.exists():
+        msg = f"blocks dir not found: {blocks_dir}"
+        print(f"Stage 10 [error]: {msg}")
+        return {"error": msg}
+
+    # Build live_slugs, live_supports, and live_attrs from current block.json files
+    live_slugs: set[str] = set()
+    live_supports: dict[str, frozenset[str]] = {}
+    live_attrs: dict[str, frozenset[str]] = {}
+
+    for block_dir in sorted(blocks_dir.iterdir()):
+        if not block_dir.is_dir() or block_dir.name in EXCLUDED_DIRS:
+            continue
+        block_json_path = block_dir / "block.json"
+        if not block_json_path.exists():
+            continue
+        try:
+            with open(block_json_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            continue
+        slug = data.get("name", f"sgs/{block_dir.name}")
+        live_slugs.add(slug)
+        live_supports[slug] = frozenset(data.get("supports", {}).keys())
+        live_attrs[slug] = frozenset(data.get("attributes", {}).keys())
+
+    frozen_slugs = frozenset(live_slugs)
+
+    # Detect whether the two DB paths share the same inode (hard-linked)
+    same_inode = False
+    try:
+        same_inode = SGS_DB.stat().st_ino == _CLAUDE_DB.stat().st_ino
+    except OSError:
+        pass
+
+    db_scope_note = "(single hard-linked DB)" if same_inode else "(both DBs)"
+
+    print(
+        f"\nStage 10 [prune-orphans]: {len(frozen_slugs)} live block slugs found. "
+        f"prune_mode={prune_mode} {db_scope_note}"
+        + (" [DRY-RUN]" if dry_run else "")
+    )
+
+    # --- Primary DB (.agents) ---
+    agents_counts = _prune_orphans_on_conn(
+        conn, ".agents", frozen_slugs, live_supports, live_attrs, prune_mode, dry_run
+    )
+
+    # --- Secondary DB (.claude) — only when it is a distinct physical file ---
+    claude_conn = _open_claude_db()
+    claude_counts: dict = {}
+    if claude_conn is not None:
+        claude_counts = _prune_orphans_on_conn(
+            claude_conn, ".claude", frozen_slugs, live_supports, live_attrs, prune_mode, dry_run
+        )
+        claude_conn.close()
+    elif not same_inode:
+        print("  [.claude] skipped — DB not found.")
+
+    # Aggregate totals (when same inode, .agents counts cover both paths)
+    total_orphan_supports = (
+        agents_counts.get("orphan_block_supports_deleted", 0)
+        + claude_counts.get("orphan_block_supports_deleted", 0)
+    )
+    total_orphan_caps = (
+        agents_counts.get("orphan_capabilities_deleted", 0)
+        + claude_counts.get("orphan_capabilities_deleted", 0)
+    )
+    total_orphan_attrs = (
+        agents_counts.get("orphan_attributes_deleted", 0)
+        + claude_counts.get("orphan_attributes_deleted", 0)
+    )
+    total_stale_supports = (
+        agents_counts.get("stale_supports_actioned", 0)
+        + claude_counts.get("stale_supports_actioned", 0)
+    )
+    total_ghost_attrs = (
+        agents_counts.get("orphan_attributes_deleted_attr_level", 0)
+        + claude_counts.get("orphan_attributes_deleted_attr_level", 0)
+    )
+    total_orphan_blocks = (
+        agents_counts.get("orphan_blocks_actioned", 0)
+        + claude_counts.get("orphan_blocks_actioned", 0)
+    )
+
+    stale_verb = "deleted" if prune_mode == _PRUNE_MODE_AGGRESSIVE else "marked_stale"
+    summary = (
+        f"Stage 10: orphan_block_supports_deleted={total_orphan_supports}, "
+        f"orphan_capabilities_deleted={total_orphan_caps}, "
+        f"orphan_attributes_deleted={total_orphan_attrs}, "
+        f"stale_supports_{stale_verb}={total_stale_supports}, "
+        f"orphan_attributes_deleted_attr_level={total_ghost_attrs}, "
+        f"orphan_blocks_{stale_verb}={total_orphan_blocks} {db_scope_note}."
+    )
+    print(summary)
+
+    return {
+        "orphan_block_supports_deleted": total_orphan_supports,
+        "orphan_capabilities_deleted": total_orphan_caps,
+        "orphan_attributes_deleted": total_orphan_attrs,
+        f"stale_supports_{stale_verb}": total_stale_supports,
+        "orphan_attributes_deleted_attr_level": total_ghost_attrs,
+        f"orphan_blocks_{stale_verb}": total_orphan_blocks,
+        "orphan_blocks_deleted": total_orphan_blocks,
+        "prune_mode": prune_mode,
+        "agents": agents_counts,
+        "claude": claude_counts,
+        "dry_run": dry_run,
+    }
+
+
+# ---------------------------------------------------------------------------
 # Main dispatcher
 # ---------------------------------------------------------------------------
 
@@ -2503,7 +3088,9 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
 
     Stage 3 is retired — its lambda prints the tombstone line and returns
     {"status": "retired", "dry_run": args.dry_run}.
+    Stage 10 is the prune-orphans stage (controlled by --prune-mode).
     """
+    prune_mode = getattr(args, "prune_mode", _PRUNE_MODE_AGGRESSIVE)
     return {
         1: lambda: stage_1_sgs_codebase_scan(conn, dry_run=args.dry_run),
         2: lambda: stage_2_core_gutenberg_cache_refresh(
@@ -2522,20 +3109,21 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
         7: lambda: stage_7_spec_doc_regen(dry_run=args.dry_run),
         8: lambda: stage_8_uimax_mirror(dry_run=args.dry_run),
         9: lambda: stage_9_drift_gate(conn, dry_run=args.dry_run),
+        10: lambda: stage_10_prune_orphans(conn, dry_run=args.dry_run, prune_mode=prune_mode),
     }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="SGS framework knowledge base — 9-stage holistic refresh",
+        description="SGS framework knowledge base — 10-stage holistic refresh",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "--stage",
         type=int,
-        choices=range(1, 10),
+        choices=range(1, 11),
         metavar="N",
-        help="Run a single stage only (1-9). Omit to run all stages.",
+        help="Run a single stage only (1-10). Omit to run all stages.",
     )
     parser.add_argument(
         "--dry-run",
@@ -2546,6 +3134,20 @@ def main() -> None:
         "--wp-version",
         default=WP_VERSION_DEFAULT,
         help=f"WP version tag for Stage 2 (default: {WP_VERSION_DEFAULT})",
+    )
+    parser.add_argument(
+        "--prune-mode",
+        dest="prune_mode",
+        choices=[_PRUNE_MODE_AGGRESSIVE, _PRUNE_MODE_CONSERVATIVE],
+        default=_PRUNE_MODE_AGGRESSIVE,
+        help=(
+            "Stage 10 prune behaviour for stale support rows "
+            "(block_slug exists in blocks but support_name removed from block.json). "
+            "'aggressive' (default) DELETEs them — source of truth is block.json. "
+            "'conservative' sets is_stale=1 instead (opt-in cautious mode). "
+            "Attr-level ghost rows (block exists but attr removed) are always deleted "
+            "regardless of this setting — block_attributes has no is_stale column."
+        ),
     )
     args = parser.parse_args()
 
@@ -2558,14 +3160,14 @@ def main() -> None:
     conn = open_db()
     ensure_schema_metadata(conn)
 
-    stages_to_run = [args.stage] if args.stage else list(range(1, 10))
+    stages_to_run = [args.stage] if args.stage else list(range(1, 11))
     dispatch = _build_stage_dispatch(conn, args)
 
     results: dict[int, dict] = {}
     for stage_num in stages_to_run:
         print(f"\n{'=' * 50}\n=== Stage {stage_num} ===\n{'=' * 50}")
         if stage_num not in dispatch:
-            print(f"Unknown stage: {stage_num}. Valid: 1-9.")
+            print(f"Unknown stage: {stage_num}. Valid: 1-10.")
             continue
         results[stage_num] = dispatch[stage_num]()
 

@@ -4,9 +4,15 @@ Replaces the hardcoded CLASS_TO_BLOCK table in convert.py with live queries
 against the Phase-1-frozen vocabularies in sgs-framework.db:
 
   - blocks                  : registered SGS block slugs
-  - slot_synonyms           : canonical_slot → aliases (label, heading, media...)
+  - slots                   : unified slot→block mapping (element + section scope).
+                               Replaces retired slot_synonyms + legacy_role_lookup.
+                               D99 2026-05-29. PK: (slot_name, scope).
+  - roles                   : role-name → classification catalogue (D99 2026-05-29).
+                               Replaces slot_synonyms.role_classification column.
+                               Fixes link-href bug: classification now lives here,
+                               not on slot rows (which never had a link-href row).
   - modifier_suffixes       : Primary/Hover/Mobile/etc.
-  - property_suffixes       : Padding/Margin/FontSize/etc.
+  - property_suffixes       : Padding/Margin/FontSize/etc. + kind_override column.
   - block_attributes        : attr_name → canonical_slot mapping per block
 
 And against uimax.naming_conventions for the SGS-BEM regex.
@@ -28,27 +34,33 @@ if not UIMAX_DB.exists():
 
 
 # ----------------------------------------------------------------------------
-# Idempotent schema migration — slot_synonyms.role_classification
+# Idempotent schema migration — `roles` table (D99 2026-05-29)
 # ----------------------------------------------------------------------------
-# Spec 22 §FR-22-2.2 / D85 (qc-council Rater B 2026-05-27): role classification
-# moves out of hardcoded Python frozensets into a DB column on slot_synonyms.
-# Honours R-22-1 (DB-first, no hardcoded dicts; blub.db row 260).
+# D99 replaces slot_synonyms.role_classification with a standalone `roles`
+# table. This removes the coupling between slot data and role-classification
+# data, and closes the link-href bug (slot_synonyms never had a row with
+# role='link-href', so the old column-based migration never seeded it).
 #
-# The column carries three permitted values:
+# The `roles` table ships 20 rows seeded from _ROLE_CLASSIFICATION_MAP.
+# INSERT OR REPLACE ensures the seed dict updates propagate on every module
+# load (unlike the old INSERT OR IGNORE which froze initial values).
+#
+# Permitted classifications (CHECK constraint in DB schema):
 #   - 'content-bearing'    — role routes content via block-equivalence
 #   - 'styling-behaviour'  — role is a scalar styling/behaviour attr
 #   - 'unclassified'       — role NULL or otherwise not yet classified
 #
-# Population mapping (per D85 brief 2026-05-27, derived from the previous
-# hardcoded _CONTENT_BEARING_ROLES + _ROLE_EXCLUSION_ALLOWLIST frozensets):
+# Runtime callers query this table via _content_bearing_roles() and
+# _styling_behaviour_roles() below. _ROLE_CLASSIFICATION_MAP is the seed
+# source only — never a runtime lookup dict (R-22-1).
 _ROLE_CLASSIFICATION_MAP: dict[str, str] = {
-    # Content-bearing roles
+    # Content-bearing roles (5 total — includes link-href, previously missing)
     "text-content":         "content-bearing",
     "image-object":         "content-bearing",
     "content":              "content-bearing",
     "link-href":            "content-bearing",
     "identity":             "content-bearing",
-    # Styling / behaviour roles
+    # Styling / behaviour roles (15 total)
     "typography":           "styling-behaviour",
     "color":                "styling-behaviour",
     "colour-gradient":      "styling-behaviour",
@@ -67,46 +79,44 @@ _ROLE_CLASSIFICATION_MAP: dict[str, str] = {
 }
 
 
-def _migrate_role_classification() -> None:
-    """Idempotent migration: add slot_synonyms.role_classification column if absent
-    and populate it from _ROLE_CLASSIFICATION_MAP.
+def _migrate_roles_table() -> None:
+    """Idempotent migration: create `roles` table if absent and seed from
+    _ROLE_CLASSIFICATION_MAP using INSERT OR REPLACE.
 
-    Safe to call repeatedly. Runs at module load. Honours R-22-1: the mapping
-    above is the one-time seed of the catalogue, NOT a runtime lookup dict —
-    once seeded, all callers query the DB column via the public helper
-    functions below.
+    INSERT OR REPLACE (not OR IGNORE) means updates to the seed dict above
+    propagate to the DB on every module load. This is intentional — the dict
+    is the canonical source for the 20 entries defined at spec time; the DB
+    is the authoritative runtime query target. Honours R-22-1.
+
+    Safe to call repeatedly. Runs at module load.
     """
     conn = sqlite3.connect(SGS_DB)
     try:
-        cols = {row[1] for row in conn.execute("PRAGMA table_info(slot_synonyms)").fetchall()}
-        if "role_classification" not in cols:
-            conn.execute(
-                "ALTER TABLE slot_synonyms ADD COLUMN role_classification TEXT"
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS roles (
+              role_name      TEXT PRIMARY KEY,
+              classification TEXT NOT NULL CHECK (classification IN
+                             ('content-bearing','styling-behaviour','unclassified')),
+              description    TEXT,
+              created_at     TEXT DEFAULT CURRENT_TIMESTAMP
             )
-        # Populate any row whose classification is missing (NULL). Idempotent:
-        # already-classified rows are left alone, so re-runs are no-ops.
-        rows = conn.execute(
-            "SELECT canonical_slot, role FROM slot_synonyms "
-            "WHERE role_classification IS NULL OR role_classification = ''"
-        ).fetchall()
-        for canonical_slot, role in rows:
-            classification = _ROLE_CLASSIFICATION_MAP.get(role, "unclassified")
+        """)
+        for role_name, classification in _ROLE_CLASSIFICATION_MAP.items():
             conn.execute(
-                "UPDATE slot_synonyms SET role_classification = ? "
-                "WHERE canonical_slot = ?",
-                (classification, canonical_slot),
+                "INSERT OR REPLACE INTO roles (role_name, classification) VALUES (?, ?)",
+                (role_name, classification),
             )
         conn.commit()
     except sqlite3.OperationalError:
         # DB read-only / locked / missing — soft-fail. Callers fall back to
-        # unclassified-default behaviour (positive-allowlist returns None).
+        # empty-frozenset / unclassified-default behaviour.
         pass
     finally:
         conn.close()
 
 
 # Run migration at module load (idempotent).
-_migrate_role_classification()
+_migrate_roles_table()
 
 
 # ----------------------------------------------------------------------------
@@ -162,11 +172,13 @@ def _migrate_html_tag_to_core_block() -> None:
             "  created_at TEXT DEFAULT CURRENT_TIMESTAMP"
             ")"
         )
-        # INSERT OR IGNORE — idempotent; never overwrites existing rows. To
-        # change a mapping, edit the row directly or DROP + recreate the table.
+        # INSERT OR REPLACE — propagates seed-dict updates on module re-load.
+        # D99 2026-05-29 (Fix 3): changed from INSERT OR IGNORE so that when
+        # _HTML_TAG_TO_CORE_BLOCK_SEED entries are updated, the DB picks up
+        # the new values automatically without manual row edits.
         for html_tag, (core_slug, note) in _HTML_TAG_TO_CORE_BLOCK_SEED.items():
             conn.execute(
-                "INSERT OR IGNORE INTO html_tag_to_core_block "
+                "INSERT OR REPLACE INTO html_tag_to_core_block "
                 "(html_tag, core_block_slug, note) VALUES (?, ?, ?)",
                 (html_tag, core_slug, note),
             )
@@ -272,15 +284,22 @@ def block_exists(slug: str) -> bool:
 
 
 # ----------------------------------------------------------------------------
-# Canonical slot lookup — element → canonical_slot via slot_synonyms
+# Canonical slot lookup — element → canonical_slot via `slots` table
+# (D99 2026-05-29: was slot_synonyms; now slots WHERE scope='element')
 # ----------------------------------------------------------------------------
 
 @functools.lru_cache(maxsize=1)
 def _slot_synonyms() -> dict[str, str]:
-    """Return {alias_or_canonical: canonical_slot}. Includes self-mappings."""
+    """Return {alias_or_canonical: canonical_slot} for element-scope slots.
+
+    D99: queries `slots WHERE scope='element'` (was slot_synonyms).
+    Includes self-mappings so canonical names resolve to themselves.
+    """
     conn = sqlite3.connect(SGS_DB)
     try:
-        rows = conn.execute("SELECT canonical_slot, aliases FROM slot_synonyms").fetchall()
+        rows = conn.execute(
+            "SELECT slot_name, aliases FROM slots WHERE scope='element'"
+        ).fetchall()
     finally:
         conn.close()
     out: dict[str, str] = {}
@@ -297,30 +316,18 @@ def _slot_synonyms() -> dict[str, str]:
 
 
 @functools.lru_cache(maxsize=1)
-def _slot_to_html_tag() -> dict[str, str]:
-    """Return {canonical_slot: html_semantic_tag}."""
-    conn = sqlite3.connect(SGS_DB)
-    try:
-        rows = conn.execute("SELECT canonical_slot, html_semantic_tag FROM slot_synonyms").fetchall()
-    finally:
-        conn.close()
-    return {c: t for c, t in rows if t}
-
-
-@functools.lru_cache(maxsize=1)
 def _slot_to_standalone_block() -> dict[str, str]:
-    """Return {canonical_slot: standalone_block_slug}.
+    """Return {canonical_slot: standalone_block_slug} for element-scope slots.
 
     Source of truth for "this element-name routes to that block when the parent
-    block doesn't claim the slot". Replaces the previous hardcoded
-    SLOT_TO_STANDALONE_BLOCK dict in convert.py — synonym vocabulary AND
-    standalone-block routing now both live in sgs-framework.db.slot_synonyms.
+    block doesn't claim the slot". D99: queries `slots WHERE scope='element'`
+    (was slot_synonyms.standalone_block).
     """
     conn = sqlite3.connect(SGS_DB)
     try:
         rows = conn.execute(
-            "SELECT canonical_slot, standalone_block FROM slot_synonyms "
-            "WHERE standalone_block IS NOT NULL AND standalone_block != ''"
+            "SELECT slot_name, standalone_block FROM slots "
+            "WHERE scope='element' AND standalone_block IS NOT NULL AND standalone_block != ''"
         ).fetchall()
     finally:
         conn.close()
@@ -394,8 +401,16 @@ def attr_name_for_slot_or_alias(block_slug: str, slot_or_alias: str) -> str | No
 
 
 def html_tag_for_slot(canonical_slot: str) -> str | None:
-    """e.g. 'label' → 'span', 'heading' → 'h1', 'media' → 'img'."""
-    return _slot_to_html_tag().get(canonical_slot)
+    """Return None — html_semantic_tag column retired in D99 (2026-05-29).
+
+    slot_synonyms.html_semantic_tag was low-value (only 27/89 rows populated)
+    and was NOT consulted by atomic_tag_map() (see that function's docstring
+    for the rationale). The column is not present in the unified `slots` table.
+
+    Callers should route via atomic_tag_map() for html-canonical tag→block
+    resolution instead of per-slot html_semantic_tag hints.
+    """
+    return None
 
 
 # ----------------------------------------------------------------------------
@@ -524,6 +539,160 @@ def parent_block_for(child_slug: str) -> str | None:
 
 
 # ----------------------------------------------------------------------------
+# Block capabilities — DB-driven semantic tags per block
+# ----------------------------------------------------------------------------
+# Capability tags (e.g. 'icon-text', 'carousel', 'grid-layout', 'expandable')
+# are stored in the `block_capabilities` table, seeded by
+# `~/.claude/skills/sgs-wp-engine/scripts/populate-db.py:CAPABILITY_RULES`.
+# The pipeline consumes them via two helpers:
+#   - capabilities_for(slug) — return all tags for a specific block
+#   - blocks_with_capability(cap) — return all slugs that carry a tag
+#
+# Primary current use: capability-aware tiebreaking inside
+# `_resolve_slug_from_bem_tuple` Path 1 when two or more bare-block BEM classes
+# both resolve to registered slugs on the same DOM node. Alphabetical-first was
+# the previous tiebreaker; capability-priority lets the pipeline pick the
+# semantically richer block (e.g. `sgs/testimonial-slider` over `sgs/container`
+# when both BEM classes are present on a social-proof section root).
+#
+# Capability priority order (ascending specificity — highest specificity first):
+_CAPABILITY_PRIORITY: list[str] = [
+    # Highly specific structural blocks (most specific → wins tiebreak)
+    "modal-popup",
+    "pricing",
+    "team-display",
+    "tabbed-content",
+    "expandable",
+    "faq",
+    "schema-faq",
+    "question-answer",
+    "carousel",
+    "form-input",
+    "rating",
+    "social-proof",
+    "icon-text",
+    "grid-layout",
+    "image-overlay",
+    "full-width-banner",
+    "call-to-action",
+    "cta",
+    "action-button",
+    "conversion",
+    "navigation",
+    "countdown",
+    "time-limited",
+    "notification",
+    "alert",
+    "dismissible",
+    "floating-element",
+    "process-display",
+    "steps",
+    "certification-display",
+    "logo-strip",
+    "partner-logos",
+    "horizontal-strip",
+    "trust-indicators",
+    "social-links",
+    "heritage-story",
+    "about-section",
+    "animated-numbers",
+    "decorative",
+]
+
+
+@functools.lru_cache(maxsize=256)
+def capabilities_for(block_slug: str) -> frozenset[str]:
+    """Return the set of capability tags for `block_slug` from the DB.
+
+    e.g. capabilities_for('sgs/accordion') → frozenset({'expandable', 'faq',
+         'schema-faq', 'question-answer'})
+    e.g. capabilities_for('sgs/unknown')  → frozenset()
+
+    Queries `block_capabilities` table in sgs-framework.db. LRU-cached per slug.
+    Safe to call per-node in the walker — the cache eliminates DB round-trips on
+    repeated calls for the same slug within a section.
+
+    R-22-1 compliance: no hardcoded slug→capability mapping in code. All data
+    lives in the DB; this function is the single read path. The CAPABILITY_RULES
+    dict in populate-db.py is one-time-seed data only.
+
+    Args:
+        block_slug: Fully-qualified SGS slug, e.g. 'sgs/accordion'.
+
+    Returns:
+        frozenset of capability tag strings. Empty frozenset if the block has
+        none or does not exist in the table.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT capability FROM block_capabilities WHERE block_slug = ?",
+            (block_slug,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        # Table absent (first-run before populate-db.py) — soft-fail to empty.
+        rows = []
+    finally:
+        conn.close()
+    return frozenset(r[0] for r in rows)
+
+
+@functools.lru_cache(maxsize=64)
+def blocks_with_capability(capability: str) -> frozenset[str]:
+    """Return the set of block slugs that carry `capability`.
+
+    e.g. blocks_with_capability('carousel') → frozenset({'sgs/testimonial-slider',
+         'sgs/brand-strip'})
+    e.g. blocks_with_capability('unknown') → frozenset()
+
+    Queries `block_capabilities` table. LRU-cached per capability tag.
+    Intended for pattern-generation and diagnostic tooling — not hot-path during
+    section walks (use capabilities_for() for per-node lookups instead).
+
+    R-22-1 compliance: DB-only read path.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT block_slug FROM block_capabilities WHERE capability = ?",
+            (capability,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        rows = []
+    finally:
+        conn.close()
+    return frozenset(r[0] for r in rows)
+
+
+def _capability_rank(block_slug: str) -> int:
+    """Return a capability-priority rank for `block_slug` (lower = higher priority).
+
+    Used as a tiebreaker sort key inside `_resolve_slug_from_bem_tuple` Path 1.
+    Blocks with more semantically specific capabilities rank ahead of generic
+    primitives like `sgs/container`.
+
+    Algorithm:
+      - Compute each capability's index in _CAPABILITY_PRIORITY (first-occurrence).
+      - Return the MINIMUM index across all capabilities (most-specific tag wins).
+      - If the block has no capabilities (empty), return len(_CAPABILITY_PRIORITY) + 1
+        so it sorts AFTER all capability-bearing blocks but still deterministically.
+      - Ties in capability rank fall back to alphabetical slug order (caller sorts
+        by (rank, slug) to guarantee determinism).
+    """
+    caps = capabilities_for(block_slug)
+    if not caps:
+        return len(_CAPABILITY_PRIORITY) + 1
+    priority_index = len(_CAPABILITY_PRIORITY)  # default: treat as unknown
+    for cap in caps:
+        try:
+            idx = _CAPABILITY_PRIORITY.index(cap)
+            priority_index = min(priority_index, idx)
+        except ValueError:
+            pass  # capability not in priority list — treated as generic
+    return priority_index
+
+
+# ----------------------------------------------------------------------------
 # CSS property → SGS attr suffix mapping (DB-driven, replaces hardcoded dict)
 # ----------------------------------------------------------------------------
 
@@ -551,12 +720,61 @@ _KIND_BY_SUFFIX: dict[str, str] = {
 }
 
 
+# ----------------------------------------------------------------------------
+# Idempotent schema migration — property_suffixes.kind_override (D99 2026-05-29)
+# ----------------------------------------------------------------------------
+# Fix 4: _KIND_BY_SUFFIX dict (17 entries, defined above) moves into the DB as
+# a `kind_override` column on property_suffixes. Honours R-22-1 (DB-first,
+# no hardcoded dicts; blub.db row 260).
+#
+# _KIND_BY_SUFFIX is the ONE-TIME SEED source. _kind_for() queries DB first;
+# the role-based fallback covers suffixes not yet in property_suffixes.
+#
+# UPDATE uses `WHERE kind_override IS NULL` to preserve manual operator
+# overrides — idempotent re-runs are no-ops for already-populated rows.
+
+
+def _migrate_property_suffixes_kind_override() -> None:
+    """Idempotent migration: add property_suffixes.kind_override column if absent
+    and seed from _KIND_BY_SUFFIX.
+
+    Safe to call repeatedly. Runs at module load.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        cols = {row[1] for row in conn.execute("PRAGMA table_info(property_suffixes)").fetchall()}
+        if "kind_override" not in cols:
+            conn.execute("ALTER TABLE property_suffixes ADD COLUMN kind_override TEXT")
+        # UPDATE only NULL rows — preserves manual overrides set after seeding.
+        for suffix, kind in _KIND_BY_SUFFIX.items():
+            conn.execute(
+                "UPDATE property_suffixes SET kind_override = ? "
+                "WHERE suffix = ? AND kind_override IS NULL",
+                (kind, suffix),
+            )
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass
+    finally:
+        conn.close()
+
+
+# Run migration at module load (idempotent — safe to call repeatedly).
+_migrate_property_suffixes_kind_override()
+
+
 def _kind_for(suffix: str, role: str | None) -> str | None:
     """Infer the convert.py 'kind' for a property_suffixes row.
 
     Returns one of: 'colour', 'number_px', 'number_unitless', 'number_px_or_em',
     'string'. Returns None for rows that shouldn't be lifted via CSS (behaviour,
     select-from-enum, content roles — these aren't CSS-driven).
+
+    D99 2026-05-29 (Fix 4): queries property_suffixes.kind_override FIRST
+    (R-22-1 — DB-first, no hardcoded dicts). Falls through to role-based
+    inference for suffixes not covered by the DB column. _KIND_BY_SUFFIX is
+    retained as the seed source for _migrate_property_suffixes_kind_override()
+    but is no longer the runtime lookup path.
 
     Wave 2 Change 3 (2026-05-22): added 'colour-gradient', 'select-from-enum',
     'spacing-token' to the lifted set. Schema evidence (blub.db 272):
@@ -566,8 +784,19 @@ def _kind_for(suffix: str, role: str | None) -> str | None:
       - spacing-token: suffix='Spacing', css_property='padding/margin (preset)' — skipped
         (multi-property; no single CSS prop to match)
     """
-    if suffix in _KIND_BY_SUFFIX:
-        return _KIND_BY_SUFFIX[suffix]
+    # DB-first (R-22-1): query kind_override column seeded from _KIND_BY_SUFFIX.
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT kind_override FROM property_suffixes WHERE suffix = ?", (suffix,)
+        ).fetchone()
+    except sqlite3.OperationalError:
+        row = None
+    finally:
+        conn.close()
+    if row and row[0]:
+        return row[0]
+    # Fall through to role-based inference for suffixes not in the DB.
     if role == "color" or any(t in suffix for t in ("Colour", "Color", "Background", "Foreground")):
         return "colour"
     if role in ("layout", "typography", "visual", "spacing", "shadow", "motion", "number-css-px"):
@@ -777,9 +1006,9 @@ def write_attribute_gap_candidate(
 
 # ----------------------------------------------------------------------------
 # Legacy role lookup — kebab-semantic class → SGS slug (DB-driven)
-# Replaces hardcoded LEGACY_ROLE_LOOKUP dict in per-section-convention-voter.py.
-# Table: sgs-framework.db legacy_role_lookup. Seeded by:
-#   plugins/sgs-blocks/scripts/uimax-tools/seed-legacy-role-lookup.py
+# D99 2026-05-29: queries `slots WHERE scope='section'` (was legacy_role_lookup).
+# The legacy_role_lookup table has been retired and its 16 rows migrated to
+# slots with scope='section'. Consumer API is unchanged.
 # ----------------------------------------------------------------------------
 
 # Module-level cache populated on first call. Avoids repeated DB round-trips
@@ -788,28 +1017,32 @@ _LEGACY_ROLE_CACHE: dict[str, str] | None = None
 
 
 def _load_legacy_role_cache() -> dict[str, str]:
-    """Query legacy_role_lookup table and return {kebab_role: sgs_slug}."""
+    """Query section-scope slots and return {slot_name: standalone_block}.
+
+    D99: queries `slots WHERE scope='section'` (was legacy_role_lookup).
+    """
     conn = sqlite3.connect(SGS_DB)
     try:
-        rows = conn.execute("SELECT kebab_role, sgs_slug FROM legacy_role_lookup").fetchall()
+        rows = conn.execute(
+            "SELECT slot_name, standalone_block FROM slots WHERE scope='section'"
+        ).fetchall()
     except sqlite3.OperationalError:
-        # Table not yet created — seed script hasn't been run. Soft-fail to empty.
+        # Table not yet created (pre-D99 DB). Soft-fail to empty.
         rows = []
     finally:
         conn.close()
-    return {kebab: slug for kebab, slug in rows}
+    return {slot: block for slot, block in rows if block}
 
 
 def legacy_role_lookup_for(kebab_role: str) -> str | None:
     """Return the SGS block slug for a legacy kebab-semantic role, or None.
 
-    Queries sgs-framework.db legacy_role_lookup (seeded by
-    plugins/sgs-blocks/scripts/uimax-tools/seed-legacy-role-lookup.py).
+    D99: queries `slots WHERE scope='section'` (was legacy_role_lookup table).
     Results cached in-module after the first call (warmup pattern).
 
     Examples:
         legacy_role_lookup_for('hero')           -> 'sgs/hero'
-        legacy_role_lookup_for('trust-bar')      -> 'sgs/trust-bar'
+        legacy_role_lookup_for('trust-bar')      -> None  (not in section-scope slots)
         legacy_role_lookup_for('unknown-role')   -> None
     """
     global _LEGACY_ROLE_CACHE
@@ -856,22 +1089,25 @@ def legacy_role_lookup_for(kebab_role: str) -> str | None:
 
 @functools.lru_cache(maxsize=1)
 def _content_bearing_roles() -> frozenset[str]:
-    """Return the set of role names classified 'content-bearing' on
-    slot_synonyms.role_classification (DB-driven; D85 2026-05-27).
+    """Return the set of role names classified 'content-bearing' from the
+    `roles` table (D99 2026-05-29 — was slot_synonyms.role_classification).
 
-    Replaces the previous hardcoded _CONTENT_BEARING_ROLES frozenset.
-    Cached at module-load price; the column is static for the lifetime
-    of a pipeline run.
+    D99 closes the link-href bug: the old column-based approach only set
+    role_classification on slot_synonyms rows that HAD a given role; since
+    no slot row had role='link-href', it was never seeded. The `roles` table
+    is seeded from _ROLE_CLASSIFICATION_MAP which explicitly lists all 5
+    content-bearing roles including link-href.
+
+    Returns 5 roles: text-content, image-object, content, link-href, identity.
+    Cached at module-load price; the rows are static for a pipeline run.
     """
     conn = sqlite3.connect(SGS_DB)
     try:
         rows = conn.execute(
-            "SELECT DISTINCT role FROM slot_synonyms "
-            "WHERE role_classification = 'content-bearing' "
-            "  AND role IS NOT NULL AND role != ''"
+            "SELECT role_name FROM roles WHERE classification = 'content-bearing'"
         ).fetchall()
     except sqlite3.OperationalError:
-        # Column missing (migration soft-failed). Return empty — positive
+        # Table missing (migration soft-failed). Return empty — positive
         # allowlist closes by default, which is the safe direction.
         return frozenset()
     finally:
@@ -881,20 +1117,19 @@ def _content_bearing_roles() -> frozenset[str]:
 
 @functools.lru_cache(maxsize=1)
 def _styling_behaviour_roles() -> frozenset[str]:
-    """Return the set of role names classified 'styling-behaviour' on
-    slot_synonyms.role_classification (DB-driven; D85 2026-05-27).
+    """Return the set of role names classified 'styling-behaviour' from the
+    `roles` table (D99 2026-05-29 — was slot_synonyms.role_classification).
 
     Diagnostic helper — not consulted by the gate in equivalent_block_for()
     (the gate is a positive allowlist on _content_bearing_roles()). Provided
-    for downstream tooling that needs to enumerate styling-behaviour roles
-    explicitly.
+    for downstream tooling that needs to enumerate styling-behaviour roles.
+
+    Returns 15 roles.
     """
     conn = sqlite3.connect(SGS_DB)
     try:
         rows = conn.execute(
-            "SELECT DISTINCT role FROM slot_synonyms "
-            "WHERE role_classification = 'styling-behaviour' "
-            "  AND role IS NOT NULL AND role != ''"
+            "SELECT role_name FROM roles WHERE classification = 'styling-behaviour'"
         ).fetchall()
     except sqlite3.OperationalError:
         return frozenset()
@@ -910,9 +1145,10 @@ _BEM_ELEMENT_RE = re.compile(r"__([a-z0-9-]+)")
 
 @functools.lru_cache(maxsize=1)
 def _slot_alias_to_standalone() -> dict[str, str]:
-    """Return {alias_lowercase: standalone_block} from slot_synonyms.
+    """Return {alias_lowercase: standalone_block} from element-scope slots.
 
-    Walks every row's canonical_slot + aliases JSON; maps each term (lowercased)
+    D99: queries `slots WHERE scope='element'` (was slot_synonyms).
+    Walks every row's slot_name + aliases JSON; maps each term (lowercased)
     to the row's standalone_block. Used by Tier B BEM-element matching.
     Excludes rows where standalone_block is NULL/empty.
     """
@@ -920,14 +1156,14 @@ def _slot_alias_to_standalone() -> dict[str, str]:
     conn = sqlite3.connect(SGS_DB)
     try:
         rows = conn.execute(
-            "SELECT canonical_slot, aliases, standalone_block FROM slot_synonyms "
-            "WHERE standalone_block IS NOT NULL AND standalone_block != ''"
+            "SELECT slot_name, aliases, standalone_block FROM slots "
+            "WHERE scope='element' AND standalone_block IS NOT NULL AND standalone_block != ''"
         ).fetchall()
     finally:
         conn.close()
     out: dict[str, str] = {}
-    for canonical, aliases_json, standalone in rows:
-        out[canonical.lower()] = standalone
+    for slot_name, aliases_json, standalone in rows:
+        out[slot_name.lower()] = standalone
         if aliases_json:
             try:
                 for alias in json.loads(aliases_json):
@@ -1202,12 +1438,16 @@ def array_item_slot_for(block_slug: str, attr_name: str) -> str | None:
 def _resolve_slug_from_bem_tuple(classes_tuple: tuple[str, ...]) -> str | None:
     """Core resolution logic — operates on a frozen sorted tuple for caching.
 
-    Multi-class disambiguation rule (FR-22-1):
+    Multi-class disambiguation rule (FR-22-1 + FR-22-15):
       Path 1 — bare block class (no __element suffix) present:
         Each class whose BemParse.element is None is a block-root candidate.
         Filter to those where `sgs/<block>` is a registered built slug.
         If exactly one → return it.
-        If multiple → pick alphabetically first (determinism) + emit trace warning.
+        If multiple → capability-aware tiebreaker (FR-22-15, D96 2026-05-29):
+          Sort by (_capability_rank, slug) ascending so the most semantically
+          specific block wins. Alphabetical is the final tiebreaker when two
+          slugs share the same capability rank. Emits trace with all candidates
+          + chosen slug for diagnostic visibility.
       Path 2 — all classes are __element-suffixed (inner element of a parent):
         Walk each class's BemParse.block + every known slot synonym alias.
         Find the first canonical_slot whose standalone_block is non-NULL.
@@ -1241,12 +1481,17 @@ def _resolve_slug_from_bem_tuple(classes_tuple: tuple[str, ...]) -> str | None:
                 bare_block_slugs.append(candidate)
 
     if bare_block_slugs:
-        bare_block_slugs.sort()  # deterministic tiebreaker
         if len(bare_block_slugs) > 1:
+            # FR-22-15 (D96 2026-05-29): capability-aware tiebreaker.
+            # Sort by (_capability_rank, slug) so the block with the most
+            # semantically specific capability tag ranks first. Alphabetical
+            # slug is the final tiebreaker for equal-rank candidates.
+            bare_block_slugs.sort(key=lambda s: (_capability_rank(s), s))
             _trace("bem_resolve_ambiguous",
                    classes=list(classes_tuple),
                    candidates=bare_block_slugs,
-                   chosen=bare_block_slugs[0])
+                   chosen=bare_block_slugs[0],
+                   tiebreaker="capability_rank")
         return bare_block_slugs[0]
 
     # ---- Path 2: element-only classes — slot fallback ----
@@ -1280,10 +1525,11 @@ def _resolve_slug_from_bem_tuple(classes_tuple: tuple[str, ...]) -> str | None:
 def resolve_slug_from_bem(sgs_classes: list[str]) -> str | None:
     """Return the canonical SGS block slug for a list of sgs-* BEM classes, or None.
 
-    Spec 22 §FR-22-1 — multi-class disambiguation:
+    Spec 22 §FR-22-1 + §FR-22-15 — multi-class disambiguation:
       - Path 1: a class whose BEM block segment maps to a registered built
-        slug (no __element suffix). Multiple matches → alphabetically first
-        wins (determinism) + trace warning emitted.
+        slug (no __element suffix). Multiple matches → capability-aware
+        tiebreaker (_capability_rank) + alphabetical final tiebreaker (D96).
+        Previously was alphabetical-first only.
       - Path 2: all classes carry __element (inner element). Walk slot_synonyms
         aliases; return the first canonical_slot whose standalone_block is set.
       - Neither → None.

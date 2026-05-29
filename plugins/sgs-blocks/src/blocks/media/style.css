@@ -3,13 +3,44 @@
 	margin: 0;
 	display: block;
 }
-.wp-block-sgs-media img {
+
+/* Image element */
+.wp-block-sgs-media img,
+.wp-block-sgs-media .sgs-media__img {
 	display: block;
 	max-width: 100%;
 	height: auto;
 }
-.wp-block-sgs-media figcaption {
+
+/* Video element — mirrors image defaults so shared styling attrs apply uniformly */
+.wp-block-sgs-media video,
+.wp-block-sgs-media .sgs-media__video {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+
+/* iframe embeds (YouTube / Vimeo) — maintain aspect ratio and fill container */
+.wp-block-sgs-media iframe.sgs-media__video {
+	display: block;
+	width: 100%;
+	/* aspect-ratio is set inline per-instance from the aspectRatio attr;
+	   fall back to 16:9 so the embed isn't collapsed when no ratio is set */
+	aspect-ratio: 16 / 9;
+	border: 0;
+}
+
+/* Caption */
+.wp-block-sgs-media figcaption,
+.wp-block-sgs-media .sgs-media__caption {
 	margin-top: 0.5em;
 	font-size: 0.9em;
 	color: var(--wp--preset--color--text-muted);
+}
+
+/* Link wrapper — full-block hit area */
+.wp-block-sgs-media .sgs-media__link {
+	display: block;
+	min-width: 44px;
+	min-height: 44px;
 }

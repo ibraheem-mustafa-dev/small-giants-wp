@@ -24,7 +24,7 @@
  *                           attribute rendering are skipped. When empty (legacy
  *                           operator-edited posts using the body[] array UI in
  *                           edit.js), the previous render path runs verbatim.
- * @var WP_Block $block      Block instance.
+ * @var \WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
  */

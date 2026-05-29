@@ -2,12 +2,13 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/media",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "title": "SGS Media",
     "category": "sgs-content",
-    "description": "Content image block. Replaces core/image in the SGS clone-pipeline converter so styling attributes lift correctly to the frontend via server-side render.",
+    "description": "Content media block — image or video. Replaces core/image in the SGS clone-pipeline converter so styling attributes lift correctly to the frontend via server-side render. Use mediaType to choose image (with imageUrl) or video (with videoUrl for external embeds or videoId for WP-library uploads).",
     "keywords": [
         "image",
+        "video",
         "media",
         "photo",
         "picture",
@@ -25,6 +26,67 @@
         }
     },
     "attributes": {
+        "mediaType": {
+            "type": "string",
+            "default": "image",
+            "enum": [
+                "image",
+                "video"
+            ]
+        },
+        "videoUrl": {
+            "type": "string",
+            "default": "",
+            "role": "content"
+        },
+        "videoSource": {
+            "type": "string",
+            "default": "external",
+            "enum": [
+                "external",
+                "internal"
+            ]
+        },
+        "videoId": {
+            "type": "integer",
+            "default": null
+        },
+        "videoMimeType": {
+            "type": "string",
+            "default": ""
+        },
+        "videoPoster": {
+            "type": "string",
+            "default": ""
+        },
+        "videoPosterId": {
+            "type": "integer",
+            "default": null
+        },
+        "videoAutoplay": {
+            "type": "boolean",
+            "default": false
+        },
+        "videoLoop": {
+            "type": "boolean",
+            "default": false
+        },
+        "videoMuted": {
+            "type": "boolean",
+            "default": true
+        },
+        "videoControls": {
+            "type": "boolean",
+            "default": true
+        },
+        "videoPlaysInline": {
+            "type": "boolean",
+            "default": true
+        },
+        "videoLazyLoad": {
+            "type": "boolean",
+            "default": true
+        },
         "imageId": {
             "type": "integer",
             "default": null
@@ -196,6 +258,7 @@
     "style": "file:./style-index.css",
     "example": {
         "attributes": {
+            "mediaType": "image",
             "imageUrl": "https://via.placeholder.com/800x600",
             "imageAlt": "Example image",
             "imageWidth": 800,

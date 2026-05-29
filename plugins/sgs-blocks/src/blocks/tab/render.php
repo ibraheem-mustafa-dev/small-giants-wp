@@ -8,7 +8,7 @@
  *
  * @var array    $attributes Block attributes (label, etc.).
  * @var string   $content    Rendered inner blocks (InnerBlocks markup).
- * @var WP_Block $block      Block instance.
+ * @var \WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
  */

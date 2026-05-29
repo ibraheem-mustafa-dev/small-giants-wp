@@ -12,6 +12,8 @@ import {
   RangeControl,
   Button,
   ToggleControl,
+  TextareaControl,
+  TextControl,
   __experimentalToggleGroupControl as ToggleGroupControl,
   __experimentalToggleGroupControlOption as ToggleGroupControlOption,
   TabPanel,
@@ -127,6 +129,29 @@ const ALIGN_OPTIONS = [
   { label: __("Stretch", "sgs-blocks"), value: "stretch" },
 ];
 
+const JUSTIFY_ITEMS_OPTIONS = [
+  { label: __("Stretch", "sgs-blocks"), value: "stretch" },
+  { label: __("Start", "sgs-blocks"), value: "start" },
+  { label: __("Centre", "sgs-blocks"), value: "center" },
+  { label: __("End", "sgs-blocks"), value: "end" },
+];
+
+const ALIGN_CONTENT_OPTIONS = [
+  { label: __("Stretch", "sgs-blocks"), value: "stretch" },
+  { label: __("Start", "sgs-blocks"), value: "start" },
+  { label: __("Centre", "sgs-blocks"), value: "center" },
+  { label: __("End", "sgs-blocks"), value: "end" },
+  { label: __("Space between", "sgs-blocks"), value: "space-between" },
+  { label: __("Space around", "sgs-blocks"), value: "space-around" },
+  { label: __("Space evenly", "sgs-blocks"), value: "space-evenly" },
+];
+
+const TEMPLATE_MODE_OPTIONS = [
+  { label: __("Free (no restrictions)", "sgs-blocks"), value: "free" },
+  { label: __("Grid section", "sgs-blocks"), value: "grid-section" },
+  { label: __("Card grid", "sgs-blocks"), value: "card-grid" },
+];
+
 export default function Edit({ attributes, setAttributes }) {
   const {
     layout,
@@ -160,6 +185,29 @@ export default function Edit({ attributes, setAttributes }) {
     widthModeDesktop = "",
     customWidth = 0,
     customWidthUnit = "px",
+    bgSvgContent = "",
+    bgSvgPosition = "background",
+    bgSvgAnimation = "none",
+    bgSvgAnimationSpeed = "medium",
+    bgSvgOpacity = 100,
+    bgSvgMinHeight = "",
+    bgSvgTextShadow = false,
+    gridItemPadding = "",
+    gridItemBackground = "",
+    gridItemBorderRadius = "",
+    gridItemBorder = "",
+    gridItemShadow = "",
+    gridItemTextColour = "",
+    gridTemplateColumns = "",
+    gridTemplateColumnsTablet = "",
+    gridTemplateColumnsMobile = "",
+    gridTemplateRows = "",
+    gridTemplateRowsTablet = "",
+    gridTemplateRowsMobile = "",
+    gridAutoRows = "",
+    justifyItems = "stretch",
+    alignContent = "stretch",
+    templateMode = "free",
   } = attributes;
 
   const anyCustom =
@@ -198,8 +246,18 @@ export default function Edit({ attributes, setAttributes }) {
 
   if (layout === "grid") {
     style.display = "grid";
-    style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
+    // SB-2: use the gridTemplateColumns string attr when set so the editor preview
+    // matches render.php output for asymmetric grids (e.g. "5fr 3fr", "60% 40%").
+    style.gridTemplateColumns = gridTemplateColumns?.trim()
+      ? gridTemplateColumns.trim()
+      : `repeat(${columns}, 1fr)`;
     style.alignItems = verticalAlign;
+    if ( justifyItems && justifyItems !== "stretch" ) {
+      style.justifyItems = justifyItems;
+    }
+    if ( alignContent && alignContent !== "stretch" ) {
+      style.alignContent = alignContent;
+    }
   } else if (layout === "flex") {
     style.display = "flex";
     style.flexWrap = "wrap";
@@ -220,9 +278,30 @@ export default function Edit({ attributes, setAttributes }) {
     .filter(Boolean)
     .join(" ");
 
+  // QB-3: allowedBlocks per templateMode — only restrict when operator explicitly
+  // opts into a structured mode. "free" (default) imposes no restrictions.
+  const TEMPLATE_MODE_ALLOWED = {
+    "grid-section": [
+      "sgs/container",
+      "sgs/heading",
+      "sgs/text",
+      "sgs/button",
+      "sgs/media",
+    ],
+    "card-grid": [
+      "sgs/info-box",
+      "sgs/card-grid",
+      "sgs/container",
+    ],
+  };
+  const allowedBlocks = templateMode !== "free"
+    ? TEMPLATE_MODE_ALLOWED[templateMode] ?? undefined
+    : undefined;
+
   const blockProps = useBlockProps({ className, style });
   const innerBlocksProps = useInnerBlocksProps(blockProps, {
     orientation: layout === "stack" ? "vertical" : undefined,
+    allowedBlocks,
   });
 
   return (
@@ -397,6 +476,169 @@ export default function Edit({ attributes, setAttributes }) {
             onChange={(val) => setAttributes({ htmlTag: val })}
             __nextHasNoMarginBottom
           />
+
+          {layout === "grid" && (
+            <>
+              <hr style={{ margin: "16px 0" }} />
+              <p
+                className="components-base-control__label"
+                style={{ fontWeight: 600, marginBottom: "8px" }}
+              >
+                {__("Advanced grid layout", "sgs-blocks")}
+              </p>
+
+              {/* QB-2: gridTemplateColumns string control */}
+              <ResponsiveControl label={__("Custom column template", "sgs-blocks")}>
+                {(breakpoint) => {
+                  const attrMap = {
+                    desktop: "gridTemplateColumns",
+                    tablet: "gridTemplateColumnsTablet",
+                    mobile: "gridTemplateColumnsMobile",
+                  };
+                  const attr = attrMap[breakpoint];
+                  return (
+                    <TextControl
+                      value={attributes[attr] || ""}
+                      onChange={(val) => setAttributes({ [attr]: val })}
+                      help={__(
+                        "CSS grid-template-columns e.g. '5fr 3fr' or 'repeat(3,minmax(0,1fr))'. Leave empty to use the column count above.",
+                        "sgs-blocks"
+                      )}
+                      __nextHasNoMarginBottom
+                    />
+                  );
+                }}
+              </ResponsiveControl>
+
+              {/* QB-1: gridTemplateRows */}
+              <ResponsiveControl label={__("Row template", "sgs-blocks")}>
+                {(breakpoint) => {
+                  const attrMap = {
+                    desktop: "gridTemplateRows",
+                    tablet: "gridTemplateRowsTablet",
+                    mobile: "gridTemplateRowsMobile",
+                  };
+                  const attr = attrMap[breakpoint];
+                  return (
+                    <TextControl
+                      value={attributes[attr] || ""}
+                      onChange={(val) => setAttributes({ [attr]: val })}
+                      help={__(
+                        "CSS grid-template-rows e.g. 'auto 1fr'. Leave empty for browser default.",
+                        "sgs-blocks"
+                      )}
+                      __nextHasNoMarginBottom
+                    />
+                  );
+                }}
+              </ResponsiveControl>
+
+              {/* QB-1: gridAutoRows */}
+              <TextControl
+                label={__("Auto rows", "sgs-blocks")}
+                value={gridAutoRows}
+                onChange={(val) => setAttributes({ gridAutoRows: val })}
+                help={__(
+                  "Sets grid-auto-rows e.g. '1fr' for equal-height rows or 'minmax(100px,auto)'.",
+                  "sgs-blocks"
+                )}
+                __nextHasNoMarginBottom
+              />
+
+              {/* QB-1: justifyItems */}
+              <SelectControl
+                label={__("Justify items", "sgs-blocks")}
+                value={justifyItems}
+                options={JUSTIFY_ITEMS_OPTIONS}
+                onChange={(val) => setAttributes({ justifyItems: val })}
+                __nextHasNoMarginBottom
+              />
+
+              {/* QB-1: alignContent */}
+              <SelectControl
+                label={__("Align content", "sgs-blocks")}
+                value={alignContent}
+                options={ALIGN_CONTENT_OPTIONS}
+                onChange={(val) => setAttributes({ alignContent: val })}
+                __nextHasNoMarginBottom
+              />
+            </>
+          )}
+        </PanelBody>
+
+        {/* SB-1: Grid item defaults panel — only shown when layout is grid */}
+        {layout === "grid" && (
+          <PanelBody
+            title={__("Grid item defaults", "sgs-blocks")}
+            initialOpen={false}
+          >
+            <p className="components-base-control__help">
+              {__(
+                "Values set here become CSS custom properties (--sgs-gi-*) inherited by direct child containers in the grid. Per-child overrides still win via specificity.",
+                "sgs-blocks"
+              )}
+            </p>
+            <SpacingControl
+              label={__("Padding", "sgs-blocks")}
+              value={gridItemPadding}
+              onChange={(val) => setAttributes({ gridItemPadding: val })}
+            />
+            <DesignTokenPicker
+              label={__("Background colour", "sgs-blocks")}
+              value={gridItemBackground}
+              onChange={(val) => setAttributes({ gridItemBackground: val })}
+            />
+            <TextControl
+              label={__("Border radius", "sgs-blocks")}
+              value={gridItemBorderRadius}
+              onChange={(val) => setAttributes({ gridItemBorderRadius: val })}
+              help={__("CSS border-radius e.g. '8px' or '50%'.", "sgs-blocks")}
+              __nextHasNoMarginBottom
+            />
+            <TextControl
+              label={__("Border", "sgs-blocks")}
+              value={gridItemBorder}
+              onChange={(val) => setAttributes({ gridItemBorder: val })}
+              help={__("CSS border shorthand e.g. '1px solid #ccc'.", "sgs-blocks")}
+              __nextHasNoMarginBottom
+            />
+            <SelectControl
+              label={__("Shadow", "sgs-blocks")}
+              value={gridItemShadow}
+              options={[
+                { label: __("None", "sgs-blocks"), value: "" },
+                { label: "Small", value: "sm" },
+                { label: "Medium", value: "md" },
+                { label: "Large", value: "lg" },
+                { label: "Glow", value: "glow" },
+              ]}
+              onChange={(val) => setAttributes({ gridItemShadow: val })}
+              __nextHasNoMarginBottom
+            />
+            <DesignTokenPicker
+              label={__("Text colour", "sgs-blocks")}
+              value={gridItemTextColour}
+              onChange={(val) => setAttributes({ gridItemTextColour: val })}
+            />
+          </PanelBody>
+        )}
+
+        {/* QB-3: Template mode — allowed children restriction */}
+        <PanelBody
+          title={__("Template mode", "sgs-blocks")}
+          initialOpen={false}
+        >
+          <SelectControl
+            label={__("Allowed children", "sgs-blocks")}
+            value={templateMode}
+            options={TEMPLATE_MODE_OPTIONS}
+            onChange={(val) => setAttributes({ templateMode: val })}
+            help={__(
+              "Grid section and Card grid restrict which block types can be inserted directly inside this container. Free (default) imposes no restrictions.",
+              "sgs-blocks"
+            )}
+            __nextHasNoMarginBottom
+          />
         </PanelBody>
 
         <PanelBody
@@ -409,6 +651,7 @@ export default function Edit({ attributes, setAttributes }) {
               { name: "video", title: __("Video", "sgs-blocks") },
               { name: "animation", title: __("Animation", "sgs-blocks") },
               { name: "overlay", title: __("Overlay", "sgs-blocks") },
+              { name: "svg", title: __("SVG", "sgs-blocks") },
             ]}
           >
             {(tab) => {
@@ -785,6 +1028,102 @@ export default function Edit({ attributes, setAttributes }) {
                       max={100}
                       __nextHasNoMarginBottom
                     />
+                  </>
+                );
+              }
+
+              if (tab.name === "svg") {
+                return (
+                  <>
+                    <p className="components-base-control__help">
+                      {__(
+                        "Paste SVG markup to render it as an animated background or foreground layer. Animations use pure CSS — no JavaScript required.",
+                        "sgs-blocks"
+                      )}
+                    </p>
+                    <TextareaControl
+                      label={__("SVG code", "sgs-blocks")}
+                      value={bgSvgContent}
+                      onChange={(val) =>
+                        setAttributes({ bgSvgContent: val })
+                      }
+                      help={__("Paste your <svg>…</svg> markup here.", "sgs-blocks")}
+                      rows={8}
+                    />
+                    {bgSvgContent && (
+                      <>
+                        <SelectControl
+                          label={__("Position", "sgs-blocks")}
+                          value={bgSvgPosition}
+                          options={[
+                            {
+                              label: __("Background (behind content)", "sgs-blocks"),
+                              value: "background",
+                            },
+                            {
+                              label: __("Foreground (above content)", "sgs-blocks"),
+                              value: "foreground",
+                            },
+                          ]}
+                          onChange={(val) =>
+                            setAttributes({ bgSvgPosition: val })
+                          }
+                          __nextHasNoMarginBottom
+                        />
+                        <RangeControl
+                          label={__("Opacity (%)", "sgs-blocks")}
+                          value={bgSvgOpacity}
+                          onChange={(val) =>
+                            setAttributes({ bgSvgOpacity: val })
+                          }
+                          min={0}
+                          max={100}
+                          step={5}
+                          __nextHasNoMarginBottom
+                        />
+                        <SelectControl
+                          label={__("Animation", "sgs-blocks")}
+                          value={bgSvgAnimation}
+                          options={[
+                            { label: __("None", "sgs-blocks"), value: "none" },
+                            { label: __("Pulse", "sgs-blocks"), value: "pulse" },
+                            { label: __("Float", "sgs-blocks"), value: "float" },
+                            { label: __("Wave", "sgs-blocks"), value: "wave" },
+                          ]}
+                          onChange={(val) =>
+                            setAttributes({ bgSvgAnimation: val })
+                          }
+                          __nextHasNoMarginBottom
+                        />
+                        {bgSvgAnimation !== "none" && (
+                          <SelectControl
+                            label={__("Animation speed", "sgs-blocks")}
+                            value={bgSvgAnimationSpeed}
+                            options={[
+                              { label: __("Slow", "sgs-blocks"), value: "slow" },
+                              { label: __("Medium", "sgs-blocks"), value: "medium" },
+                              { label: __("Fast", "sgs-blocks"), value: "fast" },
+                            ]}
+                            onChange={(val) =>
+                              setAttributes({ bgSvgAnimationSpeed: val })
+                            }
+                            __nextHasNoMarginBottom
+                          />
+                        )}
+                        <ToggleControl
+                          label={__("Text shadow", "sgs-blocks")}
+                          help={__(
+                            "Adds a subtle shadow to inner text for readability over busy SVG layers.",
+                            "sgs-blocks"
+                          )}
+                          checked={bgSvgTextShadow}
+                          onChange={(val) =>
+                            setAttributes({ bgSvgTextShadow: val })
+                          }
+                          __nextHasNoMarginBottom
+                        />
+                      </>
+                    )}
                   </>
                 );
               }

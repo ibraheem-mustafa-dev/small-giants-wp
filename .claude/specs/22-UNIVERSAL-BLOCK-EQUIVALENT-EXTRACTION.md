@@ -140,7 +140,7 @@ Content-bearing roles (return slug): text-content, image-object, content, link-h
 
 Styling/behaviour roles (return NULL even if canonical_slot joins): typography, color, colour-gradient, colour-text, spacing-token, number-css-px, number-css-percent, layout, motion, visual, behaviour, boolean-visibility, select-from-enum, enum-class-probe, query-descriptor.
 
-Per R-22-1 the classification is NOT a hardcoded Python frozenset — it lives in `slot_synonyms.role_classification` (TEXT column, values `content-bearing` / `styling-behaviour` / `unclassified`) and is queried at runtime by `db_lookup._content_bearing_roles()`. The seed mapping is in `db_lookup._ROLE_CLASSIFICATION_MAP` (one-time idempotent migration at module load; not a runtime lookup dict).
+Per R-22-1 the classification is NOT a hardcoded Python frozenset — it lives in the `roles` table (DB-driven via idempotent `INSERT OR REPLACE` migration from `_ROLE_CLASSIFICATION_MAP` seed dict in `db_lookup.py`). `slot_synonyms.role_classification` column **retired 2026-05-29 D99** — the column was incapable of seeding `link-href` because no `slot_synonyms` row had `role='link-href'`, causing `_content_bearing_roles()` to return 4 instead of 5. The `roles` table (20 rows) fixes this: classification is defined by role name directly, not derived from slot-row role values.
 
 This shrinks the "hybrid block" set from the raw block count down to a true-content-bearing set. **Phase 0.4 audit (2026-05-27 commit `de300eb2`) surfaced the actual count: 61 hybrid blocks across 77 SGS audited (1,740 attrs scanned). Earlier "8-15" estimate was a guess at high-content-composite count only; the canonical FR-22-6 criterion (≥1 content-bearing attr after role-exclusion) captures the wider truth.** Roster at `.claude/reports/2026-05-27-hybrid-block-roster.md`. Phase 2 prioritises by hybrid_attr_count descending.
 
@@ -358,6 +358,21 @@ Stage 2 (the confidence matrix) continues to produce `stage-2.json` / `match.jso
 **PASS test:** `stage-2.json` always contains an entry for every section boundary in extract.json, regardless of which path the walker took.
 **FAIL test:** any section boundary present in extract.json missing from stage-2.json.
 
+### FR-22-15 — Capability-aware tiebreaking in multi-candidate BEM resolution (D96 2026-05-29)
+
+When `resolve_slug_from_bem` Path 1 yields two or more bare-block candidates (i.e. a single DOM node carries two or more `sgs-*` BEM classes both mapping to registered slugs), the tiebreaker uses **capability rank** derived from `block_capabilities` rather than alphabetical slug order.
+
+**Architectural primitive:** every `block_capabilities` row carries a semantic tag (e.g. `carousel`, `icon-text`, `grid-layout`). The `_CAPABILITY_PRIORITY` list in `db_lookup.py` orders these tags from most-specific structural role (top) to most generic primitive (bottom). A block's capability rank is the minimum index of any of its capability tags in that list. Alphabetical slug order is the final tiebreaker when two blocks share the same rank.
+
+**Why this matters:** when a mockup author writes `class="sgs-testimonial-slider sgs-container"` on a social-proof section root, both `sgs/testimonial-slider` and `sgs/container` are registered slugs. Alphabetical would have chosen `sgs/container` (comes first). Capability rank chooses `sgs/testimonial-slider` (`carousel` tag, rank 11) over `sgs/container` (`grid-layout` tag, rank 16) — correctly preserving the section's semantic identity.
+
+**Implementation:** `db_lookup._capability_rank(block_slug)` + `capabilities_for(block_slug)` + `blocks_with_capability(capability)`. All three are DB-driven (R-22-1). `_CAPABILITY_PRIORITY` in `db_lookup.py` is a convention-ordering list (not a routing dict) — equivalent to `_BREAKPOINT_RULES` precedent.
+
+**Seed propagation fix (D96):** `populate-db.py:CAPABILITY_RULES` previously used `INSERT OR IGNORE`, meaning edits to `CAPABILITY_RULES` never propagated to an already-populated DB. Fixed to `INSERT OR REPLACE` with a pre-pass `DELETE` of rows whose capability tag is no longer in `CAPABILITY_RULES`. Re-running `populate-db.py` now fully synchronises the DB with the seed.
+
+**PASS test:** `resolve_slug_from_bem(['sgs-testimonial-slider', 'sgs-container'])` → `'sgs/testimonial-slider'` (capability rank wins over alphabetical).
+**FAIL test:** same call returning `'sgs/container'` (alphabetical-first bug re-introduced).
+
 ## 4. The data layer
 
 ### sgs-framework.db — the framework brain (29 tables, ~17k+ rows)
@@ -367,14 +382,16 @@ Stage 2 (the confidence matrix) continues to produce `stage-2.json` / `match.jso
 | `blocks` | 194 (68 sgs-built) | Block roster |
 | `block_attributes` | 2,246 | Central for FR-22-2. Walker reads `canonical_slot` + `derived_selector` + `role` to resolve equivalent_block at query time. |
 | `block_supports` | 1,216 | Block-level supports |
-| `block_capabilities` | 85 | Capability declarations |
+| `block_capabilities` | 85 | Capability declarations. FR-22-15: queried by `capabilities_for()` / `blocks_with_capability()` / `_capability_rank()` in `db_lookup.py` for capability-aware tiebreaking in multi-candidate BEM resolution. Seed propagation fixed 2026-05-29 (D96): `populate-db.py` now uses `INSERT OR REPLACE` + pre-pass DELETE so edits to `CAPABILITY_RULES` propagate on every re-run. |
 | `block_selectors` | 72 | Block-slug → element → selector mapping |
 | `block_styles` | 63 | Block style variations |
 | `block_changes` | 2,719 | Audit log |
-| `slot_synonyms` | 89 | THE central table for FR-22-1. canonical_slot → aliases (JSON) + standalone_block + role + html_semantic_tag + **role_classification** (D85 2026-05-27 — added by `db_lookup._migrate_role_classification()` idempotent migration; values: `content-bearing` / `styling-behaviour` / `unclassified`; consumed by FR-22-2.2 positive-allowlist gate). |
-| `property_suffixes` | 117 | CSS property → block-attribute suffix (D1 routing) |
+| `slots` | 105 | **D99 2026-05-29 — unified slot→block mapping.** Replaces `slot_synonyms` (89 element-scope rows) + `legacy_role_lookup` (16 section-scope rows). PK: `(slot_name, scope)` — composite because the same name can exist at both scopes (e.g. `header` is an element-scope identity slot AND a section-scope class). `scope='element'` rows are the former `slot_synonyms` data; `scope='section'` rows are the former `legacy_role_lookup` data. `html_semantic_tag` column NOT migrated (was low-value: only 27/89 populated; not consulted by `atomic_tag_map()` per §14). |
+| `roles` | 20 | **D99 2026-05-29 — role-name → classification catalogue.** Replaces `slot_synonyms.role_classification` column. Seeded from `_ROLE_CLASSIFICATION_MAP` via `INSERT OR REPLACE`. Fixes link-href bug (old column never seeded link-href because no slot row had `role='link-href'`). 5 content-bearing + 15 styling-behaviour. |
+| ~~`slot_synonyms`~~ | ~~89~~ | **RETIRED D99 2026-05-29.** Data migrated to `slots WHERE scope='element'`. |
+| `property_suffixes` | 117 | CSS property → block-attribute suffix (D1 routing). **D99: `kind_override` column added.** 17 rows seeded from `_KIND_BY_SUFFIX` dict (was a hardcoded Python lookup dict; now DB column queried first in `_kind_for()`). |
 | `modifier_suffixes` | 19 | BEM modifier kinds |
-| `legacy_role_lookup` | 16 | kebab role → SGS slug (cross-convention compatibility) |
+| ~~`legacy_role_lookup`~~ | ~~16~~ | **RETIRED D99 2026-05-29.** Data migrated to `slots WHERE scope='section'`. |
 | `design_tokens` | 184 | Token catalogue (theme.json source) |
 | `style_variations` | 8 | Per-client variation metadata |
 | `theme_parts` | 22 | Header/footer/template-part roster |

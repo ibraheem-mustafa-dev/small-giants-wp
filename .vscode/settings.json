@@ -67,6 +67,7 @@
     "pdo_sqlite",
     "pgsql",
     "Phar",
+    "phpunit",
     "posix",
     "pspell",
     "readline",

@@ -10,7 +10,7 @@
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    (unused — no inner blocks).
- * @var WP_Block $block      Block instance.
+ * @var \WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
  */

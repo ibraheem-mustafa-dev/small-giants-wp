@@ -56,11 +56,10 @@ sgs-blocks/
 │   │   ├── accordion/            # Expandable FAQ/content sections
 │   │   ├── tabs/                 # Tabbed content panels
 │   │   ├── brand-strip/          # Logo/brand carousel strip
-│   │   ├── certification-bar/    # Certification/accreditation badges strip
+│   │   # certification-bar/ — RETIRED 2026-05-29 D95, merged into trust-badges (badgeStyle variants)
 │   │   ├── notice-banner/        # Inline informational banner (MOV, delivery terms, promos)
 │   │   ├── announcement-bar/     # Top-of-page announcement banner (countdown, scheduling, rotation)
 │   │   ├── whatsapp-cta/         # WhatsApp floating button + contextual CTA
-│   │   ├── svg-background/       # SVG animation background container
 │   │   ├── pricing-table/        # Service/pricing comparison table
 │   │   ├── modal/                # Lightbox/modal overlay
 │   │   ├── google-reviews/       # Google Business Profile reviews display
@@ -440,23 +439,9 @@ Block reference content for `sgs/trust-bar` is preserved in git history (last co
 
 ---
 
-### 15. Certification Bar (`sgs/certification-bar`)
+### 15. Certification Bar (`sgs/certification-bar`) — RETIRED 2026-05-29 D95
 
-**Purpose:** Horizontal strip of certification/accreditation badges with optional labels. Used for trust signals (BRC, Halal, SALSA, FSA, Unitas, FWD).
-
-**Attributes:**
-- `items` — array of { image, label, url } objects
-  - `image` — media object (logo/badge image, optional — falls back to text-only badge)
-  - `label` — string (e.g., "BRC Certified")
-  - `url` — URL (optional, links badge to certification page)
-- `title` — string (optional heading above badges, e.g., "Trusted certifications & memberships")
-- `backgroundColour` — token slug (default: surface-alt)
-- `badgeStyle` — image-only | text-only | image-and-text (default: text-only until real logos are provided)
-- `badgeSize` — small | medium | large
-
-**Render:** Static `save()`.
-
-**Responsive:** Badges wrap naturally on smaller screens. Centre-aligned with consistent gaps.
+> **RETIRED.** Block merged into `sgs/trust-badges` as `badgeStyle: 'text-only'` and `badgeStyle: 'image-badge'` variants. Existing posts auto-migrate via `trust-badges/deprecated.js` v2 `isEligible()` + `migrate()` entry. All certification-bar attributes (`title`, `titleColour`, `titleFontSize`, `labelColour`, `labelFontSize`, `badgeSize`, `items`, `badgeStyle`) are present on `sgs/trust-badges`. Source deleted: `src/blocks/certification-bar/`. DB rows deleted from both `sgs-framework.db` copies. Use `sgs/trust-badges` with `badgeStyle: 'text-only'` or `'image-badge'` for all new builds.
 
 ---
 
@@ -552,19 +537,9 @@ Block reference content for `sgs/trust-bar` is preserved in git history (last co
 
 ---
 
-### 18. SVG Background (`sgs/svg-background`)
+### 18. ~~SVG Background (`sgs/svg-background`) — RETIRED 2026-05-28 (D93)~~
 
-**Purpose:** Container that renders an SVG animation behind its inner blocks, with responsive sizing handled properly.
-
-**Attributes:**
-- `svgContent` — SVG markup string
-- `svgPosition` — background | foreground
-- `animationType` — none | pulse | float | wave
-- `animationSpeed` — slow | medium | fast
-
-**Inner blocks:** Yes — accepts any blocks as children.
-
-**Render:** Dynamic `render.php`.
+Merged into `sgs/container`. Use `bgSvgContent` + `bgSvgAnimation` + `bgSvgPosition` attrs on `sgs/container` instead. Existing posts auto-migrate via `deprecated.js` v2 entry.
 
 ---
 

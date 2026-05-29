@@ -19,7 +19,7 @@
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — dynamic block).
- * @var WP_Block $block      Block instance.
+ * @var \WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
  */

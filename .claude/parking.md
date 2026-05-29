@@ -1,7 +1,34 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-27
+last_updated: 2026-05-29
+---
+
+## 2026-05-29 — sgs/trust-badges merge follow-ups
+
+> **P-TRUST-BADGES-MERGE-VALIDATION** — NEW 2026-05-29. `trust-badges/deprecated.js` v2 handles cross-block migration of `sgs/certification-bar` → `sgs/trust-badges`. Not yet validated against a live post containing a `sgs/certification-bar` block. Validation procedure: (1) create a test page on dev with a `sgs/certification-bar` block (text-only variant with 3 label badges); (2) deploy updated plugin; (3) open the page in the block editor and confirm the block auto-migrates to `sgs/trust-badges` with `badgeStyle: 'text-only'` and all labels intact; (4) confirm the frontend renders the pill badge shape correctly; (5) test an image-badge migration from a cert-bar `image-and-text` instance; (6) run `/sgs-update` to populate new trust-badges attrs (autoScroll, autoScrollSpeed, autoScrollPauseOnHover, title, titleColour, titleFontSize, labelColour, labelFontSize, badgeSize, badgeStyle) in block_attributes DB. ~20 min.
+> **Status:** OPEN
+> **Bucket:** Testing / QA
+> **Trigger:** Next deploy of sgs-blocks to dev site (palestine-lives.org).
+
+---
+
+## 2026-05-29 — sgs/media video extension follow-ups
+
+> **P-MEDIA-VIDEO-VALIDATION** — NEW 2026-05-29. `sgs/media` extended to image+video (D97). Not yet validated on a live page. Validation procedure: (1) create a test page on dev with one sgs/media block set to mediaType=video + a YouTube URL, one with a direct MP4 URL, one with videoSource=internal selecting a WP library video; (2) deploy updated plugin; (3) confirm each renders correctly on the frontend; (4) confirm an existing image-only post still renders identically (backwards-compat via mediaType default + deprecated.js v1 migrate); (5) run `/sgs-update --stage 1` to populate the 12 new video attrs in block_attributes and resolve the ghost `sgs/media.videoUrl` row. ~20 min validation run.
+> **Status:** OPEN
+> **Bucket:** Testing / QA
+> **Trigger:** Next deploy of sgs-blocks to dev site (palestine-lives.org). Run `/sgs-update --stage 1` immediately after deploy.
+
+---
+
+## 2026-05-28 — sgs/svg-background retirement follow-ups
+
+> **P-SVG-BACKGROUND-MIGRATION-VALIDATION** — NEW 2026-05-28. `container/deprecated.js` v2 entry handles cross-block migration of `sgs/svg-background` → `sgs/container` with `bgSvg*` attrs. Not yet validated against a live post containing a `sgs/svg-background` block — no such post exists on dev/staging as the block was never deployed to production. Validation procedure: (1) create a test page on dev with a `sgs/svg-background` block containing SVG markup + animation settings; (2) redeploy the updated plugin; (3) open the page in the block editor and confirm the block auto-migrates to `sgs/container` with correct `bgSvg*` attrs populated; (4) confirm the SVG renders on the frontend with the correct animation class.
+> **Status:** OPEN
+> **Bucket:** Testing / QA
+> **Trigger:** Next deploy of sgs-blocks to dev site (palestine-lives.org). ~15 min validation run.
+
 ---
 
 ## 2026-05-27 — Phase 1.5 close + Phase 2 reorder follow-ups

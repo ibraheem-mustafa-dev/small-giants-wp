@@ -2,20 +2,26 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "sgs/trust-badges",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "title": "SGS Trust Badges",
   "category": "sgs-content",
-  "description": "Icon-in-circle badge row for trust signals. Supports a per-badge pending flag to hide placeholder items until they are ready to display.",
+  "description": "Horizontal strip of trust signals. Three variants: icon-in-circle (default), text-only pill badges, and image-badge (certification logos). Merged from sgs/certification-bar 2026-05-29 D95.",
   "keywords": [
     "trust",
     "badges",
     "icons",
     "certifications",
+    "accreditation",
+    "halal",
+    "brc",
     "features"
   ],
   "textdomain": "sgs-blocks",
   "icon": "awards",
   "supports": {
+    "sgs": {
+      "imageControls": true
+    },
     "align": [
       "wide",
       "full"
@@ -43,14 +49,43 @@
     "typography": ".sgs-trust-badges__label"
   },
   "attributes": {
+    "badgeStyle": {
+      "type": "string",
+      "default": "icon-circle",
+      "enum": [ "icon-circle", "text-only", "image-badge" ]
+    },
     "items": {
       "type": "array",
       "default": [
-        { "icon": "home", "label": "Handmade in Birmingham", "pending": false },
+        { "icon": "home",  "label": "Handmade in Birmingham", "pending": false },
         { "icon": "check", "label": "Registered Food Business", "pending": false },
         { "icon": "truck", "label": "Free UK Delivery Over £35", "pending": false },
-        { "icon": "star", "label": "Loved by Breastfeeding Mums", "pending": false }
+        { "icon": "star",  "label": "Loved by Breastfeeding Mums", "pending": false }
       ]
+    },
+    "title": {
+      "type": "string",
+      "default": "",
+      "role": "content"
+    },
+    "titleColour": {
+      "type": "string",
+      "default": "text-muted"
+    },
+    "titleFontSize": {
+      "type": "string"
+    },
+    "labelColour": {
+      "type": "string",
+      "default": "text"
+    },
+    "labelFontSize": {
+      "type": "string"
+    },
+    "badgeSize": {
+      "type": "string",
+      "default": "medium",
+      "enum": [ "small", "medium", "large" ]
     },
     "iconCircleSize": {
       "type": "number",
@@ -79,18 +114,33 @@
     "showPendingInEditor": {
       "type": "boolean",
       "default": true
+    },
+    "autoScroll": {
+      "type": "boolean",
+      "default": false
+    },
+    "autoScrollSpeed": {
+      "type": "string",
+      "default": "medium",
+      "enum": [ "slow", "medium", "fast" ]
+    },
+    "autoScrollPauseOnHover": {
+      "type": "boolean",
+      "default": true
     }
   },
   "render": "file:./render.php",
   "editorScript": "file:./index.js",
   "style": "file:./style-index.css",
+  "viewScriptModule": "file:./view.js",
   "example": {
     "attributes": {
+      "badgeStyle": "icon-circle",
       "items": [
-        { "icon": "home", "label": "Handmade in Birmingham", "pending": false },
+        { "icon": "home",  "label": "Handmade in Birmingham", "pending": false },
         { "icon": "check", "label": "Registered Food Business", "pending": false },
         { "icon": "truck", "label": "Free UK Delivery Over £35", "pending": false },
-        { "icon": "star", "label": "Loved by Breastfeeding Mums", "pending": false }
+        { "icon": "star",  "label": "Loved by Breastfeeding Mums", "pending": false }
       ]
     }
   }

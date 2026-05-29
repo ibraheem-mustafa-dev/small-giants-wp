@@ -184,29 +184,32 @@ def render_canonical_vocabulary(conn):
     lines.append("")
     lines.append(
         "Source of truth for SGS attribute decomposition (Spec 15 §3.3). "
-        "Regenerated from `slot_synonyms`, `property_suffixes`, and `modifier_suffixes` "
+        "Regenerated from `slots`, `property_suffixes`, and `modifier_suffixes` "
         "in `sgs-framework.db`. Used by `/sgs-update` Stage 4 (canonical assignment) "
-        "and Stage 9 (drift validator)."
+        "and Stage 9 (drift validator). Note: `slot_synonyms` + `legacy_role_lookup` "
+        "unified into `slots` table 2026-05-29 (D99); query filters by `scope='element'` "
+        "for content-identity slot vocab (section-scope rows are mockup-class mappings, "
+        "consumed by `per-section-convention-voter.py`, not this reference doc)."
     )
     lines.append("")
 
-    # Slot synonyms — content-identity slot vocab
+    # Slot synonyms — content-identity slot vocab (D99: unified slots table, scope='element')
     slot_rows = list(conn.execute(
-        "SELECT canonical_slot, aliases, html_semantic_tag, description "
-        "FROM slot_synonyms ORDER BY canonical_slot"
+        "SELECT slot_name, aliases, standalone_block, notes "
+        "FROM slots WHERE scope='element' ORDER BY slot_name"
     ))
     lines.append("### Slot Synonyms")
     lines.append("")
-    lines.append("| Canonical slot | Aliases | HTML tag | Description |")
+    lines.append("| Canonical slot | Aliases | Standalone block | Notes |")
     lines.append("|---|---|---|---|")
-    for canonical, aliases, html_tag, desc in slot_rows:
+    for canonical, aliases, standalone, notes in slot_rows:
         aliases_str = (aliases or "").replace("|", "\\|")
         lines.append(
             f"| `{canonical}` | {aliases_str} | "
-            f"{html_tag or '—'} | {(desc or '').replace('|', '\\|')} |"
+            f"{standalone or '—'} | {(notes or '').replace('|', '\\|')} |"
         )
     lines.append("")
-    lines.append(f"_Total: {len(slot_rows)} canonical slots._")
+    lines.append(f"_Total: {len(slot_rows)} canonical slots (scope='element')._")
     lines.append("")
 
     # Property suffixes — CSS role vocab

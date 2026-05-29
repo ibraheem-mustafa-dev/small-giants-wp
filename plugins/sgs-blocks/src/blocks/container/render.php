@@ -6,7 +6,7 @@
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
- * @var WP_Block $block      Block instance.
+ * @var \WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
  */
@@ -115,6 +115,32 @@ if ( ! in_array( $html_tag, $allowed_tags, true ) ) {
 	$html_tag = 'section';
 }
 
+// SB-1: Grid item defaults — CSS custom properties consumed by direct child
+// .sgs-container elements via var(--sgs-gi-*). Allows a parent grid container
+// to set shared visual defaults for all children without touching each child.
+$grid_item_padding       = $attributes['gridItemPadding'] ?? '';
+$grid_item_background    = $attributes['gridItemBackground'] ?? '';
+$grid_item_border_radius = $attributes['gridItemBorderRadius'] ?? '';
+$grid_item_border        = $attributes['gridItemBorder'] ?? '';
+$grid_item_shadow        = $attributes['gridItemShadow'] ?? '';
+$grid_item_text_colour   = $attributes['gridItemTextColour'] ?? '';
+
+// QB-1: advanced grid layout attrs.
+$grid_template_rows        = $attributes['gridTemplateRows'] ?? '';
+$grid_template_rows_tablet = $attributes['gridTemplateRowsTablet'] ?? '';
+$grid_template_rows_mobile = $attributes['gridTemplateRowsMobile'] ?? '';
+$grid_auto_rows            = $attributes['gridAutoRows'] ?? '';
+$justify_items             = $attributes['justifyItems'] ?? 'stretch';
+$align_content             = $attributes['alignContent'] ?? 'stretch';
+$allowed_justify_items     = array( 'stretch', 'start', 'center', 'end' );
+$allowed_align_content     = array( 'stretch', 'start', 'center', 'end', 'space-between', 'space-around', 'space-evenly' );
+if ( ! in_array( $justify_items, $allowed_justify_items, true ) ) {
+	$justify_items = 'stretch';
+}
+if ( ! in_array( $align_content, $allowed_align_content, true ) ) {
+	$align_content = 'stretch';
+}
+
 // Build inline styles.
 $styles   = array();
 $styles[] = 'gap:var(--wp--preset--spacing--' . esc_attr( $gap ) . ')';
@@ -159,10 +185,75 @@ if ( 'grid' === $layout ) {
 		$styles[] = 'grid-template-columns:repeat(' . absint( $columns ) . ',1fr)';
 	}
 	$styles[] = 'align-items:' . esc_attr( $vertical_align );
+	// QB-1: justifyItems — only emit when non-default.
+	if ( 'stretch' !== $justify_items ) {
+		$styles[] = 'justify-items:' . esc_attr( $justify_items );
+	}
+	// QB-1: alignContent — only emit when non-default.
+	if ( 'stretch' !== $align_content ) {
+		$styles[] = 'align-content:' . esc_attr( $align_content );
+	}
 } elseif ( 'flex' === $layout ) {
 	$styles[] = 'display:flex';
 	$styles[] = 'flex-wrap:wrap';
 	$styles[] = 'align-items:' . esc_attr( $vertical_align );
+}
+
+// SVG background attributes (merged from retired sgs/svg-background block — D93).
+$bg_svg_content        = $attributes['bgSvgContent'] ?? '';
+$bg_svg_position       = $attributes['bgSvgPosition'] ?? 'background';
+$allowed_svg_positions = array( 'background', 'foreground' );
+if ( ! in_array( $bg_svg_position, $allowed_svg_positions, true ) ) {
+	$bg_svg_position = 'background';
+}
+$bg_svg_animation       = $attributes['bgSvgAnimation'] ?? 'none';
+$allowed_svg_animations = array( 'none', 'pulse', 'float', 'wave' );
+if ( ! in_array( $bg_svg_animation, $allowed_svg_animations, true ) ) {
+	$bg_svg_animation = 'none';
+}
+$bg_svg_speed       = $attributes['bgSvgAnimationSpeed'] ?? 'medium';
+$allowed_svg_speeds = array( 'slow', 'medium', 'fast' );
+if ( ! in_array( $bg_svg_speed, $allowed_svg_speeds, true ) ) {
+	$bg_svg_speed = 'medium';
+}
+$bg_svg_opacity     = isset( $attributes['bgSvgOpacity'] ) ? absint( $attributes['bgSvgOpacity'] ) : 100;
+$bg_svg_min_height  = $attributes['bgSvgMinHeight'] ?? '';
+$bg_svg_text_shadow = ! empty( $attributes['bgSvgTextShadow'] );
+$has_bg_svg         = ! empty( $bg_svg_content );
+
+// SB-1: Grid item defaults — emit --sgs-gi-* CSS custom properties when any value is set.
+// Child sgs/container blocks inherit these via the CSS var() fallback rules in style.css.
+if ( 'grid' === $layout ) {
+	if ( '' !== $grid_item_padding ) {
+		$styles[] = '--sgs-gi-padding:' . esc_attr( sgs_sanitize_grid_template( $grid_item_padding ) );
+	}
+	if ( '' !== $grid_item_background ) {
+		$styles[] = '--sgs-gi-bg:' . esc_attr( sgs_colour_value( $grid_item_background ) );
+	}
+	if ( '' !== $grid_item_border_radius ) {
+		$styles[] = '--sgs-gi-radius:' . esc_attr( sgs_sanitize_grid_template( $grid_item_border_radius ) );
+	}
+	if ( '' !== $grid_item_border ) {
+		// border shorthand — allow colon so "1px solid #ccc" is preserved; strip dangerous chars.
+		$safe_border = preg_replace( '/[^A-Za-z0-9\s%(),.\-#]/', '', $grid_item_border );
+		$styles[]    = '--sgs-gi-border:' . esc_attr( trim( $safe_border ) );
+	}
+	if ( '' !== $grid_item_shadow ) {
+		$styles[] = '--sgs-gi-shadow:var(--wp--preset--shadow--' . esc_attr( $grid_item_shadow ) . ')';
+	}
+	if ( '' !== $grid_item_text_colour ) {
+		$styles[] = '--sgs-gi-color:' . esc_attr( sgs_colour_value( $grid_item_text_colour ) );
+	}
+}
+
+// QB-1: gridTemplateRows + gridAutoRows — emitted inline on the grid wrapper.
+if ( 'grid' === $layout ) {
+	if ( '' !== trim( (string) $grid_template_rows ) ) {
+		$styles[] = 'grid-template-rows:' . esc_attr( sgs_sanitize_grid_template( $grid_template_rows ) );
+	}
+	if ( '' !== trim( (string) $grid_auto_rows ) ) {
+		$styles[] = 'grid-auto-rows:' . esc_attr( sgs_sanitize_grid_template( $grid_auto_rows ) );
+	}
 }
 
 // Build CSS classes.
@@ -212,6 +303,20 @@ if ( $has_bg_image && ! $has_bg_video ) {
 }
 if ( $has_bg_video ) {
 	$classes[] = 'sgs-container--has-bg-video';
+}
+
+// SVG background classes.
+if ( $has_bg_svg ) {
+	$classes[] = 'sgs-container--has-bg-svg';
+	$classes[] = 'sgs-container--svg-' . esc_attr( $bg_svg_position );
+	$classes[] = 'sgs-container--svg-anim-' . esc_attr( $bg_svg_animation );
+	$classes[] = 'sgs-container--svg-speed-' . esc_attr( $bg_svg_speed );
+	if ( $bg_svg_text_shadow ) {
+		$classes[] = 'sgs-container--svg-text-shadow';
+	}
+	if ( ! empty( $bg_svg_min_height ) ) {
+		$styles[] = '--sgs-svg-min-height:' . esc_attr( $bg_svg_min_height );
+	}
 }
 
 if ( 'grid' === $layout ) {
@@ -324,10 +429,11 @@ if ( $shape_top || $shape_bottom ) {
 // Build responsive gap + widthMode + bg-image CSS.
 $responsive_css      = '';
 $has_responsive_bg   = ! empty( $bg_image_tablet['url'] ) || ! empty( $bg_image_mobile['url'] );
-$has_responsive_attr = $gap_tablet || $gap_mobile || $width_mode_mobile || $width_mode_tablet || $width_mode_desktop || $has_responsive_bg;
+$has_responsive_attr = $gap_tablet || $gap_mobile || $width_mode_mobile || $width_mode_tablet || $width_mode_desktop || $has_responsive_bg
+	|| $grid_template_tablet || $grid_template_mobile || $grid_template_rows_tablet || $grid_template_rows_mobile;
 // Also need a uid when bg-parallax/ken-burns is active (for the no-parallax class via JS) or bg-video is responsive.
-$needs_uid           = $has_responsive_attr || $bg_parallax || $bg_ken_burns || ( $has_bg_video && ! empty( $bg_video_mobile['url'] ) );
-$uid                 = '';
+$needs_uid = $has_responsive_attr || $bg_parallax || $bg_ken_burns || ( $has_bg_video && ! empty( $bg_video_mobile['url'] ) );
+$uid       = '';
 if ( $needs_uid ) {
 	$uid       = 'sgs-container-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 	$classes[] = $uid;
@@ -387,6 +493,22 @@ if ( $has_responsive_attr ) {
 	if ( ! empty( $bg_image_mobile['url'] ) ) {
 		$responsive_css .= '@media (max-width:599px){.' . $uid . '{background-image:url(' . esc_url( $bg_image_mobile['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
 	}
+
+	// QB-2: Responsive gridTemplateColumns overrides (tablet + mobile).
+	if ( '' !== sgs_sanitize_grid_template( $grid_template_tablet ) ) {
+		$responsive_css .= '@media (max-width:1023px){.' . $uid . '{grid-template-columns:' . sgs_sanitize_grid_template( $grid_template_tablet ) . '}}';
+	}
+	if ( '' !== sgs_sanitize_grid_template( $grid_template_mobile ) ) {
+		$responsive_css .= '@media (max-width:599px){.' . $uid . '{grid-template-columns:' . sgs_sanitize_grid_template( $grid_template_mobile ) . '}}';
+	}
+
+	// QB-1: Responsive gridTemplateRows overrides (tablet + mobile).
+	if ( '' !== sgs_sanitize_grid_template( $grid_template_rows_tablet ) ) {
+		$responsive_css .= '@media (max-width:1023px){.' . $uid . '{grid-template-rows:' . sgs_sanitize_grid_template( $grid_template_rows_tablet ) . '}}';
+	}
+	if ( '' !== sgs_sanitize_grid_template( $grid_template_rows_mobile ) ) {
+		$responsive_css .= '@media (max-width:599px){.' . $uid . '{grid-template-rows:' . sgs_sanitize_grid_template( $grid_template_rows_mobile ) . '}}';
+	}
 }
 
 // Rebuild wrapper attributes whenever the class list has grown (shapes, uid, bg-video, parallax classes).
@@ -399,18 +521,125 @@ if ( $shape_top || $shape_bottom || $uid ) {
 	);
 }
 
+// Build SVG background markup.
+// Sanitise SVG to strip script tags and event handlers before output.
+$svg_html = '';
+if ( $has_bg_svg ) {
+	$allowed_svg_tags = array(
+		'svg'      => array(
+			'xmlns'               => true,
+			'viewbox'             => true,
+			'width'               => true,
+			'height'              => true,
+			'preserveaspectratio' => true,
+			'class'               => true,
+			'id'                  => true,
+		),
+		'g'        => array(
+			'transform' => true,
+			'class'     => true,
+			'id'        => true,
+		),
+		'path'     => array(
+			'd'            => true,
+			'fill'         => true,
+			'stroke'       => true,
+			'stroke-width' => true,
+			'class'        => true,
+		),
+		'circle'   => array(
+			'cx'     => true,
+			'cy'     => true,
+			'r'      => true,
+			'fill'   => true,
+			'stroke' => true,
+			'class'  => true,
+		),
+		'rect'     => array(
+			'x'      => true,
+			'y'      => true,
+			'width'  => true,
+			'height' => true,
+			'fill'   => true,
+			'stroke' => true,
+			'class'  => true,
+		),
+		'polygon'  => array(
+			'points' => true,
+			'fill'   => true,
+			'stroke' => true,
+			'class'  => true,
+		),
+		'polyline' => array(
+			'points' => true,
+			'fill'   => true,
+			'stroke' => true,
+			'class'  => true,
+		),
+		'line'     => array(
+			'x1'     => true,
+			'y1'     => true,
+			'x2'     => true,
+			'y2'     => true,
+			'stroke' => true,
+			'class'  => true,
+		),
+		'ellipse'  => array(
+			'cx'     => true,
+			'cy'     => true,
+			'rx'     => true,
+			'ry'     => true,
+			'fill'   => true,
+			'stroke' => true,
+			'class'  => true,
+		),
+		'text'     => array(
+			'x'           => true,
+			'y'           => true,
+			'fill'        => true,
+			'font-size'   => true,
+			'font-family' => true,
+			'class'       => true,
+		),
+		'defs'     => array(),
+		'style'    => array( 'type' => true ),
+		'animate'  => array(
+			'attributename' => true,
+			'from'          => true,
+			'to'            => true,
+			'dur'           => true,
+			'repeatcount'   => true,
+		),
+	);
+
+	$svg_html = sprintf(
+		'<div class="sgs-container__svg-bg" style="--sgs-svg-opacity:%s;" aria-hidden="true">%s</div>',
+		esc_attr( $bg_svg_opacity / 100 ),
+		wp_kses( $bg_svg_content, $allowed_svg_tags )
+	);
+}
+
 // Output responsive CSS if needed (scoped to the uid class so it only targets this instance).
 if ( $responsive_css && $uid ) {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $responsive_css contains only previously-escaped CSS rules.
 	printf( '<style id="%s">%s</style>', esc_attr( $uid ), $responsive_css );
 }
 
+// SVG position: background = before content; foreground = after content.
+$svg_bg_html = ( $has_bg_svg && 'background' === $bg_svg_position ) ? $svg_html : '';
+$svg_fg_html = ( $has_bg_svg && 'foreground' === $bg_svg_position ) ? $svg_html : '';
+
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- All variables are pre-sanitised: $html_tag allowlisted, $wrapper_attributes from get_block_wrapper_attributes(), HTML vars built with esc_* / wp_kses(), $content is WP-rendered inner blocks.
 printf(
-	'<%1$s %2$s>%3$s%4$s%5$s%6$s%7$s</%1$s>',
+	'<%1$s %2$s>%3$s%4$s%5$s%6$s%7$s%8$s%9$s</%1$s>',
 	$html_tag,
 	$wrapper_attributes,
 	$shape_top_html,
 	$video_html,
 	$overlay_html,
+	$svg_bg_html,
 	$content,
+	$svg_fg_html,
 	$shape_bottom_html
 );
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

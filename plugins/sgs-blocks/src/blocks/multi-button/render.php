@@ -7,7 +7,7 @@
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Rendered inner blocks (sgs/button instances).
- * @var WP_Block $block      Block instance.
+ * @var \WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
  */

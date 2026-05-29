@@ -9,7 +9,7 @@
  *
  * @param array    $attributes Block attributes.
  * @param string   $content    Block content.
- * @param WP_Block $block      Block instance.
+ * @param \WP_Block $block      Block instance.
  */
 
 // Backward-compat: existing posts may have UK-spelled attrs. Native attrs take precedence.

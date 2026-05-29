@@ -119,11 +119,10 @@ except ImportError:
 # (they use the SGS-prefixed BEM convention). Used for live-scrape fallback +
 # pre-rule mockups via the --legacy flag.
 #
-# The 17 entries previously hardcoded here have been migrated to the DB table
-# `legacy_role_lookup` in sgs-framework.db (both ~/.claude and ~/.agents paths).
-# They are seeded by:
-#   plugins/sgs-blocks/scripts/uimax-tools/seed-legacy-role-lookup.py
-# and re-synced on every /sgs-update run.
+# D99 2026-05-29: the 16 section-scope entries now live in the unified `slots`
+# table (scope='section') in sgs-framework.db. The retired `legacy_role_lookup`
+# table has been dropped. db_lookup.legacy_role_lookup_for() queries
+# `slots WHERE scope='section'` and the API is unchanged.
 #
 # At runtime the voter calls _legacy_role_lookup_for() (loaded from
 # db_lookup.legacy_role_lookup_for via lazy import). If the DB is unavailable

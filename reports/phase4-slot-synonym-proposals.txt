@@ -1,7 +1,7 @@
-# Slot Synonym Auto-Seed Proposals — 2026-05-26 19:57:52 UTC
+# Slot Synonym Auto-Seed Proposals — 2026-05-29 03:43:21 UTC
 
 ## Summary
-Unmapped rows: 60 | Auto-inserted (high confidence): 0 | Manual review (medium confidence): 2 | No match (low confidence): 58
+Unmapped rows: 60 | Auto-inserted (high confidence): 0 | Manual review (medium confidence): 1 | No match (low confidence): 59
 
 ## High confidence (auto-updated)
 
@@ -10,7 +10,6 @@ _(none)_
 ## Medium confidence (manual review required)
 
 - slot='feature' → sgs/feature-grid (prefix match — review before accepting)
-- slot='progress' → sgs/reading-progress (contains match — review before accepting)
 
 ## Low confidence (no clear match)
 
@@ -67,8 +66,9 @@ _(none)_
 - slot='size' (no SGS block matches)
 - slot='position' (no SGS block matches)
 - slot='header' (no SGS block matches)
-- slot='bar' (ambiguous — 2 contains matches, no auto-seed)
+- slot='bar' (no SGS block matches)
 - slot='__form_instance__' (no SGS block matches)
 - slot='nav' (ambiguous — 2 contains matches, no auto-seed)
+- slot='progress' (no SGS block matches)
 - slot='slot' (no SGS block matches)
 - slot='ribbon' (no SGS block matches)

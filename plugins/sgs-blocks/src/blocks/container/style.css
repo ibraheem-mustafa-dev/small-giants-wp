@@ -1,5 +1,19 @@
 /* ===== SGS Container — Frontend + Editor ===== */
 
+/* ===== SB-1: Grid item defaults — var(--sgs-gi-*) cascade =====
+   Parent grid container sets --sgs-gi-* custom properties via inline style (render.php).
+   Direct child .sgs-container elements consume them as visual defaults.
+   Per-child inline overrides always win over these via CSS specificity.
+   The .sgs-container--has-grid-item-defaults class triggers the consumption rules. */
+.sgs-container--grid > .sgs-container {
+	padding: var( --sgs-gi-padding );
+	background: var( --sgs-gi-bg );
+	border-radius: var( --sgs-gi-radius );
+	border: var( --sgs-gi-border );
+	box-shadow: var( --sgs-gi-shadow );
+	color: var( --sgs-gi-color );
+}
+
 .sgs-container {
 	position: relative;
 	box-sizing: border-box;
@@ -157,3 +171,141 @@
 		background-size: cover !important;
 	}
 }
+
+/* ===== SVG background layer (merged from sgs/svg-background 2026-05-28 D93) ===== */
+
+.sgs-container--has-bg-svg {
+	overflow: hidden;
+}
+
+.sgs-container__svg-bg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 0;
+	opacity: var( --sgs-svg-opacity, 1 );
+}
+
+/* Foreground: SVG sits above content */
+.sgs-container--svg-foreground .sgs-container__svg-bg {
+	z-index: 2;
+}
+
+.sgs-container__svg-bg svg {
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+/* Ensure content sits above background SVG layer */
+.sgs-container--has-bg-svg > *:not(.sgs-container__svg-bg):not(.sgs-container__overlay):not(.sgs-container__video-bg):not(.sgs-shape-divider) {
+	position: relative;
+	z-index: 1;
+}
+
+/* Foreground SVG: content sits below */
+.sgs-container--svg-foreground > *:not(.sgs-container__svg-bg):not(.sgs-container__overlay):not(.sgs-container__video-bg):not(.sgs-shape-divider) {
+	position: relative;
+	z-index: 0;
+}
+
+/* Optional text shadow for readability over busy SVG layers */
+.sgs-container--svg-text-shadow > *:not(.sgs-container__svg-bg):not(.sgs-container__overlay):not(.sgs-container__video-bg):not(.sgs-shape-divider) {
+	text-shadow: 0 1px 4px rgba( 0, 0, 0, 0.35 );
+}
+
+/* SVG animations — gated behind prefers-reduced-motion: no-preference */
+@media ( prefers-reduced-motion: no-preference ) {
+
+	/* Animation: Pulse */
+	@keyframes sgs-container-svg-pulse {
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.5;
+		}
+	}
+
+	.sgs-container--svg-anim-pulse .sgs-container__svg-bg {
+		animation: sgs-container-svg-pulse infinite;
+	}
+
+	.sgs-container--svg-anim-pulse.sgs-container--svg-speed-slow .sgs-container__svg-bg {
+		animation-duration: 5s;
+	}
+
+	.sgs-container--svg-anim-pulse.sgs-container--svg-speed-medium .sgs-container__svg-bg {
+		animation-duration: 3s;
+	}
+
+	.sgs-container--svg-anim-pulse.sgs-container--svg-speed-fast .sgs-container__svg-bg {
+		animation-duration: 1.5s;
+	}
+
+	/* Animation: Float */
+	@keyframes sgs-container-svg-float {
+		0%,
+		100% {
+			transform: translateY( 0 );
+		}
+		50% {
+			transform: translateY( -10px );
+		}
+	}
+
+	.sgs-container--svg-anim-float .sgs-container__svg-bg {
+		animation: sgs-container-svg-float infinite ease-in-out;
+	}
+
+	.sgs-container--svg-anim-float.sgs-container--svg-speed-slow .sgs-container__svg-bg {
+		animation-duration: 6s;
+	}
+
+	.sgs-container--svg-anim-float.sgs-container--svg-speed-medium .sgs-container__svg-bg {
+		animation-duration: 4s;
+	}
+
+	.sgs-container--svg-anim-float.sgs-container--svg-speed-fast .sgs-container__svg-bg {
+		animation-duration: 2s;
+	}
+
+	/* Animation: Wave */
+	@keyframes sgs-container-svg-wave {
+		0%,
+		100% {
+			transform: scale( 1 ) rotate( 0deg );
+		}
+		25% {
+			transform: scale( 1.05 ) rotate( 1deg );
+		}
+		50% {
+			transform: scale( 1 ) rotate( 0deg );
+		}
+		75% {
+			transform: scale( 1.05 ) rotate( -1deg );
+		}
+	}
+
+	.sgs-container--svg-anim-wave .sgs-container__svg-bg {
+		animation: sgs-container-svg-wave infinite ease-in-out;
+		transform-origin: center;
+	}
+
+	.sgs-container--svg-anim-wave.sgs-container--svg-speed-slow .sgs-container__svg-bg {
+		animation-duration: 8s;
+	}
+
+	.sgs-container--svg-anim-wave.sgs-container--svg-speed-medium .sgs-container__svg-bg {
+		animation-duration: 5s;
+	}
+
+	.sgs-container--svg-anim-wave.sgs-container--svg-speed-fast .sgs-container__svg-bg {
+		animation-duration: 3s;
+	}
+
+} /* end prefers-reduced-motion: no-preference */

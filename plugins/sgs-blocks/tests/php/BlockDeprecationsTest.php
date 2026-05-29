@@ -48,7 +48,7 @@ class BlockDeprecationsTest extends TestCase {
 		'cta-section',
 		'info-box',
 		// Static save modified (HTML output diverged from stored shape).
-		'certification-bar',
+		// 'certification-bar' removed 2026-05-29 D95 — retired, merged into sgs/trust-badges.
 		'counter',
 		'notice-banner',
 		// 2026-05-25 D72: 'trust-bar' removed — block retired.
@@ -98,7 +98,7 @@ class BlockDeprecationsTest extends TestCase {
 	 */
 	#[DataProvider( 'affected_block_provider' )]
 	public function test_deprecated_file_exports_array( string $slug ): void {
-		$path     = SGS_BLOCKS_PLUGIN_DIR . '/src/blocks/' . $slug . '/deprecated.js';
+		$path = SGS_BLOCKS_PLUGIN_DIR . '/src/blocks/' . $slug . '/deprecated.js';
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading a local source file in a test, no HTTP involved.
 		$contents = (string) file_get_contents( $path );
 

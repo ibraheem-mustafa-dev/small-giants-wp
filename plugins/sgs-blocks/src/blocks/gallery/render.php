@@ -12,7 +12,7 @@
  *
  * @var array    $attributes Block attributes (sanitised by block.json defaults).
  * @var string   $content    Inner block content (unused — dynamic block).
- * @var WP_Block $block      The WP_Block instance.
+ * @var \WP_Block $block      The WP_Block instance.
  */
 
 defined( 'ABSPATH' ) || exit;

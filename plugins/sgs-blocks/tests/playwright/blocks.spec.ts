@@ -33,7 +33,7 @@ test('SGS Theme is active', async ({ request }) => {
 
 const EXPECTED_BLOCKS = [
   'accordion', 'accordion-item', 'announcement-bar', 'back-to-top', 'brand-strip',
-  'breadcrumbs', 'card-grid', 'certification-bar', 'container', 'countdown-timer',
+  'breadcrumbs', 'card-grid', 'container', 'countdown-timer', // certification-bar retired 2026-05-29 D95 — merged into trust-badges
   'counter', 'cta-section', 'decorative-image', 'form', 'form-field-address',
   'form-field-checkbox', 'form-field-consent', 'form-field-date', 'form-field-email',
   'form-field-file', 'form-field-hidden', 'form-field-number', 'form-field-phone',

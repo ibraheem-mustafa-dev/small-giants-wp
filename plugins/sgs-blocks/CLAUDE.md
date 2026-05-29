@@ -88,7 +88,7 @@ rm sgs-deploy.tar
 
 | Block | Status |
 |---|---|
-| Container | Deployed |
+| Container | Deployed (SVG background layer added 2026-05-28 D93 — `bgSvg*` attrs + SVG tab in Background panel) |
 | Hero | Deployed |
 | Info Box | Deployed |
 | Counter | Deployed |
@@ -101,7 +101,7 @@ rm sgs-deploy.tar
 | Testimonial Slider | Deployed |
 | Heritage Strip | Deployed |
 | Brand Strip | Deployed |
-| Certification Bar | Deployed |
+| Trust Badges | Deployed (merged certification-bar capability + auto-scroll 2026-05-29 D95 — badgeStyle variants: icon-circle (default), text-only, image-badge; auto-scroll marquee when items overflow columns) |
 | Notice Banner | Deployed |
 | WhatsApp CTA | Deployed |
 | Accordion + Accordion Item | Deployed |
@@ -110,8 +110,11 @@ rm sgs-deploy.tar
 | Trustpilot Reviews | Deployed (2026-05-11 — looping carousel, white pill header, theme-inherited typography, hover scale + theme-primary border, Schema.org JSON-LD). Sync infrastructure shipped 2026-05-11 commit `06df2807` — see Backend Integrations below. |
 | Pricing Table | Built (L14, needs build + deploy) |
 | Modal | Built (L14, needs build + deploy) |
+| Media | Deployed (video support added 2026-05-29 D97 — mediaType toggle, YouTube/Vimeo/MP4 external embeds, WP-library internal video, poster, playback controls) |
 | Decorative Image | Built (L14, needs build + deploy) |
 | Mega Menu | Built (L3, needs build + deploy) |
+
+> **sgs/svg-background retired 2026-05-28 (D93).** SVG background capability merged into `sgs/container` as `bgSvg*` attrs (7 attrs: `bgSvgContent`, `bgSvgPosition`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `bgSvgOpacity`, `bgSvgMinHeight`, `bgSvgTextShadow`). Existing posts auto-migrate via `deprecated.js` v2 entry in container.
 
 ### Form Blocks (12 built)
 
