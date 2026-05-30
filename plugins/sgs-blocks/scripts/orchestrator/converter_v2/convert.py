@@ -1478,19 +1478,21 @@ def _atomic_attrs_for(node: Tag, slug: str) -> dict:
     """
     tag = node.name
 
-    # sgs/heading — current schema: content (string), level (enum h1..h6)
-    # NOTE: SGS blocks retain get_text behaviour pending render.php audit
-    # for rich-text safety (XS-9 conservative cut).
+    # sgs/heading — current schema: content (rich-text via wp_kses_post in render.php:442)
+    # XS-9.1 fix 2026-05-30: render.php audit confirmed wp_kses_post escape; safe
+    # to receive _RICH_TEXT_INLINE_TAGS allowlist (br/strong/em/a/etc.). Mama's
+    # hero H1 <br> case now lands correctly.
     if slug == "sgs/heading" and tag in ("h1", "h2", "h3", "h4", "h5", "h6"):
-        return {"content": node.get_text(strip=True), "level": tag}
+        return {"content": _rich_text_content(node), "level": tag}
 
     # core/heading — WP core schema: level (int 1..6), content (rich-text)
     if slug == "core/heading" and tag in ("h1", "h2", "h3", "h4", "h5", "h6"):
         return {"level": int(tag[1]), "content": _rich_text_content(node)}
 
-    # sgs/text — current schema: text (string)
+    # sgs/text — current schema: text (rich-text via wp_kses_post in render.php:607)
+    # XS-9.1 fix 2026-05-30: render.php audit confirmed wp_kses_post escape.
     if slug == "sgs/text" and tag in ("p", "span", "div"):
-        return {"text": node.get_text(strip=True)}
+        return {"text": _rich_text_content(node)}
 
     # core/paragraph — WP core schema: content (rich-text)
     if slug == "core/paragraph" and tag in ("p", "span", "div"):
@@ -1510,17 +1512,26 @@ def _atomic_attrs_for(node: Tag, slug: str) -> dict:
             "alt": node.get("alt", ""),
         }
 
-    # sgs/button — current schema: label, url
-    # core/button — WP core schema: text, url
+    # sgs/button — current schema: label (rich-text via wp_kses with no-<a>
+    # allowlist in render.php:570). XS-9.2 fix 2026-05-30: tightened allowlist
+    # excludes <a> to prevent nested-anchor phishing inside <a>/<button> wrappers.
+    # _rich_text_content preserves <br>/<strong>/<em>/<span>/etc; any nested <a>
+    # it emits will be stripped server-side by wp_kses (defence-in-depth).
+    # XS-9.2 quality-review hardening 2026-05-30: url attr ALSO gated by
+    # _safe_href to block javascript:/data:/vbscript: schemes at the converter
+    # layer (defence-in-depth vs render.php's esc_url as the only gate).
     if slug == "sgs/button" and tag in ("a", "button"):
-        return {"label": node.get_text(strip=True), "url": node.get("href", "")}
+        safe_url = _safe_href(node.get("href", "")) or ""
+        return {"label": _rich_text_content(node), "url": safe_url}
     # core/button — WP core schema: text (rich-text), url
     if slug == "core/button" and tag in ("a", "button"):
-        return {"text": _rich_text_content(node), "url": node.get("href", "")}
+        safe_url = _safe_href(node.get("href", "")) or ""
+        return {"text": _rich_text_content(node), "url": safe_url}
 
-    # sgs/quote — current schema: body (array of strings)
+    # sgs/quote — current schema: body (array of rich-text strings via wp_kses_post in render.php:727)
+    # XS-9.1 fix 2026-05-30: render.php audit confirmed wp_kses_post escape on body items.
     if slug == "sgs/quote" and tag == "blockquote":
-        return {"body": [node.get_text(strip=True)]}
+        return {"body": [_rich_text_content(node)]}
 
     # core/quote — WP core schema: value (rich-text)
     if slug == "core/quote" and tag == "blockquote":

@@ -565,9 +565,23 @@ if ( $icon ) {
 // 7. Build the button inner content.
 // ---------------------------------------------------------------------------
 
+// XS-9.2 (2026-05-30): label is rich-text. Tightened wp_kses allowlist deliberately
+// EXCLUDES <a> — nested anchors inside <a>/<button> wrappers are invalid HTML
+// and a phishing vector. <span class=...> is allowed for icon/styling spans.
 $label_html = sprintf(
 	'<span class="sgs-button__label">%s</span>',
-	esc_html( $label )
+	wp_kses(
+		$label,
+		array(
+			'br'     => array(),
+			'strong' => array(),
+			'b'      => array(),
+			'em'     => array(),
+			'i'      => array(),
+			'span'   => array( 'class' => true ),
+			'code'   => array(),
+		)
+	)
 );
 
 if ( $icon_html ) {
