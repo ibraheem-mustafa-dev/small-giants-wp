@@ -32,7 +32,6 @@ client by adding a single dict entry; no code changes needed elsewhere.
 from __future__ import annotations
 
 import argparse
-import os
 import shlex
 import shutil
 import subprocess

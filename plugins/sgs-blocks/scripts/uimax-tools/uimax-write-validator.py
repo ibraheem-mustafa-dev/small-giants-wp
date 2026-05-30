@@ -114,7 +114,7 @@ def check_rosetta_stone(table: str, payload: dict[str, Any]) -> tuple[list[str],
         stripped = sgs.strip()
         if not stripped:
             errors.append(
-                f"row-213 violation: 'sgs_block' is an empty string. Use null + gap_candidate=true "
+                "row-213 violation: 'sgs_block' is an empty string. Use null + gap_candidate=true "
                 "to flag a gap, or supply a real slug."
             )
         elif "/" not in stripped:

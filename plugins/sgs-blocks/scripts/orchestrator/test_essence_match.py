@@ -16,8 +16,6 @@ from __future__ import annotations
 import importlib.util
 import sys
 from pathlib import Path
-from types import SimpleNamespace
-from typing import Any
 
 # Windows cp1252 consoles cannot encode the '->' arrow glyph printed in test
 # output -> UnicodeEncodeError. Force UTF-8 on the standard streams.

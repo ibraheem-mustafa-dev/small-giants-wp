@@ -24,7 +24,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 # Lazy import to avoid dependencies on BeautifulSoup etc during import
-import importlib.util as ilu
+import importlib.util as ilu  # noqa: E402 — intentional: must follow sys.path.insert above
 
 def _load_module(name, path):
     spec = ilu.spec_from_file_location(name, path)

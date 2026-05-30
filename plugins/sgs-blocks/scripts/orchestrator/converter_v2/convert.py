@@ -20,7 +20,6 @@ the single permitted 'sgs/container' literal (FR-22-4 container-base exception).
 """
 from __future__ import annotations
 
-import functools
 import json
 import re
 import subprocess

@@ -197,7 +197,8 @@ def _pixel_diff(clone_png: Path, mockup_png: Path,
     min_h = min(a.height, b.height)
     a2 = a.crop((0, 0, min_w, min_h))
     b2 = b.crop((0, 0, min_w, min_h))
-    apx = a2.load(); bpx = b2.load()
+    apx = a2.load()
+    bpx = b2.load()
 
     diff_count = 0
     total = min_w * min_h
