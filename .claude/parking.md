@@ -223,8 +223,91 @@ _60 entries._
 
 **Trigger:** alongside P-FOOTER-WRAPPER-CLASS-MISSING.
 
-### P-UTF8-MOJIBAKE-IN-CONVERTER — rendered output shows mojibake despite extract.json being byte-clean (~30 min)
-**Status:** PARTIAL — XS-11 investigation 2026-05-30 narrows the search
+### P-UTF8-MOJIBAKE-IN-CONVERTER — RESOLVED 2026-05-30 (corruption was in source block.json, not converter)
+**Status:** RESOLVED — root cause was source-file corruption, not converter behaviour. Fix shipped 2026-05-30 by editing `plugins/sgs-blocks/src/blocks/announcement-bar/block.json` line 38 (mojibake → proper UTF-8 emoji + em-dash). Repo-wide grep for cp1252→UTF-8 double-encoding byte signatures returned 0 other source-file hits. Adding a pre-commit hook to reject mojibake byte signatures is parked separately at P-PRE-COMMIT-MOJIBAKE-GUARD.
+
+### P-SECTION-ROOT-INHERITANCE-SCRIPT — 41 attr-gaps between sgs/hero and sgs/container; need /sgs-update --sync-section-roots opt-in (~3 hrs)
+**Status:** OPEN
+
+**What:** Hero/container parity audit 2026-05-30 identified 41 attrs hero is MISSING that container has: shapeDividerTop/Bottom bundle (10), bgSvg* bundle (7 — D93 svg merge), responsive backgroundImage{Tablet,Mobile}, overlayGradient bundle (4), widthMode + responsive variants (6), htmlTag, backgroundSize/Position/Repeat/Attachment (4). Plus 3 naming drifts where hero has the concept but a different name: `overlayColour` vs container's `backgroundOverlayColour`, `overlayOpacity` vs `backgroundOverlayOpacity`, `verticalAlignment` vs `verticalAlign`. The 3 dedups need `deprecated.js` migrations.
+
+**Pattern repeats** across other section-root blocks (cta-section, notice-banner, heritage-strip) — auditing those would extend the gap list considerably. This is exactly the per-block-hyperfocus that R-22-9 mandates a universal-mechanism fix for.
+
+**Fix shape:**
+1. Create DB table `section_root_inheritance_attrs` listing the canonical container attrs that section-root blocks should inherit (~40 rows)
+2. Build `scripts/sync-section-root-inheritance.py` that on each /sgs-update Stage X reads section-root blocks (per the new XS-2 tier='class-section' column) + diffs each against the inheritance table
+3. Emit diffs to `pipeline-state/section-root-sync/<date>/<block>.diff` for OPERATOR REVIEW — never auto-edit block.json
+4. Pair with renames manifest so naming-drift dedups can auto-stub `deprecated.js` migrations
+5. Opt-in via `/sgs-update --sync-section-roots` (NOT default; matches blub.db 255)
+
+**R-22 compliance:** R-22-1 (DB-first — inheritance attrs live in DB, not script constants), R-22-9 (universal — applies to all section-root blocks uniformly).
+
+**Trigger:** after XS-2 tier='class-section' column ships; before adding more section-root blocks.
+
+### P-PRODUCT-CARD-GIFT-VARIANT-AUDIT — gift variant of sgs/product-card is vestigial (~30 min)
+**Status:** OPEN
+
+**What:** Investigation 2026-05-30 confirmed `gift` variant of sgs/product-card is currently UNUSED in Mama's mockup. Gift-section cards (lines 959+) use `sgs-gift-section__card` class — NOT product-card with gift variant. The `gift` enum value exists but has no associated `giftTag` attr (parallel to `trialTag`/`featuredTag`).
+
+**Fix shape:**
+1. Grep all sites/*/mockups for any actual use of variantStyle='gift' on product-card
+2. If 0 uses: retire from enum_values + bump block version + add deprecated.js stub
+3. If used: add giftTag attr + render block matching trial/featured pattern + document use case
+
+**Trigger:** Pre-1.0 cleanup OR when next client mockup either uses or doesn't use it.
+
+### P-XS-2-TIER-CRITERIA-DECISION — what makes a block tier='class-section'? (~15 min decision)
+**Status:** OPEN (Bean decision required)
+
+**What:** Original criterion ("has sgs/container attrs AND owns section-level content as block-internal attrs") rejected by Bean as "flawed and generic" — hero might fail those standards. Alternative proposed: explicit `is_section_root` flag in block.json `supports.sgs` — operator-set when registering a section-root block. No algorithmic gymnastics.
+
+**Options:**
+1. **Explicit flag** — operator decides + flags in block.json supports.sgs.is_section_root; sgs-update reads + writes blocks.tier column. Clean. R-22-1 compliant (DB-stored, just operator-derived not algorithm-derived).
+2. **Algorithmic** — sgs-update detects from block.json signals (align: wide/full + content attrs + section content ownership). Risk of false positive/negative.
+3. **Hybrid** — algorithmic detection emits a proposed diff; operator confirms before commit.
+
+**Trigger:** Before XS-2 column ships.
+
+### P-XS-3-NEW-TABLE-FOR-CONTAINER-WRAPPED-BLOCKS — block_composition table design (~45 min)
+**Status:** OPEN (Bean direction received 2026-05-30)
+
+**What:** Bean's direction at D3: a new DB table for blocks wrapped in sgs/container, with schema columns to help the pipeline differentiate between container/non-container/section-root candidates + keep them consistent in attribute inheritance.
+
+**Schema sketch:**
+```sql
+CREATE TABLE block_composition (
+  block_slug TEXT PRIMARY KEY,
+  wraps_block TEXT,                              -- e.g. 'sgs/container'
+  inherits_attrs_from TEXT,                       -- JSON list of source block slugs
+  composition_role TEXT CHECK(composition_role IN
+    ('section-root',      -- hero, cta-section
+     'wrapper-shell',     -- container itself
+     'content-block',     -- info-box, testimonial
+     'leaf')),            -- label, icon
+  has_inner_blocks INTEGER DEFAULT 0,
+  accepts_allowed_blocks TEXT,                    -- JSON list of allowed child slugs
+  FOREIGN KEY (block_slug) REFERENCES blocks(slug)
+);
+```
+
+**Use:** walker queries this table at Stage 1+2 to disambiguate candidate blocks based on shape (e.g. `__cards` wrapper → query candidates where composition_role='content-block' AND wraps_block='sgs/container' AND has_inner_blocks=1 → sgs/feature-grid matches). Replaces XS-3's earlier per-wrapper slot rows AND XS-6's separate shape-signal proposal — one table covers both.
+
+**Trigger:** After XS-2 ships (to inform tier column design — composition_role might subsume tier).
+
+### P-XS-12-RETIRED — chrome-skip observability log no longer needed
+**Status:** RESOLVED 2026-05-30 (Bean directive D8) — retire because header/footer-specific scripts will be built post-1%-per-device pixel-diff target on body sections; this code will be replaced anyway. No commit needed; XS-12 entry dropped from the diagnostic register fix sequence.
+
+### P-ASSIGN-CANONICAL-D99-PORT — assign-canonical.py references retired slot_synonyms table (~45 min)
+**Status:** OPEN
+
+**What:** `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py` (1640 LoC) implements the slots.aliases-lookup algorithm Bean described for XS-4. BUT line 76 uses `SELECT canonical_slot, aliases, role FROM slot_synonyms` — references the retired D99 `slot_synonyms` table. Same defect class as the `seed-slot-synonyms.py` port already done in Task 2 this session.
+
+**Fix shape:** port to `SELECT slot_name AS canonical_slot, aliases FROM slots WHERE scope='element'` + join with roles table for role classification. Then run batch with Bean approval gate.
+
+**Trigger:** XS-4 backfill rollout.
+
+### P-UTF8-MOJIBAKE-IN-CONVERTER-OBSOLETE — superseded by P-UTF8-MOJIBAKE-IN-CONVERTER (resolved above)
+**Status:** RESOLVED — XS-11 investigation 2026-05-30 narrows the search
 
 
 **What:** The rendered SGS output of the gift-section promo bar shows characters that look like CP-1252-as-UTF-8 mojibake — smart-quote / em-dash / emoji bytes have been double-encoded somewhere in the converter pipeline. Mockup source likely contains the correct UTF-8 characters; converter or render is corrupting them.
