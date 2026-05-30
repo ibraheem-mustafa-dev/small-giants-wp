@@ -226,8 +226,15 @@ _60 entries._
 ### P-UTF8-MOJIBAKE-IN-CONVERTER — RESOLVED 2026-05-30 (corruption was in source block.json, not converter)
 **Status:** RESOLVED — root cause was source-file corruption, not converter behaviour. Fix shipped 2026-05-30 by editing `plugins/sgs-blocks/src/blocks/announcement-bar/block.json` line 38 (mojibake → proper UTF-8 emoji + em-dash). Repo-wide grep for cp1252→UTF-8 double-encoding byte signatures returned 0 other source-file hits. Adding a pre-commit hook to reject mojibake byte signatures is parked separately at P-PRE-COMMIT-MOJIBAKE-GUARD.
 
-### P-SECTION-ROOT-INHERITANCE-SCRIPT — 41 attr-gaps between sgs/hero and sgs/container; need /sgs-update --sync-section-roots opt-in (~3 hrs)
-**Status:** OPEN
+### P-SECTION-ROOT-INHERITANCE-SCRIPT — RESOLVED 2026-05-30 D112 (sync-container-wrapping-blocks.py shipped at commit 062c69d1)
+**Status:** RESOLVED
+
+**Shipped:** 468 LOC inheritance script. Populates `block_composition.wraps_block` for 4 blocks (`sgs/hero`, `sgs/cta-section`, `sgs/modal`, `sgs/quote`). Flags 174 attrs missing from wrapping blocks plus 14 naming-drift dedups across diff Markdown files in `pipeline-state/section-root-sync/`. Operator review path; never auto-edits block.json. See decisions.md D112.
+
+---
+
+### P-SECTION-ROOT-INHERITANCE-SCRIPT-LEGACY — pre-resolution body retained for trail
+**Status:** SUPERSEDED
 
 **What:** Hero/container parity audit 2026-05-30 identified 41 attrs hero is MISSING that container has: shapeDividerTop/Bottom bundle (10), bgSvg* bundle (7 — D93 svg merge), responsive backgroundImage{Tablet,Mobile}, overlayGradient bundle (4), widthMode + responsive variants (6), htmlTag, backgroundSize/Position/Repeat/Attachment (4). Plus 3 naming drifts where hero has the concept but a different name: `overlayColour` vs container's `backgroundOverlayColour`, `overlayOpacity` vs `backgroundOverlayOpacity`, `verticalAlignment` vs `verticalAlign`. The 3 dedups need `deprecated.js` migrations.
 
@@ -256,20 +263,49 @@ _60 entries._
 
 **Trigger:** Pre-1.0 cleanup OR when next client mockup either uses or doesn't use it.
 
-### P-XS-2-TIER-CRITERIA-DECISION — what makes a block tier='class-section'? (~15 min decision)
-**Status:** OPEN (Bean decision required)
+### P-XS-2-TIER-CRITERIA-DECISION — RESOLVED 2026-05-30 D107 (Option 1: explicit `is_section_root` flag chosen and shipped)
+**Status:** RESOLVED
 
-**What:** Original criterion ("has sgs/container attrs AND owns section-level content as block-internal attrs") rejected by Bean as "flawed and generic" — hero might fail those standards. Alternative proposed: explicit `is_section_root` flag in block.json `supports.sgs` — operator-set when registering a section-root block. No algorithmic gymnastics.
+**Decision:** Option 1 — operator declares `supports.sgs.is_section_root: true` in block.json on section-root blocks. `/sgs-update` Stage 1 reads the flag and writes `blocks.tier='class-section'`. Voter at `per-section-convention-voter.py:295-305` queries the column for section-root candidates and excludes class-section rows from inner-div candidate sets.
 
-**Options:**
-1. **Explicit flag** — operator decides + flags in block.json supports.sgs.is_section_root; sgs-update reads + writes blocks.tier column. Clean. R-22-1 compliant (DB-stored, just operator-derived not algorithm-derived).
-2. **Algorithmic** — sgs-update detects from block.json signals (align: wide/full + content attrs + section content ownership). Risk of false positive/negative.
-3. **Hybrid** — algorithmic detection emits a proposed diff; operator confirms before commit.
+**Shipped roster:** `sgs/hero`, `sgs/cta-section` (commit e2c8597e).
 
-**Trigger:** Before XS-2 column ships.
+**Why Option 1 over 2/3:** algorithmic detection would false-positive on hero and false-negative on future section-roots lacking standard signals. Operator-set is unambiguous; the flag is one boolean per block.json.
 
-### P-XS-3-NEW-TABLE-FOR-CONTAINER-WRAPPED-BLOCKS — block_composition table design (~45 min)
-**Status:** OPEN (Bean direction received 2026-05-30)
+See decisions.md D107.
+
+### P-XS-3-TRIGGER-REFINEMENT — `block_composition` shipped; walker condition reverted; refined trigger needed (~2 hrs)
+**Status:** OPEN
+
+**What:** D108 shipped the `block_composition` table (188 rows) AND the walker condition that consumed `composition_role` to drive recursion. The walker code regressed `sgs-featured-product` (+13.07pp) and `sgs-social-proof` (+10.40pp); aggregate +1.32pp. Walker code reverted at commit `c76aa107`. Schema and data PERSIST and remain valid for the next attempt.
+
+**Why the regression:** unknown root cause. Two candidate hypotheses to test next session:
+1. The shipped trigger condition fired for `composition_role IN ('content-block','leaf')` paths that should have stayed on the existing `slots` lookup. Refined trigger: limit walker shape-filter to `composition_role='wrapper-shell'` and `'section-root'` rows only.
+2. The composition_role values seeded for featured-product / social-proof are wrong (need correction in `block_composition` rows before walker is re-enabled).
+
+**Next-session fix shape:**
+1. Inspect `pipeline-state/<2026-05-30-XS-3-run>/` extract.json + voter.json + leftover-buckets.json for featured-product and social-proof. Identify which `composition_role` rows fired the regression.
+2. Either correct the rows OR narrow the walker trigger (preferred — keeps data layer general-purpose).
+3. Re-deploy walker with refined trigger; measure with /sgs-clone Stage 11 per section before commit.
+4. Per blub.db 287 + D113: ship ONE row / ONE walker-condition change at a time; measure between each.
+
+**Schema as shipped (D108, persists):**
+```sql
+CREATE TABLE block_composition (
+  block_slug TEXT PRIMARY KEY,
+  wraps_block TEXT,
+  composition_role TEXT CHECK(composition_role IN
+    ('section-root','wrapper-shell','content-block','leaf')),
+  has_inner_blocks INTEGER DEFAULT 0,
+  accepts_allowed_blocks TEXT,
+  FOREIGN KEY (block_slug) REFERENCES blocks(slug)
+);
+```
+
+**Trigger:** Next session, after Bean reviews this entry.
+
+### P-XS-3-NEW-TABLE-FOR-CONTAINER-WRAPPED-BLOCKS — RESOLVED 2026-05-30 D108 (block_composition table shipped; walker consumption reverted — see P-XS-3-TRIGGER-REFINEMENT)
+**Status:** RESOLVED (schema landed; walker work moved to P-XS-3-TRIGGER-REFINEMENT)
 
 **What:** Bean's direction at D3: a new DB table for blocks wrapped in sgs/container, with schema columns to help the pipeline differentiate between container/non-container/section-root candidates + keep them consistent in attribute inheritance.
 
@@ -297,8 +333,15 @@ CREATE TABLE block_composition (
 ### P-XS-12-RETIRED — chrome-skip observability log no longer needed
 **Status:** RESOLVED 2026-05-30 (Bean directive D8) — retire because header/footer-specific scripts will be built post-1%-per-device pixel-diff target on body sections; this code will be replaced anyway. No commit needed; XS-12 entry dropped from the diagnostic register fix sequence.
 
-### P-ASSIGN-CANONICAL-D99-PORT — assign-canonical.py references retired slot_synonyms table (~45 min)
-**Status:** OPEN
+### P-ASSIGN-CANONICAL-D99-PORT — RESOLVED 2026-05-30 D110 (port + batch backfill shipped at commit 04fa0f2b)
+**Status:** RESOLVED
+
+**Shipped:** 9 references migrated to `slots WHERE scope='element'` + `roles` table join. Batch backfill ran cleanly: canonical_slot coverage 52→659 (2.5%→31.8%), role coverage 110→676 (5.3%→32.6%). 1316 rows remain NULL — gap candidates for future enrichment, no errors. See decisions.md D110.
+
+---
+
+### P-ASSIGN-CANONICAL-D99-PORT-LEGACY — pre-resolution body retained for trail
+**Status:** SUPERSEDED by RESOLVED entry above
 
 **What:** `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py` (1640 LoC) implements the slots.aliases-lookup algorithm Bean described for XS-4. BUT line 76 uses `SELECT canonical_slot, aliases, role FROM slot_synonyms` — references the retired D99 `slot_synonyms` table. Same defect class as the `seed-slot-synonyms.py` port already done in Task 2 this session.
 

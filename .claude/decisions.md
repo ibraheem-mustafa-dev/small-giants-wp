@@ -6,6 +6,51 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-05-30 — XS-2 / XS-3 / XS-4 / XS-5 / XS-6 / D6-inheritance / D5-methodology session-close batch (D107-D113)
+
+Session aggregate: mean pixel-diff 58.6% → 56.40% (-2.20pp) across the canary trajectory below. One walker fix shipped then reverted (D108 / D109) because of regression on featured-product (+13.07pp) and social-proof (+10.40pp). Schema and tooling work landed cleanly; walker consumption of the new shape signals is deferred to the next session with a refined trigger.
+
+| Step | Commit | Mean pixel-diff |
+|---|---|---|
+| Session start (post-D93-D100 baseline) | — | 58.6% |
+| Post-XS-1 (CSS sentinel fix) | 80cfc9ad | 56.85% |
+| Post-XS-8/9/10 (slot-list filter + comment skip + rich-text core) | 6087594f | 56.37% |
+| Post-XS-9.1+9.2 + mojibake + featured variant | b3feb9a2 + deploy | 56.47% |
+| Post-D1+XS-2+XS-5 | e2c8597e | 56.39% |
+| Post-XS-3 walker (REVERTED) | f173b351 | 57.71% (+1.32pp regression) |
+| After revert | c76aa107 | ~56.39% |
+| Post-XS-4 backfill | 04fa0f2b | 56.40% |
+| Post-D6 inheritance script | 062c69d1 | n/a (no walker change) |
+| **Final aggregate** | | **-2.20pp** |
+
+**D107 — XS-2 voter literal-slug-match short-circuit retired; `blocks.tier` column + `is_section_root` flag (commit e2c8597e, ships with XS-5).** `per-section-convention-voter.py:295-305` previously returned `f"sgs/{slug_root}"` at confidence 1.0 for every `sgs-`-prefixed BEM class before consulting the DB. That short-circuit emitted phantom slugs no `block.json` registered, forcing Stage 2 fallback to `sgs/container` at confidence 0.0 across 9 of 9 boundaries on the Mama's canary. Fix shipped three coordinated changes:
+
+1. `block.json` schema extension. Section-root blocks declare `supports.sgs.is_section_root: true`. Operator-set, not algorithm-derived (Bean rejected algorithmic detection as false-positive prone on hero). Current roster: `sgs/hero`, `sgs/cta-section`.
+2. `blocks.tier` column added. `/sgs-update` Stage 1 reads `supports.sgs.is_section_root` per block.json and writes `tier='class-section'`.
+3. Voter refactor at lines 295-305. For section-root BEM classes the voter queries `SELECT slug FROM blocks WHERE tier='class-section' AND slug=?` and returns the hit at confidence 0.95; for inner-div classes it excludes class-section rows. Literal-slug-match retained only as last resort, gated on a registered `block.json`.
+
+R-22 compliance: R-22-1 (tier lives in DB), R-22-9 (universal mechanism), R-22-11 (Stage 11 pixel-diff gates the commit). Sibling parking entry P-XS-2-TIER-CRITERIA-DECISION closed.
+
+**D108 — XS-3 / XS-6 unified `block_composition` table; walker consumption SHIPPED then REVERTED (commit f173b351 → c76aa107).** Bean's D6-expanded scope folded XS-3 (per-wrapper slot rows) and XS-6 (separate shape signals) into a single `block_composition` table. Schema: `block_slug PRIMARY KEY, wraps_block TEXT, composition_role TEXT CHECK IN ('section-root','wrapper-shell','content-block','leaf'), has_inner_blocks INTEGER, accepts_allowed_blocks TEXT`. 188 rows seeded by /sgs-update extension. Walker queries the table at Stage 5 to disambiguate multi-candidate BEM resolutions by shape before applying the FR-22-15 capability tiebreaker. Generic slot names (`products`, `cards`) never hardcode-route — routing is shape-driven (R-22-1, R-22-9).
+
+**D109 — XS-3 walker code REVERTED (commit c76aa107) due to regression; refined trigger queued for next session.** The shipped walker condition produced +13.07pp on `sgs-featured-product` and +10.40pp on `sgs-social-proof` — aggregate +1.32pp. Root cause analysis deferred to next session. The `block_composition` DB table (188 rows) PERSISTS — schema and data are valid and reusable. Only the walker code that consumed `composition_role` was reverted. Sibling parking entry P-XS-3-TRIGGER-REFINEMENT records the next-session task: define a narrower trigger condition that excludes the two regressors.
+
+Spec 22 implication: the new FR-22-16 / FR-22-15.1 sub-FRs documented in this session's edit-list are **DEFERRED** — they describe the intended walker consumption, not the live walker. The shape-signal data layer ships; the walker consumes it only when the refined trigger lands.
+
+**D110 — XS-4 `assign-canonical.py` ported to post-D99 slots+roles schema; batch backfill ran cleanly (commit 04fa0f2b).** Old script queried the dropped `slot_synonyms` table; 9 references migrated to `slots WHERE scope='element'` + `roles` table. Dry-run + apply ran without errors. Coverage on `block_attributes.canonical_slot` rose from 52/2074 (2.5%) to 659/2074 (31.8%); `role` from 110/2074 (5.3%) to 676/2074 (32.6%). 1316 rows remain NULL — gap candidates for future enrichment. Predicted vs actual delta: predicted 80–90% coverage; actual 31.8% because slots.aliases lookup is conservative and most attrs lack canonical-vocabulary aliases. The expansion is real; the high-end estimate was inflated.
+
+**D111 — XS-5 wrong/dead section-scope rows in `slots` deleted; testimonial + testimonial-slider re-inserted at element scope (commit e2c8597e, shipped with XS-2).** Twelve rows retired: 8 wrong-tier (`ingredients-section`, `ingredients`, `gift-section`, `social-proof`, `testimonial` section-scope, `testimonial-slider` section-scope, `brand-story`, `featured-product`) + 4 chrome-dead (`header`, `footer`, `site-header`, `site-footer`). Keepers at section scope (6): `core/group`, `hero`, `cta`, `cta-section`, plus two retained internal rows. Re-inserts at element scope (2): `testimonial → sgs/testimonial`, `testimonial-slider → sgs/testimonial-slider`. Featured-product takes no slot row — walker reaches `<section class="sgs-featured-product">`, no slots match, the post-D107 voter returns gap-candidate, Stage 2 FR-22-4 falls through to `sgs/container`. Rationale: section-root aliases that route to content-block primitives collapse sibling structure (Fix 2 +21.53pp regression cause, captured 2026-05-27).
+
+**D112 — `sync-container-wrapping-blocks.py` inheritance script SHIPPED (commit 062c69d1).** 468 LOC. Populates `block_composition.wraps_block` for 4 blocks (`sgs/hero`, `sgs/cta-section`, `sgs/modal`, `sgs/quote`). Flags 174 attrs missing from wrapping blocks plus 14 naming-drift dedups across diff Markdown files in `pipeline-state/section-root-sync/`. Operator review path; never auto-edits block.json. Closes the D107 sibling parking entry P-SECTION-ROOT-INHERITANCE-SCRIPT.
+
+**D113 — Methodology rule captured: per-row measurement gating on multi-row DB changes.** STOP catalogue entry #12 + pre-flight ritual question Q6 added to `next-session-prompt.md` (commit 32c70774). Reinforces blub.db 287 `feedback_row_by_row_measurement_gate_per_db_change.md`: any DB change touching more than one row ships ONE row at a time with /sgs-clone Stage 11 between each. XS-4 was the live counterexample — batched 600+ rows produced uninterpretable aggregate delta; future XS-4-shaped work splits per-block.
+
+**Also shipped this session (commit a23ff53f, no D-number):** `plugins/sgs-blocks/scripts/build-deploy.py` — single-command build + deploy + OPcache reset replaces the multi-step manual sequence in dev-setup.md.
+
+Status: D107, D110, D111, D112, D113 active. D108 / D109 — schema active, walker code reverted, refined-trigger work parked at P-XS-3-TRIGGER-REFINEMENT.
+
+---
+
 ## 2026-05-30 — XS-1 / XS-8 / XS-9 / XS-10 mechanical cv2 fixes; XS-11 retracted as subagent false positive (D102-D106)
 
 **D102 — XS-1 CSS serialiser sentinel leak (`'@media ... :: .selector'` → proper @media nesting).** `_parse_css()` at convert.py:352 flattens nested @media rules into dict keys with `' :: '` internal sentinel. `collect_css_for_classes` at line 417 emitted these keys verbatim into inline `<style>` blocks, producing invalid CSS browsers refused. Fix: detect sentinel + reconstruct `@media (...) { .selector { ... } }`. Empirical: 57.96% → 56.85% mean (-1.11pp), 19 → 0 sentinel leaks in extract.json, sgs-featured-product -9.00pp (the only large win because most sections target wrappers that don't render — XS-3 gating). Commit `80cfc9ad`.

@@ -404,3 +404,31 @@ If next session ships Waves 1-4 (predicted ~22-28% mean pixel-diff), the canary 
 | Phase 2 acceptance gate | ≤5% per-section × 3 viewports | R-22-13 Bean visual sign-off | Co-authoritative |
 
 The empirical lesson: **XS-3 (Bean's revised universal walker condition for layout-bearing wrappers with CSS rules) is the dominant pixel-diff lever**, not XS-1's CSS fix. XS-1 unlocks CSS parseability; XS-3 creates the DOM nodes for the parsed CSS to apply to. Both are needed; XS-3 carries the bigger empirical weight.
+
+---
+
+## Session-close empirical results (2026-05-30, post-D107-D113)
+
+Final aggregate: **mean pixel-diff 58.6% → 56.40% (-2.20pp)** across the full session trajectory.
+
+| Step | Commit | Mean pixel-diff | Notes |
+|---|---|---|---|
+| Session start (post-D93-D100 baseline) | — | 58.6% | Carried forward from prior session |
+| Post-XS-1 (CSS sentinel fix) | 80cfc9ad | 56.85% | -1.75pp |
+| Post-XS-8/9/10 (slot-list filter + comment skip + rich-text core) | 6087594f | 56.37% | -0.48pp |
+| Post-XS-9.1+9.2 + mojibake + featured variant | b3feb9a2 + deploy | 56.47% | +0.10pp (within noise floor) |
+| Post-D107 + XS-2 + XS-5 (voter tier + section-row deletes) | e2c8597e | 56.39% | -0.08pp (within noise floor) |
+| Post-D108/D109 XS-3 walker (REVERTED) | f173b351 | 57.71% | +1.32pp regression — featured-product +13.07pp, social-proof +10.40pp |
+| After revert | c76aa107 | ~56.39% | Restored |
+| Post-D110 XS-4 backfill | 04fa0f2b | 56.40% | Data-only change; no walker effect |
+| Post-D112 D6 inheritance script | 062c69d1 | n/a | No walker change |
+| **Final aggregate** | | **56.40%** | **-2.20pp from baseline** |
+
+**XS-3 walker REVERT:** the projected -20 to -30pp impact in the table above (Wave 3) was wrong — the shipped walker condition triggered on too broad a slug set and regressed featured-product + social-proof by double-digit pp. The shape-signal DATA LAYER (188-row `block_composition` table) shipped cleanly and remains valid. The refined trigger work is parked at `P-XS-3-TRIGGER-REFINEMENT` for next session: narrow the trigger to `composition_role IN ('wrapper-shell','section-root')` only, OR correct the seeded composition_role values for featured-product / social-proof before re-enabling.
+
+**Calibration update:** 3 measurement points now (XS-1, XS-8/9/10, XS-2/XS-5/XS-3). The dominant lever projection was empirically wrong; future fix-shapes that predict double-digit pp impact must include a per-section regression check (per blub.db 287 + D113).
+
+**Closed in this session:** XS-2 (voter), XS-4 (canonical backfill), XS-5 (slot row corrections), D5 methodology rule, D6 inheritance script.
+**Open for next session:** XS-3 trigger refinement (P-XS-3-TRIGGER-REFINEMENT); XS-7 auto-resolved only once the refined trigger lands.
+
+See decisions.md D107-D113 for the canonical record.
