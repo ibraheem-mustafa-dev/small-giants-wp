@@ -1,4 +1,22 @@
-> ## 2026-05-31 ADDENDUM (read first; full prior structural defences preserved below) ##
+> ## 2026-06-01 ADDENDUM (READ FIRST — supersedes the task list; all prior structural defences preserved below) ##
+>
+> **TOP PRIORITY: the converter content-routing fix. THE plan is `.claude/plans/2026-05-31-converter-content-routing-fix.md` (G1-G4). Read it + D115 first.** The old "Tasks 1-5" further down are HISTORICAL (XS-3 is done — merged).
+>
+> **What happened 2026-05-31 (see `.claude/handoff.md`):** XS-3 reconciled + merged (D114, main `eeac99a1`) — the branch was a SUPERSET of main's XS-3, not a rival. The REAL blocker found (D115): featured-product + social-proof render EMPTY because the walker never runs the FR-22-2 content-routing layer — `sgs-product-card__body` mis-resolves to the `sgs/text` LEAF (slots table lists `body/intro/description` as `text` aliases) → leaf swallows children; leaf text never reaches the scalar `text` attr. Fix is CONVERTER-side (1-2 files), NOT a 61-block migration; leaf blocks STAY leaves (R-22-14). Container migrations (product-card/testimonial/testimonial-slider → echo $content) committed WIP on `feat/fr22-6-content-render` (c9c6544d) — correct but render empty until the converter fix. Spec 24 (query-driven cards) + sgs_product CPT drafted/built (D116). Work resumes on the branch; merge to main after the fix + passing visual diff + /qc-council.
+>
+> **NEW STOP entries (append to the catalogue below — count must only GROW):**
+> | 20 | Trusting a per-section pixel-diff WIN without checking live DOM textLen | An EMPTY section scores a FALSE win on cropped pixel-diff (empty=shorter crop=more matching background). 2026-05-31: featured-product "−30.9pp" was an artefact; live textLen=0. Verify `el.innerText.trim().length` + element counts via Playwright (R-22-11) before believing any per-section drop. See memory `empty-section-false-pixel-diff-win`. |
+> | 21 | Assuming the walker runs FR-22-2 content-routing | It does NOT — `convert.py` resolves nodes + recurses but never calls `equivalent_block_for()`/`array_item_slot_for()`/`lift_behavioural_attrs()`. That missing wiring is the root cause of leaf-content loss. |
+> | 22 | Treating XS-3 as "done/closed" or expecting it to catch container mis-routing | XS-3's guard only fires on slug=None; it MISSES a wrapper that mis-resolves to a LEAF. It must be EXTENDED (fire when composition_role=='leaf' AND node has element children). |
+> | 23 | Routing pack-size pills / option-pickers to `sgs/label` | `sgs/label` is an eyebrow/caption block. Pills are interactive selectors → `sgs/button` (via canonical_slot, not a hardcoded map). |
+>
+> **NEW pre-flight ritual addition (append as Q8):** Q8 — Before believing a measurement improvement, did I verify the LIVE DOM (textLen + expected elements via Playwright), not just the pixel-diff number? (STOP #20.)
+>
+> Full prior 2026-05-31 reconciliation context retained immediately below for traceability.
+>
+> ---------------------------------------------------------------------------
+>
+> ## 2026-05-31 ADDENDUM (superseded by the 2026-06-01 addendum above; retained) ##
 >
 > Two competing XS-3 implementations to RECONCILE: main `0a212e3c` = composition_role predicate (original Task 1); branch `feat/spec23-container-neutral-walker` `eced119b` = display:grid/flex `_is_layout_bearing_wrapper` (Spec 23 A1) + B2/B3 neutral-default container. Measure each on page 144, decide.
 > social-proof +18.6 root cause (qc-council verified, NOT A1): `sgs/testimonial-slider` un-migrated FR-22-6 hybrid — render.php reads `$attributes['testimonials']` array but converter emits InnerBlocks → testimonials never render (pre-existing). Real fix = migrate the slider. featured-product −15.6pp (branch A1 grid-restoration WIN, reproduced). Header/footer PARKED.

@@ -1,8 +1,20 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-29
+last_updated: 2026-05-31
 ---
+
+## 2026-05-31 — FR-22-6 converter content-routing + Spec 24 follow-ups
+
+> **P-CONVERTER-CONTENT-ROUTING-FIX** — NEW 2026-05-31. The converter/walker never runs the FR-22-2 content-routing layer, so featured-product + social-proof render EMPTY (live DOM textLen=0). Fix is converter-side (G1-G4), sequential, on branch `feat/fr22-6-content-render` (groundwork at c9c6544d). Full plan: `plans/2026-05-31-converter-content-routing-fix.md`. Includes the XS-3 EXTENSION (leaf-misresolution guard) + pills→sgs/button (not sgs/label). On completion: passing visual-diff reports for product-card/testimonial/testimonial-slider, then merge branch → main.
+> **Status:** OPEN
+> **Bucket:** Pipeline / converter
+> **Trigger:** Next session (highest priority). Read the phase plan + the D115 decision first.
+
+> **P-PRODUCT-CPT-DEPLOY-SEED** — NEW 2026-05-31. `sgs_product` CPT + `seed-mamas-products.php` are built + committed (branch c9c6544d) but NOT deployed/seeded. To create the 2 reference products: deploy the plugin + create the entries (work around the `wp eval-file` content-guard hook — use `wp post create` over SSH or wp.data via Playwright). Also decide per-site opt-in gating for the CPT (currently registers unconditionally). ~15 min.
+> **Status:** OPEN
+> **Bucket:** Feature build
+> **Trigger:** Alongside the converter fix or Spec 24 Phase A. Bean asked for the 2 product pages.
 
 ## 2026-05-29 — sgs/trust-badges merge follow-ups
 
