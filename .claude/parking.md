@@ -274,35 +274,17 @@ _60 entries._
 
 See decisions.md D107.
 
-### P-XS-3-TRIGGER-REFINEMENT — `block_composition` shipped; walker condition reverted; refined trigger needed (~2 hrs)
-**Status:** OPEN
+### P-XS-3-TRIGGER-REFINEMENT — SHIPPED 2026-05-31 (commit 0a212e3c); measurement pending
+**Status:** PARTIAL
 
-**What:** D108 shipped the `block_composition` table (188 rows) AND the walker condition that consumed `composition_role` to drive recursion. The walker code regressed `sgs-featured-product` (+13.07pp) and `sgs-social-proof` (+10.40pp); aggregate +1.32pp. Walker code reverted at commit `c76aa107`. Schema and data PERSIST and remain valid for the next attempt.
+**What shipped (2026-05-31):** Refined XS-3 predicate in `_is_layout_bearing_wrapper()` + `get_block_composition_role()` in db_lookup.py. Five conditions must ALL be true: (1) has sgs-* BEM class, (2) parent is a Tag, (3) parent composition_role is ‘section-root’ or ‘wrapper-shell’ via block_composition table, (4) has element children, (5) has CSS rules. Narrowed from f173b351 broad predicate to immediate-child-of-section-root only.
 
-**Why the regression:** unknown root cause. Two candidate hypotheses to test next session:
-1. The shipped trigger condition fired for `composition_role IN ('content-block','leaf')` paths that should have stayed on the existing `slots` lookup. Refined trigger: limit walker shape-filter to `composition_role='wrapper-shell'` and `'section-root'` rows only.
-2. The composition_role values seeded for featured-product / social-proof are wrong (need correction in `block_composition` rows before walker is re-enabled).
+**Root cause resolved:** f173b351 regression (+13.07pp featured-product, +10.40pp social-proof) was caused by predicate firing on `sgs-featured-product__inner` and `sgs-social-proof__inner` whose parent sections resolve to slug=None in DB (unregistered blocks). Refined predicate short-circuits at condition 3 for these (parent has no slug + not sgs-container => returns False). Empirically verified: predicate fires on exactly ONE node in Mama’s mockup — sgs-hero__content (parent: sgs-hero, composition_role=section-root).
 
-**Next-session fix shape:**
-1. Inspect `pipeline-state/<2026-05-30-XS-3-run>/` extract.json + voter.json + leftover-buckets.json for featured-product and social-proof. Identify which `composition_role` rows fired the regression.
-2. Either correct the rows OR narrow the walker trigger (preferred — keeps data layer general-purpose).
-3. Re-deploy walker with refined trigger; measure with /sgs-clone Stage 11 per section before commit.
-4. Per blub.db 287 + D113: ship ONE row / ONE walker-condition change at a time; measure between each.
+**Measurement needed (R-22-4):** Run pipeline with --deploy-target page:144 --converter-v2 --debug-trace on canary. Gate: featured-product + social-proof ≤ +1pp delta. Hero: expected improvement. If either regresses >1pp: git revert 0a212e3c immediately.
 
-**Schema as shipped (D108, persists):**
-```sql
-CREATE TABLE block_composition (
-  block_slug TEXT PRIMARY KEY,
-  wraps_block TEXT,
-  composition_role TEXT CHECK(composition_role IN
-    ('section-root','wrapper-shell','content-block','leaf')),
-  has_inner_blocks INTEGER DEFAULT 0,
-  accepts_allowed_blocks TEXT,
-  FOREIGN KEY (block_slug) REFERENCES blocks(slug)
-);
-```
+**Trigger:** Next pipeline run against canary page 144.
 
-**Trigger:** Next session, after Bean reviews this entry.
 
 ### P-XS-3-NEW-TABLE-FOR-CONTAINER-WRAPPED-BLOCKS — RESOLVED 2026-05-30 D108 (block_composition table shipped; walker consumption reverted — see P-XS-3-TRIGGER-REFINEMENT)
 **Status:** RESOLVED (schema landed; walker work moved to P-XS-3-TRIGGER-REFINEMENT)

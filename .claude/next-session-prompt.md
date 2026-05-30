@@ -1,3 +1,12 @@
+> ## 2026-05-31 ADDENDUM (read first; full prior structural defences preserved below) ##
+>
+> Two competing XS-3 implementations to RECONCILE: main `0a212e3c` = composition_role predicate (original Task 1); branch `feat/spec23-container-neutral-walker` `eced119b` = display:grid/flex `_is_layout_bearing_wrapper` (Spec 23 A1) + B2/B3 neutral-default container. Measure each on page 144, decide.
+> social-proof +18.6 root cause (qc-council verified, NOT A1): `sgs/testimonial-slider` un-migrated FR-22-6 hybrid — render.php reads `$attributes['testimonials']` array but converter emits InnerBlocks → testimonials never render (pre-existing). Real fix = migrate the slider. featured-product −15.6pp (branch A1 grid-restoration WIN, reproduced). Header/footer PARKED.
+> NEW lesson (operational guard): `feedback_read_ground_truth_before_concluding.md` — verify EVERY diagnostic claim (yours or a subagent's) against real markup/render.php/`wp-blocks schema`/computed-CSS before concluding OR acting. Never grep-skim / reason from probability / assume block structure. Distinguish debug-attr artefacts from rendered output. Subagent conclusions are HYPOTHESES.
+> Full session detail: `.claude/handoff.md` (2026-05-31).
+>
+> ---------------------------------------------------------------------------
+>
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
