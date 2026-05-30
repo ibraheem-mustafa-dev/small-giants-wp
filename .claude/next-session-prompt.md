@@ -40,8 +40,9 @@ Per blub.db 260 + R-22-1: **"DB-first, no hardcoded dicts."** (Exception per Sub
 | 9 | Proposing a fix shape without reading the relevant Spec section + flow + stages + plan end-to-end | `read-full-spec-before-proposing-architectural-fix-shape` lesson. State the architectural primitive in plain English FIRST. |
 | 10 | Acting on a load-bearing claim in a doc/handoff without grep-verifying against the codebase | `grep-verify-handoff-diagnostic-premises` + `grep-verify-spec-claims-finds-drift` lessons. 60s `find`/`grep`/`ls` BEFORE acting. |
 | 11 | Using `sgs-db.py sql` for INSERT/UPDATE/DELETE | The wrapper is read-only — DELETE silently no-ops. Use direct `sqlite3` Python calls for writes. (Caught last session via Subagent 1 svg-merge.) |
+| 12 | Shipping a fix-shape without first tracing the EXACT EMISSION PATH of the canary instance for that defect | XS-9.1 redundancy lesson 2026-05-30: subagent diagnosed hero `<br>` correctly but proposed extending sgs/heading rich-text — when Mama's hero H1 actually routes via core/heading (already covered by XS-9). Net result: zero canary impact. Before predicting impact, trace which slug RECEIVES the affected attr in the current pipeline, not which slug COULD receive it. |
 
-## Pre-flight self-attestation ritual — answer ALL FIVE inline before any agent dispatch or fix-shape proposal
+## Pre-flight self-attestation ritual — answer ALL SIX inline before any agent dispatch or fix-shape proposal
 
 Before dispatching any subagent OR proposing any fix shape, write these out in your response:
 
@@ -50,6 +51,7 @@ Before dispatching any subagent OR proposing any fix shape, write these out in y
 3. **Which captured lessons (feedback_*) apply?** List by filename + cite the load-bearing claim.
 4. **What's the proposed fix shape, in 1-3 sentences?**
 5. **Does it match ANY entry in the Anti-pattern STOP catalogue above?** If yes, the fix shape is wrong; re-anchor on the primitive.
+6. **What's the EXACT emission path of the canary instance for this defect?** Trace which slug RECEIVES the affected attr in the current pipeline (grep extract.json for the canary section's block_markup). If the path your fix touches is NOT the path the canary actually uses, the predicted impact is ZERO regardless of architectural correctness. (XS-9.1 lesson 2026-05-30: subagent extended sgs/heading rich-text when Mama's hero H1 actually routes via core/heading — already covered by XS-9. Fix was correct + zero canary impact.)
 
 Skipping this ritual is what caused 5+ prior sessions of repeat-failure (per the meta-lesson `feedback_lessons_must_be_operationally_surfaced_not_just_archived`).
 
