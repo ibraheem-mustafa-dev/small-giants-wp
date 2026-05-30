@@ -1,6 +1,6 @@
 # small-giants-wp — Goals
 
-**Last updated:** 2026-05-27 (Spec 22 Phase 1 ARCHITECTURAL CLOSED + Phase 1.5 MEASURED: 0/21 body cells PASS ≤5%, mean 81.55% with regression +17.94pp from pre-walker baseline — Phase 2 hybrid migrations is the path to gap closure)
+**Last updated:** 2026-05-30 (XS-batch D107-D113 LIVE: section-root tier flag + `blocks.tier` column + `block_composition` table data layer + XS-4 canonical_slot port at 31.8% + XS-5 slot vocabulary cleanup; XS-3 walker REVERTED post-regression — refined trigger queued; D6 inheritance script PARTIAL — threshold tuning deferred. Prior: 2026-05-27 — Spec 22 Phase 1 ARCHITECTURAL CLOSED + Phase 1.5 MEASURED: 0/21 body cells PASS ≤5%, mean 81.55%)
 
 ## Primary near-term goal (2026-05-26 onwards — gates everything until met)
 

@@ -62,10 +62,18 @@ Single source of truth for every identifier used across the SGS WordPress Framew
 
 The BEM element segment is the **canonical signal** for block recognition in the converter walker. The HTML tag is rendering-shape only — it does NOT determine which block the converter emits.
 
-Recognition path (deterministic):
+Recognition path (deterministic, tier-driven post-D107):
+
+**SECTION-ROOT path (tier='class-section' blocks):**
+1. Walker reads the block segment from `sgs-<block>` on a section-root candidate
+2. Voter (`per-section-convention-voter.py:295-305`) queries `blocks.tier` — if `tier='class-section'`, emit the literal block slug with confidence 1.0 (reason: `class-section-block-equivalent`)
+3. If `sgs-` prefix is present but no `class-section` row exists, voter emits `gap-candidate-class-section` instead of literal-slug-match — surfaces unregistered section blocks as gap candidates, never silently routed
+4. Current class-section roster: `sgs/hero`, `sgs/cta-section` (sourced from `supports.sgs.is_section_root: true` in each block.json; populated into `blocks.tier` column by `/sgs-update`)
+
+**ELEMENT path (BEM element inside a section):**
 1. Walker reads the BEM element from the class (`sgs-X__<element>`)
-2. Looks up the canonical slot via `slot_synonyms.aliases` (e.g. `__quote` → `quote` canonical; `__body` → `text` canonical; `__card` → `card` canonical)
-3. Resolves canonical → standalone block via `slot_synonyms.standalone_block` (e.g. `quote` → `sgs/quote`; `card` → `sgs/info-box`; `label` → `sgs/label`)
+2. Looks up the canonical slot via `slots` table (89 element rows + 16 section rows post-D99; replaces retired `slot_synonyms`) — e.g. `__quote` → `quote` canonical; `__body` → `text` canonical; `__card` → `card` canonical
+3. Resolves canonical → standalone block via `slots.standalone_block` (e.g. `quote` → `sgs/quote`; `card` → `sgs/info-box`; `label` → `sgs/label`)
 4. Emits the resolved standalone block
 
 **Quote example (illustrates BEM-canonical-only routing):**
@@ -74,7 +82,18 @@ Recognition path (deterministic):
 - `<div class="sgs-X__body">` → `text` canonical → `sgs/text` (intentional — `body` is generic text-content)
 - `<blockquote class="sgs-X__body">` → `text` canonical → `sgs/text` (tag doesn't change recognition)
 
-**Canonical vocabulary** lives in `sgs-framework.db.slot_synonyms` and is documented in [Spec 22 §3 FR-22-1 + FR-22-2](22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md#fr-22-1--bem-is-the-only-recognition-signal). To author a draft that routes to a specific block, name the BEM element with one of that canonical's aliases.
+**Canonical vocabulary** lives in `sgs-framework.db.slots` (post-D99 replacement for retired `slot_synonyms`) and is documented in [Spec 22 §3 FR-22-1 + FR-22-2](22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md#fr-22-1--bem-is-the-only-recognition-signal). To author a draft that routes to a specific block, name the BEM element with one of that canonical's aliases.
+
+### 3.2 Section-root flag (`supports.sgs.is_section_root`)
+
+To declare a new section-root block (a block whose `sgs-<block>` class identifies a whole page section, not an element within one), set `"is_section_root": true` under `supports.sgs` in the block's `block.json`. `/sgs-update` reads this flag and writes `blocks.tier='class-section'`. The voter then routes section recognition to the literal slug at confidence 1.0.
+
+Current roster: `sgs/hero`, `sgs/cta-section`. Adding a new section-root block requires:
+1. `block.json` declares `supports.sgs.is_section_root: true`
+2. Run `/sgs-update` to populate `blocks.tier`
+3. Walker recognition flows automatically — no code branches needed
+
+Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (block_composition table — sibling routing data).
 
 ---
 

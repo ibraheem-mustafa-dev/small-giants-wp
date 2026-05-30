@@ -41,6 +41,13 @@ gap_analysis_council:
 
 # Spec 22 — SGS Cloning Pipeline (Universal Block-Equivalent Extraction)
 
+> **2026-05-30 D107/D108/D109/D110/D111 update** — Voter tier-driven recognition + block_composition data layer landed; XS-3 walker consumption code reverted (deferred).
+> - **D107** — `blocks.tier` column added (TEXT CHECK in 'block','class-section','pattern'; DEFAULT 'block'). Sourced from `supports.sgs.is_section_root: true` flag in block.json; populated by /sgs-update Stage 1. 2 rows currently 'class-section': sgs/hero + sgs/cta-section. Voter (`per-section-convention-voter.py:295-305`) rewritten — literal-slug-match short-circuit REMOVED; voter now queries `blocks.tier='class-section'` via `is_class_section_block(slug)` helper in `db_lookup`. Section-root sgs- classes return at confidence 1.0; all other sgs- classes return gap-candidate (Stage 2 FR-22-4 default → sgs/container). See new §FR-22-16.
+> - **D108** — `block_composition` table CREATED. PK `block_slug`. Columns: `wraps_block` (TEXT), `composition_role` (CHECK in 'section-root'|'wrapper-shell'|'content-block'|'leaf'), `has_inner_blocks` (INT), `accepts_allowed_blocks` (TEXT JSON). 188 rows populated (one per registered block). Initial composition_role distribution: 2 section-root, 1 wrapper-shell, 165 content-block, 20 leaf. 15 blocks have has_inner_blocks=1. `wraps_block='sgs/container'` for 4 blocks: sgs/hero, sgs/cta-section, sgs/modal, sgs/quote. **Walker consumption code DEFERRED** (see D109 / §FR-22-17).
+> - **D109** — XS-3 walker consumption code (commit f173b351) REVERTED at commit c76aa107. Regression: +13.07pp on featured-product + +10.40pp on social-proof. Refined trigger queued at parking entry **P-XS-3-TRIGGER-REFINEMENT**. Per R-22-3, the refined trigger MUST land as an FR-22-4 container-default refinement, NOT a 4th walker exception.
+> - **D110** — `assign-canonical.py` D99 port: all `slot_synonyms` references migrated to `slots WHERE scope='element'` + `roles` table. Batch backfill executed. `block_attributes.canonical_slot` coverage 52/2074 (2.5%) → **659/2074 (31.8%)**. `block_attributes.role` coverage 110/2074 (5.3%) → **676/2074 (32.6%)**.
+> - **D111** — `slots` at scope='section': 16 → **4 rows** (12 wrong/dead rows DELETED). Remaining: core/group, hero, cta, cta-section. `slots` at scope='element': 89 → **91 rows** (testimonial + testimonial-slider re-inserted; `inner` passthrough slot added with standalone_block=NULL — walker consumption reverted but slot row persists for future re-wiring).
+>
 > **2026-05-29 D99 architectural cleanup** — DATA LAYER CHANGES. Throughout this document, prior references to `slot_synonyms` (table) describe the PRE-D99 architecture. POST-D99 the table is RETIRED — its element-scope rows live in `slots WHERE scope='element'` (composite PK on `(slot_name, scope)`); `legacy_role_lookup` similarly retired into `slots WHERE scope='section'`. `slot_synonyms.role_classification` column retired into new `roles` table (per-role catalogue, seeded by `_migrate_roles_table()` via INSERT OR REPLACE from `_ROLE_CLASSIFICATION_MAP` Python dict — fixes link-href content-bearing gap). Walker function `_slot_synonyms()` retained as name but queries `slots WHERE scope='element'` internally. Read `slot_synonyms` references below as describing the LOGICAL concept (per-slot routing data); the PHYSICAL home is `slots` table. See §4 data layer for the current table inventory; see decisions.md D99 + this document's §FR-22-2.2 amendment + Spec 22 §4 data-layer rows for full migration detail.
 
 ## 0. Purpose
@@ -123,6 +130,8 @@ The derivation function lives in `converter_v2/db_lookup.py`. Two tiers, in orde
 
 **Tier C deleted 2026-05-27** per D85 / qc-council Rater B verdict (Bean directive). Re-introduction is gated on parking entry `P-SGS-UPDATE-ROLE-DETECTION-IMPROVE` generating real Tier C inputs — at which point the path will be re-added with empirical evidence backing it. See §15 F-AP-2 / F-SC-11 / F-PE-5 (all RESOLVED via deletion).
 
+**Empirical DB state (2026-05-30 update per D110):** canonical_slot coverage rose from 52/2074 (2.5%) to **659/2074 (31.8%)** via the D99-ported `assign-canonical.py` batch backfill; `role` coverage rose from 110/2074 (5.3%) to **676/2074 (32.6%)**. The pre-D110 figures below describe the historical state at Phase 0.1 close; ratios held (Tier A active for the populated rows, Tier B candidates for the rest, behavioural rows correctly NULL by design).
+
 **Empirical DB state (2026-05-27, scope-corrected — supersedes earlier "1,214 NULL rows to backfill" framing):** of 2,246 block_attributes rows:
 - 1,032 (46%) have `canonical_slot` populated → Tier A active.
 - 72 (3%) have `canonical_slot` NULL but `derived_selector` set → Tier B candidates (the actual backfill scope).
@@ -199,12 +208,16 @@ The walker is one recursive function. Its branching surface is exactly 3 conditi
 **PASS test:** count of `if|elif` branches in convert.py walker function that reference a block-slug literal must be 0. Count of `is_top_level` / `node.name in (atomic_tag_map|SKIP_TOP_LEVEL_TAGS)` branches must be exactly 3.
 **FAIL test:** any 4th branch added to the walker without a spec amendment.
 
+**2026-05-30 deferred-trigger note (D109).** The XS-3 walker consumption code (layout-bearing wrapper detection + `__inner` passthrough emit) was attempted at commit `f173b351` and REVERTED at `c76aa107` after measuring +13.07pp regression on featured-product + +10.40pp on social-proof. A refined trigger is queued at parking entry **P-XS-3-TRIGGER-REFINEMENT**. Per R-22-3, that refined trigger MUST land as a refinement to FR-22-4 container-default behaviour (or as enrichment to one of the existing three exceptions), NOT as a 4th conditional branch in the walker. The data layer that supports the future re-wire — the `block_composition` table (188 rows, see §FR-22-17) and the `inner` slot row in `slots WHERE scope='element'` — is shipped and stable; only the consumption code is deferred.
+
 ### FR-22-4 — Section base is always sgs/container
 
 Top-level section nodes are unconditionally wrapped in `sgs/container` per architecture decision #4. This is permitted exception #3 in FR-22-3.
 
 **PASS test:** every section entry in extract.json has `sgs/container` as its outermost block.
 **FAIL test:** any section root emits a non-container block at the top level.
+
+**Tier-driven routing path (D107, 2026-05-30).** The per-section-convention voter now consults `blocks.tier` before the FR-22-4 container-default fires. Section-root sgs- classes registered with `blocks.tier='class-section'` (currently sgs/hero + sgs/cta-section) return from the voter at confidence 1.0 and emit their declared block directly — the FR-22-3 permitted exception #3 still wraps the emit in `sgs/container` per architecture decision #4. All OTHER sgs- prefixed section root classes return a gap-candidate from the voter and fall through to the FR-22-4 default (Stage 2 container emit). See §FR-22-16 for the voter behaviour spec.
 
 ### FR-22-5 — CSS routes to direct-owner per FR6 four-destination policy (preserved from Spec 16)
 
@@ -375,20 +388,75 @@ When `resolve_slug_from_bem` Path 1 yields two or more bare-block candidates (i.
 **PASS test:** `resolve_slug_from_bem(['sgs-testimonial-slider', 'sgs-container'])` → `'sgs/testimonial-slider'` (capability rank wins over alphabetical).
 **FAIL test:** same call returning `'sgs/container'` (alphabetical-first bug re-introduced).
 
+### FR-22-16 — Voter tier-driven recognition (D107, 2026-05-30)
+
+The per-section-convention voter (`scripts/per-section-convention-voter.py:295-305`) recognises a section-root sgs- class as a block-equivalent emission ONLY when the block is operator-declared as a section-root in the framework. Recognition signal is the `blocks.tier` column.
+
+**Pre-condition.** `blocks.tier` is populated by `/sgs-update` Stage 1, which reads the `supports.sgs.is_section_root: true` flag in each block's `block.json`. Operators set this flag deliberately on blocks designed to BE a section root (sgs/hero, sgs/cta-section currently). All other blocks default to `tier='block'`. A future tier value `'pattern'` is reserved for pattern-emit blocks; no rows currently carry it.
+
+**Voter behaviour.**
+
+1. Voter receives a candidate sgs- class extracted from the section root node.
+2. Voter formulates the candidate block slug (e.g. `sgs-hero` → `sgs/hero`).
+3. Voter calls `db_lookup.is_class_section_block(slug)`. The helper queries `SELECT 1 FROM blocks WHERE slug = ? AND tier = 'class-section' LIMIT 1`.
+4. If the helper returns True, voter returns `(slug, confidence=1.0, source='class-section-block-equivalent')`.
+5. If the helper returns False AND the class is sgs- prefixed, voter returns `('', 0.0, 'gap-candidate-class-section')`. Stage 2 routes the candidate through the FR-22-4 container-default path.
+
+**What this REMOVES.** The pre-D107 voter contained a literal-slug-match short-circuit that returned confidence 1.0 for ANY sgs- prefixed candidate whose slug matched a registered block — regardless of whether the block was designed as a section root. This produced false-positive section emits when content-block primitives (sgs/text, sgs/heading, sgs/media) appeared in section-root class chains. The short-circuit is REMOVED; tier='class-section' is the new positive signal.
+
+**PASS test.** `voter.recognise('sgs-hero')` → `('sgs/hero', 1.0, 'class-section-block-equivalent')`. `voter.recognise('sgs-ingredients-section')` → `('', 0.0, 'gap-candidate-class-section')` (sgs/ingredients-section is not a registered block; even if it were, tier would default to 'block', not 'class-section').
+**FAIL test.** Any sgs- prefixed candidate returning confidence 1.0 from the voter without `blocks.tier = 'class-section'` on the resolved slug.
+
+Per R-22-1 there is no Python `_CLASS_SECTION_SLUGS` frozenset. The signal is in the DB column; operators control it by editing `block.json`.
+
+### FR-22-17 — block_composition shape signals (D108 data layer; walker consumption DEFERRED per D109)
+
+The `block_composition` table records the deterministic shape of each registered block — what it wraps, whether it carries InnerBlocks, what child blocks it accepts. This is structural metadata, NOT recognition data. The walker (in a future commit, see deferred-trigger note below) will consult `block_composition` to refine its container-default behaviour without adding a 4th conditional branch.
+
+**Schema.**
+
+| Column | Type | Notes |
+|---|---|---|
+| `block_slug` | TEXT PK | One row per registered block (188 rows currently). |
+| `wraps_block` | TEXT | Slug of the block this one wraps as its outer rendered container, or NULL. Populated for 4 blocks: sgs/hero, sgs/cta-section, sgs/modal, sgs/quote (all wrap `sgs/container`). |
+| `composition_role` | TEXT CHECK | One of `section-root` (2 rows), `wrapper-shell` (1 row), `content-block` (165 rows), `leaf` (20 rows). |
+| `has_inner_blocks` | INT | 1 if the block declares an InnerBlocks slot (15 blocks currently); 0 otherwise. |
+| `accepts_allowed_blocks` | TEXT (JSON) | JSON array of slug strings the block's `allowedBlocks` whitelist accepts; NULL if no whitelist. |
+
+**Population algorithm (deterministic, run by `/sgs-update`).** Per registered block:
+
+1. `composition_role` derives from a 4-step cascade: (a) `tier='class-section'` → `section-root`; (b) `wraps_block IS NOT NULL` AND `has_inner_blocks=1` AND no content-bearing attrs → `wrapper-shell`; (c) `has_inner_blocks=1` OR ≥1 content-bearing attr per FR-22-2.2 → `content-block`; (d) otherwise → `leaf`.
+2. `wraps_block` is read from save.js / render.php — first detected `<InnerBlocks>` / `<?php echo $content` parent tag that resolves to a registered block.
+3. `has_inner_blocks` is True iff save.js contains `<InnerBlocks` OR render.php emits `$content` directly without wrapping.
+4. `accepts_allowed_blocks` is read from save.js / block.json `allowedBlocks` arrays.
+
+Populated 2026-05-30 by `/sgs-update` Stage 1 extension. 188 rows. Refresh on every `/sgs-update` run.
+
+**DEFERRED walker consumption (D109).** The original XS-3 plan (commit `f173b351`) wired the walker to consult `block_composition.wraps_block` + `composition_role='wrapper-shell'` to recognise layout-bearing non-section wrappers and emit `__inner` slot passthroughs. Empirical Stage 11 measurement showed +13.07pp regression on featured-product and +10.40pp on social-proof. Code reverted at `c76aa107`. The DATA is shipped and stable; the CONSUMPTION condition is queued at parking entry **P-XS-3-TRIGGER-REFINEMENT**. Per R-22-3, the refined trigger MUST land as a refinement to FR-22-4 (container default) — NOT as a 4th walker exception.
+
+**Cross-references.**
+- D108 = data layer ship (this FR's pre-condition).
+- D109 = walker consumption revert decision + the +13.07pp / +10.40pp regression evidence.
+- P-XS-3-TRIGGER-REFINEMENT = parking entry tracking the refined trigger work.
+
+**PASS test (data layer).** `SELECT COUNT(*) FROM block_composition` returns 188. `SELECT COUNT(*) FROM block_composition WHERE wraps_block='sgs/container'` returns 4 (sgs/hero, sgs/cta-section, sgs/modal, sgs/quote). `SELECT COUNT(*) FROM block_composition WHERE composition_role='section-root'` returns 2.
+**FAIL test.** Walker consults `block_composition.wraps_block` to emit `__inner` passthrough before P-XS-3-TRIGGER-REFINEMENT closes — re-introduces the reverted regression.
+
 ## 4. The data layer
 
 ### sgs-framework.db — the framework brain (29 tables, ~17k+ rows)
 
 | Table | Rows | Spec 22 role |
 |---|---|---|
-| `blocks` | 194 (68 sgs-built) | Block roster |
-| `block_attributes` | 2,074 (post-D100 cleanup) | Central for FR-22-2. Walker reads `canonical_slot` + `derived_selector` + `role` to resolve equivalent_block at query time. |
+| `blocks` | 194 (68 sgs-built) | Block roster. **D107 2026-05-30 — `tier` column added.** TEXT CHECK in ('block','class-section','pattern'), DEFAULT 'block'. 2 rows currently 'class-section' (sgs/hero, sgs/cta-section); all others default 'block'. Populated by `/sgs-update` Stage 1 from `supports.sgs.is_section_root: true` flag in block.json. Consumed by `db_lookup.is_class_section_block()` per FR-22-16. |
+| `block_composition` | 188 | **D108 2026-05-30 — NEW table.** PK `block_slug`. Columns: `wraps_block` TEXT, `composition_role` TEXT CHECK in ('section-root','wrapper-shell','content-block','leaf'), `has_inner_blocks` INT, `accepts_allowed_blocks` TEXT JSON. Distribution: 2 section-root + 1 wrapper-shell + 165 content-block + 20 leaf. 15 rows has_inner_blocks=1; 4 rows wraps_block='sgs/container' (sgs/hero, sgs/cta-section, sgs/modal, sgs/quote). Populated by `/sgs-update` Stage 1. Walker consumption DEFERRED per D109 / FR-22-17 / parking P-XS-3-TRIGGER-REFINEMENT. |
+| `block_attributes` | 2,074 (post-D100 cleanup) | Central for FR-22-2. Walker reads `canonical_slot` + `derived_selector` + `role` to resolve equivalent_block at query time. **D110 2026-05-30 backfill:** `canonical_slot` coverage 52 → 659 rows (2.5% → 31.8%); `role` coverage 110 → 676 rows (5.3% → 32.6%) via D99-ported `assign-canonical.py`. |
 | `block_supports` | 1,160 (post-D100 cleanup) | Block-level supports |
 | `block_capabilities` | 88 | Capability declarations. FR-22-15: queried by `capabilities_for()` / `blocks_with_capability()` / `_capability_rank()` in `db_lookup.py` for capability-aware tiebreaking in multi-candidate BEM resolution. Seed propagation fixed 2026-05-29 (D96): `populate-db.py` now uses `INSERT OR REPLACE` + pre-pass DELETE so edits to `CAPABILITY_RULES` propagate on every re-run. |
 | `block_selectors` | 72 | Block-slug → element → selector mapping |
 | `block_styles` | 63 | Block style variations |
 | `block_changes` | 2,719 | Audit log |
-| `slots` | 105 | **D99 2026-05-29 — unified slot→block mapping.** Replaces `slot_synonyms` (89 element-scope rows) + `legacy_role_lookup` (16 section-scope rows). PK: `(slot_name, scope)` — composite because the same name can exist at both scopes (e.g. `header` is an element-scope identity slot AND a section-scope class). `scope='element'` rows are the former `slot_synonyms` data; `scope='section'` rows are the former `legacy_role_lookup` data. `html_semantic_tag` column NOT migrated (was low-value: only 27/89 populated; not consulted by `atomic_tag_map()` per §14). |
+| `slots` | 95 (91 element + 4 section, per D111 2026-05-30) | **D99 2026-05-29 — unified slot→block mapping.** D111 2026-05-30: section-scope rows pruned 16 → 4 (12 wrong/dead rows DELETED; remaining: core/group, hero, cta, cta-section). Element-scope rows 89 → 91 (testimonial + testimonial-slider re-inserted; `inner` passthrough slot added with `standalone_block=NULL` — walker consumption reverted per D109 but slot row persists for future re-wiring under P-XS-3-TRIGGER-REFINEMENT). Replaces `slot_synonyms` (89 element-scope rows) + `legacy_role_lookup` (16 section-scope rows). PK: `(slot_name, scope)` — composite because the same name can exist at both scopes (e.g. `header` is an element-scope identity slot AND a section-scope class). `scope='element'` rows are the former `slot_synonyms` data; `scope='section'` rows are the former `legacy_role_lookup` data. `html_semantic_tag` column NOT migrated (was low-value: only 27/89 populated; not consulted by `atomic_tag_map()` per §14). |
 | `roles` | 20 | **D99 2026-05-29 — role-name → classification catalogue.** Replaces `slot_synonyms.role_classification` column. Seeded from `_ROLE_CLASSIFICATION_MAP` via `INSERT OR REPLACE`. Fixes link-href bug (old column never seeded link-href because no slot row had `role='link-href'`). 5 content-bearing + 15 styling-behaviour. |
 | ~~`slot_synonyms`~~ | ~~89~~ | **RETIRED D99 2026-05-29.** Data migrated to `slots WHERE scope='element'`. |
 | `property_suffixes` | 117 | CSS property → block-attribute suffix (D1 routing). **D99: `kind_override` column added.** 17 rows seeded from `_KIND_BY_SUFFIX` dict (was a hardcoded Python lookup dict; now DB column queried first in `_kind_for()`). |
@@ -479,7 +547,7 @@ Retired scripts move to `plugins/sgs-blocks/scripts/orchestrator/_retired/` so t
 
 1. **R-22-1 — DB-first, no hardcoded dicts** (blub.db 260). All lookups via DB tables; the only "permitted" dict-like constant is `SKIP_TOP_LEVEL_TAGS` (3 entries: header/footer/nav — bounded HTML semantic tags, not block-specific). Role classification (replacing the original Tier C row-derivation concept) now lives in the `slot_synonyms.role_classification` column (DB-migrated 2026-05-27 per D85/D86) — Python frozensets retired.
 2. **R-22-2 — BEM is the only recognition signal** (Spec 00 §3.1). HTML tag is rendering-shape only, except in the bounded atomic-tag-swap permitted exception.
-3. **R-22-3 — Three permitted walker exceptions, no others** (FR-22-3). Adding a 4th branch requires spec amendment with empirical justification.
+3. **R-22-3 — Three permitted walker exceptions, no others** (FR-22-3). Adding a 4th branch requires spec amendment with empirical justification. **D109 2026-05-30 amplification:** the deferred XS-3 refined trigger queued at parking entry **P-XS-3-TRIGGER-REFINEMENT** MUST land as a refinement to FR-22-4 (container-default behaviour) or as enrichment of one of the three existing exceptions — NEVER as a 4th conditional. The `block_composition` table (FR-22-17) supplies the data signals; the consumption code shape is constrained by this rule.
 4. **R-22-4 — Pixel-diff measurement gates every commit** (blub.db 256). `/sgs-clone --debug-trace` Stage 11 per-section pixel-diff captured pre/post. Commit message cites predicted vs actual delta.
 5. **R-22-5 — Phases never ship as single commits** (blub.db 288). Phase 1 walker rewrite is split into ≥3 commits (Phase 1.1, 1.2, 1.3, 1.4, 1.5) per §7.
 6. **R-22-6 — Output-only inference is a trap** (2026-05-26 feedback). Verify mockup HTML AND extract.json AND live DOM at each milestone.

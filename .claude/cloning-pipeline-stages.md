@@ -158,6 +158,12 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │ SCRIPTS:                                                                    │
 │  ✓ plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py    │
 │       subprocess-called from sgs-clone-orchestrator.py at line 536          │
+│       2026-05-30 D107: per-section-convention-voter.py:295-305 now queries  │
+│       blocks.tier via db_lookup.is_class_section_block() helper (was:       │
+│       literal-slug-match for all sgs- classes). Section-roots → confidence  │
+│       1.0; non-section-roots → gap-candidate.                                │
+│  ✓ plugins/sgs-blocks/scripts/orchestrator/db_lookup.py                     │
+│       is_class_section_block() helper — reads blocks.tier column            │
 │  ✓ plugins/sgs-blocks/scripts/orchestrator/stage1_boundary_hook.py          │
 │       WIRED 2026-05-14 (Phase 6 v2 Step 4e). Adds source_convention +       │
 │       primary_sgs_bem + equivalent_implementations + gap_candidate_classes  │
@@ -169,10 +175,16 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │ FILES (W):  pipeline-state/sgs-clone/<run_id>/voter.json (rewritten)        │
 │             pipeline-state/sgs-clone/<run_id>/stage-1.json                  │
 │                                                                             │
-│ DB tables (R):  slot_synonyms (sgs-framework.db)                            │
+│ DB tables (R) — post-D107/D108/D111:                                        │
+│   blocks.tier (D107 — new column, 2 rows class-section)                     │
+│   block_composition (D108 — 188 rows; AVAILABLE for queries, walker         │
+│     consumption code DEFERRED — P-XS-3-TRIGGER-REFINEMENT)                  │
+│   slots WHERE scope='element' (89 rows incl. new 'inner' passthrough)        │
+│   slots WHERE scope='section' (6 rows post-D111; was 16 pre-D111)            │
+│   roles (D99 — 20 rows; replaces slot_synonyms.role_classification)         │
 │ Skills (X):     ✗ /uimax-classify-naming (deferred — current dispatch uses  │
 │                   heuristic classifier in stage1_boundary_hook)             │
-│ STATUS:       LIVE - Phase 6 v2 Step 4e complete                            │
+│ STATUS:       LIVE - tier-driven routing (D107) + slots/roles (D99/D111)    │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -244,6 +256,10 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │             pipeline-state/sgs-clone/<run_id>/stage-4-extract.json          │
 │                                                                             │
 │ DB tables (R):  block_attributes (canonical_slot, role, output_signature)   │
+│   D110 backfill (2026-05-30): canonical_slot 52 → 659 (2.5% → 31.8%); role  │
+│   110 → 676 (5.3% → 32.6%). 1316 rows remain NULL (vocab/regex gaps logged).│
+│   assign-canonical.py ported from retired slot_synonyms → slots+roles       │
+│   schema (9 references migrated). Stage 1 tail of /sgs-update wires it.     │
 │ External tools: Playwright (computed-style extraction at 3 viewports)       │
 │                                                                             │
 │ STATUS (post-2026-05-24 second pass — SHIPPED): 5 data-layer + walker      │
@@ -598,6 +614,9 @@ Refreshes the data layer; runs OUT-OF-BAND from /sgs-clone.
 │           ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py (query helper)   │
 │                                                                             │
 │ Stage 1  Inventory      - walks plugins/sgs-blocks/src/blocks/ + theme/     │
+│           D107 (2026-05-30): _index_sgs_block_files reads                    │
+│           supports.sgs.is_section_root from each block.json and writes      │
+│           blocks.tier ('class-section' if true else 'block'). Idempotent.  │
 │ Stage 2  Block.json     - parses every block.json; populates                │
 │                           block_attributes, block_selectors, block_supports │
 │           Script: plugins/sgs-blocks/scripts/generate-block-reference.py    │
@@ -618,6 +637,18 @@ Refreshes the data layer; runs OUT-OF-BAND from /sgs-clone.
 │ MUTEX: /sgs-update + /sgs-clone share the build mutex                      │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## Sibling tools — out-of-band data-layer maintenance (2026-05-30)
+
+These run alongside `/sgs-update` but are NOT part of the canary `/sgs-clone` pipeline. They prepare/maintain the data layer the pipeline consumes.
+
+| Script | Purpose | Status |
+|---|---|---|
+| `plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py` | D6 inheritance script. Populates `block_composition.wraps_block`. Emits per-block diff Markdown to `pipeline-state/container-inheritance-sync/<date>/<block>.diff.md`. Operator-review gate (never auto-edits `block.json`). | LIVE — threshold tuning queued at `P-D6-THRESHOLD-RETUNE` |
+| `plugins/sgs-blocks/scripts/build-deploy.py` | D3 automated build + deploy helper. | LIVE |
+| `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py` | D110 — D99 port of canonical_slot/role assigner from retired `slot_synonyms` to post-D99 `slots`+`roles` schema. Now wired as `/sgs-update` Stage 1 tail. | LIVE |
 
 ---
 
@@ -682,7 +713,7 @@ python ~/.claude/hooks/wp-blocks.py dump
 | 0 | -- | -- |
 | 0.1 | -- | naming_conventions (reference) |
 | 0.5 | -- (reads theme.json directly) | -- |
-| 1 | slot_synonyms (R) | naming_conventions (reference) |
+| 1 | blocks.tier (R, D107), block_composition (R, D108 — data layer LIVE, walker consumption DEFERRED), slots scope='element'/'section' (R, D111), roles (R, D99) | naming_conventions (reference) |
 | 2 | blocks (R via filesystem) | -- |
 | 3 | block_attributes (R: canonical_slot, role, derived_selector) | -- |
 | 4 | block_attributes (R: canonical_slot, output_signature) | -- |
@@ -702,14 +733,18 @@ python ~/.claude/hooks/wp-blocks.py dump
 
 | Table | Rows | Pipeline use |
 |---|---|---|
-| block_attributes | 1,349+ | Stages 3+4 R; cv2 D3 W |
-| slot_synonyms | 82 | Stage 1 R; cv2 walker standalone_block routing |
-| block_supports | 347 | Stage 5 supports_writer R |
-| property_suffixes | 117 | assign-canonical; cv2 db_lookup.css_property_suffixes() |
-| blocks | 67 | Stage 2 cross-check; /sgs-update S3 uimax sync |
-| patterns | 53 | Stage 2 confidence boost; +REGISTER W |
+| block_attributes | 2,074 | Stages 3+4 R; cv2 D3 W. D110 backfill: canonical_slot 659/2074 (31.8%), role 676/2074 (32.6%); 1316 NULL |
+| blocks | 67 sgs (+ 121 core/wp indexed = 188) | Stage 2 cross-check; /sgs-update S3 uimax sync. `tier` column (D107) — 2 rows class-section |
+| block_composition (D108, NEW 2026-05-30) | 188 | Data layer LIVE for Stage 1 queries; walker consumption code REVERTED — P-XS-3-TRIGGER-REFINEMENT. Schema: block_slug PK, wraps_block, composition_role enum, has_inner_blocks, accepts_allowed_blocks |
+| slots (D99, replaces slot_synonyms + legacy_role_lookup) | 89 element + 6 section = 95 (post-D111; was 105 pre-D111) | Stage 1 R via db_lookup |
+| roles (D99, replaces slot_synonyms.role_classification) | 20 | Stage 1 R; walker resolution |
+| block_supports | 1,160 (post-D100 prune) | Stage 5 supports_writer R |
+| block_capabilities (D99 wired as FR-22-15) | 88 | Walker capability-aware BEM tiebreaker |
+| property_suffixes | 117 (+ kind_override column, 17 populated per D99) | assign-canonical; cv2 db_lookup.css_property_suffixes() |
+| patterns | 47 | Stage 2 confidence boost; +REGISTER W |
 | attribute_gap_candidates | 107+ | Stage 9 W; D3 emission W (Wave 3) |
-| legacy_role_lookup | 18 | Voter R via db_lookup (Wave 3) |
+
+**Retired tables:** `slot_synonyms` + `legacy_role_lookup` — unified into `slots` (D99, 2026-05-29).
 
 ---
 

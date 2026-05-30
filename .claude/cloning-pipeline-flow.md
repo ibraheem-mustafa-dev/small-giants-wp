@@ -16,6 +16,17 @@ update_triggers:
   - Skill dispatch change at any stage
 ---
 
+> **2026-05-30 D107-D113 follow-up callout** — tier-driven Stage 1 + block_composition data layer + canonical_slot coverage uplift:
+> - **D107 Stage 1 voter rewrite** — `per-section-convention-voter.py:295-305` now queries `blocks.tier` via `db_lookup.is_class_section_block()` helper (was: literal-slug-match against every `sgs-*` class). Section-roots → confidence 1.0; non-section-roots → gap-candidate.
+> - **D107 /sgs-update integration** — `sgs-update-v2.py` Stage 1 `_index_sgs_block_files` reads `supports.sgs.is_section_root` from each `block.json` and writes `blocks.tier` (`'class-section'` if true else `'block'`). Idempotent. 2 rows currently `class-section`.
+> - **D108 block_composition data layer LIVE; walker code DEFERRED** — new `block_composition` table (188 rows; schema: `block_slug` PK, `wraps_block`, `composition_role` enum, `has_inner_blocks`, `accepts_allowed_blocks`). The TABLE persists and is valid. The walker recursion code that would consume it (XS-3) was REVERTED (commit `f173b351` → `c76aa107`). Refined trigger queued at `P-XS-3-TRIGGER-REFINEMENT`.
+> - **D110 assign-canonical.py D99 port + backfill** — script ported from retired `slot_synonyms` to post-D99 `slots`+`roles` schema (9 references migrated). `block_attributes.canonical_slot` coverage 52 → 659 rows (2.5% → 31.8%); `role` coverage 110 → 676 (5.3% → 32.6%). 1316 rows remain NULL (vocab/regex gaps logged).
+> - **D111 section-scope slot retirement** — `slots` scope='section' pruned from 16 → 6 rows; new `inner` element row added for passthrough.
+> - **D112 D6 inheritance script** — new `plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py` populates `block_composition.wraps_block`. Emits per-block diff Markdown to `pipeline-state/container-inheritance-sync/<date>/<block>.diff.md`. Operator-review gate (never auto-edits `block.json`). Threshold tuning queued at `P-D6-THRESHOLD-RETUNE` (4 blocks too few — target 20-30+).
+> - **D113 D5 methodology updates** — STOP catalogue extended (entry #12).
+> - **D3 build-deploy.py** — new automated deploy helper at `plugins/sgs-blocks/scripts/`.
+> See `.claude/decisions.md` D107-D113 for full per-decision detail.
+
 > **2026-05-29 D99 architectural cleanup batch** — recogniser/walker layer table changes:
 > - `slot_synonyms` table RETIRED → unified into new `slots` table with composite PK `(slot_name, scope)`; 89 element + 16 section = 105 rows
 > - `legacy_role_lookup` table RETIRED → migrated into `slots` table as scope='section' rows
@@ -43,7 +54,7 @@ Per-stage annotated blocks (scripts, files, DB tables, skills, status) are in
 | 0.5 | Token-usage lint | `lints/token-lint.py` | `stage-0.5-token-lint.json` | LIVE |
 | 0.7 | CSS lift (four-destination router) | `orchestrator/css_router.py` | `css-d1-assignments.json` + variation CSS | LIVE (Spec 22 §FR-22-5; was Spec 16 §FR6 — retired 2026-05-26) |
 | 0.8 | Theme-widths detection | `converter_v2/convert.py` (inline fns) | `styles/<client>.json` (idempotent) | LIVE |
-| 1 | Section boundary detection | `recogniser/per-section-convention-voter.py` | `voter.json` | LIVE |
+| 1 | Section boundary detection | `recogniser/per-section-convention-voter.py` | `voter.json` | LIVE (tier-driven post-D107) |
 | 2 | Block-type match | `recogniser/confidence-matrix.py` | `stage-2.json` | LIVE |
 | 3 | Slot list | `sgs-clone-orchestrator.py` (inline) | `stage-3-slot_list.json` | LIVE |
 | 4 | Slot extraction | `converter_v2/convert.py` | `extract-<boundary>.json` | LIVE (cv2 only) |
@@ -100,13 +111,15 @@ The cloning pipeline emits via a single universal walker path with exactly 3 per
 
 No other branches. Adding a 4th requires spec amendment with empirical justification (R-22-3). Canonical reference: `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`.
 
+**D108 status (2026-05-30):** `block_composition` table (188 rows) is LIVE as a data layer; walker recursion code that would consume it (XS-3) was REVERTED (commit `f173b351` → `c76aa107`) pending a refined trigger. Treat `block_composition` as available for DB-driven queries but NOT yet a walker branch. Refined trigger parked at `P-XS-3-TRIGGER-REFINEMENT`.
+
 ---
 
 ## Cross-cutting principles
 
 **FR21 invariant** — NO mutation outside `pipeline-state/` until `autonomy_gate` approves promotion. Every stage writes artefacts to `pipeline-state/<run_id>/`; staged_merge validates schema; only `--promote` copies scaffolds to canonical locations.
 
-**DB-first** — Before adding hardcoded lookup dicts, check `sgs-framework.db`: `property_suffixes` (117), `block_supports` (370), `modifier_suffixes` (19), `slot_synonyms`, `block_attributes` (1406). Refactor to `db_lookup.py`.
+**DB-first** — Before adding hardcoded lookup dicts, check `sgs-framework.db`: `blocks.tier` (D107 column — `class-section` vs `block`), `block_composition` (D108 — 188 rows; walker consumption DEFERRED but data layer live), `slots` scope='element' (89 rows) / scope='section' (6 rows post-D111) + new `inner` element row, `roles` (20 rows, D99), `property_suffixes` (117 + `kind_override` column 17 rows), `block_supports`, `modifier_suffixes` (19), `block_attributes` (2074; `canonical_slot` 31.8% / `role` 32.6% post-D110 backfill). Refactor to `db_lookup.py`.
 
 **Token-snap strict exact-match** — Snap only when token's resolved value equals the literal within tight tolerance (ΔE ≤ 1.0 for colour, ≤ 1px for spacing/font-size). Nearest-match (confidence 0.85) is NOT snap-eligible. See `mistakes.md` 2026-05-20 lesson 1.
 

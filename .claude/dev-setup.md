@@ -2,7 +2,7 @@
 doc_type: dev-setup
 project: small-giants-wp
 title: SGS WordPress Framework — Developer Setup & Operations
-last_updated: 2026-05-24
+last_updated: 2026-05-30
 split_from: .claude/architecture.md (Part C)
 split_date: 2026-05-24
 ---
@@ -460,6 +460,29 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client indus-foods --
 # --no-push flag for preview without pushing
 ```
 
+### Fast-cycle canary deploy (sandybrown) — D3
+
+`plugins/sgs-blocks/scripts/build-deploy.py` is the fast-cycle deploy script for the sandybrown staging canary. Skips full-ceremony steps (no /qc-council, no full doc walk) — use for iterative pipeline / converter work where the per-commit cadence is dictated by /sgs-clone --debug-trace measurement, not full deploy QA.
+
+```bash
+python plugins/sgs-blocks/scripts/build-deploy.py
+```
+
+Companion to `/wp-sgs-deploy` (full-ceremony palestine-lives deploy). Pick by target site:
+- sandybrown canary → `build-deploy.py`
+- palestine-lives + production → `/wp-sgs-deploy`
+
+### Inheritance audit — container-wrapping blocks (D6)
+
+`plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py` audits which blocks wrap their content in another block (e.g. `sgs/container`) and emits a diff against the `block_composition` table.
+
+```bash
+python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py
+# --apply to write detected wraps_block values into block_composition
+```
+
+Current threshold flags 4 blocks; tuning to a broader 20-30 block surface is DEFERRED. Re-run whenever container-wrapping conventions change across the block roster.
+
 ### PowerShell equivalents (dev machine)
 
 ```powershell
@@ -551,6 +574,22 @@ python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py stats          # Framewo
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py block sgs/hero  # Block details
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py match "pricing" # Find best block
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context indus-foods # Load client
+```
+
+### DB schema notes (post-D99 + D107-D113)
+
+- **`blocks.tier`** (new D107) — TEXT column, CHECK constraint `IN ('block', 'class-section', 'pattern')`. Populated by `/sgs-update` Stage 1 from each block's `supports.sgs.is_section_root` flag in `block.json`. Operator-set per block, not algorithmically inferred.
+- **`block_composition`** (new D108) — 188 rows seeded. Tracks ALL container-wrapping blocks (not just section-roots). Columns differentiate section-root wrappers from non-section container wrappers for div-class-level routing. Walker consumption DEFERRED — data layer LIVE only.
+- **`slots`** (D99) — composite PK on `(slot_name, scope)`. 89 element-scope + 16 section-scope rows. Replaces retired `slot_synonyms` + `legacy_role_lookup`. XS-5 cleanup retired 12 wrong/dead section-scope rows + re-inserted testimonial/testimonial-slider at element scope.
+- **`roles`** (D99) — 20 rows. Replaces `slot_synonyms.role_classification` column. `INSERT OR REPLACE` from `_ROLE_CLASSIFICATION_MAP`.
+- **`html_tag_to_core_block`** (D99) — 14 rows, idempotent migration at module load. Replaces hardcoded `_HTML_TAG_TO_CORE_SLUG` dict. `INSERT OR REPLACE`.
+
+### canonical_slot assignment (XS-4 / D110)
+
+`assign-canonical.py` was ported to the D99 `slots` + `roles` schema. Current canonical_slot coverage = 31.8% of attrs. Re-run after every slot-vocabulary addition:
+
+```bash
+python plugins/sgs-blocks/scripts/assign-canonical.py
 ```
 
 ---

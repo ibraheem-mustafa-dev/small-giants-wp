@@ -103,6 +103,7 @@ Decided 2026-05-03 — full spec at [`11-SGS-BUTTON-ARCHITECTURE.md`](11-SGS-BUT
 - **Composition pattern:** every composite block that renders CTAs (`sgs/hero`, `sgs/cta-section`, `sgs/product-card`, `sgs/feature-grid`, etc.) exposes an InnerBlocks slot whose default template is `sgs/multi-button` containing 2 `sgs/button` instances. **NEW SGS BLOCKS WITH CTAs MUST USE THIS PATTERN** — never render CTAs internally via per-block `ctaPrimary*` attributes.
 - **Preset binding** via `inheritStyle: 'primary' | 'secondary' | 'outline' | 'custom'` reads from `wp_options.sgs_button_presets`, mirrored to `theme.json` `settings.custom.buttonPresets`. Three editing paths (Settings page, Site Editor block-style-variations, theme.json) write the same backing store.
 - **Existing CTA-rendering blocks** (sgs/hero etc.) are refactored to InnerBlocks composition with deprecation paths preserving existing post content. See spec 11 §5.
+- **Render-time sanitisation (XS-9.2):** `sgs/button` `render.php` uses a tightened `wp_kses` allowlist that **excludes `<a>`** — the wrapper anchor is emitted by the render path itself, so any nested `<a>` inside button content is a malformed input. URL scheme allowlisting (`http`, `https`, `mailto`, `tel`) is enforced at the converter layer when the button is composed from a mockup. Prevents nested-anchor markup and javascript:/data: URI injection.
 
 ## Pipeline / extraction
 
@@ -169,6 +170,10 @@ block-name/
 ### 2. Hero (`sgs/hero`)
 
 **Purpose:** Page hero section with headline, sub-headline, CTAs, and background image/video/SVG.
+
+**Tier:** `class-section` (recognised at voter confidence 1.0 by `sgs-hero` BEM-block; declared via `supports.sgs.is_section_root: true` in `block.json`; populated into `blocks.tier` column by `/sgs-update`). See D107 (voter rewrite) and [`00-naming-conventions.md` §3.2](00-naming-conventions.md).
+
+**Rich-text content (XS-9.1, D104):** Inner content rich-text uses `sgs/heading` with `wp_kses_post()` sanitisation — supports inline emphasis/strong/anchor while blocking script/style tags.
 
 **Variants:**
 - `standard` — Full-width, text over background image/gradient
@@ -350,6 +355,8 @@ Block reference content for `sgs/trust-bar` is preserved in git history (last co
 
 **Purpose:** Call-to-action section with headline, supporting text, and multiple button options.
 
+**Tier:** `class-section` (sibling of `sgs/hero` in voter recognition; declared via `supports.sgs.is_section_root: true`; populated into `blocks.tier` by `/sgs-update`). Voter emits the literal slug at confidence 1.0 when `sgs-cta-section` is the section-root class. See D107.
+
 **Attributes:**
 - `headline` — RichText
 - `body` — RichText
@@ -509,6 +516,8 @@ Block reference content for `sgs/trust-bar` is preserved in git history (last co
 - `fontSize` — token slug (default: small)
 
 **Render:** Dynamic `render.php` — server checks startDate/endDate and hides bar outside the scheduled range. Client-side JS handles dismissal, countdown, and rotation.
+
+**Source-data fix (2026-05-29):** `block.json:38` default-value mojibake corrected (non-UTF-8 bytes replaced with proper UK-English punctuation). New installs and re-seeded patterns now ship clean defaults.
 
 **Interactivity:** Uses `viewScriptModule` with WordPress Interactivity API:
 - `data-wp-interactive="sgs/announcement-bar"` on root element
@@ -1054,6 +1063,32 @@ Same as Google Reviews — emits `LocalBusiness` with `aggregateRating` + nested
 9. Insert the block anywhere with `dataSource: synced`.
 
 **Visual proof:** Live on sandybrown at `/trustpilot-smoke-test-2/`. Mama's 4 reviews (TrustScore 4.0 "Great") render via the synced path. Visual diff reports: `reports/visual-diff/trustpilot-reviews-2026-05-11.md` (block) + `reports/visual-diff/trustpilot-sync-2026-05-11.md` (sync infrastructure).
+
+---
+
+## Section-root block roster (tier='class-section')
+
+Blocks recognised by the converter walker at confidence 1.0 from their literal `sgs-<block>` class on a section boundary. Identified by `supports.sgs.is_section_root: true` in `block.json`; populated into `blocks.tier='class-section'` by `/sgs-update`; consumed by the voter at `per-section-convention-voter.py:295-305`.
+
+| Block | Notes |
+|---|---|
+| `sgs/hero` | Page hero (variants: standard / split / video / svg-animated). XS-9.1 rich-text via `sgs/heading` + `wp_kses_post`. |
+| `sgs/cta-section` | Call-to-action section (centred / left-aligned / split layouts). |
+
+**Criteria for adding a new section-root block:**
+1. The block represents an entire page section, not an element-within-a-section
+2. Mockups consistently mark its boundary with a single literal `sgs-<block>` class (no ambiguity vs neighbouring sections)
+3. The block has its own pattern PHP template (so Stage 2 confidence-matrix can resolve it)
+
+To add: set `supports.sgs.is_section_root: true` in `block.json`, run `/sgs-update`, then run `/sgs-clone` on a representative mockup and verify `voter.json` emits the literal slug at confidence 1.0 with reason `class-section-block-equivalent`. Any non-section-root `sgs-` prefixed class encountered by the voter emits `gap-candidate-class-section` instead — surfacing the gap for review rather than mis-routing.
+
+Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (`block_composition` table — sibling routing data).
+
+---
+
+## product-card `featured` variant
+
+`sgs/product-card` gained a new `featured` variant + `featuredTag` attribute + render branch (shipped commit `669115f0`). When `variant: featured` is set, the render path emits a tag overlay (sourced from `featuredTag` string) and applies the `--featured` BEM modifier for elevated card styling. Sibling architecture to D112-adjacent block-variation work; not a numbered decision.
 
 ---
 
