@@ -1,10 +1,84 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-29-architectural-cleanup-batch-D93-D100
-generated: 2026-05-29
-parent_session: small-giants-wp-2026-05-28-phase-2-stream-a-db-quality-pre-pass
-primary_goal: "Shipped 8 D-numbered decisions (D93-D100) in one architectural cleanup batch. Commit bcbafe09 on origin/main. 99 files changed, +5346/-2275 lines. 10 subagents dispatched, all verified. Link-href content-bearing gap CLOSED — sgs/media video routing functionally works. slot_synonyms + legacy_role_lookup unified into new slots table. Stream A2-A5 row-correction + canary measurement DEFERRED to next session (price slot fixed; items/social/featured-product/social-proof deferred; videoUrl canonical_slot backfill needed)."
+session_tag: small-giants-wp-2026-05-30-D107-D113-canary-fixes-batch
+generated: 2026-05-30
+parent_session: small-giants-wp-2026-05-29-architectural-cleanup-batch-D93-D100
+primary_goal: "Shipped 7 D-numbered decisions (D107-D113) across 14 commits. Pixel-diff trajectory 58.6% → 56.40% (-2.20pp aggregate). XS-3 walker code attempted + REVERTED post-regression (+13.07pp featured-product / +10.40pp social-proof); block_composition table data layer persists. D6 inheritance script shipped but threshold too tight (4 blocks; Bean wants 20-30+). XS-3 refined trigger + D6 re-tune queued for next session."
+---
+
+# Session Handoff — 2026-05-30
+
+## Completed This Session
+
+1. **XS-1 + XS-8 + XS-9 + XS-10** — CSS sentinel fix, slot-list noise filter, atomic-tag rich-text for core/*, HTML comment skip (4 atomic commits earlier in session)
+2. **XS-9.1 + XS-9.2 + URL hardening** — SGS atomic rich-text (sgs/heading + sgs/text + sgs/quote) + sgs/button wp_kses tightened allowlist (no `<a>`) + `_safe_href()` scheme blocking at converter layer (commit 40a6f8ab; 11 adversarial smoke tests pass)
+3. **Mojibake source fix** — announcement-bar/block.json:38 `­ƒÄë New product launch ÔÇö` → `🎉 New product launch — ` (commit 88436693; live page verified via Playwright)
+4. **Featured variant** — sgs/product-card variantStyle enum extended + featuredTag attr + render branch (commit 669115f0)
+5. **D3 build-deploy.py** — 367 LOC canary-fast-cycle deploy automation with 5-step pipeline + 3 guards + dry-run (commit a23ff53f)
+6. **D5 STOP catalogue #12 + pre-flight Q6** — routing-path verification methodology rule (commit 32c70774)
+7. **D1 + XS-2 + XS-5** — `blocks.tier` column added (sgs/hero + sgs/cta-section flagged class-section via `supports.sgs.is_section_root`); voter rewritten to DB-driven; 12 wrong section-scope slot rows DELETED; testimonial + testimonial-slider re-inserted at element scope (commit e2c8597e)
+8. **XS-3 walker REVERTED** — universal layout-wrapper condition shipped (f173b351) then reverted (c76aa107) after +13.07pp regression on featured-product + +10.40pp on social-proof. `block_composition` table (188 rows) data layer PERSISTS past revert
+9. **XS-4 assign-canonical port + backfill** — assign-canonical.py D99-ported (9 references migrated); batch backfill canonical_slot 52→692 (33.4%), role 110→689 (33.2%) (commits 04fa0f2b + 52408c7e XS-4 follow-ups: camelCase regex + slot vocab + Tier B2 compound selectors)
+10. **D6 sync-container-wrapping-blocks.py** — 468 LOC inheritance audit script + 9-signal scoring + 4 blocks flagged wraps_block='sgs/container' (sgs/hero, sgs/cta-section, sgs/modal, sgs/quote) (commit 062c69d1)
+11. **Comprehensive doc updates** — 26 docs updated across 4 commits: decisions.md D107-D113, parking.md (3 RESOLVED + 5 NEW), state.md, CLAUDE.md, mistakes.md, architecture.md, dev-setup.md, goals.md, docs-registry.yaml, plan.md, all 5 phase plans, Spec 22 (NEW §FR-22-16 + §FR-22-17), specs 00/02/11/19/20/21, common-wp-styling-errors.md, cloning-pipeline-flow.md, cloning-pipeline-stages.md, qc-council-issue-register
+
+## Current State
+
+- **Branch:** main at `ca7026b1`
+- **Tests:** 12/12 converter_v2 tests pass post-XS-2; all 6 implementer subagents reported zero errors; 11 adversarial XSS smoke tests pass on sgs/button
+- **Build:** npm run build clean (webpack 5.105.2); build-deploy.py --dry-run passes
+- **Uncommitted changes:** none (auto-regen lucide-icons.php only, never committed per state.md)
+- **Pixel-diff:** 58.6% baseline → **56.40% final** = -2.20pp aggregate session movement
+- **DB:** blocks.tier column populated 2 rows; block_composition table 188 rows; slots 95 (89 element + 6 section); block_attributes canonical_slot 33.4% / role 33.2%
+
+## Known Issues / Blockers
+
+- **XS-3 walker code DEFERRED** — refined trigger needed (immediate-child-of-section-root constraint); queued at P-XS-3-TRIGGER-REFINEMENT
+- **D6 threshold DEFERRED** — sync-container-wrapping-blocks.py currently flags only 4 blocks; Bean wants 20-30+; queued at P-D6-THRESHOLD-RETUNE
+- **D107-D113 source changes not yet deployed to canary** — block.json supports.sgs.is_section_root + button render.php wp_kses + product-card featured render need `npm build` + `build-deploy.py --target sandybrown` before they take live effect; pipeline /sgs-clone reflects convert.py changes only
+- **block_attributes 1316 NULL canonical_slot rows** — vocab/regex gaps; runtime Tier B2 in db_lookup handles some at lookup time without DB backfill
+- **mistakes.md at 33 stubs** — exceeds ~30 active guideline per CLAUDE.md doc-op standards; prune pass deferred
+
+## Next Priorities (in order)
+
+1. **Refined XS-3 walker condition** — re-enable with immediate-child-of-section-root constraint (biggest predicted pixel-diff lever; queue subagent-driven-development with spec + quality reviewers)
+2. **D6 threshold re-tune** — broaden sync-container-wrapping-blocks.py heuristic to flag 20-30 container-wrapping blocks per Bean's list (feature-grid, info-box, form, announcement-bar, product-card, etc.)
+3. **Build + deploy D107-D113 to canary** — `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` + /sgs-clone verification
+4. **XS-4 vocab + regex follow-ups** — extend slot aliases + role regex camelCase variants (target canonical_slot coverage 33.4% → ~50%)
+5. **/qc-council retrospective** — multi-rater consistency check across D107-D113 docs
+
+## Files Modified
+
+| Commit | Files | What |
+|---|---|---|
+| 40a6f8ab | convert.py + button.{render.php,block.json} | XS-9.1 + XS-9.2 + URL hardening |
+| 88436693 | announcement-bar/block.json | Mojibake fix |
+| 669115f0 | product-card/{block.json,render.php} | Featured variant |
+| b3feb9a2 | parking.md | 6 follow-up entries |
+| a23ff53f | scripts/build-deploy.py (NEW) | D3 deploy automation (367 LOC) |
+| 32c70774 | next-session-prompt.md | D5 STOP #12 + Q6 |
+| e2c8597e | 5 files (voter + db_lookup + sgs-update + hero/cta-section block.json) | D1 + XS-2 + XS-5 |
+| f173b351→c76aa107 | convert.py | XS-3 walker (REVERTED) |
+| 04fa0f2b | assign-canonical.py | XS-4 D99 port + backfill |
+| 062c69d1 | scripts/sync-container-wrapping-blocks.py (NEW) | D6 inheritance script (468 LOC) |
+| 8eaba520 | 7 docs | D107-D113 consolidated + STOP #13-#16 |
+| 52408c7e | assign-canonical.py + db_lookup.py + seed-slot-alias-extensions.py | XS-4 follow-ups |
+| aef1767a | 11 docs (Spec 22, specs 00/02/21, pipeline-flow/stages, arch, dev-setup, mistakes, registry, goals) | Comprehensive doc round-1 |
+| ca7026b1 | 11 docs (specs 11/19/20, common-wp-styling-errors, 6 plans, qc-council register) | Comprehensive doc round-2 |
+
+## Notes for Next Session
+
+- **XS-3 + D6 deferred per Bean's explicit decision** — both need more architectural thought; don't re-attempt without refined design
+- **block_composition table IS LIVE** even after XS-3 walker revert — refined walker just needs to CONSUME the existing data layer; don't redesign the schema
+- **Routing-path verification is a now a binding pre-flight question (Q6)** — XS-9.1 redundancy lesson; trace which slug RECEIVES the affected attr before predicting impact
+- **Docs appliers can be over-conservative** — first applier this session deferred 51 spec edits incorrectly because XS-3 walker reverted (most architecture WAS live); distinguish "code reverted" from "all related changes deferred"
+- **Per-section pixel-diff noise floor ~±2pp** — confirmed across multiple measurements; deltas within ±2pp at single-viewport are not significant
+
+## Next Session Prompt
+
+See `.claude/next-session-prompt.md` for the full orchestration plan (5 tasks with per-task orchestration blocks + dependency graph + methodology guardrails + 19 STOP catalogue entries + 7 pre-flight ritual questions + 6 tiered mandatory reading lists).
+
 ---
 
 # Session Handoff — 2026-05-29
