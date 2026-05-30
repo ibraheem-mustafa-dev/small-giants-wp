@@ -457,6 +457,41 @@ def block_attrs(block_slug: str) -> dict[str, dict]:
     return result
 
 
+@functools.lru_cache(maxsize=256)
+def get_block_composition_role(block_slug: str) -> str | None:
+    """Return composition_role from block_composition table for a block.
+
+    XS-3 refined trigger (2026-05-31): queries block_composition to determine
+    if a block is a section-root, wrapper-shell, content-block, or leaf.
+    Used by the refined layout-bearing wrapper detection to check parent's role.
+
+    Args:
+        block_slug: Fully-qualified SGS slug, e.g. 'sgs/hero'.
+
+    Returns:
+        One of 'section-root', 'wrapper-shell', 'content-block', 'leaf',
+        or None if the block does not exist in the table.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT composition_role FROM block_composition WHERE block_slug = ?",
+            (block_slug,),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        # Table absent (pre-D108 state) — soft-fail to None
+        row = None
+    finally:
+        conn.close()
+    if row:
+        _trace("db_lookup_hit", lookup="get_block_composition_role",
+               block_slug=block_slug, composition_role=row[0])
+        return row[0]
+    _trace("db_lookup_miss", lookup="get_block_composition_role",
+           block_slug=block_slug)
+    return None
+
+
 def attr_for_slot(block_slug: str, canonical_slot: str) -> str | None:
     """Find the attr_name on `block_slug` whose canonical_slot matches.
 

@@ -1670,6 +1670,11 @@ def walk(
     # container InnerBlocks. Truly transparent pass-through (walk_passthrough)
     # only applies to non-top-level slug-None nodes per FR-22-11.
     if slug is None and not is_top_level:
+        # A1 (Spec 23 FR-23-6): a slug-None wrapper that owns a grid/flex layout is
+        # NOT transparent — emit it as a neutral sgs/container preserving its class
+        # so the deployed CSS reproduces the layout, rather than dissolving it.
+        if _is_layout_bearing_wrapper(node, classes, css_rules):
+            return _emit_layout_container(node, classes, sgs_classes, css_rules, depth, variation_buf)
         return walk_passthrough(node, css_rules, depth, variation_buf)
 
     # When slug is None at top level, skip attr-lifting + root-supports-lift
@@ -1826,6 +1831,97 @@ def _detect_grid_container_from_css(classes: list[str], css_rules: dict) -> dict
     if gap:
         result["gap"] = gap
     return result
+
+
+def _is_layout_bearing_wrapper(node: "Tag", classes: list[str], css_rules: dict) -> bool:
+    """XS-3 refined (2026-05-31): immediate-child wrapper of section-root blocks only.
+
+    Emits sgs/container for slug-None divs that are immediate children of
+    section-root blocks (sgs/hero, sgs/cta-section) or sgs/container. This narrower
+    trigger avoids the +13.07pp regression from f173b351's broader "any CSS + children"
+    predicate by scoping to parent composition_role.
+
+    Conditions (all must be true):
+      1. Current node has sgs-* BEM class
+      2. Parent exists and is a Tag (precondition check)
+      3. Parent's composition_role is 'section-root' or 'wrapper-shell' (via block_composition table)
+      4. Current node has at least one element child
+      5. Current node has CSS rules (has_css indicates visibility + layout bearing)
+
+    Caller precondition: slug is None and node is not top-level.
+    """
+    # Precondition 1: has sgs-* BEM class
+    sgs_classes = [c for c in classes if c.startswith("sgs-")]
+    if not sgs_classes:
+        return False
+
+    # Precondition 2: parent exists and is a Tag
+    parent = node.parent
+    if not isinstance(parent, Tag):
+        return False
+
+    # Precondition 3: check parent's composition_role via block_composition table
+    parent_classes = parent.get("class", []) or []
+    parent_sgs_classes = [c for c in parent_classes if c.startswith("sgs-")]
+    parent_slug = db.resolve_slug_from_bem(parent_sgs_classes) if parent_sgs_classes else None
+
+    # If parent has no slug resolution, check if parent IS sgs/container (literal)
+    # by scanning class names for sgs-container (sgs/container BEM form).
+    if parent_slug is None:
+        if "sgs-container" in parent_sgs_classes:
+            parent_composition_role = "wrapper-shell"
+        else:
+            return False
+    else:
+        # Query block_composition to determine parent's composition_role
+        parent_composition_role = db.get_block_composition_role(parent_slug)
+        if parent_composition_role not in ("section-root", "wrapper-shell"):
+            return False
+
+    # Precondition 4: current node has at least one element child
+    if not any(isinstance(child, Tag) for child in node.children):
+        return False
+
+    # Precondition 5: current node has CSS rules
+    # (narrower than A1's display:grid/flex check — just existence of any CSS)
+    selectors = [f".{c}" for c in sgs_classes]
+    has_css = any(
+        any(s in sel_key for s in selectors)
+        for sel_key in css_rules.keys()
+        if " :: " not in sel_key
+    )
+
+    return has_css
+
+
+def _emit_layout_container(
+    node: "Tag",
+    classes: list[str],
+    sgs_classes: list[str],
+    css_rules: dict,
+    depth: int,
+    variation_buf: list[str] | None,
+) -> str:
+    """Emit a slug-None layout wrapper as a neutral sgs/container (A1, className-only).
+
+    Preserves the wrapper's BEM className so the deployed CSS rule (display + flex/grid
+    direction + align + gap, etc.) reproduces the layout. sgs/container is
+    neutral-by-default (Spec 23 B2+B3 — no gap/width/layout/inline emitted unless set),
+    so it adds no class or inline style that could fight the deployed rule. Children
+    recurse as InnerBlocks. Routes through the FR-22-4 'sgs/container' primitive (same
+    literal as exception 3) — not a new routing branch.
+    """
+    css = collect_css_for_classes(classes, css_rules)
+    if css and variation_buf is not None:
+        variation_buf.append(css)
+    children_markup: list[str] = []
+    for child in node.children:
+        result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
+        if result:
+            children_markup.append(result)
+    _trace("walker_branch_taken", branch="layout_container",
+           node_classes=classes, depth=depth)
+    return emit_wp_block("sgs/container", {"className": " ".join(sgs_classes)}, children_markup)
 
 
 # ============================================================================
