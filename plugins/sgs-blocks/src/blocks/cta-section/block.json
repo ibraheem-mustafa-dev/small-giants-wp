@@ -17,7 +17,8 @@
     "icon": "megaphone",
     "supports": {
         "sgs": {
-            "imageControls": false
+            "imageControls": false,
+            "is_section_root": true
         },
         "align": [
             "wide",

@@ -47,7 +47,8 @@
             "style": true
         },
         "sgs": {
-            "imageControls": true
+            "imageControls": true,
+            "is_section_root": true
         }
     },
     "selectors": {

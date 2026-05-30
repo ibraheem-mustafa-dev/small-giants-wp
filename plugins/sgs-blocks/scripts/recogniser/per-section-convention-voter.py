@@ -61,7 +61,10 @@ sys.stderr.reconfigure(encoding="utf-8")
 
 
 def _load_db_lookup():
-    """Lazy-load db_lookup.legacy_role_lookup_for; soft-fail to None if unavailable."""
+    """Lazy-load db_lookup helpers; soft-fail to (None, None) if unavailable.
+
+    Returns (legacy_role_lookup_for, is_class_section_block).
+    """
     import importlib.util as _ilu
     here = Path(__file__).resolve()
     for ancestor in here.parents:
@@ -71,13 +74,16 @@ def _load_db_lookup():
             mod = _ilu.module_from_spec(spec)
             try:
                 spec.loader.exec_module(mod)
-                return getattr(mod, "legacy_role_lookup_for", None)
+                return (
+                    getattr(mod, "legacy_role_lookup_for", None),
+                    getattr(mod, "is_class_section_block", None),
+                )
             except Exception:
-                return None
-    return None
+                return (None, None)
+    return (None, None)
 
 
-_legacy_role_lookup_for = _load_db_lookup()
+_legacy_role_lookup_for, _is_class_section_block = _load_db_lookup()
 
 
 def _load_trace():
@@ -302,7 +308,15 @@ def vote_block_slug(class_signature: list[str], convention: str) -> tuple[str, f
             return (RETIRED_BLOCK_REMAP[slug_root], 0.95, "retired-block-remap")
     if sgs_bem_classes:
         slug_root = sgs_bem_classes[0][len("sgs-"):]
-        return (f"sgs/{slug_root}", 1.0, "literal-slug-match")
+        proposed_slug = f"sgs/{slug_root}"
+        # Class-section equivalent: only blocks with tier='class-section' may be
+        # returned by literal-slug match at section scope (per Spec 22 §FR-22-3
+        # exception 3 + D1 explicit is_section_root flag). Everything else
+        # falls through to gap-candidate routing → Stage 2 FR-22-4 container
+        # default routes to sgs/container.
+        if _is_class_section_block is not None and _is_class_section_block(proposed_slug):
+            return (proposed_slug, 1.0, "class-section-block-equivalent")
+        return ("", 0.0, "gap-candidate-class-section")
 
     # Legacy kebab-semantic: DB-driven lookup (migrated from hardcoded dict 2026-05-21).
     for cls in class_signature:

@@ -1055,6 +1055,45 @@ def legacy_role_lookup_for(kebab_role: str) -> str | None:
 
 
 # ----------------------------------------------------------------------------
+# is_class_section_block — Spec 22 §FR-22-3 exception 3 + D1 explicit flag
+# ----------------------------------------------------------------------------
+# Returns True iff the given block slug is registered in the `blocks` table
+# with tier='class-section'. Used by the per-section convention voter to gate
+# the literal-slug fast-path: only class-section blocks (sgs/hero, sgs/cta-section)
+# may be returned from a section-scope SGS-BEM class signature; everything
+# else falls through to gap-candidate routing (Stage 2 FR-22-4 default to
+# sgs/container).
+#
+# Cached after first call — `tier` is static for the lifetime of a pipeline run.
+
+_CLASS_SECTION_CACHE: set[str] | None = None
+
+
+def _load_class_section_cache() -> set[str]:
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT slug FROM blocks WHERE tier = 'class-section'"
+        ).fetchall()
+        return {r[0] for r in rows}
+    except sqlite3.OperationalError:
+        # tier column not present yet (pre-XS-2). Soft-fail to empty set so
+        # the voter degrades to "no class-section blocks", which preserves
+        # historical fast-path-disabled behaviour rather than crashing.
+        return set()
+    finally:
+        conn.close()
+
+
+def is_class_section_block(slug: str) -> bool:
+    """Return True iff `slug` is a registered SGS block with tier='class-section'."""
+    global _CLASS_SECTION_CACHE
+    if _CLASS_SECTION_CACHE is None:
+        _CLASS_SECTION_CACHE = _load_class_section_cache()
+    return slug in _CLASS_SECTION_CACHE
+
+
+# ----------------------------------------------------------------------------
 # equivalent_block_for — Spec 22 §FR-22-2.1 two-tier derivation
 # ----------------------------------------------------------------------------
 # Canonical implementation of the universal walker's block-equivalence question:

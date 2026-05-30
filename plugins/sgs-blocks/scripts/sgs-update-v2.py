@@ -328,6 +328,23 @@ def _index_sgs_block_files(
                         ),
                     )
                     updated_blocks += 1
+
+        # --- Tier population (D1 + XS-2) ---
+        # Read supports.sgs.is_section_root and reflect onto blocks.tier.
+        # Idempotent: only writes when the computed tier differs from current.
+        sgs_supports = supports.get("sgs", {}) if isinstance(supports, dict) else {}
+        is_section_root = bool(sgs_supports.get("is_section_root", False)) if isinstance(sgs_supports, dict) else False
+        computed_tier = "class-section" if is_section_root else "block"
+        current_tier_row = c.execute(
+            "SELECT tier FROM blocks WHERE slug = ? AND source = 'sgs'",
+            (slug,),
+        ).fetchone()
+        if current_tier_row is not None and current_tier_row[0] != computed_tier:
+            c.execute(
+                "UPDATE blocks SET tier = ? WHERE slug = ? AND source = 'sgs'",
+                (computed_tier, slug),
+            )
+
         scanned += 1
 
         # --- INSERT OR IGNORE attributes; UPDATE on drift ---
