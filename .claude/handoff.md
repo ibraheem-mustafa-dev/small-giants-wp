@@ -25,12 +25,12 @@ primary_goal: "Shipped 7 D-numbered decisions (D107-D113) across 14 commits. Pix
 
 ## Current State
 
-- **Branch:** main at `ca7026b1`
+- **Branch:** main at `dbe7cf8c` (HEAD; this handoff commit closes the session)
 - **Tests:** 12/12 converter_v2 tests pass post-XS-2; all 6 implementer subagents reported zero errors; 11 adversarial XSS smoke tests pass on sgs/button
 - **Build:** npm run build clean (webpack 5.105.2); build-deploy.py --dry-run passes
 - **Uncommitted changes:** none (auto-regen lucide-icons.php only, never committed per state.md)
 - **Pixel-diff:** 58.6% baseline → **56.40% final** = -2.20pp aggregate session movement
-- **DB:** blocks.tier column populated 2 rows; block_composition table 188 rows; slots 95 (89 element + 6 section); block_attributes canonical_slot 33.4% / role 33.2%
+- **DB:** blocks.tier column populated 2 rows (sgs/hero, sgs/cta-section); block_composition table 188 rows (4 wraps_block='sgs/container'); slots 96 (92 element + 4 section); block_attributes canonical_slot 33.4% (692/2074) / role 33.2% (689/2074)
 
 ## Known Issues / Blockers
 

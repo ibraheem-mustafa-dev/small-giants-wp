@@ -30,7 +30,7 @@ Per blub.db 260 + R-22-1: **"DB-first, no hardcoded dicts."** (Exception per Sub
 | # | If you find yourself proposing | STOP — because |
 |---|---|---|
 | 1 | Grep-skimming Spec 22 instead of reading sections end-to-end | Last session's #1 failure mode. Spec 22 §FR-22-2 / 2.1 / 2.2 / 2.5 is the cornerstone that defines `equivalent_block_for()`. Missing it = recommending features that already exist. READ FULLY, not grep. |
-| 2 | Referencing `slot_synonyms` or `legacy_role_lookup` as live tables | Both DROPPED 2026-05-29 D99. Live equivalent: `slots` table with composite PK `(slot_name, scope)`. 89 element + 6 section = 95 rows post-XS-5 (section count REDUCED 16→6 per D111). Walker queries `slots WHERE scope='element'`. |
+| 2 | Referencing `slot_synonyms` or `legacy_role_lookup` as live tables | Both DROPPED 2026-05-29 D99. Live equivalent: `slots` table with composite PK `(slot_name, scope)`. 92 element + 4 section = 96 rows post-XS-5 (section count REDUCED 16→4 per D111). Walker queries `slots WHERE scope='element'`. |
 | 3 | Referencing `slot_synonyms.role_classification` column | Retired D99. Live equivalent: `roles` table (20 rows). Walker queries `roles WHERE classification='content-bearing'`. |
 | 4 | Treating `.claude/skills/sgs-wp-engine/sgs-framework.db` and `.agents/skills/sgs-wp-engine/sgs-framework.db` as two DBs | They share inode via NTFS junction = SAME PHYSICAL FILE. Prior "mirror-DB divergence" framing was structurally impossible. Real two DBs are sgs-framework.db + ui-ux-pro-max.db (different physical files). See `feedback_dbs_are_junction_not_mirror.md`. |
 | 5 | Building a new bespoke SGS block per mockup section (`sgs/gift-section` etc.) | R-22-9 violation. Framework stays ~67 reusable primitives. Mockup-section variation comes via `slots WHERE scope='element'` rows + walker container default (FR-22-4), not new code. |
@@ -125,7 +125,7 @@ For Task 3 (build + deploy D107-D113):
 
 For Task 4 (XS-4 vocab growth):
 - `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py` — runs Tier A/B/C/D classifier; re-run after vocab seed
-- `slots` table 95 rows — query first: `SELECT slot_name, aliases FROM slots WHERE scope='element' ORDER BY slot_name`
+- `slots` table 96 rows (92 element + 4 section) — query first: `SELECT slot_name, aliases FROM slots WHERE scope='element' ORDER BY slot_name`
 
 ## DB exploration pre-flight (not just count verification)
 
@@ -144,7 +144,7 @@ python C:/Users/Bean/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \
 python C:/Users/Bean/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \
   "SELECT composition_role, COUNT(*) AS n FROM block_composition GROUP BY composition_role ORDER BY n DESC"
 
-# slots table post-XS-5 — 89 element + 6 section = 95 rows (section count reduced D111)
+# slots table post-XS-5 — 92 element + 4 section = 96 rows (section count reduced 16→4 per D111)
 python C:/Users/Bean/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \
   "SELECT scope, COUNT(*) AS n FROM slots GROUP BY scope"
 
@@ -169,7 +169,7 @@ Expected output checkpoints:
 - `blocks.tier`: at least sgs/hero + sgs/cta-section flagged as `class-section`
 - `block_composition.wraps_block`: only 4 rows populated (D6 under-tuned — Task 2 broadens this)
 - `composition_role` distribution: section-root / wrapper-shell / content-block / leaf populated across 188 rows
-- `slots`: 89 element + 6 section = 95 rows
+- `slots`: 92 element + 4 section = 96 rows
 - `slots WHERE slot_name='inner'`: 1 row (XS-5 passthrough)
 - `canonical_slot` coverage: ~33.4%
 - `role` coverage: ~33.2%
@@ -186,13 +186,13 @@ python C:/Users/Bean/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT 
 ```
 
 Expected:
-- slots-element: 89
-- slots-section: 6 (NOT 16 — reduced per D111)
+- slots-element: 92
+- slots-section: 4 (NOT 16 — reduced per D111)
 - roles: 20
 - kind_override: 17
 - block_composition: 188
 - block_composition.wraps_block: 4 (Task 2 broadens this)
-- blocks.tier: ≥ 2 (sgs/hero + sgs/cta-section)
+- blocks.tier: 2 (sgs/hero + sgs/cta-section)
 
 If any count is off, something regressed since the 2026-05-30 close — investigate before proceeding.
 
