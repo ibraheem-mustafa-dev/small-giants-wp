@@ -57,7 +57,7 @@
 	"attributes": {
 		"layout": {
 			"type": "string",
-			"default": "stack"
+			"default": ""
 		},
 		"columns": {
 			"type": "number",
@@ -85,7 +85,7 @@
 		},
 		"gap": {
 			"type": "string",
-			"default": "40"
+			"default": ""
 		},
 		"gapTablet": {
 			"type": "string",
@@ -169,7 +169,7 @@
 		},
 		"maxWidth": {
 			"type": "string",
-			"default": "wide"
+			"default": ""
 		},
 		"widthMode": {
 			"type": "string",

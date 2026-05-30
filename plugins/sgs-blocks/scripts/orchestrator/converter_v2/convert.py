@@ -1921,7 +1921,7 @@ def _emit_layout_container(
             children_markup.append(result)
     _trace("walker_branch_taken", branch="layout_container",
            node_classes=classes, depth=depth)
-    return emit_wp_block("sgs/container", {"className": " ".join(sgs_classes)}, children_markup)
+    return emit_wp_block("sgs/container", {"className": " ".join(sgs_classes), "htmlTag": "div"}, children_markup)
 
 
 # ============================================================================
