@@ -56,8 +56,12 @@ def validate(table: str, payload: dict[str, Any]) -> dict[str, Any]:
             "Cannot validate writes — refusing to proceed."
         )
 
+    # Payload via stdin (arg sentinel '-'), not as an argv string: Windows caps a
+    # command line at 32,767 chars (CreateProcess) -> WinError 206 on large pattern
+    # payloads carrying embedded markup/CSS. stdin has no such limit.
     proc = subprocess.run(
-        [sys.executable, str(VALIDATOR_PATH), table, json.dumps(payload)],
+        [sys.executable, str(VALIDATOR_PATH), table, "-"],
+        input=json.dumps(payload),
         capture_output=True,
         text=True,
         check=False,

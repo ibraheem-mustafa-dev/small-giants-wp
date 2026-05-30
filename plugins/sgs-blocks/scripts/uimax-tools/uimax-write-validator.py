@@ -159,8 +159,12 @@ def main(argv: list[str]) -> int:
         return 1
 
     table = argv[1]
+    # Payload via stdin when arg is '-': avoids Windows' 32,767-char command-line
+    # limit (WinError 206), which large pattern payloads (embedded markup/CSS) hit
+    # when passed as an argv string.
+    payload_raw = sys.stdin.read() if argv[2] == "-" else argv[2]
     try:
-        payload = json.loads(argv[2])
+        payload = json.loads(payload_raw)
     except json.JSONDecodeError as exc:
         print(json.dumps({"valid": False, "errors": [f"Invalid JSON payload: {exc}"], "warnings": []}))
         return 1

@@ -74,9 +74,13 @@ def _wp_blocks_validate(markup: str, slug: str) -> None:
     if not _WP_BLOCKS_CLI.exists():
         return
     try:
+        # Markup via stdin (arg sentinel '-'), not as an argv string: Windows caps
+        # a command line at 32,767 chars (CreateProcess) -> WinError 206 on large
+        # markup. Previously that error hit the bare `except: pass` below, silently
+        # disabling per-block validation on Windows. stdin has no such limit.
         result = subprocess.run(
-            [sys.executable, str(_WP_BLOCKS_CLI), "validate", markup],
-            capture_output=True, text=True, timeout=10, encoding="utf-8",
+            [sys.executable, str(_WP_BLOCKS_CLI), "validate", "-"],
+            input=markup, capture_output=True, text=True, timeout=10, encoding="utf-8",
         )
         if result.returncode != 0:
             _trace("wp_blocks_validation_failed", slug=slug,

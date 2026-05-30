@@ -9,9 +9,10 @@ Produces a callable matching the autonomy_gate.invoke_visual_qa() contract:
       "regions": [{...}],         # optional list of localised diff regions
     }
 
-The default factory uses Playwright (subprocess via `npx playwright`) to
-capture the deployed clone URL + the mockup served over a local HTTP
-server, then runs a pixel-diff via PIL.
+The default factory uses Playwright (subprocess via `node` running a
+`require('playwright')` one-liner — NOT `npx`, so it resolves on Windows
+without a .cmd shim) to capture the deployed clone URL + the mockup served
+over a local HTTP server, then runs a pixel-diff via PIL.
 
 Pure module -- no CLI surface. Imported by sgs-clone-orchestrator.py.
 

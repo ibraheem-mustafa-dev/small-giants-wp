@@ -14,6 +14,11 @@ This module tests:
 from pathlib import Path
 import sys
 
+# Windows cp1252 consoles cannot encode the '✓' glyph printed in test output ->
+# UnicodeEncodeError. Force UTF-8 on the standard streams.
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")
+
 # Add parent scripts dir to path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))

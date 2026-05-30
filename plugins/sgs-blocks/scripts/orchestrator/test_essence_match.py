@@ -19,6 +19,11 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
+# Windows cp1252 consoles cannot encode the '->' arrow glyph printed in test
+# output -> UnicodeEncodeError. Force UTF-8 on the standard streams.
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")
+
 HERE = Path(__file__).parent
 SPEC = importlib.util.spec_from_file_location(
     "essence_match_detector", HERE / "essence_match_detector.py"

@@ -59,9 +59,12 @@ def validate_block_markup(markup: str) -> dict:
     if not WP_BLOCKS_CLI.exists():
         raise WpBlocksValidateError(f"wp-blocks CLI missing at {WP_BLOCKS_CLI}")
     try:
+        # Pass markup via stdin (arg sentinel '-') rather than as an argv string.
+        # Windows caps a command line at 32,767 chars (CreateProcess), which large
+        # aggregate markup exceeds -> WinError 206. stdin has no such limit.
         proc = subprocess.run(
-            [sys.executable, str(WP_BLOCKS_CLI), "validate", markup],
-            capture_output=True, text=True, timeout=30, check=False,
+            [sys.executable, str(WP_BLOCKS_CLI), "validate", "-"],
+            input=markup, capture_output=True, text=True, timeout=30, check=False,
         )
     except subprocess.SubprocessError as e:
         raise WpBlocksValidateError(f"wp-blocks validate failed: {e}") from e

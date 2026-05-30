@@ -41,6 +41,11 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+# Windows consoles default to cp1252, which cannot encode the '->' arrow glyph
+# used in diff output -> UnicodeEncodeError. Force UTF-8 on the standard streams.
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")
+
 # Targets that always default to --no-push unless --yes is supplied.
 # Shared dev/staging surfaces — accidental overwrites here are expensive.
 SAFE_TARGETS = (
