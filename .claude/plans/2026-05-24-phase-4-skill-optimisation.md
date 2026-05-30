@@ -11,6 +11,12 @@ primary_goal: "Run /skill-optimiser mode 2 + /batch-gap-analysis on the 15 WP/SG
 
 # Phase 4 — Skill + command optimisation
 
+> **Progress 2026-05-30 — 2 new operator scripts shipped + 1 ported (Stream A continuation, not Phase 4 entry):**
+> - `build-deploy.py` (D3) — sandybrown canary fast-cycle deploy automation. Complements `/wp-sgs-deploy` (which remains canonical for palestine-lives.org production deploys).
+> - `sync-container-wrapping-blocks.py` (D6) — expanded inheritance script; 4 blocks flagged at current threshold, threshold re-tune (4 → 20-30) deferred.
+> - `assign-canonical.py` D99 port (D110) — canonical_slot backfill 2.5% → 33.4%, role 5.3% → 33.2%.
+> Phase 4 entry still pending Phase 3 parking sweep close. These ops scripts feed Phase 4's eventual skill-vs-current-code grading by reducing pre-fix drift.
+
 ## Pre-conditions
 
 Required BEFORE starting this phase (must be true to begin):

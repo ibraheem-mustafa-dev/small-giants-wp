@@ -135,3 +135,18 @@ Stage 9c surface logs unchanged. Additional artefacts written by Phase 1 + Phase
 - **`stage-9b.json` `chrome_skipped`** + `chrome_skipped_count` — sections rejected from scaffolding by `_is_chrome_section()`
 
 These artefacts are operator-readable diagnostic surfaces alongside the 4 sidecar logs (summary, errors, warnings, chrome-skipped). Use them to verify Phase 1 + Phase 2 wiring fired per-run.
+
+---
+
+## 2026-05-30 — XS-12 chrome-skip log extension RETIRED (D8)
+
+**Status:** RETIRED per Bean's D8 directive (2026-05-30). NOT shipping.
+
+The XS-12 proposal extended Stage 9c's classifier to surface additional chrome-skip diagnostics in `chrome-skipped.log` (richer reason taxonomy, parent-chain context, recovery hints). It is retired because:
+
+1. Forthcoming header/footer-specific extractor scripts will replace the chrome-skip code path entirely. Extending the log surface of a code path that is about to be replaced is wasted work.
+2. The existing `chrome-skipped.log` shape (one line per chrome_skip event with reason) is already sufficient for the 2026-05-19 leak class.
+
+**What stays LIVE (unchanged):** the CORE Stage 9c surfacing — `summary.log`, `errors.log`, `warnings.log`, `chrome-skipped.log` per Section "Design" above. Only the XS-12 EXTENSION proposal is retired.
+
+When the header/footer-specific extractors land, Stage 9c may be re-evaluated against them. Until then, no further work on chrome-skip log shape.

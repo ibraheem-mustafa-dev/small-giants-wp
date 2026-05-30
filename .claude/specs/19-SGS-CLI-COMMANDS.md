@@ -510,3 +510,83 @@ one DB, one query tool.
 ### `stage_attribute_promotion.py`
 
 (See above — 2026-05-20 section.)
+
+---
+
+### `build-deploy.py` (D3, 2026-05-30 — commit `a23ff53f`)
+
+Canary-fast-cycle deploy script (367 LOC) at `plugins/sgs-blocks/scripts/build-deploy.py`. Complementary to (NOT replacing) the `/wp-sgs-deploy` skill — that skill targets `palestine-lives.org` with full Check+Build+Execute+Cache+Verify ceremony. This script targets `sandybrown` by default for fast iteration.
+
+```bash
+# Default: build + deploy plugin + theme to sandybrown
+python plugins/sgs-blocks/scripts/build-deploy.py
+
+# Skip npm build (use existing build/)
+python plugins/sgs-blocks/scripts/build-deploy.py --skip-build
+
+# Theme only / blocks only
+python plugins/sgs-blocks/scripts/build-deploy.py --theme-only
+python plugins/sgs-blocks/scripts/build-deploy.py --blocks-only
+
+# Dry-run (print commands, do nothing)
+python plugins/sgs-blocks/scripts/build-deploy.py --dry-run
+
+# Bypass dirty-git guard
+python plugins/sgs-blocks/scripts/build-deploy.py --allow-dirty
+
+# Production target (requires explicit opt-in)
+python plugins/sgs-blocks/scripts/build-deploy.py --target palestine-lives
+
+# Post-deploy URL verification (HEAD check + optional Playwright probe)
+python plugins/sgs-blocks/scripts/build-deploy.py --verify-url https://sandybrown-nightingale-600381.hostingersite.com/
+```
+
+**Args:** `--target {sandybrown,palestine-lives}` (default sandybrown), `--skip-build`, `--theme-only`, `--blocks-only`, `--dry-run`, `--allow-dirty`, `--verify-url <URL>`.
+
+**Guards:**
+- Refuses dirty git tree unless `--allow-dirty`.
+- Refuses `palestine-lives` target without explicit opt-in (no default-to-production footgun).
+- Refuses if `plugins/sgs-blocks/build/` missing and `--skip-build` set.
+
+**Pipeline (5 steps):** `npm run build` → tar archive → scp → ssh extract + move → local cleanup.
+
+---
+
+### `sync-container-wrapping-blocks.py` (D6 / D112, 2026-05-30 — commit `062c69d1`)
+
+Container-inheritance audit script (468 LOC) at `plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py`. Walks the `block_composition` table for `sgs/*` blocks and scores each block.json against 9 wrapper-style signals: `background*`, `padding*`, `maxWidth` / `widthMode`, `minHeight`, `shapeDivider`, `bgSvg`, `bgVideo`, `overlay`, `htmlTag`.
+
+**Role-aware thresholds:**
+- `section-root` / `wrapper-shell` — needs ≥1 strong non-native signal.
+- `content-block` with `has_inner_blocks=1` — needs ≥2 signals.
+
+**Writes** `block_composition.wraps_block = 'sgs/container'` to the canonical `sgs-framework.db`. **Never auto-edits block.json** — operator review gate is mandatory. Per-block diff Markdown emitted to `pipeline-state/container-inheritance-sync/<date>/<block>.diff.md` listing missing attrs + naming-drift candidates.
+
+Currently flags 4 blocks: `sgs/hero`, `sgs/cta-section`, `sgs/modal`, `sgs/quote`. Threshold tuning deferred at parking entry `P-D6-THRESHOLD-RETUNE`.
+
+```bash
+python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py
+```
+
+---
+
+### `behavioural-analyser/assign-canonical.py` (D110, 2026-05-30 — commit `04fa0f2b` + XS-4 follow-ups in `52408c7e`)
+
+D99-ported `canonical_slot` / `role` / `derived_selector` batch backfill at `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py`. Reads `slots.aliases` + `roles` table; writes to `block_attributes` rows.
+
+**Coverage shift (this session):**
+- `canonical_slot`: 2.5% → 33.4%
+- `role`: 5.3% → 33.2%
+
+```bash
+# Default: apply changes
+python plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py
+
+# Preview only
+python plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py --dry-run
+
+# Skip Tier A (high-confidence direct alias matches)
+python plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py --skip-tier-a
+```
+
+**Args:** `--dry-run`, `--apply` (default), `--skip-tier-a`.

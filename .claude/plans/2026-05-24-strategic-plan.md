@@ -9,6 +9,12 @@ primary_goal: "Close the structural pixel-diff blockers via Spec 22 (Universal B
 
 # Strategic plan — post-architecture-recovery (4 phases)
 
+> **Progress 2026-05-30 — D107-D113 architectural cleanup batch shipped (Stream A continuation):**
+> - **Phase 2 hybrid migration:** Stream A continuation landed — XS-2 voter tier column (D107), `block_composition` table 188 rows (D108, walker consumption deferred), XS-4 canonical_slot backfill 2.5% → 33.4% + role 5.3% → 33.2% (D110), XS-5 retired 12 wrong/dead section-scope slot rows (D111), D6 inheritance script (D112), D113 methodology STOP catalogue extensions. XS-3 walker recursion REVERTED (D109) post-regression — refined trigger deferred. Pixel-diff trajectory **58.6% → 56.40%** (−2.20pp aggregate this session).
+> - **Phase 3 parking sweep:** no movement; parking entries net-added (XS-3 trigger refinement, D6 threshold re-tune, 3 XS-4 follow-ups) minus 1 retired (P-UTF8-MOJIBAKE-IN-CONVERTER resolved via announcement-bar block.json fix).
+> - **Phase 4 skill optimisation:** 2 new operator scripts shipped — `build-deploy.py` (D3, sandybrown canary fast-cycle complement to `/wp-sgs-deploy`) + `sync-container-wrapping-blocks.py` (D6 expansion); 1 ported (`assign-canonical.py` D99 port). `/wp-sgs-deploy` remains canonical for palestine-lives.org deploys.
+> - **Next session:** refined XS-3 walker trigger + D6 threshold re-tune (4 → 20-30 blocks) + block_attributes NULL canonical_slot vocabulary work.
+
 > **Revision 2026-05-26 — Phase 1 superseded by Spec 22.** The "Universal walker + G1+G3+G5 closure" framing below is retired. Phase 1 implementation is now defined by **Spec 22 (Universal Block-Equivalent Extraction)** at `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` and its Phase 1 plan at `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`. Acceptance gate softened from "G1+G3+G5 closed per Spec 16 §14" to "per-section ≤5% × 3 viewports + Bean visual sign-off" (Phase 1) with ≤1% Phase 1.5 stretch. Phases 2-4 (header/footer cloner, parking sweep, skill optimisation) remain valid scope; sequencing unchanged.
 
 **Revision 2026-05-23 (post-Step-1.1).** Phase 2 inserted: header + footer specialised cloning pipeline. Existing Phase 2 (parking) renumbered to Phase 3. Existing Phase 3 (skill optimisation) renumbered to Phase 4. Phase 1 acceptance criteria narrowed: header + footer pixel-diff still captured by Stage 11 for regression monitoring, but no longer gate Phase 1 closure (they are Phase 2's scope).

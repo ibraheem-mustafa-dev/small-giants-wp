@@ -11,6 +11,8 @@ primary_goal: "Build a specialised one-shot cloner that converts source mockup h
 
 # Phase 2 — Header + footer specialised cloning pipeline
 
+> **Progress 2026-05-30:** Still blocked on Phase 2 hybrid block migration close (see `.claude/plans/2026-05-28-phase-2-hybrid-block-migration.md`). D107-D113 batch advanced Stream A of the hybrid migration (pixel-diff 58.6% → 56.40%, −2.20pp) but did not close it. New `build-deploy.py` operator script (D3) does NOT unblock this phase — it's a sandybrown canary deploy helper, not a header/footer cloner. No change to blocker status this session.
+
 ## Pre-conditions
 
 Required BEFORE starting this phase (must be true to begin):

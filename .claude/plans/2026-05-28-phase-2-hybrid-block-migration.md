@@ -7,8 +7,25 @@ plan_label: "[PLAN: opus] — main session coordinates parallel Sonnet implement
 parent_spec: .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md
 parent_session: small-giants-wp-2026-05-27-spec-22-phase-1.5-fix-1-shipped
 generated: 2026-05-28
-last_updated: 2026-05-29
+last_updated: 2026-05-30
 active_scope: STREAM_A_RESHAPED_POST_D99
+progress_2026_05_30: |
+  D107-D113 architectural cleanup batch SHIPPED (Stream A continuation):
+    - D107: XS-2 voter tier-driven recognition + `blocks.tier` column (sgs/hero + sgs/cta-section flagged class-section)
+    - D108: `block_composition` table (188 rows; data layer LIVE, walker consumption DEFERRED)
+    - D109: XS-3 walker code REVERTED post +13.07pp featured-product / +10.40pp social-proof regression
+    - D110: XS-4 assign-canonical.py D99 port + batch backfill (canonical_slot 2.5% → 33.4%; role 5.3% → 33.2%)
+    - D111: XS-5 retire 12 wrong/dead section-scope slot rows; re-insert testimonial/testimonial-slider at element scope
+    - D112: D6 expanded sync-container-wrapping-blocks.py inheritance script (4 blocks flagged; threshold re-tune deferred)
+    - D113: D5 methodology — STOP catalogue #12 + pre-flight ritual Q6 + STOP #13-#16 added
+    - D3 build-deploy.py automation; mojibake fix announcement-bar block.json
+    - product-card featured variant; XS-9.1 + XS-9.2 SGS atomic rich-text + button URL hardening
+    - Pixel-diff trajectory: 58.6% → 56.40% = -2.20pp aggregate session movement
+  DEFERRED to next session:
+    - XS-3 walker recursion code (refined trigger at P-XS-3-TRIGGER-REFINEMENT)
+    - D6 threshold re-tune (4 → 20-30 blocks at P-D6-THRESHOLD-RETUNE)
+    - block_attributes 1316 NULL canonical_slot rows (vocabulary/regex gaps; runtime Tier B2 picks up some)
+  block_composition data layer LIVE — Stream B walker consumption now unblocked from data side; walker code path still pending.
 active_scope_note: |
   2026-05-29 UPDATE — D93-D100 architectural cleanup batch SHIPPED (commit bcbafe09).
   Stream A's original premise (fix slot_synonyms rows + verify both DBs) is MASSIVELY
@@ -116,6 +133,7 @@ binding_rules_invoked:
 Before Stream A starts:
 - Fix 1 (walker FR-22-3 #3 ordering) shipped on origin/main as commit `5731dc36`. Verified by: `git log --oneline | grep 5731dc36`.
 - Post-Fix-1 baseline measurement captured at `pipeline-state/mamas-munches-homepage-2026-05-27-193804/stage-11-pixel-diff.json` (mean 58.6%). Stream A's Step A5 compares against this.
+- **Post-D107-D113 baseline (2026-05-30):** mean **56.40%** (−2.20pp from post-Fix-1 baseline). Stream A continuation shipped: XS-2 voter tier column (D107), block_composition data layer (D108, walker consumption deferred), XS-4 canonical_slot backfill 2.5% → 33.4% (D110), XS-5 slot row retirements (D111), D6 inheritance script expansion (D112). XS-3 walker recursion REVERTED (D109) after +13.07pp regression on featured-product / +10.40pp on social-proof — refined trigger queued for next session at parking entry P-XS-3-TRIGGER-REFINEMENT.
 - R-22-14 binding rule active in Spec 22 §6 (commit `37dd2c79`).
 - 4 captured lessons indexed in MEMORY.md.
 - TEMP header-hide CSS override deployed (commit `9a1bb252`) — removes when Phase 2 sibling spec ships, not in this phase.
@@ -275,6 +293,17 @@ QA Gate — Stream A acceptance
 ---
 
 ---
+
+## 2026-05-30 progress note — Stream A continuation + remaining waves
+
+D107-D113 batch landed as Stream A continuation. block_composition (188 rows, D108) provides the data layer for Stream B's eventual walker consumption — Stream B implementers can now reference composition rows once the walker code path lands. XS-3 walker recursion was reverted (D109) and re-queued as P-XS-3-TRIGGER-REFINEMENT (refined trigger condition needed before re-attempt). D6 inheritance script (D112) flagged 4 blocks at the current threshold; threshold re-tune (4 → 20-30 blocks) deferred to next session at P-D6-THRESHOLD-RETUNE.
+
+**Next-session Stream A continuation candidates:**
+- P-XS-3-TRIGGER-REFINEMENT — refined walker recursion trigger (post-D109 revert)
+- P-D6-THRESHOLD-RETUNE — sync-container-wrapping-blocks.py threshold re-tune
+- block_attributes 1316 NULL canonical_slot rows — vocabulary/regex gaps (runtime Tier B2 in db_lookup picks up some at lookup time)
+
+Stream B/C/D activation criteria unchanged from original plan (Bean approval after Stream A measurement gate).
 
 ## ⏸ DEFERRED FOLLOW-ON STREAMS (blocked on Stream A close)
 

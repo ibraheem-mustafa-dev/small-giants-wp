@@ -11,6 +11,11 @@ primary_goal: "Close every STILL-OPEN parking entry EXCEPT P-BATCH-GA-14-SKILLS 
 
 # Phase 3 — Parking sweep close-out
 
+> **Progress 2026-05-30 — net entries grew this session:**
+> - **Added:** P-XS-3-TRIGGER-REFINEMENT (refined walker recursion trigger post-D109 revert), P-D6-THRESHOLD-RETUNE (sync-container-wrapping-blocks.py threshold 4 → 20-30 blocks), 3 XS-4 follow-ups from the assign-canonical.py D99 port (D110)
+> - **Retired:** P-UTF8-MOJIBAKE-IN-CONVERTER (resolved via announcement-bar block.json fix)
+> - **Net:** +4 entries this session. Phase 3 still blocked on Phase 2 hybrid migration close; sweep cadence will resume once Stream A's pixel-diff measurement gate passes.
+
 ## Pre-conditions
 
 Required BEFORE starting this phase (must be true to begin):

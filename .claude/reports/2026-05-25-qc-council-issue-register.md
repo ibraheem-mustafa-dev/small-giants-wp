@@ -17,6 +17,8 @@ goal: |
 
 # QC-council issue register — 2026-05-25
 
+> **Closing progress note 2026-05-30:** The D107-D113 architectural cleanup batch addresses the Phase 1 register issues that became XS-2 (voter tier-driven recognition), XS-4 (canonical backfill via assign-canonical.py D99 port), and XS-5 (slot row retirement/re-insert). **XS-3 (walker recursion)** and **XS-6 (related walker code)** are DEFERRED — XS-3 code was reverted at D109 after +13.07pp featured-product / +10.40pp social-proof regression; refined trigger queued at parking entry P-XS-3-TRIGGER-REFINEMENT. The `block_composition` data layer (188 rows, D108) is LIVE but walker consumption is deferred. Aggregate pixel-diff trajectory this session: **58.6% → 56.40%** (−2.20pp). Register stays open for the deferred walker work.
+
 ## Reading guide
 
 - **Severity** is the highest-confidence rating across the 3 rounds.

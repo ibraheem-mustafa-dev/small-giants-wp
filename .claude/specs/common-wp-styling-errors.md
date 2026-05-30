@@ -459,6 +459,14 @@ Where `audit-invalid-blocks.php` uses `parse_blocks()` + `serialize_blocks()` to
 
 ---
 
+## AA. Walker regression patterns (2026-05-30 XS-3 incident)
+
+| # | Error | Why it happens | Optimal fix |
+|---|---|---|---|
+| AA1 | Walker condition for layout-bearing wrappers over-emits synthetic `sgs/container` blocks INSIDE content-block sections, double-wrapping children and breaking layout | A "fire when nested div has CSS rules + no slot match + element-children" condition is too aggressive at arbitrary depth. It fires inside `featured-product` and `social-proof` sections, wrapping product cards inside an extra `sgs/container` that introduces its own padding / max-width / flex behaviour. Pixel-diff: +13.07pp on `featured-product`, +10.40pp on `social-proof`. Reverted at commit `c76aa107` (2026-05-30). | Refine the trigger so the synthetic-container emission fires ONLY when the wrapper is the IMMEDIATE child of a section-root, never at arbitrary nesting depth. Refinement queued at parking entry `P-XS-3-TRIGGER-REFINEMENT`. Until refined, do NOT re-introduce the depth-agnostic condition — pre-commit /sgs-clone Stage 11 pixel-diff would have caught it (R-22-4). |
+
+---
+
 ## How to add an entry
 
 1. Hit a real WordPress styling failure in a session.
