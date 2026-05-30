@@ -580,7 +580,7 @@ python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context indus-foods # Lo
 
 - **`blocks.tier`** (new D107) — TEXT column, CHECK constraint `IN ('block', 'class-section', 'pattern')`. Populated by `/sgs-update` Stage 1 from each block's `supports.sgs.is_section_root` flag in `block.json`. Operator-set per block, not algorithmically inferred.
 - **`block_composition`** (new D108) — 188 rows seeded. Tracks ALL container-wrapping blocks (not just section-roots). Columns differentiate section-root wrappers from non-section container wrappers for div-class-level routing. Walker consumption DEFERRED — data layer LIVE only.
-- **`slots`** (D99) — composite PK on `(slot_name, scope)`. 89 element-scope + 16 section-scope rows. Replaces retired `slot_synonyms` + `legacy_role_lookup`. XS-5 cleanup retired 12 wrong/dead section-scope rows + re-inserted testimonial/testimonial-slider at element scope.
+- **`slots`** (D99) — composite PK on `(slot_name, scope)`. Post-D111 (2026-05-30): 92 element-scope + 4 section-scope = 96 total. Replaces retired `slot_synonyms` + `legacy_role_lookup`. XS-5 cleanup retired 12 wrong/dead section-scope rows + re-inserted testimonial/testimonial-slider at element scope; `inner` passthrough element row added.
 - **`roles`** (D99) — 20 rows. Replaces `slot_synonyms.role_classification` column. `INSERT OR REPLACE` from `_ROLE_CLASSIFICATION_MAP`.
 - **`html_tag_to_core_block`** (D99) — 14 rows, idempotent migration at module load. Replaces hardcoded `_HTML_TAG_TO_CORE_SLUG` dict. `INSERT OR REPLACE`.
 

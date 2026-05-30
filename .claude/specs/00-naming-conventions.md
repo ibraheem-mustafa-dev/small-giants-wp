@@ -72,7 +72,7 @@ Recognition path (deterministic, tier-driven post-D107):
 
 **ELEMENT path (BEM element inside a section):**
 1. Walker reads the BEM element from the class (`sgs-X__<element>`)
-2. Looks up the canonical slot via `slots` table (89 element rows + 16 section rows post-D99; replaces retired `slot_synonyms`) — e.g. `__quote` → `quote` canonical; `__body` → `text` canonical; `__card` → `card` canonical
+2. Looks up the canonical slot via `slots` table (92 element rows + 4 section rows = 96 total post-D111 2026-05-30; replaces retired `slot_synonyms`) — e.g. `__quote` → `quote` canonical; `__body` → `text` canonical; `__card` → `card` canonical
 3. Resolves canonical → standalone block via `slots.standalone_block` (e.g. `quote` → `sgs/quote`; `card` → `sgs/info-box`; `label` → `sgs/label`)
 4. Emits the resolved standalone block
 

@@ -736,7 +736,7 @@ python ~/.claude/hooks/wp-blocks.py dump
 | block_attributes | 2,074 | Stages 3+4 R; cv2 D3 W. D110 backfill: canonical_slot 659/2074 (31.8%), role 676/2074 (32.6%); 1316 NULL |
 | blocks | 67 sgs (+ 121 core/wp indexed = 188) | Stage 2 cross-check; /sgs-update S3 uimax sync. `tier` column (D107) — 2 rows class-section |
 | block_composition (D108, NEW 2026-05-30) | 188 | Data layer LIVE for Stage 1 queries; walker consumption code REVERTED — P-XS-3-TRIGGER-REFINEMENT. Schema: block_slug PK, wraps_block, composition_role enum, has_inner_blocks, accepts_allowed_blocks |
-| slots (D99, replaces slot_synonyms + legacy_role_lookup) | 89 element + 6 section = 95 (post-D111; was 105 pre-D111) | Stage 1 R via db_lookup |
+| slots (D99, replaces slot_synonyms + legacy_role_lookup) | 92 element + 4 section = 96 (post-D111; was 105 pre-D111) | Stage 1 R via db_lookup |
 | roles (D99, replaces slot_synonyms.role_classification) | 20 | Stage 1 R; walker resolution |
 | block_supports | 1,160 (post-D100 prune) | Stage 5 supports_writer R |
 | block_capabilities (D99 wired as FR-22-15) | 88 | Walker capability-aware BEM tiebreaker |
