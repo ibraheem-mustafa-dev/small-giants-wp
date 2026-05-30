@@ -26,16 +26,21 @@ $product_name  = $attributes['productName'] ?? '';
 $description   = $attributes['description'] ?? '';
 $variant_style = $attributes['variantStyle'] ?? 'standard';
 $trial_tag     = $attributes['trialTag'] ?? '';
+$featured_tag  = $attributes['featuredTag'] ?? '';
 $pack_sizes    = $attributes['packSizes'] ?? array();
 $price_large   = $attributes['priceLarge'] ?? '';
 $price_note    = $attributes['priceNote'] ?? '';
 // ctaText and ctaUrl are deprecated. CTA is now rendered via sgs/multi-button InnerBlocks ($content).
 
-$is_trial = 'trial' === $variant_style;
+$is_trial    = 'trial' === $variant_style;
+$is_featured = 'featured' === $variant_style;
 
 $classes = array( 'product-card' );
 if ( $is_trial ) {
 	$classes[] = 'trial-card';
+}
+if ( $is_featured ) {
+	$classes[] = 'featured-card';
 }
 
 $wrapper_attributes = get_block_wrapper_attributes(
@@ -58,6 +63,9 @@ ob_start();
 	<div class="product-card-body">
 		<?php if ( $is_trial && $trial_tag ) : ?>
 			<div class="trial-tag"><?php echo esc_html( $trial_tag ); ?></div>
+		<?php endif; ?>
+		<?php if ( $is_featured && $featured_tag ) : ?>
+			<div class="featured-tag"><?php echo esc_html( $featured_tag ); ?></div>
 		<?php endif; ?>
 		<?php if ( $product_name ) : ?>
 			<h3><?php echo esc_html( $product_name ); ?></h3>

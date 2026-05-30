@@ -53,12 +53,18 @@
             "enum": [
                 "standard",
                 "trial",
-                "gift"
+                "gift",
+                "featured"
             ]
         },
         "trialTag": {
             "type": "string",
             "default": ""
+        },
+        "featuredTag": {
+            "type": "string",
+            "default": "",
+            "description": "Tag text for featured variant (e.g. Most popular, Best selling, Flagship product). Mirror of trialTag for the featured variant. Rendered as a coloured strip above the card content when variantStyle='featured'."
         },
         "packSizes": {
             "type": "array",
