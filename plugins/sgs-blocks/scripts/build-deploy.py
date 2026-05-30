@@ -94,6 +94,18 @@ def fmt_cmd(cmd: list[str]) -> str:
     return " ".join(shlex.quote(c) for c in cmd)
 
 
+def resolve_exe(name: str) -> str:
+    """Resolve an executable to its full path.
+
+    On Windows, bare ``subprocess.run(["npm", ...])`` fails for ``.cmd``/``.CMD``
+    shims (npm, npx) because CreateProcess only auto-appends ``.exe`` — not the
+    other PATHEXT entries. ``shutil.which`` honours PATHEXT, so it finds
+    ``npm.CMD`` where a bare name would not. Falls back to the bare name on POSIX
+    (where bare names resolve fine) or when the command is not found.
+    """
+    return shutil.which(name) or name
+
+
 def run(cmd: list[str], *, dry_run: bool, cwd: Path | None = None) -> int:
     """Run command; honour dry-run; return exit code."""
     log(f"  $ {fmt_cmd(cmd)}" + (f"  (cwd={cwd})" if cwd else ""))
@@ -145,7 +157,7 @@ def git_is_dirty() -> bool:
 # ---------------------------------------------------------------------------
 def step_build(dry_run: bool) -> int:
     log("[1/5] npm run build")
-    rc = run(["npm", "run", "build"], dry_run=dry_run, cwd=PLUGIN_DIR)
+    rc = run([resolve_exe("npm"), "run", "build"], dry_run=dry_run, cwd=PLUGIN_DIR)
     if rc != 0:
         err(f"npm run build failed (exit {rc})")
         return rc
