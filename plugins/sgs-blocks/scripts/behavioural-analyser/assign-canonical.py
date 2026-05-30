@@ -6,11 +6,13 @@ Backfills `canonical_slot`, `role`, and `derived_selector` for every row in
 
 Algorithm (per Spec 15 §3.3, §5.1, §5.2):
 
-1. Load vocabulary tables from the DB at startup (slot_synonyms, property_suffixes,
-   modifier_suffixes).
+1. Load vocabulary tables from the DB at startup (slots, property_suffixes,
+   modifier_suffixes). [Post-D99: slot_synonyms table retired; slots table
+   replaces it; role no longer lives on the slot row — role is derived from
+   property_suffixes only.]
 2. For each block_attributes row, decompose attr_name by stripping known suffixes
    from the right in the prescribed order, leaving a slot base word (stem).
-3. Resolve canonical_slot via slot_synonyms (direct PK match then alias search).
+3. Resolve canonical_slot via slots (direct slot_name match then alias search).
 4. Resolve role via property_suffixes (the property suffix that was peeled).
 5. Derive selector as  .sgs-<block-short-slug>__<canonical_slot>.
 6. Apply v1 fingerprint overrides where an explicit selector is declared in
@@ -63,24 +65,29 @@ FINGERPRINTS_PATH = (
 # Vocabulary loaders
 # ---------------------------------------------------------------------------
 
-def load_slot_synonyms(conn: sqlite3.Connection) -> dict[str, dict]:
+def load_slot_aliases(conn: sqlite3.Connection) -> dict[str, dict]:
     """
     Returns a mapping:
         lowercase_term -> {
             'canonical_slot': str,
-            'role': str | None,
+            'role': None,         # post-D99: role no longer lives on the slot row
         }
-    Covers both canonical slugs and every alias in their JSON arrays.
+    Covers both canonical slot names and every alias in their JSON arrays.
+
+    Reads the post-D99 `slots` table (scope='element'); section-scope slots
+    are skipped — they describe page sections, not attribute targets.
     """
     cur = conn.cursor()
-    cur.execute("SELECT canonical_slot, aliases, role FROM slot_synonyms")
+    cur.execute(
+        "SELECT slot_name, aliases FROM slots WHERE scope = 'element'"
+    )
     rows = cur.fetchall()
 
     mapping: dict[str, dict] = {}
-    for canonical_slot, aliases_json, role in rows:
-        info = {"canonical_slot": canonical_slot, "role": role}
+    for slot_name, aliases_json in rows:
+        info = {"canonical_slot": slot_name, "role": None}
         # Canonical itself
-        mapping[canonical_slot.lower()] = info
+        mapping[slot_name.lower()] = info
         # Each alias
         try:
             aliases = json.loads(aliases_json) if aliases_json else []
@@ -89,6 +96,10 @@ def load_slot_synonyms(conn: sqlite3.Connection) -> dict[str, dict]:
         for alias in aliases:
             mapping[alias.lower()] = info
     return mapping
+
+
+# Legacy alias for any external callers expecting the old name (D99 port).
+load_slot_synonyms = load_slot_aliases
 
 
 def load_property_suffixes(conn: sqlite3.Connection) -> dict[str, dict]:
@@ -277,7 +288,7 @@ def resolve_canonical_slot(
 # of the SINGULAR (testimonial ->review canonical via standalone_block
 # reverse-lookup; logo ->logo canonical via direct alias).
 #
-# Universal — no hardcoded attr names. Driven by slot_synonyms + blocks tables.
+# Universal — no hardcoded attr names. Driven by slots + blocks tables.
 
 
 def _singularise(plural: str) -> str:
@@ -310,19 +321,21 @@ def standalone_block_to_canonical(
     """Reverse-lookup: find the canonical_slot whose standalone_block equals
     the given block_slug. Returns (canonical_slot, role) or (None, None).
 
-    e.g. 'sgs/testimonial' ->('review', 'identity')  via slot_synonyms row
-    where standalone_block='sgs/testimonial' (canonical_slot='review').
+    e.g. 'sgs/testimonial' ->('review', None) via slots row where
+    standalone_block='sgs/testimonial' (slot_name='review'). Post-D99 the
+    slots table has no role column; role stays None and is filled by the
+    property-suffix path or remains NULL for operator review.
     """
     if not block_slug:
         return None, None
     row = conn.execute(
-        "SELECT canonical_slot, role FROM slot_synonyms "
-        "WHERE standalone_block = ?",
+        "SELECT slot_name FROM slots "
+        "WHERE standalone_block = ? AND scope = 'element'",
         (block_slug,),
     ).fetchone()
     if row is None:
         return None, None
-    return row["canonical_slot"], row["role"]
+    return row["slot_name"], None
 
 
 def resolve_array_canonical(
@@ -369,7 +382,7 @@ def derive_selector(block_slug: str, canonical_slot: str) -> str:
     """
     Derives the BEM selector: .sgs-<block-short-slug>__<canonical_slot>
 
-    canonical_slot is already lowercase (from slot_synonyms canonical_slot column).
+    canonical_slot is already lowercase (from slots.slot_name column).
     block_slug strips the 'sgs/' namespace prefix.
     """
     short_slug = block_slug.replace("sgs/", "", 1)
@@ -422,8 +435,8 @@ def run() -> None:
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
 
-    # Load vocabulary
-    slot_map = load_slot_synonyms(conn)
+    # Load vocabulary (post-D99: reads `slots` table)
+    slot_map = load_slot_aliases(conn)
     property_suffixes = load_property_suffixes(conn)
     modifier_map = load_modifier_suffixes(conn)
 
@@ -472,7 +485,7 @@ def run() -> None:
         # doesn't directly match a canonical alias, try singularise + Tier-B
         # registered-block reverse-lookup. Covers plural collection-attr names
         # like 'testimonials', 'logos', 'reviews', 'plans', 'entries' that
-        # weren't naturally in slot_synonyms aliases. Universal — no hardcoded
+        # weren't naturally in slots.aliases. Universal — no hardcoded
         # attr names. Returns None,None when neither tier resolves; row
         # falls through to the existing gap-candidate path.
         if canonical_slot is None and attr_type == "array":
@@ -543,68 +556,23 @@ def run() -> None:
     conn.commit()
 
     # ------------------------------------------------------------------
-    # P-PHASE8-13 (2026-05-16) — Second-pass role backfill.
+    # P-PHASE8-13 second-pass role backfill — RETIRED post-D99 (2026-05-29).
     #
-    # The main pass above leaves role=NULL whenever
-    #   - the attr name doesn't carry a property suffix, AND
-    #   - slot_synonyms.role is NULL for the resolved canonical_slot.
+    # The retired slot_synonyms table previously carried a `role` column;
+    # this pass propagated that role onto block_attributes rows whose
+    # attr_name had no property suffix. Post-D99 the replacement `slots`
+    # table has no `role` column (role now lives in the separate `roles`
+    # table as a vocabulary list, not as a per-slot mapping).
     #
-    # Both conditions hold for most pure-content attrs (heading, body,
-    # label, button text, etc.) — they have a clear canonical_slot but no
-    # property suffix to peel. With slot_synonyms.role now populated for
-    # content-bearing slots (see migrations/2026-05-16-slot-synonyms-
-    # roles.py), this pass propagates that role to the matching
-    # block_attributes rows. Required by the bucket-router's
-    # cv2_emitted_dynamic filter to keep the gap signal meaningful.
-    #
-    # Incremental safety: only touches rows where role IS NULL AND
-    # canonical_slot IS NOT NULL AND the attr_name had NO property suffix
-    # peeled in decompose_attr_name. The property-suffix guard avoids the
-    # false-positive case where e.g. attr_name='textTransform' has stem
-    # 'text' resolving to canonical_slot='text', which would propagate
-    # role='text-content' even though the attr is a typography CSS
-    # property — its real role is 'typography', assigned via the property
-    # suffix path. Without the guard the backfill mis-routes CSS-property
-    # attrs that happen to share a stem with a content slot.
+    # The new role-detection path is the --role-detection / --apply-roles
+    # CLI mode (see run_role_detection_dry_run / run_role_detection_apply
+    # below), which infers content-bearing roles from attr_name regex +
+    # JSON-schema hints + description scan. This is now the canonical
+    # backfill route for content-bearing attrs with role=NULL.
     # ------------------------------------------------------------------
-    backfill_cur = conn.cursor()
-    backfill_cur.execute(
-        "SELECT ba.id, ba.attr_name, ba.canonical_slot, ss.role "
-        "FROM block_attributes ba "
-        "JOIN slot_synonyms ss ON ss.canonical_slot = ba.canonical_slot "
-        "WHERE ba.role IS NULL "
-        "AND ba.canonical_slot IS NOT NULL "
-        "AND ss.role IS NOT NULL"
-    )
-    candidate_rows = backfill_cur.fetchall()
-    backfill_updates = []
-    suffix_guarded_count = 0
-    for row_id, attr_name, _canonical_slot, slot_role in candidate_rows:
-        # Re-run decomposition to check whether attr_name carries a
-        # property suffix. If yes, the property suffix should have set
-        # role earlier — its absence means a name like 'rotationXY'
-        # where the suffix peels but no property role mapping exists.
-        # Either way, prefer NOT to fill via slot.role when a suffix
-        # was peeled.
-        _, _prop_suffix, prop_info, _ = decompose_attr_name(
-            attr_name, property_suffixes, modifier_map
-        )
-        if prop_info is not None:
-            # Property suffix was peeled — skip slot.role propagation.
-            suffix_guarded_count += 1
-            continue
-        backfill_updates.append((slot_role, row_id))
-
-    if backfill_updates:
-        conn.executemany(
-            "UPDATE block_attributes SET role = ? WHERE id = ?",
-            backfill_updates,
-        )
-        conn.commit()
     print(
-        f"[backfill] propagated slot.role -> block_attributes.role on "
-        f"{len(backfill_updates)} rows (guarded {suffix_guarded_count} "
-        f"property-suffix attrs)"
+        "[backfill] slot-role propagation retired post-D99 "
+        "(slots table has no role column; use --role-detection instead)"
     )
 
     # ------------------------------------------------------------------
@@ -744,7 +712,7 @@ TIER_B_SNAPSHOT_DIR = (
 #     "proposed_canonical_slot": str,     # the matched canonical_slot
 #     "derivation_source": "tier_b_bem_element",
 #     "matched_alias": str,               # the BEM element extracted
-#     "source_synonym_row_id": int        # slot_synonyms.rowid
+#     "source_synonym_row_id": int        # slots.rowid (post-D99)
 #   }
 # Top-level shape:
 #   {
@@ -787,18 +755,19 @@ def _utc_timestamp() -> str:
 
 
 def _load_slot_synonyms_for_tier_b(conn: sqlite3.Connection) -> dict[str, tuple[str, int]]:
-    """Return {alias_lowercase: (canonical_slot, slot_synonyms.rowid)}.
+    """Return {alias_lowercase: (canonical_slot, slots.rowid)}.
 
-    Used by Tier B BEM-element matching: walk every slot_synonyms row's
-    canonical_slot + aliases, map each lowercased term back to the row's
-    canonical_slot + rowid. Only includes rows where standalone_block is
-    populated (Tier B's destination is block-equivalent slots, not bare
-    canonical-only slots).
+    Used by Tier B BEM-element matching: walk every `slots` row's slot_name +
+    aliases (post-D99 — was slot_synonyms.canonical_slot + aliases), map each
+    lowercased term back to the row's slot_name + rowid. Only includes
+    element-scope rows where standalone_block is populated (Tier B's
+    destination is block-equivalent slots, not bare canonical-only slots).
     """
     out: dict[str, tuple[str, int]] = {}
     for rowid, canonical, aliases_json, standalone in conn.execute(
-        "SELECT rowid, canonical_slot, aliases, standalone_block FROM slot_synonyms "
-        "WHERE standalone_block IS NOT NULL AND standalone_block != ''"
+        "SELECT rowid, slot_name, aliases, standalone_block FROM slots "
+        "WHERE scope = 'element' "
+        "AND standalone_block IS NOT NULL AND standalone_block != ''"
     ).fetchall():
         out[canonical.lower()] = (canonical, rowid)
         if aliases_json:
@@ -882,7 +851,7 @@ def run_tier_b_dry_run(conn: sqlite3.Connection, output_path: Path) -> dict:
         element = m.group(1).lower()
         match = alias_map.get(element)
         if match is None:
-            # BEM element extracted but no alias match in slot_synonyms.
+            # BEM element extracted but no alias match in slots.
             unresolved.append({
                 "block_slug": block_slug,
                 "attr_name": attr_name,
@@ -1330,7 +1299,7 @@ def main() -> None:
         action="store_true",
         help=(
             "Skip the legacy Tier A backfill pass (the existing decomposition + "
-            "slot_synonyms resolution flow). Default: run Tier A then Tier B."
+            "`slots` resolution flow). Default: run Tier A then Tier B."
         ),
     )
     parser.add_argument(
