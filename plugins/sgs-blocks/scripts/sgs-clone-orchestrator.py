@@ -2535,7 +2535,7 @@ def main():
                 _upload_cmd.append("--push-theme-snapshot")
             result = subprocess.run(
                 _upload_cmd,
-                capture_output=True, text=True, timeout=180,
+                capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180,
             )
             if result.returncode == 0:
                 # Print only the final success line + the link, skip image-upload chatter
@@ -2665,7 +2665,7 @@ def main():
                                     _pd_cmd.append("--wait-fonts")
                                 pd_proc = subprocess.run(
                                     _pd_cmd,
-                                    capture_output=True, text=True, timeout=120,
+                                    capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120,
                                 )
                                 diff_json_path = pd_out / "diff.json"
                                 if diff_json_path.exists():

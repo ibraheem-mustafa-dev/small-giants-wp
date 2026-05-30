@@ -297,7 +297,7 @@ def main():
             cmd.append("--yes")  # orchestrator-driven, non-interactive
         print(f"\nPhase 5a snapshot {'PUSH' if args.push_theme_snapshot else 'DIFF'} for client '{args.client}'...")
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+            result = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120)
             # Echo a trimmed view of the diff for operator visibility.
             for ln in result.stdout.splitlines():
                 if ln.strip():
