@@ -84,17 +84,34 @@ def load_slot_aliases(conn: sqlite3.Connection) -> dict[str, dict]:
     rows = cur.fetchall()
 
     mapping: dict[str, dict] = {}
+
+    def _add(term: str, info: dict) -> None:
+        """Register `term` and its no-hyphen variant in the mapping.
+
+        camelCase attr names lowercase to a hyphen-free form
+        (e.g. `splitImage` → `splitimage`), but slot aliases in the DB use
+        hyphenated kebab-case (`split-image`). Register both so the camelCase
+        decomposition path matches kebab-case aliases. First writer wins so
+        canonical-slot names never get clobbered by hyphen-stripped aliases.
+        """
+        key = term.lower()
+        if key not in mapping:
+            mapping[key] = info
+        nh = key.replace("-", "")
+        if nh and nh != key and nh not in mapping:
+            mapping[nh] = info
+
     for slot_name, aliases_json in rows:
         info = {"canonical_slot": slot_name, "role": None}
         # Canonical itself
-        mapping[slot_name.lower()] = info
+        _add(slot_name, info)
         # Each alias
         try:
             aliases = json.loads(aliases_json) if aliases_json else []
         except json.JSONDecodeError:
             aliases = []
         for alias in aliases:
-            mapping[alias.lower()] = info
+            _add(alias, info)
     return mapping
 
 
@@ -454,11 +471,18 @@ def run() -> None:
     # populated. To force re-canonicalisation, clear those columns
     # explicitly via SQL.).
     cur = conn.cursor()
+    # 2026-05-30 (P-XS-4-ROLE-REGEX-CAMELCASE + P-XS-4-SLOT-VOCAB-GAPS):
+    # Loosened scope from triple-NULL to canonical_slot-NULL only.
+    # Rows where role or derived_selector were previously populated by
+    # property-suffix peel (e.g. role='image-object' from `Image` suffix) but
+    # whose camelCase stem missed the slot map remain backfill candidates as
+    # the slot_map grows. The UPDATE still only fills NULL columns —
+    # existing role/derived_selector values are preserved by the COALESCE
+    # path below.
     cur.execute(
-        "SELECT id, block_slug, attr_name, attr_type FROM block_attributes "
-        "WHERE canonical_slot IS NULL "
-        "AND role IS NULL "
-        "AND derived_selector IS NULL"
+        "SELECT id, block_slug, attr_name, attr_type, role, derived_selector "
+        "FROM block_attributes "
+        "WHERE canonical_slot IS NULL"
     )
     rows = cur.fetchall()
 
@@ -473,13 +497,28 @@ def run() -> None:
         block_slug: str = row["block_slug"]
         attr_name: str = row["attr_name"]
         attr_type: str = row["attr_type"]
+        # Existing role / derived_selector are preserved if populated; the
+        # decomposition path only overwrites a column when its current value
+        # is NULL.
+        existing_role: Optional[str] = row["role"]
+        existing_selector: Optional[str] = row["derived_selector"]
 
         stem, prop_suffix, prop_info, modifiers = decompose_attr_name(
             attr_name, property_suffixes, modifier_map
         )
 
-        # Slot resolution
-        canonical_slot, slot_role = resolve_canonical_slot(stem, slot_map)
+        # Slot resolution — Tier 0 (full-name pre-peel match, 2026-05-30
+        # P-XS-4-SLOT-VOCAB-GAPS). Try the FULL camelCase attr_name as a slot
+        # alias BEFORE the post-peel stem. This catches cases where peeling a
+        # property suffix collapses the stem to a layout-only slot (e.g.
+        # `splitImage` -> stem `split` -> layout-slot `split` which has no
+        # standalone_block; the full-name match against `media.splitimage`
+        # alias routes correctly to sgs/media instead). Falls through to the
+        # post-peel resolver when no direct alias exists.
+        canonical_slot, slot_role = resolve_canonical_slot(attr_name, slot_map)
+
+        if canonical_slot is None:
+            canonical_slot, slot_role = resolve_canonical_slot(stem, slot_map)
 
         # Array-attr fallback (2026-05-24): when an array-typed attr's stem
         # doesn't directly match a canonical alias, try singularise + Tier-B
@@ -513,7 +552,12 @@ def run() -> None:
             if attr_name in fp_block:
                 derived_selector = fp_block[attr_name]
 
-            updates.append((canonical_slot, role, derived_selector, row_id))
+            # Preserve existing populated values (loosened scope, 2026-05-30).
+            final_role = role if existing_role is None else existing_role
+            final_selector = (
+                derived_selector if existing_selector is None else existing_selector
+            )
+            updates.append((canonical_slot, final_role, final_selector, row_id))
             resolved_count += 1
         else:
             # Gap candidate — canonical_slot stays NULL in block_attributes.
@@ -835,8 +879,17 @@ def run_tier_b_dry_run(conn: sqlite3.Connection, output_path: Path) -> dict:
                 "passed the WHERE clause. Halt."
             )
 
-        m = _get_bem_regex().search(derived_selector)
-        if not m:
+        # P-XS-4-TIER-B-FINGERPRINT-CHAIN (2026-05-30): split compound selectors
+        # on ',' BEFORE applying the BEM regex so fingerprint-override fallback
+        # chains like `.sgs-hero__headline, h1, h2` resolve via the first BEM
+        # fragment. Bare-tag fragments are silently skipped.
+        element = None
+        for fragment in derived_selector.split(","):
+            m = _get_bem_regex().search(fragment)
+            if m:
+                element = m.group(1).lower()
+                break
+        if not element:
             # No __element segment in selector (e.g. core/* rows where
             # derived_selector is a bare tag like 'audio' or 'figure > a').
             unresolved.append({
@@ -847,8 +900,6 @@ def run_tier_b_dry_run(conn: sqlite3.Connection, output_path: Path) -> dict:
                 "reason": "no_bem_element_in_selector",
             })
             continue
-
-        element = m.group(1).lower()
         match = alias_map.get(element)
         if match is None:
             # BEM element extracted but no alias match in slots.
@@ -990,19 +1041,48 @@ _CONTENT_BEARING_ROLES = frozenset({
 
 # Tier 1: attr-name regex matching (highest-confidence signal).
 # Each entry: (compiled regex, proposed_role, confidence).
+#
+# Regexes use re.IGNORECASE-equivalent explicit alternations so camelCase variants
+# are matched (e.g. `subHeadline`, `productName`, `featuredTag`). Extended
+# 2026-05-30 per P-XS-4-ROLE-REGEX-CAMELCASE to cover the camelCase content-attr
+# population that the original plain-lowercase regex missed (~100 SGS rows).
 _ATTR_NAME_RULES = [
-    # identity — icon/glyph attrs
-    (re.compile(r"^(icon|iconName|iconSource|glyph)$"), "identity", "high"),
+    # identity — icon/glyph/name-like identity attrs
+    (re.compile(r"^(icon|iconName|iconSource|glyph|productName|productSlug)$"),
+     "identity", "high"),
     # link-href — URL-like attrs
-    (re.compile(r"^(link|linkTarget|url|href|destination)$"), "link-href", "high"),
-    # image-object — image/media URL attrs
-    (re.compile(r"^(image|imageUrl|src|mediaUrl|backgroundImage)$"), "image-object", "high"),
-    # text-content — copy attrs
     (re.compile(
-        r"^(content|text|body|description|headline|title|subtitle|caption|label|name|heading)$"
+        r"^(link|linkTarget|linkUrl|linkHref|url|href|destination|destinationUrl)$"
+    ), "link-href", "high"),
+    # image-object — image/media URL attrs
+    (re.compile(
+        r"^(image|imageUrl|imageSrc|src|mediaUrl|backgroundImage|"
+        r"splitImage|featuredImage|heroImage|productImage|thumbnailImage|"
+        r"sideImage|bgImage|posterImage|coverImage)$"
+    ), "image-object", "high"),
+    # text-content — copy attrs incl. camelCase sub-variants + tag-style labels
+    (re.compile(
+        r"^("
+        # plain lowercase content stems
+        r"content|text|body|description|headline|title|subtitle|caption|"
+        r"label|name|heading|"
+        # camelCase sub-* variants
+        r"subHeadline|subheadline|subTitle|subtitle|subHeading|subheading|"
+        # camelCase tag/eyebrow content
+        r"trialTag|featuredTag|tagText|tagLabel|badgeText|badgeLabel|"
+        r"eyebrowText|kickerText|"
+        # camelCase title/heading content
+        r"productName|cardTitle|cardHeading|sectionTitle|sectionHeading|"
+        r"primaryText|secondaryText|primaryHeadline|secondaryHeadline|"
+        # camelCase descriptions
+        r"shortDescription|longDescription|productDescription|cardDescription"
+        r")$"
     ), "text-content", "high"),
     # content (array-typed collection slots)
-    (re.compile(r"^(entries|items|cards|testimonials|badges|packSizes)$"), "content", "high"),
+    (re.compile(
+        r"^(entries|items|cards|testimonials|badges|packSizes|"
+        r"products|reviews|features|services|plans|logos|steps|tabs|slides)$"
+    ), "content", "high"),
 ]
 
 # Tier 2: JSON-schema `format` field hints.

@@ -1182,6 +1182,26 @@ def _styling_behaviour_roles() -> frozenset[str]:
 _BEM_ELEMENT_RE = re.compile(r"__([a-z0-9-]+)")
 
 
+def _extract_bem_element(selector: str) -> str | None:
+    """Return the first BEM `__element` token across compound selectors.
+
+    Extended 2026-05-30 per P-XS-4-TIER-B-FINGERPRINT-CHAIN to handle
+    fingerprint-override fallback chains like
+    `.sgs-hero__headline, h1, h2`. The base regex search already finds the
+    first `__element` anywhere in the string, but this helper:
+      1. Makes the comma-split + per-fragment intent explicit
+      2. Skips fragments that have no BEM token (bare tags like `h1`, `audio`)
+      3. Returns the first BEM token encountered (left-to-right priority)
+    """
+    if not selector:
+        return None
+    for fragment in selector.split(","):
+        m = _BEM_ELEMENT_RE.search(fragment)
+        if m:
+            return m.group(1).lower()
+    return None
+
+
 @functools.lru_cache(maxsize=1)
 def _slot_alias_to_standalone() -> dict[str, str]:
     """Return {alias_lowercase: standalone_block} from element-scope slots.
@@ -1201,12 +1221,28 @@ def _slot_alias_to_standalone() -> dict[str, str]:
     finally:
         conn.close()
     out: dict[str, str] = {}
+
+    def _put(term: str, standalone: str) -> None:
+        """Register `term` plus its no-hyphen variant. First writer wins so
+        canonical slot names never get clobbered by hyphen-stripped aliases.
+
+        Extended 2026-05-30 (P-XS-4-SLOT-VOCAB-GAPS) so camelCase attr names
+        like `splitImage` (lowered to `splitimage`) resolve against
+        kebab-case aliases like `split-image` automatically.
+        """
+        key = term.lower()
+        if key not in out:
+            out[key] = standalone
+        nh = key.replace("-", "")
+        if nh and nh != key and nh not in out:
+            out[nh] = standalone
+
     for slot_name, aliases_json, standalone in rows:
-        out[slot_name.lower()] = standalone
+        _put(slot_name, standalone)
         if aliases_json:
             try:
                 for alias in json.loads(aliases_json):
-                    out[alias.lower()] = standalone
+                    _put(alias, standalone)
             except (ValueError, TypeError):
                 pass
     return out
@@ -1282,14 +1318,31 @@ def equivalent_block_for(block_slug: str, attr_name: str) -> str | None:
         # canonical_slot set but no standalone_block on slot_synonyms row
         # → falls through to next tier (defensive; should be rare).
 
-    # Tier B — BEM-element from derived_selector → slot_synonyms.aliases match
+    # Tier B — BEM-element from derived_selector → slot.aliases match.
+    # Compound selectors split + per-fragment scan via _extract_bem_element
+    # (P-XS-4-TIER-B-FINGERPRINT-CHAIN, 2026-05-30).
     if derived_selector:
-        m = _BEM_ELEMENT_RE.search(derived_selector)
-        if m:
-            element = m.group(1).lower()
+        element = _extract_bem_element(derived_selector)
+        if element:
             standalone = _slot_alias_to_standalone().get(element)
             if standalone:
                 return standalone
+
+    # Tier B2 (2026-05-30 P-XS-4-SLOT-VOCAB-GAPS) — attr-name fallback alias
+    # lookup. Resolves cases where Tier A's canonical_slot points to a
+    # layout-only slot with no standalone_block (e.g. `splitImage` resolves
+    # to canonical_slot=`split` via property-suffix peel; `split` has no
+    # standalone_block; but the camelCase attr-name `splitimage` matches the
+    # `media.splitimage` alias and routes to sgs/media). Also covers attrs
+    # where property-suffix peel produced an empty stem (e.g. attr_name
+    # `image` peels to empty + role=`image-object`; full name `image` matches
+    # `media.image` alias).
+    alias_lookup = _slot_alias_to_standalone()
+    nh_attr = attr_name.lower().replace("-", "")
+    for key in (attr_name.lower(), nh_attr):
+        standalone = alias_lookup.get(key)
+        if standalone:
+            return standalone
 
     return None
 
