@@ -472,12 +472,17 @@ def _convert_section_body(html: str, css: str, media_map: dict,
             continue
         block_short = block_slug.rsplit("/", 1)[-1]
         for k, v in raw_attrs.items():
-            # Bare attr-name key (last-write-wins across nested blocks is fine
-            # — the bucket-router treats finding any non-empty value at the
-            # bare name as 'slot filled'; we don't need block-disambiguation
-            # for the gap signal). The block-short-prefixed form additionally
-            # preserves block context for downstream consumers that want it.
-            extracted[k] = v
+            # Bare attr-name key: first-write-wins so the section-root block's
+            # attrs dominate nested descendants. Critical for className — the
+            # root block's sgs-<section> class must not be overwritten by an
+            # inner sgs/container emitted by A1 layout-container (e.g.
+            # sgs-social-proof__trustpilot-bar clobbering sgs-social-proof).
+            # The block-short-prefixed form is still written unconditionally so
+            # downstream consumers that want block-level disambiguation still
+            # get the full series (e.g. container.className for every
+            # sgs/container in the tree, last-write-wins by block-short key).
+            if k not in extracted:
+                extracted[k] = v
             extracted[f"{block_short}.{k}"] = v
 
     # D3: flush accumulated gap candidates — writes to sgs-framework.db via

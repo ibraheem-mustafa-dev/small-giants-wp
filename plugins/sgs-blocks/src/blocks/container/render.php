@@ -35,14 +35,14 @@ if ( ! function_exists( 'sgs_sanitize_grid_template' ) ) {
 	}
 }
 
-$layout               = $attributes['layout'] ?? 'stack';
+$layout               = $attributes['layout'] ?? '';
 $columns              = $attributes['columns'] ?? 2;
 $columns_mobile       = $attributes['columnsMobile'] ?? 1;
 $columns_tablet       = $attributes['columnsTablet'] ?? 2;
 $grid_template        = $attributes['gridTemplateColumns'] ?? '';
 $grid_template_tablet = $attributes['gridTemplateColumnsTablet'] ?? '';
 $grid_template_mobile = $attributes['gridTemplateColumnsMobile'] ?? '';
-$gap                  = $attributes['gap'] ?? '40';
+$gap                  = $attributes['gap'] ?? '';
 $gap_tablet           = $attributes['gapTablet'] ?? '';
 $gap_mobile           = $attributes['gapMobile'] ?? '';
 $bg_image             = $attributes['backgroundImage'] ?? null;
@@ -78,7 +78,7 @@ $bg_parallax            = ! empty( $attributes['bgParallax'] );
 $bg_ken_burns           = ! empty( $attributes['bgKenBurns'] );
 $bg_animation_duration  = isset( $attributes['bgAnimationDuration'] ) ? absint( $attributes['bgAnimationDuration'] ) : 20;
 $shadow                 = $attributes['shadow'] ?? '';
-$max_width              = $attributes['maxWidth'] ?? 'wide';
+$max_width              = $attributes['maxWidth'] ?? '';
 $min_height             = $attributes['minHeight'] ?? '';
 $vertical_align         = $attributes['verticalAlign'] ?? 'start';
 $html_tag               = $attributes['htmlTag'] ?? 'section';
@@ -142,8 +142,13 @@ if ( ! in_array( $align_content, $allowed_align_content, true ) ) {
 }
 
 // Build inline styles.
+// Gap is emitted ONLY when explicitly set — an unset gap imposes nothing, so a
+// pipeline-emitted or bare container reproduces the source layout's own gap
+// rather than over-painting the container's preset (Spec 23 neutral-default).
 $styles   = array();
-$styles[] = 'gap:var(--wp--preset--spacing--' . esc_attr( $gap ) . ')';
+if ( '' !== $gap ) {
+	$styles[] = 'gap:var(--wp--preset--spacing--' . esc_attr( $gap ) . ')';
+}
 
 if ( $min_height ) {
 	$styles[] = 'min-height:' . esc_attr( $min_height );
@@ -257,11 +262,23 @@ if ( 'grid' === $layout ) {
 }
 
 // Build CSS classes.
+// The width class is emitted ONLY when maxWidth is explicitly set. An unset
+// maxWidth imposes no max-width at all (Spec 23 neutral-default) — the theme's
+// content/wide size and any client opt-in drive width, not a baked-in default.
 $classes = array(
 	'sgs-container',
-	'sgs-container--' . esc_attr( $layout ),
-	'sgs-container--width-' . esc_attr( $max_width ),
 );
+// The layout class is emitted ONLY when layout is explicitly set (Spec 23 B3
+// neutral-default). An unset layout imposes NO display/flex-direction — so a
+// pipeline-wrapped flex-row wrapper keeps its own direction (the .sgs-container--stack
+// default was forcing flex-direction:column over mockup rows). The deployed CSS
+// drives display/direction; the client opts into stack/grid/flex in the editor.
+if ( '' !== $layout ) {
+	$classes[] = 'sgs-container--' . esc_attr( $layout );
+}
+if ( '' !== $max_width ) {
+	$classes[] = 'sgs-container--width-' . esc_attr( $max_width );
+}
 
 // widthMode — emit WP-native alignment classes so the wrapper composes with
 // .entry-content's wide/full escape mechanism. SGS-internal width classes
