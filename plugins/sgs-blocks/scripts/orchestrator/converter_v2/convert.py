@@ -1568,106 +1568,6 @@ def _atomic_attrs_for(node: Tag, slug: str) -> dict:
     return {}
 
 
-# ============================================================================
-# XS-3 helpers — layout-bearing wrapper detection + synthetic container emit
-# ============================================================================
-
-def _is_inner_passthrough(sgs_classes: list[str]) -> bool:
-    """Detect __inner BEM elements (XS-3 special case).
-
-    Any sgs-* class ending in '__inner' marks a layout-helper subdivision
-    whose CSS folds into the parent block's className rather than emitting
-    a separate block. The 'inner' slot row in `slots` (scope='element',
-    standalone_block=NULL) documents this passthrough semantically.
-    """
-    return any(c.endswith("__inner") for c in sgs_classes)
-
-
-def _is_layout_bearing_wrapper(
-    node: "Tag",
-    sgs_classes: list[str],
-    css_rules: dict,
-) -> bool:
-    """Detect a layout-bearing wrapper that should emit sgs/container.
-
-    XS-3 universal condition (Spec 22 §FR-22-11 sub-path): a <div> with
-    an sgs-* BEM class that:
-      - has no slot row in slots WHERE scope='element' for any of its
-        classes (slug resolution already returned None — that's the caller
-        precondition), AND
-      - has at least one child element-node (not just text), AND
-      - has at least one CSS rule in css_rules targeting any of its
-        sgs-* class selectors.
-
-    The combination indicates a layout-bearing wrapper that carries
-    visible styling and contains structural content — it must materialise
-    as a block in the output, not vanish via pure passthrough.
-    """
-    if not sgs_classes:
-        return False
-    # has child element-node?
-    has_child_tag = any(
-        isinstance(child, Tag) for child in node.children
-    )
-    if not has_child_tag:
-        return False
-    # has any CSS rule targeting any sgs-* class?
-    selectors = [f".{c}" for c in sgs_classes]
-    for sel in css_rules.keys():
-        if any(s in sel for s in selectors):
-            return True
-    return False
-
-
-def _emit_synthetic_container(
-    node: "Tag",
-    classes: list[str],
-    sgs_classes: list[str],
-    css_rules: dict,
-    depth: int,
-    variation_buf: list[str] | None,
-) -> str:
-    """Emit a synthetic sgs/container block preserving the wrapper's className.
-
-    XS-3 (2026-05-30). Routes through the SAME 'sgs/container' literal as
-    FR-22-3 exception 3 (top-level container wrap); this is the universal
-    container fallback — not a new routing branch. R-22-3 preserved.
-    """
-    import json as _json
-
-    # Collect CSS for this node's classes (FR-22-5 routing).
-    css = collect_css_for_classes(classes, css_rules)
-    if css and variation_buf is not None:
-        variation_buf.append(css)
-
-    # Recurse children as InnerBlocks of the synthetic container.
-    children_markup: list[str] = []
-    for child in node.children:
-        result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
-        if result:
-            children_markup.append(result)
-
-    # Build attrs — preserve the original BEM className on the container so
-    # the source CSS continues to cascade onto the rendered <div>.
-    className = " ".join(sgs_classes)
-    attrs = {"className": className} if className else {}
-    attrs_json = _json.dumps(attrs, separators=(",", ":"), ensure_ascii=False) if attrs else "{}"
-
-    _trace("walker_branch_taken", branch="synthetic_container",
-           node_classes=classes, depth=depth, css_len=len(css or ""))
-
-    inner = "\n".join(children_markup)
-    style_tail = f"\n<style>{css.strip()}</style>" if css and css.strip() else ""
-    div_class = ("wp-block-sgs-container " + className).strip()
-    div = (
-        f'<div class="{div_class}">\n'
-        f"{inner}"
-        f"{style_tail}\n"
-        f"</div>"
-    )
-    return f"<!-- wp:sgs/container {attrs_json} -->\n{div}\n<!-- /wp:sgs/container -->"
-
-
 def walk_passthrough(
     node: Tag,
     css_rules: dict,
@@ -1766,36 +1666,7 @@ def walk(
     # the wrap function accepts slug=None and emits walked children as direct
     # container InnerBlocks. Truly transparent pass-through (walk_passthrough)
     # only applies to non-top-level slug-None nodes per FR-22-11.
-    #
-    # XS-3 (2026-05-30) refinement of FR-22-11 — three sub-paths when slug is None
-    # and is_top_level is False:
-    #   (a) __inner BEM element  → pure passthrough (CSS folds into parent block).
-    #   (b) layout-bearing wrapper (has sgs-* class, has CSS rules, has child
-    #       element-nodes, no slot row) → emit sgs/container with className
-    #       preserved, recurse children as InnerBlocks. Resolves to the SAME
-    #       sgs/container literal as exception 3 (FR-22-4 container-base);
-    #       does NOT introduce a 4th routing branch — it routes through the
-    #       universal container fallback path with a non-top-level invocation.
-    #       Future blocks that should claim a slot name (e.g. a future
-    #       sgs/products block) will be picked up via block_composition
-    #       composition_role='content-block' + the FR-22-15 capability
-    #       tiebreaker, taking precedence over this generic fallback.
-    #       R-22-9 universal preserved.
-    #   (c) anything else → pure passthrough (existing FR-22-11 behaviour).
     if slug is None and not is_top_level:
-        # (a) __inner element — fold CSS into variation_buf, then pure passthrough.
-        if _is_inner_passthrough(sgs_classes):
-            inner_css = collect_css_for_classes(classes, css_rules)
-            if inner_css and variation_buf is not None:
-                variation_buf.append(inner_css)
-            _trace("walker_branch_taken", branch="inner_passthrough",
-                   node_classes=classes, depth=depth)
-            return walk_passthrough(node, css_rules, depth, variation_buf)
-        # (b) layout-bearing wrapper — emit sgs/container with className.
-        if _is_layout_bearing_wrapper(node, sgs_classes, css_rules):
-            return _emit_synthetic_container(node, classes, sgs_classes,
-                                             css_rules, depth, variation_buf)
-        # (c) pure passthrough.
         return walk_passthrough(node, css_rules, depth, variation_buf)
 
     # When slug is None at top level, skip attr-lifting + root-supports-lift
