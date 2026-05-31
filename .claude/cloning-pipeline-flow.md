@@ -111,7 +111,7 @@ The cloning pipeline emits via a single universal walker path with exactly 3 per
 
 No other branches. Adding a 4th requires spec amendment with empirical justification (R-22-3). Canonical reference: `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`.
 
-**D108 status (2026-05-30):** `block_composition` table (188 rows) is LIVE as a data layer; walker recursion code that would consume it (XS-3) was REVERTED (commit `f173b351` → `c76aa107`) pending a refined trigger. Treat `block_composition` as available for DB-driven queries but NOT yet a walker branch. Refined trigger parked at `P-XS-3-TRIGGER-REFINEMENT`.
+**D108 status (2026-05-30):** `block_composition` table (188 rows) is LIVE as a data layer; walker recursion code that would consume it (XS-3) was REVERTED (commit `f173b351` → `c76aa107`) pending a refined trigger. Treat `block_composition` as available for DB-driven queries but NOT yet a walker branch. Refined trigger formalised as **Spec 22 §FR-22-4.1 — Universal wrapper/container resolution** (Bean-directed, 2026-05-31, D118). §FR-22-4.1 is the canonical resolution rule for every sgs-classed wrapper below a section root: (1) block-match wins; (2) direct-descendant folds into the parent container (1-child → inner-CSS layer; grid/flex → container absorbs layout + grid-item CSS per item); (3) direct-descendant that matches a block → emitted as that block; (4) non-direct-descendant → its own sgs/container, then recurse. This supersedes `walk_passthrough` drop-and-bubble for sgs-classed wrappers, the depth-2 `_is_layout_bearing_wrapper` gate, and `_absorb_transparent_wrappers` (D52). FR-22-11 governs non-sgs-classed (transparent) wrappers — unchanged.
 
 ---
 

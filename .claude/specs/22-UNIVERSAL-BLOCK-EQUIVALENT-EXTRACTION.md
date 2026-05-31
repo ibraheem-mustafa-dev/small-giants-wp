@@ -208,7 +208,7 @@ The walker is one recursive function. Its branching surface is exactly 3 conditi
 **PASS test:** count of `if|elif` branches in convert.py walker function that reference a block-slug literal must be 0. Count of `is_top_level` / `node.name in (atomic_tag_map|SKIP_TOP_LEVEL_TAGS)` branches must be exactly 3.
 **FAIL test:** any 4th branch added to the walker without a spec amendment.
 
-**2026-05-30 deferred-trigger note (D109).** The XS-3 walker consumption code (layout-bearing wrapper detection + `__inner` passthrough emit) was attempted at commit `f173b351` and REVERTED at `c76aa107` after measuring +13.07pp regression on featured-product + +10.40pp on social-proof. A refined trigger is queued at parking entry **P-XS-3-TRIGGER-REFINEMENT**. Per R-22-3, that refined trigger MUST land as a refinement to FR-22-4 container-default behaviour (or as enrichment to one of the existing three exceptions), NOT as a 4th conditional branch in the walker. The data layer that supports the future re-wire — the `block_composition` table (188 rows, see §FR-22-17) and the `inner` slot row in `slots WHERE scope='element'` — is shipped and stable; only the consumption code is deferred.
+**2026-05-30 deferred-trigger note (D109).** The XS-3 walker consumption code (layout-bearing wrapper detection + `__inner` passthrough emit) was attempted at commit `f173b351` and REVERTED at `c76aa107` after measuring +13.07pp regression on featured-product + +10.40pp on social-proof. A refined trigger is queued at parking entry **P-XS-3-TRIGGER-REFINEMENT** and is now resolved by **§FR-22-4.1** (Bean-directed 2026-05-31), which codifies the universal rule for every wrapper the walker meets below a section root. Per R-22-3, the refined trigger lands as a refinement to FR-22-4 container-default behaviour (see §FR-22-4.1), NOT as a 4th conditional branch in the walker. The data layer that supports the future re-wire — the `block_composition` table (188 rows, see §FR-22-17) and the `inner` slot row in `slots WHERE scope='element'` — is shipped and stable; only the consumption code is deferred.
 
 ### FR-22-4 — Section base is always sgs/container
 
@@ -218,6 +218,37 @@ Top-level section nodes are unconditionally wrapped in `sgs/container` per archi
 **FAIL test:** any section root emits a non-container block at the top level.
 
 **Tier-driven routing path (D107, 2026-05-30).** The per-section-convention voter now consults `blocks.tier` before the FR-22-4 container-default fires. Section-root sgs- classes registered with `blocks.tier='class-section'` (currently sgs/hero + sgs/cta-section) return from the voter at confidence 1.0 and emit their declared block directly — the FR-22-3 permitted exception #3 still wraps the emit in `sgs/container` per architecture decision #4. All OTHER sgs- prefixed section root classes return a gap-candidate from the voter and fall through to the FR-22-4 default (Stage 2 container emit). See §FR-22-16 for the voter behaviour spec.
+
+### FR-22-4.1 — Universal wrapper/container resolution (Bean-directed, 2026-05-31; the FR-22-4 refinement D109 mandates; closes P-XS-3-TRIGGER-REFINEMENT)
+
+The single rule for EVERY DOM wrapper the walker meets below a section. **No wrapper is EVER silently dropped.** This SUPERSEDES the three patchwork mechanisms it grew out of — `walk_passthrough`'s drop-and-bubble for `sgs-`-classed wrappers, the depth-2 `_is_layout_bearing_wrapper` gate, and the single-wrapper `_absorb_transparent_wrappers` (D52) — folding all three into one coherent mechanism.
+
+Resolution at each node, in precedence order:
+
+1. **Block match wins (FR-22-1, unchanged).** If the node's BEM class resolves to a registered block (`resolve_slug_from_bem` non-NULL) → emit that block; it renders its own CSS. (e.g. `sgs-product-card` → `sgs/product-card`; `sgs-feature-grid` → `sgs/feature-grid`.)
+
+2. **A DIRECT descendant of a container FOLDS into that container.** Every direct child of an emitted container that is itself a slug-None wrapper folds its CSS up onto the container — it does NOT become its own block/container and is NOT dropped:
+   - **1 direct descendant** (or a non-layout shell — e.g. a `__inner` with only `max-width`/padding) → its CSS folds as a single inner-CSS layer on the container.
+   - **grid / flex / stack direct descendant** → the container ABSORBS the layout: the wrapper's `display:grid|flex` + `grid-template-columns` + `gap` lift onto the container's native grid attributes (`gridTemplateColumns`, `gap`, …), and **each of the container's resulting direct-descendant items folds its own positioning CSS as that item's grid-item CSS** (`gridItem*` attrs — item 1, 2, 3…). The container handles the grid-item CSS. (e.g. `trust-bar` `__inner` is a 4-col grid → folds into the section container, which becomes the 4-col grid with the 4 badges as grid items.)
+
+3. **Exception to #2 — a direct descendant whose class matches a block becomes that block.** It is NOT folded; it is emitted as its block and IS the grid item, handling its own CSS. (e.g. the 2 `sgs-product-card` direct descendants of `.sgs-products` → `sgs/product-card` blocks.)
+
+4. **A wrapper that is NOT a direct descendant (nested below a folded wrapper) → its own block-or-container.** Match a block (→ that block); else → a neutral className-only `sgs/container` (NEVER dropped). Then ITS direct descendants resolve by #2/#3 recursively. (e.g. `.sgs-products` is NOT a direct descendant of `.sgs-featured-product` — it sits under `__inner` — so it becomes its own `sgs/container` carrying the grid; its product-card children become blocks per #3.)
+
+**Worked example — featured-product** (`section.sgs-featured-product > div.__inner > div.sgs-products(grid) > 2× div.sgs-product-card`):
+- `sgs-featured-product` → `sgs/container` (section base, FR-22-4) [padding + background].
+- `__inner` (direct descendant, `max-width` only) → FOLDS into the section container (#2: single inner-CSS layer = max-width).
+- `sgs-products` (NOT a direct descendant of the section) → its own `sgs/container` (#4), grid CSS lifted onto its native grid attrs (`5fr 3fr`).
+- 2× `sgs-product-card` (direct descendants of `sgs-products`, match a block) → `sgs/product-card` blocks (#3), each the grid item.
+
+**Worked example — trust-bar** (`section.sgs-trust-bar > div.__inner(grid 4-col) > 4× badge`):
+- `sgs-trust-bar` → `sgs/container` (section base).
+- `__inner` (DIRECT descendant, grid) → FOLDS into the section container (#2 grid case): the section container becomes the 4-col grid; the 4 badges become its grid items with per-item CSS.
+
+**PASS tests:** (a) no `sgs-`-classed wrapper is absent from the emitted markup (never dropped); (b) `.sgs-products` emits as its own `sgs/container` with `gridTemplateColumns` set, holding 2 `sgs/product-card` blocks side-by-side; (c) `trust-bar`'s 4 badges are grid items of the section container (one container, not two); (d) live-DOM verified per R-22-11, not pixel-diff alone (pixel-diff mis-scores reflowed sections — see memory `empty-section-false-pixel-diff-win`).
+**FAIL tests:** any wrapper dropped (className absent from output); a direct-descendant transparent shell emitted as a second nested container (duplicate nesting); a non-direct layout wrapper folded up past its parent.
+
+**Constraints:** R-22-3 (only `sgs/container` as the container primitive; this is the FR-22-4 refinement, not a 4th walker branch), R-22-4 (per-section pixel-diff gates each commit), R-22-9 (universal — same rule for every wrapper, no per-class special-casing), R-22-11 (live-DOM verification), R-22-13 (Bean visual sign-off).
 
 ### FR-22-5 — CSS routes to direct-owner per FR6 four-destination policy (preserved from Spec 16)
 
@@ -354,7 +385,9 @@ All Spec 22 queries are read-only against uimax tables EXCEPT:
 
 This is documentation, not an FR. Full stage coverage tables live in §5 (Survives/Retires/Migrates/Enriches). The whole-pipeline impact: Stage 4 (Slot extraction in `convert.py`) is the rewrite. All other stages preserved or minor-tweaked.
 
-### FR-22-11 — Pass-through wrapper behaviour (per F-SC-15)
+### FR-22-11 — Pass-through wrapper behaviour for NON-sgs- nodes (per F-SC-15)
+
+> **Scope clarification (FR-22-4.1, 2026-05-31):** FR-22-11 governs nodes with **no `sgs-` classes** — transparent non-SGS wrappers. For nodes that carry an `sgs-` class but do not resolve to a registered block (layout wrappers, fold candidates), the rule is §FR-22-4.1 (Universal wrapper/container resolution), which supersedes the old `walk_passthrough` drop-and-bubble, `_absorb_transparent_wrappers` (D52), and depth-2 `_is_layout_bearing_wrapper` gate for sgs-classed nodes. FR-22-11 continues to apply to non-sgs-classed wrappers only.
 
 A pass-through node is a DOM Tag with no `sgs-` classes (and not handled by the atomic-tag swap exception of FR-22-3). The walker:
 
@@ -432,7 +465,7 @@ The `block_composition` table records the deterministic shape of each registered
 
 Populated 2026-05-30 by `/sgs-update` Stage 1 extension. 188 rows. Refresh on every `/sgs-update` run.
 
-**DEFERRED walker consumption (D109).** The original XS-3 plan (commit `f173b351`) wired the walker to consult `block_composition.wraps_block` + `composition_role='wrapper-shell'` to recognise layout-bearing non-section wrappers and emit `__inner` slot passthroughs. Empirical Stage 11 measurement showed +13.07pp regression on featured-product and +10.40pp on social-proof. Code reverted at `c76aa107`. The DATA is shipped and stable; the CONSUMPTION condition is queued at parking entry **P-XS-3-TRIGGER-REFINEMENT**. Per R-22-3, the refined trigger MUST land as a refinement to FR-22-4 (container default) — NOT as a 4th walker exception.
+**DEFERRED walker consumption — RESOLVED by FR-22-4.1 (2026-05-31).** The original XS-3 plan (commit `f173b351`) wired the walker to consult `block_composition.wraps_block` + `composition_role='wrapper-shell'` to recognise layout-bearing non-section wrappers and emit `__inner` slot passthroughs. Empirical Stage 11 measurement showed +13.07pp regression on featured-product and +10.40pp on social-proof. Code reverted at `c76aa107`. The DATA is shipped and stable. The refined trigger (parking entry **P-XS-3-TRIGGER-REFINEMENT**) is now formalised by **§FR-22-4.1** — the single coherent wrapper-resolution rule that covers direct-descendant folding, grid/flex absorption, block-match exceptions, and non-direct-descendant own-container emission. Implementations consuming `block_composition` for wrapper resolution MUST follow §FR-22-4.1 precedence order rather than re-deriving the rule. Per R-22-3, this remains a refinement to FR-22-4 (container default) — NOT a 4th walker exception.
 
 **Cross-references.**
 - D108 = data layer ship (this FR's pre-condition).

@@ -82,6 +82,7 @@ section.sgs-trust-bar
           └ span.sgs-trust-bar__text
    (halal-pending badge: CSS-only, no DOM instance)
 ```
+> **FR-22-4.1 resolution (D118):** `sgs-trust-bar__inner` is a DIRECT descendant of the section container with no registered block match + carries a grid layout → it FOLDS into the `sgs-trust-bar` section container per §FR-22-4.1 rule #2 (grid case): the section container absorbs the 4-col grid + each badge's positioning CSS as grid-item attrs. One container, four badge grid-items. No second nested container.
 
 ### 4 · Featured product (`.sgs-featured-product`, L830)
 ```
@@ -110,6 +111,7 @@ section.sgs-featured-product
                   ├ div.sgs-featured-product__price-row
                   └ a.sgs-button.sgs-button--secondary
 ```
+> **FR-22-4.1 resolution (D118):** `sgs-featured-product__inner` is a DIRECT descendant of the section container with no registered block match + max-width only → folds as inner-CSS layer onto the section container (§FR-22-4.1 rule #2, 1-child case). `.sgs-products` is NOT a direct descendant of the section (sits under `__inner`) → its own `sgs/container` with grid CSS lifted onto native grid attrs (§FR-22-4.1 rule #4). The 2 `sgs-product-card` divs ARE direct descendants of `.sgs-products` AND match a registered block → emitted as `sgs/product-card` blocks which ARE the grid items (§FR-22-4.1 rule #3). Result: section container (padding+bg) → inner-CSS fold → `.sgs-products` sgs/container (5fr 3fr grid) → 2× sgs/product-card side-by-side.
 
 ### 5 · Brand story (`.sgs-brand`, L892) — was `.sgs-heritage-strip` (RETIRED)
 ```

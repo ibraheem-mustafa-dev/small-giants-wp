@@ -6,19 +6,19 @@ last_updated: 2026-05-31
 
 ## 2026-05-31 — FR-22-6 converter content-routing + Spec 24 follow-ups
 
-> **P-CONVERTER-CONTENT-ROUTING-FIX** — NEW 2026-05-31. **G1 + G2 SHIPPED (commit 1fcb0742 on branch, D117) — content + side-by-side layout now RENDER (live-DOM verified).** G1 = FR-22-2 leaf content-routing + the `attr_type` fallback-bug fix. G2 = FR-23-6 depth-2 grid-wrapper preservation (council-designed). Remaining for full pixel-acceptance: see P-FR226-FIDELITY-AND-MERGE.
+> **P-CONVERTER-CONTENT-ROUTING-FIX** — NEW 2026-05-31. **G1 + G2 SHIPPED (commit 1fcb0742 on branch, D117) — content + side-by-side layout now RENDER (live-DOM verified).** G1 = FR-22-2 leaf content-routing + the `attr_type` fallback-bug fix. G2 = FR-23-6 depth-2 grid-wrapper preservation (council-designed; formalised as §FR-22-4.1 per D118 — the canonical container rule all future container-routing implementations MUST follow). Remaining for full pixel-acceptance: see P-FR226-FIDELITY-AND-MERGE.
 > **Status:** PARTIAL (renders correctly; pixel-acceptance pending)
 > **Bucket:** Pipeline / converter
 
-> **P-FR226-FIDELITY-AND-MERGE** — NEW 2026-05-31. Branch `feat/fr22-6-content-render` renders content+layout correctly but isn't pixel-acceptance-passing (sections 60–83%). To reach acceptance + merge to main: (a) wire real image sideload (Stage 4i is dry-run → no product images); (b) migrate `sgs/info-box` FR-22-6 hybrid (gift-section card content renders sparse — info-box reads scalar attrs); (c) exact styling; (d) generate passing visual-diff reports for product-card/testimonial/testimonial-slider; (e) merge branch→main (visual-diff gate then passes). The container migrations (c9c6544d) + converter fix (1fcb0742) wait on this.
+> **P-FR226-FIDELITY-AND-MERGE** — NEW 2026-05-31. Branch `feat/fr22-6-content-render` renders content+layout correctly but isn't pixel-acceptance-passing (sections 60–83%). To reach acceptance + merge to main: (a) wire real image sideload (Stage 4i is dry-run → no product images); (b) migrate `sgs/info-box` FR-22-6 hybrid (gift-section card content renders sparse — info-box reads scalar attrs); (c) exact styling; (d) generate passing visual-diff reports for product-card/testimonial/testimonial-slider; (e) merge branch→main (visual-diff gate then passes). The container migrations (c9c6544d) + converter fix (1fcb0742) wait on this. **Container-routing implementation target is §FR-22-4.1 (D118)** — any further container/wrapper work in this branch MUST follow the four-step precedence order rather than re-deriving ad-hoc rules.
 > **Status:** OPEN
 > **Bucket:** Pipeline / converter
 > **Trigger:** Next session. Highest-value: image sideload (likely biggest pixel-diff lever) + info-box hybrid.
 
-> **P-UNIFY-CONTAINER-ABSORPTION** — NEW 2026-05-31 (Bean directive). Two mechanisms handle container nesting: `_absorb_transparent_wrappers` (D52 pre-pass — MERGES a redundant direct-child wrapper into the section) and the walker's `_is_layout_bearing_wrapper` (PRESERVES genuine layout wrappers). Bean: these are two halves of one principle (merge transparent passthroughs, preserve layout containers) and should be unified into ONE structural rule applied to ALL containers (not class-specific). Duplicate-nesting itself is now fixed empirically by the depth-2 gate (header/trust-bar/brand = 1 container); this is a code-architecture cleanup, not a live bug.
-> **Status:** OPEN
+> **P-UNIFY-CONTAINER-ABSORPTION** — NEW 2026-05-31 (Bean directive). **RESOLVED by §FR-22-4.1 (D118, 2026-05-31).** Two mechanisms previously handled container nesting: `_absorb_transparent_wrappers` (D52 pre-pass) and the walker's `_is_layout_bearing_wrapper` depth-2 gate (D117 G2). §FR-22-4.1 unifies both into the single four-step precedence rule — rule #2 covers the D52 merge case (direct-descendant with no block match folds CSS into parent), and rule #4 covers the D117 G2 preservation case (non-direct-descendant gets its own container). Code cleanup (replacing the two discrete functions with the §FR-22-4.1 implementation) can be done when next touching the walker.
+> **Status:** RESOLVED (principle formalised in §FR-22-4.1; code-architecture cleanup still pending — low priority)
 > **Bucket:** Pipeline / converter
-> **Trigger:** When next touching the walker's container-routing path.
+> **Trigger:** When next touching the walker's container-routing path — replace `_absorb_transparent_wrappers` + `_is_layout_bearing_wrapper` with a single §FR-22-4.1 implementation.
 
 > **P-PRODUCT-CPT-DEPLOY-SEED** — NEW 2026-05-31. `sgs_product` CPT + `seed-mamas-products.php` are built + committed (branch c9c6544d) but NOT deployed/seeded. To create the 2 reference products: deploy the plugin + create the entries (work around the `wp eval-file` content-guard hook — use `wp post create` over SSH or wp.data via Playwright). Also decide per-site opt-in gating for the CPT (currently registers unconditionally). ~15 min.
 > **Status:** OPEN
@@ -295,14 +295,16 @@ _60 entries._
 
 See decisions.md D107.
 
-### P-XS-3-TRIGGER-REFINEMENT — SHIPPED 2026-05-31 (commit 0a212e3c); measurement pending
-**Status:** PARTIAL
+### P-XS-3-TRIGGER-REFINEMENT — RESOLVED 2026-05-31 by §FR-22-4.1 (D118)
+**Status:** RESOLVED (trigger formalised; measurement still required before closing pixel-diff gate)
 
-**What shipped (2026-05-31):** Refined XS-3 predicate in `_is_layout_bearing_wrapper()` + `get_block_composition_role()` in db_lookup.py. Five conditions must ALL be true: (1) has sgs-* BEM class, (2) parent is a Tag, (3) parent composition_role is ‘section-root’ or ‘wrapper-shell’ via block_composition table, (4) has element children, (5) has CSS rules. Narrowed from f173b351 broad predicate to immediate-child-of-section-root only.
+**What shipped (2026-05-31):** Refined XS-3 predicate in `_is_layout_bearing_wrapper()` + `get_block_composition_role()` in db_lookup.py (commit 0a212e3c). Five conditions must ALL be true: (1) has sgs-* BEM class, (2) parent is a Tag, (3) parent composition_role is ‘section-root’ or ‘wrapper-shell’ via block_composition table, (4) has element children, (5) has CSS rules. Narrowed from f173b351 broad predicate to immediate-child-of-section-root only.
 
 **Root cause resolved:** f173b351 regression (+13.07pp featured-product, +10.40pp social-proof) was caused by predicate firing on `sgs-featured-product__inner` and `sgs-social-proof__inner` whose parent sections resolve to slug=None in DB (unregistered blocks). Refined predicate short-circuits at condition 3 for these (parent has no slug + not sgs-container => returns False). Empirically verified: predicate fires on exactly ONE node in Mama’s mockup — sgs-hero__content (parent: sgs-hero, composition_role=section-root).
 
-**Measurement needed (R-22-4):** Run pipeline with --deploy-target page:144 --converter-v2 --debug-trace on canary. Gate: featured-product + social-proof ≤ +1pp delta. Hero: expected improvement. If either regresses >1pp: git revert 0a212e3c immediately.
+**Formalised as §FR-22-4.1 (D118, Bean-directed 2026-05-31):** the refined trigger is now the canonical four-step precedence rule for all sgs-classed wrappers below a section root — superseding `walk_passthrough` drop-and-bubble, `_absorb_transparent_wrappers` (D52), and the depth-2 gate. Future implementations consuming `block_composition` for wrapper resolution MUST follow §FR-22-4.1 precedence order.
+
+**Measurement still needed (R-22-4):** Run pipeline with `--deploy-target page:144 --converter-v2 --debug-trace` on canary. Gate: featured-product + social-proof ≤ +1pp delta vs c76aa107 baseline. Hero: expected improvement. If either regresses >1pp: git revert 0a212e3c immediately.
 
 **Trigger:** Next pipeline run against canary page 144.
 

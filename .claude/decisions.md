@@ -6,6 +6,27 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-05-31 — FR-22-4.1 Universal wrapper/container resolution (D118)
+
+**D118 — §FR-22-4.1 "Universal wrapper/container resolution" added to Spec 22 as the canonical single rule for every sgs-classed wrapper the walker meets below a section root (Bean-directed 2026-05-31). Supersedes the patchwork: `walk_passthrough` drop-and-bubble for sgs-classed nodes, the depth-2 `_is_layout_bearing_wrapper` gate, and `_absorb_transparent_wrappers` (D52). Closes the FR-22-4 refinement mandate from D109.**
+
+Four-step precedence (§FR-22-4.1):
+
+1. **Block match wins** — BEM class resolves to a registered block → emit that block; it owns its CSS.
+2. **Direct descendant + no block match → FOLD into parent container** — 1-child or non-layout shell: CSS folds as inner-CSS layer. Grid/flex direct child: container absorbs layout (`gridTemplateColumns`, `gap`, …); each resulting direct-item's positioning CSS folds as grid-item attrs on the container.
+3. **Exception to #2 — direct descendant whose class matches a block → emit as that block** (it IS the grid item; handles its own CSS).
+4. **Non-direct-descendant (nested below a folded wrapper) → its own sgs/container** (NEVER dropped); its descendants then recurse through #1–#3.
+
+**What this supersedes:** the three patchwork mechanisms were each partial/overlapping implementations of the same principle — merge transparent direct-child shells, preserve genuine nested structures. §FR-22-4.1 unifies them into one coherent rule. `walk_passthrough`'s drop-and-bubble applied to non-sgs nodes only (FR-22-11) — its sgs-classed analogue is now §FR-22-4.1. The depth-2 `_is_layout_bearing_wrapper` gate (D117 G2) was the empirical discovery that led to this formalisation. `_absorb_transparent_wrappers` (D52 merge-side pre-pass) is folded in as rule #2's 1-child case.
+
+**FR-22-11 scope clarification:** FR-22-11 governs nodes with NO sgs- classes (transparent non-SGS wrappers) — unchanged. §FR-22-4.1 governs nodes WITH sgs- classes that do not resolve to a registered block.
+
+**Propagated to:** Spec 22 §FR-22-3 deferred-trigger note, §FR-22-11, §FR-22-17; Spec 00 §3.2; cloning-pipeline-flow.md Universal-path topology section; cloning-pipeline-stages.md Stage 4 annotation; TRUTH-SPEC.md trust-bar + featured-product worked examples; parking.md P-XS-3-TRIGGER-REFINEMENT + P-UNIFY-CONTAINER-ABSORPTION + P-CONVERTER-CONTENT-ROUTING-FIX + P-FR226-FIDELITY-AND-MERGE.
+
+R-22 compliance: R-22-3 (remains FR-22-4 refinement, NOT a 4th walker branch), R-22-9 (universal — same rule for every wrapper, no per-class special-casing), R-22-11 (live-DOM verification gate), R-22-13 (Bean sign-off co-authoritative).
+
+---
+
 ## 2026-05-31 (pm) — Converter content-routing: pipeline now RENDERS content + layout (D117)
 
 **D117 — FR-22-2 leaf content-routing (G1) + FR-23-6 depth-2 grid-wrapper preservation (G2) shipped on `feat/fr22-6-content-render` (commit 1fcb0742). Mama's page 144 now renders its content AND side-by-side card layout — verified on the LIVE DOM, not pixel-diff.** Sequence: D116's container migrations were necessary-but-insufficient (content stayed empty). Root cause = the universal walker never ran FR-22-2 content-routing for leaf blocks.

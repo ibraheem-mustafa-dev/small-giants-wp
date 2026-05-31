@@ -240,6 +240,8 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 ### Stage 4 — Universal block-equivalent extraction (Spec 22)
 
 > **Spec 22 (2026-05-26) replaces Spec 16's slot-extraction architecture in full.** Single universal walker path with exactly 3 permitted exceptions per FR-22-3. The 9-branch walk(), `lift_subtree_into_block_attrs`, `_lift_inner_blocks`, F1 fallback, `ARRAY_LIFT_PATTERNS`, hardcoded `ATOMIC_TAG_MAP` are all retired. Per-block behaviour comes from DB rows (slot_synonyms.standalone_block + block_attributes.canonical_slot + role-exclusion), not code branches. Phase 1 implementation in 5 commits per `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`. Acceptance gate: per-section ≤5% × 3 viewports (Phase 1.5 stretch ≤1%).
+>
+> **Wrapper/container resolution (D118, 2026-05-31):** §FR-22-4.1 (Universal wrapper/container resolution) is the canonical Stage 4 rule for every sgs-classed wrapper below a section root. It supersedes `walk_passthrough` drop-and-bubble for sgs-classed wrappers, the depth-2 `_is_layout_bearing_wrapper` gate, and `_absorb_transparent_wrappers` (D52). Precedence: (1) block-match → emit block; (2) direct descendant with no block match → fold CSS into parent container (1-child: inner-CSS layer; grid/flex: container absorbs layout + grid-item CSS); (3) direct descendant matching a block → emit as block (the grid item); (4) non-direct-descendant → own sgs/container, recurse. FR-22-11 (non-sgs-classed transparent wrappers) is unchanged.
 
 
 ```
