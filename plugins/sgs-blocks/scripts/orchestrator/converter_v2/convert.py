@@ -1710,6 +1710,25 @@ def walk(
             return _emit_wrapper_container(node, classes, sgs_classes, css_rules, depth, variation_buf)
         return walk_passthrough(node, css_rules, depth, variation_buf)
 
+    # FR-22-4.1 top-level section fold (2026-05-31). When the section root has no
+    # registered block (slug None), emit ONE sgs/container and FOLD its direct-descendant
+    # wrapper shells INTO it (rule 2) rather than emitting each as its own nested container.
+    # The fold lifts each direct-child wrapper's layout onto this container's NATIVE attrs
+    # (grid → layout/gridTemplateColumns; max-width → widthMode = content constraint, so a
+    # full-width-background section stays full-width while its content is constrained), and
+    # the folded wrapper's children resolve below it (rule 4 → own container / block). This
+    # replaces the over-nesting own-container-for-all shortcut (WIP 8f900750) that broke
+    # parent→grid-item layouts (brand 2-col grid). Council-validated mechanism.
+    if slug is None and is_top_level:
+        css = collect_css_for_classes(classes, css_rules)
+        if css and variation_buf is not None:
+            variation_buf.append(css)
+        container_attrs: dict = {}
+        if sgs_classes:
+            container_attrs["className"] = " ".join(sgs_classes)
+        children_markup = _process_container_children(node, css_rules, depth, variation_buf, container_attrs)
+        return _emit_section_container(container_attrs, children_markup, css)
+
     # When slug is None at top level, skip attr-lifting + root-supports-lift
     # (no resolved block to lift onto); CSS collection + child recursion still
     # run so the section's classes and content flow into the synthesised
@@ -1885,102 +1904,6 @@ def _detect_grid_container_from_css(classes: list[str], css_rules: dict) -> dict
     return result
 
 
-def _is_layout_bearing_wrapper(node: "Tag", classes: list[str], css_rules: dict, depth: int = 0) -> bool:
-    """XS-3 refined (2026-05-31): immediate-child wrapper of section-root blocks only.
-
-    Emits sgs/container for slug-None divs that are immediate children of
-    section-root blocks (sgs/hero, sgs/cta-section) or sgs/container. This narrower
-    trigger avoids the +13.07pp regression from f173b351's broader "any CSS + children"
-    predicate by scoping to parent composition_role.
-
-    Conditions (all must be true):
-      1. Current node has sgs-* BEM class
-      2. Parent exists and is a Tag (precondition check)
-      3. Parent's composition_role is 'section-root' or 'wrapper-shell' (via block_composition table)
-      4. Current node has at least one element child
-      5. Current node has CSS rules (has_css indicates visibility + layout bearing)
-
-    Caller precondition: slug is None and node is not top-level.
-    """
-    # Precondition 1: has sgs-* BEM class
-    sgs_classes = [c for c in classes if c.startswith("sgs-")]
-    if not sgs_classes:
-        return False
-
-    # Precondition 2: parent exists and is a Tag
-    parent = node.parent
-    if not isinstance(parent, Tag):
-        return False
-
-    # ---- Trigger A (council-validated 2026-05-31 — FR-23-6) ----
-    # Preserve a slug-None wrapper as a neutral className-only sgs/container when it
-    # BOTH (a) declares display:grid|flex in its OWN CSS AND (b) has >=2 immediate
-    # element children that EACH resolve to a real block slug. (a) marks it a layout
-    # provider; (b) marks its children as genuine sibling blocks — e.g. .sgs-products
-    # → 2× sgs/product-card, .sgs-gift-section__cards → 2× sgs/info-box. This is the
-    # signal three independent council raters converged on (trace + code-path + live
-    # CSS). It separates real layout rows from section wrappers whose grid children
-    # are BEM-element SLOTS that resolve None (sgs-hero__content, sgs-header__*) —
-    # those have <2 real-block children and do NOT fire, so this does NOT re-introduce
-    # the reverted display-only over-fire (+2.49pp) nor f173b351's "any CSS" (+13pp).
-    # A first earlier "Trigger A" keyed on display:grid/flex ALONE — reverted; the
-    # children-resolve-to-real-blocks gate is the discriminator that was missing.
-    #
-    # DEPTH GATE (council Rater B + Rater C + FR-23-6; trace-confirmed 2026-05-31):
-    # fire ONLY at depth >= 2, i.e. wrappers nested BELOW the section's `__inner`
-    # passthrough — NOT the `__inner` itself (depth 1, a direct child of the
-    # top-level section). Trace evidence: the depth-1 wrappers that fired
-    # (sgs-header__inner, sgs-trust-bar__inner, sgs-hero__content, sgs-brand__content)
-    # double-nested their sections and regressed pixel-diff; the depth-2 wrappers
-    # (sgs-products, sgs-gift-section__cards) are the genuine layout rows to preserve
-    # (cards side-by-side). The section walks at depth 0, __inner at depth 1, the
-    # grid wrapper at depth 2 (verified at the walk() is_top_level=True call sites).
-    if depth >= 2 and _detect_grid_container_from_css(classes, css_rules) is not None:
-        real_child_count = 0
-        for child in node.children:
-            if not isinstance(child, Tag):
-                continue
-            child_sgs = [c for c in (child.get("class", []) or []) if c.startswith("sgs-")]
-            if child_sgs and db.resolve_slug_from_bem(child_sgs) is not None:
-                real_child_count += 1
-        if real_child_count >= 2:
-            return True
-
-    # ---- Trigger B (XS-3): immediate-child wrapper of a section-root ----
-    # Check parent's composition_role via block_composition table.
-    parent_classes = parent.get("class", []) or []
-    parent_sgs_classes = [c for c in parent_classes if c.startswith("sgs-")]
-    parent_slug = db.resolve_slug_from_bem(parent_sgs_classes) if parent_sgs_classes else None
-
-    # If parent has no slug resolution, check if parent IS sgs/container (literal)
-    # by scanning class names for sgs-container (sgs/container BEM form).
-    if parent_slug is None:
-        if "sgs-container" in parent_sgs_classes:
-            parent_composition_role = "wrapper-shell"
-        else:
-            return False
-    else:
-        # Query block_composition to determine parent's composition_role
-        parent_composition_role = db.get_block_composition_role(parent_slug)
-        if parent_composition_role not in ("section-root", "wrapper-shell"):
-            return False
-
-    # Precondition 4: current node has at least one element child
-    if not any(isinstance(child, Tag) for child in node.children):
-        return False
-
-    # Precondition 5: current node has CSS rules
-    # (narrower than A1's display:grid/flex check — just existence of any CSS)
-    selectors = [f".{c}" for c in sgs_classes]
-    has_css = any(
-        any(s in sel_key for s in selectors)
-        for sel_key in css_rules.keys()
-        if " :: " not in sel_key
-    )
-
-    return has_css
-
-
 def _emit_wrapper_container(
     node: "Tag",
     classes: list[str],
@@ -2010,14 +1933,121 @@ def _emit_wrapper_container(
     css = collect_css_for_classes(classes, css_rules)
     if css and variation_buf is not None:
         variation_buf.append(css)
-    children_markup: list[str] = []
-    for child in node.children:
-        result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
-        if result:
-            children_markup.append(result)
+    # This wrapper IS its own container (rule 4): its className stays on the container so
+    # its own CSS (incl. grid/flex) applies. Its DIRECT children fold into it (rule 2) via
+    # _process_container_children, which may also lift their layout onto container_attrs.
+    container_attrs: dict = {"className": " ".join(sgs_classes), "htmlTag": "div"}
+    children_markup = _process_container_children(node, css_rules, depth, variation_buf, container_attrs)
     _trace("walker_branch_taken", branch="wrapper_container",
            node_classes=classes, depth=depth)
-    return emit_wp_block("sgs/container", {"className": " ".join(sgs_classes), "htmlTag": "div"}, children_markup)
+    return emit_wp_block("sgs/container", container_attrs, children_markup)
+
+
+def _has_sgs_child(node: "Tag") -> bool:
+    """True when node has at least one child Tag carrying an sgs- class (structural child)."""
+    return any(
+        isinstance(c, Tag) and any(cl.startswith("sgs-") for cl in (c.get("class", []) or []))
+        for c in node.children
+    )
+
+
+def _fold_layout_into_attrs(
+    wrapper_node: "Tag", wrapper_classes: list[str], container_attrs: dict, css_rules: dict
+) -> None:
+    """FR-22-4.1 rule 2 — lift a FOLDED direct-child wrapper's layout onto the parent
+    container's NATIVE attrs (no new container div, no className merge).
+
+    grid/flex → layout + gridTemplateColumns; max-width → widthMode (content constraint,
+    so a full-width-background section stays full-width); padding/margin/etc. → style.*.
+    Native attrs are used (not a className-CSS merge) precisely so a folded wrapper's
+    max-width does NOT constrain the container's own width/background — widthMode applies
+    the constraint to the content box instead (verified against container render.php).
+    setdefault() never overwrites the container's own already-set layout.
+    """
+    grid = _detect_grid_container_from_css(wrapper_classes, css_rules)
+    if grid:
+        container_attrs.setdefault("layout", grid["layout"])
+        if grid.get("gridTemplateColumns"):
+            container_attrs.setdefault("gridTemplateColumns", grid["gridTemplateColumns"])
+    _lift_root_supports_to_style(wrapper_node, "sgs/container", css_rules, container_attrs)
+
+
+def _process_container_children(
+    node: "Tag", css_rules: dict, depth: int, variation_buf: list[str] | None, container_attrs: dict
+) -> list[str]:
+    """Process an emitted container's DIRECT children with FR-22-4.1 fold semantics.
+
+    For each direct child:
+      - rule 2 (FOLD): a slug-None sgs-classed wrapper folds its layout into THIS
+        container (via _fold_layout_into_attrs, mutating container_attrs) and is NOT
+        emitted; its own children are then "below a folded wrapper" → resolved by walk()
+        (rule 4 → own container for wrappers, block for block-matches).
+      - rule 3 / FR-22-11: block-match, atomic, leaf, or non-sgs wrapper → normal walk().
+    The leaf-with-element-children guard is applied here too (a leaf with sgs-classed
+    children is a mis-resolution → folds as a wrapper).
+    """
+    # FR-22-4.1 sole-shell gate (2026-05-31, evidence: brand b5 trace + DOM). A direct-
+    # child wrapper folds into its parent ONLY when it is the SOLE element child — i.e. a
+    # pass-through shell wrapping all the parent's content (e.g. section > __inner). When
+    # the parent has MULTIPLE element children, those children are structural layout items
+    # (grid/flex columns, e.g. section.sgs-brand > __content + __image) — folding one would
+    # collapse a column and break the N-col layout (the +44pp brand regression). Multiple
+    # children each keep their own block/container (rule 4). This restores the original
+    # _absorb_transparent_wrappers "exactly-1-child" gate that the first fold attempt dropped.
+    element_children = [c for c in node.children if isinstance(c, Tag)]
+    fold_eligible = len(element_children) == 1
+    out: list[str] = []
+    for child in node.children:
+        if isinstance(child, Comment):
+            continue
+        if isinstance(child, NavigableString):
+            t = str(child).strip()
+            if t:
+                out.append(t)
+            continue
+        if not isinstance(child, Tag):
+            continue
+        cclasses = child.get("class", []) or []
+        csgs = [c for c in cclasses if c.startswith("sgs-")]
+        cslug = db.resolve_slug_from_bem(csgs) if csgs else None
+        if (
+            cslug is not None
+            and db.get_block_composition_role(cslug) == "leaf"
+            and _has_sgs_child(child)
+        ):
+            cslug = None  # leaf-misresolution guard (see walk())
+        if cslug is None and csgs and fold_eligible:
+            # rule 2 — fold this sole pass-through shell's layout into the parent container
+            _fold_layout_into_attrs(child, cclasses, container_attrs, css_rules)
+            _trace("walker_branch_taken", branch="fold_into_container",
+                   node_classes=cclasses, depth=depth + 1)
+            # rule 4 — the folded wrapper's children resolve below it
+            for gc in child.children:
+                r = walk(gc, css_rules, variation_buf, depth=depth + 2, is_top_level=False)
+                if r:
+                    out.append(r)
+        else:
+            r = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
+            if r:
+                out.append(r)
+    return out
+
+
+def _emit_section_container(container_attrs: dict, children_markup: list[str], css: str) -> str:
+    """Emit the FR-22-4.1 top-level section sgs/container with folded native attrs.
+
+    Children are emitted DIRECTLY between the block comments via emit_wp_block — matching
+    sgs/container's save.js (`<InnerBlocks.Content />`, no wrapper). A static
+    `<div class="wp-block-sgs-container">` placeholder MUST NOT wrap them: for a dynamic
+    block WP folds the inner static HTML into render.php's `$content`, so the placeholder
+    div would render as an EXTRA nesting level between the section and its InnerBlocks —
+    which breaks grid-on-section (the grid's items stop being its direct children; brand /
+    trust-bar items collapse into one column). Root-caused 2026-05-31 via live DOM:
+    `section.sgs-brand` (grid 2-col) had a single `.wp-block-sgs-container` child holding
+    both columns. The section's scoped CSS is already collected into variation_buf by the
+    caller (deployed at Stage 10), so no inline <style> is embedded here.
+    """
+    return emit_wp_block("sgs/container", container_attrs, [c for c in children_markup if c])
 
 
 # ============================================================================
