@@ -1,49 +1,33 @@
-# Session Handoff — 2026-05-31 (converter renders content + side-by-side layout; FR-22-4.1 spec'd; methodology baked in)
+# Session Handoff — 2026-05-31 (wrapper mechanism perfected: recursive fold + Wave-1/Wave-2/A-1; 6/7 sections structurally green)
 
-## Completed This Session
-1. **XS-3 reconciled + merged (D114).** Branch was a superset of main's XS-3, not a rival. Clean head-to-head: main 58.39% vs branch 58.98%.
-2. **Root cause of empty sections (D115).** Pixel-diff showed false wins; live DOM (textLen=0) proved EMPTY. Cause = walker never ran FR-22-2 content-routing for leaves.
-3. **G1 — leaf content-routing + a latent `attr_type` fallback-bug fix.** All 7 content sections now render (featured-product 0→510, social-proof →621, trust-bar →98). 4 regression tests.
-4. **G2 — FR-23-6 depth-2 grid-wrapper preservation (council-designed, trace-confirmed).** featured-product + gift cards SIDE-BY-SIDE; duplicate nesting fixed (header/trust-bar/brand = 1 container); brand −11.1; mean −0.66pp. Live-DOM + screenshot verified.
-5. **FR-22-4.1 — canonical universal wrapper/container rule written (D118)** + propagated to all docs (Spec 22, 00, flow, stages, truth-spec, decisions, parking). The full rule the depth-2 gate approximates: direct descendants FOLD (grid→grid-item CSS), block-match→block, non-direct wrapper→own container, never dropped.
-6. **Root-cause methodology baked into CLAUDE.md + architecture (D26/D27) + mistakes.** No assumptions/guessing/trusting-pixel-diff; analyse all logs first; verify dependencies; named tool list.
-7. **Spec 24 (query-driven cards) + sgs_product CPT + 2-product seed.** Built.
-8. **Squash-merged feat/fr22-6-content-render → main + deleted the branch.** All session work consolidated on main.
+## Completed this session (all on branch `feat/fr22-4-1-universal-wrapper`; main untouched)
+1. **Recursive fold (FR-22-4.1) implemented** (`ce07728d`) — the universal wrapper rule, replacing the over-nesting "Phase-1 shortcut". Sole pass-through shells FOLD into the section container (native-attr lift, no extra div); non-direct + grid wrappers get their own container; **leaf-with-element-children guard** (a node resolving to a leaf but with sgs-classed children → treat as wrapper container). Root-caused via trace + live DOM across 3 iterations (over-nesting → sole-shell gate fixed brand +44→+16 → wrapper-div-leak fix: `_emit_section_container` emits InnerBlocks directly, matching `sgs/container` save.js). Brand 2-col side-by-side verified.
+2. **Wave 1 (verified live DOM, 6/7 sections green; `94c6ee75`/`7b8f3046`/`797bb45d`):**
+   - **A** responsive grid templates → native attrs (trust-bar 4-col, was 2-col).
+   - **B** `blocks.replaces` populated in 5 block.json + sgs-update Stage-1 persistence → atomic `<h2>`→`sgs/heading` (dynamic) → ALL section headings render (+ product/ingredient/gift-card names cascaded).
+   - **D** info-box FR-22-6 migration (echo $content) → gift/ingredient card content renders.
+3. **Wave 2 + A-1 (committed, NOT yet re-cloned/verified on live DOM; `d9c11ed7`/`1e214d49`/`6d9fabfb`):**
+   - **A-1** responsive per-device lift — padding/margin/gap/columns `@media` → `{Tablet,Mobile}` native attrs. Root cause: `_lift_root_supports_to_style` computed `bp_decls` then discarded it (breakpoint-suffix machinery had no caller). Slot-level responsive typography still deferred (Phase 2).
+   - **hero** FR-22-6 — content→InnerBlocks, styling/2-col shell scalar, deprecated.js v6.
+   - **trust-badges → trust-bar** comprehensive rename (block dir, block.json, BEM, build/, tests, specs, fingerprints, recogniser; deprecated.js v3 alias). `/sgs-update` run to persist.
+4. **Spec corrections + FR-22-18** — corrected my mistaken claim that `sgs/container` lacks per-grid-item customisation (it has `gridItem*` defaults + per-child overrides via specificity). Added FR-22-18 (structural-parity acceptance; pixel-diff informational-only this phase). Atomic→sgs redirect (§14) confirmed + wired.
+5. **Built the body-nesting WIREFRAME** (draft vs clone, full body) as the structural-parity measurement artefact — `wireframe-wave1-full.jpeg` + `.playwright-mcp/wireframe-wave1.html`.
 
-## Current State
-- **Branch:** `main` at `1761eb35` (squash-merge). Branch deleted.
-- **Tests:** converter suite 16/16 pass. No full build run this session.
-- **Build:** n/a (converter is local Python; plugin build deployed earlier for measurement).
-- **Uncommitted:** only the stray untracked `.claude/sgs-framework.db` (never commit).
-- **Live:** canary page 144 renders content + side-by-side layout; NOT yet pixel-acceptance (60–83%).
+## Current state
+- **Branch:** `feat/fr22-4-1-universal-wrapper` (8 commits ahead of main; `8f900750` is WIP-do-not-merge). main clean.
+- **Canary page 144:** reflects Wave 1 only. **Wave 2 + A-1 committed but NOT built/deployed/re-cloned → not yet verified on live DOM.**
+- **Converter self-tests pass.** No full build/deploy of Wave-2 this session.
+- **/sgs-update** run (trust-bar rename persisted in DB).
 
-## Known Issues / Blockers
-- **Not pixel-acceptance yet** (P-FR226-FIDELITY-AND-MERGE): images dry-run (no product images), `sgs/info-box` hybrid (gift content sparse), exact styling.
-- **FR-22-4.1 full walker implementation pending** — the depth-2 gate is the working interim; the full fold/container/per-item-CSS rule is the next implementation task.
-- **blub.db dashboard DOWN** (EPERM on start) — this session's lessons captured to workspace + CC-memory file layers + mistakes stubs; blub.db sync pending dashboard recovery.
+## Known issues / next priorities (full detail in next-session-prompt.md)
+1. **VERIFY Wave-2 + A-1 on the canary FIRST** (build+deploy+re-clone+wireframe) — not done this session.
+2. **trust-bar hybrid FR-22-6 migration** — renamed block reads scalar `items`; needs `echo $content` for the section block-override to render.
+3. **product-card full dual-mode build** (Spec 24 + atomic pill block + variation-sets logic — brain-dump in next-session-prompt + parking).
+4. **A-1 Phase 2** — slot-level responsive typography lift.
+5. **D-1 DROPPED** — info-box deprecated.js existing-post migration NOT needed (Bean: no live SGS-theme sites; scratch pages only).
 
-## Next Priorities (in order)
-1. **Implement FR-22-4.1 fully** (Spec 22 §FR-22-4.1) — replace the depth-2 gate + walk_passthrough-drop + _absorb_transparent_wrappers patchwork with the one coherent fold/container/block + per-item-CSS mechanism. Sensitive walker rewrite — use the root-cause methodology + /qc-council + /verify-loop + per-section live-DOM measurement.
-2. **Image sideload** (real WP media IDs, not Stage 4i dry-run) — likely the biggest remaining pixel-diff lever.
-3. **Migrate `sgs/info-box`** FR-22-6 hybrid (gift content) — same pattern as product-card.
-4. Reach pixel-acceptance → visual-diff reports → (branch already merged; future fidelity work commits to main or a fresh branch).
-5. Deploy + seed the sgs_product CPT (P-PRODUCT-CPT-DEPLOY-SEED).
-
-## Files Modified
-| File | What changed |
-|------|-------------|
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | G1 leaf-lift + fallback fix + G2 depth-2 grid-wrapper preservation |
-| `plugins/sgs-blocks/src/blocks/{product-card,testimonial,testimonial-slider}/*` | FR-22-6 InnerBlocks migration |
-| `plugins/sgs-blocks/scripts/seed-composition-roles.py` | NEW — idempotent block_composition role corrections |
-| `.claude/specs/22-...md` | NEW §FR-22-4.1 canonical container rule |
-| `CLAUDE.md`, `.claude/architecture.md`, `.claude/mistakes.md` | Root-cause methodology baked in (D118/D26/D27) |
-| `.claude/decisions.md`, `.claude/parking.md` | D117/D118; P-XS-3 + P-UNIFY resolved; P-FR226 added |
-
-## Notes for Next Session
-- **Verify LIVE DOM, never pixel-diff alone** — it mis-scores empty (false win) AND reflowed-correct (false loss) sections. Playwright `textLen` + element layout is the gate.
-- FR-22-4.1 is the canonical container rule (D118); the depth-2 gate is the documented interim — implement the full rule, don't re-derive it.
-- The root-cause methodology is now in CLAUDE.md — it is the mandatory working method.
-- blub.db is down; restart the OpenClaw dashboard, then re-POST this session's lessons (workspace file at `~/.openclaw/workspace/memory/learning/2026-05-31-root-cause-methodology-and-false-pixel-diff.md`).
+## Mistake analysis (this session) — captured in next-session-prompt.md as STOP #25-#29
+Shipped a shortcut instead of the spec mechanism; asserted block capability without reading block.json/edit.js; misjudged step scope + gave up after a shortcut failed; used pixel-diff during structural work; over-checkpointed (burned Bean's context). Pre-emptive STOP entries + an 8-question pre-flight ritual added to next-session-prompt.md.
 
 ## Next Session Prompt
-See `.claude/next-session-prompt.md` — updated this session; structural defences (STOP catalogue, ritual, tiered reading) preserved per D101/Gate 6.5; read-docs+git-history-first + methodology added.
+See `.claude/next-session-prompt.md` — comprehensive reading list + done/next + resolved misunderstandings + mistake-analysis (STOP #25-#29) + pre-flight ritual + product-card brain-dump. Structural defences carried forward + extended per D101.

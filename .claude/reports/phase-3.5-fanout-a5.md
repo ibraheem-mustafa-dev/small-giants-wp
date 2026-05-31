@@ -239,7 +239,7 @@ Format per row: `attr_name` → `canonical_slot` / `role` — rationale.
 
 ---
 
-## sgs/trust-badges (3)
+## sgs/trust-bar (3)  <!-- renamed from sgs/trust-badges 2026-05-31 -->
 
 - `iconCircleBackground` → `icon` / `colour-bg` — Background colour of the icon circle wrapper.
 - `iconCircleSize` → `icon` / `number-css-px` — Diameter of the icon circle in px.

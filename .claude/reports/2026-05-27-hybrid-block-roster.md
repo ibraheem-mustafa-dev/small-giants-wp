@@ -79,7 +79,7 @@ session_tag: small-giants-wp-2026-05-27-spec-22-phase-0-4
 | sgs/table-of-contents | 1 | title |
 | sgs/testimonial-slider | 1 | testimonials |
 | sgs/timeline | 1 | entries |
-| sgs/trust-badges | 1 | items |
+| sgs/trust-bar | 1 | items |
 
 ## Per-block detail (blocks with hybrid_attr_count ≥ 3)
 

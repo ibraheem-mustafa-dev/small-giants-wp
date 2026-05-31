@@ -475,6 +475,23 @@ Populated 2026-05-30 by `/sgs-update` Stage 1 extension. 188 rows. Refresh on ev
 **PASS test (data layer).** `SELECT COUNT(*) FROM block_composition` returns 188. `SELECT COUNT(*) FROM block_composition WHERE wraps_block='sgs/container'` returns 4 (sgs/hero, sgs/cta-section, sgs/modal, sgs/quote). `SELECT COUNT(*) FROM block_composition WHERE composition_role='section-root'` returns 2.
 **FAIL test.** Walker consults `block_composition.wraps_block` to emit `__inner` passthrough before P-XS-3-TRIGGER-REFINEMENT closes — re-introduces the reverted regression.
 
+### FR-22-18 — Structural-parity acceptance for layout/wrapper/logic work (Bean-directed, 2026-05-31; amends R-22-4 scope)
+
+For wrapper/container/layout/content-routing commits, the acceptance metric is **rendered-DOM structural parity** measured directly from the live page (R-22-11), NOT pixel-diff. The canonical artefact is the body-nesting **wireframe** — draft tree vs rendered-clone tree, full body. Per section it verifies:
+
+- **Container presence + nesting level** — a container exists everywhere expected, at the correct depth (Req 1).
+- **Container type + template** — correct grid/flex/stacked + grid-template (e.g. `gridTemplateColumns` 1fr 5fr) + per-device responsive variants on the block's NATIVE attrs (Req 2 Goal A). Per A-1 (D121): responsive `@media` padding/margin/gap/columns/grid lift onto `{Tablet,Mobile}` attrs.
+- **Absorbed CSS + native attrs confirmed** — every absorbed CSS property routes to D0/D1/D2/D3 (FR-22-5), never silently dropped; grid-item CSS → container `gridItem*` defaults + per-child overrides (Req 2 Goal B/D). **NB `sgs/container` HAS per-grid-item support: instance-wide `gridItem*` defaults (→ `--sgs-gi-*` custom props inherited by direct child containers) + per-child overrides win via specificity** (`container/edit.js`). (Corrects an earlier mistaken "uniform only" claim — D124.)
+- **Child blocks/elements** — correct number, type, content, order, hierarchy (Req 2 Goal C / Req 3 Goal C).
+- **Block-override** — a registered block with a built-in wrapper replaces `sgs/container` (Req 3): section-root override via `blocks.tier='class-section'` (voter, FR-22-16); child-block override via BEM resolution (FR-22-1); array content via FR-22-2.5. The block still folds its own child divs.
+
+**Pixel-diff is informational-only during this phase** — it MAY run + be shared, but MUST NOT gate or guide a layout/structural commit (layout/CSS changes produce false pixel readings; rendered-HTML structure is the truth). R-22-4's pixel-diff gate is scoped to VISUAL-FIDELITY commits (colour/image/spacing/exact-styling) — the final phase, after structure is correct.
+
+**Recognition is BEM, not HTML tag** (R-22-2): atomic non-BEM CONTENT tags emit via the FR-22-3 atomic-tag-swap to their DYNAMIC sgs equivalents (via `blocks.replaces`, §14 — `<h2>`→sgs/heading, `<p>`→sgs/text, `<img>`→sgs/media), so nothing with content is skipped; only non-content transparent WRAPPER divs dissolve (CSS folded up per FR-22-4.1).
+
+**PASS test:** the section's rendered-DOM tree matches the draft tree for container presence/type/template/child-order; Bean visual sign-off co-authoritative (R-22-13).
+**FAIL test:** any expected container missing/mis-typed/mis-nested, any absorbed CSS dropped (not in D0-D3), or a pixel-diff number used to justify a layout commit.
+
 ## 4. The data layer
 
 ### sgs-framework.db — the framework brain (29 tables, ~17k+ rows)

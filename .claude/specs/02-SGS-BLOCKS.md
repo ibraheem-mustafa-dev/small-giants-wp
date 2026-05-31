@@ -56,7 +56,7 @@ sgs-blocks/
 │   │   ├── accordion/            # Expandable FAQ/content sections
 │   │   ├── tabs/                 # Tabbed content panels
 │   │   ├── brand-strip/          # Logo/brand carousel strip
-│   │   # certification-bar/ — RETIRED 2026-05-29 D95, merged into trust-badges (badgeStyle variants)
+│   │   # certification-bar/ — RETIRED 2026-05-29 D95, merged into trust-bar (badgeStyle variants)
 │   │   ├── notice-banner/        # Inline informational banner (MOV, delivery terms, promos)
 │   │   ├── announcement-bar/     # Top-of-page announcement banner (countdown, scheduling, rotation)
 │   │   ├── whatsapp-cta/         # WhatsApp floating button + contextual CTA
@@ -448,7 +448,7 @@ Block reference content for `sgs/trust-bar` is preserved in git history (last co
 
 ### 15. Certification Bar (`sgs/certification-bar`) — RETIRED 2026-05-29 D95
 
-> **RETIRED.** Block merged into `sgs/trust-badges` as `badgeStyle: 'text-only'` and `badgeStyle: 'image-badge'` variants. Existing posts auto-migrate via `trust-badges/deprecated.js` v2 `isEligible()` + `migrate()` entry. All certification-bar attributes (`title`, `titleColour`, `titleFontSize`, `labelColour`, `labelFontSize`, `badgeSize`, `items`, `badgeStyle`) are present on `sgs/trust-badges`. Source deleted: `src/blocks/certification-bar/`. DB rows deleted from both `sgs-framework.db` copies. Use `sgs/trust-badges` with `badgeStyle: 'text-only'` or `'image-badge'` for all new builds.
+> **RETIRED.** Block merged into `sgs/trust-bar` as `badgeStyle: 'text-only'` and `badgeStyle: 'image-badge'` variants. Existing posts auto-migrate via `trust-bar/deprecated.js` v2 `isEligible()` + `migrate()` entry. All certification-bar attributes (`title`, `titleColour`, `titleFontSize`, `labelColour`, `labelFontSize`, `badgeSize`, `items`, `badgeStyle`) are present on `sgs/trust-bar`. Source deleted: `src/blocks/certification-bar/`. DB rows deleted from both `sgs-framework.db` copies. Use `sgs/trust-bar` with `badgeStyle: 'text-only'` or `'image-badge'` for all new builds.
 
 ---
 

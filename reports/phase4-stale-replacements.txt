@@ -1,6 +1,6 @@
-# Stale Block Replacement Mappings — 2026-05-29 03:43:21 UTC
+# Stale Block Replacement Mappings — 2026-05-31 22:16:43 UTC
 
-Checked: 18 | Valid: 18 | Stale: 0
+Checked: 5 | Valid: 5 | Stale: 0
 
 ## Stale mappings (manual review required)
 

@@ -35,7 +35,7 @@ update_triggers:
 > - `html_tag_to_core_block` seed switched from INSERT OR IGNORE → INSERT OR REPLACE (prevents seed/DB divergence)
 > - `block_capabilities` wired into walker as FR-22-15 capability-aware BEM tiebreaker (replaces alphabetical fallback for multi-class disambiguation)
 > - 4 retired blocks deleted from `blocks` table (sgs/back-to-top, sgs/data-display, sgs/icon-block, sgs/reading-progress)
-> - sgs/svg-background, sgs/certification-bar retired (merged into container + trust-badges respectively)
+> - sgs/svg-background, sgs/certification-bar retired (merged into container + trust-bar respectively)
 > - /sgs-update Stage 1 gained UPDATE-on-drift; Stage 10 gained aggressive-prune default + attr-orphan detection + retired-blocks cleanup
 > - Hard-link / NTFS-junction finding: .claude/.agents DB paths share inode = same physical file; real two DBs are sgs-framework + ui-ux-pro-max
 > See `.claude/decisions.md` D93-D100 for full per-decision detail.
