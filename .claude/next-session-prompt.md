@@ -1,4 +1,18 @@
-> ## 2026-06-01 ADDENDUM (READ FIRST — supersedes the task list; all prior structural defences preserved below) ##
+> ## 2026-06-01 (pm) UPDATE — READ FIRST (G1+G2 SHIPPED; new priority = fidelity→merge) ##
+>
+> **The converter content-routing fix LANDED (D117, branch `feat/fr22-6-content-render` commit `1fcb0742`). The pipeline now RENDERS content AND side-by-side card layout — live-DOM verified.** G1 = leaf content-routing + the `attr_type` fallback-bug fix (all 7 sections render). G2 = FR-23-6 depth-2 grid-wrapper preservation (council-designed, trace-confirmed: featured-product + gift cards side-by-side, duplicate nesting fixed, mean −0.66pp).
+>
+> **NEW TOP PRIORITY: reach pixel-acceptance on the branch, then merge to main.** The branch renders CORRECTLY but isn't pixel-acceptance-passing (sections 60–83%). Levers, in order (P-FR226-FIDELITY-AND-MERGE): (1) **real image sideload** — Stage 4i is dry-run so NO product images render (likely the biggest pixel lever); (2) **migrate `sgs/info-box` FR-22-6 hybrid** — gift-section card content renders sparse (same pattern as product-card); (3) exact styling; (4) generate visual-diff reports for product-card/testimonial/testimonial-slider → **merge branch→main**.
+>
+> **NEW STOP entry #24:** Trusting a per-section pixel-diff change without live-DOM check works BOTH ways — an EMPTY section scores a false WIN, and a REFLOWED-to-correct section (cards side-by-side) scores a false LOSS. Pixel-diff mis-scores exactly the structural changes that matter. Verify Playwright `textLen` + element layout. (Extends STOP #20.)
+>
+> **Bean directives (parked):** P-UNIFY-CONTAINER-ABSORPTION (unify `_absorb_transparent_wrappers` merge-side + walker preserve-side into ONE structural rule); duplicate-nesting now fixed by the depth-2 gate. The FR-23-6 depth-2 gate is council-designed + trace-confirmed — DON'T re-litigate it.
+>
+> Everything below (the original 2026-06-01 + 2026-05-31 addenda + the full STOP catalogue / ritual / tiered reading) is PRESERVED per D101.
+>
+> ---------------------------------------------------------------------------
+>
+> ## 2026-06-01 ADDENDUM (G1-G4 framing — now largely SHIPPED via D117; retained) ##
 >
 > **TOP PRIORITY: the converter content-routing fix. THE plan is `.claude/plans/2026-05-31-converter-content-routing-fix.md` (G1-G4). Read it + D115 first.** The old "Tasks 1-5" further down are HISTORICAL (XS-3 is done — merged).
 >

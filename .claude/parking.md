@@ -6,10 +6,19 @@ last_updated: 2026-05-31
 
 ## 2026-05-31 — FR-22-6 converter content-routing + Spec 24 follow-ups
 
-> **P-CONVERTER-CONTENT-ROUTING-FIX** — NEW 2026-05-31. The converter/walker never runs the FR-22-2 content-routing layer, so featured-product + social-proof render EMPTY (live DOM textLen=0). Fix is converter-side (G1-G4), sequential, on branch `feat/fr22-6-content-render` (groundwork at c9c6544d). Full plan: `plans/2026-05-31-converter-content-routing-fix.md`. Includes the XS-3 EXTENSION (leaf-misresolution guard) + pills→sgs/button (not sgs/label). On completion: passing visual-diff reports for product-card/testimonial/testimonial-slider, then merge branch → main.
+> **P-CONVERTER-CONTENT-ROUTING-FIX** — NEW 2026-05-31. **G1 + G2 SHIPPED (commit 1fcb0742 on branch, D117) — content + side-by-side layout now RENDER (live-DOM verified).** G1 = FR-22-2 leaf content-routing + the `attr_type` fallback-bug fix. G2 = FR-23-6 depth-2 grid-wrapper preservation (council-designed). Remaining for full pixel-acceptance: see P-FR226-FIDELITY-AND-MERGE.
+> **Status:** PARTIAL (renders correctly; pixel-acceptance pending)
+> **Bucket:** Pipeline / converter
+
+> **P-FR226-FIDELITY-AND-MERGE** — NEW 2026-05-31. Branch `feat/fr22-6-content-render` renders content+layout correctly but isn't pixel-acceptance-passing (sections 60–83%). To reach acceptance + merge to main: (a) wire real image sideload (Stage 4i is dry-run → no product images); (b) migrate `sgs/info-box` FR-22-6 hybrid (gift-section card content renders sparse — info-box reads scalar attrs); (c) exact styling; (d) generate passing visual-diff reports for product-card/testimonial/testimonial-slider; (e) merge branch→main (visual-diff gate then passes). The container migrations (c9c6544d) + converter fix (1fcb0742) wait on this.
 > **Status:** OPEN
 > **Bucket:** Pipeline / converter
-> **Trigger:** Next session (highest priority). Read the phase plan + the D115 decision first.
+> **Trigger:** Next session. Highest-value: image sideload (likely biggest pixel-diff lever) + info-box hybrid.
+
+> **P-UNIFY-CONTAINER-ABSORPTION** — NEW 2026-05-31 (Bean directive). Two mechanisms handle container nesting: `_absorb_transparent_wrappers` (D52 pre-pass — MERGES a redundant direct-child wrapper into the section) and the walker's `_is_layout_bearing_wrapper` (PRESERVES genuine layout wrappers). Bean: these are two halves of one principle (merge transparent passthroughs, preserve layout containers) and should be unified into ONE structural rule applied to ALL containers (not class-specific). Duplicate-nesting itself is now fixed empirically by the depth-2 gate (header/trust-bar/brand = 1 container); this is a code-architecture cleanup, not a live bug.
+> **Status:** OPEN
+> **Bucket:** Pipeline / converter
+> **Trigger:** When next touching the walker's container-routing path.
 
 > **P-PRODUCT-CPT-DEPLOY-SEED** — NEW 2026-05-31. `sgs_product` CPT + `seed-mamas-products.php` are built + committed (branch c9c6544d) but NOT deployed/seeded. To create the 2 reference products: deploy the plugin + create the entries (work around the `wp eval-file` content-guard hook — use `wp post create` over SSH or wp.data via Playwright). Also decide per-site opt-in gating for the CPT (currently registers unconditionally). ~15 min.
 > **Status:** OPEN
