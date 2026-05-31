@@ -1880,8 +1880,121 @@ def ensure_root_section_class(block_markup: str, section_id: str) -> str:
 # Grid/flex container detection (used by _absorb_transparent_wrappers context)
 # ============================================================================
 
+_MIN_WIDTH_RE = re.compile(r"min-width\s*:\s*(\d+)", re.IGNORECASE)
+
+# render.php breakpoint thresholds (max-width model):
+#   gridTemplateColumns           → base/desktop inline style (all sizes, unless overridden)
+#   gridTemplateColumnsTablet     → @media (max-width:1023px)
+#   gridTemplateColumnsMobile     → @media (max-width:599px)
+# Mockup CSS uses min-width (mobile-first), so we invert:
+#   min-width ≥ 1024 → desktop attr (gridTemplateColumns)
+#   min-width 600–1023 → tablet attr (gridTemplateColumnsTablet)
+#   base (no @media) → mobile attr (gridTemplateColumnsMobile)
+_GRID_DESKTOP_BP = 1024  # px — min-width at or above this maps to the desktop (base) attr
+_GRID_TABLET_BP  = 600   # px — min-width at or above this (below desktop) maps to tablet attr
+
+
+def _css_selector_has_class(sel_key: str, selector: str) -> bool:
+    """True if sel_key contains `selector` as a whole class-token (not as a prefix of a
+    compound selector like `.foo.bar` when looking for `.foo`).
+
+    Handles both plain selectors and @media-scoped keys with the ' :: ' sentinel.
+    The CSS part after ' :: ' is what we match against.
+    """
+    css_part = sel_key.split(" :: ", 1)[-1]  # works whether ' :: ' is present or not
+    pattern = re.escape(selector) + r"(?=[ \t\r\n,:\[#>~+{]|$)"
+    return bool(re.search(pattern, css_part))
+
+
+def _collect_responsive_grid_from_css(
+    classes: list[str], css_rules: dict, base_decls: dict[str, str]
+) -> dict[str, str]:
+    """Return responsive gridTemplateColumns attrs by scanning @media min-width rules.
+
+    Mockup CSS is mobile-first (min-width).  render.php is desktop-first (max-width).
+    This function inverts the cascade so the converter lifts the correct value onto each
+    of the three container attrs:
+        gridTemplateColumns        ← highest min-width breakpoint value (desktop)
+        gridTemplateColumnsTablet  ← mid min-width breakpoint value (tablet, ≤1023px)
+        gridTemplateColumnsMobile  ← base CSS value (mobile, ≤599px)
+
+    Only `grid-template-columns` is lifted as a native attr because render.php accepts a
+    raw string for that property.  Gap stays on the CSS/variation_buf path (render.php gap
+    attrs expect spacing-token slugs, not raw px values).
+
+    Selector matching uses _css_selector_has_class to reject compound selectors like
+    `.sgs-foo.has-modifier` when looking for `.sgs-foo` — those carry modifier-specific
+    overrides that should NOT be lifted onto the neutral container attrs.
+    """
+    selectors = [f".{c}" for c in classes if c.startswith("sgs-")]
+    if not selectors:
+        return {}
+
+    # Gather (min_width_px, grid-template-columns) pairs from @media rules.
+    # Dict keyed by px breakpoint; last write wins for duplicate breakpoints.
+    # Precise whole-token selector matching prevents compound-selector false positives.
+    bp_cols: dict[int, str] = {}
+    for sel_key, decls in css_rules.items():
+        if " :: " not in sel_key:
+            continue
+        m = _MIN_WIDTH_RE.search(sel_key)
+        if not m:
+            continue
+        if not any(_css_selector_has_class(sel_key, s) for s in selectors):
+            continue
+        cols_raw = decls.get("grid-template-columns", "")
+        if cols_raw:
+            bp_cols[int(m.group(1))] = _strip_important(cols_raw)
+
+    if not bp_cols:
+        # No responsive overrides — nothing to lift.
+        return {}
+
+    base_cols = _strip_important(base_decls.get("grid-template-columns", ""))
+
+    # Sort breakpoints descending so we can identify desktop vs tablet.
+    sorted_bps = sorted(bp_cols.keys(), reverse=True)
+
+    # Desktop value: highest breakpoint ≥ _GRID_DESKTOP_BP, else highest overall.
+    desktop_cols = bp_cols[sorted_bps[0]]
+
+    # Tablet value: highest breakpoint in [_GRID_TABLET_BP, _GRID_DESKTOP_BP).
+    tablet_cols = ""
+    for bp in sorted_bps:
+        if _GRID_TABLET_BP <= bp < _GRID_DESKTOP_BP:
+            tablet_cols = bp_cols[bp]
+            break
+    # If there is a separate desktop breakpoint AND a tablet breakpoint, use them as-is.
+    # If there is only one breakpoint (e.g. only 600px), it becomes the desktop default
+    # and the base becomes the mobile override.
+
+    result: dict[str, str] = {}
+
+    # gridTemplateColumns (desktop / base for render.php) = the widest layout.
+    if desktop_cols:
+        result["gridTemplateColumns"] = desktop_cols
+
+    # gridTemplateColumnsTablet = tablet-range value when it differs from desktop.
+    if tablet_cols and tablet_cols != desktop_cols:
+        result["gridTemplateColumnsTablet"] = tablet_cols
+
+    # gridTemplateColumnsMobile = base (mobile) value when it differs from tablet/desktop.
+    # Use tablet as the reference if present, else desktop.
+    reference = tablet_cols if tablet_cols else desktop_cols
+    if base_cols and base_cols != reference:
+        result["gridTemplateColumnsMobile"] = base_cols
+
+    return result
+
+
 def _detect_grid_container_from_css(classes: list[str], css_rules: dict) -> dict | None:
-    """Detect display:grid|flex on a node's CSS and return layout attrs, or None."""
+    """Detect display:grid|flex on a node's CSS and return layout attrs, or None.
+
+    Now also collects responsive grid-template-columns from @media min-width rules and
+    maps them onto render.php's desktop-first attr trio:
+        gridTemplateColumns / gridTemplateColumnsTablet / gridTemplateColumnsMobile.
+    Gap stays on the CSS/variation_buf path (raw px values cannot be token slugs).
+    """
     selectors = [f".{c}" for c in classes if c.startswith("sgs-")]
     if not selectors:
         return None
@@ -1895,9 +2008,17 @@ def _detect_grid_container_from_css(classes: list[str], css_rules: dict) -> dict
     if display not in ("grid", "flex"):
         return None
     result: dict = {"layout": display}
-    cols = _strip_important(base_decls.get("grid-template-columns", ""))
-    if cols:
-        result["gridTemplateColumns"] = cols
+
+    # --- Responsive grid-template-columns (mobile-first → desktop-first inversion) ---
+    responsive = _collect_responsive_grid_from_css(classes, css_rules, base_decls)
+    if responsive:
+        result.update(responsive)
+    else:
+        # No responsive overrides — lift base value directly as the desktop default.
+        cols = _strip_important(base_decls.get("grid-template-columns", ""))
+        if cols:
+            result["gridTemplateColumns"] = cols
+
     gap = _strip_important(base_decls.get("gap", base_decls.get("column-gap", "")))
     if gap:
         result["gap"] = gap
@@ -1967,8 +2088,10 @@ def _fold_layout_into_attrs(
     grid = _detect_grid_container_from_css(wrapper_classes, css_rules)
     if grid:
         container_attrs.setdefault("layout", grid["layout"])
-        if grid.get("gridTemplateColumns"):
-            container_attrs.setdefault("gridTemplateColumns", grid["gridTemplateColumns"])
+        # Lift all three responsive grid-template-columns attrs (desktop / tablet / mobile).
+        for attr in ("gridTemplateColumns", "gridTemplateColumnsTablet", "gridTemplateColumnsMobile"):
+            if grid.get(attr):
+                container_attrs.setdefault(attr, grid[attr])
     _lift_root_supports_to_style(wrapper_node, "sgs/container", css_rules, container_attrs)
 
 
