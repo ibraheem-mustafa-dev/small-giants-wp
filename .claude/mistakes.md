@@ -1,9 +1,19 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-30 (XS-batch D107-D113 — walker condition over-aggressive, inheritance threshold over-tight, docs applier conflated revert with full-batch defer)
+**Last updated:** 2026-05-31 (converter render+layout fix — pixel-diff mis-scores both ways; reasoning-not-reading caused 3 wrong diagnoses; root-cause methodology now baked into CLAUDE.md)
 
 <!-- ACTIVE — recent 30 mistakes as keyword stubs. Full body in blub.db `learnings` table or feedback_*.md files. Archive: memory/mistakes-archive.md. Search: grep -r KEYWORD memory/ + curl localhost:5050/api/learning?search=KEYWORD -->
 
 ## Active stubs (most recent 30)
+
+### [2026-05-31] Pixel-diff mis-scores BOTH ways — verify live DOM, never the number alone
+- **Pattern key:** `empty-section-false-pixel-diff-win`
+- **Evidence (D117):** featured-product migration showed −30.9pp "WIN" on cropped pixel-diff while the live DOM had `textLen=0` (empty). Inverse also true: a reflowed-to-correct section (cards side-by-side) scores a false LOSS vs the stacked baseline crop.
+- **Rule:** Verify the LIVE DOM (Playwright `el.innerText.length` + element layout) as the gate; pixel-diff is supplementary. Memory `empty-section-false-pixel-diff-win`; root CLAUDE.md "Root-cause methodology" §4.
+
+### [2026-05-31] Reasoning/assuming instead of reading ground truth → 3 wrong diagnoses before the real cause
+- **Pattern key:** `read-ground-truth-before-concluding` / root-cause-methodology
+- **Evidence (D117/D118):** Diagnosed cards-stacking from reasoning, not the CSS; two fix attempts reverted. Reading the mockup CSS + computed styles + converter trace found the real cause (`.sgs-products` grid wrapper dissolved). A /qc-council 3-rater read of the FULL Spec 20/21 logs + code converged on the fix.
+- **Rule:** No assumptions / no probability. Analyse ALL logs+debug data + verify every dependency (DB, block functionality, pipeline spec, truth-spec, pixel-diff-vs-live-DOM) BEFORE proposing a fix. Baked into root CLAUDE.md "Root-cause methodology" (D118).
 
 ### [2026-05-30] XS-3 walker condition too aggressive — regression on featured-product + social-proof; code reverted, DB layer kept
 - **Pattern key:** `P-XS-3-TRIGGER-REFINEMENT`

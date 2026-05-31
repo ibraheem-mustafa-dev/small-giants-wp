@@ -38,6 +38,21 @@ Full text in Spec 22 §6. Headlines:
 
 Sibling rules: blub.db 254 (read leftover-buckets first), 255 (multi-model /qc per converter commit), 256 (per-section cropped pixel-diff), 260 (db-first-no-hardcoded-dicts), 272 (schema enumeration before "missing X"), 276 (council fix-shapes are HYPOTHESES not specs), 281 (qc gate must be structural), 288 (phases never ship as single commits).
 
+## Root-cause methodology (MANDATORY — no assumptions, evidence-first; gate EVERY diagnosis + fix)
+
+This is the core working method for this project. It is non-negotiable and overrides any urge to move fast by guessing. Demonstrated + locked 2026-05-31 (D117/D118).
+
+**Never assume, never reason from probability, never trust a claim** — yours, a subagent's, a doc's, or a metric's — without verifying it against real ground truth. Before proposing OR acting on any fix:
+
+1. **Find the ROOT CAUSE first.** Read the actual evidence — do NOT pattern-match or theorise. Analyse ALL the logs + debug data (Spec 20/21 artefacts: `trace.jsonl`, `extract.json`, `leftover-buckets.json`, `stage-N.json`, `stage-11-pixel-diff.json`, computed CSS, render.php, `/wp-blocks schema`) BEFORE proposing a solution.
+2. **Classify the layer:** is it an IMPLEMENTATION bug, or a GAP/FLAW in the spec/plan? Fix the right layer — patching code around a spec gap is a trap.
+3. **Verify every dependency the theory rests on:** DB table data (`/sgs-db`, `/wp-blocks`), the block's ACTUAL functionality (e.g. does `sgs/container` really have a grid engine / the attrs you assume?), the pipeline spec (what it is SUPPOSED to do — Spec 22 + flow + stages), the truth-spec (`sites/<client>/mockups/.../TRUTH-SPEC.md` — does the fix hold for ALL relevant instances across the page, not just one?).
+4. **Pixel-diff is misleading — verify the LIVE DOM (R-22-11), not the number.** An EMPTY section scores a false WIN (matches background); a REFLOWED-to-correct section scores a false LOSS. Use Playwright `el.innerText.length` + element-layout checks as the gate, never the pixel-diff alone. (Memory `empty-section-false-pixel-diff-win`.)
+5. **Attest with evidence, twice** (`/verify-loop`): every load-bearing claim needs ≥2 independent evidence sources (e.g. emitted markup + live DOM). Never delegate the proof step for unproven work — open the live page yourself.
+6. **Roll back fast on regression (STOP #19);** refine across a session boundary with the empirical evidence baked into the plan — don't iterate a failing sensitive fix inline under context pressure.
+
+**Tools for this method (use the right one; don't hand-roll):** `/systematic-debugging` (root-cause gate), `/qc-council` (multi-rater validate fix-shapes from the FULL logs + code — converged-evidence beats single-model), `/verify-loop` (2-attestation), `/diagnostics` + `/lint` (static checks), `/subagent-driven-development` + `/dispatching-parallel-agents` (orchestrate independent work), `/brainstorming` (design before build), `/library-docs` (gold-standard reference), `/wp-blocks` + `/sgs-db` + `/sgs-wp-engine` + `/sgs-clone` (SGS ground truth), `/goals` (re-anchor), the `code-reviewer` + `wp-sgs-developer` agents (when registered + relevant). Captured: `feedback_read_ground_truth_before_concluding`, `feedback_qc_council_cross_family_triangulation_finds_bugs`, `empty-section-false-pixel-diff-win`.
+
 ## Repository structure
 
 ```

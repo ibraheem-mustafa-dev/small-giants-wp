@@ -197,6 +197,10 @@ The SGS framework has four primary components: the block theme (`sgs-theme`), th
 
 25. **Slot vocabulary hygiene — section-scope cleanup (D111, 2026-05-30)** — XS-5 retired 12 wrong / dead section-scope slot rows. Testimonial + testimonial-slider re-inserted at element scope (the correct scope for those slots; section-scope was the legacy miscategorisation). Schema gate: section-scope rows reserved for actual section-root semantics, never element-level slots.
 
+26. **Universal wrapper/container resolution (FR-22-4.1, D118, 2026-05-31)** — The single canonical rule for every wrapper below a section: block-match wins; a DIRECT descendant of a container FOLDS its CSS into the container (1-child = inner-CSS; grid/flex = container absorbs the grid + each item's CSS folds as grid-item CSS); a direct descendant matching a block becomes that block (the grid item); a NON-direct-descendant wrapper becomes its own `sgs/container`, never dropped. Supersedes the patchwork (walk_passthrough drop-and-bubble, depth-2 gate, `_absorb_transparent_wrappers`). Canonical text: Spec 22 §FR-22-4.1. Implementation (walker rewrite) is the active next task; the depth-2 gate (D117 G2) is the working interim. Content + side-by-side layout render correctly today (G1+G2, live-DOM verified).
+
+27. **Root-cause methodology is core + mandatory (D118, 2026-05-31)** — No assumptions / no probability / no trusting unverified claims or pixel-diff. Dig to the root cause from ALL logs+debug data; classify implementation-bug vs spec/plan-gap; verify every dependency (DB tables, block functionality, pipeline spec, truth-spec, pixel-diff-vs-live-DOM); attest with ≥2 evidence sources; roll back fast on regression. Full statement + tool list in root `CLAUDE.md` "Root-cause methodology". This is the working method for ALL future work on this project.
+
 ---
 
 ## 2026-05-25 cloning-pipeline session summary
