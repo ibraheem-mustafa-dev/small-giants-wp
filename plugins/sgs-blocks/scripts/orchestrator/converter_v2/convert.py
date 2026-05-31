@@ -695,10 +695,25 @@ def _lift_root_supports_to_style(
     css_rules: dict,
     attrs: dict,
 ) -> None:
-    """Lift block-root CSS into WP native style.* attributes.
+    """Lift block-root CSS into WP native style.* attributes AND per-device custom attrs.
 
     Reads the node's own CSS, consults db.block_supports_for(block_slug),
-    and writes matching properties into attrs['style'].
+    and writes matching properties into attrs['style'] (base) and into
+    per-device custom attrs (e.g. paddingTopTablet, paddingTopMobile) when
+    the block schema declares them and @media overrides exist in css_rules.
+
+    Responsive lift (Phase 2 universal fix):
+      _collect_css_decls_for_element returns (base_decls, bp_decls) where bp_decls
+      is keyed by breakpoint suffix ('Tablet', 'Mobile', 'Desktop').  Previously
+      bp_decls was discarded.  This function now:
+        1. Lifts base_decls to style.* (unchanged behaviour).
+        2. For each bp_suffix in bp_decls, applies _root_lift_rules and emits
+           per-device custom attrs where the block schema has them.
+      The per-device attr name convention mirrors the deprecated _lift_styling_attrs
+      pattern: '{css_prop_camel_suffix}{BpSuffix}' (e.g. paddingTopTablet).
+      Only attrs present in the block schema are emitted; others are traced as
+      'responsive_attr_dropped' for downstream gap-candidate analysis.
+
     Never overwrites existing keys.
     """
     if not block_slug or not block_slug.startswith("sgs/"):
@@ -706,58 +721,131 @@ def _lift_root_supports_to_style(
     supports = db.block_supports_for(block_slug)
     if not supports:
         return
-    base_decls, _bp_decls = _collect_css_decls_for_element(node, css_rules)
+    base_decls, bp_decls = _collect_css_decls_for_element(node, css_rules)
     # D1 sidecar merge — DELETED 2026-05-27 (/qc-council D4). Spec 16 mechanism;
     # superseded by DB-driven role classification + equivalent_block_for routing.
-    if not base_decls:
+    if not base_decls and not bp_decls:
         return
     style: dict = attrs.get("style") or {}
-    # Normalise background / border shorthand
-    if "background" in base_decls and "background-color" not in base_decls:
-        bg = base_decls["background"].strip()
-        if bg and "url(" not in bg and "gradient" not in bg:
-            for tok in bg.split():
-                if _extract_token_or_hex(tok) is not None or tok in ("white", "black", "transparent"):
-                    base_decls["background-color"] = tok
-                    break
+
+    if base_decls:
+        # Normalise background / border shorthand
+        if "background" in base_decls and "background-color" not in base_decls:
+            bg = base_decls["background"].strip()
+            if bg and "url(" not in bg and "gradient" not in bg:
+                for tok in bg.split():
+                    if _extract_token_or_hex(tok) is not None or tok in ("white", "black", "transparent"):
+                        base_decls["background-color"] = tok
+                        break
+                else:
+                    if len(bg.split()) == 1:
+                        base_decls["background-color"] = bg
+        if "border" in base_decls and "border-width" not in base_decls:
+            parts = base_decls["border"].strip().split()
+            for tok in parts:
+                if any(u in tok for u in ("px", "em", "rem", "pt")):
+                    base_decls.setdefault("border-width", tok)
+                elif tok in ("solid", "dashed", "dotted", "double", "none"):
+                    base_decls.setdefault("border-style", tok)
+                elif _extract_token_or_hex(tok) is not None or tok.startswith("var("):
+                    base_decls.setdefault("border-color", tok)
+        # Apply root lift rules (base → style.*)
+        for css_prop, sup_top, sup_sub, style_path, kind in _root_lift_rules():
+            if css_prop not in base_decls:
+                continue
+            if not _support_allows(supports, sup_top, sup_sub if sup_sub != style_path[-1] else None):
+                continue
+            raw = _strip_important(base_decls[css_prop])
+            if kind == "colour":
+                v = _colour_value_to_style(raw)
             else:
-                if len(bg.split()) == 1:
-                    base_decls["background-color"] = bg
-    if "border" in base_decls and "border-width" not in base_decls:
-        parts = base_decls["border"].strip().split()
-        for tok in parts:
-            if any(u in tok for u in ("px", "em", "rem", "pt")):
-                base_decls.setdefault("border-width", tok)
-            elif tok in ("solid", "dashed", "dotted", "double", "none"):
-                base_decls.setdefault("border-style", tok)
-            elif _extract_token_or_hex(tok) is not None or tok.startswith("var("):
-                base_decls.setdefault("border-color", tok)
-    # Apply root lift rules
-    for css_prop, sup_top, sup_sub, style_path, kind in _root_lift_rules():
-        if css_prop not in base_decls:
-            continue
-        if not _support_allows(supports, sup_top, sup_sub if sup_sub != style_path[-1] else None):
-            continue
-        raw = _strip_important(base_decls[css_prop])
-        if kind == "colour":
-            v = _colour_value_to_style(raw)
-        else:
-            v = _preserve_unit(raw)
-        if v is not None:
-            _set_in(style, style_path, v)
-    # Padding/margin shorthand
-    for shorthand in ("padding", "margin"):
-        if shorthand not in base_decls:
-            continue
-        if not _support_allows(supports, "spacing", shorthand):
-            continue
-        parsed = _parse_padding_shorthand(_strip_important(base_decls[shorthand]))
-        if parsed:
-            for side, val in parsed.items():
-                _set_in(style, ["spacing", shorthand, side], val)
+                v = _preserve_unit(raw)
+            if v is not None:
+                _set_in(style, style_path, v)
+        # Padding/margin shorthand (base)
+        for shorthand in ("padding", "margin"):
+            if shorthand not in base_decls:
+                continue
+            if not _support_allows(supports, "spacing", shorthand):
+                continue
+            parsed = _parse_padding_shorthand(_strip_important(base_decls[shorthand]))
+            if parsed:
+                for side, val in parsed.items():
+                    _set_in(style, ["spacing", shorthand, side], val)
+
     if style:
         attrs["style"] = style
         _snap_style_dict_leaves(block_slug, attrs["style"])
+
+    # ---- Responsive per-device custom attr lift --------------------------------
+    # bp_decls = {bp_suffix: {css_prop: value}} collected from @media rules.
+    # For each breakpoint suffix ('Tablet', 'Mobile', 'Desktop') and each CSS
+    # property in _root_lift_rules, attempt to emit a matching per-device custom
+    # attr on the block (e.g. paddingTopTablet).  Only emitted when:
+    #   (a) the block schema has an attr with that exact camelCase name, AND
+    #   (b) the attr isn't already set.
+    # Property→attrName mapping reuses the style_path leaf + bp_suffix:
+    #   style_path ['spacing','padding','top'] + 'Tablet' → paddingTopTablet
+    #   style_path ['color','text']             + 'Mobile' → colorTextMobile (unusual)
+    # For padding/margin shorthand @media rules, expand the four sides similarly.
+    if not bp_decls:
+        return
+    block_schema = db.block_attrs(block_slug)
+    for bp_suffix, bp_decl_map in bp_decls.items():
+        if not bp_decl_map:
+            continue
+        for css_prop, sup_top, sup_sub, style_path, kind in _root_lift_rules():
+            if css_prop not in bp_decl_map:
+                continue
+            if not _support_allows(supports, sup_top, sup_sub if sup_sub != style_path[-1] else None):
+                continue
+            raw = _strip_important(bp_decl_map[css_prop])
+            if kind == "colour":
+                v = _colour_value_to_style(raw)
+            else:
+                v = _preserve_unit(raw)
+            if v is None:
+                _trace("responsive_attr_dropped", block_slug=block_slug,
+                       css_prop=css_prop, bp_suffix=bp_suffix,
+                       reason="value_unparseable", raw=raw)
+                continue
+            # Build candidate attr name from style_path leaves + bp_suffix.
+            # e.g. ['spacing','padding','top'] → 'paddingTop' + 'Tablet' → 'paddingTopTablet'
+            path_leaves = style_path[1:]  # drop 'spacing'/'color'/'border' top-level key
+            camel_base = "".join(p.capitalize() for p in path_leaves)
+            candidate = f"{camel_base}{bp_suffix}"
+            if candidate in block_schema and candidate not in attrs:
+                attrs[candidate] = v
+                _trace("responsive_attr_lifted", block_slug=block_slug,
+                       css_prop=css_prop, bp_suffix=bp_suffix,
+                       attr_name=candidate, value=str(v))
+            else:
+                _trace("responsive_attr_dropped", block_slug=block_slug,
+                       css_prop=css_prop, bp_suffix=bp_suffix,
+                       reason="no_schema_attr" if candidate not in block_schema else "already_set",
+                       candidate=candidate)
+        # Padding/margin shorthand responsive lift
+        for shorthand in ("padding", "margin"):
+            if shorthand not in bp_decl_map:
+                continue
+            if not _support_allows(supports, "spacing", shorthand):
+                continue
+            parsed = _parse_padding_shorthand(_strip_important(bp_decl_map[shorthand]))
+            if not parsed:
+                continue
+            for side, val in parsed.items():
+                # e.g. 'padding' + 'top' + 'Tablet' → 'paddingTopTablet'
+                candidate = f"{shorthand.capitalize()}{side.capitalize()}{bp_suffix}"
+                if candidate in block_schema and candidate not in attrs:
+                    attrs[candidate] = val
+                    _trace("responsive_attr_lifted", block_slug=block_slug,
+                           css_prop=f"{shorthand} ({side})", bp_suffix=bp_suffix,
+                           attr_name=candidate, value=val)
+                else:
+                    _trace("responsive_attr_dropped", block_slug=block_slug,
+                           css_prop=f"{shorthand} ({side})", bp_suffix=bp_suffix,
+                           reason="no_schema_attr" if candidate not in block_schema else "already_set",
+                           candidate=candidate)
 
 
 def _css_value_to_attr(value: str, kind: str) -> object | None:
@@ -1987,13 +2075,87 @@ def _collect_responsive_grid_from_css(
     return result
 
 
+def _parse_repeat_columns(cols_str: str) -> int | None:
+    """Extract column count N from 'repeat(N, 1fr)' / 'repeat(N, minmax(...))' patterns.
+
+    Returns None for non-repeat patterns like '1fr 1fr 1fr' or '5fr 3fr'.
+    Used to populate the 'columns' / 'columnsTablet' / 'columnsMobile' integer attrs on
+    blocks whose render.php drives column count via data-columns (e.g. sgs/trust-bar),
+    rather than via the raw gridTemplateColumns string attr.
+    """
+    if not cols_str:
+        return None
+    m = re.match(r"repeat\(\s*(\d+)\s*,", cols_str.strip(), re.IGNORECASE)
+    if m:
+        try:
+            return int(m.group(1))
+        except ValueError:
+            return None
+    return None
+
+
+def _collect_responsive_gap_from_css(
+    classes: list[str], css_rules: dict, base_decls: dict[str, str]
+) -> dict[str, str]:
+    """Return responsive gap attrs by scanning @media min-width rules.
+
+    Mirrors _collect_responsive_grid_from_css for the 'gap' property.
+    Maps min-width breakpoints to render.php's desktop-first model:
+        gap          ← base value (desktop when no responsive override, else ignored)
+        gapTablet    ← mid min-width breakpoint value (tablet, [_GRID_TABLET_BP, _GRID_DESKTOP_BP))
+        gapMobile    ← base CSS value (mobile, < _GRID_TABLET_BP)
+
+    Gap values are intentionally passed through as raw CSS strings (e.g. '16px 12px',
+    'var(--wp--preset--spacing--30)').  render.php converts numeric spacing-token slugs
+    via preg_replace; raw px / var() values survive and can be snapped to tokens later.
+    """
+    selectors = [f".{c}" for c in classes if c.startswith("sgs-")]
+    if not selectors:
+        return {}
+
+    bp_gaps: dict[int, str] = {}
+    for sel_key, decls in css_rules.items():
+        if " :: " not in sel_key:
+            continue
+        m = _MIN_WIDTH_RE.search(sel_key)
+        if not m:
+            continue
+        if not any(_css_selector_has_class(sel_key, s) for s in selectors):
+            continue
+        gap_raw = decls.get("gap", decls.get("column-gap", ""))
+        if gap_raw:
+            bp_gaps[int(m.group(1))] = _strip_important(gap_raw)
+
+    if not bp_gaps:
+        return {}
+
+    base_gap = _strip_important(base_decls.get("gap", base_decls.get("column-gap", "")))
+    sorted_bps = sorted(bp_gaps.keys(), reverse=True)
+    desktop_gap = bp_gaps[sorted_bps[0]]
+
+    tablet_gap = ""
+    for bp in sorted_bps:
+        if _GRID_TABLET_BP <= bp < _GRID_DESKTOP_BP:
+            tablet_gap = bp_gaps[bp]
+            break
+
+    result: dict[str, str] = {}
+    reference = tablet_gap if tablet_gap else desktop_gap
+    if tablet_gap and tablet_gap != desktop_gap:
+        result["gapTablet"] = tablet_gap
+    if base_gap and base_gap != reference:
+        result["gapMobile"] = base_gap
+    return result
+
+
 def _detect_grid_container_from_css(classes: list[str], css_rules: dict) -> dict | None:
     """Detect display:grid|flex on a node's CSS and return layout attrs, or None.
 
-    Now also collects responsive grid-template-columns from @media min-width rules and
-    maps them onto render.php's desktop-first attr trio:
-        gridTemplateColumns / gridTemplateColumnsTablet / gridTemplateColumnsMobile.
-    Gap stays on the CSS/variation_buf path (raw px values cannot be token slugs).
+    Collects responsive grid-template-columns AND gap from @media min-width rules,
+    mapping them onto render.php's desktop-first attr trios:
+        gridTemplateColumns / gridTemplateColumnsTablet / gridTemplateColumnsMobile
+        gap / gapTablet / gapMobile
+        columns / columnsTablet / columnsMobile (from repeat(N, 1fr) patterns)
     """
     selectors = [f".{c}" for c in classes if c.startswith("sgs-")]
     if not selectors:
@@ -2013,11 +2175,33 @@ def _detect_grid_container_from_css(classes: list[str], css_rules: dict) -> dict
     responsive = _collect_responsive_grid_from_css(classes, css_rules, base_decls)
     if responsive:
         result.update(responsive)
+        # Also extract columns count from repeat(N, 1fr) patterns for blocks
+        # that use a 'columns' integer attr (e.g. sgs/trust-bar, sgs/feature-grid).
+        for attr_key, cols_key in (
+            ("gridTemplateColumns", "columns"),
+            ("gridTemplateColumnsTablet", "columnsTablet"),
+            ("gridTemplateColumnsMobile", "columnsMobile"),
+        ):
+            if attr_key in responsive:
+                n = _parse_repeat_columns(responsive[attr_key])
+                if n is not None:
+                    result[cols_key] = n
+        _trace("responsive_grid_lifted", classes=classes,
+               attrs={k: v for k, v in responsive.items()})
     else:
         # No responsive overrides — lift base value directly as the desktop default.
         cols = _strip_important(base_decls.get("grid-template-columns", ""))
         if cols:
             result["gridTemplateColumns"] = cols
+            n = _parse_repeat_columns(cols)
+            if n is not None:
+                result["columns"] = n
+
+    # --- Responsive gap (mobile-first → desktop-first) ---
+    responsive_gap = _collect_responsive_gap_from_css(classes, css_rules, base_decls)
+    if responsive_gap:
+        result.update(responsive_gap)
+        _trace("responsive_gap_lifted", classes=classes, attrs=responsive_gap)
 
     gap = _strip_important(base_decls.get("gap", base_decls.get("column-gap", "")))
     if gap:
@@ -2091,6 +2275,14 @@ def _fold_layout_into_attrs(
         # Lift all three responsive grid-template-columns attrs (desktop / tablet / mobile).
         for attr in ("gridTemplateColumns", "gridTemplateColumnsTablet", "gridTemplateColumnsMobile"):
             if grid.get(attr):
+                container_attrs.setdefault(attr, grid[attr])
+        # Lift responsive gap attrs (gapTablet / gapMobile) if present.
+        for attr in ("gap", "gapTablet", "gapMobile"):
+            if grid.get(attr):
+                container_attrs.setdefault(attr, grid[attr])
+        # Lift columns / columnsTablet / columnsMobile (from repeat(N, 1fr) patterns).
+        for attr in ("columns", "columnsTablet", "columnsMobile"):
+            if grid.get(attr) is not None:
                 container_attrs.setdefault(attr, grid[attr])
     _lift_root_supports_to_style(wrapper_node, "sgs/container", css_rules, container_attrs)
 
