@@ -1,3 +1,4 @@
+import { createBlock } from '@wordpress/blocks';
 import { useBlockProps } from '@wordpress/block-editor';
 import { colourVar, fontSizeVar } from '../../utils';
 
@@ -243,4 +244,89 @@ const v1 = {
 	},
 };
 
-export default [ v1 ];
+/**
+ * v2 — FR-22-6 InnerBlocks migration (2026-05-30).
+ *
+ * Previous shape: dynamic block, save returned null, render.php looped the
+ * scalar `testimonials` attribute array to build slides. The block is now
+ * InnerBlocks-driven: each sgs/testimonial child is a real block in
+ * post_content, and render.php iterates $block->inner_blocks.
+ *
+ * The migrate() converts each item in the testimonials array into a
+ * sgs/testimonial block so existing posts auto-migrate when opened in the
+ * editor. Attributes on the parent that drove per-slide rendering
+ * (quoteColour, nameColour, roleColour, ratingColour) are carried forward on
+ * the parent block — they are still used for CSS vars. The scalar testimonials
+ * array attribute is deliberately NOT included in the new attributes returned
+ * by migrate() so WP does not store it again.
+ *
+ * NOTE: WP-CLI batch migration should run after deploy to convert all
+ * existing posts. Until then, the render.php sees 0 inner_blocks and emits
+ * an empty carousel shell (no slides, no dots, no arrows) for old posts
+ * that haven't round-tripped through the editor yet.
+ */
+const v2 = {
+	attributes: {
+		layout: { type: 'string', default: 'full' },
+		sideImage: { type: 'object' },
+		testimonials: { type: 'array', default: [] },
+		autoplay: { type: 'boolean', default: true },
+		autoplaySpeed: { type: 'number', default: 5000 },
+		showDots: { type: 'boolean', default: true },
+		showArrows: { type: 'boolean', default: true },
+		slidesVisible: { type: 'number', default: 1 },
+		cardStyle: { type: 'string', default: 'card' },
+		quoteColour: { type: 'string', default: 'text' },
+		nameColour: { type: 'string', default: 'primary' },
+		nameFontSize: { type: 'string' },
+		roleColour: { type: 'string', default: 'text-muted' },
+		ratingColour: { type: 'string', default: 'accent' },
+		hoverBackgroundColour: { type: 'string', default: '' },
+		hoverTextColour: { type: 'string', default: '' },
+		hoverBorderColour: { type: 'string', default: '' },
+		hoverEffect: { type: 'string', default: 'none' },
+		transitionDuration: { type: 'string', default: '300' },
+		transitionEasing: { type: 'string', default: 'ease-in-out' },
+	},
+
+	// save: () => null — the previous shape emitted no static HTML; render.php drove everything.
+	save: () => null,
+
+	migrate( attributes ) {
+		const innerBlocks = [];
+
+		if ( Array.isArray( attributes.testimonials ) ) {
+			attributes.testimonials.forEach( ( t ) => {
+				// Each array item becomes a sgs/testimonial inner block.
+				// The scalar content attrs (quote, name, role, rating, avatar)
+				// are mapped to the child block's attribute schema.
+				// Avatar is mapped to both avatar + authorMedia so the MediaPicker
+				// in the child block's inspector shows the photo correctly.
+				const childAttrs = {
+					quote: t.quote || '',
+					name: t.name || '',
+					role: t.role || '',
+					rating: t.rating || 0,
+				};
+				if ( t.avatar && t.avatar.url ) {
+					childAttrs.avatar = t.avatar;
+					childAttrs.authorMedia = {
+						url: t.avatar.url,
+						type: 'image',
+						id: t.avatar.id || 0,
+						alt: t.avatar.alt || '',
+						mime: 'image/jpeg',
+					};
+				}
+				innerBlocks.push( createBlock( 'sgs/testimonial', childAttrs ) );
+			} );
+		}
+
+		// Return updated parent attributes (testimonials array dropped) + innerBlocks.
+		// eslint-disable-next-line no-unused-vars
+		const { testimonials: _dropped, ...nextAttrs } = attributes;
+		return [ nextAttrs, innerBlocks ];
+	},
+};
+
+export default [ v2, v1 ];

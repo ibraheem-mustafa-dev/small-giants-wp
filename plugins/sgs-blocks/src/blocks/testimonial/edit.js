@@ -1,8 +1,8 @@
 import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
+	useInnerBlocksProps,
 	InspectorControls,
-	RichText,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -13,7 +13,7 @@ import {
 } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar, fontSizeVar } from '../../utils';
+import { colourVar } from '../../utils';
 
 const STYLE_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
@@ -30,30 +30,8 @@ const FONT_SIZE_OPTIONS = [
 	{ label: __( 'XXL', 'sgs-blocks' ), value: 'xx-large' },
 ];
 
-/**
- * Generate initials from a name string.
- *
- * @param {string} fullName The person's name.
- * @return {string} Up to two initials.
- */
-function getInitials( fullName ) {
-	if ( ! fullName ) {
-		return '';
-	}
-	const parts = fullName.replace( /<[^>]+>/g, '' ).trim().split( /\s+/ );
-	if ( parts.length === 1 ) {
-		return parts[ 0 ].charAt( 0 ).toUpperCase();
-	}
-	return (
-		parts[ 0 ].charAt( 0 ) + parts[ parts.length - 1 ].charAt( 0 )
-	).toUpperCase();
-}
-
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		quote,
-		name,
-		role,
 		avatar,
 		authorMedia,
 		rating,
@@ -102,6 +80,22 @@ export default function Edit( { attributes, setAttributes } ) {
 			'--sgs-transition-easing': transitionEasing || undefined,
 		},
 	} );
+
+	// ── InnerBlocks — seeded with a core/paragraph for quote text.
+	// Converter will emit sgs/star-rating + sgs/text + sgs/text (author/role)
+	// once those Phase 2 blocks are built. templateLock:false preserves
+	// Bean's add/remove flexibility in the block editor.
+	const TESTIMONIAL_TEMPLATE = [
+		[ 'core/paragraph', { placeholder: __( 'Write the testimonial quote…', 'sgs-blocks' ), className: 'sgs-testimonial__quote' } ],
+	];
+
+	const innerBlocksProps = useInnerBlocksProps(
+		{ className: 'sgs-testimonial__inner-content' },
+		{
+			template: TESTIMONIAL_TEMPLATE,
+			templateLock: false,
+		}
+	);
 
 	return (
 		<>
@@ -406,53 +400,23 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
+			{ /*
+			 * Editor card shell. InnerBlocks replace the old RichText
+			 * quote / name / role fields. Content (quote text, stars,
+			 * author name, role) lives in child blocks; presentation
+			 * (card style, hover, colours) stays in inspector attrs.
+			 *
+			 * Avatar is kept as a MediaPicker attr \u2014 it is presentation
+			 * identity controlled by the inspector, not inline content.
+			 */ }
 			<blockquote { ...blockProps }>
-				{ rating > 0 && (
-					<div
-						className="sgs-testimonial__stars"
-						style={ {
-							color: colourVar( ratingColour ) || undefined,
-						} }
-						aria-label={ `${ rating } out of 5 stars` }
-					>
-						{ Array.from( { length: 5 }, ( _, i ) => (
-							<span
-								key={ i }
-								className={ `sgs-testimonial__star ${
-									i < rating
-										? 'sgs-testimonial__star--filled'
-										: 'sgs-testimonial__star--empty'
-								}` }
-								aria-hidden="true"
-							>
-								{ i < rating ? '\u2605' : '\u2606' }
-							</span>
-						) ) }
-					</div>
-				) }
-
-				<RichText
-					tagName="p"
-					className="sgs-testimonial__quote"
-					value={ quote }
-					onChange={ ( val ) =>
-						setAttributes( { quote: val } )
-					}
-					placeholder={ __(
-						'Write the testimonial quote\u2026',
-						'sgs-blocks'
-					) }
-					style={ {
-						color: colourVar( quoteColour ) || undefined,
-					} }
-				/>
-
+				<div { ...innerBlocksProps } />
 				<footer className="sgs-testimonial__footer">
 					<div className="sgs-testimonial__avatar">
-						{ avatar?.url ? (
+						{ ( authorMedia?.url || avatar?.url ) ? (
 							<img
-								src={ avatar.url }
-								alt={ avatar.alt || '' }
+								src={ authorMedia?.url || avatar?.url }
+								alt={ authorMedia?.alt || avatar?.alt || '' }
 								className="sgs-testimonial__avatar-img"
 							/>
 						) : (
@@ -460,45 +424,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								className="sgs-testimonial__avatar-initials"
 								aria-hidden="true"
 							>
-								{ getInitials( name ) || '?' }
+								{ '?' }
 							</span>
 						) }
-					</div>
-					<div className="sgs-testimonial__meta">
-						<RichText
-							tagName="cite"
-							className="sgs-testimonial__name"
-							value={ name }
-							onChange={ ( val ) =>
-								setAttributes( { name: val } )
-							}
-							placeholder={ __(
-								'Name',
-								'sgs-blocks'
-							) }
-							style={ {
-								color:
-									colourVar( nameColour ) || undefined,
-								fontSize:
-									fontSizeVar( nameFontSize ) || undefined,
-							} }
-						/>
-						<RichText
-							tagName="span"
-							className="sgs-testimonial__role"
-							value={ role }
-							onChange={ ( val ) =>
-								setAttributes( { role: val } )
-							}
-							placeholder={ __(
-								'Role \u2014 Company',
-								'sgs-blocks'
-							) }
-							style={ {
-								color:
-									colourVar( roleColour ) || undefined,
-							} }
-						/>
 					</div>
 				</footer>
 			</blockquote>

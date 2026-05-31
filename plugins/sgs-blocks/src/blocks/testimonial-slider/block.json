@@ -146,21 +146,27 @@
 		"attributes": {
 			"showDots": true,
 			"showArrows": true,
-			"cardStyle": "card",
-			"testimonials": [
-				{
+			"cardStyle": "card"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/testimonial",
+				"attributes": {
 					"quote": "Exceptional service — our go-to supplier for over three years.",
 					"name": "Mark Davidson",
 					"role": "Catering Manager",
 					"rating": 5
-				},
-				{
+				}
+			},
+			{
+				"name": "sgs/testimonial",
+				"attributes": {
 					"quote": "Reliable, great value, and the team are always helpful.",
 					"name": "Priya Sharma",
 					"role": "Restaurant Owner",
 					"rating": 5
 				}
-			]
-		}
+			}
+		]
 	}
 }

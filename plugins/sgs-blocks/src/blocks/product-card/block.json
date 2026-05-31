@@ -91,6 +91,10 @@
     "style": "file:./style.css",
     "render": "file:./render.php",
     "allowedBlocks": [
+        "sgs/media",
+        "core/heading",
+        "sgs/text",
+        "sgs/label",
         "sgs/multi-button",
         "sgs/button"
     ],

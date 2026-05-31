@@ -26,6 +26,7 @@
  *      omitted. Migrate sets the current colour defaults explicitly.
  */
 
+import { createBlock } from '@wordpress/blocks';
 import { useBlockProps, RichText } from '@wordpress/block-editor';
 import { RawHTML } from '@wordpress/element';
 import { colourVar, fontSizeVar } from '../../utils';
@@ -934,4 +935,85 @@ const v6 = {
 	},
 };
 
-export default [ v6, v4, v3, v2, v1, v5 ];
+/**
+ * v7 — FR-22-6 InnerBlocks migration (2026-05-30).
+ *
+ * Previous shape: dynamic block, save returned null, render.php read scalar
+ * attrs (quote, name, role, rating, authorMedia) directly. The block was
+ * converted to use InnerBlocks so the converter-emitted child blocks
+ * (sgs/star-rating, sgs/text, etc.) are persisted in post_content and
+ * rendered by render.php via echo $content.
+ *
+ * This entry matches any post saved with save: () => null and the full
+ * authorMedia-era attribute schema. The migrate() converts the scalar
+ * content attrs into a core/paragraph inner block (safe placeholder) so
+ * the quote text is preserved. The avatar/authorMedia stays as a block attr
+ * (it is presentation identity, not inline content).
+ *
+ * NOTE: WP-CLI batch migration should run after deploy to convert all
+ * existing posts via the block editor's block validation + migrate() path.
+ * Until then, old posts render as card shells with empty $content (the
+ * avatar footer and schema JSON-LD still emit from scalar attrs in render.php).
+ */
+const v7 = {
+	attributes: {
+		quote: { type: 'string', default: '' },
+		name: { type: 'string', default: '' },
+		role: { type: 'string', default: '' },
+		avatar: { type: 'object' },
+		authorMedia: { type: 'object', default: null },
+		rating: { type: 'number', default: 0 },
+		style: { type: 'string', default: 'card' },
+		quoteColour: { type: 'string', default: 'text' },
+		nameColour: { type: 'string', default: 'primary' },
+		nameFontSize: { type: 'string' },
+		nameFontSizeTablet: { type: 'string', default: '' },
+		nameFontSizeMobile: { type: 'string', default: '' },
+		roleColour: { type: 'string', default: 'text-muted' },
+		ratingColour: { type: 'string', default: 'accent' },
+		reviewSource: { type: 'string', default: '' },
+		reviewDate: { type: 'string', default: '' },
+		hoverBackgroundColour: { type: 'string', default: '' },
+		hoverTextColour: { type: 'string', default: '' },
+		hoverBorderColour: { type: 'string', default: '' },
+		hoverEffect: { type: 'string', default: 'none' },
+		transitionDuration: { type: 'string', default: '300' },
+		transitionEasing: { type: 'string', default: 'ease-in-out' },
+		hoverScale: { type: 'string', default: '' },
+		hoverShadow: { type: 'string', default: '' },
+		staggerDelay: { type: 'number', default: 0 },
+		sgsAnimation: { type: 'string', default: 'fade-up' },
+		sgsAnimationDuration: { type: 'string', default: 'medium' },
+		sgsAnimationEasing: { type: 'string', default: 'default' },
+		schemaEnabled: { type: 'boolean', default: false },
+	},
+
+	// save: () => null — the previous shape emitted no static HTML; render.php drove everything.
+	save: () => null,
+
+	migrate( attributes ) {
+		// Convert scalar content attrs into InnerBlocks.
+		// We emit a core/paragraph for the quote text so content is preserved.
+		// The avatar/authorMedia stays as a block attr (inspector MediaPicker).
+		// name/role/rating remain as attrs so schema JSON-LD and the avatar
+		// initials fallback in render.php continue to work until WP-CLI migration.
+		const innerBlocks = [];
+
+		// Quote paragraph — maps to sgs/text once that Phase 2 block ships.
+		// Until then core/paragraph renders the quote text correctly.
+		if ( attributes.quote ) {
+			innerBlocks.push(
+				createBlock( 'core/paragraph', {
+					content: attributes.quote,
+					className: 'sgs-testimonial__quote',
+				} )
+			);
+		}
+
+		// Return updated attributes (scalar content attrs are retained so
+		// render.php schema + avatar initials keep working) alongside innerBlocks.
+		return [ attributes, innerBlocks ];
+	},
+};
+
+export default [ v7, v6, v4, v3, v2, v1, v5 ];

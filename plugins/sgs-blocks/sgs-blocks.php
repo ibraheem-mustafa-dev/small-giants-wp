@@ -175,6 +175,10 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cpt-rest-gate.php';
 Sgs_Block_CPTs::register();
 Sgs_Cpt_Rest_Gate::register();
 
+// SGS Product CPT (Spec 24 FR-24-1) — sgs_product, sgs_product_cat, sgs_product_tag + meta.
+require_once SGS_BLOCKS_PATH . 'includes/content-types/class-product-cpt.php';
+Product_CPT::register();
+
 // SGS Floating UI — Customiser controls + frontend renderer (replaces retired back-to-top + reading-progress blocks).
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-floating-ui-customiser.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-floating-ui-renderer.php';

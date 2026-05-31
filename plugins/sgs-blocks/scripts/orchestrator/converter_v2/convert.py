@@ -1562,12 +1562,17 @@ def _atomic_attrs_for(node: Tag, slug: str) -> dict:
         if not isinstance(info, dict):
             continue
         if info.get("role") in ("content", "text-content"):
-            attr_type = info.get("type")
+            # block_attrs() returns the type under the key "attr_type" (not "type").
+            # The previous "type" lookup silently returned None, so this graceful
+            # fallback never fired — only the explicit slug handlers above worked.
+            # Fixed 2026-05-31 (G1): now sgs/label and any other leaf with a
+            # text-content string attr get their text lifted into the attr.
+            attr_type = info.get("attr_type")
             if attr_type == "string":
                 content_attr_name = attr_name
                 break
     if content_attr_name is not None:
-        return {content_attr_name: node.get_text(strip=True)}
+        return {content_attr_name: _rich_text_content(node)}
     return {}
 
 
@@ -1673,7 +1678,7 @@ def walk(
         # A1 (Spec 23 FR-23-6): a slug-None wrapper that owns a grid/flex layout is
         # NOT transparent — emit it as a neutral sgs/container preserving its class
         # so the deployed CSS reproduces the layout, rather than dissolving it.
-        if _is_layout_bearing_wrapper(node, classes, css_rules):
+        if _is_layout_bearing_wrapper(node, classes, css_rules, depth):
             return _emit_layout_container(node, classes, sgs_classes, css_rules, depth, variation_buf)
         return walk_passthrough(node, css_rules, depth, variation_buf)
 
@@ -1681,10 +1686,25 @@ def walk(
     # (no resolved block to lift onto); CSS collection + child recursion still
     # run so the section's classes and content flow into the synthesised
     # sgs/container wrap below.
+    is_leaf = False
     if slug is None:
         attrs = {}
     else:
         attrs = db.lift_behavioural_attrs(node, slug)    # FR-22-2 (NULL equivalent_block only)
+        # G1 (FR-22-2, 2026-05-31): leaf blocks (sgs/text, sgs/label, …) render
+        # from a scalar content attribute, NOT from InnerBlocks. Lift the node's
+        # (rich) text into that attr using the same mapping the atomic-swap path
+        # uses (_atomic_attrs_for), so the content reaches the leaf's render.php
+        # instead of being emitted as inner markup the leaf ignores. Without this
+        # the universal BEM path never ran FR-22-2 content-routing for leaves and
+        # every BEM-resolved sgs/text/sgs/label rendered empty.
+        # NB: a "G2" wrapper-to-leaf container guard was tried + reverted 2026-05-31
+        # (regressed hero +10.6pp, did NOT fix featured-product card layout — the
+        # cards-stacking is a PARENT-grid issue, not __body). See parking
+        # P-FEATURED-PRODUCT-GRID-LAYOUT.
+        is_leaf = db.get_block_composition_role(slug) == "leaf"
+        if is_leaf:
+            attrs = {**attrs, **_atomic_attrs_for(node, slug)}
     css = collect_css_for_classes(classes, css_rules)  # FR-22-5
     if css and variation_buf is not None:
         variation_buf.append(css)
@@ -1693,12 +1713,16 @@ def walk(
     if slug is not None:
         _lift_root_supports_to_style(node, slug, css_rules, attrs)
 
-    # Recursively walk children for InnerBlocks
+    # Recursively walk children for InnerBlocks — EXCEPT leaf blocks (G1): their
+    # content now lives in the lifted content attr above, so recursing would emit
+    # ignored inner markup. (A leaf node that nonetheless has element children is
+    # a mis-resolution — that is G2's wrapper-to-leaf guard's job, not here.)
     children_markup: list[str] = []
-    for child in node.children:
-        result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
-        if result:
-            children_markup.append(result)
+    if not is_leaf:
+        for child in node.children:
+            result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
+            if result:
+                children_markup.append(result)
 
     # ---- Permitted exception 3 — top-level section container wrap ----
     # FR-22-4: every top-level section is based on sgs/container.
@@ -1833,7 +1857,7 @@ def _detect_grid_container_from_css(classes: list[str], css_rules: dict) -> dict
     return result
 
 
-def _is_layout_bearing_wrapper(node: "Tag", classes: list[str], css_rules: dict) -> bool:
+def _is_layout_bearing_wrapper(node: "Tag", classes: list[str], css_rules: dict, depth: int = 0) -> bool:
     """XS-3 refined (2026-05-31): immediate-child wrapper of section-root blocks only.
 
     Emits sgs/container for slug-None divs that are immediate children of
@@ -1860,7 +1884,42 @@ def _is_layout_bearing_wrapper(node: "Tag", classes: list[str], css_rules: dict)
     if not isinstance(parent, Tag):
         return False
 
-    # Precondition 3: check parent's composition_role via block_composition table
+    # ---- Trigger A (council-validated 2026-05-31 — FR-23-6) ----
+    # Preserve a slug-None wrapper as a neutral className-only sgs/container when it
+    # BOTH (a) declares display:grid|flex in its OWN CSS AND (b) has >=2 immediate
+    # element children that EACH resolve to a real block slug. (a) marks it a layout
+    # provider; (b) marks its children as genuine sibling blocks — e.g. .sgs-products
+    # → 2× sgs/product-card, .sgs-gift-section__cards → 2× sgs/info-box. This is the
+    # signal three independent council raters converged on (trace + code-path + live
+    # CSS). It separates real layout rows from section wrappers whose grid children
+    # are BEM-element SLOTS that resolve None (sgs-hero__content, sgs-header__*) —
+    # those have <2 real-block children and do NOT fire, so this does NOT re-introduce
+    # the reverted display-only over-fire (+2.49pp) nor f173b351's "any CSS" (+13pp).
+    # A first earlier "Trigger A" keyed on display:grid/flex ALONE — reverted; the
+    # children-resolve-to-real-blocks gate is the discriminator that was missing.
+    #
+    # DEPTH GATE (council Rater B + Rater C + FR-23-6; trace-confirmed 2026-05-31):
+    # fire ONLY at depth >= 2, i.e. wrappers nested BELOW the section's `__inner`
+    # passthrough — NOT the `__inner` itself (depth 1, a direct child of the
+    # top-level section). Trace evidence: the depth-1 wrappers that fired
+    # (sgs-header__inner, sgs-trust-bar__inner, sgs-hero__content, sgs-brand__content)
+    # double-nested their sections and regressed pixel-diff; the depth-2 wrappers
+    # (sgs-products, sgs-gift-section__cards) are the genuine layout rows to preserve
+    # (cards side-by-side). The section walks at depth 0, __inner at depth 1, the
+    # grid wrapper at depth 2 (verified at the walk() is_top_level=True call sites).
+    if depth >= 2 and _detect_grid_container_from_css(classes, css_rules) is not None:
+        real_child_count = 0
+        for child in node.children:
+            if not isinstance(child, Tag):
+                continue
+            child_sgs = [c for c in (child.get("class", []) or []) if c.startswith("sgs-")]
+            if child_sgs and db.resolve_slug_from_bem(child_sgs) is not None:
+                real_child_count += 1
+        if real_child_count >= 2:
+            return True
+
+    # ---- Trigger B (XS-3): immediate-child wrapper of a section-root ----
+    # Check parent's composition_role via block_composition table.
     parent_classes = parent.get("class", []) or []
     parent_sgs_classes = [c for c in parent_classes if c.startswith("sgs-")]
     parent_slug = db.resolve_slug_from_bem(parent_sgs_classes) if parent_sgs_classes else None
