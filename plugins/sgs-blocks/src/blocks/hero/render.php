@@ -2,8 +2,29 @@
 /**
  * Server-side render for the SGS Hero block.
  *
+ * FR-22-6 migration: the content column (label, headline, sub-headline, CTAs)
+ * is now rendered via InnerBlocks ($content). Scalar content attrs (label,
+ * headline, subHeadline, ctaPrimary*, ctaSecondary*) are NO LONGER read here.
+ * They are retained in block.json for deprecated.js back-compat only.
+ * R-22-14: NO legacy scalar fallback.
+ *
+ * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
+ *   variant, alignment, backgroundImage, overlayColour, overlayOpacity,
+ *   splitImage, splitMedia, splitImageMobile, splitImageMobileObjectPosition,
+ *   backgroundVideo, svgContent, minHeight*, badges, hoverBackground/Text/Border,
+ *   transitionDuration, transitionEasing, bgParallax, bgKenBurns, bgVideo*,
+ *   splitImageBleed, ctaPrimary/SecondaryHover*, headline/subHeadlineFontSize*,
+ *   headline/subHeadlineMarginBottom*, subHeadlineMaxWidth, splitImageMobileHeight,
+ *   imageObjectFit/Position, image*Width/Height*, imageBorderRadius*,
+ *   imageBorderStyle/Width/Colour*, imagePadding*, mediaBackgroundColour,
+ *   mediaPadding*, contentPadding*, splitColumnRatio*, splitGap*,
+ *   splitContentOrderMobile, verticalAlignment, contentMaxWidth*, ctaGap*,
+ *   labelFontSize* (used by responsive CSS targeting .sgs-hero__label on child),
+ *   headlineFontSize* (responsive CSS targeting .sgs-hero__headline on child),
+ *   subHeadline* typography responsive CSS targeting .sgs-hero__subheadline.
+ *
  * @var array    $attributes Block attributes.
- * @var string   $content    Inner block content.
+ * @var string   $content    InnerBlocks HTML (label, headline, sub-headline, CTAs).
  * @var \WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
@@ -13,9 +34,10 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
+// ── Shell / layout attributes (still scalar — drive the wrapper + media column).
+// FR-22-6: scalar content attrs (label, headline, subHeadline, ctaPrimary*,
+// ctaSecondary*) are deliberately NOT read here. R-22-14: no fallback.
 $variant             = $attributes['variant'] ?? 'standard';
-$headline            = $attributes['headline'] ?? '';
-$sub_headline        = $attributes['subHeadline'] ?? '';
 $alignment           = $attributes['alignment'] ?? 'left';
 $bg_image            = $attributes['backgroundImage'] ?? null;
 $overlay_colour      = sgs_colour_value( $attributes['overlayColour'] ?? 'text' );
@@ -46,29 +68,18 @@ if ( empty( $split_image['url'] ) && ! empty( $split_media['url'] ) && 'image' =
 }
 $split_image_mobile  = $attributes['splitImageMobile'] ?? null;
 $split_image_mobile_object_position = $attributes['splitImageMobileObjectPosition'] ?? 'center 20%';
-$label               = $attributes['label'] ?? '';
 $bg_video            = $attributes['backgroundVideo'] ?? null;
 $svg_content         = $attributes['svgContent'] ?? '';
 $min_height          = $attributes['minHeight'] ?? '';
 $min_height_tablet   = $attributes['minHeightTablet'] ?? '';
 $min_height_mobile   = $attributes['minHeightMobile'] ?? '360px';
 $badges              = $attributes['badges'] ?? array();
-$cta_primary_text    = $attributes['ctaPrimaryText'] ?? '';
-$cta_primary_url     = $attributes['ctaPrimaryUrl'] ?? '';
-$cta_primary_style   = $attributes['ctaPrimaryStyle'] ?? 'accent';
-$cta_secondary_text  = $attributes['ctaSecondaryText'] ?? '';
-$cta_secondary_url   = $attributes['ctaSecondaryUrl'] ?? '';
-$cta_secondary_style = $attributes['ctaSecondaryStyle'] ?? 'outline';
 
-$headline_colour               = $attributes['headlineColour'] ?? '';
-$sub_headline_font_size        = $attributes['subHeadlineFontSize'] ?? '';
+// Responsive CSS targets for typography on InnerBlocks children.
+// These are still scalar attrs — render.php emits scoped <style> rules that
+// cascade into the child sgs/heading / sgs/text / sgs/label blocks.
 $sub_headline_font_size_tablet = $attributes['subHeadlineFontSizeTablet'] ?? '';
 $sub_headline_font_size_mobile = $attributes['subHeadlineFontSizeMobile'] ?? '';
-$sub_headline_colour           = $attributes['subHeadlineColour'] ?? '';
-$cta_primary_colour            = $attributes['ctaPrimaryColour'] ?? '';
-$cta_primary_bg                = $attributes['ctaPrimaryBackground'] ?? '';
-$cta_secondary_colour          = $attributes['ctaSecondaryColour'] ?? '';
-$cta_secondary_bg              = $attributes['ctaSecondaryBackground'] ?? '';
 
 // Per-breakpoint typography controls (new in v2).
 $headline_font_size_desktop = $attributes['headlineFontSizeDesktop'] ?? null;
@@ -188,41 +199,10 @@ $content_pad_mob_bot  = $attributes['contentPaddingBottomMobile'] ?? null;
 $content_pad_mob_left = $attributes['contentPaddingLeftMobile'] ?? null;
 $content_pad_unit     = $attributes['contentPaddingUnit'] ?? 'px';
 
-// Sub-headline typography (new Phase 1 attributes).
-$sub_headline_font_family      = $attributes['subHeadlineFontFamily'] ?? '';
-$sub_headline_font_weight      = $attributes['subHeadlineFontWeight'] ?? '';
-$sub_headline_line_height      = $attributes['subHeadlineLineHeight'] ?? null;
-$sub_headline_lh_unit          = $attributes['subHeadlineLineHeightUnit'] ?? 'em';
-$sub_headline_letter_spacing   = $attributes['subHeadlineLetterSpacing'] ?? null;
-$sub_headline_ls_unit          = $attributes['subHeadlineLetterSpacingUnit'] ?? 'px';
-$sub_headline_text_transform   = $attributes['subHeadlineTextTransform'] ?? '';
-$sub_headline_text_decoration  = $attributes['subHeadlineTextDecoration'] ?? '';
-
-// Label (eyebrow) typography.
-$label_font_family     = $attributes['labelFontFamily'] ?? '';
-$label_font_size       = $attributes['labelFontSize'] ?? null;
-$label_font_size_tab   = $attributes['labelFontSizeTablet'] ?? null;
-$label_font_size_mob   = $attributes['labelFontSizeMobile'] ?? null;
-$label_font_size_unit  = $attributes['labelFontSizeUnit'] ?? 'px';
-$label_font_weight     = $attributes['labelFontWeight'] ?? '600';
-$label_line_height     = $attributes['labelLineHeight'] ?? 1.2;
-$label_lh_unit         = $attributes['labelLineHeightUnit'] ?? 'em';
-$label_letter_spacing  = $attributes['labelLetterSpacing'] ?? null;
-$label_ls_unit         = $attributes['labelLetterSpacingUnit'] ?? 'em';
-$label_text_transform  = $attributes['labelTextTransform'] ?? 'uppercase';
-$label_text_decoration = $attributes['labelTextDecoration'] ?? '';
-$label_colour          = $attributes['labelColour'] ?? '';
-$label_margin_bottom   = $attributes['labelMarginBottom'] ?? 8;
-$label_mb_unit         = $attributes['labelMarginBottomUnit'] ?? 'px';
-
-// CTA gap — gap between buttons inside .sgs-hero__ctas flex container.
-$cta_gap        = isset( $attributes['ctaGap'] ) ? absint( $attributes['ctaGap'] ) : 12;
-$cta_gap_mobile = isset( $attributes['ctaGapMobile'] ) ? absint( $attributes['ctaGapMobile'] ) : 10;
-$cta_gap_tablet = isset( $attributes['ctaGapTablet'] ) ? absint( $attributes['ctaGapTablet'] ) : null;
-$cta_gap_unit   = isset( $attributes['ctaGapUnit'] ) ? $attributes['ctaGapUnit'] : 'px';
-
-// Validate unit.
-$cta_gap_unit = in_array( $cta_gap_unit, array( 'px', 'rem', 'em', '%', 'vw' ), true ) ? $cta_gap_unit : 'px';
+// Label responsive CSS (tablet/mobile font-size on child .sgs-hero__label).
+$label_font_size_tab  = $attributes['labelFontSizeTablet'] ?? null;
+$label_font_size_mob  = $attributes['labelFontSizeMobile'] ?? null;
+$label_font_size_unit = $attributes['labelFontSizeUnit'] ?? 'px';
 
 // Layout grid (split variant).
 $split_col_ratio        = $attributes['splitColumnRatio'] ?? '1fr 1fr';
@@ -482,16 +462,8 @@ if ( null !== $content_max_width_mob ) {
 	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{max-width:' . absint( $content_max_width_mob ) . esc_attr( $content_max_width_unit ) . '}}';
 }
 
-// ── ctaGap: gap between CTA buttons in .sgs-hero__ctas (F4 pattern) ────────
-// Desktop gap is the base value. Mobile uses !important to beat the
-// desktop value when the stack collapses to column on small screens.
-$responsive_css .= '.' . $uid . ' .sgs-hero__ctas{gap:' . $cta_gap . esc_attr( $cta_gap_unit ) . '}';
-if ( null !== $cta_gap_tablet ) {
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__ctas{gap:' . absint( $cta_gap_tablet ) . esc_attr( $cta_gap_unit ) . ' !important}}';
-}
-$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__ctas{gap:' . $cta_gap_mobile . esc_attr( $cta_gap_unit ) . ' !important}}';
-
 // ── labelFontSize: tablet / mobile overrides ───────────────────────────────
+// These cascade into the child sgs/label InnerBlock which emits .sgs-hero__label.
 if ( null !== $label_font_size_tab ) {
 	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__label{font-size:' . absint( $label_font_size_tab ) . esc_attr( $label_font_size_unit ) . '}}';
 }
@@ -608,9 +580,8 @@ if ( ( ! $is_split && ! empty( $bg_image['url'] ) ) || $is_video || $is_svg_anim
 	$overlay_html  = '<span class="sgs-hero__overlay" style="' . esc_attr( $overlay_style ) . '" aria-hidden="true"></span>';
 }
 
-// CTA buttons are now rendered via sgs/multi-button + sgs/button InnerBlocks.
-// $content is passed by WordPress and contains the rendered InnerBlocks output.
-// Legacy ctaPrimary* / ctaSecondary* attributes are handled by deprecated.js migration.
+// FR-22-6: all content (label, headline, sub-headline, CTAs) is rendered via
+// InnerBlocks. $content is the full serialised child-block output.
 
 // Build badges.
 $badges_html = '';
@@ -639,45 +610,8 @@ if ( ! empty( $badges ) ) {
 	}
 }
 
-// ── Build label (eyebrow) inline styles ────────────────────────────────────
-$label_styles = array();
-if ( $label_font_family ) {
-	// Resolve as a theme.json preset slug or pass through if it contains spaces (custom family).
-	$label_styles[] = 'font-family:var(--wp--preset--font-family--' . esc_attr( preg_replace( '/[^a-z0-9-]/', '', strtolower( $label_font_family ) ) ) . ')';
-}
-if ( null !== $label_font_size ) {
-	$label_styles[] = 'font-size:' . absint( $label_font_size ) . esc_attr( $label_font_size_unit );
-}
-if ( $label_font_weight ) {
-	$label_styles[] = 'font-weight:' . esc_attr( $label_font_weight );
-}
-if ( null !== $label_line_height ) {
-	$label_styles[] = 'line-height:' . esc_attr( (string) $label_line_height ) . esc_attr( $label_lh_unit );
-}
-if ( null !== $label_letter_spacing ) {
-	$label_styles[] = 'letter-spacing:' . esc_attr( (string) $label_letter_spacing ) . esc_attr( $label_ls_unit );
-}
-if ( $label_text_transform ) {
-	$allowed_transforms = array( 'none', 'uppercase', 'lowercase', 'capitalize', 'inherit', 'initial' );
-	if ( in_array( $label_text_transform, $allowed_transforms, true ) ) {
-		$label_styles[] = 'text-transform:' . $label_text_transform;
-	}
-}
-if ( $label_text_decoration ) {
-	$allowed_decorations = array( 'none', 'underline', 'overline', 'line-through', 'inherit', 'initial' );
-	if ( in_array( $label_text_decoration, $allowed_decorations, true ) ) {
-		$label_styles[] = 'text-decoration:' . $label_text_decoration;
-	}
-}
-if ( $label_colour ) {
-	$label_styles[] = 'color:' . sgs_colour_value( $label_colour );
-}
-if ( null !== $label_margin_bottom ) {
-	$label_styles[] = 'margin-bottom:' . absint( $label_margin_bottom ) . esc_attr( $label_mb_unit );
-}
-$label_style_attr = $label_styles ? ' style="' . implode( ';', $label_styles ) . '"' : '';
-
-// ── Build content area ─────────────────────────────────────────────────────
+// ── Build content column wrapper ───────────────────────────────────────────
+// FR-22-6: content column wraps InnerBlocks ($content) directly.
 // Vertical alignment: top → flex-start, center → center, bottom → flex-end.
 $v_align_map = array(
 	'top'    => 'flex-start',
@@ -703,73 +637,10 @@ if ( null !== $content_max_width ) {
 }
 $content_style_attr = ' style="' . implode( ';', $content_styles ) . '"';
 
-$content_html = '<div class="sgs-hero__content"' . $content_style_attr . '>';
-if ( $label ) {
-	$content_html .= '<span class="sgs-hero__label"' . $label_style_attr . '>' . esc_html( $label ) . '</span>';
-}
-if ( $headline ) {
-	$h_classes          = array( 'sgs-hero__headline' );
-	$text_align_mobile  = $attributes['textAlignMobile'] ?? '';
-	$text_align_tablet  = $attributes['textAlignTablet'] ?? '';
-	$text_align_desktop = $attributes['textAlignDesktop'] ?? '';
-
-	if ( $text_align_mobile ) {
-		$h_classes[] = 'sgs-text-align-m-' . $text_align_mobile; }
-	if ( $text_align_tablet ) {
-		$h_classes[] = 'sgs-text-align-t-' . $text_align_tablet; }
-	if ( $text_align_desktop ) {
-		$h_classes[] = 'sgs-text-align-d-' . $text_align_desktop; }
-
-	$h_styles = array();
-	if ( $headline_colour ) {
-		$h_styles[] = 'color:' . sgs_colour_value( $headline_colour ); }
-	$headline_style_attr = $h_styles ? ' style="' . implode( ';', $h_styles ) . '"' : '';
-	$headline_class_attr = ' class="' . esc_attr( implode( ' ', $h_classes ) ) . '"';
-
-	$content_html .= '<h1' . $headline_class_attr . $headline_style_attr . '>' . wp_kses_post( $headline ) . '</h1>';
-}
-if ( $sub_headline ) {
-	$sub_styles = array();
-	if ( $sub_headline_colour ) {
-		$sub_styles[] = 'color:' . sgs_colour_value( $sub_headline_colour );
-	}
-	if ( $sub_headline_font_size ) {
-		$sub_styles[] = 'font-size:' . sgs_font_size_value( $sub_headline_font_size );
-	}
-	if ( $sub_headline_max_width ) {
-		$sub_styles[] = 'max-width:' . absint( $sub_headline_max_width ) . 'px';
-	}
-	// Phase 1: Sub-headline typography extensions.
-	if ( $sub_headline_font_family ) {
-		$sub_styles[] = 'font-family:var(--wp--preset--font-family--' . esc_attr( preg_replace( '/[^a-z0-9-]/', '', strtolower( $sub_headline_font_family ) ) ) . ')';
-	}
-	if ( $sub_headline_font_weight ) {
-		$sub_styles[] = 'font-weight:' . esc_attr( $sub_headline_font_weight );
-	}
-	if ( null !== $sub_headline_line_height ) {
-		$sub_styles[] = 'line-height:' . esc_attr( (string) $sub_headline_line_height ) . esc_attr( $sub_headline_lh_unit );
-	}
-	if ( null !== $sub_headline_letter_spacing ) {
-		$sub_styles[] = 'letter-spacing:' . esc_attr( (string) $sub_headline_letter_spacing ) . esc_attr( $sub_headline_ls_unit );
-	}
-	if ( $sub_headline_text_transform ) {
-		$allowed_transforms = array( 'none', 'uppercase', 'lowercase', 'capitalize', 'inherit', 'initial' );
-		if ( in_array( $sub_headline_text_transform, $allowed_transforms, true ) ) {
-			$sub_styles[] = 'text-transform:' . $sub_headline_text_transform;
-		}
-	}
-	if ( $sub_headline_text_decoration ) {
-		$allowed_decorations = array( 'none', 'underline', 'overline', 'line-through', 'inherit', 'initial' );
-		if ( in_array( $sub_headline_text_decoration, $allowed_decorations, true ) ) {
-			$sub_styles[] = 'text-decoration:' . $sub_headline_text_decoration;
-		}
-	}
-	$sub_style_attr = $sub_styles ? ' style="' . implode( ';', $sub_styles ) . '"' : '';
-	$content_html  .= '<p class="sgs-hero__subheadline"' . $sub_style_attr . '>' . wp_kses_post( $sub_headline ) . '</p>';
-}
-// InnerBlocks output (sgs/multi-button + sgs/button) rendered by WordPress.
-$content_html .= '<div class="sgs-hero__ctas">' . $content . '</div>';
-$content_html .= '</div>';
+// R-22-14: no scalar content rendering. $content = full InnerBlocks output
+// (sgs/label + sgs/heading + sgs/text + sgs/button(s) supplied by converter).
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is WP core InnerBlocks output.
+$content_html = '<div class="sgs-hero__content"' . $content_style_attr . '>' . $content . '</div>';
 
 // ── Build split media area ─────────────────────────────────────────────────
 $media_html = '';

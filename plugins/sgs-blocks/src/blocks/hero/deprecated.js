@@ -3,25 +3,33 @@ import { InnerBlocks } from '@wordpress/block-editor';
 /**
  * Deprecated versions of the SGS Hero block.
  *
- * v4 (FRONT — newest first) — Schema before splitMedia was introduced
- *      (2026-05-05). The block accepted only an image via splitImage. v4
- *      migrates legacy splitImage objects into the new splitMedia unified
- *      slot so existing posts open without "unexpected content" warnings.
+ * Newest first — WordPress walks this array stopping at the first version
+ * whose save() output validates against the stored post_content.
+ *
+ * v6 (FR-22-6 migration, 2026-05-31) — Full content column now InnerBlocks.
+ *      Previous shape: scalar attrs (label, headline, subHeadline) drove
+ *      render.php; only the sgs/multi-button subtree was serialised as
+ *      InnerBlocks. save() was <InnerBlocks.Content /> and post_content
+ *      therefore contained only the sgs/multi-button subtree.
+ *      migrate() converts scalar label/headline/subHeadline into child
+ *      sgs/label + sgs/heading + sgs/text blocks, prepended to the existing
+ *      innerBlocks (the sgs/multi-button subtree).
+ *      R-22-14: no legacy scalar fallback in the new render.php.
+ *
+ * v5 — Schema before ctaGap* attributes were introduced (2026-05-06, H-8).
+ *
+ * v4 — Schema before splitMedia was introduced (2026-05-05). Migrates legacy
+ *      splitImage objects into the new splitMedia unified slot.
  *
  * v3 — Added Phase 1 attribute surface (image controls, inner padding,
- *      sub-headline/label typography, layout grid). No save() change — still
- *      <InnerBlocks.Content />. Attributes are purely additive with
- *      null/default values, so no migration function is required.
+ *      sub-headline/label typography, layout grid). Additive attrs only,
+ *      no migration needed.
  *
- * v2 — Save returned <InnerBlocks.Content /> but lacked the 5 new typography
- *      attributes (headlineFontSizeDesktop, headlineFontSizeTablet,
- *      headlineFontSizeMobile, subHeadlineMaxWidth, splitImageMobileHeight).
- *      No migration needed — new attrs are additive with null defaults.
+ * v2 — Save returned <InnerBlocks.Content /> but lacked 5 new typography
+ *      attributes. Additive attrs, no migration needed.
  *
- * v1 — Fully dynamic block (save returned null). CTA rendering was handled
- *      entirely by render.php using ctaPrimary* / ctaSecondary* attributes.
- *      This migration converts those attributes to sgs/multi-button + sgs/button
- *      InnerBlocks so the new render.php uses $content instead.
+ * v1 — Fully dynamic block (save returned null). Migrates ctaPrimary* /
+ *      ctaSecondary* scalar attrs to sgs/multi-button + sgs/button InnerBlocks.
  */
 
 /**
@@ -136,6 +144,237 @@ function buildInnerBlocksFromCtas( attributes ) {
 
 	return [ [ 'sgs/multi-button', {}, buttons ] ];
 }
+
+// ---------------------------------------------------------------------------
+// v6 — FR-22-6 migration (2026-05-31): full content column → InnerBlocks
+// ---------------------------------------------------------------------------
+
+/**
+ * Full attribute snapshot immediately before the FR-22-6 migration.
+ * This is v5's attrs + the ctaGap* attrs introduced in H-8.
+ * Scalar content attrs (label, headline, subHeadline, ctaPrimary*, ctaSecondary*)
+ * are retained here so WordPress can validate the stored post_content and
+ * migrate() can read them to build the new InnerBlocks.
+ */
+const V6_ATTRIBUTES = {
+	...SHARED_ATTRIBUTES_V3,
+	// Phase 1 image / layout attrs.
+	splitMedia: { type: 'object', default: null },
+	imageObjectFit: { type: 'string', default: 'cover' },
+	imageObjectPosition: { type: 'string', default: 'center center' },
+	imageWidth: { type: 'number', default: null },
+	imageWidthTablet: { type: 'number', default: null },
+	imageWidthMobile: { type: 'number', default: null },
+	imageWidthUnit: { type: 'string', default: '%' },
+	imageHeight: { type: 'number', default: null },
+	imageHeightTablet: { type: 'number', default: null },
+	imageHeightMobile: { type: 'number', default: null },
+	imageHeightUnit: { type: 'string', default: 'px' },
+	imageBorderRadiusTL: { type: 'number', default: 0 },
+	imageBorderRadiusTR: { type: 'number', default: 0 },
+	imageBorderRadiusBR: { type: 'number', default: 0 },
+	imageBorderRadiusBL: { type: 'number', default: 0 },
+	imageBorderRadiusTabletTL: { type: 'number', default: null },
+	imageBorderRadiusTabletTR: { type: 'number', default: null },
+	imageBorderRadiusTabletBR: { type: 'number', default: null },
+	imageBorderRadiusTabletBL: { type: 'number', default: null },
+	imageBorderRadiusMobileTL: { type: 'number', default: null },
+	imageBorderRadiusMobileTR: { type: 'number', default: null },
+	imageBorderRadiusMobileBR: { type: 'number', default: null },
+	imageBorderRadiusMobileBL: { type: 'number', default: null },
+	imageBorderRadiusUnit: { type: 'string', default: 'px' },
+	imageBorderStyle: { type: 'string', default: 'none' },
+	imageBorderWidthTop: { type: 'number', default: 0 },
+	imageBorderWidthRight: { type: 'number', default: 0 },
+	imageBorderWidthBottom: { type: 'number', default: 0 },
+	imageBorderWidthLeft: { type: 'number', default: 0 },
+	imageBorderWidthUnit: { type: 'string', default: 'px' },
+	imageBorderColour: { type: 'string', default: '' },
+	imagePaddingTop: { type: 'number', default: 0 },
+	imagePaddingRight: { type: 'number', default: 0 },
+	imagePaddingBottom: { type: 'number', default: 0 },
+	imagePaddingLeft: { type: 'number', default: 0 },
+	imagePaddingTopTablet: { type: 'number', default: null },
+	imagePaddingRightTablet: { type: 'number', default: null },
+	imagePaddingBottomTablet: { type: 'number', default: null },
+	imagePaddingLeftTablet: { type: 'number', default: null },
+	imagePaddingTopMobile: { type: 'number', default: null },
+	imagePaddingRightMobile: { type: 'number', default: null },
+	imagePaddingBottomMobile: { type: 'number', default: null },
+	imagePaddingLeftMobile: { type: 'number', default: null },
+	imagePaddingUnit: { type: 'string', default: 'px' },
+	mediaBackgroundColour: { type: 'string', default: '' },
+	contentPaddingTop: { type: 'number', default: null },
+	contentPaddingRight: { type: 'number', default: null },
+	contentPaddingBottom: { type: 'number', default: null },
+	contentPaddingLeft: { type: 'number', default: null },
+	contentPaddingTopTablet: { type: 'number', default: null },
+	contentPaddingRightTablet: { type: 'number', default: null },
+	contentPaddingBottomTablet: { type: 'number', default: null },
+	contentPaddingLeftTablet: { type: 'number', default: null },
+	contentPaddingTopMobile: { type: 'number', default: null },
+	contentPaddingRightMobile: { type: 'number', default: null },
+	contentPaddingBottomMobile: { type: 'number', default: null },
+	contentPaddingLeftMobile: { type: 'number', default: null },
+	contentPaddingUnit: { type: 'string', default: 'px' },
+	mediaPaddingTop: { type: 'number', default: null },
+	mediaPaddingRight: { type: 'number', default: null },
+	mediaPaddingBottom: { type: 'number', default: null },
+	mediaPaddingLeft: { type: 'number', default: null },
+	mediaPaddingTopTablet: { type: 'number', default: null },
+	mediaPaddingRightTablet: { type: 'number', default: null },
+	mediaPaddingBottomTablet: { type: 'number', default: null },
+	mediaPaddingLeftTablet: { type: 'number', default: null },
+	mediaPaddingTopMobile: { type: 'number', default: null },
+	mediaPaddingRightMobile: { type: 'number', default: null },
+	mediaPaddingBottomMobile: { type: 'number', default: null },
+	mediaPaddingLeftMobile: { type: 'number', default: null },
+	mediaPaddingUnit: { type: 'string', default: 'px' },
+	subHeadlineFontFamily: { type: 'string', default: '' },
+	subHeadlineFontWeight: { type: 'string', default: '' },
+	subHeadlineLineHeight: { type: 'number', default: null },
+	subHeadlineLineHeightUnit: { type: 'string', default: 'em' },
+	subHeadlineLetterSpacing: { type: 'number', default: null },
+	subHeadlineLetterSpacingUnit: { type: 'string', default: 'px' },
+	subHeadlineTextTransform: { type: 'string', default: '' },
+	subHeadlineTextDecoration: { type: 'string', default: '' },
+	labelFontFamily: { type: 'string', default: '' },
+	labelFontSize: { type: 'number', default: null },
+	labelFontSizeTablet: { type: 'number', default: null },
+	labelFontSizeMobile: { type: 'number', default: null },
+	labelFontSizeUnit: { type: 'string', default: 'px' },
+	labelFontWeight: { type: 'string', default: '600' },
+	labelLineHeight: { type: 'number', default: 1.2 },
+	labelLineHeightUnit: { type: 'string', default: 'em' },
+	labelLetterSpacing: { type: 'number', default: null },
+	labelLetterSpacingUnit: { type: 'string', default: 'em' },
+	labelTextTransform: { type: 'string', default: 'uppercase' },
+	labelTextDecoration: { type: 'string', default: '' },
+	labelColour: { type: 'string', default: '' },
+	labelMarginBottom: { type: 'number', default: 8 },
+	labelMarginBottomUnit: { type: 'string', default: 'px' },
+	splitColumnRatio: { type: 'string', default: '1fr 1fr' },
+	splitColumnRatioTablet: { type: 'string', default: '' },
+	splitColumnRatioMobile: { type: 'string', default: '' },
+	splitGap: { type: 'number', default: 0 },
+	splitGapTablet: { type: 'number', default: null },
+	splitGapMobile: { type: 'number', default: null },
+	splitGapUnit: { type: 'string', default: 'px' },
+	splitContentOrderMobile: { type: 'string', default: 'media-first' },
+	verticalAlignment: { type: 'string', default: 'center' },
+	contentMaxWidth: { type: 'number', default: null },
+	contentMaxWidthTablet: { type: 'number', default: null },
+	contentMaxWidthMobile: { type: 'number', default: null },
+	contentMaxWidthUnit: { type: 'string', default: 'px' },
+	headlineMarginBottom: { type: 'number', default: null },
+	headlineMarginBottomMobile: { type: 'number', default: null },
+	subHeadlineMarginBottom: { type: 'number', default: null },
+	subHeadlineMarginBottomMobile: { type: 'number', default: null },
+	// H-8 ctaGap* attrs.
+	ctaGap: { type: 'integer', default: 12 },
+	ctaGapMobile: { type: 'integer', default: 10 },
+	ctaGapTablet: { type: 'integer' },
+	ctaGapUnit: { type: 'string', default: 'px' },
+};
+
+/**
+ * v6 — FR-22-6 migration (2026-05-31).
+ *
+ * Previous save shape: <InnerBlocks.Content /> — but only the sgs/multi-button
+ * subtree was stored in post_content. Scalar label / headline / subHeadline
+ * were rendered server-side by render.php.
+ *
+ * After this migration: render.php echoes $content (full InnerBlocks output).
+ * migrate() must build sgs/label + sgs/heading + sgs/text blocks from the
+ * scalar attrs and prepend them to the existing innerBlocks (sgs/multi-button
+ * subtree).
+ *
+ * R-22-14: no legacy fallback in the new render.php.
+ */
+const v6 = {
+	attributes: V6_ATTRIBUTES,
+
+	save() {
+		// The pre-migration save was <InnerBlocks.Content /> — exactly the same
+		// as the new shape. WordPress validates the stored post_content (which
+		// only contained sgs/multi-button) against this save() output and passes.
+		return <InnerBlocks.Content />;
+	},
+
+	/**
+	 * Convert scalar content attrs to full InnerBlocks set.
+	 *
+	 * @param {Object} attributes  - Old scalar attributes.
+	 * @param {Array}  innerBlocks - Existing serialised inner blocks
+	 *                               (the sgs/multi-button subtree, may be empty).
+	 * @return {[Object, Array]} Tuple of [newAttributes, newInnerBlocks].
+	 */
+	migrate( attributes, innerBlocks ) {
+		const {
+			label,
+			headline,
+			subHeadline,
+			// Retain all other attrs — they are layout/styling and still used.
+			...rest
+		} = attributes;
+
+		const contentBlocks = [];
+
+		// 1. Eyebrow label → sgs/label.
+		if ( label ) {
+			contentBlocks.push( [
+				'sgs/label',
+				{
+					className: 'sgs-hero__label',
+					content:   label,
+				},
+				[],
+			] );
+		}
+
+		// 2. Headline → sgs/heading (h1).
+		if ( headline ) {
+			contentBlocks.push( [
+				'sgs/heading',
+				{
+					level:       1,
+					className:   'sgs-hero__headline',
+					content:     headline,
+				},
+				[],
+			] );
+		}
+
+		// 3. Sub-headline → sgs/text.
+		if ( subHeadline ) {
+			contentBlocks.push( [
+				'sgs/text',
+				{
+					className: 'sgs-hero__subheadline',
+					text:      subHeadline,
+				},
+				[],
+			] );
+		}
+
+		// 4. Append existing innerBlocks (sgs/multi-button subtree).
+		const newInnerBlocks = [ ...contentBlocks, ...( innerBlocks || [] ) ];
+
+		// Retain scalar content attrs on the migrated block for deprecation-chain
+		// safety — they are no longer read by render.php (R-22-14) but must
+		// survive subsequent round-trips through the deprecation chain.
+		const newAttributes = {
+			...rest,
+			label,
+			headline,
+			subHeadline,
+		};
+
+		return [ newAttributes, newInnerBlocks ];
+	},
+};
+
+// ---------------------------------------------------------------------------
 
 /**
  * v5 — Schema before ctaGap* attributes were introduced (2026-05-06, H-8).
@@ -379,4 +618,4 @@ const v1 = {
 	},
 };
 
-export default [ v5, v4, v3, v2, v1 ];
+export default [ v6, v5, v4, v3, v2, v1 ];
