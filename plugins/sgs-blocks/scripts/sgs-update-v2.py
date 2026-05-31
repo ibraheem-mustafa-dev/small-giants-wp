@@ -165,7 +165,7 @@ def _parent_for_block(block_dir_name: str) -> str | None:
 # excluded — they are operator-managed metadata, not block.json fields.
 _BLOCKS_TRACKED_FIELDS = (
     "title", "category", "type", "description",
-    "has_view_script", "has_render_php", "parent_block",
+    "has_view_script", "has_render_php", "parent_block", "replaces",
 )
 
 # Fields in `block_attributes` that are derived from block.json attribute defs.
@@ -234,6 +234,7 @@ def _index_sgs_block_files(
         )
         block_type = "dynamic" if has_render else "static"
         parent = _parent_for_block(block_dir.name)
+        replaces = data.get("replaces") or None  # None if absent or empty string
         attrs = data.get("attributes", {})
         supports = data.get("supports", {})
 
@@ -241,7 +242,7 @@ def _index_sgs_block_files(
             # In dry-run: count what EXISTS vs what WOULD be inserted / updated
             existing = c.execute(
                 "SELECT title, category, type, description, has_view_script, "
-                "has_render_php, parent_block FROM blocks WHERE slug = ? AND source = 'sgs'",
+                "has_render_php, parent_block, replaces FROM blocks WHERE slug = ? AND source = 'sgs'",
                 (slug,),
             ).fetchone()
             if existing is None:
@@ -249,7 +250,7 @@ def _index_sgs_block_files(
             else:
                 scraped_vals = (
                     title, category, block_type, description,
-                    1 if has_view else 0, 1 if has_render else 0, parent,
+                    1 if has_view else 0, 1 if has_render else 0, parent, replaces,
                 )
                 if tuple(existing) != scraped_vals:
                     updated_blocks += 1
@@ -288,13 +289,13 @@ def _index_sgs_block_files(
             """
             INSERT OR IGNORE INTO blocks
                 (slug, title, category, type, status, description,
-                 has_view_script, has_render_php, parent_block, source, updated_at)
-            VALUES (?, ?, ?, ?, 'built', ?, ?, ?, ?, 'sgs', ?)
+                 has_view_script, has_render_php, parent_block, replaces, source, updated_at)
+            VALUES (?, ?, ?, ?, 'built', ?, ?, ?, ?, ?, 'sgs', ?)
             """,
             (
                 slug, title, category, block_type, description,
                 1 if has_view else 0, 1 if has_render else 0,
-                parent, datetime.now(timezone.utc).isoformat(),
+                parent, replaces, datetime.now(timezone.utc).isoformat(),
             ),
         )
         if result.rowcount:
@@ -303,13 +304,13 @@ def _index_sgs_block_files(
             # Row exists — check for drift and UPDATE if any tracked field changed
             existing = c.execute(
                 "SELECT title, category, type, description, has_view_script, "
-                "has_render_php, parent_block FROM blocks WHERE slug = ? AND source = 'sgs'",
+                "has_render_php, parent_block, replaces FROM blocks WHERE slug = ? AND source = 'sgs'",
                 (slug,),
             ).fetchone()
             if existing is not None:
                 scraped_vals = (
                     title, category, block_type, description,
-                    1 if has_view else 0, 1 if has_render else 0, parent,
+                    1 if has_view else 0, 1 if has_render else 0, parent, replaces,
                 )
                 if tuple(existing) != scraped_vals:
                     c.execute(
@@ -317,13 +318,13 @@ def _index_sgs_block_files(
                         UPDATE blocks
                         SET title = ?, category = ?, type = ?, description = ?,
                             has_view_script = ?, has_render_php = ?, parent_block = ?,
-                            updated_at = ?
+                            replaces = ?, updated_at = ?
                         WHERE slug = ? AND source = 'sgs'
                         """,
                         (
                             title, category, block_type, description,
                             1 if has_view else 0, 1 if has_render else 0, parent,
-                            datetime.now(timezone.utc).isoformat(),
+                            replaces, datetime.now(timezone.utc).isoformat(),
                             slug,
                         ),
                     )
