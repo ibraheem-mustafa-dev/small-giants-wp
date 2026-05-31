@@ -19,7 +19,8 @@ primary_goal: "Verify Wave-2 + A-1 render correctly on the live canary (build + 
 ## MANDATORY READING LIST (read FULLY before any work — Bean directive)
 1. This file.
 2. `.claude/handoff.md` (2026-05-31).
-3. Root `CLAUDE.md` — "Root-cause methodology (MANDATORY)" + the 14 binding rules (R-22-1..14).
+3. `.claude/state.md` — current_phase + db_state + blockers.
+4. Root `CLAUDE.md` — "Root-cause methodology (MANDATORY)" + the 14 binding rules (R-22-1..14).
 4. `git log --oneline -10` + read the 8 commit messages (each carries root-cause + verification).
 5. `.claude/decisions.md` newest entries (A-1; hero/info-box FR-22-6; trust-bar rename; FR-22-18; container per-grid-item correction).
 6. `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` — §0, §FR-22-2/2.5, §FR-22-3, §FR-22-4/4.1, §FR-22-5 (4-destination CSS router), §FR-22-16/17, §6 (R-22-1..14), NEW §FR-22-18 (structural-parity acceptance).
@@ -53,6 +54,37 @@ Build the FULL version next session with clear specs first:
 - **Atomic tags redirect to sgs equivalents via `blocks.replaces`** (Spec 22 §14), NOT static core blocks. Was dead (NULL) → now populated.
 - **Recognition is BEM, not HTML tag** (R-22-2); atomic non-BEM CONTENT tags emit (→ sgs equivalent); only non-content transparent WRAPPER divs dissolve (CSS folds up). Nothing with content is skipped.
 - **FR-22-18 (NEW):** layout/wrapper/logic acceptance = rendered-DOM structural parity (container presence + type + grid-template + child count/type/order + absorbed-attr confirmation), NOT pixel-diff. Pixel-diff is informational-only this phase (can run + share, NEVER use as decision evidence). Amends R-22-4's scope.
+
+## Anti-pattern STOP catalogue — carried forward + extended per D101 (if you find yourself doing X, STOP)
+
+| # | If you find yourself | STOP — because |
+|---|---|---|
+| 1 | Grep-skimming Spec 22 instead of reading sections end-to-end | Cornerstone §FR-22-2/2.1/2.2/2.5 defines `equivalent_block_for()`. READ FULLY. |
+| 2 | Referencing `slot_synonyms`/`legacy_role_lookup` as live tables | DROPPED D99. Live = `slots` (composite PK `(slot_name,scope)`, 92 element + 4 section) + `roles` (20). |
+| 3 | Referencing `slot_synonyms.role_classification` column | Retired D99 → `roles` table (`classification='content-bearing'`). |
+| 4 | Treating `.claude/` + `.agents/` sgs-framework.db as two DBs | Same physical file (NTFS junction). Real two DBs = sgs-framework.db + ui-ux-pro-max.db. |
+| 5 | Building a bespoke SGS block per mockup section | R-22-9 violation. ~67 reusable primitives; section variation via slots + FR-22-4 default. |
+| 6 | Adding `if(empty($content)&&!empty($legacy_attr)){scalar render}` to a migrated render.php | R-22-14 violation. Backwards-compat = roster migration + WP-CLI batch, never per-block fallback. |
+| 7 | Batching multiple DB row changes then measuring once | Row-by-row gate: ship one + measure between each. |
+| 8 | Routing a section-root BEM class to a content-block primitive | Section roots → sgs/container (or FR-22-4 default). |
+| 9 | Proposing a fix-shape without reading the relevant Spec section + flow + stages end-to-end | State the architectural primitive in plain English FIRST. |
+| 10 | Acting on a doc/handoff claim without grep-verifying against the codebase | 60s find/grep/ls BEFORE acting. |
+| 11 | Using `sgs-db.py sql` for INSERT/UPDATE/DELETE | Wrapper is read-only (silently no-ops). Use direct `sqlite3` for writes. |
+| 12 | Shipping a fix without tracing the EXACT emission path of the canary instance | Trace which slug RECEIVES the affected attr now, not which COULD. |
+| 13 | Treating the literal-slug-match voter path as live | Retired D107. Voter queries `blocks.tier='class-section'` (declared via `supports.sgs.is_section_root`). |
+| 14 | Re-enabling the reverted XS-3 walker condition | Resolved by FR-22-4.1 fold (this session). Don't re-derive the old predicate. |
+| 15 | Batching `block_composition`/DB-row changes then measuring once | Ship one row at a time with measurement between. |
+| 16 | Hardcoding `__products`/`__cards`/generic BEM slot → specific block slug in Python | R-22-1 violation. Route via DB; fall through to sgs/container default. |
+| 17 | Treating "code reverted" as "all related updates deferred" when applying docs | Distinguish: (a) code reverted, (b) DB rows persisted, (c) shipped tasks unaffected. Map blast radius first. |
+| 18 | Accepting a subagent threshold/result without sanity-checking vs architectural intuition | If count is wildly off the expected roster, the threshold is wrong — fix before accepting. |
+| 19 | Iterating inline on a failing fix under context pressure when measurement shows regression | Roll back fast; re-tune across a session boundary with evidence baked in. |
+| 20 | Trusting a per-section pixel-diff WIN without checking live-DOM textLen | An EMPTY section scores a FALSE win (empty=shorter crop=more matching bg). Verify `el.innerText.trim().length` + element counts (R-22-11). |
+| 21 | Assuming the walker runs FR-22-2 content-routing automatically | Confirm leaf content-routing + the fold actually fire; verify emitted markup. |
+| 22 | Treating a renamed/migrated block as "done" without verifying its render mode | trust-bar (renamed) still reads scalar `items` — a HYBRID needing FR-22-6 before the section-routing renders. |
+| 23 | Routing pack-size/option pills to `sgs/label` (or `sgs/button`) | Pills are an exclusive interactive picker → a FUTURE dedicated atomic pill block (Bean), NOT label/button. |
+| 24 | Trusting a per-section pixel-diff change (either direction) over live DOM | Pixel-diff mis-scores structural change BOTH ways (empty=false win, reflowed-correct=false loss). FR-22-18: structural parity from rendered HTML is the gate; pixel-diff informational-only this phase. |
+
+(STOP #25-#29 = THIS session's additions, in the Mistake-analysis table below.)
 
 ## Mistake analysis — what went wrong + pre-emptive fixes (Bean directive)
 | Mistake | Root cause | Pre-emptive fix (every session) |
