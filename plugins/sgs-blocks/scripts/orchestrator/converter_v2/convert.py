@@ -1667,19 +1667,47 @@ def walk(
     # ---- Universal path — BEM → DB → emit ----
     slug = db.resolve_slug_from_bem(sgs_classes)  # FR-22-1 with multi-class disambiguation
 
-    # FR-22-11 pass-through, scoped to NON-top-level only.
-    # When slug is None AND is_top_level=True we must still wrap the section
-    # in sgs/container (FR-22-4 invariant: every top-level section is based on
-    # sgs/container). Falling through to exception 3 below handles that case;
-    # the wrap function accepts slug=None and emits walked children as direct
-    # container InnerBlocks. Truly transparent pass-through (walk_passthrough)
-    # only applies to non-top-level slug-None nodes per FR-22-11.
+    # FR-22-4.1 leaf-with-element-children guard (2026-05-31, D115 blind-spot fix).
+    # A node that resolves to a LEAF block (sgs/text, sgs/label, sgs/icon, …) renders
+    # from a scalar content attribute and CANNOT hold structural children. When such a
+    # node has child Tags carrying their own sgs- BEM classes, the resolution is a
+    # MIS-RESOLUTION (the children would be swallowed) — treat it as a slug-None
+    # wrapper instead so §FR-22-4.1 gives it its own sgs/container holding the real
+    # child blocks. Examples: sgs-trust-bar__badge resolves to sgs/label via a slot
+    # alias but is a flex container of sgs/icon + sgs/text; sgs-product-card__body
+    # resolves to sgs/text but wraps heading/price/CTA. Inline rich-text children
+    # (<strong>, <a> with NO sgs- class) do NOT trigger this — they are valid leaf
+    # content. This is the universal mechanism (R-22-9) the D115 handoff said XS-3
+    # must be EXTENDED to cover (the slug=None guard alone never caught leaf
+    # mis-resolution). Council-validated 2026-05-31.
+    if (
+        slug is not None
+        and not is_top_level
+        and db.get_block_composition_role(slug) == "leaf"
+        and any(
+            isinstance(c, Tag)
+            and any(cl.startswith("sgs-") for cl in (c.get("class", []) or []))
+            for c in node.children
+        )
+    ):
+        _trace("walker_branch_taken", branch="leaf_misresolution_guard",
+               node_classes=classes, depth=depth, resolved_leaf=slug,
+               reason="leaf block has sgs-classed element children — treat as wrapper container")
+        slug = None
+
+    # FR-22-4.1 universal wrapper resolution (2026-05-31), scoped to NON-top-level.
+    # A slug-None node that carries an sgs- BEM class is NEVER dropped: emit it as its
+    # own neutral sgs/container preserving its className, so its deployed CSS (incl.
+    # grid/flex layout) applies, and recurse its children. Truly transparent NON-sgs
+    # wrappers still pass through per FR-22-11 (spec §FR-22-11 scope clarification).
+    # Supersedes the _is_layout_bearing_wrapper depth gate + the walk_passthrough-drop
+    # for sgs-classed nodes (council-validated 2026-05-31; closes the PASS-test-(a)
+    # "no sgs- wrapper dropped" violation).
+    # When slug is None AND is_top_level=True the section still wraps in sgs/container
+    # via exception 3 below (FR-22-4 invariant: every top-level section is sgs/container).
     if slug is None and not is_top_level:
-        # A1 (Spec 23 FR-23-6): a slug-None wrapper that owns a grid/flex layout is
-        # NOT transparent — emit it as a neutral sgs/container preserving its class
-        # so the deployed CSS reproduces the layout, rather than dissolving it.
-        if _is_layout_bearing_wrapper(node, classes, css_rules, depth):
-            return _emit_layout_container(node, classes, sgs_classes, css_rules, depth, variation_buf)
+        if sgs_classes:
+            return _emit_wrapper_container(node, classes, sgs_classes, css_rules, depth, variation_buf)
         return walk_passthrough(node, css_rules, depth, variation_buf)
 
     # When slug is None at top level, skip attr-lifting + root-supports-lift
@@ -1953,7 +1981,7 @@ def _is_layout_bearing_wrapper(node: "Tag", classes: list[str], css_rules: dict,
     return has_css
 
 
-def _emit_layout_container(
+def _emit_wrapper_container(
     node: "Tag",
     classes: list[str],
     sgs_classes: list[str],
@@ -1961,14 +1989,23 @@ def _emit_layout_container(
     depth: int,
     variation_buf: list[str] | None,
 ) -> str:
-    """Emit a slug-None layout wrapper as a neutral sgs/container (A1, className-only).
+    """Emit a slug-None sgs-classed wrapper as a neutral sgs/container (§FR-22-4.1).
 
-    Preserves the wrapper's BEM className so the deployed CSS rule (display + flex/grid
-    direction + align + gap, etc.) reproduces the layout. sgs/container is
-    neutral-by-default (Spec 23 B2+B3 — no gap/width/layout/inline emitted unless set),
-    so it adds no class or inline style that could fight the deployed rule. Children
-    recurse as InnerBlocks. Routes through the FR-22-4 'sgs/container' primitive (same
-    literal as exception 3) — not a new routing branch.
+    The universal resolution for any sgs-classed DOM wrapper that does not resolve to
+    a registered block: it is NEVER dropped — it becomes its own neutral sgs/container
+    preserving its BEM className, so the deployed CSS rule (display + flex/grid
+    direction + grid-template-columns + align + gap, etc.) reproduces its layout, and
+    its children recurse as InnerBlocks. sgs/container is neutral-by-default (Spec 23
+    B2+B3 — no gap/width/layout/inline emitted unless set), so it adds no class or
+    inline style that could fight the deployed rule. Routes through the FR-22-4
+    'sgs/container' primitive (same literal as exception 3) — not a new routing branch.
+
+    Renamed from _emit_layout_container 2026-05-31 (§FR-22-4.1): it is no longer gated
+    to grid/flex "layout-bearing" wrappers — every sgs-classed slug-None wrapper routes
+    here so none is dropped (PASS-test (a)). Grid layout is preserved via the className
+    CSS route (collect_css_for_classes → variation_buf); native grid-attr lifting
+    (gridTemplateColumns onto the block attrs) is a deferred Phase-2 editability
+    enhancement — it does not change the rendered output (R-22-11).
     """
     css = collect_css_for_classes(classes, css_rules)
     if css and variation_buf is not None:
@@ -1978,7 +2015,7 @@ def _emit_layout_container(
         result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
         if result:
             children_markup.append(result)
-    _trace("walker_branch_taken", branch="layout_container",
+    _trace("walker_branch_taken", branch="wrapper_container",
            node_classes=classes, depth=depth)
     return emit_wp_block("sgs/container", {"className": " ".join(sgs_classes), "htmlTag": "div"}, children_markup)
 
