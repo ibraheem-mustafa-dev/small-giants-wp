@@ -116,7 +116,7 @@
     "sgs/team-member": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
     "sgs/testimonial": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
     "sgs/testimonial-slider": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
-    "sgs/trust-badges": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/trust-bar": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
     "sgs/whatsapp-cta": "No snapshot needed: save returns null (sgs_db_type=dynamic)"
   }
 }

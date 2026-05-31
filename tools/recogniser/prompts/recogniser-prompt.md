@@ -126,7 +126,7 @@ glyph (house, tick, truck, star) inside a circular badge with a short
 label beside it. No headline, no description, no CTA. Class signature
 includes `trust-bar` / `trust-badge` / `trust-icon-circle`.
 
-This is `sgs/trust-badges`, NOT `sgs/notice-banner` (single-row strip),
+This is `sgs/trust-bar`, NOT `sgs/notice-banner` (single-row strip),
 `sgs/feature-grid` (icon + heading + paragraph cards), or `sgs/icon-block`
 (single icon). Map each SVG to its Lucide name by intent: house/home
 glyph → `home`, check/tick → `check`, truck/lorry → `truck`, star →
@@ -139,7 +139,7 @@ Output:
 {
   "section_id": "trust-bar",
   "match": {
-    "block_name": "sgs/trust-badges",
+    "block_name": "sgs/trust-bar",
     "confidence": 0.96,
     "tier": "full",
     "extracted_attrs": {
@@ -256,7 +256,7 @@ Output:
    than wrapping in `core/paragraph`.
 8. **Trust badges row** — when a section is a horizontal row of 3+
    icon+label pairs (SVG icons or emoji icons) with no headline,
-   description, or CTA, match `sgs/trust-badges` with `tier=full`.
+   description, or CTA, match `sgs/trust-bar` with `tier=full`.
    Extract each pair into the `items` array as
    `{icon, label, pending: false}`. Map common SVG iconography to
    Lucide names by intent: a house/home glyph → `"home"`, a check/tick
@@ -275,5 +275,5 @@ Output:
 - `sgs/testimonial` -- 2-4 column quote/avatar/rating cards
 - `sgs/feature-grid` -- 2-6 column icon + heading + paragraph cards
 - `sgs/notice-banner` -- single-row icon + message strip (single message, NOT trust bars)
-- `sgs/trust-badges` -- horizontal row of 3+ icon+label pairs (trust-bar sections)
+- `sgs/trust-bar` -- horizontal row of 3+ icon+label pairs (trust-bar sections)
 - `sgs/icon-block` -- single icon with optional label/link

@@ -101,7 +101,7 @@ rm sgs-deploy.tar
 | Testimonial Slider | Deployed |
 | Heritage Strip | Deployed |
 | Brand Strip | Deployed |
-| Trust Badges | Deployed (merged certification-bar capability + auto-scroll 2026-05-29 D95 — badgeStyle variants: icon-circle (default), text-only, image-badge; auto-scroll marquee when items overflow columns) |
+| Trust Bar | Deployed (merged certification-bar capability + auto-scroll 2026-05-29 D95 — badgeStyle variants: icon-circle (default), text-only, image-badge; auto-scroll marquee when items overflow columns. Renamed from Trust Badges 2026-05-31.) |
 | Notice Banner | Deployed |
 | WhatsApp CTA | Deployed |
 | Accordion + Accordion Item | Deployed |
