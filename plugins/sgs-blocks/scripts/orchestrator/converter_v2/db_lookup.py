@@ -2186,34 +2186,29 @@ def emit_sgs_container_wrapping(
     # then optional CSS.
     # When slug is None (top-level FR-22-11 pass-through): children become direct
     # InnerBlocks of the container (no synthetic inner block emitted).
-    container_parts: list[str] = []
+    container_children: list[str] = []
     if slug is not None:
         inner_markup = _emit_wp_block_markup(slug, attrs, children_markup)
-        container_parts.append(inner_markup)
+        container_children.append(inner_markup)
     else:
-        container_parts.extend(c for c in children_markup if c)
-    if css and css.strip():
-        container_parts.append(f"<style>{css.strip()}</style>")
-    container_inner = "\n".join(container_parts)
+        container_children.extend(c for c in children_markup if c)
 
-    # Wrap in sgs/container (FR-22-4: every top-level section is based on sgs/container).
-    # The top-level section wrapper is ALWAYS full-width (widthMode='full'): a non-nested
-    # section container must span the full viewport so its inner block's background fills
-    # the whole section width, while content is constrained by the inner block's own
-    # content-width logic. Without widthMode='full' the wrapper renders at WP content-size
-    # (~780px) with auto side-margins — the section then appears in a centred column and
-    # its background stops at content width (Bean 2026-06-02 class-section regression;
-    # universal, not class-section-gated, because trust-bar etc. are tier='block' yet
-    # are still full-width sections). The className post-process
-    # (guarantee_section_className) MERGES the section BEM class on top of these attrs,
-    # so widthMode is preserved.
-    outer_attrs = _json.dumps({"widthMode": "full"}, separators=(",", ":"), ensure_ascii=False)
-    wrapper_div = (
-        f'<div class="wp-block-sgs-container">\n'
-        f"{container_inner}\n"
-        f"</div>"
-    )
-    return f"<!-- wp:sgs/container {outer_attrs} -->\n{wrapper_div}\n<!-- /wp:sgs/container -->"
+    # Emit sgs/container with its children DIRECTLY between the block comments — NO static
+    # <div class="wp-block-sgs-container"> wrapper and NO inline <style>. This mirrors
+    # _emit_section_container (the slug-None path) which is already correct.
+    #   * sgs/container's save() is <InnerBlocks.Content/> (no wrapper div). A static div in
+    #     the saved markup fails WP block validation → "This block contains unexpected or
+    #     invalid content" on EVERY cloned container in the editor (Bean 2026-06-02), AND
+    #     adds an extra nesting level that breaks grid-on-section (the grid's items stop
+    #     being its direct children).
+    #   * The section's scoped CSS is already collected into variation_buf by the caller
+    #     (walk: collect_css_for_classes → variation_buf.append) and deployed at Stage 10,
+    #     so embedding an inline <style> here would only duplicate it.
+    # FR-22-4: every top-level section is full-width (widthMode='full') so its background
+    # fills the viewport; content is constrained by the inner block's own content-width
+    # logic. The className post-process (guarantee_section_className) MERGES the section BEM
+    # class on top, so widthMode is preserved.
+    return _emit_wp_block_markup("sgs/container", {"widthMode": "full"}, container_children)
 
 
 # ----------------------------------------------------------------------------
