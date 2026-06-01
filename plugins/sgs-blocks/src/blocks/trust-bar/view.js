@@ -17,10 +17,10 @@
  * Loaded as a viewScriptModule (ES module, frontend only — never runs in editor).
  */
 
-const wrappers = document.querySelectorAll( '.sgs-trust-badges[data-auto-scroll="true"]' );
+const wrappers = document.querySelectorAll( '.sgs-trust-bar[data-auto-scroll="true"]' );
 
 wrappers.forEach( ( wrapper ) => {
-	const track = wrapper.querySelector( '.sgs-trust-badges__track' );
+	const track = wrapper.querySelector( '.sgs-trust-bar__track' );
 
 	if ( ! track || track.children.length === 0 ) {
 		return;
@@ -87,7 +87,7 @@ wrappers.forEach( ( wrapper ) => {
 			const clone = track.cloneNode( true );
 			clone.setAttribute( 'aria-hidden', 'true' );
 			// Remove the ready class from clones — only the original gets it.
-			clone.classList.remove( 'sgs-trust-badges__track--ready' );
+			clone.classList.remove( 'sgs-trust-bar__track--ready' );
 			wrapper.appendChild( clone );
 		}
 
@@ -95,7 +95,7 @@ wrappers.forEach( ( wrapper ) => {
 		track.style.setProperty( '--sgs-scroll-distance', `${ scrollDistance }px` );
 
 		// Start animation only after clones are in the DOM.
-		track.classList.add( 'sgs-trust-badges__track--ready' );
+		track.classList.add( 'sgs-trust-bar__track--ready' );
 	}
 
 	// Pause on hover (controllable via block attribute).

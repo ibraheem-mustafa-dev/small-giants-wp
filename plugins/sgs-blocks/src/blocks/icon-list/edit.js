@@ -1,39 +1,8 @@
 import { __ } from "@wordpress/i18n";
 import { useBlockProps, InspectorControls } from "@wordpress/block-editor";
-import {
-  PanelBody,
-  SelectControl,
-  TextControl,
-  Button,
-  Icon,
-} from "@wordpress/components";
-import {
-  check,
-  starFilled,
-  arrowRight,
-  shipping,
-  shield,
-  payment,
-  globe,
-  people,
-} from "@wordpress/icons";
-import { DesignTokenPicker } from "../../components";
+import { PanelBody, SelectControl, TextControl, Button } from "@wordpress/components";
+import { DesignTokenPicker, IconPicker, IconPreview } from "../../components";
 import { colourVar, spacingVar } from "../../utils";
-
-const ICON_OPTIONS = [
-  { label: __("Tick", "sgs-blocks"), value: "check", icon: check },
-  { label: __("Star", "sgs-blocks"), value: "star-filled", icon: starFilled },
-  { label: __("Arrow", "sgs-blocks"), value: "arrow-right", icon: arrowRight },
-  { label: __("Delivery", "sgs-blocks"), value: "shipping", icon: shipping },
-  { label: __("Shield", "sgs-blocks"), value: "shield", icon: shield },
-  { label: __("Payment", "sgs-blocks"), value: "payment", icon: payment },
-  { label: __("Globe", "sgs-blocks"), value: "globe", icon: globe },
-  { label: __("People", "sgs-blocks"), value: "people", icon: people },
-];
-
-const ICON_MAP = Object.fromEntries(
-  ICON_OPTIONS.map((opt) => [opt.value, opt.icon]),
-);
 
 const ICON_SIZE_OPTIONS = [
   { label: __("Small", "sgs-blocks"), value: "small" },
@@ -48,11 +17,37 @@ const GAP_OPTIONS = [
   { label: __("Spacious", "sgs-blocks"), value: "40" },
 ];
 
-function ItemEditor({ item, defaultIcon, onChange, onRemove }) {
-  const update = (key, value) => {
-    onChange({ ...item, [key]: value });
-  };
+// Legacy per-item slug → Lucide name (for items authored before the visual picker).
+const LEGACY_ICON_MAP = {
+  check: "check",
+  "star-filled": "star",
+  "arrow-right": "arrow-right",
+  shipping: "truck",
+  shield: "shield",
+  payment: "credit-card",
+  globe: "globe",
+  people: "users",
+};
 
+/**
+ * Resolve an item's icon to a { source, name } pair, migrating legacy items.
+ *
+ * @param {Object} item            List item.
+ * @param {Object} fallback        Default { source, name } when the item has none.
+ * @return {{source:string,name:string}} Resolved icon.
+ */
+function resolveItemIcon(item, fallback) {
+  if (item.iconSource) {
+    return { source: item.iconSource, name: item.iconName || fallback.name };
+  }
+  if (item.icon) {
+    return { source: "lucide", name: LEGACY_ICON_MAP[item.icon] || item.icon };
+  }
+  return fallback;
+}
+
+function ItemEditor({ item, fallback, onChange, onRemove }) {
+  const resolved = resolveItemIcon(item, fallback);
   return (
     <div
       className="sgs-icon-list-item-editor"
@@ -63,20 +58,17 @@ function ItemEditor({ item, defaultIcon, onChange, onRemove }) {
         marginBottom: "12px",
       }}
     >
-      <SelectControl
+      <IconPicker
         label={__("Icon", "sgs-blocks")}
-        value={item.icon || defaultIcon}
-        options={ICON_OPTIONS.map((opt) => ({
-          label: opt.label,
-          value: opt.value,
-        }))}
-        onChange={(val) => update("icon", val)}
-        __nextHasNoMarginBottom
+        value={resolved}
+        onChange={({ source, name }) =>
+          onChange({ ...item, iconSource: source, iconName: name, icon: undefined })
+        }
       />
       <TextControl
         label={__("Text", "sgs-blocks")}
         value={item.text || ""}
-        onChange={(val) => update("text", val)}
+        onChange={(val) => onChange({ ...item, text: val })}
         __nextHasNoMarginBottom
       />
       <Button
@@ -95,28 +87,26 @@ function ItemEditor({ item, defaultIcon, onChange, onRemove }) {
 export default function Edit({ attributes, setAttributes }) {
   const {
     items,
-    icon: defaultIcon,
+    icon: defaultIconName,
+    defaultIconSource,
     iconColour,
     iconSize,
     textColour,
     gap,
   } = attributes;
 
+  const fallback = {
+    source: defaultIconSource || "lucide",
+    name: defaultIconName || "check",
+  };
+
   const blockProps = useBlockProps({
     className: `sgs-icon-list sgs-icon-list--icon-${iconSize}`,
   });
 
-  const iconStyle = {
-    color: colourVar(iconColour) || undefined,
-  };
-
-  const textStyle = {
-    color: colourVar(textColour) || undefined,
-  };
-
-  const listStyle = {
-    gap: spacingVar(gap) || undefined,
-  };
+  const iconStyle = { color: colourVar(iconColour) || undefined };
+  const textStyle = { color: colourVar(textColour) || undefined };
+  const listStyle = { gap: spacingVar(gap) || undefined };
 
   const updateItem = (index, updatedItem) => {
     const updated = [...items];
@@ -125,14 +115,15 @@ export default function Edit({ attributes, setAttributes }) {
   };
 
   const removeItem = (index) => {
-    setAttributes({
-      items: items.filter((_, i) => i !== index),
-    });
+    setAttributes({ items: items.filter((_, i) => i !== index) });
   };
 
   const addItem = () => {
     setAttributes({
-      items: [...items, { icon: defaultIcon, text: "" }],
+      items: [
+        ...items,
+        { iconSource: fallback.source, iconName: fallback.name, text: "" },
+      ],
     });
   };
 
@@ -144,7 +135,7 @@ export default function Edit({ attributes, setAttributes }) {
             <ItemEditor
               key={index}
               item={item}
-              defaultIcon={defaultIcon}
+              fallback={fallback}
               onChange={(updated) => updateItem(index, updated)}
               onRemove={() => removeItem(index)}
             />
@@ -155,15 +146,12 @@ export default function Edit({ attributes, setAttributes }) {
         </PanelBody>
 
         <PanelBody title={__("Appearance", "sgs-blocks")} initialOpen={false}>
-          <SelectControl
+          <IconPicker
             label={__("Default icon", "sgs-blocks")}
-            value={defaultIcon}
-            options={ICON_OPTIONS.map((opt) => ({
-              label: opt.label,
-              value: opt.value,
-            }))}
-            onChange={(val) => setAttributes({ icon: val })}
-            __nextHasNoMarginBottom
+            value={fallback}
+            onChange={({ source, name }) =>
+              setAttributes({ defaultIconSource: source, icon: name })
+            }
           />
           <SelectControl
             label={__("Icon size", "sgs-blocks")}
@@ -197,7 +185,7 @@ export default function Edit({ attributes, setAttributes }) {
 
       <ul {...blockProps} style={{ ...blockProps.style, ...listStyle }}>
         {items.map((item, index) => {
-          const itemIcon = item.icon || defaultIcon;
+          const resolved = resolveItemIcon(item, fallback);
           return (
             <li key={index} className="sgs-icon-list__item">
               <span
@@ -205,9 +193,7 @@ export default function Edit({ attributes, setAttributes }) {
                 style={iconStyle}
                 aria-hidden="true"
               >
-                {ICON_MAP[itemIcon] && (
-                  <Icon icon={ICON_MAP[itemIcon]} size={20} />
-                )}
+                <IconPreview source={resolved.source} name={resolved.name} size={20} />
               </span>
               <span className="sgs-icon-list__text" style={textStyle}>
                 {item.text}

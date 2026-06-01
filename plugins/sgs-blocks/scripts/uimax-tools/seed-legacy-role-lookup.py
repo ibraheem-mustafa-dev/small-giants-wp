@@ -42,10 +42,11 @@ CREATE TABLE IF NOT EXISTS legacy_role_lookup (
 # Spec 12 §8 + Spec 15 §1.1 (cross-platform output + external source ingestion).
 ENTRIES: list[tuple[str, str, str]] = [
     ("hero",                   "sgs/hero",                 "Universal hero section"),
-    # 2026-05-25 D72: trust-bar legacy aliases removed. Block retired in favour
-    # of universal-nesting (sgs/container + sgs/icon-list for badges, or
-    # sgs/card-grid + sgs/counter for counters). Section class "sgs-trust-bar"
-    # now falls to normal route and emits sgs/container with className preserved.
+    # 2026-05-25 D72: old stat-counter trust-bar block retired. Its section class
+    # entries were removed from this seed. DB rows for "trust-bar" and "trust-badges"
+    # routing to sgs/trust-bar were added directly to the DB (not via this seed).
+    # NB: sgs/trust-bar is the renamed trust-badges block (2026-05-31); the section
+    # class ".sgs-trust-bar" now correctly routes to sgs/trust-bar via DB lookup.
     ("featured-product",       "sgs/featured-product",     "Featured / hero product block"),
     ("brand-story",            "sgs/info-box",             "Brand narrative section"),
     ("ingredients",            "sgs/feature-grid",         "Ingredient/feature grid"),

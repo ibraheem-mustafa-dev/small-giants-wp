@@ -1,11 +1,10 @@
 import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
+	useInnerBlocksProps,
 	InspectorControls,
-	InnerBlocks,
 	MediaUpload,
 	MediaUploadCheck,
-	RichText,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -21,7 +20,6 @@ import {
 } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar, fontSizeVar } from '../../utils';
 
 // ── Phase 1 constant options ─────────────────────────────────────────────────
 
@@ -131,10 +129,18 @@ function RRangeControl( { label, attrDesktop, attrTablet, attrMobile, attributes
 	);
 }
 
-const CTA_TEMPLATE = [
+/**
+ * FR-22-6: full content column template.
+ * Produces: eyebrow label → headline (h1) → sub-headline paragraph → CTA buttons.
+ * Converter supplies sgs/label + sgs/heading + sgs/text + sgs/multi-button.
+ */
+const HERO_CONTENT_TEMPLATE = [
+	[ 'sgs/label', { className: 'sgs-hero__label', content: __( 'Eyebrow label', 'sgs-blocks' ) } ],
+	[ 'sgs/heading', { level: 1, className: 'sgs-hero__headline', content: __( 'Your hero headline', 'sgs-blocks' ) } ],
+	[ 'sgs/text', { className: 'sgs-hero__subheadline', text: __( 'Supporting sub-headline text goes here.', 'sgs-blocks' ) } ],
 	[ 'sgs/multi-button', {}, [
-		[ 'sgs/button', { inheritStyle: 'primary', label: 'Primary Action' } ],
-		[ 'sgs/button', { inheritStyle: 'secondary', label: 'Secondary Action' } ],
+		[ 'sgs/button', { inheritStyle: 'primary', label: __( 'Primary Action', 'sgs-blocks' ) } ],
+		[ 'sgs/button', { inheritStyle: 'secondary', label: __( 'Secondary Action', 'sgs-blocks' ) } ],
 	] ],
 ];
 
@@ -233,8 +239,6 @@ const FONT_SIZE_OPTIONS = [
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		variant,
-		headline,
-		subHeadline,
 		splitImageBleed,
 		alignment,
 		backgroundImage,
@@ -336,7 +340,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	const isCustomRatio = ! COLUMN_RATIO_PRESETS.some(
 		( p ) => p.value !== 'custom' && p.value === splitColumnRatio
 	);
-	const hasLabel = !! attributes.label;
 
 	const isSplit = variant === 'split';
 	const isVideo = variant === 'video';
@@ -359,6 +362,15 @@ export default function Edit( { attributes, setAttributes } ) {
 	].join( ' ' );
 
 	const blockProps = useBlockProps( { className, style: wrapperStyle } );
+
+	// FR-22-6: content column uses InnerBlocks (label + heading + text + buttons).
+	const innerBlocksProps = useInnerBlocksProps(
+		{ className: 'sgs-hero__content' },
+		{
+			template: HERO_CONTENT_TEMPLATE,
+			templateLock: false,
+		}
+	);
 
 	const updateBadge = ( index, updatedBadge ) => {
 		const updated = [ ...badges ];
@@ -511,9 +523,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				{/* ── 3. Eyebrow Label (only when label is set) ── */}
-				{ hasLabel && (
-					<PanelBody title={ __( 'Eyebrow Label', 'sgs-blocks' ) } initialOpen={ false }>
+				{/* ── 3. Eyebrow Label typography overrides ── */}
+				<PanelBody title={ __( 'Eyebrow Label', 'sgs-blocks' ) } initialOpen={ false }>
 						<DesignTokenPicker label={ __( 'Colour', 'sgs-blocks' ) } value={ labelColour } onChange={ ( val ) => setAttributes( { labelColour: val } ) } />
 						<RRangeControl label={ __( 'Font size', 'sgs-blocks' ) } attrDesktop="labelFontSize" attrTablet="labelFontSizeTablet" attrMobile="labelFontSizeMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 72 } step={ 1 } />
 						<SelectControl label={ __( 'Font size unit', 'sgs-blocks' ) } value={ labelFontSizeUnit || 'px' } options={ UNIT_PX_EM_REM } onChange={ ( val ) => setAttributes( { labelFontSizeUnit: val } ) } __nextHasNoMarginBottom />
@@ -528,7 +539,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						<RangeControl label={ __( 'Margin bottom', 'sgs-blocks' ) } value={ labelMarginBottom || 0 } onChange={ ( val ) => setAttributes( { labelMarginBottom: val } ) } min={ 0 } max={ 80 } step={ 1 } __nextHasNoMarginBottom />
 						<SelectControl label={ __( 'Margin bottom unit', 'sgs-blocks' ) } value={ labelMarginBottomUnit || 'px' } options={ UNIT_PX_EM_REM } onChange={ ( val ) => setAttributes( { labelMarginBottomUnit: val } ) } __nextHasNoMarginBottom />
 					</PanelBody>
-				) }
 
 				{/* ── 4. Headline (h1) ── */}
 				<PanelBody title={ __( 'Headline (h1)', 'sgs-blocks' ) } initialOpen={ false }>
@@ -1194,53 +1204,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				) }
 
-				<div className="sgs-hero__content">
-					<RichText
-						tagName="h1"
-						className="sgs-hero__headline"
-						value={ headline }
-						onChange={ ( val ) =>
-							setAttributes( { headline: val } )
-						}
-						placeholder={ __(
-							'Write your headline…',
-							'sgs-blocks'
-						) }
-						style={ {
-							color: colourVar( headlineColour ) || undefined,
-						} }
-					/>
-					<RichText
-						tagName="p"
-						className="sgs-hero__subheadline"
-						value={ subHeadline }
-						onChange={ ( val ) =>
-							setAttributes( { subHeadline: val } )
-						}
-						placeholder={ __(
-							'Supporting text…',
-							'sgs-blocks'
-						) }
-						style={ {
-							color:
-								colourVar( subHeadlineColour ) || undefined,
-							fontSize:
-								fontSizeVar( subHeadlineFontSize ) ||
-								undefined,
-							maxWidth: subHeadlineMaxWidth
-								? subHeadlineMaxWidth + 'px'
-								: undefined,
-						} }
-					/>
-
-					<div className="sgs-hero__ctas">
-						<InnerBlocks
-							template={ CTA_TEMPLATE }
-							templateLock={ false }
-							allowedBlocks={ [ 'sgs/multi-button' ] }
-						/>
-					</div>
-				</div>
+				{ /* FR-22-6: content column is the InnerBlocks slot (label + heading + text + buttons). */ }
+				<div { ...innerBlocksProps } />
 
 				{ isSplit && ( splitMedia?.url || splitImage?.url ) && (
 					<div className="sgs-hero__media">

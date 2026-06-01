@@ -50,11 +50,17 @@ $transition_easing  = $attributes['transitionEasing'] ?? 'ease-in-out';
 $block_link         = $attributes['blockLink'] ?? '';
 $block_link_target  = (bool) ( $attributes['blockLinkTarget'] ?? false );
 $hover_overlay      = (bool) ( $attributes['hoverOverlay'] ?? false );
+$display_mode       = $attributes['displayMode'] ?? 'full';
+$is_compact         = 'compact' === $display_mode;
 
 $classes = array(
 	'sgs-team-member',
 	'sgs-team-member--' . esc_attr( $card_style ),
 );
+
+if ( $is_compact ) {
+	$classes[] = 'sgs-team-member--compact';
+}
 
 if ( $hover_img_zoom ) {
 	$classes[] = 'sgs-has-img-zoom';
@@ -103,7 +109,7 @@ if ( ! empty( $member_media['url'] ) ) {
 }
 
 if ( '' !== $photo_img ) {
-	if ( $hover_overlay ) {
+	if ( $hover_overlay && ! $is_compact ) {
 		// When overlay is active, the bio slides up over the photo on hover/focus.
 		// The photo wrapper gets tabindex so keyboard users can trigger the overlay.
 		$photo_html = sprintf(
@@ -130,12 +136,12 @@ $name_html = $name ? sprintf( '<h3 class="sgs-team-member__name"%s>%s</h3>', $na
 $role_style = $role_colour ? ' style="color:' . sgs_colour_value( $role_colour ) . '"' : '';
 $role_html = $role ? sprintf( '<p class="sgs-team-member__role"%s>%s</p>', $role_style, wp_kses_post( $role ) ) : '';
 
-// Bio.
-$bio_html = $bio ? sprintf( '<p class="sgs-team-member__bio">%s</p>', wp_kses_post( $bio ) ) : '';
+// Bio — hidden in Compact mode.
+$bio_html = ( $bio && ! $is_compact ) ? sprintf( '<p class="sgs-team-member__bio">%s</p>', wp_kses_post( $bio ) ) : '';
 
-// Social icons — rendered via InnerBlocks (sgs/social-icons children).
+// Social icons — rendered via InnerBlocks (sgs/social-icons children); hidden in Compact mode.
 // do_blocks() processes the serialised inner block content from $content.
-$social_html = do_blocks( $content );
+$social_html = $is_compact ? '' : do_blocks( $content );
 
 // Schema.org/Person markup (feature #252).
 $schema_html = '';

@@ -16,6 +16,7 @@
  * attributes.
  *
  * @since 2026-05-26  v0.4.0 - single-element refactor (headingRole + content).
+ * @since 2026-06-01  v0.5.0 - variantStyle replaced by WP block-styles (is-style-*).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused - dynamic block).
@@ -183,10 +184,6 @@ $hover_background = $attributes['hoverBackground'] ?? '';
 $border_style_raw      = $attributes['borderStyle'] ?? 'none';
 $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
 $border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
-
-$variant_style_raw = isset( $attributes['variantStyle'] ) ? sanitize_text_field( $attributes['variantStyle'] ) : 'default';
-$allowed_variants  = array( 'default', 'hero', 'section', 'card' );
-$variant_style     = in_array( $variant_style_raw, $allowed_variants, true ) ? $variant_style_raw : 'default';
 
 $custom_width      = $attributes['customWidth'] ?? '';
 $custom_width_unit = sgs_heading_safe_unit( $attributes['customWidthUnit'] ?? 'px' );
@@ -417,9 +414,10 @@ $wrapper_classes = array( 'wp-block-sgs-heading' );
 if ( $is_subheading ) {
 	$wrapper_classes[] = 'wp-block-sgs-heading--subheading';
 }
-if ( $variant_style && 'default' !== $variant_style ) {
-	$wrapper_classes[] = 'wp-block-sgs-heading--' . sanitize_html_class( $variant_style );
-}
+
+// Note: variantStyle (v0.4.0) has been replaced by WP block-styles (is-style-*).
+// The active style class (e.g. is-style-hero) is merged in automatically by
+// get_block_wrapper_attributes() via the block's className attribute.
 
 $wrapper_attrs = get_block_wrapper_attributes(
 	array(

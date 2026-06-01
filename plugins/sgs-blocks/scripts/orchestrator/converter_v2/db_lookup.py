@@ -76,6 +76,15 @@ _ROLE_CLASSIFICATION_MAP: dict[str, str] = {
     "select-from-enum":     "styling-behaviour",
     "enum-class-probe":     "styling-behaviour",
     "query-descriptor":     "styling-behaviour",
+    # FR-22-19 composite scalar-media (2026-06-01): foreground images that a
+    # composite block renders through its own scalar pipeline (art-direction,
+    # srcset, object-fit, bleed, responsive show/hide authored in render.php).
+    # Classification 'styling-behaviour' → equivalent_block_for() returns None →
+    # the walker does NOT emit a sgs/media child; instead _route_composite_interior
+    # lifts the img into the block's scalar attr (e.g. splitImage/splitImageMobile).
+    # Roster (DB-audit-verified 2026-06-01): sgs/hero.splitImage,
+    # sgs/hero.splitImageMobile, sgs/testimonial-slider.sideImage.
+    "scalar-media":         "styling-behaviour",
 }
 
 
@@ -149,8 +158,18 @@ _HTML_TAG_TO_CORE_BLOCK_SEED: dict[str, tuple[str, str]] = {
                "Bare button — Bean directive 2026-05-28: walker auto-wraps in sgs/multi-button"),
     "a":   ("core/button", "Link shape — routes to same atomic leaf as button"),
     "blockquote": ("core/quote", "Quote block"),
-    "ul":  ("core/list", "Unordered list — atomic leaf"),
-    "ol":  ("core/list", "Ordered list — same routing as ul at atomic level"),
+    # core/list is a STATIC block whose save() emits <ul class="wp-block-list"> +
+    # core/list-item children. Emitting it self-closing (no innerHTML) fails WP
+    # block validation. The SGS equivalent sgs/icon-list is DYNAMIC (render.php,
+    # save=null → self-closing) and already handled by _atomic_attrs_for with the
+    # items-array extraction. Route ul/ol directly to sgs/icon-list (2026-06-02).
+    # blocks.replaces for sgs/icon-list is NOT set to core/list in the DB, so
+    # Tier A of atomic_tag_map() would not find it. Storing 'sgs/icon-list' as
+    # the core_block_slug value (column name is a misnomer — it is the TARGET slug)
+    # means Tier B returns it unchanged: replaces_reverse.get('sgs/icon-list')=None,
+    # out['ul'] = 'sgs/icon-list'. INSERT OR REPLACE propagates this to DB on load.
+    "ul":  ("sgs/icon-list", "Unordered list → SGS icon-list (dynamic; core/list is static and needs save() HTML the converter cannot generate)"),
+    "ol":  ("sgs/icon-list", "Ordered list → SGS icon-list (same rationale as ul; ordered flag set via _atomic_attrs_for items)"),
 }
 
 
@@ -492,6 +511,53 @@ def get_block_composition_role(block_slug: str) -> str | None:
     return None
 
 
+@functools.lru_cache(maxsize=256)
+def block_accepts_inner_blocks(block_slug: str) -> bool:
+    """Return True when the block declares InnerBlocks in its block.json.
+
+    Queries block_composition.has_inner_blocks (populated by /sgs-update Stage 1
+    from the block's block.json `innerBlocks` / usesContext / InnerBlocks usage).
+
+    Contract:
+    - Returns True  → walker SHOULD recurse into children for InnerBlocks.
+    - Returns False → block renders from its own attrs only (dynamic render.php
+                      with no $content passthrough); walker MUST NOT emit children
+                      as inner markup — WP save() contract expects self-closing
+                      (save=null) and WP block validation rejects any innerHTML.
+
+    The distinction is what prevents the WP block-validation error
+    "This block contains unexpected or invalid content" for blocks like
+    sgs/star-rating: composition_role='content-block' but has_inner_blocks=0
+    means the block consumes no InnerBlocks despite being non-leaf.
+
+    Soft-fails to True on missing table / missing row (conservative: allow
+    children, which is safer than silently dropping them for unknown blocks).
+
+    R-22-1 compliant — DB-driven, no per-block slug literals.
+    R-22-9 compliant — universal gate: fires for every resolved non-leaf block.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT has_inner_blocks FROM block_composition WHERE block_slug = ?",
+            (block_slug,),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        # Table absent (pre-D108 state) — soft-fail to True (conservative)
+        return True
+    finally:
+        conn.close()
+    if row is None:
+        # Block not in block_composition — soft-fail to True (conservative)
+        _trace("db_lookup_miss", lookup="block_accepts_inner_blocks",
+               block_slug=block_slug)
+        return True
+    result = bool(row[0])
+    _trace("db_lookup_hit", lookup="block_accepts_inner_blocks",
+           block_slug=block_slug, has_inner_blocks=result)
+    return result
+
+
 def attr_for_slot(block_slug: str, canonical_slot: str) -> str | None:
     """Find the attr_name on `block_slug` whose canonical_slot matches.
 
@@ -796,6 +862,54 @@ def _migrate_property_suffixes_kind_override() -> None:
 
 # Run migration at module load (idempotent — safe to call repeatedly).
 _migrate_property_suffixes_kind_override()
+
+
+# ----------------------------------------------------------------------------
+# Idempotent schema migration — variant detection (FR-22-20, D133 2026-06-01)
+# ----------------------------------------------------------------------------
+# Universal variant detection (Spec 22 §FR-22-20) needs two schema additions:
+#   - blocks.variant_attr  — names the variant-selector attr per block (e.g.
+#     'variant', 'variantStyle', 'layout') so the converter never guesses it.
+#     Populated by /sgs-update Stage 1 from block.json supports.sgs.variantAttr.
+#   - variant_slots table  — (block_slug, variant_value, unique_slot) storing
+#     each variant's DISCRIMINATING slots (set-difference vs sibling variants).
+#     Populated by /sgs-update Stage 1 from block.json supports.sgs.variants.
+#
+# This migration is pure schema (additive, no data). Population is a /sgs-update
+# responsibility, so there is no seed dict here (R-22-1 dict-as-seed N/A).
+#
+# Safe to call repeatedly. Runs at module load.
+def _migrate_variant_detection_schema() -> None:
+    """Idempotent migration: add blocks.variant_attr column + create the
+    variant_slots table if absent. Schema only — no data seeding.
+
+    Safe to call repeatedly. Runs at module load.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        cols = {row[1] for row in conn.execute("PRAGMA table_info(blocks)").fetchall()}
+        if "variant_attr" not in cols:
+            conn.execute("ALTER TABLE blocks ADD COLUMN variant_attr TEXT")
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS variant_slots (
+              block_slug    TEXT NOT NULL,
+              variant_value TEXT NOT NULL,
+              unique_slot   TEXT NOT NULL,
+              created_at    TEXT DEFAULT CURRENT_TIMESTAMP,
+              PRIMARY KEY (block_slug, variant_value, unique_slot)
+            )
+        """)
+        conn.commit()
+    except sqlite3.OperationalError:
+        # DB read-only / locked / missing — soft-fail. Variant detection then
+        # no-ops (variant_attr_for returns None → detector skips).
+        pass
+    finally:
+        conn.close()
+
+
+# Run migration at module load (idempotent — safe to call repeatedly).
+_migrate_variant_detection_schema()
 
 
 def _kind_for(suffix: str, role: str | None) -> str | None:
@@ -1129,6 +1243,291 @@ def is_class_section_block(slug: str) -> bool:
 
 
 # ----------------------------------------------------------------------------
+# scalar_media_attr_for — FR-22-19 composite scalar-media slot lookup
+# ----------------------------------------------------------------------------
+# Returns the attr_name of the 'scalar-media' attr on `block_slug` whose slot
+# matches `bem_element`.  Used by _route_composite_interior in convert.py to
+# decide whether a composite interior column should be lifted into a scalar attr
+# (the media column) or folded as bare InnerBlocks (the content column).
+#
+# The DB query is intentionally cheap: it reads block_attributes once per
+# (block_slug, bem_element) pair and caches the result with functools.lru_cache.
+# The caller (_route_composite_interior) iterates per direct child, but the
+# number of composites × their child columns is small (≤4 per section) so even
+# cache-cold hits never cause measurable latency.
+#
+# R-22-1 compliance: no per-block slug literals.  Routing is driven entirely by
+# the `block_attributes.role='scalar-media'` column and the `slots` aliases.
+
+
+@functools.lru_cache(maxsize=256)
+def has_scalar_media_attrs(block_slug: str) -> bool:
+    """True if `block_slug` declares >=1 attr with role='scalar-media'.
+
+    FR-22-19 gate (2026-06-01, corrected): the composite-interior router fires
+    for any COMPOSITE that renders part of its interior itself as a scalar-media
+    attr (sgs/hero.splitImage, sgs/testimonial-slider.sideImage) — NOT only
+    class-section/section-root blocks (testimonial-slider is a composite but a
+    content-block, not a section root). Gating on the PRESENCE of a scalar-media
+    attr is precise: it covers every such composite AND naturally excludes blocks
+    with no scalar-media attr (cta-section, info-box, product-card) so their
+    interior routing is unchanged (resolves the cta-section over-fire risk).
+    R-22-1: DB-driven, no slug literals; R-22-9: universal mechanism.
+    """
+    if not block_slug:
+        return False
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT 1 FROM block_attributes WHERE block_slug = ? "
+            "AND role = 'scalar-media' LIMIT 1",
+            (block_slug,),
+        ).fetchone()
+    finally:
+        conn.close()
+    return row is not None
+
+
+def scalar_media_attr_for(block_slug: str, bem_element: str) -> str | None:
+    """Return the attr_name of the scalar-media attr on `block_slug` for `bem_element`.
+
+    A 'scalar-media' attr is one where:
+      - block_attributes.role = 'scalar-media'  (classification='styling-behaviour'
+        → equivalent_block_for returns None → walker lifts to scalar not child block)
+      - Its canonical_slot aliases include `bem_element` (or canonical_slot itself
+        equals `bem_element` after normalisation).
+
+    The Mobile/Desktop distinction is the CALLER's job: this function returns the
+    **base** attr_name (e.g. 'splitImage', 'sideImage') — never the '+Mobile'
+    sibling.  The caller appends 'Mobile' when the BEM modifier is '--mobile'.
+
+    Returns:
+        attr_name string (e.g. 'splitImage') on a match, or None when the
+        composite has no scalar-media attr at the given slot.
+
+    Args:
+        block_slug:  Fully-qualified block slug, e.g. 'sgs/hero'.
+        bem_element: BEM element segment from the child's sgs- class, e.g.
+                     'split-image', 'media', 'side-image'.
+
+    Caching: LRU-cached per (block_slug, bem_element) pair.  Safe for repeated
+    calls across a section walk.  Cache is module-level (shared across sections);
+    values are static for the lifetime of a pipeline run.
+    """
+    return _scalar_media_attr_for_cached(block_slug, bem_element)
+
+
+@functools.lru_cache(maxsize=512)
+def _scalar_media_attr_for_cached(block_slug: str, bem_element: str) -> str | None:
+    """LRU-cached implementation of scalar_media_attr_for."""
+    import json as _json
+
+    if not block_slug or not bem_element:
+        return None
+
+    # Normalise the element token once for matching (strip hyphens, lowercase).
+    norm_elem = _normalise(bem_element)
+
+    # Fetch all scalar-media attrs for this block from block_attributes.
+    # Join to slots (scope='element') to read their canonical slot name + aliases.
+    # We do NOT rely on canonical_slot being populated — Tier B (derived_selector
+    # BEM element) would work too, but querying slot aliases is more robust and
+    # consistent with the existing equivalent_block_for Tier A pattern.
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT ba.attr_name, ba.canonical_slot "
+            "FROM block_attributes ba "
+            "WHERE ba.block_slug = ? AND ba.role = 'scalar-media'",
+            (block_slug,),
+        ).fetchall()
+    finally:
+        conn.close()
+
+    if not rows:
+        _trace("db_lookup_miss", lookup="scalar_media_attr_for",
+               block_slug=block_slug, bem_element=bem_element)
+        return None
+
+    # For each scalar-media attr, check whether the bem_element resolves to its slot.
+    for attr_name, canonical_slot in rows:
+        # Skip the '+Mobile' sibling attrs (attr_name ends with 'Mobile').
+        # scalar_media_attr_for always returns the BASE attr; the caller appends 'Mobile'.
+        if attr_name.endswith("Mobile"):
+            continue
+
+        # Check 1: direct canonical_slot name match (normalised).
+        if canonical_slot and _normalise(canonical_slot) == norm_elem:
+            _trace("db_lookup_hit", lookup="scalar_media_attr_for",
+                   block_slug=block_slug, bem_element=bem_element,
+                   attr_name=attr_name, match_via="canonical_slot_name")
+            return attr_name
+
+        # Check 2: look up the slot's aliases in the slots table.
+        if canonical_slot:
+            conn2 = sqlite3.connect(SGS_DB)
+            try:
+                slot_row = conn2.execute(
+                    "SELECT aliases FROM slots WHERE slot_name = ? AND scope = 'element'",
+                    (canonical_slot,),
+                ).fetchone()
+            finally:
+                conn2.close()
+
+            if slot_row and slot_row[0]:
+                try:
+                    aliases = _json.loads(slot_row[0])
+                except (ValueError, TypeError):
+                    aliases = []
+                for alias in aliases:
+                    if _normalise(str(alias)) == norm_elem:
+                        _trace("db_lookup_hit", lookup="scalar_media_attr_for",
+                               block_slug=block_slug, bem_element=bem_element,
+                               attr_name=attr_name, match_via="slot_alias",
+                               matched_alias=alias)
+                        return attr_name
+
+        # Check 3: fall back to normalised attr_name match (e.g. 'splitImage' → 'splitimage'
+        # vs bem_element 'split-image' → 'splitimage').
+        if _normalise(attr_name) == norm_elem:
+            _trace("db_lookup_hit", lookup="scalar_media_attr_for",
+                   block_slug=block_slug, bem_element=bem_element,
+                   attr_name=attr_name, match_via="attr_name_normalised")
+            return attr_name
+
+    _trace("db_lookup_miss", lookup="scalar_media_attr_for",
+           block_slug=block_slug, bem_element=bem_element)
+    return None
+
+
+# ----------------------------------------------------------------------------
+# Variant detection — FR-22-20 (D133 2026-06-01)
+# ----------------------------------------------------------------------------
+# A block with multiple layout variants (hero: standard/split/video/svg-animated)
+# renders the correct variant ONLY when its variant-selector attr is set. The
+# cloning converter populates a variant's CONTENT (e.g. the hero's split images)
+# but does not set the variant attr → the block renders its DEFAULT. FR-22-20
+# closes this DB-first: each variant block declares supports.sgs.variantAttr +
+# variants in block.json (→ blocks.variant_attr + variant_slots via /sgs-update),
+# and the converter detects the variant from what the DRAFT extracted this run.
+#
+#   variant_attr_for(slug)       → the selector attr name, or None.
+#   detect_variant(slug, attrs)  → the variant whose discriminating slots best
+#                                  match the draft's extracted attrs, or None.
+#
+# R-22-1 (DB-driven — no per-block dict/slug literal). R-22-9 (one mechanism, all
+# variant blocks). The detector reads the draft's extracted attrs (NOT the block's
+# stored attrs) → closes the stale-data hole the $is_split band-aid had.
+
+
+@functools.lru_cache(maxsize=256)
+def variant_attr_for(block_slug: str) -> str | None:
+    """Return the variant-selector attr name for `block_slug`, or None.
+
+    Reads blocks.variant_attr (populated by /sgs-update from block.json
+    supports.sgs.variantAttr). None when the block declares no variants OR the
+    column/row is absent → the detector then skips the block (no behaviour change).
+    """
+    if not block_slug:
+        return None
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT variant_attr FROM blocks WHERE slug = ? AND source = 'sgs'",
+            (block_slug,),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        # Column absent (pre-FR-22-20 DB) — soft-fail to None.
+        row = None
+    finally:
+        conn.close()
+    return row[0] if row and row[0] else None
+
+
+@functools.lru_cache(maxsize=256)
+def _variant_slots_map(block_slug: str) -> tuple:
+    """Return ((variant_value, frozenset(discriminating slots)), ...) for a block.
+
+    Reads the variant_slots table (populated by /sgs-update via set-difference).
+    Cached per slug — the data is static for a pipeline run. Returns a tuple of
+    pairs (hashable, lru_cache-friendly); detect_variant consumes it.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT variant_value, unique_slot FROM variant_slots WHERE block_slug = ?",
+            (block_slug,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        rows = []
+    finally:
+        conn.close()
+    grouped: dict = {}
+    for variant_value, unique_slot in rows:
+        grouped.setdefault(variant_value, set()).add(unique_slot)
+    return tuple((v, frozenset(slots)) for v, slots in grouped.items())
+
+
+def _slot_extracted(value: object) -> bool:
+    """True if `value` represents a slot the converter actually extracted.
+
+    The detection signal is PRESENCE-of-a-meaningful-value, not truthiness: the
+    lift paths (_route_composite_interior, lift_behavioural_attrs) only insert a
+    key when they extracted something for it, so a present key is a real signal.
+    A plain truthiness test would wrongly drop a legitimately-extracted numeric
+    0 / boolean False / '0' (e.g. a variant whose discriminator is splitGap=0),
+    flipping detection (qc-council 2026-06-01, Rater B). We therefore count any
+    value EXCEPT None, empty string, and empty containers (which represent 'no
+    real extraction' — e.g. a src-less image lifting to {} — rather than an
+    intentional value).
+    """
+    if value is None or value == "":
+        return False
+    if isinstance(value, (dict, list, tuple, set, frozenset)) and len(value) == 0:
+        return False
+    return True
+
+
+def detect_variant(block_slug: str, populated_attrs: dict) -> str | None:
+    """Detect a block's variant from the draft's extracted attrs THIS run.
+
+    For each variant, count how many of its DISCRIMINATING slots (variant_slots)
+    were EXTRACTED into `populated_attrs` this run (presence of a meaningful
+    value per _slot_extracted — NOT the block's stored attrs). Return the variant
+    with the strictly-highest count.
+
+    Returns None when:
+      - the block declares no variant_slots, or
+      - no variant scored above zero (nothing matched), or
+      - the top score is a tie between >=2 variants (ambiguous — leave the
+        block's default rather than guess).
+
+    R-22-1 (DB-driven, no slug literal).
+    """
+    variants = _variant_slots_map(block_slug)
+    if not variants:
+        return None
+    scores = sorted(
+        (
+            (sum(1 for slot in slots if _slot_extracted(populated_attrs.get(slot))), variant_value)
+            for variant_value, slots in variants
+        ),
+        reverse=True,
+    )
+    top_count, top_variant = scores[0]
+    if top_count == 0:
+        _trace("variant_detect_miss", block_slug=block_slug, reason="no_slots_matched")
+        return None
+    # Ambiguity guard: a tie at the top means we cannot disambiguate → leave default.
+    if len(scores) > 1 and scores[1][0] == top_count:
+        tied = ",".join(v for cnt, v in scores if cnt == top_count)
+        _trace("variant_detect_tie", block_slug=block_slug, top_count=top_count, tied=tied)
+        return None
+    _trace("variant_detect_hit", block_slug=block_slug, variant=top_variant, count=top_count)
+    return top_variant
+
+
+# ----------------------------------------------------------------------------
 # equivalent_block_for — Spec 22 §FR-22-2.1 two-tier derivation
 # ----------------------------------------------------------------------------
 # Canonical implementation of the universal walker's block-equivalence question:
@@ -1281,6 +1680,90 @@ def _slot_alias_to_standalone() -> dict[str, str]:
             except (ValueError, TypeError):
                 pass
     return out
+
+
+@functools.lru_cache(maxsize=1)
+def _slot_alias_to_default_attrs() -> dict[str, dict]:
+    """Return {alias_lowercase: default_attrs_dict} from element-scope slots that
+    carry `standalone_block_default_attrs` (JSON). Mirrors `_slot_alias_to_standalone`
+    alias expansion. Lets a slot SET attrs on its emitted block — e.g. the
+    `button-primary`/`buttonSecondary`/`button-outline` slots each resolve to
+    sgs/button AND set inheritStyle to the matching theme preset, and the parked
+    `subheading` → sgs/heading{headingRole:'subheading'} routing. Added 2026-06-03."""
+    import json
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT slot_name, aliases, standalone_block_default_attrs FROM slots "
+            "WHERE scope='element' AND standalone_block_default_attrs IS NOT NULL "
+            "AND standalone_block_default_attrs != '' ORDER BY slot_name"
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return {}  # column absent on older DBs — no defaults
+    finally:
+        conn.close()
+    out: dict[str, dict] = {}
+
+    def _put(term: str, attrs: dict) -> None:
+        key = term.lower()
+        out.setdefault(key, attrs)
+        nh = key.replace("-", "")
+        if nh and nh != key:
+            out.setdefault(nh, attrs)
+
+    for slot_name, aliases_json, dattrs_json in rows:
+        try:
+            attrs = json.loads(dattrs_json)
+        except (ValueError, TypeError):
+            continue
+        if not isinstance(attrs, dict) or not attrs:
+            continue
+        _put(slot_name, attrs)
+        if aliases_json:
+            try:
+                for alias in json.loads(aliases_json):
+                    _put(alias, attrs)
+            except (ValueError, TypeError):
+                pass
+    return out
+
+
+def slot_default_attrs_for(sgs_classes: list[str]) -> dict:
+    """Per-slot default attrs for the first sgs BEM element resolving to a slot that
+    carries defaults (mirrors resolve_slug_from_bem Path 2 element matching, incl.
+    the compound-element prefix-strip). E.g. `__buttonSecondary` →
+    {'inheritStyle':'secondary'}. Empty dict when none. The walker applies these via
+    setdefault so any draft-extracted value wins (R-22-1 DB-driven, R-22-9 universal)."""
+    dmap = _slot_alias_to_default_attrs()
+    if not dmap:
+        return {}
+    for cls in sorted(c for c in sgs_classes if c.startswith("sgs-")):
+        bem = parse_sgs_bem(cls)
+        if bem is None or not bem.element:
+            continue
+        hit = dmap.get(bem.element.lower())
+        if hit:
+            return dict(hit)
+        if "-" in bem.element:  # compound element → try each segment (mirror Path 2b)
+            for seg in bem.element.lower().split("-"):
+                hit = dmap.get(seg)
+                if hit:
+                    return dict(hit)
+    return {}
+
+
+@functools.lru_cache(maxsize=1)
+def inherit_style_presets() -> frozenset:
+    """The set of `inheritStyle` preset values defined by the button-preset slots
+    (derived from slots.standalone_block_default_attrs — e.g. {'primary','secondary',
+    'outline'}). DB-driven so a BEM modifier matching one (`.sgs-button--secondary`)
+    can set inheritStyle without a hardcoded list. Added 2026-06-03."""
+    vals: set[str] = set()
+    for attrs in _slot_alias_to_default_attrs().values():
+        v = attrs.get("inheritStyle")
+        if isinstance(v, str) and v:
+            vals.add(v)
+    return frozenset(vals)
 
 
 @functools.lru_cache(maxsize=2048)
@@ -1646,7 +2129,63 @@ def _resolve_slug_from_bem_tuple(classes_tuple: tuple[str, ...]) -> str | None:
                        slug=standalone)
                 return standalone
 
+    # ---- Path 2b: compound-element prefix strip (e.g. card-tag → tag) ----
+    # A BEM element is frequently a `<head>-<tail>` compound where `head` names
+    # the containing context (a card/panel slot) and `tail` is the real element
+    # slot — e.g. `card-tag`, `card-description`, `card-price`. The literal
+    # compound misses the slot vocabulary (Path 2 above), so the element's text
+    # falls through to a slug-None container as raw inner content → WP editor
+    # "unexpected/invalid content".
+    #
+    # Resolution = prefix/suffix decomposition against the SAME DB slot vocabulary
+    # (no new table, no per-class Python literals — R-22-1; universal across every
+    # `<slot>-<slot>` compound — R-22-9). Split on the FIRST hyphen and route the
+    # tail ONLY when BOTH head and tail are themselves routable slots. Gating on
+    # `head in slot_alias_map` is the safety boundary: it fires for container
+    # prefixes (`card-`, `panel-`) but NEVER for non-slot prefixes (`skip-link`,
+    # `cart-badge`, `trustpilot-logo`) which must stay structural wrappers.
+    # `card-inner` is also correctly skipped (tail `inner` has no standalone_block
+    # → not in the map → stays a passthrough wrapper). Verified zero collateral
+    # across all 86 BEM classes in the Mama's Munches mockup (2026-06-03).
+    #
+    # PRECEDENCE: Path 2b is a FALLBACK — it runs only after Path 2's literal
+    # element/block alias lookup misses. So an explicit alias (e.g. `card-body`
+    # → sgs/info-box via the `card` row's aliases) always wins over the peel;
+    # Path 2b only fills genuine vocabulary gaps. Multi-segment tails resolve fine
+    # when the tail is itself a hyphenated alias (`x-split-image` → `split-image`
+    # → sgs/media). For any compound that is actually a WRAPPER (sgs-classed
+    # element children), the walker's leaf-misresolution guard (convert.py walk(),
+    # ~line 1961) is the backstop: a peeled leaf slug with sgs-classed children is
+    # re-treated as a slug-None container, so no wrapper is ever flattened to a leaf.
+    for cls, bem in sorted(parsed, key=lambda x: x[0]):
+        if bem.element is None or "-" not in bem.element:
+            continue
+        head, _, tail = bem.element.lower().partition("-")
+        if head in slot_alias_map and tail in slot_alias_map:
+            standalone = slot_alias_map[tail]
+            _trace("bem_resolve_prefix_strip",
+                   class_=cls,
+                   head=head,
+                   tail=tail,
+                   slug=standalone)
+            return standalone
+
     return None
+
+
+def block_for_slot_token(token: str) -> str | None:
+    """Return the standalone block a single BEM token resolves to, or None.
+
+    Thin public accessor over the element-scope slot/alias map (the same map
+    `resolve_slug_from_bem` uses). Used by the walker's text-leaf routing
+    (Spec 22 §FR-22-4.1 content-leaf step) to resolve a compound element's
+    individual hyphen-segments (e.g. `price` → sgs/text, `stars` →
+    sgs/star-rating) so a content leaf can pick its correct content block.
+    Hyphen/case-insensitive via the map's no-hyphen variant keys.
+    """
+    if not token:
+        return None
+    return _slot_alias_to_standalone().get(token.lower())
 
 
 def resolve_slug_from_bem(sgs_classes: list[str]) -> str | None:
@@ -1779,8 +2318,20 @@ def _emit_wp_block_markup(slug: str, attrs: dict, children: list[str]) -> str:
 
     Mirrors emit_wp_block() shape from _retired/convert_pre_spec22.py:964.
     Strips private underscore-prefixed keys from attrs (routing hints).
-    Produces open+close form; never self-closing (section containers always
-    have children or empty inner content).
+
+    Emit shape follows WP save() contract:
+    - No children → self-closing (`/-->`).
+      This handles dynamic blocks (save=null) emitted inside sgs/container.
+      WP block validation rejects open+close form when the block's save() is
+      null (save=null means self-closing is the ONLY valid serialisation).
+    - Children present → open+close (`--> ... <!-- /wp:slug -->`).
+      Section containers (sgs/container, sgs/hero etc.) always have children
+      so they remain in open+close form.
+
+    The original comment "never self-closing — section containers always have
+    children" was correct for sgs/container callers but wrong when this function
+    is invoked by emit_sgs_container_wrapping for a non-container inner block
+    such as sgs/star-rating (2026-06-02 fix).
     """
     import json as _json
     clean = {
@@ -1791,6 +2342,9 @@ def _emit_wp_block_markup(slug: str, attrs: dict, children: list[str]) -> str:
     if clean:
         attr_json = " " + _json.dumps(clean, separators=(",", ":"), ensure_ascii=False)
     inner_str = "\n".join(children) if children else ""
+    if not inner_str:
+        # Self-close when no inner content — matches WP save()=null contract.
+        return f"<!-- wp:{slug}{attr_json} /-->"
     return f"<!-- wp:{slug}{attr_json} -->\n{inner_str}\n<!-- /wp:{slug} -->"
 
 
@@ -1844,24 +2398,29 @@ def emit_sgs_container_wrapping(
     # then optional CSS.
     # When slug is None (top-level FR-22-11 pass-through): children become direct
     # InnerBlocks of the container (no synthetic inner block emitted).
-    container_parts: list[str] = []
+    container_children: list[str] = []
     if slug is not None:
         inner_markup = _emit_wp_block_markup(slug, attrs, children_markup)
-        container_parts.append(inner_markup)
+        container_children.append(inner_markup)
     else:
-        container_parts.extend(c for c in children_markup if c)
-    if css and css.strip():
-        container_parts.append(f"<style>{css.strip()}</style>")
-    container_inner = "\n".join(container_parts)
+        container_children.extend(c for c in children_markup if c)
 
-    # Wrap in sgs/container (FR-22-4: always an empty attrs dict — styling
-    # lives on the inner block; the container is a structural wrapper only)
-    wrapper_div = (
-        f'<div class="wp-block-sgs-container">\n'
-        f"{container_inner}\n"
-        f"</div>"
-    )
-    return f"<!-- wp:sgs/container {{}} -->\n{wrapper_div}\n<!-- /wp:sgs/container -->"
+    # Emit sgs/container with its children DIRECTLY between the block comments — NO static
+    # <div class="wp-block-sgs-container"> wrapper and NO inline <style>. This mirrors
+    # _emit_section_container (the slug-None path) which is already correct.
+    #   * sgs/container's save() is <InnerBlocks.Content/> (no wrapper div). A static div in
+    #     the saved markup fails WP block validation → "This block contains unexpected or
+    #     invalid content" on EVERY cloned container in the editor (Bean 2026-06-02), AND
+    #     adds an extra nesting level that breaks grid-on-section (the grid's items stop
+    #     being its direct children).
+    #   * The section's scoped CSS is already collected into variation_buf by the caller
+    #     (walk: collect_css_for_classes → variation_buf.append) and deployed at Stage 10,
+    #     so embedding an inline <style> here would only duplicate it.
+    # FR-22-4: every top-level section is full-width (widthMode='full') so its background
+    # fills the viewport; content is constrained by the inner block's own content-width
+    # logic. The className post-process (guarantee_section_className) MERGES the section BEM
+    # class on top, so widthMode is preserved.
+    return _emit_wp_block_markup("sgs/container", {"widthMode": "full"}, container_children)
 
 
 # ----------------------------------------------------------------------------

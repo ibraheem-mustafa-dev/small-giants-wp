@@ -131,7 +131,6 @@ if ( ! in_array( $attrib_tag, array( 'footer', 'div', 'cite' ), true ) ) {
 // ---------------------------------------------------------------------------
 
 $inherit_style         = ! empty( $attributes['inheritStyle'] );
-$variant_style         = $attributes['variantStyle'] ?? 'default';
 $bg_colour             = $attributes['backgroundColour'] ?? '';
 $border_radius         = isset( $attributes['borderRadius'] ) ? $attributes['borderRadius'] : null;
 $border_radius_unit    = $attributes['borderRadiusUnit'] ?? 'px';
@@ -179,12 +178,6 @@ $padding_bottom_mobile = isset( $attributes['paddingBottomMobile'] ) ? $attribut
 $padding_left_mobile   = isset( $attributes['paddingLeftMobile'] ) ? $attributes['paddingLeftMobile'] : null;
 $custom_width          = isset( $attributes['customWidth'] ) ? $attributes['customWidth'] : null;
 $custom_width_unit     = $attributes['customWidthUnit'] ?? 'px';
-
-// Validate variant.
-$allowed_variants = array( 'default', 'pullquote', 'testimonial', 'plain' );
-if ( ! in_array( $variant_style, $allowed_variants, true ) ) {
-	$variant_style = 'default';
-}
 
 // FIX B (P-BORDER-STYLE-ENUM-PARITY 2026-05-17): full CSS border-style set.
 $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
@@ -537,9 +530,6 @@ $wrapper_inline_style = implode( ';', $wrapper_style_parts );
 // ---------------------------------------------------------------------------
 
 $wrapper_classes = array( 'wp-block-sgs-quote' );
-if ( ! $inherit_style && 'default' !== $variant_style ) {
-	$wrapper_classes[] = 'wp-block-sgs-quote--' . esc_attr( $variant_style );
-}
 
 $wrapper_args = array( 'class' => implode( ' ', $wrapper_classes ) );
 if ( $wrapper_inline_style ) {

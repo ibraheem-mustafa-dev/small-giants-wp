@@ -1,5 +1,7 @@
 # Step 2 Strategic Plan — Theme Completion + 5 Client Pipeline
 
+> **⚠️ STATUS: SUPERSEDED (2026-04-21 plan) — historical only.** The governing strategic plan is now [`../2026-05-24-strategic-plan.md`](../2026-05-24-strategic-plan.md); the active cloning architecture is Spec 22 + [`../2026-05-28-phase-2-hybrid-block-migration.md`](../2026-05-28-phase-2-hybrid-block-migration.md). This document's "5 client pipeline" framing pre-dates the Spec 22 universal-walker architecture. Kept for git-blame / decision lineage; do not action from it.
+
 <!-- crosslinks-2026-04-29 -->
 > **Related plans (2026-04-29 cross-link pass):**
 > - Master tool inventory + 13 pipelines: [`2026-04-21-toolset-spec-from-sgs-studio-session.md`](2026-04-21-toolset-spec-from-sgs-studio-session.md)

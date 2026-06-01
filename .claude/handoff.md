@@ -1,49 +1,78 @@
-# Session Handoff — 2026-05-31 (converter renders content + side-by-side layout; FR-22-4.1 spec'd; methodology baked in)
+# Session Handoff — 2026-06-03 (CLONING PIPELINE thread)
+
+> Cloning thread. The theme/blocks thread runs in a parallel session (shared branch) → `.claude/handoff-theme.md` + `.claude/next-session-prompt-theme.md`. Prior handoffs in git history + `decisions.md`.
 
 ## Completed This Session
-1. **XS-3 reconciled + merged (D114).** Branch was a superset of main's XS-3, not a rival. Clean head-to-head: main 58.39% vs branch 58.98%.
-2. **Root cause of empty sections (D115).** Pixel-diff showed false wins; live DOM (textLen=0) proved EMPTY. Cause = walker never ran FR-22-2 content-routing for leaves.
-3. **G1 — leaf content-routing + a latent `attr_type` fallback-bug fix.** All 7 content sections now render (featured-product 0→510, social-proof →621, trust-bar →98). 4 regression tests.
-4. **G2 — FR-23-6 depth-2 grid-wrapper preservation (council-designed, trace-confirmed).** featured-product + gift cards SIDE-BY-SIDE; duplicate nesting fixed (header/trust-bar/brand = 1 container); brand −11.1; mean −0.66pp. Live-DOM + screenshot verified.
-5. **FR-22-4.1 — canonical universal wrapper/container rule written (D118)** + propagated to all docs (Spec 22, 00, flow, stages, truth-spec, decisions, parking). The full rule the depth-2 gate approximates: direct descendants FOLD (grid→grid-item CSS), block-match→block, non-direct wrapper→own container, never dropped.
-6. **Root-cause methodology baked into CLAUDE.md + architecture (D26/D27) + mistakes.** No assumptions/guessing/trusting-pixel-diff; analyse all logs first; verify dependencies; named tool list.
-7. **Spec 24 (query-driven cards) + sgs_product CPT + 2-product seed.** Built.
-8. **Squash-merged feat/fr22-6-content-render → main + deleted the branch.** All session work consolidated on main.
+1. **Editor "invalid content" / "cannot be previewed" — root-caused from the runtime + FULLY FIXED + live-DOM verified (D141).** Playwright editor investigation found 2 issues in 2 layers: (a) 10 text-only leaf elements wrapped as `sgs/container`; (b) `sgs/media` `ReferenceError: imageId` in edit.js. Fixes: media `imageId` destructure; §FR-22-4.1 content-leaf step (tag-authoritative routing); compound prefix-strip (`card-tag`→label); `disclaimer`→`sgs/notice-banner` slot; badge repoint; chrome-skip header/footer. Editor store post-fix: 0 invalid blocks, 0 console errors.
+2. **is-style carry + tag-authoritative content-leaf routing (D145, `b93a3b51`).** Drafts can request a block style (`is-style-*`) on a recognised block; the node's own tag is authoritative for content-type (img→media, etc.).
+3. **`sgs/button` REPLACES `core/button` everywhere + WP-mirror `sgs/multi-button` grouping — P-9 COMPLETE (D146, `270cd995`).** 2-rater qc-council "P-9 COMPLETE: YES".
+4. **Theme-wide button PRESETS (D147, `603cbaaf`).** `.sgs-button--primary/--secondary/--outline/--ghost` (+ element slots) → `sgs/button` with `inheritStyle` set → follows the theme preset. New `slots.standalone_block_default_attrs` column (also closes the parked subheading→heading need). qc-council caught + fixed a boolean-attr corruption bug (Finding 5).
+5. **`<video>`/`<iframe>` → `sgs/media` (D147, `603cbaaf`)** + **`sgs/star-rating` Trustpilot style variations (D147, `6f7abca6`)** (flat-green + official-badge; REST-verified) — the social-proof trustpilot-bar can now clone via real components.
+6. **Cart-block research (`/research-check`)** → architecture (Store API + Interactivity API, not cart-fragments) + a full theme-thread build prompt at `.claude/scratch/2026-06-03-prompt-sgs-cart-and-icon-enhancements.md`.
 
 ## Current State
-- **Branch:** `main` at `1761eb35` (squash-merge). Branch deleted.
-- **Tests:** converter suite 16/16 pass. No full build run this session.
-- **Build:** n/a (converter is local Python; plugin build deployed earlier for measurement).
-- **Uncommitted:** only the stray untracked `.claude/sgs-framework.db` (never commit).
-- **Live:** canary page 144 renders content + side-by-side layout; NOT yet pixel-acceptance (60–83%).
+- **Branch:** `feat/fr22-4-1-universal-wrapper` at `603cbaaf` — pushed. **Shared with the parallel theme thread** (its commits interleave). **NOT merged** (merge-prep gate: R-22-5 per-block split + R-22-13 Bean visual sign-off pending).
+- **Tests:** no pytest in env; `db_lookup.py` equivalent_block_for smoke PASS; converter imports clean; all targeted unit + regression tests pass.
+- **Build:** n/a for converter (Python). Block changes (media, star-rating) built + deployed to canary.
+- **Uncommitted changes:** none (code committed; DB changes live in `sgs-framework.db`, not git-tracked).
+- **Canary page 144** reflects the editor-fix re-clone (run `mamas-munches-homepage-2026-06-01-170153`).
 
 ## Known Issues / Blockers
-- **Not pixel-acceptance yet** (P-FR226-FIDELITY-AND-MERGE): images dry-run (no product images), `sgs/info-box` hybrid (gift content sparse), exact styling.
-- **FR-22-4.1 full walker implementation pending** — the depth-2 gate is the working interim; the full fold/container/per-item-CSS rule is the next implementation task.
-- **blub.db dashboard DOWN** (EPERM on start) — this session's lessons captured to workspace + CC-memory file layers + mistakes stubs; blub.db sync pending dashboard recovery.
+- **CSS-transfer fidelity (the 4-gap D136 audit) is still unfixed** — it is the next priority (the pipeline's core job). Gap-4 brand premise was wrong (corrected: draft brand grid is `1fr 1fr`, no bug; only trust-bar grid is real).
+- **Branch unmerged** — accumulating commits from two threads; merge-prep increasingly overdue.
+- **Outcome check (Gate 3.5):** items 1–6 are OUTCOME ACHIEVED (editor errors gone — verified; button/preset/video/star-rating shipped + verified). The session's *editor-error + button* outcomes landed; the *CSS-transfer fidelity* outcome was NOT this session's scope and remains pending.
 
 ## Next Priorities (in order)
-1. **Implement FR-22-4.1 fully** (Spec 22 §FR-22-4.1) — replace the depth-2 gate + walk_passthrough-drop + _absorb_transparent_wrappers patchwork with the one coherent fold/container/block + per-item-CSS mechanism. Sensitive walker rewrite — use the root-cause methodology + /qc-council + /verify-loop + per-section live-DOM measurement.
-2. **Image sideload** (real WP media IDs, not Stage 4i dry-run) — likely the biggest remaining pixel-diff lever.
-3. **Migrate `sgs/info-box`** FR-22-6 hybrid (gift content) — same pattern as product-card.
-4. Reach pixel-acceptance → visual-diff reports → (branch already merged; future fidelity work commits to main or a fresh branch).
-5. Deploy + seed the sgs_product CPT (P-PRODUCT-CPT-DEPLOY-SEED).
+1. **Faithful CSS transfer (the 4-gap audit, D136)** — gap 1 (theme-CSS by position) + gap 2 (fold must stop dropping `__inner`), paired; then gap 3 (hero gradient) + gap 4 (trust-bar grid only). Design via /brainstorming + /qc-council first (sensitive).
+2. **Real image sideload (media-map)** — hero/product images dry-run 404; biggest pixel lever once structure is faithful.
+3. **Merge-prep → main** — split per-block (R-22-5) + Bean visual sign-off (R-22-13).
+4. Variant-routing rollout (modifier-class mechanism, D135); video/iframe→media is done so a future media-video clone can use it.
 
 ## Files Modified
 | File | What changed |
-|------|-------------|
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | G1 leaf-lift + fallback fix + G2 depth-2 grid-wrapper preservation |
-| `plugins/sgs-blocks/src/blocks/{product-card,testimonial,testimonial-slider}/*` | FR-22-6 InnerBlocks migration |
-| `plugins/sgs-blocks/scripts/seed-composition-roles.py` | NEW — idempotent block_composition role corrections |
-| `.claude/specs/22-...md` | NEW §FR-22-4.1 canonical container rule |
-| `CLAUDE.md`, `.claude/architecture.md`, `.claude/mistakes.md` | Root-cause methodology baked in (D118/D26/D27) |
-| `.claude/decisions.md`, `.claude/parking.md` | D117/D118; P-XS-3 + P-UNIFY resolved; P-FR226 added |
+|------|---|
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | content-leaf routing, button grouping, is-style carry, slot-default-attrs apply, modifier→inheritStyle (string-gated), video/iframe `_atomic_attrs_for` |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | prefix-strip Path 2b; `_slot_alias_to_default_attrs`/`slot_default_attrs_for`/`inherit_style_presets` helpers |
+| `plugins/sgs-blocks/src/blocks/button/block.json` | `replaces: core/button` |
+| `plugins/sgs-blocks/src/blocks/media/edit.js` | destructure `imageId` (editor crash fix) |
+| `plugins/sgs-blocks/src/blocks/star-rating/{block.json,render.php}` | Trustpilot style variations |
+| `.claude/decisions.md`, `state.md`, `next-session-prompt.md` | D147 + state + prompt update (STOP catalogue 36→38) |
+| `sgs-framework.db` (live, not git) | `slots.standalone_block_default_attrs` column; button-preset slots + hyphenated aliases; `disclaimer` slot; badge repoint; video/iframe `html_tag_to_core_block` rows |
 
 ## Notes for Next Session
-- **Verify LIVE DOM, never pixel-diff alone** — it mis-scores empty (false win) AND reflowed-correct (false loss) sections. Playwright `textLen` + element layout is the gate.
-- FR-22-4.1 is the canonical container rule (D118); the depth-2 gate is the documented interim — implement the full rule, don't re-derive it.
-- The root-cause methodology is now in CLAUDE.md — it is the mandatory working method.
-- blub.db is down; restart the OpenClaw dashboard, then re-POST this session's lessons (workspace file at `~/.openclaw/workspace/memory/learning/2026-05-31-root-cause-methodology-and-false-pixel-diff.md`).
+- **DB changes survive `/sgs-update`** (slots not rebuilt; Stage 1 reconciles `blocks.replaces` from block.json). Bean ran `/sgs-update` in the parallel session — verified it kept all this session's slot work intact.
+- **Faithful transfer ≠ converter detect-mode hacks** (STOP #33) — the CSS-transfer fix belongs in the D0/D1/D2 transfer layer or a theme-CSS-by-position rule, never a per-section walker conditional.
+- **Shared branch** — coordinate doc edits with the theme thread (decisions.md / state.md / parking.md get concurrent writes; D-numbers are claimed across both threads — D141/D145/D146 cloning, D142/D143/D144 theme, D147 cloning).
+- A temp admin password was set then **restored** to the documented `.claude/secrets/sandybrown.env` value — that credential is valid.
 
 ## Next Session Prompt
-See `.claude/next-session-prompt.md` — updated this session; structural defences (STOP catalogue, ritual, tiered reading) preserved per D101/Gate 6.5; read-docs+git-history-first + methodology added.
+
+The full orchestration plan lives in `.claude/next-session-prompt.md` (cloning thread) — read it end-to-end (warm start mandatory: STOP catalogue #1–38 + pre-flight ritual + mandatory reading list). Opener = faithful CSS transfer (the 4-gap D136 audit). Summary of mandatory tooling:
+
+### Skills to Invoke
+| Skill | When |
+|-------|------|
+| `/autopilot` | FIRST (auto-injected) — live routing + ADHD support |
+| `/brainstorming` | Design the transfer-layer fix (sensitive: fold + theme-CSS) before coding |
+| `/gap-analysis` | Grade outputs before delivery |
+| `/lifecycle` | Before any skill/agent/pipeline change |
+| `/research` | If a transfer approach needs the gold standard |
+| `/strategic-plan` | Order the 4-gap fixes |
+| `/systematic-debugging` | Root-cause each gap from artefacts + draft-diff |
+| `/qc-council` | MANDATORY before every converter/block commit (blub.db 255) |
+
+### MCP Servers & Tools
+| Tool | For |
+|------|-----|
+| Playwright MCP | Serve the mockup on localhost + draft-vs-clone computed-style diff (`file://` blocked); live-DOM verification |
+| `/wp-blocks` (`python ~/.claude/hooks/wp-blocks.py dump`) | Schema enumeration before any "missing X" |
+| `/sgs-db` (read) + `sqlite3` (writes) | DB ground truth |
+
+### Agents to Delegate To
+| Agent | When |
+|-------|------|
+| `wp-sgs-developer` | Heavy converter / theme-CSS / fold build |
+| `design-reviewer` | Visual parity draft-vs-clone after the transfer fix |
+
+### Guardrails
+- Deploy before measure (`build-deploy.py --blocks-only` + OPcache reset). Draft-diff, not pixel-diff, for layout. `--converter-v2` on orchestrator runs; `WP_DEBUG_DISPLAY` false on staging. `/qc-council` before every converter/block commit. Branch stays open until merge-prep + Bean sign-off.

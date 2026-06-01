@@ -16,6 +16,10 @@ update_triggers:
   - Skill dispatch change at any stage
 ---
 
+> **2026-06-01 converter callout (cloning thread; D145/D146)** — two converter advances shipped:
+> - **D146 (`270cd995`)** — `sgs/button` now replaces `core/button` everywhere (converter `atomic_tag_map` reverse-walks `blocks.replaces`); a new `button-group` slot routes `ctas`/`buttons` wrappers → `sgs/multi-button`; `_group_loose_buttons` post-pass wraps loose `sgs/button` runs in `sgs/multi-button` (WP-mirror, DB-derived slug, idempotent). Spec 11 / P-9 complete.
+> - **D145 (`b93a3b51`)** — `walk()` carries `is-style-*` classes from the source node onto the emitted block (e.g. `is-style-trustpilot` on `sgs/star-rating`); the content-leaf ladder is now **tag-authoritative** (node's own tag via `atomic_tag_map` routes FIRST + ungated — `<img>`→sgs/media, `<p>`→text, `<a>`→core/button — THEN text-capable BEM segment, THEN sgs/text). Builds on D141's §FR-22-4.1.
+
 > **2026-05-30 D107-D113 follow-up callout** — tier-driven Stage 1 + block_composition data layer + canonical_slot coverage uplift:
 > - **D107 Stage 1 voter rewrite** — `per-section-convention-voter.py:295-305` now queries `blocks.tier` via `db_lookup.is_class_section_block()` helper (was: literal-slug-match against every `sgs-*` class). Section-roots → confidence 1.0; non-section-roots → gap-candidate.
 > - **D107 /sgs-update integration** — `sgs-update-v2.py` Stage 1 `_index_sgs_block_files` reads `supports.sgs.is_section_root` from each `block.json` and writes `blocks.tier` (`'class-section'` if true else `'block'`). Idempotent. 2 rows currently `class-section`.
@@ -35,7 +39,7 @@ update_triggers:
 > - `html_tag_to_core_block` seed switched from INSERT OR IGNORE → INSERT OR REPLACE (prevents seed/DB divergence)
 > - `block_capabilities` wired into walker as FR-22-15 capability-aware BEM tiebreaker (replaces alphabetical fallback for multi-class disambiguation)
 > - 4 retired blocks deleted from `blocks` table (sgs/back-to-top, sgs/data-display, sgs/icon-block, sgs/reading-progress)
-> - sgs/svg-background, sgs/certification-bar retired (merged into container + trust-badges respectively)
+> - sgs/svg-background, sgs/certification-bar retired (merged into container + trust-bar respectively)
 > - /sgs-update Stage 1 gained UPDATE-on-drift; Stage 10 gained aggressive-prune default + attr-orphan detection + retired-blocks cleanup
 > - Hard-link / NTFS-junction finding: .claude/.agents DB paths share inode = same physical file; real two DBs are sgs-framework + ui-ux-pro-max
 > See `.claude/decisions.md` D93-D100 for full per-decision detail.
@@ -119,7 +123,7 @@ No other branches. Adding a 4th requires spec amendment with empirical justifica
 
 **FR21 invariant** — NO mutation outside `pipeline-state/` until `autonomy_gate` approves promotion. Every stage writes artefacts to `pipeline-state/<run_id>/`; staged_merge validates schema; only `--promote` copies scaffolds to canonical locations.
 
-**DB-first** — Before adding hardcoded lookup dicts, check `sgs-framework.db`: `blocks.tier` (D107 column — `class-section` vs `block`), `block_composition` (D108 — 188 rows; walker consumption DEFERRED but data layer live), `slots` scope='element' (89 rows) / scope='section' (6 rows post-D111) + new `inner` element row, `roles` (20 rows, D99), `property_suffixes` (117 + `kind_override` column 17 rows), `block_supports`, `modifier_suffixes` (19), `block_attributes` (2074; `canonical_slot` 31.8% / `role` 32.6% post-D110 backfill). Refactor to `db_lookup.py`.
+**DB-first** — Before adding hardcoded lookup dicts, check `sgs-framework.db`: `blocks.tier` (D107 column — `class-section` vs `block`), `block_composition` (D108 — 188 rows; walker consumption DEFERRED but data layer live), `slots` scope='element' (89 rows) / scope='section' (6 rows post-D111) + new `inner` element row, `roles` (20 rows, D99), `property_suffixes` (117 + `kind_override` column 17 rows), `block_supports`, `modifier_suffixes` (19), `block_attributes` (2074; `canonical_slot` 31.8% / `role` 32.6% post-D110 backfill), **`blocks.variant_attr`** (DESIGN — FR-22-20; names each block's variant-selector attr), **`variant_slots`** (DESIGN — FR-22-20; per-block discriminating slots by variant value; populated by `/sgs-update` from `supports.sgs.variants`). Refactor to `db_lookup.py`.
 
 **Token-snap strict exact-match** — Snap only when token's resolved value equals the literal within tight tolerance (ΔE ≤ 1.0 for colour, ≤ 1px for spacing/font-size). Nearest-match (confidence 0.85) is NOT snap-eligible. See `mistakes.md` 2026-05-20 lesson 1.
 

@@ -130,6 +130,39 @@ is a framework primitive that serves products, testimonials, team, case studies,
   additive — the converter keeps emitting Typed cards; Bound/collection is an operator-authoring
   feature, not a converter output.
 
+- **FR-24-10 — Curated-content blocks are dual-mode too (Bean-directed, 2026-06-01).** The same
+  Typed-vs-bound split applies to **curated-content blocks** whose editor is a rich repeater the
+  clone pipeline must also feed — `sgs/trust-bar` is the first case (and the generalisation target
+  for any block with a per-item curated editor that the converter emits InnerBlocks into). The
+  conflict: a naive FR-22-6 InnerBlocks migration of `sgs/trust-bar` would **gut its curated client
+  editor** (the icon-circle item repeater + the 3 badge variants `icon-circle`/`text-only`/`image-badge`
+  + autoScroll + title) and replace it with raw block nesting — violating "client experience is
+  primary". The dual-mode answer: the block keeps its **Typed mode** (the existing curated `items[]`
+  repeater + variant inspector — the rich client UX) AND gains a **InnerBlocks/Bound mode** where it
+  `echo $content` so the converter's emitted badge children (`sgs/container.sgs-trust-bar__badge` >
+  `sgs/icon` + `sgs/text`, per the run-223313 ground truth) render. A per-instance Source toggle
+  (mirrors FR-24-2) selects which path drives render.php. R-22-14 clean — the two modes are distinct
+  authored states, NOT a server-side scalar fallback hack: render.php branches on the explicit mode
+  attr, not on `empty($content)`. The badge children use existing primitives (container + icon +
+  text/label + media for image-badge) — no new atomic block. **Build pending** (Bean accepted this
+  continues past the hero into a focused session). All 18 trust-bar attrs + 3 variants preserved
+  (full schema enumerated 2026-06-01: badgeStyle, items, title, titleColour/FontSize, labelColour/
+  FontSize, badgeSize, iconCircle*, iconColour, textColour, columns, gap, showPendingInEditor,
+  autoScroll*). deprecated.js keeps the v2 cert-bar + v3 rename entries; a new entry handles the
+  mode attr default. **Acceptance:** FR-22-18 structural parity — `.sgs-trust-bar` renders the
+  converter's 4 badge children in Bound mode AND the curated repeater still works in Typed mode
+  (editor smoke test, no "unexpected content" warning).
+
+- **FR-24-11 .. FR-24-17 — Variation-sets + `sgs/option-picker` (DESIGN ratified 2026-06-01 via D144; BUILD deferred as theme-thread Task 2).** Full design at `.claude/reports/2026-06-01-product-card-option-picker-design.md` (research-buddies + brainstorming, web-grounded). Bean's 6 decisions are RESOLVED (D144) and encoded below. Headlines: **FR-24-11** `_sgs_variation_sets` CPT meta (per-type `content_impact` map) — each type also carries a **`display_as`** mode of `pills` | `static-list` | `hidden` (D144.1); **FR-24-12** content-impact map drives card rendering not block logic (R-22-9); **FR-24-13** per-instance Interactivity API store; **FR-24-14** Phase-1 slot-conflict priority (first type wins; SKU matrix Phase 2 — D144.2); **FR-24-15** pickers are `sgs/option-picker` blocks (Typed=InnerBlocks / Bound=server-rendered same shape); **FR-24-16** no-JS default state; **FR-24-17** `aria-live` on dynamic slots. New atomic block **`sgs/option-picker`** (radio-group semantics via visually-hidden `<input type=radio>`+`<label>`+pill `<span>`, CSS `:checked` active state, bubbling `sgs:option-selected` event, NOT sgs/button).
+  - **D144 ratified decisions (build these):**
+    1. **Per-type `display_as`** — `pills` (interactive) | `static-list` (renders "Available in N flavours: A, B, C" — a non-interactive selling point) | `hidden`. PLUS a card-level **"price only"** toggle that sets all pickers hidden so the card shows just "From £x". (FR-24-11/12.)
+    2. **SKU matrix deferred** — two price-affecting types → Phase-1 editor warning (first type wins); `_sgs_sku_matrix` is Phase 2. (FR-24-14.)
+    3. **Pill style** = filled inside product-card / outlined as global default; PLUS three CSS states on the radio-group: resting / hover+focus ("considering") / `:checked` ("selected"). (FR-24-15.)
+    4. **Clone emit** = emit `sgs/option-picker` DIRECTLY from the clone (Bean corrected 2026-06-01 — opposite of the original rec). The converter outputs the picker block for a pill group via TRUTH-SPEC + slot_synonyms/slots updates. Build the option-picker ASAP + battle-ready, THEN wire it into the pipeline — pulls Phase D + pipeline-emit forward. (FR-24-15: the picker must be robust enough to be the converter's emit target.)
+    5. **Source toggle** (Typed/Bound) appears in BOTH the block toolbar AND the inspector (one attr, two controls). (FR-24-15.)
+    6. **Variation-sets editor UI** = Gutenberg panel, not classic meta box. (FR-24-11.)
+  - Build order: A option-picker standalone → B variation-sets data → C card Bound mode → D **clone-emit** (TRUTH-SPEC + slot_synonyms/slots so the converter outputs `sgs/option-picker` for pill groups) → E collection. **BUILD is theme-thread Task 2 — NOT yet started (deferred to the next theme session); it is a near-term priority.** Per D144.4 (Bean Q4 correction), **Phase D is IN-SCOPE within Task 2 — NOT split to a still-later phase**: when the build runs, the option-picker is made battle-ready AND wired into the converter's emit path. ("Deferred" = the build session hasn't begun; it does NOT mean Phase D is postponed once building starts.) Gated on parking P-PRODUCT-CARD-FULL-DUAL-MODE / D129; this spec is the recorded contract the build session inherits.
+
 ## Non-functional Requirements
 
 - Selection presets resolve server-side; result counts capped (default 12, max configurable).

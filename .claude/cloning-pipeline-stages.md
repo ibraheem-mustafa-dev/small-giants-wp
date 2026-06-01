@@ -262,6 +262,13 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │   110 → 676 (5.3% → 32.6%). 1316 rows remain NULL (vocab/regex gaps logged).│
 │   assign-canonical.py ported from retired slot_synonyms → slots+roles       │
 │   schema (9 references migrated). Stage 1 tail of /sgs-update wires it.     │
+│   [DESIGN/build-pending] blocks.variant_attr + variant_slots: when a        │
+│   block's variant_attr IS NOT NULL the converter counts which variant's      │
+│   discriminating slots (variant_slots table) appear in the draft's extract  │
+│   THIS run, picks the highest-count variant, and sets the variant attr →    │
+│   render.php's original gate fires correctly. Reverts the hero $is_split    │
+│   band-aid. Universal across 33 variant blocks (R-22-1/R-22-9). Build =     │
+│   next session opening task. Full spec: Spec 22 §FR-22-20 + D133.           │
 │ External tools: Playwright (computed-style extraction at 3 viewports)       │
 │                                                                             │
 │ STATUS (post-2026-05-24 second pass — SHIPPED): 5 data-layer + walker      │

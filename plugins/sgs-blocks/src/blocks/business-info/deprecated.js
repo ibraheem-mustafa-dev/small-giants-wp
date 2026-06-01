@@ -10,7 +10,7 @@
  *   - A permissive attribute schema that accepts any of the old data fields
  *   - `save: () => null` to match the original null-save shape
  *   - `migrate()` strips the obsolete data attributes from the post content,
- *     keeping only `type` + presentation attributes. The companion PHP
+ *     keeping only `displayType` + presentation attributes. The companion PHP
  *     migration in includes/migrations/0002-spec-17-foundation.php has
  *     already lifted the data into the Site Info store on plugin upgrade,
  *     so the JS migrate() is purely a cleanup.
@@ -53,7 +53,7 @@ const v1 = {
 	 */
 	migrate( oldAttrs ) {
 		return {
-			type:        oldAttrs.type        ?? 'phone',
+			displayType: oldAttrs.type        ?? 'phone',
 			showIcon:    oldAttrs.showIcon    ?? true,
 			linkPhone:   oldAttrs.linkPhone   ?? true,
 			linkEmail:   oldAttrs.linkEmail   ?? true,

@@ -15,7 +15,7 @@ split_note: "2026-05-24 — split into 3 parts: architecture.md (this file, syst
 
 SGS is a standalone WordPress block theme and Gutenberg blocks plugin built by Small Giants Studio. It competes directly with Kadence, Spectra, and GenerateBlocks — every block must be fully configurable by non-technical clients through the block editor alone. The framework is client-agnostic; Mama's Munches is the current pipeline canary, Indus Foods is the design-language proving ground, and every architectural decision must hold for any business type.
 
-**Framework stats (2026-05-25):** 69 blocks (all dynamic; sgs/trust-bar retired D72), 2,246 block attributes, 184 design tokens, 35 patterns, 1,216 block supports, 89 slot synonyms, 117 property suffixes (incl. hover-state suffixes), 19 modifier_suffixes (variant/state/breakpoint/side/corner/unit kinds), 85 block_capabilities, 5,421 hooks, 18 SGS blocks declare `blocks.replaces` mapping to core. All blocks at `apiVersion: 3`. WP 7.0.
+**Framework stats (headline verified 2026-06-01 — authoritative current counts live in [`../CLAUDE.md`](../CLAUDE.md) "Framework stats"; do not maintain a divergent copy here):** 66 SGS blocks (all dynamic) + 122 core/wp indexed = 188 total; 2,077 block_attributes; `sgs/trust-bar` is ACTIVE (rebuilt from `sgs/trust-badges` per D123 — the ORIGINAL composite was retired D72, not the current block); ≥18 SGS blocks declare `blocks.replaces` mapping to core (incl. `sgs/button` → `core/button`, D146). All blocks at `apiVersion: 3`. WP 7.0. (Token/pattern/hook/capability counts: see CLAUDE.md.)
 
 **Feature audit (354 features, graded roadmap):** moved to `.claude/plans/archive/2026-02-21-feature-audit.md`.
 
@@ -29,7 +29,7 @@ SGS is a standalone WordPress block theme and Gutenberg blocks plugin built by S
 |---|---|---|
 | CMS | WordPress 7.0 | Block theme, no classic editor. Sandybrown upgraded 2026-05-22. |
 | Theme | `sgs-theme` (block theme) | theme.json v3, template parts. Style variations retired (Phase 5a). |
-| Blocks plugin | `sgs-blocks` | 69 blocks (Phase 6 audit + markup seeding 2026-05-22). Extensions in `src/blocks/extensions/`. `Sgs_Ai_Connector` wraps WP 7.0 AI Connectors API. |
+| Blocks plugin | `sgs-blocks` | 66 blocks (trust-badges→trust-bar rename since the Phase 6 audit + markup seeding 2026-05-22). Extensions in `src/blocks/extensions/`. `Sgs_Ai_Connector` wraps WP 7.0 AI Connectors API. |
 | Block build | `@wordpress/scripts` | `--experimental-modules` flag required for `viewScriptModule` |
 | Frontend JS | Interactivity API + vanilla ES modules | Interactivity API for stateful blocks; vanilla `viewScriptModule` for AJAX (Post Grid) |
 | Icons | Lucide (1900+ icons) | Pre-generated to `lucide-icons.php` via `scripts/generate-icons.js` |
@@ -83,7 +83,7 @@ The SGS framework has four primary components: the block theme (`sgs-theme`), th
 │                                                            │
 │  ┌─────────────────────┐   ┌──────────────────────────┐  │
 │  │  sgs-theme           │   │  sgs-blocks plugin        │  │
-│  │  (block theme)       │   │  (69 dynamic blocks)      │  │
+│  │  (block theme)       │   │  (66 dynamic blocks)      │  │
 │  │                      │   │                           │  │
 │  │  theme.json          │◄──┤  render.php (per block)   │  │
 │  │  templates/          │   │  block.json (attrs)       │  │
@@ -126,7 +126,7 @@ The SGS framework has four primary components: the block theme (`sgs-theme`), th
 
 ### sgs-blocks plugin → sgs-framework.db
 - `db_lookup.py` (read-only) exposes `slot_synonyms`, `block_attributes`, `property_suffixes`, `block_capabilities`, `modifier_suffixes` as Python-callable query helpers.
-- `/sgs-update` (9-stage `sgs-update-v2.py`) rebuilds the DB from 10 canonical sources: block.json files, render.php parse, REST API enumeration (variations, styles), hooks scan, design token parse, and pattern parse.
+- `/sgs-update` (10-stage v3 `sgs-update-v2.py`) rebuilds the DB from 10 canonical sources: block.json files, render.php parse, REST API enumeration (variations, styles), hooks scan, design token parse, and pattern parse.
 - `wp-blocks.py` is the unified data CLI: `dump`, `block <slug>`, `capabilities`, `synonyms` — used by pipeline scripts and `/sgs-db` slash command.
 
 ### cloning pipeline → WordPress REST API

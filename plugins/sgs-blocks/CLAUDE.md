@@ -101,7 +101,7 @@ rm sgs-deploy.tar
 | Testimonial Slider | Deployed |
 | Heritage Strip | Deployed |
 | Brand Strip | Deployed |
-| Trust Badges | Deployed (merged certification-bar capability + auto-scroll 2026-05-29 D95 — badgeStyle variants: icon-circle (default), text-only, image-badge; auto-scroll marquee when items overflow columns) |
+| Trust Bar | Deployed (merged certification-bar capability + auto-scroll 2026-05-29 D95 — badgeStyle variants: icon-circle (default), text-only, image-badge; auto-scroll marquee when items overflow columns. Renamed from Trust Badges 2026-05-31.) |
 | Notice Banner | Deployed |
 | WhatsApp CTA | Deployed |
 | Accordion + Accordion Item | Deployed |
@@ -132,7 +132,7 @@ rm sgs-deploy.tar
 | Animation (15 scroll animation types) | Deployed |
 | Responsive Visibility (device show/hide) | Deployed |
 | Hover State Controls (bg/text/border colour) | Deployed (4 blocks: Info Box, Card Grid, CTA Section, Hero) |
-| Off-Canvas Mobile Nav (M17) | Built (needs build + deploy) |
+| Off-Canvas Mobile Nav (M17) | Deployed (full-fix 2026-06-01 D143, v3.0.3: full-screen overlay + core/page-list menu expansion + header-only inserter scope; menu now reads the WP default page-list nav, not just manual navigation-link items) |
 
 ### Backend Integrations
 
@@ -192,6 +192,7 @@ Every block MUST provide per-element customisation matching Kadence/Spectra dept
 3. Custom attributes + controls for interactive elements like CTAs (text colour, background colour)
 4. CSS fallback colours use `:not([style*="color"])` so custom values always win
 5. Use Block Selectors API in `block.json` to target native typography to primary text element
+6. **Variant-bearing blocks MUST declare `supports.sgs.variants`** in `block.json` — a map of `variant_value → [attr/slot names that variant uses]` — so the cloning converter can detect the correct variant from what the draft extracted, without per-block code. The variant-selector attr name (e.g. `variant`, `variantStyle`, `layout`) MUST also be registerable to the `blocks.variant_attr` DB column via `/sgs-update`. (FR-22-20, DESIGN/build-pending — see Spec 22 §FR-22-20 + D133. Build = next session opening task.)
 
 ### Hover Controls Spec (Phase 2)
 

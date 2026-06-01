@@ -62,7 +62,10 @@
     },
     "reviews": {
       "type": "array",
-      "default": []
+      "default": [],
+      "items": {
+        "type": "object"
+      }
     },
     "trustScore": {
       "type": "number",

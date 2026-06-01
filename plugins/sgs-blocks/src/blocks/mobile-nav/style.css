@@ -48,6 +48,18 @@
 		display 400ms allow-discrete;
 }
 
+/*
+ * Kill WP flow-layout block-gap. The drawer is a direct child of an
+ * .is-layout-flow container, so WP applies `:root :where(.is-layout-flow) > *
+ * { margin-block-start: var(--wp--preset--spacing--40) }` (specificity 0,1,0),
+ * which ties the base `.sgs-mobile-nav { margin:0 }` rule and wins on source
+ * order — pushing the overlay down ~16px and exposing a strip of the page
+ * behind. The doubled block class (0,2,0) beats the WP rule for every variant.
+ */
+.sgs-mobile-nav.wp-block-sgs-mobile-nav {
+	margin: 0;
+}
+
 /* Backdrop via Popover API */
 .sgs-mobile-nav::backdrop {
 	background: rgba(0, 0, 0, 0.6);
@@ -80,8 +92,18 @@
 }
 
 /* ─── Variant: Overlay (full-screen, slides down) ───────────────────────────── */
+/*
+ * width + height override the popover UA stylesheet defaults of
+ * width:fit-content / height:fit-content / margin:auto, which would otherwise
+ * produce a tiny content-sized box even with inset:0.
+ * 100vh is the static fallback; 100dvh (Baseline 2025) shrinks to exclude the
+ * mobile browser address bar so the drawer never overflows the visible viewport.
+ */
 .sgs-mobile-nav--overlay {
 	inset: 0;
+	width: 100vw;
+	height: 100vh;
+	height: 100dvh;
 	transform: translateY(-100%);
 }
 

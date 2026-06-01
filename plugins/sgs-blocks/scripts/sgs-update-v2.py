@@ -165,7 +165,7 @@ def _parent_for_block(block_dir_name: str) -> str | None:
 # excluded — they are operator-managed metadata, not block.json fields.
 _BLOCKS_TRACKED_FIELDS = (
     "title", "category", "type", "description",
-    "has_view_script", "has_render_php", "parent_block",
+    "has_view_script", "has_render_php", "parent_block", "replaces",
 )
 
 # Fields in `block_attributes` that are derived from block.json attribute defs.
@@ -207,6 +207,26 @@ def _index_sgs_block_files(
     indexed_updated = 0
     indexed_skipped = 0
 
+    # --- Ensure variant-detection schema (FR-22-20 D133) ---
+    # Idempotent: matches db_lookup._migrate_variant_detection_schema so an
+    # update run can populate blocks.variant_attr + variant_slots without
+    # depending on the converter module being imported. Guarded ALTER +
+    # CREATE IF NOT EXISTS — safe on every run.
+    blocks_cols = {row[1] for row in c.execute("PRAGMA table_info(blocks)").fetchall()}
+    if "variant_attr" not in blocks_cols:
+        c.execute("ALTER TABLE blocks ADD COLUMN variant_attr TEXT")
+    c.execute(
+        """
+        CREATE TABLE IF NOT EXISTS variant_slots (
+          block_slug    TEXT NOT NULL,
+          variant_value TEXT NOT NULL,
+          unique_slot   TEXT NOT NULL,
+          created_at    TEXT DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (block_slug, variant_value, unique_slot)
+        )
+        """
+    )
+
     for block_dir in sorted(blocks_dir.iterdir()):
         if not block_dir.is_dir() or block_dir.name in EXCLUDED_DIRS:
             continue
@@ -234,6 +254,7 @@ def _index_sgs_block_files(
         )
         block_type = "dynamic" if has_render else "static"
         parent = _parent_for_block(block_dir.name)
+        replaces = data.get("replaces") or None  # None if absent or empty string
         attrs = data.get("attributes", {})
         supports = data.get("supports", {})
 
@@ -241,7 +262,7 @@ def _index_sgs_block_files(
             # In dry-run: count what EXISTS vs what WOULD be inserted / updated
             existing = c.execute(
                 "SELECT title, category, type, description, has_view_script, "
-                "has_render_php, parent_block FROM blocks WHERE slug = ? AND source = 'sgs'",
+                "has_render_php, parent_block, replaces FROM blocks WHERE slug = ? AND source = 'sgs'",
                 (slug,),
             ).fetchone()
             if existing is None:
@@ -249,7 +270,7 @@ def _index_sgs_block_files(
             else:
                 scraped_vals = (
                     title, category, block_type, description,
-                    1 if has_view else 0, 1 if has_render else 0, parent,
+                    1 if has_view else 0, 1 if has_render else 0, parent, replaces,
                 )
                 if tuple(existing) != scraped_vals:
                     updated_blocks += 1
@@ -288,13 +309,13 @@ def _index_sgs_block_files(
             """
             INSERT OR IGNORE INTO blocks
                 (slug, title, category, type, status, description,
-                 has_view_script, has_render_php, parent_block, source, updated_at)
-            VALUES (?, ?, ?, ?, 'built', ?, ?, ?, ?, 'sgs', ?)
+                 has_view_script, has_render_php, parent_block, replaces, source, updated_at)
+            VALUES (?, ?, ?, ?, 'built', ?, ?, ?, ?, ?, 'sgs', ?)
             """,
             (
                 slug, title, category, block_type, description,
                 1 if has_view else 0, 1 if has_render else 0,
-                parent, datetime.now(timezone.utc).isoformat(),
+                parent, replaces, datetime.now(timezone.utc).isoformat(),
             ),
         )
         if result.rowcount:
@@ -303,13 +324,13 @@ def _index_sgs_block_files(
             # Row exists — check for drift and UPDATE if any tracked field changed
             existing = c.execute(
                 "SELECT title, category, type, description, has_view_script, "
-                "has_render_php, parent_block FROM blocks WHERE slug = ? AND source = 'sgs'",
+                "has_render_php, parent_block, replaces FROM blocks WHERE slug = ? AND source = 'sgs'",
                 (slug,),
             ).fetchone()
             if existing is not None:
                 scraped_vals = (
                     title, category, block_type, description,
-                    1 if has_view else 0, 1 if has_render else 0, parent,
+                    1 if has_view else 0, 1 if has_render else 0, parent, replaces,
                 )
                 if tuple(existing) != scraped_vals:
                     c.execute(
@@ -317,13 +338,13 @@ def _index_sgs_block_files(
                         UPDATE blocks
                         SET title = ?, category = ?, type = ?, description = ?,
                             has_view_script = ?, has_render_php = ?, parent_block = ?,
-                            updated_at = ?
+                            replaces = ?, updated_at = ?
                         WHERE slug = ? AND source = 'sgs'
                         """,
                         (
                             title, category, block_type, description,
                             1 if has_view else 0, 1 if has_render else 0, parent,
-                            datetime.now(timezone.utc).isoformat(),
+                            replaces, datetime.now(timezone.utc).isoformat(),
                             slug,
                         ),
                     )
@@ -344,6 +365,51 @@ def _index_sgs_block_files(
                 "UPDATE blocks SET tier = ? WHERE slug = ? AND source = 'sgs'",
                 (computed_tier, slug),
             )
+
+        # --- Variant-detection population (FR-22-20 D133) ---
+        # blocks.variant_attr ← supports.sgs.variantAttr; variant_slots ← each
+        # variant's DISCRIMINATING slots (set-difference vs sibling variants)
+        # from supports.sgs.variants. So the converter detects a block's variant
+        # from the draft's extracted fingerprint, universally, without per-block
+        # code (R-22-1 DB-driven, R-22-9 universal). Idempotent: variant_attr
+        # writes only on drift; variant_slots is delete-then-insert.
+        variant_attr_name = sgs_supports.get("variantAttr") if isinstance(sgs_supports, dict) else None
+        variants_map = sgs_supports.get("variants") if isinstance(sgs_supports, dict) else None
+        if not isinstance(variants_map, dict):
+            variants_map = None
+        # Only set variant_attr when BOTH the selector name and the map are
+        # declared — a half-declared block stays NULL (detector skips it).
+        desired_variant_attr = variant_attr_name if (variant_attr_name and variants_map) else None
+        current_va_row = c.execute(
+            "SELECT variant_attr FROM blocks WHERE slug = ? AND source = 'sgs'",
+            (slug,),
+        ).fetchone()
+        if current_va_row is not None and current_va_row[0] != desired_variant_attr:
+            c.execute(
+                "UPDATE blocks SET variant_attr = ? WHERE slug = ? AND source = 'sgs'",
+                (desired_variant_attr, slug),
+            )
+        # Repopulate variant_slots for this block (delete-then-insert = idempotent;
+        # reflects the current block.json on every run). A variant's discriminating
+        # slots = its slots minus the union of every sibling variant's slots, so
+        # shared attrs (e.g. minHeight) never act as a discriminator.
+        c.execute("DELETE FROM variant_slots WHERE block_slug = ?", (slug,))
+        if variants_map:
+            for v_value, v_slots in variants_map.items():
+                if not isinstance(v_slots, list):
+                    continue
+                sibling_slots: set = set()
+                for other_value, other_slots in variants_map.items():
+                    if other_value == v_value or not isinstance(other_slots, list):
+                        continue
+                    sibling_slots.update(other_slots)
+                discriminating = [s for s in v_slots if s not in sibling_slots]
+                for slot in discriminating:
+                    c.execute(
+                        "INSERT OR IGNORE INTO variant_slots "
+                        "(block_slug, variant_value, unique_slot) VALUES (?, ?, ?)",
+                        (slug, v_value, slot),
+                    )
 
         scanned += 1
 

@@ -45,6 +45,10 @@ final class SGS_Blocks {
 		// Loads every sgs-*-variations.php file in includes/variations/.
 		require_once SGS_BLOCKS_PATH . 'includes/variations/class-sgs-block-variations.php';
 		Sgs_Block_Variations::load();
+
+		// Mobile-nav inserter scope — removes sgs/mobile-nav + sgs/mobile-nav-toggle
+		// from the post/page inserter; leaves them available in the Site Editor.
+		require_once SGS_BLOCKS_PATH . 'includes/mobile-nav-inserter-scope.php';
 	}
 
 	/**
@@ -96,6 +100,30 @@ final class SGS_Blocks {
 	 * the correct WordPress script dependencies.
 	 */
 	public function enqueue_editor_extensions(): void {
+		// Expose icon-asset URLs to the shared IconPicker component. Attached to
+		// the always-present 'wp-blocks' editor handle so every block script can
+		// read window.sgsBlocksData regardless of bundle load order. The JSON
+		// assets are fetched on demand by the picker modal (editor only).
+		$icons_dir = SGS_BLOCKS_PATH . 'assets/icons/';
+		$icons_url = SGS_BLOCKS_URL . 'assets/icons/';
+		$icon_ver  = static function ( string $file ) use ( $icons_dir ): string {
+			$path = $icons_dir . $file;
+			return file_exists( $path ) ? (string) filemtime( $path ) : '0';
+		};
+		wp_add_inline_script(
+			'wp-blocks',
+			'window.sgsBlocksData = window.sgsBlocksData || {};' .
+			'window.sgsBlocksData.iconAssets = ' . wp_json_encode(
+				array(
+					'lucide'     => $icons_url . 'lucide-icons.json?ver=' . $icon_ver( 'lucide-icons.json' ),
+					'lucideTags' => $icons_url . 'lucide-tags.json?ver=' . $icon_ver( 'lucide-tags.json' ),
+					'emoji'      => $icons_url . 'emoji.json?ver=' . $icon_ver( 'emoji.json' ),
+					'wpIcons'    => $icons_url . 'wp-icons.json?ver=' . $icon_ver( 'wp-icons.json' ),
+				)
+			) . ';',
+			'before'
+		);
+
 		$asset_file = SGS_BLOCKS_PATH . 'build/extensions/index.asset.php';
 
 		if ( ! file_exists( $asset_file ) ) {

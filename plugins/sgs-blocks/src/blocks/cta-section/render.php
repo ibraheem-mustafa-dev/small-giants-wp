@@ -2,8 +2,19 @@
 /**
  * Server-side render for the SGS CTA Section block.
  *
+ * FR-22-6 migration: the content column (headline, body text, and buttons) is
+ * now rendered via InnerBlocks ($content). Scalar content attrs (headline, body)
+ * are NO LONGER read here — they are retained in block.json for deprecated.js
+ * back-compat only. R-22-14: NO legacy scalar fallback.
+ *
+ * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
+ *   ribbon, layout, gradientPreset, backgroundImage, backgroundMedia,
+ *   backgroundImageOpacity, stats, hoverBackground/Text/Border colour,
+ *   transitionDuration, transitionEasing, bodyFontSize* (responsive CSS),
+ *   textAlignMobile/Tablet/Desktop (responsive CSS targeting children).
+ *
  * @var array    $attributes Block attributes.
- * @var string   $content    Inner block content.
+ * @var string   $content    InnerBlocks HTML (headline, body, buttons).
  * @var \WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
@@ -13,14 +24,10 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
-// Extract attributes with defaults.
-$headline                 = $attributes['headline'] ?? '';
-$body                     = $attributes['body'] ?? '';
+// FR-22-6: scalar content attrs (headline, body) are intentionally NOT read here.
+// They are retained in block.json for deprecated.js back-compat only. R-22-14.
 $ribbon                   = isset( $attributes['ribbon'] ) ? sanitize_text_field( $attributes['ribbon'] ) : '';
 $layout                   = $attributes['layout'] ?? 'centred';
-$headline_colour          = $attributes['headlineColour'] ?? '';
-$body_colour              = $attributes['bodyColour'] ?? '';
-$body_font_size           = $attributes['bodyFontSize'] ?? '';
 $body_font_size_tablet    = $attributes['bodyFontSizeTablet'] ?? '';
 $body_font_size_mobile    = $attributes['bodyFontSizeMobile'] ?? '';
 $background_image         = $attributes['backgroundImage'] ?? null;
@@ -45,7 +52,7 @@ if ( ! empty( $background_media ) && is_array( $background_media ) && ! empty( $
 
 $has_image_bg = $resolved_media && ( $resolved_media['type'] ?? 'image' ) === 'image';
 $has_video_bg = $resolved_media && ( $resolved_media['type'] ?? 'image' ) === 'video';
-$stats                    = $attributes['stats'] ?? array();
+$stats        = $attributes['stats'] ?? array();
 
 $hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
 $hover_text_colour       = $attributes['hoverTextColour'] ?? '';
@@ -93,6 +100,8 @@ if ( $gradient_preset ) {
 }
 
 // Build responsive body font-size CSS.
+// Targets .sgs-cta-section__body inside InnerBlocks children (sgs/text child
+// may carry this class via its className attr set during migration).
 $responsive_css = '';
 if ( $body_font_size_tablet || $body_font_size_mobile ) {
 	$uid       = 'sgs-cta-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
@@ -146,35 +155,6 @@ if ( $resolved_media ) {
 	);
 }
 
-// Build headline styles.
-$h_classes          = array( 'sgs-cta-section__headline' );
-$text_align_mobile  = $attributes['textAlignMobile'] ?? '';
-$text_align_tablet  = $attributes['textAlignTablet'] ?? '';
-$text_align_desktop = $attributes['textAlignDesktop'] ?? '';
-
-if ( $text_align_mobile ) {
-	$h_classes[] = 'sgs-text-align-m-' . $text_align_mobile; }
-if ( $text_align_tablet ) {
-	$h_classes[] = 'sgs-text-align-t-' . $text_align_tablet; }
-if ( $text_align_desktop ) {
-	$h_classes[] = 'sgs-text-align-d-' . $text_align_desktop; }
-
-$h_styles = array();
-if ( $headline_colour ) {
-	$h_styles[] = 'color:' . sgs_colour_value( $headline_colour ); }
-$headline_style_attr = $h_styles ? ' style="' . implode( ';', $h_styles ) . '"' : '';
-$headline_class_attr = ' class="' . esc_attr( implode( ' ', $h_classes ) ) . '"';
-
-// Build body styles.
-$body_styles = array();
-if ( $body_colour ) {
-	$body_styles[] = 'color:' . sgs_colour_value( $body_colour );
-}
-if ( $body_font_size ) {
-	$body_styles[] = 'font-size:' . sgs_font_size_value( $body_font_size );
-}
-$body_style_attr = $body_styles ? ' style="' . implode( ';', $body_styles ) . '"' : '';
-
 // Build stats HTML.
 $stats_html = '';
 if ( ! empty( $stats ) ) {
@@ -192,10 +172,11 @@ if ( ! empty( $stats ) ) {
 	$stats_html .= '</div>';
 }
 
-// Buttons are now rendered via sgs/multi-button + sgs/button InnerBlocks.
-// $content is passed by WordPress and contains the rendered InnerBlocks output.
-// Legacy buttons array attribute is handled by deprecated.js migration.
-$buttons_html = '<div class="sgs-cta-section__buttons">' . $content . '</div>';
+// FR-22-6: $content is the full InnerBlocks output (sgs/heading + sgs/text +
+// sgs/multi-button children). Wrap in __content to preserve CSS layout.
+// Stats remain scalar — they are a shell-level data primitive (not plain text
+// that a child block replicates), kept per FR-22-19 discriminator.
+// R-22-14: no scalar headline/body fallback.
 
 // Output responsive CSS if needed.
 if ( $responsive_css ) {
@@ -208,22 +189,17 @@ if ( $ribbon ) {
 	$ribbon_html = '<span class="sgs-cta-section__ribbon" aria-hidden="true">' . esc_html( $ribbon ) . '</span>';
 }
 
-// Output. All variables are either pre-escaped (esc_html/esc_attr/esc_url at
-// construction time) or passed through wp_kses_post(). The phpcs disable below
-// silences the false-positive "not escaped inline" warnings on multi-arg printf.
+// Output. $content is WP core InnerBlocks output (trusted). All other variables
+// are pre-escaped at construction time. phpcs:disable silences false-positive
+// "not escaped inline" warnings on multi-arg printf.
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 printf(
-	'<section %s>%s%s%s<div class="sgs-cta-section__content"><h2%s%s>%s</h2><p class="sgs-cta-section__body"%s>%s</p>%s</div>%s</section>',
+	'<section %s>%s%s%s<div class="sgs-cta-section__content">%s%s</div></section>',
 	$wrapper_attributes,
 	$media_html,
 	$overlay_html,
 	$ribbon_html,
-	$headline_class_attr,
-	$headline_style_attr,
-	wp_kses_post( $headline ),
-	$body_style_attr,
-	wp_kses_post( $body ),
-	$stats_html,
-	$buttons_html
+	$content,
+	$stats_html
 );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

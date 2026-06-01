@@ -24,15 +24,15 @@
 	display: block;
 }
 
-/* Variant: pullquote — centred, larger type, left-right border accents. */
-.wp-block-sgs-quote--pullquote {
+/* Style: pull-quote — centred, left-right border accents. */
+.wp-block-sgs-quote.is-style-pullquote {
 	text-align: center;
 	border-left: 4px solid var( --wp--preset--color--primary, currentColor );
 	border-right: 4px solid var( --wp--preset--color--primary, currentColor );
 }
 
-/* Variant: testimonial — card-style rounding + light shadow. */
-.wp-block-sgs-quote--testimonial {
+/* Style: testimonial — card-style rounding + light shadow. */
+.wp-block-sgs-quote.is-style-testimonial {
 	border-radius: 8px;
 	box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.08 );
 }

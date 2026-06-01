@@ -19,21 +19,6 @@ const TAG_OPTIONS = [
 	{ label: __( 'div (block)', 'sgs-blocks' ), value: 'div' },
 ];
 
-const VARIANT_OPTIONS = [
-	{
-		label: __( 'Plain — eyebrow text, no background', 'sgs-blocks' ),
-		value: 'plain',
-	},
-	{
-		label: __( 'Pill fill — full-width rounded background', 'sgs-blocks' ),
-		value: 'pill-fill',
-	},
-	{
-		label: __( 'Pill wrap — content-width rounded background', 'sgs-blocks' ),
-		value: 'pill-wrap',
-	},
-];
-
 const TEXT_TRANSFORM_OPTIONS = [
 	{ label: __( 'Uppercase', 'sgs-blocks' ), value: 'uppercase' },
 	{ label: __( 'Lowercase', 'sgs-blocks' ), value: 'lowercase' },
@@ -84,7 +69,7 @@ function buildStyle( attributes ) {
 		paddingBottom,
 		paddingLeft,
 		borderRadius,
-		variantStyle,
+		className,
 	} = attributes;
 
 	const style = {
@@ -105,7 +90,10 @@ function buildStyle( attributes ) {
 		'--sgs-label-border-radius': `${ borderRadius }px`,
 	};
 
-	if ( variantStyle !== 'plain' ) {
+	// Emit padding custom property whenever a pill style is active.
+	const isPillStyle = typeof className === 'string' &&
+		( className.includes( 'is-style-pill-fill' ) || className.includes( 'is-style-pill-wrap' ) );
+	if ( isPillStyle ) {
 		style[ '--sgs-label-padding' ] =
 			`${ paddingTop }px ${ paddingRight }px ${ paddingBottom }px ${ paddingLeft }px`;
 	}
@@ -124,7 +112,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		text,
 		tag,
-		variantStyle,
+		className,
 		textColour,
 		backgroundColour,
 		fontSize,
@@ -145,31 +133,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderRadius,
 	} = attributes;
 
-	const classNames = [
-		'wp-block-sgs-label',
-		`is-style-${ variantStyle }`,
-	].join( ' ' );
-
 	const blockProps = useBlockProps( {
-		className: classNames,
 		style: buildStyle( attributes ),
 	} );
 
-	const isPill = variantStyle !== 'plain';
+	// Pill-specific panels are visible when a pill block-style is active.
+	const isPill = typeof className === 'string' &&
+		( className.includes( 'is-style-pill-fill' ) || className.includes( 'is-style-pill-wrap' ) );
 
 	return (
 		<>
 			<InspectorControls>
 				<PanelBody title={ __( 'Label Settings', 'sgs-blocks' ) }>
-					<SelectControl
-						label={ __( 'Style variant', 'sgs-blocks' ) }
-						value={ variantStyle }
-						options={ VARIANT_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { variantStyle: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
 					<SelectControl
 						label={ __( 'HTML tag', 'sgs-blocks' ) }
 						value={ tag }

@@ -1,0 +1,121 @@
+/**
+ * IconPicker editor styles. Compiled into each consuming block's index.css
+ * (editorStyle) by @wordpress/scripts. Editor-only — never shipped to the
+ * frontend. WCAG 2.2 AA: 44px targets, visible focus rings.
+ */
+
+/* Trigger button in the inspector */
+.sgs-icon-picker__trigger {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	min-height: 44px;
+	justify-content: flex-start;
+	text-align: left;
+	height: auto;
+}
+
+.sgs-icon-picker__trigger-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* Modal layout */
+.sgs-icon-picker-modal .components-modal__content {
+	display: flex;
+	flex-direction: column;
+}
+
+.sgs-icon-picker__tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	margin-bottom: 12px;
+}
+
+.sgs-icon-picker__status {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 24px 0;
+	color: #757575;
+}
+
+.sgs-icon-picker__note {
+	margin: 12px 0 0;
+	font-size: 12px;
+	color: #757575;
+}
+
+/* The icon grid */
+.sgs-icon-grid {
+	display: grid;
+	gap: 4px;
+	max-height: 50vh;
+	overflow-y: auto;
+	padding: 4px;
+	/* fixed-height scroll region; grid-template-columns set inline */
+}
+
+.sgs-icon-grid__cell {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 6px;
+	border: 1px solid transparent;
+	border-radius: 4px;
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+	transition: background-color 0.1s ease, border-color 0.1s ease;
+}
+
+.sgs-icon-grid__cell:hover {
+	background: #f0f0f0;
+}
+
+.sgs-icon-grid__cell:focus-visible {
+	outline: 2px solid var( --wp-admin-theme-color, #2563eb );
+	outline-offset: 1px;
+}
+
+.sgs-icon-grid__cell.is-selected {
+	border-color: var( --wp-admin-theme-color, #2563eb );
+	background: rgba( 37, 99, 235, 0.08 );
+}
+
+/* Icon rendering inside cells + preview chip */
+.sgs-icon-grid__svg,
+.sgs-icon-preview__svg {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.sgs-icon-grid__svg svg,
+.sgs-icon-preview__svg svg {
+	width: 24px;
+	height: 24px;
+	display: block;
+}
+
+.sgs-icon-grid__emoji {
+	font-size: 22px;
+	line-height: 1;
+}
+
+.sgs-icon-grid__cell .dashicons {
+	width: 24px;
+	height: 24px;
+	font-size: 24px;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-icon-grid__cell {
+		transition: none;
+	}
+}

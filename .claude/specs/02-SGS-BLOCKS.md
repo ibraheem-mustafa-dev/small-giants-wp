@@ -5,7 +5,7 @@ spec_version: "1.0"
 project: small-giants-wp
 title: SGS Blocks — Custom Gutenberg Block Library
 status: shipped
-last_verified: 2026-05-24
+last_verified: 2026-06-01
 authors: Bean + Claude
 session_date: 2026-02-01
 status_history:
@@ -46,7 +46,7 @@ sgs-blocks/
 │   │   ├── hero/                 # Hero section (multiple variants) — refactor to InnerBlocks composition queued (spec 11)
 │   │   ├── info-box/             # Info/feature card
 │   │   ├── counter/              # Animated statistic counter
-│   │   ├── (trust-bar/ — RETIRED D72, 2026-05-25; universal-nesting handles trust-bar sections via sgs/container + sgs/label/sgs/counter children)
+│   │   ├── trust-bar/ — ACTIVE (rebuilt from trust-badges, renamed D123; dual-mode FR-24-10; absorbed certification-bar D95). NB the ORIGINAL composite trust-bar was retired D72 — slug reused. See §5.
 │   │   ├── card-grid/            # Flexible image+content grid (overlay/card variants)
 │   │   ├── testimonial/          # Single testimonial card
 │   │   ├── testimonial-slider/   # Multi-testimonial carousel
@@ -56,7 +56,7 @@ sgs-blocks/
 │   │   ├── accordion/            # Expandable FAQ/content sections
 │   │   ├── tabs/                 # Tabbed content panels
 │   │   ├── brand-strip/          # Logo/brand carousel strip
-│   │   # certification-bar/ — RETIRED 2026-05-29 D95, merged into trust-badges (badgeStyle variants)
+│   │   # certification-bar/ — RETIRED 2026-05-29 D95, merged into trust-bar (badgeStyle variants)
 │   │   ├── notice-banner/        # Inline informational banner (MOV, delivery terms, promos)
 │   │   ├── announcement-bar/     # Top-of-page announcement banner (countdown, scheduling, rotation)
 │   │   ├── whatsapp-cta/         # WhatsApp floating button + contextual CTA
@@ -249,16 +249,13 @@ block-name/
 
 ---
 
-### 5. Trust Bar — RETIRED 2026-05-25 (D72)
+### 5. Trust Bar — ACTIVE (slug reused: ORIGINAL composite retired D72; CURRENT block rebuilt from `sgs/trust-badges`, renamed D123)
 
-**Status: RETIRED.** Block source files deleted (`src/blocks/trust-bar/`, `build/blocks/trust-bar/`). DB rows deleted across 9 tables. Hardcoded special-case removed from `confidence-matrix.py`, `seed-legacy-role-lookup.py`, `lingua_franca.py`, `generate-markup-examples.py`, `BlockDeprecationsTest.php`, `blocks.spec.ts`, `test_ensure_root_section_class.py`. See decisions.md D72.
+**Status: ACTIVE.** ⚠️ The slug `sgs/trust-bar` has had two lives — do not confuse them:
 
-**Replacement architecture:**
-- **Counter use-cases** (animated statistics like "5,000+" / "Next-Day"): use `sgs/counter` (canonical single-counter block; remains active).
-- **Badge use-cases** (trust signals like "Halal Certified" / "Family Owned Since 1962"): emit via universal-nesting — `sgs/container` (grid layout) + `sgs/label` or `sgs/icon` children per badge. The converter resolves `__badge` BEM elements to the appropriate block via `slot_synonyms.standalone_block`.
-- **Worked example:** Mama's homepage trust-bar section now emits as `sgs/container` (4-col grid) with 4 nested child blocks (icon + text per badge). See Phase 1 plan Commit 13 (1F — G1 OPEN-block emission for FR1-matched composites) for the universal-nesting closure.
+1. **ORIGINAL composite** (counter + badge) — **RETIRED 2026-05-25 (D72)**: source files + DB rows deleted; hardcoded special-cases removed from `confidence-matrix.py` / `seed-legacy-role-lookup.py` / `lingua_franca.py` / `generate-markup-examples.py` / `BlockDeprecationsTest.php` / `blocks.spec.ts` / `test_ensure_root_section_class.py`. Counter use-cases → `sgs/counter`; badge use-cases at that time → universal-nesting (`sgs/container` + `sgs/label`/`sgs/icon` children).
 
-Block reference content for `sgs/trust-bar` is preserved in git history (last commit referencing it: `668ca50a`). The block.json schema is no longer registered.
+2. **CURRENT block** — **`sgs/trust-badges` was rebuilt then renamed → `sgs/trust-bar` (D123, 2026-05-31)**; it absorbed `certification-bar` (D95, `badgeStyle` variants: icon-circle / text-only / image-badge + auto-scroll marquee). As of 2026-06-01 it is **dual-mode (FR-24-10, SHIPPED)**: `sourceMode='typed'` (curated repeater) OR `sourceMode='bound'` (echoes `$content` → renders the converter's emitted badge InnerBlocks). render.php branches on the explicit `sourceMode` (R-22-14, never `empty($content)`); the converter sets `sourceMode='bound'` on cloned trust-bars. `src/blocks/trust-bar/` is the ACTIVE directory (the old `src/blocks/trust-badges/` dir was removed in the rename). See decisions.md D72 (original retire) + D95 (certification-bar merge) + D123 (rename) + Spec 24 §FR-24-10.
 
 #### Historical content (for migration reference only — block does NOT exist post-D72)
 
@@ -448,7 +445,7 @@ Block reference content for `sgs/trust-bar` is preserved in git history (last co
 
 ### 15. Certification Bar (`sgs/certification-bar`) — RETIRED 2026-05-29 D95
 
-> **RETIRED.** Block merged into `sgs/trust-badges` as `badgeStyle: 'text-only'` and `badgeStyle: 'image-badge'` variants. Existing posts auto-migrate via `trust-badges/deprecated.js` v2 `isEligible()` + `migrate()` entry. All certification-bar attributes (`title`, `titleColour`, `titleFontSize`, `labelColour`, `labelFontSize`, `badgeSize`, `items`, `badgeStyle`) are present on `sgs/trust-badges`. Source deleted: `src/blocks/certification-bar/`. DB rows deleted from both `sgs-framework.db` copies. Use `sgs/trust-badges` with `badgeStyle: 'text-only'` or `'image-badge'` for all new builds.
+> **RETIRED.** Block merged into `sgs/trust-bar` as `badgeStyle: 'text-only'` and `badgeStyle: 'image-badge'` variants. Existing posts auto-migrate via `trust-bar/deprecated.js` v2 `isEligible()` + `migrate()` entry. All certification-bar attributes (`title`, `titleColour`, `titleFontSize`, `labelColour`, `labelFontSize`, `badgeSize`, `items`, `badgeStyle`) are present on `sgs/trust-bar`. Source deleted: `src/blocks/certification-bar/`. DB rows deleted from both `sgs-framework.db` copies. Use `sgs/trust-bar` with `badgeStyle: 'text-only'` or `'image-badge'` for all new builds.
 
 ---
 

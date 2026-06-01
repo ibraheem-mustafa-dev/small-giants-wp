@@ -33,10 +33,10 @@ const LINK_PHONE_TYPES = new Set( [ 'phone' ] );
 const LINK_EMAIL_TYPES = new Set( [ 'email' ] );
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { type, showIcon, linkPhone, linkEmail } = attributes;
+	const { displayType, showIcon, linkPhone, linkEmail } = attributes;
 
 	const blockProps = useBlockProps( {
-		className: `sgs-business-info-wrap sgs-business-info-wrap--${ type }`,
+		className: `sgs-business-info-wrap sgs-business-info-wrap--${ displayType }`,
 	} );
 
 	return (
@@ -45,9 +45,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody title={ __( 'Display Type', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'What to display', 'sgs-blocks' ) }
-						value={ type }
+						value={ displayType }
 						options={ TYPE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { type: val } ) }
+						onChange={ ( val ) => setAttributes( { displayType: val } ) }
 						__nextHasNoMarginBottom
 					/>
 					<Notice
@@ -59,7 +59,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					</Notice>
 				</PanelBody>
 
-				{ ICON_TYPES.has( type ) && (
+				{ ICON_TYPES.has( displayType ) && (
 					<PanelBody title={ __( 'Display Options', 'sgs-blocks' ) } initialOpen={ false }>
 						<ToggleControl
 							label={ __( 'Show icon', 'sgs-blocks' ) }
@@ -70,9 +70,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
-				{ ( LINK_PHONE_TYPES.has( type ) || LINK_EMAIL_TYPES.has( type ) ) && (
+				{ ( LINK_PHONE_TYPES.has( displayType ) || LINK_EMAIL_TYPES.has( displayType ) ) && (
 					<PanelBody title={ __( 'Link Options', 'sgs-blocks' ) } initialOpen={ false }>
-						{ LINK_PHONE_TYPES.has( type ) && (
+						{ LINK_PHONE_TYPES.has( displayType ) && (
 							<ToggleControl
 								label={ __( 'Make phone number clickable', 'sgs-blocks' ) }
 								checked={ linkPhone }
@@ -80,7 +80,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								__nextHasNoMarginBottom
 							/>
 						) }
-						{ LINK_EMAIL_TYPES.has( type ) && (
+						{ LINK_EMAIL_TYPES.has( displayType ) && (
 							<ToggleControl
 								label={ __( 'Make email address clickable', 'sgs-blocks' ) }
 								checked={ linkEmail }

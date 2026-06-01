@@ -73,16 +73,18 @@ section.sgs-hero
       └ img.sgs-hero__split-image.sgs-hero__split-image--desktop
 ```
 
-### 3 · Trust bar (`.sgs-trust-bar`, L792)
+### 3 · Trust bar (`.sgs-trust-bar`, L792) - 2 Potential solutions
 ```
 section.sgs-trust-bar
   └ div.sgs-trust-bar__inner            ← grid: 2-col mob / 4-col ≥600px; gap 16px 12px
       └ div.sgs-trust-bar__badge ×4
           ├ span.sgs-trust-bar__icon > svg
           └ span.sgs-trust-bar__text
-   (halal-pending badge: CSS-only, no DOM instance)
+   (halal-pending badge: was originally part of plan but has been removed since)
 ```
 > **FR-22-4.1 resolution (D118):** `sgs-trust-bar__inner` is a DIRECT descendant of the section container with no registered block match + carries a grid layout → it FOLDS into the `sgs-trust-bar` section container per §FR-22-4.1 rule #2 (grid case): the section container absorbs the 4-col grid + each badge's positioning CSS as grid-item attrs. One container, four badge grid-items. No second nested container.
+
+**Alternative - direct block routing to trust-bar or brand-strip** - Potentially whole section could be fulfilled by `sgs/trust-bar` block (renamed from trust-badges 2026-05-31 — name now matches this mockup's `.sgs-trust-bar` section class). It isn't currently identified as a class-level block but that is because that is a category which requires decision making based on several factors so is not sorted deterministically.
 
 ### 4 · Featured product (`.sgs-featured-product`, L830)
 ```

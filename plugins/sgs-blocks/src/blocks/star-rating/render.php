@@ -30,15 +30,38 @@ $display_mode          = in_array( $attributes['displayMode'] ?? 'stars-only', $
 	? $attributes['displayMode']
 	: 'stars-only';
 
+/*
+ * Block-style presets (2026-06-03). Exact-match the is-style-* class so
+ * 'trustpilot' is not a false substring of 'trustpilot-official'.
+ *   is-style-trustpilot-official : Trustpilot's own tile-star SVG badge.
+ *   is-style-trustpilot          : inline SVG stars forced to Trustpilot green.
+ *   default / any other style    : inline SVG stars in the configured starColour.
+ */
+$style_classes  = preg_split( '/\s+/', (string) ( $attributes['className'] ?? '' ), -1, PREG_SPLIT_NO_EMPTY );
+$is_tp_official = in_array( 'is-style-trustpilot-official', $style_classes, true );
+$is_tp_flat     = in_array( 'is-style-trustpilot', $style_classes, true ) && ! $is_tp_official;
+if ( $is_tp_flat ) {
+	$star_colour = '#00B67A'; // Official Trustpilot brand green — the flat-preset fill.
+}
+
 $wrapper_attributes = get_block_wrapper_attributes( array(
 	'class' => 'sgs-star-rating sgs-star-rating--' . esc_attr( $display_mode ),
 ) );
 
-// Build star SVGs.
+// Build the stars markup.
 $stars_html = '';
 $unique_id  = wp_unique_id( 'sgs-star-' );
 
-for ( $i = 1; $i <= $max_rating; $i++ ) {
+if ( $is_tp_official ) {
+	// Official Trustpilot badge: their own tile-star SVG for the (rounded) rating.
+	require_once dirname( __DIR__, 3 ) . '/includes/trustpilot-helpers.php';
+	$stars_html = sprintf(
+		'<img class="sgs-star-rating__tp-badge" src="%s" alt="" width="125" height="24" loading="lazy" decoding="async" />',
+		esc_url( sgs_trustpilot_stars_url( $rating ) )
+	);
+}
+
+for ( $i = 1; ! $is_tp_official && $i <= $max_rating; $i++ ) {
 	if ( $i <= floor( $rating ) ) {
 		$fill = $star_colour;
 	} elseif ( $i === ceil( $rating ) && fmod( $rating, 1 ) >= 0.25 ) {

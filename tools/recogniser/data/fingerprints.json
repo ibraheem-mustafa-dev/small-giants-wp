@@ -1680,34 +1680,13 @@
       "alignment"
     ]
   },
-  "sgs/trust-badges": {
+  "sgs/trust-bar": {
     "attr_extractors": [],
-    "block_name": "sgs/trust-badges",
+    "block_name": "sgs/trust-bar",
     "block_type": "dynamic",
     "category": "sgs-content",
     "optional_features": [
       "colour"
-    ],
-    "required_features": [],
-    "required_html_pattern": {
-      "class_includes_any": [
-        "sgs-trust-badges",
-        "wp-block-sgs-trust-badges"
-      ],
-      "tag": "section"
-    },
-    "source": "sgs"
-  },
-  "sgs/trust-bar": {
-    "attr_extractors": [],
-    "block_name": "sgs/trust-bar",
-    "block_type": "static",
-    "category": "sgs-content",
-    "optional_features": [
-      "colour",
-      "typography",
-      "hover",
-      "transition"
     ],
     "required_features": [],
     "required_html_pattern": {

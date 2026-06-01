@@ -19,7 +19,7 @@
 	"textdomain": "sgs-blocks",
 	"icon": "building",
 	"attributes": {
-		"type": {
+		"displayType": {
 			"type": "string",
 			"default": "phone",
 			"enum": [

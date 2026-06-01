@@ -48,10 +48,11 @@ class BlockDeprecationsTest extends TestCase {
 		'cta-section',
 		'info-box',
 		// Static save modified (HTML output diverged from stored shape).
-		// 'certification-bar' removed 2026-05-29 D95 — retired, merged into sgs/trust-badges.
+		// 'certification-bar' removed 2026-05-29 D95 — retired, merged into sgs/trust-bar.
 		'counter',
 		'notice-banner',
-		// 2026-05-25 D72: 'trust-bar' removed — block retired.
+		// trust-bar renamed from trust-badges 2026-05-31.
+		'trust-bar',
 	);
 
 	// ── Data provider ─────────────────────────────────────────────────────────

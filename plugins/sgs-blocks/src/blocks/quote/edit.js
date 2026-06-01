@@ -46,13 +46,6 @@ const ATTRIB_TAG_OPTIONS = [
 	{ label: __( 'cite', 'sgs-blocks' ), value: 'cite' },
 ];
 
-const VARIANT_OPTIONS = [
-	{ label: __( 'Default', 'sgs-blocks' ), value: 'default' },
-	{ label: __( 'Pullquote', 'sgs-blocks' ), value: 'pullquote' },
-	{ label: __( 'Testimonial', 'sgs-blocks' ), value: 'testimonial' },
-	{ label: __( 'Plain', 'sgs-blocks' ), value: 'plain' },
-];
-
 const FONT_WEIGHT_OPTIONS = [
 	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Thin (100)', 'sgs-blocks' ), value: '100' },
@@ -264,7 +257,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		paddingTop, paddingRight, paddingBottom, paddingLeft, paddingUnit,
 		customWidth,
 		customWidthUnit,
-		variantStyle,
 		inheritStyle,
 		transitionDuration,
 		transitionEasing,
@@ -299,15 +291,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				{ /* ---- Variant ---- */ }
-				<PanelBody title={ __( 'Variant', 'sgs-blocks' ) }>
-					<SelectControl
-						label={ __( 'Style variant', 'sgs-blocks' ) }
-						value={ variantStyle }
-						options={ VARIANT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { variantStyle: val } ) }
-						__nextHasNoMarginBottom
-					/>
+				{ /* ---- Style ---- */ }
+				<PanelBody title={ __( 'Style', 'sgs-blocks' ) }>
 					<ToggleControl
 						label={ __( 'Inherit parent styles (suppress wrapper inline styles)', 'sgs-blocks' ) }
 						checked={ inheritStyle }

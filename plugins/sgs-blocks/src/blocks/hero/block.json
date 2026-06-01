@@ -48,7 +48,14 @@
         },
         "sgs": {
             "imageControls": true,
-            "is_section_root": true
+            "is_section_root": true,
+            "variantAttr": "variant",
+            "variants": {
+                "standard": ["backgroundImage"],
+                "split": ["splitImage", "splitImageMobile", "splitColumnRatio", "splitGap"],
+                "video": ["backgroundVideo", "bgVideo"],
+                "svg-animated": ["svgContent"]
+            }
         }
     },
     "selectors": {

@@ -49,15 +49,6 @@
             ],
             "default": "span"
         },
-        "variantStyle": {
-            "type": "string",
-            "enum": [
-                "plain",
-                "pill-fill",
-                "pill-wrap"
-            ],
-            "default": "plain"
-        },
         "textColour": {
             "type": "string",
             "default": "primary"
@@ -139,7 +130,6 @@
     "example": {
         "attributes": {
             "text": "Our signature",
-            "variantStyle": "plain",
             "textColour": "primary"
         }
     }
