@@ -37,8 +37,8 @@ Commits: `83a55820` + `5859c42d` (hero scalar-media + gate fix) · `d6358f32` (c
 3. `.claude/state.md` — current_phase + db_state + blockers.
 4. Root `CLAUDE.md` — "Root-cause methodology (MANDATORY)" + the 14 binding rules (R-22-1..14).
 5. `git log --oneline -12` + read the recent commit messages (each carries root-cause + verification).
-6. `.claude/decisions.md` newest entries — **D125-D127 (this session: Wave-2 verified; hero H-conv chosen over H2; trust-bar dual-mode)**, then D119-D124 (fold + Wave-1/2/A-1), D117/D118.
-7. **`.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` — esp. NEW §FR-22-19 (the hero H-conv fix-shape + build sequence + OPEN GAP), plus §0, §FR-22-2/2.2/2.4 (image-pipeline role reconciliation), §FR-22-3 (3-exceptions, no 4th branch), §FR-22-4/4.1, §FR-22-16 (class-section voter), §FR-22-17 (block_composition), §6 (R-22-1..14).**
+6. `.claude/decisions.md` newest entries — **D130-D132 (SHIPPED + live-DOM verified + 3-rater qc-council), D128-D129 (scalar-media engine built + product-card/picker design), D125-D127 (H-conv chosen over H2 + trust-bar dual-mode)**, then D119-D124 (fold + Wave-1/2/A-1), D117/D118.
+7. **`.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` — esp. §FR-22-19 (the scalar-media engine — SHIPPED + live-verified), plus §0, §FR-22-2/2.2/2.4 (`scalar-media` role reconciliation), §FR-22-3 (3-exceptions, no 4th branch), §FR-22-4/4.1, §FR-22-16 (class-section voter), §FR-22-17 (block_composition), §6 (R-22-1..14).**
 8. **`.claude/scratch/2026-06-01-hero-fix-shape-qc-brief.md` — the council brief (H-conv vs H2, ground truth, the 3 raters' questions). The build executes §FR-22-19, this is the reasoning behind it.**
 9. **`.claude/specs/24-QUERY-DRIVEN-CONTENT-CARDS.md` — NEW §FR-24-10 (trust-bar dual-mode) + FR-24-1/2/3/9 (product-card dual-mode, same pattern).**
 10. `.claude/parking.md` — P-HERO-DOUBLE-WRAPPER-AND-SPLIT-IMAGE (now §FR-22-19), P-TRUST-BAR-HYBRID-MIGRATION (now §FR-24-10 dual-mode), P-PRODUCT-CARD-FULL-DUAL-MODE, P-A1-PHASE2-SLOT-RESPONSIVE-TYPOGRAPHY.
@@ -49,27 +49,18 @@ Commits: `83a55820` + `5859c42d` (hero scalar-media + gate fix) · `d6358f32` (c
 15. Hero block (read FULLY before touching): `plugins/sgs-blocks/src/blocks/hero/{render.php,edit.js,block.json}` — note render.php:760-788 (the WORKING `--mobile/--desktop` art-direction `@media` CSS — this is why H-conv keeps render.php untouched).
 16. The walker: `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` — `walk()` ~1693-1872, `_atomic_attrs_for` ~1563-1664, `is_class_section_block` path.
 
-## What shipped 2026-06-01 (docs only — no code; council prevented a wrong build)
-- **Full read + code-level root-cause** of the hero double-wrapper + split-image, AND the trust-bar hybrid.
-- **3-rater qc-council** (compliance / pipeline-impact / universality) on the hero fix-shape. Verdict: **REJECT H2** (block thin-shell — retires the 169-attr image pipeline + the render.php art-direction onto sgs/media which can't replicate it; blast radius 7 sections + 5 block files). **CHOOSE H-conv** (converter routes content→bare $content, images→scalar splitImage/splitImageMobile; render.php unchanged; 1-section blast radius; universal across the 4 `wraps_block` composites).
-- **Spec 22 §FR-22-19** (hero H-conv design + build sequence + OPEN GAP) + **Spec 24 §FR-24-10** (trust-bar dual-mode) + decisions D125-D127 + parking updates.
+## What shipped 2026-06-01 (design → build → LIVE-DOM verify; full record in decisions D125-D132)
+- **Design:** 3-rater qc-council REJECTED H2 (thin-shell — would retire the hero's 169-attr image pipeline) + locked **H-conv**. The DB audit closed the "open gap" with EXISTING columns — a new **`scalar-media`** role + `scalar_media_attr_for` slot lookup; NO new column.
+- **Built + shipped (commits 83a55820/5859c42d/d6358f32/b83cd312):** §FR-22-19 scalar-media engine (hero + testimonial-slider; gate **`has_scalar_media_attrs`**); trust-bar §FR-24-10 dual-mode; cta-section FR-22-6; converter `sourceMode='bound'`.
+- **Live-DOM verified** (run `mamas-munches-144-2026-06-01-035323`): hero 1 `.sgs-hero__content` + media column + 2 art-directed split-images; trust-bar Bound 4 badges (−5.2..−6.7pp); 3 `sgs/testimonial` intact; no regressions.
+- Product-card + `sgs/option-picker` DESIGNED (report + Spec 24 §FR-24-11..17 stub, pending Bean's 6 decisions).
 
-## NEXT SESSION — priority order
-1. **Build hero §FR-22-19 (H-conv).** READ §FR-22-19 end-to-end first. Steps (each a separate commit, R-22-5; FR-22-18 structural-parity gate + live-DOM check):
-   1. **DB:** add `image-pipeline` role to the `roles` table; reclassify `sgs/hero.splitImage` + `splitImageMobile` to it; verify `equivalent_block_for('sgs/hero','splitImage')` returns NULL. (DB writes via direct `sqlite3`, NOT `sgs-db.py sql` — STOP #11. Row-by-row, STOP #7/#15.)
-   2. **CLOSE THE OPEN GAP (DB-first):** add the mapping from a class-section composite's media-column BEM element (`__media`/`__split-image`) → its scalar attr target (`splitImage`/`splitImageMobile`) + the `--mobile`→mobile / `--desktop`→desktop disambiguation. Candidate: a `block_composition` column or a `slots` convention row. **NEVER a hardcoded `if slug=='sgs/hero'` (R-22-1 / STOP #16).**
-   3. **convert.py:** composite slot-router inside the `is_class_section_block` path (DB-driven; NOT a 4th walker branch — it's FR-22-2 content-routing applied to composite interiors, R-22-3). Use `/qc-council` per converter commit (blub.db 255).
-   4. **Verify (R-22-11 / FR-22-18):** `/sgs-clone --debug-trace --converter-v2 --spec-22-acceptance --deploy-target page:144` → live-DOM gate via Playwright: `section.sgs-hero` has exactly 1 `.sgs-hero__content`, exactly 2 imgs (`--mobile` + `--desktop`), `h1` present, 2 `.sgs-button`, content innerText > 50; AND no other section's extract.json markup changed. Roll back fast (STOP #19) on any failure.
-   5. Bean visual sign-off (R-22-13).
-2. **Build trust-bar §FR-24-10 dual-mode** — Typed curated repeater (preserve all 18 attrs + 3 variants) OR Bound `echo $content` via a Source-toggle mode attr. R-22-14 clean (mode attr, not `empty($content)` fallback). deprecated.js keeps v2/v3 + a mode-default entry. Build per its FR; verify both modes (editor smoke + clone render).
-3. **product-card full dual-mode** (Spec 24 + atomic pill block + variation-sets logic — see P-PRODUCT-CARD-FULL-DUAL-MODE brain-dump). Spec the variation-sets requirement FIRST.
-4. **A-1 Phase 2** — slot-level responsive typography lift.
-5. **Generalise §FR-22-19** to cta-section/modal/quote (each own commit, after the hero proves the mechanism).
-6. **Minors** (parking): A-1 `>1024` breakpoint edge; 3+ breakpoint trace; clean up stray git-tracked `src/blocks/trust-badges/` deletions on next commit.
+## NEXT SESSION — priority order (the §FR-22-19/24-10/FR-22-6 BUILD IS DONE + verified)
+**See the `## REMAINING (priority order — NOT done)` block near the TOP of this file** — the actual remaining work: (1) real image sideload (media-map — biggest pixel-diff lever); (2) merge-prep (split `d6358f32` per-block R-22-5 + Bean visual sign-off → merge to main); (3) `isEligible` on hero/info-box deprecations; (4) Phase-2 scalar-attr extraction (fidelity); (5) generalise §FR-22-19 to cta-section/modal/quote; (6) product-card + `sgs/option-picker` build (pending Bean's 6 decisions in the design report); (7) A-1 Phase 2 slot typography; minors (clean up stray git-tracked `src/blocks/trust-badges/` deletions at merge-prep).
 
 ## RESOLVED misunderstandings (do NOT repeat)
 - **The hero fix is CONVERTER-side (H-conv), NOT a render.php thin-shell (H2).** render.php is ALREADY correct (its 169-attr image pipeline + the `--mobile/--desktop` art-direction `@media` CSS at render.php:760-788 already work). H2 was REJECTED by qc-council (retires that pipeline + violates "preserve full functionality"). Do NOT re-derive H2.
-- **The hero's `splitImage`/`splitImageMobile` are scalar `image-pipeline` slots, not InnerBlocks slots** — reclassifying their role so `equivalent_block_for` returns NULL is the FR-22-2.2 gate working as designed, NOT a per-block bypass.
+- **The hero's `splitImage`/`splitImageMobile` (+ testimonial-slider.sideImage) are `scalar-media`-role slots, not InnerBlocks slots** — the role (styling-behaviour class) makes `equivalent_block_for` return NULL (the FR-22-2.2 gate working as designed, NOT a per-block bypass). The role is named `scalar-media` everywhere (`image-pipeline` was a retired draft name).
 - **`sgs/container` DOES support per-grid-item customisation** (D124) — `gridItem*` defaults (→ `--sgs-gi-*`) + per-child overrides via specificity (`edit.js:577`).
 - **Atomic tags redirect to sgs equivalents via `blocks.replaces`** (Spec 22 §14), populated D120-B.
 - **Recognition is BEM, not HTML tag** (R-22-2). Only non-content transparent WRAPPER divs dissolve (CSS folds up per §FR-22-4.1).
