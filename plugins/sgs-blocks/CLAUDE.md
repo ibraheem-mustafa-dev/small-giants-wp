@@ -192,6 +192,7 @@ Every block MUST provide per-element customisation matching Kadence/Spectra dept
 3. Custom attributes + controls for interactive elements like CTAs (text colour, background colour)
 4. CSS fallback colours use `:not([style*="color"])` so custom values always win
 5. Use Block Selectors API in `block.json` to target native typography to primary text element
+6. **Variant-bearing blocks MUST declare `supports.sgs.variants`** in `block.json` — a map of `variant_value → [attr/slot names that variant uses]` — so the cloning converter can detect the correct variant from what the draft extracted, without per-block code. The variant-selector attr name (e.g. `variant`, `variantStyle`, `layout`) MUST also be registerable to the `blocks.variant_attr` DB column via `/sgs-update`. (FR-22-20, DESIGN/build-pending — see Spec 22 §FR-22-20 + D133. Build = next session opening task.)
 
 ### Hover Controls Spec (Phase 2)
 

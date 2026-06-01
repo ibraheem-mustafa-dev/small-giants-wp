@@ -4,6 +4,14 @@ project: small-giants-wp
 last_updated: 2026-05-31
 ---
 
+## 2026-06-01 — FR-22-20 universal variant detection (next session opening task)
+
+> **P-FR2220-VARIANT-DETECTION** — NEW 2026-06-01 (D133 Bean-directed). Universal variant detection specced as Spec 22 §FR-22-20. The hero `$is_split = ('split'===$variant) || !empty($split_image)` fix (D131) was CONCEDED as a per-block cheat: doesn't generalise, mis-fires on stale data. The proper fix selects the variant from **what the draft pulled THIS run** (the extract), universally across all 33 variant-bearing blocks. **Build sequence (R-22-5 — each its own commit, FR-22-18 gate):** (1) DB: add `blocks.variant_attr` column + `variant_slots` table; (2) declare `supports.sgs.variants` (variant→attrs map) in the relevant block.json files (hero first); (3) `/sgs-update` Stage 1 populates `variant_slots` via set-difference; (4) converter variant-detector counts which variant's `variant_slots` appear in the draft's extract, picks the highest count, sets the variant attr; (5) **REVERT the hero `$is_split` band-aid** (hero render.php ~line 224 back to `'split' === $variant`); (6) re-clone canary + live-DOM verify hero carries `variant='split'` and renders via the original gate; (7) generalise to the other 32 variant blocks incrementally. Full mechanism: Spec 22 §FR-22-20 + decisions D133.
+> **Status:** DESIGN (build = next session opening task)
+> **Bucket:** Pipeline / converter
+
+---
+
 ## 2026-05-31 (pm) — wrapper-perfection follow-ups (Wave-2/A-1 + product-card)
 
 > **P-VERIFY-WAVE2-A1** — VERIFIED 2026-05-31 (fresh build+deploy+re-clone, run `mamas-munches-homepage-2026-05-31-223313`). Pixel mean 64.60→63.49 (−1.11pp, informational only). STRUCTURAL: ~1/7→~6/7 sections correct. brand 2-col ✓; featured/ingredients/gift/social headings + content ✓; per-device attrs lifted. **TWO findings surfaced (open):** (1) **HERO migration PARTIAL** — still 2 `.sgs-hero__content` wrappers + 2 images (height 1820); root cause: hero render.php wraps `$content` in `<div class="sgs-hero__content">` AND the converter emits a `sgs/container.sgs-hero__content` InnerBlock → duplicate wrapper; AND both art-direction `__split-image--mobile/--desktop` render (the mobile/desktop show/hide CSS not applying). FIX next session: hero shell should NOT re-wrap in `.sgs-hero__content` (let the InnerBlock be the content column), and the split-image mobile/desktop toggle must apply. (2) **trust-bar now block-routed** — after rename + /sgs-update, section `.sgs-trust-bar` resolves to the `sgs/trust-bar` BLOCK (Req-3 block-override active ✓), renders 4 badges, but it's the un-migrated HYBRID (reads scalar `items`) → see P-TRUST-BAR-HYBRID-MIGRATION.
