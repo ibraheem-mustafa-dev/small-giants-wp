@@ -807,6 +807,54 @@ def _migrate_property_suffixes_kind_override() -> None:
 _migrate_property_suffixes_kind_override()
 
 
+# ----------------------------------------------------------------------------
+# Idempotent schema migration — variant detection (FR-22-20, D133 2026-06-01)
+# ----------------------------------------------------------------------------
+# Universal variant detection (Spec 22 §FR-22-20) needs two schema additions:
+#   - blocks.variant_attr  — names the variant-selector attr per block (e.g.
+#     'variant', 'variantStyle', 'layout') so the converter never guesses it.
+#     Populated by /sgs-update Stage 1 from block.json supports.sgs.variantAttr.
+#   - variant_slots table  — (block_slug, variant_value, unique_slot) storing
+#     each variant's DISCRIMINATING slots (set-difference vs sibling variants).
+#     Populated by /sgs-update Stage 1 from block.json supports.sgs.variants.
+#
+# This migration is pure schema (additive, no data). Population is a /sgs-update
+# responsibility, so there is no seed dict here (R-22-1 dict-as-seed N/A).
+#
+# Safe to call repeatedly. Runs at module load.
+def _migrate_variant_detection_schema() -> None:
+    """Idempotent migration: add blocks.variant_attr column + create the
+    variant_slots table if absent. Schema only — no data seeding.
+
+    Safe to call repeatedly. Runs at module load.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        cols = {row[1] for row in conn.execute("PRAGMA table_info(blocks)").fetchall()}
+        if "variant_attr" not in cols:
+            conn.execute("ALTER TABLE blocks ADD COLUMN variant_attr TEXT")
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS variant_slots (
+              block_slug    TEXT NOT NULL,
+              variant_value TEXT NOT NULL,
+              unique_slot   TEXT NOT NULL,
+              created_at    TEXT DEFAULT CURRENT_TIMESTAMP,
+              PRIMARY KEY (block_slug, variant_value, unique_slot)
+            )
+        """)
+        conn.commit()
+    except sqlite3.OperationalError:
+        # DB read-only / locked / missing — soft-fail. Variant detection then
+        # no-ops (variant_attr_for returns None → detector skips).
+        pass
+    finally:
+        conn.close()
+
+
+# Run migration at module load (idempotent — safe to call repeatedly).
+_migrate_variant_detection_schema()
+
+
 def _kind_for(suffix: str, role: str | None) -> str | None:
     """Infer the convert.py 'kind' for a property_suffixes row.
 
