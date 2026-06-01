@@ -2038,10 +2038,20 @@ def walk(
     if slug is not None:
         _lift_root_supports_to_style(node, slug, css_rules, attrs)
 
-    # Recursively walk children for InnerBlocks — EXCEPT leaf blocks (G1): their
-    # content now lives in the lifted content attr above, so recursing would emit
-    # ignored inner markup. (A leaf node that nonetheless has element children is
-    # a mis-resolution — that is G2's wrapper-to-leaf guard's job, not here.)
+    # Recursively walk children for InnerBlocks — EXCEPT:
+    #   (G1) leaf blocks: content lives in the lifted content attr above.
+    #   (G3) dynamic no-InnerBlocks blocks (2026-06-02): blocks with
+    #        block_composition.has_inner_blocks=0 render from their own attrs via
+    #        render.php only (save=null → self-closing). Walking their DOM children
+    #        produces inner markup that WP's block-validation rejects with "This
+    #        block contains unexpected or invalid content" because the block's saved
+    #        form must be self-closing. Affected: sgs/star-rating, sgs/social-icons,
+    #        sgs/google-reviews, sgs/trustpilot-reviews, sgs/breadcrumbs, and 24
+    #        other dynamic blocks with has_inner_blocks=0 that are classified as
+    #        content-block (not leaf) in block_composition. DB-driven via
+    #        db.block_accepts_inner_blocks() — R-22-1 (no per-block slugs) +
+    #        R-22-9 (universal) compliant. The gate fires only for RESOLVED slugs
+    #        (slug is not None); slug-None wrappers always recurse.
     #
     # FR-22-19 (2026-06-01): class-section composites (sgs/hero, sgs/cta-section,
     # sgs/testimonial-slider etc.) use _route_composite_interior to route interior
@@ -2050,7 +2060,9 @@ def walk(
     # inside the existing resolved-block emit path gated by is_class_section_block,
     # NOT as a 4th top-level walk() branch (R-22-3 compliant).
     children_markup: list[str] = []
-    if not is_leaf:
+    # G3: if slug is resolved AND the block declares no InnerBlocks, skip children.
+    _slug_accepts_inner = slug is None or db.block_accepts_inner_blocks(slug)
+    if not is_leaf and _slug_accepts_inner:
         if slug is not None and db.has_scalar_media_attrs(slug):
             # FR-22-19: composite slot-router (mutates attrs in-place for scalar-media).
             # Gate is has_scalar_media_attrs (NOT is_class_section_block): the router

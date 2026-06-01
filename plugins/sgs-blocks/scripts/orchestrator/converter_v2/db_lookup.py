@@ -158,8 +158,18 @@ _HTML_TAG_TO_CORE_BLOCK_SEED: dict[str, tuple[str, str]] = {
                "Bare button — Bean directive 2026-05-28: walker auto-wraps in sgs/multi-button"),
     "a":   ("core/button", "Link shape — routes to same atomic leaf as button"),
     "blockquote": ("core/quote", "Quote block"),
-    "ul":  ("core/list", "Unordered list — atomic leaf"),
-    "ol":  ("core/list", "Ordered list — same routing as ul at atomic level"),
+    # core/list is a STATIC block whose save() emits <ul class="wp-block-list"> +
+    # core/list-item children. Emitting it self-closing (no innerHTML) fails WP
+    # block validation. The SGS equivalent sgs/icon-list is DYNAMIC (render.php,
+    # save=null → self-closing) and already handled by _atomic_attrs_for with the
+    # items-array extraction. Route ul/ol directly to sgs/icon-list (2026-06-02).
+    # blocks.replaces for sgs/icon-list is NOT set to core/list in the DB, so
+    # Tier A of atomic_tag_map() would not find it. Storing 'sgs/icon-list' as
+    # the core_block_slug value (column name is a misnomer — it is the TARGET slug)
+    # means Tier B returns it unchanged: replaces_reverse.get('sgs/icon-list')=None,
+    # out['ul'] = 'sgs/icon-list'. INSERT OR REPLACE propagates this to DB on load.
+    "ul":  ("sgs/icon-list", "Unordered list → SGS icon-list (dynamic; core/list is static and needs save() HTML the converter cannot generate)"),
+    "ol":  ("sgs/icon-list", "Ordered list → SGS icon-list (same rationale as ul; ordered flag set via _atomic_attrs_for items)"),
 }
 
 
@@ -499,6 +509,53 @@ def get_block_composition_role(block_slug: str) -> str | None:
     _trace("db_lookup_miss", lookup="get_block_composition_role",
            block_slug=block_slug)
     return None
+
+
+@functools.lru_cache(maxsize=256)
+def block_accepts_inner_blocks(block_slug: str) -> bool:
+    """Return True when the block declares InnerBlocks in its block.json.
+
+    Queries block_composition.has_inner_blocks (populated by /sgs-update Stage 1
+    from the block's block.json `innerBlocks` / usesContext / InnerBlocks usage).
+
+    Contract:
+    - Returns True  → walker SHOULD recurse into children for InnerBlocks.
+    - Returns False → block renders from its own attrs only (dynamic render.php
+                      with no $content passthrough); walker MUST NOT emit children
+                      as inner markup — WP save() contract expects self-closing
+                      (save=null) and WP block validation rejects any innerHTML.
+
+    The distinction is what prevents the WP block-validation error
+    "This block contains unexpected or invalid content" for blocks like
+    sgs/star-rating: composition_role='content-block' but has_inner_blocks=0
+    means the block consumes no InnerBlocks despite being non-leaf.
+
+    Soft-fails to True on missing table / missing row (conservative: allow
+    children, which is safer than silently dropping them for unknown blocks).
+
+    R-22-1 compliant — DB-driven, no per-block slug literals.
+    R-22-9 compliant — universal gate: fires for every resolved non-leaf block.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT has_inner_blocks FROM block_composition WHERE block_slug = ?",
+            (block_slug,),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        # Table absent (pre-D108 state) — soft-fail to True (conservative)
+        return True
+    finally:
+        conn.close()
+    if row is None:
+        # Block not in block_composition — soft-fail to True (conservative)
+        _trace("db_lookup_miss", lookup="block_accepts_inner_blocks",
+               block_slug=block_slug)
+        return True
+    result = bool(row[0])
+    _trace("db_lookup_hit", lookup="block_accepts_inner_blocks",
+           block_slug=block_slug, has_inner_blocks=result)
+    return result
 
 
 def attr_for_slot(block_slug: str, canonical_slot: str) -> str | None:
@@ -2121,8 +2178,20 @@ def _emit_wp_block_markup(slug: str, attrs: dict, children: list[str]) -> str:
 
     Mirrors emit_wp_block() shape from _retired/convert_pre_spec22.py:964.
     Strips private underscore-prefixed keys from attrs (routing hints).
-    Produces open+close form; never self-closing (section containers always
-    have children or empty inner content).
+
+    Emit shape follows WP save() contract:
+    - No children → self-closing (`/-->`).
+      This handles dynamic blocks (save=null) emitted inside sgs/container.
+      WP block validation rejects open+close form when the block's save() is
+      null (save=null means self-closing is the ONLY valid serialisation).
+    - Children present → open+close (`--> ... <!-- /wp:slug -->`).
+      Section containers (sgs/container, sgs/hero etc.) always have children
+      so they remain in open+close form.
+
+    The original comment "never self-closing — section containers always have
+    children" was correct for sgs/container callers but wrong when this function
+    is invoked by emit_sgs_container_wrapping for a non-container inner block
+    such as sgs/star-rating (2026-06-02 fix).
     """
     import json as _json
     clean = {
@@ -2133,6 +2202,9 @@ def _emit_wp_block_markup(slug: str, attrs: dict, children: list[str]) -> str:
     if clean:
         attr_json = " " + _json.dumps(clean, separators=(",", ":"), ensure_ascii=False)
     inner_str = "\n".join(children) if children else ""
+    if not inner_str:
+        # Self-close when no inner content — matches WP save()=null contract.
+        return f"<!-- wp:{slug}{attr_json} /-->"
     return f"<!-- wp:{slug}{attr_json} -->\n{inner_str}\n<!-- /wp:{slug} -->"
 
 
