@@ -1,48 +1,35 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-2026-06-01-hero-h-conv-build-plus-trust-bar-dual-mode
+session_tag: small-giants-wp-2026-06-02-merge-prep-image-sideload-phase2-fidelity
 generated: 2026-06-01
-primary_goal: "Build the hero composite fix via Spec 22 §FR-22-19 (H-conv: converter routes the hero's content-column children → bare $content InnerBlocks; the __media images → scalar splitImage/splitImageMobile) — CLOSING THE OPEN GAP first (a DB-first mapping of a composite's media-column BEM element → its scalar attr target; never a per-block slug conditional). render.php/edit.js/block.json stay UNCHANGED. Then build the trust-bar dual-mode (Spec 24 §FR-24-10: Typed curated repeater OR Bound echo $content via a Source-toggle mode attr). All measured from RENDERED HTML (FR-22-18 structural parity + live-DOM gate), NOT pixel-diff."
+primary_goal: "FR-22-19 composite scalar-media (hero + testimonial-slider), trust-bar FR-24-10 dual-mode, and cta-section FR-22-6 are SHIPPED + LIVE-DOM VERIFIED on branch feat/fr22-4-1-universal-wrapper (NOT merged; decisions D130-D132). Next: (1) real image sideload (media-map — biggest remaining pixel-diff lever; hero/product images are dry-run 404s); (2) merge-prep (split d6358f32 per-block per R-22-5 + Bean visual sign-off → merge to main); (3) isEligible on hero/info-box deprecations; (4) Phase-2 scalar-attr extraction (fidelity); (5) product-card + sgs/option-picker build (pending Bean's 6 design decisions)."
 ---
 
-# Next Session — Build hero §FR-22-19 (H-conv) + trust-bar §FR-24-10 dual-mode
+# Next Session — Merge-prep + image-sideload + Phase-2 fidelity (FR-22-19/24-10/FR-22-6 SHIPPED + live-verified)
 
 > ## ⚠ READ THIS BEFORE ANYTHING ELSE — then read the full list below ⚠
-> Invoke `/autopilot` first. Then read the MANDATORY READING LIST **end-to-end, not grep-skim**, before any work. The 2026-06-01 session did the full read + full code-level root-cause + a 3-rater qc-council, which REJECTED the obvious "block thin-shell" fix (it would have retired the hero's rich image pipeline + art-direction → violated "preserve full functionality") and locked H-conv instead. Do NOT re-derive H2. Quote the STOP catalogue + pre-flight ritual back to yourself before acting.
+> Invoke `/autopilot` first. Then read the MANDATORY READING LIST **end-to-end, not grep-skim**, before any work. The 2026-06-01 sessions SHIPPED + **LIVE-DOM VERIFIED** the FR-22-19 composite scalar-media engine (hero + testimonial-slider), the trust-bar FR-24-10 dual-mode, and the cta-section FR-22-6 migration — all on branch `feat/fr22-4-1-universal-wrapper`, **NOT merged**. A 3-rater qc-council confirmed the code is rule-clean. Do NOT re-derive any of it. Quote the STOP catalogue + pre-flight ritual back to yourself before acting.
 
 ## Branch + state
-- **Branch:** `feat/fr22-4-1-universal-wrapper` (NOT merged to main). main clean.
-- Canary page 144 reflects the run-223313 build. **Hero §FR-22-19 is now BUILT + EMIT-PROVEN (2026-06-01 session 2) — live-DOM confirmation is the only remaining gate.**
+- **Branch:** `feat/fr22-4-1-universal-wrapper` (6 commits ahead; **NOT merged** to main). main clean.
+- **Canary page 144 reflects the SHIPPED + LIVE-DOM-VERIFIED state** (run `mamas-munches-144-2026-06-01-035323`).
 
-## ⚡ HERO §FR-22-19 — BUILT + EMIT-PROVEN; RESUME HERE (do this FIRST)
-**Code written + reviewed + DB-verified + emit-proven.** What's done:
-- `db_lookup.py`: `scalar-media` role added to `_ROLE_CLASSIFICATION_MAP`; new `scalar_media_attr_for(slug, bem_element)`.
-- `convert.py`: `_lift_scalar_media_from_img()` + `_route_composite_interior()` + the `is_class_section_block` gate at the children-recursion block (~line 2038). R-22-3 compliant (no 4th branch).
-- **DB UPDATED (direct sqlite3, survives /sgs-update):** `sgs/hero.splitImage` + `splitImageMobile` → `(canonical_slot='media', role='scalar-media')`. Verified: `equivalent_block_for('sgs/hero','splitImage')` → None; `scalar_media_attr_for('sgs/hero','split-image')` → splitImage; `is_class_section_block('sgs/hero')` → True.
-- **EMIT PROOF (ran the walker on the hero mockup section):** hero now emits `sgs/hero {splitImage:{IMG_…webp}, splitImageMobile:{aesthetic-pic.jpeg}}` + bare content InnerBlocks (label/heading/text + `__ctas` container) — **double `.sgs-hero__content` GONE, both imgs lifted to scalar with correct mobile/desktop disambiguation.** Exactly the §FR-22-19 predicted structure.
+## ✅ SESSION-2 SHIPPED + LIVE-DOM VERIFIED (decisions D130-D132) — DO NOT re-derive
+Commits: `83a55820` + `5859c42d` (hero scalar-media + gate fix) · `d6358f32` (cta-section FR-22-6 + trust-bar dual-mode + converter sourceMode) · `b83cd312` (hero `$is_split` media fix + spec role-name).
+- **Hero (§FR-22-19 scalar-media):** double-wrapper FIXED (live: 1 `.sgs-hero__content`, was 2) + media column + 2 art-directed `.sgs-hero__split-image` (mobile/desktop) render live. Gate = **`has_scalar_media_attrs`** (covers hero + testimonial-slider; excludes cta/info-box/product-card). The content-column path folds slug-None wrappers but emits slug-resolved children as their block (FR-22-4.1 #2/#3). render.php `$is_split` fires on present split media.
+- **Trust-bar (§FR-24-10 dual-mode):** Bound mode renders the 4 cloned badges live (`sourceMode:bound`); pixel −5.2 to −6.7pp (strongest measured win). Typed (curated repeater) preserved.
+- **cta-section (FR-22-6):** full migration (render echoes $content; edit.js heading+text+buttons template; deprecated v5 + `isEligible`). Editor-verified (not on Mama's homepage).
+- **Converter:** sets `sourceMode='bound'` on any block declaring a `sourceMode` attr when it emits cloned InnerBlocks (DB-driven, no slug literal).
+- **3-rater qc-council:** all new code PASS R-22-1/2/3/9/14 + FR-22-2.2. Findings catalogued in decisions **D132**.
 
-**REMAINING for the hero (the live-DOM gate + commit):**
-1. `/sgs-clone --converter-v2 --debug-trace --spec-22-acceptance --deploy-target page:144` (canary).
-2. **Live-DOM gate (Playwright, R-22-11):** `section.sgs-hero` has exactly **1** `.sgs-hero__content`, exactly **2** imgs (`--mobile` + `--desktop`, one hidden per breakpoint), `h1` present, 2 `.sgs-button`, `.sgs-hero__content` innerText > 50; AND **no other section's extract.json markup changed** (only sgs/hero is `is_class_section_block` on this page, so blast radius = hero only).
-3. `/qc-council` on the convert.py + db_lookup.py diff (R-22-12 / blub.db 255) — the converter change has NOT been council-reviewed yet.
-4. Commit (code + DB note) once live-DOM + qc-council pass. Roll back fast on any regression (STOP #19).
-
-**RESOLVED 2026-06-01 (Bean caught it) — gate broadened + fold refined:** the gate is now **`db.has_scalar_media_attrs(slug)`** (NOT `is_class_section_block`). `testimonial-slider` is a composite (content-block, not section-root) — the old gate missed it. New gate covers hero + testimonial-slider, excludes cta-section/info-box/product-card (no scalar-media attr → router never fires → **cta-section latent risk resolved**, no behaviour change). The content-column path was refined to **fold only slug-None transparent wrappers**, and **emit slug-resolved children as their block** (so `article.sgs-testimonial` → `sgs/testimonial`, not folded). `sgs/testimonial-slider.sideImage` DB row updated (role=scalar-media, slot=media). **Emit-verified both sections:** hero lifts images + folds content; social-proof's 3 testimonials emit as `sgs/testimonial` blocks (unchanged from before — no regression). Still pending: the live-DOM gate + /qc-council (as above).
-
-## ⚡ SESSION-2 (2026-06-01) ALSO BUILT + EMIT-PROVEN (committed d6358f32) — INTEGRATION REMAINS
-Three emit-proven commits this session: `83a55820` (hero scalar-media), `5859c42d` (gate fix), `d6358f32` (cta-section + trust-bar + converter). Built + emit-proven + committed, but **NOT live-DOM/build-verified or merged**:
-- **cta-section FR-22-6 migration** (full: render.php echoes $content; edit.js InnerBlocks template heading+text+buttons; deprecated.js v5 migrate + isEligible). Editor-verified only (cta-section not on Mama's).
-- **trust-bar dual-mode FR-24-10** (sourceMode typed/bound; render.php branches on the explicit mode, R-22-14; save→InnerBlocks.Content; deprecated v4/v3/v2 keep existing trust-bars Typed). EMIT-PROVEN: converter emits `sgs/trust-bar{sourceMode:bound} > __inner > 4 badges`.
-- **converter** (convert.py): sets `sourceMode='bound'` on any block declaring a sourceMode attr when it emits cloned InnerBlocks (DB-driven, no slug literal). DB: trust-bar sourceMode row seeded (gitignored; /sgs-update confirms from block.json).
-
-**REMAINING INTEGRATION CHAIN (the live proof + verification + docs — a fresh focused session):**
-1. `npm run build` (compile cta-section + trust-bar JS) — validate it compiles.
-2. Deploy + **`/sgs-update`** (indexes the new sourceMode + confirms the scalar-media/testimonial-slider rows) + fresh **`/sgs-clone … page:144`**.
-3. **Live-DOM verify (R-22-11):** hero = 1 `.sgs-hero__content` + 2 art-directed imgs; trust-bar (Bound) renders the 4 cloned badges (not defaults); social-proof testimonials still emit as blocks; NO regressions elsewhere.
-4. **Comprehensive `/qc-council`** on ALL changes + the fresh-run logs/diffs/debug — per section (ex header/footer): works? rules? evidenced progress?
-5. Only evidence-validated points kept → **`/handoff`** + **super-deep doc pass** (docs-registry.yaml + .claude + specs + plans) + **a deep `/qc` ON THE DOCS** (no stale/inaccurate info, cross-doc consistency, AND handoff+next-session-prompt PRESERVE structure: mandatory reading list cmd, STOP catalogue #1-#32, rules, impl method, ritual — D101).
-6. Follow-up: add `isEligible` to hero/info-box deprecations (latent gap flagged by the cta-section agent — their scalar→InnerBlocks migrate may never fire for existing posts without it).
+## REMAINING (priority order — NOT done):
+1. **Real image sideload (media-map)** — hero/product/brand images are dry-run URLs (404 live). The single biggest remaining pixel-diff lever. Wire Stage-4i real WP media IDs (not dry-run) → re-clone → the hero/product images render.
+2. **Merge-prep → main:** split `d6358f32` into per-block commits (R-22-5); Bean visual sign-off (R-22-13); then merge `feat/fr22-4-1-universal-wrapper` → main.
+3. **`isEligible` on hero/info-box deprecations** (latent — their scalar→InnerBlocks `migrate()` may never fire for existing posts; copy the pattern from cta-section `deprecated.js` v5).
+4. **Phase-2 scalar-attr extraction** (476 leftover `extraction_failed` = styling/layout attrs: columns/gap/sizing/typography — not blocking structure; fidelity refinement).
+5. **Investigate:** featured-product 375 +11.1pp (likely reflow noise — renders 553 chars live); `stage-4j` charmap-stdout bug (add `sys.stdout.reconfigure(encoding='utf-8')`; the markup itself is UTF-8-clean); pre-existing `_atomic_attrs_for` per-slug conditionals (R-22-1 carry-over, NOT introduced this session); critical-fix-verification stale baseline (deleted trust-badges dir — benign).
+6. **product-card + `sgs/option-picker` build** — design done (`.claude/reports/2026-06-01-product-card-option-picker-design.md` + Spec 24 §FR-24-11..17 stub); needs **Bean's 6 decisions** (in the report) before Phase A.
 
 ## MANDATORY READING LIST (read FULLY before any work — Bean directive)
 1. This file.

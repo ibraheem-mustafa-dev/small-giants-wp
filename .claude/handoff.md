@@ -1,31 +1,32 @@
-# Session Handoff — 2026-06-01 (hero fix-shape: qc-council rejects H2, locks H-conv §FR-22-19; trust-bar reframed dual-mode §FR-24-10)
+# Session Handoff — 2026-06-01 (FR-22-19 composite scalar-media + trust-bar dual-mode + cta-section FR-22-6: SHIPPED + LIVE-DOM VERIFIED)
 
-## What happened this session (docs-only; NO code shipped — by design)
-This session did the disciplined front-half of a sensitive converter change: **full read → code-level root-cause → 3-rater qc-council → build-ready design captured**. No code was rammed at a context-heavy tail (STOP #19/#32). The qc gate PREVENTED a wrong build.
+## What shipped this session (branch `feat/fr22-4-1-universal-wrapper`; 6 commits; NOT merged to main)
+A full design→build→verify cycle, all on the feature branch:
 
-1. **Verified the entry state** — git showed Wave-2/A-1 were already verified on the canary (run 223313, commit `0f52a3ba`, pre-session): 6/7 sections structurally green; **hero is the one RED section**.
-2. **Completed the full MANDATORY READING LIST** (Spec 22 full, TRUTH-SPEC, decisions D102-D124, Spec 21, Spec 24, flow, wireframe) + the ground-truth converter output for hero + trust-bar + the walker code.
-3. **Code-level root-cause:**
-   - **Hero double-wrapper:** the walker emits the hero interior as two generic `sgs/container` columns (§FR-22-4.1); render.php ALSO wraps `$content` in `.sgs-hero__content` + renders its own scalar media column → double `.sgs-hero__content` + classless `sgs/media` children. KEY FINDING (reading render.php:760-788): **render.php is ALREADY correct** — its 169-attr image pipeline + the `--mobile/--desktop` art-direction `@media` CSS already work for a bare-content + scalar-media model. So the fix is CONVERTER-side, not block-side.
-   - **Trust-bar:** renders 4 badges via its DEFAULT `items` (coincidental Mama's match), ignoring the converter's emitted badge InnerBlocks.
-4. **3-rater qc-council** (compliance / pipeline-impact / universality) on the hero fix-shape:
-   - **REJECTED H2** (block thin-shell + images→sgs/media + universal className-preservation): retires the hero's image pipeline + art-direction onto sgs/media (can't replicate) → violates "preserve full functionality"; blast radius 7 sections + 5 block files + a migration + invalidates the pixel-diff baseline.
-   - **CHOSE H-conv** (converter routes content→bare `$content` InnerBlocks; images→scalar `splitImage`/`splitImageMobile`): render.php/edit.js/block.json UNCHANGED; 1-section blast radius; preserves all functionality; universal across the 4 `wraps_block` composites (hero/cta-section/modal/quote) + the FR-22-6 roster.
-5. **Captured the design:** Spec 22 **§FR-22-19** (hero H-conv + build sequence + the OPEN GAP: a DB-first mapping of a composite's media-column BEM element → its scalar attr target — never a per-block slug conditional). Spec 24 **§FR-24-10** (trust-bar dual-mode — Typed curated repeater OR Bound `echo $content`, same pattern as product-card). Decisions D125-D127. Parking updated. Council brief at `.claude/scratch/2026-06-01-hero-fix-shape-qc-brief.md`.
+1. **Hero composite scalar-media (§FR-22-19)** — `83a55820` + `5859c42d` + `b83cd312`. The hero double-wrapper + missing split-image are FIXED + **live-DOM verified** on canary 144: exactly **1** `.sgs-hero__content` (was 2), the media column + **2 art-directed `.sgs-hero__split-image`** (mobile/desktop) render. Mechanism: a new `scalar-media` role (styling-behaviour → `equivalent_block_for` returns NULL → walker lifts the img to the scalar attr instead of a child block); `_route_composite_interior` gated by **`has_scalar_media_attrs(slug)`** (covers hero + testimonial-slider; excludes cta/info-box/product-card); content-column folds slug-None wrappers but emits slug-resolved children as their block. render.php `$is_split` now fires on present split media.
+2. **Trust-bar dual-mode (§FR-24-10)** — `d6358f32`. `sourceMode` typed/bound; render.php branches on the explicit mode (R-22-14 clean — never `empty($content)`); Bound `echo $content`; Typed curated repeater unchanged; save→InnerBlocks.Content; deprecated v4/v3/v2 keep existing trust-bars Typed. **Live-verified:** Bound renders the 4 cloned badges; pixel −5.2 to −6.7pp (strongest measured win).
+3. **cta-section FR-22-6** — `d6358f32`. Full migration: render echoes $content; edit.js heading+text+buttons InnerBlocks template; deprecated v5 migrate + `isEligible`. Editor-verified (not on Mama's homepage).
+4. **Converter sourceMode step** — `d6358f32`. Sets `sourceMode='bound'` on any block declaring a `sourceMode` attr when emitting cloned InnerBlocks (DB-driven, no slug literal).
+5. **Product-card + `sgs/option-picker` DESIGN** — `.claude/reports/2026-06-01-product-card-option-picker-design.md` + Spec 24 §FR-24-11..17 stub (research-buddies + brainstorming; needs Bean's 6 decisions before build).
+
+## How it was verified (the methodology held)
+- **3-rater qc-council** (functional / rules / evidenced-progress) on the design fix-shape (rejected H2, locked H-conv — would have retired the hero's 169-attr image pipeline) AND on the fresh full-page clone run.
+- **Live-DOM (R-22-11)** on deployed page 144 (run `mamas-munches-144-2026-06-01-035323`): hero ✓, trust-bar Bound ✓, 3 `sgs/testimonial` intact ✓, no regressions ✓.
+- All new code PASS R-22-1/2/3/9/14 + FR-22-2.2 (qc-council). 2 qc-found gaps fixed same session (hero `$is_split` media; spec role-name image-pipeline→scalar-media).
+- **Bean's two corrections improved the mechanism** before it shipped: "preserve full functionality" → H-conv over H2; "testimonial-slider is a composite" → the `has_scalar_media_attrs` gate (covers it + resolved the cta-section over-fire risk).
 
 ## Current state
-- **Branch:** `feat/fr22-4-1-universal-wrapper` (NOT merged; main clean). Docs committed this session; no code.
-- **Hero:** fix-shape LOCKED = §FR-22-19 H-conv; build pending (focused session — sensitive walker work + the OPEN GAP to close DB-first).
-- **Trust-bar:** fix-shape = §FR-24-10 dual-mode; build pending (after hero).
-- Canary 144 = run-223313 build (hero still RED).
+- **Branch:** `feat/fr22-4-1-universal-wrapper`, 6 commits ahead, **NOT merged**. main clean.
+- Canary 144 = the shipped + verified state. Pixel-diff mean 62.6% (informational per FR-22-18; images dry-run 404 until sideload).
+- DB: `scalar-media` role + the 3 reclassified attr rows + trust-bar `sourceMode` row (indexed by /sgs-update Stage 1).
 
-## Next priorities (full detail + build sequence in next-session-prompt.md)
-1. **Build hero §FR-22-19 (H-conv)** — DB role reclassification → close the OPEN GAP (DB-first media-BEM→scalar mapping) → convert.py slot-router → live-DOM gate + roll-back-fast.
-2. **Build trust-bar §FR-24-10 dual-mode.**
-3. product-card full dual-mode (spec variation-sets FIRST); A-1 Phase 2; generalise §FR-22-19 to cta-section/modal/quote.
-
-## Mistakes AVOIDED this session (the methodology working)
-Reading the full render.php flipped H2→H-conv (STOP #30/#31). The qc-council caught H2's functionality loss before it shipped (blub.db 255). Sensitive walker change deferred to a focused build, not rammed (STOP #19/#32). New STOP entries #30/#31/#32 added to next-session-prompt.
+## REMAINING (priority — see next-session-prompt.md + decisions D132)
+1. **Real image sideload (media-map)** — biggest remaining pixel-diff lever (hero/product/brand images are dry-run 404s).
+2. **Merge-prep → main:** split `d6358f32` per-block (R-22-5) + Bean visual sign-off (R-22-13).
+3. **`isEligible`** on hero/info-box deprecations (copy cta-section v5 pattern).
+4. **Phase-2 scalar-attr extraction** (476 leftover styling/layout attrs — fidelity, not structure).
+5. **Investigate:** featured-product 375 +11.1pp (likely noise); stage-4j charmap-stdout bug; `_atomic_attrs_for` per-slug R-22-1 carry-over.
+6. **product-card + option-picker build** (pending Bean's 6 decisions).
 
 ## Next Session Prompt
-See `.claude/next-session-prompt.md` — STOP catalogue #1-#32 (was #1-#29), 16-item reading list, 10-question ritual, the §FR-22-19 build sequence + the OPEN GAP, §FR-24-10 dual-mode. Structural defences carried forward + extended per D101 (counts all up).
+See `.claude/next-session-prompt.md` — updated to the SHIPPED+VERIFIED state + the remaining priorities; STOP catalogue #1-#32 + reading list + ritual preserved verbatim (D101). decisions D130-D132 carry the full record.
