@@ -23,7 +23,18 @@ Commits: `83a55820` + `5859c42d` (hero scalar-media + gate fix) · `d6358f32` (c
 - **Converter:** sets `sourceMode='bound'` on any block declaring a `sourceMode` attr when it emits cloned InnerBlocks (DB-driven, no slug literal).
 - **3-rater qc-council:** all new code PASS R-22-1/2/3/9/14 + FR-22-2.2. Findings catalogued in decisions **D132**.
 
-## REMAINING (priority order — NOT done):
+## ⚡ NEXT SESSION OPENS WITH THIS (Bean-directed) — BUILD FR-22-20 universal variant detection
+**Read Spec 22 §FR-22-20 + decisions D133 FIRST.** This REPLACES the 2026-06-01 hero `$is_split` fix, which Bean **conceded is a cheat** (per-block, presence-based, mis-fires on stale data). The proper mechanism is universal + DB-driven + draft-data-driven, for all **33 variant-bearing blocks** (hero/product-card/gallery/mobile-nav/…), and keeps drafts variant-unaware.
+Build (each its own commit, R-22-5; FR-22-18 live-DOM gate; lean on /subagent-driven-development for steps 3+4):
+1. **DB:** add `blocks.variant_attr` column + new **`variant_slots`** table `(block_slug, variant_value, unique_slot)`.
+2. **Declare** `supports.sgs.variants` (variant → its attrs/slots map) in block.json — hero first (split→splitImage/splitImageMobile/splitColumnRatio/splitGap; standard→backgroundImage; video→backgroundVideo/bgVideo; svg-animated→svgContent), then product-card/gallery/….
+3. **`/sgs-update`** populates `variant_slots` — only each variant's DISCRIMINATING slots (set-difference vs sibling variants; exclude shared attrs like minHeight).
+4. **Converter variant-detector** (emit-path enrichment gated by `blocks.variant_attr IS NOT NULL`, NOT a 4th branch): from the slots the DRAFT extracted THIS run (the extract — NOT the block's stored attrs, which closes the stale-data hole), count each variant's `variant_slots` hits, pick the **highest** (tie-break insurance), set the variant attr. Then **REVERT the hero `$is_split` band-aid** (hero render.php ~line 224 → back to `'split' === $variant`).
+5. **Re-clone canary + live-DOM verify** the hero emits `variant='split'` + renders the media via the ORIGINAL gate (no band-aid). 
+6. **Generalise** to the other 32 variant blocks incrementally.
+Scaffolding that already exists: 33 variant-selector enum attrs + the `variations` table (206 rows). The new piece is the `variant_slots` discriminator + `blocks.variant_attr` + the detector.
+
+## REMAINING (after the variant build, priority order):
 1. **Real image sideload (media-map)** — hero/product/brand images are dry-run URLs (404 live). The single biggest remaining pixel-diff lever. Wire Stage-4i real WP media IDs (not dry-run) → re-clone → the hero/product images render.
 2. **Merge-prep → main:** split `d6358f32` into per-block commits (R-22-5); Bean visual sign-off (R-22-13); then merge `feat/fr22-4-1-universal-wrapper` → main.
 3. **`isEligible` on hero/info-box deprecations** (latent — their scalar→InnerBlocks `migrate()` may never fire for existing posts; copy the pattern from cta-section `deprecated.js` v5).
