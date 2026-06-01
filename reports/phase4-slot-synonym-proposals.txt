@@ -1,7 +1,7 @@
-# Slot Synonym Auto-Seed Proposals — 2026-05-31 22:16:43 UTC
+# Slot Synonym Auto-Seed Proposals — 2026-06-01 19:16:50 UTC
 
 ## Summary
-Unmapped rows: 61 | Auto-inserted (high confidence): 0 | Manual review (medium confidence): 1 | No match (low confidence): 60
+Unmapped rows: 62 | Auto-inserted (high confidence): 0 | Manual review (medium confidence): 1 | No match (low confidence): 61
 
 ## High confidence (auto-updated)
 
@@ -15,6 +15,7 @@ _(none)_
 
 - slot='alt' (no SGS block matches)
 - slot='options' (no SGS block matches)
+- slot='badge' (no SGS block matches)
 - slot='hover' (no SGS block matches)
 - slot='transition' (no SGS block matches)
 - slot='animation' (no SGS block matches)
