@@ -27,6 +27,11 @@ const PHOTO_SHAPES = [
 	{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
 ];
 
+const DISPLAY_MODES = [
+	{ label: __( 'Full (photo, name, role, bio, socials)', 'sgs-blocks' ), value: 'full' },
+	{ label: __( 'Compact (photo, name, role)', 'sgs-blocks' ), value: 'compact' },
+];
+
 /**
  * InnerBlocks template: default to one sgs/social-icons child.
  * Social links are now composed via InnerBlocks rather than a flat
@@ -48,7 +53,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		cardStyle,
 		photoShape,
 		hoverOverlay,
+		displayMode,
 	} = attributes;
+
+	const isCompact = 'compact' === displayMode;
 
 	// Hydrate from new memberMedia first, fall back to legacy photo.
 	const activeMedia = ( memberMedia && memberMedia.url )
@@ -79,7 +87,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	const className = [
 		'sgs-team-member',
 		`sgs-team-member--${ cardStyle }`,
-	].join( ' ' );
+		isCompact && 'sgs-team-member--compact',
+	]
+		.filter( Boolean )
+		.join( ' ' );
 
 	const blockProps = useBlockProps( { className } );
 
@@ -99,6 +110,17 @@ export default function Edit( { attributes, setAttributes } ) {
 			<InspectorControls>
 				<PanelBody title={ __( 'Card Settings', 'sgs-blocks' ) }>
 					<SelectControl
+						label={ __( 'Display mode', 'sgs-blocks' ) }
+						help={ __(
+							'Compact shows photo, name and role only — ideal for dense team grids.',
+							'sgs-blocks'
+						) }
+						value={ displayMode }
+						options={ DISPLAY_MODES }
+						onChange={ ( val ) => setAttributes( { displayMode: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
 						label={ __( 'Card style', 'sgs-blocks' ) }
 						value={ cardStyle }
 						options={ CARD_STYLES }
@@ -112,13 +134,15 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { photoShape: val } ) }
 						__nextHasNoMarginBottom
 					/>
-					<ToggleControl
-						label={ __( 'Hover overlay (bio)', 'sgs-blocks' ) }
-						help={ __( 'Reveals the bio as a slide-up overlay on the photo when hovered or focused. On touch devices, tap the photo to toggle.', 'sgs-blocks' ) }
-						checked={ hoverOverlay }
-						onChange={ ( val ) => setAttributes( { hoverOverlay: val } ) }
-						__nextHasNoMarginBottom
-					/>
+					{ ! isCompact && (
+						<ToggleControl
+							label={ __( 'Hover overlay (bio)', 'sgs-blocks' ) }
+							help={ __( 'Reveals the bio as a slide-up overlay on the photo when hovered or focused. On touch devices, tap the photo to toggle.', 'sgs-blocks' ) }
+							checked={ hoverOverlay }
+							onChange={ ( val ) => setAttributes( { hoverOverlay: val } ) }
+							__nextHasNoMarginBottom
+						/>
+					) }
 				</PanelBody>
 
 				<PanelBody title={ __( 'Colours', 'sgs-blocks' ) } initialOpen={ false }>
@@ -162,14 +186,17 @@ export default function Edit( { attributes, setAttributes } ) {
 					placeholder={ __( 'Role / Title', 'sgs-blocks' ) }
 					style={ { color: colourVar( roleColour ) || undefined } }
 				/>
-				<RichText
-					tagName="p"
-					className="sgs-team-member__bio"
-					value={ bio }
-					onChange={ ( val ) => setAttributes( { bio: val } ) }
-					placeholder={ __( 'Short bio…', 'sgs-blocks' ) }
-				/>
-				<div { ...innerBlocksProps } />
+				{ ! isCompact && (
+					<RichText
+						tagName="p"
+						className="sgs-team-member__bio"
+						value={ bio }
+						onChange={ ( val ) => setAttributes( { bio: val } ) }
+						placeholder={ __( 'Short bio…', 'sgs-blocks' ) }
+					/>
+				) }
+				{ /* Social InnerBlocks persist in data; only shown in full mode. */ }
+				<div { ...innerBlocksProps } hidden={ isCompact } />
 			</div>
 		</>
 	);
