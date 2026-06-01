@@ -2099,6 +2099,15 @@ def walk(
                 if result:
                     children_markup.append(result)
 
+    # Spec 11 + P-9: wrap any loose sgs/button runs in sgs/multi-button (WP
+    # core/buttons mirror). No-op when there are no loose buttons; already-grouped
+    # buttons (a __ctas wrapper → sgs/multi-button) pass through untouched. Skip
+    # when THIS block IS the button-group container itself (its children are the
+    # group's buttons — grouping them would double-wrap multi-button>multi-button).
+    # The button-group block slug is derived from the DB (R-22-1, no hardcoded literal).
+    if slug != db.block_for_slot_token("button-group"):
+        children_markup = _group_loose_buttons(children_markup)
+
     # FR-24-10 dual-mode (2026-06-01): blocks declaring a `sourceMode` attr
     # (e.g. sgs/trust-bar) default to 'typed' (curated scalar render). When the
     # converter emits such a block with cloned InnerBlocks children, switch it to
@@ -2629,6 +2638,45 @@ def _route_text_leaf(
     return emit_wp_block(target, attrs, [])
 
 
+# ----------------------------------------------------------------------------
+# Button grouping (Spec 11 + parking P-9, 2026-06-03)
+# Mirror WP's core/buttons>core/button: a sgs/button is NEVER loose — every run
+# of adjacent sgs/button siblings is wrapped in one sgs/multi-button (the group
+# container that owns layout/gap/alignment), exactly as core wraps even a single
+# core/button in core/buttons. Buttons the draft ALREADY grouped (a __ctas /
+# __buttons wrapper → sgs/multi-button via the button-group slot) arrive here as a
+# single multi-button string, so they are not re-wrapped. A run of length 1 is
+# still wrapped (WP wraps single buttons too; matches the composite blocks'
+# [multi-button [button,button]] default template).
+# ----------------------------------------------------------------------------
+_SGS_BUTTON_OPEN_RE = re.compile(r"^\s*<!--\s*wp:sgs/button(?:\s|/-->|-->)")
+
+
+def _group_loose_buttons(children: list[str]) -> list[str]:
+    """Wrap each consecutive run of top-level sgs/button blocks (incl. a run of 1)
+    in the button-group container. Non-button children pass through unchanged; an
+    existing group block (already-grouped buttons) is one opaque string here and is
+    not touched. Idempotent: re-running sees the wrapper, not loose buttons.
+    The group block slug is DB-derived (R-22-1) from the `button-group` slot, with
+    a safe fallback to the framework's container primitive."""
+    group_slug = db.block_for_slot_token("button-group") or "sgs/multi-button"
+    open_tag = f"<!-- wp:{group_slug} -->\n"
+    close_tag = f"\n<!-- /wp:{group_slug} -->"
+    out: list[str] = []
+    run: list[str] = []
+    for c in children:
+        if _SGS_BUTTON_OPEN_RE.match(c):
+            run.append(c)
+            continue
+        if run:
+            out.append(open_tag + "\n".join(run) + close_tag)
+            run = []
+        out.append(c)
+    if run:
+        out.append(open_tag + "\n".join(run) + close_tag)
+    return out
+
+
 def _emit_wrapper_container(
     node: "Tag",
     classes: list[str],
@@ -2765,6 +2813,8 @@ def _process_container_children(
             r = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
             if r:
                 out.append(r)
+    # Spec 11 + P-9: group loose sgs/button runs into sgs/multi-button (WP mirror).
+    out = _group_loose_buttons(out)
     return out
 
 
