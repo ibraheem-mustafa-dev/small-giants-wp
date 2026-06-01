@@ -31,7 +31,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 use SGS\Blocks\Sgs_Site_Info;
 
-$display_type = $attributes['type'] ?? 'phone';
+$display_type = $attributes['displayType'] ?? 'phone';
 $show_icon    = ! empty( $attributes['showIcon'] );
 $link_phone   = ! empty( $attributes['linkPhone'] );
 $link_email   = ! empty( $attributes['linkEmail'] );
