@@ -50,15 +50,18 @@
       "type": "array",
       "default": [
         {
-          "icon": "check",
+          "iconSource": "lucide",
+          "iconName": "check",
           "text": "First list item"
         },
         {
-          "icon": "check",
+          "iconSource": "lucide",
+          "iconName": "check",
           "text": "Second list item"
         },
         {
-          "icon": "check",
+          "iconSource": "lucide",
+          "iconName": "check",
           "text": "Third list item"
         }
       ]
@@ -66,6 +69,10 @@
     "icon": {
       "type": "string",
       "default": "check"
+    },
+    "defaultIconSource": {
+      "type": "string",
+      "default": "lucide"
     },
     "iconColour": {
       "type": "string",

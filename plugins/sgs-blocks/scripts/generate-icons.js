@@ -104,3 +104,83 @@ fs.writeFileSync( OUTPUT_FILE, phpLines.join( '\n' ), 'utf8' );
 console.log(
 	`Generated ${ OUTPUT_FILE } with ${ Object.keys( icons ).length } icons.`
 );
+
+// ── Editor-side assets for the in-editor IconPicker ─────────────────────────────
+// These are static JSON assets fetched on-demand by the IconPicker modal (editor
+// only, never the frontend, never inlined into the JS bundle). This keeps the
+// editor script lean while still allowing a searchable visual grid of all icons.
+// The frontend continues to render from lucide-icons.php (single source of truth).
+const ASSETS_DIR = path.resolve( __dirname, '../assets/icons' );
+if ( ! fs.existsSync( ASSETS_DIR ) ) {
+	fs.mkdirSync( ASSETS_DIR, { recursive: true } );
+}
+
+// 1. Full Lucide SVG map { name: svgMarkup } — lazy-fetched once per editor session.
+fs.writeFileSync(
+	path.join( ASSETS_DIR, 'lucide-icons.json' ),
+	JSON.stringify( icons ),
+	'utf8'
+);
+
+// 2. Lucide search aliases { name: [tag, …] } — copied from lucide-static.
+const tagsSrc = path.resolve(
+	__dirname,
+	'../node_modules/lucide-static/tags.json'
+);
+if ( fs.existsSync( tagsSrc ) ) {
+	fs.copyFileSync( tagsSrc, path.join( ASSETS_DIR, 'lucide-tags.json' ) );
+}
+
+// 2b. WordPress-icon SVG map { slug: svgMarkup } — parsed from the canonical
+//     server-side map in includes/wp-icons.php so the editor preview is byte-identical
+//     to the frontend render (single source of truth — never hand-duplicated).
+const WP_ICONS_PHP = path.resolve( __dirname, '../includes/wp-icons.php' );
+if ( fs.existsSync( WP_ICONS_PHP ) ) {
+	const php = fs.readFileSync( WP_ICONS_PHP, 'utf8' );
+	const wpIcons = {};
+	// Match array entries:  'slug' => '<svg …</svg>',
+	const re = /'([a-z0-9-]+)'\s*=>\s*'(<svg[\s\S]*?<\/svg>)'/g;
+	let m;
+	while ( ( m = re.exec( php ) ) !== null ) {
+		wpIcons[ m[ 1 ] ] = m[ 2 ];
+	}
+	fs.writeFileSync(
+		path.join( ASSETS_DIR, 'wp-icons.json' ),
+		JSON.stringify( wpIcons ),
+		'utf8'
+	);
+}
+
+// 3. Emoji dataset — flattened from unicode-emoji-json into a compact searchable
+//    list [{ c: char, n: name, g: group, k: searchString }].
+try {
+	const byGroup = require( 'unicode-emoji-json/data-by-group.json' );
+	const emoji = [];
+	for ( const group of Object.values( byGroup ) ) {
+		const groupName = group.name || '';
+		for ( const item of group.emojis || [] ) {
+			const search = `${ item.name } ${ item.slug || '' } ${ groupName }`
+				.toLowerCase()
+				.replace( /_/g, ' ' );
+			emoji.push( {
+				c: item.emoji,
+				n: item.name,
+				g: groupName,
+				k: search,
+			} );
+		}
+	}
+	fs.writeFileSync(
+		path.join( ASSETS_DIR, 'emoji.json' ),
+		JSON.stringify( emoji ),
+		'utf8'
+	);
+	console.log(
+		`Generated editor icon assets in ${ ASSETS_DIR } (${ Object.keys( icons ).length } lucide + ${ emoji.length } emoji).`
+	);
+} catch ( err ) {
+	console.warn(
+		'unicode-emoji-json not found — emoji.json not generated. Run npm install.',
+		err.message
+	);
+}
