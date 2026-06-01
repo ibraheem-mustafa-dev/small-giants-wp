@@ -2196,14 +2196,24 @@ def emit_sgs_container_wrapping(
         container_parts.append(f"<style>{css.strip()}</style>")
     container_inner = "\n".join(container_parts)
 
-    # Wrap in sgs/container (FR-22-4: always an empty attrs dict — styling
-    # lives on the inner block; the container is a structural wrapper only)
+    # Wrap in sgs/container (FR-22-4: every top-level section is based on sgs/container).
+    # The top-level section wrapper is ALWAYS full-width (widthMode='full'): a non-nested
+    # section container must span the full viewport so its inner block's background fills
+    # the whole section width, while content is constrained by the inner block's own
+    # content-width logic. Without widthMode='full' the wrapper renders at WP content-size
+    # (~780px) with auto side-margins — the section then appears in a centred column and
+    # its background stops at content width (Bean 2026-06-02 class-section regression;
+    # universal, not class-section-gated, because trust-bar etc. are tier='block' yet
+    # are still full-width sections). The className post-process
+    # (guarantee_section_className) MERGES the section BEM class on top of these attrs,
+    # so widthMode is preserved.
+    outer_attrs = _json.dumps({"widthMode": "full"}, separators=(",", ":"), ensure_ascii=False)
     wrapper_div = (
         f'<div class="wp-block-sgs-container">\n'
         f"{container_inner}\n"
         f"</div>"
     )
-    return f"<!-- wp:sgs/container {{}} -->\n{wrapper_div}\n<!-- /wp:sgs/container -->"
+    return f"<!-- wp:sgs/container {outer_attrs} -->\n{wrapper_div}\n<!-- /wp:sgs/container -->"
 
 
 # ----------------------------------------------------------------------------
