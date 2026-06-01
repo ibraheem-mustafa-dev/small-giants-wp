@@ -1,32 +1,44 @@
-# Session Handoff — 2026-06-01 (FR-22-19 composite scalar-media + trust-bar dual-mode + cta-section FR-22-6: SHIPPED + LIVE-DOM VERIFIED)
+# Session Handoff — 2026-06-02 (CLONING PIPELINE thread)
 
-## What shipped this session (branch `feat/fr22-4-1-universal-wrapper`; 6 commits; NOT merged to main)
-A full design→build→verify cycle, all on the feature branch:
+> Two-thread close. THIS file = cloning pipeline. Theme/blocks work → `.claude/handoff-theme.md`.
 
-1. **Hero composite scalar-media (§FR-22-19)** — `83a55820` + `5859c42d` + `b83cd312`. The hero double-wrapper + missing split-image are FIXED + **live-DOM verified** on canary 144: exactly **1** `.sgs-hero__content` (was 2), the media column + **2 art-directed `.sgs-hero__split-image`** (mobile/desktop) render. Mechanism: a new `scalar-media` role (styling-behaviour → `equivalent_block_for` returns NULL → walker lifts the img to the scalar attr instead of a child block); `_route_composite_interior` gated by **`has_scalar_media_attrs(slug)`** (covers hero + testimonial-slider; excludes cta/info-box/product-card); content-column folds slug-None wrappers but emits slug-resolved children as their block. render.php `$is_split` now fires on present split media.
-2. **Trust-bar dual-mode (§FR-24-10)** — `d6358f32`. `sourceMode` typed/bound; render.php branches on the explicit mode (R-22-14 clean — never `empty($content)`); Bound `echo $content`; Typed curated repeater unchanged; save→InnerBlocks.Content; deprecated v4/v3/v2 keep existing trust-bars Typed. **Live-verified:** Bound renders the 4 cloned badges; pixel −5.2 to −6.7pp (strongest measured win).
-3. **cta-section FR-22-6** — `d6358f32`. Full migration: render echoes $content; edit.js heading+text+buttons InnerBlocks template; deprecated v5 migrate + `isEligible`. Editor-verified (not on Mama's homepage).
-4. **Converter sourceMode step** — `d6358f32`. Sets `sourceMode='bound'` on any block declaring a `sourceMode` attr when emitting cloned InnerBlocks (DB-driven, no slug literal).
-5. **Product-card + `sgs/option-picker` DESIGN** — `.claude/reports/2026-06-01-product-card-option-picker-design.md` + Spec 24 §FR-24-11..17 stub (research-buddies + brainstorming; needs Bean's 6 decisions before build).
+## Completed This Session
+1. **FR-22-20 universal variant detection — SHIPPED + LIVE-DOM VERIFIED** (commits `1a48c602`→`55f42e1b`). DB schema (`blocks.variant_attr` + `variant_slots`) + hero `supports.sgs.variants` + `/sgs-update` population + converter `detect_variant` (db_lookup) + emit-path enrichment (convert.py) + hero `$is_split` band-aid reverted. 3-rater qc-council caught 1 real bug (truthiness dropped numeric-0 → fixed via `_slot_extracted`). Hero renders `sgs-hero--split` via the clean gate on canary 144. (D134)
+2. **Variant-routing criterion LOCKED** + all 66 blocks categorised (`.claude/scratch/2026-06-02-brain-dump-variant-routing-and-issues.md`). The slot-fingerprint only fits content-distinct variants (~2 blocks); the rest need a modifier-class mechanism (D135). Criterion: a block needs ROUTING iff the variant makes distinct content/structure/terms APPEAR; else it's a CSS setting (D0-transferable).
+3. **CSS-transfer fidelity audit (D136)** — draft-vs-clone computed-style diff proved 4 systemic transfer failures: imposed section max-width 1200; dropped `__inner` wrappers (fold); imposed hero gradient; mangled grid-template-columns. This is the new priority.
+4. **Class-section width band-aid** (committed `e27ff591`) — `widthMode:'full'` on slug-resolved section wraps; hero/trust-bar now full-width. PARTIAL — to be superseded by the faithful-transfer fix. Rejected two converter detect-mode band-aids (Bean).
+5. **Static-div editor bug FIXED** (latest commit) — `emit_sgs_container_wrapping` emitted a static `<div class="wp-block-sgs-container">` that fails WP validation against `save()`=`<InnerBlocks.Content/>` → "unexpected/invalid content" on every cloned container. Now emits children directly (mirrors `_emit_section_container`). Re-cloned to deploy.
 
-## How it was verified (the methodology held)
-- **3-rater qc-council** (functional / rules / evidenced-progress) on the design fix-shape (rejected H2, locked H-conv — would have retired the hero's 169-attr image pipeline) AND on the fresh full-page clone run.
-- **Live-DOM (R-22-11)** on deployed page 144 (run `mamas-munches-144-2026-06-01-035323`): hero ✓, trust-bar Bound ✓, 3 `sgs/testimonial` intact ✓, no regressions ✓.
-- All new code PASS R-22-1/2/3/9/14 + FR-22-2.2 (qc-council). 2 qc-found gaps fixed same session (hero `$is_split` media; spec role-name image-pipeline→scalar-media).
-- **Bean's two corrections improved the mechanism** before it shipped: "preserve full functionality" → H-conv over H2; "testimonial-slider is a composite" → the `has_scalar_media_attrs` gate (covers it + resolved the cta-section over-fire risk).
+## Current State
+- **Branch:** `feat/fr22-4-1-universal-wrapper` at HEAD (static-div fix). NOT merged (merge-prep pending).
+- **Tests:** converter emit-tests pass; no full suite run. **Build:** blocks build green.
+- **Uncommitted:** none (band-aid reverted; pre-existing lucide/trust-badges/reports unchanged).
+- **Canary 144:** re-cloned (run 113800 then a static-div-fix re-clone in flight). Pixel-diff ~61.5% (informational; the transfer gaps are why).
 
-## Current state
-- **Branch:** `feat/fr22-4-1-universal-wrapper`, 6 commits ahead, **NOT merged**. main clean.
-- Canary 144 = the shipped + verified state. Pixel-diff mean 62.6% (informational per FR-22-18; images dry-run 404 until sideload).
-- DB: `scalar-media` role + the 3 reclassified attr rows + trust-bar `sourceMode` row (indexed by /sgs-update Stage 1).
+## Known Issues / Blockers
+- **CSS transfer is unfaithful (4 gaps, D136)** — the priority; section widths/backgrounds/grids/hero-gradient diverge from the draft.
+- **Editor "unexpected content" on containers** — fix committed + re-cloning; Bean to confirm in editor. Media "cannot be previewed" (save()=null) — likely same class; verify post-reclone.
+- **Variant rollout incomplete** — only hero (slot-fingerprint); stylistic-variant majority needs the modifier-class mechanism.
 
-## REMAINING (priority — see next-session-prompt.md + decisions D132)
-1. **Real image sideload (media-map)** — biggest remaining pixel-diff lever (hero/product/brand images are dry-run 404s).
-2. **Merge-prep → main:** split `d6358f32` per-block (R-22-5) + Bean visual sign-off (R-22-13).
-3. **`isEligible`** on hero/info-box deprecations (copy cta-section v5 pattern).
-4. **Phase-2 scalar-attr extraction** (476 leftover styling/layout attrs — fidelity, not structure).
-5. **Investigate:** featured-product 375 +11.1pp (likely noise); stage-4j charmap-stdout bug; `_atomic_attrs_for` per-slug R-22-1 carry-over.
-6. **product-card + option-picker build** (pending Bean's 6 decisions).
+## Next Priorities (in order)
+1. **Faithful CSS transfer (the 4 gaps, D136)** — start with theme-CSS-by-position (gap 1) + fold stop-dropping-`__inner` (gap 2); then hero gradient + grid-columns. NOT converter band-aids.
+2. **Variant-routing rollout** — modifier-class mechanism for stylistic variants (D135).
+3. **Real image sideload** (media-map) — hero/product 404.
+4. **Merge-prep → main** — split per-block (R-22-5) + Bean sign-off.
+
+## Files Modified
+| File | What changed |
+|------|---|
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | FR-22-20 detector + widthMode:full + static-div removal |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | FR-22-20 emit enrichment (committed); band-aid reverted |
+| `plugins/sgs-blocks/src/blocks/hero/{block.json,render.php}` | variant declaration + $is_split revert |
+| `plugins/sgs-blocks/scripts/sgs-update-v2.py` | variant_attr/variant_slots population |
+| `.claude/decisions.md`, `next-session-prompt.md`, `scratch/2026-06-02-*` | D134-D136 + audit + criterion |
+
+## Notes for Next Session
+- The pipeline's job is **faithful CSS transfer**; converter detect-mode conditionals are the wrong layer (Bean rejected twice — memory `feedback_pipeline_transfers_draft_css_not_converter_detection_hacks`).
+- The draft pattern: full-bleed sections (no max-width) + `__inner` wrappers (max-width:960). Serve the mockup on localhost to diff computed styles (`file://` blocked in Playwright MCP).
+- Orchestrator path is `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (NOT `scripts/orchestrator/`).
 
 ## Next Session Prompt
-See `.claude/next-session-prompt.md` — updated to the SHIPPED+VERIFIED state + the remaining priorities; STOP catalogue #1-#32 + reading list + ritual preserved verbatim (D101). decisions D130-D132 carry the full record.
+See `.claude/next-session-prompt.md` (cloning thread — full orchestration plan, STOP catalogue #1-#36, reading list, pre-flight ritual). Theme thread: `.claude/next-session-prompt-theme.md`.

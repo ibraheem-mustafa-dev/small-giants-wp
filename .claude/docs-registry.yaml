@@ -18,8 +18,10 @@ canonical_docs:
   - {path: .claude/dev-setup.md,                                       scope: forever,                          doc_type: dev-setup}
   - {path: .claude/goals.md,                                           scope: forever,                          doc_type: goals}
   - {path: .claude/state.md,                                           scope: forever_auto_regen,               doc_type: state}
-  - {path: .claude/handoff.md,                                         scope: forever_auto_regen,               doc_type: handoff}
-  - {path: .claude/next-session-prompt.md,                             scope: forever_auto_regen,               doc_type: next-session-prompt}
+  - {path: .claude/handoff.md,                                         scope: forever_auto_regen,               doc_type: handoff, thread: cloning-pipeline}
+  - {path: .claude/next-session-prompt.md,                             scope: forever_auto_regen,               doc_type: next-session-prompt, thread: cloning-pipeline}
+  - {path: .claude/handoff-theme.md,                                   scope: forever_auto_regen,               doc_type: handoff, thread: sgs-theme}
+  - {path: .claude/next-session-prompt-theme.md,                       scope: forever_auto_regen,               doc_type: next-session-prompt, thread: sgs-theme}
   - {path: .claude/decisions.md,                                       scope: forever_append_only,              doc_type: decisions}
   - {path: .claude/mistakes.md,                                        scope: forever_append_only,              doc_type: mistakes, sot_note: "blub.db /api/corrections + memory/feedback_*.md are SoT; this is keyword-stub index"}
   - {path: .claude/parking.md,                                         scope: forever_append_only_with_status,  doc_type: parking}
