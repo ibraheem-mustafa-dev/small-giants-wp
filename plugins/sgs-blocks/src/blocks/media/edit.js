@@ -31,6 +31,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		// Shared.
 		mediaType,
 		// Image.
+		imageId,
 		imageUrl,
 		imageAlt,
 		// Video.
