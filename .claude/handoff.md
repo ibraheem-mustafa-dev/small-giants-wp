@@ -11,7 +11,7 @@
 6. **Cart-block research (`/research-check`)** → architecture (Store API + Interactivity API, not cart-fragments) + a full theme-thread build prompt at `.claude/scratch/2026-06-03-prompt-sgs-cart-and-icon-enhancements.md`.
 
 ## Current State
-- **Branch:** `feat/fr22-4-1-universal-wrapper` at `603cbaaf` — pushed. **Shared with the parallel theme thread** (its commits interleave). **NOT merged** (merge-prep gate: R-22-5 per-block split + R-22-13 Bean visual sign-off pending).
+- **Branch:** `main` at `66444790` — **all 2026-06-03 work (cloning D141/D145/D146/D147 + theme D142–D144) MERGED to main + pushed; `feat/fr22-4-1-universal-wrapper` deleted (local + remote); GitHub clean** (one `main`, no dangling branches). Bean directed the merge (overriding the prior merge-prep gate) at session end after the parallel theme session closed. No-ff merge, zero conflicts.
 - **Tests:** no pytest in env; `db_lookup.py` equivalent_block_for smoke PASS; converter imports clean; all targeted unit + regression tests pass.
 - **Build:** n/a for converter (Python). Block changes (media, star-rating) built + deployed to canary.
 - **Uncommitted changes:** none (code committed; DB changes live in `sgs-framework.db`, not git-tracked).
@@ -19,14 +19,14 @@
 
 ## Known Issues / Blockers
 - **CSS-transfer fidelity (the 4-gap D136 audit) is still unfixed** — it is the next priority (the pipeline's core job). Gap-4 brand premise was wrong (corrected: draft brand grid is `1fr 1fr`, no bug; only trust-bar grid is real).
-- **Branch unmerged** — accumulating commits from two threads; merge-prep increasingly overdue.
+- **Two unmerged branches were force-deleted at Bean's confirmation** — `feat/phase-2a-massive` (local, superseded) + remote `worktree-agent-adf7827adc88aea77` (the rejected Fix-4 hero / H2 thin-shell; FR-22-19/20 replacement shipped). Two LOCAL-only dispatch worktrees remain under `.claude/worktrees/` (one locked by a pid) — cosmetic, off GitHub.
 - **Outcome check (Gate 3.5):** items 1–6 are OUTCOME ACHIEVED (editor errors gone — verified; button/preset/video/star-rating shipped + verified). The session's *editor-error + button* outcomes landed; the *CSS-transfer fidelity* outcome was NOT this session's scope and remains pending.
 
 ## Next Priorities (in order)
 1. **Faithful CSS transfer (the 4-gap audit, D136)** — gap 1 (theme-CSS by position) + gap 2 (fold must stop dropping `__inner`), paired; then gap 3 (hero gradient) + gap 4 (trust-bar grid only). Design via /brainstorming + /qc-council first (sensitive).
 2. **Real image sideload (media-map)** — hero/product images dry-run 404; biggest pixel lever once structure is faithful.
-3. **Merge-prep → main** — split per-block (R-22-5) + Bean visual sign-off (R-22-13).
-4. Variant-routing rollout (modifier-class mechanism, D135); video/iframe→media is done so a future media-video clone can use it.
+3. **Variant-routing rollout** (modifier-class mechanism, D135); video/iframe→media is done so a future media-video clone can use it.
+4. **Bean visual sign-off (R-22-13)** on canary 144 once the CSS-transfer fidelity work lands — the merge already happened, so future fidelity work commits to `main` (or a fresh short-lived branch), no big long-lived branch.
 
 ## Files Modified
 | File | What changed |
@@ -42,7 +42,7 @@
 ## Notes for Next Session
 - **DB changes survive `/sgs-update`** (slots not rebuilt; Stage 1 reconciles `blocks.replaces` from block.json). Bean ran `/sgs-update` in the parallel session — verified it kept all this session's slot work intact.
 - **Faithful transfer ≠ converter detect-mode hacks** (STOP #33) — the CSS-transfer fix belongs in the D0/D1/D2 transfer layer or a theme-CSS-by-position rule, never a per-section walker conditional.
-- **Shared branch** — coordinate doc edits with the theme thread (decisions.md / state.md / parking.md get concurrent writes; D-numbers are claimed across both threads — D141/D145/D146 cloning, D142/D143/D144 theme, D147 cloning).
+- **Both threads now landed on `main`** — the shared `feat/fr22-4-1-universal-wrapper` branch is gone. Future cloning work starts fresh from `main`. D-numbers through D147 (D141/D145/D146/D147 cloning, D142/D143/D144 theme). A 2026-06-01 concurrent-commit race (theme thread's commit swept the cloning thread's staged docs into `603cbaaf` under the wrong message) is captured in memory `feedback_concurrent_commit_race_shared_tree` — no longer a risk now the branch is single-owner `main`.
 - A temp admin password was set then **restored** to the documented `.claude/secrets/sandybrown.env` value — that credential is valid.
 
 ## Next Session Prompt

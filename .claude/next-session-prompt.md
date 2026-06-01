@@ -3,8 +3,8 @@ doc_type: next-session-prompt
 project: small-giants-wp
 thread: cloning-pipeline
 session_tag: small-giants-wp-2026-06-04-css-transfer-fidelity
-generated: 2026-06-03
-primary_goal: "CLONING-PIPELINE THREAD. The pipeline is NOT faithfully transferring the draft's CSS — a 4-gap fidelity audit (2026-06-02) proved the framework IMPOSES values the draft never had (section max-width 1200, a hero pink gradient overlay), DROPS draft structure (the __inner content wrappers), and MANGLES grid-template-columns (badge bar, brand 2-col). Fixing faithful CSS transfer is the priority — it is literally the pipeline's whole point (Bean). FR-22-20 universal variant detection is SHIPPED + LIVE-DOM-VERIFIED for the hero (slot-fingerprint); the rollout to other blocks needs the variant-routing-vs-D0-transfer criterion applied + a modifier-class mechanism. Branch feat/fr22-4-1-universal-wrapper, NOT merged (merge-prep pending)."
+generated: 2026-06-04
+primary_goal: "CLONING-PIPELINE THREAD. The pipeline is NOT faithfully transferring the draft's CSS — a 4-gap fidelity audit (2026-06-02) proved the framework IMPOSES values the draft never had (section max-width 1200, a hero pink gradient overlay), DROPS draft structure (the __inner content wrappers), and MANGLES grid-template-columns (badge bar, brand 2-col). Fixing faithful CSS transfer is the priority — it is literally the pipeline's whole point (Bean). FR-22-20 universal variant detection is SHIPPED + LIVE-DOM-VERIFIED for the hero (slot-fingerprint); the rollout to other blocks needs the variant-routing-vs-D0-transfer criterion applied + a modifier-class mechanism. ALL 2026-06-03 work (cloning D141/D145/D146/D147 + theme D142-D144) is MERGED to main + pushed; feat/fr22-4-1-universal-wrapper is DELETED; GitHub is clean (one main). Work from main; future fidelity work commits to main or a fresh short-lived branch."
 ---
 
 # Next Session — CLONING PIPELINE thread (CSS-transfer fidelity + variant rollout)
@@ -13,7 +13,7 @@ primary_goal: "CLONING-PIPELINE THREAD. The pipeline is NOT faithfully transferr
 > Invoke `/autopilot` first. Then read the MANDATORY READING LIST **end-to-end, not grep-skim**. This session's predecessor (2026-06-02) ran a draft-vs-clone computed-style audit that proved the cloning pipeline has FOUR systemic CSS-transfer failures — do NOT re-derive them, READ the audit (decisions D136 + `.claude/scratch/2026-06-02-brain-dump-variant-routing-and-issues.md`). Quote the STOP catalogue + the pre-flight ritual back to yourself before acting. There is a SEPARATE theme/blocks thread — see `.claude/next-session-prompt-theme.md` (do not do theme work here).
 
 ## Branch + state
-- **Branch:** `feat/fr22-4-1-universal-wrapper` (NOT merged to main; merge-prep deferred — split per-block commits + Bean visual sign-off still pending). main clean.
+- **Branch:** `main` @ `66444790` — everything MERGED + pushed; `feat/fr22-4-1-universal-wrapper` DELETED; GitHub clean. Start the next session ON main; commit fidelity work to main (or a fresh short-lived branch — no long-lived shared branch this time). Bean visual sign-off (R-22-13) is now a per-fidelity-milestone gate, not a pre-merge gate.
 - **Canary page 144** (`/rc-fix-verification-mamas-munches/` on sandybrown) reflects the latest re-clone. Pixel-diff ~61% (informational per FR-22-18; the systemic transfer gaps below are WHY it's high — wrong widths, dropped wrappers, imposed gradient).
 
 ## ✅ SHIPPED + VERIFIED THIS SESSION (2026-06-03) — DO NOT re-derive
@@ -49,7 +49,7 @@ The editor-errors thread is **CLOSED** (shipped + verified above). The pipeline'
 1. **Faithful CSS transfer (the 4 gaps above)** — the priority. Start with gap 1 (theme-CSS-by-position) + gap 2 (fold stop-dropping-__inner) — they're a pair and fix the section width+content. Then gap 3 (hero gradient) + gap 4 (grid-columns).
 2. **Variant-routing rollout** (criterion LOCKED — see below). Build the modifier-class detector for stylistic variants + apply the routing-vs-D0 split. The slot-fingerprint (FR-22-20) only fits content-distinct variants (~2 blocks); most need modifier-class. See decisions D135.
 3. **Real image sideload** (media-map) — hero/product images dry-run 404. Biggest pixel lever once structure is faithful.
-4. **Merge-prep → main:** split `d6358f32` + `e27ff591` per-block (R-22-5) + Bean visual sign-off (R-22-13) → merge.
+4. **Bean visual sign-off (R-22-13)** on canary 144 per fidelity milestone — the branch already merged to main (2026-06-03), so this is no longer a pre-merge gate; it gates declaring a fidelity gap "done".
 5. **hero inner content width** — hero__content rendered 340px (should ~713, fills its split column); a content-max-width imposed it doesn't have. Part of the transfer-fidelity work.
 
 ## VARIANT-ROUTING CRITERION (LOCKED this session — the answer to "which blocks need the special matching")
@@ -57,7 +57,7 @@ The editor-errors thread is **CLOSED** (shipped + verified above). The pipeline'
 
 ## MANDATORY READING LIST (read FULLY before any work)
 1. This file.
-2. `.claude/handoff.md` (cloning thread, 2026-06-02).
+2. `.claude/handoff.md` (cloning thread, 2026-06-03 — work merged to main + branch deleted).
 3. `.claude/scratch/2026-06-02-brain-dump-variant-routing-and-issues.md` — the variant-routing criterion + 66-block categorisation + the issue register.
 4. `.claude/decisions.md` newest: **D136 (CSS-transfer 4-gap audit), D135 (variant-routing finding — slot-fingerprint only fits content-distinct), D134 (FR-22-20 shipped+verified)**, then D130-D133.
 5. Root `CLAUDE.md` — "Root-cause methodology (MANDATORY)" + the 14 binding rules (R-22-1..14).
@@ -161,4 +161,4 @@ The editor-errors thread is **CLOSED** (shipped + verified above). The pipeline'
 - **Draft-diff, not pixel-diff** for layout — serve the mockup locally, compare computed styles (STOP #35).
 - **--converter-v2 required** on orchestrator runs. **WP_DEBUG_DISPLAY false** on staging.
 - **/qc-council before every converter/block commit** (blub.db 255). **Verify subagent sweeps** (STOP #34).
-- Branch stays open (NOT merged) until merge-prep + Bean sign-off.
+- **Work on `main`** (the 2026-06-03 branch is merged + deleted). Commit fidelity work to main or a fresh SHORT-LIVED branch — no long-lived shared branch (the prior one accrued a concurrent-commit race; memory `feedback_concurrent_commit_race_shared_tree`). Bean visual sign-off per fidelity milestone (R-22-13).
