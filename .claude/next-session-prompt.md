@@ -30,6 +30,20 @@ primary_goal: "Build the hero composite fix via Spec 22 §FR-22-19 (H-conv: conv
 
 **RESOLVED 2026-06-01 (Bean caught it) — gate broadened + fold refined:** the gate is now **`db.has_scalar_media_attrs(slug)`** (NOT `is_class_section_block`). `testimonial-slider` is a composite (content-block, not section-root) — the old gate missed it. New gate covers hero + testimonial-slider, excludes cta-section/info-box/product-card (no scalar-media attr → router never fires → **cta-section latent risk resolved**, no behaviour change). The content-column path was refined to **fold only slug-None transparent wrappers**, and **emit slug-resolved children as their block** (so `article.sgs-testimonial` → `sgs/testimonial`, not folded). `sgs/testimonial-slider.sideImage` DB row updated (role=scalar-media, slot=media). **Emit-verified both sections:** hero lifts images + folds content; social-proof's 3 testimonials emit as `sgs/testimonial` blocks (unchanged from before — no regression). Still pending: the live-DOM gate + /qc-council (as above).
 
+## ⚡ SESSION-2 (2026-06-01) ALSO BUILT + EMIT-PROVEN (committed d6358f32) — INTEGRATION REMAINS
+Three emit-proven commits this session: `83a55820` (hero scalar-media), `5859c42d` (gate fix), `d6358f32` (cta-section + trust-bar + converter). Built + emit-proven + committed, but **NOT live-DOM/build-verified or merged**:
+- **cta-section FR-22-6 migration** (full: render.php echoes $content; edit.js InnerBlocks template heading+text+buttons; deprecated.js v5 migrate + isEligible). Editor-verified only (cta-section not on Mama's).
+- **trust-bar dual-mode FR-24-10** (sourceMode typed/bound; render.php branches on the explicit mode, R-22-14; save→InnerBlocks.Content; deprecated v4/v3/v2 keep existing trust-bars Typed). EMIT-PROVEN: converter emits `sgs/trust-bar{sourceMode:bound} > __inner > 4 badges`.
+- **converter** (convert.py): sets `sourceMode='bound'` on any block declaring a sourceMode attr when it emits cloned InnerBlocks (DB-driven, no slug literal). DB: trust-bar sourceMode row seeded (gitignored; /sgs-update confirms from block.json).
+
+**REMAINING INTEGRATION CHAIN (the live proof + verification + docs — a fresh focused session):**
+1. `npm run build` (compile cta-section + trust-bar JS) — validate it compiles.
+2. Deploy + **`/sgs-update`** (indexes the new sourceMode + confirms the scalar-media/testimonial-slider rows) + fresh **`/sgs-clone … page:144`**.
+3. **Live-DOM verify (R-22-11):** hero = 1 `.sgs-hero__content` + 2 art-directed imgs; trust-bar (Bound) renders the 4 cloned badges (not defaults); social-proof testimonials still emit as blocks; NO regressions elsewhere.
+4. **Comprehensive `/qc-council`** on ALL changes + the fresh-run logs/diffs/debug — per section (ex header/footer): works? rules? evidenced progress?
+5. Only evidence-validated points kept → **`/handoff`** + **super-deep doc pass** (docs-registry.yaml + .claude + specs + plans) + **a deep `/qc` ON THE DOCS** (no stale/inaccurate info, cross-doc consistency, AND handoff+next-session-prompt PRESERVE structure: mandatory reading list cmd, STOP catalogue #1-#32, rules, impl method, ritual — D101).
+6. Follow-up: add `isEligible` to hero/info-box deprecations (latent gap flagged by the cta-section agent — their scalar→InnerBlocks migrate may never fire for existing posts without it).
+
 ## MANDATORY READING LIST (read FULLY before any work — Bean directive)
 1. This file.
 2. `.claude/handoff.md` (2026-06-01).
