@@ -1,59 +1,65 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-31-wrapper-perfection-wave1-wave2
-generated: 2026-05-31
-primary_goal: "Verify Wave-2 + A-1 render correctly on the live canary (build + /sgs-update + deploy + re-clone + wireframe), then close the remaining wrapper-mechanism gaps: trust-bar hybrid FR-22-6 migration (so the renamed block renders the section), product-card full dual-mode build (Spec 24 + atomic pill block + variation-sets logic), slot-level responsive typography lift (A-1 Phase 2). All measured from RENDERED HTML (wireframe structural parity), NOT pixel-diff."
+session_tag: small-giants-wp-2026-06-01-hero-h-conv-build-plus-trust-bar-dual-mode
+generated: 2026-06-01
+primary_goal: "Build the hero composite fix via Spec 22 §FR-22-19 (H-conv: converter routes the hero's content-column children → bare $content InnerBlocks; the __media images → scalar splitImage/splitImageMobile) — CLOSING THE OPEN GAP first (a DB-first mapping of a composite's media-column BEM element → its scalar attr target; never a per-block slug conditional). render.php/edit.js/block.json stay UNCHANGED. Then build the trust-bar dual-mode (Spec 24 §FR-24-10: Typed curated repeater OR Bound echo $content via a Source-toggle mode attr). All measured from RENDERED HTML (FR-22-18 structural parity + live-DOM gate), NOT pixel-diff."
 ---
 
-# Next Session — Verify Wave-2/A-1 + close remaining wrapper gaps
+# Next Session — Build hero §FR-22-19 (H-conv) + trust-bar §FR-24-10 dual-mode
 
 > ## ⚠ READ THIS BEFORE ANYTHING ELSE — then read the full list below ⚠
-> Invoke `/autopilot` first. Then read the MANDATORY READING LIST **end-to-end, not grep-skim**, before any work. This session (2026-05-31) made real progress BUT repeated avoidable mistakes (see "Mistake analysis"). The pre-flight ritual + STOP catalogue exist to stop those recurring — quote them back to yourself before acting.
+> Invoke `/autopilot` first. Then read the MANDATORY READING LIST **end-to-end, not grep-skim**, before any work. The 2026-06-01 session did the full read + full code-level root-cause + a 3-rater qc-council, which REJECTED the obvious "block thin-shell" fix (it would have retired the hero's rich image pipeline + art-direction → violated "preserve full functionality") and locked H-conv instead. Do NOT re-derive H2. Quote the STOP catalogue + pre-flight ritual back to yourself before acting.
 
 ## Branch + state
-- **Branch:** `feat/fr22-4-1-universal-wrapper` (NOT merged to main). Commits (newest first): `6d9fabfb` trust-bar rename · `1e214d49` hero FR-22-6 · `d9c11ed7` A-1 responsive lift · `797bb45d` info-box FR-22-6 · `7b8f3046` blocks.replaces · `94c6ee75` responsive grid · `ce07728d` recursive fold · `8f900750` WIP(do-not-merge).
-- **main** clean (untouched).
-- Canary page 144 (`sandybrown-nightingale-600381.hostingersite.com/rc-fix-verification-mamas-munches/`) reflects **Wave 1 only**. Wave 2 (hero, trust-bar rename) + A-1 are committed + `/sgs-update`-persisted but **NOT yet built/deployed/re-cloned** → NOT verified on live DOM.
+- **Branch:** `feat/fr22-4-1-universal-wrapper` (NOT merged to main). main clean.
+- Canary page 144 (`sandybrown-nightingale-600381.hostingersite.com/rc-fix-verification-mamas-munches/`) reflects the run-223313 build (Wave-1 + Wave-2 + A-1 verified, 6/7 structural). **Hero is the one RED section** — its fix (§FR-22-19) is NOT yet built. Trust-bar renders 4 badges but via the hybrid block's DEFAULT items (coincidental match), not the converter's content.
+- **No code shipped 2026-06-01** — the session correctly converted root-cause + the qc-council verdict into build-ready design (Spec 22 §FR-22-19, Spec 24 §FR-24-10) rather than ram a sensitive walker change at a context-heavy tail (STOP #19/#32). Docs committed.
 
 ## MANDATORY READING LIST (read FULLY before any work — Bean directive)
 1. This file.
-2. `.claude/handoff.md` (2026-05-31).
+2. `.claude/handoff.md` (2026-06-01).
 3. `.claude/state.md` — current_phase + db_state + blockers.
 4. Root `CLAUDE.md` — "Root-cause methodology (MANDATORY)" + the 14 binding rules (R-22-1..14).
-4. `git log --oneline -10` + read the 8 commit messages (each carries root-cause + verification).
-5. `.claude/decisions.md` newest entries (A-1; hero/info-box FR-22-6; trust-bar rename; FR-22-18; container per-grid-item correction).
-6. `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` — §0, §FR-22-2/2.5, §FR-22-3, §FR-22-4/4.1, §FR-22-5 (4-destination CSS router), §FR-22-16/17, §6 (R-22-1..14), NEW §FR-22-18 (structural-parity acceptance).
-7. `.claude/specs/24-QUERY-DRIVEN-CONTENT-CARDS.md` — FR-24-1/2/3/9 (product-card dual-mode work).
-8. `.claude/parking.md` — open follow-ups.
-9. `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` — debug-artefact map (read BEFORE conjecturing).
-10. `.claude/cloning-pipeline-flow.md` + `-stages.md`.
-11. `sites/mamas-munches/mockups/homepage/TRUTH-SPEC.md`.
-12. Wireframe: `wireframe-wave1-full.jpeg` (+ `.playwright-mcp/wireframe-wave1.html`) — the structural-parity measurement artefact.
+5. `git log --oneline -12` + read the recent commit messages (each carries root-cause + verification).
+6. `.claude/decisions.md` newest entries — **D125-D127 (this session: Wave-2 verified; hero H-conv chosen over H2; trust-bar dual-mode)**, then D119-D124 (fold + Wave-1/2/A-1), D117/D118.
+7. **`.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` — esp. NEW §FR-22-19 (the hero H-conv fix-shape + build sequence + OPEN GAP), plus §0, §FR-22-2/2.2/2.4 (image-pipeline role reconciliation), §FR-22-3 (3-exceptions, no 4th branch), §FR-22-4/4.1, §FR-22-16 (class-section voter), §FR-22-17 (block_composition), §6 (R-22-1..14).**
+8. **`.claude/scratch/2026-06-01-hero-fix-shape-qc-brief.md` — the council brief (H-conv vs H2, ground truth, the 3 raters' questions). The build executes §FR-22-19, this is the reasoning behind it.**
+9. **`.claude/specs/24-QUERY-DRIVEN-CONTENT-CARDS.md` — NEW §FR-24-10 (trust-bar dual-mode) + FR-24-1/2/3/9 (product-card dual-mode, same pattern).**
+10. `.claude/parking.md` — P-HERO-DOUBLE-WRAPPER-AND-SPLIT-IMAGE (now §FR-22-19), P-TRUST-BAR-HYBRID-MIGRATION (now §FR-24-10 dual-mode), P-PRODUCT-CARD-FULL-DUAL-MODE, P-A1-PHASE2-SLOT-RESPONSIVE-TYPOGRAPHY.
+11. `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` — debug-artefact map (read BEFORE conjecturing).
+12. `.claude/cloning-pipeline-flow.md` + `-stages.md`.
+13. `sites/mamas-munches/mockups/homepage/TRUTH-SPEC.md` — §2 (hero), §3 (trust-bar).
+14. Wireframe: `wireframe-wave1-full.jpeg` (hero = RED; the structural-parity measurement artefact).
+15. Hero block (read FULLY before touching): `plugins/sgs-blocks/src/blocks/hero/{render.php,edit.js,block.json}` — note render.php:760-788 (the WORKING `--mobile/--desktop` art-direction `@media` CSS — this is why H-conv keeps render.php untouched).
+16. The walker: `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` — `walk()` ~1693-1872, `_atomic_attrs_for` ~1563-1664, `is_class_section_block` path.
 
-## What shipped this session (on the branch)
-- **Recursive fold (FR-22-4.1)** — the universal wrapper rule: sole pass-through shells fold into the section container (native-attr lift, no extra div); non-direct + grid wrappers get their own container; leaf-with-element-children guard. Brand/featured/gift/social structurally correct.
-- **Wave 1 (verified live DOM, 6/7 green):** A) responsive grid templates → native attrs (trust-bar 4-col); B) `blocks.replaces` populated → atomic `<h2>`→`sgs/heading` (all headings render); D) info-box FR-22-6 (card content renders).
-- **Wave 2 + A-1 (committed, NOT re-cloned — verify FIRST):** A-1 responsive per-device lift (padding/margin/gap/columns `@media`→`{Tablet,Mobile}` attrs; root cause: `_lift_root_supports_to_style` discarded `bp_decls`; slot-level typography deferred to Phase 2); hero FR-22-6 (content→InnerBlocks, shell scalar, deprecated.js v6); trust-badges→trust-bar rename (block is a HYBRID reading scalar `items` → needs its own FR-22-6 migration before the renamed-block section-routing renders).
+## What shipped 2026-06-01 (docs only — no code; council prevented a wrong build)
+- **Full read + code-level root-cause** of the hero double-wrapper + split-image, AND the trust-bar hybrid.
+- **3-rater qc-council** (compliance / pipeline-impact / universality) on the hero fix-shape. Verdict: **REJECT H2** (block thin-shell — retires the 169-attr image pipeline + the render.php art-direction onto sgs/media which can't replicate it; blast radius 7 sections + 5 block files). **CHOOSE H-conv** (converter routes content→bare $content, images→scalar splitImage/splitImageMobile; render.php unchanged; 1-section blast radius; universal across the 4 `wraps_block` composites).
+- **Spec 22 §FR-22-19** (hero H-conv design + build sequence + OPEN GAP) + **Spec 24 §FR-24-10** (trust-bar dual-mode) + decisions D125-D127 + parking updates.
 
 ## NEXT SESSION — priority order
-1. **VERIFY Wave-2 + A-1 on the live canary FIRST.** `npm`/`build-deploy.py --target sandybrown --blocks-only --allow-dirty` + re-clone (`sgs-clone-orchestrator … --converter-v2 --debug-trace --spec-22-acceptance --deploy-target page:144`) → re-extract clone-tree via Playwright → re-generate the wireframe. Confirm: hero renders cleanly (no double-structure), trust-bar mobile 2-col + desktop 4-col, per-device attrs present, no regressions. RENDERED HTML only (R-22-11). Regressions → root-cause via trace/live-DOM, roll back fast (STOP #19).
-2. **trust-bar hybrid FR-22-6 migration** — renamed `sgs/trust-bar` reads scalar `items`; migrate to `echo $content` so the `.sgs-trust-bar` section block-override (Req 3) renders.
-3. **product-card full dual-mode build** — plan first (Spec 24 + the variation-sets requirement), THEN build. See brain-dump.
-4. **A-1 Phase 2** — slot-level responsive typography lift (headlineFontSizeTablet etc.): wire the slot-prefix path into the universal walker.
-5. **Minors** (parking): A-1 `>1024` breakpoint edge; 3+ breakpoint trace.
-
-## Product-card brain-dump (Bean 2026-05-31 — articulate + record)
-Build the FULL version next session with clear specs first:
-- **Atomic "pill" block** — build the pack-size/option pills as a SEPARATE atomic block (reusable, improves theme versatility). NOT sgs/button (no link, different behaviour). Behaviour: exclusive selection (one active), persistent "selected" styling, click changes price/photo/etc.
-- **Variation-sets logic on the card** — a product can have MULTIPLE variation types (size, flavour). Each type can change different OR the same card areas: size→price; flavour→picture+price. Card must recognise: (a) how many variation TYPES, (b) whether each changes anything, (c) what content each changes. All logic PULLED FROM THE PRODUCT'S SETTINGS (sgs_product CPT) so the block stays simple — it reads the product's declared variations + their content-impact map.
-- **Spec 24 alignment** — dual-mode card (Typed=clone InnerBlocks per FR-24-9; Bound=CPT via Block Bindings FR-24-2/3). The variation-sets logic is a NEW requirement beyond current Spec 24 FRs — WRITE IT INTO Spec 24 (or a sub-spec) before building.
+1. **Build hero §FR-22-19 (H-conv).** READ §FR-22-19 end-to-end first. Steps (each a separate commit, R-22-5; FR-22-18 structural-parity gate + live-DOM check):
+   1. **DB:** add `image-pipeline` role to the `roles` table; reclassify `sgs/hero.splitImage` + `splitImageMobile` to it; verify `equivalent_block_for('sgs/hero','splitImage')` returns NULL. (DB writes via direct `sqlite3`, NOT `sgs-db.py sql` — STOP #11. Row-by-row, STOP #7/#15.)
+   2. **CLOSE THE OPEN GAP (DB-first):** add the mapping from a class-section composite's media-column BEM element (`__media`/`__split-image`) → its scalar attr target (`splitImage`/`splitImageMobile`) + the `--mobile`→mobile / `--desktop`→desktop disambiguation. Candidate: a `block_composition` column or a `slots` convention row. **NEVER a hardcoded `if slug=='sgs/hero'` (R-22-1 / STOP #16).**
+   3. **convert.py:** composite slot-router inside the `is_class_section_block` path (DB-driven; NOT a 4th walker branch — it's FR-22-2 content-routing applied to composite interiors, R-22-3). Use `/qc-council` per converter commit (blub.db 255).
+   4. **Verify (R-22-11 / FR-22-18):** `/sgs-clone --debug-trace --converter-v2 --spec-22-acceptance --deploy-target page:144` → live-DOM gate via Playwright: `section.sgs-hero` has exactly 1 `.sgs-hero__content`, exactly 2 imgs (`--mobile` + `--desktop`), `h1` present, 2 `.sgs-button`, content innerText > 50; AND no other section's extract.json markup changed. Roll back fast (STOP #19) on any failure.
+   5. Bean visual sign-off (R-22-13).
+2. **Build trust-bar §FR-24-10 dual-mode** — Typed curated repeater (preserve all 18 attrs + 3 variants) OR Bound `echo $content` via a Source-toggle mode attr. R-22-14 clean (mode attr, not `empty($content)` fallback). deprecated.js keeps v2/v3 + a mode-default entry. Build per its FR; verify both modes (editor smoke + clone render).
+3. **product-card full dual-mode** (Spec 24 + atomic pill block + variation-sets logic — see P-PRODUCT-CARD-FULL-DUAL-MODE brain-dump). Spec the variation-sets requirement FIRST.
+4. **A-1 Phase 2** — slot-level responsive typography lift.
+5. **Generalise §FR-22-19** to cta-section/modal/quote (each own commit, after the hero proves the mechanism).
+6. **Minors** (parking): A-1 `>1024` breakpoint edge; 3+ breakpoint trace; clean up stray git-tracked `src/blocks/trust-badges/` deletions on next commit.
 
 ## RESOLVED misunderstandings (do NOT repeat)
-- **`sgs/container` DOES support per-grid-item customisation** — instance-wide `gridItem*` DEFAULTS (→ `--sgs-gi-*` custom props) + per-child overrides win via specificity (`edit.js:577`). (I wrongly claimed "uniform only / capability gap" — retracted after reading block.json + edit.js.)
-- **Atomic tags redirect to sgs equivalents via `blocks.replaces`** (Spec 22 §14), NOT static core blocks. Was dead (NULL) → now populated.
-- **Recognition is BEM, not HTML tag** (R-22-2); atomic non-BEM CONTENT tags emit (→ sgs equivalent); only non-content transparent WRAPPER divs dissolve (CSS folds up). Nothing with content is skipped.
-- **FR-22-18 (NEW):** layout/wrapper/logic acceptance = rendered-DOM structural parity (container presence + type + grid-template + child count/type/order + absorbed-attr confirmation), NOT pixel-diff. Pixel-diff is informational-only this phase (can run + share, NEVER use as decision evidence). Amends R-22-4's scope.
+- **The hero fix is CONVERTER-side (H-conv), NOT a render.php thin-shell (H2).** render.php is ALREADY correct (its 169-attr image pipeline + the `--mobile/--desktop` art-direction `@media` CSS at render.php:760-788 already work). H2 was REJECTED by qc-council (retires that pipeline + violates "preserve full functionality"). Do NOT re-derive H2.
+- **The hero's `splitImage`/`splitImageMobile` are scalar `image-pipeline` slots, not InnerBlocks slots** — reclassifying their role so `equivalent_block_for` returns NULL is the FR-22-2.2 gate working as designed, NOT a per-block bypass.
+- **`sgs/container` DOES support per-grid-item customisation** (D124) — `gridItem*` defaults (→ `--sgs-gi-*`) + per-child overrides via specificity (`edit.js:577`).
+- **Atomic tags redirect to sgs equivalents via `blocks.replaces`** (Spec 22 §14), populated D120-B.
+- **Recognition is BEM, not HTML tag** (R-22-2). Only non-content transparent WRAPPER divs dissolve (CSS folds up per §FR-22-4.1).
+- **FR-22-18:** layout/wrapper/logic acceptance = rendered-DOM structural parity + live-DOM, NOT pixel-diff (informational-only this phase).
+- **trust-bar "renders fine" is a coincidence** — it shows its DEFAULT `items`, which happen to match Mama's; it ignores the converter's badge InnerBlocks. The dual-mode build (§FR-24-10) makes it render the cloned content while keeping the curated editor.
 
 ## Anti-pattern STOP catalogue — carried forward + extended per D101 (if you find yourself doing X, STOP)
 
@@ -72,39 +78,46 @@ Build the FULL version next session with clear specs first:
 | 11 | Using `sgs-db.py sql` for INSERT/UPDATE/DELETE | Wrapper is read-only (silently no-ops). Use direct `sqlite3` for writes. |
 | 12 | Shipping a fix without tracing the EXACT emission path of the canary instance | Trace which slug RECEIVES the affected attr now, not which COULD. |
 | 13 | Treating the literal-slug-match voter path as live | Retired D107. Voter queries `blocks.tier='class-section'` (declared via `supports.sgs.is_section_root`). |
-| 14 | Re-enabling the reverted XS-3 walker condition | Resolved by FR-22-4.1 fold (this session). Don't re-derive the old predicate. |
+| 14 | Re-enabling the reverted XS-3 walker condition | Resolved by FR-22-4.1 fold. Don't re-derive the old predicate. |
 | 15 | Batching `block_composition`/DB-row changes then measuring once | Ship one row at a time with measurement between. |
-| 16 | Hardcoding `__products`/`__cards`/generic BEM slot → specific block slug in Python | R-22-1 violation. Route via DB; fall through to sgs/container default. |
+| 16 | Hardcoding `__products`/`__cards`/`__media`/generic BEM slot → specific block slug in Python | R-22-1 violation. Route via DB; fall through to sgs/container default. |
 | 17 | Treating "code reverted" as "all related updates deferred" when applying docs | Distinguish: (a) code reverted, (b) DB rows persisted, (c) shipped tasks unaffected. Map blast radius first. |
 | 18 | Accepting a subagent threshold/result without sanity-checking vs architectural intuition | If count is wildly off the expected roster, the threshold is wrong — fix before accepting. |
 | 19 | Iterating inline on a failing fix under context pressure when measurement shows regression | Roll back fast; re-tune across a session boundary with evidence baked in. |
 | 20 | Trusting a per-section pixel-diff WIN without checking live-DOM textLen | An EMPTY section scores a FALSE win (empty=shorter crop=more matching bg). Verify `el.innerText.trim().length` + element counts (R-22-11). |
 | 21 | Assuming the walker runs FR-22-2 content-routing automatically | Confirm leaf content-routing + the fold actually fire; verify emitted markup. |
-| 22 | Treating a renamed/migrated block as "done" without verifying its render mode | trust-bar (renamed) still reads scalar `items` — a HYBRID needing FR-22-6 before the section-routing renders. |
+| 22 | Treating a renamed/migrated block as "done" without verifying its render mode | trust-bar (renamed) reads scalar `items` — a HYBRID. It renders its DEFAULTS, not cloned content (coincidental Mama's match). §FR-24-10 dual-mode. |
 | 23 | Routing pack-size/option pills to `sgs/label` (or `sgs/button`) | Pills are an exclusive interactive picker → a FUTURE dedicated atomic pill block (Bean), NOT label/button. |
-| 24 | Trusting a per-section pixel-diff change (either direction) over live DOM | Pixel-diff mis-scores structural change BOTH ways (empty=false win, reflowed-correct=false loss). FR-22-18: structural parity from rendered HTML is the gate; pixel-diff informational-only this phase. |
+| 24 | Trusting a per-section pixel-diff change (either direction) over live DOM | Pixel-diff mis-scores structural change BOTH ways. FR-22-18: structural parity from rendered HTML is the gate; pixel-diff informational-only this phase. |
+| 25 | Shipping a self-labelled "Phase 1" / "simpler-than-spec" shortcut | Implement the spec's ACTUAL mechanism. Inventing simpler-than-spec = re-read the spec. |
+| 26 | Asserting what ANY block can/can't do from a partial attr dump | READ block.json + edit.js + render.php + `/wp-blocks` before asserting capability. |
+| 27 | Giving up after one shortcut fails; not using the toolkit | For EVERY gap: root-cause from trace+live-DOM, find why same-class peers PASSED, ONE unified systemic fix. Use the full toolkit every step. |
+| 28 | Using pixel-diff during structural work | Measure from RENDERED HTML for layout/wrapper/logic. Pixel-diff informational-only (FR-22-18). |
+| 29 | Over-checkpointing (burning Bean's context with questions) | If evidence is clear, DECIDE + execute. Only ask when a decision genuinely changes direction AND can't be resolved from code/spec/evidence. |
+| 30 | Proposing a block become a "thin shell" without reading its render.php's FULL pipeline | NEW 2026-06-01. The hero render.php ALREADY had a working 169-attr image pipeline + `--mobile/--desktop` art-direction `@media` CSS (lines 760-788). The H2 thin-shell would have retired all of it onto sgs/media (can't replicate) → "preserve full functionality" violation. qc-council caught it. Read the FULL render.php before deciding the fix LAYER. |
+| 31 | Deciding the fix is block-side because "the block looks wrong" | NEW 2026-06-01. When a render.php "already works" for one input model, the fix may be CONVERTER-side. The hero double-wrapper was a CONVERTER emit-shape bug, not a render.php bug — render.php was already correct for bare-content + scalar-media. Verify which layer emits the wrong shape (read the converter's actual output AND the render.php's expected input). |
+| 32 | Ramming a sensitive/high-blast-radius walker change at a context-heavy session tail | NEW 2026-06-01. Composite slot-routing / className-preservation touch many sections. Design + `/qc-council` validate the fix-shape + focused build with the design baked in — do NOT half-build under context pressure (extends STOP #19). |
 
-(STOP #25-#29 = THIS session's additions, in the Mistake-analysis table below.)
-
-## Mistake analysis — what went wrong + pre-emptive fixes (Bean directive)
-| Mistake | Root cause | Pre-emptive fix (every session) |
+## Mistake analysis — what to keep doing (2026-06-01 session did these RIGHT)
+| Did right | Why it mattered | Keep doing |
 |---|---|---|
-| Shipped a "Phase-1 shortcut" (own-container-for-all) not the spec's fold | Invented a simpler-than-spec approach; treated its regression as grounds to stop | **STOP #25:** implement the spec's ACTUAL mechanism, never a self-labelled "Phase 1" shortcut. Inventing simpler-than-spec = re-read the spec. |
-| Asserted `sgs/container` has no per-grid-item customisation — WRONG | Reasoned from a partial attr dump; didn't read block.json/edit.js/render.php | **STOP #26:** before asserting what ANY block can/can't do, READ block.json + edit.js + render.php + `/wp-blocks`. Never assert capability from a partial query. |
-| Misjudged step scope; gave up after one shortcut failed; didn't use the toolkit until prompted | Didn't apply the full methodology (root-cause→unified-fix→verify) | **STOP #27:** for EVERY gap — root-cause from trace+live-DOM, find why same-class peers PASSED, then ONE unified systemic fix (not a cheat). Use the full toolkit (subagent-driven-development, dispatching-parallel-agents, systematic-debugging, qc-council, verify-loop) every step. |
-| Used pixel-diff during structural work | Habitual metric | **STOP #28:** measure from RENDERED HTML for layout/wrapper/logic. Pixel-diff informational-only (FR-22-18). |
-| Over-checkpointed (burned Bean's context with questions) | Treated resolvable decisions as needing sign-off | **STOP #29:** if evidence is clear, DECIDE + execute. Bean's responses cost large context. Only ask when a decision genuinely changes direction AND can't be resolved from code/spec/evidence. |
+| Read the FULL hero render.php before choosing the fix layer | Revealed the art-direction already works → flipped H2→H-conv | STOP #30/#31: read the block's full render.php before declaring a thin-shell fix |
+| Ran the qc-council BEFORE building | Caught that H2 retires the image pipeline (functionality loss) | blub.db 255 / R-22-12: multi-rater gate on every converter/block fix-shape |
+| Captured the council verdict into the spec instead of ramming the build | Sensitive walker work + heavy context = STOP #19 territory | STOP #32: design + focused build for sensitive walker changes |
+| Surfaced the genuine block-vs-fold / dual-mode design forks to Bean | They're his architecture calls (ADHD Rule 9) + overlap his atomic-block strategy | Negotiated-decision menu for genuine forks; decide-and-execute for evidence-resolvable ones |
 
 ## Pre-flight self-attestation ritual (answer ALL inline before any fix-shape or dispatch)
 1. Architectural primitive in plain English (Spec 22 §0)?
-2. Which R-22-N binding rule(s) govern this?
-3. Did I READ the block's block.json + edit.js + render.php + `/wp-blocks` before asserting its capability? (STOP #26)
-4. Is this the spec's ACTUAL mechanism, or a shortcut? (STOP #25)
-5. Root cause from trace + live DOM — why did same-class peers PASS? (STOP #27)
-6. Unified systemic fix (helps all same-class cases), not a cheat?
-7. Measuring from rendered HTML, not pixel-diff? (STOP #28)
-8. Genuinely Bean's decision, or resolvable from evidence + execute? (STOP #29)
+2. Which R-22-N binding rule(s) govern this? (esp. R-22-1 DB-first, R-22-3 no-4th-branch, R-22-9 universal, R-22-14 no-fallback)
+3. Did I READ the block's block.json + edit.js + render.php (FULL pipeline) + `/wp-blocks` before asserting its capability or proposing a thin-shell? (STOP #26/#30)
+4. Is this the spec's ACTUAL mechanism (§FR-22-19 for hero, §FR-24-10 for trust-bar), or a shortcut? (STOP #25)
+5. Which LAYER emits the wrong shape — converter or block? Did I read BOTH the converter's actual output AND the render.php's expected input? (STOP #31)
+6. Root cause from trace + live DOM — why did same-class peers PASS? (STOP #27)
+7. Unified systemic + DB-driven fix (helps all same-class cases, no per-block slug conditional), not a cheat? (STOP #16)
+8. Measuring from rendered HTML + live-DOM gate, not pixel-diff? (STOP #28)
+9. Is this a sensitive/high-blast-radius walker change at a context-heavy tail → design + qc-council + focused build? (STOP #32)
+10. Genuinely Bean's decision, or resolvable from evidence + execute? (STOP #29)
 
 ## Tooling
-`/autopilot` (first) · `/sgs-wp-engine` · `/wordpress-router` · `/sgs-clone` · `/wp-blocks` · `/sgs-db` · `/systematic-debugging` · `/qc-council` (per converter/block commit) · `/verify-loop` · `/dispatching-parallel-agents` + `/subagent-driven-development` · `/delegate` · Playwright MCP · `build-deploy.py --target sandybrown --blocks-only --allow-dirty` · `sgs-update-v2.py` · `/handoff`.
+`/autopilot` (first) · `/sgs-wp-engine` · `/wordpress-router` · `/sgs-clone` · `/wp-blocks` · `/sgs-db` (read) + direct `sqlite3` (writes) · `/systematic-debugging` · `/qc-council` (per converter/block commit — MANDATORY) · `/verify-loop` · `/dispatching-parallel-agents` + `/subagent-driven-development` · `/delegate` · Playwright MCP (live-DOM gate) · `build-deploy.py --target sandybrown --blocks-only --allow-dirty` · `sgs-update-v2.py` · `/handoff`.
 SGS visual-diff commit gate fires on block changes; for non-visual/logic/meta it sanctions `--no-verify` (structural phase; pixel reports informational only).

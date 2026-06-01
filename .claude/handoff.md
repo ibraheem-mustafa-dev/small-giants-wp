@@ -1,33 +1,31 @@
-# Session Handoff — 2026-05-31 (wrapper mechanism perfected: recursive fold + Wave-1/Wave-2/A-1; 6/7 sections structurally green)
+# Session Handoff — 2026-06-01 (hero fix-shape: qc-council rejects H2, locks H-conv §FR-22-19; trust-bar reframed dual-mode §FR-24-10)
 
-## Completed this session (all on branch `feat/fr22-4-1-universal-wrapper`; main untouched)
-1. **Recursive fold (FR-22-4.1) implemented** (`ce07728d`) — the universal wrapper rule, replacing the over-nesting "Phase-1 shortcut". Sole pass-through shells FOLD into the section container (native-attr lift, no extra div); non-direct + grid wrappers get their own container; **leaf-with-element-children guard** (a node resolving to a leaf but with sgs-classed children → treat as wrapper container). Root-caused via trace + live DOM across 3 iterations (over-nesting → sole-shell gate fixed brand +44→+16 → wrapper-div-leak fix: `_emit_section_container` emits InnerBlocks directly, matching `sgs/container` save.js). Brand 2-col side-by-side verified.
-2. **Wave 1 (verified live DOM, 6/7 sections green; `94c6ee75`/`7b8f3046`/`797bb45d`):**
-   - **A** responsive grid templates → native attrs (trust-bar 4-col, was 2-col).
-   - **B** `blocks.replaces` populated in 5 block.json + sgs-update Stage-1 persistence → atomic `<h2>`→`sgs/heading` (dynamic) → ALL section headings render (+ product/ingredient/gift-card names cascaded).
-   - **D** info-box FR-22-6 migration (echo $content) → gift/ingredient card content renders.
-3. **Wave 2 + A-1 (committed, NOT yet re-cloned/verified on live DOM; `d9c11ed7`/`1e214d49`/`6d9fabfb`):**
-   - **A-1** responsive per-device lift — padding/margin/gap/columns `@media` → `{Tablet,Mobile}` native attrs. Root cause: `_lift_root_supports_to_style` computed `bp_decls` then discarded it (breakpoint-suffix machinery had no caller). Slot-level responsive typography still deferred (Phase 2).
-   - **hero** FR-22-6 — content→InnerBlocks, styling/2-col shell scalar, deprecated.js v6.
-   - **trust-badges → trust-bar** comprehensive rename (block dir, block.json, BEM, build/, tests, specs, fingerprints, recogniser; deprecated.js v3 alias). `/sgs-update` run to persist.
-4. **Spec corrections + FR-22-18** — corrected my mistaken claim that `sgs/container` lacks per-grid-item customisation (it has `gridItem*` defaults + per-child overrides via specificity). Added FR-22-18 (structural-parity acceptance; pixel-diff informational-only this phase). Atomic→sgs redirect (§14) confirmed + wired.
-5. **Built the body-nesting WIREFRAME** (draft vs clone, full body) as the structural-parity measurement artefact — `wireframe-wave1-full.jpeg` + `.playwright-mcp/wireframe-wave1.html`.
+## What happened this session (docs-only; NO code shipped — by design)
+This session did the disciplined front-half of a sensitive converter change: **full read → code-level root-cause → 3-rater qc-council → build-ready design captured**. No code was rammed at a context-heavy tail (STOP #19/#32). The qc gate PREVENTED a wrong build.
+
+1. **Verified the entry state** — git showed Wave-2/A-1 were already verified on the canary (run 223313, commit `0f52a3ba`, pre-session): 6/7 sections structurally green; **hero is the one RED section**.
+2. **Completed the full MANDATORY READING LIST** (Spec 22 full, TRUTH-SPEC, decisions D102-D124, Spec 21, Spec 24, flow, wireframe) + the ground-truth converter output for hero + trust-bar + the walker code.
+3. **Code-level root-cause:**
+   - **Hero double-wrapper:** the walker emits the hero interior as two generic `sgs/container` columns (§FR-22-4.1); render.php ALSO wraps `$content` in `.sgs-hero__content` + renders its own scalar media column → double `.sgs-hero__content` + classless `sgs/media` children. KEY FINDING (reading render.php:760-788): **render.php is ALREADY correct** — its 169-attr image pipeline + the `--mobile/--desktop` art-direction `@media` CSS already work for a bare-content + scalar-media model. So the fix is CONVERTER-side, not block-side.
+   - **Trust-bar:** renders 4 badges via its DEFAULT `items` (coincidental Mama's match), ignoring the converter's emitted badge InnerBlocks.
+4. **3-rater qc-council** (compliance / pipeline-impact / universality) on the hero fix-shape:
+   - **REJECTED H2** (block thin-shell + images→sgs/media + universal className-preservation): retires the hero's image pipeline + art-direction onto sgs/media (can't replicate) → violates "preserve full functionality"; blast radius 7 sections + 5 block files + a migration + invalidates the pixel-diff baseline.
+   - **CHOSE H-conv** (converter routes content→bare `$content` InnerBlocks; images→scalar `splitImage`/`splitImageMobile`): render.php/edit.js/block.json UNCHANGED; 1-section blast radius; preserves all functionality; universal across the 4 `wraps_block` composites (hero/cta-section/modal/quote) + the FR-22-6 roster.
+5. **Captured the design:** Spec 22 **§FR-22-19** (hero H-conv + build sequence + the OPEN GAP: a DB-first mapping of a composite's media-column BEM element → its scalar attr target — never a per-block slug conditional). Spec 24 **§FR-24-10** (trust-bar dual-mode — Typed curated repeater OR Bound `echo $content`, same pattern as product-card). Decisions D125-D127. Parking updated. Council brief at `.claude/scratch/2026-06-01-hero-fix-shape-qc-brief.md`.
 
 ## Current state
-- **Branch:** `feat/fr22-4-1-universal-wrapper` (8 commits ahead of main; `8f900750` is WIP-do-not-merge). main clean.
-- **Canary page 144:** reflects Wave 1 only. **Wave 2 + A-1 committed but NOT built/deployed/re-cloned → not yet verified on live DOM.**
-- **Converter self-tests pass.** No full build/deploy of Wave-2 this session.
-- **/sgs-update** run (trust-bar rename persisted in DB).
+- **Branch:** `feat/fr22-4-1-universal-wrapper` (NOT merged; main clean). Docs committed this session; no code.
+- **Hero:** fix-shape LOCKED = §FR-22-19 H-conv; build pending (focused session — sensitive walker work + the OPEN GAP to close DB-first).
+- **Trust-bar:** fix-shape = §FR-24-10 dual-mode; build pending (after hero).
+- Canary 144 = run-223313 build (hero still RED).
 
-## Known issues / next priorities (full detail in next-session-prompt.md)
-1. **VERIFY Wave-2 + A-1 on the canary FIRST** (build+deploy+re-clone+wireframe) — not done this session.
-2. **trust-bar hybrid FR-22-6 migration** — renamed block reads scalar `items`; needs `echo $content` for the section block-override to render.
-3. **product-card full dual-mode build** (Spec 24 + atomic pill block + variation-sets logic — brain-dump in next-session-prompt + parking).
-4. **A-1 Phase 2** — slot-level responsive typography lift.
-5. **D-1 DROPPED** — info-box deprecated.js existing-post migration NOT needed (Bean: no live SGS-theme sites; scratch pages only).
+## Next priorities (full detail + build sequence in next-session-prompt.md)
+1. **Build hero §FR-22-19 (H-conv)** — DB role reclassification → close the OPEN GAP (DB-first media-BEM→scalar mapping) → convert.py slot-router → live-DOM gate + roll-back-fast.
+2. **Build trust-bar §FR-24-10 dual-mode.**
+3. product-card full dual-mode (spec variation-sets FIRST); A-1 Phase 2; generalise §FR-22-19 to cta-section/modal/quote.
 
-## Mistake analysis (this session) — captured in next-session-prompt.md as STOP #25-#29
-Shipped a shortcut instead of the spec mechanism; asserted block capability without reading block.json/edit.js; misjudged step scope + gave up after a shortcut failed; used pixel-diff during structural work; over-checkpointed (burned Bean's context). Pre-emptive STOP entries + an 8-question pre-flight ritual added to next-session-prompt.md.
+## Mistakes AVOIDED this session (the methodology working)
+Reading the full render.php flipped H2→H-conv (STOP #30/#31). The qc-council caught H2's functionality loss before it shipped (blub.db 255). Sensitive walker change deferred to a focused build, not rammed (STOP #19/#32). New STOP entries #30/#31/#32 added to next-session-prompt.
 
 ## Next Session Prompt
-See `.claude/next-session-prompt.md` — comprehensive reading list + done/next + resolved misunderstandings + mistake-analysis (STOP #25-#29) + pre-flight ritual + product-card brain-dump. Structural defences carried forward + extended per D101.
+See `.claude/next-session-prompt.md` — STOP catalogue #1-#32 (was #1-#29), 16-item reading list, 10-question ritual, the §FR-22-19 build sequence + the OPEN GAP, §FR-24-10 dual-mode. Structural defences carried forward + extended per D101 (counts all up).

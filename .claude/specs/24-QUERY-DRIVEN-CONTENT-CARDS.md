@@ -130,6 +130,29 @@ is a framework primitive that serves products, testimonials, team, case studies,
   additive — the converter keeps emitting Typed cards; Bound/collection is an operator-authoring
   feature, not a converter output.
 
+- **FR-24-10 — Curated-content blocks are dual-mode too (Bean-directed, 2026-06-01).** The same
+  Typed-vs-bound split applies to **curated-content blocks** whose editor is a rich repeater the
+  clone pipeline must also feed — `sgs/trust-bar` is the first case (and the generalisation target
+  for any block with a per-item curated editor that the converter emits InnerBlocks into). The
+  conflict: a naive FR-22-6 InnerBlocks migration of `sgs/trust-bar` would **gut its curated client
+  editor** (the icon-circle item repeater + the 3 badge variants `icon-circle`/`text-only`/`image-badge`
+  + autoScroll + title) and replace it with raw block nesting — violating "client experience is
+  primary". The dual-mode answer: the block keeps its **Typed mode** (the existing curated `items[]`
+  repeater + variant inspector — the rich client UX) AND gains a **InnerBlocks/Bound mode** where it
+  `echo $content` so the converter's emitted badge children (`sgs/container.sgs-trust-bar__badge` >
+  `sgs/icon` + `sgs/text`, per the run-223313 ground truth) render. A per-instance Source toggle
+  (mirrors FR-24-2) selects which path drives render.php. R-22-14 clean — the two modes are distinct
+  authored states, NOT a server-side scalar fallback hack: render.php branches on the explicit mode
+  attr, not on `empty($content)`. The badge children use existing primitives (container + icon +
+  text/label + media for image-badge) — no new atomic block. **Build pending** (Bean accepted this
+  continues past the hero into a focused session). All 18 trust-bar attrs + 3 variants preserved
+  (full schema enumerated 2026-06-01: badgeStyle, items, title, titleColour/FontSize, labelColour/
+  FontSize, badgeSize, iconCircle*, iconColour, textColour, columns, gap, showPendingInEditor,
+  autoScroll*). deprecated.js keeps the v2 cert-bar + v3 rename entries; a new entry handles the
+  mode attr default. **Acceptance:** FR-22-18 structural parity — `.sgs-trust-bar` renders the
+  converter's 4 badge children in Bound mode AND the curated repeater still works in Typed mode
+  (editor smoke test, no "unexpected content" warning).
+
 ## Non-functional Requirements
 
 - Selection presets resolve server-side; result counts capped (default 12, max configurable).
