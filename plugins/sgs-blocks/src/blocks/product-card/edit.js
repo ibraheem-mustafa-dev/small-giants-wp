@@ -73,7 +73,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ value: 'standard', label: __( 'Standard', 'sgs-blocks' ) },
 							{ value: 'trial',    label: __( 'Trial (dashed border + gradient)', 'sgs-blocks' ) },
 							{ value: 'featured', label: __( 'Featured', 'sgs-blocks' ) },
-							{ value: 'gift',     label: __( 'Gift', 'sgs-blocks' ) },
 						] }
 						onChange={ ( v ) => setAttributes( { variantStyle: v } ) }
 						__nextHasNoMarginBottom
