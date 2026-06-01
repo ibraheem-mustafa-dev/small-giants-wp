@@ -2045,7 +2045,63 @@ def _resolve_slug_from_bem_tuple(classes_tuple: tuple[str, ...]) -> str | None:
                        slug=standalone)
                 return standalone
 
+    # ---- Path 2b: compound-element prefix strip (e.g. card-tag → tag) ----
+    # A BEM element is frequently a `<head>-<tail>` compound where `head` names
+    # the containing context (a card/panel slot) and `tail` is the real element
+    # slot — e.g. `card-tag`, `card-description`, `card-price`. The literal
+    # compound misses the slot vocabulary (Path 2 above), so the element's text
+    # falls through to a slug-None container as raw inner content → WP editor
+    # "unexpected/invalid content".
+    #
+    # Resolution = prefix/suffix decomposition against the SAME DB slot vocabulary
+    # (no new table, no per-class Python literals — R-22-1; universal across every
+    # `<slot>-<slot>` compound — R-22-9). Split on the FIRST hyphen and route the
+    # tail ONLY when BOTH head and tail are themselves routable slots. Gating on
+    # `head in slot_alias_map` is the safety boundary: it fires for container
+    # prefixes (`card-`, `panel-`) but NEVER for non-slot prefixes (`skip-link`,
+    # `cart-badge`, `trustpilot-logo`) which must stay structural wrappers.
+    # `card-inner` is also correctly skipped (tail `inner` has no standalone_block
+    # → not in the map → stays a passthrough wrapper). Verified zero collateral
+    # across all 86 BEM classes in the Mama's Munches mockup (2026-06-03).
+    #
+    # PRECEDENCE: Path 2b is a FALLBACK — it runs only after Path 2's literal
+    # element/block alias lookup misses. So an explicit alias (e.g. `card-body`
+    # → sgs/info-box via the `card` row's aliases) always wins over the peel;
+    # Path 2b only fills genuine vocabulary gaps. Multi-segment tails resolve fine
+    # when the tail is itself a hyphenated alias (`x-split-image` → `split-image`
+    # → sgs/media). For any compound that is actually a WRAPPER (sgs-classed
+    # element children), the walker's leaf-misresolution guard (convert.py walk(),
+    # ~line 1961) is the backstop: a peeled leaf slug with sgs-classed children is
+    # re-treated as a slug-None container, so no wrapper is ever flattened to a leaf.
+    for cls, bem in sorted(parsed, key=lambda x: x[0]):
+        if bem.element is None or "-" not in bem.element:
+            continue
+        head, _, tail = bem.element.lower().partition("-")
+        if head in slot_alias_map and tail in slot_alias_map:
+            standalone = slot_alias_map[tail]
+            _trace("bem_resolve_prefix_strip",
+                   class_=cls,
+                   head=head,
+                   tail=tail,
+                   slug=standalone)
+            return standalone
+
     return None
+
+
+def block_for_slot_token(token: str) -> str | None:
+    """Return the standalone block a single BEM token resolves to, or None.
+
+    Thin public accessor over the element-scope slot/alias map (the same map
+    `resolve_slug_from_bem` uses). Used by the walker's text-leaf routing
+    (Spec 22 §FR-22-4.1 content-leaf step) to resolve a compound element's
+    individual hyphen-segments (e.g. `price` → sgs/text, `stars` →
+    sgs/star-rating) so a content leaf can pick its correct content block.
+    Hyphen/case-insensitive via the map's no-hyphen variant keys.
+    """
+    if not token:
+        return None
+    return _slot_alias_to_standalone().get(token.lower())
 
 
 def resolve_slug_from_bem(sgs_classes: list[str]) -> str | None:

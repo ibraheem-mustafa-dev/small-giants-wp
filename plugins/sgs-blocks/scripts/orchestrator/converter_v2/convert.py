@@ -1930,17 +1930,31 @@ def walk(
         return emit_atomic(node)
 
     # ---- Permitted exception 2 — chrome-skip at top level ----
-    # header/footer/nav at is_top_level WITHOUT sgs-* BEM → belongs in WP
-    # template parts, not post content. The `not sgs_classes` guard ensures
-    # SGS-BEM-classed elements wearing semantic HTML tags (e.g. a hero rendered
-    # as <header class="sgs-hero">) still resolve to their block — only bare
-    # chrome dropwouts hit this exception. (Fix per /qc-council 2026-05-27 D5.)
-    if is_top_level and not sgs_classes and node.name in SKIP_TOP_LEVEL_TAGS:
-        skip_label = " ".join(classes) if classes else node.name
-        _trace("walker_branch_taken", branch="chrome_skip", node_tag=node.name,
-               node_classes=classes, depth=depth,
-               reason=f"<{node.name}> {skip_label} belongs in WP template parts, not post content")
-        return None
+    # A top-level <header>/<footer>/<nav> belongs in a WP template part, NOT page
+    # content (it duplicates the theme's own header/footer template part on every
+    # page — Bean 2026-06-03). Skip it when EITHER:
+    #   (a) it carries no sgs- class (bare chrome), OR
+    #   (b) its sgs BEM block segment is ITSELF a chrome role (sgs-header /
+    #       sgs-footer / sgs-nav) — i.e. a genuine header/footer/nav section.
+    # A CONTENT block merely WEARING a semantic tag (e.g. <header class="sgs-hero">,
+    # block segment 'hero' ∉ chrome) is NOT skipped — it still resolves to its
+    # block. (Original `not sgs_classes`-only guard added per /qc-council 2026-05-27
+    # D5 to protect hero-as-header; extended 2026-06-03 to also drop sgs-classed
+    # chrome that was leaking into page body. Header/footer cloning to template
+    # parts is the parked specialised-cloner work — until then, drop from body.)
+    if is_top_level and node.name in SKIP_TOP_LEVEL_TAGS:
+        chrome_classed = False
+        for c in sgs_classes:
+            bem = db.parse_sgs_bem(c)
+            if bem is not None and bem.block in SKIP_TOP_LEVEL_TAGS:
+                chrome_classed = True
+                break
+        if not sgs_classes or chrome_classed:
+            skip_label = " ".join(classes) if classes else node.name
+            _trace("walker_branch_taken", branch="chrome_skip", node_tag=node.name,
+                   node_classes=classes, depth=depth,
+                   reason=f"<{node.name}> {skip_label} belongs in WP template parts, not post content")
+            return None
 
     # ---- Universal path — BEM → DB → emit ----
     slug = db.resolve_slug_from_bem(sgs_classes)  # FR-22-1 with multi-class disambiguation
@@ -1985,6 +1999,12 @@ def walk(
     # via exception 3 below (FR-22-4 invariant: every top-level section is sgs/container).
     if slug is None and not is_top_level:
         if sgs_classes:
+            # §FR-22-4.1 content-leaf step: a text-only sgs-classed node (no
+            # block-resolvable element children) is content, not a wrapper —
+            # route it to a content block, NOT a sgs/container that would wrap
+            # raw text (editor "unexpected/invalid content"). See _route_text_leaf.
+            if _node_is_text_leaf(node):
+                return _route_text_leaf(node, classes, sgs_classes, css_rules, variation_buf)
             return _emit_wrapper_container(node, classes, sgs_classes, css_rules, depth, variation_buf)
         return walk_passthrough(node, css_rules, depth, variation_buf)
 
@@ -2454,6 +2474,136 @@ def _detect_grid_container_from_css(classes: list[str], css_rules: dict) -> dict
     if gap:
         result["gap"] = gap
     return result
+
+
+# ----------------------------------------------------------------------------
+# §FR-22-4.1 content-leaf resolution (2026-06-03)
+# A slug-None sgs-classed node with NO block-resolvable element children is a
+# CONTENT LEAF, not a wrapper — it must emit a content block carrying its text,
+# NEVER a sgs/container (whose save()=<InnerBlocks.Content/> rejects raw text →
+# editor "unexpected/invalid content"). This is the mirror of the leaf-
+# misresolution guard in walk() (which catches leaf-RESOLVED nodes that HAVE
+# element children → treat as container); this catches container-bound nodes
+# that have NO element children → treat as leaf. Universal (R-22-9), DB-driven
+# (R-22-1: slot/alias map + atomic_tag_map + block_attrs), reuses the FR-22-3
+# atomic-tag-swap machinery. Root-caused 2026-06-03 from the editor runtime:
+# 10 sgs/container "Expected end of content, instead saw Chars" validation
+# failures, all text-only leaves (price-note, trustpilot-logo/stars/text, …).
+# ----------------------------------------------------------------------------
+
+# Block-level child tags that make a node a CONTAINER (not a text leaf). Inline
+# tags (span/strong/em/a/b/i/code/br/small/sup/sub/mark/time/label) are rich-
+# text content and do NOT disqualify a leaf — _rich_text_content preserves the
+# safe subset.
+_BLOCK_LEVEL_CHILD_TAGS = frozenset({
+    "p", "h1", "h2", "h3", "h4", "h5", "h6", "img", "blockquote", "hr",
+    "ul", "ol", "dl", "table", "figure", "section", "article", "aside",
+    "header", "footer", "nav", "div", "form", "picture", "video",
+})
+
+# core/* blocks that natively carry rich text (used by the text-capability gate
+# when the atomic-tag-swap resolves to a core slug, e.g. <a> → core/button,
+# <blockquote> → core/quote). NB `core/paragraph` is effectively unreachable in
+# the current pipeline (atomic_tag_map maps <p> → sgs/text, not core/paragraph)
+# — kept for completeness / future atomic-map changes.
+_CORE_TEXT_CAPABLE = frozenset({"core/heading", "core/paragraph", "core/quote", "core/button"})
+
+
+def _node_is_text_leaf(node: "Tag") -> bool:
+    """True when a node holds ONLY text / inline content (no child that would
+    emit its own block). A child Tag makes the node a CONTAINER when it carries
+    an sgs- BEM class (structural/content child) OR is a block-level tag."""
+    for child in node.children:
+        if not isinstance(child, Tag):
+            continue
+        if any(c.startswith("sgs-") for c in (child.get("class", []) or [])):
+            return False
+        if child.name in _BLOCK_LEVEL_CHILD_TAGS:
+            return False
+    return True
+
+
+def _is_text_capable_block(slug: str) -> bool:
+    """True when `slug`'s PRIMARY content is a line of text it can carry — gates
+    text-leaf routing so a text node never lands in a block that can't hold it.
+
+    Discriminator = the block has a string attr literally named `text` or
+    `content` (the SGS-convention primary-text attr names). This is precise
+    where a role-only check is not: star-rating / media / icon each carry a
+    SECONDARY content-role string (a `label` caption / `imageAlt`) but their
+    primary payload is a rating / image / glyph — they have NO `text`/`content`
+    attr, so they are correctly excluded. text / label / heading / notice-banner
+    / button (attr `text` or `content`) are included."""
+    if not slug:
+        return False
+    if not slug.startswith("sgs/"):
+        return slug in _CORE_TEXT_CAPABLE
+    attrs = db.block_attrs(slug)
+    for name in ("text", "content"):
+        info = attrs.get(name)
+        if isinstance(info, dict) and info.get("attr_type") == "string":
+            return True
+    return False
+
+
+def _route_text_leaf(
+    node: "Tag",
+    classes: list[str],
+    sgs_classes: list[str],
+    css_rules: dict,
+    variation_buf: list[str] | None,
+) -> str:
+    """Emit a slug-None sgs-classed CONTENT LEAF as a content block carrying its
+    text (§FR-22-4.1 content-leaf step). Target ladder, all text-content-gated:
+      (a) a BEM-element hyphen-segment → slot block, IF text-capable (tail-first
+          so the most specific segment wins — `price-note`→price→sgs/text,
+          `trustpilot-text`→text→sgs/text; `trustpilot-stars`/`-logo` skip
+          star-rating/responsive-logo because they can't hold the literal text).
+      (b) atomic-tag-swap on the node's OWN tag, IF text-capable (p→sgs/text,
+          a→core/button, h*→sgs/heading, blockquote→core/quote; span→skip).
+          (NB sgs/quote is NOT a target here — its content is a `body` array,
+          not a text/content string, so it fails the capability gate; a bare
+          blockquote text-leaf therefore falls through to sgs/text.)
+      (c) sgs/text default (a bare-text leaf IS a paragraph — the correct block,
+          not the rejected catch-all: genuinely-typed elements already resolved
+          upstream via resolve_slug_from_bem).
+    className is preserved + scoped CSS collected so styling survives.
+    """
+    target: str | None = None
+
+    # (a) content-gated segment resolution on the primary sgs BEM element
+    bem = None
+    for cls in sgs_classes:
+        parsed = db.parse_sgs_bem(cls)
+        if parsed is not None and parsed.element:
+            bem = parsed
+            break
+    if bem is not None and bem.element:
+        for seg in reversed(bem.element.split("-")):  # tail-first = most specific
+            cand = db.block_for_slot_token(seg)
+            if cand and _is_text_capable_block(cand):
+                target = cand
+                break
+
+    # (b) atomic-tag-swap on the node's own tag, if text-capable
+    if target is None:
+        tag_block = db.atomic_tag_map().get(node.name)
+        if tag_block and _is_text_capable_block(tag_block):
+            target = tag_block
+
+    # (c) default — genuine text content
+    if target is None:
+        target = "sgs/text"
+
+    css = collect_css_for_classes(classes, css_rules)
+    if css and variation_buf is not None:
+        variation_buf.append(css)
+
+    attrs = _atomic_attrs_for(node, target)
+    attrs["className"] = " ".join(sgs_classes)
+    _trace("walker_branch_taken", branch="text_leaf",
+           node_classes=classes, target=target, content_keys=list(attrs.keys()))
+    return emit_wp_block(target, attrs, [])
 
 
 def _emit_wrapper_container(
