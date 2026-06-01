@@ -100,6 +100,18 @@ function addAnimationAttributes( settings, name ) {
 	};
 }
 
+/**
+ * Guard against double registration.
+ *
+ * container/index.js imports this file directly so that animation controls
+ * are available even without the extensions bundle. The extensions bundle
+ * (extensions/index.js) also imports it. Both bundles are loaded in the editor,
+ * so without this guard every addFilter call fires twice and every block shows
+ * two Animation panels in the inspector.
+ */
+if ( ! window.__sgsAnimationRegistered ) {
+window.__sgsAnimationRegistered = true;
+
 addFilter(
 	'blocks.registerBlockType',
 	'sgs/animation-attributes',
@@ -219,3 +231,5 @@ addFilter(
 	'sgs/animation-save-props',
 	addAnimationSaveProps
 );
+
+} // end guard: window.__sgsAnimationRegistered
