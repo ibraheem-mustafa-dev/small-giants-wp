@@ -21,7 +21,23 @@ primary_goal: "CLONING-PIPELINE THREAD. The pipeline is NOT faithfully transferr
 - **Class-section width band-aid (PARTIAL, committed `e27ff591`):** `emit_sgs_container_wrapping` now emits `widthMode:'full'` so hero + trust-bar (slug-RESOLVED sections) render full-width. **This is a band-aid Bean flagged** — it only covers slug-resolved sections, is the wrong layer, and should be SUPERSEDED by the faithful-transfer fix below. Do NOT extend it with more per-section conditionals (Bean rejected that twice).
 - **Static-div editor bug FIXED (committed, re-cloned):** `emit_sgs_container_wrapping` emitted a static `<div class="wp-block-sgs-container">` that fails WP validation against `save()`=`<InnerBlocks.Content/>` → "unexpected/invalid content" on EVERY cloned container in the editor. Now emits children directly (mirrors `_emit_section_container`). **OPEN — Bean to confirm in the editor on canary 144; also verify `sgs/media` "cannot be previewed" (save()=null — likely the same emit-vs-save mismatch class) clears post-reclone. If media persists: check the converter emits `sgs/media` self-closing (`/-->`) with no innerHTML.** The removed static div was also an extra nesting level that breaks grid-on-section → likely also improves audit gap 4.
 
-## ⚡ THE PRIORITY — faithful CSS transfer (the 4-gap audit, D136)
+## ⚡ TASK 1 — NEXT SESSION OPENS WITH THIS: fix the broken BEM div-class routing (editor "invalid content")
+
+**Problem (Bean, 2026-06-02):** Many cloned `sgs/container` (and `sgs/media`) blocks STILL show "unexpected/invalid content" / "cannot be previewed" in the WP editor. Root cause is NOT bare text — it's **broken BEM div-class routing**: divs that HAVE classes which SHOULD resolve to a proper block are FALLING THROUGH to slug-None → emitted as a `sgs/container` with the text as **raw inner content**, which the container's `save()=<InnerBlocks.Content/>` rejects. The routing (FR-22-2 BEM→block resolution via the `slots` table) is failing for these classes. **DO NOT wrap the orphan text in `sgs/text` — that's a band-aid Bean explicitly rejected. The fix is to make the routing resolve these classes to their correct blocks.**
+
+**Concrete mis-routed cases (from canary 144 deployed markup):**
+- `sgs-gift-section__card-tag--trial` (text "New? Start here") → should route to **`sgs/label`**.
+- The ingredients-section **disclaimer** div class → should route to **`sgs/notice-banner`**.
+- The gift-section **card-description** div class → should route to **`sgs/text`**.
+- Plus ~15 more containers with raw-text direct children (all the same mis-routing).
+
+**What to do:** root-cause why these BEM elements (`card-tag`, `disclaimer`, `card-description`, …) don't resolve to their blocks — almost certainly missing/incorrect `slots` table rows (slot_name→standalone_block) so `equivalent_block_for()`/`resolve_slug_from_bem()` return None → slug-None container fallthrough. Fix DB-first (R-22-1): add the correct slot mappings so each BEM element resolves to its block (label/notice-banner/text/etc.), universally — NOT per-block Python literals, NOT a text-wrap band-aid. Read `/sgs-db` slots + `resolve_slug_from_bem` + FR-22-2 first. After fixing: NO container should have a raw-text direct child (scan: container open comment immediately followed by non-tag text = 0).
+
+**ALSO (same task): `sgs/media` blocks still broken ("cannot be previewed").** Bean: "doesn't make sense." This is likely a media-block edit/render error OR media routing emitting wrong attrs. Investigate the media block's edit.js + how the converter emits sgs/media (attrs vs the block's expected schema) + whether the image object shape matches.
+
+**Already fixed this session (committed `df9c5a40`, KEEP):** 2 of the 3 invalid-content variants — `sgs/star-rating` (+28 dynamic blocks) now self-close via DB `block_accepts_inner_blocks`; `core/list`→`sgs/icon-list` (was static self-closing-broken). Verified by re-clone (core/list=0, star-rating self-closing=3, static-div=0), cross-model reviewer PASS. NB the `ul/ol→sgs/icon-list` routing decision should be reviewed for correctness as part of the holistic routing fix (a plain footer nav list may want a different target than an icon-list).
+
+## ⚡ THE PRIORITY 2 — faithful CSS transfer (the 4-gap audit, D136)
 
 **The principle (Bean, locked):** "This is literally just about transferring the CSS values that exist in the draft into the clone — which is literally the whole point." When a cloned element looks wrong, the cause is almost always that the pipeline FAILED TO TRANSFER the draft's CSS, or is IMPOSING a framework default the draft never had. Do NOT bolt converter-side detection/mode hacks — fix the transfer layer. See memory `feedback_pipeline_transfers_draft_css_not_converter_detection_hacks`.
 
