@@ -14,7 +14,7 @@ primary_goal: "SGS-THEME THREAD (separate from the cloning pipeline). Fix + buil
 > **Guardrail (all tasks): after every block build-deploy, open the WP editor on canary 144 and verify the control renders + zero console errors before considering the task done. Bump the block.json `version` on any CSS/JS change (WP keys the asset `?ver=` off it — redeploying without a bump serves stale assets).**
 
 ## State recap (plain English)
-The SGS framework is a custom WordPress block library (theme + blocks plugin). Phase 1 blocks are built. This thread collects editor-UX + functionality + variant-cleanup work, INDEPENDENT of the cloning-pipeline thread (parallel-safe). Branch `feat/fr22-4-1-universal-wrapper` (shared with the cloning thread; do theme work on it, or branch `feat/theme-blocks-*` if scope grows). Build+deploy: `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --blocks-only --allow-dirty`. Canary admin: WP user `Claude`; password in `.claude/secrets/sandybrown.env` `WP_PWD_SANDYBROWN` (for the BROWSER editor; the app password only does REST).
+The SGS framework is a custom WordPress block library (theme + blocks plugin). Phase 1 blocks are built. This thread collects editor-UX + functionality + variant-cleanup work, INDEPENDENT of the cloning-pipeline thread. Work from `main` — the prior shared branch `feat/fr22-4-1-universal-wrapper` was merged to main + deleted (2026-06-03); commit theme work to main or a fresh `feat/theme-blocks-*` short-lived branch (do NOT recreate one long-lived shared branch — it caused a concurrent-commit race). Build+deploy: `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --blocks-only --allow-dirty`. Canary admin: WP user `Claude`; password in `.claude/secrets/sandybrown.env` `WP_PWD_SANDYBROWN` (for the BROWSER editor; the app password only does REST).
 
 ## First action (smallest step, ≤5 min, zero deps)
 Read the MANDATORY READING LIST (below) in order, then run `python plugins/sgs-blocks/scripts/sgs-db.py block sgs/product-card` to ground-truth the product-card's current attrs before designing the option-picker build (Task 2). That single command + the Spec 24 §FR-24-11..17 read is enough to start.
@@ -86,7 +86,7 @@ Task 2 (delegated, sonnet, sequential phases) ─┐
 Task 5 (research → parallel agents)            ├─ all parallel-safe (disjoint files)
 Task 9 (batched migrations)                    ─┘
    ↓ /qc multi-rater before each commit
-Commit to feat/fr22-4-1-universal-wrapper (shared branch — do NOT merge/delete; cloning thread active)
+Commit to `main` (or a fresh `feat/theme-blocks-*` short-lived branch) — the prior shared branch is merged + deleted; no long-lived shared branch.
 ```
 
 ## MANDATORY READING LIST (read FULLY first)
@@ -138,5 +138,5 @@ Commit to feat/fr22-4-1-universal-wrapper (shared branch — do NOT merge/delete
 - **Bump block.json `version` on any CSS/JS change** — WP keys the asset `?ver=` off it; without a bump, returning visitors get stale assets (caught live 2026-06-01).
 - **CDP top-layer quirk** — synthetic `dispatchMouseEvent` clicks on popover/top-layer elements don't reliably trigger nav/hit-test in headless Chrome; verify popover interactions via programmatic `.click()` or a screenshot, not a CDP click + state check (caught 2026-06-01).
 - **WCAG 2.2 AA + 44px touch targets + mobile-first** on all new UI.
-- **Shared branch** — `feat/fr22-4-1-universal-wrapper` is shared with the active cloning thread; commit + push to it, do NOT merge-to-main/delete it (would break the other thread).
+- **Work on `main`** — the prior shared branch `feat/fr22-4-1-universal-wrapper` was merged to main + deleted (2026-06-03). Commit theme work to main or a fresh `feat/theme-blocks-*` short-lived branch; do NOT recreate a long-lived shared branch (it caused a concurrent-commit race — memory `feedback_concurrent_commit_race_shared_tree`).
 - **Concurrent-commit race (NEW 2026-06-01)** — both threads `git add`/commit the SAME working tree. Last session a doc sweep got swept into the cloning thread's commit (`603cbaaf`) under its message — nothing lost, but history co-mingled. **Mitigation:** commit ONLY your files by explicit path (never `git add .`/`-A`); before committing, `git status` to see if the other thread has staged/dirty files; ideally coordinate one-committer-at-a-time, or run in a separate git worktree. If your commit reports "nothing staged", the other thread likely just swept your files — verify with `git log -1 --stat`.

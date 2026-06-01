@@ -75,4 +75,4 @@ The full orchestration plan lives in `.claude/next-session-prompt.md` (cloning t
 | `design-reviewer` | Visual parity draft-vs-clone after the transfer fix |
 
 ### Guardrails
-- Deploy before measure (`build-deploy.py --blocks-only` + OPcache reset). Draft-diff, not pixel-diff, for layout. `--converter-v2` on orchestrator runs; `WP_DEBUG_DISPLAY` false on staging. `/qc-council` before every converter/block commit. Branch stays open until merge-prep + Bean sign-off.
+- Deploy before measure (`build-deploy.py --blocks-only` + OPcache reset). Draft-diff, not pixel-diff, for layout. `--converter-v2` on orchestrator runs; `WP_DEBUG_DISPLAY` false on staging. `/qc-council` before every converter/block commit. Work on `main` (branch merged + deleted 2026-06-03); fidelity work commits to main or a fresh short-lived branch.
