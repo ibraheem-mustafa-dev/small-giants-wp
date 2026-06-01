@@ -2126,6 +2126,22 @@ def walk(
             if detected is not None:
                 attrs[variant_attr] = detected
 
+    # Block-style preservation (2026-06-03). A draft can request a registered
+    # block STYLE VARIATION on a recognised block by adding its `is-style-<name>`
+    # class alongside the BEM recognition class — e.g.
+    # `<div class="sgs-x__stars is-style-trustpilot" data-sgs-rating="5">` →
+    # sgs/star-rating with the Trustpilot-green preset. Carry any is-style-*
+    # class through onto the emitted block's className so WP/render.php applies
+    # the variation. (The rating itself lifts via lift_behavioural_attrs from
+    # `data-sgs-rating`.) Universal (R-22-9), DB-free, no per-block logic; only
+    # is-style-* classes are carried — the BEM recognition class is consumed by
+    # resolution, not re-emitted (resolved blocks render via their own classes).
+    if slug is not None:
+        style_classes = [c for c in classes if c.startswith("is-style-")]
+        if style_classes:
+            existing = attrs.get("className", "").strip()
+            attrs["className"] = (existing + " " + " ".join(style_classes)).strip() if existing else " ".join(style_classes)
+
     # ---- Permitted exception 3 — top-level section container wrap ----
     # FR-22-4: every top-level section is based on sgs/container.
     # Non-container top-level slugs (including slug=None) are wrapped, not
@@ -2553,43 +2569,50 @@ def _route_text_leaf(
     css_rules: dict,
     variation_buf: list[str] | None,
 ) -> str:
-    """Emit a slug-None sgs-classed CONTENT LEAF as a content block carrying its
-    text (§FR-22-4.1 content-leaf step). Target ladder, all text-content-gated:
-      (a) a BEM-element hyphen-segment → slot block, IF text-capable (tail-first
-          so the most specific segment wins — `price-note`→price→sgs/text,
-          `trustpilot-text`→text→sgs/text; `trustpilot-stars`/`-logo` skip
-          star-rating/responsive-logo because they can't hold the literal text).
-      (b) atomic-tag-swap on the node's OWN tag, IF text-capable (p→sgs/text,
-          a→core/button, h*→sgs/heading, blockquote→core/quote; span→skip).
-          (NB sgs/quote is NOT a target here — its content is a `body` array,
-          not a text/content string, so it fails the capability gate; a bare
-          blockquote text-leaf therefore falls through to sgs/text.)
+    """Emit a slug-None sgs-classed CONTENT LEAF as the right content block
+    (§FR-22-4.1 content-leaf step). A "content leaf" is a node with no
+    block-resolvable element children — text OR a single media tag. Target ladder:
+      (a) the node's OWN tag via atomic_tag_map, UNGATED — the tag is authoritative
+          for content TYPE: img→sgs/media (src/alt lifted), p→sgs/text,
+          h*→sgs/heading, a→core/button, blockquote→sgs/quote, hr→core/separator.
+      (b) tag has no atomic mapping (span/div) → a BEM-element hyphen-segment →
+          slot block IF text-capable, tail-first (most specific): `price-note`→
+          price→sgs/text. Gated to text-capable so a text span never grabs
+          media/star-rating/responsive-logo (e.g. `trustpilot-logo`'s `logo`
+          segment is skipped → falls through to sgs/text).
       (c) sgs/text default (a bare-text leaf IS a paragraph — the correct block,
-          not the rejected catch-all: genuinely-typed elements already resolved
-          upstream via resolve_slug_from_bem).
-    className is preserved + scoped CSS collected so styling survives.
+          not the rejected catch-all: genuinely-typed elements resolve upstream
+          via resolve_slug_from_bem).
+    className is preserved + scoped CSS collected so styling survives. (A draft
+    block STYLE / rating carries via the is-style-* + data-sgs-* paths in walk().)
     """
     target: str | None = None
 
-    # (a) content-gated segment resolution on the primary sgs BEM element
-    bem = None
-    for cls in sgs_classes:
-        parsed = db.parse_sgs_bem(cls)
-        if parsed is not None and parsed.element:
-            bem = parsed
-            break
-    if bem is not None and bem.element:
-        for seg in reversed(bem.element.split("-")):  # tail-first = most specific
-            cand = db.block_for_slot_token(seg)
-            if cand and _is_text_capable_block(cand):
-                target = cand
-                break
+    # (a) the node's OWN tag is authoritative for content TYPE — atomic-tag-swap
+    #     first, UNGATED (img→sgs/media, p→sgs/text, h*→sgs/heading, a→core/button,
+    #     blockquote→sgs/quote, hr→core/separator). An sgs-classed <img> that didn't
+    #     resolve is still an image → sgs/media (src/alt lifted by _atomic_attrs_for),
+    #     never sgs/text. The tag tells us WHAT the content is.
+    target = db.atomic_tag_map().get(node.name)
 
-    # (b) atomic-tag-swap on the node's own tag, if text-capable
+    # (b) tag has no atomic mapping (span/div) → resolve a BEM-element hyphen-segment
+    #     to a TEXT-capable block, tail-first (most specific). Gated to text-capable
+    #     so a text span never grabs media/star-rating/responsive-logo from a segment
+    #     (e.g. <span ...__price-note> → price → sgs/text; ...__trustpilot-logo's
+    #     `logo` segment → responsive-logo is SKIPPED, falls through to sgs/text).
     if target is None:
-        tag_block = db.atomic_tag_map().get(node.name)
-        if tag_block and _is_text_capable_block(tag_block):
-            target = tag_block
+        bem = None
+        for cls in sgs_classes:
+            parsed = db.parse_sgs_bem(cls)
+            if parsed is not None and parsed.element:
+                bem = parsed
+                break
+        if bem is not None and bem.element:
+            for seg in reversed(bem.element.split("-")):
+                cand = db.block_for_slot_token(seg)
+                if cand and _is_text_capable_block(cand):
+                    target = cand
+                    break
 
     # (c) default — genuine text content
     if target is None:
