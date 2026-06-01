@@ -76,6 +76,15 @@ _ROLE_CLASSIFICATION_MAP: dict[str, str] = {
     "select-from-enum":     "styling-behaviour",
     "enum-class-probe":     "styling-behaviour",
     "query-descriptor":     "styling-behaviour",
+    # FR-22-19 composite scalar-media (2026-06-01): foreground images that a
+    # composite block renders through its own scalar pipeline (art-direction,
+    # srcset, object-fit, bleed, responsive show/hide authored in render.php).
+    # Classification 'styling-behaviour' → equivalent_block_for() returns None →
+    # the walker does NOT emit a sgs/media child; instead _route_composite_interior
+    # lifts the img into the block's scalar attr (e.g. splitImage/splitImageMobile).
+    # Roster (DB-audit-verified 2026-06-01): sgs/hero.splitImage,
+    # sgs/hero.splitImageMobile, sgs/testimonial-slider.sideImage.
+    "scalar-media":         "styling-behaviour",
 }
 
 
@@ -1126,6 +1135,136 @@ def is_class_section_block(slug: str) -> bool:
     if _CLASS_SECTION_CACHE is None:
         _CLASS_SECTION_CACHE = _load_class_section_cache()
     return slug in _CLASS_SECTION_CACHE
+
+
+# ----------------------------------------------------------------------------
+# scalar_media_attr_for — FR-22-19 composite scalar-media slot lookup
+# ----------------------------------------------------------------------------
+# Returns the attr_name of the 'scalar-media' attr on `block_slug` whose slot
+# matches `bem_element`.  Used by _route_composite_interior in convert.py to
+# decide whether a composite interior column should be lifted into a scalar attr
+# (the media column) or folded as bare InnerBlocks (the content column).
+#
+# The DB query is intentionally cheap: it reads block_attributes once per
+# (block_slug, bem_element) pair and caches the result with functools.lru_cache.
+# The caller (_route_composite_interior) iterates per direct child, but the
+# number of composites × their child columns is small (≤4 per section) so even
+# cache-cold hits never cause measurable latency.
+#
+# R-22-1 compliance: no per-block slug literals.  Routing is driven entirely by
+# the `block_attributes.role='scalar-media'` column and the `slots` aliases.
+
+
+def scalar_media_attr_for(block_slug: str, bem_element: str) -> str | None:
+    """Return the attr_name of the scalar-media attr on `block_slug` for `bem_element`.
+
+    A 'scalar-media' attr is one where:
+      - block_attributes.role = 'scalar-media'  (classification='styling-behaviour'
+        → equivalent_block_for returns None → walker lifts to scalar not child block)
+      - Its canonical_slot aliases include `bem_element` (or canonical_slot itself
+        equals `bem_element` after normalisation).
+
+    The Mobile/Desktop distinction is the CALLER's job: this function returns the
+    **base** attr_name (e.g. 'splitImage', 'sideImage') — never the '+Mobile'
+    sibling.  The caller appends 'Mobile' when the BEM modifier is '--mobile'.
+
+    Returns:
+        attr_name string (e.g. 'splitImage') on a match, or None when the
+        composite has no scalar-media attr at the given slot.
+
+    Args:
+        block_slug:  Fully-qualified block slug, e.g. 'sgs/hero'.
+        bem_element: BEM element segment from the child's sgs- class, e.g.
+                     'split-image', 'media', 'side-image'.
+
+    Caching: LRU-cached per (block_slug, bem_element) pair.  Safe for repeated
+    calls across a section walk.  Cache is module-level (shared across sections);
+    values are static for the lifetime of a pipeline run.
+    """
+    return _scalar_media_attr_for_cached(block_slug, bem_element)
+
+
+@functools.lru_cache(maxsize=512)
+def _scalar_media_attr_for_cached(block_slug: str, bem_element: str) -> str | None:
+    """LRU-cached implementation of scalar_media_attr_for."""
+    import json as _json
+
+    if not block_slug or not bem_element:
+        return None
+
+    # Normalise the element token once for matching (strip hyphens, lowercase).
+    norm_elem = _normalise(bem_element)
+
+    # Fetch all scalar-media attrs for this block from block_attributes.
+    # Join to slots (scope='element') to read their canonical slot name + aliases.
+    # We do NOT rely on canonical_slot being populated — Tier B (derived_selector
+    # BEM element) would work too, but querying slot aliases is more robust and
+    # consistent with the existing equivalent_block_for Tier A pattern.
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT ba.attr_name, ba.canonical_slot "
+            "FROM block_attributes ba "
+            "WHERE ba.block_slug = ? AND ba.role = 'scalar-media'",
+            (block_slug,),
+        ).fetchall()
+    finally:
+        conn.close()
+
+    if not rows:
+        _trace("db_lookup_miss", lookup="scalar_media_attr_for",
+               block_slug=block_slug, bem_element=bem_element)
+        return None
+
+    # For each scalar-media attr, check whether the bem_element resolves to its slot.
+    for attr_name, canonical_slot in rows:
+        # Skip the '+Mobile' sibling attrs (attr_name ends with 'Mobile').
+        # scalar_media_attr_for always returns the BASE attr; the caller appends 'Mobile'.
+        if attr_name.endswith("Mobile"):
+            continue
+
+        # Check 1: direct canonical_slot name match (normalised).
+        if canonical_slot and _normalise(canonical_slot) == norm_elem:
+            _trace("db_lookup_hit", lookup="scalar_media_attr_for",
+                   block_slug=block_slug, bem_element=bem_element,
+                   attr_name=attr_name, match_via="canonical_slot_name")
+            return attr_name
+
+        # Check 2: look up the slot's aliases in the slots table.
+        if canonical_slot:
+            conn2 = sqlite3.connect(SGS_DB)
+            try:
+                slot_row = conn2.execute(
+                    "SELECT aliases FROM slots WHERE slot_name = ? AND scope = 'element'",
+                    (canonical_slot,),
+                ).fetchone()
+            finally:
+                conn2.close()
+
+            if slot_row and slot_row[0]:
+                try:
+                    aliases = _json.loads(slot_row[0])
+                except (ValueError, TypeError):
+                    aliases = []
+                for alias in aliases:
+                    if _normalise(str(alias)) == norm_elem:
+                        _trace("db_lookup_hit", lookup="scalar_media_attr_for",
+                               block_slug=block_slug, bem_element=bem_element,
+                               attr_name=attr_name, match_via="slot_alias",
+                               matched_alias=alias)
+                        return attr_name
+
+        # Check 3: fall back to normalised attr_name match (e.g. 'splitImage' → 'splitimage'
+        # vs bem_element 'split-image' → 'splitimage').
+        if _normalise(attr_name) == norm_elem:
+            _trace("db_lookup_hit", lookup="scalar_media_attr_for",
+                   block_slug=block_slug, bem_element=bem_element,
+                   attr_name=attr_name, match_via="attr_name_normalised")
+            return attr_name
+
+    _trace("db_lookup_miss", lookup="scalar_media_attr_for",
+           block_slug=block_slug, bem_element=bem_element)
+    return None
 
 
 # ----------------------------------------------------------------------------

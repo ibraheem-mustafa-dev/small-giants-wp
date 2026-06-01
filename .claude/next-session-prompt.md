@@ -13,8 +13,24 @@ primary_goal: "Build the hero composite fix via Spec 22 §FR-22-19 (H-conv: conv
 
 ## Branch + state
 - **Branch:** `feat/fr22-4-1-universal-wrapper` (NOT merged to main). main clean.
-- Canary page 144 (`sandybrown-nightingale-600381.hostingersite.com/rc-fix-verification-mamas-munches/`) reflects the run-223313 build (Wave-1 + Wave-2 + A-1 verified, 6/7 structural). **Hero is the one RED section** — its fix (§FR-22-19) is NOT yet built. Trust-bar renders 4 badges but via the hybrid block's DEFAULT items (coincidental match), not the converter's content.
-- **No code shipped 2026-06-01** — the session correctly converted root-cause + the qc-council verdict into build-ready design (Spec 22 §FR-22-19, Spec 24 §FR-24-10) rather than ram a sensitive walker change at a context-heavy tail (STOP #19/#32). Docs committed.
+- Canary page 144 reflects the run-223313 build. **Hero §FR-22-19 is now BUILT + EMIT-PROVEN (2026-06-01 session 2) — live-DOM confirmation is the only remaining gate.**
+
+## ⚡ HERO §FR-22-19 — BUILT + EMIT-PROVEN; RESUME HERE (do this FIRST)
+**Code written + reviewed + DB-verified + emit-proven.** What's done:
+- `db_lookup.py`: `scalar-media` role added to `_ROLE_CLASSIFICATION_MAP`; new `scalar_media_attr_for(slug, bem_element)`.
+- `convert.py`: `_lift_scalar_media_from_img()` + `_route_composite_interior()` + the `is_class_section_block` gate at the children-recursion block (~line 2038). R-22-3 compliant (no 4th branch).
+- **DB UPDATED (direct sqlite3, survives /sgs-update):** `sgs/hero.splitImage` + `splitImageMobile` → `(canonical_slot='media', role='scalar-media')`. Verified: `equivalent_block_for('sgs/hero','splitImage')` → None; `scalar_media_attr_for('sgs/hero','split-image')` → splitImage; `is_class_section_block('sgs/hero')` → True.
+- **EMIT PROOF (ran the walker on the hero mockup section):** hero now emits `sgs/hero {splitImage:{IMG_…webp}, splitImageMobile:{aesthetic-pic.jpeg}}` + bare content InnerBlocks (label/heading/text + `__ctas` container) — **double `.sgs-hero__content` GONE, both imgs lifted to scalar with correct mobile/desktop disambiguation.** Exactly the §FR-22-19 predicted structure.
+
+**REMAINING for the hero (the live-DOM gate + commit):**
+1. `/sgs-clone --converter-v2 --debug-trace --spec-22-acceptance --deploy-target page:144` (canary).
+2. **Live-DOM gate (Playwright, R-22-11):** `section.sgs-hero` has exactly **1** `.sgs-hero__content`, exactly **2** imgs (`--mobile` + `--desktop`, one hidden per breakpoint), `h1` present, 2 `.sgs-button`, `.sgs-hero__content` innerText > 50; AND **no other section's extract.json markup changed** (only sgs/hero is `is_class_section_block` on this page, so blast radius = hero only).
+3. `/qc-council` on the convert.py + db_lookup.py diff (R-22-12 / blub.db 255) — the converter change has NOT been council-reviewed yet.
+4. Commit (code + DB note) once live-DOM + qc-council pass. Roll back fast on any regression (STOP #19).
+
+**KNOWN GAP — testimonial-slider.sideImage:** the roster includes it, but `is_class_section_block('sgs/testimonial-slider')` is FALSE (tier='block', not 'class-section'), so the router does NOT fire for it. Its DB row was NOT updated this session. To cover it: either broaden the gate (e.g. fire `_route_composite_interior` for any block with ≥1 `scalar-media` attr, not just class-section — but verify cta-section isn't on the page first, see below) OR handle when the social-proof section is built. NOT done.
+
+**LATENT — cta-section:** `is_class_section_block` is also True for `sgs/cta-section`, so the router WILL fire for it. cta-section has NO scalar-media attr, so ALL its columns would fold to bare InnerBlocks — but cta-section render.php renders headline/body as SCALAR (not echo $content), so a cta-section on a mockup would render those empty. NOT on Mama's homepage (no measurement impact), but validate before any cta-section clone — likely needs cta-section's FR-22-6 headline/body migration first.
 
 ## MANDATORY READING LIST (read FULLY before any work — Bean directive)
 1. This file.

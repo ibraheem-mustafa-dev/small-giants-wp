@@ -1664,6 +1664,180 @@ def _atomic_attrs_for(node: Tag, slug: str) -> dict:
     return {}
 
 
+def _lift_scalar_media_from_img(img_node: Tag) -> dict:
+    """Build a scalar-media object value from a bare <img> element.
+
+    Returns a dict matching the `object`-typed schema that hero/slider attrs
+    expect: ``{"url": ..., "id": 0, "alt": ...}``.  The `id` is set to 0
+    because no WP media-library id is available from the mockup HTML; the
+    block's render.php renders the image from `url` + `alt` when `id` is 0.
+
+    The `url` is resolved through the active media-map (same path as
+    _resolve_media_url) so that local mockup filenames are replaced by their
+    deployed WP CDN URLs when a media-map was loaded for this run.
+
+    Args:
+        img_node: A BeautifulSoup Tag for an <img> element inside the
+                  composite's scalar-media column.
+
+    Returns:
+        dict with keys ``url`` (str), ``id`` (int 0), ``alt`` (str).
+    """
+    return {
+        "url": _resolve_media_url(img_node.get("src", "")),
+        "id": 0,
+        "alt": img_node.get("alt", ""),
+    }
+
+
+def _route_composite_interior(
+    node: Tag,
+    slug: str,
+    attrs: dict,
+    css_rules: dict,
+    depth: int,
+    variation_buf: list[str] | None,
+) -> list[str]:
+    """Route the interior children of a class-section composite per FR-22-19.
+
+    Replaces the generic ``for child in node.children: walk()`` loop when the
+    resolved `slug` is a class-section composite (``db.is_class_section_block``
+    returns True).  Instead of emitting every column as a generic sgs/container,
+    it routes each direct-child column by slot:
+
+    - **Scalar-media column** — ``db.scalar_media_attr_for(slug, element)``
+      returns a non-None attr_name → find the <img> descendants inside that
+      child, read the ``--mobile``/``--desktop`` BEM modifier to pick the base
+      attr vs its ``+Mobile`` breakpoint sibling, lift each img via
+      ``_lift_scalar_media_from_img`` into ``attrs[attr_name]`` (mutating the
+      caller's attrs dict in-place), and emit NOTHING to the markup list for
+      this column (render.php owns that column's HTML).
+
+    - **Content column** — ``scalar_media_attr_for`` returns None → the column
+      is the InnerBlocks content slot.  Fold the column wrapper away: iterate
+      its direct children and ``walk()`` each (is_top_level=False), appending
+      results to the markup list.  The ``$content`` InnerBlocks placeholder in
+      render.php will receive these children.
+
+    This implements FR-22-2 content-routing for composite interiors and is NOT
+    a 4th top-level walker branch (R-22-3): it fires only inside the existing
+    resolved-block emit path, gated by ``is_class_section_block(slug)``.
+
+    Args:
+        node:        The composite block's root Tag node.
+        slug:        The resolved class-section slug (e.g. 'sgs/hero').
+        attrs:       The block's attrs dict — MUTATED IN-PLACE with scalar-media
+                     values.  Caller owns this dict; the mutations persist into
+                     the final ``emit_wp_block`` call.
+        css_rules:   Parsed CSS rules dict threaded from the top-level walk.
+        depth:       Current recursion depth (passed to child walk() calls).
+        variation_buf: CSS accumulator threaded from the top-level walk.
+
+    Returns:
+        List of WP block markup strings for the composite's InnerBlocks
+        (content-column children only; scalar-media columns contribute nothing
+        to this list — they are lifted into attrs instead).
+    """
+    # Determine the set of breakpoint modifier names so we can classify --mobile
+    # vs --desktop (or no modifier) when lifting scalar-media imgs.
+    # db.breakpoint_suffix_rules() returns the _BREAKPOINT_RULES list (already
+    # cached at module load): [(marker, [suffixes])].  We flatten the suffix lists
+    # to build a {suffix_lowercase: is_mobile} map.
+    # 'Mobile' → True; any other breakpoint suffix → False (treat as desktop/base).
+    try:
+        _bp_rules = db.breakpoint_suffix_rules()
+        _all_bp_suffixes: frozenset[str] = frozenset(
+            sfx for _, sfxes in _bp_rules for sfx in sfxes
+        )
+    except Exception:  # noqa: BLE001 — soft-fail if DB unavailable
+        _all_bp_suffixes = frozenset()
+    _is_mobile_modifier: dict[str, bool] = {
+        sfx.lower(): (sfx == "Mobile") for sfx in _all_bp_suffixes
+    }
+
+    children_markup: list[str] = []
+
+    for child in node.children:
+        if not isinstance(child, Tag):
+            continue
+
+        cclasses: list[str] = child.get("class", []) or []
+        csgs: list[str] = [c for c in cclasses if c.startswith("sgs-")]
+
+        # Extract the BEM __element segment from the child's primary sgs- class.
+        # e.g. 'sgs-hero__split-image' → element='split-image'
+        element: str | None = None
+        for cls in csgs:
+            bem = db.parse_sgs_bem(cls)
+            if bem and bem.element:
+                element = bem.element
+                break
+
+        if element is None:
+            # No BEM element segment — cannot route by slot; fall back to generic walk.
+            result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
+            if result:
+                children_markup.append(result)
+            continue
+
+        # Ask the DB: does this composite have a scalar-media attr for this element?
+        base_attr = db.scalar_media_attr_for(slug, element)
+
+        if base_attr is not None:
+            # --- Scalar-media column ---
+            # Find all <img> descendants inside this column and lift them.
+            # Each img may carry a BEM modifier (--mobile, --desktop) that
+            # selects whether it goes into the base attr or the +Mobile sibling.
+            imgs = child.find_all("img")
+            if not imgs:
+                # No img found — emit a debug trace and skip this column silently.
+                _trace("composite_interior_route", slug=slug, element=element,
+                       attr=base_attr, branch="scalar_media_no_img_found",
+                       depth=depth + 1,
+                       note="scalar-media column had no <img> descendant; skipped")
+                continue
+
+            for img in imgs:
+                img_classes: list[str] = img.get("class", []) or []
+                img_modifier: str | None = None
+                for img_cls in img_classes:
+                    img_bem = db.parse_sgs_bem(img_cls)
+                    if img_bem and img_bem.modifier:
+                        img_modifier = img_bem.modifier.lower()
+                        break
+
+                # Determine target attr: Mobile modifier → base + 'Mobile';
+                # Desktop modifier or none → base attr.
+                is_mobile = _is_mobile_modifier.get(img_modifier, False) if img_modifier else False
+                target_attr = f"{base_attr}Mobile" if is_mobile else base_attr
+
+                lifted = _lift_scalar_media_from_img(img)
+                attrs[target_attr] = lifted
+                _trace("composite_interior_route", slug=slug, element=element,
+                       attr=target_attr, branch="scalar_media_lifted",
+                       depth=depth + 1,
+                       img_src=img.get("src", ""),
+                       modifier=img_modifier,
+                       lifted_url=lifted.get("url", ""))
+
+        else:
+            # --- Content column ---
+            # This column maps to the InnerBlocks $content slot.
+            # Fold the column wrapper away: walk its direct children and
+            # accumulate their markup directly into the InnerBlocks list.
+            _trace("composite_interior_route", slug=slug, element=element,
+                   attr=None, branch="content_column_folded",
+                   depth=depth + 1,
+                   note="column folded into bare InnerBlocks")
+            for grandchild in child.children:
+                result = walk(grandchild, css_rules, variation_buf,
+                              depth=depth + 1, is_top_level=False)
+                if result:
+                    children_markup.append(result)
+
+    return children_markup
+
+
 def walk_passthrough(
     node: Tag,
     css_rules: dict,
@@ -1852,12 +2026,25 @@ def walk(
     # content now lives in the lifted content attr above, so recursing would emit
     # ignored inner markup. (A leaf node that nonetheless has element children is
     # a mis-resolution — that is G2's wrapper-to-leaf guard's job, not here.)
+    #
+    # FR-22-19 (2026-06-01): class-section composites (sgs/hero, sgs/cta-section,
+    # sgs/testimonial-slider etc.) use _route_composite_interior to route interior
+    # columns — scalar-media columns are lifted into block attrs (not emitted as
+    # children); the content column is folded into bare InnerBlocks.  This fires
+    # inside the existing resolved-block emit path gated by is_class_section_block,
+    # NOT as a 4th top-level walk() branch (R-22-3 compliant).
     children_markup: list[str] = []
     if not is_leaf:
-        for child in node.children:
-            result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
-            if result:
-                children_markup.append(result)
+        if slug is not None and db.is_class_section_block(slug):
+            # FR-22-19: composite slot-router (mutates attrs in-place for scalar-media)
+            children_markup = _route_composite_interior(
+                node, slug, attrs, css_rules, depth, variation_buf
+            )
+        else:
+            for child in node.children:
+                result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
+                if result:
+                    children_markup.append(result)
 
     # ---- Permitted exception 3 — top-level section container wrap ----
     # FR-22-4: every top-level section is based on sgs/container.

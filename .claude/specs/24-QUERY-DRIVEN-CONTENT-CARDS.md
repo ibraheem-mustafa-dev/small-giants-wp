@@ -153,6 +153,8 @@ is a framework primitive that serves products, testimonials, team, case studies,
   converter's 4 badge children in Bound mode AND the curated repeater still works in Typed mode
   (editor smoke test, no "unexpected content" warning).
 
+- **FR-24-11 .. FR-24-17 — Variation-sets + `sgs/option-picker` (DESIGN captured 2026-06-01; proposed, NOT yet ratified — pending Bean's 6 decisions).** Full design at `.claude/reports/2026-06-01-product-card-option-picker-design.md` (research-buddies + brainstorming, web-grounded). Headlines: **FR-24-11** `_sgs_variation_sets` CPT meta (per-type `content_impact` map); **FR-24-12** content-impact map drives card rendering not block logic (R-22-9); **FR-24-13** per-instance Interactivity API store; **FR-24-14** Phase-1 slot-conflict priority (first type wins; SKU matrix Phase 2); **FR-24-15** pickers are `sgs/option-picker` blocks (Typed=InnerBlocks / Bound=server-rendered same shape); **FR-24-16** no-JS default state; **FR-24-17** `aria-live` on dynamic slots. New atomic block **`sgs/option-picker`** (radio-group semantics via visually-hidden `<input type=radio>`+`<label>`+pill `<span>`, CSS `:checked` active state, bubbling `sgs:option-selected` event, NOT sgs/button). Build order: A option-picker standalone → B variation-sets data → C card Bound mode → D Typed authoring → E collection. **These FRs ratify into the spec body AFTER Bean answers the 6 open decisions in the report + the build is verified** (per Bean's "deep docs after confirmed + approved" directive).
+
 ## Non-functional Requirements
 
 - Selection presets resolve server-side; result counts capped (default 12, max configurable).
