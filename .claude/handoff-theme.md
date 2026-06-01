@@ -1,42 +1,35 @@
-# Session Handoff — 2026-06-02 (SGS THEME thread)
+# Session Handoff — 2026-06-02 (SGS THEME thread, session 2)
 
-> Two-thread close. THIS file = theme/blocks/editor-UX/functionality. Cloning pipeline → `.claude/handoff.md`.
+> Theme/blocks/editor-UX thread. Cloning pipeline → `.claude/handoff.md`. Next steps → `.claude/next-session-prompt-theme.md`.
 
-## Completed This Session
-1. **3 block-editor load errors FIXED + committed** (`d9af96d7`): sgs/heading nested error (`hoverScale` had `default:null` — WP REST rejects null number defaults; removed); sgs/trustpilot-reviews "Invalid parameter(s): attributes" (`reviews` array missing `items` → added `items:{type:object}`); sgs/business-info same error (attribute literally named `type` shadows the JSON-Schema keyword → renamed `type`→`displayType` across block.json/edit.js/render.php/deprecated.js with migration).
-2. **Duplicate Animation panel FIXED + committed** (`378c9a4b`): `animation.js` loaded by two webpack bundles → registered twice → two panels. Added `window.__sgsAnimationRegistered` guard (matches responsive-visibility/parallax).
-3. **Caught + reverted a subagent over-reach** — it swept `items:{type:object}` onto 19 blocks + null-default removal onto 6; 5 were arrays of integers/strings (post-grid categories/tags, table-of-contents headingLevels, form-field-address fields, product-card packSizes) → would CREATE new errors. Reverted the sweep; kept only the 3 verified fixes.
-4. **Variant classification audit** — all 66 blocks categorised true-variant vs style-preset vs no-variant (`.claude/scratch/2026-06-02-brain-dump-variant-routing-and-issues.md`). Surfaced: product-card `gift` should be deleted (Bean: identical to standard); heading/text/label/quote `variantStyle` are cosmetic style-presets not variants; team-member/card-grid/cta-section have `registerBlockVariation` inserter presets (a 2nd "variant" mechanism). mega-menu's ~7 variants don't exist (DB variations=0).
-5. **Block UX gaps surfaced (live editor review)** — icon + icon-list have no visual picker; product-card has no product picker/data-feed; team-member has no photo picker + possibly non-functional variations; notice-banner variants only change colour + limited icons + no corner-radius; cta-section variants weak.
+## Completed This Session (Tasks 1, 4, 3 — all live-verified, committed, pushed)
+
+1. **Task 1 — shared visual IconPicker** (`c40c9a49`). New reusable component `plugins/sgs-blocks/src/components/IconPicker/` (IconPicker, IconPreview, IconGrid, icon-data loaders, editor.css). Searchable keyboard-navigable grid modal across 4 tabs: Lucide 1,917 / Emoji 1,914 / WordPress 49 / Dashicons. Wired into `sgs/icon` (replaced type-the-name) + `sgs/icon-list` (per-item + default, back-compat for legacy slugs). **Architecture:** SVGs NOT inlined (avoids the core/icon bundle-bloat wall, gutenberg#75715) — `scripts/generate-icons.js` emits static JSON to `assets/icons/` (lucide-icons/lucide-tags/emoji/wp-icons.json), fetched on demand per editor session, never bundled, never frontend. Block stores `{iconSource, iconName}`; render.php resolves SVG. PHP localizes asset URLs to `window.sgsBlocksData.iconAssets`. New build-time devDep `unicode-emoji-json`. Fixed a first-open loading race (derive loading from data-presence). Live-verified on canary 144 (picker/search/select/first-open/emoji; zero own console errors).
+
+2. **Task 4 — notice-banner 5 variants + per-type icons + picker** (`e8048a18`). Added `error` (red) to info/success/warning/accent. Each variant auto-sets a fitting default Lucide icon (info, circle-check, triangle-alert, circle-x, sparkles), overridable via IconPicker; new `showIcon` toggle. Fixed a real frontend bug: old emoji icon menu rendered nothing on the live page (only variant-name keys matched). render.php rewritten to resolve all 4 icon sources. Corner-radius = existing native Border control (verified working). version 0.3.0. Live-verified editor + frontend.
+
+3. **Task 3 — team-member Compact vs Full display modes** (`a55f5a71`). Bean chose Option 1 (after a clarifying Q). New `displayMode` attr (full default | compact): Compact = photo+name+role only (bio + social InnerBlocks + hover-overlay hidden); Standard + Detailed = full, differ by style only; variation descriptions made honest. Default `full` = no regression. **Photo picker already existed** (MediaPicker) — prompt was wrong. Live-verified via Chrome DevTools Protocol (Playwright MCP was lock-stuck — see gotcha).
+
+## Bugs Found (→ Task 8, NOT this session's work)
+- **`sgs/media` editor crash:** `ReferenceError: imageId is not defined` in `src/blocks/media/edit.js` (= "media cannot be previewed"). Real JS bug — fix in theme thread.
+- **`sgs/container` block-validation failures** on cloned page 144 (save-vs-stored mismatch) — cloning-thread converter issue (D136).
+
+## Gotchas for Next Session
+- **Playwright MCP lock:** the MCP Chrome can leave a busy `lockfile` in its profile (`%LOCALAPPDATA%/ms-playwright/mcp-chrome-*/lockfile`) held by a dead process — `navigate` then errors "Browser is already in use". Fallback that worked: superpowers-chrome `/browsing` (`use_browser` CDP). Log in at wp-login (creds `.claude/secrets/sandybrown.env`), then drive the editor via `eval` (wrap awaits inside an async IIFE — no top-level await).
+- **Editor canvas is in an iframe** (`iframe[name="editor-canvas"]`) — query `idoc.contentDocument` for canvas DOM; the inspector + Modal are in the top document.
+- **The cloned page 144 already contains notice-banners + containers** — when querying "the block", scope by clientId, not the first match.
 
 ## Current State
-- **Branch:** `feat/fr22-4-1-universal-wrapper` (shared with cloning thread). Block fixes committed + built + deployed.
-- **Build:** green. **Editor:** 3 fixes deployed; container/media "unexpected content" was a CLONING converter bug (static div) — fixed in the cloning thread + re-cloned.
+- **Branch:** `feat/fr22-4-1-universal-wrapper`. 3 commits pushed (c40c9a49, e8048a18, a55f5a71). Build green; canary deployed.
+- **Visual-diff commit gate:** these were editor-UX changes (frontend unchanged / equivalent), committed with `--no-verify` per Bean's authorisation (the gate's own message sanctions it for non-frontend-visual changes).
 
-## Known Issues / Blockers
-- Editor UX gaps (Tasks 1-6 in the prompt) — none block each other; parallelisable.
-- The cosmetic `variantStyle` dropdowns mislabel style-presets as variants (Task 7 cleanup).
-- Remaining FR-22-6 hybrid migrations (Task 9) — the rest of the 61-block roster.
-
-## Next Priorities (in order)
-1. **Icon visual/emoji picker** (Task 1) — highest UX impact; shared `IconPicker` component for icon + icon-list + notice-banner.
-2. **Product-card product picker + data feed** (Task 2) — aligns with Spec 24 query-driven cards.
-3. **Team-member photo picker + verify variations** (Task 3).
-4. **Notice-banner per-type defaults + corner-radius** (Task 4).
-5. **Mega-menu variants, cta-section template upgrade, variant cleanup, hybrid migrations** (Tasks 5-9).
-
-## Files Modified
-| File | What changed |
-|------|---|
-| `plugins/sgs-blocks/src/blocks/heading/block.json` | removed `hoverScale` null default |
-| `plugins/sgs-blocks/src/blocks/trustpilot-reviews/block.json` | `reviews` array `items` added |
-| `plugins/sgs-blocks/src/blocks/business-info/{block.json,edit.js,render.php,deprecated.js}` | `type`→`displayType` rename + migration |
-| `plugins/sgs-blocks/src/blocks/extensions/animation.js` | dual-registration guard |
-
-## Notes for Next Session
-- Read block.json + edit.js + render.php + `/wp-blocks` before asserting any block's capability — don't infer from a partial dump.
-- "Invalid parameter(s): attributes" = a malformed block.json attributes schema WP REST rejects (array without `items`, or a reserved JSON-Schema keyword as an attr name). Don't blanket-fix — verify each array's real element type.
-- Each task has a GAP → ACCEPTANCE in the prompt — build to the acceptance, not just "shipped".
+## Remaining Tasks (see next-session-prompt-theme.md)
+- **Task 2** — product-card product picker + data feed (BLOCKED: needs Bean's 6 decisions in `.claude/reports/2026-06-01-product-card-option-picker-design.md` + Spec 24 §FR-24-11..17).
+- **Task 5** — mega-menu ~7 variants (BLOCKED: confirm the ~7-variant list with Bean; DB has 0).
+- **Task 6** — cta-section → rich template-patterns (design work; 3 variations are style-only today).
+- **Task 7** — variant-classification cleanup (delete product-card `gift`; decide on `variantStyle` dropdowns).
+- **Task 8** — editor-errors regression + the 2 confirmed bugs above (start: grep `imageId` in media/edit.js).
+- **Task 9** — remaining FR-22-6 hybrid migrations (the 61-block roster).
 
 ## Next Session Prompt
-See `.claude/next-session-prompt-theme.md` (9 tasks, each with gap + acceptance, reading list, tooling). Cloning thread: `.claude/next-session-prompt.md`.
+See `.claude/next-session-prompt-theme.md` (Tasks 1/4/3 marked DONE; 2/5/6/7/8/9 remain; reading list + tooling tables intact).
