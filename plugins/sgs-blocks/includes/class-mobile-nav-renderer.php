@@ -169,6 +169,14 @@ class SGS_Mobile_Nav_Renderer {
 				case 'core/home-link':
 					$html .= $this->render_home_link( $block );
 					break;
+				case 'core/page-list':
+					// Default WP navigation content — expands to the published page
+					// hierarchy at render time. Without this case a default nav
+					// (which WP seeds as a bare <!-- wp:page-list /-->) yields an
+					// empty mobile menu. Universal: applies to every site whose
+					// header nav has not been manually populated with link blocks.
+					$html .= $this->render_page_list( $block );
+					break;
 				case 'sgs/mega-menu-item':
 				case 'sgs/mega-menu':
 					$html .= $this->render_mega_menu_item( $block );
@@ -268,6 +276,142 @@ class SGS_Mobile_Nav_Renderer {
 			sgs_get_lucide_icon( 'chevron-down' ),
 			esc_attr( $item_id ),
 			$children,
+			$view_all
+		);
+	}
+
+	/**
+	 * Expand a core/page-list block into accordion menu items.
+	 *
+	 * Mirrors WordPress core's page-list behaviour: lists published pages from
+	 * the configured root (parentPageID, default 0 = top level). Pages with
+	 * published children render as accordion submenus reusing the same markup
+	 * as render_nav_submenu(); leaf pages render as simple links. Depth beyond
+	 * one submenu level is flattened (mobile accordions stay one level deep).
+	 *
+	 * @param array $block Parsed core/page-list block array.
+	 * @return string HTML <li> elements, or empty string when no pages exist.
+	 */
+	public function render_page_list( array $block ): string {
+		$attrs     = $block['attrs'] ?? array();
+		$parent_id = isset( $attrs['parentPageID'] ) ? absint( $attrs['parentPageID'] ) : 0;
+
+		$pages = get_pages(
+			array(
+				'parent'      => $parent_id,
+				'sort_column' => 'menu_order,post_title',
+				'post_status' => 'publish',
+			)
+		);
+
+		if ( empty( $pages ) ) {
+			return '';
+		}
+
+		$html = '';
+		foreach ( $pages as $page ) {
+			$url   = (string) get_permalink( $page->ID );
+			$label = $page->post_title;
+
+			$children = get_pages(
+				array(
+					'parent'      => $page->ID,
+					'sort_column' => 'menu_order,post_title',
+					'post_status' => 'publish',
+				)
+			);
+
+			if ( ! empty( $children ) ) {
+				$child_links = '';
+				foreach ( $children as $child ) {
+					$child_links .= $this->render_link_li(
+						(string) get_permalink( $child->ID ),
+						$child->post_title
+					);
+				}
+				$html .= $this->build_submenu_li( $label, $url, $child_links );
+			} else {
+				$html .= $this->render_link_li( $url, $label );
+			}
+		}
+
+		return $html;
+	}
+
+	/**
+	 * Render a single link as a <li> menu item.
+	 *
+	 * Shared by render_page_list() and its submenu children. Mirrors the markup
+	 * emitted by render_nav_link() so page-list items are visually identical to
+	 * manually-added navigation links.
+	 *
+	 * @param string $url   Resolved permalink.
+	 * @param string $label Link text.
+	 * @return string HTML <li> element.
+	 */
+	private function render_link_li( string $url, string $label ): string {
+		$index   = $this->stagger_index++;
+		$current = $this->is_current_url( $url ) ? ' aria-current="page" class="is-current"' : '';
+
+		return sprintf(
+			'<li class="sgs-mobile-nav__item" style="--i:%d"><a href="%s" class="sgs-mobile-nav__link"%s>%s</a></li>',
+			absint( $index ),
+			esc_url( $url ),
+			$current,
+			esc_html( $label )
+		);
+	}
+
+	/**
+	 * Build an accordion submenu <li> from a label, parent URL, and child HTML.
+	 *
+	 * Extracted from render_nav_submenu() so core/page-list submenus share the
+	 * exact same markup (parent link + toggle + hidden child list + "View all").
+	 *
+	 * @param string $label        Parent item label.
+	 * @param string $url          Parent URL (empty string for a no-href parent).
+	 * @param string $children_html Pre-rendered child <li> elements.
+	 * @return string HTML <li> accordion element.
+	 */
+	private function build_submenu_li( string $label, string $url, string $children_html ): string {
+		$index   = $this->stagger_index++;
+		$item_id = 'sgs-mn-sub-' . $index;
+
+		$view_all = '';
+		if ( $url ) {
+			$view_all = sprintf(
+				'<li class="sgs-mobile-nav__item sgs-mobile-nav__item--view-all"><a href="%s" class="sgs-mobile-nav__link sgs-mobile-nav__link--view-all">%s &rarr;</a></li>',
+				esc_url( $url ),
+				sprintf(
+					/* translators: %s: parent menu item label */
+					esc_html__( 'View all %s', 'sgs-blocks' ),
+					esc_html( $label )
+				)
+			);
+		}
+
+		return sprintf(
+			'<li class="sgs-mobile-nav__item sgs-mobile-nav__item--has-children" style="--i:%d">
+				<div class="sgs-mobile-nav__item-row">
+					%s
+					<button class="sgs-mobile-nav__toggle" aria-expanded="false" aria-controls="%s" aria-label="%s">
+						%s
+					</button>
+				</div>
+				<ul id="%s" class="sgs-mobile-nav__submenu" hidden>
+					%s%s
+				</ul>
+			</li>',
+			absint( $index ),
+			$url
+				? sprintf( '<a href="%s" class="sgs-mobile-nav__link">%s</a>', esc_url( $url ), esc_html( $label ) )
+				: sprintf( '<span class="sgs-mobile-nav__link sgs-mobile-nav__link--no-href">%s</span>', esc_html( $label ) ),
+			esc_attr( $item_id ),
+			/* translators: %s: menu item label */
+			sprintf( esc_attr__( 'Toggle %s submenu', 'sgs-blocks' ), $label ),
+			sgs_get_lucide_icon( 'chevron-down' ),
+			esc_attr( $item_id ),
+			$children_html,
 			$view_all
 		);
 	}

@@ -24,10 +24,10 @@ function init() {
 	);
 	const supportsPopover = 'popover' in HTMLElement.prototype;
 
-	// Set up accordion toggles.
+	// Set up accordion toggles — bound regardless of trigger presence.
 	setupAccordions( drawer );
 
-	// Set up link-click close.
+	// Set up link-click close — bound regardless of trigger presence.
 	setupLinkClickClose( drawer );
 
 	// Background element for inert management.
@@ -47,6 +47,7 @@ function init() {
 				drawer.classList.remove( 'is-closing' );
 				lockScroll();
 				// A11y: announce drawer state + trap screen readers.
+				// Guard: trigger may not exist (e.g. drawer in template part without hamburger).
 				if ( trigger ) {
 					trigger.setAttribute( 'aria-expanded', 'true' );
 				}
@@ -60,7 +61,7 @@ function init() {
 				}
 			} else {
 				unlockScroll();
-				returnFocus( trigger );
+				returnFocus( trigger ); // returnFocus already guards for null trigger.
 				drawer.classList.remove( 'is-closing' );
 				// A11y: reset state.
 				if ( trigger ) {
@@ -73,6 +74,7 @@ function init() {
 		} );
 
 		// ESC key handler — popover="manual" does not auto-dismiss.
+		// Bound regardless of trigger presence so the drawer is always closeable via keyboard.
 		document.addEventListener( 'keydown', ( e ) => {
 			if ( e.key === 'Escape' && drawer.matches( ':popover-open' ) ) {
 				drawer.hidePopover();
@@ -80,7 +82,7 @@ function init() {
 		} );
 	}
 
-	// Set initial aria-expanded state on trigger.
+	// Set initial aria-expanded state on trigger (only when trigger exists).
 	if ( trigger && ! trigger.hasAttribute( 'aria-expanded' ) ) {
 		trigger.setAttribute( 'aria-expanded', 'false' );
 		trigger.setAttribute( 'aria-haspopup', 'dialog' );
