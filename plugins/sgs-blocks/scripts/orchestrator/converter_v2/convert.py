@@ -2077,6 +2077,23 @@ def walk(
     if slug is not None and children_markup and "sourceMode" in db.block_attrs(slug):
         attrs["sourceMode"] = "bound"
 
+    # FR-22-20 variant detection (2026-06-01): when the resolved block declares a
+    # variant-selector attr (blocks.variant_attr IS NOT NULL), set it from the
+    # draft's extracted fingerprint THIS run. detect_variant counts which variant's
+    # DISCRIMINATING slots (variant_slots) appear in the attrs the converter lifted
+    # from the draft and picks the highest, so render.php's ORIGINAL variant gate
+    # fires (e.g. hero $is_split = 'split' === $variant) — no data-presence guessing.
+    # DB-driven (R-22-1), universal across all variant blocks (R-22-9); an emit-path
+    # enrichment gated by variant_attr_for, NOT a 4th walk() branch (R-22-3). Reads
+    # the draft's extracted attrs (`attrs`), never the block's stored attrs — which
+    # closes the stale-data hole the reverted $is_split band-aid had.
+    if slug is not None:
+        variant_attr = db.variant_attr_for(slug)
+        if variant_attr is not None:
+            detected = db.detect_variant(slug, attrs)
+            if detected is not None:
+                attrs[variant_attr] = detected
+
     # ---- Permitted exception 3 — top-level section container wrap ----
     # FR-22-4: every top-level section is based on sgs/container.
     # Non-container top-level slugs (including slug=None) are wrapped, not

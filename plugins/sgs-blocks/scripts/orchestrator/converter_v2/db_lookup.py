@@ -1344,6 +1344,133 @@ def _scalar_media_attr_for_cached(block_slug: str, bem_element: str) -> str | No
 
 
 # ----------------------------------------------------------------------------
+# Variant detection — FR-22-20 (D133 2026-06-01)
+# ----------------------------------------------------------------------------
+# A block with multiple layout variants (hero: standard/split/video/svg-animated)
+# renders the correct variant ONLY when its variant-selector attr is set. The
+# cloning converter populates a variant's CONTENT (e.g. the hero's split images)
+# but does not set the variant attr → the block renders its DEFAULT. FR-22-20
+# closes this DB-first: each variant block declares supports.sgs.variantAttr +
+# variants in block.json (→ blocks.variant_attr + variant_slots via /sgs-update),
+# and the converter detects the variant from what the DRAFT extracted this run.
+#
+#   variant_attr_for(slug)       → the selector attr name, or None.
+#   detect_variant(slug, attrs)  → the variant whose discriminating slots best
+#                                  match the draft's extracted attrs, or None.
+#
+# R-22-1 (DB-driven — no per-block dict/slug literal). R-22-9 (one mechanism, all
+# variant blocks). The detector reads the draft's extracted attrs (NOT the block's
+# stored attrs) → closes the stale-data hole the $is_split band-aid had.
+
+
+@functools.lru_cache(maxsize=256)
+def variant_attr_for(block_slug: str) -> str | None:
+    """Return the variant-selector attr name for `block_slug`, or None.
+
+    Reads blocks.variant_attr (populated by /sgs-update from block.json
+    supports.sgs.variantAttr). None when the block declares no variants OR the
+    column/row is absent → the detector then skips the block (no behaviour change).
+    """
+    if not block_slug:
+        return None
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT variant_attr FROM blocks WHERE slug = ? AND source = 'sgs'",
+            (block_slug,),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        # Column absent (pre-FR-22-20 DB) — soft-fail to None.
+        row = None
+    finally:
+        conn.close()
+    return row[0] if row and row[0] else None
+
+
+@functools.lru_cache(maxsize=256)
+def _variant_slots_map(block_slug: str) -> tuple:
+    """Return ((variant_value, frozenset(discriminating slots)), ...) for a block.
+
+    Reads the variant_slots table (populated by /sgs-update via set-difference).
+    Cached per slug — the data is static for a pipeline run. Returns a tuple of
+    pairs (hashable, lru_cache-friendly); detect_variant consumes it.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT variant_value, unique_slot FROM variant_slots WHERE block_slug = ?",
+            (block_slug,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        rows = []
+    finally:
+        conn.close()
+    grouped: dict = {}
+    for variant_value, unique_slot in rows:
+        grouped.setdefault(variant_value, set()).add(unique_slot)
+    return tuple((v, frozenset(slots)) for v, slots in grouped.items())
+
+
+def _slot_extracted(value: object) -> bool:
+    """True if `value` represents a slot the converter actually extracted.
+
+    The detection signal is PRESENCE-of-a-meaningful-value, not truthiness: the
+    lift paths (_route_composite_interior, lift_behavioural_attrs) only insert a
+    key when they extracted something for it, so a present key is a real signal.
+    A plain truthiness test would wrongly drop a legitimately-extracted numeric
+    0 / boolean False / '0' (e.g. a variant whose discriminator is splitGap=0),
+    flipping detection (qc-council 2026-06-01, Rater B). We therefore count any
+    value EXCEPT None, empty string, and empty containers (which represent 'no
+    real extraction' — e.g. a src-less image lifting to {} — rather than an
+    intentional value).
+    """
+    if value is None or value == "":
+        return False
+    if isinstance(value, (dict, list, tuple, set, frozenset)) and len(value) == 0:
+        return False
+    return True
+
+
+def detect_variant(block_slug: str, populated_attrs: dict) -> str | None:
+    """Detect a block's variant from the draft's extracted attrs THIS run.
+
+    For each variant, count how many of its DISCRIMINATING slots (variant_slots)
+    were EXTRACTED into `populated_attrs` this run (presence of a meaningful
+    value per _slot_extracted — NOT the block's stored attrs). Return the variant
+    with the strictly-highest count.
+
+    Returns None when:
+      - the block declares no variant_slots, or
+      - no variant scored above zero (nothing matched), or
+      - the top score is a tie between >=2 variants (ambiguous — leave the
+        block's default rather than guess).
+
+    R-22-1 (DB-driven, no slug literal).
+    """
+    variants = _variant_slots_map(block_slug)
+    if not variants:
+        return None
+    scores = sorted(
+        (
+            (sum(1 for slot in slots if _slot_extracted(populated_attrs.get(slot))), variant_value)
+            for variant_value, slots in variants
+        ),
+        reverse=True,
+    )
+    top_count, top_variant = scores[0]
+    if top_count == 0:
+        _trace("variant_detect_miss", block_slug=block_slug, reason="no_slots_matched")
+        return None
+    # Ambiguity guard: a tie at the top means we cannot disambiguate → leave default.
+    if len(scores) > 1 and scores[1][0] == top_count:
+        tied = ",".join(v for cnt, v in scores if cnt == top_count)
+        _trace("variant_detect_tie", block_slug=block_slug, top_count=top_count, tied=tied)
+        return None
+    _trace("variant_detect_hit", block_slug=block_slug, variant=top_variant, count=top_count)
+    return top_variant
+
+
+# ----------------------------------------------------------------------------
 # equivalent_block_for — Spec 22 §FR-22-2.1 two-tier derivation
 # ----------------------------------------------------------------------------
 # Canonical implementation of the universal walker's block-equivalence question:
