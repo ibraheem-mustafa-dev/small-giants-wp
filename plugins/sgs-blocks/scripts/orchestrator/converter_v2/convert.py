@@ -2067,6 +2067,16 @@ def walk(
                 if result:
                     children_markup.append(result)
 
+    # FR-24-10 dual-mode (2026-06-01): blocks declaring a `sourceMode` attr
+    # (e.g. sgs/trust-bar) default to 'typed' (curated scalar render). When the
+    # converter emits such a block with cloned InnerBlocks children, switch it to
+    # 'bound' so render.php echoes $content (the emitted children) instead of its
+    # curated defaults. DB-driven (block_attrs lookup) — no per-block slug literal
+    # (R-22-1); fires only when there are children, so hand-authored blocks keep
+    # their 'typed' default.
+    if slug is not None and children_markup and "sourceMode" in db.block_attrs(slug):
+        attrs["sourceMode"] = "bound"
+
     # ---- Permitted exception 3 — top-level section container wrap ----
     # FR-22-4: every top-level section is based on sgs/container.
     # Non-container top-level slugs (including slug=None) are wrapped, not

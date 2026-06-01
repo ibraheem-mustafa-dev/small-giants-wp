@@ -1,24 +1,19 @@
 <?php
 /**
- * Server-side render for the SGS Trust Badges block.
+ * SGS Trust Bar block — server-side render.
  *
- * Three badgeStyle variants:
- *   icon-circle  (default) — Lucide SVG icon inside a coloured circle + label below.
- *   text-only    — Label text only, rendered as a pill badge (merged from sgs/certification-bar).
- *   image-badge  — Image/logo instead of icon with an optional label below
- *                  (merged from sgs/certification-bar image-only / image-and-text shapes).
+ * Dual-mode (FR-24-10, Spec 24, v0.3.0):
+ *   sourceMode='typed' — curated items[] repeater (all 3 variants, unchanged).
+ *   sourceMode='bound' — wrapper shell + echo $content (converter InnerBlocks).
  *
- * Optional title above the badge row (from certification-bar).
+ * R-22-14: mode discriminator is the EXPLICIT sourceMode attr. NEVER empty($content).
  *
- * Auto-scroll: when `autoScroll` is true, PHP emits a `data-auto-scroll` attribute on
- * the wrapper, and `data-auto-scroll-speed` / `data-auto-scroll-pause-on-hover` for JS.
- * The view.js module detects overflow and conditionally activates the scroll animation.
- *
- * @since 0.2.0  Merged sgs/certification-bar capability + auto-scroll 2026-05-29 D95.
+ * @since 0.2.0  Merged certification-bar + auto-scroll (D95).
+ * @since 0.3.0  Dual-mode per Spec 24 FR-24-10.
  *
  * @var array    $attributes Block attributes.
- * @var string   $content    Inner block content (unused).
- * @var \WP_Block $block      Block instance.
+ * @var string   $content    Parsed InnerBlocks string (Bound mode).
+ * @var \WP_Block $block     Block instance.
  *
  * @package SGS\Blocks
  */
@@ -28,17 +23,20 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
-// ─── Shared attributes ────────────────────────────────────────────────────────
+// --- Mode discriminator (R-22-14 -- NEVER branch on empty($content)) ----------
+$source_mode = $attributes['sourceMode'] ?? 'typed';
+$is_bound    = ( 'bound' === $source_mode );
+
+// --- Shared attributes (wrapper shell -- both modes) --------------------------
 $badge_style    = sanitize_html_class( $attributes['badgeStyle'] ?? 'icon-circle' );
 $badge_size     = sanitize_html_class( $attributes['badgeSize'] ?? 'medium' );
-$items          = $attributes['items'] ?? array();
 $block_title    = $attributes['title'] ?? '';
 $title_colour   = $attributes['titleColour'] ?? 'text-muted';
 $title_fontsize = $attributes['titleFontSize'] ?? '';
 $label_colour   = $attributes['labelColour'] ?? 'text';
 $label_fontsize = $attributes['labelFontSize'] ?? '';
 
-// ─── icon-circle attributes ───────────────────────────────────────────────────
+// --- icon-circle attributes (CSS vars applied in both modes) ------------------
 $icon_circle_size = absint( $attributes['iconCircleSize'] ?? 44 );
 $icon_circle_bg   = $attributes['iconCircleBackground'] ?? 'surface';
 $icon_colour      = $attributes['iconColour'] ?? 'primary-dark';
@@ -46,22 +44,22 @@ $text_colour      = $attributes['textColour'] ?? 'text';
 $columns          = absint( $attributes['columns'] ?? 4 );
 $gap_slug         = preg_replace( '/[^0-9]/', '', $attributes['gap'] ?? '20' );
 
-// ─── Auto-scroll attributes ───────────────────────────────────────────────────
+// --- Auto-scroll attributes ---------------------------------------------------
 $auto_scroll       = ! empty( $attributes['autoScroll'] );
 $auto_scroll_speed = sanitize_html_class( $attributes['autoScrollSpeed'] ?? 'medium' );
 $auto_scroll_pause = isset( $attributes['autoScrollPauseOnHover'] ) ? (bool) $attributes['autoScrollPauseOnHover'] : true;
 
-// Clamp circle size to sane bounds.
+// Clamp circle size.
 $icon_circle_size = max( 36, min( 64, $icon_circle_size ) );
 
-// ─── Resolve colour values ────────────────────────────────────────────────────
+// --- Resolve colour values ----------------------------------------------------
 $circle_bg_value   = sgs_colour_value( $icon_circle_bg );
 $icon_colour_value = sgs_colour_value( $icon_colour );
 $text_colour_value = sgs_colour_value( $text_colour );
 $title_colour_val  = sgs_colour_value( $title_colour );
 $label_colour_val  = sgs_colour_value( $label_colour );
 
-// ─── Wrapper CSS custom properties ───────────────────────────────────────────
+// --- Wrapper CSS custom properties --------------------------------------------
 $styles = array();
 
 if ( 'icon-circle' === $badge_style ) {
@@ -82,10 +80,9 @@ if ( 'icon-circle' === $badge_style ) {
 	}
 }
 
-// ─── Wrapper classes ──────────────────────────────────────────────────────────
+// --- Wrapper classes + data attributes ----------------------------------------
 $extra_classes = 'sgs-trust-bar sgs-trust-bar--' . $badge_style . ' sgs-trust-bar--' . $badge_size;
 
-// ─── Wrapper data attributes for JS ──────────────────────────────────────────
 $wrapper_data = array(
 	'class'      => $extra_classes,
 	'style'      => implode( ';', $styles ),
@@ -104,7 +101,7 @@ if ( $auto_scroll ) {
 
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_data );
 
-// ─── Title inline style ───────────────────────────────────────────────────────
+// --- Title inline style -------------------------------------------------------
 $title_style_parts = array();
 if ( $title_colour_val ) {
 	$title_style_parts[] = 'color:' . $title_colour_val;
@@ -116,7 +113,40 @@ $title_style_attr = $title_style_parts
 	? ' style="' . esc_attr( implode( ';', $title_style_parts ) ) . '"'
 	: '';
 
-// ─── Label inline style ───────────────────────────────────────────────────────
+// --- Optional title -----------------------------------------------------------
+$title_html = '';
+if ( $block_title ) {
+	$title_html = sprintf(
+		'<p class="sgs-trust-bar__title"%s>%s</p>',
+		$title_style_attr,
+		wp_kses_post( $block_title )
+	);
+}
+
+// =============================================================================
+// BOUND MODE
+// Emit wrapper shell + optional title, then echo $content.
+// The converter emits: sgs/container.__inner > sgs/container.__badge > [sgs/icon + sgs/text].
+// style.css already styles .sgs-trust-bar__badge/__inner/__track without modification.
+// autoScroll: wrap $content in __track so view.js measures/clones identically to Typed mode.
+// =============================================================================
+if ( $is_bound ) {
+	$badges_html = $auto_scroll
+		? '<div class="sgs-trust-bar__track">' . $content . '</div>'
+		: $content;
+
+	// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+	printf( '<div %s>%s%s</div>', $wrapper_attributes, $title_html, $badges_html );
+	// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
+	return;
+}
+
+// =============================================================================
+// TYPED MODE (default) -- curated items[] render, completely unchanged from v0.2.x
+// =============================================================================
+$items = $attributes['items'] ?? array();
+
+// --- Label inline style -------------------------------------------------------
 $label_style_parts = array();
 if ( $label_colour_val ) {
 	$label_style_parts[] = 'color:' . $label_colour_val;
@@ -128,7 +158,7 @@ $label_style_attr = $label_style_parts
 	? ' style="' . esc_attr( implode( ';', $label_style_parts ) ) . '"'
 	: '';
 
-// ─── Lucide icon slug → name map (icon-circle variant) ───────────────────────
+// --- Lucide icon slug map (icon-circle variant) --------------------------------
 $lucide_map = array(
 	'home'         => 'home',
 	'check'        => 'check',
@@ -152,7 +182,7 @@ $lucide_map = array(
 	'milk'         => 'milk',
 );
 
-// ─── Build badge items HTML ───────────────────────────────────────────────────
+// --- Build badge items HTML ---------------------------------------------------
 $items_html = '';
 
 foreach ( $items as $item ) {
@@ -160,32 +190,25 @@ foreach ( $items as $item ) {
 	$is_pending = ! empty( $item['pending'] );
 	$item_label = isset( $item['label'] ) ? sanitize_text_field( (string) $item['label'] ) : '';
 	$item_url   = isset( $item['url'] ) ? (string) $item['url'] : '';
-
-	// icon-circle variant: skip pending items on frontend (hidden attribute).
-	// Other variants: no pending concept — render all items.
 	$item_attrs = '';
+
 	if ( 'icon-circle' === $badge_style && $is_pending ) {
 		$item_attrs = ' hidden data-pending="true"';
 	}
 
 	if ( 'icon-circle' === $badge_style ) {
-		// ── icon-circle ────────────────────────────────────────────────────────
 		$icon_slug   = isset( $item['icon'] ) ? sanitize_key( $item['icon'] ) : 'check';
 		$lucide_name = $lucide_map[ $icon_slug ] ?? 'check';
 		$svg         = sgs_get_lucide_icon( $lucide_name );
 
 		$items_html .= sprintf(
-			'<div class="sgs-trust-bar__badge"%s>' .
-			'<span class="sgs-trust-bar__circle" aria-hidden="true">%s</span>' .
-			'<span class="sgs-trust-bar__label">%s</span>' .
-			'</div>',
+			'<div class="sgs-trust-bar__badge"%s><span class="sgs-trust-bar__circle" aria-hidden="true">%s</span><span class="sgs-trust-bar__label">%s</span></div>',
 			$item_attrs,
 			$svg,
 			esc_html( $item_label )
 		);
 
 	} elseif ( 'text-only' === $badge_style ) {
-		// ── text-only pill ─────────────────────────────────────────────────────
 		$inner_html = sprintf(
 			'<span class="sgs-trust-bar__badge-label"%s>%s</span>',
 			$label_style_attr,
@@ -200,15 +223,9 @@ foreach ( $items as $item ) {
 				$inner_html
 			);
 		} else {
-			$items_html .= sprintf(
-				'<div class="sgs-trust-bar__badge"%s>%s</div>',
-				$item_attrs,
-				$inner_html
-			);
+			$items_html .= sprintf( '<div class="sgs-trust-bar__badge"%s>%s</div>', $item_attrs, $inner_html );
 		}
 	} elseif ( 'image-badge' === $badge_style ) {
-		// ── image-badge ────────────────────────────────────────────────────────
-		// Support unified media slot AND legacy image/url keys from cert-bar.
 		$media_url = isset( $item['media']['url'] ) ? (string) $item['media']['url'] : '';
 		if ( empty( $media_url ) && isset( $item['image']['url'] ) ) {
 			$media_url = (string) $item['image']['url'];
@@ -242,43 +259,20 @@ foreach ( $items as $item ) {
 				$badge_content
 			);
 		} else {
-			$items_html .= sprintf(
-				'<div class="sgs-trust-bar__badge"%s>%s</div>',
-				$item_attrs,
-				$badge_content
-			);
+			$items_html .= sprintf( '<div class="sgs-trust-bar__badge"%s>%s</div>', $item_attrs, $badge_content );
 		}
 	}
 }
 
-// ─── Optional title above badges ─────────────────────────────────────────────
-$title_html = '';
-if ( $block_title ) {
-	$title_html = sprintf(
-		'<p class="sgs-trust-bar__title"%s>%s</p>',
-		$title_style_attr,
-		wp_kses_post( $block_title )
-	);
-}
-
-// ─── Auto-scroll track wrapper ────────────────────────────────────────────────
-// When autoScroll is active, items are wrapped inside a __track div so view.js
-// can clone and animate them (same pattern as sgs/brand-strip).
-// The __track--ready class is added by view.js after measurement/cloning.
-if ( $auto_scroll ) {
-	$badges_html = '<div class="sgs-trust-bar__track">' . $items_html . '</div>';
-} else {
-	$badges_html = $items_html;
-}
+// --- Auto-scroll track wrapper ------------------------------------------------
+// view.js queries .sgs-trust-bar[data-auto-scroll="true"] then .sgs-trust-bar__track.
+$badges_html = $auto_scroll
+	? '<div class="sgs-trust-bar__track">' . $items_html . '</div>'
+	: $items_html;
 
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-// $wrapper_attributes — from WP core get_block_wrapper_attributes() (trusted).
-// $title_html — built with wp_kses_post + esc_attr above.
-// $badges_html — all user content built with esc_html/esc_url/esc_attr/sgs_get_lucide_icon.
-printf(
-	'<div %s>%s%s</div>',
-	$wrapper_attributes,
-	$title_html,
-	$badges_html
-);
+// $wrapper_attributes -- from WP core get_block_wrapper_attributes() (trusted).
+// $title_html -- built with wp_kses_post + esc_attr.
+// $badges_html -- all user content escaped via esc_html/esc_url/esc_attr/sgs_get_lucide_icon.
+printf( '<div %s>%s%s</div>', $wrapper_attributes, $title_html, $badges_html );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

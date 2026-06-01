@@ -1,6 +1,17 @@
 /**
  * SGS Trust Bar — Deprecation entries.
  *
+ * Newest-first ordering (WP tries each entry in array order):
+ *
+ * v4 — Pre-sourceMode shape (save: () => null, no sourceMode attr).
+ *
+ *   Covers every trust-bar instance authored before the FR-24-10 dual-mode
+ *   addition (v0.3.0). These were always dynamic (render.php) with a null save.
+ *   migrate() injects sourceMode:'typed' so the existing curated items[] editor
+ *   continues to drive render.php unchanged — clients see zero difference.
+ *   R-22-14 clean: discriminator is the explicit sourceMode attr, never
+ *   empty($content) inspection.
+ *
  * v3 — Block rename: sgs/trust-badges → sgs/trust-bar (2026-05-31).
  *
  *   isEligible() matches old blocks saved as `sgs/trust-badges`. WordPress
@@ -29,10 +40,6 @@
  *     labelFontSize   → labelFontSize  (direct)
  *
  *   Trust-bar attrs not present in certification-bar default to sensible values.
- *
- * v1 — Legacy trust-bar save before block was dynamic (null save → render.php).
- *   (The original trust-badges block always used save: () => null, so no v1 stored HTML
- *    exists in practice. Entry kept as a safety net for any edge cases.)
  */
 
 /**
@@ -48,6 +55,64 @@ function mapBadgeStyle( certBarStyle ) {
 	// image-only and image-and-text both map to image-badge.
 	return 'image-badge';
 }
+
+/**
+ * v4 — Pre-sourceMode null-save shape.
+ *
+ * Matches every trust-bar block authored before v0.3.0. The previous save()
+ * returned null; there is no stored inner HTML to match against. We target these
+ * blocks by the absence of the sourceMode attribute (undefined or missing from
+ * the serialised comment's attribute JSON).
+ *
+ * migrate() adds sourceMode:'typed' so the existing curated items[] editor
+ * continues to work — no client-visible change.
+ */
+const v4 = {
+	attributes: {
+		badgeStyle:             { type: 'string', default: 'icon-circle', enum: [ 'icon-circle', 'text-only', 'image-badge' ] },
+		items:                  { type: 'array', default: [] },
+		title:                  { type: 'string', default: '', role: 'content' },
+		titleColour:            { type: 'string', default: 'text-muted' },
+		titleFontSize:          { type: 'string' },
+		labelColour:            { type: 'string', default: 'text' },
+		labelFontSize:          { type: 'string' },
+		badgeSize:              { type: 'string', default: 'medium', enum: [ 'small', 'medium', 'large' ] },
+		iconCircleSize:         { type: 'number', default: 44 },
+		iconCircleBackground:   { type: 'string', default: 'surface' },
+		iconColour:             { type: 'string', default: 'primary-dark' },
+		textColour:             { type: 'string', default: 'text' },
+		columns:                { type: 'number', default: 4 },
+		gap:                    { type: 'string', default: '20' },
+		showPendingInEditor:    { type: 'boolean', default: true },
+		autoScroll:             { type: 'boolean', default: false },
+		autoScrollSpeed:        { type: 'string', default: 'medium', enum: [ 'slow', 'medium', 'fast' ] },
+		autoScrollPauseOnHover: { type: 'boolean', default: true },
+	},
+
+	supports: {
+		sgs: { imageControls: true },
+		align: [ 'wide', 'full' ],
+		anchor: true,
+		html: false,
+		color: { background: true, text: false, gradients: false },
+		spacing: { margin: true, padding: true },
+		__experimentalBorder: { radius: true, width: false, color: false, style: false },
+	},
+
+	save() {
+		// v0.2.x blocks used save: () => null (pure dynamic block, no InnerBlocks).
+		return null;
+	},
+
+	migrate( attrs ) {
+		// Inject sourceMode:'typed' — all existing curated trust-bars stay Typed.
+		// Every other attribute is preserved as-is.
+		return {
+			...attrs,
+			sourceMode: 'typed',
+		};
+	},
+};
 
 /**
  * v3 — Block rename alias: sgs/trust-badges → sgs/trust-bar.
@@ -95,8 +160,8 @@ const v3 = {
 	},
 
 	migrate( attrs ) {
-		// Identity pass — attribute schema is unchanged.
-		return { ...attrs };
+		// Identity pass — attribute schema is unchanged; add sourceMode:'typed'.
+		return { ...attrs, sourceMode: 'typed' };
 	},
 };
 
@@ -143,6 +208,9 @@ const v2 = {
 
 	migrate( attrs ) {
 		return {
+			// ── Source mode — cert-bar content is curated, maps to Typed ──
+			sourceMode:             'typed',
+
 			// ── Trust-bar new attrs (defaults for incoming cert-bar content) ──
 			badgeStyle:             mapBadgeStyle( attrs.badgeStyle || 'text-only' ),
 			badgeSize:              attrs.badgeSize   || 'medium',
@@ -170,4 +238,4 @@ const v2 = {
 	},
 };
 
-export default [ v3, v2 ];
+export default [ v4, v3, v2 ];
