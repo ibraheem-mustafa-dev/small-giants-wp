@@ -221,7 +221,12 @@ $content_max_width_tab   = $attributes['contentMaxWidthTablet'] ?? null;
 $content_max_width_mob   = $attributes['contentMaxWidthMobile'] ?? null;
 $content_max_width_unit  = $attributes['contentMaxWidthUnit'] ?? 'px';
 
-$is_split        = 'split' === $variant;
+// Split layout renders the media column. Fire it on the explicit 'split' variant
+// OR whenever a split image/media is present (FR-22-19: the cloning converter lifts
+// splitImage/splitImageMobile as scalar attrs without forcing variant='split', so a
+// present split media is itself sufficient signal for the 2-column layout). The
+// 'standard' variant uses backgroundImage (a separate slot) so this never double-fires.
+$is_split        = ( 'split' === $variant ) || ! empty( $split_image['url'] ) || ! empty( $split_media['url'] );
 $is_video        = 'video' === $variant;
 $is_svg_animated = 'svg-animated' === $variant;
 
