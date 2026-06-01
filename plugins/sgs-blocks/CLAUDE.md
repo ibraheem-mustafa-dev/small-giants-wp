@@ -132,7 +132,7 @@ rm sgs-deploy.tar
 | Animation (15 scroll animation types) | Deployed |
 | Responsive Visibility (device show/hide) | Deployed |
 | Hover State Controls (bg/text/border colour) | Deployed (4 blocks: Info Box, Card Grid, CTA Section, Hero) |
-| Off-Canvas Mobile Nav (M17) | Built (needs build + deploy) |
+| Off-Canvas Mobile Nav (M17) | Deployed (full-fix 2026-06-01 D143, v3.0.3: full-screen overlay + core/page-list menu expansion + header-only inserter scope; menu now reads the WP default page-list nav, not just manual navigation-link items) |
 
 ### Backend Integrations
 

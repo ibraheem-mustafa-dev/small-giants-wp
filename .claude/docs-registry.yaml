@@ -4,7 +4,7 @@
 
 generated: 2026-05-15
 last_trimmed: 2026-05-21
-last_updated: 2026-05-30
+last_updated: 2026-06-01
 project: small-giants-wp
 
 canonical_docs:
@@ -38,8 +38,8 @@ canonical_docs:
   - {path: .claude/specs/02-SGS-BLOCKS.md,                             scope: spec_version_canonical,           doc_type: spec, spec_version: 2}
   - {path: .claude/specs/archive/16-DETERMINISTIC-CONVERTER-V2-retired-by-spec-22.md, scope: archived_for_git_blame, doc_type: spec, spec_version: 16, status: retired, retired_by: ".claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md", retired_date: "2026-05-26"}
   - {path: .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md,  scope: spec_version_canonical,           doc_type: spec, spec_version: 22, supersedes: ".claude/specs/archive/16-DETERMINISTIC-CONVERTER-V2-retired-by-spec-22.md", note: "Canonical cloning-pipeline spec — replaces Spec 16 2026-05-26. §FR-22-19 composite scalar-media SHIPPED 2026-06-01"}
-  - {path: .claude/specs/24-QUERY-DRIVEN-CONTENT-CARDS.md,             scope: spec_version_canonical,           doc_type: spec, spec_version: 24, note: "Query-driven content cards + trust-bar dual-mode FR-24-10 (SHIPPED 2026-06-01) + sgs/option-picker FR-24-11..17 (stub, pending Bean's 6 decisions)"}
-  - {path: .claude/reports/2026-06-01-product-card-option-picker-design.md, scope: forever_until_ratified_or_superseded, doc_type: reference, sot_note: "Product-card variation-sets + sgs/option-picker design (research-buddies+brainstorming); FR-24-11..17 ratify after Bean's 6 decisions"}
+  - {path: .claude/specs/24-QUERY-DRIVEN-CONTENT-CARDS.md,             scope: spec_version_canonical,           doc_type: spec, spec_version: 24, note: "Query-driven content cards + trust-bar dual-mode FR-24-10 (SHIPPED 2026-06-01) + sgs/option-picker FR-24-11..17 (DESIGN RATIFIED 2026-06-01 via D144 — Bean's 6 decisions encoded; BUILD = theme-thread Task 2, deferred)"}
+  - {path: .claude/reports/2026-06-01-product-card-option-picker-design.md, scope: forever_until_ratified_or_superseded, doc_type: reference, sot_note: "Product-card variation-sets + sgs/option-picker design (research-buddies+brainstorming); FR-24-11..17 RATIFIED 2026-06-01 via D144 — Bean's 6 decisions RESOLVED in-doc; BUILD deferred (Task 2)"}
   - {path: .claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md,             scope: spec_version_canonical,           doc_type: spec, spec_version: 17}
   - {path: .claude/specs/18-SGS-FLOATING-UI.md,                        scope: spec_version_canonical,           doc_type: spec, spec_version: 18}
   - {path: .claude/specs/19-SGS-CLI-COMMANDS.md,                       scope: spec_version_canonical,           doc_type: spec, spec_version: 19}

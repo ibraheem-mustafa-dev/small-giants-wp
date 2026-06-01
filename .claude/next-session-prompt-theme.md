@@ -2,116 +2,129 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 thread: sgs-theme
-session_tag: small-giants-wp-2026-06-03-theme-blocks-functionality
-generated: 2026-06-02
-primary_goal: "SGS-THEME THREAD (separate from the cloning pipeline). Fix + build the theme's blocks, editor UX, and functionality. Surfaced 2026-06-02: broken/barebones editor UX on icon + icon-list (no visual picker), missing product/photo pickers (product-card, team-member), notice-banner needs richer variant defaults + controls, mega-menu's variants don't exist, cta-section variants are weak, and a variant-classification cleanup (delete product-card gift, reclassify heading/text/label/quote variantStyle as block-styles not variants). Each item below states the GAP + the ACCEPTANCE the solution must meet."
+session_tag: small-giants-wp-2026-06-01-theme-blocks-functionality
+generated: 2026-06-01
+primary_goal: "SGS-THEME THREAD (separate from the cloning pipeline). Fix + build the theme's blocks, editor UX, and functionality. Mobile-nav full-fix + product-card decisions DONE 2026-06-01. Remaining: product-card BUILD (Task 2, now unblocked — D144 ratified the design), mega-menu panel-pattern library (Task 5), FR-22-6 hybrid migrations (Task 9), sgs/cart block, and the heading/text dormant-variant tweak from Task 7b."
 ---
 
 # Next Session — SGS THEME thread (blocks, editor UX, functionality)
 
 > ## ⚠ READ THIS BEFORE ANYTHING ELSE — warm start ⚠
-> Invoke `/autopilot` first. This is the THEME/BLOCKS thread — NOT the cloning pipeline (sibling `.claude/next-session-prompt.md`). **DO NOT START ANY TASK until you have read ALL items in the MANDATORY READING LIST below, in order — they are prerequisites, not background.** Every block claim here was observed live in the WP block editor 2026-06-02 — but VERIFY each against the actual block.json/edit.js/render.php before building (STOP: don't assert block capability from a partial dump — read block.json + edit.js + render.php + `/wp-blocks` first). **Task 2 (product-card) additionally requires reading Spec 24 + D129 + the product-card design report FULLY before starting it.** The variant-classification context lives in `.claude/scratch/2026-06-02-brain-dump-variant-routing-and-issues.md` (per-type notice-banner icon/colour recommendations are there too) — read it.
-> **Guardrail (all tasks): after every block build-deploy, open the WP editor on canary 144 and verify the control renders + zero console errors before considering the task done.**
+> Invoke `/autopilot` first. This is the THEME/BLOCKS thread — NOT the cloning pipeline (sibling `.claude/next-session-prompt.md`). **DO NOT START ANY TASK until you have read ALL items in the MANDATORY READING LIST below, in order — they are prerequisites, not background.** Every block claim here was observed live in the WP block editor — but VERIFY each against the actual block.json/edit.js/render.php before building (**STOP: don't assert block capability from a partial dump — read block.json + edit.js + render.php + `/wp-blocks` first**). **Task 2 (product-card) additionally requires reading Spec 24 §FR-24-11..17 + D144 + D129 + the product-card design report FULLY before starting it** — the 6 decisions are now RESOLVED (D144), so the build is unblocked. The variant-classification context lives in `.claude/scratch/2026-06-02-brain-dump-variant-routing-and-issues.md` — read it.
+> **Guardrail (all tasks): after every block build-deploy, open the WP editor on canary 144 and verify the control renders + zero console errors before considering the task done. Bump the block.json `version` on any CSS/JS change (WP keys the asset `?ver=` off it — redeploying without a bump serves stale assets).**
 
 ## State recap (plain English)
-The SGS framework is a custom WordPress block library (theme + blocks plugin). Phase 1 blocks are built. This thread collects the editor-UX + functionality + variant-cleanup work Bean surfaced while reviewing blocks on 2026-06-02. It is INDEPENDENT of the cloning-pipeline thread — these can be worked in parallel. Branch `feat/fr22-4-1-universal-wrapper` (shared; do client/theme work on it or branch `feat/theme-blocks-*` if scope grows). Build+deploy: `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --blocks-only --allow-dirty`. Canary admin: open the page editor on sandybrown (WP admin user `Claude`; account password in `.claude/secrets/sandybrown.env` `WP_PWD_SANDYBROWN` — needed for the BROWSER editor; the app password only does REST).
+The SGS framework is a custom WordPress block library (theme + blocks plugin). Phase 1 blocks are built. This thread collects editor-UX + functionality + variant-cleanup work, INDEPENDENT of the cloning-pipeline thread (parallel-safe). Branch `feat/fr22-4-1-universal-wrapper` (shared with the cloning thread; do theme work on it, or branch `feat/theme-blocks-*` if scope grows). Build+deploy: `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --blocks-only --allow-dirty`. Canary admin: WP user `Claude`; password in `.claude/secrets/sandybrown.env` `WP_PWD_SANDYBROWN` (for the BROWSER editor; the app password only does REST).
 
-## ✅ Completed 2026-06-02 session (Tasks 1, 4, 3 — all live-verified + committed + pushed)
-- **Task 1 DONE** (`c40c9a49`) — shared visual **`IconPicker`** (`src/components/IconPicker/`) wired into `sgs/icon` + `sgs/icon-list`. Searchable grid modal: Lucide (1,917) / Emoji (1,914) / WordPress (49) / Dashicons. **It is reusable by ANY block that picks an icon** — `import { IconPicker, IconPreview } from '../../components'`; value `{source,name}`; render.php resolves SVG server-side. Datasets are generated static JSON in `assets/icons/` by `scripts/generate-icons.js` (NOT bundled). New build-time devDep: `unicode-emoji-json`.
-- **Task 4 DONE** (`e8048a18`) — `sgs/notice-banner`: 5 variants (info/success/warning/**error**/accent), each auto-sets a fitting default Lucide icon, overridable via IconPicker; `showIcon` toggle; fixed a real frontend bug (old emoji icons rendered nothing live); corner-radius is the native Border control (verified). version 0.3.0.
-- **Task 3 DONE** (`a55f5a71`) — `sgs/team-member`: genuine Compact (photo+name+role) vs Full display modes via `displayMode` attr; the 3 variations now differ in content/style honestly. NB the **photo picker already existed** (MediaPicker) — the prompt's "no photo picker" was a live-review miss.
-- **2 bugs found → feed Task 8:** `sgs/media` edit.js throws `ReferenceError: imageId is not defined` (editor crash = the "media cannot be previewed" symptom); `sgs/container` block-validation failures on the cloned page 144.
-- **Env gotcha:** the Playwright MCP browser left a stuck lockfile (dead process held the profile). Fallback that worked: superpowers-chrome `/browsing` (`use_browser` action, CDP) — log in via wp-login then drive the editor.
+## First action (smallest step, ≤5 min, zero deps)
+Read the MANDATORY READING LIST (below) in order, then run `python plugins/sgs-blocks/scripts/sgs-db.py block sgs/product-card` to ground-truth the product-card's current attrs before designing the option-picker build (Task 2). That single command + the Spec 24 §FR-24-11..17 read is enough to start.
 
-## ✅ Completed 2026-06-02 session 2b (Tasks 6, 7a, 7b + Task 5 checked + mobile-nav research)
-- **Task 6 DONE** (`4b132e2e`) — cta-section's 3 inserter variations (Centred/Split/Banner) are now RICH presets: each prepopulates the InnerBlocks content (heading+text+2 buttons) + scalar stats/ribbon/gradient via `innerBlocks` in the get_block_type_variations filter. Live-verified scaffold.
-- **Task 7a DONE** (`4b132e2e`) — product-card `gift` variantStyle removed (enum + editor option); deprecated.js intact; gift always rendered as standard so no regression.
-- **Task 7b DONE** (`88b6bdb0`) — heading/text/label/quote `variantStyle` → WP block-styles (`is-style-*`) via 4 parallel Sonnet agents. New `includes/variations/sgs-{block}-variations.php` per block; variantStyle attr+control removed; deprecated.js migrate() converts old posts (variantStyle→className is-style-*). Live-verified (CDP): styles register, apply, migrate. **FLAG:** heading+text variants were DORMANT (no CSS) → agents added sensible defaults; Bean may want to tweak values or drop heading 'hero' (redundant per "h1 default = hero").
-- **Task 5 CHECKED** — mega-menu is fine: panel is a template part (`area='mega-menu'`), already supports unlimited layouts. 2 client layouts exist: `theme/sgs-theme/parts/mega-menu-{brands,sectors}.html` + `mega-menu-panels.css`. "Variants" = a library of reusable panel patterns; clients CAN build own + use templates as starting points. **NEXT SESSION (Bean-directed):** /research-buddies + /qc-council on whether template-part is the best UX, then generify the 2 existing patterns (placeholder + theme tokens) + subagent-build 7 generic panel layouts (simple / full-width-cols / contained-cols / featured-promo / tabbed / card-grid / split) → a strong library.
-- **Task 8 DONE by the CLONING thread** (their D141) — the 2 bugs this session flagged (sgs/media `imageId` crash + sgs/container validation) were both fixed there. No theme-thread action needed.
-- **Mobile-nav /research-buddies DONE** — full assessment at `~/.openclaw/workspace/memory/research/2026-06-03-sgs-mobile-nav-assessment.md` + decisions D142. Verdict: block is feature-AHEAD of Kadence/Spectra but robustness-fragile; the live "opens small / nothing clickable / can't close" is a WIRING bug (it's a 2-block pair — `sgs/mobile-nav` drawer + `sgs/mobile-nav-toggle` hamburger; on the broken page the toggle is absent so view.js init() early-returns + binds nothing, and popover="manual" shows a small UA box). **RECOMMENDED FIX (next session):** (1) harden view.js to bind close/ESC/backdrop UNCONDITIONALLY (don't early-return on missing trigger); (2) restrict both blocks to header chrome (remove from general inserter — fixes "it's everywhere" + duplicate-id); (3) verify view.js is current + enqueued + only one `#sgs-mobile-nav`. KEEP the bespoke block — do NOT downgrade to core/navigation's overlay (loses variants/swipe/mega-card zones). STRATEGIC later: WP 7.0 (shipped 2026-06-01) now offers customisable nav overlays (core/navigation + template-part) — evaluate only if bespoke maintenance becomes a burden. Confirm-the-bug console lines are in the research file.
+## Tool bindings
+Skills, MCP servers, and agents for this session are tabulated below under **Skills to Invoke**, **MCP / Tools**, and **Agents to Delegate To**. Invoke `/autopilot` first (auto-injected), then `/strategic-plan` to order Tasks 2/5/9, then per-task bindings as noted in each orchestration block.
 
-## NEW next-session items (added this session)
-- **Mobile-nav fix** (per the research above — harden view.js + restrict to header chrome). Quick + high-value (it's a live-broken core UX element).
-- **Mega-menu panel-pattern library** (Task 5 build — research + generify 2 existing + subagent-build 7).
-- **sgs/cart block + icon enhancements** — queued by the cloning thread; prompt at `.claude/scratch/2026-06-03-prompt-sgs-cart-and-icon-enhancements.md` (mini-cart on WooCommerce Store API + Interactivity API).
+## ✅ Completed 2026-06-01 session 3 (mobile-nav full-fix + product-card decisions)
+- **Mobile-nav DONE** (`1f985c9a`, deployed + live-verified, D143) — full-screen overlay (was 208×158) + flush-to-top (killed WP 16px block-gap) + **populated menu via `core/page-list` expansion** (was 0 items → 13; the renderer didn't handle WP's default nav content) + header-only inserter scope. Closeable (button+ESC), links navigate. v3.0.3. Visual report `reports/visual-diff/mobile-nav-2026-06-01.md`. `/sgs-update` run clean.
+- **Product-card 6 decisions RATIFIED** (D144 → Spec 24 §FR-24-11..17) — Task 2 is now UNBLOCKED. Decisions: per-type `display_as` (pills/static-list/hidden) + card "price only" toggle; SKU matrix deferred; filled-in-card/outlined-global pills + 3 states; **emit `sgs/option-picker` directly from the clone** (Bean corrected — build the picker ASAP + battle-ready, then wire into the pipeline; NOT a manual swap); source toggle in toolbar AND inspector; Gutenberg-panel editor. Full text in `.claude/reports/2026-06-01-product-card-option-picker-design.md` (RESOLVED section).
 
-## Tasks — each is GAP → ACCEPTANCE
+## ✅ Completed earlier (sessions 1-2b) — DONE, do not redo
+- **Task 1** (`c40c9a49`) — shared visual IconPicker (`src/components/IconPicker/`), wired into icon + icon-list; reusable by any icon-picking block.
+- **Task 3** (`a55f5a71`) — team-member Compact vs Full display modes (`displayMode`).
+- **Task 4** (`e8048a18`) — notice-banner 5 variants + per-type default icons + IconPicker.
+- **Task 6** (`4b132e2e`) — cta-section rich variation presets (innerBlocks scaffolding).
+- **Task 7a** (`4b132e2e`) — product-card `gift` variant deleted.
+- **Task 7b** (`88b6bdb0`) — heading/text/label/quote `variantStyle` → WP block-styles. **FLAG:** heading+text variants were dormant (no CSS) → agents added defaults; Bean may want to tweak values or drop heading `hero` (redundant per "h1 default = hero").
+- **Task 8** — the 2 flagged bugs (media `imageId`, container validation) fixed by the cloning thread (D141).
 
-### Task 1 — ✅ DONE (`c40c9a49`) — Icon block: real visual icon/emoji picker (HIGH — UX blocker)
-- **Gap:** `sgs/icon` has NO visual picker. It forces a dropdown of 4 icon SOURCES, then asks the user to TYPE the icon name. Nobody has 1 of 1,900+ Lucide names memorised. `sgs/icon-list` is worse — a tiny hardcoded dropdown.
-- **Available data:** the framework has Lucide (1,963 icons, `includes/lucide-icons.php`) + 3 other libraries + MERGED emoji libraries. They're all there, just not browsable.
-- **Acceptance:** a searchable, browsable visual grid picker (search box + scrollable icon grid + library/emoji tabs) usable inside the block inspector, for BOTH `sgs/icon` and `sgs/icon-list` (and anywhere icons are picked). User browses/searches in the moment; never types a name. WCAG 2.2 AA, 44px targets. Reuse one shared `IconPicker` component.
+## Remaining tasks — orchestration plan
 
-### Task 2 — Product-card: product picker + data feed (HIGH)
-- **Gap:** `sgs/product-card` has NO control to pick WHICH product the card shows, and no mechanism feeding the chosen product's data (title/price/image/link) through the card's child elements/blocks.
-- **Acceptance:** an inspector control to select a product (from WooCommerce or the site's product source), whose data populates the card's inner elements automatically (the "bound" data path — aligns with Spec 24 §FR-24-1/2 query-driven cards). Per-variant defaults: `featured` → defaults to best-selling product; `trial` → defaults to cheapest/trial-tagged. Picking is optional (pick-any-product also allowed). See decisions D129 + Spec 24.
+### Task 2 — Product-card BUILD (HIGH — now unblocked)
+**What:** Build the `sgs/option-picker` atomic block + product-card variation-sets per the RATIFIED design (Spec 24 §FR-24-11..17 / D144).
+**Why:** Gives clients a product card that flexes from "full interactive configurator" → "from £x" → "static flavour showcase" via toggles, with no per-use-case code.
+**Estimated time:** ~30–45 min for Phase A (option-picker standalone); the full A→E is multi-session.
+**Orchestration:**
+- Execution: delegated, **/subagent-driven-development** (implementer + spec-reviewer + quality-reviewer per phase)
+- Model: sonnet (multi-file block build) via /delegate
+- Dispatch pattern: sequential per phase (A → B → C → D → E); gate each before the next
+- Brief: build `sgs/option-picker` (radio-group via visually-hidden `<input type=radio>`+`<label>`+pill `<span>`, CSS `:checked` active + hover/focus "considering" states, bubbling `sgs:option-selected` event, NOT sgs/button) — **make it BATTLE-READY** (robust ARIA/keyboard/no-JS-default/edge cases) because the cloning converter will EMIT it directly; then `_sgs_variation_sets` CPT meta with `display_as` (pills/static-list/hidden); then card Bound mode + "price only" toggle; source toggle in BOTH toolbar + inspector. **Phase D (clone-emit) is IN-SCOPE/priority, NOT deferred** (Bean Q4 correction 2026-06-01): update TRUTH-SPEC + slot_synonyms/slots so the converter outputs `sgs/option-picker` for a pill group.
+- Context the subagent needs: D144 decisions verbatim; Spec 24 §FR-24-11..17; the design report; `save:()=>InnerBlocks.Content` rule; deprecations-required rule; parking P-PRODUCT-CARD-FULL-DUAL-MODE / D129.
+- Depends on: none (decisions resolved). Parallel with: Task 5.
+- /qc gate after: yes — /qc multi-rater before each commit (converter/SGS-block rule).
+**Acceptance:** `sgs/option-picker` works standalone (correct radio ARIA + keyboard, no-JS default state, 3 visual states); card Bound mode swaps price on pack-size + image on flavour; "price only" toggle hides all pickers; live-verified on canary editor + frontend, WCAG 2.2 AA.
 
-### Task 3 — ✅ DONE (`a55f5a71`) — Team-member: photo picker + verify the 3 block-variations are real (MED)
-- **Gap:** `sgs/team-member` has NO way to pick a team-member PHOTO. It shows 3 inserter variations (`registerBlockVariation`: Standard Team Card / Compact (photo+name) / Detailed (with bio+socials)) whose NAMES imply different content models — but Bean doubts they're functionally implemented (they may be inserter labels only).
-- **Acceptance:** (a) a media-picker control for the photo; (b) verify each of the 3 variations actually renders a DISTINCT content model (Compact = photo+name only; Detailed = +bio+socials) — if they're label-only, either implement the render differences or remove the non-functional variations. (These ARE true variants per the routing criterion — Compact vs Detailed change the content model.)
+### Task 5 — Mega-menu panel-pattern library (MED)
+**What:** Generify the 2 existing mega-menu panels (placeholder content + theme tokens) + build ~7 generic panel layouts.
+**Why:** Turns the mega-menu from 2 client-specific panels into a reusable library clients pick from + customise.
+**Estimated time:** ~20 min research + ~30 min build.
+**Orchestration:**
+- Execution: delegated. First **/research-buddies + /qc-council** on whether template-part is the best UX (Bean-directed); then **/dispatching-parallel-agents** (one per panel layout) on sonnet.
+- Brief: generify `theme/sgs-theme/parts/mega-menu-{brands,sectors}.html` (strip client data → bindings/placeholders); build 7 layouts: simple / full-width-cols / contained-cols / featured-promo / tabbed / card-grid / split.
+- Context: mega-menu panel = template part `area='mega-menu'`; clients use the Site-Editor template-part picker; `mega-menu-panels.css`.
+- Depends on: none. Parallel with: Task 2. /qc gate after: yes — /qc-inline.
+**Acceptance:** 2 existing panels carry zero client-specific strings; 7 new generic layouts register + appear in the Site-Editor picker + render on empty data.
 
-### Task 4 — ✅ DONE (`e8048a18`) — Notice-banner: richer per-type defaults + missing controls (MED)
-- **Gap:** `sgs/notice-banner` variants (info/warning/success/error) currently ONLY change a colour — "not worthy of being called variants" (Bean). Also: the icon choices are limited (should expose all icon libraries + merged emoji, per Task 1's picker); and there's no border-radius (corner rounding) control.
-- **Acceptance:** each type (info/warning/success/error) ships an IDEAL default bundle — a coherent colour + a fitting icon (auto-picked per type) + any supporting CSS — so picking the type gives a complete look the user can then customise. Add a corner-radius control. Wire in the Task-1 icon picker for icon choice.
+### Task 9 — FR-22-6 hybrid-block migrations (the 61-block roster) (MED)
+**What:** Migrate remaining hybrid SGS blocks from scalar-attr render to InnerBlocks `echo $content`.
+**Why:** Completes Phase 2; makes every block clone faithfully via the converter's InnerBlocks path.
+**Estimated time:** ~5 min per block (mechanical); batch.
+**Orchestration:**
+- Execution: delegated, **/subagent-driven-development** batched; sonnet.
+- Brief: per block — render echoes `$content`; edit.js InnerBlocks template; deprecated.js v(N+1) + `isEligible`; NEVER a server-side legacy scalar fallback (R-22-14).
+- Context: roster `.claude/reports/2026-05-27-hybrid-block-roster.md`; done already = hero/cta-section/trust-bar/info-box/testimonial-slider.
+- Depends on: none. Parallel with: Task 2/5. /qc gate after: yes — editor-verify no "unexpected content" + converter emits InnerBlocks.
+**Acceptance:** each migrated block builds, editor shows no validation error, the cloning converter emits InnerBlocks for it.
 
-### Task 5 — Mega-menu: build the ~7 variants (MED)
-- **Gap:** Bean knows there should be ~7 very different mega-menu variants; the DB has `variations` = 0 for `sgs/mega-menu`, so they aren't built/registered.
-- **Acceptance:** define + build the ~7 mega-menu variants (each a genuinely different layout/capability — confirm the list with Bean first). Register them properly so they appear + function. These ARE true variants (structural).
+### Side tasks
+- **sgs/cart block + icon enhancements** — queued by the cloning thread; prompt at `.claude/scratch/2026-06-03-prompt-sgs-cart-and-icon-enhancements.md` (mini-cart on WooCommerce Store API + Interactivity API; leanest v1 = count badge + link).
+- **Heading/text dormant-variant tweak** (from 7b) — review the agent-added default CSS values; decide whether to drop heading `hero`. Small, inline.
 
-### Task 6 — ✅ DONE (`4b132e2e`) — CTA-section: upgrade weak variants to rich template-patterns (MED)
-- **Gap:** `sgs/cta-section` has 3 variations (Banner/Centred/Split) but they're "weak, alignment-focused" (Bean). They should be like the hero's variants — essentially templates/presets that show off full functionality.
-- **Acceptance:** turn the cta-section variants into rich block-pattern templates that demonstrate the full option set — e.g. one with stats + social-proof examples inserted as filler — so a user picks a variant and gets a complete, impressive starting point fast (like a pattern, not just an alignment toggle).
-
-### Task 7 — ✅ DONE (7a `4b132e2e` gift delete; 7b `88b6bdb0` variantStyle→block-styles) — Variant-classification cleanup (LOW-MED — hygiene, do alongside)
-- **Gap:** the framework conflates true variants with style presets. Per the routing criterion (see scratch register): (a) `product-card` `gift` variant should be DELETED (Bean: identical to standard, agreed); (b) `heading.variantStyle` (default/hero/section/card), `text.variantStyle`, `label.variantStyle`, `quote.variantStyle` are cosmetic style presets, NOT variants — they should be reframed as block-styles (`is-style-*`) or just theme-default-driven sizing (Bean: heading "hero" is redundant — a `<h1>` with the theme default IS "hero"). `mobile-nav.variant` (slide-left/right) is an animation SETTING, not a variant. `divider.variant` is an asset choice (like an icon), not a variant.
-- **Acceptance:** delete `product-card` gift (+ its render.php/edit.js/deprecated handling). Decide with Bean whether to convert the cosmetic `variantStyle` dropdowns to block-styles or remove them. Do NOT touch the genuinely-content-distinct variants (hero, product-card trial/featured, business-info type, etc.).
-
-### Task 8 — Block-editor errors regression-check + duplicate animation (verify shipped fixes hold)
-- **Gap:** 2026-06-02 fixed (committed): heading nested error (hoverScale null-default), trustpilot-reviews + business-info "Invalid parameter(s): attributes" (array-items / `type`→`displayType` rename), and the duplicate Animation panel (animation.js dual-bundle guard). The container "unexpected/invalid content" + media "cannot be previewed" errors were content-vs-block mismatches; a fresh clone (run 113800) refreshed the page content.
-- **Acceptance:** open the editor on canary 144 — confirm: zero "Invalid parameter(s)" on trustpilot/business-info, zero nested-heading error, exactly ONE Animation panel per block, and that the refreshed page content shows no container/media block errors. If container/media errors persist, root-cause (likely the converter's static `<div class="wp-block-sgs-container">` placeholder vs the container's `save()` = `<InnerBlocks.Content/>` mismatch — a CLONING-thread converter issue, hand it there).
-- **CONFIRMED LIVE 2026-06-02 (page 144 editor, still present):** (1) **`sgs/media` edit.js throws `ReferenceError: imageId is not defined`** (`build/blocks/media/index.js`) → block crashes in editor = the "media cannot be previewed" symptom. Real JS bug in media's edit.js — FIX HERE (theme thread). (2) **`sgs/container` "Block validation failed"** on many cloned containers (save-vs-stored-HTML mismatch) → CLONING-thread converter issue (static-div emit; see D136), hand it there. Start Task 8 by grepping `imageId` in `src/blocks/media/edit.js`.
-
-### Task 9 — Remaining FR-22-6 hybrid-block migrations (the Phase 2 roster)
-- **Gap:** Phase 2 (Spec 22 §FR-22-6) migrates 61 hybrid SGS blocks from scalar-attr render to InnerBlocks `echo $content`. hero / cta-section / trust-bar / info-box / testimonial-slider done. The rest of the 61-block roster (per `.claude/reports/2026-05-27-hybrid-block-roster.md`) remain.
-- **Acceptance:** migrate each remaining hybrid block per FR-22-6.1 (render echoes `$content`; edit.js InnerBlocks template; deprecated.js v(N+1) + `isEligible`); NEVER a server-side legacy scalar fallback (R-22-14). Batch via `/subagent-driven-development`. Each migration: build + editor-verify no "unexpected content" + the cloning converter emits InnerBlocks for it.
+## Dependency graph
+```
+Task 2 (delegated, sonnet, sequential phases) ─┐
+Task 5 (research → parallel agents)            ├─ all parallel-safe (disjoint files)
+Task 9 (batched migrations)                    ─┘
+   ↓ /qc multi-rater before each commit
+Commit to feat/fr22-4-1-universal-wrapper (shared branch — do NOT merge/delete; cloning thread active)
+```
 
 ## MANDATORY READING LIST (read FULLY first)
 1. This file.
-2. `.claude/handoff-theme.md` (2026-06-02).
-3. `.claude/scratch/2026-06-02-brain-dump-variant-routing-and-issues.md` — variant classification + the full issue register (Tasks 1-9 originate here).
+2. `.claude/handoff-theme.md` (2026-06-01).
+3. `.claude/scratch/2026-06-02-brain-dump-variant-routing-and-issues.md` — variant classification + full issue register.
 4. Root `CLAUDE.md` + `plugins/sgs-blocks/CLAUDE.md` — block customisation standard, deprecation procedure, gotchas (source:html ban, InnerBlocks.Content save, deprecations-required).
-5. `.claude/specs/24-QUERY-DRIVEN-CONTENT-CARDS.md` — product-card/trust-bar dual-mode + query-driven cards (Task 2).
-6. `.claude/decisions.md` newest — D129 (product-card/picker design), D134-D136.
-7. `.claude/reports/2026-06-01-product-card-option-picker-design.md` — product-card + sgs/option-picker design (Task 2; needs Bean's 6 decisions).
+5. `.claude/specs/24-QUERY-DRIVEN-CONTENT-CARDS.md` — §FR-24-11..17 (RATIFIED) for Task 2.
+6. `.claude/decisions.md` newest — D143 (mobile-nav), D144 (product-card decisions), D129 (product-card/picker design), D134-D136.
+7. `.claude/reports/2026-06-01-product-card-option-picker-design.md` — product-card + sgs/option-picker design (Task 2; 6 decisions RESOLVED).
 8. `.claude/reports/2026-05-27-hybrid-block-roster.md` — the 61-block FR-22-6 migration roster (Task 9).
-9. `plugins/sgs-blocks/includes/lucide-icons.php` + the icon-library/emoji assets (Task 1).
+9. `plugins/sgs-blocks/includes/lucide-icons.php` + icon-library/emoji assets.
 10. The relevant block dirs `plugins/sgs-blocks/src/blocks/<block>/{block.json,edit.js,render.php}` — READ before asserting capability.
 
 ## Skills to Invoke
 | Skill | When |
 |-------|------|
-| `/brainstorming` | Design the icon-picker component + the per-block solutions before building |
+| `/brainstorming` | Design the option-picker + per-block solutions before building |
 | `/gap-analysis` | Grade each block fix against its acceptance criteria |
 | `/lifecycle` | Before any skill/agent change |
-| `/research` | Gold-standard for the icon-picker UX + WooCommerce product binding (auto-routes tier) |
-| `/strategic-plan` | Order the 9 tasks |
+| `/research` | Gold-standard for the option-picker UX + WooCommerce product binding (auto-routes tier) |
+| `/strategic-plan` | Order the remaining tasks |
 | `/sgs-wp-engine` | SGS block dev — block.json, attributes, render, editor controls |
 | `/wp-block-development` | Gutenberg block internals (InspectorControls, InnerBlocks, deprecations) |
-| `/visual-qa` or `/design-review` | Verify the editor UX + WCAG 2.2 AA |
+| `/subagent-driven-development` | Task 2 + Task 9 (implementer + 2 reviewers per task) |
+| `/dispatching-parallel-agents` | Task 5 (one agent per panel layout) |
+| `/research-buddies` + `/qc-council` | Task 5 UX assessment |
+| `/visual-qa` or `/design-review` | Verify editor UX + WCAG 2.2 AA |
 
 ## MCP / Tools
 | Tool | For |
 |------|-----|
-| Playwright MCP | Open the WP block editor on canary 144, verify each block's controls + errors |
+| Playwright MCP / superpowers-chrome `use_browser` (CDP) | Open the WP block editor on canary 144, verify controls + errors |
 | `/wp-blocks` (`python ~/.claude/hooks/wp-blocks.py dump`) | Block schema before asserting capability |
 | `/sgs-db` (read) | Block roster, variations, capabilities |
 
 ## Agents to Delegate To
 | Agent | When |
 |-------|------|
-| `wp-sgs-developer` | ALL heavy block dev (pickers, migrations, controls) |
-| `design-reviewer` | Editor UX + WCAG review of the new pickers |
+| `wp-sgs-developer` | ALL heavy block dev (option-picker, migrations, controls) |
+| `design-reviewer` | Editor UX + WCAG review of the new pickers/panels |
 
 ## Guardrails
 - **Read block.json + edit.js + render.php + `/wp-blocks` before asserting any block's capability** — don't infer from a partial dump.
@@ -119,4 +132,7 @@ The SGS framework is a custom WordPress block library (theme + blocks plugin). P
 - **Never `source:html` on a dynamic block**; dynamic blocks with InnerBlocks need `save: () => <InnerBlocks.Content/>`.
 - **No client-specific values in base theme/blocks** — client work lives in `sites/<client>/` only.
 - **Build + editor-verify after every block change** — `build-deploy.py --blocks-only` + reload editor.
+- **Bump block.json `version` on any CSS/JS change** — WP keys the asset `?ver=` off it; without a bump, returning visitors get stale assets (caught live 2026-06-01).
+- **CDP top-layer quirk** — synthetic `dispatchMouseEvent` clicks on popover/top-layer elements don't reliably trigger nav/hit-test in headless Chrome; verify popover interactions via programmatic `.click()` or a screenshot, not a CDP click + state check (caught 2026-06-01).
 - **WCAG 2.2 AA + 44px touch targets + mobile-first** on all new UI.
+- **Shared branch** — `feat/fr22-4-1-universal-wrapper` is shared with the active cloning thread; commit + push to it, do NOT merge-to-main/delete it (would break the other thread).

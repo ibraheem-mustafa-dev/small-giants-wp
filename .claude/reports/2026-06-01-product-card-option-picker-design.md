@@ -39,10 +39,12 @@ Current Spec 24 treats variations as a flat `packSizes`. Real products have MULT
 - **D — Typed picker authoring** (drag option-picker into Typed card; same event store).
 - **E — collection/query block** (existing Spec 24 FR-24-4/5, after card stable).
 
-## OPEN — Bean's 6 decisions (needed before Phase A/C build)
-1. **Dietary picker** (content_impact=[]): show on featured card or hide? (rec: show on product page; hide on homepage card via toggle)
-2. **Two types both impact price** (future premium flavour): spec `_sgs_sku_matrix` now, or Phase-1 editor-warning + defer? (rec: defer + warn)
-3. **Default pill style:** product-card context = filled; global default outlined — or filled global? (rec: filled in card, outlined global)
-4. **Clone of the Mama's pill group** (`.sgs-featured-product__pill-group`): emit `sgs/option-picker` directly (update TRUTH-SPEC + slot_synonyms) or container+children + manual post-clone swap? (rec: manual swap for now)
-5. **Source toggle location:** inspector panel or toolbar? (rec: inspector)
-6. **CPT variation-sets editor UI:** Gutenberg panel or classic meta box? (rec: Gutenberg panel — clients already use the block editor)
+## RESOLVED — Bean's 6 decisions (2026-06-01, ratified D144 → Spec 24 §FR-24-11..17)
+1. **Dietary / non-price options** → **per-type `display_as` mode** + card-level "price only" toggle. Each variation type renders as `pills` (interactive) | `static-list` ("Available in 3 flavours: Banana, Strawberry, Chocolate" — a non-interactive selling point) | `hidden`. A card toggle hides ALL pickers → card shows just "From £x". Bean's "pills that swap image/text not price" already fits `content_impact` (a flavour pill swaps photo+description, leaves price). *(Enhances the original rec — feature, not just show/hide.)*
+2. **Two types both impact price** → **defer + warn** (rec accepted). Phase-1 editor warning, first type wins; `_sgs_sku_matrix` is Phase 2.
+3. **Pill style** → **filled in card / outlined global** (rec accepted) + **three CSS states**: resting / hover+focus ("considering") / `:checked` ("selected").
+4. **Clone of the Mama's pill group** → **emit `sgs/option-picker` DIRECTLY** (Bean corrected 2026-06-01 — OPPOSITE of the original rec). Update TRUTH-SPEC + slot_synonyms/slots so the converter outputs the picker block for a pill group. **Build the option-picker ASAP + battle-ready, then wire into the pipeline** — pulls Phase D forward; the picker must be robust enough to be the converter's emit target.
+5. **Source toggle location** → **BOTH toolbar AND inspector** (one attr, two controls).
+6. **CPT variation-sets editor UI** → **Gutenberg panel** (rec accepted).
+
+**Status:** design ratified; BUILD is theme-thread Task 2 (deferred). This report + Spec 24 §FR-24-11..17 are the build contract.
