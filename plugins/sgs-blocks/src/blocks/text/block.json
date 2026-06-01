@@ -326,16 +326,6 @@
             "type": "string",
             "default": ""
         },
-        "variantStyle": {
-            "type": "string",
-            "enum": [
-                "default",
-                "quote",
-                "caption",
-                "lead"
-            ],
-            "default": "default"
-        },
         "customWidth": {
             "type": "string",
             "default": ""

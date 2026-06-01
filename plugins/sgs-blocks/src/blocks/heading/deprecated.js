@@ -4,6 +4,13 @@ import { colourVar } from '../../utils';
 /**
  * Heading block deprecations.
  *
+ * v3 — Single-element schema (block.json v0.4.0) with the variantStyle attr.
+ *      In 2026-06-01 variantStyle was retired in favour of WP-native block
+ *      styles (is-style-*). This entry migrates any post saved while the
+ *      v0.4.0 schema was active that has a non-default variantStyle value.
+ *      The variantStyle value is moved into `className` as `is-style-{value}`
+ *      so the correct block-style CSS fires automatically.
+ *
  * v2 — Dynamic-render composite schema (block.json v0.3.0).
  *      The block became dynamic in 2026-05-21 (save returns null).
  *      In 2026-05-26 the composite label/headline/sub attrs were replaced
@@ -19,6 +26,122 @@ import { colourVar } from '../../utils';
  *      single-element refactor the attribute schema changed further.
  *      This entry covers all posts saved while the block was static.
  */
+
+// ─── v3: single-element v0.4.0 → v0.5.0 (variantStyle → is-style-*) ─────────
+
+const v3 = {
+	/**
+	 * The v0.4.0 attribute schema — identical to current except it includes
+	 * `variantStyle`. All other attrs pass through unchanged.
+	 */
+	attributes: {
+		headingRole:         { type: 'string', enum: [ 'heading', 'subheading' ], default: 'heading', role: 'content' },
+		content:             { type: 'string', default: '', role: 'content' },
+		level:               { type: 'string', enum: [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' ], default: 'h2' },
+		subTag:              { type: 'string', enum: [ 'p', 'div' ], default: 'p' },
+		anchor:              { type: 'string', default: '' },
+
+		fontFamily:          { type: 'string', default: '' },
+		fontSize:            { type: 'number', default: 28 },
+		fontSizeUnit:        { type: 'string', default: 'px' },
+		fontSizeTablet:      { type: 'number' },
+		fontSizeMobile:      { type: 'number' },
+		fontWeight:          { type: 'string', default: '700' },
+		lineHeight:          { type: 'number' },
+		lineHeightUnit:      { type: 'string', default: 'em' },
+		letterSpacing:       { type: 'number' },
+		letterSpacingUnit:   { type: 'string', default: 'em' },
+		textTransform:       { type: 'string', default: '' },
+		textColour:          { type: 'string', default: 'text' },
+		fontStyle:           { type: 'string', enum: [ 'normal', 'italic' ], default: '' },
+		textDecoration:      { type: 'string', enum: [ 'none', 'underline', 'line-through' ], default: '' },
+
+		marginTop:           { type: 'string', default: '' },
+		marginRight:         { type: 'string', default: '' },
+		marginBottom:        { type: 'string', default: '' },
+		marginLeft:          { type: 'string', default: '' },
+		marginTopTablet:     { type: 'string', default: '' },
+		marginRightTablet:   { type: 'string', default: '' },
+		marginBottomTablet:  { type: 'string', default: '' },
+		marginLeftTablet:    { type: 'string', default: '' },
+		marginTopMobile:     { type: 'string', default: '' },
+		marginRightMobile:   { type: 'string', default: '' },
+		marginBottomMobile:  { type: 'string', default: '' },
+		marginLeftMobile:    { type: 'string', default: '' },
+		marginUnit:          { type: 'string', default: 'px' },
+
+		paddingTop:          { type: 'string', default: '' },
+		paddingRight:        { type: 'string', default: '' },
+		paddingBottom:       { type: 'string', default: '' },
+		paddingLeft:         { type: 'string', default: '' },
+		paddingTopTablet:    { type: 'string', default: '' },
+		paddingRightTablet:  { type: 'string', default: '' },
+		paddingBottomTablet: { type: 'string', default: '' },
+		paddingLeftTablet:   { type: 'string', default: '' },
+		paddingTopMobile:    { type: 'string', default: '' },
+		paddingRightMobile:  { type: 'string', default: '' },
+		paddingBottomMobile: { type: 'string', default: '' },
+		paddingLeftMobile:   { type: 'string', default: '' },
+		paddingUnit:         { type: 'string', default: 'px' },
+
+		backgroundColour:   { type: 'string', default: '' },
+		borderRadius:       { type: 'string', default: '' },
+		borderRadiusUnit:   { type: 'string', default: 'px' },
+		borderRadiusTL:     { type: 'string', default: '' },
+		borderRadiusTR:     { type: 'string', default: '' },
+		borderRadiusBL:     { type: 'string', default: '' },
+		borderRadiusBR:     { type: 'string', default: '' },
+		borderWidthTop:     { type: 'string', default: '' },
+		borderWidthRight:   { type: 'string', default: '' },
+		borderWidthBottom:  { type: 'string', default: '' },
+		borderWidthLeft:    { type: 'string', default: '' },
+		borderWidthUnit:    { type: 'string', default: 'px' },
+		borderStyle:        { type: 'string', enum: [ 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' ], default: 'none' },
+		borderColour:       { type: 'string', default: '' },
+
+		boxShadow:          { type: 'string', default: '' },
+		boxShadowHover:     { type: 'string', default: '' },
+		hoverScale:         { type: 'number' },
+		hoverColour:        { type: 'string', default: '' },
+		hoverBackground:    { type: 'string', default: '' },
+
+		// The attribute being retired — present in this entry only.
+		variantStyle: { type: 'string', enum: [ 'default', 'hero', 'section', 'card' ], default: 'default' },
+
+		customWidth:        { type: 'string', default: '' },
+		customWidthUnit:    { type: 'string', default: 'px' },
+		inheritStyle:       { type: 'boolean', default: false },
+		transitionDuration: { type: 'number', default: 300 },
+		transitionEasing:   { type: 'string', enum: [ 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' ], default: 'ease' },
+	},
+	supports: {
+		align: true,
+		html: false,
+		anchor: true,
+		color: { text: true, background: true, link: false },
+		spacing: { margin: true, padding: true },
+	},
+	// Dynamic block — save() returns null in v0.4.0.
+	save() {
+		return null;
+	},
+	/**
+	 * Only migrate posts that have a non-default variantStyle.
+	 * Posts with variantStyle='default' (or absent) pass through the current
+	 * schema untouched — no migration needed.
+	 */
+	isEligible( attrs ) {
+		return attrs.variantStyle && attrs.variantStyle !== 'default';
+	},
+	migrate( attrs ) {
+		const { variantStyle, ...rest } = attrs;
+		// Append is-style-{value} to className, preserving any existing classes.
+		const existingClass = rest.className || '';
+		const styleClass    = 'is-style-' + variantStyle;
+		rest.className = [ existingClass, styleClass ].filter( Boolean ).join( ' ' );
+		return rest;
+	},
+};
 
 // ─── v2: dynamic composite → single-element ──────────────────────────────────
 
@@ -527,4 +650,4 @@ const v1 = {
 	},
 };
 
-export default [ v2, v1 ];
+export default [ v3, v2, v1 ];

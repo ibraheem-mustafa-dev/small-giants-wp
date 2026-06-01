@@ -14,8 +14,9 @@
  *
  * @since 2026-05-17  Phase 9 — sgs/text block
  * @since 2026-05-17  Peer-parity attrs: background, border, box-shadow, hover,
- *                    variantStyle, customWidth, per-viewport letter-spacing,
- *                    inheritStyle.
+ *                    customWidth, per-viewport letter-spacing, inheritStyle.
+ * @since 2026-06-01  variantStyle removed — migrated to WordPress block styles
+ *                    (is-style-quote / is-style-caption / is-style-lead).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — block is leaf-level).
@@ -118,9 +119,6 @@ $hover_scale      = isset( $attributes['hoverScale'] ) ? (float) $attributes['ho
 $hover_colour     = $attributes['hoverColour'] ?? '';
 $hover_background = $attributes['hoverBackground'] ?? '';
 
-// Variant style.
-$variant_style = $attributes['variantStyle'] ?? 'default';
-
 // Width override.
 $custom_width      = $attributes['customWidth'] ?? '';
 $custom_width_unit = $attributes['customWidthUnit'] ?? 'px';
@@ -150,12 +148,6 @@ if ( '' === trim( wp_strip_all_tags( $text ) ) ) {
 $allowed_tags = array( 'p', 'span', 'div', 'blockquote', 'em', 'strong' );
 if ( ! in_array( $tag_name, $allowed_tags, true ) ) {
 	$tag_name = 'p';
-}
-
-// Validate variantStyle against allowlist.
-$allowed_variants = array( 'default', 'quote', 'caption', 'lead' );
-if ( ! in_array( $variant_style, $allowed_variants, true ) ) {
-	$variant_style = 'default';
 }
 
 // FIX B (P-BORDER-STYLE-ENUM-PARITY 2026-05-17): full CSS border-style set.
@@ -195,11 +187,7 @@ if ( $inherit_style ) {
 	$anchor     = $attributes['anchor'] ?? '';
 	// FIX D: hash-based id (stable across fragment-cached renders).
 	$uid        = $anchor ? esc_attr( $anchor ) : 'sgs-text-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-	$base_class = 'wp-block-sgs-text';
-	if ( 'default' !== $variant_style ) {
-		$base_class .= ' wp-block-sgs-text--' . sanitize_html_class( $variant_style );
-	}
-	$wrapper_args = array( 'class' => $base_class );
+	$wrapper_args = array( 'class' => 'wp-block-sgs-text' );
 	if ( $anchor ) {
 		$wrapper_args['id'] = $uid;
 	}
@@ -560,13 +548,7 @@ $responsive_css = trim( $css_tablet . $css_mobile . $css_drop_cap . $css_hover )
 // adds the block class, any editor-assigned custom class, and the anchor id.
 // ---------------------------------------------------------------------------
 
-// Build CSS class list — base + variant modifier.
-$wrapper_classes = array( 'wp-block-sgs-text' );
-if ( 'default' !== $variant_style ) {
-	$wrapper_classes[] = 'wp-block-sgs-text--' . sanitize_html_class( $variant_style );
-}
-
-$wrapper_args = array( 'class' => implode( ' ', $wrapper_classes ) );
+$wrapper_args = array( 'class' => 'wp-block-sgs-text' );
 if ( $inline_style ) {
 	$wrapper_args['style'] = $inline_style;
 }

@@ -27,7 +27,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 $text                = $attributes['text'] ?? '';
 $tag_name            = $attributes['tag'] ?? 'span';
-$variant_style       = $attributes['variantStyle'] ?? 'plain';
 $text_colour         = $attributes['textColour'] ?? '';
 $background_colour   = $attributes['backgroundColour'] ?? '';
 $font_family         = $attributes['fontFamily'] ?? '';
@@ -81,7 +80,11 @@ if ( $text_decoration ) {
 if ( '' !== $border_radius && null !== $border_radius ) {
 	$style_parts[] = '--sgs-label-border-radius:' . intval( $border_radius ) . 'px';
 }
-if ( 'plain' !== $variant_style ) {
+// Emit padding custom property for pill styles (derived from block-style className).
+$extra_classes = isset( $attributes['className'] ) ? $attributes['className'] : '';
+$is_pill       = ( false !== strpos( $extra_classes, 'is-style-pill-fill' ) )
+	|| ( false !== strpos( $extra_classes, 'is-style-pill-wrap' ) );
+if ( $is_pill ) {
 	$style_parts[] = '--sgs-label-padding:' . intval( $padding_top ) . 'px ' . intval( $padding_right ) . 'px ' . intval( $padding_bottom ) . 'px ' . intval( $padding_left ) . 'px';
 }
 if ( $font_family ) {
@@ -90,14 +93,11 @@ if ( $font_family ) {
 
 $style_attr = $style_parts ? implode( ';', $style_parts ) : '';
 
-// Wrapper class names — preserves wp-block-sgs-label + is-style-<variant>.
-$wrapper_classes = array(
-	'wp-block-sgs-label',
-	'is-style-' . sanitize_html_class( $variant_style ),
-);
-
+// Wrapper class — get_block_wrapper_attributes() automatically merges in
+// the block's `className` attr (which carries `is-style-{value}` when a
+// block-style is active), so no manual is-style-* construction is needed.
 $wrapper_args = array(
-	'class' => implode( ' ', $wrapper_classes ),
+	'class' => 'wp-block-sgs-label',
 );
 if ( $style_attr ) {
 	$wrapper_args['style'] = $style_attr;

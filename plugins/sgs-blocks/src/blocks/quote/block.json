@@ -419,16 +419,6 @@
             "type": "string",
             "default": "px"
         },
-        "variantStyle": {
-            "type": "string",
-            "enum": [
-                "default",
-                "pullquote",
-                "testimonial",
-                "plain"
-            ],
-            "default": "default"
-        },
         "inheritStyle": {
             "type": "boolean",
             "default": false
