@@ -1821,19 +1821,35 @@ def _route_composite_interior(
                        lifted_url=lifted.get("url", ""))
 
         else:
-            # --- Content column ---
-            # This column maps to the InnerBlocks $content slot.
-            # Fold the column wrapper away: walk its direct children and
-            # accumulate their markup directly into the InnerBlocks list.
-            _trace("composite_interior_route", slug=slug, element=element,
-                   attr=None, branch="content_column_folded",
-                   depth=depth + 1,
-                   note="column folded into bare InnerBlocks")
-            for grandchild in child.children:
-                result = walk(grandchild, css_rules, variation_buf,
+            # --- Content column OR content item (FR-22-4.1 rules #2/#3) ---
+            # Distinguish the two non-scalar-media cases by whether the child
+            # itself resolves to a registered block:
+            #   (a) child resolves to a block (e.g. article.sgs-testimonial →
+            #       sgs/testimonial — a repeated content ITEM, or any standalone
+            #       content block): emit it AS that block (walk normally). It is
+            #       NOT folded — folding would drop the block + swallow its content.
+            #   (b) child is a slug-None transparent content WRAPPER (e.g. the
+            #       hero's sgs-hero__content column): fold it — walk its children
+            #       directly into bare InnerBlocks ($content), dropping the wrapper.
+            child_slug = db.resolve_slug_from_bem(csgs)
+            if child_slug is not None:
+                _trace("composite_interior_route", slug=slug, element=element,
+                       attr=None, branch="content_item_block_emitted",
+                       child_slug=child_slug, depth=depth + 1)
+                result = walk(child, css_rules, variation_buf,
                               depth=depth + 1, is_top_level=False)
                 if result:
                     children_markup.append(result)
+            else:
+                _trace("composite_interior_route", slug=slug, element=element,
+                       attr=None, branch="content_column_folded",
+                       depth=depth + 1,
+                       note="slug-None wrapper folded into bare InnerBlocks")
+                for grandchild in child.children:
+                    result = walk(grandchild, css_rules, variation_buf,
+                                  depth=depth + 1, is_top_level=False)
+                    if result:
+                        children_markup.append(result)
 
     return children_markup
 
@@ -2035,8 +2051,13 @@ def walk(
     # NOT as a 4th top-level walk() branch (R-22-3 compliant).
     children_markup: list[str] = []
     if not is_leaf:
-        if slug is not None and db.is_class_section_block(slug):
-            # FR-22-19: composite slot-router (mutates attrs in-place for scalar-media)
+        if slug is not None and db.has_scalar_media_attrs(slug):
+            # FR-22-19: composite slot-router (mutates attrs in-place for scalar-media).
+            # Gate is has_scalar_media_attrs (NOT is_class_section_block): the router
+            # fires for any composite that renders interior media itself as a scalar
+            # attr — sgs/hero (section-root) AND sgs/testimonial-slider (content-block).
+            # Blocks with no scalar-media attr never enter here, so their interior
+            # routing is unchanged (cta-section/info-box/product-card unaffected).
             children_markup = _route_composite_interior(
                 node, slug, attrs, css_rules, depth, variation_buf
             )

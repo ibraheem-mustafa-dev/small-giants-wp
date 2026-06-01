@@ -1155,6 +1155,34 @@ def is_class_section_block(slug: str) -> bool:
 # the `block_attributes.role='scalar-media'` column and the `slots` aliases.
 
 
+@functools.lru_cache(maxsize=256)
+def has_scalar_media_attrs(block_slug: str) -> bool:
+    """True if `block_slug` declares >=1 attr with role='scalar-media'.
+
+    FR-22-19 gate (2026-06-01, corrected): the composite-interior router fires
+    for any COMPOSITE that renders part of its interior itself as a scalar-media
+    attr (sgs/hero.splitImage, sgs/testimonial-slider.sideImage) — NOT only
+    class-section/section-root blocks (testimonial-slider is a composite but a
+    content-block, not a section root). Gating on the PRESENCE of a scalar-media
+    attr is precise: it covers every such composite AND naturally excludes blocks
+    with no scalar-media attr (cta-section, info-box, product-card) so their
+    interior routing is unchanged (resolves the cta-section over-fire risk).
+    R-22-1: DB-driven, no slug literals; R-22-9: universal mechanism.
+    """
+    if not block_slug:
+        return False
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT 1 FROM block_attributes WHERE block_slug = ? "
+            "AND role = 'scalar-media' LIMIT 1",
+            (block_slug,),
+        ).fetchone()
+    finally:
+        conn.close()
+    return row is not None
+
+
 def scalar_media_attr_for(block_slug: str, bem_element: str) -> str | None:
     """Return the attr_name of the scalar-media attr on `block_slug` for `bem_element`.
 
