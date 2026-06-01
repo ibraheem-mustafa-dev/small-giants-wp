@@ -10,6 +10,7 @@ import {
 	TextControl,
 	ToggleControl,
 	Icon,
+	Button,
 } from '@wordpress/components';
 import { chevronDown, chevronRight } from '@wordpress/icons';
 import { useSelect } from '@wordpress/data';
@@ -151,6 +152,18 @@ export default function Edit( { attributes, setAttributes } ) {
 							) }
 						</p>
 					) }
+					<Button
+						variant="link"
+						href={
+							( window.location.origin ?? '' ) +
+							'/wp-admin/site-editor.php?path=%2Fpatterns&categoryType=wp_template_part&categoryId=mega-menu'
+						}
+						target="_blank"
+						rel="noreferrer"
+						style={ { marginTop: '8px', display: 'inline-block' } }
+					>
+						{ __( 'Create a new panel →', 'sgs-blocks' ) }
+					</Button>
 				</PanelBody>
 
 				<PanelBody

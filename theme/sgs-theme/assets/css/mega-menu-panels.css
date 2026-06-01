@@ -296,6 +296,28 @@
 	color: var(--wp--preset--color--primary, #0f7e80);
 }
 
+/**
+ * Featured promo — 2/3 content column + 1/3 featured card.
+ * Used by: mega-menu-featured-promo pattern.
+ * Distinct from --split (3fr/2fr = 60/40) — this is a true 2/3 + 1/3 split.
+ */
+.sgs-mega-panel--promo {
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	gap: var(--wp--preset--spacing--60);
+}
+
+/**
+ * Logo wall — 66% logo tile area + 34% sidebar description.
+ * Used by: mega-menu-logo-wall pattern.
+ * Matches the Indus-Foods brands panel proportion but now framework-generic.
+ */
+.sgs-mega-panel--logo-wall {
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	gap: var(--wp--preset--spacing--60);
+}
+
 /* ==========================================================================
    Featured Content Card
    Source: Voiceflow pattern — one prominent card drives engagement.
