@@ -2,20 +2,10 @@ import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
-	RichText,
+	useInnerBlocksProps,
 } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, IconPreview } from '../../components';
-import { colourVar, fontSizeVar } from '../../utils';
-
-const FONT_SIZE_OPTIONS = [
-	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Small', 'sgs-blocks' ), value: 'small' },
-	{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
-	{ label: __( 'Large', 'sgs-blocks' ), value: 'large' },
-	{ label: __( 'XL', 'sgs-blocks' ), value: 'x-large' },
-	{ label: __( 'XXL', 'sgs-blocks' ), value: 'xx-large' },
-];
+import { IconPicker, IconPreview } from '../../components';
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Info', 'sgs-blocks' ), value: 'info' },
@@ -51,14 +41,24 @@ function resolveIcon( attrs ) {
 	};
 }
 
+/**
+ * Default InnerBlocks template — one sgs/text child for the notice message.
+ * Operators can replace or supplement it with any block, e.g. a button.
+ */
+const NOTICE_BANNER_TEMPLATE = [
+	[ 'sgs/text', { text: __( 'Write your notice message here.', 'sgs-blocks' ), tag: 'p' } ],
+];
+
 export default function Edit( { attributes, setAttributes } ) {
-	const { text, variant, showIcon, iconSource, textColour, textFontSize } =
-		attributes;
+	const { variant, showIcon, iconSource } = attributes;
 
 	const className = [ 'sgs-notice-banner', `sgs-notice-banner--${ variant }` ].join(
 		' '
 	);
 	const blockProps = useBlockProps( { className } );
+	const innerBlocksProps = useInnerBlocksProps( {}, {
+		template: NOTICE_BANNER_TEMPLATE,
+	} );
 	const resolved = resolveIcon( attributes );
 	const usingDefault = ! ( iconSource && attributes.iconName );
 
@@ -94,7 +94,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 					{ showIcon && ! usingDefault && (
 						<ToggleControl
-							label={ __( 'Use the variant’s default icon', 'sgs-blocks' ) }
+							label={ __( "Use the variant's default icon", 'sgs-blocks' ) }
 							checked={ false }
 							onChange={ () =>
 								setAttributes( { iconSource: '', iconName: '' } )
@@ -107,43 +107,17 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					) }
 				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Text Styling', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<DesignTokenPicker
-						label={ __( 'Text colour', 'sgs-blocks' ) }
-						value={ textColour }
-						onChange={ ( val ) => setAttributes( { textColour: val } ) }
-					/>
-					<SelectControl
-						label={ __( 'Text font size', 'sgs-blocks' ) }
-						value={ textFontSize || '' }
-						options={ FONT_SIZE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { textFontSize: val } ) }
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
 			</InspectorControls>
 
+			{ /* FR-22-6: the notice text is now an InnerBlocks child (sgs/text).
+			     The wrapper div carries the variant class + role="note". */ }
 			<div { ...blockProps } role="note">
 				{ showIcon && (
 					<span className="sgs-notice-banner__icon" aria-hidden="true">
 						<IconPreview source={ resolved.source } name={ resolved.name } size={ 20 } />
 					</span>
 				) }
-				<RichText
-					tagName="p"
-					className="sgs-notice-banner__text"
-					value={ text }
-					onChange={ ( val ) => setAttributes( { text: val } ) }
-					placeholder={ __( 'Write your notice message…', 'sgs-blocks' ) }
-					style={ {
-						color: colourVar( textColour ) || undefined,
-						fontSize: fontSizeVar( textFontSize ) || undefined,
-					} }
-				/>
+				<div { ...innerBlocksProps } />
 			</div>
 		</>
 	);

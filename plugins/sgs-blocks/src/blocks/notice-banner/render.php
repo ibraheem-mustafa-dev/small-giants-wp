@@ -7,7 +7,7 @@
  * operator picks an override via the shared IconPicker (any of the four sources).
  *
  * @var array     $attributes Block attributes.
- * @var string    $content    Inner block content (unused).
+ * @var string    $content    InnerBlocks HTML (sgs/text child carrying the notice message).
  * @var \WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
@@ -19,10 +19,10 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 
-$text        = $attributes['text'] ?? '';
+// FR-22-6: $text is no longer rendered here — the text content slot is now
+// an InnerBlocks child (sgs/text), emitted via $content below.
+// Retained in block.json for deprecated.js back-compat only. R-22-14: no fallback.
 $variant     = $attributes['variant'] ?? 'info';
-$text_colour = $attributes['textColour'] ?? '';
-$text_size   = $attributes['textFontSize'] ?? '';
 $dismissible = ! empty( $attributes['dismissible'] );
 $icon_source = $attributes['iconSource'] ?? '';
 $icon_name   = $attributes['iconName'] ?? '';
@@ -74,15 +74,9 @@ if ( $show_icon ) {
 
 $dismiss_icon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 
-// Wrapper CSS custom properties (parity with the editor textStyle).
-$text_style_parts = array();
-if ( $text_colour ) {
-	$text_style_parts[] = 'color:' . sgs_colour_value( $text_colour );
-}
-if ( $text_size ) {
-	$text_style_parts[] = 'font-size:' . sgs_font_size_value( $text_size );
-}
-$text_style_attr = $text_style_parts ? ' style="' . esc_attr( implode( ';', $text_style_parts ) ) . '"' : '';
+// FR-22-6: text colour + size are now carried on the sgs/text child block's
+// own attrs and rendered by that block's render.php. No wrapper-level text
+// style injection needed here — $content carries the already-rendered child.
 
 // Wrapper class — SGS-BEM root + variant modifier + dismissible modifier.
 $wrapper_classes = array( 'sgs-notice-banner', 'sgs-notice-banner--' . sanitize_html_class( $variant ) );
@@ -96,7 +90,11 @@ $wrapper_attrs = get_block_wrapper_attributes( array( 'class' => implode( ' ', $
 	<?php if ( $icon_html ) : ?>
 		<span class="sgs-notice-banner__icon" aria-hidden="true"><?php echo $icon_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from first-party icon maps; dashicon slug + emoji escaped above. ?></span>
 	<?php endif; ?>
-	<p class="sgs-notice-banner__text"<?php echo $text_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><?php echo wp_kses_post( $text ); ?></p>
+	<?php
+		// FR-22-6: render the sgs/text child block emitted by the converter.
+		// R-22-14: no scalar $text fallback — back-compat is editor-side only (deprecated.js v3).
+		echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WP core InnerBlocks output.
+	?>
 	<?php if ( $dismissible ) : ?>
 		<button type="button" class="sgs-notice-banner__dismiss" aria-label="<?php esc_attr_e( 'Dismiss', 'sgs-blocks' ); ?>">
 			<?php echo $dismiss_icon; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
