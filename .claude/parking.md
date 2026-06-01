@@ -151,7 +151,7 @@ last_updated: 2026-05-31
 _60 entries._
 
 
-**P-DUPLICATE-HEADER-EXPOSED-BY-INLINE-CSS-FIX** — NEW 2026-05-25 (after D70 Stage 10 inline-CSS shipped). With variation-d0-d2.css now deployed inline per-page, the mockup's `<header class="sgs-header">` block in cv2 output renders visually for the first time — appearing BELOW the framework's `<header>` template part (rendered on every page by `theme/sgs-theme/parts/header.html`). Visible regression: header section pixel-diff at 375px jumped from 25.4% → 84.8% (+59.4pp) in run mamas-munches-homepage-2026-05-25-060541. Sister sections (768, 1440) only +0.9 / -2.3pp because framework header dominates the viewport there. **Resolution:** Phase 2 — header + footer specialised cloner. Gated on Phase 1.5 hitting per-section ≤1% (per `.claude/plans/2026-05-25-phase-1-universal-extraction.md` + `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md`). The specialised cloner emits to wp_template_part shape, not page-content shape, and dedupes against framework header. Until then the live page carries both headers on mobile.
+**P-DUPLICATE-HEADER-EXPOSED-BY-INLINE-CSS-FIX** — NEW 2026-05-25 (after D70 Stage 10 inline-CSS shipped). With variation-d0-d2.css now deployed inline per-page, the mockup's `<header class="sgs-header">` block in cv2 output renders visually for the first time — appearing BELOW the framework's `<header>` template part (rendered on every page by `theme/sgs-theme/parts/header.html`). Visible regression: header section pixel-diff at 375px jumped from 25.4% → 84.8% (+59.4pp) in run mamas-munches-homepage-2026-05-25-060541. Sister sections (768, 1440) only +0.9 / -2.3pp because framework header dominates the viewport there. **Resolution:** Phase 2 — header + footer specialised cloner. Gated on Phase 1.5 hitting per-section ≤1% (per `.claude/plans/2026-05-25-phase-1-universal-extraction.md` + `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md`). The specialised cloner emits to wp_template_part shape, not page-content shape, and dedupes against framework header. Until then the live page carries both headers on mobile. **PARTIAL 2026-06-01 (D141):** the converter's chrome-skip extension now skips top-level `<header>`/`<footer>`/`<nav>` whose BEM segment is itself chrome — so freshly-cloned pages no longer EMIT the duplicate `<header class="sgs-header">` into page content. Full closure still needs the Phase 2 header/footer cloner (template-part shape).
 **Status:** OPEN
 **Trigger:** Phase 2 kickoff.
 
@@ -319,7 +319,7 @@ _60 entries._
 **Trigger:** after XS-2 tier='class-section' column ships; before adding more section-root blocks.
 
 ### P-PRODUCT-CARD-GIFT-VARIANT-AUDIT — gift variant of sgs/product-card is vestigial (~30 min)
-**Status:** OPEN
+**Status:** CLOSED 2026-06-01 (D140 — `gift` removed from the `variantStyle` enum in block.json + the editor SelectControl; render.php had no gift branch so existing posts unaffected; enum now `[standard, trial, featured]`).
 
 **What:** Investigation 2026-05-30 confirmed `gift` variant of sgs/product-card is currently UNUSED in Mama's mockup. Gift-section cards (lines 959+) use `sgs-gift-section__card` class — NOT product-card with gift variant. The `gift` enum value exists but has no associated `giftTag` attr (parallel to `trialTag`/`featuredTag`).
 

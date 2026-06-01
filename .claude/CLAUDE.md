@@ -16,7 +16,7 @@
 | Parking | `parking.md` | OPEN deferred work, 6 taxonomy buckets, `**Status:**` field |
 | Last session | `handoff.md` | Most recent session summary |
 | Next session | `next-session-prompt.md` | Pre-written kick-off |
-| Specs | `specs/` | Numbered specs (00, 02, 16-20 + common-wp-styling-errors) |
+| Specs | `specs/` | Numbered specs (00, 02, 11, 17-22, 24 + common-wp-styling-errors; 16 archived, retired by 22) |
 | Active plans | `plans/` | `/strategic-plan` + `/phase-planner` outputs |
 | Strategy docs | `plans/strategy/` | Cross-cutting strategy docs |
 | Archived plans | `plans/archive/` | Completed / superseded / legacy plans |
@@ -39,4 +39,4 @@
 
 - Doc shapes per template in `~/.agents/skills/shared-references/doc-templates/`
 - `/handoff` runs slug-uniqueness gate on parking.md + walks every docs-registry.yaml entry
-- Recent decisions: see `decisions.md` (D57-D65 = 2026-05-24 doc-op programme close)
+- Recent decisions: see `decisions.md` (current through D146, 2026-06-01; D57-D65 = 2026-05-24 doc-op programme close)

@@ -7,8 +7,9 @@ plan_label: "[PLAN: opus] — main session coordinates parallel Sonnet implement
 parent_spec: .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md
 parent_session: small-giants-wp-2026-05-27-spec-22-phase-1.5-fix-1-shipped
 generated: 2026-05-28
-last_updated: 2026-05-30
+last_updated: 2026-06-01
 active_scope: STREAM_A_RESHAPED_POST_D99
+progress_2026_06_01: "Shared-branch converter advances (cloning thread, orthogonal to Stream A's DB pre-pass; Stream A steps unchanged): D141 routing fixes, D145 is-style carry + tag-authoritative content-leaf (b93a3b51), D146 sgs/button replaces core/button + multi-button grouping (270cd995). FR-22-20 variant detection PARTIALLY SHIPPED (D134, Commits 1-5/6). Plan-internal R-22-14 contradiction fixed this date: the 'add legacy fallback' instructions at Steps B0/B1 (lines ~329/332/387/399/631) were struck — they violated the P1-locked no-legacy-fallback rule; backwards-compat is Stream C WP-CLI batch migration only."
 progress_2026_05_30: |
   D107-D113 architectural cleanup batch SHIPPED (Stream A continuation):
     - D107: XS-2 voter tier-driven recognition + `blocks.tier` column (sgs/hero + sgs/cta-section flagged class-section)
@@ -326,10 +327,10 @@ R-22-14 invoked throughout Streams B/C/D: **NEVER add server-side legacy fallbac
 ```
 Step B0 — Review Fix 4 BLOCKED implementation
   Model:       inline
-  Action:      Read the diff at `.claude/worktrees/agent-adf7827adc88aea77` (specifically hero's render.php, deprecated.js, edit.js changes). Extract the proven migration template + identify what needs adding (server-side legacy fallback per Rater B Step 8). The diff is structurally sound — just needs the fallback and the prereq Fix 2b rows.
+  Action:      Read the diff at `.claude/worktrees/agent-adf7827adc88aea77` (specifically hero's render.php, deprecated.js, edit.js changes). Extract the proven migration template. NB the BLOCKED attempt was missing a "legacy fallback" — DO NOT add one: R-22-14 (P1-locked D92) forbids it. The diff is structurally sound — it needs the prereq Fix 2b rows, NOT a fallback.
   Files:       .claude/worktrees/agent-adf7827adc88aea77/plugins/sgs-blocks/src/blocks/hero/*
   Inputs:      Round 2 synthesis report; Fix 4 implementer report; Rater B Step 8 finding
-  Outcome:     Migration template extracted as `.claude/reports/2026-05-28-hybrid-migration-template.md` covering: (a) render.php diff shape (replace scalar inner-HTML with `echo $content` + add legacy fallback `if (empty($content) && !empty($headline)) { ...legacy... }`); (b) deprecated.js v(N+1) shape with isEligible + migrate(); (c) edit.js InnerBlocks template; (d) block.json schema (keep all attrs for round-trip).
+  Outcome:     Migration template extracted as `.claude/reports/2026-05-28-hybrid-migration-template.md` covering: (a) render.php diff shape (replace scalar inner-HTML with `echo $content`; NO server-side legacy fallback per R-22-14); (b) deprecated.js v(N+1) shape with isEligible + migrate(); (c) edit.js InnerBlocks template; (d) block.json schema (keep all attrs for round-trip).
   Exec:        SEQUENTIAL
   Deps:        Stream A complete (so prereq DB rows are in place)
   Marker:      SESSION-START — clean entry point for Stream B
@@ -384,7 +385,7 @@ Read FIRST:
 
 Do:
 1. Identify content-bearing attrs to deprecate (vs structural/styling/behavioural to keep on wrapper)
-2. Migrate render.php: replace scalar inner-HTML build with `echo $content` slot consumption. ADD LEGACY FALLBACK: `if (empty($content) && !empty($<primary-content-attr>)) { ...emit-legacy-scalars... }` so unedited production posts continue to render.
+2. Migrate render.php: replace scalar inner-HTML build with `echo $content` slot consumption. **R-22-14 (P1-LOCKED): NEVER add a server-side legacy fallback** (`if (empty($content) && !empty($<attr>)) {…}`) — it re-adds exactly what FR-22-6 retires. Unedited production posts are migrated by Stream C's WP-CLI batch existing-post migration, NOT by a per-block scalar guard.
 3. Add deprecated.js v(N+1) with isEligible + migrate() that builds transient InnerBlocks via createBlock()
 4. Update edit.js to use useInnerBlocksProps + template
 5. Verify save.js is `<InnerBlocks.Content />`
@@ -396,7 +397,7 @@ Constraints:
 - NO new bespoke blocks (R-22-9)
 - Touch ONLY plugins/sgs-blocks/src/blocks/<SLUG>/ (FR-22-6.1)
 - Preserve all attrs in block.json (round-trip safety)
-- Server-side legacy fallback REQUIRED (Rater B Step 8 finding)
+- Server-side legacy fallback FORBIDDEN per R-22-14 (P1-locked D92, supersedes the earlier Rater B Step 8 finding). Backwards-compat = Stream C WP-CLI batch migration, never a scalar guard.
 
 Return uncommitted diff + R-22-3 PASS + pytest PASS + build success.
 ```
@@ -628,8 +629,8 @@ Step D3 — Close Phase 2
 
 ### Primary decisions
 
-- **Decision:** Do we add server-side legacy fallback to every migrated render.php, OR rely on WP-CLI batch migration to convert all production posts first?
-  - **Options:** [A] Legacy fallback in every render.php (adds 10-20 lines of scalar code per block); [B] WP-CLI batch migration sweeps production sites first; [C] Hybrid (both — fallback as belt-and-braces, sweep as primary path)
+- **Decision — RESOLVED by R-22-14 (D92, P1-locked 2026-05-27):** NO server-side legacy fallback in any migrated render.php. Backwards-compat is **Option [B]** only — Stream C's WP-CLI batch migration sweeps production posts first. (Option [A]/[C] legacy-fallback paths are FORBIDDEN — they re-add the exact hybrid debt FR-22-6 retires; see memory `feedback_fr22_6_hybrid_problem_is_sgs_only_no_legacy_fallback_hacks`.)
+  - ~~**Options:** [A] Legacy fallback in every render.php; [B] WP-CLI batch migration first; [C] Hybrid~~ — superseded by R-22-14.
   - **Recommendation:** [C] Hybrid. The fallback is small per-block; the sweep is the primary migration path; if the sweep misses any post (caching, mid-deploy timing) the fallback prevents content loss.
   - **Why:** Production safety > code purity. The fallback IS scalar code we want to remove, but it's a 10-line guard per block, not 100 lines.
   - **Cost of wrong choice:** [A]-only adds maintenance burden across 61 blocks. [B]-only risks content loss if sweep misses anything. [C] is robust.

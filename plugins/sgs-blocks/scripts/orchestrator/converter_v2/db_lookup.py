@@ -1682,6 +1682,90 @@ def _slot_alias_to_standalone() -> dict[str, str]:
     return out
 
 
+@functools.lru_cache(maxsize=1)
+def _slot_alias_to_default_attrs() -> dict[str, dict]:
+    """Return {alias_lowercase: default_attrs_dict} from element-scope slots that
+    carry `standalone_block_default_attrs` (JSON). Mirrors `_slot_alias_to_standalone`
+    alias expansion. Lets a slot SET attrs on its emitted block — e.g. the
+    `button-primary`/`buttonSecondary`/`button-outline` slots each resolve to
+    sgs/button AND set inheritStyle to the matching theme preset, and the parked
+    `subheading` → sgs/heading{headingRole:'subheading'} routing. Added 2026-06-03."""
+    import json
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT slot_name, aliases, standalone_block_default_attrs FROM slots "
+            "WHERE scope='element' AND standalone_block_default_attrs IS NOT NULL "
+            "AND standalone_block_default_attrs != '' ORDER BY slot_name"
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return {}  # column absent on older DBs — no defaults
+    finally:
+        conn.close()
+    out: dict[str, dict] = {}
+
+    def _put(term: str, attrs: dict) -> None:
+        key = term.lower()
+        out.setdefault(key, attrs)
+        nh = key.replace("-", "")
+        if nh and nh != key:
+            out.setdefault(nh, attrs)
+
+    for slot_name, aliases_json, dattrs_json in rows:
+        try:
+            attrs = json.loads(dattrs_json)
+        except (ValueError, TypeError):
+            continue
+        if not isinstance(attrs, dict) or not attrs:
+            continue
+        _put(slot_name, attrs)
+        if aliases_json:
+            try:
+                for alias in json.loads(aliases_json):
+                    _put(alias, attrs)
+            except (ValueError, TypeError):
+                pass
+    return out
+
+
+def slot_default_attrs_for(sgs_classes: list[str]) -> dict:
+    """Per-slot default attrs for the first sgs BEM element resolving to a slot that
+    carries defaults (mirrors resolve_slug_from_bem Path 2 element matching, incl.
+    the compound-element prefix-strip). E.g. `__buttonSecondary` →
+    {'inheritStyle':'secondary'}. Empty dict when none. The walker applies these via
+    setdefault so any draft-extracted value wins (R-22-1 DB-driven, R-22-9 universal)."""
+    dmap = _slot_alias_to_default_attrs()
+    if not dmap:
+        return {}
+    for cls in sorted(c for c in sgs_classes if c.startswith("sgs-")):
+        bem = parse_sgs_bem(cls)
+        if bem is None or not bem.element:
+            continue
+        hit = dmap.get(bem.element.lower())
+        if hit:
+            return dict(hit)
+        if "-" in bem.element:  # compound element → try each segment (mirror Path 2b)
+            for seg in bem.element.lower().split("-"):
+                hit = dmap.get(seg)
+                if hit:
+                    return dict(hit)
+    return {}
+
+
+@functools.lru_cache(maxsize=1)
+def inherit_style_presets() -> frozenset:
+    """The set of `inheritStyle` preset values defined by the button-preset slots
+    (derived from slots.standalone_block_default_attrs — e.g. {'primary','secondary',
+    'outline'}). DB-driven so a BEM modifier matching one (`.sgs-button--secondary`)
+    can set inheritStyle without a hardcoded list. Added 2026-06-03."""
+    vals: set[str] = set()
+    for attrs in _slot_alias_to_default_attrs().values():
+        v = attrs.get("inheritStyle")
+        if isinstance(v, str) and v:
+            vals.add(v)
+    return frozenset(vals)
+
+
 @functools.lru_cache(maxsize=2048)
 def equivalent_block_for(block_slug: str, attr_name: str) -> str | None:
     """Return the standalone block slug if (block_slug, attr_name) is block-equivalent,

@@ -1596,6 +1596,17 @@ def _atomic_attrs_for(node: Tag, slug: str) -> dict:
             "imageAlt": node.get("alt", ""),
         }
 
+    # sgs/media (video) — <video>/<iframe> → mediaType=video + videoUrl (D97 video
+    # support: external embeds — YouTube/Vimeo/MP4). <video src> or first <source>;
+    # <iframe src> for embeds. 2026-06-03 (Bean): close the video/iframe routing gap.
+    if slug == "sgs/media" and tag in ("video", "iframe"):
+        src = node.get("src", "")
+        if not src and tag == "video":
+            source = node.find("source")
+            if source is not None:
+                src = source.get("src", "")
+        return {"mediaType": "video", "videoUrl": _resolve_media_url(src), "videoSource": "external"}
+
     # core/image — WP core schema: url, alt
     if slug == "core/image" and tag == "img":
         return {
@@ -2150,6 +2161,44 @@ def walk(
         if style_classes:
             existing = attrs.get("className", "").strip()
             attrs["className"] = (existing + " " + " ".join(style_classes)).strip() if existing else " ".join(style_classes)
+
+    # Per-slot default attrs (2026-06-03). A slot can SET attrs on its emitted block,
+    # not just choose the block: the button-preset slots (button-primary /
+    # buttonSecondary / button-outline) each resolve to sgs/button AND set
+    # inheritStyle to the matching theme preset, so the cloned button follows the
+    # preset CSS (Bean). DB-driven via slots.standalone_block_default_attrs (R-22-1),
+    # universal (R-22-9). setdefault → any value the draft actually extracted wins.
+    if slug is not None:
+        for _k, _v in db.slot_default_attrs_for(sgs_classes).items():
+            attrs.setdefault(_k, _v)
+
+    # Button preset from a BEM MODIFIER (2026-06-03). The natural BEM for a button
+    # variant is the modifier, e.g. `.sgs-button--primary` / `--secondary` /
+    # `--outline` (the real Mama's draft). When the resolved block has an
+    # `inheritStyle` attr and a modifier matches a known preset, set it so the
+    # cloned button follows that theme preset's CSS. Preset set is DB-derived
+    # (inherit_style_presets, from the button-preset slots' defaults); `ghost` is
+    # the draft's term for the outline preset. Gated on the block HAVING inheritStyle
+    # (no per-slug literal — R-22-1) and on the value not already set (draft wins).
+    # Gate on inheritStyle being a STRING-enum attr (sgs/button) — NOT the boolean
+    # `inheritStyle` that sgs/text/heading/quote carry (setting a string on those
+    # would make render.php's !empty() true and suppress their styling). DB-driven
+    # type check, no per-slug literal (R-22-1); universal over string-typed
+    # inheritStyle blocks (R-22-9). (qc-council Finding 5, 2026-06-03.)
+    if (slug is not None and "inheritStyle" not in attrs
+            and db.block_attrs(slug).get("inheritStyle", {}).get("attr_type") == "string"):
+        _presets = db.inherit_style_presets()
+        for _cls in sgs_classes:
+            _bem = db.parse_sgs_bem(_cls)
+            if _bem is None or not _bem.modifier:
+                continue
+            _mod = _bem.modifier.lower()
+            if _mod in _presets:
+                attrs["inheritStyle"] = _mod
+                break
+            if _mod == "ghost":
+                attrs["inheritStyle"] = "outline"
+                break
 
     # ---- Permitted exception 3 — top-level section container wrap ----
     # FR-22-4: every top-level section is based on sgs/container.

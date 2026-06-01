@@ -16,6 +16,10 @@ update_triggers:
   - Skill dispatch change at any stage
 ---
 
+> **2026-06-01 converter callout (cloning thread; D145/D146)** — two converter advances shipped:
+> - **D146 (`270cd995`)** — `sgs/button` now replaces `core/button` everywhere (converter `atomic_tag_map` reverse-walks `blocks.replaces`); a new `button-group` slot routes `ctas`/`buttons` wrappers → `sgs/multi-button`; `_group_loose_buttons` post-pass wraps loose `sgs/button` runs in `sgs/multi-button` (WP-mirror, DB-derived slug, idempotent). Spec 11 / P-9 complete.
+> - **D145 (`b93a3b51`)** — `walk()` carries `is-style-*` classes from the source node onto the emitted block (e.g. `is-style-trustpilot` on `sgs/star-rating`); the content-leaf ladder is now **tag-authoritative** (node's own tag via `atomic_tag_map` routes FIRST + ungated — `<img>`→sgs/media, `<p>`→text, `<a>`→core/button — THEN text-capable BEM segment, THEN sgs/text). Builds on D141's §FR-22-4.1.
+
 > **2026-05-30 D107-D113 follow-up callout** — tier-driven Stage 1 + block_composition data layer + canonical_slot coverage uplift:
 > - **D107 Stage 1 voter rewrite** — `per-section-convention-voter.py:295-305` now queries `blocks.tier` via `db_lookup.is_class_section_block()` helper (was: literal-slug-match against every `sgs-*` class). Section-roots → confidence 1.0; non-section-roots → gap-candidate.
 > - **D107 /sgs-update integration** — `sgs-update-v2.py` Stage 1 `_index_sgs_block_files` reads `supports.sgs.is_section_root` from each `block.json` and writes `blocks.tier` (`'class-section'` if true else `'block'`). Idempotent. 2 rows currently `class-section`.

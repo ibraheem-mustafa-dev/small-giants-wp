@@ -1,7 +1,7 @@
 ---
 doc_type: master-plan
 project: small-giants-wp
-last_updated: 2026-05-26
+last_updated: 2026-06-01
 status: closed — see archive
 ---
 

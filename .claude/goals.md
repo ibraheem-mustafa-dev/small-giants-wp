@@ -1,6 +1,6 @@
 # small-giants-wp — Goals
 
-**Last updated:** 2026-05-30 (XS-batch D107-D113 LIVE: section-root tier flag + `blocks.tier` column + `block_composition` table data layer + XS-4 canonical_slot port at 31.8% + XS-5 slot vocabulary cleanup; XS-3 walker REVERTED post-regression — refined trigger queued; D6 inheritance script PARTIAL — threshold tuning deferred. Prior: 2026-05-27 — Spec 22 Phase 1 ARCHITECTURAL CLOSED + Phase 1.5 MEASURED: 0/21 body cells PASS ≤5%, mean 81.55%)
+**Last updated:** 2026-06-01 (theme thread: mobile-nav full-fix D143 + product-card 6 decisions ratified D144; cloning thread: D145 is-style/content-leaf + D146 sgs/button-replaces-core/button; FR-22-20 variant detection PARTIALLY SHIPPED D134. Prior 2026-05-30: XS-batch D107-D113 LIVE: section-root tier flag + `blocks.tier` column + `block_composition` table data layer + XS-4 canonical_slot port at 31.8% + XS-5 slot vocabulary cleanup; XS-3 walker REVERTED post-regression — refined trigger queued; D6 inheritance script PARTIAL — threshold tuning deferred. Prior: 2026-05-27 — Spec 22 Phase 1 ARCHITECTURAL CLOSED + Phase 1.5 MEASURED: 0/21 body cells PASS ≤5%, mean 81.55%)
 
 ## Primary near-term goal (2026-05-26 onwards — gates everything until met)
 
