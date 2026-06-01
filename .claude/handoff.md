@@ -1,44 +1,78 @@
-# Session Handoff — 2026-06-02 (CLONING PIPELINE thread)
+# Session Handoff — 2026-06-03 (CLONING PIPELINE thread)
 
-> Two-thread close. THIS file = cloning pipeline. Theme/blocks work → `.claude/handoff-theme.md`.
+> Cloning thread. The theme/blocks thread runs in a parallel session (shared branch) → `.claude/handoff-theme.md` + `.claude/next-session-prompt-theme.md`. Prior handoffs in git history + `decisions.md`.
 
 ## Completed This Session
-1. **FR-22-20 universal variant detection — SHIPPED + LIVE-DOM VERIFIED** (commits `1a48c602`→`55f42e1b`). DB schema (`blocks.variant_attr` + `variant_slots`) + hero `supports.sgs.variants` + `/sgs-update` population + converter `detect_variant` (db_lookup) + emit-path enrichment (convert.py) + hero `$is_split` band-aid reverted. 3-rater qc-council caught 1 real bug (truthiness dropped numeric-0 → fixed via `_slot_extracted`). Hero renders `sgs-hero--split` via the clean gate on canary 144. (D134)
-2. **Variant-routing criterion LOCKED** + all 66 blocks categorised (`.claude/scratch/2026-06-02-brain-dump-variant-routing-and-issues.md`). The slot-fingerprint only fits content-distinct variants (~2 blocks); the rest need a modifier-class mechanism (D135). Criterion: a block needs ROUTING iff the variant makes distinct content/structure/terms APPEAR; else it's a CSS setting (D0-transferable).
-3. **CSS-transfer fidelity audit (D136)** — draft-vs-clone computed-style diff proved 4 systemic transfer failures: imposed section max-width 1200; dropped `__inner` wrappers (fold); imposed hero gradient; mangled grid-template-columns. This is the new priority.
-4. **Class-section width band-aid** (committed `e27ff591`) — `widthMode:'full'` on slug-resolved section wraps; hero/trust-bar now full-width. PARTIAL — to be superseded by the faithful-transfer fix. Rejected two converter detect-mode band-aids (Bean).
-5. **Static-div editor bug FIXED** (latest commit) — `emit_sgs_container_wrapping` emitted a static `<div class="wp-block-sgs-container">` that fails WP validation against `save()`=`<InnerBlocks.Content/>` → "unexpected/invalid content" on every cloned container. Now emits children directly (mirrors `_emit_section_container`). Re-cloned to deploy.
+1. **Editor "invalid content" / "cannot be previewed" — root-caused from the runtime + FULLY FIXED + live-DOM verified (D141).** Playwright editor investigation found 2 issues in 2 layers: (a) 10 text-only leaf elements wrapped as `sgs/container`; (b) `sgs/media` `ReferenceError: imageId` in edit.js. Fixes: media `imageId` destructure; §FR-22-4.1 content-leaf step (tag-authoritative routing); compound prefix-strip (`card-tag`→label); `disclaimer`→`sgs/notice-banner` slot; badge repoint; chrome-skip header/footer. Editor store post-fix: 0 invalid blocks, 0 console errors.
+2. **is-style carry + tag-authoritative content-leaf routing (D145, `b93a3b51`).** Drafts can request a block style (`is-style-*`) on a recognised block; the node's own tag is authoritative for content-type (img→media, etc.).
+3. **`sgs/button` REPLACES `core/button` everywhere + WP-mirror `sgs/multi-button` grouping — P-9 COMPLETE (D146, `270cd995`).** 2-rater qc-council "P-9 COMPLETE: YES".
+4. **Theme-wide button PRESETS (D147, `603cbaaf`).** `.sgs-button--primary/--secondary/--outline/--ghost` (+ element slots) → `sgs/button` with `inheritStyle` set → follows the theme preset. New `slots.standalone_block_default_attrs` column (also closes the parked subheading→heading need). qc-council caught + fixed a boolean-attr corruption bug (Finding 5).
+5. **`<video>`/`<iframe>` → `sgs/media` (D147, `603cbaaf`)** + **`sgs/star-rating` Trustpilot style variations (D147, `6f7abca6`)** (flat-green + official-badge; REST-verified) — the social-proof trustpilot-bar can now clone via real components.
+6. **Cart-block research (`/research-check`)** → architecture (Store API + Interactivity API, not cart-fragments) + a full theme-thread build prompt at `.claude/scratch/2026-06-03-prompt-sgs-cart-and-icon-enhancements.md`.
 
 ## Current State
-- **Branch:** `feat/fr22-4-1-universal-wrapper` at HEAD (static-div fix). NOT merged (merge-prep pending).
-- **Tests:** converter emit-tests pass; no full suite run. **Build:** blocks build green.
-- **Uncommitted:** none (band-aid reverted; pre-existing lucide/trust-badges/reports unchanged).
-- **Canary 144:** re-cloned (run 113800 then a static-div-fix re-clone in flight). Pixel-diff ~61.5% (informational; the transfer gaps are why).
+- **Branch:** `feat/fr22-4-1-universal-wrapper` at `603cbaaf` — pushed. **Shared with the parallel theme thread** (its commits interleave). **NOT merged** (merge-prep gate: R-22-5 per-block split + R-22-13 Bean visual sign-off pending).
+- **Tests:** no pytest in env; `db_lookup.py` equivalent_block_for smoke PASS; converter imports clean; all targeted unit + regression tests pass.
+- **Build:** n/a for converter (Python). Block changes (media, star-rating) built + deployed to canary.
+- **Uncommitted changes:** none (code committed; DB changes live in `sgs-framework.db`, not git-tracked).
+- **Canary page 144** reflects the editor-fix re-clone (run `mamas-munches-homepage-2026-06-01-170153`).
 
 ## Known Issues / Blockers
-- **CSS transfer is unfaithful (4 gaps, D136)** — the priority; section widths/backgrounds/grids/hero-gradient diverge from the draft.
-- **Editor "unexpected content" on containers** — fix committed + re-cloning; Bean to confirm in editor. Media "cannot be previewed" (save()=null) — likely same class; verify post-reclone.
-- **Variant rollout incomplete** — only hero (slot-fingerprint); stylistic-variant majority needs the modifier-class mechanism.
+- **CSS-transfer fidelity (the 4-gap D136 audit) is still unfixed** — it is the next priority (the pipeline's core job). Gap-4 brand premise was wrong (corrected: draft brand grid is `1fr 1fr`, no bug; only trust-bar grid is real).
+- **Branch unmerged** — accumulating commits from two threads; merge-prep increasingly overdue.
+- **Outcome check (Gate 3.5):** items 1–6 are OUTCOME ACHIEVED (editor errors gone — verified; button/preset/video/star-rating shipped + verified). The session's *editor-error + button* outcomes landed; the *CSS-transfer fidelity* outcome was NOT this session's scope and remains pending.
 
 ## Next Priorities (in order)
-1. **Faithful CSS transfer (the 4 gaps, D136)** — start with theme-CSS-by-position (gap 1) + fold stop-dropping-`__inner` (gap 2); then hero gradient + grid-columns. NOT converter band-aids.
-2. **Variant-routing rollout** — modifier-class mechanism for stylistic variants (D135).
-3. **Real image sideload** (media-map) — hero/product 404.
-4. **Merge-prep → main** — split per-block (R-22-5) + Bean sign-off.
+1. **Faithful CSS transfer (the 4-gap audit, D136)** — gap 1 (theme-CSS by position) + gap 2 (fold must stop dropping `__inner`), paired; then gap 3 (hero gradient) + gap 4 (trust-bar grid only). Design via /brainstorming + /qc-council first (sensitive).
+2. **Real image sideload (media-map)** — hero/product images dry-run 404; biggest pixel lever once structure is faithful.
+3. **Merge-prep → main** — split per-block (R-22-5) + Bean visual sign-off (R-22-13).
+4. Variant-routing rollout (modifier-class mechanism, D135); video/iframe→media is done so a future media-video clone can use it.
 
 ## Files Modified
 | File | What changed |
 |------|---|
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | FR-22-20 detector + widthMode:full + static-div removal |
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | FR-22-20 emit enrichment (committed); band-aid reverted |
-| `plugins/sgs-blocks/src/blocks/hero/{block.json,render.php}` | variant declaration + $is_split revert |
-| `plugins/sgs-blocks/scripts/sgs-update-v2.py` | variant_attr/variant_slots population |
-| `.claude/decisions.md`, `next-session-prompt.md`, `scratch/2026-06-02-*` | D134-D136 + audit + criterion |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | content-leaf routing, button grouping, is-style carry, slot-default-attrs apply, modifier→inheritStyle (string-gated), video/iframe `_atomic_attrs_for` |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | prefix-strip Path 2b; `_slot_alias_to_default_attrs`/`slot_default_attrs_for`/`inherit_style_presets` helpers |
+| `plugins/sgs-blocks/src/blocks/button/block.json` | `replaces: core/button` |
+| `plugins/sgs-blocks/src/blocks/media/edit.js` | destructure `imageId` (editor crash fix) |
+| `plugins/sgs-blocks/src/blocks/star-rating/{block.json,render.php}` | Trustpilot style variations |
+| `.claude/decisions.md`, `state.md`, `next-session-prompt.md` | D147 + state + prompt update (STOP catalogue 36→38) |
+| `sgs-framework.db` (live, not git) | `slots.standalone_block_default_attrs` column; button-preset slots + hyphenated aliases; `disclaimer` slot; badge repoint; video/iframe `html_tag_to_core_block` rows |
 
 ## Notes for Next Session
-- The pipeline's job is **faithful CSS transfer**; converter detect-mode conditionals are the wrong layer (Bean rejected twice — memory `feedback_pipeline_transfers_draft_css_not_converter_detection_hacks`).
-- The draft pattern: full-bleed sections (no max-width) + `__inner` wrappers (max-width:960). Serve the mockup on localhost to diff computed styles (`file://` blocked in Playwright MCP).
-- Orchestrator path is `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (NOT `scripts/orchestrator/`).
+- **DB changes survive `/sgs-update`** (slots not rebuilt; Stage 1 reconciles `blocks.replaces` from block.json). Bean ran `/sgs-update` in the parallel session — verified it kept all this session's slot work intact.
+- **Faithful transfer ≠ converter detect-mode hacks** (STOP #33) — the CSS-transfer fix belongs in the D0/D1/D2 transfer layer or a theme-CSS-by-position rule, never a per-section walker conditional.
+- **Shared branch** — coordinate doc edits with the theme thread (decisions.md / state.md / parking.md get concurrent writes; D-numbers are claimed across both threads — D141/D145/D146 cloning, D142/D143/D144 theme, D147 cloning).
+- A temp admin password was set then **restored** to the documented `.claude/secrets/sandybrown.env` value — that credential is valid.
 
 ## Next Session Prompt
-See `.claude/next-session-prompt.md` (cloning thread — full orchestration plan, STOP catalogue #1-#36, reading list, pre-flight ritual). Theme thread: `.claude/next-session-prompt-theme.md`.
+
+The full orchestration plan lives in `.claude/next-session-prompt.md` (cloning thread) — read it end-to-end (warm start mandatory: STOP catalogue #1–38 + pre-flight ritual + mandatory reading list). Opener = faithful CSS transfer (the 4-gap D136 audit). Summary of mandatory tooling:
+
+### Skills to Invoke
+| Skill | When |
+|-------|------|
+| `/autopilot` | FIRST (auto-injected) — live routing + ADHD support |
+| `/brainstorming` | Design the transfer-layer fix (sensitive: fold + theme-CSS) before coding |
+| `/gap-analysis` | Grade outputs before delivery |
+| `/lifecycle` | Before any skill/agent/pipeline change |
+| `/research` | If a transfer approach needs the gold standard |
+| `/strategic-plan` | Order the 4-gap fixes |
+| `/systematic-debugging` | Root-cause each gap from artefacts + draft-diff |
+| `/qc-council` | MANDATORY before every converter/block commit (blub.db 255) |
+
+### MCP Servers & Tools
+| Tool | For |
+|------|-----|
+| Playwright MCP | Serve the mockup on localhost + draft-vs-clone computed-style diff (`file://` blocked); live-DOM verification |
+| `/wp-blocks` (`python ~/.claude/hooks/wp-blocks.py dump`) | Schema enumeration before any "missing X" |
+| `/sgs-db` (read) + `sqlite3` (writes) | DB ground truth |
+
+### Agents to Delegate To
+| Agent | When |
+|-------|------|
+| `wp-sgs-developer` | Heavy converter / theme-CSS / fold build |
+| `design-reviewer` | Visual parity draft-vs-clone after the transfer fix |
+
+### Guardrails
+- Deploy before measure (`build-deploy.py --blocks-only` + OPcache reset). Draft-diff, not pixel-diff, for layout. `--converter-v2` on orchestrator runs; `WP_DEBUG_DISPLAY` false on staging. `/qc-council` before every converter/block commit. Branch stays open until merge-prep + Bean sign-off.

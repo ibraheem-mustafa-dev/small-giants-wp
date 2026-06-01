@@ -39,4 +39,4 @@
 
 - Doc shapes per template in `~/.agents/skills/shared-references/doc-templates/`
 - `/handoff` runs slug-uniqueness gate on parking.md + walks every docs-registry.yaml entry
-- Recent decisions: see `decisions.md` (current through D146, 2026-06-01; D57-D65 = 2026-05-24 doc-op programme close)
+- Recent decisions: see `decisions.md` (current through D147, 2026-06-03 — cloning thread: button presets + video/iframe→media + star-rating styles; D57-D65 = 2026-05-24 doc-op programme close)
