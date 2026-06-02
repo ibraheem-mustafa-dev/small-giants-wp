@@ -438,6 +438,23 @@ Behaviour:
 
 `/sgs-clone` Stage 10 invokes `push-theme-snapshot` automatically via the auto-derived `--client` flag (Decision 16′).
 
+### Live-style precedence: `wp_global_styles` SUPERSEDES `theme.json` (2026-06-03, D156)
+
+**Critical (caught live on sandybrown).** WordPress compiles the page's `global-styles-inline-css` by merging the `wp_global_styles` post (the Site-Editor USER layer) **on top of** `theme.json`. Wherever both define a property, **the post wins**. On sandybrown the post is ID 7. Consequence: a change written ONLY to `theme.json` on disk — including a `push-theme-snapshot.py` push — has **no live effect** for any property the post also defines. (This corrects the "conflicts are rare" framing above: it is not a conflict, it is a deterministic override.)
+
+**To change live per-client styles, update BOTH:**
+1. `sites/<client>/theme-snapshot.json` (`styles.css` field) — the version-controlled source of truth, AND
+2. the live `wp_global_styles` post via REST: `POST /wp-json/wp/v2/global-styles/<id>` (app-password Basic auth).
+Then bump `theme/sgs-theme/style.css` `Version:` to bust WP's compiled-styles cache.
+
+**Known gap:** `push-theme-snapshot.py` writes the disk file ONLY — it does NOT update the `wp_global_styles` post (parking `P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES`). Until fixed, snapshot pushes silently fail to change live styles.
+
+**Orphan:** `theme/sgs-theme/styles/mamas-munches.css` is NOT enqueued (retired Spec-16 style-variation system) — never put overrides there. Memory: `canary-live-styles-come-from-wp-global-styles-post`.
+
+### theme.json raw custom values + overridable defaults (2026-06-03, D156)
+
+`settings.color.custom` / `customGradient` / `customDuotone` and `settings.spacing.customSpacingSize` are `true`, and `settings.spacing.units` covers `px / em / rem / % / vw / vh`. This lets every block colour/spacing control accept **raw** values (hex, raw px), not only token presets — fixing the recurring "control rejected raw px" class. Framework default colour pairings are WCAG-safe; every framework default colour/spacing is an **overridable CSS custom property** (`property: var(--sgs-x, <default>)`) the editor controls can set per-instance. Memory: `block-style-controls-accept-raw-css-and-overridable`. Light-pastel client primaries still need a per-client dark-text override (framework default is white-on-primary, WCAG-safe for saturated primaries; universal auto-contrast for any primary is parked — `P-AUTO-CONTRAST-LIGHT-PRIMARIES`).
+
 ### Hide Browse-styles UI (Decision 17′)
 
 On single-stylesheet installs, the WP Browse-styles picker is hidden via PHP filter on `wp_theme_json_data_styles` so the now-useless picker doesn't confuse operators.

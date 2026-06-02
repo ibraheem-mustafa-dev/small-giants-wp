@@ -172,6 +172,21 @@ Each FR carries: behaviour, acceptance criteria, model recommendation, 4-layer t
 
 ---
 
+### FR-S1-4 — Skip-link (accessibility) — use WP core's, theme styles it (2026-06-03, D157)
+
+**Plain English:** The "Skip to main content" link is a mandatory WCAG 2.4.1 element. It is provided by **WordPress core** (`#wp-skip-link`, class `skip-link screen-reader-text`, injected automatically) — the theme MUST NOT add its own. It is NOT a Floating-UI element (Spec 18 = back-to-top + reading-progress only) and has **no Customiser control** — a skip-link must always exist, so it is never operator-disableable.
+
+**What changed (D157):** the framework header previously carried a SECOND, redundant `<a class="skip-link" href="#main">` in `parts/header.html`. Its only hide mechanism was `top:-100%` (relative to `<body>`, ≈-246px) so the full-size button drifted on-screen (pink, mid-left) and toggled position on click. Fix: the redundant theme link was **removed from `parts/header.html`** (WP core handles it); the theme now styles only WP core's link.
+
+**Styling contract:** hide-until-focus via the clip-rect pattern in `theme/sgs-theme/assets/css/utilities.css`, scoped `.skip-link:not(.screen-reader-text)` so it does not fight WP core's own `#wp-skip-link` rules; on `:focus` it appears top-left (`position:fixed; top:5px; left:5px`) with a high-contrast background + visible focus ring. The duplicate `.skip-link:focus` rule in `header-modes.css` was removed. Any theme-CSS change here bumps `theme/sgs-theme/style.css` `Version:`. `parts/header-shrink.html` / `-sticky.html` / `-transparent.html` must NOT reintroduce a theme skip link.
+
+**Model:** Haiku/Sonnet
+**Tests:** one skip-link in the DOM (`#wp-skip-link`); computed `width:1px`/`clip:rect(...)` unfocused, visible top-left on focus; contrast ≥ 4.5:1 focused.
+**Depends on:** FR-S1-1
+**Universal-benefit:** Yes
+
+---
+
 ## §S2 — Style Variation → Template Part Linkage
 
 **Plain English:** Activating a style variation seeds the matching header/footer pattern into `wp_template_part` DB records. Slug comparison + transient lock guard against races. Per-record post meta marks pipeline-generated content for safe re-clones. Resolves gap #1.
