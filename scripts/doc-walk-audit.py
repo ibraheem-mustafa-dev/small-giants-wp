@@ -112,36 +112,51 @@ def audit(reg: dict) -> int:
     print(f"{'last commit':<12}  {'src':<9}  path")
     print("-" * 78)
     for date, path, src in rows:
-        flag = "  <-- UNTRACKED: register or give a verdict" if src == "UNTRACKED" else ""
+        flag = "  <-- UNTRACKED (judge vs criterion; usually OK to leave out)" if src == "UNTRACKED" else ""
         print(f"{date:<12}  {src:<9}  {path}{flag}")
     if untracked:
-        print(f"\n{len(untracked)} UNTRACKED doc(s) in scan folders — add to canonical_docs or record a no-change verdict.")
+        print(f"\n{len(untracked)} UNTRACKED doc(s) in scan folders. Registry is deliberately LEAN —")
+        print("register one ONLY if it is a project FOUNDATION altered regularly AND read at")
+        print("session start / frequently. Dormant feature specs, generated docs, completed")
+        print("plans, and one-offs correctly stay OUT (keeps the registry + handoff-walk light).")
     return 0
 
 
 def gate(reg: dict, since: str, strict: bool) -> int:
+    """Blocking scope = canonical_docs (the foundation set that MUST be walked).
+    Untracked scan-folder docs are surfaced informationally only — leaving them
+    out is usually correct (lean-registry criterion). They never block."""
     canon = canonical_paths(reg)
+    canon_set = set(canon)
     scanned = scan_folder_docs(reg)
-    all_docs = list(dict.fromkeys(canon + scanned))  # dedupe, keep order
+    untracked = [p for p in scanned if p not in canon_set]
     modified = session_modified(since)
     verdicts = read_receipt()
 
-    not_modified = [p for p in all_docs if p not in modified]
-    unaccounted = [p for p in not_modified if p not in verdicts]
+    canon_unaccounted = [p for p in canon if p not in modified and p not in verdicts]
 
     print(f"DOC-WALK GATE — session range {since}..HEAD")
-    print(f"  modified this session : {sum(1 for p in all_docs if p in modified)}")
-    print(f"  not modified          : {len(not_modified)}")
-    print(f"  of those, no verdict  : {len(unaccounted)}\n")
-    if unaccounted:
-        print("These docs were neither updated this session nor given a verdict in")
-        print(".claude/.doc-walk-receipt.md (`path — no-change: <reason>` / `path — updated: <sha>`):")
-        for p in unaccounted:
+    print(f"  canonical docs        : {len(canon)} (modified {sum(1 for p in canon if p in modified)})")
+    print(f"  canonical unaccounted : {len(canon_unaccounted)}  (BLOCKS in --strict)\n")
+    if canon_unaccounted:
+        print("REGISTRY (canonical) docs neither updated this session nor given a verdict")
+        print("in .claude/.doc-walk-receipt.md (`path — no-change: <reason>` / `path — updated: <sha>`):")
+        for p in canon_unaccounted:
             print(f"  - {p}")
-    if strict and unaccounted:
-        print("\nGATE FAILED (--strict): account for every doc before completing the handoff.")
+    # Untracked scan-folder docs — informational only (judge against the criterion below).
+    untracked_unmodified = [p for p in untracked if p not in modified]
+    if untracked_unmodified:
+        print(f"\nINFO — {len(untracked_unmodified)} untracked scan-folder doc(s) (NOT in the registry).")
+        print("Leaving these out is usually CORRECT — register one ONLY if it is a project")
+        print("FOUNDATION that is altered regularly AND needs reading at session start / often.")
+        print("These do NOT block the gate:")
+        for p in untracked_unmodified:
+            print(f"  - {p}")
+    if strict and canon_unaccounted:
+        print("\nGATE FAILED (--strict): walk every CANONICAL doc (update it or add a no-change verdict) before completing the handoff.")
         return 1
-    print("\nGATE OK" if not unaccounted else "\nGATE: verdicts needed (non-strict — not blocking).")
+    print("\nGATE OK — every canonical doc accounted for." if not canon_unaccounted
+          else "\nGATE: canonical verdicts needed (non-strict — not blocking).")
     return 0
 
 

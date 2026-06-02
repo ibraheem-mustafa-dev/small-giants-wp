@@ -81,10 +81,19 @@ project_credentials:
 
 # Doc-walk scan folders — /handoff Gate 4.5 + scripts/doc-walk-audit.py enumerate
 # *.md (+ *.yaml) DIRECTLY in each folder (NON-recursive — subfolders like
-# specs/archive/ + plans/archive/ + plans/strategy/ are excluded) and flag any
-# file NOT in canonical_docs above as "untracked — register it or give a verdict".
-# This closes the 2026-06-02 gap where specs/plans docs not in the registry +
-# the base-.claude docs were skipped during a handoff doc-walk.
+# specs/archive/ + plans/archive/ + plans/strategy/ are excluded) and SURFACE any
+# file NOT in canonical_docs as "untracked" — INFORMATIONAL only, never blocking.
+# The registry is deliberately LEAN: a doc belongs in canonical_docs ONLY if it is
+# a project FOUNDATION that is altered on a regular basis AND needs reading at
+# session start (or frequently across sessions). Dormant feature specs (booking/
+# forms/popups/chatbot/etc.), GENERATED docs (02-SGS-BLOCKS-REFERENCE), completed/
+# superseded plans, READMEs, and one-offs CORRECTLY stay out — adding them would
+# bloat every session's context-load + the handoff in-depth walk. The scan exists
+# to surface NEW docs for a conscious in/out judgement, not to force registration.
+# Only the CANONICAL set is the blocking handoff-walk (scripts/doc-walk-audit.py
+# --gate --strict blocks on unaccounted canonical_docs, not on untracked ones).
+# This closes the 2026-06-02 gap where a handoff updated only ~4 canonical docs and
+# skipped the rest of the registry walk.
 doc_walk_scan_folders:
   - {path: .claude/,       recursive: false, note: "base .claude files only (architecture.md, dev-setup.md, goals.md, cloning-pipeline-flow.md, etc.) — NOT subfolders"}
   - {path: .claude/specs/, recursive: false, note: "exclude specs/archive/"}
