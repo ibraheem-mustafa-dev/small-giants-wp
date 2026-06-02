@@ -79,7 +79,7 @@ Chrome/Edge 90+, Firefox 90+, Safari 15+, iOS Safari 15+, Samsung Internet 18+. 
 
 ## Build Phase
 
-Phase 1a (theme foundation) is **complete**. Theme version 1.2.1, deployed and functional on palestine-lives.org.
+Phase 1a (theme foundation) is **complete**. Theme version 1.3.6, deployed and functional on palestine-lives.org.
 
 **Phase 2 theme priorities (from master feature audit):**
 - `prefers-contrast` high-contrast support (P1, S-tier differentiator — first WP theme to support this)
@@ -87,6 +87,7 @@ Phase 1a (theme foundation) is **complete**. Theme version 1.2.1, deployed and f
 - Dark mode toggle + `light-dark()` colour palette (P2)
 - `content-visibility: auto` on below-fold sections (P2, performance)
 - Block patterns library — hero, feature, testimonial, CTA, content, footer, header patterns (P2)
+- **Mega-menu generic layout patterns SHIPPED 2026-06-02** — 7 patterns registered under `mega-menu-layouts` category; create-panel inspector shortcut added. See `patterns/` directory.
 
 See `docs/plans/2026-02-21-master-feature-audit.md` for the full graded roadmap.
 

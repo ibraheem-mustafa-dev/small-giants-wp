@@ -48,7 +48,7 @@ block-name/
 
 - `sgs-layout` — Container, Hero
 - `sgs-content` — Info Box, Counter, Trust Bar, Heritage Strip, Card Grid, Testimonial, etc.
-- `sgs-interactive` — Accordion, Testimonial Slider, WhatsApp CTA
+- `sgs-interactive` — Accordion, Testimonial Slider, WhatsApp CTA, Option Picker
 - `sgs-forms` — Form, Form Step, Form Fields, Form Review
 
 ## Build Commands
@@ -102,7 +102,8 @@ rm sgs-deploy.tar
 | Heritage Strip | Deployed |
 | Brand Strip | Deployed |
 | Trust Bar | Deployed (merged certification-bar capability + auto-scroll 2026-05-29 D95 — badgeStyle variants: icon-circle (default), text-only, image-badge; auto-scroll marquee when items overflow columns. Renamed from Trust Badges 2026-05-31.) |
-| Notice Banner | Deployed |
+| Notice Banner | Deployed (FR-22-6 InnerBlocks migration 2026-06-02 — render.php echoes `$content` + `sgs/text` child; deprecated.js v3. version 0.4.0) |
+| Icon | Deployed (shape backgrounds 2026-06-02 — `backgroundShape`: none/circle/pill/square/outline; clickable via existing linkUrl/linkTarget; hover controls: hoverIconColour / hoverShapeColour / hoverScale; deprecated.js v1. version 0.2.0) |
 | WhatsApp CTA | Deployed |
 | Accordion + Accordion Item | Deployed |
 | Table of Contents | Deployed (broken — needs debugging) |
@@ -113,6 +114,8 @@ rm sgs-deploy.tar
 | Media | Deployed (video support added 2026-05-29 D97 — mediaType toggle, YouTube/Vimeo/MP4 external embeds, WP-library internal video, poster, playback controls) |
 | Decorative Image | Built (L14, needs build + deploy) |
 | Mega Menu | Built (L3, needs build + deploy) |
+| Option Picker | Deployed (sgs-interactive — exclusive radio-group pill chooser; Spec 24 FR-24-15 / D144 Phase A; no-JS-safe SSR + bubbling `sgs:option-selected` event. version 0.1.2) |
+| Cart | Deployed (WooCommerce mini-cart count badge v1 — Store API hydrate, SSR 0 then client-hydrate, no jQuery, cart-fragments dequeued, editor static placeholder; drawer mode = Phase 2) |
 
 > **sgs/svg-background retired 2026-05-28 (D93).** SVG background capability merged into `sgs/container` as `bgSvg*` attrs (7 attrs: `bgSvgContent`, `bgSvgPosition`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `bgSvgOpacity`, `bgSvgMinHeight`, `bgSvgTextShadow`). Existing posts auto-migrate via `deprecated.js` v2 entry in container.
 
@@ -237,6 +240,8 @@ Use `DesignTokenPicker` component for colour selection from theme.json palette i
 - **`viewScriptModule` vs `viewScript`** — use `viewScriptModule` (ES modules, deferred). Don't use `viewScript` (classic scripts).
 - **CSS `color` fallback pattern** — use `:not([style*="color"])` selectors so inline styles from the editor always win over CSS defaults.
 - **`useInnerBlocksProps`** — always use this (not `InnerBlocks` component directly) for proper block editor integration.
+- **CPT `custom-fields` support required for meta REST exposure** — a custom post type must declare `'supports' => [ ..., 'custom-fields' ]` in `register_post_type()` for any `register_meta()` call with `'show_in_rest' => true` to expose the `meta` field in REST responses. Without it, meta round-trips silently return nothing. Caught 2026-06-02 during product-card variation-sets panel work.
+- **Theme CSS cache-busts off the theme `style.css` Version header, not `block.json`** — SGS theme enqueues `style.css` with `?ver=` derived from the `Version:` field in `theme/sgs-theme/style.css`. Any theme-CSS change (including token updates) requires bumping that Version header (e.g. 1.3.5 → 1.3.6) to bust the browser cache. Bumping `block.json` or plugin version has no effect on theme CSS.
 
 ## Adding a deprecation when a block's save output changes
 

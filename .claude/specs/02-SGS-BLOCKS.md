@@ -64,7 +64,9 @@ sgs-blocks/
 │   │   ├── modal/                # Lightbox/modal overlay
 │   │   ├── google-reviews/       # Google Business Profile reviews display
 │   │   ├── mega-menu/            # Block-based mega menu for Navigation block
-│   │   └── decorative-image/     # Absolute-positioned decorative floating images
+│   │   ├── decorative-image/     # Absolute-positioned decorative floating images
+│   │   ├── option-picker/        # ★ NEW 2026-06-02 — Radio-group pill chooser (sgs-interactive; atomic). See Spec 24 FR-24-15
+│   │   └── cart/                 # ★ NEW 2026-06-02 — WooCommerce cart count badge v1 (sgs-interactive)
 │   │
 │   ├── components/               # Shared React components for editor UI
 │   │   ├── ResponsiveControl.js  # Breakpoint switcher (mobile/tablet/desktop)
@@ -464,7 +466,7 @@ block-name/
 - `alignment` — left | centre (default: centre)
 - `borderRadius` — preset slug (default: medium)
 
-**Render:** Static `save()`.
+**Render:** Dynamic `render.php` (FR-22-6 InnerBlocks migration shipped 2026-06-02 — `$content` echo replaces static save; `deprecated.js` entry preserves existing posts). `save.js` returns `null`.
 
 **Indus Foods usage:** The MOV banner ("Minimum order just £75 — lower than most wholesalers...") uses `success` variant with truck icon and centred text.
 
@@ -1379,6 +1381,36 @@ Attributes: iconSource (enum), iconName, emojiChar, dashiconName, wpIconName, ic
 SGS-BEM: `.sgs-icon` root + `__link` / `__svg` / `__emoji` / `__dashicon` + `--source-{lucide,wp-icon,dashicon,emoji}` + `--size-{small,medium,large,custom}`.
 
 Retired: the legacy sgs/icon-block slug (was a backward-compat shim) was deleted in commit 8a587e10.
+
+**2026-06-02 enhancements:** shape backgrounds (circle / square / rounded-square variants with background colour + padding attrs), clickable mode (wraps icon in `<a>` with `linkUrl` / `linkTarget` / `linkRel` attrs), and hover effects (lift / scale / colour-shift via the universal hover extension). These bring sgs/icon to parity with the converter's emit needs for icon slots within `sgs/trust-bar` Bound mode and `sgs/info-box` icon areas.
+
+### sgs/option-picker (NEW — 2026-06-02, theme thread)
+
+Atomic radio-group pill chooser. Category: `sgs-interactive`. Built as Phase A of Spec 24 FR-24-15 (variation-sets + option-picker system). Battle-ready as both a standalone editor block and the converter's emit target for pill-group slots.
+
+Semantics: visually-hidden `<input type=radio>` + `<label>` + pill `<span>` per option. CSS `:checked` active state (no JS required for selection display). Bubbles a `sgs:option-selected` custom event for parent-block Interactivity API stores to consume. NOT `sgs/button` — distinct atomic block.
+
+Attributes: `options` (array of `{ value, label, isDefault }`), `variant` (source toggle: `typed` | `bound` — mirrors FR-24-2), `display_as` (`pills` | `static-list` | `hidden`), `pillStyle` (`filled` | `outlined`), plus standard animation/hover extension attrs.
+
+Render: Dynamic `render.php`. `viewScriptModule` bubbles `sgs:option-selected`. No-JS default state: options render as visible static labels (FR-24-16).
+
+SGS-BEM: `.sgs-option-picker` root + `__option` / `__input` / `__label` / `__pill` + `--style-filled/outlined` + `--display-pills/static-list` + `.is-selected` state on checked option.
+
+See: Spec 24 §FR-24-11..FR-24-17 + D144.
+
+---
+
+### sgs/cart (NEW — 2026-06-02, theme thread)
+
+WooCommerce cart count badge (v1). Category: `sgs-interactive`. Displays a live item count from the WC cart; intended for use in headers/navigation alongside `sgs/mega-menu` or `core/navigation`. Gracefully absent (renders nothing) when WooCommerce is not active.
+
+Attributes: `iconSlug` (default `shopping-cart` Lucide icon), `badgeColour` (token slug, default `accent`), `showWhenEmpty` (boolean, default `false` — hides badge when count is 0).
+
+Render: Dynamic `render.php`. `viewScriptModule` uses the WC `wc-cart-fragments` mechanism to update count without full page reload.
+
+SGS-BEM: `.sgs-cart` root + `__icon` / `__count` + `--empty` modifier.
+
+---
 
 ### sgs/timeline (NEW — Phase 2A Branch D)
 
