@@ -121,6 +121,17 @@ No other branches. Adding a 4th requires spec amendment with empirical justifica
 
 ## Cross-cutting principles
 
+**Universal wrapper-conversion procedure** — the canonical container/wrapper-handling behaviour. For any draft wrapper (container / section / composite block with a built-in wrapper):
+
+1. **Identify levels** — OUTER = the wrapper's own element (`.sgs-<x>` / main div); INNER = its direct-descendant content wrapper if any (`__inner`/`__card-inner`: cap+centre via `max-width` + `margin:auto`); GRID = whichever level has `display:grid` / columns.
+2. **Emit one sgs/container for the OUTER** (or, for a composite, its built-in wrapper which MIRRORS sgs/container). Transfer outer CSS → outer attrs: background\* / padding / margin / border / min-height → supports + attrs; `max-width` ABSENT → `widthMode:"full"`, PRESENT → `widthMode:"custom"` + `customWidth` (+ `margin:auto`).
+3. **Content width (inner)** — inner exists (cap-only) → `contentWidth` = inner max-width; inner is ALSO the grid → contentWidth + grid both on the constrained content; no inner (hero) → no contentWidth; inner collapsed onto outer → just the outer max-width (brand).
+4. **Grid + per-item** — `grid-template-columns` (+responsive) → `gridTemplateColumns` (+Tablet/Mobile); `gap` (raw px allowed) → `gap` (+responsive); UNIFORM box CSS → `gridItem*` defaults; UNIQUE per-item CSS → onto THAT child block's own CSS.
+5. **Children** — every child's own CSS transfers faithfully onto its equivalent block/element. The container NEVER imposes alignment on children.
+6. **Carry all CSS** — any property with no attr equivalent → FLAG (never silent-drop). Known flags: `grid-template-areas`, `overflow` (hero-specific).
+
+The current implementation has tracked gaps (content-width attr not built, fold drops `__inner` max-width, gridItem\* never written, composites don't mirror) — see Spec 22 §FR-22-21 + the standardisation plan (`.claude/plans/2026-06-02-container-wrapper-standardisation.md`).
+
 **FR21 invariant** — NO mutation outside `pipeline-state/` until `autonomy_gate` approves promotion. Every stage writes artefacts to `pipeline-state/<run_id>/`; staged_merge validates schema; only `--promote` copies scaffolds to canonical locations.
 
 **DB-first** — Before adding hardcoded lookup dicts, check `sgs-framework.db`: `blocks.tier` (D107 column — `class-section` vs `block`), `block_composition` (D108 — 188 rows; walker consumption DEFERRED but data layer live), `slots` scope='element' (89 rows) / scope='section' (6 rows post-D111) + new `inner` element row, `roles` (20 rows, D99), `property_suffixes` (117 + `kind_override` column 17 rows), `block_supports`, `modifier_suffixes` (19), `block_attributes` (2074; `canonical_slot` 31.8% / `role` 32.6% post-D110 backfill), **`blocks.variant_attr`** (DESIGN — FR-22-20; names each block's variant-selector attr), **`variant_slots`** (DESIGN — FR-22-20; per-block discriminating slots by variant value; populated by `/sgs-update` from `supports.sgs.variants`). Refactor to `db_lookup.py`.

@@ -1446,3 +1446,11 @@ _From: Cloning pipeline — D99 port + DB table work_
 _From: Theme thread — 2026-06-02 session 5 (archived on resolve, D150 standard)_
 
 **P-CART-INCREMENT-E2E** — **Status:** RESOLVED 2026-06-02. `sgs/cart` badge-increment-on-add-to-cart was untested (canary had 0 WooCommerce products). Resolved: created WC product 513, live-verified via Playwright on `/cart-increment-test/` (page 514) — add-to-cart → `POST /wc/store/v1/cart/add-item` 201 → badge 0→1, no full reload, no `?wc-ajax=get_refreshed_fragments`, `wc-blocks_added_to_cart` fired. `sgs/cart` now fully OUTCOME-ACHIEVED. The product 513 fixture also unblocked product-card Phase C (D151). Original entry NEW 2026-06-02.
+
+---
+
+_From: Cloning thread — 2026-06-02 (archived on resolve/supersede, D150 standard)_
+
+**P-CONTAINER-KIND-ROSTER** — **Status:** RESOLVED 2026-06-02 (D152, commit `0d746073`). Workstream A built + shipped: `sync-container-wrapping-blocks.py` rewritten to the D150 "wraps children" detection + 3-KIND model + KIND→attr-scope diff; `block_composition.container_kind` migration added (db_lookup.py); seed-composition-roles.py renamed trust-badges→trust-bar row + inserted option-picker + flipped post-grid/gallery/card-grid; trust-bar/modal block.json containerKind:"section". 4-rater qc-council SHIP-WITH-FIXES (caught + fixed the UPDATE-only silent-undercount: --apply now fails-loud + rolls back on missing rows). `--apply` wrote all 28 (4 section/13 layout/11 content), verified. Editor /qc of the 4 D150 save-null deprecations also PASSED. Original entry NEW 2026-06-02 (D150).
+
+**P-CSS-TRANSFER-CONTENTWIDTH** — **Status:** SUPERSEDED 2026-06-02 (D152) by **P-CONTAINER-WRAPPER-STANDARDISATION** (WS-1 of the 5-workstream programme). The old "Option B = add contentWidth that caps+centres each CHILD via :where()" design was CORRECTED this session to the inner-WRAPPER model (container renders an `sgs-container__inner` div that caps content as a group; children keep their own CSS incl. alignment — resolves the eyebrow-label-centring concern). The fix-shape doc `2026-06-04-css-transfer-gaps-1-2-fix-shape.md` is retained as the WS-1 baseline reference but its cap-each-child mechanism is superseded. Now tracked as WS-1 in `.claude/plans/2026-06-02-container-wrapper-standardisation.md` + Spec 22 §FR-22-21. Original entry NEW 2026-06-02 (extends D136 gaps 1+2).

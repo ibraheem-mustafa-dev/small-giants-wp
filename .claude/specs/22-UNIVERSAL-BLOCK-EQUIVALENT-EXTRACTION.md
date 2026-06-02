@@ -549,6 +549,61 @@ This is **FR-22-2 content-routing applied to class-section composites** — the 
 **PASS test:** a cloned hero whose draft has `.sgs-hero__split-image` emits `sgs/hero{variant:'split'}` (set by the detector, not hardcoded); render.php renders the media via the original `$is_split` gate; the band-aid is gone.
 **FAIL test:** any per-block variant conditional in the converter; variant chosen from the block's STORED attrs rather than the draft's extracted slots; the `$is_split` data-presence band-aid still present.
 
+### FR-22-21 — Universal wrapper-conversion procedure (Bean-directed, 2026-06-02; the canonical TARGET that FR-22-4.1 + FR-22-5 + FR-22-19 implement together; status DESIGN — build-pending workstreams in the standardisation plan)
+
+This is the canonical end-to-end TARGET for converting ANY draft wrapper — a `sgs/container`, a section root, or a composite block with a built-in wrapper — into the correct emitted block(s) with all CSS carried faithfully. FR-22-4.1 (wrapper resolution), FR-22-5 (CSS routing), and FR-22-19 (composite interiors) are the mechanism slices; this FR states the unified procedure they must jointly satisfy.
+
+**The 3-layer model (canonical).** Every draft wrapper decomposes into at most three levels, each with a distinct destination:
+
+- **OUTER box** — the wrapper's own element (`.sgs-<x>` / the main div). Its box CSS (background / padding / margin / border / min-height / width) → the OUTER container's `supports` + attrs.
+- **CONTENT WIDTH (inner)** — the wrapper's direct-descendant content wrapper, if any (`__inner` / `__card-inner` whose role is cap-and-centre via `max-width` + `margin:auto`). Its max-width → the container's `contentWidth`.
+- **PER-GRID-ITEM** — whichever level carries `display:grid` / columns. Its grid CSS → the container's native grid attrs; per-item box CSS → `gridItem*` defaults (uniform) or the child block's own CSS (unique).
+
+**The 6-step procedure (canonical TARGET):**
+
+```
+Universal wrapper-conversion procedure — for any draft wrapper (container / section / composite block with a built-in wrapper):
+
+1. IDENTIFY LEVELS in the draft:
+   - OUTER  = the wrapper's own element (.sgs-<x> / main div)
+   - INNER  = its direct-descendant content wrapper, if any (__inner/__card-inner: role = cap+centre via max-width + margin:auto)
+   - GRID   = whichever level has display:grid / columns
+2. EMIT one sgs/container for the OUTER (or, for a composite, its built-in wrapper which MIRRORS sgs/container). Transfer outer CSS → outer attrs:
+   - background* / padding / margin / border / min-height → supports + attrs
+   - max-width: ABSENT → widthMode:"full"; PRESENT → widthMode:"custom" + customWidth (+ margin:auto)
+3. CONTENT WIDTH (inner):
+   - inner exists (cap-only)    → set contentWidth = inner max-width
+   - inner is ALSO the grid     → contentWidth + grid both on the constrained content
+   - no inner (hero)            → no contentWidth
+   - inner collapsed onto outer → just the outer max-width (brand)
+4. GRID + per-item:
+   - grid-template-columns (+responsive) → gridTemplateColumns (+Tablet/Mobile)
+   - gap (raw px allowed)                → gap (+responsive)
+   - UNIFORM box CSS (all items same)    → gridItem* defaults
+   - UNIQUE per-item CSS (one differs)   → onto THAT child block's own CSS
+5. CHILDREN: every child's own CSS transfers faithfully onto its equivalent block/element. The container NEVER imposes alignment on children.
+6. CARRY ALL CSS: any property with no attr equivalent → FLAG (never silent-drop). Known flags: grid-template-areas, overflow (hero-specific).
+```
+
+**Composite-mirror rule (R-22-9).** Every composite block with a built-in wrapper (the `container_kind='section'` blocks hero, cta-section, modal, trust-bar — and the wider `block_composition.wraps_block='sgs/container'` roster across all KINDs) MUST mirror `sgs/container`'s capabilities for its KIND (section / layout / content per `block_composition.container_kind`), so step 2's outer-CSS transfer + step 3's content-width + step 4's grid + step 4's `gridItem*` all have a destination attr on the composite. The mirror is propagated by `/sgs-update` from the canonical container's capability set onto each composite of the matching kind — NOT hand-authored per block (no per-block divergence; R-22-9). A composite missing a mirrored attr is a `/sgs-update` propagation gap, not a per-block fix.
+
+**Current-state gaps (build-pending).** The TARGET above is not yet fully implemented. Tracked gaps:
+
+- **content-width attr not built** — `sgs/container` has no `contentWidth` attr yet; step 3 has no destination.
+- **fold drops `__inner` max-width** — FR-22-4.1's fold (`absorb_skipped_child`→`fold_into_container`) deletes the `__inner` and discards its `max-width`, which then strands in `variation-d0-d2.css` instead of becoming `contentWidth`.
+- **outer max-width transfer broken** — step 2's `max-width PRESENT → widthMode:"custom" + customWidth` path is not wired; a hardcoded `widthMode:"full"` band-aid is in place.
+- **gap forced to spacing-token** — step 4's `gap` (raw px allowed) is currently snapped to a spacing token, losing raw values.
+- **gridItem\* never written** — step 4's uniform-item path has no writer; `gridItem*` defaults are never emitted.
+- **D1 layer written-not-consumed** — the D1 attr-lift sidecar carries layout CSS that the container emit does not consume back into native attrs.
+- **composites don't mirror + no auto-propagation** — composites lack the mirrored container capabilities and `/sgs-update` does not yet propagate them.
+
+Workstreams for these gaps live in **`.claude/plans/2026-06-02-container-wrapper-standardisation.md`**.
+
+**Constraints:** R-22-1 (DB-driven), R-22-3 (FR-22-4 container-default refinement, not a 4th walker branch), R-22-5 (each workstream its own commit), R-22-9 (universal — composite-mirror, no per-block divergence), R-22-11 (live-DOM verification), R-22-18 (structural-parity acceptance for this layout work).
+
+**PASS test:** for the canary page, every wrapper's outer box CSS, content-width, grid template, gap, and per-item CSS land on the correct destination per the 6-step procedure; no layout property strands in `variation-d0-d2.css`; composites carry the mirrored container attrs; live-DOM structural parity per R-22-18.
+**FAIL test:** any layout CSS silent-dropped or stranded in variation CSS; a composite missing a mirrored container capability; a per-block layout conditional in the converter; `widthMode` hardcoded to `full` where the draft has a max-width.
+
 ## 4. The data layer
 
 ### sgs-framework.db — the framework brain (29 tables, ~17k+ rows)
