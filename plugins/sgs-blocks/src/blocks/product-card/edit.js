@@ -7,28 +7,47 @@ import {
 import {
 	PanelBody,
 	SelectControl,
+	ComboboxControl,
 	Notice,
+	Spinner,
 } from '@wordpress/components';
+import { useState, useEffect } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
+import { store as coreStore } from '@wordpress/core-data';
+import apiFetch from '@wordpress/api-fetch';
+import ServerSideRender from '@wordpress/server-side-render';
 
 /**
- * FR-22-6 card template — all content as InnerBlocks.
+ * FR-22-6 card template — all content as InnerBlocks (typed mode).
  *
  * Document order: image → heading (name) → text (description) →
  * text (price) → label (badge/tag) → multi-button (CTA).
- *
- * templateLock: false so editors can reorder or remove items.
- * The pipeline emits these block types; this template matches that
- * emitted structure for new inserts from the editor.
  */
 const CARD_TEMPLATE = [
 	[ 'sgs/media', { mediaType: 'image' } ],
-	[ 'core/heading', { level: 3, placeholder: __( 'Product name', 'sgs-blocks' ) } ],
+	[
+		'core/heading',
+		{ level: 3, placeholder: __( 'Product name', 'sgs-blocks' ) },
+	],
 	[ 'sgs/text', { placeholder: __( 'Short description…', 'sgs-blocks' ) } ],
-	[ 'sgs/text', { placeholder: __( 'Price — e.g. £10.00 · 8-pack', 'sgs-blocks' ) } ],
+	[
+		'sgs/text',
+		{ placeholder: __( 'Price — e.g. £10.00 · 8-pack', 'sgs-blocks' ) },
+	],
 	[ 'sgs/label', {} ],
-	[ 'sgs/multi-button', {}, [
-		[ 'sgs/button', { inheritStyle: 'primary', label: __( 'Shop Now', 'sgs-blocks' ) } ],
-	] ],
+	[
+		'sgs/multi-button',
+		{},
+		[
+			[
+				'sgs/button',
+				{
+					inheritStyle: 'primary',
+					label: __( 'Shop Now', 'sgs-blocks' ),
+				},
+			],
+		],
+	],
 ];
 
 const ALLOWED_BLOCKS = [
@@ -40,22 +59,179 @@ const ALLOWED_BLOCKS = [
 	'sgs/button',
 ];
 
+/** Sentinel value for the "Typed (manual content)" option. */
+const TYPED_VALUE = '__typed__';
+
+/**
+ * Product source panel — searchable picker that lists both WooCommerce
+ * products (wc/v3/products, when WC is active) and SGS products
+ * (wp/v2/sgs_product). Selecting one auto-sets productId + sourceMode.
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Attribute setter.
+ */
+function ProductSourcePanel( { attributes, setAttributes } ) {
+	const { sourceMode, productId } = attributes;
+	const [ search, setSearch ] = useState( '' );
+	const [ wcOptions, setWcOptions ] = useState( [] );
+	const [ wcLoading, setWcLoading ] = useState( false );
+
+	// SGS CPT products via the entity store (REST: wp/v2/sgs-products).
+	const { cptRecords, cptResolving } = useSelect(
+		( select ) => {
+			const query = { per_page: 20, search: search || undefined };
+			return {
+				cptRecords: select( coreStore ).getEntityRecords(
+					'postType',
+					'sgs_product',
+					query
+				),
+				cptResolving: select( coreStore ).isResolving(
+					'getEntityRecords',
+					[ 'postType', 'sgs_product', query ]
+				),
+			};
+		},
+		[ search ]
+	);
+
+	// WooCommerce products via the WC REST API (not a WP entity).
+	useEffect( () => {
+		let cancelled = false;
+		setWcLoading( true );
+		apiFetch( {
+			path: `/wc/v3/products?per_page=20&search=${ encodeURIComponent(
+				search
+			) }`,
+		} )
+			.then( ( items ) => {
+				if ( cancelled ) {
+					return;
+				}
+				setWcOptions(
+					( items || [] ).map( ( p ) => ( {
+						value: `wc:${ p.id }`,
+						label: `${ p.name } (WooCommerce)`,
+					} ) )
+				);
+			} )
+			.catch( () => {
+				// WooCommerce inactive or endpoint unavailable — silently skip.
+				if ( ! cancelled ) {
+					setWcOptions( [] );
+				}
+			} )
+			.finally( () => {
+				if ( ! cancelled ) {
+					setWcLoading( false );
+				}
+			} );
+		return () => {
+			cancelled = true;
+		};
+	}, [ search ] );
+
+	const cptOptions = ( cptRecords || [] ).map( ( p ) => ( {
+		value: `cpt:${ p.id }`,
+		label: `${
+			p.title?.rendered || __( '(no title)', 'sgs-blocks' )
+		} (SGS)`,
+	} ) );
+
+	const options = [
+		{
+			value: TYPED_VALUE,
+			label: __( 'Typed (manual content)', 'sgs-blocks' ),
+		},
+		...wcOptions,
+		...cptOptions,
+	];
+
+	// Current combobox value derived from sourceMode + productId.
+	let currentValue = TYPED_VALUE;
+	if ( 'wc-product' === sourceMode && productId ) {
+		currentValue = `wc:${ productId }`;
+	} else if ( 'sgs-cpt' === sourceMode && productId ) {
+		currentValue = `cpt:${ productId }`;
+	}
+
+	function onSelect( value ) {
+		if ( ! value || TYPED_VALUE === value ) {
+			setAttributes( { sourceMode: 'typed', productId: 0 } );
+			return;
+		}
+		const [ kind, id ] = value.split( ':' );
+		setAttributes( {
+			sourceMode: 'wc' === kind ? 'wc-product' : 'sgs-cpt',
+			productId: parseInt( id, 10 ) || 0,
+		} );
+	}
+
+	const loading = wcLoading || cptResolving;
+
+	return (
+		<PanelBody
+			title={ __( 'Product source', 'sgs-blocks' ) }
+			initialOpen={ true }
+		>
+			<ComboboxControl
+				label={ __( 'Bind to a product', 'sgs-blocks' ) }
+				help={ __(
+					'Search WooCommerce or SGS products. Choose "Typed" to author card content by hand.',
+					'sgs-blocks'
+				) }
+				value={ currentValue }
+				options={ options }
+				onChange={ onSelect }
+				onFilterValueChange={ ( v ) => setSearch( v ) }
+				__nextHasNoMarginBottom
+			/>
+			{ loading && <Spinner /> }
+			{ 'typed' !== sourceMode && productId > 0 && (
+				<Notice
+					status="info"
+					isDismissible={ false }
+					style={ { marginTop: 8 } }
+				>
+					{ __( 'Bound to product #', 'sgs-blocks' ) }
+					{ productId }
+					{ 'wc-product' === sourceMode
+						? __( '(WooCommerce).', 'sgs-blocks' )
+						: __( '(SGS product).', 'sgs-blocks' ) }
+				</Notice>
+			) }
+		</PanelBody>
+	);
+}
+
 export default function Edit( { attributes, setAttributes } ) {
-	const { variantStyle } = attributes;
+	const { variantStyle, sourceMode } = attributes;
 
-	const isTrial    = variantStyle === 'trial';
+	const isTrial = variantStyle === 'trial';
 	const isFeatured = variantStyle === 'featured';
+	const isBound = sourceMode !== 'typed';
 
-	const blockProps = useBlockProps( {
-		className: [
-			'product-card',
-			isTrial    ? 'trial-card'    : '',
-			isFeatured ? 'featured-card' : '',
-		].filter( Boolean ).join( ' ' ),
-	} );
+	// Bound mode: render.php (via ServerSideRender) supplies the full
+	// `.product-card` wrapper itself, so the editor wrapper must NOT also add
+	// it — otherwise the preview shows a double `.product-card` (double
+	// padding/border). Frontend spacing/align still come from render.php's
+	// get_block_wrapper_attributes().
+	const blockProps = useBlockProps(
+		isBound
+			? {}
+			: {
+					className: [
+						'product-card',
+						isTrial ? 'trial-card' : '',
+						isFeatured ? 'featured-card' : '',
+					]
+						.filter( Boolean )
+						.join( ' ' ),
+			  }
+	);
 
-	// useInnerBlocksProps wires the InnerBlocks slot directly to the
-	// wrapper div (correct SGS pattern per CLAUDE.md gotchas).
+	// Typed-mode InnerBlocks slot (UNCHANGED behaviour).
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		template: CARD_TEMPLATE,
 		templateLock: false,
@@ -65,28 +241,61 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+				<ProductSourcePanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 				<PanelBody title={ __( 'Card variant', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Variant style', 'sgs-blocks' ) }
 						value={ variantStyle }
 						options={ [
-							{ value: 'standard', label: __( 'Standard', 'sgs-blocks' ) },
-							{ value: 'trial',    label: __( 'Trial (dashed border + gradient)', 'sgs-blocks' ) },
-							{ value: 'featured', label: __( 'Featured', 'sgs-blocks' ) },
+							{
+								value: 'standard',
+								label: __( 'Standard', 'sgs-blocks' ),
+							},
+							{
+								value: 'trial',
+								label: __(
+									'Trial (dashed border + gradient)',
+									'sgs-blocks'
+								),
+							},
+							{
+								value: 'featured',
+								label: __( 'Featured', 'sgs-blocks' ),
+							},
 						] }
-						onChange={ ( v ) => setAttributes( { variantStyle: v } ) }
+						onChange={ ( v ) =>
+							setAttributes( { variantStyle: v } )
+						}
 						__nextHasNoMarginBottom
 					/>
-					<Notice status="info" isDismissible={ false } style={ { marginTop: 8 } }>
-						{ __(
-							'Card content (image, name, description, price, badge, CTA) is now managed directly in the editor. Click any inner block to edit it.',
-							'sgs-blocks'
-						) }
-					</Notice>
+					{ ! isBound && (
+						<Notice
+							status="info"
+							isDismissible={ false }
+							style={ { marginTop: 8 } }
+						>
+							{ __(
+								'Card content (image, name, description, price, badge, CTA) is managed directly in the editor. Click any inner block to edit it.',
+								'sgs-blocks'
+							) }
+						</Notice>
+					) }
 				</PanelBody>
 			</InspectorControls>
 
-			<div { ...innerBlocksProps } />
+			{ isBound ? (
+				<div { ...blockProps }>
+					<ServerSideRender
+						block="sgs/product-card"
+						attributes={ attributes }
+					/>
+				</div>
+			) : (
+				<div { ...innerBlocksProps } />
+			) }
 		</>
 	);
 }

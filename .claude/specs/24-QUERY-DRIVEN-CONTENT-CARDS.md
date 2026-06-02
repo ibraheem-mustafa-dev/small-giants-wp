@@ -244,10 +244,22 @@ their own field sets — the mechanism is shared (R-22-9).
   SHIPPED 2026-06-02: `_sgs_variation_sets` meta registered with `show_in_rest => true`; editor
   panel built; meta round-trips via REST (live-verified). `sgs_product` CPT has `custom-fields`
   support (required for REST `meta` field — see FR-24-1 note).
-- **Phase C — Card Bound mode (dual-source — D149).** FR-24-2, FR-24-3, FR-24-9. Bind card
-  field slots to WooCommerce-native product data when WC is present; fall back to `sgs_product`
-  CPT meta otherwise. Requires `/brainstorming` + `/research` design gate on WC Block-Bindings
-  pattern before building. See D149.
+- **Phase C — Card Bound mode (wrapper+bridge — D151, refines D149).** FR-24-2, FR-24-3, FR-24-9.
+  **DESIGN SIGNED OFF 2026-06-02 (D151), research-gated, ready to build.** The SGS card is the
+  ALWAYS-ON unified authoring wrapper; WooCommerce (the PRIMARY backing store — the card's whole
+  purpose is wrapping WC with better design/UX) supplies base price/image/stock when present, with
+  the `sgs_product` CPT as the graceful-degradation path when WC is absent. **Source = auto from
+  the product picker** (lists WC products + `sgs_product` entries; sets the `sourceMode` attr —
+  `wc-product`|`sgs-cpt`|`typed` — automatically; no client-facing WC/CPT toggle). **Pills always
+  come from the SGS `_sgs_variation_sets` layer + `sgs/option-picker`** even on WC sites (WC-native
+  per-variant pricing/stock = deferred advanced opt-in, real multi-SKU shops only). **Add-to-cart IS
+  in Phase C** — adds the bound WC product (selected pack-size) via the WC Store API, firing
+  `wc-blocks_added_to_cart` so the `sgs/cart` badge updates (reuses the Task-A-verified path).
+  Architecture: single binding source `sgs-product/field` (`uses_context:['postId']`, routes WC vs
+  CPT via `source_args.source`); `wc_get_product()->get_price_html()` yields variable-product RANGES
+  free; front-end pill→price/image swap via the WP Interactivity API seeded server-side (zero
+  wc-blocks React bundle; ~12KB). Option-picker event contract (verified): `sgs:option-selected`,
+  `detail:{ typeKey, selectedKey, contentImpact }`. See D151 (+ D149 origin).
 - **Phase D — Clone-emit.** FR-24-15 pipeline wiring. TRUTH-SPEC + slot_synonyms/slots updates
   so the converter outputs `sgs/option-picker` for pill groups. IN-SCOPE within the same build
   sequence as Phase C (per D144.4) — not a separate later phase.

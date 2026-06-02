@@ -2,24 +2,28 @@
 /**
  * Server-side render for the SGS Product Card block.
  *
- * FR-22-6 migration: renders the card wrapper shell (variantStyle-driven
- * classes) and echoes $content (InnerBlocks) for all card content —
- * image, name, description, price, badge, and CTA.
+ * Two modes, branched on the explicit `sourceMode` attribute (R-22-14 — never
+ * `empty( $content )`):
  *
- * The scalar attributes (productName, description, priceLarge, image,
- * packSizes, trialTag, featuredTag) are retained in block.json for
- * deprecated.js back-compat only. Rendering from those scalars was
- * removed in this migration; they are no longer read here.
+ *  - 'typed' (default): renders the card wrapper shell and echoes $content
+ *    (InnerBlocks). UNCHANGED FR-22-6 behaviour — preserves every existing
+ *    typed post + the clone-pipeline output.
  *
- * Two variants (shell classes only):
+ *  - 'wc-product' / 'sgs-cpt' (Bound): resolves a real product (WooCommerce or
+ *    sgs_product CPT), seeds the Interactivity API state from the product's
+ *    _sgs_variation_sets layer, and renders a live card with reactive
+ *    price/image swapping plus an optional add-to-cart button. All initial
+ *    values are server-rendered, so the card is fully meaningful with no JS.
+ *
+ * Shell classes:
  *  - standard: .product-card
- *  - trial:    .product-card .trial-card (dashed border + gradient bg)
+ *  - trial:    .product-card .trial-card
  *  - featured: .product-card .featured-card
  *
- * @since 1.0.0
+ * @since 1.1.0
  *
- * @var array    $attributes Block attributes.
- * @var string   $content    InnerBlocks HTML (all card content).
+ * @var array     $attributes Block attributes.
+ * @var string    $content    InnerBlocks HTML (typed mode only).
  * @var \WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
@@ -28,6 +32,7 @@
 defined( 'ABSPATH' ) || exit;
 
 $variant_style = $attributes['variantStyle'] ?? 'standard';
+$source_mode   = $attributes['sourceMode'] ?? 'typed';
 
 $classes = array( 'product-card' );
 if ( 'trial' === $variant_style ) {
@@ -37,17 +42,239 @@ if ( 'featured' === $variant_style ) {
 	$classes[] = 'featured-card';
 }
 
-$wrapper_attributes = get_block_wrapper_attributes(
+/* ── Typed mode (default) — unchanged FR-22-6 behaviour ────────────────────── */
+
+if ( 'typed' === $source_mode ) {
+	$wrapper_attributes = get_block_wrapper_attributes(
+		array( 'class' => implode( ' ', $classes ) )
+	);
+	?>
+	<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() is pre-escaped. ?>>
+		<?php
+		// All card content rendered via InnerBlocks. No scalar-attr render — R-22-14.
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is WP core InnerBlocks output.
+		echo $content;
+		?>
+	</div>
+	<?php
+	return;
+}
+
+/* ── Bound mode — resolve a real product ───────────────────────────────────── */
+
+require_once dirname( __DIR__, 3 ) . '/includes/class-product-bindings.php';
+
+$product_id = absint( $attributes['productId'] ?? 0 );
+$data       = \SGS\Blocks\Product_Bindings::get_product_data( $product_id, $source_mode );
+
+$classes[] = 'product-card--bound';
+
+// Designed empty state (FR-24-6) — never blank.
+if ( null === $data ) {
+	$wrapper_attributes = get_block_wrapper_attributes(
+		array( 'class' => implode( ' ', $classes ) . ' product-card--empty' )
+	);
+	?>
+	<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped. ?>>
+		<div class="product-card-body">
+			<p class="product-desc">
+				<?php esc_html_e( 'No product selected. Choose a product in the block settings.', 'sgs-blocks' ); ?>
+			</p>
+		</div>
+	</div>
+	<?php
+	return;
+}
+
+/*
+ * Build the variations map from _sgs_variation_sets (R-22-9).
+ *
+ * Each variation type lists content_impact slots (price, image, …) and options.
+ * Phase 1 stores only key + label per option (no per-option price/image), so
+ * every option currently inherits the base product data. The map is keyed by
+ * option key so view.js can resolve values reactively; when per-option pricing
+ * lands (SKU matrix, Phase 2) only this loop changes — the directives stay
+ * identical.
+ *
+ * The pill set is the FIRST variation type whose display_as is 'pills'
+ * (matches the editor's first-type-wins rule, FR-24-14).
+ */
+
+$variation_sets = is_array( $data['variation_sets'] ) ? $data['variation_sets'] : array();
+$pill_type      = null;
+
+foreach ( $variation_sets as $vtype ) {
+	if ( ! is_array( $vtype ) ) {
+		continue;
+	}
+	$display_as = $vtype['display_as'] ?? 'pills';
+	if ( 'pills' === $display_as && ! empty( $vtype['options'] ) ) {
+		$pill_type = $vtype;
+		break;
+	}
+}
+
+$variations_map = array();
+$first_key      = '';
+
+if ( null !== $pill_type ) {
+	$content_impact = isset( $pill_type['content_impact'] ) && is_array( $pill_type['content_impact'] )
+		? array_map( 'sanitize_key', $pill_type['content_impact'] )
+		: array();
+
+	foreach ( $pill_type['options'] as $opt ) {
+		if ( empty( $opt['key'] ) ) {
+			continue;
+		}
+		$opt_key = sanitize_key( $opt['key'] );
+		if ( '' === $opt_key ) {
+			continue;
+		}
+		if ( '' === $first_key ) {
+			$first_key = $opt_key;
+		}
+
+		// Base data for every option; per-option overrides arrive with the
+		// SKU matrix (R-22-9 — values are driven by declared product data).
+		$in_stock = ( '' === $data['stock_status'] )
+			|| ( false === stripos( $data['stock_status'], 'out of stock' ) );
+
+		$variations_map[ $opt_key ] = array(
+			'price'    => $data['price_html'],
+			'image'    => $data['image_url'],
+			'imageAlt' => $data['image_alt'],
+			'inStock'  => $in_stock,
+			'impacts'  => $content_impact,
+		);
+	}
+}
+
+/* ── Seed Interactivity API state + per-instance context ───────────────────── */
+
+$add_to_cart_id = absint( $data['wc_id'] );
+
+wp_interactivity_state(
+	'sgs/product-card',
 	array(
-		'class' => implode( ' ', $classes ),
+		'variations' => array(
+			(string) $data['id'] => $variations_map,
+		),
 	)
 );
+
+// Seed the reactive display values into CONTEXT (server-resolvable plain
+// data) — NOT JS-only `state` getters. The WP Interactivity API processes
+// `data-wp-bind`/`data-wp-text` server-side; a directive pointing at a
+// JS-defined getter resolves to empty server-side and WIPES the SSR value.
+// Binding to seeded context keeps SSR correct AND stays client-reactive
+// (view.js mutates these same context keys on pill selection).
+$context = array(
+	'productId'   => (string) $data['id'],
+	'selected'    => $first_key,
+	'addToCartId' => $add_to_cart_id,
+	'imageSrc'    => $data['image_url'],
+	'imageAlt'    => $data['image_alt'],
+	'cartStatus'  => '',
+);
+
+$wrapper_attributes = get_block_wrapper_attributes(
+	array( 'class' => implode( ' ', $classes ) )
+);
 ?>
-<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() is pre-escaped. ?>>
-	<?php
-	// All card content (image, heading, description, price, badge, CTA)
-	// is rendered via InnerBlocks. No scalar-attr rendering — R-22-14.
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is WP core InnerBlocks output.
-	echo $content;
-	?>
+<div
+	<?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped. ?>
+	data-wp-interactive="sgs/product-card"
+	<?php echo wp_interactivity_data_wp_context( $context ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns escaped attribute markup. ?>
+	data-wp-on--sgs:option-selected="actions.handlePillSelect"
+>
+	<?php if ( '' !== $data['image_url'] ) : ?>
+		<img
+			class="product-card-img"
+			src="<?php echo esc_url( $data['image_url'] ); ?>"
+			alt="<?php echo esc_attr( $data['image_alt'] ); ?>"
+			loading="lazy"
+			data-wp-bind--src="context.imageSrc"
+			data-wp-bind--alt="context.imageAlt"
+		>
+	<?php endif; ?>
+
+	<div class="product-card-body">
+		<h3><?php echo esc_html( $data['title'] ); ?></h3>
+
+		<?php if ( '' !== $data['short_desc'] ) : ?>
+			<div class="product-desc">
+				<?php echo wp_kses_post( $data['short_desc'] ); ?>
+			</div>
+		<?php endif; ?>
+
+		<?php
+		// Pills — reuse the sgs/option-picker block (DRY) so its verified view.js
+		// fires the sgs:option-selected event the wrapper listens for above.
+		if ( null !== $pill_type ) :
+			$picker_options = array();
+			foreach ( $pill_type['options'] as $opt ) {
+				if ( empty( $opt['key'] ) ) {
+					continue;
+				}
+				$picker_options[] = array(
+					'key'   => sanitize_key( $opt['key'] ),
+					'label' => isset( $opt['label'] ) ? sanitize_text_field( $opt['label'] ) : '',
+				);
+			}
+			$picker_impacts = isset( $pill_type['content_impact'] ) && is_array( $pill_type['content_impact'] )
+				? array_map( 'sanitize_key', $pill_type['content_impact'] )
+				: array();
+
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
+			echo render_block(
+				array(
+					'blockName' => 'sgs/option-picker',
+					'attrs'     => array(
+						'label'           => $pill_type['type_label'] ?? __( 'Choose an option', 'sgs-blocks' ),
+						'showLabel'       => true,
+						'optionItems'     => $picker_options,
+						'defaultSelected' => $first_key,
+						'contentImpact'   => $picker_impacts,
+						'typeKey'         => sanitize_key( $pill_type['type_key'] ?? '' ),
+					),
+				)
+			);
+		endif;
+		?>
+
+		<div class="price-row" aria-live="polite">
+			<?php
+			// Static SSR price (rich HTML — currency span, variable-product
+			// ranges, sale strikethrough). NOT reactive in Phase 1: the
+			// _sgs_variation_sets data model stores no per-option price, so a
+			// pill cannot change the price yet. When per-option pricing lands
+			// (Phase 2 SKU matrix), wire a text-based reactive price via a
+			// seeded context key (NOT a JS-only `state` getter — that wipes
+			// the SSR value server-side, the bug fixed here).
+			?>
+			<div class="price">
+				<?php echo wp_kses_post( $data['price_html'] ); ?>
+			</div>
+		</div>
+
+		<?php if ( $add_to_cart_id > 0 ) : ?>
+			<button
+				type="button"
+				class="btn btn-primary product-card__add-to-cart"
+				data-wp-on--click="actions.addToCart"
+			>
+				<?php esc_html_e( 'Add to Cart', 'sgs-blocks' ); ?>
+			</button>
+			<p
+				class="product-card__cart-status sgs-sr-only"
+				role="status"
+				aria-live="polite"
+				data-wp-text="context.cartStatus"
+			></p>
+		<?php endif; ?>
+	</div>
 </div>
+<?php
+// `data-wp-text="state.currentPriceText"` shows the resolved price as plain text
+// once JS hydrates; the SSR markup above carries the full price HTML (ranges,
+// strikethrough sale prices) for the no-JS / pre-hydration case.

@@ -2,10 +2,10 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/product-card",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "title": "Product Card",
     "category": "sgs-content",
-    "description": "Static product card with pack-size variant pills, price and CTA. Pure visual block — does not yet wire to cart. Pair the standard variant with the trial variant for the canonical 'main + trial' two-up layout.",
+    "description": "Product card with pack-size variant pills, price and CTA. Typed mode = author content directly (InnerBlocks). Bound mode = render a live WooCommerce or SGS product (price, image, stock, add-to-cart) through the SGS design.",
     "keywords": [
         "product",
         "card",
@@ -23,12 +23,26 @@
         },
         "html": false,
         "align": false,
+        "interactivity": true,
         "spacing": {
             "margin": true,
             "padding": false
         }
     },
     "attributes": {
+        "sourceMode": {
+            "type": "string",
+            "default": "typed",
+            "enum": [
+                "typed",
+                "wc-product",
+                "sgs-cpt"
+            ]
+        },
+        "productId": {
+            "type": "number",
+            "default": 0
+        },
         "image": {
             "type": "string",
             "default": ""
@@ -88,6 +102,7 @@
     },
     "editorScript": "file:./index.js",
     "style": "file:./style.css",
+    "viewScriptModule": "file:./view.js",
     "render": "file:./render.php",
     "allowedBlocks": [
         "sgs/media",

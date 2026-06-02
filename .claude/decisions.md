@@ -6,6 +6,26 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-02 (theme thread) — Product-card Phase C design SIGNED OFF: SGS card is a "wrapper+bridge" over WooCommerce; add-to-cart in scope (D151)
+
+**D151 — Product-card Phase C design ratified (Bean-directed, research-gated 2026-06-02). Refines/reframes D149.** Design gate per the theme next-session-prompt: `/research` (research-pipeline, community-validated — WC source, WP core docs; run file `~/.claude/pipeline-runs/2026-06-02-woocommerce-block-bindings-product-card.md`) + Bean sign-off BEFORE any code. Bean corrected the primary-case framing (the key reframe).
+
+**(1) "Wrapper + bridge" model (Bean's reframe — corrects D149's implied default).** The SGS product-card is ALWAYS the unified authoring wrapper the client uses — same UX whether WooCommerce is present or not. WooCommerce, when present, is the optional BACKING STORE the card bridges to for real commerce data (price/image/stock/cart). D149 framed non-WC as the default and WC as the refinement; Bean clarified the card's WHOLE PURPOSE is being a design+functionality wrapper ON TOP OF WC, so **WC-present is the PRIMARY case**, non-WC (SGS `sgs_product` CPT) is the graceful-degradation superset path. One UX, two backing stores behind one binding source.
+
+**(2) Source = auto-from-picker (Bean Q1).** No explicit WC/CPT toggle the client must understand. In Bound mode the product picker lists BOTH WC products and SGS `sgs_product` entries; the `sourceMode` attr (`wc-product`|`sgs-cpt`) is set automatically from what's picked. (`typed` remains the third mode = current InnerBlocks authoring; explicit-mode branch in render.php, R-22-14 clean — never `empty($content)`.)
+
+**(3) Pills = SGS layer ALWAYS (Bean Q2, = research verdict).** Pack-size/flavour pills always come from the SGS `_sgs_variation_sets` layer + `sgs/option-picker`, even on WC sites; WC supplies base price/image/stock. **WC-native per-variant pricing/stock is a DEFERRED advanced opt-in** (real multi-SKU shops only) — NOT the common path. Research reason: WC deprecated its block-editor variation manager in WC 10.1, so WC-native variations mean the complex classic admin — wrong for tech-illiterate clients; and for typical SGS clients pills are DISPLAY choices, not separate inventory.
+
+**(4) Add-to-cart IS in Phase C (Bean: "you decide" → include).** A shop-wrapper card without add-to-cart is half-built; reuses Task A's just-verified Store-API path (`POST /wc/store/v1/batch` → `wc-blocks_added_to_cart` → `sgs/cart` badge re-fetch). Scope: adds the bound WC product (selected pack-size) via Store API; mapping a pill to a genuine WC variable-product `variation_id` is the deferred advanced path with (3).
+
+**(5) Architecture (research, battle-tested):** single binding source `sgs-product/field` (`uses_context:['postId']`, `source_args.source` routes WC vs CPT; `wc_get_product()->get_price_html()` gives variable-product RANGES "£10–£30" free). Front-end pill→price/image swap via **WP Interactivity API** (`wp_interactivity_state` seeds all variations server-side; `data-wp-on--sgs:option-selected`) — ~12KB, zero jQuery, zero wc-blocks React bundle (card is `sgs/*` not `wc/*`, so WC's heavy bundle never loads on marketing pages). No-JS: render.php always outputs the first variation's concrete price/image.
+
+**GROUND-TRUTH CONTRACT CORRECTION (caught reading source, not the research):** the `sgs/option-picker` event is `sgs:option-selected`, `detail:{ typeKey, selectedKey, contentImpact }` (verified in `option-picker/view.js`) — NOT the `{value,name}` the research example assumed. The build MUST use `selectedKey`/`typeKey`/`contentImpact`. (Memory `read_ground_truth_before_concluding`.)
+
+**Build:** `/subagent-driven-development` (Sonnet implementer + spec + quality reviewers); dispatched agents return uncommitted; main thread builds/deploys/live-verifies/`/qc`-multi-rater/commits. Spec 24 §FR-24-2/3/9 + Phase C amended. Gate that's now CLEARED: Task A (real WC product 513 exists to bind to).
+
+---
+
 ## 2026-06-02 (cloning thread) — container-bearing roster + 3-KIND model + 4-block save-null fix (D150)
 
 **D150 — block_composition container roster validated (28 blocks, 3-KIND role-based model) + 4-block save-null fix SHIPPED. (CLONING thread; branch `feat/block-composition-container-kind` off main @ 3c388195; commits 0c1078cf + d5ebe439.)** Started from D136's "the pipeline doesn't faithfully transfer the draft's CSS" → drilled into which blocks are container-bearing (to propagate a future `contentWidth` capability) + a save-null bug class.
