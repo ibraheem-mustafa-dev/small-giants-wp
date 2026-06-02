@@ -2,7 +2,7 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/icon",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "title": "SGS Icon",
     "category": "sgs-content",
     "description": "Icon from multiple sources — Lucide SVG, WordPress icons, Dashicons, or emoji — with size, colour, optional background shape, and optional link.",
@@ -81,7 +81,15 @@
         },
         "backgroundShape": {
             "type": "string",
-            "default": "none"
+            "default": "none",
+            "enum": [
+                "none",
+                "circle",
+                "pill",
+                "square",
+                "rounded",
+                "outline"
+            ]
         },
         "linkUrl": {
             "type": "string",
@@ -104,9 +112,13 @@
             "type": "string",
             "default": ""
         },
-        "hoverColour": {
+        "hoverIconColour": {
             "type": "string",
             "default": "accent-text"
+        },
+        "hoverShapeColour": {
+            "type": "string",
+            "default": ""
         },
         "hoverScale": {
             "type": "number",

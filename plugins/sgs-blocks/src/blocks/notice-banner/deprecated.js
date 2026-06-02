@@ -1,8 +1,18 @@
-import { useBlockProps, RichText } from '@wordpress/block-editor';
+import { InnerBlocks, useBlockProps, RichText } from '@wordpress/block-editor';
 import { colourVar, fontSizeVar } from '../../utils';
 
 /**
  * Notice Banner block deprecations.
+ *
+ * Newest first (WordPress walks this array in order, stopping at the first
+ * version whose save() output matches the stored post_content).
+ *
+ * v3 — FR-22-6 migration (2026-06-01). Previous shape: scalar `text` attr
+ *   drove render.php; save.js returned null (fully dynamic, no InnerBlocks slot).
+ *   The stored post_content carries no serialised InnerBlocks.
+ *   migrate() converts the `text` scalar into a sgs/text child InnerBlock so
+ *   the banner's content is driven by InnerBlocks. R-22-14: no server-side
+ *   scalar fallback — back-compat is editor-side only.
  *
  * v2 — pre-Wave-1 structural save (no inline colour on <p>).
  *   Wave 1 added `textColour: "text"` as a default in block.json, causing
@@ -16,6 +26,77 @@ import { colourVar, fontSizeVar } from '../../utils';
  *   Blocks recovered by the editor or created via WP-CLI have empty innerHTML.
  *   save: () => null matches any stored innerHTML (including empty string).
  */
+
+// ---------------------------------------------------------------------------
+// v3 — scalar text + null-save shape (pre-FR-22-6, 2026-06-01)
+// ---------------------------------------------------------------------------
+
+/**
+ * Attribute snapshot matching block.json immediately before the FR-22-6
+ * migration. The `text` attr was a RichText string; save.js returned null.
+ */
+const V3_ATTRIBUTES = {
+	icon:         { type: 'string', default: 'info' },
+	iconSource:   { type: 'string', default: '' },
+	iconName:     { type: 'string', default: '' },
+	showIcon:     { type: 'boolean', default: true },
+	text:         { type: 'string', default: '', role: 'content' },
+	variant:      { type: 'string', default: 'info' },
+	textColour:   { type: 'string', default: 'text' },
+	textFontSize: { type: 'string' },
+	dismissible:  { type: 'boolean', default: false },
+};
+
+const v3 = {
+	attributes: V3_ATTRIBUTES,
+
+	save() {
+		// Dynamic block — save was null in this era; no serialised HTML to match.
+		return null;
+	},
+
+	/**
+	 * Migrate scalar `text` → sgs/text InnerBlock.
+	 *
+	 * @param {Object} attributes Old scalar attributes.
+	 * @return {[Object, Array]} Tuple of [newAttributes, newInnerBlocks].
+	 */
+	migrate( attributes ) {
+		const { text, textColour, textFontSize, ...rest } = attributes;
+
+		const innerBlocks = [];
+
+		if ( text ) {
+			innerBlocks.push( [
+				'sgs/text',
+				{
+					text,
+					tag: 'p',
+					// Carry explicit colour + font-size onto the child block when
+					// they were customised (non-default values only).
+					...( textColour && textColour !== 'text' ? { textColour } : {} ),
+					...( textFontSize ? { fontSize: textFontSize } : {} ),
+				},
+				[],
+			] );
+		}
+
+		// Retain scalar attrs on the migrated block for deprecation-chain safety;
+		// render.php no longer reads them.
+		const newAttributes = {
+			...rest,
+			text,
+			textColour,
+			textFontSize,
+		};
+
+		return [ newAttributes, innerBlocks ];
+	},
+};
+
+// ---------------------------------------------------------------------------
+// Below this point: v2 and v1 are unchanged from before the FR-22-6 migration.
+// ---------------------------------------------------------------------------
 
 /** Lucide-style SVG icons — reproduced from the original save.js. */
 const VARIANT_ICONS = {
@@ -331,4 +412,5 @@ const v1 = {
 	migrate: ( attributes ) => attributes,
 };
 
-export default [ v2, v1 ];
+// Newest first.
+export default [ v3, v2, v1 ];

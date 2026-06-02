@@ -7,8 +7,19 @@ plan_label: "[PLAN: opus] — main session coordinates parallel Sonnet implement
 parent_spec: .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md
 parent_session: small-giants-wp-2026-05-27-spec-22-phase-1.5-fix-1-shipped
 generated: 2026-05-28
-last_updated: 2026-06-01
+last_updated: 2026-06-02
 active_scope: STREAM_A_RESHAPED_POST_D99
+progress_2026_06_02: |
+  THEME THREAD — FR-22-6 migration progress (feat/theme-blocks-wave1, NOT yet merged):
+    - FR-22-6 roster classification report written: .claude/reports/2026-06-01-fr22-6-migration-classification.md
+      (full 61-block roster classified by migration complexity; Wave-2A = 5 single-text blocks identified)
+    - notice-banner MIGRATED (first content block using FR-22-6 InnerBlocks echo-$content pattern;
+      mirrors info-box v4 reference migration; live-verified)
+    - Wave-2A defined: social-proof / featured-product / gift-section / footer / header
+    - Wave-2A GATED on P-FR226: null-save→InnerBlocks finding (blocks with save()=null need
+      different migration path than blocks with save()=<InnerBlocks.Content />; classification
+      report maps which blocks are affected; resolving P-FR226 unblocks Wave-2A dispatch)
+    - Stream A steps (DB pre-pass + Fix 2b + canary measurement) UNCHANGED in scope
 progress_2026_06_01: "Shared-branch converter advances (cloning thread, orthogonal to Stream A's DB pre-pass; Stream A steps unchanged): D141 routing fixes, D145 is-style carry + tag-authoritative content-leaf (b93a3b51), D146 sgs/button replaces core/button + multi-button grouping (270cd995). FR-22-20 variant detection PARTIALLY SHIPPED (D134, Commits 1-5/6). Plan-internal R-22-14 contradiction fixed this date: the 'add legacy fallback' instructions at Steps B0/B1 (lines ~329/332/387/399/631) were struck — they violated the P1-locked no-legacy-fallback rule; backwards-compat is Stream C WP-CLI batch migration only."
 progress_2026_05_30: |
   D107-D113 architectural cleanup batch SHIPPED (Stream A continuation):

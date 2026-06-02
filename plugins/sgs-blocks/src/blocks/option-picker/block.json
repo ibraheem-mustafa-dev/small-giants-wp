@@ -1,0 +1,136 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "sgs/option-picker",
+    "version": "0.1.2",
+    "title": "SGS Option Picker",
+    "category": "sgs-interactive",
+    "description": "Exclusive single-select pill chooser for pack sizes, flavours, colours, plan tiers, or any option set. Emits a custom DOM event on selection — fully decoupled from any parent block.",
+    "keywords": [
+        "option",
+        "picker",
+        "pill",
+        "selector",
+        "size",
+        "variant",
+        "radio",
+        "choice"
+    ],
+    "textdomain": "sgs-blocks",
+    "icon": "admin-generic",
+    "supports": {
+        "align": false,
+        "html": false,
+        "anchor": true,
+        "color": {
+            "background": false,
+            "text": false
+        },
+        "spacing": {
+            "margin": true,
+            "padding": true,
+            "__experimentalDefaultControls": {
+                "margin": false,
+                "padding": false
+            }
+        },
+        "__experimentalBorder": {
+            "radius": true
+        },
+        "sgs": {}
+    },
+    "selectors": {
+        "root": ".sgs-option-picker",
+        "typography": ".sgs-option-picker__pill"
+    },
+    "attributes": {
+        "label": {
+            "type": "string",
+            "default": "Choose an option"
+        },
+        "showLabel": {
+            "type": "boolean",
+            "default": true
+        },
+        "optionItems": {
+            "type": "array",
+            "default": [],
+            "items": {
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string"
+                    },
+                    "label": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "defaultSelected": {
+            "type": "string",
+            "default": ""
+        },
+        "contentImpact": {
+            "type": "array",
+            "default": [],
+            "items": {
+                "type": "string"
+            }
+        },
+        "typeKey": {
+            "type": "string",
+            "default": ""
+        },
+        "pillStyle": {
+            "type": "string",
+            "default": "outlined",
+            "enum": ["outlined", "filled", "ghost"]
+        },
+        "pillSize": {
+            "type": "string",
+            "default": "medium",
+            "enum": ["small", "medium", "large"]
+        },
+        "pillBgColour": {
+            "type": "string",
+            "default": ""
+        },
+        "pillTextColour": {
+            "type": "string",
+            "default": ""
+        },
+        "pillBorderColour": {
+            "type": "string",
+            "default": ""
+        },
+        "pillSelectedBgColour": {
+            "type": "string",
+            "default": ""
+        },
+        "pillSelectedTextColour": {
+            "type": "string",
+            "default": ""
+        }
+    },
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css",
+    "style": "file:./style-index.css",
+    "viewScriptModule": "file:./view.js",
+    "render": "file:./render.php",
+    "example": {
+        "attributes": {
+            "label": "Pack size",
+            "showLabel": true,
+            "pillStyle": "outlined",
+            "pillSize": "medium",
+            "optionItems": [
+                { "key": "250g", "label": "250g" },
+                { "key": "500g", "label": "500g" },
+                { "key": "1kg",  "label": "1kg"  }
+            ],
+            "defaultSelected": "500g",
+            "typeKey": "pack-size"
+        }
+    }
+}

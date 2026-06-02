@@ -57,8 +57,12 @@
 	min-height: 44px;
 	text-decoration: none;
 	color: inherit;
-	transition: transform var(--wp--custom--transition--fast, 0.15s ease),
-	            color var(--wp--custom--transition--fast, 0.15s ease);
+	border-radius: inherit; /* propagate shape radius for focus ring alignment */
+	transition:
+		transform var(--wp--custom--transition--fast, 0.15s ease),
+		color var(--wp--custom--transition--fast, 0.15s ease),
+		background-color var(--wp--custom--transition--fast, 0.15s ease),
+		border-color var(--wp--custom--transition--fast, 0.15s ease);
 }
 
 .sgs-icon__link:hover {
@@ -69,8 +73,8 @@
 /* WCAG 2.4.7 — focus must always be visible */
 .sgs-icon__link:focus-visible {
 	outline: 2px solid var(--wp--preset--color--primary);
-	outline-offset: 2px;
-	border-radius: 2px;
+	outline-offset: 4px;
+	border-radius: inherit;
 }
 
 /* ── Size modifiers ─────────────────────────────────────────────────────── */
@@ -80,8 +84,23 @@
 .sgs-icon--size-custom { width: var(--sgs-icon-size, 64px); height: var(--sgs-icon-size, 64px); }
 
 /* ── Background shape modifiers ──────────────────────────────────────────── */
+
+/*
+ * Shape modifiers — matches sgs/social-icons aesthetic.
+ * Filled shapes (circle / pill / rounded / square): solid background colour.
+ * Outline shape: transparent fill + 2px ring using --sgs-icon-outline-colour.
+ *
+ * Hover shape colour: --sgs-icon-hover-shape-colour changes bg (or border for
+ * outline) on hover when the operator supplies a hover shape colour token.
+ */
+
 .sgs-icon--bg-circle {
 	border-radius: 50%;
+	padding: 12px;
+}
+
+.sgs-icon--bg-pill {
+	border-radius: 999px;
 	padding: 12px;
 }
 
@@ -94,6 +113,53 @@
 	padding: 12px;
 }
 
+/* Outline ring — transparent fill, coloured border. No background-color on root. */
+.sgs-icon--bg-outline {
+	border-radius: 50%;
+	padding: 12px;
+	border: 2px solid var(--sgs-icon-outline-colour, currentColor);
+	background-color: transparent;
+}
+
+/* ── Hover shape-colour shifts (all filled shapes) ───────────────────────── */
+/*
+ * When --sgs-icon-hover-shape-colour is set, hovering the link wrapper
+ * transitions the shape background (or outline border) to the hover colour.
+ * The parent .sgs-icon receives the custom property; the link inherits it.
+ * We target the .sgs-icon__link inside each shape modifier so the transition
+ * only fires when there is a link (matching the social-icons hover pattern).
+ */
+.sgs-icon--bg-circle .sgs-icon__link:hover,
+.sgs-icon--bg-pill .sgs-icon__link:hover,
+.sgs-icon--bg-rounded .sgs-icon__link:hover,
+.sgs-icon--bg-square .sgs-icon__link:hover {
+	background-color: var(--sgs-icon-hover-shape-colour, inherit);
+}
+
+.sgs-icon--bg-outline .sgs-icon__link:hover {
+	border-color: var(--sgs-icon-hover-shape-colour, var(--sgs-icon-outline-colour, currentColor));
+}
+
+/*
+ * Filled shapes with hover-shape-colour: the transition must apply to the
+ * .sgs-icon root itself (not just the link) so non-linked icons with a shape
+ * also transition on hover if the browser supports :has().
+ * This is a progressive enhancement — the link-target rule above is the
+ * primary path for linked icons.
+ */
+@supports selector(:has(a)) {
+	.sgs-icon--bg-circle:has(.sgs-icon__link):hover,
+	.sgs-icon--bg-pill:has(.sgs-icon__link):hover,
+	.sgs-icon--bg-rounded:has(.sgs-icon__link):hover,
+	.sgs-icon--bg-square:has(.sgs-icon__link):hover {
+		background-color: var(--sgs-icon-hover-shape-colour, inherit);
+	}
+
+	.sgs-icon--bg-outline:has(.sgs-icon__link):hover {
+		border-color: var(--sgs-icon-hover-shape-colour, var(--sgs-icon-outline-colour, currentColor));
+	}
+}
+
 /* ── Editor preview placeholder ─────────────────────────────────────────── */
 .sgs-icon__placeholder {
 	font-size: 11px;
@@ -102,9 +168,14 @@
 	font-family: monospace;
 }
 
-/* ── Reduced motion — suppress hover transitions ────────────────────────── */
+/* ── Reduced motion — suppress all hover transitions ────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-	.sgs-icon__link {
+	.sgs-icon__link,
+	.sgs-icon--bg-circle,
+	.sgs-icon--bg-pill,
+	.sgs-icon--bg-rounded,
+	.sgs-icon--bg-square,
+	.sgs-icon--bg-outline {
 		transition: none;
 	}
 }

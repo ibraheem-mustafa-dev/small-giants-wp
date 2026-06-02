@@ -1,0 +1,266 @@
+/* ===================================================================
+   SGS Option Picker — Frontend + Editor shared styles
+   ===================================================================
+
+   Token-aware colour overrides flow through CSS custom properties
+   set as inline vars on the fieldset wrapper by render.php / edit.js:
+
+     --sgs-op-bg          resting pill background
+     --sgs-op-text        resting pill text
+     --sgs-op-border      resting pill border
+     --sgs-op-sel-bg      selected pill background
+     --sgs-op-sel-text    selected pill text
+
+   CSS drives ALL visual state — JS does NOT touch classes.
+   The `:focus-within` focus ring is applied on the <label> so it
+   covers both keyboard (focus on input) and pointer interactions.
+   ================================================================= */
+
+/* ── Screen-reader utility (shared across SGS blocks) ─────────────── */
+
+.sgs-sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* ── Fieldset reset ────────────────────────────────────────────────── */
+
+.sgs-option-picker {
+	border: none;
+	margin: 0;
+	padding: 0;
+}
+
+/* ── Label (legend) ────────────────────────────────────────────────── */
+
+.sgs-option-picker__label {
+	display: block;
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 600;
+	color: var(--wp--preset--color--foreground, currentColor);
+	margin-bottom: var(--wp--preset--spacing--20, 8px);
+	padding: 0;
+}
+
+/* ── Options row ───────────────────────────────────────────────────── */
+
+.sgs-option-picker__options {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--30, 0.75rem);
+	align-items: center;
+}
+
+/* ── Individual option (label wraps input + pill) ──────────────────── */
+
+.sgs-option-picker__option {
+	display: inline-flex;
+	cursor: pointer;
+	/* Ensure at least 44×44 px touch target (WCAG 2.2 AA §2.5.8) */
+	min-height: 44px;
+	align-items: center;
+}
+
+/* Hide the real radio visually — kept in the DOM for full a11y */
+.sgs-option-picker__option input[type="radio"] {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+	appearance: none;
+}
+
+/* ── Pill base ─────────────────────────────────────────────────────── */
+
+.sgs-option-picker__pill {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: var(--wp--custom--border-radius--medium, 6px);
+	font-weight: 500;
+	line-height: 1;
+	white-space: nowrap;
+	/*
+	 * Fix 1 (WCAG): reserve space for the selection-tick indicator so the pill
+	 * width never changes when selected — no layout shift.
+	 * The ::after pseudo-element draws the tick; it is always present but
+	 * transparent when unchecked, visible when checked (via the sibling rule below).
+	 * The extra left padding + gap to the tick use the same value so text stays
+	 * visually centred on hover/unselected states.
+	 */
+	gap: 0.3em;
+	transition: background-color var(--wp--custom--transition--fast, 0.15s ease),
+	            color            var(--wp--custom--transition--fast, 0.15s ease),
+	            border-color     var(--wp--custom--transition--fast, 0.15s ease),
+	            box-shadow       var(--wp--custom--transition--fast, 0.15s ease);
+	/* Prevent text selection on rapid clicks */
+	user-select: none;
+}
+
+/*
+ * Selection-tick indicator — always present, transparent when unselected.
+ * This reserves the width so selecting a pill never shifts adjacent pills.
+ * aria-hidden is set on this via content so screen readers ignore it (the
+ * radio :checked state is the semantic truth).
+ * CSS-drawn check: a rotated L-shape via border.
+ */
+.sgs-option-picker__pill::before {
+	content: "";
+	display: inline-block;
+	width:  0.5em;
+	height: 0.28em;
+	border-left:  0.12em solid transparent;
+	border-bottom: 0.12em solid transparent;
+	transform: rotate(-45deg) translateY(-0.06em);
+	flex-shrink: 0;
+	transition: border-color var(--wp--custom--transition--fast, 0.15s ease);
+}
+
+/* ── Size variants ─────────────────────────────────────────────────── */
+
+.sgs-option-picker--small .sgs-option-picker__pill {
+	padding: 6px 12px;
+	font-size: var(--wp--preset--font-size--small, 0.8125rem);
+}
+
+.sgs-option-picker--medium .sgs-option-picker__pill {
+	padding: 8px 16px;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+}
+
+.sgs-option-picker--large .sgs-option-picker__pill {
+	padding: 10px 20px;
+	font-size: var(--wp--preset--font-size--medium, 1rem);
+}
+
+/* ================================================================
+   OUTLINED style (global default)
+   ================================================================ */
+
+.sgs-option-picker--outlined .sgs-option-picker__pill {
+	background-color: var(--sgs-op-bg, transparent);
+	color:            var(--sgs-op-text, var(--wp--preset--color--foreground, currentColor));
+	border: 2px solid var(--sgs-op-border, var(--wp--preset--color--foreground, currentColor));
+}
+
+/* Considering state (hover / focus-within on the label) */
+.sgs-option-picker--outlined .sgs-option-picker__option:hover  .sgs-option-picker__pill,
+.sgs-option-picker--outlined .sgs-option-picker__option:focus-within .sgs-option-picker__pill {
+	background-color: var(--sgs-op-bg, var(--wp--preset--color--secondary, #f3f4f6));
+	border-color:     var(--sgs-op-border, var(--wp--preset--color--primary, currentColor));
+	color:            var(--sgs-op-text, var(--wp--preset--color--primary, currentColor));
+}
+
+/* Selected state — CSS-only via :checked sibling */
+.sgs-option-picker--outlined .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill {
+	background-color: var(--sgs-op-sel-bg,   var(--wp--preset--color--primary, #0F7E80));
+	color:            var(--sgs-op-sel-text,  var(--wp--preset--color--base,    #fff));
+	border-color:     var(--sgs-op-sel-bg,    var(--wp--preset--color--primary, #0F7E80));
+	font-weight:      700;
+}
+
+/* Fix 1 (WCAG): reveal tick on checked — outlined (light bg → dark tick via currentColor) */
+.sgs-option-picker--outlined .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill::before {
+	border-left-color:   var(--sgs-op-sel-text, var(--wp--preset--color--base, #fff));
+	border-bottom-color: var(--sgs-op-sel-text, var(--wp--preset--color--base, #fff));
+}
+
+/* ================================================================
+   FILLED style
+   ================================================================ */
+
+.sgs-option-picker--filled .sgs-option-picker__pill {
+	background-color: var(--sgs-op-bg, var(--wp--preset--color--secondary, #e5e7eb));
+	color:            var(--sgs-op-text, var(--wp--preset--color--foreground, currentColor));
+	border: 2px solid transparent;
+}
+
+.sgs-option-picker--filled .sgs-option-picker__option:hover  .sgs-option-picker__pill,
+.sgs-option-picker--filled .sgs-option-picker__option:focus-within .sgs-option-picker__pill {
+	background-color: var(--sgs-op-bg, var(--wp--preset--color--tertiary, #d1d5db));
+}
+
+.sgs-option-picker--filled .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill {
+	background-color: var(--sgs-op-sel-bg,  var(--wp--preset--color--primary, #0F7E80));
+	color:            var(--sgs-op-sel-text, var(--wp--preset--color--base,    #fff));
+	border-color:     transparent;
+	font-weight:      700;
+}
+
+/* Fix 1 (WCAG): reveal tick on checked — filled */
+.sgs-option-picker--filled .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill::before {
+	border-left-color:   var(--sgs-op-sel-text, var(--wp--preset--color--base, #fff));
+	border-bottom-color: var(--sgs-op-sel-text, var(--wp--preset--color--base, #fff));
+}
+
+/* ================================================================
+   GHOST style
+   ================================================================ */
+
+.sgs-option-picker--ghost .sgs-option-picker__pill {
+	background-color: transparent;
+	color:            var(--sgs-op-text, var(--wp--preset--color--foreground, currentColor));
+	border: 2px solid transparent;
+}
+
+.sgs-option-picker--ghost .sgs-option-picker__option:hover  .sgs-option-picker__pill,
+.sgs-option-picker--ghost .sgs-option-picker__option:focus-within .sgs-option-picker__pill {
+	background-color: var(--wp--preset--color--secondary, rgba(0, 0, 0, 0.05));
+}
+
+.sgs-option-picker--ghost .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill {
+	background-color: transparent;
+	color:            var(--sgs-op-sel-text, var(--wp--preset--color--primary, #0F7E80));
+	border-color:     var(--sgs-op-sel-bg,   var(--wp--preset--color--primary, #0F7E80));
+	font-weight:      700;
+}
+
+/* Fix 1 (WCAG): reveal tick on checked — ghost (transparent bg → coloured tick) */
+.sgs-option-picker--ghost .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill::before {
+	border-left-color:   var(--sgs-op-sel-text, var(--wp--preset--color--primary, #0F7E80));
+	border-bottom-color: var(--sgs-op-sel-text, var(--wp--preset--color--primary, #0F7E80));
+}
+
+/* ================================================================
+   FOCUS ring — visible on keyboard navigation
+   The ring appears on the pill, triggered by :focus-within on the
+   label (because the real input is visually hidden inside the label).
+   ================================================================ */
+
+.sgs-option-picker__option input[type="radio"]:focus-visible ~ .sgs-option-picker__pill {
+	outline: 2px solid var(--wp--preset--color--primary, #0F7E80);
+	outline-offset: 3px;
+}
+
+/* ================================================================
+   Editor placeholder when no options have been added
+   ================================================================ */
+
+.sgs-option-picker__empty-notice {
+	font-size: var(--wp--preset--font-size--small);
+	color: var(--wp--preset--color--secondary, #6b7280);
+	font-style: italic;
+	margin: 0;
+}
+
+/* ================================================================
+   Reduced motion — zero all transitions
+   ================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-option-picker__pill {
+		transition: none;
+	}
+}

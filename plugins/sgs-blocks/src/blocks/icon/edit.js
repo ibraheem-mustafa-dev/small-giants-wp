@@ -12,8 +12,10 @@ import { colourVar } from '../../utils';
 const BG_SHAPES = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 	{ label: __( 'Circle', 'sgs-blocks' ), value: 'circle' },
+	{ label: __( 'Pill', 'sgs-blocks' ), value: 'pill' },
 	{ label: __( 'Rounded square', 'sgs-blocks' ), value: 'rounded' },
 	{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
+	{ label: __( 'Outline ring', 'sgs-blocks' ), value: 'outline' },
 ];
 
 const LINK_TARGET_OPTIONS = [
@@ -70,6 +72,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		linkUrl,
 		linkTarget,
 		ariaLabel,
+		hoverIconColour,
+		hoverShapeColour,
+		hoverScale,
 	} = attributes;
 
 	const blockAlign = attributes.align || 'center';
@@ -83,13 +88,22 @@ export default function Edit( { attributes, setAttributes } ) {
 		.filter( Boolean )
 		.join( ' ' );
 
+	// Outline shape: transparent background + coloured border; no solid fill.
+	const isOutline = backgroundShape === 'outline';
+
 	const style = {
 		'--sgs-icon-size': `${ iconSize }px`,
 		color: colourVar( iconColour ) || undefined,
 		backgroundColor:
-			backgroundColour && backgroundShape !== 'none'
+			backgroundColour && backgroundShape !== 'none' && ! isOutline
 				? colourVar( backgroundColour )
 				: undefined,
+		'--sgs-icon-outline-colour':
+			backgroundColour && isOutline ? colourVar( backgroundColour ) : undefined,
+		'--sgs-icon-hover-colour': colourVar( hoverIconColour ) || undefined,
+		'--sgs-icon-hover-shape-colour':
+			hoverShapeColour ? colourVar( hoverShapeColour ) : undefined,
+		'--sgs-icon-hover-scale': hoverScale || undefined,
 	};
 
 	const blockProps = useBlockProps( { className, style } );
@@ -174,6 +188,34 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 						/>
 					) }
+				</PanelBody>
+
+				<PanelBody title={ __( 'Hover effects', 'sgs-blocks' ) } initialOpen={ false }>
+					<DesignTokenPicker
+						label={ __( 'Icon colour on hover', 'sgs-blocks' ) }
+						value={ hoverIconColour }
+						onChange={ ( val ) => setAttributes( { hoverIconColour: val } ) }
+					/>
+					{ backgroundShape !== 'none' && (
+						<DesignTokenPicker
+							label={ __( 'Shape colour on hover', 'sgs-blocks' ) }
+							help={ __(
+								'Background (or border for Outline) colour when hovered. Leave empty to keep unchanged.',
+								'sgs-blocks'
+							) }
+							value={ hoverShapeColour }
+							onChange={ ( val ) => setAttributes( { hoverShapeColour: val } ) }
+						/>
+					) }
+					<RangeControl
+						label={ __( 'Scale on hover', 'sgs-blocks' ) }
+						value={ hoverScale }
+						onChange={ ( val ) => setAttributes( { hoverScale: val } ) }
+						min={ 1 }
+						max={ 1.5 }
+						step={ 0.05 }
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 
 				<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>

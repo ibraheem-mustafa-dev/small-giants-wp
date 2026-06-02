@@ -65,6 +65,9 @@ require_once SGS_BLOCKS_PATH . 'includes/conditional-visibility.php';
 // Universal hover effects — server-side CSS variable injection.
 require_once SGS_BLOCKS_PATH . 'includes/hover-effects.php';
 
+// SGS Cart — dequeue wc-cart-fragments on pages using sgs/cart + inject REST config.
+require_once SGS_BLOCKS_PATH . 'includes/wc-cart-fragments.php';
+
 // Animation attributes — server-side data-attribute injection for scroll reveals.
 require_once SGS_BLOCKS_PATH . 'includes/animation-attributes.php';
 

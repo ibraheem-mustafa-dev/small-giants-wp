@@ -1,0 +1,52 @@
+/* ===================================================================
+   SGS Option Picker — Editor-only styles
+   ===================================================================
+
+   style.css already compiles to style-index.css for both frontend
+   and editor. This file (compiles to index.css) adds editor-specific
+   UI only: the option-row repeater layout in InspectorControls,
+   the canvas "selected" indicator on the preview pill (because the
+   real :checked CSS state cannot fire in the editor — the pill state
+   is driven by the .sgs-option-picker__option--selected class added
+   by edit.js), and general editor-canvas polish.
+   ================================================================= */
+
+/* ── Option repeater rows in InspectorControls ─────────────────────── */
+
+.sgs-option-picker-editor__option-row {
+	padding: 8px 0;
+	border-bottom: 1px solid var(--wp-components-color-gray-300, #ddd);
+}
+
+.sgs-option-picker-editor__option-row:last-of-type {
+	border-bottom: none;
+}
+
+/* Give the action buttons a consistent top margin so they align
+   with the bottom of the text fields on the left */
+.sgs-option-picker-editor__option-row .components-flex-item {
+	padding-top: 22px; /* Approx label height — keeps buttons vertically centred */
+}
+
+/* ── Canvas: selected-pill preview driven by edit.js class ────────────
+
+   The editor canvas uses class-based preview because input:checked
+   state cannot be toggled in React-controlled markup.
+   We mirror the outlined style's selected state as the canvas default
+   (edit.js has no access to the current pillStyle at render-class time
+   without adding complexity — this is intentional; the canvas always
+   previews "outlined selected" regardless of style choice, which is
+   acceptable for an editing context).
+   ──────────────────────────────────────────────────────────────────── */
+
+.sgs-option-picker .sgs-option-picker__option--selected .sgs-option-picker__pill {
+	background-color: var(--sgs-op-sel-bg,  var(--wp--preset--color--primary, #0F7E80));
+	color:            var(--sgs-op-sel-text, var(--wp--preset--color--base,    #fff));
+	border-color:     var(--sgs-op-sel-bg,   var(--wp--preset--color--primary, #0F7E80));
+}
+
+/* ── Editor canvas padding so fieldset doesn't flush to block outline ─ */
+
+.wp-block-sgs-option-picker.sgs-option-picker {
+	padding: 4px;
+}

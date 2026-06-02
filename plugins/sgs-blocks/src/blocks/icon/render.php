@@ -52,16 +52,17 @@ $emoji_char = trim( $emoji_char );
 // Strip any HTML tags that may have been injected.
 $emoji_char = wp_strip_all_tags( $emoji_char );
 
-$icon_size    = absint( $attributes['iconSize'] ?? 32 );
-$icon_colour  = $attributes['iconColour'] ?? 'primary';
-$bg_colour    = $attributes['backgroundColour'] ?? '';
-$bg_shape     = $attributes['backgroundShape'] ?? 'none';
-$link_url     = $attributes['linkUrl'] ?? '';
-$link_target  = $attributes['linkTarget'] ?? '_self';
-$link_rel     = $attributes['linkRel'] ?? '';
-$aria_label   = $attributes['ariaLabel'] ?? '';
-$hover_colour = $attributes['hoverColour'] ?? 'accent-text';
-$hover_scale  = (float) ( $attributes['hoverScale'] ?? 1.1 );
+$icon_size          = absint( $attributes['iconSize'] ?? 32 );
+$icon_colour        = $attributes['iconColour'] ?? 'primary';
+$bg_colour          = $attributes['backgroundColour'] ?? '';
+$bg_shape           = $attributes['backgroundShape'] ?? 'none';
+$link_url           = $attributes['linkUrl'] ?? '';
+$link_target        = $attributes['linkTarget'] ?? '_self';
+$link_rel           = $attributes['linkRel'] ?? '';
+$aria_label         = $attributes['ariaLabel'] ?? '';
+$hover_icon_colour  = $attributes['hoverIconColour'] ?? $attributes['hoverColour'] ?? 'accent-text';
+$hover_shape_colour = $attributes['hoverShapeColour'] ?? '';
+$hover_scale        = (float) ( $attributes['hoverScale'] ?? 1.1 );
 
 // Validate linkTarget — only allow known safe values.
 if ( ! in_array( $link_target, array( '_self', '_blank' ), true ) ) {
@@ -82,24 +83,34 @@ if ( 'dashicon' === $icon_source ) {
 // ── Wrapper classes ───────────────────────────────────────────────────────────
 $classes = array( 'sgs-icon', 'sgs-icon--source-' . $icon_source );
 if ( 'none' !== $bg_shape ) {
-	$allowed_shapes = array( 'circle', 'rounded', 'square' );
+	$allowed_shapes = array( 'circle', 'pill', 'rounded', 'square', 'outline' );
 	if ( in_array( $bg_shape, $allowed_shapes, true ) ) {
 		$classes[] = 'sgs-icon--bg-' . $bg_shape;
 	}
 }
 
 // ── Inline styles ─────────────────────────────────────────────────────────────
-$styles = array();
+$is_outline = 'outline' === $bg_shape;
+$styles     = array();
+
 if ( $icon_size ) {
 	$styles[] = '--sgs-icon-size:' . $icon_size . 'px';
 }
 if ( $icon_colour ) {
 	$styles[] = 'color:' . sgs_colour_value( $icon_colour );
 }
+// Outline shape: border ring, no solid fill. Other shapes: solid background.
 if ( $bg_colour && 'none' !== $bg_shape ) {
-	$styles[] = 'background-color:' . sgs_colour_value( $bg_colour );
+	if ( $is_outline ) {
+		$styles[] = '--sgs-icon-outline-colour:' . sgs_colour_value( $bg_colour );
+	} else {
+		$styles[] = 'background-color:' . sgs_colour_value( $bg_colour );
+	}
 }
-$styles[] = '--sgs-icon-hover-colour:' . sgs_colour_value( $hover_colour );
+$styles[] = '--sgs-icon-hover-colour:' . sgs_colour_value( $hover_icon_colour );
+if ( '' !== $hover_shape_colour ) {
+	$styles[] = '--sgs-icon-hover-shape-colour:' . sgs_colour_value( $hover_shape_colour );
+}
 $styles[] = '--sgs-icon-hover-scale:' . round( $hover_scale, 3 );
 
 // ── WCAG role + aria attributes on the wrapper ────────────────────────────────

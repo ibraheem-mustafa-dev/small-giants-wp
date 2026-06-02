@@ -423,6 +423,13 @@ function register_pattern_categories(): void {
 			'label' => __( 'SGS Footers', 'sgs-theme' ),
 		)
 	);
+	register_block_pattern_category(
+		'mega-menu-layouts',
+		array(
+			'label'       => __( 'Mega Menu Layouts', 'sgs-theme' ),
+			'description' => __( 'Generic layout skeletons for mega menu template parts. Drop one into a template part, then replace the placeholder content with your own.', 'sgs-theme' ),
+		)
+	);
 }
 add_action( 'init', __NAMESPACE__ . '\register_pattern_categories' );
 

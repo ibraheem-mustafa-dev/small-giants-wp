@@ -47,6 +47,14 @@ if ( ! scriptConfig ) {
 					'extensions',
 					'index.js'
 				),
+				// Variation-sets Gutenberg panel — sgs_product editor only (FR-24-11).
+				'plugins/product-variation-sets/index': path.resolve(
+					process.cwd(),
+					'src',
+					'plugins',
+					'product-variation-sets',
+					'index.js'
+				),
 			} ) );
 		}
 
@@ -57,6 +65,14 @@ if ( ! scriptConfig ) {
 				'src',
 				'blocks',
 				'extensions',
+				'index.js'
+			),
+			// Variation-sets Gutenberg panel — sgs_product editor only (FR-24-11).
+			'plugins/product-variation-sets/index': path.resolve(
+				process.cwd(),
+				'src',
+				'plugins',
+				'product-variation-sets',
 				'index.js'
 			),
 		};

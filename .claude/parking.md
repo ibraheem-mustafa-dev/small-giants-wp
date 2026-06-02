@@ -1,8 +1,22 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-31
+last_updated: 2026-06-02
 ---
+
+## 2026-06-02 — theme thread wave 1–3 deferred follow-ups
+
+> **P-CART-INCREMENT-E2E** — NEW 2026-06-02. **Status: OPEN** (ops). `sgs/cart` v1 shipped (`b6369224`); core mechanism (SSR 0 + Store API hydrate + no-jQuery + a11y) live-verified, but the badge-INCREMENT-on-add-to-cart was NOT tested — the canary has 0 WooCommerce products. Next session: seed one WC product (matching Mama's product-draft content) → add to cart → confirm badge increments with no full reload + no `?wc-ajax=get_refreshed_fragments`. Same Store API fetch path as the verified hydration (low risk). This product fixture also unblocks product-card Phase C testing.
+
+> **P-PRODUCT-CARD-PHASE-CDE** — NEW 2026-06-02. **Status: OPEN** (framework). Product-card Phase A (option-picker) + Phase B (variation-sets meta + panel + custom-fields fix) SHIPPED. Remaining: **Phase C** = card Bound-mode rendering, **DUAL-SOURCE** per D149 (bind to WooCommerce-native product data when WC present; custom `sgs_product` CPT meta otherwise; custom meta only for SGS-specific config like variation-sets display). Phase C needs a /brainstorming + /research design gate on the WC Block-Bindings pattern BEFORE building (Bean-directed). **Phase D** = clone-emit (converter outputs `sgs/option-picker` for a pill group — TRUTH-SPEC + slot_synonyms/slots + converter, per D144.4). **Phase E** = collection/query block (Spec 24 FR-24-4/5). Gated on Task A (a real product to bind to). Full design: Spec 24 §FR-24 + D144/D149.
+
+> **P-CART-DRAWER-PHASE2** — NEW 2026-06-02. **Status: DEFERRED** (framework). `sgs/cart` v1 is count+link only; the slide-in drawer is gated behind the `displayMode` attr (`link` default | `drawer`). Build the drawer in Phase 2: `role="dialog" aria-modal` + focus trap + ESC + focus-return + `prefers-reduced-motion`. Do NOT wrap/extend `woocommerce/mini-cart` (shallow controls, DOM-subtree + token-inheritance issues — see the cart cold-prompt).
+
+> **P-BLOCK-DESIGN-POLISH** — NEW 2026-06-02. **Status: DEFERRED** (content). Two lower-priority design upgrades from Bean's brain-dump: (1) cta-section → rich template-patterns with stats/social-proof filler (like the hero presets), not just alignment variants; (2) notice-banner → per-type icon+CSS bundles as ideal defaults (then customisable). Plus the heading/text dormant-variant tweak (drop heading `hero`? — Bean decision).
+
+## 2026-06-01 — FR-22-6 null-save→InnerBlocks migration gap (theme thread, wave 1)
+
+> **P-FR226-NULL-SAVE-MIGRATION** — NEW 2026-06-01. **Status: DEFERRED** (Bean's prior moot disposition stands — see P-D1 below). Generalises P-D1-INFOBOX-EXISTING-POST-MIGRATION from info-box to the whole FR-22-6 roster. **The gap:** an FR-22-6 block whose new `save()` is `<InnerBlocks.Content/>` (empty when there are no inner blocks) can VALIDATE against a null-save-era post's empty/self-closing stored markup — so WordPress treats the block as valid and **never walks the deprecation chain**, meaning the FR-22-6 `migrate()` (which converts the old scalar `text`/`heading`/etc. → a child block) **does not fire** and the scalar content is dropped on the frontend (render.php now `echo $content`, R-22-14 removed the scalar fallback). The FR-22-6 deprecation entries (info-box v4 — SHIPPED 2026-05-31; notice-banner v3 — shipped this session) have **no `isEligible`**, so they only run when the block is otherwise invalid. **Affected:** info-box (already shipped), notice-banner (shipped this session), + the entire Wave-2A roster (social-proof/featured-product/gift-section/footer/header) when migrated. **NOT a regression vs shipped behaviour** — notice-banner exactly mirrors the shipped info-box pattern. **Resolution options (when a real production SGS site exists):** (a) WP-CLI batch existing-post migration per R-22-14 (Bean's chosen path), OR (b) add an `isEligible` to the FR-22-6 deprecation entry that returns true when the scalar content attr is non-empty AND no inner blocks exist, forcing the deprecation walk. Verify on a real old-shape post before declaring fixed (R-22-11). Found during the wave-1 notice-banner migration review; render-verified clean on the canary (no live old posts to break). Full detail: notice-banner + option-picker visual-diff reports (2026-06-01), decisions (this session).
 
 ## 2026-06-02 — CSS-transfer fidelity (the pipeline's core job; 4 gaps)
 
@@ -40,7 +54,7 @@ last_updated: 2026-05-31
 > **P-A1-PHASE2-SLOT-RESPONSIVE-TYPOGRAPHY** — NEW. A-1 lifted responsive padding/margin/gap/columns/grid → per-device attrs, but SLOT-LEVEL responsive typography (e.g. `headlineFontSizeTablet`, per-slot font-size/colour at breakpoints) is still dropped to variation-CSS-only — needs the slot-prefix path wired into the universal walker (the deprecated `_lift_styling_attrs` logic has the slot-prefix derivation). Also minors: A-1 `min-width>1024` breakpoint edge (supra-1024 maps to desktop-all-sizes); add `_trace` on 3+ breakpoint drops; B-1 `replaces` comma-split contract guard.
 > **Status:** OPEN · **Bucket:** Pipeline / converter · **Trigger:** after Wave-2 + trust-bar migration.
 
-> **P-D1-INFOBOX-EXISTING-POST-MIGRATION** — DROPPED 2026-05-31 (Bean). No live SGS-theme sites exist (scratch pages only, due to be remade once the pipeline is production-ready), so info-box deprecated.js v4 not migrating existing posts is moot. Revisit only when a real production SGS-theme site exists (then: WP-CLI batch existing-post migration per R-22-14).
+> **P-D1-INFOBOX-EXISTING-POST-MIGRATION** — DROPPED 2026-05-31 (Bean). No live SGS-theme sites exist (scratch pages only, due to be remade once the pipeline is production-ready), so info-box deprecated.js v4 not migrating existing posts is moot. Revisit only when a real production SGS-theme site exists (then: WP-CLI batch existing-post migration per R-22-14). **→ GENERALISED 2026-06-01 to P-FR226-NULL-SAVE-MIGRATION** (the same null-save→InnerBlocks auto-migrate gap applies to every FR-22-6 block, not just info-box; the moot/dropped disposition stands until a production site exists).
 > **Status:** DROPPED · **Bucket:** Block migration.
 
 ## 2026-05-31 — FR-22-6 converter content-routing + Spec 24 follow-ups

@@ -1,3 +1,45 @@
+# Session Handoff — 2026-06-02 (SGS THEME thread, session 4)
+
+> Theme/blocks/editor-UX thread. Cloning pipeline → `.claude/handoff.md`. Next steps → `.claude/next-session-prompt-theme.md`.
+
+## Completed This Session
+1. **`sgs/option-picker`** built + verified (`ee6807d3`). Battle-ready radio-group pill chooser (Spec 24 FR-24-15 / D144 Phase A); native ARIA, no-JS-safe SSR, bubbling `sgs:option-selected` event. Live-verified: default-select renders, click swaps via CSS `:checked`, event contract exact.
+2. **notice-banner FR-22-6 migration** (`d8c30a74`) — `echo $content` + sgs/text child + deprecated.js v3 (mirrors shipped info-box v4). Live render clean.
+3. **Mega-menu layout library** (`e70cc07a`) — 7 generic patterns + `mega-menu-layouts` category + registered orphan sectors part + "create panel" editor shortcut. Research-gated (block-patterns chosen). All 7 register live.
+4. **4 /ui-ux-pro-max design fixes** (`3b85dad1`) — featured-card contrast 3.32→11.86:1, option-picker non-colour selected cue + spacing, card-grid borders. Theme version 1.3.5→1.3.6 (theme-CSS cache-bust).
+5. **`sgs/icon` enhancements** (`d7a75870`) — shape backgrounds (circle/pill/square/outline) + clickable (reuses linkUrl) + hover; deprecated.js v1. 5 shapes verified.
+6. **Duplicate-animation-panel fix** (`609299e1`) — root cause: `animation.js` imported by two webpack entry points → filter ran twice. Verified: exactly one `sgs/animation-controls` handler now.
+7. **Product-card Phase B** (`7115a60d`) — `_sgs_variation_sets` meta + Gutenberg panel + **`custom-fields` CPT fix** (without it the CPT REST schema omitted `meta` → no product meta round-tripped). Verified: meta round-trips via REST, panel renders 0 errors.
+8. **`sgs/cart`** WooCommerce count badge v1 (`b6369224`) — Store API hydrate, SSR 0, no jQuery, cart-fragments dequeued. Verified: hydration fetch fires, badge + aria correct.
+9. **FR-22-6 roster classification** + null-save migration finding (`470b2149`, parking P-FR226). **4-issue triage:** 3 of 4 reported editor bugs were stale/false (verified vs ground truth); only the animation panel was real.
+
+## Current State
+- **Branch:** `feat/theme-blocks-wave1` at `0afd6ab1` — 12 commits, pushed, NOT merged to main (Bean times the merge with the cloning thread per the commit-race lesson).
+- **Tests:** no unit suite; `php -l` clean on all touched PHP; `npm run build` green.
+- **Build/deploy:** all blocks + theme deployed to sandybrown canary; live-verified. `/sgs-update` run 3× clean (68 blocks).
+- **Uncommitted changes:** none — working tree clean.
+
+## Outcome vs Completion (Gate 3.5)
+- Waves 1–3 blocks/fixes: **OUTCOME ACHIEVED** — each live-verified (render + behaviour + measurement), committed, gated.
+- Product-card Phase B: **OUTCOME ACHIEVED** — data model round-trips via REST + panel renders. (Phases C/D/E are correctly future work, not completion theatre.)
+- `sgs/cart`: **CODE SHIPPED, OUTCOME PARTIALLY HIT** — core mechanism (SSR + hydrate + no-jQuery + a11y) verified live; the badge-INCREMENT-on-add-to-cart E2E is NOT yet tested (canary has 0 WC products). Next session seeds a WC product to close it.
+
+## Known Issues / Blockers
+- **Cart badge-increment E2E untested** — needs a WooCommerce product on the canary (0 exist). Same Store API fetch path as the verified hydration; low risk.
+- **FR-22-6 Wave-2A migrations gated** on resolving the null-save→InnerBlocks finding (parking P-FR226) framework-wide first.
+- **Merge to main pending** — Bean directs it when the cloning thread is at a clean point (concurrent-commit-race avoidance).
+
+## Notes for Next Session
+- **Theme CSS cache-bust:** theme assets (e.g. `mega-menu-panels.css`) key `?ver=` off the theme `Version:` header — bump `theme/sgs-theme/style.css` Version on any theme-CSS change. Block CSS busts via block.json version. (Caught live this session — the contrast fix didn't apply until the theme version bumped.)
+- **CPT meta needs `custom-fields` support** — a CPT must declare `supports => 'custom-fields'` for `register_meta`+`show_in_rest` to expose the `meta` field in REST. Without it, zero meta round-trips.
+- **Triage before fixing** — 3 of 4 reported editor bugs were already fixed/false; verifying against ground truth (REST render, edit.js read, editor repro) before dispatching saved a wasted wave.
+- **Product-card Phase C = dual-source** (D149): bind to WC-native data when WooCommerce present, custom CPT meta otherwise. Brainstorm + research the WC Block-Bindings pattern BEFORE building.
+
+## Next Session Prompt
+See `.claude/next-session-prompt-theme.md` (manual WC product to close cart + enable Phase C testing; product-card Phase C dual-source binding; remaining theme tasks).
+
+---
+
 # Session Handoff — 2026-06-01 (SGS THEME thread, session 3)
 
 > Theme/blocks/editor-UX thread. Cloning pipeline → `.claude/handoff.md`. Next steps → `.claude/next-session-prompt-theme.md`.

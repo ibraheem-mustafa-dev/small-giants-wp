@@ -2,7 +2,7 @@
 doc_type: spec
 spec_id: 24
 spec_version: 1
-status: draft
+status: phase-c-pending
 title: Query-Driven Content Cards (CPT + Query Loop + Block Bindings)
 created: 2026-05-31
 owner: Bean (Small Giants Studio)
@@ -89,6 +89,11 @@ is a framework primitive that serves products, testimonials, team, case studies,
   pack-options, plus arbitrary meta). CPTs register only when a site enables that content type
   (per-site capability flag), so marketing sites stay lean. Fields registered with
   `show_in_rest => true` and non-underscore keys so Block Bindings can surface them.
+  **Note (2026-06-02):** the `sgs_product` CPT MUST declare `'supports' => [..., 'custom-fields']`
+  in `register_post_type()`. This is the REST-exposure flag that causes WordPress to include the
+  `meta` field in the CPT's REST schema. Without it, `register_meta( ..., 'show_in_rest' => true )`
+  registers the meta globally but the CPT's REST schema omits the `meta` object entirely, and
+  Block Bindings / the editor panel cannot surface or persist the meta values.
 
 - **FR-24-2 — Dual-mode card.** The existing presentational card (`sgs/product-card`, etc.)
   gains a per-instance "Source" toggle in the inspector: **Typed** (current behaviour — fields
@@ -153,7 +158,7 @@ is a framework primitive that serves products, testimonials, team, case studies,
   converter's 4 badge children in Bound mode AND the curated repeater still works in Typed mode
   (editor smoke test, no "unexpected content" warning).
 
-- **FR-24-11 .. FR-24-17 — Variation-sets + `sgs/option-picker` (DESIGN ratified 2026-06-01 via D144; BUILD deferred as theme-thread Task 2).** Full design at `.claude/reports/2026-06-01-product-card-option-picker-design.md` (research-buddies + brainstorming, web-grounded). Bean's 6 decisions are RESOLVED (D144) and encoded below. Headlines: **FR-24-11** `_sgs_variation_sets` CPT meta (per-type `content_impact` map) — each type also carries a **`display_as`** mode of `pills` | `static-list` | `hidden` (D144.1); **FR-24-12** content-impact map drives card rendering not block logic (R-22-9); **FR-24-13** per-instance Interactivity API store; **FR-24-14** Phase-1 slot-conflict priority (first type wins; SKU matrix Phase 2 — D144.2); **FR-24-15** pickers are `sgs/option-picker` blocks (Typed=InnerBlocks / Bound=server-rendered same shape); **FR-24-16** no-JS default state; **FR-24-17** `aria-live` on dynamic slots. New atomic block **`sgs/option-picker`** (radio-group semantics via visually-hidden `<input type=radio>`+`<label>`+pill `<span>`, CSS `:checked` active state, bubbling `sgs:option-selected` event, NOT sgs/button).
+- **FR-24-11 .. FR-24-17 — Variation-sets + `sgs/option-picker` (DESIGN ratified 2026-06-01 via D144; Phase A + Phase B BUILT + SHIPPED 2026-06-02).** Full design at `.claude/reports/2026-06-01-product-card-option-picker-design.md` (research-buddies + brainstorming, web-grounded). Bean's 6 decisions are RESOLVED (D144) and encoded below. Headlines: **FR-24-11** `_sgs_variation_sets` CPT meta (per-type `content_impact` map) — each type also carries a **`display_as`** mode of `pills` | `static-list` | `hidden` (D144.1); **FR-24-12** content-impact map drives card rendering not block logic (R-22-9); **FR-24-13** per-instance Interactivity API store; **FR-24-14** Phase-1 slot-conflict priority (first type wins; SKU matrix Phase 2 — D144.2); **FR-24-15** pickers are `sgs/option-picker` blocks (Typed=InnerBlocks / Bound=server-rendered same shape); **FR-24-16** no-JS default state; **FR-24-17** `aria-live` on dynamic slots. New atomic block **`sgs/option-picker`** (radio-group semantics via visually-hidden `<input type=radio>`+`<label>`+pill `<span>`, CSS `:checked` active state, bubbling `sgs:option-selected` event, NOT sgs/button).
   - **D144 ratified decisions (build these):**
     1. **Per-type `display_as`** — `pills` (interactive) | `static-list` (renders "Available in N flavours: A, B, C" — a non-interactive selling point) | `hidden`. PLUS a card-level **"price only"** toggle that sets all pickers hidden so the card shows just "From £x". (FR-24-11/12.)
     2. **SKU matrix deferred** — two price-affecting types → Phase-1 editor warning (first type wins); `_sgs_sku_matrix` is Phase 2. (FR-24-14.)
@@ -161,7 +166,7 @@ is a framework primitive that serves products, testimonials, team, case studies,
     4. **Clone emit** = emit `sgs/option-picker` DIRECTLY from the clone (Bean corrected 2026-06-01 — opposite of the original rec). The converter outputs the picker block for a pill group via TRUTH-SPEC + slot_synonyms/slots updates. Build the option-picker ASAP + battle-ready, THEN wire it into the pipeline — pulls Phase D + pipeline-emit forward. (FR-24-15: the picker must be robust enough to be the converter's emit target.)
     5. **Source toggle** (Typed/Bound) appears in BOTH the block toolbar AND the inspector (one attr, two controls). (FR-24-15.)
     6. **Variation-sets editor UI** = Gutenberg panel, not classic meta box. (FR-24-11.)
-  - Build order: A option-picker standalone → B variation-sets data → C card Bound mode → D **clone-emit** (TRUTH-SPEC + slot_synonyms/slots so the converter outputs `sgs/option-picker` for pill groups) → E collection. **BUILD is theme-thread Task 2 — NOT yet started (deferred to the next theme session); it is a near-term priority.** Per D144.4 (Bean Q4 correction), **Phase D is IN-SCOPE within Task 2 — NOT split to a still-later phase**: when the build runs, the option-picker is made battle-ready AND wired into the converter's emit path. ("Deferred" = the build session hasn't begun; it does NOT mean Phase D is postponed once building starts.) Gated on parking P-PRODUCT-CARD-FULL-DUAL-MODE / D129; this spec is the recorded contract the build session inherits.
+  - Build order: A option-picker standalone → B variation-sets data → C card Bound mode → D **clone-emit** (TRUTH-SPEC + slot_synonyms/slots so the converter outputs `sgs/option-picker` for pill groups) → E collection. **Phase A (`sgs/option-picker` atomic block) SHIPPED 2026-06-02. Phase B (`_sgs_variation_sets` CPT meta + Gutenberg editor panel) SHIPPED 2026-06-02 — meta round-trips via REST, live-verified.** Phase C (card Bound mode + WooCommerce dual-source — see D149 below) is the next build target. Per D144.4 (Bean Q4 correction), **Phase D is IN-SCOPE within the same build sequence — NOT split to a still-later phase**: the option-picker is made battle-ready AND wired into the converter's emit path when Phase C runs. Gated on parking P-PRODUCT-CARD-FULL-DUAL-MODE / D129; this spec is the recorded contract the build session inherits.
 
 ## Non-functional Requirements
 
@@ -197,6 +202,15 @@ sgs/content-collection  ──loop template──►  dual-mode card (sgs/produc
   `register_block_bindings_source()` for computed/derived fields (e.g. formatted price).
 - **Card:** the existing presentational cards, made dual-mode (FR-24-2). Typed mode == the
   FR-22-6 InnerBlocks shape (Spec 22), so the clone pipeline is unaffected.
+- **D149 — Phase C dual-source Bound mode (decided 2026-06-02).** The card's Bound-mode data
+  source is **dual-source**: when WooCommerce is present on a given site, the card binds to
+  WooCommerce-native product data (price / image / stock status / variations via WC's own meta
+  and REST endpoints); when WooCommerce is absent, it falls back to the custom `sgs_product` CPT
+  meta. The custom CPT meta (`_sgs_variation_sets`, `_sgs_price`, etc.) is reserved for
+  SGS-specific config that WooCommerce does not model — it is NOT a storage mirror of WC data.
+  `custom-fields` support on the CPT is a REST-exposure flag, not a storage choice (see FR-24-1
+  note above). Phase C requires a `/brainstorming` + `/research` design gate on the WC
+  Block-Bindings integration pattern before building. Cross-reference: decisions.md D149.
 
 ## Data Model
 
@@ -222,13 +236,26 @@ their own field sets — the mechanism is shared (R-22-9).
 
 ## Phasing
 
-- **Phase A — CPT + dual-mode card (products).** FR-24-1, FR-24-2, FR-24-3, FR-24-9. Ship the
-  product CPT + Bound mode on the existing card. Validate on a real product set.
-- **Phase B — Collection + conditions.** FR-24-4, FR-24-5, FR-24-6. The query block + named
+- **Phase A — `sgs/option-picker` atomic block.** FR-24-15. SHIPPED 2026-06-02: radio-group
+  pill chooser (visually-hidden `<input type=radio>` + `<label>` + pill `<span>`, CSS `:checked`
+  active state, bubbling `sgs:option-selected` event). Battle-ready for both standalone use and
+  converter emit target.
+- **Phase B — `_sgs_variation_sets` CPT meta + Gutenberg editor panel.** FR-24-11, FR-24-12.
+  SHIPPED 2026-06-02: `_sgs_variation_sets` meta registered with `show_in_rest => true`; editor
+  panel built; meta round-trips via REST (live-verified). `sgs_product` CPT has `custom-fields`
+  support (required for REST `meta` field — see FR-24-1 note).
+- **Phase C — Card Bound mode (dual-source — D149).** FR-24-2, FR-24-3, FR-24-9. Bind card
+  field slots to WooCommerce-native product data when WC is present; fall back to `sgs_product`
+  CPT meta otherwise. Requires `/brainstorming` + `/research` design gate on WC Block-Bindings
+  pattern before building. See D149.
+- **Phase D — Clone-emit.** FR-24-15 pipeline wiring. TRUTH-SPEC + slot_synonyms/slots updates
+  so the converter outputs `sgs/option-picker` for pill groups. IN-SCOPE within the same build
+  sequence as Phase C (per D144.4) — not a separate later phase.
+- **Phase E — Collection + conditions.** FR-24-4, FR-24-5, FR-24-6. The query block + named
   presets + empty state. The `query_loop_block_query_vars` filter.
-- **Phase C — Generalise.** Register `sgs_testimonial` / `sgs_team` / `sgs_case_study` via the
+- **Phase F — Generalise.** Register `sgs_testimonial` / `sgs_team` / `sgs_case_study` via the
   same mechanism; prove FR-24-9 acceptance #6.
-- **Phase D — Polish.** FR-24-7 popularity counter, FR-24-8 Pattern Overrides, aspect-ratio lock
+- **Phase G — Polish.** FR-24-7 popularity counter, FR-24-8 Pattern Overrides, aspect-ratio lock
   + hover controls (the "beyond gold-standard" gaps the research identified).
 
 ## Migration

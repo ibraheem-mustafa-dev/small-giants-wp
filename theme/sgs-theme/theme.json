@@ -629,6 +629,11 @@
       "area": "mega-menu",
       "name": "mega-menu-contact",
       "title": "Mega Menu: Contact"
+    },
+    {
+      "area": "mega-menu",
+      "name": "mega-menu-sectors",
+      "title": "Mega Menu: Sectors"
     }
   ],
   "customTemplates": [
