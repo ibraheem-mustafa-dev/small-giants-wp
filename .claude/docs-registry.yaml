@@ -65,11 +65,30 @@ canonical_docs:
   # SPLIT 2026-05-24 (Phase 10 D'-1): architecture.md → Part A (here) +
   # plans/archive/2026-02-21-feature-audit.md + new dev-setup.md.
 
-# Project credentials — gitignored files at .claude/secrets/credentials.yml
-# and .claude/secrets/sandybrown.env. NOT registry-tracked: they're loaded
-# only when credentials are needed, never read during the registry doc-walk.
-# Loader: `import yaml; yaml.safe_load(open('.claude/secrets/credentials.yml'))`.
-# Future client onboarding adds a new top-level key per site.
+# Project credentials — discoverable so EVERY session knows they exist + can use
+# them directly, without asking Bean. Gitignored; never committed; never walked.
+project_credentials:
+  - path: .claude/secrets/sandybrown.env
+    what: "Staging/canary (sandybrown-nightingale-600381.hostingersite.com) logins — ALWAYS available."
+    keys: "WP_USER_SANDYBROWN + WP_PWD_SANDYBROWN (browser/admin login at wp-login.php); WP_APP_PWD_SANDYBROWN (REST + WooCommerce Store-API Basic auth, user:app_pwd); WP_URL_SANDYBROWN."
+    use_for: "Playwright editor login; REST block-renderer / wp/v2 / wc/store verification. Read directly: grep KEY .claude/secrets/sandybrown.env"
+  - path: .claude/secrets/credentials.yml
+    what: "General project credentials (YAML)."
+    loader: "import yaml; yaml.safe_load(open('.claude/secrets/credentials.yml'))"
+  - path: A:/.openclaw/.secrets/wp-app-passwords.env
+    what: "Cloning dev-site (palestine-lives.org) WP app passwords."
+  # Future client onboarding adds a new entry per site.
+
+# Doc-walk scan folders — /handoff Gate 4.5 + scripts/doc-walk-audit.py enumerate
+# *.md (+ *.yaml) DIRECTLY in each folder (NON-recursive — subfolders like
+# specs/archive/ + plans/archive/ + plans/strategy/ are excluded) and flag any
+# file NOT in canonical_docs above as "untracked — register it or give a verdict".
+# This closes the 2026-06-02 gap where specs/plans docs not in the registry +
+# the base-.claude docs were skipped during a handoff doc-walk.
+doc_walk_scan_folders:
+  - {path: .claude/,       recursive: false, note: "base .claude files only (architecture.md, dev-setup.md, goals.md, cloning-pipeline-flow.md, etc.) — NOT subfolders"}
+  - {path: .claude/specs/, recursive: false, note: "exclude specs/archive/"}
+  - {path: .claude/plans/, recursive: false, note: "exclude plans/archive/ + plans/strategy/"}
 
 # Pipeline run artefacts — the orchestrator writes these per-run; they're the
 # diagnostic surface for converter / clone pipeline output. Captured 2026-05-15

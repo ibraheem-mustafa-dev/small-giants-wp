@@ -148,6 +148,7 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --targe
 
 - **Dev site:** palestine-lives.org (WP 6.9.1). **Staging/canary:** sandybrown-nightingale-600381.hostingersite.com (WP 7.0). Canary page for Mama's = 144 (`/rc-fix-verification-mamas-munches/`).
 - **SSH:** `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias `ssh hd`). WP admin user: `Claude`.
+- **Canary credentials (gitignored, ALWAYS available — no need to ask):** `.claude/secrets/sandybrown.env` holds the test-site logins — `WP_USER_SANDYBROWN`/`WP_PWD_SANDYBROWN` (browser/admin login at wp-login.php) + `WP_APP_PWD_SANDYBROWN` (REST/Store-API Basic auth) + `WP_URL_SANDYBROWN`. Use them directly for Playwright editor login + REST verification. (Cloning dev-site app passwords: `A:/.openclaw/.secrets/wp-app-passwords.env`.)
 - **No Node.js on server** — build locally, deploy compiled `build/`.
 
 ## Architecture rules
