@@ -47,6 +47,12 @@ CORRECTIONS: dict[str, str] = {
     "sgs/post-grid": "content-block",
     "sgs/gallery": "content-block",
     "sgs/card-grid": "content-block",
+    # FR-24-15 (Phase D, 2026-06-02) — option-picker renders from optionItems array,
+    # not from InnerBlocks children.  The converter uses G3 (has_inner_blocks=0) to
+    # suppress child recursion and calls _atomic_attrs_for to extract the items array.
+    # composition_role stays content-block (not leaf) so the misresolution guard
+    # (which fires for leaf + sgs-classed children) does NOT trigger.
+    "sgs/option-picker": "content-block",
 }
 
 # Blocks whose content-block role implies inner blocks; keep has_inner_blocks in sync.
@@ -59,6 +65,9 @@ HAS_INNER_BLOCKS = {
     "sgs/post-grid": 0,
     "sgs/gallery": 0,
     "sgs/card-grid": 0,
+    # option-picker: G3 gate suppresses child recursion; items extracted via
+    # _atomic_attrs_for in the G3-attrs path (convert.py).
+    "sgs/option-picker": 0,
 }
 
 # Slug RENAMES (2026-06-02, Workstream A — D150). The block_composition table

@@ -1,0 +1,83 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "sgs/content-collection",
+    "version": "1.1.0",
+    "title": "Content Collection",
+    "category": "sgs-content",
+    "description": "Query-driven grid of content items. Runs its own WP_Query with a named selection rule and renders each result through the dual-mode product card. Inspector controls only — no code required. (Spec 24 FR-24-4/5/6.)",
+    "keywords": [
+        "collection",
+        "query",
+        "products",
+        "grid",
+        "loop",
+        "featured",
+        "filter"
+    ],
+    "textdomain": "sgs-blocks",
+    "icon": "grid-view",
+    "supports": {
+        "html": false,
+        "align": [
+            "wide",
+            "full"
+        ],
+        "spacing": {
+            "margin": true,
+            "padding": false
+        }
+    },
+    "attributes": {
+        "contentType": {
+            "type": "string",
+            "default": "sgs_product"
+        },
+        "selectionRule": {
+            "type": "string",
+            "default": "newest",
+            "enum": [
+                "newest",
+                "featured",
+                "most-expensive",
+                "cheapest",
+                "most-popular",
+                "handpicked",
+                "category"
+            ]
+        },
+        "count": {
+            "type": "number",
+            "default": 12
+        },
+        "handpickedIds": {
+            "type": "array",
+            "default": [],
+            "items": {
+                "type": "number"
+            }
+        },
+        "categoryTerm": {
+            "type": "number",
+            "default": 0
+        },
+        "columns": {
+            "type": "number",
+            "default": 3
+        },
+        "emptyMessage": {
+            "type": "string",
+            "default": "No items to show yet. Check back soon."
+        }
+    },
+    "render": "file:./render.php",
+    "editorScript": "file:./index.js",
+    "style": "file:./style.css",
+    "example": {
+        "attributes": {
+            "selectionRule": "newest",
+            "count": 3,
+            "columns": 3
+        }
+    }
+}

@@ -88,9 +88,9 @@
       "gradients": [],
       "defaultPalette": false,
       "defaultGradients": false,
-      "custom": false,
-      "customGradient": false,
-      "customDuotone": false
+      "custom": true,
+      "customGradient": true,
+      "customDuotone": true
     },
     "typography": {
       "fluid": {
@@ -216,14 +216,16 @@
     "spacing": {
       "units": [
         "px",
+        "em",
         "rem",
         "%",
-        "vw"
+        "vw",
+        "vh"
       ],
       "blockGap": true,
       "margin": true,
       "padding": true,
-      "customSpacingSize": false,
+      "customSpacingSize": true,
       "spacingSizes": [
         {
           "slug": "10",

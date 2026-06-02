@@ -84,7 +84,7 @@ rm sgs-deploy.tar
 
 ## Block Build Status
 
-### Content/Layout Blocks (25 built)
+### Content/Layout Blocks (26 built)
 
 | Block | Status |
 |---|---|
@@ -92,7 +92,7 @@ rm sgs-deploy.tar
 | Hero | Deployed |
 | Info Box | Deployed |
 | Counter | Deployed |
-| Trust Bar | Deployed |
+| Trust Bar | Deployed (merged certification-bar capability + auto-scroll 2026-05-29 D95 — badgeStyle variants: icon-circle (default), text-only, image-badge; auto-scroll marquee when items overflow columns. Renamed from Trust Badges 2026-05-31. Dual-mode shipped 2026-06-01 FR-24-10: sourceMode='typed' (curated repeater) or 'bound' (echoes $content from converter). version 1.0.0+) |
 | Icon List | Deployed |
 | Card Grid | Deployed |
 | CTA Section | Deployed |
@@ -101,7 +101,6 @@ rm sgs-deploy.tar
 | Testimonial Slider | Deployed |
 | Heritage Strip | Deployed |
 | Brand Strip | Deployed |
-| Trust Bar | Deployed (merged certification-bar capability + auto-scroll 2026-05-29 D95 — badgeStyle variants: icon-circle (default), text-only, image-badge; auto-scroll marquee when items overflow columns. Renamed from Trust Badges 2026-05-31.) |
 | Notice Banner | Deployed (FR-22-6 InnerBlocks migration 2026-06-02 — render.php echoes `$content` + `sgs/text` child; deprecated.js v3. version 0.4.0) |
 | Icon | Deployed (shape backgrounds 2026-06-02 — `backgroundShape`: none/circle/pill/square/outline; clickable via existing linkUrl/linkTarget; hover controls: hoverIconColour / hoverShapeColour / hoverScale; deprecated.js v1. version 0.2.0) |
 | WhatsApp CTA | Deployed |
@@ -114,8 +113,11 @@ rm sgs-deploy.tar
 | Media | Deployed (video support added 2026-05-29 D97 — mediaType toggle, YouTube/Vimeo/MP4 external embeds, WP-library internal video, poster, playback controls) |
 | Decorative Image | Built (L14, needs build + deploy) |
 | Mega Menu | Built (L3, needs build + deploy) |
-| Option Picker | Deployed (sgs-interactive — exclusive radio-group pill chooser; Spec 24 FR-24-15 / D144 Phase A; no-JS-safe SSR + bubbling `sgs:option-selected` event. version 0.1.2) |
-| Cart | Deployed (WooCommerce mini-cart count badge v1 — Store API hydrate, SSR 0 then client-hydrate, no jQuery, cart-fragments dequeued, editor static placeholder; drawer mode = Phase 2) |
+| Content Collection | Deployed (NEW 2026-06-03 — own WP_Query, selection rules: newest/featured/most-expensive/cheapest/most-popular/handpicked/category; renders each result as a Bound sgs/product-card; designed empty state; Inspector controls only. Spec 24 FR-24-4/5/6. version 1.1.0. Deployed to sandybrown canary.) |
+| Option Picker | Deployed (sgs-interactive — exclusive radio-group pill chooser; Spec 24 FR-24-15 / D144 Phase A; no-JS-safe SSR + bubbling `sgs:option-selected` event; WCAG contrast fix on selected pill + overridable `--sgs-option-picker-*` colour vars. version 0.1.4) |
+| Product Card | Deployed (dual-mode: Typed = author content via InnerBlocks; Bound = live WooCommerce or SGS CPT product, Store-API add-to-cart with no-JS `<a>` fallback + pending guard, overridable `--sgs-product-card-*` vars + cardMaxWidth control. D151 / Spec 24 FR-24-9. version 1.3.0) |
+| Cart | Deployed (WooCommerce mini-cart count badge v1 — Store API hydrate, SSR 0 then client-hydrate, no jQuery, cart-fragments dequeued, editor static placeholder; badge-increment E2E verified 2026-06-03; drawer mode = Phase 2) |
+| Heading | Deployed (redundant `hero` block-style removed 2026-06-03 Task D. version 0.5.1) |
 
 > **sgs/svg-background retired 2026-05-28 (D93).** SVG background capability merged into `sgs/container` as `bgSvg*` attrs (7 attrs: `bgSvgContent`, `bgSvgPosition`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `bgSvgOpacity`, `bgSvgMinHeight`, `bgSvgTextShadow`). Existing posts auto-migrate via `deprecated.js` v2 entry in container.
 

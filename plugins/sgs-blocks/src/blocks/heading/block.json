@@ -3,7 +3,7 @@
     "apiVersion": 3,
     "name": "sgs/heading",
     "replaces": "core/heading",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "title": "Heading",
     "category": "sgs-content",
     "description": "Single-element heading block. Use headingRole to switch between a primary heading (h1–h6) and a subheading paragraph (p or div). Pair with sgs/label and a second sgs/heading{headingRole:'subheading'} via the label-heading-subheading-cluster pattern for the full three-element visual cluster.",

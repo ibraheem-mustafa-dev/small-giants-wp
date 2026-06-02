@@ -389,6 +389,36 @@ NEW_CANONICAL_ROWS: list[tuple[str, list[str], str | None, str, str | None]] = [
 ]
 
 # ---------------------------------------------------------------------------
+# NEW STANDALONE ROWS — new canonical slots that ALSO emit a specific block
+# via standalone_block (and optionally standalone_block_default_attrs).
+#
+# These differ from NEW_CANONICAL_ROWS in that they carry the converter-routing
+# columns (standalone_block, standalone_block_default_attrs) in addition to the
+# base slot metadata.  The `_atomic_attrs_for` function in convert.py handles
+# content extraction for these blocks once routing lands them correctly.
+#
+# Format:
+#   (slot_name, aliases, standalone_block, standalone_block_default_attrs_dict,
+#    description)
+# ---------------------------------------------------------------------------
+NEW_STANDALONE_ROWS: list[tuple[str, list[str], str, dict, str]] = [
+    # sgs/option-picker — exclusive radio-group pill chooser (FR-24-15 / D144).
+    # Recognition: BEM element __pill-group on any parent block (e.g.
+    # sgs-product-card__pill-group, sgs-featured-product__pill-group).
+    # Aliases cover variant naming across clients; pill-group is the active
+    # Mama's Munches draft term.
+    # standalone_block_default_attrs: pillStyle=filled is the product-card
+    # default (D144.3); typeKey="" signals authors to fill it post-clone.
+    (
+        "option-picker",
+        ["pill-group", "pills", "option-group", "variant-group", "pack-group", "flavour-group", "size-group"],
+        "sgs/option-picker",
+        {"pillStyle": "filled", "typeKey": ""},
+        "Exclusive radio-group pill chooser — emits sgs/option-picker with optionItems array (FR-24-15)",
+    ),
+]
+
+# ---------------------------------------------------------------------------
 # AMBIGUOUS mappings — surfaced for operator review, NOT auto-inserted.
 # Rule: if a BEM element could plausibly belong to 2+ different canonical
 # slots with equal evidence, it goes here instead of ALIAS_EXTENSIONS.
@@ -489,6 +519,53 @@ def _insert_canonical_row(
     return inserted, skipped
 
 
+def _insert_standalone_row(
+    conn: sqlite3.Connection,
+    slot_name: str,
+    aliases: list[str],
+    standalone_block: str,
+    default_attrs: dict,
+    description: str,
+    dry_run: bool,
+) -> tuple[int, int]:
+    """INSERT OR IGNORE a new element-scope slot row with standalone_block routing.
+
+    Inserts all five columns including standalone_block and
+    standalone_block_default_attrs.  Used for slots whose purpose is to route a
+    BEM element directly to a specific SGS block (e.g. sgs/option-picker).
+
+    Returns (inserted, skipped) counts.
+    """
+    default_attrs_json = json.dumps(default_attrs, ensure_ascii=False) if default_attrs else None
+    if not dry_run:
+        cur = conn.execute(
+            """
+            INSERT OR IGNORE INTO slots
+                (slot_name, scope, aliases, standalone_block,
+                 standalone_block_default_attrs, notes)
+            VALUES (?, 'element', ?, ?, ?, ?)
+            """,
+            (
+                slot_name,
+                json.dumps(aliases, ensure_ascii=False),
+                standalone_block,
+                default_attrs_json,
+                description,
+            ),
+        )
+        conn.commit()
+        inserted = cur.rowcount
+    else:
+        exists = conn.execute(
+            "SELECT 1 FROM slots WHERE slot_name = ? AND scope = 'element'",
+            (slot_name,),
+        ).fetchone()
+        inserted = 0 if exists else 1
+
+    skipped = 1 - inserted
+    return inserted, skipped
+
+
 def seed_db(db_path: Path, dry_run: bool) -> dict:
     """Seed one DB. Returns stats dict."""
     if not db_path.exists():
@@ -516,7 +593,7 @@ def seed_db(db_path: Path, dry_run: bool) -> dict:
                 verb = "[DRY-RUN] would add" if dry_run else "added"
                 print(f"  alias→{canonical}: {verb} {added} ({new_aliases[:3]}{'...' if len(new_aliases) > 3 else ''})")
 
-        # Pass 2: insert new canonical rows
+        # Pass 2: insert new canonical rows (no standalone_block)
         for canonical, aliases, role, description, html_tag in NEW_CANONICAL_ROWS:
             inserted, skipped = _insert_canonical_row(
                 conn, canonical, aliases, role, description, html_tag, dry_run
@@ -526,6 +603,17 @@ def seed_db(db_path: Path, dry_run: bool) -> dict:
             if inserted:
                 verb = "[DRY-RUN] would insert" if dry_run else "inserted"
                 print(f"  NEW canonical: {canonical} ({verb})")
+
+        # Pass 3: insert new standalone-block routing rows
+        for slot_name, aliases, standalone_block, default_attrs, description in NEW_STANDALONE_ROWS:
+            inserted, skipped = _insert_standalone_row(
+                conn, slot_name, aliases, standalone_block, default_attrs, description, dry_run
+            )
+            stats["canonical_inserted"] += inserted
+            stats["canonical_skipped"] += skipped
+            if inserted:
+                verb = "[DRY-RUN] would insert" if dry_run else "inserted"
+                print(f"  NEW standalone-block slot: {slot_name} → {standalone_block} ({verb})")
 
     finally:
         conn.close()

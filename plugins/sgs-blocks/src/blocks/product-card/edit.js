@@ -7,6 +7,7 @@ import {
 import {
 	PanelBody,
 	SelectControl,
+	TextControl,
 	ComboboxControl,
 	Notice,
 	Spinner,
@@ -206,7 +207,7 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 }
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { variantStyle, sourceMode } = attributes;
+	const { variantStyle, sourceMode, cardMaxWidth } = attributes;
 
 	const isTrial = variantStyle === 'trial';
 	const isFeatured = variantStyle === 'featured';
@@ -283,6 +284,24 @@ export default function Edit( { attributes, setAttributes } ) {
 							) }
 						</Notice>
 					) }
+				</PanelBody>
+				<PanelBody
+					title={ __( 'Card layout', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TextControl
+						label={ __( 'Max width', 'sgs-blocks' ) }
+						help={ __(
+							'Enter any CSS value (e.g. 320px, 50%, 28rem). Leave empty to use the theme default (380px).',
+							'sgs-blocks'
+						) }
+						value={ cardMaxWidth }
+						onChange={ ( v ) =>
+							setAttributes( { cardMaxWidth: v } )
+						}
+						placeholder="380px"
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 			</InspectorControls>
 

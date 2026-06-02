@@ -31,8 +31,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$variant_style = $attributes['variantStyle'] ?? 'standard';
-$source_mode   = $attributes['sourceMode'] ?? 'typed';
+$variant_style  = $attributes['variantStyle'] ?? 'standard';
+$source_mode    = $attributes['sourceMode'] ?? 'typed';
+$card_max_width = isset( $attributes['cardMaxWidth'] ) ? sanitize_text_field( $attributes['cardMaxWidth'] ) : '';
 
 $classes = array( 'product-card' );
 if ( 'trial' === $variant_style ) {
@@ -42,12 +43,28 @@ if ( 'featured' === $variant_style ) {
 	$classes[] = 'featured-card';
 }
 
+/* ── Build inline style for per-block cardMaxWidth override ─────────────────── */
+
+$inline_style = '';
+if ( '' !== $card_max_width ) {
+	// Sanitise: allow ONLY a single CSS length (digits+unit) OR a calc() of
+	// digits/units/operators. Both ends anchored (^…$) so no trailing CSS can
+	// be appended — prevents CSS injection into the inline style attribute
+	// (a prefix-only match like "380px; } body{…}" is rejected). esc_attr is
+	// belt-and-braces; the anchored allowlist already excludes ; : { } < \.
+	if ( preg_match( '/^(?:[\d.]+(?:%|px|em|rem|vw|vh|ch|ex|fr|cm|mm|in|pt|pc)|calc\([\d.\s+\-*\/%a-z()]+\))$/i', $card_max_width ) ) {
+		$inline_style = '--sgs-product-card-max-width:' . esc_attr( $card_max_width ) . ';';
+	}
+}
+
 /* ── Typed mode (default) — unchanged FR-22-6 behaviour ────────────────────── */
 
 if ( 'typed' === $source_mode ) {
-	$wrapper_attributes = get_block_wrapper_attributes(
-		array( 'class' => implode( ' ', $classes ) )
-	);
+	$wrapper_args = array( 'class' => implode( ' ', $classes ) );
+	if ( '' !== $inline_style ) {
+		$wrapper_args['style'] = $inline_style;
+	}
+	$wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 	?>
 	<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() is pre-escaped. ?>>
 		<?php
@@ -71,9 +88,11 @@ $classes[] = 'product-card--bound';
 
 // Designed empty state (FR-24-6) — never blank.
 if ( null === $data ) {
-	$wrapper_attributes = get_block_wrapper_attributes(
-		array( 'class' => implode( ' ', $classes ) . ' product-card--empty' )
-	);
+	$empty_args = array( 'class' => implode( ' ', $classes ) . ' product-card--empty' );
+	if ( '' !== $inline_style ) {
+		$empty_args['style'] = $inline_style;
+	}
+	$wrapper_attributes = get_block_wrapper_attributes( $empty_args );
 	?>
 	<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped. ?>>
 		<div class="product-card-body">
@@ -175,11 +194,20 @@ $context = array(
 	'imageSrc'    => $data['image_url'],
 	'imageAlt'    => $data['image_alt'],
 	'cartStatus'  => '',
+
+	/*
+	 * A4 (QC): pending flag — prevents add-to-cart spam clicks.
+	 * Seeded false here so the SSR button is enabled and meaningful with no JS.
+	 * view.js sets this true before the fetch and false in the finally clause.
+	 */
+	'pending'     => false,
 );
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array( 'class' => implode( ' ', $classes ) )
-);
+$bound_args = array( 'class' => implode( ' ', $classes ) );
+if ( '' !== $inline_style ) {
+	$bound_args['style'] = $inline_style;
+}
+$wrapper_attributes = get_block_wrapper_attributes( $bound_args );
 ?>
 <div
 	<?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped. ?>
@@ -258,13 +286,31 @@ $wrapper_attributes = get_block_wrapper_attributes(
 		</div>
 
 		<?php if ( $add_to_cart_id > 0 ) : ?>
-			<button
-				type="button"
+			<?php
+			/*
+			 * A3 (QC): progressive-enhancement add-to-cart.
+			 * Rendered as an <a> linking to the product permalink so the action
+			 * works without JS (user lands on the product page).
+			 * With JS, the Interactivity API intercepts the click via
+			 * data-wp-on--click="actions.addToCart" which calls preventDefault()
+			 * and uses the Store API instead.
+			 *
+			 * A4 (QC): spam guard via context.pending.
+			 * data-wp-bind--disabled + aria-busy reflect the in-flight state;
+			 * view.js guards the action at the top (if pending, return early).
+			 */
+			$product_permalink = esc_url( get_permalink( $add_to_cart_id ) );
+			?>
+			<a
+				href="<?php echo $product_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd above. ?>"
 				class="btn btn-primary product-card__add-to-cart"
 				data-wp-on--click="actions.addToCart"
+				data-wp-bind--disabled="context.pending"
+				data-wp-bind--aria-busy="context.pending"
+				role="button"
 			>
 				<?php esc_html_e( 'Add to Cart', 'sgs-blocks' ); ?>
-			</button>
+			</a>
 			<p
 				class="product-card__cart-status sgs-sr-only"
 				role="status"

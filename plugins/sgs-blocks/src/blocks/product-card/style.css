@@ -5,15 +5,45 @@
  *
  * Uses theme.json palette tokens via WordPress preset CSS custom properties
  * so the block adapts to whichever style variation is active.
+ *
+ * Overridable custom properties (set on a parent element or :root):
+ *   --sgs-product-card-max-width      card max-width (default 380px)
+ *   --sgs-product-card-bg             card background (default #ffffff)
+ *   --sgs-product-card-shadow         card box-shadow
+ *   --sgs-product-card-btn-hover-bg   primary CTA button hover background
+ *   --sgs-product-card-btn-hover-text primary CTA button hover text colour
  */
+:root {
+	--sgs-product-card-max-width: 380px;
+	--sgs-product-card-bg: #ffffff;
+	--sgs-product-card-shadow: 0 2px 12px rgba(58, 46, 38, 0.10);
+	/*
+	 * WCAG A11Y: primary button hover defaults use primary-dark bg + white text.
+	 * Framework palette: primary-dark = #0F4C4C → white text = 9.73:1 ✓ PASS.
+	 * Style variations with a LIGHT primary-dark colour MUST override both vars
+	 * to a bg dark enough that white text passes 4.5:1 against it.
+	 * e.g. Mama's Munches: override --sgs-product-card-btn-hover-bg to #8B3A47
+	 * (#8B3A47 + white = 7.52:1 ✓ PASS).
+	 */
+	--sgs-product-card-btn-hover-bg:   var(--wp--preset--color--primary-dark, #0F4C4C);
+	--sgs-product-card-btn-hover-text: #ffffff;
+}
 
 .product-card {
-	background: #ffffff;
+	background: var(--sgs-product-card-bg, #ffffff);
 	border-radius: 16px;
 	overflow: hidden;
 	border: 1px solid var(--wp--preset--color--border, #e8d5c0);
 	display: flex;
 	flex-direction: column;
+	max-width: var(--sgs-product-card-max-width, 380px);
+	margin-inline: auto;
+	/*
+	 * A6 (QC): subtle shadow boundary so the card is visible on cream/light
+	 * backgrounds without depending on the low-contrast border (WCAG §1.4.11).
+	 * Border is kept for definition; shadow adds perceivable depth.
+	 */
+	box-shadow: var(--sgs-product-card-shadow, 0 2px 12px rgba(58, 46, 38, 0.10));
 }
 
 .product-card .product-card-img {
@@ -28,19 +58,23 @@
 	flex: 1;
 	display: flex;
 	flex-direction: column;
+	/* A5 (QC): explicit gap instead of relying on child margins for rhythm. */
+	gap: var(--wp--preset--spacing--20, 0.75rem);
 }
 
 .product-card h3 {
 	font-size: 20px;
 	font-weight: 500;
 	color: var(--wp--preset--color--text, #3a2e26);
-	margin-bottom: 6px;
+	/* A5 (QC): reset h3 margin — gap on .product-card-body drives spacing now. */
+	margin: 0;
 }
 
 .product-card .product-desc {
 	font-size: 14px;
 	color: var(--wp--preset--color--text-muted, #6b5c50);
-	margin-bottom: 16px;
+	/* A5 (QC): margin removed — flex gap on .product-card-body handles rhythm. */
+	margin: 0;
 	flex: 1;
 	line-height: 1.55;
 }
@@ -50,7 +84,8 @@
 	display: flex;
 	gap: 7px;
 	flex-wrap: wrap;
-	margin-bottom: 16px;
+	/* A5 (QC): margin removed — flex gap on .product-card-body handles rhythm. */
+	margin: 0;
 }
 
 .product-card .pill {
@@ -90,7 +125,8 @@
 	display: flex;
 	align-items: baseline;
 	gap: 10px;
-	margin-bottom: 14px;
+	/* A5 (QC): margin removed — flex gap on .product-card-body handles rhythm. */
+	margin: 0;
 }
 
 .product-card .price {
@@ -127,7 +163,8 @@
 	border-radius: 6px;
 	letter-spacing: 0.5px;
 	text-transform: uppercase;
-	margin-bottom: 12px;
+	/* A5 (QC): margin removed — flex gap on .product-card-body handles rhythm. */
+	margin: 0;
 }
 
 /* CTA buttons */
@@ -148,14 +185,27 @@
 }
 
 .product-card .btn-primary {
-	background: var(--wp--preset--color--primary, #e68a95);
-	color: var(--wp--preset--color--text, #3a2e26);
-	border: 2px solid var(--wp--preset--color--primary, #e68a95);
+	background: var(--wp--preset--color--primary, #1F7A7A);
+	/*
+	 * Overridable REST text — framework default white (teal primary = 5.09:1 ✓).
+	 * Light-palette variations (e.g. Mama's pink #E68A95, where white = 2.49:1
+	 * FAIL) MUST override --sgs-product-card-btn-text to a dark value to pass
+	 * WCAG §1.4.3. See styles/mamas-munches.css.
+	 */
+	color: var(--sgs-product-card-btn-text, #ffffff);
+	border: 2px solid var(--wp--preset--color--primary, #1F7A7A);
 }
 
 .product-card .btn-primary:hover {
-	background: var(--wp--preset--color--primary-dark, #c56a7a);
-	border-color: var(--wp--preset--color--primary-dark, #c56a7a);
+	/*
+	 * WCAG A11Y (QC #9 fix): hover uses --sgs-product-card-btn-hover-bg
+	 * (defaults to primary-dark) with white text.
+	 * Framework: #0F4C4C + white = 9.73:1 ✓. Light palette overrides must
+	 * supply a dark enough bg via --sgs-product-card-btn-hover-bg.
+	 */
+	background: var(--sgs-product-card-btn-hover-bg, var(--wp--preset--color--primary-dark, #0F4C4C));
+	border-color: var(--sgs-product-card-btn-hover-bg, var(--wp--preset--color--primary-dark, #0F4C4C));
+	color: var(--sgs-product-card-btn-hover-text, #ffffff);
 }
 
 .product-card .btn-secondary {

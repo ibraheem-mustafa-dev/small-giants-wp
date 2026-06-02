@@ -76,16 +76,37 @@ const { state } = store( 'sgs/product-card', {
 		 * Add the bound product to the cart via the WC Store API, then
 		 * announce the result and notify sgs/cart to re-read the count.
 		 *
+		 * A3: The button is rendered as an <a> so it degrades to a product-page
+		 * link without JS. This action calls event.preventDefault() to intercept
+		 * the navigation and handle the cart add via the Store API instead.
+		 *
+		 * A4: Guarded by context.pending to prevent spam clicks. Sets pending=true
+		 * before any async work and clears it in the finally clause regardless of
+		 * outcome. The <a> is disabled + aria-busy while pending via data-wp-bind.
+		 *
 		 * Generator action: the Interactivity API awaits yielded promises.
+		 *
+		 * @param {Event} event The click event from the <a> element.
 		 */
-		*addToCart() {
+		*addToCart( event ) {
+			// A3: prevent the fallback link navigation when JS is active.
+			if ( event && typeof event.preventDefault === 'function' ) {
+				event.preventDefault();
+			}
+
 			const ctx = getContext();
 			const id = parseInt( ctx.addToCartId, 10 );
 			if ( ! id ) {
 				return;
 			}
 
+			// A4: spam guard — bail immediately if a request is already in flight.
+			if ( ctx.pending ) {
+				return;
+			}
+
 			ctx.cartStatus = '';
+			ctx.pending = true;
 
 			try {
 				const url = getStoreApiBase() + '/wc/store/v1/cart/add-item';
@@ -135,6 +156,9 @@ const { state } = store( 'sgs/product-card', {
 			} catch {
 				ctx.cartStatus =
 					'Sorry, something went wrong adding this item.';
+			} finally {
+				// A4: always clear pending so the button re-enables after the request.
+				ctx.pending = false;
 			}
 		},
 	},

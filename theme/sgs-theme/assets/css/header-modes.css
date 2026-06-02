@@ -134,28 +134,16 @@ header.wp-block-template-part.sgs-header-smart-reveal:not(.sgs-header-hidden).is
 
 /*
  * WordPress core skip link scrolls to #main but does not move keyboard focus.
- * The JS adds tabindex="-1" to the skip link target.
- * This CSS ensures the target has a visible focus ring when activated.
+ * The JS (header-behaviour.js fixSkipLink) adds tabindex="-1" to the target
+ * and programmatically focuses it.
+ * This suppresses the UA focus ring on the main content area itself (not the link).
+ *
+ * The skip-link show/hide CSS lives in utilities.css only — the duplicate
+ * .skip-link:focus rule that was here has been removed (2026-06-03) to avoid
+ * conflicting position/colour values from two separate rule sets.
  */
 #main:focus {
 	outline: none;
-}
-
-.skip-link:focus {
-	clip: auto;
-	clip-path: none;
-	height: auto;
-	width: auto;
-	position: fixed;
-	top: 0;
-	left: 0;
-	z-index: 100001;
-	padding: 0.75rem 1.5rem;
-	background: var(--wp--preset--color--primary, #0f7e80);
-	color: var(--wp--preset--color--surface, #fff);
-	font-size: 1rem;
-	font-weight: 600;
-	text-decoration: none;
 }
 
 /* ─── REDUCED MOTION ─── */

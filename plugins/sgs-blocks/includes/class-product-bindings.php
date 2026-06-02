@@ -170,19 +170,8 @@ final class Product_Bindings {
 			case 'price':
 				$price = \get_post_meta( $product_id, 'sgs_price', true );
 				$note  = \get_post_meta( $product_id, 'sgs_price_note', true );
-				$html  = '';
-				if ( $price ) {
-					// Format as currency string — no WC, so format manually.
-					$html .= '<span class="sgs-product-price__amount">'
-						. \esc_html( \number_format( (float) $price, 2 ) )
-						. '</span>';
-				}
-				if ( $note ) {
-					$html .= ' <span class="sgs-product-price__note">'
-						. \esc_html( $note )
-						. '</span>';
-				}
-				return $html;
+				// C1 (QC): delegate to shared formatter — no duplication.
+				return self::format_cpt_price_html( (string) $price, (string) $note );
 
 			case 'title':
 				return \esc_html( \get_the_title( $product_id ) );
@@ -223,6 +212,32 @@ final class Product_Bindings {
 		}
 
 		return '';
+	}
+
+	/**
+	 * Format a CPT product price as HTML.
+	 *
+	 * C1 (QC): extracted to eliminate duplicated formatting logic between
+	 * resolve_cpt_field() and get_product_data() CPT branch. Both previously
+	 * built the same two-span string independently — now they call this.
+	 *
+	 * @param string $price Raw price value (numeric string or empty).
+	 * @param string $note  Optional price note (e.g. "per pack", "inc. VAT").
+	 * @return string HTML string — amount span + optional note span. Empty if no price.
+	 */
+	private static function format_cpt_price_html( string $price, string $note ): string {
+		$html = '';
+		if ( $price ) {
+			$html .= '<span class="sgs-product-price__amount">'
+				. \esc_html( \number_format( (float) $price, 2 ) )
+				. '</span>';
+		}
+		if ( $note ) {
+			$html .= ' <span class="sgs-product-price__note">'
+				. \esc_html( $note )
+				. '</span>';
+		}
+		return $html;
 	}
 
 	/**
@@ -317,15 +332,8 @@ final class Product_Bindings {
 
 		$price      = \get_post_meta( $product_id, 'sgs_price', true );
 		$price_note = \get_post_meta( $product_id, 'sgs_price_note', true );
-		$price_html = '';
-		if ( $price ) {
-			$price_html .= '<span class="sgs-product-price__amount">'
-				. \esc_html( \number_format( (float) $price, 2 ) ) . '</span>';
-		}
-		if ( $price_note ) {
-			$price_html .= ' <span class="sgs-product-price__note">'
-				. \esc_html( $price_note ) . '</span>';
-		}
+		// C1 (QC): delegate to shared formatter — eliminates duplicated span-building logic.
+		$price_html = self::format_cpt_price_html( (string) $price, (string) $price_note );
 
 		$thumb_id  = \get_post_thumbnail_id( $product_id );
 		$image_url = \get_the_post_thumbnail_url( $product_id, 'woocommerce_thumbnail' );

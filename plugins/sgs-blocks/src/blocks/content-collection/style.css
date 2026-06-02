@@ -1,0 +1,75 @@
+/**
+ * SGS Content Collection — frontend styles.
+ *
+ * Uses CSS custom properties injected by render.php (--columns) so the
+ * grid column count is set server-side and never requires JS.
+ *
+ * Mobile-first: 1 column base, grows at tablet (768px) and desktop (1024px).
+ * WCAG 2.2 AA: empty state has sufficient contrast; list semantics preserved.
+ *
+ * @package SGS\Blocks
+ * @since   1.0.0
+ */
+
+/* ── Grid container ──────────────────────────────────────────────────────── */
+
+.sgs-content-collection {
+	container-type: inline-size;
+}
+
+.sgs-content-collection__grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: var( --wp--preset--spacing--40, 1.5rem );
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+/* Tablet: 2 columns from 768px */
+@media ( min-width: 768px ) {
+	.sgs-content-collection__grid {
+		grid-template-columns: repeat( 2, 1fr );
+	}
+}
+
+/* Desktop: honour the --columns CSS variable set by render.php */
+@media ( min-width: 1024px ) {
+	.sgs-content-collection__grid {
+		grid-template-columns: repeat( var( --columns, 3 ), 1fr );
+	}
+}
+
+/* Grid items stretch to fill the cell so cards in the same row are equal height */
+.sgs-content-collection__item {
+	display: flex;
+	flex-direction: column;
+}
+
+.sgs-content-collection__item > * {
+	flex: 1;
+}
+
+/* ── Empty state (FR-24-6) ───────────────────────────────────────────────── */
+
+.sgs-content-collection__empty {
+	padding: var( --wp--preset--spacing--50, 2rem );
+	text-align: center;
+	border: 2px dashed var( --wp--preset--color--border, #d1d5db );
+	border-radius: 0.5rem;
+}
+
+.sgs-content-collection__empty-message {
+	margin: 0;
+	color: var( --wp--preset--color--text-muted, #6b7280 );
+	font-size: var( --wp--preset--font-size--small, 0.9rem );
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-content-collection__item {
+		animation: none;
+		transition: none;
+	}
+}

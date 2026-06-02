@@ -2,7 +2,7 @@
 doc_type: spec
 spec_id: 24
 spec_version: 1
-status: phase-c-pending
+status: active
 title: Query-Driven Content Cards (CPT + Query Loop + Block Bindings)
 created: 2026-05-31
 owner: Bean (Small Giants Studio)
@@ -106,21 +106,27 @@ is a framework primitive that serves products, testimonials, team, case studies,
   entry's data live; editing the entry updates every card that references it (single source of
   truth).
 
-- **FR-24-4 — Query/collection block.** A `sgs/content-collection` block (built on or alongside
-  core Query Loop) iterates a chosen CPT and renders each item through the dual-mode card as its
-  loop template. Inspector controls: source content type, count/limit, and selection rule.
+- **FR-24-4 — Query/collection block. SHIPPED (Phase E, uncommitted, 2026-06-03).** A dedicated
+  `sgs/content-collection` block (block.json v1.1.0, own `WP_Query`) iterates a chosen CPT and
+  renders each result through the dual-mode card in Bound mode. Inspector controls: source content
+  type, count/limit, and selection rule. Decision: dedicated block over core Query Loop (Open
+  Question #1 resolved).
 
-- **FR-24-5 — Named-condition selection.** The collection block exposes selection presets as
-  named inspector toggles, mapped to query behaviour via a registered `query_loop_block_query_vars`
-  filter (working around gutenberg #40170): **Featured/Starred** (boolean `_sgs_featured` meta or
-  a `featured` term), **Newest** (`date` desc), **Most-expensive / Cheapest** (`meta_value_num`
-  on `_sgs_price`), **Most-popular** (`meta_value_num` on a `_sgs_views`/`_sgs_sales` counter),
-  **Hand-picked** (explicit ID array), **By category/tag** (taxonomy terms). Conditions are DB-/
-  meta-driven, not hardcoded per content type (R-22-1, R-22-9).
+- **FR-24-5 — Named-condition selection. SHIPPED (Phase E, uncommitted, 2026-06-03).** The
+  collection block exposes selection presets as named inspector controls, resolved via `WP_Query`
+  args in render.php (the `query_loop_block_query_vars` filter is not needed — dedicated block owns
+  its own query): **Featured** (`meta_query: sgs_featured=true`), **Newest** (`orderby: date DESC`),
+  **Most-expensive / Cheapest** (`meta_key: sgs_price`, `orderby: meta_value_num`), **Most-popular**
+  (`meta_key: sgs_views`, `orderby: meta_value_num DESC`), **Hand-picked** (`post__in` ID array),
+  **By category** (`tax_query` on `sgs_product_cat`). Conditions are meta-driven, not hardcoded per
+  content type (R-22-1, R-22-9). `contentType` whitelisted via `sgs_content_collection_post_types`
+  filter; count capped server-side 1–24.
 
-- **FR-24-6 — Designed empty state.** When a query matches zero items (or a bound entry is
-  deleted), the card/collection renders a designed placeholder (operator-editable message), never
-  a blank region. Empty state is server-rendered (no-JS safe).
+- **FR-24-6 — Designed empty state. SHIPPED (Phase E, uncommitted, 2026-06-03).** When a query
+  matches zero items (or a bound entry is deleted), the card/collection renders the operator-editable
+  `emptyMessage` attribute as a styled placeholder — never blank, always server-rendered (no-JS safe).
+  The collection also renders an empty state when the bound product has been deleted (IDOR-guarded:
+  `get_post_type($id)` check ensures the picked ID is the correct post type before rendering).
 
 - **FR-24-7 — Popularity counter (optional).** A lightweight, privacy-safe view/interaction
   counter writes to `_sgs_views` meta to power "Most-popular" without analytics coupling. Opt-in;
@@ -214,12 +220,26 @@ sgs/content-collection  ──loop template──►  dual-mode card (sgs/produc
 
 ## Data Model
 
-`sgs_product` CPT (first content type) — illustrative meta keys (all `show_in_rest`):
-`_sgs_price` (number), `_sgs_price_note` (string), `_sgs_featured` (bool), `_sgs_views`
-(number, FR-24-7), `_sgs_pack_options` (array), `_sgs_badge` (string). Image via featured image
-or an image meta. Taxonomies: `sgs_product_cat`, `sgs_product_tag`. Later content types
-(`sgs_testimonial`, `sgs_team`, `sgs_case_study`) follow the same declarative registration with
-their own field sets — the mechanism is shared (R-22-9).
+`sgs_product` CPT (first content type) — meta keys (all registered with `show_in_rest: true`).
+Non-underscore keys are public display fields surfaced by Block Bindings; underscore keys are
+private SGS config. (Authoritative: `includes/content-types/class-product-cpt.php`.)
+
+| Key | Type | Underscore? | Purpose |
+|-----|------|-------------|---------|
+| `sgs_price` | number | No | Base price (lowest pack or single price) |
+| `sgs_price_note` | string | No | Label beside price, e.g. "from" |
+| `sgs_featured` | boolean | No | Drives FR-24-5 "Featured" selection rule |
+| `sgs_views` | number | No | View counter for "Most-popular" rule (FR-24-7, off by default) |
+| `_sgs_variation_sets` | string (JSON) | Yes — private | SGS display config: per-type `display_as` + `content_impact` |
+| `_sgs_sku_matrix` | string (JSON) | Yes — private | Phase 2 multi-variant pricing (planned) |
+
+Image: featured image or an image meta field. Taxonomies: `sgs_product_cat`, `sgs_product_tag`.
+Later content types (`sgs_testimonial`, `sgs_team`, `sgs_case_study`) follow the same declarative
+registration with their own field sets — the mechanism is shared (R-22-9).
+
+**`custom-fields` CPT support is required** (see FR-24-1 note). Without it, WordPress omits the
+`meta` field from the CPT REST schema entirely — `register_meta + show_in_rest` registers meta
+globally but the schema misses it. This was a pre-existing bug found on first live test (D148).
 
 ## Acceptance Criteria
 
@@ -260,11 +280,19 @@ their own field sets — the mechanism is shared (R-22-9).
   free; front-end pill→price/image swap via the WP Interactivity API seeded server-side (zero
   wc-blocks React bundle; ~12KB). Option-picker event contract (verified): `sgs:option-selected`,
   `detail:{ typeKey, selectedKey, contentImpact }`. See D151 (+ D149 origin).
-- **Phase D — Clone-emit.** FR-24-15 pipeline wiring. TRUTH-SPEC + slot_synonyms/slots updates
-  so the converter outputs `sgs/option-picker` for pill groups. IN-SCOPE within the same build
-  sequence as Phase C (per D144.4) — not a separate later phase.
-- **Phase E — Collection + conditions.** FR-24-4, FR-24-5, FR-24-6. The query block + named
-  presets + empty state. The `query_loop_block_query_vars` filter.
+- **Phase D — Clone-emit.** FR-24-15 pipeline wiring. **SHIPPED (uncommitted, 2026-06-03).**
+  `slots` DB row aliases `pill-group`/`pills`/`option-group`/`picker` → `sgs/option-picker`
+  (`has_inner_blocks=0`). `convert.py` G3 path calls `_atomic_attrs_for(..., allow_text_fallback=False)`
+  for content-blocks with no InnerBlocks. `sgs/option-picker` handler extracts `optionItems`,
+  `defaultSelected`, `typeKey` from child pill elements. Live-verified emitting the correct
+  self-closing block. See Spec 25 §Clone-emit for full mechanism.
+- **Phase E — Collection + conditions.** FR-24-4, FR-24-5, FR-24-6. **SHIPPED (uncommitted, 2026-06-03).**
+  Dedicated `sgs/content-collection` block (block.json v1.1.0), own `WP_Query`, 7 named selection
+  rules (`newest`/`featured`/`most-expensive`/`cheapest`/`most-popular`/`handpicked`/`category`)
+  via `meta_query`/`tax_query`; renders each result as a Bound `sgs/product-card`; designed empty
+  state server-rendered. `contentType` whitelisted via filter; count capped 1–24. Decision: dedicated
+  block over core Query Loop — simpler inspector, no `query_loop_block_query_vars` filter needed for
+  named presets (Open Question #1 resolved — see below).
 - **Phase F — Generalise.** Register `sgs_testimonial` / `sgs_team` / `sgs_case_study` via the
   same mechanism; prove FR-24-9 acceptance #6.
 - **Phase G — Polish.** FR-24-7 popularity counter, FR-24-8 Pattern Overrides, aspect-ratio lock
@@ -287,14 +315,15 @@ their own field sets — the mechanism is shared (R-22-9).
 
 ## Open Questions
 
-1. **Build on core Query Loop or a dedicated `sgs/content-collection`?** Core Query Loop is free
-   and future-aligned but its inspector lacks meta-orderby UI (#40170). A thin SGS wrapper that
-   adds the preset controls + the PHP filter may be cleaner than asking clients to use raw Query
-   Loop. Decide in Phase B planning.
+1. ~~**Build on core Query Loop or a dedicated `sgs/content-collection`?**~~ **RESOLVED (Phase E,
+   2026-06-03).** Dedicated block (`sgs/content-collection`, block.json v1.1.0) with its own
+   `WP_Query`. Core Query Loop's meta-orderby gap (#40170) + complex inspector UX for tech-illiterate
+   clients made the dedicated path cleaner. The `query_loop_block_query_vars` PHP filter is no longer
+   needed for named-preset selection.
 2. **Bound-mode field resolution: `core/post-meta` binding vs custom render path?** Bindings are
    the future-proof, low-code route; confirm they cover image + repeatable pack-options, or fall
    back to a custom `get_value_callback` source for those.
 3. **Popularity (FR-24-7) signal source** without analytics coupling — simple view counter vs
-   a privacy-safe interaction signal. Decide in Phase D.
+   a privacy-safe interaction signal. Decide in Phase G.
 4. **Per-site capability flag mechanism** — where content-type enablement lives (theme support
    flag, plugin setting, or `wp_options`) so CPTs register only when needed.

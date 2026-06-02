@@ -165,16 +165,24 @@
 
 /* Selected state — CSS-only via :checked sibling */
 .sgs-option-picker--outlined .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill {
-	background-color: var(--sgs-op-sel-bg,   var(--wp--preset--color--primary, #0F7E80));
-	color:            var(--sgs-op-sel-text,  var(--wp--preset--color--base,    #fff));
-	border-color:     var(--sgs-op-sel-bg,    var(--wp--preset--color--primary, #0F7E80));
-	font-weight:      700;
+	background-color: var(--sgs-op-sel-bg, var(--wp--preset--color--primary, #1F7A7A));
+	/*
+	 * WCAG A11Y: default text is white — passes 4.5:1 on the framework teal
+	 * primary (#1F7A7A + white = 5.09:1 ✓ PASS).
+	 * Style variations with a LIGHT primary colour MUST override --sgs-op-sel-text
+	 * to a dark value in their style variation CSS. Example for Mama's pink
+	 * (#e68a95): add `--sgs-op-sel-text: #3a2e26;` (#3a2e26 on #e68a95 = 5.28:1 ✓).
+	 * Per-block override: set --sgs-op-sel-text via the block inspector.
+	 */
+	color:        var(--sgs-op-sel-text, #ffffff);
+	border-color: var(--sgs-op-sel-bg,  var(--wp--preset--color--primary, #1F7A7A));
+	font-weight:  700;
 }
 
-/* Fix 1 (WCAG): reveal tick on checked — outlined (light bg → dark tick via currentColor) */
+/* Fix 1 (WCAG): reveal tick on checked — outlined (white tick on coloured bg) */
 .sgs-option-picker--outlined .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill::before {
-	border-left-color:   var(--sgs-op-sel-text, var(--wp--preset--color--base, #fff));
-	border-bottom-color: var(--sgs-op-sel-text, var(--wp--preset--color--base, #fff));
+	border-left-color:   var(--sgs-op-sel-text, #ffffff);
+	border-bottom-color: var(--sgs-op-sel-text, #ffffff);
 }
 
 /* ================================================================
@@ -193,16 +201,17 @@
 }
 
 .sgs-option-picker--filled .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill {
-	background-color: var(--sgs-op-sel-bg,  var(--wp--preset--color--primary, #0F7E80));
-	color:            var(--sgs-op-sel-text, var(--wp--preset--color--base,    #fff));
-	border-color:     transparent;
-	font-weight:      700;
+	background-color: var(--sgs-op-sel-bg, var(--wp--preset--color--primary, #1F7A7A));
+	/* WCAG A11Y: white text default passes 4.5:1 on framework teal (5.09:1 ✓). */
+	color:        var(--sgs-op-sel-text, #ffffff);
+	border-color: transparent;
+	font-weight:  700;
 }
 
-/* Fix 1 (WCAG): reveal tick on checked — filled */
+/* Fix 1 (WCAG): reveal tick on checked — filled (white tick on coloured bg) */
 .sgs-option-picker--filled .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill::before {
-	border-left-color:   var(--sgs-op-sel-text, var(--wp--preset--color--base, #fff));
-	border-bottom-color: var(--sgs-op-sel-text, var(--wp--preset--color--base, #fff));
+	border-left-color:   var(--sgs-op-sel-text, #ffffff);
+	border-bottom-color: var(--sgs-op-sel-text, #ffffff);
 }
 
 /* ================================================================
@@ -222,15 +231,15 @@
 
 .sgs-option-picker--ghost .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill {
 	background-color: transparent;
-	color:            var(--sgs-op-sel-text, var(--wp--preset--color--primary, #0F7E80));
-	border-color:     var(--sgs-op-sel-bg,   var(--wp--preset--color--primary, #0F7E80));
+	color:            var(--sgs-op-sel-text, var(--wp--preset--color--primary, #1F7A7A));
+	border-color:     var(--sgs-op-sel-bg,  var(--wp--preset--color--primary, #1F7A7A));
 	font-weight:      700;
 }
 
-/* Fix 1 (WCAG): reveal tick on checked — ghost (transparent bg → coloured tick) */
+/* Fix 1 (WCAG): reveal tick on checked — ghost (transparent bg → primary-coloured tick) */
 .sgs-option-picker--ghost .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill::before {
-	border-left-color:   var(--sgs-op-sel-text, var(--wp--preset--color--primary, #0F7E80));
-	border-bottom-color: var(--sgs-op-sel-text, var(--wp--preset--color--primary, #0F7E80));
+	border-left-color:   var(--sgs-op-sel-text, var(--wp--preset--color--primary, #1F7A7A));
+	border-bottom-color: var(--sgs-op-sel-text, var(--wp--preset--color--primary, #1F7A7A));
 }
 
 /* ================================================================

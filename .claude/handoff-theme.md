@@ -1,3 +1,64 @@
+# Session Handoff — 2026-06-03 (SGS THEME thread, session 6)
+
+> Theme/blocks thread. Cloning pipeline → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. Big session: Phase D + E + Task D + QC-council + WCAG colour defaults + skip-link, all orchestrated via parallel subagents.
+
+## Completed This Session
+1. **Phase E — `sgs/content-collection` block SHIPPED** (new; deployed). Dedicated block, own `WP_Query`, 7 selection rules (newest/featured/most-expensive/cheapest/most-popular/handpicked/category) via meta_query/tax_query, renders each result as a Bound `sgs/product-card`, designed empty state, `contentType` whitelist. Live-verified: queries CPT 522, renders pills, empty state works. block.json 1.1.0. (D154, Spec 24 FR-24-4/5/6.)
+2. **Phase D — converter emits `sgs/option-picker`** (D153). DB: `slots` row (pill-group→sgs/option-picker via seed-slot-synonyms.py) + `block_composition has_inner_blocks=0`. convert.py: `_atomic_attrs_for` option-picker handler + a G3-attrs `elif` (calls `_atomic_attrs_for(..., allow_text_fallback=False)`). Live-verified emitting `<!-- wp:sgs/option-picker {optionItems,defaultSelected:"12-pack",typeKey:"pack-size"} /-->`. DB changes are live (not git-tracked).
+3. **Task D** — removed redundant `hero` heading block-style (`sgs-heading-variations.php`, D155). heading 0.5.1.
+4. **Wave-2A roster CORRECTED** — real FR-22-6 single-`text` targets are `sgs/label`/`sgs/heading`/`sgs/text` (report `reports/2026-06-02-fr22-6-wave2-roster-rederived.md`); the old social-proof/featured-product/... list was mockup SECTION names (not blocks) — fixed in the prompt + classification report + parking last session.
+5. **QC-council (3 cross-model raters) + all findings fixed** — pill contrast (WCAG), card max-width, no-JS add-to-cart `<a>` fallback, add-to-cart pending guard, N+1 meta-cache prime, contentType security whitelist, IDOR guard kept, edit.js split (403→203), price-helper dedup, box-shadow, body gap, the G3-attrs text-fallback gate (Opus rater caught it injecting garbage into 11 blocks).
+6. **WCAG global colour/spacing defaults** (D156) — theme.json now enables raw custom colour + spacing values (fixes the "gap rejected raw px" class); button-hover + framework-default pairings pass; overridable `--sgs-*` vars + editor controls (cardMaxWidth). Per Bean's constraint: defaults overridable + accept raw CSS.
+7. **Mama's canary WCAG fixed + live-verified** — selected pill + Add-to-Cart button now dark-on-pink **5.28:1 PASS** (was 2.49:1). Root cause: live styles come from the `wp_global_styles` DB post (ID 7), which supersedes theme.json; override written to BOTH theme-snapshot.json + the live post via REST. (Memory `canary-live-styles-come-from-wp-global-styles-post`.)
+8. **Skip-link theme bug fixed** (D157) — removed a duplicate theme skip link (WP core already provides one); clip-rect hide-until-focus; deployed theme 1.3.9; live-verified.
+9. **Security** — anchored the `cardMaxWidth` CSS-injection regex (background review MEDIUM); self-tested + live-verified rejection.
+10. **Docs** — Spec 25 (authoritative SGS WooCommerce Experience Layer) created; Spec 24 status→active + meta-keys fixed; decisions D153–D157; plugins CLAUDE.md block status; parking +5 entries; 2 memory lessons (raw-css-controls, wp_global_styles) + MEMORY tidied (24254→~20.2KB).
+
+## Current State
+- **Branch:** `main` (committed this session — see commit hash in git log). Origin was `a6d215e2` (cloning D152); this session's commit sits on top.
+- **Build:** `npm run build` green; `php -l` clean; converter imports clean; R-22-3 self-test PASS.
+- **Deploy:** blocks + theme deployed to sandybrown canary (theme 1.3.9); OPcache reset; live-verified.
+- **Uncommitted:** `lucide-icons.php` (documented auto-regen, never committed). DB changes (slots/block_composition) live in sgs-framework.db (not git-tracked).
+- **Canary fixtures:** WC product 513, sgs_product 522 (variation-sets), test page 514 `/cart-increment-test/` (cart + bound WC card + content-collection).
+
+## Outcome vs Completion (Gate 3.5)
+- Phase D / E / Task D / skip-link / security regex / QC fixes / Mama's WCAG: **OUTCOME ACHIEVED** — each live-verified (render / emit / contrast measured).
+- WCAG "out of the box on the majority": **OUTCOME ACHIEVED for normal palettes** (framework defaults pass; raw-value overrides enabled) + Mama's edge case fixed. **Universal auto-contrast for ANY light primary with no per-client override: OUTCOME NOT YET HIT** — deferred (needs CSS `contrast-color()` / build-time luminance; parking P-AUTO-CONTRAST-LIGHT-PRIMARIES). Flagged to Bean as a feature decision.
+- Phase D product-PAGE clone: **NOT DONE** — that mockup isn't SGS-BEM (parking P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM); homepage emit works.
+
+## Known Issues / Blockers
+- `push-theme-snapshot.py` does NOT update the live `wp_global_styles` post — snapshot pushes silently miss live styles (parking P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES).
+- Pill→price/image swap wired but DORMANT (no per-option data; parking P-PRODUCT-CARD-PILL-SWAP-DORMANT, needs SKU matrix).
+- Phase D DB rows are live but not git-tracked — survive `/sgs-update`; a fresh clone of the repo won't have them until re-seeded.
+
+## Next Priorities (in order)
+1. **Bean decision: universal auto-contrast** (P-AUTO-CONTRAST-LIGHT-PRIMARIES) — pick CSS `contrast-color()` (when support is safe) vs build-time luminance vs per-client-override-only.
+2. **Fix `push-theme-snapshot.py`** to also POST the `wp_global_styles` post (P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES) — else future client styling silently fails to deploy.
+3. **Phase D product-page** — migrate the product mockup to SGS-BEM, then emit option-pickers there.
+4. **Per-option data model (SKU matrix)** to activate the dormant pill swap (Spec 24 FR-24-14).
+5. **FR-22-6 Wave-2A real migration** (label/heading/text — HIGH blast radius; deliberate session).
+
+## Files Modified
+| File | What changed |
+|------|---|
+| `plugins/sgs-blocks/src/blocks/content-collection/*` | NEW block (block.json/render.php/edit.js/index.js/style.css + components/) |
+| `plugins/sgs-blocks/src/blocks/product-card/{block.json,render.php,edit.js,view.js,style.css}` | Bound mode polish: no-JS cart link, pending guard, overridable vars, cardMaxWidth + anchored regex, box-shadow, gap |
+| `plugins/sgs-blocks/includes/class-product-bindings.php` | price-helper dedup (C1) |
+| `plugins/sgs-blocks/src/blocks/option-picker/{block.json,style.css}` | selected-pill contrast → foreground default |
+| `plugins/sgs-blocks/src/blocks/heading/block.json` + `includes/variations/sgs-heading-variations.php` | hero block-style removed (Task D) |
+| `plugins/sgs-blocks/scripts/{orchestrator/converter_v2/convert.py,seed-composition-roles.py,uimax-tools/seed-slot-synonyms.py}` | Phase D option-picker emit + G3-attrs fallback gate |
+| `theme/sgs-theme/{theme.json,style.css,assets/css/utilities.css,assets/css/header-modes.css,parts/header.html}` | raw custom values + skip-link fix + version 1.3.9 |
+| `sites/mamas-munches/theme-snapshot.json` | Mama's WCAG override vars |
+| `.claude/specs/{24,25}`, `decisions.md`, `parking.md`, `reports/2026-06-02-fr22-6-wave2-roster-rederived.md`, `plugins/sgs-blocks/CLAUDE.md` | docs |
+
+## Notes for Next Session
+- **Live styles on the canary = `wp_global_styles` post (ID 7), NOT theme.json on disk.** Edit BOTH + POST the post via REST, or changes don't show. `mamas-munches.css` is an orphan (not enqueued).
+- **The framework default is white-on-primary** (WCAG-safe for saturated primaries); light-pastel primaries need a per-client dark-text override in their snapshot + the wp_global_styles post.
+- **Phase D deviated from its scratch design doc** (kept option-picker as content-block + G3-attrs path, not `→leaf`) — the scratch doc is marked SUPERSEDED.
+- **Verify against git, not handoffs** — last session's handoffs were stale on merge-status + parallel-session; this session caught it via `git log`.
+
+---
+
 # Session Handoff — 2026-06-02 (SGS THEME thread, session 5)
 
 > Theme/blocks thread. Cloning pipeline → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`.

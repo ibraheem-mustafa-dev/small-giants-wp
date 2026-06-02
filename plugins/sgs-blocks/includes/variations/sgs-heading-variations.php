@@ -6,6 +6,9 @@
  * These replace the old `variantStyle` scalar attribute (deprecated in v0.5.0)
  * which was a dormant stub with no CSS implementation.
  *
+ * The `hero` style has been removed (2026-06-02): an h1 with default styling
+ * already achieves the hero visual, making the explicit hero style redundant.
+ *
  * WordPress serialises the active style as `is-style-{name}` on the block's
  * wrapper className automatically. The cloning converter can therefore treat
  * these as plain CSS class checks without any special-casing.
@@ -28,22 +31,6 @@ defined( 'ABSPATH' ) || exit;
  * @return void
  */
 function sgs_register_heading_styles(): void {
-	register_block_style(
-		'sgs/heading',
-		array(
-			'name'         => 'hero',
-			'label'        => __( 'Hero', 'sgs-blocks' ),
-			'inline_style' => '
-				.wp-block-sgs-heading.is-style-hero .wp-block-sgs-heading__text {
-					font-size: clamp( 2.5rem, 5vw, 4rem );
-					font-weight: 700;
-					line-height: 1.1;
-					letter-spacing: -0.02em;
-				}
-			',
-		)
-	);
-
 	register_block_style(
 		'sgs/heading',
 		array(

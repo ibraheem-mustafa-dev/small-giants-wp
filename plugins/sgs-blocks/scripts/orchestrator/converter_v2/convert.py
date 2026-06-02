@@ -1560,12 +1560,21 @@ def _rich_text_content(node: Tag) -> str:
     return "".join(parts).strip()
 
 
-def _atomic_attrs_for(node: Tag, slug: str) -> dict:
+def _atomic_attrs_for(node: Tag, slug: str, allow_text_fallback: bool = True) -> dict:
     """Return the attrs dict for a node emitted as `slug` via the atomic-tag swap.
 
     Schema-aligned to current block.json (2026-05-27). Returns {} when no
     content extraction is meaningful for the tag type (e.g. <hr>) OR when
     the slug+tag pair has no known mapping (graceful degradation).
+
+    allow_text_fallback controls whether the graceful text-fallback at the end
+    of this function fires. The fallback lifts _rich_text_content(node) into the
+    first content/text-content-role STRING attr for any sgs/* slug. Pass
+    allow_text_fallback=False when calling from the G3-attrs path (content-block
+    with has_inner_blocks=0) so that only EXPLICIT handlers (like option-picker's,
+    which returns before the fallback) produce attrs — preventing garbage text from
+    being dumped into date/URL attrs on blocks like sgs/countdown-timer.targetDate,
+    sgs/decorative-image.imageUrl, sgs/star-rating.label, etc.
     """
     tag = node.name
 
@@ -1644,6 +1653,70 @@ def _atomic_attrs_for(node: Tag, slug: str) -> dict:
         items_text = [li.get_text(strip=True) for li in node.find_all("li")]
         return {"items": [{"icon": "check", "text": t} for t in items_text if t]}
 
+    # sgs/option-picker — current schema: optionItems (array of {key, label}),
+    # defaultSelected (string), typeKey (string), label (string).
+    # FR-24-15 / D144 Phase D (2026-06-02).
+    # Recognises child elements whose BEM `element` segment is "pill" (e.g.
+    # sgs-product-card__pill, sgs-featured-product__pill) OR bare "pill"/"sgs-pill".
+    # Each pill button becomes one {key, label} item. The `active`/aria-pressed=true
+    # child sets defaultSelected. typeKey is derived from the group's aria-label.
+    # Note: _atomic_attrs_for is called via the G3-attrs path (not the leaf path)
+    # because composition_role='content-block' + has_inner_blocks=0 (G3 gate
+    # suppresses child recursion; this function extracts the items array instead).
+    # slot_default_attrs_for injects pillStyle/typeKey defaults AFTER this returns,
+    # so explicit values here take precedence via dict merge order.
+    if slug == "sgs/option-picker" and tag in ("div", "fieldset", "section", "ul"):
+        import re as _re
+        option_items: list[dict] = []
+        default_selected = ""
+        for child in node.find_all(True, recursive=False):
+            child_classes = child.get("class", []) or []
+            # Recognise pill children: any child whose BEM element segment is "pill"
+            # (e.g. sgs-product-card__pill) or bare "pill"/"sgs-pill" class.
+            is_pill = any(
+                (db.parse_sgs_bem(c) is not None and db.parse_sgs_bem(c).element == "pill")
+                or c in ("pill", "sgs-pill")
+                for c in child_classes
+            )
+            if not is_pill:
+                continue
+            label_text = child.get_text(strip=True)
+            if not label_text:
+                continue
+            # Key: prefer explicit data attrs, fallback to label-as-slug
+            key = str(
+                child.get("data-pack")
+                or child.get("data-value")
+                or child.get("value")
+                or label_text.lower().replace(" ", "-")
+            )
+            option_items.append({"key": key, "label": label_text})
+            # First active/pressed/checked pill sets defaultSelected
+            is_active = (
+                "active" in child_classes
+                or child.get("aria-pressed") == "true"
+                or child.get("checked") is not None
+                or child.get("aria-checked") == "true"
+            )
+            if is_active and not default_selected:
+                default_selected = key
+        result: dict = {}
+        if option_items:
+            result["optionItems"] = option_items
+        if default_selected:
+            result["defaultSelected"] = default_selected
+        # typeKey from aria-label on the group container; strip "Select "/"Choose " prefix
+        aria_label = node.get("aria-label", "")
+        if aria_label:
+            cleaned = _re.sub(r"^(?:select|choose)\s+", "", aria_label, flags=_re.IGNORECASE)
+            result["typeKey"] = cleaned.strip().lower().replace(" ", "-")
+        # label: carry aria-label verbatim as the block's accessible label attr
+        if aria_label:
+            result["label"] = aria_label
+        # contentImpact: cannot be inferred from draft HTML — leave as default []
+        # Authors configure this post-clone in the block editor inspector.
+        return result
+
     # core/list — WP core: inner blocks of core/list-item with content
     if slug == "core/list" and tag in ("ul", "ol"):
         return {"ordered": tag == "ol"}
@@ -1670,7 +1743,7 @@ def _atomic_attrs_for(node: Tag, slug: str) -> dict:
             if attr_type == "string":
                 content_attr_name = attr_name
                 break
-    if content_attr_name is not None:
+    if content_attr_name is not None and allow_text_fallback:
         return {content_attr_name: _rich_text_content(node)}
     return {}
 
@@ -2109,6 +2182,25 @@ def walk(
                 result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
                 if result:
                     children_markup.append(result)
+    elif not is_leaf and not _slug_accepts_inner and slug is not None:
+        # G3-attrs (FR-24-15, 2026-06-02): content-block with has_inner_blocks=0
+        # renders from its own attrs only (no $content passthrough in render.php).
+        # G3 already suppresses child recursion above. Here, extend attrs via
+        # _atomic_attrs_for so that blocks with schema-specific array extraction
+        # (e.g. sgs/option-picker's optionItems) receive their content.
+        # allow_text_fallback=False: _atomic_attrs_for has a graceful fallback that
+        # lifts _rich_text_content(node) into the first content/text-content-role
+        # STRING attr for any sgs/* slug. That is correct for leaf blocks called from
+        # the is_leaf path (the default). Here it is WRONG — it would dump node text
+        # into date/URL attrs on blocks like sgs/countdown-timer, sgs/decorative-image,
+        # sgs/star-rating, sgs/mega-menu, etc. Suppressing it means only EXPLICIT
+        # handlers (like option-picker's, which returns before the fallback) fire.
+        # Blocks with no explicit handler return {} — zero overhead, no garbage attrs.
+        # R-22-1 compliant (DB-driven G3 gate, no per-slug literals here).
+        # R-22-9 compliant (universal — fires for every G3 content-block).
+        atomic = _atomic_attrs_for(node, slug, allow_text_fallback=False)
+        if atomic:
+            attrs = {**attrs, **atomic}
 
     # Spec 11 + P-9: wrap any loose sgs/button runs in sgs/multi-button (WP
     # core/buttons mirror). No-op when there are no loose buttons; already-grouped
