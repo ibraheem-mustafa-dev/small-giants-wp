@@ -1,3 +1,53 @@
+# Session Handoff — 2026-06-02 (CLONING thread) — Workstream A shipped + container/wrapper standardisation programme
+
+> Cloning thread. A parallel THEME thread is/was active on the shared tree this session (it took D151 product-card Phase C + pushed commits; mine is D152). Shared docs (decisions/parking/parking-archive) carry both threads' entries — committed by explicit path, acknowledged. Full programme spec: `.claude/plans/2026-06-02-container-wrapper-standardisation.md`.
+
+## Completed This Session
+1. **Task 1 — 4-block save-null fix editor-/qc'd LIVE (PASS).** feature-grid/multi-button/tab/accordion-item: 0 invalid blocks, InnerBlocks children survive save→reload (Playwright on canary 144). The D150 fix is confirmed working. (Branch already squash-merged to main pre-session — drift from the prompt, caught + verified.)
+2. **Task 2 — Workstream A SHIPPED + pushed (`0d746073`).** Rewrote `sync-container-wrapping-blocks.py` (DB/source-detected roster, R-22-1 clean) + `block_composition.container_kind` migration + seed-composition-roles renames trust-badges→trust-bar + inserts option-picker + 3 role flips + trust-bar/modal `containerKind:"section"`. 4-rater qc-council (Gemini 403 + Cerebras 404 down) caught the UPDATE-only silent 26/28 undercount → fixed (fail-loud + rollback). `--apply` wrote all 28, verified 0 missing/malformed.
+3. **Container/wrapper system deep-analysed.** Bean reframed: no composite evades R-22-9 (my "recognised block exempt" was the cheat); composites must MIRROR sgs/container via the block_composition propagation substrate. 4-branch code analysis + 6-step target/current compare + artefact-empirical proof.
+4. **The empirical smoking gun:** the fold (`absorb_skipped_child`→`fold_into_container`) deletes the `__inner` + discards max-width → it STRANDS in variation-d0-d2.css targeting a now-deleted selector; leftover-buckets names it; composites get confidence 1.0 (tier=class-section) vs containers 0.0 (deferred-no-match). featured-product 91.9%@1440.
+5. **5-workstream standardisation plan written + qc-council'd (`1d846667`).** Plan + Spec 22 §FR-22-21 (canonical wrapper-conversion procedure) + flow/stages + D152 + parking. 2-rater doc-council → DOCS-COMPLETE + 2 wrong claims fixed (D1 count, FR-22-21 roster).
+6. **Mockup:** removed the has-halal trust-bar 5th-column rule (Bean — added manually, later dropped).
+
+## Current State
+- **Branch:** `main` at `1d846667` (pushed). Commits this session: `0d746073` (Workstream A code) + `1d846667` (standardisation docs).
+- **Tests:** no suite; converter imports clean; `--apply` verified all 28 rows written.
+- **Build:** n/a (no block code changed this phase — build deferred per the plan).
+- **Uncommitted changes:** `lucide-icons.php` (auto-regen, never committed).
+
+## Known Issues / Blockers
+- The container/wrapper standardisation BUILD is NOT started — programme-sized, deferred to fresh sessions. WS-1 (sgs/container 3-layer) gates WS-4 (composite mirror).
+- Concurrent theme thread shares the tree — coordinate commits (explicit path; check `git log -1 --stat`).
+- B1 (D1 written-not-consumed) needs a Bean decision (revive vs DB-replace) before WS-2 build.
+
+## Next Priorities (in order)
+1. **WS-1 — sgs/container 3-layer completion** (the build opener): content-width attr + inner-wrapper render (A1), outer max-width transfer + kill hardcoded widthMode:full (A2), custom-width centring (A3), raw-px gap (A4), min-height (A5), gridItem* (A6). Sensitive core-block change → design-gate + /qc-council.
+2. **WS-3 — de-cheat** (parallel with WS-1): hardcoded lists → DB; trust-bar static grid → attr-driven.
+3. **WS-2 — converter/router truth** (after B1 decision).
+4. **WS-4 — composite standardisation + auto-propagation** (after WS-1): shared PHP helper + propagation writer + /sgs-update wiring.
+
+## Files Modified
+| File | What changed |
+|------|---|
+| `plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py` | rewrite + fail-loud --apply (Workstream A) |
+| `plugins/sgs-blocks/scripts/seed-composition-roles.py` | rename/insert/flip rows (Workstream A) |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | container_kind migration |
+| `plugins/sgs-blocks/src/blocks/{trust-bar,modal}/block.json` | containerKind:"section" |
+| `.claude/plans/2026-06-02-container-wrapper-standardisation.md` | NEW — 5-workstream plan |
+| `.claude/specs/22-...md` | §FR-22-21 wrapper-conversion procedure |
+| `.claude/cloning-pipeline-flow.md`, `-stages.md` | procedure + gap callouts |
+| `.claude/decisions.md`, `parking.md`, `memory/parking-archive.md` | D152 + parking restructure |
+| `sites/mamas-munches/mockups/homepage/index.html` | removed has-halal rule |
+
+## Notes for Next Session
+- **No composite evades R-22-9** — the standardisation makes composites mirror sgs/container; never exempt a "recognised block" (new STOP #43; memory `feedback_no_composite_evades_universal_rule`).
+- **Verify subagent gap-claims against code** — I relayed an extraction subagent's hero "gaps" as fact; Bean made me verify (they were a mis-modelling). Treat subagent findings as hypotheses.
+- **D-number collisions on the shared decisions.md** — theme thread took D151; I used D152. Re-read before editing shared living-docs.
+- The contentWidth design CORRECTED this session: inner-WRAPPER model (not cap-each-child) — children keep their own CSS incl. label left-align (the earlier label-centring worry evaporates).
+
+---
+
 # Session Handoff — 2026-06-02 (CLONING PIPELINE thread) — container roster + DB-table + save-null
 
 > Cloning thread. Theme thread is DONE + merged to main (`a8cb3ff9`); no parallel session active. Full specs in `.claude/scratch/2026-06-02-container-roster-db-table-handoff.md` + `.claude/scratch/2026-06-04-css-transfer-gaps-1-2-fix-shape.md`.
