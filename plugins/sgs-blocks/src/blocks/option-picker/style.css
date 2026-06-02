@@ -54,7 +54,7 @@
 .sgs-option-picker__options {
 	display: flex;
 	flex-wrap: wrap;
-	gap: var(--wp--preset--spacing--20, 8px);
+	gap: var(--wp--preset--spacing--30, 0.75rem);
 	align-items: center;
 }
 
@@ -92,12 +92,40 @@
 	font-weight: 500;
 	line-height: 1;
 	white-space: nowrap;
+	/*
+	 * Fix 1 (WCAG): reserve space for the selection-tick indicator so the pill
+	 * width never changes when selected — no layout shift.
+	 * The ::after pseudo-element draws the tick; it is always present but
+	 * transparent when unchecked, visible when checked (via the sibling rule below).
+	 * The extra left padding + gap to the tick use the same value so text stays
+	 * visually centred on hover/unselected states.
+	 */
+	gap: 0.3em;
 	transition: background-color var(--wp--custom--transition--fast, 0.15s ease),
 	            color            var(--wp--custom--transition--fast, 0.15s ease),
 	            border-color     var(--wp--custom--transition--fast, 0.15s ease),
 	            box-shadow       var(--wp--custom--transition--fast, 0.15s ease);
 	/* Prevent text selection on rapid clicks */
 	user-select: none;
+}
+
+/*
+ * Selection-tick indicator — always present, transparent when unselected.
+ * This reserves the width so selecting a pill never shifts adjacent pills.
+ * aria-hidden is set on this via content so screen readers ignore it (the
+ * radio :checked state is the semantic truth).
+ * CSS-drawn check: a rotated L-shape via border.
+ */
+.sgs-option-picker__pill::before {
+	content: "";
+	display: inline-block;
+	width:  0.5em;
+	height: 0.28em;
+	border-left:  0.12em solid transparent;
+	border-bottom: 0.12em solid transparent;
+	transform: rotate(-45deg) translateY(-0.06em);
+	flex-shrink: 0;
+	transition: border-color var(--wp--custom--transition--fast, 0.15s ease);
 }
 
 /* ── Size variants ─────────────────────────────────────────────────── */
@@ -140,6 +168,13 @@
 	background-color: var(--sgs-op-sel-bg,   var(--wp--preset--color--primary, #0F7E80));
 	color:            var(--sgs-op-sel-text,  var(--wp--preset--color--base,    #fff));
 	border-color:     var(--sgs-op-sel-bg,    var(--wp--preset--color--primary, #0F7E80));
+	font-weight:      700;
+}
+
+/* Fix 1 (WCAG): reveal tick on checked — outlined (light bg → dark tick via currentColor) */
+.sgs-option-picker--outlined .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill::before {
+	border-left-color:   var(--sgs-op-sel-text, var(--wp--preset--color--base, #fff));
+	border-bottom-color: var(--sgs-op-sel-text, var(--wp--preset--color--base, #fff));
 }
 
 /* ================================================================
@@ -161,6 +196,13 @@
 	background-color: var(--sgs-op-sel-bg,  var(--wp--preset--color--primary, #0F7E80));
 	color:            var(--sgs-op-sel-text, var(--wp--preset--color--base,    #fff));
 	border-color:     transparent;
+	font-weight:      700;
+}
+
+/* Fix 1 (WCAG): reveal tick on checked — filled */
+.sgs-option-picker--filled .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill::before {
+	border-left-color:   var(--sgs-op-sel-text, var(--wp--preset--color--base, #fff));
+	border-bottom-color: var(--sgs-op-sel-text, var(--wp--preset--color--base, #fff));
 }
 
 /* ================================================================
@@ -182,6 +224,13 @@
 	background-color: transparent;
 	color:            var(--sgs-op-sel-text, var(--wp--preset--color--primary, #0F7E80));
 	border-color:     var(--sgs-op-sel-bg,   var(--wp--preset--color--primary, #0F7E80));
+	font-weight:      700;
+}
+
+/* Fix 1 (WCAG): reveal tick on checked — ghost (transparent bg → coloured tick) */
+.sgs-option-picker--ghost .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill::before {
+	border-left-color:   var(--sgs-op-sel-text, var(--wp--preset--color--primary, #0F7E80));
+	border-bottom-color: var(--sgs-op-sel-text, var(--wp--preset--color--primary, #0F7E80));
 }
 
 /* ================================================================
