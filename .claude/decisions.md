@@ -496,38 +496,12 @@ Status: active
 
 ---
 
-## 2026-05-24 — Source-DB retirement: blocks.db + hooks.db deleted (architecture-staging Phase 1 close-out)
-
-**D56 — Standalone source DBs deleted; data migrated into sgs-framework.db with `source` column.** `blocks.db` (459 KB) + `hooks.db` (24 MB) + 623 MB caches deleted. Back-filled 122 variations + 331 markup_examples + 187 hooks. Read paths ported: `wp-blocks.py`, `wp-docs.py`, `sgs-update-v2.py` Mode A/Stage 3. Mode A now graceful no-op when cache absent. ~647 MB disk recovered. New lessons: `feedback_data_migration_needs_read_path_port.md` + `feedback_shipped_claims_need_grep_verify.md`. Commit this session.
-Status: active
-
----
-
-## 2026-05-24 — `block_compositions` table merged into `patterns.block_composition`
-
-**D55 — Pattern composition data moved from standalone `block_compositions` table → `patterns.block_composition` JSON column; standalone table dropped.** 35 of 37 rows ported (2 orphans dropped). Writers ported: `pattern-register.py` + `seed-block-compositions.py`. Composition data remains write-only at /sgs-clone runtime; parent-child relations still read from `blocks.parent_block` + `slot_synonyms.standalone_block`. Commit this session.
-Status: active
-
----
-
 ## 2026-05-24 — BEM-is-canonical walker + Stage 4 wiring
 
 **D48 — BEM element name IS canonical signal for block recognition; HTML tag is rendering shape only.** Tag-based routing (`canonical_for_html_tag`) reverted — created second canonical path conflicting with BEM-as-canonical. Correct fix: data-layer (move "quote" alias in slot_synonyms); zero walker code changes. Commit `124e1d06` area.
 Status: active
 
 **D49 — Walker code stays universal; data-layer drives recognition.** Zero per-tag/per-block/per-section hardcoding in walker composite_element + section_inner_absorb branches. All recognition from slot_synonyms.aliases + standalone_block + block_attributes. Adding new block recognition = DB rows, not walker edits. Commit this session.
-Status: active
-
-**D50 — `/sgs-update` Stage 1 tail invokes `assign-canonical.py`.** Script was never wired into `sgs-update-v2.py` despite Spec 16 §12.6 Stage 4 declaring it. Fix: `stage_1_sgs_codebase_scan()` calls `assign-canonical.py` as subprocess after scan. Future runs auto-populate `canonical_slot` for new array attrs. Commit this session.
-Status: active
-
-**D51 — `assign-canonical.py` array-attr fallback: singularise + Tier B registered-block reverse-lookup.** Plural collection attrs (`testimonials`, `logos`, etc.) missed slot_synonyms. Fix: singularise (ies→y, ses→s, trailing s) → Tier A alias lookup → Tier B `sgs/<singular>` registered-block reverse-lookup. No hardcoded attr-name list. Commit this session.
-Status: active
-
-**D52 — Transparent-wrapper absorb at section root (one-section-one-container).** Walker pre-pass `_absorb_transparent_wrappers()` runs before `walk()` for top-level sections. Absorbs single direct-child wrapper when it has no block-spacing or positioning CSS AND isn't a registered SGS composite block. 4 single-wrapper Mama's sections → ONE outer sgs/container. FR1-matched sections correctly skipped. Commit this session.
-Status: active
-
-**D53 — Brand mockup BEM renamed for Spec 00 consistency.** `<blockquote class="sgs-brand__body">` → `<div class="sgs-brand__quote">`; `<footer>` → `<p class="sgs-brand__attribution">`. Tag choice doesn't affect block emit; BEM element makes draft a clean Spec 00 reference. Commit this session.
 Status: active
 
 **D54 — ARRAY_LIFT_PATTERNS hardcoded dict deletion DEFERRED.** Universal BEM-child array lifter (1e-B) now resolves via canonical_slot but doesn't yet replicate: (a) `count_stars` extractor for ratings, (b) multi-selector fallback chains. Full removal parked as P-ARRAY-LIFT-PATTERNS-FULL-MIGRATION. (no commit — planning-only)
@@ -537,9 +511,6 @@ Status: active
 
 ## 2026-05-24 — Step 1.6 wp-sgs-developer audit
 
-**D46 — Walker pre-pass addresses Stage 4 emit shape, not Stage 2 match.json confidence.** `_walker_pre_pass` (commit `124e1d06`) changes WHAT Stage 4 emits but NOT Stage 2 confidence — confidence_matrix.py runs before Stage 4 independently. Phase 1 plan gate (condition c: match.json confidence < 0.5 → 0 sections) cannot be met by a Stage 4 fix alone. Resolution parked as P-MATCH-JSON-GATE-REDEFINITION.
-Status: active
-
 **D47 — Structural improvement + visual regression coexist when CSS lift is pending.** A structurally correct emit can INCREASE pixel-diff relative to a structurally wrong emit if per-block CSS hasn't been lifted yet. This is NOT a reason to revert structural fixes — it is a reason to sequence CSS lift as step+1 in the same session. Never commit structural fix without CSS lift following immediately. Commit `124e1d06`.
 Status: active
 
@@ -547,33 +518,9 @@ Status: active
 
 ## 2026-05-23 — Diagnostic + fix session (Q1A / Q1B / Q3 / Stage 10 / Stage 11)
 
-**D41 — `core/group` → `sgs/container` as Stage 2 confidence-matrix fallback.** `core/group` has no SGS-BEM attributes; commit `d8ae4a2a` changes fallback to `sgs/container` (universal SGS layout primitive). `legacy_role_lookup` gains one row (18 total). Aligns with D3 (2026-05-20).
-Status: active
-
-**D42 — Hand-authored patterns deleted; deterministic-only rule enforced.** `brand.php` + `ingredients-section.php` deleted (commit `c1aa4cc5`). Pattern count: 53 (was 55). Hand-authored patterns bypass the converter and allow a second source of truth — forbidden.
-Status: active
-
-**D43 — Stage 0.7 CSS dump relocated from `theme/sgs-theme/styles/<client>.css` to `pipeline-state/<run>/variation-d0-d2.css`.** Conflating pipeline intermediates with deploy artefacts was architectural debt. Post Phase 5a, `styles/` directory contains only framework-level CSS. Status: in progress / commit pending from 2026-05-23.
-Status: active
-
-**D44 — Stage 10 silent-failure fix: named exit codes 4/5/6.** commit `700ff211` adds exit 4 (phantom page), exit 5 (id-mismatch), exit 6 (no-id-in-body). Silent Stage 10 failures would cause Stage 11 to diff against stale content.
-Status: active
-
-**D45 — Stage 11 added: per-section pixel-diff against actual deployed page.** Commit `1331f23a`. Stage 8 = pre-deploy autonomy gate (locally-rendered HTML); Stage 11 = post-deploy verification (live WP render). Together they close the full loop. Output: `pipeline-state/<run>/stage-11-pixel-diff.json`.
-Status: active
-
 ---
 
 ## 2026-05-22 — Architecture programme close-out (Phase 4 + Phase 7 + parking sweep)
-
-**D37 — Source 2 counter gates on extraction-count, not insert-count.** `s2_extracted > 0` is canonical Mode B Source 2 health signal (insert-count stays zero on dry-run). Commits `9f1e2194` + `99081252`.
-Status: active
-
-**D38 — Source 4 calibration threshold tightened (100 → 30).** Live test: page returns 91 rows with simple HTTP fetch — below old threshold. `playwright-fetch.js` created for JS-render step.
-Status: active
-
-**D39 — GitHub PAT format: classic `ghp_*` required for Mode B.** Fine-grained tokens returned 401 on Source 5 (GitHub API). Classic PAT with `public_repo` scope succeeds. PAT stored in `~/.openclaw/.env` as `GITHUB_PERSONAL_ACCESS_TOKEN`.
-Status: active
 
 **D40 — Council predictions are hypotheses; empirical gate mandatory before treating as specs.** Wave 1 G2+G4 fixes produced zero pixel-diff movement despite correct implementation — fix-shape proposals targeted wrong code paths. Rule: any council output proposing a fix shape requires empirical-validation step before subagent dispatch. blub.db row 276.
 Status: active
@@ -581,9 +528,6 @@ Status: active
 ---
 
 ## 2026-05-22 — Phase 1.5 inserted + Phase 2 parser strategy change
-
-**D32(arch-staging) — Phase 1.5 inserted: block variations + styles.** 67 of 69 SGS blocks had zero inserter-discoverable variations. Phase 1.5 authors 12 composite blocks × 2-4 variations × 2-3 styles each via PHP sibling files in `includes/variations/`. Plan: `.claude/plans/phase-1.5-variations-styles-default-styles.md`. (no commit — planning-only)
-Status: active
 
 **D33(arch-staging) — Phase 2 parser strategy: runtime enumeration, not source parsing.** Static PHP source parsing crashed twice. Replacement: `wp eval` against live WP block type + styles registry (`WP_Block_Type_Registry` + `WP_Block_Styles_Registry`). Canonical going forward — any future variation/style indexing reads runtime state.
 Status: active
@@ -597,9 +541,6 @@ Status: active (shipped)
 
 **D28 — Style-variation system killed; per-site theme.json adopted.** 9 client variation JSONs replaced with per-client `sites/<client>/theme-snapshot.json`. Three PHP files deleted; new `push-theme-snapshot.py` CLI deploys snapshots. Commit `43a93df9`. See staging doc §3 D14′,16′,17′,18,19.
 Status: active (shipped)
-
-**D29 — INNER_BLOCK_PATTERNS dict retired; DB-backed lookup.** Hardcoded two-entry dict replaced by `blocks.parent_block` + `slot_synonyms.standalone_block` DB lookups. Adjacent-slot grouping added. Phase 0 data seeding: commit `aec54882`. See staging doc §3 D3,4,5,6,12,24.
-Status: active
 
 **D30 — Button presets migrated to native WP 7.0 theme.json.** WP 7.0 natively generates 100% of `--wp--custom--button-presets--*` props from `theme.json`. `class-button-presets-admin.php` deleted; `wp_options[sgs_button_presets]` absent on sandybrown. Commit `60220b13`.
 Status: active (shipped)
@@ -632,9 +573,6 @@ Status: active
 ---
 
 ## 2026-05-20 — Phase 1 Spec 16 §FR6 rewrite + Phase 2 future capabilities
-
-**D1(2026-05-20) — Path A: site-wide variation activation (NOT per-page meta override).** Stage 10 activates variation via `set_theme_mod('active_theme_style', $slug)` site-wide. Per-page override (Path B) rejected — each client gets own WP install in production; multi-client-on-one-install is not a real scenario. Commits `8ceb8787` + read-back confirmation + exit-3 failure surface.
-Status: superseded-by-D28 (style-variation system killed 2026-05-21)
 
 **D2(2026-05-20) — Token-snap requires strict exact-match.** Nearest-match snap caused visible regressions. Per Bean's binding: "if value matches global default, use token; if not, insert literal." ΔE2000 ≤ 1.0 for colour; ≤ 1px for spacing/font-size. Commit `8a996194`.
 Status: active
@@ -685,13 +623,7 @@ Status: active
 
 ## 2026-05-17 — Universal recognition + conversion session close
 
-**D(a-2026-05-17) — `parse_css` regex was the single biggest recognition hole.** Old regex matched 0 of 13 `@media` blocks (whitespace between rules). Replaced with brace-balanced scanner. 13/13 media blocks captured; hero `headlineFontSizeDesktop` now 58 (was 34). Commit `20ef1d66`.
-Status: active
-
 **D(b-2026-05-17) — DB-first lookups, no hardcoded dicts.** `_CSS_PROP_TO_SUFFIX` (21 rows) replaced by `db.css_property_suffixes()` reading `property_suffixes` table (117 rows). `_BREAKPOINT_SUFFIXES` replaced by `db.breakpoint_suffix_rules()`. blub.db row 260 + Rule 11 HARD-GATE in `/sgs-clone`. Commit `168fd2ca`.
-Status: active
-
-**D(c-2026-05-17) — Walker preserves SGS-BEM grouping wrappers.** Non-top-level `sgs/container` with `bem.element` set AND inner blocks → preserve as nested `sgs/container` with className. Pass-through still fires for unnamed wrappers. Commit `df3a6cbf`.
 Status: active
 
 **D(function-exists) — `function_exists()` guards universal on all render.php top-level helpers.** "Cannot redeclare" fatals recurred. Every top-level function in any render.php MUST be wrapped in `if ( ! function_exists() ) { ... }`. Applied to all helpers.
@@ -701,21 +633,12 @@ Status: active
 
 ## 2026-05-16 — Spec 16 Phase 8 session: accuracy + universality
 
-**D(phase8-b) — Slot→standalone-block routing is DB-driven, not code-driven.** `slot_synonyms.standalone_block` column added; hardcoded `SLOT_TO_STANDALONE_BLOCK` dict removed. Migration: `migrations/2026-05-16-slot-synonyms-standalone-block.py`.
-Status: active
-
 **D(phase8-h) — WP `file:` render wrapper discards return values (CRITICAL).** `_wp_block_render_callback_from_file()` wraps file in its OWN `ob_start()` + `ob_get_clean()`. File's return value is thrown away. render.php MUST echo directly via `printf()` / interleaved `<?php ?>` HTML — never `return ob_get_clean()`.
 Status: active
 
 ---
 
 ## 2026-05-14 — Spec 16 decisions (core architecture)
-
-**D(spec16-2) — "CSS drives emission, never drop" (R5 re-architected).** 3-destination routing: (1) typed-attribute lift, (2) markup wrapper with className, (3) attribute_gap_candidates row. Every CSS rule MUST hit one destination. Converter self-extending via Spec 15 §4.2 table.
-Status: active
-
-**D(spec16-3) — sgs/container is MANDATORY at section-level, AVAILABLE elsewhere.** Auto-emission only at top-level section boundary. Nested wrappers pass through UNLESS CSS rules target them (then emit per Destination 2).
-Status: active
 
 **D(spec16-9) — Parallax scroll NOT applicable to logo / icon / header blocks.** Parallax-on-logo breaks visual anchor; parallax-on-header breaks sticky/transparent behaviour + causes jank. `supports.sgs.parallax` is opt-in but MUST NOT be wired for `sgs/responsive-logo`, `sgs/icon`, or the header behaviour wrapper. Permanent.
 Status: active
@@ -729,13 +652,6 @@ Status: active
 
 ---
 
-## 2026-05-13 — Spec 15 Phase 5 + Phase 6 Step 0: +REGISTER wired
-
-**D(phase5g) — Phase 5 partial closure accepted; canvas pipeline structural defect closed.** 6 of 9 blocks routed to unregistered blocks (WordPress silently drops them). Fix path chosen: hard gate in confidence-matrix (reject `registered=False`); bucket-c-classifier + atomic-block-scaffold for new-block scaffolding. +REGISTER wired via `register_patterns.py` — idempotent, writes PHP pattern file + sgs-framework.db row + uimax row per composed section. Live E2E proved pipeline functional end-to-end. Commit `d0d30579`.
-Status: active
-
----
-
 ## 2026-05-12 — Spec 15 Phase 4.5: cloning preserves intentional bespoke detail
 
 **D(phase45) — `/sgs-clone` token lint defaults to ADDITIVE mode.** Non-token CSS values → `NewTokenCandidate` rows written to client style variation JSON (NOT snapped to nearest token). Base `theme.json` stays lean; client variation absorbs bespoke differences. Bean's framing: "small differences are all intentional." Commits `8599faf3`, `55a6d73e`, `3c2c07b7`, `a9b9b1c3`.
@@ -744,9 +660,6 @@ Status: active
 ---
 
 ## 2026-05-11 — Deterministic SGS-BEM voter; Trustpilot; third-party widget split
-
-**D(voter) — Deterministic SGS-BEM voter over probabilistic AI matcher.** Stage 1 voter does literal slug match on `.sgs-<block>` → `sgs/<block>` at confidence 1.0. AI in matching step removed. Cheaper, faster, deterministic. Probabilistic matching only for live scrapes. Commit `7ac627cf`.
-Status: active
 
 **D(trustpilot) — `sgs/trustpilot-reviews` as first-party block; Browserless auth via `?token=` query string.** Official WP plugin paywalls display widgets on free plan. Browserless `/content` rejects Bearer — auth is `?token=<key>` query string. Failure surface: settings page activity log only. Commits `c6bd4980` + `06df2807`.
 Status: active

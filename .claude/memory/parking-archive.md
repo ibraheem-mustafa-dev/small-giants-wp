@@ -1288,3 +1288,155 @@ _From: Framework + SGS — Group 4 quick-close, int interpolation fixed 2026-05-
 
 **P-PHP-FOOD-SERVICE-INT-INTERPOLATION** — RESOLVED 2026-05-24 (Group 4 quick-close). `sites/indus-foods/deploy/food-service-page.php` line 415: `{$result}` string interpolation of int replaced with `absint( $result )` concatenation. Intelephense diagnostic cleared.
 
+---
+
+## Archived 2026-06-02 (prune pass — moved from live parking.md)
+
+_21 entries removed from the live doc. All were Status: CLOSED, RESOLVED, DROPPED, SUPERSEDED, or SHIPPED+VERIFIED. Verbatim text preserved below for audit trail._
+
+---
+
+_From: 2026-05-31 (pm) wrapper-perfection follow-ups_
+
+> **P-HERO-DOUBLE-WRAPPER-AND-SPLIT-IMAGE** — UPDATED 2026-06-01 (qc-council locked fix-shape → Spec 22 §FR-22-19). Code-level root cause (R-22-11): the WALKER emits the hero interior as two generic `sgs/container` columns (§FR-22-4.1); render.php ALSO wraps `$content` in `.sgs-hero__content` + renders its own scalar media column → double `.sgs-hero__content` + classless `sgs/media` children the art-direction CSS can't target. **render.php is ALREADY correct** — its 169-attr image pipeline + the `--mobile/--desktop` `@media` art-direction CSS (render.php:760-788) already work for a bare-content + scalar-media model. **FIX = converter-side H-conv** (route content→bare `$content` InnerBlocks; images→scalar `splitImage`/`splitImageMobile`). The render.php thin-shell approach (H2) was REJECTED by the 3-rater qc-council: it retires the image pipeline + the art-direction CSS onto `sgs/media` (can't replicate) → violates "preserve full functionality"; blast radius 7 sections + 5 block files. Full design + build sequence + **OPEN GAP** (no DB column yet maps a composite's media-column BEM element → its scalar attr target; build MUST add DB-first, never a per-block slug conditional) in **Spec 22 §FR-22-19** + decisions D126. Council brief: `.claude/scratch/2026-06-01-hero-fix-shape-qc-brief.md`.
+> **Status:** SHIPPED + LIVE-DOM VERIFIED 2026-06-01 (commits 83a55820/5859c42d/b83cd312; decisions D130-D131). Hero live DOM = 1 `.sgs-hero__content` (double-wrapper fixed) + media column + 2 art-directed split-images. Residual = real image sideload (media-map) for the images to load (dry-run 404 now) — see next-session-prompt REMAINING #1. · **Bucket:** Pipeline / converter.
+
+---
+
+_From: 2026-05-31 (pm) wrapper-perfection follow-ups_
+
+> **P-TRUST-BAR-HYBRID-MIGRATION** — UPDATED 2026-06-01 → reframed as DUAL-MODE (Spec 24 §FR-24-10), NOT a naive FR-22-6 migration. The renamed `sgs/trust-bar` renders on the canary via its DEFAULT `items` (coincidental match to Mama's), ignoring the converter's emitted badge InnerBlocks (run-223313 ground truth: `sgs/trust-bar > sgs/container.__inner > 4× sgs/container.__badge > sgs/icon + sgs/text`). A naive `echo $content` migration would GUT the curated icon-picker repeater + 3 badge variants (icon-circle/text-only/image-badge) + autoScroll + title → violates "client experience primary". **Resolution = dual-mode** (Typed curated repeater OR Bound `echo $content`) via a Source-toggle mode attr — same pattern as product-card (Spec 24 FR-24-2). R-22-14 clean (mode attr, not `empty($content)` fallback). Bean chose full dual-mode 2026-06-01 (accepted it continues past the hero into a focused session). Badge children use existing primitives (container+icon+text/label+media) — no new atomic block. All 18 attrs + 3 variants preserved (full schema enumerated 2026-06-01). Design: **Spec 24 §FR-24-10** + decisions D127.
+> **Status:** SHIPPED + LIVE-DOM VERIFIED 2026-06-01 (commit d6358f32; decisions D127/D130). Bound mode renders the 4 cloned badges live (`sourceMode:bound`); pixel −5.2 to −6.7pp (strongest measured win); Typed curated repeater preserved. Converter sets `sourceMode='bound'` on cloned dual-mode blocks. · **Bucket:** Block migration (dual-mode).
+
+---
+
+_From: 2026-05-31 (pm) wrapper-perfection follow-ups_
+
+> **P-D1-INFOBOX-EXISTING-POST-MIGRATION** — DROPPED 2026-05-31 (Bean). No live SGS-theme sites exist (scratch pages only, due to be remade once the pipeline is production-ready), so info-box deprecated.js v4 not migrating existing posts is moot. Revisit only when a real production SGS-theme site exists (then: WP-CLI batch existing-post migration per R-22-14). **→ GENERALISED 2026-06-01 to P-FR226-NULL-SAVE-MIGRATION** (the same null-save→InnerBlocks auto-migrate gap applies to every FR-22-6 block, not just info-box; the moot/dropped disposition stands until a production site exists).
+> **Status:** DROPPED · **Bucket:** Block migration.
+
+---
+
+_From: 2026-05-31 FR-22-6 converter content-routing + Spec 24 follow-ups_
+
+> **P-UNIFY-CONTAINER-ABSORPTION** — NEW 2026-05-31 (Bean directive). **RESOLVED by §FR-22-4.1 (D118, 2026-05-31).** Two mechanisms previously handled container nesting: `_absorb_transparent_wrappers` (D52 pre-pass) and the walker's `_is_layout_bearing_wrapper` depth-2 gate (D117 G2). §FR-22-4.1 unifies both into the single four-step precedence rule — rule #2 covers the D52 merge case (direct-descendant with no block match folds CSS into parent), and rule #4 covers the D117 G2 preservation case (non-direct-descendant gets its own container). Code cleanup (replacing the two discrete functions with the §FR-22-4.1 implementation) can be done when next touching the walker.
+> **Status:** RESOLVED (principle formalised in §FR-22-4.1; code-architecture cleanup still pending — low priority)
+> **Bucket:** Pipeline / converter
+> **Trigger:** When next touching the walker's container-routing path — replace `_absorb_transparent_wrappers` + `_is_layout_bearing_wrapper` with a single §FR-22-4.1 implementation.
+
+---
+
+_From: 2026-05-27 Phase 1.5 close + Phase 2 reorder follow-ups — closed inline_
+
+<!-- P-MIRROR-DB-DIVERGENCE-ROOT-CAUSE: closed — both DBs verified at 89 rows + identical canonical_slot hash (0ad10db82ebd). Fix 2 rollback was clean; pre-existing divergence concern dormant. Stream A's Step A3 keeps the watch active. -->
+<!-- P-FIX-4-WORKTREE-PRESERVATION: closed — Fix 4 hero diff committed to branch `worktree-agent-adf7827adc88aea77` as preservation commit `0bc0ea9a` + pushed to origin. Diff survives any local worktree auto-cleanup. Stream B can fetch from `origin/worktree-agent-adf7827adc88aea77` when activated. -->
+<!-- P-ROOT-CLAUDE-MD-R-22-14-PROPAGATION: closed — Root CLAUDE.md + .claude/CLAUDE.md both updated with R-22-14 in the binding-rules block + Active Focus section + authoritative-pointers section (commit incoming). -->
+
+---
+
+_From: 2026-05-27 Spec 22 walker deferred routing work_
+
+**P-SLOT-SYNONYMS-CONTENT-GAPS-AUDITED** — NEW 2026-05-27 (pre-Phase-1 audit, closed same-day). Initial finding: 11 content-bearing slot_synonyms rows had NULL standalone_block. Per-row audit (via block_attributes usage query) revealed 10 of 11 are CORRECTLY NULL by design: `alt`/`ariaLabel` (accessibility props of parent, not InnerBlocks children); `bar`/`feature`/`header` (only catch *Colour/*Background color attrs); `nav`/`slot` (0 usage); `progress`/`ribbon` (role=visual, excluded by positive-allowlist); `options` (form-field internal rendering, Phase 2 scope). One gap filled: `role.standalone_block = sgs/label` (activates walker routing for team-member.role + testimonial.role per existing aliases `authorRole`/`jobTitle`/`speakerRole`/`category`). Walker activation verified: `equivalent_block_for('sgs/team-member', 'role') → sgs/label` post-fill. All 5/5 + 4/4 + 30/30 tests still PASS. Triple-NULL baseline unchanged at 1090.
+> **Status:** CLOSED 2026-05-27
+
+---
+
+_From: 2026-05-27 Spec 22 walker deferred routing work_
+
+**P-SGS-UPDATE-ROLE-DETECTION-IMPROVE** — CLOSED 2026-05-27 (Spec 22 Phase 0.1.b implementation). Role-detection module added to `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py` (`detect_role_from_block_json()` + dry-run + apply mode). Three-tier heuristic: (1) attr-name regex against the 5 content-bearing role families; (2) JSON-schema `format` hint (uri/email → link-href); (3) description-keyword scan as low-confidence fallback. Hard guard: only proposes values in `_CONTENT_BEARING_ROLES` (text-content / image-object / content / link-href / identity) — never styling roles. Dry-run output: `pipeline-state/_snapshots/role-detection-diff-2026-05-26T12-03-24Z.json` (94 high-confidence proposals: 42 text-content, 31 link-href, 12 identity, 7 image-object, 2 content). Acceptance verified: sgs/icon.iconSource/iconName resolve to `identity`, linkTarget to `link-href`, sgs/timeline.entries to `content` (all four match spec's expected outcomes). 11 unit-test cases pass via `--self-test`. Apply with `--apply-roles --role-diff-file <path>`.
+> **Status:** CLOSED 2026-05-27
+
+---
+
+_From: 2026-05-27 Spec 22 walker deferred routing work_
+
+**P-D85-BASELINE-CONSTANT-DRIFT** — CLOSED 2026-05-27 (Spec 22 Phase 0.1.b implementation). Replaces the hardcoded `1142` triple-NULL baseline constant in assign-canonical.py with a file-backed snapshot at `pipeline-state/_snapshots/triple-null-baseline.json`. Sanity check now reads the snapshot at script start and reports `OK — guardrail intact, matches snapshot` on match, or a drift message naming the snapshot + capture date on mismatch. New `--recapture-baseline` CLI flag writes a fresh snapshot with the current count when /sgs-update Stage 4 legitimately adds new blocks. Eliminates alert fatigue when DB grows.
+> **Status:** CLOSED 2026-05-27
+
+---
+
+_From: 2026-05-28 Spec 22 walker deferred routing work_
+
+**P-SLOT-SYNONYMS-ATOMIC-CLEANUP** — CLOSED 2026-05-28. Five conflicting `slot_synonyms.html_semantic_tag` rows NULL'd inline as part of Track A DB-first cleanup: `subheading.h2`, `tab.button`, `review.article`, `step.li`, `items.ul`. `standalone_block` values left untouched (no walker-routing effect). Guardrail tests 39/39 PASS post-NULL (zero behavioural impact — atomic_tag_map no longer queries this column, html_tag_for_slot() helper has no production callers). Future cleanup of remaining slot-contextual-only rows (avatar.img, buttonSecondary.a, social.a, star.svg, ribbon.span, price.span, rating.span, etc.) is no-cost low-priority; left until a /sgs-update audit sweep picks it up.
+> **Status:** CLOSED 2026-05-28
+
+---
+
+_From: 2026-05-28 Spec 22 walker deferred routing work_
+
+**P-COMPOSITE-ATTR-ROUTING** — DROPPED 2026-05-28. Originally raised as a needed `slot_synonyms.composite_attr` column to handle composite-block routing in the walker (label/headline/sub attr-targeting on sgs/heading). The Track B γ-rebuild on 2026-05-28 collapsed sgs/heading from composite to single-element + `headingRole` enum, eliminating the underlying need. The remaining single-attr routing concern is captured by `P-SUBHEADING-ROUTING-TO-SGS-HEADING` above.
+> **Status:** DROPPED (superseded by sgs/heading γ-rebuild + P-SUBHEADING-ROUTING-TO-SGS-HEADING)
+
+---
+
+_From: Cloning pipeline (cv2 / orchestrator / DOM walker / pixel-diff)_
+
+**P-PIXEL-DIFF-VERTICAL-ANCHOR-FIX** — Closed by Phase 0.3 (Spec 22 Commit 0.3). 60px chrome-bleed on hero-clone-poc identified as `position:sticky;top:0` template-part header overlaying `el.screenshot()` viewport. Mitigated by pre-screenshot `visibility:hidden` on detected sticky/fixed chrome. Telemetry: `sgs_chrome_height_px` + `wait_fonts` now written to every `diff.json`. See `pipeline-state/_phase-0-3-regression/` for postfix evidence.
+**Status:** CLOSED 2026-05-28
+
+---
+
+_From: Cloning pipeline — D99 port + DB table work_
+
+**P-UTF8-MOJIBAKE-IN-CONVERTER** — **Status:** RESOLVED 2026-05-30. Root cause was source-file corruption in `plugins/sgs-blocks/src/blocks/announcement-bar/block.json` line 38 (cp1252 double-encoding). Fixed 2026-05-30 by editing to proper UTF-8 emoji + em-dash. Repo-wide grep for encoding byte signatures returned 0 other hits. Pre-commit hook to reject mojibake byte signatures parked separately as P-PRE-COMMIT-MOJIBAKE-GUARD.
+
+---
+
+_From: Cloning pipeline — D99 port + DB table work_
+
+**P-SECTION-ROOT-INHERITANCE-SCRIPT** — **Status:** RESOLVED 2026-05-30 D112 (sync-container-wrapping-blocks.py shipped at commit 062c69d1). 468 LOC inheritance script shipped. Populates `block_composition.wraps_block` for 4 blocks (`sgs/hero`, `sgs/cta-section`, `sgs/modal`, `sgs/quote`). Flags 174 attrs missing from wrapping blocks plus 14 naming-drift dedups across diff Markdown files in `pipeline-state/section-root-sync/`. Operator review path; never auto-edits block.json. See decisions.md D112.
+
+---
+
+_From: Cloning pipeline — D99 port + DB table work_
+
+**P-SECTION-ROOT-INHERITANCE-SCRIPT-LEGACY** — Pre-resolution design body for P-SECTION-ROOT-INHERITANCE-SCRIPT above (hero/container parity audit, 41 missing attrs, 3 naming drifts, fix-shape sketch). **Status:** SUPERSEDED by the RESOLVED entry above.
+
+---
+
+_From: Cloning pipeline — D99 port + DB table work_
+
+**P-PRODUCT-CARD-GIFT-VARIANT-AUDIT** — **Status:** CLOSED 2026-06-01 (D140 — `gift` removed from the `variantStyle` enum in block.json + the editor SelectControl; render.php had no gift branch so existing posts unaffected; enum now `[standard, trial, featured]`). Investigation confirmed gift variant was UNUSED in Mama's mockup; gift-section cards use `sgs-gift-section__card` class not product-card.
+
+---
+
+_From: Cloning pipeline — D99 port + DB table work_
+
+**P-XS-2-TIER-CRITERIA-DECISION** — **Status:** RESOLVED 2026-05-30 D107. Option 1 chosen: operator declares `supports.sgs.is_section_root: true` in block.json. `/sgs-update` Stage 1 reads the flag and writes `blocks.tier='class-section'`. Shipped roster: `sgs/hero`, `sgs/cta-section` (commit e2c8597e). Voter queries the column for section-root candidates.
+
+---
+
+_From: Cloning pipeline — D99 port + DB table work_
+
+**P-XS-3-TRIGGER-REFINEMENT** — **Status:** RESOLVED 2026-05-31 by §FR-22-4.1 (D118). Refined XS-3 predicate in `_is_layout_bearing_wrapper()` + `get_block_composition_role()` in db_lookup.py (commit 0a212e3c). Five conditions: sgs-* BEM class + parent is a Tag + parent composition_role section-root/wrapper-shell via block_composition + has element children + has CSS rules. Formalised as §FR-22-4.1 — the canonical four-step precedence rule superseding `walk_passthrough`, `_absorb_transparent_wrappers` (D52), and the depth-2 gate.
+
+---
+
+_From: Cloning pipeline — D99 port + DB table work_
+
+**P-XS-3-NEW-TABLE-FOR-CONTAINER-WRAPPED-BLOCKS** — **Status:** RESOLVED 2026-05-30 D108. `block_composition` table (188 rows, block_slug PK, wraps_block, composition_role enum [section-root|wrapper-shell|content-block|leaf], has_inner_blocks, accepts_allowed_blocks) shipped. Walker consumption reverted at c76aa107 pending refined trigger — moved to P-XS-3-TRIGGER-REFINEMENT (now also RESOLVED above).
+
+---
+
+_From: Cloning pipeline — D99 port + DB table work_
+
+**P-XS-12-RETIRED** — **Status:** RESOLVED 2026-05-30 (Bean directive D8). Chrome-skip observability log retired because header/footer-specific scripts will be built post-1%-per-device pixel-diff target; this code will be replaced anyway. No commit needed; XS-12 entry dropped from the diagnostic register fix sequence.
+
+---
+
+_From: Cloning pipeline — D99 port + DB table work_
+
+**P-ASSIGN-CANONICAL-D99-PORT** — **Status:** RESOLVED 2026-05-30 D110 (port + batch backfill shipped at commit 04fa0f2b). 9 references migrated to `slots WHERE scope='element'` + `roles` table join. Batch backfill ran cleanly: canonical_slot coverage 52→659 (2.5%→31.8%), role coverage 110→676 (5.3%→32.6%). 1316 rows remain NULL — gap candidates for future enrichment, no errors. See decisions.md D110.
+
+---
+
+_From: Cloning pipeline — D99 port + DB table work_
+
+**P-ASSIGN-CANONICAL-D99-PORT-LEGACY** — Pre-resolution design body for P-ASSIGN-CANONICAL-D99-PORT above (port from `slot_synonyms` to `slots WHERE scope='element'` + roles table join, batch backfill rollout). **Status:** SUPERSEDED by the RESOLVED entry above.
+
+---
+
+_From: Cloning pipeline — D99 port + DB table work_
+
+**P-UTF8-MOJIBAKE-IN-CONVERTER-OBSOLETE** — **Status:** RESOLVED — XS-11 investigation 2026-05-30 narrows the search to downstream stage-10 deploy / WP REST path. Root cause ultimately confirmed as source-file corruption (see P-UTF8-MOJIBAKE-IN-CONVERTER above). The subagent's initial mojibake claim was a Windows cp1252 tool-output rendering artefact, not file corruption. Entry superseded by P-UTF8-MOJIBAKE-IN-CONVERTER (RESOLVED above).
+

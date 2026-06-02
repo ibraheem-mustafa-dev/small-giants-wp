@@ -200,3 +200,59 @@ All 11 wire-in steps are complete. Canonical state is recorded in `cloning-pipel
 
 **D(phase3-css-lift-2026-05-09) — Parallel CSS-lift agents; render.php echo pattern.** Archive: implementation details of completed work.
 
+---
+
+## Archived 2026-06-02 — Entries moved from decisions.md (pruned from 766 lines)
+
+Entries below met all 4 archive criteria: retired/superseded surface AND no binding rule/methodology AND not cross-referenced by active spec/parking AND a newer decision supersedes.
+
+**D1(2026-05-20) — Path A: site-wide variation activation (NOT per-page meta override).** Stage 10 activates variation via `set_theme_mod('active_theme_style', $slug)` site-wide. Per-page override rejected — clients get own WP install. Archive reason: explicitly marked "superseded-by-D28" in live doc; style-variation system killed 2026-05-21 (D28).
+
+**D(a-2026-05-17) — `parse_css` regex was the single biggest recognition hole.** Old regex matched 0 of 13 `@media` blocks. Replaced with brace-balanced scanner. 13/13 media blocks captured. Archive reason: Spec 16-era implementation detail; Spec 22 walker rewrite (D79/D82) superseded all Spec 16 extraction code.
+
+**D(c-2026-05-17) — Walker preserves SGS-BEM grouping wrappers.** Non-top-level `sgs/container` with `bem.element` set AND inner blocks → preserve as nested `sgs/container` with className. Archive reason: superseded by §FR-22-4.1 (D118) which is the canonical single rule for every sgs-classed wrapper below section root. D118 explicitly states §FR-22-4.1 supersedes D52 and related patchwork mechanisms.
+
+**D(phase8-b) — Slot→standalone-block routing is DB-driven, not code-driven.** `slot_synonyms.standalone_block` column added; hardcoded `SLOT_TO_STANDALONE_BLOCK` dict removed. Archive reason: superseded by D99 — `slot_synonyms` table unified into new `slots` table; standalone_block routing still DB-driven (R-22-1) but now via the `slots` table, not `slot_synonyms`.
+
+**D(spec16-2) — "CSS drives emission, never drop" (R5 re-architected).** 3-destination routing: typed-attribute lift / markup wrapper with className / attribute_gap_candidates row. Archive reason: Spec 16 CSS router superseded by Spec 22 §FR-22-3 single universal walker with 3 permitted exceptions only. D78 explicitly retired Spec 16's layered architecture.
+
+**D(spec16-3) — sgs/container is MANDATORY at section-level, AVAILABLE elsewhere.** Auto-emission only at top-level section boundary. Nested wrappers pass through UNLESS CSS rules target them. Archive reason: superseded by §FR-22-4.1 (D118) which provides the canonical container/wrapper resolution rule for all depths.
+
+**D(voter) — Deterministic SGS-BEM voter over probabilistic AI matcher.** Stage 1 voter does literal slug match on `.sgs-<block>` → `sgs/<block>` at confidence 1.0. Archive reason: superseded by Spec 22 R-22-2 (BEM is the only recognition signal) + D107 which retired the voter's literal-slug-match short-circuit in favour of DB-tier queries.
+
+**D(phase5g) — Phase 5 partial closure accepted; canvas pipeline structural defect closed.** 6 of 9 blocks routed to unregistered blocks. Fix path chosen: hard gate in confidence-matrix; bucket-c-classifier + atomic-block-scaffold. +REGISTER wired. Archive reason: Spec 15 Phase 5 superseded by Spec 22 which replaced the layered pipeline architecture entirely.
+
+**D37 — Source 2 counter gates on extraction-count, not insert-count.** `s2_extracted > 0` is canonical Mode B Source 2 health signal. Archive reason: architecture-staging Phase 4 close-out; Mode A/B multi-source extraction architecture superseded by the current single-converter (cv2-only) pipeline path.
+
+**D38 — Source 4 calibration threshold tightened (100 → 30).** Live test: page returns 91 rows with simple HTTP fetch — below old threshold. `playwright-fetch.js` created for JS-render step. Archive reason: same as D37 — multi-source extraction architecture superseded.
+
+**D39 — GitHub PAT format: classic `ghp_*` required for Mode B.** Fine-grained tokens returned 401 on Source 5 (GitHub API). Classic PAT with `public_repo` scope succeeds. Archive reason: Mode B GitHub Source superseded; ops detail captured in `~/.openclaw/.env` note.
+
+**D41 — `core/group` → `sgs/container` as Stage 2 confidence-matrix fallback.** `core/group` has no SGS-BEM attributes; fallback changed to `sgs/container`. Archive reason: Stage 2 confidence-matrix fallback routing superseded by Spec 22 universal walker with DB-tier resolution (D107 retired the literal-slug-match short-circuit; D99 unified the slot lookup tables).
+
+**D42 — Hand-authored patterns deleted; deterministic-only rule enforced.** `brand.php` + `ingredients-section.php` deleted. Pattern count: 53 (was 55). Archive reason: one-off mechanical deletion, done; rule captured in CLAUDE.md architecture rules section.
+
+**D43 — Stage 0.7 CSS dump relocated from `theme/sgs-theme/styles/<client>.css` to `pipeline-state/<run>/variation-d0-d2.css`.** Archive reason: one-off relocation done 2026-05-23; destination path is now the canonical pipeline state path.
+
+**D44 — Stage 10 silent-failure fix: named exit codes 4/5/6.** exit 4 (phantom page), exit 5 (id-mismatch), exit 6 (no-id-in-body). Archive reason: one-off implementation detail, done; exit codes documented in pipeline code.
+
+**D45 — Stage 11 added: per-section pixel-diff against actual deployed page.** Stage 8 = pre-deploy autonomy gate; Stage 11 = post-deploy verification. Output: `pipeline-state/<run>/stage-11-pixel-diff.json`. Archive reason: one-off wiring done 2026-05-23; Stage 11 is now described in cloning-pipeline-stages.md.
+
+**D46 — Walker pre-pass addresses Stage 4 emit shape, not Stage 2 match.json confidence.** `_walker_pre_pass` changes WHAT Stage 4 emits but NOT Stage 2 confidence. Archive reason: Stage 4 walker pre-pass was Spec 16-era; Spec 22 universal walker rewrite (D82) superseded all Spec 16 walker code including the pre-pass architecture.
+
+**D50 — `/sgs-update` Stage 1 tail invokes `assign-canonical.py`.** Script was never wired. Fix: `stage_1_sgs_codebase_scan()` calls `assign-canonical.py` as subprocess after scan. Archive reason: superseded by D99 + D110 which rebuilt assign-canonical against the post-D99 `slots`+`roles` schema; the wiring mechanism changed.
+
+**D51 — `assign-canonical.py` array-attr fallback: singularise + Tier B registered-block reverse-lookup.** Plural collection attrs missed slot_synonyms. Fix: singularise → alias lookup → block reverse-lookup. Archive reason: superseded by D99 (slot_synonyms replaced by unified `slots` table) and D110 (assign-canonical ported to post-D99 schema).
+
+**D52 — Transparent-wrapper absorb at section root (one-section-one-container).** Walker pre-pass `_absorb_transparent_wrappers()` absorbs single direct-child wrapper with no block-spacing CSS. Archive reason: D118 explicitly states §FR-22-4.1 "supersedes `_absorb_transparent_wrappers` (D52 merge-side pre-pass) — folded in as rule #2's 1-child case."
+
+**D53 — Brand mockup BEM renamed for Spec 00 consistency.** `sgs-brand__body` → `sgs-brand__quote`; `<footer>` → `<p class="sgs-brand__attribution">`. Archive reason: one-off rename done 2026-05-24; no forward-looking relevance.
+
+**D55 — `block_compositions` table merged into `patterns.block_composition` JSON column; standalone table dropped.** 35 of 37 rows ported. Archive reason: one-off data migration done 2026-05-24; `patterns.block_composition` is the current state (further evolved by D108 `block_composition` table which is distinct).
+
+**D56 — Standalone source DBs deleted; data migrated into sgs-framework.db with `source` column.** `blocks.db` + `hooks.db` + caches deleted. ~647 MB disk recovered. Archive reason: one-off migration done 2026-05-24; single-DB architecture is now the live state captured in CLAUDE.md.
+
+**D29(arch-staging) — INNER_BLOCK_PATTERNS dict retired; DB-backed lookup.** Hardcoded two-entry dict replaced by `blocks.parent_block` + `slot_synonyms.standalone_block` DB lookups. Archive reason: superseded by D99 — `slot_synonyms` table unified into `slots` table; `standalone_block` lookup still DB-driven but the table changed.
+
+**D32(arch-staging) — Phase 1.5 inserted: block variations + styles.** 67 of 69 SGS blocks had zero inserter-discoverable variations. Phase 1.5 authors 12 composite blocks × 2-4 variations × 2-3 styles each via PHP sibling files in `includes/variations/`. Archive reason: this Phase 1.5 plan was superseded — D142 implemented variations as WP block-styles (`register_block_style`) not the PHP sibling-files pattern described here.
+

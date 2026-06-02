@@ -39,4 +39,5 @@
 
 - Doc shapes per template in `~/.agents/skills/shared-references/doc-templates/`
 - `/handoff` runs slug-uniqueness gate on parking.md + walks every docs-registry.yaml entry
-- Recent decisions: see `decisions.md` (current through D147, 2026-06-03 — cloning thread: button presets + video/iframe→media + star-rating styles; D57-D65 = 2026-05-24 doc-op programme close)
+- **parking.md = parked work ONLY (Bean-locked 2026-06-02, D150):** entries are `OPEN | PARTIAL | BLOCKED | DEFERRED` only. The moment a task is `CLOSED | RESOLVED | DROPPED | SUPERSEDED`, MOVE it to `memory/parking-archive.md` (verbatim + completion date). Enforce every `/handoff`. Same archive-on-resolve discipline for `decisions.md` → `memory/decisions-archive.md` (retired/superseded/non-load-bearing) and `MEMORY.md` ≤ 24,576 bytes → `MEMORY-archive.md`. Prevents the doc-balloon (parking hit 1,400+ lines; MEMORY 34KB, silently dropping autoload rules).
+- Recent decisions: see `decisions.md` (current through D150, 2026-06-02 — cloning: container roster + 3-KIND model + 4-block save-null fix; D148/D149 = theme thread; D57-D65 = 2026-05-24 doc-op programme close)
