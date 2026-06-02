@@ -46,6 +46,7 @@ final class Product_CPT {
 		\add_action( 'init', array( __CLASS__, 'register_taxonomies' ), 5 );
 		\add_action( 'init', array( __CLASS__, 'register_meta' ), 10 );
 		\add_action( 'admin_menu', array( __CLASS__, 'register_submenu' ) );
+		\add_action( 'enqueue_block_editor_assets', array( __CLASS__, 'enqueue_editor_assets' ) );
 	}
 
 	/**
@@ -93,7 +94,7 @@ final class Product_CPT {
 				'show_in_menu'       => false, // Surfaced via SGS admin submenu below.
 				'show_in_rest'       => true,  // Required for Block Editor + Block Bindings.
 				'rest_base'          => 'sgs-products',
-				'supports'           => array( 'title', 'editor', 'thumbnail', 'excerpt', 'revisions' ),
+				'supports'           => array( 'title', 'editor', 'thumbnail', 'excerpt', 'revisions', 'custom-fields' ),
 				'has_archive'        => true,
 				'rewrite'            => array(
 					'slug'       => 'products',
@@ -368,6 +369,246 @@ final class Product_CPT {
 					return \current_user_can( 'edit_posts' );
 				},
 			)
+		);
+
+		// _sgs_variation_sets — variation type definitions (FR-24-11, Spec 24).
+		//
+		// Each element describes one variation TYPE (e.g. pack-size, flavour).
+		// Schema per item:
+		// type_key        string   — machine key, e.g. "pack-size"
+		// type_label      string   — human label, e.g. "Number in Pack"
+		// display_as      string   — "pills" | "static-list" | "hidden" (D144.1)
+		// content_impact  string[] — card slots this type changes, e.g. ["price"]
+		// options         object[] — [ { key: string, label: string }, … ]
+		//
+		// Leading underscore makes this a private meta key — not surfaced by
+		// core/post-meta Block Bindings (intentional: this is CPT config, not
+		// a bindable content field). Uses show_in_rest with a full schema so the
+		// REST API can read/write it for the editor panel.
+		\register_meta(
+			$object_type,
+			'_sgs_variation_sets',
+			array(
+				'object_subtype'    => $object_subtype,
+				'type'              => 'array',
+				'description'       => \__( 'Variation type definitions for this product (FR-24-11). Each entry describes one variation type (pack-size, flavour, etc.) with its display mode and content-impact slots.', 'sgs-blocks' ),
+				'single'            => true,
+				'default'           => array(),
+				'show_in_rest'      => array(
+					'schema' => array(
+						'type'  => 'array',
+						'items' => array(
+							'type'                 => 'object',
+							'additionalProperties' => false,
+							'required'             => array( 'type_key', 'type_label', 'display_as', 'content_impact', 'options' ),
+							'properties'           => array(
+								'type_key'       => array(
+									'type'        => 'string',
+									'description' => 'Machine-readable key for this variation type, e.g. "pack-size".',
+								),
+								'type_label'     => array(
+									'type'        => 'string',
+									'description' => 'Human-readable label shown to the client, e.g. "Number in Pack".',
+								),
+								'display_as'     => array(
+									'type'        => 'string',
+									'enum'        => array( 'pills', 'static-list', 'hidden' ),
+									'description' => 'How this type renders on the card: interactive pills, a static sentence, or hidden (price-only mode).',
+								),
+								'content_impact' => array(
+									'type'        => 'array',
+									'description' => 'Which card slots this type changes when a different option is selected, e.g. ["price"] or ["image","description"].',
+									'items'       => array( 'type' => 'string' ),
+								),
+								'options'        => array(
+									'type'        => 'array',
+									'description' => 'The selectable options for this variation type.',
+									'items'       => array(
+										'type'       => 'object',
+										'additionalProperties' => false,
+										'required'   => array( 'key', 'label' ),
+										'properties' => array(
+											'key'   => array(
+												'type' => 'string',
+												'description' => 'Machine key for this option, e.g. "8pack".',
+											),
+											'label' => array(
+												'type' => 'string',
+												'description' => 'Display label for this option, e.g. "8-pack".',
+											),
+										),
+									),
+								),
+							),
+						),
+					),
+				),
+				'sanitize_callback' => array( __CLASS__, 'sanitize_variation_sets' ),
+				'auth_callback'     => static function ( $allowed, $meta_key, $post_id ) {
+					return \current_user_can( 'edit_post', $post_id );
+				},
+			)
+		);
+
+		// _sgs_sku_matrix — multi-dimension price matrix (FR-24-14, Phase 2 DEFERRED).
+		//
+		// Phase 1: when two variation types both list a price-affecting slot, the
+		// first type wins and the editor shows a warning (D144.2). The SKU matrix
+		// (per-combination pricing) is a Phase 2 concern; registering the key now
+		// ensures REST-safe access when Phase 2 ships without a database migration.
+		//
+		// Stored as a JSON string — the per-combination schema is not finalised yet
+		// and a string avoids committing to a fixed `items` shape.
+		\register_meta(
+			$object_type,
+			'_sgs_sku_matrix',
+			array(
+				'object_subtype'    => $object_subtype,
+				'type'              => 'string',
+				'description'       => \__( 'Phase-2-deferred: JSON-encoded per-combination SKU price matrix. Empty until the SKU matrix feature ships.', 'sgs-blocks' ),
+				'single'            => true,
+				'default'           => '',
+				'show_in_rest'      => true,
+				'sanitize_callback' => static function ( $value ) {
+					// Phase 2 deferred — accept only empty string or valid JSON object.
+					if ( '' === $value ) {
+						return '';
+					}
+					$decoded = \json_decode( $value, true );
+					if ( \JSON_ERROR_NONE !== \json_last_error() || ! \is_array( $decoded ) ) {
+						return '';
+					}
+					return (string) \wp_json_encode( $decoded );
+				},
+				'auth_callback'     => static function ( $allowed, $meta_key, $post_id ) {
+					return \current_user_can( 'edit_post', $post_id );
+				},
+			)
+		);
+	}
+
+	/**
+	 * Sanitise the `_sgs_variation_sets` meta value.
+	 *
+	 * Validates and sanitises every field in each variation-type object.
+	 * Invalid or unknown fields are stripped; invalid items are dropped
+	 * entirely so the meta never stores a partially-corrupt entry.
+	 *
+	 * @param mixed $raw_value The incoming value before persistence.
+	 * @return array Sanitised array (may be empty on total rejection).
+	 */
+	public static function sanitize_variation_sets( $raw_value ): array {
+		if ( ! \is_array( $raw_value ) ) {
+			return array();
+		}
+
+		$valid_display_as = array( 'pills', 'static-list', 'hidden' );
+		$sanitised        = array();
+
+		foreach ( $raw_value as $raw_type ) {
+			if ( ! \is_array( $raw_type ) ) {
+				continue;
+			}
+
+			// Required fields — skip this item if any required field is absent.
+			if (
+				empty( $raw_type['type_key'] ) ||
+				! isset( $raw_type['type_label'] ) ||
+				! isset( $raw_type['display_as'] ) ||
+				! isset( $raw_type['content_impact'] ) ||
+				! isset( $raw_type['options'] )
+			) {
+				continue;
+			}
+
+			$type_key   = \sanitize_key( $raw_type['type_key'] );
+			$type_label = \sanitize_text_field( $raw_type['type_label'] );
+			$display_as = \in_array( $raw_type['display_as'], $valid_display_as, true )
+				? $raw_type['display_as']
+				: 'pills';
+
+			// content_impact — array of sanitised slot-name strings.
+			$content_impact = array();
+			if ( \is_array( $raw_type['content_impact'] ) ) {
+				foreach ( $raw_type['content_impact'] as $slot ) {
+					$clean = \sanitize_key( (string) $slot );
+					if ( '' !== $clean ) {
+						$content_impact[] = $clean;
+					}
+				}
+			}
+
+			// options — array of { key, label } pairs.
+			$options = array();
+			if ( \is_array( $raw_type['options'] ) ) {
+				foreach ( $raw_type['options'] as $raw_opt ) {
+					if ( ! \is_array( $raw_opt ) ) {
+						continue;
+					}
+					$opt_key   = isset( $raw_opt['key'] ) ? \sanitize_key( $raw_opt['key'] ) : '';
+					$opt_label = isset( $raw_opt['label'] ) ? \sanitize_text_field( $raw_opt['label'] ) : '';
+					if ( '' === $opt_key ) {
+						continue; // A key-less option is meaningless — skip.
+					}
+					$options[] = array(
+						'key'   => $opt_key,
+						'label' => $opt_label,
+					);
+				}
+			}
+
+			if ( '' === $type_key ) {
+				continue; // Drop any item whose key sanitised to empty.
+			}
+
+			$sanitised[] = array(
+				'type_key'       => $type_key,
+				'type_label'     => $type_label,
+				'display_as'     => $display_as,
+				'content_impact' => $content_impact,
+				'options'        => $options,
+			);
+		}
+
+		return $sanitised;
+	}
+
+	/**
+	 * Enqueue the variation-sets editor panel on the `sgs_product` edit screen.
+	 *
+	 * Runs on `enqueue_block_editor_assets`. The script is only enqueued when
+	 * the current screen is the block editor for `sgs_product` posts — keeps
+	 * the payload zero on every other editor screen.
+	 *
+	 * The compiled bundle lives at build/plugins/product-variation-sets/index.js
+	 * (entry point: src/plugins/product-variation-sets/index.js).
+	 */
+	public static function enqueue_editor_assets(): void {
+		// Guard: block editor for sgs_product only.
+		$screen = \get_current_screen();
+		if (
+			! $screen ||
+			'post' !== $screen->base ||
+			self::POST_TYPE !== $screen->post_type
+		) {
+			return;
+		}
+
+		$asset_file = \SGS_BLOCKS_PATH . 'build/plugins/product-variation-sets/index.asset.php';
+		if ( ! \file_exists( $asset_file ) ) {
+			// Bundle not yet compiled — silent no-op so the CPT works without
+			// the JS asset (e.g. on a fresh clone before `npm run build`).
+			return;
+		}
+
+		$asset = require $asset_file;
+
+		\wp_enqueue_script(
+			'sgs-product-variation-sets',
+			\SGS_BLOCKS_URL . 'build/plugins/product-variation-sets/index.js',
+			$asset['dependencies'],
+			$asset['version'],
+			true
 		);
 	}
 
