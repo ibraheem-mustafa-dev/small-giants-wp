@@ -912,6 +912,44 @@ def _migrate_variant_detection_schema() -> None:
 _migrate_variant_detection_schema()
 
 
+# ----------------------------------------------------------------------------
+# Idempotent schema migration — block_composition.container_kind (D150 2026-06-02)
+# ----------------------------------------------------------------------------
+# Workstream A: adds a container_kind TEXT column (section|layout|content|NULL)
+# to block_composition. Values are written by sync-container-wrapping-blocks.py
+# (run separately — never by the walker). The column is informational for the
+# sync diff; it is NOT read by the walker (zero walker impact). Population via
+# /sgs-update (Stage 1 reads supports.sgs.containerKind from block.json).
+#
+# Safe to call repeatedly. Runs at module load.
+
+def _migrate_block_composition_container_kind() -> None:
+    """Idempotent migration: add block_composition.container_kind column if absent.
+
+    Schema only — no data seeding (data written by sync-container-wrapping-blocks.py
+    at --apply time, or by /sgs-update Stage 1 for the containerKind flag from
+    block.json supports.sgs.containerKind). Safe to call repeatedly.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        cols = {row[1] for row in conn.execute("PRAGMA table_info(block_composition)").fetchall()}
+        if "container_kind" not in cols:
+            conn.execute(
+                "ALTER TABLE block_composition ADD COLUMN container_kind TEXT "
+                "CHECK (container_kind IN ('section', 'layout', 'content'))"
+            )
+            conn.commit()
+    except sqlite3.OperationalError:
+        # DB read-only / locked / table absent — soft-fail silently.
+        pass
+    finally:
+        conn.close()
+
+
+# Run migration at module load (idempotent — safe to call repeatedly).
+_migrate_block_composition_container_kind()
+
+
 def _kind_for(suffix: str, role: str | None) -> str | None:
     """Infer the convert.py 'kind' for a property_suffixes row.
 

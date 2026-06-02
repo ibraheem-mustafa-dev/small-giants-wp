@@ -17,6 +17,16 @@ Corrections (2026-05-31):
   - sgs/testimonial-slider  leaf -> content-block  (now iterates inner_blocks; holds sgs/testimonial children)
   - sgs/label               content-block -> leaf  (eyebrow text primitive; renders from scalar `text` attr,
                                                      no block children — so G1 lifts its text into the attr)
+
+Corrections (2026-06-02, Workstream A — D150):
+  - sgs/post-grid           leaf -> content-block  (genuine grid container with layout + columns attrs;
+                                                     mis-tagged leaf before the container-bearing audit)
+  - sgs/gallery             leaf -> content-block  (genuine grid container with images array + layout attrs)
+  - sgs/card-grid           leaf -> content-block  (genuine grid container with items array + columns attrs)
+
+  SAFETY NOTE: these 3 blocks are NOT present in the Mama's Munches canary mockup (verified by the
+  council prior to D150). The walker leaf-guard at convert.py ~1989/2061/2847 reads composition_role,
+  so the flip has zero canary impact. Gate any future mockup that uses these blocks.
 """
 from __future__ import annotations
 
@@ -33,6 +43,10 @@ CORRECTIONS: dict[str, str] = {
     "sgs/testimonial": "content-block",
     "sgs/testimonial-slider": "content-block",
     "sgs/label": "leaf",
+    # Workstream A (D150, 2026-06-02) — genuine grid containers mis-tagged as leaf:
+    "sgs/post-grid": "content-block",
+    "sgs/gallery": "content-block",
+    "sgs/card-grid": "content-block",
 }
 
 # Blocks whose content-block role implies inner blocks; keep has_inner_blocks in sync.
@@ -40,7 +54,45 @@ HAS_INNER_BLOCKS = {
     "sgs/testimonial": 1,
     "sgs/testimonial-slider": 1,
     "sgs/label": 0,
+    # post-grid / gallery / card-grid render from PHP (no InnerBlocks slot);
+    # has_inner_blocks stays 0 — the walker must not recurse into them.
+    "sgs/post-grid": 0,
+    "sgs/gallery": 0,
+    "sgs/card-grid": 0,
 }
+
+# Slug RENAMES (2026-06-02, Workstream A — D150). The block_composition table
+# carries the pre-D123 slug `sgs/trust-badges`; the block was renamed to
+# `sgs/trust-bar`. Rename the row (preserving its composition_role) and set
+# has_inner_blocks=1 — trust-bar genuinely wraps InnerBlocks badge grid-items.
+# Walker-safe: today `sgs/trust-bar` has no row so get_has_inner_blocks soft-fails
+# to True; setting it to 1 (=True) preserves the exact current walker behaviour.
+# Idempotent: only renames when the old row exists and the new one does not.
+RENAMES: dict[str, str] = {
+    "sgs/trust-badges": "sgs/trust-bar",
+}
+RENAME_HAS_INNER_BLOCKS: dict[str, int] = {
+    "sgs/trust-bar": 1,
+}
+
+# Fresh INSERTS (2026-06-02, Workstream A — D150). Blocks added after the
+# block_composition table was seeded (D108, 188 rows) and therefore missing a
+# row. Without a row, sync-container-wrapping-blocks.py --apply silently skips
+# them. Values derived from each block's block.json + roster KIND (R-22-1).
+# Idempotent: only inserts when the row is absent.
+#   sgs/option-picker — CONTENT-kind, save.js uses InnerBlocks → has_inner_blocks=1,
+#                       no allowedBlocks restriction → accepts_allowed_blocks NULL.
+# NOTE: sgs/cart is also missing a row but is NOT container-bearing (not in the
+# 28-block roster), so it does not block --apply — left as a catalogue gap.
+INSERTS: list[dict] = [
+    {
+        "block_slug": "sgs/option-picker",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "has_inner_blocks": 1,
+        "accepts_allowed_blocks": None,
+    },
+]
 
 
 def main() -> int:
@@ -51,6 +103,61 @@ def main() -> int:
     con = sqlite3.connect(str(DB_PATH))
     cur = con.cursor()
     changed = 0
+
+    # 1. Slug RENAMES (idempotent — only when old row exists and new does not).
+    for old_slug, new_slug in RENAMES.items():
+        old = cur.execute(
+            "SELECT 1 FROM block_composition WHERE block_slug = ?", (old_slug,)
+        ).fetchone()
+        new = cur.execute(
+            "SELECT 1 FROM block_composition WHERE block_slug = ?", (new_slug,)
+        ).fetchone()
+        if new is not None:
+            print(f"  [ok]   rename {old_slug} -> {new_slug}: target already present")
+            continue
+        if old is None:
+            print(f"  [skip] rename {old_slug} -> {new_slug}: source row absent")
+            continue
+        want_inner = RENAME_HAS_INNER_BLOCKS.get(new_slug)
+        if want_inner is not None:
+            cur.execute(
+                "UPDATE block_composition SET block_slug = ?, has_inner_blocks = ? WHERE block_slug = ?",
+                (new_slug, want_inner, old_slug),
+            )
+            print(f"  [set]  rename {old_slug} -> {new_slug} (has_inner_blocks={want_inner})")
+        else:
+            cur.execute(
+                "UPDATE block_composition SET block_slug = ? WHERE block_slug = ?",
+                (new_slug, old_slug),
+            )
+            print(f"  [set]  rename {old_slug} -> {new_slug}")
+        changed += cur.rowcount
+
+    # 2. Fresh INSERTS (idempotent — only when the row is absent).
+    for spec in INSERTS:
+        slug = spec["block_slug"]
+        exists = cur.execute(
+            "SELECT 1 FROM block_composition WHERE block_slug = ?", (slug,)
+        ).fetchone()
+        if exists is not None:
+            print(f"  [ok]   insert {slug}: row already present")
+            continue
+        cur.execute(
+            "INSERT INTO block_composition "
+            "(block_slug, wraps_block, composition_role, has_inner_blocks, accepts_allowed_blocks) "
+            "VALUES (?, ?, ?, ?, ?)",
+            (
+                slug,
+                spec.get("wraps_block"),
+                spec["composition_role"],
+                spec["has_inner_blocks"],
+                spec.get("accepts_allowed_blocks"),
+            ),
+        )
+        changed += cur.rowcount
+        print(f"  [set]  insert {slug}: {spec['composition_role']} (has_inner_blocks={spec['has_inner_blocks']})")
+
+    # 3. composition_role corrections.
     for slug, role in CORRECTIONS.items():
         cur.execute(
             "SELECT composition_role, has_inner_blocks FROM block_composition WHERE block_slug = ?",

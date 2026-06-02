@@ -20,7 +20,8 @@
   "icon": "awards",
   "supports": {
     "sgs": {
-      "imageControls": true
+      "imageControls": true,
+      "containerKind": "section"
     },
     "align": [
       "wide",

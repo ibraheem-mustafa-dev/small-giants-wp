@@ -3,27 +3,68 @@
 sync-container-wrapping-blocks.py
 =================================
 
-Tracks every SGS block whose render shell wraps sgs/container's behaviour and
-keeps their attribute surface consistent with sgs/container.
+Tracks every SGS block that is container-bearing (wraps children via InnerBlocks,
+layout orchestration, or structural parent), keeps `block_composition.wraps_block`
++ `container_kind` consistent, and emits a per-block attribute-diff so the operator
+can propagate new sgs/container capabilities (e.g. contentWidth) to the right
+blocks with the right attr-subset.
 
-Bean's expanded D6 scope (2026-05-29):
-  1. Track ALL container-wrapping blocks in `block_composition` (not just
-     section-roots) by populating `wraps_block='sgs/container'`.
-  2. When sgs/container changes, diff each wrapping block's attributes against
-     container's and emit a per-block diff so the operator can decide what to
-     port.
-  3. Never auto-edit block.json — diff-only by default; --apply is reserved for
-     future-stage write-through and currently still only writes diff artefacts
-     (no block.json mutation here per the hero/container audit recommendation).
+Criterion (D150 validated, 5 qc-council rounds — R-22-1 DB-first, no hardcoded
+block→kind dict):
+  A block is container-bearing iff it WRAPS CHILDREN via ANY of:
+  (a) a real InnerBlocks slot (save.js InnerBlocks.Content OR edit.js
+      useInnerBlocksProps / <InnerBlocks)
+  (b) a strong layout-orchestration attr (grid: columns*/gridTemplate*/
+      gridItem*/justifyItems/alignContent; flex: direction/justifyContent/
+      wrap/alignItems; or `layout`). `gap` ALONE does NOT qualify.
+  NOTE: D150 also defines criterion (c) — array-of-OBJECTS content attr
+  (e.g. a block with a `type: "array"` attr whose items are objects
+  representing child content units). This criterion is NOT currently
+  implemented in detection. Every block in the validated 28-block roster
+  qualifies via (a) or (b); the only candidate that is container-bearing
+  SOLELY via (c) is sgs/social-icons, which is intentionally excluded
+  (icon array, not child-block parenting). A future block that is
+  container-bearing ONLY via an array-of-objects attr would not be
+  detected by this script — tracked as a latent R-22-9 gap requiring a
+  future detection extension.
+  Excludes: sgs/container itself, chrome-only blocks (mobile-nav-toggle,
+  mega-menu), pure-InnerBlocks blocks that have no layout surface (handled
+  by KIND below).
 
-R-22-1 (DB-first / no hardcoded dicts): block roster comes from
-block_composition; attribute lists come from each block's own block.json.
-The ONE heuristic constant is the grid-only attribute filter (attrs that
-only make sense inside container's grid layout role and should not propagate
-to non-grid wrapping blocks).
+KIND (role-based, drives per-block diff sub-typing):
+  section  — self-contained panel owning its whole frame (full attr surface).
+             Detected via: section-frame attrs (background*/overlay*/shapeDivider*/
+             bgVideo/widthMode) OR operator override in block.json
+             supports.sgs.containerKind:"section".
+  layout   — arranges/parents MULTIPLE children. Detected via: layout-
+             orchestration attr (grid/flex/columns) OR structural-parent
+             (a non-form-field child block declares parent=[this_slug]).
+  content  — holds ONE unit's content (InnerBlocks only, no layout or
+             section attrs, not a structural parent).
 
-R-22-9 (universal mechanism): one diff-emitter walks every wraps_block row.
-No per-block branches.
+Two operator overrides via block.json supports.sgs.containerKind. /sgs-update
+Stage 1 reads this flag into block_composition.container_kind.
+  - trust-bar: override IS load-bearing. Without it, trust-bar's `columns`
+    attr would route it to KIND=layout. The override forces KIND=section
+    (full-bleed wrapper + max-width grid).
+  - modal: override is redundant defence-in-depth, NOT strictly required.
+    modal IS attr-derivable to KIND=section via its `overlayColour` and
+    `overlayOpacity` attrs (both match SECTION_ATTR_RE). The
+    containerKind:"section" override on modal is therefore belt-and-braces
+    rather than load-bearing.
+
+R-22-1 (DB-first / no hardcoded dicts): block roster is derived from
+block.json source files. Attribute lists come from each block's block.json.
+The KIND→attr-scope map replaces the old GRID_ONLY_ATTRS constant (Rater B:
+mandatory to avoid noise diffs when propagating capabilities to the wrong KIND).
+
+R-22-9 (universal mechanism): one diff-emitter walks every container-bearing
+block. No per-block branches.
+
+Usage:
+  python sync-container-wrapping-blocks.py           # dry-run (prints roster, no DB writes)
+  python sync-container-wrapping-blocks.py --apply   # write wraps_block + container_kind to DB
+  python sync-container-wrapping-blocks.py --target-block sgs/hero  # single block
 """
 from __future__ import annotations
 
@@ -33,9 +74,12 @@ import os
 import re
 import sqlite3
 import sys
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+sys.stdout.reconfigure(encoding="utf-8")
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -47,7 +91,6 @@ SRC_BLOCKS = PLUGIN_ROOT / "src" / "blocks"
 REPO_ROOT = PLUGIN_ROOT.parent.parent        # small-giants-wp/
 PIPELINE_STATE = REPO_ROOT / "pipeline-state" / "container-inheritance-sync"
 
-# Canonical DB lives in the agents skill dir; fall back to local copy.
 DB_CANDIDATES = [
     Path(os.path.expanduser("~/.agents/skills/sgs-wp-engine/sgs-framework.db")),
     SCRIPT_DIR / "sgs-framework.db",
@@ -62,52 +105,73 @@ def find_db() -> Path:
 
 
 # ---------------------------------------------------------------------------
-# Heuristic — container-wrapping signals
+# Detection criterion patterns (D150 validated)
 # ---------------------------------------------------------------------------
-#
-# A block "wraps sgs/container's behaviour" if its outer shell exposes
-# styling/sizing controls a designer would expect to live on a container.
-# We score signals; threshold = 2 to flag.
-#
-# Signals (all DB-derivable in future — for now, attr-name patterns on the
-# block's own block.json; this is structural pattern-matching on the block's
-# DECLARED attributes, NOT a hardcoded lookup of block identities):
 
-SIGNAL_PATTERNS: List[Tuple[str, re.Pattern[str]]] = [
-    ("background", re.compile(r"^background(Image|Colour|Color|Size|Position|Repeat|Attachment|Overlay|Gradient)", re.I)),
-    ("padding",    re.compile(r"^padding(Top|Bottom|Left|Right|Block|Inline)?$", re.I)),
-    ("maxWidth",   re.compile(r"^(maxWidth|customWidth|widthMode)", re.I)),
-    ("minHeight",  re.compile(r"^minHeight$", re.I)),
-    ("shapeDivider", re.compile(r"^shapeDivider", re.I)),
-    ("bgSvg",      re.compile(r"^bgSvg", re.I)),
-    ("bgVideo",    re.compile(r"^bgVideo", re.I)),
-    ("overlay",    re.compile(r"^(overlay|backgroundOverlay)", re.I)),
-    ("htmlTag",    re.compile(r"^htmlTag$", re.I)),
-]
+# (b) Strong layout-orchestration attrs — presence of ANY qualifies (gap alone does NOT).
+LAYOUT_ATTR_RE = re.compile(
+    r"^("
+    r"columns|columnsMobile|columnsTablet|columnsDesktop|"
+    r"gridTemplateColumns|gridTemplateColumnsTablet|gridTemplateColumnsMobile|"
+    r"gridTemplateRows|gridTemplateRowsTablet|gridTemplateRowsMobile|"
+    r"gridAutoRows|"
+    r"gridItemPadding|gridItemBackground|gridItemBorderRadius|"
+    r"gridItemBorder|gridItemShadow|gridItemTextColour|"
+    r"justifyItems|alignContent|"
+    r"direction|flexDirection|justifyContent|flexWrap|wrap|alignItems|"
+    r"layout|layoutMode"
+    r")$",
+    re.IGNORECASE,
+)
 
-# Grid-only attrs on sgs/container that should NOT propagate to non-grid
-# wrappers (these are layout primitives specific to container's grid mode).
-GRID_ONLY_ATTRS = {
-    "layout", "columns", "columnsMobile", "columnsTablet",
-    "gridTemplateColumns", "gridTemplateColumnsTablet", "gridTemplateColumnsMobile",
-    "gridTemplateRows", "gridTemplateRowsTablet", "gridTemplateRowsMobile",
-    "gridAutoRows", "gap", "gapTablet", "gapMobile",
-    "justifyItems", "alignContent", "templateMode",
-    "gridItemPadding", "gridItemBackground", "gridItemBorderRadius",
-    "gridItemBorder", "gridItemShadow", "gridItemTextColour",
+# Section-frame attrs — presence triggers KIND=section (if no operator override).
+SECTION_ATTR_RE = re.compile(
+    r"^("
+    r"backgroundImage|backgroundImageTablet|backgroundImageMobile|"
+    r"backgroundOverlayColour|backgroundOverlayOpacity|"
+    r"backgroundMedia|backgroundVideo|"
+    r"overlayGradient|overlayColour|overlayOpacity|overlayColor|"
+    r"shapeDivider|shapeDividerTop|shapeDividerBottom|"
+    r"bgSvgContent|bgVideo|bgVideoMobile|widthMode"
+    r")$",
+    re.IGNORECASE,
+)
+
+# Blocks that are never container-bearing regardless of their attrs.
+EXCLUDE_SLUGS: Set[str] = {
+    "sgs/container",       # the reference block itself
+    "sgs/mobile-nav-toggle",  # chrome-only toggle button
+    "sgs/mega-menu",          # navigation chrome, not a content wrapper
 }
 
-# Naming-drift dedup hints (conceptual aliases — these are the ones we know of
-# from prior audit findings; the heuristic also flags any case-insensitive
-# substring match as a candidate).
-KNOWN_NAMING_DRIFTS: Dict[str, str] = {
-    # block-attr -> container-attr
-    "overlayColour": "backgroundOverlayColour",
-    "overlayColor": "backgroundOverlayColour",
-    "overlayOpacity": "backgroundOverlayOpacity",
-    "bgImage": "backgroundImage",
-    "bgColor": "backgroundColor",
-    "bgColour": "backgroundColor",
+# ---------------------------------------------------------------------------
+# KIND → attribute scope map (replaces old GRID_ONLY_ATTRS constant, Rater B)
+# ---------------------------------------------------------------------------
+# Each KIND only receives diff coverage for the attr subset that makes sense.
+# section  → full container attr surface (all capabilities propagate).
+# layout   → grid/flex/width/contentWidth (layout orchestration only).
+# content  → width/contentWidth/spacing (per-item sizing only).
+# Attrs outside a KIND's scope are excluded from the diff as noise.
+
+KIND_ATTR_SCOPE: Dict[str, Set[str]] = {
+    "section": set(),   # empty = all attrs included (no filter for sections)
+    "layout": {
+        "columns", "columnsMobile", "columnsTablet", "columnsDesktop",
+        "gridTemplateColumns", "gridTemplateColumnsTablet", "gridTemplateColumnsMobile",
+        "gridTemplateRows", "gridTemplateRowsTablet", "gridTemplateRowsMobile",
+        "gridAutoRows",
+        "justifyItems", "alignContent",
+        "direction", "flexDirection", "justifyContent", "flexWrap", "wrap", "alignItems",
+        "layout", "layoutMode",
+        "gap", "gapTablet", "gapMobile",
+        "maxWidth", "customWidth", "widthMode", "contentWidth",
+        "templateMode",
+    },
+    "content": {
+        "maxWidth", "customWidth", "widthMode", "contentWidth",
+        "padding", "paddingTop", "paddingBottom", "paddingLeft", "paddingRight",
+        "paddingBlock", "paddingInline",
+    },
 }
 
 
@@ -115,7 +179,7 @@ KNOWN_NAMING_DRIFTS: Dict[str, str] = {
 # Helpers
 # ---------------------------------------------------------------------------
 
-def load_block_json(slug: str) -> Dict[str, Any] | None:
+def load_block_json(slug: str) -> Optional[Dict[str, Any]]:
     """Load src/blocks/<name>/block.json for sgs/<name>. Soft-fail on errors."""
     if not slug.startswith("sgs/"):
         return None
@@ -131,44 +195,125 @@ def load_block_json(slug: str) -> Dict[str, Any] | None:
         return None
 
 
-def count_signals(attrs: Dict[str, Any], supports: Dict[str, Any]) -> Dict[str, int]:
-    """Count which container-wrapping signals this block exhibits."""
-    hits: Dict[str, int] = {}
-    for name in attrs.keys():
-        for label, pat in SIGNAL_PATTERNS:
-            if pat.match(name):
-                hits[label] = hits.get(label, 0) + 1
-                break
-    # WP-native align: ["wide","full"] is a strong wrapper signal
-    align = supports.get("align") if isinstance(supports, dict) else None
-    if isinstance(align, list) and ("wide" in align or "full" in align):
-        hits["align-wide-full"] = 1
-    # Native background/spacing support via WP-native supports also counts
-    color = supports.get("color") if isinstance(supports, dict) else None
-    if isinstance(color, dict) and color.get("background"):
-        hits.setdefault("native-bg", 1)
-    spacing = supports.get("spacing") if isinstance(supports, dict) else None
-    if isinstance(spacing, dict) and spacing.get("padding"):
-        hits.setdefault("native-padding", 1)
-    return hits
+def read_js_combined(slug: str) -> str:
+    """Read save.js + edit.js for a block into one string for pattern matching."""
+    if not slug.startswith("sgs/"):
+        return ""
+    name = slug.split("/", 1)[1]
+    block_dir = SRC_BLOCKS / name
+    combined = ""
+    for js_file in ("save.js", "edit.js"):
+        p = block_dir / js_file
+        if p.exists():
+            try:
+                combined += p.read_text(encoding="utf-8", errors="ignore")
+            except OSError:
+                pass
+    return combined
+
+
+def has_innerblocks_slot(slug: str) -> bool:
+    """True if save.js or edit.js contains a real InnerBlocks usage."""
+    js = read_js_combined(slug)
+    return bool(re.search(r"useInnerBlocksProps|InnerBlocks\.Content|<InnerBlocks", js))
+
+
+def layout_attrs_for(attrs: Dict[str, Any]) -> List[str]:
+    """Return attr names that qualify as layout-orchestration attrs."""
+    return [k for k in attrs if LAYOUT_ATTR_RE.match(k)]
+
+
+def section_attrs_for(attrs: Dict[str, Any]) -> List[str]:
+    """Return attr names that qualify as section-frame attrs."""
+    return [k for k in attrs if SECTION_ATTR_RE.match(k)]
+
+
+def build_structural_parents(slugs: List[str]) -> Set[str]:
+    """Return the set of block slugs that are structural parents.
+
+    A structural parent is a block that is declared as `parent` by a NON-form-field,
+    NON-chrome child block. This covers:
+      - sgs/accordion  (accordion-item declares parent=['sgs/accordion'])
+      - sgs/tabs       (tab declares parent=['sgs/tabs'])
+      - sgs/form       (form-step declares parent=['sgs/form'])
+
+    Explicitly excluded from the child scan:
+      - sgs/form-field-* (config inputs, not structural items)
+      - sgs/form-review  (config block)
+      - sgs/mega-menu    (navigation chrome)
+    These blocks declare parent relationships for constraining their editor
+    placement, not because the parent is a layout container of multiple items.
+    """
+    structural: Set[str] = set()
+    for slug in slugs:
+        bj = load_block_json(slug)
+        if not bj:
+            continue
+        parents = bj.get("parent", None)
+        if not parents:
+            continue
+        # Skip if this child is a form-field input, chrome block, or review block
+        if (slug.startswith("sgs/form-field")
+                or slug in {"sgs/form-review", "sgs/mega-menu"}):
+            continue
+        for parent_slug in parents:
+            structural.add(parent_slug)
+    return structural
+
+
+def derive_kind(
+    slug: str,
+    bj: Dict[str, Any],
+    structural_parents: Set[str],
+) -> str:
+    """Derive the container KIND for a block.
+
+    Priority:
+    1. Operator override in block.json supports.sgs.containerKind.
+    2. Section-frame attrs → section.
+    3. Layout-orchestration attrs OR structural parent → layout.
+    4. Default → content.
+    """
+    supports = bj.get("supports", {}) or {}
+    sgs_supports = supports.get("sgs", {}) or {}
+    override = sgs_supports.get("containerKind", None)
+    if override in ("section", "layout", "content"):
+        return override
+
+    attrs = bj.get("attributes", {}) or {}
+    if section_attrs_for(attrs):
+        return "section"
+    if layout_attrs_for(attrs) or slug in structural_parents:
+        return "layout"
+    return "content"
+
+
+# ---------------------------------------------------------------------------
+# Naming-drift detection (unchanged from original — informational only)
+# ---------------------------------------------------------------------------
+
+KNOWN_NAMING_DRIFTS: Dict[str, str] = {
+    "overlayColour": "backgroundOverlayColour",
+    "overlayColor": "backgroundOverlayColour",
+    "overlayOpacity": "backgroundOverlayOpacity",
+    "bgImage": "backgroundImage",
+    "bgColor": "backgroundColor",
+    "bgColour": "backgroundColor",
+}
 
 
 def detect_naming_drifts(block_attrs: List[str], container_attrs: List[str]) -> List[Tuple[str, str]]:
-    """Return (block_attr, container_attr) pairs that look like naming drift."""
     drifts: List[Tuple[str, str]] = []
     c_lower = {a.lower(): a for a in container_attrs}
     for ba in block_attrs:
-        # Known explicit drift
         if ba in KNOWN_NAMING_DRIFTS:
             target = KNOWN_NAMING_DRIFTS[ba]
             if target in container_attrs and ba not in container_attrs:
                 drifts.append((ba, target))
             continue
-        # Fuzzy: same trailing token but different prefix
         if ba in container_attrs:
             continue
         ba_l = ba.lower()
-        # e.g. "heroBackgroundColour" vs "backgroundColour"
         for c_l, c_orig in c_lower.items():
             if c_l == ba_l:
                 continue
@@ -178,73 +323,67 @@ def detect_naming_drifts(block_attrs: List[str], container_attrs: List[str]) -> 
     return drifts
 
 
+# ---------------------------------------------------------------------------
+# Diff report rendering
+# ---------------------------------------------------------------------------
+
+def scoped_container_attrs(container_non_grid: List[str], kind: str, container_attrs_def: Dict[str, Any]) -> List[str]:
+    """Filter container attrs to those relevant for this KIND (Rater B — no noise diffs)."""
+    if kind == "section":
+        return container_non_grid   # sections get the full surface
+    scope = KIND_ATTR_SCOPE.get(kind, set())
+    return [a for a in container_non_grid if a in scope]
+
+
 def render_diff_markdown(
     block_slug: str,
+    kind: str,
+    detection_reasons: List[str],
     block_attrs: List[str],
-    container_attrs: List[str],
-    signals: Dict[str, int],
-    missing: List[str],
+    scoped_attrs: List[str],
     drifts: List[Tuple[str, str]],
-    container_attr_defs: Dict[str, Any],
+    container_attrs_def: Dict[str, Any],
 ) -> str:
-    """Render a per-block diff in plain-English writing-clearly style."""
+    missing = [a for a in scoped_attrs if a not in block_attrs]
     lines: List[str] = []
     lines.append(f"# Container inheritance diff — `{block_slug}`")
     lines.append("")
     lines.append(f"_Generated: {datetime.now(timezone.utc).isoformat()}_")
+    lines.append(f"_container_kind: **{kind}**_")
     lines.append("")
     lines.append("## Why this block is tracked")
     lines.append("")
-    lines.append("It exposes attributes that overlap with `sgs/container`'s wrapper")
-    lines.append("surface. When `sgs/container` gains, loses, or renames an attribute,")
-    lines.append("this block needs an operator decision: port the change, ignore it,")
-    lines.append("or record a deliberate divergence.")
+    lines.append(f"Detection signals: {', '.join(detection_reasons)}")
     lines.append("")
-    lines.append("Signals detected on this block:")
-    lines.append("")
-    for k, v in sorted(signals.items()):
-        lines.append(f"- `{k}` ({v} hit{'s' if v != 1 else ''})")
-    lines.append("")
-
-    lines.append("## Missing attributes")
+    lines.append("## Missing attributes (KIND-scoped)")
     lines.append("")
     if not missing:
-        lines.append("None. This block already covers every non-grid attribute on")
-        lines.append("`sgs/container`.")
+        lines.append(f"None. This block already covers every `{kind}`-scoped attribute on `sgs/container`.")
     else:
-        lines.append(f"`sgs/container` defines {len(missing)} non-grid attribute(s)")
-        lines.append("absent from this block. The operator should decide for each")
-        lines.append("whether to port it, alias it, or record a deliberate skip.")
+        lines.append(f"`sgs/container` defines {len(missing)} `{kind}`-scoped attribute(s)")
+        lines.append("absent from this block. Operator decides: port, alias, or deliberate skip.")
         lines.append("")
         lines.append("| Attribute | Type | Container default |")
         lines.append("|---|---|---|")
         for a in missing:
-            spec = container_attr_defs.get(a, {}) or {}
-            t = spec.get("type", "?")
-            default = spec.get("default", "")
-            # Truncate long defaults
+            spec = container_attrs_def.get(a, {}) or {}
+            t = spec.get("type", "?") if isinstance(spec, dict) else "?"
+            default = spec.get("default", "") if isinstance(spec, dict) else ""
             d_str = json.dumps(default) if default not in ("", None) else ""
             if len(d_str) > 40:
                 d_str = d_str[:37] + "..."
             lines.append(f"| `{a}` | `{t}` | `{d_str}` |")
     lines.append("")
-
     lines.append("## Naming drift candidates")
     lines.append("")
     if not drifts:
         lines.append("None detected.")
     else:
-        lines.append("These attributes on the block look conceptually equivalent to")
-        lines.append("a differently-named attribute on `sgs/container`. Reconciling")
-        lines.append("them requires a `deprecated.js` migration so existing post")
-        lines.append("content keeps rendering after the rename.")
-        lines.append("")
         lines.append("| Block attribute | Container equivalent |")
         lines.append("|---|---|")
         for ba, ca in drifts:
             lines.append(f"| `{ba}` | `{ca}` |")
     lines.append("")
-
     lines.append("## Action gate")
     lines.append("")
     lines.append("This file is informational. No `block.json` is mutated by the")
@@ -255,212 +394,304 @@ def render_diff_markdown(
 
 
 # ---------------------------------------------------------------------------
+# DB migration helper (Fix 1a)
+# ---------------------------------------------------------------------------
+
+def ensure_container_kind_column(conn: sqlite3.Connection) -> None:
+    """Idempotently add container_kind to block_composition if absent.
+
+    Mirrors the migration in orchestrator/converter_v2/db_lookup.py so this
+    script can be run standalone without importing that module (which has
+    side-effects and path assumptions). The CHECK constraint matches exactly.
+    """
+    cur = conn.cursor()
+    cols = {row[1] for row in cur.execute("PRAGMA table_info(block_composition)").fetchall()}
+    if "container_kind" not in cols:
+        try:
+            cur.execute(
+                "ALTER TABLE block_composition ADD COLUMN container_kind TEXT "
+                "CHECK (container_kind IN ('section','layout','content'))"
+            )
+            conn.commit()
+            print("  [migration] added container_kind column to block_composition")
+        except sqlite3.OperationalError:
+            pass  # column already exists (race or concurrent migration)
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Sync container-wrapping blocks against sgs/container.")
-    ap.add_argument("--apply", action="store_true",
-                    help="Write wraps_block flag to DB (default: dry-run for DB writes too).")
-    ap.add_argument("--target-block", default=None,
-                    help="Limit to one block slug (e.g. sgs/hero).")
+    ap = argparse.ArgumentParser(
+        description="Detect container-bearing SGS blocks and sync block_composition."
+    )
+    ap.add_argument(
+        "--apply", action="store_true",
+        help="Write wraps_block and container_kind to DB. DEFAULT is dry-run (prints roster, no DB writes).",
+    )
+    ap.add_argument(
+        "--target-block", default=None,
+        help="Limit to one block slug (e.g. sgs/hero).",
+    )
     ap.add_argument("--db", default=None, help="Override DB path.")
     args = ap.parse_args()
 
+    dry_run = not args.apply
+
     db_path = Path(args.db) if args.db else find_db()
     print(f"DB: {db_path}")
+    if dry_run:
+        print("MODE: DRY-RUN (no DB writes — pass --apply to write)")
+    else:
+        print("MODE: APPLY (will write wraps_block + container_kind to DB)")
+    print()
 
-    # 1. Load sgs/container's attributes (DB-first, fall back to block.json)
+    # 1. Load sgs/container's attributes (block.json source)
     container_json = load_block_json("sgs/container")
     if not container_json:
         print("FATAL: could not load sgs/container block.json", file=sys.stderr)
         return 2
     container_attrs_def: Dict[str, Any] = container_json.get("attributes", {}) or {}
     container_attrs: List[str] = list(container_attrs_def.keys())
-    container_non_grid = [a for a in container_attrs if a not in GRID_ONLY_ATTRS]
-    print(f"sgs/container attributes: {len(container_attrs)} total, {len(container_non_grid)} after grid-filter")
+    # Exclude attrs that are only relevant at the layout layer (skip from section/content diffs)
+    # The KIND_ATTR_SCOPE map handles per-KIND filtering in the diff output.
+    # For the base "non-grid" list we keep everything — scoping happens in render_diff_markdown.
+    container_non_grid = container_attrs  # scoping is KIND-level, not a single global filter
+    print(f"sgs/container: {len(container_attrs)} attributes loaded")
 
-    # 2. Walk every SGS block; score signals; flag wraps_block where threshold met
+    # 2. Collect all candidate slugs from block.json source files
     conn = sqlite3.connect(str(db_path))
     cur = conn.cursor()
 
     if args.target_block:
-        cur.execute("SELECT block_slug FROM block_composition WHERE block_slug = ?", (args.target_block,))
+        candidate_slugs = [args.target_block]
     else:
-        cur.execute("SELECT block_slug FROM block_composition WHERE block_slug LIKE 'sgs/%' ORDER BY block_slug")
-    candidate_slugs = [r[0] for r in cur.fetchall()]
+        # Derive from src/blocks directory (R-22-1: roster from source, not hardcoded)
+        candidate_slugs = []
+        for d in sorted(SRC_BLOCKS.iterdir()):
+            if not d.is_dir():
+                continue
+            bjp = d / "block.json"
+            if not bjp.exists():
+                continue
+            try:
+                bj_data = json.load(open(bjp, "r", encoding="utf-8"))
+                slug = bj_data.get("name", "sgs/" + d.name)
+                if slug not in EXCLUDE_SLUGS:
+                    candidate_slugs.append(slug)
+            except Exception:
+                continue
 
-    # Exclude container itself
-    candidate_slugs = [s for s in candidate_slugs if s != "sgs/container"]
-    print(f"Candidates to audit: {len(candidate_slugs)}")
+    print(f"Candidate blocks to scan: {len(candidate_slugs)}")
 
-    # Signal labels that come from WP-native supports (universal — most blocks
-    # have them, so they're not strong evidence of container-wrapping on their own).
-    NATIVE_ONLY_LABELS = {"native-bg", "native-padding", "align-wide-full"}
+    # 3. Build structural-parent set (blocks whose non-form-field children declare parent=[slug])
+    structural_parents = build_structural_parents(candidate_slugs)
+    print(f"Structural parents detected: {sorted(structural_parents)}")
+    print()
 
-    SIGNAL_THRESHOLD = 2
-    flagged: List[Tuple[str, Dict[str, int]]] = []
-    skipped_no_json = 0
-
-    # Pull composition_role so leaf blocks (no inner content) are excluded —
-    # a leaf can't "wrap" anything.
-    cur.execute(
-        "SELECT block_slug, composition_role, has_inner_blocks FROM block_composition "
-        "WHERE block_slug LIKE 'sgs/%'"
-    )
-    role_map: Dict[str, Tuple[str, int]] = {r[0]: (r[1], r[2]) for r in cur.fetchall()}
+    # 4. Detect container-bearing blocks and derive KIND
+    container_bearing: List[Tuple[str, str, List[str]]] = []  # (slug, kind, reasons)
 
     for slug in candidate_slugs:
         bj = load_block_json(slug)
         if not bj:
-            skipped_no_json += 1
             continue
-        role, has_inner = role_map.get(slug, ("content-block", 0))
-        # Leaves don't wrap — skip even if they have background attrs (e.g.
-        # sgs/button has its own colour controls, that's not container-wrap).
-        if role == "leaf":
-            continue
+
         attrs = bj.get("attributes", {}) or {}
+        ib = has_innerblocks_slot(slug)
+        layout = layout_attrs_for(attrs)
+        has_layout = bool(layout)
+
+        # Container-bearing = InnerBlocks OR layout attrs (criterion a or b)
+        if not (ib or has_layout):
+            continue
+
+        kind = derive_kind(slug, bj, structural_parents)
+
+        reasons: List[str] = []
+        if ib:
+            reasons.append("InnerBlocks")
+        if layout:
+            reasons.append(f"layout:{layout}")
+        if slug in structural_parents:
+            reasons.append("structural-parent")
         supports = bj.get("supports", {}) or {}
-        signals = count_signals(attrs, supports)
-        # Strong signals = signals from custom attributes (not WP-native supports).
-        strong = {k: v for k, v in signals.items() if k not in NATIVE_ONLY_LABELS}
+        sgs_supports = supports.get("sgs", {}) or {}
+        if sgs_supports.get("containerKind"):
+            reasons.append(f"containerKind-override:{sgs_supports['containerKind']}")
 
-        # Composition-role-aware threshold:
-        #  - section-root / wrapper-shell: definitionally a wrapper, flag if
-        #    has any wrapper-style attr at all (>=1 strong signal).
-        #  - content-block: needs strong evidence (>=2 strong signals AND
-        #    has_inner_blocks=1, i.e. the block actually contains children to
-        #    wrap).
-        is_wrapper_role = role in ("section-root", "wrapper-shell")
-        is_content_wrapper = (
-            role == "content-block" and has_inner == 1 and len(strong) >= SIGNAL_THRESHOLD
-        )
-        if is_wrapper_role and len(strong) >= 1:
-            flagged.append((slug, signals))
-        elif is_content_wrapper:
-            flagged.append((slug, signals))
+        container_bearing.append((slug, kind, reasons))
 
-    print(f"Flagged as container-wrapping: {len(flagged)}")
-    print(f"Skipped (no block.json): {skipped_no_json}")
+    # Sort by KIND then slug
+    KIND_ORDER = {"section": 0, "layout": 1, "content": 2}
+    container_bearing.sort(key=lambda t: (KIND_ORDER.get(t[1], 9), t[0]))
 
-    # 3. Persist wraps_block in DB
-    db_changes_applied = False
-    if args.apply:
-        for slug, _ in flagged:
-            cur.execute(
-                "UPDATE block_composition SET wraps_block = 'sgs/container' WHERE block_slug = ?",
-                (slug,),
-            )
-        conn.commit()
-        db_changes_applied = True
-        print(f"DB: wrote wraps_block='sgs/container' to {len(flagged)} rows")
+    # 5. Print dry-run roster (always printed)
+    print("=" * 70)
+    print("CONTAINER-BEARING BLOCK ROSTER")
+    print("=" * 70)
+    cur_kind = None
+    for slug, kind, reasons in container_bearing:
+        if kind != cur_kind:
+            print(f"\n--- {kind.upper()} ---")
+            cur_kind = kind
+        print(f"  {slug:36}  {' | '.join(reasons)}")
+
+    counts = Counter(k for _, k, _ in container_bearing)
+    print()
+    print(f"TOTAL: {len(container_bearing)}  "
+          f"section={counts['section']}  layout={counts['layout']}  content={counts['content']}")
+    print()
+
+    # Ground-truth validation
+    EXPECTED = {
+        "section": {"sgs/cta-section", "sgs/hero", "sgs/modal", "sgs/trust-bar"},
+        "layout": {
+            "sgs/card-grid", "sgs/feature-grid", "sgs/gallery", "sgs/multi-button",
+            "sgs/post-grid", "sgs/pricing-table", "sgs/trustpilot-reviews",
+            "sgs/google-reviews", "sgs/form-field-tiles", "sgs/testimonial-slider",
+            "sgs/tabs", "sgs/accordion", "sgs/form",
+        },
+        "content": {
+            "sgs/info-box", "sgs/product-card", "sgs/testimonial", "sgs/quote",
+            "sgs/tab", "sgs/accordion-item", "sgs/form-step", "sgs/notice-banner",
+            "sgs/option-picker", "sgs/team-member", "sgs/mobile-nav",
+        },
+    }
+    got: Dict[str, Set[str]] = {"section": set(), "layout": set(), "content": set()}
+    for slug, kind, _ in container_bearing:
+        got[kind].add(slug)
+
+    all_match = True
+    for kind_name in ("section", "layout", "content"):
+        expected_set = EXPECTED[kind_name]
+        got_set = got[kind_name]
+        missing_from_got = expected_set - got_set
+        extra_in_got = got_set - expected_set
+        if missing_from_got or extra_in_got:
+            all_match = False
+            print(f"[VALIDATION FAIL] {kind_name.upper()}:")
+            if missing_from_got:
+                print(f"  MISSING (expected but not detected): {sorted(missing_from_got)}")
+            if extra_in_got:
+                print(f"  EXTRA (detected but not expected): {sorted(extra_in_got)}")
+
+    if all_match:
+        print("[VALIDATION PASS] Roster matches D150 ground truth (28 blocks, correct KINDs)")
     else:
-        # Dry-run: also persist to DB because this is the only authoritative
-        # registry of inheritance relationships (per Bean's scope expansion).
-        # The dry-run gate applies to BLOCK.JSON edits, which this script
-        # never does. DB rows are the registry, not a side effect.
-        for slug, _ in flagged:
-            cur.execute(
-                "UPDATE block_composition SET wraps_block = 'sgs/container' WHERE block_slug = ?",
-                (slug,),
-            )
-        conn.commit()
-        db_changes_applied = True
-        print(f"DB: wrote wraps_block='sgs/container' to {len(flagged)} rows (registry, not a block.json edit)")
+        print()
+        print("[VALIDATION FAIL] Roster does NOT match ground truth — fix detection before --apply")
 
-    # 4. Emit per-block diff to pipeline-state
+    print()
+
+    # 6. Emit per-block diff files to pipeline-state
+    # NOTE: diffs are always emitted regardless of validation result so the operator
+    # has per-block evidence available exactly when debugging a mismatch (Fix 4).
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     out_dir = PIPELINE_STATE / today
     out_dir.mkdir(parents=True, exist_ok=True)
-    # Clean stale diffs from prior runs today so the output reflects only the
-    # current flagged set (prevents drift when the heuristic narrows).
+    # Clean stale diffs from prior runs today
     for stale in out_dir.glob("*.md"):
         try:
             stale.unlink()
         except OSError:
             pass
 
-    total_missing = 0
-    total_drifts = 0
     diff_files_written: List[str] = []
-    sample_block_name = None
-    sample_missing: List[str] = []
-
-    for slug, signals in flagged:
+    for slug, kind, reasons in container_bearing:
         bj = load_block_json(slug)
         if not bj:
             continue
         attrs = bj.get("attributes", {}) or {}
         block_attrs = list(attrs.keys())
-        missing = [a for a in container_non_grid if a not in block_attrs]
+        scoped = scoped_container_attrs(container_non_grid, kind, container_attrs_def)
         drifts = detect_naming_drifts(block_attrs, container_attrs)
 
-        total_missing += len(missing)
-        total_drifts += len(drifts)
-
-        md = render_diff_markdown(
-            slug, block_attrs, container_attrs, signals, missing, drifts,
-            container_attrs_def,
-        )
+        md = render_diff_markdown(slug, kind, reasons, block_attrs, scoped, drifts, container_attrs_def)
         fname = slug.replace("/", "__") + ".diff.md"
         fpath = out_dir / fname
         try:
             with open(fpath, "w", encoding="utf-8") as f:
                 f.write(md)
             diff_files_written.append(str(fpath))
-            if sample_block_name is None and missing:
-                sample_block_name = slug
-                sample_missing = missing[:3]
         except Exception as e:
             print(f"  [warn] failed to write {fpath}: {e}", file=sys.stderr)
 
-    # 5. Emit index
+    # Emit index
     index_path = out_dir / "INDEX.md"
     with open(index_path, "w", encoding="utf-8") as f:
         f.write(f"# Container inheritance sync — {today}\n\n")
-        f.write(f"Container attributes (total): **{len(container_attrs)}**  \n")
-        f.write(f"Container attributes (non-grid, eligible to propagate): **{len(container_non_grid)}**  \n")
-        f.write(f"Container-wrapping blocks flagged: **{len(flagged)}**  \n")
-        f.write(f"Total missing attrs across blocks: **{total_missing}**  \n")
-        f.write(f"Naming drift dedups flagged: **{total_drifts}**  \n\n")
-        f.write("## Flagged blocks\n\n")
-        for slug, signals in flagged:
-            f.write(f"- `{slug}` — signals: {', '.join(sorted(signals.keys()))}\n")
-        f.write("\n## Grid-only attributes filtered out\n\n")
-        for a in sorted(GRID_ONLY_ATTRS):
-            f.write(f"- `{a}`\n")
+        f.write(f"Total container-bearing blocks: **{len(container_bearing)}**  \n")
+        f.write(f"section={counts['section']} layout={counts['layout']} content={counts['content']}  \n\n")
+        f.write("## Roster\n\n")
+        cur_kind2 = None
+        for slug, kind, reasons in container_bearing:
+            if kind != cur_kind2:
+                f.write(f"\n### {kind.upper()}\n\n")
+                cur_kind2 = kind
+            f.write(f"- `{slug}` — {', '.join(reasons)}\n")
+        f.write("\n## KIND → attr scope map\n\n")
+        for k, scope in KIND_ATTR_SCOPE.items():
+            f.write(f"### {k}\n")
+            if scope:
+                for a in sorted(scope):
+                    f.write(f"- `{a}`\n")
+            else:
+                f.write("_(all attrs — full container surface)_\n")
+            f.write("\n")
     diff_files_written.append(str(index_path))
+    print(f"Diff files emitted: {len(diff_files_written)} (to {out_dir})")
 
-    # 6. Emit JSON result
-    result = {
-        "files_created": [
-            {"path": str(SCRIPT_DIR / "sync-container-wrapping-blocks.py"),
-             "loc": sum(1 for _ in open(__file__, encoding="utf-8"))},
-        ],
-        "db_changes": {
-            "block_composition_wraps_block_populated_for": [s for s, _ in flagged],
-            "wraps_block_count_total": len(flagged),
-            "applied": db_changes_applied,
-        },
-        "dry_run_results": {
-            "container_wrapping_blocks_audited": len(flagged),
-            "diff_files_emitted": len(diff_files_written),
-            "total_missing_attrs_across_blocks": total_missing,
-            "naming_drift_dedups_flagged": total_drifts,
-            "sample_diff_block": (
-                f"{sample_block_name}: " + ", ".join(sample_missing)
-                if sample_block_name else "no missing attrs found"
-            ),
-            "output_dir": str(out_dir),
-        },
-        "open_questions": [
-            "Should --apply also propagate container's missing attrs into each block.json automatically? Currently no — operator review gate per hero/container audit.",
-            "Should grid-only filter be DB-derived (e.g. property_suffixes table) instead of the GRID_ONLY_ATTRS constant? Candidate refactor for next pass.",
-        ],
-    }
-    print()
-    print(json.dumps(result, indent=2))
+    # Return failure for dry-run on validation fail, AFTER diffs are written (Fix 4).
+    if dry_run and not all_match:
+        conn.close()
+        return 1
+
+    # 7. DB writes (only if --apply AND validation passed)
+    if args.apply:
+        if not all_match:
+            print("[APPLY BLOCKED] Roster validation failed — fix detection first", file=sys.stderr)
+            conn.close()
+            return 1
+
+        # Fix 1(a): ensure container_kind column exists before writing
+        ensure_container_kind_column(conn)
+
+        # Fix 1(b): per-block rowcount tracking — fail-loud on missing rows
+        missing_rows: List[str] = []
+        for slug, kind, _ in container_bearing:
+            cur.execute(
+                "UPDATE block_composition SET wraps_block = 'sgs/container', container_kind = ? "
+                "WHERE block_slug = ?",
+                (kind, slug),
+            )
+            if cur.rowcount == 0:
+                missing_rows.append(slug)
+
+        if missing_rows:
+            print(
+                f"\n[APPLY ERROR] {len(missing_rows)} roster block(s) have NO row in block_composition "
+                f"and were NOT written:\n  " + "\n  ".join(missing_rows),
+                file=sys.stderr,
+            )
+            print(
+                "These roster blocks have NO row in block_composition. "
+                "Run `python plugins/sgs-blocks/scripts/orchestrator/sgs-update.py` "
+                "(or the canonical /sgs-update) to reconcile block_composition rows first, "
+                "then re-run --apply.",
+                file=sys.stderr,
+            )
+            conn.rollback()
+            conn.close()
+            return 1
+
+        conn.commit()
+        print(f"DB: wrote wraps_block + container_kind for {len(container_bearing)} rows")
+    else:
+        print(f"DRY-RUN: {len(container_bearing)} rows would be written (wraps_block + container_kind) — re-run with --apply to write")
+
+    conn.close()
     return 0
 
 

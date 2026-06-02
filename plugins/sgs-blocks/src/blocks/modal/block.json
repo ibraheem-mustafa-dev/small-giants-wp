@@ -16,6 +16,9 @@
 	"textdomain": "sgs-blocks",
 	"icon": "welcome-view-site",
 	"supports": {
+		"sgs": {
+			"containerKind": "section"
+		},
 		"align": false,
 		"anchor": true,
 		"html": false,
