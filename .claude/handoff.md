@@ -1,3 +1,46 @@
+# Session Handoff — 2026-06-02 (CLONING PIPELINE thread) — container roster + DB-table + save-null
+
+> Cloning thread. Theme thread is DONE + merged to main (`a8cb3ff9`); no parallel session active. Full specs in `.claude/scratch/2026-06-02-container-roster-db-table-handoff.md` + `.claude/scratch/2026-06-04-css-transfer-gaps-1-2-fix-shape.md`.
+
+## Completed This Session
+1. **Full warm-start reading** of the cloning-pipeline docs (next-session-prompt, handoff, Spec 22/21/24, decisions, flow+stages, draft index.html, theme.json, container render.php/style.css, converter walk/fold/db_lookup, memory).
+2. **CSS-transfer contentWidth (gaps 1+2) designed + qc-council-validated + @1440 baseline-measured** (draft localhost :8137 vs page 144). Option B locked by Bean (sgs/container gains a contentWidth capability; fold lifts `__inner`'s max-width). NOT built. Fix-shape doc written.
+3. **Container-bearing roster validated via 5 qc-council rounds** → final 28-block roster + 3-KIND role-based model (section/layout/content). Corrected my own wrong criterion (Bean caught it: container-ness is structural/InnerBlocks, not attr-presence).
+4. **Workstream B SHIPPED** — 4-block save-null gotcha-B4 fix (feature-grid/multi-button/tab/accordion-item) via 5 parallel Sonnet subagents (verify-then-fix); mobile-nav EXCLUDED (Bean: server-rendered). Built clean. Commits 0c1078cf + d5ebe439. NOT editor-/qc'd or merged.
+5. **Workstream A (DB-table fix) spec'd + validated, NOT built** — deferred to fresh session (STOP #19).
+6. Decisions D150, parking (P-CONTAINER-KIND-ROSTER, P-TRUSTBAR-BOUND-GRID, P-CSS-TRANSFER-CONTENTWIDTH), state + next-session-prompt updated.
+
+## Current State
+- **Branch:** `feat/block-composition-container-kind` @ `d5ebe439`, off main @ `3c388195`. Workstream B only. NOT pushed/merged (awaits editor /qc).
+- **Tests/Build:** sgs-blocks `npm run build` PASSES (5 blocks compiled clean).
+- **Uncommitted:** `lucide-icons.php` (documented auto-regen, never committed); scratch handoff docs (gitignored, on disk).
+
+## Known Issues / Blockers
+- Workstream B not yet editor-validated (deprecations) or merged — Task 1 next session.
+- Workstream A + contentWidth + gaps 3/4 are designed/validated but NOT built.
+
+## Next Priorities (in order)
+1. Task 1 — editor /qc the 4 save-null deprecations → merge B to main.
+2. Task 2 — Workstream A (block_composition roster/DB-table) — single Sonnet subagent → /qc-council → Bean sanity-check → --apply.
+3. Task 3 — contentWidth (gaps 1+2) — Sonnet build → deploy → re-measure → /qc-council.
+4. Tasks 4-7 — gap 3 (hero gradient), P-TRUSTBAR-BOUND-GRID (gap 4), variant-routing rollout, image sideload.
+
+## Files Modified
+| File | What changed |
+|------|---|
+| `plugins/sgs-blocks/src/blocks/{feature-grid,multi-button,tab,accordion-item}/` | save.js → InnerBlocks.Content + deprecated.js (save-null fix) |
+| `.claude/decisions.md` | D150 (roster + 3-KIND + save-null) |
+| `.claude/parking.md` | P-CONTAINER-KIND-ROSTER, P-TRUSTBAR-BOUND-GRID, P-CSS-TRANSFER-CONTENTWIDTH |
+| `.claude/{state,next-session-prompt,handoff}.md` | this session |
+| `.claude/scratch/2026-06-02-container-roster-db-table-handoff.md`, `2026-06-04-css-transfer-gaps-1-2-fix-shape.md` | full specs (gitignored) |
+
+## Notes for Next Session
+- **Orchestration philosophy (Bean-locked):** prefer single Sonnet subagent over Opus-inline (token/context efficiency); parallel where disjoint; /qc after every considerable change. STOP #42 + ritual Q11.
+- **Council framing lesson (STOP #39):** a council validates the criterion it's given — frame around the real signal, not a proxy.
+- The next-session-prompt has the full per-task orchestration plan + dependency graph.
+
+---
+
 # Session Handoff — 2026-06-03 (CLONING PIPELINE thread)
 
 > Cloning thread. The theme/blocks thread runs in a parallel session (shared branch) → `.claude/handoff-theme.md` + `.claude/next-session-prompt-theme.md`. Prior handoffs in git history + `decisions.md`.

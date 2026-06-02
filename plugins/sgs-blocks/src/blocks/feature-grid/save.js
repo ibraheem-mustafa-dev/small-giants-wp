@@ -1,11 +1,14 @@
 /**
- * Feature Grid block — dynamic save.
+ * Feature Grid block — save.
  *
- * Returns null: all frontend output is handled by render.php.
- * The pre-conversion static save shape is preserved in deprecated.js (v1)
- * so WordPress can validate and migrate existing stored content.
+ * Emits the InnerBlocks marker so WordPress serialises child block HTML
+ * into post_content on save. render.php receives it as $content and drives
+ * 100% of frontend output. Without this, WP drops InnerBlocks children on
+ * the save round-trip and $content arrives empty.
  *
- * @return {null}
+ * @return {JSX.Element}
  */
-const save = () => null;
-export default save;
+import { InnerBlocks } from '@wordpress/block-editor';
+export default function Save() {
+	return <InnerBlocks.Content />;
+}

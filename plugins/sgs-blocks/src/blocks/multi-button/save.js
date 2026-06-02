@@ -1,11 +1,18 @@
+import { InnerBlocks } from '@wordpress/block-editor';
+
 /**
- * Multi-Button block — dynamic save.
+ * Multi-Button block — save.
  *
- * Returns null: all frontend output is handled by render.php.
- * The pre-conversion static save shape is preserved in deprecated.js (v1)
- * so WordPress can validate and migrate existing stored content.
+ * Emits <InnerBlocks.Content /> so WordPress serialises the sgs/button
+ * children into post_content. render.php receives them as $content and
+ * wraps them in the responsive flex container.
  *
- * @return {null}
+ * IMPORTANT: returning null here would cause WordPress to DROP InnerBlocks
+ * from post_content on re-save, leaving render.php with an empty $content.
+ * The null shape is preserved in deprecated.js (v2) for existing posts.
+ *
+ * @return {JSX.Element}
  */
-const save = () => null;
-export default save;
+export default function Save() {
+	return <InnerBlocks.Content />;
+}
