@@ -1,8 +1,18 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-06-01
+last_updated: 2026-06-02
 ---
+
+## 2026-06-02 — theme thread wave 1–3 deferred follow-ups
+
+> **P-CART-INCREMENT-E2E** — NEW 2026-06-02. **Status: OPEN** (ops). `sgs/cart` v1 shipped (`b6369224`); core mechanism (SSR 0 + Store API hydrate + no-jQuery + a11y) live-verified, but the badge-INCREMENT-on-add-to-cart was NOT tested — the canary has 0 WooCommerce products. Next session: seed one WC product (matching Mama's product-draft content) → add to cart → confirm badge increments with no full reload + no `?wc-ajax=get_refreshed_fragments`. Same Store API fetch path as the verified hydration (low risk). This product fixture also unblocks product-card Phase C testing.
+
+> **P-PRODUCT-CARD-PHASE-CDE** — NEW 2026-06-02. **Status: OPEN** (framework). Product-card Phase A (option-picker) + Phase B (variation-sets meta + panel + custom-fields fix) SHIPPED. Remaining: **Phase C** = card Bound-mode rendering, **DUAL-SOURCE** per D149 (bind to WooCommerce-native product data when WC present; custom `sgs_product` CPT meta otherwise; custom meta only for SGS-specific config like variation-sets display). Phase C needs a /brainstorming + /research design gate on the WC Block-Bindings pattern BEFORE building (Bean-directed). **Phase D** = clone-emit (converter outputs `sgs/option-picker` for a pill group — TRUTH-SPEC + slot_synonyms/slots + converter, per D144.4). **Phase E** = collection/query block (Spec 24 FR-24-4/5). Gated on Task A (a real product to bind to). Full design: Spec 24 §FR-24 + D144/D149.
+
+> **P-CART-DRAWER-PHASE2** — NEW 2026-06-02. **Status: DEFERRED** (framework). `sgs/cart` v1 is count+link only; the slide-in drawer is gated behind the `displayMode` attr (`link` default | `drawer`). Build the drawer in Phase 2: `role="dialog" aria-modal` + focus trap + ESC + focus-return + `prefers-reduced-motion`. Do NOT wrap/extend `woocommerce/mini-cart` (shallow controls, DOM-subtree + token-inheritance issues — see the cart cold-prompt).
+
+> **P-BLOCK-DESIGN-POLISH** — NEW 2026-06-02. **Status: DEFERRED** (content). Two lower-priority design upgrades from Bean's brain-dump: (1) cta-section → rich template-patterns with stats/social-proof filler (like the hero presets), not just alignment variants; (2) notice-banner → per-type icon+CSS bundles as ideal defaults (then customisable). Plus the heading/text dormant-variant tweak (drop heading `hero`? — Bean decision).
 
 ## 2026-06-01 — FR-22-6 null-save→InnerBlocks migration gap (theme thread, wave 1)
 
