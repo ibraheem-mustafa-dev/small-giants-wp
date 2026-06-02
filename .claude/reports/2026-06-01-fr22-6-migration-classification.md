@@ -38,8 +38,13 @@ testimonial, **notice-banner (v3 — shipped this session)**.
   entry; complex attrs → dedicated follow-up, not a batch.
 
 ### GENUINE TARGET — wave ordering (low→high blast radius)
-- **Wave 2A — single-`text` blocks** (lowest risk, notice-banner pattern): social-proof,
-  featured-product, gift-section, footer, header.
+- **Wave 2A — ⚠ CATEGORY ERROR (corrected 2026-06-02, do NOT use this list):** social-proof,
+  featured-product, gift-section, footer, header are **mockup-draft SECTION classes, NOT SGS
+  blocks** — verified: no `block.json` exists for any; all five appear only as section classes
+  in the Mama's mockup HTML. FR-22-6 migrates SGS BLOCKS (whose render.php reads a scalar
+  `text`/`heading` attr), not mockup section names (cf. the rule "mockup classes map to
+  patterns, not blocks"). The real single-`text` Wave-2 targets must be RE-DERIVED by scanning
+  the block roster's render.php files — this list is void.
 - **Wave 2B — single media/icon attr**: decorative-image (imageUrl→sgs/media),
   responsive-logo (read render.php — `alt` may be metadata = NOT-A-TARGET), icon-block
   (iconValue→sgs/icon).
