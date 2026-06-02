@@ -28,7 +28,7 @@
 ## Authoritative pointers
 
 - **Canonical cloning-pipeline spec:** `specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` (Spec 22; replaces Spec 16 retired 2026-05-26)
-- **Active Phase 2 plan:** `plans/2026-05-28-phase-2-hybrid-block-migration.md` (Stream A active; B/C/D deferred. Phase 1.5 closed 2026-05-27 per D90 — archived at `plans/archive/2026-05-26-phase-1-spec-22-implementation-closed-2026-05-27.md`.)
+- **Active primary plan:** `plans/2026-06-02-container-wrapper-standardisation.md` (5-workstream programme D152; WS-1 SHIPPED). **Cloning pixel-diff thread:** `plans/2026-05-28-phase-2-hybrid-block-migration.md` (Streams B/C/D deferred; feeds WS-3/WS-4).
 - **Pipeline overview:** `cloning-pipeline-flow.md` (stage-index + cross-cutting principles); per-stage detail → `cloning-pipeline-stages.md`
 - **Binding methodology rules:** `decisions.md` (search for "binding" + recent D-numbers) — DO NOT restate inline here. Spec 22 binding rules: R-22-1 through R-22-14 (R-22-14 added 2026-05-27 per D92 — no legacy fallback hacks in FR-22-6 migrations).
 - **Pipeline-state artefacts:** `specs/21-PIPELINE-STATE-ARTEFACTS.md` (mandatory read before conjecturing about pipeline failures)
@@ -40,4 +40,4 @@
 - Doc shapes per template in `~/.agents/skills/shared-references/doc-templates/`
 - `/handoff` runs slug-uniqueness gate on parking.md + walks every docs-registry.yaml entry
 - **parking.md = parked work ONLY (Bean-locked 2026-06-02, D150):** entries are `OPEN | PARTIAL | BLOCKED | DEFERRED` only. The moment a task is `CLOSED | RESOLVED | DROPPED | SUPERSEDED`, MOVE it to `memory/parking-archive.md` (verbatim + completion date). Enforce every `/handoff`. Same archive-on-resolve discipline for `decisions.md` → `memory/decisions-archive.md` (retired/superseded/non-load-bearing) and `MEMORY.md` ≤ 24,576 bytes → `MEMORY-archive.md`. Prevents the doc-balloon (parking hit 1,400+ lines; MEMORY 34KB, silently dropping autoload rules).
-- Recent decisions: see `decisions.md` (current through D150, 2026-06-02 — cloning: container roster + 3-KIND model + 4-block save-null fix; D148/D149 = theme thread; D57-D65 = 2026-05-24 doc-op programme close)
+- Recent decisions: see `decisions.md` (current through D152, 2026-06-02 — D152 = container/wrapper standardisation WS-1 SHIPPED + composite-mirror rule locked; D150 = archive-on-resolve standard practice; D148/D149 = theme thread; D57-D65 = 2026-05-24 doc-op programme close)

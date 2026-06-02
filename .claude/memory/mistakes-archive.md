@@ -1,6 +1,64 @@
 # mistakes — Archive
-Entries older than 2026-05-18, moved here by Phase 6a doc-op on 2026-05-24.
-Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedback_*.md.
+Entries moved here when active stubs exceed 30. Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedback_*.md.
+Last prune: 2026-06-02 (13 entries from 2026-05-18 to 2026-05-21 moved here).
+
+---
+
+## 2026-05-21 — Council predictions need empirical validation before being treated as fix specs (row 276)
+- **Pattern key:** `council-predictions-need-empirical-validation` | **blub.db row:** 276
+- **Feedback file:** feedback_council_predictions_need_empirical_validation.md
+
+## 2026-05-21 — Skills only called by other skills should be non-user-invocable (row 277)
+- **Pattern key:** `skills-only-called-by-others-non-user-invocable` | **blub.db row:** 277
+- **Feedback file:** feedback_skills_only_called_by_others_non_user_invocable.md
+
+## 2026-05-21 — Stale-doc-text caused regression of a deliberately-stripped licensing check
+- **Pattern key:** `strip-feature-update-docs-same-commit`
+- **Feedback file:** feedback_no_licensing_talk_in_cloning_context.md
+
+## 2026-05-21 — Don't port per-block legacy logic; fix the universal extraction path instead
+- **Pattern key:** `universal-extraction-no-per-block-legacy`
+- **Feedback file:** feedback_universal_extraction_no_per_block_legacy.md
+
+## 2026-05-21 — Every Gemini agent report contained fabricated line citations — grep-verify before relaying
+- **Pattern key:** `verify-gemini-claims-by-grep`
+- **Feedback file:** feedback_multi_model_qc_before_commit.md
+
+## 2026-05-20 — Five lessons: token-snap exact-match; @media scope; cv2 CSS-scope lookup; promotion is end-of-line; multi-rater council
+- **Pattern key:** `token-snap-requires-strict-exact-match`
+- **Feedback file:** feedback_cloning_preserves_intentional_bespoke_detail.md
+
+## 2026-05-20 — CSS injection strategy assumed DOM injection; should have used body_class filter instead
+- **Pattern key:** `body-class-strategy-over-dom-injection`
+- **Feedback file:** feedback_verify_rendered_output_not_internal_metrics.md
+
+## 2026-05-19 — Schema enumeration before any "missing column/table" claim (row 272)
+- **Pattern key:** `schema-enumeration-before-gap-claims` | **blub.db row:** 272
+- **Feedback file:** feedback_schema_enumeration_before_gap_claims.md
+
+## 2026-05-19 — QC panel byte-equality check was tautological while the writer was inert
+- **Pattern key:** `qc-panel-must-assert-file-existence` | **blub.db row:** 273
+- **Feedback file:** feedback_qc_panel_must_assert_file_existence.md
+
+## 2026-05-19 — Header + footer are template parts, not Gutenberg blocks (3rd recurrence)
+- **Pattern key:** `header-footer-are-template-parts-not-blocks` | **blub.db row:** 274
+- **Feedback file:** feedback_header_footer_are_template_parts_not_blocks.md
+
+## 2026-05-19 — tar --exclude must be path-anchored not basename (row 275)
+- **Pattern key:** `tar-exclude-must-be-specific-path-not-basename` | **blub.db row:** 275
+- **Feedback file:** feedback_tar_exclude_must_be_specific_path_not_basename.md
+
+## 2026-05-18 — Retired legacy feature before replacement was built; correct sequence is replace → migrate → retire
+- **Pattern key:** `build-replacement-before-retiring-legacy`
+- **Feedback file:** feedback_build_replacement_before_retiring_legacy.md
+
+## 2026-05-18 — BEM regex [a-z0-9-]* silently matches --modifier shapes; use segmented kebab pattern
+- **Pattern key:** `bem-regex-double-hyphen-false-positive`
+- **Feedback file:** feedback_bean_drafts_use_sgs_prefixed_bem_naming.md
+
+---
+
+## Previous archive (Phase 6a doc-op 2026-05-24 — entries older than 2026-05-18)
 
 ---
 

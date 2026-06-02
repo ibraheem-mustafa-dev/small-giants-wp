@@ -472,16 +472,16 @@ Companion to `/wp-sgs-deploy` (full-ceremony palestine-lives deploy). Pick by ta
 - sandybrown canary → `build-deploy.py`
 - palestine-lives + production → `/wp-sgs-deploy`
 
-### Inheritance audit — container-wrapping blocks (D6)
+### Inheritance audit — container-wrapping blocks (D152)
 
-`plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py` audits which blocks wrap their content in another block (e.g. `sgs/container`) and emits a diff against the `block_composition` table.
+`plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py` detects which blocks wrap children via InnerBlocks (the "wraps children" model) and syncs `wraps_block` + `container_kind` into `block_composition`. Rewritten D152 from a heuristic threshold model to validated structural detection.
 
 ```bash
 python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py
-# --apply to write detected wraps_block values into block_composition
+# --apply to write detected wraps_block + container_kind values into block_composition
 ```
 
-Current threshold flags 4 blocks; tuning to a broader 20-30 block surface is DEFERRED. Re-run whenever container-wrapping conventions change across the block roster.
+28-block container roster confirmed (D152, commit `0d746073`). Re-run via `/sgs-update` Stage (auto) or manually whenever block.json `supports.sgs.containerKind` changes.
 
 ### PowerShell equivalents (dev machine)
 

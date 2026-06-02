@@ -1,5 +1,5 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-31 (converter render+layout fix — pixel-diff mis-scores both ways; reasoning-not-reading caused 3 wrong diagnoses; root-cause methodology now baked into CLAUDE.md)
+**Last updated:** 2026-06-02 (container/wrapper standardisation session — composite-mirror rule; 13 oldest stubs archived to memory/mistakes-archive.md)
 
 <!-- ACTIVE — recent 30 mistakes as keyword stubs. Full body in blub.db `learnings` table or feedback_*.md files. Archive: memory/mistakes-archive.md. Search: grep -r KEYWORD memory/ + curl localhost:5050/api/learning?search=KEYWORD -->
 
@@ -153,70 +153,9 @@
 - **blub.db row:** `281`
 - **Feedback file:** [feedback_multi_model_qc_before_commit.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_multi_model_qc_before_commit.md)
 
-### [2026-05-21] Council predictions need empirical validation before being treated as fix specs (row 276)
-- **Pattern key:** `council-predictions-need-empirical-validation`
-- **blub.db row:** `276`
-- **Feedback file:** [feedback_council_predictions_need_empirical_validation.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_council_predictions_need_empirical_validation.md)
-
-### [2026-05-21] Skills only called by other skills should be non-user-invocable (row 277)
-- **Pattern key:** `skills-only-called-by-others-non-user-invocable`
-- **blub.db row:** `277`
-- **Feedback file:** [feedback_skills_only_called_by_others_non_user_invocable.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_skills_only_called_by_others_non_user_invocable.md)
-
-### [2026-05-21] Stale-doc-text caused regression of a deliberately-stripped licensing check
-- **Pattern key:** `strip-feature-update-docs-same-commit`
-- **blub.db row:** `<pending sync>`
-- **Feedback file:** [feedback_no_licensing_talk_in_cloning_context.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_no_licensing_talk_in_cloning_context.md)
-
-### [2026-05-21] Don't port per-block legacy logic; fix the universal extraction path instead
-- **Pattern key:** `universal-extraction-no-per-block-legacy`
-- **blub.db row:** `<pending sync>`
-- **Feedback file:** [feedback_universal_extraction_no_per_block_legacy.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_universal_extraction_no_per_block_legacy.md)
-
-### [2026-05-21] Every Gemini agent report contained fabricated line citations — grep-verify before relaying
-- **Pattern key:** `verify-gemini-claims-by-grep`
-- **blub.db row:** `<pending sync>`
-- **Feedback file:** [feedback_multi_model_qc_before_commit.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_multi_model_qc_before_commit.md)
-
-### [2026-05-20] Five lessons: token-snap exact-match; @media scope; cv2 CSS-scope lookup; promotion is end-of-line; multi-rater council
-- **Pattern key:** `token-snap-requires-strict-exact-match`
-- **blub.db row:** `<pending sync>`
-- **Feedback file:** [feedback_cloning_preserves_intentional_bespoke_detail.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_cloning_preserves_intentional_bespoke_detail.md)
-
-### [2026-05-20] CSS injection strategy assumed DOM injection; should have used body_class filter instead
-- **Pattern key:** `body-class-strategy-over-dom-injection`
-- **blub.db row:** `<pending sync>`
-- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md)
-
-### [2026-05-19] Schema enumeration before any "missing column/table" claim (blub.db row 272)
-- **Pattern key:** `schema-enumeration-before-gap-claims`
-- **blub.db row:** `272`
-- **Feedback file:** [feedback_schema_enumeration_before_gap_claims.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_schema_enumeration_before_gap_claims.md)
-
-### [2026-05-19] QC panel byte-equality check was tautological while the writer was inert
-- **Pattern key:** `qc-panel-must-assert-file-existence`
-- **blub.db row:** `273`
-- **Feedback file:** [feedback_qc_panel_must_assert_file_existence.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_qc_panel_must_assert_file_existence.md)
-
-### [2026-05-19] Header + footer are template parts, not Gutenberg blocks (3rd recurrence)
-- **Pattern key:** `header-footer-are-template-parts-not-blocks`
-- **blub.db row:** `274`
-- **Feedback file:** [feedback_header_footer_are_template_parts_not_blocks.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_header_footer_are_template_parts_not_blocks.md)
-
-### [2026-05-19] tar --exclude must be path-anchored not basename (blub.db row 275)
-- **Pattern key:** `tar-exclude-must-be-specific-path-not-basename`
-- **blub.db row:** `275`
-- **Feedback file:** [feedback_tar_exclude_must_be_specific_path_not_basename.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_tar_exclude_must_be_specific_path_not_basename.md)
-
-### [2026-05-18] Retired legacy feature before replacement was built; correct sequence is replace → migrate → retire
-- **Pattern key:** `build-replacement-before-retiring-legacy`
-- **blub.db row:** `<pending sync>`
-- **Feedback file:** [feedback_build_replacement_before_retiring_legacy.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_build_replacement_before_retiring_legacy.md)
-
-### [2026-05-18] BEM regex [a-z0-9-]* silently matches --modifier shapes; use segmented kebab pattern
-- **Pattern key:** `bem-regex-double-hyphen-false-positive`
-- **blub.db row:** `<pending sync>`
-- **Feedback file:** [feedback_bean_drafts_use_sgs_prefixed_bem_naming.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_bean_drafts_use_sgs_prefixed_bem_naming.md)
+### [2026-06-02] No composite block evades R-22-9 — composites with built-in wrappers mirror sgs/container
+- **Pattern key:** `no-composite-evades-universal-rule`
+- **Feedback file:** [feedback_no_composite_evades_universal_rule.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_no_composite_evades_universal_rule.md)
 
 ---
 

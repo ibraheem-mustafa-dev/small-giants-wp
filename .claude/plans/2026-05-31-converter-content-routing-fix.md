@@ -2,11 +2,13 @@
 doc_type: phase-plan
 title: Converter content-routing fix (FR-22-2 wiring) — render featured-product + social-proof
 created: 2026-05-31
-status: active
+status: superseded
 spec: specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md (FR-22-2, FR-22-4, R-22-3/9/14)
 branch: feat/fr22-6-content-render (groundwork committed at c9c6544d; complete the fix here, then merge to main)
 baseline: "Mama's page 144 mean ~58.5%; featured-product + social-proof render EMPTY (live DOM textLen=0). Target: both sections render their content."
 ---
+
+> **SUPERSEDED 2026-06-02 by `.claude/plans/2026-06-02-container-wrapper-standardisation.md` (D152).** NB this plan is about CONTENT-ROUTING (sections rendering EMPTY — G1 leaf-text lifting, G2 wrapper-to-leaf guard, G3 array-slot emission, G4 block_composition refresh), NOT the width/full-bleed work. Disposition: **G4 (block_composition data refresh) SHIPPED as Workstream A (D152)**; **G1/G2 content-routing largely shipped earlier** (commit `1fcb0742`, see parking P-CONVERTER-CONTENT-ROUTING-FIX); any residual converter leaf-routing / slot-alias / array-slot (G1/G3) defects fold into **WS-2 (converter/router truth)** of the standardisation programme. The width/full-bleed + content-width work is a SEPARATE concern owned by **WS-1** — this plan did not target it. Branch `feat/fr22-6-content-render` groundwork (`c9c6544d`) retained for diagnostic context.
 
 # Phase plan — Converter content-routing fix
 

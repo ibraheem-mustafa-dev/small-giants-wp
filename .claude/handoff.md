@@ -9,9 +9,13 @@
 4. **The empirical smoking gun:** the fold (`absorb_skipped_child`→`fold_into_container`) deletes the `__inner` + discards max-width → it STRANDS in variation-d0-d2.css targeting a now-deleted selector; leftover-buckets names it; composites get confidence 1.0 (tier=class-section) vs containers 0.0 (deferred-no-match). featured-product 91.9%@1440.
 5. **5-workstream standardisation plan written + qc-council'd (`1d846667`).** Plan + Spec 22 §FR-22-21 (canonical wrapper-conversion procedure) + flow/stages + D152 + parking. 2-rater doc-council → DOCS-COMPLETE + 2 wrong claims fixed (D1 count, FR-22-21 roster).
 6. **Mockup:** removed the has-halal trust-bar 5th-column rule (Bean — added manually, later dropped).
+7. **`/sgs-update` ran clean** (9 stages) — DB current with Workstream A: 190 blocks (68 sgs + 122 core), +2 attrs, 02-SGS-BLOCKS-REFERENCE regenerated, 0 orphans.
+8. **Full doc-walk — ALL stale docs in `.claude/` + specs/ + plans/ reconciled** (Bean caught that the first pass only touched a handful). ~16 docs updated: root+`.claude` CLAUDE.md (active focus + framework stats + composite-mirror rule), architecture/goals/plan/dev-setup/mistakes (+13 stubs archived), specs 02/00-naming/19/21/22, + SUPERSEDED banners on the 3 stale container plans (2026-05-31-container-* + converter-content-routing-fix → status superseded).
+9. **2nd qc-council on the doc set + fixes applied.** Caught the doc-walk's incomplete Spec 22 sweep — fixed ~7 stale `188`→`189` (real count) + `4 blocks (…quote)`→`28-block roster` claims + added the `container_kind` row to the §FR-22-17 schema table; corrected the converter-content-routing-fix banner (it's a CONTENT-routing plan, not width — G4 shipped as Workstream A, residual G1/G3 → WS-2).
+10. **Lesson-capture endpoint FIXED.** `/api/corrections` is dead (308→`/api/learning`, urllib doesn't follow → silent fail). Fixed the handoff command (`commands/handoff.md`) + the canonical `autopilot/references/correction-capture.md` (endpoint + payload: content field is `learning`, not `summary`/`lesson`). capture-lesson skill was already correct. Real lesson `no-composite-evades-universal-rule` re-posted (blub.db id 301).
 
 ## Current State
-- **Branch:** `main` at `1d846667` (pushed). Commits this session: `0d746073` (Workstream A code) + `1d846667` (standardisation docs).
+- **Branch:** `main` at `1d846667`+ (pushed; this turn's doc-reconciliation commit pending). Commits this session: `0d746073` (Workstream A code) + `1d846667` (standardisation docs) + `28b056a0` (handoff trio) + the doc-reconciliation commit.
 - **Tests:** no suite; converter imports clean; `--apply` verified all 28 rows written.
 - **Build:** n/a (no block code changed this phase — build deferred per the plan).
 - **Uncommitted changes:** `lucide-icons.php` (auto-regen, never committed).

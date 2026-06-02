@@ -20,6 +20,15 @@ progress_2026_06_02: |
       different migration path than blocks with save()=<InnerBlocks.Content />; classification
       report maps which blocks are affected; resolving P-FR226 unblocks Wave-2A dispatch)
     - Stream A steps (DB pre-pass + Fix 2b + canary measurement) UNCHANGED in scope
+  CONTAINER STANDARDISATION — Workstream A SHIPPED (commit 0d746073, D152):
+    - block_composition.container_kind column added (section|layout|content — 3-KIND model)
+    - sync-container-wrapping-blocks.py rewritten: validated "wraps children" detection + 3-KIND
+      model + KIND→attr-scope diff; 28-block roster populated with wraps_block + container_kind
+    - trust-bar + modal block.json: supports.sgs.containerKind:"section" operator-override added
+    - /sgs-update ran clean: 190 blocks (68 sgs + 122 core); 02-SGS-BLOCKS-REFERENCE.md regen'd
+    - 5-workstream standardisation programme planned (NOT built): canonical spec = Spec 22 §FR-22-21;
+      plan = .claude/plans/2026-06-02-container-wrapper-standardisation.md (D152). Composites
+      MIRROR sgs/container (R-22-9 — no composite evades universal mechanism)
 progress_2026_06_01: "Shared-branch converter advances (cloning thread, orthogonal to Stream A's DB pre-pass; Stream A steps unchanged): D141 routing fixes, D145 is-style carry + tag-authoritative content-leaf (b93a3b51), D146 sgs/button replaces core/button + multi-button grouping (270cd995). FR-22-20 variant detection PARTIALLY SHIPPED (D134, Commits 1-5/6). Plan-internal R-22-14 contradiction fixed this date: the 'add legacy fallback' instructions at Steps B0/B1 (lines ~329/332/387/399/631) were struck — they violated the P1-locked no-legacy-fallback rule; backwards-compat is Stream C WP-CLI batch migration only."
 progress_2026_05_30: |
   D107-D113 architectural cleanup batch SHIPPED (Stream A continuation):

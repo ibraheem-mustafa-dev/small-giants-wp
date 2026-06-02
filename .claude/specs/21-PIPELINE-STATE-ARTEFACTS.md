@@ -86,7 +86,7 @@ The pipeline grounds Stage 1/2/3 routing in `sgs-framework.db`. Read these table
 | Table / column | Rows | Role | Read by |
 |---|---|---|---|
 | `blocks.tier` (NEW post-D107) | 2 `class-section` rows (`sgs/hero`, `sgs/cta-section`) populated from `supports.sgs.is_section_root` flag in each block.json | Section-root recognition; voter emits literal slug at confidence 1.0 when tier matches | `per-section-convention-voter.py:295-305` |
-| `block_composition` (NEW post-D108) | 188 rows (all registered sgs + core blocks) | Composition metadata: `composition_role` enum, `has_inner_blocks`, `accepts_allowed_blocks`, `wraps_block`. 4 blocks currently flagged `wraps_block='sgs/container'`. Stage 1/2 routing context. | Stage 1 boundary + Stage 2 confidence-matrix (read access); walker condition (XS-3) DEFERRED at c76aa107 — data layer live, refined trigger queued at P-XS-3-TRIGGER-REFINEMENT |
+| `block_composition` (post-D108; `container_kind` column added D152 2026-06-02) | 188 rows (all registered sgs + core blocks) | Composition metadata: `composition_role` enum, `has_inner_blocks`, `accepts_allowed_blocks`, `wraps_block`, `container_kind` (section\|layout\|content — 3-KIND model). 28 blocks now carry `wraps_block` + `container_kind` (roster from `sync-container-wrapping-blocks.py`; was 4 pre-D152). See Spec 22 §FR-22-21 for the wrapper-conversion procedure + composite-mirror rule. | Stage 1 boundary + Stage 2 confidence-matrix (read access); walker condition (XS-3) DEFERRED at c76aa107 — data layer live, refined trigger queued at P-XS-3-TRIGGER-REFINEMENT |
 | `slots` (post-D99 replacement for retired `slot_synonyms`) | 92 element-scope rows + 4 section-scope rows = 96 total (post-D111 2026-05-30; was 105 pre-D111). Includes `inner` passthrough element row. | Canonical slot vocabulary; resolves BEM elements to standalone blocks via `standalone_block` column | Stage 3 slot list + walker element-path recognition. Walker `inner` passthrough code reverted; slot row persists for future re-enable. |
 | `roles` (NEW post-D99) | 20 rows | Replaces `slot_synonyms.role_classification` | Stage 3 + voter |
 | `block_attributes.canonical_slot` | 659 / 2074 rows (31.8% — uplifted from 52 via XS-4 `assign-canonical.py` D99 port) | Per-attribute canonical slot mapping for cv2 extraction | Stage 4 cv2 extractor |
@@ -98,7 +98,7 @@ The pipeline grounds Stage 1/2/3 routing in `sgs-framework.db`. Read these table
 
 **Deferred (data layer LIVE, walker code reverted):**
 - **XS-3 walker condition** — `block_composition` reads wired but walker behaviour at c76aa107 reverted; refined trigger queued at parking entry P-XS-3-TRIGGER-REFINEMENT
-- **D6 threshold re-tune** — 4 blocks currently flagged `wraps_block='sgs/container'`; Bean target 20–30+; queued at P-D6-THRESHOLD-RETUNE
+- **D6 threshold re-tune** — D152 (`sync-container-wrapping-blocks.py` rewrite) expanded the roster to 28 blocks; original P-D6-THRESHOLD-RETUNE target (20–30+) now met at data layer. Walker consumption still deferred at XS-3.
 
 ## Binding rules (blub.db rows)
 

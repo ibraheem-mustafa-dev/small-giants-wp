@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 2
-spec_version: "1.0"
+spec_version: "1.1"
 project: small-giants-wp
 title: SGS Blocks — Custom Gutenberg Block Library
 status: shipped
-last_verified: 2026-06-01
+last_verified: 2026-06-02
 authors: Bean + Claude
 session_date: 2026-02-01
 status_history:
@@ -164,6 +164,18 @@ block-name/
 **Supports:** align (wide, full), anchor, className, colour (background, text), spacing (margin, padding)
 
 **Inner blocks:** Yes — accepts any blocks as children.
+
+**containerKind (NEW 2026-06-02 — D152 / Workstream A):** `block_composition.container_kind` column introduces a 3-KIND model for all container-bearing blocks:
+
+| Kind | Meaning | CSS scope |
+|---|---|---|
+| `section` | Full-bleed outer section wrapper — background + spacing; content-width cap is on the inner wrapper | Outer: `width:100%`; no `max-width` |
+| `layout` | Inner content-width wrapper — caps readable content; explicit `max-width` + `margin:auto` | Inner: `max-width` + `margin:auto` |
+| `content` | Composite block with its own wrapper CSS (e.g. `sgs/product-card` card chrome) | Mirrors `sgs/container`; see composite-mirror rule below |
+
+`containerKind` is exposed as an operator-override attribute on composite blocks whose wrapper KIND is decided by the block's design context (not universal). Example: `sgs/trust-bar` and `sgs/modal` declare `supports.sgs.containerKind: "section"` in `block.json` so the pipeline can treat them as section wrappers when they appear at section boundaries.
+
+**Composite-mirror rule (R-22-9 / D152):** Every composite block with a built-in wrapper (`composition_role='wrapper-shell'` in `block_composition`) MUST mirror `sgs/container`'s CSS model — no per-block divergence. When `sgs/container` gains a capability (e.g. neutral-default width, inner-wrapper pattern), all 28 composite blocks gain it automatically via the `sync-container-wrapping-blocks.py` standardisation script. Canonical procedure: Spec 22 §FR-22-21 + `.claude/plans/2026-06-02-container-wrapper-standardisation.md`.
 
 **Render:** **Dynamic** — `render: file:./render.php`. Server-side rendering needed for layout/columns/gap responsive logic and `useInnerBlocksProps` integration. `save.js` returns `<InnerBlocks.Content />`.
 
@@ -1081,7 +1093,7 @@ Blocks recognised by the converter walker at confidence 1.0 from their literal `
 
 To add: set `supports.sgs.is_section_root: true` in `block.json`, run `/sgs-update`, then run `/sgs-clone` on a representative mockup and verify `voter.json` emits the literal slug at confidence 1.0 with reason `class-section-block-equivalent`. Any non-section-root `sgs-` prefixed class encountered by the voter emits `gap-candidate-class-section` instead — surfacing the gap for review rather than mis-routing.
 
-Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (`block_composition` table — sibling routing data).
+Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (`block_composition` table — sibling routing data), D152 (`block_composition.container_kind` 3-KIND model + composite-mirror rule → Spec 22 §FR-22-21 + `.claude/plans/2026-06-02-container-wrapper-standardisation.md`).
 
 ---
 

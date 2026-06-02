@@ -10,6 +10,8 @@ parent: Spec 22 (Universal Block-Equivalent Extraction); Task 1 XS-3 walker
 research: memory/research/2026-05-31-container-neutral-default-attributes.md (16 sources)
 ---
 
+> **SUPERSEDED 2026-06-02 by `.claude/plans/2026-06-02-container-wrapper-standardisation.md` (D152)** — the inner-wrapper model replaces the "neutral default" framing (contentWidth moved to inner `__inner` wrapper; outer container goes full-bleed by default). Spec 22 §FR-22-21 is the canonical procedure. This doc is retained for historical reasoning only.
+
 # Spec 23 — Neutral-Default Container Architecture
 
 ## §0 Purpose (plain English)

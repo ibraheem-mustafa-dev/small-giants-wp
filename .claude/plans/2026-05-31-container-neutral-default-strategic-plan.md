@@ -8,6 +8,8 @@ baseline: Mama's Munches page 144 — mean pixel-diff 59.83% (featured-product 7
 research: memory/research/2026-05-31-container-neutral-default-attributes.md (16 sources)
 ---
 
+> **SUPERSEDED 2026-06-02 by `.claude/plans/2026-06-02-container-wrapper-standardisation.md` (D152)** — absorbed into the 5-workstream standardisation programme; contentWidth design corrected to inner-wrapper model (supersedes cap-each-child Option B from this plan). Retained for audit trail.
+
 # Strategic Plan — Neutral-Default Container Architecture
 
 ## Goal (one sentence)

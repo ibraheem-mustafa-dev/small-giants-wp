@@ -552,17 +552,17 @@ python plugins/sgs-blocks/scripts/build-deploy.py --verify-url https://sandybrow
 
 ---
 
-### `sync-container-wrapping-blocks.py` (D6 / D112, 2026-05-30 — commit `062c69d1`)
+### `sync-container-wrapping-blocks.py` (D6 / D112 origin; **rewritten D152 2026-06-02** — commit `0d746073`)
 
-Container-inheritance audit script (468 LOC) at `plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py`. Walks the `block_composition` table for `sgs/*` blocks and scores each block.json against 9 wrapper-style signals: `background*`, `padding*`, `maxWidth` / `widthMode`, `minHeight`, `shapeDivider`, `bgSvg`, `bgVideo`, `overlay`, `htmlTag`.
+Container-inheritance audit + KIND-classification script at `plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py`. Rewritten in D152 (Workstream A of the container standardisation programme) with:
 
-**Role-aware thresholds:**
-- `section-root` / `wrapper-shell` — needs ≥1 strong non-native signal.
-- `content-block` with `has_inner_blocks=1` — needs ≥2 signals.
+- **Validated "wraps children" detection** — structural signal (block wraps child blocks) replaces attr-count scoring. Reads `block_composition.has_inner_blocks` + `accepts_allowed_blocks` as the primary gate.
+- **3-KIND model** — classifies each block as `section` (full-bleed outer), `layout` (inner content-width wrapper), or `content` (composite with its own chrome).
+- **KIND→attr-scope diff** — emits per-block diff showing which attrs are in scope for each KIND, highlighting missing attrs vs `sgs/container`.
 
-**Writes** `block_composition.wraps_block = 'sgs/container'` to the canonical `sgs-framework.db`. **Never auto-edits block.json** — operator review gate is mandatory. Per-block diff Markdown emitted to `pipeline-state/container-inheritance-sync/<date>/<block>.diff.md` listing missing attrs + naming-drift candidates.
+**Writes** `block_composition.wraps_block + container_kind` to canonical `sgs-framework.db`. **Never auto-edits block.json** — operator review gate for `containerKind` operator-override attribute is separate. Per-block diff Markdown at `pipeline-state/container-inheritance-sync/<date>/<block>.diff.md`.
 
-Currently flags 4 blocks: `sgs/hero`, `sgs/cta-section`, `sgs/modal`, `sgs/quote`. Threshold tuning deferred at parking entry `P-D6-THRESHOLD-RETUNE`.
+**Current roster (post-D152):** 28 blocks with `wraps_block` + `container_kind` populated. Original P-D6-THRESHOLD-RETUNE target (20–30+) met. See Spec 22 §FR-22-21 for the canonical wrapper-conversion procedure.
 
 ```bash
 python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py
