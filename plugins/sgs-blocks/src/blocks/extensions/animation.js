@@ -103,11 +103,14 @@ function addAnimationAttributes( settings, name ) {
 /**
  * Guard against double registration.
  *
- * container/index.js imports this file directly so that animation controls
- * are available even without the extensions bundle. The extensions bundle
- * (extensions/index.js) also imports it. Both bundles are loaded in the editor,
- * so without this guard every addFilter call fires twice and every block shows
- * two Animation panels in the inspector.
+ * This file is the canonical source — imported only by extensions/index.js.
+ * The container block previously also imported it directly, which caused
+ * addFilter('editor.BlockEdit', ...) to run twice (one per webpack bundle),
+ * producing two Animation panels in the inspector on every sgs/* block.
+ * That direct import was removed (D148 / 2026-06-02) — the guard is kept
+ * as a defensive measure in case the dual-import is accidentally re-introduced.
+ *
+ * Matches the identical pattern in responsive-visibility.js and parallax.js.
  */
 if ( ! window.__sgsAnimationRegistered ) {
 window.__sgsAnimationRegistered = true;

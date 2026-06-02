@@ -6,10 +6,11 @@ import deprecated from './deprecated';
 import './style.css';
 import './editor.css';
 
-// Extensions load once globally — animation + visibility controls
-// for all sgs/* blocks. Bundled here because container always loads.
-import '../extensions/animation';
-import '../extensions/responsive-visibility';
+// Note: global block extensions (animation, responsive-visibility, etc.)
+// are loaded unconditionally via enqueue_block_editor_assets → sgs-block-extensions.
+// No need to import them here — importing from this bundle AND the extensions
+// bundle caused both addFilter('editor.BlockEdit', ...) calls to execute, producing
+// duplicate inspector panels on every sgs/* block in the editor.
 import { containerIcon } from '../../utils';
 
 registerBlockType( metadata.name, {
