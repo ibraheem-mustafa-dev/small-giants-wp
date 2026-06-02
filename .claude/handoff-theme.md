@@ -1,3 +1,36 @@
+# Session Handoff — 2026-06-02 (SGS THEME thread, session 5)
+
+> Theme/blocks thread. Cloning pipeline → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`.
+
+## Completed This Session
+1. **Stale-handoff correction (ground truth).** The session-4 handoff + next-session-prompt said theme wave-1 was "pushed, NOT merged" on `feat/theme-blocks-wave1` and that no parallel session was active. BOTH were stale: git shows wave-1 WAS merged (`a8cb3ff9`), and a parallel CLONING session is LIVE on `main` (it committed+pushed workstream-A `0d746073`/D150 mid-session). Worked from `main`, committed by explicit pathspec (concurrent-commit-race safe).
+2. **Task A — cart badge-increment E2E CLOSED.** Created WooCommerce product 513 (canary had 0). Live-verified (Playwright): add-to-cart → `POST /wc/store/v1/cart/add-item` 201 → `sgs/cart` badge 0→1, no reload, no `wc-ajax`/fragments. `sgs/cart` now fully OUTCOME-ACHIEVED. (P-CART-INCREMENT-E2E resolved → archived.)
+3. **Product-card Phase C BUILT + LIVE-VERIFIED + COMMITTED + PUSHED (`6bcdf48c`, D151).** Design gate first: `/research` (research-pipeline, WC Block-Bindings) + Bean sign-off. Bean reframed the model: **SGS card = always-on wrapper; WooCommerce = primary backing store; CPT = no-WC fallback** (D151 refines D149). New `sgs-product/field` Block Bindings source (WC vs CPT routing); render.php Bound mode (explicit `sourceMode`, R-22-14); Interactivity-API pill→context swap + add-to-cart via Store API (reuses Task-A path); editor product picker + ServerSideRender. Build via Sonnet subagent + 2-rater cross-model QC (Sonnet+Haiku) → fixed an IDOR guard, a `wc_get_availability()` fatal (real bug — that fn doesn't exist), and an SSR-getter-wipe bug. Live-verified WC bound (513: price+add-to-cart+badge) + CPT bound (522: pills) + empty state + IDOR guard. Visual-diff report at `reports/visual-diff/product-card-2026-06-02.md`.
+
+## Current State
+- **Branch:** `main` @ `6bcdf48c` (pushed). Phase C committed by explicit path. Concurrent cloning session also on main (`0d746073` pushed).
+- **Build:** `npm run build` green; `php -l` clean; deployed to sandybrown canary + OPcache reset.
+- **Uncommitted:** `lucide-icons.php` (documented auto-regen, never committed).
+- **Canary fixtures (kept):** WC product 513, sgs_product 522 (has `_sgs_variation_sets`), test page 514 `/cart-increment-test/`.
+
+## Known Issues / Blockers
+- **Pill→price/image swap is wired but DORMANT** — Phase-B `_sgs_variation_sets` stores only `{key,label}` per option (no per-option price/image). Visible swap needs the per-option data model (Phase 2 SKU matrix). NOT a bug; documented in render.php + the visual-diff report.
+- **Editor double-wrapper fix is logic-level** — the ServerSideRender bound preview was de-duplicated; not re-opened in a live editor this session (low risk, frontend unaffected).
+- **state.md is messy** (duplicate `current_subphase_step` keys accumulated) — needs a `/handoff` regen.
+
+## Next Priorities
+1. Phase D — clone-emit (converter outputs `sgs/option-picker` for pill groups; TRUTH-SPEC + slots) per D144.4.
+2. Phase E — collection/query block (Spec 24 FR-24-4/5).
+3. Per-option data model (Phase 2 SKU matrix) to activate the dormant pill→price/image swap.
+4. Remaining theme tasks: FR-22-6 Wave-2A (gated on P-FR226), heading/text dormant-variant tweak (Task D), cart drawer (Phase 2).
+
+## Notes for Next Session
+- **VERIFY handoff claims against git before trusting them** — this session's opening handoffs were stale on merge-status AND parallel-session-active. Run `git log --oneline -8` + `git branch` first.
+- **Concurrent session on main is real** — commit by explicit pathspec (`git commit -F msg -- <paths>`), never `git add .`; the Bash tool is NOT PowerShell (the `@'...'@` heredoc fails — use `-F <file>`).
+- **Option-picker event contract (verified):** `sgs:option-selected`, `detail:{ typeKey, selectedKey, contentImpact }`.
+
+---
+
 # Session Handoff — 2026-06-02 (SGS THEME thread, session 4)
 
 > Theme/blocks/editor-UX thread. Cloning pipeline → `.claude/handoff.md`. Next steps → `.claude/next-session-prompt-theme.md`.

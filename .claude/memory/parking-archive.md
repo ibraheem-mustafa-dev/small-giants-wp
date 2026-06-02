@@ -1440,3 +1440,9 @@ _From: Cloning pipeline — D99 port + DB table work_
 
 **P-UTF8-MOJIBAKE-IN-CONVERTER-OBSOLETE** — **Status:** RESOLVED — XS-11 investigation 2026-05-30 narrows the search to downstream stage-10 deploy / WP REST path. Root cause ultimately confirmed as source-file corruption (see P-UTF8-MOJIBAKE-IN-CONVERTER above). The subagent's initial mojibake claim was a Windows cp1252 tool-output rendering artefact, not file corruption. Entry superseded by P-UTF8-MOJIBAKE-IN-CONVERTER (RESOLVED above).
 
+
+---
+
+_From: Theme thread — 2026-06-02 session 5 (archived on resolve, D150 standard)_
+
+**P-CART-INCREMENT-E2E** — **Status:** RESOLVED 2026-06-02. `sgs/cart` badge-increment-on-add-to-cart was untested (canary had 0 WooCommerce products). Resolved: created WC product 513, live-verified via Playwright on `/cart-increment-test/` (page 514) — add-to-cart → `POST /wc/store/v1/cart/add-item` 201 → badge 0→1, no full reload, no `?wc-ajax=get_refreshed_fragments`, `wc-blocks_added_to_cart` fired. `sgs/cart` now fully OUTCOME-ACHIEVED. The product 513 fixture also unblocked product-card Phase C (D151). Original entry NEW 2026-06-02.
