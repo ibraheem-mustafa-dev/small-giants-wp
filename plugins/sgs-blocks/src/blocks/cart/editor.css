@@ -1,0 +1,18 @@
+/* ===== SGS Cart — editor.css (editor-only overrides) ===== */
+
+/* Ensure the editor preview wrapper behaves inline */
+.wp-block-sgs-cart {
+	display: inline-block;
+}
+
+/* WooCommerce notice in the editor canvas */
+.sgs-cart__editor-notice {
+	font-size: 12px;
+	margin-bottom: 8px;
+}
+
+/* Prevent the editor placeholder trigger from looking like a dead element */
+.sgs-cart__trigger--editor {
+	pointer-events: none;
+	user-select: none;
+}
