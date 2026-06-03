@@ -8,7 +8,7 @@
 
 **Goal B — Cloning pipeline delivers ≤5% pixel-diff PER BODY SECTION × 3 viewports (375/768/1440) — Phase 1 acceptance — irrespective of mockup content variations, from any Claude-generated SGS-BEM HTML draft. Phase 2.5 stretch closes residual to ≤1%.**
 
-- **Phase 1 gate:** per-section ≤5% × 3 viewports for all 7 body sections (21 cells). **Phase 1 ARCHITECTURAL closed 2026-05-27** — 8 task-commits shipped (8 commits from `507d4f57` through `da3de993`). NEW convert.py 1873 LoC vs retired 4803 LoC = 61% reduction. Empirical pixel-diff measurement ongoing — current baseline 58.6%. Container/wrapper standardisation (WS-2/WS-3) is the primary active driver toward this gate.
+- **Phase 1 gate:** per-section ≤5% × 3 viewports for all 7 body sections (21 cells). **Phase 1 ARCHITECTURAL closed 2026-05-27** — 8 task-commits shipped (8 commits from `507d4f57` through `da3de993`). NEW convert.py 1873 LoC vs retired 4803 LoC = 61% reduction. Pixel-diff is informational (FR-22-18); the canonical figure is cited per-run from `stage-11-pixel-diff.json`, not held as a fixed baseline. Latest measured mean: 63.61% (Wave B re-capture 2026-05-27, `pipeline-state/mamas-munches-144-2026-05-26-122349/`). Container/wrapper standardisation (WS-2/WS-3) is the primary active driver toward this gate.
 - **Phase 1.5 gate:** per-section ≤1% × 3 viewports. Bridges residual via pixel-diff.py vertical-anchor fix + chrome cropping + font-load timing. Scope determined empirically by Phase 1.5 measurement results.
 - **Phase 2 gate:** header + footer cloner ships after Phase 1 hits ≤5% (Phase 1.5 may run in parallel). Phase 2 scope locked to 61-block hybrid render.php migration roster per `reports/2026-05-27-hybrid-block-roster.md`.
 
@@ -69,7 +69,7 @@ Ship a complete WordPress block framework + theme + supporting plugins (forms, b
 
 | Goal | Exit criteria | Source |
 |------|--------------|--------|
-| **Phase 1 pixel-diff closure (G1-G5 + F5)** | 1440 average pixel-diff ≤ 5%, 768 ≤ 8%, 375 ≤ 10% across 7 Mama's Munches sections | `.claude/next-session-prompt.md` (4-wave plan); evidence at `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` |
+| ~~**Phase 1 pixel-diff closure (G1-G5 + F5)**~~ **(SUPERSEDED)** | ~~1440 average pixel-diff ≤ 5%, 768 ≤ 8%, 375 ≤ 10%~~ Superseded by Spec 22 FR-22-7: **per-section ≤5% × 3 viewports** (not mean, not per-breakpoint averages). See Goal B above. | `.claude/next-session-prompt.md` (4-wave plan); evidence at `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` |
 
 ## Active goals (added 2026-05-21 — architecture session)
 

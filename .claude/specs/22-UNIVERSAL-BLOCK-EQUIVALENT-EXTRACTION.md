@@ -62,10 +62,10 @@ This spec covers the whole pipeline — Stage 4 (the converter) is the main rewr
 
 Spec 16 layered multiple recognition / consumption paths over time (FR1 + FR2 + FR3 + FR4 + lift_subtree + F1 + 9 walk() branches + ARRAY_LIFT_PATTERNS + ATOMIC_TAG_MAP). The 2026-05-26 diagnostic chain (commit `c9b058a7` and prior) proved that:
 
-1. **The DB already holds the complete mapping** — `slot_synonyms.standalone_block` documents every BEM-canonical-slot to block relationship. `block_attributes.canonical_slot` is the converter-side hook (currently 54.1% NULL across all 2,246 rows; `/sgs-update assign-canonical.py` extension is the backfill mechanism per FR-22-2.1).
+1. **The DB already holds the complete mapping** — `slots` (scope='element') `standalone_block` documents every BEM-canonical-slot to block relationship. `block_attributes.canonical_slot` is the converter-side hook (currently 54.1% NULL across all 2,246 rows; `/sgs-update assign-canonical.py` extension is the backfill mechanism per FR-22-2.1).
 2. **`lift_subtree_into_block_attrs` and F1 are the same goal, executed twice, incompletely.** Path A consumes descendants into scalar attrs; F1 walks the same descendants into InnerBlocks. They double-render when a block has overlapping content attrs (sgs/product-card post-F1: 8569 chars vs pre-F1 2303 chars — 3.7× explosion measured 2026-05-26).
 3. **The "container-shaped composite block" classification was abandoned** in Spec 16 (parking entry `P-G1-EXTEND-TO-OTHER-CONTAINER-SHAPED-COMPOSITES` deferred because no DB column cleanly identified the class). Spec 22 reframes honestly: the classification IS reintroduced as "hybrid block" (FR-22-6) but the criterion is now DB-derivable via `equivalent_block_for()` returning non-NULL for ≥1 attr. The renaming is acknowledged, not denied (per council finding F-AP-3).
-4. **D72 (sgs/trust-bar retirement) is the proof-of-concept** for the universal-nesting direction — replacing the hardcoded composite with universal-nesting via `slot_synonyms.standalone_block` dropped trust-bar pixel-diff −50.4pp / −27pp / −66.9pp at three viewports (absolute best-ever: 37.0 / 24.6 / 33.1% — NOT ≤1%; the proof is directional, not absolute).
+4. **D72 (sgs/trust-bar retirement) is the proof-of-concept** for the universal-nesting direction — replacing the hardcoded composite with universal-nesting via `slots` (scope='element') `standalone_block` dropped trust-bar pixel-diff −50.4pp / −27pp / −66.9pp at three viewports (absolute best-ever: 37.0 / 24.6 / 33.1% — NOT ≤1%; the proof is directional, not absolute).
 5. **The hero-clone-poc page (page 29, /hero-clone-poc/) is the visual proof-of-concept** for ≤5% achievability. Hero content matches mockup visually (Bean's eye + cropped-pair comparison artefact); pixel-diff reports 54.5% due to a 60px vertical body-anchor offset between the SGS chrome environment and the standalone mockup file — a measurement artefact, not visual divergence. Phase 1.5 fixes the measurement methodology.
 
 Spec 16 retires in full. The architectural rules R5 (CSS-drives-emission), FR6 four-destination CSS router, and FR7 visual-QA verification migrate into this spec. Everything else in Spec 16 (FR1 fast path, lift_subtree, ARRAY_LIFT_PATTERNS, hardcoded ATOMIC_TAG_MAP, the 9-branch walk(), the FR1-vs-normal-route distinction) is deleted.
@@ -78,7 +78,7 @@ The universal walker is one function called per DOM Tag. Its **input/output cont
 |---|---|
 | A DOM Tag node, the css_rules buffer, recursion depth, `is_top_level` flag | A single WP block markup string, OR `None` if the node was pass-through (its children's emit was bubbled up to the parent's InnerBlocks list) |
 
-**The walker's behaviour is fully determined by the node's class list + the DB.** No conditional based on block slug. No "if this then that" per block type. Per-block behaviour comes from DB rows (block_attributes, slot_synonyms, block_supports), not from code branches.
+**The walker's behaviour is fully determined by the node's class list + the DB.** No conditional based on block slug. No "if this then that" per block type. Per-block behaviour comes from DB rows (`block_attributes`, `slots` (scope='element'), `block_supports`), not from code branches.
 
 The walker has **exactly three permitted exceptions** to the universal path (per FR-22-3 — no others may be added without a spec amendment):
 
@@ -97,14 +97,14 @@ Walker reads `class` attribute, parses each class via `db.parse_sgs_bem()`, reso
 | Input class shape | Lookup | Result |
 |---|---|---|
 | `sgs-<block>` (block root) | direct slug formation: `sgs/<block>` | sgs/<block> emit |
-| `sgs-<block>__<element>` | `slot_synonyms.aliases` contains `<element>` to `standalone_block` | the resolved standalone block emit |
+| `sgs-<block>__<element>` | `slots` (scope='element') `aliases` contains `<element>` to `standalone_block` | the resolved standalone block emit |
 | `sgs-<block>__<element>--<modifier>` | as above + modifier goes onto emitted block as `variantStyle` or className modifier | as above + variant attribution |
 | Non-`sgs-` class on a child div | walked through (pass-through; see FR-22-11); class preserved on the nearest emitted ancestor block | structural transparent wrapper |
 | **Multiple SGS block-root classes on one node** | Resolved via `_pick_primary_sgs_block(sgs_classes)` tiebreaker (existing function in convert.py). The first SGS block-root class wins; subsequent SGS block-root classes are preserved as additional className entries on the emitted block. | Single block emit + className list |
 
 HTML tag is **rendering-shape only** (per Spec 00 §3.1), never used for recognition. `<div class="sgs-X__quote">` and `<blockquote class="sgs-X__quote">` resolve identically to sgs/quote.
 
-**No hardcoded class-to-block dicts.** The walker queries `slot_synonyms` + `block_attributes` + `blocks` at runtime via the unified `wp-blocks.py` CLI (FR-22-8). Per binding rule blub.db row 260 (db-first-no-hardcoded-dicts).
+**No hardcoded class-to-block dicts.** The walker queries `slots` (scope='element') + `block_attributes` + `blocks` at runtime via the unified `wp-blocks.py` CLI (FR-22-8). Per binding rule blub.db row 260 (db-first-no-hardcoded-dicts).
 
 **PASS test:** for every emitted block in extract.json, the block slug is derivable from the source node's SGS classes via the DB tables named above. No emitted block has a slug that required a Python conditional referencing the slug name.
 **FAIL test:** any block whose emit path includes a Python `if slug == 'sgs/X'` or `elif slug == 'sgs/Y'` block-slug-typed conditional.
@@ -125,8 +125,8 @@ Every `block_attributes` row's "equivalent_block" status is derived at query tim
 
 The derivation function lives in `converter_v2/db_lookup.py`. Two tiers, in order:
 
-1. **Tier A — Direct join.** `block_attributes.canonical_slot` IS NOT NULL → join `slot_synonyms` → return `standalone_block`.
-2. **Tier B — BEM-element from derived_selector.** When canonical_slot is NULL but `derived_selector` is set (e.g. `.sgs-product-card__image`), extract the BEM element (`image`), match against `slot_synonyms.aliases` (JSON-decoded), return the matching `standalone_block`.
+1. **Tier A — Direct join.** `block_attributes.canonical_slot` IS NOT NULL → join `slots` (scope='element') → return `standalone_block`.
+2. **Tier B — BEM-element from derived_selector.** When canonical_slot is NULL but `derived_selector` is set (e.g. `.sgs-product-card__image`), extract the BEM element (`image`), match against `slots` (scope='element') `aliases` (JSON-decoded), return the matching `standalone_block`.
 
 **Tier C deleted 2026-05-27** per D85 / qc-council Rater B verdict (Bean directive). Re-introduction is gated on parking entry `P-SGS-UPDATE-ROLE-DETECTION-IMPROVE` generating real Tier C inputs — at which point the path will be re-added with empirical evidence backing it. See §15 F-AP-2 / F-SC-11 / F-PE-5 (all RESOLVED via deletion).
 
@@ -145,13 +145,13 @@ The derivation function lives in `converter_v2/db_lookup.py`. Two tiers, in orde
 
 Not every attr whose `canonical_slot` joins to a `standalone_block` is content-bearing. `sgs/hero` has 134 attrs that join via canonical_slot to a standalone_block — but most are typography/spacing/colour attrs on the `heading` canonical slot (e.g. `headlineFontSizeDesktop` has canonical_slot=`heading` because it styles the heading, NOT because the operator should drop a sgs/heading block there).
 
-The role-exclusion rule: `equivalent_block_for()` returns the slug ONLY when the attr's role is classified `content-bearing` on `slot_synonyms.role_classification` (DB-driven positive allowlist; D85 2026-05-27 — see §4 data layer):
+The role-exclusion rule: `equivalent_block_for()` returns the slug ONLY when the attr's role is classified `content-bearing` in the `roles` table (DB-driven positive allowlist; D85 2026-05-27 — see §4 data layer):
 
 Content-bearing roles (return slug): text-content, image-object, content, link-href, identity.
 
 Styling/behaviour roles (return NULL even if canonical_slot joins): typography, color, colour-gradient, colour-text, spacing-token, number-css-px, number-css-percent, layout, motion, visual, behaviour, boolean-visibility, select-from-enum, enum-class-probe, query-descriptor.
 
-Per R-22-1 the classification is NOT a hardcoded Python frozenset — it lives in the `roles` table (DB-driven via idempotent `INSERT OR REPLACE` migration from `_ROLE_CLASSIFICATION_MAP` seed dict in `db_lookup.py`). `slot_synonyms.role_classification` column **retired 2026-05-29 D99** — the column was incapable of seeding `link-href` because no `slot_synonyms` row had `role='link-href'`, causing `_content_bearing_roles()` to return 4 instead of 5. The `roles` table (20 rows) fixes this: classification is defined by role name directly, not derived from slot-row role values.
+Per R-22-1 the classification is NOT a hardcoded Python frozenset — it lives in the `roles` table (DB-driven via idempotent `INSERT OR REPLACE` migration from `_ROLE_CLASSIFICATION_MAP` seed dict in `db_lookup.py`). The `slot_synonyms.role_classification` column was **retired 2026-05-29 D99** — the column was incapable of seeding `link-href` because no `slot_synonyms` row had `role='link-href'`, causing `_content_bearing_roles()` to return 4 instead of 5. The `roles` table (21 rows post-D128) fixes this: classification is defined by role name directly, not derived from slot-row role values.
 
 This shrinks the "hybrid block" set from the raw block count down to a true-content-bearing set. **Phase 0.4 audit (2026-05-27 commit `de300eb2`) surfaced the actual count: 61 hybrid blocks across 77 SGS audited (1,740 attrs scanned). Earlier "8-15" estimate was a guess at high-content-composite count only; the canonical FR-22-6 criterion (≥1 content-bearing attr after role-exclusion) captures the wider truth.** Roster at `.claude/reports/2026-05-27-hybrid-block-roster.md`. Phase 2 prioritises by hybrid_attr_count descending.
 
@@ -162,7 +162,7 @@ This shrinks the "hybrid block" set from the raw block count down to a true-cont
 
 **Status:** RETIRED. Earlier drafts proposed a third derivation tier (role-to-dominant-block via `slot_synonyms.role + standalone_block` query) for use when both `canonical_slot` and `derived_selector` were NULL on a `block_attributes` row. Empirically there are 0 such rows in the current DB; the path was dormant on ship. Per qc-council Rater B (2026-05-27) and Bean directive, Tier C is deleted from the codebase rather than shipped dormant — R-22-7 (council fix-shapes are hypotheses, not specs) applied to the original proposal: there were no empirical inputs to validate the dominance heuristic against. Re-introduction is gated on `P-SGS-UPDATE-ROLE-DETECTION-IMPROVE` generating real Tier C inputs, at which point a fresh spec amendment will re-add the path with measurement evidence.
 
-Adding a new role-to-block relationship is achieved by adding rows to `slot_synonyms` and populating `canonical_slot` on the relevant `block_attributes` rows (Tier A) or `derived_selector` (Tier B). No new DB table required.
+Adding a new role-to-block relationship is achieved by adding rows to `slots` (scope='element') and populating `canonical_slot` on the relevant `block_attributes` rows (Tier A) or `derived_selector` (Tier B). No new DB table required.
 
 #### FR-22-2.4 — Unresolved attr handling
 
@@ -180,7 +180,7 @@ For array-typed attrs (e.g. `packSizes`, `testimonials`, `badges` — block_attr
 1. If the parent block's attr has `canonical_slot` populated → that's the array slot's content type (e.g. `packSizes` canonical_slot=`button` → each item is a sgs/button).
 2. Walker finds the sibling-class container in the DOM (the `<div class="...__pill-group">` in product-card's case) and emits one child block per item-child within it.
 3. Per-item attrs (label, state) lift via the same role-aware mechanism as scalar attrs.
-4. If array attr has NULL canonical_slot, walker queries the children's BEM signature for the slot (the children's `__element` BEM segment → resolve via slot_synonyms.aliases → standalone_block).
+4. If array attr has NULL canonical_slot, walker queries the children's BEM signature for the slot (the children's `__element` BEM segment → resolve via `slots` (scope='element') aliases → standalone_block).
 
 **Phase 1.3a backfill priority list (corrected 2026-05-27 — drift fix per D89):** the original priority list (product-card.packSizes, social-proof.testimonials, certification-bar.badges, info-box.items) was a Spec-22-drafting drift — 3 of 4 entries didn't grep against the codebase (no `sgs/social-proof` block exists; `info-box.items` attr doesn't exist (real array is `elementOrder`, a slot-name config list); `certification-bar.badges` attr name was wrong (real attr is `items`, already populated)). The CORRECTED priority list, verified against `block_attributes` 2026-05-27, is the 4 sgs/* array attrs with NULL canonical_slot that genuinely carry content:
 
@@ -497,7 +497,7 @@ For wrapper/container/layout/content-routing commits, the acceptance metric is *
 
 ### FR-22-19 — Class-section composite interior slot-routing (Bean-directed, 2026-06-01; status DESIGN — build pending)
 
-A **class-section composite** is a registered block with `tier='class-section'` AND `block_composition.wraps_block='sgs/container'` — i.e. its render.php provides a fixed shell (named column divs like `.sgs-X__content` / `.sgs-X__media`) and consumes `$content` for one column while rendering the other column(s) from **scalar attrs with a rich own pipeline** (art-direction, srcset, object-fit, bleed, border, responsive show/hide CSS authored in render.php). Current roster: `sgs/hero`, `sgs/cta-section`, `sgs/modal`, `sgs/quote`.
+A **class-section composite** is a registered block with `tier='class-section'` AND `block_composition.wraps_block='sgs/container'` — i.e. its render.php provides a fixed shell (named column divs like `.sgs-X__content` / `.sgs-X__media`) and consumes `$content` for one column while rendering the other column(s) from **scalar attrs with a rich own pipeline** (art-direction, srcset, object-fit, bleed, border, responsive show/hide CSS authored in render.php). Current render.php-interior-slot routing roster (4 blocks): `sgs/hero`, `sgs/cta-section`, `sgs/modal`, `sgs/quote`. Note: this 4-block roster is DISTINCT from the 28-block container-mirror roster in §FR-22-21 (all blocks with `block_composition.wraps_block='sgs/container'` across all 3 KINDs — section, layout, content). The composite-mirror rule in §FR-22-21 names `hero, cta-section, modal, trust-bar` as `container_kind='section'` examples; `sgs/quote` is `container_kind='content'` and is also in the 28-block roster. The FR-22-19 routing applies specifically to blocks that render fixed named interior columns via render.php.
 
 **The problem.** When the walker resolves such a block, §FR-22-4.1 emits each of its mockup direct-descendant wrapper columns as a generic `sgs/container` (the `__content` container + the `__media` container with child `sgs/media`). The block's render.php then ALSO wraps `$content` in its own `.sgs-X__content` shell and renders its own scalar media column — producing a **double `.sgs-X__content`** and a media column the converter filled with classless `sgs/media` children that the block's art-direction CSS cannot target. Verified on Mama's hero canary 2026-05-31/06-01 (R-22-11). render.php is correct; the converter emits the wrong interior shape for these blocks.
 
@@ -586,7 +586,7 @@ Universal wrapper-conversion procedure — for any draft wrapper (container / se
 6. CARRY ALL CSS: any property with no attr equivalent → FLAG (never silent-drop). Known flags: grid-template-areas, overflow (hero-specific).
 ```
 
-**Composite-mirror rule (R-22-9).** Every composite block with a built-in wrapper (the `container_kind='section'` blocks hero, cta-section, modal, trust-bar — and the wider `block_composition.wraps_block='sgs/container'` roster across all KINDs) MUST mirror `sgs/container`'s capabilities for its KIND (section / layout / content per `block_composition.container_kind`), so step 2's outer-CSS transfer + step 3's content-width + step 4's grid + step 4's `gridItem*` all have a destination attr on the composite. The mirror is propagated by `/sgs-update` from the canonical container's capability set onto each composite of the matching kind — NOT hand-authored per block (no per-block divergence; R-22-9). A composite missing a mirrored attr is a `/sgs-update` propagation gap, not a per-block fix.
+**Composite-mirror rule (R-22-9).** This procedure applies at every nesting depth — to every `sgs/container` and every composite wrapper in the draft tree, not only to top-level section-root wrappers. Every composite block with a built-in wrapper (the `container_kind='section'` blocks hero, cta-section, modal, trust-bar — and the wider `block_composition.wraps_block='sgs/container'` roster across all KINDs) MUST mirror `sgs/container`'s capabilities for its KIND (section / layout / content per `block_composition.container_kind`), so step 2's outer-CSS transfer + step 3's content-width + step 4's grid + step 4's `gridItem*` all have a destination attr on the composite. The mirror is propagated by `/sgs-update` from the canonical container's capability set onto each composite of the matching kind — NOT hand-authored per block (no per-block divergence; R-22-9). A composite missing a mirrored attr is a `/sgs-update` propagation gap, not a per-block fix.
 
 **Current-state gaps (build-pending).** The TARGET above is not yet fully implemented. Tracked gaps:
 
@@ -595,7 +595,7 @@ Universal wrapper-conversion procedure — for any draft wrapper (container / se
 - **outer max-width transfer broken** — step 2's `max-width PRESENT → widthMode:"custom" + customWidth` path is not wired; a hardcoded `widthMode:"full"` band-aid is in place.
 - **gap forced to spacing-token** — step 4's `gap` (raw px allowed) is currently snapped to a spacing token, losing raw values.
 - **gridItem\* never written** — step 4's uniform-item path has no writer; `gridItem*` defaults are never emitted.
-- **D1 layer written-not-consumed** — the D1 attr-lift sidecar carries layout CSS that the container emit does not consume back into native attrs.
+- **D1 typed-attr sidecar written-but-not-consumed** (`seed_d1_sidecar` stub) — the D1 attr-lift sidecar carries layout CSS that the container emit does not consume back into native attrs; layout CSS strands in variation CSS instead of landing on block attributes.
 - **composites don't mirror + no auto-propagation** — composites lack the mirrored container capabilities and `/sgs-update` does not yet propagate them.
 
 Workstreams for these gaps live in **`.claude/plans/2026-06-02-container-wrapper-standardisation.md`**.
@@ -620,7 +620,7 @@ Workstreams for these gaps live in **`.claude/plans/2026-06-02-container-wrapper
 | `block_styles` | 63 | Block style variations |
 | `block_changes` | 2,719 | Audit log |
 | `slots` | 96 (92 element + 4 section, per D111 2026-05-30) | **D99 2026-05-29 — unified slot→block mapping.** D111 2026-05-30: section-scope rows pruned 16 → 4 (12 wrong/dead rows DELETED; remaining: core/group, hero, cta, cta-section). Element-scope rows 89 → 92 (testimonial + testimonial-slider re-inserted; `inner` passthrough slot added with `standalone_block=NULL` — walker consumption reverted per D109 but slot row persists for future re-wiring under P-XS-3-TRIGGER-REFINEMENT). Replaces `slot_synonyms` (89 element-scope rows) + `legacy_role_lookup` (16 section-scope rows). PK: `(slot_name, scope)` — composite because the same name can exist at both scopes (e.g. `header` is an element-scope identity slot AND a section-scope class). `scope='element'` rows are the former `slot_synonyms` data; `scope='section'` rows are the former `legacy_role_lookup` data. `html_semantic_tag` column NOT migrated (was low-value: only 27/89 populated; not consulted by `atomic_tag_map()` per §14). |
-| `roles` | 20 | **D99 2026-05-29 — role-name → classification catalogue.** Replaces `slot_synonyms.role_classification` column. Seeded from `_ROLE_CLASSIFICATION_MAP` via `INSERT OR REPLACE`. Fixes link-href bug (old column never seeded link-href because no slot row had `role='link-href'`). 5 content-bearing + 15 styling-behaviour. |
+| `roles` | 21 | **D99 2026-05-29 — role-name → classification catalogue.** Replaces `slot_synonyms.role_classification` column. Seeded from `_ROLE_CLASSIFICATION_MAP` via `INSERT OR REPLACE`. Fixes link-href bug (old column never seeded link-href because no slot row had `role='link-href'`). **D128 2026-06-01 — `scalar-media` role added** (classification `styling-behaviour`; powers FR-22-19 composite-interior routing). 5 content-bearing + 16 styling-behaviour = 21 total. |
 | ~~`slot_synonyms`~~ | ~~89~~ | **RETIRED D99 2026-05-29.** Data migrated to `slots WHERE scope='element'`. |
 | `property_suffixes` | 117 | CSS property → block-attribute suffix (D1 routing). **D99: `kind_override` column added.** 17 rows seeded from `_KIND_BY_SUFFIX` dict (was a hardcoded Python lookup dict; now DB column queried first in `_kind_for()`). |
 | `modifier_suffixes` | 19 | BEM modifier kinds |
@@ -703,12 +703,12 @@ Retired scripts move to `plugins/sgs-blocks/scripts/orchestrator/_retired/` so t
 ### Enriches
 
 - `block_attributes.canonical_slot` — `/sgs-update assign-canonical.py` extended for Tier B backfill only (≤72 candidate rows per D84 scope correction; 1,142 triple-NULL rows are correctly NULL behavioural attrs and stay NULL by design)
-- `slot_synonyms` — new rows added for gaps surfaced during the universal sweep. New column `role_classification` added by D85 (2026-05-27) idempotent migration in `db_lookup._migrate_role_classification()`; populated from `_ROLE_CLASSIFICATION_MAP` seed (one-time at module load). Tier C derivation no longer required (FR-22-2.3 retired); the column powers the FR-22-2.2 positive-allowlist gate.
+- `slots` (scope='element') — new rows added for gaps surfaced during the universal sweep. The `roles` table (D99) replaces the retired `slot_synonyms.role_classification` column; seeded by D85 (2026-05-27) idempotent migration in `db_lookup._migrate_role_classification()` from `_ROLE_CLASSIFICATION_MAP` seed (one-time at module load). Tier C derivation no longer required (FR-22-2.3 retired); the `roles` table powers the FR-22-2.2 positive-allowlist gate.
 - uimax `recognition_log` — every walker emit logs an outcome (no schema change; writes increase)
 
 ## 6. Architectural rules (binding for every Spec 22 commit)
 
-1. **R-22-1 — DB-first, no hardcoded dicts** (blub.db 260). All lookups via DB tables; the only "permitted" dict-like constant is `SKIP_TOP_LEVEL_TAGS` (3 entries: header/footer/nav — bounded HTML semantic tags, not block-specific). Role classification (replacing the original Tier C row-derivation concept) now lives in the `slot_synonyms.role_classification` column (DB-migrated 2026-05-27 per D85/D86) — Python frozensets retired.
+1. **R-22-1 — DB-first, no hardcoded dicts** (blub.db 260). All lookups via DB tables; the only "permitted" dict-like constant is `SKIP_TOP_LEVEL_TAGS` (3 entries: header/footer/nav — bounded HTML semantic tags, not block-specific). Role classification lives in the `roles` table (D99 — replaced the retired `slot_synonyms.role_classification`) — Python frozensets retired.
 2. **R-22-2 — BEM is the only recognition signal** (Spec 00 §3.1). HTML tag is rendering-shape only, except in the bounded atomic-tag-swap permitted exception.
 3. **R-22-3 — Three permitted walker exceptions, no others** (FR-22-3). Adding a 4th branch requires spec amendment with empirical justification. **D109 2026-05-30 amplification:** the deferred XS-3 refined trigger queued at parking entry **P-XS-3-TRIGGER-REFINEMENT** MUST land as a refinement to FR-22-4 (container-default behaviour) or as enrichment of one of the three existing exceptions — NEVER as a 4th conditional. The `block_composition` table (FR-22-17) supplies the data signals; the consumption code shape is constrained by this rule.
 4. **R-22-4 — Pixel-diff measurement gates every commit** (blub.db 256). `/sgs-clone --debug-trace` Stage 11 per-section pixel-diff captured pre/post. Commit message cites predicted vs actual delta.
@@ -741,7 +741,7 @@ Retired scripts move to `plugins/sgs-blocks/scripts/orchestrator/_retired/` so t
 
 **Commit 1.1 — Pre-rewrite snapshot.** Archive current `convert.py` to `_retired/convert_pre_spec22.py`. No behavioural change. Living-docs update noting pending rewrite.
 
-**Commit 1.2 — Atomic-tag map migration.** Replace hardcoded `ATOMIC_TAG_MAP` (convert.py:698-704) with DB-driven `db.atomic_tag_map()` call. Resolution algorithm: query `slot_synonyms.html_semantic_tag → standalone_block` AND `blocks.replaces` reverse-walk. Documented algorithm in Appendix B (§14). Stage 11 measurement: predicted no change (current ATOMIC_TAG_MAP works; this is structural cleanup).
+**Commit 1.2 — Atomic-tag map migration.** Replace hardcoded `ATOMIC_TAG_MAP` (convert.py:698-704) with DB-driven `db.atomic_tag_map()` call. Resolution algorithm: `blocks.replaces` reverse-walk (Tier 1) — `html_semantic_tag` was NOT migrated from retired `slot_synonyms` (see Appendix B §14). Documented algorithm in Appendix B (§14). Stage 11 measurement: predicted no change (current ATOMIC_TAG_MAP works; this is structural cleanup).
 
 **Commit 1.3 — ARRAY_LIFT_PATTERNS retirement + array-of-objects resolution.** Implement FR-22-2.5. Delete `ARRAY_LIFT_PATTERNS` dict. Stage 11 measurement: predicted social-proof + featured-product show modest improvement.
 
@@ -768,7 +768,7 @@ Per FR-22-6 + FR-22-6.1. One commit per block in the Phase 0.4 audit roster. Son
 
 **Commit 4.1 — Mama's full-page acceptance.** `/sgs-clone --auto-section`. Every body section measured. Phase 4 closes when every body section ≤5% × 3 viewports per FR-22-7 AND Bean visual sign-off accepted.
 
-**Commit 4.2 — Cross-client validation.** Same acceptance gate on Indus Foods homepage AND helping-doctors if available. Any new slot_synonyms / naming_conventions rows added are checked against Mama's pipeline run to verify no Mama's regression.
+**Commit 4.2 — Cross-client validation.** Same acceptance gate on Indus Foods homepage AND helping-doctors if available. Any new `slots` (scope='element') / `naming_conventions` rows added are checked against Mama's pipeline run to verify no Mama's regression.
 
 **Commit 4.3 — Phase 4 close `/qc-council` Stage 5 + `/handoff`.** Cross-doc updates per §8.
 
@@ -857,7 +857,7 @@ After Spec 22 Phase 4.3 closes:
 - Hybrid-block roster (Phase 0.4) empty of unresolved blocks (every hybrid has migrated render.php)
 - `_retired/` folder bulk-deleted after Phase 4 acceptance
 - decisions.md + mistakes.md cleaned of stale Spec 16 references
-- Zero hardcoded class-to-block dicts remain in Python (role classification migrated to `slot_synonyms.role_classification` column per D85/D86; Tier C derivation deleted)
+- Zero hardcoded class-to-block dicts remain in Python (role classification migrated to `roles` table per D85/D86/D99; Tier C derivation deleted)
 - ≤72-row Tier B backfill diff reviewed by Bean + applied; 1,142 triple-NULL behavioural rows verified unchanged post-script (per D84 scope correction)
 - A fresh `/sgs-clone` run on any client mockup produces deterministic ≤5% per-section output (Phase 1) with a clear path to ≤1% (Phase 1.5)
 
@@ -933,16 +933,15 @@ Total branching surface: 3 named exceptions (atomic-tag swap / chrome-skip / top
 Per FR-22-3 + Commit 1.2. The mapping from HTML tag to block slug is derived at startup from sgs-framework.db (cached in db_lookup.py):
 
 Resolution order per tag:
-1. `slot_synonyms.html_semantic_tag = <tag>` → return `standalone_block` (when set in DB)
-2. For HTML primitives not covered by Tier 1, reverse-walk `blocks.replaces` JSON: find first sgs-source block where `replaces` contains the matching `core/<equivalent>` slug
-3. If no SGS replacement exists, return the core block slug (`core/paragraph`, `core/heading`, `core/image`, etc.) as the default
+1. `blocks.replaces` reverse-walk (primary path) — find first sgs-source block where `replaces` JSON contains the matching `core/<equivalent>` slug → return that sgs block slug. Note: the old `html_semantic_tag` column lived on the retired `slot_synonyms` table and was NOT migrated to `slots` (only 27/89 rows populated; low-value — see §4 data layer). `blocks.replaces` is the canonical Tier 1 mechanism.
+2. If no SGS replacement found via Tier 1, return the core block slug (`core/paragraph`, `core/heading`, `core/image`, etc.) as the default.
 
-The Tier 2 cascade is the SAME pattern as the legacy ATOMIC_TAG_MAP but DB-derived. The legacy dict had 9 entries; the new map will have ≥9 entries and grow automatically as new SGS blocks declare `blocks.replaces` mappings.
+The Tier 1 cascade is the same lookup the legacy ATOMIC_TAG_MAP performed but DB-derived. The legacy dict had 9 entries; the new map grows automatically as SGS blocks declare `blocks.replaces` mappings.
 
 Example seed (live-derived at startup, not hardcoded):
 - `p` → sgs/text (via blocks.replaces contains "core/paragraph") or core/paragraph fallback
-- `h1`-`h6` → sgs/heading (via slot_synonyms.html_semantic_tag) or core/heading fallback
-- `img` → sgs/media (via slot_synonyms or blocks.replaces) or core/image fallback
+- `h1`-`h6` → sgs/heading (via blocks.replaces contains "core/heading") or core/heading fallback
+- `img` → sgs/media (via blocks.replaces contains "core/image") or core/image fallback
 - `hr` → sgs/divider (via blocks.replaces contains "core/separator") or core/separator fallback
 
 ## 15. Council findings addressed in v0.3
@@ -950,8 +949,8 @@ Example seed (live-derived at startup, not hardcoded):
 | Council finding | Severity | Address in v0.3 |
 |---|---|---|
 | F-AP-1 / F-SC-1 — "No branches" structural contradiction | CRIT | FR-22-3 explicitly names exactly 3 permitted exceptions; PASS/FAIL test added |
-| F-AP-2 / F-SC-11 — ROLE_TO_BLOCK dict violates R-22-1 | CRIT | **RESOLVED via Tier C deletion (D85 2026-05-27).** Earlier v0.3 mitigation derived Tier C from existing `slot_synonyms.role + standalone_block` columns; qc-council Rater B (2026-05-27) and Bean directive removed Tier C entirely on empirical grounds (0 inputs in current DB → no measurement evidence for the dominance heuristic). The DB-derived role-classification column (`slot_synonyms.role_classification`) now powers FR-22-2.2 via the positive-allowlist gate without any Python lookup dict. R-22-1 honoured. |
-| F-PE-3 — ATOMIC_TAG_MAP via blocks.replaces wrong direction | CRIT | Resolution algorithm specified in Appendix B (§14) — 2-tier lookup via slot_synonyms.html_semantic_tag + blocks.replaces reverse |
+| F-AP-2 / F-SC-11 — ROLE_TO_BLOCK dict violates R-22-1 | CRIT | **RESOLVED via Tier C deletion (D85 2026-05-27).** Earlier v0.3 mitigation derived Tier C from existing `slots` (scope='element') `role + standalone_block` columns; qc-council Rater B (2026-05-27) and Bean directive removed Tier C entirely on empirical grounds (0 inputs in current DB → no measurement evidence for the dominance heuristic). The `roles` table (D99 — replaced `slot_synonyms.role_classification`) now powers FR-22-2.2 via the positive-allowlist gate without any Python lookup dict. R-22-1 honoured. |
+| F-PE-3 — ATOMIC_TAG_MAP via blocks.replaces wrong direction | CRIT | Resolution algorithm specified in Appendix B (§14) — `blocks.replaces` reverse-walk (Tier 1). `html_semantic_tag` was NOT migrated from retired `slot_synonyms` (column absent from `slots` — see §14). |
 | F-PE-4 — Hybrid scope 90 not 5 | CRIT | Recalibrated: 63 raw → 8-15 true hybrid via FR-22-2.2 role-exclusion |
 | F-RA-1 — Phase 0.1 backfill semantic golden corpus | CRIT → DOWNGRADED LOW (D84, 2026-05-27) | Mitigation restructured: script constrained by construction to `derived_selector IS NOT NULL` input. DB audit 2026-05-27 showed 1,142 of 1,214 "NULL canonical_slot" rows are correctly-NULL behavioural attrs (NOT backfill targets); real backfill scope is ≤72 Tier B rows reviewable inline. Golden corpus DROPPED — dry-run JSON diff IS the review surface. |
 | F-RA-2 — Cold rollback broken by DB mutation | CRIT | Pre-rewrite DB snapshot in Commit 0.1 |

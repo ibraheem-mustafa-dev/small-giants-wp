@@ -194,16 +194,18 @@ sgs_product CPT  ──fields (show_in_rest)──►  Block Bindings sources
         │ queried by                                   │ binds field slots of
         ▼                                              ▼
 sgs/content-collection  ──loop template──►  dual-mode card (sgs/product-card …)
-  (Query Loop + query_loop_block_query_vars        Typed mode  → InnerBlocks ($content)
-   filter for named conditions)                    Bound mode  → field slots bound to CPT meta
+  (dedicated block, own WP_Query —             Typed mode  → InnerBlocks ($content)
+   named conditions resolved in render.php)    Bound mode  → field slots bound to CPT meta
         │
         ▼
    designed empty state (server-rendered)
 ```
 
 - **Data source:** custom CPT, registered per-site. No WooCommerce.
-- **Query engine:** core Query Loop block, extended via the `query_loop_block_query_vars` PHP
-  filter for meta_value orderby + condition presets (the documented workaround for #40170).
+- **Query engine:** dedicated `sgs/content-collection` block with its own `WP_Query`. Named
+  selection presets (featured, newest, most-expensive, etc.) are resolved via `WP_Query` args
+  in render.php — the `query_loop_block_query_vars` PHP filter is not needed (Open Question #1
+  resolved, Phase E 2026-06-03). Core Query Loop's meta-orderby gap (#40170) is avoided entirely.
 - **Field surfacing:** Block Bindings API — `register_meta(show_in_rest:true)` +
   `register_block_bindings_source()` for computed/derived fields (e.g. formatted price).
 - **Card:** the existing presentational cards, made dual-mode (FR-24-2). Typed mode == the

@@ -175,13 +175,15 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │ FILES (W):  pipeline-state/sgs-clone/<run_id>/voter.json (rewritten)        │
 │             pipeline-state/sgs-clone/<run_id>/stage-1.json                  │
 │                                                                             │
-│ DB tables (R) — post-D107/D108/D111:                                        │
+│ DB tables (R) — post-D107/D108/D111/D128/D152:                               │
 │   blocks.tier (D107 — new column, 2 rows class-section)                     │
-│   block_composition (D108 — 188 rows; AVAILABLE for queries, walker         │
-│     consumption code DEFERRED — P-XS-3-TRIGGER-REFINEMENT)                  │
-│   slots WHERE scope='element' (89 rows incl. new 'inner' passthrough)        │
-│   slots WHERE scope='section' (6 rows post-D111; was 16 pre-D111)            │
-│   roles (D99 — 20 rows; replaces slot_synonyms.role_classification)         │
+│   block_composition (D108/D152 — 189 rows post-D152; container_kind column  │
+│     added D152, values section|layout|content, 28-block roster populated;   │
+│     AVAILABLE for queries, walker consumption DEFERRED — P-XS-3-TRIGGER)    │
+│   slots WHERE scope='element' (92 rows post-D111)                            │
+│   slots WHERE scope='section' (4 rows post-D111; was 16 pre-D111)            │
+│   roles (D99/D128 — 21 rows; replaces slot_synonyms.role_classification;    │
+│     scalar-media role added D128 2026-06-01)                                │
 │ Skills (X):     ✗ /uimax-classify-naming (deferred — current dispatch uses  │
 │                   heuristic classifier in stage1_boundary_hook)             │
 │ STATUS:       LIVE - tier-driven routing (D107) + slots/roles (D99/D111)    │
@@ -210,7 +212,8 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │ when walker bypasses top_pick via unambiguous BEM signal.                   │
 │                                                                             │
 │ Q1A FIX (commit d8ae4a2a, 2026-05-23): Stage 2 fallback emits sgs/container │
-│   instead of core/group per Decision 3. legacy_role_lookup: 18 rows.        │
+│   instead of core/group per Decision 3. (legacy_role_lookup was 18 rows;    │
+│   RETIRED D99 — now slots WHERE scope='section', 4 rows.)                   │
 │                                                                             │
 │ STATUS:       LIVE - core/group fallback fixed (2026-05-23)                 │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -239,11 +242,11 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 
 ### Stage 4 — Universal block-equivalent extraction (Spec 22)
 
-> **Spec 22 (2026-05-26) replaces Spec 16's slot-extraction architecture in full.** Single universal walker path with exactly 3 permitted exceptions per FR-22-3. The 9-branch walk(), `lift_subtree_into_block_attrs`, `_lift_inner_blocks`, F1 fallback, `ARRAY_LIFT_PATTERNS`, hardcoded `ATOMIC_TAG_MAP` are all retired. Per-block behaviour comes from DB rows (slot_synonyms.standalone_block + block_attributes.canonical_slot + role-exclusion), not code branches. Phase 1 implementation in 5 commits per `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`. Acceptance gate: per-section ≤5% × 3 viewports (Phase 1.5 stretch ≤1%).
+> **Spec 22 (2026-05-26) replaces Spec 16's slot-extraction architecture in full.** Single universal walker path with exactly 3 permitted exceptions per FR-22-3. The 9-branch walk(), `lift_subtree_into_block_attrs`, `_lift_inner_blocks`, F1 fallback, `ARRAY_LIFT_PATTERNS`, hardcoded `ATOMIC_TAG_MAP` are all retired. Per-block behaviour comes from DB rows (`slots` (scope='element') `standalone_block` + `block_attributes.canonical_slot` + role-exclusion via `roles` table), not code branches. Phase 1 implementation in 5 commits per `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`. Acceptance gate: per-section ≤5% × 3 viewports (Phase 1.5 stretch ≤1%).
 >
 > **Wrapper/container resolution (D118, 2026-05-31):** §FR-22-4.1 (Universal wrapper/container resolution) is the canonical Stage 4 rule for every sgs-classed wrapper below a section root. It supersedes `walk_passthrough` drop-and-bubble for sgs-classed wrappers, the depth-2 `_is_layout_bearing_wrapper` gate, and `_absorb_transparent_wrappers` (D52). Precedence: (1) block-match → emit block; (2) direct descendant with no block match → fold CSS into parent container (1-child: inner-CSS layer; grid/flex: container absorbs layout + grid-item CSS); (3) direct descendant matching a block → emit as block (the grid item); (4) non-direct-descendant → own sgs/container, recurse. FR-22-11 (non-sgs-classed transparent wrappers) is unchanged.
 >
-> **Universal wrapper-conversion procedure (FR-22-21, 2026-06-02):** the canonical 6-step TARGET for the fold + CSS-lift at this stage (OUTER box → container supports/attrs; INNER `__inner` max-width → `contentWidth`; GRID → native grid attrs + `gridItem*`; carry-all-CSS / flag-never-drop). **Empirical current behaviour (build-pending gaps vs that target):** the fold (`absorb_skipped_child`→`fold_into_container`) currently DELETES the `__inner` and DISCARDS its `max-width` (which then strands in `variation-d0-d2.css` instead of becoming `contentWidth`); and composites take a DIFFERENT path (`absorb_skipped_section`→`composite_interior_route`, confidence 1.0 per FR-22-19) than container sections (confidence 0.0, deferred-no-match). Full TARGET + gap list: Spec 22 §FR-22-21 + `.claude/plans/2026-06-02-container-wrapper-standardisation.md`.
+> **Universal wrapper-conversion procedure (FR-22-21, 2026-06-02):** This procedure applies at every nesting depth — to every `sgs/container` and every composite wrapper in the draft tree, not only to top-level section-root wrappers. Canonical 6-step TARGET for the fold + CSS-lift at this stage (OUTER box → container supports/attrs; INNER `__inner` max-width → `contentWidth`; GRID → native grid attrs + `gridItem*`; carry-all-CSS / flag-never-drop). **Empirical current behaviour (build-pending gaps vs that target):** the fold (`absorb_skipped_child`→`fold_into_container`) currently DELETES the `__inner` and DISCARDS its `max-width` (which then strands in `variation-d0-d2.css` instead of becoming `contentWidth`); the D1 typed-attr sidecar is written-but-not-consumed (`seed_d1_sidecar` stub) so layout CSS strands in variation CSS instead of landing on block attrs; and composites take a DIFFERENT path (`absorb_skipped_section`→`composite_interior_route`, confidence 1.0 per FR-22-19) than container sections (confidence 0.0, deferred-no-match). Full TARGET + gap list: Spec 22 §FR-22-21 + `.claude/plans/2026-06-02-container-wrapper-standardisation.md`.
 
 
 ```
@@ -457,8 +460,9 @@ match; tracked as a follow-up.
 │                 functionality_gap_candidates (uimax)                        │
 │                                                                             │
 │ Wave 2 (7d713ba0): STAGE_2_CONFIDENCE_THRESHOLD = 0.7 named constant.       │
-│ Wave 3 (e60fe58e): LEGACY_ROLE_LOOKUP migrated to DB (legacy_role_lookup,   │
-│   18 entries via seed-legacy-role-lookup.py). Voter refactored to DB call.  │
+│ Wave 3 (e60fe58e): LEGACY_ROLE_LOOKUP migrated to DB (was legacy_role_lookup,│
+│   18 entries; RETIRED D99 — now slots WHERE scope='section', 4 rows post-   │
+│   D111). Voter refactored to DB call.                                        │
 │                                                                             │
 │ STATUS (post-Wave2/3 2026-05-21): LIVE - confidence gate enforced           │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -683,13 +687,13 @@ python ~/.claude/hooks/wp-blocks.py dump
 
 | Layer | Table / Column | Status |
 |-------|---------------|--------|
-| Block name | `sgs-framework.blocks.slug` | ✅ 69 blocks |
-| Attribute names | `sgs-framework.block_attributes.attr_name` | ✅ 2230 rows |
-| Canonical slot | `sgs-framework.block_attributes.canonical_slot` | ✅ + `slot_synonyms` (89 rows) |
+| Block name | `sgs-framework.blocks.slug` | ✅ 68 sgs blocks (190 total incl. core/wp) |
+| Attribute names | `sgs-framework.block_attributes.attr_name` | ✅ 2,074 rows |
+| Canonical slot | `sgs-framework.block_attributes.canonical_slot` | ✅ + `slots` (scope='element', 92 rows) |
 | Attribute role | `sgs-framework.block_attributes.role` | ✅ |
 | Output signature | `sgs-framework.block_attributes.output_signature` | ✅ |
 | Equivalent implementations (Rosetta Stone) | `sgs-framework.block_attributes.equivalent_implementations` | ✅ 1630 rows |
-| Block supports | `sgs-framework.block_supports` | ✅ 1223 rows |
+| Block supports | `sgs-framework.block_supports` | ✅ 1,160 rows (post-D100 prune) |
 | Pattern composition | `sgs-framework.patterns.block_composition` (JSON) | ✅ 35 of 53 patterns |
 | Cross-stack components | `uimax.component_libraries` | ✅ 217 rows |
 | Recognition log | `uimax.recognition_log` | ✅ Stage 9 W |
@@ -738,24 +742,24 @@ python ~/.claude/hooks/wp-blocks.py dump
 **DEAD tables (zero rows — retirement candidates):**
 `sections_detected`, `extraction_cache`, `block_opportunities`, `weaknesses`, `animations` (all in sgs-framework.db).
 
-**NEW (Wave 3, 2026-05-21):** `legacy_role_lookup` (18 rows) — voter `LEGACY_ROLE_LOOKUP` dict migrated here. +1 row added Q1A 2026-05-23.
+**RETIRED (D99 2026-05-29):** `legacy_role_lookup` (was 18 rows) — unified into `slots WHERE scope='section'` (now 4 rows post-D111). `slot_synonyms` (was 89 rows) — unified into `slots WHERE scope='element'` (now 92 rows post-D111). `slot_synonyms.role_classification` column → `roles` table.
 
 ### sgs-framework.db key tables
 
 | Table | Rows | Pipeline use |
 |---|---|---|
 | block_attributes | 2,074 | Stages 3+4 R; cv2 D3 W. D110 backfill: canonical_slot 659/2074 (31.8%), role 676/2074 (32.6%); 1316 NULL |
-| blocks | 67 sgs (+ 121 core/wp indexed = 188) | Stage 2 cross-check; /sgs-update S3 uimax sync. `tier` column (D107) — 2 rows class-section |
-| block_composition (D108, NEW 2026-05-30) | 188 | Data layer LIVE for Stage 1 queries; walker consumption code REVERTED — P-XS-3-TRIGGER-REFINEMENT. Schema: block_slug PK, wraps_block, composition_role enum, has_inner_blocks, accepts_allowed_blocks |
+| blocks | 68 sgs (+ 122 core/wp indexed = 190) | Stage 2 cross-check; /sgs-update S3 uimax sync. `tier` column (D107) — 2 rows class-section |
+| block_composition (D108/D152) | 189 (post-D152) | Data layer LIVE for Stage 1 queries; `container_kind` column added D152 (values `section|layout|content`; 28-block container roster populated); walker consumption code REVERTED — P-XS-3-TRIGGER-REFINEMENT. Schema: block_slug PK, wraps_block, composition_role enum, has_inner_blocks, accepts_allowed_blocks, container_kind |
 | slots (D99, replaces slot_synonyms + legacy_role_lookup) | 92 element + 4 section = 96 (post-D111; was 105 pre-D111) | Stage 1 R via db_lookup |
-| roles (D99, replaces slot_synonyms.role_classification) | 20 | Stage 1 R; walker resolution |
+| roles (D99/D128, replaces slot_synonyms.role_classification) | 21 (D99 base 20 + scalar-media D128 2026-06-01) | Stage 1 R; walker resolution |
 | block_supports | 1,160 (post-D100 prune) | Stage 5 supports_writer R |
 | block_capabilities (D99 wired as FR-22-15) | 88 | Walker capability-aware BEM tiebreaker |
 | property_suffixes | 117 (+ kind_override column, 17 populated per D99) | assign-canonical; cv2 db_lookup.css_property_suffixes() |
 | patterns | 47 | Stage 2 confidence boost; +REGISTER W |
 | attribute_gap_candidates | 107+ | Stage 9 W; D3 emission W (Wave 3) |
 
-**Retired tables:** `slot_synonyms` + `legacy_role_lookup` — unified into `slots` (D99, 2026-05-29).
+**Retired tables:** `slot_synonyms` (89 rows → now `slots WHERE scope='element'`, 92 rows) + `legacy_role_lookup` (16 rows → now `slots WHERE scope='section'`, 4 rows) — unified into `slots` (D99, 2026-05-29). `slot_synonyms.role_classification` column → `roles` table (D99, 21 rows post-D128).
 
 ---
 

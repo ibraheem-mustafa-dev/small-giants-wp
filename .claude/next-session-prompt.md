@@ -4,7 +4,7 @@ project: small-giants-wp
 thread: cloning-pipeline
 session_tag: small-giants-wp-2026-06-02-container-wrapper-standardisation
 generated: 2026-06-02
-primary_goal: "CLONING-PIPELINE THREAD. ORCHESTRATION-FIRST (Sonnet-subagent over Opus-inline; parallel where disjoint; /qc after every considerable change). The container/wrapper CSS-transfer system is a faithful-transfer FAILURE and composites don't mirror sgs/container — a 5-workstream STANDARDISATION PROGRAMME is now planned (NOT built): `.claude/plans/2026-06-02-container-wrapper-standardisation.md` + Spec 22 §FR-22-21. Workstream A (block_composition roster + container_kind) already SHIPPED (0d746073). OPEN WITH WS-1: sgs/container 3-layer completion (content-width attr + inner-wrapper render + outer max-width transfer + custom-width + raw-px gap + min-height + gridItem*) — sensitive core-block change → design-gate + /qc-council BEFORE coding. WS-1 gates WS-4 (composite mirror + auto-propagation). Work on main @ 1d846667; a parallel THEME thread shares the tree."
+primary_goal: "CLONING-PIPELINE THREAD. ORCHESTRATION-FIRST (Sonnet-subagent over Opus-inline; parallel where disjoint; /qc after every considerable change). The container/wrapper CSS-transfer system is a faithful-transfer FAILURE and composites don't mirror sgs/container — a 5-workstream STANDARDISATION PROGRAMME is now planned (NOT built): `.claude/plans/2026-06-02-container-wrapper-standardisation.md` + Spec 22 §FR-22-21. Workstream A (block_composition roster + container_kind) already SHIPPED (0d746073). OPEN WITH WS-1: sgs/container 3-layer completion (content-width attr + inner-wrapper render + outer max-width transfer + custom-width + raw-px gap + min-height + gridItem*) — sensitive core-block change → design-gate + /qc-council BEFORE coding. WS-1 gates WS-4 (composite mirror + auto-propagation). Work on main @ c468af7a; a parallel THEME thread is actively committing to the shared tree — commit by explicit path (STOP #41/#45)."
 ---
 
 # Next Session — CLONING thread (container/wrapper standardisation programme)
@@ -13,8 +13,8 @@ primary_goal: "CLONING-PIPELINE THREAD. ORCHESTRATION-FIRST (Sonnet-subagent ove
 > Invoke `/autopilot` first. Then read the MANDATORY READING LIST **end-to-end, not grep-skim**. The predecessor session (2026-06-02) deep-analysed the container/wrapper system (4-branch code review + 6-step target/current compare + artefact-empirical proof) and scoped the fix as a 5-workstream programme — do NOT re-derive it, READ the plan (`.claude/plans/2026-06-02-container-wrapper-standardisation.md`) + Spec 22 §FR-22-21 + decisions D152. Quote the STOP catalogue + the pre-flight ritual back to yourself before acting. A SEPARATE theme/blocks thread shares this working tree — see `.claude/next-session-prompt-theme.md` (do not do theme work here; coordinate commits, explicit path, check `git log -1 --stat`).
 
 ## Branch + state
-- **Branch:** `main` @ `1d846667` (pushed). This session's commits: `0d746073` (Workstream A code) + `1d846667` (standardisation docs). No long-lived branch — commit fidelity work to main or a fresh SHORT-LIVED branch.
-- **Canary page 144** (`/rc-fix-verification-mamas-munches/` on sandybrown) reflects the last re-clone (run `mamas-munches-144-2026-06-01-123104`). Pixel-diff mean ~62% (informational per FR-22-18; the systemic transfer gaps are WHY — wrong widths, dropped `__inner` wrappers, imposed gradient).
+- **Branch:** `main` @ `c468af7a` (pushed; a parallel THEME thread is co-active on this tree — commit by explicit path, verify `git log -1 --stat`). No long-lived branch — commit fidelity work to main or a fresh SHORT-LIVED branch.
+- **Canary page 144** (`/rc-fix-verification-mamas-munches/` on sandybrown) reflects the last re-clone (run `mamas-munches-144-2026-06-02-224706`). Pixel-diff informational per FR-22-18 — never cite a single number as a gate; the systemic transfer gaps are WHY (wrong widths, dropped `__inner` wrappers, imposed gradient).
 - **Mockup baseline server:** `python -m http.server 8137 --bind 127.0.0.1` from `sites/mamas-munches/` (restart for re-measure). Draft: `http://127.0.0.1:8137/mockups/homepage/index.html`.
 
 ## ✅ SHIPPED + DONE THIS SESSION (2026-06-02) — DO NOT re-derive
@@ -26,6 +26,8 @@ primary_goal: "CLONING-PIPELINE THREAD. ORCHESTRATION-FIRST (Sonnet-subagent ove
 - **Mockup:** removed the has-halal trust-bar 5th-column rule (Bean — added manually, later dropped).
 
 ## ⚡ OPEN WITH THIS — WS-1: sgs/container 3-layer completion (the build opener)
+
+> **Scope — universal, not section-level.** This fix applies to every wrapper element in the draft HTML at any nesting depth, every `sgs/container` instance at any depth, and every composite block with a built-in `sgs/container` wrapper (all three KINDs: section/layout/content). The class-section width bug was the symptom that surfaced it — not the scope. Faithful transfer also covers a property's absence (no `max-width` → full-width, overriding the theme default).
 
 The analysis + plan are DONE. The next session BUILDS, starting with **WS-1 — complete sgs/container's 3 layers** (the canonical wrapper; WS-1 gates WS-4 composite-mirror). Per the plan §WS-1:
 - **A1 (High)** content-width layer: add a `contentWidth` attr + render.php emits an inner `sgs-container__inner` div (max-width + margin:auto) when set + edit.js control. The fold lifts `__inner`'s max-width into it. (convert.py:498-516,2776-2804 currently DROP it.)
@@ -41,7 +43,7 @@ The analysis + plan are DONE. The next session BUILDS, starting with **WS-1 — 
 
 ### WS-1 — sgs/container 3-layer completion (OPEN HERE; gates WS-4)
 **What:** A1 content-width attr + inner-wrapper render; A2 outer max-width transfer + kill hardcoded widthMode:full; A3 custom-width centring; A4 raw-px gap; A5 min-height; A6 gridItem*. **Why:** the canonical wrapper must hold all 3 layers before composites can mirror it. **Time:** ~2 hr.
-**Orchestration:** design-gate (`/brainstorming` + `/qc-council`) FIRST → Sonnet subagent builds → main-thread deploys + re-measures live DOM → Bean R-22-13. **/qc gate after:** YES /qc-council. **Acceptance:** the 4 slug-None sections render full-bleed + content capped (featured 1040, others 960) centred; brand 1000; hero/trust-bar unchanged; live-DOM verified.
+**Orchestration:** design-gate (`/brainstorming` + `/qc-council`) FIRST → Sonnet subagent builds → main-thread deploys + re-measures live DOM → Bean R-22-13. **/qc gate after:** YES /qc-council. **Acceptance:** the 4 slug-None sections render full-bleed + content capped (featured 1040, others 960) centred; brand 1000; live-DOM verified. Note: the 4 sections are the measurement gate for WS-1 — composite blocks (hero/trust-bar) mirror sgs/container via WS-4 once the canonical wrapper is complete.
 
 ### WS-2 — converter/router truth (after a B1 decision)
 **What:** B1 the D1 typed-attr layer is written-not-consumed (`seed_d1_sidecar` stub convert.py:167) — DECIDE revive vs DB-replace; B2 multi-child `__inner`/grid → attrs; B3 grid on recognised section → attr; B4 D3 dual-write anti-pattern. **/qc gate:** YES. **Depends on:** B1 decision (present options to Bean first).
@@ -70,7 +72,8 @@ WS-5 docs throughout · then real image sideload (biggest pixel lever once struc
 ## MANDATORY READING LIST (read FULLY before any work)
 1. This file.
 2. `.claude/handoff.md` (cloning thread, 2026-06-02 — Workstream A shipped + the standardisation programme).
-3. **`.claude/plans/2026-06-02-container-wrapper-standardisation.md` — the 5-workstream programme + full A1-D3 gap register + ROAM + sequencing. THE build map.**
+3. **`.claude/plans/2026-06-02-container-wrapper-standardisation.md` — the 5-workstream programme + full A1-D3 gap register + ROAM + sequencing. THE build map (the *what*).**
+3a. **`.claude/reports/2026-06-02-container-wrapper-converter-gap-analysis.md` — the DEPTH SOURCE (the *why*): every gap-ID's file:line evidence from the 4-branch converter analysis. Read this so you understand the gaps deeply, not shallowly — the plan lists gap-IDs; this report proves each one.**
 4. `.claude/decisions.md` newest: **D152 (Workstream A shipped + container/wrapper analysis + programme)**, then D136 (CSS-transfer 4-gap audit), D135/D134 (variant detection), D130-D133.
 5. Root `CLAUDE.md` — "Root-cause methodology (MANDATORY)" + the 14 binding rules (R-22-1..14).
 6. `.claude/state.md` — current_phase + blockers.

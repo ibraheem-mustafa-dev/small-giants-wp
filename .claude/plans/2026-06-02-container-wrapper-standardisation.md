@@ -3,8 +3,8 @@ doc_type: strategic-plan
 project: small-giants-wp
 plan_name: 2026-06-02-container-wrapper-standardisation
 generated: 2026-06-02
-timebox: "~3 sessions (~6–9 hrs total; WS-1+WS-2+WS-3 concurrent ~2 sessions; WS-4 ~1 session after WS-1 gate)"
-status: draft
+timebox: "~3 sessions (~6–9 hrs total; WS-1+WS-2+WS-3 concurrent ~2 sessions; WS-4 ~1 session after WS-1 gate). DB substrate (Workstream A: block_composition.container_kind column + sync rewrite + trust-bar/modal containerKind) SHIPPED commit 0d746073."
+status: active
 authors: Claude Code / Bean
 primary_goal: "The cloning pipeline faithfully transfers CSS from any draft section, and every composite block with a built-in wrapper mirrors sgs/container — no per-block divergence, auto-propagated when container gains a capability."
 motivation: "Every pixel the pipeline gets wrong is a manual fix after every clone. Right now 4 of the 7 body sections on Mama's Munches render constrained to 1200 px when they should be full-bleed, and their inner content width is dropped entirely. Fixing the container/wrapper system is the one change that closes the structural CSS-transfer deficit for ALL future clients — not just Mama's."
@@ -16,6 +16,8 @@ parent_plan: ".claude/plans/2026-05-28-phase-2-hybrid-block-migration.md"
 ## 1. Problem
 
 The cloning pipeline's core job is **faithful CSS transfer**: whatever the designer put in the mockup must appear in the live WordPress page. That is failing at the structural level.
+
+**Scope — universal, not section-level.** This fix applies to every wrapper element in the draft HTML at any nesting depth, every `sgs/container` instance at any depth, and every composite block with a built-in `sgs/container` wrapper (all three KINDs: section/layout/content). The four Mama's Munches sections are the measurement gate, not the scope. Faithful transfer also covers a property's absence (no `max-width` → full-width, overriding the theme default).
 
 Every draft body section is two layers: a **full-bleed outer box** (background runs edge-to-edge) wrapping an **`__inner` content box** (`max-width` + `margin:auto`) that caps the readable content. The pipeline collapses these two layers into one and loses both halves:
 
@@ -48,6 +50,8 @@ Five workstreams, three running concurrently:
 4. **WS-4 — Standardise all 28 composite blocks** to mirror `sgs/container`, and build the auto-propagation path so a future container capability propagates via the `block_composition` table. Gaps D1–D3.
 5. **WS-5 — Docs** — embed the 6-step wrapper-conversion procedure in Spec 22; update decisions/parking/state throughout.
 
+**Scope — universal, not section-level.** This fix applies to every wrapper element in the draft HTML at any nesting depth, every `sgs/container` instance at any depth, and every composite block with a built-in `sgs/container` wrapper (all three KINDs: section/layout/content). The four Mama's Munches sections are the measurement gate, not the scope. Faithful transfer also covers a property's absence (no `max-width` → full-width, overriding the theme default).
+
 **Acceptance for the programme:** The four target sections (featured-product, ingredients, gift, social-proof) render full-bleed background + capped centred content matching the draft's `__inner` max-width. Every SECTION-KIND composite (cta-section, hero, modal, trust-bar) mirrors `sgs/container`'s full attr surface. A new container capability added via `block.json` + `/sgs-update` auto-propagates to all 28 composites via `sync-container-wrapping-blocks.py`. All live-DOM verified (R-22-11) + Bean sign-off (R-22-13).
 
 ---
@@ -72,7 +76,7 @@ Five workstreams, three running concurrently:
 | WS-1c | Custom-width + raw-px gap + min-height + grid-item (A3–A6) | ~45 min | Four smaller gaps closed; converter writes gridItem attrs | WS-1a | Per-gap: GAP-5 custom-width lifts a brand-1000 correctly |
 | WS-2 | Converter/router truth — B1–B4 | ~60 min | D1 typed-attr layer revived or replaced; `__inner` max-width routes to attr in multi-child grids; grid-template-columns typed; D3 dual-write removed | WS-1a | leftover-buckets.json: maxWidth/widthMode no longer extraction_failed on the 4 target sections |
 | WS-3 | De-cheat R-22-1 — C2–C8 | ~60 min | Eight hardcoded structures moved to DB or documented; unified breakpoint table; css_router._infer_role() queries DB | none (can start alongside WS-1) | No grep-match for the retired constant names in production scripts |
-| WS-4a | DB propagation writer (Workstream A from scratch handoff) | ~45 min | `container_kind` column + rewritten sync-container-wrapping-blocks.py writes diffs; /sgs-update wired | WS-1a must ship contentWidth before the KIND-scoped diff is meaningful | Bean sign-off on final 28-block roster + KIND assignments in dry-run output |
+| WS-4a | DB propagation writer (Workstream A DB substrate SHIPPED; writer still needed) | ~45 min | KIND→attr-scope diff writer + /sgs-update wired; KIND assignments verified in dry-run | WS-1a must ship contentWidth before the KIND-scoped diff is meaningful | Bean sign-off on final 28-block roster + KIND assignments in dry-run output |
 | WS-4b | PHP shared-helper + composite block.json/render.php updates | ~90 min | Shared container render helper extracted; all 28 composites call it; divergent re-implementations (trust-bar grid, hero split, cta-section layout) routed through the mechanism | WS-4a | Live-editor validation: each composite still renders correctly after switching to shared helper |
 | WS-5 | Docs | throughout | Spec 22 §FR-22-3 updated with 6-step procedure; decisions/parking/state current | each phase closes | /handoff Gate 4.5 walks docs-registry.yaml clean |
 
@@ -100,7 +104,7 @@ WS-1a (contentWidth A1) ─► WS-1b (A2) ─► WS-1c (A3–A6)           │
 | WS-1b: outer max-width transfer | WS-2 B2 (multi-child max-width routing) | Claude Code |
 | WS-4a: KIND-scoped diff writer | WS-4b (composites need the diff before apply) | Claude Code |
 | WS-2: D1 typed-attr revive decision | Bean review (decision gate) | Bean |
-| block_composition table (Workstream A from D150 scratch) | WS-4a must land this first | Claude Code |
+| ~~block_composition table (Workstream A from D150 scratch)~~ | ✅ SATISFIED — `container_kind` column + sync rewrite SHIPPED `0d746073` | Claude Code |
 
 ---
 
@@ -118,13 +122,14 @@ WS-1a (contentWidth A1) ─► WS-1b (A2) ─► WS-1c (A3–A6)           │
 - `plugins/sgs-blocks/scripts/convert.py` — `_root_lift_rules()` (line 498), `_fold_layout_into_attrs` (line 2776), `_emit_section_container`, `_match_theme_width` (line 975)
 - `plugins/sgs-blocks/scripts/db_lookup.py` — line 2461 band-aid removal
 
-**Gaps addressed:** A1, A2, A3, A4, A5, A6
+**Gaps addressed:** A1, A2, A3, A4, A5, A6, A7
 
 **Acceptance:**
 - A1: Playwright computed-style @1440 — featured-product section-box ~1425, inner content-box = 1040 px centred. Ingredients/gift/social-proof same at 960 px.
 - A2: The four slug-None sections carry no `max-width:1200`; they match the viewport width.
 - A3: GAP-5 custom-width (brand 1000 px): converter emits `widthMode:custom, customWidth:"1000px"`, brand section renders 1000 px unchanged.
 - A4: Raw-px gap value passes through render.php without being wrapped in `var(--wp--preset--spacing--…)`.
+- A7: `_lift_core_block_style` max-width→widthMode logic is called from the fold path (not atomic-only); a section container with a `max-width` CSS decl converts to `widthMode` correctly.
 - All: Bean visual sign-off on canary page 144 per section (R-22-13).
 
 **VERIFY:** Re-run the 2026-06-04 Playwright baseline script post-deploy; compare section-W + content-W per row. Gate is numerical match to the falsifiable predictions in `.claude/scratch/2026-06-04-css-transfer-gaps-1-2-fix-shape.md`.
@@ -154,7 +159,7 @@ WS-1a (contentWidth A1) ─► WS-1b (A2) ─► WS-1c (A3–A6)           │
 - `plugins/sgs-blocks/scripts/convert.py` — `seed_d1_sidecar` (line 167), `_fold_layout_into_attrs` (line 2830), gap `grid-template-columns` root-lift path
 - `plugins/sgs-blocks/scripts/css_router.py` — line 531 D3 dual-write
 
-**Gaps addressed:** B1, B2, B3, B4
+**Gaps addressed:** B1, B2, B3, B4, B5
 
 **Key decision — B1:** The D1 typed-attr layer (`seed_d1_sidecar` is a no-op stub; ~43 assignments written to `css-d1-assignments.json` but never consumed). Two options: (a) revive the consume-path (write the typed attr into the block attrs); (b) replace with a simpler DB-driven lookup. **Bean must decide after seeing options.** Present before building.
 
@@ -163,6 +168,7 @@ WS-1a (contentWidth A1) ─► WS-1b (A2) ─► WS-1c (A3–A6)           │
 - B2: multi-child `__inner` max-width lifts to `contentWidth` attr (not scoped CSS).
 - B3: `grid-template-columns` on a recognised section emits a typed attr.
 - B4: `css_router.py:531` dual-write to production CSS removed; D3 gap-candidates go only to the gap register.
+- B5: `css_router.py:433–437` verbatim-CSS-fallback removed or replaced with a logged-and-skipped path; no unscoped CSS leaks to the page on import failure.
 
 **Estimate:** ~60 min (B1 decision may add a /brainstorming session).
 
@@ -212,9 +218,9 @@ WS-1a (contentWidth A1) ─► WS-1b (A2) ─► WS-1c (A3–A6)           │
 **Gaps addressed:** D1, D2, D3
 
 **Sub-steps (from `.claude/scratch/2026-06-02-container-roster-db-table-handoff.md` Workstream A spec):**
-1. Add `container_kind` TEXT column to `block_composition`.
-2. Rewrite `sync-container-wrapping-blocks.py` — detect via `has_inner_blocks` + attr names + `accepts_allowed_blocks`; derive and write `wraps_block` + `container_kind`.
-3. Add `supports.sgs.containerKind:"section"` to trust-bar + modal block.json; wire /sgs-update Stage 1 to read it.
+1. ✅ Add `container_kind` TEXT column to `block_composition`. **SHIPPED `0d746073`.**
+2. ✅ Rewrite `sync-container-wrapping-blocks.py` — detect via `has_inner_blocks` + attr names + `accepts_allowed_blocks`; derive and write `wraps_block` + `container_kind`. **SHIPPED `0d746073` (report-only; no block.json/render.php propagation writer yet).**
+3. ✅ Add `supports.sgs.containerKind:"section"` to trust-bar + modal block.json; wire /sgs-update Stage 1 to read it. **SHIPPED `0d746073`.**
 4. Build KIND→attr-scope map (section=full surface; layout=grid/flex/width/contentWidth; content=width/contentWidth/spacing).
 5. Fix composition_role `leaf`→`content-block` for post-grid, gallery, card-grid.
 6. Dry-run — Bean reviews the 28-block roster + KIND assignments — then `--apply`.
@@ -401,7 +407,7 @@ The pipeline currently transfers Layer 1 (partially) and **drops Layers 2 and 3 
 | A5 | `min-height` not in `_root_lift_rules` | `convert.py:498` | Low |
 | A6 | `gridItem*` attrs never written by converter | `convert.py` (zero `gridItem` refs) | Medium |
 | B1 | `seed_d1_sidecar` is a no-op stub; ~43 typed-attr assignments written to JSON but never consumed | `convert.py:167` | High |
-| B2 | `__inner` max-width routes to scoped CSS in multi-child grids; only sole-child fold lifts it | `convert.py:2830` | Medium |
+| B2 | `_fold_eligible` sole-child gate (`convert.py:2830`) drops ALL fold attrs (max-width, gap, padding, etc.) for multi-child sections, not just max-width; `__inner` content-width cap lost entirely | `convert.py:2830` | Medium |
 | B3 | `grid-template-columns` on recognised section → scoped CSS, not typed attr | `convert.py:498` (missing entry) | Medium |
 | B4 | D3 gap-candidates dual-write to production CSS | `css_router.py:531` | Low |
 | C1 | Hardcoded `{"widthMode":"full"}` band-aid (paired with A2) | `db_lookup.py:2461` | High |
@@ -409,12 +415,14 @@ The pipeline currently transfers Layer 1 (partially) and **drops Layers 2 and 3 
 | C3 | `_CAPABILITY_PRIORITY` hardcoded list | `db_lookup.py:660–701` | Medium |
 | C4 | Two independent breakpoint systems | `db_lookup.py:1046–1052`, `convert.py:2322–2323` | Medium |
 | C5 | `_infer_role()` uses substring-match not `property_suffixes.kind_override` | `css_router.py:573–588` | Medium |
-| C6 | `_GLOBAL_BARE_TAGS` + `_CHROME_TOP_ELEMENTS` frozensets undocumented | `css_router.py:54–71` | Low |
+| C6 | `_GLOBAL_BARE_TAGS` + `_CHROME_TOP_ELEMENTS` frozensets are hardcoded vocabulary — an R-22-1 violation; must move to DB or be documented as a permitted constant exception (like `SKIP_TOP_LEVEL_TAGS`) with a justification comment | `css_router.py:54–71` → WS-3 | Medium |
 | C7 | `MOCKUP_ROOT` + page 144 hardcoded to Mama's in a universal script | `upload_and_patch.py:36, 86` | Medium |
 | C8 | cta-section `layout` enum collision + hero `splitColumnRatio` + `overlayColour` naming drift | `cta-section/block.json`, `hero/block.json` | Medium |
 | D1 | `sync-container-wrapping-blocks.py` is report-only; `--apply` writes DB metadata only, no block.json/render.php propagation | `sync-container-wrapping-blocks.py` | High |
 | D2 | Every composite has large attr gaps vs sgs/container (SECTION ~7–14 of 69 attrs; LAYOUT ~6–9; CONTENT 0 of 4 width attrs) | All 28 composite block.json files | High |
 | D3 | Composites (especially SECTION-KIND) get confidence 1.0 via class-section tier; the 4 sgs/container sections get confidence 0.0 deferred-no-match | `convert.py` tier logic | Medium |
+| A7 | `_lift_core_block_style` max-width→widthMode logic is dead for container paths (atomic-tag only, `convert.py:1034–1040`); the fold must call the same logic, otherwise the max-width→widthMode conversion never fires on section containers | `convert.py:1034–1040` → WS-1 | Medium |
+| B5 | `css_router.py:433–437` verbatim-CSS-fallback dumps unscoped page-wide CSS on import failure — operator-invisible anti-pattern that can leak global styles into the page | `css_router.py:433–437` → WS-2 | Medium |
 
 ---
 
@@ -425,6 +433,8 @@ WS-4 (composite standardisation) requires `sgs/container` to already have `conte
 ---
 
 ## Appendix D — Programme acceptance definition
+
+**Scope — universal, not section-level.** This fix applies to every wrapper element in the draft HTML at any nesting depth, every `sgs/container` instance at any depth, and every composite block with a built-in `sgs/container` wrapper (all three KINDs: section/layout/content). The four Mama's Munches sections are the measurement gate, not the scope. Faithful transfer also covers a property's absence (no `max-width` → full-width, overriding the theme default).
 
 The programme is CLOSED when ALL of these are true, live-DOM verified (R-22-11) + Bean sign-off (R-22-13):
 

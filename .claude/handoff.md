@@ -1,6 +1,8 @@
-# Session Handoff — 2026-06-02 (CLONING thread) — Workstream A shipped + container/wrapper standardisation programme
+# Session Handoff — 2026-06-03 (CLONING thread) — Workstream A shipped + container/wrapper standardisation programme + full doc reconciliation
 
-> Cloning thread. A parallel THEME thread is/was active on the shared tree this session (it took D151 product-card Phase C + pushed commits; mine is D152). Shared docs (decisions/parking/parking-archive) carry both threads' entries — committed by explicit path, acknowledged. Full programme spec: `.claude/plans/2026-06-02-container-wrapper-standardisation.md`.
+> **CURRENT — this is the live handoff.** The two dated sections further down (2026-06-02 roster snapshot; 2026-06-03 editor-fix work D141–D147) are EARLIER work this session, kept for history and marked SUPERSEDED.
+
+> Cloning thread. A parallel THEME thread is **actively committing** to the shared tree (HEAD `c468af7a` is its commit). Shared docs (decisions/parking) carry both threads' entries — commit by explicit path, verify `git log -1 --stat`. Full programme spec: `.claude/plans/2026-06-02-container-wrapper-standardisation.md`.
 
 ## Completed This Session
 1. **Task 1 — 4-block save-null fix editor-/qc'd LIVE (PASS).** feature-grid/multi-button/tab/accordion-item: 0 invalid blocks, InnerBlocks children survive save→reload (Playwright on canary 144). The D150 fix is confirmed working. (Branch already squash-merged to main pre-session — drift from the prompt, caught + verified.)
@@ -12,10 +14,13 @@
 7. **`/sgs-update` ran clean** (9 stages) — DB current with Workstream A: 190 blocks (68 sgs + 122 core), +2 attrs, 02-SGS-BLOCKS-REFERENCE regenerated, 0 orphans.
 8. **Full doc-walk — ALL stale docs in `.claude/` + specs/ + plans/ reconciled** (Bean caught that the first pass only touched a handful). ~16 docs updated: root+`.claude` CLAUDE.md (active focus + framework stats + composite-mirror rule), architecture/goals/plan/dev-setup/mistakes (+13 stubs archived), specs 02/00-naming/19/21/22, + SUPERSEDED banners on the 3 stale container plans (2026-05-31-container-* + converter-content-routing-fix → status superseded).
 9. **2nd qc-council on the doc set + fixes applied.** Caught the doc-walk's incomplete Spec 22 sweep — fixed ~7 stale `188`→`189` (real count) + `4 blocks (…quote)`→`28-block roster` claims + added the `container_kind` row to the §FR-22-17 schema table; corrected the converter-content-routing-fix banner (it's a CONTENT-routing plan, not width — G4 shipped as Workstream A, residual G1/G3 → WS-2).
-10. **Lesson-capture endpoint FIXED.** `/api/corrections` is dead (308→`/api/learning`, urllib doesn't follow → silent fail). Fixed the handoff command (`commands/handoff.md`) + the canonical `autopilot/references/correction-capture.md` (endpoint + payload: content field is `learning`, not `summary`/`lesson`). capture-lesson skill was already correct. Real lesson `no-composite-evades-universal-rule` re-posted (blub.db id 301).
+10. **Lesson-capture endpoint FIXED.** `/api/corrections` is dead (308→`/api/learning`, urllib doesn't follow → silent fail). Fixed the handoff command (`commands/handoff.md`) + the canonical `autopilot/references/correction-capture.md` (endpoint + payload: content field is `learning`, not `summary`/`lesson`) + all 8 operational refs (autopilot/skill-optimiser/pipeline-optimiser SKILL.md, end-goal-rubric, wal-protocol, mistakes template, sgs-skillscore regex, blub-db-unlock comment). capture-lesson skill was already correct. Real lesson `no-composite-evades-universal-rule` posted (blub.db id 301).
+11. **Full handoff doc set re-reconciled holistically (4-branch audit + memory + learning DB).** Bean flagged the docs read shallow and misframed the fix as class-level. Aligned every handoff-referenced doc to ONE canonical picture: the universal scope (every wrapper / every `sgs/container` / every composite with a built-in container — not section-level) now stated verbatim across next-session-prompt, plan, parking, state, Spec 22 §FR-22-21, flow/stages, CLAUDE.md. Reconciled counts (roles 21, slots 92+4, block_composition 189, blocks 68/190, block_attributes 2077); fixed retired `slot_synonyms`→`slots`/`roles` references; corrected the D1-stranded count (63→~43); added the 2 missing finer gaps (A7 `_lift_core_block_style` dead-for-containers, B5 verbatim-CSS-fallback) to plan + parking.
+12. **Raw 4-branch converter gap analysis saved** as the durable depth source — `.claude/reports/2026-06-02-container-wrapper-converter-gap-analysis.md` (every gap-ID's file:line evidence; the plan has the *what*, this has the *why*).
+13. **/qc-inline on the doc set caught + fixed 4 issues** the fixers missed: a wrong branch SHA (the theme thread had moved HEAD to `c468af7a`), invalid `state.md` YAML (unquoted `phase_4_status` value), and 2 residual stale counts in flow. Re-verified PASS.
 
 ## Current State
-- **Branch:** `main` at `1d846667`+ (pushed; this turn's doc-reconciliation commit pending). Commits this session: `0d746073` (Workstream A code) + `1d846667` (standardisation docs) + `28b056a0` (handoff trio) + the doc-reconciliation commit.
+- **Branch:** `main` @ `c468af7a` (the theme thread's FR-26-D2 commit is current HEAD — theme thread co-active). This thread's commits: `0d746073` (Workstream A code) + `1d846667` (standardisation docs); the holistic doc-reconciliation/update is this session's pending commit — **commit by explicit path** (theme thread shares the tree).
 - **Tests:** no suite; converter imports clean; `--apply` verified all 28 rows written.
 - **Build:** n/a (no block code changed this phase — build deferred per the plan).
 - **Uncommitted changes:** `lucide-icons.php` (auto-regen, never committed).
@@ -54,18 +59,20 @@
 
 # Session Handoff — 2026-06-02 (CLONING PIPELINE thread) — container roster + DB-table + save-null
 
+> **SUPERSEDED — see the latest section below for current state.**
+
 > Cloning thread. Theme thread is DONE + merged to main (`a8cb3ff9`); no parallel session active. Full specs in `.claude/scratch/2026-06-02-container-roster-db-table-handoff.md` + `.claude/scratch/2026-06-04-css-transfer-gaps-1-2-fix-shape.md`.
 
 ## Completed This Session
 1. **Full warm-start reading** of the cloning-pipeline docs (next-session-prompt, handoff, Spec 22/21/24, decisions, flow+stages, draft index.html, theme.json, container render.php/style.css, converter walk/fold/db_lookup, memory).
 2. **CSS-transfer contentWidth (gaps 1+2) designed + qc-council-validated + @1440 baseline-measured** (draft localhost :8137 vs page 144). Option B locked by Bean (sgs/container gains a contentWidth capability; fold lifts `__inner`'s max-width). NOT built. Fix-shape doc written.
 3. **Container-bearing roster validated via 5 qc-council rounds** → final 28-block roster + 3-KIND role-based model (section/layout/content). Corrected my own wrong criterion (Bean caught it: container-ness is structural/InnerBlocks, not attr-presence).
-4. **Workstream B SHIPPED** — 4-block save-null gotcha-B4 fix (feature-grid/multi-button/tab/accordion-item) via 5 parallel Sonnet subagents (verify-then-fix); mobile-nav EXCLUDED (Bean: server-rendered). Built clean. Commits 0c1078cf + d5ebe439. NOT editor-/qc'd or merged.
+4. **Workstream B SHIPPED** — 4-block save-null gotcha-B4 fix (feature-grid/multi-button/tab/accordion-item) via 5 parallel Sonnet subagents (verify-then-fix); mobile-nav EXCLUDED (Bean: server-rendered). Built clean. Commits 0c1078cf + d5ebe439. ~~NOT editor-/qc'd or merged~~ *(SUPERSEDED — the editor /qc PASSED and this work is on main; see the 2026-06-02 Workstream A section below.)*
 5. **Workstream A (DB-table fix) spec'd + validated, NOT built** — deferred to fresh session (STOP #19).
 6. Decisions D150, parking (P-CONTAINER-KIND-ROSTER, P-TRUSTBAR-BOUND-GRID, P-CSS-TRANSFER-CONTENTWIDTH), state + next-session-prompt updated.
 
 ## Current State
-- **Branch:** `feat/block-composition-container-kind` @ `d5ebe439`, off main @ `3c388195`. Workstream B only. NOT pushed/merged (awaits editor /qc).
+- **Branch:** ~~`feat/block-composition-container-kind` @ `d5ebe439`, off main @ `3c388195`. Workstream B only. NOT pushed/merged (awaits editor /qc).~~ *(SUPERSEDED — editor /qc passed; work squash-merged to main. See the latest section.)*
 - **Tests/Build:** sgs-blocks `npm run build` PASSES (5 blocks compiled clean).
 - **Uncommitted:** `lucide-icons.php` (documented auto-regen, never committed); scratch handoff docs (gitignored, on disk).
 
@@ -95,7 +102,9 @@
 
 ---
 
-# Session Handoff — 2026-06-03 (CLONING PIPELINE thread)
+# Session Handoff — 2026-06-03 (CLONING PIPELINE thread) — editor fixes D141–D147
+
+> **SUPERSEDED — earlier work this session (editor-error + button/preset/media fixes, D141–D147), kept for history. Current state is the top section.**
 
 > Cloning thread. The theme/blocks thread runs in a parallel session (shared branch) → `.claude/handoff-theme.md` + `.claude/next-session-prompt-theme.md`. Prior handoffs in git history + `decisions.md`.
 
@@ -121,6 +130,8 @@
 
 ## Next Priorities (in order)
 1. **Faithful CSS transfer (the 4-gap audit, D136)** — gap 1 (theme-CSS by position) + gap 2 (fold must stop dropping `__inner`), paired; then gap 3 (hero gradient) + gap 4 (trust-bar grid only). Design via /brainstorming + /qc-council first (sensitive).
+
+   > **Scope — universal, not section-level.** This fix applies to every wrapper element in the draft HTML at any nesting depth, every `sgs/container` instance at any depth, and every composite block with a built-in `sgs/container` wrapper (all three KINDs: section/layout/content). The class-section width bug was the symptom that surfaced it — not the scope. Faithful transfer also covers a property's absence (no `max-width` → full-width, overriding the theme default).
 2. **Real image sideload (media-map)** — hero/product images dry-run 404; biggest pixel lever once structure is faithful.
 3. **Variant-routing rollout** (modifier-class mechanism, D135); video/iframe→media is done so a future media-video clone can use it.
 4. **Bean visual sign-off (R-22-13)** on canary 144 once the CSS-transfer fidelity work lands — the merge already happened, so future fidelity work commits to `main` (or a fresh short-lived branch), no big long-lived branch.

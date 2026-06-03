@@ -1,4 +1,4 @@
----
+﻿---
 doc_type: architecture
 scope: forever
 title: SGS WordPress Framework — System Architecture
@@ -7,7 +7,7 @@ split_note: "2026-05-24 — split into 3 parts: architecture.md (this file, syst
 
 > Last updated: 2026-06-02 (WS-1 SHIPPED: `block_composition.container_kind` column built + populated, 28-block container roster, 3-KIND model, composite-mirror rule locked — D152. Prior: theme-thread Wave 1: sgs/option-picker + sgs/cart added = 68 total SGS blocks; notice-banner FR-22-6 migrated; product-card Phase B; D148/D149. Prior: 2026-05-30 D107-D113 XS-batch. Prior: 2026-05-29 D93-D100 architectural cleanup batch SHIPPED). Architecture programme CLOSED (2026-05-22, 31 decisions). Cloning-pipeline canonical spec is **Spec 22 (Universal Block-Equivalent Extraction)** — Spec 16 retired and archived. See `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` + `.claude/handoff.md`.
 >
-> **2026-05-29 D99 DATA LAYER UPDATE:** This document still references `slot_synonyms` table at lines 96/105/126/174 — those references describe the LOGICAL concept (per-slot routing data). The PHYSICAL table was retired 2026-05-29 D99 and replaced by `slots` table (composite PK on `slot_name + scope`; 89 element-scope + 16 section-scope rows). `slot_synonyms.role_classification` column retired into new `roles` table (20 rows). See Spec 22 §4 data layer for current table inventory. Walker functions like `_slot_synonyms()` retain their names but query the `slots` table internally.
+> **2026-05-29 D99 DATA LAYER UPDATE (references corrected 2026-06-03):** `slot_synonyms` table retired D99 and replaced by `slots` table (composite PK on `slot_name + scope`; 92 element-scope + 4 section-scope rows post-D111). `slot_synonyms.role_classification` retired into `roles` table (21 rows — 20 base + `scalar-media` added D128). Component diagram, DB table list, and integration-surface references now use `slots` / `roles`. Walker functions like `_slot_synonyms()` retain their names but query the `slots` table internally. See Spec 22 §4 data layer for current table inventory.
 
 # SGS WordPress Framework — System Architecture
 
@@ -83,7 +83,7 @@ The SGS framework has four primary components: the block theme (`sgs-theme`), th
 │                                                            │
 │  ┌─────────────────────┐   ┌──────────────────────────┐  │
 │  │  sgs-theme           │   │  sgs-blocks plugin        │  │
-│  │  (block theme)       │   │  (66 dynamic blocks)      │  │
+│  │  (block theme)       │   │  (68 dynamic blocks)      │  │
 │  │                      │   │                           │  │
 │  │  theme.json          │◄──┤  render.php (per block)   │  │
 │  │  templates/          │   │  block.json (attrs)       │  │
@@ -95,7 +95,7 @@ The SGS framework has four primary components: the block theme (`sgs-theme`), th
 │  ┌─────────────────────────────────────▼────────────────┐ │
 │  │  sgs-framework.db (SQLite — via db_lookup.py)         │ │
 │  │  Tables: blocks, block_attributes, block_supports,    │ │
-│  │  slot_synonyms, property_suffixes, modifier_suffixes,  │ │
+│  │  slots, roles, property_suffixes, modifier_suffixes,  │ │
 │  │  block_capabilities, variations, block_styles,        │ │
 │  │  design_tokens, hooks, patterns                       │ │
 │  └─────────────────────────────────────────────────────┘  │
@@ -104,7 +104,7 @@ The SGS framework has four primary components: the block theme (`sgs-theme`), th
   /sgs-clone (cloning pipeline)
   ├── Stage 0: SGS-BEM HTML draft (mockup → structured HTML)
   ├── Stage 1: css_router.py (4-destination: D0 theme/D1 block-attr/D2 variation/D3 scaffold)
-  ├── Stage 2: convert.py walker (Spec 22 universal walker — BEM → block slugs via slot_synonyms)
+  ├── Stage 2: convert.py walker (Spec 22 universal walker — BEM → block slugs via slots table)
   ├── Stage 3: token_resolver.py (exact-match CSS values → design token refs)
   ├── Stage 4: Playwright captures (375/768/1440px screenshots + Stage 11 pixel-diff)
   ├── Stage 9b: Scaffold quality scoring (5-file quality report)
@@ -125,7 +125,7 @@ The SGS framework has four primary components: the block theme (`sgs-theme`), th
 - Block Selectors API in `block.json` targets native typography controls to each block's primary text element.
 
 ### sgs-blocks plugin → sgs-framework.db
-- `db_lookup.py` (read-only) exposes `slot_synonyms`, `block_attributes`, `property_suffixes`, `block_capabilities`, `modifier_suffixes` as Python-callable query helpers.
+- `db_lookup.py` (read-only) exposes `slots`, `roles`, `block_attributes`, `property_suffixes`, `block_capabilities`, `modifier_suffixes` as Python-callable query helpers. (`slot_synonyms` retired D99; `slot_synonyms.role_classification` retired into `roles` table.)
 - `/sgs-update` (10-stage v3 `sgs-update-v2.py`) rebuilds the DB from 10 canonical sources: block.json files, render.php parse, REST API enumeration (variations, styles), hooks scan, design token parse, and pattern parse.
 - `wp-blocks.py` is the unified data CLI: `dump`, `block <slug>`, `capabilities`, `synonyms` — used by pipeline scripts and `/sgs-db` slash command.
 
