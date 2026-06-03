@@ -13,7 +13,8 @@ canonical_docs:
   # docs at ~/.agents/skills/shared-references/doc-templates/. Comments below
   # mark removed entries for git-blame continuity.
 
-  - {path: .claude/CLAUDE.md,                                          scope: forever,                          doc_type: project-rules}
+  - {path: CLAUDE.md,                                                  scope: forever,                          doc_type: project-rules, note: "PROJECT-ROOT authoritative rules — first doc a session reads. Volatile state (active-focus, framework counts) single-sourced to state.md + the live DB; keep only stable rules here."}
+  - {path: .claude/CLAUDE.md,                                          scope: forever,                          doc_type: project-rules, note: "working-area MANIFEST (index of .claude/) — rules live in the root CLAUDE.md"}
   - {path: .claude/architecture.md,                                    scope: forever,                          doc_type: architecture}
   - {path: .claude/dev-setup.md,                                       scope: forever,                          doc_type: dev-setup}
   - {path: .claude/goals.md,                                           scope: forever,                          doc_type: goals}
