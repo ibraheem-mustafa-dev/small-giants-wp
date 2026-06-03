@@ -1,3 +1,51 @@
+# Session Handoff — 2026-06-03 (SGS THEME thread, session 8 — theme tasks A/B + button re-clone + Spec 27 master + adversarial-council skill)
+
+> Theme/blocks thread. Cloning pipeline -> `.claude/handoff.md`. Next -> `.claude/next-session-prompt-theme.md`. A parallel CLONING session was live on `testimonial-slider` + `theme-snapshot.json` for most of this session; shared-doc bookkeeping was deferred to avoid the concurrent-commit race (see Next Priorities).
+
+## Completed This Session
+1. **Task A (auto-contrast) DECIDED + Task B (FR-26-D2) SHIPPED.** Bean chose build-time luminance (+ CSS `contrast-color()` as a later progressive-enhancement layer) as the universal WCAG auto-contrast direction. FR-26-D2: extended `push-theme-snapshot.py` to write the live `wp_global_styles` post via `POST /wp/v2/global-styles/{id}` (deterministic post-ID by `wp-global-styles-{stylesheet}` name, app-pwd auth from gitignored env, trailing cache flush). Live-verified reversibly on canary post 7 (marker reached DB + served HTML, then restored). Commit `c468af7a`, pushed.
+2. **Mama's homepage re-cloned to page 144 -> hero secondary button FIXED.** Root-caused the "both hero buttons filled primary" as a STALE clone (page 144 predated D147's secondary-modifier detection; the current converter chain verified to emit `inheritStyle=secondary`). Re-clone via `/sgs-clone --mode draft --skip-register --deploy-target page:144`. Live-verified: "Try 3 for £5" now `is-style-secondary` (transparent/outlined). Pixel-diff mean (excl header/footer) 57.78 -> 53.13% (14 sections improved, 3 regressed).
+3. **Spec 27 - SGS Product & WooCommerce Layer master WRITTEN + consolidated.** Researched (5 agents: WC native, architecture, competitor-gaps, SEO/AI, security/CWV), written, hardened through TWO qc-council rounds (5 polite + 6 brutal adversarial personas), RE-SCOPED MVP-first (Bean call: AI-builder demoted to roadmap Phase R), final gap-analysis grade A GO. Then folded Spec 24 + Spec 25 into it (v4, 605 lines), em-dashes stripped. Commit `f9b7c8cb`, pushed.
+4. **Live security bug fixed (found by the round-2 abuse red-team).** All 7 `sgs_product` meta `auth_callback`s used loose `edit_posts`; tightened to per-object `edit_post` (IDOR: any contributor could tamper price/featured/views on any product via REST). Commit `d07a7e05`, pushed. DEPLOY PENDING to canary.
+5. **New skill `adversarial-council` built via /lifecycle.** The "pain-in-the-butt council" pattern bottled: parallel committed-worldview personas + convergence-weighting -> must-fix register + GO/NO-GO. skillscore 96% (A), gap-analysis B -> A- (2 gaps fixed). S-grade showpiece sign-off PENDING Bean. Lives at `~/.claude/skills/adversarial-council/`.
+
+## Current State
+- **Branch:** `main` at `f9b7c8cb` (3 commits this session: `c468af7a`, `d07a7e05`, `f9b7c8cb`, all pushed).
+- **Build:** n/a (no block build this session); `push-theme-snapshot.py` py_compile clean.
+- **Uncommitted:** `lucide-icons.php` (documented auto-regen, never committed). The parallel cloning session's `testimonial-slider/*` + `theme-snapshot.json` are ITS uncommitted files - leave them.
+- **Deploy:** the product-meta security fix is committed but NOT yet deployed to the canary.
+
+## Outcome vs Completion (Gate 3.5)
+- Task A: OUTCOME ACHIEVED (direction decided + recorded). Task B: OUTCOME ACHIEVED (live-verified write path). Hero button: OUTCOME ACHIEVED (live-verified outlined secondary). Spec 27: OUTCOME ACHIEVED (master spec written + consolidated + grade-A). Security fix: CODE SHIPPED, OUTCOME NOT YET HIT (deploy to canary pending). adversarial-council: OUTCOME ACHIEVED (live skill, graded); S-grade award pending Bean.
+
+## Known Issues / Blockers
+- **Shared-doc bookkeeping DEFERRED** (parallel session held the docs): retire Spec 24/25, record the Spec-27 decision, update docs-registry + CLAUDE.md, record auto-contrast + the snapshot/live divergence. This is the next session's FIRST job once the tree is clear.
+- **Hero desktop (+19pp@1440) + ingredients (+11pp@1440) pixel regressions** from the re-clone - cloning thread owns these (structural, not the buttons).
+- Product-meta security fix awaits a canary deploy.
+
+## Next Priorities (in order)
+1. **Deferred bookkeeping (once tree clear):** retire Spec 24+25 (absorbed_by:27, status superseded, move to specs/archive); record Spec-27 decision (D159+) in decisions.md; update docs-registry.yaml (27 master) + CLAUDE.md spec list; record auto-contrast (build-time luminance) into Spec 26/parking P-AUTO-CONTRAST + the post-7 divergence note (page-29 = throwaway WC-extension test CSS).
+2. **Deploy the product-meta security fix** to the canary (build-deploy plugin + OPcache reset).
+3. **S-grade sign-off** for adversarial-council (Bean decision).
+4. **Spec 27 Phase 1 MVP build** (read-through configurator) - deferred until the cloning phase closes; it re-baselines the pixel-diff.
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `plugins/sgs-blocks/scripts/push-theme-snapshot.py` | FR-26-D2 REST-write to wp_global_styles post (commit c468af7a) |
+| `plugins/sgs-blocks/includes/content-types/class-product-cpt.php` | per-object edit_post auth on 7 meta fields (commit d07a7e05) |
+| `.claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md` | NEW v4 master, absorbs Spec 24+25 (commit f9b7c8cb) |
+| `~/.claude/skills/adversarial-council/` | NEW skill (SKILL.md + references/ + scripts/ + hooks/) |
+| canary page 144 (DB) | re-cloned; hero secondary button now outlined |
+
+## Notes for Next Session
+- **adversarial-council is the bottled "pain-in-the-butt council"** - run it on any spec/plan/design BEFORE building (polite-then-brutal = two rounds for high stakes). It found Spec 27's structural over-scope that the polite round missed.
+- **Spec 27 is now the single master** for the product + WooCommerce layer; Spec 24/25 are superseded but not yet formally retired (deferred bookkeeping).
+- **Canary live styles = `wp_global_styles` post (ID 7)**, not theme.json on disk - and FR-26-D2 now writes it; but `push-theme-snapshot` still re-diverges with disk-only edits until you use the new push path.
+- **Verify against git, not handoffs** - this session worked alongside a live cloning session; commit by explicit path only.
+
+---
+
 # Session Handoff — 2026-06-03 (SGS THEME thread, session 7 — Spec 26 global-styles design)
 
 > Theme/blocks thread. Cloning pipeline → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. Design + research session (no production code): resolved Bean's question about the global-CSS setup into a written, ratified, build-deferred spec.

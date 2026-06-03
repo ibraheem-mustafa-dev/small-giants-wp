@@ -2,63 +2,65 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 thread: sgs-theme
-session_tag: small-giants-wp-2026-06-03-theme-session8
+session_tag: small-giants-wp-2026-06-03-theme-session9
 generated: 2026-06-03
-primary_goal: "SGS-THEME THREAD. Bean-decision on universal WCAG auto-contrast; build FR-26-D2 (extend push-theme-snapshot.py to write the live wp_global_styles post); migrate the product-page mockup to SGS-BEM then emit option-pickers there (Phase D product-page); per-option data model (SKU matrix) to activate the dormant pill swap; FR-22-6 Wave-2A real migration (label/heading/text). NOTE: the global-CSS/global-styles question is now RESOLVED AS DESIGN → Spec 26 (D158); the whole build is DEFERRED until the cloning phase closes EXCEPT FR-26-D2 (= Task B, the one urgent low-risk item). FR-26-D1 is RESOLVED/MOOT — do NOT clear canary post 7."
+primary_goal: "SGS-THEME THREAD. FIRST: the deferred shared-doc bookkeeping (retire Spec 24/25, record Spec-27 decision, registry + CLAUDE.md, auto-contrast + divergence) once the tree is clear. THEN: deploy the product-meta security fix to canary; Bean S-grade sign-off for adversarial-council; and the remaining theme/WooCommerce work. The variable-product configurator (Spec 27) BUILD is deferred until the cloning phase closes (it re-baselines pixel-diff). Spec 27 is now the single MASTER for the product + WooCommerce layer (absorbed Spec 24 + 25)."
 ---
 
 # Next Session — SGS THEME thread (blocks, editor UX, WooCommerce layer)
 
-> ## ⚠ READ THIS BEFORE ANYTHING ELSE — warm start ⚠
-> Invoke `/autopilot` first. This is the THEME/BLOCKS thread — NOT the cloning pipeline (sibling `.claude/next-session-prompt.md`). **DO NOT START ANY TASK until you have read the MANDATORY READING LIST below, in order.**
-> **STOP — don't assert block capability from a partial dump:** read block.json + edit.js + render.php + `/wp-blocks` before building.
-> **STOP — triage before fixing:** verify a reported bug still reproduces against ground truth (REST render / edit.js / editor repro) BEFORE dispatching a fix. (Past sessions: multiple reported "bugs" were stale/false.)
-> **STOP — verify against git, not the handoff:** a prior session's opening handoffs were STALE on merge-status AND parallel-session-active. Run `git log --oneline -8` + `git branch` first; trust the repo over prose.
-> **STOP — canary live styles come from the `wp_global_styles` DB post (ID 7), NOT theme.json on disk.** Editing theme.json / running `push-theme-snapshot.py` alone has NO live effect — you MUST also POST `/wp-json/wp/v2/global-styles/7`. `theme/sgs-theme/styles/mamas-munches.css` is an ORPHAN (not enqueued). (Memory `canary-live-styles-come-from-wp-global-styles-post`.)
-> **STOP — the global-styles architecture is now SPEC'd: read `.claude/specs/26-SGS-GLOBAL-STYLES-AND-THEMING.md` (D158) BEFORE any theme.json / global-styles / per-client-theming change.** The whole build is DEFERRED until the cloning phase closes EXCEPT FR-26-D2 (Task B). **FR-26-D1 is RESOLVED/MOOT — do NOT clear canary post 7** (theme.json + post 7 already mirror Mama's palette + WCAG CSS; clearing is unnecessary AND risky on the shared canary). The corrected model: WP 7.0 global styles is a DATA-LAYER MERGE (`wp_global_styles` post = live source of truth, theme.json = factory seed), NOT a CSS override — this supersedes the old D156 "override precedence" framing.
-> **STOP — block style controls must accept RAW CSS values + defaults stay overridable:** every default colour/spacing is `var(--sgs-x, <default>)` with an editor control that accepts raw hex/px (theme.json `color.custom`/`customSpacingSize` true), never a token-preset-only cap (the recurring "gap rejected raw px" bug). (Memory `block-style-controls-accept-raw-css-and-overridable`.)
-> **Guardrail (all tasks):** after every block build-deploy, open the WP editor on canary 144/514 and verify the control renders + zero console errors before considering the task done. Bump block.json `version` on any block CSS/JS change AND the theme `style.css` `Version:` on any THEME-CSS change.
+> ## WARNING: READ THIS BEFORE ANYTHING ELSE - warm start
+> Invoke `/autopilot` first. This is the THEME/BLOCKS thread, NOT the cloning pipeline (sibling `.claude/next-session-prompt.md`). DO NOT START ANY TASK until you have read the MANDATORY READING LIST below, in order.
+> **STOP - shared-doc bookkeeping was DEFERRED last session** (a parallel cloning session held the docs). Do it FIRST (Task 1), and only once `git status` shows the cloning session's files (`testimonial-slider/*`, `theme-snapshot.json`) are gone/committed. Commit by EXPLICIT PATH only (never `git add .`); a parallel session may still be live.
+> **STOP - Spec 27 is now the single MASTER** for the product + WooCommerce layer (it absorbed Spec 24 + Spec 25 in v4). Spec 24/25 are SUPERSEDED but not yet formally retired (that is Task 1). Read Spec 27 before any product-card / option-picker / cart / content-collection / configurator change.
+> **STOP - don't assert block capability from a partial dump:** read block.json + edit.js + render.php + `/wp-blocks` before building.
+> **STOP - triage before fixing:** verify a reported bug still reproduces against ground truth (REST render / edit.js / editor repro) BEFORE dispatching a fix. (Past sessions: multiple reported "bugs" were stale/false - e.g. this session's hero "both buttons primary" was a STALE clone, not a converter bug.)
+> **STOP - verify against git, not the handoff:** run `git log --oneline -8` + `git branch` first; trust the repo over prose.
+> **STOP - canary live styles come from the `wp_global_styles` DB post (ID 7), NOT theme.json on disk.** FR-26-D2 (shipped) now writes that post via `push-theme-snapshot.py`, but a disk-only edit still re-diverges. `theme/sgs-theme/styles/mamas-munches.css` is an ORPHAN (not enqueued). (Memory `canary-live-styles-come-from-wp-global-styles-post`.)
+> **STOP - global-styles architecture is SPEC'd: read `.claude/specs/26-SGS-GLOBAL-STYLES-AND-THEMING.md` (D158) BEFORE any theme.json / global-styles / per-client-theming change.** Build deferred except FR-26-D2 (shipped). FR-26-D1 RESOLVED/MOOT - do NOT clear canary post 7.
+> **STOP - block style controls must accept RAW CSS values + defaults stay overridable:** every default colour/spacing is `var(--sgs-x, <default>)` with an editor control accepting raw hex/px (theme.json `color.custom`/`customSpacingSize` true). (Memory `block-style-controls-accept-raw-css-and-overridable`.)
+> **STOP - auto-contrast direction is DECIDED: build-time luminance** (compute WCAG luminance of the brand colour at deploy, pick black/white text), with CSS `contrast-color()` as a later progressive-enhancement layer. Record this in Spec 26 / parking when you do Task 1.
+> **STOP - run `/adversarial-council` (the new skill) on any spec/plan/design BEFORE building it.** It is the bottled "pain-in-the-butt council" (parallel committed adversaries + convergence -> must-fix register + GO/NO-GO). For high stakes, polite-then-brutal = two rounds.
+> **Guardrail (all tasks):** after every block build-deploy, open the WP editor on canary 144/514 and verify the control renders + zero console errors before considering the task done. Bump block.json `version` on any block CSS/JS change AND theme `style.css` `Version:` on any THEME-CSS change.
 
 ## State recap (plain English)
-The SGS framework is a custom WordPress block library (theme + blocks plugin) whose product/WooCommerce layer is now substantial. Last session (session 6) shipped: product-card Bound mode (wrapper+bridge over WooCommerce, D151), the `sgs/content-collection` query block (Phase E, D154), the converter emitting `sgs/option-picker` for draft pill groups (Phase D, D153), removed the redundant `hero` heading style (D155), a full QC-council pass with all fixes applied, WCAG global colour/spacing defaults + raw-value enablement (D156), the Mama's-canary contrast fix (now 5.28:1), and a theme skip-link fix (D157). The authoritative spec for the whole WooCommerce layer is **Spec 25 — SGS WooCommerce Experience Layer**. Work from `main` (the cloning thread's session is closed); commit by explicit path.
+The SGS framework is a custom WordPress block library (theme + blocks plugin) whose product/WooCommerce layer is now substantial. Last session (session 8): shipped Task A (auto-contrast decision = build-time luminance) + Task B (FR-26-D2 push-theme-snapshot REST-write); re-cloned Mama's homepage page 144 to fix the hero secondary button (stale-clone root cause); wrote + consolidated the **Spec 27 SGS Product & WooCommerce Layer master** (research + 2 qc-council rounds + re-scoped MVP-first + grade-A; absorbed Spec 24 + 25); fixed a live product-meta IDOR security bug; and built the new `/adversarial-council` skill. Three deferred follow-ups (Task 1, 2, 3 below) plus the Spec 27 MVP build remain. Work from `main`; commit by explicit path.
 
-## First action (smallest step, ≤5 min, zero deps)
-Read the MANDATORY READING LIST. Then bring Bean the **universal auto-contrast decision** (Task A) — a one-question design fork that gates how all future client palettes get WCAG-safe button/pill text; everything else can proceed once it's answered or explicitly deferred.
+## First action (smallest step, <=5 min, zero deps)
+Read the MANDATORY READING LIST. Then run `git status` - if the cloning session's files are gone/committed (clean tree apart from `lucide-icons.php`), start Task 1 (the deferred bookkeeping). If the tree still shows a live parallel session, do Task 2 (deploy the security fix - it touches only the plugin, collision-safe) first.
 
 ## MANDATORY READING LIST (read FULLY first)
 1. This file.
-2. `.claude/handoff-theme.md` (2026-06-03, session 7 = Spec 26 global-styles design; session 6 below it = Phase D/E/WCAG/skip-link) — what shipped + the outcome assessment.
-3. `.claude/specs/26-SGS-GLOBAL-STYLES-AND-THEMING.md` — the global-styles + per-client theming spec (D158; supersedes Spec 01 §D156 framing). Build DEFERRED except FR-26-D2. Read BEFORE any theme.json / global-styles change.
-4. `.claude/specs/25-SGS-WOOCOMMERCE-EXPERIENCE-LAYER.md` — the authoritative WC-layer spec (feature map, statuses, files).
-5. `.claude/decisions.md` newest — D158 (global-styles architecture → Spec 26; FR-26-D1 RESOLVED/MOOT) · D157 (skip-link) · D156 (WCAG colour defaults + universal-auto-contrast deferral) · D155 (hero removed) · D154 (content-collection) · D153 (Phase D emit) · D151/D149 (product-card dual-source).
-6. `.claude/specs/24-QUERY-DRIVEN-CONTENT-CARDS.md` — card/collection FRs (status active).
-7. Root `CLAUDE.md` + `plugins/sgs-blocks/CLAUDE.md` — block customisation standard, deprecation procedure, gotchas, block-status table.
-8. `.claude/parking.md` — P-AUTO-CONTRAST-LIGHT-PRIMARIES, P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES, P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM, P-PRODUCT-CARD-PILL-SWAP-DORMANT.
-9. The product files before extending: `plugins/sgs-blocks/src/blocks/{product-card,content-collection,option-picker}/` + `includes/class-product-bindings.php` + `includes/content-types/class-product-cpt.php`.
+2. `.claude/handoff-theme.md` (session 8 at top = this work; sessions 7/6 below = Spec 26 + Phase D/E/WCAG history).
+3. `.claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md` - the NEW master (product card + option-picker + cart + content-collection + variable-product configurator). Read before any product-layer change.
+4. `.claude/specs/26-SGS-GLOBAL-STYLES-AND-THEMING.md` - global styles + per-client theming (D158). Read before any theme.json/global-styles change.
+5. `.claude/decisions.md` newest - D158 (global-styles -> Spec 26) and (once Task 1 lands) the Spec-27 decision.
+6. Root `CLAUDE.md` + `plugins/sgs-blocks/CLAUDE.md` - block customisation standard, deprecation procedure, gotchas, block-status table.
+7. `.claude/parking.md` - P-AUTO-CONTRAST-LIGHT-PRIMARIES, P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES, P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM, P-PRODUCT-CARD-PILL-SWAP-DORMANT.
+8. The product files before extending: `plugins/sgs-blocks/src/blocks/{product-card,content-collection,option-picker}/` + `includes/class-product-bindings.php` + `includes/content-types/class-product-cpt.php`.
 
 ## Skills to Invoke
 | Skill | When |
 |-------|------|
-| `/brainstorming` | ALWAYS — design the auto-contrast approach + the SKU-matrix data model before building |
-| `/research` (auto-routes) | ALWAYS — gold-standard for CSS `contrast-color()` browser support (2026) + WC variation/SKU patterns |
-| `/gap-analysis` | ALWAYS — grade each build against acceptance |
-| `/lifecycle` | ALWAYS — before any skill/agent/pipeline change |
-| `/strategic-plan` | ALWAYS — order the tasks |
-| `/qc-council` | MANDATORY before every converter/SGS-block commit (blub.db 255) — multi-rater, cross-model |
-| `/dispatching-parallel-agents` | parallel disjoint work (worked well last session) |
-| `/subagent-driven-development` | design-bearing builds (implementer + reviewers) |
-| `/sgs-wp-engine` + `/wp-block-development` | block dev — block.json, attrs, render, deprecations, Block Bindings |
+| `/brainstorming` | ALWAYS - design before build |
+| `/research` (auto-routes) | ALWAYS - gold-standard before non-trivial implementations |
+| `/gap-analysis` | ALWAYS - grade each build against acceptance |
+| `/lifecycle` | ALWAYS - before any skill/agent/pipeline change |
+| `/strategic-plan` | ALWAYS - order the tasks |
+| `/adversarial-council` | NEW - brutal pre-build pre-mortem on any spec/plan before building |
+| `/qc-council` | MANDATORY before every converter/SGS-block commit (blub.db 255) - multi-rater, cross-model |
+| `/handoff` | session close |
+| `/sgs-wp-engine` + `/wp-block-development` | block dev - block.json, attrs, render, deprecations, Block Bindings |
 | `/wp-rest-api` | CPT meta / REST / Block Bindings / the wp_global_styles POST |
-| `/systematic-debugging` | any bug — root-cause before fixing |
+| `/systematic-debugging` | any bug - root-cause before fixing |
 | `/visual-qa` or `/design-review` | editor UX + WCAG 2.2 AA verification |
 
 ## MCP / Tools
 | Tool | For |
 |------|-----|
-| Playwright MCP | live editor + frontend verify on canary; computed-style contrast checks; dismiss beforeunload via `browser_handle_dialog` |
+| Playwright MCP | live editor + frontend verify on canary; computed-style contrast checks |
 | `/wp-blocks` (`python ~/.claude/hooks/wp-blocks.py dump`) | block schema before asserting capability |
 | `/sgs-db` (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py`) | block roster / attrs / capabilities / slots |
-| REST block-renderer (`/wp/v2/block-renderer/<block>?context=edit`, app-pwd Basic auth) | fast server-render verification |
 | REST global-styles (`/wp/v2/global-styles/7`) | the LIVE canary styles (supersedes theme.json) |
 | WooCommerce Store/REST API (`/wc/store/v1`, `/wc/v3`) | product + cart state |
 
@@ -70,66 +72,60 @@ Read the MANDATORY READING LIST. Then bring Bean the **universal auto-contrast d
 
 ---
 
-## Task A — Bean decision: universal WCAG auto-contrast
-**What:** Decide how the framework gives WCAG-safe button/pill TEXT on ANY client primary out-of-the-box. Options: (1) CSS `contrast-color()`/`light-dark()` when support is safe; (2) build-time/PHP luminance step picking text colour per palette; (3) keep framework-default-white + mandate a per-client dark-text override for light primaries (current).
-**Why:** Today's default (white-on-primary) fails WCAG for light-pastel primaries (e.g. Mama's pink) unless overridden. "WCAG out of the box on the majority" needs a real mechanism.
-**Orchestration:** inline (Opus). `/research` `contrast-color()` support FIRST (Rule 16), then a ranked menu to Bean. Depends on: none. /qc gate: n/a.
-**Acceptance:** Bean picks; if a build follows, WCAG-verified live on both a dark-primary and a light-primary palette.
+## Task 1 - Deferred shared-doc bookkeeping (do FIRST, once tree clear)
+**What:** complete the consolidation paperwork that was deferred last session because a parallel cloning session held the shared docs. Retire Spec 24 + Spec 25 (frontmatter `absorbed_by: specs/27-...`, `status: superseded`, move both to `.claude/specs/archive/`); record the Spec-27 decision (next D-number, D159+) in `decisions.md`; update `docs-registry.yaml` (27 = master, 24/25 retired) + the CLAUDE.md spec list; record the auto-contrast decision (build-time luminance) into Spec 26 / parking `P-AUTO-CONTRAST-LIGHT-PRIMARIES`; record the snapshot<->live post-7 divergence note (page-29 rules = throwaway WC-extension test CSS per Bean, disposable).
+**Why:** Spec 27 is committed as the master but 24/25 still read "active"; the decision + registry are unrecorded. Living-docs hygiene (D150 archive-on-resolve).
+**Orchestration:** inline (Opus). Depends on: a clean tree (`git status` shows no parallel-session files). Commit by explicit path. /qc gate: docscore on each edited doc (>=A-).
+**Acceptance:** Spec 24/25 archived + `absorbed_by` set; decisions.md carries the Spec-27 D; registry + CLAUDE.md updated; auto-contrast + divergence recorded; docscore >=90% on each.
 
-## Task B — Build FR-26-D2: extend `push-theme-snapshot.py` to update the live `wp_global_styles` post
-**What:** Extend the deploy script so a snapshot push ALSO updates the canary's `wp_global_styles` post (not just theme.json on disk). This is **Spec 26 FR-26-D2** — the one urgent, low-risk, build-now slice of the otherwise-deferred Spec 26 (use the WP-native `POST /wp/v2/global-styles/{id}`; no new endpoint/ability needed per D158). Read Spec 26 §FR-26-A3 + §FR-26-D2 first.
-**Why:** Live styles come from that post; the script silently misses them (this session's Mama's fix needed a manual REST POST). Without this, the canary's theme.json + post 7 re-diverge on the next disk-only push. Parking P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES; Spec 26 FR-26-D2.
-**Orchestration:** delegated, single sonnet via /delegate. Context: post ID 7 on sandybrown; app-password auth; script at `plugins/sgs-blocks/scripts/push-theme-snapshot.py`. Depends on: none. Parallel with: Task C. /qc gate: /qc-inline (deploy a token change, confirm it lands live).
-**Acceptance:** a snapshot push changes a live-visible style with no manual REST step.
+## Task 2 - Deploy the product-meta security fix to the canary
+**What:** deploy `class-product-cpt.php` (the per-object `edit_post` auth fix, commit d07a7e05) to the sandybrown canary + OPcache reset.
+**Why:** the IDOR fix is committed but not live; the canary still runs the vulnerable version.
+**Orchestration:** delegated, single sonnet via /delegate. Context: `build-deploy.py` + the opcache reset webroot trick; collision-safe (touches only the plugin). Depends on: none. Parallel with: Task 1. /qc gate: /qc-inline (confirm a non-editor cannot write `sgs_price` via REST on the canary).
+**Acceptance:** the fix is live; a REST write of product meta by a non-edit_post user is rejected.
 
-## Task C — Phase D product-page emit (gated on mockup migration)
-**What:** Migrate `sites/mamas-munches/mockups/product/index.html` from bare `pill`/`pill-group` to SGS-BEM (`sgs-product-card__pill-group`/`__pill`), then run the converter so it emits `sgs/option-picker` on the product page.
-**Why:** Phase D works on the homepage mockup; the product-page mockup is Stage-0-rejected (not SGS-BEM). Parking P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM.
-**Orchestration:** delegated, sonnet. Context: the homepage pill-group is the SGS-BEM template; the converter slot row already exists. Depends on: none. Parallel with: Task B. /qc gate: assert emitted `sgs/option-picker` + live editor render.
-**Acceptance:** product-page clone emits `sgs/option-picker`; live-verified.
+## Task 3 - S-grade sign-off for adversarial-council (Bean decision)
+**What:** present the S-grade case (AI-native adversarial pre-mortem council; showpiece) to Bean; on yes, record the S-grade in the skill's evaluation + capture it.
+**Why:** flagged as a genuine showpiece candidate; needs explicit human sign-off.
+**Orchestration:** inline (Opus, Bean decision). Depends on: none. /qc gate: n/a.
+**Acceptance:** Bean confirms or declines; recorded either way.
 
-## Task D — Per-option data model (SKU matrix) — activate the dormant pill swap
-**What:** Design + build per-option price/image data (Spec 24 FR-24-14, `_sgs_variation_sets` per-option values / `_sgs_sku_matrix`) so selecting a pill visibly changes price/image.
-**Why:** Phase C wired the swap but it's dormant (no per-option data). Parking P-PRODUCT-CARD-PILL-SWAP-DORMANT.
-**Orchestration:** DESIGN GATE FIRST (/brainstorming) — extend the variation-sets data model + editor panel + the card's Interactivity map. Then /subagent-driven-development (sonnet). Depends on: none. /qc gate: /qc multi-rater (SGS-block rule).
-**Acceptance:** a pack-size pill swaps price, a flavour pill swaps image; live-verified; no-JS default correct.
-
-## Task E — FR-22-6 Wave-2A real migration (label / heading / text)
-**What:** Migrate `sgs/label`, `sgs/heading`, `sgs/text` to InnerBlocks `echo $content` (notice-banner template) — the REAL roster (report `reports/2026-06-02-fr22-6-wave2-roster-rederived.md`).
-**Why:** Continues Phase 2; these are the most-used blocks → HIGH blast radius; deliberate, gated.
-**Orchestration:** delegated, /dispatching-parallel-agents (one per block) on sonnet. **BLOCKED** until the null-save→InnerBlocks finding is judged (NB: P-FR226 is DEFERRED/moot until a production SGS site with old posts exists; info-box + notice-banner already shipped the pattern without resolving it). Each needs `deprecated.js` + R-22-14 (no scalar fallback). Depends on: P-FR226 disposition. /qc gate: editor-verify no "unexpected content" + converter emits InnerBlocks.
-**Acceptance:** each migrated block builds, editor shows no validation error, converter emits InnerBlocks.
+## Task 4 - Spec 27 Phase 1 MVP build (DEFERRED until cloning phase closes)
+**What:** build the read-through variable-product configurator MVP (Spec 27 Phase 1: A1/A2/A3/A5, B1, C1, G1/G2/G3/G6, H1/H2/H3, I-MVP) - live WC price/image/stock swap, secure no-oversell add-to-cart, accessible card, cross-attribute availability past the 30-variation cliff.
+**Why:** makes Mama's sell with real variant pricing; the smallest shippable real configurator.
+**Orchestration:** DESIGN GATE (/strategic-plan -> /phase-planner per Spec 27 Phase 1) then /subagent-driven-development (sonnet). **Run `/adversarial-council` on the phase plan before building.** Depends on: the cloning phase closing (it re-baselines the pixel-diff - do NOT build mid-cloning-phase). /qc gate: /qc multi-rater per configurator commit + Bean visual sign-off.
+**Acceptance:** per Spec 27 Phase-1 acceptance criteria (lab INP <=200ms, axe-core 0, tampered add-to-cart rejected, 48-SKU availability both directions).
 
 ## Dependency graph
 ```
-Task A (inline, Opus — Bean decision; /research first) ── gates future colour work
-Task B (sonnet) ─┐
-Task C (sonnet)  ├─ parallel-safe (disjoint)
-Task D (design-gate → /subagent-driven-development, sonnet) ─┘
-Task E (parallel agents — BLOCKED on P-FR226 disposition; HIGH blast radius)
-   ↓ /qc multi-rater before each commit
-Commit to main (commit by explicit path; cloning thread idle)
+Task 1 (inline, Opus - deferred bookkeeping; needs clean tree) ─┐
+Task 2 (sonnet - deploy security fix; collision-safe)          ├─ parallel-safe
+Task 3 (inline, Opus - Bean S-grade decision)                  ─┘
+Task 4 (Spec 27 MVP - DEFERRED until cloning phase closes; /adversarial-council the plan first)
+   ↓ /qc multi-rater + Bean sign-off per commit
+Commit to main (explicit path; cloning thread may be live)
 ```
 
 ## Guardrails (carried forward + extended)
-- **Read block.json + edit.js + render.php + `/wp-blocks` before asserting any block's capability** — never infer from a partial dump.
-- **Triage before fixing** — verify a reported bug still reproduces against ground truth BEFORE dispatching.
-- **Deprecations required** — any change to a static block's save() or attribute schema needs a `deprecated.js`, or existing posts show "unexpected content".
+- **Read block.json + edit.js + render.php + `/wp-blocks` before asserting any block's capability** - never infer from a partial dump.
+- **Triage before fixing** - verify a reported bug still reproduces against ground truth BEFORE dispatching (this session: hero "both primary" was a STALE clone, not a bug).
+- **Deprecations required** - any change to a static block's save() or attribute schema needs a `deprecated.js`.
 - **Never `source:html` on a dynamic block**; dynamic InnerBlocks blocks need `save:()=><InnerBlocks.Content/>`.
-- **CPT meta needs `custom-fields` support** for REST `meta` exposure.
+- **CPT meta needs `custom-fields` support** for REST `meta` exposure; meta `auth_callback` must be per-object `edit_post` (IDOR - fixed this session).
 - **Cache-bust:** block.json `version` on block CSS/JS; theme `style.css` `Version:` on theme CSS.
-- **Deploy + OPcache reset before measure** — `build-deploy.py` (+ opcache_reset webroot trick for PHP) before any browser/REST test, or you measure stale output.
-- **Canary live styles = `wp_global_styles` post (ID 7)**, not theme.json on disk — edit both + POST the post.
+- **Deploy + OPcache reset before measure** - `build-deploy.py` (+ opcache_reset webroot trick) before any browser/REST test, or you measure stale output.
+- **Canary live styles = `wp_global_styles` post (ID 7)**, not theme.json on disk - FR-26-D2 now writes it, but disk-only edits re-diverge.
 - **Block style controls accept RAW CSS values + defaults overridable** (`var(--sgs-x, default)` + theme.json custom values).
-- **No client-specific values in base theme/blocks** — client work lives in `sites/<client>/` + the snapshot/global-styles post.
-- **CDP top-layer quirk** — synthetic `dispatchMouseEvent` clicks on popover/top-layer elements don't reliably trigger nav in headless Chrome; use `.click()` or a screenshot.
+- **No client-specific values in base theme/blocks** - client work lives in `sites/<client>/` + the snapshot/global-styles post.
 - **WCAG 2.2 AA + 44px touch targets + mobile-first** on all new UI.
-- **Work on `main`** (cloning thread idle); commit ONLY your files by explicit path (never `git add .`/`-A`; `lucide-icons.php` stays uncommitted); `git status` before committing; verify `git log -1 --stat` after.
+- **Work on `main`** (cloning thread may be live); commit ONLY your files by explicit path (never `git add .`/`-A`; `lucide-icons.php` stays uncommitted); `git status` before committing; verify `git log -1 --stat` after.
+- **Spec 27 = single master** for the product + WC layer; 24/25 superseded (retired in Task 1).
 
 ## Methodology guardrails (do not skip)
-- **Root cause before instance fix** — find the class of failure before patching the instance.
-- **Verify rendered output, not internal metrics (R-22-11)** — live REST render / editor / frontend is canonical; lint/build green ≠ correct (this session: `php -l` passed code that still had a runtime SSR-wipe bug + a CSS-injection regex).
-- **Outcome vs completion** — code shipped ≠ outcome achieved; if the live test isn't run, the task isn't done.
-- **/qc multi-rater BEFORE every commit** touching converter / pipeline / SGS-block logic (blub.db 255). Last session's 3-rater cross-model QC caught a real converter side-effect (G3-attrs text-fallback) + a security regex + WCAG fails that lint/build missed.
-- **Dispatched agents have NO commit/deploy authority** — they return uncommitted; main thread reviews + builds + deploys + commits.
-- **Prefer single Sonnet subagent over Opus-inline; parallelise disjoint work** (Bean-locked) — last session's parallel orchestration worked well across ~15 dispatches.
+- **Run `/adversarial-council` on any spec/plan/design before building** - the bottled pain-in-the-butt council; it found Spec 27's structural over-scope the polite round missed. Polite-then-brutal (two rounds) for high stakes.
+- **Root cause before instance fix** - find the class of failure before patching the instance (this session: the stale-clone root cause for the button, not a per-button patch).
+- **Verify rendered output, not internal metrics (R-22-11)** - live REST render / editor / frontend is canonical; lint/build green != correct.
+- **Outcome vs completion** - code shipped != outcome achieved; if the live test isn't run, the task isn't done.
+- **/qc multi-rater BEFORE every commit** touching converter / pipeline / SGS-block logic (blub.db 255).
+- **Dispatched agents have NO commit/deploy authority** - they return uncommitted; main thread reviews + builds + deploys + commits.
+- **Prefer single Sonnet subagent over Opus-inline; parallelise disjoint work** (Bean-locked); /qc after every considerable change.
