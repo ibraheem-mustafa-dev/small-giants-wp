@@ -69,6 +69,10 @@ blockers:
 
 # small-giants-wp — State Snapshot
 
+## Human Summary
+
+Two active threads on `main`. **Cloning thread:** container/wrapper standardisation programme (Workstream A shipped; WS-1–4 pending) is the primary architectural goal, feeding the Phase 2 hybrid-block-migration pixel-diff work. **Theme thread:** Wave 1 WooCommerce layer shipped; global-styles + per-client theming now designed as **Spec 26** (D158, build deferred except FR-26-D2). See `next-session-prompt.md` (cloning) + `next-session-prompt-theme.md` (theme) for the per-thread entry points.
+
 ## State Snapshot
 
 - **current_phase:** TWO ACTIVE THREADS. CLONING: spec-22-architectural-cleanup-batch-SHIPPED + converter advances (D145/D146/D147). THEME: Wave 1 SHIPPED on feat/theme-blocks-wave1 (13 commits, NOT merged — Bean times merge with cloning thread).
