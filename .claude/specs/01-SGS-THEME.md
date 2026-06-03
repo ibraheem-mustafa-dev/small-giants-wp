@@ -440,6 +440,8 @@ Behaviour:
 
 ### Live-style precedence: `wp_global_styles` SUPERSEDES `theme.json` (2026-06-03, D156)
 
+> **SUPERSEDED + corrected by [Spec 26 — SGS Global Styles & Per-Client Theming](26-SGS-GLOBAL-STYLES-AND-THEMING.md) (2026-06-03).** The "override precedence" framing below is imprecise: the `wp_global_styles` user layer is simply **where a site's global styles live**; `theme.json` is the factory-default seed. It is a data-layer merge, not a CSS override. Spec 26 is the canonical target architecture (variation-delta per client + `wp_global_styles` REST sync + the corrected mental model). Read Spec 26 for the current design; the note below is retained for continuity.
+
 **Critical (caught live on sandybrown).** WordPress compiles the page's `global-styles-inline-css` by merging the `wp_global_styles` post (the Site-Editor USER layer) **on top of** `theme.json`. Wherever both define a property, **the post wins**. On sandybrown the post is ID 7. Consequence: a change written ONLY to `theme.json` on disk — including a `push-theme-snapshot.py` push — has **no live effect** for any property the post also defines. (This corrects the "conflicts are rare" framing above: it is not a conflict, it is a deterministic override.)
 
 **To change live per-client styles, update BOTH:**

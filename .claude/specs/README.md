@@ -43,6 +43,9 @@ Specs are versioned, status-tracked artifacts that document architectural commit
 | 20 | [20-STRUCTURED-PIPELINE-LOG-SURFACING.md](20-STRUCTURED-PIPELINE-LOG-SURFACING.md) | Per-severity sidecar logs | shipped |
 | 21 | [21-PIPELINE-STATE-ARTEFACTS.md](21-PIPELINE-STATE-ARTEFACTS.md) | Pipeline-state debug artefacts catalogue | active |
 | 22 | [22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md](22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) | SGS Cloning Pipeline — Universal Block-Equivalent Extraction (CANONICAL; supersedes Spec 16 2026-05-26) | active |
+| 24 | [24-QUERY-DRIVEN-CONTENT-CARDS.md](24-QUERY-DRIVEN-CONTENT-CARDS.md) | Query-driven content cards (CPT + Query Loop + Block Bindings; product-card dual-mode) | active |
+| 25 | [25-SGS-WOOCOMMERCE-EXPERIENCE-LAYER.md](25-SGS-WOOCOMMERCE-EXPERIENCE-LAYER.md) | Authoritative SGS WooCommerce-wrapper layer (product-card / cart / collection / option-picker / bindings / add-to-cart) | active |
+| 26 | [26-SGS-GLOBAL-STYLES-AND-THEMING.md](26-SGS-GLOBAL-STYLES-AND-THEMING.md) | Global styles + per-client theming (variation-delta + wp_global_styles REST sync) + pipeline style derivation (supersedes Spec 01 §D156; build deferred) | draft |
 
 ## Architecture programme (2026-05-21+) — not yet a numbered spec
 
