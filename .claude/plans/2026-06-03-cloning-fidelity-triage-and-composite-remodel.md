@@ -11,6 +11,25 @@ plan_label: "[PLAN: opus]"
 
 # Phase — Cloning page-fidelity: triage + grid root-cause + composite-remodel (WS-4)
 
+## 2026-06-03 PM UPDATE (D163)
+
+**What was built this session (uncommitted):**
+- **#3 (heading-align) + #8 (testimonial-slider)** — BUILT-uncommitted, pending Gate B. #8 additionally needs live 4-card verify before the gate.
+- **WS-1c A3 (custom-width `margin-inline:auto` centring) + A4 (raw-px gap passthrough via new `sgs_container_gap_value()` helper)** — BUILT-uncommitted in `container/render.php`, pending Gate B.
+
+**Dispositions refined by /qc-council (D163) — do NOT proceed with the original plan on these items:**
+- **#4a grid-lift (converter-side align-items):** part of the FALSIFIED generic-lift exploration. align-items regression risk confirmed. Reconsider under WS-4 as a layout-only mechanism, NOT a standalone converter hack.
+- **Generic converter-lift (blind DB-suffix fingerprint for WS-1c A5/A6 + B1):** FALSIFIED. sgs/container attr suffixes are overloaded → mis-maps; min-height also triggers a `--has-min-height` flex-centre render-trap. The blind fingerprint is UNSAFE. Correct paths: A5 = curated `_root_lift_rules` extension (canonical_slot precision, align-gated); A6 = WS-4 lift-only-gated sub-mechanism with own /qc-council; B1 = curated canonical_slot map, NOT revive the blind consume-path.
+- **Real A5 (min-height) bug:** hero composite-interior extraction (`minHeightTablet=520px`) — NOT a slug-None container-path gap. Fix lives in the composite-interior path, not in `_root_lift_rules` blindly.
+
+**Dedup audit result (4-rater /qc-council):** NO block merges — the block roster is sound; overlap is plumbing-level → shared helpers + the container-mirror, not merges. **content-collection = the pending 29th container block to REGISTER** (layout KIND) — register-not-merge; DB roster is still 28 until next session registers it.
+
+**WS-4 scope confirmed:** ALL ~29 composites KIND-scoped (28 current + content-collection to register). WS-4 is the FOUNDATIONAL opener — must precede any standalone converter hacks on grid/min-height.
+
+**composite-diff scanner update:** `sync-container-wrapping-blocks.py` extended this session to emit per-composite MISSING/ADDED/ALTERED capabilities vs sgs/container, plus an INDEX roll-up. This is the WS-4 input artefact.
+
+---
+
 **USP:** The canary page *looks broken* despite WS-1's width fix — composites are drifted, content-routing drops content, and the product grid collapses. This phase makes the cloned page actually match the design, and lands the composite-remodel mechanism (Bean's directive) so the fix is permanent across every client, not a one-off patch.
 
 **Plan label:** [PLAN: opus] (architectural — WS-4 composite remodel + converter root-causes; Opus orchestrates, Sonnet/Haiku execute dispatched steps)

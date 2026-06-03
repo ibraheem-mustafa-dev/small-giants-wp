@@ -5,7 +5,7 @@ plan_name: 2026-06-02-container-wrapper-standardisation
 generated: 2026-06-02
 timebox: "~3 sessions (~6–9 hrs total; WS-1+WS-2+WS-3 concurrent ~2 sessions; WS-4 ~1 session after WS-1 gate). DB substrate (Workstream A: block_composition.container_kind column + sync rewrite + trust-bar/modal containerKind) SHIPPED commit 0d746073."
 status: active
-progress: "WS-1a (A1 contentWidth attr + guarded __inner render wrapper) + WS-1b (A2 outer max-width→widthMode transfer absent→full/present→custom + fold lifts __inner max-width→contentWidth) SHIPPED 2026-06-03, commit 2f86d9e6 (D159), live-DOM verified @1440. REMAINING WS-1c: A3/A4/A5/A6 (A7 likely MOOT — _lift_core_block_style is dead code; A2 inlined its own max-width→widthMode). WS-4 sharpened (D159.2): remove each composite's drifted wrapper → exact sgs/container mirror → /sgs-update auto-re-mirror on container version bump. Next: page-triage register P-CLONE-PAGE-VISUAL-TRIAGE (#1-#8, none an A1/A2 regression) + WS-4."
+progress: "WS-1a (A1 contentWidth attr + guarded __inner render wrapper) + WS-1b (A2 outer max-width→widthMode transfer absent→full/present→custom + fold lifts __inner max-width→contentWidth) SHIPPED 2026-06-03, commit 2f86d9e6 (D159), live-DOM verified @1440. REMAINING WS-1c: A3/A4/A5/A6 (A7 likely MOOT — _lift_core_block_style is dead code; A2 inlined its own max-width→widthMode). WS-4 sharpened (D159.2): remove each composite's drifted wrapper → exact sgs/container mirror → /sgs-update auto-re-mirror on container version bump. Next: page-triage register P-CLONE-PAGE-VISUAL-TRIAGE (#1-#8, none an A1/A2 regression) + WS-4. 2026-06-03 PM (D163): A3+A4 BUILT-uncommitted (pending Gate B); generic min-height/gridItem converter-lift FALSIFIED by /qc-council (real min-height = hero composite-interior extraction, NOT a slug-None container-path gap; A5→curated _root_lift_rules align-gated; A6→WS-4 lift-only-gated sub-mechanism with own council; B1→curated canonical_slot map, NOT a blind fingerprint); dedup audit = NO block merges (content-collection = pending 29th container block to register, layout KIND); composite-diff scanner (sync-container-wrapping-blocks.py) extended to emit per-composite MISSING/ADDED/ALTERED vs sgs/container + INDEX roll-up (WS-4 input)."
 authors: Claude Code / Bean
 primary_goal: "The cloning pipeline faithfully transfers CSS from any draft section, and every composite block with a built-in wrapper mirrors sgs/container — no per-block divergence, auto-propagated when container gains a capability."
 motivation: "Every pixel the pipeline gets wrong is a manual fix after every clone. Right now 4 of the 7 body sections on Mama's Munches render constrained to 1200 px when they should be full-bleed, and their inner content width is dropped entirely. Fixing the container/wrapper system is the one change that closes the structural CSS-transfer deficit for ALL future clients — not just Mama's."
@@ -74,7 +74,7 @@ Five workstreams, three running concurrently:
 |-------|------|---------|-------------|------------|------|
 | WS-1a | `contentWidth` attr on sgs/container | ✅ SHIPPED 2026-06-03 commit 2f86d9e6 (D159) | A1 shipped: new attr + render.php `__inner` div + editor control | none | Live-DOM verified @1440 |
 | WS-1b | Outer max-width transfer + de-cheat C1 | ✅ SHIPPED 2026-06-03 commit 2f86d9e6 (D159) | A2 shipped: widthMode-from-own-max-width transfer; fold lifts `__inner`→contentWidth | WS-1a | Live-DOM verified @1440. Note: A7 MOOT — `_lift_core_block_style` is dead code; A2 inlined its own max-width→widthMode logic |
-| WS-1c | Custom-width + raw-px gap + min-height + grid-item (A3–A6) | ~45 min | Four smaller gaps closed; converter writes gridItem attrs | WS-1a ✅ | Per-gap: GAP-5 custom-width lifts a brand-1000 correctly |
+| WS-1c | Custom-width + raw-px gap + min-height + grid-item (A3–A6) | ~45 min | A3+A4 BUILT-uncommitted (D163, block-side, pending Gate B); A5→curated `_root_lift_rules` + hero-composite-interior fix; A6→WS-4 lift-only-gated; A7 MOOT | WS-1a ✅ | Per-gap: GAP-5 custom-width lifts a brand-1000 correctly |
 | WS-2 | Converter/router truth — B1–B4 | ~60 min | D1 typed-attr layer revived or replaced; `__inner` max-width routes to attr in multi-child grids; grid-template-columns typed; D3 dual-write removed | WS-1a | leftover-buckets.json: maxWidth/widthMode no longer extraction_failed on the 4 target sections |
 | WS-3 | De-cheat R-22-1 — C2–C8 | ~60 min | Eight hardcoded structures moved to DB or documented; unified breakpoint table; css_router._infer_role() queries DB | none (can start alongside WS-1) | No grep-match for the retired constant names in production scripts |
 | WS-4a | DB propagation writer (Workstream A DB substrate SHIPPED; writer still needed) | ~45 min | KIND→attr-scope diff writer + /sgs-update wired; KIND assignments verified in dry-run | WS-1a must ship contentWidth before the KIND-scoped diff is meaningful | Bean sign-off on final 28-block roster + KIND assignments in dry-run output |
@@ -134,7 +134,7 @@ WS-1a (contentWidth A1) ─► WS-1b (A2) ─► WS-1c (A3–A6)           │
 - A2: The four slug-None sections carry no `max-width:1200`; they match the viewport width.
 - A3: GAP-5 custom-width (brand 1000 px): converter emits `widthMode:custom, customWidth:"1000px"`, brand section renders 1000 px unchanged.
 - A4: Raw-px gap value passes through render.php without being wrapped in `var(--wp--preset--spacing--…)`.
-- A7: `_lift_core_block_style` max-width→widthMode logic is called from the fold path (not atomic-only); a section container with a `max-width` CSS decl converts to `widthMode` correctly.
+- A7: MOOT (D159/D163) — `_lift_core_block_style` is dead code (zero call sites); A2 inlined its own max-width→widthMode logic. No action. (The earlier "fold must call _lift_core_block_style" framing is retired.)
 - All: Bean visual sign-off on canary page 144 per section (R-22-13).
 
 **VERIFY:** Re-run the 2026-06-04 Playwright baseline script post-deploy; compare section-W + content-W per row. Gate is numerical match to the falsifiable predictions in `.claude/scratch/2026-06-04-css-transfer-gaps-1-2-fix-shape.md`.
@@ -210,9 +210,9 @@ WS-1a (contentWidth A1) ─► WS-1b (A2) ─► WS-1c (A3–A6)           │
 
 ### WS-4 — Composite standardisation + auto-propagation
 
-> **Scope sharpened (D160):** ALL ~28 composites KIND-scoped (not just 4 SECTION blocks). Remove each composite's drifted wrapper → exact sgs/container mirror → /sgs-update auto-re-mirror on container version bump. Live triage + WS-4 build spec in `.claude/plans/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md`.
+> **Scope sharpened (D160):** ALL ~28 composites KIND-scoped (not just 4 SECTION blocks) (29 once content-collection registers — D163). Remove each composite's drifted wrapper → exact sgs/container mirror → /sgs-update auto-re-mirror on container version bump. Live triage + WS-4 build spec in `.claude/plans/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md`.
 
-**Purpose:** Every composite block with a wrapper mirrors `sgs/container`. When container gains a new capability, one `/sgs-update` run propagates the capability diff to all 28 composites.
+**Purpose:** Every composite block with a wrapper mirrors `sgs/container`. When container gains a new capability, one `/sgs-update` run propagates the capability diff to all 28 composites (29 once content-collection registers — D163).
 
 **Files:**
 - `plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py` — full rewrite from report-only to writer
@@ -409,11 +409,11 @@ The pipeline currently transfers Layer 1 (partially) and **drops Layers 2 and 3 
 |-----|-------------|------------|----------|
 | ~~A1~~ | ✅ DONE 2026-06-03 commit `2f86d9e6` — `contentWidth` attr + render.php `__inner` div + fold lift | `container/block.json`, `render.php`, `convert.py:2776` | ~~High~~ |
 | ~~A2~~ | ✅ DONE 2026-06-03 commit `2f86d9e6` — widthMode-from-own-max-width transfer; `db_lookup.py:2461` band-aid removed (C1 paired) | `convert.py:2031–2039`, `db_lookup.py:2461` | ~~High~~ |
-| A3 | `_match_theme_width` never emits `widthMode:custom + customWidth` | `convert.py:975–989` | Medium |
-| A4 | render.php wraps raw-px gap values in `var(--wp--preset--spacing--…)` | `render.php:150` | Medium |
-| A5 | `min-height` not in `_root_lift_rules` | `convert.py:498` | Low |
-| A6 | `gridItem*` attrs never written by converter | `convert.py` (zero `gridItem` refs) | Medium |
-| B1 | `seed_d1_sidecar` is a no-op stub; ~43 typed-attr assignments written to JSON but never consumed | `convert.py:167` | High |
+| A3 | ⏳ BUILT-uncommitted 2026-06-03 PM (block-side, pending Gate B) — `_match_theme_width` never emits `widthMode:custom + customWidth` | `convert.py:975–989` | Medium |
+| A4 | ⏳ BUILT-uncommitted 2026-06-03 PM (block-side, pending Gate B) — render.php wraps raw-px gap values in `var(--wp--preset--spacing--…)`; new `sgs_container_gap_value()` helper added | `render.php:150` | Medium |
+| A5 | `min-height` not in `_root_lift_rules` — disposition: hero-composite-interior extraction (`minHeightTablet=520px`) is the real bug; container-path = curated `_root_lift_rules` extension (canonical_slot precision, align-gated, render-trap avoided). Generic blind lift FALSIFIED (D163). | `convert.py:498` | Low |
+| A6 | `gridItem*` attrs never written by converter — → WS-4 lift-only-gated sub-mechanism, own /qc-council (D163). Must NOT strip unique per-child CSS; gift-section trial-card modifier is the test case. | `convert.py` (zero `gridItem` refs) | Medium |
+| B1 | `seed_d1_sidecar` is a no-op stub; ~43 typed-attr assignments written to JSON but never consumed — refined: curated canonical_slot map, NOT a blind fingerprint (council D163). Safe path = extend `_root_lift_rules` with precision, not revive the blind consume-path. | `convert.py:167` | High |
 | B2 | `_fold_eligible` sole-child gate (`convert.py:2830`) drops ALL fold attrs (max-width, gap, padding, etc.) for multi-child sections, not just max-width; `__inner` content-width cap lost entirely | `convert.py:2830` | Medium |
 | B3 | `grid-template-columns` on recognised section → scoped CSS, not typed attr | `convert.py:498` (missing entry) | Medium |
 | B4 | D3 gap-candidates dual-write to production CSS | `css_router.py:531` | Low |
@@ -426,7 +426,7 @@ The pipeline currently transfers Layer 1 (partially) and **drops Layers 2 and 3 
 | C7 | `MOCKUP_ROOT` + page 144 hardcoded to Mama's in a universal script | `upload_and_patch.py:36, 86` | Medium |
 | C8 | cta-section `layout` enum collision + hero `splitColumnRatio` + `overlayColour` naming drift | `cta-section/block.json`, `hero/block.json` | Medium |
 | D1 | `sync-container-wrapping-blocks.py` is report-only; `--apply` writes DB metadata only, no block.json/render.php propagation | `sync-container-wrapping-blocks.py` | High |
-| D2 | Every composite has large attr gaps vs sgs/container (SECTION ~7–14 of 69 attrs; LAYOUT ~6–9; CONTENT 0 of 4 width attrs) | All 28 composite block.json files | High |
+| D2 | Every composite has large attr gaps vs sgs/container (SECTION ~7–14 of 69 attrs; LAYOUT ~6–9; CONTENT 0 of 4 width attrs) | All 28 composite block.json files (29 once content-collection registers) | High |
 | D3 | Composites (especially SECTION-KIND) get confidence 1.0 via class-section tier; the 4 sgs/container sections get confidence 0.0 deferred-no-match | `convert.py` tier logic | Medium |
 | ~~A7~~ | MOOT — `_lift_core_block_style` is dead code; A2 inlined its own max-width→widthMode logic directly. No action required. | `convert.py:1034–1040` | ~~Medium~~ |
 | B5 | `css_router.py:433–437` verbatim-CSS-fallback dumps unscoped page-wide CSS on import failure — operator-invisible anti-pattern that can leak global styles into the page | `css_router.py:433–437` → WS-2 | Medium |
