@@ -190,12 +190,23 @@ store( 'sgs/product-card', {
 	},
 	actions: {
 		/**
-		 * Add the bound product to the cart via the WC Store API, then
-		 * announce the result and notify sgs/cart to re-read the count.
+		 * Add the selected product variation (or simple product) to the cart via
+		 * the SGS secure proxy POST /sgs/v1/cart/add-item. Never posts to the WC
+		 * Store API directly — all price/stock/IDOR validation is server-side.
+		 *
+		 * Wire format (M-C2, verified live on WC 10.8.1):
+		 *   POST /sgs/v1/cart/add-item
+		 *   Header: X-WP-Nonce: <wp_rest nonce seeded into ctx.restNonce>
+		 *   Body:   { id: <variationId|productId>, quantity: 1,
+		 *             variation: [{ attribute: "Size", value: "12-pack" }, …] }
+		 *   `attribute` = WC display name (axis.label); `value` = term slug.
+		 *   `id`        = selected variation ID for variable products; parent
+		 *                 product ID for simple / CPT products.
+		 *   No price is ever sent — the proxy is the sole authority.
 		 *
 		 * A3: The button is rendered as an <a> so it degrades to a product-page
 		 * link without JS. This action calls event.preventDefault() to intercept
-		 * the navigation and handle the cart add via the Store API instead.
+		 * the navigation and handle the cart add via the proxy instead.
 		 *
 		 * A4: Guarded by context.pending to prevent spam clicks. Sets pending=true
 		 * before any async work and clears it in the finally clause regardless of
@@ -212,7 +223,14 @@ store( 'sgs/product-card', {
 			}
 
 			const ctx = getContext();
-			const id = parseInt( ctx.addToCartId, 10 );
+
+			// Resolve the correct ID to send:
+			//   variable product → selected variation ID
+			//   simple / CPT    → parent product ID (addToCartId)
+			const variationId = parseInt( ctx.selectedVariationId, 10 ) || 0;
+			const parentId    = parseInt( ctx.addToCartId, 10 ) || 0;
+			const id          = variationId > 0 ? variationId : parentId;
+
 			if ( ! id ) {
 				return;
 			}
@@ -223,42 +241,50 @@ store( 'sgs/product-card', {
 			}
 
 			ctx.cartStatus = '';
-			ctx.pending = true;
+			ctx.pending    = true;
 
 			try {
-				const url = getStoreApiBase() + '/wc/store/v1/cart/add-item';
+				// Build the variation array using WC display names + term slugs
+				// (M-C2 wire format). Only populated for variable products.
+				const variation = [];
+				if ( variationId > 0 && Array.isArray( ctx.axes ) && ctx.selectedAxes ) {
+					for ( const axis of ctx.axes ) {
+						const slug = ctx.selectedAxes[ axis.taxonomy ];
+						if ( slug ) {
+							variation.push( { attribute: axis.label, value: slug } );
+						}
+					}
+				}
 
-				// First request: read the rotating Store API nonce from the
-				// response header (GET /cart returns a fresh `Nonce` header).
-				const nonceRes = yield fetch(
-					getStoreApiBase() + '/wc/store/v1/cart',
+				const body = { id, quantity: 1 };
+				if ( variation.length ) {
+					body.variation = variation;
+				}
+
+				const response = yield fetch(
+					getStoreApiBase() + '/sgs/v1/cart/add-item',
 					{
-						method: 'GET',
+						method: 'POST',
 						credentials: 'same-origin',
+						headers: {
+							'Content-Type': 'application/json',
+							'X-WP-Nonce': ctx.restNonce || '',
+						},
+						body: JSON.stringify( body ),
 					}
 				);
-				if ( ! nonceRes.ok ) {
-					ctx.cartStatus =
-						'Sorry, something went wrong adding this item.';
-					return;
-				}
-				const nonce = nonceRes.headers.get( 'Nonce' ) || '';
-
-				const headers = { 'Content-Type': 'application/json' };
-				if ( nonce ) {
-					headers.Nonce = nonce;
-				}
-
-				const response = yield fetch( url, {
-					method: 'POST',
-					credentials: 'same-origin',
-					headers,
-					body: JSON.stringify( { id, quantity: 1 } ),
-				} );
 
 				if ( ! response.ok ) {
-					ctx.cartStatus =
-						'Sorry, this item could not be added to your basket.';
+					let msg = 'Sorry, this item could not be added to your basket.';
+					try {
+						const j = yield response.json();
+						if ( j && j.message ) {
+							msg = j.message;
+						}
+					} catch {
+						// Ignore parse errors — use the default message above.
+					}
+					ctx.cartStatus = msg;
 					return;
 				}
 

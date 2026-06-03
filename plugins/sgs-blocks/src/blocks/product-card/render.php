@@ -164,6 +164,10 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			'imageAlt'            => $data['image_alt'],
 			'cartStatus'          => '',
 			'pending'             => false,
+			// U7: wp_rest nonce for the SGS cart proxy (X-WP-Nonce header).
+			// Guests receive a per-tick shared nonce — acceptable WC parity for
+			// Phase 1; the proxy returns a clear 403 "reload" message when stale.
+			'restNonce'           => wp_create_nonce( 'wp_rest' ),
 		);
 
 		// M-C9 hard cap: 24 KB max serialised context — never trips for 48 SKUs
@@ -362,6 +366,11 @@ $context = array(
 	 * view.js sets this true before the fetch and false in the finally clause.
 	 */
 	'pending'     => false,
+
+	// U7: wp_rest nonce for the SGS cart proxy (X-WP-Nonce header).
+	// Guests receive a per-tick shared nonce — acceptable WC parity for
+	// Phase 1; the proxy returns a clear 403 "reload" message when stale.
+	'restNonce'   => wp_create_nonce( 'wp_rest' ),
 );
 
 $bound_args = array( 'class' => implode( ' ', $classes ) );
