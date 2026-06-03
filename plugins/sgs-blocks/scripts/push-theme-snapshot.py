@@ -7,14 +7,27 @@ system. Each client now lives at `sites/<client>/theme-snapshot.json` (a full
 theme.json). This CLI uploads that snapshot to a specific target site's
 `wp-content/themes/sgs-theme/theme.json` over SSH+SCP and flushes WP cache.
 
+FR-26-D2 (2026-06-03): on a real push, ALSO writes the snapshot's `styles` +
+`settings` to the live `wp_global_styles` database post via the WP REST API.
+Without this, the Site-Editor user layer silently overrides the on-disk
+theme.json for every property it already defines.  Post ID is discovered at
+push-time via `wp post list --post_type=wp_global_styles` over the existing SSH
+connection — deterministic and requires no hardcoded constant.
+
+Credential lookup order (for the REST write):
+  1. Known target domain → named secrets file in `.claude/secrets/`
+     (currently: sandybrown-* → sandybrown.env vars WP_USER_SANDYBROWN /
+      WP_APP_PWD_SANDYBROWN)
+  2. CLI flags `--app-user` / `--app-password`
+  3. Environment variables SGS_WP_APP_USER / SGS_WP_APP_PWD
+
 Safety defaults:
-  - `--no-push` / `--dry-run` only print the diff and exit
+  - `--no-push` / `--dry-run` only print the diff and exit; no REST write
   - On sandybrown / palestine-lives.org targets, `--no-push` is forced unless
     `--yes` is supplied explicitly (prevents accidental overwrites on the
     shared dev/staging sites)
   - Operator overrides (keys present in `wp_global_styles` but absent from the
-    local snapshot) are surfaced in the diff output — these will SURVIVE the
-    push and are non-destructive
+    local snapshot) are surfaced in the diff output
 
 Examples:
     # Diff Mama's Munches snapshot against sandybrown (safe — never pushes)
@@ -34,7 +47,9 @@ Examples:
 from __future__ import annotations
 
 import argparse
+import base64
 import json
+import os
 import subprocess
 import sys
 import urllib.error
@@ -55,6 +70,85 @@ SAFE_TARGETS = (
 
 DEFAULT_SSH_PORT = 65002
 DEFAULT_TARGET_DOMAIN = "sandybrown-nightingale-600381.hostingersite.com"
+
+# The framework theme this script deploys. WordPress names the user-layer
+# global-styles post `wp-global-styles-<stylesheet>`, so this drives a
+# deterministic post-ID lookup (see discover_global_styles_post_id).
+THEME_STYLESHEET = "sgs-theme"
+
+# ---------------------------------------------------------------------------
+# Credential helpers (FR-26-D2)
+# ---------------------------------------------------------------------------
+
+def _load_env_file(path: Path) -> dict[str, str]:
+    """Parse a simple KEY=VALUE env file. Lines starting with # are ignored."""
+    result: dict[str, str] = {}
+    if not path.is_file():
+        return result
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        result[key.strip()] = value.strip()
+    return result
+
+
+def resolve_app_credentials(
+    target_domain: str,
+    cli_user: str | None,
+    cli_password: str | None,
+) -> tuple[str, str] | None:
+    """
+    Return (username, app_password) for REST Basic auth, or None if unavailable.
+
+    Lookup order:
+      1. Known domain → named secrets file (sandybrown.env etc.)
+      2. CLI flags --app-user / --app-password
+      3. Environment variables SGS_WP_APP_USER / SGS_WP_APP_PWD
+    """
+    secrets_dir = repo_root() / ".claude" / "secrets"
+
+    # Domain-keyed lookup — extend this dict for each new client target.
+    domain_env_map: dict[str, tuple[Path, str, str]] = {
+        "sandybrown": (
+            secrets_dir / "sandybrown.env",
+            "WP_USER_SANDYBROWN",
+            "WP_APP_PWD_SANDYBROWN",
+        ),
+    }
+
+    for domain_key, (env_path, user_var, pwd_var) in domain_env_map.items():
+        if domain_key in target_domain:
+            env = _load_env_file(env_path)
+            user = env.get(user_var, "")
+            pwd = env.get(pwd_var, "").replace(" ", "")  # strip WP app-pwd spaces
+            if user and pwd:
+                return user, pwd
+            print(
+                f"[push-theme-snapshot] WARNING: matched secrets file {env_path} "
+                f"but {user_var}/{pwd_var} are missing or empty",
+                file=sys.stderr,
+            )
+            break
+
+    # CLI flags
+    if cli_user and cli_password:
+        return cli_user, cli_password.replace(" ", "")
+
+    # Environment variables
+    env_user = os.environ.get("SGS_WP_APP_USER", "")
+    env_pwd = os.environ.get("SGS_WP_APP_PWD", "").replace(" ", "")
+    if env_user and env_pwd:
+        return env_user, env_pwd
+
+    return None
+
+
+def _basic_auth_header(username: str, app_password: str) -> str:
+    """Return a Base64-encoded Basic auth header value. Never logs the secret."""
+    token = base64.b64encode(f"{username}:{app_password}".encode()).decode()
+    return f"Basic {token}"
 
 
 def repo_root() -> Path:
@@ -169,6 +263,162 @@ def diff_summary(local: dict, server: dict | None, global_styles: dict | None) -
     return "\n".join(lines)
 
 
+def _wp_post_list(target: str, port: int, wp_root: str, extra: str) -> list | None:
+    """Run `wp post list ... --format=json` over SSH and parse the rows."""
+    cmd = [
+        "ssh", "-p", str(port), target,
+        f"cd {wp_root} && wp post list --post_type=wp_global_styles "
+        f"{extra} --fields=ID,post_name --format=json",
+    ]
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=20)
+    except subprocess.TimeoutExpired:
+        print("[push-theme-snapshot] SSH timeout discovering global-styles post ID", file=sys.stderr)
+        return None
+    if result.returncode != 0:
+        print(
+            f"[push-theme-snapshot] wp post list failed ({result.returncode}): "
+            f"{result.stderr.strip()}",
+            file=sys.stderr,
+        )
+        return None
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError as exc:
+        print(f"[push-theme-snapshot] wp post list output not valid JSON: {exc}", file=sys.stderr)
+        return None
+
+
+def discover_global_styles_post_id(target: str, port: int, wp_root: str) -> int | None:
+    """
+    Return the `wp_global_styles` user-layer post ID via `wp post list` over SSH.
+
+    Uses the same SSH connection already established for SCP/cache-flush.
+    `wp post list --post_type=wp_global_styles` is a read-only WP-CLI command
+    and is not gated by the wp-content-guard hook.  Returns None on failure.
+
+    Discovery is deterministic: WordPress names the active theme's user-layer
+    post `wp-global-styles-<stylesheet>`, so we filter by that name first
+    (correct even if older themes left orphan global-styles posts behind).
+    If the name filter yields nothing (an unexpected WP version), we fall back
+    to the single unfiltered post with a warning. On the sandybrown canary the
+    value is 7 — verified live, not a hardcoded constant.
+    """
+    expected_name = f"wp-global-styles-{THEME_STYLESHEET}"
+
+    # Primary: filter by the deterministic post_name for this theme.
+    rows = _wp_post_list(target, port, wp_root, f"--name={expected_name}")
+    if rows is None:
+        return None  # SSH/parse failure already reported.
+    match = next((r for r in rows if r.get("post_name") == expected_name), None)
+    if match is not None:
+        post_id = int(match["ID"])
+        print(f"[push-theme-snapshot] discovered wp_global_styles post ID: {post_id} ({expected_name})")
+        return post_id
+
+    # Fallback: no name match — take the single unfiltered post if exactly one exists.
+    all_rows = _wp_post_list(target, port, wp_root, "")
+    if all_rows is None:
+        return None
+    if not all_rows:
+        print("[push-theme-snapshot] no wp_global_styles post found on server", file=sys.stderr)
+        return None
+    if len(all_rows) > 1:
+        print(
+            f"[push-theme-snapshot] ERROR: {len(all_rows)} wp_global_styles posts found and none "
+            f"named {expected_name} — refusing to guess which is the active theme's. Aborting.",
+            file=sys.stderr,
+        )
+        return None
+    post_id = int(all_rows[0]["ID"])
+    print(
+        f"[push-theme-snapshot] WARNING: no post named {expected_name}; "
+        f"falling back to the only wp_global_styles post (ID {post_id})"
+    )
+    return post_id
+
+
+def post_global_styles(
+    target_domain: str,
+    post_id: int,
+    snapshot: dict,
+    auth_header: str,
+) -> bool:
+    """
+    POST the snapshot's `styles` + `settings` to /wp/v2/global-styles/{post_id}.
+
+    Fires AFTER the disk push (SCP + cache flush) so both the file layer and
+    the database user layer are updated in one operation.
+
+    Body: { "styles": <snapshot styles or {}>, "settings": <snapshot settings or {}> }
+    Content-Type: application/json
+    Authorization: Basic <base64(user:app_pwd)>
+
+    Returns True on success, False on failure.  A failed write on a real push
+    is always loud — never swallowed silently.
+    """
+    url = f"https://{target_domain}/wp-json/wp/v2/global-styles/{post_id}"
+    body: dict = {
+        "styles": snapshot.get("styles") or {},
+        "settings": snapshot.get("settings") or {},
+    }
+    body_bytes = json.dumps(body).encode("utf-8")
+    req = urllib.request.Request(
+        url,
+        data=body_bytes,
+        method="POST",
+        headers={
+            "Authorization": auth_header,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+    )
+    print(f"[push-theme-snapshot] POST /wp/v2/global-styles/{post_id} → {url}")
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            resp_data = json.loads(resp.read().decode("utf-8"))
+            returned_id = resp_data.get("id")
+            print(
+                f"[push-theme-snapshot] global-styles POST success "
+                f"(response id: {returned_id})"
+            )
+            return True
+    except urllib.error.HTTPError as exc:
+        body_text = ""
+        try:
+            body_text = exc.read().decode("utf-8", errors="replace")[:400]
+        except Exception:  # noqa: BLE001
+            pass
+        print(
+            f"[push-theme-snapshot] ERROR: global-styles POST failed HTTP {exc.code} — "
+            f"the disk push completed but the live user-layer was NOT updated. "
+            f"Response: {body_text}",
+            file=sys.stderr,
+        )
+        return False
+    except (urllib.error.URLError, TimeoutError) as exc:
+        print(
+            f"[push-theme-snapshot] ERROR: global-styles POST network error — "
+            f"the disk push completed but the live user-layer was NOT updated. "
+            f"Detail: {exc}",
+            file=sys.stderr,
+        )
+        return False
+
+
+def flush_cache(target: str, port: int, wp_root: str) -> None:
+    """`wp cache flush` over SSH. Non-fatal — a stale cache is recoverable."""
+    cmd_flush = ["ssh", "-p", str(port), target, f"cd {wp_root} && wp cache flush"]
+    print(f"[push-theme-snapshot] wp cache flush @ {wp_root}")
+    result = subprocess.run(cmd_flush, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(
+            f"[push-theme-snapshot] wp cache flush returned {result.returncode}: "
+            f"{result.stderr.strip()} — operation completed but cache may be stale",
+            file=sys.stderr,
+        )
+
+
 def push_snapshot(target: str, port: int, server_path: str, local_path: Path) -> bool:
     scp_target = f"{target}:{server_path}"
     cmd_scp = ["scp", "-P", str(port), str(local_path), scp_target]
@@ -179,15 +429,7 @@ def push_snapshot(target: str, port: int, server_path: str, local_path: Path) ->
         return False
 
     wp_root = server_path.rsplit("/wp-content/", 1)[0]
-    cmd_flush = ["ssh", "-p", str(port), target, f"cd {wp_root} && wp cache flush"]
-    print(f"[push-theme-snapshot] wp cache flush @ {wp_root}")
-    result = subprocess.run(cmd_flush, capture_output=True, text=True)
-    if result.returncode != 0:
-        print(
-            f"[push-theme-snapshot] wp cache flush returned {result.returncode}: "
-            f"{result.stderr.strip()} — push completed but cache may be stale",
-            file=sys.stderr,
-        )
+    flush_cache(target, port, wp_root)
     return True
 
 
@@ -199,11 +441,24 @@ def main() -> int:
     parser.add_argument("--port", type=int, default=DEFAULT_SSH_PORT, help="SSH port (Hostinger uses 65002)")
     parser.add_argument("--yes", action="store_true", help="Skip interactive confirmation")
     parser.add_argument("--no-push", "--dry-run", dest="no_push", action="store_true", help="Print diff and exit (no upload)")
+    # FR-26-D2: REST credentials for writing the live wp_global_styles post.
+    # Only required for an actual push; dry-run works without them.
+    parser.add_argument(
+        "--app-user",
+        default=None,
+        help="WP application-password username (fallback if no domain-matched secrets file)",
+    )
+    parser.add_argument(
+        "--app-password",
+        default=None,
+        help="WP application password (spaces stripped automatically)",
+    )
     args = parser.parse_args()
 
     local = load_local_snapshot(args.client)
     local_path = repo_root() / "sites" / args.client / "theme-snapshot.json"
     server_path = f"domains/{args.target_domain}/public_html/wp-content/themes/sgs-theme/theme.json"
+    wp_root = f"domains/{args.target_domain}/public_html"
 
     safe_target = any(safe in args.target_domain for safe in SAFE_TARGETS)
     if safe_target and not args.yes:
@@ -221,14 +476,48 @@ def main() -> int:
         print("[push-theme-snapshot] --no-push set — exiting without upload")
         return 0
 
+    # Resolve REST credentials before confirming — fail fast if unavailable.
+    creds = resolve_app_credentials(args.target_domain, args.app_user, args.app_password)
+    if creds is None:
+        print(
+            "[push-theme-snapshot] ERROR: no REST credentials available for "
+            f"{args.target_domain}. Supply --app-user/--app-password or set "
+            "SGS_WP_APP_USER/SGS_WP_APP_PWD, or add a domain-matched secrets file. "
+            "Aborting — no changes made.",
+            file=sys.stderr,
+        )
+        return 1
+    auth_header = _basic_auth_header(*creds)
+
     if not args.yes:
         answer = input(f"Push {args.client} snapshot to {args.target_domain}? [y/N] ").strip().lower()
         if answer != "y":
             print("[push-theme-snapshot] aborted by operator")
             return 0
 
+    # Step 1: SCP theme.json to disk + cache flush (existing behaviour).
     if not push_snapshot(args.target, args.port, server_path, local_path):
         return 1
+
+    # Step 2 (FR-26-D2): write snapshot styles+settings to the live
+    # wp_global_styles database post so the user layer matches the disk snapshot.
+    post_id = discover_global_styles_post_id(args.target, args.port, wp_root)
+    if post_id is None:
+        print(
+            "[push-theme-snapshot] ERROR: could not determine wp_global_styles post ID — "
+            "disk push completed but live user-layer was NOT updated.",
+            file=sys.stderr,
+        )
+        return 1
+
+    if not post_global_styles(args.target_domain, post_id, local, auth_header):
+        # post_global_styles already printed a loud error.
+        return 1
+
+    # Flush AFTER the REST write so the rendered global-styles inline CSS picks
+    # up the new user-layer data immediately (the POST self-invalidates the
+    # theme.json cache, but a trailing flush also clears object/page caches).
+    flush_cache(args.target, args.port, wp_root)
 
     print(f"[push-theme-snapshot] success — verify at https://{args.target_domain}/")
     return 0
