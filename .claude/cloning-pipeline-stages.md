@@ -748,7 +748,7 @@ python ~/.claude/hooks/wp-blocks.py dump
 
 | Table | Rows | Pipeline use |
 |---|---|---|
-| block_attributes | 2,075 (A1 contentWidth attr added 2026-06-03) | Stages 3+4 R; cv2 D3 W. D110 backfill: canonical_slot 659/2074 (31.8%), role 676/2074 (32.6%); 1316 NULL |
+| block_attributes | 2,101 (live DB; container contentWidth in block.json this session, NOT yet in this table — pending /sgs-update) | Stages 3+4 R; cv2 D3 W. D110 backfill (historical): canonical_slot 659 (31.8%), role 676 (32.6%) |
 | blocks | 68 sgs (+ 122 core/wp indexed = 190) | Stage 2 cross-check; /sgs-update S3 uimax sync. `tier` column (D107) — 2 rows class-section |
 | block_composition (D108/D152) | 189 (post-D152) | Data layer LIVE for Stage 1 queries; `container_kind` column added D152 (values `section|layout|content`; 28-block container roster populated); walker consumption code REVERTED — P-XS-3-TRIGGER-REFINEMENT. Schema: block_slug PK, wraps_block, composition_role enum, has_inner_blocks, accepts_allowed_blocks, container_kind |
 | slots (D99, replaces slot_synonyms + legacy_role_lookup) | 92 element + 4 section = 96 (post-D111; was 105 pre-D111) | Stage 1 R via db_lookup |
