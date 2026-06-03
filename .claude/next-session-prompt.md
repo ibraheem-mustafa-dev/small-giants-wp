@@ -12,6 +12,13 @@ primary_goal: "CLONING-PIPELINE THREAD. OPEN WITH **WS-4 — the composite-wrapp
 > ## ⚠ READ THIS BEFORE ANYTHING ELSE — warm start is mandatory ⚠
 > Invoke `/autopilot` first. Then read the MANDATORY READING LIST **end-to-end, not grep-skim**. The predecessor session (2026-06-02) deep-analysed the container/wrapper system (4-branch code review + 6-step target/current compare + artefact-empirical proof) and scoped the fix as a 5-workstream programme — do NOT re-derive it, READ the plan (`.claude/plans/2026-06-02-container-wrapper-standardisation.md`) + Spec 22 §FR-22-21 + decisions D152. Quote the STOP catalogue + the pre-flight ritual back to yourself before acting. A SEPARATE theme/blocks thread shares this working tree — see `.claude/next-session-prompt-theme.md` (do not do theme work here; coordinate commits, explicit path, check `git log -1 --stat`).
 
+## First action (smallest, zero-dependency entry point)
+
+1. `/autopilot` is auto-injected — let it run.
+2. Read this opener + the **MANDATORY READING LIST** below end-to-end (not grep-skim), and quote the STOP catalogue + pre-flight ritual back to yourself.
+3. Run the WS-4 input scanner (read-only, ~30s): `python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py` → read `pipeline-state/container-inheritance-sync/<date>/INDEX.md` (the per-composite MISSING/ADDED/ALTERED roll-up). That + the §WS-4 orchestration plan is your starting map.
+4. THEN dispatch Task 1 (WS-4 design-gate). Do NOT build inline — you orchestrate (see §ORCHESTRATION MODEL).
+
 ## ⚡⚡ 2026-06-03 PM — READ THIS OPENER FIRST (supersedes the "OPEN WITH" section further down)
 
 **OPEN WITH WS-4 — the composite-wrapper mirror. This is Bean's core directive and it is FOUNDATIONAL.** Replace each composite's DRIFTED built-in wrapper with an EXACT `sgs/container` mirror; then auto-propagate via `/sgs-update` whenever `sgs/container` version-bumps.
@@ -36,6 +43,109 @@ primary_goal: "CLONING-PIPELINE THREAD. OPEN WITH **WS-4 — the composite-wrapp
 - **A5/A6 disposition:** A6 (per-grid-item) is the 3rd layer of the FR-22-21 wireframe → folds into WS-4 as a **lift-only, layout=grid-gated** sub-mechanism with its OWN council (the gift-section trial-card has a modifier — uniform-detection must NOT clobber it). A5 (min-height) → the curated-map extension + the separate hero-composite-interior fix.
 
 > The dated sections below (SHIPPED 2026-06-03 AM, OPEN WITH …, WS-1 detail) are PRIOR-WORK reference, kept for history. This PM opener is the live entry point. The STOP catalogue + pre-flight ritual + mandatory reading list below remain binding — read them.
+
+## ⚙ ORCHESTRATION MODEL — you are OPUS = the ORCHESTRATOR (read before dispatching anything)
+
+**Your role (main inline agent, Opus):** orchestration · documentation · QC + fact-checking · supporting Bean (plain-English, non-technical explanations + decision framing + progress updates — Bean is a non-coder business owner). **Do NOT do the heavy technical building inline.** Per the Bean-locked orchestration philosophy (STOP #42): a single Sonnet subagent beats Opus-inline — faster, far more token-efficient, conserves your context so the session achieves more. **Dispatch the build; you verify, fact-check, document, and translate for Bean.**
+
+**Dispatch rules:**
+- **Disjoint work** (different files/blocks) → PARALLEL Sonnet subagents in ONE message via `/dispatching-parallel-agents`.
+- **Shared-file work** (e.g. multiple edits to one `convert.py`) → SERIALISE (one agent, or sequential).
+- **Implementer + spec-reviewer + quality-reviewer** pattern → `/subagent-driven-development`.
+- **Cold prompts** → `/subagent-prompt` — self-contained, embed the validated fix-shape + the contract: *edit ONLY the named files · return UNCOMMITTED · NO `git stash`/`reset`/`restore`/`checkout` · run a self-test (`npm run build` / `php -l` / `python -c import`)*.
+- **Model pick per task** → `/delegate` (Sonnet = build/design; Haiku = mechanical trace; Opus-inline ONLY when a Bean decision is needed mid-task or it's a trivial 1-2 tool-call change).
+- **VERIFY every subagent diff + finding against ground truth before trusting it** — subagent findings are HYPOTHESES (STOP #34/#44). ⚠ The `wp-sgs-developer` agent is NOT registered in this environment → dispatch with `subagent_type: general-purpose`, `model: sonnet`.
+- **`/qc-council` before EVERY converter/block/DB commit** (blub.db 255) — and as the design-gate BEFORE building any sensitive/high-blast-radius change (STOP #32). The council is the structural gate: this session it FALSIFIED the generic-lift pre-build and overturned 3 of 4 merge guesses. Trust it.
+
+### Skills + commands — WHICH to use WHEN
+
+| Category | Skill / command | Use it for |
+|----------|-----------------|-----------|
+| **First** | `/autopilot` | Auto-injected at SessionStart — live skill routing + ADHD support. |
+| **Domain (WP/SGS)** | `/sgs-wp-engine` | SGS framework block dev, QA pipeline, client/site work — the umbrella SGS skill. |
+| | `/wp-block-development` | block.json / attributes / supports / render.php / deprecations (the WS-4 composite + helper work). |
+| | `/wp-blocks` (`python ~/.claude/hooks/wp-blocks.py dump`) | Schema enumeration BEFORE any "missing X / block can't do Y" claim (STOP #8/#26). |
+| | `/sgs-db` (read) + direct `sqlite3` via `python` (writes; the CLI is NOT installed) | DB ground truth — `blocks`, `block_attributes`, `block_composition` (container_kind), `slots`, `roles`, `property_suffixes`. |
+| | `/sgs-clone` | Run the 9-stage clone pipeline + `--debug-trace` for artefacts; register results via `/sgs-update`. |
+| **QC (gates)** | `/qc-council` | MANDATORY before every converter/block/DB commit (blub.db 255) + as the pre-build design-gate for sensitive changes (STOP #32). Multi-rater, cross-model. |
+| | `/qc-inline` | Small single-artefact end-to-end check inline (no pipeline). |
+| | `/qc` | Larger end-to-end test pipeline with durable artefacts. |
+| | `/verify-loop` | 2-attestation on each load-bearing claim (open the live page yourself; don't delegate the proof). |
+| **Process** | `/brainstorming` | Design-gate sensitive changes BEFORE coding (pairs with `/qc-council`). |
+| | `/systematic-debugging` | Root-cause from artefacts + live DOM BEFORE proposing a fix (the hero-min-height composite-interior bug needs this). |
+| | `/strategic-plan` + `/phase-planner` | Break WS-4 into an executable per-step plan if it needs it. |
+| | `/dispatching-parallel-agents` · `/subagent-driven-development` · `/subagent-prompt` · `/delegate` | Orchestration (see Dispatch rules above). |
+| | `/gap-analysis` | Grade an output before delivery. |
+| **Close** | `/handoff` | Session close — walks docs-registry, updates state/handoff/next-session-prompt, runs gates. |
+| | `/capture-lesson` | Capture any new behavioural rule to all three persistence layers. |
+
+### MCP servers + tools
+
+| Tool | For |
+|------|-----|
+| **Playwright MCP** | Live-DOM verification (R-22-11) at 1440/768/375 + draft-vs-clone computed-style diff (serve the mockup on localhost — `python -m http.server 8137` from `sites/mamas-munches/`; `file://` is blocked). The visual-diff capture for Gate B runs here. |
+| `/library-docs` | Up-to-date library/WP-core docs + examples (e.g. WP block render best-practice for the shared helper). |
+| `/wp-blocks` (`python ~/.claude/hooks/wp-blocks.py dump`) | Schema dump across the DBs before any "missing X" claim. |
+| `build-deploy.py --target sandybrown --blocks-only --allow-dirty` | Deploy compiled blocks to the canary (no Node on server — build locally). OPcache reset after. |
+| `sgs-clone-orchestrator.py` (`plugins/sgs-blocks/scripts/`) | Re-clone page 144 to see CONVERTER changes (block-only fixes only need deploy; converter fixes need a re-clone). |
+
+### Agents to delegate to
+
+| Agent (subagent_type) | When | Model |
+|------------------------|------|-------|
+| `general-purpose` | ALL heavy WP build/converter/composite work (the `wp-sgs-developer` agent is NOT registered here) | `sonnet` |
+| `Explore` | Fast read-only codebase search across many files | (haiku) |
+| `code-reviewer` (feature-dev) | Independent review of a built change before commit | sonnet |
+
+### WS-4 orchestration plan (the opener) — per-task blocks
+
+## Task 1 — WS-4 design-gate: lock the shared-wrapper mechanism
+**What:** Settle the shared PHP wrapper helper signature + the KIND-scoped block.json attr-mirror rule (section=full / layout=grid+width / content=width+spacing), pressure-tested against hero (split variant), trust-bar (bound grid), cta-section (layout enum collision), modal (excluded).
+**Why:** A max-blast-radius multi-block change — design must be locked + council-validated before any composite is touched (STOP #32).
+**Estimated time:** ~30 min.
+**Orchestration:** inline (Opus) + `/brainstorming` + `/qc-council`. Read the scanner's INDEX roll-up first (run `python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py`). **/qc gate after:** the council IS the gate.
+**Depends on:** none. **Acceptance:** a locked helper signature + mirror rule that handles all 3 KINDs without per-block special-casing; council ≥70 certainty.
+
+## Task 2 — Build the shared helper + the propagation writer
+**What:** `includes/class-container-wrapper.php` (`SGS_Container_Wrapper::render(...)` → {open,close,uid}); rewrite `sync-container-wrapping-blocks.py` report-only → WRITER (mirrors KIND-scoped container attrs into each composite block.json, idempotent, dry-run default, `--apply` gated); wire `/sgs-update` Stage 11.
+**Why:** single source of truth for wrapper render + auto-propagation on container version-bump.
+**Estimated time:** ~45 min.
+**Orchestration:** delegated → Sonnet subagent (`general-purpose`), cold prompt via `/subagent-prompt` embedding the Task-1 locked spec. Container render must stay byte-identical after extraction. **/qc gate after:** YES `/qc-council`. **Depends on:** Task 1. **Acceptance:** container renders byte-identical pre/post; dry-run writer reports the per-composite diff; `/sgs-update` runs it clean.
+
+## Task 3 — Remodel the composites (parallel by KIND batch)
+**What:** Replace each composite's drifted wrapper with the shared-helper call + mirrored block.json attrs, keeping each block's OWN interior. **ALL ~29 composites, KIND-scoped (NOT 4):** SECTION (trust-bar→cta-section→hero; modal EXCLUDED) → LAYOUT (~14 incl content-collection) → CONTENT (~11 incl product-card=#4b, notice-banner=#6). **Rename blockers FIRST:** cta-section `layout`→`contentLayout` (+deprecated.js); hero `overlayColour`→`backgroundOverlayColour` (+deprecated.js); trust-bar additive.
+**Why:** Bean's core directive — fixes #1 hero, #2 trust-bar; foundational for the wrapper-dependent fixes.
+**Estimated time:** ~90 min across batches.
+**Orchestration:** `/subagent-driven-development` (implementer + 2 reviewers) per batch; parallel Sonnet agents per disjoint block (one block = one agent; NO shared-file edits). deprecated.js where save() changes. **/qc gate after:** YES per batch + live-editor (old post migrates, new persists). **Depends on:** Task 2. **Acceptance:** hero no longer left-half collapses; trust-bar badges = grid items; re-clone page 144 renders #1/#2 correct; per-composite live-editor clean; Bean sign-off (R-22-13).
+
+## Task 4 — Gate B: commit this session's block fixes
+**What:** Deploy + Playwright visual-diff capture for heading/label/container/slider → generate passing `reports/visual-diff/<block>-<date>.md` → commit the 3 fixes + scanner (closing the slider's verify-then-commit gate). Live-verify the real 4-card slider.
+**Estimated time:** ~20 min. **Orchestration:** inline (Opus) + Playwright MCP. **/qc gate after:** the visual-diff reports ARE the gate. **Depends on:** none (parallel with Task 1). **Acceptance:** 4 passing visual-diff reports; commit lands by explicit path; slider rotates correctly live.
+
+## Task 5 (parallel, independent) — register content-collection + the real hero min-height fix + #6
+**What:** (a) add `sgs/content-collection` to the scanner's EXPECTED layout roster (register, not merge — the 29th); (b) fix the hero composite-interior `minHeight`/`minHeightTablet=520px` extraction (the real, verifiable min-height bug — `/systematic-debugging` from the run artefacts); (c) #6 notice-banner option-a (mirror sgs/container wrapper + universal converter `sgs/text`-child synthesis + showIcon-from-draft).
+**Estimated time:** ~40 min. **Orchestration:** Sonnet subagents; convert.py edits SERIALISE. **/qc gate after:** YES `/qc-council` on the converter changes. **Depends on:** none (b/c parallel; #6's wrapper part depends on Task 3's content-KIND mirror). **Acceptance:** scanner validation passes (29); hero min-height live-verified @768; disclaimer text present + correct.
+
+### Dependency graph
+```
+Task 4 (Gate B, inline)  ║  Task 1 (WS-4 design-gate, inline + council)
+                                   ↓
+                          Task 2 (helper + writer, Sonnet)  →  /qc-council
+                                   ↓
+                          Task 3 (composites by KIND batch, parallel Sonnet)  →  /qc-council + live-editor + Bean sign-off
+                                   ↓
+Task 5 (#6 wrapper part depends on Task 3 content-KIND; hero-min-height + content-collection register run anytime)
+```
+
+### Methodology guardrails (do not skip)
+- **Deploy before measure** — `build-deploy.py --blocks-only` + OPcache reset BEFORE any live test; re-clone for converter changes.
+- **`/qc-council` before every converter/block/DB commit** (blub.db 255) + as the design-gate for sensitive changes (STOP #32).
+- **Verify rendered output, not internal metrics** (R-22-11) — live Playwright DOM is canonical; pixel-diff informational (FR-22-18).
+- **Faithful transfer, not detection hacks** (STOP #33) — fix the transfer layer / a container capability, never a per-section walker conditional.
+- **No composite evades R-22-9** (STOP #43) — composites MIRROR sgs/container; never exempt a "recognised block".
+- **Verify subagent sweeps + findings** against ground truth (STOP #34/#44) — they're hypotheses.
+- **Work on `main`** by explicit path; theme thread shares the tree — verify `git log -1 --stat` after every commit (STOP #41/#45).
+- **Outcome ≠ code shipped** — don't mark a task done until the OUTCOME lands (R-22-13 Bean sign-off on fidelity milestones).
 
 ## Branch + state
 - **Branch:** `main` (a parallel THEME thread is co-active on this tree — now at D162; commit by explicit path, verify `git log -1 --stat`). No long-lived branch — commit fidelity work to main or a fresh SHORT-LIVED branch.
