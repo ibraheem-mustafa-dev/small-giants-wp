@@ -59,6 +59,11 @@ final class Cart_Proxy {
 	public static function register(): void {
 		\add_action( 'rest_api_init', array( __CLASS__, 'register_route' ) );
 		\add_action( 'init', array( __CLASS__, 'register_purge_hooks' ) );
+		// Universal per-SKU cap + global rate-limit on EVERY add-to-cart path
+		// (this proxy AND a direct /wc/store/v1/cart/add-item call), closing the
+		// proxy-bypass (FR-MISSING-3). This filter is the SINGLE place the global
+		// per-variation window is incremented.
+		\add_filter( 'woocommerce_add_to_cart_validation', array( __CLASS__, 'enforce_add_to_cart_limits' ), 10, 4 );
 	}
 
 	// ── REST route ────────────────────────────────────────────────────────────
@@ -408,11 +413,9 @@ final class Cart_Proxy {
 		if ( \is_array( $global_rl_raw )
 			&& isset( $global_rl_raw['t'], $global_rl_raw['c'] )
 			&& ( $now - (int) $global_rl_raw['t'] ) < self::RL_WINDOW_SECONDS ) {
-			$global_rl_start = (int) $global_rl_raw['t'];
 			$global_rl_count = (int) $global_rl_raw['c'];
 		} else {
-			// No active window (absent or elapsed) → start a fresh one.
-			$global_rl_start = $now;
+			// No active window (absent or elapsed) → count starts at zero.
 			$global_rl_count = 0;
 		}
 		$global_rl_cap = ( $stock_qty < PHP_INT_MAX )
@@ -493,19 +496,10 @@ final class Cart_Proxy {
 			);
 		}
 
-		// Record the add in the FIXED window. TTL = the time REMAINING in the
-		// current window (not a fresh RL_WINDOW_SECONDS) so the window does not
-		// slide. (WP transients are not atomic; the worst-case race permits one
-		// extra add, not a security hole).
-		$global_rl_remaining = \max( 1, self::RL_WINDOW_SECONDS - ( $now - $global_rl_start ) );
-		\set_transient(
-			$global_rl_key,
-			array(
-				't' => $global_rl_start,
-				'c' => $global_rl_count + 1,
-			),
-			$global_rl_remaining
-		);
+		// NOTE: the global per-variation window is incremented by the universal
+		// `enforce_add_to_cart_limits` filter (which fires inside add_to_cart on
+		// EVERY path), NOT here — so a direct Store-API add also counts. Step 6a
+		// above is a fast-fail pre-check that returns a clean 429 on this path.
 
 		// Set the per-fingerprint cooldown.
 		\set_transient( $cooldown_key, 1, self::COOLDOWN_SECONDS );
@@ -531,6 +525,89 @@ final class Cart_Proxy {
 			),
 			200
 		);
+	}
+
+	// ── Universal add-to-cart limit enforcement (closes the proxy bypass) ─────
+
+	/**
+	 * Enforce the per-SKU quantity cap + the global per-variation rate-limit on
+	 * EVERY add-to-cart, regardless of entry point (this proxy OR a direct
+	 * /wc/store/v1/cart/add-item call). Fires on `woocommerce_add_to_cart_validation`,
+	 * which WC runs from `WC_Cart::add_to_cart()` for both the classic and the
+	 * Store-API paths. This is also the SINGLE place the global per-variation
+	 * window is incremented (the REST handler no longer increments it).
+	 *
+	 * Only stock-managed items are capped (unmanaged stock is skipped).
+	 *
+	 * @param bool $passed       Whether validation has passed so far.
+	 * @param int  $product_id   Product ID being added.
+	 * @param int  $quantity     Quantity requested.
+	 * @param int  $variation_id Variation ID (0 for non-variations).
+	 * @return bool
+	 */
+	public static function enforce_add_to_cart_limits( $passed, $product_id, $quantity, $variation_id = 0 ): bool {
+		if ( ! $passed || ! \function_exists( 'wc_get_product' ) ) {
+			return (bool) $passed;
+		}
+
+		$target_id = $variation_id ? (int) $variation_id : (int) $product_id;
+		$product   = \wc_get_product( $target_id );
+		if ( ! $product ) {
+			return (bool) $passed;
+		}
+
+		$stock = $product->get_stock_quantity();
+		if ( null === $stock ) {
+			// Unmanaged stock — the per-SKU cap + rate-limit do not apply.
+			return (bool) $passed;
+		}
+		$stock    = (int) $stock;
+		$quantity = (int) $quantity;
+
+		// Per-SKU quantity cap.
+		$cap = \max( 1, (int) \floor( $stock * 0.3 ) );
+		if ( $quantity > $cap ) {
+			\wc_add_notice(
+				\__( 'That quantity exceeds the per-order limit for this item.', 'sgs-blocks' ),
+				'error'
+			);
+			return false;
+		}
+
+		// Global per-variation FIXED-window rate-limit (check + increment).
+		$key = 'sgs_rl_v_' . $target_id;
+		$raw = \get_transient( $key );
+		$now = \time();
+		if ( \is_array( $raw ) && isset( $raw['t'], $raw['c'] )
+			&& ( $now - (int) $raw['t'] ) < self::RL_WINDOW_SECONDS ) {
+			$start = (int) $raw['t'];
+			$count = (int) $raw['c'];
+		} else {
+			$start = $now;
+			$count = 0;
+		}
+
+		$rl_cap = \max( 3, (int) \floor( $stock * 0.3 ) );
+		if ( $count >= $rl_cap ) {
+			\wc_add_notice(
+				\__( 'Too many requests for this product. Please try again shortly.', 'sgs-blocks' ),
+				'error'
+			);
+			return false;
+		}
+
+		// Increment within the fixed window (TTL = remaining window time).
+		$remaining = \max( 1, self::RL_WINDOW_SECONDS - ( $now - $start ) );
+		\set_transient(
+			$key,
+			array(
+				't' => $start,
+				'c' => $count + 1,
+			),
+			$remaining
+		);
+
+		return (bool) $passed;
 	}
 
 	// ── Cache purge hooks ─────────────────────────────────────────────────────
