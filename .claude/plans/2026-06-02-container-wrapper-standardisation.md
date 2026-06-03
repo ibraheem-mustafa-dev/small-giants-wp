@@ -72,9 +72,9 @@ Five workstreams, three running concurrently:
 
 | Phase | Name | Timebox | Deliverable | Depends on | Gate |
 |-------|------|---------|-------------|------------|------|
-| WS-1a | `contentWidth` attr on sgs/container | ~45 min | A1 shipped: new attr + render.php `__inner` div + editor control | none | Playwright @1440: inner cap applied correctly; deprecated.js not needed (dynamic block) |
-| WS-1b | Outer max-width transfer + de-cheat C1 | ~30 min | A2 shipped: widthMode transfer on slug-None path; band-aid `{"widthMode":"full"}` db_lookup.py:2461 removed | WS-1a | The 4 target sections render full-bleed in Playwright |
-| WS-1c | Custom-width + raw-px gap + min-height + grid-item (A3–A6) | ~45 min | Four smaller gaps closed; converter writes gridItem attrs | WS-1a | Per-gap: GAP-5 custom-width lifts a brand-1000 correctly |
+| WS-1a | `contentWidth` attr on sgs/container | ✅ SHIPPED 2026-06-03 commit 2f86d9e6 (D159) | A1 shipped: new attr + render.php `__inner` div + editor control | none | Live-DOM verified @1440 |
+| WS-1b | Outer max-width transfer + de-cheat C1 | ✅ SHIPPED 2026-06-03 commit 2f86d9e6 (D159) | A2 shipped: widthMode-from-own-max-width transfer; fold lifts `__inner`→contentWidth | WS-1a | Live-DOM verified @1440. Note: A7 MOOT — `_lift_core_block_style` is dead code; A2 inlined its own max-width→widthMode logic |
+| WS-1c | Custom-width + raw-px gap + min-height + grid-item (A3–A6) | ~45 min | Four smaller gaps closed; converter writes gridItem attrs | WS-1a ✅ | Per-gap: GAP-5 custom-width lifts a brand-1000 correctly |
 | WS-2 | Converter/router truth — B1–B4 | ~60 min | D1 typed-attr layer revived or replaced; `__inner` max-width routes to attr in multi-child grids; grid-template-columns typed; D3 dual-write removed | WS-1a | leftover-buckets.json: maxWidth/widthMode no longer extraction_failed on the 4 target sections |
 | WS-3 | De-cheat R-22-1 — C2–C8 | ~60 min | Eight hardcoded structures moved to DB or documented; unified breakpoint table; css_router._infer_role() queries DB | none (can start alongside WS-1) | No grep-match for the retired constant names in production scripts |
 | WS-4a | DB propagation writer (Workstream A DB substrate SHIPPED; writer still needed) | ~45 min | KIND→attr-scope diff writer + /sgs-update wired; KIND assignments verified in dry-run | WS-1a must ship contentWidth before the KIND-scoped diff is meaningful | Bean sign-off on final 28-block roster + KIND assignments in dry-run output |
@@ -101,8 +101,8 @@ WS-1a (contentWidth A1) ─► WS-1b (A2) ─► WS-1c (A3–A6)           │
 
 | Dependency | Blocks | Owner |
 |-----------|--------|-------|
-| WS-1a: `contentWidth` attr + render.php | WS-2 (fold target), WS-4a (diff surface) | Claude Code / wp-sgs-developer |
-| WS-1b: outer max-width transfer | WS-2 B2 (multi-child max-width routing) | Claude Code |
+| ~~WS-1a: `contentWidth` attr + render.php~~ | ✅ SATISFIED — A1 SHIPPED commit `2f86d9e6` (D159) | Claude Code |
+| ~~WS-1b: outer max-width transfer~~ | ✅ SATISFIED — A2 SHIPPED commit `2f86d9e6` (D159) | Claude Code |
 | WS-4a: KIND-scoped diff writer | WS-4b (composites need the diff before apply) | Claude Code |
 | WS-2: D1 typed-attr revive decision | Bean review (decision gate) | Bean |
 | ~~block_composition table (Workstream A from D150 scratch)~~ | ✅ SATISFIED — `container_kind` column + sync rewrite SHIPPED `0d746073` | Claude Code |
@@ -112,6 +112,10 @@ WS-1a (contentWidth A1) ─► WS-1b (A2) ─► WS-1c (A3–A6)           │
 ## 7. Work Units
 
 ### WS-1 — sgs/container capability completion
+
+> **WS-1a (A1) + WS-1b (A2) SHIPPED 2026-06-03, commit `2f86d9e6` (D159), live-DOM verified @1440.**
+> A7 MOOT — `_lift_core_block_style` is dead code; A2 inlined its own max-width→widthMode logic.
+> **Remaining: WS-1c (A3/A4/A5/A6).** Live triage register + WS-4 build spec now in `.claude/plans/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md`.
 
 **Purpose:** Build the capabilities `sgs/container` currently lacks so composites have something concrete to mirror and the converter has attributes to write into.
 
@@ -123,7 +127,7 @@ WS-1a (contentWidth A1) ─► WS-1b (A2) ─► WS-1c (A3–A6)           │
 - `plugins/sgs-blocks/scripts/convert.py` — `_root_lift_rules()` (line 498), `_fold_layout_into_attrs` (line 2776), `_emit_section_container`, `_match_theme_width` (line 975)
 - `plugins/sgs-blocks/scripts/db_lookup.py` — line 2461 band-aid removal
 
-**Gaps addressed:** A1, A2, A3, A4, A5, A6, A7
+**Gaps addressed:** ~~A1~~ ✅ ~~A2~~ ✅ ~~A7~~ MOOT | **Remaining: A3, A4, A5, A6**
 
 **Acceptance:**
 - A1: Playwright computed-style @1440 — featured-product section-box ~1425, inner content-box = 1040 px centred. Ingredients/gift/social-proof same at 960 px.
@@ -139,14 +143,14 @@ WS-1a (contentWidth A1) ─► WS-1b (A2) ─► WS-1c (A3–A6)           │
 
 **Risk:** Medium — render.php emitting an `__inner` wrapper div changes the DOM shape; any existing scoped CSS targeting direct children of `.wp-block-sgs-container` may need a `:where()` adjustment.
 
-**Steps:**
-1. Add `contentWidth` (string, default "") to container/block.json attrs.
-2. render.php: emit `<div class="sgs-container__inner" style="--sgs-content-width:<?= esc_attr($contentWidth) ?>">…</div>` when `!empty($contentWidth)`.
-3. style.css: add the constrained-content rule (`.sgs-container--constrained-content > :where(…)`).
-4. edit.js: add a "Content width" TextControl under the Dimensions panel.
-5. convert.py `_fold_layout_into_attrs` (line 2776): when the folded `__inner` has a `max-width` CSS decl, write `container_attrs.setdefault("contentWidth", <value>)`.
-6. `_emit_section_container`: for slug-None sections, emit `widthMode:"full"` (generalise the band-aid) OR emit the gap-1 theme CSS floor rule.
-7. Remove the `{"widthMode":"full"}` hardcode at db_lookup.py:2461 (C1 de-cheat — paired here because it's the same transfer path).
+**Steps (A1+A2 = steps 1–7 SHIPPED 2026-06-03 commit `2f86d9e6`; steps 8–9 pending):**
+1. ✅ Add `contentWidth` (string, default "") to container/block.json attrs.
+2. ✅ render.php: emit `<div class="sgs-container__inner" style="--sgs-content-width:<?= esc_attr($contentWidth) ?>">…</div>` when `!empty($contentWidth)`.
+3. ✅ style.css: add the constrained-content rule (`.sgs-container--constrained-content > :where(…)`).
+4. ✅ edit.js: add a "Content width" TextControl under the Dimensions panel.
+5. ✅ convert.py `_fold_layout_into_attrs` (line 2776): when the folded `__inner` has a `max-width` CSS decl, write `container_attrs.setdefault("contentWidth", <value>)`.
+6. ✅ `_emit_section_container`: for slug-None sections, transfer widthMode-from-own-max-width (absent→full / present→custom). A7 MOOT — `_lift_core_block_style` is dead code; A2 inlined its own logic directly.
+7. ✅ Remove the `{"widthMode":"full"}` hardcode at db_lookup.py:2461 (C1 de-cheat).
 8. Build + deploy canary; run Playwright baseline re-measure; compare to falsifiable predictions.
 9. Bean sign-off.
 
@@ -205,6 +209,8 @@ WS-1a (contentWidth A1) ─► WS-1b (A2) ─► WS-1c (A3–A6)           │
 ---
 
 ### WS-4 — Composite standardisation + auto-propagation
+
+> **Scope sharpened (D160):** ALL ~28 composites KIND-scoped (not just 4 SECTION blocks). Remove each composite's drifted wrapper → exact sgs/container mirror → /sgs-update auto-re-mirror on container version bump. Live triage + WS-4 build spec in `.claude/plans/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md`.
 
 **Purpose:** Every composite block with a wrapper mirrors `sgs/container`. When container gains a new capability, one `/sgs-update` run propagates the capability diff to all 28 composites.
 
@@ -401,8 +407,8 @@ The pipeline currently transfers Layer 1 (partially) and **drops Layers 2 and 3 
 
 | Gap | Description | File : line | Severity |
 |-----|-------------|------------|----------|
-| A1 | No `contentWidth` attr — `__inner` max-width dropped | `container/block.json` (missing) + `render.php` (missing inner div) + `_root_lift_rules` `convert.py:498` | High |
-| A2 | Outer max-width not transferred on slug-None sections; band-aid only fires on slug-resolved path | `convert.py:2031–2039`, `db_lookup.py:2461` | High |
+| ~~A1~~ | ✅ DONE 2026-06-03 commit `2f86d9e6` — `contentWidth` attr + render.php `__inner` div + fold lift | `container/block.json`, `render.php`, `convert.py:2776` | ~~High~~ |
+| ~~A2~~ | ✅ DONE 2026-06-03 commit `2f86d9e6` — widthMode-from-own-max-width transfer; `db_lookup.py:2461` band-aid removed (C1 paired) | `convert.py:2031–2039`, `db_lookup.py:2461` | ~~High~~ |
 | A3 | `_match_theme_width` never emits `widthMode:custom + customWidth` | `convert.py:975–989` | Medium |
 | A4 | render.php wraps raw-px gap values in `var(--wp--preset--spacing--…)` | `render.php:150` | Medium |
 | A5 | `min-height` not in `_root_lift_rules` | `convert.py:498` | Low |
@@ -411,7 +417,7 @@ The pipeline currently transfers Layer 1 (partially) and **drops Layers 2 and 3 
 | B2 | `_fold_eligible` sole-child gate (`convert.py:2830`) drops ALL fold attrs (max-width, gap, padding, etc.) for multi-child sections, not just max-width; `__inner` content-width cap lost entirely | `convert.py:2830` | Medium |
 | B3 | `grid-template-columns` on recognised section → scoped CSS, not typed attr | `convert.py:498` (missing entry) | Medium |
 | B4 | D3 gap-candidates dual-write to production CSS | `css_router.py:531` | Low |
-| C1 | Hardcoded `{"widthMode":"full"}` band-aid (paired with A2) | `db_lookup.py:2461` | High |
+| ~~C1~~ | ✅ DONE 2026-06-03 commit `2f86d9e6` — band-aid removed (paired with A2) | `db_lookup.py:2461` | ~~High~~ |
 | C2 | trust-bar grid: static CSS classes + `data-columns` selectors, not attr-driven render | `trust-bar/style.css:43–101` | Medium |
 | C3 | `_CAPABILITY_PRIORITY` hardcoded list | `db_lookup.py:660–701` | Medium |
 | C4 | Two independent breakpoint systems | `db_lookup.py:1046–1052`, `convert.py:2322–2323` | Medium |
@@ -422,7 +428,7 @@ The pipeline currently transfers Layer 1 (partially) and **drops Layers 2 and 3 
 | D1 | `sync-container-wrapping-blocks.py` is report-only; `--apply` writes DB metadata only, no block.json/render.php propagation | `sync-container-wrapping-blocks.py` | High |
 | D2 | Every composite has large attr gaps vs sgs/container (SECTION ~7–14 of 69 attrs; LAYOUT ~6–9; CONTENT 0 of 4 width attrs) | All 28 composite block.json files | High |
 | D3 | Composites (especially SECTION-KIND) get confidence 1.0 via class-section tier; the 4 sgs/container sections get confidence 0.0 deferred-no-match | `convert.py` tier logic | Medium |
-| A7 | `_lift_core_block_style` max-width→widthMode logic is dead for container paths (atomic-tag only, `convert.py:1034–1040`); the fold must call the same logic, otherwise the max-width→widthMode conversion never fires on section containers | `convert.py:1034–1040` → WS-1 | Medium |
+| ~~A7~~ | MOOT — `_lift_core_block_style` is dead code; A2 inlined its own max-width→widthMode logic directly. No action required. | `convert.py:1034–1040` | ~~Medium~~ |
 | B5 | `css_router.py:433–437` verbatim-CSS-fallback dumps unscoped page-wide CSS on import failure — operator-invisible anti-pattern that can leak global styles into the page | `css_router.py:433–437` → WS-2 | Medium |
 
 ---

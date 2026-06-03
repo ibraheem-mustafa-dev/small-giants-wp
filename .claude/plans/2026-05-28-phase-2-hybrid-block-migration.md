@@ -7,8 +7,17 @@ plan_label: "[PLAN: opus] — main session coordinates parallel Sonnet implement
 parent_spec: .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md
 parent_session: small-giants-wp-2026-05-27-spec-22-phase-1.5-fix-1-shipped
 generated: 2026-05-28
-last_updated: 2026-06-02
+last_updated: 2026-06-03
 active_scope: STREAM_A_RESHAPED_POST_D99
+progress_2026_06_03: |
+  CONTAINER STANDARDISATION WS-1a+WS-1b SHIPPED (commit 2f86d9e6, D159):
+    - A1: contentWidth attr + render.php __inner div + fold lift → live-DOM verified @1440
+    - A2: widthMode-from-own-max-width outer transfer (absent→full / present→custom)
+    - C1: db_lookup.py:2461 band-aid removed (paired with A2)
+    - A7: MOOT — _lift_core_block_style is dead code; A2 inlined its own logic
+    - Remaining WS-1c: A3/A4/A5/A6 + WS-2/WS-3/WS-4/WS-5 pending
+    - WS-4 scope sharpened (D160): ALL ~28 composites KIND-scoped, not just 4 SECTION blocks
+    - Active triage + WS-4 build spec: .claude/plans/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md
 progress_2026_06_02: |
   THEME THREAD — FR-22-6 migration progress (feat/theme-blocks-wave1, NOT yet merged):
     - FR-22-6 roster classification report written: .claude/reports/2026-06-01-fr22-6-migration-classification.md

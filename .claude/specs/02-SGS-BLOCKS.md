@@ -142,6 +142,8 @@ block-name/
 
 **Purpose:** Flexible layout wrapper — the fundamental building block for all page sections.
 
+**Version:** 0.2.0 (bumped from 0.1.0 — WS-1 A1 D159 2026-06-03; added `contentWidth` + `__inner` wrapper pattern)
+
 **Attributes:**
 - `layout` — flex | grid | stack (default: stack)
 - `columns` — 1-6 (for grid layout)
@@ -160,6 +162,7 @@ block-name/
 - `minHeight` — CSS value
 - `verticalAlign` — start | centre | end | stretch
 - `htmlTag` — section | div | article | aside | main
+- `contentWidth` — string (CSS max-width value, default `""` = full-bleed). When set, render.php emits an inner `<div class="sgs-container__inner">` with `max-width: {contentWidth}; margin-inline: auto` — allowing the outer box to remain full-bleed (background, padding) while capping the readable content width. Guard: only emits `__inner` when `layout === '' || layout === 'stack'` (i.e. not a grid/flex layout that manages its own content width). "Content width" inspector control exposed in edit.js. **WS-1 A1 / D159.**
 
 **Supports:** align (wide, full), anchor, className, colour (background, text), spacing (margin, padding)
 
@@ -343,6 +346,8 @@ block-name/
 ---
 
 ### 8. Testimonial Slider (`sgs/testimonial-slider`)
+
+> **⚠️ WIP — layout rebuild in progress, UNCOMMITTED (2026-06-03 session).** Arrows converted to flex siblings, controls markup updated, `slidesVisible` default changed 1→3, infinite-loop logic added. Currently deployed to canary but NOT committed — cards rendering too thin; rebuild pending before next commit. Do NOT treat this as a shipped state.
 
 **Purpose:** Carousel/slider of multiple testimonials.
 
