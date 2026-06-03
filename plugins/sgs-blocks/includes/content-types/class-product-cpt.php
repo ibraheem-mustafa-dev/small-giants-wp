@@ -230,8 +230,10 @@ final class Product_CPT {
 				'sanitize_callback' => static function ( $value ) {
 					return (float) $value;
 				},
-				'auth_callback'     => static function () {
-					return \current_user_can( 'edit_posts' );
+				'auth_callback'     => static function ( $allowed, $meta_key, $post_id ) {
+					// Per-object check (IDOR guard): a user must be able to edit
+					// THIS product, not merely hold the general edit_posts cap.
+					return \current_user_can( 'edit_post', $post_id );
 				},
 			)
 		);
@@ -248,8 +250,10 @@ final class Product_CPT {
 				'default'           => '',
 				'show_in_rest'      => true,
 				'sanitize_callback' => 'sanitize_text_field',
-				'auth_callback'     => static function () {
-					return \current_user_can( 'edit_posts' );
+				'auth_callback'     => static function ( $allowed, $meta_key, $post_id ) {
+					// Per-object check (IDOR guard): a user must be able to edit
+					// THIS product, not merely hold the general edit_posts cap.
+					return \current_user_can( 'edit_post', $post_id );
 				},
 			)
 		);
@@ -268,8 +272,10 @@ final class Product_CPT {
 				'sanitize_callback' => static function ( $value ) {
 					return (bool) $value;
 				},
-				'auth_callback'     => static function () {
-					return \current_user_can( 'edit_posts' );
+				'auth_callback'     => static function ( $allowed, $meta_key, $post_id ) {
+					// Per-object check (IDOR guard): a user must be able to edit
+					// THIS product, not merely hold the general edit_posts cap.
+					return \current_user_can( 'edit_post', $post_id );
 				},
 			)
 		);
@@ -286,8 +292,10 @@ final class Product_CPT {
 				'default'           => '',
 				'show_in_rest'      => true,
 				'sanitize_callback' => 'sanitize_text_field',
-				'auth_callback'     => static function () {
-					return \current_user_can( 'edit_posts' );
+				'auth_callback'     => static function ( $allowed, $meta_key, $post_id ) {
+					// Per-object check (IDOR guard): a user must be able to edit
+					// THIS product, not merely hold the general edit_posts cap.
+					return \current_user_can( 'edit_post', $post_id );
 				},
 			)
 		);
@@ -314,8 +322,10 @@ final class Product_CPT {
 						)
 					);
 				},
-				'auth_callback'     => static function () {
-					return \current_user_can( 'edit_posts' );
+				'auth_callback'     => static function ( $allowed, $meta_key, $post_id ) {
+					// Per-object check (IDOR guard): a user must be able to edit
+					// THIS product, not merely hold the general edit_posts cap.
+					return \current_user_can( 'edit_post', $post_id );
 				},
 			)
 		);
@@ -346,8 +356,10 @@ final class Product_CPT {
 					// Re-encode to strip any unexpected whitespace / injection.
 					return (string) wp_json_encode( $decoded );
 				},
-				'auth_callback'     => static function () {
-					return \current_user_can( 'edit_posts' );
+				'auth_callback'     => static function ( $allowed, $meta_key, $post_id ) {
+					// Per-object check (IDOR guard): a user must be able to edit
+					// THIS product, not merely hold the general edit_posts cap.
+					return \current_user_can( 'edit_post', $post_id );
 				},
 			)
 		);
@@ -365,8 +377,10 @@ final class Product_CPT {
 				'default'           => 0,
 				'show_in_rest'      => true,
 				'sanitize_callback' => 'absint',
-				'auth_callback'     => static function () {
-					return \current_user_can( 'edit_posts' );
+				'auth_callback'     => static function ( $allowed, $meta_key, $post_id ) {
+					// Per-object check (IDOR guard): a user must be able to edit
+					// THIS product, not merely hold the general edit_posts cap.
+					return \current_user_can( 'edit_post', $post_id );
 				},
 			)
 		);
