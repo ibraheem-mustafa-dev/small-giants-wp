@@ -1,6 +1,52 @@
-# Session Handoff — 2026-06-03 (CLONING thread) — Workstream A shipped + container/wrapper standardisation programme + full doc reconciliation
+# Session Handoff — 2026-06-03 (CLONING thread, PM) — WS-1 A1+A2 SHIPPED + #1-#8 triage GROUNDED (council) + WS-4 designed
 
-> **CURRENT — this is the live handoff.** The two dated sections further down (2026-06-02 roster snapshot; 2026-06-03 editor-fix work D141–D147) are EARLIER work this session, kept for history and marked SUPERSEDED.
+> **CURRENT — this is the live handoff.** Earlier dated sections below are prior work, kept for history.
+> Cloning thread. A parallel THEME thread shares the tree — commit by explicit path, verify `git log -1 --stat` (STOP #41/#45). Full grounded spec: `.claude/plans/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md` (GROUNDED FINDINGS appendix) + decisions D159/D160.
+
+## Completed This Session
+1. **WS-1 A1+A2 SHIPPED + pushed (`2f86d9e6`).** sgs/container gained `contentWidth` (guarded `__inner` render wrapper) + the converter transfers each slug-None section's own max-width→widthMode (absent→full/alignfull→escapes WP's 1200 cap; present→custom) + lifts the folded `__inner` max-width→contentWidth. Live-DOM @1440: 4 target sections 1200/inner-dropped→1425 full-bleed/content 1040|960; brand 1000 unchanged. 3-rater /qc-council design-gate; visual-diff report PASS.
+2. **#1-#8 page-triage GROUNDED** — 5 parallel `/systematic-debugging` investigations + a 2-rater `/qc-council` (Gate A). **The council CORRECTED 3 of 5 guessed fix-shapes** (R-22-9 violations / site-wide breaks). Full validated fix-shapes in the plan's GROUNDED FINDINGS + D160.
+3. **WS-4 wrapper-mirror mechanism designed** (foundation audit): shared PHP helper + KIND-scoped block.json attr-mirror + propagation writer; modal excluded; cta-section `layout`-collision = must-fix-first blocker; **scope = ALL ~28 composites (Bean-directed), not just section**.
+4. **#3 text-parity audit** — heading + label both lack `textAlign` (text has it); built-incomplete. Universal fix = match the sgs/text pattern.
+5. **#8 slider rebuilt + deployed (uncommitted) but BUGGY** — Bean live-checked the 4-card slider: columns too thin (~half width) + nav must always-show+rotate. Fix-direction captured; needs rebuild + live verify next session.
+6. **Docs:** plan written + grounded; decisions D159/D160; parking P-CLONE-PAGE-VISUAL-TRIAGE; state + next-session-prompt updated; all pushed.
+
+## Current State
+- **Branch:** `main` at `08d5f110` (+ this handoff/lesson commit pending). On main; theme thread co-active.
+- **Tests:** no suite; converter imports clean; sgs-blocks `npm run build` PASS.
+- **Build:** n/a (block changes built + deployed to canary).
+- **Uncommitted changes:** `plugins/sgs-blocks/src/blocks/testimonial-slider/*` (the #8 slider WIP — deployed to canary but NOT committed, pending rebuild+verify); plus the always-untracked `lucide-icons.php` + pre-existing `sites/mamas-munches/theme-snapshot.json`.
+
+## Known Issues / Blockers
+- **#8 slider deployed-but-buggy + uncommitted** — the canary social-proof slider shows thin half-width columns; rebuild + always-rotate-nav + live-verify before committing.
+- **WS-4 must come BEFORE wrapper-dependent fixes** (#4b product-card fill, #7) or they get overwritten (Bean-locked sequencing, D160).
+- Concurrent theme thread shares the tree — commit by explicit path.
+
+## Next Priorities (in order)
+1. **WS-1c** — complete sgs/container (A3 custom-width centring / A4 raw-px gap / A5 min-height / A6 gridItem*; A7 MOOT — `_lift_core_block_style` dead code).
+2. **WS-4 (FOUNDATIONAL)** — shared wrapper mirror across ALL ~28 composites (KIND-scoped); resolve cta-section `layout` rename first → helper → section batch → layout → content; modal excluded. Design-gate + /qc-council.
+3. **Then wrapper-dependent:** #4b product-card fill; #7 announcement-bar (likely auto-resolves).
+4. **In parallel (wrapper-independent):** #3 text-parity (heading+label textAlign); #6 notice-banner block.json + converter synthesis + showIcon; #4a grid-lift in `_emit_wrapper_container`; **#8 slider rebuild** (fill-width + always-rotate-nav) + commit.
+
+## Files Modified
+| File | What changed |
+|------|---|
+| `plugins/sgs-blocks/src/blocks/container/{block.json,render.php,style.css,editor.css,edit.js}` | WS-1 A1 contentWidth + `__inner` (committed `2f86d9e6`) |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | WS-1 A2 widthMode transfer + fold→contentWidth (committed) |
+| `plugins/sgs-blocks/src/blocks/testimonial-slider/*` | #8 slider rebuild — UNCOMMITTED (buggy WIP) |
+| `.claude/plans/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md` | NEW — grounded phase plan |
+| `.claude/decisions.md`, `state.md`, `parking.md`, `next-session-prompt.md`, `reports/visual-diff/container-2026-06-03.md` | D159/D160 + triage register + grounded prompt |
+
+## Notes for Next Session
+- **Run investigation+council BEFORE building** — this session's council corrected 3 of 5 guessed fixes (R-22-9 / breaking). Don't build from investigation guesses (R-22-7).
+- **Measurement-vs-eye recurred twice** — my "missing images" read was wrong (images present, mis-sized) and I nearly claimed the slider verified on a page that couldn't show its nav. Extend the measurement set / use the right content before claiming verified (STOP #46).
+- **Several #1-#8 are block-QUALITY gaps**, not converter bugs (heading lacks alignment; product-card bad default; slider layout) — fix the block, not a per-client patch.
+
+---
+
+# Session Handoff — 2026-06-03 (CLONING thread, AM) — Workstream A shipped + container/wrapper standardisation programme + full doc reconciliation
+
+> **SUPERSEDED by the PM section above.** The two dated sections further down (2026-06-02 roster snapshot; 2026-06-03 editor-fix work D141–D147) are EARLIER work, kept for history and marked SUPERSEDED.
 
 > Cloning thread. A parallel THEME thread is **actively committing** to the shared tree (HEAD `c468af7a` is its commit). Shared docs (decisions/parking) carry both threads' entries — commit by explicit path, verify `git log -1 --stat`. Full programme spec: `.claude/plans/2026-06-02-container-wrapper-standardisation.md`.
 
