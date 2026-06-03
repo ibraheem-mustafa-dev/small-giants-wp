@@ -168,6 +168,10 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			// Guests receive a per-tick shared nonce — acceptable WC parity for
 			// Phase 1; the proxy returns a clear 403 "reload" message when stale.
 			'restNonce'           => wp_create_nonce( 'wp_rest' ),
+			// U5: polite live-region seed — empty string so data-wp-text resolves
+			// to the seeded value server-side (SSR-wipe-safe). view.js writes
+			// non-empty strings here after selections + post-409 re-syncs.
+			'availabilityNote'    => '',
 		);
 
 		// M-C9 hard cap: 24 KB max serialised context — never trips for 48 SKUs
@@ -263,6 +267,14 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			data-wp-bind--hidden="context.inStock"
 			data-wp-text="context.stockText"
 		><?php echo esc_html( $stock_text ); ?></p>
+
+			<?php // ── 2e. U5: availability live region — polite, visually hidden. ?>
+		<p
+			class="product-card__availability sgs-sr-only"
+			role="status"
+			aria-live="polite"
+			data-wp-text="context.availabilityNote"
+		></p>
 
 			<?php
 			// ── 2f. Add-to-cart <a> — UNCHANGED in U3 (U7 rewires). ─────────────

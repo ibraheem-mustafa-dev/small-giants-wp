@@ -60,6 +60,159 @@
 import { store, getContext, getElement } from '@wordpress/interactivity';
 
 /**
+ * Module-level WeakMap: ctx → card ref.
+ *
+ * Keyed by the live Interactivity context proxy so that addToCart (which has
+ * ctx but not ref) can retrieve the card element for a post-409 re-grey call.
+ *
+ * @type {WeakMap<Object, Element>}
+ */
+const cardRefByCtx = new WeakMap();
+
+/**
+ * Determine whether a term on a given axis has at least one in-stock combo
+ * given the current selections on all OTHER axes (general case, ≥2 axes).
+ *
+ * A term V on axis A is available iff there exists an in-stock combo where
+ * A = V AND every OTHER currently-selected axis matches its selection.
+ *
+ * @param {Object} combos       Combo map keyed by comboKey → { inStock, … }.
+ * @param {string} axisTax      The taxonomy slug of the axis being tested.
+ * @param {string} termSlug     The term slug being tested.
+ * @param {Object} selectedAxes Current selections: { [taxonomy]: slug }.
+ * @return {boolean}            True if at least one in-stock combo exists.
+ */
+function isTermAvailable( combos, axisTax, termSlug, selectedAxes ) {
+	for ( const key in combos ) {
+		if ( ! combos[ key ].inStock ) {
+			continue;
+		}
+		// Parse the comboKey into a map { taxonomy: slug, … }.
+		const map = {};
+		for ( const part of key.split( '|' ) ) {
+			const idx = part.indexOf( ':' );
+			map[ part.slice( 0, idx ) ] = part.slice( idx + 1 );
+		}
+		// This combo must match the axis being tested.
+		if ( map[ axisTax ] !== termSlug ) {
+			continue;
+		}
+		// All OTHER selected axes must match too.
+		let ok = true;
+		for ( const tax in selectedAxes ) {
+			if ( tax === axisTax ) {
+				continue;
+			}
+			if ( map[ tax ] !== selectedAxes[ tax ] ) {
+				ok = false;
+				break;
+			}
+		}
+		if ( ok ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Apply cross-attribute availability greying to the option-picker DOM inside
+ * a card. Marks unavailable options with aria-disabled + a CSS class; removes
+ * the marks from available options. Announces changes via ctx.availabilityNote.
+ *
+ * The function reaches INTO the rendered sgs/option-picker DOM from the card
+ * scope — it never edits the shared option-picker block file (scope guardrail,
+ * blub.db 304). Native `disabled` is never set (FR-27-B1: options must remain
+ * focusable + announced by screen-readers).
+ *
+ * @param {Element} ref    The card root element (.product-card--bound).
+ * @param {Object}  ctx    The card's live Interactivity context proxy.
+ * @param {boolean} isInit True on the first paint; suppresses the live-region
+ *                         announcement so the page-load is not chatty.
+ */
+function applyAvailability( ref, ctx, isInit ) {
+	if ( ! ctx.combos || ! Array.isArray( ctx.axes ) ) {
+		return;
+	}
+
+	let totalUnavailable = 0;
+
+	// Each sgs/option-picker renders a wrapper with data-type-key (the taxonomy).
+	const pickerWrappers = ref.querySelectorAll(
+		'.sgs-option-picker__options[data-type-key]'
+	);
+
+	pickerWrappers.forEach( ( optionsDiv ) => {
+		const tax = optionsDiv.dataset.typeKey;
+		// Find the axis definition matching this picker.
+		const axis = ctx.axes.find( ( a ) => a.taxonomy === tax );
+		if ( ! axis ) {
+			return;
+		}
+
+		for ( const term of axis.terms ) {
+			const avail = isTermAvailable(
+				ctx.combos,
+				tax,
+				term.slug,
+				ctx.selectedAxes
+			);
+
+			// Locate the radio input by its value; use CSS.escape so slugs with
+			// special characters (hyphens, numbers) are handled safely.
+			const input = optionsDiv.querySelector(
+				'input[value="' + CSS.escape( term.slug ) + '"]'
+			);
+			if ( ! input ) {
+				continue;
+			}
+
+			const label = input.closest( '.sgs-option-picker__option' );
+			if ( ! label ) {
+				continue;
+			}
+
+			if ( avail ) {
+				label.classList.remove( 'sgs-option-picker__option--unavailable' );
+				label.removeAttribute( 'aria-disabled' );
+				// Remove the aria-label override if it was previously set.
+				if ( input.dataset.sgsOriginalLabel !== undefined ) {
+					input.setAttribute( 'aria-label', input.dataset.sgsOriginalLabel );
+					delete input.dataset.sgsOriginalLabel;
+				} else {
+					input.removeAttribute( 'aria-label' );
+				}
+			} else {
+				label.classList.add( 'sgs-option-picker__option--unavailable' );
+				label.setAttribute( 'aria-disabled', 'true' );
+				// Preserve original aria-label once so we can restore it.
+				if ( input.dataset.sgsOriginalLabel === undefined ) {
+					const original = input.getAttribute( 'aria-label' );
+					if ( original ) {
+						input.dataset.sgsOriginalLabel = original;
+					}
+				}
+				input.setAttribute(
+					'aria-label',
+					term.label + ' (unavailable)'
+				);
+				totalUnavailable++;
+			}
+		}
+	} );
+
+	// Update the polite live region (suppressed on init to avoid page-load noise).
+	if ( isInit ) {
+		ctx.availabilityNote = '';
+	} else {
+		ctx.availabilityNote =
+			totalUnavailable > 0
+				? 'Some options are unavailable for this selection.'
+				: '';
+	}
+}
+
+/**
  * Resolve the WooCommerce Store API base URL.
  *
  * @return {string} Base REST URL with no trailing slash.
@@ -174,6 +327,10 @@ store( 'sgs/product-card', {
 		 * store. Runs once per card via data-wp-init. Captures the live context
 		 * proxy and the card element, then listens for the bubbling pill event
 		 * (the colon in the event name prevents a data-wp-on directive binding).
+		 *
+		 * Also stores the card ref in the module WeakMap (keyed by ctx) so
+		 * addToCart can retrieve it for the post-409 availability re-sync, and
+		 * runs an initial availability pass (isInit=true, no announcement).
 		 */
 		initPillBridge() {
 			const { ref } = getElement();
@@ -183,8 +340,17 @@ store( 'sgs/product-card', {
 			ref.dataset.sgsPillBridge = '1';
 
 			const ctx = getContext();
+
+			// Store the ref so the 409 re-sync path in addToCart can retrieve it.
+			cardRefByCtx.set( ctx, ref );
+
+			// Initial availability pass — no announcement on first paint.
+			applyAvailability( ref, ctx, true );
+
 			ref.addEventListener( 'sgs:option-selected', ( event ) => {
 				applyPillSelection( ctx, event.detail );
+				// Re-compute and announce availability after each selection.
+				applyAvailability( ref, ctx, false );
 			} );
 		},
 	},
@@ -285,6 +451,65 @@ store( 'sgs/product-card', {
 						// Ignore parse errors — use the default message above.
 					}
 					ctx.cartStatus = msg;
+
+					// 409 = out of stock (post-load race). Re-fetch the availability
+					// manifest and re-grey the options. The WeakMap keyed by ctx gives
+					// us the card element without a DOM query dependency.
+					if ( response.status === 409 && ctx.productId ) {
+						try {
+							const avRes = yield fetch(
+								getStoreApiBase() +
+									'/sgs/v1/cart/availability/' +
+									encodeURIComponent( ctx.productId ),
+								{
+									method: 'GET',
+									credentials: 'same-origin',
+									headers: {
+										'X-WP-Nonce': ctx.restNonce || '',
+									},
+								}
+							);
+							if ( avRes.ok ) {
+								const avData = yield avRes.json();
+								if ( avData && avData.combos ) {
+									// Merge the fresh inStock flags into the existing
+									// full combos — the availability endpoint returns
+									// inStock ONLY (no prices), so a wholesale replace
+									// would strip priceMinor/etc and break later swaps.
+									// Iterate ctx.combos (not the response): a combo
+									// ABSENT from the fresh response no longer exists/
+									// sells → mark it OOS so it greys + cannot be
+									// re-selected (avoids an infinite-409 loop on a
+									// hard-removed variation).
+									for ( const key in ctx.combos ) {
+										ctx.combos[ key ].inStock =
+											key in avData.combos
+												? !! avData.combos[ key ].inStock
+												: false;
+									}
+									const cardRef = cardRefByCtx.get( ctx );
+									if ( cardRef ) {
+										applyAvailability( cardRef, ctx, false );
+									}
+									// Refresh the SELECTED combo's stock slot (top-level
+									// writes the proxy observes) so it stays consistent
+									// with the freshly-greyed pills.
+									const currentCombo =
+										ctx.combos[ ctx.selectedKey ];
+									if ( currentCombo && ! currentCombo.inStock ) {
+										ctx.inStock = false;
+										ctx.stockText = 'Out of stock';
+									}
+									ctx.availabilityNote =
+										'That combination just sold out.';
+								}
+							}
+						} catch {
+							// Availability refresh is best-effort; do not surface
+							// the refresh failure on top of the cart error.
+						}
+					}
+
 					return;
 				}
 

@@ -339,6 +339,49 @@
 	line-height: 1.4;
 }
 
+/*
+ * ── U5: Cross-attribute availability greying ────────────────────────────────
+ *
+ * Scoped to .product-card--bound only — typed page-144 clones are unaffected.
+ * The shared sgs/option-picker block file is NEVER edited (scope guardrail,
+ * blub.db 304); these rules reach into the rendered picker DOM from the card.
+ *
+ * Greyed options retain opacity > 0 so they stay visible (WCAG contrast-exempt
+ * for disabled controls per §1.4.3 exception, but we keep them legible).
+ * aria-disabled (not native `disabled`) is set in JS so options stay focusable
+ * and announced by screen-readers (FR-27-B1).
+ */
+/*
+ * 44px minimum touch target (project standard) for the configurator pills.
+ * Card-scoped so the shared sgs/option-picker block + page-144 Typed clones are
+ * untouched — only Bound configurator cards get the enlarged target.
+ */
+.product-card--bound .sgs-option-picker__option {
+	min-height: 44px;
+}
+
+.product-card--bound .sgs-option-picker__pill {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+}
+
+.product-card--bound .sgs-option-picker__option--unavailable {
+	opacity: 0.45;
+	text-decoration: line-through;
+	cursor: not-allowed;
+}
+
+/*
+ * Keep the inner pill text legible at reduced opacity. No additional colour
+ * override needed: the existing pill palette at 0.45 opacity still reads
+ * clearly against the card background (WCAG disabled-control exception).
+ */
+.product-card--bound .sgs-option-picker__option--unavailable .sgs-option-picker__pill {
+	/* Intentionally empty: opacity on the parent is sufficient. */
+	/* Add overrides here if a client palette makes the faded text illegible. */
+}
+
 /* Reduced motion — respect user preference */
 @media (prefers-reduced-motion: reduce) {
 	.product-card .pill,

@@ -35,9 +35,10 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Cart_Proxy {
 
-	/** REST namespace and route. */
-	const REST_NAMESPACE = 'sgs/v1';
-	const REST_ROUTE     = 'cart/add-item';
+	/** REST namespace and routes. */
+	const REST_NAMESPACE   = 'sgs/v1';
+	const REST_ROUTE       = 'cart/add-item';
+	const REST_ROUTE_AVAIL = 'cart/availability';
 
 	/**
 	 * Rate-limit window in seconds.
@@ -69,9 +70,28 @@ final class Cart_Proxy {
 	// ── REST route ────────────────────────────────────────────────────────────
 
 	/**
-	 * Register POST /sgs/v1/cart/add-item.
+	 * Register POST /sgs/v1/cart/add-item and GET /sgs/v1/cart/availability/{id}.
 	 */
 	public static function register_route(): void {
+		\register_rest_route(
+			self::REST_NAMESPACE,
+			'/' . self::REST_ROUTE_AVAIL . '/(?P<id>\d+)',
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => array( __CLASS__, 'handle_availability' ),
+				// Public read — handler enforces nonce + rate-limit.
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'id' => array(
+						'required'          => true,
+						'type'              => 'integer',
+						'sanitize_callback' => 'absint',
+						'description'       => \__( 'WooCommerce variable product ID.', 'sgs-blocks' ),
+					),
+				),
+			)
+		);
+
 		\register_rest_route(
 			self::REST_NAMESPACE,
 			'/' . self::REST_ROUTE,
@@ -116,6 +136,156 @@ final class Cart_Proxy {
 					),
 				),
 			)
+		);
+	}
+
+	// ── Availability handler ──────────────────────────────────────────────────
+
+	/**
+	 * Handle GET /sgs/v1/cart/availability/{id}.
+	 *
+	 * Returns the current in-stock status for every combo of the given variable
+	 * product so the client can re-grey option-picker pills after a post-load
+	 * out-of-stock event (409 from add-item). No price data is returned —
+	 * only the availability booleans needed for the client-side greying pass.
+	 *
+	 * Security chain:
+	 *   1. CSRF   — X-WP-Nonce (wp_rest) header, identical to add-item.
+	 *   2. IDOR   — product must be published + a WooCommerce variable product.
+	 *   3. Rate-limit — 20 requests per IP per 60 s (read-only, lighter cap).
+	 *   4. No price leak — combos are stripped to { inStock: bool } only.
+	 *
+	 * @param \WP_REST_Request $request Incoming REST request.
+	 * @return \WP_REST_Response|\WP_Error
+	 */
+	public static function handle_availability( \WP_REST_Request $request ) {
+		// ── Step 1: CSRF nonce ───────────────────────────────────────────────
+		$nonce = (string) $request->get_header( 'X-WP-Nonce' );
+		if ( ! \wp_verify_nonce( $nonce, 'wp_rest' ) ) {
+			return new \WP_Error(
+				'sgs_bad_nonce',
+				\__( 'Security token invalid or expired. Reload the page and try again.', 'sgs-blocks' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		// ── Step 2: IDOR — published variable product only ───────────────────
+		$product_id = \absint( $request->get_param( 'id' ) );
+
+		if ( 'product' !== \get_post_type( $product_id ) ) {
+			return new \WP_Error(
+				'sgs_invalid_product',
+				\__( 'Invalid product ID.', 'sgs-blocks' ),
+				array( 'status' => 404 )
+			);
+		}
+
+		if ( 'publish' !== \get_post_status( $product_id ) ) {
+			return new \WP_Error(
+				'sgs_invalid_product',
+				\__( 'Invalid product ID.', 'sgs-blocks' ),
+				array( 'status' => 404 )
+			);
+		}
+
+		if ( ! \function_exists( 'wc_get_product' ) ) {
+			return new \WP_Error(
+				'sgs_wc_unavailable',
+				\__( 'WooCommerce is not active.', 'sgs-blocks' ),
+				array( 'status' => 503 )
+			);
+		}
+
+		$product = \wc_get_product( $product_id );
+		if ( ! $product instanceof \WC_Product_Variable ) {
+			return new \WP_Error(
+				'sgs_invalid_product',
+				\__( 'Invalid product ID.', 'sgs-blocks' ),
+				array( 'status' => 404 )
+			);
+		}
+
+		// Resource guard: the configurator does not render above the manifest
+		// cap (~80 combos / M-C9), so refuse to build live availability for an
+		// oversized catalogue — bounds the per-request build cost so this
+		// read-only endpoint cannot be turned into a CPU sink on a huge product.
+		if ( \count( $product->get_children() ) > 200 ) {
+			return new \WP_Error(
+				'sgs_invalid_product',
+				\__( 'Invalid product ID.', 'sgs-blocks' ),
+				array( 'status' => 404 )
+			);
+		}
+
+		// ── Step 3: Per-IP rate-limit (20 req / 60 s) ────────────────────────
+		// Read-only endpoint so the cap is lighter than add-item. Reuses the
+		// WC_Geolocation IP resolution pattern from the add-item handler.
+		$client_ip = \class_exists( 'WC_Geolocation' )
+			? \WC_Geolocation::get_ip_address()
+			: ( isset( $_SERVER['REMOTE_ADDR'] )
+				? \sanitize_text_field( \wp_unslash( $_SERVER['REMOTE_ADDR'] ) )
+				: 'unknown' );
+
+		$avail_rl_key    = 'sgs_avrl_' . \sha1( $client_ip );
+		$avail_rl_raw    = \get_transient( $avail_rl_key );
+		$now             = \time();
+		$avail_rl_limit  = 20;
+		$avail_rl_window = 60;
+
+		if ( \is_array( $avail_rl_raw )
+			&& isset( $avail_rl_raw['t'], $avail_rl_raw['c'] )
+			&& ( $now - (int) $avail_rl_raw['t'] ) < $avail_rl_window ) {
+			$avail_rl_count = (int) $avail_rl_raw['c'];
+			$avail_rl_start = (int) $avail_rl_raw['t'];
+		} else {
+			$avail_rl_count = 0;
+			$avail_rl_start = $now;
+		}
+
+		if ( $avail_rl_count >= $avail_rl_limit ) {
+			return new \WP_Error(
+				'sgs_rate_limited',
+				\__( 'Too many requests. Please wait before trying again.', 'sgs-blocks' ),
+				array( 'status' => 429 )
+			);
+		}
+
+		// Increment within the fixed window.
+		$avail_remaining = \max( 1, $avail_rl_window - ( $now - $avail_rl_start ) );
+		\set_transient(
+			$avail_rl_key,
+			array(
+				't' => $avail_rl_start,
+				'c' => $avail_rl_count + 1,
+			),
+			$avail_remaining
+		);
+
+		// ── Step 4: Build manifest + strip to availability-only ──────────────
+		// Product_Manifest::build() uses a 60 s transient — no extra DB hit when
+		// the manifest is already warm from the page render.
+		require_once __DIR__ . '/class-product-manifest.php';
+
+		$manifest = Product_Manifest::build( $product_id );
+		if ( null === $manifest ) {
+			return new \WP_Error(
+				'sgs_manifest_error',
+				\__( 'Could not build product availability data.', 'sgs-blocks' ),
+				array( 'status' => 500 )
+			);
+		}
+
+		// Strip to { comboKey: { inStock: bool } } — no price data returned.
+		$availability = array();
+		foreach ( $manifest['combos'] as $combo_key => $combo ) {
+			$availability[ $combo_key ] = array(
+				'inStock' => (bool) $combo['inStock'],
+			);
+		}
+
+		return new \WP_REST_Response(
+			array( 'combos' => $availability ),
+			200
 		);
 	}
 
