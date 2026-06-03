@@ -2108,6 +2108,23 @@ def walk(
         container_attrs: dict = {}
         if sgs_classes:
             container_attrs["className"] = " ".join(sgs_classes)
+        # A2 (FR-22-21): set widthMode from the section element's OWN max-width.
+        # ABSENT → full-bleed (widthMode "full"); PRESENT → match theme widths or custom px.
+        # setdefault() so _process_container_children fold can't overwrite.
+        _sec_base, _ = _collect_css_decls_for_element(node, css_rules)
+        _own_mw = _sec_base.get("max-width")
+        if not _own_mw:
+            container_attrs.setdefault("widthMode", "full")
+        else:
+            _sec_mode = _match_theme_width(_strip_important(_own_mw), _LIFT_CONTEXT.get("theme_widths", {}))
+            if _sec_mode in ("default", "wide"):
+                container_attrs.setdefault("widthMode", _sec_mode)
+            else:
+                _mw_m = re.match(r"^\s*(\d+(?:\.\d+)?)\s*(px|rem|em|vw|%)?\s*$", _strip_important(_own_mw))
+                if _mw_m:
+                    container_attrs.setdefault("widthMode", "custom")
+                    container_attrs.setdefault("customWidth", int(float(_mw_m.group(1))))
+                    container_attrs.setdefault("customWidthUnit", _mw_m.group(2) or "px")
         children_markup = _process_container_children(node, css_rules, depth, variation_buf, container_attrs)
         return _emit_section_container(container_attrs, children_markup, css)
 
@@ -2894,6 +2911,14 @@ def _fold_layout_into_attrs(
             if grid.get(attr) is not None:
                 container_attrs.setdefault(attr, grid[attr])
     _lift_root_supports_to_style(wrapper_node, "sgs/container", css_rules, container_attrs)
+    # B2/A1 (FR-22-21): lift the folded wrapper's own max-width as contentWidth so the
+    # section's inner content cap is preserved (e.g. __inner max-width:960px → "960px").
+    # Only fires for the sole-shell fold path (sole element child) — grid/flex item
+    # wrappers are NOT sole children so this code is never reached for them.
+    _fw_base, _ = _collect_css_decls_for_element(wrapper_node, css_rules)
+    _inner_mw = _fw_base.get("max-width")
+    if _inner_mw:
+        container_attrs.setdefault("contentWidth", _strip_important(_inner_mw).strip())
 
 
 def _process_container_children(

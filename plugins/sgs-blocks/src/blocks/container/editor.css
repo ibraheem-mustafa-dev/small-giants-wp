@@ -8,3 +8,9 @@
 .sgs-container:hover {
 	border-color: var(--wp--preset--color--primary, #0F7E80);
 }
+
+/* Mirror of style.css — ensures editor preview reflects the content-width cap. */
+.sgs-container__inner {
+	box-sizing: border-box;
+	width: 100%;
+}

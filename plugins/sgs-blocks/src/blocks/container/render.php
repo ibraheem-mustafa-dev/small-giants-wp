@@ -79,6 +79,10 @@ $bg_ken_burns           = ! empty( $attributes['bgKenBurns'] );
 $bg_animation_duration  = isset( $attributes['bgAnimationDuration'] ) ? absint( $attributes['bgAnimationDuration'] ) : 20;
 $shadow                 = $attributes['shadow'] ?? '';
 $max_width              = $attributes['maxWidth'] ?? '';
+$content_width          = $attributes['contentWidth'] ?? '';
+// Sanitise: allow only CSS length characters (digits, letters, dot, percent).
+// Rejects semicolons, braces, quotes, slashes — no injection path.
+$content_width          = preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $content_width );
 $min_height             = $attributes['minHeight'] ?? '';
 $vertical_align         = $attributes['verticalAlign'] ?? 'start';
 $html_tag               = $attributes['htmlTag'] ?? 'section';
@@ -646,7 +650,19 @@ if ( $responsive_css && $uid ) {
 $svg_bg_html = ( $has_bg_svg && 'background' === $bg_svg_position ) ? $svg_html : '';
 $svg_fg_html = ( $has_bg_svg && 'foreground' === $bg_svg_position ) ? $svg_html : '';
 
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- All variables are pre-sanitised: $html_tag allowlisted, $wrapper_attributes from get_block_wrapper_attributes(), HTML vars built with esc_* / wp_kses(), $content is WP-rendered inner blocks.
+// Content-width inner wrapper — full-bleed background with capped content.
+// Guard: only when (a) contentWidth is set, and (b) layout is NOT grid/flex.
+// Grid/flex: __inner would become the sole grid/flex child, collapsing the layout.
+// The overlay/video/SVG layers are absolutely-positioned bg layers and MUST stay
+// outside __inner so they span the full container, not just the capped content column.
+$inner_open  = '';
+$inner_close = '';
+if ( '' !== $content_width && '' === $layout ) {
+	$inner_open  = '<div class="sgs-container__inner" style="max-width:' . esc_attr( $content_width ) . ';margin-inline:auto">';
+	$inner_close = '</div>';
+}
+
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- All variables are pre-sanitised: $html_tag allowlisted, $wrapper_attributes from get_block_wrapper_attributes(), HTML vars built with esc_* / wp_kses(), $content is WP-rendered inner blocks, $inner_open/$inner_close built with esc_attr().
 printf(
 	'<%1$s %2$s>%3$s%4$s%5$s%6$s%7$s%8$s%9$s</%1$s>',
 	$html_tag,
@@ -655,7 +671,7 @@ printf(
 	$video_html,
 	$overlay_html,
 	$svg_bg_html,
-	$content,
+	$inner_open . $content . $inner_close,
 	$svg_fg_html,
 	$shape_bottom_html
 );

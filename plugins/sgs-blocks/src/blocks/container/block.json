@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/container",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"title": "SGS Container",
 	"category": "sgs-layout",
 	"description": "Flexible layout wrapper — the fundamental building block for all page sections. Supports default/wide/full/custom widthMode per viewport — composes with WP-native alignfull/alignwide.",
@@ -344,6 +344,10 @@
 			"type": "string",
 			"default": "free",
 			"enum": ["free", "grid-section", "card-grid"]
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"providesContext": {

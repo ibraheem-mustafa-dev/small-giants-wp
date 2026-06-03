@@ -19,6 +19,14 @@
 	box-sizing: border-box;
 }
 
+/* Content-width inner wrapper — full-bleed background with capped content.
+   box-sizing + width:100% prevent overflow when max-width + margin + parent
+   padding combine on narrow viewports. */
+.sgs-container__inner {
+	box-sizing: border-box;
+	width: 100%;
+}
+
 /* Min-height with flex-centering — when a vh/px min-height is applied via inline style,
    the container centres its content vertically using flex. The class is added by render.php
    whenever minHeight is non-empty. */

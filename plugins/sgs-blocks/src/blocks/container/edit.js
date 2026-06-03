@@ -208,6 +208,7 @@ export default function Edit({ attributes, setAttributes }) {
     justifyItems = "stretch",
     alignContent = "stretch",
     templateMode = "free",
+    contentWidth = "",
   } = attributes;
 
   const anyCustom =
@@ -466,6 +467,17 @@ export default function Edit({ attributes, setAttributes }) {
               { label: "600px", value: "600px" },
             ]}
             onChange={(val) => setAttributes({ minHeight: val })}
+            __nextHasNoMarginBottom
+          />
+
+          <TextControl
+            label={__("Content width", "sgs-blocks")}
+            value={contentWidth}
+            onChange={(val) => setAttributes({ contentWidth: val })}
+            help={__(
+              "Caps the inner content to this max-width and centres it, while the section background stays full-width. Leave blank for no content cap. (Ignored when layout is Grid or Flex.)",
+              "sgs-blocks"
+            )}
             __nextHasNoMarginBottom
           />
 
