@@ -2,6 +2,12 @@
 
 > Theme/blocks thread. Cloning pipeline -> `.claude/handoff.md`. Next -> `.claude/next-session-prompt-theme.md`. A parallel CLONING session was live on `testimonial-slider` + `theme-snapshot.json` for most of this session; shared-doc bookkeeping was deferred to avoid the concurrent-commit race (see Next Priorities).
 
+> ## UPDATE (session 8 close-out) - two deferred items are now DONE
+> The two "DEFERRED/PENDING" items in the Known Issues + Next Priorities below were completed at session close once the tree cleared:
+> 1. **Shared-doc bookkeeping - DONE** (`14bb3a7c`, `7038055f`): Spec 24 + 25 MOVED to `.claude/specs/archive/` (status superseded + `absorbed_by: 27`); **D161** logged in `decisions.md`; `docs-registry.yaml` (27 = master, 24 superseded), `.claude/CLAUDE.md` spec manifest, `parking.md`, and Spec 26 non-goals (auto-contrast) all updated.
+> 2. **adversarial-council S-grade - AWARDED** by Bean + the skill hardened with battle-tested persona briefs; recorded in the skill's `correction-ledger.md`.
+> The only OPEN item carried to next session is **the canary deploy of the IDOR fix** (`d07a7e05`) + the gated **Spec 27 Phase 1 build**. See `.claude/next-session-prompt-theme.md`.
+
 ## Completed This Session
 1. **Task A (auto-contrast) DECIDED + Task B (FR-26-D2) SHIPPED.** Bean chose build-time luminance (+ CSS `contrast-color()` as a later progressive-enhancement layer) as the universal WCAG auto-contrast direction. FR-26-D2: extended `push-theme-snapshot.py` to write the live `wp_global_styles` post via `POST /wp/v2/global-styles/{id}` (deterministic post-ID by `wp-global-styles-{stylesheet}` name, app-pwd auth from gitignored env, trailing cache flush). Live-verified reversibly on canary post 7 (marker reached DB + served HTML, then restored). Commit `c468af7a`, pushed.
 2. **Mama's homepage re-cloned to page 144 -> hero secondary button FIXED.** Root-caused the "both hero buttons filled primary" as a STALE clone (page 144 predated D147's secondary-modifier detection; the current converter chain verified to emit `inheritStyle=secondary`). Re-clone via `/sgs-clone --mode draft --skip-register --deploy-target page:144`. Live-verified: "Try 3 for £5" now `is-style-secondary` (transparent/outlined). Pixel-diff mean (excl header/footer) 57.78 -> 53.13% (14 sections improved, 3 regressed).
