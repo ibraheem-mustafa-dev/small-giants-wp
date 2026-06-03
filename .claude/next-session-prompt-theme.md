@@ -86,17 +86,41 @@ Run `git log --oneline -10` + `git status` + `git branch --show-current`. Confir
 ### Residual U6 follow-ups (small; fold opportunistically, NOT blockers)
 "Any"-attribute `term_exists()` validation in the proxy; product-LOCAL (non-`pa_`) attribute case-handling; document the guest-nonce-per-tick parity. Plan §U6 tracked.
 
-### Dependency graph
+## THE REST OF PHASE 1 — after the pill-swap, to the SHIP GATE (single whole gate, Bean's decision)
+The pill-swap (U3/U4/U7/U5) is the sell-loop, but Spec 27 Phase 1 does NOT ship until ALL these land. Each is fully specced in the plan §2 + Spec 27 FR list; build IN THIS ORDER after the swap works. (Estimate: these are ~1-1.5 sessions on top of the pill-swap; total Phase-1 ≈ 3-4 AI-agent sessions.)
+
+- **U9 — WCAG 2.2 AA sprint + evidence (FR-27-B1; sonnet + `design-reviewer`).** The first-mover claim. Option-picker radiogroup (`<input type=radio>`+`<label>`, always-visible text labels never colour-only, arrow-key nav, 44px, `aria-disabled`+SR status on OOS, focus-visible, `prefers-reduced-motion`); card `aria-live` on price/stock; focus management after add-to-cart. **CHANGE the add-to-cart `<a role="button">` to a real `<button>`** (the `<a role=button>` fails the Space-key WCAG criterion — review M-C10/§8c). **4 objective gates (all via Playwright):** axe-core 0; keyboard-only Tab+arrows no trap; NVDA/SR announces label+state+price; every target ≥44×44px by computed bounding-rect. Publish the evidence sheet `.claude/reports/sgs-configurator-moat-evidence.md`. /qc gate: `design-reviewer` + the 4 gates.
+- **U10 — Performance budgets (FR-27-H1/H2; sonnet + `performance-auditor`).** Interactivity API only (`viewScriptModule`, no WC React/jQuery); pill resolves from seeded/prefetched state (no XHR on change — already true from U4); default variation SSR'd, image eager+fetchpriority (done in the polish), reserved-height price/stock so swap is CLS 0. **Gates:** lab INP ≤200 ms on a 48-SKU pill change (throttled mid-tier 4G, Chrome DevTools); block JS ≤20 KB; CLS 0 on swap; no React bundle. /qc gate: `performance-auditor`.
+- **U8 — Cache + tax correctness (FR-27-H3/G6; sonnet).** Keep the price-source discipline (already in the resolver: `wc_get_price_to_display()` + `wc_get_price_decimals()`, never own division → card price == cart price by construction). Add the render-time `get_date_modified()` staleness guard (M-C1) + confirm the U6 purge hooks fire. For Mama's (UK B2C, tax-inclusive) DEFER the dual-ex/inc-tax-seed + CDN-vary machinery (M-C10). /qc gate: B2B-exempt + standard customer see the right price from one cached page; sale-end purges.
+- **U11 — Degradation + activation prompt (FR-27-A3/A5; sonnet).** CPT no-WC fallback (IDOR fix already deployed); WC <9.8 → read-only card (static default price, no configurator JS) + dismissible admin notice; WC activation on a site with `sgs-cpt` cards → admin migration prompt. Gate WC version via `defined('WC_VERSION') && version_compare(...)` not just `function_exists` (review §8c). /qc gate: `/qc-inline` + WC-version-spoof fixture.
+- **U1 — Per-site capability flag (FR-24 #9 resolved; sonnet).** `wp_options` `sgs_content_types` (autoloaded array, default `[]` → no CPT on lean sites); CPT registration guards on it; a minimal `manage_options` SGS Settings toggle; deploy tooling sets it at provision. /qc gate: option empty → no `sgs_product` route; set → route present. (Wire conflict: U1 + U11 both touch `class-product-cpt.php` → sequence them, don't parallelise — plan Spec-Lawyer #8.)
+- **U12 — Cloning-compat + schema-compat tests (FR-27-I-MVP; sonnet).** The converter keeps emitting Typed option-pickers unchanged; adding `sourceMode`/swatch attrs keeps the Typed shape a deprecation-free subset (Jest block.json schema-compat + PHPUnit deprecation test; gate on attr TYPE not presence — the `inheritStyle` lesson). Needs a baseline snapshot to diff against (review M1). /qc gate: a clone run emits Typed pickers unchanged + the compat tests pass.
+
+**PHASE-1 SHIP GATE (Spec 27 acceptance 1-6 — the whole gate must pass before "shipped"):** real WC values + no-XHR-on-change + no-JS default + ≤24 KB context + card==cart across tax; 48-SKU grey-out both directions + OOS-after-load caught; axe-core 0 + keyboard + SR + 44px; tampered add-to-cart rejected + flood capped + sale-end purge; lab INP ≤200 ms + CLS 0; cloning emits Typed pickers unchanged. Bean visual sign-off (R-22-13).
+
+**THEN Phase 2 (next chapter — do NOT pull forward into Phase 1):** FR-27-B2 swatches (text/colour/image via term_meta), B3 per-unit £ + discount-label + server % off, C2 OOS-vs-nonexistent, A4 per-variation gallery, E1-E3 ProductGroup/hasVariant JSON-LD + canonical + breadcrumb/OG/sitemap, F1 all-commerce-in-SSR, PREFLIGHT go-live check, I2 swatch/pill tokens from Spec 26 + build-time auto-contrast, I3 done. **Phase R (roadmap, behind a 2nd shop client):** authoring controller + agency templates + AI-builder — explicitly NOT now (the council flagged AI-builder-as-headline as the stall trap). Competitor lens for the roadmap: pull configurator ANALYTICS ("combos tried-but-couldn't-buy") forward — the one revenue-language deal-winner, currently shelved; make the WCAG claim credible (third-party audit OR narrow to "agency-delivered").
+
+### Dependency graph (full Phase 1 to the ship gate)
 ```
-U3 (opus design-gate → sonnet build) ──/qc-council──┐
-        ↓                                            │
-U4 (sonnet) ──/qc-inline + live no-XHR-swap──────────┤
-        ↓                                            │
-U7 (sonnet) ──live adversarial re-run────────────────┤  all on test page 589 (un-gated from cloning)
-        ↓                                            │
-U5 (opus design → sonnet) ──/qc + 4 a11y gates───────┘
-        ↓
-Bean visual sign-off (R-22-13) per milestone → commit to main by EXPLICIT PATH (cloning thread co-active)
+THE PILL-SWAP (sell-loop) — all on test page 589, un-gated from cloning:
+  U3 (opus design-gate → sonnet build) ──/qc-council──┐
+          ↓                                            │
+  U4 (sonnet) ──/qc-inline + live no-XHR-swap──────────┤
+          ↓                                            │
+  U7 (sonnet) ──live adversarial re-run────────────────┤
+          ↓                                            │
+  U5 (opus design → sonnet) ──/qc + 4 a11y gates───────┘
+          ↓  (Bean visual sign-off — "the pills swap the price")
+THE REST OF PHASE 1 (sequential; ~1-1.5 sessions):
+  U9 a11y sprint (design-reviewer + 4 gates) → U10 perf (performance-auditor, INP≤200) →
+  U8 cache+tax (staleness guard) → U11 degradation ──┐ (U11 + U1 both touch class-product-cpt.php —
+  U1 capability flag ────────────────────────────────┘  SEQUENCE, do not parallelise) →
+  U12 cloning-compat + schema-compat tests
+          ↓
+  PHASE-1 SHIP GATE (Spec 27 acceptance 1-6) + Bean sign-off (R-22-13) → "Phase 1 SHIPPED"
+          ↓
+  PHASE 2 (swatches/per-unit/galleries/JSON-LD/SEO/PREFLIGHT) — separate chapter
+every milestone → commit to main by EXPLICIT PATH (cloning thread co-active); scope card changes to Bound-only classes
 ```
 
 ## Skills to Invoke (with subagent + qc guidance)
