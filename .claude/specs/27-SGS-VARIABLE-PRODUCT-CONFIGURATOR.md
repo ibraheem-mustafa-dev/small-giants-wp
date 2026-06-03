@@ -119,7 +119,7 @@ Merged from Spec 25's feature-map table and the configurator's phasing. Rows sup
 | WC variable-product per-variant pricing/stock via WC-native variations | SUPERSEDED - this is now the primary path (FR-27-A1); the DEFERRED label is retired | - | D151 | FR-27-A1 |
 | WC adapter for `sgs/content-collection` | PLANNED - triggers when a real shop client lands | Separate spec when in scope | D149 | FR-24 out-of-scope |
 | `sgs/trust-bar` dual-mode (Typed repeater + Bound InnerBlocks) | DRAFT-Phase-1 | `src/blocks/trust-bar/` | D123 | FR-24-10 |
-| Variable-product configurator Phase 1 — SECURE BACKEND BUILT (U0 fixture + U6 proxy + bypass closed, live-verified); VISIBLE pill-swap (U3/U4/U5/U7) NEXT | PARTIAL (D162) | `src/blocks/product-card/`, `includes/class-product-bindings.php`, `includes/class-cart-proxy.php`, `scripts/seed-48-sku-fixture.php` | D162 | FR-27-A/B/C/G/H |
+| Variable-product configurator Phase 1 — SELL-LOOP SHIPPED + LIVE-VERIFIED (U0 fixture + U6 proxy + U3 manifest/SSR + U4 pill-swap + U7 secure add-to-cart + U5 availability/a11y); hardening units (U9 evidence/U10 perf/U8 cache/U11 degradation/U1 flag/U12 cloning-compat) NEXT | PARTIAL (D164) | `src/blocks/product-card/`, `includes/class-product-manifest.php`, `includes/class-product-bindings.php`, `includes/class-cart-proxy.php`, `scripts/seed-48-sku-fixture.php` | D162, D164 | FR-27-A/B/C/G/H |
 | Variable-product configurator Phase 2 (SEO, schema, display) | DRAFT-Phase-2 | - | - | FR-27-E/F/B2/B3 |
 | Authoring controller + AI-builder (Phase R) | ROADMAP-Phase-R | - | - | FR-27-R |
 

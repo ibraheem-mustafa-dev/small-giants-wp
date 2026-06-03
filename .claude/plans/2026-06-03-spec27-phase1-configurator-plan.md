@@ -5,7 +5,7 @@ thread: sgs-theme
 plan_id: spec27-phase1-configurator
 spec: .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md
 created: 2026-06-03
-status: WARM-START (build GATED on the cloning phase closing — re-baselines the Mama's pixel-diff)
+status: SELL-LOOP SHIPPED (D164, 2026-06-04) — U0+U6 (backend) + U3+U4+U7+U5 (visible pill-swap) BUILT + live-verified on canary page 589/fixture 540, un-gated from cloning (separate page). REMAINING to the single whole ship gate: U9 (a11y evidence + <a>->button) / U10 (perf) / U8 (cache+tax) / U11 (degradation) / U1 (capability flag) / U12 (cloning-compat).
 gate_to_build: ".claude/next-session-prompt.md + .claude/state.md (cloning thread) must show the cloning phase CLOSED before Task C build starts"
 scope_frs: [FR-27-A1, FR-27-A2, FR-27-A3, FR-27-A5, FR-27-B1, FR-27-C1, FR-27-G1, FR-27-G2, FR-27-G3, FR-27-G6, FR-27-H1, FR-27-H2, FR-27-H3, FR-27-I-MVP]
 adversarial_council: CONDITIONAL-GO (6-persona brutal round run 2026-06-03; must-fixes folded into §8; build-ready after the §8 pre-build register is applied)

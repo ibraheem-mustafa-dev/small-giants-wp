@@ -1,3 +1,56 @@
+# Session Handoff — 2026-06-04 (SGS THEME thread, session 10 — the visible pill-swap QUARTET shipped + live-verified; Mama's can sell a variant)
+
+> Theme/blocks thread. Cloning pipeline → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. Decision: **D164**. The cloning thread was co-active on the shared tree (its 17 uncommitted files — `heading/*`,`label/*`,`container/render.php`,`sync-container-wrapping-blocks.py`,`testimonial-slider/*`,`reports/phase4-*`,`theme-snapshot.json`,`lucide-icons.php`,`orchestrator/sgs-framework.db` — left untouched). All my work committed by explicit path + pushed.
+
+## Completed This Session
+1. **U3 — live WC manifest + SSR seed SHIPPED** (`7f096976`). New `SGS\Blocks\Product_Manifest::build()` reads WC's 48 live variations → sparse 48-combo manifest seeded into per-instance `data-wp-context` (8,529 B ≤24KB; M-C1 staleness cache, M-C5 escaping, M-C7 image fallback, M-C9 cap; M-C3 removed the multi-card-bug global state seed). Two pickers + default-literal price SSR'd no-JS-safe. **OUTCOME ACHIEVED** (live: 48 combos, £9.99 default, 0 errors).
+2. **U4 — multi-axis pill-swap store SHIPPED** (`6b4af10a`). `view.js` swaps price/sale/pctOff/stock/image on pill click from the seeded manifest — **0 XHR on change**. **OUTCOME ACHIEVED** (live: 48-pack/vanilla → £24.49 from £34.99 + "30% off"; 0 requests, 0 errors).
+3. **U7 — secure add-to-cart wiring SHIPPED** (`c903e760`). `addToCart` posts the SELECTED variation + display-name `variation[]` (M-C2) + `X-WP-Nonce` to the proxy `/sgs/v1/cart/add-item`, never a price. **OUTCOME ACHIEVED** (live: cart holds variation 565 @ £24.49, server-computed).
+4. **U5 — cross-attribute availability SHIPPED** (`3bbb21b6`). Client-side both-directions grey-out (aria-disabled + SR label + card-scoped CSS + 44px) + NEW secure `GET /sgs/v1/cart/availability/{id}` (nonce + 20/60s rate-limit + published-variable-only 404 + inStock-only + >200-var guard) for the 409 re-sync. **OUTCOME ACHIEVED** (live: both directions grey; all 4 a11y gates PASS — axe-core 0 / keyboard / SR / 44px).
+5. **5 bugs caught by orchestrator live-testing** (would have shipped on "build passed"): U3 `&pound;` entity; U4 **latent Phase-C colon-event wiring bug** (WP Interactivity won't bind a colon event name → `data-wp-init` bridge fix); U5 409 price-strip, absent-combo infinite-409, selected-stock staleness. Cross-model council per unit (Sonnet + Haiku; Gemini/Cerebras down).
+6. **GATE 2 Bean-signed-off** — screenshot sent; Bean chose CONTINUE-to-U5 → whole quartet landed in one session.
+
+## Outcome vs Completion (Gate 3.5)
+All four units: **OUTCOME ACHIEVED** — each live-verified on canary page 589/fixture 540 (render + behaviour + measurement), committed, pushed. The Phase-1 SHIP GATE is NOT yet hit (single whole gate, D162.5): the hardening units (U9/U10/U8/U11/U1/U12) remain — correctly future work, not completion theatre.
+
+## Current State
+- **Branch:** `main` at `3bbb21b6` (4 theme commits this session `7f096976`→`3bbb21b6`, all pushed). Cloning thread's 17 files still uncommitted (theirs, untouched).
+- **Build/deploy:** product-card 1.6.1 + `class-product-manifest.php` (new) + `class-cart-proxy.php` (+availability endpoint) LIVE on sandybrown canary, opcache-reset, live-verified. Build via PowerShell.
+- **Tests:** no unit suite; `php -l` clean; WPCS 0 errors; axe-core 0; pre-merge + visual-diff gates passed.
+- **Uncommitted (mine):** none.
+
+## Known Issues / Blockers
+- **None block the next session.** The sell-loop is complete + live.
+- `class-cart-proxy.php` 939 lines + `render.php` 498 (over the 300 guideline) — cohesive controller + 3-branch template; parked refactor candidate.
+- `P-PRODUCT-CARD-PILL-SWAP-DORMANT` marked RESOLVED — move to `memory/parking-archive.md` next /handoff.
+- The price formatter (`toLocaleString`) may differ from WC's server format for prices ≥ the thousands boundary (Mama's all <£100; cart price is server-authoritative). Note for U8/U10.
+
+## Next Priorities (in order)
+1. **U9 — WCAG 2.2 AA sprint + evidence sheet** (FR-27-B1) — incl. the `<a role=button>`→`<button>` add-to-cart fix; publish `.claude/reports/sgs-configurator-moat-evidence.md`.
+2. **U10 — performance budgets** (FR-27-H1/H2; INP ≤200ms, no React, CLS 0, JS ≤20KB).
+3. **U8 — cache + tax correctness** (FR-27-H3/G6; render-time `get_date_modified()` staleness guard already in U3's manifest — confirm + the purge hooks).
+4. **U11 degradation (WC<9.8) → U1 capability flag → U12 cloning-compat tests** → Phase-1 SHIP GATE (Spec 27 acceptance 1-6) + Bean sign-off.
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `plugins/sgs-blocks/includes/class-product-manifest.php` | NEW — U3 manifest builder (read-through cache, combos, axes, default) |
+| `plugins/sgs-blocks/includes/class-product-bindings.php` | U3 — manifest method extracted out (back to 396 lines) |
+| `plugins/sgs-blocks/includes/class-cart-proxy.php` | U5 — NEW `GET /sgs/v1/cart/availability/{id}` endpoint |
+| `plugins/sgs-blocks/src/blocks/product-card/render.php` | U3 variable branch + U5 aria-live + U7 restNonce + the `data-wp-init` bridge directive |
+| `plugins/sgs-blocks/src/blocks/product-card/view.js` | U4 multi-axis store + U5 availability engine + U7 proxy wiring + colon-event bridge |
+| `plugins/sgs-blocks/src/blocks/product-card/style.css` | U3/U5 Bound-scoped price/stock/unavailable/44px CSS |
+| `plugins/sgs-blocks/src/blocks/product-card/block.json` | version 1.4.0 → 1.6.1 |
+| `reports/visual-diff/product-card-2026-06-04.md` | NEW — pill-swap visual-diff PASS report (gate requirement) |
+
+## Notes for Next Session
+- **WP Interactivity `data-wp-on--<event>` silently won't bind a COLON event name** — use `data-wp-init` + a captured-context bridge. Memory `wp-interactivity-data-wp-on-rejects-colon-event-names`. Live-test EVERY custom-event→store wiring.
+- **Security-rater verdicts are over-rated against a generic criterion** — re-derive against the actual threat model (a public-read availability endpoint is not a high-security write path). Fact-check every "blocker" before acting (council-validates-the-criterion).
+- **Scope-safety held:** all changes on the Bound variable branch + `.product-card--bound`-scoped CSS; the shared `sgs/option-picker` block + page-144 Typed clones untouched.
+- **Build via PowerShell** (Git-Bash node broken); surgical scp + opcache reset per unit; the SGS visual-diff gate needs a dated `reports/visual-diff/product-card-<today>.md` for any style.css change.
+
+---
+
 # Session Handoff — 2026-06-03 (SGS THEME thread, session 9 — secure shop backend BUILT + proven; test page live; card polished; pill-swap is next)
 
 > Theme/blocks thread. Cloning pipeline → `.claude/handoff.md` (now at D163). Next → `.claude/next-session-prompt-theme.md`. The cloning thread was co-active on this shared tree (its uncommitted `heading/*`,`label/*`,`container/render.php`,`sync-container-wrapping-blocks.py`,`testimonial-slider/*`,`reports/phase4-*`,`theme-snapshot.json`,`lucide-icons.php`,`orchestrator/sgs-framework.db` were left untouched). Decision: **D162** (with sub-points .5/.7/.8/.9).
