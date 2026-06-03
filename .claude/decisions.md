@@ -6,6 +6,20 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-03 (cloning thread) — page-triage GROUNDED via investigation+council; WS-4 locked as FOUNDATIONAL-FIRST; WS-4 mechanism + #3 parity audits done (D160)
+
+**D160 — The #1-#8 triage was grounded (5 parallel /systematic-debugging investigations + a 2-rater /qc-council Gate A), the WS-4 wrapper-mirror mechanism + the text-block parity gap were audited, and WS-4 was locked as the FOUNDATIONAL-FIRST workstream. (CLONING thread.)** Full grounded spec: the GROUNDED FINDINGS appendix of `.claude/plans/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md`.
+
+**(1) WS-4-FIRST sequencing LOCKED (Bean-directed).** The universal wrapper-mirroring to sgs/container is FOUNDATIONAL and must land BEFORE any wrapper-dependent fix — else WS-4 (which replaces each composite's wrapper) OVERWRITES those fixes. Locked order: WS-1c (complete sgs/container) → **WS-4 (wrapper mirror)** → wrapper-dependent fixes (#4b product-card fill, #7 announcement-bar); in parallel throughout: #3 text-parity, #6 notice-banner, #8 slider-nav, #4a grid-lift.
+
+**(2) Council CORRECTED 3 of the 5 investigation fix-shapes** (the reason the council was run): **#3** "remove global text-align:center" → would break every centred heading site-wide; real fix = add `textAlign` attr+control+render to heading+label (sgs/text pattern) — it's a **customisation-parity gap** (audit: heading+label both lack textAlign; text has it; + heading missing edit.js controls for fontStyle/textDecoration/bg/inheritStyle; label fontStyle missing + broken `attr()` responsive font-size). **#4** scoped `.sgs-products` CSS → R-22-9 violation; real fix = (a) lift the named grid's responsive template onto NATIVE attrs in `_emit_wrapper_container` (universal; the machinery exists, just not wired to that path), (b) product-card FILLS by default with width control baked-in via WS-4 — not a cardMaxWidth hack; **#4b is WS-4-dependent**. **#7** converter slots-row → would break legit announcement-bar; **PARK — self-resolves under WS-4**. **#6** confirmed: fix notice-banner block.json at source (so /sgs-update re-derives content-block/1, not a hand-patched DB row) + universal converter sgs/text-child synthesis + showIcon-from-draft. **#8** confirmed slider redesign.
+
+**(3) WS-4 mechanism design (from the foundation audit — the build spec).** Section-kind roster = hero/cta-section/modal/trust-bar; **MODAL = hard exclusion** (dialog+::backdrop shell has no container mapping). Mechanism = (a) shared PHP wrapper class `includes/class-container-wrapper.php` (`SGS_Container_Wrapper::render(...)` → {open,close,uid}; composite keeps its own interior between); (b) KIND-scoped block.json attr-mirror (section=full/layout=grid+width/content=width+spacing); (c) `sync-container-wrapping-blocks.py` report-only → WRITER wired as /sgs-update Stage 11. **BLOCKER first:** cta-section `layout` enum collision → rename to `contentLayout` + deprecated.js; hero `overlayColour`→`backgroundOverlayColour` + deprecated.js; trust-bar additive (low risk). Build sequence: cta rename → helper → trust-bar → cta → hero → modal-excluded → /sgs-update writer. WS-1c lands before the helper.
+
+**(4) #8 slider BUILT + deployed (uncommitted), 3-up VERIFIED, nav/loop UNVERIFIED.** Arrows→flex-siblings, controls-underneath markup, slidesVisible 1→3, infinite-loop `wrapIndex`. Page-144 slider has only 3 testimonials → nav correctly hidden → arrows/controls/loop NOT live-verifiable here (STOP #46 — not claimed verified). NEXT: check whether the draft has >3 testimonials the converter dropped; verify nav/loop on a >3-slide page; tidy pause-btn placement; then commit. Uncommitted in the working tree.
+
+---
+
 ## 2026-06-03 (cloning thread) — WS-1 A1+A2 SHIPPED (sgs/container 3-layer, first 2 gaps) + composite-remodel directive sharpened + page-level triage register (D159)
 
 **D159 — WS-1 A1+A2 shipped (`2f86d9e6`, pushed to main); the container/wrapper standardisation BUILD has begun. (CLONING thread.)** _(Next free D-number after the theme thread's D158; shared decisions.md — committed by explicit path per STOP #45.)_
