@@ -56,7 +56,7 @@ SGS is one custom WP 7.0 block theme serving many client sites. Two problems are
 
 ## Non-goals
 
-- Universal auto-contrast for any arbitrary light primary with zero per-client override (parked `P-AUTO-CONTRAST-LIGHT-PRIMARIES` — needs CSS `contrast-color()` maturity or a build-time luminance step).
+- Universal auto-contrast for any arbitrary light primary with zero per-client override (parked `P-AUTO-CONTRAST-LIGHT-PRIMARIES`). **DIRECTION DECIDED 2026-06-03 (Bean, D161): build-time luminance** — at deploy, compute the brand colour's WCAG relative luminance and pick black/white text per the contrast algorithm; layer CSS `contrast-color()` as a later progressive-enhancement once Baseline-safe. Build still deferred (with the rest of Spec 26) until the cloning phase closes.
 - Replacing per-instance inline styles — they remain the highest layer by design.
 - Fixing structural / InnerBlocks cloning gaps — separate (Spec 22) and dominate pixel-diff independently of styling.
 - A new REST endpoint, a new WP Ability, or a Create Block Theme runtime dependency (see FR-26-A5).

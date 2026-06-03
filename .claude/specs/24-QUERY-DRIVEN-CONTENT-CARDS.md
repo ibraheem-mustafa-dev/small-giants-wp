@@ -2,7 +2,8 @@
 doc_type: spec
 spec_id: 24
 spec_version: 1
-status: active
+status: superseded
+absorbed_by: .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md
 title: Query-Driven Content Cards (CPT + Query Loop + Block Bindings)
 created: 2026-05-31
 owner: Bean (Small Giants Studio)
@@ -13,6 +14,8 @@ research: "blub.db — 'Gold-standard WP product card / product display block (2
 ---
 
 # Spec 24 — Query-Driven Content Cards
+
+> **SUPERSEDED 2026-06-03 (D161).** Folded into the master **Spec 27 — SGS Product & WooCommerce Layer** (`.claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md`). All FR-24-x requirements were carried forward into Spec 27's "blocks (shipped layer)" chapter, with stable IDs. Read Spec 27 for the current canonical product-layer spec; this file is kept in place for FR-24-x cross-reference continuity only.
 
 ## Problem statement
 

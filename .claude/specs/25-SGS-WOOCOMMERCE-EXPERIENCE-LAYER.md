@@ -2,7 +2,8 @@
 doc_type: spec
 spec_id: 25
 spec_version: 1
-status: active
+status: superseded
+absorbed_by: .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md
 title: SGS WooCommerce Experience Layer
 created: 2026-06-03
 owner: Bean (Small Giants Studio)
@@ -13,6 +14,8 @@ related:
 ---
 
 # Spec 25 — SGS WooCommerce Experience Layer
+
+> **SUPERSEDED 2026-06-03 (D161).** Folded into the master **Spec 27 — SGS Product & WooCommerce Layer** (`.claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md`). The design principles, feature/status map, cart, and `sgs-product/field` binding source were carried forward; **§design-principle 6 + the `_sgs_sku_matrix`/WC-native-deferred feature-map rows are superseded** (WC variations ARE the matrix; the configurator reads WC live, never custom meta). Read Spec 27 as canonical.
 
 ## Purpose
 
