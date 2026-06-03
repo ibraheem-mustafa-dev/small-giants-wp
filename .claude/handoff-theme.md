@@ -1,3 +1,34 @@
+# Session Handoff — 2026-06-03 (SGS THEME thread, session 9 — IDOR fix DEPLOYED + Spec 27 Phase-1 build plan + adversarial-council CONDITIONAL-GO)
+
+> Theme/blocks thread. Cloning pipeline → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. The cloning thread was co-active on this shared tree (its uncommitted `testimonial-slider/*` + `reports/phase4-*` + `theme-snapshot.json` + `lucide-icons.php` were left untouched). Decision: **D162**.
+
+## Completed This Session
+1. **Task A — IDOR fix DEPLOYED + proven live.** Surgical single-file scp of `class-product-cpt.php` (commit `d07a7e05`) to the sandybrown canary + OPcache reset (no block rebuild → did NOT bundle the cloning thread's uncommitted slider). Proven 3 ways: live file's 9 per-object `edit_post` checks match local line-for-line; a throwaway **contributor's REST write of `sgs_price` on product 522 → 403 `rest_cannot_edit`** (server price unchanged); **admin write → 200** (legit authoring intact). Cleanup: price restored to 10, test user deleted. (REST base is `sgs-products`, not `sgs_product`.) OUTCOME ACHIEVED.
+2. **Task B — Spec 27 Phase-1 build plan written + stress-tested (no build code).** `.claude/plans/2026-06-03-spec27-phase1-configurator-plan.md` — 13 units U0-U12, dependency graph, 4 gates, grounded risk register, effort. `/strategic-plan` Phase-3 HARD GATE via 2 parallel Sonnet risk+effort agents (caught the single-axis store, the `data-wp-text`-strips-sale-HTML trap, the `_sgs_variation_sets` WC-branch read, the shared-state multi-card bug). Then `/adversarial-council` 6-persona brutal round → **CONDITIONAL GO** (grades Ship-PM B+ / Cynic·Spec-Lawyer·Abuse C+ / Competitor·Support D+). Five must-fixes that silently break a live shop folded into plan §8b (freshness/purge model + UK-CRA exposure; attribute/combo-key format; per-instance context not shared state; inventory-denial + qty-cap floor; CSP + manifest escaping).
+3. **Two build open-questions RESOLVED (grounded in code).** FR-24 #7: existing `sgs-product/field` source covers image+scalars; repeatable pills go via the SSR-seeded manifest — no new mechanism. FR-24 #9: a `wp_options` `sgs_content_types` flag (default `[]`) + a `manage_options` toggle. (Plan §1.)
+4. **WC add-item contract verified live (pulled-forward M-C2).** Canary = **WooCommerce 10.8.1**; `OPTIONS` confirms `variation` is an **array of `{attribute,value}`** — the spec shape is correct. Exact attribute key string still needs the U0 fixture.
+
+## Bean's two negotiated decisions (D162.5)
+- **KEEP the single whole gate** (all 13 units before "shipped") — declined the council's GATE-1.5 re-cut (the "less = relief" framing is generic-ADHD; Bean's completionist profile reads a partial gate as an unresolved thread). Must-fixes + honest 3-4-session estimate kept; MVP subset retained only as BUILD ORDER within the single gate.
+- **PULL the server-side units forward** (U0 fixture + U6 proxy + WC-contract pinning) to build DURING the cloning wait — they don't touch the rendered card, so don't affect the cloning pixel-diff. Card-rendering units (U3/U4) stay gated until cloning closes.
+
+## Current State
+- **Branch:** `main` (no new commits this session — Task A was a live canary deploy, not a repo change; the IDOR fix `d07a7e05` was already committed last session). Plan + decisions.md (D162) are uncommitted doc edits in the working tree (theme-thread paths only). The cloning thread's `testimonial-slider/*` / `reports/phase4-*` / `theme-snapshot.json` / `lucide-icons.php` remain ITS uncommitted files — leave them.
+- **Deploy:** the product-meta IDOR fix is now LIVE on the canary + verified. (No block/theme build this session.)
+- **Honest estimate (corrected):** Spec 27 Phase 1 = 3-4 AI-agent sessions for the sell-loop (matches Spec 27 §540), NOT 2.
+
+## Next Priorities (in order)
+1. **Commit the theme-thread doc edits** by explicit path: the new plan + `decisions.md` D162 + this handoff + the next-session-prompt (NEVER `git add -A`; the cloning thread's files stay untouched; verify `git log -1 --stat`).
+2. **BUILD the pulled-forward server-side units** (Bean-authorised, pixel-diff-safe, buildable during the cloning wait): **U0** `seed-48-sku-fixture.php` first (every other unit tests against it), then **U6** the `/sgs/v1/cart/add-item` proxy (security spine — fold M-C1/M-C2/M-C4/M-C5 + /qc-council per commit), then pin M-C2's exact attribute key via the fixture's cart read-back. These are a fresh focused session (security-critical).
+3. **The card-rendering units (U3/U4/U5 + the rest)** stay GATED until the cloning phase shows CLOSED (`.claude/next-session-prompt.md` + `state.md`) — they re-baseline the pixel-diff.
+
+## Notes for Next Session
+- **Plan §8b is the must-fix register** — fold M-C1 (freshness/purge: use real hooks `woocommerce_scheduled_sale_action`/`woocommerce_product_set_sale_price`/`woocommerce_update_product` + a server-side `get_date_modified()` staleness guard at render; `wc_scheduled_sales` is NOT a real hook) before U8; M-C2/M-C3/M-C4/M-C5 before the units they touch.
+- **Reframe the spec slogan** "WC never mirrored" → "WC authoritative; SGS holds a seeded read-through cache reconciled server-side on every render + at add-to-cart" (the slogan is what makes maintainers under-build freshness — Cynic).
+- **Competitor lens (for the roadmap, not this plan):** pull configurator analytics ("combos tried-but-couldn't-buy") forward — the one revenue-language deal-winner, currently shelved; make the WCAG claim credible (third-party audit OR narrow to "agency-delivered").
+
+---
+
 # Session Handoff — 2026-06-03 (SGS THEME thread, session 8 — theme tasks A/B + button re-clone + Spec 27 master + adversarial-council skill)
 
 > Theme/blocks thread. Cloning pipeline -> `.claude/handoff.md`. Next -> `.claude/next-session-prompt-theme.md`. A parallel CLONING session was live on `testimonial-slider` + `theme-snapshot.json` for most of this session; shared-doc bookkeeping was deferred to avoid the concurrent-commit race (see Next Priorities).
