@@ -17,7 +17,8 @@
 	"icon": "welcome-view-site",
 	"supports": {
 		"sgs": {
-			"containerKind": "section"
+			"containerKind": "section",
+			"containerMirror": false
 		},
 		"align": false,
 		"anchor": true,

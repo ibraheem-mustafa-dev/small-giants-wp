@@ -1,5 +1,5 @@
 """
-sgs-update-v2.py — 10-stage holistic refresh of the SGS framework knowledge base.
+sgs-update-v2.py — 11-stage holistic refresh of the SGS framework knowledge base.
 
 Phase 4 of the architecture programme. Co-exists with the legacy 3-script setup
 (update-db.py + generate-block-reference.py + sgs-update-uimax-sync.py) until
@@ -26,11 +26,15 @@ Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
                                   (ghost rows Stage 1 never removes — always deleted regardless
                                   of prune_mode; block_attributes has no is_stale column)
                               Operates on both .agents + .claude DBs.
+ 11. container_mirror_report — run sync-container-wrapping-blocks.py --write-block-json
+                               (report-only; NO --apply — operator-gated). Surfaces which
+                               KIND-scoped sgs/container attrs each composite is missing
+                               so a version-bump is visible before any operator-gated --apply.
 
 Usage:
     python sgs-update-v2.py [--stage N] [--dry-run] [--wp-version X.Y] [--prune-mode MODE]
 
-    --stage N               Run only stage N (1-10; stage 3 is retired). Omit to run all.
+    --stage N               Run only stage N (1-11; stage 3 is retired). Omit to run all.
     --dry-run               Compute row counts without writing to DB or files
     --wp-version X.Y        WP version tag for Stage 2 (default: 7.0)
     --prune-mode MODE       Stage 10 only: 'aggressive' (default) DELETEs stale support rows.
@@ -3163,6 +3167,65 @@ def stage_10_prune_orphans(
 
 
 # ---------------------------------------------------------------------------
+# Stage 11 — Container-wrapper attribute mirror (WS-4, D160)
+# ---------------------------------------------------------------------------
+# Runs sync-container-wrapping-blocks.py in --write-block-json mode (report-only
+# by default — NO --apply flag so no block.json files are written).  A container
+# version-bump surfaces the diff for operator review; --apply is gated behind an
+# explicit operator command.
+#
+# The script is invoked as a subprocess (same pattern as Stage 7 / Stage 8) so
+# it runs in its own Python process and cannot import-side-effect this module.
+
+
+def stage_11_container_mirror_report(dry_run: bool = False) -> dict:
+    """Stage 11 — container-wrapper attribute mirror diff (report-only).
+
+    Calls sync-container-wrapping-blocks.py --write-block-json (no --apply).
+    dry_run=True: just prints what Stage 11 would invoke and returns stub output.
+    """
+    sync_script = (
+        Path(__file__).resolve().parent / "sync-container-wrapping-blocks.py"
+    )
+    if not sync_script.exists():
+        msg = f"sync-container-wrapping-blocks.py not found at {sync_script}"
+        print(f"Stage 11 ERROR: {msg}")
+        return {"error": msg, "dry_run": dry_run}
+
+    if dry_run:
+        print(
+            f"Stage 11 [dry-run]: would run:\n"
+            f"  python {sync_script} --write-block-json\n"
+            "(no --apply — operator-gated; this stage only surfaces the diff)"
+        )
+        return {"status": "dry-run", "dry_run": True}
+
+    cmd = [sys.executable, str(sync_script), "--write-block-json"]
+    print(f"Stage 11: running {' '.join(cmd)}")
+    try:
+        result = subprocess.run(
+            cmd,
+            capture_output=False,   # let stdout/stderr flow through to the terminal
+            text=True,
+            timeout=120,
+        )
+        if result.returncode != 0:
+            msg = f"sync-container-wrapping-blocks.py exited {result.returncode}"
+            print(f"Stage 11 WARN: {msg}")
+            return {"status": "warn", "returncode": result.returncode, "dry_run": False}
+        print("Stage 11: container-wrapper mirror diff complete.")
+        return {"status": "ok", "dry_run": False}
+    except subprocess.TimeoutExpired:
+        msg = "sync-container-wrapping-blocks.py timed out after 120 s"
+        print(f"Stage 11 ERROR: {msg}")
+        return {"error": msg, "dry_run": False}
+    except Exception as exc:
+        msg = str(exc)
+        print(f"Stage 11 ERROR: {msg}")
+        return {"error": msg, "dry_run": False}
+
+
+# ---------------------------------------------------------------------------
 # Main dispatcher
 # ---------------------------------------------------------------------------
 
@@ -3172,6 +3235,7 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
     Stage 3 is retired — its lambda prints the tombstone line and returns
     {"status": "retired", "dry_run": args.dry_run}.
     Stage 10 is the prune-orphans stage (controlled by --prune-mode).
+    Stage 11 is the container-wrapper attribute mirror diff (WS-4, D160).
     """
     prune_mode = getattr(args, "prune_mode", _PRUNE_MODE_AGGRESSIVE)
     return {
@@ -3193,20 +3257,21 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
         8: lambda: stage_8_uimax_mirror(dry_run=args.dry_run),
         9: lambda: stage_9_drift_gate(conn, dry_run=args.dry_run),
         10: lambda: stage_10_prune_orphans(conn, dry_run=args.dry_run, prune_mode=prune_mode),
+        11: lambda: stage_11_container_mirror_report(dry_run=args.dry_run),
     }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="SGS framework knowledge base — 10-stage holistic refresh",
+        description="SGS framework knowledge base — 11-stage holistic refresh",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "--stage",
         type=int,
-        choices=range(1, 11),
+        choices=range(1, 12),
         metavar="N",
-        help="Run a single stage only (1-10). Omit to run all stages.",
+        help="Run a single stage only (1-11). Omit to run all stages.",
     )
     parser.add_argument(
         "--dry-run",
@@ -3243,7 +3308,7 @@ def main() -> None:
     conn = open_db()
     ensure_schema_metadata(conn)
 
-    stages_to_run = [args.stage] if args.stage else list(range(1, 11))
+    stages_to_run = [args.stage] if args.stage else list(range(1, 12))
     dispatch = _build_stage_dispatch(conn, args)
 
     results: dict[int, dict] = {}

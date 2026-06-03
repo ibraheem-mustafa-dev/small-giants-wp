@@ -62,9 +62,11 @@ R-22-9 (universal mechanism): one diff-emitter walks every container-bearing
 block. No per-block branches.
 
 Usage:
-  python sync-container-wrapping-blocks.py           # dry-run (prints roster, no DB writes)
-  python sync-container-wrapping-blocks.py --apply   # write wraps_block + container_kind to DB
-  python sync-container-wrapping-blocks.py --target-block sgs/hero  # single block
+  python sync-container-wrapping-blocks.py                           # dry-run (prints roster, no DB writes, no block.json writes)
+  python sync-container-wrapping-blocks.py --apply                   # write wraps_block + container_kind to DB
+  python sync-container-wrapping-blocks.py --write-block-json        # dry-run of block.json attribute mirror (reports what would change)
+  python sync-container-wrapping-blocks.py --write-block-json --apply  # mirror KIND-scoped attrs into each composite block.json
+  python sync-container-wrapping-blocks.py --target-block sgs/hero   # limit detection to one block
 """
 from __future__ import annotations
 
@@ -609,6 +611,215 @@ def render_diff_markdown(
 
 
 # ---------------------------------------------------------------------------
+# Block.json mirror writer (WS-4 propagation, D160)
+# ---------------------------------------------------------------------------
+
+def mirror_attrs_to_block_json(
+    container_bearing: List[Tuple[str, str, List[str]]],
+    container_attrs_def: Dict[str, Any],
+    container_non_grid: List[str],
+    apply: bool = False,
+) -> List[Dict[str, Any]]:
+    """Mirror KIND-scoped sgs/container attrs into each composite block.json.
+
+    Rules (WS-4 spec):
+    - Only blocks with wraps_block='sgs/container' qualification (i.e. in
+      container_bearing) are candidates.
+    - Blocks with supports.sgs.containerMirror === false are SKIPPED (C6).
+    - Per KIND, the attr subset is derived from KIND_ATTR_SCOPE (reused, no
+      new hardcoded dict):
+        section → all container attrs (KIND_ATTR_SCOPE["section"] == empty set
+                  means no filter — full surface)
+        layout  → KIND_ATTR_SCOPE["layout"]
+        content → KIND_ATTR_SCOPE["content"]
+    - An attr that is ALREADY present in the composite's block.json is NOT
+      overwritten (composite's own definition wins — log as ALTERED/kept).
+    - Idempotent: running twice produces no further changes.
+    - apply=False (dry-run): reports per-composite plan, writes nothing.
+    - apply=True: writes block.json in-place (validate JSON before write;
+      fail LOUD if validation fails — never partial write).
+
+    Returns a list of per-block result dicts, one per composite:
+      {
+        "slug": str,
+        "kind": str,
+        "skipped": bool,          # True if containerMirror:false
+        "skip_reason": str | None,
+        "would_add": List[str],   # attrs that would be / were added
+        "already_present": List[str],  # scoped attrs already in composite (kept)
+        "written": bool,          # True only if apply=True and file was written
+        "error": str | None,
+      }
+    """
+    results: List[Dict[str, Any]] = []
+
+    for slug, kind, _reasons in container_bearing:
+        entry: Dict[str, Any] = {
+            "slug": slug,
+            "kind": kind,
+            "skipped": False,
+            "skip_reason": None,
+            "would_add": [],
+            "already_present": [],
+            "written": False,
+            "error": None,
+        }
+
+        # Load block.json
+        bj = load_block_json(slug)
+        if not bj:
+            entry["error"] = "Could not load block.json"
+            results.append(entry)
+            continue
+
+        # Check containerMirror exclusion (C6)
+        supports = bj.get("supports", {}) or {}
+        sgs_supports = supports.get("sgs", {}) or {}
+        if sgs_supports.get("containerMirror") is False:
+            entry["skipped"] = True
+            entry["skip_reason"] = "containerMirror:false"
+            results.append(entry)
+            continue
+
+        # Compute KIND-scoped attr subset from container
+        scoped = scoped_container_attrs(container_non_grid, kind, container_attrs_def)
+
+        block_attrs_def: Dict[str, Any] = bj.get("attributes", {}) or {}
+
+        would_add: List[str] = []
+        already_present: List[str] = []
+        for attr in scoped:
+            if attr in block_attrs_def:
+                already_present.append(attr)
+            else:
+                would_add.append(attr)
+
+        entry["would_add"] = sorted(would_add)
+        entry["already_present"] = sorted(already_present)
+
+        if not apply:
+            # Dry-run: report only, no file write
+            results.append(entry)
+            continue
+
+        if not would_add:
+            # Nothing to add — already fully mirrored for this KIND scope
+            entry["written"] = False
+            results.append(entry)
+            continue
+
+        # Build updated attributes dict: existing attrs first (composite wins),
+        # then append the missing container attrs in sorted order.
+        updated_attrs = dict(block_attrs_def)  # shallow copy preserves composite defs
+        for attr in sorted(would_add):
+            updated_attrs[attr] = container_attrs_def[attr]
+
+        # Build updated block.json with the new attributes
+        updated_bj = dict(bj)
+        updated_bj["attributes"] = updated_attrs
+
+        # Validate the resulting JSON before writing (fail LOUD, never partial)
+        try:
+            serialised = json.dumps(updated_bj, indent="\t", ensure_ascii=False)
+            # Round-trip validation: parse back and verify attr count
+            parsed_back = json.loads(serialised)
+            expected_attr_count = len(updated_attrs)
+            actual_attr_count = len(parsed_back.get("attributes", {}))
+            if expected_attr_count != actual_attr_count:
+                raise ValueError(
+                    f"Round-trip attr count mismatch: expected {expected_attr_count}, "
+                    f"got {actual_attr_count}"
+                )
+        except Exception as exc:
+            entry["error"] = f"JSON validation failed before write: {exc}"
+            results.append(entry)
+            continue
+
+        # Write to disk
+        name = slug.split("/", 1)[1]
+        block_json_path = SRC_BLOCKS / name / "block.json"
+        try:
+            with open(block_json_path, "w", encoding="utf-8", newline="\n") as fh:
+                fh.write(serialised)
+                if not serialised.endswith("\n"):
+                    fh.write("\n")
+            entry["written"] = True
+        except Exception as exc:
+            entry["error"] = f"File write failed: {exc}"
+
+        results.append(entry)
+
+    return results
+
+
+def print_mirror_report(
+    mirror_results: List[Dict[str, Any]],
+    apply: bool,
+) -> None:
+    """Print a human-readable summary of the block.json mirror operation."""
+    mode_label = "APPLY" if apply else "DRY-RUN"
+    print()
+    print("=" * 70)
+    print(f"BLOCK.JSON ATTR MIRROR — {mode_label}")
+    print("=" * 70)
+
+    total_would_add = 0
+    total_written = 0
+    total_skipped = 0
+    total_errors = 0
+
+    for r in mirror_results:
+        slug = r["slug"]
+        if r["skipped"]:
+            print(f"  SKIPPED  {slug}  ({r['skip_reason']})")
+            total_skipped += 1
+            continue
+        if r["error"]:
+            print(f"  ERROR    {slug}  — {r['error']}")
+            total_errors += 1
+            continue
+
+        add_count = len(r["would_add"])
+        keep_count = len(r["already_present"])
+        total_would_add += add_count
+
+        if apply and r["written"]:
+            total_written += 1
+            status = "WRITTEN"
+        elif apply and not r["written"] and add_count == 0:
+            status = "ALREADY-MIRRORED"
+        else:
+            status = "WOULD-ADD"
+
+        verb = "added" if (apply and r["written"]) else "would add"
+        print(
+            f"  {status:<18} {slug:<40}  KIND={r['kind']}  "
+            f"{verb}={add_count}  kept={keep_count}"
+        )
+        if r["would_add"]:
+            # Show the attrs being added (truncated for readability)
+            attr_preview = ", ".join(r["would_add"][:8])
+            if len(r["would_add"]) > 8:
+                attr_preview += f" … (+{len(r['would_add']) - 8} more)"
+            print(f"    attrs: {attr_preview}")
+
+    print()
+    if apply:
+        print(
+            f"MIRROR SUMMARY: {total_written} block.json(s) written  "
+            f"| {total_skipped} skipped  | {total_errors} errors"
+        )
+    else:
+        print(
+            f"MIRROR DRY-RUN: {total_would_add} total attr additions across "
+            f"{sum(1 for r in mirror_results if not r['skipped'] and not r['error'] and r['would_add'])} block(s)  "
+            f"| {total_skipped} skipped  | {total_errors} errors"
+        )
+        print("  Re-run with --write-block-json --apply to write.")
+    print()
+
+
+# ---------------------------------------------------------------------------
 # DB migration helper (Fix 1a)
 # ---------------------------------------------------------------------------
 
@@ -643,7 +854,15 @@ def main() -> int:
     )
     ap.add_argument(
         "--apply", action="store_true",
-        help="Write wraps_block and container_kind to DB. DEFAULT is dry-run (prints roster, no DB writes).",
+        help="Write wraps_block and container_kind to DB (DB mode). "
+             "When combined with --write-block-json, also writes block.json files.",
+    )
+    ap.add_argument(
+        "--write-block-json", action="store_true",
+        help="Enable the block.json attr mirror writer. "
+             "Dry-run by default — reports what would change without writing. "
+             "Combine with --apply to actually write block.json files. "
+             "Operator-gated: /sgs-update runs this WITHOUT --apply (report only).",
     )
     ap.add_argument(
         "--target-block", default=None,
@@ -660,6 +879,11 @@ def main() -> int:
         print("MODE: DRY-RUN (no DB writes — pass --apply to write)")
     else:
         print("MODE: APPLY (will write wraps_block + container_kind to DB)")
+    if getattr(args, "write_block_json", False):
+        write_apply = args.apply
+        print(
+            f"BLOCK.JSON WRITER: {'APPLY — will write block.json files' if write_apply else 'DRY-RUN — report only (pass --apply to write)'}"
+        )
     print()
 
     # 1. Load sgs/container's attributes (block.json source)
@@ -763,8 +987,8 @@ def main() -> int:
     EXPECTED = {
         "section": {"sgs/cta-section", "sgs/hero", "sgs/modal", "sgs/trust-bar"},
         "layout": {
-            "sgs/card-grid", "sgs/feature-grid", "sgs/gallery", "sgs/multi-button",
-            "sgs/post-grid", "sgs/pricing-table", "sgs/trustpilot-reviews",
+            "sgs/card-grid", "sgs/content-collection", "sgs/feature-grid", "sgs/gallery",
+            "sgs/multi-button", "sgs/post-grid", "sgs/pricing-table", "sgs/trustpilot-reviews",
             "sgs/google-reviews", "sgs/form-field-tiles", "sgs/testimonial-slider",
             "sgs/tabs", "sgs/accordion", "sgs/form",
         },
@@ -793,7 +1017,7 @@ def main() -> int:
                 print(f"  EXTRA (detected but not expected): {sorted(extra_in_got)}")
 
     if all_match:
-        print("[VALIDATION PASS] Roster matches D150 ground truth (28 blocks, correct KINDs)")
+        print("[VALIDATION PASS] Roster matches D150+D160 ground truth (29 blocks, correct KINDs)")
     else:
         print()
         print("[VALIDATION FAIL] Roster does NOT match ground truth — fix detection before --apply")
@@ -942,6 +1166,29 @@ def main() -> int:
         print(f"DRY-RUN: {len(container_bearing)} rows would be written (wraps_block + container_kind) — re-run with --apply to write")
 
     conn.close()
+
+    # 8. Block.json attr mirror writer (WS-4, D160)
+    # Runs whenever --write-block-json is passed, regardless of --apply.
+    # --apply controls whether files are actually written; omitting it = report only.
+    if getattr(args, "write_block_json", False):
+        if not all_match:
+            print(
+                "\n[BLOCK.JSON WRITER BLOCKED] Roster validation failed — fix detection before mirroring attrs.",
+                file=sys.stderr,
+            )
+            return 1
+        write_apply = args.apply
+        mirror_results = mirror_attrs_to_block_json(
+            container_bearing,
+            container_attrs_def,
+            container_non_grid,
+            apply=write_apply,
+        )
+        print_mirror_report(mirror_results, apply=write_apply)
+        # Return non-zero if any block had an error
+        if any(r["error"] for r in mirror_results):
+            return 1
+
     return 0
 
 
