@@ -335,16 +335,140 @@ def scoped_container_attrs(container_non_grid: List[str], kind: str, container_a
     return [a for a in container_non_grid if a in scope]
 
 
+def _spec_fields(spec: Any) -> Tuple[str, Any, Any]:
+    """Extract (type, default, enum) from an attr spec dict. Safe on non-dict."""
+    if not isinstance(spec, dict):
+        return ("?", _SENTINEL, None)
+    t = spec.get("type", "?")
+    default = spec.get("default", _SENTINEL)
+    enum = spec.get("enum", None)
+    return (t, default, enum)
+
+
+# Sentinel for "no default defined" (distinct from explicit None / 0 / "" defaults).
+_SENTINEL = object()
+
+
+def detect_altered_attrs(
+    block_attrs_def: Dict[str, Any],
+    container_attrs_def: Dict[str, Any],
+    scoped_attrs: List[str],
+) -> List[Dict[str, Any]]:
+    """Return attrs present in BOTH the composite and container (within KIND scope)
+    whose spec (type / default / enum) differs.
+
+    Each entry is a dict with keys:
+      attr, c_type, c_default, c_enum, b_type, b_default, b_enum, differs_in
+    """
+    altered: List[Dict[str, Any]] = []
+    for attr in scoped_attrs:
+        if attr not in block_attrs_def:
+            continue  # missing, not altered
+        c_spec = container_attrs_def.get(attr, {})
+        b_spec = block_attrs_def.get(attr, {})
+        c_type, c_default, c_enum = _spec_fields(c_spec)
+        b_type, b_default, b_enum = _spec_fields(b_spec)
+
+        differs_in: List[str] = []
+        if c_type != b_type:
+            differs_in.append("type")
+        # Compare defaults carefully — treat _SENTINEL as "not defined".
+        c_def_val = None if c_default is _SENTINEL else c_default
+        b_def_val = None if b_default is _SENTINEL else b_default
+        c_has_default = c_default is not _SENTINEL
+        b_has_default = b_default is not _SENTINEL
+        if c_has_default != b_has_default or c_def_val != b_def_val:
+            differs_in.append("default")
+        # Normalise enum to sorted tuple for stable comparison.
+        c_enum_norm = tuple(sorted(c_enum)) if c_enum else None
+        b_enum_norm = tuple(sorted(b_enum)) if b_enum else None
+        if c_enum_norm != b_enum_norm:
+            differs_in.append("enum")
+
+        if differs_in:
+            altered.append({
+                "attr": attr,
+                "c_type": c_type,
+                "c_default": c_def_val,
+                "c_enum": c_enum,
+                "b_type": b_type,
+                "b_default": b_def_val,
+                "b_enum": b_enum,
+                "differs_in": differs_in,
+            })
+    return altered
+
+
+# All attr names that appear in any KIND_ATTR_SCOPE value — used to classify extras.
+_ALL_SCOPED_NAMES: Set[str] = set().union(*KIND_ATTR_SCOPE.values())
+
+
+def _is_wrapper_namespace(attr_name: str) -> bool:
+    """Return True if an extra attr looks like a wrapper/layout concern.
+
+    Heuristic (deterministic — no fuzzy matching):
+      - Name matches LAYOUT_ATTR_RE or SECTION_ATTR_RE, OR
+      - Name appears in any KIND_ATTR_SCOPE value (width/spacing/grid family), OR
+      - Name matches KNOWN_NAMING_DRIFTS (old alias for a container wrapper attr).
+    """
+    if LAYOUT_ATTR_RE.match(attr_name):
+        return True
+    if SECTION_ATTR_RE.match(attr_name):
+        return True
+    if attr_name in _ALL_SCOPED_NAMES:
+        return True
+    if attr_name in KNOWN_NAMING_DRIFTS:
+        return True
+    return False
+
+
+def detect_added_attrs(
+    block_attrs_def: Dict[str, Any],
+    container_attrs_def: Dict[str, Any],
+) -> Tuple[List[str], List[str]]:
+    """Return (wrapper_extras, interior_attrs) — attrs the composite HAS that container does NOT.
+
+    wrapper_extras — look like wrapper/layout concerns → likely drift to reconcile.
+    interior_attrs — everything else → composite's own content, legitimately keep.
+    """
+    extras = [a for a in block_attrs_def if a not in container_attrs_def]
+    wrapper_extras: List[str] = []
+    interior_attrs: List[str] = []
+    for attr in extras:
+        if _is_wrapper_namespace(attr):
+            wrapper_extras.append(attr)
+        else:
+            interior_attrs.append(attr)
+    return (sorted(wrapper_extras), sorted(interior_attrs))
+
+
+def _fmt_spec(t: str, default: Any, enum: Any) -> str:
+    """Format a spec tuple as a compact Markdown-safe string."""
+    parts = [f"type={t}"]
+    if default is not None:
+        parts.append(f"default={json.dumps(default)}")
+    if enum:
+        enum_str = json.dumps(enum)
+        if len(enum_str) > 50:
+            enum_str = enum_str[:47] + "..."
+        parts.append(f"enum={enum_str}")
+    return " · ".join(parts)
+
+
 def render_diff_markdown(
     block_slug: str,
     kind: str,
     detection_reasons: List[str],
     block_attrs: List[str],
+    block_attrs_def: Dict[str, Any],
     scoped_attrs: List[str],
     drifts: List[Tuple[str, str]],
     container_attrs_def: Dict[str, Any],
 ) -> str:
     missing = [a for a in scoped_attrs if a not in block_attrs]
+    altered = detect_altered_attrs(block_attrs_def, container_attrs_def, scoped_attrs)
+    wrapper_extras, interior_attrs = detect_added_attrs(block_attrs_def, container_attrs_def)
+
     lines: List[str] = []
     lines.append(f"# Container inheritance diff — `{block_slug}`")
     lines.append("")
@@ -355,6 +479,10 @@ def render_diff_markdown(
     lines.append("")
     lines.append(f"Detection signals: {', '.join(detection_reasons)}")
     lines.append("")
+
+    # ------------------------------------------------------------------
+    # Section 1: Missing attributes (KIND-scoped) — unchanged
+    # ------------------------------------------------------------------
     lines.append("## Missing attributes (KIND-scoped)")
     lines.append("")
     if not missing:
@@ -374,6 +502,10 @@ def render_diff_markdown(
                 d_str = d_str[:37] + "..."
             lines.append(f"| `{a}` | `{t}` | `{d_str}` |")
     lines.append("")
+
+    # ------------------------------------------------------------------
+    # Section 2: Naming drift candidates — unchanged
+    # ------------------------------------------------------------------
     lines.append("## Naming drift candidates")
     lines.append("")
     if not drifts:
@@ -384,6 +516,89 @@ def render_diff_markdown(
         for ba, ca in drifts:
             lines.append(f"| `{ba}` | `{ca}` |")
     lines.append("")
+
+    # ------------------------------------------------------------------
+    # Section 3 (NEW): Altered / drifted attributes
+    # ------------------------------------------------------------------
+    lines.append("## Altered / drifted attributes")
+    lines.append("")
+    lines.append(
+        "Attributes present in BOTH this block and `sgs/container` (within KIND scope) "
+        "whose spec (type / default / enum) has drifted."
+    )
+    lines.append("")
+    if not altered:
+        lines.append("None. All shared KIND-scoped attributes match `sgs/container` spec exactly.")
+    else:
+        lines.append(f"{len(altered)} shared attribute(s) have diverged from `sgs/container`.")
+        lines.append("")
+        lines.append("| Attribute | Container spec | This block spec | Differs in |")
+        lines.append("|---|---|---|---|")
+        for row in altered:
+            c_str = _fmt_spec(row["c_type"], row["c_default"], row["c_enum"])
+            b_str = _fmt_spec(row["b_type"], row["b_default"], row["b_enum"])
+            diffs = ", ".join(row["differs_in"])
+            lines.append(f"| `{row['attr']}` | `{c_str}` | `{b_str}` | {diffs} |")
+    lines.append("")
+
+    # ------------------------------------------------------------------
+    # Section 4 (NEW): Added attributes
+    # ------------------------------------------------------------------
+    lines.append("## Added attributes")
+    lines.append("")
+    lines.append(
+        "Attributes this block defines that `sgs/container` does NOT. "
+        "Split by wrapper-namespace (potential drift → reconcile) vs interior content (keep)."
+    )
+    lines.append("")
+
+    lines.append("### Wrapper-namespace extras (reconcile)")
+    lines.append("")
+    lines.append(
+        "These names match layout/section/width/spacing patterns — they may be drift from "
+        "an older version of `sgs/container` or a parallel implementation that should be merged."
+    )
+    lines.append("")
+    if not wrapper_extras:
+        lines.append("None.")
+    else:
+        lines.append("| Attribute | Type | Default |")
+        lines.append("|---|---|---|")
+        for attr in wrapper_extras:
+            spec = block_attrs_def.get(attr, {}) or {}
+            t = spec.get("type", "?") if isinstance(spec, dict) else "?"
+            default = spec.get("default", "") if isinstance(spec, dict) else ""
+            d_str = json.dumps(default) if default not in ("", None) else ""
+            if len(d_str) > 40:
+                d_str = d_str[:37] + "..."
+            lines.append(f"| `{attr}` | `{t}` | `{d_str}` |")
+    lines.append("")
+
+    lines.append("### Interior attrs (keep)")
+    lines.append("")
+    lines.append(
+        "These are this block's own content/config attributes — legitimately absent from "
+        "`sgs/container`. No action needed."
+    )
+    lines.append("")
+    if not interior_attrs:
+        lines.append("None.")
+    else:
+        lines.append("| Attribute | Type | Default |")
+        lines.append("|---|---|---|")
+        for attr in interior_attrs:
+            spec = block_attrs_def.get(attr, {}) or {}
+            t = spec.get("type", "?") if isinstance(spec, dict) else "?"
+            default = spec.get("default", "") if isinstance(spec, dict) else ""
+            d_str = json.dumps(default) if default not in ("", None) else ""
+            if len(d_str) > 40:
+                d_str = d_str[:37] + "..."
+            lines.append(f"| `{attr}` | `{t}` | `{d_str}` |")
+    lines.append("")
+
+    # ------------------------------------------------------------------
+    # Action gate — unchanged
+    # ------------------------------------------------------------------
     lines.append("## Action gate")
     lines.append("")
     lines.append("This file is informational. No `block.json` is mutated by the")
@@ -599,6 +814,11 @@ def main() -> int:
             pass
 
     diff_files_written: List[str] = []
+
+    # Collect per-block divergence counts for the INDEX roll-up.
+    # Each entry: (slug, kind, missing_count, altered_count, wrapper_extras_count)
+    rollup_rows: List[Tuple[str, str, int, int, int]] = []
+
     for slug, kind, reasons in container_bearing:
         bj = load_block_json(slug)
         if not bj:
@@ -608,7 +828,15 @@ def main() -> int:
         scoped = scoped_container_attrs(container_non_grid, kind, container_attrs_def)
         drifts = detect_naming_drifts(block_attrs, container_attrs)
 
-        md = render_diff_markdown(slug, kind, reasons, block_attrs, scoped, drifts, container_attrs_def)
+        # Compute counts for the roll-up before rendering.
+        missing_count = sum(1 for a in scoped if a not in attrs)
+        altered = detect_altered_attrs(attrs, container_attrs_def, scoped)
+        wrapper_extras, _ = detect_added_attrs(attrs, container_attrs_def)
+        rollup_rows.append((slug, kind, missing_count, len(altered), len(wrapper_extras)))
+
+        md = render_diff_markdown(
+            slug, kind, reasons, block_attrs, attrs, scoped, drifts, container_attrs_def
+        )
         fname = slug.replace("/", "__") + ".diff.md"
         fpath = out_dir / fname
         try:
@@ -618,12 +846,34 @@ def main() -> int:
         except Exception as e:
             print(f"  [warn] failed to write {fpath}: {e}", file=sys.stderr)
 
+    # Sort roll-up by total divergence descending (most-drifted first).
+    rollup_rows.sort(key=lambda r: -(r[2] + r[3] + r[4]))
+
     # Emit index
     index_path = out_dir / "INDEX.md"
     with open(index_path, "w", encoding="utf-8") as f:
         f.write(f"# Container inheritance sync — {today}\n\n")
         f.write(f"Total container-bearing blocks: **{len(container_bearing)}**  \n")
         f.write(f"section={counts['section']} layout={counts['layout']} content={counts['content']}  \n\n")
+
+        # --- Divergence roll-up (headline deliverable) ---
+        f.write("## Divergence roll-up (sorted by total drift)\n\n")
+        f.write(
+            "| Block | KIND | Missing | Altered | Wrapper-extras | **Total** |\n"
+            "|---|---|---|---|---|---|\n"
+        )
+        for slug, kind, miss, alt, wext in rollup_rows:
+            total = miss + alt + wext
+            f.write(f"| `{slug}` | {kind} | {miss} | {alt} | {wext} | **{total}** |\n")
+        f.write("\n")
+        f.write(
+            "_Missing_ = KIND-scoped container attrs absent from this block.  \n"
+            "_Altered_ = shared KIND-scoped attrs whose type/default/enum has drifted.  \n"
+            "_Wrapper-extras_ = attrs the composite adds that match layout/section/width patterns "
+            "(likely old drift to reconcile).  \n\n"
+        )
+
+        # --- Roster (existing) ---
         f.write("## Roster\n\n")
         cur_kind2 = None
         for slug, kind, reasons in container_bearing:

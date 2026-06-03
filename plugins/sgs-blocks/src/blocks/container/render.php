@@ -35,6 +35,46 @@ if ( ! function_exists( 'sgs_sanitize_grid_template' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_container_gap_value' ) ) {
+	/**
+	 * Resolve a gap attribute value to a safe CSS declaration fragment (the part after "gap:").
+	 *
+	 * Slug vs raw-length detection rule:
+	 *   - A BARE SLUG is a value whose characters are ALL digits (e.g. "40", "80").
+	 *     WP spacing-preset slugs are numeric keys. These are wrapped in
+	 *     var(--wp--preset--spacing--SLUG) for back-compat with existing posts.
+	 *   - A RAW CSS LENGTH contains at least one unit character (a–z) or a percent sign
+	 *     (e.g. "16px", "1.5rem", "2vw", "50%"). These are emitted directly.
+	 *     Sanitised: only [0-9], [.], unit letters [a-z], and [%] are kept; everything
+	 *     else (semicolons, braces, quotes) is stripped — no injection path.
+	 *
+	 * @param string $gap Raw gap attribute value from block attributes.
+	 * @return string CSS value fragment safe to emit after "gap:", or empty string on failure.
+	 */
+	function sgs_container_gap_value( $gap ) {
+		$gap = (string) $gap;
+		if ( '' === $gap ) {
+			return '';
+		}
+
+		// Bare slug: digits only → wrap in WP spacing-preset var().
+		if ( preg_match( '/^\d+$/', $gap ) ) {
+			return 'var(--wp--preset--spacing--' . esc_attr( $gap ) . ')';
+		}
+
+		// Raw CSS length: contains at least one letter or percent (i.e. a unit).
+		// Sanitise — keep only characters that can appear in a CSS length value.
+		// Allowlist: digits, dot, a–z (covers px/rem/em/vw/vh/ch/ex etc.), percent.
+		// Rejects: semicolons, braces, parentheses, quotes, slashes, angle brackets.
+		$sanitised = preg_replace( '/[^0-9a-z.%]/', '', strtolower( $gap ) );
+		if ( '' === $sanitised ) {
+			return '';
+		}
+
+		return $sanitised;
+	}
+}
+
 $layout               = $attributes['layout'] ?? '';
 $columns              = $attributes['columns'] ?? 2;
 $columns_mobile       = $attributes['columnsMobile'] ?? 1;
@@ -149,9 +189,10 @@ if ( ! in_array( $align_content, $allowed_align_content, true ) ) {
 // Gap is emitted ONLY when explicitly set — an unset gap imposes nothing, so a
 // pipeline-emitted or bare container reproduces the source layout's own gap
 // rather than over-painting the container's preset (Spec 23 neutral-default).
+// sgs_container_gap_value() handles slug→var() vs raw-length detection (A4).
 $styles   = array();
 if ( '' !== $gap ) {
-	$styles[] = 'gap:var(--wp--preset--spacing--' . esc_attr( $gap ) . ')';
+	$styles[] = 'gap:' . sgs_container_gap_value( $gap );
 }
 
 if ( $min_height ) {
@@ -294,6 +335,10 @@ if ( 'wide' === $width_mode ) {
 	$classes[] = 'alignfull';
 } elseif ( 'custom' === $width_mode && $custom_width_value > 0 ) {
 	$styles[] = 'max-width:' . $custom_width_value . $custom_width_unit;
+	// A3: Centre the custom-width container horizontally (mirrors the __inner wrapper
+	// which also uses margin-inline:auto). Only fires on this path — wide/full/default
+	// are handled by WP-native alignment classes and the theme's layout CSS.
+	$styles[] = 'margin-inline:auto';
 }
 
 // 2026-05-17 — honour style.dimensions.maxWidth lifted from mockup CSS by
@@ -462,10 +507,10 @@ if ( $needs_uid ) {
 if ( $has_responsive_attr ) {
 
 	if ( $gap_tablet ) {
-		$responsive_css .= '@media (max-width:1023px){.' . $uid . '{gap:var(--wp--preset--spacing--' . esc_attr( $gap_tablet ) . ')}}';
+		$responsive_css .= '@media (max-width:1023px){.' . $uid . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';
 	}
 	if ( $gap_mobile ) {
-		$responsive_css .= '@media (max-width:599px){.' . $uid . '{gap:var(--wp--preset--spacing--' . esc_attr( $gap_mobile ) . ')}}';
+		$responsive_css .= '@media (max-width:599px){.' . $uid . '{gap:' . sgs_container_gap_value( $gap_mobile ) . '}}';
 	}
 
 	// Per-viewport widthMode overrides — map enum to a max-width literal.
