@@ -16,7 +16,7 @@
 | Parking | `parking.md` | OPEN deferred work, 6 taxonomy buckets, `**Status:**` field |
 | Last session | `handoff.md` | Most recent session summary |
 | Next session | `next-session-prompt.md` | Pre-written kick-off |
-| Specs | `specs/` | Numbered specs (00, 02, 11, 17-22, 24, 25, 26 + common-wp-styling-errors; 16 archived, retired by 22). 26 = global styles + per-client theming (D158, build deferred) |
+| Specs | `specs/` | Numbered specs (00, 02, 11, 17-22, **27** (master), 26 + common-wp-styling-errors; 16 archived by 22; **24+25 SUPERSEDED by 27** 2026-06-03 D161). 27 = SGS Product & WooCommerce Layer master (CPT/collection/cart/dual-mode card/option-picker + the variable-product configurator chapter; absorbed 24+25; MVP-first, build deferred until cloning closes). 26 = global styles + per-client theming (D158, build deferred) |
 | Active plans | `plans/` | `/strategic-plan` + `/phase-planner` outputs |
 | Strategy docs | `plans/strategy/` | Cross-cutting strategy docs |
 | Archived plans | `plans/archive/` | Completed / superseded / legacy plans |
