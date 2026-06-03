@@ -220,7 +220,9 @@ $wrapper_attributes = get_block_wrapper_attributes( $bound_args );
 			class="product-card-img"
 			src="<?php echo esc_url( $data['image_url'] ); ?>"
 			alt="<?php echo esc_attr( $data['image_alt'] ); ?>"
-			loading="lazy"
+			loading="eager"
+			fetchpriority="high"
+			decoding="async"
 			data-wp-bind--src="context.imageSrc"
 			data-wp-bind--alt="context.imageAlt"
 		>
@@ -272,17 +274,25 @@ $wrapper_attributes = get_block_wrapper_attributes( $bound_args );
 
 		<div class="price-row" aria-live="polite">
 			<?php
-			// Static SSR price (rich HTML — currency span, variable-product
-			// ranges, sale strikethrough). NOT reactive in Phase 1: the
-			// _sgs_variation_sets data model stores no per-option price, so a
-			// pill cannot change the price yet. When per-option pricing lands
-			// (Phase 2 SKU matrix), wire a text-based reactive price via a
-			// seeded context key (NOT a JS-only `state` getter — that wipes
-			// the SSR value server-side, the bug fixed here).
-			?>
-			<div class="price">
-				<?php echo wp_kses_post( $data['price_html'] ); ?>
-			</div>
+			// Static SSR price. For a VARIABLE product we show "From <min>" — a
+			// single inviting price reads far better than a bare range
+			// (£9.99–£59.99) before a variation is chosen (the min is tax-correct
+			// via wc_get_price_to_display in the resolver). Simple products / CPT
+			// show the exact price. NOT reactive in Phase 1: when per-variation
+			// pricing lands (FR-27-A2), the selected price binds to a seeded
+			// context key (NOT a JS-only `state` getter — that wipes the SSR
+			// value server-side).
+			if ( ! empty( $data['is_variable'] ) && ! empty( $data['price_from_html'] ) ) :
+				?>
+				<div class="price price--from">
+					<span class="price-from-label"><?php esc_html_e( 'From', 'sgs-blocks' ); ?></span>
+					<span class="price-from-amount"><?php echo wp_kses_post( $data['price_from_html'] ); ?></span>
+				</div>
+			<?php else : ?>
+				<div class="price">
+					<?php echo wp_kses_post( $data['price_html'] ); ?>
+				</div>
+			<?php endif; ?>
 		</div>
 
 		<?php if ( $add_to_cart_id > 0 ) : ?>
@@ -309,7 +319,8 @@ $wrapper_attributes = get_block_wrapper_attributes( $bound_args );
 				data-wp-bind--aria-busy="context.pending"
 				role="button"
 			>
-				<?php esc_html_e( 'Add to Cart', 'sgs-blocks' ); ?>
+				<svg class="product-card__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+				<span class="product-card__cart-label"><?php esc_html_e( 'Add to Cart', 'sgs-blocks' ); ?></span>
 			</a>
 			<p
 				class="product-card__cart-status sgs-sr-only"

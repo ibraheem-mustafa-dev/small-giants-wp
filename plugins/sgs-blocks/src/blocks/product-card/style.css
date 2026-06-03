@@ -141,6 +141,36 @@
 	color: var(--wp--preset--color--text-muted, #6b5c50);
 }
 
+/*
+ * Bound-card "From <min>" price — a single inviting price (variable products)
+ * reads better than a bare range before a variation is chosen. The small
+ * uppercase "From" label sits beside the prominent serif amount. Scoped to the
+ * bound card via .price--from (typed clones use .price unchanged).
+ */
+.product-card .price--from {
+	display: flex;
+	align-items: baseline;
+	gap: 6px;
+	flex-wrap: wrap;
+}
+
+.product-card .price-from-label {
+	font-family: 'Inter', sans-serif;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--text-muted, #6b5c50);
+}
+
+.product-card .price-from-amount {
+	font-family: 'Fraunces', serif;
+	font-size: 28px;
+	font-weight: 700;
+	line-height: 1;
+	color: var(--wp--preset--color--text, #3a2e26);
+}
+
 /* Trial variant — dashed border + gradient overlay + accent tag */
 .product-card.trial-card {
 	border: 2px dashed var(--wp--preset--color--accent, #f5d050);
@@ -208,6 +238,35 @@
 	color: var(--sgs-product-card-btn-hover-text, #ffffff);
 }
 
+/*
+ * Bound-card add-to-cart — icon + label, centred. The SVG uses currentColor so
+ * it inherits the WCAG-correct button text colour. A subtle nudge on hover gives
+ * tactile affordance (transform-only, GPU-composited; disabled under reduced
+ * motion below). Scoped to .product-card__add-to-cart (typed CTAs unaffected).
+ */
+.product-card .product-card__add-to-cart {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 9px;
+}
+
+.product-card .product-card__cart-icon {
+	flex-shrink: 0;
+	width: 18px;
+	height: 18px;
+	transition: transform 0.2s ease;
+}
+
+.product-card .product-card__add-to-cart:hover .product-card__cart-icon {
+	transform: translateX(2px);
+}
+
+.product-card .product-card__add-to-cart[aria-busy="true"] {
+	opacity: 0.65;
+	pointer-events: none;
+}
+
 .product-card .btn-secondary {
 	background: transparent;
 	color: var(--wp--preset--color--primary-dark, #c56a7a);
@@ -222,7 +281,12 @@
 /* Reduced motion — respect user preference */
 @media (prefers-reduced-motion: reduce) {
 	.product-card .pill,
-	.product-card .btn {
+	.product-card .btn,
+	.product-card .product-card__cart-icon {
 		transition: none;
+	}
+
+	.product-card .product-card__add-to-cart:hover .product-card__cart-icon {
+		transform: none;
 	}
 }

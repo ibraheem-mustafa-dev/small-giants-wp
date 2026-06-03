@@ -306,18 +306,36 @@ final class Product_Bindings {
 
 				$availability = $product->get_availability();
 
+				// "From <min>" for variable products — a single inviting price reads
+				// better than a bare range (£9.99–£59.99) before a variation is
+				// chosen. Tax-correct via wc_get_price_to_display() (never own
+				// division); empty for simple products (they show the exact price).
+				$is_variable    = $product->is_type( 'variable' );
+				$price_from_html = '';
+				if ( $is_variable && \method_exists( $product, 'get_variation_price' ) ) {
+					$min_raw     = $product->get_variation_price( 'min', false );
+					$min_display = \function_exists( 'wc_get_price_to_display' )
+						? \wc_get_price_to_display( $product, array( 'price' => $min_raw ) )
+						: $min_raw;
+					if ( '' !== (string) $min_display ) {
+						$price_from_html = \wp_kses_post( \wc_price( $min_display ) );
+					}
+				}
+
 				return array(
-					'id'             => $product_id,
-					'title'          => \esc_html( $product->get_name() ),
-					'price_html'     => \wp_kses_post( $product->get_price_html() ),
-					'image_url'      => \esc_url( (string) $image_url ),
-					'image_alt'      => \esc_attr( (string) $image_alt ),
-					'short_desc'     => \wp_kses_post( $product->get_short_description() ),
-					'stock_status'   => isset( $availability['availability'] )
+					'id'              => $product_id,
+					'title'           => \esc_html( $product->get_name() ),
+					'price_html'      => \wp_kses_post( $product->get_price_html() ),
+					'is_variable'     => $is_variable,
+					'price_from_html' => $price_from_html,
+					'image_url'       => \esc_url( (string) $image_url ),
+					'image_alt'       => \esc_attr( (string) $image_alt ),
+					'short_desc'      => \wp_kses_post( $product->get_short_description() ),
+					'stock_status'    => isset( $availability['availability'] )
 						? \esc_html( $availability['availability'] )
 						: '',
-					'wc_id'          => $wc_id,
-					'variation_sets' => self::read_variation_sets( $product_id ),
+					'wc_id'           => $wc_id,
+					'variation_sets'  => self::read_variation_sets( $product_id ),
 				);
 			}
 		}
