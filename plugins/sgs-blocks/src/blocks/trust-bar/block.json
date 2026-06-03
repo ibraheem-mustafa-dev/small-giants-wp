@@ -1,153 +1,520 @@
 {
-  "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 3,
-  "name": "sgs/trust-bar",
-  "version": "0.3.0",
-  "title": "SGS Trust Bar",
-  "category": "sgs-content",
-  "description": "Horizontal strip of trust signals. Three variants: icon-in-circle (default), text-only pill badges, and image-badge (certification logos). Dual-mode: Typed (curated items[] repeater) or Bound (InnerBlocks — converter-emitted badges). Merged from sgs/certification-bar 2026-05-29 D95.",
-  "keywords": [
-    "trust",
-    "badges",
-    "icons",
-    "certifications",
-    "accreditation",
-    "halal",
-    "brc",
-    "features"
-  ],
-  "textdomain": "sgs-blocks",
-  "icon": "awards",
-  "supports": {
-    "sgs": {
-      "imageControls": true,
-      "containerKind": "section"
-    },
-    "align": [
-      "wide",
-      "full"
-    ],
-    "anchor": true,
-    "html": false,
-    "color": {
-      "background": true,
-      "text": false,
-      "gradients": false
-    },
-    "spacing": {
-      "margin": true,
-      "padding": true
-    },
-    "__experimentalBorder": {
-      "radius": true,
-      "width": false,
-      "color": false,
-      "style": false
-    }
-  },
-  "selectors": {
-    "root": ".wp-block-sgs-trust-bar",
-    "typography": ".sgs-trust-bar__label"
-  },
-  "attributes": {
-    "sourceMode": {
-      "type": "string",
-      "default": "typed",
-      "enum": [ "typed", "bound" ]
-    },
-    "badgeStyle": {
-      "type": "string",
-      "default": "icon-circle",
-      "enum": [ "icon-circle", "text-only", "image-badge" ]
-    },
-    "items": {
-      "type": "array",
-      "default": [
-        { "icon": "home",  "label": "Handmade in Birmingham", "pending": false },
-        { "icon": "check", "label": "Registered Food Business", "pending": false },
-        { "icon": "truck", "label": "Free UK Delivery Over £35", "pending": false },
-        { "icon": "star",  "label": "Loved by Breastfeeding Mums", "pending": false }
-      ]
-    },
-    "title": {
-      "type": "string",
-      "default": "",
-      "role": "content"
-    },
-    "titleColour": {
-      "type": "string",
-      "default": "text-muted"
-    },
-    "titleFontSize": {
-      "type": "string"
-    },
-    "labelColour": {
-      "type": "string",
-      "default": "text"
-    },
-    "labelFontSize": {
-      "type": "string"
-    },
-    "badgeSize": {
-      "type": "string",
-      "default": "medium",
-      "enum": [ "small", "medium", "large" ]
-    },
-    "iconCircleSize": {
-      "type": "number",
-      "default": 44
-    },
-    "iconCircleBackground": {
-      "type": "string",
-      "default": "surface"
-    },
-    "iconColour": {
-      "type": "string",
-      "default": "primary-dark"
-    },
-    "textColour": {
-      "type": "string",
-      "default": "text"
-    },
-    "columns": {
-      "type": "number",
-      "default": 4
-    },
-    "gap": {
-      "type": "string",
-      "default": "20"
-    },
-    "showPendingInEditor": {
-      "type": "boolean",
-      "default": true
-    },
-    "autoScroll": {
-      "type": "boolean",
-      "default": false
-    },
-    "autoScrollSpeed": {
-      "type": "string",
-      "default": "medium",
-      "enum": [ "slow", "medium", "fast" ]
-    },
-    "autoScrollPauseOnHover": {
-      "type": "boolean",
-      "default": true
-    }
-  },
-  "render": "file:./render.php",
-  "editorScript": "file:./index.js",
-  "style": "file:./style-index.css",
-  "viewScriptModule": "file:./view.js",
-  "example": {
-    "attributes": {
-      "badgeStyle": "icon-circle",
-      "items": [
-        { "icon": "home",  "label": "Handmade in Birmingham", "pending": false },
-        { "icon": "check", "label": "Registered Food Business", "pending": false },
-        { "icon": "truck", "label": "Free UK Delivery Over £35", "pending": false },
-        { "icon": "star",  "label": "Loved by Breastfeeding Mums", "pending": false }
-      ]
-    }
-  }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/trust-bar",
+	"version": "0.4.0",
+	"title": "SGS Trust Bar",
+	"category": "sgs-content",
+	"description": "Horizontal strip of trust signals. Three variants: icon-in-circle (default), text-only pill badges, and image-badge (certification logos). Dual-mode: Typed (curated items[] repeater) or Bound (InnerBlocks — converter-emitted badges). Merged from sgs/certification-bar 2026-05-29 D95.",
+	"keywords": [
+		"trust",
+		"badges",
+		"icons",
+		"certifications",
+		"accreditation",
+		"halal",
+		"brc",
+		"features"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "awards",
+	"supports": {
+		"sgs": {
+			"imageControls": true,
+			"containerKind": "section"
+		},
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"text": false,
+			"gradients": false
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": false,
+			"color": false,
+			"style": false
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-trust-bar",
+		"typography": ".sgs-trust-bar__label"
+	},
+	"attributes": {
+		"sourceMode": {
+			"type": "string",
+			"default": "typed",
+			"enum": [
+				"typed",
+				"bound"
+			]
+		},
+		"badgeStyle": {
+			"type": "string",
+			"default": "icon-circle",
+			"enum": [
+				"icon-circle",
+				"text-only",
+				"image-badge"
+			]
+		},
+		"items": {
+			"type": "array",
+			"default": [
+				{
+					"icon": "home",
+					"label": "Handmade in Birmingham",
+					"pending": false
+				},
+				{
+					"icon": "check",
+					"label": "Registered Food Business",
+					"pending": false
+				},
+				{
+					"icon": "truck",
+					"label": "Free UK Delivery Over £35",
+					"pending": false
+				},
+				{
+					"icon": "star",
+					"label": "Loved by Breastfeeding Mums",
+					"pending": false
+				}
+			]
+		},
+		"title": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"titleColour": {
+			"type": "string",
+			"default": "text-muted"
+		},
+		"titleFontSize": {
+			"type": "string"
+		},
+		"labelColour": {
+			"type": "string",
+			"default": "text"
+		},
+		"labelFontSize": {
+			"type": "string"
+		},
+		"badgeSize": {
+			"type": "string",
+			"default": "medium",
+			"enum": [
+				"small",
+				"medium",
+				"large"
+			]
+		},
+		"iconCircleSize": {
+			"type": "number",
+			"default": 44
+		},
+		"iconCircleBackground": {
+			"type": "string",
+			"default": "surface"
+		},
+		"iconColour": {
+			"type": "string",
+			"default": "primary-dark"
+		},
+		"textColour": {
+			"type": "string",
+			"default": "text"
+		},
+		"columns": {
+			"type": "number",
+			"default": 4
+		},
+		"gap": {
+			"type": "string",
+			"default": "20"
+		},
+		"showPendingInEditor": {
+			"type": "boolean",
+			"default": true
+		},
+		"autoScroll": {
+			"type": "boolean",
+			"default": false
+		},
+		"autoScrollSpeed": {
+			"type": "string",
+			"default": "medium",
+			"enum": [
+				"slow",
+				"medium",
+				"fast"
+			]
+		},
+		"autoScrollPauseOnHover": {
+			"type": "boolean",
+			"default": true
+		},
+		"layout": {
+			"type": "string",
+			"default": ""
+		},
+		"columnsMobile": {
+			"type": "number",
+			"default": 1
+		},
+		"columnsTablet": {
+			"type": "number",
+			"default": 2
+		},
+		"gridTemplateColumns": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gapTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gapMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundImage": {
+			"type": "object"
+		},
+		"backgroundImageTablet": {
+			"type": "object"
+		},
+		"backgroundImageMobile": {
+			"type": "object"
+		},
+		"backgroundSize": {
+			"type": "string",
+			"default": "cover",
+			"enum": [
+				"cover",
+				"contain",
+				"auto"
+			]
+		},
+		"backgroundPosition": {
+			"type": "string",
+			"default": "center center"
+		},
+		"backgroundRepeat": {
+			"type": "string",
+			"default": "no-repeat",
+			"enum": [
+				"no-repeat",
+				"repeat",
+				"repeat-x",
+				"repeat-y"
+			]
+		},
+		"backgroundAttachment": {
+			"type": "string",
+			"default": "scroll",
+			"enum": [
+				"scroll",
+				"fixed"
+			]
+		},
+		"backgroundOverlayColour": {
+			"type": "string"
+		},
+		"backgroundOverlayOpacity": {
+			"type": "number",
+			"default": 50
+		},
+		"overlayGradient": {
+			"type": "boolean",
+			"default": false
+		},
+		"overlayGradientAngle": {
+			"type": "number",
+			"default": 180
+		},
+		"overlayGradientFrom": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientTo": {
+			"type": "string",
+			"default": ""
+		},
+		"bgVideo": {
+			"type": "object"
+		},
+		"bgVideoMobile": {
+			"type": "object"
+		},
+		"bgParallax": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgKenBurns": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgAnimationDuration": {
+			"type": "number",
+			"default": 20
+		},
+		"shadow": {
+			"type": "string"
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"widthMode": {
+			"type": "string",
+			"default": "default",
+			"enum": [
+				"default",
+				"wide",
+				"full",
+				"custom"
+			]
+		},
+		"widthModeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeDesktop": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"minHeight": {
+			"type": "string"
+		},
+		"verticalAlign": {
+			"type": "string",
+			"default": "start"
+		},
+		"htmlTag": {
+			"type": "string",
+			"default": "section"
+		},
+		"shapeDividerTop": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerTopColour": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerTopHeight": {
+			"type": "number",
+			"default": 80
+		},
+		"shapeDividerTopFlip": {
+			"type": "boolean",
+			"default": false
+		},
+		"shapeDividerTopInvert": {
+			"type": "boolean",
+			"default": false
+		},
+		"shapeDividerBottom": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerBottomColour": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerBottomHeight": {
+			"type": "number",
+			"default": 80
+		},
+		"shapeDividerBottomFlip": {
+			"type": "boolean",
+			"default": false
+		},
+		"shapeDividerBottomInvert": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgSvgContent": {
+			"type": "string",
+			"default": ""
+		},
+		"bgSvgPosition": {
+			"type": "string",
+			"default": "background",
+			"enum": [
+				"background",
+				"foreground"
+			]
+		},
+		"bgSvgAnimation": {
+			"type": "string",
+			"default": "none",
+			"enum": [
+				"none",
+				"pulse",
+				"float",
+				"wave"
+			]
+		},
+		"bgSvgAnimationSpeed": {
+			"type": "string",
+			"default": "medium",
+			"enum": [
+				"slow",
+				"medium",
+				"fast"
+			]
+		},
+		"bgSvgOpacity": {
+			"type": "number",
+			"default": 100
+		},
+		"bgSvgMinHeight": {
+			"type": "string",
+			"default": ""
+		},
+		"bgSvgTextShadow": {
+			"type": "boolean",
+			"default": false
+		},
+		"gridItemPadding": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBorderRadius": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBorder": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRows": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridAutoRows": {
+			"type": "string",
+			"default": ""
+		},
+		"justifyItems": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end"
+			]
+		},
+		"alignContent": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end",
+				"space-between",
+				"space-around",
+				"space-evenly"
+			]
+		},
+		"templateMode": {
+			"type": "string",
+			"default": "free",
+			"enum": [
+				"free",
+				"grid-section",
+				"card-grid"
+			]
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"badgeStyle": "icon-circle",
+			"items": [
+				{
+					"icon": "home",
+					"label": "Handmade in Birmingham",
+					"pending": false
+				},
+				{
+					"icon": "check",
+					"label": "Registered Food Business",
+					"pending": false
+				},
+				{
+					"icon": "truck",
+					"label": "Free UK Delivery Over £35",
+					"pending": false
+				},
+				{
+					"icon": "star",
+					"label": "Loved by Breastfeeding Mums",
+					"pending": false
+				}
+			]
+		}
+	}
 }

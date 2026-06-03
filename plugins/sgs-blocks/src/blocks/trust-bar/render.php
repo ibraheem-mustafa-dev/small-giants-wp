@@ -22,6 +22,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 // --- Mode discriminator (R-22-14 -- NEVER branch on empty($content)) ----------
 $source_mode = $attributes['sourceMode'] ?? 'typed';
@@ -80,26 +81,39 @@ if ( 'icon-circle' === $badge_style ) {
 	}
 }
 
-// --- Wrapper classes + data attributes ----------------------------------------
-$extra_classes = 'sgs-trust-bar sgs-trust-bar--' . $badge_style . ' sgs-trust-bar--' . $badge_size;
+// --- Wrapper classes + data attributes (WS-4: passed to the shared helper) -----
+// trust-bar mirrors sgs/container's wrapper (containerKind='section'); its OWN
+// block classes + CSS vars + data-* attrs ride through the helper via opts.
+$tb_extra_classes = array(
+	'sgs-trust-bar',
+	'sgs-trust-bar--' . $badge_style,
+	'sgs-trust-bar--' . $badge_size,
+);
 
-$wrapper_data = array(
-	'class'      => $extra_classes,
-	'style'      => implode( ';', $styles ),
+$tb_extra_attrs = array(
 	'aria-label' => __( 'Trust signals', 'sgs-blocks' ),
 );
 
 if ( 'icon-circle' === $badge_style ) {
-	$wrapper_data['data-columns'] = $columns;
+	$tb_extra_attrs['data-columns'] = $columns;
 }
 
 if ( $auto_scroll ) {
-	$wrapper_data['data-auto-scroll']       = 'true';
-	$wrapper_data['data-auto-scroll-speed'] = $auto_scroll_speed;
-	$wrapper_data['data-auto-scroll-pause'] = $auto_scroll_pause ? 'true' : 'false';
+	$tb_extra_attrs['data-auto-scroll']       = 'true';
+	$tb_extra_attrs['data-auto-scroll-speed'] = $auto_scroll_speed;
+	$tb_extra_attrs['data-auto-scroll-pause'] = $auto_scroll_pause ? 'true' : 'false';
 }
 
-$wrapper_attributes = get_block_wrapper_attributes( $wrapper_data );
+// Shared opts for both emit modes — the helper owns the OUTER <div> wrapper +
+// any mirrored container layers (bg/width/etc. when the operator sets them);
+// trust-bar keeps its own interior (title + badges) as $inner_html.
+$tb_wrapper_opts = array(
+	'tag'           => 'div',
+	'extra_classes' => $tb_extra_classes,
+	'extra_styles'  => $styles,
+	'extra_attrs'   => $tb_extra_attrs,
+	'no_overlay'    => true,
+);
 
 // --- Title inline style -------------------------------------------------------
 $title_style_parts = array();
@@ -135,8 +149,9 @@ if ( $is_bound ) {
 		? '<div class="sgs-trust-bar__track">' . $content . '</div>'
 		: $content;
 
+	// WS-4: outer wrapper via the shared helper; trust-bar keeps its interior.
 	// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-	printf( '<div %s>%s%s</div>', $wrapper_attributes, $title_html, $badges_html );
+	echo SGS_Container_Wrapper::render( $attributes, $block, $title_html . $badges_html, 'section', $tb_wrapper_opts );
 	// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 	return;
 }
@@ -270,9 +285,9 @@ $badges_html = $auto_scroll
 	? '<div class="sgs-trust-bar__track">' . $items_html . '</div>'
 	: $items_html;
 
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-// $wrapper_attributes -- from WP core get_block_wrapper_attributes() (trusted).
+// WS-4: outer wrapper via the shared helper; trust-bar keeps its interior.
 // $title_html -- built with wp_kses_post + esc_attr.
 // $badges_html -- all user content escaped via esc_html/esc_url/esc_attr/sgs_get_lucide_icon.
-printf( '<div %s>%s%s</div>', $wrapper_attributes, $title_html, $badges_html );
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+echo SGS_Container_Wrapper::render( $attributes, $block, $title_html . $badges_html, 'section', $tb_wrapper_opts );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

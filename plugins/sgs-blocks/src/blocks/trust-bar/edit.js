@@ -12,6 +12,8 @@ import {
 import { DesignTokenPicker } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, fontSizeVar } from '../../utils';
+// WS-4: shared container-wrapper editor controls (section kind = full surface).
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 // ─── Icon options (icon-circle variant) ───────────────────────────────────────
 const ICON_OPTIONS = [
@@ -326,6 +328,13 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+
+				{ /* ── WS-4: mirrored sgs/container wrapper controls ─────────── */ }
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="section"
+				/>
 
 				{ /* ── Content source (Typed vs Bound) ──────────────────────── */ }
 				<PanelBody title={ __( 'Content source', 'sgs-blocks' ) } initialOpen={ true }>

@@ -89,6 +89,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$opt_block_class   = isset( $opts['block_class'] ) ? (string) $opts['block_class'] : '';
 			$opt_extra_classes = isset( $opts['extra_classes'] ) && is_array( $opts['extra_classes'] ) ? $opts['extra_classes'] : array();
 			$opt_extra_styles  = isset( $opts['extra_styles'] ) && is_array( $opts['extra_styles'] ) ? $opts['extra_styles'] : array();
+			// extra_attrs — additional HTML attributes (e.g. data-* for WP Interactivity /
+			// carousel controls, aria-*) merged verbatim into get_block_wrapper_attributes()
+			// at BOTH call sites. Values MUST be pre-sanitised by the caller. Empty array =
+			// byte-identical to the original two-key array (array_merge with [] is a no-op).
+			$opt_extra_attrs   = isset( $opts['extra_attrs'] ) && is_array( $opts['extra_attrs'] ) ? $opts['extra_attrs'] : array();
 			$opt_no_overlay    = ! empty( $opts['no_overlay'] );
 			$opt_wrap_inner    = array_key_exists( 'wrap_inner', $opts ) ? $opts['wrap_inner'] : null;
 
@@ -454,9 +459,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// This mirrors the original render.php ~line 398 first-pass call.
 			// ----------------------------------------------------------------
 			$wrapper_attributes = get_block_wrapper_attributes(
-				array(
-					'class' => implode( ' ', $classes ),
-					'style' => implode( ';', $styles ) . ';',
+				array_merge(
+					array(
+						'class' => implode( ' ', $classes ),
+						'style' => implode( ';', $styles ) . ';',
+					),
+					$opt_extra_attrs
 				)
 			);
 
@@ -655,9 +663,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			if ( $shape_top || $shape_bottom || $uid ) {
 				$wrapper_attributes = get_block_wrapper_attributes(
-					array(
-						'class' => implode( ' ', $classes ),
-						'style' => implode( ';', $styles ) . ';',
+					array_merge(
+						array(
+							'class' => implode( ' ', $classes ),
+							'style' => implode( ';', $styles ) . ';',
+						),
+						$opt_extra_attrs
 					)
 				);
 			}
