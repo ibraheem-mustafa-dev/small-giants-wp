@@ -1,3 +1,46 @@
+# Session Handoff — 2026-06-03 (SGS THEME thread, session 7 — Spec 26 global-styles design)
+
+> Theme/blocks thread. Cloning pipeline → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. Design + research session (no production code): resolved Bean's question about the global-CSS setup into a written, ratified, build-deferred spec.
+
+## Completed This Session
+1. **Spec 26 — SGS Global Styles & Per-Client Theming WRITTEN + committed** (`15a2b183`; docscore 100% A). Resolved via research-buddies (WP 7.0 global-styles, 13 sources) + a 4-persona design council (standards / agency-ops / pipeline-integration / non-coder-UX — all ranked Candidate C #1) + a CLI/abilities investigation + a converter-routing investigation. D158.
+2. **Corrected the mental model** (supersedes D156 "override precedence" framing): WP 7.0 global styles is a **data-layer merge** (default→blocks→theme(theme.json+variations)→custom `wp_global_styles` CPT, merged in PHP then emitted as inline CSS), NOT a CSS override. The `wp_global_styles` post is the live source of truth; `theme.json` is the factory seed.
+3. **Architecture decided (Candidate C):** one lean framework `theme.json` baseline + per-client **style-variation DELTA** (kills the full-theme.json-copy fork-tax) + scoped per-site deploy with Browse-Styles suppressed (super-fixes Decision 18) + sync = EXTEND `push-theme-snapshot.py` to write the live `wp_global_styles` post via `POST /wp/v2/global-styles/{id}` (no new endpoint/ability; no Create Block Theme runtime dep — confirmed no `wp global-styles` CLI exists) + a pull/round-trip + a pre-deploy guard.
+4. **Block-styling + pipeline-derivation FRs captured** — Bean's "Middle" path (presets prominent + raw values available, WCAG contrast linter, inspector reads merged custom-origin value) + Bean's pipeline-derivation proposal (converter emits RAW → post-pass derives globals from repetition + a hero-button-position rule: 1st hero button → PRIMARY preset, 2nd → SECONDARY).
+5. **FR-26-D1 corrected to RESOLVED/MOOT** (uncommitted spec edit finalised this session) — live verification inverted the council's "clear canary post 7" recommendation: theme.json AND post 7 already mirror Mama's full palette + WCAG CSS, so the canary already renders correctly; clearing post 7 is unnecessary + risky. Do NOT clear it.
+6. **Doc-walk wrap-up** — reconciled D158 (removed the stale "clear post 7" urgent), added Spec 26 to `docs-registry.yaml`, refreshed `state.md`, walked all 33 canonical docs (verdicts in `.doc-walk-receipt.md`).
+
+## Current State
+- **Branch:** `main` (theme thread works on main; commit by explicit path).
+- **Build:** n/a — no production code changed this session (design + docs only).
+- **Uncommitted:** the Spec 26 FR-26-D1 edit + doc reconciliations (committed at wrap-up); `lucide-icons.php` auto-regen (never committed — documented).
+
+## Outcome vs Completion (Gate 3.5)
+- Spec 26 design + ratification: **OUTCOME ACHIEVED** — spec written, council-ratified, docscore 100% A, committed.
+- The global-styles **build**: **OUTCOME REVISED — deferred by Bean's scope call** until the cloning phase closes (avoids re-baselining the cloning pixel-diff gate mid-thread). Only FR-26-D2 (REST-write extension) stays urgent/low-risk.
+
+## Known Issues / Blockers
+- Without FR-26-D2, the canary's two style layers (theme.json + post 7) re-diverge on the next disk-only `push-theme-snapshot` or any Site-Editor edit — they are synced now ONLY because both were hand-written last session.
+
+## Next Priorities (in order)
+1. **FR-26-D2** — extend `push-theme-snapshot.py` to write the live `wp_global_styles` post (the one urgent, low-risk, build-now item; closes `P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES`).
+2. Remaining Spec 26 build (Groups A/B/C) — deferred until the cloning phase closes.
+3. The pre-existing theme tasks in the orchestration plan (auto-contrast decision, product-page emit, SKU matrix, Wave-2A).
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `.claude/specs/26-SGS-GLOBAL-STYLES-AND-THEMING.md` | FR-26-D1 corrected to RESOLVED/MOOT (do NOT clear post 7) |
+| `.claude/decisions.md` | D158 reconciled — stale "clear post 7" urgent replaced with FR-26-D1 correction note |
+| `.claude/docs-registry.yaml` | Spec 26 entry added |
+| `.claude/state.md` | theme-thread Spec 26 line + last_updated 2026-06-03 |
+
+## Notes for Next Session
+- Spec 26 SUPERSEDES the Spec 01 §"Per-site theme.json Model" D156 framing — read Spec 26 before touching global styles.
+- FR-26-D1 is closed/MOOT; do not re-open the "clear post 7" idea — verification proved it unnecessary and risky (shared canary).
+
+---
+
 # Session Handoff — 2026-06-03 (SGS THEME thread, session 6)
 
 > Theme/blocks thread. Cloning pipeline → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. Big session: Phase D + E + Task D + QC-council + WCAG colour defaults + skip-link, all orchestrated via parallel subagents.

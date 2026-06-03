@@ -45,6 +45,7 @@ canonical_docs:
   - {path: .claude/specs/18-SGS-FLOATING-UI.md,                        scope: spec_version_canonical,           doc_type: spec, spec_version: 18}
   - {path: .claude/specs/19-SGS-CLI-COMMANDS.md,                       scope: spec_version_canonical,           doc_type: spec, spec_version: 19}
   - {path: .claude/specs/20-STRUCTURED-PIPELINE-LOG-SURFACING.md,      scope: spec_version_canonical,           doc_type: spec, spec_version: 20}
+  - {path: .claude/specs/26-SGS-GLOBAL-STYLES-AND-THEMING.md,          scope: spec_version_canonical,           doc_type: spec, spec_version: 26, status: draft, supersedes: ".claude/specs/01-SGS-THEME.md §Per-site theme.json Model (D156 framing)", note: "Global styles + per-client theming (Candidate C: lean theme.json baseline + per-client style-variation DELTA + wp_global_styles REST sync via push-theme-snapshot.py) + pipeline style derivation (D158). BUILD DEFERRED until cloning phase closes, except FR-26-D2 (REST-write extension, urgent low-risk). FR-26-D1 RESOLVED/MOOT 2026-06-03 — canary not contaminated, do NOT clear post 7."}
   - {path: .claude/specs/common-wp-styling-errors.md,                  scope: forever_append_only,              doc_type: errors-catalogue}
 
   # MOVED 2026-05-27: plans/2026-05-26-phase-1-spec-22-implementation.md →

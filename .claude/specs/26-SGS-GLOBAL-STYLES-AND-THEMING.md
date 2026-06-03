@@ -154,9 +154,10 @@ SGS is one custom WP 7.0 block theme serving many client sites. Two problems are
 
 ### Group D — Urgent fixes (low-risk; do before the deferred migration)
 
-**FR-26-D1 — Clear the canary contamination.** Clear the sandybrown `wp_global_styles` post ID 7 to draft/empty so `theme.json` renders and the cloning pixel-diff gate stops measuring wrong global tokens (council HIGH-confidence finding).
-- *Done when:* the canary renders its `theme.json` tokens; a fresh pixel-diff baseline is recorded as the new reference.
-- *Model:* n/a (≈20-min WP-CLI/REST op) — coordinate with the cloning thread (shared canary).
+**FR-26-D1 — Canary contamination — RESOLVED / MOOT (verified 2026-06-03, do NOT clear post 7).** The council's recommendation was "clear `wp_global_styles` post 7 so `theme.json` renders." **Verification inverted that:** the canary's `theme.json` already carries Mama's FULL brand palette (`theme:primary`, `theme:surface-pink`, `theme:accent`, …) AND the WCAG CSS (len ~2273), and post 7 MIRRORS the same tokens — because this session's Mama's WCAG work (D157-adjacent) wrote BOTH layers, which synced them. So the canary already renders Mama's brand correctly from both layers; the colour-contamination the council feared was real *before* this session but is **already resolved**. **Clearing post 7 is therefore unnecessary AND risky** (no render benefit; the canary is shared with the cloning thread) — do NOT do it. The cloning pixel-diff is NOT colour-contaminated currently.
+- *Done when:* (verified) `GET /wp/v2/global-styles/themes/sgs-theme` shows `theme:*` Mama slugs + the WCAG css; post 7 mirrors them. No action.
+- *Residual risk this leaves:* the two layers are synced ONLY because both were hand-written this session; without FR-26-D2 they will RE-DIVERGE on the next `push-theme-snapshot` (disk-only) or any Site-Editor edit. FR-26-D2 is the durable fix.
+- *Model:* n/a.
 
 **FR-26-D2 — REST-write extension to `push-theme-snapshot.py`.** The FR-26-A3 push half (write the live `wp_global_styles` post). Closes parking `P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES`.
 - *Done when:* a `push-theme-snapshot` run changes a live style on the canary via the post, verified live.

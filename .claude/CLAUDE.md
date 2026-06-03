@@ -16,7 +16,7 @@
 | Parking | `parking.md` | OPEN deferred work, 6 taxonomy buckets, `**Status:**` field |
 | Last session | `handoff.md` | Most recent session summary |
 | Next session | `next-session-prompt.md` | Pre-written kick-off |
-| Specs | `specs/` | Numbered specs (00, 02, 11, 17-22, 24 + common-wp-styling-errors; 16 archived, retired by 22) |
+| Specs | `specs/` | Numbered specs (00, 02, 11, 17-22, 24, 25, 26 + common-wp-styling-errors; 16 archived, retired by 22). 26 = global styles + per-client theming (D158, build deferred) |
 | Active plans | `plans/` | `/strategic-plan` + `/phase-planner` outputs |
 | Strategy docs | `plans/strategy/` | Cross-cutting strategy docs |
 | Archived plans | `plans/archive/` | Completed / superseded / legacy plans |

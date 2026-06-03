@@ -2,9 +2,9 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 thread: sgs-theme
-session_tag: small-giants-wp-2026-06-03-theme-session7
+session_tag: small-giants-wp-2026-06-03-theme-session8
 generated: 2026-06-03
-primary_goal: "SGS-THEME THREAD. Bean-decision on universal WCAG auto-contrast; fix push-theme-snapshot.py to update the live wp_global_styles post; migrate the product-page mockup to SGS-BEM then emit option-pickers there (Phase D product-page); per-option data model (SKU matrix) to activate the dormant pill swap; FR-22-6 Wave-2A real migration (label/heading/text)."
+primary_goal: "SGS-THEME THREAD. Bean-decision on universal WCAG auto-contrast; build FR-26-D2 (extend push-theme-snapshot.py to write the live wp_global_styles post); migrate the product-page mockup to SGS-BEM then emit option-pickers there (Phase D product-page); per-option data model (SKU matrix) to activate the dormant pill swap; FR-22-6 Wave-2A real migration (label/heading/text). NOTE: the global-CSS/global-styles question is now RESOLVED AS DESIGN → Spec 26 (D158); the whole build is DEFERRED until the cloning phase closes EXCEPT FR-26-D2 (= Task B, the one urgent low-risk item). FR-26-D1 is RESOLVED/MOOT — do NOT clear canary post 7."
 ---
 
 # Next Session — SGS THEME thread (blocks, editor UX, WooCommerce layer)
@@ -15,6 +15,7 @@ primary_goal: "SGS-THEME THREAD. Bean-decision on universal WCAG auto-contrast; 
 > **STOP — triage before fixing:** verify a reported bug still reproduces against ground truth (REST render / edit.js / editor repro) BEFORE dispatching a fix. (Past sessions: multiple reported "bugs" were stale/false.)
 > **STOP — verify against git, not the handoff:** a prior session's opening handoffs were STALE on merge-status AND parallel-session-active. Run `git log --oneline -8` + `git branch` first; trust the repo over prose.
 > **STOP — canary live styles come from the `wp_global_styles` DB post (ID 7), NOT theme.json on disk.** Editing theme.json / running `push-theme-snapshot.py` alone has NO live effect — you MUST also POST `/wp-json/wp/v2/global-styles/7`. `theme/sgs-theme/styles/mamas-munches.css` is an ORPHAN (not enqueued). (Memory `canary-live-styles-come-from-wp-global-styles-post`.)
+> **STOP — the global-styles architecture is now SPEC'd: read `.claude/specs/26-SGS-GLOBAL-STYLES-AND-THEMING.md` (D158) BEFORE any theme.json / global-styles / per-client-theming change.** The whole build is DEFERRED until the cloning phase closes EXCEPT FR-26-D2 (Task B). **FR-26-D1 is RESOLVED/MOOT — do NOT clear canary post 7** (theme.json + post 7 already mirror Mama's palette + WCAG CSS; clearing is unnecessary AND risky on the shared canary). The corrected model: WP 7.0 global styles is a DATA-LAYER MERGE (`wp_global_styles` post = live source of truth, theme.json = factory seed), NOT a CSS override — this supersedes the old D156 "override precedence" framing.
 > **STOP — block style controls must accept RAW CSS values + defaults stay overridable:** every default colour/spacing is `var(--sgs-x, <default>)` with an editor control that accepts raw hex/px (theme.json `color.custom`/`customSpacingSize` true), never a token-preset-only cap (the recurring "gap rejected raw px" bug). (Memory `block-style-controls-accept-raw-css-and-overridable`.)
 > **Guardrail (all tasks):** after every block build-deploy, open the WP editor on canary 144/514 and verify the control renders + zero console errors before considering the task done. Bump block.json `version` on any block CSS/JS change AND the theme `style.css` `Version:` on any THEME-CSS change.
 
@@ -26,13 +27,14 @@ Read the MANDATORY READING LIST. Then bring Bean the **universal auto-contrast d
 
 ## MANDATORY READING LIST (read FULLY first)
 1. This file.
-2. `.claude/handoff-theme.md` (2026-06-03, session 6) — what shipped + the outcome assessment.
-3. `.claude/specs/25-SGS-WOOCOMMERCE-EXPERIENCE-LAYER.md` — the authoritative WC-layer spec (feature map, statuses, files).
-4. `.claude/decisions.md` newest — D157 (skip-link) · D156 (WCAG colour defaults + universal-auto-contrast deferral) · D155 (hero removed) · D154 (content-collection) · D153 (Phase D emit) · D151/D149 (product-card dual-source).
-5. `.claude/specs/24-QUERY-DRIVEN-CONTENT-CARDS.md` — card/collection FRs (status active).
-6. Root `CLAUDE.md` + `plugins/sgs-blocks/CLAUDE.md` — block customisation standard, deprecation procedure, gotchas, block-status table.
-7. `.claude/parking.md` — P-AUTO-CONTRAST-LIGHT-PRIMARIES, P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES, P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM, P-PRODUCT-CARD-PILL-SWAP-DORMANT.
-8. The product files before extending: `plugins/sgs-blocks/src/blocks/{product-card,content-collection,option-picker}/` + `includes/class-product-bindings.php` + `includes/content-types/class-product-cpt.php`.
+2. `.claude/handoff-theme.md` (2026-06-03, session 7 = Spec 26 global-styles design; session 6 below it = Phase D/E/WCAG/skip-link) — what shipped + the outcome assessment.
+3. `.claude/specs/26-SGS-GLOBAL-STYLES-AND-THEMING.md` — the global-styles + per-client theming spec (D158; supersedes Spec 01 §D156 framing). Build DEFERRED except FR-26-D2. Read BEFORE any theme.json / global-styles change.
+4. `.claude/specs/25-SGS-WOOCOMMERCE-EXPERIENCE-LAYER.md` — the authoritative WC-layer spec (feature map, statuses, files).
+5. `.claude/decisions.md` newest — D158 (global-styles architecture → Spec 26; FR-26-D1 RESOLVED/MOOT) · D157 (skip-link) · D156 (WCAG colour defaults + universal-auto-contrast deferral) · D155 (hero removed) · D154 (content-collection) · D153 (Phase D emit) · D151/D149 (product-card dual-source).
+6. `.claude/specs/24-QUERY-DRIVEN-CONTENT-CARDS.md` — card/collection FRs (status active).
+7. Root `CLAUDE.md` + `plugins/sgs-blocks/CLAUDE.md` — block customisation standard, deprecation procedure, gotchas, block-status table.
+8. `.claude/parking.md` — P-AUTO-CONTRAST-LIGHT-PRIMARIES, P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES, P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM, P-PRODUCT-CARD-PILL-SWAP-DORMANT.
+9. The product files before extending: `plugins/sgs-blocks/src/blocks/{product-card,content-collection,option-picker}/` + `includes/class-product-bindings.php` + `includes/content-types/class-product-cpt.php`.
 
 ## Skills to Invoke
 | Skill | When |
@@ -74,9 +76,9 @@ Read the MANDATORY READING LIST. Then bring Bean the **universal auto-contrast d
 **Orchestration:** inline (Opus). `/research` `contrast-color()` support FIRST (Rule 16), then a ranked menu to Bean. Depends on: none. /qc gate: n/a.
 **Acceptance:** Bean picks; if a build follows, WCAG-verified live on both a dark-primary and a light-primary palette.
 
-## Task B — Fix `push-theme-snapshot.py` to update the live `wp_global_styles` post
-**What:** Extend the deploy script so a snapshot push ALSO updates the canary's `wp_global_styles` post (not just theme.json on disk).
-**Why:** Live styles come from that post; the script silently misses them (this session's Mama's fix needed a manual REST POST). Parking P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES.
+## Task B — Build FR-26-D2: extend `push-theme-snapshot.py` to update the live `wp_global_styles` post
+**What:** Extend the deploy script so a snapshot push ALSO updates the canary's `wp_global_styles` post (not just theme.json on disk). This is **Spec 26 FR-26-D2** — the one urgent, low-risk, build-now slice of the otherwise-deferred Spec 26 (use the WP-native `POST /wp/v2/global-styles/{id}`; no new endpoint/ability needed per D158). Read Spec 26 §FR-26-A3 + §FR-26-D2 first.
+**Why:** Live styles come from that post; the script silently misses them (this session's Mama's fix needed a manual REST POST). Without this, the canary's theme.json + post 7 re-diverge on the next disk-only push. Parking P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES; Spec 26 FR-26-D2.
 **Orchestration:** delegated, single sonnet via /delegate. Context: post ID 7 on sandybrown; app-password auth; script at `plugins/sgs-blocks/scripts/push-theme-snapshot.py`. Depends on: none. Parallel with: Task C. /qc gate: /qc-inline (deploy a token change, confirm it lands live).
 **Acceptance:** a snapshot push changes a live-visible style with no manual REST step.
 
