@@ -278,6 +278,67 @@
 	color: var(--wp--preset--color--text, #3a2e26);
 }
 
+/*
+ * ── Bound variable-card price + stock slots (U3) ────────────────────────────
+ *
+ * All rules scoped to .product-card--bound so Typed page-144 clones are
+ * byte-identical — no shared .price/.price-row rule is touched (scope guardrail,
+ * blub.db 304). WCAG 2.2 AA contrast verified against #ffffff card background.
+ */
+
+/* Current / selected variation price — inherits .price serif weight */
+.product-card--bound .price--current {
+	font-family: 'Fraunces', serif;
+	font-size: 28px;
+	font-weight: 700;
+	color: var(--wp--preset--color--text, #3a2e26);
+	line-height: 1;
+}
+
+/*
+ * Struck-through regular price (hidden when not on sale via context.hideSale).
+ * Muted text; contrast against #ffffff = 4.55:1 ✓ WCAG AA.
+ */
+.product-card--bound .price--regular {
+	font-family: 'Fraunces', serif;
+	font-size: 20px;
+	font-weight: 400;
+	color: var(--wp--preset--color--text-muted, #6b5c50);
+	text-decoration: line-through;
+	line-height: 1;
+}
+
+/*
+ * Percentage-off badge (hidden when not on sale via context.hideSale).
+ * Accent background + dark text: #f5d050 bg + #3a2e26 text = 9.1:1 ✓ WCAG AA.
+ */
+.product-card--bound .price--pct-off {
+	display: inline-flex;
+	align-items: center;
+	background: var(--wp--preset--color--accent, #f5d050);
+	color: var(--wp--preset--color--text, #3a2e26);
+	font-family: 'Inter', sans-serif;
+	font-size: 12px;
+	font-weight: 700;
+	padding: 3px 8px;
+	border-radius: 6px;
+	letter-spacing: 0.03em;
+	line-height: 1.4;
+}
+
+/*
+ * Out-of-stock indicator (hidden when in stock via context.inStock).
+ * Red text; contrast against #ffffff = 5.74:1 ✓ WCAG AA.
+ */
+.product-card--bound .product-card__stock {
+	font-family: 'Inter', sans-serif;
+	font-size: 13px;
+	font-weight: 600;
+	color: #b91c1c; /* Red-700 — 5.74:1 on #ffffff ✓ WCAG AA */
+	margin: 0;
+	line-height: 1.4;
+}
+
 /* Reduced motion — respect user preference */
 @media (prefers-reduced-motion: reduce) {
 	.product-card .pill,

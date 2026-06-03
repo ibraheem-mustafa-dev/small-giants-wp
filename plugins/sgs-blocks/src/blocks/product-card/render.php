@@ -80,6 +80,7 @@ if ( 'typed' === $source_mode ) {
 /* ── Bound mode — resolve a real product ───────────────────────────────────── */
 
 require_once dirname( __DIR__, 3 ) . '/includes/class-product-bindings.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-product-manifest.php';
 
 $product_id = absint( $attributes['productId'] ?? 0 );
 $data       = \SGS\Blocks\Product_Bindings::get_product_data( $product_id, $source_mode );
@@ -104,6 +105,194 @@ if ( null === $data ) {
 	<?php
 	return;
 }
+
+/* ── Bound variable-product branch (U3) ────────────────────────────────────── */
+
+/*
+ * When the resolved product is a WooCommerce variable product AND the manifest
+ * builds successfully, render the full interactive variable card seeded entirely
+ * from live WC data.
+ *
+ * Scope guardrail (blub.db 304): ONLY the wc-product variable branch reaches
+ * this new code path. Typed page-144 clones use the 'typed' branch above and
+ * are byte-identical to before — no shared rule is touched.
+ */
+if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
+	$manifest = \SGS\Blocks\Product_Manifest::build( $product_id );
+
+	if ( null !== $manifest ) {
+		// ── 2a. Build the seeded context ──────────────────────────────────────
+
+		$decimals = $manifest['decimals'];
+		$def      = $manifest['combos'][ $manifest['defaultKey'] ];
+
+		// Pre-format display strings server-side so SSR text == seeded value
+		// (SSR-wipe-safe — see MEMORY rule wp-interactivity-directives-wipe-ssr).
+		$price_display   = html_entity_decode( wp_strip_all_tags( wc_price( $def['priceMinor'] / 10 ** $decimals ) ), ENT_QUOTES, 'UTF-8' );
+		$show_sale       = ( null !== $def['saleMinor'] );
+		$regular_display = $show_sale
+			? html_entity_decode( wp_strip_all_tags( wc_price( $def['regularMinor'] / 10 ** $decimals ) ), ENT_QUOTES, 'UTF-8' )
+			: '';
+		$pct_display = '';
+		if ( $def['pctOff'] > 0 ) {
+			/* translators: %d is the discount percentage, e.g. "30% off". */
+			$pct_display = sprintf( __( '%d%% off', 'sgs-blocks' ), $def['pctOff'] );
+		}
+		$stock_text  = $def['inStock'] ? '' : __( 'Out of stock', 'sgs-blocks' );
+		$image_src   = '' !== $def['imageUrl'] ? $def['imageUrl'] : $data['image_url'];
+
+		// Context array — manifest lives here (M-C3: NOT in wp_interactivity_state).
+		$context = array(
+			'productId'           => (string) $data['id'],
+			'addToCartId'         => absint( $data['wc_id'] ),
+			'decimals'            => $decimals,
+			'currencySymbol'      => $manifest['currencySymbol'],
+			'combos'              => $manifest['combos'],
+			'axes'                => $manifest['axes'],
+			'selectedAxes'        => $manifest['defaultAxes'],
+			'selectedKey'         => $manifest['defaultKey'],
+			'selectedVariationId' => (int) $def['variationId'],
+			// ── display literals (default; == the SSR span text — SSR-wipe-safe) ──
+			'priceDisplay'        => $price_display,
+			'regularDisplay'      => $regular_display,
+			'pctDisplay'          => $pct_display,
+			'showSale'            => $show_sale,
+			'hideSale'            => ! $show_sale,
+			'stockText'           => $stock_text,
+			'inStock'             => (bool) $def['inStock'],
+			'imageSrc'            => $image_src,
+			'imageAlt'            => $data['image_alt'],
+			'cartStatus'          => '',
+			'pending'             => false,
+		);
+
+		// M-C9 hard cap: 24 KB max serialised context — never trips for 48 SKUs
+		// (~6 KB), but guard is here to future-proof larger catalogues.
+		if ( strlen( wp_json_encode( $context ) ) > 24576 ) {
+			// Cap exceeded — fall through to the existing non-interactive "From" card.
+			unset( $context, $manifest, $def );
+		} else {
+			$bound_args = array( 'class' => implode( ' ', $classes ) );
+			if ( '' !== $inline_style ) {
+				$bound_args['style'] = $inline_style;
+			}
+			$wrapper_attributes = get_block_wrapper_attributes( $bound_args );
+			?>
+<div
+			<?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped. ?>
+	data-wp-interactive="sgs/product-card"
+			<?php echo wp_interactivity_data_wp_context( $context ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns escaped attribute markup. ?>
+	data-wp-on--sgs:option-selected="actions.handlePillSelect"
+>
+			<?php if ( '' !== $image_src ) : ?>
+		<img
+			class="product-card-img"
+			src="<?php echo esc_url( $image_src ); ?>"
+			alt="<?php echo esc_attr( $data['image_alt'] ); ?>"
+			loading="eager"
+			fetchpriority="high"
+			decoding="async"
+			data-wp-bind--src="context.imageSrc"
+			data-wp-bind--alt="context.imageAlt"
+		>
+	<?php endif; ?>
+
+	<div class="product-card-body">
+		<h3><?php echo esc_html( $data['title'] ); ?></h3>
+
+			<?php if ( '' !== $data['short_desc'] ) : ?>
+			<div class="product-desc">
+				<?php echo wp_kses_post( $data['short_desc'] ); ?>
+			</div>
+		<?php endif; ?>
+
+			<?php
+			// ── 2b. Render TWO option-picker blocks — Size then Flavour ──────────
+			foreach ( $manifest['axes'] as $axis ) {
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
+				echo render_block(
+					array(
+						'blockName' => 'sgs/option-picker',
+						'attrs'     => array(
+							'label'           => $axis['label'],
+							'showLabel'       => true,
+							'optionItems'     => array_map(
+								static function ( $t ) {
+									return array(
+										'key'   => $t['slug'],
+										'label' => $t['label'],
+									);
+								},
+								$axis['terms']
+							),
+							'defaultSelected' => $manifest['defaultAxes'][ $axis['taxonomy'] ] ?? '',
+							'typeKey'         => $axis['taxonomy'],
+						),
+					)
+				);
+			}
+			?>
+
+			<?php // ── 2c. Price slot — bound to seeded context literals (SSR-wipe-safe). ?>
+		<div class="price-row" aria-live="polite">
+			<span
+				class="price price--current"
+				data-wp-text="context.priceDisplay"
+			><?php echo esc_html( $price_display ); ?></span>
+			<s
+				class="price--regular"
+				data-wp-bind--hidden="context.hideSale"
+				data-wp-text="context.regularDisplay"
+			><?php echo esc_html( $regular_display ); ?></s>
+			<span
+				class="price--pct-off"
+				data-wp-bind--hidden="context.hideSale"
+				data-wp-text="context.pctDisplay"
+			><?php echo esc_html( $pct_display ); ?></span>
+		</div>
+
+			<?php // ── 2d. Stock slot — hidden when in stock (default). ?>
+		<p
+			class="product-card__stock"
+			role="status"
+			aria-live="polite"
+			data-wp-bind--hidden="context.inStock"
+			data-wp-text="context.stockText"
+		><?php echo esc_html( $stock_text ); ?></p>
+
+			<?php
+			// ── 2f. Add-to-cart <a> — UNCHANGED in U3 (U7 rewires). ─────────────
+			$add_to_cart_id = absint( $data['wc_id'] );
+			if ( $add_to_cart_id > 0 ) :
+				$product_permalink = esc_url( get_permalink( $add_to_cart_id ) );
+				?>
+			<a
+				href="<?php echo $product_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd above. ?>"
+				class="btn btn-primary product-card__add-to-cart"
+				data-wp-on--click="actions.addToCart"
+				data-wp-bind--disabled="context.pending"
+				data-wp-bind--aria-busy="context.pending"
+				role="button"
+			>
+				<svg class="product-card__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+				<span class="product-card__cart-label"><?php esc_html_e( 'Add to Cart', 'sgs-blocks' ); ?></span>
+			</a>
+			<p
+				class="product-card__cart-status sgs-sr-only"
+				role="status"
+				aria-live="polite"
+				data-wp-text="context.cartStatus"
+			></p>
+			<?php endif; ?>
+	</div>
+</div>
+			<?php
+			return;
+		} // end if cap OK.
+	} // end if manifest non-null.
+} // end variable branch.
+
+/* ── Non-variable Bound mode (simple WC product / CPT / cap-exceeded fallback) */
 
 /*
  * Build the variations map from _sgs_variation_sets (R-22-9).
@@ -133,53 +322,25 @@ foreach ( $variation_sets as $vtype ) {
 	}
 }
 
-$variations_map = array();
-$first_key      = '';
+$first_key = '';
 
 if ( null !== $pill_type ) {
-	$content_impact = isset( $pill_type['content_impact'] ) && is_array( $pill_type['content_impact'] )
-		? array_map( 'sanitize_key', $pill_type['content_impact'] )
-		: array();
-
+	// Resolve the default (first valid) option key for the no-JS selected state.
+	// Per-option commerce data is NOT seeded here: simple/CPT Bound cards have no
+	// per-option price/image (the live per-variation manifest is the WC-variable
+	// branch above, FR-27-A2). The pill swap is dormant on this path by design.
 	foreach ( $pill_type['options'] as $opt ) {
-		if ( empty( $opt['key'] ) ) {
-			continue;
-		}
-		$opt_key = sanitize_key( $opt['key'] );
-		if ( '' === $opt_key ) {
-			continue;
-		}
-		if ( '' === $first_key ) {
+		$opt_key = empty( $opt['key'] ) ? '' : sanitize_key( $opt['key'] );
+		if ( '' !== $opt_key ) {
 			$first_key = $opt_key;
+			break;
 		}
-
-		// Base data for every option; per-option overrides arrive with the
-		// SKU matrix (R-22-9 — values are driven by declared product data).
-		$in_stock = ( '' === $data['stock_status'] )
-			|| ( false === stripos( $data['stock_status'], 'out of stock' ) );
-
-		$variations_map[ $opt_key ] = array(
-			'price'    => $data['price_html'],
-			'image'    => $data['image_url'],
-			'imageAlt' => $data['image_alt'],
-			'inStock'  => $in_stock,
-			'impacts'  => $content_impact,
-		);
 	}
 }
 
 /* ── Seed Interactivity API state + per-instance context ───────────────────── */
 
 $add_to_cart_id = absint( $data['wc_id'] );
-
-wp_interactivity_state(
-	'sgs/product-card',
-	array(
-		'variations' => array(
-			(string) $data['id'] => $variations_map,
-		),
-	)
-);
 
 // Seed the reactive display values into CONTEXT (server-resolvable plain
 // data) — NOT JS-only `state` getters. The WP Interactivity API processes

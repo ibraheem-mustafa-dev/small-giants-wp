@@ -310,7 +310,7 @@ final class Product_Bindings {
 				// better than a bare range (£9.99–£59.99) before a variation is
 				// chosen. Tax-correct via wc_get_price_to_display() (never own
 				// division); empty for simple products (they show the exact price).
-				$is_variable    = $product->is_type( 'variable' );
+				$is_variable     = $product->is_type( 'variable' );
 				$price_from_html = '';
 				if ( $is_variable && \method_exists( $product, 'get_variation_price' ) ) {
 					$min_raw     = $product->get_variation_price( 'min', false );
