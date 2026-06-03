@@ -147,6 +147,36 @@ Task 5 (#6 wrapper part depends on Task 3 content-KIND; hero-min-height + conten
 - **Work on `main`** by explicit path; theme thread shares the tree — verify `git log -1 --stat` after every commit (STOP #41/#45).
 - **Outcome ≠ code shipped** — don't mark a task done until the OUTCOME lands (R-22-13 Bean sign-off on fidelity milestones).
 
+## 📋 FULL REMAINING GAP REGISTER — the generic/universal de-cheat scope (nothing lost)
+
+> WS-4 (above) is the FOUNDATIONAL opener, but it is NOT the whole programme. The complete 5-workstream gap register lives in `.claude/plans/2026-06-02-container-wrapper-standardisation.md` Appendix B + the depth source `.claude/reports/2026-06-02-container-wrapper-converter-gap-analysis.md`. Every item below is **DB-first (R-22-1): the point is to REPLACE the cheating/hardcoding with DB-driven, universal mechanisms** — no per-block code, no hardcoded dicts. Done ✅: A1, A2, C1 (D159); A3/A4 block-side + scanner (this session, uncommitted). MOOT: A7.
+
+### WS-3 — DE-CHEAT (R-22-1) — this IS "replace the cheating + hardcoding in the pipeline"
+- **C2** trust-bar grid is STATIC CSS + `data-columns` selectors, not attr-driven (`trust-bar/style.css:43–101`) — P-TRUSTBAR-BOUND-GRID root cause. Folds into WS-4 (trust-bar mirrors sgs/container's grid attrs).
+- **C3** `_CAPABILITY_PRIORITY` hardcoded Python list (`db_lookup.py:660–701`) → a DB column. Grep must return 0 matches for the constant name after.
+- **C4** TWO independent breakpoint systems (`db_lookup.py:1046–1052` + `convert.py:2322–2323`) → ONE DB breakpoint table.
+- **C5** `_infer_role()` uses keyword substring-match (`css_router.py:573–588`) → query `property_suffixes.kind_override` (D99 already built that column).
+- **C6** `_GLOBAL_BARE_TAGS` + `_CHROME_TOP_ELEMENTS` hardcoded frozensets (`css_router.py:54–71`) — R-22-1 violation → DB-drive OR document as a permitted constant exception (like `SKIP_TOP_LEVEL_TAGS`) with a justification comment.
+- **C7** `MOCKUP_ROOT` + page-144 hardcoded to Mama's in a "universal" deploy script (`upload_and_patch.py:36,86`) → `--client`/`--page` args (de-Mama's it).
+- **C8** cta-section `layout` enum collision + hero `splitColumnRatio`/`overlayColour` drift (`cta-section/block.json`, `hero/block.json`) — RESOLVED AS the WS-4 rename blockers (cta-section `layout`→`contentLayout`; hero `overlayColour`→`backgroundOverlayColour`).
+- Gate: `grep -r "_CAPABILITY_PRIORITY\|BREAKPOINTS\|infer_role.*substring\|MOCKUP_ROOT\|_GLOBAL_BARE_TAGS" plugins/sgs-blocks/scripts/` returns 0 production-script matches. Mostly mechanical DB inserts + find-replace → Sonnet subagents; C5/C7 need a `/sgs-clone --debug-trace` regression check after.
+
+### WS-2 — converter/router truth (stop dropping/degrading transferred values)
+- **B1** the D1 typed-attr layer is written-not-consumed (`seed_d1_sidecar` retired no-op stub, `convert.py:167`; ~43 assignments historically stranded). **The council showed a BLIND fingerprint is unsafe → the safe path is a CURATED `canonical_slot` map (extend `_root_lift_rules`), not a blind one.** DECIDE: revive-as-curated vs DB-replace (Bean decision; present options).
+- **B2** `_fold_eligible` sole-child gate (`convert.py:2830`) drops ALL fold attrs for multi-child sections, not just max-width.
+- **B3** `grid-template-columns` on a recognised section → scoped CSS, not a typed attr (`convert.py:498` missing entry). (The #4a exploration touched this — carries an align-items regression risk; reconsider under WS-4.)
+- **B4** D3 gap-candidates DUAL-WRITE to production CSS (`css_router.py:531`) — debug surface leaking into the production path; D3 should go ONLY to the gap register.
+- **B5** verbatim-CSS-fallback: on css_router import failure ALL CSS is dumped unscoped/page-wide, operator-invisible (`css_router.py:433–437`) — must fail LOUD, never silently dump global styles.
+
+### WS-1c residuals
+- **A5** `min-height` not lifted (`convert.py:498` not in `_root_lift_rules`) → the CURATED `_root_lift_rules` extension (align-gated per STOP #49) + the separate **hero composite-interior min-height fix** (the real verifiable bug — `minHeightTablet=520px` extraction_failed, NOT a container-path gap). **A6** `gridItem*` never written (`convert.py` zero refs) → WS-4 lift-only-gated sub-mechanism (own council; gift trial-card preservation test). A7 MOOT.
+
+### Wave 3 — image sideload (biggest pixel lever once structure is faithful)
+- Wire Stage 4i media-sideload dry-run → real WP media upload + patch. Fixes triage **#5** (brand image) + hero/product images (currently 404). Independent of WS-4 — schedule anytime.
+
+### Triage residuals map (#1–#8)
+#1 hero / #2 trust-bar → WS-4. #3 → ✅ done (uncommitted). #4a grid-lift → reconsider under WS-4 (align-items risk, B3). #4b product-card fill → WS-4 content-KIND. #5 brand image → image sideload. #6 disclaimer → Task 5c. #7 announcement-bar → likely auto-resolves under WS-4 (parked till then). #8 slider → ✅ done (uncommitted, needs live verify).
+
 ## Branch + state
 - **Branch:** `main` (a parallel THEME thread is co-active on this tree — now at D162; commit by explicit path, verify `git log -1 --stat`). No long-lived branch — commit fidelity work to main or a fresh SHORT-LIVED branch.
 - **Canary page 144** (`/rc-fix-verification-mamas-munches/` on sandybrown) reflects the last re-clone (run `mamas-munches-144-2026-06-02-224706`). Pixel-diff informational per FR-22-18 — never cite a single number as a gate; the systemic transfer gaps are WHY (wrong widths, dropped `__inner` wrappers, imposed gradient).
