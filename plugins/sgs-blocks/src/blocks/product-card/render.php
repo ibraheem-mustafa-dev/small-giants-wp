@@ -182,7 +182,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			<?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped. ?>
 	data-wp-interactive="sgs/product-card"
 			<?php echo wp_interactivity_data_wp_context( $context ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns escaped attribute markup. ?>
-	data-wp-on--sgs:option-selected="actions.handlePillSelect"
+	data-wp-init="callbacks.initPillBridge"
 >
 			<?php if ( '' !== $image_src ) : ?>
 		<img
@@ -374,7 +374,7 @@ $wrapper_attributes = get_block_wrapper_attributes( $bound_args );
 	<?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped. ?>
 	data-wp-interactive="sgs/product-card"
 	<?php echo wp_interactivity_data_wp_context( $context ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns escaped attribute markup. ?>
-	data-wp-on--sgs:option-selected="actions.handlePillSelect"
+	data-wp-init="callbacks.initPillBridge"
 >
 	<?php if ( '' !== $data['image_url'] ) : ?>
 		<img
