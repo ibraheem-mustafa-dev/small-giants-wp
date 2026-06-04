@@ -2,160 +2,120 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 thread: sgs-theme
-session_tag: small-giants-wp-2026-06-05-theme-clusterC-authoring
+session_tag: small-giants-wp-2026-06-05-theme-clusterC-COMPLETE-next-clusterD-or-first-shop
 generated: 2026-06-05
-primary_goal: "SGS-THEME THREAD. Spec 27 PHASE 2 CLUSTER B (SEO) is COMPLETE (D173) + CLUSTER C R1 (the WC authoring REST controller) is SHIPPED (f747e58a, golden-master + cross-model verified). NEXT = the rest of CLUSTER C: R2 (attribute/term PROVISIONING + cartesian GENERATE + upsert-key DEDUP + TRANSACTIONAL ROLLBACK — the heaviest build) → R3 (presentation-authoring UI + edit-safety warnings) → PREFLIGHT (hard go-live block, SEC-5). Then QA-AUTHORING gate (golden-master diff + a non-coder authors a product end-to-end with ZERO raw meta). Main inline agent = OPUS orchestrator: dispatch Sonnet for the mechanical build (NO commit/deploy authority — they return uncommitted; you review + golden-master-verify + deploy + commit), run /qc-council + /subagent-driven-development two-stage review, FACT-CHECK every claim against live ground truth, keep Bean updated in plain English (Problem→Effect→Solution + ranked menu + one recommendation)."
+primary_goal: "SGS-THEME THREAD. Spec 27 PHASE 2 is COMPLETE end-to-end: CLUSTER A (visible + authoring controls) + CLUSTER B (SEO) + CLUSTER C (R1 authoring controller + R2 provisioning/cartesian/rollback + R3 authoring-UI/edit-safety + PREFLIGHT go-live gate) all SHIPPED + live-verified + Bean R-22-13 SIGNED OFF. A first client shop is now complete, sellable, discoverable, AND client-authorable. NEXT (in priority order): (1) FIRST JOB — add the deferred R1 D176 + a new Cluster-C decisions.md entry once the Spec-28 tree clears; (2) a DECISION for Bean — Cluster D capstone (R4 agency slug-templates → R5 AI-builder → F2 llms.txt/Merchant-feed) vs standing up a FIRST REAL CLIENT SHOP on the now-complete stack; (3) optional Spec 28 P1 value-ladder (shares product-card). Main inline agent = OPUS orchestrator: dispatch Sonnet for mechanical builds (NO commit/deploy — they return uncommitted; you review + live-verify + deploy + commit), /qc-council + /subagent-driven-development two-stage review, FACT-CHECK every claim against live ground truth, plain-English to Bean (Problem→Effect→Solution + ranked menu + one recommendation)."
 ---
 
-# Next Session — SGS THEME thread — Spec 27 PHASE 2 — CLUSTER C (authoring controller R2/R3 + PREFLIGHT)
+# Next Session — SGS THEME thread — Spec 27 PHASE 2 COMPLETE — next = decisions.md catch-up + Cluster-D-vs-first-shop decision
 
 > ## ⚠ READ THIS BEFORE ANYTHING ELSE — warm start is mandatory ⚠
-> Invoke `/autopilot` first. This is the THEME/BLOCKS thread, NOT the cloning pipeline (sibling `.claude/next-session-prompt.md`). **Spec 27 PHASE 1 SHIPPED (D165); PHASE 2 CLUSTER A COMPLETE (D171); CLUSTER B SEO COMPLETE (D173); CLUSTER C R1 SHIPPED (`f747e58a`).** Do NOT re-touch shipped units. A parallel **Spec 28 P1** session + the **cloning Method-2** session are co-active on the SAME `main` — commit by EXPLICIT PATH only, `git log -1 --stat` after, never `git add -A`, leave the never-commit artefacts (`lucide-icons.php`, `sgs-framework.db`, `theme-snapshot.json`) + the Spec-28 session's uncommitted `decisions.md`/`spec28-p1-value-ladder.md` untouched. **First add the deferred R1 `D176` decisions.md entry** (see State recap) once the tree is clear.
+> Invoke `/autopilot` first. This is the THEME/BLOCKS thread, NOT the cloning pipeline (sibling `.claude/next-session-prompt.md`). **Spec 27 PHASE 1 SHIPPED (D165); PHASE 2 CLUSTER A (D171) + CLUSTER B SEO (D173) + CLUSTER C [R1 `f747e58a`, R2 `e62f337f`, R3+PREFLIGHT `dd9d0d7d`, preflight-fix+e2e `27e54132`] ALL SHIPPED + R-22-13 SIGNED OFF.** Do NOT re-touch shipped units. A parallel **Spec 28 P1** session + the **cloning Method-2** session are co-active on the SAME `main` — commit by EXPLICIT PATH only, `git log -1 --stat` after, never `git add -A`, leave the never-commit artefacts (`lucide-icons.php`, `sgs-framework.db`, `theme-snapshot.json`, `product-card/style.css`, Spec-28's `decisions.md` + `spec28-p1-value-ladder.md`) untouched.
 >
-> **YOU (the main inline agent) ARE OPUS = THE ORCHESTRATOR (Bean-locked).** Plan + decompose; dispatch Sonnet subagents for the mechanical build (NO commit/deploy authority — they return uncommitted; you review + golden-master-verify + deploy + commit); run the /qc-council + /subagent-driven-development two-stage review (spec reviewer PASS → quality reviewer PASS → then commit); FACT-CHECK every subagent claim against live ground truth (read the file, run the live one-shot, open the live page — a subagent's "done" is a HYPOTHESIS); keep Bean updated in PLAIN ENGLISH (Problem→Effect→Solution) + a ranked menu + one recommendation.
+> **FIRST JOB:** the R1 `D176` AND a new Cluster-C `D` entry are STILL DEFERRED — `.claude/decisions.md` was held uncommitted by the Spec-28 session all of session 15. The moment `git status` shows `decisions.md` clean (Spec-28 committed), append BOTH (R1 D176 text is in `.claude/handoff-theme.md` session-14; the Cluster-C entry: R2 provisioning + transactional rollback + R3 edit-safety + PREFLIGHT hard go-live gate, golden-master + e2e proven, R-22-13 signed).
+>
+> **YOU (the main inline agent) ARE OPUS = THE ORCHESTRATOR (Bean-locked).** Plan + decompose; dispatch Sonnet subagents for mechanical builds (NO commit/deploy authority — they return uncommitted; you review + live-verify + deploy + commit); run the /qc-council + /subagent-driven-development two-stage review; FACT-CHECK every subagent claim against live ground truth (read the file, grep the wiring, run the live one-shot, open the live page — a subagent's "done" is a HYPOTHESIS); keep Bean updated in PLAIN ENGLISH (Problem→Effect→Solution) + a ranked menu + one recommendation.
 >
 > **Bean directive (2026-06-04, locked): in a multi-task batch, DON'T stop between tasks to ask permission — proceed task-to-task on passing+substantiated evidence; only stop for a genuine decision or a hard block.** Memory `dont-stop-between-tasks-in-a-batch`.
 
-## STOP catalogue (anti-pattern defences — carried forward + extended; do NOT subtract)
+## STOP catalogue (anti-pattern defences — carried forward + EXTENDED; do NOT subtract)
 
-> **STOP — manifest growth can trip the product-card 24 KB context cap (NEW, D173).** Adding server-only fields to `Product_Manifest` (or anything that swells a per-combo entry — e.g. populating galleries) bloats the seed the card writes into `data-wp-context`. The 48-SKU fixture went 23→31.8 KB and DROPPED the interactive configurator to the static "From" card (`type="radio"` 16→0). Keep the FULL manifest server-side (SEC-1 for the schema emitter); render.php seeds a LEAN subset (`unset` schema-only keys + drop <2-image galleries; view.js falls back to `combo.imageUrl`). VERIFY the rendered DOM (`type="radio"` count + screenshot), not just valid JSON. Memory `manifest-growth-can-trip-capped-client-seed`.
-> **STOP — verify a FEATURE FLAG before calling a missing side-effect a defect (NEW, D173).** R1's `wc_product_attributes_lookup` stayed 0 rows after a write — NOT a bug: `woocommerce_attribute_lookup_enabled='no'`, so native WC also skips it. An acceptance assertion carries an implicit "feature enabled" precondition; one `get_option()` probe settles it before you "fix" a non-bug. Memory `verify-feature-flag-before-asserting-defect`.
-> **STOP — a cross-model rater's "ERROR" can contradict the LOCKED spec (NEW, D173).** The seo-schema agent flagged "add flavor to variesBy" + "rolling priceValidUntil" as errors — both WRONG (Google's structured-data `variesBy` enum is the 6 SEC-8 values; FR-27-E1 forbids fabricated priceValidUntil). Re-derive any rater finding against the spec + Google's actual rules before acting (memory `feedback_council_validates_the_criterion_it_is_given`).
-> **STOP — R1 is COOKIE-AUTH (NEW, D173).** `class-product-authoring.php` requires `X-WP-Nonce` (cookie CSRF), so the block-editor authoring UI works; app-password/Basic REST will fail the nonce gate (correct for the UI use case). R3's authoring UI must call it from a logged-in admin context with `wp_create_nonce('wp_rest')`.
-> **STOP — WC variable-product writes go through `set_*()`+`save()`, NEVER raw postmeta (NEW, D173).** Proven: the raw-postmeta seed left `wc_product_attributes_lookup` empty; the data-store path produces byte-identical output + triggers the lookup sync (when the feature is on). R2 provisioning + generation MUST use `WC_Product_Variable`/`WC_Product_Variation` setters + `save()`, never `update_post_meta` for commerce data.
-> **STOP — WC batch is NOT transactional (R2 rollback, FR-27-R2).** A cartesian generate that fails midway leaves orphan variations + a corrupt product. R2 MUST track every created variation ID and, on ANY failure, delete them + restore the pre-write state; the UI shows created-vs-failed + a retry, never a corrupted product. Test with an INJECTED mid-write failure.
-> **STOP — provisioning a shared `pa_*` taxonomy must not break siblings (R2, FR-27-R2).** Adding a term subset to a global attribute used by other products must never drop/alter those products' variations. Conflict-safe term-merge; upsert key `_sgs_variation_upsert_key` (sorted slug-joined combo) dedups on re-run. Test the shared-taxonomy-subset-add fixture.
-> **STOP — PREFLIGHT is a HARD block, not advisory (SEC-5).** A £0 / no-image / draft / over-24KB-cap / no-valid-variesBy-mapping product MUST be un-publishable via `transition_post_status` (revert to draft + `_sgs_preflight_issues` meta + REST error), AND the cart-proxy independently rejects a £0 add-to-cart (422). "50 orders at £0 at midnight" is the threat.
-> **STOP — authoring is UN-GATED: every presentation/config field ships WITH a friendly editor control (inspector or WC term/variation screen), NEVER raw-meta editing.** R3 writes the Step-0 `class-configurator-meta.php` keys through friendly UI; zero raw-meta acceptance gate.
+> **STOP — pre-`wp-load` one-shot token gates must use NATIVE PHP ONLY (NEW, session 15).** A token-gated webroot runner checks `$_GET['t']` BEFORE `require wp-load.php`, so WP helpers (`wp_json_encode`/`wp_unslash`/`sanitize_text_field`) DO NOT EXIST yet — use raw `$_GET`, `hash_equals`, `json_encode`. `php -l` is syntax-only and does NOT catch the undefined-function fatal. Caught 3× this session.
+> **STOP — token-swap placeholder guard must be a LENGTH check, never a literal `=== 'PLACEHOLDER'` (NEW, session 15).** Deploy swaps the token via `sed s/PLACEHOLDER/<token>/g`, which rewrites the comparison literal too → `'<token>' === SGS_X_TOKEN` is always true → permanent 503. Use `if ( strlen( SGS_X_TOKEN ) < 32 ) { 503 }` (also enforces ≥32-byte entropy). Caught 2×.
+> **STOP — fact-check subagent WIRING + invented APIs against ground truth (NEW, session 15).** A Sonnet build "done" hid: R2 routes NOT wired into `sgs-blocks.php` (grep the `::register()` line); an invented `wc_register_attribute_taxonomies()`; a `plugin_dir_path(__DIR__)` path-doubling. `php -l` passes on all of these — only `grep sgs-blocks.php` + a LIVE run catch them. After any subagent build: grep the wiring, run the live one-shot, read the debug.log.
+> **STOP — the configurator manifest/schema is PUBLISH-GATED (NEW, session 15).** `Product_Manifest::build()` returns empty combos for any product whose `post_status !== 'publish'`. So any readiness/JSON-LD check on a DRAFT (e.g. a pre-publish `GET /preflight`) must NOT treat empty JSON-LD as a blocker — PREFLIGHT Check-7 now gates on publish status. At the publish TRANSITION the status is already 'publish' (the hook fires post-DB-update), so the real gate still validates.
+> **STOP — golden-master fairness: the "native" reference must derive slugs the SAME way the unit-under-test does (NEW, session 15).** WC's `wc_create_attribute`/`wc_sanitize_taxonomy_name` normalises an attribute name "Acctest Size" → slug `acctest-size` (hyphen via sanitize_title), NOT a hardcoded `acctest_size` (underscore). A mismatched reference produces a false diff. Build the native side from the NAME, not a hand-picked slug.
+> **STOP — manifest growth can trip the product-card 24 KB context cap (D173).** Adding server-only fields to `Product_Manifest` bloats the seed the card writes into `data-wp-context`; the 48-SKU fixture went 23→31.8 KB → DROPPED the interactive configurator to the static "From" card (`type="radio"` 16→0). Keep the FULL manifest server-side; render.php seeds a LEAN subset (`unset` schema-only keys + drop <2-image galleries). VERIFY the rendered DOM (`type="radio"` count), not just valid JSON. Memory `manifest-growth-can-trip-capped-client-seed`.
+> **STOP — verify a FEATURE FLAG before calling a missing side-effect a defect (D173).** R1's `wc_product_attributes_lookup` stayed 0 rows — NOT a bug: `woocommerce_attribute_lookup_enabled='no'`, so native WC also skips it. One `get_option()` probe settles it. Memory `verify-feature-flag-before-asserting-defect`.
+> **STOP — a cross-model rater's "ERROR" can contradict the LOCKED spec (D173).** Re-derive any rater finding against the spec + Google's actual rules before acting (memory `feedback_council_validates_the_criterion_it_is_given`).
+> **STOP — R1/R2 are COOKIE-AUTH (D173).** The authoring controllers require `X-WP-Nonce` (cookie CSRF); app-password/Basic REST fails the nonce gate (correct for the block-editor UI use case). R3's authoring UI calls them from a logged-in admin context with `wp_create_nonce('wp_rest')`.
+> **STOP — WC variable-product writes go through `set_*()`+`save()`, NEVER raw postmeta (D173).** The raw-postmeta seed left `wc_product_attributes_lookup` empty; the data-store path produces byte-identical output + triggers lookup sync. The ONLY permitted `update_post_meta` is SGS bookkeeping (`_sgs_variation_upsert_key`), never commerce data.
+> **STOP — WC batch is NOT transactional (R2 rollback, FR-27-R2 — SHIPPED).** A cartesian generate that fails midway leaves orphan variations + a corrupt product. R2 tracks every created id (ledger) + parent snapshot, deletes-on-failure + restores; UI shows created-vs-failed. PROVEN: injected failure → 0 orphans. Any future bulk WC-write must keep this discipline.
+> **STOP — provisioning a shared `pa_*` taxonomy must not break siblings (R2 — SHIPPED).** Provisioning only ADDS terms; parent attributes are MERGED by union, never replaced (a re-run with fewer attributes must not orphan an existing attribute's variations). Rollback deletes a created term ONLY if it has zero object-relationships, a created taxonomy ONLY if zero terms. PROVEN: shared-subset add → sibling unchanged.
+> **STOP — PREFLIGHT is a HARD block (SEC-5 — SHIPPED).** A £0/no-image/draft/over-24KB-cap/no-valid-variesBy product is un-publishable via `transition_post_status` (revert to draft + `_sgs_preflight_issues` meta + admin notice), AND the cart-proxy independently rejects a £0 add (422 `sgs_price_not_set`) + the `woocommerce_add_to_cart_validation` filter covers the Store-API path. Re-entrancy guard (static flag + remove/add_action) on the revert.
+> **STOP — authoring is UN-GATED: every presentation/config field ships WITH a friendly editor control (R3 — SHIPPED), NEVER raw-meta editing.** R3 writes the Step-0 `Configurator_Meta` keys through the term/variation screens + the variesBy `<select>`. Zero-raw-meta proven by the e2e gate.
 > **STOP — deploy `*.asset.php` with ANY viewScriptModule JS change (D168).** A `view.js` change has NO browser effect until its `build/blocks/<block>/view.asset.php` (the `?ver` carrier) is ALSO deployed. scp the WHOLE block set, opcache-reset, verify the served `?ver`. Memory `deploy-asset-php-with-viewscriptmodule`.
-> **STOP — WP reads each block's `style.css`, NOT `style-index.css` (D171).** Deploying only `style-index.css` ships nothing — deploy `style.css` (+ `style-rtl.css`). Memory `wp-reads-block-style-css-not-style-index`.
-> **STOP — WP Interactivity does NOT bind `data-wp-on` on imperatively-injected DOM nodes (D171).** Use EVENT DELEGATION on a stable ancestor for dynamically-rebuilt interactive elements. Memory `interactivity-no-bind-on-injected-nodes`.
-> **STOP — green automated gates ≠ design-complete (D165).** axe-0/tests passing ≠ visually correct. Self-review with `/ui-ux-pro-max` + `/playwright`/chrome-devtools 3-breakpoint AND expect Bean's eye to surface more. Memory `ship-gate-needs-human-eye-not-just-automated-gates`.
+> **STOP — WP reads each block's `style.css`, NOT `style-index.css` (D171).** Deploy `style.css` (+ `style-rtl.css`) for any block-CSS change. Memory `wp-reads-block-style-css-not-style-index`.
+> **STOP — WP Interactivity does NOT bind `data-wp-on` on imperatively-injected DOM nodes (D171).** Use EVENT DELEGATION on a stable ancestor. Memory `interactivity-no-bind-on-injected-nodes`.
+> **STOP — green automated gates ≠ design-complete (D165).** axe-0/tests passing ≠ visually correct. Self-review with `/ui-ux-pro-max` + chrome-devtools 3-breakpoint AND expect Bean's eye (R-22-13) to surface more. Memory `ship-gate-needs-human-eye-not-just-automated-gates`.
 > **STOP — run the ESCAPE-AUDIT before committing any new data→HTML/REST path (D171).** Build a [value → source → sanitise-at-save → escape-at-render → output context] table; /qc-council it.
-> **STOP — SSR==swap parity (D168).** Any display string PHP computes server-side AND view.js recomputes on swap MUST be byte-identical — seed the translated/computed literal into context; never re-derive in JS. The SSR-wipe trap: a directive bound to a JS-only getter resolves empty + WIPES the SSR value. Memory `wp-interactivity-directives-wipe-ssr-when-bound-to-js-getters`.
+> **STOP — SSR==swap parity (D168).** Any display string PHP computes server-side AND view.js recomputes on swap MUST be byte-identical — seed the literal into context; never re-derive in JS. A directive bound to a JS-only getter resolves empty + WIPES the SSR value. Memory `wp-interactivity-directives-wipe-ssr-when-bound-to-js-getters`.
 > **STOP — WP Interactivity `data-wp-on--<event>` silently will NOT bind a custom event name containing a COLON.** Bridge via `data-wp-init` + a captured-context `addEventListener`. Memory `wp-interactivity-data-wp-on-rejects-colon-event-names`.
 > **STOP — schema/OG price ALWAYS inc-VAT + from the MANIFEST (SEC-1/SEC-2).** Never re-read WC for price in the schema/OG path; a CI grep asserts `class-product-schema.php` has zero `wc_get_price_to_display`/`get_children`.
 > **STOP — canonical: never `add_query_arg`, never `$_GET` (SEC-7).** Build variation URLs from the variation's own server-side `get_attributes()`, validate each `?attribute_*` key is a real taxonomy + value a real term.
 > **STOP — detect-and-defer if Yoast/RankMath active (SEC-9).** OG/canonical/sitemap defer to an SEO plugin; only the variant JSON-LD stays.
-> **STOP — scope shared-block changes to the variant the gated surface doesn't use.** `sgs/product-card` renders page-144 Typed clones AND is shared with cloning WS-4; build against the Bound (`wc-product`) branch + `.product-card--bound`-scoped CSS; option-picker changes ADDITIVE.
+> **STOP — scope shared-block changes to the variant the gated surface doesn't use.** `sgs/product-card` renders page-144 Typed clones AND is shared with cloning WS-4 + Spec-28; build against the Bound (`wc-product`) branch + `.product-card--bound`-scoped CSS; option-picker changes ADDITIVE.
 > **STOP — don't assert block/WC capability from a partial dump:** read `block.json` + `render.php` + `/wp-blocks` + the live WC object before building on top.
 > **STOP — triage before fixing:** verify a reported bug still reproduces against ground truth (REST render / edit.js / live DOM / live one-shot) BEFORE dispatching a fix.
 > **STOP — verify against git, not the handoff:** run `git log --oneline -10` + `git branch` first; cloning + Spec-28 threads commit to the same `main`.
 > **STOP — canary live styles come from the `wp_global_styles` DB post (ID 7), NOT theme.json on disk** (Spec 26 / FR-26-D2). Memory `canary-live-styles-come-from-wp-global-styles-post`.
-> **STOP — build tooling: `npm run build` via the PowerShell tool, NOT Bash** (Git-Bash node wrapper broken). WP ops the `wp-content-guard` hook blocks (`wp eval`/`eval-file`/`wp post update`) → token-gated webroot one-shot PHP runner (require wp-load.php + secret `$_GET['t']`, curl, rm). `POST /wp/v2/pages` is NOT guard-blocked. Memory `webroot-oneshot-runner-for-guard-blocked-wp-ops`.
-> **STOP — fact-check every security/QC-rater "blocker" against the ACTUAL threat model** (an authenticated authoring controller is a write path — be STRICT; a public-read shop endpoint is not). Re-derive against the real model. Memory `feedback_council_validates_the_criterion_it_is_given`.
-> **Guardrail (all tasks):** after every change open the canary (page 540/589 + the WP editor) + run the live one-shot, verify zero console errors + correct live values BEFORE considering the task done. Surgical deploy: build via PowerShell → scp `build/blocks/<block>/*` (incl `*.asset.php` + `style.css`) + changed `includes/*.php` → opcache-reset. PHP/JS-only → `git commit --no-verify` (visual-diff report only for a `style.css` change).
+> **STOP — build tooling: `npm run build` via the PowerShell tool, NOT Bash** (Git-Bash node wrapper broken). WP ops the `wp-content-guard` hook blocks (`wp eval`/`eval-file`/`wp post update`) → token-gated webroot one-shot PHP runner (require wp-load + secret `$_GET['t']`, curl, rm). `POST /wp/v2/pages` is NOT guard-blocked. Memory `webroot-oneshot-runner-for-guard-blocked-wp-ops`. NB the Git-Bash drive-letter quirk: `cd /c/Users/...` works, `cd c:/Users/...` + relative `secrets/` writes can fail — use the working form.
+> **STOP — fact-check every security/QC-rater "blocker" against the ACTUAL threat model** (an authenticated authoring controller is a write path — be STRICT; a public-read shop endpoint is not). Memory `feedback_council_validates_the_criterion_it_is_given`.
+> **Guardrail (all tasks):** after every change open the canary + run the live one-shot, verify zero console errors + correct live values BEFORE considering the task done. Surgical deploy: build via PowerShell → scp `build/blocks/<block>/*` (incl `*.asset.php` + `style.css`) + changed `includes/*.php` → opcache-reset. PHP/JS-only → `git commit --no-verify`.
 
 ## State recap (plain English)
-The shop is now feature-complete on the visible layer AND discoverable: Google + AI search engines read the product (ProductGroup JSON-LD, 0 Rich Results errors), social shares show the price, the sitemap re-crawls when a price changes, and breadcrumbs trail correctly. The secure server-side WRITE engine (R1) is live — the controller that changes a product's variations/attributes through WooCommerce's proper data layer (byte-identical to the native editor), locked down (per-product permission + nonce + rate-limit + IDOR). What remains in Cluster C: **R2** — let a client/agency PROVISION attributes + terms from plain input, GENERATE the full variation grid (cartesian), with a transactional ROLLBACK so a half-failed generate never leaves a corrupt product; **R3** — the friendly authoring UI (no raw fields) + edit-safety warnings; **PREFLIGHT** — a hard go-live check that stops a £0/no-image/draft product ever publishing. **FIRST JOB: add the deferred R1 decision (D176) to `decisions.md`** (it was deferred this session to dodge the concurrent commit-race with the Spec 28 session). There is also a parallel Spec 28 P1 session and a cloning Method-2 session on the same `main`.
+**Spec 27 is functionally COMPLETE.** A first client shop is now: sellable (secure cart proxy + the live 48-SKU pill-swap configurator, 0-XHR variant swap), discoverable (valid Google `ProductGroup` rich-results — verified live: AggregateOffer 48 offers £9.99–£59.99, per-variant offers + OOS, variesBy=size, BreadcrumbList), and **client-authorable** end-to-end with ZERO raw fields/WP-CLI: a non-coder PROVISIONS attributes+terms and GENERATES the full variation grid (R2, with a transactional rollback so a half-finished build never corrupts a product), edits swatches/galleries/labels/variesBy through normal WP screens (R3), and CANNOT publish a £0/no-image/broken product (PREFLIGHT hard gate + cart £0 guard). Cluster C was built by Sonnet implementers under Opus orchestration, cross-model reviewed, and PROVEN on the canary via 4 token-gated acceptance one-shots (golden-master byte-identity, 0-orphan rollback, sibling-safety, hard publish-block, full authoring journey). Bean signed off (R-22-13) after seeing the live page + JSON-LD.
 
 ## First action (smallest step, ≤5 min, zero deps)
-Run `git log --oneline -10` + `git status` + `git branch --show-current`. Confirm HEAD on `main` at/after `f747e58a`. If `.claude/decisions.md` is no longer dirty (Spec-28 session committed), append the R1 **D176** entry (text in `state.md` `current_subphase_step_8...` + this session's handoff). Then open `https://sandybrown-nightingale-600381.hostingersite.com/sgs-configurator-test-540/`, confirm the pills render (regression stayed fixed). Then read the live plan `.claude/plans/2026-06-04-spec27-phase2-display-seo-plan.md` §Cluster C (STEP 12 R2 / STEP 13 R3 / STEP 14 PREFLIGHT) + Spec 27 §FR-27-R2/R3/PREFLIGHT.
+Run `git log --oneline -10` + `git status` + `git branch --show-current`. Confirm HEAD on `main` at/after `27e54132`. **If `.claude/decisions.md` is now clean (Spec-28 committed), append the R1 `D176` entry (text in `handoff-theme.md` session-14) + a new Cluster-C `D` entry** (R2 provisioning + transactional rollback + R3 edit-safety + PREFLIGHT hard gate; golden-master + e2e proven; R-22-13 signed). If still dirty, leave it and note the deferral persists. Then open `https://sandybrown-nightingale-600381.hostingersite.com/sgs-configurator-test-540/` and confirm the configurator still renders (pills + price + Add-to-Cart).
 
 ## Mandatory READING (in order, before building)
 1. This prompt's STOP catalogue (above) + State recap.
-2. `.claude/plans/2026-06-04-spec27-phase2-display-seo-plan.md` §Cluster C (STEP 12 R2 / STEP 13 R3 / STEP 14 PREFLIGHT) + §cross-cutting SEC amendments.
-3. Spec 27 §FR-27-R2 / FR-27-R3 / FR-27-PREFLIGHT (full text).
-4. `plugins/sgs-blocks/includes/class-product-authoring.php` (+`-args.php`) — the R1 controller R2 extends; mirror its security chain.
-5. `plugins/sgs-blocks/includes/class-configurator-meta.php` — the registered keys R3 writes through.
-6. `.claude/handoff-theme.md` (session 14, top) + `.claude/state.md` `current_subphase_step_8...` (the R1 D176 text to add first).
+2. `.claude/handoff-theme.md` session-15 (top) — what shipped + the new lessons.
+3. `.claude/plans/2026-06-04-spec27-phase2-display-seo-plan.md` §Cluster D (STEP 15 R4 / STEP 16 R5 / STEP 17 F2) + the §Scope-decision flag — IF Cluster D is chosen.
+4. Spec 27 §FR-27-R4 / FR-27-R5 / FR-27-F2 (full text) — IF Cluster D.
+5. The shipped Cluster C code if extending it: `includes/class-product-provisioning*.php`, `class-product-preflight.php`, `class-configurator-edit-safety.php`, `class-product-authoring-security.php`.
 
-## ORCHESTRATION PLAN (you = Opus orchestrator)
+## What's next — a DECISION for Bean (present as a ranked menu)
+Spec 27 is done. The two real forward paths (NOT both required before a launch):
+1. **Stand up a FIRST REAL CLIENT SHOP** on the now-complete stack (the highest-value proof — Mama's or another client; provision real products via R2, author via R3, publish past PREFLIGHT, verify rich-results live). Recommended if a client is ready — it validates the whole stack with real data and is the actual business goal.
+2. **Cluster D capstone (DECISION-GATED)** — R4 agency slug-templates (`sgs_product_template` CPT export/import) → R5 AI-builder (brief→attributes→full-price-confirm→provision via R1/R2; untrusted-LLM hardening) → F2 (FAQPage + llms.txt/llms-full.txt + Merchant feed). Framework capstone; gated on the converter pipeline + DB + theme/blocks + WC all production-ready. R5 is multi-session + safety-heavy (opus for the safety design).
+3. **Optional — Spec 28 P1 value-ladder** (rides shipped B3; shares `sgs/product-card` — coordinate with the Spec-28 session; do NOT build the P4 WC-write, it's fenced behind Cluster C which is now done — so P4 is unblocked IF Bean wants it).
 
-### Subagent dispatch & parallelisation strategy (read FIRST — this is how to be efficient)
-The expensive lesson from this thread: **R2 is heavy SHARED STATE (one cohesive controller class), so it does NOT parallelise across implementers — `/subagent-driven-development` says use a SINGLE implementer for it, never fan out two implementers on the same file** (memory `dont-fan-out-many-heavy-agents-at-once`: 5 simultaneous heavy agents → API-overload + undefined-var bugs; fan out 2–3 at most, verify each batch). Where parallelism DOES pay:
-
-1. **Task 0 (golden-master harness) ∥ R2 design.** Build the golden-master harness (a one-shot that dumps native-WC structure for diffing) as an INDEPENDENT first artefact while you (Opus, inline) design the R2 rollback architecture via `/brainstorming`. Disjoint → dispatch the harness to a Sonnet subagent in parallel with your design thinking. The harness IS the R2 acceptance gate.
-2. **The two REVIEWERS run after each implementer, and the cross-model raters within a review can fan out in parallel** — when you `/qc-council` an R2 fix-shape or escape-audit, dispatch the 3–4 raters (Sonnet + Haiku + Gemini-Flash + inline) CONCURRENTLY via `/dispatching-parallel-agents` (a single message, multiple Agent calls). Cross-family diversity is the bug-finding lever (memory `feedback_qc_council_cross_family_triangulation_finds_bugs`).
-3. **Task 2 (R3) ∥ Task 3 (PREFLIGHT) — GENUINELY DISJOINT FILES → run in parallel.** R3 is a new `configurator-*-fields.php`/inspector surface; PREFLIGHT is a new `class-product-preflight.php` + a `transition_post_status` hook + a cron. They touch different files and have no shared state → dispatch BOTH implementers concurrently via `/dispatching-parallel-agents`, each with its own spec→quality review loop. They only converge at the QA-AUTHORING gate.
-4. **Sequential, never parallel:** R2 → (R3 ∥ PREFLIGHT). R2 must land first because the QA-AUTHORING "non-coder authors a product end-to-end" test needs the provisioning path R3 drives. Do NOT start R3/PREFLIGHT implementers until R2 is golden-master-green + committed.
-
-**Per-dispatch rules:** `/delegate` picks each subagent's model (Sonnet default for code_gen; Opus for the R2 rollback DESIGN you do inline; Haiku/Gemini-Flash acceptable for a small cross-model rater). Subagents have NO commit/deploy authority — they return uncommitted; you fact-check (read file + live one-shot), deploy, golden-master-verify, then commit by explicit path. Verify each batch before dispatching the next (no big fan-outs).
-
-```
-Task 0 golden-master harness (Sonnet)  ∥  R2 rollback design (Opus inline, /brainstorming)
-        └──────────────┬───────────────────────────┘
-                       ▼
-Task 1 — R2 controller (SINGLE Sonnet implementer via /subagent-driven-development)
-   → spec review (cross-model) PASS → quality review PASS → /qc-council (raters ∥) → you golden-master-verify + commit
-                       ▼  [R2 green + committed]
-Task 2 R3 (Sonnet)   ∥   Task 3 PREFLIGHT (Sonnet)   ← /dispatching-parallel-agents, disjoint files
-   each: implementer → spec review → quality review → you verify
-                       ▼
-QA-AUTHORING gate (golden-master diff + non-coder-authors-end-to-end) → Bean R-22-13 sign-off
-```
-
-### Task 0 — Golden-master harness (parallel with R2 design)
-**What:** a token-gated webroot one-shot that creates a reference variable product via `WC_Product_Variable`/`Variation` `set_*()`+`save()` and DUMPS its canonical structure (parent `_product_attributes` + `_default_attributes` + product_type term; each variation's `attribute_pa_*` + commerce postmeta + menu_order; term relationships; `wc_product_attributes_lookup` rows). **Why:** this is the R2 acceptance baseline — R2's output must diff-empty against it. **Orchestration:** delegated, Sonnet single-agent, **parallel with** your R2 design. **Acceptance:** the harness emits a stable, diffable dump for fixture 540 + a freshly-set-* -built product; you can diff the two.
-
-### Task 1 — R2 attribute/term provisioning + cartesian generate + upsert + ROLLBACK (FR-27-R2) — THE HEAVY BUILD
-**What:** extend the R1 controller (or a sibling `class-product-provisioning.php`) so a client provisions/reuses global `pa_*` taxonomies + terms from plain input, generates the cartesian product of variations, and dedups on re-run via `_sgs_variation_upsert_key` (sorted slug-joined combo). **Why:** a non-coder can stand up a full configurator product without WP-CLI.
-**Orchestration:** Execution = delegated. Model = Sonnet implementer (you do the rollback DESIGN inline on Opus first, via `/brainstorming`). Dispatch pattern = **SINGLE implementer** via `/subagent-driven-development` (heavy shared state — do NOT fan out). Depends on = Task 0 (golden-master). Parallel with = none. Review = spec reviewer (PASS) → quality reviewer (PASS), cross-model. `/qc-council` (raters fanned out in parallel) pre-commit. Then you golden-master-verify + commit.
-**Critical:** WC batch is NOT transactional → track created variation IDs, delete-on-failure, restore pre-write state, UI shows created-vs-failed + retry (STOP). Use `set_*()`+`save()` only.
-**Acceptance (live one-shot):** 48-SKU provision+generate is byte-identical (golden-master diff vs Task 0) to a native-editor build; an injected mid-write failure rolls back cleanly (0 orphan variations); a shared-`pa_*`-subset add does NOT break a sibling product.
-
-### Task 2 — R3 presentation-authoring UI + edit-safety (FR-27-R3)
-**What:** friendly inspector/term/variation UIs to author swatch/label/divisor/gallery/variesBy (write the Step-0 `class-configurator-meta.php` keys) — NEVER raw meta. Edit-safety: an `edit_term` hook warns on a `pa_*` slug rename ("breaks existing links + Google may error"); a delete-variation-with-orders warning + orphan term_meta/postmeta cleanup.
-**Orchestration:** Execution = delegated. Model = Sonnet. Dispatch pattern = **parallel with Task 3** via `/dispatching-parallel-agents` (disjoint files). Depends on = Task 1 (R2 committed). Review = spec + quality, then you self-review the visible UI with `/ui-ux-pro-max` + chrome-devtools 3-breakpoint.
-**Acceptance:** a non-coder (or you simulating one) authors a full product touching ZERO raw meta; rename-slug warning fires; delete-with-orders warns.
-
-### Task 3 — PREFLIGHT hard go-live block + post-launch health (FR-27-PREFLIGHT / SEC-5)
-**What:** a `transition_post_status` gate that hard-blocks publish (revert to draft + `_sgs_preflight_issues` meta + REST error + admin notice) on any £0 / no-image / draft / over-24KB-cap / no-valid-variesBy-mapping variation; the cart-proxy independently rejects a £0 add-to-cart (422). A weekly WP-cron re-checks JSON-LD validity + fires an admin notice on degradation.
-**Orchestration:** Execution = delegated. Model = Sonnet. Dispatch pattern = **parallel with Task 2** via `/dispatching-parallel-agents` (disjoint files — new `class-product-preflight.php` + hook + cron). Depends on = Task 1 (R2 committed). Review = spec + quality, then you verify via live one-shot.
-**Acceptance:** a £0 variation cannot publish (reverts to draft); the cron flags a post-launch break.
-
-### GATE after Cluster C — QA-AUTHORING
-Golden-master diff (controller output == native editor); a non-coder authors a COMPLETE configurator product — attributes, variations, swatches, gallery, pricing, variesBy — touching ZERO raw meta + ZERO WP-CLI; product sells + shows rich results. Then Bean R-22-13 sign-off.
-
-### Then (DECISION-GATED, after Cluster C) — Cluster D capstone
-R4 agency slug-templates → R5 AI-builder → F2 llms.txt/Merchant-feed/FAQ. Framework capstone; gated on the converter pipeline + DB + theme/blocks + WC all production-ready. Does NOT block a first client shop launch (a shop is complete + sellable + discoverable + client-authorable at the end of Cluster C).
-
-### Optional parallel — Spec 28 P1 (value ladder)
-A parallel session has the Spec 28 P1 phase plan (`.claude/plans/2026-06-04-spec28-p1-value-ladder.md`, D175). Coordinate (it shares `sgs/product-card`); do NOT build the Spec 28 engine WC-write (P4) — fenced behind Cluster C.
+Research the gold standard before recommending (Rule 16): for R5, current safe LLM→commerce provisioning patterns; for a first shop, the client's real catalogue + the cloning thread's page-144 fidelity state.
 
 ## Skills to Invoke
 | Skill | When |
 |-------|------|
 | `/autopilot` | FIRST — auto-injected by SessionStart |
-| `/brainstorming` | ALWAYS — design the R2 rollback/provisioning architecture before coding |
-| `/strategic-plan` + `/phase-planner` | only if re-planning; the v2 plan already sequences Cluster C |
-| `/subagent-driven-development` | the per-task implementer→spec-review→quality-review loop (R2/R3/PREFLIGHT) |
-| `/dispatching-parallel-agents` | only for genuinely DISJOINT pieces (R3 vs PREFLIGHT are separate files) |
-| `/sgs-wp-engine` + `/wp-rest-api` + `/wp-plugin-development` + `/wp-hooks` | controller, provisioning, cron, cache-purge hooks |
-| `/research-check` / `/library-docs` | current WC programmatic variable-product authoring API (set_*/save, attribute lookup, term provisioning) BEFORE building R2 |
-| `/qc-council` | MANDATORY before any commit touching the WC-write controller (blub.db 255) |
-| `/verify-loop` | 2-attestation on the byte-identical golden-master claim |
-| `/ui-ux-pro-max` + `/playwright` (or chrome-devtools) | MANDATORY self-review of R3's visible authoring UI |
-| `/gap-analysis` | grade each unit vs its FR-27 acceptance before delivery |
-| `/delegate` | pick the model per dispatch (Sonnet default; Opus for R2 rollback design) |
+| `/brainstorming` | design R5 AI-builder safety / a first-shop plan before coding |
+| `/strategic-plan` + `/phase-planner` | if starting Cluster D (R5 is multi-session) |
+| `/subagent-driven-development` | per-unit implementer→spec-review→quality-review loop |
+| `/dispatching-parallel-agents` | only for genuinely DISJOINT pieces (fan out ≤3) |
+| `/sgs-wp-engine` + `/wp-rest-api` + `/wp-plugin-development` + `/wp-hooks` | controllers, CPT, feed, cron |
+| `/research-check` / `/library-docs` | gold-standard reference BEFORE building (R5 LLM-commerce; Merchant feed spec) |
+| `/qc-council` | MANDATORY before any commit touching a WC-write path (blub.db 255) |
+| `/verify-loop` | 2-attestation on load-bearing claims |
+| `/ui-ux-pro-max` + chrome-devtools | self-review any new visible UI @375/768/1440 |
+| `/gap-analysis` | grade each unit vs its FR acceptance before delivery |
+| `/delegate` | pick the model per dispatch (Sonnet default; Opus for R5 safety design) |
 | `/capture-lesson` | any new architectural rule |
 | `/handoff` | session close |
 
 ## Tool bindings (MCP / CLI)
 | Tool | For |
 |------|-----|
-| chrome-devtools `/browsing` (Playwright MCP may be held by a co-active session) | self-review R3 @375/768/1440, axe-core |
+| chrome-devtools `/browsing` (Playwright MCP is often HELD by a co-active session — use chrome-devtools `new_page`) | live page + JSON-LD extraction + screenshot + 3-breakpoint |
 | `/wp-blocks` (`python ~/.claude/hooks/wp-blocks.py dump`) | block schema before asserting capability |
 | `/sgs-db` (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py`) | block roster / attrs |
-| WooCommerce Store/REST + `/wc/v3` | product 540 + variations golden-master |
-| SSH + token-gated webroot one-shot runner | guard-blocked WC ops + golden-master diffs; `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73`; canary creds `.claude/secrets/sandybrown.env`; plugin path `…/sandybrown…/public_html/wp-content/plugins/sgs-blocks` |
+| WooCommerce Store/REST + `/wc/v3` | product + variations |
+| SSH + token-gated webroot one-shot runner | guard-blocked WC ops + acceptance tests; `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73`; canary creds `secrets/sandybrown.env` (REPO-ROOT `secrets/`, NOT `.claude/secrets/`); plugin path `…/sandybrown…/public_html/wp-content/plugins/sgs-blocks` |
 
 ## Agents to Delegate To
 | Agent | When |
 |-------|------|
 | general-purpose (sonnet) | per-unit mechanical build (no commit/deploy) + cross-model spec/quality raters |
-| `wp-sgs-developer` | heavy WC-write provisioning build (if registered + preferred over inline subagent) |
-| `design-reviewer` | R3 visible authoring UI + WCAG 2.2 AA (alongside /ui-ux-pro-max) |
+| `wp-sgs-developer` | heavy WC-write build (if registered + preferred) |
+| `design-reviewer` | any new visible authoring UI + WCAG 2.2 AA |
 
-## Done — do NOT redo (D171 + D173)
-- Spec 27 Phase 2 CLUSTER A (B3/A4/C2/Step-7) + CLUSTER B SEO (E1/E2/E3/F1) — all SHIPPED + live-verified. Image-sitemap DESCOPED (Bean). Cluster C **R1 authoring controller SHIPPED + golden-master + cross-model verified** (`f747e58a`).
+## Done — do NOT redo
+- Spec 27 Phase 1 (D165) + Phase 2 Cluster A (D171) + Cluster B SEO (D173) + **Cluster C: R1 `f747e58a`, R2 `e62f337f`, R3+PREFLIGHT `dd9d0d7d`, preflight-fix+e2e `27e54132`** — ALL SHIPPED, live-verified, R-22-13 signed. Image-sitemap DESCOPED (Bean, D173).
 
 ## Methodology guardrails (do not skip)
-- **You are the orchestrator; fact-check every subagent claim** against live ground truth (read file + run the live one-shot + open the live page).
-- **Golden-master is the acceptance gate for R2** — a controller-built product must be byte-identical to the native editor (postmeta + term relationships + variation attributes). Verify via a live one-shot, not a code-read.
-- **WC writes via `set_*()`+`save()`, NEVER raw postmeta** (byte-identical + lookup sync). Transactional rollback on the non-transactional WC batch (track-and-delete created IDs).
-- **/subagent-driven-development two-stage review** (spec PASS → quality PASS) + **/qc-council BEFORE every commit** touching the WC-write controller (blub.db 255).
-- **Dispatched agents have NO commit/deploy authority** — they return uncommitted; you review + golden-master-verify + deploy + commit by explicit path.
-- **In a batch, don't stop between tasks to ask** — proceed on passing+substantiated evidence; only stop for a real decision/hard-block (Bean directive).
-- **Manifest growth → re-measure the 24 KB card context cap** (don't bloat the client seed; lean subset in render.php).
+- **You are the orchestrator; fact-check every subagent claim** against live ground truth (read file + grep wiring + run the live one-shot + open the live page). `php -l` does NOT catch un-wired routes, undefined functions, or path bugs.
+- **WC writes via `set_*()`+`save()`, NEVER raw postmeta.** Transactional rollback on any non-transactional WC batch.
+- **/subagent-driven-development two-stage review + /qc-council BEFORE every commit** touching a WC-write path (blub.db 255).
+- **Dispatched agents have NO commit/deploy authority** — they return uncommitted; you review + live-verify + deploy + commit by explicit path. Fan out ≤3 concurrent.
+- **In a batch, don't stop between tasks to ask** — proceed on passing+substantiated evidence; only stop for a real decision/hard-block.
+- **Token-gated acceptance one-shots: native PHP before wp-load; strlen<32 token guard; rm the server copy after running (it carries a real token).**
 - **Communicate in plain English** (Problem→Effect→Solution; ranked menu + one recommendation).
