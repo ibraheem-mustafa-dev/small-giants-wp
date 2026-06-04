@@ -848,6 +848,197 @@ def _lift_root_supports_to_style(
                            candidate=candidate)
 
 
+# ============================================================================
+# A1 — Universal CSS→container-attribute lift helper (Method-2 converter-lift)
+# Spec 22 §FR-22-21. DB-driven (R-22-1). FLAG-not-drop (FR-22-21 step 6).
+# ============================================================================
+
+# CSS properties excluded from this helper — max-width/width widthMode logic
+# is handled by the path-specific code in §FR-22-21 steps 2-3 (shipped D159).
+_LIFT_EXCLUDED_PROPS: frozenset[str] = frozenset({"max-width", "width"})
+
+# Explicit attr-name overrides for cases where the DB suffix lower-cased first
+# char does NOT yield the correct sgs/container attribute name.
+# Contract rule: "handle the known multi-word cases explicitly via the DB suffix."
+# Only needed when (css_prop, suffix) naive derivation lands on the wrong attr.
+_SUFFIX_ATTR_OVERRIDES: dict[tuple[str, str], str] = {
+    # DB suffix 'Columns' → naive 'columns' (number attr), but the string
+    # attr that accepts a CSS template expression is 'gridTemplateColumns'.
+    ("grid-template-columns", "Columns"): "gridTemplateColumns",
+}
+
+# Responsive suffix pairs: bp_decls key → attr suffix appended to base attr name.
+# Matches the convention used in _lift_root_supports_to_style and block.json.
+_BP_SUFFIX_MAP: dict[str, str] = {
+    "Tablet":  "Tablet",
+    "Mobile":  "Mobile",
+    "Desktop": "Desktop",
+}
+
+# Helper: detect CSS function values that must be passed through as raw strings.
+_CSS_FUNCTION_RE = re.compile(r"\(")
+
+
+def _is_css_function(value: str) -> bool:
+    """Return True when the value contains a CSS function call (clamp, calc, var, etc.)."""
+    return bool(_CSS_FUNCTION_RE.search(value))
+
+
+def _lift_wrapper_css_to_container_attrs(
+    base_decls: dict[str, str],
+    bp_decls: dict[str, dict[str, str]],
+    container_attr_names: frozenset[str] | set[str],
+) -> tuple[dict, list[str]]:
+    """Lift base + responsive CSS declarations onto sgs/container attribute names.
+
+    Phase A, step A1 — universality foundation for the Method-2 converter-lift
+    (Spec 22 §FR-22-21). Must be called BEFORE path-specific code wires the
+    result into block emit paths (A2/A3 handle that).
+
+    Args:
+        base_decls:           {css_prop: value} from non-media CSS rules + inline style.
+        bp_decls:             {bp_suffix: {css_prop: value}} from @media rules.
+                              bp_suffix is one of 'Desktop', 'Tablet', 'Mobile'.
+        container_attr_names: Set of valid sgs/container attribute names (from block.json).
+
+    Returns:
+        attrs:   {attr_name: value} ready to merge into the block's attrs dict.
+                 Only attrs present in container_attr_names are emitted.
+        flagged: List of 'css_prop' strings with no matching container attr.
+                 Caller should treat these as gap candidates (never silently dropped).
+
+    DB contract (R-22-1):
+        All CSS-property→suffix mappings come from db.css_property_suffixes().
+        No hardcoded CSS-property dict is used for lookups.
+
+    CSS function passthrough:
+        Values containing '(' (clamp/calc/var/min/max/url/etc.) are passed
+        through as raw strings onto string-type container attrs rather than
+        being dropped by _split_value_unit().
+
+    FLAG-not-drop (FR-22-21 step 6):
+        Any css_prop with no matching container attr is added to `flagged`
+        and emitted via _trace("lift_gap_candidate") — never silently dropped.
+
+    Excluded properties:
+        max-width and width are handled by path-specific widthMode logic
+        (§FR-22-21 steps 2-3, shipped D159) and must NOT be processed here.
+    """
+    # Build a lookup: css_prop → list of (suffix, kind) from the DB.
+    # One css_prop may have multiple suffixes (e.g. background-color → Background,
+    # BackgroundColour, BackgroundColor, Bg). We try each in order.
+    prop_to_suffixes: dict[str, list[tuple[str, str]]] = {}
+    for css_prop, suffix, kind in db.css_property_suffixes():
+        prop_to_suffixes.setdefault(css_prop, []).append((suffix, kind))
+
+    attrs: dict = {}
+    flagged: list[str] = []
+
+    def _try_lift_prop(
+        css_prop: str,
+        raw_value: str,
+        bp_suffix: str | None,
+    ) -> bool:
+        """Attempt to lift one (css_prop, value) onto a container attr.
+
+        Returns True when at least one attr was successfully set.
+        bp_suffix: if set, append it to the attr name (e.g. 'Tablet' → 'gapTablet').
+        """
+        if css_prop in _LIFT_EXCLUDED_PROPS:
+            return True  # Silently skip excluded props — not a gap candidate.
+
+        value = _strip_important(raw_value).strip()
+        if not value:
+            return False
+
+        suffix_list = prop_to_suffixes.get(css_prop)
+        if not suffix_list:
+            return False  # No DB suffix for this prop → caller flags it.
+
+        placed = False
+        for suffix, kind in suffix_list:
+            # Derive the container attr name.
+            override_key = (css_prop, suffix)
+            if override_key in _SUFFIX_ATTR_OVERRIDES:
+                base_attr = _SUFFIX_ATTR_OVERRIDES[override_key]
+            else:
+                # Standard derivation: lower-case the first character of the suffix.
+                base_attr = suffix[0].lower() + suffix[1:] if suffix else ""
+
+            # Append breakpoint suffix when operating on bp_decls.
+            attr_name = f"{base_attr}{bp_suffix}" if bp_suffix else base_attr
+
+            if attr_name not in container_attr_names:
+                continue  # Try next suffix; flag at end if none matched.
+            if attr_name in attrs:
+                continue  # Never overwrite — first win wins.
+
+            # Resolve the value.
+            if _is_css_function(value):
+                # CSS function (clamp/calc/var/min/max/url/etc.) → raw string passthrough.
+                # Container string-type attrs accept raw CSS. Never route via
+                # _split_value_unit() which drops these.
+                resolved: object = value
+            elif kind == "colour":
+                resolved = _colour_value_to_style(value)
+            elif kind in ("number_px", "number_unitless", "number_px_or_em"):
+                # Container dimension attrs (minHeight, gap, gridTemplateColumns…) are
+                # type "string" in block.json — they accept raw CSS values like "520px".
+                # Use raw passthrough via _preserve_unit rather than _split_value_unit
+                # (which would produce float notation "520.0px").
+                resolved = _preserve_unit(value)
+                if resolved is None:
+                    resolved = value  # Last-resort: keep the raw string.
+            else:
+                # kind == "string" or anything else → raw passthrough.
+                resolved = value
+
+            if resolved is None:
+                continue  # Unparseable colour; try next suffix.
+
+            attrs[attr_name] = resolved
+            placed = True
+            break  # First matching attr wins; stop trying further suffixes.
+
+        return placed
+
+    # ---- Base declarations ----
+    for css_prop, value in base_decls.items():
+        if css_prop in _LIFT_EXCLUDED_PROPS:
+            continue
+        placed = _try_lift_prop(css_prop, value, bp_suffix=None)
+        if not placed and css_prop in prop_to_suffixes:
+            # Had DB rows but none matched container attrs → gap candidate.
+            flagged.append(css_prop)
+            _trace("lift_gap_candidate", prop=css_prop, value=value,
+                   reason="no_matching_container_attr")
+        elif not placed:
+            # No DB suffix at all for this prop → gap candidate.
+            flagged.append(css_prop)
+            _trace("lift_gap_candidate", prop=css_prop, value=value,
+                   reason="no_db_suffix")
+
+    # ---- Responsive declarations ----
+    for bp_key, bp_decl_map in bp_decls.items():
+        bp_suffix = _BP_SUFFIX_MAP.get(bp_key)
+        if not bp_suffix or not bp_decl_map:
+            continue
+        for css_prop, value in bp_decl_map.items():
+            if css_prop in _LIFT_EXCLUDED_PROPS:
+                continue
+            placed = _try_lift_prop(css_prop, value, bp_suffix=bp_suffix)
+            if not placed and css_prop in prop_to_suffixes:
+                flagged.append(f"{css_prop}@{bp_key}")
+                _trace("lift_gap_candidate", prop=css_prop, value=value,
+                       bp_suffix=bp_key, reason="no_matching_container_attr_responsive")
+            elif not placed:
+                flagged.append(f"{css_prop}@{bp_key}")
+                _trace("lift_gap_candidate", prop=css_prop, value=value,
+                       bp_suffix=bp_key, reason="no_db_suffix_responsive")
+
+    return attrs, flagged
+
+
 def _css_value_to_attr(value: str, kind: str) -> object | None:
     """Convert a CSS value string to a typed Python value."""
     raw = _strip_important(value)
