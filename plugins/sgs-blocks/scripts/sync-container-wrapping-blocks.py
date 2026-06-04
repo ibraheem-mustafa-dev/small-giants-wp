@@ -34,8 +34,11 @@ block→kind dict):
 KIND (role-based, drives per-block diff sub-typing):
   section  — self-contained panel owning its whole frame (full attr surface).
              Detected via: section-frame attrs (background*/overlay*/shapeDivider*/
-             bgVideo/widthMode) OR operator override in block.json
+             bgVideo) OR operator override in block.json
              supports.sgs.containerKind:"section".
+             (widthMode removed from section signals 2026-06-04 — it is now a
+             universal width capability mirrored onto every KIND, not a section
+             discriminator.)
   layout   — arranges/parents MULTIPLE children. Detected via: layout-
              orchestration attr (grid/flex/columns) OR structural-parent
              (a non-form-field child block declares parent=[this_slug]).
@@ -127,6 +130,12 @@ LAYOUT_ATTR_RE = re.compile(
 )
 
 # Section-frame attrs — presence triggers KIND=section (if no operator override).
+# NOTE: `widthMode` was REMOVED 2026-06-04 — it is no longer a section discriminator.
+# WS-4's composite-mirror added `widthMode` (a shared width capability) to every
+# layout- and content-KIND composite, so its presence no longer signals a section;
+# leaving it here mis-tagged all 25 mirrored composites as `section`. The genuine
+# section signals are the bespoke background/overlay/shape-divider/bg-video attrs
+# below, plus the explicit `supports.sgs.containerKind:"section"` override.
 SECTION_ATTR_RE = re.compile(
     r"^("
     r"backgroundImage|backgroundImageTablet|backgroundImageMobile|"
@@ -134,7 +143,7 @@ SECTION_ATTR_RE = re.compile(
     r"backgroundMedia|backgroundVideo|"
     r"overlayGradient|overlayColour|overlayOpacity|overlayColor|"
     r"shapeDivider|shapeDividerTop|shapeDividerBottom|"
-    r"bgSvgContent|bgVideo|bgVideoMobile|widthMode"
+    r"bgSvgContent|bgVideo|bgVideoMobile"
     r")$",
     re.IGNORECASE,
 )

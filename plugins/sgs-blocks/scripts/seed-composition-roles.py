@@ -101,6 +101,18 @@ INSERTS: list[dict] = [
         "has_inner_blocks": 1,
         "accepts_allowed_blocks": None,
     },
+    {
+        # Added 2026-06-04 — the 29th container-roster block (layout KIND).
+        # Query-driven grid (own WP_Query renders Bound product-cards server-side,
+        # NO InnerBlocks) → matches its layout-grid peers post-grid/card-grid/gallery
+        # (composition_role='content-block', has_inner_blocks=0). wraps_block +
+        # container_kind='layout' are set by sync-container-wrapping-blocks.py --apply.
+        "block_slug": "sgs/content-collection",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "has_inner_blocks": 0,
+        "accepts_allowed_blocks": None,
+    },
 ]
 
 
