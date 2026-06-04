@@ -224,6 +224,23 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 		$stock_text  = $def['inStock'] ? '' : __( 'Out of stock', 'sgs-blocks' );
 		$image_src   = '' !== $def['imageUrl'] ? $def['imageUrl'] : $data['image_url'];
 
+		// B3: per-unit price note + cosmetic discount badge (FR-27-B3).
+		// SSR literals seeded into context so data-wp-text == initial span text
+		// (SSR-wipe-safe — wp-interactivity-directives-wipe-ssr-when-bound-to-js-getters).
+		/* translators: %s is the unit label, e.g. "per bar" or "per 100g". */
+		$per_unit_template = __( 'per %s', 'sgs-blocks' );
+		$per_unit_display  = sgs_configurator_per_unit_display( $def, $tax_mode, $decimals, $per_unit_template );
+		$discount_label    = isset( $def['discountLabel'] ) ? (string) $def['discountLabel'] : '';
+
+		// I2 auto-contrast (FR-27-I2): the discount badge sits on the brand
+		// --…--primary background (a CSS token whose hex isn't known in CSS), so
+		// pick a WCAG-safe black/white text colour at build time against the
+		// resolved primary — works on any client palette (a pale-pink primary
+		// gets black text, a saturated/dark primary gets white). Emitted as an
+		// inline style on the badge (static — the badge bg never swaps per combo).
+		$primary_hex          = sgs_resolve_palette_hex( 'primary', '' );
+		$discount_text_colour = '' !== $primary_hex ? sgs_wcag_text_colour_for_bg( $primary_hex ) : '';
+
 		// Context array — manifest lives here (M-C3: NOT in wp_interactivity_state).
 		$context = array(
 			'productId'           => (string) $data['id'],
@@ -261,6 +278,14 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			// to the seeded value server-side (SSR-wipe-safe). view.js writes
 			// non-empty strings here after selections + post-409 re-syncs.
 			'availabilityNote'    => '',
+			// B3: per-unit pricing + cosmetic discount badge (FR-27-B3).
+			// Both display literals seeded so SSR span text == context value
+			// (SSR-wipe-safe). Boolean hidden keys mirror the hideSale pattern.
+			'perUnitDisplay'      => $per_unit_display,
+			'perUnitHidden'       => ( '' === $per_unit_display ),
+			'perUnitTemplate'     => $per_unit_template,
+			'discountLabel'       => $discount_label,
+			'discountHidden'      => ( '' === $discount_label ),
 		);
 
 		// M-C9 hard cap: 24 KB max serialised context — never trips for 48 SKUs
@@ -373,7 +398,19 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 						data-wp-bind--hidden="context.hideSale"
 						data-wp-text="context.pctDisplay"
 					><?php echo esc_html( $pct_display ); ?></span>
+					<?php // B3: cosmetic discount badge — reuses the sgs/label pill-wrap convention (wp-block-sgs-label / is-style-pill-wrap) so it matches the design-system badge component. Styled self-contained in style.css because the label block's own CSS only enqueues when a real sgs/label block renders on the page. ?>
+					<span
+						class="wp-block-sgs-label is-style-pill-wrap product-card__discount-label"
+						<?php echo '' !== $discount_text_colour ? 'style="color:' . esc_attr( $discount_text_colour ) . '"' : ''; ?>
+						data-wp-bind--hidden="context.discountHidden"
+						data-wp-text="context.discountLabel"
+					><?php echo esc_html( $discount_label ); ?></span>
 				</div>
+				<p
+					class="price-note price-note--per-unit"
+					data-wp-bind--hidden="context.perUnitHidden"
+					data-wp-text="context.perUnitDisplay"
+				><?php echo esc_html( $per_unit_display ); ?></p>
 
 				<?php // ── 2d. Stock slot — hidden when in stock (default). ?>
 				<p

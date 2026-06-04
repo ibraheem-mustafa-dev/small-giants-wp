@@ -398,6 +398,56 @@
 	min-height: 44px;
 }
 
+/*
+ * ── B3: Per-unit price note + cosmetic discount badge ───────────────────────
+ *
+ * All rules scoped to .product-card--bound — Typed page-144 clones are
+ * byte-identical (scope guardrail, blub.db 304). No existing rule is modified.
+ *
+ * Contrast notes:
+ *   .price-note--per-unit:        #6b5c50 on #ffffff = 4.55:1 ✓ WCAG AA (13px normal).
+ *   .product-card__discount-label: surface(#fff) on primary — same pairing as
+ *     every other sgs/label pill on the site; pale-primary client palettes get a
+ *     dark-text override in their snapshot (the documented SGS auto-contrast model).
+ *     Verified at the QA-VIS gate on the live canary palette + Bean R-22-13.
+ */
+
+/* Per-unit note — muted helper text below the price row. */
+.product-card--bound .price-note--per-unit {
+	color: var(--wp--preset--color--text-muted, #6b5c50);
+	font-size: 13px;
+	margin: 2px 0 0;
+}
+
+/*
+ * Cosmetic discount badge (e.g. "Best value"). Carries the recorded sgs/label
+ * classes (wp-block-sgs-label is-style-pill-wrap) for design-system + recognition
+ * parity; styled here self-contained because the label block's style-index.css
+ * only enqueues when a real sgs/label block is on the page. Declarations mirror
+ * sgs/label base + the pill-wrap variant (src/blocks/label/style.css).
+ */
+.product-card--bound .product-card__discount-label {
+	display: inline-block;
+	width: max-content;
+	max-width: 100%;
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--surface, #fff);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	line-height: 1.2em;
+	text-transform: uppercase;
+	padding: 4px 12px;
+	border-radius: 6px;
+	margin: 0;
+}
+
+/* Ensure [hidden] defeats the display rules above (mirrors the pattern at line 357). */
+.product-card--bound .price-note--per-unit[hidden],
+.product-card--bound .product-card__discount-label[hidden] {
+	display: none !important;
+}
+
 .product-card--bound .sgs-option-picker__option--unavailable {
 	opacity: 0.45;
 	text-decoration: line-through;

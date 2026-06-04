@@ -297,6 +297,35 @@ function modeRegular( combo, ctx ) {
 }
 
 /**
+ * Per-unit price string for a combo, e.g. "£1.04 per bar". Mirrors PHP
+ * sgs_configurator_per_unit_display() so the swap value == the SSR literal.
+ * Returns '' when the combo has no divisor (>0) or no unit label.
+ *
+ * Locale note: the amount is formatted via formatPrice() (toLocaleString) — the
+ * same accepted Phase-1 trade-off as the headline price (see line 232); a non-UK
+ * browser locale could differ from PHP's wc_price() separator. Per-unit amounts
+ * are well below the thousands boundary so only the decimal separator is at risk.
+ * The template uses split('%s').join() — NOT replace — to match PHP sprintf()'s
+ * replace-all behaviour (the template must use non-positional %s).
+ *
+ * @param {Object} combo The selected manifest combo.
+ * @param {Object} ctx   The card's live context.
+ * @return {string}
+ */
+function perUnitDisplay( combo, ctx ) {
+	const divisor = typeof combo.unitDivisor === 'number' ? combo.unitDivisor : parseFloat( combo.unitDivisor ) || 0;
+	const label = combo.unitLabel || '';
+	if ( divisor <= 0 || label === '' ) {
+		return '';
+	}
+	const mode = ctx.taxDisplayMode || 'auto';
+	const base = ( mode === 'ex-plus-vat' && combo.exMinor != null ) ? combo.exMinor : combo.priceMinor;
+	const perUnitMinor = Math.round( base / divisor );
+	const template = ctx.perUnitTemplate || 'per %s';
+	return formatPrice( perUnitMinor, ctx ) + ' ' + template.split( '%s' ).join( label );
+}
+
+/**
  * Apply a pill selection to the card's seeded context (multi-axis, SSR-safe).
  *
  * Mutates the seeded display keys on the live Interactivity proxy so the
@@ -362,12 +391,26 @@ function applyPillSelection( ctx, detail ) {
 		if ( combo.imageUrl ) {
 			ctx.imageSrc = combo.imageUrl;
 		}
+
+		// B3: per-unit note + discount badge (FR-27-B3).
+		// perUnitDisplay() mirrors PHP sgs_configurator_per_unit_display() exactly
+		// so the swap value is byte-identical to the SSR literal (SSR==swap parity).
+		const puDisplay = perUnitDisplay( combo, ctx );
+		ctx.perUnitDisplay = puDisplay;
+		ctx.perUnitHidden = puDisplay === '';
+		ctx.discountLabel = combo.discountLabel || '';
+		ctx.discountHidden = ! ctx.discountLabel;
 	} else {
 		// Invalid/unavailable combination (U5 will pre-grey these pills).
 		// Set a safe non-purchasable state; do not touch price or image.
 		ctx.selectedVariationId = 0;
 		ctx.inStock = false;
 		ctx.stockText = 'Unavailable';
+		// B3: hide per-unit and discount badge when no valid combo is selected.
+		ctx.perUnitDisplay = '';
+		ctx.perUnitHidden = true;
+		ctx.discountLabel = '';
+		ctx.discountHidden = true;
 	}
 }
 

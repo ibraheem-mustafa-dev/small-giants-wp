@@ -80,6 +80,10 @@ Configurator_Meta::register();
 // Configurator — swatch fields on WooCommerce attribute term screens (FR-27-B2 authoring UI).
 require_once SGS_BLOCKS_PATH . 'includes/configurator-term-fields.php';
 
+// Configurator — per-unit / unit-label / discount-label fields on the WooCommerce
+// variation editor panel (FR-27-B3 authoring UI).
+require_once SGS_BLOCKS_PATH . 'includes/configurator-variation-fields.php';
+
 // Configurator — <head> emitter (ProductGroup JSON-LD / canonical / OG). Step-0
 // scaffold; filled by FR-27-E1/E2/E3.
 require_once SGS_BLOCKS_PATH . 'includes/configurator-head.php';

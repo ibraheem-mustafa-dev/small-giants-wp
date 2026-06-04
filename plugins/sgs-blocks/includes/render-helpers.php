@@ -584,6 +584,53 @@ function sgs_wcag_text_colour_for_bg( string $hex ): string {
 }
 
 /**
+ * Resolve a theme.json palette colour to its hex value by slug, reading the
+ * MERGED global settings (default → theme → user/wp_global_styles), so the live
+ * per-client colour wins (the canary serves its primary from the wp_global_styles
+ * post, not theme.json on disk). User/custom origin is preferred over theme over
+ * default. Used for build-time auto-contrast against a token-coloured background
+ * whose hex is not known in CSS (e.g. the discount badge sat on --…--primary).
+ *
+ * Returns the $fallback when the slug is absent or global settings are
+ * unavailable. A non-hex value (gradient / CSS var) flows through unchanged; the
+ * luminance helper degrades it to a safe dark-text choice.
+ *
+ * @param string $slug     Palette slug, e.g. 'primary'.
+ * @param string $fallback Returned when the slug cannot be resolved.
+ * @return string Hex colour (e.g. '#e68a95') or the fallback.
+ */
+function sgs_resolve_palette_hex( string $slug, string $fallback = '' ): string {
+	if ( ! function_exists( 'wp_get_global_settings' ) ) {
+		return $fallback;
+	}
+
+	$palette = wp_get_global_settings( array( 'color', 'palette' ) );
+
+	// wp_get_global_settings may return the palette keyed by origin
+	// (default/theme/custom) or, in some WP versions, a flat list.
+	$lists = array();
+	if ( is_array( $palette ) && ( isset( $palette['custom'] ) || isset( $palette['theme'] ) || isset( $palette['default'] ) ) ) {
+		foreach ( array( 'custom', 'theme', 'default' ) as $origin ) {
+			if ( ! empty( $palette[ $origin ] ) && is_array( $palette[ $origin ] ) ) {
+				$lists[] = $palette[ $origin ];
+			}
+		}
+	} elseif ( is_array( $palette ) ) {
+		$lists[] = $palette;
+	}
+
+	foreach ( $lists as $list ) {
+		foreach ( $list as $entry ) {
+			if ( is_array( $entry ) && isset( $entry['slug'], $entry['color'] ) && $slug === $entry['slug'] ) {
+				return (string) $entry['color'];
+			}
+		}
+	}
+
+	return $fallback;
+}
+
+/**
  * Format a minor-int price as a plain display string (symbol + amount), matching
  * the SSR pattern used across the configurator (wc_price, tags stripped).
  *
@@ -641,6 +688,31 @@ function sgs_configurator_mode_regular( array $combo, string $mode, int $decimal
 		? (int) $combo['regularExMinor']
 		: (int) $combo['regularMinor'];
 	return sgs_configurator_format_minor( $minor, $decimals );
+}
+
+/**
+ * Per-unit price display string for a combo under a tax mode, e.g. "£1.04 per bar".
+ *
+ * Derived live (price ÷ divisor) — NEVER a stored price. Returns '' when the
+ * variation has no divisor (>0) or no unit label, so the per-unit line is hidden.
+ * The headline base mirrors sgs_configurator_mode_price(): ex-VAT in ex-plus-vat
+ * mode, else the display price — so "per bar" matches the price shown above it.
+ *
+ * @param array  $combo    Manifest combo (priceMinor/exMinor/unitDivisor/unitLabel).
+ * @param string $mode     Tax-display mode ('auto'|'inc-suffix'|'ex-plus-vat').
+ * @param int    $decimals Currency decimals.
+ * @param string $template Translated "per %s" template (e.g. from __() ).
+ * @return string
+ */
+function sgs_configurator_per_unit_display( array $combo, string $mode, int $decimals, string $template ): string {
+	$divisor = isset( $combo['unitDivisor'] ) ? (float) $combo['unitDivisor'] : 0.0;
+	$label   = isset( $combo['unitLabel'] ) ? (string) $combo['unitLabel'] : '';
+	if ( $divisor <= 0 || '' === $label ) {
+		return '';
+	}
+	$base_minor     = ( 'ex-plus-vat' === $mode && isset( $combo['exMinor'] ) ) ? (int) $combo['exMinor'] : (int) $combo['priceMinor'];
+	$per_unit_minor = (int) round( $base_minor / $divisor );
+	return sgs_configurator_format_minor( $per_unit_minor, $decimals ) . ' ' . sprintf( $template, $label );
 }
 
 if ( ! function_exists( 'sgs_sanitize_grid_template' ) ) {

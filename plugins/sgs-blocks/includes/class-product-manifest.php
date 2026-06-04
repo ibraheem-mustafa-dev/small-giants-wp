@@ -119,11 +119,12 @@ final class Product_Manifest {
 		// change a cache miss → rebuild. (This shared transient assumes a single
 		// tax context; per-customer / B2B multi-context is the deferred dual-seed,
 		// FR-27-H3 / M-C10 — out of scope for UK B2C single-rate selling.)
-		// 'v2' = manifest combo schema version. Bump when the combo array shape
-		// changes (TAX-UI added exMinor/taxMinor/regularExMinor) so old cached
-		// manifests lacking the new keys miss and rebuild rather than serving a
-		// shape the renderer/view.js no longer expect.
-		$cache_key = 'sgs_manifest_v2_' . $product_id . '_' . self::tax_fingerprint();
+		// 'v3' = manifest combo schema version. Bump when the combo array shape
+		// changes so old cached manifests lacking the new keys miss and rebuild
+		// rather than serving a shape the renderer/view.js no longer expect.
+		// v2 added exMinor/taxMinor/regularExMinor (TAX-UI).
+		// v3 adds unitDivisor/unitLabel/discountLabel (B3 per-unit pricing).
+		$cache_key = 'sgs_manifest_v3_' . $product_id . '_' . self::tax_fingerprint();
 		$cached    = \get_transient( $cache_key );
 
 		global $wpdb;
@@ -278,6 +279,14 @@ final class Product_Manifest {
 				? sprintf( \__( '%d%% off', 'sgs-blocks' ), $pct_off )
 				: '';
 
+			// B3: per-unit pricing + cosmetic discount label (FR-27-B3).
+			// Reads variation postmeta registered in class-configurator-meta.php.
+			// Sanitiser methods are called here as a second defence-in-depth layer;
+			// the registered sanitize_callback already ran at save time.
+			$unit_divisor = Configurator_Meta::sanitize_divisor( \get_post_meta( $child_id, '_sgs_unit_divisor', true ) );
+			$unit_label   = \sanitize_text_field( (string) \get_post_meta( $child_id, '_sgs_unit_label', true ) );
+			$discount_lbl = Configurator_Meta::sanitize_discount_label( \get_post_meta( $child_id, '_sgs_discount_label', true ) );
+
 			$combos[ $combo_key ] = array(
 				'variationId'    => (int) $child_id,
 				'priceMinor'     => $price_minor,
@@ -291,6 +300,10 @@ final class Product_Manifest {
 				'exMinor'        => $ex_minor,
 				'taxMinor'       => $tax_minor,
 				'regularExMinor' => $regular_ex_minor,
+				// B3: per-unit pricing + cosmetic discount label.
+				'unitDivisor'    => $unit_divisor,
+				'unitLabel'      => $unit_label,
+				'discountLabel'  => $discount_lbl,
 			);
 		}
 
