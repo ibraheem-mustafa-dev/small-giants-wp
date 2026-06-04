@@ -6,6 +6,20 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-04 (cloning thread, PM3) — Method 2 converter-lift: phase plan + adversarial-council → FINAL plan + plain-English explanation (D170)
+
+**D170 — The council-validated converter-lift design (D169) was turned into an executable phase plan (`/phase-planner`), stress-tested by a 5-persona `/adversarial-council`, and the convergence-weighted must-fixes were folded into a FINAL plan; a plain-English explanation doc was produced (per Bean's directive: per-stage failure + decisions + universal solution + A/B rule-compliance). Build = next session. (CLONING thread.)** _(Next-free cloning D after D169; theme holds D168. Committed by explicit path. Plan: `.claude/plans/2026-06-04-method2-converter-lift-PHASE-PLAN.md`; explanation: `.claude/reports/2026-06-04-method2-converter-lift-EXPLAINED.md`.)_
+
+**The adversarial council (5 personas: universality-auditor, cynic, spec-lawyer, ship-PM, CSS-red-teamer) found the plan architecturally sound but NOT universally buildable as written — it had the exact Mama's-shaped band-aid Bean's bar forbids. Convergence-weighted must-fixes (all verified at file:line — STOP #34):**
+- **MF-A [5/5 personas, the headline]:** the "curated map" was a 15-row hand-written longhand list writing to WP `style.*`, dropping every `clamp()/calc()/var()` + `background`/`box-shadow`/`min-height` (not even in `_root_lift_rules` today) + all responsive overrides (`bp_decls` discarded at convert.py:2114) — and a hardcoded dict is an **R-22-1 violation**. FOLD: build the map from the existing `property_suffixes` DB table (117 rows, the FR-22-5 mechanism), pass CSS-functions through as raw strings, FLAG-not-drop unmapped (proven by a fixture case), consume `bp_decls`, target the wrapper-attr namespace. **This is the line between "clones Mama's" and "clones anything."**
+- **MF-B [3/5]:** min-height is a BLOCK-layer fix, not a converter align-gate — verified `class-sgs-container-wrapper.php:431` adds the centre-forcing `--has-min-height` class on min-height presence ALONE. FOLD: gate the class on `verticalAlign`; lift min-height unconditionally + lift the draft's centring idiom → verticalAlign separately.
+- **MF-C [3/5]:** do NOT edit the shared wrap fn to read CSS — verified `db_lookup.py:2461 emit_sgs_container_wrapping` wraps ALL 9 top-level sections (its docstring), not just composites. FOLD: compute OUTER attrs once in the walker + pass them in as a param (one source of truth, no WS-4-divergence regression).
+- **MF-D [ship-PM]:** it's a 2-session build — re-sequenced: Session A converter-core (DB-map → composite path hero-first → slug-None lift → sidecar delete), Session B block/polish (min-height block-fix ∥ sgs/media CSS ∥ variant/modifier; then D5 layer-diagnosis; image sideload should-not-must; fixture last).
+- **REJECTED (verified false — STOP #34):** Cynic MF-1 ("sidecar file not written, D4 untraced") — `css-d1-assignments.json` exists (19,928 B / 42 keys), `seed_d1_sidecar` IS a no-op stub, `sgs/feature-grid.gap=14px` IS the stranded value. FS-2 premise holds.
+- **Compliance:** every fold stays A (spec-says) or B (clean upgrade); no Mama's-specific conditional (R-22-9 intact). SHOULD-fixes folded: FR-22-1-row-3 citation for modifier carry, trace `--Array` before fixing, a map-staleness build-gate, fixture value-syntax cases.
+
+---
+
 ## 2026-06-04 (cloning thread, PM2) — Method 2 grounded: premise corrected, trust-bar routing fix SHIPPED, converter-lift 5-piece design council-validated (D169)
 
 **D169 — The Method-2 converter investigation was grounded against a fresh full `/sgs-clone` run (`mamas-munches-homepage-2026-06-04-134425`) + 3 cross-verified read-only agents; it CORRECTED the prompt/memory premise, shipped the one real routing fix (trust-bar), and produced a council-validated-and-refined 5-fix-shape converter-lift design (build = next session). (CLONING thread.)** _(Next-free cloning D after D167; theme holds D168. Committed by explicit path per STOP #45.)_
