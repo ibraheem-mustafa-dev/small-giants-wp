@@ -84,6 +84,14 @@ Recognition path (deterministic, tier-driven post-D107):
 
 **Canonical vocabulary** lives in `sgs-framework.db.slots` (post-D99 replacement for retired `slot_synonyms`) and is documented in [Spec 22 §3 FR-22-1 + FR-22-2](22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md#fr-22-1--bem-is-the-only-recognition-signal). To author a draft that routes to a specific block, name the BEM element with one of that canonical's aliases.
 
+#### 3.1.1 Label / badge recognition → `sgs/label` (convention)
+
+Every **short standalone label or cosmetic badge** text element routes to the `label` canonical → `sgs/label` (the "Atomic eyebrow / kicker / badge text block; reusable for card-tag badges", style variants `plain` / `pill-fill` / `pill-wrap`). This is the canonical home for pre-heading labels and pill badges — NOT `sgs/text` (which is body copy) and NOT a per-block scalar attr. A draft that emits a badge as a literal `sgs/label` is faithful; a converter workaround that invents a per-block badge class is not (R-22-9).
+
+`label`-canonical aliases (recognised BEM elements) include: `eyebrow`, `kicker`, `tag`, `pill`, `badge-label`, `badge-text`, `trialTag`, `featuredTag`, `inner-label`, `slot-label`, `node-icon`, and the cosmetic-badge family `discount-label`, `discount-badge`, `value-badge`, `savings-label`, `sale-badge`, `ribbon-label` (added 2026-06-04 alongside the FR-27-B3 product-card "Best value" badge). Source of truth: `slots` row `label` (seeded by `scripts/uimax-tools/seed-slot-synonyms.py`). To route a new badge term, add its alias there + re-run the seed — never hard-code a per-block badge class.
+
+> **Known gap (cloning thread, deferred):** a separate `badge` slot exists with `standalone_block = NULL` and alias `pill` (which also lives on `label`). Wiring the bare `badge` slot → `sgs/label` and resolving the `pill` overlap is a routing change that needs the cloning thread's per-row `/sgs-clone --debug-trace` measurement gate (R-22-4) + a multi-DB audit — not done inline in the theme thread. Tracked in `parking.md`.
+
 ### 3.2 Section-root flag (`supports.sgs.is_section_root`)
 
 To declare a new section-root block (a block whose `sgs-<block>` class identifies a whole page section, not an element within one), set `"is_section_root": true` under `supports.sgs` in the block's `block.json`. `/sgs-update` reads this flag and writes `blocks.tier='class-section'`. The voter then routes section recognition to the literal slug at confidence 1.0.

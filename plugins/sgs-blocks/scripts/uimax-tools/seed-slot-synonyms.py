@@ -157,12 +157,24 @@ ALIAS_EXTENSIONS: list[tuple[str, list[str]]] = [
     ]),
 
     # ----- label slot aliases ------------------------------------------
+    # The `label` slot is the canonical home for every small pre-heading /
+    # eyebrow / kicker / tag / pill / BADGE text element — it routes to
+    # sgs/label (the "Atomic eyebrow / kicker / badge text block; reusable for
+    # card-tag badges"). Any BEM element whose role is a short standalone label
+    # or cosmetic badge belongs here, NOT sgs/text (body copy) or a per-block
+    # scalar attr. See Spec 00 §"Label / badge recognition" + Spec 02 sgs/label.
     ("label", [
         "badge-label",        # text inside a badge
         "badge-text",         # alternative badge text element name
         "inner-label",        # inner slot label
         "slot-label",         # media-manager slot label
         "node-icon",          # tree-node icon label (timeline, step blocks)
+        "discount-label",     # cosmetic discount/value badge text (FR-27-B3 product-card)
+        "discount-badge",     # discount badge element variant
+        "value-badge",        # "Best value" style badge
+        "savings-label",      # savings/value label text
+        "sale-badge",         # "Sale" / "On sale" badge text
+        "ribbon-label",       # ribbon-style badge text
     ]),
 
     # ----- button / CTA aliases ----------------------------------------
