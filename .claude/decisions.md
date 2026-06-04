@@ -6,6 +6,19 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-04 (theme thread, session 12) — Spec 27 PHASE 2 build started: Step 0 + B2 swatches + I2 auto-contrast + TAX-UI; 3 fast-follows; UK tax-verify; Phase-2 plan v2 (D168)
+
+**D168 — Theme session 12: Spec 27 Phase 2 build began and shipped its first three units (Step 0 foundations, B2 swatches + I2 build-time WCAG auto-contrast, TAX-UI 3 VAT display modes), each live-verified on canary 540 + committed by explicit path; plus 3 fast-follows, a UK-tax verification + manifest tax-fingerprint cache-bust, and a rebuilt Phase-2 plan (v2) after a 6-persona adversarial-council + codebase audit. (THEME thread.)** _(Next-free theme D-number after D165; cloning holds D166/D167. Shared decisions.md — committed by explicit path. Cloning co-active all session; its uncommitted files left untouched.)_
+
+**Sub-decisions:**
+- **D168.1 — Phase-2 scope (Bean):** demand-analytics ("combos tried-but-couldn't-buy") IS in scope (Cluster A); the AI-builder (FR-27-R5) + AI-citation/feed (FR-27-F2) are the WHOLE-FRAMEWORK CAPSTONE — built LAST, gated on the cloning/converter pipeline being production-ready + consistent, the DB fully wired, the theme/blocks complete + correct, and the WC layer done. They do NOT block a first-client launch.
+- **D168.2 — authoring un-gated:** the Phase-2 plan pulls Phase R authoring (R1/R2/R3) into scope so every presentation field (swatch/divisor/gallery/variesBy/unit-label) ships with a friendly editor control — never raw-meta. B2 set the pattern (`configurator-term-fields.php`).
+- **D168.3 — SEC amendments (from the adversarial-council):** schema/OG read the manifest + always inc-VAT (SEC-1/SEC-2); manifest values JSON_HEX-escaped; discount-label digit-stripped at save (SEC-4, no fake "% off"); variesBy closed-enum-validated at save (SEC-8); £0 hard-blocked at PREFLIGHT + proxy; sitemap visibility-filtered + GET-only; canonical never `add_query_arg`; detect-and-defer Yoast/RankMath (SEC-9).
+- **D168.4 — deploy lesson:** deploy `*.asset.php` with any viewScriptModule JS change (the `?ver` hash carrier) — else the cached old ES module runs (memory `deploy-asset-php-with-viewscriptmodule`). SSR==swap parity: seed the translated literal, never re-derive in JS.
+- **D168.5 — parked:** `P-CONFIGURATOR-PRICE-FORMAT-LOCALE` (JS toLocaleString vs PHP wc_price thousand-separator for ≥£1000 / non-UK locale; pre-existing, doesn't bite UK B2C <£100).
+
+---
+
 ## 2026-06-04 (cloning thread, PM) — WS-4 composite-mirror BLOCK-SIDE COMPLETE (hero + product-card + mobile-nav + content-collection) + architecture definitively resolved (D167)
 
 **D167 — WS-4 composite-wrapper mirror is now BLOCK-SIDE COMPLETE across the whole roster, the composite-conversion architecture was definitively resolved from the docs (not the code), and `/sgs-update` reconciled the DB. (CLONING thread.)** _(Next-free cloning D-number after D166; theme thread holds D164/D165. Committed by explicit path per STOP #45.)_

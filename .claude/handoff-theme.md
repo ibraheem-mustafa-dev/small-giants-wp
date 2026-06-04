@@ -1,3 +1,101 @@
+# Session Handoff — 2026-06-04 (SGS THEME thread, session 12 — Spec 27 PHASE 2 BUILD STARTED: 3 fast-follows + UK tax-verify + Phase-2 plan v2 + Step 0 + B2/I2 swatches + TAX-UI; D168)
+
+> Theme/blocks thread. Cloning pipeline → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. **D-number:** cloning holds D166 (WS-4 composites) + D167 (WS-4 block-side); this session's theme work = **D168**. Cloning co-active on the shared tree all session — every commit by EXPLICIT PATH; cloning's uncommitted files (hero/*, sgs-framework.db, phase4 reports, lucide, theme-snapshot) left untouched.
+
+## Completed This Session
+1. **3 fast-follows shipped.** (a) Jest `block-edit.test.js` 8 pre-existing failures fixed (`b80907c6`) — missing `ButtonGroup` + `useSettings` mocks + a real `ContainerWrapperControls` React key-prop bug (keyed a `<Fragment>` instead of passing `key` into the panel render fn); 31/31 pass. (b) JS-weight dequeue (`2bbec95a`) — NEW `includes/configurator-asset-optimiser.php` conditionally dequeues the WC jQuery frontend stack on bound-configurator pages (jQuery only when nothing else needs it; filterable). (c) moat-evidence sheet refreshed (`c3eb2907`).
+2. **UK tax point verified + fixed (`9e26de74`).** card==cart confirmed live under UK 20% VAT; dual-tax-seed (M-C10) NOT needed for UK B2C (single context). Fixed a real gap: manifest cache ignored tax-CONFIG changes → folded a tax fingerprint (display setting + rates hash) into the cache key; auto-bust proven both directions.
+3. **Phase 2 plan v2 (`89b00fa5`→`a6ef3fe7`→`74ada53d`).** Rebuilt after a 6-persona adversarial-council (D–C+: good doc, weak precision/security/scope) + a codebase audit (breadcrumb block + review/rating schema + price-SSR already built → E1/E3 shrink). Authoring UI un-gated (no raw-meta). 5 build-breakers fixed + 9 SEC amendments. 2 scope decisions: demand-analytics IN; AI-builder R5+F2 = whole-framework CAPSTONE (build LAST, gated on converter pipeline+DB+theme/blocks+WC production-ready; not a launch blocker).
+4. **Phase 2 Step 0 (`9b3a1724`).** `class-configurator-meta.php` (ONE registry: swatch/variesBy term_meta + gallery/divisor/unit-label/discount-label variation postmeta; SEC-4 digit-strip + SEC-8 variesBy enum + per-object auth, live-verified) + `configurator-head.php` (wp_head emitter scaffold for E1/E2/E3, detect-and-defer Yoast/RankMath) + `seed-48-sku-fixture-v2.php` (540 seeded + read-back verified).
+5. **Cluster A B2 swatches + I2 auto-contrast (`6cdff8d0`).** Colour/image swatches on `sgs/option-picker` via term_meta + build-time WCAG-luminance auto-contrast + a term-screen authoring UI (`configurator-term-fields.php`). LIVE: 12 chips, axe-0, 44px. Additive ON TOP of cloning's WS-4 wrapper-mirror (preserved; Typed page-144 byte-identical).
+6. **Cluster A TAX-UI (`395c76c9`).** Per-card `taxDisplayMode` (auto | inc-suffix | ex-plus-vat) + B2C-misuse warning. Manifest seeds exMinor/taxMinor/regularExMinor + translated pctDisplay; render.php + view.js share mode-aware formatters (SSR==swap). All 3 modes live-verified under UK VAT (SSR+swap). **qc-council 3-rater passed** — SEC-2 (cart untouched) confirmed; 4 fixes (stale-manifest guard, pctDisplay i18n parity, priceSuffix scoping, doc-block). Canary reverted to baseline.
+
+## Current State
+- **Branch:** `main` @ `395c76c9` — 9 commits this session (`b80907c6`→`395c76c9`), all pushed.
+- **Tests:** Jest 31/31; `php -l` + WPCS 0-errors on all touched files.
+- **Build/deploy:** product-card 1.8.0 + option-picker 0.1.6 + 4 new includes LIVE on sandybrown; opcache-reset; live-verified. Canary at baseline (tax OFF).
+- **Uncommitted (NOT mine — do not touch):** cloning's hero/*, sgs-framework.db, phase4 reports, lucide, theme-snapshot; AND `specs/27-*.md` + `plans/2026-06-03-spec27-phase1-configurator-plan.md` carry uncommitted edits of unclear authorship (pre-existing at session start). Left alone to avoid clobbering — **reconcile next session before editing them.**
+
+## Outcome vs Completion (Gate 3.5)
+**OUTCOME ACHIEVED** for all 6 — each live-verified on canary 540. Phase 2 = ~3 of ~11 units done (Step 0 + B2/I2 + TAX-UI); remainder is correctly future work.
+
+## Known Issues / Blockers
+- None block the next session.
+- **PARKED:** `P-CONFIGURATOR-PRICE-FORMAT-LOCALE` — JS formatPrice (toLocaleString) vs PHP wc_price thousand-separator divergence for ≥£1000 / non-UK locale. Pre-existing; doesn't bite UK B2C <£100.
+- spec27/phase1-plan uncommitted-doc tangle (above) — reconcile next session.
+
+## Files Modified (committed by explicit path)
+| File | What |
+|---|---|
+| `tests/js/__mocks__/@wordpress/{components,block-editor}.js` + `src/blocks/container/components/ContainerWrapperControls.js` | fast-follow 1 |
+| `includes/configurator-asset-optimiser.php` (NEW) + `sgs-blocks.php` | fast-follow 2 |
+| `includes/class-product-manifest.php` | tax fingerprint + ex/tax/regularEx/pctDisplay + v2 cache key |
+| `includes/class-configurator-meta.php` (NEW) + `configurator-head.php` (NEW) + `scripts/seed-48-sku-fixture-v2.php` (NEW) | Step 0 |
+| `includes/render-helpers.php` | luminance + mode-price helpers |
+| `includes/configurator-term-fields.php` (NEW) + `src/blocks/option-picker/{render.php,style.css,block.json}` | B2 + I2 |
+| `src/blocks/product-card/{block.json,render.php,view.js,edit.js}` + schema-compat snapshot | TAX-UI |
+| `.claude/plans/2026-06-04-spec27-phase2-display-seo-plan.md` (NEW v2) + reports | plan + evidence |
+
+## Notes for Next Session
+- **Deploy `*.asset.php` with any viewScriptModule JS change** (memory `deploy-asset-php-with-viewscriptmodule`) — stale `?ver` else serves the cached old module (cost ~30 min this session).
+- **SSR==swap parity** — seed the translated literal; never re-derive a display string in JS that PHP also computes.
+- **Build via PowerShell**; deploy by explicit-path scp + opcache reset; guard-blocked WP ops → token-gated webroot one-shot; REST `POST /wp/v2/pages` works for setting block attrs in tests.
+- **Authoring is un-gated** in the Phase-2 plan — every new presentation field ships with a friendly editor control, never raw meta.
+
+---
+
+# Session Handoff — 2026-06-04 (SGS THEME thread, session 11 — SPEC 27 PHASE 1 SHIPPED: 6 hardening units + 7 ship-gate UX fixes; Bean R-22-13 sign-off granted)
+
+> Theme/blocks thread. Cloning pipeline → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. Decision: **D165** (next free theme D-number = D166). The cloning thread was co-active on the shared tree (its WS-4 files — heading/label/info-box/quote/testimonial/cta-section/etc. + sgs-framework.db — left untouched). All my work committed by EXPLICIT PATH + pushed; the cart icon went into the shared theme header.html (committed by explicit path).
+
+## Completed This Session
+1. **All 6 hardening units SHIPPED + live-verified** (each multi-rater-reviewed, committed by explicit path): **U9** WCAG `<a role=button>`→real `<button>` + 4 a11y gates (axe 0, Space+Enter fire, SR, 44px) + moat-evidence sheet (`afb7a65a`); **U8** cache/tax — **root-caused + fixed the M-C1 staleness gap** (variation price change left the parent manifest STALE 24h: purge hooks targeted the wrong key + parent post_modified doesn't bump + the price-purge hooks are no-ops; fix = MAX(post_modified) across product+variations; proven STALE→FRESH) (`f15fa067`); **U10** perf MEASURED throttled (INP 152ms / CLS 0 / LCP 1.96s / no-React; page-JS-weight miss = WC core jQuery, parked) (`d5af2c67`); **U1** per-site capability flag (`sgs_content_types`) + manage_options toggle + one-time backward-compat migration (auto-enabled the canary) — gate proven both directions (`9fc9fecb`); **U11** WC<9.8 read-only degradation + 2 dismissible admin notices (filterable `sgs_configurator_supported` gate) (`a97f52b8`); **U12** Jest schema-compat 14/14 + baseline snapshot + PHPUnit deprecation-free-subset test (`9545ee24`).
+2. **Bean R-22-13 ship-gate review caught 7 UX gaps — all fixed + live-verified:** card width 1200→380px (WP constrained-layout max-width TIE, fixed with a (0,2,0) selector) + pink resting pill outlines + card hover (`1752fbe6`); **product-page links** (image `tabindex=-1 aria-hidden` + title `<a>`, via a `/research-buddies` study that rejected the whole-card overlay) + pure near-black description + visible "Added to your basket." feedback (`d9eddb4d`); **sgs/cart badge added to the theme header** (self-hides on non-WC sites) — full sell-loop live (badge 0→1) (`f9e3ae0c`); graceful branded no-image placeholder (`c1f3b1c2`).
+3. **Self-review** via `/ui-ux-pro-max` rubric + `/playwright` 3-breakpoint capture = ship-quality A- (clean hierarchy, excellent pill states, prominent price, strong CTA, responsive no-h-scroll, 44px, WCAG-clean).
+4. **PHASE 1 SHIPPED — Bean R-22-13 sign-off GRANTED.** Spec 27 acceptance 1-6 all met. Recorded D165(7); plan + Spec 27 feature-map marked SHIPPED.
+
+## Outcome vs Completion (Gate 3.5)
+**OUTCOME ACHIEVED** — Spec 27 Phase-1 variable-product configurator is SHIPPED with Bean's co-authoritative visual sign-off (R-22-13). Not completion theatre: every unit + every ship-gate fix was live-verified on canary 589/fixture 540, not just "code shipped". Four explicit fast-follows remain (parked, non-blocking) — named below, not hidden.
+
+## Current State
+- **Branch:** `main` at the session's last theme commit (`c1f3b1c2`); ship-gate docs (decisions/plan/spec/state/handoff/next-session-prompt) committed at handoff close. Cloning thread co-active (its WS-4 commits interleaved cleanly).
+- **Tests:** Jest configurator-schema-compat 14/14 PASS; `block-edit.test.js` 8 PRE-EXISTING failures (incomplete @wordpress/components mock — parked P-JEST-BLOCK-EDIT-MOCK-ROT, not the configurator). php -l + WPCS clean on all touched files.
+- **Build/deploy:** product-card 1.6.6 + the 6 includes classes + theme header.html LIVE on sandybrown canary, opcache-reset, live-verified.
+- **Uncommitted (mine):** none at close.
+
+## Known Issues / Blockers
+- **None block the next session.** Phase 1 is shipped + live.
+- Fast-follows (parked, non-blocking): `P-CONFIGURATOR-JS-WEIGHT-DEQUEUE` (page-JS-weight = WC core jQuery), M-C10 dual-tax-seed (tax-enabled multi-context), WCAG 3rd-party audit (before public marketing), `P-JEST-BLOCK-EDIT-MOCK-ROT`.
+
+## Next Priorities (in order)
+1. **Spec 27 Phase 2** — swatches (FR-27-B2) / per-unit pricing (B3) / per-variation galleries (A4) / ProductGroup+hasVariant JSON-LD (E1) / canonical+SEO (E2/E3) / SSR-all-commerce (F1) / PREFLIGHT go-live check. Separate chapter; do NOT pull forward into Phase 1.
+2. **Fast-follows** if Bean prefers — JS-weight dequeue, dual-tax-seed, WCAG audit (each small + parked).
+3. Cloning thread continues independently (WS-4 / fidelity) — see `.claude/next-session-prompt.md`.
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `plugins/sgs-blocks/src/blocks/product-card/{render.php,view.js,style.css,block.json}` | U9 button + U8 (no card change) + links + desc + feedback + no-image + width/pill/hover; 1.6.1→1.6.6 |
+| `plugins/sgs-blocks/includes/class-product-manifest.php` | U8 variation-aware staleness guard (MAX post_modified) |
+| `plugins/sgs-blocks/includes/class-cart-proxy.php` | U8 purge resolves variation→parent |
+| `plugins/sgs-blocks/includes/class-sgs-content-types-settings.php` | NEW — U1 capability flag + toggle + migration |
+| `plugins/sgs-blocks/includes/content-types/class-product-cpt.php` | U1 is_enabled() gate on 5 handlers |
+| `plugins/sgs-blocks/includes/class-sgs-configurator-compat.php` | NEW — U11 version gate + degradation notices |
+| `plugins/sgs-blocks/sgs-blocks.php` | wired the 2 new classes |
+| `plugins/sgs-blocks/tests/js/configurator-schema-compat.test.js` (+snapshot), `tests/php/ConfiguratorCompatTest.php` | NEW — U12 |
+| `theme/sgs-theme/parts/header.html` | sgs/cart badge added |
+| `.claude/reports/sgs-configurator-moat-evidence.md` | NEW — FR-27-J1 evidence sheet |
+| `.claude/{decisions.md,parking.md,state.md}` + `plans/2026-06-03-spec27-phase1-configurator-plan.md` + `specs/27-*.md` + `reports/visual-diff/product-card-2026-06-04.md` | D165 + ship-gate + fast-follows |
+
+## Notes for Next Session
+- **Spec 27 Phase 1 is SHIPPED — start Phase 2 as a fresh chapter; do NOT re-touch Phase 1 units.**
+- **The cart lives in the theme header.html now** (self-hiding on non-WC sites) — a real client shop gets a header cart automatically; a non-shop site renders nothing there.
+- **WP constrained-layout max-width tie** (memory `accessible-card-link-pattern-and-wp-maxwidth-tie`): a block's own max-width loses to WP's layout rule at equal (0,1,0) specificity — use a doubled-class selector.
+- **Accessible card-link convention** (now in Spec 27): interactive cards = discrete image+title links; navigation-only cards may use a whole-card overlay.
+- **Build via PowerShell** (Git-Bash node broken); surgical scp + opcache reset per unit; visual-diff gate needs a dated `reports/visual-diff/product-card-<today>.md` for any style.css change.
+
+---
+
 # Session Handoff — 2026-06-04 (SGS THEME thread, session 10 — the visible pill-swap QUARTET shipped + live-verified; Mama's can sell a variant)
 
 > Theme/blocks thread. Cloning pipeline → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. Decision: **D164**. The cloning thread was co-active on the shared tree (its 17 uncommitted files — `heading/*`,`label/*`,`container/render.php`,`sync-container-wrapping-blocks.py`,`testimonial-slider/*`,`reports/phase4-*`,`theme-snapshot.json`,`lucide-icons.php`,`orchestrator/sgs-framework.db` — left untouched). All my work committed by explicit path + pushed.
