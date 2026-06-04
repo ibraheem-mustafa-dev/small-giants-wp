@@ -20,6 +20,7 @@ import {
 } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 // ── Phase 1 constant options ─────────────────────────────────────────────────
 
@@ -1159,6 +1160,16 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ __( 'Add badge', 'sgs-blocks' ) }
 					</Button>
 				</PanelBody>
+
+				{ /* WS-4: mirrored sgs/container wrapper controls (section KIND).
+				   Legacy "Overlay colour" control above writes overlayColour; this
+				   panel writes backgroundOverlayColour, which render.php prefers
+				   (backgroundOverlayColour ?? overlayColour). */ }
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="section"
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>

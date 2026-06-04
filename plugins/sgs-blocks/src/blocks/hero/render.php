@@ -33,6 +33,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 // ── Shell / layout attributes (still scalar — drive the wrapper + media column).
 // FR-22-6: scalar content attrs (label, headline, subHeadline, ctaPrimary*,
@@ -40,8 +41,13 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 $variant             = $attributes['variant'] ?? 'standard';
 $alignment           = $attributes['alignment'] ?? 'left';
 $bg_image            = $attributes['backgroundImage'] ?? null;
-$overlay_colour      = sgs_colour_value( $attributes['overlayColour'] ?? 'text' );
-$overlay_opacity     = $attributes['overlayOpacity'] ?? 50;
+// WS-4: `overlayColour`/`overlayOpacity` renamed to `backgroundOverlayColour`/
+// `backgroundOverlayOpacity` (the shared container owns those names). Read the new
+// name first; fall back to the legacy name for un-migrated posts (belt-and-braces
+// alongside the edit.js fallback). These dynamic blocks save <InnerBlocks.Content/>,
+// so no save-markup deprecation is needed.
+$overlay_colour      = sgs_colour_value( $attributes['backgroundOverlayColour'] ?? ( $attributes['overlayColour'] ?? 'text' ) );
+$overlay_opacity     = $attributes['backgroundOverlayOpacity'] ?? ( $attributes['overlayOpacity'] ?? 50 );
 $split_image         = $attributes['splitImage'] ?? null;
 // splitMedia (added 2026-05-05) is the unified image-or-video slot. For
 // back-compat, when only the legacy splitImage is set, synthesise a
@@ -495,12 +501,10 @@ if ( $split_image_bleed ) {
 	$classes[] = 'sgs-hero--split-bleed';
 }
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class' => implode( ' ', $classes ),
-		'style' => implode( ';', $styles ) . ';',
-	)
-);
+// WS-4: the OUTER <section> is now rendered by SGS_Container_Wrapper::render() at
+// the foot of this file (the element mirrors sgs/container). $classes + $styles
+// ride through via extra_classes / extra_styles; hero keeps ALL its own media
+// layers (LCP <img>, video, svg, overlay) as bespoke interior.
 
 // Build video background.
 // bgVideo / bgVideoMobile override the background image on their respective viewports.
@@ -811,16 +815,43 @@ if ( $responsive_css ) {
 	printf( '<style id="%s">%s</style>', esc_attr( $uid ), $responsive_css );
 }
 
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attributes from WP core; all HTML strings built with esc_url/esc_html/esc_attr above.
-printf(
-	'<section %s>%s%s%s%s%s%s%s</section>',
-	$wrapper_attributes,
-	$bg_img_html,
-	$video_html,
-	$svg_html,
-	$overlay_html,
-	$content_html,
-	$media_html,
-	! $is_split ? $badges_html : ''
+// WS-4: assemble hero's bespoke interior, then wrap it in the shared sgs/container
+// element via the helper (section KIND). Hero renders ALL its own media layers
+// (LCP <img>, bg-video, svg, overlay) + its own min-height (via $styles), so every
+// attr that would drive a DUPLICATE helper layer is nulled in the helper's attr
+// copy (C3 double-emit guard) and no_overlay is passed. In split mode wrap_inner
+// is false so a stray contentWidth can never inject an __inner div that would sit
+// between the section grid and its __content/__media grid items.
+$hero_inner_html = $bg_img_html . $video_html . $svg_html . $overlay_html
+	. $content_html . $media_html . ( ! $is_split ? $badges_html : '' );
+
+$hero_helper_attrs = $attributes;
+foreach ( array(
+	'backgroundImage',
+	'backgroundImageTablet',
+	'backgroundImageMobile',
+	'backgroundVideo',
+	'bgVideo',
+	'bgVideoMobile',
+	'bgSvgContent',
+	'minHeight',
+	'minHeightTablet',
+	'minHeightMobile',
+) as $sgs_hero_null_attr ) {
+	$hero_helper_attrs[ $sgs_hero_null_attr ] = null;
+}
+
+$hero_helper_opts = array(
+	'tag'           => 'section',
+	'extra_classes' => $classes,
+	'extra_styles'  => $styles,
+	'no_overlay'    => true,
 );
+if ( $is_split ) {
+	$hero_helper_opts['wrap_inner'] = false;
+}
+
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns an escaped wrapper; $hero_inner_html built with esc_url/esc_html/esc_attr above; $content is WP core InnerBlocks output.
+echo SGS_Container_Wrapper::render( $hero_helper_attrs, $block, $hero_inner_html, 'section', $hero_helper_opts );
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
