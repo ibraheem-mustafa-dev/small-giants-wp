@@ -68,6 +68,10 @@ require_once SGS_BLOCKS_PATH . 'includes/hover-effects.php';
 // SGS Cart — dequeue wc-cart-fragments on pages using sgs/cart + inject REST config.
 require_once SGS_BLOCKS_PATH . 'includes/wc-cart-fragments.php';
 
+// Configurator — dequeue the redundant WooCommerce jQuery frontend stack on
+// pages with a bound (wc-product) sgs/product-card (FR-27-H1 JS budget).
+require_once SGS_BLOCKS_PATH . 'includes/configurator-asset-optimiser.php';
+
 // Animation attributes — server-side data-attribute injection for scroll reveals.
 require_once SGS_BLOCKS_PATH . 'includes/animation-attributes.php';
 
