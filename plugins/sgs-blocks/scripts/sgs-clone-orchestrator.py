@@ -2344,36 +2344,92 @@ def main():
     # and Stage 8 autonomy-gate / deploy). All three apply modules are
     # operator-gated by FR21 contract; they stage + emit deploy commands
     # and NEVER auto-mutate live WordPress. We:
-    #   1. Run media-sideload.sideload_batch in dry-run mode to harvest
-    #      every image-object slot from the extract and write a manifest
-    #      the operator can later promote with --upload.
+    #   1. Run media-sideload.sideload_batch.
+    #      When --deploy-target is set: REAL upload mode — posts each
+    #      image to the WP media library (idempotent; deduplicates by
+    #      filename before uploading). Auth failure raises SideloadAuthError
+    #      and is re-raised as a hard error — never silently falls back to
+    #      dry-run leaving 404s in the page. Credentials are read from the
+    #      per-client env file (sandybrown: .claude/secrets/sandybrown.env).
+    #      When --deploy-target is not set: dry-run inventory only (no
+    #      network calls) for operator review.
     #   2. Lazy-load attribute-staged-apply + functionality-bulk-apply
     #      so they're registered in sys.modules and reachable by
     #      post-clone operator scripts via the orchestrator's namespace.
     # Result lands on a stage_4i.json artefact at run_dir/.
     # ------------------------------------------------------------------
+
+    # Determine whether this run is wired to a live deploy target. When it
+    # is, promote stage-4i from inventory-only to REAL upload so the manifest
+    # carries genuine attachment ids that stage-10 (upload_and_patch.py) can
+    # consume. Credentials are read from the sandybrown env (the canonical
+    # canary env) which is always available at .claude/secrets/sandybrown.env.
+    _4i_do_upload: bool = bool(getattr(args, "deploy_target", None))
+    _4i_env_path: Path = REPO / ".claude" / "secrets" / "sandybrown.env"
+
     stage_4i_summary: dict = {"media_sideload": None, "modules_loaded": []}
+    # Load the module before the inner try block so SideloadAuthError is always
+    # resolvable in the except clause (avoids NameError if msl were unbound).
+    # Module load failure is still soft-fail — caught by the outer except.
     try:
         msl = media_sideload()
-        sideload_report = msl.sideload_batch(
-            extract_out,
-            mockup_root=args.mockup.parent,
-            upload=False,
-        )
-        manifest_path = run_dir / "media-sideload-manifest.json"
-        manifest_path.write_text(
-            json.dumps(sideload_report, indent=2, ensure_ascii=False),
-            encoding="utf-8",
-        )
-        stage_4i_summary["media_sideload"] = {
-            "slots_found": sideload_report.get("slots_found", 0),
-            "mode": sideload_report.get("mode", "dry-run"),
-            "manifest_path": str(manifest_path),
-        }
-        print(f"[stage-4i] media-sideload: {sideload_report.get('slots_found', 0)} image slot(s) staged (dry-run); manifest at {manifest_path}")
-    except Exception as exc:  # noqa: BLE001 - operator-review artefact; soft-fail
-        print(f"[stage-4i] media-sideload soft-failed: {exc}", file=sys.stderr)
-        stage_4i_summary["media_sideload"] = {"error": str(exc), "mode": "errored"}
+    except Exception as exc:  # noqa: BLE001
+        print(f"[stage-4i] media-sideload load failed (soft-fail): {exc}", file=sys.stderr)
+        stage_4i_summary["media_sideload"] = {"error": str(exc), "mode": "load-failed"}
+        msl = None  # type: ignore[assignment]
+
+    if msl is not None:
+        try:
+            sideload_report = msl.sideload_batch(
+                extract_out,
+                mockup_root=args.mockup.parent,
+                upload=_4i_do_upload,
+                env_path=_4i_env_path,
+            )
+            manifest_path = run_dir / "media-sideload-manifest.json"
+            manifest_path.write_text(
+                json.dumps(sideload_report, indent=2, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            uploaded_count = len(sideload_report.get("uploaded", []))
+            reused_count = sum(
+                1 for u in sideload_report.get("uploaded", []) if u.get("reused")
+            )
+            new_count = uploaded_count - reused_count
+            stage_4i_summary["media_sideload"] = {
+                "slots_found": sideload_report.get("slots_found", 0),
+                "mode": sideload_report.get("mode", "dry-run"),
+                "manifest_path": str(manifest_path),
+                "uploaded": uploaded_count,
+                "new_uploads": new_count,
+                "reused": reused_count,
+                "errors": len(sideload_report.get("errors", [])),
+            }
+            if _4i_do_upload:
+                print(
+                    f"[stage-4i] media-sideload: {sideload_report.get('slots_found', 0)} slot(s) "
+                    f"processed — {new_count} new upload(s), {reused_count} reused, "
+                    f"{len(sideload_report.get('errors', []))} error(s); manifest at {manifest_path}"
+                )
+            else:
+                print(
+                    f"[stage-4i] media-sideload: {sideload_report.get('slots_found', 0)} image slot(s) "
+                    f"staged (dry-run, no --deploy-target); manifest at {manifest_path}"
+                )
+        except msl.SideloadAuthError as exc:
+            # Auth failure is a hard error when in upload mode — never swallow it.
+            # Re-raise so the caller sees an explicit message rather than a
+            # mis-diagnosed "stage-4i soft-failed" with 404s left in the page.
+            print(f"[stage-4i] media-sideload AUTH ERROR (hard-fail): {exc}", file=sys.stderr)
+            stage_4i_summary["media_sideload"] = {"error": str(exc), "mode": "auth-error"}
+            (run_dir / "stage-4i.json").write_text(
+                json.dumps(stage_4i_summary, indent=2, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            raise RuntimeError(f"Stage 4i auth error — aborting pipeline: {exc}") from exc
+        except Exception as exc:  # noqa: BLE001 - operator-review artefact; soft-fail
+            print(f"[stage-4i] media-sideload soft-failed: {exc}", file=sys.stderr)
+            stage_4i_summary["media_sideload"] = {"error": str(exc), "mode": "errored"}
     for loader_name, loader in (
         ("attribute_staged_apply", attribute_staged_apply),
         ("functionality_bulk_apply", functionality_bulk_apply),
