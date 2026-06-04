@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Converter-lift universality fixture — SGS dogfood</title>
+  <!--
+    ════════════════════════════════════════════════════════════════════════
+    UNIVERSALITY FIXTURE — Method 2 converter-lift (Step 0, MANDATORY, R-22-9)
+    ════════════════════════════════════════════════════════════════════════
+    Purpose: prove the converter-lift MECHANISM is universal, not a Mama's
+    band-aid. Every section below deliberately exercises a §FR-22-21 transfer
+    case OR a CSS value-syntax the Mama's homepage does NOT use. "1% pixel-diff
+    on Mama's" is necessary but not sufficient — passing THIS is what proves
+    universal.
+
+    Section → case it proves (verify each at QA Gate 2 via /sgs-clone + live-DOM):
+      S1 full-bleed-no-maxwidth   → widthMode:"full" (faithful ABSENCE, step 6); inner __inner IS the grid; RAW-PX gap survives un-tokenised
+      S2 capped + shorthands      → max-width→contentWidth; background/border/box-shadow SHORTHANDS lift; token-ish gap
+      S3 composite + pseudo       → composite emit path (hero); ::before overlay (pseudo-element) preserved; min-height + align-items:center → CENTRED; clamp() headline
+      S4 min-height NO centring   → min-height lifts ALWAYS; NO centring idiom → block renders TOP-ALIGNED, never force-centred (STOP #49)
+      S5 deep-nested grid         → grid on a GREAT-GRANDCHILD lifts (grid-template-columns at depth, not just 2-level)
+      S6 css functions            → clamp()/calc()/var()/min() pass through as raw strings (not dropped by the unit regex)
+      S7 logical props + FLAG     → padding-inline/margin-block (logical props) lift; clip-path is UNSUPPORTED → must FLAG to gap-candidate, never silent-drop (step 6)
+      S8 units axis               → rem / % / vw / ch units all transfer (not just px)
+
+    Naming: SGS-BEM (.sgs-<block>__<element>--<modifier>); run /sgs-clone with
+    --draft-mode (soft BEM-lint). Block roots use real slugs so the converter routes.
+  -->
+  <style>
+    /* ── Design tokens (so var() resolution has real targets) ───────────── */
+    :root {
+      --primary:        #2E6F6F;
+      --primary-dark:   #1F4C4C;
+      --surface:        #F4F8F8;
+      --surface-alt:    #FFFFFF;
+      --accent:         #E0A93B;
+      --text:           #232826;
+      --text-muted:     #5A625F;
+      --border:         #D6E2E2;
+      --gap-section:    24px;
+      --pad-block:      clamp(48px, 6vw, 96px);
+      --measure:        1040px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; font-family: system-ui, sans-serif; color: var(--text); }
+    h1, h2 { font-family: Georgia, serif; line-height: 1.1; }
+    p { line-height: 1.6; color: var(--text-muted); }
+    img { max-width: 100%; height: auto; display: block; }
+
+    /* ════════════════════════════════════════════════════════════════════
+       S1 — full-bleed section, NO max-width; inner __inner IS the grid;
+            RAW-PX gap (14px, deliberately not a token); background colour
+       Expected lift: widthMode:"full" (absence) · layout grid on container ·
+                      gridTemplateColumns "1fr 1fr 1fr" · gap 14px (raw px) ·
+                      backgroundColour --surface
+       ════════════════════════════════════════════════════════════════════ */
+    .sgs-feature-grid--fullbleed {
+      width: 100%;
+      background: var(--surface);
+      padding-block: 64px;
+    }
+    .sgs-feature-grid__inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;                       /* raw px — must NOT be snapped to a spacing token */
+    }
+    .sgs-feature-grid__card {
+      background: var(--surface-alt);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    @media (max-width: 768px) {
+      .sgs-feature-grid__inner { grid-template-columns: 1fr; gap: 10px; }  /* responsive override (bp_decls) */
+    }
+
+    /* ════════════════════════════════════════════════════════════════════
+       S2 — capped content width + background / border / box-shadow SHORTHANDS
+       Expected lift: contentWidth 1040 (max-width present) · border shorthand ·
+                      box-shadow · background shorthand
+       ════════════════════════════════════════════════════════════════════ */
+    .sgs-container--capped {
+      background: var(--surface-alt);
+      padding-block: var(--pad-block);
+    }
+    .sgs-container__inner--capped {
+      max-width: var(--measure);
+      margin-inline: auto;
+      border: 1px solid var(--border);            /* shorthand */
+      box-shadow: 0 8px 24px rgba(31, 76, 76, 0.10);
+      border-radius: 16px;
+      padding: 32px;
+      gap: var(--gap-section);
+    }
+
+    /* ════════════════════════════════════════════════════════════════════
+       S3 — COMPOSITE (hero) with a bespoke ::before overlay (pseudo-element),
+            min-height + align-items:center (centred), clamp() headline
+       Expected: composite emit path · ::before overlay preserved (not dropped,
+                 not double-emitted) · minHeight 560 · verticalAlign center ·
+                 clamp() font-size passes through as raw string
+       ════════════════════════════════════════════════════════════════════ */
+    .sgs-hero--overlay {
+      position: relative;
+      min-height: 560px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;            /* centring idiom → verticalAlign:center */
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      padding: 48px;
+      overflow: hidden;
+    }
+    .sgs-hero--overlay::before {       /* pseudo-element overlay — must be preserved */
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.28);
+      z-index: 0;
+    }
+    .sgs-hero__headline {
+      position: relative;
+      z-index: 1;
+      color: #fff;
+      font-size: clamp(2rem, 5vw, 3.5rem);   /* CSS function — passthrough */
+      max-width: 22ch;                        /* ch unit */
+      text-align: center;
+    }
+
+    /* ════════════════════════════════════════════════════════════════════
+       S4 — min-height set but NO centring idiom → MUST render TOP-ALIGNED
+            (STOP #49: the --has-min-height flex-centre trap must NOT fire)
+       Expected: minHeight 420 lifts · verticalAlign ABSENT (faithful) ·
+                 content sits at the TOP, not vertically centred
+       ════════════════════════════════════════════════════════════════════ */
+    .sgs-container--tall-topaligned {
+      min-height: 420px;               /* present → lifts */
+      background: var(--surface);
+      padding: 40px;
+      /* deliberately NO align-items / justify-content / place-* / margin:auto */
+    }
+
+    /* ════════════════════════════════════════════════════════════════════
+       S5 — grid on a GREAT-GRANDCHILD (depth > Mama's two-level shape)
+       Expected: the deeply-nested grid lifts onto the right wrapper at depth,
+                 not only top-level / one-level-down
+       ════════════════════════════════════════════════════════════════════ */
+    .sgs-container--deep { background: var(--surface-alt); padding-block: 56px; }
+    .sgs-container__inner--deep { max-width: 1200px; margin-inline: auto; }
+    .sgs-card-grid__row { padding: 8px; }
+    .sgs-card-grid__cards {            /* great-grandchild of the section root */
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .sgs-card-grid__cell { background: var(--surface); border-radius: 10px; padding: 16px; }
+
+    /* ════════════════════════════════════════════════════════════════════
+       S6 — CSS FUNCTIONS everywhere (clamp/calc/var/min) — value parser must
+            pass these through as raw strings, not drop them
+       ════════════════════════════════════════════════════════════════════ */
+    .sgs-container--functions {
+      padding: clamp(24px, 4vw, 64px) calc(2rem + 1vw);
+      gap: min(32px, 4vw);
+      background: var(--surface);
+      max-width: calc(100% - 48px);
+    }
+    .sgs-container__title--functions { font-size: clamp(1.5rem, 3vw, 2.25rem); }
+
+    /* ════════════════════════════════════════════════════════════════════
+       S7 — LOGICAL PROPS + a deliberately UNSUPPORTED prop (clip-path)
+       Expected: padding-inline / margin-block lift · clip-path → FLAG to
+                 gap-candidate (FR-22-21 step 6 flag-not-drop), NEVER silent-drop
+       ════════════════════════════════════════════════════════════════════ */
+    .sgs-container--logical {
+      padding-inline: 40px;            /* logical prop */
+      padding-block: 48px;             /* logical prop */
+      margin-block: 24px;              /* logical prop */
+      background: var(--surface-alt);
+      clip-path: polygon(0 0, 100% 0, 100% 92%, 0 100%);  /* UNSUPPORTED → must FLAG */
+    }
+
+    /* ════════════════════════════════════════════════════════════════════
+       S8 — UNITS axis: rem / % / vw / ch (not just px)
+       ════════════════════════════════════════════════════════════════════ */
+    .sgs-container--units {
+      padding: 3rem 5%;                /* rem + % */
+      max-width: 90vw;                 /* vw */
+      background: var(--surface);
+      gap: 1.5rem;
+    }
+    .sgs-container__lede--units { max-width: 60ch; font-size: 1.125rem; }
+  </style>
+</head>
+<body>
+
+  <!-- S1 — full-bleed; inner IS the grid; raw-px gap -->
+  <section class="sgs-feature-grid sgs-feature-grid--fullbleed">
+    <div class="sgs-feature-grid__inner">
+      <div class="sgs-feature-grid__card"><h2>Fast</h2><p>Full-bleed section, no max-width. Inner wrapper is the grid itself.</p></div>
+      <div class="sgs-feature-grid__card"><h2>Faithful</h2><p>Raw 14px gap must survive un-tokenised.</p></div>
+      <div class="sgs-feature-grid__card"><h2>Universal</h2><p>Background colour lifts onto the container.</p></div>
+    </div>
+  </section>
+
+  <!-- S2 — capped width + border/box-shadow/background shorthands -->
+  <section class="sgs-container sgs-container--capped">
+    <div class="sgs-container__inner sgs-container__inner--capped">
+      <h2>Capped content</h2>
+      <p>Max-width 1040 lifts to contentWidth. Border, box-shadow and background shorthands all transfer.</p>
+    </div>
+  </section>
+
+  <!-- S3 — composite hero, ::before overlay, min-height + centred, clamp() -->
+  <section class="sgs-hero sgs-hero--overlay">
+    <h1 class="sgs-hero__headline">A composite with a bespoke overlay</h1>
+  </section>
+
+  <!-- S4 — min-height, NO centring → top-aligned (STOP #49) -->
+  <section class="sgs-container sgs-container--tall-topaligned">
+    <div class="sgs-container__inner">
+      <h2>Tall but top-aligned</h2>
+      <p>min-height is set, but there is no centring idiom — this content MUST sit at the top, not be vertically centred.</p>
+    </div>
+  </section>
+
+  <!-- S5 — grid on a great-grandchild -->
+  <section class="sgs-container sgs-container--deep">
+    <div class="sgs-container__inner sgs-container__inner--deep">
+      <div class="sgs-card-grid__row">
+        <div class="sgs-card-grid__cards">
+          <div class="sgs-card-grid__cell"><p>1</p></div>
+          <div class="sgs-card-grid__cell"><p>2</p></div>
+          <div class="sgs-card-grid__cell"><p>3</p></div>
+          <div class="sgs-card-grid__cell"><p>4</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S6 — CSS functions -->
+  <section class="sgs-container sgs-container--functions">
+    <h2 class="sgs-container__title sgs-container__title--functions">clamp / calc / var / min</h2>
+    <p>Every spacing and size value here is a CSS function. None may be dropped.</p>
+  </section>
+
+  <!-- S7 — logical props + unsupported clip-path (flag-not-drop) -->
+  <section class="sgs-container sgs-container--logical">
+    <div class="sgs-container__inner">
+      <h2>Logical properties</h2>
+      <p>padding-inline and margin-block lift; clip-path is unsupported and must be FLAGGED, never silently dropped.</p>
+    </div>
+  </section>
+
+  <!-- S8 — units axis -->
+  <section class="sgs-container sgs-container--units">
+    <p class="sgs-container__lede sgs-container__lede--units">rem, percentage, viewport-width and ch units must all transfer faithfully.</p>
+  </section>
+
+</body>
+</html>
