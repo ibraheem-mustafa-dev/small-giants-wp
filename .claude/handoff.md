@@ -1,6 +1,53 @@
+# Session Handoff — 2026-06-04 (CLONING thread, PM4) — Method 2 converter-lift BUILD: Phase A core + FS-4 SHIPPED + live-verified (D172)
+
+> **CURRENT — this is the live handoff.** Earlier dated sections below are prior work, kept for history. Full orchestration plan + the remaining steps: `.claude/next-session-prompt.md` (PM4 opener). Decisions: D172. Build map: `.claude/plans/2026-06-04-method2-converter-lift-PHASE-PLAN.md` (⚡ FINAL PLAN + BUILD EXECUTION PLAYBOOK). Theme thread shares the tree (interleaving spec27/28 commits) — commit by explicit path, verify `git log -1 --stat` (STOP #41/#45).
+
+## Completed This Session
+1. **A1 — DB-driven lift helper** (`e9eaf013`): `_lift_wrapper_css_to_container_attrs` in convert.py — DB-driven map via `db.css_property_suffixes()` (R-22-1, no hardcoded dict), precise css_prop→suffix→attr (STOP #48), CSS-function passthrough (clamp/calc/var), FLAG-not-drop (FR-22-21 step 6), responsive bp_decls. Self-test 6/6. The universality foundation.
+2. **A2 + MF-B** (`0564d1f3`): composite-path lift wired at `convert.py:2351`, mirror-roster-gated (DB-driven, R-22-9), A-collapse fallback (desktop-only min-height→base). MF-B gates the `--has-min-height` flex-centre class on `verticalAlign==='center'`. **Live-verified:** hero renders `minHeight:520`, no centre-regression.
+3. **A3 — slug-None section lift** (`f4fa389b`): same helper on the slug-None path. Verified: 203 attrs (+26); brand lifts grid+gap; other 4 sections correctly nothing-extra (grandchild grids handled elsewhere).
+4. **FS-4 — sgs/media grid-child 0×0 fix** (`0cbe3daf`): `width:100%`+`min-width:0`. Live-verified: 2/3 media images render non-zero; visual-diff report PASS.
+5. **Investigation + design + hardening (earlier in session):** ran `/sgs-clone`, 3 read-only investigation agents (premise corrected — routing essentially solved, hero already `sgs/hero`@1.0, trust-bar tier fix shipped `c3443e03`); 5-fix-shape design (D169) → qc-council → phase plan → 5-persona adversarial-council → universality must-fixes folded (D170); the build then executed Phase A core + FS-4 (D172).
+
+## Current State
+- **Branch:** `main` at `4d238e2e` (last cloning commit; HEAD moves — theme thread interleaves spec27/28 commits, now at `3a1e95df`).
+- **Tests:** no suite; all converter changes `import convert` clean; A1 self-test 6/6; hero + media live-DOM verified (R-22-11) on canary page 144.
+- **Build:** passes (blocks built + deployed to sandybrown canary).
+- **Uncommitted:** none of mine (theme thread's spec-28 edit + lucide-icons auto-regen + theme-snapshot + orphan sgs-framework.db are not this thread's).
+
+## Known Issues / Blockers
+- **Brand/hero/product images are 404 on the clone** — the mockup images were never uploaded (dry-run). FS-4 fixed the CSS so they'll fill their cells, but they stay invisible until **FS-5 (image sideload)** uploads them. FS-5 is the auth-complicated MUST-ship.
+- **pixel-diff held at 57.0%** — informational per FR-22-18; the lifts add attrs that render ~same as the scoped CSS (structural/editable parity is the gain). The big pixel move needs FS-5 images.
+- Theme thread shares the tree — commit by explicit path.
+
+## Next Priorities (in order)
+1. **FS-5 image sideload (MUST)** — dry-run→real WP upload + page patch; makes brand/hero/product images load (realises FS-4's payoff). Auth-complicated — use the token-gated webroot runner.
+2. **A5** — D6/D7: testimonial `--Array` variant-class bug + dropped `--send-to-ward` modifier + className carry (convert.py, serial).
+3. **D5** — product-card fills its grid cell (block; the grid-template lift already lands — scope the Spec-27 380px cap to standalone).
+4. **A4** — sidecar delete (cleanup across convert.py + orchestrator + test + css_router; zero visual).
+5. **Universality fixture (MANDATORY, R-22-9)** + **QA Gate 2 + Bean R-22-13** (incl. the hero `align-items:center` hero-block-default question).
+
+## Files Modified
+| File | What changed |
+|------|---|
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | A1 helper + A2 composite-path wire + A3 slug-None wire + A-collapse |
+| `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php` | MF-B: gate `--has-min-height` on verticalAlign |
+| `plugins/sgs-blocks/src/blocks/media/style.css` | FS-4: img width:100%+min-width:0 |
+| `reports/visual-diff/media-2026-06-04.md` | FS-4 visual-diff report (PASS) |
+| `.claude/{decisions(D169/D170/D172),plans/2026-06-04-method2-converter-lift-{design,PHASE-PLAN}.md,reports/2026-06-04-method2-converter-lift-EXPLAINED.md}` | design, plan, explanation, decisions |
+| `plugins/sgs-blocks/src/blocks/trust-bar/block.json` | (earlier) is_section_root routing fix `c3443e03` |
+
+## Notes for Next Session
+- **STOP #34 + #50 earned their keep** — verifying subagent work against the live page (not its report) caught: the hero gradient is a render-layer default (out of converter scope, not an emission gap); the brand image is a 404 (FS-5), not a CSS bug. Always live-verify, don't trust the report.
+- **A2 landing decision (Option A):** composite wrapper CSS lands on the inner composite's mirrored attrs (where its background lands), NOT the outer container — spec-grounded (§FR-22-21 composite-mirror).
+- **The hero `align-items:center`** is the hero block's pre-existing default (mockup grid-stretches); it is NOT a converter-lift gap — flagged for Bean's R-22-13 eye as a block-default decision.
+- **FS-4 + FS-5 are coupled for the brand-image visible win** — FS-4 (CSS) alone can't show a 404 image.
+
+---
+
 # Session Handoff — 2026-06-04 (CLONING thread, PM) — WS-4 BLOCK-SIDE COMPLETE (hero + product-card + mobile-nav + content-collection) + architecture resolved + /sgs-update reconciled
 
-> **CURRENT — this is the live handoff.** Earlier dated sections below are prior work, kept for history. Full orchestration plan: `.claude/next-session-prompt.md` (2026-06-04 PM opener). Decisions: D167. Theme thread shares the tree (interleaving spec27 commits) — commit by explicit path, verify `git log -1 --stat` (STOP #41/#45).
+> **SUPERSEDED by the PM4 section above.** Earlier dated sections below are prior work, kept for history. Decisions: D167. Theme thread shares the tree (interleaving spec27 commits) — commit by explicit path, verify `git log -1 --stat` (STOP #41/#45).
 
 ## Completed This Session
 1. **content-collection registered** (29th container block, layout KIND) + fixed the scanner `widthMode` section-mis-classification that would have corrupted the roster on `--apply` (commit `40a9e03d`). Roster now validates 29 (4/14/11).
