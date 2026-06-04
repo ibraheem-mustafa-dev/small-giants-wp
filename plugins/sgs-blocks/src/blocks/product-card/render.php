@@ -366,6 +366,8 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				</div>
 			<?php endif; ?>
 
+			</div><?php // end .product-card__media (image only — the aspect-ratio/overflow:hidden box must NOT wrap the thumbnails or they get clipped). ?>
+
 			<?php // A4: thumbnail strip — hidden when < 2 images via context.thumbsHidden. ?>
 			<div
 				class="product-card__thumbs"
@@ -398,7 +400,6 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				</button>
 				<?php endforeach; ?>
 			</div>
-			</div><?php // end .product-card__media. ?>
 
 			<div class="product-card-body">
 				<h3>
