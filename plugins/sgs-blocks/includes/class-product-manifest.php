@@ -30,6 +30,41 @@ defined( 'ABSPATH' ) || exit;
 final class Product_Manifest {
 
 	/**
+	 * Short fingerprint of the shop's tax configuration.
+	 *
+	 * Folded into the manifest cache key so any tax-config change (enabling VAT,
+	 * switching incl/excl display, editing a rate value or class) becomes a cache
+	 * miss and forces a rebuild at the now-correct prices. Tax-config changes do
+	 * NOT bump product post_modified, so the post_modified freshness probe cannot
+	 * catch them on its own.
+	 *
+	 * @return string 12-char hash, or 'notax' when tax calculation is disabled.
+	 */
+	private static function tax_fingerprint(): string {
+		if ( ! \function_exists( 'wc_tax_enabled' ) || ! \wc_tax_enabled() ) {
+			return 'notax';
+		}
+
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- small rates table; this IS a cache-key freshness probe.
+		$rates_hash = $wpdb->get_var(
+			"SELECT MD5( GROUP_CONCAT( CONCAT_WS( '|', tax_rate_id, tax_rate, tax_rate_country, tax_rate_state, tax_rate_class ) ORDER BY tax_rate_id ) )
+			 FROM {$wpdb->prefix}woocommerce_tax_rates"
+		);
+
+		$signature = \implode(
+			'|',
+			array(
+				(string) \get_option( 'woocommerce_tax_display_shop' ),
+				(string) \get_option( 'woocommerce_prices_include_tax' ),
+				(string) $rates_hash,
+			)
+		);
+
+		return \substr( \md5( $signature ), 0, 12 );
+	}
+
+	/**
 	 * Build the sparse live-variations manifest for a WooCommerce variable product.
 	 *
 	 * Returns null when: product is not variable, WC is not active, or the product
@@ -74,7 +109,17 @@ final class Product_Manifest {
 		// freshness key must be the MAX post_modified_gmt across the product AND
 		// all its variations — one indexed query, write-path-agnostic (catches
 		// every write regardless of which WC hook did or did not fire).
-		$cache_key = 'sgs_manifest_' . $product_id;
+		// The seeded prices are tax-context-dependent (wc_get_price_to_display
+		// honours the shop's tax-display + rate settings). A tax-config change
+		// (enabling VAT, switching incl/excl display, editing a rate) does NOT
+		// bump any product's post_modified, so the post_modified freshness probe
+		// below would serve ex-VAT prices for the whole TTL — a UK Price-Marking /
+		// Consumer-Rights exposure when an agency enables VAT AFTER products are
+		// cached. Folding a tax fingerprint into the cache key makes any tax-config
+		// change a cache miss → rebuild. (This shared transient assumes a single
+		// tax context; per-customer / B2B multi-context is the deferred dual-seed,
+		// FR-27-H3 / M-C10 — out of scope for UK B2C single-rate selling.)
+		$cache_key = 'sgs_manifest_' . $product_id . '_' . self::tax_fingerprint();
 		$cached    = \get_transient( $cache_key );
 
 		global $wpdb;
