@@ -81,6 +81,7 @@ if ( 'typed' === $source_mode ) {
 
 require_once dirname( __DIR__, 3 ) . '/includes/class-product-bindings.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-product-manifest.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-configurator-compat.php';
 
 $product_id = absint( $attributes['productId'] ?? 0 );
 $data       = \SGS\Blocks\Product_Bindings::get_product_data( $product_id, $source_mode );
@@ -100,6 +101,56 @@ if ( null === $data ) {
 			<p class="product-desc">
 				<?php esc_html_e( 'No product selected. Choose a product in the block settings.', 'sgs-blocks' ); ?>
 			</p>
+		</div>
+	</div>
+	<?php
+	return;
+}
+
+/* ── FR-27-A5: WC below the version floor → read-only card (no configurator JS) */
+
+/*
+ * When the bound product is a WC variable product but the live WooCommerce is
+ * older than the configurator floor (Sgs_Configurator_Compat::MIN_WC), render a
+ * STATIC read-only card: image, title, "From" price, and a link to the product
+ * page where WC's own UI handles purchase. No data-wp-interactive, no pickers,
+ * no add-to-cart JS. A dismissible admin notice (the compat class) tells the
+ * operator to update WooCommerce. Never a silent break (FR-27-A5). The gate is
+ * filterable (`sgs_configurator_supported`) so it is testable without a WC
+ * downgrade. Bound-branch only — page-144 Typed clones never reach this.
+ */
+if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\Blocks\Sgs_Configurator_Compat::is_supported() ) {
+	$ro_classes   = $classes;
+	$ro_classes[] = 'product-card--readonly';
+	$ro_args      = array( 'class' => implode( ' ', $ro_classes ) );
+	if ( '' !== $inline_style ) {
+		$ro_args['style'] = $inline_style;
+	}
+	$wrapper_attributes = get_block_wrapper_attributes( $ro_args );
+	$ro_permalink       = $data['wc_id'] ? esc_url( get_permalink( $data['wc_id'] ) ) : '';
+	?>
+	<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped. ?>>
+		<?php if ( '' !== $data['image_url'] ) : ?>
+			<img class="product-card-img" src="<?php echo esc_url( $data['image_url'] ); ?>" alt="<?php echo esc_attr( $data['image_alt'] ); ?>" loading="lazy" decoding="async">
+		<?php endif; ?>
+		<div class="product-card-body">
+			<h3><?php echo esc_html( $data['title'] ); ?></h3>
+			<?php if ( '' !== $data['short_desc'] ) : ?>
+				<div class="product-desc"><?php echo wp_kses_post( $data['short_desc'] ); ?></div>
+			<?php endif; ?>
+			<div class="price-row">
+				<?php if ( ! empty( $data['price_from_html'] ) ) : ?>
+					<div class="price price--from">
+						<span class="price-from-label"><?php esc_html_e( 'From', 'sgs-blocks' ); ?></span>
+						<span class="price-from-amount"><?php echo wp_kses_post( $data['price_from_html'] ); ?></span>
+					</div>
+				<?php elseif ( ! empty( $data['price_html'] ) ) : ?>
+					<div class="price"><?php echo wp_kses_post( $data['price_html'] ); ?></div>
+				<?php endif; ?>
+			</div>
+			<?php if ( '' !== $ro_permalink ) : ?>
+				<a class="btn btn-primary product-card__view" href="<?php echo $ro_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd. ?>"><?php esc_html_e( 'View product', 'sgs-blocks' ); ?></a>
+			<?php endif; ?>
 		</div>
 	</div>
 	<?php

@@ -190,6 +190,13 @@ Sgs_Content_Types_Settings::register();
 require_once SGS_BLOCKS_PATH . 'includes/content-types/class-product-cpt.php';
 Product_CPT::register();
 
+// SGS Configurator compatibility (Spec 27 FR-27-A5, U11) — WC version floor +
+// graceful read-only degradation below it + dismissible admin notices. The
+// render-time gate Sgs_Configurator_Compat::is_supported() is read by
+// product-card/render.php; the notices hook admin_notices.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-configurator-compat.php';
+Sgs_Configurator_Compat::register();
+
 // SGS Floating UI — Customiser controls + frontend renderer (replaces retired back-to-top + reading-progress blocks).
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-floating-ui-customiser.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-floating-ui-renderer.php';

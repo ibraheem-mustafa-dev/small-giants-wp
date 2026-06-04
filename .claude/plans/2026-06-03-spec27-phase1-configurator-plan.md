@@ -5,7 +5,7 @@ thread: sgs-theme
 plan_id: spec27-phase1-configurator
 spec: .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md
 created: 2026-06-03
-status: HARDENING IN PROGRESS (D165, 2026-06-04) — SELL-LOOP (U0+U6 backend + U3+U4+U7+U5 pill-swap) SHIPPED D164. Hardening: U9 (a11y `<button>` + moat-evidence sheet) SHIPPED `afb7a65a`; U8 (cache/tax; M-C1 staleness gap found-and-fixed, proven FRESH) SHIPPED `f15fa067`; U10 (perf budgets) MEASURED `d5af2c67`; U1 (per-site capability flag + toggle + backward-compat migration) SHIPPED — gate proven both directions on canary. REMAINING to the single whole ship gate: U11 (degradation) / U12 (cloning-compat).
+status: HARDENING IN PROGRESS (D165, 2026-06-04) — SELL-LOOP (U0+U6 backend + U3+U4+U7+U5 pill-swap) SHIPPED D164. Hardening: U9 (a11y `<button>` + moat-evidence sheet) SHIPPED `afb7a65a`; U8 (cache/tax; M-C1 staleness gap found-and-fixed, proven FRESH) SHIPPED `f15fa067`; U10 (perf budgets) MEASURED `d5af2c67`; U1 (per-site capability flag + toggle + backward-compat migration) SHIPPED; U11 (WC<9.8 read-only degradation + admin notices) SHIPPED — all proven on canary. REMAINING to the single whole ship gate: U12 (cloning-compat tests).
 gate_to_build: ".claude/next-session-prompt.md + .claude/state.md (cloning thread) must show the cloning phase CLOSED before Task C build starts"
 scope_frs: [FR-27-A1, FR-27-A2, FR-27-A3, FR-27-A5, FR-27-B1, FR-27-C1, FR-27-G1, FR-27-G2, FR-27-G3, FR-27-G6, FR-27-H1, FR-27-H2, FR-27-H3, FR-27-I-MVP]
 adversarial_council: CONDITIONAL-GO (6-persona brutal round run 2026-06-03; must-fixes folded into §8; build-ready after the §8 pre-build register is applied)
@@ -115,7 +115,8 @@ PURPOSE: Interactivity API only (`viewScriptModule` ≈12 KB), no WC React/jQuer
 FILES: budget asserts in CI; `render.php` image attrs.
 ON-CRITICAL-PATH: no (verification gate). TEST: lab INP ≤200 ms on a 48-SKU pill change (mandatory CI gate, throttled mid-tier 4G); block JS ≤20 KB; CLS 0 on swap; no React bundle.
 
-**U11 — Degradation + activation prompt** · FR-27-A3/A5
+**U11 — Degradation + activation prompt** · FR-27-A3/A5 · ✅ SHIPPED + PROVEN 2026-06-04 (D165)
+STATUS: new `Sgs_Configurator_Compat` — filterable `is_supported()` gate (`sgs_configurator_supported`); render.php read-only branch (WC<9.8 variable card → static image/title/From-price/View-product, no configurator JS); two dismissible admin notices (min-version + CPT-link prompt) with per-user-meta dismissal. Proven live (gate forced off via temp mu-plugin): read-only card both directions; notices render; no fatal. 2-rater review, no blockers. Bound-only — typed/simple/CPT unaffected.
 PURPOSE: CPT no-WC fallback secured (IDOR fix already deployed this session ✓); WC <9.8 → read-only card (static default price, no configurator JS) + dismissible admin notice; WC activation on a site with `sgs-cpt` cards → admin migration prompt (never a silent break).
 FILES: `render.php` (version-floor branch), `class-product-cpt.php`/an admin-notice class.
 ON-CRITICAL-PATH: no. TEST: WC 9.7 → read-only card + notice; activating WC surfaces the prompt.
