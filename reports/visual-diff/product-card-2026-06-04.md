@@ -7,7 +7,7 @@ first_paint_capture_passed: true
 canary_page: /sgs-configurator-test-540/ (page 589, fixture product 540)
 ---
 
-# Visual diff — sgs/product-card (Spec 27 Phase-1 pill-swap U3/U4/U7/U5)
+# Visual diff — sgs/product-card (Spec 27 Phase-1 pill-swap U3/U4/U7/U5 + U9 WCAG button)
 
 ## verdict: PASS
 ## first_paint_capture_passed: true
@@ -38,6 +38,16 @@ Bound variable card SSRs concrete default price/image/title + two option-pickers
 - **axe-core: 0 violations** (wcag2a/2aa/21aa/22aa, scoped to the card).
 - **Keyboard:** all 16 pills focusable, no trap.
 - **44px targets:** all 16 pills measured **44×44px** (card-scoped `min-height` — shared option-picker + page-144 untouched).
+
+### U9 — add-to-cart `<a role=button>` → real `<button>` + 4 objective a11y gates (FR-27-B1)
+- The add-to-cart control is now a native `<button type="submit">` inside a `<form method="post" action="<permalink>">` (both Bound branches). No-JS submit lands on the product page (identical to the previous `<a href>`); JS intercepts `data-wp-on--submit` → preventDefault → secure proxy.
+- **Live SSR confirmed (page 589):** `role="button"` count **0**; one `<form class="product-card__cart-form">` + one `<button type="submit" class="btn btn-primary product-card__add-to-cart" aria-busy="false">`.
+- **CSS:** `.product-card__cart-form{display:contents}` keeps the `<button>` the direct flex item of `.product-card-body` → it stretches full-width exactly as the `<a>` did (button measured 1158×49 on the full-width page-589 layout — pills + button all ≥44px). `button.product-card__add-to-cart{appearance:none}` strips native chrome. Both **new** selectors; no shared rule modified. Screenshot: `product-card-u9-button-2026-06-04.png`.
+- **Gate (a) axe-core: 0 violations** (wcag2a/2aa/21a/21aa/22aa, card-scoped).
+- **Gate (b) keyboard:** ArrowRight moves the radiogroup (12-pack → 24-pack, and the price reactively swapped to £18.99); Tab reaches the button and exits the card (no trap); **Space fires add-to-cart** AND **Enter fires add-to-cart** (the exact criterion `<a role=button>` failed — anchors ignore Space).
+- **Gate (c) SR structure:** 2 `role="radiogroup"` each `aria-labelledby` its legend (Size/Flavour); button accessible-name "Add to Cart"; 4 `aria-live="polite"` regions (price-row, stock, availability, cart-status).
+- **Gate (d) 44px:** every pill (16) + the button measured ≥44px via computed bounding-rect. **0 console errors.**
+- Verified by an isolated Playwright + axe-core node script (the shared MCP browser was held by the cloning session); throwaway script removed after the run.
 
 ## Scope safety (page-144 / cloning thread)
 - All changes are on the Bound `wc-product` variable branch + `.product-card--bound`-scoped CSS.

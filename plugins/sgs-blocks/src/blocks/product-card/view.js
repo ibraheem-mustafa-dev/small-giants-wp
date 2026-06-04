@@ -370,9 +370,12 @@ store( 'sgs/product-card', {
 		 *                 product ID for simple / CPT products.
 		 *   No price is ever sent — the proxy is the sole authority.
 		 *
-		 * A3: The button is rendered as an <a> so it degrades to a product-page
-		 * link without JS. This action calls event.preventDefault() to intercept
-		 * the navigation and handle the cart add via the proxy instead.
+		 * A3 + U9: the control is a real <button type="submit"> inside a
+		 * <form action=permalink> (native button = Space+Enter; WCAG 2.1.1).
+		 * With no JS the form submits to the product page (graceful fallback).
+		 * This action is bound to the form's submit event; it calls
+		 * event.preventDefault() to stop that navigation and handles the cart
+		 * add via the secure proxy instead.
 		 *
 		 * A4: Guarded by context.pending to prevent spam clicks. Sets pending=true
 		 * before any async work and clears it in the finally clause regardless of
@@ -380,10 +383,11 @@ store( 'sgs/product-card', {
 		 *
 		 * Generator action: the Interactivity API awaits yielded promises.
 		 *
-		 * @param {Event} event The click event from the <a> element.
+		 * @param {Event} event The submit event from the <form> element.
 		 */
 		*addToCart( event ) {
-			// A3: prevent the fallback link navigation when JS is active.
+			// A3/U9: prevent the no-JS form submission (page navigation) when JS
+			// is active so the add is handled by the secure proxy instead.
 			if ( event && typeof event.preventDefault === 'function' ) {
 				event.preventDefault();
 			}

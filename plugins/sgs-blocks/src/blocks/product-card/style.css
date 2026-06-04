@@ -269,6 +269,25 @@
 	pointer-events: none;
 }
 
+/*
+ * U9 (FR-27-B1): the add-to-cart control is a real <button type="submit">
+ * inside a <form action=permalink>. A native button activates on Space AND
+ * Enter (an <a role=button> fires on Enter only — a WCAG 2.1.1 failure).
+ * `display:contents` collapses the <form> box so the <button> stays the direct
+ * flex item of .product-card-body and stretches full-width exactly as the
+ * previous <a> did — no layout change. `appearance:none` strips the native
+ * button chrome so .btn/.btn-primary fully control its look. Bound-scoped:
+ * page-144 Typed clones never render this control (scope guardrail, blub.db 304).
+ */
+.product-card .product-card__cart-form {
+	display: contents;
+}
+
+.product-card button.product-card__add-to-cart {
+	appearance: none;
+	-webkit-appearance: none;
+}
+
 .product-card .btn-secondary {
 	background: transparent;
 	color: var(--wp--preset--color--primary-dark, #c56a7a);

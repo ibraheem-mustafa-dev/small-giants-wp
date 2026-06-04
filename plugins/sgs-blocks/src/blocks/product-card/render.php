@@ -282,17 +282,22 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			if ( $add_to_cart_id > 0 ) :
 				$product_permalink = esc_url( get_permalink( $add_to_cart_id ) );
 				?>
-			<a
-				href="<?php echo $product_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd above. ?>"
-				class="btn btn-primary product-card__add-to-cart"
-				data-wp-on--click="actions.addToCart"
-				data-wp-bind--disabled="context.pending"
-				data-wp-bind--aria-busy="context.pending"
-				role="button"
+			<form
+				class="product-card__cart-form"
+				method="post"
+				action="<?php echo $product_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd above. ?>"
+				data-wp-on--submit="actions.addToCart"
 			>
-				<svg class="product-card__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-				<span class="product-card__cart-label"><?php esc_html_e( 'Add to Cart', 'sgs-blocks' ); ?></span>
-			</a>
+				<button
+					type="submit"
+					class="btn btn-primary product-card__add-to-cart"
+					data-wp-bind--disabled="context.pending"
+					data-wp-bind--aria-busy="context.pending"
+				>
+					<svg class="product-card__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+					<span class="product-card__cart-label"><?php esc_html_e( 'Add to Cart', 'sgs-blocks' ); ?></span>
+				</button>
+			</form>
 			<p
 				class="product-card__cart-status sgs-sr-only"
 				role="status"
@@ -480,12 +485,14 @@ $wrapper_attributes = get_block_wrapper_attributes( $bound_args );
 		<?php if ( $add_to_cart_id > 0 ) : ?>
 			<?php
 			/*
-			 * A3 (QC): progressive-enhancement add-to-cart.
-			 * Rendered as an <a> linking to the product permalink so the action
-			 * works without JS (user lands on the product page).
-			 * With JS, the Interactivity API intercepts the click via
-			 * data-wp-on--click="actions.addToCart" which calls preventDefault()
-			 * and uses the Store API instead.
+			 * A3 (QC) + U9 (FR-27-B1): progressive-enhancement add-to-cart.
+			 * A native <button type="submit"> activates on BOTH Space and Enter
+			 * (an <a role=button> fires on Enter only — a WCAG 2.1.1 failure
+			 * axe-core does not catch). The wrapping <form action=permalink> is
+			 * the no-JS fallback: submitting lands the visitor on the product
+			 * page (identical UX to the previous <a href>). With JS, the
+			 * Interactivity API intercepts data-wp-on--submit, preventDefault()s
+			 * the navigation, and routes the add through the secure proxy.
 			 *
 			 * A4 (QC): spam guard via context.pending.
 			 * data-wp-bind--disabled + aria-busy reflect the in-flight state;
@@ -493,17 +500,22 @@ $wrapper_attributes = get_block_wrapper_attributes( $bound_args );
 			 */
 			$product_permalink = esc_url( get_permalink( $add_to_cart_id ) );
 			?>
-			<a
-				href="<?php echo $product_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd above. ?>"
-				class="btn btn-primary product-card__add-to-cart"
-				data-wp-on--click="actions.addToCart"
-				data-wp-bind--disabled="context.pending"
-				data-wp-bind--aria-busy="context.pending"
-				role="button"
+			<form
+				class="product-card__cart-form"
+				method="post"
+				action="<?php echo $product_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd above. ?>"
+				data-wp-on--submit="actions.addToCart"
 			>
-				<svg class="product-card__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-				<span class="product-card__cart-label"><?php esc_html_e( 'Add to Cart', 'sgs-blocks' ); ?></span>
-			</a>
+				<button
+					type="submit"
+					class="btn btn-primary product-card__add-to-cart"
+					data-wp-bind--disabled="context.pending"
+					data-wp-bind--aria-busy="context.pending"
+				>
+					<svg class="product-card__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+					<span class="product-card__cart-label"><?php esc_html_e( 'Add to Cart', 'sgs-blocks' ); ?></span>
+				</button>
+			</form>
 			<p
 				class="product-card__cart-status sgs-sr-only"
 				role="status"
