@@ -93,7 +93,7 @@ Current roster: `sgs/hero`, `sgs/cta-section`. Adding a new section-root block r
 2. Run `/sgs-update` to populate `blocks.tier`
 3. Walker recognition flows automatically — no code branches needed
 
-Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (block_composition table — sibling routing data), D118 + **Spec 22 §FR-22-4.1** (Universal wrapper/container resolution — the single rule governing how every sgs-classed wrapper below a section root is resolved: direct-descendant fold, grid/flex absorption, block-match exception, non-direct-descendant own-container), D152 + **Spec 22 §FR-22-21** (`block_composition.container_kind` 3-KIND model section|layout|content; composite-mirror rule — every composite wrapper block mirrors `sgs/container`; `containerKind` operator-override attribute on trust-bar/modal).
+Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (block_composition table — sibling routing data), D118 + **Spec 22 §FR-22-4.1** (Universal wrapper/container resolution — the single rule governing how every sgs-classed wrapper below a section root is resolved: direct-descendant fold, grid/flex absorption, block-match exception, non-direct-descendant own-container), D152 + **Spec 22 §FR-22-21** (`block_composition.container_kind` 3-KIND model section|layout|content; composite-mirror rule — every composite wrapper block mirrors `sgs/container`, BLOCK-SIDE COMPLETE across the 29-block roster D167; `supports.sgs.containerKind` operator-override + `supports.sgs.containerMirror:false` exclusion — modal + mobile-nav are excluded).
 
 ---
 

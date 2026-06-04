@@ -9,6 +9,19 @@ parent_session: small-giants-wp-2026-05-27-spec-22-phase-1.5-fix-1-shipped
 generated: 2026-05-28
 last_updated: 2026-06-03
 active_scope: STREAM_A_RESHAPED_POST_D99
+progress_2026_06_04: |
+  WS-4 COMPOSITE-WRAPPER MIRROR BLOCK-SIDE COMPLETE (D167) — supersedes the "WS-4 pending / ~28 composites" lines in progress_2026_06_03 below:
+    - The 29-block container roster (4 section / 14 layout / 11 content) mirrors sgs/container via the
+      shared helper SGS_Container_Wrapper (element route). hero (bacbde57) + product-card (f68bdc6f +
+      perf 82fd3b45, live wc-configurator preserved, verified page 589) + 25 composites (D166) all mirrored.
+    - EXCLUDED via containerMirror:false: modal + mobile-nav (391e6cb1, Popover shell). content-collection
+      registered as 29th (40a9e03d, layout KIND). cta-section conforming SECTION reference.
+    - Architecture resolved (blub.db 312): ONE unified procedure (§FR-22-21) converts containers + composites
+      identically; docs-are-truth-not-code; KIND-scoped FULL mirror, NO per-block trim.
+    - /sgs-update reconciled (block_attributes 2110→2739, roster 29, 0 orphans). Stage-11 auto-apply still report-only.
+    - REMAINING: the block-side mirror does NOT fix page-clone fidelity. NEXT = the SEPARATE converter "Method 2"
+      work (routing fix .sgs-hero→sgs/hero + converter-lift + #6/#4a + image sideload), then /sgs-update Stage-11
+      auto-apply + WS-1c residuals (A3-A6) + WS-2/WS-3 de-cheat.
 progress_2026_06_03: |
   CONTAINER STANDARDISATION WS-1a+WS-1b SHIPPED (commit 2f86d9e6, D159):
     - A1: contentWidth attr + render.php __inner div + fold lift → live-DOM verified @1440
