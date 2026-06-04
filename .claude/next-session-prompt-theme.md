@@ -62,14 +62,47 @@ Run `git log --oneline -10` + `git status` + `git branch --show-current`. Confir
 
 ## ORCHESTRATION PLAN (you = Opus orchestrator)
 
+### Subagent dispatch & parallelisation strategy (read FIRST — this is how to be efficient)
+The expensive lesson from this thread: **R2 is heavy SHARED STATE (one cohesive controller class), so it does NOT parallelise across implementers — `/subagent-driven-development` says use a SINGLE implementer for it, never fan out two implementers on the same file** (memory `dont-fan-out-many-heavy-agents-at-once`: 5 simultaneous heavy agents → API-overload + undefined-var bugs; fan out 2–3 at most, verify each batch). Where parallelism DOES pay:
+
+1. **Task 0 (golden-master harness) ∥ R2 design.** Build the golden-master harness (a one-shot that dumps native-WC structure for diffing) as an INDEPENDENT first artefact while you (Opus, inline) design the R2 rollback architecture via `/brainstorming`. Disjoint → dispatch the harness to a Sonnet subagent in parallel with your design thinking. The harness IS the R2 acceptance gate.
+2. **The two REVIEWERS run after each implementer, and the cross-model raters within a review can fan out in parallel** — when you `/qc-council` an R2 fix-shape or escape-audit, dispatch the 3–4 raters (Sonnet + Haiku + Gemini-Flash + inline) CONCURRENTLY via `/dispatching-parallel-agents` (a single message, multiple Agent calls). Cross-family diversity is the bug-finding lever (memory `feedback_qc_council_cross_family_triangulation_finds_bugs`).
+3. **Task 2 (R3) ∥ Task 3 (PREFLIGHT) — GENUINELY DISJOINT FILES → run in parallel.** R3 is a new `configurator-*-fields.php`/inspector surface; PREFLIGHT is a new `class-product-preflight.php` + a `transition_post_status` hook + a cron. They touch different files and have no shared state → dispatch BOTH implementers concurrently via `/dispatching-parallel-agents`, each with its own spec→quality review loop. They only converge at the QA-AUTHORING gate.
+4. **Sequential, never parallel:** R2 → (R3 ∥ PREFLIGHT). R2 must land first because the QA-AUTHORING "non-coder authors a product end-to-end" test needs the provisioning path R3 drives. Do NOT start R3/PREFLIGHT implementers until R2 is golden-master-green + committed.
+
+**Per-dispatch rules:** `/delegate` picks each subagent's model (Sonnet default for code_gen; Opus for the R2 rollback DESIGN you do inline; Haiku/Gemini-Flash acceptable for a small cross-model rater). Subagents have NO commit/deploy authority — they return uncommitted; you fact-check (read file + live one-shot), deploy, golden-master-verify, then commit by explicit path. Verify each batch before dispatching the next (no big fan-outs).
+
+```
+Task 0 golden-master harness (Sonnet)  ∥  R2 rollback design (Opus inline, /brainstorming)
+        └──────────────┬───────────────────────────┘
+                       ▼
+Task 1 — R2 controller (SINGLE Sonnet implementer via /subagent-driven-development)
+   → spec review (cross-model) PASS → quality review PASS → /qc-council (raters ∥) → you golden-master-verify + commit
+                       ▼  [R2 green + committed]
+Task 2 R3 (Sonnet)   ∥   Task 3 PREFLIGHT (Sonnet)   ← /dispatching-parallel-agents, disjoint files
+   each: implementer → spec review → quality review → you verify
+                       ▼
+QA-AUTHORING gate (golden-master diff + non-coder-authors-end-to-end) → Bean R-22-13 sign-off
+```
+
+### Task 0 — Golden-master harness (parallel with R2 design)
+**What:** a token-gated webroot one-shot that creates a reference variable product via `WC_Product_Variable`/`Variation` `set_*()`+`save()` and DUMPS its canonical structure (parent `_product_attributes` + `_default_attributes` + product_type term; each variation's `attribute_pa_*` + commerce postmeta + menu_order; term relationships; `wc_product_attributes_lookup` rows). **Why:** this is the R2 acceptance baseline — R2's output must diff-empty against it. **Orchestration:** delegated, Sonnet single-agent, **parallel with** your R2 design. **Acceptance:** the harness emits a stable, diffable dump for fixture 540 + a freshly-set-* -built product; you can diff the two.
+
 ### Task 1 — R2 attribute/term provisioning + cartesian generate + upsert + ROLLBACK (FR-27-R2) — THE HEAVY BUILD
-**What:** extend the R1 controller (or a sibling `class-product-provisioning.php`) so a client provisions/reuses global `pa_*` taxonomies + terms from plain input, generates the cartesian product of variations, and dedups on re-run via `_sgs_variation_upsert_key` (sorted slug-joined combo). **Why:** a non-coder can stand up a full configurator product without WP-CLI. **Orchestration:** /subagent-driven-development — Sonnet implementer (NO commit) → spec reviewer (PASS) → quality reviewer (PASS) → you golden-master-verify + commit. **Critical:** WC batch is NOT transactional → track created variation IDs, delete-on-failure, restore pre-write state, UI shows created-vs-failed + retry (STOP). Use `set_*()`+`save()` only. **/qc-council pre-commit.** **Acceptance (live one-shot):** 48-SKU provision+generate is byte-identical (golden-master diff: postmeta + term relationships + variation attributes) to a native-editor build; an injected mid-write failure rolls back cleanly (0 orphan variations); a shared-`pa_*`-subset add does NOT break a sibling product.
+**What:** extend the R1 controller (or a sibling `class-product-provisioning.php`) so a client provisions/reuses global `pa_*` taxonomies + terms from plain input, generates the cartesian product of variations, and dedups on re-run via `_sgs_variation_upsert_key` (sorted slug-joined combo). **Why:** a non-coder can stand up a full configurator product without WP-CLI.
+**Orchestration:** Execution = delegated. Model = Sonnet implementer (you do the rollback DESIGN inline on Opus first, via `/brainstorming`). Dispatch pattern = **SINGLE implementer** via `/subagent-driven-development` (heavy shared state — do NOT fan out). Depends on = Task 0 (golden-master). Parallel with = none. Review = spec reviewer (PASS) → quality reviewer (PASS), cross-model. `/qc-council` (raters fanned out in parallel) pre-commit. Then you golden-master-verify + commit.
+**Critical:** WC batch is NOT transactional → track created variation IDs, delete-on-failure, restore pre-write state, UI shows created-vs-failed + retry (STOP). Use `set_*()`+`save()` only.
+**Acceptance (live one-shot):** 48-SKU provision+generate is byte-identical (golden-master diff vs Task 0) to a native-editor build; an injected mid-write failure rolls back cleanly (0 orphan variations); a shared-`pa_*`-subset add does NOT break a sibling product.
 
 ### Task 2 — R3 presentation-authoring UI + edit-safety (FR-27-R3)
-**What:** friendly inspector/term/variation UIs to author swatch/label/divisor/gallery/variesBy (write the Step-0 `class-configurator-meta.php` keys) — NEVER raw meta. Edit-safety: an `edit_term` hook warns on a `pa_*` slug rename ("breaks existing links + Google may error"); a delete-variation-with-orders warning + orphan term_meta/postmeta cleanup. **Orchestration:** Sonnet → spec + quality review → you verify in the live editor. **Acceptance:** a non-coder (or you simulating one) authors a full product touching ZERO raw meta; rename-slug warning fires; delete-with-orders warns.
+**What:** friendly inspector/term/variation UIs to author swatch/label/divisor/gallery/variesBy (write the Step-0 `class-configurator-meta.php` keys) — NEVER raw meta. Edit-safety: an `edit_term` hook warns on a `pa_*` slug rename ("breaks existing links + Google may error"); a delete-variation-with-orders warning + orphan term_meta/postmeta cleanup.
+**Orchestration:** Execution = delegated. Model = Sonnet. Dispatch pattern = **parallel with Task 3** via `/dispatching-parallel-agents` (disjoint files). Depends on = Task 1 (R2 committed). Review = spec + quality, then you self-review the visible UI with `/ui-ux-pro-max` + chrome-devtools 3-breakpoint.
+**Acceptance:** a non-coder (or you simulating one) authors a full product touching ZERO raw meta; rename-slug warning fires; delete-with-orders warns.
 
 ### Task 3 — PREFLIGHT hard go-live block + post-launch health (FR-27-PREFLIGHT / SEC-5)
-**What:** a `transition_post_status` gate that hard-blocks publish (revert to draft + `_sgs_preflight_issues` meta + REST error + admin notice) on any £0 / no-image / draft / over-24KB-cap / no-valid-variesBy-mapping variation; the cart-proxy independently rejects a £0 add-to-cart (422). A weekly WP-cron re-checks JSON-LD validity + fires an admin notice on degradation. **Orchestration:** Sonnet → review → you verify. **Acceptance:** a £0 variation cannot publish (reverts to draft); the cron flags a post-launch break.
+**What:** a `transition_post_status` gate that hard-blocks publish (revert to draft + `_sgs_preflight_issues` meta + REST error + admin notice) on any £0 / no-image / draft / over-24KB-cap / no-valid-variesBy-mapping variation; the cart-proxy independently rejects a £0 add-to-cart (422). A weekly WP-cron re-checks JSON-LD validity + fires an admin notice on degradation.
+**Orchestration:** Execution = delegated. Model = Sonnet. Dispatch pattern = **parallel with Task 2** via `/dispatching-parallel-agents` (disjoint files — new `class-product-preflight.php` + hook + cron). Depends on = Task 1 (R2 committed). Review = spec + quality, then you verify via live one-shot.
+**Acceptance:** a £0 variation cannot publish (reverts to draft); the cron flags a post-launch break.
 
 ### GATE after Cluster C — QA-AUTHORING
 Golden-master diff (controller output == native editor); a non-coder authors a COMPLETE configurator product — attributes, variations, swatches, gallery, pricing, variesBy — touching ZERO raw meta + ZERO WP-CLI; product sells + shows rich results. Then Bean R-22-13 sign-off.
