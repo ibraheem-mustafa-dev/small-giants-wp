@@ -244,7 +244,8 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 	data-wp-init="callbacks.initPillBridge"
 >
 			<?php $card_permalink = ! empty( $data['wc_id'] ) ? esc_url( get_permalink( $data['wc_id'] ) ) : ''; ?>
-			<?php if ( '' !== $image_src ) : ?>
+			<?php $sgs_has_real_image = ( '' !== $image_src ) && ( false === strpos( (string) $image_src, 'woocommerce-placeholder' ) ); ?>
+			<?php if ( $sgs_has_real_image ) : ?>
 				<?php if ( '' !== $card_permalink ) : ?>
 				<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
 				<?php endif; ?>
@@ -261,6 +262,10 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<?php if ( '' !== $card_permalink ) : ?>
 				</a>
 				<?php endif; ?>
+			<?php else : ?>
+				<div class="product-card__no-image" aria-hidden="true">
+					<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+				</div>
 		<?php endif; ?>
 
 	<div class="product-card-body">
@@ -467,7 +472,8 @@ $wrapper_attributes = get_block_wrapper_attributes( $bound_args );
 	data-wp-init="callbacks.initPillBridge"
 >
 	<?php $card_permalink = ! empty( $data['wc_id'] ) ? esc_url( get_permalink( $data['wc_id'] ) ) : ''; ?>
-	<?php if ( '' !== $data['image_url'] ) : ?>
+	<?php $sgs_has_real_image = ( '' !== $data['image_url'] ) && ( false === strpos( (string) $data['image_url'], 'woocommerce-placeholder' ) ); ?>
+	<?php if ( $sgs_has_real_image ) : ?>
 		<?php if ( '' !== $card_permalink ) : ?>
 		<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
 		<?php endif; ?>
@@ -484,6 +490,10 @@ $wrapper_attributes = get_block_wrapper_attributes( $bound_args );
 		<?php if ( '' !== $card_permalink ) : ?>
 		</a>
 		<?php endif; ?>
+	<?php else : ?>
+		<div class="product-card__no-image" aria-hidden="true">
+			<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+		</div>
 	<?php endif; ?>
 
 	<div class="product-card-body">

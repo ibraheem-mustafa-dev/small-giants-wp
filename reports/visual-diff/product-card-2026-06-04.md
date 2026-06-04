@@ -63,6 +63,9 @@ Bean's second review pass + a `/research-buddies` study (Heydon Pickering Inclus
 - **Add-to-cart feedback** — add-to-cart worked but was invisible (success message was screen-reader-only). Removed `sgs-sr-only` from `.product-card__cart-status` + styled it as a visible success note (`#15803d`, 4.8:1). (Header cart badge = separate follow-up.)
 - 2-agent research-buddies converged; convention captured: interactive cards use discrete image+title links, navigation-only cards (content-collection results) may use a whole-card overlay. product-card 1.6.4→1.6.5. Bound-scoped; page-144 untouched.
 
+### Bean R-22-13 round 3 (graceful no-image state)
+- **No-image placeholder** — a photo-less product showed WooCommerce's default placeholder graphic (reads as broken). Now, when the resolved image URL is empty or contains `woocommerce-placeholder`, the card renders a branded `.product-card__no-image` box instead — same 220px height (no layout shift), brand `surface` background, a soft 50%-opacity framed-photo SVG icon, bottom border matching the card. Real-image products keep the existing linked `<img>` (with reactive swap) unchanged. Both interactive Bound branches; Bound-scoped only. **Live-verified** on the fixture (no photo) — clean intentional empty state, no broken graphic. Closes the no-image half of P-PRODUCT-CARD-COSMETIC-POLISH. product-card 1.6.5→1.6.6.
+
 ## Scope safety (page-144 / cloning thread)
 - All changes are on the Bound `wc-product` variable branch + `.product-card--bound`-scoped CSS.
 - The Typed branch is byte-identical; the shared `sgs/option-picker` block file is NOT edited (the card reaches into its rendered DOM).

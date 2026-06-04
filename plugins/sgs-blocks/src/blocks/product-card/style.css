@@ -515,3 +515,22 @@
 	font-weight: 600;
 	margin: 0;
 }
+
+/*
+ * Graceful no-image state (Bean R-22-13): a product with no real photo shows a
+ * branded empty box (the WooCommerce placeholder graphic reads as broken). Same
+ * 220px height as the real image so the card layout is unchanged. Bound-scoped.
+ */
+.product-card--bound .product-card__no-image {
+	height: 220px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var( --wp--preset--color--surface, #fbf3dc );
+	color: var( --wp--preset--color--text-muted, #6b5c50 );
+	border-bottom: 1px solid var( --wp--preset--color--border, #e8d5c0 );
+}
+
+.product-card--bound .product-card__no-image svg {
+	opacity: 0.5;
+}
