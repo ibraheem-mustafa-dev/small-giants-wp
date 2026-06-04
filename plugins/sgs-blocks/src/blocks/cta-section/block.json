@@ -1,219 +1,544 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/cta-section",
-    "version": "0.1.0",
-    "title": "SGS CTA Section",
-    "category": "sgs-content",
-    "description": "Call-to-action section with headline, supporting text, and buttons.",
-    "keywords": [
-        "cta",
-        "call",
-        "action",
-        "banner",
-        "buttons"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "megaphone",
-    "supports": {
-        "sgs": {
-            "imageControls": false,
-            "is_section_root": true
-        },
-        "align": [
-            "wide",
-            "full"
-        ],
-        "anchor": true,
-        "html": false,
-        "color": {
-            "background": true,
-            "text": true,
-            "gradients": true
-        },
-        "typography": {
-            "fontSize": true,
-            "lineHeight": true,
-            "textAlign": true,
-            "letterSpacing": true,
-            "textTransform": true,
-            "fontWeight": true,
-            "fontStyle": true
-        },
-        "spacing": {
-            "margin": true,
-            "padding": true
-        },
-        "shadow": true,
-        "__experimentalBorder": {
-            "radius": true,
-            "width": true,
-            "color": true,
-            "style": true
-        }
-    },
-    "selectors": {
-        "root": ".wp-block-sgs-cta-section",
-        "typography": ".sgs-cta-section__headline"
-    },
-    "attributes": {
-        "headline": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "body": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "buttons": {
-            "type": "array",
-            "default": []
-        },
-        "ribbon": {
-            "type": "string",
-            "default": ""
-        },
-        "layout": {
-            "type": "string",
-            "default": "centred"
-        },
-        "backgroundColor": {
-            "type": "string",
-            "default": "accent"
-        },
-        "textColor": {
-            "type": "string",
-            "default": "text"
-        },
-        "headlineColour": {
-            "type": "string",
-            "default": "text"
-        },
-        "bodyColour": {
-            "type": "string",
-            "default": "text"
-        },
-        "bodyFontSize": {
-            "type": "string"
-        },
-        "bodyFontSizeTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "bodyFontSizeMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "buttonColour": {
-            "type": "string",
-            "default": "text-inverse"
-        },
-        "buttonBackground": {
-            "type": "string",
-            "default": "primary-dark"
-        },
-        "backgroundImage": {
-            "type": "object",
-            "default": null
-        },
-        "_comment_backgroundMedia": "Migrated 2026-05-05 — backgroundImage retained for deprecation. New instances should use backgroundMedia (accepts image OR video).",
-        "backgroundMedia": {
-            "type": "object",
-            "default": null
-        },
-        "backgroundImageOpacity": {
-            "type": "number",
-            "default": 30
-        },
-        "stats": {
-            "type": "array",
-            "default": []
-        },
-        "buttonStyle": {
-            "type": "string",
-            "default": "solid",
-            "enum": [
-                "solid",
-                "outline",
-                "ghost",
-                "gradient"
-            ]
-        },
-        "buttonSize": {
-            "type": "string",
-            "default": "md",
-            "enum": [
-                "xs",
-                "sm",
-                "md",
-                "lg",
-                "xl"
-            ]
-        },
-        "buttonBorderColour": {
-            "type": "string"
-        },
-        "buttonBorderWidth": {
-            "type": "number"
-        },
-        "buttonBorderRadius": {
-            "type": "number"
-        },
-        "gradientPreset": {
-            "type": "string",
-            "default": ""
-        },
-        "hoverBackgroundColour": {
-            "type": "string",
-            "default": ""
-        },
-        "hoverTextColour": {
-            "type": "string",
-            "default": ""
-        },
-        "hoverBorderColour": {
-            "type": "string",
-            "default": ""
-        },
-        "transitionDuration": {
-            "type": "string",
-            "default": "300"
-        },
-        "transitionEasing": {
-            "type": "string",
-            "default": "ease-in-out"
-        },
-        "textAlignMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "textAlignTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "textAlignDesktop": {
-            "type": "string",
-            "default": ""
-        }
-    },
-    "editorScript": "file:./index.js",
-    "editorStyle": "file:./index.css",
-    "style": "file:./style-index.css",
-    "render": "file:./render.php",
-    "example": {
-        "attributes": {
-            "headline": "Ready to order in bulk?",
-            "body": "Get competitive wholesale pricing with next-day delivery across the UK.",
-            "layout": "centred",
-            "buttons": [
-                {
-                    "text": "Request a Quote",
-                    "style": "accent",
-                    "url": ""
-                }
-            ]
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/cta-section",
+	"version": "0.2.0",
+	"title": "SGS CTA Section",
+	"category": "sgs-content",
+	"description": "Call-to-action section with headline, supporting text, and buttons.",
+	"keywords": [
+		"cta",
+		"call",
+		"action",
+		"banner",
+		"buttons"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "megaphone",
+	"supports": {
+		"sgs": {
+			"imageControls": false,
+			"is_section_root": true
+		},
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"gradients": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"textAlign": true,
+			"letterSpacing": true,
+			"textTransform": true,
+			"fontWeight": true,
+			"fontStyle": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"shadow": true,
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-cta-section",
+		"typography": ".sgs-cta-section__headline"
+	},
+	"attributes": {
+		"headline": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"body": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"buttons": {
+			"type": "array",
+			"default": []
+		},
+		"ribbon": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColor": {
+			"type": "string",
+			"default": "accent"
+		},
+		"textColor": {
+			"type": "string",
+			"default": "text"
+		},
+		"headlineColour": {
+			"type": "string",
+			"default": "text"
+		},
+		"bodyColour": {
+			"type": "string",
+			"default": "text"
+		},
+		"bodyFontSize": {
+			"type": "string"
+		},
+		"bodyFontSizeTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"bodyFontSizeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"buttonColour": {
+			"type": "string",
+			"default": "text-inverse"
+		},
+		"buttonBackground": {
+			"type": "string",
+			"default": "primary-dark"
+		},
+		"backgroundImage": {
+			"type": "object",
+			"default": null
+		},
+		"_comment_backgroundMedia": "Migrated 2026-05-05 — backgroundImage retained for deprecation. New instances should use backgroundMedia (accepts image OR video).",
+		"backgroundMedia": {
+			"type": "object",
+			"default": null
+		},
+		"backgroundImageOpacity": {
+			"type": "number",
+			"default": 30
+		},
+		"stats": {
+			"type": "array",
+			"default": []
+		},
+		"buttonStyle": {
+			"type": "string",
+			"default": "solid",
+			"enum": [
+				"solid",
+				"outline",
+				"ghost",
+				"gradient"
+			]
+		},
+		"buttonSize": {
+			"type": "string",
+			"default": "md",
+			"enum": [
+				"xs",
+				"sm",
+				"md",
+				"lg",
+				"xl"
+			]
+		},
+		"buttonBorderColour": {
+			"type": "string"
+		},
+		"buttonBorderWidth": {
+			"type": "number"
+		},
+		"buttonBorderRadius": {
+			"type": "number"
+		},
+		"gradientPreset": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"transitionDuration": {
+			"type": "string",
+			"default": "300"
+		},
+		"transitionEasing": {
+			"type": "string",
+			"default": "ease-in-out"
+		},
+		"textAlignMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"textAlignTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"textAlignDesktop": {
+			"type": "string",
+			"default": ""
+		},
+		"contentLayout": {
+			"type": "string",
+			"default": "centred"
+		},
+		"layout": {
+			"type": "string",
+			"default": ""
+		},
+		"columns": {
+			"type": "number",
+			"default": 2
+		},
+		"columnsMobile": {
+			"type": "number",
+			"default": 1
+		},
+		"columnsTablet": {
+			"type": "number",
+			"default": 2
+		},
+		"gridTemplateColumns": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gap": {
+			"type": "string",
+			"default": ""
+		},
+		"gapTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gapMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundImageTablet": {
+			"type": "object"
+		},
+		"backgroundImageMobile": {
+			"type": "object"
+		},
+		"backgroundSize": {
+			"type": "string",
+			"default": "cover",
+			"enum": [
+				"cover",
+				"contain",
+				"auto"
+			]
+		},
+		"backgroundPosition": {
+			"type": "string",
+			"default": "center center"
+		},
+		"backgroundRepeat": {
+			"type": "string",
+			"default": "no-repeat",
+			"enum": [
+				"no-repeat",
+				"repeat",
+				"repeat-x",
+				"repeat-y"
+			]
+		},
+		"backgroundAttachment": {
+			"type": "string",
+			"default": "scroll",
+			"enum": [
+				"scroll",
+				"fixed"
+			]
+		},
+		"backgroundOverlayColour": {
+			"type": "string"
+		},
+		"backgroundOverlayOpacity": {
+			"type": "number",
+			"default": 50
+		},
+		"overlayGradient": {
+			"type": "boolean",
+			"default": false
+		},
+		"overlayGradientAngle": {
+			"type": "number",
+			"default": 180
+		},
+		"overlayGradientFrom": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientTo": {
+			"type": "string",
+			"default": ""
+		},
+		"bgVideo": {
+			"type": "object"
+		},
+		"bgVideoMobile": {
+			"type": "object"
+		},
+		"bgParallax": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgKenBurns": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgAnimationDuration": {
+			"type": "number",
+			"default": 20
+		},
+		"shadow": {
+			"type": "string"
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"widthMode": {
+			"type": "string",
+			"default": "default",
+			"enum": [
+				"default",
+				"wide",
+				"full",
+				"custom"
+			]
+		},
+		"widthModeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeDesktop": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"minHeight": {
+			"type": "string"
+		},
+		"verticalAlign": {
+			"type": "string",
+			"default": "start"
+		},
+		"htmlTag": {
+			"type": "string",
+			"default": "section"
+		},
+		"shapeDividerTop": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerTopColour": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerTopHeight": {
+			"type": "number",
+			"default": 80
+		},
+		"shapeDividerTopFlip": {
+			"type": "boolean",
+			"default": false
+		},
+		"shapeDividerTopInvert": {
+			"type": "boolean",
+			"default": false
+		},
+		"shapeDividerBottom": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerBottomColour": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerBottomHeight": {
+			"type": "number",
+			"default": 80
+		},
+		"shapeDividerBottomFlip": {
+			"type": "boolean",
+			"default": false
+		},
+		"shapeDividerBottomInvert": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgSvgContent": {
+			"type": "string",
+			"default": ""
+		},
+		"bgSvgPosition": {
+			"type": "string",
+			"default": "background",
+			"enum": [
+				"background",
+				"foreground"
+			]
+		},
+		"bgSvgAnimation": {
+			"type": "string",
+			"default": "none",
+			"enum": [
+				"none",
+				"pulse",
+				"float",
+				"wave"
+			]
+		},
+		"bgSvgAnimationSpeed": {
+			"type": "string",
+			"default": "medium",
+			"enum": [
+				"slow",
+				"medium",
+				"fast"
+			]
+		},
+		"bgSvgOpacity": {
+			"type": "number",
+			"default": 100
+		},
+		"bgSvgMinHeight": {
+			"type": "string",
+			"default": ""
+		},
+		"bgSvgTextShadow": {
+			"type": "boolean",
+			"default": false
+		},
+		"gridItemPadding": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBorderRadius": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBorder": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRows": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridAutoRows": {
+			"type": "string",
+			"default": ""
+		},
+		"justifyItems": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end"
+			]
+		},
+		"alignContent": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end",
+				"space-between",
+				"space-around",
+				"space-evenly"
+			]
+		},
+		"templateMode": {
+			"type": "string",
+			"default": "free",
+			"enum": [
+				"free",
+				"grid-section",
+				"card-grid"
+			]
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php",
+	"example": {
+		"attributes": {
+			"headline": "Ready to order in bulk?",
+			"body": "Get competitive wholesale pricing with next-day delivery across the UK.",
+			"layout": "centred",
+			"buttons": [
+				{
+					"text": "Request a Quote",
+					"style": "accent",
+					"url": ""
+				}
+			]
+		}
+	}
 }

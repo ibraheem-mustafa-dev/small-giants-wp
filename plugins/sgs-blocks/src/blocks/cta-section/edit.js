@@ -13,6 +13,8 @@ import {
 } from '@wordpress/components';
 import { ResponsiveControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
+// WS-4: shared sgs/container wrapper editor controls (section kind = full surface).
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 // FR-22-6: the content column is now InnerBlocks — heading + body text + buttons.
 // Headline/body are no longer scalar attrs read by render.php; they are authored
@@ -56,13 +58,19 @@ const FONT_SIZE_OPTIONS = [
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		ribbon,
-		layout,
+		layout, // legacy (pre-WS-4) — now the container grid/flex attr; read for old-post fallback only
+		contentLayout,
 		backgroundImage,
 		backgroundMedia,
 		backgroundImageOpacity,
 		gradientPreset,
 		stats,
 	} = attributes;
+
+	// WS-4: cta-section's own layout (centred/left/split) renamed to `contentLayout`
+	// (the container owns `layout` = grid/flex). Fall back to the legacy value so
+	// old posts render correctly in the editor before they round-trip.
+	const ctaLayout = contentLayout || layout || 'centred';
 
 	// Hydrate the active media from the new unified slot first, falling back to
 	// the legacy backgroundImage object for posts that have not yet round-tripped
@@ -86,7 +94,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const className = [
 		'sgs-cta-section',
-		`sgs-cta-section--${ layout }`,
+		`sgs-cta-section--${ ctaLayout }`,
 		gradientPreset ? `sgs-cta-section--gradient-${ gradientPreset }` : '',
 	]
 		.filter( Boolean )
@@ -136,12 +144,18 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+				{ /* WS-4: mirrored sgs/container wrapper controls (section kind). */ }
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="section"
+				/>
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
 					<SelectControl
-						label={ __( 'Layout', 'sgs-blocks' ) }
-						value={ layout }
+						label={ __( 'Content layout', 'sgs-blocks' ) }
+						value={ ctaLayout }
 						options={ LAYOUT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { layout: val } ) }
+						onChange={ ( val ) => setAttributes( { contentLayout: val } ) }
 						__nextHasNoMarginBottom
 					/>
 					<TextControl

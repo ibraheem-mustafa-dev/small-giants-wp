@@ -23,11 +23,14 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 // FR-22-6: scalar content attrs (headline, body) are intentionally NOT read here.
 // They are retained in block.json for deprecated.js back-compat only. R-22-14.
 $ribbon                   = isset( $attributes['ribbon'] ) ? sanitize_text_field( $attributes['ribbon'] ) : '';
-$layout                   = $attributes['layout'] ?? 'centred';
+// WS-4: `layout` renamed to `contentLayout` (the container owns `layout` = grid/flex).
+// Read the new name; fall back to the legacy `layout` for un-migrated posts (belt-and-braces alongside deprecated.js).
+$content_layout           = $attributes['contentLayout'] ?? ( $attributes['layout'] ?? 'centred' );
 $body_font_size_tablet    = $attributes['bodyFontSizeTablet'] ?? '';
 $body_font_size_mobile    = $attributes['bodyFontSizeMobile'] ?? '';
 $background_image         = $attributes['backgroundImage'] ?? null;
@@ -92,7 +95,7 @@ if ( $has_image_bg ) {
 // Build wrapper classes.
 $classes = array(
 	'sgs-cta-section',
-	'sgs-cta-section--' . esc_attr( $layout ),
+	'sgs-cta-section--' . esc_attr( $content_layout ),
 );
 
 if ( $gradient_preset ) {
@@ -115,14 +118,10 @@ if ( $body_font_size_tablet || $body_font_size_mobile ) {
 	}
 }
 
-$wrapper_attr_args = array(
-	'class' => implode( ' ', $classes ),
-);
-if ( $wrapper_styles ) {
-	$wrapper_attr_args['style'] = implode( ';', $wrapper_styles ) . ';';
-}
-
-$wrapper_attributes = get_block_wrapper_attributes( $wrapper_attr_args );
+// WS-4: the OUTER wrapper is now the shared sgs/container element (rendered by
+// SGS_Container_Wrapper::render() at the foot of this file). cta-section's own
+// classes + CSS vars + bespoke cover-image background ride through via opts; its
+// overlay stays in the interior (no_overlay) so there is no double-emit.
 
 // Build background media (video) + overlay.
 $media_html = '';
@@ -189,17 +188,31 @@ if ( $ribbon ) {
 	$ribbon_html = '<span class="sgs-cta-section__ribbon" aria-hidden="true">' . esc_html( $ribbon ) . '</span>';
 }
 
-// Output. $content is WP core InnerBlocks output (trusted). All other variables
-// are pre-escaped at construction time. phpcs:disable silences false-positive
-// "not escaped inline" warnings on multi-arg printf.
+// WS-4: build cta-section's unique interior (bg-video + overlay + ribbon + the
+// __content column with its InnerBlocks + stats), then wrap it in the shared
+// sgs/container element. $content is WP core InnerBlocks output (trusted); all
+// other parts are pre-escaped at construction time.
+$cta_inner_html = $media_html . $overlay_html . $ribbon_html
+	. '<div class="sgs-cta-section__content">' . $content . $stats_html . '</div>';
+
+// cta-section keeps its bespoke cover-image background ($wrapper_styles -> extra_styles)
+// and its opacity overlay (in the interior). Null the helper's backgroundImage so it does
+// NOT also emit a CSS background, and pass no_overlay so it does NOT emit a second overlay
+// (C3 double-emit guard). The full container attr surface is still mirrored for editor controls.
+$cta_helper_attrs                    = $attributes;
+$cta_helper_attrs['backgroundImage'] = null;
+
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-printf(
-	'<section %s>%s%s%s<div class="sgs-cta-section__content">%s%s</div></section>',
-	$wrapper_attributes,
-	$media_html,
-	$overlay_html,
-	$ribbon_html,
-	$content,
-	$stats_html
+echo SGS_Container_Wrapper::render(
+	$cta_helper_attrs,
+	$block,
+	$cta_inner_html,
+	'section',
+	array(
+		'tag'           => 'section',
+		'extra_classes' => $classes,
+		'extra_styles'  => $wrapper_styles,
+		'no_overlay'    => true,
+	)
 );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
