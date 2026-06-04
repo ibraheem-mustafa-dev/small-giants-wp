@@ -243,21 +243,34 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			<?php echo wp_interactivity_data_wp_context( $context ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns escaped attribute markup. ?>
 	data-wp-init="callbacks.initPillBridge"
 >
+			<?php $card_permalink = ! empty( $data['wc_id'] ) ? esc_url( get_permalink( $data['wc_id'] ) ) : ''; ?>
 			<?php if ( '' !== $image_src ) : ?>
-		<img
-			class="product-card-img"
-			src="<?php echo esc_url( $image_src ); ?>"
-			alt="<?php echo esc_attr( $data['image_alt'] ); ?>"
-			loading="eager"
-			fetchpriority="high"
-			decoding="async"
-			data-wp-bind--src="context.imageSrc"
-			data-wp-bind--alt="context.imageAlt"
-		>
-	<?php endif; ?>
+				<?php if ( '' !== $card_permalink ) : ?>
+				<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
+				<?php endif; ?>
+				<img
+					class="product-card-img"
+					src="<?php echo esc_url( $image_src ); ?>"
+					alt="<?php echo esc_attr( $data['image_alt'] ); ?>"
+					loading="eager"
+					fetchpriority="high"
+					decoding="async"
+					data-wp-bind--src="context.imageSrc"
+					data-wp-bind--alt="context.imageAlt"
+				>
+				<?php if ( '' !== $card_permalink ) : ?>
+				</a>
+				<?php endif; ?>
+		<?php endif; ?>
 
 	<div class="product-card-body">
-		<h3><?php echo esc_html( $data['title'] ); ?></h3>
+		<h3>
+			<?php if ( '' !== $card_permalink ) : ?>
+				<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $data['title'] ); ?></a>
+			<?php else : ?>
+				<?php echo esc_html( $data['title'] ); ?>
+			<?php endif; ?>
+		</h3>
 
 			<?php if ( '' !== $data['short_desc'] ) : ?>
 			<div class="product-desc">
@@ -350,7 +363,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				</button>
 			</form>
 			<p
-				class="product-card__cart-status sgs-sr-only"
+				class="product-card__cart-status"
 				role="status"
 				aria-live="polite"
 				data-wp-text="context.cartStatus"
@@ -453,7 +466,11 @@ $wrapper_attributes = get_block_wrapper_attributes( $bound_args );
 	<?php echo wp_interactivity_data_wp_context( $context ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns escaped attribute markup. ?>
 	data-wp-init="callbacks.initPillBridge"
 >
+	<?php $card_permalink = ! empty( $data['wc_id'] ) ? esc_url( get_permalink( $data['wc_id'] ) ) : ''; ?>
 	<?php if ( '' !== $data['image_url'] ) : ?>
+		<?php if ( '' !== $card_permalink ) : ?>
+		<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
+		<?php endif; ?>
 		<img
 			class="product-card-img"
 			src="<?php echo esc_url( $data['image_url'] ); ?>"
@@ -464,10 +481,19 @@ $wrapper_attributes = get_block_wrapper_attributes( $bound_args );
 			data-wp-bind--src="context.imageSrc"
 			data-wp-bind--alt="context.imageAlt"
 		>
+		<?php if ( '' !== $card_permalink ) : ?>
+		</a>
+		<?php endif; ?>
 	<?php endif; ?>
 
 	<div class="product-card-body">
-		<h3><?php echo esc_html( $data['title'] ); ?></h3>
+		<h3>
+		<?php if ( '' !== $card_permalink ) : ?>
+			<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $data['title'] ); ?></a>
+		<?php else : ?>
+			<?php echo esc_html( $data['title'] ); ?>
+		<?php endif; ?>
+		</h3>
 
 		<?php if ( '' !== $data['short_desc'] ) : ?>
 			<div class="product-desc">
@@ -568,7 +594,7 @@ $wrapper_attributes = get_block_wrapper_attributes( $bound_args );
 				</button>
 			</form>
 			<p
-				class="product-card__cart-status sgs-sr-only"
+				class="product-card__cart-status"
 				role="status"
 				aria-live="polite"
 				data-wp-text="context.cartStatus"

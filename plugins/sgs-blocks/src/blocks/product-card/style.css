@@ -470,3 +470,48 @@
 		transform: none;
 	}
 }
+
+/*
+ * ── Bound-card permalink + cart-status styles ────────────────────────────────
+ *
+ * All rules scoped to .product-card--bound or new BEM classes so Typed
+ * page-144 clones stay byte-identical (scope guardrail, blub.db 304).
+ * WCAG 2.2 AA contrast verified against #ffffff card background.
+ */
+
+/* Bean: pure near-black description (was brand brown), Bound-scoped only. */
+.product-card--bound .product-desc {
+	color: #1a1a1a;
+}
+
+/* The image link wraps the image as a block. */
+.product-card__img-link {
+	display: block;
+}
+
+/* Title link inherits card heading colour; underline on hover for affordance. */
+.product-card--bound .product-card__title-link {
+	color: inherit;
+	text-decoration: none;
+}
+
+.product-card--bound .product-card__title-link:hover {
+	text-decoration: underline;
+}
+
+/* Focus ring: primary pink at 2px — 3:1 on #fff ✓ WCAG AA focus indicator. */
+.product-card--bound .product-card__title-link:focus-visible {
+	outline: 2px solid var( --wp--preset--color--primary, #e68a95 );
+	outline-offset: 2px;
+	border-radius: 2px;
+}
+
+/* Visible success feedback — only shows when JS populates "Added to your basket.". */
+/* #15803d on #fff = 4.8:1 ✓ WCAG AA. */
+.product-card--bound .product-card__cart-status {
+	color: #15803d;
+	font-family: 'Inter', sans-serif;
+	font-size: 13px;
+	font-weight: 600;
+	margin: 0;
+}

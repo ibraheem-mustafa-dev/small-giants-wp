@@ -56,6 +56,13 @@ Bean's visual review (the co-authoritative gate) caught what the automated gates
 - **Card hover** — none existed. Added a Bound-scoped lift + shadow (`translateY(-4px)` + deeper shadow), reduced-motion-guarded. **Live-verified: transition-property = transform, box-shadow.**
 All three are new `.product-card--bound`-scoped selectors — page-144 Typed clones byte-identical. product-card 1.6.3→1.6.4.
 
+### Bean R-22-13 round 2 (product-page links + readability + cart feedback)
+Bean's second review pass + a `/research-buddies` study (Heydon Pickering Inclusive Components, Adrian Roselli, Kitty Giraudel, Smashing/Kalcevich, HTML spec, WooCommerce convention):
+- **Product-page links** — the card had no link to the product page. Added **image-as-link** (`<a class="product-card__img-link" tabindex="-1" aria-hidden="true">` — clickable for mouse/touch but removed from tab order + a11y tree, so no redundant duplicate link) + **title-as-link** (`<a class="product-card__title-link">` inside the `<h3>` — the one keyboard-focusable link). NO whole-card overlay (the card has nested interactive controls — pills + add-to-cart button — so an overlay would be an axe `nested-interactive`/WCAG failure + steal clicks) and NO redundant "View details" link. href = the product permalink (same URL the no-JS form uses). Both interactive Bound branches; **live-verified** title-link + img-link present, href correct.
+- **Description colour** — Bean's call: switched the Bound card description from brand-brown `#3a2e26` to pure near-black `#1a1a1a` (Bound-scoped). The measurement showed `#3a2e26` was already ~12:1 (not grey-muted), but Bean wanted crisper — his decision, recorded.
+- **Add-to-cart feedback** — add-to-cart worked but was invisible (success message was screen-reader-only). Removed `sgs-sr-only` from `.product-card__cart-status` + styled it as a visible success note (`#15803d`, 4.8:1). (Header cart badge = separate follow-up.)
+- 2-agent research-buddies converged; convention captured: interactive cards use discrete image+title links, navigation-only cards (content-collection results) may use a whole-card overlay. product-card 1.6.4→1.6.5. Bound-scoped; page-144 untouched.
+
 ## Scope safety (page-144 / cloning thread)
 - All changes are on the Bound `wc-product` variable branch + `.product-card--bound`-scoped CSS.
 - The Typed branch is byte-identical; the shared `sgs/option-picker` block file is NOT edited (the card reaches into its rendered DOM).
