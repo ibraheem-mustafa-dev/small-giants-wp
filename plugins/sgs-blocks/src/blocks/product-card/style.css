@@ -72,7 +72,9 @@
 
 .product-card .product-desc {
 	font-size: 14px;
-	color: var(--wp--preset--color--text-muted, #6b5c50);
+	/* Body content — full text colour, NOT muted (Bean: descriptions read as
+	 * real copy; muting is reserved for small necessary contextual text). */
+	color: var(--wp--preset--color--text, #3a2e26);
 	/* A5 (QC): margin removed — flex gap on .product-card-body handles rhythm. */
 	margin: 0;
 	flex: 1;
@@ -324,6 +326,17 @@
 	border-radius: 6px;
 	letter-spacing: 0.03em;
 	line-height: 1.4;
+}
+
+/*
+ * The [hidden] attribute MUST win over the explicit `display` rules above
+ * (pct-off/regular use display:inline-flex/inline which otherwise defeat the
+ * UA `[hidden]{display:none}`). Without this, the empty pct-off badge renders
+ * as a bare coloured bar on a non-sale variation (the seeded default). Applies
+ * to every reactive slot that toggles via data-wp-bind--hidden.
+ */
+.product-card--bound [hidden] {
+	display: none !important;
 }
 
 /*
