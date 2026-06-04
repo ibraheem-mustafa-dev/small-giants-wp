@@ -98,6 +98,13 @@ require_once SGS_BLOCKS_PATH . 'includes/configurator-head.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-product-canonical.php';
 Product_Canonical::register();
 
+// Configurator — WP core sitemap lastmod accuracy for variable products (FR-27-E3 / SEC-6).
+// Fixes the stale <lastmod> that results from variation price/stock changes not bumping
+// the parent post_modified. SEC-9: no-op when Yoast / RankMath is active (they own the
+// sitemap). Transient cache (6 h) busted by WooCommerce price/stock change hooks.
+require_once SGS_BLOCKS_PATH . 'includes/class-product-sitemap.php';
+Product_Sitemap::register();
+
 // Animation attributes — server-side data-attribute injection for scroll reveals.
 require_once SGS_BLOCKS_PATH . 'includes/animation-attributes.php';
 
