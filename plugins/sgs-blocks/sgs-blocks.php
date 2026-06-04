@@ -242,6 +242,14 @@ Sgs_Configurator_Compat::register();
 require_once SGS_BLOCKS_PATH . 'includes/class-product-authoring.php';
 Product_Authoring::register();
 
+// SGS Product Provisioning — REST controller for FR-27-R2: conflict-safe
+// attribute/term provisioning, Cartesian variation generation with upsert dedup,
+// and full transactional rollback. Shares R1's security chain via
+// Product_Authoring_Security. Routes: POST /sgs/v1/products/{id}/provision and
+// POST /sgs/v1/products/{id}/variations/bulk.
+require_once SGS_BLOCKS_PATH . 'includes/class-product-provisioning.php';
+Product_Provisioning::register();
+
 // SGS Floating UI — Customiser controls + frontend renderer (replaces retired back-to-top + reading-progress blocks).
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-floating-ui-customiser.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-floating-ui-renderer.php';

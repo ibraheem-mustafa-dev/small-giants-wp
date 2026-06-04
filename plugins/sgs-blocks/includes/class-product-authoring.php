@@ -22,8 +22,10 @@
  * value (e.g. duplicate SKU) returns a clean 400, never a fatal.
  *
  * Arg schemas, validate callbacks, and response helpers live in the companion
- * class Product_Authoring_Args (class-product-authoring-args.php) to keep
- * both files under the 300-line limit.
+ * class Product_Authoring_Args (class-product-authoring-args.php). Shared
+ * security primitives (nonce, rate-limit, multisite guard, lookup-regen) live
+ * in Product_Authoring_Security (class-product-authoring-security.php) so they
+ * are shared with the R2 provisioning controller without duplication.
  *
  * @package SGS\Blocks
  * @since   1.7.0
@@ -33,6 +35,7 @@ namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/class-product-authoring-security.php';
 require_once __DIR__ . '/class-product-authoring-args.php';
 
 /**
@@ -42,20 +45,6 @@ final class Product_Authoring {
 
 	/** REST namespace — matches every other SGS endpoint. */
 	const REST_NAMESPACE = 'sgs/v1';
-
-	/**
-	 * Per-user write rate-limit: maximum writes per window.
-	 *
-	 * @var int
-	 */
-	const RL_MAX_WRITES = 60;
-
-	/**
-	 * Rate-limit window in seconds.
-	 *
-	 * @var int
-	 */
-	const RL_WINDOW_SECONDS = 60;
 
 	/**
 	 * Wire the REST init hook. Called once from sgs-blocks.php.
@@ -106,16 +95,22 @@ final class Product_Authoring {
 	 * capability on the specific parent product (IDOR-safe; rejects editors who
 	 * only have access to their own posts).
 	 *
+	 * Thin wrapper — delegates to the shared security helper so R1 and R2
+	 * always use the SAME capability check.
+	 *
 	 * @param \WP_REST_Request $request Incoming request.
 	 * @return bool|\WP_Error
 	 */
 	public static function can_edit_product( \WP_REST_Request $request ) {
-		return \current_user_can( 'edit_post', (int) $request['id'] );
+		return Product_Authoring_Security::can_edit_product( $request );
 	}
 
 	/**
 	 * Common security chain applied inside every handler (CSRF + rate-limit +
 	 * multisite guard + WooCommerce availability).
+	 *
+	 * Delegates to the shared helper; the rate-limit transient is shared with R2
+	 * so both endpoints count against the same budget per user.
 	 *
 	 * Returns null on success, or a WP_Error to short-circuit the handler.
 	 *
@@ -124,73 +119,7 @@ final class Product_Authoring {
 	 * @return \WP_Error|null
 	 */
 	private static function security_chain( \WP_REST_Request $request, int $product_id ) {
-		// ── Step 1: CSRF nonce ───────────────────────────────────────────────
-		$nonce = (string) $request->get_header( 'X-WP-Nonce' );
-		if ( ! \wp_verify_nonce( $nonce, 'wp_rest' ) ) {
-			return new \WP_Error(
-				'rest_cookie_invalid_nonce',
-				\__( 'Security token invalid or expired. Reload the page and try again.', 'sgs-blocks' ),
-				array( 'status' => 403 )
-			);
-		}
-
-		// ── Step 2: Per-user fixed-window rate-limit ─────────────────────────
-		$user_id = \get_current_user_id();
-		$rl_key  = 'sgs_pa_rl_' . $user_id;
-		$rl_raw  = \get_transient( $rl_key );
-		$now     = \time();
-
-		if ( \is_array( $rl_raw )
-			&& isset( $rl_raw['t'], $rl_raw['c'] )
-			&& ( $now - (int) $rl_raw['t'] ) < self::RL_WINDOW_SECONDS ) {
-			$rl_count = (int) $rl_raw['c'];
-			$rl_start = (int) $rl_raw['t'];
-		} else {
-			$rl_count = 0;
-			$rl_start = $now;
-		}
-
-		if ( $rl_count >= self::RL_MAX_WRITES ) {
-			return new \WP_Error(
-				'sgs_rate_limited',
-				\__( 'Too many requests. Please wait before trying again.', 'sgs-blocks' ),
-				array( 'status' => 429 )
-			);
-		}
-
-		// Increment within the fixed window (TTL = remaining window time).
-		$remaining = \max( 1, self::RL_WINDOW_SECONDS - ( $now - $rl_start ) );
-		\set_transient(
-			$rl_key,
-			array(
-				't' => $rl_start,
-				'c' => $rl_count + 1,
-			),
-			$remaining
-		);
-
-		// ── Step 3: Multisite guard ──────────────────────────────────────────
-		if ( \is_multisite() ) {
-			$post = \get_post( $product_id );
-			if ( ! $post || 'product' !== $post->post_type ) {
-				return new \WP_Error(
-					'sgs_invalid_product',
-					\__( 'Product not found on this site.', 'sgs-blocks' ),
-					array( 'status' => 404 )
-				);
-			}
-		}
-
-		// ── Step 4: WooCommerce availability ─────────────────────────────────
-		if ( ! \function_exists( 'wc_get_product' ) ) {
-			return new \WP_Error(
-				'sgs_wc_unavailable',
-				\__( 'WooCommerce is not active.', 'sgs-blocks' ),
-				array( 'status' => 503 )
-			);
-		}
-
-		return null;
+		return Product_Authoring_Security::security_chain( $request, $product_id );
 	}
 
 	// ── update_variation handler ──────────────────────────────────────────────
@@ -505,38 +434,13 @@ final class Product_Authoring {
 	/**
 	 * Trigger the wc_product_attributes_lookup sync for a single product.
 	 *
-	 * Preferred path: the internal LookupDataStore (WC 6.x+), accessed via the
-	 * WC DI container. Class name verified against WC 8.x source.
-	 * Fallback path: wc_update_product_lookup_tables() (WC 3.6–5.x); rebuilds
-	 * all products but is safe.
-	 * No-op path: on WC < 3.6 the parent save() firing woocommerce_update_product
-	 * is the only available sync — acceptable graceful degradation.
-	 *
-	 * MUST NOT fatal when WC internal classes are absent.
+	 * Delegates to the shared helper (Product_Authoring_Security) to avoid
+	 * duplication with the R2 provisioning controller.
 	 *
 	 * @param \WC_Product $product The parent variable product (already saved).
 	 * @return void
 	 */
 	private static function trigger_lookup_regen( \WC_Product $product ): void {
-		$lookup_class = 'Automattic\\WooCommerce\\Internal\\ProductAttributesLookup\\LookupDataStore';
-
-		if ( \class_exists( $lookup_class ) && \function_exists( 'wc_get_container' ) ) {
-			$store = \wc_get_container()->get( $lookup_class );
-			if ( $store && \method_exists( $store, 'on_product_changed' ) ) {
-				try {
-					$store->on_product_changed( $product );
-					return;
-				} catch ( \Throwable $e ) {
-					\wc_get_logger()->warning(
-						'SGS Product_Authoring: LookupDataStore::on_product_changed failed — ' . $e->getMessage(),
-						array( 'source' => 'sgs-product-authoring' )
-					);
-				}
-			}
-		}
-
-		if ( \function_exists( 'wc_update_product_lookup_tables' ) ) {
-			\wc_update_product_lookup_tables();
-		}
+		Product_Authoring_Security::trigger_lookup_regen( $product );
 	}
 }
