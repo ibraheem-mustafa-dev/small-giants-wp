@@ -234,6 +234,14 @@ Product_CPT::register();
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-configurator-compat.php';
 Sgs_Configurator_Compat::register();
 
+// SGS Product Authoring — REST controller for FR-27-R1: updates variable-product
+// parent attributes + individual variations via WC data-store setters so the
+// wc_product_attributes_lookup table is kept in sync (byte-identical to the
+// native WC product editor). Routes: POST /sgs/v1/products/{id}/variations/{vid}
+// and POST /sgs/v1/products/{id}/attributes.
+require_once SGS_BLOCKS_PATH . 'includes/class-product-authoring.php';
+Product_Authoring::register();
+
 // SGS Floating UI — Customiser controls + frontend renderer (replaces retired back-to-top + reading-progress blocks).
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-floating-ui-customiser.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-floating-ui-renderer.php';
