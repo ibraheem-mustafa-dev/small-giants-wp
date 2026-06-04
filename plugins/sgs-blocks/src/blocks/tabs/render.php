@@ -2,6 +2,10 @@
 /**
  * SGS Tabs — server-side render.
  *
+ * WS-4 composite-mirror: outer wrapper via SGS_Container_Wrapper (layout kind).
+ * data-tabs-block + id attributes are passed via extra_attrs so view.js continues
+ * to find the block via document.querySelectorAll('[data-tabs-block]').
+ *
  * Builds the tab navigation (role="tablist") and tab panels (role="tabpanel")
  * from the inner sgs/tab child blocks. Handles deep linking via data attributes
  * consumed by view.js.
@@ -16,26 +20,27 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
-$orientation  = $attributes['orientation'] ?? 'horizontal';
-$tab_style    = $attributes['tabStyle'] ?? 'underline';
-$tab_align    = $attributes['tabAlignment'] ?? 'left';
-$transition   = isset( $attributes['transitionDuration'] )
+$orientation = $attributes['orientation'] ?? 'horizontal';
+$tab_style   = $attributes['tabStyle'] ?? 'underline';
+$tab_align   = $attributes['tabAlignment'] ?? 'left';
+$transition  = isset( $attributes['transitionDuration'] )
 	? (int) $attributes['transitionDuration']
 	: 200;
 
 // Collect tabs from inner blocks.
-$tabs = [];
+$tabs = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- local render.php scope; $tabs is not a WP global.
 foreach ( $block->inner_blocks as $inner_block ) {
 	if ( 'sgs/tab' !== $inner_block->name ) {
 		continue;
 	}
-	$tabs[] = [
+	$tabs[] = array( // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- $tabs[] append, not a WP global.
 		'label'   => isset( $inner_block->attributes['label'] )
 			? wp_strip_all_tags( $inner_block->attributes['label'] )
 			: __( 'Tab', 'sgs-blocks' ),
 		'content' => ( new WP_Block( $inner_block->parsed_block ) )->render(),
-	];
+	);
 }
 
 if ( empty( $tabs ) ) {
@@ -43,15 +48,14 @@ if ( empty( $tabs ) ) {
 }
 
 // Generate a stable block ID for ARIA relationships.
-// Uses the anchor attribute if set; falls back to a hash of the block's context.
 $block_id = ! empty( $attributes['anchor'] )
 	? sanitize_html_class( $attributes['anchor'] )
-	: 'sgs-tabs-' . substr( md5( serialize( $attributes ) . count( $tabs ) ), 0, 8 );
+	: 'sgs-tabs-' . substr( md5( serialize( $attributes ) . count( $tabs ) ), 0, 8 ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- $attributes is a plain array of scalars from block.json; no objects, no injection risk.
 
 // ─── Inline CSS custom properties ───────────────────────────────────────────
-$css_vars = [];
+$css_vars = array();
 
-$colour_props = [
+$colour_props = array(
 	'tabTextColour'            => '--sgs-tab-text',
 	'tabActiveTextColour'      => '--sgs-tab-active-text',
 	'tabActiveBgColour'        => '--sgs-tab-active-bg',
@@ -59,7 +63,7 @@ $colour_props = [
 	'tabHoverBgColour'         => '--sgs-tab-hover-bg',
 	'panelBgColour'            => '--sgs-panel-bg',
 	'panelBorderColour'        => '--sgs-panel-border',
-];
+);
 
 foreach ( $colour_props as $attr => $prop ) {
 	if ( ! empty( $attributes[ $attr ] ) ) {
@@ -72,72 +76,87 @@ foreach ( $colour_props as $attr => $prop ) {
 
 $css_vars[] = '--sgs-transition-duration:' . $transition . 'ms';
 
-$inline_style = implode( ';', $css_vars ) . ';';
-
-// ─── Wrapper attributes ──────────────────────────────────────────────────────
-$wrapper_attrs = get_block_wrapper_attributes(
-	[
-		'class'           => implode( ' ', [
-			'sgs-tabs',
-			'sgs-tabs--' . esc_attr( $orientation ),
-			'sgs-tabs--style-' . esc_attr( $tab_style ),
-			'sgs-tabs--align-' . esc_attr( $tab_align ),
-		] ),
-		'id'              => esc_attr( $block_id ),
-		'data-tabs-block' => 'true',
-		'style'           => $inline_style,
-	]
+// ─── Own classes + styles ─────────────────────────────────────────────────────
+$extra_classes = array(
+	'sgs-tabs',
+	'sgs-tabs--' . esc_attr( $orientation ),
+	'sgs-tabs--style-' . esc_attr( $tab_style ),
+	'sgs-tabs--align-' . esc_attr( $tab_align ),
 );
 
-// ─── Build output ────────────────────────────────────────────────────────────
-$tab_count = count( $tabs );
-?>
-<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+$extra_styles = $css_vars;
 
-	<div
-		class="sgs-tabs__nav"
-		role="tablist"
-		aria-label="<?php echo esc_attr( ! empty( $attributes['blockLabel'] ) ? $attributes['blockLabel'] : ( ! empty( $tabs[0]['label'] ) ? $tabs[0]['label'] : __( 'Content tabs', 'sgs-blocks' ) ) ); ?>"
-		aria-orientation="<?php echo esc_attr( $orientation ); ?>"
-	>
-		<?php foreach ( $tabs as $i => $tab ) :
-			$tab_id   = esc_attr( $block_id . '-tab-' . $i );
-			$panel_id = esc_attr( $block_id . '-panel-' . $i );
-			$is_first = ( 0 === $i );
-		?>
-		<button
-			id="<?php echo $tab_id; ?>"
-			class="sgs-tabs__tab<?php echo $is_first ? ' sgs-tabs__tab--active' : ''; ?>"
-			role="tab"
-			aria-selected="<?php echo $is_first ? 'true' : 'false'; ?>"
-			aria-controls="<?php echo $panel_id; ?>"
-			tabindex="<?php echo $is_first ? '0' : '-1'; ?>"
-			data-tab-index="<?php echo (int) $i; ?>"
-		>
-			<?php echo esc_html( $tab['label'] ); ?>
-		</button>
-		<?php endforeach; ?>
-	</div>
+// ─── Attrs that view.js queries on the OUTER wrapper ─────────────────────────
+// view.js: document.querySelectorAll('[data-tabs-block]')
+// The id is also on the outer wrapper for ARIA labelledby on panels.
+$extra_attrs = array(
+	'id'              => esc_attr( $block_id ),
+	'data-tabs-block' => 'true',
+);
 
-	<div class="sgs-tabs__panels">
-		<?php foreach ( $tabs as $i => $tab ) :
-			$tab_id   = esc_attr( $block_id . '-tab-' . $i );
-			$panel_id = esc_attr( $block_id . '-panel-' . $i );
-			$is_first = ( 0 === $i );
-		?>
-		<div
-			id="<?php echo $panel_id; ?>"
-			class="sgs-tabs__panel"
-			role="tabpanel"
-			aria-labelledby="<?php echo $tab_id; ?>"
-			tabindex="0"
-			<?php if ( ! $is_first ) : ?>hidden<?php endif; ?>
-		>
-			<?php
-			echo $tab['content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			?>
-		</div>
-		<?php endforeach; ?>
-	</div>
+// ─── Build interior HTML (tablist + panels) ───────────────────────────────────
+$tab_count   = count( $tabs );
+$nav_html    = '';
+$panels_html = '';
 
-</div>
+$aria_label = ! empty( $attributes['blockLabel'] )
+	? $attributes['blockLabel']
+	: ( ! empty( $tabs[0]['label'] ) ? $tabs[0]['label'] : __( 'Content tabs', 'sgs-blocks' ) );
+
+$nav_html .= sprintf(
+	'<div class="sgs-tabs__nav" role="tablist" aria-label="%s" aria-orientation="%s">',
+	esc_attr( $aria_label ),
+	esc_attr( $orientation )
+);
+
+foreach ( $tabs as $i => $tab ) { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- $tab is not a WP global; local loop variable.
+	$tab_id   = esc_attr( $block_id . '-tab-' . $i );
+	$panel_id = esc_attr( $block_id . '-panel-' . $i );
+	$is_first = ( 0 === $i );
+
+	$nav_html .= sprintf(
+		'<button id="%s" class="sgs-tabs__tab%s" role="tab" aria-selected="%s" aria-controls="%s" tabindex="%s" data-tab-index="%d">%s</button>',
+		$tab_id,
+		$is_first ? ' sgs-tabs__tab--active' : '',
+		$is_first ? 'true' : 'false',
+		$panel_id,
+		$is_first ? '0' : '-1',
+		$i,
+		esc_html( $tab['label'] )
+	);
+}
+
+$nav_html .= '</div>';
+
+$panels_html .= '<div class="sgs-tabs__panels">';
+foreach ( $tabs as $i => $tab ) { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- $tab is not a WP global; local loop variable.
+	$tab_id   = esc_attr( $block_id . '-tab-' . $i );
+	$panel_id = esc_attr( $block_id . '-panel-' . $i );
+	$is_first = ( 0 === $i );
+
+	$panels_html .= sprintf(
+		'<div id="%s" class="sgs-tabs__panel" role="tabpanel" aria-labelledby="%s" tabindex="0"%s>%s</div>',
+		$panel_id,
+		$tab_id,
+		$is_first ? '' : ' hidden',
+		$tab['content'] // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rendered block HTML.
+	);
+}
+$panels_html .= '</div>';
+
+$inner_html = $nav_html . $panels_html;
+
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+echo SGS_Container_Wrapper::render(
+	$attributes,
+	$block,
+	$inner_html,
+	'layout',
+	array(
+		'tag'           => 'div',
+		'extra_classes' => $extra_classes,
+		'extra_styles'  => $extra_styles,
+		'extra_attrs'   => $extra_attrs,
+	)
+);
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

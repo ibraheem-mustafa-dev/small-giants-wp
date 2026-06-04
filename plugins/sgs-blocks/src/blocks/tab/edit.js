@@ -1,7 +1,9 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
-import { TextControl } from '@wordpress/components';
+import { useBlockProps, useInnerBlocksProps, InspectorControls } from '@wordpress/block-editor';
+import { TextControl, PanelBody } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
+// WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const { label } = attributes;
@@ -92,16 +94,36 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	);
 
 	return (
-		<div { ...blockProps }>
-			<div className="sgs-tab__label-control">
-				<TextControl
-					label={ __( 'Tab label', 'sgs-blocks' ) }
-					value={ label }
-					onChange={ ( val ) => setAttributes( { label: val } ) }
-					__nextHasNoMarginBottom
+		<>
+			{ /* Width / spacing (WS-4 container mirror) */ }
+			<InspectorControls>
+				<PanelBody title={ __( 'Tab Settings', 'sgs-blocks' ) } initialOpen={ true }>
+					<TextControl
+						label={ __( 'Tab label', 'sgs-blocks' ) }
+						value={ label }
+						onChange={ ( val ) => setAttributes( { label: val } ) }
+						help={ __( 'Label shown on the tab button.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="content"
 				/>
+			</InspectorControls>
+
+			<div { ...blockProps }>
+				<div className="sgs-tab__label-control">
+					<TextControl
+						label={ __( 'Tab label', 'sgs-blocks' ) }
+						value={ label }
+						onChange={ ( val ) => setAttributes( { label: val } ) }
+						__nextHasNoMarginBottom
+					/>
+				</div>
+				<div { ...innerBlocksProps } />
 			</div>
-			<div { ...innerBlocksProps } />
-		</div>
+		</>
 	);
 }

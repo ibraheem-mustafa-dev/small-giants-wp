@@ -1,45 +1,196 @@
 {
-  "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 3,
-  "name": "sgs/multi-button",
-  "version": "1.0.0",
-  "title": "SGS Button Group",
-  "category": "sgs-content",
-  "description": "A flexible container for one or more SGS Buttons. Provides per-breakpoint layout, gap, alignment, and wrap controls.",
-  "keywords": ["button group", "cta", "buttons", "multi button"],
-  "icon": "button",
-  "textdomain": "sgs-blocks",
-  "editorScript": "file:./index.js",
-  "style": "file:./style-index.css",
-  "editorStyle": "file:./index.css",
-  "render": "file:./render.php",
-  "allowedBlocks": ["sgs/button"],
-  "supports": {
-    "anchor": true,
-    "customClassName": true,
-    "html": false
-  },
-  "attributes": {
-    "direction": { "type": "string", "default": "row" },
-    "directionTablet": { "type": "string", "default": "" },
-    "directionMobile": { "type": "string", "default": "column" },
-    "gap": { "type": "number", "default": 12 },
-    "gapTablet": { "type": "number", "default": null },
-    "gapMobile": { "type": "number", "default": 8 },
-    "gapUnit": { "type": "string", "default": "px" },
-    "justifyContent": { "type": "string", "default": "flex-start" },
-    "justifyContentTablet": { "type": "string", "default": "" },
-    "justifyContentMobile": { "type": "string", "default": "" },
-    "wrap": { "type": "string", "default": "wrap" },
-    "wrapTablet": { "type": "string", "default": "" },
-    "wrapMobile": { "type": "string", "default": "wrap" },
-    "alignItems": { "type": "string", "default": "center" }
-  },
-  "example": {
-    "attributes": {
-      "direction": "row",
-      "gap": 12,
-      "justifyContent": "flex-start"
-    }
-  }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/multi-button",
+	"version": "1.1.0",
+	"title": "SGS Button Group",
+	"category": "sgs-content",
+	"description": "A flexible container for one or more SGS Buttons. Provides per-breakpoint layout, gap, alignment, and wrap controls.",
+	"keywords": [
+		"button group",
+		"cta",
+		"buttons",
+		"multi button"
+	],
+	"icon": "button",
+	"textdomain": "sgs-blocks",
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"editorStyle": "file:./index.css",
+	"render": "file:./render.php",
+	"allowedBlocks": [
+		"sgs/button"
+	],
+	"supports": {
+		"anchor": true,
+		"customClassName": true,
+		"html": false
+	},
+	"attributes": {
+		"direction": {
+			"type": "string",
+			"default": "row"
+		},
+		"directionTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"directionMobile": {
+			"type": "string",
+			"default": "column"
+		},
+		"gap": {
+			"type": "number",
+			"default": 12
+		},
+		"gapTablet": {
+			"type": "number",
+			"default": null
+		},
+		"gapMobile": {
+			"type": "number",
+			"default": 8
+		},
+		"gapUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"justifyContent": {
+			"type": "string",
+			"default": "flex-start"
+		},
+		"justifyContentTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"justifyContentMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"wrap": {
+			"type": "string",
+			"default": "wrap"
+		},
+		"wrapTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"wrapMobile": {
+			"type": "string",
+			"default": "wrap"
+		},
+		"alignItems": {
+			"type": "string",
+			"default": "center"
+		},
+		"widthMode": {
+			"type": "string",
+			"default": "default",
+			"enum": [
+				"default",
+				"wide",
+				"full",
+				"custom"
+			]
+		},
+		"widthModeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeDesktop": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"layout": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumns": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRows": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridAutoRows": {
+			"type": "string",
+			"default": ""
+		},
+		"justifyItems": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end"
+			]
+		},
+		"alignContent": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end",
+				"space-between",
+				"space-around",
+				"space-evenly"
+			]
+		},
+		"templateMode": {
+			"type": "string",
+			"default": "free",
+			"enum": [
+				"free",
+				"grid-section",
+				"card-grid"
+			]
+		}
+	},
+	"example": {
+		"attributes": {
+			"direction": "row",
+			"gap": 12,
+			"justifyContent": "flex-start"
+		}
+	}
 }

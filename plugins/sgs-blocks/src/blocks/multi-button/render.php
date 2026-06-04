@@ -14,6 +14,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+
 $direction        = isset( $attributes['direction'] ) ? esc_attr( $attributes['direction'] ) : 'row';
 $direction_tablet = ! empty( $attributes['directionTablet'] ) ? esc_attr( $attributes['directionTablet'] ) : $direction;
 $direction_mobile = ! empty( $attributes['directionMobile'] ) ? esc_attr( $attributes['directionMobile'] ) : 'column';
@@ -64,14 +66,21 @@ $css .= 'gap:' . $gap_mobile . $gap_unit . ';';
 $css .= 'justify-content:' . $justify_content_mobile . ';';
 $css .= '}}';
 
-$wrapper_attrs = get_block_wrapper_attributes(
+// WS-4: the outer wrapper is now the shared sgs/container element. multi-button keeps
+// its own scoped flex CSS (#uid.sgs-multi-button) + the id via extra_attrs; the buttons
+// ($content) become the interior. The mirror adds the container width capability.
+$mb_style = '<style>' . esc_html( $css ) . '</style>';
+
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $mb_style is esc_html'd CSS; SGS_Container_Wrapper::render() escapes its output internally; $content is WP-rendered inner blocks.
+echo $mb_style . SGS_Container_Wrapper::render(
+	$attributes,
+	$block,
+	$content,
+	'layout',
 	array(
-		'id'    => esc_attr( $uid ),
-		'class' => 'sgs-multi-button',
+		'tag'           => 'div',
+		'extra_classes' => array( 'sgs-multi-button' ),
+		'extra_attrs'   => array( 'id' => esc_attr( $uid ) ),
 	)
 );
-?>
-<style><?php echo esc_html( $css ); ?></style>
-<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns sanitised HTML. ?>>
-	<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is rendered block HTML produced by WordPress core. ?>
-</div>
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

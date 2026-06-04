@@ -14,6 +14,7 @@ import {
 } from '@wordpress/components';
 import { useEffect } from '@wordpress/element';
 import { DesignTokenPicker } from '../../components';
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 const SUBMIT_STYLE_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
@@ -262,6 +263,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 			</InspectorControls>
+			<ContainerWrapperControls
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				kind="layout"
+			/>
 
 			<div { ...blockProps }>
 				<div { ...innerBlocksProps } />

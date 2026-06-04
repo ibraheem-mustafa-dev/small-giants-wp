@@ -12,6 +12,7 @@ import {
   RangeControl,
 } from "@wordpress/components";
 import { DesignTokenPicker } from "../../components";
+import ContainerWrapperControls from "../container/components/ContainerWrapperControls";
 
 const STYLE_OPTIONS = [
   { label: __("Bordered", "sgs-blocks"), value: "bordered" },
@@ -59,6 +60,11 @@ export default function Edit({ attributes, setAttributes }) {
   return (
     <>
       <InspectorControls>
+        <ContainerWrapperControls
+          attributes={ attributes }
+          setAttributes={ setAttributes }
+          kind="layout"
+        />
         <PanelBody title={__("Accordion Settings", "sgs-blocks")}>
           <SelectControl
             label={__("Style", "sgs-blocks")}

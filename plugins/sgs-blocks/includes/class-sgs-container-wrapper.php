@@ -193,7 +193,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// HTML tag.
 			$html_tag     = $opt_tag ? $opt_tag : ( $attributes['htmlTag'] ?? 'section' );
-			$allowed_tags = array( 'section', 'div', 'article', 'aside', 'main', 'details' );
+			$allowed_tags = array( 'section', 'div', 'article', 'aside', 'main', 'details', 'fieldset' );
 			if ( ! in_array( $html_tag, $allowed_tags, true ) ) {
 				$html_tag = 'section';
 			}

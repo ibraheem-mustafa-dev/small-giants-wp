@@ -2,9 +2,15 @@
 /**
  * Server-side render for the SGS Option Picker block.
  *
- * Renders a fully accessible radio-group of pill options.
- * The default selection is baked into the HTML so the picker is
- * fully meaningful with no JavaScript (no-JS safe).
+ * WS-4 composite-mirror: CONTENT kind — width/spacing layers only via
+ * SGS_Container_Wrapper::render(). The outer <fieldset> wrapper carries
+ * block-wrapper attributes; the radio pills + legend stay in $inner_html.
+ *
+ * view.js reads data attributes from .sgs-option-picker__options (inside
+ * $inner_html) — these do NOT need to be on the outer wrapper.
+ *
+ * R-22-14: explicit discriminators, never empty($content).
+ * No WP Interactivity API store — plain DOM events via view.js.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — no InnerBlocks).
@@ -16,6 +22,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 /* ── Attribute extraction ────────────────────────────────────────────────── */
 
@@ -100,43 +107,50 @@ $allowed_sizes  = array( 'small', 'medium', 'large' );
 $safe_style = in_array( $pill_style, $allowed_styles, true ) ? $pill_style : 'outlined';
 $safe_size  = in_array( $pill_size, $allowed_sizes, true ) ? $pill_size : 'medium';
 
-$wrapper_classes = array(
+$extra_classes = array(
 	'sgs-option-picker',
 	'sgs-option-picker--' . $safe_style,
 	'sgs-option-picker--' . $safe_size,
 );
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array( 'class' => implode( ' ', $wrapper_classes ) )
-);
-
 /* ── CSS custom properties for token-aware colour overrides ─────────────── */
 
-$css_vars = array();
+$extra_styles = array();
 
 if ( $pill_bg_colour ) {
-	$css_vars[] = '--sgs-op-bg:' . sgs_colour_value( $pill_bg_colour );
+	$extra_styles[] = '--sgs-op-bg:' . sgs_colour_value( $pill_bg_colour );
 }
 if ( $pill_text_colour ) {
-	$css_vars[] = '--sgs-op-text:' . sgs_colour_value( $pill_text_colour );
+	$extra_styles[] = '--sgs-op-text:' . sgs_colour_value( $pill_text_colour );
 }
 if ( $pill_border_colour ) {
-	$css_vars[] = '--sgs-op-border:' . sgs_colour_value( $pill_border_colour );
+	$extra_styles[] = '--sgs-op-border:' . sgs_colour_value( $pill_border_colour );
 }
 if ( $pill_sel_bg_colour ) {
-	$css_vars[] = '--sgs-op-sel-bg:' . sgs_colour_value( $pill_sel_bg_colour );
+	$extra_styles[] = '--sgs-op-sel-bg:' . sgs_colour_value( $pill_sel_bg_colour );
 }
 if ( $pill_sel_text_colour ) {
-	$css_vars[] = '--sgs-op-sel-text:' . sgs_colour_value( $pill_sel_text_colour );
+	$extra_styles[] = '--sgs-op-sel-text:' . sgs_colour_value( $pill_sel_text_colour );
 }
 
-$inline_style = '';
-if ( ! empty( $css_vars ) ) {
-	$inline_style = ' style="' . esc_attr( implode( ';', $css_vars ) ) . '"';
+/* ── Build $inner_html: legend + options div (data attrs stay here) ──────── */
+
+// Legend — visible or screen-reader-only.
+if ( $show_label ) {
+	$legend_html = sprintf(
+		'<legend id="%s" class="sgs-option-picker__label">%s</legend>',
+		esc_attr( $legend_id ),
+		esc_html( $label )
+	);
+} else {
+	$legend_html = sprintf(
+		'<legend id="%s" class="sgs-sr-only">%s</legend>',
+		esc_attr( $legend_id ),
+		esc_html( $label )
+	);
 }
 
-/* ── Data attributes for the view.js event dispatcher ───────────────────── */
-
+// Data attributes for the view.js event dispatcher live on the inner div.
 $data_type_key = $type_key
 	? ' data-type-key="' . esc_attr( sanitize_html_class( $type_key ) ) . '"'
 	: '';
@@ -147,41 +161,47 @@ if ( ! empty( $content_impact ) && is_array( $content_impact ) ) {
 	$data_content_impact = ' data-content-impact="' . esc_attr( implode( ',', $safe_impacts ) ) . '"';
 }
 
-?>
-<fieldset <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped markup. ?><?php echo $inline_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr(). ?>>
-	<?php if ( $show_label ) : ?>
-		<legend id="<?php echo esc_attr( $legend_id ); ?>" class="sgs-option-picker__label">
-			<?php echo esc_html( $label ); ?>
-		</legend>
-	<?php else : ?>
-		<legend id="<?php echo esc_attr( $legend_id ); ?>" class="sgs-sr-only">
-			<?php echo esc_html( $label ); ?>
-		</legend>
-	<?php endif; ?>
+// Pill radio inputs.
+$pills_html = '';
+foreach ( $valid_items as $item ) {
+	$is_checked  = $item['key'] === $resolved_default;
+	$input_id    = $uid . '-' . $item['key'];
+	$checked_str = $is_checked ? ' checked' : '';
 
-	<div
-		class="sgs-option-picker__options"
-		role="radiogroup"
-		aria-labelledby="<?php echo esc_attr( $legend_id ); ?>"
-		<?php echo $data_type_key; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr(). ?>
-		<?php echo $data_content_impact; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr(). ?>
-	>
-		<?php foreach ( $valid_items as $item ) : ?>
-			<?php
-			$is_checked  = $item['key'] === $resolved_default;
-			$input_id    = $uid . '-' . $item['key'];
-			$checked_str = $is_checked ? ' checked' : '';
-			?>
-			<label class="sgs-option-picker__option" for="<?php echo esc_attr( $input_id ); ?>">
-				<input
-					type="radio"
-					id="<?php echo esc_attr( $input_id ); ?>"
-					name="<?php echo esc_attr( $radio_name ); ?>"
-					value="<?php echo esc_attr( $item['key'] ); ?>"
-					<?php echo $checked_str; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 'checked' or empty. ?>
-				>
-				<span class="sgs-option-picker__pill"><?php echo esc_html( $item['label'] ); ?></span>
-			</label>
-		<?php endforeach; ?>
-	</div>
-</fieldset>
+	$pills_html .= sprintf(
+		'<label class="sgs-option-picker__option" for="%s">' .
+		'<input type="radio" id="%s" name="%s" value="%s"%s>' .
+		'<span class="sgs-option-picker__pill">%s</span>' .
+		'</label>',
+		esc_attr( $input_id ),
+		esc_attr( $input_id ),
+		esc_attr( $radio_name ),
+		esc_attr( $item['key'] ),
+		$checked_str, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 'checked' or empty.
+		esc_html( $item['label'] )
+	);
+}
+
+$options_div_html = sprintf(
+	'<div class="sgs-option-picker__options" role="radiogroup" aria-labelledby="%s"%s%s>%s</div>',
+	esc_attr( $legend_id ),
+	$data_type_key, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr().
+	$data_content_impact, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr().
+	$pills_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_* functions above.
+);
+
+$inner_html = $legend_html . $options_div_html;
+
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() output is pre-sanitised; arrays are caller-built with esc_attr().
+echo SGS_Container_Wrapper::render(
+	$attributes,
+	$block,
+	$inner_html,
+	'content',
+	array(
+		'tag'           => 'fieldset',
+		'extra_classes' => $extra_classes,
+		'extra_styles'  => $extra_styles,
+	)
+);
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

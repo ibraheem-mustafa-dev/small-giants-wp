@@ -20,6 +20,8 @@ import {
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
 import { colourVar } from '../../utils';
+// WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 /* ── Pill-style options ─────────────────────────────────────────────────── */
 
@@ -403,6 +405,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 					/>
 				</PanelBody>
+
+				{ /* Width / spacing (WS-4 container mirror) */ }
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="content"
+				/>
 
 				{ /* Converter metadata */ }
 				<PanelBody

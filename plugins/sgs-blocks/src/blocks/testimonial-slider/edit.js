@@ -26,6 +26,7 @@ import {
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
 import { colourVar } from '../../utils';
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
@@ -281,6 +282,11 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 			</InspectorControls>
+			<ContainerWrapperControls
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				kind="layout"
+			/>
 
 			<div { ...blockProps }>
 				{ isSplit && sideImage?.url && (

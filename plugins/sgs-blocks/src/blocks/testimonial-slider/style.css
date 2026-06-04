@@ -5,9 +5,21 @@
 }
 
 /* ===== Track — CSS scroll-snap ===== */
+/*
+ * flex:1 + min-width:0 make the track fill all space between the two arrow
+ * buttons when __stage is a flex row. Without min-width:0 a flex child can
+ * overflow its container when content is wider than the available space.
+ *
+ * The gap value MUST match the fallback used in the slide flex-basis calc
+ * below. Both use --wp--preset--spacing--30 with a 16px fallback so that
+ * the slide widths exactly fill the track regardless of whether the WP
+ * spacing preset is defined on the site.
+ */
 .sgs-testimonial-slider__track {
+	flex: 1;
+	min-width: 0;
 	display: flex;
-	gap: var(--wp--preset--spacing--30);
+	gap: var(--wp--preset--spacing--30, 16px);
 	overflow-x: auto;
 	scroll-snap-type: x mandatory;
 	scroll-behavior: smooth;
@@ -162,32 +174,46 @@
 	color: var(--wp--preset--color--text-muted, #555);
 }
 
-/* ===== Stage — positions arrows on the sides of the track ===== */
+/* ===== Stage — flex row: [prev-arrow] [track] [next-arrow] ===== */
+/*
+ * Arrows are flex siblings of the track — they sit on either side of the card
+ * row and never overlap card content. The track gets flex:1 so it fills all
+ * remaining width between the two arrow buttons.
+ *
+ * width:100% + box-sizing ensure the stage spans the full block width even
+ * when the parent has padding. Without this the stage would be as wide as its
+ * content, collapsing to the arrows' min-content width.
+ */
 .sgs-testimonial-slider__stage {
-	position: relative;
+	display: flex;
+	align-items: center;
+	width: 100%;
+	box-sizing: border-box;
+	gap: var(--wp--preset--spacing--20, 8px);
+}
+
+/* ===== Controls bar — sits below the stage row ===== */
+/*
+ * Houses dots + the pause/play button injected by view.js.
+ * Always centred and never takes width away from the card row.
+ */
+.sgs-testimonial-slider__controls {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--wp--preset--spacing--10, 4px);
+	margin-top: var(--wp--preset--spacing--30, 16px);
 }
 
 /* ===== Arrows ===== */
-.sgs-testimonial-slider__arrows {
-	position: absolute;
-	top: 50%;
-	left: 0;
-	right: 0;
-	transform: translateY(-50%);
-	display: flex;
-	justify-content: space-between;
-	pointer-events: none;
-	padding: 0 var(--wp--preset--spacing--20, 8px);
-	z-index: 2;
-}
-
 /*
  * Arrow button: primary bg idle → primary-dark hover (scale 1.05) → depress + scale 0.99 active.
  * Icon always text-inverse per Group J spec.
  * Duration: fast (150ms), easing: default.
+ * flex-shrink:0 stops the button from being squashed when the track is wide.
  */
 .sgs-testimonial-slider__arrow {
-	pointer-events: all;
+	flex-shrink: 0;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -225,11 +251,12 @@
 }
 
 /* ===== Dots ===== */
+/* Dots sit inside __controls which provides margin-top and centering. */
 .sgs-testimonial-slider__dots {
 	display: flex;
 	justify-content: center;
 	gap: 8px;
-	margin-top: var(--wp--preset--spacing--30);
+	margin-top: 0;
 }
 
 /*
@@ -296,11 +323,9 @@
 }
 
 /* ===== Pause/Play button — WCAG 2.2.2 compliant ===== */
-
 /*
- * Injected by view.js when autoplay is active. Provides a persistent
- * mechanism to pause auto-advancing content (WCAG 2.2.2 requirement).
- * Placed inside or adjacent to the arrows container.
+ * Injected by view.js into .sgs-testimonial-slider__controls (after the dots).
+ * __controls provides margin-top and flex centering — no extra margin needed here.
  */
 .sgs-testimonial-slider__pause-btn {
 	display: flex;
@@ -317,7 +342,7 @@
 	transition-duration: var(--sgs-transition-duration, 300ms);
 	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
 	transition-property: background-color, color, border-color;
-	margin: var(--wp--preset--spacing--20, 8px) auto 0;
+	margin: 0;
 }
 
 .sgs-testimonial-slider__pause-btn:hover {

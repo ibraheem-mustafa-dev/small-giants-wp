@@ -5,6 +5,8 @@ import {
 	InspectorControls,
 } from '@wordpress/block-editor';
 import { PanelBody, TextControl } from '@wordpress/components';
+// WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const { label } = attributes;
@@ -37,6 +39,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
+				{ /* Width / spacing (WS-4 container mirror) */ }
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="content"
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>

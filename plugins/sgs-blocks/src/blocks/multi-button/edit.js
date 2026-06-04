@@ -4,6 +4,8 @@ import {
 	useInnerBlocksProps,
 	InspectorControls,
 } from '@wordpress/block-editor';
+// WS-4: shared sgs/container wrapper editor controls (layout kind).
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import {
 	PanelBody,
 	SelectControl,
@@ -99,6 +101,12 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+				{ /* WS-4: mirrored sgs/container wrapper controls (layout kind). */ }
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="layout"
+				/>
 				{ /* ── Layout panel ── */ }
 				<PanelBody
 					title={ __( 'Layout', 'sgs-blocks' ) }

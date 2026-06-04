@@ -27,6 +27,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 // ── Attribute extraction ───────────────────────────────────────────────────
 $layout              = $attributes['layout'] ?? 'full';
@@ -68,6 +69,9 @@ if ( 'none' !== $safe_hover_effect ) {
 	$classes[] = 'sgs-testimonial-slider--hover-' . esc_attr( $safe_hover_effect );
 }
 
+// ── Own CSS vars — carried as extra_styles into the wrapper helper ─────────
+// SGS_Container_Wrapper merges these with any container-level style declarations
+// (gap, widthMode custom width, etc.) before calling get_block_wrapper_attributes().
 $css_vars = sgs_transition_vars( $attributes );
 if ( $hover_bg_colour ) {
 	$css_vars[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_bg_colour );
@@ -78,16 +82,20 @@ if ( $hover_text_colour ) {
 if ( $hover_border_colour ) {
 	$css_vars[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
 }
-$transition_style = implode( ';', $css_vars ) . ';';
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class'         => implode( ' ', $classes ),
-		'data-autoplay' => $autoplay ? 'true' : 'false',
-		'data-speed'    => absint( $autoplay_speed ),
-		'data-slides'   => absint( $slides_visible ),
-		'style'         => $transition_style,
-	)
+// ── Own extra attrs — carousel data-* + ARIA region attrs ─────────────────
+// view.js queries .sgs-testimonial-slider[data-autoplay] / [data-speed] /
+// [data-slides] on the OUTER wrapper. These must ride through extra_attrs so
+// they are present on the element that get_block_wrapper_attributes() emits.
+// The role/aria-roledescription/aria-label that were previously on the <div>
+// in the printf() calls are also moved here so the wrapper helper owns the tag.
+$slider_extra_attrs = array(
+	'data-autoplay'        => $autoplay ? 'true' : 'false',
+	'data-speed'           => (string) absint( $autoplay_speed ),
+	'data-slides'          => (string) absint( $slides_visible ),
+	'role'                 => 'region',
+	'aria-roledescription' => 'carousel',
+	'aria-label'           => esc_attr__( 'Customer Testimonials', 'sgs-blocks' ),
 );
 
 // ── Track style ────────────────────────────────────────────────────────────
@@ -153,18 +161,20 @@ foreach ( $inner_blocks as $inner_block ) {
 	++$slide_index;
 }
 
-// ── Arrows ─────────────────────────────────────────────────────────────────
-$arrows_html = '';
-if ( $show_arrows && $total_testimonials > $slides_visible ) {
-	$arrows_html  = '<div class="sgs-testimonial-slider__arrows">';
-	$arrows_html .= '<button class="sgs-testimonial-slider__arrow sgs-testimonial-slider__arrow--prev" aria-label="' . esc_attr__( 'Previous testimonial', 'sgs-blocks' ) . '" type="button"><span aria-hidden="true">‹</span></button>';
-	$arrows_html .= '<button class="sgs-testimonial-slider__arrow sgs-testimonial-slider__arrow--next" aria-label="' . esc_attr__( 'Next testimonial', 'sgs-blocks' ) . '" type="button"><span aria-hidden="true">›</span></button>';
-	$arrows_html .= '</div>';
+// ── Arrows — always rendered when showArrows is enabled, regardless of count.
+// Bug-fix (2026-06-03): removed "total > slidesVisible" gate — nav must always
+// show and rotate even when total === slidesVisible (e.g. 4 cards, 3 visible).
+$arrow_prev_html = '';
+$arrow_next_html = '';
+if ( $show_arrows && $total_testimonials > 0 ) {
+	$arrow_prev_html = '<button class="sgs-testimonial-slider__arrow sgs-testimonial-slider__arrow--prev" aria-label="' . esc_attr__( 'Previous testimonial', 'sgs-blocks' ) . '" type="button"><span aria-hidden="true">‹</span></button>';
+	$arrow_next_html = '<button class="sgs-testimonial-slider__arrow sgs-testimonial-slider__arrow--next" aria-label="' . esc_attr__( 'Next testimonial', 'sgs-blocks' ) . '" type="button"><span aria-hidden="true">›</span></button>';
 }
 
-// ── Dots ───────────────────────────────────────────────────────────────────
+// ── Dots — always rendered when showDots is enabled, regardless of count.
+// Bug-fix (2026-06-03): removed "total > slidesVisible" gate — same reason.
 $dots_html = '';
-if ( $show_dots && $total_testimonials > $slides_visible ) {
+if ( $show_dots && $total_testimonials > 0 ) {
 	$dots_html = '<div class="sgs-testimonial-slider__dots" role="group" aria-label="' . esc_attr__( 'Testimonial navigation', 'sgs-blocks' ) . '">';
 	for ( $d = 1; $d <= $total_testimonials; $d++ ) {
 		$is_first    = ( 1 === $d );
@@ -181,6 +191,15 @@ if ( $show_dots && $total_testimonials > $slides_visible ) {
 		);
 	}
 	$dots_html .= '</div>';
+}
+
+// ── Controls bar (dots + pause button slot) — always rendered when there are
+// slides, so view.js can always inject the pause button into __controls.
+// Bug-fix (2026-06-03): was conditional on $dots_html — pause btn fell outside
+// __controls when dots were hidden. Now rendered whenever there are slides.
+$controls_html = '';
+if ( $total_testimonials > 0 ) {
+	$controls_html = '<div class="sgs-testimonial-slider__controls">' . $dots_html . '</div>';
 }
 
 // ── Side image (split layout) ──────────────────────────────────────────────
@@ -211,36 +230,62 @@ if ( ! empty( $schema_items ) ) {
 	);
 }
 
-// ── Output ─────────────────────────────────────────────────────────────────
-// WCAG 2.2 AA — carousel pattern (ARIA 1.2):
-// - Outer wrapper: role="region" + aria-roledescription="carousel" + aria-label
-// - Track: aria-live="polite" announces slide changes to screen readers
-// - Slides: role="group" + aria-label="N of Total" (set above; view.js updates on transition)
+/*
+ * ── Output ─────────────────────────────────────────────────────────────────
+ * WCAG 2.2 AA — carousel pattern (ARIA 1.2):
+ * - Outer wrapper: role="region" + aria-roledescription="carousel" + aria-label
+ * - Track: aria-live="polite" announces slide changes to screen readers
+ * - Slides: role="group" + aria-label="N of Total" (view.js updates on transition)
+ *
+ * Layout structure (non-split):
+ *   .sgs-testimonial-slider  (outer wrapper)
+ *     .sgs-testimonial-slider__stage  (flex row: [prev] [track] [next])
+ *       .sgs-testimonial-slider__arrow--prev
+ *       .sgs-testimonial-slider__track
+ *       .sgs-testimonial-slider__arrow--next
+ *     .sgs-testimonial-slider__controls  (below row: dots + injected pause btn)
+ *       .sgs-testimonial-slider__dots
+ *
+ * Arrows flank the track as flex siblings — they never overlap card content.
+ * Controls bar sits beneath the full-width card row, centred.
+ */
 $slider_inner = sprintf(
-	'<div class="sgs-testimonial-slider__stage"><div class="sgs-testimonial-slider__track" aria-live="polite" tabindex="0"%s>%s</div>%s</div>%s',
+	'<div class="sgs-testimonial-slider__stage">%s<div class="sgs-testimonial-slider__track" aria-live="polite" tabindex="0"%s>%s</div>%s</div>%s',
+	$arrow_prev_html,
 	$track_style_attr,
 	$slides_html,
-	$arrows_html,
-	$dots_html
+	$arrow_next_html,
+	$controls_html
 );
 
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attributes from WP core; HTML built with esc_* helpers throughout.
+// ── Build $inner_html for the wrapper helper ───────────────────────────────
+// For the split layout the interior wraps in a two-column shell (side image +
+// slider content div). For full-width, the slider inner IS the interior.
+// $schema_html is appended outside the region tag (same as before) — it is a
+// <script type="application/ld+json"> which must not be inside a landmark.
 if ( $is_split ) {
-	printf(
-		'<div %s role="region" aria-roledescription="carousel" aria-label="%s">%s<div class="sgs-testimonial-slider__slider-content">%s</div></div>%s',
-		$wrapper_attributes,
-		esc_attr__( 'Customer Testimonials', 'sgs-blocks' ),
-		$side_image_html,
-		$slider_inner,
-		$schema_html
-	);
+	$carousel_inner = $side_image_html
+		. '<div class="sgs-testimonial-slider__slider-content">' . $slider_inner . '</div>';
 } else {
-	printf(
-		'<div %s role="region" aria-roledescription="carousel" aria-label="%s">%s</div>%s',
-		$wrapper_attributes,
-		esc_attr__( 'Customer Testimonials', 'sgs-blocks' ),
-		$slider_inner,
-		$schema_html
-	);
+	$carousel_inner = $slider_inner;
 }
+
+// ── WS-4 wrapper via SGS_Container_Wrapper ─────────────────────────────────
+// tag='div' — WCAG carousel region is a <div>; the __stage/__track structure
+// is preserved in $carousel_inner. CSS vars (transition, hover) ride in
+// extra_styles. Carousel data-* + ARIA region attributes ride in extra_attrs.
+// $schema_html is appended after the wrapper element (outside the landmark).
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML built with esc_* helpers throughout; $schema_html uses wp_json_encode.
+echo SGS_Container_Wrapper::render(
+	$attributes,
+	$block,
+	$carousel_inner,
+	'layout',
+	array(
+		'tag'           => 'div',
+		'extra_classes' => $classes,
+		'extra_styles'  => $css_vars,
+		'extra_attrs'   => $slider_extra_attrs,
+	)
+) . $schema_html;
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

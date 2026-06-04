@@ -2,7 +2,7 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/form-step",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "title": "SGS Form Step",
     "category": "sgs-forms",
     "description": "Groups form fields into a step for multi-step forms.",
@@ -31,6 +31,39 @@
             "type": "string",
             "default": "Step",
             "role": "content"
+        },
+        "widthMode": {
+            "type": "string",
+            "default": "default",
+            "enum": ["default", "wide", "full", "custom"]
+        },
+        "widthModeMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "widthModeTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "widthModeDesktop": {
+            "type": "string",
+            "default": ""
+        },
+        "customWidth": {
+            "type": "number",
+            "default": 0
+        },
+        "customWidthUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "contentWidth": {
+            "type": "string",
+            "default": ""
+        },
+        "maxWidth": {
+            "type": "string",
+            "default": ""
         }
     },
     "render": "file:./render.php",
