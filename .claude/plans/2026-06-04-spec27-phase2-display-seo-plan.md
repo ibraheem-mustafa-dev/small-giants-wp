@@ -2,411 +2,209 @@
 doc_type: phase-plan
 project: small-giants-wp
 thread: sgs-theme
-plan_id: spec27-phase2-display-seo
+plan_id: spec27-phase2-to-completion
 spec: .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md
 created: 2026-06-04
-status: PLANNED — ready to build. Phase 1 SHIPPED (D165). This plan covers the remaining buildable scope of Spec 27 (Phase 2) in execution detail + Phase R as a gated roadmap. Completing Phase 2 = Spec 27 acceptance criteria 7-8 met; Phase R (acceptance 9) is intentionally deferred behind a 2nd-shop-client trigger.
-plan_label: "[PLAN: opus] — E1 JSON-LD + F1 SSR + auto-contrast are architectural/schema-exact; the rest is Sonnet implementation under an Opus orchestrator."
+revision: v2 (2026-06-04) — rebuilt after an adversarial-council pass (6 personas) + a codebase audit of what SEO/schema already exists + Bean's scope decisions. v1 was committed 89b00fa5; this supersedes it.
+status: PLANNED — ready to build. Phase 1 SHIPPED (D165). This is the path to 100% of Spec 27 before launch (Bean: not launching until the whole spec is complete, so build ORDER is not load-bearing and the council's "defer SEO / ship-increment" re-scope is intentionally NOT adopted). Authoring UI is UN-GATED (in scope now) so no client/agency ever edits raw meta. The AI-builder (FR-27-R5) + AI-citation/feed (FR-27-F2) remain flagged for an explicit launch-or-after decision (see §Scope decisions).
 ---
 
-# Spec 27 Phase 2 — Display + SEO + AI-visible — Build Plan
+# Spec 27 → 100% — Display, SEO, Authoring & Go-Live — Build Plan (v2)
 
-**USP:** This is the half of the moat that makes the shop *discoverable*. Phase 1 lets Mama's sell; Phase 2 makes Google show the product with rich variant pricing, lets AI search engines read the whole catalogue (no-JS), adds the swatches/galleries/per-unit pricing that close the visible-quality gap with Kadence/Spectra, and ships the go-live safety check. It turns "structural closed-loop moat — partial" into the full claim.
+**USP:** This finishes the shop: Google shows the product with per-variant prices, AI search engines read the whole catalogue, clients author swatches/galleries/pricing in friendly editor boxes (never raw fields), and a hard go-live check stops a £0 product ever selling. It turns the "closed-loop" moat from *partial* to *complete* — the thing that wins shop clients.
 
-**Plan label:** [PLAN: opus] (Sonnet does the mechanical build per unit; Opus orchestrates, designs the schema/SSR, fact-checks every subagent claim against live ground truth, runs the QC gates, self-reviews visible units with /ui-ux-pro-max + /playwright before declaring done).
+**Plan label:** [PLAN: opus] — Sonnet does the mechanical build per unit; Opus orchestrates, designs the schema/SSR, fact-checks every subagent claim against live ground truth, runs the QC gates, self-reviews visible units with /ui-ux-pro-max + /playwright before declaring done.
 
-**Docscore:** self-assessed A− against the phase-plan template (all 16 step fields present; QA gates commandable; KJC + pre-emptive decisions; entry context + tooling index). Re-run /docscore at first execution session.
+**Docscore:** self-assessed A− against the phase-plan template. Re-run /docscore at first execution session.
 
-**Aggregate effort estimate (AI-agent wall-time, non-coder, Claude builds + Bean QCs):** ~3–4 sessions for Phase 2. Critical path ≈ 150 min build + per-unit deploy/live-verify + 2 Bean sign-off gates. Phase R = multi-session, off critical path (gated).
+**What changed from v1 (why this revision exists):** a 6-persona adversarial-council graded v1 D–C+ (good document, weak on precision/security/operability) and a codebase audit found the SEO half is ~30-40% already built. v2 (a) fixes the 5 build-breakers, (b) bakes in 9 security/compliance amendments, (c) un-gates the authoring UI so nothing ships as raw-meta, (d) reuses the existing breadcrumb + rating schema, (e) adds detect-and-defer for sites running Yoast/RankMath. Full council register archived at the end.
 
-## Phase success criteria (done when — Spec 27 acceptance 7-8)
+## Already built (codebase audit 2026-06-04 — do NOT rebuild)
 
-- [ ] Google **Rich Results Test passes** the ProductGroup + per-variation Offers (brand / identifier / priceValidUntil-or-omitted / shipping / returns), 0 errors (unmapped-axis warnings OK) (E1).
-- [ ] `curl` of the page with **JS disabled** shows price, availability, and the JSON-LD in the initial HTML — AI crawlers see the full catalogue (F1).
-- [ ] Colour/image **swatches** render, are keyboard+SR accessible, and pill text auto-contrasts to ≥4.5:1 against any client palette (B2 + I2).
-- [ ] Per-unit "£/unit" displays (derived live, never stored as a price) + server-computed "% off" + a cosmetic discount label (B3).
-- [ ] Per-variation **gallery** swaps on selection with a variation→parent→placeholder fallback chain (A4).
-- [ ] OOS vs nonexistent combinations are visually + SR-distinct and announced (C2).
-- [ ] Canonical URLs correct; `?attribute_*` → canonical to parent; opt-in indexable variation promotion (E2).
-- [ ] BreadcrumbList + product OG tags + a product XML sitemap (with per-variation `<image:image>`) present; price/sitemap purge on a price/stock/sale change (E3).
-- [ ] **Go-live PREFLIGHT** flags £0 / no-image / draft / over-cap variations before publish (PREFLIGHT).
-- [ ] **Tax-display-mode UI** (NEW): respects the WC price suffix; optional ex-VAT-with-VAT-amount display for trade; UK B2C default = single inc-VAT price (Price Marking Order). card==cart holds in every mode.
-- [ ] Bean R-22-13 visual sign-off on the visible layer; **human NVDA/VoiceOver pass** completed (carry-over from Phase 1 — the last WCAG step before public marketing).
+| Thing | Status | Reuse in |
+|---|---|---|
+| `sgs/breadcrumbs` block emitting `BreadcrumbList` JSON-LD | ✅ built ([breadcrumbs/render.php:138](plugins/sgs-blocks/src/blocks/breadcrumbs/render.php#L138)) | E3 = **place the block on the product template + validate**, not build |
+| `review-schema.php` (Review/Rating/Person/LocalBusiness) + star-rating/google-reviews/trustpilot/team-member schema | ✅ built | E1 `aggregateRating` **reuses these patterns**, not from scratch |
+| Default price + stock server-rendered into HTML (Phase-1 manifest) | ✅ built | F1 = only the **JSON-LD-in-SSR** half remains |
+| Manifest tax-fingerprint cache key (catches tax-config AND rate changes) | ✅ built (9e26de74) | covers the "tax-rate change → stale price" gap the council raised |
+| ProductGroup/hasVariant/Offer product schema | ❌ not built | E1 (greenfield, but assembly not invention) |
+| Product XML sitemap w/ variation images; OG tags; canonical-to-parent | ❌ not built | E3/E2 (greenfield; WP core gives only a basic sitemap + basic canonical) |
+| Swatches / per-unit / gallery / preflight / authoring UI | ❌ not built | this plan |
 
-## Entry context (read before starting)
+## Phase success criteria (done when)
 
-- `.claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md` §"Phase 2" FRs + §"Per-variation presentation meta" + §Acceptance 7-8 — the canonical requirements.
-- `.claude/specs/26-SGS-GLOBAL-STYLES-AND-THEMING.md` — swatch/pill colours derive from these tokens; auto-contrast = build-time luminance (D161). Read before I2/B2.
-- `plugins/sgs-blocks/includes/class-product-manifest.php` — the seeded manifest (already has pctOff + tax fingerprint); B3/A4 extend it.
-- `plugins/sgs-blocks/includes/class-product-bindings.php` — the `sgs-product/field` resolver; E1/B3 read here.
-- `plugins/sgs-blocks/src/blocks/product-card/{render.php,view.js,style.css}` + `option-picker/` — the visible layer (B2/A4/C2/tax-UI).
-- `.claude/reports/sgs-configurator-moat-evidence.md` — Claim 5 (closed-loop) completes when Phase 2 SEO ships; FR-27-J1 needs an evidence row per new claim.
-- Canary: page 589 / fixture 540 (48 SKUs). Creds `.claude/secrets/sandybrown.env`. Build via PowerShell; deploy by explicit-path scp + opcache reset.
+- [ ] **Google Rich Results Test passes** ProductGroup + per-variation Offers (brand/identifier/priceValidUntil-or-omitted/shipping/returns), 0 errors (E1).
+- [ ] `curl` with **JS disabled** shows price + availability + JSON-LD in the initial HTML (F1).
+- [ ] Colour/image **swatches** render, are keyboard+SR accessible, pill text auto-contrasts ≥4.5:1 (B2 + I2) — **authored via a friendly editor control, never raw meta**.
+- [ ] Per-unit "£1.04 **per bar**" (client-set unit label, derived live) + server "% off" + a digit-stripped cosmetic label (B3) — **authored via editor controls**.
+- [ ] Per-variation **gallery** with variation→parent→placeholder fallback (A4) — **authored via editor controls**.
+- [ ] OOS vs nonexistent distinct + announced (C2).
+- [ ] Canonical correct (`?attribute_*` → parent), built from server-side attributes, **never `add_query_arg`** (E2); **defers to an active SEO plugin** if present.
+- [ ] Breadcrumb (place existing block) + product OG tags (always inc-VAT) + product sitemap with per-variation images (E3) — sitemap via **WP core `WP_Sitemaps` provider**, **detect-and-defer if Yoast/RankMath active**.
+- [ ] **Hard** go-live PREFLIGHT: a £0 / no-image / draft / unmapped-variesBy product **cannot be published** (blocks via `transition_post_status`); proxy independently rejects a £0 add-to-cart (PREFLIGHT + FR-27-G1 amend).
+- [ ] **Tax-display-mode UI** (auto inc-VAT default = UK B2C compliant; inc-suffix; ex-plus-vat trade with a B2C-misuse warning). card==cart in every mode; schema/OG price ALWAYS inc-VAT.
+- [ ] **Authoring (un-gated Phase R: R1/R2/R3)** — clients/agency provision attributes+variations + author swatch/label/divisor/gallery/variesBy via friendly UI; edit-safety warnings on term-slug rename + delete-with-orders. **Zero raw-meta editing.**
+- [ ] Bean R-22-13 visual sign-off + a clean **human NVDA/VoiceOver pass** (a marketing-claim gate — decoupled from the code-ship gate).
+- [ ] **Escape-audit** table passed for every new data→HTML path (security gate).
 
-## References
+## Scope decisions (Bean to confirm; not silently chosen)
 
-- Spec 27 §"Research evidence" — Google product-variants + `variesBy` closed-enum (Feb 2024), Merchant brand/GTIN/priceValidUntil/shipping/returns, AI-crawlers-no-JS (May 2026), FAQPage/llms 2026. Current as of 2026-06-03 (5 research agents + 2 councils).
-- Memory `js-budget-measures-executed-not-prefetched`, `wp-interactivity-directives-wipe-ssr-when-bound-to-js-getters`, `canary-live-styles-come-from-wp-global-styles-post`, `scope-shared-block-changes-to-unused-variant`.
-- This session (2026-06-04): tax verified card==cart under UK 20% VAT; manifest tax-fingerprint cache-bust shipped (9e26de74); executed-JS budget met (73KB).
-
-## Tooling Index
-
-| Type | Name | Used in |
-|------|------|---------|
-| skill | /delegate | per-unit model pick |
-| skill | /brainstorming | B2 swatch UX, tax-UI mode design (design gates) |
-| skill | /library-docs | E1/E3 — current Google Merchant + schema.org reference before designing |
-| skill | /research-check | E1 — confirm 2026 Merchant variant-schema requirements at build time |
-| skill | /seo-schema | E1/E2/E3 — JSON-LD generation + Rich-Results validation (+ seo-schema agent) |
-| skill | /ui-ux-pro-max + /playwright | MANDATORY self-review of B2/A4/tax-UI before "done" |
-| skill | /qc-council | before any commit touching the resolver/schema-emitter/SSR/SGS-block (blub.db 255) |
-| skill | /qc-inline | per-unit inline checks |
-| skill | /systematic-debugging | any bug — root-cause first |
-| agent | general-purpose (sonnet) | the per-unit mechanical build (NO commit authority) |
-| agent | design-reviewer | swatch/gallery visual + WCAG |
-| agent | seo-schema | Merchant JSON-LD validation |
-| agent | performance-auditor | re-check INP/CLS after galleries (A4) |
-| mcp | playwright | live render / axe / Rich-Results render / schema-in-DOM checks |
-| cli | wp-cli (via SSH) + token-gated webroot runner | fixture meta (swatch term_meta, gallery postmeta, variesBy) |
-| external | Google Rich Results Test / Merchant preview | E1/E3 validation |
+1. **AI-builder (FR-27-R5) + AI-citation/llms.txt/Merchant-feed/FAQ (FR-27-F2)** — these were deliberately demoted to "roadmap ambition" in D161 (the OC-Protector stall-trap call you made). "100% of Spec 27 before launch" technically includes them. **Recommendation: keep R5 + F2 as the FINAL cluster, built last, and decide at that point whether the first client launches without them** (a client shop is fully functional + discoverable without the AI-builder; the AI-builder is a setup convenience, not a shopper-facing feature). Flagged, not dropped.
+2. **Demand analytics** (the council's "real moat" — "combos customers tried but couldn't buy") — not in Spec 27 (it's an Open Question + a sibling-spec non-goal). The Interactivity store already has the data. **Recommendation: small new FR, build it in the visible cluster** — it's cheap and it's the one genuinely hard-to-copy advantage. Your call to include or leave parked.
 
 ---
 
-## Work units + dependency graph
+## Build sequence + dependency graph
+
+Order is a sensible build flow, not a hard gate (you're completing everything pre-launch). QA gates still apply.
 
 ```
-TAX-UI (price suffix + ex-VAT mode) ─┐  (small, UK-relevant, early visible win)
-I2 (theme tokens + auto-contrast) ───┼─→ B2 (swatches) ─┐
-                                     │                   ├─→ [QA-VIS: Bean R-22-13 + ui-ux-pro-max + axe]
-B3 (per-unit / %off / label) ────────┤                   │
-A4 (per-variation gallery) ──────────┤                   │
-C2 (OOS vs nonexistent) ─────────────┘                   │
-                                                          ▼
-E1 (ProductGroup+hasVariant JSON-LD) ─→ E2 (canonical) ─→ E3 (breadcrumb/OG/sitemap/purge) ─→ F1 (all-commerce-SSR)
-                                                          │
-                                          [QA-SEO: Rich Results 0 errors + curl-no-JS]
-                                                          ▼
-PREFLIGHT (go-live check) ─→ human NVDA/VoiceOver pass ─→ [SHIP GATE: Spec 27 acceptance 7-8 + Bean sign-off]
+STEP 0  fixture-v2  +  class-configurator-meta.php (ALL meta registered once: sanitise + show_in_rest + variesBy closed-enum + unit_label + ranges)
+   │           +  render-configurator-head.php partial (schema/OG/canonical live here — keeps them OFF the shared product-card/render.php)
+   ▼
+CLUSTER A — visible layer (each ships render + EDITOR CONTROL together; serialised on product-card/render.php)
+   TAX-UI → I2 auto-contrast → B2 swatches(+UI) → B3 per-unit+label(+UI) → A4 gallery(+UI) → C2 → [demand-analytics?]
+   ▼  [ESCAPE-AUDIT gate]  →  [QA-VIS gate: axe-0 + ui-ux-pro-max + Bean R-22-13]
+CLUSTER B — SEO/discovery (lives in render-configurator-head.php)
+   E1 (reads MANIFEST, reuses rating schema, price always inc-VAT) → E2 canonical → E3 breadcrumb-place + OG + sitemap(WP_Sitemaps+detect-defer) → F1 verify
+   ▼  [QA-SEO gate: Rich Results 0 errors + curl-no-JS]
+CLUSTER C — authoring + go-live safety (un-gated Phase R)
+   R1 authoring controller + R2 attribute/variation provisioning + R3 presentation-authoring UI + edit-safety → PREFLIGHT (hard block) → post-launch schema-health cron
+   ▼  [QA-AUTHORING gate: golden-master diff vs native editor + a non-coder authors a product end-to-end with zero raw-meta]
+CLUSTER D — advanced (DECISION-GATED, build last)
+   R4 agency slug-templates → R5 AI-builder → F2 llms.txt/Merchant-feed/FAQ
+   ▼
+HUMAN NVDA/VoiceOver pass (marketing-claim gate, decoupled) → LAUNCH
 ```
 
-**Critical path:** I2 → B2 → QA-VIS → E1 → E2 → E3 → F1 → QA-SEO → PREFLIGHT → ship.
-**Parallel-eligible:** TAX-UI ∥ B3 ∥ A4 ∥ C2 (all touch different render/manifest regions; coordinate the shared `product-card/render.php` by explicit-path commits + Bound-scoped classes — memory `scope-shared-block-changes-to-unused-variant`).
+**Concurrency protocol (build-breaker fix):** `product-card/render.php` is a single file touched by TAX-UI/B2/B3/A4/C2. These are **serialised, not parallel** — one Sonnet agent at a time, Opus reviews + commits by explicit path between each, re-reads the file before dispatching the next. Schema/OG/canonical do NOT touch it — they live in the new `render-configurator-head.php` partial (Step 0). This is the documented fix for the "5 agents corrupt one render.php" risk (memory `dont-fan-out-many-heavy-agents-at-once`).
 
 ---
 
-### Step 1 — TAX-UI: WC price-suffix + tax-display mode
-  Model:       sonnet (after an inline design micro-gate on the mode set)
-  Action:      Add a `taxDisplayMode` card attr (`auto` [follow WC] | `inc-suffix` | `ex-plus-vat`). `auto` = current behaviour (bare `wc_get_price_to_display`). `inc-suffix` appends WC's `woocommerce_price_display_suffix` (rendered via `wc_price()`-parity, the `{price_including_tax}`/`{price_excluding_tax}` placeholders honoured). `ex-plus-vat` (trade) shows the ex-VAT price + a separate "+ £X.XX VAT" line, both seeded as literals (SSR-safe, no JS getter). UK B2C default = `auto` with the shop set to inc-tax → single inc-VAT price (Price Marking Order compliant).
-  Files:       `src/blocks/product-card/{block.json,render.php,view.js,edit.js,style.css}`, `includes/class-product-manifest.php` (seed both inc + ex literals + the suffix string when mode≠auto)
-  Inputs:      Spec 27 §"Hard constraints" tax rules; this session's card==cart verification; WC option `woocommerce_price_display_suffix`
-  Outcome:     A card can show a bare inc-VAT price (default), an "inc. VAT" suffix, or "£9.99 + £2.00 VAT" — all SSR, all card==cart, selectable per-card in the inspector
-  Exec:        PARALLEL with steps 2,3,4
-  Deps:        none
-  Marker:      SESSION-START
-  Time:        ~30 min
-  Tooling:     /brainstorming (mode set), /wp-block-development, /qc-inline, Playwright
-  On-Fail:     revert the block.json/render.php edit by explicit-path `git checkout`; the `auto` mode is the safe baseline (already shipped)
-  Cold-Entry:  this plan; Spec 27 §tax; `class-product-manifest.php` (already seeds inc literals via wc_get_price_to_display); the 2026-06-04 tax commit 9e26de74
-  Prompt:      "Add a per-card `taxDisplayMode` attribute to sgs/product-card (Bound/wc-product branch ONLY — never touch Typed/page-144). Values auto|inc-suffix|ex-plus-vat. Seed the inc-VAT and ex-VAT display literals + the WC price suffix into the per-instance data-wp-context (SSR; default == literal — the SSR-wipe rule). Render bare inc price for `auto`, append the WC suffix for `inc-suffix`, show ex price + a separate '+ £X VAT' line for `ex-plus-vat`. All via seeded context keys, no JS getter. Inspector control in edit.js. Bound-scoped CSS only. Return uncommitted + the live test result (card==cart in all 3 modes under a 20% VAT fixture)."
-  Test:
-    Happy:       mode=inc-suffix → card shows "£11.99 inc. VAT"; mode=ex-plus-vat → "£9.99 + £2.00 VAT"; both == cart
-    Edge:        tax disabled → ex-plus-vat shows no VAT line (graceful); suffix option empty → inc-suffix == auto
-    Fail:        binding to a JS-only getter → SSR wipe (the trap) → assert default context key == SSR literal
-    Integration: Store API cart line price == displayed inc price across all modes
+### Cross-cutting security & compliance amendments (apply to every step that touches them)
 
-### Step 2 — I2: theme-token swatch colours + build-time auto-contrast
+These came from the council (Abuse + Support + Cynic, several convergent). Each step below references them by number.
+
+- **SEC-1 — Single source of truth.** E1/E3/OG read the **manifest** (`Product_Manifest::build()`), never re-read WC independently. Add `sku`+`gtin` to the manifest combo array (one place). A CI grep asserts `class-product-schema.php` contains zero `wc_get_price_to_display`/`get_children`. (Cynic #1; prevents Google Merchant price-mismatch suspension.)
+- **SEC-2 — Schema/OG price ALWAYS inc-VAT,** via `wc_get_price_to_display()` forced to `incl`, deterministic per product per shop currency, **independent of `taxDisplayMode` and the request tax context.** (Abuse M3.)
+- **SEC-3 — Manifest output escaping.** Every value seeded into `data-wp-context` uses `wp_json_encode(..., JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT)`; image URLs `esc_url()` first; alt/text `sanitize_text_field()` first. (Abuse M1.)
+- **SEC-4 — Discount label: strip ALL digits at save** (`preg_replace('/\d/','',$label)`) + cap 40 chars + plain-text only. Regex `/\d%/` is bypassable (Unicode `％`, "percent", entities) → fake-discount / UK Trading-Standards exposure. (Abuse M2 + Support — the single most-likely real abuse.)
+- **SEC-5 — £0 guard, two layers.** PREFLIGHT **hard-blocks** publish (`transition_post_status` → revert to draft + `_sgs_preflight_issues` meta + REST error) on any £0/no-image variation; AND the add-to-cart proxy rejects `wc_get_price_to_display() ≤ 0` with HTTP 422 `price_not_set` (amend FR-27-G1). (Abuse M6 + Support — "50 orders at £0 at midnight".)
+- **SEC-6 — Sitemap hardening.** `WP_Sitemaps` provider (not a raw REST route); filter `post_status='publish'` AND `catalog_visibility NOT IN (hidden,search)` via `wc_get_products()`; `methods=>'GET'` only; `set_transient` 6h + purge on the FR-27-G6 hooks; `<lastmod>` = MAX(parent, all-variation modified). (Abuse M4 + Cynic #3.)
+- **SEC-7 — Canonical: never `add_query_arg`.** Build as `esc_url(get_permalink($id).'?'.http_build_query($validated_attrs))` where attrs come from the variation's own `get_attributes()` server-side, never `$_GET`. Validate each `?attribute_*` key is a real taxonomy + value a real term before reflecting anywhere. (Abuse M5 — classic WP reflected-XSS.)
+- **SEC-8 — variesBy validated at SAVE** against the closed enum (color/size/material/pattern/suggestedAge/suggestedGender) in `class-configurator-meta.php`; unmapped axes emit as `additionalProperty` `PropertyValue` (defined shape), never an invented enum value or silent drop. (Spec-Lawyer MF-5 + Support MF-2.)
+- **SEC-9 — Detect-and-defer.** If Yoast or RankMath is active (`defined('WPSEO_VERSION') || class_exists('RankMath')`), SGS registers NO sitemap/OG/canonical (they already emit product schema/sitemaps/OG) — SGS only adds the variant-specific JSON-LD those plugins lack. Prevents duplicate, conflicting tags on real client sites. (Cynic #3 + Competitor M1.)
+
+---
+
+### STEP 0 — Foundations: fixture-v2 + meta registry + head partial
   Model:       sonnet
-  Action:      Derive swatch/pill background colours from Spec 26 tokens (read the live `wp_global_styles` post, NOT just theme.json — memory `canary-live-styles-come-from-wp-global-styles-post`). Implement build-time luminance auto-contrast: at render, compute WCAG relative luminance of each swatch/pill background; pick `#000`/`#fff` text for ≥4.5:1. (CSS `contrast-color()` is a later progressive layer — D161.)
-  Files:       `src/blocks/option-picker/{render.php,style.css}`, a shared `includes/render-helpers.php` luminance helper
-  Inputs:      Spec 26 tokens; D161 auto-contrast decision
-  Outcome:     Swatch pill text always meets 4.5:1 against any client palette with zero per-client override
-  Exec:        SEQUENTIAL (gates B2)
-  Deps:        none
-  Marker:      (none)
-  Time:        ~25 min
-  Tooling:     /library-docs (WCAG luminance formula), /qc-inline, Playwright axe
-  On-Fail:     fall back to the framework default (white-on-saturated, dark-on-pastel per-client override) — the shipped Phase-1 behaviour
-  Prompt:      (dispatch) "Add a build-time WCAG-luminance auto-contrast helper (sRGB→relative-luminance→pick #000/#fff for ≥4.5:1) and apply it to sgs/option-picker swatch/pill text. Swatch background colours read from the merged global-styles (custom origin) value, not raw theme.json. Bound-scoped. Return uncommitted + an axe contrast pass on a pastel + a saturated palette."
-  Test:
-    Happy:       pastel-pink swatch → black text 4.5:1+; navy swatch → white text
-    Edge:        mid-luminance grey (the 4.5:1 boundary) → correct pick
-    Fail:        missing token → framework default, no crash
-    Integration: client-palette restyle via wp_global_styles → swatch text re-contrasts
+  Action:      (a) `seed-48-sku-fixture-v2.php` — extend fixture 540 with `_sgs_swatch_color`/`_sgs_swatch_image_id`/`_sgs_variesby_value` (terms), `_sgs_variation_gallery`/`_sgs_unit_divisor`/`_sgs_unit_label` (variations), `global_unique_id` GTIN on some variations. (b) NEW `includes/class-configurator-meta.php` — register EVERY configurator term_meta + postmeta in ONE place with `sanitize_callback` + `show_in_rest` + the SEC-8 variesBy enum validation + divisor `absint`>0 + label digit-strip (SEC-4). Phase-R authoring writes through THESE keys — no new keys, no migration. (c) NEW `src/blocks/product-card/render-configurator-head.php` partial (empty scaffold) included by render.php — schema/OG/canonical will live here, OFF the shared render.php (concurrency protocol).
+  Files:       `scripts/seed-48-sku-fixture-v2.php`, `includes/class-configurator-meta.php`, `sgs-blocks.php` (wire it), `src/blocks/product-card/render-configurator-head.php` + render.php include
+  Outcome:     Every Phase-2/R meta key is registered+sanitised in one file; the fixture has data for every downstream unit; schema/OG/canonical have a home that isn't the shared render.php
+  Exec:        SEQUENTIAL (everything depends on it); Marker: SESSION-START; Time: ~25 min
+  Cold-Entry:  this plan; Spec 27 §"Per-variation presentation meta"; the existing class-product-cpt.php meta registration pattern
+  Test:  Happy: each meta key readable via get_term_meta/get_post_meta after seeding · Edge: variesBy="flavor" (not in enum) rejected at save · Fail: label "20% off" → digits stripped to " off" · Integration: render-configurator-head.php loads with no output (empty scaffold)
 
-### Step 3 — B2: colour/image swatches via WC attribute term meta
-  Model:       sonnet
-  Action:      Add `_sgs_swatch_color` (sanitize_hex_color) + `_sgs_swatch_image_id` (absint + wp_attachment_is_image) term meta. Option-picker renders a colour chip / image swatch when present, text pill otherwise. Typed mode carries optional swatch fields on `optionItems`. Authoring: a term-meta UI (or a documented WP-admin term-edit field for Phase 2; full authoring is Phase R).
-  Files:       `src/blocks/option-picker/{block.json,render.php,edit.js,style.css}`, `includes/` term-meta registration
-  Inputs:      Step 2 auto-contrast; Spec 27 §"Per-variation presentation meta"
-  Outcome:     Size pills stay text; Flavour shows colour/image swatches; keyboard+SR accessible; image validated with graceful fallback
-  Exec:        SEQUENTIAL after Step 2
-  Deps:        Step 2
-  Marker:      (none)
-  Time:        ~35 min
-  Tooling:     /brainstorming (swatch UX), design-reviewer, /qc-inline, Playwright axe
-  On-Fail:     no swatch meta → text pills (current behaviour); never a broken image slot
-  Prompt:      (dispatch) "Add colour/image swatch support to sgs/option-picker via WC attribute term_meta (_sgs_swatch_color sanitize_hex_color; _sgs_swatch_image_id absint+wp_attachment_is_image+wp_get_attachment_image_src with fallback). Render colour chip / image swatch when set, text pill otherwise. Visually-hidden radio + label preserved (a11y). Auto-contrast text (Step 2 helper) on colour swatches. Bound-scoped. Return uncommitted + axe-0 + a missing-image fallback test."
-  Test:
-    Happy:       term with _sgs_swatch_color → colour chip; with image id → image swatch
-    Edge:        invalid/deleted image id → falls back to text pill, no broken img
-    Fail:        non-hex colour at save → rejected (sanitize_hex_color)
-    Integration: swatch select still drives the manifest swap + availability grey-out
+### Cluster A — visible layer (serialised on render.php; each unit = render + editor control)
 
-### QA Gate — Visible display layer
-  Model:   inline (Opus self-review) + design-reviewer + Bean
-  Exec:    SEQUENTIAL
-  Deps:    steps 1,2,3,4,5 complete + deployed to canary
-  Check:   `axe-core run scoped to .product-card--bound = 0 violations`; Playwright 3-breakpoint (375/768/1440) screenshots; `/ui-ux-pro-max` rubric ≥ A−; card==cart in every tax mode; swatch contrast ≥4.5:1 measured
-  Pass:    axe 0; no h-scroll @375; swatches+gallery+per-unit render; Bean R-22-13 visual sign-off granted
-  Fail:    log the gap, fix the owning unit, redeploy, re-gate (green automated gates ≠ design-complete — D165; expect the human review to catch UX gaps)
-  Marker:  QA
+**STEP 1 — TAX-UI** (`taxDisplayMode`: auto|inc-suffix|ex-plus-vat). Inspector control + a **B2C-misuse warning** on ex-plus-vat ("Trade/B2B only — UK B2C law requires the inc-VAT price prominent"). Seeds inc+ex literals (SEC-3). PREFLIGHT later warns if ex-plus-vat is set on an inc-tax (retail) shop. Model: sonnet · ~30 min · Test: 3 modes card==cart under a 20% VAT fixture; ex-plus-vat assertion = `ex£ + VAT£ == inc cart line`.
 
-### Step 4 — B3: per-unit £/unit (derived) + server %off + cosmetic discount label
-  Model:       sonnet
-  Action:      Add `_sgs_unit_divisor` (variation/CPT postmeta, range-validate 1–9999). At render, derive £/unit = live WC display price ÷ divisor (NEVER stored as a price). Seed `pctOff` per variation server-side from regular/sale (guard regular>0, cap 95). Add a cosmetic discount-type label (`postmeta`, save-time-reject if it contains a numeric %).
-  Files:       `includes/class-product-manifest.php` (seed perUnitMinor + pctOff literals), `src/blocks/product-card/{render.php,view.js}`
-  Inputs:      manifest (already seeds pctOff in U4); Spec 27 FR-27-B3
-  Outcome:     Card shows "£1.04 per bar" + "30% off" (server-computed) + an optional label; all derived/seeded, none stored as price
-  Exec:        PARALLEL with steps 1,5
-  Deps:        none
-  Marker:      (none)
-  Time:        ~25 min
-  Tooling:     /qc-inline, Playwright
-  On-Fail:     omit per-unit line if no divisor; %off already shipped in U4 (safe baseline)
-  Prompt:      (dispatch) "Add per-unit pricing to the configurator: _sgs_unit_divisor postmeta (absint, 1-9999). Derive £/unit at render = wc_get_price_to_display ÷ divisor, seed as a literal per variation (no JS getter). Ensure server %off (pctOff) guards regular_price>0 (no /0) and caps at 95. Add a cosmetic discount-label postmeta, sanitize_text_field, REJECT on save if it matches /\\d+\\s*%/. Bound-scoped. Return uncommitted + sale/divisor/label fixture results."
-  Test:
-    Happy:       divisor 12 on a £12.48 pack → "£1.04 per unit"; sale → "% off" server-computed
-    Edge:        regular_price 0 → no %off, no /0; divisor 0/10000 → rejected
-    Fail:        label "20% off" typed → save rejected (no fake-discount injection)
-    Integration: per-unit recomputes on pill swap from seeded literals (no XHR)
+**STEP 2 — I2 auto-contrast.** Build-time WCAG luminance → black/white pill text ≥4.5:1; swatch colour from `_sgs_swatch_color` directly (Spec-26 tokens are build-deferred — read the hex, not a not-yet-existing token table; token integration is a later upgrade). Model: sonnet · ~25 min · gates B2.
 
-### Step 5 — A4: per-variation gallery + fallback chain
-  Model:       sonnet
-  Action:      `_sgs_variation_gallery` (variation postmeta, JSON array of absint image ids). On selection, swap the gallery from seeded ids; prefetch on first card interaction (pointerenter/focusin), never on change (per the manifest payload spec). Fallback chain: variation gallery → variation image → parent image → placeholder.
-  Files:       `src/blocks/product-card/{render.php,view.js,style.css}`, `includes/class-product-manifest.php`
-  Inputs:      manifest; Spec 27 FR-27-A4 + §Manifest payload prefetch rule
-  Outcome:     Selecting a variation swaps its gallery; missing gallery degrades gracefully; CLS 0 on swap
-  Exec:        PARALLEL with steps 1,4
-  Deps:        none
-  Marker:      (none)
-  Time:        ~30 min
-  Tooling:     performance-auditor (CLS after galleries), /qc-inline, Playwright
-  On-Fail:     no gallery meta → single variation/parent image (current behaviour)
-  Prompt:      (dispatch) "Add per-variation gallery to sgs/product-card: _sgs_variation_gallery variation postmeta (JSON array of absint ids, validated). Swap gallery on selection from seeded ids; prefetch on first card interaction (pointerenter/focusin) NOT on change. Fallback: variation gallery → variation image → parent image → placeholder. Reserve image height (CLS 0). loading=eager+fetchpriority=high on the default; lazy on others. Bound-scoped. Return uncommitted + a gallery-swap + fallback-chain test + CLS measurement."
-  Test:
-    Happy:       variation with 3 gallery ids → swaps to first on select
-    Edge:        variation with no gallery → parent image; parent none → placeholder
-    Fail:        non-image id in array → skipped, no broken slot
-    Integration: gallery swap + price swap + availability all fire on one select, 0 XHR, CLS 0
+**STEP 3 — B2 swatches + editor UI.** Colour/image swatches via the Step-0 term_meta. **Editor control = a `WC term-edit field` (hex colour picker + media button) rendered via the `{taxonomy}_edit_form_fields` hook** — NOT raw custom-fields (un-gated authoring; honours "clients never touch code"). SEC-3 escaping on any seeded swatch URL. Model: sonnet + design-reviewer · ~40 min · Test: axe-0 + missing-image fallback + a non-coder sets a swatch colour via the term screen.
 
-### Step 6 — C2: OOS vs nonexistent distinct + announced
-  Model:       sonnet
-  Action:      In the availability engine, distinguish "exists but out of stock" (show, aria-disabled, "(sold out)") from "combination does not exist" (show, aria-disabled, "(unavailable)"); distinct SR text; both announced via the existing aria-live.
-  Files:       `src/blocks/product-card/view.js`, `option-picker/render.php`
-  Inputs:      Phase-1 U5 availability engine; Spec 27 FR-27-C2
-  Outcome:     A shopper (and a screen reader) can tell "sold out" from "not a real combo"
-  Exec:        PARALLEL with steps 1,4,5
-  Deps:        none
-  Marker:      (none)
-  Time:        ~15 min
-  Tooling:     /qc-inline, Playwright axe + SR-text inspection
-  On-Fail:     fall back to the single "(unavailable)" state (current Phase-1 behaviour)
-  Prompt:      (dispatch) "Refine the configurator availability engine to distinguish OOS (variation exists, inStock=false → '(sold out)') from nonexistent (no such combo → '(unavailable)'). Distinct SR labels; both aria-disabled + announced via the existing aria-live. Bound-scoped. Return uncommitted + axe + SR-label test for both states."
-  Test:
-    Happy:       12-coffee (exists, OOS) → "(sold out)"; an impossible combo → "(unavailable)"
-    Edge:        a combo that sells out post-load → re-sync flips it to "(sold out)"
-    Fail:        SR label missing → axe/SR check fails the gate
-    Integration: distinct states survive a pill swap + the 409 re-sync
+**STEP 4 — B3 per-unit + unit label + %off + cosmetic label.** £/unit derived at render = price ÷ `_sgs_unit_divisor`, displayed with `_sgs_unit_label` ("per bar", not "per unit"). %off server-computed (guard regular>0, cap 95). Cosmetic label digit-stripped (SEC-4). **Editor controls** for divisor + unit label + label in the variation/inspector panel. Model: sonnet · ~30 min · Test: divisor 12 + label "bar" → "£1.04 per bar"; label "20 percent off" → digits stripped; divisor 0 rejected.
 
-### Step 7 — E1: ProductGroup + hasVariant Merchant JSON-LD (SSR)
-  Model:       inline (Opus designs the schema shape) → sonnet (emit) → seo-schema (validate)
-  Action:      Emit SSR `ProductGroup` (productGroupID, variesBy from operator-set `_sgs_variesby_value` term_meta mapped to the closed enum color/size/material/pattern/suggestedAge/suggestedGender; unmapped axes omitted from variesBy but kept as free-text; brand; aggregateRating when reviews exist; AggregateOffer low/high + offerCount=true total) + `hasVariant` (≤50 children, each sku + identifier [gtin13←global_unique_id else mpn←SKU else identifier_exists:false] + absolute image ≥250px + isVariantOf + nested Offer [price, priceCurrency at request time, priceValidUntil=scheduled-sale-end-or-OMITTED, availability, canonical url, itemCondition NewCondition]) + shippingDetails + hasMerchantReturnPolicy. `wp_json_encode` (HEX flags); all url via esc_url + same-origin. ≤16KB cap.
-  Files:       NEW `includes/class-product-schema.php`, `render.php` (emit in `<head>`/body SSR), `class-product-bindings.php` (read)
-  Inputs:      Spec 27 FR-27-E1 (verbatim shape); /library-docs current Merchant requirements; the fixture's variesBy term_meta
-  Outcome:     Rich Results Test passes ProductGroup + per-variation Offers, 0 errors
-  Exec:        SEQUENTIAL (E2/E3/F1 depend on it)
-  Deps:        QA-VIS passed (visible layer stable)
-  Marker:      SESSION-START
-  Time:        ~45 min
-  Tooling:     /library-docs, /research-check (confirm 2026 Merchant variant rules), /seo-schema + seo-schema agent, /qc-council (pre-commit), Google Rich Results Test, Playwright (schema-in-DOM)
-  On-Fail:     emit nothing rather than invalid schema (invalid JSON-LD is worse than none); roll back the emitter
-  Cold-Entry:  this plan; Spec 27 §E1 (the full shape); `class-product-bindings.php`; the fixture 540 variation data; the moat sheet (Claim 5 closes here)
-  Prompt:      (dispatch to sonnet AFTER the inline schema-shape gate) "Implement includes/class-product-schema.php emitting the ProductGroup+hasVariant JSON-LD exactly per Spec 27 FR-27-E1 [paste the FR]. Read all commerce data from wc_get_product (never custom meta); variesBy from _sgs_variesby_value term_meta mapped to the closed enum (unmapped → free-text, not variesBy). priceValidUntil = scheduled-sale-end date or OMITTED (never a fabricated rolling date). All url esc_url + same-origin; wp_json_encode with JSON_HEX_* flags; ≤50 hasVariant children with AggregateOffer.offerCount = true total; ≤16KB. SSR in the initial HTML. Return uncommitted + the raw JSON-LD + a Rich Results Test result."
-  Test:
-    Happy:       Rich Results Test → ProductGroup valid, per-variation Offers valid, 0 errors
-    Edge:        scheduled sale → priceValidUntil present; no sale → priceValidUntil OMITTED
-    Fail:        unmapped axis → kept as free-text property, no invalid variesBy enum value
-    Integration: currency at request time; offerCount = full 48 even though ≤50 children emitted
+**STEP 5 — A4 per-variation gallery + editor UI.** Gallery ids in variation postmeta; swap on select; prefetch on first interaction; variation→parent→placeholder fallback; seed image width/height so swap is **CLS 0** (not just ≤0.1). **Editor control** = a media-gallery picker in the variation panel. SEC-3. Re-run the executed-JS budget (≤150KB) + context-size (≤24KB) after this. Model: sonnet + performance-auditor · ~35 min · Test: gallery swap + fallback chain + CLS 0 + budget re-check.
 
-### Step 8 — E2: canonical + indexable escape-hatch
-  Model:       sonnet (haiku-shape but keep with E-series)
-  Action:      `?attribute_*` URLs emit `rel=canonical` → parent; no indexable thin variation pages by default; a per-variation `indexVariationUrl` block attr (default false) promotes a high-intent variation; canonical hreflang-neutral.
-  Files:       `render.php` (canonical link), `block.json` (indexVariationUrl attr)
-  Inputs:      Spec 27 FR-27-E2
-  Outcome:     No duplicate-content thin pages; opt-in promotion works
-  Exec:        SEQUENTIAL after E1
-  Deps:        E1
-  Marker:      (none)
-  Time:        ~15 min
-  Tooling:     /seo-technical, Playwright (canonical tag check)
-  On-Fail:     default canonical-to-parent only (drop the opt-in promotion)
-  Prompt:      (dispatch) "Add canonical handling to the configurator page: ?attribute_* → rel=canonical to the parent product URL; default no indexable variation pages; a per-variation indexVariationUrl block attr (default false) that, when true, sets a self-canonical + index for that high-intent variation. Return uncommitted + canonical-tag tests for default + opt-in."
-  Test:
-    Happy:       ?attribute_size=12-pack → canonical points to parent
-    Edge:        indexVariationUrl=true → self-canonical + indexable
-    Fail:        malformed attribute param → canonical to parent, no error
-    Integration: canonical consistent with the E1 Offer url
+**STEP 6 — C2 OOS vs nonexistent** distinct + announced (sold-out vs unavailable, distinct SR text). Model: sonnet · ~15 min.
 
-### Step 9 — E3: BreadcrumbList + OG + product sitemap + freshness purge
-  Model:       sonnet
-  Action:      BreadcrumbList JSON-LD; og:type=product + price/availability OG tags; an SGS-generated product XML sitemap with `<image:image>` per variation image (mandatory SGS-generated OR a Playwright-verified Yoast/RankMath integration — not "documented delegation"); Last-Modified + cache-purge on the FR-27-G6 hooks so feed + page never serve a stale price.
-  Files:       NEW `includes/class-product-sitemap.php` (register_rest_route or sitemap provider), `render.php` (breadcrumb/OG), purge hooks (shared with G6)
-  Inputs:      Spec 27 FR-27-E3; the G6 purge-hook set (already wired in U6/U8)
-  Outcome:     Breadcrumb + OG valid; product sitemap lists variation images; price/sitemap purge on change
-  Exec:        SEQUENTIAL after E2
-  Deps:        E2
-  Marker:      (none)
-  Time:        ~35 min
-  Tooling:     /seo-sitemap, /seo-schema, /wp-rest-api, Playwright (sitemap fetch + OG), Google Rich Results (breadcrumb)
-  On-Fail:     ship breadcrumb+OG even if sitemap slips (sitemap is the heavier sub-unit)
-  Prompt:      (dispatch) "Add to the configurator: BreadcrumbList JSON-LD; og:type=product + product:price:amount/availability OG tags; an SGS-generated product XML sitemap with image:image per variation image (filtered to publish + visible). Hook Last-Modified + purge on the existing G6 stock/sale/price hooks. Return uncommitted + breadcrumb/OG validation + a sitemap fetch + a purge-on-price-change test."
-  Test:
-    Happy:       sitemap lists product + variation images; OG tags present; breadcrumb valid
-    Edge:        draft/hidden product → excluded from sitemap
-    Fail:        price change → sitemap + page Last-Modified update (no stale)
-    Integration: OG price == E1 Offer price == on-page price
+**STEP 7 (optional, Bean-decision) — Demand analytics.** Emit a lightweight event per selection/grey-out/OOS to a privacy-safe counter (`_sgs_combo_attempts` aggregate) + a tiny admin "top unbuyable combos" surface. The store already has the data. Model: sonnet · ~30 min · only if Bean includes it.
 
-### QA Gate — SEO / AI-discovery
-  Model:   inline + seo-schema agent
-  Exec:    SEQUENTIAL
-  Deps:    steps 7,8,9 complete + deployed
-  Check:   Google Rich Results Test → 0 errors on ProductGroup+Offers+Breadcrumb; `curl -s <page> | grep -c 'application/ld+json'` ≥1 AND shows price+availability with JS off; sitemap validates; canonical correct
-  Pass:    Rich Results 0 errors; JSON-LD + price + availability in no-JS HTML (F1); sitemap valid
-  Fail:    fix the owning E-unit; never ship invalid schema
-  Marker:  QA
+### ESCAPE-AUDIT gate (security)
+  Check: a table — every new value [field → source → sanitise-at-save → escape-at-render → output context (HTML attr/text/JSON-LD/OG)] — reviewed via /qc-council before any Cluster-A commit. Pass: every row has a save-sanitise AND a render-escape; no value reaches output unescaped. (Abuse "missing escape-audit gate".)
 
-### Step 10 — F1: all-commerce-in-SSR (verify + close gaps)
-  Model:       inline (audit) → sonnet (fix any gaps)
-  Action:      Audit the no-JS HTML: price, availability, copy, and JSON-LD must all be in the initial server response. Close any gap where a value only appears after JS (the manifest default literals already SSR; confirm JSON-LD + availability text are SSR too).
-  Files:       `render.php`, `class-product-schema.php`
-  Inputs:      Spec 27 FR-27-F1; AI-crawlers-no-JS research
-  Outcome:     `curl` (no JS) shows price + availability + JSON-LD
-  Exec:        SEQUENTIAL after E3
-  Deps:        E1, E3
-  Marker:      (none)
-  Time:        ~15 min
-  Tooling:     curl, Playwright (JS-disabled), /qc-inline
-  On-Fail:     identify the JS-only value, move it to SSR seed
-  Test:
-    Happy:       curl shows default price + "in stock" + ld+json
-    Edge:        OOS default variation → "out of stock" in no-JS HTML
-    Fail:        a value JS-only → flagged + moved to SSR
-    Integration: no-JS HTML matches the JS-rendered default state
+### QA-VIS gate
+  Check: axe-core 0 on `.product-card--bound`; Playwright 375/768/1440; /ui-ux-pro-max ≥A−; card==cart all tax modes; swatch contrast ≥4.5:1; a non-coder authored a swatch+gallery+divisor via the editor (zero raw meta). Pass: + Bean R-22-13 sign-off. (Green automated gates ≠ design-complete — D165.)
 
-### Step 11 — PREFLIGHT: go-live + setup check
-  Model:       sonnet
-  Action:      An admin (+ agent-callable) check before a configurator product is publishable: WC ≥9.8; every variation price >0 (no £0); each ≥1 image; published not draft; manifest ≤cap; JSON-LD passes a local Rich-Results check. Surface a client-legible "ready / N issues" report on the product edit screen.
-  Files:       NEW `includes/class-configurator-preflight.php`, admin_notices hook
-  Inputs:      Spec 27 FR-27-PREFLIGHT; the M-C6 go-live-guard slice
-  Outcome:     A misconfigured product (£0/no-image/draft/over-cap) surfaces each issue before it sells
-  Exec:        SEQUENTIAL (last build unit)
-  Deps:        E1 (JSON-LD check), B2/A4 (image checks meaningful)
-  Marker:      (none)
-  Time:        ~25 min
-  Tooling:     /wp-plugin-development, /qc-inline, Playwright (admin screen)
-  On-Fail:     report-only (never block publish hard in Phase 2 — advisory)
-  Prompt:      (dispatch) "Build includes/class-configurator-preflight.php: an admin-notice (+ a callable method) on the sgs/product edit screen counting variations with £0 price / no image / Draft status / manifest over cap, plus a local JSON-LD validity check. Show a client-legible 'ready / N issues' list. Advisory (does not hard-block publish in Phase 2). Return uncommitted + a deliberately-misconfigured-product test surfacing each issue."
-  Test:
-    Happy:       a clean product → "ready"; a £0 variation → "1 issue: variation X has no price"
-    Edge:        draft product → "not published" flagged
-    Fail:        no variations → graceful "not a configurator product" message
-    Integration: the check reads the same WC data the live card does (no drift)
+### Cluster B — SEO/discovery (in render-configurator-head.php)
 
-### Step 12 — Human NVDA/VoiceOver pass (carry-over) + moat-evidence update
-  Model:       Bean (human AT) + inline (record)
-  Action:      Bean (or a commissioned tester) runs a real NVDA + VoiceOver pass over the configurator (the one a11y step automation can't do). Record the result in the moat-evidence sheet; update FR-27-J1 claims for the new Phase-2 features (swatches/gallery/schema) with their evidence + durability rating; flip Claim 5 (closed loop) to fully-evidenced.
-  Files:       `.claude/reports/sgs-configurator-moat-evidence.md`
-  Inputs:      the deployed Phase-2 card; the Phase-1 axe/keyboard/structure evidence
-  Outcome:     The WCAG 2.2 AA claim is backed by human-AT evidence (pre-public-marketing requirement met)
-  Exec:        SEQUENTIAL (ship gate)
-  Deps:        all build units + both QA gates
-  Marker:      HANDOFF
-  Time:        ~30 min (Bean-driven)
-  Tooling:     NVDA (Windows) / VoiceOver (Mac), /handoff
-  On-Fail:     log any AT gap as a fix unit; do not make the public WCAG claim until clean
-  Test:
-    Happy:       NVDA announces label+state+price/stock on every interaction; VoiceOver parity
-    Edge:        swatch + gallery + per-unit announced correctly
-    Fail:        any AT gap → recorded + fixed before the public claim
-    Integration: human-AT result matches the axe/keyboard/structure automated evidence
+**STEP 8 — E1 ProductGroup+hasVariant JSON-LD.** Reads the **manifest** (SEC-1), reuses `review-schema.php` rating patterns for `aggregateRating`, price **always inc-VAT** (SEC-2). `variesBy` validated enum + unmapped→`additionalProperty` (SEC-8). `priceValidUntil` via `$variation->get_date_on_sale_to()?->date('Y-m-d')` else OMIT. `hasVariant` ≤50 selected as **actual-low + actual-high + sample** (offerCount = true total computed from the FULL manifest). Image ≥250px (use `'medium'`+ check, fallback parent). `shippingDetails`/`hasMerchantReturnPolicy` from a `wp_options` setting (NOT fabricated). `wp_json_encode` HEX flags; `mb_strlen < 16384` asserted; emit nothing if invalid. Cache the schema (reuses manifest freshness). Model: inline(design)→sonnet→seo-schema(validate) · ~45 min · /qc-council pre-commit · Test: Rich Results 0 errors; >50-variation edge (offerCount>children, low+high present); 0-review omits aggregateRating cleanly; 16KB asserted.
+
+**STEP 9 — E2 canonical** (SEC-7, SEC-9). `?attribute_*` → canonical to parent, built from server-side attrs; per-variation `indexVariationUrl` = a single integer attr (variation id; 0=none) with a cap check. Defers if SEO plugin active. Model: sonnet · ~15 min.
+
+**STEP 10 — E3 breadcrumb + OG + sitemap.** Breadcrumb = **place the existing `sgs/breadcrumbs` block** on the product template + validate (not build). OG `product:price:amount` always inc-VAT (SEC-2). Sitemap via `WP_Sitemaps` provider (SEC-6) + detect-and-defer (SEC-9). Model: sonnet · ~30 min (sitemap is the only real build) · Test: breadcrumb valid; OG inc-VAT; sitemap excludes hidden/draft, GET-only, lastmod=MAX; defers when Yoast active.
+
+**STEP 11 — F1 all-commerce-in-SSR.** Audit no-JS HTML = price+availability (already SSR) + JSON-LD (new). Close any JS-only value. Model: inline audit→sonnet · ~15 min · Test: `curl` shows price+availability+ld+json.
+
+### QA-SEO gate
+  Check: Rich Results Test 0 errors (ProductGroup+Offers+Breadcrumb); `curl | grep ld+json` ≥1 with price+availability in no-JS HTML; sitemap validates; canonical correct; defers when an SEO plugin is active. Pass: all green.
+
+### Cluster C — authoring + go-live safety (un-gated Phase R: R1/R2/R3)
+
+**STEP 12 — R1+R2 authoring controller + provisioning.** `/sgs/v1/` controller wrapping `WC_Product_Variable`/`Variation` set_*()+save() + post-write `wc_delete_product_transients()` + attribute-lookup regen + `woocommerce_update_product`; per-object `edit_post` + nonce + rate-limit + multisite guard; attribute/term provisioning + cartesian generate + bulk edit + upsert key + transactional rollback (track created ids, delete on failure). Golden-master diff vs native editor. Model: opus(design)→sonnet · ~ a session · /qc-council · Test: 48-SKU provision+generate byte-identical to native; injected-failure rolls back; shared-taxonomy subset add doesn't break siblings.
+
+**STEP 13 — R3 presentation-authoring UI + edit-safety.** Friendly inspector/term UIs for swatch/label/divisor/gallery/variesBy (writes the Step-0 keys). Edit-safety: `edit_term` hook warns on a `pa_*` slug change ("breaks existing links + Google may error" — SEO blast radius is in Phase 2, so the warning ships now, not Phase R); delete-variation-with-orders warning + orphan cleanup. Model: sonnet · ~40 min · Test: author a full product with zero raw-meta; rename-slug warning fires; delete-with-orders warns.
+
+**STEP 14 — PREFLIGHT (hard) + post-launch health.** Hard block (SEC-5) on £0/no-image/draft/over-cap(24KB)/no-valid-variesBy-mapping via `transition_post_status` + REST error + admin notice. Invocable from a weekly WP-cron that re-checks JSON-LD validity + fires an admin notice on degradation (Support MF-3). Model: sonnet · ~30 min · Test: £0 variation can't publish (reverts to draft); cron flags a post-launch break.
+
+### QA-AUTHORING gate
+  Check: golden-master diff (controller output == native editor); a non-coder (or Opus simulating one) authors a complete configurator product — attributes, variations, swatches, gallery, pricing, variesBy — touching ZERO raw meta and ZERO WP-CLI. Pass: product sells + shows rich results, authored entirely through UI.
+
+### Cluster D — advanced (DECISION-GATED — confirm before building)
+
+**STEP 15 — R4 agency slug-templates** (`sgs_product_template` CPT, export/import, provision-then-link). Model: sonnet.
+**STEP 16 — R5 AI-builder** (brief→attributes/values/swatches→full-price confirm diff→provision via R1/R2; untrusted-LLM hardening: pa_ slug regex, sanitise, URL-reject, length caps, rate-limit). Model: opus(safety)→sonnet.
+**STEP 17 — F2 AI-citation + feed** (FAQPage, llms.txt/llms-full.txt publish+visible-filtered+noindex+rate-limited, Merchant feed GTIN/item_group_id reading only wc_get_product, SSRF-safe). Model: sonnet.
+
+> **Cluster D is the §Scope-decision flag.** A first client shop is fully functional, sellable, accessible, and Google-discoverable at the end of Cluster C. R5/F2 are setup-convenience + AI-citation ambition. Decide at the Cluster-C gate whether launch waits for D or D follows the first shop.
+
+### HUMAN NVDA/VoiceOver pass (decoupled marketing-claim gate)
+  Bean (or a commissioned tester) runs a real screen-reader pass + updates the moat-evidence sheet. **Gates the public WCAG marketing claim, NOT the code ship** — schedule it independently so it never blocks a build session. Script: tab through pickers (announce label+state+price), select OOS (announce "sold out"), add-to-cart (announce success), gallery swap (announce new image), repeat on VoiceOver/Safari.
+
+---
+
+## Honest effort (smallest-plausible, Opus+Sonnet, Bean QC)
+
+| Cluster | Estimate |
+|---|---|
+| Step 0 + Cluster A (visible + authoring controls) | ~1.5 sessions |
+| Cluster B (SEO — smaller than v1: breadcrumb+rating reused) | ~1 session |
+| Cluster C (authoring controller + provisioning + preflight) | ~1.5–2 sessions (R1/R2 is the heaviest real build) |
+| Cluster D (R4/R5/F2 — IF in scope) | ~2–3 sessions (R5 AI-builder is multi-step) |
+| Human AT pass | ~30 min Bean-time, decoupled |
+
+**To a complete, sellable, discoverable, client-authorable shop (Clusters A–C): ~4–5 sessions.** Cluster D adds ~2–3 if launch-blocking.
 
 ---
 
 ## Key Judgement Calls
 
-### Primary decisions
+- **AI-builder (R5) + F2 launch-blocking?** Options: build before launch / launch after Cluster C and follow up. Rec: **launch-after-C** (shop is complete without it; R5 was your own D161 defer). Who decides: Bean.
+- **Demand analytics in scope?** Options: build it (Step 7) / leave parked. Rec: **build it** — cheapest genuine moat, data already flows. Who decides: Bean.
+- **Sitemap when an SEO plugin is present** — resolved: detect-and-defer (SEC-9), no KJC needed.
 
-- **Decision:** Swatch authoring UI in Phase 2 — full custom term-meta UI, or rely on WP-admin term-edit fields?
-  - **Options:** [A] minimal: register the term_meta + a documented WP-admin term-edit field (B2 just renders) / [B] a custom swatch-picker UI in the option-picker inspector / [C] defer all authoring to Phase R
-  - **Recommendation:** [A] for Phase 2 (render + WP-admin field); full authoring UI is Phase R (FR-27-R3)
-  - **Why:** Phase 2's job is DISPLAY; the configurator must *render* swatches now, but the friendly authoring belongs with the Phase-R authoring controller. [A] ships the visible win without building authoring twice.
-  - **Cost of wrong choice:** building a swatch UI now that Phase R supersedes = wasted build
-  - **Who decides:** Bean (it's a scope/UX call)
-
-- **Decision:** Product sitemap — SGS-generated, or integrate Yoast/RankMath?
-  - **Options:** [A] SGS-generated XML sitemap (own provider) / [B] Playwright-verified Yoast/RankMath integration / [C] document delegation (spec forbids this)
-  - **Recommendation:** [A] SGS-generated (self-contained, no plugin dependency — fits the "no plugin-stitching" moat)
-  - **Why:** the spec explicitly rejects "documented delegation"; SGS-generated keeps the closed loop and works on any install
-  - **Cost of wrong choice:** a plugin dependency undermines the closed-loop moat claim
-  - **Who decides:** architect (Opus) — recommend [A]
-
-- **Decision:** tax-display-mode default
-  - **Options:** [A] `auto` (follow WC, single inc-VAT for UK B2C) / [B] `inc-suffix` default / [C] per-client
-  - **Recommendation:** [A] `auto` (Price Marking Order compliant out of the box; trade clients opt into ex-plus-vat)
-  - **Why:** UK B2C law requires inc-VAT prominent; `auto` + shop-set-to-inc = compliant with zero config
-  - **Cost of wrong choice:** a non-compliant default = legal exposure for consumer shops
-  - **Who decides:** Bean (confirmed this session — single inc-VAT default)
-
-### Pre-emptive decisions (Hidden Decisions pass — reasoned inline; gemini-flash/cerebras were unavailable in recent sessions, so Opus ran the pass)
-
-- **Decision:** Where does the JSON-LD live — `<head>` or body, and one block or page-level?
-  - **Recommendation:** emit in the card's `render.php` (body is fine for JSON-LD; crawlers parse both) scoped to the bound product; page-level only if multiple configurator cards (then merge to one ProductGroup per product). Avoids duplicate ProductGroup if the same product appears twice.
-  - **Why:** prevents a mid-step pause on "duplicate schema" when a page has 2 cards of the same product.
-
-- **Decision:** `variesBy` when the shop's attribute isn't in Google's closed enum (e.g. "Pack size" isn't a standard enum value)?
-  - **Recommendation:** map size→`size`; flavour has NO Google enum → OMIT from `variesBy`, keep as a free-text variant property (per FR-27-E1). Do NOT invent an enum value (invalid schema).
-  - **Why:** the most likely mid-build pause; pre-answered by the spec.
-
-- **Decision:** does enabling swatches/gallery change the executed-JS budget (73KB, just won)?
-  - **Recommendation:** gallery prefetch fires on first interaction (not load) and is image bytes not JS; swatch CSS is tiny. Re-run the executed-JS measurement (initiatorType='script') after A4 — budget must stay ≤150KB. (Memory `js-budget-measures-executed-not-prefetched`.)
-  - **Why:** prevents silently regressing the perf claim.
-
-- **Decision:** is the fixture (540) missing data the Phase-2 units need?
-  - **Recommendation:** YES — fixture-v2 needed: add `_sgs_swatch_color`/`_sgs_swatch_image_id` on flavour terms, `_sgs_variation_gallery` on a few variations, `_sgs_variesby_value` on the axes, `_sgs_unit_divisor`, GTIN (`global_unique_id`) on some variations. Build a `seed-48-sku-fixture-v2.php` extension as Step 0 of the first execution session (≤15 min).
-  - **Why:** every Phase-2 unit tests against this data; missing it blocks the QA gates.
+### Pre-emptive decisions (from the council's hidden-decisions + the audit)
+- Schema lives in `render-configurator-head.php`, one ProductGroup per product even if two cards on a page (de-dupe by product id) — avoids duplicate schema.
+- Image ≥250px = use WC `'medium'` (300px) with a dimension check, fallback parent.
+- `shippingDetails`/returns come from a `wp_options` setting authored once (Cluster C), never fabricated.
+- New `block.json` attrs (taxDisplayMode, indexVariationUrl, swatch/gallery refs) need a `deprecated.js` entry + the FR-27-I-MVP schema-compat test updated — fold into each unit.
 
 ---
 
-## Phase R — Roadmap (GATED: build when a 2nd shop client lands)
+## Adversarial-council register (v1 → v2, archived)
 
-Not on the critical path. Until the trigger, the fixture is authored via WC's classic metabox. Fully specified in Spec 27 §"Phase R" — summarised here so the path to 100% of Spec 27 is visible (ADHD Rule 1 full-map):
+6 personas, grades: Cynic C+ / Competitor C+ (eng A−) / Spec-Lawyer D+ / Ship-PM C+ / Abuse C+ / Support D.
 
-- **FR-27-R1** — SGS authoring controller (`/sgs/v1/`) wrapping `WC_Product_Variable`/`Variation` set_*()+save() + explicit post-write side-effects; golden-master diff vs the native editor every WC major. Model: opus→sonnet.
-- **FR-27-R2** — attribute/term provisioning + cartesian generation + bulk edit + upsert key + transactional rollback. Model: sonnet.
-- **FR-27-R3** — presentation authoring (swatch/label/divisor/gallery/subset) + edit-safety (delete-with-orders, rename warnings). Model: sonnet. (Supersedes the Phase-2 minimal swatch-authoring KJC [A].)
-- **FR-27-R4** — agency slug-templates (`sgs_product_template` CPT, export/import, provision-then-link). Model: sonnet.
-- **FR-27-R5** — AI-builder shop setup from a brief (untrusted-LLM-output hardening: pa_ slug regex, sanitise, URL-reject, length caps, rate-limit). Model: opus(safety)→sonnet.
-- **FR-27-F2** — AI-citation levers: FAQPage JSON-LD, llms.txt/llms-full.txt (publish+visible filtered, noindex, rate-limited), Merchant feed (GTIN, item_group_id), speakable. Model: sonnet.
+**Convergent findings → how v2 resolves them:**
+1. *Over-scope / "100% = stall trap" (Ship-PM+Competitor+Cynic)* → Bean confirmed completing all pre-launch is intentional; re-scope NOT adopted; sensible order kept; AT pass decoupled; R5/F2 flagged.
+2. *Authoring violates "no raw meta" (Support+Cynic+Competitor+Spec-Lawyer)* → authoring UI UN-GATED into Cluster A + C (R3); Step-0 single meta registry; zero raw-meta acceptance gate.
+3. *Single source of truth re-opened (Cynic+Abuse)* → SEC-1 (schema reads manifest) + SEC-2 (always inc-VAT).
+4. *Sitemap OR + fights Yoast (Spec-Lawyer+Cynic)* → SEC-6 (WP_Sitemaps) + SEC-9 (detect-defer); OR removed.
+5. *PREFLIGHT advisory lets £0 sell (Abuse+Support)* → SEC-5 hard block + proxy 422.
+6. *render.php concurrency (Spec-Lawyer+Cynic)* → serialised + render-configurator-head.php partial.
+7. *variesBy free-text undefined (Spec-Lawyer+Support)* → SEC-8 (enum at save + additionalProperty emit).
+8. *Discount-label regex bypass (Abuse+Support, most-likely abuse)* → SEC-4 (strip digits).
 
-**Trigger:** a 2nd shop client signs (Spec 27 §"Scope"). When it nears, run `/phase-planner` on Phase R with the real client's catalogue as the fixture.
-
-**Completing Phase 2 = Spec 27 acceptance 7-8 met.** Phase R = acceptance 9-10. The thread reaches "100% of Spec 27 buildable-now" at the Phase-2 ship gate; Phase R is intentionally business-gated, not abandoned.
-
----
-
-## Execution handoff
-
-- **First session:** Step 0 (fixture-v2 seed, ≤15 min) → then the parallel visible group (TAX-UI ∥ B3 ∥ A4 ∥ C2) + the sequential I2→B2, to the Visible QA gate + Bean R-22-13 sign-off.
-- **Second session:** the SEO chain E1→E2→E3→F1 to the SEO QA gate (E1 is the Opus design-gate + seo-schema validation).
-- **Third session:** PREFLIGHT + the human NVDA/VoiceOver pass + moat-evidence update → ship gate.
-- Per-unit: Sonnet builds (no commit authority) → Opus fact-checks live → /qc-council before any commit touching the resolver/schema-emitter/SSR → deploy by explicit-path → Bean sign-off on visible units. Use `/subagent-driven-development` for the parallel visible group.
+**Single-voice-but-kept:** Step 0 fixture-v2 numbered (Spec-Lawyer); priceValidUntil fetch API (Spec-Lawyer, Step 8); unit-label companion field (Support, Step 4); demand-analytics deal-winner (Competitor, Step 7 decision); post-launch schema-health cron (Support, Step 14).
