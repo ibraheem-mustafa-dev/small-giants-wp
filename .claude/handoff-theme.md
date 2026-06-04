@@ -1,3 +1,50 @@
+# Session Handoff — 2026-06-05 (SGS THEME thread, session 14 — Spec 27 Phase 2 CLUSTER B SEO COMPLETE + a self-caught regression fix + CLUSTER C R1 authoring controller SHIPPED; D173)
+
+> Theme/blocks thread. Cloning pipeline → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. **D-number:** theme = **D173**; cloning holds D172. A parallel **Spec 28 P1** session is co-active on the SAME `main` — it took **D174/D175** + left `.claude/decisions.md` + `.claude/plans/2026-06-04-spec28-p1-value-ladder.md` uncommitted. Leave those untouched. **R1's decision entry is DEFERRED (needs D176) to avoid the concurrent decisions.md commit-race** — recorded fully here + in state.md instead. Commit by EXPLICIT PATH; never-commit artefacts (`lucide-icons.php`, `sgs-framework.db`, `theme-snapshot.json`) untouched.
+
+## Completed This Session
+1. **E1 — ProductGroup + hasVariant JSON-LD SHIPPED** (`6ef7e7c6`). NEW `includes/class-product-schema.php` + manifest v6 (`incMinor`/`sku`/`gtin`/`saleEndDate` per combo + per-axis `variesBy`). Reads the manifest ONLY (SEC-1; CI-grep asserts zero `wc_get_price_to_display`/`get_children`), price ALWAYS inc-VAT (SEC-2), `wp_json_encode` HEX flags (SEC-3), ≤16 KB with a low+high price-anchor-preserving trim, `variesBy` closed-enum + unmapped→`additionalProperty` (SEC-8). **seo-schema agent: Rich Results 0 ERRORS.** A cross-model security review found + I fixed a BLOCKER (`min()`/`max()` empty-array fatal in `wp_head`). Set fixture 540's parent featured image so every variant's schema image resolves.
+2. **E2 — canonical escape-hatch SHIPPED** (`ba96a4ff`). WP core already strips `?attribute_*`→clean parent canonical (verified live), so default = no code + no duplicate tag. NEW `includes/class-product-canonical.php` = the `indexVariationUrl` OPT-IN override (a per-card attr promotes one variation to indexable), URL built from the variation's own server-side `get_attributes()` (SEC-7 — no `$_GET`/`add_query_arg`), IDOR-safe, SEC-9 defer. Additive block attr + "Advanced SEO" inspector control; schema-compat snapshot updated.
+3. **E3 — OG + sitemap-lastmod + breadcrumb SHIPPED** (`325b521f`). OG product tags (inc-VAT SEC-2, inside the SEC-9 guard; E1 JSON-LD outside it). NEW `includes/class-product-sitemap.php` fixes WP-core product `<lastmod>`=MAX(parent, all variations) so a variation price change triggers recrawl (SEC-6, transient+purge, SEC-9 defer). Placed `sgs/breadcrumbs` on canary page 589 → valid BreadcrumbList. **F1**: no-JS curl shows price+availability+JSON-LD+OG — PASS.
+4. **Self-caught REGRESSION fixed** (`3a1e95df`). E1's per-combo schema fields + the parent-image gallery fallback grew the 48-SKU manifest 23→31.8 KB → tripped the product-card M-C9 24 KB seeded-context cap → interactive configurator fell back to the static "From" card (pills gone). Root-caused via live DOM (`type="radio"` 16→0). Fixed: render.php seeds a LEAN combo subset (strips the 4 schema-only fields [view.js reads none] + drops <2-image galleries [view.js falls back to `combo.imageUrl`]). Full manifest stays server-side (SEC-1). Pills restored + screenshot-confirmed.
+5. **Image-sitemap DESCOPED** (Bean confirmed) — WP_Sitemaps has no clean image-namespace + Google deprecated image sitemaps; the E1 schema already exposes every variation image. Recorded D173.
+6. **Cluster C R1 — WC authoring controller SHIPPED** (`f747e58a`). NEW `includes/class-product-authoring.php` (+`-args.php`): `POST /sgs/v1/products/{id}/variations/{vid}` + `/attributes` via WC `set_*()`+`save()` (byte-identical, NEVER raw postmeta), per-object `edit_post` + `X-WP-Nonce` + per-user rate-limit + IDOR + `WC_Data_Exception`→400. Golden-master verified (price round-trips via the data store; lookup-regen correctly no-ops because `woocommerce_attribute_lookup_enabled='no'` — native would too). Cross-model review NO-GO→GO (fixed save-outside-try BLOCKER + non-`pa_`-taxonomy corruption hole + sale<regular guard).
+
+## Current State
+- **Branch:** `main` at `f747e58a` (+ this handoff's doc commit). 7 code/doc commits this session (`6ef7e7c6`→`f747e58a`), all pushed.
+- **Tests:** `php -l` + WPCS 0-errors on every new/changed file; Jest schema-compat 14/14. No new unit suite for R1 (golden-master via live one-shot).
+- **Build/deploy:** all LIVE on sandybrown canary, opcache-reset, live-verified each unit. product-card 1.12.1.
+- **Uncommitted:** the parallel Spec 28 session's `decisions.md` + `spec28-p1-value-ladder.md` + the 3 never-commit artefacts. NONE mine.
+
+## Outcome vs Completion (Gate 3.5)
+**OUTCOME ACHIEVED** — Cluster B (SEO): every unit live-verified (Rich Results 0 errors, OG inc-VAT, sitemap lastmod, breadcrumb valid, no-JS audit pass) + the regression genuinely fixed (pills restored, visually confirmed), not completion theatre. **R1: OUTCOME ACHIEVED** — the byte-identical write path + full security empirically proven on the live canary (price round-trips, IDOR 404, no-nonce 403, sale≥regular 400, bad-taxonomy rejected); the lookup-table no-op is correct-for-install, not a gap. Cluster C R2/R3/PREFLIGHT are correctly future work.
+
+## Known Issues / Blockers
+- **None block the next session.** R2 (provisioning + cartesian + transactional rollback) is the heaviest remaining build — start fresh.
+- **Concurrent Spec 28 P1 session on `main`** — its `decisions.md`/plan edits are uncommitted; commit by explicit path only.
+- R1's `D176` decisions.md entry is deferred (race avoidance) — add it next session once the tree clears.
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `plugins/sgs-blocks/includes/class-product-schema.php` (NEW) | E1 ProductGroup emitter |
+| `plugins/sgs-blocks/includes/class-product-manifest.php` | v6 schema fields (incMinor/sku/gtin/saleEndDate/variesBy) |
+| `plugins/sgs-blocks/includes/configurator-head.php` | E1 echo + E3 OG block (SEC-9 guarded) |
+| `plugins/sgs-blocks/includes/class-product-canonical.php` (NEW) | E2 canonical override |
+| `plugins/sgs-blocks/includes/class-product-sitemap.php` (NEW) | E3 sitemap lastmod |
+| `plugins/sgs-blocks/includes/class-product-authoring.php` + `-args.php` (NEW) | R1 controller |
+| `plugins/sgs-blocks/src/blocks/product-card/{render.php,block.json,edit.js}` | regression lean-seed + indexVariationUrl attr+control |
+| `plugins/sgs-blocks/sgs-blocks.php` | wire Product_Canonical + Product_Sitemap + Product_Authoring |
+| `.claude/{decisions.md(D173),state.md}` + `plans/2026-06-04-spec27-phase2-display-seo-plan.md` + snapshot test | docs |
+
+## Notes for Next Session
+- **Manifest growth can trip the 24 KB card context cap** — adding server-only fields to the manifest bloats the client seed; keep the full manifest server-side, seed a lean subset (memory `manifest-growth-can-trip-capped-client-seed`).
+- **Verify a feature flag before calling a missing side-effect a defect** — R1's lookup-table no-op was correct because the WC feature is OFF (memory `verify-feature-flag-before-asserting-defect`).
+- **R1 nonce path is cookie-auth** — the controller requires `X-WP-Nonce` (cookie CSRF), so the block-editor authoring UI works but app-password/Basic REST won't pass the nonce gate (correct for the UI use case; note if a programmatic path is ever needed).
+- **WP core already canonicalises `?attribute_*`** — don't add a second canonical tag; only override via the `get_canonical_url` filter.
+
+---
+
 # Session Handoff — 2026-06-04 (SGS THEME thread, session 13 — Spec 27 Phase 2 CLUSTER A COMPLETE + R-22-13 sign-off + Spec 28 + label-convention; D171)
 
 > Theme/blocks thread. Cloning pipeline → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. **D-number:** cloning holds D169/D170; this theme session = **D171**. Cloning co-active on the shared tree — every commit by EXPLICIT PATH; never-commit artefacts (`lucide-icons.php`, `sgs-framework.db`, `theme-snapshot.json`) left untouched.
