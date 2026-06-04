@@ -55,5 +55,10 @@ module.exports = {
 	getColorObjectByColorValue: jest.fn( () => null ),
 	getColorObjectByAttributeValues: jest.fn( () => null ),
 	useSetting: jest.fn( () => [] ),
+	// useSettings( ...paths ) returns one resolved value per path. SGS shared
+	// controls call useSettings( 'color.palette' ) / ( 'spacing.spacingSizes' )
+	// and destructure the first element, so return an array whose first entry is
+	// an empty list (safe for .map()).
+	useSettings: jest.fn( () => [ [] ] ),
 	store: { name: 'core/block-editor' },
 };

@@ -32,6 +32,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 import {
 	InspectorControls,
 	MediaUpload,
@@ -1128,10 +1129,15 @@ export default function ContainerWrapperControls( { attributes, setAttributes, k
 
 	return (
 		<InspectorControls>
-			{ panels.map( ( renderPanel, index ) =>
+			{ panels.map( ( renderPanel, index ) => (
+				// Key the list child on a Fragment rather than passing `key`
+				// into the panel render function (which ignores it, leaving the
+				// array children unkeyed → React duplicate-key warnings).
 				// eslint-disable-next-line react/no-array-index-key
-				renderPanel( { attributes, setAttributes, key: index } )
-			) }
+				<Fragment key={ index }>
+					{ renderPanel( { attributes, setAttributes } ) }
+				</Fragment>
+			) ) }
 		</InspectorControls>
 	);
 }

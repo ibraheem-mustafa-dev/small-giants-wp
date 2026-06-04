@@ -41,6 +41,7 @@ module.exports = {
 	RangeControl: makeInput( 'RangeControl' ),
 	Button: ( { children, onClick } ) =>
 		React.createElement( 'button', { onClick }, children ),
+	ButtonGroup: makeComponent( 'ButtonGroup' ),
 	Placeholder: makeComponent( 'Placeholder' ),
 	Spinner: () => React.createElement( 'span', { 'data-testid': 'Spinner' }, '…' ),
 	Notice: makeComponent( 'Notice' ),
