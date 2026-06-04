@@ -21,6 +21,7 @@
 	"supports": {
 		"sgs": {
 			"imageControls": true,
+			"is_section_root": true,
 			"containerKind": "section"
 		},
 		"align": [
