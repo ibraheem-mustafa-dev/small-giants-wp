@@ -395,7 +395,7 @@ def stage_0_7_css_lift(mockup_path: Path, client: str, run_dir: Path,
 
     Destinations:
       D0 — global/reset rules → written unscoped to variation CSS (top of file)
-      D1 — typed-attr lift    → written to pipeline-state/<run>/css-d1-assignments.json
+      D1 — typed-attr lift    → classified by css_router; consumed inline by cv2 via _collect_css_decls_for_element
       D2 — wrapper CSS        → written scoped to .page-id-N in variation CSS
       D3 — gap candidates     → written to sgs-framework.db.attribute_gap_candidates
                                   + ALSO to D2 as fallback
@@ -405,7 +405,6 @@ def stage_0_7_css_lift(mockup_path: Path, client: str, run_dir: Path,
 
     Output:
       - pipeline-state/<run>/variation-d0-d2.css  (D0 + D2 + D3-fallback only; Q3 fix 2026-05-23)
-      - pipeline-state/<run>/css-d1-assignments.json  (D1 typed-attr sidecar for cv2)
     """
     started = now_iso()
     errors: list[str] = []
@@ -454,7 +453,6 @@ def stage_0_7_css_lift(mockup_path: Path, client: str, run_dir: Path,
 
     routing_stats = router_result.get("stats", {})
     d0_rules: list[str] = router_result.get("d0", [])
-    d1_assignments: dict = router_result.get("d1", {})
     d2_rules: list[str] = router_result.get("d2", [])
     d3_entries: list[dict] = router_result.get("d3", [])
 
@@ -474,17 +472,7 @@ def stage_0_7_css_lift(mockup_path: Path, client: str, run_dir: Path,
         out_path = _client_variation_css_path(client, run_dir)
         total_chars = 0
 
-    # ---- 5. Write D1 assignments sidecar (consumed by cv2 convert.py) ----
-    d1_sidecar_path = run_dir / "css-d1-assignments.json"
-    try:
-        d1_sidecar_path.write_text(
-            json.dumps(d1_assignments, indent=2, ensure_ascii=False),
-            encoding="utf-8",
-        )
-    except Exception as exc:  # noqa: BLE001
-        warnings.append(f"css-d1-assignments.json write failed: {exc}")
-
-    # ---- 6. Write D3 gap candidates to sgs-framework.db ----
+    # ---- 5. Write D3 gap candidates to sgs-framework.db ----
     d3_inserted = 0
     if d3_entries:
         try:
@@ -497,7 +485,6 @@ def stage_0_7_css_lift(mockup_path: Path, client: str, run_dir: Path,
         "total_chars": total_chars,
         "css_body_chars": css_body_chars,
         "sources": sources,
-        "d1_sidecar_path": str(d1_sidecar_path.relative_to(REPO)) if d1_sidecar_path.exists() else "",
         "d3_inserted": d3_inserted,
         "css_router_stats": routing_stats,
         "passed": not bool(errors),
@@ -533,7 +520,6 @@ def _stage_0_7_verbatim_fallback(
         "total_chars": len(payload),
         "css_body_chars": css_body_chars,
         "sources": sources,
-        "d1_sidecar_path": "",
         "d3_inserted": 0,
         "css_router_stats": {},
         "passed": True,
@@ -1281,33 +1267,6 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
             _seed_theme_json(theme_json)
         except Exception:  # noqa: BLE001
             pass  # token-snap gracefully degrades if seeding fails
-
-    # P1.B — seed css-d1-assignments.json sidecar into cv2's D1 cache.
-    # stage_0_7_css_lift already wrote the sidecar at run_dir/css-d1-assignments.json.
-    # Seeding here (before the per-section loop) means every section's
-    # _lift_root_supports_to_style / _lift_core_block_style call can MERGE the
-    # router's pre-classified D1 assignments alongside what _collect_css_decls_for_element
-    # derives at runtime — richer CSS context = more attrs lifted, fewer D3 gap candidates.
-    # Graceful-degradation: if the sidecar file is absent, seed_d1_sidecar returns False
-    # and cv2 falls back to _collect_css_decls_for_element exclusively.
-    if getattr(args, "converter_v2", False):
-        try:
-            _cv2_d1_dir = ORCHESTRATOR_DIR.parent
-            if str(_cv2_d1_dir) not in sys.path:
-                sys.path.insert(0, str(_cv2_d1_dir))
-            from orchestrator.converter_v2 import seed_d1_sidecar as _seed_d1_sidecar
-            _d1_loaded = _seed_d1_sidecar(run_dir)
-            if _d1_loaded:
-                from orchestrator.converter_v2 import convert as _cv2_convert_mod
-                _d1_entry_count = sum(
-                    len(v) for v in _cv2_convert_mod._D1_SIDECAR.values()
-                    if isinstance(v, dict)
-                )
-                print(f"[stage-4.5] D1 sidecar loaded: {_d1_entry_count} typed-attr assignments available for cv2")
-            else:
-                print("[stage-4.5] D1 sidecar not available; cv2 uses _collect_css_decls_for_element exclusively")
-        except Exception as _d1_exc:  # noqa: BLE001
-            print(f"[stage-4.5] D1 sidecar seed soft-failed ({_d1_exc}); cv2 falls back gracefully")
 
     for m in matches:
         boundary_id = m["boundary_id"]

@@ -20,9 +20,6 @@ __all__ = [
     "reset_pipeline_seed",
     "flush_essence_matches",
 ]
-# seed_d1_sidecar removed from __all__ 2026-05-27 (/qc-council D4) — Spec 16
-# sidecar mechanism retired; superseded by DB-driven role classification.
-
 
 # Module-level pipeline-seed state. The orchestrator calls `convert_section`
 # once per boundary; the universal width-mode lift machinery (Branch B,
@@ -126,17 +123,6 @@ def flush_essence_matches() -> list[dict]:
     """
     from . import convert as v3
     return v3.flush_essence_matches()
-
-
-def seed_d1_sidecar(run_dir: "str | object | None") -> bool:
-    """DEPRECATED no-op stub. The D1 sidecar mechanism was retired with Spec 16
-    (2026-05-26). Assignments now live in the DB via slot_synonyms +
-    block_attributes role classification + equivalent_block_for routing.
-    Returns False unconditionally. Kept temporarily so legacy orchestrator
-    callers don't AttributeError; safe to remove in a future cleanup pass once
-    every caller is verified migrated.
-    """
-    return False
 
 
 def ensure_root_section_class(block_markup: str, section_id: str) -> str:

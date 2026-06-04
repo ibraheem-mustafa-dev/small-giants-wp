@@ -179,17 +179,16 @@ def run_tests() -> None:
         fail("D2", f"ImportError: {e}")
 
     # ------------------------------------------------------------------
-    # D4 — seed_d1_sidecar still callable as no-op (back-compat)
+    # D4 — seed_d1_sidecar fully removed (A4 cleanup 2026-06-04)
     # ------------------------------------------------------------------
+    # The stub was deleted in A4; importing it must now raise ImportError.
     try:
-        from orchestrator.converter_v2 import seed_d1_sidecar as sds
-        result = sds(None)
-        if result is False:
-            ok("D4: seed_d1_sidecar is no-op stub returning False")
-        else:
-            fail("D4", f"seed_d1_sidecar returned {result!r}, expected False")
+        from orchestrator.converter_v2 import seed_d1_sidecar as sds  # noqa: F401
+        fail("D4", "seed_d1_sidecar is still importable — should have been removed by A4 cleanup")
+    except ImportError:
+        ok("D4: seed_d1_sidecar correctly not importable (A4 cleanup)")
     except Exception as e:
-        fail("D4", f"seed_d1_sidecar raised: {e}")
+        fail("D4", f"Unexpected exception importing seed_d1_sidecar: {e}")
 
     # D4 regression: _D1_SIDECAR + _load_d1_assignments removed from convert module
     convert_d1_present = hasattr(convert, "_D1_SIDECAR") or hasattr(convert, "_load_d1_assignments")

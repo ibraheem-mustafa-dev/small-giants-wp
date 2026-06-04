@@ -10,7 +10,7 @@ Key architectural changes vs. the retired file:
   - variation_buf dropped from internal logic; CSS embedded via FR-22-5.
   - Deleted: get_block_for_node, lift_attrs_for_block, lift_subtree_into_block_attrs,
     _lift_inner_blocks (DB-driven inner-block path), F1 fallback, _f1_universal_walk_direct_children.
-  - Ported: all orchestrator-API functions (seed_d1_sidecar, flush_*,
+  - Ported: all orchestrator-API functions (flush_*,
     parse_css, ensure_root_section_class, main, _lift_root_supports_to_style, etc.).
 
 R-22-3 PASS test: the _test_walker_branches() self-check at the bottom of
@@ -149,28 +149,6 @@ def _resolve_media_url(src: str) -> str:
     if entry and entry.get("url"):
         return entry["url"]
     return src
-
-
-# ============================================================================
-# D1 sidecar machinery — DELETED 2026-05-27 (/qc-council D4)
-# ============================================================================
-# The css-d1-assignments.json sidecar was a Spec 16 mechanism. Spec 22 supersedes
-# it: assignments now live in the DB via slot_synonyms + block_attributes role
-# classification + equivalent_block_for routing. No active orchestrator code wrote
-# the sidecar file or called seed_d1_sidecar(), and _load_d1_assignments always
-# returned {} in active runs. Deleted to eliminate dead code surface per Spec 22
-# §11 "Zero hardcoded class-to-block dicts remain in Python".
-#
-# Stub kept for orchestrator-side __init__.py wrapper compatibility (returns
-# False) so callers that still invoke seed_d1_sidecar (e.g. test harness) get a
-# predictable no-op. Wrapper itself can be removed in a future cleanup pass.
-def seed_d1_sidecar(run_dir: "Path | None") -> bool:
-    """No-op stub. The D1 sidecar mechanism was retired with Spec 16 (2026-05-26).
-
-    Returns False unconditionally. Kept as a no-op so the __init__.py wrapper
-    + any pre-existing orchestrator callers don't AttributeError.
-    """
-    return False
 
 
 # ============================================================================
