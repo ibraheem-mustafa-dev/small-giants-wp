@@ -7,6 +7,9 @@
  * 'sgs_trustpilot_data', populated by the sync mechanism in a future
  * release), or placeholder demo content for editor previews.
  *
+ * WS-4: OUTER wrapper is now rendered by SGS_Container_Wrapper (kind='layout').
+ * Carries block-specific classes + styles + data-* attrs via opts.
+ *
  * Helpers (score-to-label mapping, asset URLs, relative dates) live in
  * includes/trustpilot-helpers.php — kept outside the render template so
  * multiple block instances on the same page do not redeclare functions.
@@ -19,6 +22,9 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 // ───────────────────────────────────────────────────────────────────────────
 // Attribute resolution
@@ -140,32 +146,43 @@ if ( '' === $trust_score_label ) {
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// Wrapper attributes + brand asset URLs
+// Wrapper: own classes, styles, and data-* attrs for the shared helper.
 // ───────────────────────────────────────────────────────────────────────────
 
-$wrapper_classes = array(
+$tp_extra_classes = array(
 	'sgs-trustpilot-reviews',
 	'sgs-trustpilot-reviews--' . sanitize_html_class( $variant ),
 	'sgs-trustpilot-reviews--theme-' . sanitize_html_class( $theme ),
 	'sgs-trustpilot-reviews--card-' . sanitize_html_class( $card_style ),
 );
 
-$wrapper_style = sprintf(
-	'--sgs-tp-cols:%d;--sgs-tp-cols-tablet:%d;--sgs-tp-cols-mobile:%d;',
-	max( 1, $columns ),
-	max( 1, $columns_tablet ),
-	max( 1, $columns_mobile )
+$tp_extra_styles = array(
+	sprintf(
+		'--sgs-tp-cols:%d;--sgs-tp-cols-tablet:%d;--sgs-tp-cols-mobile:%d',
+		max( 1, $columns ),
+		max( 1, $columns_tablet ),
+		max( 1, $columns_mobile )
+	),
 );
 
-$wrapper_attrs = get_block_wrapper_attributes(
-	array(
-		'class'               => implode( ' ', $wrapper_classes ),
-		'style'               => $wrapper_style,
-		'data-autoplay'       => $autoplay ? 'true' : 'false',
-		'data-autoplay-speed' => $autoplay_speed,
-		'data-variant'        => $variant,
-	)
+// data-* attrs consumed by view.js for carousel + autoplay behaviour.
+// Must be carried via extra_attrs so the vanilla-JS carousel selectors work.
+$tp_extra_attrs = array(
+	'data-autoplay'       => $autoplay ? 'true' : 'false',
+	'data-autoplay-speed' => $autoplay_speed,
+	'data-variant'        => esc_attr( $variant ),
 );
+
+$tp_wrapper_opts = array(
+	'tag'           => 'div',
+	'extra_classes' => $tp_extra_classes,
+	'extra_styles'  => $tp_extra_styles,
+	'extra_attrs'   => $tp_extra_attrs,
+);
+
+// ───────────────────────────────────────────────────────────────────────────
+// Brand asset URLs
+// ───────────────────────────────────────────────────────────────────────────
 
 $logo_filename = ( 'dark' === $theme ) ? 'logo-white.svg' : 'logo-black.svg';
 $logo_url      = sgs_trustpilot_asset_url( $logo_filename );
@@ -174,65 +191,54 @@ $shield_url    = sgs_trustpilot_asset_url( 'trustpilot-shield.svg' );
 $is_carousel = ( 'carousel' === $variant || 'mini-carousel' === $variant );
 
 // ───────────────────────────────────────────────────────────────────────────
-// Render output
+// Build interior HTML
 // ───────────────────────────────────────────────────────────────────────────
 
 ob_start();
-?>
-<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- safe API output ?>>
 
-	<?php if ( $show_source_header ) : ?>
-		<div class="sgs-trustpilot-reviews__header">
-			<?php if ( '' !== $trust_score_label ) : ?>
-				<span class="sgs-trustpilot-reviews__label"><?php echo esc_html( $trust_score_label ); ?></span>
-			<?php endif; ?>
+if ( $show_source_header ) :
+	?>
+	<div class="sgs-trustpilot-reviews__header">
+		<?php if ( '' !== $trust_score_label ) : ?>
+			<span class="sgs-trustpilot-reviews__label"><?php echo esc_html( $trust_score_label ); ?></span>
+		<?php endif; ?>
 
-			<img
-				class="sgs-trustpilot-reviews__header-stars"
-				src="<?php echo esc_url( sgs_trustpilot_stars_url( $trust_score ) ); ?>"
-				alt="
-				<?php
-				/* translators: %s = trust score, e.g. "4.0 out of 5 stars" */
-				echo esc_attr( sprintf( __( '%s out of 5 stars', 'sgs-blocks' ), number_format( $trust_score, 1 ) ) );
-				?>
-				"
-				width="125"
-				height="24"
-				loading="eager"
-			/>
+		<img
+			class="sgs-trustpilot-reviews__header-stars"
+			src="<?php echo esc_url( sgs_trustpilot_stars_url( $trust_score ) ); ?>"
+			alt="
+			<?php
+			/* translators: %s = trust score, e.g. "4.0 out of 5 stars" */
+			echo esc_attr( sprintf( __( '%s out of 5 stars', 'sgs-blocks' ), number_format( $trust_score, 1 ) ) );
+			?>
+			"
+			width="125"
+			height="24"
+			loading="eager"
+		/>
 
-			<span class="sgs-trustpilot-reviews__aggregate">
-				<?php
-				/* translators: %s = trust score, e.g. "4.0" */
-				printf( esc_html__( 'Rated %s / 5 based on ', 'sgs-blocks' ), esc_html( number_format( $trust_score, 1 ) ) );
+		<span class="sgs-trustpilot-reviews__aggregate">
+			<?php
+			/* translators: %s = trust score, e.g. "4.0" */
+			printf( esc_html__( 'Rated %s / 5 based on ', 'sgs-blocks' ), esc_html( number_format( $trust_score, 1 ) ) );
 
-				if ( '' !== $business_url ) {
-					printf(
-						'<a class="sgs-trustpilot-reviews__count-link" href="%s" target="_blank" rel="noopener nofollow">%s</a>',
-						esc_url( $business_url ),
-						/* translators: %d = number of reviews */
-						esc_html( sprintf( _n( '%d review', '%d reviews', $total_reviews, 'sgs-blocks' ), $total_reviews ) )
-					);
-				} else {
+			if ( '' !== $business_url ) {
+				printf(
+					'<a class="sgs-trustpilot-reviews__count-link" href="%s" target="_blank" rel="noopener nofollow">%s</a>',
+					esc_url( $business_url ),
 					/* translators: %d = number of reviews */
-					echo esc_html( sprintf( _n( '%d review', '%d reviews', $total_reviews, 'sgs-blocks' ), $total_reviews ) );
-				}
+					esc_html( sprintf( _n( '%d review', '%d reviews', $total_reviews, 'sgs-blocks' ), $total_reviews ) )
+				);
+			} else {
+				/* translators: %d = number of reviews */
+				echo esc_html( sprintf( _n( '%d review', '%d reviews', $total_reviews, 'sgs-blocks' ), $total_reviews ) );
+			}
 
-				if ( $show_logo ) :
-					?>
-					<span class="sgs-trustpilot-reviews__on"><?php esc_html_e( ' on ', 'sgs-blocks' ); ?></span>
-					<?php if ( '' !== $business_url ) : ?>
-						<a class="sgs-trustpilot-reviews__header-logo-link" href="<?php echo esc_url( $business_url ); ?>" target="_blank" rel="noopener nofollow" aria-label="<?php esc_attr_e( 'Read reviews on Trustpilot (opens in new tab)', 'sgs-blocks' ); ?>">
-							<img
-								class="sgs-trustpilot-reviews__header-logo"
-								src="<?php echo esc_url( $logo_url ); ?>"
-								alt="Trustpilot"
-								width="93"
-								height="22"
-								loading="eager"
-							/>
-						</a>
-					<?php else : ?>
+			if ( $show_logo ) :
+				?>
+				<span class="sgs-trustpilot-reviews__on"><?php esc_html_e( ' on ', 'sgs-blocks' ); ?></span>
+				<?php if ( '' !== $business_url ) : ?>
+					<a class="sgs-trustpilot-reviews__header-logo-link" href="<?php echo esc_url( $business_url ); ?>" target="_blank" rel="noopener nofollow" aria-label="<?php esc_attr_e( 'Read reviews on Trustpilot (opens in new tab)', 'sgs-blocks' ); ?>">
 						<img
 							class="sgs-trustpilot-reviews__header-logo"
 							src="<?php echo esc_url( $logo_url ); ?>"
@@ -241,131 +247,146 @@ ob_start();
 							height="22"
 							loading="eager"
 						/>
-					<?php endif; ?>
-					<?php
-				endif;
-				?>
-			</span>
-		</div>
-	<?php endif; ?>
-
-	<?php if ( $show_subtitle && '' !== $subtitle_text ) : ?>
-		<p class="sgs-trustpilot-reviews__subtitle"><?php echo esc_html( $subtitle_text ); ?></p>
-	<?php endif; ?>
-
-	<div class="sgs-trustpilot-reviews__viewport">
-
-		<?php if ( $is_carousel && $show_arrows ) : ?>
-			<button class="sgs-trustpilot-reviews__arrow sgs-trustpilot-reviews__arrow--prev" type="button" aria-label="<?php esc_attr_e( 'Previous review', 'sgs-blocks' ); ?>">
-				<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4-4.6-4.6z"/></svg>
-			</button>
-		<?php endif; ?>
-
-		<div class="sgs-trustpilot-reviews__track">
-			<?php
-			foreach ( $reviews as $idx => $r ) :
-				$rating       = floatval( isset( $r['rating'] ) ? $r['rating'] : 0 );
-				$author       = isset( $r['author'] ) ? $r['author'] : '';
-				$date         = isset( $r['datePublished'] ) ? $r['datePublished'] : '';
-				$body         = isset( $r['reviewBody'] ) ? $r['reviewBody'] : '';
-				$review_title = isset( $r['title'] ) ? $r['title'] : '';
-				$is_verified  = isset( $r['isVerified'] ) ? (bool) $r['isVerified'] : true;
-				?>
-				<article class="sgs-trustpilot-reviews__card" data-index="<?php echo esc_attr( $idx ); ?>">
-
-					<header class="sgs-trustpilot-reviews__card-header">
-						<img
-							class="sgs-trustpilot-reviews__card-stars"
-							src="<?php echo esc_url( sgs_trustpilot_stars_url( $rating ) ); ?>"
-							alt="
-							<?php
-							/* translators: %d = star rating 1-5 */
-							echo esc_attr( sprintf( __( '%d out of 5 stars', 'sgs-blocks' ), (int) $rating ) );
-							?>
-							"
-							width="125"
-							height="24"
-							loading="lazy"
-						/>
-
-						<?php if ( $show_verified && $is_verified ) : ?>
-							<span class="sgs-trustpilot-reviews__verified">
-								<img
-									class="sgs-trustpilot-reviews__verified-icon"
-									src="<?php echo esc_url( $shield_url ); ?>"
-									alt=""
-									width="16"
-									height="16"
-									loading="lazy"
-								/>
-								<span class="sgs-trustpilot-reviews__verified-text"><?php esc_html_e( 'Verified', 'sgs-blocks' ); ?></span>
-							</span>
-						<?php endif; ?>
-					</header>
-
-					<?php if ( '' !== $review_title ) : ?>
-						<h3 class="sgs-trustpilot-reviews__card-title"><?php echo esc_html( $review_title ); ?></h3>
-					<?php endif; ?>
-
-					<div class="sgs-trustpilot-reviews__card-body"><?php echo wp_kses_post( wpautop( $body ) ); ?></div>
-
-					<?php if ( $show_author || $show_date ) : ?>
-						<footer class="sgs-trustpilot-reviews__card-meta">
-							<?php if ( $show_author && '' !== $author ) : ?>
-								<span class="sgs-trustpilot-reviews__card-author"><?php echo esc_html( $author ); ?></span>
-							<?php endif; ?>
-
-							<?php if ( $show_date && '' !== $date ) : ?>
-								<?php if ( $show_author && '' !== $author ) : ?>
-									<span class="sgs-trustpilot-reviews__card-sep">, </span>
-								<?php endif; ?>
-								<time class="sgs-trustpilot-reviews__card-date" datetime="<?php echo esc_attr( $date ); ?>">
-									<?php echo esc_html( sgs_trustpilot_relative_date( $date ) ); ?>
-								</time>
-							<?php endif; ?>
-						</footer>
-					<?php endif; ?>
-				</article>
+					</a>
+				<?php else : ?>
+					<img
+						class="sgs-trustpilot-reviews__header-logo"
+						src="<?php echo esc_url( $logo_url ); ?>"
+						alt="Trustpilot"
+						width="93"
+						height="22"
+						loading="eager"
+					/>
+				<?php endif; ?>
 				<?php
-			endforeach;
+			endif;
 			?>
-		</div>
+		</span>
+	</div>
+	<?php
+endif;
 
-		<?php if ( $is_carousel && $show_arrows ) : ?>
-			<button class="sgs-trustpilot-reviews__arrow sgs-trustpilot-reviews__arrow--next" type="button" aria-label="<?php esc_attr_e( 'Next review', 'sgs-blocks' ); ?>">
-				<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M8.6 7.4 10 6l6 6-6 6-1.4-1.4 4.6-4.6z"/></svg>
-			</button>
-		<?php endif; ?>
+if ( $show_subtitle && '' !== $subtitle_text ) :
+	?>
+	<p class="sgs-trustpilot-reviews__subtitle"><?php echo esc_html( $subtitle_text ); ?></p>
+	<?php
+endif;
+?>
 
+<div class="sgs-trustpilot-reviews__viewport">
+
+	<?php if ( $is_carousel && $show_arrows ) : ?>
+		<button class="sgs-trustpilot-reviews__arrow sgs-trustpilot-reviews__arrow--prev" type="button" aria-label="<?php esc_attr_e( 'Previous review', 'sgs-blocks' ); ?>">
+			<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4-4.6-4.6z"/></svg>
+		</button>
+	<?php endif; ?>
+
+	<div class="sgs-trustpilot-reviews__track">
+		<?php
+		foreach ( $reviews as $idx => $r ) :
+			$rating       = floatval( isset( $r['rating'] ) ? $r['rating'] : 0 );
+			$author       = isset( $r['author'] ) ? $r['author'] : '';
+			$date         = isset( $r['datePublished'] ) ? $r['datePublished'] : '';
+			$body         = isset( $r['reviewBody'] ) ? $r['reviewBody'] : '';
+			$review_title = isset( $r['title'] ) ? $r['title'] : '';
+			$is_verified  = isset( $r['isVerified'] ) ? (bool) $r['isVerified'] : true;
+			?>
+			<article class="sgs-trustpilot-reviews__card" data-index="<?php echo esc_attr( $idx ); ?>">
+
+				<header class="sgs-trustpilot-reviews__card-header">
+					<img
+						class="sgs-trustpilot-reviews__card-stars"
+						src="<?php echo esc_url( sgs_trustpilot_stars_url( $rating ) ); ?>"
+						alt="
+						<?php
+						/* translators: %d = star rating 1-5 */
+						echo esc_attr( sprintf( __( '%d out of 5 stars', 'sgs-blocks' ), (int) $rating ) );
+						?>
+						"
+						width="125"
+						height="24"
+						loading="lazy"
+					/>
+
+					<?php if ( $show_verified && $is_verified ) : ?>
+						<span class="sgs-trustpilot-reviews__verified">
+							<img
+								class="sgs-trustpilot-reviews__verified-icon"
+								src="<?php echo esc_url( $shield_url ); ?>"
+								alt=""
+								width="16"
+								height="16"
+								loading="lazy"
+							/>
+							<span class="sgs-trustpilot-reviews__verified-text"><?php esc_html_e( 'Verified', 'sgs-blocks' ); ?></span>
+						</span>
+					<?php endif; ?>
+				</header>
+
+				<?php if ( '' !== $review_title ) : ?>
+					<h3 class="sgs-trustpilot-reviews__card-title"><?php echo esc_html( $review_title ); ?></h3>
+				<?php endif; ?>
+
+				<div class="sgs-trustpilot-reviews__card-body"><?php echo wp_kses_post( wpautop( $body ) ); ?></div>
+
+				<?php if ( $show_author || $show_date ) : ?>
+					<footer class="sgs-trustpilot-reviews__card-meta">
+						<?php if ( $show_author && '' !== $author ) : ?>
+							<span class="sgs-trustpilot-reviews__card-author"><?php echo esc_html( $author ); ?></span>
+						<?php endif; ?>
+
+						<?php if ( $show_date && '' !== $date ) : ?>
+							<?php if ( $show_author && '' !== $author ) : ?>
+								<span class="sgs-trustpilot-reviews__card-sep">, </span>
+							<?php endif; ?>
+							<time class="sgs-trustpilot-reviews__card-date" datetime="<?php echo esc_attr( $date ); ?>">
+								<?php echo esc_html( sgs_trustpilot_relative_date( $date ) ); ?>
+							</time>
+						<?php endif; ?>
+					</footer>
+				<?php endif; ?>
+			</article>
+			<?php
+		endforeach;
+		?>
 	</div>
 
-	<?php if ( $is_carousel && $show_dots && count( $reviews ) > 1 ) : ?>
-		<div class="sgs-trustpilot-reviews__dots" role="tablist" aria-label="<?php esc_attr_e( 'Review pagination', 'sgs-blocks' ); ?>">
-			<?php foreach ( $reviews as $idx => $r ) : ?>
-				<button
-					class="sgs-trustpilot-reviews__dot<?php echo 0 === $idx ? ' is-active' : ''; ?>"
-					type="button"
-					role="tab"
-					aria-selected="<?php echo 0 === $idx ? 'true' : 'false'; ?>"
-					data-index="<?php echo esc_attr( $idx ); ?>"
-					aria-label="
-					<?php
-					/* translators: %d = review index */
-					echo esc_attr( sprintf( __( 'Go to review %d', 'sgs-blocks' ), $idx + 1 ) );
-					?>
-					"
-				></button>
-			<?php endforeach; ?>
-		</div>
+	<?php if ( $is_carousel && $show_arrows ) : ?>
+		<button class="sgs-trustpilot-reviews__arrow sgs-trustpilot-reviews__arrow--next" type="button" aria-label="<?php esc_attr_e( 'Next review', 'sgs-blocks' ); ?>">
+			<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M8.6 7.4 10 6l6 6-6 6-1.4-1.4 4.6-4.6z"/></svg>
+		</button>
 	<?php endif; ?>
 
 </div>
 
-<?php
+<?php if ( $is_carousel && $show_dots && count( $reviews ) > 1 ) : ?>
+	<div class="sgs-trustpilot-reviews__dots" role="tablist" aria-label="<?php esc_attr_e( 'Review pagination', 'sgs-blocks' ); ?>">
+		<?php foreach ( $reviews as $idx => $r ) : ?>
+			<button
+				class="sgs-trustpilot-reviews__dot<?php echo 0 === $idx ? ' is-active' : ''; ?>"
+				type="button"
+				role="tab"
+				aria-selected="<?php echo 0 === $idx ? 'true' : 'false'; ?>"
+				data-index="<?php echo esc_attr( $idx ); ?>"
+				aria-label="
+				<?php
+				/* translators: %d = review index */
+				echo esc_attr( sprintf( __( 'Go to review %d', 'sgs-blocks' ), $idx + 1 ) );
+				?>
+				"
+			></button>
+		<?php endforeach; ?>
+	</div>
+	<?php
+endif;
+
+$inner_html = ob_get_clean();
+
 // ───────────────────────────────────────────────────────────────────────────
-// Schema.org JSON-LD
+// Schema.org JSON-LD (appended after the wrapper)
 // ───────────────────────────────────────────────────────────────────────────
 
+$schema_html = '';
 if ( $show_schema && ! empty( $reviews ) ) {
 	$schema_reviews = array();
 	foreach ( $reviews as $r ) {
@@ -400,7 +421,13 @@ if ( $show_schema && ! empty( $reviews ) ) {
 		'review'          => $schema_reviews,
 	);
 
-	echo '<script type="application/ld+json">' . wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>';
+	$schema_html = '<script type="application/ld+json">' . wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>';
 }
 
-echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- buffered HTML already escaped per-token
+// ───────────────────────────────────────────────────────────────────────────
+// Output: schema JSON-LD first, then the outer wrapper via the shared helper.
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+// ───────────────────────────────────────────────────────────────────────────
+echo $schema_html;
+echo SGS_Container_Wrapper::render( $attributes, $block, $inner_html, 'layout', $tp_wrapper_opts );
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

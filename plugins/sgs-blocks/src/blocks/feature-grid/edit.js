@@ -4,6 +4,7 @@ import {
 	useInnerBlocksProps,
 	InspectorControls,
 } from '@wordpress/block-editor';
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import {
 	PanelBody,
 	SelectControl,
@@ -113,6 +114,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Layout mode', 'sgs-blocks' ) }

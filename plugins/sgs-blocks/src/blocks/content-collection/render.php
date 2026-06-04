@@ -6,6 +6,9 @@
  * each result through the dual-mode `sgs/product-card` block in Bound mode.
  * No core Query Loop dependency — self-contained, inspector-driven.
  *
+ * WS-4: OUTER wrapper is now rendered by SGS_Container_Wrapper (kind='layout').
+ * Own classes + styles + --columns CSS var carried via extra_classes / extra_styles.
+ *
  * Selection rules (FR-24-5):
  *   newest         — date DESC
  *   featured       — meta_query: sgs_featured = true, date DESC tiebreak
@@ -33,6 +36,9 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 /* ── 1. Resolve attributes ─────────────────────────────────────────────────── */
 
@@ -161,29 +167,41 @@ if ( ! empty( $result_posts ) ) {
 	update_meta_cache( 'post', wp_list_pluck( $result_posts, 'ID' ) );
 }
 
-/* ── 4. Wrapper attributes (align, spacing, custom CSS vars) ───────────────── */
+/* ── 4. Wrapper: own classes and CSS vars for SGS_Container_Wrapper ─────────── */
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class' => 'sgs-content-collection',
-		'style' => '--columns:' . $columns . ';',
-	)
+$cc_extra_classes = array(
+	'sgs-content-collection',
+);
+
+$cc_extra_styles = array(
+	'--columns:' . $columns,
+);
+
+$cc_wrapper_opts = array(
+	'tag'           => 'div',
+	'extra_classes' => $cc_extra_classes,
+	'extra_styles'  => $cc_extra_styles,
 );
 
 /* ── 5. Empty state (FR-24-6) ──────────────────────────────────────────────── */
 
-if ( empty( $result_posts ) ) :
+if ( empty( $result_posts ) ) {
+	ob_start();
 	?>
-	<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped attribute markup. ?>>
-		<div class="sgs-content-collection__empty">
-			<p class="sgs-content-collection__empty-message">
-				<?php echo esc_html( $empty_message ); ?>
-			</p>
-		</div>
+	<div class="sgs-content-collection__empty">
+		<p class="sgs-content-collection__empty-message">
+			<?php echo esc_html( $empty_message ); ?>
+		</p>
 	</div>
 	<?php
+	$empty_html = ob_get_clean();
+
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo SGS_Container_Wrapper::render( $attributes, $block, $empty_html, 'layout', $cc_wrapper_opts );
+
+	wp_reset_postdata();
 	return;
-endif;
+}
 
 /* ── 6. Render items via the dual-mode product card ─────────────────────────── */
 
@@ -200,41 +218,46 @@ endif;
 
 $has_woocommerce = function_exists( 'WC' );
 
+ob_start();
 ?>
-<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped. ?>>
-	<ul class="sgs-content-collection__grid">
-		<?php
-		foreach ( $result_posts as $collection_post ) :
-			$collection_post_id   = absint( $collection_post->ID );
-			$collection_post_type = $collection_post->post_type;
+<ul class="sgs-content-collection__grid">
+	<?php
+	foreach ( $result_posts as $collection_post ) :
+		$collection_post_id   = absint( $collection_post->ID );
+		$collection_post_type = $collection_post->post_type;
 
-			// Resolve source mode per item (R-22-9 — universal, no hardcoded per-type dict).
-			if ( $has_woocommerce && 'product' === $collection_post_type ) {
-				$item_source_mode = 'wc-product';
-			} else {
-				$item_source_mode = 'sgs-cpt';
-			}
+		// Resolve source mode per item (R-22-9 — universal, no hardcoded per-type dict).
+		if ( $has_woocommerce && 'product' === $collection_post_type ) {
+			$item_source_mode = 'wc-product';
+		} else {
+			$item_source_mode = 'sgs-cpt';
+		}
 
-			$card_attrs = array(
-				'sourceMode' => $item_source_mode,
-				'productId'  => $collection_post_id,
-			);
+		$card_attrs = array(
+			'sourceMode' => $item_source_mode,
+			'productId'  => $collection_post_id,
+		);
 
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
-			$card_html = render_block(
-				array(
-					'blockName' => 'sgs/product-card',
-					'attrs'     => $card_attrs,
-				)
-			);
-			?>
-			<li class="sgs-content-collection__item">
-				<?php echo $card_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already escaped by render_block(). ?>
-			</li>
-		<?php endforeach; ?>
-	</ul>
-</div>
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
+		$card_html = render_block(
+			array(
+				'blockName' => 'sgs/product-card',
+				'attrs'     => $card_attrs,
+			)
+		);
+		?>
+		<li class="sgs-content-collection__item">
+			<?php echo $card_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already escaped by render_block(). ?>
+		</li>
+	<?php endforeach; ?>
+</ul>
 <?php
+
+$inner_html = ob_get_clean();
+
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+echo SGS_Container_Wrapper::render( $attributes, $block, $inner_html, 'layout', $cc_wrapper_opts );
+
 // Reset post data after the manual WP_Query (defensive — render_block() sets up
 // its own post context; this guard ensures the outer template is unaffected).
 wp_reset_postdata();

@@ -15,6 +15,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+
 $layout_mode     = isset( $attributes['layoutMode'] ) ? esc_attr( $attributes['layoutMode'] ) : 'auto-flex';
 $columns_desktop = isset( $attributes['columnsDesktop'] ) ? absint( $attributes['columnsDesktop'] ) : 4;
 $columns_tablet  = isset( $attributes['columnsTablet'] ) ? absint( $attributes['columnsTablet'] ) : 2;
@@ -82,18 +84,18 @@ if ( 'auto-flex' === $layout_mode ) {
 }";
 }
 
-$wrapper_attributes = get_block_wrapper_attributes(
+echo '<style>' . esc_html( $css ) . '</style>';
+
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() escapes all output internally; variables are pre-sanitised above.
+echo SGS_Container_Wrapper::render(
+	$attributes,
+	$block,
+	$content,
+	'layout',
 	array(
-		'id'    => $uid,
-		'class' => 'sgs-feature-grid sgs-feature-grid--' . $layout_mode,
+		'tag'           => 'div',
+		'extra_classes' => array( 'sgs-feature-grid', 'sgs-feature-grid--' . $layout_mode ),
+		'extra_attrs'   => array( 'id' => $uid ),
 	)
 );
-?>
-<style><?php echo esc_html( $css ); ?></style>
-<?php
-// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns trusted WP output.
-echo '<div ' . $wrapper_attributes . '>';
-// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is already-rendered InnerBlocks HTML.
-echo $content;
-echo '</div>';
-?>
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

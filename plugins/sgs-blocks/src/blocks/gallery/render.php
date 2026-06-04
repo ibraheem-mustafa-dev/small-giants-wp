@@ -18,6 +18,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __FILE__, 4 ) . '/includes/render-helpers.php';
+require_once dirname( __FILE__, 4 ) . '/includes/class-sgs-container-wrapper.php';
 
 // -------------------------------------------------------------------------
 // Normalise attributes with safe defaults.
@@ -142,20 +143,16 @@ $wrapper_classes = implode( ' ', array_filter( [
 	( $show_captions && $caption_reveal ) ? 'sgs-gallery--caption-reveal' : '',
 ] ) );
 
-$wrapper_attrs_extra = [
-	'class' => $wrapper_classes,
-	'style' => $inline_styles,
-];
-
+// Build extra_attrs — Interactivity API data-* attrs (view.js reads these).
+$extra_attrs = array();
 if ( $enable_lightbox ) {
-	$wrapper_attrs_extra['data-wp-interactive'] = 'sgs/gallery';
-	$wrapper_attrs_extra['data-wp-context']     = $context_data;
+	$extra_attrs['data-wp-interactive'] = 'sgs/gallery';
+	$extra_attrs['data-wp-context']     = $context_data;
 }
 
-$wrapper_attrs = get_block_wrapper_attributes( $wrapper_attrs_extra );
-
+// Build interior HTML via output buffer.
+ob_start();
 ?>
-<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — get_block_wrapper_attributes() is safe. ?>>
 
 	<?php /* ----------------------------------------------------------------
 	       Gallery grid / masonry / carousel inner track
@@ -183,13 +180,13 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_attrs_extra );
 				$img_caption = $show_captions ? esc_html( wp_strip_all_tags( $img['caption'] ?? '' ) ) : '';
 
 				// Build the unified media-slot shape for sgs_render_media().
-				$item_media = [
+				$item_media = array(
 					'url'  => $img['url'] ?? '',
 					'type' => $img_type,
 					'id'   => $img_id,
 					'alt'  => $img['alt'] ?? '',
 					'mime' => $img['mime'] ?? '',
-				];
+				);
 				$item_html = sgs_render_media( $item_media, 'sgs/gallery' );
 
 				// Determine the aspect-ratio and stagger delay inline style for this item.
@@ -226,22 +223,22 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_attrs_extra );
 								printf( esc_attr__( 'View %s in lightbox', 'sgs-blocks' ), $img_alt ?: esc_attr__( 'image', 'sgs-blocks' ) );
 							?>"
 							data-wp-on--click="actions.openLightbox"
-							data-wp-context="<?php echo esc_attr( wp_json_encode( [ 'currentIndex' => $index ] ) ); ?>"
+							data-wp-context="<?php echo esc_attr( wp_json_encode( array( 'currentIndex' => $index ) ) ); ?>"
 						>
 							<div class="sgs-gallery__img-wrap">
 								<?php
 								if ( 'image' === $img_type && $img_id ) {
 									// Prefer wp_get_attachment_image() for images with attachment IDs —
 									// it emits srcset, the requested size, and lazy-loading natively.
-									echo wp_get_attachment_image(
+									echo wp_get_attachment_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — wp_get_attachment_image() is safe.
 										$img_id,
 										$image_size,
 										false,
-										[
+										array(
 											'class'   => 'sgs-gallery__img',
 											'loading' => $index < 4 ? 'eager' : 'lazy',
-										]
-									); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — wp_get_attachment_image() is safe.
+										)
+									);
 								} else {
 									// Video items, or images without an attachment ID, render via the
 									// shared media-slot helper — emits <img> or <video> as needed.
@@ -252,7 +249,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_attrs_extra );
 						</button>
 						<?php if ( 'overlay-slide' === $hover_effect && ( $img_alt || $img_caption ) ) : ?>
 							<div class="sgs-gallery__overlay">
-								<?php echo $img_caption ?: $img_alt; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+								<?php echo $img_caption ? $img_caption : $img_alt; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — already escaped above. ?>
 							</div>
 						<?php endif; ?>
 						<?php if ( $show_captions && $img_caption ) : ?>
@@ -273,15 +270,15 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_attrs_extra );
 						<div class="sgs-gallery__img-wrap">
 							<?php
 							if ( 'image' === $img_type && $img_id ) {
-								echo wp_get_attachment_image(
+								echo wp_get_attachment_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — wp_get_attachment_image() is safe.
 									$img_id,
 									$image_size,
 									false,
-									[
+									array(
 										'class'   => 'sgs-gallery__img',
 										'loading' => $index < 4 ? 'eager' : 'lazy',
-									]
-								); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — wp_get_attachment_image() is safe.
+									)
+								);
 							} else {
 								echo $item_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — sgs_render_media() escapes internally.
 							}
@@ -289,7 +286,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_attrs_extra );
 						</div>
 						<?php if ( 'overlay-slide' === $hover_effect && ( $img_alt || $img_caption ) ) : ?>
 							<div class="sgs-gallery__overlay">
-								<?php echo $img_caption ?: $img_alt; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+								<?php echo $img_caption ? $img_caption : $img_alt; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — already escaped above. ?>
 							</div>
 						<?php endif; ?>
 						<?php if ( $show_captions && $img_caption ) : ?>
@@ -414,4 +411,20 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_attrs_extra );
 
 	<?php endif; ?>
 
-</div>
+<?php
+$inner_html = ob_get_clean();
+
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() escapes all output internally; variables are pre-sanitised above.
+echo SGS_Container_Wrapper::render(
+	$attributes,
+	$block,
+	$inner_html,
+	'layout',
+	array(
+		'tag'           => 'div',
+		'extra_classes' => explode( ' ', $wrapper_classes ),
+		'extra_styles'  => array( $inline_styles ),
+		'extra_attrs'   => $extra_attrs,
+	)
+);
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

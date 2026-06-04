@@ -10,6 +10,7 @@ import {
 	InspectorControls,
 	useBlockProps,
 } from '@wordpress/block-editor';
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
 	PanelBody,
@@ -159,6 +160,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
 				<PanelBody title={ __( 'Source', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Data source', 'sgs-blocks' ) }

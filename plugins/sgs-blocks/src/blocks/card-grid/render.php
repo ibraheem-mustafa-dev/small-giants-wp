@@ -15,6 +15,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 $source             = $attributes['source'] ?? 'manual';
 $variant            = $attributes['variant'] ?? 'card';
@@ -151,77 +152,82 @@ if ( $stagger_delay ) {
 	$grid_style_parts[] = '--sgs-stagger: ' . absint( $stagger_delay ) . 'ms';
 }
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class' => implode( ' ', $class_names ),
-		'style' => implode( '; ', $grid_style_parts ),
-	)
-);
-
 $title_style    = $title_colour ? ' style="color:var(--wp--preset--color--' . sanitize_key( $title_colour ) . ')"' : '';
 $subtitle_style = $subtitle_colour ? ' style="color:var(--wp--preset--color--' . sanitize_key( $subtitle_colour ) . ')"' : '';
 
-?>
-<div <?php echo $wrapper_attributes; ?>>
-	<?php foreach ( $items as $index => $item ) :
-		$has_link   = ! empty( $item['link'] );
-		$tag        = $has_link ? 'a' : 'div';
-		$link_attr  = $has_link ? ' href="' . esc_url( $item['link'] ) . '"' : '';
-		$item_style = $stagger_delay ? ' style="--sgs-item-index:' . absint( $index ) . '"' : '';
+// Build the interior HTML (card items).
+ob_start();
+foreach ( $items as $index => $item ) :
+	$has_link   = ! empty( $item['link'] );
+	$item_tag   = $has_link ? 'a' : 'div';
+	$link_attr  = $has_link ? ' href="' . esc_url( $item['link'] ) . '"' : '';
+	$item_style = $stagger_delay ? ' style="--sgs-item-index:' . absint( $index ) . '"' : '';
 
-		// Unified media slot (added 2026-05-05). When only the legacy
-		// $item['image'] is set, synthesise a media object so the shared
-		// sgs_render_media() helper can emit the right tag for video too.
-		$item_media = $item['media'] ?? null;
-		if ( empty( $item_media ) && ! empty( $item['image']['url'] ) ) {
-			$item_media = array(
-				'url'  => $item['image']['url'],
-				'type' => 'image',
-				'id'   => isset( $item['image']['id'] ) ? absint( $item['image']['id'] ) : 0,
-				'alt'  => isset( $item['image']['alt'] ) ? (string) $item['image']['alt'] : '',
-				'mime' => 'image/jpeg',
-			);
-		}
-		$media_html = ! empty( $item_media ) ? sgs_render_media( $item_media, 'sgs/card-grid' ) : '';
+	// Unified media slot (added 2026-05-05). When only the legacy
+	// $item['image'] is set, synthesise a media object so the shared
+	// sgs_render_media() helper can emit the right tag for video too.
+	$item_media = $item['media'] ?? null;
+	if ( empty( $item_media ) && ! empty( $item['image']['url'] ) ) {
+		$item_media = array(
+			'url'  => $item['image']['url'],
+			'type' => 'image',
+			'id'   => isset( $item['image']['id'] ) ? absint( $item['image']['id'] ) : 0,
+			'alt'  => isset( $item['image']['alt'] ) ? (string) $item['image']['alt'] : '',
+			'mime' => 'image/jpeg',
+		);
+	}
+	$media_html = ! empty( $item_media ) ? sgs_render_media( $item_media, 'sgs/card-grid' ) : '';
 	?>
-		<<?php echo esc_attr( $tag ); ?> class="sgs-card-grid__item"<?php echo $link_attr; ?><?php echo $item_style; ?>>
-			<div class="sgs-card-grid__image-wrap">
-				<?php if ( '' !== $media_html ) : ?>
-					<?php echo $media_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_render_media(). ?>
-				<?php elseif ( ! empty( $item['image']['url'] ) ) : ?>
-					<img
-						src="<?php echo esc_url( $item['image']['url'] ); ?>"
-						alt="<?php echo esc_attr( $item['image']['alt'] ?? '' ); ?>"
-						class="sgs-card-grid__image"
-						loading="lazy"
-					/>
-				<?php endif; ?>
-				<?php if ( 'overlay' === $variant || 'overlay-slide' === $hover_effect ) : ?>
-					<div class="sgs-card-grid__overlay">
-						<?php if ( ! empty( $item['title'] ) ) : ?>
-							<span class="sgs-card-grid__title"<?php echo $title_style; ?>><?php echo esc_html( $item['title'] ); ?></span>
-						<?php endif; ?>
-						<?php if ( ! empty( $item['subtitle'] ) ) : ?>
-							<span class="sgs-card-grid__subtitle"<?php echo $subtitle_style; ?>><?php echo esc_html( $item['subtitle'] ); ?></span>
-						<?php endif; ?>
-					</div>
-				<?php endif; ?>
-			</div>
-			<?php if ( 'card' === $variant ) : ?>
-				<div class="sgs-card-grid__body">
+	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item"<?php echo $link_attr; ?><?php echo $item_style; ?>>
+		<div class="sgs-card-grid__image-wrap">
+			<?php if ( '' !== $media_html ) : ?>
+				<?php echo $media_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_render_media(). ?>
+			<?php elseif ( ! empty( $item['image']['url'] ) ) : ?>
+				<img
+					src="<?php echo esc_url( $item['image']['url'] ); ?>"
+					alt="<?php echo esc_attr( $item['image']['alt'] ?? '' ); ?>"
+					class="sgs-card-grid__image"
+					loading="lazy"
+				/>
+			<?php endif; ?>
+			<?php if ( 'overlay' === $variant || 'overlay-slide' === $hover_effect ) : ?>
+				<div class="sgs-card-grid__overlay">
 					<?php if ( ! empty( $item['title'] ) ) : ?>
-						<h3 class="sgs-card-grid__title"<?php echo $title_style; ?>><?php echo esc_html( $item['title'] ); ?></h3>
+						<span class="sgs-card-grid__title"<?php echo $title_style; ?>><?php echo esc_html( $item['title'] ); ?></span>
 					<?php endif; ?>
 					<?php if ( ! empty( $item['subtitle'] ) ) : ?>
-						<p class="sgs-card-grid__subtitle"<?php echo $subtitle_style; ?>><?php echo esc_html( $item['subtitle'] ); ?></p>
-					<?php endif; ?>
-					<?php if ( ! empty( $item['badge'] ) && ! empty( $item['badgeVariant'] ) ) : ?>
-						<span class="sgs-card-grid__badge sgs-card-grid__badge--<?php echo esc_attr( $item['badgeVariant'] ); ?>">
-							<?php echo esc_html( $item['badge'] ); ?>
-						</span>
+						<span class="sgs-card-grid__subtitle"<?php echo $subtitle_style; ?>><?php echo esc_html( $item['subtitle'] ); ?></span>
 					<?php endif; ?>
 				</div>
 			<?php endif; ?>
-		</<?php echo esc_attr( $tag ); ?>>
-	<?php endforeach; ?>
-</div>
+		</div>
+		<?php if ( 'card' === $variant ) : ?>
+			<div class="sgs-card-grid__body">
+				<?php if ( ! empty( $item['title'] ) ) : ?>
+					<h3 class="sgs-card-grid__title"<?php echo $title_style; ?>><?php echo esc_html( $item['title'] ); ?></h3>
+				<?php endif; ?>
+				<?php if ( ! empty( $item['subtitle'] ) ) : ?>
+					<p class="sgs-card-grid__subtitle"<?php echo $subtitle_style; ?>><?php echo esc_html( $item['subtitle'] ); ?></p>
+				<?php endif; ?>
+				<?php if ( ! empty( $item['badge'] ) && ! empty( $item['badgeVariant'] ) ) : ?>
+					<span class="sgs-card-grid__badge sgs-card-grid__badge--<?php echo esc_attr( $item['badgeVariant'] ); ?>">
+						<?php echo esc_html( $item['badge'] ); ?>
+					</span>
+				<?php endif; ?>
+			</div>
+		<?php endif; ?>
+	</<?php echo esc_attr( $item_tag ); ?>>
+<?php endforeach;
+$inner_html = ob_get_clean();
+
+echo SGS_Container_Wrapper::render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() escapes internally.
+	$attributes,
+	$block,
+	$inner_html,
+	'layout',
+	array(
+		'tag'           => 'div',
+		'extra_classes' => $class_names,
+		'extra_styles'  => $grid_style_parts,
+	)
+);

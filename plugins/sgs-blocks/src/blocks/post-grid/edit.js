@@ -21,6 +21,7 @@ import { useSelect } from '@wordpress/data';
 import DesignTokenPicker from '../../components/DesignTokenPicker';
 import ResponsiveControl from '../../components/ResponsiveControl';
 import { colourVar } from '../../utils';
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 // -------------------------------------------------------------------------
 // Static option arrays (defined outside component to avoid re-creation)
@@ -716,6 +717,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
+
+				{ /* Panel: Container wrapper (WS-4 mirror) */ }
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="layout"
+				/>
 
 				{ /* Panel 8: Carousel (conditional) */ }
 				{ 'carousel' === layout && (

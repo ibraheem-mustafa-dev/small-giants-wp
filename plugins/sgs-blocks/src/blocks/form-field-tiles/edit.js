@@ -8,6 +8,7 @@ import {
 	RangeControl,
 	Button,
 } from '@wordpress/components';
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
@@ -123,6 +124,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
+
+				{ /* Container wrapper (WS-4 mirror) */ }
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="layout"
+				/>
 
 				<PanelBody
 					title={ __( 'Tiles', 'sgs-blocks' ) }

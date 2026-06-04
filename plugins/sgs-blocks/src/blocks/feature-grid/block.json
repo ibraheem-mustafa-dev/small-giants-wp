@@ -2,7 +2,7 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/feature-grid",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "title": "SGS Feature Grid",
     "category": "sgs-layout",
     "description": "A responsive grid container for SGS Info Boxes. Default: auto-fill flexbox wrap, 4-up on desktop, stacked on mobile.",
@@ -81,6 +81,103 @@
         "justifyItems": {
             "type": "string",
             "default": "stretch"
+        },
+        "widthMode": {
+            "type": "string",
+            "default": "default",
+            "enum": ["default", "wide", "full", "custom"]
+        },
+        "widthModeMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "widthModeTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "widthModeDesktop": {
+            "type": "string",
+            "default": ""
+        },
+        "customWidth": {
+            "type": "number",
+            "default": 0
+        },
+        "customWidthUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "contentWidth": {
+            "type": "string",
+            "default": ""
+        },
+        "maxWidth": {
+            "type": "string",
+            "default": ""
+        },
+        "layout": {
+            "type": "string",
+            "default": ""
+        },
+        "gridTemplateColumns": {
+            "type": "string",
+            "default": ""
+        },
+        "gridTemplateColumnsTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "gridTemplateColumnsMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "gridTemplateRows": {
+            "type": "string",
+            "default": ""
+        },
+        "gridTemplateRowsTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "gridTemplateRowsMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "gridAutoRows": {
+            "type": "string",
+            "default": ""
+        },
+        "direction": {
+            "type": "string",
+            "default": ""
+        },
+        "flexDirection": {
+            "type": "string",
+            "default": ""
+        },
+        "flexWrap": {
+            "type": "string",
+            "default": ""
+        },
+        "wrap": {
+            "type": "string",
+            "default": ""
+        },
+        "justifyContent": {
+            "type": "string",
+            "default": ""
+        },
+        "alignContent": {
+            "type": "string",
+            "default": ""
+        },
+        "templateMode": {
+            "type": "string",
+            "default": ""
+        },
+        "columnsDesktop": {
+            "type": "number",
+            "default": 0
         }
     },
     "render": "file:./render.php",

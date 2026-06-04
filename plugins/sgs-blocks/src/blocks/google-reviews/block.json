@@ -1,6 +1,7 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
+  "version": "0.2.0",
   "name": "sgs/google-reviews",
   "title": "SGS Google Reviews",
   "category": "sgs-content",
@@ -174,6 +175,127 @@
     "staggerDelay": {
       "type": "number",
       "default": 60
+    },
+    "widthMode": {
+      "type": "string",
+      "default": "default",
+      "enum": ["default", "wide", "full", "custom"]
+    },
+    "widthModeMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "widthModeTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "widthModeDesktop": {
+      "type": "string",
+      "default": ""
+    },
+    "customWidth": {
+      "type": "number",
+      "default": 0
+    },
+    "customWidthUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "contentWidth": {
+      "type": "string",
+      "default": ""
+    },
+    "maxWidth": {
+      "type": "string",
+      "default": ""
+    },
+    "layout": {
+      "type": "string",
+      "default": ""
+    },
+    "layoutMode": {
+      "type": "string",
+      "default": ""
+    },
+    "gridTemplateColumns": {
+      "type": "string",
+      "default": ""
+    },
+    "gridTemplateColumnsTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "gridTemplateColumnsMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "gridTemplateRows": {
+      "type": "string",
+      "default": ""
+    },
+    "gridTemplateRowsTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "gridTemplateRowsMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "gridAutoRows": {
+      "type": "string",
+      "default": ""
+    },
+    "direction": {
+      "type": "string",
+      "default": ""
+    },
+    "flexDirection": {
+      "type": "string",
+      "default": ""
+    },
+    "flexWrap": {
+      "type": "string",
+      "default": ""
+    },
+    "wrap": {
+      "type": "boolean",
+      "default": false
+    },
+    "justifyContent": {
+      "type": "string",
+      "default": ""
+    },
+    "justifyItems": {
+      "type": "string",
+      "default": "stretch"
+    },
+    "alignContent": {
+      "type": "string",
+      "default": "stretch"
+    },
+    "alignItems": {
+      "type": "string",
+      "default": ""
+    },
+    "templateMode": {
+      "type": "string",
+      "default": "free"
+    },
+    "columnsDesktop": {
+      "type": "number",
+      "default": 0
+    },
+    "gap": {
+      "type": "string",
+      "default": ""
+    },
+    "gapTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "gapMobile": {
+      "type": "string",
+      "default": ""
     }
   },
   "editorScript": "file:./index.js",

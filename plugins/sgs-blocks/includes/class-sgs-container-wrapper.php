@@ -38,6 +38,14 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// The wrapper render depends on these shared helpers (sgs_container_gap_value,
+// sgs_sanitize_grid_template, sgs_colour_value, sgs_render_shape_divider). Require
+// them HERE so the helper is self-contained — a composite that requires only this
+// file (and not render-helpers.php) must still resolve every function the wrapper
+// calls. Without this, a layout/section composite fatals on the gap/shape code path.
+require_once __DIR__ . '/render-helpers.php';
+require_once __DIR__ . '/shape-dividers.php';
+
 if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 	/**
@@ -185,7 +193,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// HTML tag.
 			$html_tag     = $opt_tag ? $opt_tag : ( $attributes['htmlTag'] ?? 'section' );
-			$allowed_tags = array( 'section', 'div', 'article', 'aside', 'main' );
+			$allowed_tags = array( 'section', 'div', 'article', 'aside', 'main', 'details' );
 			if ( ! in_array( $html_tag, $allowed_tags, true ) ) {
 				$html_tag = 'section';
 			}

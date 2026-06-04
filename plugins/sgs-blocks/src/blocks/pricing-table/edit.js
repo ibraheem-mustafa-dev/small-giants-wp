@@ -16,6 +16,7 @@ import {
 import { Icon, plus, close } from '@wordpress/icons';
 import { DesignTokenPicker } from '../../components';
 import { colourVar } from '../../utils';
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 const STYLE_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
@@ -315,6 +316,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 					/>
 				</PanelBody>
+
+				{ /* Container wrapper (WS-4 mirror) */ }
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="layout"
+				/>
 
 				<PanelBody
 					title={ __( 'Popular Badge', 'sgs-blocks' ) }

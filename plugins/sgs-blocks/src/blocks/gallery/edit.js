@@ -7,6 +7,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import {
 	PanelBody,
 	SelectControl,
@@ -272,6 +273,8 @@ export default function Edit( { attributes, setAttributes } ) {
 			     Inspector panels
 			     ============================================================ */ }
 			<InspectorControls>
+
+				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
 
 				{ /* Panel 1: Images */ }
 				<PanelBody title={ __( 'Images', 'sgs-blocks' ) } initialOpen={ true }>

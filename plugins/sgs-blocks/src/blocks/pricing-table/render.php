@@ -2,9 +2,14 @@
 /**
  * Server-side render for the SGS Pricing Table block.
  *
+ * WS-4: outer wrapper now delegates to SGS_Container_Wrapper (kind='layout')
+ * so the block mirrors sgs/container's grid/flex + widthMode + gap controls.
+ *
  * Outputs responsive pricing plans with an optional monthly/yearly billing
  * toggle, per-plan icons (Lucide), per-plan ribbons, per-feature
  * included/excluded markers, and an optional savings badge for yearly billing.
+ *
+ * R-22-14: discriminators are EXPLICIT attributes. NEVER branch on empty($content).
  *
  * @var array    $attributes Block attributes (sanitised by block.json defaults).
  * @var string   $content    Inner block content (unused — dynamic block).
@@ -17,6 +22,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 // ── Attributes ──────────────────────────────────────────────────────────────
 $columns        = absint( $attributes['columns'] ?? 3 );
@@ -60,25 +66,8 @@ $toggle_yearly_lbl  = sanitize_text_field( $attributes['billingToggleYearlyLabel
 // ── Unique block ID for billing toggle radio inputs ──────────────────────────
 $block_id = wp_unique_id( 'sgs-pricing-' );
 
-// ── Wrapper ──────────────────────────────────────────────────────────────────
-$wrapper_classes = array_filter(
-	array(
-		'sgs-pricing-table',
-		'sgs-pricing-table--columns-' . $columns,
-		'sgs-pricing-table--' . esc_attr( $style ),
-		$show_toggle ? 'sgs-pricing-table--has-toggle' : '',
-	)
-);
-
-$wrapper_attrs = get_block_wrapper_attributes(
-	array(
-		'class'                => implode( ' ', $wrapper_classes ),
-		'data-billing-default' => $default_period,
-	)
-);
-
 // ── Helper: colour CSS value ─────────────────────────────────────────────────
-$colour_val = function ( $slug ) {
+$colour_val = static function ( $slug ) {
 	if ( ! $slug ) {
 		return '';
 	}
@@ -274,7 +263,7 @@ foreach ( $plans as $plan ) {
 				'<li class="%s"%s>%s<span>%s</span></li>',
 				esc_attr( $item_classes ),
 				$feature_style_attr,
-				$icon_svg,
+				$icon_svg, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — SVG is hardcoded safe markup.
 				esc_html( $feature_text )
 			);
 		}
@@ -329,29 +318,44 @@ foreach ( $plans as $plan ) {
 			'%s' . // cta.
 		'</div>',
 		esc_attr( $plan_classes ),
-		$badge_html,
-		$ribbon_html,
-		$icon_html,
+		$badge_html,  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — built from escaped parts above.
+		$ribbon_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — built from escaped parts above.
+		$icon_html,   // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — sgs_get_lucide_icon() returns safe SVG.
 		$title_style_attr,
 		esc_html( $plan_name ),
-		$price_html,
+		$price_html,  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — built from escaped parts above.
 		$plan_desc ? esc_html( $plan_desc ) : '',
-		$features_html,
-		$cta_html
+		$features_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — built from escaped parts above.
+		$cta_html     // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — built from escaped parts above.
 	);
 }
 
-// ── Output ───────────────────────────────────────────────────────────────────
-?>
-<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() is safe. ?>>
-	<?php
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $toggle_html built from escaped parts above.
-	echo $toggle_html;
-	?>
-	<div class="sgs-pricing-table__grid">
-		<?php
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $plans_html built from escaped parts above.
-		echo $plans_html;
-		?>
-	</div>
-</div>
+// ── Interior HTML ─────────────────────────────────────────────────────────────
+// toggle + plans grid. The helper owns the outer wrapper.
+$inner_html = $toggle_html . '<div class="sgs-pricing-table__grid">' . $plans_html . '</div>';
+
+// ── WS-4: emit via shared wrapper helper (kind='layout') ─────────────────────
+// data-billing-default carried verbatim via extra_attrs (view.js reads it).
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+echo SGS_Container_Wrapper::render(
+	$attributes,
+	$block,
+	$inner_html,
+	'layout',
+	array(
+		'tag'           => 'div',
+		'extra_classes' => array_filter(
+			array(
+				'sgs-pricing-table',
+				'sgs-pricing-table--columns-' . $columns,
+				'sgs-pricing-table--' . esc_attr( $style ),
+				$show_toggle ? 'sgs-pricing-table--has-toggle' : '',
+			)
+		),
+		'extra_styles'  => array(),
+		'extra_attrs'   => array(
+			'data-billing-default' => $default_period,
+		),
+	)
+);
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
