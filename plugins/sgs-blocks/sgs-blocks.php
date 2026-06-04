@@ -72,6 +72,15 @@ require_once SGS_BLOCKS_PATH . 'includes/wc-cart-fragments.php';
 // pages with a bound (wc-product) sgs/product-card (FR-27-H1 JS budget).
 require_once SGS_BLOCKS_PATH . 'includes/configurator-asset-optimiser.php';
 
+// Configurator — single registration point for all Spec 27 presentation meta
+// (swatch/variesBy term_meta + gallery/per-unit/discount-label variation postmeta).
+require_once SGS_BLOCKS_PATH . 'includes/class-configurator-meta.php';
+Configurator_Meta::register();
+
+// Configurator — <head> emitter (ProductGroup JSON-LD / canonical / OG). Step-0
+// scaffold; filled by FR-27-E1/E2/E3.
+require_once SGS_BLOCKS_PATH . 'includes/configurator-head.php';
+
 // Animation attributes — server-side data-attribute injection for scroll reveals.
 require_once SGS_BLOCKS_PATH . 'includes/animation-attributes.php';
 
