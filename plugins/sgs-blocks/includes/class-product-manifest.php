@@ -126,7 +126,10 @@ final class Product_Manifest {
 		// v3 adds unitDivisor/unitLabel/discountLabel (B3 per-unit pricing).
 		// v4 adds gallery (A4 per-variation image gallery).
 		// v5: imageUrl authoritative = gallery[0] when a gallery exists (A4 fix).
-		$cache_key = 'sgs_manifest_v5_' . $product_id . '_' . self::tax_fingerprint();
+		// v6 adds sku/gtin/incMinor/saleEndDate per combo + variesBy per axis
+		// (E1 ProductGroup JSON-LD: the schema emitter reads these from the
+		// manifest, never re-reading WC — SEC-1 single source of truth).
+		$cache_key = 'sgs_manifest_v6_' . $product_id . '_' . self::tax_fingerprint();
 		$cached    = \get_transient( $cache_key );
 
 		global $wpdb;
@@ -140,7 +143,7 @@ final class Product_Manifest {
 				$product_id
 			)
 		);
-		$mod_ts = $max_modified_gmt ? (int) \strtotime( $max_modified_gmt . ' UTC' ) : 0;
+		$mod_ts           = $max_modified_gmt ? (int) \strtotime( $max_modified_gmt . ' UTC' ) : 0;
 
 		// Only trust a cache hit when we have a real modified timestamp to compare
 		// against. A null/empty result yields $mod_ts = 0; comparing 0 >= 0 would
@@ -166,6 +169,14 @@ final class Product_Manifest {
 		foreach ( $raw_attrs as $taxonomy => $slugs ) {
 			$axis_label = \wc_attribute_label( $taxonomy );
 			$terms      = array();
+			// E1: the axis-level Google `variesBy` enum value (color/size/material/
+			// pattern/suggestedAge/suggestedGender). Stored per-term as
+			// `_sgs_variesby_value` (an axis classification — every term on one axis
+			// shares it); take the first non-empty mapped value. '' = unmapped axis,
+			// which the schema emitter renders as a free-text additionalProperty
+			// rather than an invalid enum (SEC-8). The sanitiser already guarantees
+			// only an enum value or '' is ever stored.
+			$varies_by = '';
 			foreach ( $slugs as $slug ) {
 				if ( '' === $slug ) {
 					continue; // "Any" — skip from term list.
@@ -174,6 +185,15 @@ final class Product_Manifest {
 				$term_label = ( $term && ! \is_wp_error( $term ) )
 					? \sanitize_text_field( $term->name )
 					: \sanitize_text_field( $slug );
+
+				if ( '' === $varies_by && $term && ! \is_wp_error( $term ) ) {
+					$mapped = Configurator_Meta::sanitize_variesby(
+						\get_term_meta( $term->term_id, '_sgs_variesby_value', true )
+					);
+					if ( '' !== $mapped ) {
+						$varies_by = $mapped;
+					}
+				}
 
 				$terms[] = array(
 					'slug'  => $slug,           // Slug is safe (WC sanitises at save).
@@ -185,6 +205,7 @@ final class Product_Manifest {
 				$axes[] = array(
 					'taxonomy' => $taxonomy,                           // e.g. 'pa_size'.
 					'label'    => \sanitize_text_field( $axis_label ), // e.g. 'Size'.
+					'variesBy' => $varies_by,                          // Enum value or ''.
 					'terms'    => $terms,
 				);
 			}
@@ -237,10 +258,10 @@ final class Product_Manifest {
 			// VAT amount on it, and the regular price ex-tax for the struck line.
 			// When tax is disabled / zero-rated, $tax_minor is 0 and ex == display
 			// (the ex-plus-vat mode then shows no VAT line).
-			$ex_minor          = (int) \round( \wc_get_price_excluding_tax( $variation ) * $multiplier );
-			$inc_minor         = (int) \round( \wc_get_price_including_tax( $variation ) * $multiplier );
-			$tax_minor         = \max( 0, $inc_minor - $ex_minor );
-			$regular_ex_minor  = (int) \round(
+			$ex_minor         = (int) \round( \wc_get_price_excluding_tax( $variation ) * $multiplier );
+			$inc_minor        = (int) \round( \wc_get_price_including_tax( $variation ) * $multiplier );
+			$tax_minor        = \max( 0, $inc_minor - $ex_minor );
+			$regular_ex_minor = (int) \round(
 				\wc_get_price_excluding_tax( $variation, array( 'price' => $regular_price ) ) * $multiplier
 			);
 
@@ -287,7 +308,7 @@ final class Product_Manifest {
 			$gallery_ids = Configurator_Meta::sanitize_id_array(
 				\get_post_meta( $child_id, '_sgs_variation_gallery', true )
 			);
-			$gallery = array();
+			$gallery     = array();
 			foreach ( $gallery_ids as $gid ) {
 				$src = \wp_get_attachment_image_src( $gid, 'woocommerce_thumbnail' );
 				if ( ! $src ) {
@@ -350,6 +371,32 @@ final class Product_Manifest {
 			$unit_label   = \sanitize_text_field( (string) \get_post_meta( $child_id, '_sgs_unit_label', true ) );
 			$discount_lbl = Configurator_Meta::sanitize_discount_label( \get_post_meta( $child_id, '_sgs_discount_label', true ) );
 
+			// E1 schema fields (SEC-1: computed here so the JSON-LD emitter reads
+			// them from the manifest and never re-reads WC).
+			// - incMinor: the VAT-INCLUSIVE price as a minor int, ALWAYS inc-VAT
+			// regardless of the shop's tax-display setting (SEC-2). Schema/OG
+			// price must be inc-VAT or Google Merchant suspends the account for a
+			// price mismatch. exMinor + taxMinor == the inclusive price.
+			// - sku: variation SKU (plain text).
+			// - gtin: GTIN-13 etc. from WC's global_unique_id field (WC 9.2+),
+			// digits only; '' when unset or WC too old.
+			// - saleEndDate: scheduled sale-end as Y-m-d for Offer.priceValidUntil;
+			// '' when not a scheduled sale (the emitter then OMITS priceValidUntil
+			// rather than fabricating a rolling date).
+			$inc_price_minor = $ex_minor + $tax_minor;
+			$sku             = \sanitize_text_field( (string) $variation->get_sku() );
+			$gtin            = '';
+			if ( \method_exists( $variation, 'get_global_unique_id' ) ) {
+				$gtin = \preg_replace( '/\D/', '', (string) $variation->get_global_unique_id() );
+			}
+			$sale_end_date = '';
+			if ( $variation->is_on_sale() ) {
+				$sale_to = $variation->get_date_on_sale_to();
+				if ( $sale_to ) {
+					$sale_end_date = $sale_to->date( 'Y-m-d' );
+				}
+			}
+
 			$combos[ $combo_key ] = array(
 				'variationId'    => (int) $child_id,
 				'priceMinor'     => $price_minor,
@@ -367,6 +414,11 @@ final class Product_Manifest {
 				'unitDivisor'    => $unit_divisor,
 				'unitLabel'      => $unit_label,
 				'discountLabel'  => $discount_lbl,
+				// E1: schema fields read by the JSON-LD emitter (SEC-1/SEC-2).
+				'incMinor'       => $inc_price_minor,
+				'sku'            => $sku,
+				'gtin'           => $gtin,
+				'saleEndDate'    => $sale_end_date,
 				// A4: per-variation image gallery (ordered { url, w, h, alt } items).
 				// Always the authoritative image set; imageUrl == gallery[0].url when
 				// present (kept for back-compat). Empty array when no image resolves.

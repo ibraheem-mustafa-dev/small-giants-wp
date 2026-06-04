@@ -97,15 +97,26 @@ function sgs_configurator_emit_head(): void {
 		return;
 	}
 
-	// STEP 0 scaffold marker. FR-27-E1 replaces this with the ProductGroup JSON-LD
-	// (reading Product_Manifest::build(), inc-VAT, <=16 KB, wp_json_encode HEX flags);
-	// FR-27-E2 adds the canonical; FR-27-E3 adds OG — all detect-and-defer aware.
+	// Debug marker (kept): proves the hook fired here and shows the SEO-plugin
+	// ownership state. FR-27-E2 adds the canonical; FR-27-E3 adds OG — those defer
+	// to an active SEO plugin (SEC-9). The ProductGroup JSON-LD below does NOT
+	// defer: variant-level schema is the thing SGS uniquely adds that Yoast /
+	// RankMath do not produce for the configurator.
 	\printf(
 		"\n<!-- sgs-configurator-head: %s (%d bound product%s) -->\n",
 		\esc_html( sgs_configurator_seo_plugin_active() ? 'seo-plugin-active' : 'sgs-owned' ),
 		\count( $product_ids ),
 		1 === \count( $product_ids ) ? '' : 's'
 	);
+
+	// FR-27-E1 — ProductGroup + hasVariant JSON-LD, one per bound product. The
+	// returned string is already wp_json_encode'd with HEX flags + size-capped
+	// (SEC-3); echo it verbatim. Reads commerce data only from the manifest (SEC-1)
+	// at the inc-VAT price (SEC-2).
+	require_once __DIR__ . '/class-product-schema.php';
+	foreach ( $product_ids as $product_id ) {
+		echo Product_Schema::build_script( $product_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-encoded ld+json (wp_json_encode HEX flags), not HTML.
+	}
 }
 
 \add_action( 'wp_head', __NAMESPACE__ . '\\sgs_configurator_emit_head', 11 );
