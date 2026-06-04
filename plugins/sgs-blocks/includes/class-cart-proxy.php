@@ -892,12 +892,28 @@ final class Cart_Proxy {
 			return;
 		}
 
-		// Delete the SGS per-product manifest transient (U8 / FR-27-G6).
-		\delete_transient( 'sgs_manifest_' . $product_id );
+		// The manifest is cached under the PARENT product id. When a hook fires
+		// for a VARIATION (woocommerce_product_set_stock / variation_set_stock_status
+		// / a parent save_post_product …), purging only the variation id leaves the
+		// PARENT manifest stale (U8: empirically confirmed M-C1 gap — a cached
+		// page kept serving the old price for the whole TTL). Resolve the parent
+		// and purge both transients. wp_get_post_parent_id() returns 0 for a
+		// top-level product, so a plain product purges just itself.
+		// These purge hooks are BEST-EFFORT — some WC price setters fire no hook
+		// at all; the render-time staleness guard in Product_Manifest::build() is
+		// the authoritative, write-path-agnostic freshness mechanism (M-C1).
+		$parent_id = \wp_get_post_parent_id( $product_id );
 
-		// Purge the LiteSpeed page cache when the plugin is active.
+		\delete_transient( 'sgs_manifest_' . $product_id );
+		if ( $parent_id ) {
+			\delete_transient( 'sgs_manifest_' . $parent_id );
+		}
+
+		// LiteSpeed: purge the cacheable PRODUCT page only (the parent for a
+		// variation, else the product itself). Variation posts are not cached
+		// pages, so firing the page purge for a variation id is pointless.
 		if ( \has_action( 'litespeed_purge_post' ) ) {
-			\do_action( 'litespeed_purge_post', $product_id );
+			\do_action( 'litespeed_purge_post', $parent_id ? $parent_id : $product_id );
 		}
 	}
 

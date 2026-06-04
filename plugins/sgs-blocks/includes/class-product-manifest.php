@@ -63,17 +63,37 @@ final class Product_Manifest {
 			return null;
 		}
 
-		// ── M-C1 read-through transient cache ────────────────────────────────
+		// ── M-C1 read-through transient cache (variation-aware staleness) ─────
+		// The manifest is cached under the PARENT product id, but WooCommerce
+		// does NOT bump the parent's post_modified when only a variation changes
+		// (a single-variation price edit, or a scheduled-sale start/end that
+		// rewrites a child's price). A parent-only date_modified check therefore
+		// MISSES variation changes and serves a stale price for the whole TTL —
+		// the M-C1 / UK-Consumer-Rights-Act exposure (empirically confirmed, U8:
+		// changing a variation price left the parent manifest STALE). The
+		// freshness key must be the MAX post_modified_gmt across the product AND
+		// all its variations — one indexed query, write-path-agnostic (catches
+		// every write regardless of which WC hook did or did not fire).
 		$cache_key = 'sgs_manifest_' . $product_id;
 		$cached    = \get_transient( $cache_key );
-		$mod_ts    = $product->get_date_modified()
-			? $product->get_date_modified()->getTimestamp()
-			: 0;
+
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- this IS the cache-freshness probe; caching it would defeat its purpose.
+		$max_modified_gmt = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT MAX( post_modified_gmt ) FROM {$wpdb->posts}
+				 WHERE post_type IN ( 'product', 'product_variation' )
+				 AND ( ID = %d OR post_parent = %d )",
+				$product_id,
+				$product_id
+			)
+		);
+		$mod_ts = $max_modified_gmt ? (int) \strtotime( $max_modified_gmt . ' UTC' ) : 0;
 
 		// Only trust a cache hit when we have a real modified timestamp to compare
-		// against. Products with a null get_date_modified() (some CSV/SQL imports)
-		// yield $mod_ts = 0; comparing 0 >= 0 would pin a stale manifest for the
-		// whole TTL, so those always rebuild (freshness over the cache micro-win).
+		// against. A null/empty result yields $mod_ts = 0; comparing 0 >= 0 would
+		// pin a stale manifest for the whole TTL, so those always rebuild
+		// (freshness over the cache micro-win).
 		if ( $mod_ts > 0 && \is_array( $cached ) && isset( $cached['generatedAt'] ) && (int) $cached['generatedAt'] >= $mod_ts ) {
 			return $cached;
 		}

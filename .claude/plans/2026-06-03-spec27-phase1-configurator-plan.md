@@ -5,7 +5,7 @@ thread: sgs-theme
 plan_id: spec27-phase1-configurator
 spec: .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md
 created: 2026-06-03
-status: SELL-LOOP SHIPPED (D164, 2026-06-04) — U0+U6 (backend) + U3+U4+U7+U5 (visible pill-swap) BUILT + live-verified on canary page 589/fixture 540, un-gated from cloning (separate page). REMAINING to the single whole ship gate: U9 (a11y evidence + <a>->button) / U10 (perf) / U8 (cache+tax) / U11 (degradation) / U1 (capability flag) / U12 (cloning-compat).
+status: HARDENING IN PROGRESS (D165, 2026-06-04) — SELL-LOOP (U0+U6 backend + U3+U4+U7+U5 pill-swap) SHIPPED D164. Hardening: U9 (a11y `<button>` + moat-evidence sheet) SHIPPED `afb7a65a` + U8 (cache/tax; M-C1 staleness gap found-and-fixed, proven FRESH) SHIPPED — both live-verified on canary 589/fixture 540. REMAINING to the single whole ship gate: U10 (perf budgets) / U11 (degradation) / U1 (capability flag) / U12 (cloning-compat).
 gate_to_build: ".claude/next-session-prompt.md + .claude/state.md (cloning thread) must show the cloning phase CLOSED before Task C build starts"
 scope_frs: [FR-27-A1, FR-27-A2, FR-27-A3, FR-27-A5, FR-27-B1, FR-27-C1, FR-27-G1, FR-27-G2, FR-27-G3, FR-27-G6, FR-27-H1, FR-27-H2, FR-27-H3, FR-27-I-MVP]
 adversarial_council: CONDITIONAL-GO (6-persona brutal round run 2026-06-03; must-fixes folded into §8; build-ready after the §8 pre-build register is applied)
@@ -97,7 +97,8 @@ PURPOSE: **replace** the current `view.js addToCart` direct Store-API `{id, quan
 FILES: `product-card/view.js`.
 ON-CRITICAL-PATH: yes. TEST: live add-to-cart adds the *selected* variation; badge increments; tampered payload rejected by U6.
 
-**U8 — Cache + tax correctness** · FR-27-H3 / G6
+**U8 — Cache + tax correctness** · FR-27-H3 / G6 · ✅ SHIPPED + PROVEN 2026-06-04 (D165)
+STATUS: the M-C1 staleness model was empirically verified on the live canary and found BROKEN — a variation-only price change left the parent manifest STALE for the 24h TTL (purge hooks targeted the variation id not the parent; the parent's `post_modified` does not bump on a variation change; the `woocommerce_product_set_price`/`set_sale_price` hooks are no-ops). FIXED: render-time staleness guard now keys on `MAX(post_modified_gmt)` across the product + all variations (authoritative, write-path-agnostic); purge helper resolves a variation to its parent. PROVEN STALE→FRESH for regular + sale changes. Tax is OFF on the canary → card==cart by construction; dual-tax-seed DEFERRED per M-C10 (Mama's tax-inclusive → card==cart anyway). 2-rater review, no blockers.
 PURPOSE: pages stay fully cacheable. Seed BOTH ex/inc-tax display values OR cache-exclude the price fragment + vary on tax context; price via `wc_get_price_to_display()`, decimals via `wc_get_price_decimals()` (never own division); `generated_at` in the manifest + a >1 h add-to-cart-click manifest refresh; purge hooks (shared with U6).
 FILES: `render.php` (seed), `class-cart-proxy.php` (purge hooks), `view.js` (stale-manifest refresh).
 ON-CRITICAL-PATH: no. TEST: B2B-exempt + standard customer each see the correct price from one cached page; card price == cart price; sale-end purges.
