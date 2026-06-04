@@ -28,15 +28,14 @@
  * data-wp-context carry:
  *  Branches 4 (variable configurator) and 5 (non-variable bound) need
  *  data-wp-interactive, data-wp-init, and data-wp-context on the OUTER wrapper
- *  div (the same element get_block_wrapper_attributes() controls). These are
- *  passed via $opts['extra_attrs'] to SGS_Container_Wrapper::render() →
- *  get_block_wrapper_attributes(). For data-wp-context the value is
- *  wp_json_encode( $context ) — get_block_wrapper_attributes() HTML-encodes it
- *  with esc_attr() so " → &quot;; the browser HTML parser decodes &quot; back
- *  to " before WP Interactivity reads the attribute. This is the canonical safe
- *  approach (identical to how WP core handles JSON attrs via wp_kses et al.).
- *  data-wp-interactive value is the plain namespace string "sgs/product-card"
- *  which esc_attr() leaves intact.
+ *  div (the same element get_block_wrapper_attributes() controls).
+ *  data-wp-interactive + data-wp-init are plain strings → passed via
+ *  $opts['extra_attrs'] (esc_attr is a no-op on them). data-wp-context is the
+ *  large per-instance JSON manifest → emitted via $opts['extra_attr_html'] +
+ *  wp_interactivity_data_wp_context( $context ), the WP-canonical compact
+ *  single-quoted attribute, instead of routing it through extra_attrs/esc_attr
+ *  (which &quot;-expands every quote in the JSON and bloated the payload ~5 KB).
+ *  Both land on the same outer element get_block_wrapper_attributes() controls.
  *
  * @since 1.1.0
  * @since 1.7.0  WS-4 composite-mirror: SGS_Container_Wrapper delegation.
@@ -199,12 +198,23 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 		$decimals = $manifest['decimals'];
 		$def      = $manifest['combos'][ $manifest['defaultKey'] ];
 
+		// Tax-display mode (TAX-UI / FR-27-H3): how the price line reads.
+		// 'auto' = shop-configured display price; 'inc-suffix' = + WC suffix;
+		// 'ex-plus-vat' = ex price + a VAT line (trade). DISPLAY ONLY — the cart
+		// (and Phase-2 JSON-LD) price stay WC-authoritative + inc-VAT (SEC-2).
+		$tax_mode = $attributes['taxDisplayMode'] ?? 'auto';
+		if ( ! in_array( $tax_mode, array( 'auto', 'inc-suffix', 'ex-plus-vat' ), true ) ) {
+			$tax_mode = 'auto';
+		}
+		$price_suffix = wp_strip_all_tags( (string) get_option( 'woocommerce_price_display_suffix', '' ) );
+		$price_suffix = sanitize_text_field( trim( str_replace( array( '{price_including_tax}', '{price_excluding_tax}' ), '', $price_suffix ) ) );
+
 		// Pre-format display strings server-side so SSR text == seeded value
 		// (SSR-wipe-safe — see MEMORY rule wp-interactivity-directives-wipe-ssr).
-		$price_display   = html_entity_decode( wp_strip_all_tags( wc_price( $def['priceMinor'] / 10 ** $decimals ) ), ENT_QUOTES, 'UTF-8' );
+		$price_display   = sgs_configurator_mode_price( $def, $tax_mode, $decimals, $price_suffix );
 		$show_sale       = ( null !== $def['saleMinor'] );
 		$regular_display = $show_sale
-			? html_entity_decode( wp_strip_all_tags( wc_price( $def['regularMinor'] / 10 ** $decimals ) ), ENT_QUOTES, 'UTF-8' )
+			? sgs_configurator_mode_regular( $def, $tax_mode, $decimals )
 			: '';
 		$pct_display = '';
 		if ( $def['pctOff'] > 0 ) {
@@ -229,6 +239,10 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			'priceDisplay'        => $price_display,
 			'regularDisplay'      => $regular_display,
 			'pctDisplay'          => $pct_display,
+			// TAX-UI: view.js recomputes priceDisplay/regularDisplay per mode on swap.
+			'taxDisplayMode'      => $tax_mode,
+			'priceSuffix'         => $price_suffix,
+			'vatLabel'            => __( 'VAT', 'sgs-blocks' ),
 			'showSale'            => $show_sale,
 			'hideSale'            => ! $show_sale,
 			'stockText'           => $stock_text,

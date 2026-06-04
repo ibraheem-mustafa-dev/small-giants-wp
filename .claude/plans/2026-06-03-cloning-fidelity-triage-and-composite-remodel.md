@@ -5,20 +5,47 @@ thread: cloning-pipeline
 plan_name: 2026-06-03-cloning-fidelity-triage-and-composite-remodel
 generated: 2026-06-03
 parent_plan: .claude/plans/2026-06-02-container-wrapper-standardisation.md
-status: awaiting-approval
+status: active
 plan_label: "[PLAN: opus]"
 ---
 
 # Phase — Cloning page-fidelity: triage + grid root-cause + composite-remodel (WS-4)
 
-## 2026-06-04 UPDATE (D166) — WS-4 composite-mirror EXECUTED (25 composites); triage residuals re-scoped
+## 2026-06-04 PM UPDATE (D167) — WS-4 BLOCK-SIDE COMPLETE (all 29 composites); "Method 2" converter work is next
 
-**WS-4 (the composite-wrapper mirror) is BUILT.** 25 composites mirror `sgs/container` via the shared helper (`includes/class-sgs-container-wrapper.php`), all live-validated + committed (foundation `64950efa`; section/content/layout/interactive batches; recipe canonical in **Spec 22 §FR-22-21.1/.2**, commit `a4295130`). REMAINING WS-4: hero (inline w/ Bean), mobile-nav, product-card. The reliable small-batch fan-out process is proven (memory `dont-fan-out-many-heavy-agents-at-once`).
+**WS-4 block-side is now FULLY COMPLETE across the whole 29-block container roster** (4 section / 14 layout / 11 content):
 
-**CRITICAL re-scope of the triage #1–#8 (the block-mirror does NOT fix the cloned page):** the converter routes mockup wrapper classes to `sgs/container` (stage-2 conf 0.10, all 9 sections → containers), NOT to the matching composite BLOCK — so page-144 fidelity needs the SEPARATE converter work, evaluated by the Phase-7 adversarial review:
+- **hero** SHIPPED commit `bacbde57` — double-emit guard + `overlayColour`→`backgroundOverlayColour` rename + `extra_styles` opt + `wrap_inner:false` (section KIND, cta-section is the conforming SECTION reference — audited PASS).
+- **product-card** SHIPPED commits `f68bdc6f` + perf `82fd3b45` — all 5 source-mode branches mirrored; live `sourceMode='wc'` configurator preserved + verified on page 589. NOT via bare `do_blocks(sourceMode='bound')` (renders empty — use real page context only).
+- **25 composites** (D166 batches) all live-validated.
+- **content-collection** REGISTERED as 29th block (layout KIND, commit `40a9e03d`).
+- **mobile-nav + modal** EXCLUDED `containerMirror:false` (commit `391e6cb1`) — Popover/dialog shells, no sgs/container mapping.
+- **Helper** gained `extra_attr_html` opt (compact `data-wp-context` injection).
+- `/sgs-update` reconciled: `block_attributes` 2110→2739; 29-block roster; 0 orphans. Stage-11 auto-apply still **REPORT-ONLY** (pending Bean sign-off to flip).
+
+**Architecture resolved (blub.db 312):** ONE unified procedure (Spec 22 §FR-22-21) converts containers + composites identically; KIND-scoped FULL mirror with NO per-block trim; docs-are-truth-not-code.
+
+**CRITICAL: the block-mirror does NOT fix page-clone fidelity.** The converter still routes all mockup wrapper classes to `sgs/container` (stage-2 conf 0.10, all 9 sections → containers), NOT to the matching composite BLOCK. The remaining work is **"Method 2" converter-side** (next session):
+
+- **Routing fix:** `.sgs-hero`→`sgs/hero` (and other composites) before the container fallback in the converter tier logic.
+- **Universal converter-lift** (post-WS-4, reinstated — `universal-lift-was-premature-not-falsified`): transfers draft CSS onto the now-mirrored wrapper attrs; rebuild with canonical_slot precision + min-height align-gate.
+- **#6 notice-banner synthesis** (converter content-synthesis, block mirror does NOT fix this).
+- **#4a grid-lift** (converter-side, independent).
+- **#5 image sideload.**
+- WS-2/WS-3 de-cheat debt also pending.
+
+Memories: `composite-mirror-is-separate-from-cloning-fidelity`, `universal-lift-was-premature-not-falsified`, `dont-fan-out-many-heavy-agents-at-once`, `shared-helper-must-require-its-own-deps`, `scope-shared-block-changes-to-unused-variant`.
+
+## 2026-06-04 AM UPDATE (D166) — WS-4 composite-mirror EXECUTED (25 composites); hero/product-card/mobile-nav pending at that point
+
+> **SUPERSEDED for WS-4 status by D167 above. Retained for context on the fan-out batch process + triage re-scope.**
+
+**WS-4 (the composite-wrapper mirror) was BUILT for 25 composites** via the shared helper (`includes/class-sgs-container-wrapper.php`), all live-validated + committed (foundation `64950efa`; section/content/layout/interactive batches; recipe canonical in **Spec 22 §FR-22-21.1/.2**, commit `a4295130`). The reliable small-batch fan-out process proven (memory `dont-fan-out-many-heavy-agents-at-once`).
+
+**CRITICAL re-scope of the triage #1–#8 (the block-mirror does NOT fix the cloned page):** the converter routes mockup wrapper classes to `sgs/container` (stage-2 conf 0.10, all 9 sections → containers), NOT to the matching composite BLOCK — so page-144 fidelity needs the SEPARATE converter work:
 - **#1 hero / #2 trust-bar page-clone** → need the **routing fix** (`.sgs-hero`→`sgs/hero` block before the container fallback) + the **converter-lift** (transfer mockup CSS onto the now-mirrored attrs) + image sideload.
 - **#3 heading/label** → block textAlign-parity capability BUILT + committed 2026-06-04; the visible page-144 outcome needs the converter to EMIT text-align + a re-clone (converter follow-up).
-- **#4a** converter grid-lift; **#4b** product-card fill (after product-card mirror); **#5** image sideload; **#6** notice-banner converter content-synthesis (block mirror does NOT fix it); **#7** announcement-bar PARKED (mis-route, not a container-roster block); **#8** slider committed w/ the slider work — residuals (pause-float, broken icons, track-fill) need a live 4-card visual verify.
+- **#4a** converter grid-lift; **#4b** product-card fill (✅ product-card mirror DONE per D167 — block-side complete; converter routing still pending); **#5** image sideload; **#6** notice-banner converter content-synthesis; **#7** announcement-bar PARKED (mis-route, not a container-roster block); **#8** slider committed w/ the slider work — residuals (pause-float, broken icons, track-fill) need a live 4-card visual verify.
 - Memories: `composite-mirror-is-separate-from-cloning-fidelity`, `universal-lift-was-premature-not-falsified`.
 
 ## 2026-06-03 PM UPDATE (D163)
@@ -56,7 +83,7 @@ plan_label: "[PLAN: opus]"
 
 **Entry context (read before starting):**
 - `.claude/parking.md` → P-CLONE-PAGE-VISUAL-TRIAGE (#1–#8) + P-CONTAINER-WRAPPER-STANDARDISATION (WS-1 progress + WS-4 directive) + P-TRUSTBAR-BOUND-GRID
-- `.claude/decisions.md` D159 (WS-1 A1+A2 shipped + WS-4 sharpened directive + triage findings), D152 (composite-mirror rule), D150 (28-block roster + 3-KIND)
+- `.claude/decisions.md` D159 (WS-1 A1+A2 shipped + WS-4 sharpened directive + triage findings), D152 (composite-mirror rule), D150 (28-block roster + 3-KIND), D167 (WS-4 block-side complete — roster now 29, content-collection registered)
 - `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §FR-22-21 (wrapper-conversion procedure + composite-mirror), §FR-22-19 (composite interiors), §FR-22-4.1 (fold), §6 (R-22-1..14)
 - Run artefacts: `pipeline-state/mamas-munches-mamas-homepage-ws1-2026-06-03-060940/` (extract.json, trace.jsonl, leftover-buckets.json)
 - `sites/mamas-munches/mockups/homepage/index.html` (draft truth) — served at `python -m http.server 8137 --bind 127.0.0.1` from `sites/mamas-munches/`
@@ -65,7 +92,7 @@ plan_label: "[PLAN: opus]"
 
 **References:**
 - Existing shared-helper pattern (precedent for WS-4): `plugins/sgs-blocks/includes/render-helpers.php`, `includes/shape-dividers.php` (composites already `require_once` these)
-- `block_composition` table (`container_kind` column, 28-block roster) — the propagation substrate (Workstream A, shipped `0d746073`)
+- `block_composition` table (`container_kind` column, 29-block roster — 28 original + content-collection registered D167) — the propagation substrate (Workstream A, shipped `0d746073`)
 - memory: `feedback_no_composite_evades_universal_rule`, `feedback_pipeline_transfers_draft_css_not_converter_detection_hacks`, `empty-section-false-pixel-diff-win`, measurement-vs-eye rule + STOP #46
 
 **Tooling Index:**
@@ -98,7 +125,7 @@ WAVE 1 (this session) — fast parallel wins
         ↓
   GATE B: deploy + re-clone + live-DOM verify @1440/768/375 + Bean sign-off (R-22-11/13)
         ↓  [SESSION boundary candidate — WS-1 complete + visible bugs fixed]
-WAVE 2 (gated; likely next session) — WS-4 composite remodel
+WAVE 2 (gated; likely next session) — WS-4 composite remodel [✅ SUPERSEDED 2026-06-04 D167 — Steps 8-10 + Gate C DONE]
   2a DESIGN-GATE: /brainstorming + /qc-council on the shared-wrapper mechanism (PHP helper vs block.json mirror vs both)
         ↓
   2b BUILD shared container-wrapper render helper + the propagation WRITER (sync-container-wrapping-blocks.py report-only → writer) + /sgs-update wiring
@@ -264,7 +291,9 @@ QA Gate B — Deploy + live-DOM verify + Bean sign-off
 
 ## WAVE 2 — WS-4 composite remodel (GATED on Wave 1 complete; likely next session)
 
-> The big architectural one — Bean's directive. Sensitive + touches the 28-block roster → design-gate FIRST, /subagent-driven-development for the per-composite build, proof-of-propagation gate. Detailed but gated; a fresh session executes it with this plan + Gate B's committed state as cold-entry.
+> ✅ SUPERSEDED 2026-06-04 D167 — WS-4 BLOCK-SIDE COMPLETE; Steps 8-10 + Gate C are DONE. See the D167 update at the top of this file. Do NOT re-execute this wave. Remaining work is the SEPARATE converter "Method 2" (routing fix + universal lift + #4a + #6 + #5) — not block-side composite remodel.
+
+> The big architectural one — Bean's directive. Sensitive + touches the 29-block roster → design-gate FIRST, /subagent-driven-development for the per-composite build, proof-of-propagation gate. Detailed but gated; a fresh session executes it with this plan + Gate B's committed state as cold-entry.
 
 Step 8 [SESSION-START] — Design-gate the shared-wrapper mechanism
   Model:    inline (Opus) + /brainstorming + /qc-council
@@ -328,11 +357,14 @@ QA Gate C — Proof-of-propagation + per-composite + Bean sign-off
 ## Key Judgement Calls
 
 ### KJC-1 — WS-4 wrapper-mirror mechanism (decide at Step 8)
+
+> ✅ DECIDED + SHIPPED 2026-06-04 D167 — option (c): shared PHP helper `includes/class-sgs-container-wrapper.php` + KIND-scoped attr-mirror. No further decision needed.
+
 - **Options:** (a) shared PHP render helper only; (b) block.json attr-mirror only (each composite duplicates the attrs, /sgs-update keeps them synced); (c) BOTH — helper for render + attr-mirror for editor controls.
 - **Recommendation:** (c) BOTH. The helper is the single render source of truth (no drift); the attr-mirror gives each composite the container's editor controls (client-experience rule — every control must be an inspector control) and is what /sgs-update propagates.
 - **Why:** render-helper alone leaves composites without the container's editor controls; attr-mirror alone leaves render logic duplicated (the original drift cause).
 - **Cost of wrong choice:** helper-only → clients can't edit composite wrappers; mirror-only → render drift returns. Re-work ~1 session.
-- **Who decides:** Bean (architectural) — present at Step 8.
+- **Who decides:** Bean (architectural) — present at Step 8. ~~DECIDED D167.~~
 
 ### KJC-2 — Image sideload: Wave 1 or Wave 3?
 - **Options:** (a) do it now (Wave 1) — it's the biggest visible lever and would make Bean's sign-off meaningful; (b) defer to Wave 3 (structure-first).

@@ -69,6 +69,8 @@ Task 3 (Stage-11, Sonnet — parallel)                          ↓
 
 ### THE PROVEN RECIPE (element route — Bean-confirmed): a composite's OWN outer element BECOMES an sgs/container (carries `sgs-container` + the container's capabilities), keeping ONLY its unique interior. 4 steps per block: (1) render.php → `require_once .../class-sgs-container-wrapper.php`; own classes→`extra_classes`, styles→`extra_styles`, **ALL data-*/aria/view.js-queried attrs→`extra_attrs`**; interior→`$inner_html`; `echo SGS_Container_Wrapper::render($attributes,$block,$inner_html,'<KIND>',[...])`. (2) block.json → mirror KIND-scoped container attrs IF MISSING (never clobber own); bump version. (3) edit.js → import + `<ContainerWrapperControls attributes setAttributes kind="<KIND>"/>` in InspectorControls. (4) deprecated.js → NONE for additive; for renames use a render+edit `newName ?? legacyName` fallback (dynamic blocks, no save-markup deprecation). **KINDs:** content=width-only (simplest, no double-emit); layout=grid+width+gap; section=full (DOUBLE-EMIT guard + renames). **MANDATORY verify (the failure-fix):** small batches (2-3 agents, 3-4 blocks), each agent self-checks build+php-l+**undefined-var grep** (`\$wrapper_attributes|\$styles|\$classes` — php-l misses these), and **the orchestrator verifies EACH block on a live test page** (REST `POST /wp/v2/pages` NOT guard-blocked; use a `core/paragraph` child not `sgs/text`; or a token-gated webroot `do_blocks()` probe) — sgs-container present + 0 fatals — before commit. Reference blocks: trust-bar (section+data-attrs), cta-section (section+rename+double-emit), info-box (content), accordion-item (interactive content), feature-grid/gallery (layout+interactivity).
 
+> ✅ DONE 2026-06-04 D167 — hero + product-card MIRRORED, mobile-nav EXCLUDED. This list is HISTORY; do NOT re-do. See the PM opener at the top.
+
 ### THIS SESSION'S WORK (in order)
 1. **hero — INLINE WITH BEAN (the hardest, 827 lines).** Same pattern as cta-section (the proven section example): kind='section'. **Double-emit guard (C3):** hero builds its OWN overlay (`overlayColour`) + an LCP `<img fetchpriority=high>` background — keep BOTH as bespoke (overlay in `$inner_html` OR rename `overlayColour`→`backgroundOverlayColour` and let the helper own it; LCP `<img>` stays FIRST in `$inner_html` + null the helper's `backgroundImage` so no double-bg). **Rename (C4):** `overlayColour`→`backgroundOverlayColour` (+`overlayOpacity`→`backgroundOverlayOpacity`) with `?? legacy` fallback. **Split variant:** hero's `splitColumnRatio` is just the container's native `layout='grid'` + `gridTemplateColumns` — adopting the mirror REPLACES the bespoke split (pass via extra_styles or set the container layout attrs). **Bean decides** at 2 points: (a) LCP-img-stays vs moves-to-container-bg-attr; (b) split-grid-via-extra_styles vs container-layout-attrs. Keep hero's responsive `<style id=uid>` (headline/subheadline font CSS) as-is.
 2. **mobile-nav** — popover/drawer shell; the earlier agent flagged it does NOT fit the helper cleanly (Popover API + complex data-*). Either content-kind width-only with extra_attrs carrying ALL the popover/drawer/data-* (careful), OR leave it manual (width applied directly) — decide with Bean. Low priority.
@@ -298,6 +300,8 @@ The analysis + plan are DONE. The next session BUILDS, starting with **WS-1 — 
 ### WS-3 — de-cheat (R-22-1 DB-first) — parallel with WS-1
 **What:** C2 trust-bar static-grid CSS → attr-driven (P-TRUSTBAR-BOUND-GRID root cause); C3 `_CAPABILITY_PRIORITY`, C4 the two breakpoint systems, C5 `_infer_role`, C6 `_GLOBAL_BARE_TAGS` → DB; C7 de-Mama's the deploy script (MOCKUP_ROOT + page-144 default); C8 cta-section `layout` enum collision. **/qc gate:** YES per commit.
 
+> ✅ WS-4 SHIPPED D166/D167 (block-side complete) — do NOT execute this; kept for history.
+
 ### WS-4 — composite standardisation + auto-propagation (after WS-1 — the largest)
 **What:** extract container render logic into a SHARED PHP helper composites call + a propagation WRITER (current sync is report-only) + /sgs-update wiring, so updating sgs/container mirrors into every composite of its KIND. Resolve the divergent re-implementations (trust-bar/hero/cta-section). **Orchestration:** `/dispatching-parallel-agents` across the 28 blocks once the helper + writer exist. **/qc gate:** YES. **Acceptance:** add a dummy capability to sgs/container → /sgs-update → all KIND-matching composites gain it; live-verified; Bean sign-off.
 
@@ -318,10 +322,10 @@ WS-5 docs throughout · then real image sideload (biggest pixel lever once struc
 
 ## MANDATORY READING LIST (read FULLY before any work)
 1. This file.
-2. `.claude/handoff.md` (cloning thread, 2026-06-02 — Workstream A shipped + the standardisation programme).
+2. `.claude/handoff.md` (read the TOP 2026-06-04 PM section — WS-4 block-side complete, Method 2 next).
 3. **`.claude/plans/2026-06-02-container-wrapper-standardisation.md` — the 5-workstream programme + full A1-D3 gap register + ROAM + sequencing. THE build map (the *what*).**
 3a. **`.claude/reports/2026-06-02-container-wrapper-converter-gap-analysis.md` — the DEPTH SOURCE (the *why*): every gap-ID's file:line evidence from the 4-branch converter analysis. Read this so you understand the gaps deeply, not shallowly — the plan lists gap-IDs; this report proves each one.**
-4. `.claude/decisions.md` newest: **D152 (Workstream A shipped + container/wrapper analysis + programme)**, then D136 (CSS-transfer 4-gap audit), D135/D134 (variant detection), D130-D133.
+4. `.claude/decisions.md` newest: **D167 (WS-4 block-side complete + architecture resolved), D166 (25 composites mirrored + shared helper recipe canonical),** then D152 (Workstream A shipped + container/wrapper analysis + programme), D136 (CSS-transfer 4-gap audit), D135/D134 (variant detection), D130-D133.
 5. Root `CLAUDE.md` — "Root-cause methodology (MANDATORY)" + the 14 binding rules (R-22-1..14).
 6. `.claude/state.md` — current_phase + blockers.
 7. `git log --oneline -14` + read the recent commit messages (each carries root-cause + verification).
@@ -331,6 +335,7 @@ WS-5 docs throughout · then real image sideload (biggest pixel lever once struc
 11. `sites/mamas-munches/mockups/homepage/index.html` — THE draft truth. Pattern: full-bleed sections (no max-width) + `__inner` wrappers (max-width:960/1040).
 12. `.claude/parking.md` — P-CONTAINER-WRAPPER-STANDARDISATION (the programme), P-TRUSTBAR-BOUND-GRID, P-FR2220-VARIANT-DETECTION.
 13. memory `feedback_no_composite_evades_universal_rule` (NEW — the reframe), `feedback_pipeline_transfers_draft_css_not_converter_detection_hacks`, `feedback_read_ground_truth_before_concluding`, `feedback_concurrent_commit_race_shared_tree`, `feedback_empty_section_false_pixel_diff_win`.
+13a. **CRITICAL for Method 2:** memory `composite-mirror-is-separate-from-cloning-fidelity` (blub.db 312) — when you re-run `/sgs-clone`, the stage-2 converter will emit `sgs/container` (conf 0.10) across ALL sections, NOT the composite blocks. This is EXPECTED — the converter routes by BEM class to sgs/container as a fallback; it does NOT yet recognise `.sgs-hero` → `sgs/hero`. This is the PROBLEM Method 2 is diagnosing, not a WS-4 failure. Do NOT re-run WS-4 work to "fix" this. Validate composite BLOCKS in the EDITOR (fresh block on a test page), never via a page re-clone.
 14. The converter: `convert.py` walk() ~2031-2090 (slug-None section path + fold), `_root_lift_rules` ~498 (no max-width — A1/A2), `_fold_layout_into_attrs` ~2776, `db_lookup.py` `emit_sgs_container_wrapping` ~2389-2461 (hardcoded widthMode:full — A2/C1), `seed_d1_sidecar` ~167 (stub — B1), `_collect_css_decls_for_element`.
 15. `theme/sgs-theme/theme.json` (contentSize 780 / wideSize 1200) + `container/render.php` (widthMode + gap:150) + `container/style.css` width classes.
 16. `.claude/specs/24-QUERY-DRIVEN-CONTENT-CARDS.md` — product-card/trust-bar dual-mode (FR-24-10 shipped).
@@ -430,7 +435,7 @@ WS-5 docs throughout · then real image sideload (biggest pixel lever once struc
 ## Agents to Delegate To
 | Agent | When |
 |-------|------|
-| `wp-sgs-developer` | Heavy converter/theme-CSS/fold/render.php build (WS-1, WS-4) |
+| `wp-sgs-developer` (NOT registered here — dispatch with subagent_type: general-purpose, model: sonnet) | Heavy converter/theme-CSS/fold/render.php build |
 | `design-reviewer` | Visual parity draft-vs-clone after the transfer fix |
 
 ## Guardrails
