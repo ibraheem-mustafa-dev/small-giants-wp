@@ -52,6 +52,14 @@ The shop is now feature-complete on the visible layer AND discoverable: Google +
 ## First action (smallest step, ≤5 min, zero deps)
 Run `git log --oneline -10` + `git status` + `git branch --show-current`. Confirm HEAD on `main` at/after `f747e58a`. If `.claude/decisions.md` is no longer dirty (Spec-28 session committed), append the R1 **D176** entry (text in `state.md` `current_subphase_step_8...` + this session's handoff). Then open `https://sandybrown-nightingale-600381.hostingersite.com/sgs-configurator-test-540/`, confirm the pills render (regression stayed fixed). Then read the live plan `.claude/plans/2026-06-04-spec27-phase2-display-seo-plan.md` §Cluster C (STEP 12 R2 / STEP 13 R3 / STEP 14 PREFLIGHT) + Spec 27 §FR-27-R2/R3/PREFLIGHT.
 
+## Mandatory READING (in order, before building)
+1. This prompt's STOP catalogue (above) + State recap.
+2. `.claude/plans/2026-06-04-spec27-phase2-display-seo-plan.md` §Cluster C (STEP 12 R2 / STEP 13 R3 / STEP 14 PREFLIGHT) + §cross-cutting SEC amendments.
+3. Spec 27 §FR-27-R2 / FR-27-R3 / FR-27-PREFLIGHT (full text).
+4. `plugins/sgs-blocks/includes/class-product-authoring.php` (+`-args.php`) — the R1 controller R2 extends; mirror its security chain.
+5. `plugins/sgs-blocks/includes/class-configurator-meta.php` — the registered keys R3 writes through.
+6. `.claude/handoff-theme.md` (session 14, top) + `.claude/state.md` `current_subphase_step_8...` (the R1 D176 text to add first).
+
 ## ORCHESTRATION PLAN (you = Opus orchestrator)
 
 ### Task 1 — R2 attribute/term provisioning + cartesian generate + upsert + ROLLBACK (FR-27-R2) — THE HEAVY BUILD
@@ -90,7 +98,7 @@ A parallel session has the Spec 28 P1 phase plan (`.claude/plans/2026-06-04-spec
 | `/capture-lesson` | any new architectural rule |
 | `/handoff` | session close |
 
-## MCP / Tools
+## Tool bindings (MCP / CLI)
 | Tool | For |
 |------|-----|
 | chrome-devtools `/browsing` (Playwright MCP may be held by a co-active session) | self-review R3 @375/768/1440, axe-core |
