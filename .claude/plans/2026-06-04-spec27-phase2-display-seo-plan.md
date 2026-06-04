@@ -6,7 +6,7 @@ plan_id: spec27-phase2-to-completion
 spec: .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md
 created: 2026-06-04
 revision: v2 (2026-06-04) — rebuilt after an adversarial-council pass (6 personas) + a codebase audit of what SEO/schema already exists + Bean's scope decisions. v1 was committed 89b00fa5; this supersedes it.
-status: PLANNED — ready to build. Phase 1 SHIPPED (D165). This is the path to 100% of Spec 27 before launch (Bean: not launching until the whole spec is complete, so build ORDER is not load-bearing and the council's "defer SEO / ship-increment" re-scope is intentionally NOT adopted). Authoring UI is UN-GATED (in scope now) so no client/agency ever edits raw meta. The AI-builder (FR-27-R5) + AI-citation/feed (FR-27-F2) remain flagged for an explicit launch-or-after decision (see §Scope decisions).
+status: PLANNED — ready to build. Phase 1 SHIPPED (D165). This is the path to 100% of Spec 27 before launch (Bean: not launching until the whole spec is complete, so build ORDER is not load-bearing and the council's "defer SEO / ship-increment" re-scope is intentionally NOT adopted). Authoring UI is UN-GATED (in scope now) so no client/agency ever edits raw meta. SCOPE RESOLVED 2026-06-04: demand analytics IS in scope (Step 7); the AI-builder (FR-27-R5) + AI-citation/feed (FR-27-F2) are the whole-framework CAPSTONE — built LAST, gated on the converter pipeline + DB + theme/blocks + WC layer all being production-ready; they do not block a first client shop launch (see §Scope decisions).
 ---
 
 # Spec 27 → 100% — Display, SEO, Authoring & Go-Live — Build Plan (v2)
@@ -39,6 +39,7 @@ status: PLANNED — ready to build. Phase 1 SHIPPED (D165). This is the path to 
 - [ ] Per-unit "£1.04 **per bar**" (client-set unit label, derived live) + server "% off" + a digit-stripped cosmetic label (B3) — **authored via editor controls**.
 - [ ] Per-variation **gallery** with variation→parent→placeholder fallback (A4) — **authored via editor controls**.
 - [ ] OOS vs nonexistent distinct + announced (C2).
+- [ ] **Demand analytics** — unbuyable-combo attempts captured (privacy-safe aggregate) + a top-combos admin surface (Step 7).
 - [ ] Canonical correct (`?attribute_*` → parent), built from server-side attributes, **never `add_query_arg`** (E2); **defers to an active SEO plugin** if present.
 - [ ] Breadcrumb (place existing block) + product OG tags (always inc-VAT) + product sitemap with per-variation images (E3) — sitemap via **WP core `WP_Sitemaps` provider**, **detect-and-defer if Yoast/RankMath active**.
 - [ ] **Hard** go-live PREFLIGHT: a £0 / no-image / draft / unmapped-variesBy product **cannot be published** (blocks via `transition_post_status`); proxy independently rejects a £0 add-to-cart (PREFLIGHT + FR-27-G1 amend).
@@ -47,10 +48,10 @@ status: PLANNED — ready to build. Phase 1 SHIPPED (D165). This is the path to 
 - [ ] Bean R-22-13 visual sign-off + a clean **human NVDA/VoiceOver pass** (a marketing-claim gate — decoupled from the code-ship gate).
 - [ ] **Escape-audit** table passed for every new data→HTML path (security gate).
 
-## Scope decisions (Bean to confirm; not silently chosen)
+## Scope decisions (RESOLVED by Bean 2026-06-04)
 
-1. **AI-builder (FR-27-R5) + AI-citation/llms.txt/Merchant-feed/FAQ (FR-27-F2)** — these were deliberately demoted to "roadmap ambition" in D161 (the OC-Protector stall-trap call you made). "100% of Spec 27 before launch" technically includes them. **Recommendation: keep R5 + F2 as the FINAL cluster, built last, and decide at that point whether the first client launches without them** (a client shop is fully functional + discoverable without the AI-builder; the AI-builder is a setup convenience, not a shopper-facing feature). Flagged, not dropped.
-2. **Demand analytics** (the council's "real moat" — "combos customers tried but couldn't buy") — not in Spec 27 (it's an Open Question + a sibling-spec non-goal). The Interactivity store already has the data. **Recommendation: small new FR, build it in the visible cluster** — it's cheap and it's the one genuinely hard-to-copy advantage. Your call to include or leave parked.
+1. **AI-builder (FR-27-R5) + AI-citation/llms.txt/Merchant-feed/FAQ (FR-27-F2) — BUILD LAST: the whole-framework CAPSTONE.** Bean's reasoning: the AI-builder generates entire shops, so it is dependent on (a) the cloning/converter pipeline working CONSISTENTLY + being production-ready, (b) the sgs-framework DB being COMPLETELY wired in, (c) the SGS theme + blocks being in the correct format + complete, and (d) the WooCommerce layer (this Spec-27 work, in progress now). R5/F2 are therefore the final cluster of the ENTIRE framework, not just Spec 27 — built only after all of the above land. They do NOT gate a first client shop launch (a shop is complete + sellable + discoverable + client-authorable at the end of Cluster C). Cluster D stays last.
+2. **Demand analytics — IN SCOPE** (Bean: "yeah, do it"). Promoted from optional to a confirmed unit (Step 7, Cluster A). The one genuinely hard-to-copy advantage; the data already flows through the Interactivity store.
 
 ---
 
@@ -120,7 +121,7 @@ These came from the council (Abuse + Support + Cynic, several convergent). Each 
 
 **STEP 6 — C2 OOS vs nonexistent** distinct + announced (sold-out vs unavailable, distinct SR text). Model: sonnet · ~15 min.
 
-**STEP 7 (optional, Bean-decision) — Demand analytics.** Emit a lightweight event per selection/grey-out/OOS to a privacy-safe counter (`_sgs_combo_attempts` aggregate) + a tiny admin "top unbuyable combos" surface. The store already has the data. Model: sonnet · ~30 min · only if Bean includes it.
+**STEP 7 — Demand analytics (IN SCOPE, Bean-confirmed).** Emit a lightweight event per selection/grey-out/OOS to a privacy-safe AGGREGATE counter (`_sgs_combo_attempts` — no PII, counts only) + a small admin "top unbuyable combos" surface. The Interactivity store already has the data. Rate-limit the write endpoint (it's public). Model: sonnet · ~30 min · Test: selecting an OOS/nonexistent combo increments the aggregate; admin surface lists top combos; zero PII stored; write endpoint rate-limited.
 
 ### ESCAPE-AUDIT gate (security)
   Check: a table — every new value [field → source → sanitise-at-save → escape-at-render → output context (HTML attr/text/JSON-LD/OG)] — reviewed via /qc-council before any Cluster-A commit. Pass: every row has a save-sanitise AND a render-escape; no value reaches output unescaped. (Abuse "missing escape-audit gate".)
@@ -181,8 +182,8 @@ These came from the council (Abuse + Support + Cynic, several convergent). Each 
 
 ## Key Judgement Calls
 
-- **AI-builder (R5) + F2 launch-blocking?** Options: build before launch / launch after Cluster C and follow up. Rec: **launch-after-C** (shop is complete without it; R5 was your own D161 defer). Who decides: Bean.
-- **Demand analytics in scope?** Options: build it (Step 7) / leave parked. Rec: **build it** — cheapest genuine moat, data already flows. Who decides: Bean.
+- **AI-builder (R5) + F2 — RESOLVED: build LAST (framework capstone).** Gated on the converter pipeline being production-ready + consistent, the DB fully wired, theme/blocks complete + correct, and the WC layer done. Does not block a first client shop launch.
+- **Demand analytics — RESOLVED: IN SCOPE** (Step 7, Cluster A).
 - **Sitemap when an SEO plugin is present** — resolved: detect-and-defer (SEC-9), no KJC needed.
 
 ### Pre-emptive decisions (from the council's hidden-decisions + the audit)
