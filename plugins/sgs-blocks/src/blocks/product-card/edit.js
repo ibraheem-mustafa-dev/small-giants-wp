@@ -74,7 +74,7 @@ const TYPED_VALUE = '__typed__';
  * @param {Function} props.setAttributes Attribute setter.
  */
 function ProductSourcePanel( { attributes, setAttributes } ) {
-	const { sourceMode, productId } = attributes;
+	const { sourceMode, productId, taxDisplayMode } = attributes;
 	const [ search, setSearch ] = useState( '' );
 	const [ wcOptions, setWcOptions ] = useState( [] );
 	const [ wcLoading, setWcLoading ] = useState( false );
@@ -202,6 +202,48 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 						? __( '(WooCommerce).', 'sgs-blocks' )
 						: __( '(SGS product).', 'sgs-blocks' ) }
 				</Notice>
+			) }
+			{ 'wc-product' === sourceMode && productId > 0 && (
+				<>
+					<SelectControl
+						label={ __( 'Price display (VAT)', 'sgs-blocks' ) }
+						help={ __(
+							'How the price line reads. Display only — the cart always charges the correct VAT-inclusive price.',
+							'sgs-blocks'
+						) }
+						value={ taxDisplayMode || 'auto' }
+						options={ [
+							{
+								label: __( 'Automatic (follow shop tax setting)', 'sgs-blocks' ),
+								value: 'auto',
+							},
+							{
+								label: __( 'Inclusive + "inc. VAT" suffix', 'sgs-blocks' ),
+								value: 'inc-suffix',
+							},
+							{
+								label: __( 'Ex-VAT price + VAT amount (trade/B2B)', 'sgs-blocks' ),
+								value: 'ex-plus-vat',
+							},
+						] }
+						onChange={ ( value ) =>
+							setAttributes( { taxDisplayMode: value } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ 'ex-plus-vat' === taxDisplayMode && (
+						<Notice
+							status="warning"
+							isDismissible={ false }
+							style={ { marginTop: 8 } }
+						>
+							{ __(
+								'Trade/B2B only. UK consumer law (Price Marking Order 2004) requires the VAT-inclusive price to be the prominent price on a consumer shop — do not use this mode for B2C.',
+								'sgs-blocks'
+							) }
+						</Notice>
+					) }
+				</>
 			) }
 		</PanelBody>
 	);

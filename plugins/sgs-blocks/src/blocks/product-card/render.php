@@ -241,7 +241,9 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			'pctDisplay'          => $pct_display,
 			// TAX-UI: view.js recomputes priceDisplay/regularDisplay per mode on swap.
 			'taxDisplayMode'      => $tax_mode,
-			'priceSuffix'         => $price_suffix,
+			// Only surface the suffix in the mode that uses it (avoids seeding shop
+			// config into contexts where it plays no role).
+			'priceSuffix'         => ( 'inc-suffix' === $tax_mode ) ? $price_suffix : '',
 			'vatLabel'            => __( 'VAT', 'sgs-blocks' ),
 			'showSale'            => $show_sale,
 			'hideSale'            => ! $show_sale,

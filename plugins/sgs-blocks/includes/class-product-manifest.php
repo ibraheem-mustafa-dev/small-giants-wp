@@ -119,7 +119,11 @@ final class Product_Manifest {
 		// change a cache miss → rebuild. (This shared transient assumes a single
 		// tax context; per-customer / B2B multi-context is the deferred dual-seed,
 		// FR-27-H3 / M-C10 — out of scope for UK B2C single-rate selling.)
-		$cache_key = 'sgs_manifest_' . $product_id . '_' . self::tax_fingerprint();
+		// 'v2' = manifest combo schema version. Bump when the combo array shape
+		// changes (TAX-UI added exMinor/taxMinor/regularExMinor) so old cached
+		// manifests lacking the new keys miss and rebuild rather than serving a
+		// shape the renderer/view.js no longer expect.
+		$cache_key = 'sgs_manifest_v2_' . $product_id . '_' . self::tax_fingerprint();
 		$cached    = \get_transient( $cache_key );
 
 		global $wpdb;
@@ -224,6 +228,19 @@ final class Product_Manifest {
 				);
 			}
 
+			// Tax components for the per-card taxDisplayMode (FR-27-H3 / TAX-UI).
+			// Computed directly from WC tax functions so they are correct whether
+			// the shop displays prices inc or ex tax: the active price ex-tax, the
+			// VAT amount on it, and the regular price ex-tax for the struck line.
+			// When tax is disabled / zero-rated, $tax_minor is 0 and ex == display
+			// (the ex-plus-vat mode then shows no VAT line).
+			$ex_minor          = (int) \round( \wc_get_price_excluding_tax( $variation ) * $multiplier );
+			$inc_minor         = (int) \round( \wc_get_price_including_tax( $variation ) * $multiplier );
+			$tax_minor         = \max( 0, $inc_minor - $ex_minor );
+			$regular_ex_minor  = (int) \round(
+				\wc_get_price_excluding_tax( $variation, array( 'price' => $regular_price ) ) * $multiplier
+			);
+
 			// pctOff: guarded /0, capped at 95.
 			$pct_off = 0;
 			if ( $regular_minor > 0 && $variation->is_on_sale() ) {
@@ -254,14 +271,26 @@ final class Product_Manifest {
 			}
 			$image_url = $image_url ? \esc_url_raw( (string) $image_url ) : '';
 
+			// Translated "% off" label seeded per combo so view.js shows the SAME
+			// (localised) string on swap that the SSR literal shows (i18n parity).
+			$pct_display = $pct_off > 0
+				/* translators: %d is the discount percentage, e.g. "30% off". */
+				? sprintf( \__( '%d%% off', 'sgs-blocks' ), $pct_off )
+				: '';
+
 			$combos[ $combo_key ] = array(
-				'variationId'  => (int) $child_id,
-				'priceMinor'   => $price_minor,
-				'regularMinor' => $regular_minor,
-				'saleMinor'    => $sale_minor,
-				'pctOff'       => $pct_off,
-				'inStock'      => $in_stock,
-				'imageUrl'     => $image_url,
+				'variationId'    => (int) $child_id,
+				'priceMinor'     => $price_minor,
+				'regularMinor'   => $regular_minor,
+				'saleMinor'      => $sale_minor,
+				'pctOff'         => $pct_off,
+				'pctDisplay'     => $pct_display,
+				'inStock'        => $in_stock,
+				'imageUrl'       => $image_url,
+				// Tax components for the per-card taxDisplayMode (TAX-UI / FR-27-H3).
+				'exMinor'        => $ex_minor,
+				'taxMinor'       => $tax_minor,
+				'regularExMinor' => $regular_ex_minor,
 			);
 		}
 

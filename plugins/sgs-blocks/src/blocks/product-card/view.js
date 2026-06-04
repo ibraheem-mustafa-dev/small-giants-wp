@@ -251,6 +251,52 @@ function formatPrice( minor, ctx ) {
 }
 
 /**
+ * The current-price display string for a combo under the card's tax-display mode
+ * (TAX-UI). Mirrors the PHP sgs_configurator_mode_price() so the swap value ==
+ * the SSR literal.
+ *
+ * @param {Object} combo The selected manifest combo.
+ * @param {Object} ctx   The card's live context (taxDisplayMode / priceSuffix / vatLabel).
+ * @return {string}
+ */
+function modePrice( combo, ctx ) {
+	let mode = ctx.taxDisplayMode || 'auto';
+	// Defensive: a pre-v2 cached manifest (e.g. full-page-cached HTML seeded
+	// before the deploy) lacks the ex/tax fields — degrade to the display price
+	// rather than render "£NaN".
+	if ( mode === 'ex-plus-vat' && ( combo.exMinor == null || combo.taxMinor == null ) ) {
+		mode = 'auto';
+	}
+	if ( mode === 'ex-plus-vat' ) {
+		let out = formatPrice( combo.exMinor, ctx );
+		if ( combo.taxMinor && combo.taxMinor > 0 ) {
+			out += ' + ' + formatPrice( combo.taxMinor, ctx ) + ' ' + ( ctx.vatLabel || 'VAT' );
+		}
+		return out;
+	}
+	if ( mode === 'inc-suffix' && ctx.priceSuffix ) {
+		return formatPrice( combo.priceMinor, ctx ) + ' ' + ctx.priceSuffix;
+	}
+	return formatPrice( combo.priceMinor, ctx );
+}
+
+/**
+ * The struck-through regular-price display string for a combo under the tax mode.
+ *
+ * @param {Object} combo The selected manifest combo.
+ * @param {Object} ctx   The card's live context.
+ * @return {string}
+ */
+function modeRegular( combo, ctx ) {
+	// Use the ex-VAT regular only in ex-plus-vat mode AND when the field exists
+	// (pre-v2 cached manifests lack it — fall back to the display regular).
+	const exMode =
+		( ctx.taxDisplayMode || 'auto' ) === 'ex-plus-vat' &&
+		combo.regularExMinor != null;
+	return formatPrice( exMode ? combo.regularExMinor : combo.regularMinor, ctx );
+}
+
+/**
  * Apply a pill selection to the card's seeded context (multi-axis, SSR-safe).
  *
  * Mutates the seeded display keys on the live Interactivity proxy so the
@@ -293,16 +339,21 @@ function applyPillSelection( ctx, detail ) {
 		ctx.selectedKey = comboKey;
 		ctx.selectedVariationId = combo.variationId;
 
-		ctx.priceDisplay = formatPrice( combo.priceMinor, ctx );
+		ctx.priceDisplay = modePrice( combo, ctx );
 
 		const onSale =
 			combo.saleMinor !== null && combo.saleMinor !== undefined;
 		ctx.showSale = onSale;
 		ctx.hideSale = ! onSale;
-		ctx.regularDisplay = onSale
-			? formatPrice( combo.regularMinor, ctx )
-			: '';
-		ctx.pctDisplay = combo.pctOff > 0 ? combo.pctOff + '% off' : '';
+		ctx.regularDisplay = onSale ? modeRegular( combo, ctx ) : '';
+		// Prefer the server-translated per-combo label (SSR==swap i18n parity);
+		// fall back to the English recompute only if absent.
+		ctx.pctDisplay =
+			combo.pctDisplay != null
+				? combo.pctDisplay
+				: combo.pctOff > 0
+				? combo.pctOff + '% off'
+				: '';
 
 		ctx.inStock = !! combo.inStock;
 		ctx.stockText = combo.inStock ? '' : 'Out of stock';

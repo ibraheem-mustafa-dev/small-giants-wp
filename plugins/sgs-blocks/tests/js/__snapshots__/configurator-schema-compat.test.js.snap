@@ -29,19 +29,28 @@ exports[`sgs/option-picker — converter/Typed schema-compat attribute type map 
 exports[`sgs/product-card — Typed shape is a deprecation-free subset attribute type map matches the frozen baseline 1`] = `
 {
   "cardMaxWidth": "string",
+  "contentWidth": "string",
   "ctaText": "string",
   "ctaUrl": "string",
+  "customWidth": "number",
+  "customWidthUnit": "string",
   "description": "string",
   "featuredTag": "string",
   "image": "string",
   "imageAlt": "string",
+  "maxWidth": "string",
   "packSizes": "array",
   "priceLarge": "string",
   "priceNote": "string",
   "productId": "number",
   "productName": "string",
   "sourceMode": "string",
+  "taxDisplayMode": "string",
   "trialTag": "string",
   "variantStyle": "string",
+  "widthMode": "string",
+  "widthModeDesktop": "string",
+  "widthModeMobile": "string",
+  "widthModeTablet": "string",
 }
 `;
