@@ -2393,6 +2393,19 @@ def walk(
                     container_attrs.setdefault("widthMode", "custom")
                     container_attrs.setdefault("customWidth", int(float(_mw_m.group(1))))
                     container_attrs.setdefault("customWidthUnit", _mw_m.group(2) or "px")
+        # A3 — lift the section root's wrapper-capability CSS (min-height, box-shadow,
+        # grid-template-columns, gap, etc.) onto the container attrs (Method-2, Spec 22
+        # §FR-22-21). Mirrors A2 (composite path) — same A1 helper, different call site.
+        # Re-collects base + bp_decls so responsive declarations are included
+        # (the existing _sec_base/_  at 2382 discards bp_decls; this pass captures them).
+        # setdefault throughout — widthMode/customWidth set above are NEVER overwritten.
+        # R-22-1: DB-driven attr-name set; R-22-9: universal (every slug-None section fires).
+        _a3_base, _a3_bp = _collect_css_decls_for_element(node, css_rules)
+        _a3_lifted, _a3_flagged = _lift_wrapper_css_to_container_attrs(
+            _a3_base, _a3_bp, _block_attr_names("sgs/container")
+        )
+        for _a3_k, _a3_v in _a3_lifted.items():
+            container_attrs.setdefault(_a3_k, _a3_v)  # Never clobber widthMode/customWidth set above.
         children_markup = _process_container_children(node, css_rules, depth, variation_buf, container_attrs)
         return _emit_section_container(container_attrs, children_markup, css)
 
