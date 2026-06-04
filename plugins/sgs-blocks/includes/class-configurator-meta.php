@@ -210,14 +210,21 @@ final class Configurator_Meta {
 	 */
 	public static function sanitize_id_array( $value ): array {
 		if ( ! \is_array( $value ) ) {
-			$value = \is_string( $value ) ? \json_decode( $value, true ) : array();
-		}
-		if ( ! \is_array( $value ) ) {
-			return array();
+			// Accept a JSON array (REST) OR a comma-separated string (the variation
+			// gallery editor field posts a CSV of attachment ids).
+			if ( \is_string( $value ) && '' !== $value ) {
+				$decoded = \json_decode( $value, true );
+				$value   = \is_array( $decoded ) ? $decoded : \explode( ',', $value );
+			} else {
+				$value = array();
+			}
 		}
 		$ids = array();
 		foreach ( $value as $item ) {
-			$id = \absint( $item );
+			// Image-type check (escape-audit): only real image attachments may
+			// enter a gallery — sanitize_image_id() runs wp_attachment_is_image(),
+			// so arbitrary post/page/non-image ids are rejected (no info-leak).
+			$id = self::sanitize_image_id( $item );
 			if ( $id > 0 ) {
 				$ids[] = $id;
 			}

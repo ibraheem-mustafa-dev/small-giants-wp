@@ -306,4 +306,14 @@ function sgs_save_variation_fields( int $variation_id, int $i ): void {
 		$discount_raw = sanitize_text_field( wp_unslash( $_POST['_sgs_discount_label'][ $i ] ) );
 		update_post_meta( $variation_id, '_sgs_discount_label', Configurator_Meta::sanitize_discount_label( $discount_raw ) );
 	}
+
+	// ── Variation image gallery (A4) ───────────────────────────────────────────
+	// The gallery picker field posts a comma-separated list of attachment ids;
+	// sanitize_id_array() splits the CSV and image-type-checks every id.
+	// phpcs:ignore WordPress.Security.NonceVerification.Missing -- WC verifies the variation-save nonce before this hook fires.
+	if ( isset( $_POST['_sgs_variation_gallery'][ $i ] ) ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- see above.
+		$gallery_raw = sanitize_text_field( wp_unslash( $_POST['_sgs_variation_gallery'][ $i ] ) );
+		update_post_meta( $variation_id, '_sgs_variation_gallery', Configurator_Meta::sanitize_id_array( $gallery_raw ) );
+	}
 }

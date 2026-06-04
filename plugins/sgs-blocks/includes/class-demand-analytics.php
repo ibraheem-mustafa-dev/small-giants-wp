@@ -238,7 +238,8 @@ final class Demand_Analytics {
 				: 'unknown' );
 
 		// Hash with server-side salt — the transient key cannot be reversed to an IP.
-		$ip_hash = \sha1( $client_ip . self::$rl_salt );
+		// SHA-256 (not SHA-1) for the one-way IP hash (escape-audit hardening).
+		$ip_hash = \hash( 'sha256', $client_ip . self::$rl_salt );
 		$rl_key  = 'sgs_da_rl_' . $ip_hash;
 		$rl_raw  = \get_transient( $rl_key );
 		$now     = \time();
