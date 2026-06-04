@@ -53,6 +53,7 @@ The original "extend `_root_lift_rules`" is wrong on four counts, all verified: 
 ### MF-B [3/5] — min-height is a BLOCK-layer fix, not a converter align-gate (re-layer; STOP #31 applied to my own STOP #49)
 Verified: `class-sgs-container-wrapper.php:431` adds `sgs-container--has-min-height` on **min-height presence alone** (no `verticalAlign` reference), and `style.css:33` centres it. The helper DOES already read `verticalAlign` (line 197) + emit `align-items` from it (337/347) — so the centre-forcing class at 431 can CONFLICT with a top-aligned section.
 **FOLD:** the fix is block-side — gate the `--has-min-height` class (or its CSS) on `verticalAlign === 'center'` so a non-centred min-height section is NOT force-centred. THEN the converter lifts `min-height`→`minHeight` **unconditionally** (faithful) and lifts the draft's centring idiom → `verticalAlign` **separately**. The centring detector must cover the idiom set (`align-items`/`justify-content`/`place-items`/`place-content`/child `margin:auto`/`align-self`), checked across `bp_decls` too — not just `align-items` in `_sec_base`. This becomes a new block-layer step (parallel with FS-4).
+**Bean-confirmed (2026-06-04):** min-height lifts **ALWAYS** when the draft sets it (the clone inherits the CSS rules, min-height included). `verticalAlign` is lifted **ONLY if the draft sets a centring idiom** — if the draft does NOT set one, **do NOT pass verticalAlign over** (faithful absence, R-22-21 step 6) and the block must render **top-aligned** (no imposed centring). So: present-min-height → lift it; absent-centring → block defaults top, content is NOT force-centred.
 
 ### MF-C [3/5] — do NOT edit the shared wrap function to read CSS; pass computed attrs in as a parameter
 Verified: `db_lookup.py:2461 emit_sgs_container_wrapping` wraps **every top-level section** (slug-None AND composite — its docstring says so), not just composites. Editing it to read CSS changes OUTER attrs for all 9 sections from a 2nd code site → re-introduces the two-path divergence WS-4 killed.
@@ -220,10 +221,11 @@ All folds keep every fix as A (spec-says) or B (clean upgrade): MF-A = A (R-22-1
   - **Why:** the block side is done (WS-4); the gap is purely that the converter doesn't WRITE the attrs. Keep it converter-side, no render.php change.
   - **Cost of wrong choice:** touching render.php risks the WS-4 mirror; a 0-delta no-op if it lands on the wrong path (the trap the council caught).
   - **Who decides:** joint (confirm at Step 3's /qc-council pre-build).
-- **Decision:** D5 (product-card 380px) — block or converter layer?
-  - **Recommendation:** verify on a test page first (STOP #31); likely block-side (a default width overriding the grid track).
-  - **Cost of wrong choice:** a converter fix for a block bug = wasted + doesn't generalise.
-  - **Who decides:** joint (Step 4).
+- **Decision:** D5 (product-card 380px not filling its 640/384 track) — RESOLVED (Bean, 2026-06-04).
+  - **Resolution:** the GRID CONTAINER owns the column template (lifted from the draft's `.sgs-products` div CSS — the converter-lift; Agent C confirmed `640px 384px` already lands on the container). Each product-card is a **grid item that FILLS its cell** — no per-card width. The Spec-27 standalone `380px` cap applies **only when the card is standalone**, NOT when it is a grid item: inside a grid the track wins; outside one the 380px cap applies.
+  - **Work:** (a) confirm the container's grid-template lift holds (converter, already covered by Step 1/3); (b) block fix — product-card's width cap must not apply in a grid-item context (e.g. scope the `380px max-width` so it yields to the grid track). No converter hack, no per-card width.
+  - **Why universal (R-22-9):** any card in any grid fills its track; the container owns the template — matches §FR-22-4.1's featured-product worked example exactly.
+  - **Layer:** block-side (the width cap) + confirm converter lift. STOP #31 satisfied (layer identified).
 
 ### Pre-emptive decisions (to be filled by the /adversarial-council — Bean-directed next step)
 - _Folded into the adversarial-council pass: what breaks universality, what causes new issues post-fix, what's over/under-scoped._
