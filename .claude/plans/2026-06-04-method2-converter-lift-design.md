@@ -125,5 +125,25 @@ Ran the qc-council Stage-5 gate against the run `mamas-munches-homepage-2026-06-
 
 **Saved:** catching the FS-1/FS-2 mis-target pre-build saved a wasted wave of converter subagent work + a re-baselining session (the 2026-06-03 failure mode, repeated would-be).
 
+## A2 BUILD-TIME GROUNDING (2026-06-04 — corrections from reading the actual hero emission)
+
+Read the hero's emitted markup (`extract.json`, run 134425) + traced the gradient source. Two corrections to FS-1b:
+1. **The hero gradient is OUT of converter scope.** The converter correctly emits `style.color.background: surface-pink` on the inner `sgs/hero` (flat pink). The dark-pink gradient is the hero block's OWN default (`hero/style.css:40-48`, "overridden by inline background-color") — a render-layer / double-wrapper / `wp_global_styles` artefact, NOT a converter emission. **A2 does NOT touch it.** (If it still shows visibly, that's a separate block-CSS / global-styles task — memory `canary-live-styles-come-from-wp-global-styles-post`.)
+2. **The real A2 gap = `min-height:520px` dropped** (mockup `.sgs-hero` @desktop sets it; absent from emitted markup). A2 lifts it onto the outer `sgs/container` via MF-C (compute attrs → pass into `emit_sgs_container_wrapping`).
+3. **COUPLING — RESOLVED by the landing decision (Option A):** the centre-trap (`--has-min-height` → flex-centre, `style.css:33`) is **overridden by inline `display:grid` + `align-items:$verticalAlign`** (helper lines 330-337). So it only bites a min-height section with NO grid/flex layout. The hero IS a grid → if min-height lands on the inner `sgs/hero` (which carries the grid), the trap is overridden → **MF-B is DECOUPLED from the hero**. (MF-B remains a real universal fix for non-grid min-height sections — keep it in Phase B.)
+
+### A2 BUILD-SPEC (precise — for the focused build; decided + grounded, ready to execute)
+- **Landing decision = Option A (spec-grounded, §FR-22-21 composite-mirror, R-22-9):** the composite's own wrapper CSS lands on the COMPOSITE block's mirrored attrs (where its background already lands), NOT the outer `sgs/container` wrap. Site: **`convert.py:2351`** — immediately after `_lift_root_supports_to_style(node, slug, css_rules, attrs)` on the resolved-slug path, ALSO call the A1 helper:
+  ```
+  if slug is not None and <slug is in the container-mirror roster>:   # DB-gated: block_composition.wraps_block=='sgs/container'
+      base, bp = _collect_css_decls_for_element(node, css_rules)
+      lifted, flagged = _lift_wrapper_css_to_container_attrs(base, bp, db.block_attr_names(slug))
+      for k, v in lifted.items(): attrs.setdefault(k, v)   # never clobber background/etc. already set
+  ```
+  This is UNIVERSAL: every container-mirror composite (29 roster) gets its wrapper CSS lifted onto its mirrored attrs at this ONE site — not hero-specific (R-22-9). Gate via the DB roster (R-22-1), so non-mirroring blocks (sgs/text etc.) are skipped (no FLAG-spam).
+- **OPEN FORK (decide at build): responsive min-height.** The hero's `min-height:520px` is in `@media(min-width:768px)` → reaches the A1 helper as `bp_decls['Desktop']` → maps to `minHeightDesktop`, which the container does NOT have (only base `minHeight`). Two options: **(A-collapse)** the helper falls back to the BASE attr when a responsive variant doesn't exist (desktop min-height → base `minHeight`, applies all viewports — harmless on mobile since the stacked hero exceeds 520; minor infidelity); **(A-responsive)** add `minHeightTablet/Mobile` (+ `Desktop` semantics) to the container block + 28 mirrors (bigger, more faithful). **Recommend A-collapse** for this build (the helper gains a graceful responsive→base fallback for attrs lacking responsive variants — itself universal); A-responsive is a future polish. CONFIRM with Bean or decide from the rule "clone inherits the CSS" (a floor min-height that mobile exceeds is faithful-enough).
+- **Verify (R-22-11):** build → `build-deploy.py --blocks-only` (it's a converter change → re-clone, not just deploy) → re-clone page 144 → Playwright: hero emitted markup carries `minHeight:'520px'` on the inner `sgs/hero`; live hero section height ≥520 @1440; mobile NOT broken; NO new centre-regression (hero content not force-centred). Roll back fast on regression (STOP #19).
+- **Gradient: explicitly NOT in A2** (out of converter scope per finding 1).
+
 ## Build is next session (per next-session-prompt dependency graph)
 This session's deliverable = this council-validated-and-refined design. The build (FS-1a/b..FS-5) is the next focused session — open with FS-1b/FS-2b path-split confirmed.

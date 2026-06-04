@@ -884,6 +884,58 @@ def _is_css_function(value: str) -> bool:
     return bool(_CSS_FUNCTION_RE.search(value))
 
 
+# ============================================================================
+# A2 — Container-mirror roster + per-block attr-name helpers
+# DB-driven (R-22-1): no hardcoded slug list.
+# ============================================================================
+
+_container_mirror_cache: dict[str, bool] = {}
+_block_attr_names_cache: dict[str, frozenset[str]] = {}
+
+
+def _is_container_mirror_block(slug: str) -> bool:
+    """Return True when the block has wraps_block='sgs/container' in block_composition.
+
+    Cached per slug. Soft-fails to False on missing table / missing row so that
+    non-mirror blocks (sgs/text, sgs/button, etc.) are silently skipped.
+    R-22-1 compliant — DB-driven; no hardcoded slug list.
+    """
+    if slug in _container_mirror_cache:
+        return _container_mirror_cache[slug]
+    import sqlite3
+    result = False
+    try:
+        conn = sqlite3.connect(str(db.SGS_DB))
+        try:
+            row = conn.execute(
+                "SELECT 1 FROM block_composition WHERE block_slug = ? AND wraps_block = 'sgs/container'",
+                (slug,),
+            ).fetchone()
+            result = row is not None
+        except sqlite3.OperationalError:
+            result = False  # Table absent — soft-fail
+        finally:
+            conn.close()
+    except Exception:  # noqa: BLE001
+        result = False
+    _container_mirror_cache[slug] = result
+    return result
+
+
+def _block_attr_names(slug: str) -> frozenset[str]:
+    """Return frozenset of attr_name strings for a block from block_attributes.
+
+    Uses db.block_attrs() which is already LRU-cached. Returns empty frozenset
+    on missing block so that _try_lift_prop silently skips every candidate.
+    """
+    if slug in _block_attr_names_cache:
+        return _block_attr_names_cache[slug]
+    attr_map = db.block_attrs(slug)
+    result: frozenset[str] = frozenset(attr_map.keys()) if attr_map else frozenset()
+    _block_attr_names_cache[slug] = result
+    return result
+
+
 def _lift_wrapper_css_to_container_attrs(
     base_decls: dict[str, str],
     bp_decls: dict[str, dict[str, str]],
@@ -1028,9 +1080,34 @@ def _lift_wrapper_css_to_container_attrs(
                 continue
             placed = _try_lift_prop(css_prop, value, bp_suffix=bp_suffix)
             if not placed and css_prop in prop_to_suffixes:
-                flagged.append(f"{css_prop}@{bp_key}")
-                _trace("lift_gap_candidate", prop=css_prop, value=value,
-                       bp_suffix=bp_key, reason="no_matching_container_attr_responsive")
+                # A-collapse rule: the responsive attr (e.g. minHeightDesktop) is NOT in
+                # container_attr_names, but the BASE attr (minHeight) MAY be present.
+                # If so, fall back to setting the base attr via setdefault — never
+                # overwrite a base value already set by the base-decls pass or by an
+                # earlier responsive variant. Rationale: mockups are often mobile-first;
+                # a desktop-only min-height with no base value should still be captured
+                # as a floor (mobile won't usually be taller). Only fires when the
+                # responsive attr truly does not exist on the block.
+                collapsed = False
+                if css_prop not in _LIFT_EXCLUDED_PROPS:
+                    for suffix, _kind in prop_to_suffixes.get(css_prop, []):
+                        override_key = (css_prop, suffix)
+                        if override_key in _SUFFIX_ATTR_OVERRIDES:
+                            base_attr = _SUFFIX_ATTR_OVERRIDES[override_key]
+                        else:
+                            base_attr = suffix[0].lower() + suffix[1:] if suffix else ""
+                        if base_attr and base_attr in container_attr_names and base_attr not in attrs:
+                            # Base attr exists AND is not yet set → collapse to base.
+                            placed = _try_lift_prop(css_prop, value, bp_suffix=None)
+                            if placed:
+                                _trace("lift_a_collapse", prop=css_prop, value=value,
+                                       bp_key=bp_key, base_attr=base_attr)
+                                collapsed = True
+                            break
+                if not collapsed:
+                    flagged.append(f"{css_prop}@{bp_key}")
+                    _trace("lift_gap_candidate", prop=css_prop, value=value,
+                           bp_suffix=bp_key, reason="no_matching_container_attr_responsive")
             elif not placed:
                 flagged.append(f"{css_prop}@{bp_key}")
                 _trace("lift_gap_candidate", prop=css_prop, value=value,
@@ -2349,6 +2426,22 @@ def walk(
     # Lift block-root WP native supports (spacing/border/colour → style.*)
     if slug is not None:
         _lift_root_supports_to_style(node, slug, css_rules, attrs)
+
+    # A2 — Composite wrapper-CSS lift onto mirrored block attrs (Method-2, Spec 22 §FR-22-21).
+    # For every block in the container-mirror roster (wraps_block='sgs/container', DB-gated),
+    # lift the block's own wrapper CSS (min-height, box-shadow, grid, gap, background-image,
+    # etc.) onto its mirrored block attrs using the A1 helper.
+    # setdefault is used throughout — _lift_root_supports_to_style (style.*) runs first and
+    # owns background-colour/padding/border; this pass captures the remainder.
+    # R-22-1: DB-gated roster; no hardcoded slug list.
+    # R-22-9: universal — every mirror-roster composite fires; non-roster blocks are skipped.
+    if slug is not None and _is_container_mirror_block(slug):
+        _a2_base, _a2_bp = _collect_css_decls_for_element(node, css_rules)
+        _a2_lifted, _a2_flagged = _lift_wrapper_css_to_container_attrs(
+            _a2_base, _a2_bp, _block_attr_names(slug)
+        )
+        for _a2_k, _a2_v in _a2_lifted.items():
+            attrs.setdefault(_a2_k, _a2_v)  # Never clobber attrs already set above.
 
     # Recursively walk children for InnerBlocks — EXCEPT:
     #   (G1) leaf blocks: content lives in the lifted content attr above.

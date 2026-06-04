@@ -427,8 +427,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$styles[] = 'max-width:' . esc_attr( $style_dim['maxWidth'] );
 			}
 
-			// Min-height flex-centring class.
-			if ( $is_section && ! empty( $min_height ) ) {
+			// Min-height flex-centring class — ONLY when the design asks for centring
+			// (verticalAlign === 'center'). A min-height section with default/start/
+			// stretch alignment must NOT be force-centred: doing so overrides grid
+			// stretch / top alignment (e.g. a hero grid whose columns should fill the
+			// row, not float vertically). MF-B, Method-2 converter-lift 2026-06-04.
+			if ( $is_section && ! empty( $min_height ) && 'center' === $vertical_align ) {
 				$classes[] = 'sgs-container--has-min-height';
 			}
 
