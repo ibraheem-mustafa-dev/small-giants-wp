@@ -2,10 +2,10 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/mobile-nav",
-	"version": "3.0.3",
+	"version": "3.0.4",
 	"title": "Mobile Navigation",
 	"category": "sgs-interactive",
-	"description": "Full-screen mobile navigation drawer with accordion submenus, spring-physics animation, and swipe-to-close. Reads menu items from the header navigation block automatically.",
+	"description": "Full-screen mobile navigation drawer with accordion submenus, spring-physics animation, and swipe-to-close. Reads menu items from the header navigation block automatically. Excluded from WS-4 container-mirror (containerMirror:false): outer shell is a Popover API portal/dialog — no contentWidth semantics apply; drawer width is governed by its own drawerWidth/drawerMaxWidth CSS vars (see R-22-9 assessment 2026-06-04).",
 	"keywords": [
 		"mobile",
 		"navigation",
@@ -17,6 +17,10 @@
 	"textdomain": "sgs-blocks",
 	"icon": "menu-alt3",
 	"supports": {
+		"sgs": {
+			"containerKind": "content",
+			"containerMirror": false
+		},
 		"html": false,
 		"anchor": true,
 		"multiple": false,
