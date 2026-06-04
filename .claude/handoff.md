@@ -1,6 +1,51 @@
+# Session Handoff — 2026-06-04 (CLONING thread) — WS-4 composite-mirror EXECUTED: 25 composites mirror sgs/container + recipe canonical + reliable fan-out proven
+
+> **CURRENT — this is the live handoff.** Earlier dated sections below are prior work, kept for history. Full orchestration plan: `.claude/next-session-prompt.md` (2026-06-04 opener). Decisions: D166. Theme thread shares the tree (D165) — commit by explicit path, verify `git log -1 --stat` (STOP #41/#45).
+
+## Completed This Session
+1. **WS-4 foundation (`64950efa`):** extracted the full wrapper-render from `container/render.php` into `includes/class-sgs-container-wrapper.php` (`SGS_Container_Wrapper::render($attributes,$block,$inner_html,$kind,$opts)`; KIND-gated section/layout/content; opts incl `extra_attrs` data-* passthrough + `no_overlay` C3 guard); refactored `sgs/container` to call it — **byte-identical proven (canary page diff=0)**; + `ContainerWrapperControls.js` editor component + the propagation writer + Stage-11 (report-only). Helper later hardened: self-requires render-helpers.php + shape-dividers.php (a composite requiring only the helper fataled on the gap path) + `fieldset` allowed-tag.
+2. **25 composites migrated to mirror sgs/container (element route) — all live-validated + committed:** section (trust-bar `a18e6188`, cta-section `a0297c04` incl. the rename + double-emit pattern); content ×6 (`84a86b96`, `6634d2e2`); layout grids ×9 (`54032e86`); interactive ×8 (`0ad389b0` — incl. testimonial-slider with the preserved #8 work).
+3. **Recipe canonical (`a4295130`):** Spec 22 §FR-22-21.1 (4-step migration recipe + KIND rules + the mandatory verification process) + §FR-22-21.2 (Stage-11 auto-propagation design) + pipeline-flow status.
+4. **#3 heading + label textAlign parity (`5712c97e`):** block capability (R-22-9, matches sgs/text); the page-144 visible outcome needs converter-emit + re-clone (tracked).
+5. **Reliable fan-out process proven** after the 2026-06-03 5-way-agent overload failure: small batches (2-3 agents) + mandatory undefined-var self-check + orchestrator live test-page verify per block. Caught 3 cut-off/500 agents + a helper-dependency fatal + an option-picker tag gap — all fixed before commit. Docs (`a524c241`): D166 + next-session-prompt 2026-06-04 opener + state.
+
+## Current State
+- **Branch:** `main` at `5712c97e` (+ this handoff commit pending). Theme thread co-active (D165).
+- **Tests:** no suite; all 25 composites + heading/label `php -l` + `npm run build` clean; live `do_blocks()`/test-page render-verified (sgs-container mirror present, 0 fatals).
+- **Build:** passes. **Uncommitted:** lucide-icons.php (auto-regen, never committed).
+
+## Known Issues / Blockers
+- **WS-4 NOT 100% done:** hero (inline w/ Bean — hardest), mobile-nav, product-card (coordinate theme thread) remain.
+- **The composite mirror does NOT fix the cloned page** — the converter routes mockup classes to `sgs/container` (conf 0.10), not to the matching composite BLOCK. Page-144 fidelity needs the SEPARATE converter work (routing fix + converter-lift + image sideload), to be architected by the Phase-7 adversarial review.
+
+## Next Priorities (in order)
+1. **hero inline WITH Bean** (cta-section is the proven section pattern) + mobile-nav + product-card.
+2. **/qc-council** all 25+ composites (gaps/weaknesses/missed interactivity).
+3. **Upgrade /sgs-update Stage 11** to auto `--apply` the KIND-scoped mirror on a container version-bump → **run /sgs-update**.
+4. **/systematic-debugging + /adversarial-council** — hole-poke the universal setup vs Spec 22 + plan; FIX the converter routing (`.sgs-hero`→`sgs/hero` block before the container fallback).
+5. **/handoff.**
+
+## Files Modified
+| File | What changed |
+|------|---|
+| `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php` | NEW shared wrapper helper (+ extra_attrs, fieldset, self-requires deps) |
+| `plugins/sgs-blocks/src/blocks/container/{render.php,components/ContainerWrapperControls.js}` | container delegates to helper (byte-identical) + editor-controls component |
+| `plugins/sgs-blocks/src/blocks/<25 composites>/{render.php,block.json,edit.js}` | mirror sgs/container via the helper |
+| `plugins/sgs-blocks/src/blocks/{heading,label}/*` | #3 textAlign parity capability |
+| `plugins/sgs-blocks/scripts/{sync-container-wrapping-blocks.py,sgs-update-v2.py}` | propagation writer + Stage 11 (report-only) |
+| `.claude/specs/22-...md`, `cloning-pipeline-flow.md`, `decisions.md` (D166), `state.md`, `next-session-prompt.md`, `parking.md`, the triage plan | recipe canonical + reconciliation |
+
+## Notes for Next Session
+- **Validate composites in the EDITOR / a test page, NOT a page re-clone** — the converter emits containers not composites (memory `composite-mirror-is-separate-from-cloning-fidelity`). REST `POST /wp/v2/pages` is NOT guard-blocked; use a `core/paragraph` child (NOT `sgs/text` — it renders empty), or a token-gated webroot `do_blocks()` probe.
+- **The recipe is two committed reference blocks + Spec 22 §FR-22-21.1** — fan-out the rest in small verified batches; the undefined-var grep + orchestrator render-verify are MANDATORY (php -l misses undefined vars; agents repeatedly self-report "clean" while broken — STOP #34).
+- **hero decisions for Bean:** LCP `<img>` stays bespoke vs moves to container bg-attr; split-grid via extra_styles vs container layout attrs. Same double-emit/rename pattern as cta-section.
+- The converter-lift is NOT dead (memory `universal-lift-was-premature-not-falsified`) — it's queued post-WS-4 + folds into the adversarial review's converter architecture.
+
+---
+
 # Session Handoff — 2026-06-03 (CLONING thread, LATE PM) — Wave-1 block fixes + composite-diff scanner (uncommitted) · dedup audit (NO merges) · generic-lift FALSIFIED · WS-4 set up as the full-29 opener
 
-> **CURRENT — this is the live handoff.** Earlier dated sections below are prior work, kept for history. Full orchestration plan: `.claude/next-session-prompt.md`. Decisions: D163. A parallel THEME thread shares the tree (now at D162) — commit by explicit path, verify `git log -1 --stat` (STOP #41/#45).
+> **SUPERSEDED by the 2026-06-04 section above.** Earlier dated sections below are prior work, kept for history. Full orchestration plan: `.claude/next-session-prompt.md`. Decisions: D163. A parallel THEME thread shares the tree (now at D162) — commit by explicit path, verify `git log -1 --stat` (STOP #41/#45).
 
 ## Completed This Session
 1. **3 block-quality fixes BUILT (uncommitted; build-clean + diff-verified; NOT live-verified — the SGS visual-diff hook blocks committing visual block changes without a passing report).** #3 heading/label **text-parity** (textAlign + parity controls + label `attr()` fix; heading `:where()` guard); #8 **reviews-slider** rebuild (fill-width track + always-rotating nav + pause-in-controls — still needs the live 4-card verify); **WS-1c A3+A4** on `sgs/container` render.php (custom-width `margin-inline:auto` + raw-px gap helper). 3 parallel Sonnet subagents; diffs verified.
