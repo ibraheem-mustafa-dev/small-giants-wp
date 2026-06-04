@@ -448,26 +448,36 @@ final class Product_Preflight {
 		}
 
 		// ── Check 7: JSON-LD structural validity ─────────────────────────────────
-		$checked[]   = 'jsonld';
-		$schema_html = Product_Schema::build_script( $product_id );
-		if ( '' === $schema_html ) {
-			$issues[] = array(
-				'code'     => 'invalid_jsonld',
-				'message'  => \__( 'The ProductGroup JSON-LD output is empty — the manifest has no valid combos or the product data is incomplete.', 'sgs-blocks' ),
-				'severity' => 'blocker',
-			);
-		} else {
-			// Verify the script contains a ProductGroup and at least one AggregateOffer.
-			$json_str  = (string) \preg_replace( '/<script[^>]*>|<\/script>/i', '', $schema_html );
-			$json_data = \json_decode( $json_str, true );
-			if ( ! \is_array( $json_data )
-				|| 'ProductGroup' !== ( $json_data['@type'] ?? '' )
-				|| empty( $json_data['offers'] ) ) {
+		// The schema/manifest is publish-gated (Product_Manifest only builds combos
+		// for a published product), so this check is only meaningful once the product
+		// IS published. It runs for real at the publish transition (the status is
+		// already 'publish' when transition_post_status fires) and on every re-save of
+		// a published product. For a pre-publish readiness check on a still-draft
+		// product we SKIP it — the priced/imaged/variesBy checks above already
+		// guarantee the data a valid ProductGroup needs, so a valid draft is not
+		// falsely reported as having empty JSON-LD.
+		if ( 'publish' === \get_post_status( $product_id ) ) {
+			$checked[]   = 'jsonld';
+			$schema_html = Product_Schema::build_script( $product_id );
+			if ( '' === $schema_html ) {
 				$issues[] = array(
 					'code'     => 'invalid_jsonld',
-					'message'  => \__( 'The ProductGroup JSON-LD is missing required fields (ProductGroup type or offers).', 'sgs-blocks' ),
+					'message'  => \__( 'The ProductGroup JSON-LD output is empty — the manifest has no valid combos or the product data is incomplete.', 'sgs-blocks' ),
 					'severity' => 'blocker',
 				);
+			} else {
+				// Verify the script contains a ProductGroup and at least one AggregateOffer.
+				$json_str  = (string) \preg_replace( '/<script[^>]*>|<\/script>/i', '', $schema_html );
+				$json_data = \json_decode( $json_str, true );
+				if ( ! \is_array( $json_data )
+				|| 'ProductGroup' !== ( $json_data['@type'] ?? '' )
+				|| empty( $json_data['offers'] ) ) {
+					$issues[] = array(
+						'code'     => 'invalid_jsonld',
+						'message'  => \__( 'The ProductGroup JSON-LD is missing required fields (ProductGroup type or offers).', 'sgs-blocks' ),
+						'severity' => 'blocker',
+					);
+				}
 			}
 		}
 
