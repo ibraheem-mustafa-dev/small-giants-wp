@@ -286,6 +286,13 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			'perUnitTemplate'     => $per_unit_template,
 			'discountLabel'       => $discount_label,
 			'discountHidden'      => ( '' === $discount_label ),
+			// A4: per-variation image gallery (FR-27-A4).
+			// gallery = default combo's ordered { url, w, h, alt } image set.
+			// thumbsHidden = true when < 2 images (strip not shown for solo image).
+			// selectedThumb = 0 = first image highlighted on load (SSR-wipe-safe).
+			'gallery'             => $def['gallery'],
+			'thumbsHidden'        => ( count( $def['gallery'] ) < 2 ),
+			'selectedThumb'       => 0,
 		);
 
 		// M-C9 hard cap: 24 KB max serialised context — never trips for 48 SKUs
@@ -305,18 +312,35 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				$base_opts,
 				array(
 					'extra_attrs'     => array(
-						'data-wp-interactive' => 'sgs/product-card',
-						'data-wp-init'        => 'callbacks.initPillBridge',
+						'data-wp-interactive'      => 'sgs/product-card',
+						'data-wp-init'             => 'callbacks.initPillBridge',
+						// A4: prefetch gallery images on first card interaction.
+						// Plain event names — no colon, no binding issue (constraint 4).
+						'data-wp-on--pointerenter' => 'actions.prefetchGallery',
+						'data-wp-on--focusin'      => 'actions.prefetchGallery',
 					),
 					'extra_attr_html' => wp_interactivity_data_wp_context( $context ),
 				)
 			);
 
-			$card_permalink = ! empty( $data['wc_id'] ) ? esc_url( get_permalink( $data['wc_id'] ) ) : '';
+			$card_permalink     = ! empty( $data['wc_id'] ) ? esc_url( get_permalink( $data['wc_id'] ) ) : '';
 			$sgs_has_real_image = ( '' !== $image_src ) && ( false === strpos( (string) $image_src, 'woocommerce-placeholder' ) );
+
+			// A4: resolve default image dimensions for the aspect-ratio box (CLS 0).
+			$def_img_w = ( ! empty( $def['gallery'][0]['w'] ) ) ? (int) $def['gallery'][0]['w'] : 0;
+			$def_img_h = ( ! empty( $def['gallery'][0]['h'] ) ) ? (int) $def['gallery'][0]['h'] : 0;
+			// Aspect-ratio inline style: only set when both dimensions are known and
+			// non-zero; falls back to the 220px fixed height in style.css.
+			$media_aspect_style = ( $def_img_w > 0 && $def_img_h > 0 )
+				? 'aspect-ratio:' . esc_attr( (string) $def_img_w . '/' . (string) $def_img_h ) . ';'
+				: '';
 
 			ob_start();
 			?>
+			<div
+				class="product-card__media"
+				<?php echo '' !== $media_aspect_style ? 'style="' . $media_aspect_style . '"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr applied above. ?>
+			>
 			<?php if ( $sgs_has_real_image ) : ?>
 				<?php if ( '' !== $card_permalink ) : ?>
 				<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
@@ -325,6 +349,8 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					class="product-card-img"
 					src="<?php echo esc_url( $image_src ); ?>"
 					alt="<?php echo esc_attr( $data['image_alt'] ); ?>"
+					<?php echo $def_img_w > 0 ? 'width="' . esc_attr( (string) $def_img_w ) . '"' : ''; ?>
+					<?php echo $def_img_h > 0 ? 'height="' . esc_attr( (string) $def_img_h ) . '"' : ''; ?>
 					loading="eager"
 					fetchpriority="high"
 					decoding="async"
@@ -339,6 +365,40 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
 				</div>
 			<?php endif; ?>
+
+			<?php // A4: thumbnail strip — hidden when < 2 images via context.thumbsHidden. ?>
+			<div
+				class="product-card__thumbs"
+				role="list"
+				aria-label="<?php esc_attr_e( 'Product images', 'sgs-blocks' ); ?>"
+				data-wp-bind--hidden="context.thumbsHidden"
+				<?php echo count( $def['gallery'] ) < 2 ? 'hidden' : ''; ?>
+			>
+				<?php foreach ( $def['gallery'] as $thumb_idx => $thumb ) : ?>
+					<?php
+					/* translators: %d is the image number in the thumbnail strip, e.g. "Image 1". */
+					$thumb_aria_label = esc_attr( sprintf( __( 'Image %d', 'sgs-blocks' ), $thumb_idx + 1 ) );
+					?>
+				<button
+					type="button"
+					class="product-card__thumb"
+					role="listitem"
+					data-index="<?php echo esc_attr( (string) $thumb_idx ); ?>"
+					aria-current="<?php echo 0 === $thumb_idx ? 'true' : 'false'; ?>"
+					aria-label="<?php echo $thumb_aria_label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr applied above. ?>"
+				>
+					<img
+						src="<?php echo esc_url( $thumb['url'] ); ?>"
+						alt="<?php echo esc_attr( $thumb['alt'] ); ?>"
+						<?php echo $thumb['w'] > 0 ? 'width="' . esc_attr( (string) $thumb['w'] ) . '"' : ''; ?>
+						<?php echo $thumb['h'] > 0 ? 'height="' . esc_attr( (string) $thumb['h'] ) . '"' : ''; ?>
+						loading="lazy"
+						decoding="async"
+					>
+				</button>
+				<?php endforeach; ?>
+			</div>
+			</div><?php // end .product-card__media. ?>
 
 			<div class="product-card-body">
 				<h3>

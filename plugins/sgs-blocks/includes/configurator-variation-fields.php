@@ -50,8 +50,31 @@ function sgs_configurator_variation_fields_register(): void {
 
 	add_action( 'woocommerce_product_after_variable_attributes', __NAMESPACE__ . '\\sgs_render_variation_fields', 10, 3 );
 	add_action( 'woocommerce_save_product_variation', __NAMESPACE__ . '\\sgs_save_variation_fields', 10, 2 );
+	// Enqueue the WP media library on the product edit screen so the gallery
+	// picker JS can open the media modal. wp_enqueue_media() is idempotent.
+	add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\sgs_enqueue_variation_gallery_assets' );
 }
 add_action( 'init', __NAMESPACE__ . '\\sgs_configurator_variation_fields_register', 20 );
+
+/**
+ * Enqueue the WP media library + inline gallery-picker JS on product edit screens.
+ *
+ * Only loads on `post.php` / `post-new.php` for the `product` post type.
+ *
+ * @param string $hook_suffix Current admin page hook.
+ * @return void
+ */
+function sgs_enqueue_variation_gallery_assets( string $hook_suffix ): void {
+	if ( ! in_array( $hook_suffix, array( 'post.php', 'post-new.php' ), true ) ) {
+		return;
+	}
+	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+	if ( ! $screen || 'product' !== $screen->post_type ) {
+		return;
+	}
+	// Loads the WP media library (idempotent — safe to call even if already loaded).
+	wp_enqueue_media();
+}
 
 /**
  * Render the per-unit + discount-label fields inside a variation's panel.
@@ -115,6 +138,131 @@ function sgs_render_variation_fields( int $loop, array $variation_data, \WP_Post
 			'wrapper_class' => 'form-row form-row-full',
 		)
 	);
+
+	// A4: variation image gallery — multi-image picker using the WP media library.
+	// Stores a comma-separated list of attachment IDs in a hidden input; JS
+	// populates it when the operator selects images via the media modal.
+	$gallery_ids     = Configurator_Meta::sanitize_id_array(
+		get_post_meta( $variation_id, '_sgs_variation_gallery', true )
+	);
+	$gallery_ids_csv = implode( ',', $gallery_ids );
+
+	// Build SSR thumbnail previews (shown even before JS loads).
+	$preview_html = '';
+	foreach ( $gallery_ids as $gid ) {
+		$thumb = wp_get_attachment_image_url( $gid, array( 48, 48 ) );
+		if ( $thumb ) {
+			$preview_html .= '<img src="' . esc_url( $thumb ) . '" width="48" height="48" alt="" style="object-fit:cover;border-radius:4px;border:1px solid #ddd;">';
+		}
+	}
+
+	echo '<div class="form-row form-row-full sgs-variation-gallery-field" style="border-top:1px solid #e0e0e0;margin-top:6px;padding-top:6px;">';
+	echo '<label style="display:block;margin-bottom:4px;">' . esc_html__( 'Image gallery', 'sgs-blocks' ) . '</label>';
+	echo '<p class="description" style="margin-bottom:6px;">' . esc_html__( 'Optional extra images shown as thumbnails below the main product image. Leave empty to use the variation\'s single image only.', 'sgs-blocks' ) . '</p>';
+	echo '<input
+		type="hidden"
+		id="_sgs_variation_gallery_' . esc_attr( (string) $loop ) . '"
+		name="_sgs_variation_gallery[' . esc_attr( (string) $loop ) . ']"
+		value="' . esc_attr( $gallery_ids_csv ) . '"
+	>';
+	echo '<div
+		class="sgs-gallery-previews"
+		id="_sgs_variation_gallery_previews_' . esc_attr( (string) $loop ) . '"
+		style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;"
+	>' . $preview_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $preview_html built from esc_url + hard-coded safe attributes only.
+	echo '<button
+		type="button"
+		class="button sgs-gallery-select"
+		data-loop="' . esc_attr( (string) $loop ) . '"
+	>' . esc_html__( 'Select images', 'sgs-blocks' ) . '</button>';
+	if ( ! empty( $gallery_ids ) ) {
+		echo ' <button
+			type="button"
+			class="button sgs-gallery-clear"
+			data-loop="' . esc_attr( (string) $loop ) . '"
+		>' . esc_html__( 'Clear', 'sgs-blocks' ) . '</button>';
+	}
+	echo '</div>';
+
+	// Inline JS for the gallery picker — deferred until DOMContentLoaded so it
+	// runs after WooCommerce renders variation panels. Scoped to this variation
+	// loop index so multiple variations on the same page don't collide.
+	// wp_enqueue_media() is called on admin_enqueue_scripts (above) so
+	// wp.media is available when this runs.
+	?>
+	<script>
+	( function() {
+		var loop       = <?php echo (int) $loop; ?>;
+		var inputId    = '_sgs_variation_gallery_' + loop;
+		var previewId  = '_sgs_variation_gallery_previews_' + loop;
+
+		function attachHandlers() {
+			var selectBtn = document.querySelector( '.sgs-gallery-select[data-loop="' + loop + '"]' );
+			var clearBtn  = document.querySelector( '.sgs-gallery-clear[data-loop="' + loop + '"]' );
+			var input     = document.getElementById( inputId );
+			var preview   = document.getElementById( previewId );
+
+			if ( ! selectBtn || ! input || ! preview ) {
+				return;
+			}
+
+			selectBtn.addEventListener( 'click', function() {
+				var frame = wp.media( {
+					title    : <?php echo wp_json_encode( __( 'Select gallery images', 'sgs-blocks' ), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ); ?>,
+					multiple : true,
+					library  : { type: 'image' },
+					button   : { text: <?php echo wp_json_encode( __( 'Use these images', 'sgs-blocks' ), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ); ?> },
+				} );
+				frame.on( 'select', function() {
+					var ids     = [];
+					var newPrev = '';
+					frame.state().get( 'selection' ).each( function( attachment ) {
+						ids.push( attachment.id );
+						var sizes = attachment.get( 'sizes' ) || {};
+						var url   = ( sizes.thumbnail && sizes.thumbnail.url ) || attachment.get( 'url' ) || '';
+						if ( url ) {
+							newPrev += '<img src="' + url + '" width="48" height="48" alt="" style="object-fit:cover;border-radius:4px;border:1px solid #ddd;">';
+						}
+					} );
+					input.value   = ids.join( ',' );
+					preview.innerHTML = newPrev;
+					// Show clear button if hidden.
+					var cb = document.querySelector( '.sgs-gallery-clear[data-loop="' + loop + '"]' );
+					if ( ! cb ) {
+						var newClear = document.createElement( 'button' );
+						newClear.type      = 'button';
+						newClear.className = 'button sgs-gallery-clear';
+						newClear.dataset.loop = String( loop );
+						newClear.textContent = <?php echo wp_json_encode( __( 'Clear', 'sgs-blocks' ), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ); ?>;
+						selectBtn.parentNode.insertBefore( newClear, selectBtn.nextSibling );
+						newClear.addEventListener( 'click', doClear );
+					}
+				} );
+				frame.open();
+			} );
+
+			function doClear() {
+				input.value       = '';
+				preview.innerHTML = '';
+				var cb = document.querySelector( '.sgs-gallery-clear[data-loop="' + loop + '"]' );
+				if ( cb ) {
+					cb.remove();
+				}
+			}
+
+			if ( clearBtn ) {
+				clearBtn.addEventListener( 'click', doClear );
+			}
+		}
+
+		if ( document.readyState === 'loading' ) {
+			document.addEventListener( 'DOMContentLoaded', attachHandlers );
+		} else {
+			attachHandlers();
+		}
+	}() );
+	</script>
+	<?php
 
 	echo '</div>';
 }

@@ -119,12 +119,14 @@ final class Product_Manifest {
 		// change a cache miss → rebuild. (This shared transient assumes a single
 		// tax context; per-customer / B2B multi-context is the deferred dual-seed,
 		// FR-27-H3 / M-C10 — out of scope for UK B2C single-rate selling.)
-		// 'v3' = manifest combo schema version. Bump when the combo array shape
+		// 'v4' = manifest combo schema version. Bump when the combo array shape
 		// changes so old cached manifests lacking the new keys miss and rebuild
 		// rather than serving a shape the renderer/view.js no longer expect.
 		// v2 added exMinor/taxMinor/regularExMinor (TAX-UI).
 		// v3 adds unitDivisor/unitLabel/discountLabel (B3 per-unit pricing).
-		$cache_key = 'sgs_manifest_v3_' . $product_id . '_' . self::tax_fingerprint();
+		// v4 adds gallery (A4 per-variation image gallery).
+		// v5: imageUrl authoritative = gallery[0] when a gallery exists (A4 fix).
+		$cache_key = 'sgs_manifest_v5_' . $product_id . '_' . self::tax_fingerprint();
 		$cached    = \get_transient( $cache_key );
 
 		global $wpdb;
@@ -272,6 +274,67 @@ final class Product_Manifest {
 			}
 			$image_url = $image_url ? \esc_url_raw( (string) $image_url ) : '';
 
+			// A4: per-variation image gallery.
+			// Read the registered int[] meta `_sgs_variation_gallery`; build an
+			// ordered array of { url, w, h, alt } items for the thumbnail strip.
+			// wp_get_attachment_image_src() returns [ url, w, h, is_intermediate ]
+			// in one call — avoids a second DB round-trip for dimensions.
+			// Fallback chain (A4 spec): if the gallery meta is empty, fall back to a
+			// single-item gallery built from the variation image (used for imageUrl
+			// above), then the parent image, then []. This guarantees `gallery` is
+			// always the authoritative ordered image set; imageUrl is kept for
+			// back-compat and equals gallery[0].url when present.
+			$gallery_ids = Configurator_Meta::sanitize_id_array(
+				\get_post_meta( $child_id, '_sgs_variation_gallery', true )
+			);
+			$gallery = array();
+			foreach ( $gallery_ids as $gid ) {
+				$src = \wp_get_attachment_image_src( $gid, 'woocommerce_thumbnail' );
+				if ( ! $src ) {
+					continue; // Skip if attachment doesn't resolve.
+				}
+				$gallery[] = array(
+					'url' => \esc_url_raw( (string) $src[0] ),
+					'w'   => (int) $src[1],
+					'h'   => (int) $src[2],
+					'alt' => \sanitize_text_field(
+						(string) \get_post_meta( $gid, '_wp_attachment_image_alt', true )
+					),
+				);
+			}
+
+			// Fallback: build single-item gallery from variation image → parent image.
+			if ( empty( $gallery ) ) {
+				$fallback_url = '' !== $image_url ? $image_url : '';
+				if ( '' !== $fallback_url ) {
+					// Resolve dimensions from the source image ID.
+					$fallback_id  = $vid ? $vid : ( isset( $parent_image_id ) ? $parent_image_id : 0 );
+					$fallback_src = $fallback_id
+						? \wp_get_attachment_image_src( $fallback_id, 'woocommerce_thumbnail' )
+						: false;
+					$fallback_alt = \sanitize_text_field(
+						(string) \get_post_meta( $fallback_id ? $fallback_id : 0, '_wp_attachment_image_alt', true )
+					);
+					$gallery[]    = array(
+						'url' => $fallback_url,
+						'w'   => $fallback_src ? (int) $fallback_src[1] : 0,
+						'h'   => $fallback_src ? (int) $fallback_src[2] : 0,
+						'alt' => $fallback_alt,
+					);
+				}
+				// If there's truly no image at all, gallery stays [].
+			}
+
+			// A4: imageUrl is authoritative = gallery[0] when a gallery exists.
+			// A variation can carry a _sgs_variation_gallery but no FEATURED image
+			// (get_image_id() === 0); without this, imageUrl stays the placeholder
+			// and the card renders the no-image state while its thumbnails show
+			// real gallery images. gallery[0] is the canonical main image; the SSR
+			// main <img>, the no-image gate, and the view.js swap all read it.
+			if ( ! empty( $gallery ) && ! empty( $gallery[0]['url'] ) ) {
+				$image_url = $gallery[0]['url'];
+			}
+
 			// Translated "% off" label seeded per combo so view.js shows the SAME
 			// (localised) string on swap that the SSR literal shows (i18n parity).
 			$pct_display = $pct_off > 0
@@ -304,6 +367,10 @@ final class Product_Manifest {
 				'unitDivisor'    => $unit_divisor,
 				'unitLabel'      => $unit_label,
 				'discountLabel'  => $discount_lbl,
+				// A4: per-variation image gallery (ordered { url, w, h, alt } items).
+				// Always the authoritative image set; imageUrl == gallery[0].url when
+				// present (kept for back-compat). Empty array when no image resolves.
+				'gallery'        => $gallery,
 			);
 		}
 

@@ -387,9 +387,30 @@ function applyPillSelection( ctx, detail ) {
 		ctx.inStock = !! combo.inStock;
 		ctx.stockText = combo.inStock ? '' : 'Out of stock';
 
-		// M-C7: leave the current image if the variation has none.
-		if ( combo.imageUrl ) {
+		// A4: gallery swap — update strip + main image, reset selected thumb.
+		// gallery is always present in v4+ manifests; guard for pre-v4 cached HTML.
+		const newGallery = combo.gallery || [];
+		ctx.gallery = newGallery;
+		ctx.thumbsHidden = newGallery.length < 2;
+		ctx.selectedThumb = 0;
+		// Update main image from gallery[0] if present, else fall back to imageUrl.
+		// M-C7 parity: leave current image if the variation has none at all.
+		if ( newGallery.length > 0 && newGallery[ 0 ].url ) {
+			ctx.imageSrc = newGallery[ 0 ].url;
+		} else if ( combo.imageUrl ) {
 			ctx.imageSrc = combo.imageUrl;
+		}
+
+		// A4: rebuild the thumbnail strip for the new variation's gallery. The
+		// strip is SSR-rendered for first paint (no-JS-safe), but on a pill swap
+		// the image SET changes, so the buttons + images themselves must be
+		// rebuilt — re-stamping aria-current alone would leave the previous
+		// variation's thumbnails on screen. Rebuilt via renderThumbStrip (DOM
+		// createElement, never innerHTML; clicks handled by delegation in
+		// initPillBridge, so injected buttons need no data-wp-on directive).
+		const cardRef = cardRefByCtx.get( ctx );
+		if ( cardRef ) {
+			renderThumbStrip( cardRef, newGallery, 0 );
 		}
 
 		// B3: per-unit note + discount badge (FR-27-B3).
@@ -413,6 +434,88 @@ function applyPillSelection( ctx, detail ) {
 		ctx.discountHidden = true;
 	}
 }
+
+/**
+ * Rebuild the thumbnail strip DOM for a card from a gallery array (A4).
+ *
+ * The strip is SSR-rendered for first paint (no-JS-safe), but a variation swap
+ * changes the image SET, so the buttons + images must be rebuilt. Built with
+ * createElement/setAttribute (never innerHTML) so the manifest-sourced url/alt
+ * cannot inject markup. Clicks are handled by a delegated listener on the card
+ * (see initPillBridge) — injected buttons therefore need no data-wp-on directive
+ * (the Interactivity API does not bind directives on imperatively-added nodes).
+ * Mirrors the imperative DOM approach already used in applyAvailability().
+ *
+ * @param {Element} card        The card root (.product-card--bound).
+ * @param {Array}   gallery     Ordered [{ url, w, h, alt }] items.
+ * @param {number}  selectedIdx Index to mark aria-current.
+ */
+function renderThumbStrip( card, gallery, selectedIdx ) {
+	const strip = card.querySelector( '.product-card__thumbs' );
+	if ( ! strip ) {
+		return;
+	}
+	while ( strip.firstChild ) {
+		strip.removeChild( strip.firstChild );
+	}
+	const items = Array.isArray( gallery ) ? gallery : [];
+	items.forEach( ( item, i ) => {
+		if ( ! item || ! item.url ) {
+			return;
+		}
+		const btn = document.createElement( 'button' );
+		btn.type = 'button';
+		btn.className = 'product-card__thumb';
+		btn.setAttribute( 'role', 'listitem' );
+		btn.dataset.index = String( i );
+		btn.setAttribute( 'aria-current', i === selectedIdx ? 'true' : 'false' );
+		btn.setAttribute( 'aria-label', 'Image ' + ( i + 1 ) );
+		const img = document.createElement( 'img' );
+		img.src = item.url;
+		img.alt = item.alt || '';
+		if ( item.w ) {
+			img.width = item.w;
+		}
+		if ( item.h ) {
+			img.height = item.h;
+		}
+		img.loading = 'lazy';
+		img.decoding = 'async';
+		btn.appendChild( img );
+		strip.appendChild( btn );
+	} );
+}
+
+/**
+ * Apply a thumbnail selection: swap the main image to gallery[idx] and move the
+ * aria-current ring (A4). Used by the delegated click listener in initPillBridge
+ * (works for both SSR-rendered and rebuilt thumbnail buttons).
+ *
+ * @param {Object}  ctx  The card's live Interactivity context proxy.
+ * @param {Element} card The card root (.product-card--bound).
+ * @param {number}  idx  Selected thumbnail index.
+ */
+function selectThumbByIndex( ctx, card, idx ) {
+	if ( ! Array.isArray( ctx.gallery ) || ! ctx.gallery[ idx ] || ! ctx.gallery[ idx ].url ) {
+		return;
+	}
+	ctx.imageSrc = ctx.gallery[ idx ].url;
+	ctx.selectedThumb = idx;
+	card.querySelectorAll( '.product-card__thumb' ).forEach( ( btn ) => {
+		btn.setAttribute(
+			'aria-current',
+			parseInt( btn.dataset.index, 10 ) === idx ? 'true' : 'false'
+		);
+	} );
+}
+
+/**
+ * Module-level WeakSet: tracks cards whose gallery has already been prefetched.
+ * Keyed by the card root element so one pointerenter/focusin is enough per card.
+ *
+ * @type {WeakSet<Element>}
+ */
+const prefetchedCards = new WeakSet();
 
 store( 'sgs/product-card', {
 	callbacks: {
@@ -445,6 +548,22 @@ store( 'sgs/product-card', {
 				applyPillSelection( ctx, event.detail );
 				// Re-compute and announce availability after each selection.
 				applyAvailability( ref, ctx, false );
+			} );
+
+			// A4: delegated thumbnail click handler. Delegation (one listener on
+			// the card) handles BOTH the SSR-rendered thumbnails and the ones
+			// rebuilt imperatively on a pill swap — the Interactivity API does not
+			// bind data-wp-on directives on imperatively-injected nodes, so a
+			// directive on each thumb would not fire after a rebuild.
+			ref.addEventListener( 'click', ( event ) => {
+				const btn = event.target.closest( '.product-card__thumb' );
+				if ( ! btn || ! ref.contains( btn ) ) {
+					return;
+				}
+				const idx = parseInt( btn.dataset.index, 10 );
+				if ( ! isNaN( idx ) ) {
+					selectThumbByIndex( ctx, ref, idx );
+				}
 			} );
 		},
 	},
@@ -625,6 +744,43 @@ store( 'sgs/product-card', {
 			} finally {
 				// A4: always clear pending so the button re-enables after the request.
 				ctx.pending = false;
+			}
+		},
+
+		/**
+		 * Prefetch all gallery images for every combo on first card interaction (A4).
+		 *
+		 * Fires on pointerenter and focusin (bound via data-wp-on--pointerenter and
+		 * data-wp-on--focusin on the card wrapper). Runs ONCE per card element,
+		 * guarded by the module-level prefetchedCards WeakSet so subsequent events
+		 * are instant no-ops. Creates an Image() object per URL — the browser
+		 * fetches and caches each one; subsequent swaps are served from cache.
+		 *
+		 * Only prefetches gallery images. Never runs on the change/submit path so
+		 * it cannot interfere with the add-to-cart flow.
+		 */
+		prefetchGallery() {
+			const { ref } = getElement();
+			if ( ! ref || prefetchedCards.has( ref ) ) {
+				return;
+			}
+			prefetchedCards.add( ref );
+
+			const ctx = getContext();
+			if ( ! ctx.combos ) {
+				return;
+			}
+
+			for ( const key in ctx.combos ) {
+				const gallery = ctx.combos[ key ].gallery;
+				if ( ! Array.isArray( gallery ) ) {
+					continue;
+				}
+				for ( const item of gallery ) {
+					if ( item && item.url ) {
+						new window.Image().src = item.url;
+					}
+				}
 			}
 		},
 	},
