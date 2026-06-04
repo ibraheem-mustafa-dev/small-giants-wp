@@ -90,6 +90,11 @@ require_once SGS_BLOCKS_PATH . 'includes/configurator-term-fields.php';
 // variation editor panel (FR-27-B3 authoring UI).
 require_once SGS_BLOCKS_PATH . 'includes/configurator-variation-fields.php';
 
+// Configurator — edit-safety hooks (FR-27-R3): slug-rename warning on pa_* attribute
+// terms + variation-delete order warning + Configurator_Meta orphan cleanup.
+require_once SGS_BLOCKS_PATH . 'includes/class-configurator-edit-safety.php';
+Configurator_Edit_Safety::register();
+
 // Configurator — <head> emitter (ProductGroup JSON-LD / canonical / OG). Step-0
 // scaffold; filled by FR-27-E1/E2/E3.
 require_once SGS_BLOCKS_PATH . 'includes/configurator-head.php';
@@ -249,6 +254,26 @@ Product_Authoring::register();
 // POST /sgs/v1/products/{id}/variations/bulk.
 require_once SGS_BLOCKS_PATH . 'includes/class-product-provisioning.php';
 Product_Provisioning::register();
+
+// SGS Product Preflight — hard go-live gate + cart £0 guard + weekly health cron
+// (FR-27-PREFLIGHT / SEC-5). Blocks a variable product from publishing if it has
+// zero-priced variations, missing images, an over-cap manifest, no variesBy mapping,
+// or invalid JSON-LD. Also guards add-to-cart at the proxy layer (HTTP 422) and
+// via the universal woocommerce_add_to_cart_validation filter. REST read endpoint:
+// GET /sgs/v1/products/{id}/preflight.
+require_once SGS_BLOCKS_PATH . 'includes/class-product-preflight.php';
+Product_Preflight::register();
+
+// Clear the preflight health-cron schedule on plugin deactivation.
+register_deactivation_hook(
+	__FILE__,
+	static function () {
+		$timestamp = \wp_next_scheduled( \SGS\Blocks\Product_Preflight::CRON_HOOK );
+		if ( $timestamp ) {
+			\wp_unschedule_event( $timestamp, \SGS\Blocks\Product_Preflight::CRON_HOOK );
+		}
+	}
+);
 
 // SGS Floating UI — Customiser controls + frontend renderer (replaces retired back-to-top + reading-progress blocks).
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-floating-ui-customiser.php';

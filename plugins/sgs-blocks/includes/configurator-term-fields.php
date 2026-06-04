@@ -70,12 +70,16 @@ function sgs_configurator_term_fields_hooks(): void {
 	foreach ( wc_get_attribute_taxonomy_names() as $taxonomy ) {
 		// Add-term screen — fields below the default form fields.
 		add_action( "{$taxonomy}_add_form_fields", __NAMESPACE__ . '\\sgs_render_swatch_add_fields' );
+		add_action( "{$taxonomy}_add_form_fields", __NAMESPACE__ . '\\sgs_render_variesby_add_field' );
 		// Edit-term screen — table rows inserted into the edit form.
 		add_action( "{$taxonomy}_edit_form_fields", __NAMESPACE__ . '\\sgs_render_swatch_edit_fields' );
+		add_action( "{$taxonomy}_edit_form_fields", __NAMESPACE__ . '\\sgs_render_variesby_edit_field' );
 		// Save on create.
 		add_action( "created_{$taxonomy}", __NAMESPACE__ . '\\sgs_save_swatch_fields', 10, 2 );
+		add_action( "created_{$taxonomy}", __NAMESPACE__ . '\\sgs_save_variesby_field', 10, 2 );
 		// Save on update.
 		add_action( "edited_{$taxonomy}", __NAMESPACE__ . '\\sgs_save_swatch_fields', 10, 2 );
+		add_action( "edited_{$taxonomy}", __NAMESPACE__ . '\\sgs_save_variesby_field', 10, 2 );
 	}
 
 	// Enqueue the tiny media-button script on term screens only.
@@ -367,4 +371,122 @@ function sgs_save_swatch_fields( int $term_id, int $tt_id ): void { // phpcs:ign
 	}
 
 	update_term_meta( $term_id, '_sgs_swatch_image_id', $safe_image_id );
+}
+
+// ─── variesBy field (FR-27-R3) ────────────────────────────────────────────────
+
+/**
+ * Render the variesBy <select> on the "Add term" screen.
+ *
+ * The field maps to Google Merchant Center's `variesBy` closed enum (SEC-8):
+ * color, size, material, pattern, suggestedAge, suggestedGender.
+ *
+ * @param string $taxonomy Current taxonomy slug (unused; field is taxonomy-agnostic).
+ * @return void
+ */
+function sgs_render_variesby_add_field( string $taxonomy ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
+	$nonce = wp_create_nonce( 'sgs_variesby_save_' . $taxonomy );
+	?>
+	<div class="form-field sgs-variesby-field" style="margin-top:1.5em;">
+		<input type="hidden" name="sgs_variesby_nonce" value="<?php echo esc_attr( $nonce ); ?>" />
+		<label for="sgs_variesby_value_add"><?php esc_html_e( 'Google variesBy type', 'sgs-blocks' ); ?></label>
+		<?php echo sgs_variesby_select( 'sgs_variesby_value_add', 'sgs_variesby_value', '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- function returns pre-escaped markup. ?>
+		<p class="description">
+			<?php esc_html_e( 'Optional. Tells Google which product dimension this attribute represents (e.g. "color" for a colour attribute). Used in the JSON-LD ProductGroup markup. Leave "(none)" if unsure.', 'sgs-blocks' ); ?>
+		</p>
+	</div>
+	<?php
+}
+
+/**
+ * Render the variesBy <select> on the "Edit term" screen (inside a <table> row).
+ *
+ * @param \WP_Term $wp_term The term being edited.
+ * @return void
+ */
+function sgs_render_variesby_edit_field( \WP_Term $wp_term ): void {
+	$taxonomy      = $wp_term->taxonomy;
+	$nonce         = wp_create_nonce( 'sgs_variesby_save_' . $taxonomy );
+	$current_value = (string) get_term_meta( $wp_term->term_id, '_sgs_variesby_value', true );
+	?>
+	<input type="hidden" name="sgs_variesby_nonce" value="<?php echo esc_attr( $nonce ); ?>" />
+	<tr class="form-field sgs-variesby-field-row">
+		<th scope="row">
+			<label for="sgs_variesby_value_edit"><?php esc_html_e( 'Google variesBy type', 'sgs-blocks' ); ?></label>
+		</th>
+		<td>
+			<?php echo sgs_variesby_select( 'sgs_variesby_value_edit', 'sgs_variesby_value', $current_value ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- function returns pre-escaped markup. ?>
+			<p class="description">
+				<?php esc_html_e( 'Tells Google which product dimension this attribute represents. Used in the JSON-LD ProductGroup markup. Leave "(none)" if unsure.', 'sgs-blocks' ); ?>
+			</p>
+		</td>
+	</tr>
+	<?php
+}
+
+/**
+ * Build a <select> element for the variesBy closed enum.
+ *
+ * Returns a pre-escaped HTML string; callers must NOT double-escape.
+ *
+ * @param string $id            The HTML `id` attribute.
+ * @param string $name          The HTML `name` attribute.
+ * @param string $current_value The currently saved value (may be '').
+ * @return string Pre-escaped HTML markup.
+ */
+function sgs_variesby_select( string $id, string $name, string $current_value ): string {
+	$options = array(
+		''                => __( '(none)', 'sgs-blocks' ),
+		'color'           => __( 'color — colour swatches', 'sgs-blocks' ),
+		'size'            => __( 'size — size options (S, M, L…)', 'sgs-blocks' ),
+		'material'        => __( 'material — fabric or material type', 'sgs-blocks' ),
+		'pattern'         => __( 'pattern — visual pattern', 'sgs-blocks' ),
+		'suggestedAge'    => __( 'suggestedAge — age range', 'sgs-blocks' ),
+		'suggestedGender' => __( 'suggestedGender — gender targeting', 'sgs-blocks' ),
+	);
+
+	$html = '<select id="' . esc_attr( $id ) . '" name="' . esc_attr( $name ) . '" style="max-width:280px;">';
+	foreach ( $options as $value => $label ) {
+		$html .= '<option value="' . esc_attr( (string) $value ) . '"'
+			. selected( $current_value, (string) $value, false )
+			. '>' . esc_html( $label ) . '</option>';
+	}
+	$html .= '</select>';
+
+	return $html;
+}
+
+/**
+ * Save the variesBy term meta on term create or update.
+ *
+ * Called on `created_{taxonomy}` and `edited_{taxonomy}`.
+ *
+ * @param int $term_id Term ID being saved.
+ * @param int $tt_id   Term taxonomy ID (unused).
+ * @return void
+ */
+function sgs_save_variesby_field( int $term_id, int $tt_id ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+	// Capability check — matches the auth_callback in class-configurator-meta.php.
+	if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- manage_woocommerce is a WooCommerce core capability.
+		return;
+	}
+
+	// Derive taxonomy from the current action name to verify the correct nonce.
+	$action   = current_action();
+	$taxonomy = preg_replace( '/^(created|edited)_/', '', (string) $action );
+
+	$nonce = isset( $_POST['sgs_variesby_nonce'] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified below.
+		? sanitize_text_field( wp_unslash( $_POST['sgs_variesby_nonce'] ) )
+		: '';
+	if ( ! wp_verify_nonce( $nonce, 'sgs_variesby_save_' . $taxonomy ) ) {
+		return;
+	}
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above.
+	$raw   = isset( $_POST['sgs_variesby_value'] )
+		? sanitize_text_field( wp_unslash( $_POST['sgs_variesby_value'] ) )
+		: '';
+	$value = Configurator_Meta::sanitize_variesby( $raw ); // SEC-8: drops any non-enum value.
+
+	update_term_meta( $term_id, '_sgs_variesby_value', $value );
 }

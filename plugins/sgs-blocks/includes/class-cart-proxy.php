@@ -406,6 +406,23 @@ final class Cart_Proxy {
 			);
 		}
 
+		// ── Step 3b: SEC-5 £0 price guard (HTTP 422) ────────────────────────────
+		// Independently reject a zero/unset-price item at the proxy layer before
+		// any cart mutation occurs. The universal filter (enforce_add_to_cart_limits)
+		// also catches this on the Store-API path; having both layers means the
+		// 422 is returned cleanly on the proxy path without reaching add_to_cart().
+		if ( \function_exists( 'wc_get_price_to_display' ) ) {
+			$price_target  = null !== $variation ? $variation : $obj;
+			$display_price = \wc_get_price_to_display( $price_target );
+			if ( $display_price <= 0 ) {
+				return new \WP_Error(
+					'sgs_price_not_set',
+					\__( 'This item does not have a valid price and cannot be added to the basket.', 'sgs-blocks' ),
+					array( 'status' => 422 )
+				);
+			}
+		}
+
 		// ── Step 4: Attribute-match ───────────────────────────────────────────
 		//
 		// The client sends display names + term slugs:
@@ -724,6 +741,22 @@ final class Cart_Proxy {
 		$product   = \wc_get_product( $target_id );
 		if ( ! $product ) {
 			return (bool) $passed;
+		}
+
+		// SEC-5 £0 guard (layer 2) — independently reject any variation whose
+		// display price is zero or unset. Prevents "50 orders at £0 at midnight"
+		// regardless of entry point (this proxy OR a direct Store-API call).
+		// wc_get_price_to_display() honours tax-display settings, matching the
+		// price the customer sees in the configurator card.
+		if ( \function_exists( 'wc_get_price_to_display' ) ) {
+			$display_price = \wc_get_price_to_display( $product );
+			if ( $display_price <= 0 ) {
+				\wc_add_notice(
+					\__( 'This item does not have a valid price and cannot be added to the basket.', 'sgs-blocks' ),
+					'error'
+				);
+				return false;
+			}
 		}
 
 		$stock = $product->get_stock_quantity();
