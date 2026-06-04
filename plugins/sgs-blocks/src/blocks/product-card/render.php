@@ -15,12 +15,31 @@
  *    price/image swapping plus an optional add-to-cart button. All initial
  *    values are server-rendered, so the card is fully meaningful with no JS.
  *
+ * WS-4 (composite-mirror): render.php now delegates the OUTER wrapper to
+ * SGS_Container_Wrapper::render() so sgs/product-card mirrors sgs/container's
+ * wrapper capabilities (widthMode, contentWidth, maxWidth, etc.). The block is
+ * a CONTENT-KIND composite — only width layers are emitted (no bg/grid/shapes).
+ *
  * Shell classes:
  *  - standard: .product-card
  *  - trial:    .product-card .trial-card
  *  - featured: .product-card .featured-card
  *
+ * data-wp-context carry:
+ *  Branches 4 (variable configurator) and 5 (non-variable bound) need
+ *  data-wp-interactive, data-wp-init, and data-wp-context on the OUTER wrapper
+ *  div (the same element get_block_wrapper_attributes() controls). These are
+ *  passed via $opts['extra_attrs'] to SGS_Container_Wrapper::render() →
+ *  get_block_wrapper_attributes(). For data-wp-context the value is
+ *  wp_json_encode( $context ) — get_block_wrapper_attributes() HTML-encodes it
+ *  with esc_attr() so " → &quot;; the browser HTML parser decodes &quot; back
+ *  to " before WP Interactivity reads the attribute. This is the canonical safe
+ *  approach (identical to how WP core handles JSON attrs via wp_kses et al.).
+ *  data-wp-interactive value is the plain namespace string "sgs/product-card"
+ *  which esc_attr() leaves intact.
+ *
  * @since 1.1.0
+ * @since 1.7.0  WS-4 composite-mirror: SGS_Container_Wrapper delegation.
  *
  * @var array     $attributes Block attributes.
  * @var string    $content    InnerBlocks HTML (typed mode only).
@@ -30,6 +49,8 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 $variant_style  = $attributes['variantStyle'] ?? 'standard';
 $source_mode    = $attributes['sourceMode'] ?? 'typed';
@@ -57,23 +78,19 @@ if ( '' !== $card_max_width ) {
 	}
 }
 
+// Base opts shared across all branches (no WP Interactivity attrs).
+$base_opts = array(
+	'tag'           => 'div',
+	'extra_classes' => $classes,
+	'extra_styles'  => ( '' !== $inline_style ) ? array( $inline_style ) : array(),
+	'wrap_inner'    => false,
+);
+
 /* ── Typed mode (default) — unchanged FR-22-6 behaviour ────────────────────── */
 
 if ( 'typed' === $source_mode ) {
-	$wrapper_args = array( 'class' => implode( ' ', $classes ) );
-	if ( '' !== $inline_style ) {
-		$wrapper_args['style'] = $inline_style;
-	}
-	$wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
-	?>
-	<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() is pre-escaped. ?>>
-		<?php
-		// All card content rendered via InnerBlocks. No scalar-attr render — R-22-14.
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is WP core InnerBlocks output.
-		echo $content;
-		?>
-	</div>
-	<?php
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() returns pre-escaped HTML.
+	echo SGS_Container_Wrapper::render( $attributes, $block, $content, 'content', $base_opts );
 	return;
 }
 
@@ -88,22 +105,26 @@ $data       = \SGS\Blocks\Product_Bindings::get_product_data( $product_id, $sour
 
 $classes[] = 'product-card--bound';
 
+// Rebuild base opts with updated classes.
+$base_opts['extra_classes'] = $classes;
+
 // Designed empty state (FR-24-6) — never blank.
 if ( null === $data ) {
-	$empty_args = array( 'class' => implode( ' ', $classes ) . ' product-card--empty' );
-	if ( '' !== $inline_style ) {
-		$empty_args['style'] = $inline_style;
-	}
-	$wrapper_attributes = get_block_wrapper_attributes( $empty_args );
+	$empty_opts                  = $base_opts;
+	$empty_opts['extra_classes'] = array_merge( $classes, array( 'product-card--empty' ) );
+
+	ob_start();
 	?>
-	<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped. ?>>
-		<div class="product-card-body">
-			<p class="product-desc">
-				<?php esc_html_e( 'No product selected. Choose a product in the block settings.', 'sgs-blocks' ); ?>
-			</p>
-		</div>
+	<div class="product-card-body">
+		<p class="product-desc">
+			<?php esc_html_e( 'No product selected. Choose a product in the block settings.', 'sgs-blocks' ); ?>
+		</p>
 	</div>
 	<?php
+	$inner = ob_get_clean();
+
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() returns pre-escaped HTML.
+	echo SGS_Container_Wrapper::render( $attributes, $block, $inner, 'content', $empty_opts );
 	return;
 }
 
@@ -122,38 +143,39 @@ if ( null === $data ) {
 if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\Blocks\Sgs_Configurator_Compat::is_supported() ) {
 	$ro_classes   = $classes;
 	$ro_classes[] = 'product-card--readonly';
-	$ro_args      = array( 'class' => implode( ' ', $ro_classes ) );
-	if ( '' !== $inline_style ) {
-		$ro_args['style'] = $inline_style;
-	}
-	$wrapper_attributes = get_block_wrapper_attributes( $ro_args );
-	$ro_permalink       = $data['wc_id'] ? esc_url( get_permalink( $data['wc_id'] ) ) : '';
+	$ro_opts      = array_merge( $base_opts, array( 'extra_classes' => $ro_classes ) );
+
+	$ro_permalink = $data['wc_id'] ? esc_url( get_permalink( $data['wc_id'] ) ) : '';
+
+	ob_start();
 	?>
-	<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped. ?>>
-		<?php if ( '' !== $data['image_url'] ) : ?>
-			<img class="product-card-img" src="<?php echo esc_url( $data['image_url'] ); ?>" alt="<?php echo esc_attr( $data['image_alt'] ); ?>" loading="lazy" decoding="async">
+	<?php if ( '' !== $data['image_url'] ) : ?>
+		<img class="product-card-img" src="<?php echo esc_url( $data['image_url'] ); ?>" alt="<?php echo esc_attr( $data['image_alt'] ); ?>" loading="lazy" decoding="async">
+	<?php endif; ?>
+	<div class="product-card-body">
+		<h3><?php echo esc_html( $data['title'] ); ?></h3>
+		<?php if ( '' !== $data['short_desc'] ) : ?>
+			<div class="product-desc"><?php echo wp_kses_post( $data['short_desc'] ); ?></div>
 		<?php endif; ?>
-		<div class="product-card-body">
-			<h3><?php echo esc_html( $data['title'] ); ?></h3>
-			<?php if ( '' !== $data['short_desc'] ) : ?>
-				<div class="product-desc"><?php echo wp_kses_post( $data['short_desc'] ); ?></div>
-			<?php endif; ?>
-			<div class="price-row">
-				<?php if ( ! empty( $data['price_from_html'] ) ) : ?>
-					<div class="price price--from">
-						<span class="price-from-label"><?php esc_html_e( 'From', 'sgs-blocks' ); ?></span>
-						<span class="price-from-amount"><?php echo wp_kses_post( $data['price_from_html'] ); ?></span>
-					</div>
-				<?php elseif ( ! empty( $data['price_html'] ) ) : ?>
-					<div class="price"><?php echo wp_kses_post( $data['price_html'] ); ?></div>
-				<?php endif; ?>
-			</div>
-			<?php if ( '' !== $ro_permalink ) : ?>
-				<a class="btn btn-primary product-card__view" href="<?php echo $ro_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd. ?>"><?php esc_html_e( 'View product', 'sgs-blocks' ); ?></a>
+		<div class="price-row">
+			<?php if ( ! empty( $data['price_from_html'] ) ) : ?>
+				<div class="price price--from">
+					<span class="price-from-label"><?php esc_html_e( 'From', 'sgs-blocks' ); ?></span>
+					<span class="price-from-amount"><?php echo wp_kses_post( $data['price_from_html'] ); ?></span>
+				</div>
+			<?php elseif ( ! empty( $data['price_html'] ) ) : ?>
+				<div class="price"><?php echo wp_kses_post( $data['price_html'] ); ?></div>
 			<?php endif; ?>
 		</div>
+		<?php if ( '' !== $ro_permalink ) : ?>
+			<a class="btn btn-primary product-card__view" href="<?php echo $ro_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd. ?>"><?php esc_html_e( 'View product', 'sgs-blocks' ); ?></a>
+		<?php endif; ?>
 	</div>
 	<?php
+	$inner = ob_get_clean();
+
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() returns pre-escaped HTML.
+	echo SGS_Container_Wrapper::render( $attributes, $block, $inner, 'content', $ro_opts );
 	return;
 }
 
@@ -231,20 +253,29 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			// Cap exceeded — fall through to the existing non-interactive "From" card.
 			unset( $context, $manifest, $def );
 		} else {
-			$bound_args = array( 'class' => implode( ' ', $classes ) );
-			if ( '' !== $inline_style ) {
-				$bound_args['style'] = $inline_style;
-			}
-			$wrapper_attributes = get_block_wrapper_attributes( $bound_args );
+			// ── 2b. Build opts for the helper — Interactivity attrs on the wrapper ──
+			//
+			// data-wp-interactive and data-wp-init are plain strings; esc_attr() is a
+			// no-op on them (no HTML-special chars). data-wp-context is wp_json_encode()'d
+			// JSON; get_block_wrapper_attributes() esc_attr()-encodes " → &quot; so the
+			// attribute is double-quoted safely. The browser HTML parser decodes &quot;
+			// back to " before WP Interactivity reads it — standard safe approach.
+			$var_opts = array_merge(
+				$base_opts,
+				array(
+					'extra_attrs' => array(
+						'data-wp-interactive' => 'sgs/product-card',
+						'data-wp-context'     => wp_json_encode( $context ),
+						'data-wp-init'        => 'callbacks.initPillBridge',
+					),
+				)
+			);
+
+			$card_permalink = ! empty( $data['wc_id'] ) ? esc_url( get_permalink( $data['wc_id'] ) ) : '';
+			$sgs_has_real_image = ( '' !== $image_src ) && ( false === strpos( (string) $image_src, 'woocommerce-placeholder' ) );
+
+			ob_start();
 			?>
-<div
-			<?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped. ?>
-	data-wp-interactive="sgs/product-card"
-			<?php echo wp_interactivity_data_wp_context( $context ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns escaped attribute markup. ?>
-	data-wp-init="callbacks.initPillBridge"
->
-			<?php $card_permalink = ! empty( $data['wc_id'] ) ? esc_url( get_permalink( $data['wc_id'] ) ) : ''; ?>
-			<?php $sgs_has_real_image = ( '' !== $image_src ) && ( false === strpos( (string) $image_src, 'woocommerce-placeholder' ) ); ?>
 			<?php if ( $sgs_has_real_image ) : ?>
 				<?php if ( '' !== $card_permalink ) : ?>
 				<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
@@ -266,117 +297,120 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<div class="product-card__no-image" aria-hidden="true">
 					<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
 				</div>
-		<?php endif; ?>
-
-	<div class="product-card-body">
-		<h3>
-			<?php if ( '' !== $card_permalink ) : ?>
-				<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $data['title'] ); ?></a>
-			<?php else : ?>
-				<?php echo esc_html( $data['title'] ); ?>
 			<?php endif; ?>
-		</h3>
 
-			<?php if ( '' !== $data['short_desc'] ) : ?>
-			<div class="product-desc">
-				<?php echo wp_kses_post( $data['short_desc'] ); ?>
-			</div>
-		<?php endif; ?>
+			<div class="product-card-body">
+				<h3>
+					<?php if ( '' !== $card_permalink ) : ?>
+						<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $data['title'] ); ?></a>
+					<?php else : ?>
+						<?php echo esc_html( $data['title'] ); ?>
+					<?php endif; ?>
+				</h3>
 
-			<?php
-			// ── 2b. Render TWO option-picker blocks — Size then Flavour ──────────
-			foreach ( $manifest['axes'] as $axis ) {
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
-				echo render_block(
-					array(
-						'blockName' => 'sgs/option-picker',
-						'attrs'     => array(
-							'label'           => $axis['label'],
-							'showLabel'       => true,
-							'optionItems'     => array_map(
-								static function ( $t ) {
-									return array(
-										'key'   => $t['slug'],
-										'label' => $t['label'],
-									);
-								},
-								$axis['terms']
+				<?php if ( '' !== $data['short_desc'] ) : ?>
+				<div class="product-desc">
+					<?php echo wp_kses_post( $data['short_desc'] ); ?>
+				</div>
+				<?php endif; ?>
+
+				<?php
+				// ── 2b. Render TWO option-picker blocks — Size then Flavour ──────────
+				foreach ( $manifest['axes'] as $axis ) {
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
+					echo render_block(
+						array(
+							'blockName' => 'sgs/option-picker',
+							'attrs'     => array(
+								'label'           => $axis['label'],
+								'showLabel'       => true,
+								'optionItems'     => array_map(
+									static function ( $t ) {
+										return array(
+											'key'   => $t['slug'],
+											'label' => $t['label'],
+										);
+									},
+									$axis['terms']
+								),
+								'defaultSelected' => $manifest['defaultAxes'][ $axis['taxonomy'] ] ?? '',
+								'typeKey'         => $axis['taxonomy'],
 							),
-							'defaultSelected' => $manifest['defaultAxes'][ $axis['taxonomy'] ] ?? '',
-							'typeKey'         => $axis['taxonomy'],
-						),
-					)
-				);
-			}
-			?>
-
-			<?php // ── 2c. Price slot — bound to seeded context literals (SSR-wipe-safe). ?>
-		<div class="price-row" aria-live="polite">
-			<span
-				class="price price--current"
-				data-wp-text="context.priceDisplay"
-			><?php echo esc_html( $price_display ); ?></span>
-			<s
-				class="price--regular"
-				data-wp-bind--hidden="context.hideSale"
-				data-wp-text="context.regularDisplay"
-			><?php echo esc_html( $regular_display ); ?></s>
-			<span
-				class="price--pct-off"
-				data-wp-bind--hidden="context.hideSale"
-				data-wp-text="context.pctDisplay"
-			><?php echo esc_html( $pct_display ); ?></span>
-		</div>
-
-			<?php // ── 2d. Stock slot — hidden when in stock (default). ?>
-		<p
-			class="product-card__stock"
-			role="status"
-			aria-live="polite"
-			data-wp-bind--hidden="context.inStock"
-			data-wp-text="context.stockText"
-		><?php echo esc_html( $stock_text ); ?></p>
-
-			<?php // ── 2e. U5: availability live region — polite, visually hidden. ?>
-		<p
-			class="product-card__availability sgs-sr-only"
-			role="status"
-			aria-live="polite"
-			data-wp-text="context.availabilityNote"
-		></p>
-
-			<?php
-			// ── 2f. Add-to-cart <a> — UNCHANGED in U3 (U7 rewires). ─────────────
-			$add_to_cart_id = absint( $data['wc_id'] );
-			if ( $add_to_cart_id > 0 ) :
-				$product_permalink = esc_url( get_permalink( $add_to_cart_id ) );
+						)
+					);
+				}
 				?>
-			<form
-				class="product-card__cart-form"
-				method="post"
-				action="<?php echo $product_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd above. ?>"
-				data-wp-on--submit="actions.addToCart"
-			>
-				<button
-					type="submit"
-					class="btn btn-primary product-card__add-to-cart"
-					data-wp-bind--disabled="context.pending"
-					data-wp-bind--aria-busy="context.pending"
+
+				<?php // ── 2c. Price slot — bound to seeded context literals (SSR-wipe-safe). ?>
+				<div class="price-row" aria-live="polite">
+					<span
+						class="price price--current"
+						data-wp-text="context.priceDisplay"
+					><?php echo esc_html( $price_display ); ?></span>
+					<s
+						class="price--regular"
+						data-wp-bind--hidden="context.hideSale"
+						data-wp-text="context.regularDisplay"
+					><?php echo esc_html( $regular_display ); ?></s>
+					<span
+						class="price--pct-off"
+						data-wp-bind--hidden="context.hideSale"
+						data-wp-text="context.pctDisplay"
+					><?php echo esc_html( $pct_display ); ?></span>
+				</div>
+
+				<?php // ── 2d. Stock slot — hidden when in stock (default). ?>
+				<p
+					class="product-card__stock"
+					role="status"
+					aria-live="polite"
+					data-wp-bind--hidden="context.inStock"
+					data-wp-text="context.stockText"
+				><?php echo esc_html( $stock_text ); ?></p>
+
+				<?php // ── 2e. U5: availability live region — polite, visually hidden. ?>
+				<p
+					class="product-card__availability sgs-sr-only"
+					role="status"
+					aria-live="polite"
+					data-wp-text="context.availabilityNote"
+				></p>
+
+				<?php
+				// ── 2f. Add-to-cart <a> — UNCHANGED in U3 (U7 rewires). ─────────────
+				$add_to_cart_id = absint( $data['wc_id'] );
+				if ( $add_to_cart_id > 0 ) :
+					$product_permalink = esc_url( get_permalink( $add_to_cart_id ) );
+					?>
+				<form
+					class="product-card__cart-form"
+					method="post"
+					action="<?php echo $product_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd above. ?>"
+					data-wp-on--submit="actions.addToCart"
 				>
-					<svg class="product-card__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-					<span class="product-card__cart-label"><?php esc_html_e( 'Add to Cart', 'sgs-blocks' ); ?></span>
-				</button>
-			</form>
-			<p
-				class="product-card__cart-status"
-				role="status"
-				aria-live="polite"
-				data-wp-text="context.cartStatus"
-			></p>
-			<?php endif; ?>
-	</div>
-</div>
+					<button
+						type="submit"
+						class="btn btn-primary product-card__add-to-cart"
+						data-wp-bind--disabled="context.pending"
+						data-wp-bind--aria-busy="context.pending"
+					>
+						<svg class="product-card__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+						<span class="product-card__cart-label"><?php esc_html_e( 'Add to Cart', 'sgs-blocks' ); ?></span>
+					</button>
+				</form>
+				<p
+					class="product-card__cart-status"
+					role="status"
+					aria-live="polite"
+					data-wp-text="context.cartStatus"
+				></p>
+				<?php endif; ?>
+			</div>
 			<?php
+			$inner = ob_get_clean();
+
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() returns pre-escaped HTML.
+			echo SGS_Container_Wrapper::render( $attributes, $block, $inner, 'content', $var_opts );
 			return;
 		} // end if cap OK.
 	} // end if manifest non-null.
@@ -459,160 +493,164 @@ $context = array(
 	'restNonce'   => wp_create_nonce( 'wp_rest' ),
 );
 
-$bound_args = array( 'class' => implode( ' ', $classes ) );
-if ( '' !== $inline_style ) {
-	$bound_args['style'] = $inline_style;
-}
-$wrapper_attributes = get_block_wrapper_attributes( $bound_args );
+// Non-variable bound opts — Interactivity attrs on the wrapper.
+// Same escaping rationale as the variable branch above.
+$nonvar_opts = array_merge(
+	$base_opts,
+	array(
+		'extra_attrs' => array(
+			'data-wp-interactive' => 'sgs/product-card',
+			'data-wp-context'     => wp_json_encode( $context ),
+			'data-wp-init'        => 'callbacks.initPillBridge',
+		),
+	)
+);
+
+$card_permalink     = ! empty( $data['wc_id'] ) ? esc_url( get_permalink( $data['wc_id'] ) ) : '';
+$sgs_has_real_image = ( '' !== $data['image_url'] ) && ( false === strpos( (string) $data['image_url'], 'woocommerce-placeholder' ) );
+
+ob_start();
 ?>
-<div
-	<?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped. ?>
-	data-wp-interactive="sgs/product-card"
-	<?php echo wp_interactivity_data_wp_context( $context ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns escaped attribute markup. ?>
-	data-wp-init="callbacks.initPillBridge"
->
-	<?php $card_permalink = ! empty( $data['wc_id'] ) ? esc_url( get_permalink( $data['wc_id'] ) ) : ''; ?>
-	<?php $sgs_has_real_image = ( '' !== $data['image_url'] ) && ( false === strpos( (string) $data['image_url'], 'woocommerce-placeholder' ) ); ?>
-	<?php if ( $sgs_has_real_image ) : ?>
-		<?php if ( '' !== $card_permalink ) : ?>
-		<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
-		<?php endif; ?>
-		<img
-			class="product-card-img"
-			src="<?php echo esc_url( $data['image_url'] ); ?>"
-			alt="<?php echo esc_attr( $data['image_alt'] ); ?>"
-			loading="eager"
-			fetchpriority="high"
-			decoding="async"
-			data-wp-bind--src="context.imageSrc"
-			data-wp-bind--alt="context.imageAlt"
-		>
-		<?php if ( '' !== $card_permalink ) : ?>
-		</a>
-		<?php endif; ?>
+<?php if ( $sgs_has_real_image ) : ?>
+	<?php if ( '' !== $card_permalink ) : ?>
+	<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
+	<?php endif; ?>
+	<img
+		class="product-card-img"
+		src="<?php echo esc_url( $data['image_url'] ); ?>"
+		alt="<?php echo esc_attr( $data['image_alt'] ); ?>"
+		loading="eager"
+		fetchpriority="high"
+		decoding="async"
+		data-wp-bind--src="context.imageSrc"
+		data-wp-bind--alt="context.imageAlt"
+	>
+	<?php if ( '' !== $card_permalink ) : ?>
+	</a>
+	<?php endif; ?>
+<?php else : ?>
+	<div class="product-card__no-image" aria-hidden="true">
+		<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+	</div>
+<?php endif; ?>
+
+<div class="product-card-body">
+	<h3>
+	<?php if ( '' !== $card_permalink ) : ?>
+		<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $data['title'] ); ?></a>
 	<?php else : ?>
-		<div class="product-card__no-image" aria-hidden="true">
-			<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+		<?php echo esc_html( $data['title'] ); ?>
+	<?php endif; ?>
+	</h3>
+
+	<?php if ( '' !== $data['short_desc'] ) : ?>
+		<div class="product-desc">
+			<?php echo wp_kses_post( $data['short_desc'] ); ?>
 		</div>
 	<?php endif; ?>
 
-	<div class="product-card-body">
-		<h3>
-		<?php if ( '' !== $card_permalink ) : ?>
-			<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $data['title'] ); ?></a>
-		<?php else : ?>
-			<?php echo esc_html( $data['title'] ); ?>
-		<?php endif; ?>
-		</h3>
+	<?php
+	// Pills — reuse the sgs/option-picker block (DRY) so its verified view.js
+	// fires the sgs:option-selected event the wrapper listens for above.
+	if ( null !== $pill_type ) :
+		$picker_options = array();
+		foreach ( $pill_type['options'] as $opt ) {
+			if ( empty( $opt['key'] ) ) {
+				continue;
+			}
+			$picker_options[] = array(
+				'key'   => sanitize_key( $opt['key'] ),
+				'label' => isset( $opt['label'] ) ? sanitize_text_field( $opt['label'] ) : '',
+			);
+		}
+		$picker_impacts = isset( $pill_type['content_impact'] ) && is_array( $pill_type['content_impact'] )
+			? array_map( 'sanitize_key', $pill_type['content_impact'] )
+			: array();
 
-		<?php if ( '' !== $data['short_desc'] ) : ?>
-			<div class="product-desc">
-				<?php echo wp_kses_post( $data['short_desc'] ); ?>
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
+		echo render_block(
+			array(
+				'blockName' => 'sgs/option-picker',
+				'attrs'     => array(
+					'label'           => $pill_type['type_label'] ?? __( 'Choose an option', 'sgs-blocks' ),
+					'showLabel'       => true,
+					'optionItems'     => $picker_options,
+					'defaultSelected' => $first_key,
+					'contentImpact'   => $picker_impacts,
+					'typeKey'         => sanitize_key( $pill_type['type_key'] ?? '' ),
+				),
+			)
+		);
+	endif;
+	?>
+
+	<div class="price-row" aria-live="polite">
+		<?php
+		// Static SSR price. For a VARIABLE product we show "From <min>" — a
+		// single inviting price reads far better than a bare range
+		// (£9.99–£59.99) before a variation is chosen (the min is tax-correct
+		// via wc_get_price_to_display in the resolver). Simple products / CPT
+		// show the exact price. NOT reactive in Phase 1: when per-variation
+		// pricing lands (FR-27-A2), the selected price binds to a seeded
+		// context key (NOT a JS-only `state` getter — that wipes the SSR
+		// value server-side).
+		if ( ! empty( $data['is_variable'] ) && ! empty( $data['price_from_html'] ) ) :
+			?>
+			<div class="price price--from">
+				<span class="price-from-label"><?php esc_html_e( 'From', 'sgs-blocks' ); ?></span>
+				<span class="price-from-amount"><?php echo wp_kses_post( $data['price_from_html'] ); ?></span>
+			</div>
+		<?php else : ?>
+			<div class="price">
+				<?php echo wp_kses_post( $data['price_html'] ); ?>
 			</div>
 		<?php endif; ?>
-
-		<?php
-		// Pills — reuse the sgs/option-picker block (DRY) so its verified view.js
-		// fires the sgs:option-selected event the wrapper listens for above.
-		if ( null !== $pill_type ) :
-			$picker_options = array();
-			foreach ( $pill_type['options'] as $opt ) {
-				if ( empty( $opt['key'] ) ) {
-					continue;
-				}
-				$picker_options[] = array(
-					'key'   => sanitize_key( $opt['key'] ),
-					'label' => isset( $opt['label'] ) ? sanitize_text_field( $opt['label'] ) : '',
-				);
-			}
-			$picker_impacts = isset( $pill_type['content_impact'] ) && is_array( $pill_type['content_impact'] )
-				? array_map( 'sanitize_key', $pill_type['content_impact'] )
-				: array();
-
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
-			echo render_block(
-				array(
-					'blockName' => 'sgs/option-picker',
-					'attrs'     => array(
-						'label'           => $pill_type['type_label'] ?? __( 'Choose an option', 'sgs-blocks' ),
-						'showLabel'       => true,
-						'optionItems'     => $picker_options,
-						'defaultSelected' => $first_key,
-						'contentImpact'   => $picker_impacts,
-						'typeKey'         => sanitize_key( $pill_type['type_key'] ?? '' ),
-					),
-				)
-			);
-		endif;
-		?>
-
-		<div class="price-row" aria-live="polite">
-			<?php
-			// Static SSR price. For a VARIABLE product we show "From <min>" — a
-			// single inviting price reads far better than a bare range
-			// (£9.99–£59.99) before a variation is chosen (the min is tax-correct
-			// via wc_get_price_to_display in the resolver). Simple products / CPT
-			// show the exact price. NOT reactive in Phase 1: when per-variation
-			// pricing lands (FR-27-A2), the selected price binds to a seeded
-			// context key (NOT a JS-only `state` getter — that wipes the SSR
-			// value server-side).
-			if ( ! empty( $data['is_variable'] ) && ! empty( $data['price_from_html'] ) ) :
-				?>
-				<div class="price price--from">
-					<span class="price-from-label"><?php esc_html_e( 'From', 'sgs-blocks' ); ?></span>
-					<span class="price-from-amount"><?php echo wp_kses_post( $data['price_from_html'] ); ?></span>
-				</div>
-			<?php else : ?>
-				<div class="price">
-					<?php echo wp_kses_post( $data['price_html'] ); ?>
-				</div>
-			<?php endif; ?>
-		</div>
-
-		<?php if ( $add_to_cart_id > 0 ) : ?>
-			<?php
-			/*
-			 * A3 (QC) + U9 (FR-27-B1): progressive-enhancement add-to-cart.
-			 * A native <button type="submit"> activates on BOTH Space and Enter
-			 * (an <a role=button> fires on Enter only — a WCAG 2.1.1 failure
-			 * axe-core does not catch). The wrapping <form action=permalink> is
-			 * the no-JS fallback: submitting lands the visitor on the product
-			 * page (identical UX to the previous <a href>). With JS, the
-			 * Interactivity API intercepts data-wp-on--submit, preventDefault()s
-			 * the navigation, and routes the add through the secure proxy.
-			 *
-			 * A4 (QC): spam guard via context.pending.
-			 * data-wp-bind--disabled + aria-busy reflect the in-flight state;
-			 * view.js guards the action at the top (if pending, return early).
-			 */
-			$product_permalink = esc_url( get_permalink( $add_to_cart_id ) );
-			?>
-			<form
-				class="product-card__cart-form"
-				method="post"
-				action="<?php echo $product_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd above. ?>"
-				data-wp-on--submit="actions.addToCart"
-			>
-				<button
-					type="submit"
-					class="btn btn-primary product-card__add-to-cart"
-					data-wp-bind--disabled="context.pending"
-					data-wp-bind--aria-busy="context.pending"
-				>
-					<svg class="product-card__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-					<span class="product-card__cart-label"><?php esc_html_e( 'Add to Cart', 'sgs-blocks' ); ?></span>
-				</button>
-			</form>
-			<p
-				class="product-card__cart-status"
-				role="status"
-				aria-live="polite"
-				data-wp-text="context.cartStatus"
-			></p>
-		<?php endif; ?>
 	</div>
+
+	<?php if ( $add_to_cart_id > 0 ) : ?>
+		<?php
+		/*
+		 * A3 (QC) + U9 (FR-27-B1): progressive-enhancement add-to-cart.
+		 * A native <button type="submit"> activates on BOTH Space and Enter
+		 * (an <a role=button> fires on Enter only — a WCAG 2.1.1 failure
+		 * axe-core does not catch). The wrapping <form action=permalink> is
+		 * the no-JS fallback: submitting lands the visitor on the product
+		 * page (identical UX to the previous <a href>). With JS, the
+		 * Interactivity API intercepts data-wp-on--submit, preventDefault()s
+		 * the navigation, and routes the add through the secure proxy.
+		 *
+		 * A4 (QC): spam guard via context.pending.
+		 * data-wp-bind--disabled + aria-busy reflect the in-flight state;
+		 * view.js guards the action at the top (if pending, return early).
+		 */
+		$product_permalink = esc_url( get_permalink( $add_to_cart_id ) );
+		?>
+		<form
+			class="product-card__cart-form"
+			method="post"
+			action="<?php echo $product_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd above. ?>"
+			data-wp-on--submit="actions.addToCart"
+		>
+			<button
+				type="submit"
+				class="btn btn-primary product-card__add-to-cart"
+				data-wp-bind--disabled="context.pending"
+				data-wp-bind--aria-busy="context.pending"
+			>
+				<svg class="product-card__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+				<span class="product-card__cart-label"><?php esc_html_e( 'Add to Cart', 'sgs-blocks' ); ?></span>
+			</button>
+		</form>
+		<p
+			class="product-card__cart-status"
+			role="status"
+			aria-live="polite"
+			data-wp-text="context.cartStatus"
+		></p>
+	<?php endif; ?>
 </div>
 <?php
-// `data-wp-text="state.currentPriceText"` shows the resolved price as plain text
-// once JS hydrates; the SSR markup above carries the full price HTML (ranges,
-// strikethrough sale prices) for the no-JS / pre-hydration case.
+$inner = ob_get_clean();
+
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() returns pre-escaped HTML.
+echo SGS_Container_Wrapper::render( $attributes, $block, $inner, 'content', $nonvar_opts );

@@ -4,6 +4,7 @@ import {
 	useInnerBlocksProps,
 	InspectorControls,
 } from '@wordpress/block-editor';
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import {
 	PanelBody,
 	SelectControl,
@@ -245,6 +246,11 @@ export default function Edit( { attributes, setAttributes } ) {
 				<ProductSourcePanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }
+				/>
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="content"
 				/>
 				<PanelBody title={ __( 'Card variant', 'sgs-blocks' ) }>
 					<SelectControl
