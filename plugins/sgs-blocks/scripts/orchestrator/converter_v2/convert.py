@@ -2528,7 +2528,29 @@ def walk(
         if variant_attr is not None:
             detected = db.detect_variant(slug, attrs)
             if detected is not None:
-                attrs[variant_attr] = detected
+                # D6 guard (2026-06-04): detect_variant must return a plain string.
+                # A list / non-string value would be serialised as the Python type
+                # repr (e.g. "['a','b']") by json.dumps, producing garbage in the
+                # block comment and a potential "--Array" class on the frontend when
+                # render.php concatenates `sgs-block--{variant}`. This cannot occur
+                # with the current DB schema (variant_value is TEXT) or the current
+                # detect_variant implementation (always returns str|None), but is
+                # defensively asserted here so that any future caller or DB change
+                # that accidentally produces a non-string is caught at the assignment
+                # point rather than silently emitting malformed block markup.
+                # FR-22-21 step-6 (flag-not-drop): log the anomaly and skip rather
+                # than coercing a bad value.
+                if not isinstance(detected, str):
+                    _trace(
+                        "variant_attr_type_error",
+                        block_slug=slug,
+                        variant_attr=variant_attr,
+                        detected_type=type(detected).__name__,
+                        detected_value=repr(detected),
+                        reason="variant value is not a string — skipped to prevent --Array class emission",
+                    )
+                else:
+                    attrs[variant_attr] = detected
 
     # Block-style preservation (2026-06-03). A draft can request a registered
     # block STYLE VARIATION on a recognised block by adding its `is-style-<name>`
@@ -2545,6 +2567,40 @@ def walk(
         if style_classes:
             existing = attrs.get("className", "").strip()
             attrs["className"] = (existing + " " + " ".join(style_classes)).strip() if existing else " ".join(style_classes)
+
+    # BEM modifier carry (D7, 2026-06-04). A draft can scope CSS rules to a
+    # specific block instance by adding an arbitrary BEM modifier to the block's
+    # root class — e.g. `.sgs-announcement-bar--send-to-ward` or
+    # `.sgs-product-card.sgs-gift-section__card--trial`. The modifier class must
+    # appear on the emitted block's wrapper element so the scoped CSS rule
+    # (harvested into the client style variation) matches. Carry any sgs-BEM class
+    # that has a modifier whose kind (per modifier_suffixes DB) is None — i.e. an
+    # arbitrary identifier, NOT a structural kind (breakpoint / side / corner /
+    # state) and NOT a variant-preset already handled by inheritStyle or is-style-*.
+    # DB-driven via modifier_kind() (R-22-1); universal across all blocks and all
+    # nesting depths (R-22-9); no per-block or per-client conditional. The BEM
+    # recognition class itself is NOT re-emitted — only the modifier-bearing form.
+    # Gated on slug is not None (resolved blocks only — slug-None wrappers already
+    # carry all sgs_classes on className via _emit_wrapper_container). Idempotent:
+    # uses a set-union to avoid duplicating classes already in className.
+    if slug is not None:
+        _existing_cls_set = set(attrs.get("className", "").split())
+        _modifier_classes: list[str] = []
+        for _cls in sgs_classes:
+            _bem = db.parse_sgs_bem(_cls)
+            if _bem is None or _bem.modifier is None:
+                continue
+            if db.modifier_kind(_bem.modifier) is not None:
+                # Structural / state / variant kind — handled elsewhere or irrelevant.
+                continue
+            if _cls not in _existing_cls_set:
+                _modifier_classes.append(_cls)
+        if _modifier_classes:
+            _existing_str = attrs.get("className", "").strip()
+            _new_classes = " ".join(_modifier_classes)
+            attrs["className"] = (
+                (_existing_str + " " + _new_classes).strip() if _existing_str else _new_classes
+            )
 
     # Per-slot default attrs (2026-06-03). A slot can SET attrs on its emitted block,
     # not just choose the block: the button-preset slots (button-primary /
