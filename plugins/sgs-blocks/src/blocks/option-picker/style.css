@@ -273,3 +273,85 @@
 		transition: none;
 	}
 }
+
+/* ================================================================
+   FR-27-B2 — Colour and image swatches
+   New selectors only. Existing pill rules are UNCHANGED.
+   These rules activate only when the PHP render adds the
+   sgs-option-picker__swatch modifier classes. Options without
+   swatch meta render byte-for-byte as before (additive-safe).
+   ================================================================ */
+
+/* ── Shared swatch base ──────────────────────────────────────────── */
+
+.sgs-option-picker__swatch {
+	display: inline-block;
+	flex-shrink: 0;
+	border-radius: 3px;
+	vertical-align: middle;
+}
+
+/* ── Colour chip ─────────────────────────────────────────────────── */
+
+.sgs-option-picker__swatch--colour {
+	/* Size the chip to fit comfortably inside the existing pill padding.
+	   The pill already provides at least 44 px touch target via min-height
+	   on .sgs-option-picker__option — the chip itself is decorative. */
+	width: 1.125em;
+	height: 1.125em;
+	border: 1px solid rgba(0, 0, 0, 0.15);
+	/* Slight inset ring ensures the chip is visible against near-white BGs */
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+/* When a colour swatch is present, apply the auto-contrast text colour
+   (set by PHP as --sgs-op-swatch-text on the pill element) to the pill
+   text.  The chip colour itself is already in background: on the <span>. */
+.sgs-option-picker__pill--has-colour {
+	color: var(--sgs-op-swatch-text, var(--sgs-op-text, var(--wp--preset--color--foreground, currentColor)));
+}
+
+/* Keep WCAG contrast on the checked state too — the selected background
+   may be the primary colour (often teal/dark), so the auto-contrast value
+   from the SWATCH background might disagree with the selected-pill background.
+   We deliberately fall back to the existing --sgs-op-sel-text var so the
+   selected state always uses the globally-correct contrast colour. */
+.sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill--has-colour {
+	color: var(--sgs-op-sel-text, #ffffff);
+}
+
+/* ── Image swatch ────────────────────────────────────────────────── */
+
+.sgs-option-picker__swatch--image {
+	/* Constrain to a consistent square; the <img> fills it via object-fit. */
+	width: 2rem;
+	height: 2rem;
+	border-radius: 4px;
+	object-fit: cover;
+	border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Pills containing an image swatch need slightly less horizontal padding
+   since the image already provides visual bulk. */
+.sgs-option-picker--small  .sgs-option-picker__pill--has-image { padding-inline: 8px; }
+.sgs-option-picker--medium .sgs-option-picker__pill--has-image { padding-inline: 10px; }
+.sgs-option-picker--large  .sgs-option-picker__pill--has-image { padding-inline: 12px; }
+
+/* ── Focus ring — carries through to swatch pills unchanged ────────
+   The existing focus-visible rule already targets all pills via the
+   class selector .sgs-option-picker__pill, so no new rule needed.   */
+
+/* ── Checked ring on swatch pills — all three styles ──────────────
+   The existing :checked ~ .sgs-option-picker__pill rules apply
+   because the modifier classes are additive. No duplication needed. */
+
+/* ── Reduced motion — swatch chip has no transition by default ─────
+   The colour chip uses box-shadow only; no motion to suppress.
+   Image swap is a PHP render — no CSS transition involved.           */
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-option-picker__swatch--colour {
+		/* No transition was added, but be explicit for future-proofing. */
+		transition: none;
+	}
+}
