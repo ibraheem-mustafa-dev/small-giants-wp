@@ -6,6 +6,22 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-04 (cloning thread, PM4) — Method 2 converter-lift BUILD: Phase A core + 2 block fixes SHIPPED + live-verified (D172)
+
+**D172 — The Method-2 converter-lift build executed Phase A (the converter core) + the first Phase-B block fixes, one Sonnet subagent per step with orchestrator live-DOM verification (R-22-11), all committed by explicit path. (CLONING thread.)** _(Next-free cloning D after D170; theme holds D171. Build follows the FINAL PLAN in `.claude/plans/2026-06-04-method2-converter-lift-PHASE-PLAN.md`.)_
+
+**SHIPPED + verified:**
+- **A1 (`e9eaf013`)** — `_lift_wrapper_css_to_container_attrs`: DB-driven (`db.css_property_suffixes()`, R-22-1) precise map (STOP #48), CSS-function passthrough, FLAG-not-drop, responsive. Universality foundation; self-test 6/6.
+- **A2 + MF-B (`0564d1f3`)** — composite-path lift at `convert.py:2351`, mirror-roster-gated (R-22-9), A-collapse fallback (desktop-only min-height→base). MF-B gates `--has-min-height` centring on `verticalAlign==='center'`. LIVE-VERIFIED hero `minHeight:520` renders, no centre-regression. Gradient confirmed OUT of converter scope.
+- **A3 (`f4fa389b`)** — slug-None section lift; 203 attrs (+26); brand grid lifted; others correctly nothing-extra (grandchild grids handled by the existing wrapper path).
+- **FS-4 (`0cbe3daf`)** — sgs/media `width:100%`+`min-width:0` (no 0×0 grid-child collapse). LIVE-VERIFIED 2/3 render; the brand image is 404 (un-uploaded → FS-5), NOT CSS. Visual-diff PASS.
+
+**REMAINING (focused next pass, all grounded in the plan):** FS-5 image sideload (MUST — makes brand/hero/product images load; auth-complicated, webroot-runner; realises FS-4's payoff) · A5 D6/D7 (testimonial `--Array` bug + `--send-to-ward` modifier + className carry) · A4 sidecar delete (cleanup, zero visual) · D5 product-card fill · universality fixture (MANDATORY, R-22-9, value-syntax axis) · QA Gate 2 + Bean R-22-13 (incl. the flagged hero `align-items:center` hero-block-default question).
+
+**Method note:** STOP #34 + #50 earned their keep — A2 grounding corrected the design (gradient out of scope, min-height the real gap, lands on the inner composite); FS-4 live-check caught the brand image is 404 not CSS. pixel-diff held 57.0% (informational, FR-22-18 — structural/editable parity is the gain; the big pixel move needs FS-5).
+
+---
+
 ## 2026-06-04 (theme thread, session 13) — Spec 27 Phase 2 Cluster A COMPLETE + Spec 28 drafted + label-convention (D171)
 
 **D171 — Spec 27 Phase 2 Cluster A is DONE (B3/A4/C2 + Step-7 demand analytics), all live-verified on canary 540 + Bean R-22-13 sign-off granted; the label/badge→sgs/label recognition convention was registered; Spec 28 Smart Bulk Pricing was drafted + adversarial-councilled. (THEME thread; cloning holds D169/D170.)** _(Commits by explicit path: B3 ceb4e04a; label-convention 07975d7e; Spec 28 5cee5e5f; A4 77dccc9f + 48fc54b7; C2+demand 771f43ad; escape-audit 28607ac4; R-22-13 fixes 5fe7cfd5. All pushed to main.)_
