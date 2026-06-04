@@ -11,7 +11,7 @@
 6. **Cluster A TAX-UI (`395c76c9`).** Per-card `taxDisplayMode` (auto | inc-suffix | ex-plus-vat) + B2C-misuse warning. Manifest seeds exMinor/taxMinor/regularExMinor + translated pctDisplay; render.php + view.js share mode-aware formatters (SSR==swap). All 3 modes live-verified under UK VAT (SSR+swap). **qc-council 3-rater passed** — SEC-2 (cart untouched) confirmed; 4 fixes (stale-manifest guard, pctDisplay i18n parity, priceSuffix scoping, doc-block). Canary reverted to baseline.
 
 ## Current State
-- **Branch:** `main` @ `395c76c9` — 9 commits this session (`b80907c6`→`395c76c9`), all pushed.
+- **Branch:** `main` — theme CODE through `395c76c9` (9 commits `b80907c6`→`395c76c9`); theme DOCS through `325991d4` (handoff `8a677a8e` + reconcile `325991d4`); all pushed. Cloning's `a2726848` sits cleanly on top (touched none of my files). Verify with `git log` (HEAD will be at/after `325991d4`).
 - **Tests:** Jest 31/31; `php -l` + WPCS 0-errors on all touched files.
 - **Build/deploy:** product-card 1.8.0 + option-picker 0.1.6 + 4 new includes LIVE on sandybrown; opcache-reset; live-verified. Canary at baseline (tax OFF).
 - **Uncommitted:** only the never-commit artefacts (`lucide-icons.php` auto-regen, `sgs-framework.db`, `theme-snapshot.json`). The earlier spec27/phase1-plan doc tangle was RESOLVED at session-12 close (after the cloning thread closed): spec27 Phase-1 row confirmed SHIPPED + Phase-2 row updated to PARTIAL (D168) + committed; the completed Phase-1 plan archived to `plans/archive/2026-06-03-spec27-phase1-configurator-plan-complete.md`; state.md theme line added.
