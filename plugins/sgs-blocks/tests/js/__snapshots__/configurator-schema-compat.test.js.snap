@@ -38,6 +38,8 @@ exports[`sgs/product-card — Typed shape is a deprecation-free subset attribute
   "featuredTag": "string",
   "image": "string",
   "imageAlt": "string",
+  "imageHeight": "string",
+  "indexVariationUrl": "number",
   "maxWidth": "string",
   "packSizes": "array",
   "priceLarge": "string",

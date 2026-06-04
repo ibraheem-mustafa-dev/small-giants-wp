@@ -9,6 +9,7 @@ import {
 	PanelBody,
 	SelectControl,
 	TextControl,
+	NumberControl,
 	ComboboxControl,
 	Notice,
 	Spinner,
@@ -250,7 +251,13 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 }
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { variantStyle, sourceMode, cardMaxWidth, imageHeight } = attributes;
+	const {
+		variantStyle,
+		sourceMode,
+		cardMaxWidth,
+		imageHeight,
+		indexVariationUrl,
+	} = attributes;
 
 	const isTrial = variantStyle === 'trial';
 	const isFeatured = variantStyle === 'featured';
@@ -364,6 +371,32 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
+				{ 'wc-product' === sourceMode && (
+					<PanelBody
+						title={ __( 'Advanced SEO', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<NumberControl
+							label={ __(
+								'Index a specific variation (advanced)',
+								'sgs-blocks'
+							) }
+							help={ __(
+								'Optional. Enter a variation ID to let search engines index that one variation\'s URL instead of only the main product. Leave at 0 for the default (recommended).',
+								'sgs-blocks'
+							) }
+							value={ indexVariationUrl }
+							min={ 0 }
+							onChange={ ( v ) =>
+								setAttributes( {
+									indexVariationUrl: parseInt( v, 10 ) || 0,
+								} )
+							}
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+						/>
+					</PanelBody>
+				) }
 			</InspectorControls>
 
 			{ isBound ? (

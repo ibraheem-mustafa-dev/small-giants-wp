@@ -94,6 +94,10 @@ require_once SGS_BLOCKS_PATH . 'includes/configurator-variation-fields.php';
 // scaffold; filled by FR-27-E1/E2/E3.
 require_once SGS_BLOCKS_PATH . 'includes/configurator-head.php';
 
+// Configurator — canonical URL override for the indexed-variation escape-hatch (FR-27-E2).
+require_once SGS_BLOCKS_PATH . 'includes/class-product-canonical.php';
+Product_Canonical::register();
+
 // Animation attributes — server-side data-attribute injection for scroll reveals.
 require_once SGS_BLOCKS_PATH . 'includes/animation-attributes.php';
 
