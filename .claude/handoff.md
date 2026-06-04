@@ -1,6 +1,51 @@
+# Session Handoff — 2026-06-04 (CLONING thread, PM) — WS-4 BLOCK-SIDE COMPLETE (hero + product-card + mobile-nav + content-collection) + architecture resolved + /sgs-update reconciled
+
+> **CURRENT — this is the live handoff.** Earlier dated sections below are prior work, kept for history. Full orchestration plan: `.claude/next-session-prompt.md` (2026-06-04 PM opener). Decisions: D167. Theme thread shares the tree (interleaving spec27 commits) — commit by explicit path, verify `git log -1 --stat` (STOP #41/#45).
+
+## Completed This Session
+1. **content-collection registered** (29th container block, layout KIND) + fixed the scanner `widthMode` section-mis-classification that would have corrupted the roster on `--apply` (commit `40a9e03d`). Roster now validates 29 (4/14/11).
+2. **Composite-conversion architecture DEFINITIVELY resolved** via a 4-agent read-only doc audit (Spec 22 §FR-22-21 + flow + stages + decisions): ONE unified layer-by-layer procedure converts a literal-`sgs/container` section AND a composite-with-built-in-wrapper IDENTICALLY; the DOCS (not the unbuilt converter code) are the standard of truth; KIND-scoped FULL mirror is REQUIRED, NO per-block trim (trust-bar is a grid-using section). Captured blub.db 312.
+3. **hero** mirrored + live-verified (commit `bacbde57`) — section KIND, double-emit guard, `overlayColour`→`backgroundOverlayColour` rename, split via `extra_styles` + `wrap_inner:false`; both variants 0 fatals on live `do_blocks`.
+4. **product-card** mirrored (commit `f68bdc6f` + perf `82fd3b45`) — content KIND, all 5 source-mode branches buffer interior→helper; the live `sourceMode='wc'` configurator fully preserved (verified page 589: interactive+context×1+init+44 pickers+sgs-container, 0 fatals). Perf follow-up: new additive helper opt `extra_attr_html` emits `data-wp-context` the compact WP-canonical way (−5.4KB).
+5. **mobile-nav** assessed → EXCLUDED (commit `391e6cb1`, `containerMirror:false`, content KIND — Popover/dialog shell, like modal). **cta-section** audited → conforming SECTION reference (PASS all 6 checks).
+6. **Lesson captured** (blub.db 312 — composite-conversion-truth-is-docs-not-legacy-code) + **`/sgs-update` ran clean** (block_attributes 2110→2739, 29 roster, 0 orphans, reference regenerated).
+
+## Current State
+- **Branch:** `main` at `82fd3b45` (+ this handoff commit pending). Theme thread co-active (interleaving spec27 commits).
+- **Tests:** no suite; all WS-4 blocks `php -l` + `npm run build` clean; hero + product-card live `do_blocks`/page-589 render-verified (0 fatals).
+- **Build:** passes. **Uncommitted (noise):** lucide-icons.php (auto-regen), stray orphan sgs-framework.db (untracked), theme-thread files (NOT mine).
+
+## Known Issues / Blockers
+- **WS-4 mirror does NOT fix page-clone fidelity** — the converter routes mockup classes to `sgs/container` (conf 0.10), not the composite BLOCK. Page fidelity needs the SEPARATE converter work (Method 2 → routing fix + converter-lift + image sideload).
+- Theme thread shares the tree — commit by explicit path, verify `git log -1 --stat`.
+
+## Next Priorities (in order)
+1. **Method 2 — the converter investigation** (Bean's plan): run `/sgs-clone`, read the debug artefacts, diff draft-vs-clone HTML via `/browsing`, using `/dispatching-parallel-agents` + `/brainstorming` + `/qc-council` to architect the converter work coherently (routing fix + converter-lift + #6 content-synthesis + #4a in ONE design).
+2. **`/sgs-update` Stage-11 auto-apply** upgrade (§FR-22-21.2 — currently report-only → auto-`--apply` the KIND-scoped mirror on container version-bump).
+3. **Full doc reconciliation** — spec/flow/stages mark WS-4 block-side complete + concise rewrite + correct outdated points (Bean asked for this).
+4. WS-2/WS-3 de-cheat debt (B1-B5, C2-C8).
+
+## Files Modified
+| File | What changed |
+|------|---|
+| `plugins/sgs-blocks/scripts/{sync-container-wrapping-blocks.py,seed-composition-roles.py}` | scanner widthMode fix + content-collection seed (`40a9e03d`) |
+| `plugins/sgs-blocks/src/blocks/hero/{render.php,block.json,edit.js}` | WS-4 section mirror (`bacbde57`) |
+| `plugins/sgs-blocks/src/blocks/product-card/{render.php,block.json,edit.js}` | WS-4 content mirror + perf (`f68bdc6f`/`82fd3b45`) |
+| `plugins/sgs-blocks/src/blocks/mobile-nav/block.json` | WS-4 exclusion (`391e6cb1`) |
+| `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php` | + `extra_attr_html` additive opt (`82fd3b45`) |
+| `reports/visual-diff/{hero,product-card-ws4}-2026-06-04.md` | WS-4 visual-diff reports |
+| `.claude/{decisions(D167),state,parking,mistakes,handoff,next-session-prompt}.md` | this handoff |
+
+## Notes for Next Session
+- **The mirror is block-side; page fidelity is the SEPARATE converter work** — validate composites in the editor/test-page, NEVER a page re-clone (memory `composite-mirror-is-separate-from-cloning-fidelity`).
+- **Verify on the VALID surface:** product-card's configurator only renders for `sourceMode='wc'` in real page context (page 589) — a bare `do_blocks` of `sourceMode='bound'` renders empty for ANY version (cost me a wrong "regression" call + revert this session). The webroot probe pattern: `setup_postdata($pg); do_blocks($pg->post_content)`.
+- **Docs are truth, not the unbuilt converter code; no per-block trim below KIND** (blub.db 312) — don't re-litigate the composite mirror scope.
+
+---
+
 # Session Handoff — 2026-06-04 (CLONING thread) — WS-4 composite-mirror EXECUTED: 25 composites mirror sgs/container + recipe canonical + reliable fan-out proven
 
-> **CURRENT — this is the live handoff.** Earlier dated sections below are prior work, kept for history. Full orchestration plan: `.claude/next-session-prompt.md` (2026-06-04 opener). Decisions: D166. Theme thread shares the tree (D165) — commit by explicit path, verify `git log -1 --stat` (STOP #41/#45).
+> **SUPERSEDED by the PM section above.** Earlier dated sections below are prior work, kept for history. Full orchestration plan: `.claude/next-session-prompt.md` (2026-06-04 opener). Decisions: D166. Theme thread shares the tree (D165) — commit by explicit path, verify `git log -1 --stat` (STOP #41/#45).
 
 ## Completed This Session
 1. **WS-4 foundation (`64950efa`):** extracted the full wrapper-render from `container/render.php` into `includes/class-sgs-container-wrapper.php` (`SGS_Container_Wrapper::render($attributes,$block,$inner_html,$kind,$opts)`; KIND-gated section/layout/content; opts incl `extra_attrs` data-* passthrough + `no_overlay` C3 guard); refactored `sgs/container` to call it — **byte-identical proven (canary page diff=0)**; + `ContainerWrapperControls.js` editor component + the propagation writer + Stage-11 (report-only). Helper later hardened: self-requires render-helpers.php + shape-dividers.php (a composite requiring only the helper fataled on the gap path) + `fieldset` allowed-tag.

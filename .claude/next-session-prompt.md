@@ -2,9 +2,9 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 thread: cloning-pipeline
-session_tag: small-giants-wp-2026-06-03-PM-ws4-opener-dedup-cleared-genericlift-falsified
-generated: 2026-06-03
-primary_goal: "CLONING-PIPELINE THREAD. OPEN WITH **WS-4 — the composite-wrapper mirror (Bean's core directive, FOUNDATIONAL)**: replace each composite's DRIFTED built-in wrapper with an EXACT sgs/container mirror; auto-propagate via /sgs-update on container version-bump. **SCOPE = ALL ~29 composites in the block_composition roster, KIND-scoped (section=full / layout=grid+width / content=width+spacing) — NOT just the 4 section blocks (Bean corrected this 2026-06-03 PM).** Mechanism (D160): shared PHP helper `includes/class-container-wrapper.php` + KIND-scoped block.json attr-mirror + sync-container-wrapping-blocks.py report-only→WRITER (/sgs-update Stage 11). Build order: rename blockers (cta-section layout→contentLayout +deprecated.js; hero overlayColour→backgroundOverlayColour +deprecated.js; trust-bar additive) → helper → SECTION batch (trust-bar→cta→hero) → LAYOUT batch → CONTENT batch (product-card=#4b, notice-banner=#6) → writer. modal EXCLUDED. INPUT = the composite-diff scanner (sync-container-wrapping-blocks.py now emits per-composite MISSING/ADDED/ALTERED vs sgs/container + an INDEX roll-up — RUN it, read INDEX.md first). Sensitive multi-block build → design-gate + /qc-council + per-composite live-editor + deprecated.js verify; sgs/container the BLOCK is already a complete mirror target (it has minHeight/gridItem*/contentWidth attrs). 2026-06-03 PM session DONE-but-UNCOMMITTED (need a Gate-B visual-diff capture to commit — SGS visual-diff hook blocks committing visual block changes without a passing report): #3 heading/label text-parity, #8 reviews-slider rebuild, WS-1c A3+A4 container, + the scanner extension. DEDUP AUDIT verdict (my review + 4-rater /qc-council; council overturned 3 of 4 merge guesses): NO block merges — overlap is plumbing-level → shared helpers + the container-mirror, NOT merges; content-collection = REGISTER as the 29th roster block (layout KIND), not merge; #6 = notice-banner option-a (mirror sgs/container, keep its role=note/alert + per-type icon/border). GENERIC CONVERTER-LIFT (the A5/A6 'make CSS-transfer generic' idea) was FALSIFIED by /qc-council — DO NOT rebuild as scoped: a blind DB-suffix fingerprint mis-maps (sgs/container's suffixes are overloaded — gridItem*/bgSvg*/overlay*/shapeDivider* end in Colour/Background/Height); min-height has a --has-min-height flex-centre render-trap; AND the only real min-height (hero 520px) is a COMPOSITE-INTERIOR extraction bug, NOT a container-path gap → the fix would be a 0-delta no-op on the canary. The real converter follow-ups: (i) hero composite-interior minHeight/minHeightTablet extraction (verifiable); (ii) if still wanted, extend the CURATED _root_lift_rules with canonical_slot precision (not a blind fingerprint) + align-gate min-height; (iii) A6 = lift-only-gated redesign with its own council (gift trial-card preservation test). Work on main; parallel THEME thread shares the tree (now at D162) — commit by explicit path, verify git log -1 --stat (STOP #41/#45)."
+session_tag: small-giants-wp-2026-06-04-PM-ws4-blockside-complete-open-with-method2-converter-investigation
+generated: 2026-06-04
+primary_goal: "CLONING-PIPELINE THREAD. **WS-4 composite-wrapper mirror is BLOCK-SIDE COMPLETE (D167)** — hero + product-card MIRRORED (live-verified, configurator preserved), mobile-nav EXCLUDED (containerMirror:false, like modal), content-collection REGISTERED (29th roster block), cta-section conforming; roster validates 29 (4/14/11); /sgs-update reconciled (block_attributes 2110→2739, 0 orphans). Architecture DEFINITIVELY resolved via a 4-agent doc audit: ONE unified procedure converts containers + composites IDENTICALLY (§FR-22-21), the DOCS (not the unbuilt converter code) are truth, KIND-scoped FULL mirror REQUIRED — NO per-block trim (blub.db 312). **OPEN WITH METHOD 2 — the converter investigation (Bean's plan).** The mirror does NOT fix page-clone fidelity: the converter routes mockup classes to sgs/container (conf 0.10), NOT the composite BLOCK (memory composite-mirror-is-separate-from-cloning-fidelity). Run /sgs-clone on Mama's page 144, READ the debug artefacts FIRST (leftover-buckets.json → trace.jsonl → stage-2.json/extract.json — Spec 21), diff draft-vs-clone rendered HTML via /browsing (serve the mockup on localhost), and use /dispatching-parallel-agents + /brainstorming + /qc-council to ARCHITECT the converter work as ONE coherent design: (i) routing fix (.sgs-hero→sgs/hero BLOCK before the sgs/container fallback); (ii) the converter-lift (transfer the draft's CSS onto the now-mirrored composite wrapper attrs — universal-lift-was-premature-not-falsified, lands post-WS-4, curated canonical_slot precision NOT a blind suffix fingerprint per STOP #48); (iii) #6 notice-banner content-synthesis; (iv) #4a grid-lift; (v) image sideload (#5). THEN: /sgs-update Stage-11 auto-apply upgrade (§FR-22-21.2, report-only→auto on container version-bump); the FULL doc reconciliation (spec/flow/stages mark WS-4 block-side complete + concise rewrite + correct outdated points). DON'T trim the composite mirror or cite the unbuilt converter as truth (blub.db 312). Work on main; THEME thread shares the tree (interleaving spec27 commits) — commit by explicit path, verify git log -1 --stat (STOP #41/#45)."
 ---
 
 # Next Session — CLONING thread (container/wrapper standardisation programme)
@@ -15,11 +15,50 @@ primary_goal: "CLONING-PIPELINE THREAD. OPEN WITH **WS-4 — the composite-wrapp
 ## First action (smallest, zero-dependency entry point)
 
 1. `/autopilot` is auto-injected — let it run.
-2. Read this opener + the **MANDATORY READING LIST** below end-to-end (not grep-skim), and quote the STOP catalogue + pre-flight ritual back to yourself.
-3. Run the WS-4 input scanner (read-only, ~30s): `python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py` → read `pipeline-state/container-inheritance-sync/<date>/INDEX.md` (the per-composite MISSING/ADDED/ALTERED roll-up). That + the §WS-4 orchestration plan is your starting map.
-4. THEN dispatch Task 1 (WS-4 design-gate). Do NOT build inline — you orchestrate (see §ORCHESTRATION MODEL).
+2. Read the 2026-06-04 PM opener below + the **MANDATORY READING LIST** end-to-end (not grep-skim), and quote the STOP catalogue + pre-flight ritual back to yourself.
+3. Run `/sgs-clone` on Mama's page 144 (the smallest first action that grounds Method 2), then read the debug artefacts in artefact-order (leftover-buckets.json → trace.jsonl → stage-2.json/extract.json — Spec 21) BEFORE conjecturing.
+4. THEN dispatch the Method-2 read-only investigation agents (Task 1 below). You ORCHESTRATE — do NOT build inline (see §ORCHESTRATION MODEL).
 
-## ⚡⚡⚡ 2026-06-04 — WS-4 HERO + TAIL (READ THIS FIRST — supersedes all openers below; the structural-defence sections [STOP catalogue, pre-flight ritual, mandatory reading list] further down REMAIN BINDING)
+## ⚡⚡⚡ 2026-06-04 PM — WS-4 BLOCK-SIDE COMPLETE → OPEN WITH METHOD 2 (the converter investigation) [READ THIS FIRST — supersedes the openers below; the structural-defence sections (STOP catalogue, pre-flight ritual, mandatory reading list, orchestration model) further down REMAIN BINDING and carry forward]
+
+**You are Opus = the ORCHESTRATOR (see §ORCHESTRATION MODEL below).** WS-4 is BLOCK-SIDE DONE (D167); this session investigates + architects the CONVERTER work.
+
+**State recap (plain English):** Every composite block now mirrors `sgs/container` per its KIND — hero + product-card live-verified (product-card's `sourceMode='wc'` configurator preserved), mobile-nav EXCLUDED (`containerMirror:false`, like modal), content-collection REGISTERED (29th roster block), cta-section conforming; the 25 earlier composites already shipped. DB reconciled (29 roster, 2739 attrs, 0 orphans). Architecture is settled: ONE unified procedure converts containers + composites identically (§FR-22-21), the DOCS are truth (not the unbuilt converter code), KIND-scoped FULL mirror is required (NO per-block trim — blub.db 312). **BUT the cloned page (Mama's 144) still looks wrong** because the mirror is BLOCK-SIDE ONLY — the CONVERTER routes every mockup section to a plain `sgs/container` (conf 0.10), never to the matching composite BLOCK, and never lifts the draft's CSS onto the mirrored wrapper attrs. Method 2 grounds + architects that converter work.
+
+### Task 1 — Method 2: investigate the converter (read-only, parallel)
+**What:** Run `/sgs-clone` on Mama's page 144, then fan out read-only agents to (a) read the debug artefacts in artefact-order (leftover-buckets.json → trace.jsonl → stage-1/2.json → extract.json), (b) diff the draft vs the live clone's rendered HTML via `/browsing` (serve the mockup on localhost — `file://` blocked), (c) pinpoint every converter drop/mis-route (the `.sgs-hero`→`sgs/container` fallback; the un-lifted draft CSS) at file:line.
+**Why:** Ground-truth what the converter ACTUALLY does before designing any fix (R-22-7: fix-shapes are hypotheses until measured; STOP #34 verify subagent findings).
+**Orchestration:** `/sgs-clone` inline → `/dispatching-parallel-agents` (3–4 read-only Sonnet/Haiku agents, one per artefact surface + one for the draft-vs-clone DOM diff). **/qc gate after:** `/qc-council` on the findings.
+**Depends on:** none. **Acceptance:** a file:line map of every converter drop/mis-route + a draft-vs-clone structural diff, council-validated.
+
+### Task 2 — Architect the converter work (ONE coherent design)
+**What:** With Task-1 ground truth, `/brainstorming` + `/qc-council` to design the converter changes as ONE coherent design (do NOT patch piecemeal): (i) routing fix (`.sgs-hero`→`sgs/hero` block BEFORE the `sgs/container` fallback); (ii) the converter-lift (draft CSS → the now-mirrored composite wrapper attrs — curated `canonical_slot` precision per STOP #48, NOT a blind suffix fingerprint; `universal-lift-was-premature-not-falsified`); (iii) #6 notice-banner `sgs/text`-child synthesis; (iv) #4a grid-lift in `_emit_wrapper_container`; (v) image sideload (#5).
+**Why:** These are interconnected converter concerns; designing them together avoids the per-section-patch anti-pattern (STOP #27/#33).
+**Orchestration:** inline (Opus) + `/brainstorming` + `/qc-council` (the design-gate — the council IS the gate, ≥70 certainty). **Depends on:** Task 1.
+**Acceptance:** a council-validated file:line fix-shape set with falsifiable predicted outcomes per change.
+
+### Task 3 — `/sgs-update` Stage-11 auto-apply upgrade
+**What:** Upgrade Stage 11 (`sync-container-wrapping-blocks.py`) report-only → auto-`--apply` the KIND-scoped mirror to every `wraps_block='sgs/container'` composite when `sgs/container` version-bumps (§FR-22-21.2). Idempotent, operator-gated, respects `containerMirror:false`.
+**Orchestration:** Sonnet subagent. **/qc gate:** yes (DB-touching). **Depends on:** none (parallel with Task 1/2). **Acceptance:** add a dummy attr to container → `/sgs-update` → all KIND-matching composites gain it; revert the dummy.
+
+### Task 4 — Full doc reconciliation
+**What:** Mark WS-4 block-side complete + the converter work scoped across Spec 22 §FR-22-21 / `cloning-pipeline-flow.md` / `-stages.md` / the standardisation plan; concise rewrite of drifted/outdated points; registry-walk.
+**Orchestration:** inline or Sonnet. **/qc gate:** docscore on changed docs. **Depends on:** Task 2 (converter scope settled). **Acceptance:** flow/stages reference §FR-22-21.1/.2; no stale WS-4 "pending"/"product-card parked" claims remain.
+
+### Dependency graph
+```
+/sgs-clone (inline) → Task 1 (parallel read-only agents) → /qc-council
+                                                              ↓
+                                              Task 2 (design, inline + council)
+Task 3 (Stage-11, Sonnet — parallel)                          ↓
+                                       [execute the designed converter work — likely next session]
+                                                              ↓
+                                              Task 4 (doc reconciliation) → /handoff
+```
+
+> The dated openers below (2026-06-04 WS-4 HERO+TAIL, 2026-06-03 PM, WS-1 detail) are PRIOR-WORK reference. **WS-4 block-side is now DONE — do NOT re-run the WS-4 fan-out.** This PM opener is the live entry point. The STOP catalogue + pre-flight ritual + mandatory reading list + orchestration model below REMAIN BINDING.
+
+## ⚡⚡⚡ 2026-06-04 — WS-4 HERO + TAIL (SUPERSEDED by the PM opener above — WS-4 block-side complete; kept for history. Structural-defence sections further down REMAIN BINDING)
 
 **WS-4 composite-mirror is ~90% DONE. The fan-out is COMPLETE. This session = hero (inline WITH Bean) + 2 complex blocks + 5 tail phases.**
 
