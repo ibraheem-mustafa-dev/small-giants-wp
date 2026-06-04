@@ -5,6 +5,11 @@
 
 ## Active stubs (most recent 30)
 
+### [2026-06-04] WP Interactivity `data-wp-on--<event>` silently won't bind a COLON event name
+- **Pattern key:** `wp-interactivity-data-wp-on-rejects-colon-event-names`
+- **Evidence (D164):** the product-card listened for `sgs:option-selected` via `data-wp-on--sgs:option-selected` — built in Phase C, never visually verified (swap was dormant). When U3 gave it data, the live test showed pills changing the radio but NEVER the price: WP's directive-suffix parser rejects the colon, no listener attaches, no console error. Decisive test: `el.dispatchEvent(new CustomEvent('sgs:option-selected',{bubbles:true,detail}))` directly on the card → no effect.
+- **Rule:** never use a colon in an event name bound via `data-wp-on--`; bridge via `data-wp-init` + a captured-context `addEventListener`, or hyphenate. A present `data-wp-on--` attribute is NOT proof the listener bound — LIVE-TEST every custom-event→store-action wiring. Memory `wp-interactivity-data-wp-on-rejects-colon-event-names`.
+
 ### [2026-05-31] Pixel-diff mis-scores BOTH ways — verify live DOM, never the number alone
 - **Pattern key:** `empty-section-false-pixel-diff-win`
 - **Evidence (D117):** featured-product migration showed −30.9pp "WIN" on cropped pixel-diff while the live DOM had `textLen=0` (empty). Inverse also true: a reflowed-to-correct section (cards side-by-side) scores a false LOSS vs the stacked baseline crop.
