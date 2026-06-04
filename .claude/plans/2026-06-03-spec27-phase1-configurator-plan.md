@@ -5,7 +5,7 @@ thread: sgs-theme
 plan_id: spec27-phase1-configurator
 spec: .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md
 created: 2026-06-03
-status: HARDENING IN PROGRESS (D165, 2026-06-04) — SELL-LOOP (U0+U6 backend + U3+U4+U7+U5 pill-swap) SHIPPED D164. Hardening: U9 (a11y `<button>` + moat-evidence sheet) SHIPPED `afb7a65a` + U8 (cache/tax; M-C1 staleness gap found-and-fixed, proven FRESH) SHIPPED — both live-verified on canary 589/fixture 540. REMAINING to the single whole ship gate: U10 (perf budgets) / U11 (degradation) / U1 (capability flag) / U12 (cloning-compat).
+status: HARDENING IN PROGRESS (D165, 2026-06-04) — SELL-LOOP (U0+U6 backend + U3+U4+U7+U5 pill-swap) SHIPPED D164. Hardening: U9 (a11y `<button>` + moat-evidence sheet) SHIPPED `afb7a65a`; U8 (cache/tax; M-C1 staleness gap found-and-fixed, proven FRESH) SHIPPED `f15fa067`; U10 (perf budgets) MEASURED — all live-verified on canary 589/fixture 540. REMAINING to the single whole ship gate: U11 (degradation) / U1 (capability flag) / U12 (cloning-compat).
 gate_to_build: ".claude/next-session-prompt.md + .claude/state.md (cloning thread) must show the cloning phase CLOSED before Task C build starts"
 scope_frs: [FR-27-A1, FR-27-A2, FR-27-A3, FR-27-A5, FR-27-B1, FR-27-C1, FR-27-G1, FR-27-G2, FR-27-G3, FR-27-G6, FR-27-H1, FR-27-H2, FR-27-H3, FR-27-I-MVP]
 adversarial_council: CONDITIONAL-GO (6-persona brutal round run 2026-06-03; must-fixes folded into §8; build-ready after the §8 pre-build register is applied)
@@ -108,7 +108,8 @@ PURPOSE: the first-mover claim. Option-picker radiogroup (`<input type=radio>`+`
 FILES: `option-picker/*`, `product-card/*`, `.claude/reports/sgs-configurator-moat-evidence.md`.
 ON-CRITICAL-PATH: yes (gates the ship claim). TEST (4 objective gates): axe-core 0; keyboard-only Tab+arrows no trap; NVDA+Chrome announces label+state+price/stock; every target ≥44×44px measured via Playwright computed bounding-rect.
 
-**U10 — Performance budgets (INP/LCP/CLS)** · FR-27-H1/H2 · sonnet + performance-auditor
+**U10 — Performance budgets (INP/LCP/CLS)** · FR-27-H1/H2 · ✅ MEASURED 2026-06-04 (D165)
+STATUS: throttled (4× CPU + ~4G) lab capture on canary 589 — PASS: lab INP 152ms (Event Timing, slowest pill interaction) ≤200; CLS 0 on swap + 0 on load; LCP 1.96s ≤2.5; 0 XHR on pill change; NO React/wc-blocks bundle; block JS 4.6KB ≤20KB. MISS (not the configurator): total page JS 207KB decoded (78KB gzip transfer) > 150KB budget — WC core jQuery + WC frontend + 5 theme animation scripts; configurator's own JS ≈20KB. Dequeue path PARKED `P-CONFIGURATOR-JS-WEIGHT-DEQUEUE`. No code change (verification unit). Measured via isolated Playwright node script (shared browser held by cloning; performance-auditor is Lighthouse-oriented + won't script pill-INP).
 PURPOSE: Interactivity API only (`viewScriptModule` ≈12 KB), no WC React/jQuery; pill resolves from seeded/prefetched state (no XHR on change); default variation SSR'd, image `loading=eager`+`fetchpriority=high`, reserved-height price/stock; swap via `data-wp-bind` (no node insertion).
 FILES: budget asserts in CI; `render.php` image attrs.
 ON-CRITICAL-PATH: no (verification gate). TEST: lab INP ≤200 ms on a 48-SKU pill change (mandatory CI gate, throttled mid-tier 4G); block JS ≤20 KB; CLS 0 on swap; no React bundle.
