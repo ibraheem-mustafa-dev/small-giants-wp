@@ -4,10 +4,19 @@
 	display: block;
 }
 
-/* Image element */
+/* Image element.
+   width:100% fills the grid/flex track (so the image isn't invisible when the
+   track has no intrinsic size contribution from the img itself).
+   min-width:0 lets the image shrink below its intrinsic width inside a
+   min-content track — without it, grid's min-width:auto on the item can
+   produce a 0×0 rendered box even though naturalWidth is non-zero.
+   Both are safe in normal block flow: width:100% on a block-level img is
+   standard practice; min-width:0 is a no-op outside grid/flex. */
 .wp-block-sgs-media img,
 .wp-block-sgs-media .sgs-media__img {
 	display: block;
+	width: 100%;
+	min-width: 0;
 	max-width: 100%;
 	height: auto;
 }
