@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sgs/option-picker — converter/Typed schema-compat attribute type map matches the frozen baseline 1`] = `
+{
+  "contentImpact": "array",
+  "contentWidth": "string",
+  "customWidth": "number",
+  "customWidthUnit": "string",
+  "defaultSelected": "string",
+  "label": "string",
+  "maxWidth": "string",
+  "optionItems": "array",
+  "pillBgColour": "string",
+  "pillBorderColour": "string",
+  "pillSelectedBgColour": "string",
+  "pillSelectedTextColour": "string",
+  "pillSize": "string",
+  "pillStyle": "string",
+  "pillTextColour": "string",
+  "showLabel": "boolean",
+  "typeKey": "string",
+  "widthMode": "string",
+  "widthModeDesktop": "string",
+  "widthModeMobile": "string",
+  "widthModeTablet": "string",
+}
+`;
+
+exports[`sgs/product-card — Typed shape is a deprecation-free subset attribute type map matches the frozen baseline 1`] = `
+{
+  "cardMaxWidth": "string",
+  "ctaText": "string",
+  "ctaUrl": "string",
+  "description": "string",
+  "featuredTag": "string",
+  "image": "string",
+  "imageAlt": "string",
+  "packSizes": "array",
+  "priceLarge": "string",
+  "priceNote": "string",
+  "productId": "number",
+  "productName": "string",
+  "sourceMode": "string",
+  "trialTag": "string",
+  "variantStyle": "string",
+}
+`;

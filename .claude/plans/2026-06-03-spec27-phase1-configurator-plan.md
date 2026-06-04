@@ -5,7 +5,7 @@ thread: sgs-theme
 plan_id: spec27-phase1-configurator
 spec: .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md
 created: 2026-06-03
-status: HARDENING IN PROGRESS (D165, 2026-06-04) — SELL-LOOP (U0+U6 backend + U3+U4+U7+U5 pill-swap) SHIPPED D164. Hardening: U9 (a11y `<button>` + moat-evidence sheet) SHIPPED `afb7a65a`; U8 (cache/tax; M-C1 staleness gap found-and-fixed, proven FRESH) SHIPPED `f15fa067`; U10 (perf budgets) MEASURED `d5af2c67`; U1 (per-site capability flag + toggle + backward-compat migration) SHIPPED; U11 (WC<9.8 read-only degradation + admin notices) SHIPPED — all proven on canary. REMAINING to the single whole ship gate: U12 (cloning-compat tests).
+status: HARDENING IN PROGRESS (D165, 2026-06-04) — SELL-LOOP (U0+U6 backend + U3+U4+U7+U5 pill-swap) SHIPPED D164. Hardening: U9 (a11y `<button>` + moat-evidence sheet) SHIPPED `afb7a65a`; U8 (cache/tax; M-C1 staleness gap found-and-fixed, proven FRESH) SHIPPED `f15fa067`; U10 (perf budgets) MEASURED `d5af2c67`; U1 (per-site capability flag + toggle + backward-compat migration) SHIPPED; U11 (WC<9.8 read-only degradation + admin notices) SHIPPED; U12 (cloning/schema-compat tests — Jest 14/14 + PHPUnit) SHIPPED. ALL 6 HARDENING UNITS DONE. REMAINING: the Spec 27 acceptance 1-6 ship-gate review + Bean visual sign-off (R-22-13) → "Phase 1 SHIPPED".
 gate_to_build: ".claude/next-session-prompt.md + .claude/state.md (cloning thread) must show the cloning phase CLOSED before Task C build starts"
 scope_frs: [FR-27-A1, FR-27-A2, FR-27-A3, FR-27-A5, FR-27-B1, FR-27-C1, FR-27-G1, FR-27-G2, FR-27-G3, FR-27-G6, FR-27-H1, FR-27-H2, FR-27-H3, FR-27-I-MVP]
 adversarial_council: CONDITIONAL-GO (6-persona brutal round run 2026-06-03; must-fixes folded into §8; build-ready after the §8 pre-build register is applied)
@@ -121,7 +121,8 @@ PURPOSE: CPT no-WC fallback secured (IDOR fix already deployed this session ✓)
 FILES: `render.php` (version-floor branch), `class-product-cpt.php`/an admin-notice class.
 ON-CRITICAL-PATH: no. TEST: WC 9.7 → read-only card + notice; activating WC surfaces the prompt.
 
-**U12 — Cloning-compat + schema-compat tests** · FR-27-I-MVP
+**U12 — Cloning-compat + schema-compat tests** · FR-27-I-MVP · ✅ SHIPPED 2026-06-04 (D165)
+STATUS: Jest `tests/js/configurator-schema-compat.test.js` 14/14 PASS + frozen baseline snapshot (block.json attr-TYPE contract for option-picker + product-card; gate on TYPE not presence). PHPUnit `tests/php/ConfiguratorCompatTest.php` (CI; logic verified 13/13 via standalone php) — Typed shape is a deprecation-free subset (option-picker save=null, product-card save=InnerBlocks.Content → no attr serialisation). Converter-emit proven live D153. Pre-existing `block-edit.test.js` mock rot parked P-JEST-BLOCK-EDIT-MOCK-ROT (not U12).
 PURPOSE: the converter keeps emitting Typed option-pickers unchanged; adding `sourceMode`/swatch attrs keeps the Typed shape a **deprecation-free subset** (Jest block.json schema-compat + PHPUnit deprecation tests assert this).
 FILES: `tests/js/*schema-compat*`, `tests/php/BlockDeprecationsTest.php`, option-picker/product-card `block.json` (+`deprecated.js` if needed).
 ON-CRITICAL-PATH: yes (acceptance 6). TEST: a clone run emits Typed pickers unchanged; schema-compat + deprecation tests pass.
