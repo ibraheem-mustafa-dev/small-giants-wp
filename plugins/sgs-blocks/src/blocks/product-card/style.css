@@ -414,15 +414,59 @@
 	/* Add overrides here if a client palette makes the faded text illegible. */
 }
 
+/*
+ * ── Bean R-22-13 sign-off fixes (Bound configurator card) ───────────────────
+ * All scoped to .product-card--bound so page-144 Typed clones stay byte-identical.
+ */
+
+/*
+ * Width: WordPress's constrained-layout injects
+ *   `.wp-container-… > :where(:not(.alignfull)) { max-width: <wide-size> }`
+ * at (0,1,0) specificity, which TIES the card's own `.product-card{max-width:380px}`
+ * (also (0,1,0)) and wins on source order — so the bound card stretched to the
+ * full 1200px content width (and the placeholder image became a thin strip). The
+ * doubled-class selector (0,2,0) beats the layout rule, capping the configurator
+ * card at the intended ~1/3 width (matches the draft trial-pack card).
+ */
+.product-card.product-card--bound {
+	max-width: var( --sgs-product-card-max-width, 380px );
+	margin-inline: auto;
+}
+
+/*
+ * Resting (unselected) option pills get the brand-primary (pink) outline. The
+ * shared option-picker default is the foreground/dark colour; the configurator
+ * wants pink on every state (resting + considering), with the selected pill
+ * filled pink. Set the picker's border custom-property card-scoped only.
+ */
+.product-card--bound .sgs-option-picker {
+	--sgs-op-border: var( --wp--preset--color--primary, #e68a95 );
+}
+
+/*
+ * Card hover affordance (was missing). Subtle lift + deeper shadow on hover —
+ * GPU-composited transform only. Disabled under reduced motion below.
+ */
+.product-card--bound {
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card--bound:hover {
+	transform: translateY( -4px );
+	box-shadow: 0 8px 24px rgba( 58, 46, 38, 0.16 );
+}
+
 /* Reduced motion — respect user preference */
 @media (prefers-reduced-motion: reduce) {
 	.product-card .pill,
 	.product-card .btn,
-	.product-card .product-card__cart-icon {
+	.product-card .product-card__cart-icon,
+	.product-card--bound {
 		transition: none;
 	}
 
-	.product-card .product-card__add-to-cart:hover .product-card__cart-icon {
+	.product-card .product-card__add-to-cart:hover .product-card__cart-icon,
+	.product-card--bound:hover {
 		transform: none;
 	}
 }

@@ -49,6 +49,13 @@ Bound variable card SSRs concrete default price/image/title + two option-pickers
 - **Gate (d) 44px:** every pill (16) + the button measured ≥44px via computed bounding-rect. **0 console errors.**
 - Verified by an isolated Playwright + axe-core node script (the shared MCP browser was held by the cloning session); throwaway script removed after the run.
 
+### Bean R-22-13 sign-off fixes (Bound card polish)
+Bean's visual review (the co-authoritative gate) caught what the automated gates missed:
+- **Card width** — the bound card stretched to the full 1200px content width (placeholder image became a 1198×220 strip). Root cause: WP's constrained-layout `.wp-container-… > :where(:not(.alignfull)){max-width:1200px}` ties the card's own `.product-card{max-width:380px}` (both (0,1,0)) and wins on source order. Fixed with `.product-card.product-card--bound{max-width:380px}` (0,2,0). **Live-verified: card offsetWidth 1200→380, image 1198→378.**
+- **Resting pill outline** — unchecked pills had a dark-brown (`#3a2e26`) border; only the selected pill was pink. Fixed: `.product-card--bound .sgs-option-picker{--sgs-op-border: var(--wp--preset--color--primary)}`. **Live-verified: unchecked border now rgb(230,138,149) pink.**
+- **Card hover** — none existed. Added a Bound-scoped lift + shadow (`translateY(-4px)` + deeper shadow), reduced-motion-guarded. **Live-verified: transition-property = transform, box-shadow.**
+All three are new `.product-card--bound`-scoped selectors — page-144 Typed clones byte-identical. product-card 1.6.3→1.6.4.
+
 ## Scope safety (page-144 / cloning thread)
 - All changes are on the Bound `wc-product` variable branch + `.product-card--bound`-scoped CSS.
 - The Typed branch is byte-identical; the shared `sgs/option-picker` block file is NOT edited (the card reaches into its rendered DOM).
