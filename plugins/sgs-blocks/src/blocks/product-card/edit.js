@@ -250,7 +250,7 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 }
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { variantStyle, sourceMode, cardMaxWidth } = attributes;
+	const { variantStyle, sourceMode, cardMaxWidth, imageHeight } = attributes;
 
 	const isTrial = variantStyle === 'trial';
 	const isFeatured = variantStyle === 'featured';
@@ -348,6 +348,19 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { cardMaxWidth: v } )
 						}
 						placeholder="380px"
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Image height', 'sgs-blocks' ) }
+						help={ __(
+							'Height of the product image box (e.g. 180px, 16rem). Leave empty to use the theme default (220px).',
+							'sgs-blocks'
+						) }
+						value={ imageHeight }
+						onChange={ ( v ) =>
+							setAttributes( { imageHeight: v } )
+						}
+						placeholder="220px"
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>

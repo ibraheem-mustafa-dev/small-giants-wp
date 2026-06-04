@@ -513,8 +513,15 @@ function applyPillSelection( ctx, detail ) {
 		const puDisplay = perUnitDisplay( combo, ctx );
 		ctx.perUnitDisplay = puDisplay;
 		ctx.perUnitHidden = puDisplay === '';
-		ctx.discountLabel = combo.discountLabel || '';
-		ctx.discountHidden = ! ctx.discountLabel;
+		// R-22-13: an on-sale combo shows the "Sale" badge (limited-time urgency);
+		// otherwise the author's cosmetic discount label (e.g. "Best value"). The
+		// "Sale" literal is the server-seeded ctx.saleLabel (SSR==swap parity).
+		const badgeLabel =
+			combo.saleMinor !== null && combo.saleMinor !== undefined
+				? ctx.saleLabel || 'Sale'
+				: combo.discountLabel || '';
+		ctx.discountLabel = badgeLabel;
+		ctx.discountHidden = ! badgeLabel;
 	} else {
 		// Invalid/unavailable combination (U5 will pre-grey these pills).
 		// Set a safe non-purchasable state; do not touch price or image.

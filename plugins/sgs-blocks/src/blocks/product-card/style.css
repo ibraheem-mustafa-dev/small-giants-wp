@@ -15,6 +15,7 @@
  */
 :root {
 	--sgs-product-card-max-width: 380px;
+	--sgs-product-card-image-height: 220px;
 	--sgs-product-card-bg: #ffffff;
 	--sgs-product-card-shadow: 0 2px 12px rgba(58, 46, 38, 0.10);
 	/*
@@ -606,16 +607,24 @@
  */
 .product-card--bound .product-card__media {
 	position: relative;
+	/* Fixed-height media box (matches the mockup draft): the image scales to
+	   fill the full width + a fixed height, cropping/​centred via object-fit
+	   cover rather than zooming a square aspect-ratio box. Fixed height = CLS 0.
+	   Overridable per-instance (block inspector → imageHeight) and site-wide
+	   (theme/global styles) via --sgs-product-card-image-height. */
+	height: var( --sgs-product-card-image-height, 220px );
 	overflow: hidden;
 	background: var( --wp--preset--color--surface, #fbf3dc );
 }
 
-/* Main image fills the aspect-ratio box exactly. */
+/* Main image fills the fixed-height box, centred, scaled to cover. */
 .product-card--bound .product-card__media .product-card-img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
+	object-position: center;
 	display: block;
+	margin: 0;
 }
 
 /* Thumbnail strip — flex row below the main image. */

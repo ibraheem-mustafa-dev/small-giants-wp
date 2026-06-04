@@ -54,6 +54,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 $variant_style  = $attributes['variantStyle'] ?? 'standard';
 $source_mode    = $attributes['sourceMode'] ?? 'typed';
 $card_max_width = isset( $attributes['cardMaxWidth'] ) ? sanitize_text_field( $attributes['cardMaxWidth'] ) : '';
+$image_height   = isset( $attributes['imageHeight'] ) ? sanitize_text_field( $attributes['imageHeight'] ) : '';
 
 $classes = array( 'product-card' );
 if ( 'trial' === $variant_style ) {
@@ -63,25 +64,28 @@ if ( 'featured' === $variant_style ) {
 	$classes[] = 'featured-card';
 }
 
-/* ── Build inline style for per-block cardMaxWidth override ─────────────────── */
+/* ── Build inline styles for per-block CSS-var overrides (cardMaxWidth, imageHeight) ── */
 
-$inline_style = '';
-if ( '' !== $card_max_width ) {
-	// Sanitise: allow ONLY a single CSS length (digits+unit) OR a calc() of
-	// digits/units/operators. Both ends anchored (^…$) so no trailing CSS can
-	// be appended — prevents CSS injection into the inline style attribute
-	// (a prefix-only match like "380px; } body{…}" is rejected). esc_attr is
-	// belt-and-braces; the anchored allowlist already excludes ; : { } < \.
-	if ( preg_match( '/^(?:[\d.]+(?:%|px|em|rem|vw|vh|ch|ex|fr|cm|mm|in|pt|pc)|calc\([\d.\s+\-*\/%a-z()]+\))$/i', $card_max_width ) ) {
-		$inline_style = '--sgs-product-card-max-width:' . esc_attr( $card_max_width ) . ';';
-	}
+// Sanitise: allow ONLY a single CSS length (digits+unit) OR a calc() of
+// digits/units/operators. Both ends anchored (^…$) so no trailing CSS can be
+// appended — prevents CSS injection into the inline style attribute (a prefix-
+// only match like "380px; } body{…}" is rejected). esc_attr is belt-and-braces;
+// the anchored allowlist already excludes ; : { } < \.
+$sgs_css_length_re = '/^(?:[\d.]+(?:%|px|em|rem|vw|vh|ch|ex|fr|cm|mm|in|pt|pc)|calc\([\d.\s+\-*\/%a-z()]+\))$/i';
+
+$inline_styles = array();
+if ( '' !== $card_max_width && preg_match( $sgs_css_length_re, $card_max_width ) ) {
+	$inline_styles[] = '--sgs-product-card-max-width:' . esc_attr( $card_max_width ) . ';';
+}
+if ( '' !== $image_height && preg_match( $sgs_css_length_re, $image_height ) ) {
+	$inline_styles[] = '--sgs-product-card-image-height:' . esc_attr( $image_height ) . ';';
 }
 
 // Base opts shared across all branches (no WP Interactivity attrs).
 $base_opts = array(
 	'tag'           => 'div',
 	'extra_classes' => $classes,
-	'extra_styles'  => ( '' !== $inline_style ) ? array( $inline_style ) : array(),
+	'extra_styles'  => $inline_styles,
 	'wrap_inner'    => false,
 );
 
@@ -230,7 +234,15 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 		/* translators: %s is the unit label, e.g. "per bar" or "per 100g". */
 		$per_unit_template = __( 'per %s', 'sgs-blocks' );
 		$per_unit_display  = sgs_configurator_per_unit_display( $def, $tax_mode, $decimals, $per_unit_template );
-		$discount_label    = isset( $def['discountLabel'] ) ? (string) $def['discountLabel'] : '';
+		// R-22-13: the badge prefers "Sale" on an on-sale variation (limited-time
+		// urgency) over the cosmetic discount label — a pack is only "best value"
+		// because it is temporarily on sale, so "Sale" is the honest + higher-
+		// converting signal. Non-sale variations fall back to the author's cosmetic
+		// `_sgs_discount_label` (e.g. "Best value" on a genuinely cheapest pack).
+		$sale_badge_label = __( 'Sale', 'sgs-blocks' );
+		$discount_label   = ( null !== $def['saleMinor'] )
+			? $sale_badge_label
+			: ( isset( $def['discountLabel'] ) ? (string) $def['discountLabel'] : '' );
 
 		// I2 auto-contrast (FR-27-I2): the discount badge sits on the brand
 		// --…--primary background (a CSS token whose hex isn't known in CSS), so
@@ -286,6 +298,9 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			'perUnitTemplate'     => $per_unit_template,
 			'discountLabel'       => $discount_label,
 			'discountHidden'      => ( '' === $discount_label ),
+			// R-22-13: translated "Sale" badge literal, seeded so view.js shows the
+			// SAME string on swap (SSR==swap parity) for on-sale combos.
+			'saleLabel'           => $sale_badge_label,
 			// A4: per-variation image gallery (FR-27-A4).
 			// gallery = default combo's ordered { url, w, h, alt } image set.
 			// thumbsHidden = true when < 2 images (strip not shown for solo image).
@@ -329,17 +344,11 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			// A4: resolve default image dimensions for the aspect-ratio box (CLS 0).
 			$def_img_w = ( ! empty( $def['gallery'][0]['w'] ) ) ? (int) $def['gallery'][0]['w'] : 0;
 			$def_img_h = ( ! empty( $def['gallery'][0]['h'] ) ) ? (int) $def['gallery'][0]['h'] : 0;
-			// Aspect-ratio inline style: only set when both dimensions are known and
-			// non-zero; falls back to the 220px fixed height in style.css.
-			$media_aspect_style = ( $def_img_w > 0 && $def_img_h > 0 )
-				? 'aspect-ratio:' . esc_attr( (string) $def_img_w . '/' . (string) $def_img_h ) . ';'
-				: '';
 
 			ob_start();
 			?>
 			<div
 				class="product-card__media"
-				<?php echo '' !== $media_aspect_style ? 'style="' . $media_aspect_style . '"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr applied above. ?>
 			>
 			<?php if ( $sgs_has_real_image ) : ?>
 				<?php if ( '' !== $card_permalink ) : ?>

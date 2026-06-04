@@ -2,7 +2,7 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/product-card",
-    "version": "1.11.0",
+    "version": "1.12.0",
     "title": "Product Card",
     "category": "sgs-content",
     "description": "Product card with pack-size variant pills, price and CTA. Typed mode = author content directly (InnerBlocks). Bound mode = render a live WooCommerce or SGS product (price, image, stock, add-to-cart) through the SGS design.",
@@ -112,6 +112,11 @@
             "type": "string",
             "default": "",
             "description": "Override the card max-width (e.g. 320px, 100%). Empty = use theme default (380px). Sets --sgs-product-card-max-width inline."
+        },
+        "imageHeight": {
+            "type": "string",
+            "default": "",
+            "description": "Override the product image box height (e.g. 180px, 16rem). Empty = use theme default (220px). Sets --sgs-product-card-image-height inline."
         },
         "widthMode": {
             "type": "string",

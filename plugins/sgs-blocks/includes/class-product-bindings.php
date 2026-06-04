@@ -329,7 +329,7 @@ final class Product_Bindings {
 					'is_variable'     => $is_variable,
 					'price_from_html' => $price_from_html,
 					'image_url'       => \esc_url( (string) $image_url ),
-					'image_alt'       => \esc_attr( (string) $image_alt ),
+					'image_alt'       => \sanitize_text_field( (string) $image_alt ),
 					'short_desc'      => \wp_kses_post( $product->get_short_description() ),
 					'stock_status'    => isset( $availability['availability'] )
 						? \esc_html( $availability['availability'] )
@@ -379,7 +379,7 @@ final class Product_Bindings {
 			'title'          => \esc_html( \get_the_title( $product_id ) ),
 			'price_html'     => $price_html,
 			'image_url'      => \esc_url( (string) $image_url ),
-			'image_alt'      => \esc_attr( (string) $image_alt ),
+			'image_alt'      => \sanitize_text_field( (string) $image_alt ),
 			'short_desc'     => \wp_kses(
 				(string) $desc,
 				array(
