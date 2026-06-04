@@ -102,6 +102,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// at BOTH call sites. Values MUST be pre-sanitised by the caller. Empty array =
 			// byte-identical to the original two-key array (array_merge with [] is a no-op).
 			$opt_extra_attrs   = isset( $opts['extra_attrs'] ) && is_array( $opts['extra_attrs'] ) ? $opts['extra_attrs'] : array();
+			// extra_attr_html — a PRE-ESCAPED raw attribute string appended verbatim to the
+			// opening tag (caller MUST pre-escape). Use for attributes that
+			// get_block_wrapper_attributes()'s esc_attr double-quoting would bloat — e.g.
+			// data-wp-context, where WP-canonical wp_interactivity_data_wp_context() emits a
+			// compact single-quoted attribute (no &quot; expansion of the JSON's quotes).
+			$opt_extra_attr_html = isset( $opts['extra_attr_html'] ) && is_string( $opts['extra_attr_html'] ) ? $opts['extra_attr_html'] : '';
 			$opt_no_overlay    = ! empty( $opts['no_overlay'] );
 			$opt_wrap_inner    = array_key_exists( 'wrap_inner', $opts ) ? $opts['wrap_inner'] : null;
 
@@ -811,10 +817,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// shape_top / video / overlay / svg_bg / [__inner] content [/__inner] / svg_fg / shape_bottom
 			// ----------------------------------------------------------------
 			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- All variables pre-sanitised: $html_tag allowlisted, $wrapper_attributes from get_block_wrapper_attributes(), HTML vars built with esc_*/wp_kses(), $inner_html is caller-rendered blocks, $inner_open/$inner_close built with esc_attr().
+			$open_attrs = '' !== $opt_extra_attr_html ? $wrapper_attributes . ' ' . $opt_extra_attr_html : $wrapper_attributes;
 			$element = sprintf(
 				'<%1$s %2$s>%3$s%4$s%5$s%6$s%7$s%8$s%9$s</%1$s>',
 				$html_tag,
-				$wrapper_attributes,
+				$open_attrs,
 				$shape_top_html,
 				$video_html,
 				$overlay_html,

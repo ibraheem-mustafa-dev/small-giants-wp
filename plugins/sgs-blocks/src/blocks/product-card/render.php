@@ -255,19 +255,19 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 		} else {
 			// ── 2b. Build opts for the helper — Interactivity attrs on the wrapper ──
 			//
-			// data-wp-interactive and data-wp-init are plain strings; esc_attr() is a
-			// no-op on them (no HTML-special chars). data-wp-context is wp_json_encode()'d
-			// JSON; get_block_wrapper_attributes() esc_attr()-encodes " → &quot; so the
-			// attribute is double-quoted safely. The browser HTML parser decodes &quot;
-			// back to " before WP Interactivity reads it — standard safe approach.
+			// data-wp-interactive and data-wp-init are plain strings → extra_attrs (esc_attr is
+			// a no-op on them). data-wp-context is the large per-instance JSON manifest: emit it
+			// via extra_attr_html + wp_interactivity_data_wp_context() — the WP-canonical compact
+			// single-quoted attribute — instead of routing it through extra_attrs/esc_attr, which
+			// &quot;-expands every quote in the JSON and bloats the payload (~5 KB per card).
 			$var_opts = array_merge(
 				$base_opts,
 				array(
-					'extra_attrs' => array(
+					'extra_attrs'     => array(
 						'data-wp-interactive' => 'sgs/product-card',
-						'data-wp-context'     => wp_json_encode( $context ),
 						'data-wp-init'        => 'callbacks.initPillBridge',
 					),
+					'extra_attr_html' => wp_interactivity_data_wp_context( $context ),
 				)
 			);
 
@@ -494,15 +494,17 @@ $context = array(
 );
 
 // Non-variable bound opts — Interactivity attrs on the wrapper.
-// Same escaping rationale as the variable branch above.
+// Same approach as the variable branch above: plain-string attrs via extra_attrs,
+// the data-wp-context JSON manifest via extra_attr_html + wp_interactivity_data_wp_context()
+// (compact single-quoted, avoids the esc_attr &quot; payload bloat).
 $nonvar_opts = array_merge(
 	$base_opts,
 	array(
-		'extra_attrs' => array(
+		'extra_attrs'     => array(
 			'data-wp-interactive' => 'sgs/product-card',
-			'data-wp-context'     => wp_json_encode( $context ),
 			'data-wp-init'        => 'callbacks.initPillBridge',
 		),
+		'extra_attr_html' => wp_interactivity_data_wp_context( $context ),
 	)
 );
 
