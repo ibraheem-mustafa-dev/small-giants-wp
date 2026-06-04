@@ -77,6 +77,12 @@ require_once SGS_BLOCKS_PATH . 'includes/configurator-asset-optimiser.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-configurator-meta.php';
 Configurator_Meta::register();
 
+// Demand Analytics — privacy-safe aggregate counter for unbuyable combos
+// (Spec 27 Phase-2 Step 7). REST endpoint POST /sgs/v1/demand/attempt +
+// admin meta-box on product edit screen. ZERO PII stored.
+require_once SGS_BLOCKS_PATH . 'includes/class-demand-analytics.php';
+Demand_Analytics::register();
+
 // Configurator — swatch fields on WooCommerce attribute term screens (FR-27-B2 authoring UI).
 require_once SGS_BLOCKS_PATH . 'includes/configurator-term-fields.php';
 

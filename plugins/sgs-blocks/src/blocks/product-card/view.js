@@ -116,6 +116,55 @@ function isTermAvailable( combos, axisTax, termSlug, selectedAxes ) {
 }
 
 /**
+ * Three-state availability for a term given the current OTHER-axis selections
+ * (FR-27-C2):
+ *   'available'   — at least one IN-STOCK combo matches.
+ *   'sold-out'    — matching combo(s) exist but ALL are out of stock.
+ *   'nonexistent' — no combo exists for this term + the other selections.
+ *
+ * Distinguishing sold-out from nonexistent lets the picker announce
+ * "(sold out)" vs "(unavailable)" with the correct screen-reader text and lets
+ * demand analytics record WHY a selection was unbuyable.
+ *
+ * @param {Object} combos       Combo map keyed by comboKey → { inStock, … }.
+ * @param {string} axisTax      The taxonomy slug of the axis being tested.
+ * @param {string} termSlug     The term slug being tested.
+ * @param {Object} selectedAxes Current selections: { [taxonomy]: slug }.
+ * @return {'available'|'sold-out'|'nonexistent'}
+ */
+function termAvailability( combos, axisTax, termSlug, selectedAxes ) {
+	let exists = false;
+	for ( const key in combos ) {
+		const map = {};
+		for ( const part of key.split( '|' ) ) {
+			const idx = part.indexOf( ':' );
+			map[ part.slice( 0, idx ) ] = part.slice( idx + 1 );
+		}
+		if ( map[ axisTax ] !== termSlug ) {
+			continue;
+		}
+		let ok = true;
+		for ( const tax in selectedAxes ) {
+			if ( tax === axisTax ) {
+				continue;
+			}
+			if ( map[ tax ] !== selectedAxes[ tax ] ) {
+				ok = false;
+				break;
+			}
+		}
+		if ( ! ok ) {
+			continue;
+		}
+		exists = true;
+		if ( combos[ key ].inStock ) {
+			return 'available';
+		}
+	}
+	return exists ? 'sold-out' : 'nonexistent';
+}
+
+/**
  * Apply cross-attribute availability greying to the option-picker DOM inside
  * a card. Marks unavailable options with aria-disabled + a CSS class; removes
  * the marks from available options. Announces changes via ctx.availabilityNote.
@@ -151,7 +200,7 @@ function applyAvailability( ref, ctx, isInit ) {
 		}
 
 		for ( const term of axis.terms ) {
-			const avail = isTermAvailable(
+			const state = termAvailability(
 				ctx.combos,
 				tax,
 				term.slug,
@@ -172,8 +221,9 @@ function applyAvailability( ref, ctx, isInit ) {
 				continue;
 			}
 
-			if ( avail ) {
+			if ( 'available' === state ) {
 				label.classList.remove( 'sgs-option-picker__option--unavailable' );
+				label.classList.remove( 'sgs-option-picker__option--sold-out' );
 				label.removeAttribute( 'aria-disabled' );
 				// Remove the aria-label override if it was previously set.
 				if ( input.dataset.sgsOriginalLabel !== undefined ) {
@@ -183,7 +233,15 @@ function applyAvailability( ref, ctx, isInit ) {
 					input.removeAttribute( 'aria-label' );
 				}
 			} else {
+				// C2: distinct state — 'sold-out' (combo exists, OOS) vs
+				// 'nonexistent' (combo doesn't exist). Both aria-disabled +
+				// announced, with distinct screen-reader suffixes.
+				const isSoldOut = 'sold-out' === state;
 				label.classList.add( 'sgs-option-picker__option--unavailable' );
+				label.classList.toggle(
+					'sgs-option-picker__option--sold-out',
+					isSoldOut
+				);
 				label.setAttribute( 'aria-disabled', 'true' );
 				// Preserve original aria-label once so we can restore it.
 				if ( input.dataset.sgsOriginalLabel === undefined ) {
@@ -194,7 +252,7 @@ function applyAvailability( ref, ctx, isInit ) {
 				}
 				input.setAttribute(
 					'aria-label',
-					term.label + ' (unavailable)'
+					term.label + ( isSoldOut ? ' (sold out)' : ' (unavailable)' )
 				);
 				totalUnavailable++;
 			}
@@ -223,6 +281,36 @@ function getStoreApiBase() {
 		window?.sgsCartData?.restUrl ||
 		'/wp-json';
 	return wpRoot.replace( /\/$/, '' );
+}
+
+/**
+ * Record a privacy-safe demand-analytics attempt (Step 7) when a shopper selects
+ * a combination they cannot buy. Fire-and-forget POST to the SGS demand endpoint
+ * with NO PII — just the WC product id, the combo key, and the reason. The server
+ * increments an aggregate counter, rate-limits, and never stores who attempted.
+ *
+ * @param {Object} ctx      The card's live Interactivity context proxy.
+ * @param {string} comboKey The unbuyable combo key (sorted "tax:slug|…").
+ * @param {string} reason   'oos' (variation exists but out of stock) |
+ *                          'nonexistent' (no matching variation).
+ */
+function recordDemandAttempt( ctx, comboKey, reason ) {
+	const productId = parseInt( ctx.addToCartId, 10 );
+	if ( ! productId || ! comboKey || ! ctx.restNonce ) {
+		return;
+	}
+	try {
+		fetch( getStoreApiBase() + '/sgs/v1/demand/attempt', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-WP-Nonce': ctx.restNonce,
+			},
+			body: JSON.stringify( { productId, comboKey, reason } ),
+		} ).catch( () => {} ); // Never block or surface — analytics is best-effort.
+	} catch ( e ) {
+		// No-op: demand recording must never affect the shopping UI.
+	}
 }
 
 /**
@@ -387,6 +475,12 @@ function applyPillSelection( ctx, detail ) {
 		ctx.inStock = !! combo.inStock;
 		ctx.stockText = combo.inStock ? '' : 'Out of stock';
 
+		// Step 7: record a demand attempt when the selected combo EXISTS but is
+		// out of stock (reason 'oos') — privacy-safe aggregate, fire-and-forget.
+		if ( ! combo.inStock ) {
+			recordDemandAttempt( ctx, comboKey, 'oos' );
+		}
+
 		// A4: gallery swap — update strip + main image, reset selected thumb.
 		// gallery is always present in v4+ manifests; guard for pre-v4 cached HTML.
 		const newGallery = combo.gallery || [];
@@ -427,6 +521,10 @@ function applyPillSelection( ctx, detail ) {
 		ctx.selectedVariationId = 0;
 		ctx.inStock = false;
 		ctx.stockText = 'Unavailable';
+
+		// Step 7: record a demand attempt for a NON-EXISTENT combination
+		// (reason 'nonexistent') — privacy-safe aggregate, fire-and-forget.
+		recordDemandAttempt( ctx, comboKey, 'nonexistent' );
 		// B3: hide per-unit and discount badge when no valid combo is selected.
 		ctx.perUnitDisplay = '';
 		ctx.perUnitHidden = true;
