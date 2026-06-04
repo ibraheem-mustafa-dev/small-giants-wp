@@ -14,6 +14,8 @@ import {
 import { DesignTokenPicker, ResponsiveControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar } from '../../utils';
+// WS-4: shared container-wrapper editor controls (content kind = width/spacing only).
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 const STYLE_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
@@ -100,6 +102,12 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+				{ /* WS-4: width/spacing controls (content kind — no bg/overlay/grid). */ }
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="content"
+				/>
 				<PanelBody
 					title={ __( 'Hover States', 'sgs-blocks' ) }
 					initialOpen={ false }

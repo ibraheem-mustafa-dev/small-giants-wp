@@ -30,6 +30,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 // ---------------------------------------------------------------------------
 // Extract LAYOUT/STYLING scalar attributes with defaults.
@@ -96,53 +97,64 @@ if ( $sgs_hover_gray ) {
 }
 
 // ---------------------------------------------------------------------------
-// Build get_block_wrapper_attributes() args.
-// ---------------------------------------------------------------------------
-$sgs_wrapper_attr_args = array(
-	'class' => implode( ' ', $sgs_classes ),
-);
-if ( $sgs_wrapper_styles ) {
-	$sgs_wrapper_attr_args['style'] = implode( ';', $sgs_wrapper_styles ) . ';';
-}
-
 // Responsive data attrs (consumed by CSS via data-* attribute selectors).
+// Collected into extra_attrs array for SGS_Container_Wrapper::render().
+// ---------------------------------------------------------------------------
+$sgs_extra_attrs = array();
+
 if ( $sgs_icon_sz_tablet && in_array( $sgs_icon_sz_tablet, $sgs_valid_icon_sizes, true ) ) {
-	$sgs_wrapper_attr_args['data-icon-size-tablet'] = $sgs_icon_sz_tablet;
+	$sgs_extra_attrs['data-icon-size-tablet'] = $sgs_icon_sz_tablet;
 }
 if ( $sgs_icon_sz_mobile && in_array( $sgs_icon_sz_mobile, $sgs_valid_icon_sizes, true ) ) {
-	$sgs_wrapper_attr_args['data-icon-size-mobile'] = $sgs_icon_sz_mobile;
+	$sgs_extra_attrs['data-icon-size-mobile'] = $sgs_icon_sz_mobile;
 }
 if ( $sgs_head_fs_tablet && in_array( $sgs_head_fs_tablet, $sgs_valid_font_sizes, true ) ) {
-	$sgs_wrapper_attr_args['data-heading-fs-tablet'] = $sgs_head_fs_tablet;
+	$sgs_extra_attrs['data-heading-fs-tablet'] = $sgs_head_fs_tablet;
 }
 if ( $sgs_head_fs_mobile && in_array( $sgs_head_fs_mobile, $sgs_valid_font_sizes, true ) ) {
-	$sgs_wrapper_attr_args['data-heading-fs-mobile'] = $sgs_head_fs_mobile;
+	$sgs_extra_attrs['data-heading-fs-mobile'] = $sgs_head_fs_mobile;
 }
 if ( $sgs_sub_fs_tablet && in_array( $sgs_sub_fs_tablet, $sgs_valid_font_sizes, true ) ) {
-	$sgs_wrapper_attr_args['data-subtitle-fs-tablet'] = $sgs_sub_fs_tablet;
+	$sgs_extra_attrs['data-subtitle-fs-tablet'] = $sgs_sub_fs_tablet;
 }
 if ( $sgs_sub_fs_mobile && in_array( $sgs_sub_fs_mobile, $sgs_valid_font_sizes, true ) ) {
-	$sgs_wrapper_attr_args['data-subtitle-fs-mobile'] = $sgs_sub_fs_mobile;
+	$sgs_extra_attrs['data-subtitle-fs-mobile'] = $sgs_sub_fs_mobile;
 }
-
-$sgs_wrapper_attributes = get_block_wrapper_attributes( $sgs_wrapper_attr_args );
 
 // ---------------------------------------------------------------------------
 // Render: wrapper shell + InnerBlocks content. R-22-14: no scalar fallback.
 // All card content (icon/media, heading, subtitle, description, button)
 // is rendered via InnerBlocks. Never read scalar content attrs here.
+//
+// WS-4: CONTENT kind — width/spacing layers only (no bg/overlay/grid).
+// The block's own background/colour/border CSS rides on $sgs_classes via the
+// existing sgs-info-box BEM classes. No double-emit risk for CONTENT kind.
+// The block-link wrapper, if present, wraps the full SGS_Container_Wrapper
+// output so the anchor encloses the block wrapper (including WP anchor attr).
 // ---------------------------------------------------------------------------
-$sgs_inner_html = '<div ' . $sgs_wrapper_attributes . '>'
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is WP core InnerBlocks output.
-	. $content
-	. '</div>';
+
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is WP core InnerBlocks output.
+$sgs_card_html = SGS_Container_Wrapper::render(
+	$attributes,
+	$block,
+	$content,
+	'content',
+	array(
+		'tag'           => 'div',
+		'extra_classes' => $sgs_classes,
+		'extra_styles'  => $sgs_wrapper_styles,
+		'extra_attrs'   => $sgs_extra_attrs,
+	)
+);
 
 // Block link wraps the entire card in an <a> tag.
 if ( $sgs_block_link ) {
 	$sgs_block_target = $sgs_block_link_tgt ? ' target="_blank" rel="noopener noreferrer"' : '';
-	echo '<a href="' . esc_url( $sgs_block_link ) . '" class="sgs-block-link-wrapper"' . $sgs_block_target . '>' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $sgs_block_target is a hardcoded safe string.
-		. $sgs_inner_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $sgs_block_target is a hardcoded safe string; $sgs_card_html from SGS_Container_Wrapper::render() is pre-sanitised.
+	echo '<a href="' . esc_url( $sgs_block_link ) . '" class="sgs-block-link-wrapper"' . $sgs_block_target . '>'
+		. $sgs_card_html
 		. '</a>';
+	// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 } else {
-	echo $sgs_inner_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo $sgs_card_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() output is pre-sanitised.
 }

@@ -30,6 +30,8 @@ import {
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
 import { colourVar } from '../../utils';
+// WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing only).
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -763,6 +765,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
+
+				{ /* WS-4: width/spacing mirror from sgs/container (content kind). */ }
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="content"
+				/>
 			</InspectorControls>
 
 			{ /* Canvas */ }

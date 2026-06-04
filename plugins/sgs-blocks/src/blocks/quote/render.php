@@ -10,11 +10,18 @@
  * of blockquote to sgs/container (loses the element + italic inheritance) and
  * footer to sgs/text tag="p" (loses footer semantics + primary colour rule).
  *
- * Responsive per-viewport overrides are emitted as a scoped <style> block
- * keyed on the block anchor id (or a generated wp_unique_id fallback) so
- * multiple instances on the same page never collide.
+ * WS-4 (composite-mirror): the outer wrapper is now delegated to
+ * SGS_Container_Wrapper::render() with kind='content' so sgs/quote mirrors
+ * sgs/container's width/spacing capabilities without diverging.
+ * KIND='content' = widthMode/customWidth/contentWidth + padding/spacing only.
+ * NO bg/overlay/svg/shape-divider/grid layers.
+ *
+ * Responsive per-viewport overrides for the body/attribution SLOTS are still
+ * emitted as a scoped <style> block keyed on the block anchor id (or a
+ * generated wp_unique_id fallback) so multiple instances never collide.
  *
  * @since 2026-05-17  Initial — sgs/quote block
+ * @since 2026-06-04  WS-4 composite-mirror: outer wrapper via SGS_Container_Wrapper (kind='content').
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Rendered InnerBlocks output. When non-empty (e.g. from
@@ -32,6 +39,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 // ---------------------------------------------------------------------------
 // 1. Resolve body source: InnerBlocks $content (β-path) vs legacy body[] attr.
@@ -47,8 +55,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // $attributes['attribution'] verbatim.
 // ---------------------------------------------------------------------------
 
-$content_str        = is_string( $content ) ? trim( $content ) : '';
-$has_inner_blocks   = '' !== $content_str;
+$content_str      = is_string( $content ) ? trim( $content ) : '';
+$has_inner_blocks = '' !== $content_str;
 
 $body           = isset( $attributes['body'] ) && is_array( $attributes['body'] ) ? $attributes['body'] : array();
 $attribution    = isset( $attributes['attribution'] ) ? (string) $attributes['attribution'] : '';
@@ -127,57 +135,31 @@ if ( ! in_array( $attrib_tag, array( 'footer', 'div', 'cite' ), true ) ) {
 }
 
 // ---------------------------------------------------------------------------
-// 4. Extract wrapper-level attributes.
+// 4. Extract wrapper-level attributes used for the block's OWN visual styling
+// (colour, border, shadow, hover). Width/padding/margin are delegated to
+// SGS_Container_Wrapper::render() via the $attributes pass-through.
 // ---------------------------------------------------------------------------
 
-$inherit_style         = ! empty( $attributes['inheritStyle'] );
-$bg_colour             = $attributes['backgroundColour'] ?? '';
-$border_radius         = isset( $attributes['borderRadius'] ) ? $attributes['borderRadius'] : null;
-$border_radius_unit    = $attributes['borderRadiusUnit'] ?? 'px';
-$border_radius_tl      = isset( $attributes['borderRadiusTL'] ) ? $attributes['borderRadiusTL'] : null;
-$border_radius_tr      = isset( $attributes['borderRadiusTR'] ) ? $attributes['borderRadiusTR'] : null;
-$border_radius_bl      = isset( $attributes['borderRadiusBL'] ) ? $attributes['borderRadiusBL'] : null;
-$border_radius_br      = isset( $attributes['borderRadiusBR'] ) ? $attributes['borderRadiusBR'] : null;
-$border_width_top      = isset( $attributes['borderWidthTop'] ) ? $attributes['borderWidthTop'] : null;
-$border_width_right    = isset( $attributes['borderWidthRight'] ) ? $attributes['borderWidthRight'] : null;
-$border_width_bottom   = isset( $attributes['borderWidthBottom'] ) ? $attributes['borderWidthBottom'] : null;
-$border_width_left     = isset( $attributes['borderWidthLeft'] ) ? $attributes['borderWidthLeft'] : null;
-$border_width_unit     = $attributes['borderWidthUnit'] ?? 'px';
-$border_style          = $attributes['borderStyle'] ?? 'none';
-$border_colour         = $attributes['borderColour'] ?? '';
-$box_shadow            = $attributes['boxShadow'] ?? '';
-$box_shadow_hover      = $attributes['boxShadowHover'] ?? '';
-$hover_scale           = $attributes['hoverScale'] ?? '';
-$hover_colour          = $attributes['hoverColour'] ?? '';
-$hover_bg              = $attributes['hoverBackground'] ?? '';
-$margin_top            = isset( $attributes['marginTop'] ) ? $attributes['marginTop'] : null;
-$margin_right          = isset( $attributes['marginRight'] ) ? $attributes['marginRight'] : null;
-$margin_bottom         = isset( $attributes['marginBottom'] ) ? $attributes['marginBottom'] : null;
-$margin_left           = isset( $attributes['marginLeft'] ) ? $attributes['marginLeft'] : null;
-$margin_unit           = $attributes['marginUnit'] ?? 'px';
-$margin_top_tablet     = isset( $attributes['marginTopTablet'] ) ? $attributes['marginTopTablet'] : null;
-$margin_right_tablet   = isset( $attributes['marginRightTablet'] ) ? $attributes['marginRightTablet'] : null;
-$margin_bottom_tablet  = isset( $attributes['marginBottomTablet'] ) ? $attributes['marginBottomTablet'] : null;
-$margin_left_tablet    = isset( $attributes['marginLeftTablet'] ) ? $attributes['marginLeftTablet'] : null;
-$margin_top_mobile     = isset( $attributes['marginTopMobile'] ) ? $attributes['marginTopMobile'] : null;
-$margin_right_mobile   = isset( $attributes['marginRightMobile'] ) ? $attributes['marginRightMobile'] : null;
-$margin_bottom_mobile  = isset( $attributes['marginBottomMobile'] ) ? $attributes['marginBottomMobile'] : null;
-$margin_left_mobile    = isset( $attributes['marginLeftMobile'] ) ? $attributes['marginLeftMobile'] : null;
-$padding_top           = isset( $attributes['paddingTop'] ) ? $attributes['paddingTop'] : null;
-$padding_right         = isset( $attributes['paddingRight'] ) ? $attributes['paddingRight'] : null;
-$padding_bottom        = isset( $attributes['paddingBottom'] ) ? $attributes['paddingBottom'] : null;
-$padding_left          = isset( $attributes['paddingLeft'] ) ? $attributes['paddingLeft'] : null;
-$padding_unit          = $attributes['paddingUnit'] ?? 'px';
-$padding_top_tablet    = isset( $attributes['paddingTopTablet'] ) ? $attributes['paddingTopTablet'] : null;
-$padding_right_tablet  = isset( $attributes['paddingRightTablet'] ) ? $attributes['paddingRightTablet'] : null;
-$padding_bottom_tablet = isset( $attributes['paddingBottomTablet'] ) ? $attributes['paddingBottomTablet'] : null;
-$padding_left_tablet   = isset( $attributes['paddingLeftTablet'] ) ? $attributes['paddingLeftTablet'] : null;
-$padding_top_mobile    = isset( $attributes['paddingTopMobile'] ) ? $attributes['paddingTopMobile'] : null;
-$padding_right_mobile  = isset( $attributes['paddingRightMobile'] ) ? $attributes['paddingRightMobile'] : null;
-$padding_bottom_mobile = isset( $attributes['paddingBottomMobile'] ) ? $attributes['paddingBottomMobile'] : null;
-$padding_left_mobile   = isset( $attributes['paddingLeftMobile'] ) ? $attributes['paddingLeftMobile'] : null;
-$custom_width          = isset( $attributes['customWidth'] ) ? $attributes['customWidth'] : null;
-$custom_width_unit     = $attributes['customWidthUnit'] ?? 'px';
+$inherit_style       = ! empty( $attributes['inheritStyle'] );
+$bg_colour           = $attributes['backgroundColour'] ?? '';
+$border_radius       = isset( $attributes['borderRadius'] ) ? $attributes['borderRadius'] : null;
+$border_radius_unit  = $attributes['borderRadiusUnit'] ?? 'px';
+$border_radius_tl    = isset( $attributes['borderRadiusTL'] ) ? $attributes['borderRadiusTL'] : null;
+$border_radius_tr    = isset( $attributes['borderRadiusTR'] ) ? $attributes['borderRadiusTR'] : null;
+$border_radius_bl    = isset( $attributes['borderRadiusBL'] ) ? $attributes['borderRadiusBL'] : null;
+$border_radius_br    = isset( $attributes['borderRadiusBR'] ) ? $attributes['borderRadiusBR'] : null;
+$border_width_top    = isset( $attributes['borderWidthTop'] ) ? $attributes['borderWidthTop'] : null;
+$border_width_right  = isset( $attributes['borderWidthRight'] ) ? $attributes['borderWidthRight'] : null;
+$border_width_bottom = isset( $attributes['borderWidthBottom'] ) ? $attributes['borderWidthBottom'] : null;
+$border_width_left   = isset( $attributes['borderWidthLeft'] ) ? $attributes['borderWidthLeft'] : null;
+$border_width_unit   = $attributes['borderWidthUnit'] ?? 'px';
+$border_style        = $attributes['borderStyle'] ?? 'none';
+$border_colour       = $attributes['borderColour'] ?? '';
+$box_shadow          = $attributes['boxShadow'] ?? '';
+$box_shadow_hover    = $attributes['boxShadowHover'] ?? '';
+$hover_scale         = $attributes['hoverScale'] ?? '';
+$hover_colour        = $attributes['hoverColour'] ?? '';
+$hover_bg            = $attributes['hoverBackground'] ?? '';
 
 // FIX B (P-BORDER-STYLE-ENUM-PARITY 2026-05-17): full CSS border-style set.
 $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
@@ -287,76 +269,7 @@ if ( ! function_exists( 'sgs_quote_slot_responsive_css' ) ) {
 }
 
 // ---------------------------------------------------------------------------
-// 7. Helper: build responsive CSS for the wrapper at one breakpoint.
-// function_exists() guard.
-// ---------------------------------------------------------------------------
-
-if ( ! function_exists( 'sgs_quote_wrapper_responsive_css' ) ) {
-	/**
-	 * Emit one media-query block for the wrapper's responsive overrides.
-	 *
-	 * @param string     $scope   CSS selector (e.g. '#sgs-quote-1').
-	 * @param string     $media   Full @media rule string.
-	 * @param float|null $mt      Margin-top override.
-	 * @param float|null $mr      Margin-right override.
-	 * @param float|null $mb      Margin-bottom override.
-	 * @param float|null $ml      Margin-left override.
-	 * @param string     $m_unit  Margin unit.
-	 * @param float|null $pt      Padding-top override.
-	 * @param float|null $pr      Padding-right override.
-	 * @param float|null $pb      Padding-bottom override.
-	 * @param float|null $pl      Padding-left override.
-	 * @param string     $p_unit  Padding unit.
-	 * @return string CSS string, or '' when no overrides are set.
-	 */
-	function sgs_quote_wrapper_responsive_css(
-		string $scope,
-		string $media,
-		?float $mt,
-		?float $mr,
-		?float $mb,
-		?float $ml,
-		string $m_unit,
-		?float $pt,
-		?float $pr,
-		?float $pb,
-		?float $pl,
-		string $p_unit
-	): string {
-		$decls = array();
-		if ( null !== $mt ) {
-			$decls[] = 'margin-top:' . $mt . $m_unit;
-		}
-		if ( null !== $mr ) {
-			$decls[] = 'margin-right:' . $mr . $m_unit;
-		}
-		if ( null !== $mb ) {
-			$decls[] = 'margin-bottom:' . $mb . $m_unit;
-		}
-		if ( null !== $ml ) {
-			$decls[] = 'margin-left:' . $ml . $m_unit;
-		}
-		if ( null !== $pt ) {
-			$decls[] = 'padding-top:' . $pt . $p_unit;
-		}
-		if ( null !== $pr ) {
-			$decls[] = 'padding-right:' . $pr . $p_unit;
-		}
-		if ( null !== $pb ) {
-			$decls[] = 'padding-bottom:' . $pb . $p_unit;
-		}
-		if ( null !== $pl ) {
-			$decls[] = 'padding-left:' . $pl . $p_unit;
-		}
-		if ( empty( $decls ) ) {
-			return '';
-		}
-		return $media . '{' . $scope . '{' . implode( ';', $decls ) . '}}';
-	}
-}
-
-// ---------------------------------------------------------------------------
-// 8. Resolve anchor / scope id.
+// 7. Resolve anchor / scope id.
 // ---------------------------------------------------------------------------
 
 $anchor = $attributes['anchor'] ?? '';
@@ -369,7 +282,7 @@ if ( ! $anchor ) {
 $scope = '#' . esc_attr( $anchor );
 
 // ---------------------------------------------------------------------------
-// 9. Build body slot style.
+// 8. Build body slot style.
 // ---------------------------------------------------------------------------
 
 $body_style_str = sgs_quote_build_slot_style(
@@ -392,7 +305,7 @@ $body_style_str = sgs_quote_build_slot_style(
 );
 
 // ---------------------------------------------------------------------------
-// 10. Build attribution slot style.
+// 9. Build attribution slot style.
 // ---------------------------------------------------------------------------
 
 $attrib_style_str = sgs_quote_build_slot_style(
@@ -413,14 +326,16 @@ $attrib_style_str = sgs_quote_build_slot_style(
 );
 
 // ---------------------------------------------------------------------------
-// 11. Build wrapper inline style (skipped when inheritStyle is true).
+// 10. Build the block's OWN extra_styles (colour, border, shadow, hover CSS vars).
+// Width/padding/margin delegated to the helper via $attributes pass-through.
+// These travel via extra_styles so the helper merges them onto the wrapper.
 // ---------------------------------------------------------------------------
 
-$wrapper_style_parts = array();
+$extra_styles = array();
 
 if ( ! $inherit_style ) {
 	if ( $bg_colour ) {
-		$wrapper_style_parts[] = 'background-color:' . sgs_colour_value( $bg_colour );
+		$extra_styles[] = 'background-color:' . sgs_colour_value( $bg_colour );
 	}
 
 	// Border radius — per-corner takes precedence over shorthand.
@@ -432,14 +347,14 @@ if ( ! $inherit_style ) {
 		sgs_attr_has_value( $border_radius_bl ) ||
 		sgs_attr_has_value( $border_radius_br )
 	) {
-		$u                     = esc_attr( $border_radius_unit );
-		$tl                    = sgs_attr_has_value( $border_radius_tl ) ? floatval( $border_radius_tl ) . $u : '0' . $u;
-		$tr                    = sgs_attr_has_value( $border_radius_tr ) ? floatval( $border_radius_tr ) . $u : '0' . $u;
-		$bl                    = sgs_attr_has_value( $border_radius_bl ) ? floatval( $border_radius_bl ) . $u : '0' . $u;
-		$br                    = sgs_attr_has_value( $border_radius_br ) ? floatval( $border_radius_br ) . $u : '0' . $u;
-		$wrapper_style_parts[] = "border-radius:{$tl} {$tr} {$br} {$bl}";
+		$u              = esc_attr( $border_radius_unit );
+		$tl             = sgs_attr_has_value( $border_radius_tl ) ? floatval( $border_radius_tl ) . $u : '0' . $u;
+		$tr             = sgs_attr_has_value( $border_radius_tr ) ? floatval( $border_radius_tr ) . $u : '0' . $u;
+		$bl             = sgs_attr_has_value( $border_radius_bl ) ? floatval( $border_radius_bl ) . $u : '0' . $u;
+		$br             = sgs_attr_has_value( $border_radius_br ) ? floatval( $border_radius_br ) . $u : '0' . $u;
+		$extra_styles[] = "border-radius:{$tl} {$tr} {$br} {$bl}";
 	} elseif ( sgs_attr_has_value( $border_radius ) ) {
-		$wrapper_style_parts[] = 'border-radius:' . floatval( $border_radius ) . esc_attr( $border_radius_unit );
+		$extra_styles[] = 'border-radius:' . floatval( $border_radius ) . esc_attr( $border_radius_unit );
 	}
 
 	// Border.
@@ -454,101 +369,47 @@ if ( ! $inherit_style ) {
 		) {
 			$u = esc_attr( $border_width_unit );
 			if ( sgs_attr_has_value( $border_width_top ) ) {
-				$wrapper_style_parts[] = 'border-top-width:' . floatval( $border_width_top ) . $u;
+				$extra_styles[] = 'border-top-width:' . floatval( $border_width_top ) . $u;
 			}
 			if ( sgs_attr_has_value( $border_width_right ) ) {
-				$wrapper_style_parts[] = 'border-right-width:' . floatval( $border_width_right ) . $u;
+				$extra_styles[] = 'border-right-width:' . floatval( $border_width_right ) . $u;
 			}
 			if ( sgs_attr_has_value( $border_width_bottom ) ) {
-				$wrapper_style_parts[] = 'border-bottom-width:' . floatval( $border_width_bottom ) . $u;
+				$extra_styles[] = 'border-bottom-width:' . floatval( $border_width_bottom ) . $u;
 			}
 			if ( sgs_attr_has_value( $border_width_left ) ) {
-				$wrapper_style_parts[] = 'border-left-width:' . floatval( $border_width_left ) . $u;
+				$extra_styles[] = 'border-left-width:' . floatval( $border_width_left ) . $u;
 			}
 		}
-		$wrapper_style_parts[] = 'border-style:' . esc_attr( $border_style );
+		$extra_styles[] = 'border-style:' . esc_attr( $border_style );
 		if ( $border_colour ) {
-			$wrapper_style_parts[] = 'border-color:' . sgs_colour_value( $border_colour );
+			$extra_styles[] = 'border-color:' . sgs_colour_value( $border_colour );
 		}
 	}
 
 	// Box shadow (desktop).
 	if ( $box_shadow ) {
-		$wrapper_style_parts[] = '--sgs-quote-shadow:' . esc_attr( $box_shadow );
-		$wrapper_style_parts[] = 'box-shadow:var(--sgs-quote-shadow)';
-	}
-
-	// Margin.
-	// sgs_attr_has_value() guards empty-string defaults (marginTop etc. type:string default:"").
-	if ( sgs_attr_has_value( $margin_top ) ) {
-		$wrapper_style_parts[] = 'margin-top:' . floatval( $margin_top ) . esc_attr( $margin_unit );
-	}
-	if ( sgs_attr_has_value( $margin_right ) ) {
-		$wrapper_style_parts[] = 'margin-right:' . floatval( $margin_right ) . esc_attr( $margin_unit );
-	}
-	if ( sgs_attr_has_value( $margin_bottom ) ) {
-		$wrapper_style_parts[] = 'margin-bottom:' . floatval( $margin_bottom ) . esc_attr( $margin_unit );
-	}
-	if ( sgs_attr_has_value( $margin_left ) ) {
-		$wrapper_style_parts[] = 'margin-left:' . floatval( $margin_left ) . esc_attr( $margin_unit );
-	}
-
-	// Padding.
-	// sgs_attr_has_value() guards empty-string defaults (paddingTop etc. type:string default:"").
-	if ( sgs_attr_has_value( $padding_top ) ) {
-		$wrapper_style_parts[] = 'padding-top:' . floatval( $padding_top ) . esc_attr( $padding_unit );
-	}
-	if ( sgs_attr_has_value( $padding_right ) ) {
-		$wrapper_style_parts[] = 'padding-right:' . floatval( $padding_right ) . esc_attr( $padding_unit );
-	}
-	if ( sgs_attr_has_value( $padding_bottom ) ) {
-		$wrapper_style_parts[] = 'padding-bottom:' . floatval( $padding_bottom ) . esc_attr( $padding_unit );
-	}
-	if ( sgs_attr_has_value( $padding_left ) ) {
-		$wrapper_style_parts[] = 'padding-left:' . floatval( $padding_left ) . esc_attr( $padding_unit );
-	}
-
-	// Custom width.
-	// Treat empty string the same as null so absent-attr instances don't emit
-	// `max-width:0px` (block.json default for `customWidth` is `""`, not null).
-	// Captured 2026-05-26: empty-string-not-null-in-wp-block-render pattern.
-	if ( null !== $custom_width && '' !== $custom_width ) {
-		$wrapper_style_parts[] = 'max-width:' . floatval( $custom_width ) . esc_attr( $custom_width_unit );
+		$extra_styles[] = '--sgs-quote-shadow:' . esc_attr( $box_shadow );
+		$extra_styles[] = 'box-shadow:var(--sgs-quote-shadow)';
 	}
 
 	// Transition custom properties (used by hover CSS).
 	$transition_vars = sgs_transition_vars( $attributes );
 	foreach ( $transition_vars as $var ) {
-		$wrapper_style_parts[] = $var;
+		$extra_styles[] = $var;
 	}
 }
 
-$wrapper_inline_style = implode( ';', $wrapper_style_parts );
-
 // ---------------------------------------------------------------------------
-// 12. Assemble wrapper class list.
-// ---------------------------------------------------------------------------
-
-$wrapper_classes = array( 'wp-block-sgs-quote' );
-
-$wrapper_args = array( 'class' => implode( ' ', $wrapper_classes ) );
-if ( $wrapper_inline_style ) {
-	$wrapper_args['style'] = $wrapper_inline_style;
-}
-// Pass anchor so get_block_wrapper_attributes() writes id="…" on the element.
-if ( isset( $attributes['anchor'] ) && $attributes['anchor'] ) {
-	$wrapper_args['id'] = esc_attr( $anchor );
-}
-
-$wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
-
-// ---------------------------------------------------------------------------
-// 13. Build scoped <style> blocks.
+// 11. Build scoped <style> blocks for SLOT responsive overrides + hover state.
 //
 // a) Body slot responsive overrides.
 // b) Attribution slot responsive overrides.
-// c) Wrapper responsive overrides.
-// d) Hover state (scale, colour, background, shadow).
+// c) Hover state (scale, colour, background, shadow).
+//
+// NOTE: Wrapper margin/padding responsive overrides (tablet/mobile) are
+// now handled by SGS_Container_Wrapper::render() — no separate wrapper CSS
+// needed here.
 // ---------------------------------------------------------------------------
 
 $body_scope   = $scope . ' .wp-block-sgs-quote__body';
@@ -606,40 +467,6 @@ $css_attrib_mobile = sgs_quote_slot_responsive_css(
 	'margin-top'
 );
 
-// Wrapper — tablet.
-// sgs_attr_has_value() guards empty-string defaults (marginTopTablet etc. type:string default:"").
-$css_wrapper_tablet = ! $inherit_style ? sgs_quote_wrapper_responsive_css(
-	$scope,
-	'@media (min-width:768px) and (max-width:1023px)',
-	sgs_attr_has_value( $margin_top_tablet ) ? floatval( $margin_top_tablet ) : null,
-	sgs_attr_has_value( $margin_right_tablet ) ? floatval( $margin_right_tablet ) : null,
-	sgs_attr_has_value( $margin_bottom_tablet ) ? floatval( $margin_bottom_tablet ) : null,
-	sgs_attr_has_value( $margin_left_tablet ) ? floatval( $margin_left_tablet ) : null,
-	$margin_unit,
-	sgs_attr_has_value( $padding_top_tablet ) ? floatval( $padding_top_tablet ) : null,
-	sgs_attr_has_value( $padding_right_tablet ) ? floatval( $padding_right_tablet ) : null,
-	sgs_attr_has_value( $padding_bottom_tablet ) ? floatval( $padding_bottom_tablet ) : null,
-	sgs_attr_has_value( $padding_left_tablet ) ? floatval( $padding_left_tablet ) : null,
-	$padding_unit
-) : '';
-
-// Wrapper — mobile.
-// sgs_attr_has_value() guards empty-string defaults (marginTopMobile etc. type:string default:"").
-$css_wrapper_mobile = ! $inherit_style ? sgs_quote_wrapper_responsive_css(
-	$scope,
-	'@media (max-width:767px)',
-	sgs_attr_has_value( $margin_top_mobile ) ? floatval( $margin_top_mobile ) : null,
-	sgs_attr_has_value( $margin_right_mobile ) ? floatval( $margin_right_mobile ) : null,
-	sgs_attr_has_value( $margin_bottom_mobile ) ? floatval( $margin_bottom_mobile ) : null,
-	sgs_attr_has_value( $margin_left_mobile ) ? floatval( $margin_left_mobile ) : null,
-	$margin_unit,
-	sgs_attr_has_value( $padding_top_mobile ) ? floatval( $padding_top_mobile ) : null,
-	sgs_attr_has_value( $padding_right_mobile ) ? floatval( $padding_right_mobile ) : null,
-	sgs_attr_has_value( $padding_bottom_mobile ) ? floatval( $padding_bottom_mobile ) : null,
-	sgs_attr_has_value( $padding_left_mobile ) ? floatval( $padding_left_mobile ) : null,
-	$padding_unit
-) : '';
-
 // Hover state.
 $css_hover = '';
 if ( $hover_scale || $hover_colour || $hover_bg || $box_shadow_hover ) {
@@ -662,73 +489,100 @@ if ( $hover_scale || $hover_colour || $hover_bg || $box_shadow_hover ) {
 	$css_hover = $scope . ':hover{' . implode( ';', $hover_decls ) . '}';
 }
 
-$responsive_css = trim(
+$slot_responsive_css = trim(
 	$css_body_tablet .
 	$css_body_mobile .
 	$css_attrib_tablet .
 	$css_attrib_mobile .
-	$css_wrapper_tablet .
-	$css_wrapper_mobile .
 	$css_hover
 );
 
 // ---------------------------------------------------------------------------
-// 14. Output.
+// 12. Build the blockquote's interior HTML.
 //
-// FIX E audit (P-WP-AUTOP-INTERACTION 2026-05-17):
-// sgs/quote emits <blockquote><p>…</p><footer>…</footer></blockquote>.
-// wpautop() runs on 'the_content' at priority 10. do_blocks() runs at priority 9,
-// so block render output is injected into the content string BEFORE wpautop sees it.
-// wpautop skips content already inside block-level elements (<blockquote>, <p>, etc.)
-// because it only wraps bare text nodes at the top level of the content string.
-// A <blockquote> is a block-level element — wpautop will not insert a <p> wrapper
-// around it, and the inner <p> elements are already explicit markup, not bare text.
-// No double-wrap risk confirmed. No defensive action needed.
+// FIX E audit (P-WP-AUTOP-INTERACTION 2026-05-17): no double-wrap risk —
+// <blockquote> is a block-level element; wpautop skips it.
 // ---------------------------------------------------------------------------
 
-if ( $responsive_css ) {
-	printf( '<style>%s</style>', $responsive_css ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+$blockquote_inner = '';
+
+if ( $has_inner_blocks ) {
+	// β-path: emit rendered InnerBlocks output as the body. Attribution
+	// arrives as a child block — do NOT also render the attribution attribute.
+	$blockquote_inner = $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+} else {
+	// Legacy path: iterate $attributes['body'][] array per the operator UI.
+	$body_tag_escaped = tag_escape( $body_tag );
+	foreach ( $body as $item ) {
+		$item_text = (string) $item;
+		// Skip entirely blank items.
+		if ( '' === trim( wp_strip_all_tags( $item_text ) ) ) {
+			continue;
+		}
+		$body_style_attr   = $body_style_str ? ' style="' . esc_attr( $body_style_str ) . '"' : '';
+		$blockquote_inner .= sprintf(
+			'<%1$s class="wp-block-sgs-quote__body"%2$s>%3$s</%1$s>',
+			$body_tag_escaped, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$body_style_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			wp_kses_post( $item_text )
+		);
+	}
+
+	// Attribution — legacy path only. β-path attribution arrives via InnerBlocks.
+	if ( $attrib_enabled && '' !== trim( wp_strip_all_tags( $attribution ) ) ) {
+		$attrib_tag_escaped = tag_escape( $attrib_tag );
+		$attrib_style_attr  = $attrib_style_str ? ' style="' . esc_attr( $attrib_style_str ) . '"' : '';
+		$blockquote_inner  .= sprintf(
+			'<%1$s class="wp-block-sgs-quote__attribution"%2$s>%3$s</%1$s>',
+			$attrib_tag_escaped, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$attrib_style_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			wp_kses_post( $attribution )
+		);
+	}
 }
 
-?>
-<blockquote <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-	<?php
-	if ( $has_inner_blocks ) {
-		// β-path: emit rendered InnerBlocks output as the body. Attribution
-		// arrives as a child block (sgs/text with .sgs-brand__attribution-style
-		// className from the converter) — do NOT also render the attribution
-		// attribute, that would duplicate it.
-		echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	} else {
-		// Legacy path: iterate $attributes['body'][] array per the operator UI
-		// in edit.js, then emit the attribution attribute below.
-		$body_tag_escaped = tag_escape( $body_tag );
-		foreach ( $body as $item ) {
-			$item_text = (string) $item;
-			// Skip entirely blank items.
-			if ( '' === trim( wp_strip_all_tags( $item_text ) ) ) {
-				continue;
-			}
-			$body_style_attr = $body_style_str ? ' style="' . esc_attr( $body_style_str ) . '"' : '';
-			printf(
-				'<%1$s class="wp-block-sgs-quote__body"%2$s>%3$s</%1$s>',
-				$body_tag_escaped, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				$body_style_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				wp_kses_post( $item_text )
-			);
-		}
+// Prepend scoped slot CSS (inside inner_html so it is scoped to this instance).
+$slot_style_tag = '';
+if ( $slot_responsive_css ) {
+	$slot_style_tag = sprintf( '<style>%s</style>', $slot_responsive_css ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}
 
-		// Attribution — legacy path only. β-path attribution arrives via InnerBlocks.
-		if ( $attrib_enabled && '' !== trim( wp_strip_all_tags( $attribution ) ) ) {
-			$attrib_tag_escaped = tag_escape( $attrib_tag );
-			$attrib_style_attr  = $attrib_style_str ? ' style="' . esc_attr( $attrib_style_str ) . '"' : '';
-			printf(
-				'<%1$s class="wp-block-sgs-quote__attribution"%2$s>%3$s</%1$s>',
-				$attrib_tag_escaped, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				$attrib_style_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				wp_kses_post( $attribution )
-			);
-		}
-	}
-	?>
-</blockquote>
+$inner_html = $slot_style_tag . $blockquote_inner;
+
+// ---------------------------------------------------------------------------
+// 13. Anchor id attr — passed via extra_attrs so the helper writes id="…"
+// on the wrapper element. Only set when an explicit anchor is authored;
+// for auto-generated anchors we rely on the scoped $scope CSS selector
+// (see step 7) without polluting the DOM with generated ids.
+// ---------------------------------------------------------------------------
+
+$extra_attrs = array();
+if ( isset( $attributes['anchor'] ) && $attributes['anchor'] ) {
+	$extra_attrs['id'] = esc_attr( $anchor );
+}
+
+// ---------------------------------------------------------------------------
+// 14. Emit via the shared wrapper helper.
+//
+// KIND = 'content': width/spacing layers only — no bg/overlay/svg/grid.
+// The blockquote's own colour/border/shadow CSS travels via extra_styles.
+// The block's own BEM class + any block editor className travel via extra_classes.
+// The anchor id travels via extra_attrs.
+//
+// WS-4: quote uses the semantic <blockquote> tag — pass it explicitly.
+// ---------------------------------------------------------------------------
+
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+echo SGS_Container_Wrapper::render(
+	$attributes,
+	$block,
+	$inner_html,
+	'content',
+	array(
+		'tag'           => 'blockquote',
+		'extra_classes' => array( 'wp-block-sgs-quote' ),
+		'extra_styles'  => $extra_styles,
+		'extra_attrs'   => $extra_attrs,
+	)
+);
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

@@ -11,6 +11,8 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveControl } from '../../components';
+// WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing only).
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 /**
  * FR-22-6 migration: all card content (icon/media, heading, subtitle,
@@ -122,6 +124,12 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+				{ /* WS-4: mirrored sgs/container wrapper controls (content kind = width/spacing). */ }
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="content"
+				/>
 				{ /* ===== Card Style ===== */ }
 				<PanelBody title={ __( 'Card Style', 'sgs-blocks' ) } initialOpen={ true }>
 					<SelectControl

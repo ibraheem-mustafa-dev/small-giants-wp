@@ -27,6 +27,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 $card_style              = $attributes['style'] ?? 'card';
 $hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
@@ -115,20 +116,13 @@ if ( $stagger_delay ) {
 // though name is now in InnerBlocks — legacy posts may still carry these).
 $name_font_size_tablet = $attributes['nameFontSizeTablet'] ?? '';
 $name_font_size_mobile = $attributes['nameFontSizeMobile'] ?? '';
-$data_attrs            = '';
+$extra_attrs           = array();
 if ( $name_font_size_tablet ) {
-	$data_attrs .= ' data-name-fs-tablet="' . esc_attr( $name_font_size_tablet ) . '"';
+	$extra_attrs['data-name-fs-tablet'] = esc_attr( $name_font_size_tablet );
 }
 if ( $name_font_size_mobile ) {
-	$data_attrs .= ' data-name-fs-mobile="' . esc_attr( $name_font_size_mobile ) . '"';
+	$extra_attrs['data-name-fs-mobile'] = esc_attr( $name_font_size_mobile );
 }
-
-$wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class' => implode( ' ', $classes ),
-		'style' => $styles ? implode( ';', $styles ) . ';' : '',
-	)
-);
 
 // ── Avatar / author photo ──────────────────────────────────────────────────
 // Avatar is a presentation/identity attr managed via the inspector MediaPicker.
@@ -200,13 +194,27 @@ if ( $schema_enabled ) {
 	}
 }
 
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attributes from WP core; $content from inner blocks (WP-rendered); $footer_html/$schema_html built with esc_* helpers above.
-printf(
-	'<blockquote %1$s%2$s>%3$s%4$s</blockquote>%5$s',
-	$wrapper_attributes,
-	$data_attrs,
-	$content,
-	$footer_html,
-	$schema_html
+// ── Build interior HTML ────────────────────────────────────────────────────
+// $content (InnerBlocks), $footer_html, and $schema_html are all pre-escaped
+// above. The helper owns the OUTER <blockquote> wrapper; testimonial keeps
+// its own interior (InnerBlocks quote content + avatar footer + schema JSON-LD).
+$inner_html = $content . $footer_html . $schema_html;
+
+// WS-4: CONTENT kind = width/spacing only (no bg/overlay/grid).
+// The block's own colour/border/hover CSS rides on $classes (extra_classes)
+// and CSS custom properties ($styles → extra_styles). R-22-14: explicit
+// discriminators used above; no empty($content) branching here.
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- all parts pre-sanitised: $inner_html built with esc_*/wp_kses(); $classes/styles built with esc_attr()/sanitize_html_class(); $extra_attrs values pre-escaped.
+echo SGS_Container_Wrapper::render(
+	$attributes,
+	$block,
+	$inner_html,
+	'content',
+	array(
+		'tag'           => 'blockquote',
+		'extra_classes' => $classes,
+		'extra_styles'  => $styles,
+		'extra_attrs'   => $extra_attrs,
+	)
 );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

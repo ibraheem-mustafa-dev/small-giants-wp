@@ -3,7 +3,7 @@
     "apiVersion": 3,
     "name": "sgs/quote",
     "replaces": "core/quote",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "title": "Quote",
     "category": "sgs-content",
     "description": "Attributed blockquote with body paragraphs and an optional footer attribution. Emits semantic <blockquote> + <footer> so converter-pipeline outputs preserve the correct HTML5 structure and inheritable italic styling.",
@@ -418,6 +418,31 @@
         "customWidthUnit": {
             "type": "string",
             "default": "px"
+        },
+        "widthMode": {
+            "type": "string",
+            "enum": [ "default", "wide", "full", "custom" ],
+            "default": "default"
+        },
+        "widthModeMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "widthModeTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "widthModeDesktop": {
+            "type": "string",
+            "default": ""
+        },
+        "contentWidth": {
+            "type": "string",
+            "default": ""
+        },
+        "maxWidth": {
+            "type": "string",
+            "default": ""
         },
         "inheritStyle": {
             "type": "boolean",
