@@ -1,3 +1,49 @@
+# Session Handoff — 2026-06-04 (SGS THEME thread, session 13 — Spec 27 Phase 2 CLUSTER A COMPLETE + R-22-13 sign-off + Spec 28 + label-convention; D171)
+
+> Theme/blocks thread. Cloning pipeline → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. **D-number:** cloning holds D169/D170; this theme session = **D171**. Cloning co-active on the shared tree — every commit by EXPLICIT PATH; never-commit artefacts (`lucide-icons.php`, `sgs-framework.db`, `theme-snapshot.json`) left untouched.
+
+## Completed This Session
+1. **B3 — per-unit pricing + cosmetic badge + I2 auto-contrast SHIPPED** (`ceb4e04a`; R-22-13 polish `5fe7cfd5`). "£0.83→£0.51 per bar" recompute on swap; badge reuses the recorded **`sgs/label`** pill-wrap convention (Bean correction — not an invented class); badge text auto-contrasts vs the resolved primary (8.43:1); **on-sale variation shows "Sale"** not "Best value"; WC variation-editor authoring. Caught a deploy bug: WP reads each block's `style.css` not `style-index.css`.
+2. **Label/badge → sgs/label recognition convention SHIPPED** (`07975d7e`). `slots.label`→`sgs/label` extended with the cosmetic-badge family in the DB + seed script + Spec 00 §3.1.1 + Spec 02 regen. Bare `badge`-slot rewire parked for cloning (`P-BADGE-SLOT-ROUTE-TO-LABEL`).
+3. **Spec 28 Smart Bulk Pricing drafted + adversarial-councilled** (`5cee5e5f`). Auto-pricing engine (power-law k=0.12) + value-ladder. 6-persona council = CONDITIONAL GO; folded a 4-phase re-scope (P1 value-ladder=MVP on B3 / P4 WC-write DEFERRED behind Cluster C) + 15-item must-fix register + corrected idempotent charm fixture. status: draft — do NOT build FR-28-5 as written.
+4. **A4 — per-variation gallery SHIPPED** (`77dccc9f`, clip-fix `48fc54b7`, R-22-13 `5fe7cfd5`). Per-combo `gallery` in manifest (cache v3→v5, `imageUrl`=gallery[0]); thumbnail strip rebuilt imperatively on swap with a DELEGATED click listener; prefetch-once; fixed-220px image box + object-fit cover; editable `imageHeight` attr + inspector control + var; media-picker authoring. Self-review caught a clipped-strip bug.
+5. **C2 + Step-7 demand analytics SHIPPED** (`771f43ad`). 3-state `termAvailability()` → "(sold out)" vs "(unavailable)" SR text; privacy-safe demand REST (`/sgs/v1/demand/attempt`, SHA-256, ZERO PII) + admin meta box; view.js fire-and-forget emit.
+6. **ESCAPE-AUDIT + QA-VIS gates PASSED** (`28607ac4`). Escape-audit fixed a BLOCKER (gallery authoring field had no save handler) + image-type sanitiser + SHA-256. QA-VIS: axe-0, 3-breakpoint, Bean R-22-13 sign-off GRANTED. 2 escape-audit items resolved → parking-archive.
+
+## Current State
+- **Branch:** `main` at `5fe7cfd5` (+ this handoff's doc commit). 8 code commits this session (`ceb4e04a`→`5fe7cfd5`), all pushed. Cloning's D170 commits interleave cleanly.
+- **Tests:** axe-0 on `.product-card--bound`; `php -l` + WPCS 0-errors on all touched files. product-card 1.12.0.
+- **Build/deploy:** LIVE on sandybrown canary 540, opcache-reset, live-verified each unit.
+- **Uncommitted:** only never-commit artefacts.
+
+## Outcome vs Completion (Gate 3.5)
+**OUTCOME ACHIEVED** — Cluster A is genuinely DONE: every unit live-verified on canary 540, ESCAPE-AUDIT + QA-VIS gates passed, Bean R-22-13 visual sign-off GRANTED (image-box, Sale-badge, editable-height, pricing all approved).
+
+## Known Issues / Blockers
+- None block the next session. Spec 28 is draft (build later, P4 gated on Cluster C). Cloning thread co-active.
+
+## Next Priorities (in order)
+1. **Spec 27 Phase 2 Cluster B — SEO**: E1 ProductGroup+hasVariant JSON-LD (reuse `review-schema.php` + the manifest, inc-VAT, SEC-1/2) → E2 canonical (no add_query_arg, SEC-7) → E3 breadcrumb-place + OG + sitemap (WP_Sitemaps + detect-defer Yoast/RankMath, SEC-6/9) → F1 SSR-all-commerce. Lives in `includes/configurator-head.php`. Plan: `.claude/plans/2026-06-04-spec27-phase2-display-seo-plan.md` §Cluster B.
+2. **Then Cluster C** — authoring controller (R1/R2) + R3 + PREFLIGHT hard go-live block.
+3. **Spec 28 P1** (value-ladder, rides shipped B3) — parallel option when desired.
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `plugins/sgs-blocks/src/blocks/product-card/{render.php,view.js,style.css,edit.js,block.json}` | B3+A4+C2+Step7+R-22-13 (per-unit/badge/gallery/thumbs/3-state/Sale/imageHeight); 1.8.0→1.12.0 |
+| `plugins/sgs-blocks/includes/class-product-manifest.php` | gallery + unit/discount per combo; cache v3→v5; imageUrl=gallery[0] |
+| `plugins/sgs-blocks/includes/{render-helpers,configurator-variation-fields,class-product-bindings}.php` | per-unit+palette-resolve helpers; gallery+divisor+label authoring fields + save; imageAlt sanitise-at-storage |
+| `plugins/sgs-blocks/includes/{class-demand-analytics,demand-analytics-admin}.php` (NEW) + `sgs-blocks.php` | Step-7 REST endpoint + admin meta box |
+| `plugins/sgs-blocks/scripts/uimax-tools/seed-slot-synonyms.py` | label-slot cosmetic-badge aliases |
+| `.claude/specs/{00,27,28},.claude/{decisions,state,parking}.md` + `memory/parking-archive.md` + `reports/visual-diff/*` | docs + Spec 28 + D171 + visual-diff reports |
+
+## Notes for Next Session
+- **Deploy `*.asset.php` with any viewScriptModule change**; **WP reads each block's `style.css`, not `style-index.css`** (A4 deploy bug); **build via PowerShell**.
+- **Interactivity does NOT bind `data-wp-on` on imperatively-injected nodes** — use event delegation (A4 thumbnail fix).
+- **Self-review with /playwright + /ui-ux-pro-max catches what axe can't** (clipped-thumbnail passed axe-0) — D165 holds.
+
+---
+
 # Session Handoff — 2026-06-04 (SGS THEME thread, session 12 — Spec 27 PHASE 2 BUILD STARTED: 3 fast-follows + UK tax-verify + Phase-2 plan v2 + Step 0 + B2/I2 swatches + TAX-UI; D168)
 
 > Theme/blocks thread. Cloning pipeline → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. **D-number:** cloning holds D166 (WS-4 composites) + D167 (WS-4 block-side); this session's theme work = **D168**. Cloning co-active on the shared tree all session — every commit by EXPLICIT PATH; cloning's uncommitted files (hero/*, sgs-framework.db, phase4 reports, lucide, theme-snapshot) left untouched.

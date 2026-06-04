@@ -7,6 +7,12 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-06-04 — theme thread Cluster A escape-audit items (RESOLVED)
+
+> **P-IMAGEALT-DOUBLE-ENCODE** — **RESOLVED 2026-06-04 (commit 5fe7cfd5).** `Product_Bindings::get_product_data()` now `sanitize_text_field()`s `image_alt` at storage (was `esc_attr()` → double HTML-entity encode that showed literal entities on the JS image swap). Every output consumer still `esc_attr()`s at output (render.php 152/351/637 + JSON-encoded `data-wp-context` seeds verified). Fix-comprehensive: both array branches (~332 product, ~382 CPT).
+
+> **P-DEMAND-RL-XFF-SPOOF** — **RESOLVED 2026-06-04 (working-as-intended, no code change).** `class-demand-analytics.php` uses `WC_Geolocation::get_ip_address()` which is the WP/WC-standard IP source: it returns `REMOTE_ADDR` by DEFAULT and only trusts `X-Forwarded-For` when the site admin has explicitly configured a trusted upstream proxy (where XFF is the legitimate client IP). Forcing `REMOTE_ADDR`-only would BREAK legitimately-proxied/CDN setups (all guests share one rate-limit bucket). The 200-combo-per-product hard cap is the structural backstop + the counter only increments (no integrity risk). Disposition: keep WC_Geolocation. (Escape-audit reviewer flagged a theoretical mis-config case; the framework-standard call is correct.)
+
 Entries here were moved out of `.claude/parking.md` at Phase 6c of the doc-op programme (2026-05-24). Grouped by completion date (YYYY-MM-DD) where parseable from the original entry text or its source section title; undated entries at the bottom. Original section context preserved as the `_From:_` line on each entry.
 
 ## 2026-05-24
