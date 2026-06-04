@@ -7,11 +7,14 @@
  * (`show_in_rest => true`, no leading-underscore keys so the `core/post-meta`
  * binding source can resolve them directly).
  *
- * Per-site opt-in (Spec 24 FR-24-1):
- *   Phase A registers unconditionally so the Mama's Munches test data can be
- *   seeded and validated without extra config. A capability-flag gating mechanism
- *   (theme_support / wp_options) is a Spec 24 Phase A follow-up task before the
- *   framework ships to non-product sites.
+ * Per-site opt-in (Spec 24 FR-24-1 / FR-24 #9, U1):
+ *   The CPT, taxonomies, meta, and admin UI register ONLY when this site has
+ *   'sgs_product' in the `sgs_content_types` option (managed by
+ *   Sgs_Content_Types_Settings). A lean marketing site (option []) pays zero
+ *   penalty: no CPT, no taxonomies, no meta, no admin screens. The gate lives in
+ *   the init-priority handlers below — NOT at register()-call time — so the
+ *   one-time backward-compat migration (init @1) sets the option before these
+ *   handlers (init @5) read it.
  *
  * @package SGS\Blocks
  * @since   1.0.0
@@ -50,6 +53,20 @@ final class Product_CPT {
 	}
 
 	/**
+	 * Whether the product content type is enabled on this site (FR-24 #9, U1).
+	 *
+	 * Reads the `sgs_content_types` option directly (managed by
+	 * Sgs_Content_Types_Settings) so this class stays self-contained. Called from
+	 * each init-priority handler — never at register()-call time — so the settings
+	 * class's init @1 backward-compat migration sets the option first.
+	 *
+	 * @return bool
+	 */
+	public static function is_enabled(): bool {
+		return \in_array( self::POST_TYPE, (array) \get_option( 'sgs_content_types', array() ), true );
+	}
+
+	/**
 	 * Register the `sgs_product` custom post type.
 	 *
 	 * `show_in_rest => true` is required for Block Editor support and the
@@ -62,6 +79,10 @@ final class Product_CPT {
 	 * (core issues a `_doing_it_wrong` notice and breaks meta-cap mapping).
 	 */
 	public static function register_post_type(): void {
+		if ( ! self::is_enabled() ) {
+			return; // Lean site — product CPT disabled (FR-24 #9, U1).
+		}
+
 		$labels = array(
 			'name'                  => \__( 'Products', 'sgs-blocks' ),
 			'singular_name'         => \__( 'Product', 'sgs-blocks' ),
@@ -129,6 +150,9 @@ final class Product_CPT {
 	 * and Block Bindings can filter by them.
 	 */
 	public static function register_taxonomies(): void {
+		if ( ! self::is_enabled() ) {
+			return; // Lean site — product taxonomies disabled (FR-24 #9, U1).
+		}
 
 		// --- Product Category ---------------------------------------------------
 		\register_taxonomy(
@@ -212,6 +236,9 @@ final class Product_CPT {
 	 * binding source.
 	 */
 	public static function register_meta(): void {
+		if ( ! self::is_enabled() ) {
+			return; // Lean site — product meta disabled (FR-24 #9, U1).
+		}
 
 		$object_type    = 'post';
 		$object_subtype = self::POST_TYPE;
@@ -598,6 +625,10 @@ final class Product_CPT {
 	 * (entry point: src/plugins/product-variation-sets/index.js).
 	 */
 	public static function enqueue_editor_assets(): void {
+		if ( ! self::is_enabled() ) {
+			return; // Lean site — product editor assets disabled (FR-24 #9, U1).
+		}
+
 		// Guard: block editor for sgs_product only.
 		$screen = \get_current_screen();
 		if (
@@ -630,6 +661,9 @@ final class Product_CPT {
 	 * Add "Products" submenu under the SGS top-level admin menu.
 	 */
 	public static function register_submenu(): void {
+		if ( ! self::is_enabled() ) {
+			return; // Lean site — no Products admin submenu (FR-24 #9, U1).
+		}
 		\add_submenu_page(
 			Sgs_Admin_Menu::MENU_SLUG,
 			\__( 'Products', 'sgs-blocks' ),

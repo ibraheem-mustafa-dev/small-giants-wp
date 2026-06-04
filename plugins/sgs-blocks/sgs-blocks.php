@@ -178,7 +178,15 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cpt-rest-gate.php';
 Sgs_Block_CPTs::register();
 Sgs_Cpt_Rest_Gate::register();
 
+// SGS Content Types per-site capability flag (Spec 27 FR-24-1 / FR-24 #9, U1) —
+// owns the `sgs_content_types` option + the manage_options toggle + the one-time
+// backward-compat migration (init @1). Must register BEFORE Product_CPT so the
+// migration's init @1 hook is wired before the CPT's init @5 gate reads the flag.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-content-types-settings.php';
+Sgs_Content_Types_Settings::register();
+
 // SGS Product CPT (Spec 24 FR-24-1) — sgs_product, sgs_product_cat, sgs_product_tag + meta.
+// Registers ONLY when 'sgs_product' is enabled in sgs_content_types (FR-24 #9, U1).
 require_once SGS_BLOCKS_PATH . 'includes/content-types/class-product-cpt.php';
 Product_CPT::register();
 
