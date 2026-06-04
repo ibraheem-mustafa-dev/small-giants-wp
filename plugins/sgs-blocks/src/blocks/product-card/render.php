@@ -253,13 +253,37 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 		$primary_hex          = sgs_resolve_palette_hex( 'primary', '' );
 		$discount_text_colour = '' !== $primary_hex ? sgs_wcag_text_colour_for_bg( $primary_hex ) : '';
 
+		// Lean per-combo seed for the M-C9 24 KB context cap. The FULL manifest
+		// (with the JSON-LD-only fields sku/gtin/incMinor/saleEndDate and a gallery
+		// per combo) stays server-side for the schema emitter; view.js needs none of
+		// those four fields, and only needs a combo's gallery when it has >=2 images
+		// (the thumbnail strip — a 0/1-image combo shows just the main image, which
+		// view.js takes from combo.imageUrl). Stripping them keeps a large catalogue
+		// (e.g. the 48-SKU fixture, whose galleries all fall back to the parent image)
+		// under the cap so the interactive configurator does not drop to the static
+		// "From" card. SEC-1 intact: the manifest is still the single source; this is
+		// only the client SEED subset.
+		$seed_combos = array();
+		foreach ( $manifest['combos'] as $combo_key => $combo_data ) {
+			unset(
+				$combo_data['sku'],
+				$combo_data['gtin'],
+				$combo_data['incMinor'],
+				$combo_data['saleEndDate']
+			);
+			if ( count( $combo_data['gallery'] ) < 2 ) {
+				$combo_data['gallery'] = array(); // No strip for <2 images; view.js uses imageUrl.
+			}
+			$seed_combos[ $combo_key ] = $combo_data;
+		}
+
 		// Context array — manifest lives here (M-C3: NOT in wp_interactivity_state).
 		$context = array(
 			'productId'           => (string) $data['id'],
 			'addToCartId'         => absint( $data['wc_id'] ),
 			'decimals'            => $decimals,
 			'currencySymbol'      => $manifest['currencySymbol'],
-			'combos'              => $manifest['combos'],
+			'combos'              => $seed_combos,
 			'axes'                => $manifest['axes'],
 			'selectedAxes'        => $manifest['defaultAxes'],
 			'selectedKey'         => $manifest['defaultKey'],
