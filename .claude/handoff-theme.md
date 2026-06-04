@@ -14,7 +14,7 @@
 - **Branch:** `main` @ `395c76c9` — 9 commits this session (`b80907c6`→`395c76c9`), all pushed.
 - **Tests:** Jest 31/31; `php -l` + WPCS 0-errors on all touched files.
 - **Build/deploy:** product-card 1.8.0 + option-picker 0.1.6 + 4 new includes LIVE on sandybrown; opcache-reset; live-verified. Canary at baseline (tax OFF).
-- **Uncommitted (NOT mine — do not touch):** cloning's hero/*, sgs-framework.db, phase4 reports, lucide, theme-snapshot; AND `specs/27-*.md` + `plans/2026-06-03-spec27-phase1-configurator-plan.md` carry uncommitted edits of unclear authorship (pre-existing at session start). Left alone to avoid clobbering — **reconcile next session before editing them.**
+- **Uncommitted:** only the never-commit artefacts (`lucide-icons.php` auto-regen, `sgs-framework.db`, `theme-snapshot.json`). The earlier spec27/phase1-plan doc tangle was RESOLVED at session-12 close (after the cloning thread closed): spec27 Phase-1 row confirmed SHIPPED + Phase-2 row updated to PARTIAL (D168) + committed; the completed Phase-1 plan archived to `plans/archive/2026-06-03-spec27-phase1-configurator-plan-complete.md`; state.md theme line added.
 
 ## Outcome vs Completion (Gate 3.5)
 **OUTCOME ACHIEVED** for all 6 — each live-verified on canary 540. Phase 2 = ~3 of ~11 units done (Step 0 + B2/I2 + TAX-UI); remainder is correctly future work.
@@ -22,7 +22,6 @@
 ## Known Issues / Blockers
 - None block the next session.
 - **PARKED:** `P-CONFIGURATOR-PRICE-FORMAT-LOCALE` — JS formatPrice (toLocaleString) vs PHP wc_price thousand-separator divergence for ≥£1000 / non-UK locale. Pre-existing; doesn't bite UK B2C <£100.
-- spec27/phase1-plan uncommitted-doc tangle (above) — reconcile next session.
 
 ## Files Modified (committed by explicit path)
 | File | What |
