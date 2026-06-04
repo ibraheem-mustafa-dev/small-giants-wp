@@ -6,12 +6,12 @@ plan_id: spec27-phase2-to-completion
 spec: .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md
 created: 2026-06-04
 revision: v2 (2026-06-04) — rebuilt after an adversarial-council pass (6 personas) + a codebase audit of what SEO/schema already exists + Bean's scope decisions. v1 was committed 89b00fa5; this supersedes it.
-status: IN PROGRESS. Phase 1 SHIPPED (D165). **Cluster A SHIPPED (D171). Cluster B SEO SHIPPED (D173, 2026-06-05): E1 ProductGroup JSON-LD (commit 6ef7e7c6, Rich Results 0 errors) + E2 canonical escape-hatch (ba96a4ff) + E3 OG/sitemap-lastmod/breadcrumb (325b521f) + F1 SSR-audit — all live-verified on canary 540/589; a self-introduced context-cap regression fixed (3a1e95df); image-sitemap descoped (Bean). Cluster C STARTED: R1 authoring controller SHIPPED (f747e58a, golden-master verified + cross-model reviewed). REMAINING: R2 (provisioning + cartesian + rollback — heaviest), R3 (authoring UI), PREFLIGHT.** This is the path to 100% of Spec 27 before launch (Bean: not launching until the whole spec is complete). Authoring UI is UN-GATED (in scope now) so no client/agency ever edits raw meta. SCOPE RESOLVED 2026-06-04: demand analytics IS in scope (Step 7); the AI-builder (FR-27-R5) + AI-citation/feed (FR-27-F2) are the whole-framework CAPSTONE — built LAST, gated on the converter pipeline + DB + theme/blocks + WC layer all being production-ready; they do not block a first client shop launch (see §Scope decisions).
+status: **COMPLETE (2026-06-05) — Phase 2 done; only the decision-gated Cluster D remains.** Phase 1 SHIPPED (D165). Cluster A SHIPPED (D171). Cluster B SEO SHIPPED (D173): E1 ProductGroup JSON-LD (6ef7e7c6, Rich Results 0 errors) + E2 canonical (ba96a4ff) + E3 OG/sitemap-lastmod/breadcrumb (325b521f, image-sitemap descoped) + F1 SSR-audit. **Cluster C SHIPPED (2026-06-05): R1 authoring controller (f747e58a) + R2 provisioning/cartesian/transactional-rollback (e62f337f, golden-master byte-identity + 0-orphan rollback + sibling-safety live-proven) + R3 authoring-UI/edit-safety (dd9d0d7d) + PREFLIGHT hard go-live gate + cart £0 422 + health cron (dd9d0d7d, invalid_jsonld publish-gate fix 27e54132). QA-AUTHORING gate PASSED (consolidated e2e: provision→author→publish→valid rich-results, zero raw-meta) + Bean R-22-13 sign-off GRANTED.** A first client shop is now complete, sellable, discoverable, and client-authorable. Authoring UI is UN-GATED (no raw-meta). REMAINING = **Cluster D only** (DECISION-GATED, NOT BUILT): AI-builder (FR-27-R5) + AI-citation/feed (FR-27-F2) + agency slug-templates (FR-27-R4) — the whole-framework CAPSTONE, gated on converter pipeline + DB + theme/blocks + WC all production-ready; does NOT block a first client shop (see §Scope decisions).
 ---
 
 # Spec 27 → 100% — Display, SEO, Authoring & Go-Live — Build Plan (v2)
 
-> **PROGRESS (2026-06-05):** Step 0 + Cluster A DONE (D171). **Cluster B (Steps 8–11: E1/E2/E3/F1) DONE + QA-SEO gate PASSED (D173).** Cluster C STEP 12 R1 (controller core) DONE (f747e58a). NEXT = STEP 12 R2 (provisioning/cartesian/rollback) → STEP 13 R3 → STEP 14 PREFLIGHT.
+> **PROGRESS (2026-06-05 — PHASE 2 COMPLETE):** Step 0 + Cluster A DONE (D171). Cluster B (Steps 8–11: E1/E2/E3/F1) DONE + QA-SEO gate PASSED (D173). **Cluster C DONE: STEP 12 R1 (f747e58a) + R2 (e62f337f) + STEP 13 R3 (dd9d0d7d) + STEP 14 PREFLIGHT (dd9d0d7d, 27e54132) all SHIPPED + QA-AUTHORING gate PASSED + Bean R-22-13 signed.** NEXT = the decision-gated Cluster D capstone (R4/R5/F2) OR a first real client shop on the now-complete stack — a Bean decision, not more required Phase-2 build.
 
 **USP:** This finishes the shop: Google shows the product with per-variant prices, AI search engines read the whole catalogue, clients author swatches/galleries/pricing in friendly editor boxes (never raw fields), and a hard go-live check stops a £0 product ever selling. It turns the "closed-loop" moat from *partial* to *complete* — the thing that wins shop clients.
 
@@ -35,20 +35,20 @@ status: IN PROGRESS. Phase 1 SHIPPED (D165). **Cluster A SHIPPED (D171). Cluster
 
 ## Phase success criteria (done when)
 
-- [ ] **Google Rich Results Test passes** ProductGroup + per-variation Offers (brand/identifier/priceValidUntil-or-omitted/shipping/returns), 0 errors (E1).
-- [ ] `curl` with **JS disabled** shows price + availability + JSON-LD in the initial HTML (F1).
-- [ ] Colour/image **swatches** render, are keyboard+SR accessible, pill text auto-contrasts ≥4.5:1 (B2 + I2) — **authored via a friendly editor control, never raw meta**.
-- [ ] Per-unit "£1.04 **per bar**" (client-set unit label, derived live) + server "% off" + a digit-stripped cosmetic label (B3) — **authored via editor controls**.
-- [ ] Per-variation **gallery** with variation→parent→placeholder fallback (A4) — **authored via editor controls**.
-- [ ] OOS vs nonexistent distinct + announced (C2).
-- [ ] **Demand analytics** — unbuyable-combo attempts captured (privacy-safe aggregate) + a top-combos admin surface (Step 7).
-- [ ] Canonical correct (`?attribute_*` → parent), built from server-side attributes, **never `add_query_arg`** (E2); **defers to an active SEO plugin** if present.
-- [ ] Breadcrumb (place existing block) + product OG tags (always inc-VAT) + product sitemap with per-variation images (E3) — sitemap via **WP core `WP_Sitemaps` provider**, **detect-and-defer if Yoast/RankMath active**.
-- [ ] **Hard** go-live PREFLIGHT: a £0 / no-image / draft / unmapped-variesBy product **cannot be published** (blocks via `transition_post_status`); proxy independently rejects a £0 add-to-cart (PREFLIGHT + FR-27-G1 amend).
-- [ ] **Tax-display-mode UI** (auto inc-VAT default = UK B2C compliant; inc-suffix; ex-plus-vat trade with a B2C-misuse warning). card==cart in every mode; schema/OG price ALWAYS inc-VAT.
-- [ ] **Authoring (un-gated Phase R: R1/R2/R3)** — clients/agency provision attributes+variations + author swatch/label/divisor/gallery/variesBy via friendly UI; edit-safety warnings on term-slug rename + delete-with-orders. **Zero raw-meta editing.**
-- [ ] Bean R-22-13 visual sign-off + a clean **human NVDA/VoiceOver pass** (a marketing-claim gate — decoupled from the code-ship gate).
-- [ ] **Escape-audit** table passed for every new data→HTML path (security gate).
+- [x] **Google Rich Results Test passes** ProductGroup + per-variation Offers (brand/identifier/priceValidUntil-or-omitted/shipping/returns), 0 errors (E1). — 6ef7e7c6, seo-schema 0 errors + live-verified.
+- [x] `curl` with **JS disabled** shows price + availability + JSON-LD in the initial HTML (F1).
+- [x] Colour/image **swatches** render, are keyboard+SR accessible, pill text auto-contrasts ≥4.5:1 (B2 + I2) — **authored via a friendly editor control, never raw meta**. — 6cdff8d0.
+- [x] Per-unit "£1.04 **per bar**" (client-set unit label, derived live) + server "% off" + a digit-stripped cosmetic label (B3) — **authored via editor controls**. — ceb4e04a.
+- [x] Per-variation **gallery** with variation→parent→placeholder fallback (A4) — **authored via editor controls**. — 77dccc9f.
+- [x] OOS vs nonexistent distinct + announced (C2). — 771f43ad.
+- [x] **Demand analytics** — unbuyable-combo attempts captured (privacy-safe aggregate) + a top-combos admin surface (Step 7). — 771f43ad.
+- [x] Canonical correct (`?attribute_*` → parent), built from server-side attributes, **never `add_query_arg`** (E2); **defers to an active SEO plugin** if present. — ba96a4ff.
+- [x] Breadcrumb (place existing block) + product OG tags (always inc-VAT) + sitemap `<lastmod>` accuracy (E3) — detect-and-defer if Yoast/RankMath active. — 325b521f. **(Per-variation image-sitemap clause DESCOPED — Bean 53b85d7c: WP_Sitemaps has no clean image namespace + Google deprecated image sitemaps + E1 schema already exposes every variation image.)**
+- [x] **Hard** go-live PREFLIGHT: a £0 / no-image / draft / unmapped-variesBy product **cannot be published** (blocks via `transition_post_status`); proxy independently rejects a £0 add-to-cart (PREFLIGHT + FR-27-G1 amend). — dd9d0d7d, live-proven.
+- [x] **Tax-display-mode UI** (auto inc-VAT default = UK B2C compliant; inc-suffix; ex-plus-vat trade with a B2C-misuse warning). card==cart in every mode; schema/OG price ALWAYS inc-VAT. — 395c76c9/9e26de74.
+- [x] **Authoring (un-gated, R1/R2/R3)** — clients/agency provision attributes+variations + author swatch/label/divisor/gallery/variesBy via friendly UI; edit-safety warnings on term-slug rename + delete-with-orders. **Zero raw-meta editing.** — e62f337f/dd9d0d7d, e2e-proven.
+- [x] Bean R-22-13 visual sign-off (GRANTED 2026-06-05). — [ ] a clean **human NVDA/VoiceOver pass** remains OUTSTANDING (a marketing-claim gate, decoupled from the code-ship gate — Bean-time, gates the public WCAG claim only).
+- [x] **Escape-audit** table passed for every new data→HTML path (security gate). — 28607ac4 + per-cluster.
 
 ## Scope decisions (RESOLVED by Bean 2026-06-04)
 
