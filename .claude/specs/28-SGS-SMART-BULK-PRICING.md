@@ -1,8 +1,8 @@
 ---
 doc_type: spec
 spec_id: 28
-spec_version: 1
-status: draft — RE-SCOPE REQUIRED (adversarial-council CONDITIONAL GO 2026-06-04; do NOT build FR-28-5 as written — see §Council outcome)
+spec_version: 2
+status: draft — BUILDABLE (v2 folds the adversarial-council must-fixes into the FRs, 2026-06-04). Build per §"Build order" — P1 ships now on shipped B3; P4 (FR-28-5 WC-write) is build-deferred behind Spec 27 Cluster C / Phase R.
 title: "SGS Smart Bulk Pricing — auto-pricing engine + comparative value ladder"
 project: small-giants-wp
 authors: Bean + Claude (Opus 4.8)
@@ -15,10 +15,10 @@ absorbed_by: null
 
 # Spec 28 — SGS Smart Bulk Pricing
 
-> ## ⚠ Council outcome (2026-06-04) — read before building
-> A 6-persona `/adversarial-council` returned **CONDITIONAL GO**. The architecture (generate-to-WC, never render-override; integer-pence; legal framing) is sound, but the spec as written is **not buildable** — it points at a stall trap and lacks the safety machinery for software that rewrites live prices. **Build per the re-scoped 4-phase order in §"Build order (v2, post-council)" — NOT the original FR order.** The convergent must-fixes + the corrected (self-consistent) maths are in §"Council must-fix register". The FR bodies below are the v1 source; where they conflict with the council sections, the council sections win until a v2 FR rewrite lands.
+> ## v2 status (2026-06-04) — read before building
+> A 6-persona `/adversarial-council` returned **CONDITIONAL GO** on v1. The architecture (generate-to-WC, never render-override; integer-pence; legal framing) was sound, but v1 lacked the safety machinery for software that rewrites live prices. **This v2 has folded all 15 convergent must-fixes into the functional requirements below** — the FR bodies are now the single source of truth and are self-consistent with the corrected maths. The original 15-item register is retained at the foot of the doc as **provenance only** (each item now maps to the FR that resolved it).
 >
-> **The one-line takeaway:** ship the **value-ladder display (P1)** now — it needs no engine and rides on the already-shipped B3. Build the engine as a **preview-only** tool (P2/P3). **Fence the actual write-to-WooCommerce (P4) behind Spec 27 Cluster C / Phase R** — do not pull Phase R forward.
+> **Build order is the canonical sequence — NOT the FR numbering.** See §"Build order". The one-line takeaway: ship the **value-ladder display (P1)** now — it needs no engine and rides on the already-shipped B3 (`ceb4e04a`). Build the engine as a **preview-only** tool (P2/P3). **Fence the actual write-to-WooCommerce (P4 = FR-28-5) behind Spec 27 Cluster C / Phase R** — do not pull Phase R forward.
 
 ## USP / why this exists
 
@@ -27,7 +27,9 @@ Two halves of one feature that together turn quantity-discount pricing from a me
 1. **Auto-pricing engine (the deal-winner).** A non-technical shop owner enters ONE number — the price of a single item (even if a single is never sold) — picks a discount strength, and the engine generates every pack price using a psychologically- and legally-grounded model. No spreadsheet, no guessing, no "is 20% off the 24-pack too much?". Site-wide, per-category, or per-product.
 2. **Comparative value ladder (the conversion lift).** The product card shows the per-unit price at EVERY pack size with the saving vs a single item, anchored on the smallest pack and framed as loss ("save 30p each vs buying singly"), so "bigger pack = cheaper per item" becomes an explicit buying cue.
 
-This is the single hardest-to-copy commercial advantage in the shop layer: most WooCommerce shops make the owner hand-set every variation price and never surface the per-unit value ladder. Spec 28 makes both automatic.
+This is a real conversion advantage in the shop layer: most WooCommerce shops make the owner hand-set every variation price and never surface the per-unit value ladder. Spec 28 makes both automatic.
+
+**Moat honesty (must-fix #9).** The *engine itself is commodity* — at least five plugins do quantity discounts and the ~12-line power-law formula clones by lunchtime. That is table-stakes, not the differentiator. The defensible asset is the **integrated clone → theme → WooCommerce → value-ladder closed loop**: a standalone discount plugin cannot author prices into the same pipeline that built the site, drive the same `sgs/label` badge system, and read them back through the SSR manifest. The engine is a feature of the loop, not the moat — do not over-trust it as the commercial advantage.
 
 **Research basis:** two grounded research streams (2026-06-04) — `/marketing-skills` CRO/UX audit (Top-10) + a pricing-science report (16 cited sources, UK pricing law incl. Price Marking Order 2004 amendments effective 2026-04-06, CMA DMCC Act 2024, ASA 2026). The pricing report's verdict: ONE model dominates this use case (UK small food/FMCG, a few pack sizes) — a power-law per-unit curve with one steepness dial.
 
@@ -45,56 +47,77 @@ Spec 27 principle 6: **WooCommerce is the single source of truth; SGS never mirr
 2. **Generate to WooCommerce, never override at render.** (See the Spec 27 rule above.)
 3. **Legally clean by construction.** Savings are always framed as the pack's per-unit price vs the CURRENT single-unit price — never a "was/now" reference price — so the CMA 30-day / 1:2-volume rules never apply. Per-unit price is always displayed (also the Price Marking Order requirement).
 4. **One model, one dial.** Power-law `per_unit(n) = P × n^(−k)`; `k` is the single steepness parameter, surfaced as Gentle / Standard / Aggressive (k = 0.08 / 0.12 / 0.18). No model-selection UI — the research verdict is that the model shape is not situational, only `k` is.
-5. **Integer pence internally.** All money maths in integer pence; charm-round once on the pack total; derive per-unit from the charmed total (never charm-round per-unit independently — that breaks per-unit × n = pack-total).
-6. **Sensible defaults hidden, brand-safe caps enforced.** Margin floor, charm algorithm, the formula itself are not owner-facing. Hard caps: first multi-pack ≥ 8% saving (else admin warning), largest pack ≤ 40% saving (scepticism ceiling), per-unit never ≥ single price after rounding.
+5. **Integer pence internally; charm on the shopper-visible price.** All money maths in integer pence; charm-round once on the **inc-VAT display total** (the number the shopper actually sees), then back-solve the ex-VAT `regular_price` per the variation's tax class; derive per-unit from the charmed total (never charm-round per-unit independently — that breaks per-unit × n = pack-total). Charm-rounding the ex-VAT value is invisible to the shopper, so it must never be the charm basis (FR-28-2/5/12).
+6. **Sensible defaults hidden, brand-safe caps enforced.** Margin floor, charm algorithm, the formula itself are not owner-facing. Hard caps: first multi-pack ≥ 8% saving (else raise k ≤3×, then admin warning / abort), largest pack ≤ 40% saving (scepticism ceiling — wins on conflict with the 8% floor), per-unit must strictly DECREASE as pack size grows after rounding, per-unit never ≥ single price after rounding.
 7. **Authoring is un-gated (Spec 27 carry-over).** Every control is a friendly editor/settings field — never raw meta.
+8. **Writing live prices is a deliberate, reversible, audited act.** Nothing ever auto-writes to WooCommerce. The only write trigger is an explicit two-step "Apply to my live shop" confirmation; every write is logged, snapshotted, one-click revertible, and skips owner-locked variations (FR-28-5/13/14).
 
 ## Functional requirements
 
+All engine PHP declares `strict_types=1`. Money is integer pence end-to-end; floats appear only inside the power-law exponent and are cast back to int immediately. Every string that reaches markup is `sanitize_text_field()` on save / `esc_html()` on output (FR-28-8).
+
 ### Engine
 
-- **FR-28-1 — Power-law price generator.** `sgs_auto_pack_prices( int $base_pence, array $pack_sizes, float $k = 0.12, float $margin_floor = 0.40, int $cost_pence = 0 ): array`. For each pack `n`: raw = `base_pence × n^(1−k)`; enforce margin floor if cost known (`min = cost_pence × n / (1 − margin_floor)`); charm-round; derive per-unit + saving. Returns per-pack `{pack_price_pence, per_unit_pence, saving_pct, saving_pence_each, saving_display}`. Pure function, ~12 LOC, unit-tested against the worked example.
-- **FR-28-2 — Charm rounding.** `sgs_charm_round( int $pence ): int` — <£5 → .49/.99; <£20 → .99; <£100 → nearest X4.95; ≥£100 → nearest 50p. Site-wide toggle to disable (B2B/wholesale + premium mode → clean £X.00/£X.50).
-- **FR-28-3 — Steepness dial.** Owner picks Gentle/Standard/Aggressive → k = 0.08/0.12/0.18. Raw `k` never exposed. Premium mode caps k ≤ 0.10 + disables charm rounding.
-- **FR-28-4 — Guardrails.** After generation: if smallest multi-pack saving < 8%, auto-raise k by 0.02 up to 3 iterations, else admin warning. Cap largest-pack saving at 40% (clamp k). If any per-unit ≥ single price after rounding → zero that pack's saving + admin notice. Absolute margin floor at checkout: never below `cost × n × 1.15` regardless of overrides.
-- **FR-28-5 — Write to WooCommerce.** The generator output is written to each variation's `regular_price` via the Spec 27 Cluster C authoring controller (R1/R2) — `set_regular_price()` + `save()` + `wc_delete_product_transients()`. Ex-VAT internally; WC's tax layer handles inc-VAT display. Re-runs on base-price/k/pack-size change. NEVER a render-time substitution.
+- **FR-28-1 — Power-law price generator.** `sgs_auto_pack_prices( int $base_pence, array $pack_sizes, float $k = 0.12, int $cost_pence = 0, float $margin_floor = 0.40, bool $inc_vat = true, float $vat_rate = 0.20, bool $charm = true ): array`. For each pack `n`, apply the **canonical guardrail order (FR-28-4)** and return per-pack `{pack_price_pence, per_unit_pence, saving_pct, saving_pence_each, saving_display, clamped, locked}`. Pure function (no WP calls), unit-tested against the canonical fixture (corrected worked-example table at the foot of this doc). The pure core is the only part the "~100 LOC" budget covers; the full feature is a 6–8 file module ≤300 LOC/file.
+- **FR-28-2 — Charm rounding (idempotent, on the shopper-visible price).** `sgs_charm_round( int $pence ): int` using the simplified self-consistent rule: **`<£5 → nearest of {floor(£)+.49, floor(£)+.99}`; `<£100 → floor(£)+.99`; `≥£100 → nearest 50p`.** The function is idempotent (`charm(charm(x)) == charm(x)`) — proven in unit tests. Charm is applied to the **inc-VAT display total** (Principle 5), then the ex-VAT `regular_price` is back-solved per the variation's tax class. Site-wide toggle to disable (B2B/wholesale + premium mode → clean £X.00/£X.50).
+- **FR-28-3 — Steepness dial + Custom %.** Owner picks Gentle/Standard/Aggressive → k = 0.08/0.12/0.18. Raw `k` never exposed as a number. A fourth **"Custom %"** notch lets the owner state the target saving on the largest pack and back-solves k from it (flexibility escape hatch; clamped to k ≤ 0.18 unless premium overrides downward). Premium mode caps k ≤ 0.10 + disables charm rounding.
+- **FR-28-4 — Guardrails (canonical evaluation order).** Applied per generation in EXACTLY this order: **(1)** power-law raw → **(2)** cost margin floor (`min = cost_pence × n ÷ (1 − margin_floor)`; if `cost_pence = 0` it is treated as *unknown* → a configurable absolute min-floor applies, never a collapse to 0) → **(3)** charm-round on the inc-VAT price (FR-28-2) → **(4)** per-unit ≥ single price → **clamp the price down** (not merely zero the label) → **(5)** 8% minimum saving on the smallest multi-pack → raise k by 0.02 up to 3× → **(6)** 40% cap on the largest pack → reduce k. **On a 5↔6 conflict the 40% cap WINS.** If the 8% floor is unachievable at k ≤ 0.18, the engine **ABORTS the write** with a blocking plain-English error — it never writes a sub-floor price. Post-generation, reject any pack priced ≤ 1p. Per-unit must strictly decrease as pack size grows (monotonicity guard, FR-28-7).
+- **FR-28-5 — Commit to WooCommerce (P4 — build-deferred behind Spec 27 Cluster C / Phase R).** The generator output is written to each variation's `regular_price` via the Spec 27 Cluster C authoring controller (R1/R2) — `set_regular_price()` + `save()` + `wc_delete_product_transients()`. Inputs: detect `wc_prices_include_tax()` for the input basis; write the ex-VAT `regular_price` back-solved from the charmed inc-VAT total per the variation's tax class. The write path: (a) is gated behind the two-step apply (FR-28-10) — never a `save_post` / auto hook; (b) **skips owner-locked variations** (FR-28-13); (c) **snapshots + logs** before writing (FR-28-14); (d) clears or flags any active `sale_price ≥ new regular_price` with a warning (FR-28-11/sale interaction below); (e) handles the missing-variation path (creates ticked-but-absent variations via Cluster C R2, or blocks with a clear message — owner-configurable). NEVER a render-time substitution. **Multi-currency is an explicit non-goal that DISABLES the engine.**
 
-### Override cascade
+### Override cascade + performance
 
-- **FR-28-6 — Layered config (highest wins): site → category → product.** Site defaults in WooCommerce → Settings → SGS Pack Pricing (`sgs_pack_k`, `sgs_pack_margin_floor`, `sgs_pack_charm_round`, `sgs_pack_sizes`). Category override via `product_cat` term meta (`sgs_pack_k`). Product override via post meta (`_sgs_pack_k`, `_sgs_pack_sizes`) + optional per-pack manual price override that clears the auto-calc for that one pack only. `sgs_get_pack_pricing_config( int $product_id ): array` resolves the cascade.
+- **FR-28-6 — Layered config (highest wins): site → category → product.** Site defaults in WooCommerce → Settings → SGS Pack Pricing (`sgs_pack_k`, `sgs_pack_margin_floor`, `sgs_pack_cost_pence`, `sgs_pack_charm_round`, `sgs_pack_sizes`, `sgs_pack_vat_registered`). Category override via `product_cat` term meta (`sgs_pack_k`) — capability-gated to `manage_woocommerce` (NOT `edit_product_terms`) + nonce + audit. Product override via post meta (`_sgs_pack_k`, `_sgs_pack_sizes`, `_sgs_base_price_pence`) + optional per-pack manual override that clears the auto-calc for that one pack only. `sgs_get_pack_pricing_config( int $product_id ): array` resolves the cascade. **Performance: explicit-trigger-only.** A site/category change does NOT auto-reprice the catalogue — it applies on the next per-product "Generate" (or a rate-limited WP-Cron batch). The engine stores a hash of `(base, k, packs, vat, charm)` per product and skips regeneration if unchanged.
 
-### Value-ladder display (extends FR-27-B3)
+### Value-ladder display (extends FR-27-B3) — P1, ships first
 
-- **FR-28-7 — Comparative per-unit ladder.** On the configurator card, render per-unit price at every pack size with the saving vs a single item. Anchor: smallest pack first; the largest (or decoy-target) row gets a visual delta + the "Best value" `sgs/label` badge (FR-27-B3). Per-unit derived live from the WC manifest (B3 mechanism) — display only, no new price store.
-- **FR-28-8 — Framing modes.** A `framingMode` control (enum: savings | loss-aversion | neutral) on the display. Loss-aversion default for sub-£ items ("save Xp each vs buying singly"). Rule of 100: show % under £1/item, lead with pence ≥ £1/item. Strings auto-generated by `sgs_saving_display()`.
+- **FR-28-7 — Comparative per-unit ladder.** On the configurator card, render per-unit price at every pack size with the saving vs a single item. Anchor: smallest pack first; the largest (or, if enabled, the decoy-target) row gets a visual delta + the "Best value" `sgs/label` badge (FR-27-B3). Per-unit derived live from the WC manifest (B3 mechanism) — display only, no new price store. **Reads the ACTIVE WC price** (matches the cart): when a `sale_price` is live, the ladder computes from the sale price and labels savings as "calculated vs sale price". **Monotonicity guard:** if post-rounding per-unit does not strictly decrease across pack sizes, the badge + saving for the offending row are suppressed (a non-decreasing ladder lies — CPUT exposure).
+- **FR-28-8 — Framing modes (output-escaped).** A `framingMode` control (enum: savings | loss-aversion | neutral) on the display. Loss-aversion default for sub-£ items ("save Xp each vs buying singly"). Rule of 100: show % under £1/item, lead with pence ≥ £1/item. Strings auto-generated by `sgs_saving_display()`, which returns **plain text only**; every input is `sanitize_text_field()` on save and `esc_html()` on output — saving strings are never echoed raw (XSS).
 - **FR-28-9 — Per-unit always shown (legal).** Per-unit price is always displayed alongside the pack price (Price Marking Order). This requirement is met by FR-27-B3 already; Spec 28 makes it comparative.
+- **FR-28-9a — Decoy pricing (opt-in per product, resolves KJC-2).** Off by default site-wide. A per-product toggle prices the second-largest pack 3–5% worse per unit to nudge toward the largest. When on, the decoy row is the badge target; when off, the largest pack is. Never enabled site-wide (manipulation / CPUT-perception risk) and must still satisfy the monotonicity guard (FR-28-7) and the genuine-saving rule (FR-28-12).
 
 ### Authoring UI
 
-- **FR-28-10 — One-number authoring.** Product editor: a "Smart pricing" panel — base single-item price (the one number) + Gentle/Standard/Aggressive radio + pack-sizes checkboxes (6/12/24/48 + custom) + optional per-pack manual override + a live preview table (generated prices + per-unit + saving) before commit. "Generate prices" writes to WC variations (FR-28-5). Friendly, no raw meta (Spec 27 un-gated rule).
-- **FR-28-11 — Site + category settings.** A WooCommerce settings tab (site defaults) + a `product_cat` term field (category override). Both expose only the owner-safe controls (FR-28-6); margin floor + cost set once at site level.
+- **FR-28-10 — One-number authoring with two-step apply.** Product editor "Smart pricing" panel — base single-item price (the one number, FR-28-16) + Gentle/Standard/Aggressive/Custom% radio + pack-sizes checkboxes (6/12/24/48 + custom) + optional per-pack manual override + decoy toggle (FR-28-9a) + a live **preview table** (generated prices + per-unit + saving + a lock icon per owner-locked variation, FR-28-13). Two-step apply is the ONLY write trigger: **"Calculate preview"** (JS only, no WC write) → explicit **"Apply prices to your live shop"** modal showing current→new per pack + a Cancel. Friendly, no raw meta (Spec 27 un-gated rule). A dismissible legal-disclosure notice is shown (FR-28-16).
+- **FR-28-11 — Site + category settings + sale/coupon interaction.** A WooCommerce settings tab (site defaults) + a `product_cat` term field (category override). Both expose only the owner-safe controls (FR-28-6); margin floor + cost + VAT-registered set once at site level. **Sale/coupon rules:** on write, an active `sale_price ≥ new regular_price` is cleared or flagged with a warning; coupons stack BELOW the engine; the 40% ceiling is measured **pre-coupon**.
+
+### Safety machinery (new in v2 — folds the council must-fixes)
+
+- **FR-28-13 — Engine-vs-manual-edit lock (must-fix #1).** Per variation: store `_sgs_price_engine_value` (the last value the engine wrote) + a `_sgs_price_owner_locked` flag. Before any write, the path DETECTS a current WC price ≠ last engine value → auto-locks that variation and surfaces it. The preview shows a lock icon + "you hand-edited this — the engine won't touch it" + a one-click release. The post-run summary reports "generated N, skipped M locked".
+- **FR-28-14 — Audit log + one-click undo (must-fix #2).** Each run appends to a `sgs_pack_pricing_runs` log (timestamp + resolved config + per-variation before→after). Before any write, the prior `regular_price` is snapshotted to `_sgs_pack_price_backup`. A one-click **"Revert last generation"** restores every variation from its backup.
+- **FR-28-15 — Input validation gates (must-fix #7).** `sgs_validate_base_pence` — integer, ≥ a hard 10p minimum; reject 0 / negative / float / scientific-notation. `sgs_validate_pack_sizes` — each n ≥ 2, ≤ 500, array length ≤ 10. `cost_pence = 0` ⇒ "unknown" ⇒ configurable min-floor (never collapse to 0). All validation runs before FR-28-1 and returns plain-English inline errors (FR-28-17).
+- **FR-28-16 — Base-price semantics (resolves KJC-1, must-fix #10).** P = the owner-entered single-item price, stored `_sgs_base_price_pence`, labelled "your reference price for discounts". A toggle lets the owner instead enter the smallest-pack price; the engine back-solves P and stores the **raw (unrounded)** derived value. **If no real single is sold and the owner cannot honour that reference price, `sgs_saving_display()` SUPPRESSES the saving claim** — the spec never invents a comparison to an unsellable reference (DMCC/CPUT). A dismissible in-editor legal-disclosure panel states the owner is responsible that the single-item price is a genuine selling price.
 
 ### Compliance
 
-- **FR-28-12 — UK pricing-law guardrails.** No "was/now" claims generated. Per-unit always shown. VAT: compute ex-VAT internally, display inc-VAT for B2C (Consumer Contracts Regs); site-wide "VAT registered?" toggle. DMCC/CPUT: every displayed saving must be real (per-unit < single price enforced, FR-28-4). Document the Price Marking Order 2004 (2026 amendment) + CMA position in the spec's compliance appendix.
+- **FR-28-12 — UK pricing-law guardrails.** No "was/now" claims generated. Per-unit always shown. VAT: compute on the correct basis (`wc_prices_include_tax()`), charm on the inc-VAT display price, store ex-VAT `regular_price`; site-wide "VAT registered?" toggle; UK food mixes zero-rated + standard-rated, so charm MUST be on the inc-VAT value (FR-28-2). DMCC/CPUT: every displayed saving must be real (per-unit < single price + monotonicity enforced, FR-28-4/7); suppress the claim where no genuine single price exists (FR-28-16). Document the Price Marking Order 2004 (2026 amendment) + CMA position in the compliance appendix.
+- **FR-28-17 — Error states + integration fixture (must-fix #15).** Enumerate every failure with a plain-English inline message: empty base, base < 10p, < 2 pack sizes, no matching variation, margin-floor-impossible (8% unachievable at k ≤ 0.18), WC write failure, no tax class resolvable, multi-currency active. Acceptance artefact: a round-trip integration fixture — **generate → write → read-back → cart-charges-it** across a tax-class boundary AND a live-sale boundary. The magic numbers (k = 0.08/0.12/0.18; 8% / 40% caps; 10p floor) are inlined into this spec, not left in a transcript.
 
 ## Phase success criteria (done when)
 
-- [ ] Owner sets ONE base price + a strength → all pack prices generated, charm-rounded, written to WC variations; cart charges the generated WC price (single source of truth verified).
-- [ ] Worked example reproduced: £1/cookie, [6,12,24,48], Standard → £4.99/£8.99/£16.99/£29.99 (17/25/29/38% per-unit saving), top pack < 40%.
-- [ ] Value ladder shows comparative per-unit + loss-framed saving across packs on the card; anchored smallest-first; "Best value" badge on target pack.
-- [ ] Override cascade proven: site → category → product, highest wins; per-pack manual override holds.
-- [ ] Guardrails proven: <8% first-pack auto-raises k / warns; >40% clamps; per-unit-≥-single zeroes the saving.
-- [ ] UK-legal: no "was" price emitted; per-unit always shown; inc-VAT display; saving strings accurate.
-- [ ] Authoring is fully UI-driven (zero raw meta); a non-coder generates a full price set end-to-end.
-- [ ] `sgs_auto_pack_prices` + `sgs_charm_round` unit-tested; engine logic ≤ ~100 LOC.
+**P1 (value ladder, ships first on shipped B3):**
+- [ ] Value ladder shows comparative per-unit + loss-framed saving across packs on the card; anchored smallest-first; "Best value" badge on target pack; reads the ACTIVE WC price (sale-aware label); monotonicity guard suppresses any non-decreasing row.
+- [ ] UK-legal display: no "was" price emitted; per-unit always shown; saving strings `esc_html`-escaped and accurate; claim suppressed where no genuine single price exists.
 
-## Open questions / KJCs (resolve at council / build)
+**P2 (engine pure functions):**
+- [ ] Corrected worked example reproduced: £1/item, [6,12,24,48], Standard → **£4.99 / £8.99 / £16.99 / £30.99** (17 / 25 / 29 / 35% per-unit saving), top pack < 40% (canonical fixture at foot of doc).
+- [ ] `sgs_auto_pack_prices` + `sgs_charm_round` unit-tested; `charm()` proven idempotent; guardrail order (FR-28-4) exercised; input gates (FR-28-15) reject 0/neg/float/over-cap; pure core ≤ ~100 LOC, `declare(strict_types=1)`.
 
-- **KJC-1 — base = single-item vs smallest-pack.** Owner enters a single-item notional price (cleanest for the power-law) OR the smallest-pack price (more intuitive if singles are never sold). Lean: accept EITHER via a toggle ("I'll enter: price per item / price of my smallest pack"); back-solve P from the smallest pack if the latter.
-- **KJC-2 — decoy pack.** Whether to auto-apply a decoy nudge (price the 2nd-largest pack 3-5% worse to push the largest) by default, or leave it as an opt-in per-product control. Lean: opt-in (auto-decoy risks looking manipulative + complicates the clean curve).
-- **KJC-3 — does the engine own the variation prices, or seed them once?** If the engine writes WC prices and the owner later hand-edits a variation in WC, re-running the engine overwrites it. Need a "manual override" flag per variation so the engine skips owner-edited prices. (Ties to FR-28-6 per-pack override + FR-28-5.)
-- **KJC-4 — relationship to Spec 27 Cluster C.** FR-28-5/10 depend on the R1/R2 authoring controller. Build Spec 28 as part of Cluster C, or as a standalone that the controller calls? Lean: Spec 28 engine is standalone (pure functions + settings); the WC-write integration rides on Cluster C R1/R2.
+**P3 (preview-only authoring):**
+- [ ] Owner sets ONE base price + a strength → preview table shows all pack prices / per-unit / saving live; **writes NOTHING to WC**; cascade site→category→product proven, highest wins, per-pack manual override holds; category meta capability-gated to `manage_woocommerce`.
+- [ ] Guardrails proven in preview: <8% first-pack raises k ≤3× then aborts; >40% clamps (40% wins on conflict); per-unit-≥-single clamps the price.
+- [ ] Authoring is fully UI-driven (zero raw meta); a non-coder generates a full preview end-to-end; legal-disclosure panel shown.
+
+**P4 (commit to WC — DEFERRED behind Spec 27 Cluster C / Phase R):**
+- [ ] Two-step apply is the only write trigger; cart charges the generated WC price (single source of truth verified); inc-VAT charm with ex-VAT `regular_price` back-solved per tax class.
+- [ ] Owner-locked variations skipped (FR-28-13); per-run audit log + snapshot written; one-click "Revert last generation" restores prior prices (FR-28-14).
+- [ ] Round-trip integration fixture passes: generate → write → read-back → cart-charges-it across a tax-class boundary AND a live-sale boundary (FR-28-17).
+
+## KJCs — RESOLVED (v2)
+
+- **KJC-1 — base = single-item vs smallest-pack → RESOLVED in FR-28-16.** P = the owner-entered single-item reference price (stored `_sgs_base_price_pence`); a toggle accepts the smallest-pack price instead and back-solves raw P. Where no genuine single price exists, the saving claim is suppressed.
+- **KJC-2 — decoy pack → RESOLVED in FR-28-9a (Bean, 2026-06-04).** Opt-in per product, off by default site-wide. Never site-wide-on.
+- **KJC-3 — engine owns vs seeds prices → RESOLVED in FR-28-13.** The engine writes but never clobbers owner edits: a per-variation lock flag + last-engine-value detection makes the engine skip any hand-edited variation; one-click release re-arms it.
+- **KJC-4 — relationship to Spec 27 Cluster C → RESOLVED.** The Spec 28 engine is standalone (pure functions + settings + preview UI, P2/P3, build now). The WC-write integration (P4 = FR-28-5) rides on the Cluster C R1/R2 controller and is build-deferred behind Phase R — do not pull it forward.
 
 ## CRO backlog (from the 2026-06-04 audit — NOT in this spec's build scope)
 
@@ -119,7 +142,9 @@ Ship in this order, not the FR order. The cut-line de-risks the stall trap: the 
 
 **Sequencing lock:** Spec 28 does not start until Spec 27 Phase 2 B3 is verified live (it is — `ceb4e04a`). 28-P1 rides B3. The engine (P2/P3) is a fill-in workstream — never a reason to deprioritise remaining Spec 27 Cluster A (A4 gallery / C2 / demand analytics). Honest effort: P1 ~½ session; P2 ~½ session; P3 ~1-1.5 sessions (3 surfaces + preview UI + guardrails); P4 blocked. **"~100 LOC" applies ONLY to the P2 pure core; the feature is a 6-8 file module ≤300 LOC/file (CLAUDE.md limit).**
 
-## Council must-fix register (fold into the v2 FR rewrite + P4)
+## Council must-fix register (PROVENANCE — all folded into v2 FRs above)
+
+> **Status: all 15 folded into the v2 FRs.** This register is retained for provenance only. Resolution map: #1→FR-28-13 · #2→FR-28-14 · #3→FR-28-10 (two-step apply) · #4→FR-28-2/5/12 (inc-VAT charm) · #5→FR-28-1/2 + corrected worked example below · #6→FR-28-4 (guardrail order) · #7→FR-28-15 · #8→FR-28-8 (XSS escaping) · #9→USP "Moat honesty" + FR-28-3 (Custom %) · #10→FR-28-16 · #11→FR-28-5/7/11 (sale/coupon/tax) · #12→FR-28-6 (explicit-trigger + capability gate) · #13→FR-28-5 (missing-variation path) · #14→FR-28-7 (monotonicity) + FR-28-16 (disclosure) · #15→FR-28-17.
 
 Convergence-ordered (number of personas who independently flagged it in brackets). Convergent + fatal first.
 
