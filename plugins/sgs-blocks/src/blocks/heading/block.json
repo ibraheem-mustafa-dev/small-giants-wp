@@ -129,6 +129,8 @@
 
         "customWidth": { "type": "string", "default": "" },
         "customWidthUnit": { "type": "string", "default": "px" },
+        "textAlign": { "type": "string", "enum": [ "", "left", "center", "right", "justify", "start", "end" ], "default": "" },
+
         "inheritStyle": { "type": "boolean", "default": false },
 
         "transitionDuration": { "type": "number", "default": 300 },

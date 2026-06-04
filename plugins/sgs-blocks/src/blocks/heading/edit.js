@@ -9,6 +9,7 @@ import {
 	SelectControl,
 	RangeControl,
 	RadioControl,
+	ToggleControl,
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
 import { colourVar } from '../../utils';
@@ -35,10 +36,31 @@ const SUB_TAG_OPTIONS = [
 ];
 
 const TEXT_TRANSFORM_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: '' },
+	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Uppercase', 'sgs-blocks' ), value: 'uppercase' },
 	{ label: __( 'Lowercase', 'sgs-blocks' ), value: 'lowercase' },
 	{ label: __( 'Capitalise', 'sgs-blocks' ), value: 'capitalize' },
+];
+
+const FONT_STYLE_OPTIONS = [
+	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
+	{ label: __( 'Italic', 'sgs-blocks' ), value: 'italic' },
+];
+
+const TEXT_DECORATION_OPTIONS = [
+	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'Underline', 'sgs-blocks' ), value: 'underline' },
+	{ label: __( 'Line-through', 'sgs-blocks' ), value: 'line-through' },
+];
+
+const TEXT_ALIGN_OPTIONS = [
+	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
+	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
 ];
 
 const FONT_WEIGHT_OPTIONS = [
@@ -75,6 +97,8 @@ function buildTextStyle( attributes ) {
 		letterSpacing,
 		letterSpacingUnit,
 		textTransform,
+		fontStyle,
+		textDecoration,
 	} = attributes;
 
 	const style = {
@@ -87,11 +111,26 @@ function buildTextStyle( attributes ) {
 			: undefined,
 		textTransform: textTransform || undefined,
 		fontFamily: fontFamily || undefined,
+		fontStyle: fontStyle || undefined,
+		textDecoration: textDecoration || undefined,
 	};
 
 	return Object.fromEntries(
 		Object.entries( style ).filter( ( [ , v ] ) => v !== undefined )
 	);
+}
+
+/** Build wrapper-level inline style for the editor canvas (mirrors render.php $wrapper_inline). */
+function buildWrapperStyle( attributes ) {
+	const { textAlign, backgroundColour } = attributes;
+	const style = {};
+	if ( textAlign ) {
+		style.textAlign = textAlign;
+	}
+	if ( backgroundColour ) {
+		style.backgroundColor = colourVar( backgroundColour ) || undefined;
+	}
+	return style;
 }
 
 // ─── Main edit component ──────────────────────────────────────────────────────
@@ -103,6 +142,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		level,
 		subTag,
 		textColour,
+		textAlign,
+		backgroundColour,
+		fontStyle,
+		textDecoration,
+		inheritStyle,
 	} = attributes;
 
 	const isSubheading = headingRole === 'subheading';
@@ -115,6 +159,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			'wp-block-sgs-heading',
 			isSubheading ? 'wp-block-sgs-heading--subheading' : '',
 		].filter( Boolean ).join( ' ' ),
+		style: buildWrapperStyle( attributes ),
 	} );
 
 	const textStyle = buildTextStyle( attributes );
@@ -158,6 +203,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Text colour', 'sgs-blocks' ) }
 						value={ textColour }
 						onChange={ ( val ) => setAttributes( { textColour: val } ) }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Background colour', 'sgs-blocks' ) }
+						value={ backgroundColour }
+						onChange={ ( val ) => setAttributes( { backgroundColour: val ?? '' } ) }
 					/>
 				</PanelBody>
 
@@ -217,6 +267,20 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { textTransform: val } ) }
 						__nextHasNoMarginBottom
 					/>
+					<SelectControl
+						label={ __( 'Font style', 'sgs-blocks' ) }
+						value={ fontStyle }
+						options={ FONT_STYLE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { fontStyle: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Text decoration', 'sgs-blocks' ) }
+						value={ textDecoration }
+						options={ TEXT_DECORATION_OPTIONS }
+						onChange={ ( val ) => setAttributes( { textDecoration: val } ) }
+						__nextHasNoMarginBottom
+					/>
 					<div className="sgs-inspector-row">
 						<RangeControl
 							label={ __( 'Line height', 'sgs-blocks' ) }
@@ -253,6 +317,27 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 						/>
 					</div>
+				</PanelBody>
+
+				{ /* ── Layout panel ── */ }
+				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Text align', 'sgs-blocks' ) }
+						value={ textAlign }
+						options={ TEXT_ALIGN_OPTIONS }
+						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				{ /* ── Advanced panel ── */ }
+				<PanelBody title={ __( 'Advanced', 'sgs-blocks' ) } initialOpen={ false }>
+					<ToggleControl
+						label={ __( 'Inherit style from parent', 'sgs-blocks' ) }
+						help={ __( 'When enabled, all block-level typography styles are suppressed and the element inherits from its parent container.', 'sgs-blocks' ) }
+						checked={ !! inheritStyle }
+						onChange={ ( val ) => setAttributes( { inheritStyle: val } ) }
+					/>
 				</PanelBody>
 			</InspectorControls>
 

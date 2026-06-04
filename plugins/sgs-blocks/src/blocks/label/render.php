@@ -32,6 +32,8 @@ $background_colour   = $attributes['backgroundColour'] ?? '';
 $font_family         = $attributes['fontFamily'] ?? '';
 $font_size           = $attributes['fontSize'] ?? '';
 $font_size_unit      = $attributes['fontSizeUnit'] ?? 'px';
+$font_size_tablet    = isset( $attributes['fontSizeTablet'] ) ? $attributes['fontSizeTablet'] : null;
+$font_size_mobile    = isset( $attributes['fontSizeMobile'] ) ? $attributes['fontSizeMobile'] : null;
 $font_weight         = $attributes['fontWeight'] ?? '';
 $line_height         = $attributes['lineHeight'] ?? '';
 $line_height_unit    = $attributes['lineHeightUnit'] ?? '';
@@ -44,6 +46,15 @@ $padding_right       = $attributes['paddingRight'] ?? '';
 $padding_bottom      = $attributes['paddingBottom'] ?? '';
 $padding_left        = $attributes['paddingLeft'] ?? '';
 $border_radius       = $attributes['borderRadius'] ?? '';
+
+// New attrs: font-style + text-align.
+$font_style_raw      = isset( $attributes['fontStyle'] ) ? sanitize_text_field( $attributes['fontStyle'] ) : '';
+$allowed_font_styles = array( 'normal', 'italic' );
+$font_style          = in_array( $font_style_raw, $allowed_font_styles, true ) ? $font_style_raw : '';
+
+$text_align_raw      = isset( $attributes['textAlign'] ) ? sanitize_text_field( $attributes['textAlign'] ) : '';
+$allowed_text_aligns = array( 'left', 'center', 'right', 'justify', 'start', 'end' );
+$text_align          = in_array( $text_align_raw, $allowed_text_aligns, true ) ? $text_align_raw : '';
 
 // Whitelist HTML tag (parity with save.js + safety).
 $allowed_tags = array( 'span', 'p', 'div', 'small', 'em', 'strong' );
@@ -77,6 +88,13 @@ if ( $text_transform ) {
 if ( $text_decoration ) {
 	$style_parts[] = '--sgs-label-text-decoration:' . esc_attr( $text_decoration );
 }
+// font-style and text-align are direct CSS properties (not consumed as vars).
+if ( $font_style ) {
+	$style_parts[] = 'font-style:' . esc_attr( $font_style );
+}
+if ( $text_align ) {
+	$style_parts[] = 'text-align:' . esc_attr( $text_align );
+}
 if ( '' !== $border_radius && null !== $border_radius ) {
 	$style_parts[] = '--sgs-label-border-radius:' . intval( $border_radius ) . 'px';
 }
@@ -93,16 +111,37 @@ if ( $font_family ) {
 
 $style_attr = $style_parts ? implode( ';', $style_parts ) : '';
 
+// ---------------------------------------------------------------------------
+// Responsive font-size — scoped <style> block per instance.
+// CSS attr() for non-`content` properties is unimplemented in stable browsers;
+// the data-attribute pattern in the original style.css was ineffective.
+// This follows the same pattern as sgs/text and sgs/heading.
+// ---------------------------------------------------------------------------
+
+$uid        = 'sgs-lbl-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$responsive = array();
+if ( null !== $font_size_tablet && '' !== $font_size_tablet ) {
+	$responsive[] = '@media(max-width:1024px){#' . esc_attr( $uid ) . '.wp-block-sgs-label{font-size:' . floatval( $font_size_tablet ) . esc_attr( $font_size_unit ) . ';}}';
+}
+if ( null !== $font_size_mobile && '' !== $font_size_mobile ) {
+	$responsive[] = '@media(max-width:767px){#' . esc_attr( $uid ) . '.wp-block-sgs-label{font-size:' . floatval( $font_size_mobile ) . esc_attr( $font_size_unit ) . ';}}';
+}
+
 // Wrapper class — get_block_wrapper_attributes() automatically merges in
 // the block's `className` attr (which carries `is-style-{value}` when a
 // block-style is active), so no manual is-style-* construction is needed.
 $wrapper_args = array(
+	'id'    => $uid,
 	'class' => 'wp-block-sgs-label',
 );
 if ( $style_attr ) {
 	$wrapper_args['style'] = $style_attr;
 }
 $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
+
+if ( $responsive ) {
+	printf( '<style>%s</style>', implode( '', $responsive ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}
 
 printf(
 	'<%1$s %2$s>%3$s</%1$s>',

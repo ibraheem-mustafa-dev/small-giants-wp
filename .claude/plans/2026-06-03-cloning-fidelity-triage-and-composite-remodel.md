@@ -11,16 +11,29 @@ plan_label: "[PLAN: opus]"
 
 # Phase — Cloning page-fidelity: triage + grid root-cause + composite-remodel (WS-4)
 
+## 2026-06-04 UPDATE (D166) — WS-4 composite-mirror EXECUTED (25 composites); triage residuals re-scoped
+
+**WS-4 (the composite-wrapper mirror) is BUILT.** 25 composites mirror `sgs/container` via the shared helper (`includes/class-sgs-container-wrapper.php`), all live-validated + committed (foundation `64950efa`; section/content/layout/interactive batches; recipe canonical in **Spec 22 §FR-22-21.1/.2**, commit `a4295130`). REMAINING WS-4: hero (inline w/ Bean), mobile-nav, product-card. The reliable small-batch fan-out process is proven (memory `dont-fan-out-many-heavy-agents-at-once`).
+
+**CRITICAL re-scope of the triage #1–#8 (the block-mirror does NOT fix the cloned page):** the converter routes mockup wrapper classes to `sgs/container` (stage-2 conf 0.10, all 9 sections → containers), NOT to the matching composite BLOCK — so page-144 fidelity needs the SEPARATE converter work, evaluated by the Phase-7 adversarial review:
+- **#1 hero / #2 trust-bar page-clone** → need the **routing fix** (`.sgs-hero`→`sgs/hero` block before the container fallback) + the **converter-lift** (transfer mockup CSS onto the now-mirrored attrs) + image sideload.
+- **#3 heading/label** → block textAlign-parity capability BUILT + committed 2026-06-04; the visible page-144 outcome needs the converter to EMIT text-align + a re-clone (converter follow-up).
+- **#4a** converter grid-lift; **#4b** product-card fill (after product-card mirror); **#5** image sideload; **#6** notice-banner converter content-synthesis (block mirror does NOT fix it); **#7** announcement-bar PARKED (mis-route, not a container-roster block); **#8** slider committed w/ the slider work — residuals (pause-float, broken icons, track-fill) need a live 4-card visual verify.
+- Memories: `composite-mirror-is-separate-from-cloning-fidelity`, `universal-lift-was-premature-not-falsified`.
+
 ## 2026-06-03 PM UPDATE (D163)
 
 **What was built this session (uncommitted):**
 - **#3 (heading-align) + #8 (testimonial-slider)** — BUILT-uncommitted, pending Gate B. #8 additionally needs live 4-card verify before the gate.
 - **WS-1c A3 (custom-width `margin-inline:auto` centring) + A4 (raw-px gap passthrough via new `sgs_container_gap_value()` helper)** — BUILT-uncommitted in `container/render.php`, pending Gate B.
 
-**Dispositions refined by /qc-council (D163) — do NOT proceed with the original plan on these items:**
-- **#4a grid-lift (converter-side align-items):** part of the FALSIFIED generic-lift exploration. align-items regression risk confirmed. Reconsider under WS-4 as a layout-only mechanism, NOT a standalone converter hack.
-- **Generic converter-lift (blind DB-suffix fingerprint for WS-1c A5/A6 + B1):** FALSIFIED. sgs/container attr suffixes are overloaded → mis-maps; min-height also triggers a `--has-min-height` flex-centre render-trap. The blind fingerprint is UNSAFE. Correct paths: A5 = curated `_root_lift_rules` extension (canonical_slot precision, align-gated); A6 = WS-4 lift-only-gated sub-mechanism with own /qc-council; B1 = curated canonical_slot map, NOT revive the blind consume-path.
-- **Real A5 (min-height) bug:** hero composite-interior extraction (`minHeightTablet=520px`) — NOT a slug-None container-path gap. Fix lives in the composite-interior path, not in `_root_lift_rules` blindly.
+**Dispositions refined by /qc-council (D163) — CORRECTED 2026-06-03 PM by Bean (the "FALSIFIED" framing was WRONG — it was an ORDERING artefact, not a falsification):**
+
+> **Bean correction (2026-06-03 PM):** the universal/generic converter-lift was NOT proven wrong. The council's "0-delta no-op on the canary" was a SEQUENCING symptom — the lift transfers draft CSS onto the wrapper's LAYER attributes (outer-width / content-width / per-grid-item), and those destinations only exist on composites AFTER WS-4 mirrors them on. Last session built the lift BEFORE WS-4 created the layers → no destination → no-op. **Correct order: WS-4 (wrapper remake) FIRST → then the universal converter-lift lands.** The lift is REINSTATED as a real post-WS-4 task, not dead. The only thing carried from the council is the build-safety HOW for the rebuild (canonical_slot precision over blind attr-suffix matching; min-height align-gated). See memory `feedback_universal_lift_was_premature_not_falsified`.
+
+- **#4a grid-lift (converter-side):** reinstated — sequence AFTER WS-4 (layout-KIND mirror gives it the native grid attrs to land on). align-items still gated (council safety note).
+- **Universal converter-lift (WS-1c A5/A6 + B1):** NOT falsified — **premature**. Rebuild AFTER WS-4 with canonical_slot precision (not a blind suffix fingerprint) + min-height align-gate. A5/A6/B1 all land once their wrapper-attr destinations exist (WS-4).
+- **Hero A5 (min-height):** the hero composite-interior `minHeightTablet=520px` extraction is still a real verifiable bug; fixing it is cleaner once hero mirrors the container (WS-4) so minHeight has its mirrored destination attr.
 
 **Dedup audit result (4-rater /qc-council):** NO block merges — the block roster is sound; overlap is plumbing-level → shared helpers + the container-mirror, not merges. **content-collection = the pending 29th container block to REGISTER** (layout KIND) — register-not-merge; DB roster is still 28 until next session registers it.
 

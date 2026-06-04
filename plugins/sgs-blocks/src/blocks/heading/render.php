@@ -189,6 +189,11 @@ $custom_width      = $attributes['customWidth'] ?? '';
 $custom_width_unit = sgs_heading_safe_unit( $attributes['customWidthUnit'] ?? 'px' );
 $inherit_style     = ! empty( $attributes['inheritStyle'] );
 
+// Text alignment — validated against allowlist; emitted on the wrapper.
+$text_align_raw      = isset( $attributes['textAlign'] ) ? sanitize_text_field( $attributes['textAlign'] ) : '';
+$allowed_text_aligns = array( 'left', 'center', 'right', 'justify', 'start', 'end' );
+$text_align          = in_array( $text_align_raw, $allowed_text_aligns, true ) ? $text_align_raw : '';
+
 // ---------------------------------------------------------------------------
 // 3. Build inline text element style.
 // ---------------------------------------------------------------------------
@@ -307,6 +312,12 @@ if ( ! $inherit_style ) {
 		if ( $cw_val ) {
 			$wrapper_inline[] = 'width:' . $cw_val;
 		}
+	}
+
+	// Text alignment — explicit value overrides the CSS default (center) with
+	// zero-specificity :where() guard in style.css so this inline wins reliably.
+	if ( '' !== $text_align ) {
+		$wrapper_inline[] = 'text-align:' . esc_attr( $text_align );
 	}
 }
 

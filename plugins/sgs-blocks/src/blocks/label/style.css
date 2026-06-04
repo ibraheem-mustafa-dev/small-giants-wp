@@ -70,22 +70,10 @@
 }
 
 /* ----- Responsive font size overrides (tablet / mobile) ----- */
-/* Applied via a sibling CSS custom property written by the save layer.
-   Because CSS has no conditional var() fallback that triggers on
-   breakpoints, responsive font sizes are handled via @media wrappers
-   using data attributes set during render. This approach is the
-   SGS-standard pattern (mirrors hero / info-box blocks). */
-@media ( max-width: 1024px ) {
-	.wp-block-sgs-label[data-font-size-tablet] {
-		font-size: attr(data-font-size-tablet);
-	}
-}
-
-@media ( max-width: 767px ) {
-	.wp-block-sgs-label[data-font-size-mobile] {
-		font-size: attr(data-font-size-mobile);
-	}
-}
+/* Scoped per-instance via a <style> block emitted by render.php using       */
+/* #uid.wp-block-sgs-label selectors — mirrors the sgs/text + sgs/heading    */
+/* pattern. CSS attr() for non-`content` properties is unimplemented in      */
+/* stable browsers so the previous data-attribute approach had no effect.    */
 
 /* ===== Reduced motion — no animated states on this block ===== */
 /* (Label has no transitions; rule kept as placeholder for

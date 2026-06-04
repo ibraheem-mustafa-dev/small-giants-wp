@@ -26,6 +26,20 @@ const TEXT_TRANSFORM_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 ];
 
+const FONT_STYLE_OPTIONS = [
+	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
+	{ label: __( 'Italic', 'sgs-blocks' ), value: 'italic' },
+];
+
+const TEXT_ALIGN_OPTIONS = [
+	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
+	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
+];
+
 const FONT_WEIGHT_OPTIONS = [
 	{ label: __( 'Regular (400)', 'sgs-blocks' ), value: '400' },
 	{ label: __( 'Medium (500)', 'sgs-blocks' ), value: '500' },
@@ -64,6 +78,8 @@ function buildStyle( attributes ) {
 		letterSpacingUnit,
 		textTransform,
 		textDecoration,
+		fontStyle,
+		textAlign,
 		paddingTop,
 		paddingRight,
 		paddingBottom,
@@ -88,6 +104,9 @@ function buildStyle( attributes ) {
 		'--sgs-label-text-transform': textTransform || undefined,
 		'--sgs-label-text-decoration': textDecoration || undefined,
 		'--sgs-label-border-radius': `${ borderRadius }px`,
+		// Direct CSS properties (not consumed as vars by style.css).
+		fontStyle: fontStyle || undefined,
+		textAlign: textAlign || undefined,
 	};
 
 	// Emit padding custom property whenever a pill style is active.
@@ -126,6 +145,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		letterSpacingUnit,
 		textTransform,
 		textDecoration,
+		fontStyle,
+		textAlign,
 		paddingTop,
 		paddingRight,
 		paddingBottom,
@@ -297,6 +318,24 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { textDecoration: val } )
 						}
 						placeholder={ __( 'none', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Font style', 'sgs-blocks' ) }
+						value={ fontStyle }
+						options={ FONT_STYLE_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { fontStyle: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Text align', 'sgs-blocks' ) }
+						value={ textAlign }
+						options={ TEXT_ALIGN_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { textAlign: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>

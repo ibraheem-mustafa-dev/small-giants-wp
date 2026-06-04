@@ -99,8 +99,18 @@
             "type": "string",
             "default": "uppercase"
         },
+        "fontStyle": {
+            "type": "string",
+            "enum": [ "", "normal", "italic" ],
+            "default": ""
+        },
         "textDecoration": {
             "type": "string",
+            "default": ""
+        },
+        "textAlign": {
+            "type": "string",
+            "enum": [ "", "left", "center", "right", "justify", "start", "end" ],
             "default": ""
         },
         "paddingTop": {
