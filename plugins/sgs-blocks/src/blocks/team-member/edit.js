@@ -11,6 +11,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar } from '../../utils';
 
@@ -107,6 +108,11 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			<ContainerWrapperControls
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				kind="content"
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Card Settings', 'sgs-blocks' ) }>
 					<SelectControl

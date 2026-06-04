@@ -3,7 +3,10 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	RichText,
+	InspectorControls,
 } from '@wordpress/block-editor';
+// WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { useState } from '@wordpress/element';
 import { colourVar } from '../../utils';
 
@@ -87,7 +90,16 @@ export default function Edit( { attributes, setAttributes, context } ) {
 	);
 
 	return (
-		<div { ...blockProps }>
+		<>
+			<InspectorControls>
+				{ /* WS-4: mirrored sgs/container wrapper controls (content kind). */ }
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="content"
+				/>
+			</InspectorControls>
+			<div { ...blockProps }>
 			{ /* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */ }
 			<div
 				className="sgs-accordion-item__header"
@@ -109,6 +121,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 				{ iconPosition === 'right' && chevron }
 			</div>
 			<div { ...innerBlocksProps } />
-		</div>
+			</div>
+		</>
 	);
 }

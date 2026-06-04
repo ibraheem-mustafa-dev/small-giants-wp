@@ -2,8 +2,12 @@
 /**
  * Accordion Item — server-side render.
  *
- * Outputs a <details>/<summary> element for progressive enhancement.
- * Works without JS; enhanced with smooth animation via viewScriptModule.
+ * WS-4 composite-mirror: CONTENT kind — width/spacing layers only via
+ * SGS_Container_Wrapper::render(). The outer <details> wrapper carries
+ * all toggle attrs (open / aria-expanded is on <summary> inside $inner_html).
+ *
+ * Works without JS; enhanced with smooth animation via the parent
+ * sgs/accordion viewScriptModule.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Rendered inner blocks.
@@ -15,8 +19,9 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
-$title      = $attributes['title'] ?? '';
+$sgs_title  = $attributes['title'] ?? '';
 $is_open    = ! empty( $attributes['isOpen'] );
 $style      = $block->context['sgs/accordionStyle'] ?? 'bordered';
 $icon_pos   = $block->context['sgs/accordionIconPosition'] ?? 'right';
@@ -42,11 +47,6 @@ if ( $icon_col ) {
 	$icon_style_attr = sprintf( ' style="color:var(--wp--preset--color--%s)"', esc_attr( $icon_col ) );
 }
 
-$classes = array(
-	'sgs-accordion-item',
-	'sgs-accordion-item--' . esc_attr( $style ),
-);
-
 // Retrieve Lucide SVGs for open and close states. Fall back to inline chevrons
 // if the icon name does not exist in the library (e.g. typo by the editor).
 $open_icon_svg  = sgs_get_lucide_icon( $open_icon );
@@ -68,8 +68,6 @@ $icon_html = sprintf(
 	$close_icon_svg
 );
 
-$open_attr = $is_open ? ' open' : '';
-
 /*
  * aria-expanded on <summary> improves compatibility with legacy screen readers
  * that do not fully support the native <details>/<summary> open state.
@@ -77,36 +75,60 @@ $open_attr = $is_open ? ' open' : '';
  */
 $aria_expanded = $is_open ? 'true' : 'false';
 
-printf(
-	'<details class="%s"%s>',
-	esc_attr( implode( ' ', $classes ) ),
-	$open_attr
-);
-
-printf(
+// ---------------------------------------------------------------------------
+// Build the interior HTML: <summary> header + content panel + $content.
+// This entire blob becomes $inner_html for SGS_Container_Wrapper::render().
+// The <details> open attribute travels via extra_attrs on the OUTER wrapper.
+// ---------------------------------------------------------------------------
+$summary_open  = sprintf(
 	'<summary class="sgs-accordion-item__header" aria-expanded="%s"%s>',
 	esc_attr( $aria_expanded ),
 	$header_style_attr
 );
-
-if ( 'left' === $icon_pos ) {
-	echo $icon_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG is hardcoded above.
-}
-
-printf(
-	'<span class="sgs-accordion-item__title">%s</span>',
-	wp_kses_post( $title )
-);
-
-if ( 'right' === $icon_pos ) {
-	echo $icon_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG is hardcoded above.
-}
-
-echo '</summary>';
-
-printf(
+$summary_left  = 'left' === $icon_pos ? $icon_html : '';
+$summary_title = sprintf( '<span class="sgs-accordion-item__title">%s</span>', wp_kses_post( $sgs_title ) );
+$summary_right = 'right' === $icon_pos ? $icon_html : '';
+$summary_close = '</summary>';
+$content_panel = sprintf(
 	'<div class="sgs-accordion-item__content">%s</div>',
 	$content // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inner blocks are already escaped.
 );
 
-echo '</details>';
+$inner_html = $summary_open
+	. $summary_left
+	. $summary_title
+	. $summary_right
+	. $summary_close
+	. $content_panel;
+
+// ---------------------------------------------------------------------------
+// Extra wrapper classes (BEM style + variant modifier).
+// ---------------------------------------------------------------------------
+$extra_classes = array(
+	'sgs-accordion-item',
+	'sgs-accordion-item--' . esc_attr( $style ),
+);
+
+// ---------------------------------------------------------------------------
+// Toggle attrs: `open` is an HTML boolean attribute on <details>.
+// Pass as extra_attrs so SGS_Container_Wrapper merges it into get_block_wrapper_attributes().
+// R-22-14: explicit $is_open discriminator — never empty($content).
+// ---------------------------------------------------------------------------
+$extra_attrs = array();
+if ( $is_open ) {
+	$extra_attrs['open'] = '';
+}
+
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() output is pre-sanitised; $block is WP_Block object; arrays are caller-built with esc_attr().
+echo SGS_Container_Wrapper::render(
+	$attributes,
+	$block,
+	$inner_html,
+	'content',
+	array(
+		'tag'           => 'details',
+		'extra_classes' => $extra_classes,
+		'extra_attrs'   => $extra_attrs,
+	)
+);
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

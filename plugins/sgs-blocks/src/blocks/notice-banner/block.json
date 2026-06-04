@@ -2,7 +2,7 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/notice-banner",
-    "version": "0.4.0",
+    "version": "0.5.0",
     "title": "SGS Notice Banner",
     "category": "sgs-content",
     "description": "Inline informational banner for contextual messages like minimum order values, delivery terms, or promotional notices.",
@@ -83,6 +83,38 @@
         "dismissible": {
             "type": "boolean",
             "default": false
+        },
+        "widthMode": {
+            "type": "string",
+            "default": "default"
+        },
+        "widthModeMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "widthModeTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "widthModeDesktop": {
+            "type": "string",
+            "default": ""
+        },
+        "customWidth": {
+            "type": "number",
+            "default": 0
+        },
+        "customWidthUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "contentWidth": {
+            "type": "string",
+            "default": ""
+        },
+        "maxWidth": {
+            "type": "string",
+            "default": ""
         }
     },
     "render": "file:./render.php",

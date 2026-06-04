@@ -6,6 +6,8 @@ import {
 } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 import { IconPicker, IconPreview } from '../../components';
+// WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing only).
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Info', 'sgs-blocks' ), value: 'info' },
@@ -65,6 +67,12 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+				{ /* WS-4: mirrored sgs/container wrapper controls (content kind = width/spacing only). */ }
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="content"
+				/>
 				<PanelBody title={ __( 'Banner Settings', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Variant', 'sgs-blocks' ) }
