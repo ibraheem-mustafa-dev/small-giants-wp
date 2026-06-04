@@ -4,7 +4,7 @@ title: SGS Variable-Product Configurator — Ownable-claims evidence sheet
 spec: 27 (FR-27-J1)
 project: small-giants-wp
 generated: 2026-06-04
-status: LIVE — all 5 claims evidenced on canary page 589 (fixture product 540, 48 SKUs) as of U10 (2026-06-04). One sub-budget (page-JS-weight) missed by WC-core jQuery, parked.
+status: LIVE — all 5 claims evidenced on canary page 589 (fixture product 540, 48 SKUs). 2026-06-04 update: JS-weight dequeue (commit 2bbec95a) brought EXECUTED JS to 73KB, MEETING the ≤150KB budget; the earlier "207KB miss" was a measurement error (prefetch links counted as executed scripts — the ~2MB is WC checkout PREFETCH, not executed JS).
 canary: https://sandybrown-nightingale-600381.hostingersite.com/sgs-configurator-test-540/
 ---
 
@@ -41,6 +41,8 @@ defensible moat and which are copyable features we ship anyway.
 | (d) 44px targets | computed bounding-rect | all 16 pills + the add-to-cart button measured ≥44×44px |
 
 Plus **0 console errors**. Evidence: `reports/visual-diff/product-card-2026-06-04.md` (U9 section) + `reports/visual-diff/product-card-u9-button-2026-06-04.png`.
+
+**Re-confirmed live 2026-06-04 after the JS-weight dequeue (commit `2bbec95a`), to verify removing the WC jQuery stack did not regress a11y:** axe-core 4.10.2 scoped to `.product-card--bound` = **0 violations / 18 passes**; 2 labelled radiogroups (Size/Flavour); 5 `aria-live="polite"` regions; native `<button type="submit">` named "Add to Cart"; all 17 interactive targets measured ≥44×44px. No regression. (Human NVDA/VoiceOver pass still recommended before public marketing — see caveat below.)
 
 **The U9 fix that earned this gate:** the add-to-cart control was an `<a role="button">`, which activates on Enter only — pressing **Space** scrolls the page instead (a WCAG 2.1.1 failure that **axe-core does not catch**, because the ARIA role is technically valid). It is now a native `<button type="submit">` inside a `<form action=permalink>`: Space **and** Enter both activate it, and the form is the no-JS fallback (submitting lands the visitor on the product page).
 
@@ -81,9 +83,16 @@ WooCommerce's `find_matching_variations` only operates at/below `woocommerce_aja
 | XHR on pill change | 0 | **0** | ✅ |
 | No React / wc-blocks bundle on the page | none | **none** (Interactivity API runtime ~12 KB, not React) | ✅ |
 | Configurator block JS | ≤20 KB | **product-card 4.0 KB + option-picker 0.6 KB** | ✅ |
-| Total product-page JS (decoded) | ≤150 KB | **207 KB** (transfer 78 KB gzip) | ❌ |
+| Total EXECUTED product-page JS (decoded) | ≤150 KB | **73 KB** (initiatorType `script`; jQuery + WC frontend dequeued, commit `2bbec95a`) | ✅ |
 
-**The one miss is honest and not the configurator's:** the 207 KB decoded total is dominated by **WooCommerce core jQuery (~100 KB: jquery + migrate + blockUI) + WooCommerce frontend scripts (woocommerce.min, add-to-cart, sourcebuster, order-attribution) + 5 SGS-theme animation scripts**. The configurator's own JS is ~20 KB (block modules + the shared Interactivity runtime). Meeting the strict ≤150 KB-decoded budget requires dequeuing WC's legacy frontend scripts (the page uses the SGS proxy, not WC's native jQuery add-to-cart) + the unused theme animation scripts on configurator pages — a scoped optimisation parked as `P-CONFIGURATOR-JS-WEIGHT-DEQUEUE` (low value vs side-effect risk; transfer weight + interaction perf are already good).
+**The ≤150 KB budget is MET — measured correctly as EXECUTED JS (2026-06-04, after the JS-weight dequeue).** Earlier this was reported as a 207 KB miss; that was a measurement error — it conflated executed scripts with `<link rel="prefetch">` resources. The honest breakdown, measured by `PerformanceResourceTiming.initiatorType` on a clean load of the configurator page:
+
+- **Executed JS (`initiatorType: "script"`): 73 KB decoded / 13 files** — the WP Interactivity runtime (`index.min.js` 39 KB), the configurator `view.js` modules (product-card 4 KB + option-picker 0.6 KB + cart + mobile-nav), the 5 SGS animation scripts, and 2 theme helpers. **No jQuery, no executed wc-blocks.** This is the number the budget governs.
+- **Prefetched, NOT executed (`initiatorType: "link"`): ~1,949 KB / 51 files** — WooCommerce deliberately prefetches the Cart/Checkout Blocks bundle (`wc-cart-checkout-base/vendors-frontend`, `@wordpress/components`, `react-dom`, `wc-blocks-data`) via `AssetsController::get_prefetch_resource_hints()` so a *future* navigation to cart/checkout is instant. These `<link rel="prefetch">` resources never parse, never run, never touch the main thread, and do not affect INP/LCP/CLS. `transferSize` was 0 (cache-amortised). This is an intentional WC checkout-speed feature, bandwidth-only — left in place (prefetching checkout aids conversion). Optionally disable via the `wp_resource_hints` filter if mobile bandwidth becomes a concern.
+
+**What the dequeue removed (commit `2bbec95a`, `includes/configurator-asset-optimiser.php`):** on bound-configurator pages, the redundant WooCommerce jQuery frontend stack — `jquery` + `jquery-migrate` (~96 KB) + `jquery-blockui` + `woocommerce.min` + `wc-add-to-cart` + `sourcebuster-js` + `wc-order-attribution` + `js-cookie`. The configurator's add-to-cart uses the SGS proxy (vanilla `fetch`) and the cart badge uses the Store API, so none of these are needed. This took EXECUTED JS from ~183 KB (over budget) to 73 KB (under). Live-verified post-dequeue: pill swap (£24.49 sale, 0 XHR on change), add-to-cart → proxy 200 + badge 0→1 + "Added to your basket.", availability grey-out intact, 0 new console errors.
+
+**Measurement lesson (captured):** `performance.getEntriesByType('resource')` reports prefetched and executed JS identically by `decodedBodySize`; only `initiatorType` (`link` vs `script`) distinguishes "downloaded into cache" from "parsed and run". A JS-weight budget must be measured on executed scripts, not total resource bytes.
 
 Marked **expiring** deliberately: WooCommerce is migrating to the same lean Interactivity approach (Oct 2025), so the no-React edge erodes over time — ride it, don't bank on it.
 
@@ -104,5 +113,5 @@ This is the **real moat**: not any single feature, but that the same system deli
 | 1 | WCAG 2.2 AA whole card | first-mover | ✅ 4 gates pass (3rd-party audit advised before public marketing) |
 | 2 | Cross-attribute availability past 30-var cliff | feature | ✅ live U5 |
 | 3 | Server-authoritative secure add-to-cart | feature / structural | ✅ live adversarial suite U6/U7 |
-| 4 | No-React lean performance | expiring | ✅ measured U10 (INP 152ms · CLS 0 · LCP 1.96s · no React; page-JS-weight miss = WC core jQuery, parked) |
+| 4 | No-React lean performance | expiring | ✅ measured U10 + JS-weight dequeue (INP 152ms · CLS 0 · LCP 1.96s · no React · EXECUTED JS 73KB ≤150KB ✓ after dequeuing the WC jQuery stack, commit `2bbec95a`; the ~2MB is WC checkout PREFETCH, not executed) |
 | 5 | End-to-end closed loop | structural | ◑ partial (SEO half = Phase 2) |
