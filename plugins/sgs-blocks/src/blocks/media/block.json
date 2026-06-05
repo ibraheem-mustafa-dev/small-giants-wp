@@ -3,7 +3,7 @@
     "apiVersion": 3,
     "name": "sgs/media",
     "replaces": "core/image",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "title": "SGS Media",
     "category": "sgs-content",
     "description": "Content media block — image or video. Replaces core/image in the SGS clone-pipeline converter so styling attributes lift correctly to the frontend via server-side render. Use mediaType to choose image (with imageUrl) or video (with videoUrl for external embeds or videoId for WP-library uploads).",
@@ -24,6 +24,12 @@
         "html": false,
         "sgs": {
             "imageControls": true
+        },
+        "__experimentalBorder": {
+            "radius": true,
+            "width": true,
+            "style": true,
+            "color": true
         }
     },
     "attributes": {
