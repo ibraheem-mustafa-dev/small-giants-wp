@@ -210,7 +210,12 @@ if ( $font_weight ) {
 	$text_style_parts[] = 'font-weight:' . esc_attr( $font_weight );
 }
 if ( null !== $line_height && '' !== $line_height ) {
-	$text_style_parts[] = 'line-height:' . floatval( $line_height ) . $line_height_unit;
+	// When the converter lifted a unitless line-height (e.g. 1.15 from
+	// the draft CSS), it stores lineHeightUnit="unitless" so the value
+	// survives block serialisation (empty strings are stripped).
+	// Treat "unitless" as no-unit — emit the bare number ratio.
+	$lh_unit            = ( 'unitless' === $line_height_unit ) ? '' : $line_height_unit;
+	$text_style_parts[] = 'line-height:' . floatval( $line_height ) . $lh_unit;
 }
 if ( null !== $letter_spacing && '' !== $letter_spacing ) {
 	$text_style_parts[] = 'letter-spacing:' . floatval( $letter_spacing ) . $letter_spacing_unit;

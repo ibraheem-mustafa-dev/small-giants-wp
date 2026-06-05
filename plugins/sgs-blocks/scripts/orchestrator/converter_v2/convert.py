@@ -1406,7 +1406,15 @@ def _lift_typography_to_block_attrs(
             return
 
         if css_prop in ("color", "background-color"):
-            v = _colour_value_to_style(raw)
+            # Flat SGS attrs (textColour, backgroundColour) are consumed by
+            # sgs_colour_value() in render.php, which expects either a bare
+            # token slug (e.g. "text") or a raw CSS value (hex / var(...)).
+            # _colour_value_to_style() wraps in "var:preset|color|<slug>" —
+            # WP-native serialisation for style.color.* paths only; passing
+            # that string to sgs_colour_value() produces the mangled
+            # "var(--wp--preset--color--varpresetcolortext)" output (Bug 1).
+            # Fix: emit the raw slug / hex directly.
+            v = _extract_token_or_hex(raw)
             if v is not None:
                 result.setdefault(tgt, v)
             return
@@ -1415,13 +1423,24 @@ def _lift_typography_to_block_attrs(
         primary_type = primary_info.get("attr_type", "string")
 
         if primary_type == "number" and unit_attr:
-            num, unit = _split_value_unit(raw)
+            # default_unit="" so that a unitless CSS value (e.g. line-height:1.15)
+            # returns unit="" and the unit companion attr is NOT written.
+            # The "and unit" guard at the setdefault call below then skips
+            # lineHeightUnit, so render.php emits "1.15" with no appended "px"
+            # (Bug 2).  Values that carry an explicit unit (58px, 1.5em) are
+            # unaffected — the regex captures the unit string directly.
+            num, unit = _split_value_unit(raw, default_unit="")
             if num is not None:
                 num_out: int | float = int(num) if num == int(num) else num
                 result.setdefault(tgt, num_out)
                 # Unit companion: only write alongside the base attr, not variants.
-                if tgt == primary_attr and unit_attr in block_attr_map and unit:
-                    result.setdefault(unit_attr, unit)
+                # When unit="" (unitless draft value, e.g. line-height:1.15),
+                # the block serialiser strips "" (it filters falsy values).
+                # Use the sentinel "unitless" so the value survives serialisation;
+                # render.php checks for "unitless" and omits any CSS unit suffix.
+                effective_unit = unit if unit else ("unitless" if unit_attr else unit)
+                if tgt == primary_attr and unit_attr in block_attr_map and effective_unit:
+                    result.setdefault(unit_attr, effective_unit)
         elif primary_type == "number":
             num, _ = _split_value_unit(raw)
             if num is not None:
