@@ -168,27 +168,27 @@
 		},
 		"layout": {
 			"type": "string",
-			"default": ""
+			"default": "grid"
 		},
 		"columnsMobile": {
 			"type": "number",
-			"default": 1
+			"default": 2
 		},
 		"columnsTablet": {
 			"type": "number",
-			"default": 2
+			"default": 4
 		},
 		"gridTemplateColumns": {
 			"type": "string",
-			"default": ""
+			"default": "repeat(4, 1fr)"
 		},
 		"gridTemplateColumnsTablet": {
 			"type": "string",
-			"default": ""
+			"default": "repeat(4, 1fr)"
 		},
 		"gridTemplateColumnsMobile": {
 			"type": "string",
-			"default": ""
+			"default": "1fr 1fr"
 		},
 		"gapTablet": {
 			"type": "string",

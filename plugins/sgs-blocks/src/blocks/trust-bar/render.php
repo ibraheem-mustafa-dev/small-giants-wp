@@ -42,8 +42,9 @@ $icon_circle_size = absint( $attributes['iconCircleSize'] ?? 44 );
 $icon_circle_bg   = $attributes['iconCircleBackground'] ?? 'surface';
 $icon_colour      = $attributes['iconColour'] ?? 'primary-dark';
 $text_colour      = $attributes['textColour'] ?? 'text';
-$columns          = absint( $attributes['columns'] ?? 4 );
-$gap_slug         = preg_replace( '/[^0-9]/', '', $attributes['gap'] ?? '20' );
+// $columns and $gap_slug are no longer needed locally:
+// - grid columns are driven by gridTemplateColumns attr via the shared wrapper helper.
+// - gap is consumed by the shared wrapper helper directly from $attributes['gap'].
 
 // --- Auto-scroll attributes ---------------------------------------------------
 $auto_scroll       = ! empty( $attributes['autoScroll'] );
@@ -61,12 +62,12 @@ $title_colour_val  = sgs_colour_value( $title_colour );
 $label_colour_val  = sgs_colour_value( $label_colour );
 
 // --- Wrapper CSS custom properties --------------------------------------------
+// Note: gap is now handled universally by the shared wrapper helper (WS-4 mirror).
+// The helper reads the `gap` attr and emits `gap:var(--wp--preset--spacing--N)` as
+// an inline style when layout="grid". --sgs-trust-bar-gap is no longer emitted here.
 $styles = array();
 
 if ( 'icon-circle' === $badge_style ) {
-	if ( $gap_slug ) {
-		$styles[] = '--sgs-trust-bar-gap: var(--wp--preset--spacing--' . $gap_slug . ')';
-	}
 	if ( 44 !== $icon_circle_size ) {
 		$styles[] = '--sgs-trust-badge-circle-size: ' . $icon_circle_size . 'px';
 	}
@@ -94,9 +95,8 @@ $tb_extra_attrs = array(
 	'aria-label' => __( 'Trust signals', 'sgs-blocks' ),
 );
 
-if ( 'icon-circle' === $badge_style ) {
-	$tb_extra_attrs['data-columns'] = $columns;
-}
+// data-columns removed: grid columns are now driven by gridTemplateColumns attr
+// via the universal wrapper mechanism. No CSS selector overrides needed.
 
 if ( $auto_scroll ) {
 	$tb_extra_attrs['data-auto-scroll']       = 'true';

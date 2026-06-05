@@ -39,12 +39,14 @@ a.sgs-trust-bar__badge:focus-visible {
 }
 
 /* ─── icon-circle variant ────────────────────────────────────────────────────── */
-
-.sgs-trust-bar--icon-circle {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: var(--sgs-trust-bar-gap, var(--wp--preset--spacing--20));
-}
+/*
+ * Grid layout is now driven by the universal wrapper mechanism (sgs/container mirror, WS-4).
+ * The shared helper emits display:grid + grid-template-columns + gap as inline styles
+ * when layout="grid", using the gridTemplateColumns / gridTemplateColumnsMobile /
+ * gridTemplateColumnsTablet / gap attrs. Default attrs in block.json replicate the
+ * old 1fr 1fr → repeat(4,1fr) behaviour so existing blocks render identically.
+ * The converter sets these attrs from the draft — no trust-bar special-case needed.
+ */
 
 /* Hide pending items on the frontend — belt-and-brace alongside the `hidden` attribute. */
 .sgs-trust-bar--icon-circle .sgs-trust-bar__badge[hidden],
@@ -84,21 +86,6 @@ a.sgs-trust-bar__badge:focus-visible {
 	font-weight: 500;
 	line-height: 1.35;
 	color: var(--sgs-trust-badge-text-colour, var(--wp--preset--color--text, #1E1E1E));
-}
-
-/* Responsive: 4-column grid at 600px+ */
-@media (min-width: 600px) {
-	.sgs-trust-bar--icon-circle {
-		grid-template-columns: repeat(4, 1fr);
-	}
-}
-
-/* Data-attribute column overrides */
-@media (min-width: 600px) {
-	.sgs-trust-bar--icon-circle[data-columns="2"] { grid-template-columns: repeat(2, 1fr); }
-	.sgs-trust-bar--icon-circle[data-columns="3"] { grid-template-columns: repeat(3, 1fr); }
-	.sgs-trust-bar--icon-circle[data-columns="5"] { grid-template-columns: repeat(5, 1fr); }
-	.sgs-trust-bar--icon-circle[data-columns="6"] { grid-template-columns: repeat(6, 1fr); }
 }
 
 @media (min-width: 1024px) {
