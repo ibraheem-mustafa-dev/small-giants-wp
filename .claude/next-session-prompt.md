@@ -19,6 +19,27 @@ primary_goal: "CLONING-PIPELINE THREAD. **WS-4 composite-wrapper mirror is BLOCK
 3. Run `/sgs-clone` on Mama's page 144 (the smallest first action that grounds Method 2), then read the debug artefacts in artefact-order (leftover-buckets.json → trace.jsonl → stage-2.json/extract.json — Spec 21) BEFORE conjecturing.
 4. THEN dispatch the Method-2 read-only investigation agents (Task 1 below). You ORCHESTRATE — do NOT build inline (see §ORCHESTRATION MODEL).
 
+## ⚡⚡⚡⚡⚡⚡⚡ 2026-06-05 PM — 32-POINT ROOT-CAUSE COMPLETE + VERIFICATION IS THE WEAK LINK → TWO WORKSTREAMS [READ THIS FIRST — supersedes openers below; structural-defence sections (STOP catalogue, ritual, reading list, orchestration model) further down REMAIN BINDING]
+
+**You are Opus = the ORCHESTRATOR.** Bean manually QA'd canary 144 vs the draft and found **32 defects**; the prior session's LLM verification + 3-persona council had caught only ~4. That ~8× gap is the headline: **LLM-eyeball clone verification is unreliable** (memory `llm-eyeball-clone-verification-unreliable`). A QC'd root-cause investigation (3 parallel agents) + a verification-methodology design (both multi-agent QC'd) were produced. **Build from the docs, not from memory.**
+
+### READ FIRST (committed `1a49db26`)
+1. **`.claude/reports/2026-06-05-32pt-rootcause-QC-corrections.md`** — START HERE. The QC verdict (32/32 covered, B+) + the ONE material correction (Family-A is **CSS-inheritance-not-simulated**, NOT "class-CSS-not-extracted" — fix is ancestor-inheritance sim for inheritable props, generalising `642cad61`; acting on the raw report's wording writes redundant code).
+2. **`.claude/reports/2026-06-05-32pt-rootcause-part{1,2,3}-*.md`** — per-point root cause + evidence + doc-vs-impl for all 32.
+3. **`.claude/reports/2026-06-05-taskB-clone-verification-methodology.md`** — the deterministic `clone-parity.js` design (6 QC amendments folded in, ~90% coverage).
+
+### WS-B FIRST (build the deterministic verifier, THEN fix — so every fix is provable)
+Build **`clone-parity.js`** (Node+Playwright) per the Task-B doc + its amendments: per-element draft-vs-clone computed-style diff, BEM-class match + structural-path fallback + skip `wp-block-*` wrappers, font-LOAD check, 3 viewports, element-count-by-role, concrete ΔE thresholds; emit PASS/FAIL as a pipeline stage; golden-master mode after R-22-13. **Why first:** the whole reason 32 defects slipped is that we had no deterministic gate — without it, every WS-A "fix" is another untrustworthy claim. The LLM then ONLY root-causes the FAIL list (triage by property-group).
+
+### WS-A — fix the converged root causes (all IMPL unless noted; NO cheating, NO per-section band-aids — R-22-1/9)
+Ranked by leverage: (1) **CSS-inheritance simulation** (~11 pts — dominant); (2) **composite double-container** `convert.py:2901` add `and not _is_container_mirror_block(slug)` (#1/2/4); (3) **`productId` emission** on bound product-card (#10/11 empty-state); (4) **last-instance-wins multi-card slot extraction**; (5) **missing lift mappings** (align-items→verticalAlign, object-fit/border-radius→sgs/media, emoji→emojiChar, SVG→Lucide name, circle-bg→backgroundShape); (6) **`sgs/button` background lift paints the wrapper** (#9 all primary buttons); (7) **notice-banner FR-22-6 emit** (#18 child sgs/text not scalar text); + the council must-fixes (responsive font-size render, the **grid wrapper gate** `class-sgs-container-wrapper.php` emit `display:grid` on `gridTemplateColumns` presence not `layout==='grid'` — unblocks A2/A3 + responsive grid, hero/trust-bar OUTER padding, FS-5 `id:0` write-back + brand 404). NOT-a-fault: #7, #12B. Block-capability (separate): #12C ghost preset, #32 slider/author-image toggles. Each WS-A fix VERIFIED via WS-B's clone-parity (not LLM eyeball), committed by explicit path (theme thread shares tree, STOP #41/45).
+
+### Sequencing
+```
+WS-B clone-parity.js (deterministic gate)  →  then per WS-A fix: build → clone-parity PASS → commit
+```
+> The 2026-06-05 META opener + PM4 opener below are PRIOR (the lift fixes they describe SHIPPED this session: typography 642cad61/32b4c6fe, grid bridge c97f85f1, D5 b3e3b284, padding 1cf0692d, trust-bar e75db509 — but the council + Bean's 32-point pass proved them DESKTOP-ONLY / partial; WS-A above supersedes with the full fix list). Structural-defence sections further down REMAIN BINDING.
+
 ## ⚡⚡⚡⚡⚡⚡ 2026-06-05 — META ROOT CAUSE FOUND (diagnosis-without-delivery) → DELIVER THE REMAINING LIFT FIXES [READ THIS FIRST — supersedes ALL openers below; the structural-defence sections (STOP catalogue, pre-flight ritual, mandatory reading list, orchestration model) further down REMAIN BINDING and carry forward]
 
 **You are Opus = the ORCHESTRATOR.** Last session ran a doc↔code conformance investigation (3 parallel agents + /systematic-debugging + /remembering-conversations) to answer Bean's question: *why do the same clone defects keep recurring despite prior "targeted fixes"?*
