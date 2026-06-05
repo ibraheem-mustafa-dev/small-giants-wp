@@ -868,6 +868,7 @@ def _is_css_function(value: str) -> bool:
 # ============================================================================
 
 _container_mirror_cache: dict[str, bool] = {}
+_section_kind_mirror_cache: dict[str, bool] = {}
 _block_attr_names_cache: dict[str, frozenset[str]] = {}
 
 
@@ -897,6 +898,36 @@ def _is_container_mirror_block(slug: str) -> bool:
     except Exception:  # noqa: BLE001
         result = False
     _container_mirror_cache[slug] = result
+    return result
+
+
+def _is_section_kind_mirror_block(slug: str) -> bool:
+    """True when block is a SECTION-kind container mirror (wraps_block='sgs/container'
+    AND container_kind='section'). Cached; soft-fails to False on missing table/row/None.
+    R-22-1 DB-driven. Used to exempt top-level section composites (hero/trust-bar/
+    cta-section) from the exception-3 outer-container wrap — they carry their own
+    mirrored wrapper. Layout/content-kind mirror blocks are NOT exempted (they are
+    normally nested; bare-emitting them at top level would drop their section wrapper).
+    """
+    if slug in _section_kind_mirror_cache:
+        return _section_kind_mirror_cache[slug]
+    import sqlite3
+    result = False
+    try:
+        conn = sqlite3.connect(str(db.SGS_DB))
+        try:
+            row = conn.execute(
+                "SELECT 1 FROM block_composition WHERE block_slug = ? AND wraps_block = 'sgs/container' AND container_kind = 'section'",
+                (slug,),
+            ).fetchone()
+            result = row is not None
+        except sqlite3.OperationalError:
+            result = False  # Table absent — soft-fail
+        finally:
+            conn.close()
+    except Exception:  # noqa: BLE001
+        result = False
+    _section_kind_mirror_cache[slug] = result
     return result
 
 
@@ -2673,6 +2704,30 @@ def walk(
         )
         for _a2_k, _a2_v in _a2_lifted.items():
             attrs.setdefault(_a2_k, _a2_v)  # Never clobber attrs already set above.
+        # R1.3 — widthMode fallback for SECTION-kind mirror composites at top level.
+        # When exempted from the exception-3 outer wrap (R1.2), the bare composite must
+        # carry the widthMode that outer container used to inject ({"widthMode":"full"}).
+        # Mirrors the slug-None section path's max-width → widthMode logic exactly.
+        # setdefault: draft-set widthMode is never clobbered. Layout/content-kind mirror
+        # blocks are not section composites at top level, so this gate is safe.
+        # R-22-1 DB-gated; R-22-9 universal over every section-kind mirror block.
+        if _is_section_kind_mirror_block(slug) and "widthMode" not in attrs:
+            _r1_base, _ = _collect_css_decls_for_element(node, css_rules)
+            _r1_own_mw = _r1_base.get("max-width")
+            if not _r1_own_mw:
+                attrs.setdefault("widthMode", "full")
+            else:
+                _r1_mode = _match_theme_width(_strip_important(_r1_own_mw), _LIFT_CONTEXT.get("theme_widths", {}))
+                if _r1_mode in ("default", "wide"):
+                    attrs.setdefault("widthMode", _r1_mode)
+                else:
+                    _r1_mw_m = re.match(r"^\s*(\d+(?:\.\d+)?)\s*(px|rem|em|vw|%)?\s*$", _strip_important(_r1_own_mw))
+                    if _r1_mw_m:
+                        attrs.setdefault("widthMode", "custom")
+                        attrs.setdefault("customWidth", int(float(_r1_mw_m.group(1))))
+                        attrs.setdefault("customWidthUnit", _r1_mw_m.group(2) or "px")
+                    else:
+                        attrs.setdefault("widthMode", "full")
         # GAP 3 (A2 path) — display:grid|flex → layout attr for composite mirror blocks.
         # Same gap as A3: _lift_wrapper_css_to_container_attrs cannot set `layout`
         # NOTE (GAP-3 scope decision, 2026-06-05): `layout` is intentionally NOT lifted
@@ -2891,6 +2946,66 @@ def walk(
                 attrs["inheritStyle"] = "outline"
                 break
 
+    # R6 — strip the lifted style.color.background for preset-mode buttons.
+    # _lift_root_supports_to_style (above) runs before inheritStyle is resolved, so it
+    # cannot gate on preset. Now that inheritStyle is set, strip the lifted background:
+    # for a preset button WP applies style.color.background to the .sgs-button-wrapper
+    # div (a coloured box), while the button face colour comes from the is-style-<preset>
+    # CSS class. Custom buttons (inheritStyle absent or 'custom') are NEVER stripped —
+    # they read style.color.background legitimately. DB-driven preset set (R-22-1); universal
+    # over any string-enum inheritStyle block (R-22-9). Only background is stripped (not text).
+    if (slug is not None
+            and attrs.get("inheritStyle")
+            and attrs.get("inheritStyle") in db.inherit_style_presets()):
+        _btn_style = attrs.get("style")
+        if isinstance(_btn_style, dict):
+            _btn_colour = _btn_style.get("color")
+            if isinstance(_btn_colour, dict) and "background" in _btn_colour:
+                del _btn_colour["background"]
+                if not _btn_colour:
+                    _btn_style.pop("color", None)
+                if not _btn_style:
+                    attrs.pop("style", None)
+
+    # R8c — BEM modifier → variantStyle attr (generalised modifier-to-string-enum lift).
+    # Mirrors the inheritStyle detection block above: when the resolved block has a
+    # string-enum attr named `variantStyle` (DB-checked) AND a BEM modifier on the node
+    # matches one of that attr's enum values (read from block_attributes.enum_values),
+    # set attrs["variantStyle"] = <modifier>. setdefault semantics — draft-set wins.
+    # Example: .sgs-gift-section__card--trial → sgs/product-card variantStyle:"trial".
+    # DB-driven enum set per R-22-1; universal over any block with a variantStyle
+    # string attr + populated enum_values in the DB (R-22-9). No per-slug literals.
+    if (slug is not None
+            and "variantStyle" not in attrs
+            and db.block_attrs(slug).get("variantStyle", {}).get("attr_type") == "string"):
+        import sqlite3 as _sq3
+        import json as _json
+        _vs_enums: frozenset[str] = frozenset()
+        try:
+            _vs_conn = _sq3.connect(str(db.SGS_DB))
+            try:
+                _vs_row = _vs_conn.execute(
+                    "SELECT enum_values FROM block_attributes WHERE block_slug = ? AND attr_name = 'variantStyle'",
+                    (slug,),
+                ).fetchone()
+                if _vs_row and _vs_row[0]:
+                    _vs_enums = frozenset(v.lower() for v in _json.loads(_vs_row[0]))
+            except Exception:  # noqa: BLE001
+                pass
+            finally:
+                _vs_conn.close()
+        except Exception:  # noqa: BLE001
+            pass
+        if _vs_enums:
+            for _cls in sgs_classes:
+                _bem = db.parse_sgs_bem(_cls)
+                if _bem is None or not _bem.modifier:
+                    continue
+                _mod = _bem.modifier.lower()
+                if _mod in _vs_enums:
+                    attrs.setdefault("variantStyle", _mod)
+                    break
+
     # ---- Permitted exception 3 — top-level section container wrap ----
     # FR-22-4: every top-level section is based on sgs/container.
     # Non-container top-level slugs (including slug=None) are wrapped, not
@@ -2898,7 +3013,12 @@ def walk(
     # container InnerBlocks when slug is None.
     # NOTE: 'sgs/container' is the ONLY block-slug literal in this file.
     # It is explicitly permitted by FR-22-4 as the container-base exception.
-    if is_top_level and slug != "sgs/container":
+    # R1 — SECTION-kind mirror blocks (hero/trust-bar/cta-section/modal) are
+    # exempted: they already carry their own mirrored wrapper via A2 above, so
+    # wrapping them again creates a redundant outer sgs/container (double-wrap).
+    # widthMode is injected onto the bare composite by R1.3 inside the A2 block.
+    # DB-driven via _is_section_kind_mirror_block (R-22-1); no per-slug literals (R-22-9).
+    if is_top_level and slug != "sgs/container" and not _is_section_kind_mirror_block(slug):
         return db.emit_sgs_container_wrapping(slug, attrs, children_markup, css)
 
     return emit_wp_block(slug, attrs, children_markup)
