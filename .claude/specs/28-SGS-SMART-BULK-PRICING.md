@@ -2,7 +2,7 @@
 doc_type: spec
 spec_id: 28
 spec_version: 2
-status: draft — BUILDABLE (v2 folds the adversarial-council must-fixes into the FRs, 2026-06-04). Build per §"Build order" — P1 ships now on shipped B3; P4 (FR-28-5 WC-write) is build-deferred behind Spec 27 Cluster C / Phase R.
+status: BUILDABLE; P1 SHIPPED 2026-06-05 (value-ladder display, commits 49d63ab8 + e0dea916, live-verified). P2/P3 (preview-only engine) + P4 (FR-28-5 WC-write, build-deferred behind Spec 27 Cluster C — note: Cluster C is now COMPLETE, so P4 is unblocked when chosen) remain. v2 folds the adversarial-council must-fixes into the FRs.
 title: "SGS Smart Bulk Pricing — auto-pricing engine + comparative value ladder"
 project: small-giants-wp
 authors: Bean + Claude (Opus 4.8)
@@ -94,9 +94,9 @@ All engine PHP declares `strict_types=1`. Money is integer pence end-to-end; flo
 
 ## Phase success criteria (done when)
 
-**P1 (value ladder, ships first on shipped B3):**
-- [ ] Value ladder shows comparative per-unit + loss-framed saving across packs on the card; anchored smallest-first; "Best value" badge on target pack; reads the ACTIVE WC price (sale-aware label); monotonicity guard suppresses any non-decreasing row.
-- [ ] UK-legal display: no "was" price emitted; per-unit always shown; saving strings `esc_html`-escaped and accurate; claim suppressed where no genuine single price exists.
+**P1 (value ladder, ships first on shipped B3): SHIPPED 2026-06-05 (commits 49d63ab8 foundation + e0dea916 ship; product-card v1.13.0; live-verified on canary 540).**
+- [x] Value ladder shows comparative per-unit + loss-framed saving across packs on the card; anchored smallest-first (or owner-set `_sgs_base_price_pence` single-item ref, KJC-A); "Best value" badge on target pack; reads the ACTIVE WC price (sale-aware label); monotonicity guard suppresses any non-decreasing row (live-proven: 96-pack £0.62/unit suppressed vs 48-pack £0.51, badge moved to the 48-pack).
+- [x] UK-legal display: no "was" price emitted; per-unit always shown; saving strings `esc_html`-escaped and accurate (Rule-of-100 floored via exact intdiv); claim suppressed where no genuine single price exists. SSR-only (lean-seed 24KB cap held at 22408B, KJC-B); WCAG 4.5:1 (saving text 15.71:1 after a live-caught pink-primary contrast fix).
 
 **P2 (engine pure functions):**
 - [ ] Corrected worked example reproduced: £1/item, [6,12,24,48], Standard → **£4.99 / £8.99 / £16.99 / £30.99** (17 / 25 / 29 / 35% per-unit saving), top pack < 40% (canonical fixture at foot of doc).
