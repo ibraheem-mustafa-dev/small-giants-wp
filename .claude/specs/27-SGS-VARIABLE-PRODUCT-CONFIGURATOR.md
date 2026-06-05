@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 27
-spec_version: 4
+spec_version: 5
 status: active
 title: "SGS Product & WooCommerce Layer"
 project: small-giants-wp
@@ -113,13 +113,13 @@ Merged from Spec 25's feature-map table and the configurator's phasing. Rows sup
 | `custom-fields` CPT support (REST meta exposure gate) | SHIPPED (commit `7115a60d`) | `includes/content-types/class-product-cpt.php` | D148, D149 | FR-24-1 |
 | `_sgs_variation_sets` meta + Gutenberg editor panel | SHIPPED (commit `7115a60d`) | `includes/content-types/class-product-cpt.php`, `product-card/edit.js` | D148 | FR-24-11 |
 | `sgs/option-picker` atomic block (pill radio-group) | SHIPPED (commit `ee6807d3`) | `src/blocks/option-picker/` | D144, D148 | FR-24-15 |
-| Converter emits `sgs/option-picker` for draft pill groups | SHIPPED (uncommitted - Phase D) | `scripts/orchestrator/converter_v2/convert.py`, `seed-slot-synonyms.py` | - | FR-24-15 |
-| `sgs/content-collection` block (own WP_Query, selection rules) | SHIPPED (uncommitted - Phase E) | `src/blocks/content-collection/` (block.json v1.1.0, render.php) | - | FR-24-4/5/6 |
+| Converter emits `sgs/option-picker` for draft pill groups | SHIPPED (commit `c68b8cb6`, Phase D) | `scripts/orchestrator/converter_v2/convert.py`, `seed-slot-synonyms.py` | - | FR-24-15 |
+| `sgs/content-collection` block (own WP_Query, selection rules) | SHIPPED (commit `c68b8cb6`, Phase E) | `src/blocks/content-collection/` (block.json v1.1.0, render.php) | - | FR-24-4/5/6 |
 | Pill-to-price/image swap via WP Interactivity API (full live read) | **SHIPPED** (live: 0-XHR multi-axis swap of price/sale/stock/image from the seeded manifest; FR-27-A1/A2 D164/D165) | `src/blocks/product-card/view.js`, `includes/class-product-manifest.php` | D164, D165 | FR-27-A1/A2 |
 | `_sgs_sku_matrix` (multi-SKU variable pricing) | SUPERSEDED - dropped; WC variations are the matrix; see principle 6 above | - | D144 (superseded) | FR-24-14, superseded by FR-27 |
 | WC variable-product per-variant pricing/stock via WC-native variations | SUPERSEDED - this is now the primary path (FR-27-A1); the DEFERRED label is retired | - | D151 | FR-27-A1 |
 | WC adapter for `sgs/content-collection` | PLANNED - triggers when a real shop client lands | Separate spec when in scope | D149 | FR-24 out-of-scope |
-| `sgs/trust-bar` dual-mode (Typed repeater + Bound InnerBlocks) | DRAFT-Phase-1 | `src/blocks/trust-bar/` | D123 | FR-24-10 |
+| `sgs/trust-bar` dual-mode (Typed repeater + Bound InnerBlocks) | **SHIPPED (commit `d6358f32`, 2026-06-01 — FR-24-10; render.php branches on `sourceMode` typed/bound)** | `src/blocks/trust-bar/` | D123 | FR-24-10 |
 | Variable-product configurator Phase 1 — **SHIPPED** (Bean R-22-13 sign-off 2026-06-04). Sell-loop (U0/U6/U3/U4/U7/U5) + all 6 hardening units (U9 a11y+evidence/U10 perf INP152ms/U8 cache M-C1-staleness-fix/U11 WC<9.8 degradation/U1 capability-flag/U12 cloning+schema-compat tests) + 7 ship-gate UX fixes (width/pills/hover/product-page-links/near-black-desc/header-cart+feedback/no-image-placeholder). Acceptance 1-6 met. | SHIPPED (D165) | `src/blocks/product-card/`, `includes/class-product-manifest.php`, `class-product-bindings.php`, `class-cart-proxy.php`, `class-sgs-configurator-compat.php`, `class-sgs-content-types-settings.php`, `content-types/class-product-cpt.php`, `theme/sgs-theme/parts/header.html`, `scripts/seed-48-sku-fixture.php`, `tests/js/configurator-schema-compat.test.js`, `tests/php/ConfiguratorCompatTest.php`, `.claude/reports/sgs-configurator-moat-evidence.md` | D162, D164, D165 | FR-27-A/B/C/G/H/I-MVP |
 | Variable-product configurator Phase 2 — **COMPLETE** (Cluster A D171 + Cluster B SEO D173 + Cluster C authoring/go-live 2026-06-05); Bean R-22-13 sign-off granted on each cluster. **Cluster A** (display, live-verified on canary 540): Step 0 foundations; B2 swatches + I2 build-time WCAG auto-contrast (6cdff8d0); TAX-UI (FR-27-H3, 9e26de74); B3 per-unit "£x/bar" derived live + cosmetic badge reusing `sgs/label` + on-sale "Sale" badge + WC variation-editor authoring (ceb4e04a/5fe7cfd5); A4 per-variation gallery + thumbnail strip + prefetch + editable `imageHeight` + media-picker authoring (77dccc9f/48fc54b7); C2 3-state sold-out-vs-unavailable SR text; Step-7 demand analytics privacy-safe REST (`/sgs/v1/demand/attempt`, SHA-256, ZERO PII) + admin (771f43ad); ESCAPE-AUDIT + QA-VIS(axe-0) gates passed (28607ac4). **Cluster B** (SEO, live-verified): E1 ProductGroup+hasVariant JSON-LD (6ef7e7c6, Rich Results 0 errors); E2 canonical escape-hatch (ba96a4ff); E3 OG + sitemap-lastmod + breadcrumb-block-placement (325b521f) — image-sitemap clause DESCOPED (53b85d7c); F1 SSR no-JS audit passed; manifest context-cap regression self-caught + fixed (3a1e95df). **Cluster C** (authoring + go-live) — see the Phase-R rows below, all SHIPPED. | COMPLETE | `includes/{class-configurator-meta,configurator-head,configurator-term-fields,configurator-variation-fields,render-helpers,class-product-manifest,class-product-bindings,class-demand-analytics,demand-analytics-admin,class-product-schema,class-product-canonical,class-product-sitemap}.php`, `src/blocks/{option-picker,product-card}/`, `scripts/seed-48-sku-fixture-v2.php` | D171, D173 | Cluster A + B + C all done |
 | FR-27-R1 authoring controller (WC data-store set_*()+save(), nonce, per-object edit_post, lookup regen) | **SHIPPED** (pulled forward from Phase R into Cluster C per D-2026-06-04 "complete whole spec before launch") | `includes/class-product-authoring.php` + `-args.php` + shared `class-product-authoring-security.php` | f747e58a | FR-27-R1 |
@@ -317,7 +317,7 @@ The badge children use existing primitives (container + icon + text/label + medi
 
 Acceptance: FR-22-18 structural parity. `.sgs-trust-bar` renders the converter's 4 badge children in Bound mode AND the curated repeater still works in Typed mode (editor smoke test, no "unexpected content" warning).
 
-Status: Build pending. Bean accepted this continues past the hero into a focused session.
+Status: SHIPPED (commit `d6358f32`, 2026-06-01). `render.php` branches on the explicit `sourceMode` (typed = curated repeater / bound = converter's badge InnerBlocks); converter sets `sourceMode='bound'` on cloned trust-bars.
 
 ### FR-24-11 to FR-24-17 -- Variation-sets and `sgs/option-picker`
 
@@ -377,8 +377,8 @@ Primary files: `src/blocks/cart/` (block.json, render.php, view.js, style.css).
 - **Phase A -- `sgs/option-picker` atomic block.** FR-24-15. SHIPPED 2026-06-02.
 - **Phase B -- `_sgs_variation_sets` CPT meta + Gutenberg editor panel.** FR-24-11, FR-24-12. SHIPPED 2026-06-02: `_sgs_variation_sets` meta registered with `show_in_rest => true`; editor panel built; meta round-trips via REST (live-verified). `sgs_product` CPT has `custom-fields` support.
 - **Phase C -- Card Bound mode (wrapper+bridge, D151, refines D149).** FR-24-2, FR-24-3, FR-24-9. DESIGN SIGNED OFF 2026-06-02 (D151), research-gated, ready to build. The SGS card is the always-on unified authoring wrapper; WooCommerce (the primary backing store) supplies base price/image/stock when present, with the `sgs_product` CPT as the graceful-degradation path when WC is absent. Source is auto from the product picker (lists WC products + `sgs_product` entries; sets `sourceMode` attr automatically; no client-facing WC/CPT toggle). Pills always come from the SGS `_sgs_variation_sets` layer + `sgs/option-picker` even on WC sites (WC-native per-variant pricing/stock is deferred advanced opt-in for real multi-SKU shops). Add-to-cart is in Phase C: adds the bound WC product via the WC Store API, firing `wc-blocks_added_to_cart` so the `sgs/cart` badge updates (reuses the Task-A-verified path). Architecture: single binding source `sgs-product/field` (`uses_context:['postId']`, routes WC vs CPT via `source_args.source`); `wc_get_product()->get_price_html()` yields variable-product ranges free; front-end pill-to-price/image swap via the WP Interactivity API seeded server-side (zero wc-blocks React bundle, approximately 12 KB). Option-picker event contract (verified): `sgs:option-selected`, `detail:{ typeKey, selectedKey, contentImpact }`. See D151 (+ D149 origin). NOTE: the full live read-through swap (using live WC variation data) is the MVP of the variable-product configurator: FR-27-A1/A2. Phase C delivers the structural wiring; FR-27-A1/A2 delivers the populated data.
-- **Phase D -- Clone-emit.** FR-24-15 pipeline wiring. SHIPPED (uncommitted, 2026-06-03). See FR-24-15 above.
-- **Phase E -- Collection + conditions.** FR-24-4, FR-24-5, FR-24-6. SHIPPED (uncommitted, 2026-06-03).
+- **Phase D -- Clone-emit.** FR-24-15 pipeline wiring. SHIPPED (commit `c68b8cb6`, 2026-06-03). See FR-24-15 above.
+- **Phase E -- Collection + conditions.** FR-24-4, FR-24-5, FR-24-6. SHIPPED (commit `c68b8cb6`, 2026-06-03).
 - **Phase F -- Generalise.** Register `sgs_testimonial` / `sgs_team` / `sgs_case_study` via the same mechanism; prove FR-24-9 acceptance criterion 6.
 - **Phase G -- Polish.** FR-24-7 popularity counter, FR-24-8 Pattern Overrides, aspect-ratio lock + hover controls.
 

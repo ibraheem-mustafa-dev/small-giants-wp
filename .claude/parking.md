@@ -6,6 +6,40 @@ last_updated: 2026-06-02 (pruned — 21 archived entries moved to memory/parking
 
 > **STANDARD PRACTICE (Bean-locked 2026-06-02):** this doc holds ONLY parked work — entries with `**Status:** OPEN | PARTIAL | BLOCKED | DEFERRED`. The MOMENT a task is **CLOSED / RESOLVED / DROPPED / SUPERSEDED**, MOVE it (verbatim, with completion date) to `memory/parking-archive.md` — do NOT leave it here. Enforce this every `/handoff` (Gate 4.5). Keeps parking concise + purposeful; prevents the balloon that hit 1,400+ lines.
 
+## 2026-06-05 — theme thread: Spec 27/28 adversarial-council must-fix backlog (post-D179)
+
+> **P-SPEC27-28-COUNCIL-MUSTFIX-WAVE** — NEW 2026-06-05 (6-persona adversarial-council on the shipped Cluster C + Spec 28 P1 + docs; every item below FACT-CHECKED against real code/git by a verifier subagent — 2 council claims were REFUTED and are NOT listed). **Status: OPEN** (framework / shop layer). The next theme session's FIRST task is to plan an optimal haiku+sonnet subagent-driven wave-plan to clear this whole list in a few waves, THEN continue Spec 27/28 to 100% (excl. the cloning HTML-draft product page). **Bucket:** Framework / shop layer.
+>
+> **MUST-FIX (before a real paying client uses the value ladder / shop):**
+> 1. **Value-ladder has NO authoring UI (C1/C2/C3 VERIFIED).** `framingMode`/`decoyEnabled` have no controls in `product-card/edit.js`; `_sgs_base_price_pence`/`_sgs_decoy_enabled` are READ-only meta ("UI is P3", `class-configurator-meta.php:187`). With no base price set, `sgs_saving_display` returns '' for every row (`render-helpers.php:746-748,883`) → savings SILENT by default; a non-coder can't enable them without WP-CLI. **Fix:** add a `framingMode` SelectControl + `decoyEnabled` ToggleControl to edit.js (gated to non-typed mode) + a validated `_sgs_base_price_pence` product field.
+> 2. **PREFLIGHT publish-block is INVISIBLE in the block editor (P1 VERIFIED).** It surfaces only via `admin_notices` (`class-product-preflight.php:181`) which Gutenberg doesn't render; `grep preflight src/` = 0. A client's product silently reverts to Draft with no reason. **Fix:** a `PluginPrePublishPanel`/`@wordpress/notices` JS integration calling the existing `GET /sgs/v1/products/{id}/preflight`; + an actionable `no_variesby` message (link to the term screen) + auto-set a sensible `variesBy` at provisioning.
+> 3. **Live £0 Store-API add-to-cart bypass (P2 VERIFIED — self-documented `TODO FR-MISSING-3`, `class-cart-proxy.php:966-986`).** The `woocommerce_add_to_cart_validation` filter may not cover the Block Store-API path; `woocommerce_is_purchasable` is NOT overridden (grep=0). **Fix:** override `woocommerce_is_purchasable` → false when `wc_get_price_to_display() <= 0` (blocks every add path at once).
+> 4. **LEGAL — fabricated reference price (Consumer-Law MF-1; C4 VERIFIED).** `_sgs_base_price_pence` sanitises with `absint` ONLY — no check a real single is sold at it → "save X% vs buying singly" is an unsubstantiated comparison (DMCC 2024 / CPRs). **Fix:** validate at save (≥ smallest-pack per-unit + a "this single is genuinely available" confirmation) OR derive from a real single-unit SKU; suppress the "vs buying singly" tail when no single exists.
+> 5. **LEGAL — "Best value" on a non-cheapest pack (Consumer-Law MF-2; C5 VERIFIED).** Decoy mode targets the 2nd-largest row (`render-helpers.php:955-957`) but the badge says the literal words "Best value" (`render.php:653`) while a cheaper-per-unit pack is visible — a DMCC misleading action. **Fix:** when `decoy_enabled`, use a non-superlative label ("Popular choice"); reserve "Best value" for the actually-cheapest-per-unit row.
+>
+> **SHOULD-FIX:**
+> 6. Rate-limit counts REQUESTS not variations (P5 VERIFIED) — one `/provision` writes up to 300 against 1 token (~18k writes/min @ 60 req). Budget by variations created. `class-product-authoring-security.php:143`.
+> 7. `can_edit_product` returns a bare bool → REST 401 not 403 (P4 VERIFIED). Return a `WP_Error` 403. `class-product-authoring-security.php:51-54`.
+> 8. `_sgs_test_fail_after` visible in the public OPTIONS schema (P3 VERIFIED; dead code, low risk) — gate its registration behind `WP_DEBUG`/`SGS_TESTING`. `class-product-provisioning-args.php:135-145`.
+> 9. termLabel size-axis detection is English-only `/size/i` + first-axis fallback (P10 VERIFIED) — breaks on "Roast"/"Größe". Let the operator pick the pack-size axis, or detect by unitDivisor-correlation. `render.php:417`.
+> 10. Health cron checks only the 50 OLDEST products (`ORDER BY ID ASC LIMIT 50`, P7 VERIFIED) — new products never checked. Rotate/randomise selection or hook `woocommerce_update_product`. `class-product-preflight.php:514`.
+> 11. `no_image` preflight passes a WC PLACEHOLDER image (P8 VERIFIED) — replicate render.php's `woocommerce-placeholder` URL check in the preflight loop. `class-product-preflight.php:374-376`.
+> 12. Rollback `wp_delete_post($vid,true)` return unchecked (P9 VERIFIED) — non-atomic; check + surface "manual cleanup: variation IDs X,Y" rather than a clean "rolled back". `class-product-provisioning.php:742-743`.
+> 13. "vs sale price" tail can mismatch the saving's denominator (C6 PARTIAL) — the saving is vs the single-item anchor, not the sale price; make the tail describe the actual denominator. `render-helpers.php:786-792`.
+> 14. **LEGAL** — cosmetic discount-label strips digits/% but NOT price-claim WORDS (C7: by-design as a code matter, but a legal product-decision) — add a deny-list (half/free/cheapest/lowest/guaranteed/bogof/save/off/deal/sale/discount) + length cap. `class-configurator-meta.php:298-307`.
+> 15. slug-rename warning transient TTL = 60s, too tight (Support S1) → `DAY_IN_SECONDS`. `class-configurator-edit-safety.php:41`.
+> 16. variation-delete warning dual-fires on trash + permanent-delete (Support S2) — gate on trash-vs-permanent + clearer copy ("restore from the WooCommerce Trash"). `class-configurator-edit-safety.php:204-227`.
+> 17. File-cohesion debt — `render-helpers.php` = 1514 lines, `class-cart-proxy.php` = 988 (C8 VERIFIED, both over the 300 guideline). Split render-helpers into colour / configurator-pricing / value-ladder / svg-kses.
+>
+> **MISSING (add whole dimensions):**
+> 18. No test asserting the lean-seed `data-wp-context` stays ≤24KB — the exact regression that bit Cluster B (`3a1e95df`). Add a size-assert (current baseline 22408B).
+> 19. No substantiation/audit trail for a price claim (Lawyer MISSING) — timestamp + provenance when `_sgs_base_price_pence` is set (DMCC expects an evidence file).
+> 20. No VAT-basis guard: the consumer-facing ladder per-unit can be ex-VAT when `tax_mode==='ex-plus-vat'` (Lawyer SF-1) — force the consumer ladder to inc-VAT, or label the basis. `render-helpers.php:858-864`.
+>
+> **REFUTED by the fact-check (do NOT action):** "unmanaged-stock qty uncapped" (a hard 50-cap exists, `class-cart-proxy.php:608`); "discount-label sanitiser is broken" (digit/% strip is intentional SEC-4 scope — only the LEGAL word-deny-list #14 is worth doing).
+>
+> **STRATEGIC (Ship-PM, single-voice but load-bearing):** the real first-shop blocker is the CONVERTER (cloning D178: typography/grid/hero don't lift), NOT more shop capability. Do NOT pull Spec 28 P2/P3/P4 forward ahead of the converter. The shop LAYER is complete; a first client's actual page can't be produced until the converter is faithful.
+
 ## 2026-06-04 — theme thread: Spec 27 Phase 2 (D168)
 
 
