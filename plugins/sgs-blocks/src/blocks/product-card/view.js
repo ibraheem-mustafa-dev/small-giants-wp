@@ -522,6 +522,26 @@ function applyPillSelection( ctx, detail ) {
 				: combo.discountLabel || '';
 		ctx.discountLabel = badgeLabel;
 		ctx.discountHidden = ! badgeLabel;
+
+		// Step 6: re-highlight the active value-ladder row on pill swap (PD-11).
+		// The ladder is SSR-rendered; plain DOM setAttribute, no data-wp-* directives
+		// (memory: interactivity-no-bind-on-injected-nodes). cardRef already fetched
+		// above; if absent or no ladder rows, silent no-op.
+		if ( cardRef ) {
+			const ladderRows = cardRef.querySelectorAll( '.value-ladder__row' );
+			if ( ladderRows.length > 0 ) {
+				// SSR writes data-pack as (int) round(unitDivisor) — normalise both
+				// sides to a rounded integer string so the comparison is type-safe.
+				const activePack = String( Math.round( combo.unitDivisor ) );
+				ladderRows.forEach( ( row ) => {
+					if ( String( row.dataset.pack ) === activePack ) {
+						row.setAttribute( 'aria-current', 'true' );
+					} else {
+						row.removeAttribute( 'aria-current' );
+					}
+				} );
+			}
+		}
 	} else {
 		// Invalid/unavailable combination (U5 will pre-grey these pills).
 		// Set a safe non-purchasable state; do not touch price or image.

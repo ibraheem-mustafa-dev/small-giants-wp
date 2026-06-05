@@ -220,13 +220,13 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 		$regular_display = $show_sale
 			? sgs_configurator_mode_regular( $def, $tax_mode, $decimals )
 			: '';
-		$pct_display = '';
+		$pct_display     = '';
 		if ( $def['pctOff'] > 0 ) {
 			/* translators: %d is the discount percentage, e.g. "30% off". */
 			$pct_display = sprintf( __( '%d%% off', 'sgs-blocks' ), $def['pctOff'] );
 		}
-		$stock_text  = $def['inStock'] ? '' : __( 'Out of stock', 'sgs-blocks' );
-		$image_src   = '' !== $def['imageUrl'] ? $def['imageUrl'] : $data['image_url'];
+		$stock_text = $def['inStock'] ? '' : __( 'Out of stock', 'sgs-blocks' );
+		$image_src  = '' !== $def['imageUrl'] ? $def['imageUrl'] : $data['image_url'];
 
 		// B3: per-unit price note + cosmetic discount badge (FR-27-B3).
 		// SSR literals seeded into context so data-wp-text == initial span text
@@ -361,6 +361,113 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					'extra_attr_html' => wp_interactivity_data_wp_context( $context ),
 				)
 			);
+
+			// ── Step 3: Build the comparative value ladder (SSR-only, lean-seed safe) ──
+			//
+			// IMPORTANT: `$context` has already been serialised into `data-wp-context` via
+			// wp_interactivity_data_wp_context() in the $var_opts build above. Adding
+			// `valueLadder` to $context HERE means it lives ONLY in the PHP array used for
+			// SSR template rendering below — it is NEVER included in the client-seeded JSON,
+			// so the 24KB lean-seed cap (KJC-B / memory manifest-growth-can-trip-capped-client-seed)
+			// cannot be tripped by the ladder rows.
+
+			// 3a. Resolve the owner-set single-item reference price (PD-14: product-level, once).
+			$base_pence = (int) absint( get_post_meta( $product_id, '_sgs_base_price_pence', true ) );
+			$base_pence = $base_pence > 0 ? $base_pence : null; // 0 means "not set" → null → fallback anchor.
+
+			// 3b. Resolve framing mode from the block attribute (placement-level, per PD-6).
+			$framing_mode = sanitize_key( $attributes['framingMode'] ?? 'loss-aversion' );
+			if ( ! in_array( $framing_mode, array( 'savings', 'loss-aversion', 'neutral' ), true ) ) {
+				$framing_mode = 'loss-aversion';
+			}
+
+			// 3c. Decoy: per-product meta WINS over the block attribute in bound mode (PD-6).
+			$meta_decoy_raw = get_post_meta( $product_id, '_sgs_decoy_enabled', true );
+			if ( '' !== (string) $meta_decoy_raw ) {
+				$decoy_enabled = (bool) $meta_decoy_raw;
+			} else {
+				$decoy_enabled = (bool) ( $attributes['decoyEnabled'] ?? false );
+			}
+
+			// 3d. Enrich combos with `termLabel` (the size-axis term label, per PD-1).
+			//
+			// Detection rule: we look for the axis whose terms' slugs each appear in
+			// at least one combo's key (`pa_<tax>:<slug>`). Among all axes, the SIZE axis
+			// is the one whose term slugs vary alongside `unitDivisor` — in practice the
+			// axis labelled "Size" (case-insensitive) is the intended one. We therefore
+			// scan all axes in order, preferring: (1) the axis whose label matches /size/i,
+			// then (2) the first axis that appears in the combo keys at all. If we still
+			// cannot identify a size axis, `termLabel` is left unset and sgs_value_ladder()
+			// falls back to (string)(int)round(unitDivisor) (documented in helper docblock).
+			//
+			// Build a flat slug→label map for the identified size axis.
+			$size_term_map = array(); // slug (string) → label (string).
+			$size_axis_key = '';      // The matched taxonomy key, e.g. 'pa_size'.
+
+			if ( ! empty( $manifest['axes'] ) ) {
+				$candidate_by_label = null;
+				$candidate_by_first = null;
+
+				foreach ( $manifest['axes'] as $axis_def ) {
+					$axis_tax = $axis_def['taxonomy'] ?? '';
+					if ( '' === $axis_tax ) {
+						continue;
+					}
+					// Prefer axis labelled "Size" (case-insensitive, any language label).
+					if ( null === $candidate_by_label && preg_match( '/size/i', (string) ( $axis_def['label'] ?? '' ) ) ) {
+						$candidate_by_label = $axis_def;
+					}
+					// First-axis fallback.
+					if ( null === $candidate_by_first ) {
+						$candidate_by_first = $axis_def;
+					}
+				}
+
+				$size_axis = $candidate_by_label ?? $candidate_by_first;
+
+				if ( null !== $size_axis ) {
+					$size_axis_key = (string) ( $size_axis['taxonomy'] ?? '' );
+					foreach ( (array) ( $size_axis['terms'] ?? array() ) as $term_row ) {
+						$slug  = (string) ( $term_row['slug'] ?? '' );
+						$label = (string) ( $term_row['label'] ?? '' );
+						if ( '' !== $slug ) {
+							$size_term_map[ $slug ] = $label;
+						}
+					}
+				}
+			}
+
+			// Enrich a copy of the FULL manifest combos (not $seed_combos — we need
+			// incMinor / exMinor etc. for the ladder calculation).
+			$ladder_combos = $manifest['combos'];
+			if ( '' !== $size_axis_key && ! empty( $size_term_map ) ) {
+				foreach ( $ladder_combos as $c_key => &$c_val ) {
+					// Each combo key is e.g. "pa_flavour:vanilla|pa_size:12-pack".
+					// Find the size axis slug for this combo by parsing the key parts.
+					foreach ( explode( '|', $c_key ) as $part ) {
+						$colon_pos = strpos( $part, ':' );
+						if ( false === $colon_pos ) {
+							continue;
+						}
+						$part_tax  = substr( $part, 0, $colon_pos );
+						$part_slug = substr( $part, $colon_pos + 1 );
+						if ( $part_tax === $size_axis_key && isset( $size_term_map[ $part_slug ] ) ) {
+							$c_val['termLabel'] = $size_term_map[ $part_slug ];
+							break;
+						}
+					}
+				}
+				unset( $c_val ); // Break the reference.
+			}
+
+			// 3e. Call the helper — null-safe: if <2 distinct divisors, hide the ladder.
+			$ladder = function_exists( 'sgs_value_ladder' )
+				? sgs_value_ladder( $ladder_combos, $base_pence, $framing_mode, $decoy_enabled, $tax_mode, $decimals )
+				: array();
+
+			// Expose to the SSR template ONLY (not serialised to client seed — see above).
+			$context['valueLadder']       = $ladder;
+			$context['valueLadderHidden'] = ( count( $ladder ) < 2 );
 
 			$card_permalink     = ! empty( $data['wc_id'] ) ? esc_url( get_permalink( $data['wc_id'] ) ) : '';
 			$sgs_has_real_image = ( '' !== $image_src ) && ( false === strpos( (string) $image_src, 'woocommerce-placeholder' ) );
@@ -505,6 +612,50 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					data-wp-bind--hidden="context.perUnitHidden"
 					data-wp-text="context.perUnitDisplay"
 				><?php echo esc_html( $per_unit_display ); ?></p>
+
+				<?php // ── Step 4: Comparative value ladder (SSR-only, no data-wp-* — KJC-B). ?>
+				<?php if ( ! $context['valueLadderHidden'] ) : ?>
+				<ul
+					class="product-card__value-ladder"
+					aria-label="<?php esc_attr_e( 'Price per unit by pack size', 'sgs-blocks' ); ?>"
+				>
+					<?php foreach ( $context['valueLadder'] as $ladder_row ) : ?>
+						<?php
+						// PD-12: aria-current on the row matching the DEFAULT-SELECTED combo's
+						// unitDivisor — NOT the is_target row. $def is the default combo resolved
+						// above. (int)round() both sides mirrors the data-pack write (PD-11).
+						$ladder_row_pack     = (int) round( $ladder_row['pack'] );
+						$ladder_default_pack = isset( $def['unitDivisor'] ) ? (int) round( (float) $def['unitDivisor'] ) : 0;
+						$ladder_is_default   = ( $ladder_row_pack === $ladder_default_pack );
+						?>
+					<li
+						class="value-ladder__row"
+						data-pack="<?php echo esc_attr( (string) $ladder_row_pack ); ?>"
+						<?php echo $ladder_is_default ? 'aria-current="true"' : ''; ?>
+					>
+						<span class="value-ladder__pack"><?php echo esc_html( $ladder_row['row_label'] ); ?></span>
+						<span class="value-ladder__per-unit"><?php echo esc_html( $ladder_row['per_unit_display'] ); ?></span>
+						<?php if ( '' !== $ladder_row['saving_display'] && ! $ladder_row['suppressed'] ) : ?>
+						<span class="value-ladder__saving"><?php echo esc_html( $ladder_row['saving_display'] ); ?></span>
+						<?php endif; ?>
+						<?php if ( $ladder_row['is_target'] ) : ?>
+							<?php
+							// PD-10 (CRITICAL): copy ONLY the class + auto-contrast inline style
+							// from the B3 badge (render.php ~lines 602–608).
+							// Do NOT copy data-wp-bind--hidden / data-wp-text — those directives
+							// would wipe the static "Best value" text on hydration
+							// (memory: wp-interactivity-directives-wipe-ssr-when-bound-to-js-getters).
+							// This span carries NO data-wp-* at all.
+							?>
+						<span
+							class="wp-block-sgs-label is-style-pill-wrap product-card__best-value-badge"
+							<?php echo '' !== $discount_text_colour ? 'style="color:' . esc_attr( $discount_text_colour ) . '"' : ''; ?>
+						><?php echo esc_html( __( 'Best value', 'sgs-blocks' ) ); ?></span>
+						<?php endif; ?>
+					</li>
+					<?php endforeach; ?>
+				</ul>
+				<?php endif; ?>
 
 				<?php // ── 2d. Stock slot — hidden when in stock (default). ?>
 				<p

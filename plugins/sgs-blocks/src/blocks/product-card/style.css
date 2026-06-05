@@ -485,6 +485,48 @@
 }
 
 /*
+ * ── D5: Grid-item fill — card must fill its grid track ───────────────────────
+ *
+ * Problem: the 380px max-width cap (standalone default) also applies when the
+ * card is a grid item inside an sgs/container whose layout="grid". The grid
+ * track is wider (e.g. 640px or 384px from gridTemplateColumns), so the cap
+ * stops the card filling the track and the card looks too narrow.
+ *
+ * Fix: yield the max-width cap when the card is a direct child of a grid
+ * container. SGS Container adds class `sgs-container--grid` when layout="grid"
+ * (class-sgs-container-wrapper.php line 408). Confirmed SGS grid parent class;
+ * WP core `is-layout-grid` is NOT emitted here (no core layout support declared
+ * in container block.json supports — "layout" appears only in keywords).
+ * A belt-and-braces `:where(.is-layout-grid)` selector is included at zero added
+ * specificity to cover any future WP core emission.
+ *
+ * Specificity ordering (all max-width declarations on .product-card):
+ *   (A) .product-card { max-width: … }                                  (0,1,0)
+ *   (B) .product-card.product-card--bound { max-width: … }              (0,2,0) ← above
+ *   (C) .sgs-container--grid > .product-card { max-width: none }        (0,2,0) ← this rule
+ *       :where(.is-layout-grid) > .product-card { max-width: none }     (0,1,0) ← supplemental
+ *
+ * Rule (C) beats (A) on specificity. Rule (C) ties (B) on specificity — but (C)
+ * appears AFTER (B) in source order, so (C) wins the tie for any card inside a
+ * grid, regardless of whether it also carries .product-card--bound. This is
+ * correct: a bound card in a grid must fill its track just like a Typed card.
+ *
+ * Standalone (non-grid) case: (A) and (B) are unaffected — (C) does not fire
+ * because the parent does not carry .sgs-container--grid.
+ *
+ * margin-inline: 0 overrides the auto-centering so the card aligns to the grid
+ * cell edge. Auto-centering is only meaningful in the standalone (flow) case.
+ *
+ * R-22-9 compliant: universal selector — applies to ALL .product-card instances
+ * inside a grid container, not scoped to any client or variant.
+ */
+.sgs-container--grid > .product-card,
+:where(.is-layout-grid) > .product-card {
+	max-width: none;
+	margin-inline: 0;
+}
+
+/*
  * Resting (unselected) option pills get the brand-primary (pink) outline. The
  * shared option-picker default is the foreground/dark colour; the configurator
  * wants pink on every state (resting + considering), with the selected pill
@@ -680,6 +722,117 @@
 /* Reduced motion: no transitions on thumb borders. */
 @media (prefers-reduced-motion: reduce) {
 	.product-card--bound .product-card__thumb {
+		transition: none;
+	}
+}
+
+/*
+ * ── B4: Comparative value ladder ────────────────────────────────────────────
+ *
+ * Renders a <ul class="product-card__value-ladder"> listing pack-size options
+ * with per-unit price and optional saving %. The current pack option carries
+ * aria-current="true" — emphasis is NOT colour-only (border + background
+ * accompany the attribute so the signal is structural, WCAG 2.2 §1.4.1).
+ *
+ * Contrast notes:
+ *   .value-ladder__saving text colour: var(--wp--preset--color--primary, #000)
+ *     — the #000 fallback guarantees ≥21:1 on #ffffff if the theme primary is
+ *     pale; operator palettes with a dark primary also pass. This text is
+ *     supplementary ("save X%") and never the sole indicator of value.
+ *   [aria-current] accent border: var(--wp--preset--color--primary, #000)
+ *     — 3:1 minimum for UI components ✓ WCAG AA (most palettes exceed this).
+ *   [aria-current] background (#f9f4ef, ~1.05:1 lightness shift on #fff) is
+ *     cosmetic only — contrast is not asserted on the bg itself (non-text).
+ *
+ * All rules namespaced to .product-card__value-ladder / .value-ladder__*
+ * (grep confirms zero collision in the codebase). No global selectors.
+ */
+
+/* List reset — mobile-first stacked layout. */
+.product-card__value-ladder {
+	list-style: none;
+	margin: 8px 0 0;
+	padding: 0;
+}
+
+/*
+ * Row — comfortable tap spacing without forcing a hard 44px on a non-interactive
+ * list item. `padding-block: 10px` gives ~40px of effective target height when
+ * combined with the line-height of the inner spans (≈ 20px). If a future
+ * iteration makes rows interactive (radio-style), add min-height: 44px then.
+ */
+.value-ladder__row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px 8px;
+	padding: 10px 12px;
+	border-left: 3px solid transparent;
+	background: transparent;
+	border-radius: 0 4px 4px 0;
+	transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+/* ≥480px: pack label left, per-unit price pushed right, saving follows inline. */
+@media (min-width: 480px) {
+	.value-ladder__row {
+		flex-wrap: nowrap;
+		justify-content: space-between;
+	}
+}
+
+/* Current / selected row — subtle surface + left accent. */
+.value-ladder__row[aria-current="true"] {
+	border-left-color: var( --wp--preset--color--primary, #000 );
+	background: var( --wp--preset--color--surface, #f9f4ef );
+}
+
+/* Pack label — left-anchored, medium weight. */
+.value-ladder__pack {
+	font-weight: 600;
+	flex: 1 1 auto;
+	white-space: nowrap;
+}
+
+/* Per-unit price — right-aligned on wide viewports. */
+.value-ladder__per-unit {
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+/*
+ * Saving percentage — uses theme primary as text colour (supplementary signal;
+ * "save X%" is also conveyed as text). Falls back to #000 so any pale primary
+ * cannot produce a failing contrast ratio against the card surface.
+ */
+.value-ladder__saving {
+	/*
+	 * Use the theme's body/contrast text colour, NOT the brand primary: a light
+	 * primary (e.g. a pink/pastel brand) fails WCAG AA on a light card surface
+	 * (live-measured 2.25:1 on Mama's pink-on-cream). The contrast preset is the
+	 * theme's accessible-on-surface text colour; #1a1a1a is a near-black fallback.
+	 * Emphasis comes from weight, not a low-contrast hue (not colour-only either).
+	 */
+	color: var( --wp--preset--color--contrast, #1a1a1a );
+	font-weight: 600;
+	font-size: 13px;
+	white-space: nowrap;
+}
+
+/*
+ * Best-value badge — the element already carries .wp-block-sgs-label
+ * .is-style-pill-wrap which provides the pill chrome (background, border-radius,
+ * padding, colour). Only spacing is added here to keep it visually separate
+ * from the saving text. Do not restyle the pill shape or colours.
+ */
+.product-card__best-value-badge {
+	margin-left: 4px;
+	flex-shrink: 0;
+}
+
+/* Reduced motion — honour user preference (no transitions beyond opacity). */
+@media (prefers-reduced-motion: reduce) {
+	.value-ladder__row {
 		transition: none;
 	}
 }
