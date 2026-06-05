@@ -61,15 +61,14 @@ primary_goal: "SGS-THEME THREAD. Spec 27 PHASE 2 + Spec 28 P1 value-ladder are S
 ## First action (smallest step, ≤5 min, zero deps)
 Run `git log --oneline -10` + `git status` + `git branch --show-current`. Confirm HEAD on `main` at/after `cd898a11`. **Decisions are DONE — D176/D177 (`535942f1`) + D179 Spec 28 P1 (`cd898a11`) are committed; do NOT re-append.** Read parking `P-SPEC27-28-COUNCIL-MUSTFIX-WAVE` (the FACT-CHECKED ~20-item backlog) end-to-end. Then open `https://sandybrown-nightingale-600381.hostingersite.com/sgs-configurator-test-540/` and confirm the configurator + value-ladder still render (16 pills + per-pack ladder + price). **D-NUMBER CONTENTION: three threads (theme/cloning/Spec-28) share one decisions.md — VERIFY the live max D-number with `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` before assigning a new one; commit decisions by `git commit -- <path>` only.**
 
-## Mandatory READING (in order, before building)
-1. This prompt's STOP catalogue (above) + State recap.
-2. `.claude/handoff-theme.md` session-15 (top) — what shipped + the new lessons.
-3. `.claude/plans/2026-06-04-spec27-phase2-display-seo-plan.md` §Cluster D (STEP 15 R4 / STEP 16 R5 / STEP 17 F2) + the §Scope-decision flag — IF Cluster D is chosen.
-4. Spec 27 §FR-27-R4 / FR-27-R5 / FR-27-F2 (full text) — IF Cluster D.
-5. The shipped Cluster C code if extending it: `includes/class-product-provisioning*.php`, `class-product-preflight.php`, `class-configurator-edit-safety.php`, `class-product-authoring-security.php`.
-6. IF building R4/F2: Spec 27 §FR-27-R4 / §FR-27-F2 (full text, lines ~513 / ~528) + the canary fixture product (540/589) for live testing.
-7. IF Spec 28 P1: the P1 phase plan `.claude/plans/2026-06-04-spec28-p1-value-ladder.md` (Step 0–8, pre-written dispatch prompts, PD-1..PD-15 decisions).
-8. IF the (deferred) first shop ever comes up: `sites/mamas-munches/mockups/product/index.html` (the product-page draft) + `sites/mamas-munches/CLAUDE.md` (48-SKU attributes, brand, MVP scope). NB: that build waits on the converter.
+## Mandatory READING (read these 3 before the wave; everything else is at-point-of-use)
+1. This prompt's **STOP catalogue + State recap** (above) + **`.claude/handoff-theme.md` session-16** (top) — what shipped + the council/fact-check + new lessons.
+2. **parking `P-SPEC27-28-COUNCIL-MUSTFIX-WAVE`** — the wave backlog (the operative work; it cites every must-fix's source file:line, so read the named source file at the point you action each item, NOT all up-front).
+3. The Spec 28 P1 plan `.claude/plans/2026-06-04-spec28-p1-value-ladder.md` ONLY for the value-ladder cluster (Wave 2 touches the same files; its PD-1..PD-15 decisions + KJC-A/B are the design constraints). Skip if not on Wave 2 yet.
+
+**At-point-of-use (do NOT read up-front — read when you reach that work):**
+- PHASE 2 only: Spec 27 §FR-27-R4 / §FR-27-F2 (R4 slug-templates + F2 feed, ~lines 513/528) + Spec 28 §P2/P3 — when you START Phase 2, not before.
+- The deferred first-shop draft (`sites/mamas-munches/…`) belongs to the cloning thread; do NOT read it for this thread's work.
 
 ## What's next — the council must-fix WAVE-PLAN, then Spec 27/28 to 100% (Bean directive 2026-06-05)
 
