@@ -64,6 +64,7 @@ final class Configurator_Meta {
 	public static function register_meta(): void {
 		self::register_term_meta_all();
 		self::register_variation_meta();
+		self::register_product_meta();
 	}
 
 	// ─── Attribute term meta (swatch + variesBy) on every product attribute taxonomy ───
@@ -170,6 +171,47 @@ final class Configurator_Meta {
 				'single'            => true,
 				'show_in_rest'      => true,
 				'sanitize_callback' => array( __CLASS__, 'sanitize_discount_label' ),
+				'auth_callback'     => array( __CLASS__, 'can_edit_variation' ),
+			)
+		);
+	}
+
+	// ─── Product-level meta (Spec 28 P1 value-ladder) ───
+
+	/**
+	 * Register product-level meta used by the Spec 28 comparative value-ladder.
+	 *
+	 *  - `_sgs_base_price_pence`: a single-item reference price in pence (KJC-A). When > 0
+	 *    the ladder frames savings "vs buying singly"; when absent the anchor falls back to
+	 *    the smallest pack's per-unit and the single-item claim is suppressed (FR-28-16).
+	 *    READ path only this phase; the authoring UI is P3.
+	 *  - `_sgs_decoy_enabled`: per-product decoy flag (FR-28-9a); in bound mode it overrides
+	 *    the block-level `decoyEnabled` attribute (per-product commercial choice wins).
+	 *
+	 * @return void
+	 */
+	private static function register_product_meta(): void {
+		\register_post_meta(
+			'product',
+			'_sgs_base_price_pence',
+			array(
+				'type'              => 'integer',
+				'single'            => true,
+				'show_in_rest'      => true,
+				'default'           => 0,
+				'sanitize_callback' => 'absint',
+				'auth_callback'     => array( __CLASS__, 'can_edit_variation' ),
+			)
+		);
+		\register_post_meta(
+			'product',
+			'_sgs_decoy_enabled',
+			array(
+				'type'              => 'boolean',
+				'single'            => true,
+				'show_in_rest'      => true,
+				'default'           => false,
+				'sanitize_callback' => 'rest_sanitize_boolean',
 				'auth_callback'     => array( __CLASS__, 'can_edit_variation' ),
 			)
 		);

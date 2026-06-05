@@ -155,6 +155,17 @@
             "type": "number",
             "default": 0,
             "description": "FR-27-E2 escape-hatch: set to a variation ID to override the page canonical URL to that variation's URL, enabling it to be indexed. 0 = default (WP core canonical, recommended)."
+        },
+        "framingMode": {
+            "type": "string",
+            "enum": [ "savings", "loss-aversion", "neutral" ],
+            "default": "loss-aversion",
+            "description": "Spec 28 P1 (FR-28-8): how the comparative value-ladder frames the per-unit saving. loss-aversion = 'save Xp each vs …'; savings = 'save X%'; neutral = no saving text. Placement-level (a card block renders many products)."
+        },
+        "decoyEnabled": {
+            "type": "boolean",
+            "default": false,
+            "description": "Spec 28 P1 (FR-28-9a): when true, the 'Best value' badge targets the 2nd-largest pack (decoy) instead of the largest. In bound mode the per-product meta _sgs_decoy_enabled overrides this."
         }
     },
     "editorScript": "file:./index.js",
