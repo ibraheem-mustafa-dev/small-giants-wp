@@ -2572,6 +2572,15 @@ def walk(
         )
         for _a3_k, _a3_v in _a3_lifted.items():
             container_attrs.setdefault(_a3_k, _a3_v)  # Never clobber widthMode/customWidth set above.
+        # NOTE (GAP-3 scope decision, 2026-06-05): display:grid|flex → layout is intentionally
+        # NOT lifted here for slug-None top-level sections. Reason: the A3 path emits layout/grid
+        # as sgs-container-wrapper.php inline CSS (display:grid + grid-template-columns). For slug-None
+        # sections, the variation CSS already controls all breakpoints; adding render.php's inline
+        # style creates a specificity conflict that collapses desktop 2-col grids to 1-col
+        # (inline style 1,0,0 beats class-based media query 0,1,0 from variation CSS).
+        # GAP-3 is wired only on the NESTED-wrapper path (_emit_wrapper_container) and the
+        # FOLD path (_fold_layout_into_attrs) where the native block engine is needed for
+        # block-portability (e.g. sgs-products, sgs-trust-bar__inner, gift-section__cards).
         # GAP 2 — Padding lift for slug-None top-level sections (wired 2026-06-05).
         # _lift_root_supports_to_style was gated `if slug is not None` (line ~2418)
         # so it never fired here; padding on generic sections was silently dropped.
@@ -2645,6 +2654,17 @@ def walk(
         )
         for _a2_k, _a2_v in _a2_lifted.items():
             attrs.setdefault(_a2_k, _a2_v)  # Never clobber attrs already set above.
+        # GAP 3 (A2 path) — display:grid|flex → layout attr for composite mirror blocks.
+        # Same gap as A3: _lift_wrapper_css_to_container_attrs cannot set `layout`
+        # NOTE (GAP-3 scope decision, 2026-06-05): `layout` is intentionally NOT lifted
+        # here for composite mirror blocks. Composite render.php files each have their
+        # own layout logic (hero: split-variant CSS grid; trust-bar: typed vs bound mode;
+        # feature-grid: repeat/auto cols). Setting `layout` from the mockup CSS collides
+        # with that render.php logic — layout:"grid" on sgs/hero standard variant adds
+        # display:grid via SGS_Container_Wrapper, breaking the flex content stack.
+        # GAP-3 is wired only on the NESTED sgs/container path (_emit_wrapper_container)
+        # and the FOLD path (_fold_layout_into_attrs).
+        # gridTemplateColumns + gap are already lifted by the _lift_wrapper_css_to_container_attrs pass.
 
     # Recursively walk children for InnerBlocks — EXCEPT:
     #   (G1) leaf blocks: content lives in the lifted content attr above.
@@ -3202,6 +3222,39 @@ def _detect_grid_container_from_css(classes: list[str], css_rules: dict) -> dict
     return result
 
 
+def _merge_grid_attrs_into_container(
+    classes: list[str], css_rules: dict, container_attrs: dict
+) -> None:
+    """Detect display:grid|flex on a node's CSS and merge native layout attrs.
+
+    Shared by every path that emits an sgs/container: the slug-None top-level
+    section path (A3), the composite mirror path (A2), and _emit_wrapper_container.
+    _detect_grid_container_from_css is the single source of truth for the
+    grid→layout translation; this helper only does the setdefault merge so no
+    call-site can accidentally clobber an already-set layout attr.
+
+    Gap-3 fix (wired 2026-06-05): `display:grid/flex` has no DB row in
+    property_suffixes so _lift_wrapper_css_to_container_attrs silently flags
+    `display` and never sets `layout`. This helper closes that gap.
+    """
+    grid = _detect_grid_container_from_css(classes, css_rules)
+    if not grid:
+        return
+    container_attrs.setdefault("layout", grid["layout"])
+    # Responsive gridTemplateColumns (desktop / tablet / mobile).
+    for attr in ("gridTemplateColumns", "gridTemplateColumnsTablet", "gridTemplateColumnsMobile"):
+        if grid.get(attr):
+            container_attrs.setdefault(attr, grid[attr])
+    # Responsive gap (desktop / tablet / mobile).
+    for attr in ("gap", "gapTablet", "gapMobile"):
+        if grid.get(attr):
+            container_attrs.setdefault(attr, grid[attr])
+    # Integer columns count from repeat(N, 1fr) patterns.
+    for attr in ("columns", "columnsTablet", "columnsMobile"):
+        if grid.get(attr) is not None:
+            container_attrs.setdefault(attr, grid[attr])
+
+
 # ----------------------------------------------------------------------------
 # §FR-22-4.1 content-leaf resolution (2026-06-03)
 # A slug-None sgs-classed node with NO block-resolvable element children is a
@@ -3401,8 +3454,8 @@ def _emit_wrapper_container(
     to grid/flex "layout-bearing" wrappers — every sgs-classed slug-None wrapper routes
     here so none is dropped (PASS-test (a)). Grid layout is preserved via the className
     CSS route (collect_css_for_classes → variation_buf); native grid-attr lifting
-    (gridTemplateColumns onto the block attrs) is a deferred Phase-2 editability
-    enhancement — it does not change the rendered output (R-22-11).
+    (layout + gridTemplateColumns onto the block attrs) is wired via
+    _merge_grid_attrs_into_container (Gap-3 fix, 2026-06-05) — previously deferred.
     """
     css = collect_css_for_classes(classes, css_rules)
     if css and variation_buf is not None:
@@ -3411,6 +3464,10 @@ def _emit_wrapper_container(
     # its own CSS (incl. grid/flex) applies. Its DIRECT children fold into it (rule 2) via
     # _process_container_children, which may also lift their layout onto container_attrs.
     container_attrs: dict = {"className": " ".join(sgs_classes), "htmlTag": "div"}
+    # GAP 3 (wrapper path) — lift display:grid|flex → layout + gridTemplateColumns onto
+    # native block attrs so the block is block-portable (editor grid engine active).
+    # setdefault via shared helper; never clobbers className already set above.
+    _merge_grid_attrs_into_container(classes, css_rules, container_attrs)
     children_markup = _process_container_children(node, css_rules, depth, variation_buf, container_attrs)
     _trace("walker_branch_taken", branch="wrapper_container",
            node_classes=classes, depth=depth)
@@ -3438,21 +3495,8 @@ def _fold_layout_into_attrs(
     the constraint to the content box instead (verified against container render.php).
     setdefault() never overwrites the container's own already-set layout.
     """
-    grid = _detect_grid_container_from_css(wrapper_classes, css_rules)
-    if grid:
-        container_attrs.setdefault("layout", grid["layout"])
-        # Lift all three responsive grid-template-columns attrs (desktop / tablet / mobile).
-        for attr in ("gridTemplateColumns", "gridTemplateColumnsTablet", "gridTemplateColumnsMobile"):
-            if grid.get(attr):
-                container_attrs.setdefault(attr, grid[attr])
-        # Lift responsive gap attrs (gapTablet / gapMobile) if present.
-        for attr in ("gap", "gapTablet", "gapMobile"):
-            if grid.get(attr):
-                container_attrs.setdefault(attr, grid[attr])
-        # Lift columns / columnsTablet / columnsMobile (from repeat(N, 1fr) patterns).
-        for attr in ("columns", "columnsTablet", "columnsMobile"):
-            if grid.get(attr) is not None:
-                container_attrs.setdefault(attr, grid[attr])
+    # Reuse shared helper — same setdefault semantics, same detector.
+    _merge_grid_attrs_into_container(wrapper_classes, css_rules, container_attrs)
     _lift_root_supports_to_style(wrapper_node, "sgs/container", css_rules, container_attrs)
     # B2/A1 (FR-22-21): lift the folded wrapper's own max-width as contentWidth so the
     # section's inner content cap is preserved (e.g. __inner max-width:960px → "960px").
