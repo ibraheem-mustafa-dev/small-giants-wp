@@ -1358,6 +1358,19 @@ def _lift_typography_to_block_attrs(
     colour attrs (textColour, backgroundColour): resolved via
     _colour_value_to_style — hex passthrough or 'var:preset|color|<token>'.
     Unparseable colours are silently skipped (faithful-absence).
+
+    Responsive lift (descendant-combinator + @media fix, 2026-06-05):
+      bp_decls from _collect_css_decls_for_element are now consumed.
+      For each breakpoint suffix ('Tablet', 'Mobile', 'Desktop'), typography
+      properties are lifted to the corresponding block attr when declared
+      (e.g. font-size@Desktop → fontSizeTablet for 'Tablet' suffix).
+      A-collapse rule: when no per-device attr exists (e.g. no fontSizeDesktop)
+      but the base attr does (fontSize), the Desktop value is collapsed onto
+      the base attr via setdefault — highest-specificity desktop value wins.
+      This fixes hero H1 (font-size:58px in @media min-width:1280px → fontSize=58)
+      and section H2s (font-size:36px in @media → fontSizeTablet / fontSize).
+      Reuses _BP_SUFFIX_MAP + existing _collect_css_decls_for_element matching;
+      no new CSS-selector infrastructure. R-22-9: universal (every leaf block).
     """
     if not slug or not slug.startswith("sgs/"):
         return {}
@@ -1365,53 +1378,112 @@ def _lift_typography_to_block_attrs(
     if not block_attr_map:
         return {}
 
-    base_decls, _ = _collect_css_decls_for_element(node, css_rules)
-    if not base_decls:
+    base_decls, bp_decls = _collect_css_decls_for_element(node, css_rules)
+    if not base_decls and not bp_decls:
         return {}
 
     result: dict = {}
 
-    for css_prop, primary_attr, unit_attr in _TYPOGRAPHY_CSS_TO_ATTRS:
-        raw = base_decls.get(css_prop)
-        if not raw:
-            continue  # Faithful-absence: draft doesn't declare this property.
+    def _resolve_typo_value(
+        css_prop: str,
+        primary_attr: str,
+        unit_attr: str | None,
+        raw: str,
+        tgt: str,
+    ) -> None:
+        """Resolve one typography declaration and write to result[tgt].
+
+        Uses setdefault — first caller for a given tgt wins.
+        Caller controls tgt (primary_attr or a responsive variant like
+        'fontSizeTablet'), and whether to use setdefault or override;
+        this helper always does setdefault (lower-priority callers pass first).
+        """
+        if tgt not in block_attr_map:
+            return  # Faithful-absence: block doesn't declare this attr.
 
         raw = _strip_important(raw).strip()
         if not raw:
-            continue
-
-        # Check the primary attr exists on this block.
-        if primary_attr not in block_attr_map:
-            continue
-
-        primary_info = block_attr_map[primary_attr]
-        primary_type = primary_info.get("attr_type", "string")
+            return
 
         if css_prop in ("color", "background-color"):
-            # Colour attrs — resolve via colour helper.
             v = _colour_value_to_style(raw)
             if v is not None:
-                result.setdefault(primary_attr, v)
-            continue
+                result.setdefault(tgt, v)
+            return
+
+        primary_info = block_attr_map.get(primary_attr, {})
+        primary_type = primary_info.get("attr_type", "string")
 
         if primary_type == "number" and unit_attr:
-            # Split "58px" → primary=58 (number), unit="px"
             num, unit = _split_value_unit(raw)
             if num is not None:
-                # Prefer integer when the number is whole (matches block default=28).
                 num_out: int | float = int(num) if num == int(num) else num
-                result.setdefault(primary_attr, num_out)
-                if unit_attr in block_attr_map and unit:
+                result.setdefault(tgt, num_out)
+                # Unit companion: only write alongside the base attr, not variants.
+                if tgt == primary_attr and unit_attr in block_attr_map and unit:
                     result.setdefault(unit_attr, unit)
         elif primary_type == "number":
-            # Number without companion unit attr — parse numeric part.
             num, _ = _split_value_unit(raw)
             if num is not None:
                 num_out = int(num) if num == int(num) else num
-                result.setdefault(primary_attr, num_out)
+                result.setdefault(tgt, num_out)
         else:
-            # string type — raw CSS value as-is.
-            result.setdefault(primary_attr, raw)
+            result.setdefault(tgt, raw)
+
+    # ---- Processing order: highest specificity first ----
+    # WP block convention: fontSize = desktop value; fontSizeTablet = tablet;
+    # fontSizeMobile = mobile. CSS cascade: base rule = mobile-first fallback;
+    # @media min-width:1280px = desktop (highest specificity for fontSize base).
+    # Processing order: Desktop bp → Tablet bp → base_decls.
+    # This ensures the Desktop A-collapse (no fontSizeDesktop attr) writes
+    # fontSize=58 FIRST, and the base-decl pass (mobile 34px) is silently
+    # blocked by setdefault — not the other way around.
+    #
+    # Sort bp_decls: Desktop (min-width:1280) before Tablet (min-width:768)
+    # before Mobile (max-width:767). _BP_SUFFIX_MAP keys are 'Desktop',
+    # 'Tablet', 'Mobile'; process in that order.
+    _TYPO_BP_ORDER = ("Desktop", "Tablet", "Mobile")
+
+    # ---- Responsive declarations (@media rules) — highest specificity first ----
+    for bp_key in _TYPO_BP_ORDER:
+        bp_decl_map = bp_decls.get(bp_key)
+        if not bp_decl_map:
+            continue
+        bp_suffix = _BP_SUFFIX_MAP.get(bp_key)
+        if not bp_suffix:
+            continue
+        for css_prop, primary_attr, unit_attr in _TYPOGRAPHY_CSS_TO_ATTRS:
+            raw = bp_decl_map.get(css_prop)
+            if not raw:
+                continue
+            if primary_attr not in block_attr_map:
+                continue
+            # Build the responsive variant name (e.g. 'fontSizeTablet').
+            responsive_attr = f"{primary_attr}{bp_suffix}"
+            if responsive_attr in block_attr_map:
+                # Per-device attr exists → use it.
+                _resolve_typo_value(css_prop, primary_attr, unit_attr, raw,
+                                    tgt=responsive_attr)
+            else:
+                # A-collapse: no per-device attr (e.g. fontSizeDesktop absent on
+                # sgs/heading).  Write to base attr — Desktop specificity wins.
+                # Processed before base_decls pass so setdefault writes 58px
+                # before the mobile base 34px gets a chance.
+                _resolve_typo_value(css_prop, primary_attr, unit_attr, raw,
+                                    tgt=primary_attr)
+
+    # ---- Base declarations (mobile-first / non-media rules) — lowest priority ----
+    # Runs AFTER responsive pass so setdefault on fontSize is already filled
+    # by the Desktop A-collapse; mobile base value is blocked (correct).
+    if base_decls:
+        for css_prop, primary_attr, unit_attr in _TYPOGRAPHY_CSS_TO_ATTRS:
+            raw = base_decls.get(css_prop)
+            if not raw:
+                continue
+            if primary_attr not in block_attr_map:
+                continue
+            _resolve_typo_value(css_prop, primary_attr, unit_attr, raw,
+                                tgt=primary_attr)
 
     return result
 
@@ -2357,8 +2429,22 @@ def walk(
     sgs_classes: list[str] = [c for c in classes if c.startswith("sgs-")]
 
     # ---- Permitted exception 1 — atomic-tag swap ----
-    # No sgs-* BEM class AND tag is in atomic_tag_map → emit as atomic block
+    # No sgs-* BEM class AND tag is in atomic_tag_map → emit as atomic block.
+    # Typography lift also fires here (descendant-combinator + @media fix,
+    # 2026-06-05): emit_atomic only sets content/level attrs; font-size/weight/
+    # colour from ancestor-qualified CSS rules (e.g. .sgs-hero__content h1)
+    # and @media blocks must also be lifted onto the emitted block's attrs.
+    # css_rules is in scope here; emit_atomic itself has no access to it.
     if not sgs_classes and node.name in db.atomic_tag_map():
+        _at_slug = db.atomic_tag_map().get(node.name)
+        _at_attrs = _atomic_attrs_for(node, _at_slug) if _at_slug else {}
+        if _at_slug:
+            _at_typo = _lift_typography_to_block_attrs(node, _at_slug, css_rules)
+            for _at_k, _at_v in _at_typo.items():
+                _at_attrs.setdefault(_at_k, _at_v)
+            _trace("walker_branch_taken", branch="atomic_tag_swap",
+                   node_tag=node.name, slug=_at_slug, attrs_keys=list(_at_attrs.keys()))
+            return emit_wp_block(_at_slug, _at_attrs, [])
         return emit_atomic(node)
 
     # ---- Permitted exception 2 — chrome-skip at top level ----
