@@ -1315,6 +1315,108 @@ def _flatten_wp_style_to_sgs_flat(style_dict: dict, extra_top: dict, block_slug:
 
 
 # ============================================================================
+# Typography CSS → SGS flat-attr lift  (GAP 1 — was dead code, wired 2026-06-05)
+# ============================================================================
+
+# CSS property → (attr_name_base, paired_unit_attr) mapping for SGS text-block
+# number+unit attribute pairs and plain string attrs.
+# Faithful-absence: only set an attr when the draft explicitly declares that
+# CSS property (no defaults injected).  R-22-9: universal across every block
+# that declares the target attr; DB-driven for attr-existence gate.
+# R-22-1 compliant: no hardcoded slug literals — the target block slug is
+# always passed in and the attr-name set comes from db.block_attrs().
+_TYPOGRAPHY_CSS_TO_ATTRS: list[tuple[str, str, str | None]] = [
+    # (css_prop, primary_attr, unit_attr_or_None)
+    ("font-size",       "fontSize",       "fontSizeUnit"),
+    ("line-height",     "lineHeight",     "lineHeightUnit"),
+    ("letter-spacing",  "letterSpacing",  "letterSpacingUnit"),
+    ("font-weight",     "fontWeight",     None),
+    ("font-style",      "fontStyle",      None),
+    ("text-align",      "textAlign",      None),
+    ("color",           "textColour",     None),
+    ("background-color","backgroundColour",None),
+]
+
+
+def _lift_typography_to_block_attrs(
+    node: "Tag",
+    slug: str,
+    css_rules: dict,
+) -> dict:
+    """Lift draft element typography CSS onto SGS block flat attrs.
+
+    Returns a dict of attrs to MERGE (using setdefault) into the block's
+    existing attrs dict.  Only attrs declared by the target block are emitted
+    (DB-gated, R-22-1).  Only CSS properties actually present in the draft are
+    lifted (faithful-absence — no defaults injected).
+
+    number+unit pairs (e.g. fontSize/fontSizeUnit): the numeric part becomes
+    a Python float/int (matching the block.json type=number schema) and the
+    unit string is set on the companion attr.  If the block only declares the
+    primary attr (not the unit companion), the raw CSS string is written.
+
+    colour attrs (textColour, backgroundColour): resolved via
+    _colour_value_to_style — hex passthrough or 'var:preset|color|<token>'.
+    Unparseable colours are silently skipped (faithful-absence).
+    """
+    if not slug or not slug.startswith("sgs/"):
+        return {}
+    block_attr_map = db.block_attrs(slug)  # {attr_name: {attr_type, …}}
+    if not block_attr_map:
+        return {}
+
+    base_decls, _ = _collect_css_decls_for_element(node, css_rules)
+    if not base_decls:
+        return {}
+
+    result: dict = {}
+
+    for css_prop, primary_attr, unit_attr in _TYPOGRAPHY_CSS_TO_ATTRS:
+        raw = base_decls.get(css_prop)
+        if not raw:
+            continue  # Faithful-absence: draft doesn't declare this property.
+
+        raw = _strip_important(raw).strip()
+        if not raw:
+            continue
+
+        # Check the primary attr exists on this block.
+        if primary_attr not in block_attr_map:
+            continue
+
+        primary_info = block_attr_map[primary_attr]
+        primary_type = primary_info.get("attr_type", "string")
+
+        if css_prop in ("color", "background-color"):
+            # Colour attrs — resolve via colour helper.
+            v = _colour_value_to_style(raw)
+            if v is not None:
+                result.setdefault(primary_attr, v)
+            continue
+
+        if primary_type == "number" and unit_attr:
+            # Split "58px" → primary=58 (number), unit="px"
+            num, unit = _split_value_unit(raw)
+            if num is not None:
+                # Prefer integer when the number is whole (matches block default=28).
+                num_out: int | float = int(num) if num == int(num) else num
+                result.setdefault(primary_attr, num_out)
+                if unit_attr in block_attr_map and unit:
+                    result.setdefault(unit_attr, unit)
+        elif primary_type == "number":
+            # Number without companion unit attr — parse numeric part.
+            num, _ = _split_value_unit(raw)
+            if num is not None:
+                num_out = int(num) if num == int(num) else num
+                result.setdefault(primary_attr, num_out)
+        else:
+            # string type — raw CSS value as-is.
+            result.setdefault(primary_attr, raw)
+
+    return result
+
+
+# ============================================================================
 # Transparent wrapper absorber (pre-pass)
 # ============================================================================
 _ABSORB_GAP_PROPS = frozenset({
@@ -2384,6 +2486,19 @@ def walk(
         )
         for _a3_k, _a3_v in _a3_lifted.items():
             container_attrs.setdefault(_a3_k, _a3_v)  # Never clobber widthMode/customWidth set above.
+        # GAP 2 — Padding lift for slug-None top-level sections (wired 2026-06-05).
+        # _lift_root_supports_to_style was gated `if slug is not None` (line ~2418)
+        # so it never fired here; padding on generic sections was silently dropped.
+        # Fix: call the same function with slug='sgs/container' so padding → style.*
+        # is written onto container_attrs via the native WP supports path.
+        # The A3 _lift_wrapper_css_to_container_attrs pass above handles
+        # width/grid/min-height/gap onto block attrs; this pass handles
+        # padding/margin/border/background-colour onto style.* — no double-lift.
+        # R-22-9: universal (every slug-None section fires).
+        # R-22-1: _lift_root_supports_to_style is entirely DB-driven.
+        # setdefault semantics are enforced inside _lift_root_supports_to_style
+        # (it uses _set_in which never overwrites an existing leaf).
+        _lift_root_supports_to_style(node, "sgs/container", css_rules, container_attrs)
         children_markup = _process_container_children(node, css_rules, depth, variation_buf, container_attrs)
         return _emit_section_container(container_attrs, children_markup, css)
 
@@ -2410,6 +2525,17 @@ def walk(
         is_leaf = db.get_block_composition_role(slug) == "leaf"
         if is_leaf:
             attrs = {**attrs, **_atomic_attrs_for(node, slug)}
+            # GAP 1 — Typography lift (wired 2026-06-05).
+            # _lift_typography_to_block_attrs was dead code with zero call sites.
+            # Wire it here so draft heading/text CSS (font-size, colour, weight,
+            # etc.) lands on the emitted block's flat attrs.
+            # Uses setdefault: _atomic_attrs_for content/level are never clobbered.
+            # R-22-9: universal — fires for every leaf block that declares the attr.
+            # R-22-1: DB-gated attr-existence check inside the helper.
+            # Faithful-absence: helper only emits attrs for CSS props actually present.
+            typo_lift = _lift_typography_to_block_attrs(node, slug, css_rules)
+            for _tl_k, _tl_v in typo_lift.items():
+                attrs.setdefault(_tl_k, _tl_v)
     css = collect_css_for_classes(classes, css_rules)  # FR-22-5
     if css and variation_buf is not None:
         variation_buf.append(css)
