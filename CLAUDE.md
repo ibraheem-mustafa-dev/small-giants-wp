@@ -34,7 +34,10 @@ A custom WordPress block framework built by Claude Code: theme + blocks plugin (
 - **Programme plan (5 workstreams):** [`.claude/plans/2026-06-02-container-wrapper-standardisation.md`](.claude/plans/2026-06-02-container-wrapper-standardisation.md) — **WS-1** sgs/container completion · **WS-2** converter/router truth · **WS-3** de-cheat (R-22-1) · **WS-4** composite wrapper mirror + auto-propagation (**BLOCK-SIDE COMPLETE 2026-06-04 D167** — 29-block roster; architecture resolved: docs-are-truth, KIND-scoped full mirror, no per-block trim, blub.db 312; modal + mobile-nav excluded; the mirror does NOT fix page-clone fidelity — separate converter Method-2 next) · **WS-5** docs.
 - **Parent (cloning pixel-diff thread):** [`.claude/plans/2026-05-28-phase-2-hybrid-block-migration.md`](.claude/plans/2026-05-28-phase-2-hybrid-block-migration.md) — per-section ≤5% × 3 viewports + Bean sign-off (R-22-13).
 
-## 14 binding rules (Spec 22 R-22-1 through R-22-14; gate every commit)
+## Binding rules (Spec 22 R-22-1 through R-22-15; gate every commit)
+
+<!-- NOTE: R-* (binding rules) and FR-* (functional requirements) are SEPARATE numbering series — FR-22-15 (capability-aware BEM tiebreaking, D96) and R-22-15 (the anti-mirror gate) are NOT a collision. R-22-15 = "no mirror emit": the cloning thread's anti-cheat rule, enforced via plugins/sgs-blocks/scripts/orchestrator/check_no_mirror.py (--report now, flips to --enforce when the converter stops cheating). See Spec 22 §FR-22-11 PASS-test + next-session-prompt.md. The 14 headlines below predate R-22-15; it is the 15th. -->
+
 
 Full text in Spec 22 §6. Headlines:
 
@@ -46,12 +49,12 @@ Full text in Spec 22 §6. Headlines:
 6. **Output-only inference is a trap (R-22-6)** — verify mockup HTML + extract.json + live DOM at each milestone.
 7. **Council fix-shapes are hypotheses, not specs (R-22-7)** — multi-rater proposals require empirical pre/post measurement.
 8. **Schema enumeration before "missing X" (R-22-8)** — query `sgs-framework.db` via `/sgs-db` first.
-9. **Universal mechanisms, no per-block hyperfocus (R-22-9)** — every fix passes "does this apply to all 68 SGS blocks?"
+9. **Universal mechanisms, no per-block hyperfocus (R-22-9)** — every fix passes "does this apply to ALL SGS blocks?" (the live block count is DB-authoritative — query `/sgs-db` or `/wp-blocks`; never hardcode it here).
 10. **Read full spec before proposing fix-shape (R-22-10)** — state architectural primitive in plain English first.
 11. **Verify rendered output, not internal metrics (R-22-11)** — live Playwright DOM is canonical.
 12. **QC gates are structural, not prompt (R-22-12)** — `pipeline-stage-gate.py` hook enforces /qc-council.
 13. **Bean visual sign-off is co-authoritative (R-22-13)** — script measurement + Bean's eye + visual cropped-pair BOTH consulted; numbers alone don't close, eye alone doesn't close.
-14. **FR-22-6 migrations never carry server-side legacy fallback hacks (R-22-14)** — added 2026-05-27 per D92. The hybrid render.php problem is exclusively SGS framework debt (zero core blocks on Phase 0.4 roster). Never add `if (empty($content) && !empty($legacy_attr)) { ...legacy scalar render... }` to a migrated render.php. Canonical backwards-compat: full 61-block roster migration + WP-CLI batch existing-post migration via deprecated.js. Bean P1 locked.
+14. **FR-22-6 migrations never carry server-side legacy fallback hacks (R-22-14)** — added 2026-05-27 per D92. The hybrid render.php problem is exclusively SGS framework debt (zero core blocks on Phase 0.4 roster). Never add `if (empty($content) && !empty($legacy_attr)) { ...legacy scalar render... }` to a migrated render.php. Canonical backwards-compat: full FR-22-6 hybrid-block roster migration (the roster is DB/report-derived — query `/sgs-db`; do not hardcode a count) + WP-CLI batch existing-post migration via deprecated.js. Bean P1 locked.
 
 Sibling rules: blub.db 254 (read leftover-buckets first), 255 (multi-model /qc per converter commit), 256 (per-section cropped pixel-diff), 260 (db-first-no-hardcoded-dicts), 272 (schema enumeration before "missing X"), 276 (council fix-shapes are HYPOTHESES not specs), 281 (qc gate must be structural), 288 (phases never ship as single commits).
 
@@ -212,7 +215,7 @@ PHP: `get_theme_file_uri()` / `get_stylesheet_directory_uri()` / `wp_upload_dir(
 `theme/sgs-theme/styles/` is empty. Per-client colour/typography lives at `sites/<client>/theme-snapshot.json` and deploys via `push-theme-snapshot.py`. Client-specific CSS goes into the snapshot's `styles.css` OR `sites/<client>/theme-overrides.css`. Never into framework's `style.css`.
 
 ### sgs/trust-bar — renamed from trust-badges (D123, 2026-05-31); dual-mode FR-24-10 SHIPPED 2026-06-01
-D72 (2026-05-25) retired the ORIGINAL composite `sgs/trust-bar` (counter use-cases → `sgs/counter`; badge use-cases → universal-nesting). Then `sgs/trust-badges` was renamed → `sgs/trust-bar` (D123) — this is the CURRENT active block. As of 2026-06-01 (FR-24-10, commit d6358f32) it is **dual-mode**: `sourceMode='typed'` (curated icon/badge repeater, 3 variants) OR `sourceMode='bound'` (echoes `$content` → renders the cloning converter's emitted badge InnerBlocks; live-verified, 4 badges). render.php branches on the explicit `sourceMode` (R-22-14, never `empty($content)`); the converter sets `sourceMode='bound'` on cloned trust-bars.
+D72 (2026-05-25) retired the ORIGINAL composite `sgs/trust-bar` (counter use-cases → `sgs/counter`; badge use-cases → universal-nesting). Then `sgs/trust-badges` was renamed → `sgs/trust-bar` (D123) — this is the CURRENT active block. As of 2026-06-01 (FR-24-10, commit d6358f32) it is **dual-mode**: `sourceMode='typed'` (curated icon/badge repeater, 3 variants) OR `sourceMode='bound'` (echoes `$content` → renders the cloning converter's emitted badge InnerBlocks; live-verified, 4 badges). render.php branches on the explicit `sourceMode` (R-22-14, never `empty($content)`); the converter sets `sourceMode='bound'` on cloned trust-bars — **⚠️ THIS bound-emit IS THE CHEAT being purged (Rule 2 / WS-3); see the WARNING immediately below. The `typed` mode + the live WC modes are legitimate; do NOT rely on or extend the converter bound-emit.**
 
 > ⚠️ **WARNING — CLONING CHEAT (SUPERSEDED for cloning; violates Rules 1 + 2):** `sourceMode='bound'` on a converter emit is a TEST CHEAT. It echoes `$content` (mirrors the draft DOM verbatim) instead of converting to native block attributes — exactly what Rules 1 and 2 prohibit. The description above reflects what was shipped; it does NOT represent the correct architecture for cloning. This cheat is being purged (WS-3 de-cheat work). **ONLY** the live WC configurator modes (`sourceMode='wc-product'` / `sourceMode='sgs-cpt'`) are legitimate non-typed source modes. Do NOT add new `sourceMode='bound'` emits.
 
