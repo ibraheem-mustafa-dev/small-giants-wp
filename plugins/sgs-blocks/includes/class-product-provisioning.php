@@ -38,6 +38,7 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/class-product-authoring-security.php';
 require_once __DIR__ . '/class-product-provisioning-args.php';
 require_once __DIR__ . '/class-product-provisioning-helpers.php';
+require_once __DIR__ . '/class-configurator-meta.php';
 
 /**
  * Registers and handles the product-provisioning REST endpoints.
@@ -311,6 +312,15 @@ final class Product_Provisioning {
 				$attributes_provisioned[] = $taxonomy;
 			}
 
+			// Compute the Google variesBy mapping once per axis. $name carries the
+			// caller-supplied attribute name (e.g. 'Size', 'Colour') and $taxonomy
+			// the resolved pa_* slug — map_axis_to_variesby() tries both so a raw
+			// name like 'Colour' and a slug like 'pa_colour' both resolve to 'color'.
+			$variesby_mapped = self::map_axis_to_variesby( $name );
+			if ( '' === $variesby_mapped ) {
+				$variesby_mapped = self::map_axis_to_variesby( $taxonomy );
+			}
+
 			$term_ids   = array();
 			$term_slugs = array();
 			foreach ( $requested_terms as $term_name ) {
@@ -320,15 +330,38 @@ final class Product_Provisioning {
 					// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- message goes to catch block, never to output.
 					throw new \RuntimeException( $term_result->get_error_message() );
 				}
-				$term_ids[] = $term_result['term_id'];
+				$term_id    = $term_result['term_id'];
+				$term_ids[] = $term_id;
 				if ( $term_result['created'] ) {
 					$ledger['terms'][] = array(
-						'term_id'  => $term_result['term_id'],
+						'term_id'  => $term_id,
 						'taxonomy' => $taxonomy,
 					);
 					$terms_created[]   = $term_name;
 				}
-				$term = \get_term( $term_result['term_id'], $taxonomy );
+
+				// Auto-set variesBy on this term when the axis maps to a Google enum
+				// value AND the term has no existing _sgs_variesby_value. Applied to
+				// both freshly-created terms and pre-existing terms with an empty value
+				// so a freshly-provisioned product passes the PREFLIGHT no_variesby
+				// check without an operator having to set each term manually.
+				// NEVER overwrites an existing non-empty value (operator intent wins).
+				// Note: _sgs_variesby_value is term-meta on the GLOBAL pa_* taxonomy
+				// term, so the value applies wherever that term is used across products.
+				// That is correct: variesBy describes the ATTRIBUTE (a "Size" term varies
+				// by 'size' for every product), so a shared, consistent value is desired.
+				if ( '' !== $variesby_mapped ) {
+					$existing_variesby = \get_term_meta( $term_id, '_sgs_variesby_value', true );
+					if ( '' === $existing_variesby || false === $existing_variesby ) {
+						\update_term_meta(
+							$term_id,
+							'_sgs_variesby_value',
+							Configurator_Meta::sanitize_variesby( $variesby_mapped )
+						);
+					}
+				}
+
+				$term = \get_term( $term_id, $taxonomy );
 				if ( $term && ! \is_wp_error( $term ) ) {
 					$term_slugs[] = $term->slug;
 				}
@@ -857,6 +890,48 @@ final class Product_Provisioning {
 				);
 			}
 		}
+	}
+
+	// ── Google variesBy auto-mapping ─────────────────────────────────────────
+
+	/**
+	 * Map a WooCommerce attribute name to a Google Merchant variesBy enum value.
+	 *
+	 * The mapping is a small, fixed in-method constant because Google's variesBy
+	 * enum is a CLOSED, Google-defined set (six values) — not client data. It will
+	 * only change if Google changes their spec, making a hardcoded map correct here
+	 * (unlike DB-first lookups used for open-ended client taxonomies per R-22-1).
+	 *
+	 * Matching rules (applied to the normalised token):
+	 *   - Strip a leading pa_ prefix (WC global taxonomy convention).
+	 *   - Lowercase the result.
+	 *   - Match the full normalised token against the table below.
+	 *   - No confident match → return '' (axis treated as additionalProperty by the
+	 *     JSON-LD emitter; SEC-8 guard in Configurator_Meta::sanitize_variesby() would
+	 *     reject an invalid enum anyway).
+	 *
+	 * @param string $attribute_name Raw attribute name as supplied by the caller
+	 *                               (e.g. 'Size', 'pa_colour', 'Gender').
+	 * @return string A valid Configurator_Meta::VARIESBY_ENUM value, or ''.
+	 */
+	private static function map_axis_to_variesby( string $attribute_name ): string {
+		// Strip optional pa_ prefix, lowercase.
+		$token = \strtolower( \preg_replace( '/^pa_/', '', $attribute_name ) );
+
+		// Fixed map against Google's variesBy closed enum. Dual entries for
+		// colour/colour handle the UK and US spelling of the same taxonomy.
+		$map = array(
+			'size'     => 'size',
+			'colour'   => 'color',
+			'color'    => 'color',
+			'material' => 'material',
+			'pattern'  => 'pattern',
+			'age'      => 'suggestedAge',
+			'gender'   => 'suggestedGender',
+			'sex'      => 'suggestedGender',
+		);
+
+		return isset( $map[ $token ] ) ? $map[ $token ] : '';
 	}
 
 	// ── Test-failure hook (un-abusable in production) ─────────────────────────
