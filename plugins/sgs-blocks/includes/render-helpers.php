@@ -782,12 +782,14 @@ function sgs_saving_display( int $anchor_per_unit_pence, int $pack_per_unit_penc
 	/* translators: %d is a whole-number pence amount, e.g. "save 8p each". */
 	$base = sprintf( __( 'save %dp each', 'sgs-blocks' ), $pence );
 
-	// Loss-aversion framing appends a contextual tail.
+	// Loss-aversion framing appends a tail naming the ACTUAL denominator.
+	// #13 LEGAL accuracy: the saving is measured against the single-unit anchor
+	// ("buying singly"), NOT against this row's own (possibly sale) price. The row
+	// being on sale changes its OWN per-unit, not what the saving is compared to —
+	// so the tail is always "vs buying singly". The previous "vs sale price" wording
+	// misdescribed the denominator (a misleading-comparison risk). $is_active_sale is
+	// retained in the signature for the caller's contract but no longer alters the tail.
 	if ( 'loss-aversion' === $framing_mode ) {
-		if ( $is_active_sale ) {
-			/* translators: Appended to a saving label, e.g. "save 8p each vs sale price". */
-			return $base . ' ' . __( 'vs sale price', 'sgs-blocks' );
-		}
 		/* translators: Appended to a saving label, e.g. "save 8p each vs buying singly". */
 		return $base . ' ' . __( 'vs buying singly', 'sgs-blocks' );
 	}
@@ -856,10 +858,13 @@ function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode
 		}
 		$dkey = (string) $divisor;
 
-		// Resolve the price basis (mirrors sgs_configurator_per_unit_display).
-		$base_minor = ( 'ex-plus-vat' === $tax_mode && isset( $combo['exMinor'] ) )
-			? (int) $combo['exMinor']
-			: (int) $combo['priceMinor'];
+		// #20 LEGAL: the consumer-facing comparison ladder per-unit MUST be
+		// VAT-INCLUSIVE (Price Marking Order 2004 / DMCC Act 2024 s.230), regardless
+		// of the card's tax_mode — an ex-VAT comparison price shown to consumers is
+		// misleading by omission. Use incMinor (always inc-VAT) when present, else
+		// priceMinor (the inc-VAT active display price). NEVER exMinor here.
+		// $tax_mode is retained in the signature for caller compatibility.
+		$base_minor = isset( $combo['incMinor'] ) ? (int) $combo['incMinor'] : (int) $combo['priceMinor'];
 
 		$per_unit = (int) round( $base_minor / $divisor );
 
@@ -1017,10 +1022,13 @@ if ( ! function_exists( 'sgs_container_gap_value' ) ) {
 		}
 
 		// Raw CSS length: contains at least one letter or percent (i.e. a unit).
-		// Sanitise — keep only characters that can appear in a CSS length value.
-		// Allowlist: digits, dot, a–z (covers px/rem/em/vw/vh/ch/ex etc.), percent.
+		// Sanitise — keep only characters that can appear in a CSS gap value.
+		// Allowlist: digits, dot, a–z (covers px/rem/em/vw/vh/ch/ex etc.), percent,
+		// AND space — a two-value gap is "row-gap col-gap" (e.g. "16px 12px"); the
+		// space MUST survive or the value collapses to invalid CSS ("16px12px").
 		// Rejects: semicolons, braces, parentheses, quotes, slashes, angle brackets.
-		$sanitised = preg_replace( '/[^0-9a-z.%]/', '', strtolower( $gap ) );
+		$sanitised = preg_replace( '/[^0-9a-z.% ]/', '', strtolower( $gap ) );
+		$sanitised = trim( preg_replace( '/\s+/', ' ', $sanitised ) );
 		if ( '' === $sanitised ) {
 			return '';
 		}
