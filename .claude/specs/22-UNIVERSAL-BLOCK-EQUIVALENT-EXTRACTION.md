@@ -90,7 +90,19 @@ These three exceptions are exhaustive and bounded. Spec 22 ratification commits 
 
 ## 3. Functional requirements
 
+> **built_status legend** (added 2026-06-06, doc-council finding #4 — "documented ≠ built"). Each FR carries a one-line delivery state so a reader never mistakes a description for an implementation:
+>
+> - **BUILT-VERIFIED** — implemented AND verified (cited commit / D-number / passing test).
+> - **PARTIAL** — mechanism built but coverage/consumption incomplete, or block-side done + converter-side pending.
+> - **DESCRIBED** — specified, no ship evidence yet.
+> - **RETIRED** — explicitly deleted. **N/A** — documentation, not a requirement.
+>
+> The authoritative live status is still `state.md` + `decisions.md` (GROUND-TRUTH-FIRST); these tags are a per-FR fast-scan, not a substitute.
+
+
 ### FR-22-1 — BEM is the only recognition signal
+
+**built_status: PARTIAL** — DB tables built (D99/D107/D110); walker zero-slug-conditional invariant not re-verified
 
 Walker reads `class` attribute, parses each class via `db.parse_sgs_bem()`, resolves block slug via:
 
@@ -111,6 +123,8 @@ HTML tag is **rendering-shape only** (per Spec 00 §3.1), never used for recogni
 
 ### FR-22-2 — Block-equivalent attrs become child blocks; only behavioural attrs become scalar
 
+**built_status: PARTIAL** — equivalent_block_for() built in db_lookup.py; InnerBlocks emit not fully wired (D178)
+
 Every `block_attributes` row's "equivalent_block" status is derived at query time via `db_lookup.equivalent_block_for(block_slug, attr_name)`. The function returns a slug (e.g. `sgs/text`) when the attr's slot is block-equivalent, OR `None` when the attr is genuinely scalar (behaviour/enum/identity/metadata).
 
 | Returned equivalent_block | Walker behaviour |
@@ -122,6 +136,8 @@ Every `block_attributes` row's "equivalent_block" status is derived at query tim
 **FAIL test:** any extract.json entry where `description` appears both as a parent attr AND as a child sgs/text block (the double-render).
 
 #### FR-22-2.1 — Two-tier derivation for `equivalent_block_for()` (implementation reference)
+
+**built_status: BUILT-VERIFIED** — assign-canonical.py shipped; canonical_slot 31.8% coverage confirmed D110
 
 The derivation function lives in `converter_v2/db_lookup.py`. Two tiers, in order:
 
@@ -143,6 +159,8 @@ The derivation function lives in `converter_v2/db_lookup.py`. Two tiers, in orde
 
 #### FR-22-2.2 — Role-exclusion rule (the "typography looks like heading" trap)
 
+**built_status: BUILT-VERIFIED** — roles table + role-exclusion allowlist shipped D99; scalar-media added D128 (83a55820)
+
 Not every attr whose `canonical_slot` joins to a `standalone_block` is content-bearing. `sgs/hero` has 134 attrs that join via canonical_slot to a standalone_block — but most are typography/spacing/colour attrs on the `heading` canonical slot (e.g. `headlineFontSizeDesktop` has canonical_slot=`heading` because it styles the heading, NOT because the operator should drop a sgs/heading block there).
 
 The role-exclusion rule: `equivalent_block_for()` returns the slug ONLY when the attr's role is classified `content-bearing` in the `roles` table (DB-driven positive allowlist; D85 2026-05-27 — see §4 data layer):
@@ -160,11 +178,15 @@ This shrinks the "hybrid block" set from the raw block count down to a true-cont
 
 #### FR-22-2.3 — (RETIRED 2026-05-27, D85) — Tier C role-to-block derivation
 
+**built_status: RETIRED** — RETIRED 2026-05-27 D85; Tier C deleted per qc-council Rater B
+
 **Status:** RETIRED. Earlier drafts proposed a third derivation tier (role-to-dominant-block via `slot_synonyms.role + standalone_block` query) for use when both `canonical_slot` and `derived_selector` were NULL on a `block_attributes` row. Empirically there are 0 such rows in the current DB; the path was dormant on ship. Per qc-council Rater B (2026-05-27) and Bean directive, Tier C is deleted from the codebase rather than shipped dormant — R-22-7 (council fix-shapes are hypotheses, not specs) applied to the original proposal: there were no empirical inputs to validate the dominance heuristic against. Re-introduction is gated on `P-SGS-UPDATE-ROLE-DETECTION-IMPROVE` generating real Tier C inputs, at which point a fresh spec amendment will re-add the path with measurement evidence.
 
 Adding a new role-to-block relationship is achieved by adding rows to `slots` (scope='element') and populating `canonical_slot` on the relevant `block_attributes` rows (Tier A) or `derived_selector` (Tier B). No new DB table required.
 
 #### FR-22-2.4 — Unresolved attr handling
+
+**built_status: DESCRIBED** — no ship evidence for the unresolved_equivalent_block.log writer
 
 When all three derivation tiers return NULL AND the attr is in the content-bearing role set, the walker:
 1. Emits the parent block WITHOUT the slot's content as either child block or scalar attr.
@@ -174,6 +196,8 @@ When all three derivation tiers return NULL AND the attr is in the content-beari
 This log is registered in Spec 21 artefact catalogue (cross-doc impact list §8 — Spec 21 update is Commit 1.4).
 
 #### FR-22-2.5 — Array-of-objects resolution (replaces ARRAY_LIFT_PATTERNS)
+
+**built_status: DESCRIBED** — backfills + array_item_slot_for() helper listed; no ship evidence cited
 
 For array-typed attrs (e.g. `packSizes`, `testimonials`, `badges` — block_attributes.attr_type = 'array'), the walker treats EACH item as a separate slot. The resolution path:
 
@@ -197,6 +221,8 @@ All four backfills + three config flags ship in Phase 1.3a alongside the new `db
 
 ### FR-22-3 — Walker is a single universal path with exactly 3 permitted exceptions
 
+**built_status: PARTIAL** — Phase 1 walker rewrite shipped (8 commits, D118); exactly-3-branches invariant not re-verified post FR-22-4.1
+
 The walker is one recursive function. Its branching surface is exactly 3 conditionals:
 
 1. `if not sgs_classes and node.name in atomic_tag_map`: atomic-tag swap.
@@ -212,6 +238,8 @@ The walker is one recursive function. Its branching surface is exactly 3 conditi
 
 ### FR-22-4 — Section base is always sgs/container
 
+**built_status: PARTIAL** — container-wrap + tier routing (D107) shipped; FR-22-4.1 content-leaf exception not live-verified
+
 Top-level section nodes are unconditionally wrapped in `sgs/container` per architecture decision #4. This is permitted exception #3 in FR-22-3.
 
 **PASS test:** every section entry in extract.json has `sgs/container` as its outermost block.
@@ -220,6 +248,8 @@ Top-level section nodes are unconditionally wrapped in `sgs/container` per archi
 **Tier-driven routing path (D107, 2026-05-30).** The per-section-convention voter now consults `blocks.tier` before the FR-22-4 container-default fires. Section-root sgs- classes registered with `blocks.tier='class-section'` (currently sgs/hero + sgs/cta-section) return from the voter at confidence 1.0 and emit their declared block directly — the FR-22-3 permitted exception #3 still wraps the emit in `sgs/container` per architecture decision #4. All OTHER sgs- prefixed section root classes return a gap-candidate from the voter and fall through to the FR-22-4 default (Stage 2 container emit). See §FR-22-16 for the voter behaviour spec.
 
 ### FR-22-4.1 — Universal wrapper/container resolution (Bean-directed, 2026-05-31; the FR-22-4 refinement D109 mandates; closes P-XS-3-TRIGGER-REFINEMENT)
+
+**built_status: PARTIAL** — rule written D118; padding-lift A1 (1cf0692d, D178); gridItem*/full PASS tests not met
 
 The single rule for EVERY DOM wrapper the walker meets below a section. **No wrapper is EVER silently dropped.** This SUPERSEDES the three patchwork mechanisms it grew out of — `walk_passthrough`'s drop-and-bubble for `sgs-`-classed wrappers, the depth-2 `_is_layout_bearing_wrapper` gate, and the single-wrapper `_absorb_transparent_wrappers` (D52) — folding all three into one coherent mechanism.
 
@@ -254,6 +284,8 @@ Resolution at each node, in precedence order:
 
 ### FR-22-5 — CSS routes to direct-owner per FR6 four-destination policy (preserved from Spec 16)
 
+**built_status: PARTIAL** — _lift_wrapper_css_to_container_attrs shipped A1 (e9eaf013, D172); typography lift partial (D178)
+
 Spec 16's FR6 four-destination CSS router (D0 / D1 / D2 / D3) is preserved:
 
 - **D0** — Global tokens → `theme.json` / variation overlay
@@ -267,6 +299,8 @@ The D1 routing change from Spec 16: when a CSS rule targets `.sgs-X__Y`, D1 rout
 **FAIL test:** any D1 assignment violates the child-attribution rule.
 
 ### FR-22-6 — Hybrid block render.php migration
+
+**built_status: PARTIAL** — Phase 0.4 audit + 61-block roster shipped (de300eb2, D85); per-block render.php migrations not built
 
 A "hybrid block" is any block where `equivalent_block_for()` returns non-NULL for ≥1 attr (after FR-22-2.2 role-exclusion). The classification is empirically determined by the Phase 0.4 audit query — NOT hand-curated. **Phase 0.4 audit shipped 2026-05-27 (commit `de300eb2`): 61 hybrid blocks identified across 77 SGS audited (mean 3.08 attrs/block; median 2). Phase 2 prioritises by hybrid_attr_count descending (top: sgs/hero=11, sgs/media=8, sgs/icon-list=7, sgs/cta-section=6, sgs/form-field-number=6).**
 
@@ -285,6 +319,8 @@ Phase 2 commits these migrations sequentially per binding rule R-22-5 (phases ne
 
 #### FR-22-6.1 — Parallel-session coordination protocol (per F-RA-5)
 
+**built_status: DESCRIBED** — coordination protocol specified; no commit evidence for the dispatch mechanism
+
 When per-block migrations dispatch to parallel agents, the dispatch prompt enforces:
 
 - **No shared-file edits.** Each agent's diff must be confined to `plugins/sgs-blocks/src/blocks/<slug>/` — agents MAY NOT edit `includes/render-helpers.php`, `includes/lucide-icons.php`, or any other shared include.
@@ -293,6 +329,8 @@ When per-block migrations dispatch to parallel agents, the dispatch prompt enfor
 - **Phase 3 cleanup is BLOCKED until all Phase 2 parallel agents have closed.** Coordination via main-session TodoWrite task tracking.
 
 ### FR-22-7 — Acceptance: per-section ≤5% pixel-diff × 3 viewports (Phase 1) + visual sign-off
+
+**built_status: DESCRIBED** — <=5% gate NOT met; measured mean ~63% (D172); per-section Bean sign-off not granted
 
 **Phase 1 acceptance gate (this spec's primary delivery):**
 
@@ -332,6 +370,8 @@ Bridge the residual ~4pp from ≤5% to ≤1% via:
 
 ### FR-22-8 — Unified data interface via wp-blocks.py CLI
 
+**built_status: PARTIAL** — db_lookup.py DB interface built; new wp-blocks.py subcommands not ship-cited
+
 `wp-blocks.py` extends its existing dual-DB connection (current code at `~/.claude/hooks/wp-blocks.py` line 41 already opens both `sgs-framework.db` and `ui-ux-pro-max.db`) to expose the unified subcommands the converter needs:
 
 | New subcommand | Returns |
@@ -354,6 +394,8 @@ Per binding rule blub.db row 260 (db-first-no-hardcoded-dicts).
 
 #### FR-22-8.1 — Cross-DB invariants
 
+**built_status: PARTIAL** — cross-DB invariants defined; is_stale marker described; no ship commit cited
+
 Both `sgs-framework.db` and `ui-ux-pro-max.db` (uimax) contain tables with similar names but different roles. Authoritative resolution:
 
 | Logical entity | sgs-framework.db | uimax | Authoritative source under Spec 22 |
@@ -365,6 +407,8 @@ Both `sgs-framework.db` and `ui-ux-pro-max.db` (uimax) contain tables with simil
 When `wp-blocks.py` is asked for an entity that exists in both DBs, it returns the authoritative source's row and (when an `--include-cross-check` flag is set) the uimax counterpart for comparison. Mismatches are logged to `pipeline-state/<run>/cross-db-conflicts.log` (registered in Spec 21 — Commit 1.4 update).
 
 ### FR-22-9 — Selected uimax tables as recognition oracle
+
+**built_status: DESCRIBED** — uimax oracle table roles defined; no evidence walker queries them at runtime
 
 Only the SGS-WP-relevant subset of uimax tables routes through `wp-blocks.py` per FR-22-8:
 
@@ -385,9 +429,13 @@ All Spec 22 queries are read-only against uimax tables EXCEPT:
 
 ### FR-22-10 — Stage coverage map (renamed per F-SC-14)
 
+**built_status: N/A** — documentation (stage coverage map), not a requirement
+
 This is documentation, not an FR. Full stage coverage tables live in §5 (Survives/Retires/Migrates/Enriches). The whole-pipeline impact: Stage 4 (Slot extraction in `convert.py`) is the rewrite. All other stages preserved or minor-tweaked.
 
 ### FR-22-11 — Pass-through wrapper behaviour for NON-sgs- nodes (per F-SC-15)
+
+**built_status: PARTIAL** — non-sgs- pass-through in walker shipped; R-22-15(a) FAIL-warning mechanism not ship-cited
 
 > **Scope clarification (FR-22-4.1, 2026-05-31):** FR-22-11 governs nodes with **no `sgs-` classes** — transparent non-SGS wrappers. For nodes that carry an `sgs-` class but do not resolve to a registered block (layout wrappers, fold candidates), the rule is §FR-22-4.1 (Universal wrapper/container resolution), which supersedes the old `walk_passthrough` drop-and-bubble, `_absorb_transparent_wrappers` (D52), and depth-2 `_is_layout_bearing_wrapper` gate for sgs-classed nodes. FR-22-11 continues to apply to non-sgs-classed wrappers only.
 
@@ -403,12 +451,16 @@ A pass-through node is a DOM Tag with no `sgs-` classes (and not handled by the 
 
 ### FR-22-12 — Stage 2 confidence-matrix preservation
 
+**built_status: PARTIAL** — Stage 2 artefact preserved by design; no explicit PASS-test evidence cited
+
 Stage 2 (the confidence matrix) continues to produce `stage-2.json` / `match.json` for every section boundary, even when Spec 22's universal walker emits via unambiguous BEM signal. The Stage 2 artefact is preserved for downstream diagnostics (per Spec 21 mandatory diagnostic sequence). The walker MAY bypass Stage 2's `top_pick` selection when BEM resolves unambiguously, but Stage 2 still runs and writes its artefact.
 
 **PASS test:** `stage-2.json` always contains an entry for every section boundary in extract.json, regardless of which path the walker took.
 **FAIL test:** any section boundary present in extract.json missing from stage-2.json.
 
 ### FR-22-15 — Capability-aware tiebreaking in multi-candidate BEM resolution (D96 2026-05-29)
+
+**built_status: BUILT-VERIFIED** — _capability_rank() + seed fix shipped D96; spec test confirmed
 
 When `resolve_slug_from_bem` Path 1 yields two or more bare-block candidates (i.e. a single DOM node carries two or more `sgs-*` BEM classes both mapping to registered slugs), the tiebreaker uses **capability rank** derived from `block_capabilities` rather than alphabetical slug order.
 
@@ -424,6 +476,8 @@ When `resolve_slug_from_bem` Path 1 yields two or more bare-block candidates (i.
 **FAIL test:** same call returning `'sgs/container'` (alphabetical-first bug re-introduced).
 
 ### FR-22-16 — Voter tier-driven recognition (D107, 2026-05-30)
+
+**built_status: BUILT-VERIFIED** — voter tier-driven path shipped D107; trust-bar fix (c3443e03, D169)
 
 The per-section-convention voter (`scripts/per-section-convention-voter.py:295-305`) recognises a section-root sgs- class as a block-equivalent emission ONLY when the block is operator-declared as a section-root in the framework. Recognition signal is the `blocks.tier` column.
 
@@ -445,6 +499,8 @@ The per-section-convention voter (`scripts/per-section-convention-voter.py:295-3
 Per R-22-1 there is no Python `_CLASS_SECTION_SLUGS` frozenset. The signal is in the DB column; operators control it by editing `block.json`.
 
 ### FR-22-17 — block_composition shape signals (D108 data layer; walker consumption DEFERRED per D109)
+
+**built_status: PARTIAL** — data layer (189 rows, container_kind) built+verified D108/D167; walker consumption DEFERRED
 
 The `block_composition` table records the deterministic shape of each registered block — what it wraps, whether it carries InnerBlocks, what child blocks it accepts. This is structural metadata, NOT recognition data. The walker (in a future commit, see deferred-trigger note below) will consult `block_composition` to refine its container-default behaviour without adding a 4th conditional branch.
 
@@ -480,6 +536,8 @@ Populated 2026-05-30 by `/sgs-update` Stage 1 extension. 189 rows (post-D152). R
 
 ### FR-22-18 — Structural-parity acceptance for layout/wrapper/logic work (Bean-directed, 2026-05-31; amends R-22-4 scope)
 
+**built_status: PARTIAL** — rule + spec amend D118; closing-gate clause added 2026-06-06; no passing acceptance run
+
 For wrapper/container/layout/content-routing commits, the acceptance metric is **rendered-DOM structural parity** measured directly from the live page (R-22-11), NOT pixel-diff. The canonical artefact is the body-nesting **wireframe** — draft tree vs rendered-clone tree, full body. Per section it verifies:
 
 - **Container presence + nesting level** — a container exists everywhere expected, at the correct depth (Req 1).
@@ -498,6 +556,8 @@ For wrapper/container/layout/content-routing commits, the acceptance metric is *
 **FAIL test:** any expected container missing/mis-typed/mis-nested, any absorbed CSS dropped (not in D0-D3), a pixel-diff number used to justify a layout commit, OR a commit closed on structural parity alone without the FR-22-7 live-homepage visual gate (a mirror passes structural parity by construction — see R-22-15).
 
 ### FR-22-19 — Class-section composite interior slot-routing (Bean-directed, 2026-06-01; SHIPPED 2026-06-01 D128-D132)
+
+**built_status: PARTIAL** — DB + _route_composite_interior shipped (83a55820+5859c42d, D128); converter still emits containers (Method-2 pending)
 
 > **Doc status ≠ built status** — see `decisions.md` + `state.md` for the authoritative built-status; the converter still emits containers, not native composites (Method-2 pending). A "SHIPPED" header here documents the design, not a verified live deliverable.
 
@@ -538,6 +598,8 @@ This is **FR-22-2 content-routing applied to class-section composites** — the 
 
 ### FR-22-20 — Universal variant detection (Bean-directed 2026-06-01; supersedes the hero `$is_split` band-aid; PARTIALLY SHIPPED — hero Commits 1–5/6 built + live-DOM verified 2026-06-01 per D134; Commit 6 modifier-class→enum path redesign-pending per D135; generalisation to the other 32 variant blocks still pending)
 
+**built_status: PARTIAL** — hero Commits 1-5/6 live-DOM verified D134; Commit 6 pending; 32 other variant blocks pending
+
 > **Doc status ≠ built status** — see `decisions.md` + `state.md` for the authoritative built-status; the converter still emits containers, not native composites (Method-2 pending). A "PARTIALLY SHIPPED" header here documents the design, not a verified live deliverable.
 
 **Problem.** A block with multiple layout variants renders the correct variant ONLY when its variant-selector attr is set. **33 SGS blocks carry a variant-selector enum attr** (`hero.variant` [standard/split/video/svg-animated], `product-card.variantStyle` [standard/trial/gift/featured], `gallery.layout`, `mobile-nav.variant`, `trustpilot.variant`, `divider.variant`, `announcement-bar.variant`, …). The cloning converter populates a variant's CONTENT (e.g. the hero's split images) but does NOT set the variant attr → the block renders its DEFAULT variant. Gating render on data-presence (the 2026-06-01 hero `$is_split` fix) is a per-block **CHEAT**: it doesn't generalise, and it mis-fires on stale data (a block authored as `standard` that also carries `splitImage` from a prior edit would be mis-detected). The variant MUST be chosen from **what the draft pulled THIS run**, universally, with **zero variant-awareness required of the HTML draft** (drafts stay free-form — the framework infers the variant; per Bean, drafts must not be limited to current design capacity).
@@ -557,6 +619,8 @@ This is **FR-22-2 content-routing applied to class-section composites** — the 
 **FAIL test:** any per-block variant conditional in the converter; variant chosen from the block's STORED attrs rather than the draft's extracted slots; the `$is_split` data-presence band-aid still present.
 
 ### FR-22-21 — Universal wrapper-conversion procedure (Bean-directed, 2026-06-02; the canonical TARGET that FR-22-4.1 + FR-22-5 + FR-22-19 implement together; BLOCK-SIDE COMPLETE 2026-06-04 D167 — 29-block roster mirrored; converter-side gaps remain)
+
+**built_status: PARTIAL** — block-side COMPLETE D167 (29-block roster); converter-side gaps remain (grid/gap/gridItem*/D1/routing)
 
 > **Doc status ≠ built status** — see `decisions.md` + `state.md` for the authoritative built-status; the converter still emits containers, not native composites (Method-2 pending). "BLOCK-SIDE COMPLETE" means the blocks can mirror sgs/container; it does NOT mean the converter emits native composites on a real clone.
 
@@ -617,6 +681,8 @@ Workstreams for these gaps live in **`.claude/plans/2026-06-02-container-wrapper
 
 ### FR-22-21.1 — Composite-mirror MIGRATION RECIPE (the element route — COMPLETE 2026-06-04 D167, full 29-block roster)
 
+**built_status: BUILT-VERIFIED** — COMPLETE 2026-06-04 D167, full 29-block roster (bacbde57, f68bdc6f, a18e6188)
+
 > **Mechanism (Bean-confirmed "element route"):** a composite's OWN outer element BECOMES an `sgs/container` (it carries the `sgs-container` class + the container's capabilities), via the shared PHP helper — NOT by nesting a separate `sgs/container` InnerBlock. The composite keeps only its UNIQUE interior; anything the container already does is DELETED from the composite. Reference implementations (read these — they are the canonical recipe): `sgs/trust-bar` (commit `a18e6188`, section + data-attrs), `sgs/cta-section` (`a0297c04`, section + rename + double-emit), `sgs/info-box`/`quote`/`testimonial` (`84a86b96`, content), `sgs/team-member`/`notice-banner`/`accordion-item` (`6634d2e2`, content + interactive), **`sgs/hero` (`bacbde57`, section — hardest: double-emit guard + `overlayColour`→`backgroundOverlayColour` rename + `extra_styles` split + `wrap_inner:false`)**, **`sgs/product-card` (`f68bdc6f` + perf `82fd3b45`, content — template-style 5-branch: all `sourceMode` branches including live `wc` configurator, verified page 589; uses `extra_attr_html` for compact `data-wp-context`)**, + the 25 composites from D166. The helper: `includes/class-sgs-container-wrapper.php` — `SGS_Container_Wrapper::render( array $attributes, ?WP_Block $block, string $inner_html, string $kind, array $opts=[] )`; opts: `tag`, `block_class`, `extra_classes`[], `extra_styles`[], `extra_attrs`[] (data-*/aria passthrough — byte-identical when empty), **`extra_attr_html`** (PRE-ESCAPED raw attribute string appended to the opening tag — for attrs whose `get_block_wrapper_attributes()`/`esc_attr` double-quoting would bloat, e.g. `data-wp-context` via `wp_interactivity_data_wp_context()`; byte-identical for composites that don't pass it), `no_overlay` (C3 guard), `wrap_inner`.
 
 **Per-composite, 4 steps:**
@@ -634,6 +700,8 @@ Workstreams for these gaps live in **`.claude/plans/2026-06-02-container-wrapper
 **MANDATORY verification (the process that distinguishes the 2026-06-04 reliable fan-out from the 2026-06-03 failed 5-way overload):** small batches (2–3 subagents, 3–4 blocks each — NOT 5+), each subagent runs `npm run build` + `php -l` + a **manual undefined-var grep** (`\$wrapper_attributes|\$wrapper_attr|\$styles\b|\$classes\b` — `php -l` does NOT catch undefined vars), and the ORCHESTRATOR verifies EACH block on a real test page (REST `POST /wp/v2/pages` is not guard-blocked; use a `core/paragraph` child, not `sgs/text`) before commit — sgs-container class present, content renders, 0 PHP errors. Memories: `dont-fan-out-many-heavy-agents-at-once`, `composite-mirror-is-separate-from-cloning-fidelity` (validate in the EDITOR/test-page, NOT a page re-clone — the converter emits containers not composites; page-clone fidelity is the separate converter-lift task).
 
 ### FR-22-21.2 — Auto-propagation: `/sgs-update` Stage 11 (writer + scanner WIRED; `--apply` auto-propagation REPORT-ONLY / build-pending)
+
+**built_status: PARTIAL** — Stage 11 writer + scanner wired; --apply auto-propagation REPORT-ONLY / build-pending
 On every `/sgs-update`, after the `sgs/container` block.json is read, Stage 11 (`sync-container-wrapping-blocks.py`) detects whether `sgs/container`'s attr surface changed since the composites were last mirrored (e.g. container `version` bump or attr-set diff) and reports drift. The `--apply` path that re-mirrors the KIND-scoped attr subset into each composite's block.json (idempotent) is not yet live. When built: for each block in the `block_composition` roster with `wraps_block='sgs/container'` AND NOT `containerMirror:false`, the writer merges the KIND-scoped container attrs into the composite's block.json without clobbering the composite's own attrs. This makes a new container capability propagate to all composites with one `/sgs-update` run — zero per-composite manual edits (D2/D3).
 
 ## 4. The data layer
