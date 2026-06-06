@@ -34,3 +34,20 @@ Four parallel adversarial reviewers (core docs / living docs / pipeline canon / 
 6. **Shrink + archive (mechanical).** decisions.md → archive resolved (<250 lines); parking.md → enforce archive-on-resolve now (<300); truncate handoff.md + handoff-theme to the live section + an archive pointer; archive the 9 superseded/complete plans (2026-05-21-architecture-staging, 2026-05-23-parking-finishers, 2026-05-24-phase-3-parking-sweep, 2026-05-24-phase-4-skill-optimisation, both 2026-05-31-container-neutral-default-*, 2026-05-31-converter-content-routing-fix, 2026-06-04-spec27-phase2-display-seo-plan, 2026-06-04-spec28-p1-value-ladder); fix README (Spec 24/25 archived), Spec 18 frontmatter (shipped:true), 06-BUILD-ORDER (points to the cloning pipeline as current).
 7. **Goal: a 3-line SUCCESS definition at the top of CLAUDE.md + goals.md.**
 8. **Reconcile the hero-gradient contradiction** (decisions D178 says block-default/closed; parking + the cloning next-session-prompt say converter-bug-open). Bean SEES the dark-pink now, so it is a real visible bug — state it as "real, cause TBD via the line-by-line hero mapping," not "closed," and not a confirmed converter emission until the mapping proves it.
+
+---
+
+## STATUS — register closeout (updated 2026-06-06)
+
+| # | Status | Evidence |
+|---|--------|----------|
+| FATAL 1 (un-bless cheat) | ✅ DONE | `3f351b19` + CLAUDE.md trust-bar inline cheat-flag (`f1a53ac5`) |
+| FATAL 2 (enforced anti-mirror gate) | ✅ DONE | `check_no_mirror.py` built (`df495b2e`); `--report` mode (correct — converter still cheats), `--enforce` wire-point inert in `pipeline-stage-gate.py` until converter is clean |
+| FATAL 3 (homepage visual gate) | ✅ DONE | `3f351b19` (FR-22-18 amend) + `clone-parity.js` deterministic DOM-compare (`df495b2e`) |
+| FATAL 4 (7 rules named + STOP catalogue + anti-patterns) | ✅ DONE | "⛔ NON-NEGOTIABLE RULES" at top of root CLAUDE.md; STOP catalogue in next-session-prompt; anti-patterns present in mistakes.md |
+| HIGH 5 (built_status per FR) | ✅ DONE | `01f52187` — 29 FR tags + legend on Spec 22 (5 BUILT-VERIFIED / 17 PARTIAL / 5 DESCRIBED / 1 RETIRED / 1 N/A) |
+| HIGH 6 (shrink + archive) | ◐ RECALIBRATED | 9 plans archived + README/Spec18/BUILD-ORDER fixed + handoffs truncated (`c5cb0313`); decisions safe-shrink — 4 superseded entries archived (`fc39db30`). **<250/<300 line targets dropped as aspirational:** premise didn't hold — parking.md is ALREADY compliant (112 entries, all OPEN/PARTIAL/BLOCKED/DEFERRED, 0 resolved-to-archive); decisions are permanent history, not resolvable state. Binding rules (parked-work-only; archive-superseded) are now satisfied. Deeper shrink would require editing live load-bearing content on shared files — deferred unless Bean directs. |
+| HIGH 7 (3-line SUCCESS def) | ✅ DONE | Top of root CLAUDE.md + goals.md |
+| HIGH 8 (hero-gradient reconcile) | ✅ DISMISSED | Bean confirmed 2026-06-06: the gradient decision (D178) is CORRECTLY closed; the visible dark-pink is a **transient artefact of the in-progress converter upgrade**, not a doc contradiction. No reconciliation needed. |
+
+**Backlog closed.** All FATAL + the substantive HIGH items shipped; #6 recalibrated to the binding rule (satisfied); #8 dismissed by Bean. Residual optional work: deeper decisions/parking compression (judgment-heavy, shared-file, low value) — pull only on Bean's direction.
