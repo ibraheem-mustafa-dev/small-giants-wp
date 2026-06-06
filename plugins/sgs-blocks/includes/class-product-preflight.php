@@ -92,6 +92,15 @@ final class Product_Preflight {
 		// Surface cron findings as a dismissible admin notice.
 		\add_action( 'admin_notices', array( __CLASS__, 'maybe_show_health_notice' ) );
 
+		// Surface a blocked-publish reason on the product edit screen. The revert
+		// happens in a POST request that then REDIRECTS, so the request-scoped
+		// admin_notices closure queued in queue_publish_blocked_notice() never
+		// renders. WooCommerce products edit in the CLASSIC screen (not Gutenberg),
+		// so there is no pre-publish panel — instead we persist the issues to
+		// _sgs_preflight_issues meta (done in on_transition_post_status) and render
+		// them here on the next edit-screen load. #2 — the publish-block was invisible.
+		\add_action( 'admin_notices', array( __CLASS__, 'maybe_show_blocked_publish_notice' ) );
+
 		// Note: clearing the scheduled event on plugin deactivation requires a
 		// register_deactivation_hook call in sgs-blocks.php (see wiring note below).
 	}
@@ -140,6 +149,9 @@ final class Product_Preflight {
 		$result = self::evaluate( $post->ID, /* skip_draft_check */ true );
 
 		if ( $result['ready'] ) {
+			// Clear any stale block reason from a previous failed publish now that
+			// it passes, so the edit-screen notice does not show a resolved issue.
+			\delete_post_meta( $post->ID, '_sgs_preflight_issues' );
 			return; // All good — let the publish proceed.
 		}
 
@@ -590,6 +602,47 @@ final class Product_Preflight {
 			(int) $count
 		);
 		echo '</p></div>';
+	}
+
+	/**
+	 * Hook: admin_notices — on the product edit screen, surface the reason a
+	 * previous publish attempt was blocked + reverted to draft.
+	 *
+	 * The revert happens in a redirecting POST request, so the notice queued
+	 * in-request never renders. The issues persist in _sgs_preflight_issues meta;
+	 * we read + render them here, and they clear on the next successful publish
+	 * (on_transition_post_status). Products edit in the classic screen, so this is
+	 * the correct surface (no Gutenberg pre-publish panel exists for them).
+	 */
+	public static function maybe_show_blocked_publish_notice(): void {
+		if ( ! \function_exists( 'get_current_screen' ) ) {
+			return;
+		}
+		$screen = \get_current_screen();
+		if ( null === $screen || 'post' !== $screen->base || 'product' !== $screen->post_type ) {
+			return;
+		}
+
+		$post_id = isset( $_GET['post'] ) ? (int) $_GET['post'] : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only screen context, no state change.
+		if ( $post_id <= 0 || ! \current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+
+		$issues = \get_post_meta( $post_id, '_sgs_preflight_issues', true );
+		if ( ! \is_array( $issues ) || empty( $issues ) ) {
+			return;
+		}
+
+		echo '<div class="notice notice-error is-dismissible"><p><strong>';
+		\esc_html_e( 'This product could not be published — resolve these issues, then publish again:', 'sgs-blocks' );
+		echo '</strong></p><ul style="list-style:disc;margin-left:20px;">';
+		foreach ( $issues as $issue ) {
+			$msg = \is_array( $issue ) && isset( $issue['message'] ) ? (string) $issue['message'] : '';
+			if ( '' !== $msg ) {
+				echo '<li>' . \esc_html( $msg ) . '</li>';
+			}
+		}
+		echo '</ul></div>';
 	}
 
 	// ── Private helpers ───────────────────────────────────────────────────────────
