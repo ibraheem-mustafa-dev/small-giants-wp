@@ -1,3 +1,24 @@
+# Session Handoff — 2026-06-06 (doc-council closeout — cross-cutting docs; cloning converter untouched)
+
+> Live handoff. This session did DOC-COUNCIL CLOSEOUT only — no converter/block code touched. A co-active CLONING session worked the bound-purge in parallel (its commits `d499f7f0`/D182 interleave below mine; its dirty tree = convert.py/trust-bar — NOT mine). **NEXT SESSION = THEME thread (Bean-directed): read `.claude/next-session-prompt-theme.md`** (Wave 3 #17 + Spec 27/28 to 100%). The cloning converter-fix continuation stays in `.claude/next-session-prompt.md` for whenever the cloning thread resumes.
+
+## Completed This Session
+1. **Verified the prior doc-council session's two commits** (`f1a53ac5` docs + `d0f64287` hooks) against ground truth — all claims held (state.md gutted + GROUND-TRUTH block, registry thread-gate + theme reading-order, Spec 28 registered, counts removed, git-path-scope + memory-cap guards wired, pipeline-enforcer stub created). Path-scoping confirmed clean.
+2. **Discovered the doc-council programme spanned ~7 commits across BOTH threads** (not the 2 the message described). The "remaining gates" (anti-mirror + render-verify) were ALREADY built by the cloning thread in `df495b2e` (`check_no_mirror.py` --report mode, caught 7 violations on the latest run; `clone-parity.js`). Evidence-first check prevented a 32k-line duplicate build.
+3. **HIGH#5 SHIPPED** (`01f52187`) — `built_status` tags on all 29 Spec 22 FRs + legend. Sonnet-subagent-derived, validated against inline-status FRs, conservative. Honest distribution: 5 BUILT-VERIFIED / 17 PARTIAL / 5 DESCRIBED / 1 RETIRED / 1 N/A.
+4. **HIGH#6 (safe-shrink) SHIPPED** (`fc39db30`) — archived 4 verifiably-superseded decisions (D114/D115/D116/D133) to decisions-archive.md. Found parking.md ALREADY compliant (112 entries, all active, 0 resolved); <250/<300 targets recalibrated as aspirational (premise didn't hold — decisions are permanent history, not resolvable state).
+5. **Doc-council backlog CLOSED** (`70421c44`) — STATUS table appended to the council report: all 4 FATAL + HIGH#5/#7 done, HIGH#6 recalibrated, HIGH#8 DISMISSED (Bean: hero-gradient correctly closed; dark-pink is a transient converter-upgrade artefact, not a contradiction).
+
+## Current State (doc-council)
+- **Branch:** `main` at `70421c44` (+ this handoff commit). My 3 commits pushed.
+- **Co-active cloning session LIVE** — dirty tree (convert.py, trust-bar, seed-composition-roles.py, lucide-icons.php) is THEIRS; do not commit it.
+- **Tests:** n/a (docs only). **Build:** n/a.
+
+## Doc-council outcome
+- All FATAL + substantive HIGH items shipped. Backlog closed. Residual = optional deep decisions/parking compression (judgment-heavy, low value) — pull only on Bean's direction.
+
+---
+
 # Session Handoff — 2026-06-05 (CLONING thread) — 32-point QA → 9 evidence-grounded root causes (fix-spec ready)
 
 > Live handoff. Earlier sections below are prior work. Next session: `.claude/next-session-prompt.md` (FIX the 9 roots). Fix-spec: `.claude/reports/2026-06-05-clone-fix-spec-9-roots.md`. Theme thread shares the tree — commit by explicit path, `git log -1 --stat`.

@@ -14,7 +14,11 @@ note: "LEAN per-thread snapshot (restructured 2026-06-06 per doc-council). Full 
 - **Framework counts (blocks/attrs/slots/roles):** query `/sgs-db` or `/wp-blocks` — the DB is authoritative; counts are NOT maintained in prose anywhere.
 - **Which thread am I on?** TWO co-active threads share `main`. Pick your thread, then read ONLY its block below + its handoff + its next-session-prompt. Commit by EXPLICIT PATH (`git commit -- <paths>`), never `git add -A`.
 
+## NEXT SESSION = SGS-THEME THREAD (Bean-directed 2026-06-06)
+- Read `.claude/next-session-prompt-theme.md` (Wave 3 #17 file-split + centralise lean-seed stripper, then Spec 27/28 to 100%). The cloning thread is co-active (a separate live session is mid bound-purge / converter work) — do NOT pull cloning tasks into the theme session.
+
 ## CLONING-PIPELINE THREAD  (owner of: this block, handoff.md, next-session-prompt.md)
+- **DOC-COUNCIL BACKLOG CLOSED 2026-06-06** (all FATAL + HIGH shipped/recalibrated/dismissed — see `.claude/reports/2026-06-06-doc-council-findings.md` STATUS table). The "adversarially-review all .claude docs" sub-goal in next-session-prompt.md is DONE; the converter-fix continuation there still stands.
 - **SoT for current status:** `.claude/handoff.md` (latest session) + `.claude/next-session-prompt.md` (the operative opener). READ THOSE — do not rely on a summary here.
 - **One-line where-we-are:** Method-2 converter work in progress (the converter must faithfully lift draft CSS + route mockup classes to the composite BLOCK, not `sgs/container`); the bound-mode `sourceMode='bound'` converter-emit is a CHEAT being PURGED (R-22 anti-mirror gate). The block-side composite-wrapper mirror (WS-4) is complete and is SEPARATE from page-clone fidelity.
 - **Canonical spec:** `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`. Reading order: see `docs-registry.yaml` `cold_start_reading_order`.
