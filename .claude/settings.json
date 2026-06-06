@@ -30,6 +30,16 @@
             "timeout": 8
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python C:/Users/Bean/Projects/small-giants-wp/.claude/hooks/memory-cap-guard.py",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -40,6 +50,11 @@
             "type": "command",
             "command": "python C:/Users/Bean/Projects/small-giants-wp/.claude/hooks/qc-on-converter-edit.py",
             "timeout": 8
+          },
+          {
+            "type": "command",
+            "command": "python C:/Users/Bean/Projects/small-giants-wp/.claude/hooks/git-path-scope-guard.py",
+            "timeout": 5
           }
         ]
       }
