@@ -6,6 +6,17 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-06 (theme thread) — council Wave 3 #2 (PREFLIGHT visibility + auto-variesBy) SHIPPED (D181)
+
+**D181 — Wave 3 #2 of the council backlog is shipped + pushed: the PREFLIGHT publish-block is now VISIBLE on the product edit screen, and provisioning auto-sets a sensible Google variesBy. (THEME thread; cloning co-active — path-scoped commits `dbb96b6c`, `0bf4f2a7`.)**
+
+- **Grounding pivot:** the backlog assumed a Gutenberg `PluginPrePublishPanel`, but `use_block_editor_for_post_type('product')` is FALSE on this stack — WC products edit in the CLASSIC screen. The real bug: the publish-block revert runs in a redirecting POST, so the in-request `admin_notices` closure never rendered → silent revert-to-draft. Fix (classic-correct): persist issues to `_sgs_preflight_issues` meta (already done) + render them on the next edit-screen load via `maybe_show_blocked_publish_notice()` (screen-guarded + per-object cap), cleared on the next successful publish. Code-verified (mirrors the working health-notice); a full admin-login browser test was judged disproportionate for an admin-only notice + would expose the test cred.
+- **Part 2 (auto-variesBy):** built via `/subagent-driven-development`; provisioning auto-sets `_sgs_variesby_value` term-meta when an axis maps to Google's closed enum (size/colour/material/pattern/age/gender — name then pa_* slug), only when unset (operator wins), via `Configurator_Meta::sanitize_variesby`. Hardcoded map is correct (Google closed enum, not client data). Reviewed by a sonnet spec-reviewer (PASS all 6 acceptance points) + a haiku quality/security reviewer (GO) — Gemini cross-rater account-blocked (403). Mapping live-verified on canary (pa_size→size, Flavour→'' unset). require_once'd its own dep.
+- **Bug found + fixed during this work:** a PREFLIGHT `manifest_over_cap` FALSE-POSITIVE — its lean-subset measurement had DRIFTED from render.php's real strip (kept single-image galleries render.php empties) → blocked publishing the valid 48-SKU fixture (27739 vs the real seed's 22408). Aligned to render.php exactly; 540 republished. (Committed with the Wave-2 batch `34e7e427`.) Reinforces #17 (centralise the one stripper).
+- **#2 REMAINING (deferred):** an optional proactive pre-publish readiness check (lower value now the block reason is visible). **Wave 3 REMAINING:** #17 file-cohesion split + centralise the lean-seed stripper. Then Phase 2 (Spec 27/28 to 100%: R4+F2, P2/P3).
+
+---
+
 ## 2026-06-06 (theme thread) — adversarial-council must-fix WAVE 1 + WAVE 2 SHIPPED (D180)
 
 **D180 — The fact-checked adversarial-council backlog (parking `P-SPEC27-28-COUNCIL-MUSTFIX-WAVE`) is cleared in two file-disjoint subagent waves, both live-verified on canary 540 + pushed. (THEME thread; cloning co-active on `main` — every commit path-scoped.)** _(Wave 1 commits `04e62cdd` + path-scoped batch; Wave 2 commit `34e7e427`. Planned via `.claude/plans/2026-06-06-spec27-28-council-mustfix-wave-plan.md`.)_
