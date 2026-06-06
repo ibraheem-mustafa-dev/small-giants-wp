@@ -4,11 +4,12 @@ spec_id: 18
 spec_version: 0.1
 project: small-giants-wp
 title: SGS Floating UI — Customiser-Based Back-to-Top + Reading Progress
-status: active
+status: shipped
 status_history:
   - 2026-05-19: ACCEPTED — implementation pending
   - 2026-05-24: normalised to canonical enum (accepted → active)
-shipped: false
+  - 2026-05-22: SHIPPED — deployed via Phase 5b (commit `60220b13` + paint-fix `0ef032fe`)
+shipped: true
 session_date: 2026-05-19
 authors: Bean + Claude (Sonnet 4.6)
 references:

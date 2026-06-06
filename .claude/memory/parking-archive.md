@@ -7,6 +7,15 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-06-06 — archived from parking.md
+
+> **P-TRUSTBAR-BOUND-GRID** — NEW 2026-06-02. **Status: OPEN** (pipeline/converter). trust-bar gap-4: in bound mode the converter-emitted `sgs/container.sgs-trust-bar__inner` grid renders 584px wide / uneven auto columns (143/132/111/160) instead of 1100 / 4×266. Root cause (Bean's diagnosis, confirmed; now mapped to WS-3/C2 in the standardisation plan): the grid lives on the block's own `.sgs-trust-bar--icon-circle` STATIC CSS (trust-bar/style.css:43-101) NOT attr-driven render; bound mode echoes `$content` (the emitted `__inner` container relying on draft CSS) → the block's own grid CSS wins / shrink-wraps. Composite-block CSS conflict — fix = make trust-bar's grid attr-driven (mirror sgs/container) per WS-3/WS-4. Measure live DOM (R-22-11). **RESOLVED 2026-06-05 (D178, commit `e75db509`):** the static `repeat(4,1fr)` grid CSS + `data-columns` overrides were removed from trust-bar/style.css; the grid is now driven by the universal container `layout=grid`/`gridTemplateColumns` wrapper mechanism (+ defaults), and the converter's grid bridge (`c97f85f1`) lifts a draft's grid onto `sgs-trust-bar__inner`. Live-verified: badges render a horizontal row (were collapsed).
+> **Archived:** 2026-06-06
+
+> **P-PRODUCT-CARD-PILL-SWAP-DORMANT** — **RESOLVED 2026-06-04 (D164).** No longer dormant: Spec 27 Phase-1 U3/U4 shipped (`7f096976`/`6b4af10a`) — the Bound card reads WC's live per-variation data (NOT `_sgs_variation_sets`, retired for commerce per Spec 27 principle 6) into a seeded 48-combo manifest and swaps price/sale/stock/image on pill click with 0 XHR, live-verified on page 589. The `_sgs_sku_matrix` dependency this entry assumed is DROPPED (WC variations are the matrix).
+> **Bucket:** Feature build / Spec
+> **Archived:** 2026-06-06
+
 ## 2026-06-04 — theme thread Cluster A escape-audit items (RESOLVED)
 
 > **P-IMAGEALT-DOUBLE-ENCODE** — **RESOLVED 2026-06-04 (commit 5fe7cfd5).** `Product_Bindings::get_product_data()` now `sanitize_text_field()`s `image_alt` at storage (was `esc_attr()` → double HTML-entity encode that showed literal entities on the JS image swap). Every output consumer still `esc_attr()`s at output (render.php 152/351/637 + JSON-encoded `data-wp-context` seeds verified). Fix-comprehensive: both array branches (~332 product, ~382 CPT).

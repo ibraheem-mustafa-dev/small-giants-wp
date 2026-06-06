@@ -43,13 +43,13 @@ Specs are versioned, status-tracked artifacts that document architectural commit
 | 20 | [20-STRUCTURED-PIPELINE-LOG-SURFACING.md](20-STRUCTURED-PIPELINE-LOG-SURFACING.md) | Per-severity sidecar logs | shipped |
 | 21 | [21-PIPELINE-STATE-ARTEFACTS.md](21-PIPELINE-STATE-ARTEFACTS.md) | Pipeline-state debug artefacts catalogue | active |
 | 22 | [22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md](22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) | SGS Cloning Pipeline — Universal Block-Equivalent Extraction (CANONICAL; supersedes Spec 16 2026-05-26) | active |
-| 24 | [24-QUERY-DRIVEN-CONTENT-CARDS.md](24-QUERY-DRIVEN-CONTENT-CARDS.md) | Query-driven content cards (CPT + Query Loop + Block Bindings; product-card dual-mode) | active |
-| 25 | [25-SGS-WOOCOMMERCE-EXPERIENCE-LAYER.md](25-SGS-WOOCOMMERCE-EXPERIENCE-LAYER.md) | Authoritative SGS WooCommerce-wrapper layer (product-card / cart / collection / option-picker / bindings / add-to-cart) | active |
+| 24 | [archive/24-QUERY-DRIVEN-CONTENT-CARDS.md](archive/24-QUERY-DRIVEN-CONTENT-CARDS.md) | Query-driven content cards (CPT + Query Loop + Block Bindings; product-card dual-mode) — **retired — superseded by Spec 27** (D161, 2026-06-03) | retired |
+| 25 | [archive/25-SGS-WOOCOMMERCE-EXPERIENCE-LAYER.md](archive/25-SGS-WOOCOMMERCE-EXPERIENCE-LAYER.md) | Authoritative SGS WooCommerce-wrapper layer (product-card / cart / collection / option-picker / bindings / add-to-cart) — **retired — superseded by Spec 27** (D161, 2026-06-03) | retired |
 | 26 | [26-SGS-GLOBAL-STYLES-AND-THEMING.md](26-SGS-GLOBAL-STYLES-AND-THEMING.md) | Global styles + per-client theming (variation-delta + wp_global_styles REST sync) + pipeline style derivation (supersedes Spec 01 §D156; build deferred) | draft |
 
-## Architecture programme (2026-05-21+) — not yet a numbered spec
+## Architecture programme (2026-05-21+) — archived
 
-The 31-decision architecture programme lives at [`.claude/plans/2026-05-21-architecture-staging.md`](../plans/2026-05-21-architecture-staging.md). Phases 0/0.5/1/1.5/2/3/5a/5b shipped as of 2026-05-22; Phases 4/6/7 pending. Phase 1.5 was inserted mid-execution and isn't in the original 8-phase list.
+The 31-decision architecture programme (`.claude/plans/archive/2026-05-21-architecture-staging.md`) **SHIPPED 2026-05-22** — all phases complete. Active work is now the cloning pipeline programme; see Spec 22 + `.claude/plans/2026-06-02-container-wrapper-standardisation.md`.
 
 ## Working specs / research artefacts (not numbered)
 

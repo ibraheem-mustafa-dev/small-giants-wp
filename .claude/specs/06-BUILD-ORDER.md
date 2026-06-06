@@ -17,23 +17,19 @@ Framework **v1 shipped** 2026-04-29. Phases 0–5 complete.
 
 ## Active initiative
 
-### HTML mockup → SGS blocks compiler
+### HTML mockup → SGS blocks cloning pipeline
 
-**Status:** Researched 2026-04-30, not yet built. Build estimate: 3.5–4 days.
+**Status:** BUILT + actively shipping. The cloning pipeline (originally researched 2026-04-30) is the dominant current programme.
 
-**Why:** Today, building one block from a mockup takes ~half a day (read HTML → identify dynamic sections → write block.json/render.php/edit.js by hand). The compiler reduces this to ~10 min/block.
+**What it does:** Converts any SGS-BEM HTML mockup into a deployable WordPress page of SGS blocks via a 12-stage pipeline (Stage 0 validation → Stage 4 Playwright responsive capture → Stage 8 converter → Stage 11 pixel-diff). Reduces a full-page build from days to minutes.
 
-**Approach:**
-- Fork [Verneaut's `html-to-gutenberg`](https://github.com/jverneaut/html-to-gutenberg) and add SGS-specific processors
-- Annotation grammar: `data-sgs="name:type"` (8 types: text/image/link/bool/array/innerblocks/business/colour-token)
-- `block.config.json` sidecar carries non-HTML-expressible attributes (responsive variants, hover behaviour, palette tokens)
-- AI annotator pre-step uses Anthropic structured output to add `data-sgs` attributes to plain HTML
-- `--mode=pattern` flag emits `register_block_pattern()` PHP for design-pattern mode
-- Ships as `/sgs-mockup-to-block` skill + slash command
+**Canonical spec:** [`Spec 22 — Universal Block-Equivalent Extraction`](.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) — single-path universal walker; R-22-1 through R-22-14 binding rules.
 
-**Research doc:** `~/.openclaw/workspace/memory/research/2026-04-30-html-mockup-to-sgs-blocks.md`
+**Active plan:** [`.claude/plans/2026-06-02-container-wrapper-standardisation.md`](../.claude/plans/2026-06-02-container-wrapper-standardisation.md) — 5-workstream programme (WS-1 SHIPPED; WS-4 block-side COMPLETE 2026-06-04 D167; converter-lift in progress).
 
-**Recommended model for build:** Sonnet 4.6 (mostly pattern-following work; not novel architecture).
+**Current focus:** Converter method-2 lift (CSS → block attrs) and responsive fidelity (9 root-cause fixes per `.claude/reports/2026-06-05-clone-fix-spec-9-roots.md`).
+
+> The original `html-to-gutenberg` fork approach (researched 2026-04-30) was superseded by the SGS-native BEM walker architecture. Research doc at `~/.openclaw/workspace/memory/research/2026-04-30-html-mockup-to-sgs-blocks.md` (historical reference).
 
 ## Recently shipped (2026-04-30)
 
