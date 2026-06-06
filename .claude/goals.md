@@ -2,6 +2,10 @@
 
 **Last updated:** 2026-06-02 (container/wrapper standardisation programme launched — WS-1 SHIPPED commit `0d746073`, D152; block_composition.container_kind column built + 28-block roster populated; composite-mirror rule locked.)
 
+## ⛔ SUCCESS DEFINITION (gate every session)
+
+SGS is an AI website-builder. The cloning pipeline must CONVERT any SGS-BEM draft into NATIVE WordPress SGS blocks (driven by block attributes), faithful to the draft on the real homepage, with zero cheats. Long-term: ship the framework + client builds with Bean as QC only.
+
 ## Primary near-term goals (2026-06-02 onwards)
 
 **Goal A — Container/wrapper standardisation programme (gates full pixel-diff closure):** 5-workstream programme launched D152. WS-1 (audit + DB column) SHIPPED. Active: WS-2 (sgs/container capability parity — add missing wrapper attrs to composites), WS-3 (converter wrapper logic reads container_kind), WS-4 (pixel-diff closure to ≤5%), WS-5 (docs + QA). Plan: [`.claude/plans/2026-06-02-container-wrapper-standardisation.md`](.claude/plans/2026-06-02-container-wrapper-standardisation.md). Canonical procedure: Spec 22 §FR-22-21. Composite-mirror rule: no composite with a built-in wrapper diverges from sgs/container capabilities (propagated via block_composition + /sgs-update).

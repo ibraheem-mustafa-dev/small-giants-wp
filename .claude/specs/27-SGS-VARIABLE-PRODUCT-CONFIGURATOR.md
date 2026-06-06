@@ -309,6 +309,8 @@ The dual-mode card's Typed mode is exactly the FR-22-6 InnerBlocks shape the con
 
 ### FR-24-10 -- Curated-content blocks are dual-mode too (Bean-directed, 2026-06-01)
 
+> **⚠ SUPERSEDED FOR CLONING (2026-06-06):** The `sourceMode='bound'` converter path described below is a **TEST CHEAT** — the converter mirrors the draft DOM by echoing badge InnerBlocks into `$content`, instead of converting to native `items[]` attributes. This violates the convert-not-mirror rule and is being purged per `.claude/reports/2026-06-06-bound-mode-purge-plan.md`. **ONLY the live WC configurator modes (`sourceMode='wc-product'` / `'sgs-cpt'`) are legitimate bound modes.** For cloning, `sgs/trust-bar` MUST be converted to **Typed mode** with a populated `items[]` array. The factual record below is preserved for historical context.
+
 The same Typed-vs-Bound split applies to curated-content blocks whose editor is a rich repeater the clone pipeline must also feed. `sgs/trust-bar` is the first case.
 
 The conflict: a naive FR-22-6 InnerBlocks migration of `sgs/trust-bar` would gut its curated client editor (the icon-circle item repeater + the 3 badge variants `icon-circle`/`text-only`/`image-badge` + autoScroll + title) and replace it with raw block nesting, violating "client experience is primary". The dual-mode answer: the block keeps its **Typed mode** (the existing curated `items[]` repeater + variant inspector) AND gains a **Bound mode** where it renders `$content` so the converter's emitted badge children render. A per-instance Source toggle (mirrors FR-24-2) selects which path drives `render.php`. R-22-14 clean: `render.php` branches on the explicit mode attr, not on `empty($content)`. The two modes are distinct authored states, not a server-side scalar fallback hack.
@@ -317,7 +319,7 @@ The badge children use existing primitives (container + icon + text/label + medi
 
 Acceptance: FR-22-18 structural parity. `.sgs-trust-bar` renders the converter's 4 badge children in Bound mode AND the curated repeater still works in Typed mode (editor smoke test, no "unexpected content" warning).
 
-Status: SHIPPED (commit `d6358f32`, 2026-06-01). `render.php` branches on the explicit `sourceMode` (typed = curated repeater / bound = converter's badge InnerBlocks); converter sets `sourceMode='bound'` on cloned trust-bars.
+Status: SHIPPED (commit `d6358f32`, 2026-06-01). `render.php` branches on the explicit `sourceMode` (typed = curated repeater / bound = converter's badge InnerBlocks); ~~converter sets `sourceMode='bound'` on cloned trust-bars~~ — **the bound-emit converter path is a cheat; see superseding note above.**
 
 ### FR-24-11 to FR-24-17 -- Variation-sets and `sgs/option-picker`
 

@@ -5,6 +5,29 @@
 
 ## Active stubs (most recent 30)
 
+### [2026-06-06] Bound-mode converter emit is a test cheat, not native conversion
+- **Pattern key:** `bound-mode-is-test-cheating-not-conversion`
+- **Feedback file:** [feedback_bound_mode_is_test_cheating_not_conversion.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_bound_mode_is_test_cheating_not_conversion.md)
+- **Findings:** [reports/2026-06-06-doc-council-findings.md](.claude/reports/2026-06-06-doc-council-findings.md)
+- **Rule:** Setting `sourceMode='bound'` in the converter so a block echoes `$content` is DOM-mirroring, not conversion. The block renders the draft DOM structure verbatim; it does not extract values into native attributes. Only the live WC configurator modes (`wc-product`/`sgs-cpt`) are legitimate bound modes. Cloning always targets Typed mode with populated attributes.
+
+### [2026-06-06] Converter must emit native blocks, never replicate draft class/DOM structure
+- **Pattern key:** `convert-not-mirror`
+- **Findings:** [reports/2026-06-06-doc-council-findings.md](.claude/reports/2026-06-06-doc-council-findings.md)
+- **Rule:** The converter's job is to EXTRACT values from the draft DOM and populate native block attributes. Emitting a block that echoes the draft's raw class tree / `$content` wholesale is mirroring — it perpetuates the draft's structure instead of converting it. Every emitted block must carry populated native attrs. If the native block cannot accept the extracted values yet, fix the block first (WS-4 / mirror) rather than short-circuiting via a bound-echo.
+
+### [2026-06-06] Clone verification on a real homepage render, not just emitted markup inspection
+- **Pattern key:** `verify-clone-on-real-homepage-not-emit`
+- **Feedback file:** [memory/llm-eyeball-clone-verification-unreliable.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/llm-eyeball-clone-verification-unreliable.md)
+- **Findings:** [reports/2026-06-06-doc-council-findings.md](.claude/reports/2026-06-06-doc-council-findings.md)
+- **Rule:** Inspecting emitted `wp:` markup to declare "clone works" is not sufficient — an echoed `$content` can look structurally correct in markup but render incorrectly (or identically to a mirror) on the live homepage. Verification MUST be against the live-rendered homepage (Playwright + per-section pixel-diff + Bean R-22-13 sign-off).
+
+### [2026-06-06] Diagnosis without delivery needs a conformance gate, not just a plan
+- **Pattern key:** `diagnosis-without-delivery-needs-conformance-gate`
+- **Feedback file:** [feedback_diagnosis_without_delivery_needs_conformance_gate.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_diagnosis_without_delivery_needs_conformance_gate.md)
+- **Findings:** [reports/2026-06-06-doc-council-findings.md](.claude/reports/2026-06-06-doc-council-findings.md)
+- **Rule:** Recurring defects (typography, grid, trust-bar, hero) were correctly diagnosed multiple sessions in a row — then the fixes were never wired, committed, or gated. A diagnosis is only closed when a conformance gate (a static assert, a CI test, or a pipeline-stage-gate hook) prevents the code path from being dead again. "Planned to build" is not "built"; "discussed in decisions.md" is not "enforced."
+
 ### [2026-06-04] Composite-conversion truth = the DOCS, not the legacy converter code; full KIND-scoped mirror, no trim
 - **Pattern key:** `composite-conversion-truth-is-docs-not-legacy-code`
 - **blub.db row:** `312`
