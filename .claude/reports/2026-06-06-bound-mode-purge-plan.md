@@ -52,3 +52,42 @@ R-22-14 forbids an `empty($content)` fallback. After the render branch is remove
 
 ## OUT OF SCOPE (live data — never touch)
 product-card/{render.php,block.json,edit.js,view.js}; content-collection/render.php.
+
+---
+
+# ⭐ COUNCIL-CORRECTED EXECUTION SPEC (Bean-approved 2026-06-06) — BUILD FROM THIS, not the draft above
+
+A 6-persona `/adversarial-council` (cynic/spec-lawyer/ship-PM/migration-guardian/regression-red-team/support-realist) graded the draft plan above **NO-GO-as-written** (grades: D,D,D,D,C+,B−). Convergent fixes are baked in below. Bean's 2 decisions: **(1)** placeholder-icon interim is an ACCEPTABLE shippable win (icons next task), with a VISIBLE "unresolved" flag — never a silent `check`; **(2)** existing bound content handled by **re-clone, NOT a deprecated.js v5**.
+
+## GATE — DONE 2026-06-06 (audit passed)
+Audited ALL post types on canary (7 pages, 2 posts, 0 wp_block, 15 templates, 21 template-parts): **only page 8** (`mamas-munches-homepage`) carries a bound trust-bar. No real client page. Page 589 has **no** product-card (and the converter never touches existing post content anyway) → configurator can't regress. **→ re-clone path validated; NO deprecated.js v5 needed.**
+
+## FATAL FIX (council convergence #1 — without this it ships the duplicate-nesting bug it claims to fix)
+Trust-bar is `has_inner_blocks=1` → resolved as `_is_container_mirror_block` → its 4 multi-child badges fall through the sole-child fold to the plain walk → emitted as nested containers → bound stamp fires. Deleting the stamp ALONE leaves those nested containers as orphan InnerBlocks inside a "typed" block. **The lever:** flip trust-bar to `has_inner_blocks=0` so the walk drops to the G3-attrs path (`convert.py:2806` — child recursion suppressed, `_atomic_attrs_for` called, exactly like option-picker). In TYPED mode the block renders its OWN grid via render.php from attrs — the draft `__inner` grid CSS is no longer needed.
+
+## ORDERED BUILD STEPS (one PR; each step verified)
+**S1 — Converter `convert.py`:**
+  (a) DELETE the FR-24-10 bound stamp (`convert.py` ~2818-2820: `if slug ... children_markup and "sourceMode" in db.block_attrs(slug): attrs["sourceMode"]="bound"`). Do NOT replace with another stamp. This also fixes product-card's illegal `bound` stamp (council regression-RT confirmed: purge FIXES product-card, doesn't break it).
+  (b) ADD a typed trust-bar handler inside `_atomic_attrs_for` (the G3 path, where option-picker's `optionItems` handler lives). **Full extraction contract (council #2/#5):**
+   - Enumerate `.sgs-trust-bar__badge` nodes (handle nesting — the draft may nest `__inner > __badge`).
+   - `label` ← text of `.sgs-trust-bar__label` if present, ELSE `node.get_text(strip=True)` of the badge (NOT `_rich_text_content` — avoids double-escape; NOT raw concat that swallows SVG path data).
+   - `url` ← `_safe_href(badge_anchor['href'])` (strips `javascript:`) or omit if no `<a>`.
+   - `badgeStyle` (block-level) ← infer: any badge has `<img>` → `image-badge`; has circle/`<svg>` → `icon-circle`; bare text → `text-only`. Populate the matching field set per render.php (`:214` icon-circle{icon,label} / `:226` text-only{label,url} / `:243` image-badge{media.url,label,url}).
+   - `icon` ← DEFERRED resolver. For now set `icon:''` + a VISIBLE unresolved flag (e.g. `pending:true` or an `_iconUnresolved` marker the editor surfaces) — NOT a silent `'check'`. Image-badge `media.url` filtered to `^https?://`.
+   - `columns` ← draft badge count (so the typed grid matches).
+**S2 — Seed `seed-composition-roles.py:84`:** `RENAME_HAS_INNER_BLOCKS["sgs/trust-bar"]` `1 → 0`; re-run the seed (writes BOTH DBs) + `/sgs-update` so `block_composition.has_inner_blocks=0` lands. Verify via `sgs-db.py` BOTH DBs.
+**S3 — trust-bar block strips (5 files, NO deprecated.js v5):**
+  - `render.php`: delete `$source_mode`/`$is_bound` (~28-29) + the entire BOUND branch (~147-157). Keep typed path. Confirm the typed `SGS_Container_Wrapper::render(...)` call (~292) is byte-unchanged (council #3 — shared wrapper blast radius; live `do_blocks()` verify, not page-clone).
+  - `block.json`: enum `["typed","bound"]`→`["typed"]`; version bump; description drop the "Bound" clause (keep D95 attribution); (optional) `autoScroll` default→true if Bean confirms.
+  - `edit.js`: strip ALL bound UI — SOURCE_MODE_OPTIONS, BOUND_TEMPLATE, useInnerBlocksProps+import, AND the entire "Content source" PanelBody (support-RT M3 — a 1-option dropdown confuses clients), the bound canvas div. Always-typed.
+  - `index.js`: `save()`→`()=>null`; drop the `InnerBlocks` import.
+**S4 — Build + deploy blocks** (`build-deploy.py --blocks-only`; OPcache reset).
+**S5 — Re-clone page 8** (`--deploy-target page:8`). Delete the old bound trust-bar block; emit fresh typed. Acceptance: emitted markup has `"sourceMode":"typed"` (or absent) + `"items":[` with entry-count == draft badge count.
+**S6 — VERIFY on the real homepage (R-22-11/R-22-13, council #5 — live DOM not eyeball):**
+  - Playwright page 8: `document.querySelectorAll('.sgs-trust-bar__badge').length === <expected>`; native circles present; labels correct; icons = visible placeholder (flagged); NO nested `sgs/container` badge blocks.
+  - REGRESSION GUARD: page 589 configurator still resolves (radio-pill count > 0, From-price renders); content-collection grid still renders live cards.
+  - Bean R-22-13 sign-off (expectation pre-set: labels+structure right, icons uniform-placeholder).
+  - Rollback line: if S5 emits empty/garbage items[] → revert the stamp deletion + re-plan (STOP #19), don't iterate inline.
+**S7 — `/sgs-update`** (enum/has_inner_blocks/attr schema change → DB sync).
+
+## FOLLOW-ON (next task, Bean-scoped): icon-identity resolver — multi-library SVG fingerprint + emoji reverse-index + confidence threshold + visible fallback (never silent star). Replaces the S1(b) placeholder.

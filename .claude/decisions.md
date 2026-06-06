@@ -6,6 +6,17 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-06 (cloning thread) — bound-purge design-gate PASSED + audit gate PASSED; council-corrected build spec ready (D182)
+
+**D182 — Task 3 (purge trust-bar bound-mode → typed) is GO after a 6-persona `/adversarial-council` design-gate (Rule 7) + Bean approval + a passed content audit. The council-corrected execution spec is the build SoT.** _(Gate work only this session; BUILD not yet executed. Spec: `.claude/reports/2026-06-06-bound-mode-purge-plan.md` §COUNCIL-CORRECTED EXECUTION SPEC.)_
+
+- **Council verdict on the draft plan:** NO-GO-as-written (grades D,D,D,D,C+,B−). Convergent must-fixes baked into the corrected spec: **(FATAL)** deleting the `sourceMode='bound'` stamp does NOT stop the InnerBlocks child-walk — trust-bar is `has_inner_blocks=1` so its 4 badges emit as orphan nested containers (the duplicate-nesting bug it claims to fix). Lever: flip `seed-composition-roles.py:84` `RENAME_HAS_INNER_BLOCKS["sgs/trust-bar"]` 1→0 → drops to the G3-attrs path (child-recursion suppressed, `_atomic_attrs_for` handler like option-picker). Plus: a full items[] extraction contract (badgeStyle detect + label from `.sgs-trust-bar__label` + url via `_safe_href` + visible icon-unresolved flag, never silent `check`); strip the whole "Content source" PanelBody from edit.js; live-DOM badge-count gate not eyeball; page-589 regression pre-check.
+- **Bean's 2 decisions (Rule 9):** (1) placeholder-icon interim is an ACCEPTABLE shippable win (icon-identity resolver = explicit NEXT task), provided the placeholder is VISIBLY flagged; (2) existing bound content handled by **re-clone, NOT a deprecated.js v5** — the audit gates this.
+- **Audit gate PASSED:** ALL canary post types scanned (7 pages/2 posts/0 wp_block/15 templates/21 template-parts) → only page 8 carries a bound trust-bar; no real client page; page 589 has no product-card. → re-clone path safe, no v5.
+- **Regression red-team finding (recorded):** deleting the converter bound stamp FIXES product-card's illegal `bound` stamp rather than breaking it — the converter only runs on draft HTML during a clone, never on existing post content, so the live configurator (589) is structurally untouchable by this change.
+- **Tasks 5/6 finding (why they were deferred):** live page-8 data proved the trust-bar's visible gap/column defects are BOUND-MODE artefacts (badges = echoed draft CSS, not block attributes), and ZERO page-8 containers hit the `grid_on_inner` path the wrapper WIP "finishes" → 5/6 deliver no visible change while bound; Task 3 is the real unlock. Wrapper WIP (7 files) left uncommitted; has a latent inline-vs-@media base-grid bug to fix before it's committed.
+- **Doc cleanup (Task 1 HIGH-6) shipped:** handoffs truncated→archive, 9 plans→archive, README/Spec18/BUILD-ORDER fixed, decisions.md 843→526 (commits `c5cb0313`/`707aa4e2`, pushed). parking.md deliberately NOT force-shrunk — its 112 entries are all already active status (no resolved cruft); <300 target was based on a stale assumption.
+
 ## 2026-06-06 (theme thread) — council Wave 3 #2 (PREFLIGHT visibility + auto-variesBy) SHIPPED (D181)
 
 **D181 — Wave 3 #2 of the council backlog is shipped + pushed: the PREFLIGHT publish-block is now VISIBLE on the product edit screen, and provisioning auto-sets a sensible Google variesBy. (THEME thread; cloning co-active — path-scoped commits `dbb96b6c`, `0bf4f2a7`.)**
