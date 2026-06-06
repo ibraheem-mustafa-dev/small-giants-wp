@@ -40,7 +40,7 @@ final class Product_Provisioning_Args {
 	 * @return array
 	 */
 	public static function provision_args(): array {
-		return array(
+		$args = array(
 			'id'         => array(
 				'required'          => true,
 				'type'              => 'integer',
@@ -128,18 +128,24 @@ final class Product_Provisioning_Args {
 				'default'     => false,
 				'description' => \__( 'Compute the plan without writing anything.', 'sgs-blocks' ),
 			),
-			// Test-only injected-failure threshold. Declared here so it is visible
-			// and self-documenting, but it is DEAD CODE in production: the handler
-			// honours it only when the user has manage_options AND the
-			// `sgs_pa_allow_test_fail` filter returns true (default false).
-			'_sgs_test_fail_after' => array(
+		);
+
+		// Test-only injected-failure threshold. Registered ONLY under a debug/
+		// testing constant so it never appears in the public REST OPTIONS schema in
+		// production. Even when registered, the handler honours it only when the
+		// user has manage_options AND the `sgs_pa_allow_test_fail` filter returns
+		// true (default false).
+		if ( ( \defined( 'WP_DEBUG' ) && \WP_DEBUG ) || ( \defined( 'SGS_TESTING' ) && \SGS_TESTING ) ) {
+			$args['_sgs_test_fail_after'] = array(
 				'required'          => false,
 				'type'              => 'integer',
 				'default'           => 0,
 				'sanitize_callback' => 'absint',
 				'description'       => \__( 'Test-only: throw after creating N variations (gated; inert in production).', 'sgs-blocks' ),
-			),
-		);
+			);
+		}
+
+		return $args;
 	}
 
 	/**

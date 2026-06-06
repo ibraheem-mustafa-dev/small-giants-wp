@@ -362,17 +362,32 @@ final class Product_Preflight {
 		}
 
 		// ── Check 4: Missing images ──────────────────────────────────────────────
-		$checked[]       = 'images';
-		$parent_image_id = $product->get_image_id();
-		$no_image_ids    = array();
+		// Resolve image URLs the SAME way the manifest/render path does:
+		// wp_get_attachment_image_url( get_image_id() ). WC_Product has no
+		// get_image_url() method, and wc_get_product() on an attachment ID returns
+		// false (it only resolves product post-types). get_image_id() returns 0 when
+		// no featured image is set, so the URL resolves to '' (never a placeholder
+		// attachment); the explicit woocommerce-placeholder string guard is kept as
+		// defence-in-depth in case a placeholder file is ever uploaded as a real image.
+		$checked[]        = 'images';
+		$parent_image_id  = $product->get_image_id();
+		$parent_image_url = $parent_image_id
+			? (string) \wp_get_attachment_image_url( $parent_image_id, 'woocommerce_thumbnail' )
+			: '';
+		$has_parent_real_image = ( '' !== $parent_image_url ) && ( false === strpos( $parent_image_url, 'woocommerce-placeholder' ) );
+		$no_image_ids = array();
 		foreach ( $product->get_children() as $child_id ) {
 			$variation = \wc_get_product( $child_id );
 			if ( ! $variation || ! $variation->exists() ) {
 				continue;
 			}
-			$variation_image_id = $variation->get_image_id();
-			// A variation passes when it has its own image OR the parent has a fallback image.
-			if ( ! $variation_image_id && ! $parent_image_id ) {
+			$variation_image_id  = $variation->get_image_id();
+			$variation_image_url = $variation_image_id
+				? (string) \wp_get_attachment_image_url( $variation_image_id, 'woocommerce_thumbnail' )
+				: '';
+			// A variation passes when it has its own real (non-placeholder) image OR the parent has a real fallback image.
+			$has_variation_real_image = ( '' !== $variation_image_url ) && ( false === strpos( $variation_image_url, 'woocommerce-placeholder' ) );
+			if ( ! $has_variation_real_image && ! $has_parent_real_image ) {
 				$no_image_ids[] = $child_id;
 			}
 		}
@@ -501,6 +516,7 @@ final class Product_Preflight {
 		global $wpdb;
 
 		// Fetch up to CRON_PRODUCT_BATCH published variable products (cheap indexed query).
+		// Use RAND() to randomise selection so coverage rotates across all products over time.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- cron context; result not cached on purpose.
 		$product_ids = $wpdb->get_col(
 			$wpdb->prepare(
@@ -511,7 +527,7 @@ final class Product_Preflight {
 				    AND p.post_status = 'publish'
 				    AND pm.meta_key   = '_product_type'
 				    AND pm.meta_value = 'variable'
-				  ORDER BY p.ID ASC
+				  ORDER BY RAND()
 				  LIMIT %d",
 				self::CRON_PRODUCT_BATCH
 			)

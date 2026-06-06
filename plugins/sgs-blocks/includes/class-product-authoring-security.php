@@ -24,7 +24,11 @@ defined( 'ABSPATH' ) || exit;
 final class Product_Authoring_Security {
 
 	/**
-	 * Per-user write rate-limit: maximum writes per window.
+	 * Per-user write rate-limit: maximum variation-units per window.
+	 *
+	 * Each request accounts for the number of variations it will create
+	 * (not just 1 per request), so one provision call creating 300 variations
+	 * counts as 300 units against this budget.
 	 *
 	 * @var int
 	 */
@@ -49,7 +53,14 @@ final class Product_Authoring_Security {
 	 * @return bool|\WP_Error
 	 */
 	public static function can_edit_product( \WP_REST_Request $request ) {
-		return \current_user_can( 'edit_post', (int) $request['id'] );
+		if ( ! \current_user_can( 'edit_post', (int) $request['id'] ) ) {
+			return new \WP_Error(
+				'sgs_forbidden',
+				\__( 'You are not allowed to edit this product.', 'sgs-blocks' ),
+				array( 'status' => 403 )
+			);
+		}
+		return true;
 	}
 
 	// ── Common security chain ────────────────────────────────────────────────
@@ -62,13 +73,19 @@ final class Product_Authoring_Security {
 	 * shared between R1 and R2 so a user cannot bypass the budget by
 	 * alternating endpoints.
 	 *
+	 * The rate-limit is budgeted in variation-units, not requests. Callers that
+	 * know how many variations they will create MUST pass that count as $units so
+	 * one large request cannot flood the budget (e.g. a single 300-combo provision
+	 * call would otherwise count as 1 unit instead of 300).
+	 *
 	 * Returns null on success, or a WP_Error to short-circuit the handler.
 	 *
 	 * @param \WP_REST_Request $request    Incoming request.
 	 * @param int              $product_id Validated parent product ID.
+	 * @param int              $units      Variation-units this call will consume (default 1).
 	 * @return \WP_Error|null
 	 */
-	public static function security_chain( \WP_REST_Request $request, int $product_id ) {
+	public static function security_chain( \WP_REST_Request $request, int $product_id, int $units = 1 ) {
 		// ── Step 1: CSRF nonce ───────────────────────────────────────────────
 		$nonce = (string) $request->get_header( 'X-WP-Nonce' );
 		if ( ! \wp_verify_nonce( $nonce, 'wp_rest' ) ) {
@@ -95,7 +112,7 @@ final class Product_Authoring_Security {
 			$rl_start = $now;
 		}
 
-		if ( $rl_count >= self::RL_MAX_WRITES ) {
+		if ( ( $rl_count + $units ) > self::RL_MAX_WRITES ) {
 			return new \WP_Error(
 				'sgs_rate_limited',
 				\__( 'Too many requests. Please wait before trying again.', 'sgs-blocks' ),
@@ -103,13 +120,13 @@ final class Product_Authoring_Security {
 			);
 		}
 
-		// Increment within the fixed window (TTL = remaining window time).
+		// Increment by $units within the fixed window (TTL = remaining window time).
 		$remaining = \max( 1, self::RL_WINDOW_SECONDS - ( $now - $rl_start ) );
 		\set_transient(
 			$rl_key,
 			array(
 				't' => $rl_start,
-				'c' => $rl_count + 1,
+				'c' => $rl_count + $units,
 			),
 			$remaining
 		);

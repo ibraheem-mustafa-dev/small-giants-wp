@@ -140,7 +140,21 @@ final class Product_Provisioning {
 	public static function provision( \WP_REST_Request $request ) {
 		$product_id = (int) $request['id'];
 
-		$error = Product_Authoring_Security::security_chain( $request, $product_id );
+		// Upper-bound the variation-units this call may create from the raw request
+		// input (product of per-attribute term counts), capped at MAX_VARIATIONS so
+		// the rate-limit budget is charged per-variation, not per-request. This
+		// mirrors the projected-combo pre-gate in run_provision(); the cap matches
+		// the hard combo ceiling enforced there before any writes occur.
+		$projected_units = 1;
+		foreach ( (array) $request['attributes'] as $attr_data ) {
+			$tcount           = ( isset( $attr_data['terms'] ) && \is_array( $attr_data['terms'] ) )
+				? \count( $attr_data['terms'] )
+				: 0;
+			$projected_units *= \max( 1, $tcount );
+		}
+		$projected_units = \min( $projected_units, Product_Provisioning_Args::MAX_VARIATIONS );
+
+		$error = Product_Authoring_Security::security_chain( $request, $product_id, $projected_units );
 		if ( null !== $error ) {
 			return $error;
 		}
@@ -183,19 +197,40 @@ final class Product_Provisioning {
 				$request
 			);
 		} catch ( \Throwable $e ) {
-			self::rollback( $ledger, $parent_snapshot, $product );
+			$failed_deletes = self::rollback( $ledger, $parent_snapshot, $product );
+
+			$message = \sprintf(
+				/* translators: %s: internal error message. */
+				\__( 'Provisioning failed and was rolled back. Reason: %s', 'sgs-blocks' ),
+				$e->getMessage()
+			);
+
+			$error_data = array(
+				'status'                 => 500,
+				'created'                => \count( $ledger['variations'] ),
+				'rolled_back_variations' => $ledger['variations'],
+			);
+
+			// A failed delete leaves an orphan variation — do NOT report a clean
+			// rollback. Surface the affected IDs so an operator can clean up.
+			if ( ! empty( $failed_deletes ) ) {
+				$error_data['rollback_incomplete']    = true;
+				$error_data['orphaned_variations']    = $failed_deletes;
+				$error_data['rolled_back_variations'] = \array_values(
+					\array_diff( $ledger['variations'], $failed_deletes )
+				);
+
+				$message .= ' ' . \sprintf(
+					/* translators: %s: comma-separated list of variation IDs. */
+					\__( 'Rollback incomplete — manual cleanup required: variation IDs %s.', 'sgs-blocks' ),
+					\implode( ', ', $failed_deletes )
+				);
+			}
+
 			return new \WP_Error(
 				'sgs_provision_rolled_back',
-				\sprintf(
-					/* translators: %s: internal error message. */
-					\__( 'Provisioning failed and was rolled back. Reason: %s', 'sgs-blocks' ),
-					$e->getMessage()
-				),
-				array(
-					'status'                 => 500,
-					'created'                => \count( $ledger['variations'] ),
-					'rolled_back_variations' => $ledger['variations'],
-				)
+				$message,
+				$error_data
 			);
 		}
 
@@ -571,7 +606,12 @@ final class Product_Provisioning {
 	public static function bulk_update( \WP_REST_Request $request ) {
 		$product_id = (int) $request['id'];
 
-		$error = Product_Authoring_Security::security_chain( $request, $product_id );
+		// One variation-unit per item: each bulk item writes exactly one existing
+		// variation, so the rate-limit is charged the item count (the validator
+		// guarantees a non-empty array; the count is the true write volume).
+		$bulk_units = \count( (array) $request['items'] );
+
+		$error = Product_Authoring_Security::security_chain( $request, $product_id, \max( 1, $bulk_units ) );
 		if ( null !== $error ) {
 			return $error;
 		}
@@ -731,16 +771,23 @@ final class Product_Provisioning {
 	 * @param array                $ledger          Provision ledger.
 	 * @param array                $parent_snapshot From capture_parent_snapshot().
 	 * @param \WC_Product_Variable $product         Parent product.
-	 * @return void
+	 * @return int[] Variation IDs that FAILED to delete (empty array = clean rollback).
 	 */
 	private static function rollback(
 		array $ledger,
 		array $parent_snapshot,
 		\WC_Product_Variable $product
-	): void {
-		// 1. Delete created variations.
+	): array {
+		// 1. Delete created variations. wp_delete_post() returns the deleted post
+		// object on success, or false/null on failure — capture each so a failed
+		// delete is surfaced rather than silently reported as a clean rollback.
+		$failed_deletes = array();
 		foreach ( $ledger['variations'] as $vid ) {
-			\wp_delete_post( (int) $vid, true );
+			$vid     = (int) $vid;
+			$deleted = \wp_delete_post( $vid, true );
+			if ( ! $deleted ) {
+				$failed_deletes[] = $vid;
+			}
 		}
 
 		// 2. Restore parent attributes.
@@ -778,6 +825,8 @@ final class Product_Provisioning {
 		// 5. Cache busting after rollback.
 		\wc_delete_product_transients( $product->get_id() );
 		Product_Authoring_Security::trigger_lookup_regen( $product );
+
+		return $failed_deletes;
 	}
 
 	/**

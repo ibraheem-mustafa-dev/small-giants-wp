@@ -65,6 +65,13 @@ final class Cart_Proxy {
 		// proxy-bypass (FR-MISSING-3). This filter is the SINGLE place the global
 		// per-variation window is incremented.
 		\add_filter( 'woocommerce_add_to_cart_validation', array( __CLASS__, 'enforce_add_to_cart_limits' ), 10, 4 );
+		// Block every add-to-cart path (proxy, classic, and Store-API) for products
+		// whose display price resolves to £0 or below. woocommerce_add_to_cart_validation
+		// does NOT cover the WooCommerce Block Store-API path (/wc/store/v1/cart/add-item);
+		// woocommerce_is_purchasable fires universally across all paths and is the
+		// correct defence layer for this case.
+		// Backlog #3 / FR-MISSING-3 — defence-in-depth alongside the validation filter above.
+		\add_filter( 'woocommerce_is_purchasable', array( __CLASS__, 'block_zero_price_purchasable' ), 10, 2 );
 	}
 
 	// ── REST route ────────────────────────────────────────────────────────────
@@ -961,6 +968,40 @@ final class Cart_Proxy {
 			return;
 		}
 		self::purge_by_product_id( $product->get_id() );
+	}
+
+	// ── Zero-price purchasable guard (FR-MISSING-3 / Backlog #3) ────────────
+	//
+	// Closes the Store-API £0 add-to-cart bypass. woocommerce_add_to_cart_validation
+	// does NOT fire on the WooCommerce Block Store-API path; woocommerce_is_purchasable
+	// fires on EVERY path (proxy, classic REST, Store-API). We return FALSE when the
+	// display price resolves to ≤ 0, treating an empty/non-numeric price as ≤ 0 to
+	// err on the side of blocking rather than allowing an unpriced item into the cart.
+
+	/**
+	 * Return false when a product's display price is zero or negative, preventing
+	 * it from being added to the cart via any path including the Store-API.
+	 *
+	 * Implements FR-MISSING-3 (Backlog #3). Additive defence-in-depth alongside
+	 * the woocommerce_add_to_cart_validation filter registered in register().
+	 *
+	 * @param bool        $purchasable Current purchasable flag from WooCommerce.
+	 * @param \WC_Product $product     The product being evaluated.
+	 * @return bool False when display price is ≤ 0, otherwise the original value.
+	 */
+	public static function block_zero_price_purchasable( bool $purchasable, $product ): bool {
+		if ( ! $product instanceof \WC_Product ) {
+			return $purchasable;
+		}
+
+		$price = \wc_get_price_to_display( $product );
+
+		// Cast to float; an empty string / null / non-numeric value resolves to 0.0.
+		if ( (float) $price <= 0 ) {
+			return false;
+		}
+
+		return $purchasable;
 	}
 
 	// ── Direct Store-API bypass stub ──────────────────────────────────────────
