@@ -1,3 +1,57 @@
+# Session Handoff — 2026-06-06 (SGS THEME thread, session 17 — council backlog Wave 1 + Wave 2 + Wave 3 #2 SHIPPED; 3-team adversarial pass; D180/D181)
+
+> Theme/blocks thread. Cloning → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. Cloning thread co-active on `main` ALL session — every theme commit was path-scoped (`git commit -- <paths>`); never-commit artefacts (lucide-icons.php, sgs-framework.db, theme-snapshot.json, phase4 reports) left untouched.
+
+## Completed This Session
+1. **Council must-fix Wave 1 SHIPPED (9 items)** — £0 add-to-cart blocked via `woocommerce_is_purchasable` override (#3); rate-limit-by-variations (#6); `WP_Error` 403 (#7); test-hook gated behind WP_DEBUG (#8); preflight cron RAND() (#10) + WC-placeholder no_image (#11); rollback surfaces failed-delete IDs (#12); edit-safety TTL→DAY (#15) + de-dual-fired delete warning (#16); NEW lean-seed ≤24KB PHPUnit test (#18). Commits `04e62cdd` + batch. Caught 3 real subagent defects (cut-off, wrong-premise #16, an invented `WC_Product::get_image_url()` runtime fatal in #11).
+2. **Council must-fix Wave 2 SHIPPED (8 items, value-ladder authoring UI + UK consumer-law)** — product-data authoring fields + edit.js controls (#1); reference-price floor+ceiling+attested-only claim (#4); "Best value"→"Most popular" on decoy (#5); operator pack-size axis (#9); sale-tail denominator (#13); price-claim deny-list + NFKC/zero-width/no-space (#14); DMCC audit record (#19); inc-VAT consumer ladder (#20). Commit `34e7e427`. Grounded in DMCC 2024/CPRs/ASA/Price Marking Order research.
+3. **3-team adversarial red-team pass — 6 real gaps found + fixed + re-verified** — REST meta write bypassing the #4 floor + #19 audit (`show_in_rest:false`); rogue-string attestation via `(bool)` cast (strict `'1'===`); £0 "save 100%" (skip ≤0 rows); deny-list Unicode/CamelCase evasion (NFKC); decoy badge; + a **PREFLIGHT `manifest_over_cap` FALSE-POSITIVE** (its lean-subset hand-copy had DRIFTED from render.php's real strip → blocked publishing the valid 48-SKU fixture; aligned exactly). `/qc-council` separately caught the attestation-not-read-at-render blocker.
+4. **Wave 3 #2 SHIPPED** — grounding showed WC products edit CLASSIC (not Gutenberg), so the publish-block reason is now a classic-editor `admin_notices` reader of the persisted `_sgs_preflight_issues` (commit `dbb96b6c`); + auto-set Google variesBy at provisioning via `/subagent-driven-development` (sonnet impl + sonnet-spec + haiku-quality review; mapping live-verified) (commit `0bf4f2a7`).
+5. **Docs + DB prep** — D180 + D181 recorded (`b94c4b33`, `edcd0d40`); parking backlog updated (Wave 1/2/3#2 shipped, #17 + Phase 2 remain); `/sgs-update` clean (0 new blocks/attrs, DB current); 2 lessons captured; MEMORY.md trimmed back under the 24576 cap.
+
+## Current State
+- **Branch:** `main` — theme commits this session `04e62cdd` (Wave1) · `34e7e427` (Wave2) · `b94c4b33` (D180) · `dbb96b6c` (#2-part1) · `0bf4f2a7` (#2-part2) · `edcd0d40` (D181), all pushed + path-scoped. Cloning commits interleave.
+- **Tests:** `php -l` + WPCS clean on every touched file; mapping + legal fixes live-verified on canary 540 (axe 15.71:1; 0 console errors).
+- **Build/deploy:** all LIVE on sandybrown canary, opcache-reset. Product 540 republished (the PREFLIGHT false-positive had reverted it to draft).
+- **Uncommitted (NOT mine):** cloning thread's container/social-icons/SpacingControl files + never-commit artefacts.
+
+## Outcome vs Completion (Gate 3.5)
+**OUTCOME ACHIEVED** — Wave 1, Wave 2 (+ adversarial hardening + PREFLIGHT fix), Wave 3 #2 all live-verified on canary 540 (£0 add blocked via mutate→restore; attestation gate on→savings/off→none; "Most popular" on decoy; deny-list vectors stripped; variesBy auto-mapped; publish-block now visible). R-22-13 signed off. Not completion theatre.
+
+## Known Issues / Blockers
+- **None block the next session.** The legal/security must-fixes are all live; the shop layer is correct + safe.
+- The real first-shop blocker remains the CONVERTER (cloning thread) — the shop LAYER is done; don't out-run the converter.
+
+## Next Priorities (in order)
+1. **Wave 3 #17 — file-cohesion split + CENTRALISE the lean-seed stripper** (render.php / PREFLIGHT / the size-test all hand-copy it — that drift caused this session's PREFLIGHT false-positive). Plus split render-helpers.php (1500+) → colour/configurator-pricing/value-ladder/svg-kses + cart-proxy. Large, high-churn — do it deliberately, LAST.
+2. **#2 optional** — a proactive pre-publish readiness check (lower value now the block reason is visible).
+3. **Phase 2 — Spec 27/28 to 100%** — R4 slug-templates + F2 (FAQPage/llms.txt/Merchant feed); Spec 28 P2/P3. P4 WC-write + R5 AI-builder stay gated.
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `plugins/sgs-blocks/includes/class-cart-proxy.php` | #3 £0 is_purchasable override |
+| `plugins/sgs-blocks/includes/class-product-authoring-security.php` | #6 rate-limit-by-units + #7 WP_Error 403 |
+| `plugins/sgs-blocks/includes/class-product-provisioning-args.php` | #8 WP_DEBUG-gated test hook |
+| `plugins/sgs-blocks/includes/class-product-provisioning.php` | #12 rollback return-check + #2-part2 auto-variesBy |
+| `plugins/sgs-blocks/includes/class-product-preflight.php` | #10/#11 + lean-subset-drift fix + #2-part1 edit-screen notice |
+| `plugins/sgs-blocks/includes/class-configurator-edit-safety.php` | #15 TTL + #16 trash-vs-permanent |
+| `plugins/sgs-blocks/includes/class-configurator-meta.php` | #1 metas + #4 validation + #14 deny-list + #19 audit + show_in_rest:false (GAP-1/2) |
+| `plugins/sgs-blocks/includes/configurator-product-fields.php` (NEW) | #1 product-level authoring UI |
+| `plugins/sgs-blocks/includes/render-helpers.php` | #13 sale-tail + #20 inc-VAT + BUG-1 ≤0-skip + AMB-1 sale-flag |
+| `plugins/sgs-blocks/src/blocks/product-card/{render.php,edit.js}` | #1 controls + #5 badge + #9 axis + strict-attested |
+| `plugins/sgs-blocks/tests/php/LeanSeedSizeTest.php` (NEW) | #18 ≤24KB size assert |
+| `plugins/sgs-blocks/sgs-blocks.php` | require the new authoring-fields file |
+| `.claude/{decisions.md,parking.md}` + `plans/2026-06-06-spec27-28-council-mustfix-wave-plan.md` (NEW) | D180/D181 + backlog + wave-plan |
+
+## Notes for Next Session
+- **A guard on ONE write path isn't a guard** — the REST meta API bypassed the save-hook's legal validation+audit; close unneeded `show_in_rest` doors. Meta security/legal gates use strict `'1'===`, never `(bool)`. (memory `guard-on-one-path-is-not-a-guard`)
+- **A duplicated calculation drifts** — PREFLIGHT's lean-subset copy diverged from render.php → false publish-block. #17 centralises it. (memory `duplicated-calculation-drifts`)
+- **WC products edit CLASSIC** (`use_block_editor_for_post_type('product')`=false) — no Gutenberg pre-publish panel; surface admin notices via persisted meta + `admin_notices`.
+- **Gemini cross-rater is account-blocked** (403 "Lightning dunning decision deny") — use haiku as the second family for cross-model review.
+
+---
+
 # Session Handoff — 2026-06-05 (SGS THEME thread, session 16 — Spec 27 reconciled to v5 + D-wave (D176/D177/D179) + Spec 28 P1 value-ladder SHIPPED + /sgs-update + a 6-persona adversarial-council + verifier fact-check → a fact-checked must-fix backlog + doc-drift fixes)
 
 > Theme/blocks thread. Cloning → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. **Decisions ALL committed this session: D176 + D177 (`535942f1`) + D179 Spec 28 P1 (`cd898a11`) — the session-15 "deferred D176/D177" Known Issue is RESOLVED.** Cloning thread co-active (took D178, `convert.py` lift fixes); commit by EXPLICIT PATH (`git commit -- <paths>` — a bare commit swept in co-active staged files once this session; lesson `git-commit-must-be-path-scoped-with-coactive-sessions`).
