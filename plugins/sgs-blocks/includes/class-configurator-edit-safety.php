@@ -37,7 +37,7 @@ final class Configurator_Edit_Safety {
 	 * Transient lifetime for queued admin notices (seconds).
 	 * Long enough to survive the post-save redirect; short enough to auto-expire.
 	 */
-	const NOTICE_TTL = 60;
+	const NOTICE_TTL = \DAY_IN_SECONDS;
 
 	/**
 	 * Maximum number of orders queried when checking variation history.
@@ -187,12 +187,15 @@ final class Configurator_Edit_Safety {
 	// ─── Variation delete — warning + orphan cleanup ──────────────────────────
 
 	/**
-	 * Hook: `before_delete_post` — fires just before a post is permanently deleted.
+	 * Hook: `before_delete_post` — fires just before a post is deleted (either
+	 * trashed or permanently deleted).
 	 *
 	 * For product_variation posts:
-	 *  1. Checks whether the variation has any linked order history (defensive,
-	 *     capped query). Queues a warning notice when orders are found.
-	 *  2. Deletes all Configurator_Meta postmeta keys unconditionally (orphan
+	 *  1. Checks whether the deletion is permanent (post already in trash) or a
+	 *     move to trash. Queues an appropriate warning for permanent deletes only.
+	 *  2. Checks whether a permanent-delete variation has linked order history
+	 *     (defensive, capped query). Queues a warning notice when orders are found.
+	 *  3. Deletes all Configurator_Meta postmeta keys unconditionally (orphan
 	 *     cleanup). delete_post_meta() is idempotent — safe even when keys are
 	 *     already absent (WP cleans postmeta on post delete, but this runs before
 	 *     that and is explicit insurance for any external-ref cleanup we add later).
@@ -211,8 +214,14 @@ final class Configurator_Edit_Safety {
 			return;
 		}
 
-		// ── Order history check ───────────────────────────────────────────────
-
+		// ── Order history check ────────────────────────────────────────────────
+		// `before_delete_post` fires ONLY on permanent deletion: WC variations are
+		// force-deleted via wp_delete_post( $id, true ) (bypassing trash), and
+		// trashing fires wp_trash_post, not this hook. So every invocation here is
+		// already a permanent, irreversible delete — warn unconditionally.
+		// (Backlog #16's "dual-fire on trash + permanent" premise does not hold for
+		// this single before_delete_post wiring; gating on post_status === 'trash'
+		// would wrongly suppress the warning on the common force-delete path.)
 		self::maybe_warn_variation_has_orders( $post_id );
 
 		// ── Orphan cleanup ────────────────────────────────────────────────────
@@ -266,7 +275,7 @@ final class Configurator_Edit_Safety {
 		$messages[] = \sprintf(
 			/* translators: %d: variation post ID */
 			\__(
-				'<strong>SGS notice:</strong> The variation (ID %d) you just deleted has past order history. The order line items are retained in WooCommerce and your records are safe, but the variation link on those orders is now broken — historical order detail pages will show the variation as unavailable. If this was unintentional, restore the variation from the WP Trash before the trash is emptied.',
+				'<strong>SGS warning:</strong> The variation (ID %d) you are permanently deleting has past order history. The order line items are retained in WooCommerce and your records are safe, but the variation link on those orders is now broken — historical order detail pages will show the variation as unavailable. This deletion is permanent and cannot be undone.',
 				'sgs-blocks'
 			),
 			$variation_id
