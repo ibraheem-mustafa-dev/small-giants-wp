@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import shlex
 import subprocess
@@ -62,9 +63,18 @@ def validate_block_markup(markup: str) -> dict:
         # Pass markup via stdin (arg sentinel '-') rather than as an argv string.
         # Windows caps a command line at 32,767 chars (CreateProcess), which large
         # aggregate markup exceeds -> WinError 206. stdin has no such limit.
+        # Force UTF-8 on stdin/stdout/stderr. Aggregate clone markup can contain
+        # non-cp1252 characters (e.g. '→' U+2192, '£', smart quotes). With text=True
+        # Windows defaults to cp1252 and raises "'charmap' codec can't encode" while
+        # writing `input` to the child's stdin — which the orchestrator caught and
+        # silently marked stage-4j "skipped" on EVERY run, disabling the only
+        # WP-block-markup validity check. encoding='utf-8' fixes the parent side;
+        # PYTHONUTF8/PYTHONIOENCODING make the child CLI read its stdin as UTF-8 too.
         proc = subprocess.run(
             [sys.executable, str(WP_BLOCKS_CLI), "validate", "-"],
             input=markup, capture_output=True, text=True, timeout=30, check=False,
+            encoding="utf-8", errors="replace",
+            env={**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"},
         )
     except subprocess.SubprocessError as e:
         raise WpBlocksValidateError(f"wp-blocks validate failed: {e}") from e
