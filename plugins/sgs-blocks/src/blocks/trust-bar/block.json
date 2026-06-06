@@ -2,10 +2,10 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/trust-bar",
-	"version": "0.4.0",
+	"version": "0.5.0",
 	"title": "SGS Trust Bar",
 	"category": "sgs-content",
-	"description": "Horizontal strip of trust signals. Three variants: icon-in-circle (default), text-only pill badges, and image-badge (certification logos). Dual-mode: Typed (curated items[] repeater) or Bound (InnerBlocks — converter-emitted badges). Merged from sgs/certification-bar 2026-05-29 D95.",
+	"description": "Horizontal strip of trust signals. Three variants: icon-in-circle (default), text-only pill badges, and image-badge (certification logos). Typed mode only: curated items[] repeater. Merged from sgs/certification-bar 2026-05-29 D95.",
 	"keywords": [
 		"trust",
 		"badges",
@@ -55,8 +55,7 @@
 			"type": "string",
 			"default": "typed",
 			"enum": [
-				"typed",
-				"bound"
+				"typed"
 			]
 		},
 		"badgeStyle": {

@@ -73,15 +73,23 @@ HAS_INNER_BLOCKS = {
 # Slug RENAMES (2026-06-02, Workstream A — D150). The block_composition table
 # carries the pre-D123 slug `sgs/trust-badges`; the block was renamed to
 # `sgs/trust-bar`. Rename the row (preserving its composition_role) and set
-# has_inner_blocks=1 — trust-bar genuinely wraps InnerBlocks badge grid-items.
-# Walker-safe: today `sgs/trust-bar` has no row so get_has_inner_blocks soft-fails
-# to True; setting it to 1 (=True) preserves the exact current walker behaviour.
+# has_inner_blocks=0 — TYPED-ONLY post-bound-purge (D182, 2026-06-06): trust-bar
+# renders its badge grid from its own items[] attrs (typed loop in render.php), it
+# does NOT wrap walked InnerBlocks. has_inner_blocks=0 drops it to the converter
+# G3-attrs path so the typed items[] extraction handler fires (like option-picker)
+# and the child-walk is suppressed — preventing the duplicate-nesting orphan
+# InnerBlocks that deleting the bound stamp alone would leave.
 # Idempotent: only renames when the old row exists and the new one does not.
 RENAMES: dict[str, str] = {
     "sgs/trust-badges": "sgs/trust-bar",
 }
 RENAME_HAS_INNER_BLOCKS: dict[str, int] = {
-    "sgs/trust-bar": 1,
+    "sgs/trust-bar": 0,
+}
+# Enforce has_inner_blocks on EXISTING rows (the rename above only fires when the
+# target row is absent; once renamed, re-runs must still converge these values).
+ENFORCE_HAS_INNER_BLOCKS: dict[str, int] = {
+    "sgs/trust-bar": 0,
 }
 
 # Fresh INSERTS (2026-06-02, Workstream A — D150). Blocks added after the
@@ -153,6 +161,23 @@ def main() -> int:
             )
             print(f"  [set]  rename {old_slug} -> {new_slug}")
         changed += cur.rowcount
+
+    # 1b. ENFORCE has_inner_blocks on existing rows (converges re-runs — the rename
+    #     above is a no-op once the target row exists, so values set post-rename
+    #     must be re-asserted here). Idempotent: UPDATE only when the value differs.
+    for slug, want in ENFORCE_HAS_INNER_BLOCKS.items():
+        row = cur.execute(
+            "SELECT has_inner_blocks FROM block_composition WHERE block_slug = ?", (slug,)
+        ).fetchone()
+        if row is not None and row[0] != want:
+            cur.execute(
+                "UPDATE block_composition SET has_inner_blocks = ? WHERE block_slug = ?",
+                (want, slug),
+            )
+            changed += cur.rowcount
+            print(f"  [set]  enforce {slug} has_inner_blocks={want} (was {row[0]})")
+        else:
+            print(f"  [ok]   enforce {slug} has_inner_blocks={want}: already correct")
 
     # 2. Fresh INSERTS (idempotent — only when the row is absent).
     for spec in INSERTS:

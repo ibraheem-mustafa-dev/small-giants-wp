@@ -2,17 +2,15 @@
 /**
  * SGS Trust Bar block — server-side render.
  *
- * Dual-mode (FR-24-10, Spec 24, v0.3.0):
- *   sourceMode='typed' — curated items[] repeater (all 3 variants, unchanged).
- *   sourceMode='bound' — wrapper shell + echo $content (converter InnerBlocks).
- *
- * R-22-14: mode discriminator is the EXPLICIT sourceMode attr. NEVER empty($content).
+ * Typed-only: curated items[] repeater (all 3 variants).
+ * Bound mode (sourceMode='bound') removed — purged per WS-3 de-cheat (Rules 1 + 2).
  *
  * @since 0.2.0  Merged certification-bar + auto-scroll (D95).
  * @since 0.3.0  Dual-mode per Spec 24 FR-24-10.
+ * @since 0.5.0  Typed-only — bound mode purged.
  *
  * @var array    $attributes Block attributes.
- * @var string   $content    Parsed InnerBlocks string (Bound mode).
+ * @var string   $content    Unused (dynamic block, no InnerBlocks).
  * @var \WP_Block $block     Block instance.
  *
  * @package SGS\Blocks
@@ -24,11 +22,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
-// --- Mode discriminator (R-22-14 -- NEVER branch on empty($content)) ----------
-$source_mode = $attributes['sourceMode'] ?? 'typed';
-$is_bound    = ( 'bound' === $source_mode );
-
-// --- Shared attributes (wrapper shell -- both modes) --------------------------
+// --- Shared attributes --------------------------------------------------------
 $badge_style    = sanitize_html_class( $attributes['badgeStyle'] ?? 'icon-circle' );
 $badge_size     = sanitize_html_class( $attributes['badgeSize'] ?? 'medium' );
 $block_title    = $attributes['title'] ?? '';
@@ -37,7 +31,7 @@ $title_fontsize = $attributes['titleFontSize'] ?? '';
 $label_colour   = $attributes['labelColour'] ?? 'text';
 $label_fontsize = $attributes['labelFontSize'] ?? '';
 
-// --- icon-circle attributes (CSS vars applied in both modes) ------------------
+// --- icon-circle attributes ---------------------------------------------------
 $icon_circle_size = absint( $attributes['iconCircleSize'] ?? 44 );
 $icon_circle_bg   = $attributes['iconCircleBackground'] ?? 'surface';
 $icon_colour      = $attributes['iconColour'] ?? 'primary-dark';
@@ -46,7 +40,7 @@ $text_colour      = $attributes['textColour'] ?? 'text';
 // - grid columns are driven by gridTemplateColumns attr via the shared wrapper helper.
 // - gap is consumed by the shared wrapper helper directly from $attributes['gap'].
 
-// --- Auto-scroll attributes ---------------------------------------------------
+// --- Auto-scroll attributes --------------------------------------------------
 $auto_scroll       = ! empty( $attributes['autoScroll'] );
 $auto_scroll_speed = sanitize_html_class( $attributes['autoScrollSpeed'] ?? 'medium' );
 $auto_scroll_pause = isset( $attributes['autoScrollPauseOnHover'] ) ? (bool) $attributes['autoScrollPauseOnHover'] : true;
@@ -104,8 +98,8 @@ if ( $auto_scroll ) {
 	$tb_extra_attrs['data-auto-scroll-pause'] = $auto_scroll_pause ? 'true' : 'false';
 }
 
-// Shared opts for both emit modes — the helper owns the OUTER <div> wrapper +
-// any mirrored container layers (bg/width/etc. when the operator sets them);
+// Wrapper opts — the helper owns the OUTER <div> wrapper + any mirrored
+// container layers (bg/width/etc. when the operator sets them);
 // trust-bar keeps its own interior (title + badges) as $inner_html.
 $tb_wrapper_opts = array(
 	'tag'           => 'div',
@@ -138,26 +132,7 @@ if ( $block_title ) {
 }
 
 // =============================================================================
-// BOUND MODE
-// Emit wrapper shell + optional title, then echo $content.
-// The converter emits: sgs/container.__inner > sgs/container.__badge > [sgs/icon + sgs/text].
-// style.css already styles .sgs-trust-bar__badge/__inner/__track without modification.
-// autoScroll: wrap $content in __track so view.js measures/clones identically to Typed mode.
-// =============================================================================
-if ( $is_bound ) {
-	$badges_html = $auto_scroll
-		? '<div class="sgs-trust-bar__track">' . $content . '</div>'
-		: $content;
-
-	// WS-4: outer wrapper via the shared helper; trust-bar keeps its interior.
-	// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo SGS_Container_Wrapper::render( $attributes, $block, $title_html . $badges_html, 'section', $tb_wrapper_opts );
-	// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
-	return;
-}
-
-// =============================================================================
-// TYPED MODE (default) -- curated items[] render, completely unchanged from v0.2.x
+// TYPED MODE — curated items[] render.
 // =============================================================================
 $items = $attributes['items'] ?? array();
 
@@ -286,8 +261,8 @@ $badges_html = $auto_scroll
 	: $items_html;
 
 // WS-4: outer wrapper via the shared helper; trust-bar keeps its interior.
-// $title_html -- built with wp_kses_post + esc_attr.
-// $badges_html -- all user content escaped via esc_html/esc_url/esc_attr/sgs_get_lucide_icon.
+// $title_html  — built with wp_kses_post + esc_attr.
+// $badges_html — all user content escaped via esc_html/esc_url/esc_attr/sgs_get_lucide_icon.
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 echo SGS_Container_Wrapper::render( $attributes, $block, $title_html . $badges_html, 'section', $tb_wrapper_opts );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

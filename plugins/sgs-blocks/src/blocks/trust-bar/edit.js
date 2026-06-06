@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, RichText, useInnerBlocksProps } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, RichText } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	SelectControl,
@@ -71,48 +71,6 @@ const AUTO_SCROLL_SPEED_OPTIONS = [
 	{ label: __( 'Slow (40s)', 'sgs-blocks' ),   value: 'slow' },
 	{ label: __( 'Medium (25s)', 'sgs-blocks' ),  value: 'medium' },
 	{ label: __( 'Fast (15s)', 'sgs-blocks' ),    value: 'fast' },
-];
-
-/**
- * Source mode options for the Content Source inspector panel.
- * Mirrors the FR-24-2 / FR-24-10 Typed-vs-Bound pattern.
- */
-const SOURCE_MODE_OPTIONS = [
-	{
-		label: __( 'Typed — curated repeater (default)', 'sgs-blocks' ),
-		value: 'typed',
-	},
-	{
-		label: __( 'Bound — block children (converter / advanced)', 'sgs-blocks' ),
-		value: 'bound',
-	},
-];
-
-/**
- * Default template for the InnerBlocks slot in Bound mode.
- * Provides one sgs/container (the __inner row) with a placeholder sgs/container
- * for a single badge child, matching the converter's emitted shape:
- *   sgs/trust-bar
- *     └─ sgs/container.sgs-trust-bar__inner
- *          └─ sgs/container.sgs-trust-bar__badge
- *               ├─ sgs/icon
- *               └─ sgs/text
- *
- * The template is only shown when the InnerBlocks slot is empty. Once the
- * converter fills it with real badge children, the template is ignored.
- */
-const BOUND_TEMPLATE = [
-	[
-		'sgs/container',
-		{ className: 'sgs-trust-bar__inner' },
-		[
-			[
-				'sgs/container',
-				{ className: 'sgs-trust-bar__badge' },
-				[],
-			],
-		],
-	],
 ];
 
 // ─── Editor sub-components ────────────────────────────────────────────────────
@@ -249,7 +207,6 @@ function GenericBadgeItemEditor( { item, index, badgeStyle, onChange, onRemove }
 // ─── Main Edit component ──────────────────────────────────────────────────────
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		sourceMode,
 		badgeStyle,
 		items,
 		title,
@@ -269,8 +226,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		autoScrollSpeed,
 		autoScrollPauseOnHover,
 	} = attributes;
-
-	const isTyped = sourceMode !== 'bound';
 
 	const circleBgValue  = colourVar( iconCircleBackground ) || '#ffffff';
 	const iconColorValue = colourVar( iconColour ) || 'currentColor';
@@ -293,20 +248,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			'--sgs-trust-badge-text-colour': textColorValue,
 		} : {},
 	} );
-
-	/**
-	 * InnerBlocks slot for Bound mode.
-	 * useInnerBlocksProps wires proper block-editor integration (drag-and-drop,
-	 * selection, inserter). The template renders when the slot is empty.
-	 */
-	const innerBlocksProps = useInnerBlocksProps(
-		{},
-		{
-			template: BOUND_TEMPLATE,
-			templateLock: false,
-			renderAppender: false,
-		}
-	);
 
 	const updateItem = ( index, updated ) => {
 		const next = [ ...items ];
@@ -336,23 +277,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					kind="section"
 				/>
 
-				{ /* ── Content source (Typed vs Bound) ──────────────────────── */ }
-				<PanelBody title={ __( 'Content source', 'sgs-blocks' ) } initialOpen={ true }>
-					<SelectControl
-						label={ __( 'Source mode', 'sgs-blocks' ) }
-						help={
-							isTyped
-								? __( 'Typed: manage badges via the curated repeater below. All variant controls are active.', 'sgs-blocks' )
-								: __( 'Bound: badges are block children (e.g. converter-emitted). Edit them directly on the canvas.', 'sgs-blocks' )
-						}
-						value={ sourceMode }
-						options={ SOURCE_MODE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { sourceMode: val } ) }
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
-
-				{ /* ── Variant + size (both modes — affects wrapper classes) ── */ }
+				{ /* ── Variant + size ────────────────────────────────────────── */ }
 				<PanelBody title={ __( 'Style', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Badge style', 'sgs-blocks' ) }
@@ -370,7 +295,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ /* ── Optional title (text-only + image-badge — both modes) ── */ }
+				{ /* ── Optional title (text-only + image-badge) ─────────────── */ }
 				{ ( badgeStyle === 'text-only' || badgeStyle === 'image-badge' ) && (
 					<PanelBody title={ __( 'Title', 'sgs-blocks' ) } initialOpen={ false }>
 						<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
@@ -391,8 +316,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
-				{ /* ── icon-circle appearance controls (Typed mode only) ─────── */ }
-				{ isTyped && badgeStyle === 'icon-circle' && (
+				{ /* ── icon-circle appearance controls ──────────────────────── */ }
+				{ badgeStyle === 'icon-circle' && (
 					<PanelBody title={ __( 'Appearance', 'sgs-blocks' ) } initialOpen={ false }>
 						<RangeControl
 							label={ __( 'Icon circle size (px)', 'sgs-blocks' ) }
@@ -421,8 +346,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
-				{ /* ── text-only / image-badge label styling (Typed mode only) ── */ }
-				{ isTyped && ( badgeStyle === 'text-only' || badgeStyle === 'image-badge' ) && (
+				{ /* ── text-only / image-badge label styling ─────────────────── */ }
+				{ ( badgeStyle === 'text-only' || badgeStyle === 'image-badge' ) && (
 					<PanelBody title={ __( 'Label styling', 'sgs-blocks' ) } initialOpen={ false }>
 						<DesignTokenPicker
 							label={ __( 'Label colour', 'sgs-blocks' ) }
@@ -439,8 +364,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
-				{ /* ── Layout (icon-circle only, Typed mode only) ─────────────── */ }
-				{ isTyped && badgeStyle === 'icon-circle' && (
+				{ /* ── Layout (icon-circle only) ─────────────────────────────── */ }
+				{ badgeStyle === 'icon-circle' && (
 					<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
 						<RangeControl
 							label={ __( 'Columns (at 600px+)', 'sgs-blocks' ) }
@@ -461,7 +386,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
-				{ /* ── Auto-scroll (both modes — view.js works the same way) ──── */ }
+				{ /* ── Auto-scroll ───────────────────────────────────────────── */ }
 				<PanelBody title={ __( 'Auto-scroll', 'sgs-blocks' ) } initialOpen={ false }>
 					<ToggleControl
 						label={ __( 'Enable auto-scroll', 'sgs-blocks' ) }
@@ -489,49 +414,47 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				{ /* ── Badge items repeater (Typed mode only) ──────────────────── */ }
-				{ isTyped && (
-					<PanelBody title={ __( 'Badges', 'sgs-blocks' ) }>
-						{ badgeStyle === 'icon-circle' && (
-							<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
-								{ __( 'Badges marked "Pending" are hidden on the frontend but remain editable.', 'sgs-blocks' ) }
-							</p>
-						) }
-						{ items.map( ( item, index ) => (
-							badgeStyle === 'icon-circle' ? (
-								<IconCircleItemEditor
-									key={ index }
-									item={ item }
-									onChange={ ( updated ) => updateItem( index, updated ) }
-									onRemove={ () => removeItem( index ) }
-								/>
-							) : (
-								<GenericBadgeItemEditor
-									key={ index }
-									item={ item }
-									index={ index }
-									badgeStyle={ badgeStyle }
-									onChange={ ( updated ) => updateItem( index, updated ) }
-									onRemove={ () => removeItem( index ) }
-								/>
-							)
-						) ) }
-						<Button
-							variant="secondary"
-							onClick={ addItem }
-							style={ { width: '100%', justifyContent: 'center' } }
-						>
-							{ __( 'Add badge', 'sgs-blocks' ) }
-						</Button>
-					</PanelBody>
-				) }
+				{ /* ── Badge items repeater ───────────────────────────────────── */ }
+				<PanelBody title={ __( 'Badges', 'sgs-blocks' ) }>
+					{ badgeStyle === 'icon-circle' && (
+						<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
+							{ __( 'Badges marked "Pending" are hidden on the frontend but remain editable.', 'sgs-blocks' ) }
+						</p>
+					) }
+					{ items.map( ( item, index ) => (
+						badgeStyle === 'icon-circle' ? (
+							<IconCircleItemEditor
+								key={ index }
+								item={ item }
+								onChange={ ( updated ) => updateItem( index, updated ) }
+								onRemove={ () => removeItem( index ) }
+							/>
+						) : (
+							<GenericBadgeItemEditor
+								key={ index }
+								item={ item }
+								index={ index }
+								badgeStyle={ badgeStyle }
+								onChange={ ( updated ) => updateItem( index, updated ) }
+								onRemove={ () => removeItem( index ) }
+							/>
+						)
+					) ) }
+					<Button
+						variant="secondary"
+						onClick={ addItem }
+						style={ { width: '100%', justifyContent: 'center' } }
+					>
+						{ __( 'Add badge', 'sgs-blocks' ) }
+					</Button>
+				</PanelBody>
 
 			</InspectorControls>
 
 			{ /* ── Editor canvas ───────────────────────────────────────────── */ }
 			<div { ...blockProps }>
 
-				{ /* Optional title (text-only + image-badge variants) — both modes */ }
+				{ /* Optional title (text-only + image-badge variants) */ }
 				{ ( badgeStyle === 'text-only' || badgeStyle === 'image-badge' ) && (
 					<RichText
 						tagName="p"
@@ -546,14 +469,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				) }
 
-				{ /* ── BOUND MODE — InnerBlocks slot ──────────────────────── */ }
-				{ ! isTyped && (
-					<div { ...innerBlocksProps } />
-				) }
-
-				{ /* ── TYPED MODE — curated items preview ─────────────────── */ }
-				{ isTyped && (
-					items.length === 0 ? (
+				{ /* ── Curated items preview ───────────────────────────────── */ }
+				{ items.length === 0 ? (
 						<p style={ { color: '#757575', fontStyle: 'italic' } }>
 							{ __( 'Add badges in the sidebar panel.', 'sgs-blocks' ) }
 						</p>
@@ -633,7 +550,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							);
 						} )
 					)
-				) }
+				}
 			</div>
 		</>
 	);

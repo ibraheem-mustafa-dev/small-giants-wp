@@ -2187,6 +2187,110 @@ def _atomic_attrs_for(node: Tag, slug: str, allow_text_fallback: bool = True) ->
         # Authors configure this post-clone in the block editor inspector.
         return result
 
+    # sgs/trust-bar — FR-24-10 purge / D182 (2026-06-06): TYPED native emission.
+    # Replaces the old 'bound' cheat (Rules 1+2 violation). The block now flows
+    # down the G3-attrs path (has_inner_blocks=0 in DB) and lands here instead
+    # of generating converter InnerBlocks children.
+    #
+    # Extraction contract (council-specified):
+    #   - Enumerate every .sgs-trust-bar__badge descendant (recursive — draft
+    #     nests __inner > __badge so direct children are not enough).
+    #   - Per badge: label (text-only, never SVG path data), url (via _safe_href
+    #     when an <a> is present), icon="" + pending=True (icon slug deferred —
+    #     render.php hides pending badges; operator resolves in editor).
+    #   - image-badge variant: media.url + media.alt when badge has an <img>
+    #     with an http/https src.
+    #   - badgeStyle: inferred from first matching badge structure.
+    #   - columns: number of badges found.
+    #
+    # R-22-1 compliant: no hardcoded lookup dicts beyond this explicit handler
+    # (option-picker is the precedent for an explicit slug handler here).
+    if slug == "sgs/trust-bar" and tag in ("section", "div", "ul", "nav"):
+        badge_nodes = node.find_all(
+            lambda t: t.name is not None and any(
+                "sgs-trust-bar__badge" in c for c in (t.get("class") or [])
+            )
+        )
+
+        # Infer badgeStyle from the first badge that matches a variant signal.
+        badge_style = "icon-circle"  # default — matches the draft's SVG circles
+        for _bn in badge_nodes:
+            if _bn.find("img"):
+                badge_style = "image-badge"
+                break
+            if _bn.find(
+                lambda t: t.name is not None and any(
+                    "sgs-trust-bar__circle" in c for c in (t.get("class") or [])
+                )
+            ) or _bn.find("svg"):
+                badge_style = "icon-circle"
+                break
+            # text-only: badge has neither img nor svg/circle
+            badge_style = "text-only"
+            break
+
+        trust_items: list[dict] = []
+        for badge_node in badge_nodes:
+            item: dict = {}
+
+            # label: text of __label/__text descendant, else full badge text.
+            # Never use _rich_text_content (would double-escape <a> → &lt;a&gt;
+            # and concatenate SVG path data into the label string).
+            label_node = badge_node.find(
+                lambda t: t.name is not None and any(
+                    c in ("sgs-trust-bar__label", "sgs-trust-bar__text")
+                    for c in (t.get("class") or [])
+                )
+            )
+            if label_node is not None:
+                item["label"] = label_node.get_text(strip=True)
+            else:
+                # Strip SVG text noise: get_text on the badge includes path data
+                # from <svg> descendants. Remove <svg> subtrees first.
+                import copy as _copy
+                badge_clone = _copy.copy(badge_node)
+                for _svg in badge_clone.find_all("svg"):
+                    _svg.decompose()
+                item["label"] = badge_clone.get_text(strip=True)
+
+            # url: present only when the badge contains an <a> with a safe href.
+            anchor = badge_node.find("a")
+            if anchor is not None:
+                safe = _safe_href(anchor.get("href", ""))
+                if safe:
+                    item["url"] = safe
+
+            # icon: identity resolver DEFERRED (D182). Emit empty slug — render.php
+            # falls back to a placeholder glyph and the badge stays VISIBLE with its
+            # correct label (the agreed interim). Do NOT set pending=True here:
+            # pending makes render.php add `hidden` to the badge (it means "credential
+            # not yet confirmed → hide from visitors"), which would render the whole
+            # cloned trust-bar empty. The unresolved-icon state is surfaced in the
+            # editor (empty icon slot) + the clone transfer report, not by hiding.
+            item["icon"] = ""
+
+            # media: image-badge variant only — include only http/https src.
+            if badge_style == "image-badge":
+                img = badge_node.find("img")
+                if img is not None:
+                    src = img.get("src", "")
+                    if src.startswith(("http://", "https://")):
+                        item["media"] = {
+                            "url": src,
+                            "alt": img.get("alt", item.get("label", "")),
+                        }
+
+            if item.get("label"):
+                trust_items.append(item)
+
+        trust_result: dict = {
+            "badgeStyle": badge_style,
+            "columns": len(trust_items),
+        }
+        if trust_items:
+            trust_result["items"] = trust_items
+        return trust_result
+
     # core/list — WP core: inner blocks of core/list-item with content
     if slug == "core/list" and tag in ("ul", "ol"):
         return {"ordered": tag == "ol"}
@@ -2830,16 +2934,6 @@ def walk(
     # The button-group block slug is derived from the DB (R-22-1, no hardcoded literal).
     if slug != db.block_for_slot_token("button-group"):
         children_markup = _group_loose_buttons(children_markup)
-
-    # FR-24-10 dual-mode (2026-06-01): blocks declaring a `sourceMode` attr
-    # (e.g. sgs/trust-bar) default to 'typed' (curated scalar render). When the
-    # converter emits such a block with cloned InnerBlocks children, switch it to
-    # 'bound' so render.php echoes $content (the emitted children) instead of its
-    # curated defaults. DB-driven (block_attrs lookup) — no per-block slug literal
-    # (R-22-1); fires only when there are children, so hand-authored blocks keep
-    # their 'typed' default.
-    if slug is not None and children_markup and "sourceMode" in db.block_attrs(slug):
-        attrs["sourceMode"] = "bound"
 
     # FR-22-20 variant detection (2026-06-01): when the resolved block declares a
     # variant-selector attr (blocks.variant_attr IS NOT NULL), set it from the
