@@ -24,6 +24,11 @@ primary_goal: "Purge the converter's bound-mode CHEAT and replace it with TYPED 
 6. **Per-device/responsive values go in the block's responsive attributes**, never inline. Inline beats `@media`, so inline kills responsiveness.
 7. **Design-gate sensitive changes** (`/adversarial-council` or `/qc-council`) and get Bean's approval BEFORE building high-blast-radius changes (the shared wrapper, the walker/router).
 
+## NEW THIS SESSION — built + committed, USE THESE
+- **`plugins/sgs-blocks/scripts/clone-parity.js`** — deterministic clone-vs-draft DOM/computed-style verifier. The draft is the immutable ground truth (captured at `sites/mamas-munches/mockups/homepage/.parity-golden.json`; `--rebuild-golden` to refresh). Run it to VERIFY a clone (replaces eyeballing): `node plugins/sgs-blocks/scripts/clone-parity.js` (writes a PASS/FAIL + per-class report). This is rule 5's enforcement.
+- **`plugins/sgs-blocks/scripts/orchestrator/check_no_mirror.py`** — the R-22-15 anti-mirror gate. `--report` (informational) now; **flip to `--enforce` (commit-blocking) once the converter stops cheating.** It catches emitted draft-class containers + `sourceMode='bound'` emits.
+- **Doc meta-fix DONE (committed 3f351b19):** the 7 rules + success are at the top of CLAUDE.md; the bound-mode cheat is un-blessed in Spec 27/02/decisions; R-22-15 + the restored homepage gate are in Spec 22; mistakes.md has the 4 anti-patterns. **Remaining doc cleanup (HIGH, mechanical, not done — one agent hit a context limit):** archive the 9 superseded plans, shrink decisions.md/parking.md (enforce archive-on-resolve), truncate the handoffs, fix README (Spec 24/25) + Spec 18 frontmatter + 06-BUILD-ORDER. See `.claude/reports/2026-06-06-doc-council-findings.md` HIGH-6.
+
 ## MANDATORY READING (in order, in full)
 1. `.claude/reports/2026-06-06-bound-mode-purge-plan.md` — the exact, safe, ordered plan to purge bound mode and emit typed. START HERE.
 2. `.claude/reports/2026-06-06-container-architecture-rootcause-and-proposal.md` — the container-architecture root cause.
