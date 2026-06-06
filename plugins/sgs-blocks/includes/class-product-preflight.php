@@ -369,13 +369,13 @@ final class Product_Preflight {
 		// no featured image is set, so the URL resolves to '' (never a placeholder
 		// attachment); the explicit woocommerce-placeholder string guard is kept as
 		// defence-in-depth in case a placeholder file is ever uploaded as a real image.
-		$checked[]        = 'images';
-		$parent_image_id  = $product->get_image_id();
-		$parent_image_url = $parent_image_id
+		$checked[]             = 'images';
+		$parent_image_id       = $product->get_image_id();
+		$parent_image_url      = $parent_image_id
 			? (string) \wp_get_attachment_image_url( $parent_image_id, 'woocommerce_thumbnail' )
 			: '';
 		$has_parent_real_image = ( '' !== $parent_image_url ) && ( false === strpos( $parent_image_url, 'woocommerce-placeholder' ) );
-		$no_image_ids = array();
+		$no_image_ids          = array();
 		foreach ( $product->get_children() as $child_id ) {
 			$variation = \wc_get_product( $child_id );
 			if ( ! $variation || ! $variation->exists() ) {
@@ -611,9 +611,16 @@ final class Product_Preflight {
 		if ( isset( $lean['combos'] ) && \is_array( $lean['combos'] ) ) {
 			foreach ( $lean['combos'] as &$combo ) {
 				unset( $combo['sku'], $combo['gtin'], $combo['incMinor'], $combo['saleEndDate'] );
-				// Keep only the first gallery item (the primary image).
-				if ( isset( $combo['gallery'] ) && \is_array( $combo['gallery'] ) && \count( $combo['gallery'] ) > 1 ) {
-					$combo['gallery'] = array( $combo['gallery'][0] );
+				// Match render.php's seed strip EXACTLY (it's the source of truth for
+				// what actually lands in data-wp-context): a gallery with <2 images is
+				// EMPTIED (view.js falls back to combo.imageUrl for a 0/1-image combo),
+				// a gallery with >=2 images is kept in FULL (the thumbnail strip needs
+				// every item). The previous "keep only the first item" diverged from
+				// render.php and OVER-counted single-image-gallery catalogues, producing
+				// a false manifest_over_cap publish-block (48-SKU fixture: 27739 vs the
+				// real seed's 22408). The #17 file-split should centralise this stripper.
+				if ( isset( $combo['gallery'] ) && \is_array( $combo['gallery'] ) && \count( $combo['gallery'] ) < 2 ) {
+					$combo['gallery'] = array();
 				}
 			}
 			unset( $combo );

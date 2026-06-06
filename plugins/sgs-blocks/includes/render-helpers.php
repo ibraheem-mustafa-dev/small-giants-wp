@@ -866,6 +866,15 @@ function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode
 		// $tax_mode is retained in the signature for caller compatibility.
 		$base_minor = isset( $combo['incMinor'] ) ? (int) $combo['incMinor'] : (int) $combo['priceMinor'];
 
+		// Skip non-positive prices: an unset/£0 variation (priceMinor <= 0) would
+		// otherwise produce a negative/zero per-unit and an absurd overstated saving
+		// ("save 100%+"), a misleading-claim risk (DMCC). A £0 product is already
+		// un-purchasable (woocommerce_is_purchasable guard) + un-publishable (PREFLIGHT),
+		// but the ladder must not render a claim for it either.
+		if ( $base_minor <= 0 ) {
+			continue;
+		}
+
 		$per_unit = (int) round( $base_minor / $divisor );
 
 		if ( ! isset( $by_divisor[ $dkey ] ) || $per_unit < $by_divisor[ $dkey ]['min_per_unit'] ) {
@@ -900,7 +909,9 @@ function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode
 		$divisor   = $entry['divisor'];
 		$combo     = $entry['combo'];
 		$per_unit  = $entry['min_per_unit'];
-		$is_sale   = isset( $combo['saleMinor'] ) && null !== $combo['saleMinor'];
+		// A saleMinor of 0/null is an UNSET sale, not a genuine £0.00 sale — treat
+		// only a positive sale price as an active sale.
+		$is_sale   = isset( $combo['saleMinor'] ) && (int) $combo['saleMinor'] > 0;
 		$row_label = ( isset( $combo['termLabel'] ) && '' !== (string) $combo['termLabel'] )
 			? (string) $combo['termLabel']
 			: (string) (int) round( $divisor );

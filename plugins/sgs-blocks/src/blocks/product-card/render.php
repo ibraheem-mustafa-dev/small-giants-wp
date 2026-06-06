@@ -373,7 +373,20 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 
 			// 3a. Resolve the owner-set single-item reference price (PD-14: product-level, once).
 			$base_pence = (int) absint( get_post_meta( $product_id, '_sgs_base_price_pence', true ) );
-			$base_pence = $base_pence > 0 ? $base_pence : null; // 0 means "not set" → null → fallback anchor.
+			// #4 LEGAL: the "vs buying singly" claim may fire ONLY when the operator has
+			// BOTH set a single-unit price AND ticked the attestation ("genuinely
+			// available to buy"). The save path stores both, but a base_pence can also
+			// reach the DB un-attested (pre-attestation save, WP-CLI migration, direct
+			// write) — so the render path MUST re-check attestation, not trust base>0.
+			// Un-attested → null anchor → ladder falls back to smallest-pack per-unit,
+			// no genuine-single claim (FR-28-16).
+			// STRICT attestation check: WordPress stores a true boolean meta as the
+			// string '1' (false as ''). A bare (bool) cast would treat a rogue non-empty
+			// string ('true'/'yes' written by a careless import/CLI/plugin bypassing the
+			// rest_sanitize_boolean callback) as attested. Compare to the canonical '1'
+			// so ONLY a value set through the gated save path counts as attestation.
+			$base_attested = ( '1' === (string) get_post_meta( $product_id, '_sgs_base_price_attested', true ) );
+			$base_pence     = ( $base_pence > 0 && $base_attested ) ? $base_pence : null;
 
 			// 3b. Resolve framing mode from the block attribute (placement-level, per PD-6).
 			$framing_mode = sanitize_key( $attributes['framingMode'] ?? 'loss-aversion' );
@@ -405,25 +418,33 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			$size_axis_key = '';      // The matched taxonomy key, e.g. 'pa_size'.
 
 			if ( ! empty( $manifest['axes'] ) ) {
-				$candidate_by_label = null;
-				$candidate_by_first = null;
+				// #9: the operator-chosen pack-size axis (product meta) WINS over the
+				// English-only /size/ heuristic — the heuristic breaks on "Roast"/"Größe".
+				$operator_axis_key     = sanitize_key( (string) get_post_meta( $product_id, '_sgs_pack_size_axis', true ) );
+				$candidate_by_operator = null;
+				$candidate_by_label    = null;
+				$candidate_by_first    = null;
 
 				foreach ( $manifest['axes'] as $axis_def ) {
 					$axis_tax = $axis_def['taxonomy'] ?? '';
 					if ( '' === $axis_tax ) {
 						continue;
 					}
-					// Prefer axis labelled "Size" (case-insensitive, any language label).
+					// (0) Operator-chosen axis — highest priority (#9).
+					if ( '' !== $operator_axis_key && $axis_tax === $operator_axis_key ) {
+						$candidate_by_operator = $axis_def;
+					}
+					// (1) Prefer axis labelled "Size" (case-insensitive, any language label).
 					if ( null === $candidate_by_label && preg_match( '/size/i', (string) ( $axis_def['label'] ?? '' ) ) ) {
 						$candidate_by_label = $axis_def;
 					}
-					// First-axis fallback.
+					// (2) First-axis fallback.
 					if ( null === $candidate_by_first ) {
 						$candidate_by_first = $axis_def;
 					}
 				}
 
-				$size_axis = $candidate_by_label ?? $candidate_by_first;
+				$size_axis = $candidate_by_operator ?? $candidate_by_label ?? $candidate_by_first;
 
 				if ( null !== $size_axis ) {
 					$size_axis_key = (string) ( $size_axis['taxonomy'] ?? '' );
@@ -646,11 +667,20 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 							// would wipe the static "Best value" text on hydration
 							// (memory: wp-interactivity-directives-wipe-ssr-when-bound-to-js-getters).
 							// This span carries NO data-wp-* at all.
+							//
+							// #5 LEGAL: "Best value" is an unqualified superlative (CAP Code / DMCC),
+							// read as a per-unit comparative claim — valid ONLY on the genuinely
+							// cheapest per-unit row (the non-decoy target = largest non-suppressed
+							// pack). When decoy targets the 2nd-largest pack (NOT cheapest per-unit),
+							// use the non-superlative "Most popular".
+							$badge_text = $decoy_enabled
+								? __( 'Most popular', 'sgs-blocks' )
+								: __( 'Best value', 'sgs-blocks' );
 							?>
 						<span
 							class="wp-block-sgs-label is-style-pill-wrap product-card__best-value-badge"
 							<?php echo '' !== $discount_text_colour ? 'style="color:' . esc_attr( $discount_text_colour ) . '"' : ''; ?>
-						><?php echo esc_html( __( 'Best value', 'sgs-blocks' ) ); ?></span>
+						><?php echo esc_html( $badge_text ); ?></span>
 						<?php endif; ?>
 					</li>
 					<?php endforeach; ?>

@@ -11,6 +11,7 @@ import {
 	TextControl,
 	NumberControl,
 	ComboboxControl,
+	ToggleControl,
 	Notice,
 	Spinner,
 } from '@wordpress/components';
@@ -257,6 +258,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		cardMaxWidth,
 		imageHeight,
 		indexVariationUrl,
+		framingMode,
+		decoyEnabled,
 	} = attributes;
 
 	const isTrial = variantStyle === 'trial';
@@ -397,7 +400,64 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</PanelBody>
 				) }
-			</InspectorControls>
+			{ isBound && (
+						<PanelBody
+							title={ __( 'Value ladder', 'sgs-blocks' ) }
+							initialOpen={ false }
+						>
+							<SelectControl
+								label={ __( 'Savings framing', 'sgs-blocks' ) }
+								help={ __(
+									'How per-unit savings are worded on the price-per-unit ladder. Savings only show when a single-unit reference price is set + confirmed on the product editor.',
+									'sgs-blocks'
+								) }
+								value={ framingMode || 'loss-aversion' }
+								options={ [
+									{
+										value: 'loss-aversion',
+										label: __(
+											'Loss aversion ("save 8p each vs buying singly")',
+											'sgs-blocks'
+										),
+									},
+									{
+										value: 'savings',
+										label: __(
+											'Savings ("save 8p each")',
+											'sgs-blocks'
+										),
+									},
+									{
+										value: 'neutral',
+										label: __(
+											'Neutral (no saving text)',
+											'sgs-blocks'
+										),
+									},
+								] }
+								onChange={ ( v ) =>
+									setAttributes( { framingMode: v } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<ToggleControl
+								label={ __(
+									'Promote the second-largest pack',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Places a "Most popular" badge on the second-largest pack (decoy pricing). A per-product setting on the product editor overrides this for that product.',
+									'sgs-blocks'
+								) }
+								checked={ !! decoyEnabled }
+								onChange={ ( v ) =>
+									setAttributes( { decoyEnabled: v } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</PanelBody>
+					) }
+				</InspectorControls>
 
 			{ isBound ? (
 				<div { ...blockProps }>

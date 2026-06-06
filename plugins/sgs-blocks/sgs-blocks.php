@@ -77,6 +77,11 @@ require_once SGS_BLOCKS_PATH . 'includes/configurator-asset-optimiser.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-configurator-meta.php';
 Configurator_Meta::register();
 
+// Configurator — product-level value-ladder authoring fields (Wave-2 #1/#9).
+// Self-hooks woocommerce_product_options_general_product_data + the save handler
+// (delegates to Configurator_Meta::save_product_fields). No-op without WooCommerce.
+require_once SGS_BLOCKS_PATH . 'includes/configurator-product-fields.php';
+
 // Demand Analytics — privacy-safe aggregate counter for unbuyable combos
 // (Spec 27 Phase-2 Step 7). REST endpoint POST /sgs/v1/demand/attempt +
 // admin meta-box on product edit screen. ZERO PII stored.
