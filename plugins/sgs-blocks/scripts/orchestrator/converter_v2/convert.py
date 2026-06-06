@@ -2775,6 +2775,28 @@ def walk(
             children_markup = _route_composite_interior(
                 node, slug, attrs, css_rules, depth, variation_buf
             )
+        elif slug is not None and _is_container_mirror_block(slug):
+            # FR-22-4.1 universal fold for RESOLVED container-equivalent composites.
+            # Route their children through the SAME fold routine slug-None containers
+            # use (_process_container_children) so a SOLE pass-through inner wrapper
+            # (e.g. .sgs-trust-bar__inner — a fake wrapper that only carries the
+            # container's internal grid/max-width CSS) FOLDS its grid-template /
+            # default-grid / contentWidth / per-grid-item CSS onto THIS composite's
+            # mirrored attrs, instead of becoming a redundant nested sgs/container
+            # whose single child lands in the composite's first grid cell ("1 column").
+            # Previously the fold fired ONLY under slug-None container parents; resolved
+            # composites took the plain walk loop below and never folded — the selective
+            # application that caused the trust-bar duplicate-nesting bug.
+            # UNIVERSAL: gated on _is_container_mirror_block (wraps_block='sgs/container',
+            # the whole 29-block roster — R-22-1 DB-driven, R-22-9, NOT section-kind-only,
+            # no per-slug literal). SAFE: the sole-element-child gate inside
+            # _process_container_children means a multi-child composite (real grid/flex
+            # columns) is NOT folded — preventing the +13pp multi-child grid-collapse
+            # that reverted the earlier universal-fold attempt. Closes the Spec 22
+            # §FR-22-4.1 duplicate-nesting FAIL test for resolved composites.
+            children_markup = _process_container_children(
+                node, css_rules, depth, variation_buf, attrs
+            )
         else:
             for child in node.children:
                 result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
