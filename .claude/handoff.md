@@ -10,6 +10,7 @@
 5. **Diagnosed all 3 fidelity tools as unreliable + WHY:** pixel-diff over-reports on photos/sub-pixel; old clone-parity rewards the DOM-mirror (penalises conversion); leftover-buckets conflates correct-absence with extraction-failure (the perfect trust-bar logged 48 false "failures"). stage-2 + extract.json ARE reliable.
 6. **Fixed a silently-broken check (commit `29e82568`):** stage-4j wp-blocks-validate had skipped every run on a Windows cp1252 crash (`→`); forced UTF-8 → now validates.
 7. **Built + rewired + QC'd parity2 (commits `2ddea70b`/`a2336198`/`486f8f9f`)** via `/dispatching-parallel-agents` + `/qc`. DRAFT = 100% denominator; measures CONTENT + LAYOUT + CSS transfer, fate-aware, class-AGNOSTIC (own-text anchors + LCA tree-alignment absorb renames + WP wrapper divs). `/qc` caught + fixed a content false-negative (→word-overlap). Bean's catch: layout was diluted → now a weighted first-class signal. **Trust-bar = content 100% / layout 95% / css 96% / full 93%** (honest; one badge flagged). Mirrored sections honestly low (brand layout 48%).
+8. **Wired parity2 into `/sgs-clone` as Stage 11.5 (commit `553334f3`):** after Stage 10 deploy, captures draft+clone (golden rebuilt fresh from the mockup) + runs parity2 → per-section content/layout/css/full printed (sorted worst-layout-first) + `pipeline-state/<run>/parity2-report.json`. Soft-fail (`--no-parity2` opt-out). **Verified live on a real page-8 run** — numbers match standalone. Rule 4 (per-class transfer accounting) is now automatic on every clone.
 
 ## Current State
 - **Branch:** `main` at `a7cfd07a`. Theme thread co-active.
@@ -22,10 +23,10 @@
 - The pipeline still **container-mirrors 5 of 9 sections** (featured-product/brand/ingredients/gift/social-proof → `sgs/container` @conf 0.0) — converter Method-2 CSS-lift is the big remaining fidelity work (separate from the bound purge; parity2's layout% now measures it).
 
 ## Next Priorities (in order)
-1. **Wire parity2 into `/sgs-clone`** as the standing fidelity gate — auto content%/layout%/css%/full% + per-class carried/not-carried report each run.
-2. **Icon-identity resolver** — placeholder ticks → real icons.
-3. **Converter Method-2 CSS-lift** for the 5 mirrored sections (the real visible-fidelity lever).
-4. **Finish + commit OR revert the wrapper WIP** (Tasks 5/6) — don't leave it dangling.
+1. **Icon-identity resolver** — placeholder ticks → real icons (multi-library SVG fingerprint + emoji reverse-index + confidence + visible fallback).
+2. **Converter Method-2 CSS-lift** for the 5 mirrored sections (the real visible-fidelity lever; parity2 Stage 11.5 now measures pre/post automatically — use its per-section `css_dropped`/`layout_dropped` as the spec).
+3. **Finish + commit OR revert the wrapper WIP** (old Tasks 5/6) — don't leave it dangling.
+4. (Done this session: parity2 built + wired into `/sgs-clone` Stage 11.5.)
 
 ## Files Modified
 | File path | What changed |
