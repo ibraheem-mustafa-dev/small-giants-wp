@@ -2204,6 +2204,12 @@ def main():
              "hard halt. (default: False — soft warning only)",
     )
     parser.add_argument(
+        "--no-parity2", action="store_true", default=False,
+        help="Skip Stage 11.5 (parity2 draft-centric fidelity: content/layout/css "
+             "transfer per section). On by default after a successful deploy; this "
+             "opts out (e.g. when 'node' is unavailable). (default: False — parity2 runs)",
+    )
+    parser.add_argument(
         "--no-schema-validation", action="store_true", default=False,
         help="Skip Stage 6 block.json attribute schema validation. By default, the "
              "orchestrator halts with an actionable error if any block emits attributes "
@@ -2769,6 +2775,83 @@ def main():
                         )
         except Exception as exc:  # noqa: BLE001 — Stage 11 is observability; soft-fail
             print(f"[stage-11] pixel-diff soft-failed: {exc}", file=sys.stderr)
+
+    # ------------------------------------------------------------------
+    # Stage 11.5 — parity2 draft-centric fidelity (D183). The DRAFT is the
+    # 100% denominator; reports how much CONTENT + LAYOUT + CSS transferred to
+    # the clone, per section, class-AGNOSTIC (own-text anchors + LCA tree-align
+    # absorb renames + WP wrapper divs). This is Rule 4 (per-class transfer
+    # accounting) made automatic. Soft-fail observability — never blocks.
+    # Writes parity2-captures.json + parity2-report.json into the run dir.
+    # ------------------------------------------------------------------
+    if not getattr(args, "no_parity2", False) and args.deploy_target \
+            and 'result' in locals() and result.returncode == 0:
+        try:
+            import re as _re2
+            _tail = [ln for ln in result.stdout.splitlines() if "link=" in ln]
+            _lm = _re2.search(r"link=(https?://\S+)", _tail[-1]) if _tail else None
+            if not _lm:
+                print("[stage-11.5] parity2 SKIPPED — no link= URL from Stage 10.", file=sys.stderr)
+            else:
+                p2_url = _lm.group(1).rstrip(".,;")
+                cp_js = REPO / "plugins" / "sgs-blocks" / "scripts" / "clone-parity.js"
+                p2_py = REPO / "plugins" / "sgs-blocks" / "scripts" / "parity2" / "parity2.py"
+                caps = run_dir / "parity2-captures.json"
+                golden_tmp = run_dir / ".parity-golden.json"
+                if not cp_js.exists() or not p2_py.exists():
+                    print(f"[stage-11.5] parity2 SKIPPED — tool not found ({cp_js} / {p2_py}).", file=sys.stderr)
+                else:
+                    # 1) capture draft (rebuilt fresh from THIS mockup) + clone in one node run.
+                    cap_cmd = [
+                        "node", str(cp_js),
+                        "--url", p2_url,
+                        "--draft", str(args.mockup.resolve()),
+                        "--golden", str(golden_tmp),
+                        "--rebuild-golden",
+                        "--dump-captures", str(caps),
+                        "--viewports", "1440",
+                        "--out-dir", str(run_dir),
+                    ]
+                    cap_proc = subprocess.run(cap_cmd, capture_output=True, text=True,
+                                              encoding="utf-8", errors="replace", timeout=240)
+                    if not caps.exists():
+                        print(f"[stage-11.5] parity2 capture produced no dump (node rc={cap_proc.returncode}). "
+                              f"stderr: {(cap_proc.stderr or '')[-200:]}", file=sys.stderr)
+                    else:
+                        # 2) score transfer.
+                        p2_proc = subprocess.run(
+                            [sys.executable, str(p2_py), "--captures", str(caps),
+                             "--viewport", "1440", "--out", str(run_dir / "parity2-report")],
+                            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120,
+                        )
+                        rpt = run_dir / "parity2-report.json"
+                        if rpt.exists():
+                            import json as _json2
+                            _r = _json2.loads(rpt.read_text(encoding="utf-8"))
+                            _t = _r.get("totals", {})
+                            _secs = _r.get("by_section", {})
+                            _nonchrome = max(1, _t.get("draft_total", 0) - _t.get("chrome", 0))
+                            _content = round(100 * sum(v.get("content_ok", 0) for v in _secs.values())
+                                             / max(1, sum(v.get("non_chrome", 0) for v in _secs.values())), 1)
+                            print(f"[stage-11.5] parity2 fidelity (1440px, draft=100%): "
+                                  f"content {_content}% | full {_r.get('score_pct')}% "
+                                  f"(transferred {_t.get('transferred')}+folded {_t.get('folded')} / {_nonchrome})")
+                            for _s in sorted(_secs, key=lambda k: (_secs[k].get('layout_pct') is None,
+                                                                   _secs[k].get('layout_pct') or 0)):
+                                _c = _secs[_s]
+                                if _c.get("content_pct") is None:
+                                    continue
+                                print(f"[stage-11.5]   {_s:24s} content {_c['content_pct']:5.1f}% "
+                                      f"layout {_c.get('layout_pct'):5.1f}% css {_c.get('css_pct'):5.1f}% "
+                                      f"full {_c.get('transfer_pct'):5.1f}%")
+                            print(f"[stage-11.5] parity2 report → {rpt}")
+                        else:
+                            print(f"[stage-11.5] parity2 scoring produced no report (rc={p2_proc.returncode}). "
+                                  f"stderr: {(p2_proc.stderr or '')[-200:]}", file=sys.stderr)
+        except FileNotFoundError:
+            print("[stage-11.5] parity2 SKIPPED — 'node' not on PATH.", file=sys.stderr)
+        except Exception as exc:  # noqa: BLE001 — observability; soft-fail
+            print(f"[stage-11.5] parity2 soft-failed: {exc}", file=sys.stderr)
 
     if args.skip_autonomy_gate:
         print("[orchestrator] DONE (autonomy gate skipped per --skip-autonomy-gate).")
