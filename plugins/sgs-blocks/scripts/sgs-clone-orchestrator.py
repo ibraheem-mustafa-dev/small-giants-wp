@@ -2801,7 +2801,11 @@ def main():
                 if not cp_js.exists() or not p2_py.exists():
                     print(f"[stage-11.5] parity2 SKIPPED — tool not found ({cp_js} / {p2_py}).", file=sys.stderr)
                 else:
-                    # 1) capture draft (rebuilt fresh from THIS mockup) + clone in one node run.
+                    # 1) capture draft (rebuilt fresh from THIS mockup) + clone across ALL
+                    #    THREE viewports (mobile 375 / tablet 768 / desktop 1440) in one node
+                    #    run — the framework is mobile-first, so responsive fidelity matters
+                    #    most. The dump is keyed by viewport.
+                    _p2_viewports = ("375", "768", "1440")
                     cap_cmd = [
                         "node", str(cp_js),
                         "--url", p2_url,
@@ -2809,31 +2813,38 @@ def main():
                         "--golden", str(golden_tmp),
                         "--rebuild-golden",
                         "--dump-captures", str(caps),
-                        "--viewports", "1440",
+                        "--viewports", ",".join(_p2_viewports),
                         "--out-dir", str(run_dir),
                     ]
                     cap_proc = subprocess.run(cap_cmd, capture_output=True, text=True,
-                                              encoding="utf-8", errors="replace", timeout=240)
+                                              encoding="utf-8", errors="replace", timeout=420)
                     if not caps.exists():
                         print(f"[stage-11.5] parity2 capture produced no dump (node rc={cap_proc.returncode}). "
                               f"stderr: {(cap_proc.stderr or '')[-200:]}", file=sys.stderr)
                     else:
-                        # 2) score transfer.
-                        p2_proc = subprocess.run(
-                            [sys.executable, str(p2_py), "--captures", str(caps),
-                             "--viewport", "1440", "--out", str(run_dir / "parity2-report")],
-                            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120,
-                        )
-                        rpt = run_dir / "parity2-report.json"
-                        if rpt.exists():
-                            import json as _json2
+                        import json as _json2
+                        # 2) score transfer per viewport (mobile-first order).
+                        _vp_labels = {"375": "mobile-375", "768": "tablet-768", "1440": "desktop-1440"}
+                        for _vp in _p2_viewports:
+                            _out_base = run_dir / f"parity2-report-{_vp}"
+                            p2_proc = subprocess.run(
+                                [sys.executable, str(p2_py), "--captures", str(caps),
+                                 "--viewport", _vp, "--out", str(_out_base)],
+                                capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120,
+                            )
+                            rpt = _out_base.with_suffix(".json")
+                            if not rpt.exists():
+                                print(f"[stage-11.5] parity2 {_vp_labels[_vp]} produced no report "
+                                      f"(rc={p2_proc.returncode}). stderr: {(p2_proc.stderr or '')[-160:]}",
+                                      file=sys.stderr)
+                                continue
                             _r = _json2.loads(rpt.read_text(encoding="utf-8"))
                             _t = _r.get("totals", {})
                             _secs = _r.get("by_section", {})
                             _nonchrome = max(1, _t.get("draft_total", 0) - _t.get("chrome", 0))
                             _content = round(100 * sum(v.get("content_ok", 0) for v in _secs.values())
                                              / max(1, sum(v.get("non_chrome", 0) for v in _secs.values())), 1)
-                            print(f"[stage-11.5] parity2 fidelity (1440px, draft=100%): "
+                            print(f"[stage-11.5] parity2 fidelity [{_vp_labels[_vp]}px, draft=100%]: "
                                   f"content {_content}% | full {_r.get('score_pct')}% "
                                   f"(transferred {_t.get('transferred')}+folded {_t.get('folded')} / {_nonchrome})")
                             for _s in sorted(_secs, key=lambda k: (_secs[k].get('layout_pct') is None,
@@ -2841,13 +2852,10 @@ def main():
                                 _c = _secs[_s]
                                 if _c.get("content_pct") is None:
                                     continue
-                                print(f"[stage-11.5]   {_s:24s} content {_c['content_pct']:5.1f}% "
+                                print(f"[stage-11.5]   [{_vp}] {_s:22s} content {_c['content_pct']:5.1f}% "
                                       f"layout {_c.get('layout_pct'):5.1f}% css {_c.get('css_pct'):5.1f}% "
                                       f"full {_c.get('transfer_pct'):5.1f}%")
-                            print(f"[stage-11.5] parity2 report → {rpt}")
-                        else:
-                            print(f"[stage-11.5] parity2 scoring produced no report (rc={p2_proc.returncode}). "
-                                  f"stderr: {(p2_proc.stderr or '')[-200:]}", file=sys.stderr)
+                        print(f"[stage-11.5] parity2 reports → {run_dir}/parity2-report-{{375,768,1440}}.json")
         except FileNotFoundError:
             print("[stage-11.5] parity2 SKIPPED — 'node' not on PATH.", file=sys.stderr)
         except Exception as exc:  # noqa: BLE001 — observability; soft-fail
