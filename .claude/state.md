@@ -2,7 +2,7 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-last_updated: 2026-06-06
+last_updated: 2026-06-07
 note: "LEAN per-thread snapshot (restructured 2026-06-06 per doc-council). Full pre-restructure history → memory/state-archive.md. This file holds ONLY the current per-thread pointer; detail lives in each thread's handoff + next-session-prompt (the SoT). Do NOT restate D-numbers / counts / commit hashes here — they drift. ≤24576 bytes."
 ---
 
@@ -20,7 +20,7 @@ note: "LEAN per-thread snapshot (restructured 2026-06-06 per doc-council). Full 
 ## CLONING-PIPELINE THREAD  (owner of: this block, handoff.md, next-session-prompt.md)
 - **DOC-COUNCIL BACKLOG CLOSED 2026-06-06** (all FATAL + HIGH shipped/recalibrated/dismissed — see `.claude/reports/2026-06-06-doc-council-findings.md` STATUS table). The "adversarially-review all .claude docs" sub-goal in next-session-prompt.md is DONE; the converter-fix continuation there still stands.
 - **SoT for current status:** `.claude/handoff.md` (latest session) + `.claude/next-session-prompt.md` (the operative opener). READ THOSE — do not rely on a summary here.
-- **One-line where-we-are (2026-06-07):** the bound-mode cheat is **PURGED from the trust-bar** (D182, live-verified on page 8 — native `sgs/trust-bar`, icons placeholder pending the resolver). A **draft-centric fidelity verifier `parity2` is built + QC'd** (D183, `plugins/sgs-blocks/scripts/parity2/`) — reports content%/layout%/css%/full% per section; WIRED into `/sgs-clone` as Stage 11.5 (auto fidelity report every run, D183/commit 553334f3). The big remaining fidelity work is the converter **Method-2 CSS-lift** for the 5 still-`sgs/container`-mirrored sections (parity2's layout% now measures it).
+- **One-line where-we-are (2026-06-07 PM):** SHIPPED this session (D184-D188) — icon-identity resolver (trust-bar badges clone to correct icons, live page 8); Stage 9 schema fix (autonomy gate was rolling back EVERY deploy — now promotes); UNIVERSAL gap consolidation (one shared `sgs/container` gap control across all composite/wrapper blocks, council-gated + frontend-verified); pre-existing heading React #130 crash fixed (info-box/hero/feature-grid); Task 3 scope CORRECTED (`sgs/container` is the valid DB-driven target — complete the §FR-22-21 attribute-transfer, do NOT force composites; lesson blub.db 329). **NEXT (next-session-prompt):** (1) `/sgs-update` DB sync; (2) the converter **Method-2 universal CSS-transfer** (the real fidelity lever); (3) 11-block icon-migration to the shared picker; (4) gap council follow-ups (`P-GAP-CONSOLIDATION-FOLLOWUPS`). parity2 Stage 11.5 measures Method-2 pre/post.
 - **Canonical spec:** `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`. Reading order: see `docs-registry.yaml` `cold_start_reading_order`.
 
 ## SGS-THEME THREAD  (owner of: this block, handoff-theme.md, next-session-prompt-theme.md)

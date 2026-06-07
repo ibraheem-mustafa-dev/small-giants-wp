@@ -1,49 +1,50 @@
-# Session Handoff — 2026-06-07 (CLONING thread) — bound-mode cheat PURGED + draft-centric fidelity verifier (parity2) built/rewired/QC'd
+# Session Handoff — 2026-06-07 (CLONING + framework) — Task 2 icon resolver + Stage 9 deploy-blocker fix + universal gap consolidation + pre-existing #130 fix, all council-gated + shipped
 
-> Live handoff. Prior sessions: `.claude/memory/handoff-archive.md`. Next session: `.claude/next-session-prompt.md`. Theme thread shares `main` — commit by explicit path (`git commit -- <paths>`), `git log -1 --stat` before pushing.
+> Live handoff. Prior sessions: `.claude/memory/handoff-archive.md`. Next session: `.claude/next-session-prompt.md`. Theme thread shares `main` — commit by explicit path (`git commit -- <paths>`).
 
 ## Completed This Session
-1. **Task 1 (docs) DONE + pushed:** executed HIGH-6 — handoffs truncated→`memory/handoff-archive.md`, 9 superseded plans→`plans/archive/`, README/Spec18/06-BUILD-ORDER fixed, **decisions.md 843→526** (archived ≤D113). parking.md deliberately NOT force-shrunk (its 112 entries are all already active status). Commits `c5cb0313`/`707aa4e2`.
-2. **Tasks 5/6 investigated → bound-blocked:** live page-8 data proved the trust-bar's gap/column defects are BOUND-MODE artefacts (badges = echoed draft CSS, not block attributes); ZERO page-8 containers hit the wrapper WIP's `grid_on_inner` path → 5/6 deliver no visible change while bound. Bean redirected to Task 3. Wrapper WIP (7 files) left UNCOMMITTED.
-3. **Task 3 (bound purge) SHIPPED + live-verified (D182, commit `92bcf997`):** 6-persona `/adversarial-council` gate (NO-GO-as-written → must-fixes baked in) + Bean approval + content audit. Converter: deleted the `sourceMode='bound'` stamp + added a typed `items[]` handler (G3 path); seed `has_inner_blocks` 1→0 (the FATAL fix — drops trust-bar to G3, suppresses orphan child-walk). Block: typed-only (bound branch deleted, enum `['typed']` v0.5.0, edit.js stripped, save→null). Re-cloned page 8. **Live homepage: 4 native badges, 0 nested containers, 4-col grid, £35 correct. Regression PASS: page-589 configurator intact.** Icons DEFERRED (placeholder ticks, Bean-approved).
-4. **Proved Bean right twice:** the purge fixed the trust-bar AND 2 product-cards (every sourceMode block), not just the trust-bar; and the hero is already a faithful native composite (the "dark-pink gradient" was a stale doc claim I wrongly repeated).
-5. **Diagnosed all 3 fidelity tools as unreliable + WHY:** pixel-diff over-reports on photos/sub-pixel; old clone-parity rewards the DOM-mirror (penalises conversion); leftover-buckets conflates correct-absence with extraction-failure (the perfect trust-bar logged 48 false "failures"). stage-2 + extract.json ARE reliable.
-6. **Fixed a silently-broken check (commit `29e82568`):** stage-4j wp-blocks-validate had skipped every run on a Windows cp1252 crash (`→`); forced UTF-8 → now validates.
-7. **Built + rewired + QC'd parity2 (commits `2ddea70b`/`a2336198`/`486f8f9f`)** via `/dispatching-parallel-agents` + `/qc`. DRAFT = 100% denominator; measures CONTENT + LAYOUT + CSS transfer, fate-aware, class-AGNOSTIC (own-text anchors + LCA tree-alignment absorb renames + WP wrapper divs). `/qc` caught + fixed a content false-negative (→word-overlap). Bean's catch: layout was diluted → now a weighted first-class signal. **Trust-bar = content 100% / layout 95% / css 96% / full 93%** (honest; one badge flagged). Mirrored sections honestly low (brand layout 48%).
-8. **Wired parity2 into `/sgs-clone` as Stage 11.5, across ALL 3 viewports (commits `553334f3` + `e73173c3`):** after Stage 10 deploy, captures draft+clone at **375/768/1440** (golden rebuilt per viewport, fresh from the mockup) + scores each → per-viewport per-section content/layout/css/full printed (mobile-first order) + `pipeline-state/<run>/parity2-report-{375,768,1440}.json`. Soft-fail (`--no-parity2` opt-out). **Verified live** — scores diverge per device (full 45.4% @375 vs 43.5% @1440; trust-bar layout 96% mobile vs 95% desktop). Rule 4 (per-class transfer accounting) automatic on every clone, mobile-first.
+1. **Task 2 — icon-identity resolver SHIPPED + live-verified (commit `127f2290`).** New `converter_v2/icon_resolver.py` fingerprints each cloned `.sgs-trust-bar__badge` SVG/emoji → correct icon slug (reverse path-index from lucide/wp-icons assets + structural heuristics + emoji map), raw-SVG fallback (never a silent wrong icon). Page-8 badges now render home/check/truck/star (was uniform ticks) — live-DOM verified.
+2. **Stage 9 coverage-report schema fix SHIPPED (`f93db924`).** The orchestrator emitted `leftover_totals`/`leftover_total_count` + dropped `gap_level_totals`, so the autonomy gate FAILED schema validation and **rolled back EVERY page deploy**. Fixed to emit the contract keys (`totals`/`gap_level_totals`/`total_count`). Verified: re-clone went `rolled-back` → `merge=success`.
+3. **Task 3 scope CORRECTED + recorded (`36e3bc3c`).** `sgs/container` is the LEGITIMATE DB-driven conversion target for slug-None sections; the fix is completing the universal §FR-22-21 attribute-transfer, NOT forcing bespoke composites. An earlier same-session overcorrection ("force composites") was caught + reversed by Bean before any build; lesson captured (blub.db 329).
+4. **Universal GAP CONSOLIDATION SHIPPED (`668e26ad`).** Every composite/wrapper block's duplicate gap control unified onto the ONE shared `sgs/container` gap control (raw-px free-input), rendered via `sgs_container_gap_value()`; inert `blockGap` support removed; deprecations + `isEligible` migrate numeric→string. Blocks: trust-bar/card-grid/feature-grid/gallery/multi-button/post-grid (hero kept — distinct splitGap/ctaGap). `/adversarial-council` (6 personas) gated pre-commit + caught real back-compat breakage (digit gaps rendering as preset tokens not px; dead deprecations) — all fixed; frontend-verified (post-grid 30px, feature-grid 24px).
+5. **Pre-existing sgs/heading React #130 crash fixed (`6da23ccc`).** Templates passed numeric `level` (3/1) → `createElement(3)` → #130, crashing the editor for info-box, hero, and feature-grid. Fixed: heading edit.js + render.php coerce numeric `level`→`h{n}`; info-box/hero templates pass `'h3'`/`'h1'`. Live-verified 0 console errors.
+6. **Icon-picker polish SHIPPED (`1450ade6`)** — sgs/icon browse-all (beyond the 300-cap) + category sidebar + wider modal (editor-only).
+7. **Docs reconciled (`b5f50b94` + `8617c53b`)** — decisions D184-D188, parking P-GAP-CONSOLIDATION-FOLLOWUPS, parallel doc audit (3 agents) across root/.claude/specs/plans; CLAUDE.md bound-cheat marked PURGED.
 
 ## Current State
-- **Branch:** `main` at `a7cfd07a`. Theme thread co-active.
-- **Tests:** parity2 self-tests pass (3 fixtures incl. rename+wrapper LCA); converter imports clean. No project suite. Build passes.
-- **Uncommitted (NOT this session's deliverables):** wrapper WIP (`container/edit.js`, `SpacingControl.js`, `class-sgs-container-wrapper.php`, `ContainerWrapperControls.js` — unfinished Tasks 5/6, Bean-aware); pre-existing noise (phase4-*.txt, theme-snapshot.json, lucide-icons.php).
-- **Live:** trust-bar TYPED on page 8 (sandybrown homepage canary). `.parity-golden.json` rebuilt 1440-ONLY — regenerate 3 viewports with `--rebuild-golden --viewports 375,768,1440` when needed.
+- **Branch:** `main` at `8617c53b`. Theme thread co-active.
+- **Tests:** no project JS/PHP suite; all builds pass; `php -l` clean on touched render/helpers. Editor live-verify: 8 blocks valid, 0 console errors. Frontend live-verify: gap back-compat confirmed.
+- **Build:** passes. Deployed to sandybrown canary.
+- **Uncommitted:** only pre-existing noise (reports/phase4-*.txt, theme-snapshot.json, parity artefacts) — no session deliverables outstanding.
 
 ## Known Issues / Blockers
-- parity2 minor limits (non-blocking): textless leaves (identical placeholder icons) can share a clone match; single-node sections show a binary full%; position-0 LCA can map the first badge to a container-ish node (one false DROPPED on the first trust-bar badge).
-- The pipeline still **container-mirrors 5 of 9 sections** (featured-product/brand/ingredients/gift/social-proof → `sgs/container` @conf 0.0) — converter Method-2 CSS-lift is the big remaining fidelity work (separate from the bound purge; parity2's layout% now measures it).
+- **DB not yet synced** to the gap block.json changes (`gapUnit` removed from feature-grid/multi-button; `blockGap` from container) — run `/sgs-update` next session (deferred; block.json is source-of-truth).
+- Council follow-ups (non-blocking) parked: `P-GAP-CONSOLIDATION-FOLLOWUPS` — layout/columns collision in the shared LayoutPanel; responsive gap half-wired on card-grid/gallery; container blockGap value migration; tests; calc/clamp helper limitation.
 
 ## Next Priorities (in order)
-1. **Icon-identity resolver** — placeholder ticks → real icons (multi-library SVG fingerprint + emoji reverse-index + confidence + visible fallback).
-2. **Converter Method-2 CSS-lift** for the 5 mirrored sections (the real visible-fidelity lever; parity2 Stage 11.5 now measures pre/post automatically — use its per-section `css_dropped`/`layout_dropped` as the spec).
-3. **Finish + commit OR revert the wrapper WIP** (old Tasks 5/6) — don't leave it dangling.
-4. (Done this session: parity2 built + wired into `/sgs-clone` Stage 11.5.)
+1. **`/sgs-update`** — sync the DB + regenerate `specs/02-SGS-BLOCKS-REFERENCE.md` with the gap block.json changes (deferred this session).
+2. **Converter Method-2 (Task 3, corrected scope)** — complete the universal DB-driven CSS-transfer onto `sgs/container` editable attrs (§FR-22-21); the real cloning-fidelity lever. Design-gate first (Rule 7).
+3. **11-block icon-migration** to the shared rich picker (plan: `.claude/scratch/2026-06-07-icon-picker-migration-plan.md`; includes mobile-nav-toggle per Bean).
+4. **Gap-consolidation council follow-ups** (`P-GAP-CONSOLIDATION-FOLLOWUPS`).
 
 ## Files Modified
 | File path | What changed |
 |---|---|
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | deleted bound stamp; added typed trust-bar `items[]` handler |
-| `plugins/sgs-blocks/scripts/seed-composition-roles.py` | trust-bar `has_inner_blocks` 1→0 + idempotent enforce |
-| `plugins/sgs-blocks/src/blocks/trust-bar/{render.php,block.json,edit.js,index.js}` | typed-only; bound purged |
-| `plugins/sgs-blocks/scripts/orchestrator/wp_integration.py` | stage-4j UTF-8 fix |
-| `plugins/sgs-blocks/scripts/parity2/*.py` (4 modules) | NEW draft-centric fidelity verifier |
-| `plugins/sgs-blocks/scripts/clone-parity.js` | `ownText` capture + `--dump-captures` |
-| `.claude/{decisions.md,handoff*.md,parking.md,specs/*,reports/2026-06-07-*}` | doc cleanup + D182 + parity2 design |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/icon_resolver.py` (NEW) + `convert.py` | icon-identity resolver + wiring |
+| `plugins/sgs-blocks/src/blocks/trust-bar/{render.php,block.json}` | icon resolver render + items schema |
+| `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | Stage 9 contract-field fix |
+| `plugins/sgs-blocks/src/components/SpacingControl.js` + `container/components/ContainerWrapperControls.js` + `container/block.json` | gap freeInput + blockGap removal |
+| `plugins/sgs-blocks/src/blocks/{card-grid,feature-grid,gallery,multi-button,post-grid}/{edit.js,render.php,...}` | gap consolidation + deprecations |
+| `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php` | responsive `<style>` esc_html |
+| `plugins/sgs-blocks/src/blocks/{heading,info-box,hero}/*` | #130 numeric-level fix |
+| `plugins/sgs-blocks/src/components/IconPicker/{IconPicker.js,editor.css}` | picker polish |
+| `.claude/{decisions.md,parking.md,specs/*,plans/*,architecture.md,goals.md,dev-setup.md,cloning-pipeline-*}` + `CLAUDE.md` | doc reconciliation |
 
 ## Notes for Next Session
-- **bound-mode is a TEST CHEAT** (echoes draft DOM as `$content`) — purged from trust-bar; only the LIVE WC configurator (`sourceMode='wc-product'/'sgs-cpt'`, page 589) is a legit non-typed mode. Never re-introduce a converter `bound` emit.
-- **parity2: trust CONTENT% + LAYOUT%** (validated on trust-bar). It measures TRANSFER fidelity, not nativeness — the anti-mirror gate (R-22-15) detects the cheat; parity2 measures how much carried over.
-- The converter routes `.sgs-trust-bar` correctly to `sgs/trust-bar`; the OTHER 5 sections → `sgs/container` is Method-2 work, not a routing bug.
-- Don't trust leftover-buckets' `extraction_failed` count as "what failed" — it conflates correct-absences; parity2 replaces it as the fidelity signal.
+- **Gap decision rule (Bean):** functional overlap, not value format — consolidate controls that do the same job; reconcile format by routing through `sgs_container_gap_value()`.
+- **`sgs_container_gap_value()` is now the sole gap security floor** for 6+ blocks (allowlist sanitiser, council-rated A−). Add a unit test before extending it; it strips `()` so calc()/clamp() are mangled.
+- **Lesson (blub.db 329):** a user saying "this breaks Rule X" confirms the BREACH, not my interpretation/fix — read the canonical design doc + state the primitive before recording any architectural fix-shape; never write un-grounded conclusions to durable docs.
+- **The dead-subagent trap recurred:** a fix subagent hit "prompt too long" at 118 tools + left wrong half-baked changes — reverted to clean base, root-caused inline. Keep heavy subagents tightly scoped.
 
 ## Next Session Prompt
 See `.claude/next-session-prompt.md` (orchestration plan).
