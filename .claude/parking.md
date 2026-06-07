@@ -1,7 +1,7 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-06-06 (pruned — P-TRUSTBAR-BOUND-GRID + P-PRODUCT-CARD-PILL-SWAP-DORMANT moved to memory/parking-archive.md)
+last_updated: 2026-06-07 (staleness sweep — 27 entries archived to memory/parking-archive.md; 10 status corrections applied)
 ---
 
 > **STANDARD PRACTICE (Bean-locked 2026-06-02):** this doc holds ONLY parked work — entries with `**Status:** OPEN | PARTIAL | BLOCKED | DEFERRED`. The MOMENT a task is **CLOSED / RESOLVED / DROPPED / SUPERSEDED**, MOVE it (verbatim, with completion date) to `memory/parking-archive.md` — do NOT leave it here. Enforce this every `/handoff` (Gate 4.5). Keeps parking concise + purposeful; prevents the balloon that hit 1,400+ lines.
@@ -43,12 +43,7 @@ last_updated: 2026-06-06 (pruned — P-TRUSTBAR-BOUND-GRID + P-PRODUCT-CARD-PILL
 ## 2026-06-04 — theme thread: Spec 27 Phase 2 (D168)
 
 
-
-> **P-BADGE-SLOT-ROUTE-TO-LABEL** — NEW 2026-06-04 (theme thread, alongside FR-27-B3). **Status: OPEN** (pipeline/converter — cloning thread). The `label` slot already routes to `sgs/label` and now recognises the cosmetic-badge family (`discount-label`/`discount-badge`/`value-badge`/`savings-label`/`sale-badge`/`ribbon-label` — added this session to `seed-slot-synonyms.py`; DB + Spec 02 regenerated; documented Spec 00 §3.1.1). **Remaining gap:** a SEPARATE `slots` row `badge` exists with `standalone_block = NULL` and alias `pill` — and `pill` ALSO lives on the `label` slot, so a bare `__badge` element routes nowhere and `pill` is ambiguous across two slots. Wiring the bare `badge` slot → `sgs/label` and de-duping the `pill` overlap is a recognition-ROUTING change (not a pure additive alias), so it needs the cloning thread's per-row `/sgs-clone --debug-trace` measurement gate (R-22-4) + a multi-DB audit (`feedback_comprehensive_db_audit_before_data_layer_changes`) to confirm it doesn't regress any client's clone. Deliberately NOT done inline in the theme thread. **Fix:** in the cloning thread, either set `badge` slot `standalone_block='sgs/label'` (and resolve which slot owns `pill`) or merge `badge` into `label`; re-measure page-144 + a second client before commit. **Bucket:** Pipeline / converter.
-
-> **P-CONFIGURATOR-PRICE-FORMAT-LOCALE** — NEW 2026-06-04 (D168, surfaced by the TAX-UI qc-council). **Status: DEFERRED** (framework / i18n). The configurator's client price formatter (`view.js formatPrice` → `toLocaleString(undefined, …)`) uses the browser/OS locale's thousand + decimal separators, while the PHP SSR (`wc_price` via `sgs_configurator_format_minor`) uses WooCommerce's configured `woocommerce_price_thousand_separator` / `_decimal_separator`. For UK en-GB + prices <£100 these match exactly (Mama's case), so it does not bite the current canary. But for any price ≥£1000 OR a non-UK browser locale OR a non-default WC separator, the SSR string and the on-swap string can diverge (e.g. `£1,234.00` vs `£1.234,00`) — an SSR==swap parity break. **Fix:** seed `thousandSeparator`/`decimalSeparator` (from `wc_get_price_thousand_separator()`/`wc_get_price_decimal_separator()`) + the price format into the manifest/context and format manually in `view.js` instead of `toLocaleString(undefined,…)`. Pre-existing (predates TAX-UI; TAX-UI did not widen it). **Bucket:** Framework / i18n.
-
-## 2026-06-02 — cloning thread: container/wrapper standardisation programme (D152)
+> **P-BADGE-SLOT-ROUTE-TO-LABEL** — NEW 2026-06-04 (theme thread, alongside FR-27-B3). **Status: OPEN** (pipeline/converter — cloning thread). The `label` slot already routes to `sgs/label` and now recognises the cosmetic-badge family (`discount-label`/`discount-badge`/`value-badge`/`savings-label`/`sale-badge`/`ribbon-label` — added this session to `seed-slot-synonyms.py`; DB + Spec 02 regenerated; documented Spec 00 §3.1.1). **Remaining gap (narrowed 2026-06-07):** cosmetic-badge aliases shipped `07975d7e`; a SEPARATE `slots` row `badge` exists with `standalone_block = NULL` and alias `pill` — and `pill` ALSO lives on the `label` slot, so a bare `__badge` element routes nowhere and `pill` is ambiguous across two slots. Wiring the bare `badge` slot → `sgs/label` and de-duping the `pill` overlap is a recognition-ROUTING change (not a pure additive alias), so it needs the cloning thread's per-row `/sgs-clone --debug-trace` measurement gate (R-22-4) + a multi-DB audit (`feedback_comprehensive_db_audit_before_data_layer_changes`) to confirm it doesn't regress any client's clone. Deliberately NOT done inline in the theme thread. **Fix:** in the cloning thread, either set `badge` slot `standalone_block='sgs/label'` (and resolve which slot owns `pill`) or merge `badge` into `label`; re-measure page-144 + a second client before commit. **Bucket:** Pipeline / converter.
 
 > **P-CONTAINER-WRAPPER-STANDARDISATION** — NEW 2026-06-02 (D152); **WS-1 A1+A2 SHIPPED 2026-06-03 (D159); WS-4 BLOCK-SIDE COMPLETE 2026-06-04 (D166+D167) — whole 29-block roster mirrors `sgs/container` via the shared helper (4 section / 14 layout / 11 content); modal + mobile-nav excluded `containerMirror:false`; content-collection registered as 29th; architecture resolved — docs-are-truth, KIND-scoped full mirror, no per-block trim; blub.db 312.** **Status: PARTIAL** (pipeline/converter — PROGRAMME). REMAINING: (a) **/sgs-update Stage-11 auto-apply** upgrade (§FR-22-21.2 — currently report-only); (b) the **post-WS-4 converter Method-2 work** (the block-side mirror does NOT fix page-clone fidelity — converter still routes `.sgs-hero` classes to `sgs/container` not the composite BLOCK @conf 0.10): the **routing fix** (`.sgs-hero`→`sgs/hero` before container fallback), the **converter-lift** (transfer mockup CSS onto now-mirrored attrs — memory `universal-lift-was-premature-not-falsified`), **#6 notice-banner content-synthesis**, **#4a grid-lift**, **image sideload (#5 + hero/product imgs)**, **#8 slider live-4-card residual verify**. (c) WS-2/WS-3 de-cheat debt.
 >
@@ -71,16 +66,12 @@ last_updated: 2026-06-06 (pruned — P-TRUSTBAR-BOUND-GRID + P-PRODUCT-CARD-PILL
 
 > **P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES** — NEW 2026-06-03. **Status: OPEN** (infra/tooling). `push-theme-snapshot.py` writes the per-client snapshot to `theme.json` on disk only — it does NOT update the live `wp_global_styles` post (the Site-Editor USER layer, ID 7 on sandybrown) which SUPERSEDES theme.json wherever both define a property. So a snapshot push silently fails to change live styles; this session's Mama's WCAG override only took once also POSTed to `/wp-json/wp/v2/global-styles/7` via REST. **Fix:** extend `push-theme-snapshot.py` to also update the `wp_global_styles` post (or document the two-step requirement). **FR-26-D2 SHIPPED 2026-06-03 (commit c468af7a, D161): the push-write half is done** — the script now POSTs `/wp/v2/global-styles/{id}` (deterministic post-ID, app-pwd auth, trailing cache flush), live-verified reversibly on canary post 7. Remaining: the pull round-trip (FR-26-A3) + the pre-deploy user-edit guard (FR-26-A4) -> Status downgraded to **PARTIAL**. Memory: `canary-live-styles-come-from-wp-global-styles-post`. **Bucket:** Infra / tooling.
 
-> **P-PRODUCT-CARD-PHASE-DE** — UPDATED 2026-06-03. **Status: OPEN** (framework). Product-card Phase A (option-picker) + Phase B (variation-sets meta + panel + custom-fields fix) + Phase C (Bound mode WC/CPT wrapper+bridge, D151) + **Phase E (`sgs/content-collection` query block, Spec 24 FR-24-4/5/6, version 1.1.0) ALL SHIPPED + deployed to sandybrown canary.** Remaining: **Phase D** = clone-emit (converter outputs `sgs/option-picker` for a pill group — TRUTH-SPEC + slot_synonyms/slots + converter, per D144.4; design proposal in `.claude/scratch/2026-06-02-phase-d-pill-emit-design.md` is SUPERSEDED BY BUILD — actual implementation kept option-picker as content-block + used G3-attrs path with `allow_text_fallback=False`, see scratch note). **Plus a Phase-2 data-model task (see P-PRODUCT-CARD-PILL-SWAP-DORMANT):** pill→price/image swap is wired but dormant. Full design: Spec 24 §FR-24 + D144/D149/D151.
 
 > **P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM** — NEW 2026-06-03. **Status: OPEN** (framework). `sites/mamas-munches/mockups/product/index.html` uses bare `pill-group`/`pill` classes (no `sgs-` prefix). Stage 0 hard-rejects non-conforming mockups on production runs. Must be migrated to SGS-BEM before the product-page clone can emit `sgs/option-picker` blocks. The homepage mockup already conforms. No code change required — edit the HTML file only.
 > **Bucket:** Content / client asset
 
 > **P-AUTO-CONTRAST-LIGHT-PRIMARIES** — NEW 2026-06-03. **Status: DEFERRED** (framework). Framework default button and pill text is white, which is WCAG-safe for saturated primaries (the majority of client brands). Light-pastel primaries (e.g. Mama's Munches pink) need a per-client override to ensure contrast. Truly universal auto-contrast — correct text colour for ANY primary with zero per-client override — requires either CSS `contrast-color()` (browser support maturing 2026; not yet safe for broad production use) or a build-time luminance calculation step. Current workaround: document the per-client override in the client's `theme-snapshot.json`. Feature decision for Bean.
 > **Bucket:** Framework / design-system
-
-> **P-PRODUCT-CARD-COSMETIC-POLISH** — NEW 2026-06-03. **Status: OPEN** (framework). Two minor cosmetic gaps surfaced during QC (P2/P3 priority): (1) WooCommerce placeholder image shown when a product has no featured image — needs a graceful no-image state (hide `<img>` or show a styled empty placeholder instead of the WC default broken image). (2) `priceNote` font size renders at 13px — should be 14px per design. Neither is a blocker for the Bound mode launch.
-> **Bucket:** Feature build
 
 > **P-CART-DRAWER-PHASE2** — NEW 2026-06-02. **Status: DEFERRED** (framework). `sgs/cart` v1 is count+link only; the slide-in drawer is gated behind the `displayMode` attr (`link` default | `drawer`). Build the drawer in Phase 2: `role="dialog" aria-modal` + focus trap + ESC + focus-return + `prefers-reduced-motion`. Do NOT wrap/extend `woocommerce/mini-cart` (shallow controls, DOM-subtree + token-inheritance issues — see the cart cold-prompt).
 
@@ -92,8 +83,8 @@ last_updated: 2026-06-06 (pruned — P-TRUSTBAR-BOUND-GRID + P-PRODUCT-CARD-PILL
 
 ## 2026-06-02 — CSS-transfer fidelity (the pipeline's core job; 4 gaps)
 
-> **P-CSS-TRANSFER-FIDELITY** — NEW 2026-06-02 (D136). A draft-vs-clone computed-style audit proved the cloning pipeline does NOT faithfully transfer the draft's CSS — the framework IMPOSES values the draft never had + DROPS draft structure. **4 primary gaps:** (1) imposed `max-width:1200` on full-bleed sections — fix = theme-CSS `.entry-content > .wp-block-sgs-container{max-width:none}` (full-bleed by position); (2) the FR-22-4.1 fold DROPS the `__inner` content wrappers (max-width:960) — fix = preserve the two-level structure; (3) hero gradient overlay (`#C56A7A→#E68A95`) imposed over the draft's solid pink; (4) `grid-template-columns` not transferred (trust-bar 266×4 → uneven; brand 122/782 → 450/450). **2 finer gaps (added 2026-06-03):** (5) `css_router.py:433–437` verbatim-CSS-fallback dumps unscoped page-wide CSS on import failure — operator-invisible (gap B5, WS-2); (6) `_lift_core_block_style` max-width→widthMode logic is dead for container paths (atomic-only, `convert.py:1034–1040`) — the fold must call the same logic (gap A7, WS-1). The principle (Bean, locked): faithful CSS transfer is the pipeline's whole point; converter detect-mode band-aids are the wrong layer (2 rejected). Static-div editor bug already fixed (committed). The `widthMode:'full'` slug-resolved band-aid (e27ff591) is PARTIAL — superseded by the faithful-transfer fix. Note: pixel-diff scores are informational per FR-22-18 — structural faithfulness is the primary gate, not pixel %. Full detail: decisions D136 + `.claude/next-session-prompt.md`. **PROGRESS (2026-06-05, D178):** Gap (2) `__inner` content-width drop — RESOLVED (contentWidth attr + fold lift, `2f86d9e6`). Gap (3) hero gradient — RECLASSIFIED, NOT a converter bug: the converter correctly emits flat pink on the inner `sgs/hero`; the gradient is the hero block's OWN default CSS (hero/style.css, client palette vars) painting over it (D172). Fix block-side if undesired — do NOT chase as a converter-lift gap. Gap (4) grid-template-columns — RESOLVED for nested wrappers (`display:grid→layout:"grid"` bridge `c97f85f1`; products/trust-bar__inner/gift-cards lift their grid). Gap (6) `_lift_core_block_style` dead — superseded: typography now lifts via `_lift_typography_to_block_attrs` incl. descendant/responsive (`642cad61`). Residual OPEN: gap (1) imposed max-width on full-bleed (theme-CSS); gap (5) verbatim-CSS-fallback (B5/WS-2).
-> **Status:** PARTIAL
+> **P-CSS-TRANSFER-FIDELITY** — NEW 2026-06-02 (D136). A draft-vs-clone computed-style audit proved the cloning pipeline does NOT faithfully transfer the draft's CSS — the framework IMPOSES values the draft never had + DROPS draft structure. **4 primary gaps:** (1) imposed `max-width:1200` on full-bleed sections — fix = theme-CSS `.entry-content > .wp-block-sgs-container{max-width:none}` (full-bleed by position); (2) the FR-22-4.1 fold DROPS the `__inner` content wrappers (max-width:960) — fix = preserve the two-level structure; (3) hero gradient overlay (`#C56A7A→#E68A95`) imposed over the draft's solid pink; (4) `grid-template-columns` not transferred (trust-bar 266×4 → uneven; brand 122/782 → 450/450). **2 finer gaps (added 2026-06-03):** (5) `css_router.py:433–437` verbatim-CSS-fallback dumps unscoped page-wide CSS on import failure — operator-invisible (gap B5, WS-2); (6) `_lift_core_block_style` max-width→widthMode logic is dead for container paths (atomic-only, `convert.py:1034–1040`) — the fold must call the same logic (gap A7, WS-1). The principle (Bean, locked): faithful CSS transfer is the pipeline's whole point; converter detect-mode band-aids are the wrong layer (2 rejected). Static-div editor bug already fixed (committed). The `widthMode:'full'` slug-resolved band-aid (e27ff591) is PARTIAL — superseded by the faithful-transfer fix. Note: pixel-diff scores are informational per FR-22-18 — structural faithfulness is the primary gate, not pixel %. Full detail: decisions D136 + `.claude/next-session-prompt.md`. **PROGRESS (2026-06-05, D178):** Gap (2) `__inner` content-width drop — RESOLVED (contentWidth attr + fold lift, `2f86d9e6`). Gap (3) hero gradient — RECLASSIFIED, NOT a converter bug: the converter correctly emits flat pink on the inner `sgs/hero`; the gradient is the hero block's OWN default CSS (hero/style.css, client palette vars) painting over it (D172). Fix block-side if undesired — do NOT chase as a converter-lift gap. Gap (4) grid-template-columns — RESOLVED for nested wrappers (`display:grid→layout:"grid"` bridge `c97f85f1`; products/trust-bar__inner/gift-cards lift their grid). Gap (6) `_lift_core_block_style` dead — superseded: typography now lifts via `_lift_typography_to_block_attrs` incl. descendant/responsive (`642cad61`). Residual OPEN: gap (1) imposed max-width on full-bleed (theme-CSS); gap (5) verbatim-CSS-fallback (B5/WS-2). **UPDATE 2026-06-07:** gap (5) verbatim-CSS-fallback replaced by the four-destination router `05fb38a4` (likely resolved); only gap (1) imposed max-width on full-bleed remains.
+> **Status:** PARTIAL (gap (1) imposed max-width on full-bleed remains; gap (5) verbatim-CSS-fallback replaced by four-destination router `05fb38a4` — likely resolved)
 > **Bucket:** Pipeline / converter
 
 ---
@@ -108,8 +99,8 @@ last_updated: 2026-06-06 (pruned — P-TRUSTBAR-BOUND-GRID + P-PRODUCT-CARD-PILL
 
 ## 2026-05-31 (pm) — wrapper-perfection follow-ups (Wave-2/A-1 + product-card)
 
-> **P-VERIFY-WAVE2-A1** — VERIFIED 2026-05-31 (fresh build+deploy+re-clone, run `mamas-munches-homepage-2026-05-31-223313`). Pixel mean 64.60→63.49 (−1.11pp, informational only). STRUCTURAL: ~1/7→~6/7 sections correct. brand 2-col ✓; featured/ingredients/gift/social headings + content ✓; per-device attrs lifted. **TWO findings surfaced (open):** (1) **HERO migration PARTIAL** — still 2 `.sgs-hero__content` wrappers + 2 images (height 1820); root cause: hero render.php wraps `$content` in `<div class="sgs-hero__content">` AND the converter emits a `sgs/container.sgs-hero__content` InnerBlock → duplicate wrapper; AND both art-direction `__split-image--mobile/--desktop` render (the mobile/desktop show/hide CSS not applying). FIX next session: hero shell should NOT re-wrap in `.sgs-hero__content` (let the InnerBlock be the content column), and the split-image mobile/desktop toggle must apply. (2) **trust-bar now block-routed** — after rename + /sgs-update, section `.sgs-trust-bar` resolves to the `sgs/trust-bar` BLOCK (Req-3 block-override active ✓), renders 4 badges, but it's the un-migrated HYBRID (reads scalar `items`) → see P-TRUST-BAR-HYBRID-MIGRATION.
-> **Status:** PARTIAL (6/7 structural; hero + trust-bar-hybrid open) · **Bucket:** Pipeline / converter · **Trigger:** next session.
+> **P-VERIFY-WAVE2-A1** — VERIFIED 2026-05-31 (fresh build+deploy+re-clone, run `mamas-munches-homepage-2026-05-31-223313`). Pixel mean 64.60→63.49 (−1.11pp, informational only). STRUCTURAL: ~1/7→~6/7 sections correct. brand 2-col ✓; featured/ingredients/gift/social headings + content ✓; per-device attrs lifted. **TWO findings surfaced (open):** (1) **HERO migration PARTIAL** — still 2 `.sgs-hero__content` wrappers + 2 images (height 1820); root cause: hero render.php wraps `$content` in `<div class="sgs-hero__content">` AND the converter emits a `sgs/container.sgs-hero__content` InnerBlock → duplicate wrapper; AND both art-direction `__split-image--mobile/--desktop` render (the mobile/desktop show/hide CSS not applying). FIX next session: hero shell should NOT re-wrap in `.sgs-hero__content` (let the InnerBlock be the content column), and the split-image mobile/desktop toggle must apply. (2) **trust-bar now block-routed** — after rename + /sgs-update, section `.sgs-trust-bar` resolves to the `sgs/trust-bar` BLOCK (Req-3 block-override active ✓), renders 4 badges, but it's the un-migrated HYBRID (reads scalar `items`) → see P-TRUST-BAR-HYBRID-MIGRATION. **UPDATE 2026-06-07:** trust-bar-hybrid half CLOSED — bound-purge `92bcf997` D182 + icon resolver `127f2290`; only the hero duplicate-wrapper remains open.
+> **Status:** PARTIAL (trust-bar-hybrid CLOSED; hero duplicate-wrapper still open) · **Bucket:** Pipeline / converter · **Trigger:** next session.
 
 > **P-BLOCK-CAPABILITY-NOTES-IN-REFERENCE** — NEW 2026-05-31. The DB attr-list can't convey a block's CSS MECHANISM (e.g. sgs/container per-grid-item via `--sgs-gi-*` custom-prop defaults + per-child specificity override) — which caused a wrong "no per-item customisation" assertion this session. FIX: add a "capability/mechanism note" per block to `02-SGS-BLOCKS-REFERENCE.md` (regenerated by /sgs-update) so capability is queryable without reading edit.js. (Pairs with STOP #26.)
 > **Status:** OPEN · **Bucket:** Docs / DB · **Trigger:** opportunistic.
@@ -117,31 +108,17 @@ last_updated: 2026-06-06 (pruned — P-TRUSTBAR-BOUND-GRID + P-PRODUCT-CARD-PILL
 > **P-PRODUCT-CARD-FULL-DUAL-MODE** — NEW (Bean brain-dump 2026-05-31; plan BEFORE building). Build the full product-card next session. Three parts: (1) **atomic "pill" block** — pack-size/option pills as a SEPARATE reusable atomic block (NOT sgs/button: no link, different behaviour); exclusive selection, persistent "selected" styling, click changes price/photo/etc. (2) **variation-sets logic on the card** — a product can have MULTIPLE variation types (size, flavour); each can change different OR the same card areas (size→price; flavour→picture+price); card recognises how many variation types exist, whether each changes anything, and what content each changes — all PULLED FROM the sgs_product CPT settings (block stays simple, reads the product's declared variations + content-impact map). (3) **Spec 24 dual-mode** (Typed=clone InnerBlocks FR-24-9; Bound=CPT Block-Bindings FR-24-2/3). **The variation-sets logic is a NEW requirement beyond current Spec 24 FRs — write it into Spec 24 (or a sub-spec) FIRST.** Defer until specced + the atomic pill block exists.
 > **Status:** OPEN (plan next session) · **Bucket:** Feature build / Spec · **Trigger:** next session, after Wave-2 verification.
 
-> **P-A1-PHASE2-SLOT-RESPONSIVE-TYPOGRAPHY** — NEW. A-1 lifted responsive padding/margin/gap/columns/grid → per-device attrs, but SLOT-LEVEL responsive typography (e.g. `headlineFontSizeTablet`, per-slot font-size/colour at breakpoints) is still dropped to variation-CSS-only — needs the slot-prefix path wired into the universal walker (the deprecated `_lift_styling_attrs` logic has the slot-prefix derivation). Also minors: A-1 `min-width>1024` breakpoint edge (supra-1024 maps to desktop-all-sizes); add `_trace` on 3+ breakpoint drops; B-1 `replaces` comma-split contract guard.
-> **Status:** OPEN · **Bucket:** Pipeline / converter · **Trigger:** after Wave-2 + trust-bar migration.
+> **P-A1-PHASE2-SLOT-RESPONSIVE-TYPOGRAPHY** — NEW. A-1 lifted responsive padding/margin/gap/columns/grid → per-device attrs, but SLOT-LEVEL responsive typography (e.g. `headlineFontSizeTablet`, per-slot font-size/colour at breakpoints) is still dropped to variation-CSS-only — needs the slot-prefix path wired into the universal walker (the deprecated `_lift_styling_attrs` logic has the slot-prefix derivation). Also minors: A-1 `min-width>1024` breakpoint edge (supra-1024 maps to desktop-all-sizes); add `_trace` on 3+ breakpoint drops; B-1 `replaces` comma-split contract guard. **UPDATE 2026-06-07:** descendant-combinator + hero H1 responsive typography SHIPPED `642cad61`; remaining = slot-prefix per-slot breakpoints.
+> **Status:** PARTIAL (descendant-combinator + hero H1 responsive typography SHIPPED `642cad61`; remaining = slot-prefix per-slot breakpoints) · **Bucket:** Pipeline / converter · **Trigger:** after Wave-2 + trust-bar migration.
 
 ## 2026-05-31 — FR-22-6 converter content-routing + Spec 24 follow-ups
 
-> **P-FR2241-FOLD-IMPLEMENTATION** — UPDATED 2026-05-31. **FR-22-4.1 recursive fold IMPLEMENTED + structurally verified on branch `feat/fr22-4-1-universal-wrapper` (commit after `8f900750`).** Three evidence-driven fixes (each root-caused via trace + live-DOM, not pixel): (1) recursive **fold** — a slug-None sgs-wrapper that is the SOLE element child of an emitted container folds its layout onto the parent's native attrs (no new div); multiple children = structural items, each own container; (2) **sole-shell gate** — fixed brand +44→ (folding a grid COLUMN like `__content` collapses N-col layouts; restores the `_absorb_transparent_wrappers` 1-child guard); (3) **wrapper-div leak** — `_emit_section_container` now emits InnerBlocks directly (matching `sgs/container` save.js `<InnerBlocks.Content/>`); the static `<div class=wp-block-sgs-container>` placeholder was leaking into the dynamic block's `$content` as an extra nesting level, breaking grid-on-section. **VERIFIED live DOM (R-22-11/R-22-13):** trust-bar = 4 icon+text badge grid items (was 1 collapsed label); brand = 2-col side-by-side (`__content` left x=233 + `sgs/media` right x=743); social-proof testimonials+stars render; no structural regressions. Plus leaf-with-element-children guard (D115 blind spot). **Pixel-diff +1.70pp (66.30 vs 64.60) — fidelity NOT structure:** dominated by (a) missing sideloaded images (brand right column empty, hero), (b) trust-bar renders 2-col not the mockup's responsive 4-col (only BASE grid-template-columns lifted to native attr, not the `@media` 4-col), (c) hero composite block shows BOTH art-direction images + internal layout, (d) header +32@768 = NOISE (theme template part, not converter output). /qc-council (cross-family Sonnet+Haiku) on the diff: no canary-blocking bugs; CSS-loss on folded shells is a generality gap (native-lift covers the canary; no worse than baseline drop) — documented. **DO NOT MERGE to main until pixel-acceptance** (P-FR226).
-> **NEXT levers (in order):** (1) real image sideload (Stage 4i dry-run → the biggest remaining pixel mover; brand/hero/product images); (2) lift RESPONSIVE grid-template-columns (`@media` 4-col) onto native attrs / variation CSS so trust-bar is 4-col; (3) hero art-direction (hide mobile img on desktop) + composite internal layout; (4) migrate `sgs/info-box` hybrid (gift cards). Follow-up cleanups: dead `css` param in `_emit_section_container`; extract leaf-guard helper (duplicated in walk() + _process_container_children); walk() docstring "3 branches" note.
-> _Superseded original note:_ FR-22-4.1 Phase 1 (own-container-for-all) regressed +2.46pp via over-nesting; WIP `8f900750` preserved that attempt + evidence. Two changes in `convert.py` `walk()`: (1) **leaf-with-element-children guard** — a node resolving to a LEAF block (sgs/label/text/icon) that has sgs-classed element children is a mis-resolution → treat as slug-None wrapper. **VALIDATED + KEEP**: fixes trust-bar badges (4 icon+text units, was 1 collapsed `sgs/label`) + product-card/info-box card bodies. Universal (R-22-9), closes the D115 leaf-misresolution blind spot. (2) **un-gated own-container emit** — every sgs-classed slug-None wrapper → own `sgs/container`. **REGRESSED**: over-nests. Measurement (canary 144 vs main baseline run `102445`): mean 64.60→67.06. WINS: gift-375 −12.7, featured-1440 −8.1, trust-bar badges render. **REAL regression: brand-1440 +33.2 — 2-col grid collapsed** (extra container broke parent→grid-item; verified live DOM + screenshot). header-768 +36.7 = NOISE (theme template part, not converter output — `header.sgs-header` absent from page content). social-proof-1440 +21.1 = reflow noise (renders fine, textLen 623). **Root cause:** own-container-for-all over-nests transparent direct-descendant shells, breaking layouts that depend on a direct parent→grid relationship — confirms council Finding + the spec FAIL-test on duplicate nesting. **The FR-22-4.1 FOLD is REQUIRED, not optional.** **Refined design for the next focused step:** KEEP the leaf-guard; replace own-container-for-all with the FOLD — a slug-None sgs-classed wrapper that is a DIRECT descendant of an emitted container (the section, or a rule-4 own-container) folds its CSS up onto that container (no new container div) via the generalised `_absorb_transparent_wrappers` pre-pass (relax `_is_absorbable_wrapper` lines 1014-1024 to absorb grid/spacing wrappers, AND carry the merged className onto the emitted container in `emit_sgs_container_wrapping` so its CSS applies); NON-direct wrappers + standalone grid wrappers keep their own container (rule 4). HARD subtlety to handle: a `__inner` with `max-width`+`margin:0 auto` over a full-width-background section must lift to `widthMode`/content-constraint (NOT constrain the container's own width / background) — see `_lift_root_supports_to_style` max-width→widthMode at convert.py ~946. Measure per-section live-DOM (R-22-11/STOP #24) + roll back fast.
-> **Status:** OPEN (WIP preserved on branch; canary 144 currently has the regressed WIP deployed — next step re-deploys main baseline then implements the fold)
-> **Bucket:** Pipeline / converter
-> **Trigger:** Next focused step. Use `/subagent-driven-development` or main-thread Opus with the council findings + this evidence; the leaf-guard code in `8f900750` is the validated starting point.
 
-> **P-CONVERTER-CONTENT-ROUTING-FIX** — NEW 2026-05-31. **G1 + G2 SHIPPED (commit 1fcb0742 on branch, D117) — content + side-by-side layout now RENDER (live-DOM verified).** G1 = FR-22-2 leaf content-routing + the `attr_type` fallback-bug fix. G2 = FR-23-6 depth-2 grid-wrapper preservation (council-designed; formalised as §FR-22-4.1 per D118 — the canonical container rule all future container-routing implementations MUST follow). Remaining for full pixel-acceptance: see P-FR226-FIDELITY-AND-MERGE.
-> **Status:** PARTIAL (renders correctly; pixel-acceptance pending)
+> **P-FR226-FIDELITY-AND-MERGE** — NEW 2026-05-31. Branch `feat/fr22-6-content-render` renders content+layout correctly but isn't pixel-acceptance-passing (sections 60–83%). To reach acceptance + merge to main: (a) wire real image sideload (Stage 4i is dry-run → no product images); (b) migrate `sgs/info-box` FR-22-6 hybrid (gift-section card content renders sparse — info-box reads scalar attrs); (c) exact styling; (d) generate passing visual-diff reports for product-card/testimonial/testimonial-slider; (e) merge branch→main (visual-diff gate then passes). The container migrations (c9c6544d) + converter fix (1fcb0742) wait on this. **Container-routing implementation target is §FR-22-4.1 (D118)** — any further container/wrapper work in this branch MUST follow the four-step precedence order rather than re-deriving ad-hoc rules. **UPDATE 2026-06-07:** branch merged `1761eb35` + image sideload `51e9ab13` + info-box migrated `797bb45d`; remaining pixel-acceptance goals are now Method-2 scope.
+> **Status:** DEFERRED (branch merged `1761eb35` + image sideload `51e9ab13` + info-box migrated `797bb45d`; remaining pixel-acceptance goals are Method-2 scope)
 > **Bucket:** Pipeline / converter
+> **Trigger:** Method-2 converter work.
 
-> **P-FR226-FIDELITY-AND-MERGE** — NEW 2026-05-31. Branch `feat/fr22-6-content-render` renders content+layout correctly but isn't pixel-acceptance-passing (sections 60–83%). To reach acceptance + merge to main: (a) wire real image sideload (Stage 4i is dry-run → no product images); (b) migrate `sgs/info-box` FR-22-6 hybrid (gift-section card content renders sparse — info-box reads scalar attrs); (c) exact styling; (d) generate passing visual-diff reports for product-card/testimonial/testimonial-slider; (e) merge branch→main (visual-diff gate then passes). The container migrations (c9c6544d) + converter fix (1fcb0742) wait on this. **Container-routing implementation target is §FR-22-4.1 (D118)** — any further container/wrapper work in this branch MUST follow the four-step precedence order rather than re-deriving ad-hoc rules.
-> **Status:** OPEN
-> **Bucket:** Pipeline / converter
-> **Trigger:** Next session. Highest-value: image sideload (likely biggest pixel-diff lever) + info-box hybrid.
-
-> **P-PRODUCT-CPT-DEPLOY-SEED** — NEW 2026-05-31. `sgs_product` CPT + `seed-mamas-products.php` are built + committed (branch c9c6544d) but NOT deployed/seeded. To create the 2 reference products: deploy the plugin + create the entries (work around the `wp eval-file` content-guard hook — use `wp post create` over SSH or wp.data via Playwright). Also decide per-site opt-in gating for the CPT (currently registers unconditionally). ~15 min.
-> **Status:** OPEN
-> **Bucket:** Feature build
-> **Trigger:** Alongside the converter fix or Spec 24 Phase A. Bean asked for the 2 product pages.
 
 ## 2026-05-29 — sgs/trust-bar merge + rename follow-ups
 
@@ -193,16 +170,6 @@ last_updated: 2026-06-06 (pruned — P-TRUSTBAR-BOUND-GRID + P-PRODUCT-CARD-PILL
 > **Status:** BLOCKED
 > **Trigger:** Phase 1.4 walker rewrite shipping — pick mechanism (a) or (b) at that decision point.
 
-**P-TEAM-MEMBER-SCHEMA-ORG-SAMEAS-RESTORATION** — NEW 2026-05-27 (Phase 1.3b regression). The pre-1.3b `sgs/team-member.render.php` emitted Schema.org `Person` JSON-LD with a `sameAs` array populated from the flat `socialLinks[].url` values. Phase 1.3b converted `socialLinks` to a child `sgs/social-icons` InnerBlocks slot — the social URLs are now inside child block markup, not accessible as flat attrs from team-member's render.php. The `sameAs` Schema.org array was REMOVED rather than parsed back from `$content`. **Effect:** team-member blocks no longer emit `sameAs` Schema.org structured data → SEO regression for any team-member pages relying on Schema.org Person markup. **Resolution options:** (a) parse `$content` via `parse_blocks()` in team-member render.php and walk the child sgs/social-icons block's `icons` attr to extract URLs — cheapest, most localised; (b) move Schema.org JSON-LD emission into sgs/social-icons render.php with a `context: 'person'` flag passed down via block ancestry; (c) server-side meta marker on team-member that the new sgs/social-icons render.php reads up-tree. Option (a) is recommended.
-> **Status:** OPEN
-> **Bucket:** SEO / structured-data regression
-> **Trigger:** Phase 2 (post Phase 1.5) OR sooner if any team-member-using client surfaces an SEO Schema audit issue.
-
-## Cloning pipeline (cv2 / orchestrator / DOM walker / pixel-diff)
-
-_60 entries._
-
-
 **P-DUPLICATE-HEADER-EXPOSED-BY-INLINE-CSS-FIX** — NEW 2026-05-25 (after D70 Stage 10 inline-CSS shipped). With variation-d0-d2.css now deployed inline per-page, the mockup's `<header class="sgs-header">` block in cv2 output renders visually for the first time — appearing BELOW the framework's `<header>` template part (rendered on every page by `theme/sgs-theme/parts/header.html`). Visible regression: header section pixel-diff at 375px jumped from 25.4% → 84.8% (+59.4pp) in run mamas-munches-homepage-2026-05-25-060541. Sister sections (768, 1440) only +0.9 / -2.3pp because framework header dominates the viewport there. **Resolution:** Phase 2 — header + footer specialised cloner. Gated on Phase 1.5 hitting per-section ≤1% (per `.claude/plans/2026-05-25-phase-1-universal-extraction.md` + `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md`). The specialised cloner emits to wp_template_part shape, not page-content shape, and dedupes against framework header. Until then the live page carries both headers on mobile. **PARTIAL 2026-06-01 (D141):** the converter's chrome-skip extension now skips top-level `<header>`/`<footer>`/`<nav>` whose BEM segment is itself chrome — so freshly-cloned pages no longer EMIT the duplicate `<header class="sgs-header">` into page content. Full closure still needs the Phase 2 header/footer cloner (template-part shape).
 **Status:** OPEN
 **Trigger:** Phase 2 kickoff.
@@ -210,7 +177,6 @@ _60 entries._
 
 **P-INGREDIENTS-1440-REGRESSION-AFTER-INLINE-CSS** — NEW 2026-05-25 (after D70). Stage 11 ingredients-section at 1440px regressed from 31.5% → 53.9% (+22.4pp) post-fix while same section dropped -22pp at 375 and -20pp at 768 (clear net win at the other two viewports). Hypothesis A: a desktop rule in variation-d0-d2.css overrides framework defaults at 1440 with a partial cascade conflict. Hypothesis B: screenshot-timing — page wasn't fully painted when Playwright captured. Hypothesis C: a desktop-specific rule in variation CSS doesn't match the live DOM shape exactly. **Trigger:** trace investigation — pixel-diff/section.sgs-ingredients-1440x900/diff.json + mockup.png + sgs.png + heatmap.png in run mamas-munches-homepage-2026-05-25-060541. Re-run /sgs-clone to rule out timing artefact first.
 **Status:** OPEN
-
 
 
 **P-G1-EXTEND-TO-OTHER-CONTAINER-SHAPED-COMPOSITES** — NEW 2026-05-24 (scoped narrow). Step 1.6 (G1 closure) ships OPEN-block emit for `sgs/hero` only this phase, plus FR1 branch-(b) pattern-reference emission in Step 1.5. All other composite blocks (info-box, product-card, card-grid, etc.) continue to emit self-closing. **Why scoped narrow:** no DB column today cleanly identifies "container-shaped composite block" — `blocks.parent_block`, `block_supports`, `patterns.block_composition`, `block_attributes.output_signature` each describe partial facets but none excludes info-box / product-card from a "container-outer + InnerBlocks" definition. Investigated candidates: (a) add `is_pattern_shaped` boolean to `blocks`, hand-curated; (b) new `/sgs-update` stage that static-analyses each `render.php` for `<InnerBlocks />` inside an outer container element; (c) manual `block.json` annotation under `supports.sgs.containerShaped: true`.
@@ -247,8 +213,8 @@ _60 entries._
 **Status:** PARTIAL
 
 
-**P-CLONING-PIPELINE-FLOW-DOC-DRIFT** — 2026-05-21 reality check found that the entry-point chain "verified 2026-05-13" predates the 2026-05-20 architectural rewrite (`css_router.py`, `essence_match_detector.py`, `stage_attribute_promotion.py` added but ASCII chain not refreshed). Plus G2 Step 1+2 changes (orchestrator-side CSS merge into `_section_css` + cv2 scope strip) aren't documented yet.
-**Status:** OPEN
+**P-CLONING-PIPELINE-FLOW-DOC-DRIFT** — 2026-05-21 reality check found that the entry-point chain "verified 2026-05-13" predates the 2026-05-20 architectural rewrite (`css_router.py`, `essence_match_detector.py`, `stage_attribute_promotion.py` added but ASCII chain not refreshed). Plus G2 Step 1+2 changes (orchestrator-side CSS merge into `_section_css` + cv2 scope strip) aren't documented yet. **UPDATE 2026-06-07:** the ASCII-chain/historical-framing complaint was resolved by `eaa226f0` (2026-06-07); remaining = add the G2 Step 1+2 (`affca3f1`: `_section_css` merge + cv2 scope-strip) section to cloning-pipeline-flow.md.
+**Status:** PARTIAL (ASCII-chain/historical-framing resolved `eaa226f0`; remaining = add the G2 Step 1+2 `affca3f1` section to cloning-pipeline-flow.md)
 **Trigger:** Before the next architectural pipeline change that modifies the stage boundary or script chain. G2 Step 1+2 changes (commit `affca3f1`) are the immediate outstanding update.
 
 
@@ -302,58 +268,10 @@ _60 entries._
 **Trigger:** Revisit on first cross-file pytest ordering failure. No active failure observed since Wave 2b revert.
 
 
+**P-WAVE-4-DOC-FOLLOWUPS** — Sonnet /qc raters surfaced: `/research-buddies` skill missing from dispatch chain; Wave 3 Indus heritage-strip not in flow doc body; `+DEPLOY`/`+PARITY` tails could use dedicated stage blocks. **UPDATE 2026-06-07:** FR36/FR37/FR40 §12.9 sub-item DROPPED — Spec 16 archived → moot. Keep the flow-doc + stages-doc update items.
+**Status:** OPEN (flow-doc + stages-doc updates remain; FR36/FR37/FR40 dropped — Spec 16 archived)
+**Trigger:** Next doc-op session specifically targeting cloning-pipeline-flow.md. "Phase 4" in the original trigger = `.claude/plans/2026-05-24-phase-4-skill-optimisation.md` — check that plan's scope before opening this entry.
 
-**P-WAVE-4-DOC-FOLLOWUPS** — Sonnet /qc raters surfaced: `/research-buddies` skill missing from dispatch chain; Wave 3 Indus heritage-strip not in flow doc body; `+DEPLOY`/`+PARITY` tails could use dedicated stage blocks; FR36/FR37/FR40 status incomplete in Spec 16 §12.9.
-**Status:** OPEN
-**Trigger:** Next doc-op session specifically targeting Spec 16 §12.9 and cloning-pipeline-flow.md. "Phase 4" in the original trigger = `.claude/plans/2026-05-24-phase-4-skill-optimisation.md` — check that plan's scope before opening this entry.
-
-
-### P-DETECT-INNER-ELEMENT-WIDTHS — `_detect_client_layout_widths` misses `__inner` element widths (~20 min)
-**Status:** OPEN
-
-
-**What:** Today's orchestrator re-run wrote `theme/sgs-theme/styles/mamas-munches.json:settings.layout = {contentSize: 1000px, wideSize: 1000px}` — both keys carry the same value because only one block-root selector (`.sgs-brand { max-width: 1000px }`) matched. The mockup actually authors content widths on `__inner` elements: `.sgs-header__inner: 1280px`, `.sgs-trust-bar__inner: 1100px`, `.sgs-featured-product__inner: 1040px`, `.sgs-ingredients-section__inner: 960px`, `.sgs-gift-section__card-inner: 960px`, `.sgs-social-proof__inner: 960px`. The current SGS-BEM-block-root regex correctly rejects these (per Section T of common-wp-styling-errors.md), but in doing so loses real layout-width signal.
-
-**Fix shape:** extend `_detect_client_layout_widths` to ALSO accept `^\.sgs-[a-z][a-z0-9]*(-[a-z0-9]+)*__inner$` selectors (the canonical SGS-BEM "inner wrapper" element name). Universal-benefit: `__inner` is a convention name, not a client-specific class. The function still rejects `__title`, `__lead`, `__card`, etc — only `__inner` counts as a layout-width signal.
-
-**Trigger:** next session's intra-section closure work — picking up after this session's framework shipment.
-
-### P-FOOTER-WRAPPER-CLASS-MISSING — sgs/footer render.php doesn't emit `.sgs-footer` on wrapper (~10 min)
-**Status:** OPEN
-
-
-**What:** Pixel-diff against page 144 (canary — page 131 was deleted) selecting `.sgs-footer` at 1440 returns 98.7% diff — but the cause isn't the footer rendering badly; it's that `.sgs-footer` matches a stray `<h2 class="...sgs-footer-label">` heading on the page, NOT the actual `<footer>` wrapper. The sgs/footer block's render.php emits the `<footer>` element without adding `sgs-footer` as its block-root class. Selector-by-prefix mismatches cause this collision.
-
-**Fix shape:** audit sgs/footer (and sgs/header — same issue suspected; header diff 24% may also be wrong-element-matched) render.php to add `sgs-<block-name>` class to the wrapper alongside any existing `wp-block-sgs-<name>`. Re-measure with the corrected wrapper class to get a real footer diff.
-
-**Trigger:** before any further pixel-diff measurement on `.sgs-footer` or `.sgs-header` — selector reliability gate.
-
-### P-HEADER-WRAPPER-CLASS-AUDIT — sgs/header same suspected pattern (~10 min)
-**Status:** PARTIAL
-
-
-**What:** Similar to footer. Header at 24% (clean baseline) is suspiciously low given the visual rendering shows substantial differences. Possible that the selector is matching only a partial header sub-tree. Confirm by checking what `.sgs-header` matches on page 144 (canary page — page 131 was deleted).
-
-**Fix shape:** read first `<*[class*=sgs-header]>` element on page 144; if it's not a `<header>` wrapper, apply the same fix as P-FOOTER-WRAPPER-CLASS-MISSING. **Closure criterion:** Playwright confirms `.sgs-header` matches a `<header>` wrapper element on page 144.
-
-**Trigger:** alongside P-FOOTER-WRAPPER-CLASS-MISSING.
-
-### P-SGS-ATOMIC-RICH-TEXT-AUDIT — SGS atomic emissions (sgs/heading, sgs/text, sgs/button, sgs/quote) don't preserve inline rich-text (~60 min)
-**Status:** OPEN
-
-
-**What:** XS-9 (2026-05-30 D104) added rich-text preservation for `<br>`, `<strong>`, `<em>`, `<a>` etc. in core/* atomic-tag swaps (core/heading, core/paragraph, core/quote, core/button). SGS atomic emissions retain `node.get_text(strip=True)` behaviour pending render.php audit because their content escape policy is unknown — applying rich-text without confirming `wp_kses_post()` wrap on render could either (a) lose tags to `esc_html()` escaping or (b) introduce XSS.
-
-**Empirical evidence the gap matters:** Mama's hero H1 (`<h1>Made for the mum<br>who needs it most</h1>`) is processed via sgs/heading atomic-tag swap, so XS-9 fix doesn't reach it. Hero pixel-diff unchanged at 67.76% pre/post XS-9 measurement.
-
-**Fix shape:**
-1. Read render.php for sgs/heading, sgs/text, sgs/button, sgs/quote
-2. Identify which use `esc_html()` (strip tags) vs `wp_kses_post()` (preserve safe HTML) on content
-3. For blocks using `esc_html()`: either (a) migrate to `wp_kses_post()` per WP standards then enable rich-text preservation in `_atomic_attrs_for`, OR (b) leave them as plain-text emissions
-4. For blocks already using `wp_kses_post()` (if any): extend XS-9 `_rich_text_content` helper coverage to those slugs
-5. Document the per-block decision in `.claude/specs/02-SGS-BLOCKS.md`
-
-**Trigger:** Wave 6 of the diagnostic register fix sequence OR when hero pixel-diff needs to drop below ~50% (sgs/heading rich-text restoration is one of the constraints).
 
 ### P-PIXEL-DIFF-PER-SECTION-NOISE-FLOOR — confirm ±2pp variability (~30 min)
 **Status:** OPEN
@@ -368,26 +286,6 @@ _60 entries._
 4. Update diagnostic register methodology: per-section deltas within noise floor are reported as "no significant change" not "improvement/regression"
 
 **Trigger:** Before Wave 4 (XS-3) measurement cycle, since wrapper-slot fixes are predicted to produce per-section deltas large enough to need noise floor calibration to distinguish signal from variance.
-
-### P-HEADING-DEFAULTS-NORMALISE-FOR-SERIF — `headlineLetterSpacing: -0.01em` default not universal (~20 min)
-**Status:** OPEN
-
-
-**What:** Rater 1 finding. sgs/heading render.php fallback default `headlineLetterSpacing: -0.01em` actively hurts readability on loose serif faces (DM Serif Display, Playfair). Sans-serif display (Inter, Montserrat) benefits from -0.01 tracking; serifs don't.
-
-**Approach:** Change default to empty string in render.php (no inline style emitted unless explicitly set). Same audit for `headlineLineHeight: 1.2` etc. — defaults should be `null`/empty so theme/inherited values win. Per-attribute audit + update.
-
-**Trigger:** First serif-typography client OR when adding a non-Inter style variation.
-
-
-### P-BORDER-STYLE-ENUM-PARITY — sgs/heading vs sgs/quote borderStyle enum mismatch (~5 min)
-**Status:** OPEN
-
-
-**What:** Rater 4 finding. quote allows `["none","solid","dashed","dotted","double"]`. heading only allows 4 (no "double"). Setting `borderStyle: double` on heading silently downgrades to `none`.
-
-**Approach:** Standardise to the 5-value set across heading + text + quote + future. One-line edit in each block.json.
-
 
 
 ### P-WP-AUTOP-INTERACTION — Audit how WP `wpautop` interacts with sgs/text emission (~30 min)
@@ -409,25 +307,6 @@ _60 entries._
 
 **Approach:** Use content-derived hash (e.g. `md5` of block JSON) for scoped IDs instead of sequential counter. Stable across cache fragments.
 
-### P-HEADING-TRANSITION-ATTRS — Add transitionDuration + transitionEasing attrs to sgs/heading hover (~15 min)
-**Status:** OPEN
-
-
-**What:** Rater 4 finding (partially false — attrs don't exist today). sgs/heading hover transition is hardcoded `300ms ease`. Non-configurable; should expose attrs for parity with hover-controls extension.
-
-**Approach:** Add `transitionDuration` (number, default 300) + `transitionEasing` (string, default "ease") to block.json. Render.php reads them. Same for sgs/text + sgs/quote.
-
-### P-WRAPPER-ATTR-LEADING-SPACE-AUDIT — Sweep `<element<?php echo` across all dynamic blocks (~45 min)
-**Status:** OPEN
-
-
-**What:** sgs/heading rendered malformed HTML `<divstyle="..."` when WP's block-supports filter injected a style attr via regex without leading space. Fixed today via explicit space: `<div <?php echo $wrapper_attrs; ?>>`. The same pattern likely exists in other dynamic blocks (sgs/info-box, sgs/feature-grid, sgs/testimonial, sgs/card-grid, sgs/container, sgs/hero, sgs/button, sgs/cta-section, sgs/media, sgs/text) — any wrapper tag rendered as `<tag<?php echo $wrapper_attrs; ?>>` without explicit leading space is at risk when block-supports adds inline-style attrs.
-
-**Approach:** grep for `<\w+<\?php echo \\\$wrapper_attrs` across all `plugins/sgs-blocks/src/blocks/*/render.php`. For each match, insert a literal space before the `<?php` opener.
-
-**Trigger:** Next time a dynamic block adds WP-native `supports.spacing` / `supports.color` AND the converter emits it. Or any time someone reports a section that renders shorter than expected on the frontend (could be premature `</tag>` close from malformed parent).
-
-Captured 2026-05-17 from /qc-inline finding 1 (HIGH).
 
 ### P-FR1-PLUS-GRID-DOUBLE-LIFT-REGRESSION — Add regression scenario for FR1 + grid container interaction (~30 min)
 **Status:** OPEN
@@ -462,20 +341,6 @@ Different DOM wrapper contexts: post 66 is plain mockup HTML inside WP content a
 
 Captured: 2026-05-17.
 
-### P-IMAGE-UPLOAD-INTO-PIPELINE — Promote upload_and_patch.py into the orchestrator (~30 min)
-**Status:** OPEN
-
-
-**What:** The 2026-05-17 session built `reports/brand-walkdown-2026-05-19/upload_and_patch.py` as a one-shot fix to upload mockup images + patch block_markup. The orchestrator's stage-4i media-sideload runs in `--dry-run` mode by default; live upload is never triggered through the canonical pipeline.
-
-**Approach:** Add `--upload-media` flag to `sgs-clone-orchestrator.py`. When set:
-- Pass `upload=True` to `sideload_batch`
-- Add a post-sideload "URL rewrite" step that maps relative paths in `extract.json:block_markup` to the uploaded WP attachment URLs
-- Save patched extract as authoritative for post-deploy `register_to_wp`
-
-**Trigger:** Any client deploy or live-data run where the converter must produce a working page.
-
-Captured: 2026-05-17.
 
 ### P-CORE-STYLE-MAP-DB-MIGRATION — Migrate `_CORE_BLOCK_STYLE_MAP` to DB-driven lookup (~1.5 hrs)
 **Status:** OPEN
@@ -495,182 +360,16 @@ Captured: 2026-05-17.
 
 Captured: 2026-05-19 by QC rater 2 (Haiku DB-schema lens).
 
-### P-COVERAGE-METRIC-CORE-STYLE — Extend `attribute_coverage` to count core-block nested style paths (~30 min)
+
+### P-PHASE8-9 — Slot-synonym expansion: tile / feature / module synonyms
 **Status:** OPEN
 
 
-**What:** `scripts/pixel-diff.py compute_attribute_coverage` does suffix-anchored match on SGS-flat-attr keys (`headlineFontSize`, `image.url`, etc.). The new universal-lift helper emits nested `style.color.text`, `style.typography.fontSize`, `image.style.scale` etc. — the coverage matcher doesn't recognise these paths as covering CSS rules.
-
-**Evidence:** 2026-05-19 brand walkdown: post-lift extract has +4 new nested style objects (image.style, heading.style, paragraph.style, button.style). Coverage% still reads 18.75% — unchanged from pre-lift baseline. The lift IS happening (verified in extract.json); the metric is blind to it.
-
-**Approach:** Add a second matcher to `compute_attribute_coverage` that walks nested `*.style` dicts and matches each leaf's path tail (e.g. `style.color.text` covers `color` rules, `style.typography.fontSize` covers `font-size`, `style.dimensions.maxHeight` covers `max-height`). Reuse `_CORE_BLOCK_STYLE_MAP` from convert.py as the ground truth.
-
-**Trigger:** Next session's brand+hero re-measurement OR before any handoff that claims coverage% as evidence.
-
-Captured: 2026-05-19 inline during brand walkdown.
-
-### P-PARENT-QUALIFIED-TAG-LIFT — Smarter SGS-class guard allowing parent-qualified tag selectors (~45-60 min)
-**Status:** OPEN
-
-
-**What:** The 2026-05-19 commit's `_lift_core_block_style` SGS-class guard rejects lift on any node without an `sgs-` class. This correctly blocks the tag-blast-radius bug (rater 3 finding: `p { color: #333 }` corrupting every paragraph globally). However, it ALSO rejects parent-qualified tag selectors like `.sgs-brand__body p { font-size }` — the inner `<p>` has no SGS class but the matching selector IS class-qualified via the ancestor.
-
-**Evidence:** Post-fix shakeout 2026-05-19 shows -1 attr per non-canary section vs subagent's permissive run (brand 40 vs 41, featured-product 53 vs 54, ingredients 28 vs 29, gift 43 vs 44, social-proof 17 vs 18). The lost attr per section is the parent-qualified tag-selector lift.
-
-**Approach:** Modify `_collect_css_decls_for_element` (or add a sibling fn) to RETURN the matched selectors alongside declarations. Then in `_lift_core_block_style`, after collecting decls, filter to only those whose matched selector has at least one `.sgs-*` class token anywhere in the selector chain. This allows `.sgs-brand__body p` (has ancestor sgs class) while rejecting bare `p` (no sgs class anywhere).
-
-**Trigger:** Next session's brand+hero re-measurement when the -1 attr/section gap proves to bite OR P-COVERAGE-METRIC-CORE-STYLE shipping reveals which specific rules are lost.
-
-Captured: 2026-05-19 post-fix verification.
-
-### P-TAG-SELECTOR-LIFT — Lift CSS from tag-only selectors targeting atomic children (~30-45 min)
-**Status:** OPEN
-
-
-**What:** `_lift_core_block_style` reads CSS via `_collect_css_decls_for_element` which matches by class + parent-qualified class selectors. Pure tag selectors (`blockquote p`, `blockquote footer`, `h1, h2, h3 { font-family }`, `img { max-width }`, `a { color }`) aren't picked up because the node's classes don't match.
-
-**Why this matters for brand:** mockup CSS has 5 tag-only rules that affect brand subtree visibility:
-- `*, *::before, *::after { box-sizing; margin; padding }`
-- `h1, h2, h3 { font-family; line-height }`
-- `img { max-width; display }`
-- `a { color; text-decoration }`
-- `blockquote { font-style }` + `blockquote p { ... }` + `blockquote footer { ... }`
-
-After universal-class filter (the 5 above are universal → don't count), the blockquote-children rules are still missing. They drop brand's effective coverage by 3 rules (blockquote, blockquote p, blockquote footer).
-
-**Approach:** Add a second pass in `_lift_core_block_style` that queries CSS rules for selectors matching the node's tag name + ancestor chain. Limit ancestor chain to 3 levels to avoid combinatorial blowup. Reuse mapping infrastructure.
-
-**Trigger:** Next walkdown where blockquote / tag-styled content is visible OR P-COVERAGE-METRIC-CORE-STYLE shows tag-selector residual.
-
-### P-PHASE9-REDEPLOY-BASELINE — Refresh sandybrown post 65 with post-lift converter output (~20 min)
-**Status:** OPEN
-
-
-**What:** Pixel-diff baseline (post 65 at sandybrown-nightingale-600381.hostingersite.com) was last refreshed 2026-05-17. The 2026-05-19 commit adds new `style.*` attrs into emitted block markup. Until post 65 is redeployed with the new markup, pixel-diff% won't reflect the visible improvement.
-
-**Approach:** Re-run `/sgs-clone` full-page mode → take new extract.json's block_markup for the brand section → update WP post 65 via REST or wp-admin → take fresh screenshots. Standard redeploy workflow.
-
-**Trigger:** Next session's brand+hero re-measurement.
-
-### P-COVERAGE-SCOPE-FILTER — Add `selector_scope` field to expected-rules baseline (~30 min)
-**Status:** OPEN
-
-
-**What:** Coverage% currently treats every CSS rule in `expected-rules-<boundary>.jsonl` as a candidate for SGS-attr matching. Universal selectors (`*, *::before, *::after`), generic-tag selectors (`h1, h2, h3`, `img`, `a`), and pseudo-only-state selectors (`:hover` against generic tags) have no SGS-attr equivalent by design. Including them in the denominator deflates coverage% on every section. Real impact: brand reads 18.75% coverage today (dry-run 2026-05-18); with universal filter applied it would read ~30%. The qualitative verdict ("real debugging needed") doesn't change — but the metric will be more accurate.
-
-**Approach:** Add `selector_scope` field to each baseline row. Values: `universal` (matches `*`, `:root`, `html`, `body`), `tag_generic` (bare tag selectors with no class), `block_scoped` (matches `.sgs-*`). Coverage computation reports `block_scoped` only; the other two surface as separate non-counted lines. Cross-block attr aggregation (rules targeting nested blocks should compare against the child's attrs) is a harder second-order refinement — park separately.
-
-**Trigger:** Bean asks "coverage% feels low" OR cross-cutting batch in a future session OR raters at next session's council debate cite metric noise as a problem.
-
-### P-PHASE9-5 — Empty-DB defensive assertion (Adversarial A1)
-**Status:** OPEN
-
-
-**What:** `db_lookup.css_property_suffixes()` returns `[]` silently if the `property_suffixes` table is empty or DB file is missing (sqlite3 auto-creates an empty file on connect). The lifter then extracts zero CSS-driven attrs across the entire pipeline with no error raised.
-
-**Approach:** Add `assert len(rows) > 0` at module load. Or fail-fast with a clear `RuntimeError` message naming the canonical DB path + `/sgs-update` recovery command. ~5 line fix.
-
-### P-PHASE9-6 — RETIRED_BLOCK_REMAP future-block-registration guard (Adversarial C1)
-**Status:** OPEN
-
-
-**What:** `RETIRED_BLOCK_REMAP = {"heritage-strip": "brand"}` silently locks pattern routing even if `sgs/brand` is later registered as a real block. The remap fires unconditionally; Tier 2 always picks the pattern over the block.
-
-**Approach:** Add a module-load assertion that no `RETIRED_BLOCK_REMAP` value collides with a currently-registered block slug (via `db.registered_block_slugs()`). Or invert the priority: check `block_exists()` first, only remap when the block is actually gone.
-
-
-### P-PHASE9-NITS-BATCH — Fresh-eyes nits in convert.py / db_lookup.py
-**Status:** DEFERRED
-
-**Trigger:** Batch these during the next convert.py general maintenance pass — no functional impact, pure readability.
-
-- **P-PHASE9-8:** `convert.py:_css_prop_to_suffix()` and `_breakpoint_suffixes()` are thin wrappers with no transformation. Inline the calls at the 3 call sites; drop the wrapper functions. ~10 lines removed.
-- **P-PHASE9-9:** `db_lookup._kind_for(suffix, role)` is opaque on cold read. Rename to `_value_kind_for_suffix()`. Update the 1 call site.
-
-### P-PHASE8-14 — Section-collapses-into-leaf-block guard
-**Status:** OPEN
-
-
-**What:** Multi-rater /qc panel (fresh-eyes lens) flagged an adversarial scenario: a section whose class accidentally matches a leaf-level block name (e.g. `<section class="sgs-product-card">` rather than `<section class="sgs-products"><div class="sgs-product-card">…</div>…</section>`). Stage 2 matches the registered `sgs/product-card` at confidence 1.0. The block-root fast path fires at the section root. `lift_subtree_into_block_attrs` collapses the entire multi-component section into a single product-card block with whatever the first descendant's attrs were. No bucket captures this — silent collapse.
-
-**Trigger:** Real client mockup hits the pattern, OR Phase 8 closure work uses an adversarial test to demonstrate the gap.
-
-**Approach:** Add a new check `route_section_complexity_mismatch` (or extend `route_wrong_block_type`): when Stage 2 matches a registered LEAF block (no InnerBlocks slot in block.json) at confidence ≥ threshold AND the section DOM contains > N child elements OR descendant depth > D, emit `structural_mismatch_or_orphan` with `source="section_collapsed_into_leaf_block"` and severity `high`. Need to read block.json `supports` to determine "is this a leaf vs composite block". ~25 lines + DB lookup.
-
-### P-PHASE8-15 — severity_totals key in orchestrator router-failure fallback
-**Status:** OPEN
-
-
-**What:** Multi-rater /qc panel (ecosystem lens) noted the orchestrator's bucket-router subprocess-fail fallback initialiser hardcodes `{"leftover_buckets": {}, "totals": {}, "total_count": 0}` — no `severity_totals` key. If the router subprocess fails (non-zero exit) AND a downstream consumer eventually reads `severity_totals`, it'll throw KeyError. No consumer reads it yet, but future operator-review HTML / handoff regen may.
-
-**Trigger:** First downstream consumer of `severity_totals` is wired in.
-
-**Approach:** Add `"severity_totals": {}` to the fallback init dict at `sgs-clone-orchestrator.py:1606`. 1 line.
-
-### P-PHASE8-9 — Slot-synonym expansion: tile / panel / feature / module / item
-**Status:** OPEN
-
-
-**What:** The 2026-05-16 walker fix added `card → sgs/info-box` via `slot_synonyms.standalone_block`. Multi-rater /qc panel (fresh-eyes lens) recommended also registering the four next-most-common BEM element names that map to info-box compositions in real-world client mockups: `tile`, `panel`, `feature`, `module`, `item`.
+**What:** The 2026-05-16 walker fix added `card → sgs/info-box` via `slot_synonyms.standalone_block`. Multi-rater /qc panel (fresh-eyes lens) recommended also registering the four next-most-common BEM element names that map to info-box compositions in real-world client mockups: `tile`, `panel`, `feature`, `module`, `item`. **UPDATE 2026-06-07:** panel/card/items → sgs/info-box SHIPPED `a2d58a3d`; remaining = tile/feature/module synonyms only.
 
 **Trigger:** Next client onboarding hits one of these element names AND surfaces as an unmatched gap in `pipeline-state/<run>/leftover-buckets.json`, OR Phase 8 closure work touches a section with these names.
 
 **Approach:** INSERT rows into `slot_synonyms` (sgs-framework.db) with `canonical_slot` = one of the names, `standalone_block` = `sgs/info-box`. Mirror as aliases on the existing `card` row if structurally equivalent. ~5 min per synonym.
-
-### P-PHASE8-10 — Standalone-block column validation on walker startup
-**Status:** DEFERRED
-
-
-**What:** Multi-rater /qc panel (architecture lens) raised a deferred concern: a bad row in `slot_synonyms.standalone_block` (e.g. `text → sgs/paragraph`, `media → sgs/image`) would route every leaf-text element through the composite path, conflicting with `ATOMIC_TAG_MAP`. No load-time validation today.
-
-**Trigger:** Next time someone proposes adding a synonym for a tag covered by `ATOMIC_TAG_MAP`, OR the converter exhibits unexpected routing under DB extension.
-
-**Approach:** In `db_lookup._slot_to_standalone_block()`, reject any row where the standalone_block matches a value in `ATOMIC_TAG_MAP.values()`. Emit stderr warning + drop the row from the map. ~10 lines.
-
-### P-PHASE8-2 — Per-block render.php audits
-**Status:** OPEN
-
-
-**What:** Many lifted styling attrs aren't honoured by block render.php. The converter lifts `headlineFontSizeTablet` correctly but the block's render.php doesn't emit a `@media (min-width:768px) { .sgs-Xxx__headline { font-size:N }}` rule for it. Audit 6-8 blocks (hero, product-card, info-box, heritage-strip, testimonial-slider, feature-grid, card-grid, cta-section).
-
-**Trigger:** Phase 8 section-by-section closure — each section's per-section diff above 1% drives an audit of its block's render.php.
-
-**Approach:** for each block:
-1. List all *Tablet / *Mobile / *Desktop variant attrs in block.json
-2. Confirm render.php emits matching media-query CSS for each
-3. Confirm CSS uses `:not([style*="<prop>"])` fallback pattern per SGS standard
-
-**Effort:** ~30 min per block × 6-8 = 3-4 hours.
-
-### P-PHASE8-3 — Remove hyperspecific block_slug guards in `lift_subtree_into_block_attrs`
-**Status:** OPEN
-
-
-**What:** `if block_slug == "sgs/hero":` at line 1016 and `if block_slug == "sgs/heritage-strip":` at line 1048 are pre-existing technical debt the multi-model QC panel surfaced as "in scope of NEEDS-REFACTOR but not new". Refactor to BEM-modifier-driven generic lift via a DB-backed `block_image_slots` table (subagent 5's 2026-05-15 design).
-
-**Trigger:** Either Phase 8 closure work hits a non-Mama's hero, OR the heritage-strip pattern refactor (P-PHASE8-1) makes the heritage guard dead code.
-
-**Approach:** see 2026-05-15 subagent 5 report in conversation transcript. ~70-80 lines + DB seed.
-
-### P-PHASE8-4 — `convert_page.py` line 198 still hardcodes `extracted_attributes: {}`
-**Status:** OPEN
-
-
-**What:** During the 2026-05-15 styling-lift work, the implementer fixed `convert_section()` in `__init__.py` to populate extracted_attributes via brace-depth extraction. The parallel `convert_page.py` function still has the hardcoded empty dict. If the orchestrator routes through convert_page.py instead of convert_section, Stage 9 sees empty extracted_attributes.
-
-**Trigger:** Next session start (Phase 8 will run convert_page.py at orchestrator invocation; surface this as one of the first investigations).
-
-**Approach:** apply the same brace-depth extractor logic. ~15 lines.
-
-### P-PHASE8-5 — Pack-size pills not rendering on featured-product cards
-**Status:** OPEN
-
-
-**What:** Lift code in `_extract_attr_value` and the lift_subtree loop correctly emits `packSizes` array in the converter's WP block markup for Zookies card. Render.php has `if ( ! $is_trial && ! empty( $pack_sizes ) )` gate. Pills don't render visibly on the deployed page. Audit the `$is_trial` computation — likely the variantStyle being lifted as "standard" doesn't quite match what render.php expects.
-
-**Trigger:** Phase 8 section-by-section closure hits `.sgs-featured-product`.
-
-**Approach:** open `plugins/sgs-blocks/src/blocks/product-card/render.php`, trace `$is_trial`, confirm the variantStyle enum mapping. ~15 min.
 
 ### P-PHASE8-6 — Section-internal nav mapping
 **Status:** OPEN
@@ -682,27 +381,6 @@ After universal-class filter (the 5 above are universal → don't count), the bl
 
 **Approach:** add `<nav>` to ATOMIC_TAG_MAP routing to `core/navigation` with a child-link lifting helper. ~30 lines.
 
-### P-PHASE8-7 — `_BREAKPOINT_SUFFIXES` non-standard breakpoint silent-drop
-**Status:** OPEN
-
-
-**What:** The styling-lifter's `_BREAKPOINT_SUFFIXES` table covers 5 industry-standard breakpoints (min-width 768/1024/1280, max-width 767/640). Non-standard breakpoints (e.g. `min-width: 900px` or `min-width: 576px`) are silently ignored — the responsive attr family doesn't get lifted.
-
-**Trigger:** Phase 8 work hits a mockup with non-standard breakpoints, OR a CC/QC reviewer flags this gap.
-
-**Approach:** add a stderr warning when a media-query selector matches a known class but the breakpoint isn't in the table. Long-term: read breakpoints from theme.json or a new config rather than a hardcoded set. ~30 min.
-
-### P-MM-1 — Create 4 gap-candidate patterns for Mama's homepage
-**Status:** OPEN
-
-
-**What:** Four mockup sections have no matching pattern yet: `featured-product`, `products` (4× `sgs/product-card` grid), `gift-section` (3 cards: 1 trial + 2 gifts), `social-proof` (containing `sgs/testimonial-slider` + trustpilot bar). Each needs a pattern file under `theme/sgs-theme/patterns/` following the same shape as `ingredients-section.php` and `header-mamas-munches.php`.
-
-**Trigger:** Phase 8 starts. Patterns get created inline as `/sgs-clone` Stage 7 (composition emit) surfaces them — per the "make new blocks inline, never defer with placeholder" rule.
-
-**Spec:** TRUTH-SPEC at `sites/mamas-munches/mockups/homepage/TRUTH-SPEC.md` documents the slot bindings for each. The renamed mockup HTML at `sites/mamas-munches/mockups/homepage/index.html` is the visual source of truth.
-
-**Effort:** ~10-15 min per pattern (use ingredients-section.php as scaffold; replace inner blocks per slot table).
 
 ### P-MM-2 — Decide on sgs/section-heading block
 **Status:** OPEN
@@ -714,74 +392,13 @@ After universal-class filter (the 5 above are universal → don't count), the bl
 
 **Effort:** ~30-45 min if creating the block (block.json + edit.js + save.js + render.php + style.css). Zero if leaving as utility.
 
-### P-MM-3 — Add cart element to header-mamas-munches pattern
-**Status:** OPEN
-
-
-**What:** Current `theme/sgs-theme/patterns/header-mamas-munches.php` uses `core/site-logo` + `core/navigation` + `sgs/mobile-nav-toggle` + `sgs/mobile-nav`. The renamed mockup has cart button + cart badge that the pattern doesn't model. Structural drift between mockup and pattern.
-
-**Trigger:** Phase 8 live-deploy parity check. The cart element needs an SGS block or a core block addition to the pattern.
-
-**Spec:** TRUTH-SPEC documents `.sgs-header__cart` + `.sgs-header__cart-badge` slots. There is no SGS cart block currently — likely a `sgs/cart-link` or similar to create.
-
-**Effort:** ~20-30 min (extend the pattern + new block if needed).
-
-### P-PH8-1 — Hero parity test file scaffold
-**Status:** OPEN
-
-
-**What:** Phase 6 Step 6 specified running `python -m pytest plugins/sgs-blocks/scripts/recogniser/tests/test_slot_filler.py::test_hero_filled_slots_match_baseline_count -v` as a sanity check. The test file doesn't exist yet — Phase 8 deliverable.
-
-**Trigger:** Phase 8 starts. The test verifies that `/sgs-clone`'s slot-filler produces ≥50 attributes on the hero section matching `plugins/sgs-blocks/scripts/recogniser/tests/fixtures/hero-baseline.json` (50-attr baseline).
-
-**Spec:** Test file location is the canonical path. Pytest collects from project root. Baseline fixture already exists at `fixtures/hero-baseline.json` (per Phase 6 plan entry-context list — verify before referencing).
-
-**Effort:** ~30-45 min.
 
 ---
-
-### P-11-M9 — REOPENED 2026-05-09 (false-claim ship, milestone never actually validated)
-**Status:** OPEN
-
-
-**Status as of 2026-05-09 (this session):** The M9 milestone was claimed shipped by the previous session but was NOT actually validated. The orchestrator extension code shipped (commit dcb185b). The 6521-file foundation committed. But the multi-section orchestrator NEVER RAN on the live site. The wp-sgs-developer subagent was given a brief that contained a fallback ("hero-only deploy is acceptable") and took it; only the M8 hero markup was redeployed to the homepage post. Operator never opened the live URL before claiming success. Live result: hero+footer only, debug WordPress nav, empty footer fields, hero not a clean clone of post 29. Lesson captured as `dont-delegate-the-test-of-unproven-work` (blub.db row 221). M9 must be redone fresh — see next session prompt.
-
-**Critical reframe for the redo:** The end goal is the PIPELINE, not the homepage. The homepage being a perfect clone is the OUTCOME of a working pipeline. When discrepancies are found in the next session, the fix is to identify the failing pipeline component and fix it, then rerun — NEVER patch the artefact directly. Manual SQL edits to fix the WordPress nav menu, manual content fills for the footer, hand-edited block markup are all forbidden. If the pipeline cannot produce a clean clone, the pipeline is incomplete and that is what gets fixed.
-
-**Captured:** 2026-05-09 (M7-M10 session close), reopened 2026-05-09
-
-**Status update 2026-05-09 session:** M7 + M8 COMPLETE.
-- M7: 6 sibling skills shipped via /lifecycle Mode A, all >=B grade. Skill scoreboard at evaluation-history.json. Rubric files all carry `bean_signoff: confirmed_via_m7_brief_2026-05-08`.
-- M8: minimal orchestrator at plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py. Hero smoke at 100% PoC parity (50/50 attrs match manual baseline). Visual-diff report at reports/visual-diff/hero-2026-05-09.md.
-- M9: deferred to next session (this entry).
-- M10: handoff + narrow commit (M7/M8 artefacts only) shipped this session. Foundation commit blocked.
-
-**What's left (M9 only):**
-- Multi-section orchestrator extension to walk all 9 sections of Mama's homepage in one run (the current orchestrator is single-section)
-- Live deploy OVERWRITING the sandybrown homepage (Bean instruction 2026-05-09 — deploy target is the live homepage post, not a sibling post). Snapshot existing `post_content` first for rollback. Post 29 stays preserved as manual hero PoC reference.
-- Multi-frame Playwright capture at 0/200/500/1000/3000 ms across 375/768/1440 viewports
-- mockup-parity-validator.js per section
-- screenshot-diff-helper.js per Q1-Q4 delta flagged
-- 13 remaining block visual-diff reports written to reports/visual-diff/<block>-<date>.md (button, container, data-display, icon, icon-block, icon-list, media, mega-menu, mobile-nav, notice-banner, post-grid, process-steps, trust-bar, whatsapp-cta)
-- Pre-commit STOP GATE unblocks once all 14 visual-diff reports present (hero + 13 listed)
-- 690-file foundation commit lands (currently uncommitted on main since 2026-05-08)
-- Bucket-2 session unblocks for Tasks 10-12 dogfood loop
-
-**Source docs (M9 only — M7+M8 complete):**
-- `.claude/handoff.md` — most recent session digest
-- `.claude/next-session-prompt.md` — full M9 task brief with skills/MCP/agents tables
-- **Note:** `.claude/specs/12-DRAFT-TO-SGS-PIPELINE.md` was deleted (Spec 12 retired). Successor is Spec 15 (`.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`) + Spec 16 (`.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md`).
-
-**Effort:** ~3 hours wall-time remaining (M9 main-thread + foundation commit).
-
-**Resume trigger:** When Bean has a focused window for the M9 build session.
 
 ---
 
 ### P-9 — Bucket 2 new blocks + timeline rework
-**Status:** OPEN
-
-**Depends on:** P-11-M9 must ship first (pipeline stability prerequisite). If P-11-M9 is substantially delayed, demote this to DEFERRED.
+**Status:** PARTIAL (sgs/button grouping DONE `270cd995`/D146; remaining = sgs/empty-state + sgs/toggle + timeline-rework)
 
 **Captured:** 2026-05-07
 
@@ -794,13 +411,13 @@ After universal-class filter (the 5 above are universal → don't count), the bl
 | `sgs/testimonial-slider` block | gap candidate `swipe-to-dismiss` from animation gap audit | 90-120 min |
 | `sgs/timeline` rework | Bean 2026-05-07: "design / lack of variety / animations are pretty awful" | 60-120 min |
 
-Total estimate: 3.5-5.5 hrs.
+Note: sgs/button grouping (`270cd995`, D146) completed. Remaining items above still open.
 
 **Strategic dogfood opportunity:** if `/sgs-clone` is shipped + stable when this session runs, design the static layers as HTML/CSS mockups first, then run `/sgs-clone` on each as a real-world stress test. Manually layer the interactive concerns (slider gestures, toggle state) on top.
 
 **Specialised next-session-prompt:** `.claude/next-session-prompt-bucket-2-blocks-and-timeline.md`.
 
-**Resume trigger:** After P-11 ships.
+**Resume trigger:** After cloning pipeline Method-2 lands.
 
 ---
 
@@ -808,27 +425,9 @@ Total estimate: 3.5-5.5 hrs.
 
 _21 entries._
 
-**P-SGS-UPDATE-V2-COGNITIVE-COMPLEXITY-REFACTOR** — PARTIAL-RESOLVED 2026-05-24 (3 of ~9 functions shipped this session; 6 remain). SonarLint surfaced 9 functions in `plugins/sgs-blocks/scripts/sgs-update-v2.py` (2,400-line `/sgs-update` orchestrator) with Cognitive Complexity above the 15 allowed.
-**Status:** PARTIAL
-
-
-**Shipped 2026-05-24:**
-- **Proposal A** — `stage_5_slot_synonym_auto_seed` cc 29 → ~10 (commit `4c5aaa5c`). 3 helpers: `_match_slot_to_block`, `_apply_high_confidence_match`, `_build_synonym_report`. Cross-model review (Sonnet + Haiku) APPROVE. Polish follow-up: contains-candidates slice moved from helper into coordinator for API consistency (commit `<polish>`).
-- **Proposal B** — `stage_4_style_variation_sync` cc 85 → ~9 (commit `8127f880`). 4 helpers: `_write_token_row`, `_build_token_candidates` (promoted from nested), `_process_client_snapshot`, `_write_stage4_report`. Cross-model review found 2 real issues + 1 false-positive; all real issues fixed before commit (dead `_CUSTOM_KEY_BLACKLIST` deleted, `_write_stage4_report` docstring corrected). Haiku's "double-count" was a misdiagnosis — original DID increment `client_inserted` for conflict-inserted when `existing_prefixed is None`.
-- **Proposal C** — `_mode_b_refresh_upstream` cc 142 → ~28 (commit `c0fb9639`). 4 source-helpers: `_scrape_source_1_gutenberg`, `_scrape_source_2_hooks`, `_scrape_source_3_wpcli`, `_scrape_source_4_since`. Sources 5-10 kept as the existing shared loop. `new_rows` mutated by reference, per-source commit cadence preserved. Live-network smoke test confirmed Stage 2 return dict byte-identical to baseline. Cross-model review APPROVE. Polish follow-up: `base64` import promoted to module level (commit `<polish>`).
-
-**Remaining for follow-on session:**
-- 6 cc warnings not yet investigated. SonarLint line numbers drifted after 3 refactors + polish; re-locate by function name. Approximate function names from the latest sonarlint scan: `stage_1_sgs_codebase_scan` (~cc 73), an early helper near line 571 (~cc 96), `stage_3_wpcli_handbook_refresh` (~cc 27), `stage_7_*` / `stage_8_*` (each ~cc 18), and one more. Run `python plugins/sgs-blocks/scripts/sgs-update-v2.py --dry-run` then re-read the IDE diagnostics for current line numbers.
-
-**Implementation discipline (binding, validated this session):** (1) /subagent-driven-development one proposal at a time per Bean 2026-05-24 — no parallel dispatch on the same file (blub.db row 240 + 254). (2) Each refactor commit gated by 2-rater cross-model review minimum (Sonnet + Haiku via Agent tool). (3) Each refactor's commit-gate: predicted post-fix Stage-N return dict matches baseline dict; report-file body byte-equal (timestamp line excluded); for Mode B `--refresh-upstream --dry-run` source-success / source-fail counts identical pre/post. Do not commit on divergence. (4) Fix ALL issues even non-blocking before commit per Bean 2026-05-24. (5) Implementer must re-locate functions by name (line numbers drift after each commit).
-
-**Trigger to action (remaining 6):** dedicated session after current doc-op programme closes. Open with `python plugins/sgs-blocks/scripts/sgs-update-v2.py --dry-run` + re-read IDE diagnostics to get current line numbers, then dispatch parallel-agents-then-/qc-inline per the 2026-05-24 pattern. Apply same `/subagent-driven-development` discipline — one function at a time, full commit gate before next.
-
-
 
 **P-HEADER-FOOTER-SITE-SUFFIX-NAMING-CONVENTION** — NEW 2026-05-24 (clone pipeline convention). Headers + footers produced from drafts by the clone pipeline MUST be saved as `sgs/header-<client-slug>` / `sgs/footer-<client-slug>` (e.g. `sgs/header-mamas-munches`, `sgs/footer-mamas-munches`, `sgs/footer-indus-foods`). Bare `sgs/header` / `sgs/footer` are framework defaults, never site-specific. **Existing misnamed patterns:** `sgs/mamas-munches-header` + `sgs/mamas-munches-footer` use the inverted order (`<client>-<role>` instead of `<role>-<client>`). Phase 2 header/footer cloner should: (a) author headers/footers under the canonical convention, (b) rename the misnamed mamas-munches pair, (c) add a `/sgs-update` Stage 9 drift rule that fails when a `sgs/header-*` / `sgs/footer-*` pattern doesn't follow the canonical order. Spec 17 §S6 enforces this convention for framework defaults already; this entry extends it to client-derived patterns.
 **Status:** OPEN
-
 
 
 ### P-S17-B — Pattern versioning on `wp_template_part` records (~2 hrs)
@@ -1156,11 +755,6 @@ _4 entries._
 
 **P-SUBAGENT-DRIVEN-DEV-SKILLSCORE-DEBT** — NEW 2026-05-23. `~/.agents/skills/subagent-driven-development/SKILL.md` scores 84% (below 90% threshold). Pre-existing issues surfaced when the line-319 xref fix triggered the skillscore hook: (a) no numbered process stages found, (b) skill doesn't declare which skills it invokes, (c) no hooks/ directory, (d) no scripts/ directory, (e) body 317 lines (over 300 working budget — needs progressive disclosure). Cleanup routes through /lifecycle per project CLAUDE.md. **Trigger:** Task 6 skill-optimiser session (mode 2 = gap analysis + research) is the natural home — bundle with /batch-gap-analysis pass on 14 WP/SGS skills.
 **Status:** OPEN
-
-
-**P-QC-COUNCIL-PHASE-B-BACKPORTS** — qc-trio gap-analysis identified 5 backports from /qc-council into /qc + /qc-inline. Phase A shipped this session via Sonnet subagent — branch `feat/qc-skills-backport-from-qc-council` commit `e340cde` in `~/.agents/skills/`. Phase B = optional follow-ups for hard-iteration-cap + persona-disagreement-carry-forward + rationalisation-table integration. Lower priority since the trio is already at 92-94% skillscore. **Trigger:** next skill-optimisation session.
-**Status:** OPEN
-
 
 
 ### P-OPS-1 — Skill-type classifier in sgs-skillscore v3
