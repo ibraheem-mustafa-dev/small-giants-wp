@@ -8,7 +8,7 @@ SGS is an AI website-builder. The cloning pipeline must CONVERT any SGS-BEM draf
 **THE 7 RULES — violation condition shown for each:**
 
 1. **CONVERT, don't mirror** — output = native SGS blocks driven by their attributes; NOT a div-by-div copy of the draft's classes/DOM. *(Violation: any emitted block whose `className` carries a draft BEM element class like `sgs-x__y`.)*
-2. **NO CHEATS** — no `sourceMode='bound'` converter emit, no echo-`$content` passthrough, no shallow-test workaround. *(KNOWN CHEAT: `sourceMode='bound'` on cloned trust-bars — being purged. ONLY the live WC configurator `sourceMode='wc-product'`/`'sgs-cpt'` is legitimate.)*
+2. **NO CHEATS** — no `sourceMode='bound'` converter emit, no echo-`$content` passthrough, no shallow-test workaround. *(CHEAT PURGED: `sourceMode='bound'` on cloned trust-bars was purged D182 2026-06-06 — trust-bar now clones to native typed attrs + icon resolver. ONLY the live WC configurator `sourceMode='wc-product'`/`'sgs-cpt'` is legitimate.)*
 3. **UNIVERSAL, no carve-outs** — a fix applies to every qualifying block/case; no per-block/per-tier/per-kind exception without universal justification to change the condition itself. *(Violation: "except for X block" or "only for section-kind".)*
 4. **NO SKIPPING** — every draft class's content + CSS transfers to the clone, OR is reported as skipped-with-reason, per class. *(Violation: a draft class silently absent from emitted markup and not listed as skipped.)*
 5. **VERIFY ON THE REAL HOMEPAGE** — Playwright live DOM + computed-style vs the draft's real values. *(Violation: closing a task on assertion output, a test page, or the emit alone without opening the real homepage.)*
@@ -214,10 +214,11 @@ PHP: `get_theme_file_uri()` / `get_stylesheet_directory_uri()` / `wp_upload_dir(
 ### Style-variation system retired (D28, Phase 5a 2026-05-21)
 `theme/sgs-theme/styles/` is empty. Per-client colour/typography lives at `sites/<client>/theme-snapshot.json` and deploys via `push-theme-snapshot.py`. Client-specific CSS goes into the snapshot's `styles.css` OR `sites/<client>/theme-overrides.css`. Never into framework's `style.css`.
 
-### sgs/trust-bar — renamed from trust-badges (D123, 2026-05-31); dual-mode FR-24-10 SHIPPED 2026-06-01
-D72 (2026-05-25) retired the ORIGINAL composite `sgs/trust-bar` (counter use-cases → `sgs/counter`; badge use-cases → universal-nesting). Then `sgs/trust-badges` was renamed → `sgs/trust-bar` (D123) — this is the CURRENT active block. As of 2026-06-01 (FR-24-10, commit d6358f32) it is **dual-mode**: `sourceMode='typed'` (curated icon/badge repeater, 3 variants) OR `sourceMode='bound'` (echoes `$content` → renders the cloning converter's emitted badge InnerBlocks; live-verified, 4 badges). render.php branches on the explicit `sourceMode` (R-22-14, never `empty($content)`); the converter sets `sourceMode='bound'` on cloned trust-bars — **⚠️ THIS bound-emit IS THE CHEAT being purged (Rule 2 / WS-3); see the WARNING immediately below. The `typed` mode + the live WC modes are legitimate; do NOT rely on or extend the converter bound-emit.**
-
-> ⚠️ **WARNING — CLONING CHEAT (SUPERSEDED for cloning; violates Rules 1 + 2):** `sourceMode='bound'` on a converter emit is a TEST CHEAT. It echoes `$content` (mirrors the draft DOM verbatim) instead of converting to native block attributes — exactly what Rules 1 and 2 prohibit. The description above reflects what was shipped; it does NOT represent the correct architecture for cloning. This cheat is being purged (WS-3 de-cheat work). **ONLY** the live WC configurator modes (`sourceMode='wc-product'` / `sourceMode='sgs-cpt'`) are legitimate non-typed source modes. Do NOT add new `sourceMode='bound'` emits.
+### sgs/trust-bar — renamed from trust-badges (D123, 2026-05-31); dual-mode FR-24-10 SHIPPED 2026-06-01; bound-purge SHIPPED D182 2026-06-06
+D72 (2026-05-25) retired the ORIGINAL composite `sgs/trust-bar` (counter use-cases → `sgs/counter`; badge use-cases → universal-nesting). Then `sgs/trust-badges` was renamed → `sgs/trust-bar` (D123) — this is the CURRENT active block. As of 2026-06-01 (FR-24-10, commit d6358f32) it introduced dual-mode, but the cloning `sourceMode='bound'` emit was a cheat that has since been **PURGED (D182, 2026-06-06, commit `92bcf997`, 6-persona adversarial-council gated)**. The converter now emits `sourceMode='typed'` with native item attrs resolved by the icon-identity resolver (`converter_v2/icon_resolver.py`, 2026-06-07) — badges clone to correct icon slugs (home/check/truck/star). **Current canonical modes:**
+- `sourceMode='typed'` — curated icon/badge repeater, 3 variants. THE mode for cloned + authored trust-bars.
+- `sourceMode='wc-product'` / `sourceMode='sgs-cpt'` — live WC configurator only. Legitimate non-typed modes.
+- `sourceMode='bound'` — **RETIRED from cloning (D182).** Do NOT add new `sourceMode='bound'` emits. render.php no longer routes new clones through this path.
 
 ## Non-negotiables
 
