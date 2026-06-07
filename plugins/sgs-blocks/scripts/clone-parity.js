@@ -62,6 +62,10 @@ const OUT_DIR     = getArg('--out-dir', path.join(REPO_ROOT, '.claude/reports'))
 const REBUILD     = hasFlag('--rebuild-golden');
 const SKIP_CLONE  = hasFlag('--skip-clone');
 const VIEWPORTS   = getArg('--viewports', '375,768,1440').split(',').map(Number);
+// parity2 integration: dump the raw draft+clone captures (golden node format) so the
+// draft-centric transfer-accounting verifier (parity2.py) can consume the exact same
+// capture (identical prop set + text strategy → no apples-to-oranges divergence).
+const DUMP_CAPTURES = getArg('--dump-captures', '');
 
 // ── Thresholds ─────────────────────────────────────────────────────────────
 const PX_TOLERANCE     = 1;      // px difference allowed
@@ -694,6 +698,17 @@ async function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   fs.writeFileSync(jsonOutPath, JSON.stringify(jsonOut, null, 2));
   console.log(`\nJSON report → ${jsonOutPath}`);
+
+  // parity2 integration: persist the raw captures (draft + clone) in golden node format.
+  if (DUMP_CAPTURES) {
+    const captures = {};
+    for (const r of allViewportResults) {
+      captures[r.viewport] = { draft: r.draftEls || [], clone: r.cloneEls || [] };
+    }
+    fs.mkdirSync(path.dirname(DUMP_CAPTURES) || '.', { recursive: true });
+    fs.writeFileSync(DUMP_CAPTURES, JSON.stringify(captures, null, 2));
+    console.log(`Captures dumped → ${DUMP_CAPTURES}`);
+  }
 
   const mdContent = buildMarkdownReport(allViewportResults, runDate);
   fs.writeFileSync(mdOutPath, mdContent);

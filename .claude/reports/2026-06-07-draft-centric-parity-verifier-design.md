@@ -55,5 +55,20 @@ Headline = % of the draft's content+CSS that reached the clone. 100% = faithful.
 - The fold map is the hard part — it must mirror the converter's `_process_container_children` / `_is_container_mirror_block` fold decisions exactly, or folded classes read as DROPPED. Source the fold rules from the same DB columns the walker uses (no re-implementation of fold heuristics).
 - Chrome exclusion: header/footer/skip-link are theme template parts — tag their draft classes as CHROME so they leave the denominator (they're never clone targets).
 
+## v1 BUILT + running (2026-06-07) — `plugins/sgs-blocks/scripts/parity2/`
+4 files, built via `/dispatching-parallel-agents` (3 pure modules + integration harness), runs end-to-end:
+- `draft_denominator.py` — golden node → canonical NodeRecord (the draft 100% denominator).
+- `fate_classifier.py` — DB-driven fate (emit-block / lift-attr / fold-parent / chrome) via `db_lookup` + `resolve_slug_from_bem`.
+- `transfer_checker.py` — fate-aware content + CSS transfer, tolerances (start==left, ±2px/2%, ΔE≤8).
+- `parity2.py` — harness; consumes `clone-parity.js --dump-captures` (draft+clone in identical golden format, new flag).
+Run: `node clone-parity.js --dump-captures .claude/reports/parity2-captures.json --viewports 1440` then `python parity2/parity2.py`.
+
+**v1 result (1440px): content 57.4% / full 35.2%.** Reports CONTENT coverage (did the text reach the clone — primary) separately from FULL (content+CSS). Validates on the trust-bar: **content 100%** (correctly credits the conversion), social-proof 100%; surfaces real low-transfer sections (testimonial 25%, ingredients 0%).
+
+**v1 EMPIRICALLY PROVED the core design premise:** the draft and clone speak DIFFERENT class vocabularies — draft `sgs-product-card__title`/`sgs-info-box__*`/`sgs-section-heading__*` have ZERO same-name clone nodes; the clone renders them as `sgs/container` (37) + `sgs-business-info__*` (16) + `option-picker`/`star-rating`/etc. So **literal-class matching cannot work** on a converted page — content must be matched page-wide by text/role/nesting, not by class. (v1 already does page-wide CONTENT matching; the trust-bar's 100% content confirms it.)
+
+## NEXT ITERATION (the matcher is the crux)
+The CSS/`full` signal is still harsh because CSS is compared on the class-matched clone node, which fails under rename. The next build makes the MATCHER role+nesting based (Bean's model): map draft class → expected clone role via DB `slots`/`slot_synonyms`, then match by role + nesting depth + content, and compare CSS on that matched node. Also: handle container-text aggregation (a draft section node's concatenated text vs the clone's per-element text). Until then, **trust the CONTENT % (validated), treat FULL % as a lower bound.**
+
 ## Open question for Bean (build path)
 This is the foundational fidelity instrument — every future "is the clone good" judgement depends on it. Given that, build it as its own focused pass (fresh session, this design as SoT) rather than inline at the tail of a long session. Smallest first slice: denominator + content-transfer only (no CSS), proven on the trust-bar (should score ~100% content) + a mirrored section (e.g. featured-product) before adding CSS + fold.
