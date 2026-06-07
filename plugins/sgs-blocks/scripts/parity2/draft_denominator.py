@@ -139,6 +139,11 @@ def _reshape_node(node: dict) -> dict:
     # include descendant text when the JS capturer traverses the DOM.
     text = (node.get("text") or "").strip()
 
+    # ownText — direct text-node children only (added alongside `text` so the
+    # verifier can match container elements structurally when their full
+    # textContent is shared with a descendant).
+    own_text = (node.get("ownText") or "").strip()
+
     # css — the full props dict (61 computed-style properties + 4 pseudo keys)
     css: dict[str, str] = node.get("props") or {}
 
@@ -151,6 +156,7 @@ def _reshape_node(node: dict) -> dict:
         "classes": classes,
         "section": section,
         "text": text,
+        "ownText": own_text,
         "css": css,
         "media": media,
         "imgNaturalW": img_natural_w,

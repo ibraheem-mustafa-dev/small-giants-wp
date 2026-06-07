@@ -67,7 +67,17 @@ Run: `node clone-parity.js --dump-captures .claude/reports/parity2-captures.json
 
 **v1 EMPIRICALLY PROVED the core design premise:** the draft and clone speak DIFFERENT class vocabularies — draft `sgs-product-card__title`/`sgs-info-box__*`/`sgs-section-heading__*` have ZERO same-name clone nodes; the clone renders them as `sgs/container` (37) + `sgs-business-info__*` (16) + `option-picker`/`star-rating`/etc. So **literal-class matching cannot work** on a converted page — content must be matched page-wide by text/role/nesting, not by class. (v1 already does page-wide CONTENT matching; the trust-bar's 100% content confirms it.)
 
-## NEXT ITERATION (the matcher is the crux) — root cause found 2026-06-07
+## v2 REWIRED + QC-PASSED (2026-06-07) — the matcher is FIXED
+Built via `/dispatching-parallel-agents` (own-text capture + structural matcher) then `/qc`:
+- **Own-text capture** (`clone-parity.js` + `draft_denominator.py`): each element now records `ownText` (direct text-node children only) alongside `text` (descendant). Containers → empty ownText (matched structurally); leaves → carry their words.
+- **Structural LCA matcher** (`transfer_checker.py` `_StructuralMatcher`): anchors draft leaves to clone leaves by ownText, maps containers via Lowest-Common-Ancestor of their anchored descendants in the CLONE tree — absorbing the clone's extra WP wrapper divs. Class-AGNOSTIC: proven on a fixture where the clone renames classes AND adds a wrapper, the draft badge still maps to the right level.
+- **Graded CSS + dimension de-weighting:** verdict uses a CSS match-RATE (≥80% authored-rule props = transferred), and `width`/`height` (computed-layout consequences) are de-weighted out of the verdict (reported as `dim_dropped`). Reports **content% / css% / full%** separately.
+- **`/qc` found + fixed a real bug:** content_ok required FULL verbatim text containment in one clone node → false DROPPED when the clone re-split a paragraph. Fixed to **word-overlap ≥70%** against the clone's combined text. Content 81.5%→90.7%; product-card 71%→100%.
+
+**v2 result (1440px): content 90.7% / full 59.3%.** Trust-bar = **content 100% / css 96% / full 100%** — QC-verified trustworthy (the 4 badges map to 4 DISTINCT clone nodes at the right nesting, not a collapsed false-positive). Honestly surfaces weaker sections (brand css 71%, products 68%) + candidate content gaps (hero__sub).
+**Known limitations (noted, non-blocking):** textless leaves (identical placeholder icons) can map to the same clone node (harmless when identical); single-node sections show a binary full% (one CSS miss → 0%).
+
+## (historical) NEXT ITERATION (the matcher is the crux) — root cause found 2026-06-07
 A content-first, depth-aware matcher was prototyped (then reverted — it traded trust-bar accuracy up for featured-product accuracy down; a wash). It surfaced the REAL obstacle, which is NOT the rename (Bean correct: the rename doesn't fundamentally break it):
 
 **TEXT BUBBLING.** The capture records each element's `textContent`, which includes ALL descendant text. So a draft container `<div class=__badge>` and its child `<span class=__label>` have the **identical** text. Content-matching therefore cannot tell a container from its text child — a container query can match a text leaf, comparing a flex-container's CSS against a span's → false drops. Depth tie-breaking is unreliable because the clone inserts extra WP wrapper divs (absolute depths differ).

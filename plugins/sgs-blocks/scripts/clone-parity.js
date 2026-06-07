@@ -293,10 +293,21 @@ async function captureElements(page, { isClone = false } = {}) {
         const textContent = el.textContent ? el.textContent.trim().slice(0, 120) : '';
         const domPath = normPath(el);
 
+        // Direct text-node children only — containers get empty string; text
+        // leaves carry their own words. Allows the verifier to distinguish a
+        // parent element from its child when both share the same textContent.
+        const ownText = Array.from(el.childNodes)
+          .filter(n => n.nodeType === 3)
+          .map(n => n.textContent)
+          .join(' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+
         const item = {
           sgsClasses,
           tag,
           text: textContent,
+          ownText,
           section: sectionName,
           depth,
           domPath,
