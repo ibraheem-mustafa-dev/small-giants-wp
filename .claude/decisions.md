@@ -6,6 +6,15 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-07 (cloning thread) — parity2 draft-centric fidelity verifier BUILT + rewired + QC'd (D183)
+
+**D183 — A new fidelity verifier `parity2` replaces the three over-reporting instruments (pixel-diff, old clone-parity, leftover-buckets). The DRAFT is the 100% denominator; it measures CONTENT + LAYOUT + CSS transfer, class-AGNOSTIC.** _(Commits `2ddea70b`/`a2336198`/`486f8f9f`. Built via `/dispatching-parallel-agents` + `/qc`. Design: `.claude/reports/2026-06-07-draft-centric-parity-verifier-design.md`. Files: `plugins/sgs-blocks/scripts/parity2/*.py` + `clone-parity.js --dump-captures`.)_
+
+- **Why the old tools failed (all over-report, different ways):** pixel-diff judges painted pixels (photos/sub-pixel noise); old clone-parity pairs by DOM path → rewards a div-by-div MIRROR + penalises genuine conversion; leftover-buckets is a block-SLOT census → flags every slot the draft never set as `extraction_failed` (the perfectly-converted trust-bar logged 48 false failures). stage-2 + extract.json ARE reliable.
+- **The model (Bean-directed):** enumerate everything the draft contains = 100%; per draft node find its EQUIVALENT clone node by own-text anchors + Lowest-Common-Ancestor tree-alignment (absorbs renames + WP wrapper divs), class-agnostic; report content/layout/css transfer. Fate-aware (emit-block / lift-attr / fold-parent / chrome via the converter's own DB tables).
+- **Key calibrations:** content via word-overlap ≥70% (the `/qc` fix — verbatim containment had false negatives); raw width/height de-weighted (layout CONSEQUENCE); **LAYOUT props scored as a separate WEIGHTED signal** (Bean's catch — they were diluted in the overall css%, hiding the trust-bar's real badge-grid difference). Reports content%/layout%/css%/full%.
+- **Validated:** trust-bar content 100% / layout 95% / css 96% / full 93% (QC-verified trustworthy: 4 badges → 4 distinct clone nodes). Honestly surfaces mirrored sections (brand layout 48%). NOT yet wired into `/sgs-clone` (next-session Task 1).
+
 ## 2026-06-06 (cloning thread) — bound-purge SHIPPED + live-verified; council-gated (D182)
 
 **D182 — Task 3 (purge trust-bar bound-mode → typed native emission) SHIPPED + live-verified (commit `92bcf997`, pushed). Gated by a 6-persona `/adversarial-council` (Rule 7) + Bean approval + a passed content audit.** _(Spec: `.claude/reports/2026-06-06-bound-mode-purge-plan.md` §COUNCIL-CORRECTED EXECUTION SPEC. Visual-diff: `reports/visual-diff/trust-bar-2026-06-06.md` PASS.)_

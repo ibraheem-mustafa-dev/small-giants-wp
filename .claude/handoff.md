@@ -1,70 +1,48 @@
-# Session Handoff — 2026-06-06 (doc-council closeout — cross-cutting docs; cloning converter untouched)
+# Session Handoff — 2026-06-07 (CLONING thread) — bound-mode cheat PURGED + draft-centric fidelity verifier (parity2) built/rewired/QC'd
 
-> Live handoff. This session did DOC-COUNCIL CLOSEOUT only — no converter/block code touched. A co-active CLONING session worked the bound-purge in parallel (its commits `d499f7f0`/D182 interleave below mine; its dirty tree = convert.py/trust-bar — NOT mine). **NEXT SESSION = THEME thread (Bean-directed): read `.claude/next-session-prompt-theme.md`** (Wave 3 #17 + Spec 27/28 to 100%). The cloning converter-fix continuation stays in `.claude/next-session-prompt.md` for whenever the cloning thread resumes.
-
-## Completed This Session
-1. **Verified the prior doc-council session's two commits** (`f1a53ac5` docs + `d0f64287` hooks) against ground truth — all claims held (state.md gutted + GROUND-TRUTH block, registry thread-gate + theme reading-order, Spec 28 registered, counts removed, git-path-scope + memory-cap guards wired, pipeline-enforcer stub created). Path-scoping confirmed clean.
-2. **Discovered the doc-council programme spanned ~7 commits across BOTH threads** (not the 2 the message described). The "remaining gates" (anti-mirror + render-verify) were ALREADY built by the cloning thread in `df495b2e` (`check_no_mirror.py` --report mode, caught 7 violations on the latest run; `clone-parity.js`). Evidence-first check prevented a 32k-line duplicate build.
-3. **HIGH#5 SHIPPED** (`01f52187`) — `built_status` tags on all 29 Spec 22 FRs + legend. Sonnet-subagent-derived, validated against inline-status FRs, conservative. Honest distribution: 5 BUILT-VERIFIED / 17 PARTIAL / 5 DESCRIBED / 1 RETIRED / 1 N/A.
-4. **HIGH#6 (safe-shrink) SHIPPED** (`fc39db30`) — archived 4 verifiably-superseded decisions (D114/D115/D116/D133) to decisions-archive.md. Found parking.md ALREADY compliant (112 entries, all active, 0 resolved); <250/<300 targets recalibrated as aspirational (premise didn't hold — decisions are permanent history, not resolvable state).
-5. **Doc-council backlog CLOSED** (`70421c44`) — STATUS table appended to the council report: all 4 FATAL + HIGH#5/#7 done, HIGH#6 recalibrated, HIGH#8 DISMISSED (Bean: hero-gradient correctly closed; dark-pink is a transient converter-upgrade artefact, not a contradiction).
-
-## Current State (doc-council)
-- **Branch:** `main` at `70421c44` (+ this handoff commit). My 3 commits pushed.
-- **Co-active cloning session LIVE** — dirty tree (convert.py, trust-bar, seed-composition-roles.py, lucide-icons.php) is THEIRS; do not commit it.
-- **Tests:** n/a (docs only). **Build:** n/a.
-
-## Doc-council outcome
-- All FATAL + substantive HIGH items shipped. Backlog closed. Residual = optional deep decisions/parking compression (judgment-heavy, low value) — pull only on Bean's direction.
-
----
-
-# Session Handoff — 2026-06-05 (CLONING thread) — 32-point QA → 9 evidence-grounded root causes (fix-spec ready)
-
-> Live handoff. Earlier sections below are prior work. Next session: `.claude/next-session-prompt.md` (FIX the 9 roots). Fix-spec: `.claude/reports/2026-06-05-clone-fix-spec-9-roots.md`. Theme thread shares the tree — commit by explicit path, `git log -1 --stat`.
+> Live handoff. Prior sessions: `.claude/memory/handoff-archive.md`. Next session: `.claude/next-session-prompt.md`. Theme thread shares `main` — commit by explicit path (`git commit -- <paths>`), `git log -1 --stat` before pushing.
 
 ## Completed This Session
-1. **Shipped + live-verified (desktop) + committed:** padding lift (`1cf0692d`), trust-bar de-hardcode (`e75db509`), typography incl. hero-H1 58px + colour/line-height nits (`642cad61`/`32b4c6fe`), grid->layout:grid bridge (`c97f85f1`), D5 product-card fill (`b3e3b284`), A4/A5/FS-5/fixture earlier.
-2. **3-persona adversarial council** on those fixes: verdict NO-GO / desktop-only — responsive (768/375) broken; mostly IMPL faults. (Verification was 1440-only — STOP #46.)
-3. **Bean manual-QA'd the clone vs draft → 30+ issues.** Caught that the in-session LLM verification found only ~4 of them.
-4. **Strict evidence-only RE-fact-check (3 agents, quote-or-delete)** produced v2 root-cause reports; falsified v1 conjecture (productId-empty-state, slot-collision #21/#24, "class-CSS-not-extracted", circle-bg-invented). v1 reports DELETED.
-5. **3-persona /adversarial-council over v2 + the Task-B verifier spec:** flagged 7 don't-act-until-live points, the invented "~90%", BEM-correspondence false-PASS on composites, cross-doc inconsistencies.
-6. **Consolidated to 9 root causes (R1-R9)** + fix-spec written (`2026-06-05-clone-fix-spec-9-roots.md`): file:line, solution, symptom-check, doc-vs-impl per root. All IMPL except R7 (one spec clause).
-7. **Bean corrections folded:** #31 is array-driven (card-grid has `items[]`), not "correct"; alignment fix = per-instance textAlign control + theme-default-left; never conclude no-fault from one DB column.
-8. **Task-B methodology** (deterministic `clone-parity.js`) written + council-corrected to honest ~55-75% coverage + NO-GO/proof-spike-first — DEFERRED per Bean (pipeline fixes first).
+1. **Task 1 (docs) DONE + pushed:** executed HIGH-6 — handoffs truncated→`memory/handoff-archive.md`, 9 superseded plans→`plans/archive/`, README/Spec18/06-BUILD-ORDER fixed, **decisions.md 843→526** (archived ≤D113). parking.md deliberately NOT force-shrunk (its 112 entries are all already active status). Commits `c5cb0313`/`707aa4e2`.
+2. **Tasks 5/6 investigated → bound-blocked:** live page-8 data proved the trust-bar's gap/column defects are BOUND-MODE artefacts (badges = echoed draft CSS, not block attributes); ZERO page-8 containers hit the wrapper WIP's `grid_on_inner` path → 5/6 deliver no visible change while bound. Bean redirected to Task 3. Wrapper WIP (7 files) left UNCOMMITTED.
+3. **Task 3 (bound purge) SHIPPED + live-verified (D182, commit `92bcf997`):** 6-persona `/adversarial-council` gate (NO-GO-as-written → must-fixes baked in) + Bean approval + content audit. Converter: deleted the `sourceMode='bound'` stamp + added a typed `items[]` handler (G3 path); seed `has_inner_blocks` 1→0 (the FATAL fix — drops trust-bar to G3, suppresses orphan child-walk). Block: typed-only (bound branch deleted, enum `['typed']` v0.5.0, edit.js stripped, save→null). Re-cloned page 8. **Live homepage: 4 native badges, 0 nested containers, 4-col grid, £35 correct. Regression PASS: page-589 configurator intact.** Icons DEFERRED (placeholder ticks, Bean-approved).
+4. **Proved Bean right twice:** the purge fixed the trust-bar AND 2 product-cards (every sourceMode block), not just the trust-bar; and the hero is already a faithful native composite (the "dark-pink gradient" was a stale doc claim I wrongly repeated).
+5. **Diagnosed all 3 fidelity tools as unreliable + WHY:** pixel-diff over-reports on photos/sub-pixel; old clone-parity rewards the DOM-mirror (penalises conversion); leftover-buckets conflates correct-absence with extraction-failure (the perfect trust-bar logged 48 false "failures"). stage-2 + extract.json ARE reliable.
+6. **Fixed a silently-broken check (commit `29e82568`):** stage-4j wp-blocks-validate had skipped every run on a Windows cp1252 crash (`→`); forced UTF-8 → now validates.
+7. **Built + rewired + QC'd parity2 (commits `2ddea70b`/`a2336198`/`486f8f9f`)** via `/dispatching-parallel-agents` + `/qc`. DRAFT = 100% denominator; measures CONTENT + LAYOUT + CSS transfer, fate-aware, class-AGNOSTIC (own-text anchors + LCA tree-alignment absorb renames + WP wrapper divs). `/qc` caught + fixed a content false-negative (→word-overlap). Bean's catch: layout was diluted → now a weighted first-class signal. **Trust-bar = content 100% / layout 95% / css 96% / full 93%** (honest; one badge flagged). Mirrored sections honestly low (brand layout 48%).
 
 ## Current State
-- **Branch:** `main` at `3acff380` (+ this handoff commit). Theme thread co-active.
-- **Tests:** no suite; converter imports clean. **Build:** passes.
-- **Uncommitted (noise, not mine):** lucide-icons.php, theme-snapshot.json, phase4-*.txt, orphan sgs-framework.db.
-- **Clone live on:** page 144 — NEXT SESSION switches to the actual homepage = **page 8** (`page_on_front=8`).
+- **Branch:** `main` at `a7cfd07a`. Theme thread co-active.
+- **Tests:** parity2 self-tests pass (3 fixtures incl. rename+wrapper LCA); converter imports clean. No project suite. Build passes.
+- **Uncommitted (NOT this session's deliverables):** wrapper WIP (`container/edit.js`, `SpacingControl.js`, `class-sgs-container-wrapper.php`, `ContainerWrapperControls.js` — unfinished Tasks 5/6, Bean-aware); pre-existing noise (phase4-*.txt, theme-snapshot.json, lucide-icons.php).
+- **Live:** trust-bar TYPED on page 8 (sandybrown homepage canary). `.parity-golden.json` rebuilt 1440-ONLY — regenerate 3 viewports with `--rebuild-golden --viewports 375,768,1440` when needed.
 
 ## Known Issues / Blockers
-- The clone is faithful at DESKTOP only; the 9 roots fix the rest. None block the next session.
-- Theme thread shares the tree — explicit-path commits.
+- parity2 minor limits (non-blocking): textless leaves (identical placeholder icons) can share a clone match; single-node sections show a binary full%; position-0 LCA can map the first badge to a container-ish node (one false DROPPED on the first trust-bar badge).
+- The pipeline still **container-mirrors 5 of 9 sections** (featured-product/brand/ingredients/gift/social-proof → `sgs/container` @conf 0.0) — converter Method-2 CSS-lift is the big remaining fidelity work (separate from the bound purge; parity2's layout% now measures it).
 
 ## Next Priorities (in order)
-1. Fix R1-R9 in the pipeline per the fix-spec (Tasks 1-4 in the prompt) — verify by symptom-resolution on the homepage clone.
-2. Switch deploy target to page 8.
-3. UNVERIFIED sweep (#8/#11a-c/#17/#19/#25/#29e/#30) + Bean R-22-13 sign-off.
-4. (Deferred) build `clone-parity.js` only after the fixes land.
+1. **Wire parity2 into `/sgs-clone`** as the standing fidelity gate — auto content%/layout%/css%/full% + per-class carried/not-carried report each run.
+2. **Icon-identity resolver** — placeholder ticks → real icons.
+3. **Converter Method-2 CSS-lift** for the 5 mirrored sections (the real visible-fidelity lever).
+4. **Finish + commit OR revert the wrapper WIP** (Tasks 5/6) — don't leave it dangling.
 
 ## Files Modified
-| File | What |
+| File path | What changed |
 |---|---|
-| `.claude/reports/2026-06-05-clone-fix-spec-9-roots.md` | NEW — the actionable 9-root fix spec |
-| `.claude/reports/2026-06-05-32pt-rootcause-v2-part{1,2,3}-*.md` | NEW — evidence-grounded per-point |
-| `.claude/reports/2026-06-05-32pt-rootcause-QC-corrections.md`, `-taskB-clone-verification-methodology.md` | QC + verifier methodology |
-| `.claude/reports/2026-06-05-32pt-rootcause-part{1,2,3}-*.md` | DELETED (v1 conjecture) |
-| `.claude/next-session-prompt.md` | REWRITTEN clean + targeted (fix-the-9-roots) |
-| `.claude/decisions.md` (D178), `.claude/parking.md` | reconciled to corrected causes |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | deleted bound stamp; added typed trust-bar `items[]` handler |
+| `plugins/sgs-blocks/scripts/seed-composition-roles.py` | trust-bar `has_inner_blocks` 1→0 + idempotent enforce |
+| `plugins/sgs-blocks/src/blocks/trust-bar/{render.php,block.json,edit.js,index.js}` | typed-only; bound purged |
+| `plugins/sgs-blocks/scripts/orchestrator/wp_integration.py` | stage-4j UTF-8 fix |
+| `plugins/sgs-blocks/scripts/parity2/*.py` (4 modules) | NEW draft-centric fidelity verifier |
+| `plugins/sgs-blocks/scripts/clone-parity.js` | `ownText` capture + `--dump-captures` |
+| `.claude/{decisions.md,handoff*.md,parking.md,specs/*,reports/2026-06-07-*}` | doc cleanup + D182 + parity2 design |
 
 ## Notes for Next Session
-- **Verification is SIMPLE this session** (Bean): fix the root, re-clone page 8, check the symptom is gone. No verifier-build.
-- **R2 and R3 are DISTINCT fixes** (ancestor-inheritance vs own-class-property-map) — do not conflate.
-- **R4 = codebase-wide `__experimentalBorder` audit**, not per-block PRs.
-- **R7 = array-driven content blocks** (card-grid items / announcement messages / trust-bar badges / notice-banner InnerBlock) — the router gate must stop using `has_inner_blocks` as the sole signal.
-- Never conclude no-fault from one DB column; read the block's actual capability.
+- **bound-mode is a TEST CHEAT** (echoes draft DOM as `$content`) — purged from trust-bar; only the LIVE WC configurator (`sourceMode='wc-product'/'sgs-cpt'`, page 589) is a legit non-typed mode. Never re-introduce a converter `bound` emit.
+- **parity2: trust CONTENT% + LAYOUT%** (validated on trust-bar). It measures TRANSFER fidelity, not nativeness — the anti-mirror gate (R-22-15) detects the cheat; parity2 measures how much carried over.
+- The converter routes `.sgs-trust-bar` correctly to `sgs/trust-bar`; the OTHER 5 sections → `sgs/container` is Method-2 work, not a routing bug.
+- Don't trust leftover-buckets' `extraction_failed` count as "what failed" — it conflates correct-absences; parity2 replaces it as the fidelity signal.
 
-> Older sections (2026-06-03 AM/PM/LATE-PM + 2026-06-04 PM/PM4) moved to `memory/handoff-archive.md` (also in git history).
-
+## Next Session Prompt
+See `.claude/next-session-prompt.md` (orchestration plan).
