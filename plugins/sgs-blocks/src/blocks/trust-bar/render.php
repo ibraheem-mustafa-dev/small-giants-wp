@@ -187,9 +187,25 @@ foreach ( $items as $item ) {
 	}
 
 	if ( 'icon-circle' === $badge_style ) {
-		$icon_slug   = isset( $item['icon'] ) ? sanitize_key( $item['icon'] ) : 'check';
-		$lucide_name = $lucide_map[ $icon_slug ] ?? 'check';
-		$svg         = sgs_get_lucide_icon( $lucide_name );
+		// Determine which SVG to render inside the circle.
+		// Priority: matched Lucide slug > raw_svg fallback from the icon resolver.
+		$icon_slug = isset( $item['icon'] ) ? sanitize_key( (string) $item['icon'] ) : '';
+		$raw_svg   = isset( $item['iconSvg'] ) ? (string) $item['iconSvg'] : '';
+
+		if ( '' !== $icon_slug ) {
+			// Resolver found a confident match — look up the Lucide sprite.
+			$lucide_name = $lucide_map[ $icon_slug ] ?? 'check';
+			$svg         = sgs_get_lucide_icon( $lucide_name );
+		} elseif ( '' !== $raw_svg ) {
+			// Resolver returned a raw SVG fallback (no confident slug match).
+			// Sanitise with the existing sgs_svg_kses_allowed_tags() allowlist so
+			// only safe SVG drawing elements and attributes are emitted.
+			$svg = wp_kses( $raw_svg, sgs_svg_kses_allowed_tags() );
+		} else {
+			// Neither slug nor raw_svg set — show the generic check tick so the
+			// badge is never blank while the operator resolves the icon in editor.
+			$svg = sgs_get_lucide_icon( 'check' );
+		}
 
 		$items_html .= sprintf(
 			'<div class="sgs-trust-bar__badge"%s><span class="sgs-trust-bar__circle" aria-hidden="true">%s</span><span class="sgs-trust-bar__label">%s</span></div>',

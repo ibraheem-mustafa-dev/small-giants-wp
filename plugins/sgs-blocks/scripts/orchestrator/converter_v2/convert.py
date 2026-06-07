@@ -2260,14 +2260,39 @@ def _atomic_attrs_for(node: Tag, slug: str, allow_text_fallback: bool = True) ->
                 if safe:
                     item["url"] = safe
 
-            # icon: identity resolver DEFERRED (D182). Emit empty slug — render.php
-            # falls back to a placeholder glyph and the badge stays VISIBLE with its
-            # correct label (the agreed interim). Do NOT set pending=True here:
-            # pending makes render.php add `hidden` to the badge (it means "credential
-            # not yet confirmed → hide from visitors"), which would render the whole
-            # cloned trust-bar empty. The unresolved-icon state is surfaced in the
-            # editor (empty icon slot) + the clone transfer report, not by hiding.
-            item["icon"] = ""
+            # icon: identity resolver (Task 2 — icon_resolver.py).
+            # Finds the <svg> element inside the __icon/__circle span, then asks
+            # the resolver for the best Lucide slug match or a raw-SVG fallback.
+            # Rules:
+            #   confident match  -> item["icon"] = slug  (render.php uses lucide map)
+            #   no match         -> item["icon"] = ""     (empty slot visible in editor)
+            #                       item["iconSvg"] = raw  (render.php outputs sanitised SVG)
+            # Do NOT set pending=True — that adds `hidden` to the badge, hiding it
+            # from visitors entirely, which is wrong for an unresolved-icon state.
+            try:
+                from .icon_resolver import resolve_icon as _resolve_icon  # noqa: PLC0415
+
+                _icon_container = badge_node.find(
+                    lambda t: t.name is not None and any(
+                        c in ("sgs-trust-bar__icon", "sgs-trust-bar__circle")
+                        for c in (t.get("class") or [])
+                    )
+                )
+                # Fallback: if no labelled icon wrapper, search the badge directly.
+                _svg_node = (
+                    _icon_container.find("svg") if _icon_container else None
+                ) or badge_node.find("svg")
+
+                _resolved = _resolve_icon(_svg_node)
+                if _resolved["confidence"] in ("high", "medium"):
+                    item["icon"] = _resolved["slug"] or ""
+                else:
+                    item["icon"] = ""
+                    if _resolved["raw_svg"]:
+                        item["iconSvg"] = _resolved["raw_svg"]
+            except Exception:
+                # Resolver unavailable — degrade gracefully with empty slug.
+                item["icon"] = ""
 
             # media: image-badge variant only — include only http/https src.
             if badge_style == "image-badge":

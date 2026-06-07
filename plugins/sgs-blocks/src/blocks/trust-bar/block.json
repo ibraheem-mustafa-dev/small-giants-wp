@@ -69,6 +69,23 @@
 		},
 		"items": {
 			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"icon":    { "type": "string" },
+					"iconSvg": { "type": "string" },
+					"label":   { "type": "string" },
+					"url":     { "type": "string" },
+					"pending": { "type": "boolean" },
+					"media": {
+						"type": "object",
+						"properties": {
+							"url": { "type": "string" },
+							"alt": { "type": "string" }
+						}
+					}
+				}
+			},
 			"default": [
 				{
 					"icon": "home",
