@@ -99,6 +99,11 @@ $anchor       = $attributes['anchor'] ?? '';
 if ( ! in_array( $heading_role, array( 'heading', 'subheading' ), true ) ) {
 	$heading_role = 'heading';
 }
+// Coerce a numeric level (e.g. "3" stored by the editor) to the "hN" string form
+// so the in_array allowlist below matches, matching what edit.js already does.
+if ( is_numeric( $level ) ) {
+	$level = 'h' . absint( $level );
+}
 if ( ! in_array( $level, array( 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' ), true ) ) {
 	$level = 'h2';
 }

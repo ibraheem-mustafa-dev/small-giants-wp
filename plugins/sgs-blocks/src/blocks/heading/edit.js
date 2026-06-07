@@ -152,7 +152,14 @@ export default function Edit( { attributes, setAttributes } ) {
 	const isSubheading = headingRole === 'subheading';
 
 	// Determine the tag to render in the editor canvas.
-	const editorTag = isSubheading ? subTag : level;
+	// Defensive coercion: `level` is a string enum ('h1'–'h6'), but a block
+	// template may pass a bare number (e.g. level: 3). A numeric tag name makes
+	// React throw "Element type is invalid: got number" (#130), which crashes
+	// the editor for this block AND any parent whose template inserts it. Coerce
+	// a number to its `h{n}` form so a mis-typed template can never crash.
+	const normalisedLevel =
+		typeof level === 'number' ? `h${ level }` : level;
+	const editorTag = isSubheading ? subTag : normalisedLevel;
 
 	const blockProps = useBlockProps( {
 		className: [

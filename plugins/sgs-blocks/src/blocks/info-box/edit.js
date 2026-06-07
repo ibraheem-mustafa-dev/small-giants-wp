@@ -73,7 +73,7 @@ const FONT_SIZE_OPTIONS = [
  */
 const INFO_BOX_TEMPLATE = [
 	[ 'sgs/icon', { icon: 'star-filled', iconColour: 'primary', iconBackgroundColour: 'accent-light', iconSize: 'medium' } ],
-	[ 'sgs/heading', { level: 3, headingRole: 'heading', content: __( 'Feature heading', 'sgs-blocks' ) } ],
+	[ 'sgs/heading', { level: 'h3', headingRole: 'heading', content: __( 'Feature heading', 'sgs-blocks' ) } ],
 	[ 'sgs/text', { text: __( 'Describe the feature or benefit here.', 'sgs-blocks' ) } ],
 	[
 		'sgs/multi-button',

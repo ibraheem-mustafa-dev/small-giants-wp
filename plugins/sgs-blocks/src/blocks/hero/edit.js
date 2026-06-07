@@ -137,7 +137,7 @@ function RRangeControl( { label, attrDesktop, attrTablet, attrMobile, attributes
  */
 const HERO_CONTENT_TEMPLATE = [
 	[ 'sgs/label', { className: 'sgs-hero__label', content: __( 'Eyebrow label', 'sgs-blocks' ) } ],
-	[ 'sgs/heading', { level: 1, className: 'sgs-hero__headline', content: __( 'Your hero headline', 'sgs-blocks' ) } ],
+	[ 'sgs/heading', { level: 'h1', className: 'sgs-hero__headline', content: __( 'Your hero headline', 'sgs-blocks' ) } ],
 	[ 'sgs/text', { className: 'sgs-hero__subheadline', text: __( 'Supporting sub-headline text goes here.', 'sgs-blocks' ) } ],
 	[ 'sgs/multi-button', {}, [
 		[ 'sgs/button', { inheritStyle: 'primary', label: __( 'Primary Action', 'sgs-blocks' ) } ],
