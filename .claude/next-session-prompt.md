@@ -53,17 +53,26 @@ Stage 11.5 in `sgs-clone-orchestrator.py` (after Stage 10 deploy): captures draf
 - /qc gate after: yes — `/qc-inline` + live-verify on page 8 (icons resolve, no silent default).
 **Acceptance:** re-cloned page 8 trust-bar badges show the CORRECT icons (or a raw-SVG fallback), live-verified — not uniform ticks.
 
-## Task 3 — Converter Method-2 CSS-lift for the 5 container-mirrored sections
-**What:** for featured-product/brand/ingredients/gift/social-proof (route to `sgs/container` @conf 0.0), transfer the draft's CSS onto the container's block attributes (the 3-layer wrapper model) so they're faithful + editable, not class-mirrored.
-**Why:** the big remaining VISIBLE fidelity lever (parity2 shows brand layout 48%, etc.). Makes most of the page genuinely converted.
-**Estimated time:** start with ONE section (brand) ~30 min; design-gate the shared mechanism first.
+## Task 3 — Complete the UNIVERSAL DB-driven CSS-transfer (Spec 22 §FR-22-21) for sgs/container sections (CLARIFIED 2026-06-07, Bean)
+> ✅ **`sgs/container` is a LEGITIMATE, reusable conversion target — do NOT force bespoke composites.** Bean clarified 2026-06-07: the block choice is already DB-driven (Stage 1 `blocks.tier` + Stage 2 `confidence-matrix.py`; the Stage-2 fallback to `sgs/container` per Decision 3 is BY DESIGN), and the "Universal wrapper-conversion procedure" that transfers a section's CSS onto the container's *editable block attributes* (Spec 22 §FR-22-21) IS the sanctioned conversion — NOT mirroring. We clone bespoke drafts into reusable blocks via conversion; we do NOT hardcode sections to exactly match.
+>
+> The ORIGINAL framing's faults were narrower than first thought: (a) **Rule 3 / R-22-9** — "the 5 sections, brand first" must be ONE universal mechanism, not per-section code; (b) **Rule 1** — the transfer must land on EDITABLE block ATTRIBUTES (reusable), never mirrored classes / inline CSS / a hardcoded one-section match. Routing TO `sgs/container` is fine.
+
+**What:** complete the universal CSS-transfer so every slug-None section the DB/confidence engine routes to `sgs/container` faithfully reproduces the draft via the container's editable attributes (widthMode/customWidth/contentWidth/gap/gridTemplateColumns+responsive/gridItem*/background/padding) — DB-driven, applied to ALL qualifying sections at once. Let the data (`/wp-blocks` dump + `blocks.tier`/`block_composition`/`slots` + `confidence-matrix.py`) decide which block fits each section; where it legitimately matches a more-specific block, use that — but never force it.
+**Why:** the big remaining VISIBLE fidelity lever (parity2 shows brand layout 48%, etc.). Makes most of the page genuinely converted (editable, reusable), not class-mirrored.
+**The real gaps to close (from cloning-pipeline-flow.md §cross-cutting + stages.md Stage 4 — these are WS-2/WS-3, NOT a routing change):**
+- D1 typed-attr sidecar written-but-not-consumed (`seed_d1_sidecar` stub, B1/WS-2) → layout CSS strands in variation CSS instead of landing on attrs.
+- `gridItem*` defaults never written (A6/WS-1c); raw-px gap (A4 — editor side fixed by the wrapper WIP this session; verify converter side).
+- `widthMode:"full"` band-aid at `db_lookup.py:2461` (slug-RESOLVED path, C1/WS-3).
+**Rules binding the shape:** Universal (Rule 3) — one mechanism for all qualifying sections; Convert-not-mirror (Rule 1) — editable attributes only; DB-driven decision (no hardcoded section-matching).
+**Estimated time:** design-phase first. Build deferred until the design-gate clears.
 **Orchestration:**
-- Execution: design-gate THEN delegated. **Rule 7 applies — touches the converter/wrapper: `/adversarial-council` or `/qc-council` + Bean approval BEFORE code.**
-- Pattern: after the gate, `/subagent-driven-development` per section (implementer + spec + quality reviewers).
-- Context: parity2's per-class `css_dropped`/`layout_dropped` for each section IS the spec of what to lift. Memory `universal-lift-was-premature-not-falsified` — it lands on wrapper attrs that exist post-WS-4.
-- Depends on: Task 1 (use parity2 to measure pre/post). Parallel with: Task 2.
-- /qc gate after: `/qc-council` (blub.db 255 — converter change) + live page-8 verify + parity2 pre/post.
-**Acceptance:** the target section's parity2 layout% + css% rise measurably pre→post on page 8, live-DOM verified, no regression elsewhere.
+- Execution: **design FIRST** — `/brainstorming` (design mode) to scope the WS-2/WS-3 transfer gaps, then `/adversarial-council` or `/qc-council` + Bean approval BEFORE any code (Rule 7 — converter, high blast radius).
+- Pattern: after the gate, `/subagent-driven-development` on the UNIVERSAL mechanism — not section-by-section.
+- Context: parity2's per-class `layout_dropped`/`css_dropped` measures the gap per section; the fix is completing the universal attribute-transfer. `/wp-blocks dump` for the container's real attr schema before any "missing X" claim.
+- Depends on: Task 1 (parity2 pre/post). Parallel with: Task 2.
+- /qc gate after: `/qc-council` (blub.db 255 — converter change) + live page-8 verify + parity2 pre/post across ALL sections.
+**Acceptance:** every qualifying slug-None section reproduces its draft via editable container attributes (live-DOM verified, no draft BEM element classes carrying CSS per Rule 1); parity2 layout%/css% rise across all of them; no regression elsewhere.
 
 ## Task 4 — Finish or revert the wrapper WIP (old Tasks 5/6)
 **What:** the 7 uncommitted files (gap single-source + contentWidth mobile) get finished + committed OR reverted — not left dangling.
