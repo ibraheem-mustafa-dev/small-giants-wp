@@ -4,7 +4,7 @@ project: small-giants-wp
 thread: cloning-pipeline
 title: "Method 2 — converter-lift design (the page-clone fidelity work after WS-4)"
 created: 2026-06-04
-status: DESIGN — council-gate pending. Build is the NEXT session (per next-session-prompt dependency graph). Routing fix #1 (trust-bar) already SHIPPED (c3443e03).
+status: DESIGN — council complete (adversarial-council 2026-06-04 ✅). Build is the NEXT session. Routing fix #1 (trust-bar) SHIPPED (c3443e03). Task-3 scope clarified 2026-06-07 (Bean, commit 36e3bc3c): sgs/container IS the valid DB-driven target for slug-None sections; FS-1a/FS-2a already correct. See phase-plan for full note. Also pre-shipped: icon-identity resolver (127f2290), Stage 9 schema fix (f93db924), WS-1c A4 gap consolidation (668e26ad).
 grounded_by:
   - "/sgs-clone run mamas-munches-homepage-2026-06-04-134425 (full pipeline + debug-trace + deploy page 144)"
   - "3 read-only investigation agents (routing / extraction-lift / draft-vs-clone DOM diff) — findings cross-verified at file:line"

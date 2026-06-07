@@ -74,7 +74,7 @@ Five workstreams, three running concurrently:
 |-------|------|---------|-------------|------------|------|
 | WS-1a | `contentWidth` attr on sgs/container | ✅ SHIPPED 2026-06-03 commit 2f86d9e6 (D159) | A1 shipped: new attr + render.php `__inner` div + editor control | none | Live-DOM verified @1440 |
 | WS-1b | Outer max-width transfer + de-cheat C1 | ✅ SHIPPED 2026-06-03 commit 2f86d9e6 (D159) | A2 shipped: widthMode-from-own-max-width transfer; fold lifts `__inner`→contentWidth | WS-1a | Live-DOM verified @1440. Note: A7 MOOT — `_lift_core_block_style` is dead code; A2 inlined its own max-width→widthMode logic |
-| WS-1c | Custom-width + raw-px gap + min-height + grid-item (A3–A6) | ~45 min | A3+A4 BUILT-uncommitted (D163, block-side, pending Gate B); A5→curated `_root_lift_rules` + hero-composite-interior fix; A6→WS-4 lift-only-gated; A7 MOOT | WS-1a ✅ | Per-gap: GAP-5 custom-width lifts a brand-1000 correctly |
+| WS-1c | Custom-width + raw-px gap + min-height + grid-item (A3–A6) | ~45 min | ~~A4 SHIPPED 2026-06-07 commit `668e26ad` (raw-px gap + gap consolidation across composites)~~; A3 BUILT-uncommitted (D163, block-side, pending Gate B); A5→curated `_root_lift_rules` + hero-composite-interior fix; A6→WS-4 lift-only-gated; A7 MOOT | WS-1a ✅ | Per-gap: GAP-5 custom-width lifts a brand-1000 correctly |
 | WS-2 | Converter/router truth — B1–B4 | ~60 min | D1 typed-attr layer revived or replaced; `__inner` max-width routes to attr in multi-child grids; grid-template-columns typed; D3 dual-write removed | WS-1a | leftover-buckets.json: maxWidth/widthMode no longer extraction_failed on the 4 target sections |
 | WS-3 | De-cheat R-22-1 — C2–C8 | ~60 min | Eight hardcoded structures moved to DB or documented; unified breakpoint table; css_router._infer_role() queries DB | none (can start alongside WS-1) | No grep-match for the retired constant names in production scripts |
 | WS-4a | DB propagation writer (Workstream A DB substrate SHIPPED; writer still needed) | ✅ SHIPPED 2026-06-04 (D167) — `sync-container-wrapping-blocks.py` report-only; Stage-11 auto-apply PENDING (report-only gate still in place) | KIND→attr-scope diff writer + /sgs-update reconciled (2739 attrs; 29-block roster; 0 orphans) | WS-1a ✅ | Stage-11 auto-apply gate (report-only → writer) pending Bean sign-off |
@@ -127,13 +127,13 @@ WS-1a (contentWidth A1) ─► WS-1b (A2) ─► WS-1c (A3–A6)           │
 - `plugins/sgs-blocks/scripts/convert.py` — `_root_lift_rules()` (line 498), `_fold_layout_into_attrs` (line 2776), `_emit_section_container`, `_match_theme_width` (line 975)
 - `plugins/sgs-blocks/scripts/db_lookup.py` — line 2461 band-aid removal
 
-**Gaps addressed:** ~~A1~~ ✅ ~~A2~~ ✅ ~~A7~~ MOOT | **Remaining: A3, A4, A5, A6**
+**Gaps addressed:** ~~A1~~ ✅ ~~A2~~ ✅ ~~A4~~ ✅ ~~A7~~ MOOT | **Remaining: A3, A5, A6**
 
 **Acceptance:**
 - A1: Playwright computed-style @1440 — featured-product section-box ~1425, inner content-box = 1040 px centred. Ingredients/gift/social-proof same at 960 px.
 - A2: The four slug-None sections carry no `max-width:1200`; they match the viewport width.
 - A3: GAP-5 custom-width (brand 1000 px): converter emits `widthMode:custom, customWidth:"1000px"`, brand section renders 1000 px unchanged.
-- A4: Raw-px gap value passes through render.php without being wrapped in `var(--wp--preset--spacing--…)`.
+- ~~A4~~ ✅ SHIPPED 2026-06-07 commit `668e26ad` — Raw-px gap passes through `sgs_container_gap_value()`; duplicate gap controls consolidated across composites.
 - A7: MOOT (D159/D163) — `_lift_core_block_style` is dead code (zero call sites); A2 inlined its own max-width→widthMode logic. No action. (The earlier "fold must call _lift_core_block_style" framing is retired.)
 - All: Bean visual sign-off on canary page 144 per section (R-22-13).
 
@@ -417,7 +417,7 @@ The pipeline currently transfers Layer 1 (partially) and **drops Layers 2 and 3 
 | ~~A1~~ | ✅ DONE 2026-06-03 commit `2f86d9e6` — `contentWidth` attr + render.php `__inner` div + fold lift | `container/block.json`, `render.php`, `convert.py:2776` | ~~High~~ |
 | ~~A2~~ | ✅ DONE 2026-06-03 commit `2f86d9e6` — widthMode-from-own-max-width transfer; `db_lookup.py:2461` band-aid removed (C1 paired) | `convert.py:2031–2039`, `db_lookup.py:2461` | ~~High~~ |
 | A3 | ⏳ BUILT-uncommitted 2026-06-03 PM (block-side, pending Gate B) — `_match_theme_width` never emits `widthMode:custom + customWidth` | `convert.py:975–989` | Medium |
-| A4 | ⏳ BUILT-uncommitted 2026-06-03 PM (block-side, pending Gate B) — render.php wraps raw-px gap values in `var(--wp--preset--spacing--…)`; new `sgs_container_gap_value()` helper added | `render.php:150` | Medium |
+| ~~A4~~ | ✅ DONE 2026-06-07 commit `668e26ad` — `sgs_container_gap_value()` helper shipped; raw-px gap passes through render.php without being wrapped in a preset token. Broader gap consolidation also shipped: duplicate gap controls removed from trust-bar, card-grid, feature-grid, gallery, multi-button, post-grid; all route through the shared container gap control. Deprecations added for each block (isEligible + migrate). Container `blockGap` support removed (inert). | `render.php`, `class-sgs-container-wrapper.php`, 6 composite blocks | ~~Medium~~ |
 | A5 | `min-height` not in `_root_lift_rules` — disposition: hero-composite-interior extraction (`minHeightTablet=520px`) is the real bug; container-path = curated `_root_lift_rules` extension (canonical_slot precision, align-gated, render-trap avoided). Generic blind lift FALSIFIED (D163). | `convert.py:498` | Low |
 | A6 | `gridItem*` attrs never written by converter — → WS-4 lift-only-gated sub-mechanism, own /qc-council (D163). Must NOT strip unique per-child CSS; gift-section trial-card modifier is the test case. | `convert.py` (zero `gridItem` refs) | Medium |
 | B1 | `seed_d1_sidecar` is a no-op stub; ~43 typed-attr assignments written to JSON but never consumed — refined: curated canonical_slot map, NOT a blind fingerprint (council D163). Safe path = extend `_root_lift_rules` with precision, not revive the blind consume-path. | `convert.py:167` | High |

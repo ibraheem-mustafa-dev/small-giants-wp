@@ -149,7 +149,7 @@ block-name/
 - `columns` — 1-6 (for grid layout)
 - `columnsMobile` — 1-3 (grid columns on mobile)
 - `columnsTablet` — 1-4 (grid columns on tablet)
-- `gap` — spacing preset slug
+- `gap` — raw CSS length string (e.g. `"16px"`, `"1.5rem"`); rendered via `sgs_container_gap_value()`. **2026-06-07 (commit 668e26ad):** switched from spacing-preset slug to raw-px free-input; `blockGap` native support removed (was inert). Composite/wrapper blocks (trust-bar, card-grid, feature-grid, gallery, multi-button, post-grid) no longer carry their own gap control — all use this shared one via `ContainerWrapperControls`.
 - `padding` — per-side spacing with responsive overrides
 - `margin` — per-side spacing with responsive overrides
 - `backgroundColour` — token slug or custom hex
@@ -316,7 +316,7 @@ block-name/
 - `columns` — 2-4 (desktop, default: 4)
 - `columnsTablet` — 1-3 (default: 2)
 - `columnsMobile` — 1-2 (default: 1)
-- `gap` — spacing preset
+- `gap` — raw CSS length string (shared ContainerWrapperControls control, 2026-06-07 commit 668e26ad — was per-block spacing preset)
 - `aspectRatio` — auto | 1:1 | 4:3 | 16:9 | 3:2 | 16:10 (default: 16:10 for card, 4:3 for overlay)
 - `hoverEffect` — none | zoom | lift | overlay-slide (default: zoom + lift for card variant)
 - `overlayStyle` — none | gradient | solid (only used in overlay variant)

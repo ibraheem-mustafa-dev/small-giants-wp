@@ -16,6 +16,11 @@ update_triggers:
   - Skill dispatch change at any stage
 ---
 
+> **2026-06-07 cloning pipeline callout** — three fixes/additions shipped:
+> - **Stage 9 autonomy-gate rollback BUG FIXED (`f93db924`)** — `stage-9-coverage.json` was missing the validator-contract fields (`totals`/`gap_level_totals`/`total_count`) that `staged_merge`/`autonomy_gate` schema validation requires. The orchestrator was renaming them to `leftover_*` aliases, causing the autonomy gate to roll back EVERY page deploy. Fix: emit canonical keys alongside `leftover_*` aliases. Re-clone of page 8 went from `outcome=rolled-back` to `outcome=surface`.
+> - **Icon-identity resolver (`127f2290`)** — new `converter_v2/icon_resolver.py` fingerprints cloned trust-bar badge SVGs/emoji → resolves to correct Lucide/WP icon slug (reverse path-index + structural heuristics, raw-SVG fallback). Trust-bar badges now clone to correct icons (home/check/truck/star). `render.php` gained raw-SVG fallback branch via `sgs_svg_kses_allowed_tags()`.
+> - **Stage 11.5 — parity2 draft-centric fidelity gate wired (`553334f3`, D183)** — every `/sgs-clone` run now auto-reports draft-centric fidelity after Stage 10: captures draft + clone, runs `parity2/` → `content%/layout%/css%/full%` per section + per-class carried/not-carried ledger → `pipeline-state/<run>/parity2-report.json`. Soft-fail (never blocks autonomy chain). Opt-out: `--no-parity2`. Covers 375/768/1440 viewports.
+
 > **2026-06-01 converter callout (cloning thread; D145/D146)** — two converter advances shipped:
 > - **D146 (`270cd995`)** — `sgs/button` now replaces `core/button` everywhere (converter `atomic_tag_map` reverse-walks `blocks.replaces`); a new `button-group` slot routes `ctas`/`buttons` wrappers → `sgs/multi-button`; `_group_loose_buttons` post-pass wraps loose `sgs/button` runs in `sgs/multi-button` (WP-mirror, DB-derived slug, idempotent). Spec 11 / P-9 complete.
 > - **D145 (`b93a3b51`)** — `walk()` carries `is-style-*` classes from the source node onto the emitted block (e.g. `is-style-trustpilot` on `sgs/star-rating`); the content-leaf ladder is now **tag-authoritative** (node's own tag via `atomic_tag_map` routes FIRST + ungated — `<img>`→sgs/media, `<p>`→text, `<a>`→core/button — THEN text-capable BEM segment, THEN sgs/text). Builds on D141's §FR-22-4.1.
@@ -74,6 +79,7 @@ Per-stage annotated blocks (scripts, files, DB tables, skills, status) are in
 | 9c | Structured log surfacing | `orchestrator/surface_pipeline_logs.py` | `summary.log`, sidecar logs | LIVE |
 | 10 | Per-page deploy | `orchestrator/upload_and_patch.py` | `extract.patched.json` + REST PATCH | LIVE (opt-in) |
 | 11 | Per-section pixel-diff (deployed) | `orchestrator/upload_and_patch.py` (post-Stage-10) | `stage-11-pixel-diff.json` | LIVE |
+| 11.5 | Draft-centric fidelity gate (parity2) | `parity2/` via `sgs-clone-orchestrator.py` (inline, post-Stage-10) | `parity2-report.json` (content%/layout%/css%/full% per section) | LIVE (soft-fail; D183 2026-06-07; commit `553334f3`; opt-out `--no-parity2`) |
 | +REG | Pattern registration | `orchestrator/register_patterns.py` | `patterns/<slug>.php` + DB rows | LIVE |
 | — | Final acceptance harness | `orchestrator/critical-fix-verification.py` | `critical-fix-verification.json` | LIVE |
 

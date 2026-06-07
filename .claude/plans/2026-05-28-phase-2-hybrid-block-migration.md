@@ -21,14 +21,23 @@ progress_2026_06_04: |
     - /sgs-update reconciled (block_attributes 2110→2739, roster 29, 0 orphans). Stage-11 auto-apply still report-only.
     - REMAINING: the block-side mirror does NOT fix page-clone fidelity. NEXT = the SEPARATE converter "Method 2"
       work (routing fix .sgs-hero→sgs/hero + converter-lift + #6/#4a + image sideload), then /sgs-update Stage-11
-      auto-apply + WS-1c residuals (A3-A6) + WS-2/WS-3 de-cheat.
+      auto-apply + WS-1c residuals (A3, A5, A6) + WS-2/WS-3 de-cheat.
+progress_2026_06_07: |
+  WS-1c A4 SHIPPED (commit 668e26ad) — sgs_container_gap_value() raw-px gap helper + universal gap
+  consolidation: duplicate gap controls removed from trust-bar, card-grid, feature-grid, gallery,
+  multi-button, post-grid; all route through shared container gap control; deprecations added.
+  Icon-identity resolver SHIPPED (commit 127f2290) — trust-bar badges clone to correct Lucide icons.
+  Stage 9 coverage-report schema fix SHIPPED (commit f93db924) — autonomy gate now promotes deploys.
+  sgs/heading React #130 crash fix SHIPPED (commit 6da23ccc).
+  Task-3 scope clarified (commit 36e3bc3c): sgs/container IS a valid DB-driven target for slug-None
+  sections; Method-2 FS-1a/FS-2a slug-None path is confirmed correct. WS-1c remaining: A3, A5, A6.
 progress_2026_06_03: |
   CONTAINER STANDARDISATION WS-1a+WS-1b SHIPPED (commit 2f86d9e6, D159):
     - A1: contentWidth attr + render.php __inner div + fold lift → live-DOM verified @1440
     - A2: widthMode-from-own-max-width outer transfer (absent→full / present→custom)
     - C1: db_lookup.py:2461 band-aid removed (paired with A2)
     - A7: MOOT — _lift_core_block_style is dead code; A2 inlined its own logic
-    - Remaining WS-1c: A3/A4/A5/A6 + WS-2/WS-3/WS-4/WS-5 pending
+    - Remaining WS-1c: A3/~~A4~~/A5/A6 + WS-2/WS-3/WS-5 pending (~~A4 SHIPPED 668e26ad~~; WS-4 COMPLETE D167)
     - WS-4 scope sharpened (D160): ALL ~28 composites KIND-scoped, not just 4 SECTION blocks
     - Active triage + WS-4 build spec: .claude/plans/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md
 progress_2026_06_02: |

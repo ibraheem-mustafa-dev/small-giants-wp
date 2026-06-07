@@ -466,6 +466,10 @@ match; tracked as a follow-up.
 │   D111). Voter refactored to DB call.                                        │
 │                                                                             │
 │ STATUS (post-Wave2/3 2026-05-21): LIVE - confidence gate enforced           │
+│ BUG FIXED 2026-06-07 (`f93db924`): stage-9-coverage.json now emits the     │
+│ validator-contract keys (totals/gap_level_totals/total_count) alongside the │
+│ leftover_* aliases — autonomy gate was rolling back every deploy on missing  │
+│ required fields. Re-clone of page 8: outcome went rolled-back → surface.   │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -598,6 +602,32 @@ The 5-bucket `leftover-bucket-router.py` classifier. Vocabulary update 2026-05-2
 │   differences that Stage 8 can't see.                                       │
 │                                                                             │
 │ STATUS:       LIVE — shipped 2026-05-23                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Stage 11.5 — Draft-centric fidelity gate (parity2) [LIVE — wired 2026-06-07; D183]
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ SCRIPTS:                                                                    │
+│  ✓ parity2/ (via sgs-clone-orchestrator.py inline, post-Stage-10)           │
+│       clone-parity.js --dump-captures (captures draft + clone at 3vp)      │
+│       parity2/*.py: measures content%/layout%/css%/full% per section        │
+│       (DRAFT is the 100% denominator — class-agnostic, source-not-target)  │
+│                                                                             │
+│ FILES (W):  pipeline-state/<run>/parity2-report.json                        │
+│             (per-section: content%, layout%, css%, full%;                   │
+│              per-class carried/not-carried ledger; sorted worst-layout)     │
+│                                                                             │
+│ DESIGN PRINCIPLE (memory fidelity-denominator-is-the-source-not-the-target):│
+│   Replaces pixel-diff + old clone-parity as the canonical fidelity signal.  │
+│   Pairs with Bean R-22-13 visual sign-off — numbers alone don't close.     │
+│                                                                             │
+│ VIEWPORTS: 375 / 768 / 1440 (all 3 scored per run).                        │
+│ GATE MODE: soft-fail — never blocks the autonomy chain.                     │
+│ OPT-OUT:   --no-parity2 flag, or when 'node' is unavailable.               │
+│                                                                             │
+│ STATUS:       LIVE — wired 2026-06-07 commit 553334f3 (D183)               │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 

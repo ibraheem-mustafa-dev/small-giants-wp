@@ -1,6 +1,6 @@
 # small-giants-wp — Goals
 
-**Last updated:** 2026-06-02 (container/wrapper standardisation programme launched — WS-1 SHIPPED commit `0d746073`, D152; block_composition.container_kind column built + 28-block roster populated; composite-mirror rule locked.)
+**Last updated:** 2026-06-07 (WS-4 block-side complete D167 — 29-block container roster mirrors sgs/container; bound-purge SHIPPED D182; parity2 fidelity verifier wired D183; gap consolidation shipped 2026-06-07; icon-identity resolver shipped; Stage 9 autonomy-gate rollback bug fixed. For earlier: 2026-06-02 WS-1 SHIPPED commit `0d746073`, D152; block_composition.container_kind column built + 28-block roster populated; composite-mirror rule locked.)
 
 ## ⛔ SUCCESS DEFINITION (gate every session)
 

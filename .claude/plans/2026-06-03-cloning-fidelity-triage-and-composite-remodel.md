@@ -52,7 +52,13 @@ Memories: `composite-mirror-is-separate-from-cloning-fidelity`, `universal-lift-
 
 **What was built this session (uncommitted):**
 - **#3 (heading-align) + #8 (testimonial-slider)** — BUILT-uncommitted, pending Gate B. #8 additionally needs live 4-card verify before the gate.
-- **WS-1c A3 (custom-width `margin-inline:auto` centring) + A4 (raw-px gap passthrough via new `sgs_container_gap_value()` helper)** — BUILT-uncommitted in `container/render.php`, pending Gate B.
+- **WS-1c A3 (custom-width `margin-inline:auto` centring)** — BUILT-uncommitted in `container/render.php`, pending Gate B.
+- ~~**WS-1c A4 (raw-px gap passthrough via new `sgs_container_gap_value()` helper)**~~ ✅ **SHIPPED 2026-06-07 commit `668e26ad`** — shipped as part of the universal gap consolidation (duplicate gap controls removed from trust-bar, card-grid, feature-grid, gallery, multi-button, post-grid; all route through the shared container gap control; deprecations added). No longer "BUILT-uncommitted".
+
+**2026-06-07 ADDITIONAL SHIPS (this session):**
+- **Icon-identity resolver** commit `127f2290` — trust-bar badges now clone to correct Lucide icon slugs (reverse path-index + structural heuristics + raw-SVG fallback). Covers D7-adjacent trust-bar badge rendering; live-verified on page 8 (sandybrown canary).
+- **Stage 9 coverage-report schema fix** commit `f93db924` — autonomy gate was rolling back ALL page deploys due to missing contract keys (`totals`/`gap_level_totals`/`total_count`); now promotes correctly.
+- **sgs/heading React #130 crash fix** commit `6da23ccc` — pre-existing crash on numeric level attr; unrelated to cloning fidelity.
 
 **Dispositions refined by /qc-council (D163) — CORRECTED 2026-06-03 PM by Bean (the "FALSIFIED" framing was WRONG — it was an ORDERING artefact, not a falsification):**
 

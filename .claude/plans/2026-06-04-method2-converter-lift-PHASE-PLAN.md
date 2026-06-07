@@ -4,9 +4,19 @@ project: small-giants-wp
 thread: cloning-pipeline
 title: "Method 2 — converter-lift BUILD phase plan (universal CSS→attr transfer)"
 created: 2026-06-04
-status: PLAN — pre-adversarial-council. Build = next session. Design source + council verdict: 2026-06-04-method2-converter-lift-design.md (D169).
+status: PLAN — adversarial-council DONE (2026-06-04). Build = next session. Design source + council verdict: 2026-06-04-method2-converter-lift-design.md (D169).
 plan_label: "[PLAN: opus] — orchestrator; Sonnet subagents build the serialised convert.py edits + parallel block/orchestrator edits"
 ---
+
+# Phase — Method 2 converter-lift (universal CSS→attribute transfer)
+
+## 2026-06-07 CLARIFICATION — Task 3 scope (Bean-locked, commit `36e3bc3c`)
+
+> **`sgs/container` IS a valid, DB-driven conversion target. Do NOT route slug-None sections to bespoke composites.** The Stage-2 confidence-matrix fallback to `sgs/container` is correct by design (Decision 3). The task is to transfer the section's CSS onto the container's *editable block attributes* via the §FR-22-21 universal procedure — NOT to reroute sections to bespoke composites or add per-section/per-brand hardcoding.
+>
+> This plan's slug-None path (FS-1a/FS-2a → `convert.py:2104–2129`) already targets `sgs/container` correctly. The composite path (FS-1b/FS-2b) is SEPARATE and only applies to blocks that legitimately route to their own composite slug (hero → `sgs/hero` already correct; trust-bar routing SHIPPED `c3443e03`). No conflict with this plan.
+>
+> **Also shipped this session (before Method-2 build):** icon-identity resolver `127f2290` (trust-bar badges → correct Lucide icons; closes a D7-adjacent gap); Stage 9 schema fix `f93db924` (autonomy gate no longer rolls back deploys); gap consolidation `668e26ad` (WS-1c A4 SHIPPED — raw-px gap + universal gap control across composites). These do NOT block Method-2 build.
 
 # Phase — Method 2 converter-lift (universal CSS→attribute transfer)
 
