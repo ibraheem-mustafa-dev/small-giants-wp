@@ -2,7 +2,7 @@
 """SGS Framework DB Enrichment — 10 targets in one idempotent pass.
 
 Targets:
-  2.1  slot_synonyms — 26 anomaly attrs + container's 15 new attrs
+  2.1  slots — 26 anomaly attrs + container's 15 new attrs (D99: slot_synonyms → slots)
   2.2  block_attributes.enum_values — verify/fix auto-population
   2.3  block_attributes.equivalent_implementations — Rosetta Stone seed
   2.4  style_variations sync — scan theme/sgs-theme/styles/*.json, upsert
@@ -137,29 +137,37 @@ CONTAINER_NEW_ATTR_SLOTS: dict[str, str] = {
 
 
 def target_21_slot_synonyms(conn: sqlite3.Connection, dry_run: bool) -> int:
-    """Backfill canonical_slot for anomaly block attrs + container new attrs."""
+    """Backfill canonical_slot for anomaly block attrs + container new attrs.
+
+    D99 2026-05-29: slot vocab now lives in `slots` (scope='element') not
+    slot_synonyms (dropped). NEW_SYNONYMS seeds `slots` accordingly.
+    html_semantic_tag and role columns retired — not present in `slots`.
+    """
     updated = 0
 
     # Build combined map: attr_name -> slot (anomaly + container)
     all_map = {**ANOMALY_ATTR_SLOTS, **CONTAINER_NEW_ATTR_SLOTS}
 
-    # Also make sure the canonical slots used above exist in slot_synonyms.
-    # New ones needed: layout, parallax
+    # Also make sure the canonical slots used above exist in the `slots` table
+    # (D99 2026-05-29: slot_synonyms was dropped; unified `slots` table with
+    # scope='element'/'section'. html_semantic_tag and role columns were NOT
+    # migrated — html_semantic_tag retired deliberately; role is in `roles` table).
+    # New slots needed: layout, parallax, column.
     NEW_SYNONYMS = [
-        ("layout", ["layoutType", "direction", "flexDirection", "gridColumns"], "structural",
-         "Layout mode / direction control for flex/grid containers", "div"),
-        ("parallax", ["parallaxSpeed", "bgParallax", "parallaxOffset"], "animation",
-         "Parallax scroll effect attributes", "div"),
-        ("column", ["columns", "columnCount", "numColumns"], "structural",
-         "Column count / layout column control", "div"),
+        ("layout", ["layoutType", "direction", "flexDirection", "gridColumns"],
+         "Layout mode / direction control for flex/grid containers"),
+        ("parallax", ["parallaxSpeed", "bgParallax", "parallaxOffset"],
+         "Parallax scroll effect attributes"),
+        ("column", ["columns", "columnCount", "numColumns"],
+         "Column count / layout column control"),
     ]
     if not dry_run:
-        for slug, aliases, role, desc, tag in NEW_SYNONYMS:
+        for slot_name, aliases, notes in NEW_SYNONYMS:
             conn.execute(
-                """INSERT OR IGNORE INTO slot_synonyms
-                   (canonical_slot, aliases, role, description, html_semantic_tag)
-                   VALUES (?, ?, ?, ?, ?)""",
-                (slug, json.dumps(aliases), role, desc, tag),
+                """INSERT OR IGNORE INTO slots
+                   (slot_name, scope, aliases, notes)
+                   VALUES (?, 'element', ?, ?)""",
+                (slot_name, json.dumps(aliases), notes),
             )
 
     # Now backfill NULL canonical_slot rows

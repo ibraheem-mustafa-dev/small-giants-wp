@@ -91,12 +91,16 @@ COLLAPSE_MAP = {
 
 
 def insert_cross_cutting_slots(conn: sqlite3.Connection) -> int:
+    # Post-D99: slot_synonyms dropped; writes to slots table (scope='element').
+    # canonical_slot -> slot_name; description -> notes; scope required.
     inserted = 0
     for canon, aliases, desc in NEW_CROSS_CUTTING_SLOTS:
-        existing = conn.execute("SELECT 1 FROM slot_synonyms WHERE canonical_slot=?", (canon,)).fetchone()
+        existing = conn.execute("SELECT 1 FROM slots WHERE slot_name=? AND scope='element'", (canon,)).fetchone()
         if not existing:
-            conn.execute("INSERT INTO slot_synonyms (canonical_slot, aliases, description) VALUES (?, ?, ?)",
-                         (canon, json.dumps(aliases), desc))
+            conn.execute(
+                "INSERT INTO slots (slot_name, scope, aliases, notes) VALUES (?, 'element', ?, ?)",
+                (canon, json.dumps(aliases), desc),
+            )
             inserted += 1
     conn.commit()
     return inserted
@@ -157,7 +161,8 @@ def main() -> int:
     inserted = insert_cross_cutting_slots(conn)
     print(f"Cross-cutting slots inserted: {inserted}")
 
-    valid_slots = {r[0] for r in conn.execute("SELECT canonical_slot FROM slot_synonyms")}
+    # Post-D99: slot_synonyms dropped; reads slots table (scope='element').
+    valid_slots = {r[0] for r in conn.execute("SELECT slot_name FROM slots WHERE scope = 'element'")}
     valid_roles = set()
     rt_path = REPO / "tools" / "recogniser-v2" / "data" / "role-templates.json"
     if rt_path.exists():

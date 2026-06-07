@@ -2,7 +2,7 @@
 Spec 15 §6 Stage 9 — Drift Validator
 ====================================
 Validates that every canonical value stored on `block_attributes` decomposes
-into known vocabulary (slot_synonyms.canonical_slot, property_suffixes.role,
+into known vocabulary (slots.slot_name [scope='element'], property_suffixes.role,
 modifier_suffixes.suffix). Surfaces violations where the data layer has
 drifted away from the canonical vocabulary.
 
@@ -75,14 +75,16 @@ def load_role_taxonomy() -> set[str]:
 
 
 def load_vocabulary(conn: sqlite3.Connection) -> tuple[set[str], set[str], set[str], set[str], dict[str, set[str]]]:
-    slot_set = {r[0] for r in conn.execute("SELECT canonical_slot FROM slot_synonyms")}
+    # Post-D99: slot_synonyms dropped; reads slots table (scope='element') instead.
+    # slot_name replaces canonical_slot; notes replaces description.
+    slot_set = {r[0] for r in conn.execute("SELECT slot_name FROM slots WHERE scope = 'element'")}
     role_set = load_role_taxonomy()
     property_suffix_set = {r[0] for r in conn.execute("SELECT suffix FROM property_suffixes")}
     modifier_suffix_set = {r[0] for r in conn.execute("SELECT suffix FROM modifier_suffixes")}
-    # canonical_slot -> {canonical_slot, aliases...} so the modifier check can
+    # slot_name -> {slot_name, aliases...} so the modifier check can
     # accept alias forms (e.g. `subHeadline` is accepted as `subheading`).
     alias_map: dict[str, set[str]] = {}
-    for canon, aliases_json in conn.execute("SELECT canonical_slot, aliases FROM slot_synonyms"):
+    for canon, aliases_json in conn.execute("SELECT slot_name, aliases FROM slots WHERE scope = 'element'"):
         aliases: set[str] = {canon}
         if aliases_json:
             try:
@@ -124,9 +126,9 @@ def detect_unknown_modifier(
     the remaining trailing CamelCase token. If a CamelCase token still
     trails after the peels AND it's in neither vocab, flag it as drift.
 
-    Honours slot_synonyms aliases — the remaining stem after peels is
-    accepted if it matches the canonical_slot OR any of its aliases (e.g.
-    `subHeadline` accepts as alias of `subheading`).
+    Honours slots.aliases — the remaining stem after peels is accepted if
+    it matches the slot_name OR any of its aliases (e.g. `subHeadline`
+    accepts as alias of `subheading`).
     """
     if canonical_slot is None:
         return None

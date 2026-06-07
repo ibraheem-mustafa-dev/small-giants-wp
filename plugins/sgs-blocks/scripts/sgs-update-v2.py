@@ -2214,13 +2214,14 @@ def stage_5_slot_synonym_auto_seed(
 ) -> dict:
     """Heuristic auto-seed of slot_synonyms.standalone_block for unmapped rows.
 
-    Queries slot_synonyms WHERE standalone_block IS NULL OR standalone_block = ''.
+    Queries `slots` WHERE scope='element' AND standalone_block IS NULL OR standalone_block = ''.
+    (D99 2026-05-29: was slot_synonyms; now `slots WHERE scope='element'`.)
     For each unmapped slot, runs a 3-tier heuristic against blocks WHERE source='sgs':
       1. Exact slug match:      sgs/<normalised-name>
       2. Prefix match:          slug LIKE 'sgs/<normalised-name>%'  (single result only)
       3. Contains match:        slug LIKE '%<normalised-name>%'       (single result only)
 
-    High-confidence (exact) → UPDATE slot_synonyms SET standalone_block=slug.
+    High-confidence (exact) → UPDATE slots SET standalone_block=? WHERE rowid=? AND scope='element'.
     Medium-confidence (single prefix) → log to report, no write.
     Low (contains or multiple/none) → log to report, no write.
 

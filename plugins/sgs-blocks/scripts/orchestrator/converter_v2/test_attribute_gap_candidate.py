@@ -31,8 +31,12 @@ if str(_SCRIPTS_DIR) not in sys.path:
 
 def _make_temp_db() -> sqlite3.Connection:
     """Return an in-memory DB populated with the attribute_gap_candidates
-    schema plus minimal rows in property_suffixes and slot_synonyms so
+    schema plus minimal rows in property_suffixes and slots so
     propose_attr_name() has something to work with.
+
+    D99 2026-05-29: fixture uses `slots` (scope='element'), not the dropped
+    `slot_synonyms` table.  db_lookup._slot_synonyms() queries
+    `slots WHERE scope='element'`, so the fixture must match that schema.
     """
     conn = sqlite3.connect(":memory:")
     conn.execute("""
@@ -56,16 +60,18 @@ def _make_temp_db() -> sqlite3.Connection:
             notes         TEXT
         )
     """)
+    # D99 2026-05-29: slot_synonyms was dropped; unified `slots` table replaces it.
+    # db_lookup._slot_synonyms() queries `slots WHERE scope='element'`.
     conn.execute("""
-        CREATE TABLE slot_synonyms (
-            canonical_slot    TEXT NOT NULL,
-            aliases           TEXT,
-            role              TEXT,
-            description       TEXT,
-            wp_canonical      TEXT,
-            html_semantic_tag TEXT,
-            created_at        TEXT DEFAULT CURRENT_TIMESTAMP,
-            standalone_block  TEXT
+        CREATE TABLE slots (
+            slot_name        TEXT NOT NULL,
+            scope            TEXT NOT NULL DEFAULT 'element',
+            aliases          TEXT,
+            standalone_block TEXT,
+            notes            TEXT,
+            created_at       TEXT DEFAULT CURRENT_TIMESTAMP,
+            standalone_block_default_attrs TEXT,
+            PRIMARY KEY (slot_name, scope)
         )
     """)
     conn.execute("""
@@ -113,9 +119,11 @@ def _make_temp_db() -> sqlite3.Connection:
             ("Desktop", "breakpoint"),
         ],
     )
-    # Seed a slot synonym: label → canonical "label"
+    # Seed a slot row: label (element scope) with aliases so _slot_synonyms()
+    # can resolve "label" / "eyebrow" → canonical "label".
+    # D99: was slot_synonyms.canonical_slot; now slots.slot_name with scope='element'.
     conn.execute(
-        "INSERT INTO slot_synonyms (canonical_slot, aliases) VALUES (?, ?)",
+        "INSERT INTO slots (slot_name, scope, aliases) VALUES (?, 'element', ?)",
         ("label", '["label", "eyebrow"]'),
     )
     conn.commit()
@@ -151,9 +159,10 @@ def _patch_db(temp_db_path: Path):
         original_db_path = db_mod.SGS_DB
         db_mod.SGS_DB = temp_db_path
         # Bust all lru_caches that query the DB so they re-query the temp DB.
+        # Note: _slot_to_html_tag was retired at D99 (html_semantic_tag column
+        # dropped); it is no longer present in db_lookup — excluded from this list.
         for fn in (
             db_mod._slot_synonyms,
-            db_mod._slot_to_html_tag,
             db_mod._slot_to_standalone_block,
             db_mod._canonical_modifiers,
             db_mod.css_property_suffixes,
@@ -170,7 +179,6 @@ def _patch_db(temp_db_path: Path):
             db_mod.SGS_DB = original_db_path
             for fn in (
                 db_mod._slot_synonyms,
-                db_mod._slot_to_html_tag,
                 db_mod._slot_to_standalone_block,
                 db_mod._canonical_modifiers,
                 db_mod.css_property_suffixes,

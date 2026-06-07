@@ -17,17 +17,19 @@ db = sqlite3.connect(str(DB_PATH))
 db.row_factory = sqlite3.Row
 
 # Load vocab
+# Post-D99: slot_synonyms dropped; reads slots table (scope='element').
+# slot_name replaces canonical_slot.
 mods = {r["suffix"] for r in db.execute("SELECT suffix FROM modifier_suffixes")}
 props = {r["suffix"] for r in db.execute("SELECT suffix FROM property_suffixes")}
 slot_map = {}
-for r in db.execute("SELECT canonical_slot, aliases FROM slot_synonyms"):
-    slot_map[r["canonical_slot"]] = r["canonical_slot"]
+for r in db.execute("SELECT slot_name, aliases FROM slots WHERE scope = 'element'"):
+    slot_map[r["slot_name"]] = r["slot_name"]
     aliases = json.loads(r["aliases"]) if r["aliases"] else []
     for a in aliases:
-        slot_map[a] = r["canonical_slot"]
-        slot_map[a.lower()] = r["canonical_slot"]
+        slot_map[a] = r["slot_name"]
+        slot_map[a.lower()] = r["slot_name"]
         # also handle camelCase aliases case-insensitively
-        slot_map[a[0].lower() + a[1:] if a else a] = r["canonical_slot"]
+        slot_map[a[0].lower() + a[1:] if a else a] = r["slot_name"]
 
 print(f"Loaded {len(slot_map)} slot lookup keys, {len(props)} property suffixes, {len(mods)} modifier suffixes")
 

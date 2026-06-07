@@ -6,7 +6,8 @@ sys.stdout.reconfigure(encoding="utf-8")
 db = sqlite3.connect(r"C:\Users\Bean\.claude\skills\sgs-wp-engine\sgs-framework.db")
 db.row_factory = sqlite3.Row
 
-slot_set = {r["canonical_slot"] for r in db.execute("SELECT canonical_slot FROM slot_synonyms")}
+# Post-D99: slot_synonyms dropped; reads slots table (scope='element').
+slot_set = {r["slot_name"] for r in db.execute("SELECT slot_name FROM slots WHERE scope = 'element'")}
 prop_set = {r["suffix"] for r in db.execute("SELECT suffix FROM property_suffixes")}
 mod_set = {r["suffix"] for r in db.execute("SELECT suffix FROM modifier_suffixes")}
 
@@ -55,7 +56,7 @@ lines = [
     "",
     "**Date:** 2026-05-12. **Method:** Live DB query (post-B5 drift remediation).",
     "",
-    f"Live vocab baseline: {len(slot_set)} slot_synonyms, {len(prop_set)} property_suffixes, {len(mod_set)} modifier_suffixes.",
+    f"Live vocab baseline: {len(slot_set)} slots [scope='element'], {len(prop_set)} property_suffixes, {len(mod_set)} modifier_suffixes.",
     "",
     "## Method A — Top recurring gap stems",
     "",
@@ -83,7 +84,7 @@ lines += [
     "",
     "## Synthesis — proposed vocab additions",
     "",
-    "### To slot_synonyms (extends §11 — needs Bean approval)",
+    "### To slots [scope='element'] (extends §11 — needs Bean approval)",
     "| Proposed slot | Pattern matched | Approx canonicalisation gain |",
     "|---|---|---:|",
     "| `hover` (state slot) | hoverBg / hoverText / hoverBorder / hoverEffect | ~50 |",

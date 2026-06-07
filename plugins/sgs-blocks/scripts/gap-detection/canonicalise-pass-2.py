@@ -73,33 +73,40 @@ def main() -> int:
     db.row_factory = sqlite3.Row
 
     # === Step 1: insert new slots ===
+    # Post-D99: slot_synonyms dropped; writes to slots table (scope='element').
+    # canonical_slot -> slot_name; description -> notes.
     inserted = 0
     aliases_added = 0
     for slot, aliases, desc in NEW_SLOTS:
-        existing = db.execute("SELECT canonical_slot FROM slot_synonyms WHERE canonical_slot=?", (slot,)).fetchone()
+        existing = db.execute("SELECT slot_name FROM slots WHERE slot_name=? AND scope='element'", (slot,)).fetchone()
         if existing is None:
-            db.execute("INSERT INTO slot_synonyms (canonical_slot, aliases, description) VALUES (?, ?, ?)",
-                       (slot, json.dumps(aliases), desc))
+            db.execute(
+                "INSERT INTO slots (slot_name, scope, aliases, notes) VALUES (?, 'element', ?, ?)",
+                (slot, json.dumps(aliases), desc),
+            )
             inserted += 1
     # Add extra aliases to existing slots
     for canon, extras in EXTRA_ALIASES.items():
-        r = db.execute("SELECT aliases FROM slot_synonyms WHERE canonical_slot=?", (canon,)).fetchone()
+        r = db.execute("SELECT aliases FROM slots WHERE slot_name=? AND scope='element'", (canon,)).fetchone()
         if r is None:
             continue
         current = set(json.loads(r["aliases"])) if r["aliases"] else set()
         merged = current | set(extras)
         if merged != current:
-            db.execute("UPDATE slot_synonyms SET aliases=? WHERE canonical_slot=?",
-                       (json.dumps(sorted(merged)), canon))
+            db.execute(
+                "UPDATE slots SET aliases=? WHERE slot_name=? AND scope='element'",
+                (json.dumps(sorted(merged)), canon),
+            )
             aliases_added += len(merged - current)
     db.commit()
     print(f"New slots inserted: {inserted}")
     print(f"Aliases added to existing slots: {aliases_added}")
 
     # === Step 2: rebuild slot lookup map (canonical + all aliases, multiple case variants) ===
+    # Post-D99: reads slots table (scope='element'); slot_name replaces canonical_slot.
     slot_map: dict[str, str] = {}
-    for r in db.execute("SELECT canonical_slot, aliases FROM slot_synonyms"):
-        canon = r["canonical_slot"]
+    for r in db.execute("SELECT slot_name, aliases FROM slots WHERE scope = 'element'"):
+        canon = r["slot_name"]
         forms = {canon}
         if r["aliases"]:
             forms |= set(json.loads(r["aliases"]))

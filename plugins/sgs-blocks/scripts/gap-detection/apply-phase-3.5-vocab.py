@@ -5,7 +5,7 @@ Tier 1 (property_suffixes, no §11 impact):
     BlockGap, ContentSize, WideSize, FontStyle, Gradient, LinkColor,
     Spacing, Image, Video, Effect, Scale, ImageZoom, Grayscale
 
-Tier 2 (slot_synonyms, extends §11 to layout/state/motion per amended spec):
+Tier 2 (slots [scope='element'], extends §11 to layout/state/motion per amended spec):
     hover, transition, animation, subHeadline (alias of subheading),
     secondaryCta, column (alias columns), padding, margin, gap, width
 
@@ -70,18 +70,19 @@ def main() -> int:
         if cur.rowcount > 0:
             inserted_prop += 1
 
-    # slot_synonyms schema — check existing alias for the canonical
+    # Post-D99: slot_synonyms dropped; writes to slots table (scope='element').
+    # canonical_slot -> slot_name; description -> notes; role + html_semantic_tag
+    # not stored on slots (role lives in roles table; html_tag omitted).
     inserted_slot = 0
     updated_aliases = 0
     for canon, new_aliases, desc, html_tag in NEW_SLOT_SYNONYMS:
         existing = conn.execute(
-            "SELECT aliases FROM slot_synonyms WHERE canonical_slot=?", (canon,)
+            "SELECT aliases FROM slots WHERE slot_name=? AND scope='element'", (canon,)
         ).fetchone()
         if existing is None:
             conn.execute(
-                "INSERT INTO slot_synonyms (canonical_slot, aliases, role, description, "
-                "html_semantic_tag) VALUES (?, ?, NULL, ?, ?)",
-                (canon, json.dumps(new_aliases), desc, html_tag),
+                "INSERT INTO slots (slot_name, scope, aliases, notes) VALUES (?, 'element', ?, ?)",
+                (canon, json.dumps(new_aliases), desc),
             )
             inserted_slot += 1
         elif new_aliases:
@@ -89,7 +90,7 @@ def main() -> int:
             merged = sorted(set(current) | set(new_aliases))
             if merged != sorted(current):
                 conn.execute(
-                    "UPDATE slot_synonyms SET aliases=? WHERE canonical_slot=?",
+                    "UPDATE slots SET aliases=? WHERE slot_name=? AND scope='element'",
                     (json.dumps(merged), canon),
                 )
                 updated_aliases += 1
