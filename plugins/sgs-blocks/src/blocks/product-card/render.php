@@ -9,11 +9,12 @@
  *    (InnerBlocks). UNCHANGED FR-22-6 behaviour — preserves every existing
  *    typed post + the clone-pipeline output.
  *
- *  - 'wc-product' / 'sgs-cpt' (Bound): resolves a real product (WooCommerce or
- *    sgs_product CPT), seeds the Interactivity API state from the product's
- *    _sgs_variation_sets layer, and renders a live card with reactive
- *    price/image swapping plus an optional add-to-cart button. All initial
- *    values are server-rendered, so the card is fully meaningful with no JS.
+ *  - 'wc-product' / 'sgs-cpt' (Live product data): resolves a real product
+ *    (WooCommerce or sgs_product CPT), seeds the Interactivity API state from
+ *    the product's _sgs_variation_sets layer, and renders a live card with
+ *    reactive price/image swapping plus an optional add-to-cart button. All
+ *    initial values are server-rendered, so the card is fully meaningful with
+ *    no JS.
  *
  * WS-4 (composite-mirror): render.php now delegates the OUTER wrapper to
  * SGS_Container_Wrapper::render() so sgs/product-card mirrors sgs/container's
@@ -26,7 +27,7 @@
  *  - featured: .product-card .featured-card
  *
  * data-wp-context carry:
- *  Branches 4 (variable configurator) and 5 (non-variable bound) need
+ *  Branches 4 (variable configurator) and 5 (non-variable live-data) need
  *  data-wp-interactive, data-wp-init, and data-wp-context on the OUTER wrapper
  *  div (the same element get_block_wrapper_attributes() controls).
  *  data-wp-interactive + data-wp-init are plain strings → passed via
@@ -97,7 +98,7 @@ if ( 'typed' === $source_mode ) {
 	return;
 }
 
-/* ── Bound mode — resolve a real product ───────────────────────────────────── */
+/* ── Live-data mode — resolve a real product ───────────────────────────────── */
 
 require_once dirname( __DIR__, 3 ) . '/includes/class-product-bindings.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-product-manifest.php';
@@ -106,7 +107,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-configurator-compat.ph
 $product_id = absint( $attributes['productId'] ?? 0 );
 $data       = \SGS\Blocks\Product_Bindings::get_product_data( $product_id, $source_mode );
 
-$classes[] = 'product-card--bound';
+$classes[] = 'product-card--live';
 
 // Rebuild base opts with updated classes.
 $base_opts['extra_classes'] = $classes;
@@ -134,14 +135,14 @@ if ( null === $data ) {
 /* ── FR-27-A5: WC below the version floor → read-only card (no configurator JS) */
 
 /*
- * When the bound product is a WC variable product but the live WooCommerce is
+ * When the linked product is a WC variable product but the live WooCommerce is
  * older than the configurator floor (Sgs_Configurator_Compat::MIN_WC), render a
  * STATIC read-only card: image, title, "From" price, and a link to the product
  * page where WC's own UI handles purchase. No data-wp-interactive, no pickers,
  * no add-to-cart JS. A dismissible admin notice (the compat class) tells the
  * operator to update WooCommerce. Never a silent break (FR-27-A5). The gate is
  * filterable (`sgs_configurator_supported`) so it is testable without a WC
- * downgrade. Bound-branch only — page-144 Typed clones never reach this.
+ * downgrade. Live-data branch only — page-144 Typed clones never reach this.
  */
 if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\Blocks\Sgs_Configurator_Compat::is_supported() ) {
 	$ro_classes   = $classes;
@@ -182,7 +183,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 	return;
 }
 
-/* ── Bound variable-product branch (U3) ────────────────────────────────────── */
+/* ── Live variable-product branch (U3) ─────────────────────────────────────── */
 
 /*
  * When the resolved product is a WooCommerce variable product AND the manifest
@@ -394,7 +395,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				$framing_mode = 'loss-aversion';
 			}
 
-			// 3c. Decoy: per-product meta WINS over the block attribute in bound mode (PD-6).
+			// 3c. Decoy: per-product meta WINS over the block attribute in live-data mode (PD-6).
 			$meta_decoy_raw = get_post_meta( $product_id, '_sgs_decoy_enabled', true );
 			if ( '' !== (string) $meta_decoy_raw ) {
 				$decoy_enabled = (bool) $meta_decoy_raw;
@@ -744,7 +745,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 	} // end if manifest non-null.
 } // end variable branch.
 
-/* ── Non-variable Bound mode (simple WC product / CPT / cap-exceeded fallback) */
+/* ── Non-variable live-data mode (simple WC product / CPT / cap-exceeded fallback) */
 
 /*
  * Build the variations map from _sgs_variation_sets (R-22-9).
@@ -778,7 +779,7 @@ $first_key = '';
 
 if ( null !== $pill_type ) {
 	// Resolve the default (first valid) option key for the no-JS selected state.
-	// Per-option commerce data is NOT seeded here: simple/CPT Bound cards have no
+	// Per-option commerce data is NOT seeded here: simple/CPT live-data cards have no
 	// per-option price/image (the live per-variation manifest is the WC-variable
 	// branch above, FR-27-A2). The pill swap is dormant on this path by design.
 	foreach ( $pill_type['options'] as $opt ) {
@@ -821,7 +822,7 @@ $context = array(
 	'restNonce'   => wp_create_nonce( 'wp_rest' ),
 );
 
-// Non-variable bound opts — Interactivity attrs on the wrapper.
+// Non-variable live-data opts — Interactivity attrs on the wrapper.
 // Same approach as the variable branch above: plain-string attrs via extra_attrs,
 // the data-wp-context JSON manifest via extra_attr_html + wp_interactivity_data_wp_context()
 // (compact single-quoted, avoids the esc_attr &quot; payload bloat).

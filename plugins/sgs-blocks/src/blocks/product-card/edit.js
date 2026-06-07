@@ -198,7 +198,7 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 					isDismissible={ false }
 					style={ { marginTop: 8 } }
 				>
-					{ __( 'Bound to product #', 'sgs-blocks' ) }
+					{ __( 'Linked product #', 'sgs-blocks' ) }
 					{ productId }
 					{ 'wc-product' === sourceMode
 						? __( '(WooCommerce).', 'sgs-blocks' )

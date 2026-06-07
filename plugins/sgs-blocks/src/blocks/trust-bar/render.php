@@ -3,11 +3,12 @@
  * SGS Trust Bar block — server-side render.
  *
  * Typed-only: curated items[] repeater (all 3 variants).
- * Bound mode (sourceMode='bound') removed — purged per WS-3 de-cheat (Rules 1 + 2).
+ * sourceMode attribute removed — typed is the only mode; the attribute was redundant.
  *
  * @since 0.2.0  Merged certification-bar + auto-scroll (D95).
  * @since 0.3.0  Dual-mode per Spec 24 FR-24-10.
  * @since 0.5.0  Typed-only — bound mode purged.
+ * @since 0.5.1  sourceMode attribute removed (Rule 3 de-plumb).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Unused (dynamic block, no InnerBlocks).

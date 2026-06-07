@@ -62,7 +62,7 @@
  * Bound-mode cards use the .product-card__no-image SVG placeholder instead
  * (render.php gates on $sgs_has_real_image — CSS fallback not needed there).
  */
-.product-card .product-card-img:not(.product-card--bound .product-card-img) {
+.product-card .product-card-img:not(.product-card--live .product-card-img) {
 	/* Prevent browser's broken-image chrome showing (alt text still accessible). */
 	overflow: hidden;
 }
@@ -322,13 +322,13 @@
 /*
  * ── Bound variable-card price + stock slots (U3) ────────────────────────────
  *
- * All rules scoped to .product-card--bound so Typed page-144 clones are
+ * All rules scoped to .product-card--live so Typed page-144 clones are
  * byte-identical — no shared .price/.price-row rule is touched (scope guardrail,
  * blub.db 304). WCAG 2.2 AA contrast verified against #ffffff card background.
  */
 
 /* Current / selected variation price — inherits .price serif weight */
-.product-card--bound .price--current {
+.product-card--live .price--current {
 	font-family: 'Fraunces', serif;
 	font-size: 28px;
 	font-weight: 700;
@@ -340,7 +340,7 @@
  * Struck-through regular price (hidden when not on sale via context.hideSale).
  * Muted text; contrast against #ffffff = 4.55:1 ✓ WCAG AA.
  */
-.product-card--bound .price--regular {
+.product-card--live .price--regular {
 	font-family: 'Fraunces', serif;
 	font-size: 20px;
 	font-weight: 400;
@@ -353,7 +353,7 @@
  * Percentage-off badge (hidden when not on sale via context.hideSale).
  * Accent background + dark text: #f5d050 bg + #3a2e26 text = 9.1:1 ✓ WCAG AA.
  */
-.product-card--bound .price--pct-off {
+.product-card--live .price--pct-off {
 	display: inline-flex;
 	align-items: center;
 	background: var(--wp--preset--color--accent, #f5d050);
@@ -374,7 +374,7 @@
  * as a bare coloured bar on a non-sale variation (the seeded default). Applies
  * to every reactive slot that toggles via data-wp-bind--hidden.
  */
-.product-card--bound [hidden] {
+.product-card--live [hidden] {
 	display: none !important;
 }
 
@@ -382,7 +382,7 @@
  * Out-of-stock indicator (hidden when in stock via context.inStock).
  * Red text; contrast against #ffffff = 5.74:1 ✓ WCAG AA.
  */
-.product-card--bound .product-card__stock {
+.product-card--live .product-card__stock {
 	font-family: 'Inter', sans-serif;
 	font-size: 13px;
 	font-weight: 600;
@@ -394,7 +394,7 @@
 /*
  * ── U5: Cross-attribute availability greying ────────────────────────────────
  *
- * Scoped to .product-card--bound only — typed page-144 clones are unaffected.
+ * Scoped to .product-card--live only — typed page-144 clones are unaffected.
  * The shared sgs/option-picker block file is NEVER edited (scope guardrail,
  * blub.db 304); these rules reach into the rendered picker DOM from the card.
  *
@@ -408,11 +408,11 @@
  * Card-scoped so the shared sgs/option-picker block + page-144 Typed clones are
  * untouched — only Bound configurator cards get the enlarged target.
  */
-.product-card--bound .sgs-option-picker__option {
+.product-card--live .sgs-option-picker__option {
 	min-height: 44px;
 }
 
-.product-card--bound .sgs-option-picker__pill {
+.product-card--live .sgs-option-picker__pill {
 	display: inline-flex;
 	align-items: center;
 	min-height: 44px;
@@ -421,7 +421,7 @@
 /*
  * ── B3: Per-unit price note + cosmetic discount badge ───────────────────────
  *
- * All rules scoped to .product-card--bound — Typed page-144 clones are
+ * All rules scoped to .product-card--live — Typed page-144 clones are
  * byte-identical (scope guardrail, blub.db 304). No existing rule is modified.
  *
  * Contrast notes:
@@ -433,7 +433,7 @@
  */
 
 /* Per-unit note — muted helper text below the price row. */
-.product-card--bound .price-note--per-unit {
+.product-card--live .price-note--per-unit {
 	color: var(--wp--preset--color--text-muted, #6b5c50);
 	font-size: 13px;
 	margin: 2px 0 0;
@@ -446,7 +446,7 @@
  * only enqueues when a real sgs/label block is on the page. Declarations mirror
  * sgs/label base + the pill-wrap variant (src/blocks/label/style.css).
  */
-.product-card--bound .product-card__discount-label {
+.product-card--live .product-card__discount-label {
 	display: inline-block;
 	width: max-content;
 	max-width: 100%;
@@ -463,12 +463,12 @@
 }
 
 /* Ensure [hidden] defeats the display rules above (mirrors the pattern at line 357). */
-.product-card--bound .price-note--per-unit[hidden],
-.product-card--bound .product-card__discount-label[hidden] {
+.product-card--live .price-note--per-unit[hidden],
+.product-card--live .product-card__discount-label[hidden] {
 	display: none !important;
 }
 
-.product-card--bound .sgs-option-picker__option--unavailable {
+.product-card--live .sgs-option-picker__option--unavailable {
 	opacity: 0.45;
 	text-decoration: line-through;
 	cursor: not-allowed;
@@ -479,14 +479,14 @@
  * override needed: the existing pill palette at 0.45 opacity still reads
  * clearly against the card background (WCAG disabled-control exception).
  */
-.product-card--bound .sgs-option-picker__option--unavailable .sgs-option-picker__pill {
+.product-card--live .sgs-option-picker__option--unavailable .sgs-option-picker__pill {
 	/* Intentionally empty: opacity on the parent is sufficient. */
 	/* Add overrides here if a client palette makes the faded text illegible. */
 }
 
 /*
  * ── Bean R-22-13 sign-off fixes (Bound configurator card) ───────────────────
- * All scoped to .product-card--bound so page-144 Typed clones stay byte-identical.
+ * All scoped to .product-card--live so page-144 Typed clones stay byte-identical.
  */
 
 /*
@@ -498,7 +498,7 @@
  * doubled-class selector (0,2,0) beats the layout rule, capping the configurator
  * card at the intended ~1/3 width (matches the draft trial-pack card).
  */
-.product-card.product-card--bound {
+.product-card.product-card--live {
 	max-width: var( --sgs-product-card-max-width, 380px );
 	margin-inline: auto;
 }
@@ -521,13 +521,13 @@
  *
  * Specificity ordering (all max-width declarations on .product-card):
  *   (A) .product-card { max-width: … }                                  (0,1,0)
- *   (B) .product-card.product-card--bound { max-width: … }              (0,2,0) ← above
+ *   (B) .product-card.product-card--live { max-width: … }              (0,2,0) ← above
  *   (C) .sgs-container--grid > .product-card { max-width: none }        (0,2,0) ← this rule
  *       :where(.is-layout-grid) > .product-card { max-width: none }     (0,1,0) ← supplemental
  *
  * Rule (C) beats (A) on specificity. Rule (C) ties (B) on specificity — but (C)
  * appears AFTER (B) in source order, so (C) wins the tie for any card inside a
- * grid, regardless of whether it also carries .product-card--bound. This is
+ * grid, regardless of whether it also carries .product-card--live. This is
  * correct: a bound card in a grid must fill its track just like a Typed card.
  *
  * Standalone (non-grid) case: (A) and (B) are unaffected — (C) does not fire
@@ -551,7 +551,7 @@
  * wants pink on every state (resting + considering), with the selected pill
  * filled pink. Set the picker's border custom-property card-scoped only.
  */
-.product-card--bound .sgs-option-picker {
+.product-card--live .sgs-option-picker {
 	--sgs-op-border: var( --wp--preset--color--primary, #e68a95 );
 }
 
@@ -559,11 +559,11 @@
  * Card hover affordance (was missing). Subtle lift + deeper shadow on hover —
  * GPU-composited transform only. Disabled under reduced motion below.
  */
-.product-card--bound {
+.product-card--live {
 	transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.product-card--bound:hover {
+.product-card--live:hover {
 	transform: translateY( -4px );
 	box-shadow: 0 8px 24px rgba( 58, 46, 38, 0.16 );
 }
@@ -573,12 +573,12 @@
 	.product-card .pill,
 	.product-card .btn,
 	.product-card .product-card__cart-icon,
-	.product-card--bound {
+	.product-card--live {
 		transition: none;
 	}
 
 	.product-card .product-card__add-to-cart:hover .product-card__cart-icon,
-	.product-card--bound:hover {
+	.product-card--live:hover {
 		transform: none;
 	}
 }
@@ -586,13 +586,13 @@
 /*
  * ── Bound-card permalink + cart-status styles ────────────────────────────────
  *
- * All rules scoped to .product-card--bound or new BEM classes so Typed
+ * All rules scoped to .product-card--live or new BEM classes so Typed
  * page-144 clones stay byte-identical (scope guardrail, blub.db 304).
  * WCAG 2.2 AA contrast verified against #ffffff card background.
  */
 
 /* Bean: pure near-black description (was brand brown), Bound-scoped only. */
-.product-card--bound .product-desc {
+.product-card--live .product-desc {
 	color: #1a1a1a;
 }
 
@@ -602,17 +602,17 @@
 }
 
 /* Title link inherits card heading colour; underline on hover for affordance. */
-.product-card--bound .product-card__title-link {
+.product-card--live .product-card__title-link {
 	color: inherit;
 	text-decoration: none;
 }
 
-.product-card--bound .product-card__title-link:hover {
+.product-card--live .product-card__title-link:hover {
 	text-decoration: underline;
 }
 
 /* Focus ring: primary pink at 2px — 3:1 on #fff ✓ WCAG AA focus indicator. */
-.product-card--bound .product-card__title-link:focus-visible {
+.product-card--live .product-card__title-link:focus-visible {
 	outline: 2px solid var( --wp--preset--color--primary, #e68a95 );
 	outline-offset: 2px;
 	border-radius: 2px;
@@ -620,7 +620,7 @@
 
 /* Visible success feedback — only shows when JS populates "Added to your basket.". */
 /* #15803d on #fff = 4.8:1 ✓ WCAG AA. */
-.product-card--bound .product-card__cart-status {
+.product-card--live .product-card__cart-status {
 	color: #15803d;
 	font-family: 'Inter', sans-serif;
 	font-size: 13px;
@@ -633,7 +633,7 @@
  * branded empty box (the WooCommerce placeholder graphic reads as broken). Same
  * 220px height as the real image so the card layout is unchanged. Bound-scoped.
  */
-.product-card--bound .product-card__no-image {
+.product-card--live .product-card__no-image {
 	height: 220px;
 	display: flex;
 	align-items: center;
@@ -643,14 +643,14 @@
 	border-bottom: 1px solid var( --wp--preset--color--border, #e8d5c0 );
 }
 
-.product-card--bound .product-card__no-image svg {
+.product-card--live .product-card__no-image svg {
 	opacity: 0.5;
 }
 
 /*
  * ── A4: Per-variation image gallery (thumbnail strip) ───────────────────────
  *
- * All rules scoped to .product-card--bound — Typed page-144 clones are
+ * All rules scoped to .product-card--live — Typed page-144 clones are
  * byte-identical (scope guardrail, blub.db 304). No existing rule is modified.
  *
  * Contrast / a11y notes:
@@ -666,7 +666,7 @@
  * aspect-ratio inline style drives the box; the fixed 220px from .product-card-img
  * is overridden when the media box is present. overflow:hidden clips any rounding.
  */
-.product-card--bound .product-card__media {
+.product-card--live .product-card__media {
 	position: relative;
 	/* Fixed-height media box (matches the mockup draft): the image scales to
 	   fill the full width + a fixed height, cropping/​centred via object-fit
@@ -679,7 +679,7 @@
 }
 
 /* Main image fills the fixed-height box, centred, scaled to cover. */
-.product-card--bound .product-card__media .product-card-img {
+.product-card--live .product-card__media .product-card-img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
@@ -689,7 +689,7 @@
 }
 
 /* Thumbnail strip — flex row below the main image. */
-.product-card--bound .product-card__thumbs {
+.product-card--live .product-card__thumbs {
 	display: flex;
 	gap: 8px;
 	flex-wrap: wrap;
@@ -699,7 +699,7 @@
 }
 
 /* Individual thumb button — 48×48px tap target, no native button chrome. */
-.product-card--bound .product-card__thumb {
+.product-card--live .product-card__thumb {
 	width: 48px;
 	height: 48px;
 	min-width: 44px;
@@ -715,23 +715,23 @@
 }
 
 /* Hover: show border affordance. */
-.product-card--bound .product-card__thumb:hover {
+.product-card--live .product-card__thumb:hover {
 	border-color: var( --wp--preset--color--primary, #e68a95 );
 }
 
 /* Focus ring for keyboard navigation. */
-.product-card--bound .product-card__thumb:focus-visible {
+.product-card--live .product-card__thumb:focus-visible {
 	outline: 2px solid var( --wp--preset--color--primary, #e68a95 );
 	outline-offset: 2px;
 }
 
 /* Active / selected thumb gets the primary ring. */
-.product-card--bound .product-card__thumb[aria-current="true"] {
+.product-card--live .product-card__thumb[aria-current="true"] {
 	border-color: var( --wp--preset--color--primary, #e68a95 );
 }
 
 /* Thumb image fills the button box. */
-.product-card--bound .product-card__thumb img {
+.product-card--live .product-card__thumb img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
@@ -740,7 +740,7 @@
 
 /* Reduced motion: no transitions on thumb borders. */
 @media (prefers-reduced-motion: reduce) {
-	.product-card--bound .product-card__thumb {
+	.product-card--live .product-card__thumb {
 		transition: none;
 	}
 }

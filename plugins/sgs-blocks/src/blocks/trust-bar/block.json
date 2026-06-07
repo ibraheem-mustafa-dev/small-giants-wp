@@ -51,13 +51,6 @@
 		"typography": ".sgs-trust-bar__label"
 	},
 	"attributes": {
-		"sourceMode": {
-			"type": "string",
-			"default": "typed",
-			"enum": [
-				"typed"
-			]
-		},
 		"badgeStyle": {
 			"type": "string",
 			"default": "icon-circle",
@@ -334,6 +327,14 @@
 		},
 		"minHeight": {
 			"type": "string"
+		},
+		"minHeightTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"minHeightMobile": {
+			"type": "string",
+			"default": ""
 		},
 		"verticalAlign": {
 			"type": "string",

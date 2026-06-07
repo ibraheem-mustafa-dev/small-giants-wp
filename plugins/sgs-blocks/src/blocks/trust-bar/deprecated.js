@@ -7,10 +7,8 @@
  *
  *   Covers every trust-bar instance authored before the FR-24-10 dual-mode
  *   addition (v0.3.0). These were always dynamic (render.php) with a null save.
- *   migrate() injects sourceMode:'typed' so the existing curated items[] editor
- *   continues to drive render.php unchanged — clients see zero difference.
- *   R-22-14 clean: discriminator is the explicit sourceMode attr, never
- *   empty($content) inspection.
+ *   sourceMode was subsequently removed (Rule 3 de-plumb); migrate() is a
+ *   pass-through — all existing curated items[] content continues unchanged.
  *
  * v3 — Block rename: sgs/trust-badges → sgs/trust-bar (2026-05-31).
  *
@@ -60,12 +58,11 @@ function mapBadgeStyle( certBarStyle ) {
  * v4 — Pre-sourceMode null-save shape.
  *
  * Matches every trust-bar block authored before v0.3.0. The previous save()
- * returned null; there is no stored inner HTML to match against. We target these
- * blocks by the absence of the sourceMode attribute (undefined or missing from
- * the serialised comment's attribute JSON).
+ * returned null; there is no stored inner HTML to match against.
  *
- * migrate() adds sourceMode:'typed' so the existing curated items[] editor
- * continues to work — no client-visible change.
+ * migrate() is a pass-through — all existing curated items[] content continues
+ * unchanged. sourceMode has been removed from the live attribute schema (Rule 3
+ * de-plumb: typed is the only mode, so it is now implicit).
  */
 const v4 = {
 	attributes: {
@@ -105,12 +102,9 @@ const v4 = {
 	},
 
 	migrate( attrs ) {
-		// Inject sourceMode:'typed' — all existing curated trust-bars stay Typed.
-		// Every other attribute is preserved as-is.
-		return {
-			...attrs,
-			sourceMode: 'typed',
-		};
+		// Pass-through — all existing curated trust-bars need no attribute surgery.
+		// sourceMode removed from live schema (Rule 3 de-plumb).
+		return { ...attrs };
 	},
 };
 
@@ -160,8 +154,9 @@ const v3 = {
 	},
 
 	migrate( attrs ) {
-		// Identity pass — attribute schema is unchanged; add sourceMode:'typed'.
-		return { ...attrs, sourceMode: 'typed' };
+		// Identity pass — attribute schema is unchanged; sourceMode removed from
+		// live schema (Rule 3 de-plumb), so no injection needed.
+		return { ...attrs };
 	},
 };
 
@@ -208,10 +203,8 @@ const v2 = {
 
 	migrate( attrs ) {
 		return {
-			// ── Source mode — cert-bar content is curated, maps to Typed ──
-			sourceMode:             'typed',
-
 			// ── Trust-bar new attrs (defaults for incoming cert-bar content) ──
+			// sourceMode removed from live schema (Rule 3 de-plumb; typed is implicit).
 			badgeStyle:             mapBadgeStyle( attrs.badgeStyle || 'text-only' ),
 			badgeSize:              attrs.badgeSize   || 'medium',
 			items:                  Array.isArray( attrs.items ) ? attrs.items : [],

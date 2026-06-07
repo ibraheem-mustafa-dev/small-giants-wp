@@ -174,7 +174,7 @@ function termAvailability( combos, axisTax, termSlug, selectedAxes ) {
  * blub.db 304). Native `disabled` is never set (FR-27-B1: options must remain
  * focusable + announced by screen-readers).
  *
- * @param {Element} ref    The card root element (.product-card--bound).
+ * @param {Element} ref    The card root element (.product-card--live).
  * @param {Object}  ctx    The card's live Interactivity context proxy.
  * @param {boolean} isInit True on the first paint; suppresses the live-region
  *                         announcement so the page-load is not chatty.
@@ -571,7 +571,7 @@ function applyPillSelection( ctx, detail ) {
  * (the Interactivity API does not bind directives on imperatively-added nodes).
  * Mirrors the imperative DOM approach already used in applyAvailability().
  *
- * @param {Element} card        The card root (.product-card--bound).
+ * @param {Element} card        The card root (.product-card--live).
  * @param {Array}   gallery     Ordered [{ url, w, h, alt }] items.
  * @param {number}  selectedIdx Index to mark aria-current.
  */
@@ -617,7 +617,7 @@ function renderThumbStrip( card, gallery, selectedIdx ) {
  * (works for both SSR-rendered and rebuilt thumbnail buttons).
  *
  * @param {Object}  ctx  The card's live Interactivity context proxy.
- * @param {Element} card The card root (.product-card--bound).
+ * @param {Element} card The card root (.product-card--live).
  * @param {number}  idx  Selected thumbnail index.
  */
 function selectThumbByIndex( ctx, card, idx ) {

@@ -5,7 +5,7 @@
     "version": "1.14.0",
     "title": "Product Card",
     "category": "sgs-content",
-    "description": "Product card with pack-size variant pills, price and CTA. Typed mode = author content directly (InnerBlocks). Bound mode = render a live WooCommerce or SGS product (price, image, stock, add-to-cart) through the SGS design.",
+    "description": "Product card with pack-size variant pills, price and CTA. Typed mode = author content directly (InnerBlocks). Live product data mode = render a live WooCommerce or SGS product (price, image, stock, add-to-cart) through the SGS design.",
     "keywords": [
         "product",
         "card",
@@ -171,7 +171,7 @@
         "decoyEnabled": {
             "type": "boolean",
             "default": false,
-            "description": "Spec 28 P1 (FR-28-9a): when true, the 'Best value' badge targets the 2nd-largest pack (decoy) instead of the largest. In bound mode the per-product meta _sgs_decoy_enabled overrides this."
+            "description": "Spec 28 P1 (FR-28-9a): when true, the 'Best value' badge targets the 2nd-largest pack (decoy) instead of the largest. In live-data mode the per-product meta _sgs_decoy_enabled overrides this."
         }
     },
     "editorScript": "file:./index.js",
