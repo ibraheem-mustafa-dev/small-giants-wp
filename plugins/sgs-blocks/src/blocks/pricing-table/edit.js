@@ -14,7 +14,7 @@ import {
 	CheckboxControl,
 } from '@wordpress/components';
 import { Icon, plus, close } from '@wordpress/icons';
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, IconPicker } from '../../components';
 import { colourVar } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
@@ -502,17 +502,15 @@ export default function Edit( { attributes, setAttributes } ) {
 									</div>
 								</div>
 
-								{ /* Per-plan icon name control */ }
+								{ /* Per-plan icon control */ }
 								<div className="sgs-pricing-table__plan-meta">
-									<TextControl
-										label={ __( 'Icon name (Lucide)', 'sgs-blocks' ) }
-										value={ plan.iconName || '' }
-										onChange={ ( val ) =>
-											updatePlan( planIndex, 'iconName', val )
+									<IconPicker
+										label={ __( 'Plan icon (optional)', 'sgs-blocks' ) }
+										value={ { source: 'lucide', name: plan.iconName || '' } }
+										onChange={ ( { name } ) =>
+											updatePlan( planIndex, 'iconName', name )
 										}
-										placeholder={ __( 'e.g. star, zap, shield-check', 'sgs-blocks' ) }
-										help={ __( 'Any Lucide icon slug. Leave blank for no icon.', 'sgs-blocks' ) }
-										__nextHasNoMarginBottom
+										sources={ [ 'lucide' ] }
 									/>
 									<TextControl
 										label={ __( 'Ribbon text', 'sgs-blocks' ) }

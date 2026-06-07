@@ -9,6 +9,7 @@ import {
 	Notice,
 	__experimentalHStack as HStack,
 } from '@wordpress/components';
+import { IconPicker } from '../../components';
 
 const PRESET_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
@@ -287,12 +288,10 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ /* Icon */ }
 				<PanelBody title={ __( 'Icon', 'sgs-blocks' ) } initialOpen={ false }>
-					<TextControl
-						label={ __( 'Lucide icon name', 'sgs-blocks' ) }
-						value={ icon }
-						onChange={ ( val ) => setAttributes( { icon: val } ) }
-						help={ __( 'e.g. arrow-right, phone, mail, check-circle. Leave blank for no icon.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
+					<IconPicker
+						label={ __( 'Icon', 'sgs-blocks' ) }
+						value={ icon ? { source: 'lucide', name: icon } : null }
+						onChange={ ( val ) => setAttributes( { icon: val ? val.name : '' } ) }
 					/>
 					{ hasIcon && (
 						<>

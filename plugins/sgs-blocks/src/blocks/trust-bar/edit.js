@@ -9,7 +9,7 @@ import {
 	RangeControl,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, IconPicker, IconPreview } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, fontSizeVar } from '../../utils';
 // WS-4: shared container-wrapper editor controls (section kind = full surface).
@@ -35,30 +35,6 @@ function gapCssValue( gap ) {
 	}
 	return String( gap );
 }
-
-// ─── Icon options (icon-circle variant) ───────────────────────────────────────
-const ICON_OPTIONS = [
-	{ label: __( 'Home', 'sgs-blocks' ),              value: 'home' },
-	{ label: __( 'Tick / Check', 'sgs-blocks' ),       value: 'check' },
-	{ label: __( 'Truck / Delivery', 'sgs-blocks' ),   value: 'truck' },
-	{ label: __( 'Star', 'sgs-blocks' ),               value: 'star' },
-	{ label: __( 'Moon / Halal', 'sgs-blocks' ),       value: 'moon' },
-	{ label: __( 'Shield Check', 'sgs-blocks' ),       value: 'shield-check' },
-	{ label: __( 'Award', 'sgs-blocks' ),              value: 'award' },
-	{ label: __( 'Heart', 'sgs-blocks' ),              value: 'heart' },
-	{ label: __( 'Leaf', 'sgs-blocks' ),               value: 'leaf' },
-	{ label: __( 'Zap / Energy', 'sgs-blocks' ),       value: 'zap' },
-	{ label: __( 'Clock', 'sgs-blocks' ),              value: 'clock' },
-	{ label: __( 'Package', 'sgs-blocks' ),            value: 'package' },
-	{ label: __( 'Users / People', 'sgs-blocks' ),     value: 'users' },
-	{ label: __( 'Globe', 'sgs-blocks' ),              value: 'globe' },
-	{ label: __( 'Badge Check', 'sgs-blocks' ),        value: 'badge-check' },
-	{ label: __( 'Thumbs Up', 'sgs-blocks' ),          value: 'thumbs-up' },
-	{ label: __( 'Flame', 'sgs-blocks' ),              value: 'flame' },
-	{ label: __( 'Gift', 'sgs-blocks' ),               value: 'gift' },
-	{ label: __( 'Baby', 'sgs-blocks' ),               value: 'baby' },
-	{ label: __( 'Milk', 'sgs-blocks' ),               value: 'milk' },
-];
 
 const BADGE_STYLE_OPTIONS = [
 	{ label: __( 'Icon circle (default)', 'sgs-blocks' ), value: 'icon-circle' },
@@ -89,8 +65,8 @@ const AUTO_SCROLL_SPEED_OPTIONS = [
 
 // ─── Editor sub-components ────────────────────────────────────────────────────
 
-/** Simple circle placeholder for icon-circle variant preview in editor. */
-function EditorIconCircle( { size, circleBg, iconColour } ) {
+/** Circle wrapper with the actual selected icon for editor preview. */
+function EditorIconCircle( { size, circleBg, iconColour, iconSlug } ) {
 	return (
 		<span
 			className="sgs-trust-bar__circle"
@@ -105,21 +81,14 @@ function EditorIconCircle( { size, circleBg, iconColour } ) {
 				justifyContent: 'center',
 				flexShrink: 0,
 				boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
+				color: iconColour || 'currentColor',
 			} }
 		>
-			<svg
-				width={ Math.round( size * 0.45 ) }
-				height={ Math.round( size * 0.45 ) }
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke={ iconColour || 'currentColor' }
-				strokeWidth="1.8"
-				strokeLinecap="round"
-				strokeLinejoin="round"
-				aria-hidden="true"
-			>
-				<circle cx="12" cy="12" r="8" />
-			</svg>
+			<IconPreview
+				source="lucide"
+				name={ iconSlug || 'check' }
+				size={ Math.round( size * 0.45 ) }
+			/>
 		</span>
 	);
 }
@@ -143,12 +112,11 @@ function IconCircleItemEditor( { item, onChange, onRemove } ) {
 					{ __( 'Pending — hidden on the frontend until you uncheck "Pending".', 'sgs-blocks' ) }
 				</Notice>
 			) }
-			<SelectControl
+			<IconPicker
 				label={ __( 'Icon', 'sgs-blocks' ) }
-				value={ item.icon || 'check' }
-				options={ ICON_OPTIONS }
-				onChange={ ( val ) => update( 'icon', val ) }
-				__nextHasNoMarginBottom
+				value={ { source: 'lucide', name: item.icon || 'check' } }
+				onChange={ ( { name } ) => update( 'icon', name ) }
+				sources={ [ 'lucide' ] }
 			/>
 			<TextControl
 				label={ __( 'Label', 'sgs-blocks' ) }
@@ -499,6 +467,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											size={ iconCircleSize }
 											circleBg={ circleBgValue }
 											iconColour={ iconColorValue }
+											iconSlug={ item.icon || 'check' }
 										/>
 										<span className="sgs-trust-bar__label" style={ { color: textColorValue } }>
 											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }

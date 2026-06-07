@@ -19,6 +19,7 @@ import {
 	Button,
 	__experimentalBoxControl as BoxControl,
 } from '@wordpress/components';
+import { IconPicker, IconPreview } from '../../components';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -45,8 +46,33 @@ export default function Edit( { attributes, setAttributes } ) {
 		startDate,
 		endDate,
 		icon,
+		iconSource,
 		fontSize,
 	} = attributes;
+
+	/**
+	 * Handle IconPicker onChange — stores the slug in `icon` and the source in
+	 * `iconSource`.  A single `icon` string is kept for back-compat (legacy
+	 * emoji/text values are preserved as-is when `iconSource` is absent).
+	 *
+	 * @param {{ source: string, name: string }} param0
+	 */
+	const handleIconChange = ( { source, name } ) => {
+		// Clear iconSource when the icon is cleared so a stale 'lucide' discriminator
+		// is never persisted alongside an empty icon slug (prevents FIX 3 legacy branch
+		// from running a lucide lookup against an empty string on the next render).
+		setAttributes( { icon: name, iconSource: name ? source : '' } );
+	};
+
+	/**
+	 * Derive the current { source, name } value for IconPicker.
+	 * When `iconSource` is empty (legacy stored value), treat as emoji so the
+	 * raw string is visible in the picker's current-selection chip.
+	 */
+	const iconPickerValue = {
+		source: iconSource || 'emoji',
+		name: icon || '',
+	};
 
 	const blockProps = useBlockProps( {
 		className: `sgs-announcement-bar sgs-announcement-bar--${ variant } has-${ backgroundColour }-background-color has-${ textColour }-color`,
@@ -127,11 +153,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { fontSize: value } ) }
 					/>
 
-					<TextControl
-						label={ __( 'Icon (emoji or SVG slug)', 'sgs-blocks' ) }
-						value={ icon }
-						onChange={ ( value ) => setAttributes( { icon: value } ) }
-						help={ __( 'E.g., 🎉 or icon-megaphone', 'sgs-blocks' ) }
+					<IconPicker
+						label={ __( 'Icon', 'sgs-blocks' ) }
+						value={ iconPickerValue }
+						onChange={ handleIconChange }
 					/>
 				</PanelBody>
 
@@ -309,7 +334,11 @@ export default function Edit( { attributes, setAttributes } ) {
 				<div className="sgs-announcement-bar__content">
 					{ icon && (
 						<span className="sgs-announcement-bar__icon" aria-hidden="true">
-							{ icon }
+							<IconPreview
+								source={ iconPickerValue.source }
+								name={ iconPickerValue.name }
+								size={ 18 }
+							/>
 						</span>
 					) }
 

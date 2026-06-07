@@ -17,7 +17,7 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
 ];
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, IconPicker, IconPreview } from '../../components';
 import { colourVar } from '../../utils';
 
 const CONNECTOR_OPTIONS = [
@@ -66,16 +66,11 @@ function StepEditor( { step, index, onChange, onRemove } ) {
 				rows={ 2 }
 				__nextHasNoMarginBottom
 			/>
-			<TextControl
+			<IconPicker
 				label={ __( 'Icon (optional)', 'sgs-blocks' ) }
-				value={ step.icon || '' }
-				onChange={ ( val ) => update( 'icon', val ) }
-				placeholder="icon-name or emoji"
-				help={ __(
-					'Optional icon slug (e.g., shopping-cart)',
-					'sgs-blocks'
-				) }
-				__nextHasNoMarginBottom
+				value={ { source: 'lucide', name: step.icon || '' } }
+				onChange={ ( { name } ) => update( 'icon', name ) }
+				sources={ [ 'lucide' ] }
 			/>
 			<Button
 				variant="secondary"
@@ -321,7 +316,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								aria-hidden="true"
 								data-icon={ step.icon }
 							>
-								{ step.icon }
+								<IconPreview source="lucide" name={ step.icon } size={ 24 } />
 							</span>
 						) }
 						{ numberStyle !== 'none' && (

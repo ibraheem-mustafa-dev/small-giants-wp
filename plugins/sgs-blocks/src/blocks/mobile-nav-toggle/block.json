@@ -38,6 +38,14 @@
     "popoverTarget": {
       "type": "string",
       "default": "sgs-mobile-nav"
+    },
+    "toggleOpenIcon": {
+      "type": "string",
+      "default": "menu"
+    },
+    "toggleCloseIcon": {
+      "type": "string",
+      "default": "x"
     }
   },
   "editorScript": "file:./index.js",

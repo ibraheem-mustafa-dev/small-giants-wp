@@ -11,7 +11,7 @@ import {
   RangeControl,
   ToggleControl,
 } from "@wordpress/components";
-import { DesignTokenPicker } from "../../components";
+import { DesignTokenPicker, IconPicker, IconPreview } from "../../components";
 import { colourVar, fontSizeVar } from "../../utils";
 
 const FONT_SIZE_OPTIONS = [
@@ -111,16 +111,10 @@ export default function Edit({ attributes, setAttributes }) {
         </PanelBody>
 
         <PanelBody title={__("Icon", "sgs-blocks")} initialOpen={false}>
-          <TextControl
-            label={__("Lucide icon name", "sgs-blocks")}
-            help={__(
-              'Enter a Lucide icon slug (e.g. "star", "users", "bar-chart"). Icon renders on the frontend — not previewed in the editor.',
-              "sgs-blocks",
-            )}
-            value={icon}
-            onChange={(val) => setAttributes({ icon: val })}
-            placeholder="e.g. star"
-            __nextHasNoMarginBottom
+          <IconPicker
+            label={__("Icon", "sgs-blocks")}
+            value={ icon ? { source: "lucide", name: icon } : null }
+            onChange={ ( val ) => setAttributes({ icon: val ? val.name : "" }) }
           />
         </PanelBody>
 
@@ -159,20 +153,11 @@ export default function Edit({ attributes, setAttributes }) {
       </InspectorControls>
 
       <div {...blockProps}>
-        {icon && (
-          <span
-            className="sgs-counter__icon-placeholder"
-            aria-hidden="true"
-            style={{
-              display: "block",
-              marginBottom: "8px",
-              fontSize: "0.75rem",
-              color: "var(--wp--preset--color--text-muted)",
-            }}
-          >
-            {`[ Icon: ${icon} ]`}
+        { icon && (
+          <span className="sgs-counter__icon" aria-hidden="true">
+            <IconPreview source="lucide" name={ icon } size={ 24 } />
           </span>
-        )}
+        ) }
         <span className="sgs-counter__number" style={numberStyle}>
           {prefix}
           {formatNumber(number, separator)}

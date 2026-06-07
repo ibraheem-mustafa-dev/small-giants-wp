@@ -27,7 +27,7 @@ import {
 	Button,
 	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, IconPicker } from '../../components';
 import ColoursPanel from './ColoursPanel';
 import NavigationPanel from './NavigationPanel';
 import AnimationPanel from './AnimationPanel';
@@ -430,12 +430,10 @@ export default function Edit( { attributes, setAttributes } ) {
 								placeholder="/apply-for-trade-account/"
 								onChange={ ( value ) => setAttributes( { ctaUrl: value } ) }
 							/>
-							<TextControl
-								label={ __( 'CTA Icon (Lucide slug)', 'sgs-blocks' ) }
-								help={ __( 'e.g. arrow-right, star, shopping-cart', 'sgs-blocks' ) }
-								value={ ctaIcon }
-								placeholder="arrow-right"
-								onChange={ ( value ) => setAttributes( { ctaIcon: value } ) }
+							<IconPicker
+								label={ __( 'CTA Icon', 'sgs-blocks' ) }
+								value={ ctaIcon ? { source: 'lucide', name: ctaIcon } : null }
+								onChange={ ( val ) => setAttributes( { ctaIcon: val ? val.name : '' } ) }
 							/>
 							<SelectControl
 								label={ __( 'CTA Style', 'sgs-blocks' ) }
@@ -464,11 +462,10 @@ export default function Edit( { attributes, setAttributes } ) {
 								placeholder="tel:+441234567890"
 								onChange={ ( value ) => setAttributes( { secondaryCtaUrl: value } ) }
 							/>
-							<TextControl
-								label={ __( 'Secondary CTA Icon (Lucide slug)', 'sgs-blocks' ) }
-								value={ secondaryCtaIcon }
-								placeholder="phone"
-								onChange={ ( value ) => setAttributes( { secondaryCtaIcon: value } ) }
+							<IconPicker
+								label={ __( 'Secondary CTA Icon', 'sgs-blocks' ) }
+								value={ secondaryCtaIcon ? { source: 'lucide', name: secondaryCtaIcon } : null }
+								onChange={ ( val ) => setAttributes( { secondaryCtaIcon: val ? val.name : '' } ) }
 							/>
 							<SelectControl
 								label={ __( 'Secondary CTA Style', 'sgs-blocks' ) }

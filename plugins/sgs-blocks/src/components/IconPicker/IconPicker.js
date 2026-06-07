@@ -146,6 +146,9 @@ export default function IconPicker( {
 	label = __( 'Icon', 'sgs-blocks' ),
 	sources,
 } ) {
+	// Coerce null → empty object so destructuring value.source/value.name below
+	// never throws when a block passes value={ icon ? { source, name } : null }.
+	value = value || {};
 	const enabledSources = useMemo(
 		() =>
 			ICON_SOURCES.filter(

@@ -154,6 +154,10 @@
       "type": "string",
       "default": ""
     },
+    "iconSource": {
+      "type": "string",
+      "default": ""
+    },
     "fontSize": {
       "type": "string",
       "default": "small"

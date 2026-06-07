@@ -28,3 +28,22 @@
 	outline-offset: 2px;
 	border-radius: 4px;
 }
+
+/* Icon size — driven by the iconSize attribute via CSS custom property */
+.sgs-mobile-nav-toggle svg {
+	width: var(--sgs-toggle-icon-size, 24px);
+	height: var(--sgs-toggle-icon-size, 24px);
+}
+
+/* Open/close icon swap — driven by aria-expanded on the button */
+.sgs-mobile-nav-toggle__close {
+	display: none;
+}
+
+.sgs-mobile-nav-toggle[aria-expanded="true"] .sgs-mobile-nav-toggle__open {
+	display: none;
+}
+
+.sgs-mobile-nav-toggle[aria-expanded="true"] .sgs-mobile-nav-toggle__close {
+	display: inline;
+}

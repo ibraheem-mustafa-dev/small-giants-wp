@@ -89,7 +89,34 @@ foreach ( $tiles as $i => $tile ) {
 	echo ' />';
 
 	if ( ! empty( $tile['icon'] ) ) {
-		echo '<span class="sgs-form-tile__icon" aria-hidden="true">' . esc_html( $tile['icon'] ) . '</span>';
+		$tile_icon_source = $tile['iconSource'] ?? '';
+		require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+		if ( 'lucide' === $tile_icon_source ) {
+			// Explicit lucide source — resolve to SVG.
+			$tile_svg = sgs_get_lucide_icon( $tile['icon'] );
+			if ( '' !== $tile_svg ) {
+				echo '<span class="sgs-form-tile__icon" aria-hidden="true">';
+				echo $tile_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_get_lucide_icon() returns pre-sanitised SVG markup.
+				echo '</span>';
+			} else {
+				// Unknown slug — fall back to raw value.
+				echo '<span class="sgs-form-tile__icon" aria-hidden="true">' . esc_html( $tile['icon'] ) . '</span>';
+			}
+		} elseif ( '' === $tile_icon_source ) {
+			// Legacy value: no source stored. Try lucide first (pre-migration bare
+			// slugs), then fall back to echoing the raw string (emoji/text).
+			$tile_svg = sgs_get_lucide_icon( $tile['icon'] );
+			if ( '' !== $tile_svg ) {
+				echo '<span class="sgs-form-tile__icon" aria-hidden="true">';
+				echo $tile_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_get_lucide_icon() returns pre-sanitised SVG markup.
+				echo '</span>';
+			} else {
+				echo '<span class="sgs-form-tile__icon" aria-hidden="true">' . esc_html( $tile['icon'] ) . '</span>';
+			}
+		} else {
+			// Explicit non-lucide source (emoji, dashicon, wp-icon) — echo raw.
+			echo '<span class="sgs-form-tile__icon" aria-hidden="true">' . esc_html( $tile['icon'] ) . '</span>';
+		}
 	}
 
 	if ( ! empty( $tile['image'] ) ) {

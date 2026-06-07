@@ -40,6 +40,7 @@ $rotation_type         = $attributes['rotationType'] ?? 'fade';
 $start_date            = $attributes['startDate'] ?? '';
 $end_date              = $attributes['endDate'] ?? '';
 $icon                  = $attributes['icon'] ?? '';
+$icon_source           = $attributes['iconSource'] ?? '';
 $font_size             = $attributes['fontSize'] ?? 'small';
 
 // Check scheduling — use time() for a real UTC Unix timestamp.
@@ -112,7 +113,33 @@ $wrapper_attributes = get_block_wrapper_attributes(
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped output. ?>>
 	<div class="sgs-announcement-bar__content">
 		<?php if ( ! empty( $icon ) ) : ?>
-			<span class="sgs-announcement-bar__icon" aria-hidden="true"><?php echo esc_html( $icon ); ?></span>
+			<span class="sgs-announcement-bar__icon" aria-hidden="true">
+			<?php
+			require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+			if ( 'lucide' === $icon_source ) {
+				// Explicit lucide source — resolve to SVG.
+				$svg = sgs_get_lucide_icon( $icon );
+				if ( '' !== $svg ) {
+					echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_get_lucide_icon() returns pre-sanitised SVG markup.
+				} else {
+					// Unknown slug — echo raw so operator can see the value.
+					echo esc_html( $icon );
+				}
+			} elseif ( '' === $icon_source ) {
+				// Legacy value: no source stored. Try lucide first (pre-migration
+				// bare slugs), then fall back to echoing the raw string (emoji/text).
+				$svg = sgs_get_lucide_icon( $icon );
+				if ( '' !== $svg ) {
+					echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_get_lucide_icon() returns pre-sanitised SVG markup.
+				} else {
+					echo esc_html( $icon );
+				}
+			} else {
+				// Explicit non-lucide source (emoji, dashicon, wp-icon) — echo raw.
+				echo esc_html( $icon );
+			}
+			?>
+			</span>
 		<?php endif; ?>
 
 		<div class="sgs-announcement-bar__messages">

@@ -9,6 +9,7 @@ import {
 	Button,
 } from '@wordpress/components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+import { IconPicker, IconPreview } from '../../components';
 
 const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
@@ -162,14 +163,21 @@ export default function Edit( { attributes, setAttributes } ) {
 								style={ { marginTop: '8px' } }
 								__nextHasNoMarginBottom
 							/>
-							<TextControl
-								label={ __( 'Icon (emoji or text)', 'sgs-blocks' ) }
-								value={ tile.icon || '' }
-								onChange={ ( val ) =>
-									updateTile( index, 'icon', val )
-								}
-								style={ { marginTop: '8px' } }
-								__nextHasNoMarginBottom
+							<IconPicker
+								label={ __( 'Icon', 'sgs-blocks' ) }
+								value={ {
+									source: tile.iconSource || 'emoji',
+									name: tile.icon || '',
+								} }
+								onChange={ ( { source, name } ) => {
+									const newTiles = [ ...tiles ];
+									newTiles[ index ] = {
+										...newTiles[ index ],
+										icon: name,
+										iconSource: source,
+									};
+									setAttributes( { tiles: newTiles } );
+								} }
 							/>
 							<Button
 								isDestructive
@@ -232,9 +240,15 @@ export default function Edit( { attributes, setAttributes } ) {
 									style={ {
 										fontSize: '32px',
 										marginBottom: '8px',
+										lineHeight: 1,
 									} }
+									aria-hidden="true"
 								>
-									{ tile.icon }
+									<IconPreview
+										source={ tile.iconSource || 'emoji' }
+										name={ tile.icon }
+										size={ 32 }
+									/>
 								</span>
 							) }
 							<span>{ tile.label || '' }</span>

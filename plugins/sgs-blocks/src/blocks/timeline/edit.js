@@ -14,7 +14,7 @@ import {
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, IconPicker } from '../../components';
 
 // ── Select options ──────────────────────────────────────────────────────────
 
@@ -94,12 +94,11 @@ function EntryEditor( { entry, index, onChange, onRemove } ) {
 					} }
 				/>
 			</div>
-			<TextControl
-				label={ __( 'Icon (optional Lucide slug)', 'sgs-blocks' ) }
-				value={ entry.icon || '' }
-				onChange={ ( val ) => update( 'icon', val ) }
-				placeholder="e.g. building, truck, star"
-				__nextHasNoMarginBottom
+			<IconPicker
+				label={ __( 'Icon (optional)', 'sgs-blocks' ) }
+				value={ { source: 'lucide', name: entry.icon || '' } }
+				onChange={ ( { name } ) => update( 'icon', name ) }
+				sources={ [ 'lucide' ] }
 			/>
 			<MediaUploadCheck>
 				<MediaUpload

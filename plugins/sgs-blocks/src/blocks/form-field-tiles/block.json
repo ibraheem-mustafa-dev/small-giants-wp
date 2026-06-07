@@ -58,7 +58,27 @@
         },
         "tiles": {
             "type": "array",
-            "default": []
+            "default": [],
+            "items": {
+                "type": "object",
+                "properties": {
+                    "label": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string"
+                    },
+                    "icon": {
+                        "type": "string"
+                    },
+                    "iconSource": {
+                        "type": "string"
+                    },
+                    "image": {
+                        "type": "string"
+                    }
+                }
+            }
         },
         "multiSelect": {
             "type": "boolean",
@@ -185,19 +205,23 @@
             "tiles": [
                 {
                     "label": "Restaurant",
-                    "icon": "utensils"
+                    "icon": "utensils",
+                    "iconSource": "lucide"
                 },
                 {
                     "label": "Hotel",
-                    "icon": "building"
+                    "icon": "building",
+                    "iconSource": "lucide"
                 },
                 {
                     "label": "Retailer",
-                    "icon": "shopping-bag"
+                    "icon": "shopping-bag",
+                    "iconSource": "lucide"
                 },
                 {
                     "label": "Caterer",
-                    "icon": "chef-hat"
+                    "icon": "chef-hat",
+                    "iconSource": "lucide"
                 }
             ]
         }

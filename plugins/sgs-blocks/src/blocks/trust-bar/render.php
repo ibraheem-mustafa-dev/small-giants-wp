@@ -148,30 +148,6 @@ $label_style_attr = $label_style_parts
 	? ' style="' . esc_attr( implode( ';', $label_style_parts ) ) . '"'
 	: '';
 
-// --- Lucide icon slug map (icon-circle variant) --------------------------------
-$lucide_map = array(
-	'home'         => 'home',
-	'check'        => 'check',
-	'truck'        => 'truck',
-	'star'         => 'star',
-	'moon'         => 'moon',
-	'shield-check' => 'shield-check',
-	'award'        => 'award',
-	'heart'        => 'heart',
-	'leaf'         => 'leaf',
-	'zap'          => 'zap',
-	'clock'        => 'clock',
-	'package'      => 'package',
-	'users'        => 'users',
-	'globe'        => 'globe',
-	'badge-check'  => 'badge-check',
-	'thumbs-up'    => 'thumbs-up',
-	'flame'        => 'flame',
-	'gift'         => 'gift',
-	'baby'         => 'baby',
-	'milk'         => 'milk',
-);
-
 // --- Build badge items HTML ---------------------------------------------------
 $items_html = '';
 
@@ -188,22 +164,25 @@ foreach ( $items as $item ) {
 
 	if ( 'icon-circle' === $badge_style ) {
 		// Determine which SVG to render inside the circle.
-		// Priority: matched Lucide slug > raw_svg fallback from the icon resolver.
+		// IconPicker stores the raw Lucide slug directly into item['icon'].
+		// Priority: Lucide slug > raw_svg fallback from the cloning icon resolver.
 		$icon_slug = isset( $item['icon'] ) ? sanitize_key( (string) $item['icon'] ) : '';
 		$raw_svg   = isset( $item['iconSvg'] ) ? (string) $item['iconSvg'] : '';
 
 		if ( '' !== $icon_slug ) {
-			// Resolver found a confident match — look up the Lucide sprite.
-			$lucide_name = $lucide_map[ $icon_slug ] ?? 'check';
-			$svg         = sgs_get_lucide_icon( $lucide_name );
+			// IconPicker stores the Lucide slug directly — resolve the sprite.
+			$svg = sgs_get_lucide_icon( $icon_slug );
+			if ( ! $svg ) {
+				// Unknown slug — fall back to check so the badge is never blank.
+				$svg = sgs_get_lucide_icon( 'check' );
+			}
 		} elseif ( '' !== $raw_svg ) {
 			// Resolver returned a raw SVG fallback (no confident slug match).
 			// Sanitise with the existing sgs_svg_kses_allowed_tags() allowlist so
 			// only safe SVG drawing elements and attributes are emitted.
 			$svg = wp_kses( $raw_svg, sgs_svg_kses_allowed_tags() );
 		} else {
-			// Neither slug nor raw_svg set — show the generic check tick so the
-			// badge is never blank while the operator resolves the icon in editor.
+			// No icon set — show the generic check tick so the badge is never blank.
 			$svg = sgs_get_lucide_icon( 'check' );
 		}
 
