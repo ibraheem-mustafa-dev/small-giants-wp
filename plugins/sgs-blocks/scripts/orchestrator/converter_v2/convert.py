@@ -474,7 +474,22 @@ def _set_in(target: dict, path: list[str], value) -> None:
 
 
 def _root_lift_rules():
-    """Return canonical CSS-property → WP style.* mapping list."""
+    """Return canonical CSS-property → WP style.* mapping list.
+
+    R-22-1 permitted-constant exception (WP-core schema, same class as
+    SKIP_TOP_LEVEL_TAGS): the style_path + supports keys here encode
+    WordPress Core's serialised block-style schema (wp-includes/blocks/
+    block-serialization-spec; `style.spacing.padding.top`, `style.color.background`,
+    etc.). This path structure is defined by WordPress, not by the SGS DB —
+    there is no `property_suffixes` column for WP's nested style-object paths.
+    The CSS→style_path transform is therefore a deterministic WP-schema
+    constant rather than per-block lookup data.
+
+    What IS DB-driven: which CSS properties a given block may receive is
+    governed by db.block_supports_for(slug) queried in _lift_root_supports_to_style
+    at call-time. Only properties whose supports key is present in the block's
+    DB record are actually written.
+    """
     return [
         ("padding-top",    "spacing",               "padding", ["spacing", "padding", "top"],    "unit"),
         ("padding-right",  "spacing",               "padding", ["spacing", "padding", "right"],  "unit"),
@@ -1372,19 +1387,14 @@ def _flatten_wp_style_to_sgs_flat(style_dict: dict, extra_top: dict, block_slug:
 # Faithful-absence: only set an attr when the draft explicitly declares that
 # CSS property (no defaults injected).  R-22-9: universal across every block
 # that declares the target attr; DB-driven for attr-existence gate.
-# R-22-1 compliant: no hardcoded slug literals — the target block slug is
-# always passed in and the attr-name set comes from db.block_attrs().
-_TYPOGRAPHY_CSS_TO_ATTRS: list[tuple[str, str, str | None]] = [
-    # (css_prop, primary_attr, unit_attr_or_None)
-    ("font-size",       "fontSize",       "fontSizeUnit"),
-    ("line-height",     "lineHeight",     "lineHeightUnit"),
-    ("letter-spacing",  "letterSpacing",  "letterSpacingUnit"),
-    ("font-weight",     "fontWeight",     None),
-    ("font-style",      "fontStyle",      None),
-    ("text-align",      "textAlign",      None),
-    ("color",           "textColour",     None),
-    ("background-color","backgroundColour",None),
-]
+# R-22-1 compliant: derived at runtime from db.typography_css_to_attrs() which
+# queries property_suffixes. See db_lookup._TYPO_CSS_SUFFIX_SELECTION for the
+# suffix-selection convention and db_lookup.typography_css_to_attrs() for the
+# full derivation. The module-level name is kept for readability; it resolves
+# lazily (first call to _lift_typography_to_block_attrs triggers the DB query).
+def _get_typography_css_to_attrs() -> list[tuple[str, str, "str | None"]]:
+    """Return the DB-derived typography CSS→attr map (R-22-1, replaces hardcoded list)."""
+    return db.typography_css_to_attrs()
 
 
 def _lift_typography_to_block_attrs(
@@ -1520,7 +1530,7 @@ def _lift_typography_to_block_attrs(
         bp_suffix = _BP_SUFFIX_MAP.get(bp_key)
         if not bp_suffix:
             continue
-        for css_prop, primary_attr, unit_attr in _TYPOGRAPHY_CSS_TO_ATTRS:
+        for css_prop, primary_attr, unit_attr in _get_typography_css_to_attrs():
             raw = bp_decl_map.get(css_prop)
             if not raw:
                 continue
@@ -1544,7 +1554,7 @@ def _lift_typography_to_block_attrs(
     # Runs AFTER responsive pass so setdefault on fontSize is already filled
     # by the Desktop A-collapse; mobile base value is blocked (correct).
     if base_decls:
-        for css_prop, primary_attr, unit_attr in _TYPOGRAPHY_CSS_TO_ATTRS:
+        for css_prop, primary_attr, unit_attr in _get_typography_css_to_attrs():
             raw = base_decls.get(css_prop)
             if not raw:
                 continue

@@ -1060,6 +1060,163 @@ def css_property_suffixes() -> list[tuple[str, str, str]]:
 
 
 # ----------------------------------------------------------------------------
+# Typography CSS → block-attr lift map (DB-driven, replaces _TYPOGRAPHY_CSS_TO_ATTRS)
+# ----------------------------------------------------------------------------
+# R-22-1: no hardcoded css-property→attribute literal dict/list.
+# The 8 entries formerly hardcoded in convert.py._TYPOGRAPHY_CSS_TO_ATTRS are
+# now derived at runtime from property_suffixes. The DB's css_property column
+# already holds the css_property→suffix direction; iteration is driven entirely
+# from the DB rows (typography role + the two colour css_properties), so adding
+# a new typography suffix to the DB flows through with ZERO code edits here.
+#
+# Disambiguation: most css_properties have exactly ONE suffix row in the DB
+# (font-size→FontSize, line-height→LineHeight, etc.) — those resolve directly,
+# no constant needed. Only the two colour css_properties are ambiguous:
+#   - 'color'            → Colour / Color / Foreground / TextColour / TextColor (5)
+#   - 'background-color' → Background / BackgroundColour / BackgroundColor / Bg (4)
+# The SGS block schema uses 'textColour' and 'backgroundColour' as the canonical
+# flat attr names; any other suffix (e.g. 'Colour' → 'colour') is an attr no
+# block declares, so the lift would no-op. This 2-entry table is the minimal
+# WP/SGS naming-convention constant (same class as SKIP_TOP_LEVEL_TAGS) needed
+# to pick the right DB row for those two ambiguous properties only.
+_TYPO_CSS_SUFFIX_SELECTION: dict[str, str] = {
+    "color":            "TextColour",       # → textColour (not 'colour')
+    "background-color": "BackgroundColour", # → backgroundColour (not 'background')
+}
+
+# The two colour css_properties whose suffix is selected via the table above.
+# All other lifted typography css_properties (role='typography') resolve their
+# single DB suffix directly. Order matters for setdefault semantics downstream.
+_TYPO_COLOUR_CSS_PROPS: tuple[str, ...] = ("color", "background-color")
+
+# Lift SCOPE roster (ordered): the css_properties _lift_typography_to_block_attrs
+# transfers from a draft element onto a leaf SGS text block. This is the lift
+# *scope* decision (which CSS properties to lift) — NOT a css→attr mapping; the
+# attr name + unit companion are derived from property_suffixes per entry.
+# The DB classifies more properties as role='typography' (font-family,
+# text-decoration, text-transform) but those are deliberately OUT of the typed
+# flat-attr lift scope here (they have separate handling / no faithful-default
+# need on the cloning path). Adding one to this tuple is the single edit needed
+# to bring it into scope — the suffix/attr/unit then derive from the DB row.
+_TYPO_LIFT_TYPOGRAPHY_CSS_PROPS: tuple[str, ...] = (
+    "font-size", "line-height", "letter-spacing",
+    "font-weight", "font-style", "text-align",
+)
+
+
+@functools.lru_cache(maxsize=1)
+def typography_css_to_attrs() -> list[tuple[str, str, "str | None"]]:
+    """Return list of (css_prop, primary_attr, unit_attr_or_None) tuples used by
+    _lift_typography_to_block_attrs in convert.py.
+
+    Fully DB-driven from property_suffixes (R-22-1). Replaces the hardcoded
+    _TYPOGRAPHY_CSS_TO_ATTRS list. The css_property→suffix→attr→unit derivation
+    reads the DB; only the lift SCOPE (which css_properties to lift) and the
+    2-property colour disambiguation are module constants.
+
+    Iteration order = _TYPO_LIFT_TYPOGRAPHY_CSS_PROPS (the 6 typography props)
+    then _TYPO_COLOUR_CSS_PROPS (color, background-color).
+
+    Derivation rules:
+      - For each lifted css_property, gather candidate suffixes from the DB
+        css_property column. Unambiguous (one candidate) → use it. Ambiguous
+        (color / background-color) → pick via _TYPO_CSS_SUFFIX_SELECTION.
+      - primary_attr = lower-first-char of the chosen suffix ('FontSize' → 'fontSize')
+      - unit_attr    = primary_attr + 'Unit' when role='typography' AND
+                       kind_override != 'string' — i.e. the property accepts a
+                       numeric value that may carry a CSS unit ('px','em',etc.)
+                       or the 'unitless' sentinel. Colour-role entries never get a
+                       unit attr; select-from-enum entries never get a unit attr.
+      - Ordering preserves the original _TYPOGRAPHY_CSS_TO_ATTRS sequence so that
+        setdefault semantics in _resolve_typo_value are unchanged.
+
+    Soft-fail: on any DB error, warns to stderr and returns the known-good
+    hardcoded fallback (same values as the original list) so the converter
+    never breaks on a missing/locked DB.
+    """
+    _FALLBACK: list[tuple[str, str, "str | None"]] = [
+        ("font-size",       "fontSize",        "fontSizeUnit"),
+        ("line-height",     "lineHeight",       "lineHeightUnit"),
+        ("letter-spacing",  "letterSpacing",    "letterSpacingUnit"),
+        ("font-weight",     "fontWeight",       None),
+        ("font-style",      "fontStyle",        None),
+        ("text-align",      "textAlign",        None),
+        ("color",           "textColour",       None),
+        ("background-color","backgroundColour", None),
+    ]
+    # Ordered lift scope: 6 typography props then the 2 colour props.
+    lifted_css_props = list(_TYPO_LIFT_TYPOGRAPHY_CSS_PROPS) + list(_TYPO_COLOUR_CSS_PROPS)
+    try:
+        conn = sqlite3.connect(SGS_DB)
+        try:
+            # Pull every property_suffixes row whose css_property is in scope.
+            # The DB's css_property column IS the css_property→suffix mapping —
+            # we read it rather than re-encode it.
+            placeholders = ",".join("?" for _ in lifted_css_props)
+            db_rows = conn.execute(
+                "SELECT css_property, suffix, role, kind_override "
+                "FROM property_suffixes "
+                f"WHERE css_property IN ({placeholders}) "
+                "ORDER BY rowid",
+                lifted_css_props,
+            ).fetchall()
+        finally:
+            conn.close()
+    except Exception as exc:  # noqa: BLE001 — DB unavailable → safe fallback
+        import sys as _sys
+        print(
+            f"[db_lookup] WARNING: typography_css_to_attrs DB error ({exc!r}) — "
+            "using hardcoded fallback. Re-run /sgs-update.",
+            file=_sys.stderr,
+        )
+        return _FALLBACK
+
+    # Build css_property → [(suffix, role, kind_override)] candidate map, in
+    # rowid order (so the first candidate for an unambiguous prop is its only row).
+    candidates: dict[str, list[tuple[str, str, "str | None"]]] = {}
+    for css_property, suffix, role, kind_override in db_rows:
+        candidates.setdefault(css_property, []).append((suffix, role, kind_override))
+
+    def _resolve_one(css_prop: str) -> "tuple[str, str, str | None] | None":
+        rows_for_prop = candidates.get(css_prop)
+        if not rows_for_prop:
+            return None
+        if css_prop in _TYPO_CSS_SUFFIX_SELECTION:
+            # Ambiguous colour property — pick the canonical suffix.
+            wanted = _TYPO_CSS_SUFFIX_SELECTION[css_prop]
+            chosen = next((r for r in rows_for_prop if r[0] == wanted), None)
+            if chosen is None:
+                return None
+        else:
+            # Unambiguous — exactly one suffix row in the DB for this css_property.
+            chosen = rows_for_prop[0]
+        suffix, role, kind_override = chosen
+        primary_attr = suffix[0].lower() + suffix[1:]
+        # unit_attr: only typography-role props that accept a CSS unit.
+        # kind_override='string' → no unit (fontWeight, textAlign).
+        # role='color' → no unit (textColour, backgroundColour).
+        # role='select-from-enum' → no unit (fontStyle).
+        if role == "typography" and kind_override != "string":
+            unit_attr: "str | None" = primary_attr + "Unit"
+        else:
+            unit_attr = None
+        return (css_prop, primary_attr, unit_attr)
+
+    result: list[tuple[str, str, "str | None"]] = []
+    for css_prop in lifted_css_props:
+        resolved = _resolve_one(css_prop)
+        if resolved is not None:
+            result.append(resolved)
+        else:
+            # Couldn't resolve from DB → fall back to the hardcoded value if known.
+            fb = next((t for t in _FALLBACK if t[0] == css_prop), None)
+            if fb:
+                result.append(fb)
+
+    return result if result else _FALLBACK
+
+
+# ----------------------------------------------------------------------------
 # Breakpoint suffix vocabulary (DB-driven, replaces hardcoded _BREAKPOINT_SUFFIXES)
 # ----------------------------------------------------------------------------
 
@@ -1068,6 +1225,11 @@ def css_property_suffixes() -> list[tuple[str, str, str]]:
 # the converter wants to populate both responsive attrs from that single rule.
 # This mapping is convention, not data — the DB has the suffix vocabulary; this
 # function maps @media query breakpoints to which suffixes those queries apply to.
+# R-22-1 permitted-constant exception (same class as SKIP_TOP_LEVEL_TAGS): these
+# are CSS @media-query breakpoint thresholds from the W3C / web-platform standard,
+# not SGS per-block data. There is no DB table for @media boundary values.
+# The suffix vocabulary IS DB-driven (verified via modifier_suffixes in
+# breakpoint_suffix_rules() below); only the marker→suffix PAIRING is a constant.
 _BREAKPOINT_RULES: list[tuple[str, list[str]]] = [
     ("min-width: 768",  ["Tablet", "Desktop"]),
     ("min-width: 1024", ["Desktop"]),
