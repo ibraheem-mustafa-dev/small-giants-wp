@@ -2065,6 +2065,18 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
         "leftover_buckets": buckets_output.get("leftover_buckets", {}),
         "leftover_totals": buckets_output.get("totals", {}),
         "leftover_total_count": buckets_output.get("total_count", 0),
+        # Stage-9 schema-contract fields (enforced by staged_merge / autonomy_gate):
+        # mirror the bucket router's canonical keys so schema validation passes.
+        # Kept ALONGSIDE the leftover_* aliases that the summary line + operator
+        # tooling read. Drift between these two name sets caused the autonomy
+        # rollback ("missing required top-level field: 'totals'/'gap_level_totals'/
+        # 'total_count'") on 2026-06-07.
+        "totals": buckets_output.get("totals", {}),
+        "gap_level_totals": buckets_output.get(
+            "gap_level_totals",
+            {"attribute": 0, "functionality": 0, "convention": 0, "structural": 0},
+        ),
+        "total_count": buckets_output.get("total_count", 0),
         "recognition_log_rows_inserted": rows_inserted,
         "operator_review_html_path": str(review_html_path),
         "autonomy_chain": autonomy_out,
