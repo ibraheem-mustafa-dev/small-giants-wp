@@ -3,10 +3,8 @@ doc_type: reference
 project: small-giants-wp
 purpose: Per-stage annotated blocks for the SGS Cloning Pipeline. Every stage shows scripts that run, files read/written, DB tables touched, skills dispatched, and wiring status. Also contains the absorbed script inventory, skill dispatch chain (full), and DB heat-map (full). Overview and stage-index table are in cloning-pipeline-flow.md.
 session_date: 2026-05-13
-last_annotated: 2026-05-29 (D99 architectural cleanup batch — annotation added below)
-last_consolidated: 2026-05-21 (tooling-map + skills-commands-map + db-tables-map absorbed)
+last_annotated: 2026-06-07
 line_number_policy: Line numbers cited are accurate as of 2026-05-13 against sgs-clone-orchestrator.py HEAD (1277 lines). If they drift, grep for the function or constant name instead.
-qc_consensus: 4 reviewers agree on all wiring-status claims. Material errors patched 2026-05-13.
 update_triggers:
   - Pipeline stage change (new stage, retired stage, renumbered)
   - Script wired or unwired (status flip in any stage block)
@@ -14,7 +12,7 @@ update_triggers:
   - Skill dispatch change at any stage
 ---
 
-> **2026-05-29 D99 DATA LAYER UPDATE** — annotations throughout this document reference `slot_synonyms` and `legacy_role_lookup` tables. Those tables were RETIRED 2026-05-29 D99 (commit `bcbafe09`) and unified into a single `slots` table with composite PK on `(slot_name, scope)`. Element-scope rows in `slots` are the former slot_synonyms data; section-scope rows are the former legacy_role_lookup data. `slot_synonyms.role_classification` column retired into new `roles` table (20 rows). Walker queries `slots WHERE scope='element'` for BEM-element resolution; per-section-convention-voter.py queries `slots WHERE scope='section'` for --legacy mode. Read every `slot_synonyms` / `legacy_role_lookup` reference below as the LOGICAL concept; the PHYSICAL table is `slots`. See `decisions.md` D99 + Spec 22 §4 data layer for full migration detail.
+**DB table note:** `slot_synonyms` and `legacy_role_lookup` were unified into the `slots` table (D99, 2026-05-29). The `slots` table has composite PK `(slot_name, scope)`: scope='element' rows are the element-resolution data; scope='section' (4 rows post-D111) are the section-boundary data. `roles` table (21 rows) replaced `slot_synonyms.role_classification`. Wherever annotations below reference a DB table, use the current table names — `slots`, `roles`.
 
 # SGS Cloning Pipeline — Per-Stage Annotated Blocks
 
@@ -121,9 +119,8 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │ DB tables:    none                                                          │
 │ Skills:       none                                                          │
 │                                                                             │
-│ STATUS:       LIVE - Spec 22 §FR-22-5 compliant (formerly Spec 16 §FR6;       │
-│               Spec 16 retired 2026-05-26; preserved verbatim per Spec 22 §1)  │
-│               Previously LIVE wrong-architecture (monolithic CSS dump).     │
+│ STATUS:       LIVE — Spec 22 §FR-22-5 (four-destination router; D0/D1/D2/D3). │
+│               Previous monolithic CSS dump architecture replaced.            │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -204,17 +201,17 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │                                                                             │
 │ DB tables (R):  blocks (sgs-framework.db, via filesystem scan)              │
 │                                                                             │
-│ UNIVERSAL-PATH TOPOLOGY (Spec 22 FR-22-3, 2026-05-26):                      │
+│ UNIVERSAL-PATH TOPOLOGY (Spec 22 FR-22-3):                                  │
 │   Single recursive walker; per-block behaviour from DB rows, not branches.  │
 │   Exactly 3 permitted exceptions: atomic-tag swap / chrome-skip /           │
-│   top-level container wrap. Spec 16 two-route topology retired.             │
+│   top-level container wrap. No 4th exception without spec amendment.        │
 │                                                                             │
 │ Stage 2 produces match.json for every section boundary (FR-22-12) even      │
 │ when walker bypasses top_pick via unambiguous BEM signal.                   │
 │                                                                             │
 │ Q1A FIX (commit d8ae4a2a, 2026-05-23): Stage 2 fallback emits sgs/container │
-│   instead of core/group per Decision 3. (legacy_role_lookup was 18 rows;    │
-│   RETIRED D99 — now slots WHERE scope='section', 4 rows.)                   │
+│   instead of core/group per Decision 3. No-confident-match → sgs/container  │
+│   by design. Section boundary data: slots WHERE scope='section', 4 rows.    │
 │                                                                             │
 │ STATUS:       LIVE - core/group fallback fixed (2026-05-23)                 │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -243,7 +240,7 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 
 ### Stage 4 — Universal block-equivalent extraction (Spec 22)
 
-> **Spec 22 (2026-05-26) replaces Spec 16's slot-extraction architecture in full.** Single universal walker path with exactly 3 permitted exceptions per FR-22-3. The 9-branch walk(), `lift_subtree_into_block_attrs`, `_lift_inner_blocks`, F1 fallback, `ARRAY_LIFT_PATTERNS`, hardcoded `ATOMIC_TAG_MAP` are all retired. Per-block behaviour comes from DB rows (`slots` (scope='element') `standalone_block` + `block_attributes.canonical_slot` + role-exclusion via `roles` table), not code branches. Phase 1 implementation in 5 commits per `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`. Acceptance gate: per-section ≤5% × 3 viewports (Phase 1.5 stretch ≤1%).
+> **Architecture:** single universal walker path with exactly 3 permitted exceptions per Spec 22 FR-22-3. Per-block behaviour comes from DB rows (`slots` (scope='element') `standalone_block` + `block_attributes.canonical_slot` + role-exclusion via `roles` table), not code branches. Acceptance gate: per-section ≤5% × 3 viewports (≤1% target).
 >
 > **Wrapper/container resolution (D118, 2026-05-31):** §FR-22-4.1 (Universal wrapper/container resolution) is the canonical Stage 4 rule for every sgs-classed wrapper below a section root. It supersedes `walk_passthrough` drop-and-bubble for sgs-classed wrappers, the depth-2 `_is_layout_bearing_wrapper` gate, and `_absorb_transparent_wrappers` (D52). Precedence: (1) block-match → emit block; (2) direct descendant with no block match → fold CSS into parent container (1-child: inner-CSS layer; grid/flex: container absorbs layout + grid-item CSS); (3) direct descendant matching a block → emit as block (the grid item); (4) non-direct-descendant → own sgs/container, recurse. FR-22-11 (non-sgs-classed transparent wrappers) is unchanged.
 >
@@ -332,12 +329,7 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 
 ### Stage 6 — Block.json emission
 
-**Spec 17 framework pattern targets (added 2026-05-19):** the `/sgs-clone` Stage 6
-(cv2 emission) can now target the 9 framework header/footer patterns shipped in Spec 17
-(`sgs/framework-header-{default,sticky,transparent,shrink,minimal,centred}` +
-`sgs/framework-footer-{default,compact,informational}`) instead of always generating
-bespoke header/footer markup. (Header/footer cloner is Phase 2 sibling spec, parked until Spec 22 Phase 1 closes — see `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md`.) The legacy Spec 16 §7 Stage 6 framing here is historical — Spec 22 §3 FR-22-6 (hybrid block render.php migration) governs the equivalent work for body sections.
-match; tracked as a follow-up.
+**Spec 17 framework pattern targets:** the `/sgs-clone` Stage 6 (cv2 emission) can now target the 9 framework header/footer patterns shipped in Spec 17 (`sgs/framework-header-{default,sticky,transparent,shrink,minimal,centred}` + `sgs/framework-footer-{default,compact,informational}`) instead of always generating bespoke header/footer markup. (Header/footer cloner is a Phase 2 sibling spec, parked — see `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md`.) Spec 22 §3 FR-22-6 (hybrid block render.php migration) governs the equivalent work for body sections.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -460,10 +452,8 @@ match; tracked as a follow-up.
 │                 recognition_log (uimax)                                     │
 │                 functionality_gap_candidates (uimax)                        │
 │                                                                             │
-│ Wave 2 (7d713ba0): STAGE_2_CONFIDENCE_THRESHOLD = 0.7 named constant.       │
-│ Wave 3 (e60fe58e): LEGACY_ROLE_LOOKUP migrated to DB (was legacy_role_lookup,│
-│   18 entries; RETIRED D99 — now slots WHERE scope='section', 4 rows post-   │
-│   D111). Voter refactored to DB call.                                        │
+│ STAGE_2_CONFIDENCE_THRESHOLD = 0.7 named constant.                          │
+│ Voter reads slots WHERE scope='section' (4 rows) via DB call.               │
 │                                                                             │
 │ STATUS (post-Wave2/3 2026-05-21): LIVE - confidence gate enforced           │
 │ BUG FIXED 2026-06-07 (`f93db924`): stage-9-coverage.json now emits the     │
@@ -773,7 +763,7 @@ python ~/.claude/hooks/wp-blocks.py dump
 **DEAD tables (zero rows — retirement candidates):**
 `sections_detected`, `extraction_cache`, `block_opportunities`, `weaknesses`, `animations` (all in sgs-framework.db).
 
-**RETIRED (D99 2026-05-29):** `legacy_role_lookup` (was 18 rows) — unified into `slots WHERE scope='section'` (now 4 rows post-D111). `slot_synonyms` (was 89 rows) — unified into `slots WHERE scope='element'` (now 92 rows post-D111). `slot_synonyms.role_classification` column → `roles` table.
+**Retired tables (no longer in schema):** `legacy_role_lookup` and `slot_synonyms` — both unified into the `slots` table (D99). Use `slots WHERE scope='element'` (92 rows) and `slots WHERE scope='section'` (4 rows). The old `role_classification` column is now the `roles` table (21 rows).
 
 ### sgs-framework.db key tables
 
@@ -782,15 +772,15 @@ python ~/.claude/hooks/wp-blocks.py dump
 | block_attributes | 2,739 (post-WS-4 /sgs-update 2026-06-04; 29-block roster synced; counts drift — /sgs-db authoritative) | Stages 3+4 R; cv2 D3 W. D110 backfill (historical): canonical_slot 659 (31.8%), role 676 (32.6%) |
 | blocks | 68 sgs (+ 122 core/wp indexed = 190) | Stage 2 cross-check; /sgs-update S3 uimax sync. `tier` column (D107) — 2 rows class-section |
 | block_composition (D108/D152/D167) | 189+ (post-D152; +content-collection D167 = 29-block container roster) | Data layer LIVE for Stage 1 queries; `container_kind` column added D152 (values `section|layout|content`; 29-block container roster post-D167: 4 section / 14 layout / 11 content; modal + mobile-nav excluded); walker consumption code REVERTED — P-XS-3-TRIGGER-REFINEMENT. Schema: block_slug PK, wraps_block, composition_role enum, has_inner_blocks, accepts_allowed_blocks, container_kind |
-| slots (D99, replaces slot_synonyms + legacy_role_lookup) | 92 element + 4 section = 96 (post-D111; was 105 pre-D111) | Stage 1 R via db_lookup |
-| roles (D99/D128, replaces slot_synonyms.role_classification) | 21 (D99 base 20 + scalar-media D128 2026-06-01) | Stage 1 R; walker resolution |
+| slots | 92 element + 4 section = 96 | Stage 1 R via db_lookup |
+| roles | 21 (20 base + scalar-media) | Stage 1 R; walker resolution |
 | block_supports | 1,160 (post-D100 prune) | Stage 5 supports_writer R |
 | block_capabilities (D99 wired as FR-22-15) | 88 | Walker capability-aware BEM tiebreaker |
 | property_suffixes | 117 (+ kind_override column, 17 populated per D99) | assign-canonical; cv2 db_lookup.css_property_suffixes() |
 | patterns | 47 | Stage 2 confidence boost; +REGISTER W |
 | attribute_gap_candidates | 107+ | Stage 9 W; D3 emission W (Wave 3) |
 
-**Retired tables:** `slot_synonyms` (89 rows → now `slots WHERE scope='element'`, 92 rows) + `legacy_role_lookup` (16 rows → now `slots WHERE scope='section'`, 4 rows) — unified into `slots` (D99, 2026-05-29). `slot_synonyms.role_classification` column → `roles` table (D99, 21 rows post-D128).
+**Removed from schema:** `slot_synonyms` and `legacy_role_lookup` — use `slots` table instead. `role_classification` → `roles` table.
 
 ---
 
@@ -846,7 +836,7 @@ The Phase 2A pricing-table additions (Branch E) also extend the recogniser surfa
 
 ## Script inventory (key scripts)
 
-### Spec 16 converter v2 (`plugins/sgs-blocks/scripts/orchestrator/converter_v2/`)
+### Converter v2 (`plugins/sgs-blocks/scripts/orchestrator/converter_v2/`)
 
 | Script | Status |
 |---|---|
@@ -911,7 +901,7 @@ The Phase 2A pricing-table additions (Branch E) also extend the recogniser surfa
 - **G5** — Per-block DOM-shape mismatches (`<blockquote>` vs `<section>`; mockup-grid vs render-carousel).
 - **F5** — D1 media-field flow: responsive variants stored but not routed to `<attr>Mobile/Tablet/Desktop` attrs.
 
-G1+G3+G5 are manifestations of one gap: cv2 doesn't walk all classes + assign CSS ownership via the DB tables that exist. **This is the gap Spec 22 closes.** Spec 16's diagnosis was correct; Spec 22 is the canonical fix-shape — single universal walker, exactly 3 permitted exceptions, DB-driven recognition. See `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §2-§3 for the structural architecture. (Spec 16 retired 2026-05-26; archived at `.claude/specs/archive/` for historical evidence.)
+G1+G3+G5 are manifestations of one gap: cv2 doesn't walk all classes + assign CSS ownership via the DB tables that exist. **Spec 22 is the canonical fix-shape** — single universal walker, exactly 3 permitted exceptions, DB-driven recognition. See `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §2-§3 for the structural architecture.
 
 ---
 
@@ -919,7 +909,7 @@ G1+G3+G5 are manifestations of one gap: cv2 doesn't walk all classes + assign CS
 
 ### Architectural debt (not blocking)
 
-1. **Stage 0.7 CSS lift** — previous monolithic dump architecture replaced (Spec 22 §FR-22-5; was Spec 16 §FR6, retired 2026-05-26). D3/D2 split still evolving.
+1. **Stage 0.7 CSS lift** — four-destination router active (Spec 22 §FR-22-5). D3/D2 split still evolving.
 2. **Stage 2 has no pattern-level matcher** — sections matching pattern slugs fall to normal route. Tracked: Phase 1 of strategic-plan.
 3. **5 dead DB tables** — `sections_detected`, `extraction_cache`, `block_opportunities`, `weaknesses`, `animations` — retire or remove from schema.
 4. **ARRAY_LIFT_PATTERNS hardcoded dict** — `count_stars` + multi-selector fallback not yet migrated to universal 1e-B path. Tracked: `P-ARRAY-LIFT-PATTERNS-FULL-MIGRATION`.

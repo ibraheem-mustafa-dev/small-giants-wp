@@ -17,7 +17,7 @@ target_wp_version: "7.0"
 target_php_version: "8.0+"
 companion_docs:
   - .claude/CLAUDE.md
-  - .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md (Spec 15 absorbed into Spec 16 2026-05-12; both retired 2026-05-26 via Spec 22)
+  - .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md (canonical cloning-pipeline spec)
 update_triggers:
   - architectural_change
   - fr_addition

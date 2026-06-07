@@ -2,11 +2,11 @@
 
 Spec files with status tags. One spec per file.
 
-**Last reviewed:** 2026-05-26 (Spec 22 ratification + Spec 16 archival).
+**Last reviewed:** 2026-06-07
 
 ## Specification Standards
 
-Specs are versioned, status-tracked artifacts that document architectural commitments. Each spec carries `doc_type: spec`, a numeric `spec_id`, and a `status` from the enum below. Specs supersede each other via the `supersedes` / `retired_by` frontmatter fields (see Spec 22 retiring Spec 16 2026-05-26 as the canonical example). Retired specs move to `.claude/specs/archive/` with retirement headers preserved for git-blame continuity.
+Specs are versioned, status-tracked artifacts that document architectural commitments. Each spec carries `doc_type: spec`, a numeric `spec_id`, and a `status` from the enum below. Retired specs move to `.claude/specs/archive/`.
 
 ### Status tags
 
@@ -35,17 +35,16 @@ Specs are versioned, status-tracked artifacts that document architectural commit
 | 09 | [09-GOLD-STANDARD-AUDIT.md](../../reports/reference/09-GOLD-STANDARD-AUDIT.md) | Per-block competitor gap analysis | active |
 | 10 | [10-COMPETITOR-RESEARCH.md](../../reports/10-COMPETITOR-RESEARCH.md) | Spectra / Kadence / GenerateBlocks research | shipped |
 | 11 | [11-SGS-BUTTON-ARCHITECTURE.md](11-SGS-BUTTON-ARCHITECTURE.md) | sgs/button + sgs/multi-button canonical (includes 2026-05-22 double-default fix) | shipped |
-| 15 | (absorbed into Spec 16 2026-05-12, then absorbed-chain retired with Spec 16 2026-05-26) | Deterministic converter Spec 15 | absorbed → retired |
-| 16 | [archive/16-DETERMINISTIC-CONVERTER-V2-retired-by-spec-22.md](archive/16-DETERMINISTIC-CONVERTER-V2-retired-by-spec-22.md) | Slot-aware DOM walker (RETIRED — superseded by Spec 22 2026-05-26) | retired |
 | 17 | [17-HEADER-FOOTER-ARCHITECTURE.md](17-HEADER-FOOTER-ARCHITECTURE.md) | Header/footer infrastructure | shipped |
 | 18 | [18-SGS-FLOATING-UI.md](18-SGS-FLOATING-UI.md) | Back to Top + Reading Progress | shipped |
 | 19 | [19-SGS-CLI-COMMANDS.md](19-SGS-CLI-COMMANDS.md) | `wp sgs` command tree (includes Phase 1 DB seed) | shipped |
 | 20 | [20-STRUCTURED-PIPELINE-LOG-SURFACING.md](20-STRUCTURED-PIPELINE-LOG-SURFACING.md) | Per-severity sidecar logs | shipped |
 | 21 | [21-PIPELINE-STATE-ARTEFACTS.md](21-PIPELINE-STATE-ARTEFACTS.md) | Pipeline-state debug artefacts catalogue | active |
-| 22 | [22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md](22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) | SGS Cloning Pipeline — Universal Block-Equivalent Extraction (CANONICAL; supersedes Spec 16 2026-05-26) | active |
-| 24 | [archive/24-QUERY-DRIVEN-CONTENT-CARDS.md](archive/24-QUERY-DRIVEN-CONTENT-CARDS.md) | Query-driven content cards (CPT + Query Loop + Block Bindings; product-card dual-mode) — **retired — superseded by Spec 27** (D161, 2026-06-03) | retired |
-| 25 | [archive/25-SGS-WOOCOMMERCE-EXPERIENCE-LAYER.md](archive/25-SGS-WOOCOMMERCE-EXPERIENCE-LAYER.md) | Authoritative SGS WooCommerce-wrapper layer (product-card / cart / collection / option-picker / bindings / add-to-cart) — **retired — superseded by Spec 27** (D161, 2026-06-03) | retired |
-| 26 | [26-SGS-GLOBAL-STYLES-AND-THEMING.md](26-SGS-GLOBAL-STYLES-AND-THEMING.md) | Global styles + per-client theming (variation-delta + wp_global_styles REST sync) + pipeline style derivation (supersedes Spec 01 §D156; build deferred) | draft |
+| 22 | [22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md](22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) | SGS Cloning Pipeline — Universal Block-Equivalent Extraction (CANONICAL) | active |
+| 26 | [26-SGS-GLOBAL-STYLES-AND-THEMING.md](26-SGS-GLOBAL-STYLES-AND-THEMING.md) | Global styles + per-client theming (variation-delta + wp_global_styles REST sync) + pipeline style derivation (build deferred) | draft |
+| 27 | [27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md](27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md) | MASTER — SGS product + WooCommerce layer (CPT, collection, cart, dual-mode card, option-picker, configurator) | active |
+| 28 | [28-SGS-SMART-BULK-PRICING.md](28-SGS-SMART-BULK-PRICING.md) | Smart bulk pricing / comparative value-ladder | active |
+| 29 | [29-CONTAINER-EQUIVALENT-BLOCKS.md](29-CONTAINER-EQUIVALENT-BLOCKS.md) | Container-equivalent blocks reference — 3-KIND map, mirror roster, shared helper | active |
 
 ## Architecture programme (2026-05-21+) — archived
 

@@ -77,7 +77,7 @@ This is the core working method for this project. It is non-negotiable and overr
 
 ```
 small-giants-wp/
-├── theme/sgs-theme/          # Block theme (own CLAUDE.md). styles/ retired Phase 5a — empty.
+├── theme/sgs-theme/          # Block theme (own CLAUDE.md). styles/ is empty — per-client snapshots at sites/<client>/theme-snapshot.json
 ├── plugins/
 │   ├── sgs-blocks/           # Gutenberg blocks + forms (own CLAUDE.md)
 │   ├── sgs-booking/          # Appointment + event booking (own CLAUDE.md)
@@ -97,8 +97,7 @@ Each sub-project + each client site has its own CLAUDE.md. Read the relevant one
 | [`.claude/reports/2026-05-25-qc-council-issue-register.md`](.claude/reports/2026-05-25-qc-council-issue-register.md) | THE current cloning-pipeline register (~110 items, Sections A-R) |
 | [`.claude/plans/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md`](.claude/plans/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md) | **Live cloning-fidelity plan (D159/D160) — grounded #1-#8 triage + WS-4 build spec + locked sequence** |
 | [`.claude/plans/2026-06-02-container-wrapper-standardisation.md`](.claude/plans/2026-06-02-container-wrapper-standardisation.md) | Standardisation programme (D152; WS-1 A1+A2 SHIPPED D159, WS-1c/WS-2/3/4/5 pending) |
-| [`.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`](.claude/plans/2026-05-26-phase-1-spec-22-implementation.md) | Phase 1 walker rewrite plan (SHIPPED — 8 commits `507d4f57`–`da3de993`; archived reference) |
-| [`.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`](.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) | Canonical pipeline spec; single-path universal walker; FR-22-1 through FR-22-13; R-22-1 through R-22-14 binding rules (R-22-14 added 2026-05-27 per D92 — no legacy fallback hacks). (Spec 16 retired 2026-05-26 — archived at `.claude/specs/archive/`.) |
+| [`.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`](.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) | Canonical pipeline spec; single-path universal walker; FR-22-1 through FR-22-13; R-22-1 through R-22-14 binding rules (R-22-14 added 2026-05-27 per D92 — no legacy fallback hacks). |
 | [`.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md`](.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md) | Pipeline-state artefact map (read BEFORE conjecturing) |
 | [`.claude/cloning-pipeline-flow.md`](.claude/cloning-pipeline-flow.md) + [`-stages.md`](.claude/cloning-pipeline-stages.md) | Stage map + per-stage detail |
 | [`.claude/dev-setup.md`](.claude/dev-setup.md) | Build / deploy / SSH / local environment / gotchas |
@@ -183,7 +182,7 @@ Posts use `single.html` which constrains `.entry-content` to `max-width: 800px` 
 No block feature is complete until it has full block-editor UI controls. Clients are tech-illiterate — they use the block editor exclusively. Every customisable property must be exposed as an inspector control. If a setting requires touching code, it is not done. WP-CLI is a developer tool only; never something clients touch.
 
 ### Universal block-equivalent extraction (Spec 22 FR-22-3, locked 2026-05-26)
-Walker is a single recursive function with exactly 3 permitted exceptions (atomic-tag swap / top-level chrome-skip / top-level container wrap). Every BEM-classed DOM node resolves to a block slug via `slot_synonyms.standalone_block` lookup; per-block behaviour comes from DB rows, not code branches. Block-equivalent attrs (FR-22-2) become child InnerBlocks rather than scalar attrs (eliminates double-render). Spec 16's layered FR1/FR4/lift_subtree/F1/9-branch architecture retired 2026-05-26.
+Walker is a single recursive function with exactly 3 permitted exceptions (atomic-tag swap / top-level chrome-skip / top-level container wrap). Every BEM-classed DOM node resolves to a block slug via `slot_synonyms.standalone_block` lookup; per-block behaviour comes from DB rows, not code branches. Block-equivalent attrs (FR-22-2) become child InnerBlocks rather than scalar attrs (eliminates double-render). Canonical spec: Spec 22 §FR-22-3.
 
 ### DB-first, no hardcoded dicts (blub.db 260)
 Before adding any hardcoded lookup dict in pipeline scripts, check sgs-framework.db: `property_suffixes` (117) + `kind_override` column (17 populated, replaces `_KIND_BY_SUFFIX` dict per D99), `block_supports` (1160 active post-D100 prune), `modifier_suffixes` (19), `slots` (96 = 92 element + 4 section post-D111 2026-05-30; was 105 at D99 — section pruned 16→4, element grew 89→92, replaces retired `slot_synonyms` + `legacy_role_lookup`), `roles` (21 — 20 base + `scalar-media` added D128, replaces `slot_synonyms.role_classification` per D99), `block_attributes` (2077), `block_capabilities` (88), **`blocks.variant_attr` column** (BUILT, FR-22-20, Commits 1–5/6 SHIPPED 2026-06-01; names the variant-selector attr per block), **`variant_slots` table** (BUILT, FR-22-20; stores each variant's DISCRIMINATING slots via set-difference; populated by `/sgs-update` from `supports.sgs.variants` in block.json), **`block_composition.container_kind` column** (BUILT + populated 2026-06-02, D152; values `section|layout|content`; 28-block container roster has `wraps_block` + `container_kind` populated; NOT walker-read yet — standardisation WS-3). Refactor to `db_lookup.py` reads. Full mechanism: Spec 22 §FR-22-20 + §FR-22-21.
@@ -199,7 +198,7 @@ Every uimax row describing a design artefact MUST carry equivalent-name mappings
 ### Bean-controlled drafts use SGS-BEM (Spec 15 §8.1, blub.db 236)
 `.sgs-<block>__<element>--<modifier>`. `/sgs-clone` Stage 0 hard-rejects non-conforming on production runs; `--draft-mode` = soft warning; `--legacy` bypasses. Live scrapes use lingua-franca conversion at write time.
 
-### Saved-defaults model (canonical, retired 2026-05-08 — do NOT reintroduce parallel infra)
+### Saved-defaults model (canonical — do NOT reintroduce parallel infra)
 Four WordPress-native channels: (1) visual styling defaults → Site Editor Styles panel (`wp_global_styles` over `theme.json`); (2) structural starting state → block patterns at `plugins/sgs-blocks/includes/block-patterns.php`; (3) per-operator session memory → `useLastUsedAttributes` sessionStorage hook; (4) per-instance customisation → block inspector. NO `withSaveAsDefault` HOC, NO `<BlockDefaultsPanel>`, NO `wp_options`-backed defaults store.
 
 ### Block customisation standard (MANDATORY)
@@ -211,7 +210,7 @@ Every new block rendering `<img>` MUST declare `"imageControls": true` in `block
 ### No hard-coded environment paths
 PHP: `get_theme_file_uri()` / `get_stylesheet_directory_uri()` / `wp_upload_dir()`. JS/CSS: CSS custom properties via `wp_add_inline_style()` or `wp_localize_script()`. Never `/wp-content/themes/sgs-theme/assets/image.png` (breaks on non-standard installs).
 
-### Style-variation system retired (D28, Phase 5a 2026-05-21)
+### Per-client theming model
 `theme/sgs-theme/styles/` is empty. Per-client colour/typography lives at `sites/<client>/theme-snapshot.json` and deploys via `push-theme-snapshot.py`. Client-specific CSS goes into the snapshot's `styles.css` OR `sites/<client>/theme-overrides.css`. Never into framework's `style.css`.
 
 ### sgs/trust-bar — renamed from trust-badges (D123, 2026-05-31); dual-mode FR-24-10 SHIPPED 2026-06-01; bound-purge SHIPPED D182 2026-06-06
@@ -234,7 +233,7 @@ D72 (2026-05-25) retired the ORIGINAL composite `sgs/trust-bar` (counter use-cas
 Architectural record: `.claude/decisions.md` D57-D65. Canonical templates: `~/.agents/skills/shared-references/doc-templates/`.
 
 1. **parking entries** carry `**Status:** OPEN|PARTIAL|BLOCKED|DEFERRED` + one of 6 taxonomy buckets
-2. **specs** use `FR-{spec_id}-{N}` for requirement IDs (e.g. `FR-16-3`)
+2. **specs** use `FR-{spec_id}-{N}` for requirement IDs (e.g. `FR-22-3`)
 3. **mistakes.md** is a keyword-stub index only — body links to `feedback_*.md` + blub.db row
 4. **plans** use strategic-plan + phase-plan templates (timebox / ROAM / 16-field step block)
 5. **Handoff docs carry forward structural defences — never SUBTRACT** (D101 rule, captured 2026-05-29 / blub.db 290 / pattern_key `handoff-docs-carry-forward-structural-defences`). When overwriting `.claude/next-session-prompt.md` or any handoff doc with structural-defence sections (anti-pattern STOP catalogue, pre-flight self-attestation ritual, tiered mandatory reading list, "READ THIS BEFORE ANYTHING ELSE" boxes), READ THE PREVIOUS VERSION FIRST end-to-end. Carry every structural-defence section forward verbatim or extended. Only ADD based on this session's new learnings; never SUBTRACT without a recorded justification. After writing, COUNT: STOP entries ≥ previous + new; reading items ≥ previous + new; ritual questions ≥ previous + new. If any count went down without justification, the new doc is a regression — revise before commit. Captured because 2026-05-29 D93-D100 session-close prompt dropped 7-entry STOP catalogue + 5-question ritual + collapsed 16→5 reading list; Bean caught before next session ran. Sparser prompts let captured failure patterns recur (meta-lesson `feedback_lessons_must_be_operationally_surfaced_not_just_archived` — captured lessons sitting in memory files only prevent failures when operationally surfaced at session start; STOP catalogue at top of handoff IS the operational surfacing).
@@ -243,7 +242,7 @@ Architectural record: `.claude/decisions.md` D57-D65. Canonical templates: `~/.a
 
 **Counts (blocks, block_attributes, slots, roles, patterns, etc.) drift in prose — the DB is authoritative; never hard-code a count here.** Query live via `/sgs-db` or `/wp-blocks`, or read `.claude/specs/02-SGS-BLOCKS-REFERENCE.md` (regenerated by `/sgs-update`). DB schema + per-table roles + the recent column/table additions (`blocks.tier`, `block_composition.container_kind`, `blocks.variant_attr`/`variant_slots`, `property_suffixes.kind_override`, `slots`/`roles`) are catalogued in **Spec 22 §4 (data layer)** + `.claude/decisions.md`.
 
-Stable facts: WP 7.0 compatible; style-variation system retired (per-client `theme-snapshot.json`); `/sgs-update` is 10-stage v3 (aggressive prune-orphans + attr-orphan detection + retired-blocks delete); single-command deploy `plugins/sgs-blocks/scripts/build-deploy.py`.
+Stable facts: WP 7.0 compatible; per-client theming via `theme-snapshot.json`; `/sgs-update` is 10-stage v3 (aggressive prune-orphans + attr-orphan detection + retired-blocks delete); single-command deploy `plugins/sgs-blocks/scripts/build-deploy.py`.
 
 ## Design context for current client builds
 

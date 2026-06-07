@@ -16,7 +16,7 @@
 | Parking | `parking.md` | OPEN deferred work, 6 taxonomy buckets, `**Status:**` field |
 | Last session | `handoff.md` | Most recent session summary |
 | Next session | `next-session-prompt.md` | Pre-written kick-off |
-| Specs | `specs/` | Numbered specs (00, 02, 11, 17-22, **27** (master), 26 + common-wp-styling-errors; 16 archived by 22; **24+25 SUPERSEDED by 27** 2026-06-03 D161). 27 = SGS Product & WooCommerce Layer master (CPT/collection/cart/dual-mode card/option-picker + the variable-product configurator chapter; absorbed 24+25; MVP-first, build deferred until cloning closes). 26 = global styles + per-client theming (D158, build deferred) |
+| Specs | `specs/` | Numbered specs (00, 02, 11, 17-22, **27** (product/WooCommerce master), 26 + common-wp-styling-errors). 27 = SGS Product & WooCommerce Layer master (CPT/collection/cart/dual-mode card/option-picker + the variable-product configurator chapter; MVP-first, build deferred until cloning closes). 26 = global styles + per-client theming (D158, build deferred) |
 | Active plans | `plans/` | `/strategic-plan` + `/phase-planner` outputs |
 | Strategy docs | `plans/strategy/` | Cross-cutting strategy docs |
 | Archived plans | `plans/archive/` | Completed / superseded / legacy plans |
@@ -27,7 +27,7 @@
 
 ## Authoritative pointers
 
-- **Canonical cloning-pipeline spec:** `specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` (Spec 22; replaces Spec 16 retired 2026-05-26)
+- **Canonical cloning-pipeline spec:** `specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` (Spec 22)
 - **Active primary plan:** `plans/2026-06-02-container-wrapper-standardisation.md` (5-workstream programme D152; WS-1 SHIPPED). **Cloning pixel-diff thread:** `plans/2026-05-28-phase-2-hybrid-block-migration.md` (Streams B/C/D deferred; feeds WS-3/WS-4).
 - **Pipeline overview:** `cloning-pipeline-flow.md` (stage-index + cross-cutting principles); per-stage detail → `cloning-pipeline-stages.md`
 - **Binding methodology rules:** `decisions.md` (search for "binding" + recent D-numbers) — DO NOT restate inline here. Spec 22 binding rules: R-22-1 through R-22-14 (R-22-14 added 2026-05-27 per D92 — no legacy fallback hacks in FR-22-6 migrations).

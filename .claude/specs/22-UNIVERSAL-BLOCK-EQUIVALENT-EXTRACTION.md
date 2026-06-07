@@ -6,19 +6,12 @@ project: small-giants-wp
 title: SGS Cloning Pipeline (Universal Block-Equivalent Extraction)
 status: active
 status_note: |
-  RATIFIED 2026-05-26 v1.0 — status flipped from draft → active per §16 gate.
-  All 4 ratification boxes ticked: Commit 0.0 cross-doc sync landed (31 files);
-  Bean sign-off received; /docscore A 100% on 22 of 22 scored docs (2 custom
-  doc_types unscored — plan.md `master-plan`, cloning-pipeline-flow.md
-  `visual-reference`); council findings table §15 all addressed/dropped/recalibrated.
-  Spec 16 retired + archived. Phase 1 plan at
-  `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`.
-  Phase 1 acceptance gate softened to ≤5% per-section × 3 viewports; Phase 1.5
-  stretch goal ≤1%. Spec 16 retires in full. Status-flip to active is gated
-  on Commit 0.0 (cross-doc sync) completing AND Bean ratification.
+  RATIFIED 2026-05-26 v1.0 — all 4 ratification boxes ticked: Commit 0.0 cross-doc
+  sync landed (31 files); Bean sign-off received; /docscore A 100% on 22 of 22
+  scored docs; council findings table §15 all addressed/dropped/recalibrated.
+  Phase 1 acceptance gate: ≤5% per-section × 3 viewports; Phase 1.5 stretch: ≤1%.
 session_date: 2026-05-26
 authors: Bean + Claude (Opus 4.7)
-supersedes: 16-DETERMINISTIC-CONVERTER-V2.md
 companion_specs:
   - 00-naming-conventions.md (BEM canonical signal — Spec 00 §3.1 is foundational)
   - 02-SGS-BLOCKS.md (block library; render.php migration template)
@@ -52,23 +45,20 @@ gap_analysis_council:
 
 ## 0. Purpose
 
-Replace the layered Spec 16 architecture with a single universal extraction path inside the cloning pipeline. Every BEM-class div in any mockup becomes its own emitted WP block, nested where the mockup nests it, with CSS attributed to its direct owner. The DB has all the metadata needed; the converter just consults it consistently.
+Single universal extraction path for the cloning pipeline. Every BEM-class div in any mockup becomes its own emitted WP block, nested where the mockup nests it, with CSS attributed to its direct owner. The DB has all the metadata needed; the converter just consults it consistently.
 
 **Plain English statement of the architecture:** read each div's BEM class, look up which SGS block it equates to in the database, emit that block, recurse into its children. Three precisely-enumerated exceptions are permitted (atomic-tag swap, top-level chrome skip, top-level container wrap — see FR-22-3). No others. Same code for sgs/hero, sgs/product-card, sgs/quote, sgs/text, sgs/media, every BEM-class div in any mockup.
 
 This spec covers the whole pipeline — Stage 4 (the converter) is the main rewrite; every other stage is documented for the impact (preserved / adjusted / dissolved) Spec 22 has on it. There is no follow-up "orchestrator spec" — Spec 22 is comprehensive.
 
-## 1. Why Spec 16 retires
+## 1. Architecture rationale
 
-Spec 16 layered multiple recognition / consumption paths over time (FR1 + FR2 + FR3 + FR4 + lift_subtree + F1 + 9 walk() branches + ARRAY_LIFT_PATTERNS + ATOMIC_TAG_MAP). The 2026-05-26 diagnostic chain (commit `c9b058a7` and prior) proved that:
+1. **The DB holds the complete mapping** — `slots` (scope='element') `standalone_block` documents every BEM-canonical-slot to block relationship. `block_attributes.canonical_slot` is the converter-side hook; `/sgs-update assign-canonical.py` is the backfill mechanism per FR-22-2.1.
+2. **Hybrid block (FR-22-6)** — the "container-shaped composite" criterion is DB-derivable via `equivalent_block_for()` returning non-NULL for ≥1 attr.
+3. **D72 (sgs/trust-bar)** — proof-of-concept for universal-nesting direction; trust-bar pixel-diff dropped −50.4pp / −27pp / −66.9pp at three viewports.
+4. **Hero-clone-poc (page 29)** — visual proof-of-concept for ≤5% achievability; reported 54.5% due to measurement offset, not visual divergence.
 
-1. **The DB already holds the complete mapping** — `slots` (scope='element') `standalone_block` documents every BEM-canonical-slot to block relationship. `block_attributes.canonical_slot` is the converter-side hook (at Spec 22 ratification (2026-05-26), 54.1% NULL across all 2,246 rows; `/sgs-update assign-canonical.py` extension is the backfill mechanism per FR-22-2.1).
-2. **`lift_subtree_into_block_attrs` and F1 are the same goal, executed twice, incompletely.** Path A consumes descendants into scalar attrs; F1 walks the same descendants into InnerBlocks. They double-render when a block has overlapping content attrs (sgs/product-card post-F1: 8569 chars vs pre-F1 2303 chars — 3.7× explosion measured 2026-05-26).
-3. **The "container-shaped composite block" classification was abandoned** in Spec 16 (parking entry `P-G1-EXTEND-TO-OTHER-CONTAINER-SHAPED-COMPOSITES` deferred because no DB column cleanly identified the class). Spec 22 reframes honestly: the classification IS reintroduced as "hybrid block" (FR-22-6) but the criterion is now DB-derivable via `equivalent_block_for()` returning non-NULL for ≥1 attr. The renaming is acknowledged, not denied (per council finding F-AP-3).
-4. **D72 (sgs/trust-bar retirement) is the proof-of-concept** for the universal-nesting direction — replacing the hardcoded composite with universal-nesting via `slots` (scope='element') `standalone_block` dropped trust-bar pixel-diff −50.4pp / −27pp / −66.9pp at three viewports (absolute best-ever: 37.0 / 24.6 / 33.1% — NOT ≤1%; the proof is directional, not absolute).
-5. **The hero-clone-poc page (page 29, /hero-clone-poc/) is the visual proof-of-concept** for ≤5% achievability. Hero content matches mockup visually (Bean's eye + cropped-pair comparison artefact); pixel-diff reports 54.5% due to a 60px vertical body-anchor offset between the SGS chrome environment and the standalone mockup file — a measurement artefact, not visual divergence. Phase 1.5 fixes the measurement methodology.
-
-Spec 16 retires in full. The architectural rules R5 (CSS-drives-emission), FR6 four-destination CSS router, and FR7 visual-QA verification migrate into this spec. Everything else in Spec 16 (FR1 fast path, lift_subtree, ARRAY_LIFT_PATTERNS, hardcoded ATOMIC_TAG_MAP, the 9-branch walk(), the FR1-vs-normal-route distinction) is deleted.
+The architecture inherits CSS-drives-emission (FR-22-5), the four-destination CSS router (FR-22-5), and visual-QA verification (FR-22-11) as binding rules.
 
 ## 2. The architecture (functional contract, not pseudocode)
 
@@ -282,18 +272,18 @@ Resolution at each node, in precedence order:
 
 **Constraints:** R-22-3 (only `sgs/container` as the container primitive; this is the FR-22-4 refinement, not a 4th walker branch), R-22-4 (per-section pixel-diff gates each commit), R-22-9 (universal — same rule for every wrapper, no per-class special-casing), R-22-11 (live-DOM verification), R-22-13 (Bean visual sign-off).
 
-### FR-22-5 — CSS routes to direct-owner per FR6 four-destination policy (preserved from Spec 16)
+### FR-22-5 — CSS routes to direct-owner via four-destination policy
 
 **built_status: PARTIAL** — _lift_wrapper_css_to_container_attrs shipped A1 (e9eaf013, D172); typography lift partial (D178)
 
-Spec 16's FR6 four-destination CSS router (D0 / D1 / D2 / D3) is preserved:
+Four-destination CSS router (D0 / D1 / D2 / D3):
 
 - **D0** — Global tokens → `theme.json` / variation overlay
 - **D1** — Typed-attr lift → block attribute (when CSS property matches `property_suffixes` for an attr of the emitted block)
 - **D2** — Scoped variation CSS → `pipeline-state/<run>/variation-d0-d2.css`, deployed inline at Stage 10
 - **D3** — `attribute_gap_candidates` (the operator-promotion queue) — **uimax table only** (see FR-22-8.1 for the sgs-framework.db legacy table handling)
 
-The D1 routing change from Spec 16: when a CSS rule targets `.sgs-X__Y`, D1 routing calls `equivalent_block_for(parent_X, Y)`. If non-NULL, the rule attributes to the CHILD block, not the parent's `Y` attr. This is the SAME function call as FR-22-2 — single authoritative implementation in `converter_v2/db_lookup.py`.
+D1 child-attribution rule: when a CSS rule targets `.sgs-X__Y`, D1 routing calls `equivalent_block_for(parent_X, Y)`. If non-NULL, the rule attributes to the CHILD block, not the parent's `Y` attr. Same function call as FR-22-2 — single authoritative implementation in `converter_v2/db_lookup.py`.
 
 **PASS test:** `css-d1-assignments.json` contains zero entries where a CSS rule targeting `.sgs-X__Y` is attributed to the parent block's `Y` attr when `equivalent_block_for(parent, Y)` returns non-NULL.
 **FAIL test:** any D1 assignment violates the child-attribution rule.
@@ -401,7 +391,7 @@ Both `sgs-framework.db` and `ui-ux-pro-max.db` (uimax) contain tables with simil
 | Logical entity | sgs-framework.db | uimax | Authoritative source under Spec 22 |
 |---|---|---|---|
 | `patterns` | 44 rows (framework + client patterns) | 14 rows (cross-platform pattern fingerprints) | **sgs-framework.db** for emit decisions. uimax is read-only cross-check (mismatches log to `unresolved_pattern_fingerprint.log`; do NOT block emit). |
-| `attribute_gap_candidates` | 1,480 rows (legacy — Spec 16 era) | 91 rows (Spec 22 era, with confidence + provenance) | **uimax** for new writes. sgs-framework.db table is **read-only legacy** — NO new writes from Spec 22 onwards. Commit 0.0 marks it `is_stale=1` in schema_metadata. Migration of 1,480 legacy rows is out-of-scope for Spec 22 (parked: P-LEGACY-GAP-CANDIDATES-MIGRATION). |
+| `attribute_gap_candidates` | 1,480 rows (legacy — pre-Spec 22) | 91 rows (Spec 22 era, with confidence + provenance) | **uimax** for new writes. sgs-framework.db table is **read-only legacy** — NO new writes from Spec 22 onwards. `is_stale=1` in schema_metadata. Migration of 1,480 legacy rows is out-of-scope for Spec 22 (parked: P-LEGACY-GAP-CANDIDATES-MIGRATION). |
 | `design_tokens` | 184 rows (SGS authoritative) | 5,164 rows (multi-system cross-reference catalogue) | **sgs-framework.db** for SGS theme work. uimax design_tokens is read-only cross-reference. |
 
 When `wp-blocks.py` is asked for an entity that exists in both DBs, it returns the authoritative source's row and (when an `--include-cross-check` flag is set) the uimax counterpart for comparison. Mismatches are logged to `pipeline-state/<run>/cross-db-conflicts.log` (registered in Spec 21 — Commit 1.4 update).
@@ -777,7 +767,6 @@ Retired scripts move to `plugins/sgs-blocks/scripts/orchestrator/_retired/` so t
 
 | Surface | What goes | Archive location |
 |---|---|---|
-| Spec 16 (was `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md`; now `.claude/specs/archive/16-DETERMINISTIC-CONVERTER-V2-retired-by-spec-22.md`) | Entire spec retired 2026-05-26 (commit d9bd1c00) | `.claude/specs/archive/` |
 | `lift_subtree_into_block_attrs` (convert.py:3387) | Function deleted | inline removal |
 | 9-branch walk() | Collapsed to 3-exception FR-22-3 path | inline removal |
 | FR1 fast path / "normal route" distinction | Dissolved | inline removal |
@@ -828,7 +817,7 @@ Retired scripts move to `plugins/sgs-blocks/scripts/orchestrator/_retired/` so t
 
 ### Phase 0 — Foundation (DB + tooling + cross-doc sync)
 
-**Commit 0.0 — Cross-doc sync (gate for Spec 22 status flip).** This MUST land BEFORE Spec 22 status flips from `draft` to `active`. Updates: `architecture.md` decision #14 rewrite, `cloning-pipeline-flow.md` two-route topology retirement, `cloning-pipeline-stages.md` Stage 4 rewrite, `Spec 00 §3.1` link target update (currently points to retired Spec 16 §12.3), `Spec 16` move to archive, `docs-registry.yaml` Spec 22 add, parking entries close (P-WAVE-2-RESHAPE-AS-ONE-WIRING-GAP, P-G1-EXTEND-TO-OTHER-CONTAINER-SHAPED-COMPOSITES, P-FR1-VARIATION-BUF-CONSISTENCY, P-MATCH-JSON-GATE-REDEFINITION, P-G3-STAGE-3-VISUAL-SLOT-MAPPING, P-G5-PER-BLOCK-DOM-SHAPE-FIXES). Per F-AP-6 / F-SC-4 / F-SC-5 / F-SC-7. No code change.
+**Commit 0.0 — Cross-doc sync (SHIPPED 2026-05-26).** 31 files updated including architecture.md, cloning-pipeline-flow.md, cloning-pipeline-stages.md, docs-registry.yaml. Parking entries closed. No code change.
 
 **Commit 0.1 — DB enrichment (scope-corrected per D84 2026-05-27).** Extend `/sgs-update assign-canonical.py` with **Tier B BEM-element derivation only**. Structural guardrail by construction: script refuses to operate on any row where `derived_selector IS NULL` — makes the F-RA-1 "mis-tag behavioural attr" failure mode impossible by input shape. `--dry-run` mode emits a JSON diff (block_slug, attr_name, proposed canonical_slot, derivation source). Expected yield ≤72 Tier B candidate updates (DB audit 2026-05-27 confirmed). Bean inline-reviews the diff BEFORE any DB write — 20-50 rows fits one screen. **Tier C ships dormant** — 0 candidates in current DB state (the path is wired for future-proofing per FR-22-2.1 but has no inputs to act on today). **Golden corpus DROPPED** — 1,142 of 1,214 "NULL canonical_slot" rows are correctly-NULL behavioural attrs (size, position, enum toggles, identity), NOT backfill targets; the dry-run diff IS the review surface. Pre-rewrite DB snapshot at `pipeline-state/_snapshots/sgs-framework-pre-spec22.db` (captured 2026-05-26, SHA256 `d08806295db262a35db0b7a25948d35d86e782f74847fe87c1ded824e00017bc`). No new DB tables.
 
@@ -875,9 +864,7 @@ Per FR-22-6 + FR-22-6.1. One commit per block in the Phase 0.4 audit roster. Son
 
 ### Phase 5 — decisions.md + mistakes.md pruning
 
-**Commit 5.1 — decisions.md walk.** Each D-entry referencing retired Spec 16 surfaces either:
-- **Pruned** if entirely about retired surface + no longer load-bearing — delete (git history preserved).
-- **Modernised** if underlying decision still relevant — rewrite pointing at Spec 22 equivalent FR.
+**Commit 5.1 — decisions.md walk.** Prune D-entries that are no longer load-bearing; modernise entries that remain relevant to point at the current Spec 22 FR.
 
 **Commit 5.2 — mistakes.md walk.** Same treatment.
 
@@ -896,29 +883,15 @@ Phase 1.5 work is empirically scoped after Phase 1 measurements arrive. May be i
 
 | Doc | Change shape | When |
 |---|---|---|
-| `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` | Move to archive/ with retirement header | Commit 0.0 |
-| `.claude/architecture.md` | Decision #14 rewrites to reference Spec 22 FR-22-3. New decision documenting Spec 16 retirement. | Commit 0.0 |
-| `.claude/decisions.md` | NEW D-numbers: D78 Spec 16 retirement, D79 Spec 22 lands, D80 wp-blocks.py unified CLI, D81 hybrid block migration, D82 walker rewrite, D83 acceptance gate ≤5% with ≤1% Phase 1.5 stretch | Commits 0.0, 0.2, 1.4, 2.N, 4.3 |
-| `.claude/mistakes.md` | Pruning pass per Phase 5.2 | Commit 5.2 |
-| `.claude/cloning-pipeline-flow.md` | Two-route topology section retires; Stage 4 description rewrites | Commit 0.0 |
 | `.claude/cloning-pipeline-stages.md` | Stage 4 annotated block rewrites; scripts inventory updates | Commits 0.0, 1.4, 3.1 |
 | `.claude/specs/02-SGS-BLOCKS.md` | render.php migration pattern documented | Commit 2.1 |
-| `.claude/specs/00-naming-conventions.md` | §3.1 link target updated (currently points to retired Spec 16 §12.3) | Commit 0.0 |
 | `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` | Bucket distribution updates; new logs registered (`unresolved_equivalent_block.log`, `cross-db-conflicts.log`, `unresolved_pattern_fingerprint.log`); trace.jsonl event taxonomy updates | Commit 1.4 |
-| `.claude/parking.md` | Close subsumed entries (P-WAVE-2-RESHAPE-AS-ONE-WIRING-GAP, P-G1-EXTEND-TO-OTHER-CONTAINER-SHAPED-COMPOSITES, P-FR1-VARIATION-BUF-CONSISTENCY, P-MATCH-JSON-GATE-REDEFINITION, P-G3-STAGE-3-VISUAL-SLOT-MAPPING, P-G5-PER-BLOCK-DOM-SHAPE-FIXES). Add new: P-LEGACY-GAP-CANDIDATES-MIGRATION (1480 sgs-framework.db rows) | Commits 0.0, 4.3 |
-| `.claude/plans/2026-05-25-phase-1-universal-extraction.md` | Archive + replace with Spec 22's Phase 1 plan (Phase 3 of this Spec 22 work) | Commit 0.0 |
-| `.claude/plans/2026-05-24-strategic-plan.md` | Rewrite or retire post-Spec-22 ratification | Commit 0.0 or Phase 4.3 |
+| `.claude/parking.md` | Add P-LEGACY-GAP-CANDIDATES-MIGRATION (1480 sgs-framework.db rows) | Commit 4.3 |
 | `.claude/state.md` | Phase + status + latest_commit through every commit | Every commit |
 | `.claude/handoff.md` | Final close at Phase 4.3 | Commit 4.3 |
-| Root `CLAUDE.md` | "binding rules" updates to reference R-22-1 through R-22-14 (R-22-14 added 2026-05-27 per Fix 4 reframing) | Commit 1.4 + Phase 2 update |
-| `.claude/CLAUDE.md` (working area) | Authoritative-pointers table gains Spec 22 entry | Commit 0.0 |
+| Root `CLAUDE.md` | "binding rules" updates to reference R-22-1 through R-22-14 | Commit 1.4 + Phase 2 update |
 | `plugins/sgs-blocks/CLAUDE.md` | "Block customisation standard" gains hybrid-block migration reference | Commit 2.1 |
-| `~/.claude/skills/sgs-wp-engine/SKILL.md` | Spec 22 referenced as canonical Stage 4 spec | Commit 0.0 |
-| `~/.claude/skills/sgs-clone/SKILL.md` | Hard rules list updates to drop FR1 references; add FR-22-* references | Commit 1.4 |
-| `.claude/docs-registry.yaml` | Add Spec 22 entry; mark Spec 16 retired | Commit 0.0 |
-| `~/.claude/CLAUDE.md` (global) | If cloning-pipeline section references Spec 16, update to Spec 22 | Commit 0.0 |
-
-**Estimated total: ~20 docs touched across Spec 22's lifespan.** Commit 0.0 alone touches 11 of them — it IS the gating commit for status flip.
+| `~/.claude/skills/sgs-clone/SKILL.md` | FR-22-* references kept current | Commit 1.4 |
 
 ## 9. Out of scope (explicitly)
 
@@ -952,12 +925,10 @@ After Spec 22 Phase 4.3 closes:
 - Every body section on Mama's homepage measures ≤5% pixel-diff × 3 viewports
 - Bean visual sign-off captured on cropped-pair artefacts for every section
 - Cross-client validation gate met on at least one other client (Indus Foods or helping-doctors)
-- Spec 16 archived; all references in 18+ docs updated to Spec 22
 - `convert.py` reduced substantially in LoC (target ~50-60% reduction)
 - `wp-blocks.py` unified CLI deployed; converter calls one tool not two
 - Hybrid-block roster (Phase 0.4) empty of unresolved blocks (every hybrid has migrated render.php)
 - `_retired/` folder bulk-deleted after Phase 4 acceptance
-- decisions.md + mistakes.md cleaned of stale Spec 16 references
 - Zero hardcoded class-to-block dicts remain in Python (role classification migrated to `roles` table per D85/D86/D99; Tier C derivation deleted)
 - ≤72-row Tier B backfill diff reviewed by Bean + applied; 1,142 triple-NULL behavioural rows verified unchanged post-script (per D84 scope correction)
 - A fresh `/sgs-clone` run on any client mockup produces deterministic ≤5% per-section output (Phase 1) with a clear path to ≤1% (Phase 1.5)

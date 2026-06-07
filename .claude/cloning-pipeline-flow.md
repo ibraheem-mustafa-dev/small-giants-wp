@@ -3,12 +3,11 @@ doc_type: visual-reference
 project: small-giants-wp
 purpose: Overview of the SGS Cloning Pipeline — stage-index table, entry-point chain, cross-cutting principles, and pointers to per-stage detail. Per-stage annotated blocks live in cloning-pipeline-stages.md.
 session_date: 2026-05-13
-last_annotated: 2026-05-24 (split into overview + stages file)
-last_consolidated: 2026-05-29 (D99 architectural batch — slot_synonyms + legacy_role_lookup unified into `slots` table; `roles` table replaces slot_synonyms.role_classification; capability-aware tiebreaker FR-22-15 added; walker now queries slots/roles tables for resolution)
+last_annotated: 2026-06-07
 registry_entry: docs-registry.yaml canonical_docs (cloning-pipeline-flow.md)
 companion_docs:
   - .claude/cloning-pipeline-stages.md - per-stage annotated blocks (scripts, files, DB, skills, status)
-  - .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md - canonical pipeline spec (Spec 16 retired 2026-05-26)
+  - .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md - canonical pipeline spec (Spec 22)
 update_triggers:
   - Pipeline stage change (new stage, retired stage, renumbered)
   - Script wired or unwired (status flip in any stage block)
@@ -16,43 +15,39 @@ update_triggers:
   - Skill dispatch change at any stage
 ---
 
-> **2026-06-07 cloning pipeline callout** — three fixes/additions shipped:
-> - **Stage 9 autonomy-gate rollback BUG FIXED (`f93db924`)** — `stage-9-coverage.json` was missing the validator-contract fields (`totals`/`gap_level_totals`/`total_count`) that `staged_merge`/`autonomy_gate` schema validation requires. The orchestrator was renaming them to `leftover_*` aliases, causing the autonomy gate to roll back EVERY page deploy. Fix: emit canonical keys alongside `leftover_*` aliases. Re-clone of page 8 went from `outcome=rolled-back` to `outcome=surface`.
-> - **Icon-identity resolver (`127f2290`)** — new `converter_v2/icon_resolver.py` fingerprints cloned trust-bar badge SVGs/emoji → resolves to correct Lucide/WP icon slug (reverse path-index + structural heuristics, raw-SVG fallback). Trust-bar badges now clone to correct icons (home/check/truck/star). `render.php` gained raw-SVG fallback branch via `sgs_svg_kses_allowed_tags()`.
-> - **Stage 11.5 — parity2 draft-centric fidelity gate wired (`553334f3`, D183)** — every `/sgs-clone` run now auto-reports draft-centric fidelity after Stage 10: captures draft + clone, runs `parity2/` → `content%/layout%/css%/full%` per section + per-class carried/not-carried ledger → `pipeline-state/<run>/parity2-report.json`. Soft-fail (never blocks autonomy chain). Opt-out: `--no-parity2`. Covers 375/768/1440 viewports.
-
-> **2026-06-01 converter callout (cloning thread; D145/D146)** — two converter advances shipped:
-> - **D146 (`270cd995`)** — `sgs/button` now replaces `core/button` everywhere (converter `atomic_tag_map` reverse-walks `blocks.replaces`); a new `button-group` slot routes `ctas`/`buttons` wrappers → `sgs/multi-button`; `_group_loose_buttons` post-pass wraps loose `sgs/button` runs in `sgs/multi-button` (WP-mirror, DB-derived slug, idempotent). Spec 11 / P-9 complete.
-> - **D145 (`b93a3b51`)** — `walk()` carries `is-style-*` classes from the source node onto the emitted block (e.g. `is-style-trustpilot` on `sgs/star-rating`); the content-leaf ladder is now **tag-authoritative** (node's own tag via `atomic_tag_map` routes FIRST + ungated — `<img>`→sgs/media, `<p>`→text, `<a>`→core/button — THEN text-capable BEM segment, THEN sgs/text). Builds on D141's §FR-22-4.1.
-
-> **2026-05-30 D107-D113 follow-up callout** — tier-driven Stage 1 + block_composition data layer + canonical_slot coverage uplift:
-> - **D107 Stage 1 voter rewrite** — `per-section-convention-voter.py:295-305` now queries `blocks.tier` via `db_lookup.is_class_section_block()` helper (was: literal-slug-match against every `sgs-*` class). Section-roots → confidence 1.0; non-section-roots → gap-candidate.
-> - **D107 /sgs-update integration** — `sgs-update-v2.py` Stage 1 `_index_sgs_block_files` reads `supports.sgs.is_section_root` from each `block.json` and writes `blocks.tier` (`'class-section'` if true else `'block'`). Idempotent. 2 rows currently `class-section`.
- > - **D108/D152 block_composition data layer LIVE; walker code DEFERRED** — `block_composition` table (188 rows D108; **189 rows post-D152** — `sgs/option-picker` added; `container_kind` column added D152, values `section|layout|content`, populated for 28-block container roster; schema: `block_slug` PK, `wraps_block`, `composition_role` enum, `has_inner_blocks`, `accepts_allowed_blocks`, `container_kind`). The TABLE persists and is valid. The walker recursion code that would consume it (XS-3) was REVERTED (commit `f173b351` → `c76aa107`). Refined trigger queued at `P-XS-3-TRIGGER-REFINEMENT`.
-> - **D110 assign-canonical.py D99 port + backfill** — script ported from retired `slot_synonyms` to post-D99 `slots`+`roles` schema (9 references migrated). `block_attributes.canonical_slot` coverage 52 → 692 rows (2.5% → 33.4% via initial backfill + XS-4 follow-ups); `role` coverage 110 → 689 (5.3% → 33.2%). ~1382 rows remain NULL (vocab/regex gaps logged).
-> - **D111 section-scope slot retirement** — `slots` scope='section' pruned from 16 → 4 rows (keepers: core/group, hero, cta, cta-section); element scope grew to 92 (testimonial + testimonial-slider re-inserted at element scope, `inner` passthrough element row added).
-> - **D112 D6 inheritance script** — new `plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py` populates `block_composition.wraps_block`. Emits per-block diff Markdown to `pipeline-state/container-inheritance-sync/<date>/<block>.diff.md`. Operator-review gate (never auto-edits `block.json`). Threshold tuning queued at `P-D6-THRESHOLD-RETUNE` (4 blocks too few — target 20-30+).
-> - **D113 D5 methodology updates** — STOP catalogue extended (entry #12).
-> - **D3 build-deploy.py** — new automated deploy helper at `plugins/sgs-blocks/scripts/`.
-> See `.claude/decisions.md` D107-D113 for full per-decision detail.
-
-> **2026-05-29 D99 architectural cleanup batch** — recogniser/walker layer table changes:
-> - `slot_synonyms` table RETIRED → unified into new `slots` table with composite PK `(slot_name, scope)`; 89 element + 16 section = 105 rows at D99 (later pruned to 92 element + 4 section = 96 at D111)
-> - `legacy_role_lookup` table RETIRED → migrated into `slots` table as scope='section' rows
-> - NEW `roles` table (21 rows post-D128; 20 base + `scalar-media`) replaces `slot_synonyms.role_classification` — fixes link-href bug at gate (`_content_bearing_roles()` now returns all 5 spec-defined roles)
-> - NEW `property_suffixes.kind_override` column replaces `_KIND_BY_SUFFIX` hardcoded Python dict (17 rows)
-> - `html_tag_to_core_block` seed switched from INSERT OR IGNORE → INSERT OR REPLACE (prevents seed/DB divergence)
-> - `block_capabilities` wired into walker as FR-22-15 capability-aware BEM tiebreaker (replaces alphabetical fallback for multi-class disambiguation)
-> - 4 retired blocks deleted from `blocks` table (sgs/back-to-top, sgs/data-display, sgs/icon-block, sgs/reading-progress)
-> - sgs/svg-background, sgs/certification-bar retired (merged into container + trust-bar respectively)
-> - /sgs-update Stage 1 gained UPDATE-on-drift; Stage 10 gained aggressive-prune default + attr-orphan detection + retired-blocks cleanup
-> - Hard-link / NTFS-junction finding: .claude/.agents DB paths share inode = same physical file; real two DBs are sgs-framework + ui-ux-pro-max
-> See `.claude/decisions.md` D93-D100 for full per-decision detail.
 
 # SGS Cloning Pipeline — Overview
 
 Per-stage annotated blocks (scripts, files, DB tables, skills, status) are in
 `.claude/cloning-pipeline-stages.md`. This file is the cold-start map.
+
+---
+
+## How cloning fidelity works — DO NOT REDESIGN THIS
+
+**Read this before proposing any change to the cloning pipeline or fidelity strategy.**
+
+**What a draft is:** an HTML file with embedded CSS whose classes follow SGS-BEM convention (`.sgs-<block>__<element>--<modifier>`). The converter's job is to faithfully transfer that draft's visual CSS into native WordPress SGS block attributes — producing a clone that looks identical to the draft AND remains fully editable in the block editor.
+
+**The converter is ONE universal recursive walker (FR-22-3).** Exactly 3 permitted exceptions exist: atomic-tag swap / chrome-skip at top level / top-level section wrap in `sgs/container`. No per-section code branches. No 4th exception without a spec amendment.
+
+**Block choice is DB-driven, never invented:**
+- Stage 1 (`per-section-convention-voter.py` → `blocks.tier`) finds section-roots.
+- Stage 2 (`confidence-matrix.py`) matches each section to the best-fit SGS block.
+- No confident match → falls back to `sgs/container` BY DESIGN (Decision 3). This is correct behaviour, not a gap.
+- Every BEM node → block slug via `slots.standalone_block` DB lookup. No per-section bespoke blocks, no hardcoded dicts (R-22-1).
+
+**Fidelity = transferring the draft's CSS onto the chosen block's EDITABLE attributes** (Spec 22 §FR-22-21 universal wrapper-conversion procedure): `widthMode` / `contentWidth` / `gap` / `gridTemplateColumns` / `gridItem*` / background / padding. The clone reproduces the draft AND stays editable + reusable.
+
+**The remaining "Method-2" converter work is COMPLETING that attribute-transfer** where it is currently incomplete (D1 sidecar not yet consumed; composite routing not yet active). It is NOT:
+- Creating a new composite block per draft section.
+- Hardcoding per-section class names or CSS values.
+- Mirroring the draft DOM / classes verbatim (`sourceMode='bound'` cheat — purged in WS-3).
+- A "complete mirror" that bypasses the converter + DB.
+
+**Anti-pattern warning:** when a cloned section looks wrong, the fix is ALWAYS "complete the DB-driven attribute-transfer for that property". NEVER invent per-section blocks, hardcode values, or bypass the converter/DB. (blub.db 329 / `rule-critique-is-not-fix-shape-confirmation`)
+
+---
 
 ## Stage-index table
 
@@ -61,7 +56,7 @@ Per-stage annotated blocks (scripts, files, DB tables, skills, status) are in
 | 0 | Pre-flight + Theme Cache | `orchestrator/preflight_chain.py` | `stage-0-preflight.json` | LIVE |
 | 0.1 | BEM compliance lint | `lints/bem-lint.py` | `stage-0.1-bem-lint.json` | LIVE |
 | 0.5 | Token-usage lint | `lints/token-lint.py` | `stage-0.5-token-lint.json` | LIVE |
-| 0.7 | CSS lift (four-destination router) | `orchestrator/css_router.py` | `css-d1-assignments.json` + variation CSS | LIVE (Spec 22 §FR-22-5; was Spec 16 §FR6 — retired 2026-05-26) |
+| 0.7 | CSS lift (four-destination router) | `orchestrator/css_router.py` | `css-d1-assignments.json` + variation CSS | LIVE (Spec 22 §FR-22-5) |
 | 0.8 | Theme-widths detection | `converter_v2/convert.py` (inline fns) | `styles/<client>.json` (idempotent) | LIVE |
 | 1 | Section boundary detection | `recogniser/per-section-convention-voter.py` | `voter.json` | LIVE (tier-driven post-D107) |
 | 2 | Block-type match | `recogniser/confidence-matrix.py` | `stage-2.json` | LIVE |
@@ -85,13 +80,14 @@ Per-stage annotated blocks (scripts, files, DB tables, skills, status) are in
 
 ---
 
-## Live entry-point chain (verified 2026-05-13; ASCII art stale post 2026-05-20)
+## Live entry-point chain
 
 ```
 1.  /sgs-clone command
        ↓ invokes
 2.  plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py        ✓ ENTRY POINT
        ↓ runs stages 0.1 → 9 inline + via subprocess
+       ↓ also loads css_router.py, essence_match_detector.py inline
        ↓ then imports
 3.  plugins/sgs-blocks/scripts/orchestrator/orchestrator_main.py  ✓
        ↓ loads
@@ -103,16 +99,11 @@ Per-stage annotated blocks (scripts, files, DB tables, skills, status) are in
 4.  plugins/sgs-blocks/scripts/orchestrator/register_patterns.py ✓ +REGISTER tail
 ```
 
-**Note (2026-05-20):** `css_router.py`, `essence_match_detector.py`, and
-`stage_attribute_promotion.py` were added in the architectural rewrite and are
-not yet reflected in the ASCII art above.
-Tracked: `P-CLONING-PIPELINE-FLOW-DOC-DRIFT` in parking.md.
-
 ---
 
 ## Universal-path topology (Spec 22 FR-22-3)
 
-The cloning pipeline emits via a single universal walker path with exactly 3 permitted exceptions. The legacy "two-route" topology (Spec 16 FR1 fast path + FR4 normal route) is **retired** — Spec 16 archived 2026-05-26.
+The cloning pipeline emits via a single universal walker path with exactly 3 permitted exceptions. Canonical spec: `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`.
 
 - **Universal path** — every BEM-classed DOM node resolves to a block slug via Spec 00 §3.1 BEM canonical signal + `slots` (scope='element') `standalone_block` lookup. Walker recurses into children. Per-block behaviour comes from DB rows, not code branches. See Spec 22 §3 FR-22-1 + FR-22-3.
 - **Permitted exception 1** — Atomic-tag swap (Spec 22 FR-22-3 / Appendix B). Bare HTML tags with no SGS classes route via DB-driven `db.atomic_tag_map()` (`blocks.replaces` reverse-walk; `html_semantic_tag` was NOT migrated from retired `slot_synonyms` — see Spec 22 §14).
@@ -170,7 +161,7 @@ No other branches. Adding a 4th requires spec amendment with empirical justifica
 ## See also
 
 - **Per-stage detail:** `.claude/cloning-pipeline-stages.md` — stage annotated blocks, script inventory, skill dispatch chain (full), DB heat-map (full)
-- **Canonical pipeline spec:** `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` (Spec 16 retired 2026-05-26, archived at `.claude/specs/archive/`)
+- **Canonical pipeline spec:** `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`
 - **State:** `.claude/state.md`
 - **Decisions log:** `.claude/decisions.md`
 - **Artefact catalogue:** `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md`

@@ -37,7 +37,7 @@ small-giants-wp/
 │   ├── theme.json               # All design tokens: colours, fonts, spacing, shadows
 │   ├── style.css                # Theme header only (no CSS rules)
 │   ├── functions.php            # Enqueues, variation-specific CSS, filters
-│   ├── styles/                  # EMPTIED — Phase 5a (2026-05-21). Per-client snapshots at sites/<client>/theme-snapshot.json
+│   ├── styles/                  # EMPTY — per-client snapshots at sites/<client>/theme-snapshot.json
 │   ├── templates/               # Full-page block templates (index, page, single, etc.)
 │   ├── parts/                   # Template parts (header variants, footer, mega menus)
 │   ├── patterns/                # Reusable block patterns
@@ -260,13 +260,11 @@ Auto-discovery is handled by `class-sgs-blocks.php`. Any folder in `build/blocks
 
 ---
 
-## Adding a style variation
+## Adding per-client theming
 
-> **Note (2026-05-21, Phase 5a):** The WP style-variation overlay system was retired. `theme/sgs-theme/styles/` is now empty. Per-client colour/typography snapshots live at `sites/<client>/theme-snapshot.json` and are deployed via `plugins/sgs-blocks/scripts/push-theme-snapshot.py`. The section below documents the old mechanism for reference; do not add new per-client `.json` files to `theme/sgs-theme/styles/`.
+Per-client colour/typography snapshots live at `sites/<client>/theme-snapshot.json` and are deployed via `plugins/sgs-blocks/scripts/push-theme-snapshot.py`. Do NOT add per-client `.json` files to `theme/sgs-theme/styles/` — that directory is intentionally empty.
 
-Style variations used to let the same theme serve different clients via JSON files in `theme/sgs-theme/styles/`. The current approach is `theme-snapshot.json` per client, pushed with the push-theme-snapshot script.
-
-If the variation needs CSS that cannot be expressed via tokens, add it to the client's `theme-snapshot.json` under `styles.css` OR to `sites/<client>/theme-overrides.css`. Never add client-specific CSS to `style.css`.
+If the client needs CSS that cannot be expressed via tokens, add it to the client's `theme-snapshot.json` under `styles.css` OR to `sites/<client>/theme-overrides.css`. Never add client-specific CSS to `style.css`.
 
 ---
 
@@ -613,12 +611,12 @@ python plugins/sgs-blocks/scripts/assign-canonical.py
 
 ---
 
-## 2026-05-20 — Phase 1 four-destination CSS router architectural rewrite (was Spec 16 §FR6; now Spec 22 §FR-22-5)
+## 2026-05-20 — Phase 1 four-destination CSS router architectural rewrite (Spec 22 §FR-22-5)
 
 13 commits (`8ceb8787` → `bb3de12b`) added:
 
 **New modules:**
-- `plugins/sgs-blocks/scripts/orchestrator/css_router.py` (661 LOC) — Spec 22 §FR-22-5 four-destination router (D0/D1/D2/D3); was Spec 16 §FR6 — retired 2026-05-26
+- `plugins/sgs-blocks/scripts/orchestrator/css_router.py` (661 LOC) — Spec 22 §FR-22-5 four-destination router (D0/D1/D2/D3)
 - `plugins/sgs-blocks/scripts/orchestrator/stage_attribute_promotion.py` — operator-driven CLI for promoting gap candidates into block.json schema
 - `plugins/sgs-blocks/scripts/orchestrator/essence_match_detector.py` — cv2 walker tier for essence-match-with-differences → block-variation emit
 - `plugins/sgs-blocks/includes/class-variation-rest.php` — sgs/v1/active-variation REST endpoint
@@ -629,6 +627,6 @@ python plugins/sgs-blocks/scripts/assign-canonical.py
 
 **Cross-references:**
 - Full pipeline changes: `.claude/cloning-pipeline-flow.md` 2026-05-20 section
-- Spec compliance + known gaps: `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §2-§3 (Spec 16 retired 2026-05-26; archived at `.claude/specs/archive/`)
+- Spec compliance + known gaps: `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §2-§3
 - Architectural decisions: `.claude/decisions.md` D1-D6
 - Honest-path council finding: `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md`

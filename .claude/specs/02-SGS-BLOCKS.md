@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 2
-spec_version: "1.1"
+spec_version: "1.2"
 project: small-giants-wp
 title: SGS Blocks — Custom Gutenberg Block Library
 status: shipped
-last_verified: 2026-06-02
+last_verified: 2026-06-07
 authors: Bean + Claude
 session_date: 2026-02-01
 status_history:
@@ -101,7 +101,7 @@ sgs-blocks/
 Decided 2026-05-03 — full spec at [`11-SGS-BUTTON-ARCHITECTURE.md`](11-SGS-BUTTON-ARCHITECTURE.md). Summary:
 
 - **`sgs/button`** is the canonical button block. Replaces all uses of `core/button` inside SGS blocks. 87 attributes (full surface — see spec 11 §8 comparison vs Spectra/Kadence/Stackable/core).
-- **`sgs/multi-button`** is the container. Accepts 0..N `sgs/button` instances via InnerBlocks (restricted to children of type `sgs/button`). Per-breakpoint layout direction + gap + alignment.
+- **`sgs/multi-button`** is the container. Accepts 0..N `sgs/button` instances via InnerBlocks (restricted to children of type `sgs/button`). Per-breakpoint layout direction + alignment. Gap is provided by the shared `ContainerWrapperControls` gap control (raw-px free-input, `sgs_container_gap_value()`) — no separate per-block gap control.
 - **Composition pattern:** every composite block that renders CTAs (`sgs/hero`, `sgs/cta-section`, `sgs/product-card`, `sgs/feature-grid`, etc.) exposes an InnerBlocks slot whose default template is `sgs/multi-button` containing 2 `sgs/button` instances. **NEW SGS BLOCKS WITH CTAs MUST USE THIS PATTERN** — never render CTAs internally via per-block `ctaPrimary*` attributes.
 - **Preset binding** via `inheritStyle: 'primary' | 'secondary' | 'outline' | 'custom'` reads from `wp_options.sgs_button_presets`, mirrored to `theme.json` `settings.custom.buttonPresets`. Three editing paths (Settings page, Site Editor block-style-variations, theme.json) write the same backing store.
 - **Existing CTA-rendering blocks** (sgs/hero etc.) are refactored to InnerBlocks composition with deprecation paths preserving existing post content. See spec 11 §5.
@@ -109,7 +109,7 @@ Decided 2026-05-03 — full spec at [`11-SGS-BUTTON-ARCHITECTURE.md`](11-SGS-BUT
 
 ## Pipeline / extraction
 
-Mockup HTML → SGS block markup pipeline at [`22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`](22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) (Spec 12 absorbed into Spec 16 §12 Appendix A 2026-05-12; Spec 16 retired into Spec 22 2026-05-26). Key rules:
+Mockup HTML → SGS block markup pipeline at [`22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`](22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) (canonical cloning-pipeline spec). Key rules:
 
 - Fingerprints auto-derived from `block.json` — never hand-written. Adding an attribute to a block automatically grows the recogniser's coverage.
 - Pull all CSS every run, classify into block-attribute / universal-handled / one-time-custom. No silent loss.
@@ -170,15 +170,15 @@ block-name/
 
 **containerKind (NEW 2026-06-02 — D152 / Workstream A):** `block_composition.container_kind` column introduces a 3-KIND model for all container-bearing blocks:
 
-| Kind | Meaning | CSS scope |
+| Kind | Meaning | Editor controls exposed |
 |---|---|---|
-| `section` | Full-bleed outer section wrapper — background + spacing; content-width cap is on the inner wrapper | Outer: `width:100%`; no `max-width` |
-| `layout` | Inner content-width wrapper — caps readable content; explicit `max-width` + `margin:auto` | Inner: `max-width` + `margin:auto` |
-| `content` | Composite block with its own wrapper CSS (e.g. `sgs/product-card` card chrome) | Mirrors `sgs/container`; see composite-mirror rule below |
+| `section` | Full-bleed outer section wrapper — full surface: background (image/video/overlay/SVG/animation), shape dividers, width/contentWidth, gap (responsive), layout (grid/flex), min-height, grid-item defaults, shadow | All `ContainerWrapperControls` panels |
+| `layout` | Inner layout wrapper — grid/flex arrangement + width/contentWidth + gap. No background/overlay/SVG/shape layers. | Layout + Width panels only |
+| `content` | Content-level composite — width/contentWidth + inner padding/spacing only. No grid/bg layers. | Width + Spacing panels only |
 
-`containerKind` is exposed as an operator-override attribute on composite blocks whose wrapper KIND is decided by the block's design context (not universal). Example: `sgs/trust-bar` and `sgs/modal` declare `supports.sgs.containerKind: "section"` in `block.json` so the pipeline can treat them as section wrappers when they appear at section boundaries.
+`containerKind` is declared in each composite block's `block.json` as `supports.sgs.containerKind`. It gates which `ContainerWrapperControls` panels render in the editor and which layers the shared `SGS_Container_Wrapper::render()` PHP helper emits at runtime. `sgs/modal` and `sgs/mobile-nav` carry `supports.sgs.containerMirror: false` and are excluded from the roster entirely (their outer shell is a Popover/dialog, not a container).
 
-**Composite-mirror rule (R-22-9 / D152):** Every composite block with a built-in wrapper (`composition_role='wrapper-shell'` in `block_composition`) MUST mirror `sgs/container`'s CSS model — no per-block divergence. When `sgs/container` gains a capability (e.g. neutral-default width, inner-wrapper pattern), all 28 composite blocks gain it automatically via the `sync-container-wrapping-blocks.py` standardisation script. Canonical procedure: Spec 22 §FR-22-21 + `.claude/plans/2026-06-02-container-wrapper-standardisation.md`.
+**Composite-mirror rule (R-22-9 / D152, BLOCK-SIDE COMPLETE D167 2026-06-04):** Every composite block in the 29-block roster mirrors `sgs/container`'s wrapper capabilities via the shared helper `includes/class-sgs-container-wrapper.php`. No per-block reimplementation — the helper handles all rendering. When `sgs/container` gains a new capability, `/sgs-update` Stage 11 propagates it to all roster blocks. Canonical procedure: Spec 22 §FR-22-21 + `.claude/plans/2026-06-02-container-wrapper-standardisation.md`.
 
 **Render:** **Dynamic** — `render: file:./render.php`. Server-side rendering needed for layout/columns/gap responsive logic and `useInnerBlocksProps` integration. `save.js` returns `<InnerBlocks.Content />`.
 
@@ -270,7 +270,7 @@ block-name/
 
 **Status: ACTIVE.** ⚠️ The slug `sgs/trust-bar` has had two lives — do not confuse them:
 
-1. **ORIGINAL composite** (counter + badge) — **RETIRED 2026-05-25 (D72)**: source files + DB rows deleted; hardcoded special-cases removed from `confidence-matrix.py` / `seed-legacy-role-lookup.py` / `lingua_franca.py` / `generate-markup-examples.py` / `BlockDeprecationsTest.php` / `blocks.spec.ts` / `test_ensure_root_section_class.py`. Counter use-cases → `sgs/counter`; badge use-cases at that time → universal-nesting (`sgs/container` + `sgs/label`/`sgs/icon` children).
+1. **ORIGINAL composite** (counter + badge) — retired: counter use-cases → `sgs/counter`; badge use-cases → universal-nesting (`sgs/container` + `sgs/label`/`sgs/icon` children).
 
 2. **CURRENT block** — **`sgs/trust-badges` was rebuilt then renamed → `sgs/trust-bar` (D123, 2026-05-31)**; it absorbed `certification-bar` (D95, `badgeStyle` variants: icon-circle / text-only / image-badge + auto-scroll marquee). As of 2026-06-01 it is **dual-mode (FR-24-10, SHIPPED)**: `sourceMode='typed'` (curated repeater) OR `sourceMode='bound'` (echoes `$content` → renders the converter's emitted badge InnerBlocks). render.php branches on the explicit `sourceMode` (R-22-14, never `empty($content)`); ~~the converter sets `sourceMode='bound'` on cloned trust-bars~~. ⚠ **SUPERSEDED FOR CLONING (2026-06-06):** the converter's bound-emit path is a **test cheat** — it mirrors the draft DOM structure instead of converting to native `items[]` attributes. Being purged per reports/2026-06-06-bound-mode-purge-plan.md. Cloning MUST produce Typed mode (`items[]` populated). The live WC configurator modes (`wc-product`/`sgs-cpt`) are unaffected. `src/blocks/trust-bar/` is the ACTIVE directory (the old `src/blocks/trust-badges/` dir was removed in the rename). See decisions.md D72 (original retire) + D95 (certification-bar merge) + D123 (rename) + Spec 27 §FR-24-10.
 
@@ -1300,7 +1300,7 @@ Global floating UI elements (Back to Top button, Reading Progress bar) live in `
 
 **Reading Progress settings (9):** enabled, mode (bar/countdown/both), position (top/bottom), target selector, words-per-minute (default 225), bar colour, bar height, post types to show on, show when finished.
 
-**Retired blocks:** `sgs/back-to-top` and `sgs/reading-progress` both FULLY RETIRED 2026-05-29 (D100 Stage 10 v3 cleanup): src directories deleted (since Spec 17 Wave 2 Polish 1b 2026-05-18), DB `blocks` table rows DELETED via /sgs-update Stage 10 v3 aggressive prune (D100). Existing post content carrying `wp:sgs/back-to-top` or `wp:sgs/reading-progress` markers renders WordPress's generic "block has been deleted" placeholder; operators reconfigure via Customiser at *Appearance → Customise → SGS Floating UI*. Also retired in the D100 cleanup pass: `sgs/data-display` and `sgs/icon-block` (both were already deleted from src; D100 cleaned the lingering blocks-table rows).
+**Retired blocks:** `sgs/back-to-top`, `sgs/reading-progress`, `sgs/data-display`, `sgs/icon-block` no longer exist. Existing post content carrying `wp:sgs/back-to-top` / `wp:sgs/reading-progress` markers renders WordPress's "block has been deleted" placeholder; operators reconfigure the floating UI via the Customiser at *Appearance → Customise → SGS Floating UI*.
 
 **Why not a settings admin page:** Customiser has live preview — clients see button reposition / change colour as they drag sliders. Save-and-refresh on a settings page kills the design-iteration feel.
 
@@ -1464,4 +1464,4 @@ Audit report at reports/2026-05-20-block-attribute-audit.csv. 9 block.json retro
 
 **Attribute promotion:** new operator-driven CLI `stage_attribute_promotion.py` (commands: `list --top N`, `promote --id <row_id>`, `status`) mutates block.json `attributes` + emits render.php inline-style branch for promoted gap candidates. Reads from BOTH uimax DB + sgs-framework DB candidates (1128-row backlog). Manual confirmation gate + idempotent. Commit `37c92950`.
 
-**How blocks evolve over time:** during clone runs, the universal walker routes gap candidates to D3 (per Spec 22 FR-22-5; was Spec 16 §FR6 before retirement). Operator periodically runs the promotion CLI to convert high-confidence candidates into block.json schema additions. Next clone run picks up the new attrs, lifting them via D1 instead of flagging as gap. Each promoted attr permanently expands the block's typed surface for future clones.
+**How blocks evolve over time:** during clone runs, the universal walker routes gap candidates to D3 (per Spec 22 FR-22-5). Operator periodically runs the promotion CLI to convert high-confidence candidates into block.json schema additions. Next clone run picks up the new attrs, lifting them via D1 instead of flagging as gap. Each promoted attr permanently expands the block's typed surface for future clones.

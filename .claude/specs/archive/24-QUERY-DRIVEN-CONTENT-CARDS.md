@@ -15,7 +15,7 @@ research: "blub.db — 'Gold-standard WP product card / product display block (2
 
 # Spec 24 — Query-Driven Content Cards
 
-> **SUPERSEDED 2026-06-03 (D161).** Folded into the master **Spec 27 — SGS Product & WooCommerce Layer** (`.claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md`). All FR-24-x requirements were carried forward into Spec 27's "blocks (shipped layer)" chapter, with stable IDs. Read Spec 27 for the current canonical product-layer spec; this file is kept in place for FR-24-x cross-reference continuity only.
+> **SUPERSEDED — read [Spec 27](../27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md) instead.** FR-24-x IDs are stable in Spec 27.
 
 ## Problem statement
 

@@ -16,7 +16,7 @@ SGS is an AI website-builder. The cloning pipeline must CONVERT any SGS-BEM draf
 - **Phase 1.5 gate:** per-section ≤1% × 3 viewports. Bridges residual via pixel-diff.py vertical-anchor fix + chrome cropping + font-load timing. Scope determined empirically by Phase 1.5 measurement results.
 - **Phase 2 gate:** header + footer cloner ships after Phase 1 hits ≤5% (Phase 1.5 may run in parallel). Phase 2 scope locked to 61-block hybrid render.php migration roster per `reports/2026-05-27-hybrid-block-roster.md`.
 
-Canonical spec: `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` (replaces Spec 16, retired 2026-05-26). Council findings register: `.claude/reports/2026-05-25-qc-council-issue-register.md` (~110 items + Section P binding rules + Section Q 20-cheat inventory — drove the Spec 22 architecture).
+Canonical spec: `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`. Council findings register: `.claude/reports/2026-05-25-qc-council-issue-register.md` (~110 items + Section P binding rules + Section Q 20-cheat inventory).
 
 Empirical baseline (Wave B re-capture 2026-05-27): `pipeline-state/mamas-munches-144-2026-05-26-122349/stage-11-pixel-diff.json` — **mean_mismatch_percent: 63.61%** per file (27 captures attempted, 27 OK, 0 errors, 0 wait_fonts_false_count). hero 1440 honest correction 69.6% → 60.8% (-8.8pp per D88); brand-375 +2.4pp methodology shift confirmed deterministic across re-runs (D88). Earlier `pipeline-state/mamas-munches-homepage-2026-05-26-012625/` baseline (mean 63.0%) retained as historical reference per D88 — partially stale on chrome-affected cells. Visual proof-of-concept at `/hero-clone-poc/` (page 29) — visual parity achievable; pre-fix 54.5% → post-fix 10.3% at 1440 (-44.2pp per D87).
 
@@ -38,7 +38,7 @@ Ship a complete WordPress block framework + theme + supporting plugins (forms, b
 
 | Goal | Status | Notes |
 |------|--------|-------|
-| **Architecture programme (8 phases, 31 decisions)** | DONE | All phases shipped across 2026-05-21 → 2026-05-22. DB consolidation, style-variation system retired, INNER_BLOCK_PATTERNS retired, button presets migrated to WP 7.0 theme.json, `/sgs-update` rebuilt as 9-stage v2, WP 7.0 alignment (all 69 blocks). See `.claude/plans/2026-05-21-architecture-staging.md`. |
+| **Architecture programme (8 phases, 31 decisions)** | DONE | All phases shipped across 2026-05-21 → 2026-05-22. DB consolidation, per-client theme-snapshot model established, button presets migrated to WP 7.0 theme.json, `/sgs-update` rebuilt as 9-stage v2, WP 7.0 alignment (all 69 blocks). See `.claude/plans/2026-05-21-architecture-staging.md`. |
 | **WP 7.0 upgrade on sandybrown** | DONE | DB schema 60717 → 61833. `Sgs_Ai_Connector`, `wp_set_script_module_translations`, `WP_REST_Icons_Controller` all confirmed available. |
 | **Spec 17 — Header/Footer Architecture** | DONE | 16 FRs, 22 PHP classes, 12 WP-CLI commands across 3 waves. Full spec: `.claude/specs/17-SGS-HEADER-FOOTER-ARCHITECTURE.md` |
 | **Floating UI Customiser** | DONE | `Sgs_Floating_UI_Customiser` + `Sgs_Floating_UI_Renderer` replace admin-page approach with live Customiser preview. `sgs/back-to-top` block deprecated to no-op. |
@@ -56,7 +56,7 @@ Ship a complete WordPress block framework + theme + supporting plugins (forms, b
 - No jQuery; no page builders; pure Gutenberg + Interactivity API
 - UK English in all code, comments, user-facing text
 - Every block customisable via editor inspector (no code-required settings)
-- Style variation system: **RETIRED (Decision D28, Phase 5a shipped 2026-05-21, commit `43a93df9`).** Per-client snapshots at `sites/<client>/theme-snapshot.json`; deployed via `push-theme-snapshot.py`. Framework deploys contain zero client-specific files. Header/footer template parts unaffected.
+- Per-client theming: `sites/<client>/theme-snapshot.json` deployed via `push-theme-snapshot.py`. Framework deploys contain zero client-specific files. `theme/sgs-theme/styles/` is empty; do not add files there.
 
 ## Success metrics (from design-brain spec §8)
 

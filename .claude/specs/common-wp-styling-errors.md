@@ -233,7 +233,7 @@ Also: always use `background-image:` not `background:` shorthand for gradient/im
 
 **Captured:** 2026-05-06 (H-9 audit). Fixed in `cta-section/style.css` (gradient preset rules + button gradient) and `post-grid/style.css` (skeleton shimmer).
 
-## S. Pixel-diff investigation methodology (2026-05-15 Spec 16 Phase 7 session)
+## S. Pixel-diff investigation methodology
 
 **Symptom:** Pixel-diff between deployed SGS converter output and a mockup baseline plateaus at ~30-45% even after multiple architectural converter improvements. Tempting conclusion: "the closure gate is unachievable, the comparison is structurally noisy".
 
@@ -374,7 +374,7 @@ Then set `self_closing=False` in `emit_wp_block()` for hero (and any other Inner
 
 **Fix:** Phase 6 audit (Decision 23a) — walk all 73 SGS block.json files and add `"role": "content"` to every content-bearing string attribute. This is a block.json-only change; no PHP or JS required.
 
-**Cross-reference:** Spec 16 §21 — this is Decision 23a of the backfill audits phase.
+**Cross-reference:** Decision 23a of the backfill audits phase (decisions.md D23a).
 
 ---
 

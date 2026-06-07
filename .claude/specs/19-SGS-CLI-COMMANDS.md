@@ -460,7 +460,7 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py \
 
 The primary pipeline orchestrator for the SGS clone workflow. Runs all pipeline stages
 (extraction, recognition, conversion, deploy). Accepts `--converter-v2` flag to route
-through the Spec 22 universal walker converter (Spec 16 was the predecessor; retired 2026-05-26).
+through the Spec 22 universal walker converter.
 
 ```bash
 # Standard full run
@@ -478,7 +478,7 @@ python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
 ```
 
 **Key flags:**
-- `--converter-v2` — REQUIRED to route through cv2 (Spec 16). Without it, legacy extract path runs silently.
+- `--converter-v2` — REQUIRED to route through cv2. Without it, legacy extract path runs silently.
 - `--client <slug>` — auto-derived from mockup path when omitted; required for Stage 10 push.
 - `--no-playwright` — skips Stage 4 Playwright responsive extraction. Use only for quick iteration; not for fidelity measurement.
 

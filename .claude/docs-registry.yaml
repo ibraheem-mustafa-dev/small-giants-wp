@@ -38,11 +38,10 @@ canonical_docs:
   - {path: .claude/cloning-pipeline-stages.md,                         scope: forever,                          doc_type: pipeline-stages-reference}
   - {path: .claude/specs/02-SGS-BLOCKS.md,                             scope: spec_version_canonical,           doc_type: spec, spec_version: 2}
   - {path: .claude/specs/11-SGS-BUTTON-ARCHITECTURE.md,                scope: spec_version_canonical,           doc_type: spec, spec_version: 11, note: "sgs/button architecture — SHIPPED 2026-05-04; core/button universal replacement + multi-button grouping completed by the converter 2026-06-01 (D146 / commit 270cd995). P5 theme.json-native migration still pending."}
-  - {path: .claude/specs/archive/16-DETERMINISTIC-CONVERTER-V2-retired-by-spec-22.md, scope: archived_for_git_blame, doc_type: spec, spec_version: 16, status: retired, retired_by: ".claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md", retired_date: "2026-05-26"}
-  - {path: .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md,  scope: spec_version_canonical,           doc_type: spec, spec_version: 22, supersedes: ".claude/specs/archive/16-DETERMINISTIC-CONVERTER-V2-retired-by-spec-22.md", note: "Canonical cloning-pipeline spec — replaces Spec 16 2026-05-26. §FR-22-19 composite scalar-media SHIPPED 2026-06-01"}
-  - {path: .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md,      scope: spec_version_canonical,           doc_type: spec, spec_version: 27, thread: sgs-theme, absorbs: "24, 25", status: master, note: "MASTER spec for the SGS product + WooCommerce layer (CPT, content-collection, cart, dual-mode card, option-picker) + the variable-product configurator chapter. Absorbed Spec 24 + 25 (v4, 2026-06-03, D161). Phases 1+2 SHIPPED (D165/D171/D173/D176/D177); Cluster-D R4/F2 + R5 remain. Read this, not 24/25."}
+  - {path: .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md,  scope: spec_version_canonical,           doc_type: spec, spec_version: 22, note: "Canonical cloning-pipeline spec — universal walker, single extraction path, DB-first slot routing. §FR-22-19 composite scalar-media SHIPPED 2026-06-01"}
+  - {path: .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md,      scope: spec_version_canonical,           doc_type: spec, spec_version: 27, thread: sgs-theme, status: master, note: "MASTER spec for the SGS product + WooCommerce layer (CPT, content-collection, cart, dual-mode card, option-picker) + the variable-product configurator chapter. Phases 1+2 SHIPPED (D165/D171/D173/D176/D177); Cluster-D R4/F2 + R5 remain."}
   - {path: .claude/specs/28-SGS-SMART-BULK-PRICING.md,                 scope: spec_version_canonical,           doc_type: spec, spec_version: 28, thread: sgs-theme, status: active, note: "Smart bulk pricing / comparative value-ladder. P1 (display-only ladder) + the council Wave-2 authoring-UI + UK-consumer-law hardening SHIPPED (D179/D180/D181). P2/P3 (preview engine + base-price cascade) next; P4 WC-write + R5 AI-builder GATED behind the cloning converter. ADDED to registry 2026-06-06 (was referenced everywhere but untracked — doc-council finding #6)."}
-  - {path: .claude/specs/24-QUERY-DRIVEN-CONTENT-CARDS.md,             scope: spec_version_canonical,           doc_type: spec, spec_version: 24, status: superseded_by_27, note: "SUPERSEDED 2026-06-03 (D161) -> folded into Spec 27 master; kept in place for FR-24-x cross-ref. Query-driven content cards + trust-bar dual-mode FR-24-10 (SHIPPED 2026-06-01) + sgs/option-picker FR-24-11..17 Phase A SHIPPED 2026-06-02 (D144 — block built + variation-sets meta wired; Phase B product-card Gutenberg panel SHIPPED same session). Product-card Phase C (dual-source WC-native/CPT) = D149, next theme session."}
+  - {path: .claude/specs/29-CONTAINER-EQUIVALENT-BLOCKS.md,            scope: spec_version_canonical,           doc_type: reference, spec_version: 29, note: "Container-equivalent blocks reference (NEW 2026-06-07) — the built-in sgs/container model, the 3-KIND map (section/layout/content), the mirror roster + shared helper/controls, and the consolidated single gap control. Cross-ref: Spec 22 §FR-22-21."}
   - {path: .claude/reports/2026-06-01-product-card-option-picker-design.md, scope: forever_until_ratified_or_superseded, doc_type: reference, sot_note: "Product-card variation-sets + sgs/option-picker design (research-buddies+brainstorming); FR-24-11..17 RATIFIED 2026-06-01 via D144 — Bean's 6 decisions RESOLVED in-doc; Phase A+B SHIPPED 2026-06-02 (sgs/option-picker block + product-card Gutenberg panel + variation-sets meta). Phase C (dual-source) design D149, Phase D (clone-emit) + Phase E (collection) still pending."}
   - {path: .claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md,             scope: spec_version_canonical,           doc_type: spec, spec_version: 17}
   - {path: .claude/specs/18-SGS-FLOATING-UI.md,                        scope: spec_version_canonical,           doc_type: spec, spec_version: 18}
@@ -58,8 +57,7 @@ canonical_docs:
 
   # REMOVED 2026-05-21: tooling-map.md / skills-commands-map.md / db-tables-map.md
   # → absorbed into cloning-pipeline-flow.md.
-  # REMOVED 2026-05-21: specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md
-  # → absorbed into Spec 16 §12 Appendix A.
+  # REMOVED 2026-05-21: specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md (absorbed + retired)
   # REMOVED 2026-05-21: plans/spec-15-master-execution-plan.md and
   # plans/phase-7-spec-16-converter-rollout.md → shipped phases; git-blame only.
   # RENAMED 2026-05-24 (Phase 10 D'-3): pipeline-state-debug-artefacts-inventory.md
@@ -171,7 +169,7 @@ pipeline_run_artefacts:
       owns: "Stage 10 — block_markup with mockup-relative image URLs swapped to live WP media library URLs. Used by upload_and_patch.py to PATCH the target page/post via REST."
       read_when: "Verifying which images were sideloaded + what final markup landed on the live page after Stage 10."
       writer: plugins/sgs-blocks/scripts/orchestrator/upload_and_patch.py
-      spec: .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md §5 (Stage 10 inline-CSS deploy; Spec 16 §12.11 was the original spec — Spec 16 retired 2026-05-26)
+      spec: .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md §5 (Stage 10 inline-CSS deploy)
 
     # Standard per-stage artefacts written by sgs-clone-orchestrator.py for
     # every run. Cross-reference cloning-pipeline-flow.md per-stage entries
@@ -276,7 +274,7 @@ cold_start_reading_order:   # CLONING-PIPELINE thread
   - 6. .claude/cloning-pipeline-flow.md (pipeline work) OR .claude/architecture.md (other)
   - 7. .claude/decisions.md (last 5-10 entries; D90/D91/D92 = this-session Phase 1.5 close + Phase 2 reorder + R-22-14; D78-D83 = Spec 22 ratification chain)
   - 8. .claude/parking.md (last 5 entries)
-  - 9. Domain reference: cloning-pipeline-flow.md (absorbed tooling-map + skills-commands-map + db-tables-map). Spec 22 is the canonical spec; Spec 16 retired and archived 2026-05-26 at .claude/specs/archive/.
+  - 9. Domain reference: cloning-pipeline-flow.md (absorbed tooling-map + skills-commands-map + db-tables-map). Spec 22 is the canonical cloning-pipeline spec.
   - 10. .claude/specs/common-wp-styling-errors.md (sections A-R catalogue — check BEFORE filing new "I've seen this" tickets)
   - 11. pipeline-state/<latest-run>/leftover-buckets.json (MANDATORY before any converter-quality conjecture — see feedback_read_leftover_buckets_before_conjecturing.md)
 
@@ -284,7 +282,7 @@ cold_start_reading_order_theme:   # SGS-THEME thread (added 2026-06-06 — was m
   - 1. .claude/state.md (read the SGS-THEME block + the GROUND-TRUTH-FIRST block)
   - 2. .claude/handoff-theme.md (latest session — what shipped + this session's lessons)
   - 3. .claude/next-session-prompt-theme.md (the operative opener — STOP catalogue + the orchestration plan)
-  - 4. .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md (product/WooCommerce master — read this, NOT Spec 24/25)
+  - 4. .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md (product/WooCommerce master spec)
   - 5. .claude/specs/28-SGS-SMART-BULK-PRICING.md (value-ladder/bulk pricing — for any pricing work)
   - 6. .claude/decisions.md (head — last 5-10; theme D-numbers interleave with cloning)
   - 7. .claude/parking.md (the P-SPEC27-28-* entry = the live theme backlog)
