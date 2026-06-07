@@ -59,21 +59,18 @@
             "default": "px"
         },
         "gap": {
-            "type": "number",
-            "default": 24
+            "type": "string",
+            "default": "24px"
         },
         "gapTablet": {
-            "type": "number",
-            "default": null
+            "type": "string",
+            "default": ""
         },
         "gapMobile": {
-            "type": "number",
-            "default": 16
-        },
-        "gapUnit": {
             "type": "string",
-            "default": "px"
+            "default": "16px"
         },
+        "_comment_gap_unit": "gapUnit retired 2026-06-07 — gap now stores a full CSS value (e.g. '24px') resolved by sgs_container_gap_value(). Existing posts migrate via deprecated.js v3.",
         "alignItems": {
             "type": "string",
             "default": "stretch"

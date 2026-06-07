@@ -368,11 +368,12 @@ export default function Edit( { attributes, setAttributes } ) {
 	} );
 
 	// Wrapper inline styles.
+	// gap is now a raw CSS string (e.g. "30px") set by ContainerWrapperControls.
 	const inlineStyles = {
 		'--sgs-columns-desktop': columns,
 		'--sgs-columns-tablet':  columnsTablet,
 		'--sgs-columns-mobile':  columnsMobile,
-		'--sgs-gap':             gap + 'px',
+		'--sgs-gap':             gap || '30px',
 	};
 
 	const blockProps = useBlockProps( {
@@ -389,7 +390,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			? undefined
 			: `repeat( ${ columns }, 1fr )`,
 		columnCount:         'masonry' === layout ? columns : undefined,
-		gap:                 gap + 'px',
+		gap:                 gap || '30px',
 	};
 
 	return (
@@ -496,14 +497,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) }
 					</ResponsiveControl>
-					<RangeControl
-						label={ __( 'Gap (px)', 'sgs-blocks' ) }
-						value={ parseInt( gap, 10 ) || 30 }
-						onChange={ ( val ) => setAttributes( { gap: String( val ) } ) }
-						min={ 0 }
-						max={ 80 }
-						__nextHasNoMarginBottom
-					/>
+					{ /* Gap is provided by the shared ContainerWrapperControls panel below. */ }
 					<SelectControl
 						label={ __( 'Image aspect ratio', 'sgs-blocks' ) }
 						value={ aspectRatio }

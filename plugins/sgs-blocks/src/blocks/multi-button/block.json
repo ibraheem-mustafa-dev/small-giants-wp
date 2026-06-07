@@ -40,20 +40,16 @@
 			"default": "column"
 		},
 		"gap": {
-			"type": "number",
-			"default": 12
+			"type": "string",
+			"default": "12px"
 		},
 		"gapTablet": {
-			"type": "number",
-			"default": null
+			"type": "string",
+			"default": ""
 		},
 		"gapMobile": {
-			"type": "number",
-			"default": 8
-		},
-		"gapUnit": {
 			"type": "string",
-			"default": "px"
+			"default": "8px"
 		},
 		"justifyContent": {
 			"type": "string",
@@ -189,7 +185,7 @@
 	"example": {
 		"attributes": {
 			"direction": "row",
-			"gap": 12,
+			"gap": "12px",
 			"justifyContent": "flex-start"
 		}
 	}

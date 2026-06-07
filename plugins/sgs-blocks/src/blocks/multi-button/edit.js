@@ -10,7 +10,6 @@ import {
 	PanelBody,
 	SelectControl,
 	RangeControl,
-	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 
 const TEMPLATE = [
@@ -57,21 +56,12 @@ const ALIGN_ITEMS_OPTIONS = [
 	{ label: __( 'Stretch', 'sgs-blocks' ), value: 'stretch' },
 ];
 
-const GAP_UNIT_OPTIONS = [
-	{ value: 'px', label: 'px' },
-	{ value: 'em', label: 'em' },
-	{ value: 'rem', label: 'rem' },
-];
-
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		direction,
 		directionTablet,
 		directionMobile,
 		gap,
-		gapTablet,
-		gapMobile,
-		gapUnit,
 		justifyContent,
 		justifyContentTablet,
 		justifyContentMobile,
@@ -82,11 +72,12 @@ export default function Edit( { attributes, setAttributes } ) {
 	} = attributes;
 
 	// Preview the desktop layout in the editor.
+	// Gap comes from the shared ContainerWrapperControls SpacingControl (raw CSS string).
 	const editorStyle = {
 		display: 'flex',
 		flexDirection: direction,
 		flexWrap: wrap,
-		gap: `${ gap }${ gapUnit }`,
+		gap: gap || undefined,
 		justifyContent,
 		alignItems,
 	};
@@ -135,50 +126,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 
 					<hr style={ { margin: '12px 0' } } />
-
-					<p style={ { fontWeight: 600, marginBottom: 4 } }>
-						{ __( 'Gap', 'sgs-blocks' ) }
-					</p>
-
-					<p style={ { fontSize: 11, color: '#757575', marginBottom: 4 } }>
-						{ __( 'Desktop', 'sgs-blocks' ) }
-					</p>
-					<RangeControl
-						value={ gap ?? 12 }
-						onChange={ ( val ) => setAttributes( { gap: val } ) }
-						min={ 0 }
-						max={ 80 }
-					/>
-
-					<p style={ { fontSize: 11, color: '#757575', marginBottom: 4 } }>
-						{ __( 'Tablet', 'sgs-blocks' ) }
-					</p>
-					<RangeControl
-						value={ gapTablet ?? '' }
-						onChange={ ( val ) => setAttributes( { gapTablet: val ?? null } ) }
-						min={ 0 }
-						max={ 80 }
-						allowReset
-						resetFallbackValue={ null }
-					/>
-
-					<p style={ { fontSize: 11, color: '#757575', marginBottom: 4 } }>
-						{ __( 'Mobile', 'sgs-blocks' ) }
-					</p>
-					<RangeControl
-						value={ gapMobile ?? 8 }
-						onChange={ ( val ) => setAttributes( { gapMobile: val } ) }
-						min={ 0 }
-						max={ 80 }
-					/>
-
-					<SelectControl
-						label={ __( 'Gap unit', 'sgs-blocks' ) }
-						value={ gapUnit }
-						options={ GAP_UNIT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { gapUnit: val } ) }
-					/>
-
+					{ /* Gap is provided by the shared ContainerWrapperControls panel above. */ }
 					<hr style={ { margin: '12px 0' } } />
 
 					<p style={ { fontWeight: 600, marginBottom: 4 } }>

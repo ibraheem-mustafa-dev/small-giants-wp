@@ -25,6 +25,29 @@ import {
 } from "../../components";
 import { spacingVar, shadowVar } from "../../utils";
 
+/**
+ * Resolve a gap attribute value to a CSS string for editor preview.
+ *
+ * Mirrors PHP sgs_container_gap_value():
+ *  - Bare slug (digits only, e.g. "40") → var(--wp--preset--spacing--40)
+ *  - Raw CSS length (contains a letter or %, e.g. "16px", "1.5rem") → pass through
+ *  - Empty → undefined (so the style key is omitted)
+ *
+ * @param {string} gap Gap attribute value.
+ * @returns {string|undefined}
+ */
+function gapCssValue( gap ) {
+	if ( ! gap ) {
+		return undefined;
+	}
+	// Bare numeric slug → WP spacing preset var.
+	if ( /^\d+$/.test( gap ) ) {
+		return `var(--wp--preset--spacing--${ gap })`;
+	}
+	// Raw CSS length — return as-is (already validated by SpacingControl freeInput).
+	return gap;
+}
+
 const BG_SIZE_OPTIONS = [
   { label: __("Cover", "sgs-blocks"), value: "cover" },
   { label: __("Contain", "sgs-blocks"), value: "contain" },
@@ -226,7 +249,7 @@ export default function Edit({ attributes, setAttributes }) {
   const hasBgVideo = !!bgVideo?.url;
 
   const style = {
-    gap: spacingVar(gap),
+    gap: gapCssValue(gap),
     minHeight: minHeight || undefined,
     ...(shadow && { boxShadow: shadowVar(shadow) }),
     ...(hasBgImage && !hasBgVideo && {
@@ -353,6 +376,7 @@ export default function Edit({ attributes, setAttributes }) {
               const attr = attrMap[breakpoint];
               return (
                 <SpacingControl
+                  freeInput
                   value={attributes[attr]}
                   onChange={(val) =>
                     setAttributes({

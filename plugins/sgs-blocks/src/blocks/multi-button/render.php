@@ -14,16 +14,50 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 $direction        = isset( $attributes['direction'] ) ? esc_attr( $attributes['direction'] ) : 'row';
 $direction_tablet = ! empty( $attributes['directionTablet'] ) ? esc_attr( $attributes['directionTablet'] ) : $direction;
 $direction_mobile = ! empty( $attributes['directionMobile'] ) ? esc_attr( $attributes['directionMobile'] ) : 'column';
 
-$gap        = isset( $attributes['gap'] ) ? absint( $attributes['gap'] ) : 12;
-$gap_tablet = ( isset( $attributes['gapTablet'] ) && null !== $attributes['gapTablet'] ) ? absint( $attributes['gapTablet'] ) : $gap;
-$gap_mobile = ( isset( $attributes['gapMobile'] ) && null !== $attributes['gapMobile'] ) ? absint( $attributes['gapMobile'] ) : 8;
-$gap_unit   = isset( $attributes['gapUnit'] ) ? esc_attr( $attributes['gapUnit'] ) : 'px';
+// Gap: resolved via the shared helper (handles preset slugs + raw CSS lengths + back-compat).
+// Falls back to "12px" matching the block.json default.
+// Back-compat: pre-consolidation posts stored a numeric (int) gap value; the old render
+// appended "px" via absint(). Append "px" to digit-only strings before the helper so
+// sgs_container_gap_value() treats them as raw CSS lengths, not WP preset slugs.
+$gap_raw = isset( $attributes['gap'] ) ? (string) $attributes['gap'] : '12px';
+if ( preg_match( '/^\d+$/', $gap_raw ) ) {
+	$gap_raw = $gap_raw . 'px';
+}
+$gap_css = sgs_container_gap_value( $gap_raw );
+if ( '' === $gap_css ) {
+	$gap_css = '12px';
+}
+$gap_tab_raw = isset( $attributes['gapTablet'] ) ? (string) $attributes['gapTablet'] : '';
+if ( '' !== $gap_tab_raw ) {
+	if ( preg_match( '/^\d+$/', $gap_tab_raw ) ) {
+		$gap_tab_raw = $gap_tab_raw . 'px';
+	}
+	$gap_tab_css = sgs_container_gap_value( $gap_tab_raw );
+	if ( '' === $gap_tab_css ) {
+		$gap_tab_css = $gap_css;
+	}
+} else {
+	$gap_tab_css = $gap_css;
+}
+$gap_mob_raw = isset( $attributes['gapMobile'] ) ? (string) $attributes['gapMobile'] : '8px';
+if ( '' !== $gap_mob_raw ) {
+	if ( preg_match( '/^\d+$/', $gap_mob_raw ) ) {
+		$gap_mob_raw = $gap_mob_raw . 'px';
+	}
+	$gap_mob_css = sgs_container_gap_value( $gap_mob_raw );
+	if ( '' === $gap_mob_css ) {
+		$gap_mob_css = '8px';
+	}
+} else {
+	$gap_mob_css = '8px';
+}
 
 $justify_content        = isset( $attributes['justifyContent'] ) ? esc_attr( $attributes['justifyContent'] ) : 'flex-start';
 $justify_content_tablet = ! empty( $attributes['justifyContentTablet'] ) ? esc_attr( $attributes['justifyContentTablet'] ) : $justify_content;
@@ -43,7 +77,7 @@ $css  = '#' . $uid . '.sgs-multi-button{';
 $css .= 'display:flex;';
 $css .= 'flex-direction:' . $direction . ';';
 $css .= 'flex-wrap:' . $wrap . ';';
-$css .= 'gap:' . $gap . $gap_unit . ';';
+$css .= 'gap:' . $gap_css . ';';
 $css .= 'justify-content:' . $justify_content . ';';
 $css .= 'align-items:' . $align_items . ';';
 $css .= '}';
@@ -53,7 +87,7 @@ $css .= '@media(max-width:1024px) and (min-width:769px){';
 $css .= '#' . $uid . '.sgs-multi-button{';
 $css .= 'flex-direction:' . $direction_tablet . ';';
 $css .= 'flex-wrap:' . $wrap_tablet . ';';
-$css .= 'gap:' . $gap_tablet . $gap_unit . ';';
+$css .= 'gap:' . $gap_tab_css . ';';
 $css .= 'justify-content:' . $justify_content_tablet . ';';
 $css .= '}}';
 
@@ -62,7 +96,7 @@ $css .= '@media(max-width:768px){';
 $css .= '#' . $uid . '.sgs-multi-button{';
 $css .= 'flex-direction:' . $direction_mobile . ';';
 $css .= 'flex-wrap:' . $wrap_mobile . ';';
-$css .= 'gap:' . $gap_mobile . $gap_unit . ';';
+$css .= 'gap:' . $gap_mob_css . ';';
 $css .= 'justify-content:' . $justify_content_mobile . ';';
 $css .= '}}';
 

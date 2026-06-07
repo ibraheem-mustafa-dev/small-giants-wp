@@ -799,8 +799,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			$style_tag = '';
 			if ( $responsive_css && $uid ) {
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $responsive_css contains only previously-escaped CSS rules.
-				$style_tag = sprintf( '<style id="%s">%s</style>', esc_attr( $uid ), $responsive_css );
+				$style_tag = sprintf( '<style id="%s">%s</style>', esc_attr( $uid ), esc_html( $responsive_css ) );
 			}
 
 			// ----------------------------------------------------------------

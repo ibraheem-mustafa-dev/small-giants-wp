@@ -234,7 +234,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-columns-desktop': columns,
 		'--sgs-columns-tablet':  columnsTablet,
 		'--sgs-columns-mobile':  columnsMobile,
-		'--sgs-gap':             gap + 'px',
+		// gap is now a string from the shared SpacingControl (e.g. "16px", "40").
+		// Bare numeric strings (legacy format) are suffixed with px for preview.
+		'--sgs-gap':             /^\d+$/.test( String( gap ) ) ? gap + 'px' : ( gap || '16px' ),
 		'--sgs-transition-duration': transitionDuration + 'ms',
 		'--sgs-transition-easing':   transitionEasing,
 	};
@@ -264,7 +266,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			? `repeat( ${ columns }, 1fr )`
 			: undefined,
 		columnCount:         layout === 'masonry' ? columns : undefined,
-		gap:                 gap + 'px',
+		gap:                 /^\d+$/.test( String( gap ) ) ? gap + 'px' : ( gap || '16px' ),
 	};
 
 	return (
@@ -365,14 +367,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) }
 					</ResponsiveControl>
-					<RangeControl
-						label={ __( 'Gap (px)', 'sgs-blocks' ) }
-						value={ parseInt( gap, 10 ) || 16 }
-						onChange={ ( val ) => setAttributes( { gap: String( val ) } ) }
-						min={ 0 }
-						max={ 80 }
-						__nextHasNoMarginBottom
-					/>
 					<SelectControl
 						label={ __( 'Image aspect ratio', 'sgs-blocks' ) }
 						value={ aspectRatio }

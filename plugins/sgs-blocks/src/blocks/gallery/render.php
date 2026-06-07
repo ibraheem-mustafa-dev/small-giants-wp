@@ -33,7 +33,19 @@ $layout          = sanitize_key( $attributes['layout'] ?? 'grid' );
 $columns         = absint( $attributes['columns'] ?? 3 );
 $columns_tablet  = absint( $attributes['columnsTablet'] ?? 2 );
 $columns_mobile  = absint( $attributes['columnsMobile'] ?? 1 );
-$gap             = absint( $attributes['gap'] ?? 16 );
+// gap is stored as a string (e.g. "16", "24px", or a WP spacing slug like "40").
+// The shared ContainerWrapperControls Gap control writes slug/raw-CSS strings;
+// the old own RangeControl wrote bare numeric strings like "16".
+// sgs_container_gap_value() handles slug ("40") and raw-CSS ("16px") natively.
+// Back-compat: a bare numeric string (old format) → append "px" before resolving.
+$gap_raw = (string) ( $attributes['gap'] ?? '16' );
+if ( preg_match( '/^\d+$/', $gap_raw ) ) {
+	$gap_raw = $gap_raw . 'px';
+}
+$gap = sgs_container_gap_value( $gap_raw );
+if ( '' === $gap ) {
+	$gap = '16px';
+}
 $aspect_ratio    = sanitize_text_field( $attributes['aspectRatio'] ?? '1/1' );
 $enable_lightbox = (bool) ( $attributes['enableLightbox'] ?? true );
 $show_captions   = (bool) ( $attributes['showCaptions'] ?? false );
@@ -68,7 +80,7 @@ $inline_styles_parts = array_merge(
 		'--sgs-columns-desktop:' . $columns,
 		'--sgs-columns-tablet:'  . $columns_tablet,
 		'--sgs-columns-mobile:'  . $columns_mobile,
-		'--sgs-gap:'             . $gap . 'px',
+		'--sgs-gap:'             . $gap,
 	),
 	sgs_transition_vars( $attributes )
 );

@@ -9,7 +9,6 @@ import {
 	PanelBody,
 	SelectControl,
 	RangeControl,
-	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
 
 const LAYOUT_MODE_OPTIONS = [
@@ -23,6 +22,8 @@ const LAYOUT_MODE_OPTIONS = [
 	},
 ];
 
+// Units for the "Min item width" control (NOT the gap — gap is now the shared
+// ContainerWrapperControls control). Restored after the gap-unit removal over-deleted it.
 const UNIT_OPTIONS = [
 	{ label: 'px', value: 'px' },
 	{ label: 'em', value: 'em' },
@@ -49,6 +50,11 @@ const TEMPLATE = [
  * Mirrors the logic in render.php so what you see in the editor
  * matches the frontend output.
  *
+ * gap is now a full CSS value string (e.g. "24px", "40" for preset slug).
+ * Preset slugs (bare digits) are wrapped in a spacing-preset var on the
+ * frontend; the editor preview passes the value through directly which is
+ * good enough for layout preview purposes.
+ *
  * @param {Object} attributes Block attributes.
  * @return {Object} React inline style object.
  */
@@ -59,16 +65,21 @@ function buildGridStyle( attributes ) {
 		minItemWidth,
 		minItemWidthUnit,
 		gap,
-		gapUnit,
 		alignItems,
 		justifyItems,
 	} = attributes;
+
+	// For editor preview: if gap looks like a bare slug (digits only), render
+	// it as a spacing-preset CSS var; otherwise pass through as-is.
+	const gapCss = gap && /^\d+$/.test( String( gap ) )
+		? `var(--wp--preset--spacing--${ gap })`
+		: ( gap || '24px' );
 
 	if ( 'auto-flex' === layoutMode ) {
 		return {
 			display: 'grid',
 			gridTemplateColumns: `repeat(auto-fill, minmax(${ minItemWidth }${ minItemWidthUnit }, 1fr))`,
-			gap: `${ gap }${ gapUnit }`,
+			gap: gapCss,
 			alignItems,
 			justifyItems,
 		};
@@ -77,7 +88,7 @@ function buildGridStyle( attributes ) {
 	return {
 		display: 'grid',
 		gridTemplateColumns: `repeat(${ columnsDesktop }, 1fr)`,
-		gap: `${ gap }${ gapUnit }`,
+		gap: gapCss,
 		alignItems,
 		justifyItems,
 	};
@@ -92,9 +103,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		minItemWidth,
 		minItemWidthUnit,
 		gap,
-		gapTablet,
-		gapMobile,
-		gapUnit,
 		alignItems,
 		justifyItems,
 	} = attributes;
@@ -214,69 +222,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						</>
 					) }
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<div
-						style={ {
-							display: 'flex',
-							gap: '8px',
-							alignItems: 'flex-end',
-						} }
-					>
-						<div style={ { flex: 1 } }>
-							<RangeControl
-								label={ __( 'Gap — desktop', 'sgs-blocks' ) }
-								value={ gap }
-								onChange={ ( val ) =>
-									setAttributes( { gap: val } )
-								}
-								min={ 0 }
-								max={ 80 }
-								step={ 4 }
-								__nextHasNoMarginBottom
-							/>
-						</div>
-						<SelectControl
-							label={ __( 'Unit', 'sgs-blocks' ) }
-							value={ gapUnit }
-							options={ UNIT_OPTIONS }
-							onChange={ ( val ) =>
-								setAttributes( { gapUnit: val } )
-							}
-							style={ { width: '70px' } }
-							__nextHasNoMarginBottom
-						/>
-					</div>
-					<RangeControl
-						label={ __( 'Gap — tablet', 'sgs-blocks' ) }
-						value={ gapTablet ?? gap }
-						onChange={ ( val ) =>
-							setAttributes( { gapTablet: val } )
-						}
-						min={ 0 }
-						max={ 80 }
-						step={ 4 }
-						help={ __(
-							'Defaults to desktop gap if not set.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-					/>
-					<RangeControl
-						label={ __( 'Gap — mobile', 'sgs-blocks' ) }
-						value={ gapMobile }
-						onChange={ ( val ) =>
-							setAttributes( { gapMobile: val } )
-						}
-						min={ 0 }
-						max={ 80 }
-						step={ 4 }
-						__nextHasNoMarginBottom
-					/>
 				</PanelBody>
 
 				<PanelBody

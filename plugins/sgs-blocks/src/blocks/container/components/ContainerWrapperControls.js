@@ -368,6 +368,7 @@ function LayoutPanel( { attributes, setAttributes } ) {
 					const attr = attrMap[ breakpoint ];
 					return (
 						<SpacingControl
+							freeInput
 							value={ attributes[ attr ] || '' }
 							onChange={ ( val ) => setAttributes( { [ attr ]: val } ) }
 						/>

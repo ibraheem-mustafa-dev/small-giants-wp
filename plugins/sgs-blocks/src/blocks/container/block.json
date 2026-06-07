@@ -41,8 +41,7 @@
 		},
 		"spacing": {
 			"margin": true,
-			"padding": true,
-			"blockGap": true
+			"padding": true
 		},
 		"__experimentalBorder": {
 			"radius": true,

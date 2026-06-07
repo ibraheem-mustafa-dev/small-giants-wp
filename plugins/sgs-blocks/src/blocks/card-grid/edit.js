@@ -36,13 +36,6 @@ const HOVER_OPTIONS = [
 	{ label: __( 'Overlay Slide', 'sgs-blocks' ), value: 'overlay-slide' },
 ];
 
-const GAP_OPTIONS = [
-	{ label: __( 'Tight', 'sgs-blocks' ), value: '20' },
-	{ label: __( 'Normal', 'sgs-blocks' ), value: '30' },
-	{ label: __( 'Relaxed', 'sgs-blocks' ), value: '40' },
-	{ label: __( 'Spacious', 'sgs-blocks' ), value: '50' },
-];
-
 const BADGE_VARIANT_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Success', 'sgs-blocks' ), value: 'success' },
@@ -342,15 +335,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							);
 						} }
 					</ResponsiveControl>
-					<SelectControl
-						label={ __( 'Gap', 'sgs-blocks' ) }
-						value={ gap }
-						options={ GAP_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { gap: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
 					<SelectControl
 						label={ __( 'Aspect ratio', 'sgs-blocks' ) }
 						value={ aspectRatio }

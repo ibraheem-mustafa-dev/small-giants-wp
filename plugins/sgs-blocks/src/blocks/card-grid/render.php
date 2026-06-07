@@ -107,16 +107,12 @@ if ( $stagger_delay ) {
 	$class_names[] = 'sgs-has-stagger';
 }
 
-// Spacing token → CSS value.
-$spacing_map = array(
-	'10' => 'var(--wp--preset--spacing--10)',
-	'20' => 'var(--wp--preset--spacing--20)',
-	'30' => 'var(--wp--preset--spacing--30)',
-	'40' => 'var(--wp--preset--spacing--40)',
-	'50' => 'var(--wp--preset--spacing--50)',
-	'60' => 'var(--wp--preset--spacing--60)',
-);
-$gap_value = $spacing_map[ $gap ] ?? ( 'var(--wp--preset--spacing--' . esc_attr( $gap ) . ')' );
+// Resolve gap via the shared helper — handles both preset slugs ("30" →
+// var(--wp--preset--spacing--30)) and raw CSS lengths ("16px" → "16px").
+// Back-compat: the old SelectControl only wrote bare numeric slugs, so
+// existing posts are covered by the slug branch. New posts written via the
+// shared ContainerWrapperControls SpacingControl may be raw lengths.
+$gap_value = sgs_container_gap_value( $gap );
 
 // Build grid CSS custom properties.
 $grid_style_parts = array(

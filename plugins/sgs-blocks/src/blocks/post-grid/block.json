@@ -116,7 +116,7 @@
     },
     "gap": {
       "type": "string",
-      "default": "30"
+      "default": "30px"
     },
     "aspectRatio": {
       "type": "string",

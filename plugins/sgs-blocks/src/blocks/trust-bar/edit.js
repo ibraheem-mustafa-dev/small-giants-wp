@@ -15,6 +15,27 @@ import { colourVar, fontSizeVar } from '../../utils';
 // WS-4: shared container-wrapper editor controls (section kind = full surface).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
+/**
+ * Resolve a gap attribute value to a valid CSS string for editor preview.
+ *
+ * Mirrors PHP sgs_container_gap_value() and container/edit.js gapCssValue():
+ *  - Bare digit slug (e.g. "40") → var(--wp--preset--spacing--40)
+ *  - Raw CSS length (e.g. "16px", "1.5rem") → pass through as-is
+ *  - Empty / nullish → undefined (style key omitted)
+ *
+ * @param {string|null|undefined} gap Gap attribute value.
+ * @returns {string|undefined}
+ */
+function gapCssValue( gap ) {
+	if ( ! gap ) {
+		return undefined;
+	}
+	if ( /^\d+$/.test( String( gap ) ) ) {
+		return `var(--wp--preset--spacing--${ gap })`;
+	}
+	return String( gap );
+}
+
 // ─── Icon options (icon-circle variant) ───────────────────────────────────────
 const ICON_OPTIONS = [
 	{ label: __( 'Home', 'sgs-blocks' ),              value: 'home' },
@@ -37,13 +58,6 @@ const ICON_OPTIONS = [
 	{ label: __( 'Gift', 'sgs-blocks' ),               value: 'gift' },
 	{ label: __( 'Baby', 'sgs-blocks' ),               value: 'baby' },
 	{ label: __( 'Milk', 'sgs-blocks' ),               value: 'milk' },
-];
-
-const GAP_OPTIONS = [
-	{ label: __( 'Tight (8px)', 'sgs-blocks' ),    value: '10' },
-	{ label: __( 'Normal (16px)', 'sgs-blocks' ),   value: '20' },
-	{ label: __( 'Relaxed (24px)', 'sgs-blocks' ),  value: '30' },
-	{ label: __( 'Spacious (32px)', 'sgs-blocks' ), value: '40' },
 ];
 
 const BADGE_STYLE_OPTIONS = [
@@ -241,7 +255,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( {
 		className: blockClassName,
 		style: badgeStyle === 'icon-circle' ? {
-			'--sgs-trust-bar-gap': gap ? `var(--wp--preset--spacing--${ gap })` : undefined,
+			'--sgs-trust-bar-gap': gapCssValue( gap ),
 			'--sgs-trust-badge-circle-size': iconCircleSize !== 44 ? `${ iconCircleSize }px` : undefined,
 			'--sgs-trust-badge-circle-bg': circleBgValue,
 			'--sgs-trust-badge-icon-colour': iconColorValue,
@@ -376,13 +390,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							step={ 1 }
 							__nextHasNoMarginBottom
 						/>
-						<SelectControl
-							label={ __( 'Gap between badges', 'sgs-blocks' ) }
-							value={ gap }
-							options={ GAP_OPTIONS }
-							onChange={ ( val ) => setAttributes( { gap: val } ) }
-							__nextHasNoMarginBottom
-						/>
+						{ /* Gap between badges is provided by the shared ContainerWrapperControls
+						     "Gap" responsive control (writes the same `gap` attr via the wrapper
+						     helper). Removed here to eliminate UI duplication. */ }
 					</PanelBody>
 				) }
 

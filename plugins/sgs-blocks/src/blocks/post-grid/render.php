@@ -45,7 +45,19 @@ $card_style     = sanitize_key( $attributes['cardStyle'] ?? 'card' );
 $columns        = absint( $attributes['columns'] ?? 3 );
 $columns_tablet = absint( $attributes['columnsTablet'] ?? 2 );
 $columns_mobile = absint( $attributes['columnsMobile'] ?? 1 );
-$gap            = absint( $attributes['gap'] ?? 30 );
+// Gap: resolved via the shared helper (handles raw CSS lengths + back-compat).
+// Falls back to "30px" matching the block.json default.
+// Back-compat: pre-consolidation posts stored a bare digit string (e.g. "30")
+// that render.php rendered as absint().'px'. Append "px" before the helper so
+// sgs_container_gap_value() treats it as a raw CSS length, not a preset slug.
+$gap_raw = (string) ( $attributes['gap'] ?? '30px' );
+if ( preg_match( '/^\d+$/', $gap_raw ) ) {
+	$gap_raw = $gap_raw . 'px';
+}
+$gap_css = sgs_container_gap_value( $gap_raw );
+if ( '' === $gap_css ) {
+	$gap_css = '30px';
+}
 
 $pagination      = sanitize_key( $attributes['pagination'] ?? 'none' );
 $show_filters    = (bool) ( $attributes['showFilters'] ?? false );
@@ -138,7 +150,7 @@ $extra_styles = array_filter(
 			'--sgs-columns-desktop:' . $columns,
 			'--sgs-columns-tablet:' . $columns_tablet,
 			'--sgs-columns-mobile:' . $columns_mobile,
-			'--sgs-gap:' . $gap . 'px',
+			'--sgs-gap:' . $gap_css,
 			$card_bg ? '--sgs-card-bg:' . $card_bg : '',
 			$hover_scale ? '--sgs-hover-scale:' . esc_attr( $hover_scale ) : '',
 			$hover_shadow ? '--sgs-hover-shadow:' . esc_attr( $hover_shadow ) : '',
