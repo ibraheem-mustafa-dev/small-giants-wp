@@ -555,20 +555,23 @@ def _collect_css_decls_for_element(
     base_decls: dict[str, str] = {}
     bp_decls: dict[str, dict[str, str]] = {}
 
-    def _merge_into(target: dict, incoming: dict) -> None:
-        for p, v in incoming.items():
-            if p not in target:
-                target[p] = v
+    # CSS specificity (ids, classes/attrs/pseudo-class, tags/pseudo-element) of one
+    # comma-split selector — used to apply the cascade CORRECTLY so a more specific
+    # rule (.sgs-testimonial__text) beats a generic one (blockquote p) regardless of
+    # source order. The old first-wins merge ignored specificity AND source order,
+    # silently letting an earlier generic rule corrupt an element's real values.
+    def _sel_specificity(sel: str) -> tuple[int, int, int]:
+        ids = len(re.findall(r"#[\w-]+", sel))
+        cls = len(re.findall(r"\.[\w-]+|\[[^\]]+\]|:[\w-]+", sel))
+        tags = len(re.findall(r"(?:^|[\s>+~])([a-zA-Z][\w-]*)", sel))
+        return (ids, cls, tags)
 
-    # ---- 1. Inline style ----
-    inline = node.get("style", "") or ""
-    if inline:
-        _merge_into(base_decls, _parse_decls(inline))
-
-    matched_base: list[dict[str, str]] = []
+    matched_base: list[tuple[tuple[int, int, int], int, dict[str, str]]] = []
     matched_media: list[tuple[str, dict[str, str]]] = []
+    _src_order = 0
 
     for sel, decls in css_rules.items():
+        _src_order += 1
         if "::" in sel:
             media_part, sel_part = sel.split("::", 1)
             media_part = media_part.strip()
@@ -577,7 +580,7 @@ def _collect_css_decls_for_element(
             media_part = ""
             sel_part = sel.strip()
 
-        matches = False
+        matched_sel: str | None = None
         for individual_sel in sel_part.split(","):
             individual_sel = individual_sel.strip()
             if not individual_sel:
@@ -591,12 +594,14 @@ def _collect_css_decls_for_element(
                 continue
             last_part = parts[-1]
             if last_part.startswith(".") and last_part[1:] in desc_classes:
-                matches = True
+                matched_sel = individual_sel
                 break
             elif last_part == desc_tag:
                 parent_match = True
                 if len(parts) > 1:
                     parent_token = parts[-2]
+                    if parent_token in (">", "+", "~"):
+                        parent_token = parts[-3] if len(parts) > 2 else ""
                     if parent_token.startswith("."):
                         parent_cls = parent_token[1:]
                         ancestor = node.parent
@@ -607,19 +612,37 @@ def _collect_css_decls_for_element(
                                 break
                             ancestor = ancestor.parent
                         parent_match = ancestor_match
+                    elif parent_token and not parent_token.startswith(("#", "[", ":")):
+                        # TAG ancestor (e.g. 'blockquote p') — REQUIRE a real ancestor
+                        # with this tag. Previously skipped, so 'blockquote p' matched
+                        # EVERY <p>, pulling wrong values onto unrelated elements.
+                        ancestor = node.parent
+                        ancestor_match = False
+                        while ancestor and ancestor.name:
+                            if ancestor.name == parent_token:
+                                ancestor_match = True
+                                break
+                            ancestor = ancestor.parent
+                        parent_match = ancestor_match
                 if parent_match:
-                    matches = True
+                    matched_sel = individual_sel
                     break
 
-        if not matches:
+        if matched_sel is None:
             continue
         if media_part:
             matched_media.append((media_part, decls))
         else:
-            matched_base.append(decls)
+            matched_base.append((_sel_specificity(matched_sel), _src_order, decls))
 
-    for d in matched_base:
-        _merge_into(base_decls, d)
+    # Apply base rules in CASCADE order: ascending specificity then source order;
+    # later/more-specific OVERRIDES earlier (last-wins). Inline style wins over all.
+    matched_base.sort(key=lambda x: (x[0], x[1]))
+    for _spec_key, _ord, d in matched_base:
+        base_decls.update(d)
+    inline = node.get("style", "") or ""
+    if inline:
+        base_decls.update(_parse_decls(inline))
 
     def _specificity_key(media_cond: str) -> tuple[int, int]:
         mn = re.search(r"min-width\s*:\s*(\d+)", media_cond)
@@ -644,18 +667,16 @@ def _collect_css_decls_for_element(
 
 
 def _snap_style_dict_leaves(block_slug: str, style: dict) -> None:
-    """Attempt to token-snap literal CSS values inside a style dict (in-place).
+    """Token-snapping DISABLED 2026-06-07 (Bean directive).
 
-    Soft-fail: never raises; best-effort token snapping via token_resolver.
+    Snapping rewrote the draft's literal CSS values to the nearest theme token
+    (e.g. font-size:14px → a token's value), destroying fidelity. The faithful
+    behaviour is to PRESERVE the draft's real values; bespoke values that don't
+    match a token should become new tokens in the client variation, not be
+    snapped away (memory `cloning_preserves_intentional_bespoke_detail`).
+    Re-enable only behind an explicit, value-preserving design.
     """
-    tr_mod = _get_token_resolver()
-    if tr_mod is None or not _LIFT_CONTEXT.get("theme_json"):
-        return
-    theme_json = _LIFT_CONTEXT["theme_json"]
-    try:
-        tr_mod.snap_style_dict(block_slug, style, theme_json, _TOKEN_RESOLUTIONS)
-    except Exception:  # noqa: BLE001
-        pass
+    return
 
 
 def _lift_root_supports_to_style(
@@ -782,6 +803,10 @@ def _lift_root_supports_to_style(
             # e.g. ['spacing','padding','top'] → 'paddingTop' + 'Tablet' → 'paddingTopTablet'
             path_leaves = style_path[1:]  # drop 'spacing'/'color'/'border' top-level key
             camel_base = "".join(p.capitalize() for p in path_leaves)
+            # camelCase the attr name (lowercase first char): block attrs are
+            # 'paddingTopTablet', not 'PaddingTopTablet'. Without this the candidate
+            # never matches block_schema and EVERY responsive box value is dropped.
+            camel_base = camel_base[:1].lower() + camel_base[1:]
             candidate = f"{camel_base}{bp_suffix}"
             if candidate in block_schema and candidate not in attrs:
                 attrs[candidate] = v
@@ -804,7 +829,9 @@ def _lift_root_supports_to_style(
                 continue
             for side, val in parsed.items():
                 # e.g. 'padding' + 'top' + 'Tablet' → 'paddingTopTablet'
-                candidate = f"{shorthand.capitalize()}{side.capitalize()}{bp_suffix}"
+                # (shorthand stays lowercase so the camelCase attr name matches the
+                # block schema — 'paddingTopTablet', not 'PaddingTopTablet').
+                candidate = f"{shorthand}{side.capitalize()}{bp_suffix}"
                 if candidate in block_schema and candidate not in attrs:
                     attrs[candidate] = val
                     _trace("responsive_attr_lifted", block_slug=block_slug,
@@ -2515,10 +2542,19 @@ def _route_composite_interior(
                 if result:
                     children_markup.append(result)
             else:
+                # FR-22-21 / council MF-1 (2026-06-07): before dropping this slug-None
+                # content-column wrapper, lift its OWN layout + box CSS (padding/flex/
+                # max-width/background) onto the composite's mirrored attrs — exactly as
+                # the other three fold paths do (slug-None section, resolved container,
+                # nested wrapper at line 3828). Without this the wrapper's CSS evaporated
+                # (the hero __content 0%-transfer drop). `attrs` is the composite block's
+                # dict, mutated in-place; setdefault() never clobbers the composite's own
+                # already-set layout/grid/background attrs.
+                _fold_layout_into_attrs(child, cclasses, attrs, css_rules)
                 _trace("composite_interior_route", slug=slug, element=element,
                        attr=None, branch="content_column_folded",
                        depth=depth + 1,
-                       note="slug-None wrapper folded into bare InnerBlocks")
+                       note="slug-None wrapper folded into bare InnerBlocks; own CSS lifted to composite attrs")
                 for grandchild in child.children:
                     result = walk(grandchild, css_rules, variation_buf,
                                   depth=depth + 1, is_top_level=False)
@@ -2809,21 +2845,27 @@ def walk(
     if slug is not None:
         _lift_root_supports_to_style(node, slug, css_rules, attrs)
 
-    # A2 — Composite wrapper-CSS lift onto mirrored block attrs (Method-2, Spec 22 §FR-22-21).
-    # For every block in the container-mirror roster (wraps_block='sgs/container', DB-gated),
-    # lift the block's own wrapper CSS (min-height, box-shadow, grid, gap, background-image,
-    # etc.) onto its mirrored block attrs using the A1 helper.
-    # setdefault is used throughout — _lift_root_supports_to_style (style.*) runs first and
-    # owns background-colour/padding/border; this pass captures the remainder.
-    # R-22-1: DB-gated roster; no hardcoded slug list.
-    # R-22-9: universal — every mirror-roster composite fires; non-roster blocks are skipped.
-    if slug is not None and _is_container_mirror_block(slug):
+    # UNIVERSAL DB-driven custom-attr lift (Method-2, Spec 22 §FR-22-21).
+    # For EVERY resolved block — not only mirror composites — lift the element's own
+    # CSS onto the block's OWN attrs via property_suffixes (DB). This recovers the
+    # properties the hardcoded style.* map (_root_lift_rules, 15 rules) misses —
+    # min-height, max-width, box-shadow, typography, border-radius, object-fit, gap,
+    # grid — onto any block that declares the matching attr (heading/text/button
+    # included), using the same DB-driven helper the container/composite paths use.
+    # setdefault is used throughout — typography (above) + _lift_root_supports_to_style
+    # (style.*) run first and own colour/padding/border; this pass captures the remainder.
+    # R-22-1: DB-gated (property_suffixes + block_attrs); no hardcoded slug list.
+    # R-22-9: universal — every resolved block fires; a block lacking an attr gets that
+    # prop flagged as a gap candidate (flag-not-drop), never silently set on the wrong attr.
+    if slug is not None:
         _a2_base, _a2_bp = _collect_css_decls_for_element(node, css_rules)
         _a2_lifted, _a2_flagged = _lift_wrapper_css_to_container_attrs(
             _a2_base, _a2_bp, _block_attr_names(slug)
         )
         for _a2_k, _a2_v in _a2_lifted.items():
             attrs.setdefault(_a2_k, _a2_v)  # Never clobber attrs already set above.
+
+    if slug is not None and _is_container_mirror_block(slug):
         # R1.3 — widthMode fallback for SECTION-kind mirror composites at top level.
         # When exempted from the exception-3 outer wrap (R1.2), the bare composite must
         # carry the widthMode that outer container used to inject ({"widthMode":"full"}).

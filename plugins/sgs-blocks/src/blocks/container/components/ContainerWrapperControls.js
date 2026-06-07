@@ -1072,6 +1072,21 @@ const KIND_PANELS = {
 					value={ props.attributes.minHeight || '' }
 					options={ MIN_HEIGHT_OPTIONS }
 					onChange={ ( val ) => props.setAttributes( { minHeight: val } ) }
+					help={ __( 'Desktop / base. Tablet and mobile override it at narrower widths.', 'sgs-blocks' ) }
+					__nextHasNoMarginBottom
+				/>
+				<SelectControl
+					label={ __( 'Min height (tablet)', 'sgs-blocks' ) }
+					value={ props.attributes.minHeightTablet || '' }
+					options={ MIN_HEIGHT_OPTIONS }
+					onChange={ ( val ) => props.setAttributes( { minHeightTablet: val } ) }
+					__nextHasNoMarginBottom
+				/>
+				<SelectControl
+					label={ __( 'Min height (mobile)', 'sgs-blocks' ) }
+					value={ props.attributes.minHeightMobile || '' }
+					options={ MIN_HEIGHT_OPTIONS }
+					onChange={ ( val ) => props.setAttributes( { minHeightMobile: val } ) }
 					__nextHasNoMarginBottom
 				/>
 			</PanelBody>

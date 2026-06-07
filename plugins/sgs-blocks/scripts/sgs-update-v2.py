@@ -563,6 +563,7 @@ def _run_canonical_assignment(conn: sqlite3.Connection) -> None:
         result = subprocess.run(
             ["python", str(ac_script)],
             capture_output=True, text=True, timeout=60,
+            encoding="utf-8", errors="replace",
         )
         if result.returncode == 0:
             tail = [
@@ -844,6 +845,7 @@ def _fetch_with_playwright(url: str, timeout: int = 60) -> str:
         text=True,
         timeout=timeout,
         encoding="utf-8",
+        errors="replace",
     )
     if result.returncode != 0:
         raise RuntimeError(
@@ -2509,6 +2511,7 @@ def stage_7_spec_doc_regen(dry_run: bool = False) -> dict:
         capture_output=True,
         text=True,
         encoding="utf-8",
+        errors="replace",
     )
     if result.returncode != 0:
         error_msg = (result.stderr or result.stdout or "").strip()[:400]
@@ -2574,6 +2577,7 @@ def stage_8_uimax_mirror(dry_run: bool = False) -> dict:
         capture_output=True,
         text=True,
         encoding="utf-8",
+        errors="replace",
         cwd=str(REPO_ROOT),
     )
 
@@ -2689,6 +2693,7 @@ def stage_9_drift_gate(
             capture_output=True,
             text=True,
             encoding="utf-8",
+            errors="replace",
             timeout=15,
         )
         raw_output = (result.stdout or "").strip()
@@ -3209,6 +3214,7 @@ def stage_11_container_mirror_report(dry_run: bool = False) -> dict:
             capture_output=False,   # let stdout/stderr flow through to the terminal
             text=True,
             timeout=120,
+            encoding="utf-8", errors="replace",
         )
         if result.returncode != 0:
             msg = f"sync-container-wrapping-blocks.py exited {result.returncode}"

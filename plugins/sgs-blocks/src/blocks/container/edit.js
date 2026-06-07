@@ -201,6 +201,8 @@ export default function Edit({ attributes, setAttributes }) {
     shadow,
     maxWidth,
     minHeight,
+    minHeightTablet = "",
+    minHeightMobile = "",
     verticalAlign,
     widthMode = "default",
     widthModeMobile = "",
@@ -491,6 +493,42 @@ export default function Edit({ attributes, setAttributes }) {
               { label: "600px", value: "600px" },
             ]}
             onChange={(val) => setAttributes({ minHeight: val })}
+            help={__(
+              "Desktop / base. Tablet and mobile override it at narrower widths.",
+              "sgs-blocks",
+            )}
+            __nextHasNoMarginBottom
+          />
+
+          <SelectControl
+            label={__("Min height (tablet)", "sgs-blocks")}
+            value={minHeightTablet || ""}
+            options={[
+              { label: __("Auto", "sgs-blocks"), value: "" },
+              { label: "50vh", value: "50vh" },
+              { label: "75vh", value: "75vh" },
+              { label: "100vh", value: "100vh" },
+              { label: "200px", value: "200px" },
+              { label: "400px", value: "400px" },
+              { label: "600px", value: "600px" },
+            ]}
+            onChange={(val) => setAttributes({ minHeightTablet: val })}
+            __nextHasNoMarginBottom
+          />
+
+          <SelectControl
+            label={__("Min height (mobile)", "sgs-blocks")}
+            value={minHeightMobile || ""}
+            options={[
+              { label: __("Auto", "sgs-blocks"), value: "" },
+              { label: "50vh", value: "50vh" },
+              { label: "75vh", value: "75vh" },
+              { label: "100vh", value: "100vh" },
+              { label: "200px", value: "200px" },
+              { label: "400px", value: "400px" },
+              { label: "600px", value: "600px" },
+            ]}
+            onChange={(val) => setAttributes({ minHeightMobile: val })}
             __nextHasNoMarginBottom
           />
 

@@ -355,6 +355,14 @@
 		"minHeight": {
 			"type": "string"
 		},
+		"minHeightTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"minHeightMobile": {
+			"type": "string",
+			"default": ""
+		},
 		"verticalAlign": {
 			"type": "string",
 			"default": "start"
@@ -519,6 +527,70 @@
 			]
 		},
 		"contentWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingTopTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingRightTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingBottomTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingLeftTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingTopMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingRightMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingBottomMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingLeftMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"marginTopTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"marginRightTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"marginBottomTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"marginLeftTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"marginTopMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"marginRightMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"marginBottomMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"marginLeftMobile": {
 			"type": "string",
 			"default": ""
 		}

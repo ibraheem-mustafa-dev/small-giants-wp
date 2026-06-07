@@ -194,8 +194,50 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$max_width      = $attributes['maxWidth'] ?? '';
 			$content_width  = $attributes['contentWidth'] ?? '';
 			$content_width  = preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $content_width );
-			$min_height     = $attributes['minHeight'] ?? '';
-			$vertical_align = $attributes['verticalAlign'] ?? 'start';
+			$min_height        = $attributes['minHeight'] ?? '';
+			$min_height_tablet = $attributes['minHeightTablet'] ?? '';
+			$min_height_mobile = $attributes['minHeightMobile'] ?? '';
+			$vertical_align    = $attributes['verticalAlign'] ?? 'start';
+
+			// CSS-length sanitiser for min-height (inline + injected <style> contexts).
+			// Strips everything except digits, dot, %, and unit letters so a value can
+			// never break out of its declaration (mirrors the contentWidth strip above).
+			$sgs_css_length = static function ( $value ) {
+				return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+			};
+			$min_height        = $sgs_css_length( $min_height );
+			$min_height_tablet = $is_section ? $sgs_css_length( $min_height_tablet ) : '';
+			$min_height_mobile = $is_section ? $sgs_css_length( $min_height_mobile ) : '';
+			// True when a responsive variant exists → base + variants render via the
+			// per-instance uid CSS below (so @media overrides win over the cascade),
+			// rather than the inline base (which would beat any .uid{} @media rule).
+			$has_responsive_min_height = $is_section && ( '' !== $min_height_tablet || '' !== $min_height_mobile );
+
+			// Responsive padding — all kinds (WP spacing.padding sets base via the block-supports
+			// layer; responsive variants land as @media rules scoped to the uid selector).
+			$padding_top_tablet    = $sgs_css_length( $attributes['paddingTopTablet'] ?? '' );
+			$padding_right_tablet  = $sgs_css_length( $attributes['paddingRightTablet'] ?? '' );
+			$padding_bottom_tablet = $sgs_css_length( $attributes['paddingBottomTablet'] ?? '' );
+			$padding_left_tablet   = $sgs_css_length( $attributes['paddingLeftTablet'] ?? '' );
+			$padding_top_mobile    = $sgs_css_length( $attributes['paddingTopMobile'] ?? '' );
+			$padding_right_mobile  = $sgs_css_length( $attributes['paddingRightMobile'] ?? '' );
+			$padding_bottom_mobile = $sgs_css_length( $attributes['paddingBottomMobile'] ?? '' );
+			$padding_left_mobile   = $sgs_css_length( $attributes['paddingLeftMobile'] ?? '' );
+
+			// Responsive margin — all kinds.
+			$margin_top_tablet    = $sgs_css_length( $attributes['marginTopTablet'] ?? '' );
+			$margin_right_tablet  = $sgs_css_length( $attributes['marginRightTablet'] ?? '' );
+			$margin_bottom_tablet = $sgs_css_length( $attributes['marginBottomTablet'] ?? '' );
+			$margin_left_tablet   = $sgs_css_length( $attributes['marginLeftTablet'] ?? '' );
+			$margin_top_mobile    = $sgs_css_length( $attributes['marginTopMobile'] ?? '' );
+			$margin_right_mobile  = $sgs_css_length( $attributes['marginRightMobile'] ?? '' );
+			$margin_bottom_mobile = $sgs_css_length( $attributes['marginBottomMobile'] ?? '' );
+			$margin_left_mobile   = $sgs_css_length( $attributes['marginLeftMobile'] ?? '' );
+
+			$has_responsive_padding = ( '' !== $padding_top_tablet || '' !== $padding_right_tablet || '' !== $padding_bottom_tablet || '' !== $padding_left_tablet
+				|| '' !== $padding_top_mobile || '' !== $padding_right_mobile || '' !== $padding_bottom_mobile || '' !== $padding_left_mobile );
+			$has_responsive_margin  = ( '' !== $margin_top_tablet || '' !== $margin_right_tablet || '' !== $margin_bottom_tablet || '' !== $margin_left_tablet
+				|| '' !== $margin_top_mobile || '' !== $margin_right_mobile || '' !== $margin_bottom_mobile || '' !== $margin_left_mobile );
 
 			// HTML tag.
 			$html_tag     = $opt_tag ? $opt_tag : ( $attributes['htmlTag'] ?? 'section' );
@@ -301,7 +343,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$styles[] = 'gap:' . sgs_container_gap_value( $gap );
 			}
 
-			if ( $is_section && $min_height ) {
+			// Base min-height — section kind. When responsive variants exist it is
+			// emitted via the per-instance uid CSS below instead (so @media overrides
+			// can win); inline-only in the base-only case keeps existing output byte-
+			// identical and avoids forcing a uid on already-shipped content.
+			if ( $is_section && $min_height && ! $has_responsive_min_height ) {
 				$styles[] = 'min-height:' . esc_attr( $min_height );
 			}
 
@@ -587,7 +633,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			$responsive_css      = '';
 			$has_responsive_bg   = $is_section && ( ! empty( $bg_image_tablet['url'] ) || ! empty( $bg_image_mobile['url'] ) );
-			$has_responsive_attr = ( $gap_tablet || $gap_mobile || $width_mode_mobile || $width_mode_tablet || $width_mode_desktop || $has_responsive_bg )
+			$has_responsive_attr = ( $gap_tablet || $gap_mobile || $width_mode_mobile || $width_mode_tablet || $width_mode_desktop || $has_responsive_bg || $has_responsive_min_height
+				|| $has_responsive_padding || $has_responsive_margin )
 				|| ( ( $is_section || $is_layout ) && ( $grid_template_tablet || $grid_template_mobile || $grid_template_rows_tablet || $grid_template_rows_mobile ) );
 
 			// uid also needed when parallax/ken-burns is active or bg-video is responsive.
@@ -608,6 +655,102 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				}
 				if ( $gap_mobile ) {
 					$responsive_css .= '@media (max-width:599px){.' . $uid . '{gap:' . sgs_container_gap_value( $gap_mobile ) . '}}';
+				}
+
+				// Responsive min-height — section kind. Base + variants all emit via
+				// the uid selector so source-order + @media decide the winner per
+				// viewport (an inline base would override every @media rule). Cascade:
+				// base (all) → tablet (≤1023) → mobile (≤599), later wins at narrower.
+				if ( $has_responsive_min_height ) {
+					if ( '' !== $min_height ) {
+						$responsive_css .= '.' . $uid . '{min-height:' . $min_height . '}';
+					}
+					if ( '' !== $min_height_tablet ) {
+						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{min-height:' . $min_height_tablet . '}}';
+					}
+					if ( '' !== $min_height_mobile ) {
+						$responsive_css .= '@media (max-width:599px){.' . $uid . '{min-height:' . $min_height_mobile . '}}';
+					}
+				}
+
+				// Responsive padding — all kinds. Base padding is handled by WP's spacing.padding
+				// block-support layer (inline style); responsive variants MUST go via @media so
+				// they can override the base without being beaten by inline specificity.
+				if ( $has_responsive_padding ) {
+					// Tablet (≤1023px).
+					$tablet_padding_decls = array();
+					if ( '' !== $padding_top_tablet ) {
+						$tablet_padding_decls[] = 'padding-top:' . $padding_top_tablet;
+					}
+					if ( '' !== $padding_right_tablet ) {
+						$tablet_padding_decls[] = 'padding-right:' . $padding_right_tablet;
+					}
+					if ( '' !== $padding_bottom_tablet ) {
+						$tablet_padding_decls[] = 'padding-bottom:' . $padding_bottom_tablet;
+					}
+					if ( '' !== $padding_left_tablet ) {
+						$tablet_padding_decls[] = 'padding-left:' . $padding_left_tablet;
+					}
+					if ( $tablet_padding_decls ) {
+						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{' . implode( ';', $tablet_padding_decls ) . '}}';
+					}
+
+					// Mobile (≤599px).
+					$mobile_padding_decls = array();
+					if ( '' !== $padding_top_mobile ) {
+						$mobile_padding_decls[] = 'padding-top:' . $padding_top_mobile;
+					}
+					if ( '' !== $padding_right_mobile ) {
+						$mobile_padding_decls[] = 'padding-right:' . $padding_right_mobile;
+					}
+					if ( '' !== $padding_bottom_mobile ) {
+						$mobile_padding_decls[] = 'padding-bottom:' . $padding_bottom_mobile;
+					}
+					if ( '' !== $padding_left_mobile ) {
+						$mobile_padding_decls[] = 'padding-left:' . $padding_left_mobile;
+					}
+					if ( $mobile_padding_decls ) {
+						$responsive_css .= '@media (max-width:599px){.' . $uid . '{' . implode( ';', $mobile_padding_decls ) . '}}';
+					}
+				}
+
+				// Responsive margin — all kinds. Same @media pattern as padding.
+				if ( $has_responsive_margin ) {
+					// Tablet (≤1023px).
+					$tablet_margin_decls = array();
+					if ( '' !== $margin_top_tablet ) {
+						$tablet_margin_decls[] = 'margin-top:' . $margin_top_tablet;
+					}
+					if ( '' !== $margin_right_tablet ) {
+						$tablet_margin_decls[] = 'margin-right:' . $margin_right_tablet;
+					}
+					if ( '' !== $margin_bottom_tablet ) {
+						$tablet_margin_decls[] = 'margin-bottom:' . $margin_bottom_tablet;
+					}
+					if ( '' !== $margin_left_tablet ) {
+						$tablet_margin_decls[] = 'margin-left:' . $margin_left_tablet;
+					}
+					if ( $tablet_margin_decls ) {
+						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{' . implode( ';', $tablet_margin_decls ) . '}}';
+					}
+
+					// Mobile (≤599px).
+					$mobile_margin_decls = array();
+					if ( '' !== $margin_top_mobile ) {
+						$mobile_margin_decls[] = 'margin-top:' . $margin_top_mobile;
+					}
+					if ( '' !== $margin_right_mobile ) {
+						$mobile_margin_decls[] = 'margin-right:' . $margin_right_mobile;
+					}
+					if ( '' !== $margin_bottom_mobile ) {
+						$mobile_margin_decls[] = 'margin-bottom:' . $margin_bottom_mobile;
+					}
+					if ( '' !== $margin_left_mobile ) {
+						$mobile_margin_decls[] = 'margin-left:' . $margin_left_mobile;
+					}
+					if ( $mobile_margin_decls ) {
+						$responsive_css .= '@media (max-width:599px){.' . $uid . '{' . implode( ';', $mobile_margin_decls ) . '}}';
+					}
 				}
 
 				$width_mode_to_css = static function ( $mode ) use ( $custom_width_value, $custom_width_unit ) {

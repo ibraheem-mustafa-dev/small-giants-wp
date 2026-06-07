@@ -2166,6 +2166,14 @@ def main():
              "visual_qa + autonomy_decision + deliverable). Useful for diagnostic runs.",
     )
     parser.add_argument(
+        "--enforce-autonomy-gate", action="store_true",
+        help="Force the autonomy gate ON even in --mode draft. By default draft runs "
+             "(dev/verification) auto-skip the gate so the deploy stays inspectable; "
+             "production runs (--mode strict) always enforce it. This flag re-enables "
+             "the gate for a draft run when you specifically want the keep/rollback "
+             "decision exercised.",
+    )
+    parser.add_argument(
         "--deploy-target", type=str, default=None,
         help="Per-page deploy target in shape 'page:<id>' or 'post:<id>'. When set, "
              "Stage 10 auto-runs upload_and_patch.py after pipeline completion — "
@@ -2230,6 +2238,18 @@ def main():
              "(default: False — validation is required)",
     )
     args = parser.parse_args()
+
+    # Verification-run ergonomics (2026-06-07): a draft run is a dev/verification
+    # clone — the operator wants to SEE the output on the live page. The autonomy
+    # gate defaults to rollback when it can't get a real visual-QA signal (stubbed
+    # capture → decision=None), which silently reverts the deploy and makes the run
+    # un-inspectable. So in --mode draft we auto-skip the gate unless the operator
+    # explicitly re-enables it with --enforce-autonomy-gate. Production (--mode
+    # strict) always enforces the gate — this only changes the dev/verification path.
+    if args.mode == "draft" and not args.skip_autonomy_gate and not args.enforce_autonomy_gate:
+        args.skip_autonomy_gate = True
+        print("[orchestrator] --mode draft → autonomy gate auto-skipped "
+              "(deploy stays inspectable; pass --enforce-autonomy-gate to override).")
 
     # Decision 6 (Phase 0): auto-derive --client from mockup path when not supplied.
     # Walks the resolved mockup path's parents looking for a sites/<client>/ ancestor.
