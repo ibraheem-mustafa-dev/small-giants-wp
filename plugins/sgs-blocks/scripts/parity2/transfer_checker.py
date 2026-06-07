@@ -77,6 +77,21 @@ from typing import Callable
 # Excluded from the transfer VERDICT; still reported separately as `dim_dropped`.
 _DERIVED_DIMS = frozenset({"width", "height"})
 
+# LAYOUT-DETERMINING props (camelCase, matching the captured prop names). These are the
+# AUTHORED rules that produce the visible layout — how children are sized, spaced, and
+# positioned (the trust-bar badge grid/gap/alignment is exactly this). They get diluted in
+# the overall css% across ~60 props, so a real layout difference can still score ≥80% and
+# pass. Scored as a SEPARATE weighted sub-signal so layout differences surface instead of
+# being absorbed. (Raw width/height stay in _DERIVED_DIMS — they are CONSEQUENCES of these.)
+_LAYOUT_PROPS = frozenset({
+    "display", "gridTemplateColumns", "gridTemplateRows",
+    "gap", "columnGap", "rowGap",
+    "alignItems", "alignContent", "justifyContent", "justifyItems",
+    "flexWrap", "flexDirection",
+    "maxWidth", "minHeight",
+    "marginTop", "marginRight", "marginBottom", "marginLeft",
+})
+
 _FOLD_PROPS = frozenset({
     "display", "flex-direction", "flex-wrap",
     "grid-template-columns", "grid-template-rows",
@@ -682,9 +697,10 @@ def check(
         clone_match_path = clone_match.get("domPath") if clone_match else None
 
         # ------------------------------------------------------------------
-        # Verdict — graded CSS match-rate (authored rules), dimensions de-weighted.
-        # css_pct = matched authored-rule props / authored-rule props compared.
-        # width/height are reported separately (dim_dropped) but do not fail the node.
+        # Verdict — graded match-rates. css_pct = all authored rules (raw width/height
+        # de-weighted as consequences). layout_pct = the layout-DETERMINING props scored
+        # separately + WEIGHTED INTO THE VERDICT, so a real layout difference (the
+        # trust-bar badge grid/gap/align) surfaces instead of being diluted away.
         # ------------------------------------------------------------------
         meaningful_dropped = [p for p in css_dropped if p not in _DERIVED_DIMS]
         dim_dropped = [p for p in css_dropped if p in _DERIVED_DIMS]
@@ -694,10 +710,16 @@ def check(
         ]))
         css_pct = round(100.0 * (css_considered - len(meaningful_dropped)) / css_considered, 1)
 
+        # Layout sub-score over the props the draft actually authors.
+        layout_present = [p for p in draft_css if p in _LAYOUT_PROPS]
+        layout_dropped = [p for p in css_dropped if p in _LAYOUT_PROPS]
+        layout_considered = max(1, len(layout_present))
+        layout_pct = round(100.0 * (layout_considered - len(layout_dropped)) / layout_considered, 1)
+
         if fate == "fold-parent" and fold_match and not meaningful_dropped:
             verdict = "FOLDED"
             totals["folded"] += 1
-        elif content_ok and css_pct >= 80.0:
+        elif content_ok and css_pct >= 80.0 and layout_pct >= 80.0:
             verdict = "TRANSFERRED"
             totals["transferred"] += 1
         else:
@@ -711,6 +733,8 @@ def check(
             "verdict": verdict,
             "content_ok": content_ok,
             "css_pct": css_pct,
+            "layout_pct": layout_pct,
+            "layout_dropped": layout_dropped,
             "css_dropped": meaningful_dropped,
             "dim_dropped": dim_dropped,
             "clone_match": clone_match_path,

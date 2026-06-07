@@ -58,7 +58,8 @@ def fate_of(node: dict) -> dict:
 def _per_section(report: dict) -> dict:
     """Aggregate by_node verdicts into per-section scores (non-chrome denominator)."""
     sec = defaultdict(lambda: {"transferred": 0, "folded": 0, "dropped": 0, "chrome": 0,
-                               "content_ok": 0, "non_chrome": 0, "css_pct_sum": 0.0})
+                               "content_ok": 0, "non_chrome": 0, "css_pct_sum": 0.0,
+                               "layout_pct_sum": 0.0})
     for n in report["by_node"]:
         s = n.get("section", "") or "?"
         v = n["verdict"].lower()
@@ -67,6 +68,7 @@ def _per_section(report: dict) -> dict:
         if n["verdict"] != "CHROME":
             sec[s]["non_chrome"] += 1
             sec[s]["css_pct_sum"] += n.get("css_pct", 0.0)
+            sec[s]["layout_pct_sum"] += n.get("layout_pct", 0.0)
             if n.get("content_ok"):
                 sec[s]["content_ok"] += 1
     out = {}
@@ -76,6 +78,8 @@ def _per_section(report: dict) -> dict:
             **c,
             # CONTENT coverage: did the draft node's text reach the clone? (the primary signal)
             "content_pct": round(100 * c["content_ok"] / c["non_chrome"], 1) if c["non_chrome"] else None,
+            # LAYOUT coverage: mean layout-determining-prop match-rate (the visible layout signal)
+            "layout_pct": round(c["layout_pct_sum"] / c["non_chrome"], 1) if c["non_chrome"] else None,
             # CSS coverage: mean authored-rule match-rate across the section's nodes
             "css_pct": round(c["css_pct_sum"] / c["non_chrome"], 1) if c["non_chrome"] else None,
             # FULL transfer (content present AND css ≥80%): the stricter node verdict
@@ -106,13 +110,14 @@ def main() -> int:
     print(f"  CONTENT transferred (text reached the clone): {overall_content:.1f}%   <- primary signal")
     print(f"  FULL transfer (content + CSS within tolerance): {report['score_pct']:.1f}%   <- stricter")
     print(f"  dropped (full): {t['dropped']}")
-    print("\n  per-section  (content% / css% / full-transfer%, draft = 100%):")
-    for s in sorted(sections, key=lambda k: (sections[k]["content_pct"] is None, -(sections[k]["content_pct"] or 0))):
+    print("\n  per-section  (content% / layout% / css% / full%, draft = 100%):")
+    for s in sorted(sections, key=lambda k: (sections[k]["layout_pct"] is None, sections[k]["layout_pct"] or 0)):
         c = sections[s]
         if c["content_pct"] is None:
             continue
-        print(f"    {s:26s} content {c['content_pct']:5.1f}%   css {c['css_pct']:5.1f}%   "
-              f"full {c['transfer_pct']:5.1f}%   (T{c['transferred']} F{c['folded']} D{c['dropped']})")
+        print(f"    {s:26s} content {c['content_pct']:5.1f}%   layout {c['layout_pct']:5.1f}%   "
+              f"css {c['css_pct']:5.1f}%   full {c['transfer_pct']:5.1f}%   "
+              f"(T{c['transferred']} F{c['folded']} D{c['dropped']})")
 
     if args.section:
         print(f"\n  --- per-node detail: section '{args.section}' ---")
