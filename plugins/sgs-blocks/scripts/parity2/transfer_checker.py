@@ -106,8 +106,19 @@ _FOLD_PROPS = frozenset({
 # ---------------------------------------------------------------------------
 
 def _normalise_text(text: str) -> str:
-    """Lower-case + collapse all whitespace to a single space."""
-    return re.sub(r"\s+", " ", text.strip().lower())
+    """Lower-case, strip punctuation/quotes/encoding-mojibake, collapse whitespace.
+
+    Text matching between the DRAFT and the rendered CLONE must survive
+    straight-vs-curly quotes, apostrophes, em-dashes and U+FFFD replacement
+    characters (the live render mangled the draft's curly quote to `�`).
+    Dropping all non-word characters makes `"I was sceptical, honestly…"` and
+    `�I was sceptical honestly` normalise to the same word sequence, so a
+    real conversion is matched instead of falling through to a wrong structural
+    node. \\w keeps letters/digits/underscore (incl. unicode); everything else
+    (quotes, commas, em-dashes, the replacement char) becomes a space.
+    """
+    t = re.sub(r"[^\w\s]", " ", text.strip().lower(), flags=re.UNICODE)
+    return re.sub(r"\s+", " ", t).strip()
 
 
 def _parse_px(value: str) -> float | None:
