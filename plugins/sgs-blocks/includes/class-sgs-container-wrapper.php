@@ -101,15 +101,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// carousel controls, aria-*) merged verbatim into get_block_wrapper_attributes()
 			// at BOTH call sites. Values MUST be pre-sanitised by the caller. Empty array =
 			// byte-identical to the original two-key array (array_merge with [] is a no-op).
-			$opt_extra_attrs   = isset( $opts['extra_attrs'] ) && is_array( $opts['extra_attrs'] ) ? $opts['extra_attrs'] : array();
+			$opt_extra_attrs = isset( $opts['extra_attrs'] ) && is_array( $opts['extra_attrs'] ) ? $opts['extra_attrs'] : array();
 			// extra_attr_html — a PRE-ESCAPED raw attribute string appended verbatim to the
 			// opening tag (caller MUST pre-escape). Use for attributes that
 			// get_block_wrapper_attributes()'s esc_attr double-quoting would bloat — e.g.
 			// data-wp-context, where WP-canonical wp_interactivity_data_wp_context() emits a
 			// compact single-quoted attribute (no &quot; expansion of the JSON's quotes).
 			$opt_extra_attr_html = isset( $opts['extra_attr_html'] ) && is_string( $opts['extra_attr_html'] ) ? $opts['extra_attr_html'] : '';
-			$opt_no_overlay    = ! empty( $opts['no_overlay'] );
-			$opt_wrap_inner    = array_key_exists( 'wrap_inner', $opts ) ? $opts['wrap_inner'] : null;
+			$opt_no_overlay      = ! empty( $opts['no_overlay'] );
+			$opt_wrap_inner      = array_key_exists( 'wrap_inner', $opts ) ? $opts['wrap_inner'] : null;
 
 			// Allowed kinds — fall back to 'section' on invalid input.
 			$allowed_kinds = array( 'section', 'layout', 'content' );
@@ -190,10 +190,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$bg_animation_duration  = 20;
 			}
 
-			$shadow         = $attributes['shadow'] ?? '';
-			$max_width      = $attributes['maxWidth'] ?? '';
-			$content_width  = $attributes['contentWidth'] ?? '';
-			$content_width  = preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $content_width );
+			$shadow            = $attributes['shadow'] ?? '';
+			$max_width         = $attributes['maxWidth'] ?? '';
+			$content_width     = $attributes['contentWidth'] ?? '';
+			$content_width     = preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $content_width );
 			$min_height        = $attributes['minHeight'] ?? '';
 			$min_height_tablet = $attributes['minHeightTablet'] ?? '';
 			$min_height_mobile = $attributes['minHeightMobile'] ?? '';
@@ -202,7 +202,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// CSS-length sanitiser for min-height (inline + injected <style> contexts).
 			// Strips everything except digits, dot, %, and unit letters so a value can
 			// never break out of its declaration (mirrors the contentWidth strip above).
-			$sgs_css_length = static function ( $value ) {
+			$sgs_css_length    = static function ( $value ) {
 				return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
 			};
 			$min_height        = $sgs_css_length( $min_height );
@@ -292,6 +292,23 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 			if ( ! in_array( $align_content, $allowed_align_content, true ) ) {
 				$align_content = 'stretch';
+			}
+
+			// AXIS-4 flex-receiving attrs (section + layout kinds — flex only).
+			$justify_content         = $attributes['justifyContent'] ?? '';
+			$flex_direction          = $attributes['flexDirection'] ?? '';
+			$flex_wrap               = $attributes['flexWrap'] ?? '';
+			$allowed_justify_content = array( '', 'flex-start', 'center', 'flex-end', 'space-between', 'space-around' );
+			$allowed_flex_direction  = array( '', 'row', 'column' );
+			$allowed_flex_wrap       = array( '', 'wrap', 'nowrap' );
+			if ( ! in_array( $justify_content, $allowed_justify_content, true ) ) {
+				$justify_content = '';
+			}
+			if ( ! in_array( $flex_direction, $allowed_flex_direction, true ) ) {
+				$flex_direction = '';
+			}
+			if ( ! in_array( $flex_wrap, $allowed_flex_wrap, true ) ) {
+				$flex_wrap = '';
 			}
 
 			// SVG background attrs (section kind only).
@@ -389,8 +406,14 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					}
 				} elseif ( 'flex' === $layout ) {
 					$styles[] = 'display:flex';
-					$styles[] = 'flex-wrap:wrap';
+					$styles[] = 'flex-wrap:' . esc_attr( '' !== $flex_wrap ? $flex_wrap : 'wrap' );
 					$styles[] = 'align-items:' . esc_attr( $vertical_align );
+					if ( '' !== $flex_direction ) {
+						$styles[] = 'flex-direction:' . esc_attr( $flex_direction );
+					}
+					if ( '' !== $justify_content ) {
+						$styles[] = 'justify-content:' . esc_attr( $justify_content );
+					}
 				}
 			}
 
@@ -964,7 +987,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- All variables pre-sanitised: $html_tag allowlisted, $wrapper_attributes from get_block_wrapper_attributes(), HTML vars built with esc_*/wp_kses(), $inner_html is caller-rendered blocks, $inner_open/$inner_close built with esc_attr().
 			$open_attrs = '' !== $opt_extra_attr_html ? $wrapper_attributes . ' ' . $opt_extra_attr_html : $wrapper_attributes;
-			$element = sprintf(
+			$element    = sprintf(
 				'<%1$s %2$s>%3$s%4$s%5$s%6$s%7$s%8$s%9$s</%1$s>',
 				$html_tag,
 				$open_attrs,

@@ -517,6 +517,21 @@
 				"space-evenly"
 			]
 		},
+		"justifyContent": {
+			"type": "string",
+			"default": "",
+			"enum": ["", "flex-start", "center", "flex-end", "space-between", "space-around"]
+		},
+		"flexDirection": {
+			"type": "string",
+			"default": "",
+			"enum": ["", "row", "column"]
+		},
+		"flexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": ["", "wrap", "nowrap"]
+		},
 		"templateMode": {
 			"type": "string",
 			"default": "free",
