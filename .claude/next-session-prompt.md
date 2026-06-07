@@ -3,7 +3,7 @@ doc_type: next-session-prompt
 project: small-giants-wp
 thread: cloning-pipeline
 generated: 2026-06-07
-primary_goal: "Wire the new draft-centric fidelity verifier (parity2) into /sgs-clone so every clone auto-reports content%/layout%/css%/full% + a per-class carried/not-carried report; then build the icon-identity resolver and start the converter Method-2 CSS-lift for the 5 still-mirrored sections."
+primary_goal: "parity2 is now wired into /sgs-clone (Stage 11.5, DONE 2026-06-07, commit 553334f3 — every clone auto-reports content/layout/css/full per section). Next: build the icon-identity resolver (Task 2) and start the converter Method-2 CSS-lift for the 5 still-mirrored sections (Task 3), using parity2's per-section layout%/css_dropped as the spec + pre/post gate."
 ---
 
 # Next session — wire parity2 into /sgs-clone, then icon resolver + Method-2 lift
@@ -25,7 +25,11 @@ The bound-mode cheat is purged from the trust-bar — it now clones to a real na
 
 ---
 
-## Task 1 — Wire parity2 into /sgs-clone as the standing fidelity gate
+## Task 1 — Wire parity2 into /sgs-clone as the standing fidelity gate ✅ DONE 2026-06-07 (commit 553334f3)
+Stage 11.5 in `sgs-clone-orchestrator.py` (after Stage 10 deploy): captures draft+clone via `clone-parity.js --dump-captures` (golden rebuilt fresh from the mockup), runs `parity2.py`, prints the per-section content/layout/css/full table (sorted worst-layout first) + writes `pipeline-state/<run>/parity2-report.json`. Soft-fail, opt out with `--no-parity2`. Verified live (numbers match standalone). **Next session: just confirm it still fires on the run; the real work is Task 2 + Task 3 below.**
+
+<details><summary>(original Task 1 spec — for reference)</summary>
+
 **What:** make every `/sgs-clone` run auto-produce parity2's content%/layout%/css%/full% per section + the per-class carried/not-carried ledger, saved to the run's `pipeline-state/<run>/`.
 **Why:** Rule 4 (per-class transfer accounting) becomes automatic; trustworthy fidelity numbers + exact "what didn't carry over" on every clone instead of running it by hand. (Bean's explicit ask.)
 **Estimated time:** ~20 min.
@@ -35,6 +39,7 @@ The bound-mode cheat is purged from the trust-bar — it now clones to a real na
 - Depends on: none. Parallel with: none.
 - /qc gate after: `/qc-inline` (confirm the wired run produces the report + numbers match a standalone parity2 run).
 **Acceptance:** a fresh `/sgs-clone` run writes `pipeline-state/<run>/parity2-report.json` with content/layout/css/full per section, and the orchestrator prints the table — matching a manual parity2 run on the same captures.
+</details>
 
 ## Task 2 — Icon-identity resolver (trust-bar placeholder ticks → real icons)
 **What:** map a draft badge's SVG/emoji → the trust-bar icon enum across ALL icon + emoji libraries (NOT lucide-only): reverse path→name index + confidence threshold; on no match, emit the raw SVG (never a silent wrong/default icon).
