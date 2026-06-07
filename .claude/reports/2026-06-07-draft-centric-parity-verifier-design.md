@@ -67,8 +67,16 @@ Run: `node clone-parity.js --dump-captures .claude/reports/parity2-captures.json
 
 **v1 EMPIRICALLY PROVED the core design premise:** the draft and clone speak DIFFERENT class vocabularies — draft `sgs-product-card__title`/`sgs-info-box__*`/`sgs-section-heading__*` have ZERO same-name clone nodes; the clone renders them as `sgs/container` (37) + `sgs-business-info__*` (16) + `option-picker`/`star-rating`/etc. So **literal-class matching cannot work** on a converted page — content must be matched page-wide by text/role/nesting, not by class. (v1 already does page-wide CONTENT matching; the trust-bar's 100% content confirms it.)
 
-## NEXT ITERATION (the matcher is the crux)
-The CSS/`full` signal is still harsh because CSS is compared on the class-matched clone node, which fails under rename. The next build makes the MATCHER role+nesting based (Bean's model): map draft class → expected clone role via DB `slots`/`slot_synonyms`, then match by role + nesting depth + content, and compare CSS on that matched node. Also: handle container-text aggregation (a draft section node's concatenated text vs the clone's per-element text). Until then, **trust the CONTENT % (validated), treat FULL % as a lower bound.**
+## NEXT ITERATION (the matcher is the crux) — root cause found 2026-06-07
+A content-first, depth-aware matcher was prototyped (then reverted — it traded trust-bar accuracy up for featured-product accuracy down; a wash). It surfaced the REAL obstacle, which is NOT the rename (Bean correct: the rename doesn't fundamentally break it):
+
+**TEXT BUBBLING.** The capture records each element's `textContent`, which includes ALL descendant text. So a draft container `<div class=__badge>` and its child `<span class=__label>` have the **identical** text. Content-matching therefore cannot tell a container from its text child — a container query can match a text leaf, comparing a flex-container's CSS against a span's → false drops. Depth tie-breaking is unreliable because the clone inserts extra WP wrapper divs (absolute depths differ).
+
+**The fix (two parts, both required):**
+1. **Capture OWN text, not descendant text** — in `clone-parity.js` `captureElements`, set `text` from DIRECT child text nodes only (`[...el.childNodes].filter(n=>n.nodeType===3)...`). Then a container has empty own-text (matches by structure/role), and only the genuine text leaf carries the words (matches by text). Cleanly disambiguates container vs child. Requires `--rebuild-golden` + re-dump.
+2. **Structural alignment** — anchor on own-text leaf matches, then walk each matched pair's ANCESTOR chain in parallel, absorbing the clone's extra wrapper divs, so each draft nesting level compares against the correct clone level (Bean's "match by nesting layer"). Role hints from DB `slots`/`slot_synonyms` break ambiguity for textless wrappers.
+
+Until then: **trust the CONTENT % (validated — trust-bar 100%); treat FULL % as a lower bound.** The committed v1 uses class-then-containment CSS matching (scores higher where classes survive, wrong-in-principle under rename); the fix above makes it rename-robust.
 
 ## Open question for Bean (build path)
 This is the foundational fidelity instrument — every future "is the clone good" judgement depends on it. Given that, build it as its own focused pass (fresh session, this design as SoT) rather than inline at the tail of a long session. Smallest first slice: denominator + content-transfer only (no CSS), proven on the trust-bar (should score ~100% content) + a mirrored section (e.g. featured-product) before adding CSS + fold.
