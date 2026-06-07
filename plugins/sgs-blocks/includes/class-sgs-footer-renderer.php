@@ -30,6 +30,37 @@ final class Sgs_Footer_Renderer {
 	 */
 	public static function register(): void {
 		\add_action( 'wp_head', array( __CLASS__, 'render_css' ), 26 );
+		\add_filter( 'render_block_core/template-part', array( __CLASS__, 'add_wrapper_class' ), 10, 2 );
+	}
+
+	/**
+	 * Add the `sgs-footer` class to the root element of the footer template part.
+	 *
+	 * WP renders `<footer class="wp-block-template-part">` for template parts with
+	 * `area: footer`. This filter injects `sgs-footer` so CSS and JS can target the
+	 * footer root without depending on a hardcoded `footer.wp-block-template-part`
+	 * selector (which breaks if the area changes or a non-block theme is used).
+	 *
+	 * The `tagName` in block attrs is 'footer' for footer template parts, 'header'
+	 * for header template parts. We match on 'footer' to stay surgical.
+	 *
+	 * @param string $block_content Rendered block HTML.
+	 * @param array  $block         Block metadata.
+	 * @return string
+	 */
+	public static function add_wrapper_class( string $block_content, array $block ): string {
+		$tag_name = $block['attrs']['tagName'] ?? '';
+		if ( 'footer' !== $tag_name ) {
+			return $block_content;
+		}
+		// Inject `sgs-footer` into the first opening tag's class attribute.
+		// Uses a targeted regex that matches only the outer wrapper element.
+		return \preg_replace(
+			'/(<footer\b[^>]*\bclass=")/i',
+			'$1sgs-footer ',
+			$block_content,
+			1
+		) ?? $block_content;
 	}
 
 	// ── Public render method ─────────────────────────────────────────────────

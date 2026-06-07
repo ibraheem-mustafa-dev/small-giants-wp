@@ -192,13 +192,44 @@ def main(argv: list[str]) -> int:
             section_id = root.get("id", "")
             selector_classes: list[str] = root.get("class", []) or []
             selector = f"{root.name}." + ".".join(selector_classes) if selector_classes else root.name
+
+            # Extract attrs from emitted block markup so Stage 9 leftover-bucket-router
+            # can credit converted attrs instead of treating them as extraction failures.
+            # Same brace-depth-counting strategy used by convert_section() in __init__.py.
+            import re as _re_pipe
+            import json as _json_pipe
+            _extracted: dict = {}
+            _slug_re_pipe = _re_pipe.compile(r"<!-- wp:([\w/\-]+)\s+(\{)", _re_pipe.DOTALL)
+            for _m in _slug_re_pipe.finditer(block_markup):
+                _slug_pipe = _m.group(1)
+                _bstart = _m.start(2)
+                _depth = 0
+                for _i, _ch in enumerate(block_markup[_bstart:], start=_bstart):
+                    if _ch == "{":
+                        _depth += 1
+                    elif _ch == "}":
+                        _depth -= 1
+                        if _depth == 0:
+                            try:
+                                _raw = _json_pipe.loads(block_markup[_bstart: _i + 1])
+                                _short = _slug_pipe.rsplit("/", 1)[-1]
+                                for _k, _v in _raw.items():
+                                    # Bare key: first-write-wins so root block's attrs dominate.
+                                    if _k not in _extracted:
+                                        _extracted[_k] = _v
+                                    # Block-short-prefixed key: unconditional (last-write-wins per block).
+                                    _extracted[f"{_short}.{_k}"] = _v
+                            except (ValueError, KeyError):
+                                pass
+                            break
+
             result = {
                 "boundary_id": section_id or selector,
                 "section_id": section_id,
                 "selector": selector,
                 "block_name": "sgs/container",
                 "status": "complete",
-                "extracted_attributes": {},
+                "extracted_attributes": _extracted,
                 "block_markup": block_markup,
                 "variation_css": "\n".join(variation_buf),
                 "attribute_gap_candidates": [],

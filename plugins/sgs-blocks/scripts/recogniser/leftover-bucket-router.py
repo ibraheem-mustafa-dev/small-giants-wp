@@ -297,6 +297,142 @@ def _db_attrs_for_block(block_slug: str) -> list[str]:
 
 _DB_ATTRS_CACHE: dict[str, list[str]] = {}
 
+# ---------------------------------------------------------------------------
+# P-PHASE8-14 helpers — leaf-block + complex-subtree guard
+# ---------------------------------------------------------------------------
+
+_DB_LEAF_CACHE: dict[str, bool] = {}
+
+
+def _db_block_is_leaf(block_slug: str) -> bool:
+    """Return True when the block is a LEAF (has_inner_blocks=0 in block_composition).
+
+    Soft-fails to False (non-leaf) on DB miss / table-absent so we never
+    emit false positives for unknown blocks.
+
+    R-22-1 compliant — DB-driven, no per-block slug literals.
+    Uses the same inline sqlite3 pattern as _db_attrs_for_block (the router
+    does not import converter_v2.db_lookup to avoid a circular-import risk).
+    """
+    if block_slug in _DB_LEAF_CACHE:
+        return _DB_LEAF_CACHE[block_slug]
+    result = False
+    try:
+        import sqlite3
+        import os
+        db_path = os.path.expanduser("~/.claude/skills/sgs-wp-engine/sgs-framework.db")
+        if os.path.exists(db_path):
+            conn = sqlite3.connect(db_path)
+            try:
+                row = conn.execute(
+                    "SELECT has_inner_blocks FROM block_composition WHERE block_slug = ?",
+                    (block_slug,),
+                ).fetchone()
+                # row is None  → block absent from table → soft-fail to False (non-leaf)
+                # row[0] == 0  → confirmed leaf
+                # row[0] == 1  → has InnerBlocks → non-leaf
+                if row is not None:
+                    result = (row[0] == 0)
+            except sqlite3.OperationalError:
+                # Table absent (pre-D108 state) — soft-fail to False
+                pass
+            finally:
+                conn.close()
+    except Exception:  # noqa: BLE001 — DB read is best-effort
+        pass
+    _DB_LEAF_CACHE[block_slug] = result
+    return result
+
+
+# P-PHASE8-14 thresholds — tunable without schema changes.
+# A section whose emitted markup contains more than this many WP block-open
+# comments is treated as "complex subtree" for the leaf-block guard.
+# A leaf block cannot legally accept InnerBlocks, so > 1 block in the
+# markup means the converter nested children inside a self-closing block
+# (structural collapse).  Threshold of 1 catches any nesting at all without
+# false positives from single-block sections.
+_LEAF_GUARD_MIN_WP_BLOCK_OPENS: int = 1
+
+
+def _count_wp_block_opens(markup: str) -> int:
+    """Count the number of ``<!-- wp:`` block-open comments in markup.
+
+    Used as a proxy for subtree complexity: a section whose converter output
+    contains N block-open comments had at least N source child elements that
+    the walker tried to represent. For a leaf block (no InnerBlocks), any
+    value > 1 means children were collapsed into a block that can't accept
+    them — the structural-mismatch signal P-PHASE8-14 targets.
+    """
+    return len(_WP_BLOCK_OPEN.findall(markup or ""))
+
+
+def route_leaf_block_with_complex_subtree(
+    matches: list[dict],
+    extract: dict,
+    buckets: dict[str, list],
+) -> None:
+    """P-PHASE8-14 (2026-06-07) — flag sections where a LEAF block was chosen
+    at high confidence but the source subtree is too complex to fit.
+
+    When Stage 2 matches a registered leaf block (has_inner_blocks=0 in
+    block_composition) at confidence >= STAGE_2_CONFIDENCE_THRESHOLD AND the
+    emitted markup contains > _LEAF_GUARD_MIN_WP_BLOCK_OPENS block-open
+    comments (meaning the converter tried to nest multiple elements inside a
+    block that has no InnerBlocks slot), emit structural_mismatch_or_orphan
+    with source="section_collapsed_into_leaf_block" and severity "high".
+
+    This is a DIAGNOSTIC-ONLY bucket emission — it does NOT change routing
+    or conversion output. The converter already ran; this surfaces the gap
+    for operator review.
+
+    Skips:
+      - Chrome-skipped sections (header/footer/nav — intentional skips).
+      - Sections where the DB confirms the block is NOT a leaf (safe).
+      - Sections with confidence below the threshold (already in
+        unrecognised_section; no need to double-bucket).
+      - DB miss / table-absent — soft-fail to no-emit (no false positives).
+    """
+    bucket = "structural_mismatch_or_orphan"
+    psr_by_bid = {r.get("boundary_id"): r for r in _per_section_results(extract)}
+
+    for m in matches:
+        confidence = float(m.get("confidence", 0.0))
+        if confidence < STAGE_2_CONFIDENCE_THRESHOLD:
+            continue  # already handled by route_unrecognised_section
+
+        block_slug = m.get("block_name") or ""
+        if not block_slug.startswith("sgs/"):
+            continue  # only check SGS blocks (non-SGS may have different composition model)
+
+        if not _db_block_is_leaf(block_slug):
+            continue  # composite/unknown — not the target scenario
+
+        bid = m.get("boundary_id")
+        psr = psr_by_bid.get(bid) or {}
+        markup = psr.get("block_markup") or ""
+
+        if _CHROME_SKIPPED_MARKER.search(markup):
+            continue  # intentional chrome skip — not a mismatch
+
+        block_opens = _count_wp_block_opens(markup)
+        if block_opens <= _LEAF_GUARD_MIN_WP_BLOCK_OPENS:
+            continue  # subtree is simple enough — no structural mismatch
+
+        buckets[bucket].append(_enrich_item({
+            "section_id": m.get("section_id"),
+            "boundary_id": bid,
+            "block_name": block_slug,
+            "confidence": confidence,
+            "emitted_block_opens": block_opens,
+            "leaf_guard_threshold": _LEAF_GUARD_MIN_WP_BLOCK_OPENS,
+            "reason": (
+                f"{block_slug} is a leaf block (no InnerBlocks) but the emitted "
+                f"markup contains {block_opens} block-open(s) — the section's "
+                f"subtree was collapsed into a block that cannot accept children."
+            ),
+            "source": "section_collapsed_into_leaf_block",
+        }, bucket))
+
 
 def route_extraction_failed(slot_lists: dict, extract: dict, buckets: dict[str, list]) -> None:
     """For each section, surface declared slots that came back empty.
@@ -626,6 +762,7 @@ def route(
     route_animation_unclassified(extract_dict, buckets)
     route_structural_mismatch(matches, extract_dict, buckets)
     route_wrong_block_type(matches, boundaries, extract_dict, buckets)
+    route_leaf_block_with_complex_subtree(matches, extract_dict, buckets)  # P-PHASE8-14
 
     totals = {name: len(items) for name, items in buckets.items()}
     gap_level_totals = {"attribute": 0, "functionality": 0, "convention": 0, "structural": 0}

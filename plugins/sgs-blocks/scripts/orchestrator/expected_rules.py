@@ -67,6 +67,36 @@ def _strip_pseudo(selector: str) -> str:
     return _PSEUDO_RE.sub("", selector).strip()
 
 
+# Regex that matches a .sgs-<name> class token in a selector part.
+# A selector carrying at least one such token is scoped to SGS-namespaced
+# content and counts toward the coverage denominator.  Selectors with no
+# .sgs- token are page-wide (e.g. `body`, `h1, h2`, `* { box-sizing }`,
+# `:root { --var }`) and deflate the denominator without representing a
+# genuine SGS-attr gap — they are tagged `selector_scope: "page_wide"` so
+# downstream consumers can exclude them.
+#
+# Scoping rule (FR-22-18 safe-minimal version, 2026-06-07):
+#   - Any selector part containing `.sgs-` → scope = "section"
+#   - All other matched selectors                → scope = "page_wide"
+#
+# "page_wide" rows are still WRITTEN to the baseline (conservative bias:
+# keep visibility) but the field lets a coverage calculator skip them as
+# the denominator.
+_SGS_CLASS_TOKEN_RE = re.compile(r"\.sgs-")
+
+
+def _selector_scope(selector: str) -> str:
+    """Classify a selector as ``"section"`` or ``"page_wide"``.
+
+    A comma-separated selector is ``"section"`` when ANY part contains a
+    ``.sgs-`` class token; otherwise ``"page_wide"``.
+    """
+    for part in selector.split(","):
+        if _SGS_CLASS_TOKEN_RE.search(part):
+            return "section"
+    return "page_wide"
+
+
 def _split_parsed_key(key: str) -> tuple[str | None, str]:
     """parse_css() flattens @media into ``"<cond> :: <selector>"``. Split it back."""
     if " :: " in key:
@@ -127,6 +157,10 @@ def extract_for_section(section_html: str, full_css: str) -> list[dict]:
             "selector": selector,
             "declarations": dict(decls),
             "source_media_condition": media_cond,
+            # Coverage denominator filter — see _selector_scope() docstring.
+            # Consumers exclude "page_wide" rows from the denominator to avoid
+            # deflating coverage% with selectors that have no SGS-attr equivalent.
+            "selector_scope": _selector_scope(selector),
         })
     return out
 

@@ -155,6 +155,33 @@ $bio_html = ( $bio && ! $is_compact ) ? sprintf( '<p class="sgs-team-member__bio
 $social_html = $is_compact ? '' : $content;
 
 // ---------------------------------------------------------------------------
+// Schema.org/Person — sameAs: collect social URLs from child sgs/social-icons
+// InnerBlocks. Each sgs/social-icons block stores its links in an `icons` attr
+// (array of { platform, url, … }). Walk $block->inner_blocks to find the first
+// sgs/social-icons block and extract non-empty URL values.
+// ---------------------------------------------------------------------------
+$schema_same_as = array();
+if ( ! empty( $block->inner_blocks ) ) {
+	foreach ( $block->inner_blocks as $child_block ) {
+		if ( 'sgs/social-icons' === ( $child_block->name ?? '' ) ) {
+			$child_icons = $child_block->attributes['icons'] ?? array();
+			if ( is_array( $child_icons ) ) {
+				foreach ( $child_icons as $icon_item ) {
+					$icon_url = $icon_item['url'] ?? '';
+					if ( '' !== $icon_url ) {
+						$safe_url = esc_url_raw( $icon_url );
+						if ( '' !== $safe_url ) {
+							$schema_same_as[] = $safe_url;
+						}
+					}
+				}
+			}
+			break; // Only the first sgs/social-icons block is used.
+		}
+	}
+}
+
+// ---------------------------------------------------------------------------
 // Schema.org/Person markup.
 // ---------------------------------------------------------------------------
 $schema_html = '';
@@ -172,6 +199,9 @@ if ( $name ) {
 	}
 	if ( $schema_image_url ) {
 		$schema['image'] = $schema_image_url;
+	}
+	if ( ! empty( $schema_same_as ) ) {
+		$schema['sameAs'] = 1 === count( $schema_same_as ) ? $schema_same_as[0] : array_values( $schema_same_as );
 	}
 	$schema_html = sprintf(
 		'<script type="application/ld+json">%s</script>',

@@ -31,6 +31,36 @@ final class Sgs_Header_Renderer {
 	 */
 	public static function register(): void {
 		\add_action( 'wp_head', array( __CLASS__, 'render_css' ), 25 );
+		\add_filter( 'render_block_core/template-part', array( __CLASS__, 'add_wrapper_class' ), 10, 2 );
+	}
+
+	/**
+	 * Add the `sgs-header` class to the root element of the header template part.
+	 *
+	 * WP renders `<header class="wp-block-template-part">` for template parts with
+	 * `area: header`. This filter injects `sgs-header` so CSS and JS can target the
+	 * header root with a stable SGS class rather than depending on a hardcoded
+	 * `header.wp-block-template-part` selector (which is theme-infrastructure detail).
+	 *
+	 * Only fires when `tagName` is 'header' — leaves footer template parts
+	 * untouched (those are handled by {@see Sgs_Footer_Renderer::add_wrapper_class}).
+	 *
+	 * @param string $block_content Rendered block HTML.
+	 * @param array  $block         Block metadata.
+	 * @return string
+	 */
+	public static function add_wrapper_class( string $block_content, array $block ): string {
+		$tag_name = $block['attrs']['tagName'] ?? '';
+		if ( 'header' !== $tag_name ) {
+			return $block_content;
+		}
+		// Inject `sgs-header` into the first opening tag's class attribute.
+		return \preg_replace(
+			'/(<header\b[^>]*\bclass=")/i',
+			'$1sgs-header ',
+			$block_content,
+			1
+		) ?? $block_content;
 	}
 
 	// ── Public render method ─────────────────────────────────────────────────

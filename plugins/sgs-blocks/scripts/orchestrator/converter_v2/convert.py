@@ -528,15 +528,6 @@ def _split_value_unit(raw, default_unit: str = "px") -> tuple:
         return None, None
 
 
-def _css_prop_to_suffix() -> list[tuple[str, str, str]]:
-    """DB-driven (css_property, suffix, kind) tuples."""
-    return db.css_property_suffixes()
-
-
-def _breakpoint_suffixes() -> list[tuple[str, list[str]]]:
-    """DB-verified breakpoint marker → suffix-list mapping."""
-    return db.breakpoint_suffix_rules()
-
 
 def _collect_css_decls_for_element(
     node: Tag,
@@ -639,7 +630,7 @@ def _collect_css_decls_for_element(
             return (1, -int(mx.group(1)))
         return (2, 0)
 
-    bp_rules = _breakpoint_suffixes()
+    bp_rules = db.breakpoint_suffix_rules()
     matched_media.sort(key=lambda mc: _specificity_key(mc[0]))
     for media_part, decls in matched_media:
         for bp_substr, bp_suffix_list in bp_rules:
@@ -1685,10 +1676,10 @@ def _lift_styling_attrs(
             return
         attrs[attr_name] = value
 
-    _known_css_props: set[str] = {cp for cp, _, _ in _css_prop_to_suffix()}
+    _known_css_props: set[str] = {cp for cp, _, _ in db.css_property_suffixes()}
     _lifted_css_props: set[str] = set()
 
-    for css_prop, suffix, kind in _css_prop_to_suffix():
+    for css_prop, suffix, kind in db.css_property_suffixes():
         raw = base_decls.get(css_prop)
         if raw is None:
             continue
@@ -1735,7 +1726,7 @@ def _lift_styling_attrs(
             if css_prop in _lifted_css_props:
                 any_in_schema = any(
                     f"{prefix}{sfx}" in schema or f"{prefix}{sfx}Desktop" in schema
-                    for cp, sfx, _ in _css_prop_to_suffix()
+                    for cp, sfx, _ in db.css_property_suffixes()
                     if cp == css_prop
                 )
                 if not any_in_schema:
@@ -1743,7 +1734,7 @@ def _lift_styling_attrs(
 
     _bp_lifted_keys: set[tuple[str, str]] = set()
     for bp_suffix, bp_decl_map in bp_decls.items():
-        for css_prop, suffix, kind in _css_prop_to_suffix():
+        for css_prop, suffix, kind in db.css_property_suffixes():
             raw = bp_decl_map.get(css_prop)
             if raw is None:
                 continue
@@ -1785,7 +1776,7 @@ def _lift_styling_attrs(
                     continue
                 any_in_schema = any(
                     f"{prefix}{sfx}{bp_suffix}" in schema
-                    for cp, sfx, _ in _css_prop_to_suffix()
+                    for cp, sfx, _ in db.css_property_suffixes()
                     if cp == css_prop
                 )
                 if not any_in_schema:

@@ -48,6 +48,7 @@ def _write_minimal_stages(run_id, root):
         9: {"leftover_buckets": {}, "totals": {},
             "gap_level_totals": {"attribute":0, "functionality":0,
                                  "convention":0, "structural":0},
+            "severity_totals": {"info":0, "low":0, "medium":0, "high":0},
             "total_count": 0},
     }
     for n in range(1, 10):

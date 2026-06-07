@@ -54,6 +54,25 @@
 	display: block;
 }
 
+/*
+ * Graceful no-image state for typed product cards (non-bound).
+ * When a product has no featured image the <img> src may be empty or broken.
+ * Hide broken images (browsers show the alt text anyway) and ensure the card
+ * does not collapse to zero height. The alt text remains accessible.
+ * Bound-mode cards use the .product-card__no-image SVG placeholder instead
+ * (render.php gates on $sgs_has_real_image — CSS fallback not needed there).
+ */
+.product-card .product-card-img:not(.product-card--bound .product-card-img) {
+	/* Prevent browser's broken-image chrome showing (alt text still accessible). */
+	overflow: hidden;
+}
+
+/* When the image fails to load, show a neutral surface placeholder. */
+.product-card .product-card-img[src=""],
+.product-card .product-card-img:not([src]) {
+	display: none;
+}
+
 .product-card .product-card-body {
 	padding: 20px;
 	flex: 1;
@@ -140,7 +159,7 @@
 }
 
 .product-card .price-note {
-	font-size: 13px;
+	font-size: 14px;
 	color: var(--wp--preset--color--text-muted, #6b5c50);
 }
 

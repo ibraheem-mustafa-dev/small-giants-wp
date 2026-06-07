@@ -1,15 +1,17 @@
 {
   "stage": 9,
   "name": "coverage",
-  "description": "Stage 9 coverage + gap detection: 5a router output + gap_level_totals",
-  "required_top_level": ["leftover_buckets", "totals", "gap_level_totals", "total_count"],
+  "description": "Stage 9 coverage + gap detection: 5a router output + gap_level_totals + severity_totals",
+  "required_top_level": ["leftover_buckets", "totals", "gap_level_totals", "severity_totals", "total_count"],
   "field_types": {
     "leftover_buckets": "dict",
     "totals": "dict",
     "gap_level_totals": "dict",
+    "severity_totals": "dict",
     "total_count": "int"
   },
   "dict_required_keys": {
-    "gap_level_totals": ["attribute", "functionality", "convention", "structural"]
+    "gap_level_totals": ["attribute", "functionality", "convention", "structural"],
+    "severity_totals": ["info", "low", "medium", "high"]
   }
 }

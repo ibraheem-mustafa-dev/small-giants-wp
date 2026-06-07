@@ -357,11 +357,28 @@ def standalone_block_for(canonical_slot: str) -> str | None:
     """Return the standalone block slug for a canonical slot, or None.
 
     e.g. 'label' → 'sgs/label', 'badge' → 'sgs/label', 'card' → 'sgs/info-box'.
+
+    Cross-checks that the resolved slug is actually built/registered (status='built'
+    in the blocks table). If the DB row points at a planned/stub slug the converter
+    would emit it and WP would throw a block-validation error. In that case we
+    return None and fall back to sgs/container (the converter's correct fallback
+    for unbuilt blocks — see registered_block_slugs() docstring).
     """
+    import sys as _sys
     result = _slot_to_standalone_block().get(canonical_slot)
-    if result is None and canonical_slot:
-        _trace("db_lookup_miss", lookup="standalone_block_for",
-               canonical_slot=canonical_slot)
+    if result is None:
+        if canonical_slot:
+            _trace("db_lookup_miss", lookup="standalone_block_for",
+                   canonical_slot=canonical_slot)
+        return None
+    if result not in registered_block_slugs():
+        print(
+            f"[db_lookup] WARNING: standalone_block_for('{canonical_slot}') resolved to "
+            f"'{result}' which is NOT in registered_block_slugs() (status != 'built'). "
+            "Returning None — converter will fall back to sgs/container.",
+            file=_sys.stderr,
+        )
+        return None
     return result
 
 
@@ -1025,6 +1042,14 @@ def css_property_suffixes() -> list[tuple[str, str, str]]:
         ).fetchall()
     finally:
         conn.close()
+    if not rows:
+        import sys as _sys
+        print(
+            "[db_lookup] WARNING: property_suffixes table empty — "
+            "suffix resolution will mis-classify all CSS properties. "
+            "Re-run /sgs-update to seed the table.",
+            file=_sys.stderr,
+        )
     out: list[tuple[str, str, str]] = []
     for suffix, css_prop, role in rows:
         kind = _kind_for(suffix, role)
