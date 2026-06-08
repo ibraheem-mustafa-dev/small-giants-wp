@@ -4,8 +4,8 @@
 	"private": true,
 	"description": "Custom Gutenberg block library for Small Giants Studio",
 	"scripts": {
-		"prebuild": "node scripts/generate-icons.js",
-		"prestart": "node scripts/generate-icons.js",
+		"prebuild": "node scripts/generate-icons.js && node scripts/generate-extension-attributes.js",
+		"prestart": "node scripts/generate-icons.js && node scripts/generate-extension-attributes.js",
 		"build": "wp-scripts build --experimental-modules --webpack-copy-php",
 		"postbuild": "node scripts/copy-built-styles.js",
 		"start": "wp-scripts start --experimental-modules --webpack-copy-php",

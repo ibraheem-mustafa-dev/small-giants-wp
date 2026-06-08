@@ -121,6 +121,12 @@ require_once SGS_BLOCKS_PATH . 'includes/animation-attributes.php';
 // Custom CSS per block — server-side scoped <style> output.
 require_once SGS_BLOCKS_PATH . 'includes/custom-css.php';
 
+// Register the JS-added sgs* extension attributes server-side (for every
+// className-supporting block) so the ServerSideRender block-renderer route
+// stops rejecting them with "Invalid parameter(s): attributes". Attribute list
+// is generated from the extension JS by scripts/generate-extension-attributes.js.
+require_once SGS_BLOCKS_PATH . 'includes/extension-attrs-rest-register.php';
+
 // Parallax scroll — server-side class, custom property, and data-attribute injection.
 require_once SGS_BLOCKS_PATH . 'includes/parallax.php';
 

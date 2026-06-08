@@ -1,0 +1,41 @@
+#!/bin/sh
+#
+# SGS pre-commit hook.
+#
+# Enforces that the generated extension-attribute list stays in sync with the
+# extension JS that is its single source of truth. Without this, a JS edit that
+# adds a new `sgs*` attribute could be committed without regenerating
+# plugins/sgs-blocks/includes/extension-attributes.generated.php, which would
+# reintroduce the WP block-renderer "Invalid parameter(s): attributes" 400 on
+# ServerSideRender-preview blocks (product-card bound / trustpilot-reviews /
+# business-info / content-collection). See
+# plugins/sgs-blocks/scripts/generate-extension-attributes.js.
+#
+# Activated repo-wide via:  git config core.hooksPath .githooks
+# (run once per clone; see .githooks/README.md).
+
+GEN="plugins/sgs-blocks/scripts/generate-extension-attributes.js"
+
+# Only run the check when extension JS or the generated file is part of the commit.
+if git diff --cached --name-only | grep -Eq 'plugins/sgs-blocks/src/blocks/extensions/.*\.js$|plugins/sgs-blocks/includes/extension-attributes\.generated\.php$'; then
+	# Resolve a runnable node. On Windows git-bash the bare `node` shim
+	# (nvm4w) can be broken while `node.exe` works, so prefer node.exe.
+	if command -v node.exe >/dev/null 2>&1; then
+		NODE=node.exe
+	elif command -v node >/dev/null 2>&1; then
+		NODE=node
+	else
+		echo "pre-commit: node not found on PATH — skipping extension-attribute drift check." >&2
+		exit 0
+	fi
+	if ! "$NODE" "$GEN" --check; then
+		echo "" >&2
+		echo "pre-commit BLOCKED: extension-attributes.generated.php is out of sync with src/blocks/extensions/*.js." >&2
+		echo "Regenerate it, then re-stage and commit:" >&2
+		echo "    node $GEN" >&2
+		echo "  (or: cd plugins/sgs-blocks && npm run build)" >&2
+		exit 1
+	fi
+fi
+
+exit 0
