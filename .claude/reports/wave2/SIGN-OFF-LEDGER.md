@@ -42,7 +42,7 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 | FP-H | Featured-prod | NEW block-arch-mismatch | Spec 27 | OPEN |
 | FP-I | Featured-prod | F3 (council-added) | Stage2-F3 | OPEN |
 | FP-J | Featured-prod | F1 cross-node | Stage1 | OPEN |
-| FP-K | Featured-prod | F6 (showLabel default) | Stage2-F3 | OPEN |
+| FP-K | Featured-prod | F3 (showLabel render-side boolean default — NOT F6; corrected per qc-council) | Stage2-F3 | OPEN |
 | FP-L1 | Featured-prod | F3 | Stage2-F3 | OPEN |
 | FP-M | Featured-prod | F2 | Stage2-F2 | OPEN |
 | FP-N | Featured-prod | F3 + F1 | Stage2-F3 + Stage1 | OPEN |
@@ -71,7 +71,7 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 | SP-A | Social Proof | F4 (min-width:640) | Stage2-F4 | OPEN |
 | SP-B | Social Proof | F1 (spacing-support gate) | Stage1 | OPEN |
 | SP-C | Social Proof | F3 (verticalAlign) | Stage2-F3 | OPEN |
-| SP-D.1 | Social Proof | F3 (starSize) | Stage2-F3 | OPEN |
+| SP-D.1 | Social Proof | F1 (NOT F3 — qc-council: `starSize` is already attr-driven; the fix is the converter routing `.sgs-testimonial__stars` `font-size:15px` → the child `sgs/star-rating`'s size attr via the dispatch, a typography→child-block-attr route) | Stage1 (dispatch — typography to child) | OPEN |
 | SP-D.2 | Social Proof | F1 | Stage1 | OPEN |
 | SP-E | Social Proof | F3 + F8 | Stage2-F3 + F8 | OPEN |
 | SP-F | Social Proof | F3 (slide-card token) | Stage2-F3 | OPEN |
@@ -86,7 +86,7 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 - **Stage 2-F5:** 3 (FP-D, SP-G, GF-I-half)
 - **Stage 2-F7:** 1 (H-A)
 - **Stage 2-F8:** ~4 (BR-B, IN-D, IN-F, GF-I-half, SP-E-half)
-- **NEW / draft / Spec 27:** TB-C, TB-C-draft, FP-E, FP-H, FP-DRAFT (FP-E/H = card-grid product capability = a real Spec 27 build, sized honestly)
+- **NEW / draft / Spec 27:** TB-C, TB-C-draft, FP-E, FP-H, FP-DRAFT. **⚠ MILESTONE GATE (qc-council):** FP-E (card-grid WooCommerce product capability) + FP-H (product-card built-in-elements architecture) are NOT Stage-1/2/3 work — they are a **Spec 27 block-build milestone** (multi-session: new attrs + render.php + edit.js + deprecated.js + WC query, co-ordinated with Spec 27 Phases). They **cannot be marked VERIFIED by the clone-fix waves** — they require an explicit Spec-27 session. Until that session runs, FP-E/FP-H stay OPEN by design; the 55-row ledger reaching all-VERIFIED is gated on it. Do NOT let them be silently rolled into "residue".
 
 ## Stage-1 build prerequisites (council C5 — must be green BEFORE the relevant commit)
 - **canonical_slot backfill (blocks the cross-node commit / F1-cross-node).** The cross-node dispatch finds the parent's per-slot box attrs by their `canonical_slot` — but **~41 rows are untagged** (qc-council/Spec-Lawyer measured: every `block_attributes.contentWidth` row across 28 blocks + all `sgs/hero.contentPadding*` are `canonical_slot=NULL`; `sgs/hero.mediaPadding*` ARE already tagged `media`). **`/sgs-update` does NOT write `canonical_slot`** (Stage 5 only auto-fills missing `standalone_block`) — needs a `scripts/seed-canonical-slots.py` that writes BOTH DBs (the `seed-slot-synonyms.py` pattern), verified per-row, before the cross-node commit. Status: OPEN (pre-commit gate).
