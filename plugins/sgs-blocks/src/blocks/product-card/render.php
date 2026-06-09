@@ -51,6 +51,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+require_once dirname( __DIR__, 3 ) . '/includes/configurator-seed.php';
 
 $variant_style  = $attributes['variantStyle'] ?? 'standard';
 $source_mode    = $attributes['sourceMode'] ?? 'typed';
@@ -276,19 +277,8 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 		// under the cap so the interactive configurator does not drop to the static
 		// "From" card. SEC-1 intact: the manifest is still the single source; this is
 		// only the client SEED subset.
-		$seed_combos = array();
-		foreach ( $manifest['combos'] as $combo_key => $combo_data ) {
-			unset(
-				$combo_data['sku'],
-				$combo_data['gtin'],
-				$combo_data['incMinor'],
-				$combo_data['saleEndDate']
-			);
-			if ( count( $combo_data['gallery'] ) < 2 ) {
-				$combo_data['gallery'] = array(); // No strip for <2 images; view.js uses imageUrl.
-			}
-			$seed_combos[ $combo_key ] = $combo_data;
-		}
+		// Canonical implementation: includes/configurator-seed.php (sgs_lean_seed_combos).
+		$seed_combos = sgs_lean_seed_combos( $manifest['combos'] );
 
 		// Context array — manifest lives here (M-C3: NOT in wp_interactivity_state).
 		$context = array(

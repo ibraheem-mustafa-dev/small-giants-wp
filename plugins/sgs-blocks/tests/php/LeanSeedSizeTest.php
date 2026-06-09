@@ -3,7 +3,7 @@
  * Tests: product-card lean-seed size cap (backlog #18, regression commit 3a1e95df).
  *
  * The product-card's WC variable branch builds a lean-seed context subset for
- * the 24 KB hard cap (M-C9 in render.php line 339). When the manifest grows
+ * the 24 KB hard cap (M-C9 in render.php). When the manifest grows
  * (e.g. adding schema fields like sku/gtin/incMinor/saleEndDate, or per-variation
  * image galleries), the lean-seed must strip server-only fields and reduce
  * gallery size to keep the client-seeded JSON ≤ 24576 bytes.
@@ -14,9 +14,9 @@
  * regression test was missing — the cap could be silently exceeded again if
  * future schema additions don't follow the stripping pattern.
  *
- * This test builds a representative 48-combo manifest (the fixture product),
- * applies the EXACT lean-seed stripping logic from render.php lines 266–278,
- * and asserts the serialised JSON size ≤ 24576 bytes.
+ * This test builds a representative 48-combo manifest (the fixture product) and
+ * exercises the canonical sgs_lean_seed_combos() callable from
+ * includes/configurator-seed.php — the single source of truth for the strip logic.
  *
  * Self-contained — no WordPress installation required. Uses PHP json_encode
  * (the functional equivalent of wp_json_encode for size measurement).
@@ -25,6 +25,8 @@
  */
 
 use PHPUnit\Framework\TestCase;
+
+require_once dirname( __DIR__, 2 ) . '/includes/configurator-seed.php';
 
 /**
  * Class LeanSeedSizeTest
@@ -194,32 +196,6 @@ class LeanSeedSizeTest extends TestCase {
 	}
 
 	/**
-	 * Apply the EXACT lean-seed stripping logic from render.php lines 266–278.
-	 *
-	 * Strips server-only fields (sku/gtin/incMinor/saleEndDate) and reduces
-	 * gallery to empty when <2 images.
-	 *
-	 * @param array $manifest Full manifest (with all fields).
-	 * @return array Lean-seed combos (what gets serialised to the 24KB cap).
-	 */
-	private static function build_lean_seed_combos( array $manifest ): array {
-		$seed_combos = array();
-		foreach ( $manifest['combos'] as $combo_key => $combo_data ) {
-			unset(
-				$combo_data['sku'],
-				$combo_data['gtin'],
-				$combo_data['incMinor'],
-				$combo_data['saleEndDate']
-			);
-			if ( 2 > count( $combo_data['gallery'] ) ) {
-				$combo_data['gallery'] = array(); // No strip for <2 images; view.js uses imageUrl.
-			}
-			$seed_combos[ $combo_key ] = $combo_data;
-		}
-		return $seed_combos;
-	}
-
-	/**
 	 * Test: 48-combo manifest lean-seed stays ≤ 24 KB (baseline 22408 bytes).
 	 *
 	 * The lean-seed logic (stripping schema fields + reducing galleries <2 images)
@@ -232,7 +208,7 @@ class LeanSeedSizeTest extends TestCase {
 		$manifest = self::build_48combo_manifest();
 
 		// Apply the exact lean-seed logic.
-		$seed_combos = self::build_lean_seed_combos( $manifest );
+		$seed_combos = sgs_lean_seed_combos( $manifest['combos'] );
 
 		// Build the context that gets serialised (matching render.php lines 281–335).
 		// We only measure the combos contribution here; a full context would add axes,
@@ -314,7 +290,7 @@ class LeanSeedSizeTest extends TestCase {
 	 */
 	public function test_lean_seed_baseline_headroom(): void {
 		$manifest    = self::build_48combo_manifest();
-		$seed_combos = self::build_lean_seed_combos( $manifest );
+		$seed_combos = sgs_lean_seed_combos( $manifest['combos'] );
 
 		$seed_context = array(
 			'combos' => $seed_combos,

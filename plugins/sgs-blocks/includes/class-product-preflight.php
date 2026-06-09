@@ -31,6 +31,7 @@ require_once __DIR__ . '/class-product-schema.php';
 require_once __DIR__ . '/class-configurator-meta.php';
 require_once __DIR__ . '/class-sgs-configurator-compat.php';
 require_once __DIR__ . '/class-product-authoring-security.php';
+require_once __DIR__ . '/configurator-seed.php';
 
 /**
  * Class Product_Preflight
@@ -651,32 +652,18 @@ final class Product_Preflight {
 	 * Build a lean manifest subset — mirrors the size-reduction the product-card
 	 * render.php applies before seeding into data-wp-context.
 	 *
-	 * Strips server-only fields: sku, gtin, incMinor, saleEndDate.
-	 * Also drops gallery entries beyond the first (the primary image; the rest are
-	 * loaded on demand).  These two operations are the main causes of the E1 server-
-	 * manifest growth that tripped the 24 KB cap (MEMORY feedback 2026-06-05).
+	 * Delegates the per-combo strip to sgs_lean_seed_combos() in
+	 * includes/configurator-seed.php, which is the single source of truth for the
+	 * 24 KB lean-seed strip. Any future change to the strip logic belongs there,
+	 * not here.
 	 *
 	 * @param array $manifest Full manifest from Product_Manifest::build().
 	 * @return array Lean subset.
 	 */
 	private static function lean_manifest_subset( array $manifest ): array {
 		$lean = $manifest;
-		if ( isset( $lean['combos'] ) && \is_array( $lean['combos'] ) ) {
-			foreach ( $lean['combos'] as &$combo ) {
-				unset( $combo['sku'], $combo['gtin'], $combo['incMinor'], $combo['saleEndDate'] );
-				// Match render.php's seed strip EXACTLY (it's the source of truth for
-				// what actually lands in data-wp-context): a gallery with <2 images is
-				// EMPTIED (view.js falls back to combo.imageUrl for a 0/1-image combo),
-				// a gallery with >=2 images is kept in FULL (the thumbnail strip needs
-				// every item). The previous "keep only the first item" diverged from
-				// render.php and OVER-counted single-image-gallery catalogues, producing
-				// a false manifest_over_cap publish-block (48-SKU fixture: 27739 vs the
-				// real seed's 22408). The #17 file-split should centralise this stripper.
-				if ( isset( $combo['gallery'] ) && \is_array( $combo['gallery'] ) && \count( $combo['gallery'] ) < 2 ) {
-					$combo['gallery'] = array();
-				}
-			}
-			unset( $combo );
+		if ( isset( $lean['combos'] ) && \is_array( $lean['combos'] ) && ! empty( $lean['combos'] ) ) {
+			$lean['combos'] = sgs_lean_seed_combos( $lean['combos'] );
 		}
 		return $lean;
 	}
