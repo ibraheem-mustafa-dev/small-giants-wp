@@ -2,7 +2,7 @@
 doc_type: spec
 spec_id: 28
 spec_version: 2
-status: BUILDABLE; P1 SHIPPED 2026-06-05 (value-ladder display, commits 49d63ab8 + e0dea916, live-verified). P2 SHIPPED 2026-06-09 (engine pure functions + tests, commit bf769cee, D198 — canonical fixture reproduced exactly, 53/53 standalone assertions). P3 (preview-only authoring) + P4 (FR-28-5 WC-write, build-deferred behind Spec 27 Cluster C — note: Cluster C is now COMPLETE, so P4 is unblocked when chosen) remain. v2 folds the adversarial-council must-fixes into the FRs.
+status: BUILDABLE; P1 SHIPPED 2026-06-05 (value-ladder display, commits 49d63ab8 + e0dea916, live-verified). P2 SHIPPED 2026-06-09 (engine pure functions + tests, commit bf769cee, D198 — canonical fixture reproduced exactly, 53/53 standalone assertions). P3 SHIPPED 2026-06-09 (preview-only authoring: 3 surfaces + cascade + preview REST, commit aa599097, D199 — security-hardened, live-verified zero-WC-writes; admin UI awaits Bean R-22-13 eye). ONLY P4 remains (FR-28-5 WC-write, build-deferred behind Spec 27 Cluster C — note: Cluster C is now COMPLETE, so P4 is unblocked when chosen). v2 folds the adversarial-council must-fixes into the FRs.
 title: "SGS Smart Bulk Pricing — auto-pricing engine + comparative value ladder"
 project: small-giants-wp
 authors: Bean + Claude (Opus 4.8)
