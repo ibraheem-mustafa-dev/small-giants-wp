@@ -288,6 +288,24 @@ D1 child-attribution rule: when a CSS rule targets `.sgs-X__Y`, D1 routing calls
 **PASS test:** `css-d1-assignments.json` contains zero entries where a CSS rule targeting `.sgs-X__Y` is attributed to the parent block's `Y` attr when `equivalent_block_for(parent, Y)` returns non-NULL.
 **FAIL test:** any D1 assignment violates the child-attribution rule.
 
+### FR-22-5.1 — Inherited / absent-value resolution
+
+**built_status: PLANNED** — ratified 2026-06-09 (Wave-2 clone-fix, D193); build is Stage-1 of `.claude/reports/wave2/CLONE-FIX-BUILD-PLAN.md` (the F6a family).
+
+**Requirement.** When a content leaf's *effective* value for an inheritable property (`text-align`, `color`, `font-family`, `line-height`) derives from an **ancestor** selector rather than the leaf's own, OR is **absent** (browser default) where a block's own CSS default would otherwise override it, the converter resolves the property to an **explicit** value on the leaf's block attrs. Inheritable properties only; resolved via an ancestor-chain walk in `_collect_css_decls_for_element`. Pairs with the draft-authoring convention (text classes SHOULD declare explicit alignment) as the forward path; this FR is the converter's safety net for drafts that don't.
+
+**PASS test:** a draft with `.sgs-X__inner{text-align:center}` + a no-own-`text-align` leaf heading → emitted `sgs/heading` carries `textAlign:'center'`; a draft with NO `text-align` on a heading (browser default) where the block default is `center` (`heading/style.css:7`) → emitted heading carries explicit `textAlign:'left'`.
+**FAIL test:** a heading renders an alignment that doesn't match the draft's effective alignment because the converter read only the leaf's own selector. Universal (R-22-9) — every leaf, every inheritable property; no text-align carve-out.
+
+### FR-22-5.2 — Draft-driven responsive breakpoints
+
+**built_status: PLANNED** — ratified 2026-06-09 (D193); build is Stage-2 of the clone-fix plan (the F4 family).
+
+**Requirement.** The converter reads the draft's **actual** `@media` breakpoints rather than snapping to fixed constants (`_BREAKPOINT_RULES` `db_lookup.py:1233-1239`; `_GRID_DESKTOP_BP=1024` / `_GRID_TABLET_BP=600` `convert.py:3317-3318`). Each detected breakpoint maps to the block's existing responsive attr tier (`+Tablet`/`+Mobile`, the FR-22-21 step-4 companions). A breakpoint with no matching attr tier is logged as a D3 `attribute_gap_candidate` — never emitted as inline `@media` (R-22-6).
+
+**PASS test:** a draft `@media(min-width:640px)` rule is lifted (today silently discarded — `640` absent from `_BREAKPOINT_RULES`); a draft `min-width:768` 2-col grid maps to the **desktop** attr (today misbucketed to tablet, leaving desktop at the mobile base — the H-A2/BR-A bug).
+**FAIL test:** a draft breakpoint outside the fixed set is dropped, or a `min-width` value lands on the wrong device tier.
+
 ### FR-22-6 — Hybrid block render.php migration
 
 **built_status: PARTIAL** — Phase 0.4 audit + 61-block roster shipped (de300eb2, D85); per-block render.php migrations not built
@@ -547,7 +565,9 @@ For wrapper/container/layout/content-routing commits, the acceptance metric is *
 
 ### FR-22-19 — Class-section composite interior slot-routing (Bean-directed, 2026-06-01; SHIPPED 2026-06-01 D128-D132)
 
-**built_status: PARTIAL** — DB + _route_composite_interior shipped (83a55820+5859c42d, D128); converter still emits containers (Method-2 pending)
+**built_status: PARTIAL — RETIREMENT RATIFIED 2026-06-09 (D193).** DB + `_route_composite_interior` shipped (83a55820+5859c42d, D128); now SUPERSEDED-IN-PLAN by the universal per-slot routing (FR-22-5/FR-22-5.1 + the array path FR-22-2.5), per the Wave-2 clone-fix plan.
+
+> **RETIREMENT (D193, ratified — build pending Stage 1 of `.claude/reports/wave2/CLONE-FIX-BUILD-PLAN.md`):** `_route_composite_interior` (the per-composite carve-out gated by `is_class_section_block`, `convert.py:2404`) is superseded by the universal dispatch keyed on `role`/`canonical_slot`/`attr_type` — composite interiors route content AND CSS via the universal path, with NO `is_class_section_block` branch. **Migration (R-22-3/R-22-4):** the sole-element-child guard (`_process_container_children:2956`) that prevents the +13pp XS-3 regression MUST be preserved in the universal path (qc-council 2026-06-09 confirmed it already defuses the XS-3 mechanism). Remove `_route_composite_interior` ONLY after the universal path is live-DOM-verified to route every composite interior correctly; per-section pixel-diff on the removal commit; roll back only if genuinely non-universal (NOT if the draft's parity score dips — the deliverable is the universal converter, not the score). **PASS:** `grep is_class_section_block` in the routing path returns zero; every class-section composite emits its interior via the universal dispatch; live DOM unchanged-or-better.
 
 > **Doc status ≠ built status** — see `decisions.md` + `state.md` for the authoritative built-status; the converter still emits containers, not native composites (Method-2 pending). A "SHIPPED" header here documents the design, not a verified live deliverable.
 

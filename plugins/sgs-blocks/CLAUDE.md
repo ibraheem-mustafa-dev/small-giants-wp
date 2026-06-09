@@ -66,6 +66,8 @@ The `--webpack-copy-php` flag copies `render.php` to `build/` automatically — 
 
 `prebuild`/`prestart` also run `node scripts/check-dead-controls.js --check` — the **dead-control guard** (HC2, D192). It FAILS the build if any block declares an editor control for an attribute that nothing renders (consumes in render.php/save.js/view.js/shared includes). Run standalone with `npm run check:dead-controls`. Accepted exceptions live in `scripts/dead-controls-baseline.json` (empty = zero tolerance). If it false-positives a legit consumption pattern, broaden `collectControlledAttrs`/`isConsumed` in the script — do NOT dump the finding into the baseline. See `.claude/reports/wave2/HC2-COMPLETION-2026-06-09.md`.
 
+**PLANNED — conformance gate (D193, approved 2026-06-09, NOT yet wired).** Two more build-time gates are designed (`.claude/reports/wave2/STAGE0-FRS-AND-GATE.md`) and land WITH the Wave-2 clone-fix build — do not assume they run until their scripts exist + are wired: **Gate A** — a converter golden-fixture regression (`tests/test_converter_conformance.py` over `tests/fixtures/conformance/*.json`) that fails on emit↔spec drift (the D178 cure; seeded one fixture/section + a regression lock per VERIFIED clone issue). **Gate B** — `scripts/check-hardcoded-render-defaults.js`, a sibling of the dead-control guard, failing the build when a `render.php`/`style.css` hardcodes a layout/visual constant for a property the block declares an attr for (the F3 family defence).
+
 ## Deploy
 
 Use the tar method from the framework CLAUDE.md — `scp -r` creates nested directories on Hostinger.

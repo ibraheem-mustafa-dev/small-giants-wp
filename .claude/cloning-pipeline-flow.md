@@ -21,6 +21,8 @@ update_triggers:
 Per-stage annotated blocks (scripts, files, DB tables, skills, status) are in
 `.claude/cloning-pipeline-stages.md`. This file is the cold-start map.
 
+> **ACTIVE BUILD TARGET (2026-06-09, D193):** the Wave-2 clone-fix programme — `.claude/reports/wave2/CLONE-FIX-BUILD-PLAN.md`. It changes pipeline behaviour via 3 ratified Spec-22 FRs: **FR-22-5.1** (inherited/absent-value resolution), **FR-22-5.2** (draft-driven breakpoints — replaces the fixed `_BREAKPOINT_RULES`/`_GRID_DESKTOP_BP` constants), and the **FR-22-19 retirement** (the `_route_composite_interior` carve-out → one universal per-slot dispatch). The headline new capability is **cross-node child→parent CSS routing** (an interior element's CSS → the parent composite's container/slot attrs) — net-new, not yet built. A **conformance gate** (golden-fixture converter regression + an F3 hardcode guard) is approved to stop the recurring undelivered-code rot (D178).
+
 ---
 
 ## How cloning fidelity works — DO NOT REDESIGN THIS

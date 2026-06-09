@@ -18,6 +18,8 @@ update_triggers:
 
 Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 
+> **ACTIVE BUILD TARGET (2026-06-09, D193) — affects the CSS-routing + composite-interior stages.** Per the Wave-2 clone-fix plan (`.claude/reports/wave2/CLONE-FIX-BUILD-PLAN.md`): the 4 existing lift paths (`_lift_typography_to_block_attrs`, `_lift_wrapper_css_to_container_attrs`, `_lift_root_supports_to_style`, scalar-media) consolidate into ONE DB-driven dispatch (delete the dead `_lift_styling_attrs`/`_slot_attr_prefix`); the NET-NEW capability is cross-node child→parent CSS routing; `_route_composite_interior` is retired (FR-22-19 retirement) in favour of that universal dispatch (preserving the `_process_container_children:2956` sole-element-child guard); breakpoint detection becomes draft-driven (FR-22-5.2). None built yet — Stage 1/1b/2 of the plan.
+
 ## Per-stage annotated flow
 
 ### Stage 0 — Pre-flight + Theme Cache

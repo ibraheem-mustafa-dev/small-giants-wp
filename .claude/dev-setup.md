@@ -115,6 +115,8 @@ The build uses `--experimental-modules` to support `viewScriptModule` (the Inter
 
 A `prebuild` / `prestart` hook runs `scripts/generate-icons.js` automatically. This generates `includes/lucide-icons.php` from the `lucide-static` package — a flat PHP array of 1,900+ SVG icons. Do not edit `lucide-icons.php` directly.
 
+The same `prebuild` chain runs the **dead-control guard** (`scripts/check-dead-controls.js --check`, D192). **PLANNED additions (D193, approved 2026-06-09, NOT yet wired — do not assume they run until built):** a converter golden-fixture conformance gate + `scripts/check-hardcoded-render-defaults.js`, both landing with the Wave-2 clone-fix build (design in `.claude/reports/wave2/STAGE0-FRS-AND-GATE.md`).
+
 **Output:** `build/blocks/{block-name}/` contains the compiled files. All files in `build/` are version-controlled and deployed directly to the server — Node.js is not available on the Hostinger host.
 
 ---
