@@ -982,6 +982,8 @@ def _lift_wrapper_css_to_container_attrs(
     base_decls: dict[str, str],
     bp_decls: dict[str, dict[str, str]],
     container_attr_names: frozenset[str] | set[str],
+    *,
+    _typography_owned_attrs: frozenset[str] | None = None,
 ) -> tuple[dict, list[str]]:
     """Lift base + responsive CSS declarations onto sgs/container attribute names.
 
@@ -990,10 +992,15 @@ def _lift_wrapper_css_to_container_attrs(
     result into block emit paths (A2/A3 handle that).
 
     Args:
-        base_decls:           {css_prop: value} from non-media CSS rules + inline style.
-        bp_decls:             {bp_suffix: {css_prop: value}} from @media rules.
-                              bp_suffix is one of 'Desktop', 'Tablet', 'Mobile'.
-        container_attr_names: Set of valid sgs/container attribute names (from block.json).
+        base_decls:             {css_prop: value} from non-media CSS rules + inline style.
+        bp_decls:               {bp_suffix: {css_prop: value}} from @media rules.
+                                bp_suffix is one of 'Desktop', 'Tablet', 'Mobile'.
+        container_attr_names:   Set of valid sgs/container attribute names (from block.json).
+        _typography_owned_attrs: (Commit 1b — DB dispatch) Optional frozenset of flat
+                                attr names that the typography writer owns for this block.
+                                When provided, this writer skips any attr in the set
+                                (the DB has already decided it belongs to typography).
+                                None = legacy / no-contest path (no filtering applied).
 
     Returns:
         attrs:   {attr_name: value} ready to merge into the block's attrs dict.
@@ -1066,6 +1073,11 @@ def _lift_wrapper_css_to_container_attrs(
                 continue  # Try next suffix; flag at end if none matched.
             if attr_name in attrs:
                 continue  # Never overwrite — first win wins.
+            # Commit 1b — DB dispatch: skip any attr the DB has assigned to the
+            # typography writer.  base_attr is the attr name without bp_suffix;
+            # the typography writer owns the attr regardless of breakpoint.
+            if _typography_owned_attrs and base_attr in _typography_owned_attrs:
+                continue  # Typography owns this attr — wrapper-css must not write it.
 
             # Resolve the value.
             if _is_css_function(value):
@@ -1642,10 +1654,19 @@ def route_node_css(
                        lift_wrapper_css=False)
     """
     # ---- GAP 1: typography lift (leaf-block and atomic-tag-swap paths) ----
+    # _typo_written: the set of flat attrs that the typography writer actually
+    # wrote to attrs in this invocation.  Captured here for the Commit-1b DB
+    # dispatch below (wrapper-css must not double-write the same attr).
+    _typo_written: frozenset[str] = frozenset()
     if lift_typography:
         typo_lift = _lift_typography_to_block_attrs(node, typo_slug, css_rules)
         for _tl_k, _tl_v in typo_lift.items():
             attrs.setdefault(_tl_k, _tl_v)
+        # Capture only the attrs that the lifter PRODUCED (not necessarily written
+        # to attrs — setdefault may have blocked some; but we exclude all produced
+        # keys from wrapper-css to avoid the DB-dispatch contest: if typography
+        # produced it, typography owns it; wrapper-css must not touch it).
+        _typo_written = frozenset(typo_lift.keys())
 
     # ---- Root WP native supports (spacing/border/colour → style.*) ----
     if lift_root_supports:
@@ -1654,8 +1675,43 @@ def route_node_css(
     # ---- UNIVERSAL DB-driven custom-attr lift (Method-2, Spec 22 §FR-22-21) ----
     if lift_wrapper_css:
         _base, _bp = _collect_css_decls_for_element(node, css_rules)
+
+        # Commit 1b — DB dispatch: determine which flat attrs the typography writer
+        # owns for this (block, CSS declarations) pair, then suppress wrapper-css
+        # from writing those same attrs.
+        #
+        # Two-step ownership decision (DB-driven, no Python call-order):
+        #   Step A: for each css_prop in the collected declarations, query
+        #           db.attr_for_property(slug, css_prop).  If it returns
+        #           ("typography", attr_name, kind), that attr_name is DB-owned by
+        #           the typography writer.
+        #   Step B: intersect with _typo_written — the attrs typography actually
+        #           produced.  This handles the case where the typography lifter
+        #           CANNOT write a value (e.g. rgba() for colour) even though the
+        #           DB says it owns the property: if typography didn't write it,
+        #           wrapper-css gets a fallback chance (flag-not-suppress).
+        #
+        # Result: a frozenset of attr names to exclude from wrapper-css writes.
+        # This replaces the implicit setdefault-first-wins ordering with an
+        # explicit DB-rule + actual-output gate.
+        _typography_owned_attrs: frozenset[str] | None = None
+        if lift_typography and typo_slug and _typo_written:
+            _owned: set[str] = set()
+            for _css_prop in set(_base) | {
+                _p for _bp_map in _bp.values() for _p in _bp_map
+            }:
+                _dest = db.attr_for_property(typo_slug, _css_prop)
+                if _dest is not None and _dest[0] == "typography":
+                    # DB says typography owns this property's attr.
+                    # Only exclude it from wrapper-css if typography actually wrote it.
+                    if _dest[1] in _typo_written:
+                        _owned.add(_dest[1])
+            if _owned:
+                _typography_owned_attrs = frozenset(_owned)
+
         _lifted, _flagged = _lift_wrapper_css_to_container_attrs(
-            _base, _bp, _block_attr_names(effective_slug)
+            _base, _bp, _block_attr_names(effective_slug),
+            _typography_owned_attrs=_typography_owned_attrs,
         )
         for _k, _v in _lifted.items():
             attrs.setdefault(_k, _v)

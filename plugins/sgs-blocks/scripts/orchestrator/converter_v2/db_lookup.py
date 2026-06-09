@@ -1217,6 +1217,175 @@ def typography_css_to_attrs() -> list[tuple[str, str, "str | None"]]:
 
 
 # ----------------------------------------------------------------------------
+# Commit 1b — per-declaration DB dispatch
+# ----------------------------------------------------------------------------
+# `attr_for_property` is the single function that decides, for a given
+# (block_slug, css_property) pair, which write-path and flat attr name OWNS
+# that declaration.  This removes the call-order precedence-chain from
+# route_node_css (Commit 1a) and replaces it with an explicit DB-driven rule.
+#
+# Decision keys (per STAGE1-DESIGN.md §Commit-1b + D194):
+#   1. TYPOGRAPHY scope  — css_property in _TYPO_LIFT_TYPOGRAPHY_CSS_PROPS or
+#      _TYPO_COLOUR_CSS_PROPS, AND the block declares the corresponding flat attr
+#      (e.g. sgs/heading.textColour for 'color').  Owner = "typography".
+#      The typography writer handles unit companions correctly (fontSizeUnit etc.)
+#      and applies the correct colour treatment (bare token vs hex), so it MUST
+#      own the flat attr — not the wrapper-css writer.
+#   2. WRAPPER-CSS scope — css_property in property_suffixes, block has a
+#      matching flat attr, AND the property is NOT in the typography scope.
+#      Owner = "wrapper_css".
+#   3. ROOT-SUPPORTS (style.* path) — fires unconditionally in route_node_css
+#      when block_supports_for allows it (always writes to style.*, a DIFFERENT
+#      dest from flat attrs, so no contest with (1) or (2)).
+#      NOT returned here — route_node_css handles it unconditionally.
+#
+# The function does NOT duplicate the root-supports path because it writes to a
+# structurally different destination (style.* dict vs top-level flat attr) —
+# both can legitimately fire for the same css_property (e.g. `color` on
+# sgs/heading writes BOTH `textColour` AND `style.color.text`).
+#
+# R-22-1 compliance: all lookups via DB tables (property_suffixes,
+# block_attributes).  _SUFFIX_ATTR_OVERRIDES is the ONLY constant (same
+# exception class as SKIP_TOP_LEVEL_TAGS — handles `grid-template-columns`
+# whose naive suffix derivation lands on the wrong attr, a WP-schema constant).
+#
+# Cache: LRU per (block_slug, css_property) — O(1) per declaration in the
+# walker's per-node loop.
+# ----------------------------------------------------------------------------
+
+# The set of css_properties owned by the typography writer (R-22-1 permitted
+# constant: these are the scope of _lift_typography_to_block_attrs, defined by
+# the lift SCOPE decision documented in typography_css_to_attrs() above, not by
+# per-block data.  Adding a new typography css_property to the DB scope is the
+# single edit point).
+_TYPOGRAPHY_CSS_SCOPE: frozenset[str] = frozenset(
+    _TYPO_LIFT_TYPOGRAPHY_CSS_PROPS
+) | frozenset(_TYPO_COLOUR_CSS_PROPS)
+
+# Explicit attr-name overrides: mirrors the _SUFFIX_ATTR_OVERRIDES dict in
+# convert.py._lift_wrapper_css_to_container_attrs so the derivation is
+# consistent (R-22-1: these are WP-schema constants, not per-block data).
+_ATTR_NAME_OVERRIDES: dict[tuple[str, str], str] = {
+    ("grid-template-columns", "Columns"): "gridTemplateColumns",
+}
+
+
+@functools.lru_cache(maxsize=4096)
+def attr_for_property(
+    block_slug: str,
+    css_property: str,
+) -> "tuple[str, str, str] | None":
+    """Per-declaration DB dispatch: return (writer_path, attr_name, kind).
+
+    Given (block_slug, css_property), decides which write-path OWNS the
+    corresponding flat attr on the block.  Returns None when the property has
+    no flat-attr destination on this block (it may still go to style.* via the
+    root-supports path, which route_node_css handles unconditionally).
+
+    Returns
+    -------
+    (writer_path, attr_name, kind) where:
+      writer_path : "typography" | "wrapper_css"
+      attr_name   : the flat block attribute name to write to
+      kind        : value-conversion kind (colour / number_px / number_unitless /
+                    number_px_or_em / string) from property_suffixes.kind_override
+                    or role-based inference.
+
+    Decision algorithm
+    ------------------
+    1. Query property_suffixes for css_property (ordered by rowid).
+    2. For each (suffix, ps_role, kind_override) row:
+       a. Derive candidate attr name = _ATTR_NAME_OVERRIDES.get((css_prop, suffix))
+          or suffix[0].lower() + suffix[1:].
+       b. Check block_attributes: does block_slug declare attr_name?
+       c. If yes:
+          - If css_property is in _TYPOGRAPHY_CSS_SCOPE → writer_path = "typography"
+            (DB rule: typography writer owns this property's flat attr — it handles
+             unit companions and colour treatment correctly).
+          - Otherwise → writer_path = "wrapper_css"
+          - Infer kind from kind_override → role-based fallback (mirrors _kind_for
+            in this module).
+          - Return immediately (first matching attr wins — same first-wins semantics
+            as the existing setdefault ordering, now made explicit by DB rowid order
+            rather than Python call order).
+    3. If no matching flat attr found → return None.
+
+    Performance: LRU-cached per (block_slug, css_property); cache size 4096 covers
+    the typical walker's per-node-per-property call pattern across a full page.
+
+    R-22-1: property_suffixes and block_attributes are the sole lookup sources.
+    No hardcoded css_property→attr_name dict.
+    """
+    if not block_slug or not css_property:
+        return None
+
+    # Step 1: gather all (suffix, role, kind_override) rows for this css_property.
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT suffix, role, kind_override "
+            "FROM property_suffixes "
+            "WHERE css_property = ? "
+            "ORDER BY rowid",
+            (css_property,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return None
+    finally:
+        conn.close()
+
+    if not rows:
+        return None
+
+    # Step 2: for each suffix, check block_attributes.
+    block_attr_map = block_attrs(block_slug)
+    if not block_attr_map:
+        return None
+
+    for suffix, ps_role, kind_override in rows:
+        # Step 2a: derive candidate attr name.
+        override_key = (css_property, suffix)
+        if override_key in _ATTR_NAME_OVERRIDES:
+            attr_name = _ATTR_NAME_OVERRIDES[override_key]
+        elif suffix:
+            attr_name = suffix[0].lower() + suffix[1:]
+        else:
+            continue
+
+        # Step 2b: block_attributes membership check.
+        if attr_name not in block_attr_map:
+            continue
+
+        # Step 2c: writer-path decision via DB rule.
+        if css_property in _TYPOGRAPHY_CSS_SCOPE:
+            writer_path = "typography"
+        else:
+            writer_path = "wrapper_css"
+
+        # Infer kind (mirrors _kind_for logic; kind_override is the DB-first value).
+        if kind_override:
+            kind = kind_override
+        elif ps_role == "color":
+            kind = "colour"
+        elif ps_role == "typography":
+            kind = "number_px"  # safe fallback; actual conversion in the writer
+        elif ps_role == "layout":
+            kind = "number_px"
+        elif ps_role == "visual":
+            kind = "string"
+        else:
+            kind = "string"
+
+        _trace("attr_for_property_dispatch",
+               block_slug=block_slug, css_property=css_property,
+               attr_name=attr_name, writer_path=writer_path, kind=kind)
+        return (writer_path, attr_name, kind)
+
+    # No matching flat attr on this block for this css_property.
+    return None
+
+
+# ----------------------------------------------------------------------------
 # Breakpoint suffix vocabulary (DB-driven, replaces hardcoded _BREAKPOINT_SUFFIXES)
 # ----------------------------------------------------------------------------
 
