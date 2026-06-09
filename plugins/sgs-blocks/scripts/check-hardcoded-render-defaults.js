@@ -24,16 +24,33 @@
  *
  * EXEMPTIONS (a declaration is NOT a violation when)
  * ---------------------------------------------------
+ *  STRUCTURAL (original):
  *  - Value uses a CSS custom property:  var(--...)
  *  - Declaration is inside :where(...)  (low-specificity default)
  *  - File is editor.css                 (editor-only, not painted)
  *  - Value is a CSS reset keyword:      inherit | initial | unset | revert | normal | none | auto
  *  - Value is 0 (universal reset)
  *  - PHP render.php: the value is dynamically emitted (contains $, esc_attr,
- *    <?php, or a PHP interpolation marker) — only LITERAL string constants
- *    qualify.
+ *    <?php, or a PHP interpolation marker) — only LITERAL string constants qualify.
  *  - The CSS selector is scoped to a :where() or a reset / animation /
  *    keyframes context (handled by the context-aware scanner).
+ *
+ *  ADDED (E1–E10, converged from 5-agent audit of 268 baseline findings):
+ *  - E1  Selector-context awareness: sub-element selectors (__foo) only flagged
+ *        when the attr name semantically maps to that element token.
+ *  - E2  Variant/modifier scope: selectors containing --modifier or .is-style-*
+ *        implement the class-switch pattern, not competing defaults.
+ *  - E3  Interactive/pseudo states: :hover, :focus*, :active, [open], ::before/after etc.
+ *  - E4  Responsive structural rules: declarations inside @media / @container.
+ *  - E5  Multi-line value capture: join through the terminating ; before testing.
+ *  - E6  Narrow `size` suffix: only flag on root/matching-element selectors.
+ *  - E7  WCAG touch targets: 44px / 48px on width/height/min-width/min-height.
+ *  - E8  Scoped-<style> wins: render.php emits a #$uid-scoped rule for the same
+ *        property → style.css literal is a dormant fallback beaten by specificity.
+ *  - E9  WP Block Selectors API typography: block.json declares selectors.typography
+ *        → WP pipeline applies user values; base font-size literal is not competing.
+ *  - E10 HTML-attribute consumption: render.php reads the attr as an HTML attribute
+ *        (e.g. width="..." on <img>) rather than a CSS property — no CSS competition.
  *
  * BASELINE
  * --------
@@ -172,6 +189,21 @@ const CSS_VAR_RE = /var\s*\(\s*--/;
 const PHP_DYNAMIC_RE = /\$[a-zA-Z_]|\besc_attr\b|\besc_html\b|<\?php|%[sdfe]/;
 
 // ---------------------------------------------------------------------------
+// E7 — WCAG touch target values
+// 44px and 48px on dimension properties are canonical touch-target minimums
+// (WCAG 2.2 SC 2.5.8). These are never attr-owned layout constants.
+// ---------------------------------------------------------------------------
+const TOUCH_TARGET_SIZES = new Set( [ '44px', '48px' ] );
+const TOUCH_TARGET_PROPS = new Set( [ 'width', 'height', 'min-width', 'min-height' ] );
+
+// ---------------------------------------------------------------------------
+// E3 — Interactive / pseudo-state selectors
+// Declarations under these selectors are interactive variants, not competing
+// defaults. They are driven by user interaction / browser state, not attr values.
+// ---------------------------------------------------------------------------
+const INTERACTIVE_PSEUDO_RE = /:hover|:focus(?:-visible|-within)?|:active|:disabled|\[open\]|::(?:before|after|first-letter|placeholder|backdrop|selection|marker|details-content|-webkit-)/i;
+
+// ---------------------------------------------------------------------------
 // HELPERS
 // ---------------------------------------------------------------------------
 
@@ -207,6 +239,272 @@ function stripComments( src ) {
 		.replace( /\/\*[\s\S]*?\*\//g, ' ' ) // /* ... */
 		.replace( /(^|[^:])\/\/[^\n]*/g, '$1 ' ) // // ... (not http://)
 		.replace( /^\s*#[^\n]*/gm, ' ' ); // # PHP comment
+}
+
+// ---------------------------------------------------------------------------
+// E1 — SELECTOR-CONTEXT HELPERS
+//
+// Given a selector (the text that opened the most recent `{`), determine
+// whether it targets a BEM sub-element (`__something`) and, if so, whether
+// the given attr name semantically maps to that element.
+// ---------------------------------------------------------------------------
+
+/**
+ * Extract the BEM sub-element token(s) from a selector string.
+ * e.g. ".sgs-gallery__caption" → ["caption"]
+ *      ".sgs-trust-bar__badge-label" → ["badge-label", "badge", "label"]
+ * Returns null if the selector has no `__element` part (root-level selector).
+ *
+ * We extract ALL `__`-delimited tokens and also the individual dash-separated
+ * parts of the element (so `badge-label` matches both `badge` and `label`).
+ */
+function extractBemElements( selector ) {
+	// Find all `__something` fragments. Use a global match.
+	const matches = selector.match( /__([a-zA-Z0-9-]+)/g );
+	if ( ! matches || matches.length === 0 ) {
+		return null; // no sub-element — root selector
+	}
+	const tokens = new Set();
+	for ( const m of matches ) {
+		const element = m.slice( 2 ); // strip __
+		tokens.add( element.toLowerCase() );
+		// Also add each dash-part (e.g. "badge-label" → "badge", "label")
+		for ( const part of element.split( '-' ) ) {
+			if ( part.length > 1 ) {
+				tokens.add( part.toLowerCase() );
+			}
+		}
+	}
+	return tokens;
+}
+
+/**
+ * E1: For a sub-element selector, check whether the attr name semantically
+ * maps to that element. Returns true (EXEMPT) when the attr does NOT map to
+ * the sub-element — i.e. it is a root-level concern being incorrectly applied
+ * to a sub-element selector.
+ *
+ * Semantic match rule: the lowercased attr name must CONTAIN at least one of
+ * the element tokens. If none match, the attr "owns" a different element and
+ * the declaration on this sub-element selector is NOT a real F3 violation.
+ *
+ * Example:
+ *   attrName = "gap"         selector tokens = ["header"] → no match → EXEMPT
+ *   attrName = "captionColour" selector tokens = ["caption"] → "caption" in "captioncolour" → NOT exempt (real)
+ *   attrName = "labelFontSize" selector tokens = ["label"] → "label" in "labelfontsize" → NOT exempt (real)
+ *   attrName = "gap"         selector tokens = null (root) → NOT exempt (checked normally)
+ */
+function isBemSubElementMismatch( attrName, bemElements ) {
+	if ( bemElements === null ) {
+		return false; // root selector — apply full checking
+	}
+	const lowerAttr = attrName.toLowerCase();
+	for ( const token of bemElements ) {
+		if ( lowerAttr.includes( token ) ) {
+			return false; // attr DOES map to this element → not exempt
+		}
+	}
+	// No token matched → the attr controls something else; this sub-element
+	// declaration is not owned by this attr → exempt.
+	return true;
+}
+
+// ---------------------------------------------------------------------------
+// E6 — NARROW THE `size` SUFFIX
+//
+// Attrs ending in `size` (iconSize, starSize, badgeSize, pillSize, etc.) map
+// to font-size + width + height via SUFFIX_MAP. Without narrowing, every
+// width/height/font-size on any sub-element in the file gets flagged.
+//
+// Narrowing rule: `size`-suffix attrs ONLY flag declarations on:
+//   (a) root-element selectors (no `__` in the selector), OR
+//   (b) selectors whose element token contains "icon", "size", "star", "badge",
+//       "circle", "pill", or matches the attr's own prefix before "size".
+// ---------------------------------------------------------------------------
+
+/**
+ * Returns the element-match tokens for a `size`-type attr.
+ * e.g. "iconSize" → ["icon", "size"]
+ *      "starSize" → ["star", "size"]
+ *      "badgeSize" → ["badge", "size"]
+ *      "pillSize" → ["pill", "size"]
+ *      "imageSize" → ["image", "img", "size"]
+ *      "iconCircleSize" → ["icon", "circle", "size"]
+ */
+function sizeAttrTokens( attrName ) {
+	const lower = attrName.toLowerCase();
+	// Strip "size" suffix to get the prefix
+	const prefix = lower.endsWith( 'size' ) ? lower.slice( 0, -4 ) : lower;
+	const tokens = new Set( [ 'size' ] );
+	// Add each dash-separated or camelCase part of the prefix
+	// Split on camelCase transitions (lowercase → uppercase boundary)
+	const parts = prefix.split( /(?=[A-Z])/g ).map( p => p.toLowerCase() ).filter( Boolean );
+	for ( const p of parts ) {
+		if ( p.length > 1 ) {
+			tokens.add( p );
+		}
+	}
+	// Common aliase: image → img
+	if ( tokens.has( 'image' ) ) {
+		tokens.add( 'img' );
+	}
+	return tokens;
+}
+
+// ---------------------------------------------------------------------------
+// E8 — SCOPED-<STYLE>-WINS DETECTION
+//
+// Before flagging a style.css declaration, check whether the block's render.php
+// emits a #$uid-scoped rule for the same CSS property. When it does, the
+// style.css literal is a dormant fallback beaten by the higher-specificity
+// scoped rule — not a real F3 violation.
+//
+// Pattern: PHP builds a string like "#$uid.sgs-feature-grid { ... gap: ... }"
+// and echoes it as a <style> tag. We look for:
+//   1. A string in render.php containing "#$uid" (or the equivalent with a
+//      variable that becomes a UID) AND
+//   2. The target CSS property name appearing in that string.
+// ---------------------------------------------------------------------------
+
+/**
+ * Build the set of CSS properties that render.php emits in a #$uid-scoped
+ * <style> block. Returns a Set of property names (lowercased).
+ */
+function getScopedStyleProps( renderPhpSrc ) {
+	if ( ! renderPhpSrc ) {
+		return new Set();
+	}
+	const props = new Set();
+
+	// Look for PHP heredoc / string blocks that contain a UID variable
+	// (typically `#$uid` or `#$block_id` or similar) used inside a CSS block.
+	// We search for the pattern:  $css = "...#$<varname>...property: ...";
+	// or echo '<style>' followed by a string containing #$<var>.
+	//
+	// Strategy: find lines that contain a CSS property name preceded by a
+	// '#' + '$' sequence (the #$uid selector pattern). We normalise to
+	// lower-case and collect the property names.
+
+	// Strip PHP block comments first.
+	const stripped = renderPhpSrc
+		.replace( /\/\*[\s\S]*?\*\//g, ' ' )
+		.replace( /(^|[^:])\/\/[^\n]*/g, '$1 ' );
+
+	// Match a CSS property declaration within a string that also mentions #$
+	// (UID-scoped block). We look for the text pattern:
+	//   #$<identifier>  ... (within some lines) ... property: value;
+	// A simpler heuristic: collect all CSS property names from lines that
+	// appear BETWEEN a '#$' reference and the end of the string literal.
+	//
+	// Even simpler: if the file has '#$' + prop anywhere in a string context,
+	// treat that as a scoped emission of that prop.
+	//
+	// We split on string delimiters and look inside each string chunk.
+	// PHP strings can span multiple lines (heredoc, double-quote with concat).
+	// Rather than full PHP parsing, we use a regex that captures content between
+	// double-quoted string regions that include #$ (good enough for this pattern).
+
+	// Find all occurrences of #$<word> and then look for CSS props in the
+	// surrounding string context (up to 500 chars in each direction).
+	const uidMarkerRe = /#\$[a-zA-Z_][a-zA-Z0-9_]*/g;
+	let m;
+	while ( ( m = uidMarkerRe.exec( stripped ) ) !== null ) {
+		const start  = Math.max( 0, m.index - 50 );
+		const end    = Math.min( stripped.length, m.index + 500 );
+		const chunk  = stripped.slice( start, end );
+		// Extract CSS property names from this chunk
+		const propRe = /\b([\w-]+)\s*:/g;
+		let pm;
+		while ( ( pm = propRe.exec( chunk ) ) !== null ) {
+			const candidate = pm[ 1 ].toLowerCase().trim();
+			// Only recognise known CSS property names (avoid PHP keys)
+			if ( /^[a-z-]+$/.test( candidate ) && candidate.includes( '-' ) || isKnownCssProp( candidate ) ) {
+				props.add( candidate );
+			}
+		}
+	}
+
+	return props;
+}
+
+/** Lightweight list of CSS property names we care about for E8. */
+function isKnownCssProp( name ) {
+	return new Set( [
+		'gap', 'row-gap', 'column-gap',
+		'grid-template-columns', 'grid-template-rows',
+		'flex-direction', 'flex-wrap', 'align-items', 'justify-content',
+		'font-size', 'width', 'height', 'max-width', 'min-height',
+		'padding', 'margin', 'color', 'background-color', 'border-radius',
+	] ).has( name );
+}
+
+// ---------------------------------------------------------------------------
+// E9 — WP BLOCK SELECTORS API TYPOGRAPHY
+//
+// If block.json declares `selectors.typography` (targeting a child element),
+// WP's own styling pipeline applies the user's fontSize/lineHeight/etc. values
+// via generated CSS on that child selector — the literal in style.css is the
+// design-system default and is NOT competing with the attr at the same
+// specificity level. We exempt font-size / line-height / letter-spacing /
+// font-weight / text-transform for any block that declares selectors.typography.
+// ---------------------------------------------------------------------------
+
+const WP_NATIVE_TYPOGRAPHY_PROPS = new Set( [
+	'font-size', 'line-height', 'letter-spacing', 'font-weight', 'text-transform',
+] );
+
+// ---------------------------------------------------------------------------
+// E10 — HTML-ATTRIBUTE CONSUMPTION
+//
+// If render.php reads the attr as an HTML attribute (e.g. width="..." on an
+// <img>, or height="...") rather than ever emitting it as a CSS property, the
+// attr is consumed by the HTML layer and has no CSS-level conflict.
+//
+// Heuristic: search render.php for the pattern: attr-name (as slug) followed
+// by `="` or `= "` in an HTML context, NOT in a `style="..."` value.
+// ---------------------------------------------------------------------------
+
+/**
+ * Build the set of attribute names that render.php consumes as HTML attributes
+ * (rather than CSS properties). Returns a Set of camelCase attr names.
+ *
+ * We look for patterns like:
+ *   width="<?php ... ?>"   (PHP echo inside html attr)
+ *   'width="' . $something  (concatenated html attr)
+ * When an attr whose name matches a known HTML attr (width, height) appears
+ * in an HTML-attribute context, we consider it HTML-consumed.
+ */
+function getHtmlAttrConsumedAttrs( renderPhpSrc, blockAttrs ) {
+	if ( ! renderPhpSrc ) {
+		return new Set();
+	}
+	const consumed = new Set();
+	// HTML attribute names we check (a subset that could be confused with CSS)
+	const htmlAttrNames = [ 'width', 'height' ];
+	for ( const htmlAttr of htmlAttrNames ) {
+		// Look for patterns like:  width="   or  width='  (not inside a style="...")
+		// Crude but effective: the attr appears as an HTML attribute when it is
+		// immediately followed by = and a quote and the preceding text is NOT `style`.
+		const re = new RegExp( `(?<!style\\s*=\\s*["'][^"']{0,200})\\b${ htmlAttr }\\s*=\\s*["']`, 'i' );
+		if ( re.test( renderPhpSrc ) ) {
+			// Find block attrs whose name ends with this html attr suffix
+			for ( const attrName of blockAttrs ) {
+				const lower = attrName.toLowerCase();
+				if ( lower.endsWith( htmlAttr ) && lower !== htmlAttr ) {
+					// e.g. imageWidth → html attr is "width"; if the attr has a prefix,
+					// this is likely consumed as an html attr + CSS custom property.
+					// Only exempt if the attr name is EXACTLY the html attr or a known
+					// image dimension attr.
+					if ( lower === 'imagewidth' || lower === 'imageheight' ||
+						lower === 'logowidth' || lower === 'logoheight' ||
+						lower === 'avatarwidth' || lower === 'avatarheight' ) {
+						consumed.add( attrName );
+					}
+				}
+			}
+		}
+	}
+	return consumed;
 }
 
 // ---------------------------------------------------------------------------
@@ -262,75 +560,236 @@ function isLiteralConstant( value, property ) {
 }
 
 /**
- * Scan `src` for CSS declarations matching any property in `targetProps`.
- * Skips declarations inside :where(...) blocks (low-specificity default OK).
- * Skips declarations inside @keyframes blocks (animation keyframes, not layout).
- * Skips the file entirely when it is editor.css.
+ * E5 — MULTI-LINE VALUE CAPTURE
  *
- * Returns array of { line (1-based), property, value, inWhereBlock }.
+ * Join a run of lines from `startLine` until we find the terminating `;` or `}`.
+ * Returns the full value string (everything after the `:` up to the `;`).
  */
-function scanCssDeclarations( src, targetProps ) {
+function captureFullValue( lines, startLine, colonPos ) {
+	let collected = lines[ startLine ].slice( colonPos + 1 );
+	let lineIdx   = startLine;
+
+	while ( lineIdx < lines.length ) {
+		const semiIdx = collected.indexOf( ';' );
+		const braceIdx = collected.indexOf( '}' );
+		if ( semiIdx !== -1 && ( braceIdx === -1 || semiIdx < braceIdx ) ) {
+			return collected.slice( 0, semiIdx ).trim();
+		}
+		if ( braceIdx !== -1 ) {
+			return collected.slice( 0, braceIdx ).trim();
+		}
+		lineIdx++;
+		if ( lineIdx < lines.length ) {
+			collected += ' ' + lines[ lineIdx ].trim();
+		}
+	}
+	return collected.trim();
+}
+
+/**
+ * Scan `src` for CSS declarations matching any property in `targetProps`.
+ * Applies all exemptions:
+ *   - :where(...) blocks (low-specificity default OK)
+ *   - @keyframes blocks
+ *   - @media / @container blocks (E4)
+ *   - Selector contains --modifier or .is-style-* (E2)
+ *   - Selector or its ancestor contains interactive/pseudo state (E3)
+ *   - Sub-element selector where attr doesn't map to that element (E1)
+ *   - WCAG touch-target 44px/48px on dimension props (E7)
+ *   - `size`-suffix attrs on non-matching sub-elements (E6)
+ *
+ * Returns array of { line (1-based), property, value, selector, inWhereBlock }.
+ *
+ * @param {string}   src         Full CSS source (comments already stripped).
+ * @param {Set}      targetProps CSS property names to watch for.
+ * @param {string[]} attrNames   Block attribute names (for E1/E6 checks).
+ * @param {Map}      cssToAttrs  CSS property → Set of attr names.
+ */
+function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs ) {
 	const findings = [];
 	const lines    = src.split( '\n' );
 
-	let depthTotal  = 0; // { } brace depth
-	let whereDepth  = 0; // depth at entry of a :where( block
-	let inWhere     = false;
+	let depthTotal    = 0; // { } brace depth
+	let whereDepth    = 0;
+	let inWhere       = false;
 	let keyframeDepth = 0;
-	let inKeyframes = false;
+	let inKeyframes   = false;
+	let mediaDepth    = 0;  // E4: @media / @container depth
+	let inMedia       = false;
+
+	// Selector tracking (E1/E2/E3): maintain a stack of selectors at each brace depth.
+	// When we see a `{`, push the preceding selector text. When we see `}`, pop.
+	/** @type {string[]} */
+	const selectorStack = [];
+	// Buffer for the "pending selector" — accumulated text since the last `}` or start.
+	let pendingSelector = '';
 
 	for ( let i = 0; i < lines.length; i++ ) {
 		const line    = lines[ i ];
 		const lineNum = i + 1;
 
-		// Track brace depth to detect :where / @keyframes exit.
 		const opens  = ( line.match( /\{/g ) || [] ).length;
 		const closes = ( line.match( /\}/g ) || [] ).length;
 
-		// Detect :where( entry before incrementing.
+		// ── :where( detection ────────────────────────────────────────────────
 		if ( /:[a-z-]*where\s*\(/i.test( line ) ) {
-			inWhere     = true;
-			whereDepth  = depthTotal + opens; // depth AFTER the opening brace on this line
+			inWhere    = true;
+			whereDepth = depthTotal + opens;
 		}
 
-		// Detect @keyframes entry.
+		// ── @keyframes detection ─────────────────────────────────────────────
 		if ( /^\s*@keyframes/i.test( line ) ) {
 			inKeyframes   = true;
 			keyframeDepth = depthTotal + opens;
 		}
 
+		// ── E4: @media / @container detection ────────────────────────────────
+		if ( /^\s*@(?:media|container)\b/i.test( line ) ) {
+			inMedia    = true;
+			mediaDepth = depthTotal + opens;
+		}
+
+		// ── Selector stack management ─────────────────────────────────────────
+		// Accumulate pending selector text from lines that look like selectors
+		// (i.e. do not contain declarations and precede a `{`).
+		if ( opens > 0 ) {
+			// The text up to the first `{` on this line is the tail of the selector.
+			const beforeBrace = line.indexOf( '{' );
+			if ( beforeBrace >= 0 ) {
+				pendingSelector += ' ' + line.slice( 0, beforeBrace );
+			}
+			selectorStack.push( pendingSelector.trim() );
+			pendingSelector = '';
+		} else if ( closes === 0 ) {
+			// No braces → could be a continuation of a multi-line selector.
+			// Only accumulate if it looks like a selector (no `:` followed by value).
+			if ( ! /^\s*[\w-]+\s*:/.test( line ) ) {
+				pendingSelector += ' ' + line.trim();
+			}
+		}
+
+		// Update depth AFTER selector stack push.
 		depthTotal += opens - closes;
 
-		// Exit :where / @keyframes when depth drops back to entry level.
+		// Pop selector stack for each close-brace.
+		for ( let c = 0; c < closes; c++ ) {
+			if ( selectorStack.length > 0 ) {
+				selectorStack.pop();
+			}
+		}
+
+		// Exit :where / @keyframes / @media when depth drops back to entry level.
 		if ( inWhere && depthTotal < whereDepth ) {
 			inWhere = false;
 		}
 		if ( inKeyframes && depthTotal < keyframeDepth ) {
 			inKeyframes = false;
 		}
-
-		if ( inWhere || inKeyframes ) {
-			continue; // exempt context
+		if ( inMedia && depthTotal < mediaDepth ) {
+			inMedia = false;
 		}
 
-		// Match CSS declaration: property: value;
-		// Allow multi-value declarations (e.g. `flex-direction: column row;`).
-		const declRe = /^\s*([\w-]+)\s*:\s*([^;{}]+);?/;
+		// ── Exempt contexts ───────────────────────────────────────────────────
+		if ( inWhere || inKeyframes ) {
+			continue;
+		}
+		// E4: skip everything inside @media / @container
+		if ( inMedia ) {
+			continue;
+		}
+
+		// Current selector context for E1/E2/E3 checks.
+		// Use the full selector chain (join stack) for the most complete check.
+		const currentSelector = selectorStack.join( ' ' );
+
+		// E2: skip if selector chain contains a BEM modifier (--modifier) or .is-style-*.
+		if ( /--[a-zA-Z0-9-]+/.test( currentSelector ) || /\.is-style-/.test( currentSelector ) ) {
+			continue;
+		}
+
+		// E3: skip if selector chain contains an interactive / pseudo state.
+		if ( INTERACTIVE_PSEUDO_RE.test( currentSelector ) ) {
+			continue;
+		}
+
+		// ── Match CSS declaration: property: value; ───────────────────────────
+		// E5: multi-line value capture — match property up to the `:`,
+		// then collect the value through the terminating `;`.
+		const declRe = /^\s*([\w-]+)\s*:/;
 		const m      = declRe.exec( line );
 		if ( ! m ) {
 			continue;
 		}
 		const property = m[ 1 ].toLowerCase().trim();
-		const rawValue = m[ 2 ].trim();
 
 		if ( ! targetProps.has( property ) ) {
 			continue;
 		}
+
+		// E5: capture the full value (may span multiple lines).
+		const colonPos = line.indexOf( ':' );
+		const rawValue = captureFullValue( lines, i, colonPos );
+
 		if ( ! isLiteralConstant( rawValue, property ) ) {
 			continue;
 		}
 
-		findings.push( { line: lineNum, property, value: rawValue } );
+		// E7: WCAG touch-target exemption — 44px / 48px on dimension properties.
+		if ( TOUCH_TARGET_SIZES.has( rawValue ) && TOUCH_TARGET_PROPS.has( property ) ) {
+			continue;
+		}
+
+		// ── Per-attr checks (E1, E6) for every attr that maps to this property ──
+		const owningAttrs = cssToAttrs.get( property );
+		if ( ! owningAttrs ) {
+			continue;
+		}
+
+		// Extract BEM sub-element tokens from the current selector (for E1/E6).
+		const bemElements = extractBemElements( currentSelector );
+
+		// Check whether ALL owning attrs are exempt for this selector.
+		// If at least one owning attr is NOT exempt, the finding stands.
+		const nonExemptAttrs = [];
+		for ( const attrName of owningAttrs ) {
+			// E1: sub-element selector mismatch — attr doesn't map to this element.
+			if ( isBemSubElementMismatch( attrName, bemElements ) ) {
+				continue; // this attr is exempt for this selector
+			}
+
+			// E6: narrow `size` suffix — only flag on root or semantically matching selectors.
+			if ( attrName.toLowerCase().endsWith( 'size' ) ) {
+				if ( bemElements !== null ) {
+					// On a sub-element: only flag if the attr's size tokens overlap with the element.
+					const sizeTokens = sizeAttrTokens( attrName );
+					let matched = false;
+					for ( const token of bemElements ) {
+						if ( sizeTokens.has( token ) ) {
+							matched = true;
+							break;
+						}
+					}
+					if ( ! matched ) {
+						continue; // E6 exempt
+					}
+				}
+				// On root selector: allow fall-through to report
+			}
+
+			nonExemptAttrs.push( attrName );
+		}
+
+		if ( nonExemptAttrs.length === 0 ) {
+			continue; // all owning attrs are exempt for this declaration
+		}
+
+		findings.push( {
+			line:     lineNum,
+			property,
+			value:    rawValue,
+			selector: currentSelector,
+			attrs:    nonExemptAttrs,
+		} );
 	}
 
 	return findings;
@@ -392,6 +851,10 @@ function scanPhpInlineStyles( src, targetProps ) {
 				if ( ! isLiteralConstant( rawValue, property ) ) {
 					continue;
 				}
+				// E7: touch target
+				if ( TOUCH_TARGET_SIZES.has( rawValue ) && TOUCH_TARGET_PROPS.has( property ) ) {
+					continue;
+				}
 				findings.push( { line: lineNum, property, value: rawValue } );
 			}
 		}
@@ -428,6 +891,17 @@ function checkBlock( blockDir ) {
 	const blockName = meta.name || path.basename( blockDir );
 	const attrs     = Object.keys( meta.attributes || {} );
 
+	// ── E9: Block Selectors API typography detection ─────────────────────────
+	// If block.json declares selectors.typography, WP applies font-size etc.
+	// via generated CSS on the targeted child element — literal base values in
+	// style.css are not competing defaults.
+	const hasSelectorsTypography = !! (
+		meta.selectors && (
+			meta.selectors.typography ||
+			( typeof meta.selectors === 'object' && 'typography' in meta.selectors )
+		)
+	);
+
 	// Build a map: CSS property → Set of attr names that own it.
 	// Used in violation reporting to name which attr should own the property.
 	/** @type {Map<string, Set<string>>} */
@@ -445,18 +919,64 @@ function checkBlock( blockDir ) {
 		return []; // no layout-related attrs → nothing to check
 	}
 
+	// ── E9: Remove WP-native typography props when block uses selectors.typography ──
 	const targetProps = new Set( cssToAttrs.keys() );
+	if ( hasSelectorsTypography ) {
+		for ( const prop of WP_NATIVE_TYPOGRAPHY_PROPS ) {
+			targetProps.delete( prop );
+		}
+	}
+
+	if ( targetProps.size === 0 ) {
+		return [];
+	}
+
 	const violations  = [];
+
+	// Load render.php for E8/E10 analysis.
+	const renderPhpPath = path.join( blockDir, 'render.php' );
+	const renderPhpSrc  = readIfExists( renderPhpPath );
+
+	// ── E8: build set of props emitted as #$uid-scoped styles in render.php ──
+	const scopedStyleProps = getScopedStyleProps( renderPhpSrc );
+
+	// ── E10: build set of attrs consumed as HTML attributes in render.php ────
+	const htmlAttrConsumed = getHtmlAttrConsumedAttrs( renderPhpSrc, attrs );
+
+	// Build effective targetProps excluding E8 (scoped) and E10 (html-attr) props.
+	const effectiveTargetProps = new Set();
+	for ( const prop of targetProps ) {
+		// E8: if render.php emits a scoped #$uid rule for this prop, style.css
+		// literal is a dormant fallback — skip it.
+		if ( scopedStyleProps.has( prop ) ) {
+			continue;
+		}
+		// E10: if the owning attrs for this prop are all html-attr-consumed, skip.
+		const owners = cssToAttrs.get( prop );
+		if ( owners ) {
+			const allHtmlConsumed = [ ...owners ].every( a => htmlAttrConsumed.has( a ) );
+			if ( allHtmlConsumed ) {
+				continue;
+			}
+		}
+		effectiveTargetProps.add( prop );
+	}
+
+	if ( effectiveTargetProps.size === 0 ) {
+		return [];
+	}
 
 	// --- style.css ---------------------------------------------------------
 	const styleCssPath = path.join( blockDir, 'style.css' );
 	if ( fs.existsSync( styleCssPath ) ) {
 		const cssFindings = scanCssDeclarations(
 			readIfExists( styleCssPath ),
-			targetProps
+			effectiveTargetProps,
+			attrs,
+			cssToAttrs
 		);
 		for ( const f of cssFindings ) {
-			const owningAttrs = [ ...( cssToAttrs.get( f.property ) || [] ) ].join( ', ' );
+			const owningAttrs = f.attrs.join( ', ' );
 			violations.push( {
 				block:    blockName,
 				file:     path.relative( ROOT, styleCssPath ),
@@ -469,11 +989,10 @@ function checkBlock( blockDir ) {
 	}
 
 	// --- render.php — inline style attributes ------------------------------
-	const renderPhpPath = path.join( blockDir, 'render.php' );
 	if ( fs.existsSync( renderPhpPath ) ) {
 		const phpFindings = scanPhpInlineStyles(
-			readIfExists( renderPhpPath ),
-			targetProps
+			renderPhpSrc,
+			effectiveTargetProps
 		);
 		for ( const f of phpFindings ) {
 			const owningAttrs = [ ...( cssToAttrs.get( f.property ) || [] ) ].join( ', ' );
