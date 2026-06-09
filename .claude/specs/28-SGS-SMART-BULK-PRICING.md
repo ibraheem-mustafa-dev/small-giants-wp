@@ -2,7 +2,7 @@
 doc_type: spec
 spec_id: 28
 spec_version: 2
-status: BUILDABLE; P1 SHIPPED 2026-06-05 (value-ladder display, commits 49d63ab8 + e0dea916, live-verified). P2/P3 (preview-only engine) + P4 (FR-28-5 WC-write, build-deferred behind Spec 27 Cluster C — note: Cluster C is now COMPLETE, so P4 is unblocked when chosen) remain. v2 folds the adversarial-council must-fixes into the FRs.
+status: BUILDABLE; P1 SHIPPED 2026-06-05 (value-ladder display, commits 49d63ab8 + e0dea916, live-verified). P2 SHIPPED 2026-06-09 (engine pure functions + tests, commit bf769cee, D198 — canonical fixture reproduced exactly, 53/53 standalone assertions). P3 (preview-only authoring) + P4 (FR-28-5 WC-write, build-deferred behind Spec 27 Cluster C — note: Cluster C is now COMPLETE, so P4 is unblocked when chosen) remain. v2 folds the adversarial-council must-fixes into the FRs.
 title: "SGS Smart Bulk Pricing — auto-pricing engine + comparative value ladder"
 project: small-giants-wp
 authors: Bean + Claude (Opus 4.8)
@@ -136,7 +136,7 @@ Ship in this order, not the FR order. The cut-line de-risks the stall trap: the 
 | Phase | What | FRs | Ships | Depends on |
 |---|---|---|---|---|
 | **28-P1 — Value ladder (MVP, the conversion lift)** | comparative per-unit across packs + loss-framing + Rule-of-100, DISPLAY ONLY on live WC prices | FR-28-7/8/9 | first | **B3 (shipped ✓)** — no engine, no WC write |
-| **28-P2 — Engine pure functions + tests** | re-derived power-law + charm (see corrected maths below) + guardrail order; 100% unit-tested | FR-28-1/2/3 | standalone | nothing (pure PHP, `declare(strict_types=1)`) |
+| **28-P2 — Engine pure functions + tests — SHIPPED 2026-06-09 (`bf769cee`, D198)** | re-derived power-law + charm (see corrected maths below) + guardrail order; 100% unit-tested (`includes/class-pricing-engine.php` + PHPUnit + a plain-PHP standalone runner; canonical fixture exact, 53/53) | FR-28-1/2/3 | standalone | nothing (pure PHP, `declare(strict_types=1)`) |
 | **28-P3 — Authoring as a PREVIEW-ONLY table** | owner enters one number → sees all pack prices/per-unit/saving live; cascade + settings + guardrails; **writes NOTHING to WC** | FR-28-3/4/6/10/11 | after P1/P2 | nothing (preview only) |
 | **28-P4 — Commit-to-WooCommerce (headline)** | the actual `regular_price` write + ALL safety machinery (below) | FR-28-5 (+ new FRs) | **DEFERRED** | **Spec 27 Cluster C / Phase R (R1/R2)** — do NOT pull forward |
 
