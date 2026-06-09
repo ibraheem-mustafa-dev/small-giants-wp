@@ -16,33 +16,33 @@ namespace SGS\Blocks;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Registers the SGS Pack Pricing WooCommerce settings page.
+ * Add the SGS Pack Pricing page to the WC settings stack.
  *
- * Hooked on woocommerce_loaded so WC_Settings_Page is defined before we
- * extend it. The require_once MUST stay inside this function, after the
- * class_exists guard: class-pack-pricing-settings-page.php declares
- * `extends \WC_Settings_Page` at file scope, so loading it before
- * WooCommerce fatals the whole site (sgs-blocks loads alphabetically
- * before woocommerce — live-confirmed on the canary 2026-06-09).
+ * The filter is added unconditionally; ALL WC-dependent work happens inside
+ * this callback. Two timing traps live here (both live-confirmed on the
+ * canary 2026-06-09):
  *
- * @return void
- */
-function sgs_pack_pricing_settings_register(): void {
-	if ( ! \class_exists( 'WC_Settings_Page' ) ) {
-		return;
-	}
-	require_once __DIR__ . '/class-pack-pricing-settings-page.php';
-	\add_filter( 'woocommerce_get_settings_pages', __NAMESPACE__ . '\\sgs_pack_pricing_settings_add_page' );
-}
-\add_action( 'woocommerce_loaded', __NAMESPACE__ . '\\sgs_pack_pricing_settings_register' );
-
-/**
- * Add the Pack_Pricing_Settings_Page instance to the WC settings stack.
+ * 1. class-pack-pricing-settings-page.php declares `extends \WC_Settings_Page`
+ *    at FILE scope — requiring it before WooCommerce loads fatals the whole
+ *    site (sgs-blocks loads alphabetically before woocommerce), so the
+ *    require_once must be lazy.
+ * 2. WC_Settings_Page is an ADMIN-LAZY class — it does not exist yet at
+ *    `woocommerce_loaded` time, so a class_exists() early-return there
+ *    silently unregisters the tab. By the time WooCommerce applies the
+ *    woocommerce_get_settings_pages filter it has already loaded
+ *    WC_Settings_Page, which is why the require belongs HERE.
  *
  * @param array $pages Existing WC settings page objects.
  * @return array
  */
 function sgs_pack_pricing_settings_add_page( array $pages ): array {
-	$pages[] = new Pack_Pricing_Settings_Page();
+	if ( ! \class_exists( 'WC_Settings_Page' ) ) {
+		return $pages;
+	}
+	require_once __DIR__ . '/class-pack-pricing-settings-page.php';
+	if ( \class_exists( __NAMESPACE__ . '\\Pack_Pricing_Settings_Page' ) ) {
+		$pages[] = new Pack_Pricing_Settings_Page();
+	}
 	return $pages;
 }
+\add_filter( 'woocommerce_get_settings_pages', __NAMESPACE__ . '\\sgs_pack_pricing_settings_add_page' );

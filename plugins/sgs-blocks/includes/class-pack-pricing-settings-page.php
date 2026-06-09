@@ -49,7 +49,7 @@ final class Pack_Pricing_Settings_Page extends \WC_Settings_Page {
 	 */
 	public function __construct() {
 		$this->id    = 'sgs_pack_pricing';
-		$this->label = \__( 'SGS Pack Pricing', 'sgs-blocks' );
+		$this->label = \__( 'SGS Smart Bulk Pricing', 'sgs-blocks' ); // ONE canonical feature name across all surfaces (visual-pass naming fix).
 		parent::__construct();
 	}
 
@@ -63,7 +63,7 @@ final class Pack_Pricing_Settings_Page extends \WC_Settings_Page {
 
 			// ── Section header ──────────────────────────────────────────────────
 			array(
-				'title' => \__( 'Smart Bulk Pricing — Site Defaults', 'sgs-blocks' ),
+				'title' => \__( 'SGS Smart Bulk Pricing — Site Defaults', 'sgs-blocks' ),
 				'type'  => 'title',
 				/* translators: Introductory description for the SGS Pack Pricing settings section. */
 				'desc'  => \__( 'These settings apply to every product unless overridden at the category or product level. Enter one base price on any product to generate all pack prices automatically.', 'sgs-blocks' ),
@@ -74,13 +74,15 @@ final class Pack_Pricing_Settings_Page extends \WC_Settings_Page {
 			array(
 				'title'    => \__( 'Discount strength', 'sgs-blocks' ),
 				/* translators: Description for the discount-strength setting. */
-				'desc'     => \__( 'How steeply per-unit price falls as pack size grows. Gentle = ~8-20% saving on the largest pack; Standard = ~17-35%; Aggressive = ~20-40%.', 'sgs-blocks' ),
+				'desc'     => \__( 'How much cheaper each larger pack gets versus buying singles. Ranges are approximate and vary with your pricing.', 'sgs-blocks' ),
 				'id'       => 'sgs_pack_pricing_settings[k_notch]',
 				'type'     => 'select',
+				// Option wording is IDENTICAL to the product-screen radios (visual-pass consistency fix) —
+				// an operator moving between settings → category → product must see the same choices.
 				'options'  => array(
-					'gentle'     => \__( 'Gentle', 'sgs-blocks' ),
-					'standard'   => \__( 'Standard (recommended)', 'sgs-blocks' ),
-					'aggressive' => \__( 'Aggressive', 'sgs-blocks' ),
+					'gentle'     => \__( 'Gentle (~8-20% saving on largest pack)', 'sgs-blocks' ),
+					'standard'   => \__( 'Standard (~17-35% saving on largest pack) — recommended', 'sgs-blocks' ),
+					'aggressive' => \__( 'Aggressive (~20-40% saving on largest pack)', 'sgs-blocks' ),
 				),
 				'default'  => 'standard',
 				'desc_tip' => true,
@@ -100,9 +102,9 @@ final class Pack_Pricing_Settings_Page extends \WC_Settings_Page {
 
 			// ── Charm rounding ──────────────────────────────────────────────────
 			array(
-				'title'   => \__( 'Charm rounding', 'sgs-blocks' ),
+				'title'   => \__( '.99 price endings', 'sgs-blocks' ),
 				/* translators: Description for the charm-rounding checkbox. */
-				'desc'    => \__( 'Round pack prices to .49 or .99 endings (e.g. 8.89 becomes 8.99). Disable for B2B, wholesale, or premium brands.', 'sgs-blocks' ),
+				'desc'    => \__( 'Round pack prices to .49 or .99 endings (e.g. 8.89 becomes 8.99) — "charm pricing". Disable for B2B, wholesale, or premium brands.', 'sgs-blocks' ),
 				'id'      => 'sgs_pack_pricing_settings[charm_round]',
 				'type'    => 'checkbox',
 				'default' => 'yes',

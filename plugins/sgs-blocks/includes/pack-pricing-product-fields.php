@@ -113,23 +113,33 @@ function sgs_render_pack_pricing_product_fields(): void {
 	echo '<h4 style="padding-left:12px;margin-bottom:4px;">';
 	echo \esc_html__( 'SGS Smart Bulk Pricing', 'sgs-blocks' );
 	echo '</h4>';
+	// Operator-empathy connector (visual-pass F7): make the dependency on the
+	// Value Ladder section's single-unit price explicit.
+	echo '<p class="description" style="padding-left:12px;margin:0 0 8px;">';
+	echo \esc_html__( 'Uses the single-unit price you entered in the SGS Value Ladder section above as the starting point for every pack price.', 'sgs-blocks' );
+	echo '</p>';
 
 	// ── Legal disclosure panel (FR-28-10/16) ────────────────────────────────
-	echo '<div class="sgs-smart-pricing-disclosure" style="margin:8px 12px 12px;padding:10px 12px;background:#fff8e1;border-left:3px solid #f9a825;">';
-	echo '<strong>' . \esc_html__( 'Important — UK consumer law', 'sgs-blocks' ) . '</strong><br>';
-	echo \esc_html__(
-		'The preview below shows auto-generated pack prices based on your single-unit reference price. You are responsible for ensuring that single-unit price is a genuine price at which you sell (or have recently sold) single units. If you never sell singles, do not use the "vs buying singly" framing. No prices are applied to your shop until you use the "Apply to live shop" button (coming in a future update).',
-		'sgs-blocks'
-	);
+	// Border #e65100 (3.79:1 vs white) clears the WCAG 1.4.11 3:1 UI-component
+	// floor; the previous #f9a825 measured 1.97:1 (visual-pass FAIL-AA #2).
+	// Bullet structure: the no-live-prices line leads, bolded (operator F3).
+	echo '<div class="sgs-smart-pricing-disclosure" style="margin:8px 12px 12px;padding:10px 12px;background:#fff8e1;border-left:3px solid #e65100;">';
+	echo '<strong>' . \esc_html__( 'Important — UK consumer law', 'sgs-blocks' ) . '</strong>';
+	echo '<ul style="margin:6px 0 0 18px;list-style:disc;">';
+	echo '<li><strong>' . \esc_html__( 'Nothing on this screen changes your live shop prices. The table below is a preview only.', 'sgs-blocks' ) . '</strong></li>';
+	echo '<li>' . \esc_html__( 'Savings are calculated against your single-unit reference price. You are responsible for ensuring it is a genuine price at which you sell (or have recently sold) single units.', 'sgs-blocks' ) . '</li>';
+	echo '<li>' . \esc_html__( 'If you never sell singles, do not use the "vs buying singly" framing.', 'sgs-blocks' ) . '</li>';
+	echo '</ul>';
 	echo '</div>';
 
 	// ── Steepness (k_notch) radio ────────────────────────────────────────────
 	echo '<p class="form-field form-row form-row-full" style="padding-left:12px;">';
 	echo '<label>' . \esc_html__( 'Discount strength', 'sgs-blocks' ) . '</label>';
 	echo '<span class="description" style="display:block;margin-bottom:6px;">';
+	echo \esc_html__( 'How much cheaper each larger pack gets versus buying singles. ', 'sgs-blocks' );
 	\printf(
 		/* translators: %s: the source layer that is supplying the k value (e.g. "site", "category", "default"). */
-		\esc_html__( 'Override the site/category default for this product. Current source: %s.', 'sgs-blocks' ),
+		\esc_html__( 'Overrides the site or category default for this product. Current source: %s.', 'sgs-blocks' ),
 		'<strong>' . \esc_html( $cfg['source_k'] ) . '</strong>'
 	);
 	echo '</span>';
@@ -186,14 +196,20 @@ function sgs_render_pack_pricing_product_fields(): void {
 	echo '<div class="sgs-pack-manual-overrides" style="padding-left:12px;margin-bottom:8px;">';
 	echo '<label style="display:block;margin-bottom:4px;">' . \esc_html__( 'Manual price overrides (optional)', 'sgs-blocks' ) . '</label>';
 	echo '<span class="description" style="display:block;margin-bottom:6px;">';
-	echo \esc_html__( 'Enter a fixed pack price (in pence) to lock that pack. Leave blank to use the auto-generated price. E.g. enter 499 for £4.99.', 'sgs-blocks' );
+	// Unit blocker (visual-pass F1): the £-pounds field above and these PENCE
+	// inputs sit close together — a "p" suffix is rendered ON each input so an
+	// operator cannot mistake the unit from prose alone.
+	echo \esc_html__( 'Whole pence per pack — a "p" sits after each box. Example: 499p locks that pack at £4.99. Leave blank to use the auto-generated price.', 'sgs-blocks' );
 	echo '</span>';
 
+	// flex-wrap (visual-pass design fix): the four inputs wrap as whole units
+	// at narrow admin widths instead of breaking mid-label.
+	echo '<span style="display:flex;flex-wrap:wrap;gap:8px 16px;">';
 	foreach ( $all_sizes as $n ) {
 		$override_val = isset( $overrides[ (string) $n ] ) ? (int) $overrides[ (string) $n ] : '';
 		\printf(
-			'<label style="display:inline-block;margin-right:16px;font-weight:normal;margin-bottom:4px;">'
-			. '%s: <input type="number" name="_sgs_pack_manual_overrides[%d]" value="%s" min="2" max="999999" style="width:90px;" placeholder="%s">'
+			'<label style="flex:0 0 auto;font-weight:normal;">'
+			. '%s: <input type="number" name="_sgs_pack_manual_overrides[%d]" value="%s" min="2" max="999999" style="width:90px;" placeholder="%s">p'
 			. '</label>',
 			/* translators: %d: the pack size number. */
 			\esc_html( \sprintf( \__( 'Pack of %d', 'sgs-blocks' ), (int) $n ) ),
@@ -202,6 +218,7 @@ function sgs_render_pack_pricing_product_fields(): void {
 			\esc_attr__( 'Auto', 'sgs-blocks' )
 		);
 	}
+	echo '</span>';
 	echo '</div>';
 
 	// ── Generate Preview button ──────────────────────────────────────────────
@@ -223,9 +240,9 @@ function sgs_render_pack_pricing_product_fields(): void {
 	echo '<thead><tr>';
 	foreach ( array(
 		\__( 'Pack size', 'sgs-blocks' ),
-		\__( 'Pack price', 'sgs-blocks' ),
+		\__( 'Pack price (£)', 'sgs-blocks' ),
 		\__( 'Per unit', 'sgs-blocks' ),
-		\__( 'Saving', 'sgs-blocks' ),
+		\__( 'Saving vs single', 'sgs-blocks' ),
 		\__( 'Notes', 'sgs-blocks' ),
 	) as $heading ) {
 		echo '<th style="white-space:nowrap;">' . \esc_html( $heading ) . '</th>';
@@ -319,6 +336,12 @@ function sgs_pack_pricing_preview_js(): string {
 ( function() {
 	'use strict';
 
+	// DOM-ready guard (visual-pass finding, 2026-06-09): this inline script is
+	// attached to the woocommerce_admin handle, which WP prints in the HEAD —
+	// before the product-data panel (and the button) exists. Without the guard
+	// the IIFE's `if ( ! btn ) return;` silently never binds.
+	function sgsPackPricingInit() {
+
 	var btn = document.getElementById( 'sgs-pack-pricing-preview-btn' );
 	if ( ! btn ) { return; }
 
@@ -406,21 +429,33 @@ function sgs_pack_pricing_preview_js(): string {
 				} );
 
 				var tdNote = document.createElement( 'td' );
-				tdNote.style.color    = row.clamped ? '#e65100' : '#666';
-				tdNote.style.fontSize = '11px';
+				// #bf360c = 5.8:1 on white at 12px — clears WCAG 4.5:1 for
+				// normal text. The previous #e65100 at 11px measured 3.79:1
+				// (visual-pass FAIL-AA #1).
+				tdNote.style.color    = row.clamped ? '#bf360c' : '#666';
+				tdNote.style.fontSize = '12px';
 				tdNote.textContent    = note;
 				tr.appendChild( tdNote );
 
 				tbody.appendChild( tr );
 			} );
 
-			// Config summary.
+			// Config summary — plain English, no internals (visual-pass F2):
+			// the operator must be able to verify which settings layer drove
+			// the numbers without knowing what "k" is.
 			if ( data.config ) {
 				var c = data.config;
-				metaEl.textContent = 'Base: ' + ( c.base_pence / 100 ).toFixed( 2 ) +
-					' | k source: ' + c.source_k +
-					' | sizes source: ' + c.source_sizes +
-					' | charm: ' + ( c.charm_round ? 'on' : 'off' );
+				var sourceLabels = {
+					'default':  'site default',
+					'site':     'your site settings',
+					'category': 'this product’s category',
+					'product':  'this product’s own setting',
+					'request':  'your selection above'
+				};
+				metaEl.textContent = 'Calculated using: £' + ( c.base_pence / 100 ).toFixed( 2 ) + ' single-unit price' +
+					' · discount strength from ' + ( sourceLabels[ c.source_k ] || c.source_k ) +
+					' · pack sizes from ' + ( sourceLabels[ c.source_sizes ] || c.source_sizes ) +
+					' · .99 price endings ' + ( c.charm_round ? 'on' : 'off' ) + '.';
 			}
 
 			wrap.style.display = 'block';
@@ -431,6 +466,14 @@ function sgs_pack_pricing_preview_js(): string {
 			status.textContent = 'Network error: ' + err.message;
 		} );
 	} );
+
+	}
+
+	if ( 'loading' === document.readyState ) {
+		document.addEventListener( 'DOMContentLoaded', sgsPackPricingInit );
+	} else {
+		sgsPackPricingInit();
+	}
 } )();
 JS;
 }
