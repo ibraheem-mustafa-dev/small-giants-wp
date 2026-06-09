@@ -1,0 +1,77 @@
+---
+doc_type: reference
+project: small-giants-wp
+thread: cloning-pipeline
+title: "Stage 0 — FR drafts (F6a, F4, FR-22-19 retirement) + conformance gate design"
+created: 2026-06-09
+status: PROPOSAL — draft FRs to be ratified into Spec 22 + a conformance-gate design. Written BEFORE the build (architecture-council requirement: new converter behaviour must be documented as a spec rule first, not invented in code). Design-gate with Bean before merging into Spec 22.
+---
+
+# Stage 0 — spec rules + conformance gate
+
+These are drafts. They get reviewed + merged into `specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` (assigning real FR numbers) before the workstreams that depend on them build. Written spec-shaped (requirement + PASS/FAIL) to match Spec 22's style.
+
+---
+
+## FR draft 1 — Inherited / absent-value resolution (F6a) → proposed `FR-22-5.1`
+
+**Requirement.** When a content leaf's *effective* value for an inheritable property (`text-align`, `color`, `font-family`, `line-height`) derives from an **ancestor** selector rather than the leaf's own, OR is **absent** (browser default) where a block's own default would otherwise override it, the converter resolves the property to an **explicit** value on the leaf's block attrs. Inheritable properties only; resolved via an ancestor-chain walk in `_collect_css_decls_for_element`.
+
+**PASS.**
+- Draft `.sgs-X__inner { text-align:center }` + a leaf heading with no own `text-align` → the emitted `sgs/heading` carries `textAlign:'center'`.
+- Draft with NO `text-align` anywhere on a heading (browser default = left) AND the block's own CSS default is `center` (`heading/style.css:7` `:where(){text-align:center}`) → the emitted heading carries explicit `textAlign:'left'`.
+
+**FAIL.** A heading renders centred when the draft's effective alignment is left (or vice-versa) because the converter only read the leaf's own selector.
+
+**Scope note (R-22-9).** Universal — applies to every content leaf, every inheritable property. NOT a text-align carve-out. Pairs with the draft-authoring convention (text classes SHOULD declare explicit alignment) as the forward path; this FR is the converter's resolution for drafts that don't.
+
+---
+
+## FR draft 2 — Draft-driven responsive breakpoints (F4) → proposed `FR-22-5.2`
+
+**Requirement.** The converter reads the draft's **actual** `@media` breakpoints rather than snapping to fixed constants (`_BREAKPOINT_RULES`, `_GRID_DESKTOP_BP=1024`, `_GRID_TABLET_BP=600` at `convert.py:3317-3318`). Each detected breakpoint maps to the block's existing responsive attr tier (`+Tablet`/`+Mobile`, the FR-22-21 step-4 companions). A breakpoint with no matching attr tier is logged as an `attribute_gap_candidate` (D3) — never emitted as inline `@media` (R-22-6).
+
+**PASS.**
+- A draft using `@media (min-width:640px)` has its 640 rule lifted (today it's silently discarded — `min-width:640` absent from `_BREAKPOINT_RULES`, `db_lookup.py:1233-1239`).
+- A draft using `min-width:768` for a 2-col grid maps to the **desktop** attr (today `768 < _GRID_DESKTOP_BP=1024` misbuckets it to tablet, leaving desktop at the mobile base — the H-A2/BR-A bug).
+
+**FAIL.** A draft breakpoint outside the fixed set is dropped; or a `min-width` value lands on the wrong device tier.
+
+**Note.** This replaces fixed thresholds with draft-derived ranges. The H-A2 output bug (cause unverified by static read) should be traced under this FR — the fix is "read the draft's breakpoints", which subsumes the threshold-misbucket regardless of the exact current cause.
+
+---
+
+## FR draft 3 — FR-22-19 retirement (carve-out supersession) → amend `FR-22-19`
+
+**Requirement.** `_route_composite_interior` (`convert.py:2404`, the per-composite carve-out gated by `is_class_section_block`) is **superseded** by the universal per-slot CSS routing (F1 cross-node) + the array path (FR-22-2.5). Composite interiors route content AND CSS via the universal dispatch keyed on `role`/`canonical_slot`/`attr_type` — with **no** `is_class_section_block` branch in the routing path.
+
+**Migration (R-22-3 / R-22-4).**
+- The sole-element-child guard (`_process_container_children:2956`) that prevents the +13pp XS-3 regression (`__inner` fold firing on multi-child grids) MUST be preserved in the universal path (qc-council confirmed this guard already exists and defuses the XS-3 mechanism).
+- Remove `_route_composite_interior` ONLY after the universal path is **live-DOM-verified** to route every composite interior (content + CSS) correctly. Per-section pixel-diff on the removal commit; rollback only if genuinely non-universal (not if the draft's score dips — the deliverable is the universal converter, not the score).
+
+**PASS.** `grep is_class_section_block` in the routing path returns zero; every class-section composite (hero, cta-section, testimonial-slider, …) emits its interior via the universal dispatch; live DOM unchanged-or-better.
+
+**FAIL.** Any composite still routed via a per-slug / per-KIND branch.
+
+---
+
+## Conformance gate design (D178's missing cure)
+
+D178: the recurring defects are "good docs + undelivered/mis-wired code, with **no spec↔code conformance gate** to catch it." Two complementary gates — both wired to something that RUNS (memory `dont-claim-a-guard-is-enforced-unless-wired`):
+
+### Gate A — converter golden-fixture regression (the primary D178 cure)
+A small set of draft fixtures (one per family-representative section) with **expected emitted attrs**. The gate runs the converter and asserts the emit matches the golden file. Catches "mis-wired/undelivered code" — the exact D178 failure mode where the spec is right but the code silently doesn't deliver.
+- **Where:** a `pytest` test (`tests/test_converter_conformance.py`) over `tests/fixtures/conformance/*.json` (draft → expected-attrs).
+- **Runs:** pre-commit hook on `convert.py`/`db_lookup.py` edits + (when CI exists) CI. Until CI exists, the pre-commit wiring IS the floor — state that honestly.
+- **Seeded from:** the sign-off ledger — each VERIFIED issue gets a fixture asserting its fix stays fixed (regression lock).
+
+### Gate B — F3 hardcoded-render-default guard (`check-hardcoded-render-defaults.js`)
+Mirrors the shipped `check-dead-controls.js`. Fails `npm run build` when a block's `render.php`/`style.css` emits a layout/visual **constant** for a property the block declares an **attr** for (the F3 failure class — `flex-wrap:wrap`, `verticalAlign:start`, `starSize:24`, etc.).
+- **Where:** `plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js`, wired into prebuild like the dead-control guard.
+- **Catches:** new F3 hardcodes at build time so F3 doesn't re-open on the next section.
+
+### Build order for the gates
+- **Gate A first** — it's the D178 cure and locks every fix as it lands (the ledger feeds its fixtures).
+- **Gate B alongside the F3 workstream** — it's that workstream's structural defence.
+
+**Decision needed from Bean:** Gate A's fixture granularity — one fixture per section (7) to start, expanding per VERIFIED issue? (Recommended: yes — start with the 7 section fixtures, add a regression fixture each time an issue moves to VERIFIED.)
