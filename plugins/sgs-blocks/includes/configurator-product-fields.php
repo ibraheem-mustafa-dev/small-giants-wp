@@ -123,8 +123,13 @@ function sgs_render_product_value_ladder_fields(): void {
 			'name'        => '_sgs_base_price_attested',
 			'value'       => $attested ? 'yes' : 'no',
 			'cbvalue'     => 'yes',
-			'label'       => __( 'I confirm this single-unit price is genuinely available to buy', 'sgs-blocks' ),
-			'description' => __( 'Required by UK consumer law (DMCC Act 2024 / CPRs 2008) before a "vs buying singly" savings claim may be shown to consumers.', 'sgs-blocks' ),
+			// WC's product-panel label column is 150px wide — a sentence-length
+			// label wraps over 3 lines and collides with the description (Bean's
+			// 2026-06-10 screenshot). WC idiom: SHORT column label; the full
+			// first-person legal confirmation lives in the description, which
+			// renders beside the checkbox itself (the tick still confirms it).
+			'label'       => __( 'Single-unit price is genuine', 'sgs-blocks' ),
+			'description' => __( 'Tick to confirm this single-unit price is genuinely available to buy on your shop — required by UK consumer law (DMCC Act 2024 / CPRs 2008) before a "vs buying singly" savings claim is shown to consumers.', 'sgs-blocks' ),
 			'desc_tip'    => false,
 		)
 	);
