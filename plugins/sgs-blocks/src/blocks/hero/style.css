@@ -58,10 +58,15 @@ section.sgs-hero {
  * provide a sensible default for blocks without those attributes set. */
 .sgs-hero--split {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
 	gap: var(--wp--preset--spacing--50);
 	padding: var(--wp--preset--spacing--60) var(--wp--preset--spacing--40);
 	flex-direction: unset;
+}
+
+/* Default column split kept at zero specificity so the splitColumnRatio
+ * attribute's emission always wins (F3 fix — attr owns the property). */
+:where(.sgs-hero--split) {
+	grid-template-columns: 1fr 1fr;
 }
 
 /* Background image (standard variant — <img> for LCP fetchpriority support) */

@@ -49,7 +49,8 @@
 
 .product-card .product-card-img {
 	width: 100%;
-	height: 220px;
+	/* Var emitted by render.php when the imageHeight attr is set (F3 fix). */
+	height: var( --sgs-product-card-image-height, 220px );
 	object-fit: cover;
 	display: block;
 }
@@ -637,7 +638,8 @@
  * 220px height as the real image so the card layout is unchanged. Bound-scoped.
  */
 .product-card--live .product-card__no-image {
-	height: 220px;
+	/* Mirrors the real image height var so the no-image box always matches (F3 fix). */
+	height: var( --sgs-product-card-image-height, 220px );
 	display: flex;
 	align-items: center;
 	justify-content: center;
