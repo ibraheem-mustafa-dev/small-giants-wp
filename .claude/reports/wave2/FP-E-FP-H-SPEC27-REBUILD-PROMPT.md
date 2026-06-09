@@ -2,6 +2,11 @@
 
 Paste everything below the line into a fresh Opus session. Self-contained. This is a **Spec-27 block-build milestone**, NOT clone-fix Stage-1/2/3 work — it is a multi-session block rebuild that the clone-fix waves explicitly cannot complete (per `SIGN-OFF-LEDGER.md` milestone gate).
 
+> **⛔ SEQUENCING — DO NOT START THIS YET (Bean-confirmed 2026-06-09).** This rebuild has two hard upstream dependencies:
+> 1. **The Spec27-28 council-mustfix wave plan** (`.claude/plans/2026-06-06-spec27-28-council-mustfix-wave-plan.md`) must complete first. It is `AWAITING-BEAN-SIGNOFF` with **Wave 2 mid-build/uncommitted**, and it edits the EXACT files this rebuild touches — `product-card/render.php`, `edit.js`, `block.json`, `class-configurator-meta.php`, `render-helpers.php`. Starting FP-H now = two threads rebuilding `sgs/product-card` at once (collision). FP-H's feature-rich card also BUILDS ON that plan's output (the value-ladder / configurator / pricing / consumer-law layer).
+> 2. **The cloning converter Stage 1** (the universal dispatch, `STAGE1-DESIGN.md`) — the plan itself names the converter (D178) as the real first-shop blocker, and FP-E/FP-H must be cloneable, so the dispatch that routes into their slots should exist first.
+> **Correct order: Spec27-28 wave plan → cloning converter Stage 1 → THEN this rebuild.** Confirm both are complete before running this prompt.
+
 ---
 
 **Invoke `/autopilot` before anything else** (live skill routing + ADHD support).
