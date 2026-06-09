@@ -398,6 +398,20 @@ NEW_CANONICAL_ROWS: list[tuple[str, list[str], str | None, str, str | None]] = [
     ("slot",          ["slot-placeholder", "slot-upload", "slot-preview", "slot-actions", "slot-label", "slot-img"], "identity", "Media-manager slot container (admin UI)", "div"),
     # Structural
     ("ribbon",        ["price-ribbon", "plan-ribbon"],                 "visual",      "Decorative ribbon overlay on a card/panel",                    "span"),
+    # Content-cap area label (2026-06-09).
+    # NOTE — DELIBERATELY EMPTY aliases ([]): a 2026-05-24 decision (see the
+    # ALIAS_EXTENSIONS `text` block note above) removed the structural-wrapper
+    # terms `inner`/`content`/`body-row` because they made wrapper divs
+    # (__inner, __content, __body-row) wrongly COLLAPSE into a content-block
+    # primitive via the composite_element walker branch. We must NOT
+    # reintroduce that failure mode. This slot exists SOLELY as a
+    # canonical_slot VALUE for the content-area box layout attributes
+    # (contentWidth*, contentPadding*) — labelling which sub-AREA of a block
+    # those attrs belong to (the constrained content-width cap inside a
+    # block's OUTER box). It is metadata only, never matched against draft
+    # class names. An empty-alias slot only ever matches the literal stem
+    # `content`, never an arbitrary draft wrapper class.
+    ("content",       [],                                              None,          "Content-cap sub-area label — the constrained content-width box inside a block's outer box. canonical_slot value for contentWidth*/contentPadding* layout attrs (metadata only; EMPTY aliases by design — never matched against draft wrapper classes; see 2026-05-24 inner/body-row removal note).", None),
 ]
 
 # ---------------------------------------------------------------------------
@@ -626,6 +640,24 @@ def seed_db(db_path: Path, dry_run: bool) -> dict:
             if inserted:
                 verb = "[DRY-RUN] would insert" if dry_run else "inserted"
                 print(f"  NEW standalone-block slot: {slot_name} → {standalone_block} ({verb})")
+
+        # GUARD (D194, adversarial-council 2026-06-09): the `content` element-slot is a
+        # metadata-only area label (canonical_slot value for contentWidth*/contentPadding*).
+        # It MUST keep standalone_block IS NULL. If it ever gains a standalone_block, the
+        # ~13 stem-collision rows tagged canonical_slot='content' with a content-bearing
+        # role (e.g. sgs/heading.content, core/* body text) would start emitting rogue
+        # child InnerBlocks mid-clone — the exact D85 wrong-collapse failure mode. Fail
+        # loudly here rather than discover it in a pixel-diff three sections later.
+        _content_sb = conn.execute(
+            "SELECT standalone_block FROM slots WHERE slot_name='content' AND scope='element'"
+        ).fetchone()
+        if _content_sb is not None and _content_sb[0] not in (None, ""):
+            raise SystemExit(
+                "GUARD FAILED (D194): the 'content' element-slot has gained a "
+                f"standalone_block ({_content_sb[0]!r}). Re-audit every "
+                "canonical_slot='content' + content-bearing-role row before proceeding "
+                "(see decisions.md D194 + reports/wave2/WRAPPER-CSS-ROUTING-DESIGN-GATE.md)."
+            )
 
     finally:
         conn.close()

@@ -584,13 +584,16 @@ python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context indus-foods # Lo
 - **`roles`** (D99/D128) — 21 rows (20 base + `scalar-media` added D128 2026-06-01). Replaces `slot_synonyms.role_classification` column. `INSERT OR REPLACE` from `_ROLE_CLASSIFICATION_MAP`.
 - **`html_tag_to_core_block`** (D99) — 14 rows, idempotent migration at module load. Replaces hardcoded `_HTML_TAG_TO_CORE_SLUG` dict. `INSERT OR REPLACE`.
 
-### canonical_slot assignment (XS-4 / D110)
+### canonical_slot assignment (XS-4 / D110; D194)
 
 `assign-canonical.py` was ported to the D99 `slots` + `roles` schema. Current canonical_slot coverage = 31.8% of attrs. Re-run after every slot-vocabulary addition:
 
 ```bash
 python plugins/sgs-blocks/scripts/assign-canonical.py
 ```
+
+- **It writes the one physical `sgs-framework.db`.** uimax holds neither `block_attributes` nor `slots`; the `.claude` and `.agents` DB paths are the *same file* via an NTFS junction (not two copies) — so a single write reaches every path.
+- **It is the deterministic mechanism for content-area `canonical_slot` tagging (D194, 2026-06-09).** `assign-canonical.py` runs automatically as `/sgs-update` Stage 1; once the `content` element-slot row + the `Width`/`Padding`→`layout` `property_suffixes` rows exist, it tags the content-area attrs (`contentWidth`/`contentPadding*`/`contentMaxWidth*`) `content`/`layout` deterministically — no manual seed step. The throwaway `seed-canonical-slots.py` was **deleted as redundant** (the DB values it wrote persist; `/sgs-update` maintains + extends them).
 
 ---
 

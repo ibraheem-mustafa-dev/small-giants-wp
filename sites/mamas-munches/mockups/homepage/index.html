@@ -147,7 +147,8 @@
       align-items: center;
       justify-content: space-between;
       padding: 10px 20px;
-      max-width: 1280px;
+      max-width: var(--content-width);
+      --content-width: 1280px;
       margin: 0 auto;
       gap: 16px;
     }
@@ -323,7 +324,8 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px 12px;
-      max-width: 1100px;
+      max-width: var(--content-width);
+      --content-width: 1100px;
       margin: 0 auto;
     }
     .sgs-trust-bar__badge {
@@ -369,7 +371,7 @@
        FEATURED PRODUCT
     ══════════════════════════════════════════ */
     .sgs-featured-product { padding: 56px 20px; background: var(--surface-cream); }
-    .sgs-featured-product__inner { max-width: 1040px; margin: 0 auto; }
+    .sgs-featured-product__inner { max-width: var(--content-width); --content-width: 1040px; margin: 0 auto; }
     .sgs-featured-product h2 {
       font-size: 28px;
       font-weight: 600;
@@ -458,8 +460,7 @@
     ══════════════════════════════════════════ */
     /* Brand-story section — uses the sgs/brand pattern (replaces retired
        sgs/heritage-strip block, 2026-05-16). The pattern's root sgs/container
-       provides the 2-col grid on desktop / single-column stack on mobile via
-       its own block CSS, so this only carries Mama's-specific visual treatment. */
+       provides the 2-col grid on desktop / single-column stack on mobile. */
     .sgs-brand {
       background: var(--surface-alt);
       padding: 64px 20px;
@@ -504,7 +505,7 @@
        INGREDIENT EDUCATION
     ══════════════════════════════════════════ */
     .sgs-ingredients-section { background: var(--surface-cream); padding: 64px 20px; }
-    .sgs-ingredients-section__inner { max-width: 960px; margin: 0 auto; text-align: center; }
+    .sgs-ingredients-section__inner { max-width: var(--content-width); --content-width: 960px; margin: 0 auto; text-align: center; }
     .sgs-ingredients-section h2 { font-size: 28px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
     .sgs-ingredients-section .sgs-section-heading__intro {
       font-size: 16px;
@@ -551,7 +552,7 @@
        GIFT SECTION
     ══════════════════════════════════════════ */
     .sgs-gift-section { background: var(--surface-pink); padding: 64px 20px; }
-    .sgs-gift-section__card-inner { max-width: 960px; margin: 0 auto; }
+    .sgs-gift-section__card-inner { max-width: var(--content-width); --content-width: 960px; margin: 0 auto; }
     .sgs-gift-section h2 { font-size: 28px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
     .sgs-gift-section .sgs-section-heading__sub { font-size: 16px; color: var(--text); margin-bottom: 32px; }
     .sgs-gift-section__cards { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 20px; }
@@ -608,7 +609,7 @@
        SOCIAL PROOF
     ══════════════════════════════════════════ */
     .sgs-social-proof { background: var(--surface-alt); padding: 64px 20px; }
-    .sgs-social-proof__inner { max-width: 960px; margin: 0 auto; }
+    .sgs-social-proof__inner { max-width: var(--content-width); --content-width: 960px; margin: 0 auto; }
     .sgs-social-proof h2 {
       font-size: 28px;
       font-weight: 600;
@@ -659,7 +660,7 @@
        FOOTER
     ══════════════════════════════════════════ */
     .sgs-footer { background: var(--text); color: var(--text-inverse); padding: 52px 20px 24px; }
-    .sgs-footer__inner { max-width: 1000px; margin: 0 auto; }
+    .sgs-footer__inner { max-width: var(--content-width); --content-width: 1000px; margin: 0 auto; }
     .sgs-footer__grid { display: grid; grid-template-columns: 1fr; gap: 36px; margin-bottom: 40px; }
 
     .sgs-footer__logo { height: 36px; width: auto; margin-bottom: 12px; filter: brightness(0) invert(1); }

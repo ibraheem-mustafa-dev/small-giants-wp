@@ -234,7 +234,19 @@ The `KIND_PANELS` map in the component file defines exactly which sub-panels ren
 
 ---
 
-## 8. Cross-References
+## 8. Name-Free Routing (how the converter maps draft CSS to these attrs) — D194
+
+When the cloning converter maps a draft wrapper onto a container-equivalent block's attributes, **layer detection is by CSS signature + structural position — NOT by class-name matching and NOT by `canonical_slot`.**
+
+- **`canonical_slot` is content-fork metadata only.** It decides whether an attr emits a child InnerBlock or lifts a scalar value (read together with `role` + `attr_type`; see Spec 22 §FR-22-2.1). It is NOT the structural-CSS router. Structural box CSS (`contentWidth` / `contentPadding*` / `mediaPadding*` / `gridItem*`) routes name-free via `{layer-prefix} + property_suffixes` (Spec 22 §FR-22-21).
+- **The mockup inner wrapper folds by CSS signature.** A direct-descendant inner wrapper (`__inner` / `__card-inner`) carrying `max-width` + `margin:auto` is detected by that signature + position and mapped to the block's `contentWidth` attribute — never by matching the `__inner`/`__card-inner` class name (precedent: D85 removed those slot aliases because name-matching caused wrong collapse). The fold itself is the slug-None direct-descendant rule (Spec 22 §FR-22-4.1).
+- **`block_composition.container_kind` gates panel EXPOSURE, not routing.** The KIND value decides which `ContainerWrapperControls` panels render and which PHP layers `SGS_Container_Wrapper::render()` emits (see §2). It does NOT participate in converter layer detection — that is purely CSS-signature-driven.
+
+Cross-refs: Spec 22 §FR-22-21 (layer→prefix table + 6-step procedure), §FR-22-4.1 (slug-None direct-descendant fold), §FR-22-2.1 (`canonical_slot` content fork). Decision: `.claude/decisions.md` D194.
+
+---
+
+## 9. Cross-References
 
 | Topic | Where |
 |---|---|

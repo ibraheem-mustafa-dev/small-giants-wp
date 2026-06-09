@@ -103,6 +103,16 @@ Current roster: `sgs/hero`, `sgs/cta-section`. Adding a new section-root block r
 
 Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (block_composition table — sibling routing data), D118 + **Spec 22 §FR-22-4.1** (Universal wrapper/container resolution — the single rule governing how every sgs-classed wrapper below a section root is resolved: direct-descendant fold, grid/flex absorption, block-match exception, non-direct-descendant own-container), D152 + **Spec 22 §FR-22-21** (`block_composition.container_kind` 3-KIND model section|layout|content; composite-mirror rule — every composite wrapper block mirrors `sgs/container`, BLOCK-SIDE COMPLETE across the 29-block roster D167; `supports.sgs.containerKind` operator-override + `supports.sgs.containerMirror:false` exclusion — modal + mobile-nav are excluded).
 
+### 3.3 Content-width cap → `contentWidth` attribute (the inner-wrapper mapping, D194)
+
+**Rule (SUPERSEDES the earlier "max-width stays, NO custom property, NO rename" wording):** Bean-authored SGS-BEM drafts express the inner content-cap as a `--content-width` **custom property** on the section's **direct-descendant inner wrapper** (`__inner` / `__card-inner`): `max-width: var(--content-width); --content-width: <value>; margin: 0 auto;` — e.g. `.sgs-hero__inner { max-width: var(--content-width); --content-width: 1040px; margin: 0 auto; }`. This is the **deterministic CONTENT-WIDTH-layer signal** the converter maps to the block's `contentWidth` attribute (Spec 22 §FR-22-21, step 3).
+
+**Why the custom property:** it disambiguates the inner content cap from a section's OWN `max-width`. A section's own width (e.g. `.sgs-brand { max-width: 1000px; }`) is an OUTER-layer signal → maps to the OUTER `customWidth` / `widthMode`. The inner cap's `--content-width` is the CONTENT-WIDTH layer → maps to `contentWidth`. An adversarial council (2026-06-09) confirmed bare `max-width` alone is ambiguous between these two layers; the named property removes the ambiguity for Bean-authored drafts.
+
+**Fallback for scraped / external drafts** (which won't use `--content-width`): the `max-width` + `margin:auto` (or `margin-inline:auto`) heuristic on a direct-descendant wrapper remains the universal fallback signal for the CONTENT-WIDTH layer.
+
+**Routing stays name-free.** The converter reads EITHER the `--content-width` declaration OR the `max-width` + `margin:auto` signature on a slug-None direct-descendant wrapper (FR-22-4.1) — NEVER the `__inner`/`__card-inner` class name (precedent: D85 removed those slot aliases for causing wrong collapse). This is a documented CSS-signature mapping, not a class-name match.
+
 ---
 
 ## 4. PHP function prefixes

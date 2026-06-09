@@ -46,7 +46,7 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │ FILES (W):                                                                  │
 │  pipeline-state/sgs-clone/<run_id>/stage-0-preflight.json                   │
 │                                                                             │
-│ DB tables:    none                                                          │
+│ DB tables:    none (reads theme.json + styles/<client>.json files, not DB) │
 │ Skills:       none                                                          │
 │ STATUS:       LIVE - working                                                │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -231,6 +231,9 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │ FILES (W):  pipeline-state/sgs-clone/<run_id>/stage-3-slot_list.json        │
 │                                                                             │
 │ DB tables (R):  block_attributes (canonical_slot, role, derived_selector)   │
+│   D194: canonical_slot here = the CONTENT fork (child-InnerBlock vs scalar, │
+│   read with role+attr_type); structural box-CSS routes via property_suffixes│
+│   + CSS-signature, name-free — NOT canonical_slot.                          │
 │                                                                             │
 │ Wave 3 (2026-05-21, e60fe58e): annotates each slot with canonical_source:   │
 │   'db' | 'auto-derived'. slot_canonicalisation_gap: true on auto-derived.   │
@@ -263,6 +266,9 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │             pipeline-state/sgs-clone/<run_id>/stage-4-extract.json          │
 │                                                                             │
 │ DB tables (R):  block_attributes (canonical_slot, role, output_signature)   │
+│   D194: canonical_slot = the CONTENT fork only (child-InnerBlock vs scalar, │
+│   gated by role + attr_type); structural box-CSS (contentWidth/*Padding*/   │
+│   gridItem*) routes name-free via layer-prefix + property_suffixes.         │
 │   D110 backfill (2026-05-30): canonical_slot 52 → 659 (2.5% → 31.8%); role  │
 │   110 → 676 (5.3% → 32.6%). 1316 rows remain NULL (vocab/regex gaps logged).│
 │   assign-canonical.py ported from retired slot_synonyms → slots+roles       │
@@ -564,6 +570,9 @@ The 5-bucket `leftover-bucket-router.py` classifier. Vocabulary update 2026-05-2
 │             WP page/post N (sandybrown) via REST PATCH                       │
 │ FILES (R):  pipeline-state/<run>/extract.json                               │
 │             pipeline-state/<run>/variation-d0-d2.css (D70)                  │
+│                                                                             │
+│ DB tables:    none (writes via WP REST API to the live WP DB, not          │
+│               sgs-framework.db)                                              │
 │                                                                             │
 │ CANARY PAGE (updated 2026-05-23): page 144 (/rc-fix-verification-mamas-    │
 │   munches/). Page 131 was deleted — DO NOT use page 131.                   │
