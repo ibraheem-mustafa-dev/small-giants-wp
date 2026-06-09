@@ -99,18 +99,6 @@
             "type": "integer",
             "default": 5
         },
-        "paymentEnabled": {
-            "type": "boolean",
-            "default": false
-        },
-        "paymentAmount": {
-            "type": "string",
-            "default": ""
-        },
-        "paymentDescription": {
-            "type": "string",
-            "default": ""
-        },
         "formFocusRingColour": {
             "type": "string",
             "default": "primary"
@@ -225,11 +213,6 @@
             "type": "string",
             "default": "stretch",
             "enum": ["stretch", "start", "center", "end", "space-between", "space-around", "space-evenly"]
-        },
-        "templateMode": {
-            "type": "string",
-            "default": "free",
-            "enum": ["free", "grid-section", "card-grid"]
         }
     },
     "providesContext": {

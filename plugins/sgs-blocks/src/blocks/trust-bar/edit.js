@@ -203,7 +203,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		textColour,
 		columns,
 		gap,
-		showPendingInEditor,
 		autoScroll,
 		autoScrollSpeed,
 		autoScrollPauseOnHover,

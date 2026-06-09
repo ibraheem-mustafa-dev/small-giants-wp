@@ -14,11 +14,14 @@
  *
  * Scalar STYLING/LAYOUT attributes consumed here (wrapper-level only):
  *   cardStyle, hoverEffect, iconPosition, hoverBackgroundColour, hoverTextColour,
- *   hoverBorderColour, hoverScale, hoverShadow, hoverGrayscale, iconSizeTablet,
- *   iconSizeMobile, headingFontSizeTablet, headingFontSizeMobile,
- *   subtitleFontSizeTablet, subtitleFontSizeMobile, transitionDuration,
- *   transitionEasing, blockLink, blockLinkTarget, sgsAnimation,
- *   sgsAnimationDuration, sgsAnimationEasing, staggerDelay.
+ *   hoverBorderColour, hoverScale, hoverShadow, hoverGrayscale,
+ *   transitionDuration, transitionEasing, blockLink, blockLinkTarget,
+ *   sgsAnimation, sgsAnimationDuration, sgsAnimationEasing, staggerDelay.
+ *
+ * HC2 cleanup (2026-06-08): the responsive icon-size / heading-fs / subtitle-fs
+ * data-attrs were removed. They were dead — their CSS selectors targeted
+ * .sgs-info-box__icon / __heading / __subtitle, which no longer exist now that
+ * those elements render as child blocks (sgs/icon, sgs/heading, sgs/text).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    InnerBlocks HTML (all card content).
@@ -44,12 +47,6 @@ $sgs_hover_border   = isset( $attributes['hoverBorderColour'] ) ? $attributes['h
 $sgs_hover_scale    = isset( $attributes['hoverScale'] ) ? $attributes['hoverScale'] : '';
 $sgs_hover_shadow   = isset( $attributes['hoverShadow'] ) ? $attributes['hoverShadow'] : '';
 $sgs_hover_gray     = isset( $attributes['hoverGrayscale'] ) ? (bool) $attributes['hoverGrayscale'] : false;
-$sgs_icon_sz_tablet = isset( $attributes['iconSizeTablet'] ) ? $attributes['iconSizeTablet'] : '';
-$sgs_icon_sz_mobile = isset( $attributes['iconSizeMobile'] ) ? $attributes['iconSizeMobile'] : '';
-$sgs_head_fs_tablet = isset( $attributes['headingFontSizeTablet'] ) ? $attributes['headingFontSizeTablet'] : '';
-$sgs_head_fs_mobile = isset( $attributes['headingFontSizeMobile'] ) ? $attributes['headingFontSizeMobile'] : '';
-$sgs_sub_fs_tablet  = isset( $attributes['subtitleFontSizeTablet'] ) ? $attributes['subtitleFontSizeTablet'] : '';
-$sgs_sub_fs_mobile  = isset( $attributes['subtitleFontSizeMobile'] ) ? $attributes['subtitleFontSizeMobile'] : '';
 $sgs_block_link     = isset( $attributes['blockLink'] ) ? $attributes['blockLink'] : '';
 $sgs_block_link_tgt = isset( $attributes['blockLinkTarget'] ) ? (bool) $attributes['blockLinkTarget'] : false;
 
@@ -69,10 +66,8 @@ if ( $sgs_hover_border ) {
 	$sgs_wrapper_styles[] = '--sgs-hover-border:' . sgs_colour_value( $sgs_hover_border );
 }
 
-$sgs_allowed_scales   = array( '1.02', '1.05', '1.1' );
-$sgs_allowed_shadows  = array( 'sm', 'md', 'lg', 'glow' );
-$sgs_valid_icon_sizes = array( 'small', 'medium', 'large' );
-$sgs_valid_font_sizes = array( 'small', 'medium', 'large', 'x-large', 'xx-large' );
+$sgs_allowed_scales  = array( '1.02', '1.05', '1.1' );
+$sgs_allowed_shadows = array( 'sm', 'md', 'lg', 'glow' );
 
 // ---------------------------------------------------------------------------
 // Wrapper classes.
@@ -97,31 +92,6 @@ if ( $sgs_hover_gray ) {
 }
 
 // ---------------------------------------------------------------------------
-// Responsive data attrs (consumed by CSS via data-* attribute selectors).
-// Collected into extra_attrs array for SGS_Container_Wrapper::render().
-// ---------------------------------------------------------------------------
-$sgs_extra_attrs = array();
-
-if ( $sgs_icon_sz_tablet && in_array( $sgs_icon_sz_tablet, $sgs_valid_icon_sizes, true ) ) {
-	$sgs_extra_attrs['data-icon-size-tablet'] = $sgs_icon_sz_tablet;
-}
-if ( $sgs_icon_sz_mobile && in_array( $sgs_icon_sz_mobile, $sgs_valid_icon_sizes, true ) ) {
-	$sgs_extra_attrs['data-icon-size-mobile'] = $sgs_icon_sz_mobile;
-}
-if ( $sgs_head_fs_tablet && in_array( $sgs_head_fs_tablet, $sgs_valid_font_sizes, true ) ) {
-	$sgs_extra_attrs['data-heading-fs-tablet'] = $sgs_head_fs_tablet;
-}
-if ( $sgs_head_fs_mobile && in_array( $sgs_head_fs_mobile, $sgs_valid_font_sizes, true ) ) {
-	$sgs_extra_attrs['data-heading-fs-mobile'] = $sgs_head_fs_mobile;
-}
-if ( $sgs_sub_fs_tablet && in_array( $sgs_sub_fs_tablet, $sgs_valid_font_sizes, true ) ) {
-	$sgs_extra_attrs['data-subtitle-fs-tablet'] = $sgs_sub_fs_tablet;
-}
-if ( $sgs_sub_fs_mobile && in_array( $sgs_sub_fs_mobile, $sgs_valid_font_sizes, true ) ) {
-	$sgs_extra_attrs['data-subtitle-fs-mobile'] = $sgs_sub_fs_mobile;
-}
-
-// ---------------------------------------------------------------------------
 // Render: wrapper shell + InnerBlocks content. R-22-14: no scalar fallback.
 // All card content (icon/media, heading, subtitle, description, button)
 // is rendered via InnerBlocks. Never read scalar content attrs here.
@@ -143,7 +113,6 @@ $sgs_card_html = SGS_Container_Wrapper::render(
 		'tag'           => 'div',
 		'extra_classes' => $sgs_classes,
 		'extra_styles'  => $sgs_wrapper_styles,
-		'extra_attrs'   => $sgs_extra_attrs,
 	)
 );
 

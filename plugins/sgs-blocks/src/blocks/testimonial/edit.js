@@ -11,7 +11,7 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveControl } from '../../components';
+import { DesignTokenPicker } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar } from '../../utils';
 // WS-4: shared container-wrapper editor controls (content kind = width/spacing only).
@@ -23,28 +23,12 @@ const STYLE_OPTIONS = [
 	{ label: __( 'Featured', 'sgs-blocks' ), value: 'featured' },
 ];
 
-const FONT_SIZE_OPTIONS = [
-	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Small', 'sgs-blocks' ), value: 'small' },
-	{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
-	{ label: __( 'Large', 'sgs-blocks' ), value: 'large' },
-	{ label: __( 'XL', 'sgs-blocks' ), value: 'x-large' },
-	{ label: __( 'XXL', 'sgs-blocks' ), value: 'xx-large' },
-];
-
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		avatar,
 		authorMedia,
 		rating,
 		style: cardStyle,
-		quoteColour,
-		nameColour,
-		nameFontSize,
-		roleColour,
-		ratingColour,
-		reviewSource,
-		reviewDate,
 		hoverBackgroundColour,
 		hoverTextColour,
 		hoverBorderColour,
@@ -276,117 +260,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 					/>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Text Styling', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<DesignTokenPicker
-						label={ __( 'Quote colour', 'sgs-blocks' ) }
-						value={ quoteColour }
-						onChange={ ( val ) =>
-							setAttributes( { quoteColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Name colour', 'sgs-blocks' ) }
-						value={ nameColour }
-						onChange={ ( val ) =>
-							setAttributes( { nameColour: val } )
-						}
-					/>
-					<ResponsiveControl
-						label={ __( 'Name font size', 'sgs-blocks' ) }
-					>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'nameFontSize',
-								tablet: 'nameFontSizeTablet',
-								mobile: 'nameFontSizeMobile',
-							};
-							return (
-								<SelectControl
-									value={
-										attributes[
-											attrMap[ breakpoint ]
-										] || ''
-									}
-									options={
-										breakpoint === 'desktop'
-											? FONT_SIZE_OPTIONS
-											: [
-													{
-														label: __(
-															'Same as desktop',
-															'sgs-blocks'
-														),
-														value: '',
-													},
-													...FONT_SIZE_OPTIONS.filter(
-														( opt ) =>
-															opt.value !== ''
-													),
-												]
-									}
-									onChange={ ( val ) =>
-										setAttributes( {
-											[ attrMap[ breakpoint ] ]:
-												val,
-										} )
-									}
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
-					<DesignTokenPicker
-						label={ __( 'Role colour', 'sgs-blocks' ) }
-						value={ roleColour }
-						onChange={ ( val ) =>
-							setAttributes( { roleColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Star colour', 'sgs-blocks' ) }
-						value={ ratingColour }
-						onChange={ ( val ) =>
-							setAttributes( { ratingColour: val } )
-						}
-					/>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Review Source', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<TextControl
-						label={ __( 'Source platform', 'sgs-blocks' ) }
-						help={ __(
-							'e.g. Google Reviews, LinkedIn, Trustpilot. Leave empty for hand-written testimonials (no schema output).',
-							'sgs-blocks'
-						) }
-						value={ reviewSource }
-						onChange={ ( val ) =>
-							setAttributes( { reviewSource: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					{ reviewSource && (
-						<TextControl
-							label={ __( 'Review date', 'sgs-blocks' ) }
-							help={ __(
-								'Date of the original review (YYYY-MM-DD).',
-								'sgs-blocks'
-							) }
-							value={ reviewDate }
-							onChange={ ( val ) =>
-								setAttributes( { reviewDate: val } )
-							}
-							type="date"
-							__nextHasNoMarginBottom
-						/>
-					) }
 				</PanelBody>
 
 				<PanelBody

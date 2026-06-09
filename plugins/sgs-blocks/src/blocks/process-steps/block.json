@@ -131,10 +131,6 @@
     "sgsAnimationEasing": {
       "type": "string",
       "default": "ease-out"
-    },
-    "staggerDelay": {
-      "type": "number",
-      "default": 80
     }
   },
   "render": "file:./render.php",

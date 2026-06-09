@@ -5,6 +5,7 @@ import {
 	InspectorControls,
 } from '@wordpress/block-editor';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+import { SpacingControl } from '../../components';
 import {
 	PanelBody,
 	SelectControl,
@@ -304,6 +305,18 @@ export default function Edit( { attributes, setAttributes } ) {
 					setAttributes={ setAttributes }
 					kind="content"
 				/>
+				<PanelBody
+					title={ __( 'Inner padding', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<SpacingControl
+						label={ __( 'Card body padding', 'sgs-blocks' ) }
+						value={ attributes.innerPadding || '' }
+						onChange={ ( val ) =>
+							setAttributes( { innerPadding: val } )
+						}
+					/>
+				</PanelBody>
 				<PanelBody title={ __( 'Card variant', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Variant style', 'sgs-blocks' ) }

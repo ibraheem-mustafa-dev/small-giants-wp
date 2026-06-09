@@ -26,6 +26,14 @@
 	pointer-events: none;
 }
 
+/* HC2: mirror the frontend CTA-row gap in the editor preview. style.css is
+   frontend-only (compiles to style-index.css), so the editor needs its own
+   rule reading the same --sgs-hero-cta-gap custom property + spacing--30
+   fallback that render.php / edit.js set on the wrapper. */
+.sgs-hero__ctas {
+	gap: var(--sgs-hero-cta-gap, var(--wp--preset--spacing--30));
+}
+
 /* ── Badge layout preview — matches frontend flex behaviour ────────────────── */
 .sgs-hero__badges {
 	display: flex;

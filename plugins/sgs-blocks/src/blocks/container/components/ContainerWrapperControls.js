@@ -1032,26 +1032,6 @@ function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 	);
 }
 
-/**
- * Spacing / padding controls for `content` kind.
- * Exposed as a simple SpacingControl (the native WP spacing supports may handle
- * margin/padding at the block level, but this surfaces an explicit inner padding
- * for composites that need a soft cap on their inner content area).
- */
-function ContentSpacingPanel( { attributes, setAttributes } ) {
-	const { innerPadding = '' } = attributes;
-
-	return (
-		<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-			<SpacingControl
-				label={ __( 'Inner padding', 'sgs-blocks' ) }
-				value={ innerPadding }
-				onChange={ ( val ) => setAttributes( { innerPadding: val } ) }
-			/>
-		</PanelBody>
-	);
-}
-
 // ---------------------------------------------------------------------------
 // KIND → CONTROLS map
 // ---------------------------------------------------------------------------
@@ -1123,7 +1103,12 @@ const KIND_PANELS = {
 				<WidthPanel { ...props } />
 			</PanelBody>
 		),
-		( props ) => <ContentSpacingPanel { ...props } />,
+		// No shared inner-padding panel: content-kind blocks expose WP-native
+		// spacing.padding (consumed by SGS_Container_Wrapper). A standalone
+		// `innerPadding` control here had no shared consumer — it was a dead
+		// control on every content-kind block (HC2, 2026-06-08). product-card
+		// keeps its OWN bespoke inner-padding control for its genuine two-region
+		// (image vs body) padding case.
 	],
 };
 

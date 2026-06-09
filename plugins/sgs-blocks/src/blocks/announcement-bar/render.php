@@ -2,8 +2,11 @@
 /**
  * Announcement Bar — Server Render
  *
- * Migrated 2026-04-30: backgroundColour/textColour -> native backgroundColor/textColor (supports.color).
- * Backward-compat shim reads legacy UK attrs if native attrs are absent.
+ * Colour: background + text colour come exclusively from native WP colour
+ * supports (supports.color in block.json). get_block_wrapper_attributes()
+ * injects the has-*-color / has-*-background-color classes — render.php emits
+ * no custom colour vars for the bar itself (HC2: legacy UK custom controls
+ * removed). Only the CTA link keeps its own --sgs-ab-cta-colour var.
  *
  * @package SGS\Blocks
  *

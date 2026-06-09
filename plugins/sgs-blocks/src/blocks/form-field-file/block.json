@@ -68,10 +68,6 @@
             "type": "number",
             "default": 10
         },
-        "maxFiles": {
-            "type": "number",
-            "default": 1
-        },
         "conditionalField": {
             "type": "string",
             "default": ""

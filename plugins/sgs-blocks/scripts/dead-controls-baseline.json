@@ -1,0 +1,4 @@
+{
+	"_comment": "Accepted dead-control findings (HC2 guard, check-dead-controls.js). Each entry is a finding the team has consciously accepted, with a reason. The guard fails the build ONLY on findings NOT listed here. Key shape: { check, block, attr, reason }. To accept a finding add it here with a reason; to fix one, wire or remove the control and delete the entry. Empty `accepted` = zero tolerance.",
+	"accepted": []
+}

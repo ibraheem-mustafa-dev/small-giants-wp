@@ -25,8 +25,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		messages,
 		variant,
-		backgroundColour,
-		textColour,
 		ctaStyle,
 		ctaColour,
 		position,
@@ -75,7 +73,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	};
 
 	const blockProps = useBlockProps( {
-		className: `sgs-announcement-bar sgs-announcement-bar--${ variant } has-${ backgroundColour }-background-color has-${ textColour }-color`,
+		className: `sgs-announcement-bar sgs-announcement-bar--${ variant }`,
 		style: {
 			position: sticky ? 'sticky' : 'relative',
 			[ position ]: 0,
@@ -119,29 +117,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody title={ __( 'Appearance', 'sgs-blocks' ) }>
-					<SelectControl
-						label={ __( 'Background Colour', 'sgs-blocks' ) }
-						value={ backgroundColour }
-						options={ [
-							{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
-							{ label: __( 'Primary Dark', 'sgs-blocks' ), value: 'primary-dark' },
-							{ label: __( 'Accent', 'sgs-blocks' ), value: 'accent' },
-							{ label: __( 'Success', 'sgs-blocks' ), value: 'success' },
-						] }
-						onChange={ ( value ) => setAttributes( { backgroundColour: value } ) }
-					/>
-
-					<SelectControl
-						label={ __( 'Text Colour', 'sgs-blocks' ) }
-						value={ textColour }
-						options={ [
-							{ label: __( 'Text Inverse', 'sgs-blocks' ), value: 'text-inverse' },
-							{ label: __( 'Surface', 'sgs-blocks' ), value: 'surface' },
-							{ label: __( 'Text', 'sgs-blocks' ), value: 'text' },
-						] }
-						onChange={ ( value ) => setAttributes( { textColour: value } ) }
-					/>
-
+					{ /* Background & text colour are handled by native WP colour
+					     supports (supports.color in block.json) — the core Color
+					     panel exposes them. Custom controls removed (HC2). */ }
 					<SelectControl
 						label={ __( 'Font Size', 'sgs-blocks' ) }
 						value={ fontSize }

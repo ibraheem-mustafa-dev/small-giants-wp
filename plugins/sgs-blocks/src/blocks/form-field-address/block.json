@@ -43,10 +43,6 @@
             "type": "boolean",
             "default": false
         },
-        "lookupProvider": {
-            "type": "string",
-            "default": "getaddress.io"
-        },
         "fields": {
             "type": "array",
             "default": [

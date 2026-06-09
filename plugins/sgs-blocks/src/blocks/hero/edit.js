@@ -24,30 +24,6 @@ import ContainerWrapperControls from '../container/components/ContainerWrapperCo
 
 // ── Phase 1 constant options ─────────────────────────────────────────────────
 
-const FONT_WEIGHT_OPTIONS = [
-	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
-	{ label: __( '300 Light', 'sgs-blocks' ), value: '300' },
-	{ label: __( '400 Regular', 'sgs-blocks' ), value: '400' },
-	{ label: __( '500 Medium', 'sgs-blocks' ), value: '500' },
-	{ label: __( '600 Semi-bold', 'sgs-blocks' ), value: '600' },
-	{ label: __( '700 Bold', 'sgs-blocks' ), value: '700' },
-	{ label: __( '800 Extra-bold', 'sgs-blocks' ), value: '800' },
-	{ label: __( '900 Black', 'sgs-blocks' ), value: '900' },
-];
-
-const TEXT_TRANSFORM_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Uppercase', 'sgs-blocks' ), value: 'uppercase' },
-	{ label: __( 'Lowercase', 'sgs-blocks' ), value: 'lowercase' },
-	{ label: __( 'Capitalise', 'sgs-blocks' ), value: 'capitalize' },
-];
-
-const TEXT_DECORATION_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Underline', 'sgs-blocks' ), value: 'underline' },
-	{ label: __( 'Line-through', 'sgs-blocks' ), value: 'line-through' },
-];
-
 const BORDER_STYLE_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 	{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
@@ -73,11 +49,6 @@ const UNIT_PX_EM_REM = [
 	{ label: 'px', value: 'px' },
 	{ label: 'em', value: 'em' },
 	{ label: 'rem', value: 'rem' },
-];
-
-const UNIT_EM_PX = [
-	{ label: 'em', value: 'em' },
-	{ label: 'px', value: 'px' },
 ];
 
 const VERTICAL_ALIGN_OPTIONS = [
@@ -157,6 +128,15 @@ const ALIGN_OPTIONS = [
 	{ label: __( 'Centre', 'sgs-blocks' ), value: 'centre' },
 ];
 
+// HC2: per-breakpoint content text-align. Values are raw CSS text-align values
+// (consumed by render.php on .sgs-hero__content). Empty = inherit variant default.
+const TEXT_ALIGN_OPTIONS = [
+	{ label: __( 'Inherit', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
+];
+
 const CTA_STYLE_OPTIONS = [
 	{ label: __( 'Accent', 'sgs-blocks' ), value: 'accent' },
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
@@ -228,15 +208,6 @@ function BadgeEditor( { badge, index, onChange, onRemove } ) {
 	);
 }
 
-const FONT_SIZE_OPTIONS = [
-	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Small', 'sgs-blocks' ), value: 'small' },
-	{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
-	{ label: __( 'Large', 'sgs-blocks' ), value: 'large' },
-	{ label: __( 'XL', 'sgs-blocks' ), value: 'x-large' },
-	{ label: __( 'XXL', 'sgs-blocks' ), value: 'xx-large' },
-];
-
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		variant,
@@ -251,14 +222,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		svgContent,
 		minHeight,
 		badges,
-		headlineColour,
-		headlineFontSizeDesktop,
-		headlineFontSizeTablet,
-		headlineFontSizeMobile,
 		headlineMarginBottom,
 		headlineMarginBottomMobile,
-		subHeadlineFontSize,
-		subHeadlineColour,
 		subHeadlineMaxWidth,
 		subHeadlineMarginBottom,
 		subHeadlineMarginBottomMobile,
@@ -294,31 +259,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		mediaBackgroundColour,
 		contentPaddingUnit,
 		mediaPaddingUnit,
-		// Phase 1 — sub-headline typography.
-		subHeadlineFontFamily,
-		subHeadlineFontWeight,
-		subHeadlineLineHeight,
-		subHeadlineLineHeightUnit,
-		subHeadlineLetterSpacing,
-		subHeadlineLetterSpacingUnit,
-		subHeadlineTextTransform,
-		subHeadlineTextDecoration,
-		// Phase 1 — label typography.
-		labelFontFamily,
-		labelFontSize,
-		labelFontSizeTablet,
-		labelFontSizeMobile,
-		labelFontSizeUnit,
-		labelFontWeight,
-		labelLineHeight,
-		labelLineHeightUnit,
-		labelLetterSpacing,
-		labelLetterSpacingUnit,
-		labelTextTransform,
-		labelTextDecoration,
-		labelColour,
-		labelMarginBottom,
-		labelMarginBottomUnit,
 		// Phase 1 — layout grid.
 		splitColumnRatio,
 		splitColumnRatioTablet,
@@ -335,7 +275,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		contentMaxWidthMobile,
 		contentMaxWidthUnit,
 		// H-8 — CTA gap.
+		ctaGap,
 		ctaGapUnit,
+		// HC2 — per-breakpoint text alignment on .sgs-hero__content.
+		textAlignDesktop,
+		textAlignTablet,
+		textAlignMobile,
 	} = attributes;
 
 	const isCustomRatio = ! COLUMN_RATIO_PRESETS.some(
@@ -355,6 +300,18 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( minHeight ) {
 		wrapperStyle.minHeight = minHeight;
 	}
+	// HC2: preview the desktop CTA-row gap in the editor (frontend tablet/mobile
+	// overrides are @media-only and can't be shown in the iframe — matches how
+	// the block's other responsive controls preview desktop-only).
+	if ( ctaGap !== undefined && ctaGap !== null && ctaGap !== '' ) {
+		wrapperStyle[ '--sgs-hero-cta-gap' ] = `${ ctaGap }${ ctaGapUnit || 'px' }`;
+	}
+
+	// HC2: desktop text-align preview for the content column.
+	const contentPreviewStyle = {};
+	if ( textAlignDesktop ) {
+		contentPreviewStyle.textAlign = textAlignDesktop;
+	}
 
 	const className = [
 		'sgs-hero',
@@ -366,7 +323,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	// FR-22-6: content column uses InnerBlocks (label + heading + text + buttons).
 	const innerBlocksProps = useInnerBlocksProps(
-		{ className: 'sgs-hero__content' },
+		{ className: 'sgs-hero__content', style: contentPreviewStyle },
 		{
 			template: HERO_CONTENT_TEMPLATE,
 			templateLock: false,
@@ -441,6 +398,32 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { verticalAlignment: val } ) }
 						__nextHasNoMarginBottom
 					/>
+
+					{/* HC2: per-breakpoint text-align on the content column.
+					    Empty = inherit the variant's own alignment. */}
+					<ResponsiveControl
+						label={ __( 'Content text align', 'sgs-blocks' ) }
+					>
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'textAlignDesktop',
+								tablet: 'textAlignTablet',
+								mobile: 'textAlignMobile',
+							};
+							return (
+								<SelectControl
+									value={ attributes[ attrMap[ breakpoint ] ] || '' }
+									options={ TEXT_ALIGN_OPTIONS }
+									onChange={ ( val ) =>
+										setAttributes( {
+											[ attrMap[ breakpoint ] ]: val,
+										} )
+									}
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
+					</ResponsiveControl>
 
 					<ResponsiveControl
 						label={ __( 'Min height', 'sgs-blocks' ) }
@@ -524,58 +507,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				{/* ── 3. Eyebrow Label typography overrides ── */}
-				<PanelBody title={ __( 'Eyebrow Label', 'sgs-blocks' ) } initialOpen={ false }>
-						<DesignTokenPicker label={ __( 'Colour', 'sgs-blocks' ) } value={ labelColour } onChange={ ( val ) => setAttributes( { labelColour: val } ) } />
-						<RRangeControl label={ __( 'Font size', 'sgs-blocks' ) } attrDesktop="labelFontSize" attrTablet="labelFontSizeTablet" attrMobile="labelFontSizeMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 72 } step={ 1 } />
-						<SelectControl label={ __( 'Font size unit', 'sgs-blocks' ) } value={ labelFontSizeUnit || 'px' } options={ UNIT_PX_EM_REM } onChange={ ( val ) => setAttributes( { labelFontSizeUnit: val } ) } __nextHasNoMarginBottom />
-						<TextControl label={ __( 'Font family slug', 'sgs-blocks' ) } help={ __( 'theme.json slug e.g. "montserrat". Blank = inherit.', 'sgs-blocks' ) } value={ labelFontFamily || '' } onChange={ ( val ) => setAttributes( { labelFontFamily: val } ) } __nextHasNoMarginBottom />
-						<SelectControl label={ __( 'Font weight', 'sgs-blocks' ) } value={ labelFontWeight || '600' } options={ FONT_WEIGHT_OPTIONS } onChange={ ( val ) => setAttributes( { labelFontWeight: val } ) } __nextHasNoMarginBottom />
-						<RangeControl label={ __( 'Line height', 'sgs-blocks' ) } value={ labelLineHeight || 0 } onChange={ ( val ) => setAttributes( { labelLineHeight: val || null } ) } min={ 0 } max={ 4 } step={ 0.05 } __nextHasNoMarginBottom />
-						<SelectControl label={ __( 'Line height unit', 'sgs-blocks' ) } value={ labelLineHeightUnit || 'em' } options={ UNIT_EM_PX } onChange={ ( val ) => setAttributes( { labelLineHeightUnit: val } ) } __nextHasNoMarginBottom />
-						<RangeControl label={ __( 'Letter spacing', 'sgs-blocks' ) } value={ labelLetterSpacing || 0 } onChange={ ( val ) => setAttributes( { labelLetterSpacing: val || null } ) } min={ -5 } max={ 20 } step={ 0.01 } __nextHasNoMarginBottom />
-						<SelectControl label={ __( 'Letter spacing unit', 'sgs-blocks' ) } value={ labelLetterSpacingUnit || 'em' } options={ UNIT_EM_PX } onChange={ ( val ) => setAttributes( { labelLetterSpacingUnit: val } ) } __nextHasNoMarginBottom />
-						<SelectControl label={ __( 'Text transform', 'sgs-blocks' ) } value={ labelTextTransform || 'uppercase' } options={ TEXT_TRANSFORM_OPTIONS } onChange={ ( val ) => setAttributes( { labelTextTransform: val } ) } __nextHasNoMarginBottom />
-						<SelectControl label={ __( 'Text decoration', 'sgs-blocks' ) } value={ labelTextDecoration || '' } options={ TEXT_DECORATION_OPTIONS } onChange={ ( val ) => setAttributes( { labelTextDecoration: val } ) } __nextHasNoMarginBottom />
-						<RangeControl label={ __( 'Margin bottom', 'sgs-blocks' ) } value={ labelMarginBottom || 0 } onChange={ ( val ) => setAttributes( { labelMarginBottom: val } ) } min={ 0 } max={ 80 } step={ 1 } __nextHasNoMarginBottom />
-						<SelectControl label={ __( 'Margin bottom unit', 'sgs-blocks' ) } value={ labelMarginBottomUnit || 'px' } options={ UNIT_PX_EM_REM } onChange={ ( val ) => setAttributes( { labelMarginBottomUnit: val } ) } __nextHasNoMarginBottom />
-					</PanelBody>
-
 				{/* ── 4. Headline (h1) ── */}
 				<PanelBody title={ __( 'Headline (h1)', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
-						label={ __( 'Headline colour', 'sgs-blocks' ) }
-						value={ headlineColour }
-						onChange={ ( val ) =>
-							setAttributes( { headlineColour: val } )
-						}
-					/>
-					<ResponsiveControl
-						label={ __( 'Headline font size (px)', 'sgs-blocks' ) }
-					>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'headlineFontSizeDesktop',
-								tablet: 'headlineFontSizeTablet',
-								mobile: 'headlineFontSizeMobile',
-							};
-							return (
-								<RangeControl
-									value={ attributes[ attrMap[ breakpoint ] ] || 0 }
-									onChange={ ( val ) =>
-										setAttributes( {
-											[ attrMap[ breakpoint ] ]: val || null,
-										} )
-									}
-									min={ 0 }
-									max={ 120 }
-									step={ 1 }
-									help={ __( '0 = inherit from theme', 'sgs-blocks' ) }
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
 					<RangeControl
 						label={ __( 'Margin bottom — desktop (px)', 'sgs-blocks' ) }
 						help={ __( '0 = inherit from theme.', 'sgs-blocks' ) }
@@ -604,65 +537,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{/* ── 5. Subheadline ── */}
 				<PanelBody title={ __( 'Subheadline', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
-						label={ __( 'Colour', 'sgs-blocks' ) }
-						value={ subHeadlineColour }
-						onChange={ ( val ) =>
-							setAttributes( { subHeadlineColour: val } )
-						}
-					/>
-					<ResponsiveControl
-						label={ __( 'Font size', 'sgs-blocks' ) }
-					>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'subHeadlineFontSize',
-								tablet: 'subHeadlineFontSizeTablet',
-								mobile: 'subHeadlineFontSizeMobile',
-							};
-							return (
-								<SelectControl
-									value={
-										attributes[
-											attrMap[ breakpoint ]
-										] || ''
-									}
-									options={
-										breakpoint === 'desktop'
-											? FONT_SIZE_OPTIONS
-											: [
-													{
-														label: __(
-															'Same as desktop',
-															'sgs-blocks'
-														),
-														value: '',
-													},
-													...FONT_SIZE_OPTIONS.filter(
-														( opt ) =>
-															opt.value !== ''
-													),
-												]
-									}
-									onChange={ ( val ) =>
-										setAttributes( {
-											[ attrMap[ breakpoint ] ]:
-												val,
-										} )
-									}
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
-					<TextControl label={ __( 'Font family slug', 'sgs-blocks' ) } help={ __( 'theme.json slug e.g. "montserrat". Blank = inherit.', 'sgs-blocks' ) } value={ subHeadlineFontFamily || '' } onChange={ ( val ) => setAttributes( { subHeadlineFontFamily: val } ) } __nextHasNoMarginBottom />
-					<SelectControl label={ __( 'Font weight', 'sgs-blocks' ) } value={ subHeadlineFontWeight || '' } options={ FONT_WEIGHT_OPTIONS } onChange={ ( val ) => setAttributes( { subHeadlineFontWeight: val } ) } __nextHasNoMarginBottom />
-					<RangeControl label={ __( 'Line height', 'sgs-blocks' ) } value={ subHeadlineLineHeight || 0 } onChange={ ( val ) => setAttributes( { subHeadlineLineHeight: val || null } ) } min={ 0 } max={ 4 } step={ 0.05 } __nextHasNoMarginBottom />
-					<SelectControl label={ __( 'Line height unit', 'sgs-blocks' ) } value={ subHeadlineLineHeightUnit || 'em' } options={ UNIT_EM_PX } onChange={ ( val ) => setAttributes( { subHeadlineLineHeightUnit: val } ) } __nextHasNoMarginBottom />
-					<RangeControl label={ __( 'Letter spacing', 'sgs-blocks' ) } value={ subHeadlineLetterSpacing || 0 } onChange={ ( val ) => setAttributes( { subHeadlineLetterSpacing: val || null } ) } min={ -5 } max={ 20 } step={ 0.01 } __nextHasNoMarginBottom />
-					<SelectControl label={ __( 'Letter spacing unit', 'sgs-blocks' ) } value={ subHeadlineLetterSpacingUnit || 'px' } options={ UNIT_PX_EM_REM } onChange={ ( val ) => setAttributes( { subHeadlineLetterSpacingUnit: val } ) } __nextHasNoMarginBottom />
-					<SelectControl label={ __( 'Text transform', 'sgs-blocks' ) } value={ subHeadlineTextTransform || '' } options={ TEXT_TRANSFORM_OPTIONS } onChange={ ( val ) => setAttributes( { subHeadlineTextTransform: val } ) } __nextHasNoMarginBottom />
-					<SelectControl label={ __( 'Text decoration', 'sgs-blocks' ) } value={ subHeadlineTextDecoration || '' } options={ TEXT_DECORATION_OPTIONS } onChange={ ( val ) => setAttributes( { subHeadlineTextDecoration: val } ) } __nextHasNoMarginBottom />
+					{/* Font size (desktop + responsive) is owned by the child sgs/text
+					    block across all breakpoints. Only max-width / margins remain here. */}
 					<RangeControl
 						label={ __( 'Max width (px)', 'sgs-blocks' ) }
 						help={ __( 'Limits sub-headline width for readability. 0 = no limit.', 'sgs-blocks' ) }

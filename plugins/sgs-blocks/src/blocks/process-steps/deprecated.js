@@ -152,7 +152,10 @@ const v4 = {
 			sgsAnimation:         'fade-up',
 			sgsAnimationDuration: attributes.sgsAnimationDuration || 'medium',
 			sgsAnimationEasing:   attributes.sgsAnimationEasing   || 'ease-out',
-			staggerDelay:         attributes.staggerDelay          ?? 80,
+			// staggerDelay removed from the current block.json schema (orphan — no
+			// control, never consumed). The deprecation's own `attributes` block still
+			// self-declares it so the OLD stored shape validates; we no longer re-emit
+			// it into the migrated attrs (WP would strip an unregistered attribute).
 			// Backfill colour defaults so the current save.js emits inline styles.
 			numberColour:     attributes.numberColour     || 'text-inverse',
 			numberBackground: attributes.numberBackground || 'primary',

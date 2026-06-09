@@ -91,17 +91,6 @@
 			"type": "string",
 			"default": "text"
 		},
-		"bodyFontSize": {
-			"type": "string"
-		},
-		"bodyFontSizeTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"bodyFontSizeMobile": {
-			"type": "string",
-			"default": ""
-		},
 		"buttonColour": {
 			"type": "string",
 			"default": "text-inverse"

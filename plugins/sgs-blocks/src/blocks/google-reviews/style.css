@@ -81,6 +81,57 @@
 	height: auto;
 }
 
+/* ─── Ratings Breakdown (per-star distribution) ──────────────────────────── */
+
+.sgs-google-reviews__breakdown {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	margin-bottom: 2rem;
+	max-width: 28rem;
+}
+
+.sgs-google-reviews__breakdown-row {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	font-size: 0.875rem;
+	color: var( --wp--preset--color--text, #1e1e1e );
+}
+
+.sgs-google-reviews__breakdown-label {
+	flex: 0 0 4.5rem;
+	white-space: nowrap;
+}
+
+.sgs-google-reviews__breakdown-bar {
+	flex: 1 1 auto;
+	height: 0.625rem;
+	border-radius: 999px;
+	background-color: var( --wp--preset--color--border-subtle, #e0e0e0 );
+	overflow: hidden;
+}
+
+.sgs-google-reviews__breakdown-fill {
+	display: block;
+	height: 100%;
+	border-radius: 999px;
+	/* Reuses the star colour variable set on the wrapper by render.php. */
+	background-color: var( --sgs-gr-star-colour, var( --wp--preset--color--accent, #f5a623 ) );
+}
+
+.sgs-google-reviews__breakdown-count {
+	flex: 0 0 auto;
+	white-space: nowrap;
+	color: var( --wp--preset--color--text-muted, #555 );
+}
+
+@media ( max-width: 599px ) {
+	.sgs-google-reviews__breakdown-count {
+		font-size: 0.8125rem;
+	}
+}
+
 /* ─── SVG Star Rating ────────────────────────────────────────────────────── */
 
 .sgs-google-reviews__stars {

@@ -190,15 +190,6 @@
 				"space-evenly"
 			]
 		},
-		"templateMode": {
-			"type": "string",
-			"default": "free",
-			"enum": [
-				"free",
-				"grid-section",
-				"card-grid"
-			]
-		},
 		"gap": {
 			"type": "string",
 			"default": ""

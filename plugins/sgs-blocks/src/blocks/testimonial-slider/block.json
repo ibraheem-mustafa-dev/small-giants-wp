@@ -94,24 +94,8 @@
 			"type": "string",
 			"default": "card"
 		},
-		"quoteColour": {
-			"type": "string",
-			"default": "text"
-		},
-		"nameColour": {
-			"type": "string",
-			"default": "primary"
-		},
 		"nameFontSize": {
 			"type": "string"
-		},
-		"roleColour": {
-			"type": "string",
-			"default": "text-muted"
-		},
-		"ratingColour": {
-			"type": "string",
-			"default": "accent"
 		},
 		"hoverBackgroundColour": {
 			"type": "string",

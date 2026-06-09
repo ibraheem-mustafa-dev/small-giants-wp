@@ -54,39 +54,6 @@
         "typography": ".sgs-info-box__heading"
     },
     "attributes": {
-        "showMedia": {
-            "type": "boolean",
-            "default": true
-        },
-        "showTitle": {
-            "type": "boolean",
-            "default": true
-        },
-        "showSubtitle": {
-            "type": "boolean",
-            "default": false
-        },
-        "showText": {
-            "type": "boolean",
-            "default": true
-        },
-        "showButton": {
-            "type": "boolean",
-            "default": false
-        },
-        "elementOrder": {
-            "type": "array",
-            "default": [
-                "media",
-                "title",
-                "subtitle",
-                "text",
-                "button"
-            ],
-            "items": {
-                "type": "string"
-            }
-        },
         "mediaType": {
             "type": "string",
             "default": "icon",
@@ -104,22 +71,6 @@
             "type": "string",
             "default": "",
             "role": "content"
-        },
-        "subtitleColour": {
-            "type": "string",
-            "default": ""
-        },
-        "subtitleFontSize": {
-            "type": "string",
-            "default": ""
-        },
-        "subtitleFontSizeTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "subtitleFontSizeMobile": {
-            "type": "string",
-            "default": ""
         },
         "image": {
             "type": "object"
@@ -151,52 +102,6 @@
             "type": "string",
             "default": "",
             "role": "content"
-        },
-        "link": {
-            "type": "string"
-        },
-        "linkOpensNewTab": {
-            "type": "boolean",
-            "default": false
-        },
-        "iconColour": {
-            "type": "string",
-            "default": "primary"
-        },
-        "iconBackgroundColour": {
-            "type": "string",
-            "default": "accent-light"
-        },
-        "iconSize": {
-            "type": "string",
-            "default": "medium"
-        },
-        "iconSizeTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "iconSizeMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "headingColour": {
-            "type": "string",
-            "default": "primary"
-        },
-        "headingFontSize": {
-            "type": "string"
-        },
-        "headingFontSizeTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "headingFontSizeMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "descriptionColour": {
-            "type": "string",
-            "default": "text"
         },
         "cardStyle": {
             "type": "string",
@@ -246,10 +151,6 @@
             "type": "boolean",
             "default": false
         },
-        "hoverImageZoom": {
-            "type": "boolean",
-            "default": false
-        },
         "staggerDelay": {
             "type": "number",
             "default": 0
@@ -265,18 +166,6 @@
         "sgsAnimationEasing": {
             "type": "string",
             "default": "default"
-        },
-        "textAlignMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "textAlignTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "textAlignDesktop": {
-            "type": "string",
-            "default": ""
         },
         "widthMode": {
             "type": "string",

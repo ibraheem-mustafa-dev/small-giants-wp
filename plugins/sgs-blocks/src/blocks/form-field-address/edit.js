@@ -4,17 +4,8 @@ import {
 	PanelBody,
 	TextControl,
 	ToggleControl,
-	SelectControl,
 	CheckboxControl,
 } from '@wordpress/components';
-
-const LOOKUP_PROVIDERS = [
-	{ label: __( 'getaddress.io', 'sgs-blocks' ), value: 'getaddress.io' },
-	{
-		label: __( 'Ideal Postcodes', 'sgs-blocks' ),
-		value: 'ideal-postcodes',
-	},
-];
 
 const ADDRESS_FIELDS = [
 	{ label: __( 'Address line 1', 'sgs-blocks' ), value: 'line1' },
@@ -31,7 +22,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		label,
 		required,
 		enableLookup,
-		lookupProvider,
 		fields,
 	} = attributes;
 
@@ -97,21 +87,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						__nextHasNoMarginBottom
 					/>
-					{ enableLookup && (
-						<SelectControl
-							label={ __( 'Lookup provider', 'sgs-blocks' ) }
-							value={ lookupProvider }
-							options={ LOOKUP_PROVIDERS }
-							onChange={ ( val ) =>
-								setAttributes( { lookupProvider: val } )
-							}
-							help={ __(
-								'API key configured in plugin settings',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
-						/>
-					) }
 				</PanelBody>
 				<PanelBody
 					title={ __( 'Address Fields', 'sgs-blocks' ) }

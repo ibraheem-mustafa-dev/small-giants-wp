@@ -152,14 +152,6 @@
       "type": "boolean",
       "default": true
     },
-    "cardVariant": {
-      "type": "string",
-      "default": "default",
-      "enum": [
-        "default",
-        "compact"
-      ]
-    },
     "sgsAnimation": {
       "type": "string",
       "default": "fade-up"

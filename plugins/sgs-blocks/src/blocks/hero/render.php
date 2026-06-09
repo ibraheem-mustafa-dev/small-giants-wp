@@ -13,15 +13,14 @@
  *   splitImage, splitMedia, splitImageMobile, splitImageMobileObjectPosition,
  *   backgroundVideo, svgContent, minHeight*, badges, hoverBackground/Text/Border,
  *   transitionDuration, transitionEasing, bgParallax, bgKenBurns, bgVideo*,
- *   splitImageBleed, ctaPrimary/SecondaryHover*, headline/subHeadlineFontSize*,
+ *   splitImageBleed, ctaPrimary/SecondaryHover*,
  *   headline/subHeadlineMarginBottom*, subHeadlineMaxWidth, splitImageMobileHeight,
  *   imageObjectFit/Position, image*Width/Height*, imageBorderRadius*,
  *   imageBorderStyle/Width/Colour*, imagePadding*, mediaBackgroundColour,
  *   mediaPadding*, contentPadding*, splitColumnRatio*, splitGap*,
- *   splitContentOrderMobile, verticalAlignment, contentMaxWidth*, ctaGap*,
- *   labelFontSize* (used by responsive CSS targeting .sgs-hero__label on child),
- *   headlineFontSize* (responsive CSS targeting .sgs-hero__headline on child),
- *   subHeadline* typography responsive CSS targeting .sgs-hero__subheadline.
+ *   splitContentOrderMobile, verticalAlignment, contentMaxWidth*, ctaGap*.
+ *   Headline / sub-headline / label FONT-SIZE (all breakpoints) is owned by the
+ *   child sgs/heading / sgs/text / sgs/label blocks — not emitted here.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    InnerBlocks HTML (label, headline, sub-headline, CTAs).
@@ -81,16 +80,9 @@ $min_height_tablet   = $attributes['minHeightTablet'] ?? '';
 $min_height_mobile   = $attributes['minHeightMobile'] ?? '360px';
 $badges              = $attributes['badges'] ?? array();
 
-// Responsive CSS targets for typography on InnerBlocks children.
-// These are still scalar attrs — render.php emits scoped <style> rules that
-// cascade into the child sgs/heading / sgs/text / sgs/label blocks.
-$sub_headline_font_size_tablet = $attributes['subHeadlineFontSizeTablet'] ?? '';
-$sub_headline_font_size_mobile = $attributes['subHeadlineFontSizeMobile'] ?? '';
-
-// Per-breakpoint typography controls (new in v2).
-$headline_font_size_desktop = $attributes['headlineFontSizeDesktop'] ?? null;
-$headline_font_size_tablet  = $attributes['headlineFontSizeTablet'] ?? null;
-$headline_font_size_mobile  = $attributes['headlineFontSizeMobile'] ?? null;
+// Sub-headline / headline / label font-size are owned by the child
+// sgs/text / sgs/heading / sgs/label blocks across all breakpoints — no
+// scoped font-size <style> is emitted here.
 $sub_headline_max_width     = $attributes['subHeadlineMaxWidth'] ?? null;
 
 // Margin-bottom controls for headline and sub-headline (F1/F2).
@@ -205,10 +197,14 @@ $content_pad_mob_bot  = $attributes['contentPaddingBottomMobile'] ?? null;
 $content_pad_mob_left = $attributes['contentPaddingLeftMobile'] ?? null;
 $content_pad_unit     = $attributes['contentPaddingUnit'] ?? 'px';
 
-// Label responsive CSS (tablet/mobile font-size on child .sgs-hero__label).
-$label_font_size_tab  = $attributes['labelFontSizeTablet'] ?? null;
-$label_font_size_mob  = $attributes['labelFontSizeMobile'] ?? null;
-$label_font_size_unit = $attributes['labelFontSizeUnit'] ?? 'px';
+// HC2: per-breakpoint text-align on .sgs-hero__content. Desktop = base rule
+// (no @media), tablet/mobile via the scoped <style> @media mechanism — mirrors
+// the existing responsive-CSS builder. Empty string / 'inherit' = no emit so
+// unset instances keep the variant's own alignment (sgs-hero--align-*).
+$text_align_desktop = $attributes['textAlignDesktop'] ?? '';
+$text_align_tablet  = $attributes['textAlignTablet'] ?? '';
+$text_align_mobile  = $attributes['textAlignMobile'] ?? '';
+$allowed_text_align = array( 'left', 'center', 'right', 'start', 'end', 'justify' );
 
 // Layout grid (split variant).
 $split_col_ratio        = $attributes['splitColumnRatio'] ?? '1fr 1fr';
@@ -219,6 +215,17 @@ $split_gap_tablet       = $attributes['splitGapTablet'] ?? null;
 $split_gap_mobile       = $attributes['splitGapMobile'] ?? null;
 $split_gap_unit         = $attributes['splitGapUnit'] ?? 'px';
 $split_order_mobile     = $attributes['splitContentOrderMobile'] ?? 'media-first';
+
+// HC2: CTA row gap (.sgs-hero__ctas). Emitted as the --sgs-hero-cta-gap custom
+// property which style.css consumes with the legacy spacing--30 default as the
+// fallback — so an instance whose control was never touched is byte-unchanged.
+// ctaGap has a schema default (12), so gate desktop emit on the attr being
+// PRESENT in $attributes (operator actually set it), not on a non-null read.
+$cta_gap_unit   = $attributes['ctaGapUnit'] ?? 'px';
+$cta_gap_set    = array_key_exists( 'ctaGap', $attributes );
+$cta_gap        = $cta_gap_set ? absint( $attributes['ctaGap'] ) : null;
+$cta_gap_tablet = array_key_exists( 'ctaGapTablet', $attributes ) && null !== $attributes['ctaGapTablet'] ? absint( $attributes['ctaGapTablet'] ) : null;
+$cta_gap_mobile = array_key_exists( 'ctaGapMobile', $attributes ) && null !== $attributes['ctaGapMobile'] ? absint( $attributes['ctaGapMobile'] ) : null;
 
 // Vertical alignment and content max-width.
 $vertical_alignment      = $attributes['verticalAlignment'] ?? 'center';
@@ -245,6 +252,14 @@ if ( ! empty( $min_height ) ) {
 
 // Transition custom properties — consumed by CSS vars on the block and its children.
 $styles = array_merge( $styles, sgs_transition_vars( $attributes ) );
+
+// HC2: desktop CTA-row gap. Only emitted when the operator actually set ctaGap
+// (array_key_exists) so untouched instances fall through to style.css's legacy
+// var(--wp--preset--spacing--30) fallback and stay byte-identical. Wrapper-level
+// custom property (not an inline gap) so the @media tablet/mobile overrides win.
+if ( null !== $cta_gap ) {
+	$styles[] = '--sgs-hero-cta-gap:' . $cta_gap . esc_attr( $cta_gap_unit );
+}
 
 if ( $hover_background_colour ) {
 	$styles[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_background_colour );
@@ -296,23 +311,6 @@ if ( $min_height_tablet ) {
 }
 if ( $min_height_mobile ) {
 	$responsive_css .= '@media (max-width:767px){.' . $uid . '{min-height:' . esc_attr( $min_height_mobile ) . '}}';
-}
-if ( $sub_headline_font_size_tablet ) {
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__subheadline{font-size:' . sgs_font_size_value( $sub_headline_font_size_tablet ) . ' !important}}';
-}
-if ( $sub_headline_font_size_mobile ) {
-	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__subheadline{font-size:' . sgs_font_size_value( $sub_headline_font_size_mobile ) . ' !important}}';
-}
-
-// Per-breakpoint headline font size.
-if ( $headline_font_size_desktop ) {
-	$responsive_css .= '.' . $uid . ' .sgs-hero__headline{font-size:' . absint( $headline_font_size_desktop ) . 'px}';
-}
-if ( $headline_font_size_tablet ) {
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__headline{font-size:' . absint( $headline_font_size_tablet ) . 'px}}';
-}
-if ( $headline_font_size_mobile ) {
-	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__headline{font-size:' . absint( $headline_font_size_mobile ) . 'px}}';
 }
 
 // ── Margin-bottom: headline + sub-headline (F1/F2) ─────────────────────────
@@ -474,13 +472,30 @@ if ( null !== $content_max_width_mob ) {
 	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{max-width:' . absint( $content_max_width_mob ) . esc_attr( $content_max_width_unit ) . '}}';
 }
 
-// ── labelFontSize: tablet / mobile overrides ───────────────────────────────
-// These cascade into the child sgs/label InnerBlock which emits .sgs-hero__label.
-if ( null !== $label_font_size_tab ) {
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__label{font-size:' . absint( $label_font_size_tab ) . esc_attr( $label_font_size_unit ) . '}}';
+// ── HC2: text-align on .sgs-hero__content ──────────────────────────────────
+// Desktop = base rule (no @media); tablet/mobile = scoped @media overrides.
+// Each value is allowlisted; empty / unrecognised = no emit (keeps variant
+// default). This makes textAlignDesktop a live render target for the cloning
+// converter (H-C) and revives the inert tablet/mobile attrs.
+if ( in_array( $text_align_desktop, $allowed_text_align, true ) ) {
+	$responsive_css .= '.' . $uid . ' .sgs-hero__content{text-align:' . $text_align_desktop . '}';
 }
-if ( null !== $label_font_size_mob ) {
-	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__label{font-size:' . absint( $label_font_size_mob ) . esc_attr( $label_font_size_unit ) . '}}';
+if ( in_array( $text_align_tablet, $allowed_text_align, true ) ) {
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__content{text-align:' . $text_align_tablet . '}}';
+}
+if ( in_array( $text_align_mobile, $allowed_text_align, true ) ) {
+	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{text-align:' . $text_align_mobile . '}}';
+}
+
+// ── HC2: CTA row gap (.sgs-hero__ctas) ─────────────────────────────────────
+// Desktop value → --sgs-hero-cta-gap on the wrapper (style.css falls back to
+// the legacy spacing--30 when unset). Tablet/mobile re-set the property within
+// @media so the cascade beats the desktop value — Rule 6 (no losing inline).
+if ( null !== $cta_gap_tablet ) {
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . '{--sgs-hero-cta-gap:' . $cta_gap_tablet . esc_attr( $cta_gap_unit ) . '}}';
+}
+if ( null !== $cta_gap_mobile ) {
+	$responsive_css .= '@media (max-width:767px){.' . $uid . '{--sgs-hero-cta-gap:' . $cta_gap_mobile . esc_attr( $cta_gap_unit ) . '}}';
 }
 
 // Build wrapper classes.

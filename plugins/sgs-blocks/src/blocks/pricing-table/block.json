@@ -191,10 +191,6 @@
       "type": "string",
       "default": "default"
     },
-    "staggerDelay": {
-      "type": "number",
-      "default": 100
-    },
     "widthMode": {
       "type": "string",
       "default": "default",
@@ -281,11 +277,6 @@
       "type": "string",
       "default": "stretch",
       "enum": ["stretch", "start", "center", "end", "space-between", "space-around", "space-evenly"]
-    },
-    "templateMode": {
-      "type": "string",
-      "default": "free",
-      "enum": ["free", "grid-section", "card-grid"]
     }
   },
   "editorScript": "file:./index.js",

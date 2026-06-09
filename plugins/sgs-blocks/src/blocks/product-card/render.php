@@ -56,6 +56,7 @@ $variant_style  = $attributes['variantStyle'] ?? 'standard';
 $source_mode    = $attributes['sourceMode'] ?? 'typed';
 $card_max_width = isset( $attributes['cardMaxWidth'] ) ? sanitize_text_field( $attributes['cardMaxWidth'] ) : '';
 $image_height   = isset( $attributes['imageHeight'] ) ? sanitize_text_field( $attributes['imageHeight'] ) : '';
+$inner_padding  = isset( $attributes['innerPadding'] ) ? (string) $attributes['innerPadding'] : '';
 
 $classes = array( 'product-card' );
 if ( 'trial' === $variant_style ) {
@@ -80,6 +81,17 @@ if ( '' !== $card_max_width && preg_match( $sgs_css_length_re, $card_max_width )
 }
 if ( '' !== $image_height && preg_match( $sgs_css_length_re, $image_height ) ) {
 	$inline_styles[] = '--sgs-product-card-image-height:' . esc_attr( $image_height ) . ';';
+}
+// Inner padding (ContainerWrapperControls content-kind Spacing panel). Formatted
+// through sgs_container_gap_value() — the canonical SpacingControl→CSS formatter
+// the shared wrapper uses for gap / grid-item-padding: a bare numeric slug (e.g.
+// "40") resolves to var(--wp--preset--spacing--40); a raw CSS length (e.g. "24px"
+// or "16px 12px") is emitted directly. The helper sanitises out every injection
+// character, so the value is safe in the inline style. style.css reads the var on
+// .product-card-body, overriding its default 20px.
+$inner_padding_css = '' !== $inner_padding ? sgs_container_gap_value( $inner_padding ) : '';
+if ( '' !== $inner_padding_css ) {
+	$inline_styles[] = '--sgs-product-card-inner-padding:' . $inner_padding_css . ';';
 }
 
 // Base opts shared across all branches (no WP Interactivity attrs).

@@ -18,7 +18,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		fieldName,
 		label,
-		placeholder,
 		helpText,
 		required,
 		width,

@@ -10,7 +10,7 @@
  * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
  *   ribbon, layout, gradientPreset, backgroundImage, backgroundMedia,
  *   backgroundImageOpacity, stats, hoverBackground/Text/Border colour,
- *   transitionDuration, transitionEasing, bodyFontSize* (responsive CSS),
+ *   transitionDuration, transitionEasing,
  *   textAlignMobile/Tablet/Desktop (responsive CSS targeting children).
  *
  * @var array    $attributes Block attributes.
@@ -31,8 +31,6 @@ $ribbon                   = isset( $attributes['ribbon'] ) ? sanitize_text_field
 // WS-4: `layout` renamed to `contentLayout` (the container owns `layout` = grid/flex).
 // Read the new name; fall back to the legacy `layout` for un-migrated posts (belt-and-braces alongside deprecated.js).
 $content_layout           = $attributes['contentLayout'] ?? ( $attributes['layout'] ?? 'centred' );
-$body_font_size_tablet    = $attributes['bodyFontSizeTablet'] ?? '';
-$body_font_size_mobile    = $attributes['bodyFontSizeMobile'] ?? '';
 $background_image         = $attributes['backgroundImage'] ?? null;
 $background_media         = $attributes['backgroundMedia'] ?? null;
 $background_image_opacity = $attributes['backgroundImageOpacity'] ?? 30;
@@ -102,22 +100,6 @@ if ( $gradient_preset ) {
 	$classes[] = 'sgs-cta-section--gradient-' . esc_attr( $gradient_preset );
 }
 
-// Build responsive body font-size CSS.
-// Targets .sgs-cta-section__body inside InnerBlocks children (sgs/text child
-// may carry this class via its className attr set during migration).
-$responsive_css = '';
-if ( $body_font_size_tablet || $body_font_size_mobile ) {
-	$uid       = 'sgs-cta-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
-	$classes[] = $uid;
-
-	if ( $body_font_size_tablet ) {
-		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-cta-section__body{font-size:' . sgs_font_size_value( $body_font_size_tablet ) . '}}';
-	}
-	if ( $body_font_size_mobile ) {
-		$responsive_css .= '@media (max-width:599px){.' . $uid . ' .sgs-cta-section__body{font-size:' . sgs_font_size_value( $body_font_size_mobile ) . '}}';
-	}
-}
-
 // WS-4: the OUTER wrapper is now the shared sgs/container element (rendered by
 // SGS_Container_Wrapper::render() at the foot of this file). cta-section's own
 // classes + CSS vars + bespoke cover-image background ride through via opts; its
@@ -176,11 +158,6 @@ if ( ! empty( $stats ) ) {
 // Stats remain scalar — they are a shell-level data primitive (not plain text
 // that a child block replicates), kept per FR-22-19 discriminator.
 // R-22-14: no scalar headline/body fallback.
-
-// Output responsive CSS if needed.
-if ( $responsive_css ) {
-	printf( '<style id="%s">%s</style>', esc_attr( $uid ), wp_strip_all_tags( $responsive_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS generated from sanitised block attributes.
-}
 
 // Build ribbon HTML — content escaped with esc_html() at construction time.
 $ribbon_html = '';

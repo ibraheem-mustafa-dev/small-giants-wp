@@ -83,41 +83,6 @@
             "type": "string",
             "default": "card"
         },
-        "quoteColour": {
-            "type": "string",
-            "default": "text"
-        },
-        "nameColour": {
-            "type": "string",
-            "default": "primary"
-        },
-        "nameFontSize": {
-            "type": "string"
-        },
-        "nameFontSizeTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "nameFontSizeMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "roleColour": {
-            "type": "string",
-            "default": "text-muted"
-        },
-        "ratingColour": {
-            "type": "string",
-            "default": "accent"
-        },
-        "reviewSource": {
-            "type": "string",
-            "default": ""
-        },
-        "reviewDate": {
-            "type": "string",
-            "default": ""
-        },
         "hoverBackgroundColour": {
             "type": "string",
             "default": ""

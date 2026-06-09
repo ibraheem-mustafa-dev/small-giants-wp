@@ -112,18 +112,6 @@ if ( $stagger_delay ) {
 	$styles[] = '--sgs-stagger:' . absint( $stagger_delay ) . 'ms';
 }
 
-// Responsive name font-size data-attributes (kept for CSS consumers even
-// though name is now in InnerBlocks — legacy posts may still carry these).
-$name_font_size_tablet = $attributes['nameFontSizeTablet'] ?? '';
-$name_font_size_mobile = $attributes['nameFontSizeMobile'] ?? '';
-$extra_attrs           = array();
-if ( $name_font_size_tablet ) {
-	$extra_attrs['data-name-fs-tablet'] = esc_attr( $name_font_size_tablet );
-}
-if ( $name_font_size_mobile ) {
-	$extra_attrs['data-name-fs-mobile'] = esc_attr( $name_font_size_mobile );
-}
-
 // ── Avatar / author photo ──────────────────────────────────────────────────
 // Avatar is a presentation/identity attr managed via the inspector MediaPicker.
 // It renders in the card footer outside the InnerBlocks content slot.
@@ -204,7 +192,7 @@ $inner_html = $content . $footer_html . $schema_html;
 // The block's own colour/border/hover CSS rides on $classes (extra_classes)
 // and CSS custom properties ($styles → extra_styles). R-22-14: explicit
 // discriminators used above; no empty($content) branching here.
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- all parts pre-sanitised: $inner_html built with esc_*/wp_kses(); $classes/styles built with esc_attr()/sanitize_html_class(); $extra_attrs values pre-escaped.
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- all parts pre-sanitised: $inner_html built with esc_*/wp_kses(); $classes/styles built with esc_attr()/sanitize_html_class().
 echo SGS_Container_Wrapper::render(
 	$attributes,
 	$block,
@@ -214,7 +202,6 @@ echo SGS_Container_Wrapper::render(
 		'tag'           => 'blockquote',
 		'extra_classes' => $classes,
 		'extra_styles'  => $styles,
-		'extra_attrs'   => $extra_attrs,
 	)
 );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

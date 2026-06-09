@@ -545,8 +545,12 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 44px;
-	height: 44px;
+	/* Driven by the socialIconSize control (render.php emits --sgs-mn-social-size,
+	   including responsive @media overrides). 44px fallback = WCAG min touch target. */
+	width: var(--sgs-mn-social-size, 44px);
+	height: var(--sgs-mn-social-size, 44px);
+	min-width: 44px;
+	min-height: 44px;
 	border-radius: 50%;
 	color: var(--wp--preset--color--text-inverse, #fff);
 	text-decoration: none;

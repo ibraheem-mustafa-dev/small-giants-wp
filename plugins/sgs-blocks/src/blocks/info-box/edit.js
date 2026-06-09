@@ -7,10 +7,7 @@ import {
 import {
 	PanelBody,
 	SelectControl,
-	TextControl,
-	ToggleControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveControl } from '../../components';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing only).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
@@ -20,15 +17,16 @@ import ContainerWrapperControls from '../container/components/ContainerWrapperCo
  * RichText inline editing of heading/description/subtitle has been removed —
  * those elements are now editable as child blocks in the InnerBlocks slot.
  *
- * Inspector controls for STYLING/LAYOUT scalar attrs are preserved:
- *   cardStyle, hoverEffect, iconPosition, iconSize*, headingFontSize*,
- *   subtitleFontSize*, headingColour, descriptionColour, subtitleColour,
- *   iconColour, iconBackgroundColour, hover*, transition*, blockLink*, etc.
+ * Inspector controls cover only WRAPPER-level styling/layout that render.php
+ * actually consumes:
+ *   - cardStyle, hoverEffect, iconPosition (drive wrapper BEM classes)
+ *   - the shared sgs/container wrapper controls (width/spacing, content kind)
  *
- * The showMedia/showTitle/showSubtitle/showText/showButton toggles and
- * elementOrder reorder UI are retained as inspector controls — they are
- * styling/layout signals that drive CSS classes + render.php wrapper classes,
- * and they are still needed for the deprecation migration shape.
+ * HC2 cleanup (2026-06-08): the per-element colour / font-size / icon-size and
+ * legacy-link controls were removed. They were dead — the child blocks
+ * (sgs/icon, sgs/heading, sgs/text, sgs/multi-button) own their own colour,
+ * font size and link, so the parent controls set attributes render.php never
+ * read. The removed attrs survive only in deprecated.js for back-compat.
  */
 
 const CARD_STYLE_OPTIONS = [
@@ -49,21 +47,6 @@ const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Top', 'sgs-blocks' ), value: 'top' },
 	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
 	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
-];
-
-const ICON_SIZE_OPTIONS = [
-	{ label: __( 'Small', 'sgs-blocks' ), value: 'small' },
-	{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
-	{ label: __( 'Large', 'sgs-blocks' ), value: 'large' },
-];
-
-const FONT_SIZE_OPTIONS = [
-	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Small', 'sgs-blocks' ), value: 'small' },
-	{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
-	{ label: __( 'Large', 'sgs-blocks' ), value: 'large' },
-	{ label: __( 'XL', 'sgs-blocks' ), value: 'x-large' },
-	{ label: __( 'XXL', 'sgs-blocks' ), value: 'xx-large' },
 ];
 
 /**
@@ -87,22 +70,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		cardStyle,
 		hoverEffect,
 		iconPosition,
-		iconSize,
-		iconSizeTablet,
-		iconSizeMobile,
-		iconColour,
-		iconBackgroundColour,
-		headingColour,
-		headingFontSize,
-		headingFontSizeTablet,
-		headingFontSizeMobile,
-		subtitleColour,
-		subtitleFontSize,
-		subtitleFontSizeTablet,
-		subtitleFontSizeMobile,
-		descriptionColour,
-		link,
-		linkOpensNewTab,
 	} = attributes;
 
 	const className = [
@@ -159,175 +126,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ /* ===== Icon Defaults ===== */ }
-				<PanelBody title={ __( 'Icon Defaults', 'sgs-blocks' ) } initialOpen={ false }>
-					<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
-						{ __(
-							'These defaults apply to newly inserted icon child blocks. Edit individual icon blocks directly for per-instance overrides.',
-							'sgs-blocks'
-						) }
-					</p>
-					<ResponsiveControl label={ __( 'Icon size', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'iconSize',
-								tablet:  'iconSizeTablet',
-								mobile:  'iconSizeMobile',
-							};
-							return (
-								<SelectControl
-									value={ attributes[ attrMap[ breakpoint ] ] || '' }
-									options={
-										breakpoint === 'desktop'
-											? ICON_SIZE_OPTIONS
-											: [
-													{
-														label: __( 'Same as desktop', 'sgs-blocks' ),
-														value: '',
-													},
-													...ICON_SIZE_OPTIONS,
-												]
-									}
-									onChange={ ( val ) =>
-										setAttributes( { [ attrMap[ breakpoint ] ]: val } )
-									}
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
-					<DesignTokenPicker
-						label={ __( 'Icon colour', 'sgs-blocks' ) }
-						value={ iconColour }
-						onChange={ ( val ) => setAttributes( { iconColour: val } ) }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Icon background colour', 'sgs-blocks' ) }
-						value={ iconBackgroundColour }
-						onChange={ ( val ) =>
-							setAttributes( { iconBackgroundColour: val } )
-						}
-					/>
-				</PanelBody>
-
-				{ /* ===== Heading Styling ===== */ }
-				<PanelBody title={ __( 'Heading Styling', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
-						label={ __( 'Heading colour', 'sgs-blocks' ) }
-						value={ headingColour }
-						onChange={ ( val ) => setAttributes( { headingColour: val } ) }
-					/>
-					<ResponsiveControl label={ __( 'Heading font size', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'headingFontSize',
-								tablet:  'headingFontSizeTablet',
-								mobile:  'headingFontSizeMobile',
-							};
-							return (
-								<SelectControl
-									value={ attributes[ attrMap[ breakpoint ] ] || '' }
-									options={
-										breakpoint === 'desktop'
-											? FONT_SIZE_OPTIONS
-											: [
-													{
-														label: __( 'Same as desktop', 'sgs-blocks' ),
-														value: '',
-													},
-													...FONT_SIZE_OPTIONS.filter(
-														( opt ) => opt.value !== ''
-													),
-												]
-									}
-									onChange={ ( val ) =>
-										setAttributes( { [ attrMap[ breakpoint ] ]: val } )
-									}
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
-				</PanelBody>
-
-				{ /* ===== Subtitle Styling ===== */ }
-				<PanelBody title={ __( 'Subtitle Styling', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
-						label={ __( 'Subtitle colour', 'sgs-blocks' ) }
-						value={ subtitleColour }
-						onChange={ ( val ) => setAttributes( { subtitleColour: val } ) }
-					/>
-					<ResponsiveControl label={ __( 'Subtitle font size', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'subtitleFontSize',
-								tablet:  'subtitleFontSizeTablet',
-								mobile:  'subtitleFontSizeMobile',
-							};
-							return (
-								<SelectControl
-									value={ attributes[ attrMap[ breakpoint ] ] || '' }
-									options={
-										breakpoint === 'desktop'
-											? FONT_SIZE_OPTIONS
-											: [
-													{
-														label: __( 'Same as desktop', 'sgs-blocks' ),
-														value: '',
-													},
-													...FONT_SIZE_OPTIONS.filter(
-														( opt ) => opt.value !== ''
-													),
-												]
-									}
-									onChange={ ( val ) =>
-										setAttributes( { [ attrMap[ breakpoint ] ]: val } )
-									}
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
-				</PanelBody>
-
-				{ /* ===== Text Body Styling ===== */ }
-				<PanelBody title={ __( 'Text Body Styling', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
-						label={ __( 'Text colour', 'sgs-blocks' ) }
-						value={ descriptionColour }
-						onChange={ ( val ) =>
-							setAttributes( { descriptionColour: val } )
-						}
-					/>
-				</PanelBody>
-
-				{ /* ===== Legacy link (kept for existing content) ===== */ }
-				<PanelBody
-					title={ __( 'Legacy Link', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
-						{ __(
-							'Use a button child block for new links. This field is kept for backwards compatibility with existing info boxes.',
-							'sgs-blocks'
-						) }
-					</p>
-					<TextControl
-						label={ __( 'Link URL', 'sgs-blocks' ) }
-						value={ link || '' }
-						onChange={ ( val ) => setAttributes( { link: val } ) }
-						type="url"
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Open in new tab', 'sgs-blocks' ) }
-						checked={ linkOpensNewTab }
-						onChange={ ( val ) =>
-							setAttributes( { linkOpensNewTab: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
 			</InspectorControls>
 
 			{ /* FR-22-6: innerBlocksProps spread onto the wrapper div — the

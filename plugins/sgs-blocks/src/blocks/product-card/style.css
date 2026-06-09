@@ -74,7 +74,10 @@
 }
 
 .product-card .product-card-body {
-	padding: 20px;
+	/* Inner padding override (ContainerWrapperControls content-kind Spacing panel).
+	 * render.php emits --sgs-product-card-inner-padding on the card element when the
+	 * operator sets the "Inner padding" control; unset → theme default 20px. */
+	padding: var(--sgs-product-card-inner-padding, 20px);
 	flex: 1;
 	display: flex;
 	flex-direction: column;

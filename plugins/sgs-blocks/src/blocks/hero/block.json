@@ -171,25 +171,6 @@
 			"type": "array",
 			"default": []
 		},
-		"headlineColour": {
-			"type": "string",
-			"default": "text-inverse"
-		},
-		"subHeadlineFontSize": {
-			"type": "string"
-		},
-		"subHeadlineFontSizeTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"subHeadlineFontSizeMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"subHeadlineColour": {
-			"type": "string",
-			"default": "text-inverse"
-		},
 		"ctaPrimaryText": {
 			"type": "string",
 			"role": "content"
@@ -291,18 +272,6 @@
 		"ctaSecondaryHoverColour": {
 			"type": "string",
 			"default": ""
-		},
-		"headlineFontSizeDesktop": {
-			"type": "number",
-			"default": null
-		},
-		"headlineFontSizeTablet": {
-			"type": "number",
-			"default": null
-		},
-		"headlineFontSizeMobile": {
-			"type": "number",
-			"default": null
 		},
 		"subHeadlineMaxWidth": {
 			"type": "number",
@@ -589,98 +558,6 @@
 			"default": null
 		},
 		"mediaPaddingUnit": {
-			"type": "string",
-			"default": "px"
-		},
-		"subHeadlineFontFamily": {
-			"type": "string",
-			"default": ""
-		},
-		"subHeadlineFontWeight": {
-			"type": "string",
-			"default": ""
-		},
-		"subHeadlineLineHeight": {
-			"type": "number",
-			"default": null
-		},
-		"subHeadlineLineHeightUnit": {
-			"type": "string",
-			"default": "em"
-		},
-		"subHeadlineLetterSpacing": {
-			"type": "number",
-			"default": null
-		},
-		"subHeadlineLetterSpacingUnit": {
-			"type": "string",
-			"default": "px"
-		},
-		"subHeadlineTextTransform": {
-			"type": "string",
-			"default": ""
-		},
-		"subHeadlineTextDecoration": {
-			"type": "string",
-			"default": ""
-		},
-		"labelFontFamily": {
-			"type": "string",
-			"default": ""
-		},
-		"labelFontSize": {
-			"type": "number",
-			"default": null
-		},
-		"labelFontSizeTablet": {
-			"type": "number",
-			"default": null
-		},
-		"labelFontSizeMobile": {
-			"type": "number",
-			"default": null
-		},
-		"labelFontSizeUnit": {
-			"type": "string",
-			"default": "px"
-		},
-		"labelFontWeight": {
-			"type": "string",
-			"default": "600"
-		},
-		"labelLineHeight": {
-			"type": "number",
-			"default": 1.2
-		},
-		"labelLineHeightUnit": {
-			"type": "string",
-			"default": "em"
-		},
-		"labelLetterSpacing": {
-			"type": "number",
-			"default": null
-		},
-		"labelLetterSpacingUnit": {
-			"type": "string",
-			"default": "em"
-		},
-		"labelTextTransform": {
-			"type": "string",
-			"default": "uppercase"
-		},
-		"labelTextDecoration": {
-			"type": "string",
-			"default": ""
-		},
-		"labelColour": {
-			"type": "string",
-			"default": ""
-		},
-		"labelMarginBottom": {
-			"type": "number",
-			"default": 8
-		},
-		"labelMarginBottomUnit": {
 			"type": "string",
 			"default": "px"
 		},

@@ -207,10 +207,14 @@ section.sgs-hero {
 }
 
 /* CTA buttons */
+/* CTA row gap is driven by the --sgs-hero-cta-gap custom property (set by
+   render.php from the ctaGap/ctaGapUnit attrs + tablet/mobile @media overrides).
+   The fallback preserves the original hardcoded spacing--30 for any instance
+   whose Button-gap control was never touched — unset = byte-identical. */
 .sgs-hero__ctas {
 	display: flex;
 	flex-wrap: wrap;
-	gap: var(--wp--preset--spacing--30);
+	gap: var(--sgs-hero-cta-gap, var(--wp--preset--spacing--30));
 }
 
 .sgs-hero__cta {

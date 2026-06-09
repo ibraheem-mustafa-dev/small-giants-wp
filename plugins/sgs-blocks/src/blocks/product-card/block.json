@@ -124,6 +124,11 @@
             "default": "",
             "description": "Override the product image box height (e.g. 180px, 16rem). Empty = use theme default (220px). Sets --sgs-product-card-image-height inline."
         },
+        "innerPadding": {
+            "type": "string",
+            "default": "",
+            "description": "Inner padding of the card body (ContainerWrapperControls content-kind Spacing panel). A numeric spacing-preset slug (e.g. \"40\") resolves to var(--wp--preset--spacing--40); a raw CSS length (e.g. \"24px\") is emitted directly. Empty = theme default (20px). Sets --sgs-product-card-inner-padding inline."
+        },
         "widthMode": {
             "type": "string",
             "default": "default",

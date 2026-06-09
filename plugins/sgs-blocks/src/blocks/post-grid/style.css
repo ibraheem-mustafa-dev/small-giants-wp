@@ -128,7 +128,10 @@
 	background-color: var( --sgs-card-bg );
 	transition:
 		transform var( --sgs-transition-duration ) var( --sgs-transition-easing ),
-		box-shadow var( --sgs-transition-duration ) var( --sgs-transition-easing );
+		box-shadow var( --sgs-transition-duration ) var( --sgs-transition-easing ),
+		background-color var( --sgs-transition-duration ) var( --sgs-transition-easing ),
+		color var( --sgs-transition-duration ) var( --sgs-transition-easing ),
+		border-color var( --sgs-transition-duration ) var( --sgs-transition-easing );
 }
 
 /* ==========================================================================
@@ -397,6 +400,29 @@
 /* Attribute-driven shadow elevation */
 .sgs-post-grid__card[style*="--sgs-hover-shadow"]:hover {
 	box-shadow: var( --sgs-hover-shadow );
+}
+
+/*
+ * Attribute-driven hover colour shifts. The --sgs-hover-bg/text/border custom
+ * properties are set as inline styles on the .sgs-post-grid wrapper by
+ * render.php and inherit down to the card. Each rule is gated on the wrapper
+ * actually carrying that property so cards without the attribute are unaffected.
+ * Mirrors the info-box `--sgs-hover-*` pattern.
+ */
+.sgs-post-grid[style*="--sgs-hover-bg"] .sgs-post-grid__card:hover {
+	background-color: var( --sgs-hover-bg );
+}
+
+.sgs-post-grid[style*="--sgs-hover-text"] .sgs-post-grid__card:hover,
+.sgs-post-grid[style*="--sgs-hover-text"] .sgs-post-grid__card:hover .sgs-post-grid__title a,
+.sgs-post-grid[style*="--sgs-hover-text"] .sgs-post-grid__card:hover .sgs-post-grid__excerpt,
+.sgs-post-grid[style*="--sgs-hover-text"] .sgs-post-grid__card:hover .sgs-post-grid__meta,
+.sgs-post-grid[style*="--sgs-hover-text"] .sgs-post-grid__card:hover .sgs-post-grid__readmore {
+	color: var( --sgs-hover-text );
+}
+
+.sgs-post-grid[style*="--sgs-hover-border"] .sgs-post-grid__card:hover {
+	border-color: var( --sgs-hover-border );
 }
 
 /* Image zoom — enabled by data-hover-image-zoom="true" on wrapper */

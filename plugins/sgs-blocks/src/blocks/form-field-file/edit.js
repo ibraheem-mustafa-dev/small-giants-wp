@@ -24,7 +24,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		width,
 		allowedTypes,
 		maxSize,
-		maxFiles,
 	} = attributes;
 
 	const className = [
@@ -106,16 +105,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						min={ 1 }
 						max={ 50 }
-						__nextHasNoMarginBottom
-					/>
-					<RangeControl
-						label={ __( 'Maximum files', 'sgs-blocks' ) }
-						value={ maxFiles }
-						onChange={ ( val ) =>
-							setAttributes( { maxFiles: val } )
-						}
-						min={ 1 }
-						max={ 10 }
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>

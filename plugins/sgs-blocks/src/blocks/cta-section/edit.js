@@ -11,7 +11,6 @@ import {
 	Button,
 	RangeControl,
 } from '@wordpress/components';
-import { ResponsiveControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 // WS-4: shared sgs/container wrapper editor controls (section kind = full surface).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
@@ -45,14 +44,6 @@ const LAYOUT_OPTIONS = [
 	{ label: __( 'Centred', 'sgs-blocks' ), value: 'centred' },
 	{ label: __( 'Left-aligned', 'sgs-blocks' ), value: 'left' },
 	{ label: __( 'Split', 'sgs-blocks' ), value: 'split' },
-];
-
-const FONT_SIZE_OPTIONS = [
-	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Small', 'sgs-blocks' ), value: 'small' },
-	{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
-	{ label: __( 'Large', 'sgs-blocks' ), value: 'large' },
-	{ label: __( 'XL', 'sgs-blocks' ), value: 'x-large' },
 ];
 
 export default function Edit( { attributes, setAttributes } ) {
@@ -288,58 +279,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					<Button variant="secondary" onClick={ addStat }>
 						{ __( 'Add stat', 'sgs-blocks' ) }
 					</Button>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Body Text Sizing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveControl
-						label={ __( 'Body font size', 'sgs-blocks' ) }
-					>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'bodyFontSize',
-								tablet: 'bodyFontSizeTablet',
-								mobile: 'bodyFontSizeMobile',
-							};
-							return (
-								<SelectControl
-									value={
-										attributes[ attrMap[ breakpoint ] ] ||
-										''
-									}
-									options={
-										breakpoint === 'desktop'
-											? FONT_SIZE_OPTIONS
-											: [
-													{
-														label: __(
-															'Same as desktop',
-															'sgs-blocks'
-														),
-														value: '',
-													},
-													...FONT_SIZE_OPTIONS.filter(
-														( opt ) =>
-															opt.value !== ''
-													),
-											  ]
-									}
-									onChange={ ( val ) =>
-										setAttributes( {
-											[ attrMap[ breakpoint ] ]: val,
-										} )
-									}
-									help={ __(
-										'Applies a tablet/mobile font-size override to the body text block (.sgs-cta-section__body).',
-										'sgs-blocks'
-									) }
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
 				</PanelBody>
 			</InspectorControls>
 

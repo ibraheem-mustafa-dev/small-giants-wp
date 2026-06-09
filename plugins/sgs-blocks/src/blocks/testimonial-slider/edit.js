@@ -69,10 +69,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		showArrows,
 		slidesVisible,
 		cardStyle,
-		quoteColour,
-		nameColour,
-		roleColour,
-		ratingColour,
 		hoverBackgroundColour,
 		hoverTextColour,
 		hoverBorderColour,
@@ -232,29 +228,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 						/>
 					) }
-				</PanelBody>
-
-				<PanelBody title={ __( 'Text Styling', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
-						label={ __( 'Quote colour', 'sgs-blocks' ) }
-						value={ quoteColour }
-						onChange={ ( val ) => setAttributes( { quoteColour: val } ) }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Name colour', 'sgs-blocks' ) }
-						value={ nameColour }
-						onChange={ ( val ) => setAttributes( { nameColour: val } ) }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Role colour', 'sgs-blocks' ) }
-						value={ roleColour }
-						onChange={ ( val ) => setAttributes( { roleColour: val } ) }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Star colour', 'sgs-blocks' ) }
-						value={ ratingColour }
-						onChange={ ( val ) => setAttributes( { ratingColour: val } ) }
-					/>
 				</PanelBody>
 
 				<PanelBody title={ __( 'Hover States', 'sgs-blocks' ) } initialOpen={ false }>

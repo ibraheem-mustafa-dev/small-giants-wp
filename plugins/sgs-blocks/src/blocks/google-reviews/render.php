@@ -18,7 +18,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 $variant            = $attributes['variant'] ?? 'grid';
-$card_variant       = $attributes['cardVariant'] ?? 'default';
 $place_id           = $attributes['placeId'] ?? Google_Reviews_Settings::get_settings()['place_id'] ?? '';
 $columns            = $attributes['columns'] ?? 3;
 $columns_tablet     = $attributes['columnsTablet'] ?? 2;
@@ -307,6 +306,57 @@ if ( $show_aggregate && ! in_array( $variant, array( 'badge', 'floating-badge' )
 		<?php endif; ?>
 	</div>
 	<?php
+endif;
+
+// ───────────────────────────────────────────────────────────────────────────
+// Ratings breakdown — per-star distribution bars (5★ … 1★).
+// Counts are derived from the available reviews ($all_reviews); the Google
+// Places API returns no histogram, so the sample of returned reviews is the
+// best available source. WCAG: each row carries a visible numeric star label
+// + the count + an aria-label — meaning is NOT conveyed by the bar colour alone.
+// Hidden for badge variants (no room) and when there are no reviews to count.
+// ───────────────────────────────────────────────────────────────────────────
+if ( $show_breakdown && ! in_array( $variant, array( 'badge', 'floating-badge' ), true ) && ! empty( $all_reviews ) ) :
+	$gr_star_counts = array(
+		5 => 0,
+		4 => 0,
+		3 => 0,
+		2 => 0,
+		1 => 0,
+	);
+	foreach ( $all_reviews as $gr_review ) {
+		$gr_r = (int) round( (float) ( $gr_review['rating'] ?? 0 ) );
+		if ( $gr_r >= 1 && $gr_r <= 5 ) {
+			++$gr_star_counts[ $gr_r ];
+		}
+	}
+	$gr_total = array_sum( $gr_star_counts );
+	if ( $gr_total > 0 ) :
+		?>
+		<div class="sgs-google-reviews__breakdown" role="table" aria-label="<?php echo esc_attr__( 'Rating breakdown by number of stars', 'sgs-blocks' ); ?>">
+			<?php foreach ( $gr_star_counts as $gr_stars => $gr_count ) : ?>
+				<?php $gr_pct = $gr_total > 0 ? round( ( $gr_count / $gr_total ) * 100 ) : 0; ?>
+				<div class="sgs-google-reviews__breakdown-row" role="row">
+					<span class="sgs-google-reviews__breakdown-label" role="cell">
+						<?php
+						/* translators: %d: number of stars (1-5). */
+						echo esc_html( sprintf( _n( '%d star', '%d stars', $gr_stars, 'sgs-blocks' ), $gr_stars ) );
+						?>
+					</span>
+					<span class="sgs-google-reviews__breakdown-bar" role="cell" aria-hidden="true">
+						<span class="sgs-google-reviews__breakdown-fill" style="width:<?php echo esc_attr( $gr_pct ); ?>%"></span>
+					</span>
+					<span class="sgs-google-reviews__breakdown-count" role="cell">
+						<?php
+						/* translators: %1$d: number of reviews; %2$d: percentage. */
+						echo esc_html( sprintf( _n( '%1$d review (%2$d%%)', '%1$d reviews (%2$d%%)', $gr_count, 'sgs-blocks' ), $gr_count, $gr_pct ) );
+						?>
+					</span>
+				</div>
+			<?php endforeach; ?>
+		</div>
+		<?php
+	endif;
 endif;
 
 if ( in_array( $variant, array( 'badge', 'floating-badge' ), true ) ) :
