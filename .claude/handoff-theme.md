@@ -47,6 +47,9 @@ Council backlog 100% closed (#17) + Spec 28 P2 engine + P3 preview authoring + a
 - The visual pass is now proven mandatory for any admin-surface feature: two functional bugs were invisible to every REST/one-shot gate.
 - `rater suggestions are hypotheses`: the security rater's nonce action string (`woocommerce_save_product`) was WRONG — live WC source says `woocommerce_save_data`. Verify against ground truth before applying any rater's literal fix.
 
+## Round-2 fixes (post-handoff, same session)
+Bean's R-22-13 re-check caught 2 more WC-panel float defects (fadce85, D201 extended): the pounds field's half-width form-row-first wrapper let the attestation row float up beside it (help-tip overlapped its label) — now form-row-full; the axis select (width:100% + WC's float) orphaned its description's first word — now 400px-bounded with clear:both on the description. Both live-measured before + after; after-shots sent to Bean.
+
 ## Next Session Prompt
 The full orchestration plan lives in `.claude/next-session-prompt-theme.md` (this thread's operative opener — R4 then F2, with the carried + extended STOP catalogue).
 
