@@ -41,6 +41,23 @@ These are drafts. They get reviewed + merged into `specs/22-UNIVERSAL-BLOCK-EQUI
 
 ---
 
+## FR draft 2b — Cross-node interior box-CSS → parent per-slot attr group → proposed `FR-22-5.3`
+
+**built_status: PLANNED** — ratified 2026-06-09 (D193); build is Stage-1 Commit 2 (the F1 cross-node capability). Written because the adversarial-council flagged this as undocumented new behaviour (no existing FR covers child→parent box-CSS routing).
+
+**Requirement.** When an interior element's CSS is not consumed by the element's own block, the converter routes its **box/layout** properties (padding, margin, max-width, gap) to the **owning composite's per-slot attr group**, resolved DB-driven:
+1. Child BEM element → `canonical_slot` (`slots` table).
+2. **Fork on `equivalent_block_for(parent_block, slot)` FIRST** (the FR-22-5 D1 rule): non-NULL → the CSS attributes to the CHILD block (existing D1 path, NOT the parent); **NULL** → lift to the parent's attrs whose `canonical_slot` matches + which carry a box-property `property_suffixes`.
+3. **EXCLUDE `display` / `grid-template-*`** — those stay on the layout engine (lifting them cross-node as inline beats `@media` and collapses grids; the GAP-3 rule, `convert.py:2791-2799`). Box CSS → block attrs only (R-22-6: responsive values in attrs, never inline).
+4. **Flag-not-drop (FR-22-21 step 6 + FR-22-2.4):** no matching parent attr → log `attribute_gap_candidate` + `unresolved_equivalent_block.log`; the slot becomes a gap-candidate to add the attr to the composite. Never silent-drop, never per-block special-case (R-22-9).
+
+**DB dependency:** the per-slot box attrs (`contentPadding*`, `contentWidth`, `mediaPadding*`, …) MUST carry their `canonical_slot` — see the Commit-0a `seed-canonical-slots.py` pre-gate (~41 untagged rows today).
+
+**PASS test:** hero `contentPadding*` set from `.sgs-hero__content` padding (today lands on the outer section); trust-bar `contentWidth` set from `.sgs-trust-bar__inner` max-width (today absent). A `.sgs-X__Y` whose `equivalent_block_for(X,Y)` is non-NULL attributes to the child block, NOT the parent's `Y`.
+**FAIL test:** box CSS dropped for a non-equivalent interior slot; OR a child-block slot's CSS mis-routed to a parent scalar attr (the FR-22-5 D1 FAIL case); OR `display`/`grid-template` lifted cross-node as inline.
+
+---
+
 ## FR draft 3 — FR-22-19 retirement (carve-out supersession) → amend `FR-22-19`
 
 **Requirement.** The TWO per-composite interior-routing carve-outs in `walk()` — `_route_composite_interior` (def `convert.py:2404`) gated by `db.has_scalar_media_attrs(slug)` (`:2940`), and `_is_container_mirror_block(slug)` (`:2950`, def `:908`) → `_process_container_children` (`:3834`) — are **superseded** by the universal per-slot CSS routing (F1 cross-node) + the array path (FR-22-2.5). Composite interiors route content AND CSS via the universal dispatch keyed on `role`/`canonical_slot`/`attr_type` — with **no** per-composite gate (`has_scalar_media_attrs` / `_is_container_mirror_block`) in the routing path. NB: `is_class_section_block` is the VOTER's slug-resolution helper (FR-22-16), NOT this gate — do not target it.

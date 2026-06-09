@@ -2,52 +2,63 @@
 doc_type: reference
 project: small-giants-wp
 thread: cloning-pipeline
-title: "Stage 1 DESIGN — universal converter core (DESIGN-GATE, awaiting Bean approval)"
+title: "Stage 1 DESIGN v2 — universal per-slot CSS dispatch (council-hardened; DESIGN-GATE, awaiting Bean approval)"
 created: 2026-06-09
-status: DESIGN-GATE (Rule 7). NO converter code until Bean approves this design. Grounded in the live dispatch structure (convert.py walk() :2786-2876).
+status: DESIGN-GATE (Rule 7). NO converter code until Bean approves. v2 folds in the Stage-1-design adversarial-council (6 personas, 2026-06-09) must-fixes C2/C4/C6/C7 + the gate-identity correction. All refs verified against live convert.py / db_lookup.py 2026-06-09.
 ---
 
-# Stage 1 design — universal per-slot CSS dispatch
+# Stage 1 design v2 — universal per-slot CSS dispatch
 
 ## The architectural primitive (plain English)
-Today the converter decides where a CSS value goes by looking **only at each element's own CSS**, through **four parallel lift functions**, and it routes composite interiors through **per-composite carve-out routers** — `_route_composite_interior` (gated by `db.has_scalar_media_attrs(slug)` `:2940`) + `_is_container_mirror_block` (`:2950`) → `_process_container_children`; plus the hard-coded trust-bar handler. (`is_class_section_block` is the VOTER's helper, FR-22-16 — not these gates.)
+Today the converter decides where a CSS value goes by looking **only at each element's own CSS**, through **four parallel lift functions**, and routes composite interiors through **two per-composite carve-out branches** (`has_scalar_media_attrs`-gated `_route_composite_interior` + `_is_container_mirror_block`).
 
-The universal primitive: **for every DOM node, each CSS declaration (its own + any it inherits from an ancestor) is routed to ONE destination — a child block's attr, the parent composite's per-slot attr, or the block's own scalar attr — by a single DB-driven dispatch that asks the database "which attribute owns this property for this slot?" The same dispatch runs at every nesting level, with no per-composite branches.** The node's slot identity (from the `slots` table) + the owning block's attribute schema (`block_attributes.canonical_slot` + `property_suffixes` + `role`/`attr_type`) decide the destination. Nothing is hard-coded per block.
+The universal primitive: **for every DOM node, each CSS declaration (its own + any it inherits) is routed to ONE destination — a child block's attr, the parent composite's per-slot attr, or the block's own scalar attr — by a single DB-driven dispatch that, PER DECLARATION, asks the database "which attribute owns this property for this (block, slot)?" The same dispatch runs at every nesting level, no per-composite branches.** Decision key = the DB (`block_attributes.canonical_slot`/`role`/`attr_type` + `property_suffixes` + `equivalent_block_for`), NOT Python precedence order.
 
-## Current state (verified at code level)
-- 4 lift paths, all node-own-CSS only: `_lift_typography_to_block_attrs` (`:1400`, called `:2847`), `_lift_wrapper_css_to_container_attrs` (`:981`, called `:2786`/`:2872`), `_lift_root_supports_to_style` (`:697`, called `:2812`/`:2856`), the scalar-media lift inside `_route_composite_interior` (`:2404`).
+## Current state (verified at code level, 2026-06-09)
+- 4 lift paths, all node-own-CSS only: `_lift_typography_to_block_attrs` (def `:1400`, called `:2847`), `_lift_wrapper_css_to_container_attrs` (def `:981`, called `:2786` A3 + `:2872` A2), `_lift_root_supports_to_style` (def `:697`, called `:2812` A3 + `:2856` A2), `_collect_css_decls_for_element` (def `:547`, called `:2871`).
 - Dead code: `_lift_styling_attrs` (`:1687`) + `_slot_attr_prefix` (`:1665`) — zero production callers (test-only).
-- Carve-outs: `_route_composite_interior` (def `:2404`, gated `db.has_scalar_media_attrs(slug)` `:2940`); the sibling `_is_container_mirror_block` (`:2950`, def `:908`) → `_process_container_children` (`:3834`, guard `:3857`); the trust-bar atomic handler (`:2236`).
-- The DB dispatch already exists for CONTENT: `equivalent_block_for` (`db_lookup.py:1995`) reads `role`/`canonical_slot` per (block,attr). The gap is the CSS side + the cross-node destination.
+- TWO carve-out branches in `walk()`: `_route_composite_interior` (def `:2404`) gated by `db.has_scalar_media_attrs(slug)` (`:2940`); `_is_container_mirror_block(slug)` (def `:908`, branch `:2950`) → `_process_container_children` (`:3834`, guard `fold_eligible:3857`).
+- DB dispatch exists for CONTENT: `equivalent_block_for` (`db_lookup.py:1995`) reads `canonical_slot`/`role`/`derived_selector` per (block,attr).
 
-## The build — 4 commits (R-22-5), Gate A FIRST
+## Pre-gate (must be GREEN before the commit named) — council C5 + SF-1
+**Commit 0a — `seed-canonical-slots.py`.** The cross-node dispatch finds a parent's per-slot box attrs by their `canonical_slot`. **~41 rows are untagged** (28 blocks' `contentWidth` + `sgs/hero.contentPadding*` all `canonical_slot=NULL`; `sgs/hero.mediaPadding*` already tagged). `/sgs-update` does NOT write `canonical_slot` — build `scripts/seed-canonical-slots.py` writing BOTH DBs (the `seed-slot-synonyms.py` pattern), verify per-row, before Commit 2. Hard gate: `SELECT count(*) FROM block_attributes WHERE canonical_slot IS NULL AND (attr_name LIKE 'contentPadding%' OR attr_name LIKE 'contentWidth%' OR attr_name LIKE 'mediaPadding%')` returns 0.
 
-### Commit 0 (pre-req) — Gate A golden-fixture conformance harness
-Build `tests/test_converter_conformance.py` + `tests/fixtures/conformance/*.json` (one fixture/section: capture the CURRENT emitted attrs for each Mama's section as the golden baseline). This is the **regression lock** that makes Commit 1 safe — it proves the refactor changes nothing.
+## The build — commits (R-22-5), Gate A FIRST
 
-### Commit 1 — consolidate the dispatch (PURE REFACTOR, zero behaviour change)
-One entry point `route_node_css(node, owning_block, css_rules, attrs, *, slot_context=None)` that orchestrates the existing helpers in a defined precedence order (typography → root-supports → wrapper-css, all `setdefault`) — the helpers' internals are NOT rewritten, only called through one door. **Delete `_lift_styling_attrs` + `_slot_attr_prefix`; fix the one test that imports them.**
-- **Measure:** Gate A golden fixtures emit BYTE-IDENTICAL. A refactor that changes any emit is wrong — revert.
+### Commit 0 — Gate A conformance harness (the D178 cure; council C4)
+`tests/test_converter_conformance.py` + `tests/fixtures/conformance/`. **Fixtures keyed to BLOCKS-TOUCHED, not one draft's 7 sections** (council MF-2): one synthetic fixture per **container-mirror composite** (the 29-block roster via `_is_container_mirror_block` / `block_composition.container_kind IS NOT NULL`) exercising its interior, PLUS one **precedence-collision fixture** (a node whose CSS makes ≥2 lifters eligible for the same attr — proves Commit 1a's ordering), PLUS **cross-client** fixtures for palestine-lives + sandybrown drafts (council MF-4: 2 of 3 clones currently have zero coverage). Capture CURRENT emit as golden. **Wire it** into prebuild + the pre-commit hook (memory `dont-claim-a-guard-is-enforced-unless-wired`) — not a lock with no door.
 
-### Commit 2 — cross-node routing (the NET-NEW capability)
-New step `_route_interior_css_to_parent_slot(child_node, parent_block, parent_attrs, css_rules)`: for a composite's interior wrapper/element child, resolve its BEM element → `canonical_slot` (slots table), find the parent block's attr group for that slot (DB: parent's `block_attributes` rows whose `canonical_slot` matches + box-property `property_suffixes`), and lift the child's box/layout CSS (padding/margin/max-width/gap) to those parent attrs — instead of dropping it. **DB-driven, no `hero__content→contentPadding` hardcode.**
-- **Measure:** hero `contentPadding*` now set from `.sgs-hero__content` padding (today null); trust-bar `contentWidth` set from `.sgs-trust-bar__inner` max-width (today absent). H-B, TB-A-cap close.
-- **Dependency (verify first):** the parent's per-slot box attrs (`contentPadding*`, `mediaPadding*`, `contentWidth`) must carry their `canonical_slot` in `block_attributes` so the dispatch can find them. If untagged → a small `/sgs-update`-driven backfill (Stage-0 "correct the DB as we go"). **Confirm this before building Commit 2.**
+### Commit 1a — call-site consolidation (PURE REFACTOR, byte-identical)
+One entry point `route_node_css(node, owning_block, css_rules, attrs)` that calls the 3 live lifters in the EXACT current order — typography (`:2847`) → root-supports (`:2856`) → wrapper-css (`:2872`), all `setdefault`/`_set_in` — **from one site, replacing BOTH the A2 (`:2871-2876`) AND A3 (`:2786`/`:2812`) call clusters** (council M2/MISSING: A3 must fold in too). **Delete `_lift_styling_attrs`/`_slot_attr_prefix`; fix the one test.** Exit gate: Gate A golden BYTE-IDENTICAL (incl. the precedence-collision fixture) AND a call-graph assertion — each lifter has exactly ONE caller (`route_node_css`).
+- This is consolidation of the CALL SITE only. It does NOT yet change the decision logic (that's 1b) — so byte-identical is honest.
 
-### Commit 3 — F6a inheritance / absence resolution (FR-22-5.1)
-Extend `_collect_css_decls_for_element` with an ancestor-chain walk for inheritable properties (`text-align`, `color`, `font-family`, `line-height`): when a leaf has no own value but an ancestor sets one → resolve it explicit; when absent AND the block's own CSS default would override (heading `:where(){text-align:center}`) → emit explicit (`textAlign:left`). Feeds the same dispatch.
-- **Measure:** H-C1, FP-A, IN-A/E, GF-A/E resolve to the draft's effective alignment.
+### Commit 1b — real DB-driven dispatch (council C2/MF-1; MEASURED, not byte-identical)
+Replace the precedence-chain decision with a **per-declaration DB dispatch**: for each collected CSS declaration, call `db_lookup.attr_for_property(owning_block, slot, css_property)` (joins `canonical_slot` + `property_suffixes` + `role`/`attr_type`) to pick the destination attr; the 3 lifters become the WRITERS the dispatch delegates to once the destination is known. This is the "ONE dispatch" the primitive requires — not 4 routers behind a door.
+- **Measure:** the contested-attr winner is DB-decided + identical-or-justified vs the 1a baseline; the precedence-collision fixture now resolves by DB rule, not call order.
 
-### Commit 4 — retire the carve-outs (FR-22-19 retirement, HIGHEST blast radius)
-Absorb BOTH per-composite branches into the universal handler: `_route_composite_interior`'s scalar-media lift (gated `has_scalar_media_attrs` `:2940`) = a cross-node route to the media slot; the `_is_container_mirror_block` branch (`:2950`) content-column fold stays but now ALSO runs cross-node CSS routing on the folded wrapper. **Remove BOTH per-composite gates** (`has_scalar_media_attrs` / `_is_container_mirror_block`) — the universal interior handler runs for every composite, deciding per-slot via DB. (Do NOT target `is_class_section_block` — it's the voter helper, FR-22-16.) Trust-bar: keep the badge CONTENT extraction (items array = the block's legit data model), but route `__inner` CSS via cross-node (per-badge CSS = Stage 1b). **PRESERVE the sole-element-child guard `fold_eligible = len(element_children) == 1` (`_process_container_children:3857`)** — it prevents the +13pp XS-3 regression.
-- **Measure:** neither the `has_scalar_media_attrs`-gated `_route_composite_interior` branch (`:2940`) nor the `_is_container_mirror_block` branch (`:2950`) remains as a separate per-composite path in `walk()` — all composites route through the one universal dispatch; **live-DOM verify EVERY composite** (hero, cta-section, feature-grid, card-grid, gallery, testimonial-slider, trust-bar) routes correctly — universality, not score. Roll back only if genuinely non-universal.
+### Commit 2 — cross-node routing (NET-NEW; council C6) — requires Commit 0a green
+New step `_route_interior_css_to_parent_slot(child_node, parent_block, parent_attrs, css_rules)`:
+1. Resolve the child's BEM element → `canonical_slot` (`slots` table).
+2. **FORK on `equivalent_block_for(parent_block, slot)` FIRST (council MF-3, the FR-22-5 D1 rule):** non-NULL → the CSS attributes to the CHILD block (existing D1 path); **NULL** → only then lift the child's box CSS to the parent's per-slot attr group (match `canonical_slot` + box-property `property_suffixes`).
+3. **EXCLUDE `display`/`grid-template-*` from cross-node** (council MISSING/GAP-3, `convert.py:2791-2799`): grid/display as inline beats `@media` and collapses 2-col grids. Box CSS only (padding/margin/max-width/gap → attrs, never inline grid).
+4. **Flag-not-drop (FR-22-21 step 6 + FR-22-2.4):** a slot with no matching parent attr → log an `attribute_gap_candidate` + `unresolved_equivalent_block.log` entry → a gap-candidate to add the attr to the composite. NEVER drop, NEVER `if slug=='sgs/hero'` special-case (council SF-1).
+- **Mechanism FR:** this needs **FR-22-5.3** (cross-node interior box-CSS → parent per-slot attr group) written into Spec 22 first — see STAGE0-FRS-AND-GATE.md. **Measure:** hero `contentPadding*` set from `.sgs-hero__content`; trust-bar `contentWidth` from `__inner`.
 
-## Gates per the handoff
-- `/qc-council` per commit's fix-shape (predicted vs measured) before dispatch.
-- Live-DOM universality verify (Playwright, real homepage) on Commits 2 + 4.
-- Each commit cites pre/post measurement; ledger rows → VERIFIED with live evidence.
+### Commit 3 — F6a inheritance / absence (FR-22-5.1)
+DOM parent-chain walk (NOT the CSS-selector-ancestry walk `_collect_css_decls_for_element` already does — council MF-4) for inheritable props (`text-align`/`color`/`font-family`/`line-height`): nearest-ancestor-wins; stop at the resolved-block boundary. **"Block default would override" detection (council MF-4 — decide here):** a DB `block_defaults` table (`block_slug, css_property, default_value`) seeded from each block's `style.css` `:where()` defaults — NOT a runtime file-read, NOT a hardcoded set. When the leaf's resolved value is absent AND `block_defaults` says the block self-defaults to a *different* value → emit explicit.
+- **Measure incl. a no-regression case (council SF-2):** a leaf that ALREADY inherits a value matching the block default → explicit emit produces IDENTICAL rendered output (don't break already-correct headings).
+
+### Commit 4 — retire the carve-outs (council C7; HIGHEST blast radius; OWN BRANCH)
+Absorb BOTH branches into the universal dispatch: `_route_composite_interior`'s scalar-media lift (`:2940`) = a cross-node route to the media slot; the `_is_container_mirror_block` branch (`:2950`) content-fold stays but ALSO runs cross-node CSS routing. **Remove both per-composite gates.** Trust-bar: keep the badge items-array extraction (the block's data model, FR-22-2.5) but route it through the universal `array_item_slot_for` path, not the hard-coded `:2236` handler (per-badge CSS = Stage 1b). **PRESERVE `fold_eligible:3857`.** **FR-22-20 interaction (council MISSING):** verify the variant detector still fires (e.g. hero `$is_split`) so routed split-media renders — else it renders nothing.
+- **Ships on `feat/stage1-converter-core`, merges to main ONLY after: (a) the per-composite verification MATRIX reads all-PASS, (b) Bean's live-homepage eyeball (R-22-13).** Matrix = one row per composite (hero/cta-section/feature-grid/card-grid/gallery/testimonial-slider/trust-bar): BEM interior node · expected attr post-routing · live-DOM computed-style check · PASS = attr set AND innerText.length>0 AND not collapsed-to-1-col (the empty-section-false-win rule).
+
+## Gates + rollback (council C3/C7)
+- `/qc-council` per commit fix-shape (predicted vs measured) before dispatch.
+- **Rollback unit:** each commit = one git commit on the branch; revert = `git revert <sha>` (do NOT squash, so Commit 4's deleted `_route_composite_interior` body stays recoverable). Commit 2/4 rollback oracle = the pre-commit golden-fixture set (revert + re-assert).
+- **Cross-client regression gate (council MF-4):** after Commits 1b/2/4, re-run the converter on palestine-lives + sandybrown drafts; diff emitted markup vs the committed baseline; live-DOM-verify any section whose emit changed. R-22-9 universality = across CLIENTS, not one homepage.
+- **Re-baseline golden fixtures** at the end of each emit-changing commit (1b/2/3/4) with a cited reason (council Cynic S3) — so Gate A doesn't fail every intended improvement.
 
 ## What I need from you (the design-gate)
-1. **Approve the primitive + the 4-commit shape?** (one dispatch + cross-node + F6a + carve-out retirement, Gate A first, pure-refactor Commit 1).
-2. **The cross-node DB dependency** (Commit 2) — OK to backfill `canonical_slot` on the per-slot box attrs if they're untagged, as part of this?
-3. Anything you want re-scoped before I write the first line of converter code.
+1. Approve the v2 commit shape: pre-gate (seed-canonical-slots) → 0 Gate-A (block-keyed + collision + cross-client) → 1a pure consolidation → **1b real DB dispatch** → 2 cross-node (equiv-block fork, box-only, flag-not-drop) → 3 F6a (DB block_defaults) → 4 carve-out retirement (own branch + matrix + your sign-off)?
+2. Approve writing **FR-22-5.3** (cross-node mechanism) + the `block_defaults` table as part of this?
+3. Anything to re-scope before code.
