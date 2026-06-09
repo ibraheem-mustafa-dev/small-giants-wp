@@ -1,0 +1,22 @@
+<!-- fixture: sgs/form-field-tiles — layout-kind composite (tile-style radio fields) -->
+<style>
+.sgs-form-field-tiles { padding: 24px; }
+.sgs-form-field-tiles__inner { display: flex; flex-wrap: wrap; gap: 12px; }
+.sgs-form-field-tiles__option {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 16px; border: 2px solid #e5e0db; border-radius: 8px;
+  cursor: pointer; font-size: 14px; color: #3a2e26;
+}
+</style>
+<section class="sgs-form-field-tiles">
+  <div class="sgs-form-field-tiles__inner">
+    <label class="sgs-form-field-tiles__option">
+      <input type="radio" name="choice" value="option-a"/>
+      <span>Option A</span>
+    </label>
+    <label class="sgs-form-field-tiles__option">
+      <input type="radio" name="choice" value="option-b"/>
+      <span>Option B</span>
+    </label>
+  </div>
+</section>

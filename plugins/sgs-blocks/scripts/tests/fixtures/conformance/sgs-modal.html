@@ -1,0 +1,17 @@
+<!-- fixture: sgs/modal — section-kind composite (dialogue overlay) -->
+<style>
+.sgs-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; padding: 24px; }
+.sgs-modal__overlay { display: flex; align-items: center; justify-content: center; min-height: 100%; }
+.sgs-modal__panel { background: white; border-radius: 16px; padding: 40px; max-width: 560px; width: 100%; }
+.sgs-modal__heading { font-size: 24px; font-weight: 700; color: #3a2e26; margin-bottom: 12px; }
+.sgs-modal__text { font-size: 16px; color: #5c4f46; line-height: 1.6; }
+</style>
+<section class="sgs-modal" role="dialog" aria-modal="true">
+  <div class="sgs-modal__overlay">
+    <div class="sgs-modal__panel">
+      <h2 class="sgs-modal__heading">Modal Title</h2>
+      <p class="sgs-modal__text">Modal body content goes here in this panel.</p>
+      <a class="sgs-button sgs-button--primary" href="#">Confirm</a>
+    </div>
+  </div>
+</section>

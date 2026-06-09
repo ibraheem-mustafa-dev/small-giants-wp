@@ -1,0 +1,5 @@
+{
+  "fixture": "sgs-notice-banner.html",
+  "primary_block_emitted": "sgs/container",
+  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/notice-banner {\"text\":\"Free delivery on orders over £35 — order before 2pm for next-day dispatch!\",\"style\":{\"spacing\":{\"padding\":{\"top\":\"12px\",\"right\":\"24px\",\"bottom\":\"12px\",\"left\":\"24px\"}}}} /-->\n<!-- /wp:sgs/container -->"
+}

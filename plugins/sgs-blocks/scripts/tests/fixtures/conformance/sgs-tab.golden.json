@@ -1,0 +1,5 @@
+{
+  "fixture": "sgs-tab.html",
+  "primary_block_emitted": "sgs/container",
+  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/tab -->\n<!-- wp:sgs/tab -->\n<!-- wp:sgs/tab -->\nThis is the content for this individual tab panel.\n<!-- /wp:sgs/tab -->\n<!-- /wp:sgs/tab -->\n<!-- /wp:sgs/tab -->\n<!-- /wp:sgs/container -->"
+}

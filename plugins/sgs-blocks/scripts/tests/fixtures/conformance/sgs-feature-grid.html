@@ -1,0 +1,30 @@
+<!-- fixture: sgs/feature-grid — layout-kind composite with 3-column grid -->
+<style>
+.sgs-feature-grid { padding: 64px 24px; background: #f8f4ef; }
+.sgs-feature-grid__inner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.sgs-feature-grid__item { padding: 24px; }
+.sgs-feature-grid__title { font-size: 20px; font-weight: 600; color: #2d5016; margin-bottom: 8px; }
+.sgs-feature-grid__text { font-size: 16px; color: #5c4f46; line-height: 1.6; }
+</style>
+<section class="sgs-feature-grid">
+  <div class="sgs-feature-grid__inner">
+    <div class="sgs-feature-grid__item">
+      <h3 class="sgs-feature-grid__title">Feature One</h3>
+      <p class="sgs-feature-grid__text">Description of this feature in detail.</p>
+    </div>
+    <div class="sgs-feature-grid__item">
+      <h3 class="sgs-feature-grid__title">Feature Two</h3>
+      <p class="sgs-feature-grid__text">Description of the second feature.</p>
+    </div>
+    <div class="sgs-feature-grid__item">
+      <h3 class="sgs-feature-grid__title">Feature Three</h3>
+      <p class="sgs-feature-grid__text">Description of the third feature here.</p>
+    </div>
+  </div>
+</section>

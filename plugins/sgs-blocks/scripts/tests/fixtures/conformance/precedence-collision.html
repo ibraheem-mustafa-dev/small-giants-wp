@@ -1,0 +1,29 @@
+<!-- fixture: precedence-collision — a section root node with BOTH typography attrs AND
+     wrapper-box CSS active simultaneously. Locks current lift-precedence ordering:
+     wrapper-box (padding/max-width) takes priority over typography (font-size/colour)
+     when both lift paths are eligible on the SAME element.
+     Composite: sgs/info-box (content-kind) — its root class carries both.
+     Expected: wrapper attrs (padding, max-width via contentWidth) win on the outer
+     block; typography attrs (font-size, colour) route to children. -->
+<style>
+.sgs-info-box {
+  /* Wrapper-box CSS — should lift to block wrapper attrs */
+  padding: 32px 24px;
+  max-width: 400px;
+  margin: 0 auto;
+  background: white;
+  /* Typography CSS on root — creates lift-path collision.
+     Expected: root-level font-size + colour go to style.typography, not inline. */
+  font-size: 16px;
+  font-weight: 400;
+  color: #3a2e26;
+}
+.sgs-info-box__heading { font-size: 20px; font-weight: 600; color: #2d5016; }
+.sgs-info-box__text { font-size: 14px; line-height: 1.6; }
+</style>
+<section class="sgs-info-box">
+  <div class="sgs-info-box__inner">
+    <h3 class="sgs-info-box__heading">Collision Heading</h3>
+    <p class="sgs-info-box__text">Body text in the collision fixture.</p>
+  </div>
+</section>

@@ -1,0 +1,2150 @@
+{
+	"_comment": "Accepted hardcoded-render-default findings (Gate B). Each entry is a pre-existing F3 violation accepted as layout debt. To FIX: replace the literal with var(--sgs-x, <default>) OR read the attr in render.php and emit it dynamically, then delete the baseline entry. To accept a NEW intentional hardcode: add an entry manually with a reason — do NOT re-run --write-baseline (it overwrites ALL accepted reasons).",
+	"baselineSeededAt": "2026-06-09T20:31:31.792Z",
+	"accepted": [
+		{
+			"block": "sgs/accordion",
+			"file": "src\\blocks\\accordion\\style.css",
+			"property": "align-items",
+			"value": "center",
+			"attr": "alignItems",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/accordion",
+			"file": "src\\blocks\\accordion\\style.css",
+			"property": "gap",
+			"value": "12px",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/accordion",
+			"file": "src\\blocks\\accordion\\style.css",
+			"property": "justify-content",
+			"value": "center",
+			"attr": "justifyContent",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/accordion",
+			"file": "src\\blocks\\accordion\\style.css",
+			"property": "width",
+			"value": "24px",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/announcement-bar",
+			"file": "src\\blocks\\announcement-bar\\style.css",
+			"property": "font-size",
+			"value": "1.25em",
+			"attr": "fontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/announcement-bar",
+			"file": "src\\blocks\\announcement-bar\\style.css",
+			"property": "font-size",
+			"value": "0.875em",
+			"attr": "fontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/announcement-bar",
+			"file": "src\\blocks\\announcement-bar\\style.css",
+			"property": "background-color",
+			"value": "rgba( 255, 255, 255, 0.15 )",
+			"attr": "backgroundColor, textColor, ctaColour",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/announcement-bar",
+			"file": "src\\blocks\\announcement-bar\\style.css",
+			"property": "font-size",
+			"value": "1.125em",
+			"attr": "fontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/announcement-bar",
+			"file": "src\\blocks\\announcement-bar\\style.css",
+			"property": "font-size",
+			"value": "0.75em",
+			"attr": "fontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/announcement-bar",
+			"file": "src\\blocks\\announcement-bar\\style.css",
+			"property": "font-size",
+			"value": "1.75rem",
+			"attr": "fontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/announcement-bar",
+			"file": "src\\blocks\\announcement-bar\\style.css",
+			"property": "background-color",
+			"value": "rgba( 0, 0, 0, 0.1 )",
+			"attr": "backgroundColor, textColor, ctaColour",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/announcement-bar",
+			"file": "src\\blocks\\announcement-bar\\style.css",
+			"property": "font-size",
+			"value": "1em",
+			"attr": "fontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/announcement-bar",
+			"file": "src\\blocks\\announcement-bar\\style.css",
+			"property": "font-size",
+			"value": "1.5rem",
+			"attr": "fontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/button",
+			"file": "src\\blocks\\button\\style.css",
+			"property": "font-weight",
+			"value": "600",
+			"attr": "fontWeight",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/button",
+			"file": "src\\blocks\\button\\style.css",
+			"property": "font-size",
+			"value": "15px",
+			"attr": "fontSize, iconSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/button",
+			"file": "src\\blocks\\button\\style.css",
+			"property": "line-height",
+			"value": "1.2",
+			"attr": "lineHeight",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/button",
+			"file": "src\\blocks\\button\\style.css",
+			"property": "min-height",
+			"value": "48px",
+			"attr": "minHeight",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/button",
+			"file": "src\\blocks\\button\\style.css",
+			"property": "color",
+			"value": "#ffffff",
+			"attr": "iconColour",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/card-grid",
+			"file": "src\\blocks\\card-grid\\style.css",
+			"property": "grid-template-columns",
+			"value": "repeat(",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/card-grid",
+			"file": "src\\blocks\\card-grid\\style.css",
+			"property": "flex-direction",
+			"value": "column",
+			"attr": "direction, flexDirection",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/card-grid",
+			"file": "src\\blocks\\card-grid\\style.css",
+			"property": "justify-content",
+			"value": "flex-end",
+			"attr": "justifyContent",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/card-grid",
+			"file": "src\\blocks\\card-grid\\style.css",
+			"property": "color",
+			"value": "inherit !important",
+			"attr": "titleColour, subtitleColour, hoverBackgroundColour, hoverTextColour, hoverBorderColour",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/cart",
+			"file": "src\\blocks\\cart\\style.css",
+			"property": "height",
+			"value": "18px",
+			"attr": "iconSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/cart",
+			"file": "src\\blocks\\cart\\style.css",
+			"property": "font-size",
+			"value": "11px",
+			"attr": "iconSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/container",
+			"file": "src\\blocks\\container\\style.css",
+			"property": "flex-direction",
+			"value": "column",
+			"attr": "flexDirection",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/container",
+			"file": "src\\blocks\\container\\style.css",
+			"property": "align-items",
+			"value": "center",
+			"attr": "verticalAlign",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/container",
+			"file": "src\\blocks\\container\\style.css",
+			"property": "justify-content",
+			"value": "center",
+			"attr": "justifyContent",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/content-collection",
+			"file": "src\\blocks\\content-collection\\style.css",
+			"property": "grid-template-columns",
+			"value": "1fr",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/content-collection",
+			"file": "src\\blocks\\content-collection\\style.css",
+			"property": "grid-template-columns",
+			"value": "repeat( 2, 1fr )",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/content-collection",
+			"file": "src\\blocks\\content-collection\\style.css",
+			"property": "flex-direction",
+			"value": "column",
+			"attr": "direction, flexDirection",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/counter",
+			"file": "src\\blocks\\counter\\style.css",
+			"property": "font-size",
+			"value": "clamp(2.5rem, 6vw, 4rem)",
+			"attr": "labelFontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/cta-section",
+			"file": "src\\blocks\\cta-section\\style.css",
+			"property": "max-width",
+			"value": "680px",
+			"attr": "buttonBorderWidth, maxWidth, customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/cta-section",
+			"file": "src\\blocks\\cta-section\\style.css",
+			"property": "flex-direction",
+			"value": "column",
+			"attr": "flexDirection",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/cta-section",
+			"file": "src\\blocks\\cta-section\\style.css",
+			"property": "align-items",
+			"value": "center",
+			"attr": "verticalAlign",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/cta-section",
+			"file": "src\\blocks\\cta-section\\style.css",
+			"property": "flex-wrap",
+			"value": "wrap",
+			"attr": "flexWrap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/cta-section",
+			"file": "src\\blocks\\cta-section\\style.css",
+			"property": "opacity",
+			"value": "0.9",
+			"attr": "backgroundImageOpacity, backgroundOverlayOpacity, bgSvgOpacity",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/cta-section",
+			"file": "src\\blocks\\cta-section\\style.css",
+			"property": "justify-content",
+			"value": "center",
+			"attr": "justifyContent",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/cta-section",
+			"file": "src\\blocks\\cta-section\\style.css",
+			"property": "gap",
+			"value": "8px",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/cta-section",
+			"file": "src\\blocks\\cta-section\\style.css",
+			"property": "min-height",
+			"value": "44px",
+			"attr": "minHeight, bgSvgMinHeight",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/cta-section",
+			"file": "src\\blocks\\cta-section\\style.css",
+			"property": "font-size",
+			"value": "1.2em",
+			"attr": "buttonSize, backgroundSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/cta-section",
+			"file": "src\\blocks\\cta-section\\style.css",
+			"property": "background-color",
+			"value": "rgba( 255, 255, 255, 0.12 )",
+			"attr": "backgroundColor, textColor, headlineColour, bodyColour, buttonColour, buttonBorderColour, hoverBackgroundColour, hoverTextColour, hoverBorderColour, backgroundOverlayColour, shapeDividerTopColour, shapeDividerBottomColour, gridItemTextColour",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/cta-section",
+			"file": "src\\blocks\\cta-section\\style.css",
+			"property": "opacity",
+			"value": "0.88",
+			"attr": "backgroundImageOpacity, backgroundOverlayOpacity, bgSvgOpacity",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/cta-section",
+			"file": "src\\blocks\\cta-section\\style.css",
+			"property": "padding",
+			"value": "0.25rem 0.75rem",
+			"attr": "gridItemPadding",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/feature-grid",
+			"file": "src\\blocks\\feature-grid\\style.css",
+			"property": "gap",
+			"value": "24px",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/feature-grid",
+			"file": "src\\blocks\\feature-grid\\style.css",
+			"property": "grid-template-columns",
+			"value": "repeat( auto-fill, minmax( 240px, 1fr ) )",
+			"attr": "gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/form",
+			"file": "src\\blocks\\form\\style.css",
+			"property": "grid-template-columns",
+			"value": "1fr",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/form",
+			"file": "src\\blocks\\form\\style.css",
+			"property": "grid-template-columns",
+			"value": "1fr 1fr",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/form",
+			"file": "src\\blocks\\form\\style.css",
+			"property": "opacity",
+			"value": "0.7",
+			"attr": "formFocusRingOpacity",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/form",
+			"file": "src\\blocks\\form\\style.css",
+			"property": "gap",
+			"value": "0.5rem",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/form",
+			"file": "src\\blocks\\form\\style.css",
+			"property": "width",
+			"value": "20px",
+			"attr": "formFocusRingWidth, customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/form",
+			"file": "src\\blocks\\form\\style.css",
+			"property": "width",
+			"value": "5px",
+			"attr": "formFocusRingWidth, customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/form",
+			"file": "src\\blocks\\form\\style.css",
+			"property": "grid-template-columns",
+			"value": "1fr 1fr !important",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/form",
+			"file": "src\\blocks\\form\\style.css",
+			"property": "grid-template-columns",
+			"value": "1fr !important",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/form",
+			"file": "src\\blocks\\form\\style.css",
+			"property": "gap",
+			"value": "0.75rem",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/form",
+			"file": "src\\blocks\\form\\style.css",
+			"property": "gap",
+			"value": "0.25rem",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/form",
+			"file": "src\\blocks\\form\\style.css",
+			"property": "width",
+			"value": "28px",
+			"attr": "formFocusRingWidth, customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/form",
+			"file": "src\\blocks\\form\\style.css",
+			"property": "width",
+			"value": "24px",
+			"attr": "formFocusRingWidth, customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/form",
+			"file": "src\\blocks\\form\\style.css",
+			"property": "opacity",
+			"value": "0.6",
+			"attr": "formFocusRingOpacity",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/form",
+			"file": "src\\blocks\\form\\style.css",
+			"property": "grid-template-columns",
+			"value": "1fr 2fr",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/form",
+			"file": "src\\blocks\\form\\style.css",
+			"property": "gap",
+			"value": "0.5rem 1rem",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "align-items",
+			"value": "center",
+			"attr": "alignItems",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "justify-content",
+			"value": "center",
+			"attr": "justifyContent",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "width",
+			"value": "44px",
+			"attr": "imageSize, customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "height",
+			"value": "44px",
+			"attr": "imageSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "gap",
+			"value": "8px",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "width",
+			"value": "10px",
+			"attr": "imageSize, customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "height",
+			"value": "10px",
+			"attr": "imageSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "height",
+			"value": "40%",
+			"attr": "imageSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "align-items",
+			"value": "flex-end",
+			"attr": "alignItems",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "font-size",
+			"value": "0.875rem",
+			"attr": "imageSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "width",
+			"value": "52px",
+			"attr": "imageSize, customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "height",
+			"value": "52px",
+			"attr": "imageSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "flex-direction",
+			"value": "column",
+			"attr": "direction, flexDirection",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "gap",
+			"value": "12px",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "max-width",
+			"value": "90vw",
+			"attr": "customWidth, contentWidth, maxWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "font-size",
+			"value": "0.9375rem",
+			"attr": "imageSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "max-width",
+			"value": "600px",
+			"attr": "customWidth, contentWidth, maxWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "color",
+			"value": "rgba( 255, 255, 255, 0.65 )",
+			"attr": "captionColour, captionBgColour, hoverOverlayColour",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "max-width",
+			"value": "36ch",
+			"attr": "customWidth, contentWidth, maxWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "grid-template-columns",
+			"value": "repeat(",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "width",
+			"value": "48px",
+			"attr": "imageSize, customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/gallery",
+			"file": "src\\blocks\\gallery\\style.css",
+			"property": "height",
+			"value": "48px",
+			"attr": "imageSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "background-color",
+			"value": "rgba( 255, 0, 0, 0.1 )",
+			"attr": "starColour",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "align-items",
+			"value": "center",
+			"attr": "alignItems",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "gap",
+			"value": "1rem",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "flex-wrap",
+			"value": "wrap",
+			"attr": "flexWrap, wrap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "align-items",
+			"value": "baseline",
+			"attr": "alignItems",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "gap",
+			"value": "0.375rem",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "flex-direction",
+			"value": "column",
+			"attr": "direction, flexDirection",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "gap",
+			"value": "0.25rem",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "width",
+			"value": "60px",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "gap",
+			"value": "0.5rem",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "max-width",
+			"value": "28rem",
+			"attr": "customWidth, contentWidth, maxWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "gap",
+			"value": "0.75rem",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "gap",
+			"value": "2px",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "gap",
+			"value": "1.5rem",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "background-color",
+			"value": "rgba( 255, 255, 255, 0.05 )",
+			"attr": "starColour",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "border-color",
+			"value": "rgba( 255, 255, 255, 0.1 )",
+			"attr": "starColour",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "border-color",
+			"value": "rgba( 0, 0, 0, 0.1 )",
+			"attr": "starColour",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "width",
+			"value": "40px",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "justify-content",
+			"value": "center",
+			"attr": "justifyContent",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "justify-content",
+			"value": "space-between",
+			"attr": "justifyContent",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"file": "src\\blocks\\google-reviews\\style.css",
+			"property": "gap",
+			"value": "0.125rem",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/heading",
+			"file": "src\\blocks\\heading\\style.css",
+			"property": "margin-bottom",
+			"value": "8px",
+			"attr": "marginBottom",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/heading",
+			"file": "src\\blocks\\heading\\style.css",
+			"property": "font-size",
+			"value": "28px",
+			"attr": "fontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/heading",
+			"file": "src\\blocks\\heading\\style.css",
+			"property": "font-weight",
+			"value": "700",
+			"attr": "fontWeight",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/heading",
+			"file": "src\\blocks\\heading\\style.css",
+			"property": "line-height",
+			"value": "1.2",
+			"attr": "lineHeight",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/heading",
+			"file": "src\\blocks\\heading\\style.css",
+			"property": "font-size",
+			"value": "36px",
+			"attr": "fontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/heading",
+			"file": "src\\blocks\\heading\\style.css",
+			"property": "font-size",
+			"value": "16px",
+			"attr": "fontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/heading",
+			"file": "src\\blocks\\heading\\style.css",
+			"property": "line-height",
+			"value": "1.5",
+			"attr": "lineHeight",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/heading",
+			"file": "src\\blocks\\heading\\style.css",
+			"property": "font-weight",
+			"value": "400",
+			"attr": "fontWeight",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/hero",
+			"file": "src\\blocks\\hero\\style.css",
+			"property": "align-items",
+			"value": "center",
+			"attr": "alignment, verticalAlignment, verticalAlign",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/hero",
+			"file": "src\\blocks\\hero\\style.css",
+			"property": "flex-direction",
+			"value": "column",
+			"attr": "flexDirection",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/hero",
+			"file": "src\\blocks\\hero\\style.css",
+			"property": "justify-content",
+			"value": "center",
+			"attr": "justifyContent",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/hero",
+			"file": "src\\blocks\\hero\\style.css",
+			"property": "grid-template-columns",
+			"value": "1fr 1fr",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/hero",
+			"file": "src\\blocks\\hero\\style.css",
+			"property": "font-size",
+			"value": "0.875rem",
+			"attr": "backgroundSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/hero",
+			"file": "src\\blocks\\hero\\style.css",
+			"property": "margin-bottom",
+			"value": "0.5rem",
+			"attr": "headlineMarginBottom, subHeadlineMarginBottom",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/hero",
+			"file": "src\\blocks\\hero\\style.css",
+			"property": "text-align",
+			"value": "center",
+			"attr": "alignment, verticalAlignment",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/hero",
+			"file": "src\\blocks\\hero\\style.css",
+			"property": "text-align",
+			"value": "left",
+			"attr": "alignment, verticalAlignment",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/hero",
+			"file": "src\\blocks\\hero\\style.css",
+			"property": "align-items",
+			"value": "flex-start",
+			"attr": "alignment, verticalAlignment, verticalAlign",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/hero",
+			"file": "src\\blocks\\hero\\style.css",
+			"property": "flex-wrap",
+			"value": "wrap",
+			"attr": "flexWrap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/hero",
+			"file": "src\\blocks\\hero\\style.css",
+			"property": "padding",
+			"value": "clamp(0.5rem, 1vw + 0.25rem, 0.875rem) clamp(1rem, 2vw + 0.5rem, 2rem)",
+			"attr": "gridItemPadding",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/hero",
+			"file": "src\\blocks\\hero\\style.css",
+			"property": "border-radius",
+			"value": "8px",
+			"attr": "gridItemBorderRadius",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/hero",
+			"file": "src\\blocks\\hero\\style.css",
+			"property": "font-size",
+			"value": "clamp(0.8125rem, 0.5vw + 0.75rem, 0.9375rem)",
+			"attr": "backgroundSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/hero",
+			"file": "src\\blocks\\hero\\style.css",
+			"property": "min-height",
+			"value": "44px",
+			"attr": "minHeight, bgSvgMinHeight",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/hero",
+			"file": "src\\blocks\\hero\\style.css",
+			"property": "flex-direction",
+			"value": "row",
+			"attr": "flexDirection",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/hero",
+			"file": "src\\blocks\\hero\\style.css",
+			"property": "font-size",
+			"value": "clamp(1.75rem, 4vw, 2.5rem)",
+			"attr": "backgroundSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/hero",
+			"file": "src\\blocks\\hero\\style.css",
+			"property": "grid-template-columns",
+			"value": "1fr",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/hero",
+			"file": "src\\blocks\\hero\\style.css",
+			"property": "font-size",
+			"value": "clamp(1.5rem, 6vw, 2rem)",
+			"attr": "backgroundSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/icon",
+			"file": "src\\blocks\\icon\\style.css",
+			"property": "font-size",
+			"value": "11px",
+			"attr": "iconSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/icon-list",
+			"file": "src\\blocks\\icon-list\\style.css",
+			"property": "width",
+			"value": "20px",
+			"attr": "iconSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/icon-list",
+			"file": "src\\blocks\\icon-list\\style.css",
+			"property": "height",
+			"value": "20px",
+			"attr": "iconSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/icon-list",
+			"file": "src\\blocks\\icon-list\\style.css",
+			"property": "width",
+			"value": "16px",
+			"attr": "iconSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/icon-list",
+			"file": "src\\blocks\\icon-list\\style.css",
+			"property": "height",
+			"value": "16px",
+			"attr": "iconSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/icon-list",
+			"file": "src\\blocks\\icon-list\\style.css",
+			"property": "width",
+			"value": "24px",
+			"attr": "iconSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/icon-list",
+			"file": "src\\blocks\\icon-list\\style.css",
+			"property": "height",
+			"value": "24px",
+			"attr": "iconSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/icon-list",
+			"file": "src\\blocks\\icon-list\\style.css",
+			"property": "width",
+			"value": "32px",
+			"attr": "iconSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/icon-list",
+			"file": "src\\blocks\\icon-list\\style.css",
+			"property": "height",
+			"value": "32px",
+			"attr": "iconSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/icon-list",
+			"file": "src\\blocks\\icon-list\\style.css",
+			"property": "width",
+			"value": "28px",
+			"attr": "iconSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/icon-list",
+			"file": "src\\blocks\\icon-list\\style.css",
+			"property": "height",
+			"value": "28px",
+			"attr": "iconSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/info-box",
+			"file": "src\\blocks\\info-box\\style.css",
+			"property": "width",
+			"value": "40px",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/info-box",
+			"file": "src\\blocks\\info-box\\style.css",
+			"property": "width",
+			"value": "52px",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/info-box",
+			"file": "src\\blocks\\info-box\\style.css",
+			"property": "width",
+			"value": "64px",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/info-box",
+			"file": "src\\blocks\\info-box\\style.css",
+			"property": "width",
+			"value": "80px",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/label",
+			"file": "src\\blocks\\label\\style.css",
+			"property": "text-align",
+			"value": "center",
+			"attr": "textAlign",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/media",
+			"file": "src\\blocks\\media\\style.css",
+			"property": "width",
+			"value": "100% fills the grid/flex track (so the image isn't invisible when the",
+			"attr": "imageWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/media",
+			"file": "src\\blocks\\media\\style.css",
+			"property": "font-size",
+			"value": "0.9em",
+			"attr": "captionFontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/mega-menu",
+			"file": "src\\blocks\\mega-menu\\style.css",
+			"property": "align-items",
+			"value": "center",
+			"attr": "panelAlignment",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/mega-menu",
+			"file": "src\\blocks\\mega-menu\\style.css",
+			"property": "max-width",
+			"value": "min(900px, calc(100vw - 2rem))",
+			"attr": "panelWidth, panelMaxWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/mega-menu",
+			"file": "src\\blocks\\mega-menu\\style.css",
+			"property": "width",
+			"value": "100vw",
+			"attr": "panelWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/mega-menu",
+			"file": "src\\blocks\\mega-menu\\style.css",
+			"property": "max-width",
+			"value": "100vw",
+			"attr": "panelWidth, panelMaxWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/mega-menu",
+			"file": "src\\blocks\\mega-menu\\style.css",
+			"property": "align-items",
+			"value": "start",
+			"attr": "panelAlignment",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/mega-menu",
+			"file": "src\\blocks\\mega-menu\\style.css",
+			"property": "max-width",
+			"value": "90vw",
+			"attr": "panelWidth, panelMaxWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/mega-menu",
+			"file": "src\\blocks\\mega-menu\\style.css",
+			"property": "align-items",
+			"value": "stretch",
+			"attr": "panelAlignment",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/mega-menu",
+			"file": "src\\blocks\\mega-menu\\style.css",
+			"property": "width",
+			"value": "1.25rem",
+			"attr": "panelWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/mega-menu",
+			"file": "src\\blocks\\mega-menu\\style.css",
+			"property": "width",
+			"value": "100% !important",
+			"attr": "panelWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/mega-menu",
+			"file": "src\\blocks\\mega-menu\\style.css",
+			"property": "color",
+			"value": "rgba(0, 0, 0, 0.5)",
+			"attr": "badgeColour, panelBgColour, linkColour, linkHoverColour, linkHoverBgColour",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/mega-menu",
+			"file": "src\\blocks\\mega-menu\\style.css",
+			"property": "align-items",
+			"value": "flex-start",
+			"attr": "panelAlignment",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/mega-menu",
+			"file": "src\\blocks\\mega-menu\\style.css",
+			"property": "width",
+			"value": "2.25rem",
+			"attr": "panelWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/mega-menu",
+			"file": "src\\blocks\\mega-menu\\style.css",
+			"property": "width",
+			"value": "1.125rem",
+			"attr": "panelWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/mega-menu",
+			"file": "src\\blocks\\mega-menu\\style.css",
+			"property": "width",
+			"value": "200px",
+			"attr": "panelWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/mega-menu",
+			"file": "src\\blocks\\mega-menu\\style.css",
+			"property": "text-align",
+			"value": "left",
+			"attr": "panelAlignment",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/mega-menu",
+			"file": "src\\blocks\\mega-menu\\style.css",
+			"property": "color",
+			"value": "rgba(255, 255, 255, 0.85)",
+			"attr": "badgeColour, panelBgColour, linkColour, linkHoverColour, linkHoverBgColour",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/mega-menu",
+			"file": "src\\blocks\\mega-menu\\style.css",
+			"property": "text-align",
+			"value": "center",
+			"attr": "panelAlignment",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/mobile-nav",
+			"file": "src\\blocks\\mobile-nav\\style.css",
+			"property": "max-width",
+			"value": "100vw",
+			"attr": "drawerWidth, drawerMaxWidth, logoMaxWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/modal",
+			"file": "src\\blocks\\modal\\style.css",
+			"property": "opacity",
+			"value": "1",
+			"attr": "overlayOpacity",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/modal",
+			"file": "src\\blocks\\modal\\style.css",
+			"property": "max-width",
+			"value": "calc(100vw - 2rem)",
+			"attr": "maxWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/modal",
+			"file": "src\\blocks\\modal\\style.css",
+			"property": "max-width",
+			"value": "95vw",
+			"attr": "maxWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/notice-banner",
+			"file": "src\\blocks\\notice-banner\\style.css",
+			"property": "font-size",
+			"value": "20px",
+			"attr": "textFontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/option-picker",
+			"file": "src\\blocks\\option-picker\\style.css",
+			"property": "width",
+			"value": "2rem",
+			"attr": "pillSize, customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/option-picker",
+			"file": "src\\blocks\\option-picker\\style.css",
+			"property": "height",
+			"value": "2rem",
+			"attr": "pillSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/post-grid",
+			"file": "src\\blocks\\post-grid\\style.css",
+			"property": "grid-template-columns",
+			"value": "1fr",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/post-grid",
+			"file": "src\\blocks\\post-grid\\style.css",
+			"property": "grid-template-columns",
+			"value": "clamp( 140px, 30%, 240px ) 1fr",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/post-grid",
+			"file": "src\\blocks\\post-grid\\style.css",
+			"property": "gap",
+			"value": "8px",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/post-grid",
+			"file": "src\\blocks\\post-grid\\style.css",
+			"property": "font-size",
+			"value": "0.8125rem",
+			"attr": "imageSize, titleFontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/post-grid",
+			"file": "src\\blocks\\post-grid\\style.css",
+			"property": "font-size",
+			"value": "0.75rem",
+			"attr": "imageSize, titleFontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/post-grid",
+			"file": "src\\blocks\\post-grid\\style.css",
+			"property": "font-size",
+			"value": "1.125rem",
+			"attr": "imageSize, titleFontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/post-grid",
+			"file": "src\\blocks\\post-grid\\style.css",
+			"property": "font-size",
+			"value": "0.9375rem",
+			"attr": "imageSize, titleFontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/post-grid",
+			"file": "src\\blocks\\post-grid\\style.css",
+			"property": "gap",
+			"value": "4px",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/post-grid",
+			"file": "src\\blocks\\post-grid\\style.css",
+			"property": "font-size",
+			"value": "0.875rem",
+			"attr": "imageSize, titleFontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/post-grid",
+			"file": "src\\blocks\\post-grid\\style.css",
+			"property": "gap",
+			"value": "6px",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/post-grid",
+			"file": "src\\blocks\\post-grid\\style.css",
+			"property": "font-size",
+			"value": "1rem",
+			"attr": "imageSize, titleFontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/post-grid",
+			"file": "src\\blocks\\post-grid\\style.css",
+			"property": "font-size",
+			"value": "2rem",
+			"attr": "imageSize, titleFontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/post-grid",
+			"file": "src\\blocks\\post-grid\\style.css",
+			"property": "width",
+			"value": "10px",
+			"attr": "imageSize, customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/post-grid",
+			"file": "src\\blocks\\post-grid\\style.css",
+			"property": "height",
+			"value": "10px",
+			"attr": "imageSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/post-grid",
+			"file": "src\\blocks\\post-grid\\style.css",
+			"property": "gap",
+			"value": "12px",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/post-grid",
+			"file": "src\\blocks\\post-grid\\style.css",
+			"property": "max-width",
+			"value": "36ch",
+			"attr": "customWidth, contentWidth, maxWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/pricing-table",
+			"file": "src\\blocks\\pricing-table\\style.css",
+			"property": "grid-template-columns",
+			"value": "1fr",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/pricing-table",
+			"file": "src\\blocks\\pricing-table\\style.css",
+			"property": "grid-template-columns",
+			"value": "repeat(2, 1fr)",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/pricing-table",
+			"file": "src\\blocks\\pricing-table\\style.css",
+			"property": "grid-template-columns",
+			"value": "repeat(3, 1fr)",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/pricing-table",
+			"file": "src\\blocks\\pricing-table\\style.css",
+			"property": "grid-template-columns",
+			"value": "repeat(4, 1fr)",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/pricing-table",
+			"file": "src\\blocks\\pricing-table\\style.css",
+			"property": "gap",
+			"value": "0.5rem",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/pricing-table",
+			"file": "src\\blocks\\pricing-table\\style.css",
+			"property": "width",
+			"value": "1.25rem",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/pricing-table",
+			"file": "src\\blocks\\pricing-table\\style.css",
+			"property": "width",
+			"value": "2rem",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/pricing-table",
+			"file": "src\\blocks\\pricing-table\\style.css",
+			"property": "background-color",
+			"value": "color-mix(",
+			"attr": "titleColour, priceColour, featureColour, ctaColour, popularBadgeColour",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/pricing-table",
+			"file": "src\\blocks\\pricing-table\\style.css",
+			"property": "background-color",
+			"value": "rgba(15, 126, 128, 0.1)",
+			"attr": "titleColour, priceColour, featureColour, ctaColour, popularBadgeColour",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/product-card",
+			"file": "src\\blocks\\product-card\\style.css",
+			"property": "height",
+			"value": "220px",
+			"attr": "imageHeight",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/product-card",
+			"file": "src\\blocks\\product-card\\style.css",
+			"property": "padding",
+			"value": "7px 13px",
+			"attr": "innerPadding",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/product-card",
+			"file": "src\\blocks\\product-card\\style.css",
+			"property": "padding",
+			"value": "4px 10px",
+			"attr": "innerPadding",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/product-card",
+			"file": "src\\blocks\\product-card\\style.css",
+			"property": "padding",
+			"value": "12px 20px",
+			"attr": "innerPadding",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/product-card",
+			"file": "src\\blocks\\product-card\\style.css",
+			"property": "width",
+			"value": "18px",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/product-card",
+			"file": "src\\blocks\\product-card\\style.css",
+			"property": "height",
+			"value": "18px",
+			"attr": "imageHeight",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/product-card",
+			"file": "src\\blocks\\product-card\\style.css",
+			"property": "padding",
+			"value": "3px 8px",
+			"attr": "innerPadding",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/product-card",
+			"file": "src\\blocks\\product-card\\style.css",
+			"property": "width",
+			"value": "max-content",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/product-card",
+			"file": "src\\blocks\\product-card\\style.css",
+			"property": "padding",
+			"value": "4px 12px",
+			"attr": "innerPadding",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/product-card",
+			"file": "src\\blocks\\product-card\\style.css",
+			"property": "padding",
+			"value": "8px 12px",
+			"attr": "innerPadding",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/product-card",
+			"file": "src\\blocks\\product-card\\style.css",
+			"property": "width",
+			"value": "48px",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/product-card",
+			"file": "src\\blocks\\product-card\\style.css",
+			"property": "height",
+			"value": "48px",
+			"attr": "imageHeight",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/product-card",
+			"file": "src\\blocks\\product-card\\style.css",
+			"property": "padding",
+			"value": "10px 12px",
+			"attr": "innerPadding",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/quote",
+			"file": "src\\blocks\\quote\\style.css",
+			"property": "border-radius",
+			"value": "8px",
+			"attr": "borderRadius",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/social-icons",
+			"file": "src\\blocks\\social-icons\\style.css",
+			"property": "gap",
+			"value": "15px",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/social-icons",
+			"file": "src\\blocks\\social-icons\\style.css",
+			"property": "width",
+			"value": "25px",
+			"attr": "iconSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/social-icons",
+			"file": "src\\blocks\\social-icons\\style.css",
+			"property": "height",
+			"value": "25px",
+			"attr": "iconSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/tabs",
+			"file": "src\\blocks\\tabs\\style.css",
+			"property": "align-items",
+			"value": "flex-start",
+			"attr": "tabAlignment",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/tabs",
+			"file": "src\\blocks\\tabs\\style.css",
+			"property": "text-align",
+			"value": "center",
+			"attr": "tabAlignment",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/tabs",
+			"file": "src\\blocks\\tabs\\style.css",
+			"property": "width",
+			"value": "2px",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/tabs",
+			"file": "src\\blocks\\tabs\\style.css",
+			"property": "gap",
+			"value": "4px",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/tabs",
+			"file": "src\\blocks\\tabs\\style.css",
+			"property": "gap",
+			"value": "0.25rem",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/tabs",
+			"file": "src\\blocks\\tabs\\style.css",
+			"property": "text-align",
+			"value": "left",
+			"attr": "tabAlignment",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/team-member",
+			"file": "src\\blocks\\team-member\\style.css",
+			"property": "width",
+			"value": "150px",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/testimonial",
+			"file": "src\\blocks\\testimonial\\style.css",
+			"property": "width",
+			"value": "48px",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/testimonial-slider",
+			"file": "src\\blocks\\testimonial-slider\\style.css",
+			"property": "gap",
+			"value": "2px",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/testimonial-slider",
+			"file": "src\\blocks\\testimonial-slider\\style.css",
+			"property": "font-size",
+			"value": "18px",
+			"attr": "nameFontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/testimonial-slider",
+			"file": "src\\blocks\\testimonial-slider\\style.css",
+			"property": "width",
+			"value": "48px",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/testimonial-slider",
+			"file": "src\\blocks\\testimonial-slider\\style.css",
+			"property": "width",
+			"value": "44px",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/testimonial-slider",
+			"file": "src\\blocks\\testimonial-slider\\style.css",
+			"property": "font-size",
+			"value": "24px",
+			"attr": "nameFontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/testimonial-slider",
+			"file": "src\\blocks\\testimonial-slider\\style.css",
+			"property": "gap",
+			"value": "8px",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/testimonial-slider",
+			"file": "src\\blocks\\testimonial-slider\\style.css",
+			"property": "width",
+			"value": "10px",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/testimonial-slider",
+			"file": "src\\blocks\\testimonial-slider\\style.css",
+			"property": "font-size",
+			"value": "16px",
+			"attr": "nameFontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/testimonial-slider",
+			"file": "src\\blocks\\testimonial-slider\\style.css",
+			"property": "font-size",
+			"value": "14px",
+			"attr": "nameFontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/testimonial-slider",
+			"file": "src\\blocks\\testimonial-slider\\style.css",
+			"property": "grid-template-columns",
+			"value": "3fr 2fr",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/testimonial-slider",
+			"file": "src\\blocks\\testimonial-slider\\style.css",
+			"property": "grid-template-columns",
+			"value": "1fr 1fr",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/testimonial-slider",
+			"file": "src\\blocks\\testimonial-slider\\style.css",
+			"property": "grid-template-columns",
+			"value": "1fr",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/text",
+			"file": "src\\blocks\\text\\style.css",
+			"property": "line-height",
+			"value": "0.8",
+			"attr": "lineHeight",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/text",
+			"file": "src\\blocks\\text\\style.css",
+			"property": "margin-right",
+			"value": "0.1em",
+			"attr": "marginRight",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/text",
+			"file": "src\\blocks\\text\\style.css",
+			"property": "margin-top",
+			"value": "0.05em",
+			"attr": "marginTop",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trust-bar",
+			"file": "src\\blocks\\trust-bar\\style.css",
+			"property": "align-items",
+			"value": "center",
+			"attr": "verticalAlign",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trust-bar",
+			"file": "src\\blocks\\trust-bar\\style.css",
+			"property": "border-radius",
+			"value": "4px",
+			"attr": "gridItemBorderRadius",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trust-bar",
+			"file": "src\\blocks\\trust-bar\\style.css",
+			"property": "flex-direction",
+			"value": "row",
+			"attr": "flexDirection",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trust-bar",
+			"file": "src\\blocks\\trust-bar\\style.css",
+			"property": "gap",
+			"value": "10px",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trust-bar",
+			"file": "src\\blocks\\trust-bar\\style.css",
+			"property": "justify-content",
+			"value": "center",
+			"attr": "justifyContent",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trust-bar",
+			"file": "src\\blocks\\trust-bar\\style.css",
+			"property": "border-radius",
+			"value": "50%",
+			"attr": "gridItemBorderRadius",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trust-bar",
+			"file": "src\\blocks\\trust-bar\\style.css",
+			"property": "font-size",
+			"value": "clamp(0.75rem, 1.2vw, 0.875rem)",
+			"attr": "titleFontSize, labelFontSize, badgeSize, iconCircleSize, backgroundSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trust-bar",
+			"file": "src\\blocks\\trust-bar\\style.css",
+			"property": "font-size",
+			"value": "0.875rem",
+			"attr": "titleFontSize, labelFontSize, badgeSize, iconCircleSize, backgroundSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trust-bar",
+			"file": "src\\blocks\\trust-bar\\style.css",
+			"property": "flex-wrap",
+			"value": "wrap",
+			"attr": "flexWrap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trust-bar",
+			"file": "src\\blocks\\trust-bar\\style.css",
+			"property": "flex-direction",
+			"value": "column",
+			"attr": "flexDirection",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trust-bar",
+			"file": "src\\blocks\\trust-bar\\style.css",
+			"property": "border-radius",
+			"value": "999px",
+			"attr": "gridItemBorderRadius",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trust-bar",
+			"file": "src\\blocks\\trust-bar\\style.css",
+			"property": "padding",
+			"value": "0.625rem 1.125rem",
+			"attr": "gridItemPadding",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trust-bar",
+			"file": "src\\blocks\\trust-bar\\style.css",
+			"property": "min-height",
+			"value": "36px",
+			"attr": "minHeight, bgSvgMinHeight",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trust-bar",
+			"file": "src\\blocks\\trust-bar\\style.css",
+			"property": "padding",
+			"value": "0.625rem 1rem",
+			"attr": "gridItemPadding",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trust-bar",
+			"file": "src\\blocks\\trust-bar\\style.css",
+			"property": "min-height",
+			"value": "44px",
+			"attr": "minHeight, bgSvgMinHeight",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trust-bar",
+			"file": "src\\blocks\\trust-bar\\style.css",
+			"property": "gap",
+			"value": "6px",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trust-bar",
+			"file": "src\\blocks\\trust-bar\\style.css",
+			"property": "flex-wrap",
+			"value": "nowrap",
+			"attr": "flexWrap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trust-bar",
+			"file": "src\\blocks\\trust-bar\\style.css",
+			"property": "justify-content",
+			"value": "flex-start",
+			"attr": "justifyContent",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trustpilot-reviews",
+			"file": "src\\blocks\\trustpilot-reviews\\style.css",
+			"property": "align-items",
+			"value": "center",
+			"attr": "alignItems",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trustpilot-reviews",
+			"file": "src\\blocks\\trustpilot-reviews\\style.css",
+			"property": "gap",
+			"value": "0.5rem",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trustpilot-reviews",
+			"file": "src\\blocks\\trustpilot-reviews\\style.css",
+			"property": "flex-wrap",
+			"value": "wrap",
+			"attr": "flexWrap, wrap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trustpilot-reviews",
+			"file": "src\\blocks\\trustpilot-reviews\\style.css",
+			"property": "justify-content",
+			"value": "center",
+			"attr": "justifyContent",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trustpilot-reviews",
+			"file": "src\\blocks\\trustpilot-reviews\\style.css",
+			"property": "gap",
+			"value": "0.25rem",
+			"attr": "gap",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trustpilot-reviews",
+			"file": "src\\blocks\\trustpilot-reviews\\style.css",
+			"property": "align-items",
+			"value": "start",
+			"attr": "alignItems",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trustpilot-reviews",
+			"file": "src\\blocks\\trustpilot-reviews\\style.css",
+			"property": "align-items",
+			"value": "flex-start",
+			"attr": "alignItems",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trustpilot-reviews",
+			"file": "src\\blocks\\trustpilot-reviews\\style.css",
+			"property": "grid-template-columns",
+			"value": "1fr",
+			"attr": "columns, gridTemplateColumns",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trustpilot-reviews",
+			"file": "src\\blocks\\trustpilot-reviews\\style.css",
+			"property": "flex-direction",
+			"value": "column",
+			"attr": "direction, flexDirection",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trustpilot-reviews",
+			"file": "src\\blocks\\trustpilot-reviews\\style.css",
+			"property": "width",
+			"value": "16px",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trustpilot-reviews",
+			"file": "src\\blocks\\trustpilot-reviews\\style.css",
+			"property": "width",
+			"value": "44px",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trustpilot-reviews",
+			"file": "src\\blocks\\trustpilot-reviews\\style.css",
+			"property": "width",
+			"value": "8px",
+			"attr": "customWidth, contentWidth",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/trustpilot-reviews",
+			"file": "src\\blocks\\trustpilot-reviews\\style.css",
+			"property": "justify-content",
+			"value": "flex-start",
+			"attr": "justifyContent",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		},
+		{
+			"block": "sgs/whatsapp-cta",
+			"file": "src\\blocks\\whatsapp-cta\\style.css",
+			"property": "font-size",
+			"value": "12px",
+			"attr": "labelFontSize",
+			"reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+		}
+	]
+}

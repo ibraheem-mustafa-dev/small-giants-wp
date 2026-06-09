@@ -1,0 +1,5 @@
+{
+  "fixture": "sgs-post-grid.html",
+  "primary_block_emitted": "sgs/container",
+  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/post-grid {\"style\":{\"spacing\":{\"padding\":{\"top\":\"64px\",\"right\":\"24px\",\"bottom\":\"64px\",\"left\":\"24px\"}}}} /-->\n<!-- /wp:sgs/container -->"
+}

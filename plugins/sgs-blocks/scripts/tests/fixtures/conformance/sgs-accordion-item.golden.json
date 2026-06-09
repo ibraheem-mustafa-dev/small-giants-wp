@@ -1,0 +1,5 @@
+{
+  "fixture": "sgs-accordion-item.html",
+  "primary_block_emitted": "sgs/container",
+  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/accordion-item /-->\n<!-- /wp:sgs/container -->"
+}

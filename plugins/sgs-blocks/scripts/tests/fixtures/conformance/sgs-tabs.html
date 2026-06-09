@@ -1,0 +1,29 @@
+<!-- fixture: sgs/tabs — layout-kind composite (tabbed content container) -->
+<style>
+.sgs-tabs { padding: 48px 24px; }
+.sgs-tabs__nav {
+  display: flex;
+  gap: 8px;
+  border-bottom: 2px solid #e5e0db;
+  margin-bottom: 24px;
+}
+.sgs-tabs__trigger {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5c4f46;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.sgs-tabs__panel { padding: 16px 0; }
+</style>
+<section class="sgs-tabs">
+  <div class="sgs-tabs__nav">
+    <button class="sgs-tabs__trigger">Ingredients</button>
+    <button class="sgs-tabs__trigger">Nutrition</button>
+  </div>
+  <div class="sgs-tabs__panel">
+    <p>Oats, honey, flaxseed, coconut oil.</p>
+  </div>
+</section>

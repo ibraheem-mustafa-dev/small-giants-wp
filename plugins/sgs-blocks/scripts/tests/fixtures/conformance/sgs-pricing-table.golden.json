@@ -1,0 +1,5 @@
+{
+  "fixture": "sgs-pricing-table.html",
+  "primary_block_emitted": "sgs/container",
+  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/pricing-table {\"style\":{\"color\":{\"background\":\"#f8f4ef\"},\"spacing\":{\"padding\":{\"top\":\"64px\",\"right\":\"24px\",\"bottom\":\"64px\",\"left\":\"24px\"}}}} /-->\n<!-- /wp:sgs/container -->"
+}

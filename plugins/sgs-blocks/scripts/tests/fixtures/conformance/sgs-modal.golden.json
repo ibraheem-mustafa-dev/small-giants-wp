@@ -1,0 +1,5 @@
+{
+  "fixture": "sgs-modal.html",
+  "primary_block_emitted": "sgs/modal",
+  "markup": "<!-- wp:sgs/modal {\"widthMode\":\"full\",\"layout\":\"flex\"} -->\n<!-- wp:sgs/info-box {\"style\":{\"border\":{\"radius\":\"16px\"},\"spacing\":{\"padding\":{\"top\":\"40px\",\"right\":\"40px\",\"bottom\":\"40px\",\"left\":\"40px\"}}}} -->\n<!-- wp:sgs/heading {\"content\":\"Modal Title\",\"level\":\"h2\",\"fontSize\":24,\"fontSizeUnit\":\"px\",\"fontWeight\":\"700\",\"textColour\":\"#3a2e26\",\"style\":{\"spacing\":{\"margin\":{\"bottom\":\"12px\"}},\"color\":{\"text\":\"#3a2e26\"}},\"marginBottom\":\"12px\"} /-->\n<!-- wp:sgs/text {\"text\":\"Modal body content goes here in this panel.\",\"fontSize\":16,\"fontSizeUnit\":\"px\",\"lineHeight\":1.6,\"lineHeightUnit\":\"unitless\",\"textColour\":\"#5c4f46\"} /-->\n<!-- wp:sgs/multi-button -->\n<!-- wp:sgs/button {\"label\":\"Confirm\",\"url\":\"#\",\"inheritStyle\":\"primary\"} /-->\n<!-- /wp:sgs/multi-button -->\n<!-- /wp:sgs/info-box -->\n<!-- /wp:sgs/modal -->"
+}

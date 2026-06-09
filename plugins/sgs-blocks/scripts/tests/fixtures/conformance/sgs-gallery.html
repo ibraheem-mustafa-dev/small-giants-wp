@@ -1,0 +1,19 @@
+<!-- fixture: sgs/gallery — layout-kind composite with image grid -->
+<style>
+.sgs-gallery { padding: 48px 24px; }
+.sgs-gallery__inner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.sgs-gallery__item { border-radius: 8px; overflow: hidden; aspect-ratio: 4/3; object-fit: cover; }
+</style>
+<section class="sgs-gallery">
+  <div class="sgs-gallery__inner">
+    <img class="sgs-gallery__item" src="/img/photo-1.jpg" alt="Photo one"/>
+    <img class="sgs-gallery__item" src="/img/photo-2.jpg" alt="Photo two"/>
+    <img class="sgs-gallery__item" src="/img/photo-3.jpg" alt="Photo three"/>
+  </div>
+</section>

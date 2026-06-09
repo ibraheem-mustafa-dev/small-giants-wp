@@ -1,0 +1,18 @@
+<!-- fixture: sgs/product-card — content-kind composite (product display card) -->
+<style>
+.sgs-product-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e5e0db;
+  padding: 16px;
+}
+.sgs-product-card__image { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; }
+.sgs-product-card__title { font-size: 16px; font-weight: 600; color: #3a2e26; margin-top: 12px; }
+.sgs-product-card__price { font-size: 18px; font-weight: 700; color: #2d5016; }
+</style>
+<section class="sgs-product-card">
+  <img class="sgs-product-card__image" src="/products/lactation-cookies.jpg" alt="Lactation Cookies"/>
+  <h3 class="sgs-product-card__title">Lactation Cookies</h3>
+  <span class="sgs-product-card__price">12.99</span>
+</section>

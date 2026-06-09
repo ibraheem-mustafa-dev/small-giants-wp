@@ -1,0 +1,5 @@
+{
+  "fixture": "sgs-mobile-nav.html",
+  "primary_block_emitted": "sgs/container",
+  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/mobile-nav {\"style\":{\"spacing\":{\"padding\":{\"top\":\"16px\",\"right\":\"16px\",\"bottom\":\"16px\",\"left\":\"16px\"}}},\"contentWidth\":\"320px\"} -->\n<!-- wp:sgs/info-box {\"style\":{\"color\":{\"text\":\"#3a2e26\"},\"spacing\":{\"padding\":{\"top\":\"12px\",\"right\":\"0\",\"bottom\":\"12px\",\"left\":\"0\"}}}} -->\nHome\n<!-- /wp:sgs/info-box -->\n<!-- wp:sgs/info-box {\"style\":{\"color\":{\"text\":\"#3a2e26\"},\"spacing\":{\"padding\":{\"top\":\"12px\",\"right\":\"0\",\"bottom\":\"12px\",\"left\":\"0\"}}}} -->\nShop\n<!-- /wp:sgs/info-box -->\n<!-- wp:sgs/info-box {\"style\":{\"color\":{\"text\":\"#3a2e26\"},\"spacing\":{\"padding\":{\"top\":\"12px\",\"right\":\"0\",\"bottom\":\"12px\",\"left\":\"0\"}}}} -->\nAbout\n<!-- /wp:sgs/info-box -->\n<!-- /wp:sgs/mobile-nav -->\n<!-- /wp:sgs/container -->"
+}

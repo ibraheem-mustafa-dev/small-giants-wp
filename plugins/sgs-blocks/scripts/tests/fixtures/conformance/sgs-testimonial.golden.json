@@ -1,0 +1,5 @@
+{
+  "fixture": "sgs-testimonial.html",
+  "primary_block_emitted": "sgs/container",
+  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/testimonial {\"style\":{\"border\":{\"radius\":\"12px\",\"width\":\"1px\",\"style\":\"solid\",\"color\":\"#e5e0db\"},\"spacing\":{\"padding\":{\"top\":\"32px\",\"right\":\"24px\",\"bottom\":\"32px\",\"left\":\"24px\"}}}} -->\n<!-- wp:sgs/quote -->\nThese lactation cookies genuinely boosted my supply — ordered three packs already!\n<!-- /wp:sgs/quote -->\n<!-- wp:sgs/text {\"text\":\"Sarah M., Birmingham\",\"fontSize\":14,\"fontSizeUnit\":\"px\",\"fontWeight\":\"600\",\"textColour\":\"#5c4f46\"} /-->\n<!-- /wp:sgs/testimonial -->\n<!-- /wp:sgs/container -->"
+}

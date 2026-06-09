@@ -1,0 +1,5 @@
+{
+  "fixture": "sgs-hero.html",
+  "primary_block_emitted": "sgs/hero",
+  "markup": "<!-- wp:sgs/hero {\"style\":{\"color\":{\"background\":\"#f8f4ef\"},\"spacing\":{\"padding\":{\"top\":\"80px\",\"right\":\"24px\",\"bottom\":\"80px\",\"left\":\"24px\"},\"margin\":{\"top\":\"0\",\"right\":\"auto\",\"bottom\":\"0\",\"left\":\"auto\"}}},\"widthMode\":\"full\",\"contentWidth\":\"1100px\"} -->\n<!-- wp:sgs/heading {\"content\":\"Page Title\",\"level\":\"h1\",\"fontSize\":40,\"fontSizeUnit\":\"px\",\"lineHeight\":1.2,\"lineHeightUnit\":\"unitless\",\"fontWeight\":\"700\",\"textColour\":\"#3a2e26\",\"style\":{\"color\":{\"text\":\"#3a2e26\"}}} /-->\n<!-- wp:sgs/text {\"text\":\"Hero description text for this section.\",\"fontSize\":18,\"fontSizeUnit\":\"px\",\"textColour\":\"#5c4f46\",\"marginTop\":\"16px\"} /-->\n<!-- wp:sgs/multi-button -->\n<!-- wp:sgs/button {\"label\":\"Shop Now\",\"url\":\"/shop/\",\"inheritStyle\":\"primary\"} /-->\n<!-- /wp:sgs/multi-button -->\n<!-- /wp:sgs/hero -->"
+}

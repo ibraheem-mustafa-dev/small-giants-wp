@@ -1,0 +1,20 @@
+<!-- fixture: sgs/form — layout-kind composite with form body -->
+<style>
+.sgs-form { padding: 48px 24px; background: white; }
+.sgs-form__body { max-width: 600px; margin: 0 auto; }
+.sgs-form__field { margin-bottom: 16px; }
+.sgs-form__label { font-size: 14px; font-weight: 500; color: #3a2e26; display: block; margin-bottom: 4px; }
+</style>
+<section class="sgs-form">
+  <form class="sgs-form__body">
+    <div class="sgs-form__field">
+      <label class="sgs-form__label">Your Name</label>
+      <input type="text" name="name" placeholder="Jane Smith"/>
+    </div>
+    <div class="sgs-form__field">
+      <label class="sgs-form__label">Email Address</label>
+      <input type="email" name="email" placeholder="jane@example.com"/>
+    </div>
+    <a class="sgs-button sgs-button--primary" href="#">Submit</a>
+  </form>
+</section>

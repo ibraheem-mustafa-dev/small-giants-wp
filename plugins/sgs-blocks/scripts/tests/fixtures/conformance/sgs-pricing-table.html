@@ -1,0 +1,30 @@
+<!-- fixture: sgs/pricing-table — layout-kind composite with tier columns -->
+<style>
+.sgs-pricing-table { padding: 64px 24px; background: #f8f4ef; }
+.sgs-pricing-table__inner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.sgs-pricing-table__tier { background: white; border-radius: 12px; padding: 32px 24px; border: 1px solid #e5e0db; }
+.sgs-pricing-table__name { font-size: 20px; font-weight: 700; color: #3a2e26; margin-bottom: 8px; }
+.sgs-pricing-table__price { font-size: 36px; font-weight: 800; color: #2d5016; }
+</style>
+<section class="sgs-pricing-table">
+  <div class="sgs-pricing-table__inner">
+    <div class="sgs-pricing-table__tier">
+      <h3 class="sgs-pricing-table__name">Basic</h3>
+      <span class="sgs-pricing-table__price">£9/mo</span>
+    </div>
+    <div class="sgs-pricing-table__tier">
+      <h3 class="sgs-pricing-table__name">Pro</h3>
+      <span class="sgs-pricing-table__price">£19/mo</span>
+    </div>
+    <div class="sgs-pricing-table__tier">
+      <h3 class="sgs-pricing-table__name">Enterprise</h3>
+      <span class="sgs-pricing-table__price">£49/mo</span>
+    </div>
+  </div>
+</section>

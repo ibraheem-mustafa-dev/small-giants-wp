@@ -1,0 +1,5 @@
+{
+  "fixture": "sgs-google-reviews.html",
+  "primary_block_emitted": "sgs/container",
+  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/google-reviews {\"style\":{\"color\":{\"background\":\"#f8f4ef\"}}} /-->\n<!-- /wp:sgs/container -->"
+}

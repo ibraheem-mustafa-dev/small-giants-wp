@@ -1,0 +1,5 @@
+{
+  "fixture": "sgs-team-member.html",
+  "primary_block_emitted": "sgs/container",
+  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/team-member {\"style\":{\"border\":{\"radius\":\"12px\"},\"spacing\":{\"padding\":{\"top\":\"24px\",\"right\":\"24px\",\"bottom\":\"24px\",\"left\":\"24px\"}}}} /-->\n<!-- /wp:sgs/container -->"
+}

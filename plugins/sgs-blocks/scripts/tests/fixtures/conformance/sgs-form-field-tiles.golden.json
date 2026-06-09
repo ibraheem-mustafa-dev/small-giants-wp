@@ -1,0 +1,5 @@
+{
+  "fixture": "sgs-form-field-tiles.html",
+  "primary_block_emitted": "sgs/container",
+  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/form-field-tiles /-->\n<!-- /wp:sgs/container -->"
+}

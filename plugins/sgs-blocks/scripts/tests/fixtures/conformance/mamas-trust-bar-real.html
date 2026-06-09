@@ -1,0 +1,89 @@
+<!-- fixture: mamas-trust-bar-real — extracted verbatim from
+     sites/mamas-munches/mockups/homepage/index.html (trust-bar section + its CSS).
+     CSS variables resolved to real hex: --surface-pink = #f5c2c8, --content-width = 1100px,
+     --primary-dark = #3a2e26 (approx), --text = #3a2e26, --text-muted = #5c4f46.
+     This fixture adds REALISM to the golden set — it is what the live pipeline
+     actually processes for the Mama's Munches canary. -->
+<style>
+.sgs-trust-bar {
+  background: #f5c2c8;
+  padding: 22px 20px;
+}
+.sgs-trust-bar__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 12px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.sgs-trust-bar__badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sgs-trust-bar__badge[hidden],
+.sgs-trust-bar__badge[data-pending="true"] { display: none; }
+.sgs-trust-bar__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(58,46,38,0.06);
+}
+.sgs-trust-bar__icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: #3a2e26;
+  stroke-width: 1.8;
+  fill: none;
+}
+.sgs-trust-bar__text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #3a2e26;
+  line-height: 1.35;
+}
+@media (min-width: 600px) {
+  .sgs-trust-bar__inner { grid-template-columns: repeat(4, 1fr); }
+}
+@media (min-width: 1024px) {
+  .sgs-trust-bar__text { font-size: 14px; }
+}
+</style>
+<section class="sgs-trust-bar" aria-label="Why choose Mama's Munches">
+  <div class="sgs-trust-bar__inner">
+
+    <div class="sgs-trust-bar__badge">
+      <span class="sgs-trust-bar__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="m3 12 9-9 9 9"/><path d="M5 10v10a1 1 0 0 0 1 1h3v-6h6v6h3a1 1 0 0 0 1-1V10"/></svg>
+      </span>
+      <span class="sgs-trust-bar__text">Handmade in Birmingham</span>
+    </div>
+
+    <div class="sgs-trust-bar__badge">
+      <span class="sgs-trust-bar__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+      </span>
+      <span class="sgs-trust-bar__text">Registered Food Business</span>
+    </div>
+
+    <div class="sgs-trust-bar__badge">
+      <span class="sgs-trust-bar__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><path d="m16 8 5 2v5h-5z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      </span>
+      <span class="sgs-trust-bar__text">Free UK Delivery Over £35</span>
+    </div>
+
+    <div class="sgs-trust-bar__badge">
+      <span class="sgs-trust-bar__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </span>
+      <span class="sgs-trust-bar__text">Loved by Breastfeeding Mums</span>
+    </div>
+
+  </div>
+</section>

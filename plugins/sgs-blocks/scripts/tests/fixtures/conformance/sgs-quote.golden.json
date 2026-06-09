@@ -1,0 +1,5 @@
+{
+  "fixture": "sgs-quote.html",
+  "primary_block_emitted": "sgs/container",
+  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/quote -->\n<!-- wp:sgs/text {\"text\":\"Amazing product — my baby absolutely loves it!\",\"fontSize\":22,\"fontSizeUnit\":\"px\",\"lineHeight\":1.5,\"lineHeightUnit\":\"unitless\",\"fontStyle\":\"italic\",\"textColour\":\"#3a2e26\"} /-->\n<!-- wp:sgs/text {\"text\":\"— Jane Doe, Happy Customer\",\"fontSize\":14,\"fontSizeUnit\":\"px\",\"fontWeight\":\"600\",\"textColour\":\"#5c4f46\"} /-->\n<!-- /wp:sgs/quote -->\n<!-- /wp:sgs/container -->"
+}
