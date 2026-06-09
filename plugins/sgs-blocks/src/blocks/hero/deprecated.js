@@ -318,6 +318,21 @@ const v6 = {
 			...rest
 		} = attributes;
 
+		// 2026-06-09 — the legacy per-hero contentMaxWidth* family was removed in
+		// favour of the universal `contentWidth` wrapper attribute. Carry a set
+		// desktop contentMaxWidth value across so the content cap is not lost on
+		// upgrade (e.g. 1200 + 'px' -> '1200px'). The per-breakpoint Tablet/Mobile
+		// caps are dropped — the universal wrapper exposes width responsiveness via
+		// widthMode*/customWidth and a single contentWidth, not a responsive
+		// content cap; if an instance set Tablet/Mobile values they collapse to the
+		// desktop cap (a deliberate, non-fatal simplification). Only fill
+		// contentWidth when it is not already set, so a wrapper value always wins.
+		const newContentWidth =
+			rest.contentWidth ||
+			( rest.contentMaxWidth != null
+				? `${ rest.contentMaxWidth }${ rest.contentMaxWidthUnit || 'px' }`
+				: rest.contentWidth );
+
 		const contentBlocks = [];
 
 		// 1. Eyebrow label → sgs/label.
@@ -365,6 +380,7 @@ const v6 = {
 		// survive subsequent round-trips through the deprecation chain.
 		const newAttributes = {
 			...rest,
+			contentWidth: newContentWidth,
 			label,
 			headline,
 			subHeadline,

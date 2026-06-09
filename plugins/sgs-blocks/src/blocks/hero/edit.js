@@ -268,12 +268,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		splitGapMobile,
 		splitGapUnit,
 		splitContentOrderMobile,
-		// Phase 1 — vertical alignment + content max-width.
+		// Phase 1 — vertical alignment.
 		verticalAlignment,
-		contentMaxWidth,
-		contentMaxWidthTablet,
-		contentMaxWidthMobile,
-		contentMaxWidthUnit,
 		// H-8 — CTA gap.
 		ctaGap,
 		ctaGapUnit,
@@ -463,9 +459,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							);
 						} }
 					</ResponsiveControl>
-
-					<RRangeControl label={ __( 'Content max-width', 'sgs-blocks' ) } attrDesktop="contentMaxWidth" attrTablet="contentMaxWidthTablet" attrMobile="contentMaxWidthMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 1400 } step={ 10 } />
-					<SelectControl label={ __( 'Max-width unit', 'sgs-blocks' ) } value={ contentMaxWidthUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { contentMaxWidthUnit: val } ) } __nextHasNoMarginBottom />
 
 					<DesignTokenPicker label={ __( 'Media background colour', 'sgs-blocks' ) } value={ mediaBackgroundColour } onChange={ ( val ) => setAttributes( { mediaBackgroundColour: val } ) } />
 

@@ -123,10 +123,12 @@ section.sgs-hero {
 	display: flex;
 	flex-direction: column;
 }
-/* No default max-width — heroes are full-bleed by default. To constrain,
- * use the contentMaxWidth block attribute (emitted as inline style by
- * render.php). Removing the global content-size default fixes F5 from
- * hero-poc-qc-2026-05-04.md (~780px leak from base SGS theme.json). */
+/* No default max-width — heroes are full-bleed by default. To constrain the
+ * hero interior, use the universal `contentWidth` wrapper attribute (rendered
+ * by SGS_Container_Wrapper as the .sgs-container__inner cap; the legacy
+ * per-hero contentMaxWidth* family was removed 2026-06-09). Removing the global
+ * content-size default fixes F5 from hero-poc-qc-2026-05-04.md (~780px leak
+ * from base SGS theme.json). */
 
 /* Eyebrow label (above headline). Style variations may override. */
 .sgs-hero__label {

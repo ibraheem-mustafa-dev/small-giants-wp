@@ -597,22 +597,6 @@
 			"type": "string",
 			"default": "center"
 		},
-		"contentMaxWidth": {
-			"type": "number",
-			"default": null
-		},
-		"contentMaxWidthTablet": {
-			"type": "number",
-			"default": null
-		},
-		"contentMaxWidthMobile": {
-			"type": "number",
-			"default": null
-		},
-		"contentMaxWidthUnit": {
-			"type": "string",
-			"default": "px"
-		},
 		"headlineMarginBottom": {
 			"type": "number",
 			"default": null

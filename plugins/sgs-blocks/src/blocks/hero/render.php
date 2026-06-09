@@ -18,7 +18,7 @@
  *   imageObjectFit/Position, image*Width/Height*, imageBorderRadius*,
  *   imageBorderStyle/Width/Colour*, imagePadding*, mediaBackgroundColour,
  *   mediaPadding*, contentPadding*, splitColumnRatio*, splitGap*,
- *   splitContentOrderMobile, verticalAlignment, contentMaxWidth*, ctaGap*.
+ *   splitContentOrderMobile, verticalAlignment, ctaGap*.
  *   Headline / sub-headline / label FONT-SIZE (all breakpoints) is owned by the
  *   child sgs/heading / sgs/text / sgs/label blocks — not emitted here.
  *
@@ -227,12 +227,10 @@ $cta_gap        = $cta_gap_set ? absint( $attributes['ctaGap'] ) : null;
 $cta_gap_tablet = array_key_exists( 'ctaGapTablet', $attributes ) && null !== $attributes['ctaGapTablet'] ? absint( $attributes['ctaGapTablet'] ) : null;
 $cta_gap_mobile = array_key_exists( 'ctaGapMobile', $attributes ) && null !== $attributes['ctaGapMobile'] ? absint( $attributes['ctaGapMobile'] ) : null;
 
-// Vertical alignment and content max-width.
+// Vertical alignment. Content max-width now lives on the universal wrapper attr
+// `contentWidth` (rendered by SGS_Container_Wrapper as the .sgs-container__inner
+// cap) — the legacy per-hero contentMaxWidth* family was removed 2026-06-09.
 $vertical_alignment      = $attributes['verticalAlignment'] ?? 'center';
-$content_max_width       = $attributes['contentMaxWidth'] ?? null;
-$content_max_width_tab   = $attributes['contentMaxWidthTablet'] ?? null;
-$content_max_width_mob   = $attributes['contentMaxWidthMobile'] ?? null;
-$content_max_width_unit  = $attributes['contentMaxWidthUnit'] ?? 'px';
 
 // Split layout renders the media column on the explicit 'split' variant.
 // FR-22-20 (2026-06-01): the cloning converter now DETECTS the variant from the
@@ -464,14 +462,6 @@ if ( null !== $content_pad_mob_top || null !== $content_pad_mob_right || null !=
 	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{padding:' . $mob_cpt . esc_attr( $content_pad_unit ) . ' ' . $mob_cpr . esc_attr( $content_pad_unit ) . ' ' . $mob_cpb . esc_attr( $content_pad_unit ) . ' ' . $mob_cpl . esc_attr( $content_pad_unit ) . ' !important}}';
 }
 
-// ── contentMaxWidth: tablet / mobile overrides ─────────────────────────────
-if ( null !== $content_max_width_tab ) {
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__content{max-width:' . absint( $content_max_width_tab ) . esc_attr( $content_max_width_unit ) . '}}';
-}
-if ( null !== $content_max_width_mob ) {
-	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{max-width:' . absint( $content_max_width_mob ) . esc_attr( $content_max_width_unit ) . '}}';
-}
-
 // ── HC2: text-align on .sgs-hero__content ──────────────────────────────────
 // Desktop = base rule (no @media); tablet/mobile = scoped @media overrides.
 // Each value is allowlisted; empty / unrecognised = no emit (keeps variant
@@ -656,9 +646,6 @@ if ( null !== $content_pad_top || null !== $content_pad_right || null !== $conte
 	$cpb = null !== $content_pad_bottom ? absint( $content_pad_bottom ) : 0;
 	$cpl = null !== $content_pad_left ? absint( $content_pad_left ) : 0;
 	$content_styles[] = 'padding:' . $cpt . esc_attr( $content_pad_unit ) . ' ' . $cpr . esc_attr( $content_pad_unit ) . ' ' . $cpb . esc_attr( $content_pad_unit ) . ' ' . $cpl . esc_attr( $content_pad_unit );
-}
-if ( null !== $content_max_width ) {
-	$content_styles[] = 'max-width:' . absint( $content_max_width ) . esc_attr( $content_max_width_unit );
 }
 $content_style_attr = ' style="' . implode( ';', $content_styles ) . '"';
 
