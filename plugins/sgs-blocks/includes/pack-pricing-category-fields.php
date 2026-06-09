@@ -54,7 +54,7 @@ function sgs_render_pack_pricing_cat_add_field(): void {
 	?>
 	<div class="form-field">
 		<label for="sgs_pack_k">
-			<?php \esc_html_e( 'Smart Pricing — discount strength', 'sgs-blocks' ); ?>
+			<?php \esc_html_e( 'Smart Bulk Pricing — discount strength', 'sgs-blocks' ); ?>
 		</label>
 		<?php sgs_pack_pricing_cat_k_select( '' ); ?>
 		<p class="description">
@@ -77,13 +77,13 @@ function sgs_render_pack_pricing_cat_edit_field( \WP_Term $term ): void {
 	<tr class="form-field">
 		<th scope="row">
 			<label for="sgs_pack_k">
-				<?php \esc_html_e( 'Smart Pricing — discount strength', 'sgs-blocks' ); ?>
+				<?php \esc_html_e( 'Smart Bulk Pricing — discount strength', 'sgs-blocks' ); ?>
 			</label>
 		</th>
 		<td>
 			<?php sgs_pack_pricing_cat_k_select( $current ); ?>
 			<p class="description">
-				<?php \esc_html_e( 'Override the site-wide discount strength for all products in this category. Leave as "Inherit from site" to use the site default.', 'sgs-blocks' ); ?>
+				<?php \esc_html_e( 'Override the site-wide discount strength for all products in this category (a product can still override this individually). Leave as "Inherit from site" to use the site default.', 'sgs-blocks' ); ?>
 			</p>
 		</td>
 	</tr>
@@ -97,11 +97,13 @@ function sgs_render_pack_pricing_cat_edit_field( \WP_Term $term ): void {
  * @return void
  */
 function sgs_pack_pricing_cat_k_select( string $current ): void {
+	// Option wording is IDENTICAL across settings/category/product surfaces
+	// (visual-pass consistency fix).
 	$options = array(
 		''           => \__( 'Inherit from site', 'sgs-blocks' ),
-		'gentle'     => \__( 'Gentle (~8-20% saving)', 'sgs-blocks' ),
-		'standard'   => \__( 'Standard (~17-35% saving)', 'sgs-blocks' ),
-		'aggressive' => \__( 'Aggressive (~20-40% saving)', 'sgs-blocks' ),
+		'gentle'     => \__( 'Gentle (~8-20% saving on largest pack)', 'sgs-blocks' ),
+		'standard'   => \__( 'Standard (~17-35% saving on largest pack)', 'sgs-blocks' ),
+		'aggressive' => \__( 'Aggressive (~20-40% saving on largest pack)', 'sgs-blocks' ),
 	);
 	echo '<select name="sgs_pack_k" id="sgs_pack_k">';
 	foreach ( $options as $value => $label ) {
