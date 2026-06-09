@@ -26,6 +26,9 @@ D194 resolved a real architectural confusion: `canonical_slot` is **content-rout
 
 ---
 
+## (DONE 2026-06-09 — hero dedup) — no action needed
+The dead per-hero `contentMaxWidth*` duplicate control was removed (4 attrs + 2 editor controls + legacy render path); universal wrapper `contentWidth` owns the cap; deprecation `migrate()` carries old→new. Built, deployed to canary, live-verified (deployed block.json has 0 `contentMaxWidth`; page-8 hero renders with no cap regression — cap was 0/none before+after), visual-diff PASS (`reports/visual-diff/hero-2026-06-09.md`), 4 orphaned DB rows pruned, committed `e49ff126`. Nothing to do here.
+
 ## Task 1 — parity2 containment fallback (so we can MEASURE) [inline, FIRST]
 
 **What:** in `plugins/sgs-blocks/scripts/parity2/transfer_checker.py`, add a containment fallback to `_build_anchors`/`_fallback_match`: when a draft leaf's normalised `ownText` isn't an exact clone `ownText` match (converter restructured the section — testimonials→slider, brand), match it to the smallest clone node whose `text` CONTAINS the draft ownText, scoped to the same section, BEFORE the structural fallback that picks a wrong node (footer).
@@ -47,7 +50,7 @@ Stage-0 Commit 0a (canonical_slot backfill) is **DONE + RETIRED as a gate** (D19
 The design is council-hardened (this session's `/adversarial-council` = GO-conditional; the must-fixes are in STAGE1-DESIGN.md "Commit 2 build contract"). Build the universal DB-driven per-slot CSS dispatch replacing the 4-lift-path + 2-carve-out architecture.
 
 **Honour the Commit-2 build contract (council-surfaced):**
-- **Per-block attr resolution, NOT prefix concatenation.** Hero uses `contentMaxWidth*`, the other 28 blocks use `contentWidth` — `{prefix}+{suffix}` string-concat can't generate both. The resolver must be a per-block lookup: `(block_slug, layer, css_property) → the block's actual attr_name`. (Also flag hero's `contentMaxWidth*` divergence — rename to `contentWidth` OR document as a sanctioned exception.)
+- **Per-block attr resolution, NOT prefix concatenation.** The resolver must be a per-block lookup: `(block_slug, layer, css_property) → the block's actual attr_name` (don't assume `{prefix}+{suffix}` string-concat — attr names vary per block). NOTE: the hero `contentMaxWidth*` divergence the council flagged is RESOLVED — Task 0 deduped hero onto the universal `contentWidth`. Keep per-block lookup anyway (robust against any remaining/future naming variance across the 29-composite roster).
 - **`slot_has_equivalent_block(block_slug, slot_name)`** — query `WHERE block_slug=? AND canonical_slot=? AND role IN (<content-bearing>)`; do NOT use the attr-keyed `equivalent_block_for` (the qc-council fatal catch).
 - **CONTENT-WIDTH detection:** `--content-width` custom-property declaration [deterministic, Bean drafts] OR `max-width`+margin-centring signature [fallback, scraped]. Honour the falsification list in STAGE1-DESIGN (width:min/clamp, margin-inline, longhand margin, section-root max-width, flex-grid, padding-centring → gap-candidate, never guess).
 - **Co-located layers** (one element = OUTER+CONTENT+GRID, e.g. `.sgs-brand`, `.sgs-trust-bar__inner`): route its CSS to ALL matching layers' attrs on the same container. Layer detection runs on the post-fold tree, non-exclusive.

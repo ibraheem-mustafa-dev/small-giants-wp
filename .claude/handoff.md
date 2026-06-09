@@ -2,6 +2,8 @@
 
 > Live handoff. Prior sessions: `.claude/memory/handoff-archive.md` + git history. Next session: `.claude/next-session-prompt.md`. Theme thread co-active — commit by explicit path.
 
+**TL;DR:** D194 settled the canonical_slot/wrapper-routing architecture (content-fork metadata only; structural CSS routes name-free via layer-detection + property_suffixes) — DB tagged, full doc sweep, `/qc` + `/adversarial-council` gated, Bean's `--content-width` draft convention applied, and the hero `contentMaxWidth*` duplicate control deduped + deployed + live-verified. Two commits (`a3e22fbb`, `e49ff126`). No converter code changed — next session writes the Stage-1 universal converter core.
+
 ## Completed This Session
 1. **D194 decision** — established that `block_attributes.canonical_slot` is **content-fork metadata only** (the emit-child-InnerBlock-vs-scalar decision, gated by `role` + read with `attr_type`), NOT the structural-CSS routing key. Structural wrapper box CSS routes **name-free** via layer detection (OUTER/CONTENT/GRID by CSS signature + position) + the `property_suffixes` table.
 2. **DB tagging** — added a bare `content` element-slot (`scope='element'`, `aliases=[]`, `standalone_block=NULL`) via `seed-slot-synonyms.py`; tagged 41 `contentWidth`/`contentPadding*`/`contentMaxWidth*` rows `canonical_slot='content'`/`role='layout'`. Confirmed `/sgs-update`'s `assign-canonical.py` does this deterministically → deleted the redundant `seed-canonical-slots.py` (no parallel infra).
@@ -10,12 +12,13 @@
 5. **Full doc sweep** — propagated D194 across Spec 22/00/29/02, cloning-pipeline-flow/stages, architecture, dev-setup, decisions (D194); de-conflicted the Wave-2 design docs (STAGE1-DESIGN/STAGE0-FRS/SIGN-OFF-LEDGER/CLONE-FIX-BUILD-PLAN) + the 2026-06-03 plan + fixed the Method-2 plan's "curated canonical_slot map" → "layer→property_suffixes map" contradiction.
 6. **`/qc`** passed (closed one stale-doc gap in the design-gate doc); **`/adversarial-council`** (6 personas) returned GO-conditional, validated the core split, and surfaced the Commit-2 build contract now recorded in STAGE1-DESIGN.md.
 7. **Wave-2 prompt files removed** (STAGE1-HANDOFF-PROMPT.md + CANONICAL-SLOT-BACKFILL-PROMPT.md) — consolidated into the main `.claude/` opener per Bean.
+8. **Hero dedup (DONE — committed `e49ff126`)** — removed the dead per-hero `contentMaxWidth*` duplicate control (4 attrs + 2 editor controls + legacy render path); universal wrapper `contentWidth` now owns the cap; deprecation `migrate()` carries `contentMaxWidth`→`contentWidth`. Built + deployed to the sandybrown canary + OPcache reset; live-verified (deployed block.json has 0 `contentMaxWidth`, page-8 hero renders with no cap regression — cap was 0/none before+after); visual-diff PASS (`reports/visual-diff/hero-2026-06-09.md`); 4 orphaned DB rows pruned.
 
 ## Current State
-- **Branch:** main at `04157e31` (pre-commit; this session's work committed at the end of handoff)
-- **Tests:** no converter code changed; `seed-slot-synonyms.py` py_compiles OK; guard verified passing (content slot `standalone_block` is NULL)
-- **Build:** n/a (DB + docs + draft only)
-- **Uncommitted changes:** this session's files (see Files Modified) — committed path-scoped at handoff close; co-active Spec-28 files (`2026-06-06-spec27-28-...`, `lucide-icons.php`, `theme-snapshot.json`, phase4 reports) explicitly EXCLUDED.
+- **Branch:** main at `e49ff126` — two commits this session: `a3e22fbb` (D194 decision + DB tag + full doc sweep + `--content-width` draft convention + guard) and `e49ff126` (hero `contentMaxWidth*` dedup, deployed + live-verified).
+- **Tests:** no converter code changed; `seed-slot-synonyms.py` py_compiles OK; guard verified passing; hero block builds + deploys clean; visual-diff gate PASS for hero.
+- **Build:** sgs-blocks rebuilt + deployed to the sandybrown canary (blocks-only) + OPcache reset.
+- **Uncommitted changes:** none of this session's work (both commits pushed). Co-active Spec-28 files (`2026-06-06-spec27-28-...`, `lucide-icons.php`, `theme-snapshot.json`, phase4 reports) were left untouched/uncommitted — they belong to the other thread.
 
 ## Known Issues / Blockers
 - None block the next session. The parity2 node-matcher reliability gap (Task 1) is the first thing to fix so the fidelity gauge is honest before converter work.
