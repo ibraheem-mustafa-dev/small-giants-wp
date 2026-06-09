@@ -507,3 +507,72 @@ class TestLiftersHaveSingleCaller:
             "Lifters must be called ONLY from route_node_css. "
             "Violations found:\n" + "\n".join(violations)
         )
+
+
+# ---------------------------------------------------------------------------
+# Regression guard — no button-group double-nest (D146 gate universality)
+# ---------------------------------------------------------------------------
+
+class TestNoButtonGroupDoubleNest:
+    """Universal regression: a wp:sgs/multi-button block must never appear directly
+    inside another wp:sgs/multi-button block in any fixture's emitted markup.
+
+    Root cause of the bug (2026-06-10): _process_container_children called
+    _group_loose_buttons unconditionally, with no guard checking the parent slug.
+    When the parent was sgs/multi-button itself (the button-group block), its
+    button children were re-wrapped in a bare inner sgs/multi-button.
+    Fix: parent_slug parameter added to _process_container_children; the call site
+    for resolved container-mirror blocks (walk() line ~2934) passes parent_slug=slug;
+    the guard at line ~3862 suppresses _group_loose_buttons when parent_slug ==
+    block_for_slot_token('button-group'). DB-derived (R-22-1), universal (R-22-9).
+
+    This test scans ALL fixture emits — not just sgs-multi-button.html — so any
+    future fixture or converter path that introduces the same double-nest is caught.
+    """
+
+    _MULTI_BUTTON_OPEN_RE = re.compile(r"<!--\s*wp:sgs/multi-button(?:\s|\s*-->|/-->)")
+    _MULTI_BUTTON_CLOSE = "<!-- /wp:sgs/multi-button -->"
+
+    @staticmethod
+    def _find_double_nest(markup: str) -> bool:
+        """Return True if any wp:sgs/multi-button block contains another as a direct
+        or indirect child.
+
+        Implemented as a simple nesting-depth scan: track depth each time an open
+        or close multi-button comment is encountered; a SECOND open while depth > 0
+        means a nested multi-button exists.
+        """
+        depth = 0
+        for line in markup.splitlines():
+            stripped = line.strip()
+            if TestNoButtonGroupDoubleNest._MULTI_BUTTON_OPEN_RE.match(stripped):
+                if depth > 0:
+                    return True  # Found a nested open while already inside one
+                depth += 1
+            elif stripped == TestNoButtonGroupDoubleNest._MULTI_BUTTON_CLOSE:
+                if depth > 0:
+                    depth -= 1
+        return False
+
+    def test_no_double_nest_across_all_fixtures(self) -> None:
+        """No fixture emit may contain wp:sgs/multi-button nested inside wp:sgs/multi-button."""
+        violations: list[str] = []
+        for html_path in sorted(_FIXTURE_DIR.glob("*.html")):
+            html_content = html_path.read_text(encoding="utf-8")
+            try:
+                css_text, section = _extract_fixture_parts(html_content)
+            except ValueError:
+                continue  # Fixture has no <section> — skip (other tests catch this)
+            markup = _run_converter(section, css_text)
+            if self._find_double_nest(markup):
+                violations.append(
+                    f"  {html_path.name}: wp:sgs/multi-button nested inside wp:sgs/multi-button"
+                )
+        assert not violations, (
+            "Button-group double-nest detected in converter output.\n"
+            "Root cause: _process_container_children called _group_loose_buttons "
+            "when the parent IS the button-group block — re-wrapping its children.\n"
+            "Fix: ensure parent_slug is passed to _process_container_children at "
+            "the container-mirror-block call site (walk() line ~2934) so the guard fires.\n"
+            "Violations:\n" + "\n".join(violations)
+        )

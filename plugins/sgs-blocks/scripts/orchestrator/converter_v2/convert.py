@@ -2932,7 +2932,7 @@ def walk(
             # that reverted the earlier universal-fold attempt. Closes the Spec 22
             # §FR-22-4.1 duplicate-nesting FAIL test for resolved composites.
             children_markup = _process_container_children(
-                node, css_rules, depth, variation_buf, attrs
+                node, css_rules, depth, variation_buf, attrs, parent_slug=slug
             )
         else:
             for child in node.children:
@@ -3801,7 +3801,8 @@ def _fold_layout_into_attrs(
 
 
 def _process_container_children(
-    node: "Tag", css_rules: dict, depth: int, variation_buf: list[str] | None, container_attrs: dict
+    node: "Tag", css_rules: dict, depth: int, variation_buf: list[str] | None, container_attrs: dict,
+    parent_slug: "str | None" = None,
 ) -> list[str]:
     """Process an emitted container's DIRECT children with FR-22-4.1 fold semantics.
 
@@ -3813,6 +3814,11 @@ def _process_container_children(
       - rule 3 / FR-22-11: block-match, atomic, leaf, or non-sgs wrapper → normal walk().
     The leaf-with-element-children guard is applied here too (a leaf with sgs-classed
     children is a mis-resolution → folds as a wrapper).
+
+    parent_slug — the resolved block slug this container IS (e.g. 'sgs/multi-button').
+    When parent_slug IS the button-group block, _group_loose_buttons is suppressed here
+    (mirrors the gate in walk() at line 2968): the children are the group's OWN items and
+    must not be re-wrapped in a second group block. DB-derived (R-22-1), universal (R-22-9).
     """
     # FR-22-4.1 sole-shell gate (2026-05-31, evidence: brand b5 trace + DOM). A direct-
     # child wrapper folds into its parent ONLY when it is the SOLE element child — i.e. a
@@ -3859,7 +3865,11 @@ def _process_container_children(
             if r:
                 out.append(r)
     # Spec 11 + P-9: group loose sgs/button runs into sgs/multi-button (WP mirror).
-    out = _group_loose_buttons(out)
+    # Suppressed when THIS container IS the button-group block itself — its children
+    # are the group's own buttons and must not be re-wrapped (mirrors the gate in
+    # walk() at line 2968; DB-derived R-22-1; universal R-22-9).
+    if parent_slug != db.block_for_slot_token("button-group"):
+        out = _group_loose_buttons(out)
     return out
 
 
