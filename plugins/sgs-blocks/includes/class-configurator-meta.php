@@ -314,6 +314,51 @@ final class Configurator_Meta {
 				'auth_callback'     => array( __CLASS__, 'can_edit_variation' ),
 			)
 		);
+
+		// ── Spec 28 P3 — Smart Bulk Pricing product-level overrides ──────────────
+		// These keys store per-product smart-pricing settings that override the
+		// site/category cascade (FR-28-6).  show_in_rest:false on all — values
+		// are authored exclusively via the WC product-data panel and must pass
+		// the validation in pack-pricing-product-fields.php before persisting.
+
+		\register_post_meta(
+			'product',
+			'_sgs_pack_k',
+			array(
+				'type'              => 'string',
+				'single'            => true,
+				'show_in_rest'      => false,
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_key', // Matches the save handler's sanitiser (one validation path).
+				'auth_callback'     => array( __CLASS__, 'can_edit_variation' ),
+			)
+		);
+
+		\register_post_meta(
+			'product',
+			'_sgs_pack_sizes',
+			array(
+				'type'              => 'array',
+				'single'            => true,
+				'show_in_rest'      => false,
+				'default'           => array(),
+				'sanitize_callback' => array( __CLASS__, 'sanitize_pack_sizes' ),
+				'auth_callback'     => array( __CLASS__, 'can_edit_variation' ),
+			)
+		);
+
+		\register_post_meta(
+			'product',
+			'_sgs_pack_manual_overrides',
+			array(
+				'type'              => 'string',  // JSON-encoded map of pack_size → price_pence.
+				'single'            => true,
+				'show_in_rest'      => false,
+				'default'           => '',
+				'sanitize_callback' => array( __CLASS__, 'sanitize_pack_manual_overrides' ),
+				'auth_callback'     => array( __CLASS__, 'can_edit_variation' ),
+			)
+		);
 	}
 
 	// ─── Wave-2: product-level save handler (base price + audit trail) ───
@@ -679,5 +724,66 @@ final class Configurator_Meta {
 	 */
 	public static function can_edit_variation( $allowed, $meta_key, $post_id ): bool {
 		return \current_user_can( 'edit_post', (int) $post_id );
+	}
+
+	// ─── Spec 28 P3 sanitisers ───
+
+	/**
+	 * Sanitise a pack-sizes array (FR-28-15, Spec 28 P3).
+	 *
+	 * Accepts an array of pack counts; drops any entry that is not an integer
+	 * in the range 2–500.  Deduplicates and sorts ascending.  Returns [] on
+	 * completely invalid input (caller must then fall back to site/default).
+	 *
+	 * @param mixed $value Raw value from meta or REST.
+	 * @return int[]
+	 */
+	public static function sanitize_pack_sizes( $value ): array {
+		if ( ! \is_array( $value ) ) {
+			return array();
+		}
+		$sizes = array();
+		foreach ( $value as $n ) {
+			$n = (int) $n;
+			if ( $n >= 2 && $n <= 500 ) {
+				$sizes[] = $n;
+			}
+		}
+		$sizes = \array_unique( $sizes );
+		\sort( $sizes );
+		return \array_values( $sizes );
+	}
+
+	/**
+	 * Sanitise the per-pack manual overrides map (Spec 28 P3, FR-28-10).
+	 *
+	 * Accepts an array of { pack_size => price_pence } pairs or a
+	 * JSON-encoded string of the same shape.  Each override must have:
+	 *   - pack_size: integer 2–500
+	 *   - price_pence: integer ≥ 2 (post-generation floor, FR-28-4)
+	 *
+	 * Returns a JSON-encoded string for storage (the registered meta type is
+	 * 'string' so WP serialises nothing — we own the encoding).
+	 *
+	 * @param mixed $value Raw value.
+	 * @return string JSON-encoded map, or '{}' on invalid input.
+	 */
+	public static function sanitize_pack_manual_overrides( $value ): string {
+		if ( \is_string( $value ) ) {
+			$decoded = \json_decode( $value, true );
+			$value   = \is_array( $decoded ) ? $decoded : array();
+		}
+		if ( ! \is_array( $value ) ) {
+			return '{}';
+		}
+		$out = array();
+		foreach ( $value as $n => $pence ) {
+			$n     = (int) $n;
+			$pence = (int) $pence;
+			if ( $n >= 2 && $n <= 500 && $pence >= 2 ) {
+				$out[ $n ] = $pence;
+			}
+		}
+		return \wp_json_encode( $out );
 	}
 }
