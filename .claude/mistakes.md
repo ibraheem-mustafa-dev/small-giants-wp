@@ -4,6 +4,10 @@
 <!-- ACTIVE — recent 30 mistakes as keyword stubs. Full body in blub.db `learnings` table or feedback_*.md files. Archive: memory/mistakes-archive.md. Search: grep -r KEYWORD memory/ + curl localhost:5050/api/learning?search=KEYWORD -->
 
 ## Active stubs (most recent 30)
+### [2026-06-10] WC product-panel CSS force-columns EVERY label — nested labels overlap
+- **Pattern key:** `wc-panel-css-force-columns-every-label`
+- **Decision:** D201 (`fe7e4fff`)
+- **Rule:** WC applies `float:left;width:150px;margin-left:-150px` to every label PANEL-WIDE. Nested per-control labels need inline `float:none;width:auto;margin:…` resets (no !important — inline wins; the width/margin hit flex items too). `woocommerce_wp_*` field labels must be SHORT — sentences go in `description`. Bean's eye caught what the visual pass mis-triaged as polish.
 
 ### [2026-06-09] File-scope `extends \WC_*` is a double timing trap (site fatal AND silent unregister)
 - **Pattern key:** `file-scope-wc-class-extends-must-load-lazily`
