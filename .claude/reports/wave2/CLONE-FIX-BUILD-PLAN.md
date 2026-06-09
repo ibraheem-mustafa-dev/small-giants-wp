@@ -41,14 +41,14 @@ GO on the 8-family decomposition (all 6 personas praised the F1/F3 layer split).
 
 ### Stage 0 — gate + baseline + spec (do FIRST, before any build)
 1. **Spec↔code conformance gate** (D178's missing cure) — wired to something that runs (prebuild + pre-commit, per memory `dont-claim-a-guard-is-enforced-unless-wired`). Fails when emit diverges from the spec. This is the structural defence that stops the families silently re-rotting.
-2. **Re-baseline the issue register** — every issue from the family map tagged `open | canary-only | shipped` against git + canary. FP-F/SP-G = shipped. Produces the true denominator + the **46-row sign-off ledger** (issue → family → owner → verified Y/N).
+2. **Re-baseline the issue register** — every issue from the family map tagged `open | canary-only | shipped` against git + canary. FP-F/SP-G = shipped. Produces the true denominator + the **55-row sign-off ledger** (issue → family → owner → verified Y/N).
 3. **Write the missing spec rules (FRs)** so new behaviour is documented before it's coded: FR for inherited/absent-value resolution (F6a); FR for draft-driven breakpoints (F4); the FR-22-19 retirement clause (so removing `_route_composite_interior` is a sanctioned spec change, not silent deletion).
 
 ### Stage 1 — PRIORITY: the universal converter core
 Built as one coherent workstream (split into commits per R-22-5), design-gated (Rule 7), **regression-OK but live-DOM-verified-universal**. qc-council (2026-06-09, cross-model empirical) re-sized this into three distinct pieces — do NOT bundle them as one "consolidate+extend":
 
 - **F1-consolidate (SMALL, verified).** `_lift_typography_to_block_attrs` (`convert.py:1400`), `_lift_wrapper_css_to_container_attrs` (`:981`, called `:2786`/`:2872`), `_lift_root_supports_to_style`, the scalar-media path → ONE DB-driven dispatch keyed on `role`/`canonical_slot`/`attr_type` (`equivalent_block_for`, `db_lookup.py:1995`). **Delete the dead `_lift_styling_attrs` (`:1687`) + `_slot_attr_prefix` (`:1665`)** — qc-council confirmed zero production call-sites (test-only). This part IS consolidation.
-- **F1-cross-node (NET-NEW code, MEDIUM — qc-council Correction 1).** An interior element's CSS routes to its slot's destination: parent container attrs (`contentPadding`/`contentWidth`/gap) or child-block attrs. **This is genuinely new code, NOT a tidy extend** — qc-council confirmed the A2 path collects CSS for the node ONLY (`_collect_css_decls_for_element(node)`, `:2872`); nothing walks a `__inner`/`__content` child's CSS upward today. This is the headline F1 capability; size it as a real build.
+- **F1-cross-node (NET-NEW code, MEDIUM — qc-council Correction 1).** An interior element's CSS routes to its slot's destination: parent container attrs (`contentPadding`/`contentWidth`/gap) or child-block attrs. **This is genuinely new code, NOT a tidy extend** — qc-council confirmed the A2 path collects CSS for the node ONLY (`_collect_css_decls_for_element(node)`, `:2871`; the `:2872` sibling call is `_lift_wrapper_css_to_container_attrs`); nothing walks a `__inner`/`__content` child's CSS upward today. This is the headline F1 capability; size it as a real build.
 - **F6a inheritance/absence** rides here (same `_collect_css_decls_for_element`): resolve inherited/ancestor values + make browser-defaults explicit.
 - **Remove the carve-outs.** Replace BOTH per-composite interior-routing branches in `walk()` — `_route_composite_interior` (def `:2404`, gated `has_scalar_media_attrs` `:2940`) + `_is_container_mirror_block` (`:2950`, def `:908`) → `_process_container_children` (`:3834`) — and the trust-bar atomic handler, with the universal dispatch. **qc-council de-risked this:** the sole-element-child guard `fold_eligible = len(element_children) == 1` (`_process_container_children:3857`) already prevents the exact mechanism behind the +13pp XS-3 revert, and the trust-bar bound-mode cheat was already purged (D182). Still **verify on the live DOM that the replacement routes correctly for EVERY composite + array block**; roll back only if genuinely non-universal, not if the draft's number dips.
 
@@ -65,7 +65,7 @@ Built as one coherent workstream (split into commits per R-22-5), design-gated (
 ### Stage 3 — verify
 - Real-homepage live DOM per section (Playwright, R-22-11) — the universal mechanism routed correctly, not just the score.
 - **Mobile/tablet verification pass** (375 / 768) — confirm the universal fix landed across devices.
-- The 46-row sign-off ledger closed out + Bean's eye (R-22-13).
+- The 55-row sign-off ledger closed out + Bean's eye (R-22-13).
 - **Uncaptured residue list** maintained (FP-I now in; any mobile-only defect found in the pass; the FP-F drift guard wiring) so nothing silently survives.
 
 ## Gates (the council skills, baked in)

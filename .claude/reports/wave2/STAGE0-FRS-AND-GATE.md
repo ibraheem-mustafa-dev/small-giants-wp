@@ -29,7 +29,7 @@ These are drafts. They get reviewed + merged into `specs/22-UNIVERSAL-BLOCK-EQUI
 
 ## FR draft 2 — Draft-driven responsive breakpoints (F4) → proposed `FR-22-5.2`
 
-**Requirement.** The converter reads the draft's **actual** `@media` breakpoints rather than snapping to fixed constants (`_BREAKPOINT_RULES`, `_GRID_DESKTOP_BP=1024`, `_GRID_TABLET_BP=600` at `convert.py:3317-3318`). Each detected breakpoint maps to the block's existing responsive attr tier (`+Tablet`/`+Mobile`, the FR-22-21 step-4 companions). A breakpoint with no matching attr tier is logged as an `attribute_gap_candidate` (D3) — never emitted as inline `@media` (R-22-6).
+**Requirement.** The converter reads the draft's **actual** `@media` breakpoints rather than snapping to fixed constants (`_BREAKPOINT_RULES` at `db_lookup.py:1233-1239`; `_GRID_DESKTOP_BP=1024` + `_GRID_TABLET_BP=600` at `convert.py:3317-3318`). Each detected breakpoint maps to the block's existing responsive attr tier (`+Tablet`/`+Mobile`, the FR-22-21 step-4 companions). A breakpoint with no matching attr tier is logged as an `attribute_gap_candidate` (D3) — never emitted as inline `@media` (R-22-6).
 
 **PASS.**
 - A draft using `@media (min-width:640px)` has its 640 rule lifted (today it's silently discarded — `min-width:640` absent from `_BREAKPOINT_RULES`, `db_lookup.py:1233-1239`).
