@@ -43,13 +43,13 @@ These are drafts. They get reviewed + merged into `specs/22-UNIVERSAL-BLOCK-EQUI
 
 ## FR draft 3 — FR-22-19 retirement (carve-out supersession) → amend `FR-22-19`
 
-**Requirement.** `_route_composite_interior` (`convert.py:2404`, the per-composite carve-out gated by `is_class_section_block`) is **superseded** by the universal per-slot CSS routing (F1 cross-node) + the array path (FR-22-2.5). Composite interiors route content AND CSS via the universal dispatch keyed on `role`/`canonical_slot`/`attr_type` — with **no** `is_class_section_block` branch in the routing path.
+**Requirement.** The TWO per-composite interior-routing carve-outs in `walk()` — `_route_composite_interior` (def `convert.py:2404`) gated by `db.has_scalar_media_attrs(slug)` (`:2940`), and `_is_container_mirror_block(slug)` (`:2950`, def `:908`) → `_process_container_children` (`:3834`) — are **superseded** by the universal per-slot CSS routing (F1 cross-node) + the array path (FR-22-2.5). Composite interiors route content AND CSS via the universal dispatch keyed on `role`/`canonical_slot`/`attr_type` — with **no** per-composite gate (`has_scalar_media_attrs` / `_is_container_mirror_block`) in the routing path. NB: `is_class_section_block` is the VOTER's slug-resolution helper (FR-22-16), NOT this gate — do not target it.
 
 **Migration (R-22-3 / R-22-4).**
-- The sole-element-child guard (`_process_container_children:2956`) that prevents the +13pp XS-3 regression (`__inner` fold firing on multi-child grids) MUST be preserved in the universal path (qc-council confirmed this guard already exists and defuses the XS-3 mechanism).
+- The sole-element-child guard `fold_eligible = len(element_children) == 1` (`_process_container_children:3857`) that prevents the +13pp XS-3 regression (`__inner` fold firing on multi-child grids) MUST be preserved in the universal path (qc-council confirmed this guard already exists and defuses the XS-3 mechanism).
 - Remove `_route_composite_interior` ONLY after the universal path is **live-DOM-verified** to route every composite interior (content + CSS) correctly. Per-section pixel-diff on the removal commit; rollback only if genuinely non-universal (not if the draft's score dips — the deliverable is the universal converter, not the score).
 
-**PASS.** `grep is_class_section_block` in the routing path returns zero; every class-section composite (hero, cta-section, testimonial-slider, …) emits its interior via the universal dispatch; live DOM unchanged-or-better.
+**PASS.** Neither the `has_scalar_media_attrs`-gated `_route_composite_interior` branch (`:2940`) nor the `_is_container_mirror_block` branch (`:2950`) remains as a separate per-composite path in the `walk()` emit chain — every composite emits its interior via the one universal dispatch; live DOM unchanged-or-better. (A `grep is_class_section_block`=0 test is meaningless — that string is only in stale docstrings + the unrelated voter helper.)
 
 **FAIL.** Any composite still routed via a per-slug / per-KIND branch.
 

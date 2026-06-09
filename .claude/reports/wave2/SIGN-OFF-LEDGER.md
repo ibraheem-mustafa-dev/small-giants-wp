@@ -88,6 +88,10 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 - **Stage 2-F8:** ~4 (BR-B, IN-D, IN-F, GF-I-half, SP-E-half)
 - **NEW / draft / Spec 27:** TB-C, TB-C-draft, FP-E, FP-H, FP-DRAFT (FP-E/H = card-grid product capability = a real Spec 27 build, sized honestly)
 
+## Stage-1 build prerequisites (council C5 — must be green BEFORE the relevant commit)
+- **canonical_slot backfill (blocks the cross-node commit / F1-cross-node).** The cross-node dispatch finds the parent's per-slot box attrs by their `canonical_slot` — but **~41 rows are untagged** (qc-council/Spec-Lawyer measured: every `block_attributes.contentWidth` row across 14 blocks + all `sgs/hero.contentPadding*` are `canonical_slot=NULL`; `sgs/hero.mediaPadding*` ARE already tagged `media`). **`/sgs-update` does NOT write `canonical_slot`** (Stage 5 only auto-fills missing `standalone_block`) — needs a `scripts/seed-canonical-slots.py` that writes BOTH DBs (the `seed-slot-synonyms.py` pattern), verified per-row, before the cross-node commit. Status: OPEN (pre-commit gate).
+- **Gate identity (no doc may say `is_class_section_block` for the composite-interior carve-out).** The live gates are `db.has_scalar_media_attrs(slug)` (`convert.py:2940`) + `_is_container_mirror_block` (`:2950`); the XS-3 guard is `fold_eligible` (`_process_container_children:3857`). Corrected across all docs 2026-06-09.
+
 ## Uncaptured residue (council Completeness — must stay visible)
 - **Mobile/tablet defects** — the source review was DESKTOP-ONLY. The responsiveness *failure-mode* is captured (F4 + per-device CSS vars), and universal fixes apply to all devices — but the **375/768 verification pass at Stage 3 may surface device-specific defects** not in this ledger. Add them here when found.
 - **FP-F drift guard** — the binding fix shipped, but its `generate-extension-attributes.js --check` is only wired to prebuild, not CI/pre-commit. Confirm the pre-commit wiring (memory `dont-claim-a-guard-is-enforced-unless-wired`).
