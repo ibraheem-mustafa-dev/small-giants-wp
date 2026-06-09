@@ -397,10 +397,58 @@ class _StructuralMatcher:
             if not own:
                 continue
             candidates = self._clone_by_own_text.get(own)
-            if not candidates:
+            if candidates:
+                best = self._pick_best_anchor(dn, candidates)
+                self._anchor[_node_id(dn)] = best
                 continue
-            best = self._pick_best_anchor(dn, candidates)
-            self._anchor[_node_id(dn)] = best
+            # Containment fallback: the converter RESTRUCTURED the section
+            # (e.g. testimonials -> slider, brand strip re-wrapped) so the
+            # draft leaf's ownText is no longer the OWN text of any single
+            # clone node — it has been merged into a container's combined
+            # `text`. Anchor it to the SMALLEST clone node (shortest full
+            # text, most specific) in the SAME section whose full `text`
+            # CONTAINS the draft ownText. This runs BEFORE the structural
+            # fallback (_fallback_match in match() step 3), which would
+            # otherwise pick a wrong node by tag/BEM/depth (e.g. the footer).
+            contained = self._containment_match(dn, own)
+            if contained is not None:
+                self._anchor[_node_id(dn)] = contained
+
+    def _containment_match(self, draft: dict, own_norm: str) -> dict | None:
+        """
+        Find the smallest clone node whose normalised full `text` CONTAINS the
+        draft leaf's normalised ownText, scoped to the draft's section.
+
+        Smallest = shortest containing full text (the most specific node still
+        carrying the text), then most shared BEM, then deepest (most specific
+        structural position), then matching tag. Returns None when the ownText
+        is too short to be a reliable signal or nothing in the section contains
+        it (genuinely dropped content stays DROPPED — see Fixture B).
+        """
+        if len(own_norm) < 3:
+            return None
+
+        section = draft.get("section", "")
+        section_pool = [n for n in self._clone_nodes if n.get("section") == section]
+        if not section_pool:
+            section_pool = self._clone_nodes
+
+        matches: list[tuple[int, dict]] = []
+        for cn in section_pool:
+            clone_text = _normalise_text(cn.get("text") or "")
+            if clone_text and own_norm in clone_text:
+                matches.append((len(clone_text), cn))
+        if not matches:
+            return None
+
+        def sort_key(item: tuple[int, dict]) -> tuple:
+            text_len, cn = item
+            shared = _shared_bem(draft, cn)
+            depth = len(_segments(cn))
+            tag_match = 0 if cn.get("tag", "").lower() == draft.get("tag", "").lower() else 1
+            return (text_len, -shared, -depth, tag_match)
+
+        return min(matches, key=sort_key)[1]
 
     def _pick_best_anchor(self, draft: dict, candidates: list[dict]) -> dict:
         """
@@ -1219,6 +1267,90 @@ def _self_test() -> None:
     assert t["dropped"] == 1,     f"Expected dropped=1, got {t['dropped']}"
 
     print("Fixture C assertions passed.")
+
+    # ===================================================================
+    # Fixture D — section restructured (testimonials -> slider): the draft
+    # leaf's ownText is no longer a clone OWN-text match; it's merged into a
+    # slider container's combined text. The containment fallback must anchor
+    # it to that container, NOT let the structural fallback grab the footer.
+    # ===================================================================
+    print()
+    print("=" * 60)
+    print("FIXTURE D — restructured section (containment fallback)")
+    print("=" * 60)
+
+    draft_d = [
+        # Testimonial quote leaf — own text the slider will merge/re-wrap.
+        {
+            "domPath": "main[0]>section[0]>blockquote[0]>p[0]",
+            "tag": "p",
+            "classes": ["sgs-testimonial__quote"],
+            "section": "testimonials",
+            "text": "I was sceptical honestly but the team delivered",
+            "ownText": "I was sceptical honestly but the team delivered",
+            "css": {"font-size": "18px", "color": "rgb(40, 40, 40)"},
+            "media": None,
+            "imgNaturalW": None,
+        },
+    ]
+
+    clone_d = [
+        # Slider container — the quote text is now part of its combined
+        # descendant text (no node has it as OWN text); shortest containing node.
+        {
+            "domPath": "main[0]>section[0]>div[0]>div[0]",
+            "tag": "div",
+            "classes": ["sgs-testimonial-slider__slide"],
+            "section": "testimonials",
+            "text": "I was sceptical, honestly — but the team delivered. Jane D.",
+            "ownText": "",
+            "css": {"font-size": "18px", "color": "rgb(40, 40, 40)"},
+            "media": None,
+            "imgNaturalW": None,
+        },
+        # Footer node in a DIFFERENT section — the wrong node the OLD structural
+        # fallback (same tag p, depth) would have grabbed. Must NOT be picked.
+        {
+            "domPath": "footer[0]>div[0]>p[0]",
+            "tag": "p",
+            "classes": ["sgs-site-footer__copy"],
+            "section": "footer",
+            "text": "Copyright 2026 Small Giants Studio",
+            "ownText": "Copyright 2026 Small Giants Studio",
+            "css": {"font-size": "12px", "color": "rgb(120, 120, 120)"},
+            "media": None,
+            "imgNaturalW": None,
+        },
+    ]
+
+    def fate_d(node: dict) -> dict:
+        return {"fate": "emit-block", "block": "sgs/testimonial-slider", "note": ""}
+
+    result_d = check(draft_d, clone_d, fate_d)
+
+    print("\nPer-node verdicts:")
+    for entry in result_d["by_node"]:
+        cls_str = ", ".join(entry["classes"]) or "(no classes)"
+        print(
+            f"  [{entry['verdict']:12s}]  {cls_str:<35s}  "
+            f"content_ok={entry['content_ok']}  "
+            f"clone_match={entry['clone_match'] or '—'}"
+        )
+
+    print("\nRunning Fixture D assertions …")
+    quote_entry = result_d["by_node"][0]
+    assert quote_entry["content_ok"] is True, (
+        "Restructured quote should be content_ok via containment fallback"
+    )
+    assert quote_entry["clone_match"] == "main[0]>section[0]>div[0]>div[0]", (
+        f"Quote should anchor to the slider slide (containment), not the footer; "
+        f"got {quote_entry['clone_match']}"
+    )
+    assert quote_entry["verdict"] == "TRANSFERRED", (
+        f"Quote CSS matches the slider slide → TRANSFERRED, got {quote_entry['verdict']}"
+    )
+    print("Fixture D assertions passed.")
+
     print()
     print("All self-tests passed.")
 
