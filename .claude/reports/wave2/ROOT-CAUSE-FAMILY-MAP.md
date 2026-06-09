@@ -38,18 +38,21 @@ caveat: Family classification is robust. Exact file:line citations inherit the W
 6. **F5 (block resolution/capability)** — slot-routing table additions (`trustpilot-reviews`, `announcement-bar` callout) + a real card-grid product capability (framework build, the Spec 27 thread).
 7. **F7 (single grid engine)** — H-A's double emission; render-side.
 
-## Revised plan — multi-workstream, with the council gates you asked for
+## Council corrections applied (adversarial-council 2026-06-09 + Bean reframe)
 
-**Stage 0 — design pre-mortem (NOW): `/adversarial-council`** on THIS family map + the workstream decomposition. Question for the panel: is the 8-family decomposition correct and complete; is anything mis-classified; is F1 genuinely the right centrepiece; what's the safest build order given the shared converter + shared container wrapper blast radius?
+The 8-family **diagnosis** passed the council (all 6 praised the F1/F3 layer split). Corrections folded in:
 
-**Stage 1 — per-workstream fix-shape validation: `/qc-council`** (per blub.db 255). Before building each workstream's fix, validate the fix-shape against a measured baseline (predicted vs actual delta) — especially F1 (converter routing) and F4 (breakpoints), which touch the converter core.
+- **F1 reframed** — the lift paths already EXIST (`_lift_wrapper_css_to_container_attrs` wired universally, `convert.py:2871-2876`). F1 = **consolidate the 4-5 existing paths into one DB-driven dispatch + add the missing cross-node child→parent CSS routing** — not "build a router". Delete the dead `_lift_styling_attrs`.
+- **F6 SPLIT** → **F6a** (converter resolves inherited/ancestor CSS — shares `_collect_css_decls_for_element` with F1, build together) + **F6b** (heading block `:where(){text-align:center}` default — moves to F3). Needs a new spec rule (FR) written first.
+- **BR-B reclassified F1 → F8** (the `sgs/media` atomic handler doesn't *invoke* the lift, vs routing-table gap). **BR-C reclassified F5 → F3** (`is-style-outline` CSS uses wrong border token; block resolves correctly). **F5-trustpilot** = missing slot *alias* coverage, not wrong block resolution.
+- **FP-I ADDED** (was dropped — uniform card image height) → F3 (with FP-O).
+- **FP-F/SP-G binding = SHIPPED (D191)** — not a pending workstream; re-baseline the denominator {open/canary-only/shipped}.
+- **F2** is a D0-vs-D1 decision (token→leave / override→lift), NOT a 1-line un-exclude.
+- **Scope note:** the source review was DESKTOP-ONLY. Per Bean, the responsiveness *failure-mode* IS captured (per-device CSS vars, breakpoints F4) — universal fixes apply to all devices — so a mobile/tablet **verification pass** at the end suffices, not an exhaustive pre-list.
+- **Bean reframe (overrides council C3/C4):** the deliverable is the **universal converter**, not the draft's parity score. Temporary regression while removing a carve-out is fine; the replacement must be verified **universal on the live DOM** (the +13pp XS-3 revert was a *broken* replacement, not "regression is bad"). Cheap-wins-first sequencing de-prioritised; independents build in parallel.
 
-**Stage 2 — build, sequenced by the council's order**, each in a fresh session (Wave-3 model), each design-gated (Rule 7) because F1/F3/F7 touch shared mechanisms. Add the **spec↔code conformance gate** D178 says is missing so this can't silently rot.
+## Plan → see `CLONE-FIX-BUILD-PLAN.md`
 
-**Stage 3 — verify on the real homepage** (Playwright live DOM, R-22-11/R-22-13) per section, Bean sign-off.
+This map is the DIAGNOSIS. The **build plan** (stages, gates, priority order, the universal-core-first decision) lives in [`CLONE-FIX-BUILD-PLAN.md`](CLONE-FIX-BUILD-PLAN.md) (council-revised + Bean reframe). Gates baked in there: Stage-0 conformance gate + re-baseline + write-the-FRs; `/qc-council` per fix-shape; design-gate (Rule 7) on shared-mechanism builds.
 
-### Build-order hypothesis (for the council to confirm/reorder)
-1. **F1 converter per-slot routing** (D178 finish + extend to wrapper-box-CSS + array per-item) — biggest lever, unblocks the most.
-2. **F3 block render defaults** (attr-drive the container/feature-grid/option-picker/etc. hardcodes) — second biggest, partly overlaps WS-1.
-3. **F6 inheritance/absence** + **F4 breakpoints** + **F2 font-family** — converter-side, ride alongside F1.
-4. **F5 block resolution/capability** + **F7 grid engine** + **NEW framework/draft** — targeted.
+_(The original build-order hypothesis + stages here were superseded 2026-06-09 by the council-revised + Bean-reframed plan in `CLONE-FIX-BUILD-PLAN.md`. Priority there: Stage 0 gate+baseline+FRs → Stage 1 universal converter core (priority) → Stage 2 parallel families → Stage 3 verify incl. mobile pass + sign-off ledger.)_
