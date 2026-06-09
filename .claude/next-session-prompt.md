@@ -3,8 +3,16 @@ doc_type: next-session-prompt
 project: small-giants-wp
 thread: cloning-pipeline
 generated: 2026-06-09
-primary_goal: "D194 resolved the canonical_slot/wrapper-routing architecture (content-fork metadata only; structural CSS routes name-free via layer-detection + property_suffixes) — DB tagged, full doc sweep done, /qc + /adversarial-council gated, Bean's --content-width draft convention applied. Next: Stage 1 of the clone-fix build — the universal converter core (F1-consolidate + F1-cross-node NET-NEW + carve-out removal), now carrying the council-hardened Commit-2 build contract."
+primary_goal: "Stage-1 converter core IS UNDERWAY on branch feat/stage1-converter-core: Commits 1a (route_node_css consolidation, byte-identical, dd320886) + 1b (per-declaration DB dispatch via db_lookup.attr_for_property, byte-identical, 1bc25e29) are DONE + Gate-A-gated. Next: write FR-22-5.3 into Spec 22 (count is 0 — prerequisite), then Commit 2 cross-node routing per the council build contract, then 3 (F6a) + 4 (carve-out retirement, own-branch merge after Bean live sign-off)."
+updated: 2026-06-09 (late session — Tasks 1/2 closed, Stage-1 Commits 1a+1b shipped)
 ---
+
+> **2026-06-09 LATE-SESSION STATE (read before the original tasks below):**
+> - **Task 1 SUPERSEDED by D195** — the fidelity gauge is the DIRECT TRUTH-FILE comparison (draft `index.html` vs `current-clone-page-source.html`, refresh via `curl -sL` after every deploy). parity2 = soft signal only (containment fallback shipped `5ad9f75f` but its `css_dropped` lists are NOT fix inputs).
+> - **Task 2 DONE** — Gate A (38-test golden harness, wired to local pre-commit on converter_v2 edits, `8bbe7143`) + Gate B (`check-hardcoded-render-defaults.js`, prebuild-wired). Gate B's first baseline was 268; a 5-agent audit found **265 checker false positives** → checker hardened E1–E10 (`cacfc449`, baseline 11 honest entries, guard integrity seed-proven) + 3 real F3 fixes shipped (`64fc1f3a`, live-verified render-neutral). See D195 addendum in decisions.md.
+> - **Task 3 IN PROGRESS — branch `feat/stage1-converter-core` (pushed):** Commit 1a `dd320886` (4 lifter call sites → one `route_node_css` seam; dead `_lift_styling_attrs`/`_slot_attr_prefix` deleted; `test_lifters_have_single_caller` locks the seam) + Commit 1b `1bc25e29` (`db_lookup.attr_for_property` :1274 — DB decides contested attr destinations; byte-identical across the 31-fixture corpus). **NEXT STEP: merge the ratified FR-22-5.3 draft (STAGE0-FRS-AND-GATE.md) into Spec 22 — grep count is currently 0 — THEN build Commit 2 honouring the build contract below.** Commits 2–4 CHANGE EMITTED OUTPUT: expect golden re-baselines with cited reasons + re-clone page 8 + truth-file diff + live verify per commit.
+> - **Converter triage additions (found this session, for Commit 2+ work):** (1) `sgs/multi-button` double-nests itself (`container > multi-button > multi-button > button`); (2) the cloned hero's INLINE style carries `grid-template-columns` TWICE (`1fr 1fr` then `1fr` — two emit writers colliding; second wins; the precedence-collision class); (3) accordion items + tabs nav resolve to `sgs/info-box` (slot-resolution gaps).
+> - **NEW GUARDRAIL (blub.db 331):** agents that seed-then-revert test edits must revert by inverse Edit ONLY — NEVER `git checkout/restore/stash/clean` ("unchanged" = vs pre-task state, not HEAD). A rater wiped the uncommitted tree this session. Commit valuable work BEFORE dispatching file-mutating agents.
 
 # Next session — Stage 1 universal converter core (Method-2), council-hardened
 
