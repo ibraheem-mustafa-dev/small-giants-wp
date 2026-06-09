@@ -1,4 +1,56 @@
-# Session Handoff — 2026-06-06 (SGS THEME thread, session 17 — council backlog Wave 1 + Wave 2 + Wave 3 #2 SHIPPED; 3-team adversarial pass; D180/D181)
+# Session Handoff — 2026-06-09 (SGS THEME thread, session 18 — #17 + Spec 27 v6 + Spec 28 P2 + P3 + P3 visual pass ALL SHIPPED; D196–D200)
+
+> Theme/blocks thread. Cloning → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. **CO-ACTIVE HAZARD ESCALATED:** the cloning thread switched the shared tree to `feat/stage1-converter-core` MID-SESSION — one theme commit (`343d6605`) landed on their branch tip and was recovered by cherry-pick to main via a TEMP WORKTREE (now `84899c2c`); the duplicate auto-drops when they rebase. New rule: `git branch --show-current` before EVERY commit, recover via temp worktree, never touch their ref.
+
+## TL;DR
+Council backlog 100% closed (#17) + Spec 28 P2 engine + P3 preview authoring + a visual qc-council pass that caught 2 browser-only bugs — five units shipped, all live-verified on canary 540, all on main through 187c2643 (D196-D200). Next: R4 + F2, the last two Spec 27 units.
+
+## Completed this session
+1. **Wave 3 #17 SHIPPED (D196, `b273db02`)** — lean-seed stripper centralised into `includes/configurator-seed.php` (render.php + PREFLIGHT + LeanSeedSizeTest delegate; the 3-copy drift class is dead); `render-helpers.php` 1533→46-line loader + 7 cohesive `helpers-*.php`; `class-cart-proxy.php` 1029→749 + `Cart_Limits`/`Cart_Cache_Purge` extracted (net hook table identical). 3-rater adversarial /qc-council + 5/5 equivalence harness; canary 540 BYTE-IDENTICAL post-deploy (143,987 B); live PREFLIGHT ready=true; lean seed 20,326 B/48 combos. **OUTCOME ACHIEVED.** Council backlog now 100% closed.
+2. **Spec 27 v6 (D197, `21108cfe`)** — Bean-requested F2 research corrections applied pre-build: `speakable` DESCOPED (dead for e-commerce); FAQ copy must claim AI-citation + Bing, never Google rich results (deprecated 2026-05-07) — enforced by a grep gate in the F2 done-when; feed/llms.txt clauses hardened. Research pack: `.claude/reports/2026-06-09-f2-gold-standard-research.md`. **OUTCOME ACHIEVED.**
+3. **Spec 28 P2 SHIPPED (D198, `bf769cee`)** — pure-PHP pricing engine (`includes/class-pricing-engine.php`, zero WP calls): power-law floor-truncated + charm bands + guardrails in spec order; canonical fixture EXACT (499/899/1699/3099p); 53/53 standalone assertions, re-run independently. **OUTCOME ACHIEVED.**
+4. **Spec 28 P3 SHIPPED (D199, `aa599097`)** — preview-only authoring: WC settings tab + product_cat term fields + classic product-data panel with live preview table; ONE cascade resolver (site→category→product, 42/42); `POST /sgs/v1/pack-pricing/preview` (edit_post + schema-gated). ZERO WC price writes live-proven. Implementer died at context limit (work complete but UNWIRED — grep-the-wiring caught it); LIVE FATAL on rollout (file-scope `extends \WC_Settings_Page` + alphabetical load order) rolled back <1 min + double-guarded; sonnet security review → 5 findings fixed (incl. rater's WRONG nonce action string caught against live WC source). **OUTCOME ACHIEVED.**
+5. **P3 visual qc-council pass SHIPPED (D200, `84899c2c` + `187c2643`) — Bean-requested.** Orchestrator drove the live admin (chrome-devtools; Playwright held by cloning session); 3 adversarial raters on screenshots. Caught 2 browser-only FUNCTIONAL bugs (settings tab NEVER REGISTERED — `WC_Settings_Page` is admin-LAZY, the class_exists guard at woocommerce_loaded silently unregistered it; preview button never bound — head-printed JS, no DOM-ready guard) + 12 findings fixed (2 measured WCAG AA failures; pence-vs-pounds blocker → "p" suffix on inputs; jargon summary → plain English; disclosure restructured, bold no-live-prices line first; ONE canonical name "SGS Smart Bulk Pricing"; identical strength wording across 3 surfaces; flex-wrap; table headers). All re-verified live click-through (exact P2 fixture rows). Report + screenshots: `.claude/reports/visual-p3/`; 2 after-shots sent to Bean. **OUTCOME ACHIEVED (R-22-13: Bean's own eye still to confirm on the sent screenshots).**
+6. **Lessons + docs** — `file-scope-wc-class-extends-must-load-lazily` captured (memory + MEMORY.md, re-capped 24,496/24,576 after archiving 8 stubs); D196–D200 recorded; parking + Spec 27/28 status rows flipped; all pushed to main.
+
+## Current state
+- **Branch:** SHARED TREE on `feat/stage1-converter-core` (cloning thread's). **Theme work is ALL on `main` at `187c2643`**, pushed. Theme commits: `b273db02`/`eef7b465` (#17+docs) · `21108cfe` (Spec27 v6) · `bf769cee`/`571d6286` (P2+docs) · `aa599097`/`63a43b57` (P3+docs) · `84899c2c`/`187c2643` (visual pass+D200, via temp worktree).
+- **Tests:** pricing engine 53/53 + cascade 42/42 (standalone PHP runners; PHPUnit vendor/ not installed locally); php -l + WPCS clean on every touched file (1 false-positive warning: manage_woocommerce capability sniff).
+- **Build/deploy:** all LIVE on sandybrown canary, opcache-reset, front page 200, configurator 16 pills + ladder intact, preview click-through generates exact fixture rows, zero WC writes proven.
+- **Uncommitted (shared tree, NOT mine):** cloning-thread artefacts only (lucide-icons.php, style.css files, reports) — untouched.
+
+## Known Issues / Blockers
+- The duplicate commit `343d6605` sits on `feat/stage1-converter-core`'s tip (same content as main's `84899c2c`) — harmless; auto-drops on rebase; cloning thread should not be surprised (recorded in D200).
+- P3 deferred polish (non-blocking, in `.claude/reports/visual-p3/VISUAL-PASS-REPORT-2026-06-09.md`): WC two-column idiom refactor, 44px touch targets, emoji-indicator fragility, pack-sizes chip input, persistent preview-only admin notice.
+- PHPUnit not installed locally (no vendor/) — standalone runners are the proof mechanism until composer install is decided.
+
+## Next priorities (in order)
+1. **R4 — agency slug-templates** (Spec 27 §FR-27-R4): `sgs_product_template` CPT + export/import endpoints (`manage_woocommerce`) + apply-provisions-via-R2; acceptance = export site A → apply site B → working configurator.
+2. **F2 — AI-citation + secure feed** (Spec 27 §FR-27-F2 v6): FAQ block (corrected copy!) + llms.txt/llms-full.txt + Merchant feed; build FROM the research pack; /qc-council before the SEO-emit commit; the done-when grep gate on client-facing strings.
+3. **Bean R-22-13 eye** on the visual-p3 screenshots (sent) + the P3 deferred-polish go/no-go.
+4. Spec 28 P4 + R5 STAY GATED (do not pull forward — converter is still the first-shop blocker).
+
+## Files modified
+| File | What changed |
+|---|---|
+| plugins/sgs-blocks/includes/configurator-seed.php | NEW — canonical lean-seed stripper |
+| plugins/sgs-blocks/includes/render-helpers.php + helpers-*.php (7) | 1533→46 loader + cohesive split |
+| plugins/sgs-blocks/includes/class-cart-proxy.php + class-cart-limits.php + class-cart-cache-purge.php | money-path split, hook table identical |
+| plugins/sgs-blocks/includes/class-pricing-engine.php + tests/php/PricingEngineTest.php + run-pricing-engine-standalone.php | NEW — P2 engine + 53/53 tests |
+| plugins/sgs-blocks/includes/class-pack-pricing-{cascade,preview,settings-page}.php + pack-pricing-{settings,category-fields,product-fields}.php | NEW — P3 surfaces (+ visual-pass fixes) |
+| plugins/sgs-blocks/includes/class-product-preflight.php + class-configurator-meta.php + class-sgs-blocks.php | stripper delegation / P3 metas / wiring |
+| plugins/sgs-blocks/src/blocks/product-card/render.php + tests/php/LeanSeedSizeTest.php | stripper delegation |
+| .claude/specs/27 + 28, decisions.md (D196–D200), parking.md, reports/ | docs + research pack + visual report |
+
+## Notes for Next Session
+- The P3 admin UI's two "guard timing" traps are now lessons: a file-scope `extends WC_*` class must lazy-require at the CONSUMER hook (WC_Settings_Page doesn't exist at `woocommerce_loaded` — guard there silently unregisters), and head-printed inline JS needs a readyState guard.
+- The visual pass is now proven mandatory for any admin-surface feature: two functional bugs were invisible to every REST/one-shot gate.
+- `rater suggestions are hypotheses`: the security rater's nonce action string (`woocommerce_save_product`) was WRONG — live WC source says `woocommerce_save_data`. Verify against ground truth before applying any rater's literal fix.
+
+## Next Session Prompt
+The full orchestration plan lives in `.claude/next-session-prompt-theme.md` (this thread's operative opener — R4 then F2, with the carried + extended STOP catalogue).
+
+---
 
 > Theme/blocks thread. Cloning → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. Cloning thread co-active on `main` ALL session — every theme commit was path-scoped (`git commit -- <paths>`); never-commit artefacts (lucide-icons.php, sgs-framework.db, theme-snapshot.json, phase4 reports) left untouched.
 

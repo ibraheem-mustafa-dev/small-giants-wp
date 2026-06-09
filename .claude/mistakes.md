@@ -1,9 +1,19 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-06-02 (container/wrapper standardisation session — composite-mirror rule; 13 oldest stubs archived to memory/mistakes-archive.md)
+**Last updated:** 2026-06-09 (theme session 18 — WC load-order double-trap + visual-pass-mandatory lessons)
 
 <!-- ACTIVE — recent 30 mistakes as keyword stubs. Full body in blub.db `learnings` table or feedback_*.md files. Archive: memory/mistakes-archive.md. Search: grep -r KEYWORD memory/ + curl localhost:5050/api/learning?search=KEYWORD -->
 
 ## Active stubs (most recent 30)
+
+### [2026-06-09] File-scope `extends \WC_*` is a double timing trap (site fatal AND silent unregister)
+- **Pattern key:** `file-scope-wc-class-extends-must-load-lazily`
+- **Feedback file:** [feedback_file_scope_wc_class_extends_must_load_lazily.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_file_scope_wc_class_extends_must_load_lazily.md)
+- **Rule:** Early require = parse-time site-wide fatal (sgs-blocks loads before woocommerce). But the lazy guard can be TOO EARLY too: `WC_Settings_Page` is admin-lazy and absent at `woocommerce_loaded` — guard + require at the CONSUMER hook; parse-time class_exists guard in the file itself. D199/D200.
+
+### [2026-06-09] REST/one-shot gates cannot see admin-surface defects — visual pass is mandatory
+- **Pattern key:** `visual-pass-mandatory-for-admin-ui`
+- **Findings:** [reports/visual-p3/VISUAL-PASS-REPORT-2026-06-09.md](.claude/reports/visual-p3/VISUAL-PASS-REPORT-2026-06-09.md)
+- **Rule:** P3 passed every server-side gate while its settings tab didn't exist and its preview button never bound (head-printed JS, no DOM-ready guard). Drive the real admin + adversarial visual raters before declaring any admin UI shipped. Extends `ship-gate-needs-human-eye-not-just-automated-gates`. D200.
 
 ### [2026-06-06] Bound-mode converter emit is a test cheat, not native conversion
 - **Pattern key:** `bound-mode-is-test-cheating-not-conversion`

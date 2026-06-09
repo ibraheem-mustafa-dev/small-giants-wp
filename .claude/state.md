@@ -14,8 +14,8 @@ note: "LEAN per-thread snapshot (restructured 2026-06-06 per doc-council). Full 
 - **Framework counts (blocks/attrs/slots/roles):** query `/sgs-db` or `/wp-blocks` — the DB is authoritative; counts are NOT maintained in prose anywhere.
 - **Which thread am I on?** TWO co-active threads share `main`. Pick your thread, then read ONLY its block below + its handoff + its next-session-prompt. Commit by EXPLICIT PATH (`git commit -- <paths>`), never `git add -A`.
 
-## NEXT SESSION = SGS-THEME THREAD (Bean-directed 2026-06-06)
-- Read `.claude/next-session-prompt-theme.md` (Wave 3 #17 file-split + centralise lean-seed stripper, then Spec 27/28 to 100%). The cloning thread is co-active (a separate live session is mid bound-purge / converter work) — do NOT pull cloning tasks into the theme session.
+## NEXT SESSION = SGS-THEME THREAD (continuing; updated 2026-06-09)
+- Read `.claude/next-session-prompt-theme.md` (R4 agency slug-templates, then F2 feeds — the LAST two Spec 27 units). The cloning thread is co-active AND has the shared tree checked out on `feat/stage1-converter-core` — theme commits go to main via a TEMP WORKTREE; do NOT pull cloning tasks into the theme session.
 
 ## CLONING-PIPELINE THREAD  (owner of: this block, handoff.md, next-session-prompt.md)
 - **DOC-COUNCIL BACKLOG CLOSED 2026-06-06** (all FATAL + HIGH shipped/recalibrated/dismissed — see `.claude/reports/2026-06-06-doc-council-findings.md` STATUS table). The "adversarially-review all .claude docs" sub-goal in next-session-prompt.md is DONE; the converter-fix continuation there still stands.
@@ -25,7 +25,7 @@ note: "LEAN per-thread snapshot (restructured 2026-06-06 per doc-council). Full 
 
 ## SGS-THEME THREAD  (owner of: this block, handoff-theme.md, next-session-prompt-theme.md)
 - **SoT for current status:** `.claude/handoff-theme.md` (latest session) + `.claude/next-session-prompt-theme.md` (the operative opener). READ THOSE.
-- **One-line where-we-are (2026-06-06, session 17):** Spec 27 (Phases 1+2) + Spec 28 P1 SHIPPED; the adversarial-council must-fix backlog Wave 1 (9) + Wave 2 (8, value-ladder authoring UI + UK consumer-law) + Wave 3 #2 (PREFLIGHT visibility + auto-variesBy) ALL SHIPPED + live-verified on canary 540, R-22-13 signed. **NEXT:** Wave 3 #17 (file-split + CENTRALISE the lean-seed stripper) → Phase 2 (Spec 27 R4+F2; Spec 28 P2/P3; P4/R5 gated).
+- **One-line where-we-are (2026-06-09, session 18):** council backlog 100% CLOSED (#17 stripper-centralise + file-splits, D196) + Spec 27 v6 F2 research corrections (D197, speakable descoped) + Spec 28 P2 engine (D198, 53/53 fixture-exact) + P3 preview-only authoring (D199) + a 3-rater VISUAL qc-council pass on the P3 admin UI (D200 — 2 browser-only functional bugs + 12 findings fixed). All live on canary 540 + on main through `187c2643`. **NEXT:** R4 (slug-templates) → F2 (FAQ block + llms.txt + Merchant feed, build from the research pack). P4/R5 stay GATED.
 - **Canonical specs:** `.claude/specs/27-...md` (product/configurator master, absorbs 24/25), `.claude/specs/28-...md` (smart bulk pricing), `.claude/specs/26-...md` (global styles, build-deferred). Reading order: `docs-registry.yaml` `cold_start_reading_order_theme`.
 
 ## SHARED-STATE DISCIPLINE (two threads, one main)
