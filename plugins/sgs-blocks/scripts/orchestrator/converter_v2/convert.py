@@ -714,8 +714,8 @@ def _lift_root_supports_to_style(
         1. Lifts base_decls to style.* (unchanged behaviour).
         2. For each bp_suffix in bp_decls, applies _root_lift_rules and emits
            per-device custom attrs where the block schema has them.
-      The per-device attr name convention mirrors the deprecated _lift_styling_attrs
-      pattern: '{css_prop_camel_suffix}{BpSuffix}' (e.g. paddingTopTablet).
+      The per-device attr name convention follows '{css_prop_camel_suffix}{BpSuffix}'
+      (e.g. paddingTopTablet).
       Only attrs present in the block schema are emitted; others are traced as
       'responsive_attr_dropped' for downstream gap-candidate analysis.
 
@@ -1567,6 +1567,101 @@ def _lift_typography_to_block_attrs(
 
 
 # ============================================================================
+# Consolidated CSS-lift entry point  (Commit 1a — call-site consolidation)
+# ============================================================================
+
+def route_node_css(
+    node: "Tag",
+    css_rules: dict,
+    attrs: dict,
+    effective_slug: str,
+    *,
+    lift_typography: bool = False,
+    typo_slug: str | None = None,
+    lift_root_supports: bool = True,
+    lift_wrapper_css: bool = True,
+) -> None:
+    """Single entry point for all three CSS-lift helpers inside walk().
+
+    This is a PURE CALL-SITE consolidation (Commit 1a).  Decision logic is
+    unchanged; each helper is invoked with exactly the same arguments, guards,
+    and setdefault semantics as the call clusters it replaces.  Byte-identical
+    emitted output is the exit contract.
+
+    Parameters
+    ----------
+    node:
+        The BeautifulSoup Tag being converted.
+    css_rules:
+        The full CSS-rules dict for the current draft page.
+    attrs:
+        The block-attrs dict to write into (mutated in-place via setdefault).
+    effective_slug:
+        The block slug used for DB lookups.  A3 path passes 'sgs/container'
+        (slug-None top-level section); A2 path passes the resolved slug.
+    lift_typography:
+        True only on the A2 leaf-block path and the atomic-tag-swap path.
+        When True, typography CSS is lifted onto ``attrs`` before the
+        root-supports + wrapper-css passes (same ordering as the original
+        inline cluster).
+    typo_slug:
+        Slug forwarded to ``_lift_typography_to_block_attrs``.  Must be
+        supplied when ``lift_typography=True``.  Ignored otherwise.
+    lift_root_supports:
+        When False, the ``_lift_root_supports_to_style`` pass is skipped.
+        Default True (all production paths that previously called it directly
+        continue to receive the pass).
+    lift_wrapper_css:
+        When False, the ``_lift_wrapper_css_to_container_attrs`` pass is
+        skipped.  Default True.  Set to False on paths (e.g. fold path) that
+        only need root-supports without the full DB-driven wrapper-css lift.
+
+    Call-site mapping
+    -----------------
+    A3 (slug-None top-level section):
+        route_node_css(node, css_rules, container_attrs,
+                       effective_slug="sgs/container")
+
+    A2 (slug-not-None resolved block):
+        route_node_css(node, css_rules, attrs,
+                       effective_slug=slug,
+                       lift_typography=is_leaf,
+                       typo_slug=slug)
+
+    Atomic-tag-swap path (exception 1, typography only):
+        route_node_css(node, css_rules, _at_attrs,
+                       effective_slug=_at_slug,
+                       lift_typography=True,
+                       typo_slug=_at_slug,
+                       lift_root_supports=False,
+                       lift_wrapper_css=False)
+
+    Fold path (_fold_layout_into_attrs, root-supports only):
+        route_node_css(wrapper_node, css_rules, container_attrs,
+                       effective_slug="sgs/container",
+                       lift_wrapper_css=False)
+    """
+    # ---- GAP 1: typography lift (leaf-block and atomic-tag-swap paths) ----
+    if lift_typography:
+        typo_lift = _lift_typography_to_block_attrs(node, typo_slug, css_rules)
+        for _tl_k, _tl_v in typo_lift.items():
+            attrs.setdefault(_tl_k, _tl_v)
+
+    # ---- Root WP native supports (spacing/border/colour → style.*) ----
+    if lift_root_supports:
+        _lift_root_supports_to_style(node, effective_slug, css_rules, attrs)
+
+    # ---- UNIVERSAL DB-driven custom-attr lift (Method-2, Spec 22 §FR-22-21) ----
+    if lift_wrapper_css:
+        _base, _bp = _collect_css_decls_for_element(node, css_rules)
+        _lifted, _flagged = _lift_wrapper_css_to_container_attrs(
+            _base, _bp, _block_attr_names(effective_slug)
+        )
+        for _k, _v in _lifted.items():
+            attrs.setdefault(_k, _v)
+
+
+# ============================================================================
 # Transparent wrapper absorber (pre-pass)
 # ============================================================================
 _ABSORB_GAP_PROPS = frozenset({
@@ -1654,170 +1749,6 @@ def _absorb_transparent_wrappers(section_root: "Tag", css_rules: dict) -> list[s
     return added
 
 
-# ============================================================================
-# DEPRECATED Spec-16 styling helpers — ported for test compatibility
-# (test_attribute_gap_candidate.py, test_root_supports_double_lift.py).
-# Spec 22 §FR-22-2 replaces these with the universal walker path.
-# Do NOT use these functions in new code; they exist only to avoid breaking
-# existing tests during the Phase 1.4 transition.
-# ============================================================================
-
-def _slot_attr_prefix(block_slug: str, canonical_slot: str, schema: dict) -> str | None:
-    """DEPRECATED — find the attr-name prefix used for styling attrs in this slot.
-
-    The content attr for the slot (e.g. 'headline' for slot 'heading') IS the
-    prefix: 'headlineColour', 'headlineFontSize*', etc.
-    """
-    styling_suffixes = (
-        "Colour", "Color", "FontSize", "FontWeight", "LineHeight",
-        "LetterSpacing", "TextTransform", "FontFamily", "PaddingTop",
-        "PaddingRight", "PaddingBottom", "PaddingLeft", "BorderRadius",
-        "MaxWidth", "BackgroundColour", "Unit", "Mobile", "Tablet", "Desktop",
-        "MarginBottom", "TextDecoration", "HoverColour", "HoverBackground",
-    )
-    for attr_name, info in schema.items():
-        if info.get("canonical_slot") != canonical_slot:
-            continue
-        if any(attr_name.endswith(s) for s in styling_suffixes):
-            continue
-        return attr_name
-    return None
-
-
-def _lift_styling_attrs(
-    desc: Tag,
-    slot_name: str,
-    block_slug: str,
-    schema: dict,
-    attrs: dict,
-    css_rules: dict,
-) -> None:
-    """DEPRECATED — lift slot CSS styling properties into block attrs.
-
-    Spec 22 §FR-22-2 replaces this with db_lookup.lift_behavioural_attrs()
-    and the universal walker's CSS collection path (collect_css_for_classes).
-    Ported verbatim for test_attribute_gap_candidate.py compatibility.
-    """
-    canonical = db.canonical_slot_for(slot_name) or slot_name
-    prefix = _slot_attr_prefix(block_slug, canonical, schema)
-    if not prefix:
-        return
-    base_decls, bp_decls = _collect_css_decls_for_element(desc, css_rules)
-
-    def _try_set(attr_name: str, value: object) -> None:
-        if attr_name not in schema:
-            return
-        if attr_name in attrs:
-            return
-        if value is None or value == "":
-            return
-        attrs[attr_name] = value
-
-    _known_css_props: set[str] = {cp for cp, _, _ in db.css_property_suffixes()}
-    _lifted_css_props: set[str] = set()
-
-    for css_prop, suffix, kind in db.css_property_suffixes():
-        raw = base_decls.get(css_prop)
-        if raw is None:
-            continue
-        val = _css_value_to_attr(raw, kind)
-        if val is None:
-            continue
-        candidate = f"{prefix}{suffix}"
-        _lifted_css_props.add(css_prop)
-        _try_set(candidate, val)
-        if candidate not in schema:
-            _try_set(f"{prefix}{suffix}Desktop", val)
-        if kind in ("number_px", "number_px_or_em", "number_unitless"):
-            unit_candidate = f"{prefix}{suffix}Unit"
-            if unit_candidate in schema and unit_candidate not in attrs:
-                raw_stripped = raw.strip().lower()
-                if raw_stripped.endswith("rem"):
-                    unit = "rem"
-                elif raw_stripped.endswith("em"):
-                    unit = "em"
-                elif raw_stripped.endswith("%"):
-                    unit = "%"
-                elif kind == "number_unitless":
-                    unit = "em"
-                else:
-                    unit = "px"
-                _try_set(unit_candidate, unit)
-
-    _SUPPORTS_HANDLED_PROPS: frozenset[str] = frozenset({
-        "padding", "margin", "background", "border",
-        "padding-top", "padding-right", "padding-bottom", "padding-left",
-        "margin-top", "margin-right", "margin-bottom", "margin-left",
-        "gap", "border-radius", "border-width", "border-style", "border-color",
-        "background-color", "color", "max-width",
-    })
-    if block_slug and block_slug.startswith("sgs/"):
-        desc_sgs_classes = [c for c in (desc.get("class", []) or []) if c.startswith("sgs-")]
-        source_class = f".{desc_sgs_classes[0]}" if desc_sgs_classes else f".{slot_name}"
-        for css_prop, raw in base_decls.items():
-            if css_prop in _SUPPORTS_HANDLED_PROPS:
-                continue
-            if css_prop not in _known_css_props:
-                _record_gap_candidate(block_slug, css_prop, raw, source_class)
-                continue
-            if css_prop in _lifted_css_props:
-                any_in_schema = any(
-                    f"{prefix}{sfx}" in schema or f"{prefix}{sfx}Desktop" in schema
-                    for cp, sfx, _ in db.css_property_suffixes()
-                    if cp == css_prop
-                )
-                if not any_in_schema:
-                    _record_gap_candidate(block_slug, css_prop, raw, source_class)
-
-    _bp_lifted_keys: set[tuple[str, str]] = set()
-    for bp_suffix, bp_decl_map in bp_decls.items():
-        for css_prop, suffix, kind in db.css_property_suffixes():
-            raw = bp_decl_map.get(css_prop)
-            if raw is None:
-                continue
-            val = _css_value_to_attr(raw, kind)
-            if val is None:
-                continue
-            candidate = f"{prefix}{suffix}{bp_suffix}"
-            if candidate in schema:
-                attrs[candidate] = val
-                _bp_lifted_keys.add((css_prop, bp_suffix))
-            if kind in ("number_px", "number_px_or_em", "number_unitless"):
-                unit_candidate = f"{prefix}{suffix}Unit{bp_suffix}"
-                if unit_candidate not in schema:
-                    unit_candidate = f"{prefix}{suffix}{bp_suffix}Unit"
-                if unit_candidate in schema:
-                    raw_stripped = raw.strip().lower()
-                    if raw_stripped.endswith("rem"):
-                        unit = "rem"
-                    elif raw_stripped.endswith("em"):
-                        unit = "em"
-                    elif raw_stripped.endswith("%"):
-                        unit = "%"
-                    elif kind == "number_unitless":
-                        unit = "em"
-                    else:
-                        unit = "px"
-                    attrs[unit_candidate] = unit
-
-    if block_slug and block_slug.startswith("sgs/"):
-        for bp_suffix, bp_decl_map in bp_decls.items():
-            for css_prop, raw in bp_decl_map.items():
-                if css_prop in _SUPPORTS_HANDLED_PROPS:
-                    continue
-                if (css_prop, bp_suffix) in _bp_lifted_keys:
-                    continue
-                bp_source_class = f"{source_class}@{bp_suffix}"
-                if css_prop not in _known_css_props:
-                    _record_gap_candidate(block_slug, css_prop, raw, bp_source_class)
-                    continue
-                any_in_schema = any(
-                    f"{prefix}{sfx}{bp_suffix}" in schema
-                    for cp, sfx, _ in db.css_property_suffixes()
-                    if cp == css_prop
-                )
-                if not any_in_schema:
-                    _record_gap_candidate(block_slug, css_prop, raw, bp_source_class)
 
 
 # ============================================================================
@@ -2655,9 +2586,14 @@ def walk(
         _at_slug = db.atomic_tag_map().get(node.name)
         _at_attrs = _atomic_attrs_for(node, _at_slug) if _at_slug else {}
         if _at_slug:
-            _at_typo = _lift_typography_to_block_attrs(node, _at_slug, css_rules)
-            for _at_k, _at_v in _at_typo.items():
-                _at_attrs.setdefault(_at_k, _at_v)
+            route_node_css(
+                node, css_rules, _at_attrs,
+                effective_slug=_at_slug,
+                lift_typography=True,
+                typo_slug=_at_slug,
+                lift_root_supports=False,
+                lift_wrapper_css=False,
+            )
             _trace("walker_branch_taken", branch="atomic_tag_swap",
                    node_tag=node.name, slug=_at_slug, attrs_keys=list(_at_attrs.keys()))
             return emit_wp_block(_at_slug, _at_attrs, [])
@@ -2782,12 +2718,6 @@ def walk(
         # (the existing _sec_base/_  at 2382 discards bp_decls; this pass captures them).
         # setdefault throughout — widthMode/customWidth set above are NEVER overwritten.
         # R-22-1: DB-driven attr-name set; R-22-9: universal (every slug-None section fires).
-        _a3_base, _a3_bp = _collect_css_decls_for_element(node, css_rules)
-        _a3_lifted, _a3_flagged = _lift_wrapper_css_to_container_attrs(
-            _a3_base, _a3_bp, _block_attr_names("sgs/container")
-        )
-        for _a3_k, _a3_v in _a3_lifted.items():
-            container_attrs.setdefault(_a3_k, _a3_v)  # Never clobber widthMode/customWidth set above.
         # NOTE (GAP-3 scope decision, 2026-06-05): display:grid|flex → layout is intentionally
         # NOT lifted here for slug-None top-level sections. Reason: the A3 path emits layout/grid
         # as sgs-container-wrapper.php inline CSS (display:grid + grid-template-columns). For slug-None
@@ -2800,16 +2730,14 @@ def walk(
         # GAP 2 — Padding lift for slug-None top-level sections (wired 2026-06-05).
         # _lift_root_supports_to_style was gated `if slug is not None` (line ~2418)
         # so it never fired here; padding on generic sections was silently dropped.
-        # Fix: call the same function with slug='sgs/container' so padding → style.*
-        # is written onto container_attrs via the native WP supports path.
-        # The A3 _lift_wrapper_css_to_container_attrs pass above handles
-        # width/grid/min-height/gap onto block attrs; this pass handles
-        # padding/margin/border/background-colour onto style.* — no double-lift.
-        # R-22-9: universal (every slug-None section fires).
-        # R-22-1: _lift_root_supports_to_style is entirely DB-driven.
-        # setdefault semantics are enforced inside _lift_root_supports_to_style
-        # (it uses _set_in which never overwrites an existing leaf).
-        _lift_root_supports_to_style(node, "sgs/container", css_rules, container_attrs)
+        # Fix: route_node_css calls it with effective_slug='sgs/container' so
+        # padding → style.* is written onto container_attrs via the native WP supports path.
+        # The wrapper-css pass handles width/grid/min-height/gap onto block attrs; the
+        # root-supports pass handles padding/margin/border/background-colour → style.*
+        # — no double-lift.  R-22-9: universal (every slug-None section fires).
+        # R-22-1: all three helpers are entirely DB-driven.
+        # setdefault semantics are enforced inside each helper.
+        route_node_css(node, css_rules, container_attrs, effective_slug="sgs/container")
         children_markup = _process_container_children(node, css_rules, depth, variation_buf, container_attrs)
         return _emit_section_container(container_attrs, children_markup, css)
 
@@ -2836,44 +2764,25 @@ def walk(
         is_leaf = db.get_block_composition_role(slug) == "leaf"
         if is_leaf:
             attrs = {**attrs, **_atomic_attrs_for(node, slug)}
-            # GAP 1 — Typography lift (wired 2026-06-05).
-            # _lift_typography_to_block_attrs was dead code with zero call sites.
-            # Wire it here so draft heading/text CSS (font-size, colour, weight,
-            # etc.) lands on the emitted block's flat attrs.
-            # Uses setdefault: _atomic_attrs_for content/level are never clobbered.
-            # R-22-9: universal — fires for every leaf block that declares the attr.
-            # R-22-1: DB-gated attr-existence check inside the helper.
-            # Faithful-absence: helper only emits attrs for CSS props actually present.
-            typo_lift = _lift_typography_to_block_attrs(node, slug, css_rules)
-            for _tl_k, _tl_v in typo_lift.items():
-                attrs.setdefault(_tl_k, _tl_v)
     css = collect_css_for_classes(classes, css_rules)  # FR-22-5
     if css and variation_buf is not None:
         variation_buf.append(css)
 
-    # Lift block-root WP native supports (spacing/border/colour → style.*)
+    # A2 — Lift block-root WP native supports + UNIVERSAL DB-driven custom-attr lift
+    # (Method-2, Spec 22 §FR-22-21) + typography lift for leaf blocks.
+    # GAP 1 — Typography lift (wired 2026-06-05): lifted inside route_node_css when
+    # lift_typography=True (leaf path only). _atomic_attrs_for content/level are set
+    # above; typography uses setdefault so they are never clobbered.
+    # R-22-9: universal — every resolved block fires all three lifters.
+    # R-22-1: all three helpers are entirely DB-driven.
+    # setdefault semantics are enforced inside each helper.
     if slug is not None:
-        _lift_root_supports_to_style(node, slug, css_rules, attrs)
-
-    # UNIVERSAL DB-driven custom-attr lift (Method-2, Spec 22 §FR-22-21).
-    # For EVERY resolved block — not only mirror composites — lift the element's own
-    # CSS onto the block's OWN attrs via property_suffixes (DB). This recovers the
-    # properties the hardcoded style.* map (_root_lift_rules, 15 rules) misses —
-    # min-height, max-width, box-shadow, typography, border-radius, object-fit, gap,
-    # grid — onto any block that declares the matching attr (heading/text/button
-    # included), using the same DB-driven helper the container/composite paths use.
-    # setdefault is used throughout — typography (above) + _lift_root_supports_to_style
-    # (style.*) run first and own colour/padding/border; this pass captures the remainder.
-    # R-22-1: DB-gated (property_suffixes + block_attrs); no hardcoded slug list.
-    # R-22-9: universal — every resolved block fires; a block lacking an attr gets that
-    # prop flagged as a gap candidate (flag-not-drop), never silently set on the wrong attr.
-    if slug is not None:
-        _a2_base, _a2_bp = _collect_css_decls_for_element(node, css_rules)
-        _a2_lifted, _a2_flagged = _lift_wrapper_css_to_container_attrs(
-            _a2_base, _a2_bp, _block_attr_names(slug)
+        route_node_css(
+            node, css_rules, attrs,
+            effective_slug=slug,
+            lift_typography=is_leaf,
+            typo_slug=slug,
         )
-        for _a2_k, _a2_v in _a2_lifted.items():
-            attrs.setdefault(_a2_k, _a2_v)  # Never clobber attrs already set above.
 
     if slug is not None and _is_container_mirror_block(slug):
         # R1.3 — widthMode fallback for SECTION-kind mirror composites at top level.
@@ -3820,7 +3729,11 @@ def _fold_layout_into_attrs(
     """
     # Reuse shared helper — same setdefault semantics, same detector.
     _merge_grid_attrs_into_container(wrapper_classes, css_rules, container_attrs)
-    _lift_root_supports_to_style(wrapper_node, "sgs/container", css_rules, container_attrs)
+    route_node_css(
+        wrapper_node, css_rules, container_attrs,
+        effective_slug="sgs/container",
+        lift_wrapper_css=False,
+    )
     # B2/A1 (FR-22-21): lift the folded wrapper's own max-width as contentWidth so the
     # section's inner content cap is preserved (e.g. __inner max-width:960px → "960px").
     # Only fires for the sole-shell fold path (sole element child) — grid/flex item
