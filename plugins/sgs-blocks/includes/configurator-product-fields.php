@@ -112,7 +112,11 @@ function sgs_render_product_value_ladder_fields(): void {
 			'custom_attributes' => array(
 				'pattern' => '^\d+(\.\d{1,2})?$',
 			),
-			'wrapper_class'     => 'form-row form-row-first',
+			// FULL-width row: the previous half-width form-row-first (with no
+			// form-row-last partner) let the attestation row float up BESIDE
+			// this field, and this field's help-tip painted on top of the
+			// attestation label (Bean's 2026-06-10 report, live-measured).
+			'wrapper_class'     => 'form-row form-row-full',
 		)
 	);
 
@@ -151,7 +155,10 @@ function sgs_render_product_value_ladder_fields(): void {
 	if ( ! empty( $axes ) ) {
 		echo '<p class="form-field _sgs_pack_size_axis_field form-row form-row-full">';
 		echo '<label for="_sgs_pack_size_axis">' . esc_html__( 'Pack-size attribute axis', 'sgs-blocks' ) . '</label>';
-		echo '<select name="_sgs_pack_size_axis" id="_sgs_pack_size_axis" style="width:100%;">';
+		// Bounded width + the description forced onto its OWN line below: at
+		// width:100% the select filled the row and the inline description's first
+		// word ("Which") orphaned beside it (Bean's 2026-06-10 report).
+		echo '<select name="_sgs_pack_size_axis" id="_sgs_pack_size_axis" style="width:400px;max-width:100%;">';
 		echo '<option value="">' . esc_html__( '— Auto-detect (recommended) —', 'sgs-blocks' ) . '</option>';
 		foreach ( $axes as $tax => $label ) {
 			printf(
@@ -162,7 +169,11 @@ function sgs_render_product_value_ladder_fields(): void {
 			);
 		}
 		echo '</select>';
-		echo '<span class="description">' . esc_html__( 'Which attribute axis contains the pack sizes? Overrides the automatic /size/ heuristic. "Auto-detect" works for most products.', 'sgs-blocks' ) . '</span>';
+		// clear:both is load-bearing: WC's panel CSS FLOATS the select (and the
+		// label), so display:block alone leaves this box on the same line and the
+		// text wraps around the float ("Which" orphaned beside the dropdown —
+		// Bean's 2026-06-10 report, live-measured).
+		echo '<span class="description" style="display:block;clear:both;padding-top:4px;">' . esc_html__( 'Which attribute axis contains the pack sizes? Overrides the automatic /size/ heuristic. "Auto-detect" works for most products.', 'sgs-blocks' ) . '</span>';
 		echo '</p>';
 	} else {
 		// No variation attributes yet — show an informational note.
