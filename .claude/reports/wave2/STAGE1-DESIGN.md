@@ -4,7 +4,7 @@ project: small-giants-wp
 thread: cloning-pipeline
 title: "Stage 1 DESIGN v2 — universal per-slot CSS dispatch (council-hardened; DESIGN-GATE, awaiting Bean approval)"
 created: 2026-06-09
-status: DESIGN-GATE (Rule 7). NO converter code until Bean approves. v2 folds in the Stage-1-design adversarial-council (6 personas, 2026-06-09) must-fixes C2/C4/C6/C7 + the gate-identity correction. All refs verified against live convert.py / db_lookup.py 2026-06-09.
+status: DESIGN-GATE CLOSED — Bean approved in-session 2026-06-09/10 ("Continue here" direction into Task 3 + live direction of the branch work; recorded here to close the Rule-7 audit trail, flagged by the 2026-06-10 plan-adherence qc-council rater). BUILD UNDERWAY on feat/stage1-converter-core — Commits 1a (dd320886) + 1b (1bc25e29) shipped byte-identical + Gate-A-gated; Commit 2 pends the FR-22-5.3 Spec-22 merge. v2 folds in the Stage-1-design adversarial-council (6 personas, 2026-06-09) must-fixes C2/C4/C6/C7 + the gate-identity correction; the 2026-06-10 council added the parent-scoped-resolution + interior-chrome-fold constraints to the Commit 2/4 contracts. All refs verified against live convert.py / db_lookup.py 2026-06-09.
 ---
 
 # Stage 1 design v2 — universal per-slot CSS dispatch

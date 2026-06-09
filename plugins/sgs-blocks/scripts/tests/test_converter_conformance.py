@@ -576,3 +576,39 @@ class TestNoButtonGroupDoubleNest:
             "the container-mirror-block call site (walk() line ~2934) so the guard fires.\n"
             "Violations:\n" + "\n".join(violations)
         )
+
+
+# ---------------------------------------------------------------------------
+# Dispatch-determinism lock (qc-council residual-risk finding, 2026-06-10)
+# ---------------------------------------------------------------------------
+# attr_for_property's verdicts rest on property_suffixes ROW ORDER. A future
+# /sgs-update reseed that reorders rows for an unrelated reason could silently
+# shift a contested property's destination WITHOUT any golden failing (the
+# fixture corpus cannot cover every (block, contested-property) pair). This
+# class pins the dispatch verdicts for the known contested set, independent of
+# fixture coverage. On intentional dispatch-rule changes, update these pins
+# WITH a cited reason in the same commit (same discipline as golden regen).
+class TestDispatchDeterminism:
+    """Pin db_lookup.attr_for_property verdicts for contested properties."""
+
+    @pytest.fixture(scope="class")
+    def db(self):
+        from orchestrator.converter_v2 import db_lookup
+        return db_lookup
+
+    def _writer(self, result):
+        """Normalise a dispatch result to its writer path (or None)."""
+        return result[0] if result else None
+
+    def test_typography_owns_leaf_text_props(self, db) -> None:
+        assert self._writer(db.attr_for_property("sgs/heading", "color")) == "typography"
+        assert self._writer(db.attr_for_property("sgs/text", "line-height")) == "typography"
+
+    def test_wrapper_owns_container_box_props(self, db) -> None:
+        assert self._writer(db.attr_for_property("sgs/container", "gap")) == "wrapper_css"
+
+    def test_unmatched_props_fall_to_root_supports(self, db) -> None:
+        # No flat attr exists for these (block, property) pairs — the dispatch
+        # must return None so root-supports handles them via style.*.
+        assert db.attr_for_property("sgs/container", "padding-top") is None
+        assert db.attr_for_property("sgs/hero", "font-size") is None
