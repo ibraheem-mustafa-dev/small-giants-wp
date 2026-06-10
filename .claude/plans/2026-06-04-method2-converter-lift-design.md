@@ -45,7 +45,7 @@ The prompt/memory said "converter routes everything to sgs/container @0.10; rout
 | D2 | **Hero: dark-pink gradient not in the mockup** + min-height 520 dropped | flat `#F5C2C8`, `min-height:520px` | imposed gradient on the OUTER container; `min-height` never lifted (A5) | FS-1 |
 | D3 | **Trust-bar badges span full 1425px** (cap + gap lost) | inner cap `max-width:1100px`, `gap:16px` | content-width + gap not lifted onto the (now-mirrored) trust-bar | FS-1 + FS-2 |
 | D4 | **Feature-grid boxes flush** (`gap:normal`) | `.sgs-feature-grid gap:14px` | the 14px gap is a STRANDED D1 assignment (B1) | FS-2 (B1=A consume) |
-| D5 | **Product cards both 380px** (640/384 split lost) | `.sgs-products` grid `640px 384px` | grid lifts onto the container, but product-card has a fixed width overriding its track | FS-3 |
+| D5 | **Product cards both 380px** (640/384 split lost) — ✅ **BLOCK-SIDE RESOLVED 2026-06-10 (D204):** the layer-check (STOP #31) confirmed block-side; the card now yields its 380px cap inside a grid track via `.sgs-card-grid > .product-card{max-width:none;margin-inline:0}` + the WP-constrained-tie B2 rule (`.product-card.sgs-product-card{max-width:380px}` for standalone). Converter D5 is now satisfied as long as the cloned cards land inside a grid wrapper (`.sgs-products`→grid). | `.sgs-products` grid `640px 384px` | grid lifts onto the container, but product-card had a fixed width overriding its track (now scoped to standalone-only) | FS-3 |
 | D6 | **Testimonials get class `--Array`** | static variant | FR-22-20 emits a JS Array `.toString()` as the variant class | FS-3 |
 | D7 | **Announcement-bar loses `--send-to-ward`** | only-class modifier | BEM modifier not carried to the emitted block's className | FS-3 |
 
