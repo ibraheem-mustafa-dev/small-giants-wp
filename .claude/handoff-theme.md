@@ -1,3 +1,33 @@
+# Session Handoff — 2026-06-10 (SGS THEME thread, session 19 — R4 + F2 SHIPPED; Spec 27/28 COMPLETE bar gated P4/R5; D202)
+
+> Theme/blocks thread. Cloning → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. Shared tree on `feat/stage1-converter-core` all session — ALL theme work done in a temp worktree on main (C:/tmp/sgs-r4, removed at close), every commit path-scoped. A SECOND theme session was co-active mid-session (its commits `f5f3449b`/`db89ebae` interleaved between my two pushes — R4 language pass + deeper visual pass; converged cleanly, no conflicts).
+
+## TL;DR
+The last two open Spec 27 units shipped: **R4 agency slug-templates** (`0d7badb8`, D202 — template CPT + export/import/apply REST + WC product-editor panel; live acceptance: export 540 → import → apply to a fresh product → 48 variations → PREFLIGHT publish → 16-pill configurator) and **F2 AI-citation/feeds** (`95754224`, D202 — Merchant feed + llms.txt/llms-full.txt + sgs/product-faq FAQPage block). Spec 27/28 now complete except the deliberately gated R5 + P4. The theme thread has NO mandatory build work left — the first-shop blocker is the cloning converter.
+
+## Completed this session
+1. **R4 SHIPPED (D202, `0d7badb8`)** — built via /subagent-driven-development (sonnet implementer; spec FAIL→3 fixes [export nonce, dead 256KB guard, file splits ≤300]; haiku quality CHANGES-REQUIRED→i18n 21-key strings map; sonnet red-team SHIP [16 vectors clean] + H1 swatch non-clobber + H2 single-path axis). 10 files, 56/56 standalone assertions. Live round-trip acceptance proven on canary (template 947 → import 948 → apply to product 950 → published → page 999 renders 16 pills). Co-active follow-up (`f5f3449b` language pass + `db89ebae` report) fixed 2 deeper browser-only bugs: pure-JSON data element + **CPT singular meta-caps had broken manage_woocommerce SITE-WIDE** (memory `cpt-singular-meta-caps-break-the-mapped-capability-sitewide`).
+2. **F2 SHIPPED (D202, `95754224`)** — 3 parallel sonnet sub-units (all hit context limits mid-build, all resumed to completion): (a) Merchant feed `GET /sgs/v1/merchant-feed` — per-variation RSS 2.0 `g:` items, SEC-1 manifest prices (zero wc_get_price_to_display/get_children), shared `Product_Schema::product_group_id()` (promoted public — one call site), SEC-7 deep-links; (b) /llms.txt + /llms-full.txt — text/plain, noindex, navigation-map anti-cloaking, SEC-9 defer, 700KB cap; (c) sgs/product-faq + -item blocks — native details/summary, merged FAQPage JSON-LD via wp_footer collector, copy grep-gated (zero "rich result" matches). **Red-team BLOCK fixed pre-commit: the feed query had no visibility filter — "Search results only" products leaked to the public endpoint** (+ stampede locks, 2000-item cap, session-independent password guard, JSON_HEX_TAG). Live probes: exfil PASS (search-only → 0 feed items, 0 llms-full), feed↔schema price parity PASS (48/48 byte-identical), FAQ page 1008 renders + valid JSON-LD, editor pass zero console errors, 540 regression-clean.
+3. **Live-caught defects fixed during rollout** — the invented `wp_get_privacy_policy_url()` fatal (real: `get_privacy_policy_url`); HTML-entity leak in text/plain + XML contexts (`get_bloginfo` display filters → html_entity_decode before write); CDN-cached feed masking fixes (cb-buster verification).
+4. **Docs (D202 commit)** — Spec 27 rows flipped (R4/F2 SHIPPED; only R5 marked NOT BUILT); decisions.md D202; parking `P-SPEC27-28-COUNCIL-MUSTFIX-WAVE` RESOLVED → memory/parking-archive.md; next-session-prompt-theme.md rewritten (STOP catalogue 40→45, D101 count gate passed).
+
+## Current state
+- **Branch:** theme work all on `main` (pushed through the docs commit); shared tree remains on the cloning branch — untouched.
+- **Tests:** R4 standalone runner 56/56; php -l + WPCS clean on every touched file.
+- **Live:** everything deployed on the sandybrown canary, opcache-reset, front 200, configurator 16 pills, all three F2 surfaces serving.
+- **Canary fixtures left intentionally:** templates 947/948 (+2 rater "RT" templates), product 950 + page 999 (R4 acceptance), page 1008 (FAQ acceptance) — Bean decides keep/delete.
+
+## Known issues / blockers
+- None blocking. F2 niceties parked (feed g:shipping, llms-full pagination, CDN image allowlist — see next-session-prompt).
+- Bean R-22-13 eye pending on: R4 panel screenshots (visual-r4/), F2 FAQ editor shot, P3 polish go/no-go.
+
+## Next priorities
+1. Bean R-22-13 queue (ranked in next-session-prompt-theme.md).
+2. **Default: switch to the cloning CONVERTER thread — the single first-shop blocker.**
+3. R5 + P4 stay GATED (R5 = /brainstorming design first if un-gated).
+
+---
+
 # Session Handoff — 2026-06-09 (SGS THEME thread, session 18 — #17 + Spec 27 v6 + Spec 28 P2 + P3 + P3 visual pass ALL SHIPPED; D196–D200)
 
 > Theme/blocks thread. Cloning → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. **CO-ACTIVE HAZARD ESCALATED:** the cloning thread switched the shared tree to `feat/stage1-converter-core` MID-SESSION — one theme commit (`343d6605`) landed on their branch tip and was recovered by cherry-pick to main via a TEMP WORKTREE (now `84899c2c`); the duplicate auto-drops when they rebase. New rule: `git branch --show-current` before EVERY commit, recover via temp worktree, never touch their ref.
