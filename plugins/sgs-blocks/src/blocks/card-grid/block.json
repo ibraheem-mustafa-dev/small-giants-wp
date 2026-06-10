@@ -156,8 +156,79 @@
             "default": "manual",
             "enum": [
                 "manual",
-                "query"
+                "query",
+                "wc-product"
             ]
+        },
+        "productSource": {
+            "type": "string",
+            "default": "collection",
+            "enum": [
+                "collection",
+                "handpick"
+            ],
+            "description": "How products are selected: 'collection' = smart preset + filters; 'handpick' = explicit IDs."
+        },
+        "productCollection": {
+            "type": "string",
+            "default": "latest",
+            "enum": [
+                "best-selling",
+                "price-high",
+                "price-low",
+                "top-rated",
+                "latest"
+            ],
+            "description": "Smart collection preset. Ignored when productSource = 'handpick'."
+        },
+        "productCategories": {
+            "type": "array",
+            "default": [],
+            "items": {
+                "type": "number"
+            },
+            "description": "WC product category term IDs to filter by (multi-select). Empty = all categories."
+        },
+        "productTags": {
+            "type": "array",
+            "default": [],
+            "items": {
+                "type": "number"
+            },
+            "description": "WC product tag term IDs to filter by (multi-select). Empty = all tags."
+        },
+        "productFeatured": {
+            "type": "boolean",
+            "default": false,
+            "description": "When true, only featured products are returned."
+        },
+        "productOnSale": {
+            "type": "boolean",
+            "default": false,
+            "description": "When true, only on-sale products are returned (uses wc_get_product_ids_on_sale index)."
+        },
+        "productInStock": {
+            "type": "boolean",
+            "default": true,
+            "description": "When true, only in-stock products are returned."
+        },
+        "productLimit": {
+            "type": "number",
+            "default": 6,
+            "description": "Maximum number of products to return (1–24). Server-side cap enforced at 24. When combined with the on-sale filter, fewer than the limit may be returned (v1: no refill pass)."
+        },
+        "productIds": {
+            "type": "array",
+            "default": [],
+            "items": {
+                "type": "number"
+            },
+            "description": "Explicit product IDs for handpick mode. Order is respected."
+        },
+        "productEmptyMessage": {
+            "type": "string",
+            "default": "No products to show at the moment. Check back soon.",
+            "description": "Message shown when the product query returns zero results (FR-24-6 empty state)."
         },
         "queryPostType": {
             "type": "string",

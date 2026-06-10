@@ -10,7 +10,13 @@ import {
 	RangeControl,
 	Button,
 	TextControl,
+	Spinner,
 } from '@wordpress/components';
+import ServerSideRender from '@wordpress/server-side-render';
+import {
+	ProductTaxonomyChecklist,
+	ProductHandpickPanel,
+} from './components/product-panels';
 import { DesignTokenPicker, ResponsiveControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, spacingVar } from '../../utils';
@@ -34,6 +40,14 @@ const HOVER_OPTIONS = [
 	{ label: __( 'Zoom', 'sgs-blocks' ), value: 'zoom' },
 	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
 	{ label: __( 'Overlay Slide', 'sgs-blocks' ), value: 'overlay-slide' },
+];
+
+const PRODUCT_COLLECTION_OPTIONS = [
+	{ label: __( 'Latest', 'sgs-blocks' ), value: 'latest' },
+	{ label: __( 'Best selling', 'sgs-blocks' ), value: 'best-selling' },
+	{ label: __( 'Highest price', 'sgs-blocks' ), value: 'price-high' },
+	{ label: __( 'Lowest price', 'sgs-blocks' ), value: 'price-low' },
+	{ label: __( 'Top rated', 'sgs-blocks' ), value: 'top-rated' },
 ];
 
 const BADGE_VARIANT_OPTIONS = [
@@ -162,9 +176,28 @@ export default function Edit( { attributes, setAttributes } ) {
 		queryPostType,
 		queryPostsPerPage,
 		queryCategory,
+		productSource,
+		productCollection,
+		productLimit,
+		productCategories,
+		productTags,
+		productFeatured,
+		productOnSale,
+		productInStock,
+		productIds,
+		productEmptyMessage,
 	} = attributes;
 
 	const isQueryMode = source === 'query';
+	const isWcProductMode = source === 'wc-product';
+
+	// Flat help-text resolution (no nested ternary — S3358).
+	let sourceHelp = __( 'Add and arrange cards manually below.', 'sgs-blocks' );
+	if ( isWcProductMode ) {
+		sourceHelp = __( 'Products are pulled from your WooCommerce catalogue.', 'sgs-blocks' );
+	} else if ( isQueryMode ) {
+		sourceHelp = __( 'Cards are pulled automatically from your posts.', 'sgs-blocks' );
+	}
 
 	const className = [
 		'sgs-card-grid',
@@ -230,12 +263,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ [
 							{ label: __( 'Manual (custom items)', 'sgs-blocks' ), value: 'manual' },
 							{ label: __( 'Query (from posts)', 'sgs-blocks' ), value: 'query' },
+							{ label: __( 'WooCommerce products', 'sgs-blocks' ), value: 'wc-product' },
 						] }
 						onChange={ ( val ) => setAttributes( { source: val } ) }
-						help={ isQueryMode
-							? __( 'Cards are pulled automatically from your posts.', 'sgs-blocks' )
-							: __( 'Add and arrange cards manually below.', 'sgs-blocks' )
-						}
+						help={ sourceHelp }
 						__nextHasNoMarginBottom
 					/>
 					{ isQueryMode && (
@@ -261,7 +292,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							<TextControl
 								label={ __( 'Category ID (optional)', 'sgs-blocks' ) }
 								value={ queryCategory ? String( queryCategory ) : '' }
-								onChange={ ( val ) => setAttributes( { queryCategory: parseInt( val, 10 ) || 0 } ) }
+								onChange={ ( val ) => setAttributes( { queryCategory: Number.parseInt( val, 10 ) || 0 } ) }
 								type="number"
 								help={ __( 'Filter by category ID. Leave 0 for all categories.', 'sgs-blocks' ) }
 								__nextHasNoMarginBottom
@@ -270,7 +301,110 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				{ ! isQueryMode && (
+				{ /* ── Products panel: visible only in wc-product mode ── */ }
+				{ isWcProductMode && (
+					<PanelBody
+						title={ __( 'Products', 'sgs-blocks' ) }
+						initialOpen={ true }
+					>
+						<SelectControl
+							label={ __( 'Selection mode', 'sgs-blocks' ) }
+							value={ productSource || 'collection' }
+							options={ [
+								{ label: __( 'Smart collection', 'sgs-blocks' ), value: 'collection' },
+								{ label: __( 'Hand-pick specific products', 'sgs-blocks' ), value: 'handpick' },
+							] }
+							onChange={ ( val ) => setAttributes( { productSource: val } ) }
+							__nextHasNoMarginBottom
+						/>
+
+						{ ( productSource || 'collection' ) === 'collection' && (
+							<>
+								<SelectControl
+									label={ __( 'Smart collection', 'sgs-blocks' ) }
+									value={ productCollection || 'latest' }
+									options={ PRODUCT_COLLECTION_OPTIONS }
+									onChange={ ( val ) => setAttributes( { productCollection: val } ) }
+									help={ __( 'One-click preset ordering for your product grid.', 'sgs-blocks' ) }
+									__nextHasNoMarginBottom
+								/>
+								<RangeControl
+									label={ __( 'Number of products', 'sgs-blocks' ) }
+									value={ productLimit || 6 }
+									onChange={ ( val ) => setAttributes( { productLimit: val } ) }
+									min={ 1 }
+									max={ 24 }
+									help={ __( 'Maximum 24 products.', 'sgs-blocks' ) }
+									__nextHasNoMarginBottom
+								/>
+								<p style={ { margin: '12px 0 4px', fontWeight: 600, fontSize: 12 } }>
+									{ __( 'Filters', 'sgs-blocks' ) }
+								</p>
+								<ProductTaxonomyChecklist
+									taxonomy="product_cat"
+									label={ __( 'Categories', 'sgs-blocks' ) }
+									attributeKey="productCategories"
+									selectedIds={ productCategories || [] }
+									setAttributes={ setAttributes }
+								/>
+								<ProductTaxonomyChecklist
+									taxonomy="product_tag"
+									label={ __( 'Tags', 'sgs-blocks' ) }
+									attributeKey="productTags"
+									selectedIds={ productTags || [] }
+									setAttributes={ setAttributes }
+								/>
+								<SelectControl
+									label={ __( 'In stock only', 'sgs-blocks' ) }
+									value={ productInStock === false ? 'no' : 'yes' }
+									options={ [
+										{ label: __( 'Yes (recommended)', 'sgs-blocks' ), value: 'yes' },
+										{ label: __( 'No — include out-of-stock', 'sgs-blocks' ), value: 'no' },
+									] }
+									onChange={ ( val ) => setAttributes( { productInStock: val === 'yes' } ) }
+									__nextHasNoMarginBottom
+								/>
+								<SelectControl
+									label={ __( 'On sale only', 'sgs-blocks' ) }
+									value={ productOnSale ? 'yes' : 'no' }
+									options={ [
+										{ label: __( 'No', 'sgs-blocks' ), value: 'no' },
+										{ label: __( 'Yes — sale items only', 'sgs-blocks' ), value: 'yes' },
+									] }
+									onChange={ ( val ) => setAttributes( { productOnSale: val === 'yes' } ) }
+									__nextHasNoMarginBottom
+								/>
+								<SelectControl
+									label={ __( 'Featured only', 'sgs-blocks' ) }
+									value={ productFeatured ? 'yes' : 'no' }
+									options={ [
+										{ label: __( 'No', 'sgs-blocks' ), value: 'no' },
+										{ label: __( 'Yes — featured items only', 'sgs-blocks' ), value: 'yes' },
+									] }
+									onChange={ ( val ) => setAttributes( { productFeatured: val === 'yes' } ) }
+									__nextHasNoMarginBottom
+								/>
+							</>
+						) }
+
+						{ ( productSource || 'collection' ) === 'handpick' && (
+							<ProductHandpickPanel
+								productIds={ productIds || [] }
+								setAttributes={ setAttributes }
+							/>
+						) }
+
+						<TextControl
+							label={ __( 'Empty state message', 'sgs-blocks' ) }
+							value={ productEmptyMessage || '' }
+							onChange={ ( val ) => setAttributes( { productEmptyMessage: val } ) }
+							help={ __( 'Shown when no products match — never a blank region (FR-24-6).', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+						/>
+					</PanelBody>
+				) }
+
+				{ ! isQueryMode && ! isWcProductMode && (
 				<PanelBody title={ __( 'Items', 'sgs-blocks' ) }>
 					{ items.map( ( item, index ) => (
 						<ItemEditor
@@ -376,78 +510,96 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
-			<div { ...blockProps } style={ { ...blockProps.style, ...gridStyle } }>
-				{ items.length === 0 && (
-					<p className="sgs-card-grid__placeholder">
-						{ __(
-							'Add items in the sidebar to build your grid.',
-							'sgs-blocks'
+			{ /* WC-product mode: live server-side preview (mirrors content-collection pattern) */ }
+			{ isWcProductMode ? (
+				<div { ...blockProps }>
+					<ServerSideRender
+						block="sgs/card-grid"
+						attributes={ attributes }
+						LoadingResponsePlaceholder={ () => (
+							<div style={ { padding: '2rem', textAlign: 'center' } }>
+								<Spinner />
+								<p style={ { marginTop: 8, color: '#6b7280' } }>
+									{ __( 'Loading products…', 'sgs-blocks' ) }
+								</p>
+							</div>
 						) }
-					</p>
-				) }
-				{ items.map( ( item, index ) => (
-					<div key={ index } className="sgs-card-grid__item">
-						<div className="sgs-card-grid__image-wrap">
-							{ item.image?.url ? (
-								<img
-									src={ item.image.url }
-									alt={ item.image.alt || '' }
-									className="sgs-card-grid__image"
-								/>
-							) : (
-								<span className="sgs-card-grid__image-placeholder" />
+					/>
+				</div>
+			) : (
+				<div { ...blockProps } style={ { ...blockProps.style, ...gridStyle } }>
+					{ items.length === 0 && (
+						<p className="sgs-card-grid__placeholder">
+							{ __(
+								'Add items in the sidebar to build your grid.',
+								'sgs-blocks'
 							) }
-							{ variant === 'overlay' && (
-								<div className="sgs-card-grid__overlay">
+						</p>
+					) }
+					{ items.map( ( item, index ) => (
+						<div key={ index } className="sgs-card-grid__item">
+							<div className="sgs-card-grid__image-wrap">
+								{ item.image?.url ? (
+									<img
+										src={ item.image.url }
+										alt={ item.image.alt || '' }
+										className="sgs-card-grid__image"
+									/>
+								) : (
+									<span className="sgs-card-grid__image-placeholder" />
+								) }
+								{ variant === 'overlay' && (
+									<div className="sgs-card-grid__overlay">
+										{ item.title && (
+											<span
+												className="sgs-card-grid__title"
+												style={ titleStyle }
+											>
+												{ item.title }
+											</span>
+										) }
+										{ item.subtitle && (
+											<span
+												className="sgs-card-grid__subtitle"
+												style={ subtitleStyle }
+											>
+												{ item.subtitle }
+											</span>
+										) }
+									</div>
+								) }
+							</div>
+							{ variant === 'card' && (
+								<div className="sgs-card-grid__body">
 									{ item.title && (
-										<span
+										<h3
 											className="sgs-card-grid__title"
 											style={ titleStyle }
 										>
 											{ item.title }
-										</span>
+										</h3>
 									) }
 									{ item.subtitle && (
-										<span
+										<p
 											className="sgs-card-grid__subtitle"
 											style={ subtitleStyle }
 										>
 											{ item.subtitle }
+										</p>
+									) }
+									{ item.badge && item.badgeVariant && (
+										<span
+											className={ `sgs-card-grid__badge sgs-card-grid__badge--${ item.badgeVariant }` }
+										>
+											{ item.badge }
 										</span>
 									) }
 								</div>
 							) }
 						</div>
-						{ variant === 'card' && (
-							<div className="sgs-card-grid__body">
-								{ item.title && (
-									<h3
-										className="sgs-card-grid__title"
-										style={ titleStyle }
-									>
-										{ item.title }
-									</h3>
-								) }
-								{ item.subtitle && (
-									<p
-										className="sgs-card-grid__subtitle"
-										style={ subtitleStyle }
-									>
-										{ item.subtitle }
-									</p>
-								) }
-								{ item.badge && item.badgeVariant && (
-									<span
-										className={ `sgs-card-grid__badge sgs-card-grid__badge--${ item.badgeVariant }` }
-									>
-										{ item.badge }
-									</span>
-								) }
-							</div>
-						) }
-					</div>
-				) ) }
-			</div>
+					) ) }
+				</div>
+			) }
 		</>
 	);
 }

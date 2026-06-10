@@ -863,6 +863,15 @@ store( 'sgs/product-card', {
 				document.dispatchEvent(
 					new CustomEvent( 'wc-blocks_added_to_cart' )
 				);
+
+				// FP-H buy-now: redirect to checkout immediately after a successful
+				// add. context.ctaBehaviour is seeded server-side from the block attr;
+				// context.checkoutUrl is the esc_url'd wc_get_checkout_url() value.
+				// The form carries data-buy-now="1" as a belt-and-braces DOM signal,
+				// but we read from context to stay consistent with the seeded state.
+				if ( ctx.ctaBehaviour === 'buy-now' && ctx.checkoutUrl ) {
+					window.location.href = ctx.checkoutUrl;
+				}
 			} catch {
 				ctx.cartStatus =
 					'Sorry, something went wrong adding this item.';

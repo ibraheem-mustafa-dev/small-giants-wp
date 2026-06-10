@@ -1,8 +1,10 @@
 import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
-	useInnerBlocksProps,
 	InspectorControls,
+	MediaUpload,
+	MediaPlaceholder,
+	RichText,
 } from '@wordpress/block-editor';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { SpacingControl } from '../../components';
@@ -10,11 +12,14 @@ import {
 	PanelBody,
 	SelectControl,
 	TextControl,
+	TextareaControl,
 	NumberControl,
 	ComboboxControl,
 	ToggleControl,
+	CheckboxControl,
 	Notice,
 	Spinner,
+	Button,
 } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
@@ -22,50 +27,28 @@ import { store as coreStore } from '@wordpress/core-data';
 import apiFetch from '@wordpress/api-fetch';
 import ServerSideRender from '@wordpress/server-side-render';
 
-/**
- * FR-22-6 card template — all content as InnerBlocks (typed mode).
- *
- * Document order: image → heading (name) → text (description) →
- * text (price) → label (badge/tag) → multi-button (CTA).
- */
-const CARD_TEMPLATE = [
-	[ 'sgs/media', { mediaType: 'image' } ],
-	[
-		'core/heading',
-		{ level: 3, placeholder: __( 'Product name', 'sgs-blocks' ) },
-	],
-	[ 'sgs/text', { placeholder: __( 'Short description…', 'sgs-blocks' ) } ],
-	[
-		'sgs/text',
-		{ placeholder: __( 'Price — e.g. £10.00 · 8-pack', 'sgs-blocks' ) },
-	],
-	[ 'sgs/label', {} ],
-	[
-		'sgs/multi-button',
-		{},
-		[
-			[
-				'sgs/button',
-				{
-					inheritStyle: 'primary',
-					label: __( 'Shop Now', 'sgs-blocks' ),
-				},
-			],
-		],
-	],
-];
-
-const ALLOWED_BLOCKS = [
-	'sgs/media',
-	'core/heading',
-	'sgs/text',
-	'sgs/label',
-	'sgs/multi-button',
-	'sgs/button',
-];
-
-/** Sentinel value for the "Typed (manual content)" option. */
+/** Sentinel value for the "No product connected" option. */
 const TYPED_VALUE = '__typed__';
+
+/*
+ * Override-able elements (Bean design, FP-H final unit): 'name', 'description',
+ * 'badge', 'image', 'cta' — see ContentOverridesPanel. PRICE IS NEVER
+ * OVERRIDABLE (page ↔ schema ↔ feed parity) — deliberately absent.
+ */
+
+/** Allowed CTA behaviour options — typed mode locks to 'learn-more'. */
+const CTA_BEHAVIOUR_OPTIONS = [
+	{ value: 'learn-more', label: __( 'Learn more (link to product page)', 'sgs-blocks' ) },
+	{ value: 'add-to-basket', label: __( 'Add to basket (cart proxy)', 'sgs-blocks' ) },
+	{ value: 'buy-now', label: __( 'Buy now (add + go to checkout)', 'sgs-blocks' ) },
+];
+
+/** Allowed CTA style options — mirrors btn-* vocabulary in style.css. */
+const CTA_STYLE_OPTIONS = [
+	{ value: 'primary', label: __( 'Primary', 'sgs-blocks' ) },
+	{ value: 'secondary', label: __( 'Secondary', 'sgs-blocks' ) },
+	{ value: 'outline', label: __( 'Outline', 'sgs-blocks' ) },
+];
 
 /**
  * Product source panel — searchable picker that lists both WooCommerce
@@ -147,7 +130,7 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 	const options = [
 		{
 			value: TYPED_VALUE,
-			label: __( 'Typed (manual content)', 'sgs-blocks' ),
+			label: __( 'No product connected', 'sgs-blocks' ),
 		},
 		...wcOptions,
 		...cptOptions,
@@ -169,7 +152,7 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 		const [ kind, id ] = value.split( ':' );
 		setAttributes( {
 			sourceMode: 'wc' === kind ? 'wc-product' : 'sgs-cpt',
-			productId: parseInt( id, 10 ) || 0,
+			productId: Number.parseInt( id, 10 ) || 0,
 		} );
 	}
 
@@ -177,13 +160,13 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 
 	return (
 		<PanelBody
-			title={ __( 'Product source', 'sgs-blocks' ) }
+			title={ __( 'Connected product', 'sgs-blocks' ) }
 			initialOpen={ true }
 		>
 			<ComboboxControl
-				label={ __( 'Bind to a product', 'sgs-blocks' ) }
+				label={ __( 'Connected product', 'sgs-blocks' ) }
 				help={ __(
-					'Search WooCommerce or SGS products. Choose "Typed" to author card content by hand.',
+					'Connect a WooCommerce product to fill this card with live data. Leave unconnected to author the card by hand.',
 					'sgs-blocks'
 				) }
 				value={ currentValue }
@@ -241,7 +224,345 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 							style={ { marginTop: 8 } }
 						>
 							{ __(
-								'Trade/B2B only. UK consumer law (Price Marking Order 2004) requires the VAT-inclusive price to be the prominent price on a consumer shop — do not use this mode for B2C.',
+								'Trade/B2B only. UK consumer law (Price Marking Order 2004) requires the VAT-inclusive price to be the prominent price on a consumer shop — do not use this option for B2C.',
+								'sgs-blocks'
+							) }
+						</Notice>
+					) }
+				</>
+			) }
+		</PanelBody>
+	);
+}
+
+/**
+ * Product options panel (connected products only) — visibleAxes checkbox list.
+ * Derives the connected product's attribute taxonomies from the shared
+ * /wc/v3/products/{id} fetch in Edit (single round-trip, reused by the
+ * overrides panel too) so the operator can tick which axes to show.
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Attribute setter.
+ * @param {?Object}  props.wcProduct     The connected WC product (or null).
+ * @param {boolean}  props.loading       True while the product fetch is in flight.
+ */
+function ProductOptionsPanel( { attributes, setAttributes, wcProduct, loading } ) {
+	const { visibleAxes } = attributes;
+	const axesLoading = loading;
+	const wcAxes = ( wcProduct?.attributes || [] )
+		.filter( ( a ) => a.variation )
+		.map( ( a ) => ( {
+			slug: a.slug || `pa_${ a.name.toLowerCase().replace( /\s+/g, '-' ) }`,
+			label: a.name,
+		} ) );
+
+	if ( ! wcAxes.length && ! axesLoading ) {
+		return null;
+	}
+
+	const currentAxes = Array.isArray( visibleAxes ) ? visibleAxes : [];
+
+	function toggleAxis( slug, checked ) {
+		const next = checked
+			? [ ...currentAxes.filter( ( s ) => s !== slug ), slug ]
+			: currentAxes.filter( ( s ) => s !== slug );
+		setAttributes( { visibleAxes: next } );
+	}
+
+	return (
+		<PanelBody
+			title={ __( 'Product options', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
+			{ axesLoading && <Spinner /> }
+			{ ! axesLoading && (
+				<>
+					<p style={ { marginTop: 0 } }>
+						{ __(
+							'Choose which option axes to show. Untick to hide an axis from the picker (the product combos and pricing remain correct).',
+							'sgs-blocks'
+						) }
+					</p>
+					{ wcAxes.map( ( axis ) => (
+						<CheckboxControl
+							key={ axis.slug }
+							label={ axis.label }
+							checked={
+								currentAxes.length === 0 ||
+								currentAxes.includes( axis.slug )
+							}
+							onChange={ ( checked ) =>
+								toggleAxis( axis.slug, checked )
+							}
+							__nextHasNoMarginBottom
+						/>
+					) ) }
+					{ currentAxes.length === 0 && (
+						<Notice
+							status="info"
+							isDismissible={ false }
+							style={ { marginTop: 8 } }
+						>
+							{ __(
+								'All axes shown (default). Untick one to hide it.',
+								'sgs-blocks'
+							) }
+						</Notice>
+					) }
+				</>
+			) }
+		</PanelBody>
+	);
+}
+
+/**
+ * Content overrides panel (connected products only) — Bean's per-element
+ * override design (FP-H final unit).
+ *
+ * Per element: ToggleControl "Override <element>". ON = the typed field shows
+ * beneath and its non-empty value replaces the live value on the front end.
+ * OFF = the field hides but its value is PRESERVED (toggle back without
+ * retyping); the live value renders. An empty override never blanks the card.
+ *
+ * PRICE IS NEVER OVERRIDABLE (page ↔ schema ↔ feed parity) — no toggle here.
+ *
+ * Live previews + the image gallery strip reuse the SINGLE /wc/v3/products/{id}
+ * fetch from Edit (no new REST round-trips).
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Attribute setter.
+ * @param {?Object}  props.wcProduct     The connected WC product (or null).
+ */
+function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
+	const { overrideElements, variantStyle, ctaBehaviour } = attributes;
+	const overrides = Array.isArray( overrideElements ) ? overrideElements : [];
+
+	const isOn = ( el ) => overrides.includes( el );
+
+	function toggle( el, on ) {
+		// Only mutate the override LIST — never the element's typed attr value
+		// (preserved so the operator can toggle back without retyping).
+		const next = on
+			? [ ...overrides.filter( ( e ) => e !== el ), el ]
+			: overrides.filter( ( e ) => e !== el );
+		setAttributes( { overrideElements: next } );
+	}
+
+	const stripTags = ( html ) =>
+		( html || '' ).replace( /<[^>]*>/g, '' ).trim();
+
+	const liveName = wcProduct?.name || '';
+	const liveDesc = stripTags( wcProduct?.short_description );
+	const galleryImages = wcProduct?.images || [];
+
+	// The badge attr follows the variant (mirrors render.php's resolution).
+	const isFeatured = variantStyle === 'featured';
+	const badgeAttr = isFeatured ? 'featuredTag' : 'trialTag';
+	const badgeApplies = variantStyle === 'trial' || isFeatured;
+
+	/* translators: live-value preview under an override toggle. */
+	const liveHelp = ( value ) =>
+		value ? `${ __( 'Live value:', 'sgs-blocks' ) } ${ value }` : undefined;
+
+	return (
+		<PanelBody
+			title={ __( 'Content overrides', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
+			<p style={ { marginTop: 0 } }>
+				{ __(
+					'Replace individual live product details with your own text. Switching an override off keeps your text for later. Price always comes from the product.',
+					'sgs-blocks'
+				) }
+			</p>
+
+			{ /* Name */ }
+			<ToggleControl
+				label={ __( 'Override name', 'sgs-blocks' ) }
+				checked={ isOn( 'name' ) }
+				onChange={ ( on ) => toggle( 'name', on ) }
+				help={ ! isOn( 'name' ) ? liveHelp( liveName ) : undefined }
+				__nextHasNoMarginBottom
+			/>
+			{ isOn( 'name' ) && (
+				<TextControl
+					label={ __( 'Name', 'sgs-blocks' ) }
+					value={ attributes.productName || '' }
+					onChange={ ( v ) =>
+						setAttributes( { productName: v } )
+					}
+					__nextHasNoMarginBottom
+				/>
+			) }
+
+			{ /* Description */ }
+			<ToggleControl
+				label={ __( 'Override description', 'sgs-blocks' ) }
+				checked={ isOn( 'description' ) }
+				onChange={ ( on ) => toggle( 'description', on ) }
+				help={
+					! isOn( 'description' )
+						? liveHelp( liveDesc )
+						: undefined
+				}
+				__nextHasNoMarginBottom
+			/>
+			{ isOn( 'description' ) && (
+				<TextareaControl
+					label={ __( 'Description', 'sgs-blocks' ) }
+					value={ attributes.description || '' }
+					onChange={ ( v ) =>
+						setAttributes( { description: v } )
+					}
+					__nextHasNoMarginBottom
+				/>
+			) }
+
+			{ /* Badge */ }
+			<ToggleControl
+				label={ __( 'Override badge', 'sgs-blocks' ) }
+				checked={ isOn( 'badge' ) }
+				onChange={ ( on ) => toggle( 'badge', on ) }
+				__nextHasNoMarginBottom
+			/>
+			{ isOn( 'badge' ) &&
+				( badgeApplies ? (
+					<TextControl
+						label={ __( 'Badge text', 'sgs-blocks' ) }
+						value={ attributes[ badgeAttr ] || '' }
+						onChange={ ( v ) =>
+							setAttributes( { [ badgeAttr ]: v } )
+						}
+						__nextHasNoMarginBottom
+					/>
+				) : (
+					<Notice status="info" isDismissible={ false }>
+						{ __(
+							'Badges show on the Trial and Featured variants. Choose one under Card.',
+							'sgs-blocks'
+						) }
+					</Notice>
+				) ) }
+
+			{ /* Image */ }
+			<ToggleControl
+				label={ __( 'Override image', 'sgs-blocks' ) }
+				checked={ isOn( 'image' ) }
+				onChange={ ( on ) => toggle( 'image', on ) }
+				__nextHasNoMarginBottom
+			/>
+			{ isOn( 'image' ) && (
+				<>
+					{ galleryImages.length > 0 && (
+						<div
+							style={ {
+								display: 'flex',
+								flexWrap: 'wrap',
+								gap: 8,
+								margin: '8px 0',
+							} }
+							aria-label={ __(
+								'Product gallery images',
+								'sgs-blocks'
+							) }
+						>
+							{ galleryImages.map( ( img, i ) => (
+								<Button
+									key={ img.id || i }
+									onClick={ () =>
+										setAttributes( {
+											image: img.src,
+											imageAlt: img.alt || '',
+										} )
+									}
+									aria-label={ `${ __(
+										'Use gallery image',
+										'sgs-blocks'
+									) } ${ i + 1 }` }
+									style={ {
+										padding: 0,
+										width: 48,
+										height: 48,
+										minWidth: 44,
+										minHeight: 44,
+										overflow: 'hidden',
+										borderRadius: 4,
+										border:
+											attributes.image === img.src
+												? '2px solid var(--wp-admin-theme-color, #007cba)'
+												: '2px solid transparent',
+									} }
+								>
+									<img
+										src={ img.src }
+										alt={ img.alt || '' }
+										style={ {
+											width: '100%',
+											height: '100%',
+											objectFit: 'cover',
+										} }
+									/>
+								</Button>
+							) ) }
+						</div>
+					) }
+					<MediaUpload
+						onSelect={ ( media ) =>
+							setAttributes( {
+								image: media.url,
+								imageAlt: media.alt || '',
+							} )
+						}
+						allowedTypes={ [ 'image' ] }
+						render={ ( { open } ) => (
+							<Button
+								variant="secondary"
+								onClick={ open }
+							>
+								{ __(
+									'Choose another image',
+									'sgs-blocks'
+								) }
+							</Button>
+						) }
+					/>
+				</>
+			) }
+
+			{ /* CTA */ }
+			<ToggleControl
+				label={ __( 'Override button', 'sgs-blocks' ) }
+				checked={ isOn( 'cta' ) }
+				onChange={ ( on ) => toggle( 'cta', on ) }
+				__nextHasNoMarginBottom
+			/>
+			{ isOn( 'cta' ) && (
+				<>
+					<TextControl
+						label={ __( 'Button text', 'sgs-blocks' ) }
+						value={ attributes.ctaText || '' }
+						onChange={ ( v ) =>
+							setAttributes( { ctaText: v } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ ( ctaBehaviour || 'learn-more' ) ===
+					'learn-more' ? (
+						<TextControl
+							label={ __( 'Button link', 'sgs-blocks' ) }
+							value={ attributes.ctaUrl || '' }
+							onChange={ ( v ) =>
+								setAttributes( { ctaUrl: v } )
+							}
+							type="url"
+							__nextHasNoMarginBottom
+						/>
+					) : (
+						<Notice status="info" isDismissible={ false }>
+							{ __(
+								'Only the button text is overridable for basket buttons — the button keeps its basket action.',
 								'sgs-blocks'
 							) }
 						</Notice>
@@ -261,17 +582,81 @@ export default function Edit( { attributes, setAttributes } ) {
 		indexVariationUrl,
 		framingMode,
 		decoyEnabled,
+		// Typed built-in attrs.
+		productName,
+		description,
+		image,
+		imageAlt,
+		packSizes,
+		priceLarge,
+		priceNote,
+		ctaText,
+		ctaUrl,
+		cta2Text,
+		cta2Url,
+		headingLevel,
+		ctaStyle,
+		cta2Style,
+		ctaBehaviour,
 	} = attributes;
 
 	const isTrial = variantStyle === 'trial';
 	const isFeatured = variantStyle === 'featured';
 	const isBound = sourceMode !== 'typed';
 
+	// In typed mode, determine whether we are in the new built-in branch
+	// (productName set) or the legacy InnerBlocks bridge path.
+	const isBuiltIn = ! isBound && productName !== '';
+
+	// FP-H final unit: SINGLE shared /wc/v3/products/{id} fetch for the
+	// connected product — reused by ProductOptionsPanel (axes), the overrides
+	// panel (live-value help + gallery strip). No per-panel round-trips.
+	const [ wcProduct, setWcProduct ] = useState( null );
+	const [ wcProductLoading, setWcProductLoading ] = useState( false );
+	const boundProductId = attributes.productId || 0;
+
+	useEffect( () => {
+		if ( 'wc-product' !== sourceMode || ! boundProductId ) {
+			setWcProduct( null );
+			return;
+		}
+		let cancelled = false;
+		setWcProductLoading( true );
+		apiFetch( { path: `/wc/v3/products/${ boundProductId }` } )
+			.then( ( product ) => {
+				if ( ! cancelled ) {
+					setWcProduct( product || null );
+				}
+			} )
+			.catch( () => {
+				if ( ! cancelled ) {
+					setWcProduct( null );
+				}
+			} )
+			.finally( () => {
+				if ( ! cancelled ) {
+					setWcProductLoading( false );
+				}
+			} );
+		return () => {
+			cancelled = true;
+		};
+	}, [ sourceMode, boundProductId ] );
+
+	// Q3: allowlist the style slugs before interpolating into className —
+	// a stale/imported attribute value must not inject an arbitrary class.
+	const ctaStyleSlugs = CTA_STYLE_OPTIONS.map( ( o ) => o.value );
+	const safeCtaStyle = ctaStyleSlugs.includes( ctaStyle )
+		? ctaStyle
+		: 'primary';
+	const safeCta2Style = ctaStyleSlugs.includes( cta2Style )
+		? cta2Style
+		: 'secondary';
+
 	// Bound mode: render.php (via ServerSideRender) supplies the full
 	// `.product-card` wrapper itself, so the editor wrapper must NOT also add
 	// it — otherwise the preview shows a double `.product-card` (double
-	// padding/border). Frontend spacing/align still come from render.php's
-	// get_block_wrapper_attributes().
+	// padding/border).
 	const blockProps = useBlockProps(
 		isBound
 			? {}
@@ -286,12 +671,27 @@ export default function Edit( { attributes, setAttributes } ) {
 			  }
 	);
 
-	// Typed-mode InnerBlocks slot (UNCHANGED behaviour).
-	const innerBlocksProps = useInnerBlocksProps( blockProps, {
-		template: CARD_TEMPLATE,
-		templateLock: false,
-		allowedBlocks: ALLOWED_BLOCKS,
-	} );
+	// Pack sizes: stored as array of { label, selected }. Editor uses a
+	// comma-separated text control for simplicity.
+	const packSizesText = ( packSizes || [] )
+		.map( ( p ) => p.label )
+		.join( ', ' );
+
+	function onPackSizesChange( text ) {
+		const labels = text
+			.split( ',' )
+			.map( ( s ) => s.trim() )
+			.filter( Boolean );
+		setAttributes( {
+			packSizes: labels.map( ( label, i ) => ( {
+				label,
+				selected: i === 0,
+			} ) ),
+		} );
+	}
+
+	// Heading tag derived from headingLevel attr.
+	const headingTag = `h${ headingLevel || 3 }`;
 
 	return (
 		<>
@@ -317,7 +717,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Card variant', 'sgs-blocks' ) }>
+
+				{ /* ── Card panel ── */ }
+				<PanelBody title={ __( 'Card', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Variant style', 'sgs-blocks' ) }
 						value={ variantStyle }
@@ -343,19 +745,210 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
-					{ ! isBound && (
+					{ isBuiltIn && (
+						<>
+							<SelectControl
+								label={ __( 'Heading level', 'sgs-blocks' ) }
+								help={ __(
+									'HTML heading tag for the product name (h2, h3, or h4).',
+									'sgs-blocks'
+								) }
+								value={ String( headingLevel || 3 ) }
+								options={ [
+									{ value: '2', label: 'H2' },
+									{ value: '3', label: 'H3' },
+									{ value: '4', label: 'H4' },
+								] }
+								onChange={ ( v ) =>
+									setAttributes( {
+										headingLevel: Number.parseInt( v, 10 ),
+									} )
+								}
+								__nextHasNoMarginBottom
+							/>
+							{ isTrial && (
+								<TextControl
+									label={ __( 'Trial tag text', 'sgs-blocks' ) }
+									value={ attributes.trialTag || '' }
+									onChange={ ( v ) =>
+										setAttributes( { trialTag: v } )
+									}
+									__nextHasNoMarginBottom
+								/>
+							) }
+							{ isFeatured && (
+								<TextControl
+									label={ __( 'Featured tag text', 'sgs-blocks' ) }
+									value={ attributes.featuredTag || '' }
+									onChange={ ( v ) =>
+										setAttributes( { featuredTag: v } )
+									}
+									__nextHasNoMarginBottom
+								/>
+							) }
+						</>
+					) }
+					{ ! isBound && ! isBuiltIn && (
 						<Notice
 							status="info"
 							isDismissible={ false }
 							style={ { marginTop: 8 } }
 						>
 							{ __(
-								'Card content (image, name, description, price, badge, CTA) is managed directly in the editor. Click any inner block to edit it.',
+								'Card content is managed directly in the editor. Click any inner block to edit it.',
 								'sgs-blocks'
 							) }
 						</Notice>
 					) }
 				</PanelBody>
+
+				{ /* ── Price panel (typed built-in only) ── */ }
+				{ isBuiltIn && (
+					<PanelBody
+						title={ __( 'Price', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<TextControl
+							label={ __( 'Price', 'sgs-blocks' ) }
+							help={ __(
+								'Displayed price, e.g. £10.00',
+								'sgs-blocks'
+							) }
+							value={ priceLarge || '' }
+							onChange={ ( v ) =>
+								setAttributes( { priceLarge: v } )
+							}
+							__nextHasNoMarginBottom
+						/>
+						<TextControl
+							label={ __( 'Price note', 'sgs-blocks' ) }
+							help={ __(
+								'Small text below the price, e.g. "8-pack · Free delivery over £35"',
+								'sgs-blocks'
+							) }
+							value={ priceNote || '' }
+							onChange={ ( v ) =>
+								setAttributes( { priceNote: v } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					</PanelBody>
+				) }
+				{ isBound && (
+					<PanelBody
+						title={ __( 'Price', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<Notice status="info" isDismissible={ false }>
+							{ __(
+								'Price is drawn from the linked product and cannot be edited here.',
+								'sgs-blocks'
+							) }
+						</Notice>
+					</PanelBody>
+				) }
+
+				{ /* ── Buttons panel ── */ }
+				<PanelBody
+					title={ __( 'Buttons', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					{ /* Primary CTA */ }
+					<TextControl
+						label={ __( 'Primary button text', 'sgs-blocks' ) }
+						value={ ctaText || '' }
+						onChange={ ( v ) => setAttributes( { ctaText: v } ) }
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Primary button URL', 'sgs-blocks' ) }
+						value={ ctaUrl || '' }
+						onChange={ ( v ) => setAttributes( { ctaUrl: v } ) }
+						type="url"
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Primary button style', 'sgs-blocks' ) }
+						value={ ctaStyle || 'primary' }
+						options={ CTA_STYLE_OPTIONS }
+						onChange={ ( v ) =>
+							setAttributes( { ctaStyle: v } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ isBound ? (
+						<SelectControl
+							label={ __( 'Primary button behaviour', 'sgs-blocks' ) }
+							help={ __(
+								'What happens when the button is clicked in the live product card.',
+								'sgs-blocks'
+							) }
+							value={ ctaBehaviour || 'learn-more' }
+							options={ CTA_BEHAVIOUR_OPTIONS }
+							onChange={ ( v ) =>
+								setAttributes( { ctaBehaviour: v } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					) : (
+						<Notice
+							status="info"
+							isDismissible={ false }
+							style={ { marginTop: 8 } }
+						>
+							{ __(
+								'Buttons render as plain links until a product is connected. Behaviour options apply to a connected product.',
+								'sgs-blocks'
+							) }
+						</Notice>
+					) }
+
+					{ /* Secondary CTA */ }
+					<hr style={ { margin: '12px 0' } } />
+					<TextControl
+						label={ __( 'Secondary button text', 'sgs-blocks' ) }
+						help={ __(
+							'Leave empty to hide the secondary button.',
+							'sgs-blocks'
+						) }
+						value={ cta2Text || '' }
+						onChange={ ( v ) =>
+							setAttributes( { cta2Text: v } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ ( cta2Text || '' ) !== '' && (
+						<>
+							<TextControl
+								label={ __(
+									'Secondary button URL',
+									'sgs-blocks'
+								) }
+								value={ cta2Url || '' }
+								onChange={ ( v ) =>
+									setAttributes( { cta2Url: v } )
+								}
+								type="url"
+								__nextHasNoMarginBottom
+							/>
+							<SelectControl
+								label={ __(
+									'Secondary button style',
+									'sgs-blocks'
+								) }
+								value={ cta2Style || 'secondary' }
+								options={ CTA_STYLE_OPTIONS }
+								onChange={ ( v ) =>
+									setAttributes( { cta2Style: v } )
+								}
+								__nextHasNoMarginBottom
+							/>
+								{ /* v1: the secondary button is always a plain learn-more link (one canonical cart form per card) — no behaviour dropdown until a real second behaviour exists (dead-control rule). */ }
+						</>
+					) }
+				</PanelBody>
+
+				{ /* ── Card layout panel ── */ }
 				<PanelBody
 					title={ __( 'Card layout', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -387,6 +980,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
+
+				{ /* ── Advanced SEO panel (WC bound only) ── */ }
 				{ 'wc-product' === sourceMode && (
 					<PanelBody
 						title={ __( 'Advanced SEO', 'sgs-blocks' ) }
@@ -405,7 +1000,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							min={ 0 }
 							onChange={ ( v ) =>
 								setAttributes( {
-									indexVariationUrl: parseInt( v, 10 ) || 0,
+									indexVariationUrl:
+										parseInt( v, 10 ) || 0,
 								} )
 							}
 							__next40pxDefaultSize
@@ -413,74 +1009,257 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</PanelBody>
 				) }
-			{ isBound && (
-						<PanelBody
-							title={ __( 'Value ladder', 'sgs-blocks' ) }
-							initialOpen={ false }
-						>
-							<SelectControl
-								label={ __( 'Savings framing', 'sgs-blocks' ) }
-								help={ __(
-									'How per-unit savings are worded on the price-per-unit ladder. Savings only show when a single-unit reference price is set + confirmed on the product editor.',
-									'sgs-blocks'
-								) }
-								value={ framingMode || 'loss-aversion' }
-								options={ [
-									{
-										value: 'loss-aversion',
-										label: __(
-											'Loss aversion ("save 8p each vs buying singly")',
-											'sgs-blocks'
-										),
-									},
-									{
-										value: 'savings',
-										label: __(
-											'Savings ("save 8p each")',
-											'sgs-blocks'
-										),
-									},
-									{
-										value: 'neutral',
-										label: __(
-											'Neutral (no saving text)',
-											'sgs-blocks'
-										),
-									},
-								] }
-								onChange={ ( v ) =>
-									setAttributes( { framingMode: v } )
-								}
-								__nextHasNoMarginBottom
-							/>
-							<ToggleControl
-								label={ __(
-									'Promote the second-largest pack',
-									'sgs-blocks'
-								) }
-								help={ __(
-									'Places a "Most popular" badge on the second-largest pack (decoy pricing). A per-product setting on the product editor overrides this for that product.',
-									'sgs-blocks'
-								) }
-								checked={ !! decoyEnabled }
-								onChange={ ( v ) =>
-									setAttributes( { decoyEnabled: v } )
-								}
-								__nextHasNoMarginBottom
-							/>
-						</PanelBody>
-					) }
-				</InspectorControls>
+
+				{ /* ── Value ladder panel (bound only) ── */ }
+				{ isBound && (
+					<PanelBody
+						title={ __( 'Value ladder', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<SelectControl
+							label={ __( 'Savings framing', 'sgs-blocks' ) }
+							help={ __(
+								'How per-unit savings are worded on the price-per-unit ladder. Savings only show when a single-unit reference price is set + confirmed on the product editor.',
+								'sgs-blocks'
+							) }
+							value={ framingMode || 'loss-aversion' }
+							options={ [
+								{
+									value: 'loss-aversion',
+									label: __(
+										'Loss aversion ("save 8p each vs buying singly")',
+										'sgs-blocks'
+									),
+								},
+								{
+									value: 'savings',
+									label: __(
+										'Savings ("save 8p each")',
+										'sgs-blocks'
+									),
+								},
+								{
+									value: 'neutral',
+									label: __(
+										'Neutral (no saving text)',
+										'sgs-blocks'
+									),
+								},
+							] }
+							onChange={ ( v ) =>
+								setAttributes( { framingMode: v } )
+							}
+							__nextHasNoMarginBottom
+						/>
+						<ToggleControl
+							label={ __(
+								'Promote the second-largest pack',
+								'sgs-blocks'
+							) }
+							help={ __(
+								'Places a "Most popular" badge on the second-largest pack (decoy pricing). A per-product setting on the product editor overrides this for that product.',
+								'sgs-blocks'
+							) }
+							checked={ !! decoyEnabled }
+							onChange={ ( v ) =>
+								setAttributes( { decoyEnabled: v } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					</PanelBody>
+				) }
+
+				{ /* ── Content overrides panel (connected products only) ── */ }
+				{ isBound && (
+					<ContentOverridesPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						wcProduct={ wcProduct }
+					/>
+				) }
+
+				{ /* ── Product options panel (connected WC products only) ── */ }
+				{ isBound && (
+					<ProductOptionsPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						wcProduct={ wcProduct }
+						loading={ wcProductLoading }
+					/>
+				) }
+			</InspectorControls>
 
 			{ isBound ? (
+				/* Bound mode: server-side render preview */
 				<div { ...blockProps }>
 					<ServerSideRender
 						block="sgs/product-card"
 						attributes={ attributes }
 					/>
 				</div>
+			) : isBuiltIn ? (
+				/* Typed built-in mode: WYSIWYG preview from block attributes */
+				<div { ...blockProps }>
+					{ /* Image */ }
+					{ image ? (
+						<div style={ { position: 'relative' } }>
+							<img
+								className="sgs-product-card__image"
+								src={ image }
+								alt={ imageAlt || '' }
+								style={ {
+									width: '100%',
+									height: imageHeight || '220px',
+									objectFit: 'cover',
+									display: 'block',
+								} }
+							/>
+							<Button
+								isDestructive
+								isSmall
+								style={ {
+									position: 'absolute',
+									top: 8,
+									right: 8,
+								} }
+								onClick={ () =>
+									setAttributes( {
+										image: '',
+										imageAlt: '',
+									} )
+								}
+							>
+								{ __( 'Remove image', 'sgs-blocks' ) }
+							</Button>
+						</div>
+					) : (
+						<MediaPlaceholder
+							icon="format-image"
+							labels={ {
+								title: __( 'Product image', 'sgs-blocks' ),
+							} }
+							onSelect={ ( media ) =>
+								setAttributes( {
+									image: media.url,
+									imageAlt: media.alt || '',
+								} )
+							}
+							accept="image/*"
+							allowedTypes={ [ 'image' ] }
+						/>
+					) }
+
+					<div className="sgs-product-card__body">
+						{ /* Tag badge preview */ }
+						{ isTrial && ( attributes.trialTag || '' ) !== '' && (
+							<span className="sgs-product-card__tag sgs-product-card__tag--trial">
+								{ attributes.trialTag }
+							</span>
+						) }
+						{ isFeatured &&
+							( attributes.featuredTag || '' ) !== '' && (
+								<span className="sgs-product-card__tag sgs-product-card__tag--featured">
+									{ attributes.featuredTag }
+								</span>
+							) }
+
+						{ /* Product name — inline RichText */ }
+						<RichText
+							tagName={ headingTag }
+							className="sgs-product-card__title"
+							value={ productName || '' }
+							onChange={ ( v ) =>
+								setAttributes( { productName: v } )
+							}
+							placeholder={ __(
+								'Product name…',
+								'sgs-blocks'
+							) }
+							allowedFormats={ [] }
+						/>
+
+						{ /* Description — inline RichText */ }
+						<RichText
+							tagName="div"
+							className="sgs-product-card__description"
+							value={ description || '' }
+							onChange={ ( v ) =>
+								setAttributes( { description: v } )
+							}
+							placeholder={ __(
+								'Short description…',
+								'sgs-blocks'
+							) }
+							allowedFormats={ [
+								'core/bold',
+								'core/italic',
+								'core/link',
+							] }
+						/>
+
+						{ /* Pack pills preview */ }
+						{ ( packSizes || [] ).length > 0 && (
+							<div className="sgs-product-card__pill-group">
+								{ packSizes.map( ( pill, i ) => (
+									<span
+										key={ i }
+										className={
+											'sgs-product-card__pill' +
+											( pill.selected ? ' active' : '' )
+										}
+									>
+										{ pill.label }
+									</span>
+								) ) }
+							</div>
+						) }
+
+						{ /* Price row */ }
+						{ ( ( priceLarge || '' ) !== '' ||
+							( priceNote || '' ) !== '' ) && (
+							<div className="sgs-product-card__price-row">
+								{ ( priceLarge || '' ) !== '' && (
+									<span className="sgs-product-card__price">
+										{ priceLarge }
+									</span>
+								) }
+								{ ( priceNote || '' ) !== '' && (
+									<span className="sgs-product-card__price-note">
+										{ priceNote }
+									</span>
+								) }
+							</div>
+						) }
+
+						{ /* CTA row */ }
+						<div className="sgs-product-card__cta-row">
+							{ ( ctaText || '' ) !== '' && (
+								<span
+									className={ `btn btn-${ safeCtaStyle }` }
+								>
+									{ ctaText }
+								</span>
+							) }
+							{ ( cta2Text || '' ) !== '' && (
+								<span
+									className={ `btn btn-${ safeCta2Style }` }
+								>
+									{ cta2Text }
+								</span>
+							) }
+						</div>
+					</div>
+				</div>
 			) : (
-				<div { ...innerBlocksProps } />
+				/* Legacy InnerBlocks bridge path — transition until page-144 re-clones */
+				<div { ...blockProps }>
+					<Notice status="warning" isDismissible={ false }>
+						{ __(
+							'This card uses the legacy InnerBlocks layout. Set a product name above to switch to the new built-in card editor.',
+							'sgs-blocks'
+						) }
+					</Notice>
+				</div>
 			) }
 		</>
 	);

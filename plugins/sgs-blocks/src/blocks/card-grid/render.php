@@ -2,8 +2,10 @@
 /**
  * Server-side render for the SGS Card Grid block.
  *
- * In manual mode: renders the items array stored in block attributes.
- * In query mode: fetches posts via WP_Query and maps them to card layout.
+ * In manual mode:     renders the items array stored in block attributes.
+ * In query mode:      fetches posts via WP_Query and maps them to card layout.
+ * In wc-product mode: fetches WooCommerce products via Card_Grid_Products and
+ *                     renders each as an sgs/product-card in wc-product mode.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — block is fully dynamic).
@@ -16,6 +18,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-card-grid-products.php';
 
 $source             = $attributes['source'] ?? 'manual';
 $variant            = $attributes['variant'] ?? 'card';
@@ -25,7 +28,7 @@ $columns_mobile     = $attributes['columnsMobile'] ?? 1;
 $columns_tablet     = $attributes['columnsTablet'] ?? 2;
 $gap                = $attributes['gap'] ?? '30';
 $aspect_ratio       = $attributes['aspectRatio'] ?? '16/10';
-$hover_effect       = $attributes['hoverEffect'] ?? 'zoom';
+$hover_effect       = sanitize_key( $attributes['hoverEffect'] ?? 'zoom' );
 $overlay_style      = $attributes['overlayStyle'] ?? 'gradient';
 $title_colour       = $attributes['titleColour'] ?? '';
 $subtitle_colour    = $attributes['subtitleColour'] ?? '';
@@ -78,6 +81,113 @@ if ( 'query' === $source ) {
 
 	$items = $query_items;
 	wp_reset_postdata();
+}
+
+// WC-product mode: render product cards via the dual-mode sgs/product-card.
+// Delegates the query entirely to Card_Grid_Products (HPOS-safe, WC-canonical).
+if ( 'wc-product' === $source ) {
+	$product_ids   = \SGS\Blocks\Card_Grid_Products::get_product_ids( $attributes );
+	$empty_message = sanitize_text_field(
+		$attributes['productEmptyMessage'] ?? __( 'No products to show at the moment. Check back soon.', 'sgs-blocks' )
+	);
+
+	// ── Build shared wrapper props (same CSS vars the other modes use) ───────
+	$wc_class_names = array(
+		'sgs-card-grid',
+		'sgs-card-grid--card', // Product cards always use card variant.
+		'sgs-card-grid--hover-' . esc_attr( $hover_effect ),
+	);
+	if ( $hover_scale ) {
+		$wc_class_names[] = 'sgs-has-hover-scale';
+	}
+	if ( $hover_shadow ) {
+		$wc_class_names[] = 'sgs-has-hover';
+	}
+	if ( $stagger_delay ) {
+		$wc_class_names[] = 'sgs-has-stagger';
+	}
+
+	$gap_value_wc   = sgs_container_gap_value( $gap );
+	$wc_style_parts = array(
+		'--sgs-card-grid-columns: ' . absint( $columns ),
+		'--sgs-card-grid-columns-mobile: ' . absint( $columns_mobile ),
+		'--sgs-card-grid-columns-tablet: ' . absint( $columns_tablet ),
+		'--sgs-card-grid-gap: ' . $gap_value_wc,
+	);
+	if ( $hover_bg ) {
+		$wc_style_parts[] = '--sgs-hover-bg: var(--wp--preset--color--' . sanitize_key( $hover_bg ) . ')';
+	}
+	if ( $hover_text ) {
+		$wc_style_parts[] = '--sgs-hover-text: var(--wp--preset--color--' . sanitize_key( $hover_text ) . ')';
+	}
+	if ( $hover_border ) {
+		$wc_style_parts[] = '--sgs-hover-border: var(--wp--preset--color--' . sanitize_key( $hover_border ) . ')';
+	}
+	if ( $transition_dur ) {
+		$wc_style_parts[] = '--sgs-transition-duration: ' . absint( $transition_dur ) . 'ms';
+	}
+	if ( $transition_ease ) {
+		$wc_style_parts[] = '--sgs-transition-easing: ' . esc_attr( $transition_ease );
+	}
+	if ( $hover_scale ) {
+		$wc_style_parts[] = '--sgs-hover-scale: ' . esc_attr( $hover_scale );
+	}
+	if ( $hover_shadow ) {
+		$wc_style_parts[] = '--sgs-hover-shadow: var(--wp--preset--shadow--' . sanitize_key( $hover_shadow ) . ')';
+	}
+	if ( $stagger_delay ) {
+		$wc_style_parts[] = '--sgs-stagger: ' . absint( $stagger_delay ) . 'ms';
+	}
+
+	$wc_wrapper_opts = array(
+		'tag'           => 'div',
+		'extra_classes' => $wc_class_names,
+		'extra_styles'  => $wc_style_parts,
+	);
+
+	// ── Empty state (FR-24-6 reuse) ──────────────────────────────────────────
+	if ( empty( $product_ids ) ) {
+		ob_start();
+		?>
+		<div class="sgs-card-grid__empty">
+			<p class="sgs-card-grid__empty-message">
+				<?php echo esc_html( $empty_message ); ?>
+			</p>
+		</div>
+		<?php
+		$empty_html = ob_get_clean();
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() escapes internally.
+		echo SGS_Container_Wrapper::render( $attributes, $block, $empty_html, 'layout', $wc_wrapper_opts );
+		return;
+	}
+
+	// ── Render each product as sgs/product-card in wc-product mode ──────────
+	// Mirror of content-collection render.php §6 — render_block() returns
+	// fully-rendered, escaped markup (house pattern file:render.php:242).
+	ob_start();
+	foreach ( $product_ids as $wc_product_id ) :
+		$card_attrs = array(
+			'sourceMode' => 'wc-product',
+			'productId'  => absint( $wc_product_id ),
+		);
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
+		echo render_block(
+			array(
+				'blockName' => 'sgs/product-card',
+				'attrs'     => $card_attrs,
+			)
+		);
+	endforeach;
+	$wc_inner_html = ob_get_clean();
+
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() escapes internally.
+	echo SGS_Container_Wrapper::render( $attributes, $block, $wc_inner_html, 'layout', $wc_wrapper_opts );
+
+	// ItemList JSON-LD is emitted page-level by Product_Item_List
+	// (includes/class-product-item-list.php) — single source of truth; no
+	// per-grid emission here (prevents double-emission with loose cards).
+	return;
 }
 
 if ( empty( $items ) ) {

@@ -115,6 +115,15 @@ Product_Canonical::register();
 require_once SGS_BLOCKS_PATH . 'includes/class-product-sitemap.php';
 Product_Sitemap::register();
 
+// Page-level ItemList JSON-LD (FP-E) — ONE node per singular front-end page,
+// collecting wc-product card-grids + loose wc-product product-cards from the
+// queried post's block tree (recursive innerBlocks walk, document order).
+// SEC-9: defers to Yoast / RankMath when active; skips when WC inactive.
+// v1 limitation: blocks in template parts / synced patterns outside
+// post_content are not scanned.
+require_once SGS_BLOCKS_PATH . 'includes/class-product-item-list.php';
+Product_Item_List::register();
+
 // llms.txt + llms-full.txt — AI navigation files at site root (FR-27-F2 llms clause).
 // Serves curated navigation map + per-product expansion in llmstxt.org shape.
 // SEC-9: defers to Yoast / RankMath when active. Rate-limited 60/hr per IP.

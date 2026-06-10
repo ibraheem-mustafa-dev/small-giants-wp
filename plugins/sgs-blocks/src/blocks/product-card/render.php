@@ -52,6 +52,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/configurator-seed.php';
+require_once dirname( __DIR__, 3 ) . '/includes/product-card-builtin-render.php';
 
 $variant_style  = $attributes['variantStyle'] ?? 'standard';
 $source_mode    = $attributes['sourceMode'] ?? 'typed';
@@ -103,9 +104,45 @@ $base_opts = array(
 	'wrap_inner'    => false,
 );
 
-/* ── Typed mode (default) — unchanged FR-22-6 behaviour ────────────────────── */
+/* ── Typed mode ─────────────────────────────────────────────────────────────── */
 
 if ( 'typed' === $source_mode ) {
+	/*
+	 * FP-H bridge rule (TRANSITION — retires when page-144 re-clones with built-in emissions):
+	 *
+	 * When productName is a non-empty string, this card was either (a) authored
+	 * fresh in the editor after FP-H shipped, or (b) re-cloned by the converter
+	 * emitting native typed attrs.  Render the new built-in element branch.
+	 *
+	 * When productName is empty, this card is an existing InnerBlocks emission
+	 * (e.g. the current page-144 clones) that has not yet been re-cloned.
+	 * Echo $content unchanged — IDENTICAL to the pre-FP-H behaviour.
+	 *
+	 * NEVER branch on empty( $content ) — that is prohibited by R-22-14.
+	 * Branch only on the explicit typed attribute productName.
+	 */
+	$typed_name = isset( $attributes['productName'] ) ? trim( (string) $attributes['productName'] ) : '';
+
+	if ( '' !== $typed_name ) {
+		// New built-in element render (FP-H). Function defined in included helper above.
+		$builtin_inner = sgs_product_card_builtin_render( $attributes );
+
+		// Add BEM modifier classes to the wrapper for the new typed-builtin branch.
+		$builtin_classes   = $classes;
+		$builtin_classes[] = 'sgs-product-card';
+		if ( 'standard' !== $variant_style ) {
+			$builtin_classes[] = 'sgs-product-card--' . sanitize_html_class( $variant_style );
+		}
+		$builtin_opts                  = $base_opts;
+		$builtin_opts['extra_classes'] = $builtin_classes;
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() returns pre-escaped HTML.
+		echo SGS_Container_Wrapper::render( $attributes, $block, (string) $builtin_inner, 'content', $builtin_opts );
+		return;
+	}
+
+	// Transition bridge: existing InnerBlocks $content path (page-144 clones).
+	// This path retires once the converter re-clones page-144 with built-in emissions.
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() returns pre-escaped HTML.
 	echo SGS_Container_Wrapper::render( $attributes, $block, $content, 'content', $base_opts );
 	return;
@@ -119,6 +156,20 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-configurator-compat.ph
 
 $product_id = absint( $attributes['productId'] ?? 0 );
 $data       = \SGS\Blocks\Product_Bindings::get_product_data( $product_id, $source_mode );
+
+// FP-H: bound-branch title heading tag from headingLevel, clamped 2–4 (same
+// clamp as the typed built-in helper). Integer-derived — injection-safe.
+$sgs_bound_htag = 'h' . max( 2, min( 4, (int) ( $attributes['headingLevel'] ?? 3 ) ) );
+
+// FP-H: resolve the CTA behaviour ONCE for all bound branches (context seed +
+// markup share this value so label and behaviour always agree).
+$sgs_cta_behaviour = in_array( $attributes['ctaBehaviour'] ?? 'learn-more', array( 'learn-more', 'add-to-basket', 'buy-now' ), true )
+	? sanitize_key( $attributes['ctaBehaviour'] ?? 'learn-more' )
+	: 'learn-more';
+// Q2: 'buy-now' demotes to 'add-to-basket' when wc_get_checkout_url() is unavailable — label/behaviour stay truthful.
+if ( 'buy-now' === $sgs_cta_behaviour && ! function_exists( 'wc_get_checkout_url' ) ) {
+	$sgs_cta_behaviour = 'add-to-basket';
+}
 
 $classes[] = 'product-card--live';
 
@@ -145,6 +196,32 @@ if ( null === $data ) {
 	return;
 }
 
+/*
+ * ── FP-H final unit: per-element override resolution (Bean design) ────────────
+ *
+ * Single source: sgs_product_card_resolve_element() / sgs_product_card_override_active()
+ * in includes/product-card-builtin-render.php. Resolved ONCE here; every live-value
+ * emission below (read-only, variable, non-variable branches) uses these.
+ *
+ * PRICE IS NEVER RESOLVED THROUGH THIS MECHANISM — price paths have no override
+ * branch (legal: page ↔ schema ↔ feed parity).
+ */
+$sgs_resolved_title = sgs_product_card_resolve_element( $attributes, 'name', $attributes['productName'] ?? '', $data['title'] );
+$sgs_resolved_desc  = sgs_product_card_resolve_element( $attributes, 'description', $attributes['description'] ?? '', $data['short_desc'] );
+
+// Image: URL + alt resolve as a pair — when the typed image wins, the typed alt
+// accompanies it (a live alt under a typed image would mis-describe).
+$sgs_img_override     = sgs_product_card_override_active( $attributes, 'image', $attributes['image'] ?? '' );
+$sgs_resolved_img     = $sgs_img_override ? (string) $attributes['image'] : (string) $data['image_url'];
+$sgs_resolved_img_alt = $sgs_img_override ? (string) ( $attributes['imageAlt'] ?? '' ) : (string) $data['image_alt'];
+
+// Badge: bound branches have no live badge — live value is '' (override OFF or
+// empty typed value = no badge, matching pre-override bound output).
+$sgs_badge_typed    = 'trial' === $variant_style
+	? ( isset( $attributes['trialTag'] ) ? sanitize_text_field( (string) $attributes['trialTag'] ) : '' )
+	: ( 'featured' === $variant_style ? ( isset( $attributes['featuredTag'] ) ? sanitize_text_field( (string) $attributes['featuredTag'] ) : '' ) : '' );
+$sgs_resolved_badge = sgs_product_card_resolve_element( $attributes, 'badge', $sgs_badge_typed, '' );
+
 /* ── FR-27-A5: WC below the version floor → read-only card (no configurator JS) */
 
 /*
@@ -166,13 +243,17 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 
 	ob_start();
 	?>
-	<?php if ( '' !== $data['image_url'] ) : ?>
-		<img class="product-card-img" src="<?php echo esc_url( $data['image_url'] ); ?>" alt="<?php echo esc_attr( $data['image_alt'] ); ?>" loading="lazy" decoding="async">
+	<?php // FP-H: live values resolved through the per-element override helper. ?>
+	<?php if ( '' !== $sgs_resolved_img ) : ?>
+		<img class="product-card-img" src="<?php echo esc_url( $sgs_resolved_img ); ?>" alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>" loading="lazy" decoding="async">
 	<?php endif; ?>
 	<div class="product-card-body">
-		<h3><?php echo esc_html( $data['title'] ); ?></h3>
-		<?php if ( '' !== $data['short_desc'] ) : ?>
-			<div class="product-desc"><?php echo wp_kses_post( $data['short_desc'] ); ?></div>
+		<?php if ( '' !== $sgs_resolved_badge ) : ?>
+			<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_resolved_badge ); ?></span>
+		<?php endif; ?>
+		<h3><?php echo esc_html( $sgs_resolved_title ); ?></h3>
+		<?php if ( '' !== $sgs_resolved_desc ) : ?>
+			<div class="product-desc"><?php echo wp_kses_post( $sgs_resolved_desc ); ?></div>
 		<?php endif; ?>
 		<div class="price-row">
 			<?php if ( ! empty( $data['price_from_html'] ) ) : ?>
@@ -185,7 +266,13 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 			<?php endif; ?>
 		</div>
 		<?php if ( '' !== $ro_permalink ) : ?>
-			<a class="btn btn-primary product-card__view" href="<?php echo $ro_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd. ?>"><?php esc_html_e( 'View product', 'sgs-blocks' ); ?></a>
+			<?php
+			// FP-H: CTA label + URL via the override helper (this branch is link-only,
+			// so the learn-more URL rule applies).
+			$ro_cta_label = sgs_product_card_resolve_element( $attributes, 'cta', $attributes['ctaText'] ?? '', __( 'View product', 'sgs-blocks' ) );
+			$ro_cta_href  = esc_url( sgs_product_card_resolve_element( $attributes, 'cta', $attributes['ctaUrl'] ?? '', get_permalink( $data['wc_id'] ) ) );
+			?>
+			<a class="btn btn-primary product-card__view" href="<?php echo $ro_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $ro_cta_label ); ?></a>
 		<?php endif; ?>
 	</div>
 	<?php
@@ -241,6 +328,12 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 		}
 		$stock_text = $def['inStock'] ? '' : __( 'Out of stock', 'sgs-blocks' );
 		$image_src  = '' !== $def['imageUrl'] ? $def['imageUrl'] : $data['image_url'];
+		// FP-H: image override wins over the per-variation default image. The img
+		// then renders STATIC (no data-wp-bind, thumbs hidden) — a typed image
+		// must not be swapped away by variation selection.
+		if ( $sgs_img_override ) {
+			$image_src = $sgs_resolved_img;
+		}
 
 		// B3: per-unit price note + cosmetic discount badge (FR-27-B3).
 		// SSR literals seeded into context so data-wp-text == initial span text
@@ -306,7 +399,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			'stockText'           => $stock_text,
 			'inStock'             => (bool) $def['inStock'],
 			'imageSrc'            => $image_src,
-			'imageAlt'            => $data['image_alt'],
+			'imageAlt'            => $sgs_img_override ? $sgs_resolved_img_alt : $data['image_alt'],
 			'cartStatus'          => '',
 			'pending'             => false,
 			// U7: wp_rest nonce for the SGS cart proxy (X-WP-Nonce header).
@@ -333,8 +426,13 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			// thumbsHidden = true when < 2 images (strip not shown for solo image).
 			// selectedThumb = 0 = first image highlighted on load (SSR-wipe-safe).
 			'gallery'             => $def['gallery'],
-			'thumbsHidden'        => ( count( $def['gallery'] ) < 2 ),
+			'thumbsHidden'        => ( $sgs_img_override || count( $def['gallery'] ) < 2 ),
 			'selectedThumb'       => 0,
+			// FP-H: buy-now behaviour — seeded so view.js can read it without a DOM query.
+			// $sgs_cta_behaviour is resolved (and Q2-demoted) once above; 'buy-now' here
+			// guarantees wc_get_checkout_url() exists.
+			'ctaBehaviour'        => $sgs_cta_behaviour,
+			'checkoutUrl'         => ( 'buy-now' === $sgs_cta_behaviour ) ? esc_url( wc_get_checkout_url() ) : '',
 		);
 
 		// M-C9 hard cap: 24 KB max serialised context — never trips for 48 SKUs
@@ -512,14 +610,16 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<img
 					class="product-card-img"
 					src="<?php echo esc_url( $image_src ); ?>"
-					alt="<?php echo esc_attr( $data['image_alt'] ); ?>"
-					<?php echo $def_img_w > 0 ? 'width="' . esc_attr( (string) $def_img_w ) . '"' : ''; ?>
-					<?php echo $def_img_h > 0 ? 'height="' . esc_attr( (string) $def_img_h ) . '"' : ''; ?>
+					alt="<?php echo esc_attr( $sgs_img_override ? $sgs_resolved_img_alt : $data['image_alt'] ); ?>"
+					<?php echo $def_img_w > 0 && ! $sgs_img_override ? 'width="' . esc_attr( (string) $def_img_w ) . '"' : ''; ?>
+					<?php echo $def_img_h > 0 && ! $sgs_img_override ? 'height="' . esc_attr( (string) $def_img_h ) . '"' : ''; ?>
 					loading="eager"
 					fetchpriority="high"
 					decoding="async"
+					<?php if ( ! $sgs_img_override ) : // FP-H: a typed override image is STATIC — no reactive swap binds. ?>
 					data-wp-bind--src="context.imageSrc"
 					data-wp-bind--alt="context.imageAlt"
+					<?php endif; ?>
 				>
 				<?php if ( '' !== $card_permalink ) : ?>
 				</a>
@@ -538,7 +638,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				role="list"
 				aria-label="<?php esc_attr_e( 'Product images', 'sgs-blocks' ); ?>"
 				data-wp-bind--hidden="context.thumbsHidden"
-				<?php echo count( $def['gallery'] ) < 2 ? 'hidden' : ''; ?>
+				<?php echo ( $sgs_img_override || count( $def['gallery'] ) < 2 ) ? 'hidden' : ''; // FP-H: strip hidden under an image override (static image). ?>
 			>
 				<?php foreach ( $def['gallery'] as $thumb_idx => $thumb ) : ?>
 					<?php
@@ -566,23 +666,47 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			</div>
 
 			<div class="product-card-body">
-				<h3>
+				<?php // FP-H: badge from the override helper (no live badge — '' when override off/empty). ?>
+				<?php if ( '' !== $sgs_resolved_badge ) : ?>
+					<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_resolved_badge ); ?></span>
+				<?php endif; ?>
+				<?php // FP-H: heading tag from headingLevel (clamped int — injection-safe); title via override helper. ?>
+				<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- integer-derived 'h2'|'h3'|'h4'. ?>>
 					<?php if ( '' !== $card_permalink ) : ?>
-						<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $data['title'] ); ?></a>
+						<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $sgs_resolved_title ); ?></a>
 					<?php else : ?>
-						<?php echo esc_html( $data['title'] ); ?>
+						<?php echo esc_html( $sgs_resolved_title ); ?>
 					<?php endif; ?>
-				</h3>
+				</<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- integer-derived 'h2'|'h3'|'h4'. ?>>
 
-				<?php if ( '' !== $data['short_desc'] ) : ?>
+				<?php if ( '' !== $sgs_resolved_desc ) : ?>
 				<div class="product-desc">
-					<?php echo wp_kses_post( $data['short_desc'] ); ?>
+					<?php echo wp_kses_post( $sgs_resolved_desc ); ?>
 				</div>
 				<?php endif; ?>
 
 				<?php
-				// ── 2b. Render TWO option-picker blocks — Size then Flavour ──────────
+				// ── 2b. Render option-picker blocks — one per axis ────────────────────
+				//
+				// FP-H visibleAxes: display-only filter — hides specific axis pickers
+				// from the rendered markup without altering $context['axes'] (the seeded
+				// state that view.js uses for reactive swapping). When visibleAxes is
+				// empty, all axes are shown (existing behaviour).
+				//
+				// SCOPE NOTE (open Q4 ruling): visibleAxes is a WC-VARIABLE-product
+				// feature — axis slugs are WC attribute taxonomies (pa_*) sourced from
+				// /wc/v3/products/{id} in the editor. sgs-cpt bound cards have no WC
+				// taxonomies: the editor panel shows nothing for them and this filter
+				// (and the type_key variant in the non-variable branch) is a no-op.
+				$sgs_visible_axes = isset( $attributes['visibleAxes'] ) && is_array( $attributes['visibleAxes'] )
+					? array_map( 'sanitize_key', $attributes['visibleAxes'] )
+					: array();
+
 				foreach ( $manifest['axes'] as $axis ) {
+					// Skip if visibleAxes is set and this taxonomy is not in it.
+					if ( ! empty( $sgs_visible_axes ) && ! in_array( sanitize_key( (string) ( $axis['taxonomy'] ?? '' ) ), $sgs_visible_axes, true ) ) {
+						continue;
+					}
 					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
 					echo render_block(
 						array(
@@ -708,27 +832,88 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				></p>
 
 				<?php
-				// ── 2f. Add-to-cart <a> — UNCHANGED in U3 (U7 rewires). ─────────────
+				/*
+				 * ── 2f. CTA button — behaviour controlled by ctaBehaviour attr (FP-H).
+				 *
+				 * 'learn-more'    = plain link to product page (no cart JS).
+				 * 'add-to-basket' = existing proxy form (data-wp-on--submit=addToCart).
+				 * 'buy-now'       = proxy form + data-buy-now="1"; view.js reads
+				 *                   context.ctaBehaviour === 'buy-now' and redirects to
+				 *                   context.checkoutUrl after a successful add.
+				 *
+				 * The form's no-JS fallback (action=permalink) is preserved for all
+				 * behaviours — only the JS path changes for buy-now. The server-side
+				 * guards (£0 422, purchasable) in the cart proxy remain in force.
+				 */
+				// $sgs_cta_behaviour resolved (and Q2-demoted) once at the top of the live-data section.
 				$add_to_cart_id = absint( $data['wc_id'] );
+
 				if ( $add_to_cart_id > 0 ) :
 					$product_permalink = esc_url( get_permalink( $add_to_cart_id ) );
-					?>
-				<form
-					class="product-card__cart-form"
-					method="post"
-					action="<?php echo $product_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd above. ?>"
-					data-wp-on--submit="actions.addToCart"
-				>
-					<button
-						type="submit"
+
+					/*
+					 * FP-H override: 'cta' overrides the LABEL for all behaviours; ctaUrl
+					 * overrides the destination ONLY for learn-more — add-to-basket/buy-now
+					 * keep the cart form action (the proxy add must not be redirected).
+					 */
+					$sgs_cta_live_label = 'buy-now' === $sgs_cta_behaviour
+						? __( 'Buy now', 'sgs-blocks' )
+						: ( 'add-to-basket' === $sgs_cta_behaviour ? __( 'Add to Cart', 'sgs-blocks' ) : __( 'View product', 'sgs-blocks' ) );
+					$sgs_cta_label      = sgs_product_card_resolve_element( $attributes, 'cta', $attributes['ctaText'] ?? '', $sgs_cta_live_label );
+
+					if ( 'learn-more' === $sgs_cta_behaviour ) :
+						$sgs_cta_href = esc_url( sgs_product_card_resolve_element( $attributes, 'cta', $attributes['ctaUrl'] ?? '', get_permalink( $add_to_cart_id ) ) );
+						?>
+					<a
 						class="btn btn-primary product-card__add-to-cart"
-						data-wp-bind--disabled="context.pending"
-						data-wp-bind--aria-busy="context.pending"
+						href="<?php echo $sgs_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"
 					>
-						<svg class="product-card__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-						<span class="product-card__cart-label"><?php esc_html_e( 'Add to Cart', 'sgs-blocks' ); ?></span>
-					</button>
-				</form>
+						<span class="product-card__cart-label"><?php echo esc_html( $sgs_cta_label ); ?></span>
+					</a>
+					<?php else : // 'add-to-basket' or 'buy-now' — proxy form path. ?>
+					<form
+						class="product-card__cart-form"
+						method="post"
+						action="<?php echo $product_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd above. ?>"
+						data-wp-on--submit="actions.addToCart"
+						<?php echo 'buy-now' === $sgs_cta_behaviour ? 'data-buy-now="1"' : ''; ?>
+					>
+						<button
+							type="submit"
+							class="btn btn-primary product-card__add-to-cart"
+							data-wp-bind--disabled="context.pending"
+							data-wp-bind--aria-busy="context.pending"
+						>
+							<svg class="product-card__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+							<span class="product-card__cart-label"><?php echo esc_html( $sgs_cta_label ); ?></span>
+						</button>
+					</form>
+					<?php endif; ?>
+					<?php
+					/*
+					 * FP-H secondary CTA (bound mode) — renders when cta2Text is non-empty.
+					 * v1 ruling: 'add-to-basket'/'buy-now' are PRIMARY-only behaviours — a
+					 * second add form would double the Interactivity context wiring (one
+					 * canonical cart form per card), so the secondary is ALWAYS a plain
+					 * learn-more anchor (the cta2Behaviour attr was removed as a dead
+					 * control 2026-06-10). Nothing secondary is seeded into context
+					 * (the JS never needs it — the secondary is always a plain anchor).
+					 * URL fallback: empty cta2Url → the bound product's permalink.
+					 */
+					$sgs_cta2_text = isset( $attributes['cta2Text'] ) ? sanitize_text_field( (string) $attributes['cta2Text'] ) : '';
+					if ( '' !== $sgs_cta2_text ) :
+						$sgs_cta2_url_raw = isset( $attributes['cta2Url'] ) ? (string) $attributes['cta2Url'] : '';
+						$sgs_cta2_href    = '' !== $sgs_cta2_url_raw ? esc_url( $sgs_cta2_url_raw ) : $product_permalink;
+						$sgs_cta2_style   = sanitize_key( (string) ( $attributes['cta2Style'] ?? 'secondary' ) );
+						if ( ! in_array( $sgs_cta2_style, array( 'primary', 'secondary', 'outline' ), true ) ) {
+							$sgs_cta2_style = 'secondary';
+						}
+						?>
+					<a
+						class="btn btn-<?php echo esc_attr( $sgs_cta2_style ); ?> product-card__cta-secondary"
+						href="<?php echo $sgs_cta2_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- both ternary arms esc_url'd above. ?>"
+					><?php echo esc_html( $sgs_cta2_text ); ?></a>
+					<?php endif; ?>
 				<p
 					class="product-card__cart-status"
 					role="status"
@@ -804,24 +989,29 @@ $add_to_cart_id = absint( $data['wc_id'] );
 // Binding to seeded context keeps SSR correct AND stays client-reactive
 // (view.js mutates these same context keys on pill selection).
 $context = array(
-	'productId'   => (string) $data['id'],
-	'selected'    => $first_key,
-	'addToCartId' => $add_to_cart_id,
-	'imageSrc'    => $data['image_url'],
-	'imageAlt'    => $data['image_alt'],
-	'cartStatus'  => '',
+	'productId'    => (string) $data['id'],
+	'selected'     => $first_key,
+	'addToCartId'  => $add_to_cart_id,
+	'imageSrc'     => $sgs_resolved_img,
+	'imageAlt'     => $sgs_resolved_img_alt,
+	'cartStatus'   => '',
 
 	/*
 	 * A4 (QC): pending flag — prevents add-to-cart spam clicks.
 	 * Seeded false here so the SSR button is enabled and meaningful with no JS.
 	 * view.js sets this true before the fetch and false in the finally clause.
 	 */
-	'pending'     => false,
+	'pending'      => false,
 
 	// U7: wp_rest nonce for the SGS cart proxy (X-WP-Nonce header).
 	// Guests receive a per-tick shared nonce — acceptable WC parity for
 	// Phase 1; the proxy returns a clear 403 "reload" message when stale.
-	'restNonce'   => wp_create_nonce( 'wp_rest' ),
+	'restNonce'    => wp_create_nonce( 'wp_rest' ),
+	// FP-H: buy-now behaviour — seeded so view.js can redirect after a successful add.
+	// $sgs_cta_behaviour is resolved (and Q2-demoted) once at the top of the live-data
+	// section; 'buy-now' here guarantees wc_get_checkout_url() exists.
+	'ctaBehaviour' => $sgs_cta_behaviour,
+	'checkoutUrl'  => ( 'buy-now' === $sgs_cta_behaviour ) ? esc_url( wc_get_checkout_url() ) : '',
 );
 
 // Non-variable live-data opts — Interactivity attrs on the wrapper.
@@ -839,8 +1029,9 @@ $nonvar_opts = array_merge(
 	)
 );
 
-$card_permalink     = ! empty( $data['wc_id'] ) ? esc_url( get_permalink( $data['wc_id'] ) ) : '';
-$sgs_has_real_image = ( '' !== $data['image_url'] ) && ( false === strpos( (string) $data['image_url'], 'woocommerce-placeholder' ) );
+$card_permalink = ! empty( $data['wc_id'] ) ? esc_url( get_permalink( $data['wc_id'] ) ) : '';
+// FP-H: image resolved through the override helper (typed image wins when overridden).
+$sgs_has_real_image = ( '' !== $sgs_resolved_img ) && ( false === strpos( (string) $sgs_resolved_img, 'woocommerce-placeholder' ) );
 
 ob_start();
 ?>
@@ -850,13 +1041,15 @@ ob_start();
 	<?php endif; ?>
 	<img
 		class="product-card-img"
-		src="<?php echo esc_url( $data['image_url'] ); ?>"
-		alt="<?php echo esc_attr( $data['image_alt'] ); ?>"
+		src="<?php echo esc_url( $sgs_resolved_img ); ?>"
+		alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>"
 		loading="eager"
 		fetchpriority="high"
 		decoding="async"
+		<?php if ( ! $sgs_img_override ) : // FP-H: a typed override image is STATIC — no reactive swap binds. ?>
 		data-wp-bind--src="context.imageSrc"
 		data-wp-bind--alt="context.imageAlt"
+		<?php endif; ?>
 	>
 	<?php if ( '' !== $card_permalink ) : ?>
 	</a>
@@ -868,24 +1061,48 @@ ob_start();
 <?php endif; ?>
 
 <div class="product-card-body">
-	<h3>
-	<?php if ( '' !== $card_permalink ) : ?>
-		<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $data['title'] ); ?></a>
-	<?php else : ?>
-		<?php echo esc_html( $data['title'] ); ?>
+	<?php // FP-H: badge from the override helper (no live badge — '' when override off/empty). ?>
+	<?php if ( '' !== $sgs_resolved_badge ) : ?>
+		<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_resolved_badge ); ?></span>
 	<?php endif; ?>
-	</h3>
+	<?php // FP-H: heading tag from headingLevel (clamped int — injection-safe); title via override helper. ?>
+	<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- integer-derived 'h2'|'h3'|'h4'. ?>>
+	<?php if ( '' !== $card_permalink ) : ?>
+		<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $sgs_resolved_title ); ?></a>
+	<?php else : ?>
+		<?php echo esc_html( $sgs_resolved_title ); ?>
+	<?php endif; ?>
+	</<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- integer-derived 'h2'|'h3'|'h4'. ?>>
 
-	<?php if ( '' !== $data['short_desc'] ) : ?>
+	<?php if ( '' !== $sgs_resolved_desc ) : ?>
 		<div class="product-desc">
-			<?php echo wp_kses_post( $data['short_desc'] ); ?>
+			<?php echo wp_kses_post( $sgs_resolved_desc ); ?>
 		</div>
 	<?php endif; ?>
 
 	<?php
-	// Pills — reuse the sgs/option-picker block (DRY) so its verified view.js
-	// fires the sgs:option-selected event the wrapper listens for above.
-	if ( null !== $pill_type ) :
+	/*
+	 * Pills — reuse the sgs/option-picker block (DRY) so its verified view.js
+	 * fires the sgs:option-selected event the wrapper listens for above.
+	 *
+	 * FP-H visibleAxes: if visibleAxes is non-empty and the pill type's type_key
+	 * is not in the list, suppress the picker. Display-only filter — $context is
+	 * already seeded and unchanged. Matches the variable-branch filter semantics.
+	 *
+	 * SCOPE NOTE (open Q4 ruling): visibleAxes is a WC-VARIABLE-product feature.
+	 * On this non-variable/CPT path the picker key is a variation-set type_key,
+	 * not a WC taxonomy; the editor panel only lists WC axes, so for sgs-cpt
+	 * cards visibleAxes stays empty and this filter is a no-op by design.
+	 */
+	$sgs_visible_axes_nv = isset( $attributes['visibleAxes'] ) && is_array( $attributes['visibleAxes'] )
+		? array_map( 'sanitize_key', $attributes['visibleAxes'] )
+		: array();
+
+	$sgs_pill_type_key = null !== $pill_type ? sanitize_key( (string) ( $pill_type['type_key'] ?? '' ) ) : '';
+	$sgs_show_picker   = null !== $pill_type
+		&& ( empty( $sgs_visible_axes_nv ) || in_array( $sgs_pill_type_key, $sgs_visible_axes_nv, true ) );
+
+	if ( $sgs_show_picker ) :
 		$picker_options = array();
 		foreach ( $pill_type['options'] as $opt ) {
 			if ( empty( $opt['key'] ) ) {
@@ -910,7 +1127,7 @@ ob_start();
 					'optionItems'     => $picker_options,
 					'defaultSelected' => $first_key,
 					'contentImpact'   => $picker_impacts,
-					'typeKey'         => sanitize_key( $pill_type['type_key'] ?? '' ),
+					'typeKey'         => $sgs_pill_type_key,
 				),
 			)
 		);
@@ -955,14 +1172,39 @@ ob_start();
 		 * A4 (QC): spam guard via context.pending.
 		 * data-wp-bind--disabled + aria-busy reflect the in-flight state;
 		 * view.js guards the action at the top (if pending, return early).
+		 *
+		 * FP-H: ctaBehaviour = 'learn-more' renders a plain link; 'buy-now'
+		 * adds data-buy-now="1" so view.js redirects after a successful add.
 		 */
-		$product_permalink = esc_url( get_permalink( $add_to_cart_id ) );
+		// $sgs_cta_behaviour resolved (and Q2-demoted) once at the top of the live-data section.
+		$product_permalink    = esc_url( get_permalink( $add_to_cart_id ) );
+		$sgs_nonvar_behaviour = $sgs_cta_behaviour;
+
+		/*
+		 * FP-H override: 'cta' overrides the LABEL for all behaviours; ctaUrl
+		 * overrides the destination ONLY for learn-more — add-to-basket/buy-now
+		 * keep the cart form action (the proxy add must not be redirected).
+		 */
+		$sgs_nv_cta_live_label = 'buy-now' === $sgs_nonvar_behaviour
+			? __( 'Buy now', 'sgs-blocks' )
+			: ( 'add-to-basket' === $sgs_nonvar_behaviour ? __( 'Add to Cart', 'sgs-blocks' ) : __( 'View product', 'sgs-blocks' ) );
+		$sgs_nv_cta_label      = sgs_product_card_resolve_element( $attributes, 'cta', $attributes['ctaText'] ?? '', $sgs_nv_cta_live_label );
 		?>
+		<?php if ( 'learn-more' === $sgs_nonvar_behaviour ) : ?>
+			<?php $sgs_nv_cta_href = esc_url( sgs_product_card_resolve_element( $attributes, 'cta', $attributes['ctaUrl'] ?? '', get_permalink( $add_to_cart_id ) ) ); ?>
+		<a
+			class="btn btn-primary product-card__add-to-cart"
+			href="<?php echo $sgs_nv_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"
+		>
+			<span class="product-card__cart-label"><?php echo esc_html( $sgs_nv_cta_label ); ?></span>
+		</a>
+		<?php else : ?>
 		<form
 			class="product-card__cart-form"
 			method="post"
 			action="<?php echo $product_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd above. ?>"
 			data-wp-on--submit="actions.addToCart"
+			<?php echo 'buy-now' === $sgs_nonvar_behaviour ? 'data-buy-now="1"' : ''; ?>
 		>
 			<button
 				type="submit"
@@ -971,9 +1213,35 @@ ob_start();
 				data-wp-bind--aria-busy="context.pending"
 			>
 				<svg class="product-card__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-				<span class="product-card__cart-label"><?php esc_html_e( 'Add to Cart', 'sgs-blocks' ); ?></span>
+				<span class="product-card__cart-label"><?php echo esc_html( $sgs_nv_cta_label ); ?></span>
 			</button>
 		</form>
+		<?php endif; ?>
+		<?php
+		/*
+		 * FP-H secondary CTA (bound mode) — renders when cta2Text is non-empty.
+		 * v1 ruling: 'add-to-basket'/'buy-now' are PRIMARY-only behaviours — a
+		 * second add form would double the Interactivity context wiring (one
+		 * canonical cart form per card), so the secondary is ALWAYS a plain
+		 * learn-more anchor (the cta2Behaviour attr was removed as a dead
+		 * control 2026-06-10). Nothing secondary is seeded into context
+		 * (the JS never needs it — the secondary is always a plain anchor).
+		 * URL fallback: empty cta2Url → the bound product's permalink.
+		 */
+		$sgs_nv_cta2_text = isset( $attributes['cta2Text'] ) ? sanitize_text_field( (string) $attributes['cta2Text'] ) : '';
+		if ( '' !== $sgs_nv_cta2_text ) :
+			$sgs_nv_cta2_url_raw = isset( $attributes['cta2Url'] ) ? (string) $attributes['cta2Url'] : '';
+			$sgs_nv_cta2_href    = '' !== $sgs_nv_cta2_url_raw ? esc_url( $sgs_nv_cta2_url_raw ) : $product_permalink;
+			$sgs_nv_cta2_style   = sanitize_key( (string) ( $attributes['cta2Style'] ?? 'secondary' ) );
+			if ( ! in_array( $sgs_nv_cta2_style, array( 'primary', 'secondary', 'outline' ), true ) ) {
+				$sgs_nv_cta2_style = 'secondary';
+			}
+			?>
+		<a
+			class="btn btn-<?php echo esc_attr( $sgs_nv_cta2_style ); ?> product-card__cta-secondary"
+			href="<?php echo $sgs_nv_cta2_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- both ternary arms esc_url'd above. ?>"
+		><?php echo esc_html( $sgs_nv_cta2_text ); ?></a>
+		<?php endif; ?>
 		<p
 			class="product-card__cart-status"
 			role="status"

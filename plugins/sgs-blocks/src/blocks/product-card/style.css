@@ -860,3 +860,183 @@
 		transition: none;
 	}
 }
+
+/*
+ * ── FP-H: Typed built-in element card ───────────────────────────────────────
+ *
+ * New BEM classes for the typed built-in render path. Shared .product-card
+ * shell rules (background, border-radius, flex-column, max-width, shadow)
+ * already apply via the existing .product-card selector on the wrapper.
+ * Rules below cover the new elements that did not exist on the InnerBlocks path.
+ *
+ * Contrast notes (all on #ffffff card background):
+ *   .sgs-product-card__title:     inherits .product-card h3 rules — unchanged.
+ *   .sgs-product-card__price:     inherits .product-card .price rules — unchanged.
+ *   .sgs-product-card__price-note: #6b5c50 on #fff = 4.55:1 ✓ WCAG AA.
+ *   .sgs-product-card__tag--trial:   accent bg + dark text — same as .trial-tag.
+ *   .sgs-product-card__tag--featured: primary bg + white text — client palette
+ *     must supply sufficient contrast via theme token (SGS auto-contrast model).
+ *   .sgs-product-card__pill: min-height 44px ✓ WCAG 2.2 §2.5.8.
+ *   CTA anchors: inherit .btn .btn-primary / .btn-secondary — already audited.
+ *
+ * Scoped under .product-card so specificity matches the existing rules above
+ * and the cascade is predictable.
+ */
+
+/* Image — fills the full card width at the fixed image-height. */
+.product-card .sgs-product-card__image {
+	width: 100%;
+	height: var( --sgs-product-card-image-height, 220px );
+	object-fit: cover;
+	display: block;
+}
+
+/* Body — matches .product-card-body layout so the built-in card is
+   visually identical to the InnerBlocks path. */
+.product-card .sgs-product-card__body {
+	padding: var( --sgs-product-card-inner-padding, 20px );
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: var( --wp--preset--spacing--20, 0.75rem );
+}
+
+/* Tag badges — trial and featured variants. */
+.product-card .sgs-product-card__tag {
+	display: inline-flex;
+	align-items: center;
+	font-size: 11px;
+	font-weight: 700;
+	padding: 4px 10px;
+	border-radius: 6px;
+	letter-spacing: 0.5px;
+	text-transform: uppercase;
+	margin: 0;
+	width: max-content;
+}
+
+.product-card .sgs-product-card__tag--trial {
+	background: var( --wp--preset--color--accent, #f5d050 );
+	color: var( --wp--preset--color--text, #3a2e26 );
+}
+
+.product-card .sgs-product-card__tag--featured {
+	background: var( --wp--preset--color--primary, #1f7a7a );
+	color: #ffffff;
+}
+
+/* Title — same rules as .product-card h3 for the new BEM class. */
+.product-card .sgs-product-card__title {
+	font-size: 20px;
+	font-weight: 500;
+	color: var( --wp--preset--color--text, #3a2e26 );
+	margin: 0;
+}
+
+/* Description — same rules as .product-card .product-desc. */
+.product-card .sgs-product-card__description {
+	font-size: 14px;
+	color: var( --wp--preset--color--text, #3a2e26 );
+	margin: 0;
+	flex: 1;
+	line-height: 1.55;
+}
+
+/* Pack pills group — matches .product-card .pill-group. */
+.product-card .sgs-product-card__pill-group {
+	display: flex;
+	gap: 7px;
+	flex-wrap: wrap;
+	margin: 0;
+}
+
+/* Individual pill — matches .product-card .pill; 44px min touch target. */
+.product-card .sgs-product-card__pill {
+	background: var( --wp--preset--color--surface, #fbf3dc );
+	border: 2px solid var( --wp--preset--color--border, #e8d5c0 );
+	border-radius: 8px;
+	padding: 7px 13px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var( --wp--preset--color--text-muted, #6b5c50 );
+	min-height: 44px;
+	display: flex;
+	align-items: center;
+	line-height: 1;
+}
+
+.product-card .sgs-product-card__pill.active {
+	border-color: var( --wp--preset--color--primary, #e68a95 );
+	background: rgba( 230, 138, 149, 0.1 );
+	color: var( --wp--preset--color--text, #3a2e26 );
+}
+
+/* Price row — matches .product-card .price-row. */
+.product-card .sgs-product-card__price-row {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+	margin: 0;
+}
+
+/* Price amount — matches .product-card .price. */
+.product-card .sgs-product-card__price {
+	font-family: 'Fraunces', serif;
+	font-size: 28px;
+	font-weight: 700;
+	color: var( --wp--preset--color--text, #3a2e26 );
+}
+
+/* Price note — matches .product-card .price-note. */
+.product-card .sgs-product-card__price-note {
+	font-size: 14px;
+	color: var( --wp--preset--color--text-muted, #6b5c50 );
+}
+
+/*
+ * CTA row — flex row so primary + secondary sit side by side on wider cards,
+ * wrapping on narrow viewports. gap matches the card's body gap token.
+ */
+.product-card .sgs-product-card__cta-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var( --wp--preset--spacing--20, 0.75rem );
+	margin-top: auto;
+}
+
+/*
+ * CTA anchors inherit .btn / .btn-primary / .btn-secondary rules already
+ * defined above. Ensure they fill available space on single-button rows.
+ */
+.product-card .sgs-product-card__cta-row .btn {
+	flex: 1 1 auto;
+	text-align: center;
+}
+
+/*
+ * FP-H: bound-branch title heading at non-default levels. The bound branches
+ * now emit <h2>/<h3>/<h4> per the headingLevel attr; only `.product-card h3`
+ * was previously styled, so h2/h4 titles would fall back to UA/theme heading
+ * sizes (a dead-control-by-styling gap). Scoped to DIRECT children of
+ * .product-card-body — bound markup only; legacy typed InnerBlocks headings
+ * (core/heading) are not children of .product-card-body so page-144 clones
+ * are untouched.
+ * Typed built-in headings are styled by .sgs-product-card__title above.
+ */
+.product-card .product-card-body > h2,
+.product-card .product-card-body > h4 {
+	font-size: 20px;
+	font-weight: 500;
+	color: var( --wp--preset--color--text, #3a2e26 );
+	margin: 0;
+}
+
+/*
+ * FP-H: bound-mode secondary CTA — a plain learn-more anchor rendered after
+ * the cart form. Inherits .btn + .btn-{style} chrome; this rule only ensures
+ * predictable block layout inside the flex-column card body.
+ */
+.product-card .product-card__cta-secondary {
+	display: inline-block;
+	text-align: center;
+}
