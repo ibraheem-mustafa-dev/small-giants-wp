@@ -1,0 +1,47 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/product-faq-item",
+	"version": "0.1.0",
+	"title": "SGS Product FAQ Item",
+	"category": "sgs-content",
+	"description": "A single question and answer pair inside a Product FAQ block. The visible content is read by search engines to improve AI search citation and Bing visibility.",
+	"keywords": [
+		"faq",
+		"question",
+		"answer",
+		"item",
+		"product"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "arrow-down-alt2",
+	"parent": [
+		"sgs/product-faq"
+	],
+	"supports": {
+		"html": false,
+		"reusable": false
+	},
+	"usesContext": [
+		"sgs/productFaqIconPosition"
+	],
+	"attributes": {
+		"question": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"isOpen": {
+			"type": "boolean",
+			"default": false
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"example": {
+		"attributes": {
+			"question": "What are the ingredients?",
+			"isOpen": true
+		}
+	}
+}

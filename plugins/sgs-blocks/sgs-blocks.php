@@ -115,6 +115,13 @@ Product_Canonical::register();
 require_once SGS_BLOCKS_PATH . 'includes/class-product-sitemap.php';
 Product_Sitemap::register();
 
+// llms.txt + llms-full.txt — AI navigation files at site root (FR-27-F2 llms clause).
+// Serves curated navigation map + per-product expansion in llmstxt.org shape.
+// SEC-9: defers to Yoast / RankMath when active. Rate-limited 60/hr per IP.
+// Content transient-cached (6 h); busted on woocommerce_update_product + save_post.
+require_once SGS_BLOCKS_PATH . 'includes/class-llms-txt.php';
+Llms_Txt::register();
+
 // Animation attributes — server-side data-attribute injection for scroll reveals.
 require_once SGS_BLOCKS_PATH . 'includes/animation-attributes.php';
 
@@ -288,6 +295,14 @@ require_once SGS_BLOCKS_PATH . 'includes/product-template-fields.php';
 // GET /sgs/v1/products/{id}/preflight.
 require_once SGS_BLOCKS_PATH . 'includes/class-product-preflight.php';
 Product_Preflight::register();
+
+// SGS Google Merchant feed (FR-27-F2) — public, rate-limited RSS 2.0 + g: namespace
+// feed at GET /sgs/v1/merchant-feed, one <item> per variation. SEC-1: prices and
+// availability come ONLY from Product_Manifest (the same source the JSON-LD schema
+// reads), so feed↔page↔schema can never mismatch. Hourly transient cache busted on
+// woocommerce_update_product. Split across class-product-feed{,-items,-cache}.php.
+require_once SGS_BLOCKS_PATH . 'includes/class-product-feed.php';
+Product_Feed::register();
 
 // Clear the preflight health-cron schedule on plugin deactivation.
 register_deactivation_hook(

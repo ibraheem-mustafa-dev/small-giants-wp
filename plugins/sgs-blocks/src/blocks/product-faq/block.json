@@ -1,0 +1,146 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/product-faq",
+	"version": "0.1.0",
+	"title": "SGS Product FAQ",
+	"category": "sgs-content",
+	"description": "A dedicated FAQ section for your product pages. Outputs structured FAQ data that improves AI search citation and Bing visibility by making your Q&A content machine-readable.",
+	"keywords": [
+		"faq",
+		"questions",
+		"answers",
+		"product",
+		"schema",
+		"structured data"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "editor-help",
+	"supports": {
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"blockGap": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		},
+		"sgs": {
+			"containerKind": "content"
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-product-faq"
+	},
+	"attributes": {
+		"heading": {
+			"type": "string",
+			"default": "Frequently Asked Questions",
+			"role": "content"
+		},
+		"headingLevel": {
+			"type": "number",
+			"default": 2,
+			"enum": [2, 3, 4]
+		},
+		"iconPosition": {
+			"type": "string",
+			"default": "right",
+			"enum": ["right", "left"]
+		},
+		"widthMode": {
+			"type": "string",
+			"default": "default",
+			"enum": ["default", "wide", "full", "custom"]
+		},
+		"widthModeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeDesktop": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"gap": {
+			"type": "string",
+			"default": ""
+		},
+		"gapTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gapMobile": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"providesContext": {
+		"sgs/productFaqIconPosition": "iconPosition"
+	},
+	"allowedBlocks": [
+		"sgs/product-faq-item"
+	],
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"heading": "Frequently Asked Questions",
+			"headingLevel": 2,
+			"iconPosition": "right"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/product-faq-item",
+				"attributes": {
+					"question": "What are the ingredients?"
+				}
+			},
+			{
+				"name": "sgs/product-faq-item",
+				"attributes": {
+					"question": "How should I store this product?"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,164 @@
+/* ─── Product FAQ — Frontend + Editor Styles ─── */
+
+.sgs-product-faq {
+	display: flex;
+	flex-direction: column;
+}
+
+.sgs-product-faq__heading {
+	margin-top: 0;
+	margin-bottom: var(--wp--preset--spacing--40, 1.5rem);
+}
+
+.sgs-product-faq__items {
+	display: flex;
+	flex-direction: column;
+}
+
+/* ─── FAQ ITEM ─── */
+
+.sgs-product-faq-item {
+	border: 1px solid var(--wp--preset--color--border-subtle, #e0e0e0);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	background: var(--wp--preset--color--surface, #ffffff);
+}
+
+.sgs-product-faq-item + .sgs-product-faq-item {
+	margin-top: 8px;
+}
+
+/* Remove native marker */
+.sgs-product-faq-item > summary {
+	list-style: none;
+	cursor: pointer;
+}
+
+.sgs-product-faq-item > summary::-webkit-details-marker {
+	display: none;
+}
+
+.sgs-product-faq-item > summary::marker {
+	display: none;
+	content: "";
+}
+
+/* ─── QUESTION (summary header) ─── */
+
+.sgs-product-faq-item__question {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 16px 20px;
+	font-weight: 600;
+	font-size: 1rem;
+	line-height: 1.4;
+	min-height: 44px; /* WCAG 2.2 AA touch target */
+	transition:
+		background-color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
+		color            var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.sgs-product-faq-item__question:not([style*="color"]) {
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+.sgs-product-faq-item__question:hover,
+.sgs-product-faq-item[open] > .sgs-product-faq-item__question {
+	background-color: var(--wp--preset--color--surface-alt, #f5f7f7);
+	color: var(--wp--preset--color--primary, #0f7e80);
+}
+
+.sgs-product-faq-item__question:focus-visible {
+	outline: var(--wp--custom--focus-ring--width, 3px) solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
+	outline-offset: var(--wp--custom--focus-ring--offset, 2px);
+}
+
+.sgs-product-faq-item__question-text {
+	flex: 1;
+}
+
+/* ─── CHEVRON — single icon, rotates 180° when open ─── */
+
+.sgs-product-faq-item__chevron {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 24px;
+	height: 24px;
+	color: var(--wp--preset--color--text-muted, #555555);
+	transition:
+		transform var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
+		color     var(--wp--custom--duration--fast, 150ms)   var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.sgs-product-faq-item[open] .sgs-product-faq-item__chevron,
+.sgs-product-faq-item__question:hover .sgs-product-faq-item__chevron {
+	color: var(--wp--preset--color--primary, #0f7e80);
+}
+
+.sgs-product-faq-item[open] .sgs-product-faq-item__chevron {
+	transform: rotate(180deg);
+}
+
+/* ─── ANSWER ─── */
+
+.sgs-product-faq-item__answer {
+	padding: 0 20px 16px;
+}
+
+.sgs-product-faq-item__answer > :first-child {
+	margin-top: 0;
+}
+
+.sgs-product-faq-item__answer > :last-child {
+	margin-bottom: 0;
+}
+
+/* ─── @STARTING-STYLE ENTRY ANIMATION ─── */
+
+.sgs-product-faq-item__answer {
+	transition:
+		opacity   var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
+		transform var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.sgs-product-faq-item[open] > .sgs-product-faq-item__answer {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+@starting-style {
+	.sgs-product-faq-item[open] > .sgs-product-faq-item__answer {
+		opacity: 0;
+		transform: translateY(-6px);
+	}
+}
+
+/* ─── RESPONSIVE ─── */
+
+@media (max-width: 600px) {
+	.sgs-product-faq-item__question {
+		padding: 14px 16px;
+		font-size: 0.9rem;
+	}
+
+	.sgs-product-faq-item__answer {
+		padding: 0 16px 14px;
+	}
+}
+
+/* ─── REDUCED MOTION ─── */
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-product-faq-item__question,
+	.sgs-product-faq-item__chevron,
+	.sgs-product-faq-item__answer {
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+	}
+
+	.sgs-product-faq-item[open] .sgs-product-faq-item__chevron {
+		transform: none !important;
+	}
+}

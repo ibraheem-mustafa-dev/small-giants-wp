@@ -214,11 +214,15 @@ final class Product_Schema {
 	/**
 	 * Resolve productGroupID: parent SKU if non-empty, else (string) product_id.
 	 *
+	 * Public because the Merchant feed (Product_Feed) MUST emit a byte-identical
+	 * g:item_group_id — one call site, no duplicated rule (duplicated-calculation
+	 * drift is a known failure class in this codebase).
+	 *
 	 * @param \WC_Product $wc_product Parent product object.
 	 * @param int         $product_id Product ID fallback.
 	 * @return string
 	 */
-	private static function product_group_id( \WC_Product $wc_product, int $product_id ): string {
+	public static function product_group_id( \WC_Product $wc_product, int $product_id ): string {
 		$sku = self::sanitise_text( $wc_product->get_sku() );
 		return '' !== $sku ? $sku : (string) $product_id;
 	}
@@ -393,7 +397,7 @@ final class Product_Schema {
 				$low_key = $key;
 			}
 			if ( null === $max_val || $price > $max_val ) {
-				$max_val = $price;
+				$max_val  = $price;
 				$high_key = $key;
 			}
 		}

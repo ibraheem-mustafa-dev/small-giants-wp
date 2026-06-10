@@ -1,0 +1,13 @@
+/* ─── Product FAQ — Editor-only styles ─── */
+
+.sgs-product-faq__schema-help {
+	font-size: 12px;
+	color: var(--wp-admin-theme-color-darker-10, #555);
+	margin: 0;
+}
+
+/* Editor preview of an open item: show answer area below the question. */
+.editor-styles-wrapper .sgs-product-faq-item__answer {
+	opacity: 1;
+	transform: none;
+}
