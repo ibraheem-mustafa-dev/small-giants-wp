@@ -134,6 +134,51 @@ final class Product_Item_List {
 		return $result;
 	}
 
+	// ── Public gate helper ──────────────────────────────────────────────────
+
+	/**
+	 * Whether a product ID is safe to surface on a public-facing listing or
+	 * schema emit.
+	 *
+	 * A product is publicly listable only when:
+	 *   1. Its post status is 'publish' (not draft / pending / private).
+	 *   2. When WooCommerce is active, wc_get_product() resolves a product
+	 *      object AND that product's catalog visibility is NOT 'hidden'
+	 *      (is_visible() returns false for catalog_visibility='hidden' and
+	 *      also for private/password-protected posts — the two checks are
+	 *      belt-and-braces rather than redundant).
+	 *
+	 * Single source — call this at EVERY collection/emission boundary so
+	 * draft/private/hidden products never reach public ItemList JSON-LD,
+	 * ProductGroup schema, OG tags, or grid "View product" links.
+	 * (Lesson: duplicated-calculation-drifts — one helper, zero divergence.)
+	 *
+	 * @param int $id Product post ID.
+	 * @return bool True when the product may appear in public listings.
+	 */
+	public static function is_publicly_listable( int $id ): bool {
+		if ( $id <= 0 ) {
+			return false;
+		}
+		// Belt 1: post status must be publish (catches draft/pending/private
+		// before touching the WC object layer — cheapest check first).
+		if ( 'publish' !== \get_post_status( $id ) ) {
+			return false;
+		}
+		// Belt 2: when WC is active, the product must resolve AND be visible
+		// in the catalogue (is_visible() returns false for
+		// catalog_visibility='hidden', password-protected, and private).
+		// NOTE: is_visible() EXCLUDES catalog_visibility=hidden — that is
+		// intended; hidden products must not appear in any public listing.
+		if ( \function_exists( 'wc_get_product' ) ) {
+			$p = \wc_get_product( $id );
+			if ( ! $p || ! $p->is_visible() ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	/**
 	 * Recursively collect product IDs from a parsed block tree, in document
 	 * order, descending into innerBlocks at any depth.
@@ -161,12 +206,21 @@ final class Product_Item_List {
 				if ( ! empty( $grid_ids ) ) {
 					$grid_contributed = true;
 					foreach ( $grid_ids as $grid_product_id ) {
-						$product_ids[] = \absint( $grid_product_id );
+						// SEC: gate — handpick mode may include draft/hidden IDs;
+						// is_publicly_listable() is the single source of truth
+						// (duplicated-calculation-drifts). Collection mode already
+						// passes status=>'publish' to wc_get_products, but the gate
+						// adds is_visible() for catalog_visibility=hidden defence.
+						if ( self::is_publicly_listable( \absint( $grid_product_id ) ) ) {
+							$product_ids[] = \absint( $grid_product_id );
+						}
 					}
 				}
 			} elseif ( 'sgs/product-card' === $name && 'wc-product' === ( $attrs['sourceMode'] ?? '' ) ) {
 				$card_product_id = \absint( $attrs['productId'] ?? 0 );
-				if ( $card_product_id > 0 ) {
+				// SEC: gate — a loose card's connected product may have been drafted
+				// or hidden after the block was saved; suppress from the ItemList.
+				if ( $card_product_id > 0 && self::is_publicly_listable( $card_product_id ) ) {
 					$product_ids[] = $card_product_id;
 				}
 			}

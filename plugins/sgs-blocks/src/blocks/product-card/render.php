@@ -185,7 +185,24 @@ if ( null === $data ) {
 	?>
 	<div class="product-card-body">
 		<p class="product-desc">
-			<?php esc_html_e( 'No product selected. Choose a product in the block settings.', 'sgs-blocks' ); ?>
+			<?php
+			/*
+			 * FIX-2: split the empty-state message by intent.
+			 *
+			 * $product_id > 0 means a product WAS connected (saved in block attrs)
+			 * but resolved null — the product was deleted or set to draft/private
+			 * after the block was published. Show a customer-safe message, not an
+			 * editor instruction (shoppers must never see "block settings" text).
+			 *
+			 * $product_id === 0 means the block was never configured. Keep the
+			 * editor instruction so the operator knows what to do.
+			 */
+			if ( $product_id > 0 ) {
+				esc_html_e( 'This product is currently unavailable.', 'sgs-blocks' );
+			} else {
+				esc_html_e( 'No product selected. Choose a product in the block settings.', 'sgs-blocks' );
+			}
+			?>
 		</p>
 	</div>
 	<?php
@@ -509,7 +526,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			// rest_sanitize_boolean callback) as attested. Compare to the canonical '1'
 			// so ONLY a value set through the gated save path counts as attestation.
 			$base_attested = ( '1' === (string) get_post_meta( $product_id, '_sgs_base_price_attested', true ) );
-			$base_pence     = ( $base_pence > 0 && $base_attested ) ? $base_pence : null;
+			$base_pence    = ( $base_pence > 0 && $base_attested ) ? $base_pence : null;
 
 			// 3b. Resolve framing mode from the block attribute (placement-level, per PD-6).
 			$framing_mode = sanitize_key( $attributes['framingMode'] ?? 'loss-aversion' );

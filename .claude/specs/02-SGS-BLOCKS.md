@@ -1119,8 +1119,11 @@ A drafted product card uses ONE block prefix — `sgs-product-card` — for the 
 | `sgs-product-card__description` | `description` |
 | `sgs-product-card__pill-group` / `__pill` / `__pill--active` | `packSizes` (display); live modes use the option-picker subsystem |
 | `sgs-product-card__price-row` / `__price` / `__price-note` | `priceLarge` / `priceNote` |
-| `sgs-product-card__tag--trial` | `trialTag` |
-| nested `sgs-button sgs-button--primary\|--secondary` | CTA (`ctaText` / `ctaUrl`) |
+| `sgs-product-card__tag--trial` | `trialTag` (rendered IN-BODY above the title) |
+| `sgs-product-card__tag--featured` | `featuredTag` (rendered as a media-OVERLAY badge in `sgs-product-card__media-wrap` when `variantStyle='featured'`; falls back in-body when imageless) |
+| nested `sgs-button sgs-button--primary\|--secondary` | CTA (`ctaText` / `ctaUrl`); on conversion set `ctaBehaviour='learn-more'` (the only typed-mode behaviour) |
+
+**Converter scope note:** these are DRAFT INPUT tokens (what the converter reads from a draft's HTML). They are NOT identical to the runtime SSR classes that bound-mode `render.php` emits — the live variable branch uses `price-row`/`product-card__media` (no BEM prefix), the typed built-in + non-variable branches use `sgs-product-card__price-row`/`sgs-product-card__media-wrap`. A live-DOM parity check will see this divergence; it is intentional (only the typed built-in path is converter-input-shaped). The image container class differs by branch (`product-card__media` variable vs `sgs-product-card__media-wrap` non-variable/typed) — CSS targets all forms; a future unifier should converge them but must update all three render sites together.
 
 Converter routing of these classes to TYPED-ATTR destinations (not child InnerBlocks) is the FP-H direction — `canonical_slot`/`role`/`attr_type` metadata via `/sgs-update`, per the design gate above.
 

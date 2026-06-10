@@ -61,6 +61,18 @@ final class Card_Grid_Products {
 			return array();
 		}
 
+		// FIX-3 perf: per-request static memo keyed on a hash of $attributes.
+		// The ItemList walker re-runs this query after render.php already ran it
+		// for the same block; the memo makes the second (and any further) call
+		// free for the duration of the request. The cache is intentionally
+		// request-scoped (static variable) — no cross-request stale data risk.
+		// ~5 lines; keyed on md5(wp_json_encode) so any attribute change busts it.
+		static $memo = array();
+		$memo_key    = \md5( (string) \wp_json_encode( $attributes ) );
+		if ( isset( $memo[ $memo_key ] ) ) {
+			return $memo[ $memo_key ];
+		}
+
 		$product_source = isset( $attributes['productSource'] )
 			? \sanitize_key( $attributes['productSource'] )
 			: 'collection';
@@ -69,7 +81,21 @@ final class Card_Grid_Products {
 		if ( 'handpick' === $product_source ) {
 			$ids = array_map( 'absint', (array) ( $attributes['productIds'] ?? array() ) );
 			$ids = array_filter( $ids ); // Remove any 0 values.
-			return array_values( $ids );
+			// SEC: gate — handpick stores IDs at authoring time; a product may be
+			// drafted, made private, or set catalog_visibility=hidden AFTER saving.
+			// Filter through the single shared gate so draft/hidden product URLs
+			// never appear in public grids or the ItemList/ProductGroup schema.
+			// Leak class: non-public products' URLs in public JSON-LD / grids.
+			require_once __DIR__ . '/class-product-item-list.php';
+			$ids = array_values(
+				array_filter(
+					$ids,
+					static function ( int $id ): bool {
+						return \SGS\Blocks\Product_Item_List::is_publicly_listable( $id );
+					}
+				)
+			);
+			return $ids;
 		}
 
 		// ── Collection mode: smart preset + filters ─────────────────────────
@@ -133,6 +159,16 @@ final class Card_Grid_Products {
 		$position   = 1;
 
 		foreach ( $product_ids as $product_id ) {
+			// SEC: belt-and-braces gate — ids may arrive from the handpick branch
+			// (pre-filtered above) or from the ItemList walker (also gated), but
+			// build_item_list_schema() is a public static and may be called
+			// independently. Re-check here so no draft/hidden URL ever lands in
+			// the emitted JSON-LD regardless of call path.
+			// Leak class: non-public products' URLs in public ItemList JSON-LD.
+			require_once __DIR__ . '/class-product-item-list.php';
+			if ( ! \SGS\Blocks\Product_Item_List::is_publicly_listable( \absint( $product_id ) ) ) {
+				continue;
+			}
 			$url = \get_permalink( \absint( $product_id ) );
 			if ( ! $url ) {
 				continue;

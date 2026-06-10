@@ -71,7 +71,20 @@ function sgs_get_bound_configurator_product_ids(): array {
 	$ids = array();
 	sgs_collect_bound_configurator_ids( \parse_blocks( $post->post_content ), $ids );
 
-	return \array_values( \array_unique( $ids ) );
+	// SEC: gate — filter before returning so draft/private/hidden products
+	// never reach the ProductGroup JSON-LD or OG price emit.
+	// Leak class: non-public products' URLs/prices in public schema + OG tags.
+	require_once __DIR__ . '/class-product-item-list.php';
+	$ids = array_values(
+		array_filter(
+			array_unique( $ids ),
+			static function ( int $id ): bool {
+				return \SGS\Blocks\Product_Item_List::is_publicly_listable( $id );
+			}
+		)
+	);
+
+	return $ids;
 }
 
 /**
