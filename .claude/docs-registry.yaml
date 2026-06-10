@@ -27,9 +27,12 @@ canonical_docs:
   - {path: .claude/mistakes.md,                                        scope: forever_append_only,              doc_type: mistakes, sot_note: "blub.db /api/corrections + memory/feedback_*.md are SoT; this is keyword-stub index"}
   - {path: .claude/parking.md,                                         scope: forever_append_only_with_status,  doc_type: parking}
   - {path: .claude/plan.md,                                            scope: forever_master,                   doc_type: master-plan}
-  - {path: .claude/plans/2026-05-24-strategic-plan.md,                 scope: forever_until_recovery_complete,  doc_type: strategic-plan, note: "Phase 1 scope superseded by Spec 22; Phases 2-4 still active"}
-  - {path: .claude/plans/2026-05-28-phase-2-hybrid-block-migration.md, scope: forever_until_phase_2_shipped,    doc_type: phase-plan, canonical_spec: ".claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md", active_scope: "STREAM_A_ONLY 2026-05-27 per Bean directive — Streams B/C/D deferred placeholders", note: "Active phase 2026-05-28; Phase 1.5 closed via D90/D91/D92"}
-  - {path: .claude/plans/2026-05-24-phase-2-header-footer-cloner.md,   scope: forever_until_header_footer_cloner_shipped,    doc_type: phase-plan, note: "Phase 2 sibling spec — header/footer cloner; renumbered from 'Phase 2' since the active Phase 2 is now hybrid-block-migration. Blocked on Phase 2 hybrid migration close."}
+  # LIVE canonical cloning plan (2026-06-09) — supersedes the archived re-cuts below.
+  - {path: .claude/plans/2026-06-09-clone-fix-build-plan.md,           scope: forever_until_clone_fix_shipped,  doc_type: phase-plan, canonical_spec: ".claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md", thread: cloning-pipeline, note: "LIVE canonical cloning build plan (phase-plan). Supersedes the archived container-wrapper / fidelity-triage / hybrid-migration re-cuts."}
+  - {path: .claude/plans/2026-06-09-clone-fix-sign-off-ledger.md,      scope: forever_until_clone_fix_shipped,  doc_type: phase-plan, thread: cloning-pipeline, note: "LIVE 55-issue sign-off ledger — the per-issue tracker for the clone-fix build plan."}
+  - {path: .claude/plans/archive/2026-05-24-strategic-plan.md,        scope: archived,  doc_type: strategic-plan, status: superseded, note: "ARCHIVED 2026-06-10 (plans/archive/). Phase 1 scope superseded by Spec 22; historical."}
+  - {path: .claude/plans/archive/2026-05-28-phase-2-hybrid-block-migration.md, scope: archived,  doc_type: phase-plan, status: superseded, canonical_spec: ".claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md", note: "ARCHIVED 2026-06-10 (plans/archive/) — superseded re-cut; live plan is 2026-06-09-clone-fix-build-plan.md."}
+  - {path: .claude/plans/archive/2026-05-24-phase-2-header-footer-cloner.md,   scope: archived,  doc_type: phase-plan, status: superseded, note: "ARCHIVED 2026-06-10 (plans/archive/) — header/footer cloner sibling; superseded re-cut."}
   - {path: .claude/plans/2026-05-24-phase-3-parking-sweep.md,          scope: forever_until_phase_3_shipped,    doc_type: phase-plan}
   - {path: .claude/plans/2026-05-24-phase-4-skill-optimisation.md,     scope: forever_until_phase_4_shipped,    doc_type: phase-plan}
   - {path: .claude/reports/2026-05-25-qc-council-issue-register.md,    scope: forever_until_phase_1_shipped,    doc_type: reference, sot_note: "Canonical register for Phase 1 — ~110 items across Sections A-R; Section P = 27 binding design principles; Section Q = 20-cheat inventory; Section R = consolidated phase plan"}
@@ -270,7 +273,7 @@ cold_start_reading_order:   # CLONING-PIPELINE thread
   - 2. .claude/handoff.md
   - 3. .claude/next-session-prompt.md
   - 4. .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md (canonical pipeline spec — read §0 Purpose + §2 architecture diagram + §3 FRs + §16 ratification gate)
-  - 5. .claude/plans/2026-05-28-phase-2-hybrid-block-migration.md (active Phase 2 plan — Stream A active scope; B/C/D deferred. Phase 1.5 closed 2026-05-27 per D90, archived plan at plans/archive/2026-05-26-phase-1-spec-22-implementation-closed-2026-05-27.md)
+  - 5. .claude/plans/2026-06-09-clone-fix-build-plan.md (LIVE canonical cloning plan — phase-plan) + .claude/plans/2026-06-09-clone-fix-sign-off-ledger.md (55-issue tracker). Superseded re-cuts archived at plans/archive/ (2026-06-03-cloning-fidelity-triage / 2026-06-02-container-wrapper-standardisation / 2026-05-28-phase-2-hybrid-block-migration).
   - 6. .claude/cloning-pipeline-flow.md (pipeline work) OR .claude/architecture.md (other)
   - 7. .claude/decisions.md (last 5-10 entries; D90/D91/D92 = this-session Phase 1.5 close + Phase 2 reorder + R-22-14; D78-D83 = Spec 22 ratification chain)
   - 8. .claude/parking.md (last 5 entries)

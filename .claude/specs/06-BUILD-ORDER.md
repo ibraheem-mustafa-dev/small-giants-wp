@@ -25,7 +25,7 @@ Framework **v1 shipped** 2026-04-29. Phases 0–5 complete.
 
 **Canonical spec:** [`Spec 22 — Universal Block-Equivalent Extraction`](.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) — single-path universal walker; R-22-1 through R-22-14 binding rules.
 
-**Active plan:** [`.claude/plans/2026-06-02-container-wrapper-standardisation.md`](../.claude/plans/2026-06-02-container-wrapper-standardisation.md) — 5-workstream programme (WS-1 SHIPPED; WS-4 block-side COMPLETE 2026-06-04 D167; converter-lift in progress).
+**Active plan:** [`.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md`](../.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md) (archived) — 5-workstream programme (WS-1 SHIPPED; WS-4 block-side COMPLETE 2026-06-04 D167; converter-lift deferred).
 
 **Current focus:** Converter method-2 lift (CSS → block attrs) and responsive fidelity (9 root-cause fixes per `.claude/reports/2026-06-05-clone-fix-spec-9-roots.md`).
 

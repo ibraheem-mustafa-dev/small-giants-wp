@@ -9,7 +9,7 @@ created: 2026-06-07
 authors: Claude Code / Bean
 cross_refs:
   - .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md §FR-22-21
-  - .claude/plans/2026-06-02-container-wrapper-standardisation.md
+  - .claude/plans/archive/2026-06-02-container-wrapper-standardisation.md
   - plugins/sgs-blocks/includes/class-sgs-container-wrapper.php
   - plugins/sgs-blocks/src/blocks/container/components/ContainerWrapperControls.js
 ---
@@ -252,7 +252,7 @@ Cross-refs: Spec 22 §FR-22-21 (layer→prefix table + 6-step procedure), §FR-2
 |---|---|
 | Canonical wrapper-conversion procedure (6-step) | Spec 22 §FR-22-21 |
 | 29-block roster + KIND assignments (live, DB-authoritative) | `python sgs-db.py query "SELECT block_slug, container_kind FROM block_composition WHERE container_kind IS NOT NULL"` |
-| Standardisation programme (WS-1 through WS-5) | `.claude/plans/2026-06-02-container-wrapper-standardisation.md` |
+| Standardisation programme (WS-1 through WS-5) | `.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md` |
 | Composite-mirror migration recipe (4-step per block) | Spec 22 §FR-22-21.1 |
 | Auto-propagation via `/sgs-update` Stage 11 | Spec 22 §FR-22-21.2 |
 | Gap consolidation decision | D167 + commit `668e26ad` (2026-06-07) |

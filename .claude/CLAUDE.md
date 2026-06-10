@@ -28,7 +28,7 @@
 ## Authoritative pointers
 
 - **Canonical cloning-pipeline spec:** `specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` (Spec 22)
-- **Active primary plan:** `plans/2026-06-02-container-wrapper-standardisation.md` (5-workstream programme D152; WS-1 SHIPPED). **Cloning pixel-diff thread:** `plans/2026-05-28-phase-2-hybrid-block-migration.md` (Streams B/C/D deferred; feeds WS-3/WS-4).
+- **LIVE canonical cloning plan:** `plans/2026-06-09-clone-fix-build-plan.md` (phase-plan) + `plans/2026-06-09-clone-fix-sign-off-ledger.md` (55-issue tracker). **Archived (superseded, at `plans/archive/`):** `plans/archive/2026-06-02-container-wrapper-standardisation.md` (5-workstream programme) + `plans/archive/2026-05-28-phase-2-hybrid-block-migration.md` (pixel-diff thread).
 - **Pipeline overview:** `cloning-pipeline-flow.md` (stage-index + cross-cutting principles); per-stage detail → `cloning-pipeline-stages.md`
 - **Binding methodology rules:** `decisions.md` (search for "binding" + recent D-numbers) — DO NOT restate inline here. Spec 22 binding rules: R-22-1 through R-22-14 (R-22-14 added 2026-05-27 per D92 — no legacy fallback hacks in FR-22-6 migrations).
 - **Pipeline-state artefacts:** `specs/21-PIPELINE-STATE-ARTEFACTS.md` (mandatory read before conjecturing about pipeline failures)

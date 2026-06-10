@@ -48,7 +48,7 @@ Specs are versioned, status-tracked artifacts that document architectural commit
 
 ## Architecture programme (2026-05-21+) — archived
 
-The 31-decision architecture programme (`.claude/plans/archive/2026-05-21-architecture-staging.md`) **SHIPPED 2026-05-22** — all phases complete. Active work is now the cloning pipeline programme; see Spec 22 + `.claude/plans/2026-06-02-container-wrapper-standardisation.md`.
+The 31-decision architecture programme (`.claude/plans/archive/2026-05-21-architecture-staging.md`) **SHIPPED 2026-05-22** — all phases complete. Active work is now the cloning pipeline programme; see Spec 22 + `.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md` (archived).
 
 ## Working specs / research artefacts (not numbered)
 

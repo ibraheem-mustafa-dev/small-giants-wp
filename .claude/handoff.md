@@ -42,7 +42,7 @@
 | `.claude/reports/wave2/WRAPPER-CSS-ROUTING-DESIGN-GATE.md` | NEW — D194 design + full impact map |
 | `.claude/reports/wave2/{STAGE1-DESIGN,STAGE0-FRS-AND-GATE,SIGN-OFF-LEDGER,CLONE-FIX-BUILD-PLAN}.md` | de-conflicted canonical_slot-as-routing-key; Commit-2 build contract added to STAGE1-DESIGN |
 | `.claude/reports/wave2/{STAGE1-HANDOFF-PROMPT,CANONICAL-SLOT-BACKFILL-PROMPT}.md` | DELETED (consolidated into main opener) |
-| `.claude/plans/2026-06-03-...md`, `.claude/plans/2026-06-04-method2-converter-lift-design.md` | name-free language; method2 "curated canonical_slot map" wording fix |
+| `.claude/plans/archive/2026-06-03-...md`, `.claude/plans/archive/2026-06-04-method2-converter-lift-design.md` | name-free language; method2 "curated canonical_slot map" wording fix |
 | `plugins/sgs-blocks/scripts/uimax-tools/seed-slot-synonyms.py` | added `content` slot row + the standalone_block GUARD |
 | `sites/mamas-munches/mockups/homepage/index.html` | 7 inner-wrapper caps → `--content-width` |
 | `.claude/{state,handoff,next-session-prompt}.md` | this handoff |

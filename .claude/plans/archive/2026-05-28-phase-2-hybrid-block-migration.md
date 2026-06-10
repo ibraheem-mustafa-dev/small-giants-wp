@@ -10,6 +10,8 @@ generated: 2026-05-28
 last_updated: 2026-06-03
 active_scope: STREAM_A_RESHAPED_POST_D99
 progress_2026_06_04: |
+
+> **⚠ ARCHIVED 2026-06-10 — SUPERSEDED (plans-folder consolidation).** A successive re-cut of the cloning-fidelity effort; its open work was folded into the build-plan + sign-off ledger and parking.md. Live canonical cloning plan: `../2026-06-09-clone-fix-build-plan.md` + `../2026-06-09-clone-fix-sign-off-ledger.md`. Remaining open work tracked in `../../parking.md`. Kept for historical detail (shipped-state, locked decisions, methodology).
   WS-4 COMPOSITE-WRAPPER MIRROR BLOCK-SIDE COMPLETE (D167) — supersedes the "WS-4 pending / ~28 composites" lines in progress_2026_06_03 below:
     - The 29-block container roster (4 section / 14 layout / 11 content) mirrors sgs/container via the
       shared helper SGS_Container_Wrapper (element route). hero (bacbde57) + product-card (f68bdc6f +
@@ -39,7 +41,7 @@ progress_2026_06_03: |
     - A7: MOOT — _lift_core_block_style is dead code; A2 inlined its own logic
     - Remaining WS-1c: A3/~~A4~~/A5/A6 + WS-2/WS-3/WS-5 pending (~~A4 SHIPPED 668e26ad~~; WS-4 COMPLETE D167)
     - WS-4 scope sharpened (D160): ALL ~28 composites KIND-scoped, not just 4 SECTION blocks
-    - Active triage + WS-4 build spec: .claude/plans/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md
+    - Active triage + WS-4 build spec: .claude/plans/archive/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md
 progress_2026_06_02: |
   THEME THREAD — FR-22-6 migration progress (feat/theme-blocks-wave1, NOT yet merged):
     - FR-22-6 roster classification report written: .claude/reports/2026-06-01-fr22-6-migration-classification.md
@@ -58,7 +60,7 @@ progress_2026_06_02: |
     - trust-bar + modal block.json: supports.sgs.containerKind:"section" operator-override added
     - /sgs-update ran clean: 190 blocks (68 sgs + 122 core); 02-SGS-BLOCKS-REFERENCE.md regen'd
     - 5-workstream standardisation programme planned (NOT built): canonical spec = Spec 22 §FR-22-21;
-      plan = .claude/plans/2026-06-02-container-wrapper-standardisation.md (D152). Composites
+      plan = .claude/plans/archive/2026-06-02-container-wrapper-standardisation.md (D152). Composites
       MIRROR sgs/container (R-22-9 — no composite evades universal mechanism)
 progress_2026_06_01: "Shared-branch converter advances (cloning thread, orthogonal to Stream A's DB pre-pass; Stream A steps unchanged): D141 routing fixes, D145 is-style carry + tag-authoritative content-leaf (b93a3b51), D146 sgs/button replaces core/button + multi-button grouping (270cd995). FR-22-20 variant detection PARTIALLY SHIPPED (D134, Commits 1-5/6). Plan-internal R-22-14 contradiction fixed this date: the 'add legacy fallback' instructions at Steps B0/B1 (lines ~329/332/387/399/631) were struck — they violated the P1-locked no-legacy-fallback rule; backwards-compat is Stream C WP-CLI batch migration only."
 progress_2026_05_30: |
@@ -194,7 +196,7 @@ Before Stream A starts:
 
 Items deliberately deferred from this phase plan (do NOT add to Stream A scope):
 - Phase 2.5 noise-floor work (≤1% pixel-diff bridge) — separate phase after Phase 2 closes.
-- Header/footer cloner Phase 2 sibling spec (`.claude/plans/2026-05-24-phase-2-header-footer-cloner.md`) — blocked on Phase 2 hybrid migration close.
+- Header/footer cloner Phase 2 sibling spec (`.claude/plans/archive/2026-05-24-phase-2-header-footer-cloner.md`) — blocked on Phase 2 hybrid migration close.
 - Removing the TEMP header-hide CSS override — tied to header/footer cloner ship date.
 - 5 pre-existing duplicate parking slugs from prior sessions — separate cleanup pass.
 - Mirror-DB divergence root-cause investigation BEYOND Step A3 verification (Stream A's A3 surfaces it; deeper investigation is a separate parking entry if it persists).

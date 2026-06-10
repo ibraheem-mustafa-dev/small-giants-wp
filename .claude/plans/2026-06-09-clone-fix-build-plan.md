@@ -1,5 +1,5 @@
 ---
-doc_type: reference
+doc_type: phase-plan
 project: small-giants-wp
 thread: cloning-pipeline
 title: "Wave-2 → Wave-3 clone-fix BUILD PLAN (council-revised + Bean priority reframe)"
