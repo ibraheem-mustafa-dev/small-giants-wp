@@ -1718,6 +1718,300 @@ def route_node_css(
 
 
 # ============================================================================
+# FR-22-5.3 — Cross-node interior CSS routing (Commit 2)
+# ============================================================================
+# When an interior element's CSS is NOT consumed by the element's own resolved
+# block, route its structural box CSS (padding / margin / max-width / gap +
+# responsive companions) to the owning composite's per-slot attr group via a
+# DB-driven, name-free layer lookup.
+#
+# Three layers (Spec 22 FR-22-21):
+#   OUTER   — the composite's full-bleed wrapper (padding, max-width, gap …)
+#   CONTENT — the content-width inner band (max-width / --content-width,
+#             content-padding …)
+#   GRID    — per-grid-item attrs (gridItemPadding …)
+#
+# GAP-3: display + grid-template-* are EXCLUDED from cross-node lifting.
+# Inline display/grid beats @media → collapses 2-col grids (R-22-6).
+#
+# R-22-1 DB-first; R-22-6 no inline CSS; R-22-9 universal.
+
+# CSS properties that MUST NOT be lifted cross-node (GAP-3 rule).
+# display:grid|flex as a block attr generates inline style which overrides
+# @media-query grid/flex layout CSS — collapsing N-col grids to 1-col.
+_CROSS_NODE_EXCLUDED_PROPS: frozenset[str] = frozenset({
+    "display",
+    "grid-template-columns",
+    "grid-template-rows",
+    "grid-template-areas",
+    "grid-template",
+})
+
+# CSS properties considered structural box CSS for cross-node lifting.
+# Any property with a DB entry in `property_suffixes` qualifies provided
+# it is not in _CROSS_NODE_EXCLUDED_PROPS.  This set names the FAMILIES
+# we proactively detect layers for; the actual attr is found by the DB lookup.
+_BOX_CSS_FAMILIES: frozenset[str] = frozenset({
+    "padding", "padding-top", "padding-right", "padding-bottom", "padding-left",
+    "margin", "margin-top", "margin-right", "margin-bottom", "margin-left",
+    "max-width", "min-width", "width",
+    "gap", "row-gap", "column-gap",
+    "min-height",
+})
+
+# CONTENT-layer detection signals.
+# Priority 1 (deterministic): an element declares `--content-width` custom property
+#   — Bean's draft convention: `max-width: var(--content-width); --content-width: 720px`
+# Priority 2 (heuristic): `max-width` + margin-centring signature
+#   (`margin: 0 auto` / `margin-left: auto` + `margin-right: auto`).
+#
+# FALSIFICATION LIST — these patterns must NOT be silently detected as CONTENT;
+# each routes to gap-candidate instead of being misinterpreted:
+#   • `width: min(W, 100%)` / `clamp()` with no max-width — use `min()` shape
+#   • `margin-inline: auto` longhand — no shorthand `margin`
+#   • `margin-left: auto` / `margin-right: auto` WITHOUT both sides present
+#   • section-root `max-width` with NO inner wrapper (catches the outer shell)
+#   • flex-grid: `display:flex; flex-wrap:wrap` + child `width:calc()` — not an inner band
+#   • padding-based centring: `padding: 0 10vw` — no max-width at all
+#
+# Detection is run on the POST-FOLD tree (after _fold_layout_into_attrs resolves).
+
+
+def _detect_content_layer(base_decls: dict[str, str]) -> bool:
+    """Return True when `base_decls` carries a CONTENT-layer signature.
+
+    CONTENT layer = a content-width inner band.  Detection is deterministic-first:
+
+    1. `--content-width` custom-property declared in the element's CSS  →  True.
+    2. `max-width` present AND margin-centring present (both `margin-left:auto`
+       AND `margin-right:auto`, OR the `margin:0 auto` shorthand)  →  True.
+
+    Any other pattern → False (routed to gap-candidate by the caller).
+
+    Falsification: `width:min(...)` / `clamp()` without `max-width`;
+    `margin-inline:auto` longhand; single-sided margin:auto;
+    padding-centring only (`padding:0 10vw`) — all return False.
+    """
+    # Priority 1: `--content-width` custom property anywhere in the declaration block.
+    for prop in base_decls:
+        if prop.strip() == "--content-width":
+            return True
+    for val in base_decls.values():
+        if "--content-width" in (val or ""):
+            return True
+
+    # Priority 2: max-width + margin-centring.
+    raw_mw = _strip_important(base_decls.get("max-width", "")).strip()
+    if not raw_mw:
+        return False
+
+    # Reject width:min()/clamp() shaped values that appear in max-width slot —
+    # these are responsive sizing tricks, not a content-band constraint.
+    if raw_mw.startswith(("min(", "clamp(", "max(")):
+        return False
+
+    # Reject flex-grid containers: `display:flex` + `flex-wrap:wrap` is a
+    # multi-column flex layout pattern, NOT an inner content-width band.
+    # Routing its CSS to a contentWidth attr is always wrong — the grid layout
+    # attrs belong elsewhere (gap-candidate or OUTER).  The build contract
+    # specifies: "flex-grid → gap-candidate, never guess."
+    raw_display = _strip_important(base_decls.get("display", "")).strip().lower()
+    if raw_display in ("flex", "grid", "inline-flex", "inline-grid"):
+        return False
+
+    # Check for margin-centring signature.
+    margin_short = _strip_important(base_decls.get("margin", "")).strip().lower()
+    ml = _strip_important(base_decls.get("margin-left", "")).strip().lower()
+    mr = _strip_important(base_decls.get("margin-right", "")).strip().lower()
+
+    # Shorthand `margin: 0 auto` / `margin: auto` / `margin: N auto` — the auto
+    # value appears as the second (horizontal) token.
+    if margin_short:
+        tokens = margin_short.split()
+        # `auto` as sole token → centred; `N auto` → centred; `auto N auto N` → centred
+        if "auto" in tokens:
+            return True
+
+    # Explicit `margin-left:auto` AND `margin-right:auto` (both must be present).
+    if ml == "auto" and mr == "auto":
+        return True
+
+    # `margin-inline:auto` is NOT detected here (longhand not in standard base_decls
+    # under the current CSS parser — guard the falsification).
+    return False
+
+
+def _route_interior_css_to_parent_slot(
+    child_node: "Tag",
+    element_token: "str | None",
+    owning_block: str,
+    parent_attrs: dict,
+    css_rules: dict,
+) -> None:
+    """FR-22-5.3 — Route an interior element's structural box CSS to the owning
+    composite's per-slot attr group when the slot has no equivalent child block.
+
+    Algorithm (Spec 22 STAGE1-DESIGN.md §Commit 2 build contract):
+    1. Resolve the child's BEM element token → slot name (via `slots` table).
+    2. Fork on `db.slot_has_equivalent_block(owning_block, slot_name)`:
+         TRUE  → the slot IS served by a child InnerBlock.  The CSS stays with
+                 the child block (existing D1 path).  This function is a no-op.
+         FALSE → the slot is NOT a content-bearing child block.  Lift the child's
+                 structural box CSS onto the parent's per-layer attrs (DB-driven,
+                 name-free).
+    3. For each collected base + responsive CSS declaration:
+         (a) Exclude _CROSS_NODE_EXCLUDED_PROPS (GAP-3).
+         (b) Detect the destination layer (CONTENT / OUTER / GRID).
+         (c) Resolve the parent attr via `db.attr_for_layer_property(owning_block,
+             layer, css_property)`.
+         (d) On hit  → setdefault into parent_attrs.
+         (e) On miss → record attribute_gap_candidate + unresolved_equivalent_block
+             trace (flag-not-drop, FR-22-21 step 6).
+
+    Parameters
+    ----------
+    child_node:     The interior element Tag (e.g. the `.sgs-hero__content` div).
+    element_token:  BEM element name extracted from the child's primary sgs- class
+                    (e.g. ``'content'``, ``'inner'``).  None → no-op (no slot to route).
+    owning_block:   Resolved slug of the parent composite (e.g. ``'sgs/hero'``).
+    parent_attrs:   The parent composite's attrs dict — mutated in-place.
+    css_rules:      The CSS rules dict threaded from the top-level walk.
+    """
+    if not element_token or not owning_block:
+        return
+
+    # Step 1: resolve element_token → canonical slot name.
+    slot_name: str | None = db.canonical_slot_for(element_token)
+
+    # Step 2: CONTENT-fork check.  If the slot has a content-bearing child block
+    # on this parent, the CSS is not ours to cross-node-lift — leave it to the
+    # child block's own route_node_css call.
+    if slot_name and db.slot_has_equivalent_block(owning_block, slot_name):
+        _trace(
+            "cross_node_content_fork",
+            owning_block=owning_block,
+            element_token=element_token,
+            slot_name=slot_name,
+            branch="content_bearing_child_block_present__skip",
+        )
+        return
+
+    # Step 3: collect the child's CSS declarations.
+    base_decls, bp_decls = _collect_css_decls_for_element(child_node, css_rules)
+
+    if not base_decls and not bp_decls:
+        return  # Nothing to route.
+
+    is_content = _detect_content_layer(base_decls)
+
+    def _lift_decl(css_prop: str, value: str, bp_suffix: "str | None" = None) -> bool:
+        """Attempt to route one declaration; return True on success."""
+        if css_prop in _CROSS_NODE_EXCLUDED_PROPS:
+            return False  # GAP-3: never lift display/grid-template-* cross-node.
+
+        # Determine candidate layer(s) for this property.
+        # A single element can be OUTER + CONTENT + GRID simultaneously (co-located).
+        layers_to_try: list[str] = []
+
+        # max-width / width / --content-width on ANY inner element defaults to CONTENT:
+        # an inner element's max-width is almost always a content-width constraint, not an
+        # outer full-bleed width.  Priority 1 = CONTENT; only try OUTER as fallback if
+        # the CONTENT lookup misses (meaning the block has no contentWidth attr).
+        # `is_content` (margin-centring detected) confirms the CONTENT interpretation;
+        # even WITHOUT centring, the CONTENT attempt is made first because `_fold_layout_into_attrs`
+        # already handles the fold path and we don't want to double-set `maxWidth`.
+        if css_prop in ("max-width", "width", "--content-width"):
+            layers_to_try.append("CONTENT")
+            # Also try OUTER as second-choice (e.g. a block with only `maxWidth` and
+            # no `contentWidth` attr).  The `break` after first hit prevents double-setting.
+            layers_to_try.append("OUTER")
+        elif css_prop.startswith("padding"):
+            if is_content:
+                layers_to_try.append("CONTENT")
+            # GRID layer for per-grid-item padding (e.g. padding on a .sgs-X__grid-item).
+            # `attr_for_layer_property(block, 'GRID', css_prop)` returns None for blocks
+            # that have no gridItem* attrs — the None miss IS the filter; no per-slug
+            # branch needed (R-22-1 DB-first).  GRID wins over OUTER for an element that
+            # IS a grid item: the per-item padding belongs on the item attr, not the
+            # outer container padding.  CONTENT takes priority over GRID (content-area
+            # padding is a different semantic from per-grid-item padding).
+            layers_to_try.append("GRID")
+            layers_to_try.append("OUTER")
+        elif css_prop in ("gap", "row-gap", "column-gap"):
+            # GRID layer covers per-grid-item gap (gridItemGap*) when the block has it;
+            # OUTER covers the container-level gap attr.  GRID wins when both exist because
+            # the element being routed is a grid item, not the outer shell.
+            layers_to_try.append("GRID")
+            layers_to_try.append("OUTER")
+        elif css_prop in ("margin", "margin-top", "margin-right", "margin-bottom", "margin-left"):
+            layers_to_try.append("GRID")
+            layers_to_try.append("OUTER")
+        elif css_prop == "min-height":
+            # GRID layer first — a per-grid-item min-height (e.g. gridItemMinHeight) is
+            # the tighter, more specific destination when the block exposes it.
+            layers_to_try.append("GRID")
+            layers_to_try.append("OUTER")
+        else:
+            # Fallback: try OUTER for any unmatched box property.
+            layers_to_try.append("OUTER")
+
+        placed = False
+        for layer in layers_to_try:
+            # Build the full responsive css_property name for DB lookup:
+            # `padding-top` at `Desktop` bp → still `padding-top` (suffix is on the attr name).
+            attr_name = db.attr_for_layer_property(owning_block, layer, css_prop)
+            if attr_name:
+                # Append responsive breakpoint suffix to attr name if needed.
+                dest_key = f"{attr_name}{bp_suffix}" if bp_suffix else attr_name
+                parent_attrs.setdefault(dest_key, _strip_important(value).strip())
+                _trace(
+                    "cross_node_css_lifted",
+                    owning_block=owning_block,
+                    element_token=element_token,
+                    css_property=css_prop,
+                    layer=layer,
+                    dest_attr=dest_key,
+                    value=value,
+                )
+                placed = True
+                break  # First matching layer wins (CONTENT > OUTER precedence).
+
+        if not placed:
+            # Flag-not-drop: log as gap candidate so the attr can be added later.
+            source_class = next(
+                (c for c in (child_node.get("class", []) or []) if c.startswith("sgs-")),
+                element_token or "",
+            )
+            _record_gap_candidate(
+                block_slug=owning_block,
+                css_property=css_prop,
+                raw_value=value,
+                source_class=source_class,
+            )
+            _trace(
+                "cross_node_gap_candidate",
+                owning_block=owning_block,
+                element_token=element_token,
+                css_property=css_prop,
+                reason="no_matching_layer_attr",
+            )
+
+        return placed
+
+    # --- Base declarations ---
+    for css_prop, value in base_decls.items():
+        _lift_decl(css_prop, value, bp_suffix=None)
+
+    # --- Responsive declarations ---
+    for bp_key, bp_decl_map in bp_decls.items():
+        bp_suffix = _BP_SUFFIX_MAP.get(bp_key)
+        if not bp_suffix or not bp_decl_map:
+            continue
+        for css_prop, value in bp_decl_map.items():
+            _lift_decl(css_prop, value, bp_suffix=bp_suffix)
+
+
+# ============================================================================
 # Transparent wrapper absorber (pre-pass)
 # ============================================================================
 _ABSORB_GAP_PROPS = frozenset({
@@ -2473,7 +2767,8 @@ def _route_composite_interior(
 
         if element is None:
             # No BEM element segment — cannot route by slot; fall back to generic walk.
-            result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
+            result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False,
+                          parent_block=slug)
             if result:
                 children_markup.append(result)
             continue
@@ -2535,7 +2830,7 @@ def _route_composite_interior(
                        attr=None, branch="content_item_block_emitted",
                        child_slug=child_slug, depth=depth + 1)
                 result = walk(child, css_rules, variation_buf,
-                              depth=depth + 1, is_top_level=False)
+                              depth=depth + 1, is_top_level=False, parent_block=slug)
                 if result:
                     children_markup.append(result)
             else:
@@ -2548,13 +2843,26 @@ def _route_composite_interior(
                 # dict, mutated in-place; setdefault() never clobbers the composite's own
                 # already-set layout/grid/background attrs.
                 _fold_layout_into_attrs(child, cclasses, attrs, css_rules)
+                # FR-22-5.3 cross-node CSS routing (Commit 2, 2026-06-10): after the
+                # fold lifts grid/flex, also route this slug-None column's STRUCTURAL
+                # BOX CSS (padding / max-width / gap) onto the composite's per-slot
+                # layer attrs via the DB-driven layer resolver.  Complements the fold
+                # (which covers grid/layout attrs) with the CONTENT-layer attrs the
+                # fold does not set (contentPadding*, contentWidth from __content).
+                _route_interior_css_to_parent_slot(
+                    child_node=child,
+                    element_token=element,
+                    owning_block=slug,
+                    parent_attrs=attrs,
+                    css_rules=css_rules,
+                )
                 _trace("composite_interior_route", slug=slug, element=element,
                        attr=None, branch="content_column_folded",
                        depth=depth + 1,
-                       note="slug-None wrapper folded into bare InnerBlocks; own CSS lifted to composite attrs")
+                       note="slug-None wrapper folded + cross-node CSS routed to composite attrs")
                 for grandchild in child.children:
                     result = walk(grandchild, css_rules, variation_buf,
-                                  depth=depth + 1, is_top_level=False)
+                                  depth=depth + 1, is_top_level=False, parent_block=slug)
                     if result:
                         children_markup.append(result)
 
@@ -2593,6 +2901,7 @@ def walk(
     variation_buf: list[str] | None = None,
     depth: int = 0,
     is_top_level: bool = False,
+    parent_block: "str | None" = None,
 ) -> str | None:
     """Universal walker per Spec 22 §13 Appendix A + R-22-3 (exactly 3 routing branches).
 
@@ -2610,6 +2919,14 @@ def walk(
     The single 'sgs/container' literal (branch 3) is FR-22-4 permitted: every
     top-level section base is sgs/container; non-container top-level slugs are
     wrapped. This is the ONLY block-slug literal permitted anywhere in this file.
+
+    parent_block:
+        The nearest RESOLVED ancestor slug (intermediate slug-None wrappers do not
+        update this).  Used for the FR-22-5.3 parent-scoped child-token pre-check
+        (Commit 2): when a child element's BEM token matches a registered child block
+        of ``parent_block``, that child slug takes precedence over the global ``slots``
+        alias lookup.  Must NOT be threaded into the lru_cache'd
+        ``_resolve_slug_from_bem_tuple`` (cache key is the class tuple only).
 
     Returns: WP block markup string, or None for chrome-skipped / text-only-none nodes.
     """
@@ -2685,6 +3002,39 @@ def walk(
     # ---- Universal path — BEM → DB → emit ----
     slug = db.resolve_slug_from_bem(sgs_classes)  # FR-22-1 with multi-class disambiguation
 
+    # ---- FR-22-5.3 parent-scoped child-token pre-check (Commit 2, 2026-06-10) ----
+    # When a parent block is resolved, check whether ANY of this node's BEM element
+    # tokens match a registered child block of that parent.  A parent-scoped match
+    # takes precedence over the global `slots` alias lookup — fixing two confirmed
+    # mis-resolutions: accordion `__item` → sgs/info-box (should → sgs/accordion-item);
+    # form `__step` → sgs/process-steps (should → sgs/form-step).
+    #
+    # Build contract (STAGE1-DESIGN.md §Commit 2):
+    #   (a) Pure DB lookup via blocks.parent_block (18 rows) — no Python branch per slug.
+    #   (b) Parent context = nearest RESOLVED ancestor (the `parent_block` arg;
+    #       intermediate slug-None wrappers do NOT update it — their callers pass
+    #       the SAME parent_block down).
+    #   (c) Parent-scoped hit → slug overrides the global resolution; traced.
+    #   (d) NOT threaded into lru_cache'd _resolve_slug_from_bem_tuple.
+    if parent_block and sgs_classes:
+        for _ps_cls in sgs_classes:
+            _ps_bem = db.parse_sgs_bem(_ps_cls)
+            if _ps_bem and _ps_bem.element:
+                _ps_child = db.child_block_for_parent_token(parent_block, _ps_bem.element)
+                if _ps_child is not None:
+                    _trace(
+                        "walker_branch_taken",
+                        branch="parent_scoped_child_token",
+                        parent_block=parent_block,
+                        element_token=_ps_bem.element,
+                        global_slug=slug,
+                        parent_scoped_slug=_ps_child,
+                        node_classes=classes,
+                        depth=depth,
+                    )
+                    slug = _ps_child
+                    break  # First match wins; no further element token tries needed.
+
     # FR-22-4.1 leaf-with-element-children guard (2026-05-31, D115 blind-spot fix).
     # A node that resolves to a LEAF block (sgs/text, sgs/label, sgs/icon, …) renders
     # from a scalar content attribute and CANNOT hold structural children. When such a
@@ -2731,7 +3081,8 @@ def walk(
             # raw text (editor "unexpected/invalid content"). See _route_text_leaf.
             if _node_is_text_leaf(node):
                 return _route_text_leaf(node, classes, sgs_classes, css_rules, variation_buf)
-            return _emit_wrapper_container(node, classes, sgs_classes, css_rules, depth, variation_buf)
+            return _emit_wrapper_container(node, classes, sgs_classes, css_rules, depth, variation_buf,
+                                           parent_block=parent_block)
         return walk_passthrough(node, css_rules, depth, variation_buf)
 
     # FR-22-4.1 top-level section fold (2026-05-31). When the section root has no
@@ -2936,7 +3287,8 @@ def walk(
             )
         else:
             for child in node.children:
-                result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
+                result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False,
+                              parent_block=slug)
                 if result:
                     children_markup.append(result)
     elif not is_leaf and not _slug_accepts_inner and slug is not None:
@@ -3726,6 +4078,7 @@ def _emit_wrapper_container(
     css_rules: dict,
     depth: int,
     variation_buf: list[str] | None,
+    parent_block: "str | None" = None,
 ) -> str:
     """Emit a slug-None sgs-classed wrapper as a neutral sgs/container (§FR-22-4.1).
 
@@ -3744,6 +4097,11 @@ def _emit_wrapper_container(
     CSS route (collect_css_for_classes → variation_buf); native grid-attr lifting
     (layout + gridTemplateColumns onto the block attrs) is wired via
     _merge_grid_attrs_into_container (Gap-3 fix, 2026-06-05) — previously deferred.
+
+    parent_block:
+        The nearest RESOLVED ancestor slug — threaded from walk() so children of this
+        wrapper can still resolve against the ancestor's registered child blocks.
+        Intermediate slug-None wrappers do NOT reset parent_block (they are transparent).
     """
     css = collect_css_for_classes(classes, css_rules)
     if css and variation_buf is not None:
@@ -3756,7 +4114,11 @@ def _emit_wrapper_container(
     # native block attrs so the block is block-portable (editor grid engine active).
     # setdefault via shared helper; never clobbers className already set above.
     _merge_grid_attrs_into_container(classes, css_rules, container_attrs)
-    children_markup = _process_container_children(node, css_rules, depth, variation_buf, container_attrs)
+    # Thread parent_block so child items can still resolve against the resolved ancestor.
+    # (This wrapper is slug-None — it does NOT update parent_block for its children.)
+    children_markup = _process_container_children(
+        node, css_rules, depth, variation_buf, container_attrs, parent_slug=parent_block
+    )
     _trace("walker_branch_taken", branch="wrapper_container",
            node_classes=classes, depth=depth)
     return emit_wp_block("sgs/container", container_attrs, children_markup)
@@ -3853,15 +4215,70 @@ def _process_container_children(
         if cslug is None and csgs and fold_eligible:
             # rule 2 — fold this sole pass-through shell's layout into the parent container
             _fold_layout_into_attrs(child, cclasses, container_attrs, css_rules)
+            # FR-22-5.3 cross-node CSS routing (Commit 2, 2026-06-10): after the fold
+            # lifts grid/layout attrs, also route this slug-None wrapper's structural
+            # box CSS (padding / max-width / gap) onto the parent composite's layer
+            # attrs — specifically CONTENT-layer attrs the fold's contentWidth path
+            # does not cover (contentPadding*, responsively-aware gap).
+            # Only fires when parent_slug is a resolved composite (not None).
+            if parent_slug:
+                _child_element: "str | None" = None
+                for _fc in csgs:
+                    _fc_bem = db.parse_sgs_bem(_fc)
+                    if _fc_bem and _fc_bem.element:
+                        _child_element = _fc_bem.element
+                        break
+                _route_interior_css_to_parent_slot(
+                    child_node=child,
+                    element_token=_child_element,
+                    owning_block=parent_slug,
+                    parent_attrs=container_attrs,
+                    css_rules=css_rules,
+                )
             _trace("walker_branch_taken", branch="fold_into_container",
                    node_classes=cclasses, depth=depth + 1)
             # rule 4 — the folded wrapper's children resolve below it
             for gc in child.children:
-                r = walk(gc, css_rules, variation_buf, depth=depth + 2, is_top_level=False)
+                r = walk(gc, css_rules, variation_buf, depth=depth + 2, is_top_level=False,
+                         parent_block=parent_slug)
+                if r:
+                    out.append(r)
+        elif cslug is None and not csgs and fold_eligible and parent_slug:
+            # FR-22-4.1 complement (Commit 2 build contract, 2026-06-10):
+            # A scraped draft wrapper with NO sgs- classes at all (raw <div class="inner">,
+            # <div class="wrapper">, or even <div> with no classes) can still be the sole
+            # content-width shell — its box CSS is lost via the FR-22-11 pass-through
+            # unless we handle it here.
+            # Guard: ONLY fold when the child's CSS carries a CONTENT-layer signature
+            # (max-width + margin-centring, or --content-width custom property) — this
+            # keeps the guard narrow and avoids folding arbitrary classless divs.
+            # `fold_eligible` (len == 1) is already asserted by the `elif` clause.
+            # `parent_slug` being truthy means we have a resolved composite to route to.
+            _child_base, _ = _collect_css_decls_for_element(child, css_rules)
+            if _detect_content_layer(_child_base):
+                _route_interior_css_to_parent_slot(
+                    child_node=child,
+                    element_token=None,  # No sgs- BEM token available; slot resolved from DB
+                    owning_block=parent_slug,
+                    parent_attrs=container_attrs,
+                    css_rules=css_rules,
+                )
+                _trace("walker_branch_taken", branch="fold_non_sgs_content_width_wrapper",
+                       node_classes=cclasses, depth=depth + 1)
+                # The wrapper's children still resolve normally via walk().
+                for gc in child.children:
+                    r = walk(gc, css_rules, variation_buf, depth=depth + 2, is_top_level=False,
+                             parent_block=parent_slug)
+                    if r:
+                        out.append(r)
+            else:
+                r = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False,
+                         parent_block=parent_slug)
                 if r:
                     out.append(r)
         else:
-            r = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
+            r = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False,
+                     parent_block=parent_slug)
             if r:
                 out.append(r)
     # Spec 11 + P-9: group loose sgs/button runs into sgs/multi-button (WP mirror).

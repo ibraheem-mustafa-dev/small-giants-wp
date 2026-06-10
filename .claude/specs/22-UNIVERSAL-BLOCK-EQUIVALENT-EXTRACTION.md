@@ -325,6 +325,8 @@ D1 child-attribution rule: when a CSS rule targets `.sgs-X__Y`, D1 routing calls
 
 **Constraints:** R-22-1 (DB-driven, no hardcoded dicts), R-22-6 (attrs never inline), R-22-9 (universal — every composite, no per-block gate), R-22-11 (live-DOM verification per commit). Per-block attr resolution, NOT prefix concatenation — the layer→attr resolver is a per-block lookup `(block_slug, layer, css_property) → attr_name` (attr names vary per block; council build contract, STAGE1-DESIGN.md).
 
+**CONTENT-layer property equivalence (build-discovered 2026-06-10):** on the CONTENT layer, a draft `max-width` / `--content-width` signal resolves to the roster's `contentWidth` attrs via a `max-width ≡ width` suffix equivalence — `property_suffixes` for `max-width` yields only `MaxWidth`/`ContentSize`/`WideSize`, none of which produce `contentWidth` under the `content` prefix; the resolver therefore expands the CONTENT-layer lookup to include `width`-suffix rows (mirrors the pre-existing direct assignment at `convert.py` `contentWidth` setdefault). This equivalence is part of the FR — not an implementation accident.
+
 ### FR-22-6 — Hybrid block render.php migration
 
 **built_status: PARTIAL** — Phase 0.4 audit + 61-block roster shipped (de300eb2, D85); per-block render.php migrations not built

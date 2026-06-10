@@ -2260,6 +2260,424 @@ def equivalent_block_for(block_slug: str, attr_name: str) -> str | None:
 
 
 # ----------------------------------------------------------------------------
+# Commit 2 — cross-node routing helpers (FR-22-5.3, 2026-06-10)
+# ----------------------------------------------------------------------------
+# Three pure DB-lookup functions required by the cross-node interior box-CSS
+# routing step (`_route_interior_css_to_parent_slot`) described in
+# STAGE1-DESIGN.md §Commit 2.  None of these functions modify the DB or the
+# converter state — they are pure read-only lookups.
+#
+# Background:
+#   The walker encounters a child DOM node whose BEM element belongs to a slot
+#   on the PARENT composite block (e.g. `.sgs-hero__content`).  Before routing
+#   the child's CSS to the parent, the walker must decide:
+#     (a) Is the slot CONTENT-BEARING?  If yes → the CSS belongs to a child
+#         InnerBlock, not to the parent's per-slot layout attr (D1 path).
+#     (b) If NOT content-bearing → which parent attr owns this CSS for the
+#         given layer (OUTER / CONTENT / GRID)?
+#     (c) Does the parent have a dedicated child block that resolves this
+#         element token?  (parent-scoped child-block resolution, FR-22-5.3
+#         clause 5.)
+#
+# Design decisions used here:
+#   DEC-1 (D194) — `canonical_slot` is NOT the structural-CSS routing key.
+#   DEC-3 (D194) — Layer prefix families: OUTER = '' (unprefixed wrapper attrs),
+#                  CONTENT = 'content', GRID = 'gridItem'.
+#   R-22-1        — Pure DB lookups; no hardcoded per-slug dicts.
+#   R-22-9        — Universal: applies to all 29 container-mirror composites.
+
+
+@functools.lru_cache(maxsize=4096)
+def slot_has_equivalent_block(block_slug: str, slot_name: str) -> bool:
+    """CONTENT-fork predicate: does `block_slug` have a content-bearing attr
+    tagged with `canonical_slot = slot_name`?
+
+    Purpose (Spec 22 FR-22-5.3 / STAGE1-DESIGN.md §Commit 2 step 2):
+        Before routing a child element's CSS to the parent's per-slot attr group,
+        the walker must confirm the slot is NOT already served by a child InnerBlock
+        (the D1 content path).  This predicate fires the CONTENT fork when True —
+        meaning the CSS stays with the child block, not the parent's layout attrs.
+
+    Contract:
+        SELECT 1 FROM block_attributes
+        WHERE block_slug = ? AND canonical_slot = ?
+          AND role IN (<content-bearing roles>)
+        LIMIT 1
+
+    The query is SLOT-KEYED (``canonical_slot``), NOT attr-keyed.  The existing
+    ``equivalent_block_for(block_slug, attr_name)`` function queries
+    ``WHERE block_slug=? AND attr_name=?``; passing a slot name to it returns None
+    for every call because slot names are never stored in ``attr_name``.  That
+    is exactly the bug class this predicate exists to avoid.
+
+    Content-bearing role set (DB-authoritative, queried live via
+    ``_content_bearing_roles()``; do NOT duplicate here — R-22-1):
+        text-content, image-object, content, link-href, identity
+    Evidence: ``_ROLE_CLASSIFICATION_MAP`` in this module + the ``roles`` table
+    seeded by ``_migrate_roles_table()``.
+
+    Returns False for ``role='layout'`` rows (layout is NOT content-bearing;
+    e.g. ``sgs/hero.contentPaddingTop`` has ``canonical_slot='content'`` +
+    ``role='layout'`` and MUST return False so the CSS is routed to the parent's
+    ``contentPadding*`` attrs, not emitted as a child InnerBlock).
+
+    Args:
+        block_slug:  Fully-qualified SGS slug, e.g. ``'sgs/hero'``.
+        slot_name:   Canonical slot name, e.g. ``'heading'``, ``'content'``,
+                     ``'media'``.
+
+    Returns:
+        True  — at least one attr on ``block_slug`` has ``canonical_slot=slot_name``
+                AND its role is content-bearing.
+        False — no such attr exists, OR all matching attrs have non-content-bearing
+                roles (layout / styling / behaviour / NULL).
+    """
+    if not block_slug or not slot_name:
+        return False
+
+    content_roles = _content_bearing_roles()
+    if not content_roles:
+        # Migration soft-failed — safe default: treat as non-content (layout path).
+        return False
+
+    # Build a parameterised IN clause from the frozenset.
+    # SQLite supports up to 999 parameters; the role set has at most 5 entries.
+    placeholders = ",".join("?" for _ in content_roles)
+    params = (block_slug, slot_name, *content_roles)
+
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            f"SELECT 1 FROM block_attributes "
+            f"WHERE block_slug = ? AND canonical_slot = ? "
+            f"AND role IN ({placeholders}) "
+            f"LIMIT 1",
+            params,
+        ).fetchone()
+    except sqlite3.OperationalError:
+        return False
+    finally:
+        conn.close()
+
+    result = row is not None
+    _trace(
+        "slot_has_equivalent_block",
+        block_slug=block_slug,
+        slot_name=slot_name,
+        result=result,
+    )
+    return result
+
+
+# Layer prefix map (DEC-3, D194).  These are the ONLY three permitted layer
+# names for ``attr_for_layer_property``.  The values are the camelCase prefix
+# that the block's attr names carry for that layer.
+# R-22-1 permitted-constant: these are CSS-architecture constants (the 3-layer
+# model from Spec 22 FR-22-21), not per-block data.  There is no DB table for
+# layer prefixes.
+_LAYER_PREFIXES: dict[str, str] = {
+    "OUTER":   "",          # unprefixed wrapper attrs: maxWidth, gap, padding*
+    "CONTENT": "content",   # content-area attrs:       contentWidth, contentPadding*
+    "GRID":    "gridItem",  # per-grid-item attrs:      gridItemPadding, gridItemShadow
+}
+
+# CSS property equivalence for the CONTENT layer: max-width on a content-area
+# element is semantically the content-width constraint, equivalent to ``width``
+# for attr-matching purposes.  This mirrors the existing converter logic at
+# convert.py line 3800 where ``max-width`` is lifted directly into
+# ``contentWidth``.  (R-22-1 permitted-constant: CSS standard knowledge.)
+_CONTENT_LAYER_MAX_WIDTH_EQUIV: frozenset[str] = frozenset({"max-width", "width"})
+
+
+@functools.lru_cache(maxsize=2048)
+def attr_for_layer_property(
+    block_slug: str,
+    layer: str,
+    css_property: str,
+) -> "str | None":
+    """Per-block layer → attr resolver for structural box CSS.
+
+    Given ``(block_slug, layer, css_property)``, returns the block's ACTUAL
+    ``attr_name`` from its registered attrs for that CSS property at that layer.
+
+    Purpose (Spec 22 FR-22-5.3 / STAGE1-DESIGN.md §Commit 2 step 2, DEC-1/DEC-3):
+        When the CONTENT fork is False (the slot is NOT content-bearing), the
+        cross-node step lifts the child element's structural box CSS onto the
+        parent composite's layer-specific attr.  This function resolves WHICH
+        attr receives the value.
+
+    Mechanism (name-free, per DEC-1 D194):
+        The destination attr is found by layer-prefix + ``property_suffixes``
+        membership — never by matching ``canonical_slot``.  This avoids the
+        ``canonical_slot``-as-routing-key trap (see WRAPPER-CSS-ROUTING-DESIGN-
+        GATE.md).
+
+    Layer → attr prefix map (DEC-3, D194):
+        OUTER    → '' (unprefixed)  e.g. ``maxWidth``, ``gap``, ``paddingTop``
+        CONTENT  → 'content'        e.g. ``contentWidth``, ``contentPaddingTop``
+        GRID     → 'gridItem'       e.g. ``gridItemPadding``, ``gridItemShadow``
+
+    Algorithm (per-block lookup, NOT prefix concatenation):
+        1. Resolve the layer prefix from ``_LAYER_PREFIXES``.
+        2. Collect ALL ``property_suffixes`` rows for ``css_property`` (ordered
+           by rowid for determinism, matching ``attr_for_property``).
+           For the CONTENT layer and ``max-width``, ALSO include ``property_suffixes``
+           rows for ``width`` — ``max-width`` on a content-area element is
+           semantically the content-width constraint and maps to ``contentWidth``
+           (mirrors convert.py line 3800; ``_CONTENT_LAYER_MAX_WIDTH_EQUIV``).
+        3. For each (suffix, role) row, derive the camelCase attr candidate:
+             • CONTENT/GRID layers: prefix + suffix[0].lower() + suffix[1:]
+               e.g. (CONTENT, 'Width') → 'contentWidth'
+             • OUTER layer: suffix[0].lower() + suffix[1:]
+               e.g. (OUTER, 'MaxWidth') → 'maxWidth'
+        4. Check whether ``block_slug`` has that attr in its ``block_attributes``.
+           First match wins (preserves ``property_suffixes`` rowid ordering).
+        5. Return the matched ``attr_name``, or None when the block has no matching
+           attr for this layer/property combination.
+           Callers log a gap-candidate on None (flag-not-drop, FR-22-21 step 6).
+
+    Rationale for per-block lookup (NOT string concat):
+        Attr names vary per block.  Hero historically used ``contentMaxWidth*``
+        where other blocks use ``contentWidth``; a ``{prefix}+{suffix}`` concat
+        cannot generate both from a single ``max-width`` signal without knowing
+        which suffix the block registered its attr under.  The per-block lookup
+        lets the DB tell us the actual attr name.  As of commit e49ff126 (2026-06-09)
+        hero's ``contentMaxWidth*`` was deduped to ``contentWidth``, but the per-
+        block lookup is retained for robustness against any future variance.
+
+    Args:
+        block_slug:    Fully-qualified SGS slug, e.g. ``'sgs/hero'``.
+        layer:         One of ``'OUTER'``, ``'CONTENT'``, ``'GRID'``.
+        css_property:  CSS property name, e.g. ``'max-width'``, ``'padding-top'``.
+
+    Returns:
+        The block's ``attr_name`` that owns ``css_property`` at ``layer``, or None.
+
+    Examples:
+        attr_for_layer_property('sgs/hero', 'CONTENT', 'max-width')   → 'contentWidth'
+        attr_for_layer_property('sgs/container', 'OUTER', 'max-width') → 'maxWidth'
+        attr_for_layer_property('sgs/hero', 'OUTER', 'padding-top')   → None
+            (sgs/hero's paddingTop is NOT an OUTER-layer attr — hero exposes padding
+            via contentPadding*, not unprefixed paddingTop)
+        attr_for_layer_property('sgs/banana', 'CONTENT', 'gap')        → None
+            (block does not exist)
+    """
+    if not block_slug or not css_property:
+        return None
+
+    prefix = _LAYER_PREFIXES.get(layer)
+    if prefix is None:
+        # Unknown layer name — caller error; soft-fail.
+        _trace(
+            "attr_for_layer_property_unknown_layer",
+            block_slug=block_slug,
+            layer=layer,
+            css_property=css_property,
+        )
+        return None
+
+    # Collect property_suffixes rows for the given css_property.
+    # For CONTENT layer + max-width, also include 'width' rows so that
+    # max-width on a content element maps to contentWidth (mirrors convert.py:3800).
+    css_properties_to_try: list[str] = [css_property]
+    if layer == "CONTENT" and css_property in _CONTENT_LAYER_MAX_WIDTH_EQUIV:
+        # Add the complementary property so both 'max-width' and 'width' are
+        # tried (deduplication via seen-set in the loop below).
+        for equiv in _CONTENT_LAYER_MAX_WIDTH_EQUIV:
+            if equiv != css_property:
+                css_properties_to_try.append(equiv)
+
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        # Fetch suffix rows for each css_property candidate, preserving
+        # original property rowid order (primary css_property first, then equiv).
+        all_suffix_rows: list[tuple[str, str]] = []
+        seen_suffixes: set[str] = set()
+        for cp in css_properties_to_try:
+            rows = conn.execute(
+                "SELECT suffix, role FROM property_suffixes "
+                "WHERE css_property = ? ORDER BY rowid",
+                (cp,),
+            ).fetchall()
+            for suffix, role in rows:
+                if suffix and suffix not in seen_suffixes:
+                    seen_suffixes.add(suffix)
+                    all_suffix_rows.append((suffix, role))
+    except sqlite3.OperationalError:
+        return None
+    finally:
+        conn.close()
+
+    if not all_suffix_rows:
+        return None
+
+    # Load this block's attr map (cached by block_attrs).
+    block_attr_map = block_attrs(block_slug)
+    if not block_attr_map:
+        return None
+
+    # Derive candidate attr names and check membership.
+    for suffix, _role in all_suffix_rows:
+        # Build camelCase suffix (PascalCase suffix → camelCase).
+        camel_suffix = suffix[0].lower() + suffix[1:]
+
+        if prefix:
+            # CONTENT or GRID layer: prefix the suffix.
+            candidate = prefix + suffix[0].upper() + suffix[1:]
+        else:
+            # OUTER layer: suffix IS the full attr name (camelCase).
+            candidate = camel_suffix
+
+        if candidate in block_attr_map:
+            _trace(
+                "attr_for_layer_property_hit",
+                block_slug=block_slug,
+                layer=layer,
+                css_property=css_property,
+                attr_name=candidate,
+            )
+            return candidate
+
+    _trace(
+        "attr_for_layer_property_miss",
+        block_slug=block_slug,
+        layer=layer,
+        css_property=css_property,
+    )
+    return None
+
+
+@functools.lru_cache(maxsize=256)
+def child_block_for_parent_token(
+    parent_block: str,
+    element_token: str,
+) -> "str | None":
+    """Parent-scoped child-block resolver (FR-22-5.3 clause 5).
+
+    Given ``(parent_block, element_token)``, returns the child block slug whose
+    DB-derived token matches ``element_token`` within ``parent_block``'s roster,
+    or None when no match exists.
+
+    Purpose (STAGE1-DESIGN.md §Commit 2 build contract, parent-scoped resolution):
+        The global ``slots`` alias table mis-resolves child-item tokens when the
+        parent has a dedicated child block.  Two confirmed collisions:
+
+          • ``sgs/accordion`` + ``item``  → global alias ``card.item`` → ``sgs/info-box``
+            (wrong); correct → ``sgs/accordion-item``.
+          • ``sgs/form`` + ``step``       → step alias → ``sgs/process-steps``
+            (wrong); correct → ``sgs/form-step``.
+
+        A parent-scoped pre-check that beats the global alias resolves both
+        without a per-slug Python branch (R-22-1 / R-22-9).
+
+    Mechanism — pure DB lookup via ``blocks.parent_block`` (18 rows as of 2026-06-10):
+        For each child registered under ``parent_block``, a token is derived
+        from the child slug:
+          • If the child's name portion (after ``sgs/``) starts with the parent's
+            name portion followed by ``-``, the token is the REMAINDER after that
+            prefix.  e.g. ``sgs/accordion-item`` under ``sgs/accordion`` →
+            token = ``'item'``; ``sgs/form-step`` under ``sgs/form`` →
+            token = ``'step'``; ``sgs/form-field-text`` under ``sgs/form`` →
+            token = ``'field-text'``.
+          • Otherwise the token is the child's full name after ``sgs/``.
+            e.g. ``sgs/tab`` under ``sgs/tabs`` → token = ``'tab'``
+            (``'tabs-tab'`` does not exist; the child simply has a shorter name).
+
+        This derivation is performed in SQL via:
+          ``CASE WHEN substr(slug, 5) LIKE substr(parent_block, 5) || '-%'
+               THEN substr(slug, length(parent_block) + 2)
+               ELSE substr(slug, 5)
+           END``
+
+        The SQL derivation is verified against all 18 ``blocks.parent_block`` rows
+        at implementation time — every pair resolves correctly (audit below).
+
+        Precedence (STAGE1-DESIGN.md §Commit 2):
+            Parent-scoped row beats global alias.  The walker calls this function
+            as a PRE-CHECK before consulting the global ``slots`` table.
+
+        Cache key: (parent_block, element_token).  NOT threaded into the LRU-
+        cached ``_resolve_slug_from_bem_tuple`` core (which is keyed on the class
+        tuple only — parent-aware resolution is a separate walker pre-check per
+        the build contract).
+
+    DB parent_block audit (all 18 rows, verified 2026-06-10):
+        parent=sgs/accordion    token=item           → sgs/accordion-item   ✓
+        parent=sgs/form         token=field-address  → sgs/form-field-address ✓
+        parent=sgs/form         token=field-checkbox → sgs/form-field-checkbox ✓
+        parent=sgs/form         token=field-consent  → sgs/form-field-consent ✓
+        parent=sgs/form         token=field-date     → sgs/form-field-date  ✓
+        parent=sgs/form         token=field-email    → sgs/form-field-email ✓
+        parent=sgs/form         token=field-file     → sgs/form-field-file  ✓
+        parent=sgs/form         token=field-hidden   → sgs/form-field-hidden ✓
+        parent=sgs/form         token=field-number   → sgs/form-field-number ✓
+        parent=sgs/form         token=field-phone    → sgs/form-field-phone ✓
+        parent=sgs/form         token=field-radio    → sgs/form-field-radio ✓
+        parent=sgs/form         token=field-select   → sgs/form-field-select ✓
+        parent=sgs/form         token=field-text     → sgs/form-field-text  ✓
+        parent=sgs/form         token=field-textarea → sgs/form-field-textarea ✓
+        parent=sgs/form         token=field-tiles    → sgs/form-field-tiles ✓
+        parent=sgs/form         token=review         → sgs/form-review      ✓
+        parent=sgs/form         token=step           → sgs/form-step        ✓
+        parent=sgs/tabs         token=tab            → sgs/tab              ✓
+
+    Args:
+        parent_block:   Fully-qualified slug of the resolved ancestor, e.g.
+                        ``'sgs/accordion'``.
+        element_token:  BEM element name extracted from the child class, e.g.
+                        ``'item'``, ``'step'``, ``'tab'``.
+
+    Returns:
+        The child block slug (e.g. ``'sgs/accordion-item'``), or None when the
+        parent has no child block matching ``element_token``.
+    """
+    if not parent_block or not element_token:
+        return None
+
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            """
+            WITH child_tokens AS (
+                SELECT slug,
+                    CASE
+                        WHEN substr(slug, 5) LIKE substr(parent_block, 5) || '-%'
+                        THEN substr(slug, length(parent_block) + 2)
+                        ELSE substr(slug, 5)
+                    END AS derived_token
+                FROM blocks
+                WHERE parent_block = ?
+            )
+            SELECT slug FROM child_tokens WHERE derived_token = ?
+            LIMIT 1
+            """,
+            (parent_block, element_token),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        # parent_block column absent (pre-D108 DB) — soft-fail.
+        return None
+    finally:
+        conn.close()
+
+    if row is None:
+        _trace(
+            "child_block_for_parent_token_miss",
+            parent_block=parent_block,
+            element_token=element_token,
+        )
+        return None
+
+    child_slug = row[0]
+    _trace(
+        "child_block_for_parent_token_hit",
+        parent_block=parent_block,
+        element_token=element_token,
+        child_slug=child_slug,
+    )
+    return child_slug
+
+
+# ----------------------------------------------------------------------------
 # atomic_tag_map — Spec 22 §14 Appendix B / Commit 1.2
 # ----------------------------------------------------------------------------
 # DB-driven replacement for the legacy hardcoded ATOMIC_TAG_MAP dict in
