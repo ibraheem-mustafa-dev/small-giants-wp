@@ -187,6 +187,50 @@ KIND_ATTR_SCOPE: Dict[str, Set[str]] = {
 
 
 # ---------------------------------------------------------------------------
+# Mirrored WP-native styling SUPPORTS (WS-4 supports propagation)
+# ---------------------------------------------------------------------------
+# Each composite that wraps sgs/container should expose the SAME native styling
+# capabilities (border / background / gradient / text colour) as sgs/container,
+# for ALL KINDs identically (Bean's decision: full styling for all KINDs). Today
+# these are hand-authored per composite and drift (e.g. notice-banner has
+# supports.color.background:false; product-card has no color support at all),
+# so we FORCE each path to the container's value — overriding an absent OR
+# explicitly-false composite value, because making them universally available
+# is the whole point.
+#
+# These (top_key, sub_key) pairs are the ONLY supports paths propagated. The
+# actual values are read from the container's own block.json supports at runtime
+# (NOT hardcoded here) so this stays truth-from-container (R-22-1 spirit).
+#
+# DELIBERATELY EXCLUDES supports.spacing (padding / margin): forcing native
+# spacing.padding onto blocks that already carry a custom padding attribute
+# (e.g. product-card's `innerPadding`) would create a duplicate dead control
+# (D192). Padding stays handled by the KIND_ATTR_SCOPE attribute mirror above.
+MIRRORED_SUPPORT_PATHS: List[Tuple[str, str]] = [
+    ("color", "background"),
+    ("color", "gradients"),
+    ("color", "text"),
+    ("__experimentalBorder", "radius"),
+    ("__experimentalBorder", "width"),
+    ("__experimentalBorder", "color"),
+    ("__experimentalBorder", "style"),
+]
+
+
+def container_support_values(container_json: Dict[str, Any]) -> Dict[Tuple[str, str], Any]:
+    """Read the truthy values for MIRRORED_SUPPORT_PATHS from the container's own
+    block.json supports — truth-from-container (R-22-1), never a hardcoded value dict.
+    Missing paths are skipped (only present container values are propagated)."""
+    supports = container_json.get("supports", {}) or {}
+    values: Dict[Tuple[str, str], Any] = {}
+    for top, sub in MIRRORED_SUPPORT_PATHS:
+        top_block = supports.get(top, {})
+        if isinstance(top_block, dict) and sub in top_block:
+            values[(top, sub)] = top_block[sub]
+    return values
+
+
+# ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
@@ -627,14 +671,17 @@ def mirror_attrs_to_block_json(
     container_bearing: List[Tuple[str, str, List[str]]],
     container_attrs_def: Dict[str, Any],
     container_non_grid: List[str],
+    container_support_vals: Dict[Tuple[str, str], Any],
     apply: bool = False,
 ) -> List[Dict[str, Any]]:
-    """Mirror KIND-scoped sgs/container attrs into each composite block.json.
+    """Mirror KIND-scoped sgs/container attrs AND native styling supports into
+    each composite block.json.
 
     Rules (WS-4 spec):
     - Only blocks with wraps_block='sgs/container' qualification (i.e. in
       container_bearing) are candidates.
-    - Blocks with supports.sgs.containerMirror === false are SKIPPED (C6).
+    - Blocks with supports.sgs.containerMirror === false are SKIPPED (C6) —
+      neither attrs NOR supports are touched.
     - Per KIND, the attr subset is derived from KIND_ATTR_SCOPE (reused, no
       new hardcoded dict):
         section → all container attrs (KIND_ATTR_SCOPE["section"] == empty set
@@ -643,6 +690,10 @@ def mirror_attrs_to_block_json(
         content → KIND_ATTR_SCOPE["content"]
     - An attr that is ALREADY present in the composite's block.json is NOT
       overwritten (composite's own definition wins — log as ALTERED/kept).
+    - SUPPORTS (MIRRORED_SUPPORT_PATHS) are FORCED to the container's value for
+      ALL KINDs identically — overriding an absent OR explicitly-false composite
+      value (universal availability is the whole point). Spacing is NOT mirrored
+      (D192 — see MIRRORED_SUPPORT_PATHS comment).
     - Idempotent: running twice produces no further changes.
     - apply=False (dry-run): reports per-composite plan, writes nothing.
     - apply=True: writes block.json in-place (validate JSON before write;
@@ -656,6 +707,8 @@ def mirror_attrs_to_block_json(
         "skip_reason": str | None,
         "would_add": List[str],   # attrs that would be / were added
         "already_present": List[str],  # scoped attrs already in composite (kept)
+        "supports_added": List[str],   # "top.sub" support paths newly added
+        "supports_forced": List[str],  # "top.sub" present-but-different, overridden
         "written": bool,          # True only if apply=True and file was written
         "error": str | None,
       }
@@ -670,6 +723,8 @@ def mirror_attrs_to_block_json(
             "skip_reason": None,
             "would_add": [],
             "already_present": [],
+            "supports_added": [],
+            "supports_forced": [],
             "written": False,
             "error": None,
         }
@@ -706,13 +761,36 @@ def mirror_attrs_to_block_json(
         entry["would_add"] = sorted(would_add)
         entry["already_present"] = sorted(already_present)
 
+        # Reconcile native styling supports (MIRRORED_SUPPORT_PATHS) — FORCED to
+        # the container's value for ALL KINDs. Build the updated supports block so
+        # both dry-run reporting AND apply can use it. Spacing is never touched.
+        existing_supports = bj.get("supports", {}) or {}
+        updated_supports = dict(existing_supports)  # shallow copy; preserves all other keys
+        supports_added: List[str] = []
+        supports_forced: List[str] = []
+        for (top, sub), value in container_support_vals.items():
+            top_block = updated_supports.get(top, {})
+            # Only mirror into a dict-shaped support block (or create one).
+            top_block = dict(top_block) if isinstance(top_block, dict) else {}
+            path_label = f"{top}.{sub}"
+            if sub not in top_block:
+                top_block[sub] = value
+                supports_added.append(path_label)
+            elif top_block[sub] != value:
+                top_block[sub] = value
+                supports_forced.append(path_label)
+            updated_supports[top] = top_block
+
+        entry["supports_added"] = sorted(supports_added)
+        entry["supports_forced"] = sorted(supports_forced)
+
         if not apply:
             # Dry-run: report only, no file write
             results.append(entry)
             continue
 
-        if not would_add:
-            # Nothing to add — already fully mirrored for this KIND scope
+        if not would_add and not supports_added and not supports_forced:
+            # Nothing to add — already fully mirrored (attrs + supports) for this KIND scope
             entry["written"] = False
             results.append(entry)
             continue
@@ -723,14 +801,15 @@ def mirror_attrs_to_block_json(
         for attr in sorted(would_add):
             updated_attrs[attr] = container_attrs_def[attr]
 
-        # Build updated block.json with the new attributes
+        # Build updated block.json with the new attributes + reconciled supports
         updated_bj = dict(bj)
         updated_bj["attributes"] = updated_attrs
+        updated_bj["supports"] = updated_supports
 
         # Validate the resulting JSON before writing (fail LOUD, never partial)
         try:
             serialised = json.dumps(updated_bj, indent="\t", ensure_ascii=False)
-            # Round-trip validation: parse back and verify attr count
+            # Round-trip validation: parse back and verify attr count + supports survived
             parsed_back = json.loads(serialised)
             expected_attr_count = len(updated_attrs)
             actual_attr_count = len(parsed_back.get("attributes", {}))
@@ -739,6 +818,14 @@ def mirror_attrs_to_block_json(
                     f"Round-trip attr count mismatch: expected {expected_attr_count}, "
                     f"got {actual_attr_count}"
                 )
+            pb_supports = parsed_back.get("supports", {}) or {}
+            for (top, sub), value in container_support_vals.items():
+                top_block = pb_supports.get(top, {})
+                if not isinstance(top_block, dict) or top_block.get(sub) != value:
+                    raise ValueError(
+                        f"Round-trip supports mismatch: {top}.{sub} did not survive "
+                        f"as {value!r}"
+                    )
         except Exception as exc:
             entry["error"] = f"JSON validation failed before write: {exc}"
             results.append(entry)
@@ -773,6 +860,7 @@ def print_mirror_report(
     print("=" * 70)
 
     total_would_add = 0
+    total_supports_changed = 0
     total_written = 0
     total_skipped = 0
     total_errors = 0
@@ -790,12 +878,16 @@ def print_mirror_report(
 
         add_count = len(r["would_add"])
         keep_count = len(r["already_present"])
+        sup_added = r.get("supports_added", [])
+        sup_forced = r.get("supports_forced", [])
+        sup_change_count = len(sup_added) + len(sup_forced)
         total_would_add += add_count
+        total_supports_changed += sup_change_count
 
         if apply and r["written"]:
             total_written += 1
             status = "WRITTEN"
-        elif apply and not r["written"] and add_count == 0:
+        elif apply and not r["written"] and add_count == 0 and sup_change_count == 0:
             status = "ALREADY-MIRRORED"
         else:
             status = "WOULD-ADD"
@@ -803,7 +895,7 @@ def print_mirror_report(
         verb = "added" if (apply and r["written"]) else "would add"
         print(
             f"  {status:<18} {slug:<40}  KIND={r['kind']}  "
-            f"{verb}={add_count}  kept={keep_count}"
+            f"{verb}={add_count}  kept={keep_count}  supports±={sup_change_count}"
         )
         if r["would_add"]:
             # Show the attrs being added (truncated for readability)
@@ -811,17 +903,23 @@ def print_mirror_report(
             if len(r["would_add"]) > 8:
                 attr_preview += f" … (+{len(r['would_add']) - 8} more)"
             print(f"    attrs: {attr_preview}")
+        if sup_added:
+            print(f"    supports_added: {', '.join(sup_added)}")
+        if sup_forced:
+            print(f"    supports_forced (override): {', '.join(sup_forced)}")
 
     print()
     if apply:
         print(
             f"MIRROR SUMMARY: {total_written} block.json(s) written  "
+            f"| {total_supports_changed} support path change(s)  "
             f"| {total_skipped} skipped  | {total_errors} errors"
         )
     else:
         print(
-            f"MIRROR DRY-RUN: {total_would_add} total attr additions across "
-            f"{sum(1 for r in mirror_results if not r['skipped'] and not r['error'] and r['would_add'])} block(s)  "
+            f"MIRROR DRY-RUN: {total_would_add} total attr additions + "
+            f"{total_supports_changed} support path change(s) across "
+            f"{sum(1 for r in mirror_results if not r['skipped'] and not r['error'] and (r['would_add'] or r.get('supports_added') or r.get('supports_forced')))} block(s)  "
             f"| {total_skipped} skipped  | {total_errors} errors"
         )
         print("  Re-run with --write-block-json --apply to write.")
@@ -906,7 +1004,12 @@ def main() -> int:
     # The KIND_ATTR_SCOPE map handles per-KIND filtering in the diff output.
     # For the base "non-grid" list we keep everything — scoping happens in render_diff_markdown.
     container_non_grid = container_attrs  # scoping is KIND-level, not a single global filter
+    # Source the truthy values for the mirrored native styling supports from the
+    # container's own block.json (truth-from-container, R-22-1 spirit).
+    container_support_vals = container_support_values(container_json)
     print(f"sgs/container: {len(container_attrs)} attributes loaded")
+    print(f"sgs/container: {len(container_support_vals)} mirrored support path(s) loaded "
+          f"({', '.join(f'{t}.{s}' for (t, s) in container_support_vals)})")
 
     # 2. Collect all candidate slugs from block.json source files
     conn = sqlite3.connect(str(db_path))
@@ -1191,6 +1294,7 @@ def main() -> int:
             container_bearing,
             container_attrs_def,
             container_non_grid,
+            container_support_vals,
             apply=write_apply,
         )
         print_mirror_report(mirror_results, apply=write_apply)
