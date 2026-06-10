@@ -3460,37 +3460,42 @@ def walk(
     # G3: if slug is resolved AND the block declares no InnerBlocks, skip children.
     _slug_accepts_inner = slug is None or db.block_accepts_inner_blocks(slug)
     if not is_leaf and _slug_accepts_inner:
-        if slug is not None and db.has_scalar_media_attrs(slug):
-            # FR-22-19: composite slot-router (mutates attrs in-place for scalar-media).
-            # Gate is has_scalar_media_attrs (NOT is_class_section_block): the router
-            # fires for any composite that renders interior media itself as a scalar
-            # attr — sgs/hero (section-root) AND sgs/testimonial-slider (content-block).
-            # Blocks with no scalar-media attr never enter here, so their interior
-            # routing is unchanged (cta-section/info-box/product-card unaffected).
-            children_markup = _route_composite_interior(
-                node, slug, attrs, css_rules, depth, variation_buf
-            )
-        elif slug is not None and _is_container_mirror_block(slug):
-            # FR-22-4.1 universal fold for RESOLVED container-equivalent composites.
-            # Route their children through the SAME fold routine slug-None containers
-            # use (_process_container_children) so a SOLE pass-through inner wrapper
-            # (e.g. .sgs-trust-bar__inner — a fake wrapper that only carries the
-            # container's internal grid/max-width CSS) FOLDS its grid-template /
-            # default-grid / contentWidth / per-grid-item CSS onto THIS composite's
-            # mirrored attrs, instead of becoming a redundant nested sgs/container
-            # whose single child lands in the composite's first grid cell ("1 column").
-            # Previously the fold fired ONLY under slug-None container parents; resolved
-            # composites took the plain walk loop below and never folded — the selective
-            # application that caused the trust-bar duplicate-nesting bug.
-            # UNIVERSAL: gated on _is_container_mirror_block (wraps_block='sgs/container',
-            # the whole 29-block roster — R-22-1 DB-driven, R-22-9, NOT section-kind-only,
-            # no per-slug literal). SAFE: the sole-element-child gate inside
-            # _process_container_children means a multi-child composite (real grid/flex
-            # columns) is NOT folded — preventing the +13pp multi-child grid-collapse
-            # that reverted the earlier universal-fold attempt. Closes the Spec 22
-            # §FR-22-4.1 duplicate-nesting FAIL test for resolved composites.
+        if slug is not None and _is_container_mirror_block(slug):
+            # FR-22-4.1 + FR-22-19 (Commit 4): unified interior dispatch for ALL
+            # container-mirror composites, regardless of whether they also have
+            # scalar-media attrs.  Previously the gate was split:
+            #   - has_scalar_media_attrs → _route_composite_interior (hero, slider)
+            #   - _is_container_mirror_block → _process_container_children (all others)
+            # Both gates were per-composite carve-outs (council C7 / FR-22-19).
+            # The scalar-media lift is now absorbed into _process_container_children
+            # as rule 0 (checked first, before the fold/walk decision), so ONE
+            # universal dispatch serves every container-mirror block:
+            #   • blocks WITH scalar-media attrs get the lift applied inline (rule 0)
+            #     THEN the remaining content children go through fold/walk (rules 2-3)
+            #   • blocks WITHOUT scalar-media attrs are unaffected (rule 0 is a no-op,
+            #     cost = one cached DB call that returns False)
+            # _route_composite_interior body is preserved for rollback reference but is
+            # no longer called from walk() (Commit 4, 2026-06-10).
+            # R-22-1 DB-driven (wraps_block='sgs/container' query, no slug literals).
+            # R-22-9 universal (the whole 29-block container-mirror roster).
+            # R-22-3 compliant: NOT a new top-level walker branch — fires inside the
+            # existing resolved-block emit path only.
+            # fold_eligible (sole-element-child guard) is PRESERVED inside
+            # _process_container_children (prevents +13pp multi-child grid-collapse).
             children_markup = _process_container_children(
                 node, css_rules, depth, variation_buf, attrs, parent_slug=slug
+            )
+        elif slug is not None and db.has_scalar_media_attrs(slug):
+            # FR-22-19 fallback (Commit 4): a block that has scalar-media attrs but is
+            # NOT a container-mirror block routes through _route_composite_interior as
+            # before.  Currently no such block exists (every scalar-media block is also
+            # a container-mirror block), so this branch is unreachable in practice.
+            # Retained as a safety net: if a future block gains scalar-media attrs
+            # without being added to the mirror roster, it still gets the lift rather
+            # than falling through to the plain walk and silently losing its images.
+            # R-22-1 compliant (DB-driven gate). R-22-9 unaffected (unreachable today).
+            children_markup = _route_composite_interior(
+                node, slug, attrs, css_rules, depth, variation_buf
             )
         else:
             for child in node.children:
@@ -4376,6 +4381,13 @@ def _process_container_children(
     """Process an emitted container's DIRECT children with FR-22-4.1 fold semantics.
 
     For each direct child:
+      - rule 0 (SCALAR-MEDIA LIFT, FR-22-19): when parent_slug has scalar-media attrs
+        (DB-driven via db.has_scalar_media_attrs) AND the child's BEM element maps to a
+        scalar-media attr on the parent, lift any <img> descendants into container_attrs
+        and emit NO markup for that child.  This subsumes the scalar-media lift that
+        previously lived exclusively in _route_composite_interior (now retired as a gate).
+        Breakpoint modifiers (--mobile / --desktop) on the img select the +Mobile attr
+        sibling, matching the exact logic in _route_composite_interior (Commit 4).
       - rule 2 (FOLD): a slug-None sgs-classed wrapper folds its layout into THIS
         container (via _fold_layout_into_attrs, mutating container_attrs) and is NOT
         emitted; its own children are then "below a folded wrapper" → resolved by walk()
@@ -4389,6 +4401,28 @@ def _process_container_children(
     (mirrors the gate in walk() at line 2968): the children are the group's OWN items and
     must not be re-wrapped in a second group block. DB-derived (R-22-1), universal (R-22-9).
     """
+    # Pre-compute breakpoint modifier map for scalar-media lifting (rule 0).
+    # Mirrors the same computation in _route_composite_interior. Cached at DB
+    # module load; the frozenset + dict build here is O(n_suffixes) and cheap.
+    # Only materialised when parent_slug has scalar-media attrs (fast-path: most
+    # composites do not, so the DB call short-circuits on the cached False result).
+    _parent_has_scalar_media = (
+        parent_slug is not None and db.has_scalar_media_attrs(parent_slug)
+    )
+    if _parent_has_scalar_media:
+        try:
+            _bp_rules = db.breakpoint_suffix_rules()
+            _all_bp_suffixes: frozenset[str] = frozenset(
+                sfx for _, sfxes in _bp_rules for sfx in sfxes
+            )
+        except Exception:  # noqa: BLE001 — soft-fail if DB unavailable
+            _all_bp_suffixes = frozenset()
+        _is_mobile_modifier: dict[str, bool] = {
+            sfx.lower(): (sfx == "Mobile") for sfx in _all_bp_suffixes
+        }
+    else:
+        _is_mobile_modifier = {}
+
     # FR-22-4.1 sole-shell gate (2026-05-31, evidence: brand b5 trace + DOM). A direct-
     # child wrapper folds into its parent ONLY when it is the SOLE element child — i.e. a
     # pass-through shell wrapping all the parent's content (e.g. section > __inner). When
@@ -4412,6 +4446,66 @@ def _process_container_children(
             continue
         cclasses = child.get("class", []) or []
         csgs = [c for c in cclasses if c.startswith("sgs-")]
+
+        # Rule 0 — scalar-media lift (FR-22-19, Commit 4): absorb the lift that
+        # previously lived only in _route_composite_interior into this universal path.
+        # Fires ONLY when the parent block has scalar-media attrs (DB-cached, cheap)
+        # AND the child's BEM element maps to a scalar-media attr on the parent.
+        # When the element does NOT map (None), we fall through to the fold/walk
+        # decision below — preserving existing behaviour for non-media children.
+        # R-22-1 (DB-driven, no per-slug literals), R-22-9 (universal).
+        if _parent_has_scalar_media and csgs:
+            _child_element_sm: "str | None" = None
+            for _sm_cls in csgs:
+                _sm_bem = db.parse_sgs_bem(_sm_cls)
+                if _sm_bem and _sm_bem.element:
+                    _child_element_sm = _sm_bem.element
+                    break
+            if _child_element_sm is not None:
+                _base_attr = db.scalar_media_attr_for(parent_slug, _child_element_sm)
+                if _base_attr is not None:
+                    # --- Scalar-media column (rule 0) ---
+                    imgs = child.find_all("img")
+                    if not imgs:
+                        _trace(
+                            "composite_interior_route",
+                            slug=parent_slug,
+                            element=_child_element_sm,
+                            attr=_base_attr,
+                            branch="scalar_media_no_img_found",
+                            depth=depth + 1,
+                            note="scalar-media column had no <img> descendant; skipped",
+                        )
+                        continue
+                    for _img in imgs:
+                        _img_classes: list[str] = _img.get("class", []) or []
+                        _img_modifier: "str | None" = None
+                        for _img_cls in _img_classes:
+                            _img_bem = db.parse_sgs_bem(_img_cls)
+                            if _img_bem and _img_bem.modifier:
+                                _img_modifier = _img_bem.modifier.lower()
+                                break
+                        _is_mobile = (
+                            _is_mobile_modifier.get(_img_modifier, False)
+                            if _img_modifier
+                            else False
+                        )
+                        _target_attr = f"{_base_attr}Mobile" if _is_mobile else _base_attr
+                        _lifted = _lift_scalar_media_from_img(_img)
+                        container_attrs[_target_attr] = _lifted
+                        _trace(
+                            "composite_interior_route",
+                            slug=parent_slug,
+                            element=_child_element_sm,
+                            attr=_target_attr,
+                            branch="scalar_media_lifted",
+                            depth=depth + 1,
+                            img_src=_img.get("src", ""),
+                            modifier=_img_modifier,
+                            lifted_url=_lifted.get("url", ""),
+                        )
+                    continue  # column consumed — no markup emitted for it
+
         cslug = db.resolve_slug_from_bem(csgs) if csgs else None
         if (
             cslug is not None
