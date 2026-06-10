@@ -170,6 +170,7 @@ if ( 'wc-product' === $source ) {
 		$card_attrs = array(
 			'sourceMode' => 'wc-product',
 			'productId'  => absint( $wc_product_id ),
+			'showLadder' => (bool) ( $attributes['productShowLadder'] ?? false ),
 		);
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
 		echo render_block(

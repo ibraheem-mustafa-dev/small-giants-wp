@@ -10,6 +10,7 @@ import {
 	RangeControl,
 	Button,
 	TextControl,
+	ToggleControl,
 	Spinner,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
@@ -185,6 +186,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		productOnSale,
 		productInStock,
 		productIds,
+		productShowLadder,
 		productEmptyMessage,
 	} = attributes;
 
@@ -394,6 +396,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) }
 
+						<ToggleControl
+							label={ __( 'Show price breakdown on cards', 'sgs-blocks' ) }
+							checked={ !! productShowLadder }
+							onChange={ ( val ) => setAttributes( { productShowLadder: val } ) }
+							help={ __( 'Off by default — grids are a browsing context; the ladder does its upsell work on the product page.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+						/>
 						<TextControl
 							label={ __( 'Empty state message', 'sgs-blocks' ) }
 							value={ productEmptyMessage || '' }

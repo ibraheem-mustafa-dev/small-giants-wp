@@ -1020,6 +1020,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						title={ __( 'Value ladder', 'sgs-blocks' ) }
 						initialOpen={ false }
 					>
+						<ToggleControl
+							label={ __( 'Show price ladder', 'sgs-blocks' ) }
+							help={ __(
+								'Off shows just the price and per-item note — suited to browsing grids.',
+								'sgs-blocks'
+							) }
+							checked={ false !== attributes.showLadder }
+							onChange={ ( v ) =>
+								setAttributes( { showLadder: v } )
+							}
+							__nextHasNoMarginBottom
+						/>
 						<SelectControl
 							label={ __( 'Savings framing', 'sgs-blocks' ) }
 							help={ __(

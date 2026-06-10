@@ -2,7 +2,7 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/card-grid",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "title": "SGS Card Grid",
     "category": "sgs-content",
     "description": "Flexible image and content grid with overlay and card variants.",
@@ -224,6 +224,11 @@
                 "type": "number"
             },
             "description": "Explicit product IDs for handpick mode. Order is respected."
+        },
+        "productShowLadder": {
+            "type": "boolean",
+            "default": false,
+            "description": "Show the per-pack price ladder on each card. Off by default — grids are a browsing context; the ladder does its upsell work on the product page."
         },
         "productEmptyMessage": {
             "type": "string",

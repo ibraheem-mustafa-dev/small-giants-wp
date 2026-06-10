@@ -787,7 +787,8 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				><?php echo esc_html( $per_unit_display ); ?></p>
 
 				<?php // ── Step 4: Comparative value ladder (SSR-only, no data-wp-* — KJC-B). ?>
-				<?php if ( ! $context['valueLadderHidden'] ) : ?>
+				<?php // showLadder gate: grid/browsing contexts set false — just price + per-item note (the note above is NOT the ladder). ?>
+				<?php if ( false !== ( $attributes['showLadder'] ?? true ) && ! $context['valueLadderHidden'] ) : ?>
 				<ul
 					class="product-card__value-ladder"
 					aria-label="<?php esc_attr_e( 'Price per unit by pack size', 'sgs-blocks' ); ?>"
