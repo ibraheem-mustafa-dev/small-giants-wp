@@ -61,13 +61,18 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/class-cart-proxy.php';
 		Cart_Proxy::register();
 
-		// Smart Bulk Pricing P3 (Spec 28 FR-28-3/4/6/10/11) — PREVIEW-ONLY:
-		// cascade site→category→product, WC settings tab, term/product fields,
-		// and POST /sgs/v1/pack-pricing/preview. Writes NOTHING to WC prices
-		// (the P4 apply path is deferred). The fields/settings files self-register
+		// Smart Bulk Pricing P3 (Spec 28 FR-28-3/4/6/10/11) — PREVIEW: cascade
+		// site→category→product, WC settings tab, term/product fields, and POST
+		// /sgs/v1/pack-pricing/preview. The fields/settings files self-register
 		// their hooks on require; the REST controller registers explicitly.
 		require_once SGS_BLOCKS_PATH . 'includes/class-pack-pricing-preview.php';
 		Pack_Pricing_Preview::register();
+		// Smart Bulk Pricing P4 (Spec 28 FR-28-5/10/11/13/14) — the WC-WRITE path.
+		// Registers POST /sgs/v1/pack-pricing/{apply,revert,release-lock}. The
+		// ONLY write trigger is the explicit two-step "Apply prices to your live
+		// shop" button — never an auto save_post hook.
+		require_once SGS_BLOCKS_PATH . 'includes/class-pack-pricing-apply.php';
+		Pack_Pricing_Apply::register();
 		require_once SGS_BLOCKS_PATH . 'includes/pack-pricing-settings.php';
 		require_once SGS_BLOCKS_PATH . 'includes/pack-pricing-category-fields.php';
 		require_once SGS_BLOCKS_PATH . 'includes/pack-pricing-product-fields.php';
