@@ -266,6 +266,20 @@ Product_Authoring::register();
 require_once SGS_BLOCKS_PATH . 'includes/class-product-provisioning.php';
 Product_Provisioning::register();
 
+// SGS Product Templates — CPT + REST routes for FR-27-R4: agency slug-templates.
+// Snapshot a product's attribute/term slugs + presentation config into a portable
+// sgs_product_template CPT post; export/import between sites; apply provisions
+// attributes/terms via R2 and returns the card-link config (sourceMode/productId)
+// for the operator to set on the page's product-card block. Routes:
+// POST /sgs/v1/product-templates, GET /sgs/v1/product-templates/{id}/export,
+// POST /sgs/v1/product-templates/import, POST /sgs/v1/product-templates/{id}/apply.
+require_once SGS_BLOCKS_PATH . 'includes/class-product-templates.php';
+Product_Templates::register();
+
+// SGS Product Template admin UI — product-data panel for FR-27-R4: save, apply,
+// export, and import templates directly from the WooCommerce product editor.
+require_once SGS_BLOCKS_PATH . 'includes/product-template-fields.php';
+
 // SGS Product Preflight — hard go-live gate + cart £0 guard + weekly health cron
 // (FR-27-PREFLIGHT / SEC-5). Blocks a variable product from publishing if it has
 // zero-priced variations, missing images, an over-cap manifest, no variesBy mapping,
