@@ -168,6 +168,24 @@ export function ProductHandpickPanel( { productIds, setAttributes } ) {
 		[ search ]
 	);
 
+	// Second resolved query: titles for the SELECTED products, independent of
+	// the current search window — selected items keep their names regardless
+	// of what is typed in the search box. Skipped while nothing is selected.
+	const selectedRecords = useSelect(
+		( select ) => {
+			if ( productIds.length === 0 ) {
+				return [];
+			}
+			return (
+				select( coreStore ).getEntityRecords( 'postType', 'product', {
+					include: productIds,
+					per_page: productIds.length,
+				} ) || []
+			);
+		},
+		[ productIds ]
+	);
+
 	const options = ( records || [] ).map( ( p ) => ( {
 		value: String( p.id ),
 		label: p.title?.rendered || __( '(no title)', 'sgs-blocks' ),
@@ -226,14 +244,12 @@ export function ProductHandpickPanel( { productIds, setAttributes } ) {
 			{ productIds.length > 0 && (
 				<ul style={ { margin: '4px 0 0', padding: 0, listStyle: 'none' } }>
 					{ productIds.map( ( id ) => {
-						// Known limitation (v2 candidate): `records` only holds
-						// the current search window (20 results), so selected
-						// products outside it display as #ID rather than their
-						// title. A v2 could fetch the selected IDs separately
-						// via getEntityRecords( { include: productIds } ).
-						const found = ( records || [] ).find(
-							( p ) => p.id === id
-						);
+						// Title lookup: the dedicated selected-products query
+						// first (always covers every selected ID), then the
+						// search window as a fallback while it resolves.
+						const found =
+							selectedRecords.find( ( p ) => p.id === id ) ||
+							( records || [] ).find( ( p ) => p.id === id );
 						const label = found
 							? found.title?.rendered || `#${ id }`
 							: `#${ id }`;

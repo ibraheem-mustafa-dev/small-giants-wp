@@ -314,7 +314,9 @@
 
 .product-card .btn-secondary {
 	background: transparent;
-	color: var(--wp--preset--color--primary-dark, #c56a7a);
+	/* Text colour for readability (AA — primary-dark on white failed 3.67:1 live,
+	 * axe 2026-06-10); the brand identity comes from the primary border + hover. */
+	color: var(--wp--preset--color--text, #3a2e26);
 	border: 2px solid var(--wp--preset--color--primary, #e68a95);
 }
 
@@ -921,8 +923,12 @@
 }
 
 .product-card .sgs-product-card__tag--featured {
-	background: var( --wp--preset--color--primary, #1f7a7a );
-	color: #ffffff;
+	/* WCAG-safe across ANY client palette: a light tint of the client primary
+	 * behind the palette's dark text colour. Hard-pairing #fff text with an
+	 * arbitrary client primary failed AA live (white on Mama's #e68a95 = 2.48:1,
+	 * axe 2026-06-10) — a tint + dark text stays ≥4.5:1 whatever the palette. */
+	background: color-mix( in srgb, var( --wp--preset--color--primary, #1f7a7a ) 22%, #ffffff );
+	color: var( --wp--preset--color--text, #3a2e26 );
 }
 
 /* Title — same rules as .product-card h3 for the new BEM class. */

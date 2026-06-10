@@ -11,8 +11,9 @@
  *   WC_Product_Query (the WC-canonical path).
  * - On-sale filter uses wc_get_product_ids_on_sale() (transient-backed index)
  *   then intersects with the main query result — the efficient, HPOS-safe path.
- *   When combined with the on-sale filter, fewer than the limit may be
- *   returned (v1: no refill pass).
+ *   The base query over-fetches 4× (capped 96) so the intersection can refill
+ *   to the requested limit; fewer are returned only when fewer on-sale
+ *   products exist.
  * - No transients in v1 (explicit non-goal — transient layer can be added later
  *   without changing the public interface).
  * - No WC class is extended or instantiated at file scope (lazy-load lesson:
@@ -85,8 +86,14 @@ final class Card_Grid_Products {
 		// via post-query intersection (HPOS-safe indexed path).
 		$on_sale = ! empty( $attributes['productOnSale'] );
 		if ( $on_sale ) {
-			// Do NOT pass 'on_sale' key — handled below via intersection.
-			unset( $query_args['on_sale'] );
+			// Refill headroom: the on-sale intersection happens AFTER the base
+			// query, so fetching only $limit rows would under-fill the grid
+			// whenever non-sale items occupy the top of the result order.
+			// Over-fetch 4× (a sale rate of >=25% in the fetched window fills
+			// the grid), hard-capped at 96 rows to bound the query cost. If
+			// fewer on-sale products EXIST than the limit, fewer are returned
+			// — that is correct behaviour, not a gap.
+			$query_args['limit'] = \min( $limit * 4, 96 );
 		}
 
 		$ids = \wc_get_products( $query_args );
@@ -95,13 +102,12 @@ final class Card_Grid_Products {
 		}
 		$ids = array_map( 'absint', $ids );
 
-		// Intersect with on-sale index (transient-backed, HPOS-safe).
+		// Intersect with on-sale index (transient-backed, HPOS-safe), then
+		// slice the over-fetched window back down to the requested limit.
 		if ( $on_sale ) {
 			$sale_ids = \wc_get_product_ids_on_sale();
 			$ids      = \array_values( \array_intersect( $ids, $sale_ids ) );
-			// Trim to limit after intersection (the base query fetched $limit
-			// before filtering, so the result may already be ≤ $limit).
-			$ids = \array_slice( $ids, 0, $limit );
+			$ids      = \array_slice( $ids, 0, $limit );
 		}
 
 		return $ids;

@@ -115,9 +115,30 @@ function sgs_configurator_emit_head(): void {
 	// at the inc-VAT price (SEC-2). NOT guarded by SEC-9: the ProductGroup schema
 	// is the thing Yoast / RankMath do NOT produce for the configurator, so SGS
 	// always emits it.
-	require_once __DIR__ . '/class-product-schema.php';
-	foreach ( $product_ids as $product_id ) {
-		echo Product_Schema::build_script( $product_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-encoded ld+json (wp_json_encode HEX flags), not HTML.
+	//
+	// SINGLE-PRODUCT-FOCUS GATE: Google awards product rich results only to
+	// pages that "focus on a single product" (research:
+	// workspace/memory/research/2026-06-10-product-card-block-schema.md).
+	// A page surfacing MULTIPLE distinct products (e.g. the canary test page:
+	// 4 distinct products) must NOT carry a ProductGroup node. WC product
+	// pages (is_product()) are single-product by definition — cheap guard
+	// first, no walk. Otherwise count DISTINCT connected product IDs via
+	// Product_Item_List's shared walker (cards + wc-product grids; never
+	// re-implement the walk — duplicated-calculation-drifts) and emit ONLY
+	// when exactly ONE is connected. Nothing else changes when 2+ (marker
+	// comment + OG section above/below are untouched).
+	$sgs_single_product_focus = \function_exists( 'is_product' ) && \is_product();
+	if ( ! $sgs_single_product_focus ) {
+		require_once __DIR__ . '/class-product-item-list.php';
+		$sgs_page_products        = Product_Item_List::collect_page_product_ids();
+		$sgs_single_product_focus = 1 === \count( $sgs_page_products['ids'] );
+	}
+
+	if ( $sgs_single_product_focus ) {
+		require_once __DIR__ . '/class-product-schema.php';
+		foreach ( $product_ids as $product_id ) {
+			echo Product_Schema::build_script( $product_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-encoded ld+json (wp_json_encode HEX flags), not HTML.
+		}
 	}
 
 	// FR-27-E3 — Open Graph product meta tags.

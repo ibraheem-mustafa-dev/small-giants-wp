@@ -215,7 +215,7 @@
         "productLimit": {
             "type": "number",
             "default": 6,
-            "description": "Maximum number of products to return (1–24). Server-side cap enforced at 24. When combined with the on-sale filter, fewer than the limit may be returned (v1: no refill pass)."
+            "description": "Maximum number of products to return (1–24). Server-side cap enforced at 24. The on-sale filter over-fetches and refills to this limit; fewer are returned only when fewer on-sale products exist."
         },
         "productIds": {
             "type": "array",

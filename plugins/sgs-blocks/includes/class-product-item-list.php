@@ -67,18 +67,9 @@ final class Product_Item_List {
 			return;
 		}
 
-		$post = \get_post( \get_queried_object_id() );
-		if ( ! $post || '' === $post->post_content ) {
-			return;
-		}
-
-		$product_ids      = array();
-		$grid_contributed = false;
-		self::collect( \parse_blocks( $post->post_content ), $product_ids, $grid_contributed );
-
-		// Dedupe preserving FIRST position (array_unique keeps the first
-		// occurrence; array_values re-indexes for 1-based schema positions).
-		$product_ids = \array_values( \array_unique( $product_ids ) );
+		$page             = self::collect_page_product_ids();
+		$product_ids      = $page['ids'];
+		$grid_contributed = $page['grid_contributed'];
 
 		/*
 		 * Emit threshold (deliberate asymmetry):
@@ -102,6 +93,45 @@ final class Product_Item_List {
 			'<script type="application/ld+json">%s</script>' . "\n",
 			\wp_json_encode( $schema ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode output is safe; JSON encoding is the escape mechanism for JSON-LD.
 		);
+	}
+
+	/**
+	 * Collect every connected product ID on the queried page, deduped.
+	 *
+	 * PUBLIC shared API — the single walk used by BOTH the ItemList emitter
+	 * (emit(), above) and the ProductGroup single-product-focus gate in
+	 * configurator-head.php. One walker, one truth (duplicated-calculation
+	 * drift is a known failure class in this codebase — never re-implement
+	 * this walk at a call site).
+	 *
+	 * @return array {
+	 *     @type int[] $ids              Distinct product IDs, document order,
+	 *                                   first occurrence kept.
+	 *     @type bool  $grid_contributed True when a wc-product card-grid
+	 *                                   contributed at least one ID.
+	 * }
+	 */
+	public static function collect_page_product_ids(): array {
+		$result = array(
+			'ids'              => array(),
+			'grid_contributed' => false,
+		);
+
+		$post = \get_post( \get_queried_object_id() );
+		if ( ! $post || '' === $post->post_content ) {
+			return $result;
+		}
+
+		$product_ids      = array();
+		$grid_contributed = false;
+		self::collect( \parse_blocks( $post->post_content ), $product_ids, $grid_contributed );
+
+		// Dedupe preserving FIRST position (array_unique keeps the first
+		// occurrence; array_values re-indexes for 1-based schema positions).
+		$result['ids']              = \array_values( \array_unique( $product_ids ) );
+		$result['grid_contributed'] = $grid_contributed;
+
+		return $result;
 	}
 
 	/**

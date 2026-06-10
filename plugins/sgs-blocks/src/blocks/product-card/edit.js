@@ -451,6 +451,10 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 				label={ __( 'Override image', 'sgs-blocks' ) }
 				checked={ isOn( 'image' ) }
 				onChange={ ( on ) => toggle( 'image', on ) }
+				help={ __(
+					'Sets the card’s default image. Variation photos still swap in when an option is selected.',
+					'sgs-blocks'
+				) }
 				__nextHasNoMarginBottom
 			/>
 			{ isOn( 'image' ) && (

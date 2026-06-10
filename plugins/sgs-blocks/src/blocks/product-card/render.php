@@ -328,9 +328,17 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 		}
 		$stock_text = $def['inStock'] ? '' : __( 'Out of stock', 'sgs-blocks' );
 		$image_src  = '' !== $def['imageUrl'] ? $def['imageUrl'] : $data['image_url'];
-		// FP-H: image override wins over the per-variation default image. The img
-		// then renders STATIC (no data-wp-bind, thumbs hidden) — a typed image
-		// must not be swapped away by variation selection.
+
+		/*
+		 * FP-H (Bean FINAL-FORM ruling): an image override sets the card's
+		 * DEFAULT image — it replaces the featured-image fallback in the
+		 * initial SSR src + context seed ONLY. Variation image swapping stays
+		 * fully enabled (binds + thumbnail strip untouched): a variation with
+		 * its own image swaps in on selection; image-less variations keep the
+		 * current image (M-C7 "leave current" in view.js L490-496), so the
+		 * overridden default naturally persists as the fallback — the live
+		 * featured URL sits NOWHERE else in context/view.js.
+		 */
 		if ( $sgs_img_override ) {
 			$image_src = $sgs_resolved_img;
 		}
@@ -426,7 +434,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			// thumbsHidden = true when < 2 images (strip not shown for solo image).
 			// selectedThumb = 0 = first image highlighted on load (SSR-wipe-safe).
 			'gallery'             => $def['gallery'],
-			'thumbsHidden'        => ( $sgs_img_override || count( $def['gallery'] ) < 2 ),
+			'thumbsHidden'        => ( count( $def['gallery'] ) < 2 ),
 			'selectedThumb'       => 0,
 			// FP-H: buy-now behaviour — seeded so view.js can read it without a DOM query.
 			// $sgs_cta_behaviour is resolved (and Q2-demoted) once above; 'buy-now' here
@@ -611,15 +619,14 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					class="product-card-img"
 					src="<?php echo esc_url( $image_src ); ?>"
 					alt="<?php echo esc_attr( $sgs_img_override ? $sgs_resolved_img_alt : $data['image_alt'] ); ?>"
-					<?php echo $def_img_w > 0 && ! $sgs_img_override ? 'width="' . esc_attr( (string) $def_img_w ) . '"' : ''; ?>
-					<?php echo $def_img_h > 0 && ! $sgs_img_override ? 'height="' . esc_attr( (string) $def_img_h ) . '"' : ''; ?>
+					<?php echo $def_img_w > 0 ? 'width="' . esc_attr( (string) $def_img_w ) . '"' : ''; ?>
+					<?php echo $def_img_h > 0 ? 'height="' . esc_attr( (string) $def_img_h ) . '"' : ''; ?>
 					loading="eager"
 					fetchpriority="high"
 					decoding="async"
-					<?php if ( ! $sgs_img_override ) : // FP-H: a typed override image is STATIC — no reactive swap binds. ?>
+					<?php // FP-H FINAL-FORM: binds stay under an image override — the override is the DEFAULT image; variation photos still swap in. ?>
 					data-wp-bind--src="context.imageSrc"
 					data-wp-bind--alt="context.imageAlt"
-					<?php endif; ?>
 				>
 				<?php if ( '' !== $card_permalink ) : ?>
 				</a>
@@ -638,7 +645,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				role="list"
 				aria-label="<?php esc_attr_e( 'Product images', 'sgs-blocks' ); ?>"
 				data-wp-bind--hidden="context.thumbsHidden"
-				<?php echo ( $sgs_img_override || count( $def['gallery'] ) < 2 ) ? 'hidden' : ''; // FP-H: strip hidden under an image override (static image). ?>
+				<?php echo count( $def['gallery'] ) < 2 ? 'hidden' : ''; // FP-H FINAL-FORM: strip behaviour identical with or without an image override. ?>
 			>
 				<?php foreach ( $def['gallery'] as $thumb_idx => $thumb ) : ?>
 					<?php
