@@ -1,300 +1,314 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/gallery",
-    "version": "0.2.0",
-    "title": "SGS Image Gallery",
-    "category": "sgs-content",
-    "description": "Image gallery with grid, masonry, and carousel layouts plus lightbox viewing.",
-    "keywords": [
-        "gallery",
-        "images",
-        "photos",
-        "lightbox",
-        "masonry",
-        "carousel",
-        "portfolio"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "format-gallery",
-    "supports": {
-        "align": [
-            "wide",
-            "full"
-        ],
-        "anchor": true,
-        "html": false,
-        "color": {
-            "background": true,
-            "text": false
-        },
-        "spacing": {
-            "margin": true,
-            "padding": true
-        },
-        "__experimentalBorder": {
-            "radius": true,
-            "width": true,
-            "color": true,
-            "style": true
-        },
-        "interactivity": true,
-        "sgs": {
-            "imageControls": true
-        }
-    },
-    "selectors": {
-        "root": ".wp-block-sgs-gallery"
-    },
-    "attributes": {
-        "mediaItems": {
-            "type": "array",
-            "default": [],
-            "items": {
-                "type": "object"
-            }
-        },
-        "images": {
-            "type": "array",
-            "default": [],
-            "items": {
-                "type": "object"
-            }
-        },
-        "layout": {
-            "type": "string",
-            "default": "grid",
-            "enum": [
-                "grid",
-                "masonry",
-                "carousel"
-            ]
-        },
-        "columns": {
-            "type": "number",
-            "default": 3
-        },
-        "columnsTablet": {
-            "type": "number",
-            "default": 2
-        },
-        "columnsMobile": {
-            "type": "number",
-            "default": 1
-        },
-        "gap": {
-            "type": "string",
-            "default": "16"
-        },
-        "aspectRatio": {
-            "type": "string",
-            "default": "1/1"
-        },
-        "hoverEffect": {
-            "type": "string",
-            "default": "zoom"
-        },
-        "enableLightbox": {
-            "type": "boolean",
-            "default": true
-        },
-        "showCaptions": {
-            "type": "boolean",
-            "default": false
-        },
-        "captionColour": {
-            "type": "string",
-            "default": "text-inverse"
-        },
-        "captionBgColour": {
-            "type": "string",
-            "default": "primary-dark"
-        },
-        "hoverOverlayColour": {
-            "type": "string",
-            "default": "primary-dark"
-        },
-        "hoverScale": {
-            "type": "string",
-            "default": ""
-        },
-        "hoverImageZoom": {
-            "type": "boolean",
-            "default": true
-        },
-        "transitionDuration": {
-            "type": "string",
-            "default": "300"
-        },
-        "transitionEasing": {
-            "type": "string",
-            "default": "ease"
-        },
-        "carouselAutoplay": {
-            "type": "boolean",
-            "default": false
-        },
-        "carouselSpeed": {
-            "type": "number",
-            "default": 5000
-        },
-        "carouselShowDots": {
-            "type": "boolean",
-            "default": true
-        },
-        "carouselShowArrows": {
-            "type": "boolean",
-            "default": true
-        },
-        "imageSize": {
-            "type": "string",
-            "default": "large"
-        },
-        "captionReveal": {
-            "type": "boolean",
-            "default": false
-        },
-        "hoverGrayscale": {
-            "type": "boolean",
-            "default": false
-        },
-        "staggerDelay": {
-            "type": "number",
-            "default": 60
-        },
-        "hoverShadow": {
-            "type": "string",
-            "default": ""
-        },
-        "sgsAnimation": {
-            "type": "string",
-            "default": "fade-in"
-        },
-        "sgsAnimationDuration": {
-            "type": "string",
-            "default": "medium"
-        },
-        "sgsAnimationEasing": {
-            "type": "string",
-            "default": "ease-out"
-        },
-        "widthMode": {
-            "type": "string",
-            "default": "default",
-            "enum": ["default", "wide", "full", "custom"]
-        },
-        "widthModeMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "widthModeTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "widthModeDesktop": {
-            "type": "string",
-            "default": ""
-        },
-        "customWidth": {
-            "type": "number",
-            "default": 0
-        },
-        "customWidthUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "contentWidth": {
-            "type": "string",
-            "default": ""
-        },
-        "maxWidth": {
-            "type": "string",
-            "default": ""
-        },
-        "layoutMode": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateColumns": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateColumnsTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateColumnsMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateRows": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateRowsTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateRowsMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "gridAutoRows": {
-            "type": "string",
-            "default": ""
-        },
-        "direction": {
-            "type": "string",
-            "default": ""
-        },
-        "flexDirection": {
-            "type": "string",
-            "default": ""
-        },
-        "flexWrap": {
-            "type": "string",
-            "default": ""
-        },
-        "wrap": {
-            "type": "string",
-            "default": ""
-        },
-        "justifyContent": {
-            "type": "string",
-            "default": ""
-        },
-        "justifyItems": {
-            "type": "string",
-            "default": ""
-        },
-        "alignContent": {
-            "type": "string",
-            "default": ""
-        },
-        "alignItems": {
-            "type": "string",
-            "default": ""
-        },
-        "templateMode": {
-            "type": "string",
-            "default": ""
-        },
-        "columnsDesktop": {
-            "type": "number",
-            "default": 0
-        }
-    },
-    "editorScript": "file:./index.js",
-    "editorStyle": "file:./index.css",
-    "style": "file:./style-index.css",
-    "viewScriptModule": "file:./view.js",
-    "render": "file:./render.php",
-    "example": {
-        "attributes": {
-            "layout": "grid",
-            "columns": 3,
-            "enableLightbox": true,
-            "gap": "16"
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/gallery",
+	"version": "0.2.0",
+	"title": "SGS Image Gallery",
+	"category": "sgs-content",
+	"description": "Image gallery with grid, masonry, and carousel layouts plus lightbox viewing.",
+	"keywords": [
+		"gallery",
+		"images",
+		"photos",
+		"lightbox",
+		"masonry",
+		"carousel",
+		"portfolio"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "format-gallery",
+	"supports": {
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"gradients": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		},
+		"interactivity": true,
+		"sgs": {
+			"imageControls": true
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-gallery"
+	},
+	"attributes": {
+		"mediaItems": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object"
+			}
+		},
+		"images": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object"
+			}
+		},
+		"layout": {
+			"type": "string",
+			"default": "grid",
+			"enum": [
+				"grid",
+				"masonry",
+				"carousel"
+			]
+		},
+		"columns": {
+			"type": "number",
+			"default": 3
+		},
+		"columnsTablet": {
+			"type": "number",
+			"default": 2
+		},
+		"columnsMobile": {
+			"type": "number",
+			"default": 1
+		},
+		"gap": {
+			"type": "string",
+			"default": "16"
+		},
+		"aspectRatio": {
+			"type": "string",
+			"default": "1/1"
+		},
+		"hoverEffect": {
+			"type": "string",
+			"default": "zoom"
+		},
+		"enableLightbox": {
+			"type": "boolean",
+			"default": true
+		},
+		"showCaptions": {
+			"type": "boolean",
+			"default": false
+		},
+		"captionColour": {
+			"type": "string",
+			"default": "text-inverse"
+		},
+		"captionBgColour": {
+			"type": "string",
+			"default": "primary-dark"
+		},
+		"hoverOverlayColour": {
+			"type": "string",
+			"default": "primary-dark"
+		},
+		"hoverScale": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverImageZoom": {
+			"type": "boolean",
+			"default": true
+		},
+		"transitionDuration": {
+			"type": "string",
+			"default": "300"
+		},
+		"transitionEasing": {
+			"type": "string",
+			"default": "ease"
+		},
+		"carouselAutoplay": {
+			"type": "boolean",
+			"default": false
+		},
+		"carouselSpeed": {
+			"type": "number",
+			"default": 5000
+		},
+		"carouselShowDots": {
+			"type": "boolean",
+			"default": true
+		},
+		"carouselShowArrows": {
+			"type": "boolean",
+			"default": true
+		},
+		"imageSize": {
+			"type": "string",
+			"default": "large"
+		},
+		"captionReveal": {
+			"type": "boolean",
+			"default": false
+		},
+		"hoverGrayscale": {
+			"type": "boolean",
+			"default": false
+		},
+		"staggerDelay": {
+			"type": "number",
+			"default": 60
+		},
+		"hoverShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"sgsAnimation": {
+			"type": "string",
+			"default": "fade-in"
+		},
+		"sgsAnimationDuration": {
+			"type": "string",
+			"default": "medium"
+		},
+		"sgsAnimationEasing": {
+			"type": "string",
+			"default": "ease-out"
+		},
+		"widthMode": {
+			"type": "string",
+			"default": "default",
+			"enum": [
+				"default",
+				"wide",
+				"full",
+				"custom"
+			]
+		},
+		"widthModeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeDesktop": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"layoutMode": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumns": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRows": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridAutoRows": {
+			"type": "string",
+			"default": ""
+		},
+		"direction": {
+			"type": "string",
+			"default": ""
+		},
+		"flexDirection": {
+			"type": "string",
+			"default": ""
+		},
+		"flexWrap": {
+			"type": "string",
+			"default": ""
+		},
+		"wrap": {
+			"type": "string",
+			"default": ""
+		},
+		"justifyContent": {
+			"type": "string",
+			"default": ""
+		},
+		"justifyItems": {
+			"type": "string",
+			"default": ""
+		},
+		"alignContent": {
+			"type": "string",
+			"default": ""
+		},
+		"alignItems": {
+			"type": "string",
+			"default": ""
+		},
+		"templateMode": {
+			"type": "string",
+			"default": ""
+		},
+		"columnsDesktop": {
+			"type": "number",
+			"default": 0
+		},
+		"gapMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gapTablet": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"render": "file:./render.php",
+	"example": {
+		"attributes": {
+			"layout": "grid",
+			"columns": 3,
+			"enableLightbox": true,
+			"gap": "16"
+		}
+	}
 }

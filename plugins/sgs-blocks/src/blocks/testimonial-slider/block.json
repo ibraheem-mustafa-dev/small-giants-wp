@@ -28,7 +28,8 @@
 		"html": false,
 		"color": {
 			"background": true,
-			"text": true
+			"text": true,
+			"gradients": true
 		},
 		"typography": {
 			"fontSize": true,
@@ -242,6 +243,36 @@
 		"contentWidth": {
 			"type": "string",
 			"default": ""
+		},
+		"flexDirection": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"row",
+				"column"
+			]
+		},
+		"flexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap"
+			]
+		},
+		"justifyContent": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"flex-start",
+				"center",
+				"flex-end",
+				"space-between",
+				"space-around"
+			]
 		}
 	},
 	"editorScript": "file:./index.js",

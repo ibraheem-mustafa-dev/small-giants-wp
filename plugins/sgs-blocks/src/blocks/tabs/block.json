@@ -24,7 +24,8 @@
 		"html": false,
 		"color": {
 			"background": true,
-			"text": true
+			"text": true,
+			"gradients": true
 		},
 		"spacing": {
 			"margin": true,
@@ -201,6 +202,57 @@
 		"gapMobile": {
 			"type": "string",
 			"default": ""
+		},
+		"columns": {
+			"type": "number",
+			"default": 2
+		},
+		"columnsMobile": {
+			"type": "number",
+			"default": 1
+		},
+		"columnsTablet": {
+			"type": "number",
+			"default": 2
+		},
+		"flexDirection": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"row",
+				"column"
+			]
+		},
+		"flexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap"
+			]
+		},
+		"justifyContent": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"flex-start",
+				"center",
+				"flex-end",
+				"space-between",
+				"space-around"
+			]
+		},
+		"templateMode": {
+			"type": "string",
+			"default": "free",
+			"enum": [
+				"free",
+				"grid-section",
+				"card-grid"
+			]
 		}
 	},
 	"providesContext": {

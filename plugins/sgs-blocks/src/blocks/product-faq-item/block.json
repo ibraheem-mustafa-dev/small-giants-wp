@@ -20,7 +20,18 @@
 	],
 	"supports": {
 		"html": false,
-		"reusable": false
+		"reusable": false,
+		"color": {
+			"background": true,
+			"gradients": true,
+			"text": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
 	},
 	"usesContext": [
 		"sgs/productFaqIconPosition"
@@ -34,6 +45,28 @@
 		"isOpen": {
 			"type": "boolean",
 			"default": false
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"widthMode": {
+			"type": "string",
+			"default": "default",
+			"enum": [
+				"default",
+				"wide",
+				"full",
+				"custom"
+			]
 		}
 	},
 	"render": "file:./render.php",

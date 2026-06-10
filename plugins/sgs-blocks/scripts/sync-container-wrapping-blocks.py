@@ -1105,9 +1105,15 @@ def main() -> int:
             "sgs/tabs", "sgs/accordion", "sgs/form",
         },
         "content": {
-            "sgs/info-box", "sgs/product-card", "sgs/testimonial", "sgs/quote",
+            "sgs/info-box", "sgs/testimonial", "sgs/quote",
             "sgs/tab", "sgs/accordion-item", "sgs/form-step", "sgs/notice-banner",
             "sgs/option-picker", "sgs/team-member", "sgs/mobile-nav",
+            # product-faq + product-faq-item added 2026-06-10 (new since D160 — F2/D197).
+            "sgs/product-faq", "sgs/product-faq-item",
+            # product-card REMOVED 2026-06-10: the D204 built-in-element rebuild made it
+            # a standalone block (no sgs/container InnerBlocks wrapper) — it is no longer
+            # structurally container-bearing, so it is styled directly (own color+border
+            # supports) rather than mirror-managed.
         },
     }
     got: Dict[str, Set[str]] = {"section": set(), "layout": set(), "content": set()}
@@ -1129,7 +1135,7 @@ def main() -> int:
                 print(f"  EXTRA (detected but not expected): {sorted(extra_in_got)}")
 
     if all_match:
-        print("[VALIDATION PASS] Roster matches D150+D160 ground truth (29 blocks, correct KINDs)")
+        print("[VALIDATION PASS] Roster matches ground truth (D150+D160, reconciled 2026-06-10: +product-faq/-item, -product-card; correct KINDs)")
     else:
         print()
         print("[VALIDATION FAIL] Roster does NOT match ground truth — fix detection before --apply")

@@ -1,76 +1,92 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/form-step",
-    "version": "0.1.1",
-    "title": "SGS Form Step",
-    "category": "sgs-forms",
-    "description": "Groups form fields into a step for multi-step forms.",
-    "keywords": [
-        "step",
-        "page",
-        "section"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "editor-ol",
-    "parent": [
-        "sgs/form"
-    ],
-    "supports": {
-        "html": false,
-        "spacing": {
-            "padding": true,
-            "blockGap": true
-        }
-    },
-    "usesContext": [
-        "sgs/formId"
-    ],
-    "attributes": {
-        "label": {
-            "type": "string",
-            "default": "Step",
-            "role": "content"
-        },
-        "widthMode": {
-            "type": "string",
-            "default": "default",
-            "enum": ["default", "wide", "full", "custom"]
-        },
-        "widthModeMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "widthModeTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "widthModeDesktop": {
-            "type": "string",
-            "default": ""
-        },
-        "customWidth": {
-            "type": "number",
-            "default": 0
-        },
-        "customWidthUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "contentWidth": {
-            "type": "string",
-            "default": ""
-        },
-        "maxWidth": {
-            "type": "string",
-            "default": ""
-        }
-    },
-    "render": "file:./render.php",
-    "editorScript": "file:./index.js",
-    "example": {
-        "attributes": {
-            "label": "Your Details"
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/form-step",
+	"version": "0.1.1",
+	"title": "SGS Form Step",
+	"category": "sgs-forms",
+	"description": "Groups form fields into a step for multi-step forms.",
+	"keywords": [
+		"step",
+		"page",
+		"section"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "editor-ol",
+	"parent": [
+		"sgs/form"
+	],
+	"supports": {
+		"html": false,
+		"spacing": {
+			"padding": true,
+			"blockGap": true
+		},
+		"color": {
+			"background": true,
+			"gradients": true,
+			"text": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
+	},
+	"usesContext": [
+		"sgs/formId"
+	],
+	"attributes": {
+		"label": {
+			"type": "string",
+			"default": "Step",
+			"role": "content"
+		},
+		"widthMode": {
+			"type": "string",
+			"default": "default",
+			"enum": [
+				"default",
+				"wide",
+				"full",
+				"custom"
+			]
+		},
+		"widthModeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeDesktop": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"example": {
+		"attributes": {
+			"label": "Your Details"
+		}
+	}
 }

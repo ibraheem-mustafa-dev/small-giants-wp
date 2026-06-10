@@ -1,216 +1,222 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/info-box",
-    "version": "0.2.0",
-    "title": "SGS Info Box",
-    "category": "sgs-content",
-    "description": "Feature or benefit card with 5 toggleable, reorderable elements: media, title, subtitle, text, and button.",
-    "keywords": [
-        "info",
-        "feature",
-        "card",
-        "benefit",
-        "box",
-        "icon"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "info-outline",
-    "supports": {
-        "align": false,
-        "anchor": true,
-        "html": false,
-        "color": {
-            "background": true,
-            "text": true,
-            "link": true
-        },
-        "typography": {
-            "fontSize": true,
-            "lineHeight": true,
-            "textAlign": true,
-            "letterSpacing": true,
-            "textTransform": true,
-            "fontWeight": true,
-            "fontStyle": true
-        },
-        "spacing": {
-            "margin": true,
-            "padding": true
-        },
-        "shadow": true,
-        "__experimentalBorder": {
-            "radius": true,
-            "width": true,
-            "color": true,
-            "style": true
-        },
-        "sgs": {
-            "imageControls": true
-        }
-    },
-    "selectors": {
-        "root": ".wp-block-sgs-info-box",
-        "typography": ".sgs-info-box__heading"
-    },
-    "attributes": {
-        "mediaType": {
-            "type": "string",
-            "default": "icon",
-            "enum": [
-                "icon",
-                "emoji",
-                "image"
-            ]
-        },
-        "mediaEmoji": {
-            "type": "string",
-            "default": ""
-        },
-        "subtitle": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "image": {
-            "type": "object"
-        },
-        "_comment_boxMedia": "Migrated 2026-05-05 — image retained for deprecation. New instances should use boxMedia (unified image-or-video slot).",
-        "boxMedia": {
-            "type": "object",
-            "default": null
-        },
-        "iconPosition": {
-            "type": "string",
-            "default": "top",
-            "enum": [
-                "top",
-                "left",
-                "right"
-            ]
-        },
-        "icon": {
-            "type": "string",
-            "default": "star-filled"
-        },
-        "heading": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "description": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "cardStyle": {
-            "type": "string",
-            "default": "elevated"
-        },
-        "hoverEffect": {
-            "type": "string",
-            "default": "lift"
-        },
-        "hoverBackgroundColour": {
-            "type": "string",
-            "default": ""
-        },
-        "hoverTextColour": {
-            "type": "string",
-            "default": ""
-        },
-        "hoverBorderColour": {
-            "type": "string",
-            "default": ""
-        },
-        "transitionDuration": {
-            "type": "string",
-            "default": "300"
-        },
-        "transitionEasing": {
-            "type": "string",
-            "default": "ease-in-out"
-        },
-        "hoverScale": {
-            "type": "string",
-            "default": ""
-        },
-        "hoverShadow": {
-            "type": "string",
-            "default": ""
-        },
-        "blockLink": {
-            "type": "string",
-            "default": ""
-        },
-        "blockLinkTarget": {
-            "type": "boolean",
-            "default": false
-        },
-        "hoverGrayscale": {
-            "type": "boolean",
-            "default": false
-        },
-        "staggerDelay": {
-            "type": "number",
-            "default": 0
-        },
-        "sgsAnimation": {
-            "type": "string",
-            "default": "fade-up"
-        },
-        "sgsAnimationDuration": {
-            "type": "string",
-            "default": "medium"
-        },
-        "sgsAnimationEasing": {
-            "type": "string",
-            "default": "default"
-        },
-        "widthMode": {
-            "type": "string",
-            "default": "default",
-            "enum": ["default", "wide", "full", "custom"]
-        },
-        "widthModeMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "widthModeTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "widthModeDesktop": {
-            "type": "string",
-            "default": ""
-        },
-        "customWidth": {
-            "type": "number",
-            "default": 0
-        },
-        "customWidthUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "contentWidth": {
-            "type": "string",
-            "default": ""
-        },
-        "maxWidth": {
-            "type": "string",
-            "default": ""
-        }
-    },
-    "editorScript": "file:./index.js",
-    "editorStyle": "file:./index.css",
-    "style": "file:./style-index.css",
-    "render": "file:./render.php",
-    "example": {
-        "attributes": {
-            "icon": "truck",
-            "heading": "Next-Day Delivery",
-            "description": "Order before 2pm for guaranteed next-day delivery across mainland UK.",
-            "cardStyle": "elevated"
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/info-box",
+	"version": "0.2.0",
+	"title": "SGS Info Box",
+	"category": "sgs-content",
+	"description": "Feature or benefit card with 5 toggleable, reorderable elements: media, title, subtitle, text, and button.",
+	"keywords": [
+		"info",
+		"feature",
+		"card",
+		"benefit",
+		"box",
+		"icon"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "info-outline",
+	"supports": {
+		"align": false,
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"link": true,
+			"gradients": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"textAlign": true,
+			"letterSpacing": true,
+			"textTransform": true,
+			"fontWeight": true,
+			"fontStyle": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"shadow": true,
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		},
+		"sgs": {
+			"imageControls": true
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-info-box",
+		"typography": ".sgs-info-box__heading"
+	},
+	"attributes": {
+		"mediaType": {
+			"type": "string",
+			"default": "icon",
+			"enum": [
+				"icon",
+				"emoji",
+				"image"
+			]
+		},
+		"mediaEmoji": {
+			"type": "string",
+			"default": ""
+		},
+		"subtitle": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"image": {
+			"type": "object"
+		},
+		"_comment_boxMedia": "Migrated 2026-05-05 — image retained for deprecation. New instances should use boxMedia (unified image-or-video slot).",
+		"boxMedia": {
+			"type": "object",
+			"default": null
+		},
+		"iconPosition": {
+			"type": "string",
+			"default": "top",
+			"enum": [
+				"top",
+				"left",
+				"right"
+			]
+		},
+		"icon": {
+			"type": "string",
+			"default": "star-filled"
+		},
+		"heading": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"description": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"cardStyle": {
+			"type": "string",
+			"default": "elevated"
+		},
+		"hoverEffect": {
+			"type": "string",
+			"default": "lift"
+		},
+		"hoverBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"transitionDuration": {
+			"type": "string",
+			"default": "300"
+		},
+		"transitionEasing": {
+			"type": "string",
+			"default": "ease-in-out"
+		},
+		"hoverScale": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"blockLink": {
+			"type": "string",
+			"default": ""
+		},
+		"blockLinkTarget": {
+			"type": "boolean",
+			"default": false
+		},
+		"hoverGrayscale": {
+			"type": "boolean",
+			"default": false
+		},
+		"staggerDelay": {
+			"type": "number",
+			"default": 0
+		},
+		"sgsAnimation": {
+			"type": "string",
+			"default": "fade-up"
+		},
+		"sgsAnimationDuration": {
+			"type": "string",
+			"default": "medium"
+		},
+		"sgsAnimationEasing": {
+			"type": "string",
+			"default": "default"
+		},
+		"widthMode": {
+			"type": "string",
+			"default": "default",
+			"enum": [
+				"default",
+				"wide",
+				"full",
+				"custom"
+			]
+		},
+		"widthModeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeDesktop": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php",
+	"example": {
+		"attributes": {
+			"icon": "truck",
+			"heading": "Next-Day Delivery",
+			"description": "Order before 2pm for guaranteed next-day delivery across mainland UK.",
+			"cardStyle": "elevated"
+		}
+	}
 }

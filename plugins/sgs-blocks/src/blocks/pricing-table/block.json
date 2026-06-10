@@ -1,294 +1,408 @@
 {
-  "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 3,
-  "name": "sgs/pricing-table",
-  "version": "0.3.0",
-  "title": "SGS Pricing Table",
-  "category": "sgs-content",
-  "description": "Pricing plans displayed in responsive columns with features, CTAs, monthly/yearly toggle, and optional badges.",
-  "keywords": [
-    "pricing",
-    "plans",
-    "table",
-    "price",
-    "subscription",
-    "tiers"
-  ],
-  "textdomain": "sgs-blocks",
-  "icon": "table-col-after",
-  "supports": {
-    "align": [
-      "wide",
-      "full"
-    ],
-    "anchor": true,
-    "html": false,
-    "color": {
-      "background": true,
-      "text": true
-    },
-    "typography": {
-      "fontSize": true,
-      "lineHeight": true
-    },
-    "spacing": {
-      "margin": true,
-      "padding": true
-    },
-    "sgs": {
-      "imageControls": false
-    }
-  },
-  "selectors": {
-    "root": ".wp-block-sgs-pricing-table",
-    "typography": ".sgs-pricing-table__title"
-  },
-  "attributes": {
-    "columns": {
-      "type": "number",
-      "default": 3
-    },
-    "billingToggle": {
-      "type": "string",
-      "default": "monthly-yearly",
-      "enum": [
-        "none",
-        "monthly-yearly",
-        "monthly-only",
-        "yearly-only"
-      ]
-    },
-    "toggleStyle": {
-      "type": "string",
-      "default": "text",
-      "enum": [
-        "text",
-        "button"
-      ]
-    },
-    "billingToggleMonthlyLabel": {
-      "type": "string",
-      "default": "Monthly"
-    },
-    "billingToggleYearlyLabel": {
-      "type": "string",
-      "default": "Yearly"
-    },
-    "plans": {
-      "type": "array",
-      "default": [
-        {
-          "name": "Starter",
-          "price": "\u00a39",
-          "priceYearly": "\u00a390",
-          "period": "monthly",
-          "description": "Everything you need to get started.",
-          "features": [
-            { "text": "5 projects", "included": true },
-            { "text": "10 GB storage", "included": true },
-            { "text": "Email support", "included": true }
-          ],
-          "ctaText": "Get started",
-          "ctaUrl": "",
-          "highlighted": false,
-          "iconName": "",
-          "ribbonText": "",
-          "ribbonColour": "accent",
-          "savingsBadgeText": ""
-        },
-        {
-          "name": "Professional",
-          "price": "\u00a329",
-          "priceYearly": "\u00a3290",
-          "period": "monthly",
-          "description": "For growing teams who need more.",
-          "features": [
-            { "text": "Unlimited projects", "included": true },
-            { "text": "100 GB storage", "included": true },
-            { "text": "Priority support", "included": true },
-            { "text": "Advanced analytics", "included": true },
-            { "text": "Custom domain", "included": true }
-          ],
-          "ctaText": "Get started",
-          "ctaUrl": "",
-          "highlighted": true,
-          "iconName": "",
-          "ribbonText": "Most popular",
-          "ribbonColour": "accent",
-          "savingsBadgeText": "Save 17%"
-        },
-        {
-          "name": "Enterprise",
-          "price": "\u00a399",
-          "priceYearly": "\u00a3990",
-          "period": "monthly",
-          "description": "For large organisations with custom needs.",
-          "features": [
-            { "text": "Everything in Professional", "included": true },
-            { "text": "Unlimited storage", "included": true },
-            { "text": "24/7 phone support", "included": true },
-            { "text": "Custom integrations", "included": true },
-            { "text": "Dedicated account manager", "included": true },
-            { "text": "SLA guarantee", "included": true }
-          ],
-          "ctaText": "Contact sales",
-          "ctaUrl": "",
-          "highlighted": false,
-          "iconName": "",
-          "ribbonText": "",
-          "ribbonColour": "accent",
-          "savingsBadgeText": ""
-        }
-      ]
-    },
-    "style": {
-      "type": "string",
-      "default": "card"
-    },
-    "titleColour": {
-      "type": "string",
-      "default": "text"
-    },
-    "priceColour": {
-      "type": "string",
-      "default": "text"
-    },
-    "featureColour": {
-      "type": "string",
-      "default": "text"
-    },
-    "ctaStyle": {
-      "type": "string",
-      "default": "accent"
-    },
-    "ctaColour": {
-      "type": "string"
-    },
-    "ctaBackground": {
-      "type": "string"
-    },
-    "popularBadgeText": {
-      "type": "string",
-      "default": "Popular"
-    },
-    "popularBadgeColour": {
-      "type": "string",
-      "default": "text"
-    },
-    "popularBadgeBackground": {
-      "type": "string",
-      "default": "accent"
-    },
-    "sgsAnimation": {
-      "type": "string",
-      "default": "slide-up"
-    },
-    "sgsAnimationDuration": {
-      "type": "string",
-      "default": "medium"
-    },
-    "sgsAnimationEasing": {
-      "type": "string",
-      "default": "default"
-    },
-    "widthMode": {
-      "type": "string",
-      "default": "default",
-      "enum": ["default", "wide", "full", "custom"]
-    },
-    "widthModeMobile": {
-      "type": "string",
-      "default": ""
-    },
-    "widthModeTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "widthModeDesktop": {
-      "type": "string",
-      "default": ""
-    },
-    "customWidth": {
-      "type": "number",
-      "default": 0
-    },
-    "customWidthUnit": {
-      "type": "string",
-      "default": "px"
-    },
-    "contentWidth": {
-      "type": "string",
-      "default": ""
-    },
-    "maxWidth": {
-      "type": "string",
-      "default": ""
-    },
-    "layout": {
-      "type": "string",
-      "default": ""
-    },
-    "gap": {
-      "type": "string",
-      "default": ""
-    },
-    "gapTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "gapMobile": {
-      "type": "string",
-      "default": ""
-    },
-    "gridTemplateColumns": {
-      "type": "string",
-      "default": ""
-    },
-    "gridTemplateColumnsTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "gridTemplateColumnsMobile": {
-      "type": "string",
-      "default": ""
-    },
-    "gridTemplateRows": {
-      "type": "string",
-      "default": ""
-    },
-    "gridTemplateRowsTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "gridTemplateRowsMobile": {
-      "type": "string",
-      "default": ""
-    },
-    "gridAutoRows": {
-      "type": "string",
-      "default": ""
-    },
-    "justifyItems": {
-      "type": "string",
-      "default": "stretch",
-      "enum": ["stretch", "start", "center", "end"]
-    },
-    "alignContent": {
-      "type": "string",
-      "default": "stretch",
-      "enum": ["stretch", "start", "center", "end", "space-between", "space-around", "space-evenly"]
-    }
-  },
-  "editorScript": "file:./index.js",
-  "editorStyle": "file:./index.css",
-  "style": "file:./style-index.css",
-  "viewScriptModule": "file:./view.js",
-  "render": "file:./render.php",
-  "example": {
-    "attributes": {
-      "columns": 3,
-      "style": "card",
-      "billingToggle": true
-    }
-  }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/pricing-table",
+	"version": "0.3.0",
+	"title": "SGS Pricing Table",
+	"category": "sgs-content",
+	"description": "Pricing plans displayed in responsive columns with features, CTAs, monthly/yearly toggle, and optional badges.",
+	"keywords": [
+		"pricing",
+		"plans",
+		"table",
+		"price",
+		"subscription",
+		"tiers"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "table-col-after",
+	"supports": {
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"gradients": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"sgs": {
+			"imageControls": false
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-pricing-table",
+		"typography": ".sgs-pricing-table__title"
+	},
+	"attributes": {
+		"columns": {
+			"type": "number",
+			"default": 3
+		},
+		"billingToggle": {
+			"type": "string",
+			"default": "monthly-yearly",
+			"enum": [
+				"none",
+				"monthly-yearly",
+				"monthly-only",
+				"yearly-only"
+			]
+		},
+		"toggleStyle": {
+			"type": "string",
+			"default": "text",
+			"enum": [
+				"text",
+				"button"
+			]
+		},
+		"billingToggleMonthlyLabel": {
+			"type": "string",
+			"default": "Monthly"
+		},
+		"billingToggleYearlyLabel": {
+			"type": "string",
+			"default": "Yearly"
+		},
+		"plans": {
+			"type": "array",
+			"default": [
+				{
+					"name": "Starter",
+					"price": "£9",
+					"priceYearly": "£90",
+					"period": "monthly",
+					"description": "Everything you need to get started.",
+					"features": [
+						{
+							"text": "5 projects",
+							"included": true
+						},
+						{
+							"text": "10 GB storage",
+							"included": true
+						},
+						{
+							"text": "Email support",
+							"included": true
+						}
+					],
+					"ctaText": "Get started",
+					"ctaUrl": "",
+					"highlighted": false,
+					"iconName": "",
+					"ribbonText": "",
+					"ribbonColour": "accent",
+					"savingsBadgeText": ""
+				},
+				{
+					"name": "Professional",
+					"price": "£29",
+					"priceYearly": "£290",
+					"period": "monthly",
+					"description": "For growing teams who need more.",
+					"features": [
+						{
+							"text": "Unlimited projects",
+							"included": true
+						},
+						{
+							"text": "100 GB storage",
+							"included": true
+						},
+						{
+							"text": "Priority support",
+							"included": true
+						},
+						{
+							"text": "Advanced analytics",
+							"included": true
+						},
+						{
+							"text": "Custom domain",
+							"included": true
+						}
+					],
+					"ctaText": "Get started",
+					"ctaUrl": "",
+					"highlighted": true,
+					"iconName": "",
+					"ribbonText": "Most popular",
+					"ribbonColour": "accent",
+					"savingsBadgeText": "Save 17%"
+				},
+				{
+					"name": "Enterprise",
+					"price": "£99",
+					"priceYearly": "£990",
+					"period": "monthly",
+					"description": "For large organisations with custom needs.",
+					"features": [
+						{
+							"text": "Everything in Professional",
+							"included": true
+						},
+						{
+							"text": "Unlimited storage",
+							"included": true
+						},
+						{
+							"text": "24/7 phone support",
+							"included": true
+						},
+						{
+							"text": "Custom integrations",
+							"included": true
+						},
+						{
+							"text": "Dedicated account manager",
+							"included": true
+						},
+						{
+							"text": "SLA guarantee",
+							"included": true
+						}
+					],
+					"ctaText": "Contact sales",
+					"ctaUrl": "",
+					"highlighted": false,
+					"iconName": "",
+					"ribbonText": "",
+					"ribbonColour": "accent",
+					"savingsBadgeText": ""
+				}
+			]
+		},
+		"style": {
+			"type": "string",
+			"default": "card"
+		},
+		"titleColour": {
+			"type": "string",
+			"default": "text"
+		},
+		"priceColour": {
+			"type": "string",
+			"default": "text"
+		},
+		"featureColour": {
+			"type": "string",
+			"default": "text"
+		},
+		"ctaStyle": {
+			"type": "string",
+			"default": "accent"
+		},
+		"ctaColour": {
+			"type": "string"
+		},
+		"ctaBackground": {
+			"type": "string"
+		},
+		"popularBadgeText": {
+			"type": "string",
+			"default": "Popular"
+		},
+		"popularBadgeColour": {
+			"type": "string",
+			"default": "text"
+		},
+		"popularBadgeBackground": {
+			"type": "string",
+			"default": "accent"
+		},
+		"sgsAnimation": {
+			"type": "string",
+			"default": "slide-up"
+		},
+		"sgsAnimationDuration": {
+			"type": "string",
+			"default": "medium"
+		},
+		"sgsAnimationEasing": {
+			"type": "string",
+			"default": "default"
+		},
+		"widthMode": {
+			"type": "string",
+			"default": "default",
+			"enum": [
+				"default",
+				"wide",
+				"full",
+				"custom"
+			]
+		},
+		"widthModeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeDesktop": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"layout": {
+			"type": "string",
+			"default": ""
+		},
+		"gap": {
+			"type": "string",
+			"default": ""
+		},
+		"gapTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gapMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumns": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRows": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridAutoRows": {
+			"type": "string",
+			"default": ""
+		},
+		"justifyItems": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end"
+			]
+		},
+		"alignContent": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end",
+				"space-between",
+				"space-around",
+				"space-evenly"
+			]
+		},
+		"columnsMobile": {
+			"type": "number",
+			"default": 1
+		},
+		"columnsTablet": {
+			"type": "number",
+			"default": 2
+		},
+		"flexDirection": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"row",
+				"column"
+			]
+		},
+		"flexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap"
+			]
+		},
+		"justifyContent": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"flex-start",
+				"center",
+				"flex-end",
+				"space-between",
+				"space-around"
+			]
+		},
+		"templateMode": {
+			"type": "string",
+			"default": "free",
+			"enum": [
+				"free",
+				"grid-section",
+				"card-grid"
+			]
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"render": "file:./render.php",
+	"example": {
+		"attributes": {
+			"columns": 3,
+			"style": "card",
+			"billingToggle": true
+		}
+	}
 }

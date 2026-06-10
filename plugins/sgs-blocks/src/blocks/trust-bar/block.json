@@ -32,8 +32,8 @@
 		"html": false,
 		"color": {
 			"background": true,
-			"text": false,
-			"gradients": false
+			"text": true,
+			"gradients": true
 		},
 		"spacing": {
 			"margin": true,
@@ -41,9 +41,9 @@
 		},
 		"__experimentalBorder": {
 			"radius": true,
-			"width": false,
-			"color": false,
-			"style": false
+			"width": true,
+			"color": true,
+			"style": true
 		}
 	},
 	"selectors": {
@@ -65,16 +65,30 @@
 			"items": {
 				"type": "object",
 				"properties": {
-					"icon":    { "type": "string" },
-					"iconSvg": { "type": "string" },
-					"label":   { "type": "string" },
-					"url":     { "type": "string" },
-					"pending": { "type": "boolean" },
+					"icon": {
+						"type": "string"
+					},
+					"iconSvg": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					},
+					"url": {
+						"type": "string"
+					},
+					"pending": {
+						"type": "boolean"
+					},
 					"media": {
 						"type": "object",
 						"properties": {
-							"url": { "type": "string" },
-							"alt": { "type": "string" }
+							"url": {
+								"type": "string"
+							},
+							"alt": {
+								"type": "string"
+							}
 						}
 					}
 				}
@@ -493,17 +507,32 @@
 		"justifyContent": {
 			"type": "string",
 			"default": "",
-			"enum": ["", "flex-start", "center", "flex-end", "space-between", "space-around"]
+			"enum": [
+				"",
+				"flex-start",
+				"center",
+				"flex-end",
+				"space-between",
+				"space-around"
+			]
 		},
 		"flexDirection": {
 			"type": "string",
 			"default": "",
-			"enum": ["", "row", "column"]
+			"enum": [
+				"",
+				"row",
+				"column"
+			]
 		},
 		"flexWrap": {
 			"type": "string",
 			"default": "",
-			"enum": ["", "wrap", "nowrap"]
+			"enum": [
+				"",
+				"wrap",
+				"nowrap"
+			]
 		},
 		"templateMode": {
 			"type": "string",

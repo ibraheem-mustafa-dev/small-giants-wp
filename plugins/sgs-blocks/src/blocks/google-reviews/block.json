@@ -1,307 +1,318 @@
 {
-  "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 3,
-  "version": "0.2.0",
-  "name": "sgs/google-reviews",
-  "title": "SGS Google Reviews",
-  "category": "sgs-content",
-  "description": "Display Google Business Profile reviews with aggregate ratings and schema.org markup.",
-  "keywords": [
-    "reviews",
-    "google",
-    "testimonials",
-    "ratings",
-    "stars"
-  ],
-  "icon": "star-filled",
-  "textdomain": "sgs-blocks",
-  "supports": {
-    "sgs": {
-      "imageControls": false
-    },
-    "align": [
-      "wide",
-      "full"
-    ],
-    "anchor": true,
-    "className": true,
-    "html": false,
-    "interactivity": true,
-    "color": {
-      "background": true,
-      "text": true,
-      "gradients": false
-    }
-  },
-  "selectors": {
-    "root": ".wp-block-sgs-google-reviews"
-  },
-  "attributes": {
-    "variant": {
-      "type": "string",
-      "default": "grid",
-      "enum": [
-        "grid",
-        "slider",
-        "list",
-        "badge",
-        "floating-badge",
-        "wall"
-      ]
-    },
-    "placeId": {
-      "type": "string",
-      "default": ""
-    },
-    "columns": {
-      "type": "number",
-      "default": 3
-    },
-    "columnsTablet": {
-      "type": "number",
-      "default": 2
-    },
-    "columnsMobile": {
-      "type": "number",
-      "default": 1
-    },
-    "maxReviews": {
-      "type": "number",
-      "default": 10
-    },
-    "minRating": {
-      "type": "number",
-      "default": 1
-    },
-    "textOnly": {
-      "type": "boolean",
-      "default": false
-    },
-    "excludeKeywords": {
-      "type": "string",
-      "default": ""
-    },
-    "sortBy": {
-      "type": "string",
-      "default": "newest",
-      "enum": [
-        "newest",
-        "highest",
-        "lowest"
-      ]
-    },
-    "showAggregate": {
-      "type": "boolean",
-      "default": true
-    },
-    "showBreakdown": {
-      "type": "boolean",
-      "default": false
-    },
-    "showAvatar": {
-      "type": "boolean",
-      "default": true
-    },
-    "showDate": {
-      "type": "boolean",
-      "default": true
-    },
-    "showGoogleLogo": {
-      "type": "boolean",
-      "default": true
-    },
-    "reviewRequestUrl": {
-      "type": "string",
-      "default": ""
-    },
-    "theme": {
-      "type": "string",
-      "default": "light",
-      "enum": [
-        "light",
-        "dark",
-        "transparent"
-      ]
-    },
-    "cardStyle": {
-      "type": "string",
-      "default": "bordered",
-      "enum": [
-        "flat",
-        "bordered",
-        "elevated"
-      ]
-    },
-    "starColour": {
-      "type": "string",
-      "default": "accent"
-    },
-    "autoplay": {
-      "type": "boolean",
-      "default": false
-    },
-    "autoplaySpeed": {
-      "type": "number",
-      "default": 5000
-    },
-    "showDots": {
-      "type": "boolean",
-      "default": true
-    },
-    "showArrows": {
-      "type": "boolean",
-      "default": true
-    },
-    "sgsAnimation": {
-      "type": "string",
-      "default": "fade-up"
-    },
-    "sgsAnimationDuration": {
-      "type": "string",
-      "default": "medium"
-    },
-    "sgsAnimationEasing": {
-      "type": "string",
-      "default": "ease-out"
-    },
-    "staggerDelay": {
-      "type": "number",
-      "default": 60
-    },
-    "widthMode": {
-      "type": "string",
-      "default": "default",
-      "enum": ["default", "wide", "full", "custom"]
-    },
-    "widthModeMobile": {
-      "type": "string",
-      "default": ""
-    },
-    "widthModeTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "widthModeDesktop": {
-      "type": "string",
-      "default": ""
-    },
-    "customWidth": {
-      "type": "number",
-      "default": 0
-    },
-    "customWidthUnit": {
-      "type": "string",
-      "default": "px"
-    },
-    "contentWidth": {
-      "type": "string",
-      "default": ""
-    },
-    "maxWidth": {
-      "type": "string",
-      "default": ""
-    },
-    "layout": {
-      "type": "string",
-      "default": ""
-    },
-    "layoutMode": {
-      "type": "string",
-      "default": ""
-    },
-    "gridTemplateColumns": {
-      "type": "string",
-      "default": ""
-    },
-    "gridTemplateColumnsTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "gridTemplateColumnsMobile": {
-      "type": "string",
-      "default": ""
-    },
-    "gridTemplateRows": {
-      "type": "string",
-      "default": ""
-    },
-    "gridTemplateRowsTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "gridTemplateRowsMobile": {
-      "type": "string",
-      "default": ""
-    },
-    "gridAutoRows": {
-      "type": "string",
-      "default": ""
-    },
-    "direction": {
-      "type": "string",
-      "default": ""
-    },
-    "flexDirection": {
-      "type": "string",
-      "default": ""
-    },
-    "flexWrap": {
-      "type": "string",
-      "default": ""
-    },
-    "wrap": {
-      "type": "boolean",
-      "default": false
-    },
-    "justifyContent": {
-      "type": "string",
-      "default": ""
-    },
-    "justifyItems": {
-      "type": "string",
-      "default": "stretch"
-    },
-    "alignContent": {
-      "type": "string",
-      "default": "stretch"
-    },
-    "alignItems": {
-      "type": "string",
-      "default": ""
-    },
-    "templateMode": {
-      "type": "string",
-      "default": "free"
-    },
-    "columnsDesktop": {
-      "type": "number",
-      "default": 0
-    },
-    "gap": {
-      "type": "string",
-      "default": ""
-    },
-    "gapTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "gapMobile": {
-      "type": "string",
-      "default": ""
-    }
-  },
-  "editorScript": "file:./index.js",
-  "editorStyle": "file:./editor.css",
-  "style": "file:./style.css",
-  "viewScriptModule": "file:./view.js",
-  "render": "file:./render.php",
-  "example": {
-    "attributes": {
-      "variant": "grid",
-      "columns": 3,
-      "showAggregate": true,
-      "cardStyle": "elevated",
-      "minRating": 4
-    }
-  }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"version": "0.2.0",
+	"name": "sgs/google-reviews",
+	"title": "SGS Google Reviews",
+	"category": "sgs-content",
+	"description": "Display Google Business Profile reviews with aggregate ratings and schema.org markup.",
+	"keywords": [
+		"reviews",
+		"google",
+		"testimonials",
+		"ratings",
+		"stars"
+	],
+	"icon": "star-filled",
+	"textdomain": "sgs-blocks",
+	"supports": {
+		"sgs": {
+			"imageControls": false
+		},
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true,
+		"className": true,
+		"html": false,
+		"interactivity": true,
+		"color": {
+			"background": true,
+			"text": true,
+			"gradients": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-google-reviews"
+	},
+	"attributes": {
+		"variant": {
+			"type": "string",
+			"default": "grid",
+			"enum": [
+				"grid",
+				"slider",
+				"list",
+				"badge",
+				"floating-badge",
+				"wall"
+			]
+		},
+		"placeId": {
+			"type": "string",
+			"default": ""
+		},
+		"columns": {
+			"type": "number",
+			"default": 3
+		},
+		"columnsTablet": {
+			"type": "number",
+			"default": 2
+		},
+		"columnsMobile": {
+			"type": "number",
+			"default": 1
+		},
+		"maxReviews": {
+			"type": "number",
+			"default": 10
+		},
+		"minRating": {
+			"type": "number",
+			"default": 1
+		},
+		"textOnly": {
+			"type": "boolean",
+			"default": false
+		},
+		"excludeKeywords": {
+			"type": "string",
+			"default": ""
+		},
+		"sortBy": {
+			"type": "string",
+			"default": "newest",
+			"enum": [
+				"newest",
+				"highest",
+				"lowest"
+			]
+		},
+		"showAggregate": {
+			"type": "boolean",
+			"default": true
+		},
+		"showBreakdown": {
+			"type": "boolean",
+			"default": false
+		},
+		"showAvatar": {
+			"type": "boolean",
+			"default": true
+		},
+		"showDate": {
+			"type": "boolean",
+			"default": true
+		},
+		"showGoogleLogo": {
+			"type": "boolean",
+			"default": true
+		},
+		"reviewRequestUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"theme": {
+			"type": "string",
+			"default": "light",
+			"enum": [
+				"light",
+				"dark",
+				"transparent"
+			]
+		},
+		"cardStyle": {
+			"type": "string",
+			"default": "bordered",
+			"enum": [
+				"flat",
+				"bordered",
+				"elevated"
+			]
+		},
+		"starColour": {
+			"type": "string",
+			"default": "accent"
+		},
+		"autoplay": {
+			"type": "boolean",
+			"default": false
+		},
+		"autoplaySpeed": {
+			"type": "number",
+			"default": 5000
+		},
+		"showDots": {
+			"type": "boolean",
+			"default": true
+		},
+		"showArrows": {
+			"type": "boolean",
+			"default": true
+		},
+		"sgsAnimation": {
+			"type": "string",
+			"default": "fade-up"
+		},
+		"sgsAnimationDuration": {
+			"type": "string",
+			"default": "medium"
+		},
+		"sgsAnimationEasing": {
+			"type": "string",
+			"default": "ease-out"
+		},
+		"staggerDelay": {
+			"type": "number",
+			"default": 60
+		},
+		"widthMode": {
+			"type": "string",
+			"default": "default",
+			"enum": [
+				"default",
+				"wide",
+				"full",
+				"custom"
+			]
+		},
+		"widthModeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeDesktop": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"layout": {
+			"type": "string",
+			"default": ""
+		},
+		"layoutMode": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumns": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRows": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridAutoRows": {
+			"type": "string",
+			"default": ""
+		},
+		"direction": {
+			"type": "string",
+			"default": ""
+		},
+		"flexDirection": {
+			"type": "string",
+			"default": ""
+		},
+		"flexWrap": {
+			"type": "string",
+			"default": ""
+		},
+		"wrap": {
+			"type": "boolean",
+			"default": false
+		},
+		"justifyContent": {
+			"type": "string",
+			"default": ""
+		},
+		"justifyItems": {
+			"type": "string",
+			"default": "stretch"
+		},
+		"alignContent": {
+			"type": "string",
+			"default": "stretch"
+		},
+		"alignItems": {
+			"type": "string",
+			"default": ""
+		},
+		"templateMode": {
+			"type": "string",
+			"default": "free"
+		},
+		"columnsDesktop": {
+			"type": "number",
+			"default": 0
+		},
+		"gap": {
+			"type": "string",
+			"default": ""
+		},
+		"gapTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gapMobile": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./editor.css",
+	"style": "file:./style.css",
+	"viewScriptModule": "file:./view.js",
+	"render": "file:./render.php",
+	"example": {
+		"attributes": {
+			"variant": "grid",
+			"columns": 3,
+			"showAggregate": true,
+			"cardStyle": "elevated",
+			"minRating": 4
+		}
+	}
 }

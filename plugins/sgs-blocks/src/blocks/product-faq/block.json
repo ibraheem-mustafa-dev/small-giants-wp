@@ -25,7 +25,8 @@
 		"html": false,
 		"color": {
 			"background": true,
-			"text": true
+			"text": true,
+			"gradients": true
 		},
 		"typography": {
 			"fontSize": true,
@@ -58,17 +59,29 @@
 		"headingLevel": {
 			"type": "number",
 			"default": 2,
-			"enum": [2, 3, 4]
+			"enum": [
+				2,
+				3,
+				4
+			]
 		},
 		"iconPosition": {
 			"type": "string",
 			"default": "right",
-			"enum": ["right", "left"]
+			"enum": [
+				"right",
+				"left"
+			]
 		},
 		"widthMode": {
 			"type": "string",
 			"default": "default",
-			"enum": ["default", "wide", "full", "custom"]
+			"enum": [
+				"default",
+				"wide",
+				"full",
+				"custom"
+			]
 		},
 		"widthModeMobile": {
 			"type": "string",

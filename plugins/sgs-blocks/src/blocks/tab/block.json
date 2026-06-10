@@ -1,75 +1,91 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/tab",
-    "version": "0.2.1",
-    "title": "SGS Tab",
-    "category": "sgs-interactive",
-    "description": "Individual tab panel — add any content blocks inside.",
-    "keywords": [
-        "tab",
-        "panel",
-        "section",
-        "content"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "table-row-after",
-    "parent": [
-        "sgs/tabs"
-    ],
-    "supports": {
-        "html": false,
-        "reusable": false
-    },
-    "usesContext": [
-        "sgs/tabsOrientation",
-        "sgs/tabsStyle"
-    ],
-    "attributes": {
-        "label": {
-            "type": "string",
-            "default": "Tab",
-            "role": "content"
-        },
-        "widthMode": {
-            "type": "string",
-            "default": "default",
-            "enum": ["default", "wide", "full", "custom"]
-        },
-        "widthModeMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "widthModeTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "widthModeDesktop": {
-            "type": "string",
-            "default": ""
-        },
-        "customWidth": {
-            "type": "number",
-            "default": 0
-        },
-        "customWidthUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "contentWidth": {
-            "type": "string",
-            "default": ""
-        },
-        "maxWidth": {
-            "type": "string",
-            "default": ""
-        }
-    },
-    "editorScript": "file:./index.js",
-    "render": "file:./render.php",
-    "example": {
-        "attributes": {
-            "label": "Overview"
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/tab",
+	"version": "0.2.1",
+	"title": "SGS Tab",
+	"category": "sgs-interactive",
+	"description": "Individual tab panel — add any content blocks inside.",
+	"keywords": [
+		"tab",
+		"panel",
+		"section",
+		"content"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "table-row-after",
+	"parent": [
+		"sgs/tabs"
+	],
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"color": {
+			"background": true,
+			"gradients": true,
+			"text": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
+	},
+	"usesContext": [
+		"sgs/tabsOrientation",
+		"sgs/tabsStyle"
+	],
+	"attributes": {
+		"label": {
+			"type": "string",
+			"default": "Tab",
+			"role": "content"
+		},
+		"widthMode": {
+			"type": "string",
+			"default": "default",
+			"enum": [
+				"default",
+				"wide",
+				"full",
+				"custom"
+			]
+		},
+		"widthModeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeDesktop": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php",
+	"example": {
+		"attributes": {
+			"label": "Overview"
+		}
+	}
 }

@@ -20,7 +20,18 @@
 	],
 	"supports": {
 		"html": false,
-		"reusable": false
+		"reusable": false,
+		"color": {
+			"background": true,
+			"gradients": true,
+			"text": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
 	},
 	"usesContext": [
 		"sgs/accordionStyle",

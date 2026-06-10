@@ -1,384 +1,398 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/card-grid",
-    "version": "0.3.0",
-    "title": "SGS Card Grid",
-    "category": "sgs-content",
-    "description": "Flexible image and content grid with overlay and card variants.",
-    "keywords": [
-        "card",
-        "grid",
-        "image",
-        "gallery",
-        "product",
-        "tiles"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "grid-view",
-    "supports": {
-        "align": [
-            "wide",
-            "full"
-        ],
-        "anchor": true,
-        "html": false,
-        "color": {
-            "background": true,
-            "text": true
-        },
-        "typography": {
-            "fontSize": true,
-            "lineHeight": true,
-            "textAlign": true,
-            "letterSpacing": true,
-            "textTransform": true,
-            "fontWeight": true,
-            "fontStyle": true
-        },
-        "spacing": {
-            "margin": true,
-            "padding": true
-        },
-        "shadow": true,
-        "__experimentalBorder": {
-            "radius": true,
-            "width": true,
-            "color": true,
-            "style": true
-        },
-        "sgs": {
-            "imageControls": true
-        }
-    },
-    "selectors": {
-        "root": ".wp-block-sgs-card-grid",
-        "typography": ".sgs-card-grid__title"
-    },
-    "attributes": {
-        "variant": {
-            "type": "string",
-            "default": "card"
-        },
-        "_comment_items_media": "Migrated 2026-05-05 — each item gains a unified `media` slot (image OR video). Legacy `image` retained on items for deprecation back-compat. New instances should write `media` via MediaPicker.",
-        "items": {
-            "type": "array",
-            "default": []
-        },
-        "columns": {
-            "type": "number",
-            "default": 3
-        },
-        "columnsMobile": {
-            "type": "number",
-            "default": 1
-        },
-        "gap": {
-            "type": "string",
-            "default": "30"
-        },
-        "aspectRatio": {
-            "type": "string",
-            "default": "16/10"
-        },
-        "hoverEffect": {
-            "type": "string",
-            "default": "zoom"
-        },
-        "columnsTablet": {
-            "type": "number",
-            "default": 2
-        },
-        "overlayStyle": {
-            "type": "string",
-            "default": "gradient"
-        },
-        "titleColour": {
-            "type": "string",
-            "default": "primary"
-        },
-        "subtitleColour": {
-            "type": "string",
-            "default": "text"
-        },
-        "hoverBackgroundColour": {
-            "type": "string"
-        },
-        "hoverTextColour": {
-            "type": "string"
-        },
-        "hoverBorderColour": {
-            "type": "string",
-            "default": "primary"
-        },
-        "transitionDuration": {
-            "type": "string",
-            "default": "300"
-        },
-        "transitionEasing": {
-            "type": "string",
-            "default": "ease-in-out"
-        },
-        "hoverScale": {
-            "type": "string",
-            "default": ""
-        },
-        "hoverShadow": {
-            "type": "string",
-            "default": ""
-        },
-        "hoverImageZoom": {
-            "type": "boolean",
-            "default": false
-        },
-        "hoverGrayscale": {
-            "type": "boolean",
-            "default": false
-        },
-        "staggerDelay": {
-            "type": "number",
-            "default": 80
-        },
-        "sgsAnimation": {
-            "type": "string",
-            "default": "fade-up"
-        },
-        "sgsAnimationDuration": {
-            "type": "string",
-            "default": "medium"
-        },
-        "sgsAnimationEasing": {
-            "type": "string",
-            "default": "default"
-        },
-        "source": {
-            "type": "string",
-            "default": "manual",
-            "enum": [
-                "manual",
-                "query",
-                "wc-product"
-            ]
-        },
-        "productSource": {
-            "type": "string",
-            "default": "collection",
-            "enum": [
-                "collection",
-                "handpick"
-            ],
-            "description": "How products are selected: 'collection' = smart preset + filters; 'handpick' = explicit IDs."
-        },
-        "productCollection": {
-            "type": "string",
-            "default": "latest",
-            "enum": [
-                "best-selling",
-                "price-high",
-                "price-low",
-                "top-rated",
-                "latest"
-            ],
-            "description": "Smart collection preset. Ignored when productSource = 'handpick'."
-        },
-        "productCategories": {
-            "type": "array",
-            "default": [],
-            "items": {
-                "type": "number"
-            },
-            "description": "WC product category term IDs to filter by (multi-select). Empty = all categories."
-        },
-        "productTags": {
-            "type": "array",
-            "default": [],
-            "items": {
-                "type": "number"
-            },
-            "description": "WC product tag term IDs to filter by (multi-select). Empty = all tags."
-        },
-        "productFeatured": {
-            "type": "boolean",
-            "default": false,
-            "description": "When true, only featured products are returned."
-        },
-        "productOnSale": {
-            "type": "boolean",
-            "default": false,
-            "description": "When true, only on-sale products are returned (uses wc_get_product_ids_on_sale index)."
-        },
-        "productInStock": {
-            "type": "boolean",
-            "default": true,
-            "description": "When true, only in-stock products are returned."
-        },
-        "productLimit": {
-            "type": "number",
-            "default": 6,
-            "description": "Maximum number of products to return (1–24). Server-side cap enforced at 24. The on-sale filter over-fetches and refills to this limit; fewer are returned only when fewer on-sale products exist."
-        },
-        "productIds": {
-            "type": "array",
-            "default": [],
-            "items": {
-                "type": "number"
-            },
-            "description": "Explicit product IDs for handpick mode. Order is respected."
-        },
-        "productShowLadder": {
-            "type": "boolean",
-            "default": false,
-            "description": "Show the per-pack price ladder on each card. Off by default — grids are a browsing context; the ladder does its upsell work on the product page."
-        },
-        "productEmptyMessage": {
-            "type": "string",
-            "default": "No products to show at the moment. Check back soon.",
-            "description": "Message shown when the product query returns zero results (FR-24-6 empty state)."
-        },
-        "queryPostType": {
-            "type": "string",
-            "default": "post"
-        },
-        "queryPostsPerPage": {
-            "type": "number",
-            "default": 6
-        },
-        "queryCategory": {
-            "type": "number",
-            "default": 0
-        },
-        "widthMode": {
-            "type": "string",
-            "default": "default",
-            "enum": ["default", "wide", "full", "custom"]
-        },
-        "widthModeMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "widthModeTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "widthModeDesktop": {
-            "type": "string",
-            "default": ""
-        },
-        "customWidth": {
-            "type": "number",
-            "default": 0
-        },
-        "customWidthUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "contentWidth": {
-            "type": "string",
-            "default": ""
-        },
-        "maxWidth": {
-            "type": "string",
-            "default": ""
-        },
-        "layout": {
-            "type": "string",
-            "default": ""
-        },
-        "layoutMode": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateColumns": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateColumnsTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateColumnsMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateRows": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateRowsTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateRowsMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "gridAutoRows": {
-            "type": "string",
-            "default": ""
-        },
-        "direction": {
-            "type": "string",
-            "default": ""
-        },
-        "flexDirection": {
-            "type": "string",
-            "default": ""
-        },
-        "flexWrap": {
-            "type": "string",
-            "default": ""
-        },
-        "wrap": {
-            "type": "string",
-            "default": ""
-        },
-        "justifyContent": {
-            "type": "string",
-            "default": ""
-        },
-        "justifyItems": {
-            "type": "string",
-            "default": ""
-        },
-        "alignContent": {
-            "type": "string",
-            "default": ""
-        },
-        "alignItems": {
-            "type": "string",
-            "default": ""
-        },
-        "templateMode": {
-            "type": "string",
-            "default": ""
-        },
-        "columnsDesktop": {
-            "type": "number",
-            "default": 0
-        }
-    },
-    "render": "file:./render.php",
-    "editorScript": "file:./index.js",
-    "editorStyle": "file:./index.css",
-    "style": "file:./style-index.css",
-    "example": {
-        "attributes": {
-            "variant": "card",
-            "columns": 3,
-            "items": [
-                {
-                    "title": "Fresh Produce",
-                    "subtitle": "Farm-fresh vegetables and fruits"
-                },
-                {
-                    "title": "Dairy & Eggs",
-                    "subtitle": "Sourced from trusted local farms"
-                },
-                {
-                    "title": "Bakery",
-                    "subtitle": "Baked fresh every morning"
-                }
-            ]
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/card-grid",
+	"version": "0.3.0",
+	"title": "SGS Card Grid",
+	"category": "sgs-content",
+	"description": "Flexible image and content grid with overlay and card variants.",
+	"keywords": [
+		"card",
+		"grid",
+		"image",
+		"gallery",
+		"product",
+		"tiles"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "grid-view",
+	"supports": {
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"gradients": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"textAlign": true,
+			"letterSpacing": true,
+			"textTransform": true,
+			"fontWeight": true,
+			"fontStyle": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"shadow": true,
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		},
+		"sgs": {
+			"imageControls": true
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-card-grid",
+		"typography": ".sgs-card-grid__title"
+	},
+	"attributes": {
+		"variant": {
+			"type": "string",
+			"default": "card"
+		},
+		"_comment_items_media": "Migrated 2026-05-05 — each item gains a unified `media` slot (image OR video). Legacy `image` retained on items for deprecation back-compat. New instances should write `media` via MediaPicker.",
+		"items": {
+			"type": "array",
+			"default": []
+		},
+		"columns": {
+			"type": "number",
+			"default": 3
+		},
+		"columnsMobile": {
+			"type": "number",
+			"default": 1
+		},
+		"gap": {
+			"type": "string",
+			"default": "30"
+		},
+		"aspectRatio": {
+			"type": "string",
+			"default": "16/10"
+		},
+		"hoverEffect": {
+			"type": "string",
+			"default": "zoom"
+		},
+		"columnsTablet": {
+			"type": "number",
+			"default": 2
+		},
+		"overlayStyle": {
+			"type": "string",
+			"default": "gradient"
+		},
+		"titleColour": {
+			"type": "string",
+			"default": "primary"
+		},
+		"subtitleColour": {
+			"type": "string",
+			"default": "text"
+		},
+		"hoverBackgroundColour": {
+			"type": "string"
+		},
+		"hoverTextColour": {
+			"type": "string"
+		},
+		"hoverBorderColour": {
+			"type": "string",
+			"default": "primary"
+		},
+		"transitionDuration": {
+			"type": "string",
+			"default": "300"
+		},
+		"transitionEasing": {
+			"type": "string",
+			"default": "ease-in-out"
+		},
+		"hoverScale": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverImageZoom": {
+			"type": "boolean",
+			"default": false
+		},
+		"hoverGrayscale": {
+			"type": "boolean",
+			"default": false
+		},
+		"staggerDelay": {
+			"type": "number",
+			"default": 80
+		},
+		"sgsAnimation": {
+			"type": "string",
+			"default": "fade-up"
+		},
+		"sgsAnimationDuration": {
+			"type": "string",
+			"default": "medium"
+		},
+		"sgsAnimationEasing": {
+			"type": "string",
+			"default": "default"
+		},
+		"source": {
+			"type": "string",
+			"default": "manual",
+			"enum": [
+				"manual",
+				"query",
+				"wc-product"
+			]
+		},
+		"productSource": {
+			"type": "string",
+			"default": "collection",
+			"enum": [
+				"collection",
+				"handpick"
+			],
+			"description": "How products are selected: 'collection' = smart preset + filters; 'handpick' = explicit IDs."
+		},
+		"productCollection": {
+			"type": "string",
+			"default": "latest",
+			"enum": [
+				"best-selling",
+				"price-high",
+				"price-low",
+				"top-rated",
+				"latest"
+			],
+			"description": "Smart collection preset. Ignored when productSource = 'handpick'."
+		},
+		"productCategories": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "number"
+			},
+			"description": "WC product category term IDs to filter by (multi-select). Empty = all categories."
+		},
+		"productTags": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "number"
+			},
+			"description": "WC product tag term IDs to filter by (multi-select). Empty = all tags."
+		},
+		"productFeatured": {
+			"type": "boolean",
+			"default": false,
+			"description": "When true, only featured products are returned."
+		},
+		"productOnSale": {
+			"type": "boolean",
+			"default": false,
+			"description": "When true, only on-sale products are returned (uses wc_get_product_ids_on_sale index)."
+		},
+		"productInStock": {
+			"type": "boolean",
+			"default": true,
+			"description": "When true, only in-stock products are returned."
+		},
+		"productLimit": {
+			"type": "number",
+			"default": 6,
+			"description": "Maximum number of products to return (1–24). Server-side cap enforced at 24. The on-sale filter over-fetches and refills to this limit; fewer are returned only when fewer on-sale products exist."
+		},
+		"productIds": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "number"
+			},
+			"description": "Explicit product IDs for handpick mode. Order is respected."
+		},
+		"productShowLadder": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show the per-pack price ladder on each card. Off by default — grids are a browsing context; the ladder does its upsell work on the product page."
+		},
+		"productEmptyMessage": {
+			"type": "string",
+			"default": "No products to show at the moment. Check back soon.",
+			"description": "Message shown when the product query returns zero results (FR-24-6 empty state)."
+		},
+		"queryPostType": {
+			"type": "string",
+			"default": "post"
+		},
+		"queryPostsPerPage": {
+			"type": "number",
+			"default": 6
+		},
+		"queryCategory": {
+			"type": "number",
+			"default": 0
+		},
+		"widthMode": {
+			"type": "string",
+			"default": "default",
+			"enum": [
+				"default",
+				"wide",
+				"full",
+				"custom"
+			]
+		},
+		"widthModeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeDesktop": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"layout": {
+			"type": "string",
+			"default": ""
+		},
+		"layoutMode": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumns": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRows": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridAutoRows": {
+			"type": "string",
+			"default": ""
+		},
+		"direction": {
+			"type": "string",
+			"default": ""
+		},
+		"flexDirection": {
+			"type": "string",
+			"default": ""
+		},
+		"flexWrap": {
+			"type": "string",
+			"default": ""
+		},
+		"wrap": {
+			"type": "string",
+			"default": ""
+		},
+		"justifyContent": {
+			"type": "string",
+			"default": ""
+		},
+		"justifyItems": {
+			"type": "string",
+			"default": ""
+		},
+		"alignContent": {
+			"type": "string",
+			"default": ""
+		},
+		"alignItems": {
+			"type": "string",
+			"default": ""
+		},
+		"templateMode": {
+			"type": "string",
+			"default": ""
+		},
+		"columnsDesktop": {
+			"type": "number",
+			"default": 0
+		},
+		"gapMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gapTablet": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"example": {
+		"attributes": {
+			"variant": "card",
+			"columns": 3,
+			"items": [
+				{
+					"title": "Fresh Produce",
+					"subtitle": "Farm-fresh vegetables and fruits"
+				},
+				{
+					"title": "Dairy & Eggs",
+					"subtitle": "Sourced from trusted local farms"
+				},
+				{
+					"title": "Bakery",
+					"subtitle": "Baked fresh every morning"
+				}
+			]
+		}
+	}
 }

@@ -257,9 +257,14 @@ select.sgs-form-field__input {
 	gap: var(--wp--preset--spacing--20, 0.75rem);
 }
 
+/* flex-direction in :where() (specificity 0) — .sgs-form-tile is a descendant,
+   not the form root the flexDirection attr controls; keeps column default
+   overridable so the F3 guard passes. */
+:where(.sgs-form-tile) {
+	flex-direction: column;
+}
 .sgs-form-tile {
 	display: flex;
-	flex-direction: column;
 	align-items: center;
 	gap: 0.5rem;
 	padding: 1rem;

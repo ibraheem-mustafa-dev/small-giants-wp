@@ -1,375 +1,428 @@
 {
-  "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 3,
-  "name": "sgs/post-grid",
-  "version": "0.2.0",
-  "title": "SGS Post Grid",
-  "category": "sgs-content",
-  "description": "Display posts in grid, list, masonry, or carousel layouts with AJAX filtering and pagination.",
-  "keywords": [
-    "posts",
-    "grid",
-    "blog",
-    "query",
-    "news",
-    "articles",
-    "cards",
-    "masonry",
-    "carousel"
-  ],
-  "textdomain": "sgs-blocks",
-  "icon": "grid-view",
-  "supports": {
-    "align": [
-      "wide",
-      "full"
-    ],
-    "anchor": true,
-    "html": false,
-    "color": {
-      "background": true,
-      "text": true
-    },
-    "typography": {
-      "fontSize": true,
-      "lineHeight": true
-    },
-    "spacing": {
-      "margin": true,
-      "padding": true
-    },
-    "__experimentalBorder": {
-      "radius": true,
-      "width": true,
-      "color": true,
-      "style": true
-    }
-  },
-  "selectors": {
-    "root": ".wp-block-sgs-post-grid",
-    "typography": ".sgs-post-grid__title"
-  },
-  "attributes": {
-    "postType": {
-      "type": "string",
-      "default": "post"
-    },
-    "postsPerPage": {
-      "type": "number",
-      "default": 6
-    },
-    "orderBy": {
-      "type": "string",
-      "default": "date"
-    },
-    "order": {
-      "type": "string",
-      "default": "desc"
-    },
-    "categories": {
-      "type": "array",
-      "default": []
-    },
-    "tags": {
-      "type": "array",
-      "default": []
-    },
-    "excludeCurrent": {
-      "type": "boolean",
-      "default": true
-    },
-    "offset": {
-      "type": "number",
-      "default": 0
-    },
-    "layout": {
-      "type": "string",
-      "default": "grid",
-      "enum": [
-        "grid",
-        "list",
-        "masonry",
-        "carousel"
-      ]
-    },
-    "cardStyle": {
-      "type": "string",
-      "default": "card",
-      "enum": [
-        "card",
-        "flat",
-        "overlay",
-        "minimal"
-      ]
-    },
-    "columns": {
-      "type": "number",
-      "default": 3
-    },
-    "columnsTablet": {
-      "type": "number",
-      "default": 2
-    },
-    "columnsMobile": {
-      "type": "number",
-      "default": 1
-    },
-    "gap": {
-      "type": "string",
-      "default": "30px"
-    },
-    "aspectRatio": {
-      "type": "string",
-      "default": "16/10"
-    },
-    "imageSize": {
-      "type": "string",
-      "default": "medium_large"
-    },
-    "showImage": {
-      "type": "boolean",
-      "default": true
-    },
-    "showTitle": {
-      "type": "boolean",
-      "default": true
-    },
-    "showExcerpt": {
-      "type": "boolean",
-      "default": true
-    },
-    "excerptLength": {
-      "type": "number",
-      "default": 20
-    },
-    "showDate": {
-      "type": "boolean",
-      "default": true
-    },
-    "showAuthor": {
-      "type": "boolean",
-      "default": false
-    },
-    "showCategory": {
-      "type": "boolean",
-      "default": true
-    },
-    "showReadMore": {
-      "type": "boolean",
-      "default": true
-    },
-    "readMoreText": {
-      "type": "string",
-      "default": "Read more"
-    },
-    "pagination": {
-      "type": "string",
-      "default": "none",
-      "enum": [
-        "none",
-        "standard",
-        "load-more",
-        "infinite"
-      ]
-    },
-    "showFilters": {
-      "type": "boolean",
-      "default": false
-    },
-    "filterTaxonomy": {
-      "type": "string",
-      "default": "category"
-    },
-    "titleColour": {
-      "type": "string",
-      "default": "primary"
-    },
-    "titleFontSize": {
-      "type": "string"
-    },
-    "excerptColour": {
-      "type": "string",
-      "default": "text"
-    },
-    "metaColour": {
-      "type": "string",
-      "default": "text-muted"
-    },
-    "categoryBadgeColour": {
-      "type": "string",
-      "default": "text-inverse"
-    },
-    "categoryBadgeBgColour": {
-      "type": "string",
-      "default": "primary"
-    },
-    "readMoreColour": {
-      "type": "string",
-      "default": "primary"
-    },
-    "cardBgColour": {
-      "type": "string",
-      "default": "surface"
-    },
-    "hoverBackgroundColour": {
-      "type": "string"
-    },
-    "hoverTextColour": {
-      "type": "string"
-    },
-    "hoverBorderColour": {
-      "type": "string"
-    },
-    "hoverScale": {
-      "type": "string",
-      "default": ""
-    },
-    "hoverShadow": {
-      "type": "string",
-      "default": ""
-    },
-    "hoverImageZoom": {
-      "type": "boolean",
-      "default": true
-    },
-    "transitionDuration": {
-      "type": "string",
-      "default": "300"
-    },
-    "transitionEasing": {
-      "type": "string",
-      "default": "ease"
-    },
-    "carouselAutoplay": {
-      "type": "boolean",
-      "default": false
-    },
-    "carouselSpeed": {
-      "type": "number",
-      "default": 5000
-    },
-    "carouselShowDots": {
-      "type": "boolean",
-      "default": true
-    },
-    "carouselShowArrows": {
-      "type": "boolean",
-      "default": true
-    },
-    "staggerDelay": {
-      "type": "number",
-      "default": 60
-    },
-    "sgsAnimation": {
-      "type": "string",
-      "default": "fade-up"
-    },
-    "sgsAnimationDuration": {
-      "type": "string",
-      "default": "medium"
-    },
-    "sgsAnimationEasing": {
-      "type": "string",
-      "default": "ease-out"
-    },
-    "widthMode": {
-      "type": "string",
-      "default": "default",
-      "enum": ["default", "wide", "full", "custom"]
-    },
-    "widthModeMobile": {
-      "type": "string",
-      "default": ""
-    },
-    "widthModeTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "widthModeDesktop": {
-      "type": "string",
-      "default": ""
-    },
-    "customWidth": {
-      "type": "number",
-      "default": 0
-    },
-    "customWidthUnit": {
-      "type": "string",
-      "default": "px"
-    },
-    "contentWidth": {
-      "type": "string",
-      "default": ""
-    },
-    "maxWidth": {
-      "type": "string",
-      "default": ""
-    },
-    "gapTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "gapMobile": {
-      "type": "string",
-      "default": ""
-    },
-    "gridTemplateColumns": {
-      "type": "string",
-      "default": ""
-    },
-    "gridTemplateColumnsTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "gridTemplateColumnsMobile": {
-      "type": "string",
-      "default": ""
-    },
-    "gridTemplateRows": {
-      "type": "string",
-      "default": ""
-    },
-    "gridTemplateRowsTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "gridTemplateRowsMobile": {
-      "type": "string",
-      "default": ""
-    },
-    "gridAutoRows": {
-      "type": "string",
-      "default": ""
-    },
-    "justifyItems": {
-      "type": "string",
-      "default": "stretch",
-      "enum": ["stretch", "start", "center", "end"]
-    },
-    "alignContent": {
-      "type": "string",
-      "default": "stretch",
-      "enum": ["stretch", "start", "center", "end", "space-between", "space-around", "space-evenly"]
-    },
-    "templateMode": {
-      "type": "string",
-      "default": "free",
-      "enum": ["free", "grid-section", "card-grid"]
-    }
-  },
-  "editorScript": "file:./index.js",
-  "editorStyle": "file:./index.css",
-  "style": "file:./style-index.css",
-  "viewScriptModule": "file:./view.js",
-  "render": "file:./render.php",
-  "example": {
-    "attributes": {
-      "layout": "grid",
-      "columns": 3,
-      "cardStyle": "card",
-      "showImage": true,
-      "showExcerpt": true,
-      "postsPerPage": 6
-    }
-  }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/post-grid",
+	"version": "0.2.0",
+	"title": "SGS Post Grid",
+	"category": "sgs-content",
+	"description": "Display posts in grid, list, masonry, or carousel layouts with AJAX filtering and pagination.",
+	"keywords": [
+		"posts",
+		"grid",
+		"blog",
+		"query",
+		"news",
+		"articles",
+		"cards",
+		"masonry",
+		"carousel"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "grid-view",
+	"supports": {
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"gradients": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-post-grid",
+		"typography": ".sgs-post-grid__title"
+	},
+	"attributes": {
+		"postType": {
+			"type": "string",
+			"default": "post"
+		},
+		"postsPerPage": {
+			"type": "number",
+			"default": 6
+		},
+		"orderBy": {
+			"type": "string",
+			"default": "date"
+		},
+		"order": {
+			"type": "string",
+			"default": "desc"
+		},
+		"categories": {
+			"type": "array",
+			"default": []
+		},
+		"tags": {
+			"type": "array",
+			"default": []
+		},
+		"excludeCurrent": {
+			"type": "boolean",
+			"default": true
+		},
+		"offset": {
+			"type": "number",
+			"default": 0
+		},
+		"layout": {
+			"type": "string",
+			"default": "grid",
+			"enum": [
+				"grid",
+				"list",
+				"masonry",
+				"carousel"
+			]
+		},
+		"cardStyle": {
+			"type": "string",
+			"default": "card",
+			"enum": [
+				"card",
+				"flat",
+				"overlay",
+				"minimal"
+			]
+		},
+		"columns": {
+			"type": "number",
+			"default": 3
+		},
+		"columnsTablet": {
+			"type": "number",
+			"default": 2
+		},
+		"columnsMobile": {
+			"type": "number",
+			"default": 1
+		},
+		"gap": {
+			"type": "string",
+			"default": "30px"
+		},
+		"aspectRatio": {
+			"type": "string",
+			"default": "16/10"
+		},
+		"imageSize": {
+			"type": "string",
+			"default": "medium_large"
+		},
+		"showImage": {
+			"type": "boolean",
+			"default": true
+		},
+		"showTitle": {
+			"type": "boolean",
+			"default": true
+		},
+		"showExcerpt": {
+			"type": "boolean",
+			"default": true
+		},
+		"excerptLength": {
+			"type": "number",
+			"default": 20
+		},
+		"showDate": {
+			"type": "boolean",
+			"default": true
+		},
+		"showAuthor": {
+			"type": "boolean",
+			"default": false
+		},
+		"showCategory": {
+			"type": "boolean",
+			"default": true
+		},
+		"showReadMore": {
+			"type": "boolean",
+			"default": true
+		},
+		"readMoreText": {
+			"type": "string",
+			"default": "Read more"
+		},
+		"pagination": {
+			"type": "string",
+			"default": "none",
+			"enum": [
+				"none",
+				"standard",
+				"load-more",
+				"infinite"
+			]
+		},
+		"showFilters": {
+			"type": "boolean",
+			"default": false
+		},
+		"filterTaxonomy": {
+			"type": "string",
+			"default": "category"
+		},
+		"titleColour": {
+			"type": "string",
+			"default": "primary"
+		},
+		"titleFontSize": {
+			"type": "string"
+		},
+		"excerptColour": {
+			"type": "string",
+			"default": "text"
+		},
+		"metaColour": {
+			"type": "string",
+			"default": "text-muted"
+		},
+		"categoryBadgeColour": {
+			"type": "string",
+			"default": "text-inverse"
+		},
+		"categoryBadgeBgColour": {
+			"type": "string",
+			"default": "primary"
+		},
+		"readMoreColour": {
+			"type": "string",
+			"default": "primary"
+		},
+		"cardBgColour": {
+			"type": "string",
+			"default": "surface"
+		},
+		"hoverBackgroundColour": {
+			"type": "string"
+		},
+		"hoverTextColour": {
+			"type": "string"
+		},
+		"hoverBorderColour": {
+			"type": "string"
+		},
+		"hoverScale": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverImageZoom": {
+			"type": "boolean",
+			"default": true
+		},
+		"transitionDuration": {
+			"type": "string",
+			"default": "300"
+		},
+		"transitionEasing": {
+			"type": "string",
+			"default": "ease"
+		},
+		"carouselAutoplay": {
+			"type": "boolean",
+			"default": false
+		},
+		"carouselSpeed": {
+			"type": "number",
+			"default": 5000
+		},
+		"carouselShowDots": {
+			"type": "boolean",
+			"default": true
+		},
+		"carouselShowArrows": {
+			"type": "boolean",
+			"default": true
+		},
+		"staggerDelay": {
+			"type": "number",
+			"default": 60
+		},
+		"sgsAnimation": {
+			"type": "string",
+			"default": "fade-up"
+		},
+		"sgsAnimationDuration": {
+			"type": "string",
+			"default": "medium"
+		},
+		"sgsAnimationEasing": {
+			"type": "string",
+			"default": "ease-out"
+		},
+		"widthMode": {
+			"type": "string",
+			"default": "default",
+			"enum": [
+				"default",
+				"wide",
+				"full",
+				"custom"
+			]
+		},
+		"widthModeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeDesktop": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"gapTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gapMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumns": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRows": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridAutoRows": {
+			"type": "string",
+			"default": ""
+		},
+		"justifyItems": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end"
+			]
+		},
+		"alignContent": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end",
+				"space-between",
+				"space-around",
+				"space-evenly"
+			]
+		},
+		"templateMode": {
+			"type": "string",
+			"default": "free",
+			"enum": [
+				"free",
+				"grid-section",
+				"card-grid"
+			]
+		},
+		"flexDirection": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"row",
+				"column"
+			]
+		},
+		"flexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap"
+			]
+		},
+		"justifyContent": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"flex-start",
+				"center",
+				"flex-end",
+				"space-between",
+				"space-around"
+			]
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"render": "file:./render.php",
+	"example": {
+		"attributes": {
+			"layout": "grid",
+			"columns": 3,
+			"cardStyle": "card",
+			"showImage": true,
+			"showExcerpt": true,
+			"postsPerPage": 6
+		}
+	}
 }

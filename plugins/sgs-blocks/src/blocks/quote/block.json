@@ -1,479 +1,494 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/quote",
-    "replaces": "core/quote",
-    "version": "0.2.0",
-    "title": "Quote",
-    "category": "sgs-content",
-    "description": "Attributed blockquote with body paragraphs and an optional footer attribution. Emits semantic <blockquote> + <footer> so converter-pipeline outputs preserve the correct HTML5 structure and inheritable italic styling.",
-    "keywords": [
-        "quote",
-        "blockquote",
-        "attribution",
-        "pullquote",
-        "testimonial"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "format-quote",
-    "render": "file:./render.php",
-    "supports": {
-        "anchor": true,
-        "className": true,
-        "html": false,
-        "color": false
-    },
-    "attributes": {
-        "body": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            },
-            "default": [],
-            "role": "content"
-        },
-        "bodyTag": {
-            "type": "string",
-            "enum": [
-                "p",
-                "div"
-            ],
-            "default": "p"
-        },
-        "bodyColour": {
-            "type": "string",
-            "default": ""
-        },
-        "bodyFontSize": {
-            "type": "number"
-        },
-        "bodyFontSizeTablet": {
-            "type": "number"
-        },
-        "bodyFontSizeMobile": {
-            "type": "number"
-        },
-        "bodyFontSizeUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "bodyFontWeight": {
-            "type": "string",
-            "default": ""
-        },
-        "bodyFontFamily": {
-            "type": "string",
-            "default": ""
-        },
-        "bodyFontStyle": {
-            "type": "string",
-            "enum": [
-                "",
-                "normal",
-                "italic"
-            ],
-            "default": "italic"
-        },
-        "bodyTextDecoration": {
-            "type": "string",
-            "enum": [
-                "",
-                "none",
-                "underline",
-                "line-through"
-            ],
-            "default": ""
-        },
-        "bodyTextTransform": {
-            "type": "string",
-            "enum": [
-                "",
-                "none",
-                "uppercase",
-                "lowercase",
-                "capitalize"
-            ],
-            "default": ""
-        },
-        "bodyLineHeight": {
-            "type": "number"
-        },
-        "bodyLineHeightTablet": {
-            "type": "number"
-        },
-        "bodyLineHeightMobile": {
-            "type": "number"
-        },
-        "bodyLineHeightUnit": {
-            "type": "string",
-            "default": "em"
-        },
-        "bodyLetterSpacing": {
-            "type": "number"
-        },
-        "bodyLetterSpacingUnit": {
-            "type": "string",
-            "default": "em"
-        },
-        "bodyMarginBottom": {
-            "type": "number"
-        },
-        "bodyMarginBottomTablet": {
-            "type": "number"
-        },
-        "bodyMarginBottomMobile": {
-            "type": "number"
-        },
-        "bodyMarginUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "attribution": {
-            "type": "string",
-            "default": ""
-        },
-        "attributionTag": {
-            "type": "string",
-            "enum": [
-                "footer",
-                "div",
-                "cite"
-            ],
-            "default": "footer"
-        },
-        "attributionEnabled": {
-            "type": "boolean",
-            "default": true
-        },
-        "attributionColour": {
-            "type": "string",
-            "default": ""
-        },
-        "attributionFontSize": {
-            "type": "number"
-        },
-        "attributionFontSizeTablet": {
-            "type": "number"
-        },
-        "attributionFontSizeMobile": {
-            "type": "number"
-        },
-        "attributionFontSizeUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "attributionFontWeight": {
-            "type": "string",
-            "default": ""
-        },
-        "attributionFontFamily": {
-            "type": "string",
-            "default": ""
-        },
-        "attributionFontStyle": {
-            "type": "string",
-            "enum": [
-                "",
-                "normal",
-                "italic"
-            ],
-            "default": ""
-        },
-        "attributionTextDecoration": {
-            "type": "string",
-            "enum": [
-                "",
-                "none",
-                "underline",
-                "line-through"
-            ],
-            "default": ""
-        },
-        "attributionTextTransform": {
-            "type": "string",
-            "enum": [
-                "",
-                "none",
-                "uppercase",
-                "lowercase",
-                "capitalize"
-            ],
-            "default": ""
-        },
-        "attributionLineHeight": {
-            "type": "number"
-        },
-        "attributionLineHeightUnit": {
-            "type": "string",
-            "default": "em"
-        },
-        "attributionMarginTop": {
-            "type": "number"
-        },
-        "attributionMarginTopTablet": {
-            "type": "number"
-        },
-        "attributionMarginTopMobile": {
-            "type": "number"
-        },
-        "attributionMarginUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "backgroundColour": {
-            "type": "string",
-            "default": ""
-        },
-        "borderRadius": {
-            "type": "string",
-            "default": ""
-        },
-        "borderRadiusUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "borderRadiusTL": {
-            "type": "string",
-            "default": ""
-        },
-        "borderRadiusTR": {
-            "type": "string",
-            "default": ""
-        },
-        "borderRadiusBL": {
-            "type": "string",
-            "default": ""
-        },
-        "borderRadiusBR": {
-            "type": "string",
-            "default": ""
-        },
-        "borderWidthTop": {
-            "type": "string",
-            "default": ""
-        },
-        "borderWidthRight": {
-            "type": "string",
-            "default": ""
-        },
-        "borderWidthBottom": {
-            "type": "string",
-            "default": ""
-        },
-        "borderWidthLeft": {
-            "type": "string",
-            "default": ""
-        },
-        "borderWidthUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "borderStyle": {
-            "type": "string",
-            "enum": [
-                "none",
-                "solid",
-                "dashed",
-                "dotted",
-                "double",
-                "groove",
-                "ridge",
-                "inset",
-                "outset"
-            ],
-            "default": "none"
-        },
-        "borderColour": {
-            "type": "string",
-            "default": ""
-        },
-        "boxShadow": {
-            "type": "string",
-            "default": ""
-        },
-        "boxShadowHover": {
-            "type": "string",
-            "default": ""
-        },
-        "hoverScale": {
-            "type": "number",
-            "default": null
-        },
-        "hoverColour": {
-            "type": "string",
-            "default": ""
-        },
-        "hoverBackground": {
-            "type": "string",
-            "default": ""
-        },
-        "marginTop": {
-            "type": "string",
-            "default": ""
-        },
-        "marginRight": {
-            "type": "string",
-            "default": ""
-        },
-        "marginBottom": {
-            "type": "string",
-            "default": ""
-        },
-        "marginLeft": {
-            "type": "string",
-            "default": ""
-        },
-        "marginUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "marginTopTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "marginRightTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "marginBottomTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "marginLeftTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "marginTopMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "marginRightMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "marginBottomMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "marginLeftMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "paddingTop": {
-            "type": "string",
-            "default": ""
-        },
-        "paddingRight": {
-            "type": "string",
-            "default": ""
-        },
-        "paddingBottom": {
-            "type": "string",
-            "default": ""
-        },
-        "paddingLeft": {
-            "type": "string",
-            "default": ""
-        },
-        "paddingUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "paddingTopTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "paddingRightTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "paddingBottomTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "paddingLeftTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "paddingTopMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "paddingRightMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "paddingBottomMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "paddingLeftMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "customWidth": {
-            "type": "string",
-            "default": ""
-        },
-        "customWidthUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "widthMode": {
-            "type": "string",
-            "enum": [ "default", "wide", "full", "custom" ],
-            "default": "default"
-        },
-        "widthModeMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "widthModeTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "widthModeDesktop": {
-            "type": "string",
-            "default": ""
-        },
-        "contentWidth": {
-            "type": "string",
-            "default": ""
-        },
-        "maxWidth": {
-            "type": "string",
-            "default": ""
-        },
-        "inheritStyle": {
-            "type": "boolean",
-            "default": false
-        },
-        "transitionDuration": {
-            "type": "string",
-            "default": "300"
-        },
-        "transitionEasing": {
-            "type": "string",
-            "default": "ease-in-out"
-        }
-    },
-    "editorScript": "file:./index.js",
-    "editorStyle": "file:./index.css",
-    "style": "file:./style-index.css",
-    "example": {
-        "attributes": {
-            "body": [
-                "A great quotation block lets your content speak for itself.",
-                "Place the source's words here for emphasis and credibility.",
-                "A short third line keeps the example representative."
-            ],
-            "attribution": "— Jane Smith, Customer",
-            "attributionColour": "primary",
-            "bodyFontStyle": "italic",
-            "paddingTop": 24,
-            "paddingRight": 24,
-            "paddingBottom": 24,
-            "paddingLeft": 24
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/quote",
+	"replaces": "core/quote",
+	"version": "0.2.0",
+	"title": "Quote",
+	"category": "sgs-content",
+	"description": "Attributed blockquote with body paragraphs and an optional footer attribution. Emits semantic <blockquote> + <footer> so converter-pipeline outputs preserve the correct HTML5 structure and inheritable italic styling.",
+	"keywords": [
+		"quote",
+		"blockquote",
+		"attribution",
+		"pullquote",
+		"testimonial"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "format-quote",
+	"render": "file:./render.php",
+	"supports": {
+		"anchor": true,
+		"className": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"gradients": true,
+			"text": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
+	},
+	"attributes": {
+		"body": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"default": [],
+			"role": "content"
+		},
+		"bodyTag": {
+			"type": "string",
+			"enum": [
+				"p",
+				"div"
+			],
+			"default": "p"
+		},
+		"bodyColour": {
+			"type": "string",
+			"default": ""
+		},
+		"bodyFontSize": {
+			"type": "number"
+		},
+		"bodyFontSizeTablet": {
+			"type": "number"
+		},
+		"bodyFontSizeMobile": {
+			"type": "number"
+		},
+		"bodyFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"bodyFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"bodyFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"bodyFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": "italic"
+		},
+		"bodyTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"bodyTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"bodyLineHeight": {
+			"type": "number"
+		},
+		"bodyLineHeightTablet": {
+			"type": "number"
+		},
+		"bodyLineHeightMobile": {
+			"type": "number"
+		},
+		"bodyLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"bodyLetterSpacing": {
+			"type": "number"
+		},
+		"bodyLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"bodyMarginBottom": {
+			"type": "number"
+		},
+		"bodyMarginBottomTablet": {
+			"type": "number"
+		},
+		"bodyMarginBottomMobile": {
+			"type": "number"
+		},
+		"bodyMarginUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"attribution": {
+			"type": "string",
+			"default": ""
+		},
+		"attributionTag": {
+			"type": "string",
+			"enum": [
+				"footer",
+				"div",
+				"cite"
+			],
+			"default": "footer"
+		},
+		"attributionEnabled": {
+			"type": "boolean",
+			"default": true
+		},
+		"attributionColour": {
+			"type": "string",
+			"default": ""
+		},
+		"attributionFontSize": {
+			"type": "number"
+		},
+		"attributionFontSizeTablet": {
+			"type": "number"
+		},
+		"attributionFontSizeMobile": {
+			"type": "number"
+		},
+		"attributionFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"attributionFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"attributionFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"attributionFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"attributionTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"attributionTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"attributionLineHeight": {
+			"type": "number"
+		},
+		"attributionLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"attributionMarginTop": {
+			"type": "number"
+		},
+		"attributionMarginTopTablet": {
+			"type": "number"
+		},
+		"attributionMarginTopMobile": {
+			"type": "number"
+		},
+		"attributionMarginUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderRadius": {
+			"type": "string",
+			"default": ""
+		},
+		"borderRadiusUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"borderRadiusTL": {
+			"type": "string",
+			"default": ""
+		},
+		"borderRadiusTR": {
+			"type": "string",
+			"default": ""
+		},
+		"borderRadiusBL": {
+			"type": "string",
+			"default": ""
+		},
+		"borderRadiusBR": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidthTop": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidthRight": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidthBottom": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidthLeft": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "none"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"boxShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"boxShadowHover": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverScale": {
+			"type": "number",
+			"default": null
+		},
+		"hoverColour": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"marginTop": {
+			"type": "string",
+			"default": ""
+		},
+		"marginRight": {
+			"type": "string",
+			"default": ""
+		},
+		"marginBottom": {
+			"type": "string",
+			"default": ""
+		},
+		"marginLeft": {
+			"type": "string",
+			"default": ""
+		},
+		"marginUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"marginTopTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"marginRightTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"marginBottomTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"marginLeftTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"marginTopMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"marginRightMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"marginBottomMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"marginLeftMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingTop": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingRight": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingBottom": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingLeft": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"paddingTopTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingRightTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingBottomTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingLeftTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingTopMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingRightMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingBottomMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingLeftMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"widthMode": {
+			"type": "string",
+			"enum": [
+				"default",
+				"wide",
+				"full",
+				"custom"
+			],
+			"default": "default"
+		},
+		"widthModeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeDesktop": {
+			"type": "string",
+			"default": ""
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"inheritStyle": {
+			"type": "boolean",
+			"default": false
+		},
+		"transitionDuration": {
+			"type": "string",
+			"default": "300"
+		},
+		"transitionEasing": {
+			"type": "string",
+			"default": "ease-in-out"
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"example": {
+		"attributes": {
+			"body": [
+				"A great quotation block lets your content speak for itself.",
+				"Place the source's words here for emphasis and credibility.",
+				"A short third line keeps the example representative."
+			],
+			"attribution": "— Jane Smith, Customer",
+			"attributionColour": "primary",
+			"bodyFontStyle": "italic",
+			"paddingTop": 24,
+			"paddingRight": 24,
+			"paddingBottom": 24,
+			"paddingLeft": 24
+		}
+	}
 }

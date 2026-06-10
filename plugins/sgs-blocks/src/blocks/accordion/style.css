@@ -1,6 +1,7 @@
 /* ─── Accordion — Frontend + Editor Styles ─── */
 
-.sgs-accordion {
+/* :where() = specificity 0 so the mirror's flexDirection attr can override (F3). */
+:where(.sgs-accordion) {
 	display: flex;
 	flex-direction: column;
 }

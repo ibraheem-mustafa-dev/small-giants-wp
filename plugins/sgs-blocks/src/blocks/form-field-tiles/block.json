@@ -1,229 +1,300 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/form-field-tiles",
-    "version": "0.2.0",
-    "title": "SGS Tiles Field",
-    "category": "sgs-forms",
-    "description": "Visual tile selection with icons.",
-    "keywords": [
-        "tiles",
-        "choice",
-        "visual",
-        "icon"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "grid-view",
-    "parent": [
-        "sgs/form",
-        "sgs/form-step"
-    ],
-    "usesContext": [
-        "sgs/formId"
-    ],
-    "supports": {
-        "sgs": {
-            "imageControls": false
-        },
-        "html": false,
-        "anchor": false
-    },
-    "attributes": {
-        "fieldName": {
-            "type": "string",
-            "default": ""
-        },
-        "label": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "placeholder": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "helpText": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "required": {
-            "type": "boolean",
-            "default": false
-        },
-        "width": {
-            "type": "string",
-            "default": "full"
-        },
-        "tiles": {
-            "type": "array",
-            "default": [],
-            "items": {
-                "type": "object",
-                "properties": {
-                    "label": {
-                        "type": "string"
-                    },
-                    "value": {
-                        "type": "string"
-                    },
-                    "icon": {
-                        "type": "string"
-                    },
-                    "iconSource": {
-                        "type": "string"
-                    },
-                    "image": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "multiSelect": {
-            "type": "boolean",
-            "default": false
-        },
-        "columns": {
-            "type": "number",
-            "default": 3
-        },
-        "conditionalField": {
-            "type": "string",
-            "default": ""
-        },
-        "conditionalOperator": {
-            "type": "string",
-            "default": "equals"
-        },
-        "conditionalValue": {
-            "type": "string",
-            "default": ""
-        },
-        "selectedStyle": {
-            "type": "string",
-            "default": "checkmark"
-        },
-        "widthMode": {
-            "type": "string",
-            "default": "default",
-            "enum": ["default", "wide", "full", "custom"]
-        },
-        "widthModeMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "widthModeTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "widthModeDesktop": {
-            "type": "string",
-            "default": ""
-        },
-        "customWidth": {
-            "type": "number",
-            "default": 0
-        },
-        "customWidthUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "contentWidth": {
-            "type": "string",
-            "default": ""
-        },
-        "maxWidth": {
-            "type": "string",
-            "default": ""
-        },
-        "layout": {
-            "type": "string",
-            "default": ""
-        },
-        "gap": {
-            "type": "string",
-            "default": ""
-        },
-        "gapTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "gapMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateColumns": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateColumnsTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateColumnsMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateRows": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateRowsTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateRowsMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "gridAutoRows": {
-            "type": "string",
-            "default": ""
-        },
-        "justifyItems": {
-            "type": "string",
-            "default": "stretch",
-            "enum": ["stretch", "start", "center", "end"]
-        },
-        "alignContent": {
-            "type": "string",
-            "default": "stretch",
-            "enum": ["stretch", "start", "center", "end", "space-between", "space-around", "space-evenly"]
-        },
-        "templateMode": {
-            "type": "string",
-            "default": "free",
-            "enum": ["free", "grid-section", "card-grid"]
-        }
-    },
-    "render": "file:./render.php",
-    "editorScript": "file:./index.js",
-    "example": {
-        "attributes": {
-            "label": "What type of business are you?",
-            "tiles": [
-                {
-                    "label": "Restaurant",
-                    "icon": "utensils",
-                    "iconSource": "lucide"
-                },
-                {
-                    "label": "Hotel",
-                    "icon": "building",
-                    "iconSource": "lucide"
-                },
-                {
-                    "label": "Retailer",
-                    "icon": "shopping-bag",
-                    "iconSource": "lucide"
-                },
-                {
-                    "label": "Caterer",
-                    "icon": "chef-hat",
-                    "iconSource": "lucide"
-                }
-            ]
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/form-field-tiles",
+	"version": "0.2.0",
+	"title": "SGS Tiles Field",
+	"category": "sgs-forms",
+	"description": "Visual tile selection with icons.",
+	"keywords": [
+		"tiles",
+		"choice",
+		"visual",
+		"icon"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "grid-view",
+	"parent": [
+		"sgs/form",
+		"sgs/form-step"
+	],
+	"usesContext": [
+		"sgs/formId"
+	],
+	"supports": {
+		"sgs": {
+			"imageControls": false
+		},
+		"html": false,
+		"anchor": false,
+		"color": {
+			"background": true,
+			"gradients": true,
+			"text": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
+	},
+	"attributes": {
+		"fieldName": {
+			"type": "string",
+			"default": ""
+		},
+		"label": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"placeholder": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"helpText": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"required": {
+			"type": "boolean",
+			"default": false
+		},
+		"width": {
+			"type": "string",
+			"default": "full"
+		},
+		"tiles": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"label": {
+						"type": "string"
+					},
+					"value": {
+						"type": "string"
+					},
+					"icon": {
+						"type": "string"
+					},
+					"iconSource": {
+						"type": "string"
+					},
+					"image": {
+						"type": "string"
+					}
+				}
+			}
+		},
+		"multiSelect": {
+			"type": "boolean",
+			"default": false
+		},
+		"columns": {
+			"type": "number",
+			"default": 3
+		},
+		"conditionalField": {
+			"type": "string",
+			"default": ""
+		},
+		"conditionalOperator": {
+			"type": "string",
+			"default": "equals"
+		},
+		"conditionalValue": {
+			"type": "string",
+			"default": ""
+		},
+		"selectedStyle": {
+			"type": "string",
+			"default": "checkmark"
+		},
+		"widthMode": {
+			"type": "string",
+			"default": "default",
+			"enum": [
+				"default",
+				"wide",
+				"full",
+				"custom"
+			]
+		},
+		"widthModeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeDesktop": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"layout": {
+			"type": "string",
+			"default": ""
+		},
+		"gap": {
+			"type": "string",
+			"default": ""
+		},
+		"gapTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gapMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumns": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRows": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridAutoRows": {
+			"type": "string",
+			"default": ""
+		},
+		"justifyItems": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end"
+			]
+		},
+		"alignContent": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end",
+				"space-between",
+				"space-around",
+				"space-evenly"
+			]
+		},
+		"templateMode": {
+			"type": "string",
+			"default": "free",
+			"enum": [
+				"free",
+				"grid-section",
+				"card-grid"
+			]
+		},
+		"columnsMobile": {
+			"type": "number",
+			"default": 1
+		},
+		"columnsTablet": {
+			"type": "number",
+			"default": 2
+		},
+		"flexDirection": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"row",
+				"column"
+			]
+		},
+		"flexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap"
+			]
+		},
+		"justifyContent": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"flex-start",
+				"center",
+				"flex-end",
+				"space-between",
+				"space-around"
+			]
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"example": {
+		"attributes": {
+			"label": "What type of business are you?",
+			"tiles": [
+				{
+					"label": "Restaurant",
+					"icon": "utensils",
+					"iconSource": "lucide"
+				},
+				{
+					"label": "Hotel",
+					"icon": "building",
+					"iconSource": "lucide"
+				},
+				{
+					"label": "Retailer",
+					"icon": "shopping-bag",
+					"iconSource": "lucide"
+				},
+				{
+					"label": "Caterer",
+					"icon": "chef-hat",
+					"iconSource": "lucide"
+				}
+			]
+		}
+	}
 }

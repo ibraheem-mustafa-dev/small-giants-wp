@@ -1,187 +1,203 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/feature-grid",
-    "version": "0.2.0",
-    "title": "SGS Feature Grid",
-    "category": "sgs-layout",
-    "description": "A responsive grid container for SGS Info Boxes. Default: auto-fill flexbox wrap, 4-up on desktop, stacked on mobile.",
-    "keywords": [
-        "feature grid",
-        "info box grid",
-        "card grid",
-        "ingredients"
-    ],
-    "textdomain": "sgs-blocks",
-    "supports": {
-        "anchor": true,
-        "customClassName": true,
-        "html": false,
-        "align": [
-            "wide",
-            "full"
-        ],
-        "color": {
-            "background": true,
-            "text": false
-        },
-        "spacing": {
-            "margin": true,
-            "padding": true
-        }
-    },
-    "allowedBlocks": [
-        "sgs/info-box"
-    ],
-    "attributes": {
-        "layoutMode": {
-            "type": "string",
-            "default": "auto-flex"
-        },
-        "columnsDesktop": {
-            "type": "number",
-            "default": 4
-        },
-        "columnsTablet": {
-            "type": "number",
-            "default": 2
-        },
-        "columnsMobile": {
-            "type": "number",
-            "default": 1
-        },
-        "minItemWidth": {
-            "type": "number",
-            "default": 240
-        },
-        "minItemWidthUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "gap": {
-            "type": "string",
-            "default": "24px"
-        },
-        "gapTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "gapMobile": {
-            "type": "string",
-            "default": "16px"
-        },
-        "_comment_gap_unit": "gapUnit retired 2026-06-07 — gap now stores a full CSS value (e.g. '24px') resolved by sgs_container_gap_value(). Existing posts migrate via deprecated.js v3.",
-        "alignItems": {
-            "type": "string",
-            "default": "stretch"
-        },
-        "justifyItems": {
-            "type": "string",
-            "default": "stretch"
-        },
-        "widthMode": {
-            "type": "string",
-            "default": "default",
-            "enum": ["default", "wide", "full", "custom"]
-        },
-        "widthModeMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "widthModeTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "widthModeDesktop": {
-            "type": "string",
-            "default": ""
-        },
-        "customWidth": {
-            "type": "number",
-            "default": 0
-        },
-        "customWidthUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "contentWidth": {
-            "type": "string",
-            "default": ""
-        },
-        "maxWidth": {
-            "type": "string",
-            "default": ""
-        },
-        "layout": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateColumns": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateColumnsTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateColumnsMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateRows": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateRowsTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "gridTemplateRowsMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "gridAutoRows": {
-            "type": "string",
-            "default": ""
-        },
-        "direction": {
-            "type": "string",
-            "default": ""
-        },
-        "flexDirection": {
-            "type": "string",
-            "default": ""
-        },
-        "flexWrap": {
-            "type": "string",
-            "default": ""
-        },
-        "wrap": {
-            "type": "string",
-            "default": ""
-        },
-        "justifyContent": {
-            "type": "string",
-            "default": ""
-        },
-        "alignContent": {
-            "type": "string",
-            "default": ""
-        },
-        "templateMode": {
-            "type": "string",
-            "default": ""
-        }
-    },
-    "render": "file:./render.php",
-    "editorScript": "file:./index.js",
-    "editorStyle": "file:./index.css",
-    "style": "file:./style-index.css",
-    "example": {
-        "attributes": {
-            "layoutMode": "auto-flex",
-            "columnsDesktop": 4,
-            "gap": 24
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/feature-grid",
+	"version": "0.2.0",
+	"title": "SGS Feature Grid",
+	"category": "sgs-layout",
+	"description": "A responsive grid container for SGS Info Boxes. Default: auto-fill flexbox wrap, 4-up on desktop, stacked on mobile.",
+	"keywords": [
+		"feature grid",
+		"info box grid",
+		"card grid",
+		"ingredients"
+	],
+	"textdomain": "sgs-blocks",
+	"supports": {
+		"anchor": true,
+		"customClassName": true,
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		],
+		"color": {
+			"background": true,
+			"text": true,
+			"gradients": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
+	},
+	"allowedBlocks": [
+		"sgs/info-box"
+	],
+	"attributes": {
+		"layoutMode": {
+			"type": "string",
+			"default": "auto-flex"
+		},
+		"columnsDesktop": {
+			"type": "number",
+			"default": 4
+		},
+		"columnsTablet": {
+			"type": "number",
+			"default": 2
+		},
+		"columnsMobile": {
+			"type": "number",
+			"default": 1
+		},
+		"minItemWidth": {
+			"type": "number",
+			"default": 240
+		},
+		"minItemWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"gap": {
+			"type": "string",
+			"default": "24px"
+		},
+		"gapTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gapMobile": {
+			"type": "string",
+			"default": "16px"
+		},
+		"_comment_gap_unit": "gapUnit retired 2026-06-07 — gap now stores a full CSS value (e.g. '24px') resolved by sgs_container_gap_value(). Existing posts migrate via deprecated.js v3.",
+		"alignItems": {
+			"type": "string",
+			"default": "stretch"
+		},
+		"justifyItems": {
+			"type": "string",
+			"default": "stretch"
+		},
+		"widthMode": {
+			"type": "string",
+			"default": "default",
+			"enum": [
+				"default",
+				"wide",
+				"full",
+				"custom"
+			]
+		},
+		"widthModeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"widthModeDesktop": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"layout": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumns": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRows": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridAutoRows": {
+			"type": "string",
+			"default": ""
+		},
+		"direction": {
+			"type": "string",
+			"default": ""
+		},
+		"flexDirection": {
+			"type": "string",
+			"default": ""
+		},
+		"flexWrap": {
+			"type": "string",
+			"default": ""
+		},
+		"wrap": {
+			"type": "string",
+			"default": ""
+		},
+		"justifyContent": {
+			"type": "string",
+			"default": ""
+		},
+		"alignContent": {
+			"type": "string",
+			"default": ""
+		},
+		"templateMode": {
+			"type": "string",
+			"default": ""
+		},
+		"columns": {
+			"type": "number",
+			"default": 2
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"example": {
+		"attributes": {
+			"layoutMode": "auto-flex",
+			"columnsDesktop": 4,
+			"gap": 24
+		}
+	}
 }

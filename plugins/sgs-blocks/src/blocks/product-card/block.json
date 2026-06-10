@@ -24,6 +24,11 @@
         "html": false,
         "align": false,
         "interactivity": true,
+        "color": {
+            "background": true,
+            "gradients": true,
+            "text": true
+        },
         "spacing": {
             "margin": true,
             "padding": false
