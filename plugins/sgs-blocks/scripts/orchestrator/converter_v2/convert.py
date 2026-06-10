@@ -1579,6 +1579,196 @@ def _lift_typography_to_block_attrs(
 
 
 # ============================================================================
+# F6a — Inherited / absent-value resolution  (Commit 3, FR-22-5.1, 2026-06-10)
+# ============================================================================
+#
+# DOM parent-chain walk for CSS-inherited typography properties.  This is
+# explicitly NOT the CSS-selector-ancestry walk that _collect_css_decls_for_element
+# already performs (council MF-4 — that walk matches CSS selectors, this walk
+# climbs the actual DOM parent nodes).
+#
+# Design: always-emit (no block_defaults table required, Commit 0b avoidable).
+# We emit the *resolved effective value* explicitly on every text leaf — even
+# when the value is the browser default — so it overrides the block's own
+# :where() CSS default.  Only falls back to a block_defaults lookup if
+# measured emit-bloat is a problem (not triggered in this build).
+#
+# R-22-9: universal over every leaf block, every inheritable property.
+# R-22-1: DB-gated (block_attr_map check before any emission).
+# R-22-6: values written to block attrs, never inline style.
+
+# The four CSS-inherited properties handled by F6a.
+_INHERITABLE_TYPOGRAPHY_PROPS: tuple[tuple[str, str], ...] = (
+    ("text-align",   "textAlign"),
+    ("color",        "textColour"),
+    ("font-family",  "fontFamily"),
+    ("line-height",  "lineHeight"),
+)
+
+# Browser / LTR default for each inheritable prop (used when NEITHER the leaf
+# NOR any ancestor declares the property — the "absence" case).
+# Only text-align has a meaningful LTR default that conflicts with block
+# :where() defaults (sgs/heading style.css centres by default at some levels).
+# color / font-family / line-height browser defaults vary widely and their
+# "absence" is correctly represented by NOT emitting the attr (faithful-absence).
+# The converter always-emits text-align:left for the absence case because the
+# block's :where() default can be centre; the other three are left absent when
+# neither leaf nor ancestor declares them.
+_TEXT_ALIGN_BROWSER_DEFAULT: str = "left"
+
+
+def _node_has_resolved_block(node: "Tag") -> bool:
+    """Return True when this DOM node itself resolves to a distinct SGS block slug.
+
+    Used as the stop-at-boundary test while walking the DOM parent chain.
+    A node is the boundary when it carries its own sgs- BEM block class (not just
+    an element class) that maps to a block slug.  This is the "resolved-block
+    boundary" the spec defines: stop walking parents when you reach the node that
+    owns the enclosing composite block.
+    """
+    classes = node.get("class", []) or []
+    sgs_classes = [c for c in classes if c.startswith("sgs-")]
+    if not sgs_classes:
+        return False
+    # Use the same resolution as walk() — if any of the classes maps to a block
+    # slug (i.e. resolve_slug_from_bem returns non-None), this node IS a
+    # resolved-block boundary.
+    return db.resolve_slug_from_bem(sgs_classes) is not None
+
+
+def _resolve_inherited_typography(
+    leaf_node: "Tag",
+    slug: str,
+    css_rules: dict,
+) -> dict:
+    """Resolve inherited / absent typography values for a text-leaf block.
+
+    FR-22-5.1 — Commit 3 (always-emit design):
+
+    For each of the four CSS-inherited properties (text-align / color /
+    font-family / line-height):
+
+      1. If the leaf's own CSS declarations contain the property → that value
+         wins (already handled by _lift_typography_to_block_attrs; this
+         function does NOT overwrite attrs already set by that lifter).
+      2. Else walk the DOM parent chain from the leaf upward; the NEAREST
+         ancestor that declares the property wins (nearest-ancestor-wins).
+         Stop at the RESOLVED-BLOCK BOUNDARY — the first ancestor that itself
+         carries a resolved SGS block class — so alignment set by a parent
+         composite's wrapper does not bleed into an adjacent block.
+      3. If neither the leaf nor any ancestor declares text-align → emit the
+         LTR browser default (``left``) so it overrides the block's own
+         :where() centre default.  color / font-family / line-height are NOT
+         emitted for their absent case (browser defaults vary; faithful-absence
+         applies).
+
+    Parameters
+    ----------
+    leaf_node:
+        The BeautifulSoup Tag that resolved to the leaf block.
+    slug:
+        The resolved leaf block slug (used to gate attr emission via DB).
+    css_rules:
+        The full CSS-rules dict for the current draft page.
+
+    Returns
+    -------
+    dict
+        Attr key→value pairs to merge into the leaf's attrs dict using
+        setdefault (caller decides whether to setdefault or assign; the
+        caller in walk() uses setdefault so the leaf's own CSS wins).
+    """
+    if not slug or not slug.startswith("sgs/"):
+        return {}
+
+    block_attr_map = db.block_attrs(slug)
+    if not block_attr_map:
+        return {}
+
+    # Collect the leaf's own CSS declarations (from _collect_css_decls_for_element)
+    # so we can skip properties already present on the leaf itself — those are
+    # resolved by _lift_typography_to_block_attrs; we must not duplicate.
+    leaf_base, _ = _collect_css_decls_for_element(leaf_node, css_rules)
+
+    # ---- DOM parent-chain walk ----
+    # We need the effective value for each of the 4 inheritable properties.
+    # Walk up from leaf_node.parent, collecting base declarations at each level.
+    # Stop when we hit a resolved-block boundary OR the document root.
+
+    # effective_from_ancestor maps css_prop → resolved value from nearest ancestor.
+    effective_from_ancestor: dict[str, str] = {}
+
+    parent = getattr(leaf_node, "parent", None)
+    while parent is not None and hasattr(parent, "name") and parent.name is not None:
+        # Stop condition: this ancestor IS a resolved SGS block — we have crossed
+        # into the enclosing composite's own root element.  Do not read its CSS
+        # as "ancestor CSS" for the leaf; that would bleed the composite's root
+        # alignment into a separate interior leaf.  We stop BEFORE including this
+        # ancestor's declarations.
+        if _node_has_resolved_block(parent):
+            break
+
+        # Collect base declarations for this ancestor (CSS-selector-ancestry on
+        # the ancestor node — this captures any rule targeting this ancestor's
+        # class, e.g. `.sgs-hero__inner { text-align: center }`).
+        anc_base, _ = _collect_css_decls_for_element(parent, css_rules)
+
+        for css_prop, _attr_name in _INHERITABLE_TYPOGRAPHY_PROPS:
+            if css_prop in effective_from_ancestor:
+                continue  # Nearer ancestor already provided this property.
+            if css_prop in anc_base:
+                effective_from_ancestor[css_prop] = _strip_important(anc_base[css_prop]).strip()
+
+        # If we have resolved all 4 properties, no need to climb further.
+        if len(effective_from_ancestor) == len(_INHERITABLE_TYPOGRAPHY_PROPS):
+            break
+
+        parent = getattr(parent, "parent", None)
+
+    # ---- Build the result dict ----
+    result: dict = {}
+
+    for css_prop, attr_name in _INHERITABLE_TYPOGRAPHY_PROPS:
+        # Leaf already declares this property directly → skip.
+        # _lift_typography_to_block_attrs handles it; we must not conflict.
+        if css_prop in leaf_base:
+            continue
+
+        # Block doesn't declare this attr → skip (R-22-1 faithful-absence gate).
+        if attr_name not in block_attr_map:
+            continue
+
+        # Determine the effective value.
+        if css_prop in effective_from_ancestor:
+            effective_val = effective_from_ancestor[css_prop]
+        elif css_prop == "text-align":
+            # Absence case: no text-align anywhere on leaf or ancestors.
+            # Emit the LTR browser default so it overrides the block's
+            # :where() CSS default (e.g. sgs/heading centres headings in
+            # some style.css rules; always-emit 'left' for LTR drafts).
+            effective_val = _TEXT_ALIGN_BROWSER_DEFAULT
+        else:
+            # color / font-family / line-height: faithful-absence — do NOT
+            # emit when the draft has no declaration anywhere on the DOM path.
+            continue
+
+        if not effective_val:
+            continue
+
+        # Colour properties: use the same extraction as _lift_typography_to_block_attrs
+        # (extract bare token slug or hex; do NOT wrap in var:preset|color|... since
+        # SGS render.php's sgs_colour_value() consumes raw tokens, not WP-native refs).
+        if css_prop == "color":
+            v = _extract_token_or_hex(effective_val)
+            if v is not None:
+                result[attr_name] = v
+        else:
+            result[attr_name] = effective_val
+
+    return result
+
+
+# ============================================================================
 # Consolidated CSS-lift entry point  (Commit 1a — call-site consolidation)
 # ============================================================================
 
@@ -2967,6 +3157,13 @@ def walk(
                 lift_root_supports=False,
                 lift_wrapper_css=False,
             )
+            # F6a — inherited / absent-value resolution (FR-22-5.1, Commit 3).
+            # After the leaf's own typography is lifted, resolve any inherited
+            # or absent values via the DOM parent-chain walk.  Uses setdefault
+            # so the leaf's own CSS (written above by route_node_css) always wins.
+            _f6a = _resolve_inherited_typography(node, _at_slug, css_rules)
+            for _k, _v in _f6a.items():
+                _at_attrs.setdefault(_k, _v)
             _trace("walker_branch_taken", branch="atomic_tag_swap",
                    node_tag=node.name, slug=_at_slug, attrs_keys=list(_at_attrs.keys()))
             return emit_wp_block(_at_slug, _at_attrs, [])
@@ -3190,6 +3387,16 @@ def walk(
             lift_typography=is_leaf,
             typo_slug=slug,
         )
+        # F6a — inherited / absent-value resolution (FR-22-5.1, Commit 3).
+        # Fire for leaf blocks only.  After the leaf's own typography is lifted
+        # by route_node_css, resolve any inherited or absent values via the DOM
+        # parent-chain walk.  setdefault semantics: the leaf's own CSS wins.
+        # R-22-9: universal — every leaf block on every resolved-slug path.
+        # R-22-1: DB-gated inside _resolve_inherited_typography.
+        if is_leaf:
+            _f6a_inherited = _resolve_inherited_typography(node, slug, css_rules)
+            for _f6a_k, _f6a_v in _f6a_inherited.items():
+                attrs.setdefault(_f6a_k, _f6a_v)
 
     if slug is not None and _is_container_mirror_block(slug):
         # R1.3 — widthMode fallback for SECTION-kind mirror composites at top level.
