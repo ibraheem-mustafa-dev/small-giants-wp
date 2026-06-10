@@ -317,7 +317,10 @@
 	/* Text colour for readability (AA — primary-dark on white failed 3.67:1 live,
 	 * axe 2026-06-10); the brand identity comes from the primary border + hover. */
 	color: var(--wp--preset--color--text, #3a2e26);
-	border: 2px solid var(--wp--preset--color--primary, #e68a95);
+	/* F6 (visual-polish): primary-dark border — >=3:1 vs white (WCAG 1.4.11
+	 * non-text contrast) and clearer primary/secondary hierarchy at 375px.
+	 * Was primary (pale pink, disappeared on white). */
+	border: 2px solid var(--wp--preset--color--primary-dark, #c56a7a);
 }
 
 .product-card .btn-secondary:hover {
@@ -510,6 +513,19 @@
 }
 
 /*
+ * F1 (visual-polish): the typed BUILT-IN card root carries .product-card +
+ * .sgs-product-card but NOT .product-card--live, so it fell to rule (A)
+ * (0,1,0), lost the WP is-layout-constrained tie on source order, and
+ * stretched to the full content width. Same house pattern as rule (B): a
+ * doubled-class (0,2,0) selector beats the layout rule. Placed BEFORE the
+ * grid-yield rules (B2 ties C; C must win in grids via source order).
+ */
+.product-card.sgs-product-card {
+	max-width: var( --sgs-product-card-max-width, 380px );
+	margin-inline: auto;
+}
+
+/*
  * ── D5: Grid-item fill — card must fill its grid track ───────────────────────
  *
  * Problem: the 380px max-width cap (standalone default) also applies when the
@@ -526,18 +542,21 @@
  * specificity to cover any future WP core emission.
  *
  * Specificity ordering (all max-width declarations on .product-card):
- *   (A) .product-card { max-width: … }                                  (0,1,0)
- *   (B) .product-card.product-card--live { max-width: … }              (0,2,0) ← above
- *   (C) .sgs-container--grid > .product-card { max-width: none }        (0,2,0) ← this rule
- *       :where(.is-layout-grid) > .product-card { max-width: none }     (0,1,0) ← supplemental
+ *   (A)  .product-card { max-width: … }                                 (0,1,0)
+ *   (B)  .product-card.product-card--live { max-width: … }             (0,2,0) ← above
+ *   (B2) .product-card.sgs-product-card { max-width: … }               (0,2,0) ← above (F1, typed built-in)
+ *   (C)  .sgs-container--grid > .product-card { max-width: none }       (0,2,0) ← this rule
+ *        .sgs-card-grid > .product-card { max-width: none }             (0,2,0) ← this rule (F1, card-grid parent)
+ *        :where(.is-layout-grid) > .product-card { max-width: none }    (0,1,0) ← supplemental
  *
- * Rule (C) beats (A) on specificity. Rule (C) ties (B) on specificity — but (C)
- * appears AFTER (B) in source order, so (C) wins the tie for any card inside a
- * grid, regardless of whether it also carries .product-card--live. This is
- * correct: a bound card in a grid must fill its track just like a Typed card.
+ * Rule (C) beats (A) on specificity. Rule (C) ties (B)/(B2) on specificity —
+ * but (C) appears AFTER both in source order, so (C) wins the tie for any card
+ * inside a grid (sgs/container grid OR sgs/card-grid), regardless of whether it
+ * also carries .product-card--live or .sgs-product-card. This is correct: any
+ * card in a grid must fill its track.
  *
- * Standalone (non-grid) case: (A) and (B) are unaffected — (C) does not fire
- * because the parent does not carry .sgs-container--grid.
+ * Standalone (non-grid) case: (A)/(B)/(B2) are unaffected — (C) does not fire
+ * because the parent carries neither .sgs-container--grid nor .sgs-card-grid.
  *
  * margin-inline: 0 overrides the auto-centering so the card aligns to the grid
  * cell edge. Auto-centering is only meaningful in the standalone (flow) case.
@@ -546,6 +565,7 @@
  * inside a grid container, not scoped to any client or variant.
  */
 .sgs-container--grid > .product-card,
+.sgs-card-grid > .product-card,
 :where(.is-layout-grid) > .product-card {
 	max-width: none;
 	margin-inline: 0;
@@ -774,11 +794,17 @@
  * (grep confirms zero collision in the codebase). No global selectors.
  */
 
-/* List reset — mobile-first stacked layout. */
+/* List reset — mobile-first stacked layout.
+ * F9 (visual-polish): visually subordinate the ladder — hairline top border,
+ * faint wash, 0.92em type — so it reads as supporting data under the price
+ * anchor, not a competing block. Data/row markup untouched. */
 .product-card__value-ladder {
 	list-style: none;
 	margin: 8px 0 0;
-	padding: 0;
+	padding: 6px 0 0;
+	border-top: 1px solid rgba(0, 0, 0, 0.08);
+	background: rgba(0, 0, 0, 0.025);
+	font-size: 0.92em;
 }
 
 /*
@@ -1045,4 +1071,72 @@
 .product-card .product-card__cta-secondary {
 	display: inline-block;
 	text-align: center;
+}
+
+/*
+ * ── Visual-polish round (2-rater judgement, 2026-06-10) ─────────────────────
+ */
+
+/*
+ * F5+F8: equal-height cards with bottom-pinned CTA region — GRID ONLY.
+ * Every rule scoped under `.sgs-card-grid >` so standalone cards (typed,
+ * bound, page-144 clones outside a card-grid) are pixel-identical.
+ * .product-card is already display:flex/column (base rule); height:100%
+ * stretches each card to its grid track so card chrome lines up.
+ * Both body variants (.product-card-body bound, .sgs-product-card__body
+ * typed built-in) already carry flex:1 globally.
+ */
+.sgs-card-grid > .product-card {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+/*
+ * Pin the LAST action group to the card bottom. Bound markup: the cart form
+ * is display:contents, so the pin lands on the button/anchor itself
+ * (.product-card__add-to-cart — the first element of the action group;
+ * secondary CTA + cart-status follow it down). The value ladder stays in
+ * normal flow above. Typed built-in cards need no rule here —
+ * .sgs-product-card__cta-row already carries margin-top:auto globally.
+ */
+.sgs-card-grid > .product-card .product-card__add-to-cart {
+	margin-top: auto;
+}
+
+/*
+ * F10: 3-line description clamp — GRID ONLY (CSS line-clamp, no new attr).
+ * Covers both description variants (bound .product-desc, typed built-in
+ * .sgs-product-card__description). Standalone cards keep full descriptions.
+ */
+.sgs-card-grid > .product-card .product-desc,
+.sgs-card-grid > .product-card .sgs-product-card__description {
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+/*
+ * F7: FEATURED badge overlays the image's top-left corner (industry pattern —
+ * the FEATURED tag has no draft precedent; the TRIAL tag stays in-body per
+ * draft canon). Scoped to the MEDIA containers only: an image-less card's
+ * in-body featured fallback stays in normal flow (never overlays the title).
+ * Colours come from the base .sgs-product-card__tag--featured rule (WCAG-
+ * treated); this adds position + the over-photo treatment (padding bump,
+ * radius, subtle shadow so it reads over any photo).
+ */
+.sgs-product-card__media-wrap {
+	position: relative;
+}
+
+.sgs-product-card__media-wrap .sgs-product-card__tag--featured,
+.product-card--live .product-card__media .sgs-product-card__tag--featured {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	z-index: 1;
+	padding: 6px 12px;
+	border-radius: 6px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }

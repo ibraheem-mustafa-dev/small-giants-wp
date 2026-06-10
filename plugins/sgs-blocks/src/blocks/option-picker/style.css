@@ -328,7 +328,10 @@
 	height: 2rem;
 	border-radius: 4px;
 	object-fit: cover;
-	border: 1px solid rgba(0, 0, 0, 0.1);
+	/* F4 (visual-polish): 0.15 keyline matches the colour-chip keyline so a
+	   pale/off-white product photo (live-caught: coconut swatch) never
+	   disappears against a white pill. */
+	border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 /* Pills containing an image swatch need slightly less horizontal padding

@@ -73,15 +73,29 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 
 		ob_start();
 
+		/*
+		 * F7 (visual-polish): the FEATURED tag overlays the image's top-left
+		 * corner — media-wrap is the positioning context; CSS does the overlay.
+		 * The TRIAL tag stays in-body (draft canon). An image-less featured
+		 * card falls back to the in-body chip: the overlay CSS is scoped to
+		 * .sgs-product-card__media-wrap, so the fallback stays in normal flow.
+		 */
+		$sgs_pcard_feat_badge = ( 'featured' === $sgs_pcard_variant ) ? $sgs_pcard_feat : '';
+
 		if ( '' !== $sgs_pcard_image ) :
 			?>
-			<img
-				class="sgs-product-card__image"
-				src="<?php echo esc_url( $sgs_pcard_image ); ?>"
-				alt="<?php echo esc_attr( $sgs_pcard_alt ); ?>"
-				loading="lazy"
-				decoding="async"
-			>
+			<div class="sgs-product-card__media-wrap">
+				<img
+					class="sgs-product-card__image"
+					src="<?php echo esc_url( $sgs_pcard_image ); ?>"
+					alt="<?php echo esc_attr( $sgs_pcard_alt ); ?>"
+					loading="lazy"
+					decoding="async"
+				>
+				<?php if ( '' !== $sgs_pcard_feat_badge ) : ?>
+					<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_pcard_feat_badge ); ?></span>
+				<?php endif; ?>
+			</div>
 			<?php
 		endif;
 		?>
@@ -91,9 +105,10 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 				?>
 				<span class="sgs-product-card__tag sgs-product-card__tag--trial"><?php echo esc_html( $sgs_pcard_trial ); ?></span>
 				<?php
-			elseif ( 'featured' === $sgs_pcard_variant && '' !== $sgs_pcard_feat ) :
+			elseif ( '' !== $sgs_pcard_feat_badge && '' === $sgs_pcard_image ) :
+				// Image-less featured card — in-body fallback (stays in flow).
 				?>
-				<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_pcard_feat ); ?></span>
+				<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_pcard_feat_badge ); ?></span>
 				<?php
 			endif;
 

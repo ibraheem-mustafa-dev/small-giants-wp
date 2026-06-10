@@ -222,6 +222,11 @@ $sgs_badge_typed    = 'trial' === $variant_style
 	: ( 'featured' === $variant_style ? ( isset( $attributes['featuredTag'] ) ? sanitize_text_field( (string) $attributes['featuredTag'] ) : '' ) : '' );
 $sgs_resolved_badge = sgs_product_card_resolve_element( $attributes, 'badge', $sgs_badge_typed, '' );
 
+// F7 (visual-polish): the FEATURED badge overlays the media area (overlay CSS is
+// scoped to the media containers); the TRIAL badge stays in-body (draft canon).
+$sgs_badge_overlay = ( 'featured' === $variant_style ) ? $sgs_resolved_badge : '';
+$sgs_badge_inbody  = ( 'featured' === $variant_style ) ? '' : $sgs_resolved_badge;
+
 /* ── FR-27-A5: WC below the version floor → read-only card (no configurator JS) */
 
 /*
@@ -245,11 +250,20 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 	?>
 	<?php // FP-H: live values resolved through the per-element override helper. ?>
 	<?php if ( '' !== $sgs_resolved_img ) : ?>
-		<img class="product-card-img" src="<?php echo esc_url( $sgs_resolved_img ); ?>" alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>" loading="lazy" decoding="async">
+		<?php // F7: media-wrap = positioning context for the featured overlay badge. ?>
+		<div class="sgs-product-card__media-wrap">
+			<img class="product-card-img" src="<?php echo esc_url( $sgs_resolved_img ); ?>" alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>" loading="lazy" decoding="async">
+			<?php if ( '' !== $sgs_badge_overlay ) : ?>
+				<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_badge_overlay ); ?></span>
+			<?php endif; ?>
+		</div>
 	<?php endif; ?>
 	<div class="product-card-body">
-		<?php if ( '' !== $sgs_resolved_badge ) : ?>
-			<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_resolved_badge ); ?></span>
+		<?php if ( '' !== $sgs_badge_inbody ) : ?>
+			<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_badge_inbody ); ?></span>
+		<?php elseif ( '' !== $sgs_badge_overlay && '' === $sgs_resolved_img ) : ?>
+			<?php // Image-less featured card — in-body fallback (overlay CSS is media-scoped, so this stays in flow). ?>
+			<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_badge_overlay ); ?></span>
 		<?php endif; ?>
 		<h3><?php echo esc_html( $sgs_resolved_title ); ?></h3>
 		<?php if ( '' !== $sgs_resolved_desc ) : ?>
@@ -637,6 +651,10 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				</div>
 			<?php endif; ?>
 
+			<?php if ( '' !== $sgs_badge_overlay ) : ?>
+				<?php // F7: featured badge overlays the media box (position:relative already on .product-card__media). ?>
+				<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_badge_overlay ); ?></span>
+			<?php endif; ?>
 			</div><?php // end .product-card__media (image only — the aspect-ratio/overflow:hidden box must NOT wrap the thumbnails or they get clipped). ?>
 
 			<?php // A4: thumbnail strip — hidden when < 2 images via context.thumbsHidden. ?>
@@ -673,9 +691,9 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			</div>
 
 			<div class="product-card-body">
-				<?php // FP-H: badge from the override helper (no live badge — '' when override off/empty). ?>
-				<?php if ( '' !== $sgs_resolved_badge ) : ?>
-					<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_resolved_badge ); ?></span>
+				<?php // FP-H: in-body badge (trial only — F7 moved the featured badge into the media box above). ?>
+				<?php if ( '' !== $sgs_badge_inbody ) : ?>
+					<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_badge_inbody ); ?></span>
 				<?php endif; ?>
 				<?php // FP-H: heading tag from headingLevel (clamped int — injection-safe); title via override helper. ?>
 				<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- integer-derived 'h2'|'h3'|'h4'. ?>>
@@ -1042,6 +1060,8 @@ $sgs_has_real_image = ( '' !== $sgs_resolved_img ) && ( false === strpos( (strin
 
 ob_start();
 ?>
+<?php // F7: media-wrap = positioning context for the featured overlay badge (wraps both the real-image and no-image states). ?>
+<div class="sgs-product-card__media-wrap">
 <?php if ( $sgs_has_real_image ) : ?>
 	<?php if ( '' !== $card_permalink ) : ?>
 	<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
@@ -1066,11 +1086,15 @@ ob_start();
 		<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
 	</div>
 <?php endif; ?>
+<?php if ( '' !== $sgs_badge_overlay ) : ?>
+	<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_badge_overlay ); ?></span>
+<?php endif; ?>
+</div>
 
 <div class="product-card-body">
-	<?php // FP-H: badge from the override helper (no live badge — '' when override off/empty). ?>
-	<?php if ( '' !== $sgs_resolved_badge ) : ?>
-		<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_resolved_badge ); ?></span>
+	<?php // FP-H: in-body badge (trial only — F7 moved the featured badge into the media wrap above). ?>
+	<?php if ( '' !== $sgs_badge_inbody ) : ?>
+		<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_badge_inbody ); ?></span>
 	<?php endif; ?>
 	<?php // FP-H: heading tag from headingLevel (clamped int — injection-safe); title via override helper. ?>
 	<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- integer-derived 'h2'|'h3'|'h4'. ?>>
