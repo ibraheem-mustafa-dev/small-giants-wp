@@ -1,8 +1,49 @@
-# Session Handoff — 2026-06-10 (SGS THEME thread, session 19 — R4 + F2 SHIPPED; Spec 27/28 COMPLETE bar gated P4/R5; D202)
+# Session Handoff — 2026-06-10 (SGS THEME thread, session 20 — FP-H/FP-E built-in product-card + grid product mode + page-level ItemList SHIPPED TO FINAL FORM; D204)
 
-> ## ⚡ SESSION-19/20 DELTA (2026-06-10 late, theme thread — READ FIRST, everything below this box predates it)
-> **FP-H + FP-E SHIPPED TO FINAL FORM (D204; commits `eccc3fc7`/`ec084e50`/`72e973c3`/`8be3366a` + specs `f04e5bc3`/`36279457`/`d929f26c`; gate doc = `.claude/reports/wave2/FP-E-FP-H-DESIGN-GATE-2026-06-10.md`, status SHIPPED).** The product-card is a built-in-element block in all modes (connect+override UX, per-element override toggles, price never overridable, image override = default with live swaps); card-grid has the wc-product mode (smart collections + hand-pick + refill); ONE page-level ItemList per page; ProductGroup gated to single-product-focus pages; the card itself emits NO schema (research-check verdict, persisted). Earlier same day: R4 slug-templates shipped (`0d7badb8` co-active + my `f5f3449b` language pass) and the FP-DRAFT-FIX rename completed in the cloning working tree (zero-pixel proofs). Two new lessons: `cpt-singular-meta-caps-break-the-mapped-capability-sitewide` (blub 335) + `bump-block-version-with-any-style-css-change` (blub 336).
-> **NEXT SESSION FIRST ACTIONS:** (1) run `/sgs-update` ONLY when the co-active cloning session is not mid-flight on the shared DB (registers ~10 new attrs + routing metadata; main checkout must be on main-state code — use a worktree); (2) the converter Stage-2 routing of the canonical draft vocabulary (Spec 02 §"Canonical draft BEM vocabulary") → typed-attr destinations + live clone-verify of the Mama's product section = CLONING thread's step; (3) gated rounds awaiting their own session: option-picker roving tabindex (rater F12) + widthMode wide/full precedence (shared-wrapper Rule-7 design gate). Bean R-22-13 eye: canary test page 1069 + screenshots `.claude/reports/visual-fp/`. Canary test artefacts kept: page 1069, products 897/950/1017, pages 946/999, RT templates.
+> Theme/blocks thread. Cloning → `.claude/handoff.md`. Co-active cloning session shares `main` AND held the working checkout on `feat/stage1-converter-core` all session — every theme commit landed on `main` via a TEMP WORKTREE (`C:/tmp/sgs-specs`), path-scoped (`git commit -- <paths>`), never `git add -A`; never-commit artefacts (lucide-icons.php, sgs-framework.db, phase4 reports, 02-SGS-BLOCKS-REFERENCE.md) left uncommitted.
+
+## Completed This Session
+1. **FP-DRAFT-FIX rename** — Mama's draft product cards unified to one `sgs-product-card` BEM prefix (variants as root modifiers, pill state `__pill--active`, `__title` on the h3); zero-pixel-change proof. Specs 02+27 sign-off (`f04e5bc3`/`36279457`/`d929f26c`).
+2. **FP-H SHIPPED (`eccc3fc7`+closures)** — `sgs/product-card` is BUILT-IN-ELEMENT in all modes (zero InnerBlocks in typed; page-144 transition bridge branches on the `productName` attr). Connect+override UX (overrideElements toggles, price never overridable, image override = default with live variation swaps), CTA model, per-instance `visibleAxes`, `showLadder` (default on; grid passes off).
+3. **FP-E SHIPPED** — `sgs/card-grid` `wc-product` mode: `wc_get_products` only, smart collections (best-selling/price-high/low/top-rated), category+tag checklists, featured/on-sale (4× refill)/in-stock, hand-pick, FR-24-6 empty state, renders product-cards.
+4. **Schema (research-check verdict, persisted)** — card emits NO schema; ONE page-level ItemList per page (`Product_Item_List` shared walker); ProductGroup gated to single-product-focus pages.
+5. **Adversarial-council pass (`da2ec8ef`, D204)** — 5 personas; CONFIRMED draft/private-product → public-JSON-LD leak CLOSED (shared `is_publicly_listable()` gate at all 5 boundaries, live-proven); customer-safe deleted-product message; grid double-query memoised; M4 REST-bypass REFUTED by fact-check.
+6. **2-rater visual judgement** — 9 findings closed, 3 refuted (interactive-block-in-stills artefacts), 2 → gated rounds; axe 0 violations (1069 + 540); WCAG-safe palette-agnostic contrast fixes.
+7. **`/sgs-update` RAN** — 2 new blocks + 36 new attrs registered; content-routing attrs all mapped (converter-routable); the new NULL-canonical_slot attrs are operator-config (correct, NOT a gap). Stage 11 container-roster drift flagged for the cloning thread (no bad data — refused to --apply).
+
+## Current State
+- **Branch:** all theme work on `main` at `da2ec8ef` (pushed). Worktree `C:/tmp/sgs-specs` detached at that HEAD (remove after).
+- **Tests:** `php -l` + WPCS clean on every touched PHP; standalone runners green; axe 0 violations live (1069 + 540).
+- **Build:** `npm run build` green; product-card v1.16.3; all deployed to sandybrown canary, opcache-reset.
+- **Uncommitted (worktree, never-commit):** lucide-icons.php, phase4 reports, 02-SGS-BLOCKS-REFERENCE.md.
+
+## Known Issues / Blockers
+- **None block the next session.** The shop layer is correct, secure (leak closed), legally-safe, and converter-routable.
+- Stage 11 container-wrapping-roster lists `sgs/product-card` missing + the F2 thread's `product-faq` blocks extra — cross-thread, no corruption (bailed pre-apply); container-roster owner (cloning thread) reconciles.
+- The real first-shop blocker remains the cloning CONVERTER — do not out-run it (Ship-PM council call).
+
+## Next Priorities (in order)
+1. **Converter Stage-2 routing** (CLONING thread) — route the canonical draft BEM vocabulary (Spec 02 §"Canonical draft BEM vocabulary") to the typed-attr destinations + live clone-verify the Mama's product section. The card is converter-ready; the converter isn't.
+2. **Parked P-FP-COUNCIL residuals** (theme, low priority) — `P-FP-H-BRIDGE-RETIRE` forcing-function, namespace the 2 global helpers, dedup CTA-label/visibleAxes logic, out-of-stock button state, editor go-live checklist.
+3. **2 gated design rounds** — option-picker roving tabindex (F12); widthMode wide/full vs B-rule precedence (Rule-7 shared-wrapper, needs Bean).
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| plugins/sgs-blocks/src/blocks/product-card/{block.json,render.php,edit.js,style.css,view.js} | built-in render, connect+override, CTA model, showLadder, contrast fixes, v1.16.3 |
+| plugins/sgs-blocks/includes/product-card-builtin-render.php (NEW) | typed built-in render + override-resolution helpers |
+| plugins/sgs-blocks/src/blocks/card-grid/{block.json,render.php,edit.js,components/product-panels.js} | wc-product mode, smart collections, ladder pass-through |
+| plugins/sgs-blocks/includes/class-card-grid-products.php (NEW) | wc_get_products builder + refill + memo + ItemList builder |
+| plugins/sgs-blocks/includes/class-product-item-list.php (NEW) | page-level ItemList walker + is_publicly_listable gate |
+| plugins/sgs-blocks/includes/configurator-head.php | ProductGroup focus gate + leak gate |
+| .claude/specs/02 + 27, decisions.md (D204), parking.md (P-FP-COUNCIL), reports/wave2/FP-E-FP-H-DESIGN-GATE | doc-sync |
+
+## Notes for Next Session
+- A council finding is a HYPOTHESIS — fact-check before acting. M4 (discount-label REST bypass) was REFUTED: the registered `sanitize_callback` IS the full validator.
+- The NULL `canonical_slot` on the 36 new attrs is CORRECT — the converter routes CONTENT, not operator-config. Do NOT "fill" them.
+- New lessons (blub 335/336): `cpt-singular-meta-caps-break-the-mapped-capability-sitewide`; `bump-block-version-with-any-style-css-change`.
+- The image-override bind asymmetry (variable unconditional / non-variable absent) is INTENTIONAL — do not "fix" it.
+- Canary test artefacts kept for Bean's R-22-13 eye: page 1069 (FP live test) + screenshots `.claude/reports/visual-fp/`; products 897/950/1017; pages 946/999; RT templates.
 
 > Theme/blocks thread. Cloning → `.claude/handoff.md`. Next → `.claude/next-session-prompt-theme.md`. Shared tree on `feat/stage1-converter-core` all session — ALL theme work done in a temp worktree on main (C:/tmp/sgs-r4, removed at close), every commit path-scoped. A SECOND theme session was co-active mid-session (its commits `f5f3449b`/`db89ebae` interleaved between my two pushes — R4 language pass + deeper visual pass; converged cleanly, no conflicts).
 
