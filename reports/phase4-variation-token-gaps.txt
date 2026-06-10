@@ -1,10 +1,14 @@
-# Stage 4 Style Variation Sync — 2026-06-04 11:29:23 UTC
+# Stage 4 Style Variation Sync — 2026-06-10 04:58:47 UTC
 
 Phase 5a shipped. DB writes active.
 
-Snapshots found: 8 | Missing: 2 | Inserted: 0 | Skipped: 107 | Conflicts: 106
+Snapshots found: 8 | Missing: 3 | Inserted: 0 | Skipped: 107 | Conflicts: 106
 
 ## Per-client results
+
+### _dogfood
+
+_(theme-snapshot.json not found)_
 
 ### eye-care-ward-end
 

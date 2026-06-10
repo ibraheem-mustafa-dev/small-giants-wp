@@ -403,8 +403,8 @@
     }
     .sgs-product-card__description { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; flex: 1; line-height: 1.55; }
 
-    .sgs-featured-product__pill-group { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 16px; }
-    .sgs-featured-product__pill {
+    .sgs-product-card__pill-group { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 16px; }
+    .sgs-product-card__pill {
       background: var(--surface-cream);
       border: 2px solid var(--border);
       border-radius: 8px;
@@ -420,22 +420,22 @@
       transition: all 0.15s;
       line-height: 1;
     }
-    .sgs-featured-product__pill.active {
+    .sgs-product-card__pill.sgs-product-card__pill--active {
       border-color: var(--primary);
       background: rgba(230,138,149,0.1);
       color: var(--text);
     }
-    .sgs-featured-product__pill:hover:not(.active) { border-color: var(--primary-dark); }
+    .sgs-product-card__pill:hover:not(.sgs-product-card__pill--active) { border-color: var(--primary-dark); }
 
-    .sgs-featured-product__price-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
-    .sgs-featured-product__price { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 700; color: var(--text); }
-    .sgs-featured-product__price-note { font-size: 13px; color: var(--text-muted); }
+    .sgs-product-card__price-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+    .sgs-product-card__price { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 700; color: var(--text); }
+    .sgs-product-card__price-note { font-size: 13px; color: var(--text-muted); }
 
-    .sgs-gift-section__card--trial {
+    .sgs-product-card--trial {
       border: 2px dashed var(--accent);
       background: linear-gradient(135deg, rgba(245,208,80,0.08) 0%, rgba(230,138,149,0.06) 100%);
     }
-    .sgs-gift-section__card-tag--trial {
+    .sgs-product-card__tag--trial {
       display: inline-flex;
       align-items: center;
       background: var(--accent);
@@ -836,26 +836,26 @@
     <div class="sgs-products">
 
       <!-- Main product -->
-      <div class="sgs-product-card">
+      <div class="sgs-product-card sgs-product-card--featured">
         <img class="sgs-product-card__image"
              src="../../research/photography/wp-media-library/cookies-stacked.jpeg"
              alt="Stack of Mama's Munches Zookies lactation cookies"
              loading="lazy"
              width="1920" height="1080">
         <div class="sgs-product-card__body">
-          <h3>Mama's Munches Zookies</h3>
+          <h3 class="sgs-product-card__title">Mama's Munches Zookies</h3>
           <p class="sgs-product-card__description">Baked fresh every week and posted the same day. Oats, brewer's yeast, flaxseed, fenugreek — no shortcuts, no preservatives.</p>
 
-          <div class="sgs-featured-product__pill-group" role="group" aria-label="Choose pack size">
-            <button class="sgs-featured-product__pill" type="button" aria-pressed="false">8-pack</button>
-            <button class="sgs-featured-product__pill active" type="button" aria-pressed="true">12-pack</button>
-            <button class="sgs-featured-product__pill" type="button" aria-pressed="false">20-pack</button>
-            <button class="sgs-featured-product__pill" type="button" aria-pressed="false">40-pack</button>
+          <div class="sgs-product-card__pill-group" role="group" aria-label="Choose pack size">
+            <button class="sgs-product-card__pill" type="button" aria-pressed="false">8-pack</button>
+            <button class="sgs-product-card__pill sgs-product-card__pill--active" type="button" aria-pressed="true">12-pack</button>
+            <button class="sgs-product-card__pill" type="button" aria-pressed="false">20-pack</button>
+            <button class="sgs-product-card__pill" type="button" aria-pressed="false">40-pack</button>
           </div>
 
-          <div class="sgs-featured-product__price-row">
-            <span class="sgs-featured-product__price">£10.00</span>
-            <span class="sgs-featured-product__price-note">8-pack · Free delivery over £35</span>
+          <div class="sgs-product-card__price-row">
+            <span class="sgs-product-card__price">£10.00</span>
+            <span class="sgs-product-card__price-note">8-pack · Free delivery over £35</span>
           </div>
 
           <a href="/product/zookies/" class="sgs-button sgs-button--primary">Add to Cart — £10</a>
@@ -863,19 +863,19 @@
       </div>
 
       <!-- Trial pack -->
-      <div class="sgs-product-card sgs-gift-section__card--trial">
+      <div class="sgs-product-card sgs-product-card--trial">
         <img class="sgs-product-card__image"
              src="../../research/photography/wp-media-library/cookies-on-bun-case.jpeg"
              alt="Mama's Munches cookies in a bakery display"
              loading="lazy"
              width="2048" height="1784">
         <div class="sgs-product-card__body">
-          <div class="sgs-gift-section__card-tag--trial">New? Start here</div>
-          <h3>The Trial Pack</h3>
+          <div class="sgs-product-card__tag--trial">New? Start here</div>
+          <h3 class="sgs-product-card__title">The Trial Pack</h3>
           <p class="sgs-product-card__description">Not sure yet? Try 3 Classic Zookies and see what all the mums are talking about. Postage included.</p>
-          <div class="sgs-featured-product__price-row">
-            <span class="sgs-featured-product__price">£5.00</span>
-            <span class="sgs-featured-product__price-note">3 Classic Zookies · postage included</span>
+          <div class="sgs-product-card__price-row">
+            <span class="sgs-product-card__price">£5.00</span>
+            <span class="sgs-product-card__price-note">3 Classic Zookies · postage included</span>
           </div>
           <a href="/product/trial-pack/" class="sgs-button sgs-button--secondary">Try 3 for £5</a>
         </div>

@@ -1,0 +1,2204 @@
+{
+  "runDate": "2026-06-06 23:56:07 UTC",
+  "cloneUrl": "https://sandybrown-nightingale-600381.hostingersite.com/",
+  "draft": "C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches\\mockups\\homepage\\index.html",
+  "thresholds": {
+    "PX_TOLERANCE": 1,
+    "COLOR_DELTA_E": 2,
+    "LARGE_COLOR_DE": 5
+  },
+  "viewports": [
+    {
+      "viewport": 1440,
+      "totalElements": 130,
+      "passed": 4,
+      "failed": 126,
+      "pairResults": [
+        {
+          "sgsClasses": "sgs-hero__content",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "Handmade in Birmingham\n    Made for the mumwho needs it most",
+          "domPath": "main[0]>section[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "textAlign",
+              "draft": "start",
+              "clone": "left"
+            },
+            {
+              "prop": "paddingTop",
+              "draft": "72px",
+              "clone": "0px"
+            },
+            {
+              "prop": "paddingRight",
+              "draft": "64px",
+              "clone": "0px"
+            },
+            {
+              "prop": "paddingBottom",
+              "draft": "72px",
+              "clone": "0px"
+            },
+            {
+              "prop": "paddingLeft",
+              "draft": "64px",
+              "clone": "0px"
+            },
+            {
+              "prop": "alignItems",
+              "draft": "normal",
+              "clone": "flex-start"
+            },
+            {
+              "prop": "width",
+              "draft": "720px",
+              "clone": "704px"
+            },
+            {
+              "prop": "height",
+              "draft": "720px",
+              "clone": "303.375px"
+            }
+          ],
+          "draft_img_404": false,
+          "clone_img_404": false
+        },
+        {
+          "sgsClasses": "sgs-hero__media",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "",
+          "domPath": "main[0]>section[0]>div[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "width",
+              "draft": "720px",
+              "clone": "704px"
+            },
+            {
+              "prop": "height",
+              "draft": "720px",
+              "clone": "704px"
+            }
+          ],
+          "draft_img_404": false,
+          "clone_img_404": false
+        },
+        {
+          "sgsClasses": "sgs-hero__split-image sgs-hero__split-image--mobile",
+          "tag": "img",
+          "section": "root",
+          "draft_text": "",
+          "domPath": "main[0]>section[0]>div[1]>img[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "height",
+              "draft": "340px",
+              "clone": "100%"
+            }
+          ],
+          "draft_img_404": false,
+          "clone_img_404": false
+        },
+        {
+          "sgsClasses": "sgs-hero__split-image sgs-hero__split-image--desktop",
+          "tag": "img",
+          "section": "root",
+          "draft_text": "",
+          "domPath": "main[0]>section[0]>div[1]>img[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "width",
+              "draft": "720px",
+              "clone": "704px"
+            },
+            {
+              "prop": "height",
+              "draft": "720px",
+              "clone": "704px"
+            }
+          ],
+          "draft_img_404": false,
+          "clone_img_404": false
+        },
+        {
+          "sgsClasses": "sgs-trust-bar__badge",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "Handmade in Birmingham",
+          "domPath": "main[0]>section[1]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "textAlign",
+              "draft": "start",
+              "clone": "center"
+            },
+            {
+              "prop": "width",
+              "draft": "266px",
+              "clone": "344.719px"
+            }
+          ],
+          "draft_img_404": false,
+          "clone_img_404": false
+        },
+        {
+          "sgsClasses": "sgs-trust-bar__badge",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "Registered Food Business",
+          "domPath": "main[0]>section[1]>div[0]>div[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "textAlign",
+              "draft": "start",
+              "clone": "center"
+            },
+            {
+              "prop": "width",
+              "draft": "266px",
+              "clone": "344.734px"
+            }
+          ],
+          "draft_img_404": false,
+          "clone_img_404": false
+        },
+        {
+          "sgsClasses": "sgs-trust-bar__badge",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "Free UK Delivery Over £35",
+          "domPath": "main[0]>section[1]>div[0]>div[2]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "textAlign",
+              "draft": "start",
+              "clone": "center"
+            },
+            {
+              "prop": "width",
+              "draft": "266px",
+              "clone": "344.719px"
+            }
+          ],
+          "draft_img_404": false,
+          "clone_img_404": false
+        },
+        {
+          "sgsClasses": "sgs-trust-bar__badge",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "Loved by Breastfeeding Mums",
+          "domPath": "main[0]>section[1]>div[0]>div[3]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "textAlign",
+              "draft": "start",
+              "clone": "center"
+            },
+            {
+              "prop": "width",
+              "draft": "266px",
+              "clone": "344.734px"
+            }
+          ],
+          "draft_img_404": false,
+          "clone_img_404": false
+        },
+        {
+          "sgsClasses": "sgs-featured-product__price-note",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "8-pack · Free delivery over £35",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[0]>div[0]>div[1]>span[1]",
+          "passed": true,
+          "failures": [],
+          "draft_img_404": false,
+          "clone_img_404": false
+        },
+        {
+          "sgsClasses": "sgs-gift-section__card-tag--trial",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "New? Start here",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[1]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "lineHeight",
+              "draft": "17.6px",
+              "clone": "13.2px"
+            },
+            {
+              "prop": "width",
+              "draft": "340px",
+              "clone": "130.422px"
+            },
+            {
+              "prop": "height",
+              "draft": "25.5938px",
+              "clone": "21.2031px"
+            }
+          ],
+          "draft_img_404": false,
+          "clone_img_404": false
+        },
+        {
+          "sgsClasses": "sgs-featured-product__price-note",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "3 Classic Zookies · postage included",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[1]>div[0]>div[1]>span[1]",
+          "passed": true,
+          "failures": [],
+          "draft_img_404": false,
+          "clone_img_404": false
+        },
+        {
+          "sgsClasses": "sgs-social-proof__trustpilot-logo",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "★ Trustpilot",
+          "domPath": "main[0]>section[6]>div[0]>div[0]>span[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "width",
+              "draft": "74.2344px",
+              "clone": "75.2656px"
+            }
+          ],
+          "draft_img_404": false,
+          "clone_img_404": false
+        },
+        {
+          "sgsClasses": "sgs-social-proof__trustpilot-stars",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "★★★★★",
+          "domPath": "main[0]>section[6]>div[0]>div[0]>span[1]",
+          "passed": true,
+          "failures": [],
+          "draft_img_404": false,
+          "clone_img_404": false
+        },
+        {
+          "sgsClasses": "sgs-social-proof__trustpilot-text",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "Leave us a review — help other mums find us",
+          "domPath": "main[0]>section[6]>div[0]>div[0]>span[2]",
+          "passed": true,
+          "failures": [],
+          "draft_img_404": false,
+          "clone_img_404": false
+        },
+        {
+          "sgsClasses": "sgs-header__skip-link",
+          "tag": "a",
+          "section": "sgs-header__skip-link",
+          "draft_text": "Skip to main content",
+          "domPath": "a[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-header",
+          "tag": "header",
+          "section": "sgs-header",
+          "draft_text": "Shop\n      Our Story\n      Send to Ward ★\n      Gift Ideas\n ",
+          "domPath": "header[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-header__inner",
+          "tag": "div",
+          "section": "sgs-header",
+          "draft_text": "Shop\n      Our Story\n      Send to Ward ★\n      Gift Ideas\n ",
+          "domPath": "header[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-header__logo",
+          "tag": "a",
+          "section": "sgs-header",
+          "draft_text": "",
+          "domPath": "header[0]>div[0]>a[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-header__nav",
+          "tag": "nav",
+          "section": "sgs-header",
+          "draft_text": "Shop\n      Our Story\n      Send to Ward ★\n      Gift Ideas\n ",
+          "domPath": "header[0]>div[0]>nav[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-header__nav-featured",
+          "tag": "a",
+          "section": "sgs-header",
+          "draft_text": "Send to Ward ★",
+          "domPath": "header[0]>div[0]>nav[0]>a[2]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-header__right",
+          "tag": "div",
+          "section": "sgs-header",
+          "draft_text": "0",
+          "domPath": "header[0]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-header__cart",
+          "tag": "a",
+          "section": "sgs-header",
+          "draft_text": "0",
+          "domPath": "header[0]>div[0]>div[0]>a[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-header__cart-badge",
+          "tag": "span",
+          "section": "sgs-header",
+          "draft_text": "0",
+          "domPath": "header[0]>div[0]>div[0]>a[0]>span[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-header__hamburger",
+          "tag": "button",
+          "section": "sgs-header",
+          "draft_text": "",
+          "domPath": "header[0]>div[0]>div[0]>button[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-hero",
+          "tag": "section",
+          "section": "root",
+          "draft_text": "Handmade in Birmingham\n    Made for the mumwho needs it most",
+          "domPath": "main[0]>section[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-section-heading__label",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "Handmade in Birmingham",
+          "domPath": "main[0]>section[0]>div[0]>span[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-hero__sub",
+          "tag": "p",
+          "section": "root",
+          "draft_text": "Handmade lactation cookies with proper galactagogue ingredie",
+          "domPath": "main[0]>section[0]>div[0]>p[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-hero__ctas",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "Shop Zookies\n      Try 3 for £5",
+          "domPath": "main[0]>section[0]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-button sgs-button--primary",
+          "tag": "a",
+          "section": "root",
+          "draft_text": "Shop Zookies",
+          "domPath": "main[0]>section[0]>div[0]>div[0]>a[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-button sgs-button--secondary",
+          "tag": "a",
+          "section": "root",
+          "draft_text": "Try 3 for £5",
+          "domPath": "main[0]>section[0]>div[0]>div[0]>a[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-trust-bar",
+          "tag": "section",
+          "section": "root",
+          "draft_text": "Handmade in Birmingham\n    \n\n    \n      \n        \n      \n   ",
+          "domPath": "main[0]>section[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-trust-bar__inner",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "Handmade in Birmingham\n    \n\n    \n      \n        \n      \n   ",
+          "domPath": "main[0]>section[1]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-trust-bar__icon",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "",
+          "domPath": "main[0]>section[1]>div[0]>div[0]>span[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-trust-bar__text",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "Handmade in Birmingham",
+          "domPath": "main[0]>section[1]>div[0]>div[0]>span[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-trust-bar__icon",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "",
+          "domPath": "main[0]>section[1]>div[0]>div[1]>span[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-trust-bar__text",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "Registered Food Business",
+          "domPath": "main[0]>section[1]>div[0]>div[1]>span[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-trust-bar__icon",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "",
+          "domPath": "main[0]>section[1]>div[0]>div[2]>span[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-trust-bar__text",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "Free UK Delivery Over £35",
+          "domPath": "main[0]>section[1]>div[0]>div[2]>span[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-trust-bar__icon",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "",
+          "domPath": "main[0]>section[1]>div[0]>div[3]>span[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-trust-bar__text",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "Loved by Breastfeeding Mums",
+          "domPath": "main[0]>section[1]>div[0]>div[3]>span[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-featured-product",
+          "tag": "section",
+          "section": "root",
+          "draft_text": "Our signature\n    Zookies — Our Signature Giant Cookie\n    O",
+          "domPath": "main[0]>section[2]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-featured-product__inner",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "Our signature\n    Zookies — Our Signature Giant Cookie\n    O",
+          "domPath": "main[0]>section[2]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-section-heading__label",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "Our signature",
+          "domPath": "main[0]>section[2]>div[0]>span[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-section-heading__intro",
+          "tag": "p",
+          "section": "root",
+          "draft_text": "One Zookie is a proper sized treat. Every one baked to order",
+          "domPath": "main[0]>section[2]>div[0]>p[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-products",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "Mama's Munches Zookies\n          Baked fresh every week and ",
+          "domPath": "main[0]>section[2]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-product-card",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "Mama's Munches Zookies\n          Baked fresh every week and ",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-product-card__image",
+          "tag": "img",
+          "section": "root",
+          "draft_text": "",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[0]>img[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-product-card__body",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "Mama's Munches Zookies\n          Baked fresh every week and ",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-product-card__description",
+          "tag": "p",
+          "section": "root",
+          "draft_text": "Baked fresh every week and posted the same day. Oats, brewer",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[0]>div[0]>p[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-featured-product__pill-group",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "8-pack\n            12-pack\n            20-pack\n            4",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[0]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-featured-product__pill",
+          "tag": "button",
+          "section": "root",
+          "draft_text": "8-pack",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[0]>div[0]>div[0]>button[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-featured-product__pill",
+          "tag": "button",
+          "section": "root",
+          "draft_text": "12-pack",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[0]>div[0]>div[0]>button[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-featured-product__pill",
+          "tag": "button",
+          "section": "root",
+          "draft_text": "20-pack",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[0]>div[0]>div[0]>button[2]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-featured-product__pill",
+          "tag": "button",
+          "section": "root",
+          "draft_text": "40-pack",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[0]>div[0]>div[0]>button[3]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-featured-product__price-row",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "£10.00\n            8-pack · Free delivery over £35",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[0]>div[0]>div[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-featured-product__price",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "£10.00",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[0]>div[0]>div[1]>span[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-button sgs-button--primary",
+          "tag": "a",
+          "section": "root",
+          "draft_text": "Add to Cart — £10",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[0]>div[0]>a[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-gift-section__card--trial sgs-product-card",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "New? Start here\n          The Trial Pack\n          Not sure ",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-product-card__image",
+          "tag": "img",
+          "section": "root",
+          "draft_text": "",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[1]>img[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-product-card__body",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "New? Start here\n          The Trial Pack\n          Not sure ",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[1]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-product-card__description",
+          "tag": "p",
+          "section": "root",
+          "draft_text": "Not sure yet? Try 3 Classic Zookies and see what all the mum",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[1]>div[0]>p[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-featured-product__price-row",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "£5.00\n            3 Classic Zookies · postage included",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[1]>div[0]>div[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-featured-product__price",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "£5.00",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[1]>div[0]>div[1]>span[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-button sgs-button--secondary",
+          "tag": "a",
+          "section": "root",
+          "draft_text": "Try 3 for £5",
+          "domPath": "main[0]>section[2]>div[0]>div[0]>div[1]>div[0]>a[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-brand",
+          "tag": "section",
+          "section": "root",
+          "draft_text": "A story that started with a friend\n    \n      She was strugg",
+          "domPath": "main[0]>section[3]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-brand__content",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "A story that started with a friend\n    \n      She was strugg",
+          "domPath": "main[0]>section[3]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-brand__headline",
+          "tag": "h2",
+          "section": "root",
+          "draft_text": "A story that started with a friend",
+          "domPath": "main[0]>section[3]>div[0]>h2[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-brand__quote",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "She was struggling with breastfeeding her newborn. We starte",
+          "domPath": "main[0]>section[3]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-brand__attribution",
+          "tag": "p",
+          "section": "root",
+          "draft_text": "— Zainab, Founder of Mama's Munches",
+          "domPath": "main[0]>section[3]>div[0]>div[0]>p[3]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-brand__cta sgs-button sgs-button--ghost",
+          "tag": "a",
+          "section": "root",
+          "draft_text": "Read the full story →",
+          "domPath": "main[0]>section[3]>div[0]>a[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-brand__image",
+          "tag": "img",
+          "section": "root",
+          "draft_text": "",
+          "domPath": "main[0]>section[3]>img[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-ingredients-section",
+          "tag": "section",
+          "section": "root",
+          "draft_text": "What's in them?\n    Proper ingredients, properly used\n    Ev",
+          "domPath": "main[0]>section[4]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-ingredients-section__inner",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "What's in them?\n    Proper ingredients, properly used\n    Ev",
+          "domPath": "main[0]>section[4]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-section-heading__label",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "What's in them?",
+          "domPath": "main[0]>section[4]>div[0]>span[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-section-heading__intro",
+          "tag": "p",
+          "section": "root",
+          "draft_text": "Every Zookie contains the same four galactagogues that appea",
+          "domPath": "main[0]>section[4]>div[0]>p[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-feature-grid",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "🌾\n        Oats\n        Rich in iron. Used in postpartum foo",
+          "domPath": "main[0]>section[4]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-info-box",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "🌾\n        Oats\n        Rich in iron. Used in postpartum foo",
+          "domPath": "main[0]>section[4]>div[0]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-info-box__icon",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "🌾",
+          "domPath": "main[0]>section[4]>div[0]>div[0]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-info-box",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "🍺\n        Brewer's Yeast\n        B-vitamins and chromium. A",
+          "domPath": "main[0]>section[4]>div[0]>div[0]>div[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-info-box__icon",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "🍺",
+          "domPath": "main[0]>section[4]>div[0]>div[0]>div[1]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-info-box",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "🌿\n        Flaxseed\n        Omega-3 fatty acids. Good for mu",
+          "domPath": "main[0]>section[4]>div[0]>div[0]>div[2]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-info-box__icon",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "🌿",
+          "domPath": "main[0]>section[4]>div[0]>div[0]>div[2]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-info-box",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "🌱\n        Fenugreek\n        Traditional postpartum herb. If",
+          "domPath": "main[0]>section[4]>div[0]>div[0]>div[3]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-info-box__icon",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "🌱",
+          "domPath": "main[0]>section[4]>div[0]>div[0]>div[3]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-ingredients-section__disclaimer",
+          "tag": "p",
+          "section": "root",
+          "draft_text": "We make nourishing food. We don't make medical claims. If yo",
+          "domPath": "main[0]>section[4]>div[0]>p[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-gift-section",
+          "tag": "section",
+          "section": "root",
+          "draft_text": "Give the gift of nourishment\n    A gift she'll actually use\n",
+          "domPath": "main[0]>section[5]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-gift-section__card-inner",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "Give the gift of nourishment\n    A gift she'll actually use\n",
+          "domPath": "main[0]>section[5]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-section-heading__label",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "Give the gift of nourishment",
+          "domPath": "main[0]>section[5]>div[0]>span[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-section-heading__sub",
+          "tag": "p",
+          "section": "root",
+          "draft_text": "For baby showers, new arrivals, and the mums who deserve a t",
+          "domPath": "main[0]>section[5]>div[0]>p[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-gift-section__cards",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "Gift idea\n        New Baby Gift Box\n        The perfect gift",
+          "domPath": "main[0]>section[5]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-gift-section__card",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "Gift idea\n        New Baby Gift Box\n        The perfect gift",
+          "domPath": "main[0]>section[5]>div[0]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-gift-section__card-tag",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "Gift idea",
+          "domPath": "main[0]>section[5]>div[0]>div[0]>div[0]>span[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-gift-section__card-description",
+          "tag": "p",
+          "section": "root",
+          "draft_text": "The perfect gift for a new mum. A mix of Zookies and Classic",
+          "domPath": "main[0]>section[5]>div[0]>div[0]>div[0]>p[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-gift-section__card-price",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "£15",
+          "domPath": "main[0]>section[5]>div[0]>div[0]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-button sgs-button--primary",
+          "tag": "a",
+          "section": "root",
+          "draft_text": "Shop Gift Box",
+          "domPath": "main[0]>section[5]>div[0]>div[0]>div[0]>a[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-gift-section__card",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "Most thoughtful\n        40-Day Care Bundle\n        Six weekl",
+          "domPath": "main[0]>section[5]>div[0]>div[0]>div[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-gift-section__card-tag",
+          "tag": "span",
+          "section": "root",
+          "draft_text": "Most thoughtful",
+          "domPath": "main[0]>section[5]>div[0]>div[0]>div[1]>span[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-gift-section__card-description",
+          "tag": "p",
+          "section": "root",
+          "draft_text": "Six weekly deliveries for the 40-day postnatal window. One o",
+          "domPath": "main[0]>section[5]>div[0]>div[0]>div[1]>p[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-gift-section__card-price",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "£42",
+          "domPath": "main[0]>section[5]>div[0]>div[0]>div[1]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-button sgs-button--primary",
+          "tag": "a",
+          "section": "root",
+          "draft_text": "Shop Bundle",
+          "domPath": "main[0]>section[5]>div[0]>div[0]>div[1]>a[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-announcement-bar--send-to-ward",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "🏥 Heading to hospital? Ask us about our Send to Ward delive",
+          "domPath": "main[0]>section[5]>div[0]>div[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-social-proof",
+          "tag": "section",
+          "section": "root",
+          "draft_text": "What mums are saying\n    Real feedback from real mums — noth",
+          "domPath": "main[0]>section[6]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-social-proof__inner",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "What mums are saying\n    Real feedback from real mums — noth",
+          "domPath": "main[0]>section[6]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-section-heading__sub",
+          "tag": "p",
+          "section": "root",
+          "draft_text": "Real feedback from real mums — nothing fabricated.",
+          "domPath": "main[0]>section[6]>div[0]>p[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-social-proof__trustpilot-bar",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "★ Trustpilot\n      ★★★★★\n      Leave us a review — help othe",
+          "domPath": "main[0]>section[6]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-testimonial-slider",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "★★★★★\n        \"I was sceptical but honestly these have made ",
+          "domPath": "main[0]>section[6]>div[0]>div[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-testimonial",
+          "tag": "article",
+          "section": "root",
+          "draft_text": "★★★★★\n        \"I was sceptical but honestly these have made ",
+          "domPath": "main[0]>section[6]>div[0]>div[1]>article[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-testimonial__stars",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "★★★★★",
+          "domPath": "main[0]>section[6]>div[0]>div[1]>article[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-testimonial__text",
+          "tag": "p",
+          "section": "root",
+          "draft_text": "\"I was sceptical but honestly these have made such a differe",
+          "domPath": "main[0]>section[6]>div[0]>div[1]>article[0]>p[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-testimonial__author",
+          "tag": "p",
+          "section": "root",
+          "draft_text": "Reham, London",
+          "domPath": "main[0]>section[6]>div[0]>div[1]>article[0]>p[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-testimonial",
+          "tag": "article",
+          "section": "root",
+          "draft_text": "★★★★★\n        \"Bought these for my best friend who was reall",
+          "domPath": "main[0]>section[6]>div[0]>div[1]>article[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-testimonial__stars",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "★★★★★",
+          "domPath": "main[0]>section[6]>div[0]>div[1]>article[1]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-testimonial__text",
+          "tag": "p",
+          "section": "root",
+          "draft_text": "\"Bought these for my best friend who was really struggling. ",
+          "domPath": "main[0]>section[6]>div[0]>div[1]>article[1]>p[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-testimonial__author",
+          "tag": "p",
+          "section": "root",
+          "draft_text": "Sarah M., Manchester",
+          "domPath": "main[0]>section[6]>div[0]>div[1]>article[1]>p[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-testimonial",
+          "tag": "article",
+          "section": "root",
+          "draft_text": "★★★★★\n        \"Zainab is so responsive and lovely. The cooki",
+          "domPath": "main[0]>section[6]>div[0]>div[1]>article[2]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-testimonial__stars",
+          "tag": "div",
+          "section": "root",
+          "draft_text": "★★★★★",
+          "domPath": "main[0]>section[6]>div[0]>div[1]>article[2]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-testimonial__text",
+          "tag": "p",
+          "section": "root",
+          "draft_text": "\"Zainab is so responsive and lovely. The cookies arrived qui",
+          "domPath": "main[0]>section[6]>div[0]>div[1]>article[2]>p[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-testimonial__author",
+          "tag": "p",
+          "section": "root",
+          "draft_text": "Halimah, Birmingham",
+          "domPath": "main[0]>section[6]>div[0]>div[1]>article[2]>p[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-footer",
+          "tag": "footer",
+          "section": "sgs-footer",
+          "draft_text": "Real food for real mums.Handmade in Birmingham with care.\n  ",
+          "domPath": "footer[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-footer__inner",
+          "tag": "div",
+          "section": "sgs-footer",
+          "draft_text": "Real food for real mums.Handmade in Birmingham with care.\n  ",
+          "domPath": "footer[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-footer__grid",
+          "tag": "div",
+          "section": "sgs-footer",
+          "draft_text": "Real food for real mums.Handmade in Birmingham with care.\n  ",
+          "domPath": "footer[0]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-footer__brand",
+          "tag": "div",
+          "section": "sgs-footer",
+          "draft_text": "Real food for real mums.Handmade in Birmingham with care.\n  ",
+          "domPath": "footer[0]>div[0]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-footer__logo",
+          "tag": "img",
+          "section": "sgs-footer",
+          "draft_text": "",
+          "domPath": "footer[0]>div[0]>div[0]>div[0]>img[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-footer__tagline",
+          "tag": "p",
+          "section": "sgs-footer",
+          "draft_text": "Real food for real mums.Handmade in Birmingham with care.",
+          "domPath": "footer[0]>div[0]>div[0]>div[0]>p[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-footer__meta",
+          "tag": "p",
+          "section": "sgs-footer",
+          "draft_text": "Birmingham, UK",
+          "domPath": "footer[0]>div[0]>div[0]>div[0]>p[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-footer__meta",
+          "tag": "p",
+          "section": "sgs-footer",
+          "draft_text": "Zainab@mamasmunches.com",
+          "domPath": "footer[0]>div[0]>div[0]>div[0]>p[2]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-footer__social",
+          "tag": "div",
+          "section": "sgs-footer",
+          "draft_text": "Instagram\n          \n          \n            \n              \n",
+          "domPath": "footer[0]>div[0]>div[0]>div[0]>div[0]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-footer__col",
+          "tag": "div",
+          "section": "sgs-footer",
+          "draft_text": "Shop\n        \n          All Products\n          Zookies\n     ",
+          "domPath": "footer[0]>div[0]>div[0]>div[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-footer__col",
+          "tag": "div",
+          "section": "sgs-footer",
+          "draft_text": "Information\n        \n          Privacy Policy\n          Ship",
+          "domPath": "footer[0]>div[0]>div[0]>div[2]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        },
+        {
+          "sgsClasses": "sgs-footer__bottom",
+          "tag": "div",
+          "section": "sgs-footer",
+          "draft_text": "© 2026 Mama's Munches. Registered Food Business, Birmingham.",
+          "domPath": "footer[0]>div[0]>div[1]",
+          "passed": false,
+          "failures": [
+            {
+              "prop": "ELEMENT",
+              "draft": "present",
+              "clone": "MISSING",
+              "reason": "no clone counterpart found"
+            }
+          ]
+        }
+      ],
+      "draftCounts": {
+        "sgs-header__skip-link": {
+          "headings": 0,
+          "images": 0,
+          "buttons": 0,
+          "links": 1,
+          "sgsElements": 1
+        },
+        "sgs-header": {
+          "headings": 0,
+          "images": 0,
+          "buttons": 1,
+          "links": 3,
+          "sgsElements": 9
+        },
+        "root": {
+          "headings": 1,
+          "images": 5,
+          "buttons": 11,
+          "links": 7,
+          "sgsElements": 108
+        },
+        "sgs-footer": {
+          "headings": 0,
+          "images": 1,
+          "buttons": 0,
+          "links": 0,
+          "sgsElements": 12
+        }
+      },
+      "cloneCounts": {
+        "root": {
+          "headings": 4,
+          "images": 5,
+          "buttons": 35,
+          "links": 20,
+          "sgsElements": 201
+        }
+      }
+    }
+  ]
+}

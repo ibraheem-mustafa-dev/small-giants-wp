@@ -152,7 +152,7 @@ function sgs_render_pack_pricing_product_fields(): void {
 	);
 	foreach ( $k_options as $value => $label ) {
 		\printf(
-			'<label style="display:inline-block;margin-right:16px;font-weight:normal;">'
+			'<label style="float:none;width:auto;display:inline-block;margin:0 16px 4px 0;font-weight:normal;">'
 			. '<input type="radio" name="_sgs_pack_k" value="%s"%s> %s'
 			. '</label>',
 			\esc_attr( $value ),
@@ -181,7 +181,7 @@ function sgs_render_pack_pricing_product_fields(): void {
 	foreach ( $all_sizes as $n ) {
 		$checked = \in_array( (int) $n, $current_sizes, true ) || empty( $current_sizes );
 		\printf(
-			'<label style="display:inline-block;margin-right:12px;font-weight:normal;">'
+			'<label style="float:none;width:auto;display:inline-block;margin:0 16px 4px 0;font-weight:normal;">'
 			. '<input type="checkbox" name="_sgs_pack_sizes[]" value="%d"%s> %s'
 			. '</label>',
 			(int) $n,
@@ -194,7 +194,11 @@ function sgs_render_pack_pricing_product_fields(): void {
 
 	// ── Per-pack manual override fields ─────────────────────────────────────
 	echo '<div class="sgs-pack-manual-overrides" style="padding-left:12px;margin-bottom:8px;">';
-	echo '<label style="display:block;margin-bottom:4px;">' . \esc_html__( 'Manual price overrides (optional)', 'sgs-blocks' ) . '</label>';
+	// float:none/width:auto/margin:0 are load-bearing: WC's panel CSS targets
+	// labels PANEL-WIDE (not just p.form-field), and this div lacks the field
+	// row's 150px column padding — without the reset the label is floated
+	// 150px off the div's left edge and clips (Bean's 2026-06-10 orphan).
+	echo '<label style="float:none;width:auto;margin:0 0 4px;display:block;">' . \esc_html__( 'Manual price overrides (optional)', 'sgs-blocks' ) . '</label>';
 	echo '<span class="description" style="display:block;margin-bottom:6px;">';
 	// Unit blocker (visual-pass F1): the £-pounds field above and these PENCE
 	// inputs sit close together — a "p" suffix is rendered ON each input so an
@@ -208,7 +212,7 @@ function sgs_render_pack_pricing_product_fields(): void {
 	foreach ( $all_sizes as $n ) {
 		$override_val = isset( $overrides[ (string) $n ] ) ? (int) $overrides[ (string) $n ] : '';
 		\printf(
-			'<label style="flex:0 0 auto;font-weight:normal;">'
+			'<label style="flex:0 0 auto;width:auto;margin:0;font-weight:normal;">'
 			. '%s: <input type="number" name="_sgs_pack_manual_overrides[%d]" value="%s" min="2" max="999999" style="width:90px;" placeholder="%s">p'
 			. '</label>',
 			/* translators: %d: the pack size number. */
