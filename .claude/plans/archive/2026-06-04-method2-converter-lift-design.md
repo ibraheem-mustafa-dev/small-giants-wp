@@ -12,8 +12,10 @@ grounded_by:
 b1_decision: "Option A — consume inline (Bean, 2026-06-04). The walker maps each element's CSS → attrs at walk-time via a CURATED layer→property_suffixes DB map (name-free; property-keyed, NOT canonical_slot-keyed — per D194, canonical_slot is content-fork metadata only, NOT the structural-CSS routing key); the css-d1-assignments.json sidecar (seed_d1_sidecar stub, convert.py:167) is DELETED, not revived. No two-stage element-identity re-alignment; matches Spec 22 (sidecar superseded). STOP #48: explicit property→attr entries, never a blind suffix guess."
 related:
   - .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md §FR-22-21 (canonical target) + §FR-22-4.1 (wrapper resolution) + §FR-22-20 (variant detection)
-  - .claude/plans/2026-06-02-container-wrapper-standardisation.md (WS-2/WS-3 gap register)
+  - .claude/plans/archive/2026-06-02-container-wrapper-standardisation.md (WS-2/WS-3 gap register)
 ---
+
+> **⚠ ARCHIVED 2026-06-10 — SUPERSEDED (plans-folder consolidation).** A successive re-cut of the cloning-fidelity effort; its open work was folded into the build-plan + sign-off ledger and parking.md. Live canonical cloning plan: `../2026-06-09-clone-fix-build-plan.md` + `../2026-06-09-clone-fix-sign-off-ledger.md`. Remaining open work tracked in `../../parking.md`. Kept for historical detail (shipped-state, locked decisions, methodology).
 
 # Method 2 — converter-lift design
 

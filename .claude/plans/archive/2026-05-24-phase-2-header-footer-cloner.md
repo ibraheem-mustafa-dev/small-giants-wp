@@ -1,7 +1,7 @@
 ---
 doc_type: phase-plan
 phase: 2
-parent_plan: .claude/plans/2026-05-24-strategic-plan.md
+parent_plan: .claude/plans/archive/2026-05-24-strategic-plan.md
 plan_label: opus
 docscore_grade: B+ (self-assessed)
 generated: 2026-05-23
@@ -9,9 +9,11 @@ generator: /phase-planner (inline, parent session opus)
 primary_goal: "Build a specialised one-shot cloner that converts source mockup headers + footers into Spec 17 architecture (template-part patterns + Sgs_Site_Info store + Customiser-controlled behaviours), bypassing the generic page-clone pipeline. Validate on Mama's Munches; defer per-page-pipeline integration until standalone path is proven."
 ---
 
+> **⚠ ARCHIVED 2026-06-10 — SUPERSEDED (plans-folder consolidation).** Never-started build; preserved here for its 12 steps + 5 locked KJCs, pointed to from parking P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER. Live canonical cloning plan: `../2026-06-09-clone-fix-build-plan.md` + `../2026-06-09-clone-fix-sign-off-ledger.md`. Remaining open work tracked in `../../parking.md`. Kept for historical detail (shipped-state, locked decisions, methodology).
+
 # Phase 2 — Header + footer specialised cloning pipeline
 
-> **Progress 2026-05-30:** Still blocked on Phase 2 hybrid block migration close (see `.claude/plans/2026-05-28-phase-2-hybrid-block-migration.md`). D107-D113 batch advanced Stream A of the hybrid migration (pixel-diff 58.6% → 56.40%, −2.20pp) but did not close it. New `build-deploy.py` operator script (D3) does NOT unblock this phase — it's a sandybrown canary deploy helper, not a header/footer cloner. No change to blocker status this session.
+> **Progress 2026-05-30:** Still blocked on Phase 2 hybrid block migration close (see `.claude/plans/archive/2026-05-28-phase-2-hybrid-block-migration.md`). D107-D113 batch advanced Stream A of the hybrid migration (pixel-diff 58.6% → 56.40%, −2.20pp) but did not close it. New `build-deploy.py` operator script (D3) does NOT unblock this phase — it's a sandybrown canary deploy helper, not a header/footer cloner. No change to blocker status this session.
 
 ## Pre-conditions
 

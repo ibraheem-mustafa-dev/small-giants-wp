@@ -4,10 +4,10 @@ project: small-giants-wp
 thread: cloning-pipeline
 title: Container/wrapper converter — full 4-branch gap analysis (the evidence base for the standardisation programme)
 created: 2026-06-02
-status: ANALYSIS — the durable evidence base behind Spec 22 §FR-22-21 + the 5-workstream plan (`2026-06-02-container-wrapper-standardisation.md`). Every gap-ID (A1-A6/B1-B4/C2-C8/D1-D3) traces to a finding here.
+status: ANALYSIS — the durable evidence base behind Spec 22 §FR-22-21 + the 5-workstream plan (`plans/archive/2026-06-02-container-wrapper-standardisation.md`). Every gap-ID (A1-A6/B1-B4/C2-C8/D1-D3) traces to a finding here.
 method: 4 parallel read-only Sonnet agents, one per code surface, each reporting file:line evidence
 related:
-  - .claude/plans/2026-06-02-container-wrapper-standardisation.md (the build map this evidence justifies)
+  - .claude/plans/archive/2026-06-02-container-wrapper-standardisation.md (the build map this evidence justifies)
   - .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md §FR-22-21 (the canonical procedure)
   - .claude/decisions.md D152 (the decision) + D136 (the original 4-gap audit)
 ---

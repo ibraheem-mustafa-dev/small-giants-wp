@@ -8,6 +8,8 @@ status: PLAN — adversarial-council DONE (2026-06-04). Build = next session. De
 plan_label: "[PLAN: opus] — orchestrator; Sonnet subagents build the serialised convert.py edits + parallel block/orchestrator edits"
 ---
 
+> **⚠ ARCHIVED 2026-06-10 — SUPERSEDED (plans-folder consolidation).** A successive re-cut of the cloning-fidelity effort; its open work was folded into the build-plan + sign-off ledger and parking.md. Live canonical cloning plan: `../2026-06-09-clone-fix-build-plan.md` + `../2026-06-09-clone-fix-sign-off-ledger.md`. Remaining open work tracked in `../../parking.md`. Kept for historical detail (shipped-state, locked decisions, methodology).
+
 # Phase — Method 2 converter-lift (universal CSS→attribute transfer)
 
 ## 2026-06-07 CLARIFICATION — Task 3 scope (Bean-locked, commit `36e3bc3c`)
@@ -34,7 +36,7 @@ plan_label: "[PLAN: opus] — orchestrator; Sonnet subagents build the serialise
 - [ ] Each fix carries its A/B tag + a passing universality-fixture check in its commit message.
 
 **Entry context (read before starting):**
-- `.claude/plans/2026-06-04-method2-converter-lift-design.md` — the 5 fix-shapes + council verdict (the path-split)
+- `.claude/plans/archive/2026-06-04-method2-converter-lift-design.md` — the 5 fix-shapes + council verdict (the path-split)
 - `.claude/specs/22-...md` §FR-22-21 (6-step procedure) + §FR-22-4.1 (wrapper resolution) + §FR-22-5 (CSS routing) + §FR-22-19 (composite interiors)
 - `.claude/reports/2026-06-02-container-wrapper-converter-gap-analysis.md` — file:line evidence
 - run `pipeline-state/mamas-munches-homepage-2026-06-04-134425` — the baseline artefacts

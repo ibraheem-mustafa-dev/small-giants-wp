@@ -22,7 +22,7 @@ The session opened on a hand-off task ("Commit 0a — canonical_slot backfill": 
 
 | Lineage | Date | How draft wrapper CSS finds its destination attr | Matches our conclusion? |
 |---|---|---|---|
-| **Method-2 converter-lift plans** (`plans/2026-06-04-method2-converter-lift-design.md` + `-PHASE-PLAN.md`) | 2026-06-04 | **Name-free.** Curated `property_suffixes` map (R-22-1, DB-driven), CSS-signature layer detection, ONE code site passing attrs into `emit_sgs_container_wrapping`. Explicitly rejects a hardcoded dict AND canonical_slot routing. | **YES** |
+| **Method-2 converter-lift plans** (`plans/archive/2026-06-04-method2-converter-lift-design.md` + `-PHASE-PLAN.md`) | 2026-06-04 | **Name-free.** Curated `property_suffixes` map (R-22-1, DB-driven), CSS-signature layer detection, ONE code site passing attrs into `emit_sgs_container_wrapping`. Explicitly rejects a hardcoded dict AND canonical_slot routing. | **YES** |
 | **Wave-2 Stage docs** (`reports/wave2/STAGE1-DESIGN.md`, `STAGE0-FRS-AND-GATE.md` FR-22-5.3 draft, `SIGN-OFF-LEDGER.md`) | 2026-06-09 (council-ratified D193) | **canonical_slot-keyed.** A new `slot_has_equivalent_block()` predicate + "lift box CSS to the parent's per-slot attr group (match `canonical_slot` + property_suffixes)" → requires the 41-row Commit-0a backfill as a build gate. | **NO** |
 
 The two were never reconciled. The newer (Wave-2) lineage reintroduced `canonical_slot` as a routing key. **Our session sides with Method-2.** This gate's job is to make that explicit and de-conflict the docs.
@@ -127,9 +127,9 @@ Bean chose **`content` + `role='layout'`**. Implemented:
 
 | Doc | Action | What |
 |---|---|---|
-| `plans/2026-06-04-method2-converter-lift-design.md` | **NONE (already correct)** | This IS the name-free design; it's the reference. |
-| `plans/2026-06-04-method2-converter-lift-PHASE-PLAN.md` | **NONE (already correct)** | MF-A `property_suffixes` runtime map, MF-C one-site param-pass — matches DEC-1/DEC-3. |
-| `plans/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md` | 31, 65 | **CHANGE (small)** | Replace "canonical_slot precision" language with "property_suffixes + layer detection"; the universal-lift lands on mirrored wrapper attrs name-free. |
+| `plans/archive/2026-06-04-method2-converter-lift-design.md` | **NONE (already correct)** | This IS the name-free design; it's the reference. |
+| `plans/archive/2026-06-04-method2-converter-lift-PHASE-PLAN.md` | **NONE (already correct)** | MF-A `property_suffixes` runtime map, MF-C one-site param-pass — matches DEC-1/DEC-3. |
+| `plans/archive/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md` | 31, 65 | **CHANGE (small)** | Replace "canonical_slot precision" language with "property_suffixes + layer detection"; the universal-lift lands on mirrored wrapper attrs name-free. |
 
 ### DB + Python scripts
 

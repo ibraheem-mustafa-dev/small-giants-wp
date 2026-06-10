@@ -30,9 +30,9 @@ A custom WordPress block framework built by Claude Code: theme + blocks plugin (
 > **Live status is single-sourced — do NOT track shipped-status / D-numbers / counts here (they drift; the F1/F2 doc-staleness on 2026-06-03 was exactly this).** For "what's shipped vs pending, current step, D-ceiling, blockers" read **`.claude/state.md` + `.claude/next-session-prompt.md`**. Decisions → `.claude/decisions.md`. Parked work → `.claude/parking.md`.
 
 - **Canonical spec:** [Spec 22 §FR-22-21](.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) — the universal wrapper-conversion procedure + 3-layer model (OUTER / CONTENT-WIDTH / PER-GRID-ITEM) + composite-mirror rule.
-- **Live plan (grounded #1-#8 triage + WS-4 build spec + locked sequence):** [`.claude/plans/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md`](.claude/plans/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md).
-- **Programme plan (5 workstreams):** [`.claude/plans/2026-06-02-container-wrapper-standardisation.md`](.claude/plans/2026-06-02-container-wrapper-standardisation.md) — **WS-1** sgs/container completion · **WS-2** converter/router truth · **WS-3** de-cheat (R-22-1) · **WS-4** composite wrapper mirror + auto-propagation (**BLOCK-SIDE COMPLETE 2026-06-04 D167** — 29-block roster; architecture resolved: docs-are-truth, KIND-scoped full mirror, no per-block trim, blub.db 312; modal + mobile-nav excluded; the mirror does NOT fix page-clone fidelity — separate converter Method-2 next) · **WS-5** docs.
-- **Parent (cloning pixel-diff thread):** [`.claude/plans/2026-05-28-phase-2-hybrid-block-migration.md`](.claude/plans/2026-05-28-phase-2-hybrid-block-migration.md) — per-section ≤5% × 3 viewports + Bean sign-off (R-22-13).
+- **LIVE cloning plan (phase-plan):** [`.claude/plans/2026-06-09-clone-fix-build-plan.md`](.claude/plans/2026-06-09-clone-fix-build-plan.md) — the current canonical build plan.
+- **LIVE sign-off ledger (55-issue tracker):** [`.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md`](.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md).
+- **Archived (superseded re-cuts, at `plans/archive/`):** [`2026-06-03-cloning-fidelity-triage-and-composite-remodel.md`](.claude/plans/archive/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md) (triage #1-#8 + WS-4 build spec) · [`2026-06-02-container-wrapper-standardisation.md`](.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md) (5-workstream programme) · [`2026-05-28-phase-2-hybrid-block-migration.md`](.claude/plans/archive/2026-05-28-phase-2-hybrid-block-migration.md) (pixel-diff thread).
 
 ## Binding rules (Spec 22 R-22-1 through R-22-15; gate every commit)
 
@@ -95,8 +95,10 @@ Each sub-project + each client site has its own CLAUDE.md. Read the relevant one
 | Doc | What |
 |---|---|
 | [`.claude/reports/2026-05-25-qc-council-issue-register.md`](.claude/reports/2026-05-25-qc-council-issue-register.md) | THE current cloning-pipeline register (~110 items, Sections A-R) |
-| [`.claude/plans/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md`](.claude/plans/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md) | **Live cloning-fidelity plan (D159/D160) — grounded #1-#8 triage + WS-4 build spec + locked sequence** |
-| [`.claude/plans/2026-06-02-container-wrapper-standardisation.md`](.claude/plans/2026-06-02-container-wrapper-standardisation.md) | Standardisation programme (D152; WS-1 A1+A2 SHIPPED D159, WS-1c/WS-2/3/4/5 pending) |
+| [`.claude/plans/2026-06-09-clone-fix-build-plan.md`](.claude/plans/2026-06-09-clone-fix-build-plan.md) | **LIVE canonical cloning plan (phase-plan)** |
+| [`.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md`](.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md) | **LIVE 55-issue sign-off ledger** |
+| [`.claude/plans/archive/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md`](.claude/plans/archive/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md) | Cloning-fidelity triage #1-#8 + WS-4 build spec (archived — superseded) |
+| [`.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md`](.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md) | Standardisation programme, 5 workstreams (archived — superseded) |
 | [`.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`](.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) | Canonical pipeline spec; single-path universal walker; FR-22-1 through FR-22-13; R-22-1 through R-22-14 binding rules (R-22-14 added 2026-05-27 per D92 — no legacy fallback hacks). |
 | [`.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md`](.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md) | Pipeline-state artefact map (read BEFORE conjecturing) |
 | [`.claude/cloning-pipeline-flow.md`](.claude/cloning-pipeline-flow.md) + [`-stages.md`](.claude/cloning-pipeline-stages.md) | Stage map + per-stage detail |

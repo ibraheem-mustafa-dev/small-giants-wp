@@ -5,7 +5,7 @@ thread: cloning-pipeline
 title: "Method 2 converter-lift — explained in plain English (what's failing, the decisions, the universal solution)"
 created: 2026-06-04
 audience: Bean (non-coder owner) + the build session
-companion: 2026-06-04-method2-converter-lift-PHASE-PLAN.md (the executable plan) + 2026-06-04-method2-converter-lift-design.md (D169, the fix-shapes)
+companion: plans/archive/2026-06-04-method2-converter-lift-PHASE-PLAN.md (the executable plan) + plans/archive/2026-06-04-method2-converter-lift-design.md (D169, the fix-shapes)
 ---
 
 # Method 2 converter-lift — explained
@@ -82,6 +82,6 @@ Every fix is either **A** (what the spec already says the pipeline should do) or
 ---
 
 ## Where to go next
-- **Executable plan:** `2026-06-04-method2-converter-lift-PHASE-PLAN.md` — read the "⚡ FINAL PLAN" section (it supersedes the step bodies). Build = next session, Session A first (converter core, hero-first).
-- **Fix-shape detail + council verdict:** `2026-06-04-method2-converter-lift-design.md` (D169).
+- **Executable plan:** `plans/archive/2026-06-04-method2-converter-lift-PHASE-PLAN.md` — read the "⚡ FINAL PLAN" section (it supersedes the step bodies). Build = next session, Session A first (converter core, hero-first).
+- **Fix-shape detail + council verdict:** `plans/archive/2026-06-04-method2-converter-lift-design.md` (D169).
 - **The trap to remember:** validate each fix on the path the section actually emits through (the council Stage-5 check), and prove universality on the synthetic fixture, not just Mama's.

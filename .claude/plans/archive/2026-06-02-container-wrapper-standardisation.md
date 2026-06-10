@@ -9,8 +9,10 @@ progress: "WS-1a (A1 contentWidth attr + guarded __inner render wrapper) + WS-1b
 authors: Claude Code / Bean
 primary_goal: "The cloning pipeline faithfully transfers CSS from any draft section, and every composite block with a built-in wrapper mirrors sgs/container — no per-block divergence, auto-propagated when container gains a capability."
 motivation: "Every pixel the pipeline gets wrong is a manual fix after every clone. Right now 4 of the 7 body sections on Mama's Munches render constrained to 1200 px when they should be full-bleed, and their inner content width is dropped entirely. Fixing the container/wrapper system is the one change that closes the structural CSS-transfer deficit for ALL future clients — not just Mama's."
-parent_plan: ".claude/plans/2026-05-28-phase-2-hybrid-block-migration.md"
+parent_plan: ".claude/plans/archive/2026-05-28-phase-2-hybrid-block-migration.md"
 ---
+
+> **⚠ ARCHIVED 2026-06-10 — SUPERSEDED (plans-folder consolidation).** A successive re-cut of the cloning-fidelity effort; its open work was folded into the build-plan + sign-off ledger and parking.md. Live canonical cloning plan: `../2026-06-09-clone-fix-build-plan.md` + `../2026-06-09-clone-fix-sign-off-ledger.md`. Remaining open work tracked in `../../parking.md`. Kept for historical detail (shipped-state, locked decisions, methodology).
 
 # Container & Wrapper Standardisation — Strategic Plan
 
@@ -115,7 +117,7 @@ WS-1a (contentWidth A1) ─► WS-1b (A2) ─► WS-1c (A3–A6)           │
 
 > **WS-1a (A1) + WS-1b (A2) SHIPPED 2026-06-03, commit `2f86d9e6` (D159), live-DOM verified @1440.**
 > A7 MOOT — `_lift_core_block_style` is dead code; A2 inlined its own max-width→widthMode logic.
-> **Remaining: WS-1c (A3/A4/A5/A6).** Live triage register + WS-4 build spec now in `.claude/plans/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md`.
+> **Remaining: WS-1c (A3/A4/A5/A6).** Live triage register + WS-4 build spec now in `.claude/plans/archive/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md`.
 
 **Purpose:** Build the capabilities `sgs/container` currently lacks so composites have something concrete to mirror and the converter has attributes to write into.
 

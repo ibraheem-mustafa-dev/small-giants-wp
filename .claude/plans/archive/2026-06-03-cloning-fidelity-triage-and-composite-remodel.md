@@ -4,10 +4,12 @@ project: small-giants-wp
 thread: cloning-pipeline
 plan_name: 2026-06-03-cloning-fidelity-triage-and-composite-remodel
 generated: 2026-06-03
-parent_plan: .claude/plans/2026-06-02-container-wrapper-standardisation.md
+parent_plan: .claude/plans/archive/2026-06-02-container-wrapper-standardisation.md
 status: active
 plan_label: "[PLAN: opus]"
 ---
+
+> **⚠ ARCHIVED 2026-06-10 — SUPERSEDED (plans-folder consolidation).** A successive re-cut of the cloning-fidelity effort; its open work was folded into the build-plan + sign-off ledger and parking.md. Live canonical cloning plan: `../2026-06-09-clone-fix-build-plan.md` + `../2026-06-09-clone-fix-sign-off-ledger.md`. Remaining open work tracked in `../../parking.md`. Kept for historical detail (shipped-state, locked decisions, methodology).
 
 # Phase — Cloning page-fidelity: triage + grid root-cause + composite-remodel (WS-4)
 

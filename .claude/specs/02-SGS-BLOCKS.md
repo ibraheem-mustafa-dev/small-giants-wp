@@ -178,7 +178,7 @@ block-name/
 
 `containerKind` is declared in each composite block's `block.json` as `supports.sgs.containerKind`. It gates which `ContainerWrapperControls` panels render in the editor and which layers the shared `SGS_Container_Wrapper::render()` PHP helper emits at runtime. `sgs/modal` and `sgs/mobile-nav` carry `supports.sgs.containerMirror: false` and are excluded from the roster entirely (their outer shell is a Popover/dialog, not a container).
 
-**Composite-mirror rule (R-22-9 / D152, BLOCK-SIDE COMPLETE D167 2026-06-04):** Every composite block in the 29-block roster mirrors `sgs/container`'s wrapper capabilities via the shared helper `includes/class-sgs-container-wrapper.php`. No per-block reimplementation — the helper handles all rendering. When `sgs/container` gains a new capability, `/sgs-update` Stage 11 propagates it to all roster blocks. Canonical procedure: Spec 22 §FR-22-21 + `.claude/plans/2026-06-02-container-wrapper-standardisation.md`.
+**Composite-mirror rule (R-22-9 / D152, BLOCK-SIDE COMPLETE D167 2026-06-04):** Every composite block in the 29-block roster mirrors `sgs/container`'s wrapper capabilities via the shared helper `includes/class-sgs-container-wrapper.php`. No per-block reimplementation — the helper handles all rendering. When `sgs/container` gains a new capability, `/sgs-update` Stage 11 propagates it to all roster blocks. Canonical procedure: Spec 22 §FR-22-21 + `.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md`.
 
 **Render:** **Dynamic** — `render: file:./render.php`. Server-side rendering needed for layout/columns/gap responsive logic and `useInnerBlocksProps` integration. `save.js` returns `<InnerBlocks.Content />`.
 
@@ -1098,7 +1098,7 @@ Blocks recognised by the converter walker at confidence 1.0 from their literal `
 
 To add: set `supports.sgs.is_section_root: true` in `block.json`, run `/sgs-update`, then run `/sgs-clone` on a representative mockup and verify `voter.json` emits the literal slug at confidence 1.0 with reason `class-section-block-equivalent`. Any non-section-root `sgs-` prefixed class encountered by the voter emits `gap-candidate-class-section` instead — surfacing the gap for review rather than mis-routing.
 
-Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (`block_composition` table — sibling routing data), D152 (`block_composition.container_kind` 3-KIND model + composite-mirror rule → Spec 22 §FR-22-21 + `.claude/plans/2026-06-02-container-wrapper-standardisation.md`).
+Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (`block_composition` table — sibling routing data), D152 (`block_composition.container_kind` 3-KIND model + composite-mirror rule → Spec 22 §FR-22-21 + `.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md`).
 
 ---
 

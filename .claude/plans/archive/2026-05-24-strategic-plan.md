@@ -7,6 +7,8 @@ parent_plan: .claude/plans/2026-05-21-architecture-staging.md (PARTIAL — see f
 primary_goal: "Close the structural pixel-diff blockers via Spec 22 (Universal Block-Equivalent Extraction; replaces the 2026-05-23 G1+G3+G5 framing entirely), build a specialised header/footer cloning pipeline, finish remaining parking, then optimise the skill+command surface that depends on all the above."
 ---
 
+> **⚠ ARCHIVED 2026-06-10 — SUPERSEDED (plans-folder consolidation).** Historical recovery roadmap; Phase 1 superseded by Spec 22, Phases 2-4 carried to parking.md. Live canonical cloning plan: `../2026-06-09-clone-fix-build-plan.md` + `../2026-06-09-clone-fix-sign-off-ledger.md`. Remaining open work tracked in `../../parking.md`. Kept for historical detail (shipped-state, locked decisions, methodology).
+
 # Strategic plan — post-architecture-recovery (4 phases)
 
 > **Progress 2026-05-30 — D107-D113 architectural cleanup batch shipped (Stream A continuation):**
