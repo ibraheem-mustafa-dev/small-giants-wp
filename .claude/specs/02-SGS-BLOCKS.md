@@ -1115,7 +1115,7 @@ A drafted product card uses ONE block prefix — `sgs-product-card` — for the 
 | `sgs-product-card` + `--featured` \| `--trial` | `variantStyle: standard\|featured\|trial` |
 | `sgs-product-card__image` | `image` / `imageAlt` |
 | `sgs-product-card__body` | (structural) |
-| unclassed `<h3>` | `productName` (atomic tag-mapping table — do NOT add a class) |
+| `sgs-product-card__title` (on the `<h3>`) | `productName` (explicit class REQUIRED — corrected by Bean 2026-06-10: an unclassed `<h3>` falls back to the atomic tag-mapping table, which emits a `core/heading` CHILD block and contradicts the zero-InnerBlocks built-in card; the tag-mapping fallback is for legacy drafts only, never the standard) |
 | `sgs-product-card__description` | `description` |
 | `sgs-product-card__pill-group` / `__pill` / `__pill--active` | `packSizes` (display); live modes use the option-picker subsystem |
 | `sgs-product-card__price-row` / `__price` / `__price-note` | `priceLarge` / `priceNote` |
