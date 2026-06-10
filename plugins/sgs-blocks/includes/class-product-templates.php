@@ -165,7 +165,7 @@ final class Product_Templates {
 						'type'              => 'string',
 						'default'           => '',
 						'sanitize_callback' => 'sanitize_text_field',
-						'description'       => \__( 'Optional regular price (decimal string, e.g. "9.99") set on all new variations. If absent, variations are created priceless and PREFLIGHT will hold the product unpublished until prices are set.', 'sgs-blocks' ),
+						'description'       => \__( 'Optional regular price (decimal string, e.g. "9.99") set on all new variations. If absent, variations will be created without prices, and the product will stay unpublished until prices are set (see the Variations tab).', 'sgs-blocks' ),
 					),
 				),
 			)

@@ -29,11 +29,17 @@ final class Product_Templates_Apply {
 	 * Operator-facing "not carried" notes — shared by the dry-run summary and
 	 * the live-apply response so both always state the same exclusions.
 	 *
+	 * Plain English only — no meta keys or internal system names. For
+	 * developers, the underlying exclusions are:
+	 *   - Swatch images = _sgs_swatch_image_id (attachment IDs are install-local).
+	 *   - Pack pricing settings = _sgs_pack_k + _sgs_pack_sizes (shop-local
+	 *     pricing config; the site-level Pack Pricing cascade provides defaults).
+	 *
 	 * @var string[]
 	 */
 	const NOT_CARRIED_NOTES = array(
-		'swatch images (_sgs_swatch_image_id) — attachment IDs are install-local; re-upload on this site',
-		'pricing policy settings (_sgs_pack_k, _sgs_pack_sizes) — the site-level Pack Pricing cascade provides defaults; configure per shop',
+		'Swatch images are not carried over — re-upload them on this site.',
+		'Pack pricing settings are not carried over — configure pricing for this shop after applying.',
 	);
 
 	// ── Delegate to R2 ────────────────────────────────────────────────────────

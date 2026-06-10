@@ -139,7 +139,7 @@ function sgs_render_product_template_fields(): void {
 		// clear:both is load-bearing — WC floats the select, so without it the description
 		// floats beside it and truncates (same pattern as pack-size axis field).
 		echo '<span class="description" style="display:block;clear:both;padding-top:4px;">';
-		echo esc_html__( 'Applying a template provisions the template\'s attribute/term structure then sets presentation config. No prices are set — use the "Starting price" field in the confirm box.', 'sgs-blocks' );
+		echo esc_html__( 'Applying a template sets up this product\'s options (sizes, flavours, and so on) and how they are displayed. No prices are set — you can add an optional starting price before anything is changed.', 'sgs-blocks' );
 		echo '</span>';
 		echo '<span id="sgs_template_apply_msg" style="display:block;clear:both;margin-top:4px;"></span>';
 		echo '</p>';
@@ -148,15 +148,21 @@ function sgs_render_product_template_fields(): void {
 		// window.prompt (inaccessible). Summary is filled via textContent in JS.
 		echo '<div id="sgs_template_confirm_box" style="display:none;clear:both;margin:8px 12px;padding:10px;border:1px solid #c3c4c7;background:#f6f7f7;max-width:480px;">';
 		echo '<strong style="display:block;margin-bottom:4px;">' . esc_html__( 'Preview — applying this template will:', 'sgs-blocks' ) . '</strong>';
-		echo '<div id="sgs_template_confirm_summary" style="white-space:pre-line;margin-bottom:8px;"></div>';
+		echo '<div id="sgs_template_confirm_summary" style="white-space:pre-line;max-width:65ch;margin-bottom:8px;"></div>';
 		// Nested label needs the float reset (WC floats every panel label into a 150px column).
 		echo '<label for="sgs_template_starting_price" style="float:none;width:auto;margin:0 6px 0 0;display:inline-block;">';
-		echo esc_html__( 'Starting price (optional, £)', 'sgs-blocks' );
+		echo esc_html(
+			sprintf(
+				/* translators: %s: the shop's currency symbol (e.g. £, $, €). */
+				__( 'Starting price (optional, %s)', 'sgs-blocks' ),
+				function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : ''
+			)
+		);
 		echo '</label>';
 		echo '<input type="text" inputmode="decimal" id="sgs_template_starting_price" style="float:none;width:120px;min-height:44px;box-sizing:border-box;vertical-align:middle;" placeholder="9.99" />';
 		// Description forced onto its own line below the input (clear:both — floated-select trap).
 		echo '<span class="description" style="display:block;clear:both;padding-top:4px;">';
-		echo esc_html__( 'Sets this regular price on every new variation. Leave blank to create variations priceless — the product stays unpublished until prices are set.', 'sgs-blocks' );
+		echo esc_html__( 'Sets this regular price on every new variation. Leave blank to create variations without prices — the product will stay unpublished until prices are set (see the Variations tab).', 'sgs-blocks' );
 		echo '</span>';
 		echo '<p style="margin:8px 0 0;">';
 		echo '<button type="button" id="sgs_template_confirm_apply_btn" class="button button-primary" style="min-height:44px;">' . esc_html__( 'Apply template', 'sgs-blocks' ) . '</button> ';
@@ -178,9 +184,12 @@ function sgs_render_product_template_fields(): void {
 	// ── 3. Import ──────────────────────────────────────────────────────────────
 	echo '<p class="form-field form-row form-row-full" style="padding:0 12px;">';
 	echo '<label for="sgs_template_import_json" style="float:none;width:auto;margin:0 0 4px;display:block;">';
-	echo esc_html__( 'Import template (JSON):', 'sgs-blocks' );
+	echo esc_html__( 'Import a template from another site:', 'sgs-blocks' );
 	echo '</label>';
-	echo '<textarea id="sgs_template_import_json" rows="3" style="float:none;width:100%;max-width:480px;font-family:monospace;font-size:11px;" placeholder="' . esc_attr__( 'Paste exported JSON here…', 'sgs-blocks' ) . '"></textarea>';
+	echo '<textarea id="sgs_template_import_json" rows="3" style="float:none;width:100%;max-width:480px;font-family:monospace;font-size:11px;" placeholder="' . esc_attr__( 'Export a template on the other site, then paste the copied text here.', 'sgs-blocks' ) . '"></textarea>';
+	echo '<span class="description" style="display:block;clear:both;padding-top:4px;">';
+	echo esc_html__( 'Export a template on the other site, then paste the copied text here.', 'sgs-blocks' );
+	echo '</span>';
 	echo '<br/><button type="button" id="sgs_template_import_btn" class="button" style="min-height:44px;margin-top:4px;">' . esc_html__( 'Import', 'sgs-blocks' ) . '</button>';
 	echo '<span id="sgs_template_import_msg" style="margin-left:8px;vertical-align:middle;display:none;"></span>';
 	echo '</p>';
@@ -200,27 +209,30 @@ function sgs_render_product_template_fields(): void {
 				'restRoot'  => $rest_root,
 				'nonce'     => $rest_nonce,
 				'strings'   => array(
-					'enterName'          => __( 'Please enter a template name.', 'sgs-blocks' ),
-					'saving'             => __( 'Saving…', 'sgs-blocks' ),
-					'saved'              => __( 'Saved! Reload the page to use this template.', 'sgs-blocks' ),
-					'saveFailed'         => __( 'Save failed', 'sgs-blocks' ),
-					'networkError'       => __( 'Network error:', 'sgs-blocks' ),
-					'exportFailed'       => __( 'Export failed', 'sgs-blocks' ),
-					'selectTemplate'     => __( 'Please select a template.', 'sgs-blocks' ),
-					'loadingPreview'     => __( 'Loading preview…', 'sgs-blocks' ),
-					'previewFailed'      => __( 'Preview failed', 'sgs-blocks' ),
-					'reviewPreview'      => __( 'Review the preview below, then apply or cancel.', 'sgs-blocks' ),
-					'applying'           => __( 'Applying…', 'sgs-blocks' ),
-					'applied'            => __( 'Template applied successfully.', 'sgs-blocks' ),
-					'applyFailed'        => __( 'Apply failed', 'sgs-blocks' ),
-					'applyCancelled'     => __( 'Apply cancelled.', 'sgs-blocks' ),
-					'pasteJson'          => __( 'Paste JSON into the field first.', 'sgs-blocks' ),
-					'invalidJson'        => __( 'Invalid JSON:', 'sgs-blocks' ),
-					'importing'          => __( 'Importing…', 'sgs-blocks' ),
-					'imported'           => __( 'Imported! Reload the page to use this template.', 'sgs-blocks' ),
-					'importFailed'       => __( 'Import failed', 'sgs-blocks' ),
-					'presentationFields' => __( 'Presentation fields:', 'sgs-blocks' ),
-					'notCarried'         => __( 'Not carried:', 'sgs-blocks' ),
+					'enterName'      => __( 'Please enter a template name.', 'sgs-blocks' ),
+					'saving'         => __( 'Saving…', 'sgs-blocks' ),
+					'saved'          => __( 'Saved! Reload the page to use this template.', 'sgs-blocks' ),
+					'saveFailed'     => __( 'Save failed', 'sgs-blocks' ),
+					'networkError'   => __( 'Network error:', 'sgs-blocks' ),
+					'exportFailed'   => __( 'Export failed', 'sgs-blocks' ),
+					'selectTemplate' => __( 'Please select a template.', 'sgs-blocks' ),
+					'loadingPreview' => __( 'Loading preview…', 'sgs-blocks' ),
+					'previewFailed'  => __( 'Preview failed', 'sgs-blocks' ),
+					'reviewPreview'  => __( 'Review the preview below, then apply or cancel.', 'sgs-blocks' ),
+					'applying'       => __( 'Applying…', 'sgs-blocks' ),
+					'applied'        => __( 'Template applied successfully.', 'sgs-blocks' ),
+					'applyFailed'    => __( 'Apply failed', 'sgs-blocks' ),
+					'applyCancelled' => __( 'Apply cancelled.', 'sgs-blocks' ),
+					'pasteJson'      => __( 'Paste the exported template text into the field first.', 'sgs-blocks' ),
+					'invalidJson'    => __( 'That text is not a valid exported template:', 'sgs-blocks' ),
+					'importing'      => __( 'Importing…', 'sgs-blocks' ),
+					'imported'       => __( 'Imported! Reload the page to use this template.', 'sgs-blocks' ),
+					'importFailed'   => __( 'Import failed', 'sgs-blocks' ),
+					'willSetUp'      => __( 'Will set up:', 'sgs-blocks' ),
+					/* translators: %s: number of options for an attribute (e.g. "4 options:"). */
+					'optionsCount'   => __( '%s options:', 'sgs-blocks' ),
+					'notCarried'     => __( 'Not carried over:', 'sgs-blocks' ),
+					'important'      => __( 'Important:', 'sgs-blocks' ),
 				),
 			)
 		)

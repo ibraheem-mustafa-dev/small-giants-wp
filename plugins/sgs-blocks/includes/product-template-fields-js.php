@@ -176,22 +176,30 @@ function sgs_product_template_inline_script(): void {
 								setMsg('sgs_template_apply_msg', msg, true);
 								return;
 							}
-							var d     = res.data;
-							var lines = [];
-							if (d.would_provision) {
-								d.would_provision.forEach(function (a) {
-									lines.push(a.attribute + ': ' + a.term_count + ' term(s) (' + (a.term_names || []).join(', ') + ')');
-								});
-							}
-							if (d.presentation_fields && d.presentation_fields.length) {
-								lines.push(strings.presentationFields + ' ' + d.presentation_fields.join(', '));
-							}
-							if (d.not_carried && d.not_carried.length) {
-								lines.push(strings.notCarried + ' ' + d.not_carried.join('; '));
-							}
-							if (d.starting_price_note) { lines.push(d.starting_price_note); }
+							// Three labelled groups, blank-line separated (the summary div
+							// is white-space:pre-line). Operator language only — the raw
+							// presentation_fields meta keys are deliberately NOT shown.
+							var d      = res.data;
+							var groups = [];
 
-							confirmSum.textContent = lines.join('\n'); // textContent — server data never hits innerHTML.
+							if (d.would_provision && d.would_provision.length) {
+								var setupLines = [strings.willSetUp];
+								d.would_provision.forEach(function (a) {
+									var countLabel = (strings.optionsCount || '%s options:').replace('%s', a.term_count);
+									setupLines.push(a.attribute + ' — ' + countLabel + ' ' + (a.term_names || []).join(', '));
+								});
+								groups.push(setupLines.join('\n'));
+							}
+
+							if (d.not_carried && d.not_carried.length) {
+								groups.push([strings.notCarried].concat(d.not_carried).join('\n'));
+							}
+
+							if (d.starting_price_note) {
+								groups.push(strings.important + '\n' + d.starting_price_note);
+							}
+
+							confirmSum.textContent = groups.join('\n\n'); // textContent — server data never hits innerHTML.
 							confirmBox.dataset.templateId = String(tplId);
 							confirmBox.style.display = 'block';
 							setMsg('sgs_template_apply_msg', strings.reviewPreview, false);

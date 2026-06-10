@@ -224,10 +224,11 @@ final class Product_Templates_Handlers {
 
 		$message = '' !== $starting_price
 			? \__( 'Template applied. Variations created with the supplied starting price.', 'sgs-blocks' )
-			: \__( 'Template applied. No starting price supplied — variations are priceless. PREFLIGHT will hold this product unpublished until prices are set.', 'sgs-blocks' );
+			: \__( 'Template applied. No starting price supplied — variations will be created without prices, and the product will stay unpublished until prices are set (see the Variations tab).', 'sgs-blocks' );
 
-		// Pricing-policy settings never travel in a template (META_DENY_LIST).
-		$message .= ' ' . \__( 'Note: pricing policy settings (_sgs_pack_k, _sgs_pack_sizes) are not carried — the site-level Pack Pricing cascade provides defaults; configure per shop.', 'sgs-blocks' );
+		// Pricing-policy settings never travel in a template (META_DENY_LIST:
+		// _sgs_pack_k + _sgs_pack_sizes — shop-local pricing config).
+		$message .= ' ' . \__( 'Note: pack pricing settings are not carried over — configure pricing for this shop after applying.', 'sgs-blocks' );
 
 		// card_link is ADVISORY — no automatic page write occurs; the operator
 		// sets sourceMode/productId on the page's product-card block themselves.
@@ -278,7 +279,7 @@ final class Product_Templates_Handlers {
 			'presentation_fields' => $presentation_keys,
 			'starting_price'      => '' !== $starting_price ? $starting_price : null,
 			'starting_price_note' => '' === $starting_price
-				? \__( 'No starting_price supplied — variations will be created priceless. PREFLIGHT will hold the product unpublished until prices are set.', 'sgs-blocks' )
+				? \__( 'No starting price supplied — variations will be created without prices, and the product will stay unpublished until prices are set (see the Variations tab).', 'sgs-blocks' )
 				: null,
 			'not_carried'         => Product_Templates_Apply::NOT_CARRIED_NOTES,
 			'message'             => \__( 'Dry run complete. Pass confirm=true to perform this apply.', 'sgs-blocks' ),
