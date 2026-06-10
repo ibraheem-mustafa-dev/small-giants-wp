@@ -4,9 +4,11 @@ project: small-giants-wp
 thread: sgs-theme
 plan_id: spec27-28-council-mustfix-wave
 created: 2026-06-06
-status: AWAITING-BEAN-SIGNOFF
-source_backlog: parking P-SPEC27-28-COUNCIL-MUSTFIX-WAVE
+status: SHIPPED 2026-06-10 (D202/D204) — all must-fix/should-fix/missing waves cleared; Wave 3 #17 centralised lean-seed stripper; R4 slug-templates + F2 feeds shipped; Spec 27/28 COMPLETE bar gated R5/P4. Superseded — archive candidate.
+source_backlog: parking P-SPEC27-28-COUNCIL-MUSTFIX-WAVE (archived to memory/parking-archive.md at D202)
 ---
+
+> **STATUS: SHIPPED + SUPERSEDED (2026-06-10, D204).** Every wave in this plan shipped and live-verified on canary (Wave 1/2/3 + #17 + R4 + F2 + the FP-H/FP-E built-in-card rebuild that followed). Spec 27 + 28 are complete except the deliberately gated R5 (AI-builder) + P4 was itself shipped (D203). Kept for history; current state lives in `.claude/handoff-theme.md` (session 20) + `decisions.md` D202–D204.
 
 # Wave-Plan — clear the Spec 27/28 adversarial-council must-fix backlog
 
