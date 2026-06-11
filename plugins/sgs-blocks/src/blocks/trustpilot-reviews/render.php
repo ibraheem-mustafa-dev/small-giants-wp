@@ -31,7 +31,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // ───────────────────────────────────────────────────────────────────────────
 
 $variant            = isset( $attributes['variant'] ) ? $attributes['variant'] : 'carousel';
-$data_source        = isset( $attributes['dataSource'] ) ? $attributes['dataSource'] : 'inline';
+$data_source        = isset( $attributes['dataSource'] ) ? sanitize_key( $attributes['dataSource'] ) : 'synced';
+$empty_state        = isset( $attributes['emptyState'] ) ? $attributes['emptyState'] : 'hide';
 $business_url       = isset( $attributes['businessUnitUrl'] ) ? $attributes['businessUnitUrl'] : '';
 $reviews_attr       = isset( $attributes['reviews'] ) ? $attributes['reviews'] : array();
 $trust_score        = isset( $attributes['trustScore'] ) ? floatval( $attributes['trustScore'] ) : 0.0;
@@ -55,6 +56,13 @@ $autoplay           = isset( $attributes['autoplay'] ) ? (bool) $attributes['aut
 $autoplay_speed     = isset( $attributes['autoplaySpeed'] ) ? intval( $attributes['autoplaySpeed'] ) : 5000;
 $show_dots          = isset( $attributes['showDots'] ) ? (bool) $attributes['showDots'] : false;
 $show_arrows        = isset( $attributes['showArrows'] ) ? (bool) $attributes['showArrows'] : true;
+
+// DMCC FR-30-10: whitelist the data source. Any unsanitised / invalid / REST-injected
+// value must NEVER fall through to fake demo reviews — coerce it to the safe synced
+// (empty-state) path, which renders genuine data or nothing, never placeholders.
+if ( ! in_array( $data_source, array( 'synced', 'inline', 'placeholder' ), true ) ) {
+	$data_source = 'synced';
+}
 
 // ───────────────────────────────────────────────────────────────────────────
 // Data source resolution
@@ -97,7 +105,8 @@ $placeholder_reviews = array(
 	),
 );
 
-$reviews = array();
+$reviews         = array();
+$synced_is_empty = false; // True when dataSource=synced but no live data is available.
 
 if ( 'synced' === $data_source ) {
 	$synced = get_option( 'sgs_trustpilot_data', null );
@@ -119,12 +128,37 @@ if ( 'synced' === $data_source ) {
 			$business_url = isset( $synced['source_url'] ) ? $synced['source_url'] : '';
 		}
 	} else {
-		$reviews = $placeholder_reviews;
+		// No live sync data — never render placeholder reviews on the frontend (DMCC compliance).
+		$synced_is_empty = true;
 	}
 } elseif ( 'inline' === $data_source && ! empty( $reviews_attr ) ) {
 	$reviews = $reviews_attr;
-} else {
+} elseif ( 'placeholder' === $data_source ) {
+	// Placeholder is for editor preview / explicit operator demo only. This is the
+	// ONLY path that may render demo data, and only via an explicit dataSource choice.
 	$reviews = $placeholder_reviews;
+} else {
+	// DMCC FR-30-10: any other case (e.g. inline with no reviews) renders nothing —
+	// never placeholder/fake reviews on a live frontend.
+	$reviews = array();
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Empty-state handling (DMCC FR-30-10): when synced source has no live data,
+// render the operator-chosen empty state and return early — never a broken gap.
+// ───────────────────────────────────────────────────────────────────────────
+
+if ( $synced_is_empty ) {
+	if ( 'coming-soon' === $empty_state ) {
+		$wrapper_attrs = get_block_wrapper_attributes( array( 'class' => 'sgs-trustpilot-reviews sgs-trustpilot-reviews--empty-state' ) );
+		printf(
+			'<div %s><p class="sgs-trustpilot-reviews__coming-soon">%s</p></div>',
+			$wrapper_attrs, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes returns escaped attribute string.
+			esc_html__( 'Reviews coming soon', 'sgs-blocks' )
+		);
+	}
+	// emptyState=hide: output nothing — no gap, no layout break.
+	return;
 }
 
 // Auto-derive aggregates when missing.
@@ -281,7 +315,12 @@ endif;
 		</button>
 	<?php endif; ?>
 
-	<div class="sgs-trustpilot-reviews__track">
+	<div
+		class="sgs-trustpilot-reviews__track"
+		tabindex="0"
+		role="group"
+		aria-label="<?php esc_attr_e( 'Customer reviews', 'sgs-blocks' ); ?>"
+	>
 		<?php
 		foreach ( $reviews as $idx => $r ) :
 			$rating       = floatval( isset( $r['rating'] ) ? $r['rating'] : 0 );

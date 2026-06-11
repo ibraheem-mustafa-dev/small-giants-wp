@@ -12,8 +12,13 @@ import { PanelBody, TextControl, Icon } from '@wordpress/components';
  * would always show the core-blocks fallback and mislead operators.
  */
 export default function Edit( { attributes, setAttributes } ) {
-	const { soldOutLabel, unavailableLabel, notifyMeLabel, addToCartLabel } =
-		attributes;
+	const {
+		soldOutLabel,
+		unavailableLabel,
+		notifyMeLabel,
+		addToCartLabel,
+		perUnitDenomination,
+	} = attributes;
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-buybox sgs-buybox--editor-placeholder',
@@ -32,6 +37,19 @@ export default function Edit( { attributes, setAttributes } ) {
 						placeholder={ __( 'Add to Cart', 'sgs-blocks' ) }
 						help={ __(
 							'Empty = the default translated label.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Per-unit denomination', 'sgs-blocks' ) }
+						value={ perUnitDenomination }
+						onChange={ ( val ) =>
+							setAttributes( { perUnitDenomination: val } )
+						}
+						placeholder={ __( 'per %s', 'sgs-blocks' ) }
+						help={ __(
+							'Override the per-unit label. %s is replaced with the unit label (e.g. "per bar", "per 100g"). Empty = translated default.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom

@@ -58,6 +58,18 @@
 	text-align: left;
 }
 
+/* WCAG 2.2 §2.1.1 — the track is a focusable, keyboard-scrollable region
+   (tabindex=0 in render.php). Provide a visible focus ring (2px solid,
+   2px offset, >=3:1 against light + dark themes). */
+.sgs-trustpilot-reviews__track:focus-visible {
+	outline: 2px solid #1c1c1c;
+	outline-offset: 2px;
+}
+
+.sgs-trustpilot-reviews--theme-dark .sgs-trustpilot-reviews__track:focus-visible {
+	outline-color: #ffffff;
+}
+
 .sgs-trustpilot-reviews__label {
 	font-size: 1.25rem;
 	font-weight: 700;

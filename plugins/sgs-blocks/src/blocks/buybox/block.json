@@ -2,7 +2,7 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/buybox",
-    "version": "1.0.2",
+    "version": "1.0.4",
     "title": "Buybox",
     "category": "sgs-content",
     "description": "WooCommerce single-product buybox: wires the SGS option-picker pills to the shipped cart proxy engine. Renders per-axis pickers, live price row, stock status, and an accessible add-to-cart form. Falls back to core WC blocks for simple products or when WooCommerce is absent.",
@@ -51,6 +51,27 @@
             "type": "string",
             "default": "",
             "description": "Override the Add to Cart button label. Empty = use the default translated string."
+        },
+        "perUnitDenomination": {
+            "type": "string",
+            "default": "",
+            "description": "Override the per-unit denomination template. Use %s as the placeholder for the unit label (e.g. 'per bar', 'per 100g'). Empty = translated default 'per %s'."
+        },
+        "showLadder": {
+            "type": "boolean",
+            "default": true,
+            "description": "Show the comparative value-ladder table. Set false to suppress it (e.g. in narrow sidebar contexts)."
+        },
+        "framingMode": {
+            "type": "string",
+            "default": "loss-aversion",
+            "enum": ["savings", "loss-aversion", "neutral"],
+            "description": "Saving-label framing: 'savings' (positive), 'loss-aversion' (adds 'vs buying singly' tail), or 'neutral' (no saving label)."
+        },
+        "decoyEnabled": {
+            "type": "boolean",
+            "default": false,
+            "description": "When true, the 'Best value' badge targets the 2nd-largest pack (decoy effect) instead of the largest."
         }
     },
     "editorScript": "file:./index.js",
