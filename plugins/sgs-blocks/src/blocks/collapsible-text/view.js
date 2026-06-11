@@ -40,11 +40,16 @@ function initInstance( root ) {
 	}
 	root.dataset.sgsCollapsibleTextReady = '1';
 
+	// Per-instance labels — read from server-emitted data attributes (i18n),
+	// falling back to the English module-level constants if absent.
+	const readMore = button.dataset.readMore || READ_MORE;
+	const readLess = button.dataset.readLess || READ_LESS;
+
 	// Enhance: collapse the body and reveal the now-operable button.
 	body.classList.add( 'is-collapsed' );
 	button.hidden = false;
 	button.setAttribute( 'aria-expanded', 'false' );
-	button.textContent = READ_MORE;
+	button.textContent = readMore;
 
 	button.addEventListener( 'click', () => {
 		const collapsed = body.classList.toggle( 'is-collapsed' );
@@ -52,7 +57,7 @@ function initInstance( root ) {
 		// collapsed === false → text is full     → expanded is true.
 		const expanded = ! collapsed;
 		button.setAttribute( 'aria-expanded', expanded ? 'true' : 'false' );
-		button.textContent = expanded ? READ_LESS : READ_MORE;
+		button.textContent = expanded ? readLess : readMore;
 	} );
 }
 

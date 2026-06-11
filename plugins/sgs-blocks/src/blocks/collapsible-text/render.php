@@ -115,7 +115,7 @@ if ( $collapsible ) {
 
 	// Toggle — `hidden` by default; view.js un-hides it. aria-controls points
 	// at the body so assistive tech announces the controlled region.
-	$output .= '<button type="button" class="sgs-collapsible-text__toggle" aria-expanded="false" aria-controls="' . $body_id . '" hidden>';
+	$output .= '<button type="button" class="sgs-collapsible-text__toggle" aria-expanded="false" aria-controls="' . $body_id . '" data-read-more="' . esc_attr__( 'Read more', 'sgs-blocks' ) . '" data-read-less="' . esc_attr__( 'Read less', 'sgs-blocks' ) . '" hidden>';
 	$output .= esc_html__( 'Read more', 'sgs-blocks' );
 	$output .= '</button>';
 
