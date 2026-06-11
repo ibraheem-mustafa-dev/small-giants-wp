@@ -99,3 +99,27 @@ CURRENT DB STATE (verified 2026-06-11): `quote` has canonical_slot=`quote`, deri
 
 ## ACCEPTANCE
 Ledger rows SP-C/D/E flip to VERIFIED with live page-8 evidence cited per row (innerText > 0 on quote/name/stars at 3 viewports). The aggregate differ score is NOT the gate. `/qc-council` passed on the converter commit. Negative test proves no grid-block regression.
+
+---
+
+## BUILD LOG / RESUME STATE (2026-06-12)
+
+**DONE + COMMITTED (`75f2ffea` — converter mechanism, path-scoped, Gate A pass):**
+- Step 1 ✅ `has_inner_blocks` 1→0 for testimonial only (slider stays 1). seed-composition-roles.py.
+- Step 2 ✅ DB lift data: `quote`→`.sgs-testimonial__text, .sgs-testimonial__quote` (multi-selector), `reviewerName`→`.sgs-testimonial__author`, `ratingStars`→`.sgs-testimonial__stars`; roles text-content/text-content/rating. (Direct SQL — see parking **P-TESTIMONIAL-LIFT-DATA-DURABILITY**.)
+- Step 3 ✅ universal `_lift_scalar_attrs_by_selector` (convert.py G3-attrs path); DB-driven; multi-selector; star clamp 0–5; showRating coupling; **no per-block branch**.
+- Step 6 ✅ Gate-A golden re-baselined (self-closing testimonial + quote + reviewerName) + unit tests (positive page-8 + expanded negatives proving the GATE no-ops countdown-timer/decorative-image/star-rating/post-grid/core-image). 22 converter_v2 + 43 conformance pass.
+- **qc-council finding (Bean-approved Option A):** the role+derived_selector trigger exists on ~50 blocks, so the lift was over-broad (would re-introduce the suppressed text-dump into date/URL attrs). Narrowed to a DB-driven **opt-in capability** `scalar-content-lift` (block.json `supports.sgs.scalarContentLift` → `/sgs-update` Stage 1 → `block_capabilities` row). Only testimonial opts in.
+
+**DONE + STAGED (block-side commit awaiting live-verify evidence):** Steps 4+5.
+- testimonial/render.php: esc_html names + clamp stars/scale; testimonial-slider/render.php:136 dead `rating`→`ratingStars`.
+- testimonial/style.css: variant card chrome → `:where()` (Rule-4 faithful transfer, no dead-control attrs); block.json `scalarContentLift` + version 0.3.3.
+- **Why staged not committed:** the visual-diff gate wants a passing report for testimonial-slider; deferring to attach REAL live-page-8 visual-diff evidence (verify-then-commit) rather than `--no-verify`.
+
+**REMAINING (Bean deploys, then I verify — Bean's choice 2026-06-12):**
+1. **Bean:** `python plugins/sgs-blocks/scripts/build-deploy.py --blocks-only --allow-dirty` (plugin-only → avoids theme thread's woocommerce/archive WIP; NOTE: still bundles theme thread's uncommitted product-card — deploy when canary is safe). Then OPcache reset (build-deploy may do it).
+2. **Bean or me:** re-clone page 8 on sandybrown via `/sgs-clone --converter-v2` (deploy-target page 8). Page 8 = "Homepage", slug `mamas-munches-homepage`.
+3. **Me:** live-DOM verify via chrome-devtools MCP — `el.innerText.length > 0` on `.sgs-testimonial__quote` / `.sgs-testimonial__name` / `.sgs-testimonial__stars` at 375/768/1440 (2nd attestation; 1st = emit smoke/conformance, DONE).
+4. **Me:** write visual-diff reports (testimonial + testimonial-slider) → commit block-side (4 staged files) → flip ledger SP-C/D/E to VERIFIED with per-row live evidence.
+
+**Branch:** `feat/spec30-p2-shop-schema` (co-active theme thread shares this worktree — all commits path-scoped). Converter commit is on this branch; merges to main via the temp-worktree cherry-pick pattern at thread close.
