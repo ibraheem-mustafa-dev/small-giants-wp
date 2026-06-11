@@ -57,7 +57,7 @@ CORRECTIONS: dict[str, str] = {
 
 # Blocks whose content-block role implies inner blocks; keep has_inner_blocks in sync.
 HAS_INNER_BLOCKS = {
-    "sgs/testimonial": 1,
+    "sgs/testimonial": 0,
     "sgs/testimonial-slider": 1,
     "sgs/label": 0,
     # post-grid / gallery / card-grid render from PHP (no InnerBlocks slot);

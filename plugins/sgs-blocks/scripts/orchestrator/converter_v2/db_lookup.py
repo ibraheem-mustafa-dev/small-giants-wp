@@ -475,18 +475,25 @@ def modifier_kind(modifier: str) -> str | None:
 
 @functools.lru_cache(maxsize=256)
 def block_attrs(block_slug: str) -> dict[str, dict]:
-    """Return {attr_name: {role, canonical_slot, attr_type}} for a block."""
+    """Return {attr_name: {role, canonical_slot, attr_type, derived_selector}} for a block.
+
+    `derived_selector` (added 2026-06-11 for the universal scalar-lift,
+    _lift_scalar_attrs_by_selector) is the BEM class selector for the draft
+    element this attr extracts from (e.g. '.sgs-testimonial__text'). NULL for
+    attrs with no draft element. Consumed by FR-22-2 / FR-22-5 D1 selector-lift.
+    """
     conn = sqlite3.connect(SGS_DB)
     try:
         rows = conn.execute(
-            "SELECT attr_name, attr_type, role, canonical_slot FROM block_attributes WHERE block_slug = ?",
+            "SELECT attr_name, attr_type, role, canonical_slot, derived_selector "
+            "FROM block_attributes WHERE block_slug = ?",
             (block_slug,),
         ).fetchall()
     finally:
         conn.close()
     result = {
-        name: {"attr_type": t, "role": role, "canonical_slot": cs}
-        for name, t, role, cs in rows
+        name: {"attr_type": t, "role": role, "canonical_slot": cs, "derived_selector": ds}
+        for name, t, role, cs, ds in rows
     }
     if not result:
         _trace("db_lookup_miss", lookup="block_attrs", block_slug=block_slug)

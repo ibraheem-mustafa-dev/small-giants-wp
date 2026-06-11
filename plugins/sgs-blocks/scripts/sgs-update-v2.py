@@ -416,6 +416,28 @@ def _index_sgs_block_files(
                         (slug, v_value, slot),
                     )
 
+        # --- scalar-content-lift capability (council opt-in gate) ---
+        # block.json supports.sgs.scalarContentLift === true → upsert a
+        # block_capabilities row (slug, 'scalar-content-lift'); absent/false →
+        # remove it. This is the DATA half of the converter's universal
+        # _lift_scalar_attrs_by_selector opt-in gate (R-22-1 DB-driven /
+        # R-22-9 universal mechanism). Idempotent: present→INSERT OR IGNORE
+        # (UNIQUE(block_slug, capability)); absent→DELETE. Mirrors variant_attr's
+        # presence/absence handling.
+        wants_scalar_lift = bool(sgs_supports.get("scalarContentLift", False)) if isinstance(sgs_supports, dict) else False
+        if wants_scalar_lift:
+            c.execute(
+                "INSERT OR IGNORE INTO block_capabilities "
+                "(block_slug, capability) VALUES (?, 'scalar-content-lift')",
+                (slug,),
+            )
+        else:
+            c.execute(
+                "DELETE FROM block_capabilities "
+                "WHERE block_slug = ? AND capability = 'scalar-content-lift'",
+                (slug,),
+            )
+
         scanned += 1
 
         # --- INSERT OR IGNORE attributes; UPDATE on drift ---
