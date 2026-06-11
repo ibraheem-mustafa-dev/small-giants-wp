@@ -1,55 +1,118 @@
-/* ===== SGS Testimonial — Frontend + Editor ===== */
+/* ===== SGS Testimonial — Frontend + Editor (7 variants) ===== */
 
 .sgs-testimonial {
 	position: relative;
 	margin: 0;
 	box-sizing: border-box;
+	transition-property: background-color, color, border-color, transform, box-shadow;
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
 }
 
-/* ===== Card Style ===== */
-.sgs-testimonial--card {
-	background: var(--wp--preset--color--surface, #fff);
+/* ===== Shared text elements ===== */
+.sgs-testimonial__quote {
+	font-size: var(--sgs-testimonial-quote-size, var(--wp--preset--font-size--medium));
+	line-height: 1.6;
+	margin: 0 0 var(--wp--preset--spacing--30, 1rem) 0;
+	font-style: italic;
+	position: relative;
+	/* Reset blockquote default indentation. */
+	padding: 0;
+	quotes: none;
+}
+
+.sgs-testimonial__quote:not([style*="color"]) {
+	color: var(--wp--preset--color--text, #1E1E1E);
+}
+
+.sgs-testimonial__summary {
+	font-size: var(--sgs-testimonial-summary-size, var(--wp--preset--font-size--x-large, 1.75rem));
+	line-height: 1.3;
+	font-weight: 600;
+	margin: 0 0 var(--wp--preset--spacing--30, 1rem) 0;
+}
+
+.sgs-testimonial__summary:not([style*="color"]) {
+	color: var(--wp--preset--color--heading, var(--wp--preset--color--text, #1E1E1E));
+}
+
+/* ===== Footer / attribution ===== */
+.sgs-testimonial__footer {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--20, 0.75rem);
+	flex-wrap: wrap;
+}
+
+.sgs-testimonial__meta {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.sgs-testimonial__name {
+	font-style: normal;
+	font-weight: 700;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+}
+
+.sgs-testimonial__name:not([style*="color"]) {
+	color: var(--wp--preset--color--text, #1E1E1E);
+}
+
+.sgs-testimonial__role,
+.sgs-testimonial__org {
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+}
+
+.sgs-testimonial__role:not([style*="color"]),
+.sgs-testimonial__org:not([style*="color"]) {
+	color: var(--wp--preset--color--text-muted, #555);
+}
+
+/* ===== Media ===== */
+.sgs-testimonial__avatar {
+	flex-shrink: 0;
+}
+
+.sgs-testimonial__avatar img {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	object-fit: cover;
+	display: block;
+}
+
+.sgs-testimonial__logo {
+	flex-shrink: 0;
+}
+
+.sgs-testimonial__logo img {
+	max-width: 140px;
+	height: auto;
+	max-height: 56px;
+	object-fit: contain;
+	display: block;
+}
+
+.sgs-testimonial__work {
+	margin: 0 0 var(--wp--preset--spacing--30, 1rem) 0;
+}
+
+.sgs-testimonial__work img,
+.sgs-testimonial__work video {
+	display: block;
+	width: 100%;
+	height: auto;
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	box-shadow: var(--wp--preset--shadow--md);
-	padding: var(--wp--preset--spacing--40);
 }
 
-/* ===== Minimal Style ===== */
-.sgs-testimonial--minimal {
-	background: transparent;
-	border-left: 3px solid var(--wp--preset--color--accent, #F87A1F);
-	padding: var(--wp--preset--spacing--30) var(--wp--preset--spacing--40);
-}
-
-/* ===== Featured Style ===== */
-.sgs-testimonial--featured {
-	background: var(--wp--preset--color--primary-dark, #0A5B5D);
-	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	padding: var(--wp--preset--spacing--50);
-}
-
-.sgs-testimonial--featured .sgs-testimonial__quote:not([style*="color"]) {
-	color: var(--wp--preset--color--text-inverse, #C0D5D6);
-}
-
-.sgs-testimonial--featured .sgs-testimonial__name:not([style*="color"]) {
-	color: var(--wp--preset--color--text-inverse, #fff);
-}
-
-.sgs-testimonial--featured .sgs-testimonial__role:not([style*="color"]) {
-	color: var(--wp--preset--color--text-inverse, #C0D5D6);
-}
-
-.sgs-testimonial--featured .sgs-testimonial__avatar-initials {
-	background-color: var(--wp--preset--color--accent, #F87A1F);
-	color: var(--wp--preset--color--text-inverse, #fff);
-}
-
-/* ===== Stars ===== */
+/* ===== Rating — stars ===== */
 .sgs-testimonial__stars {
 	display: flex;
-	gap: var(--wp--preset--spacing--5, 2px);
-	margin-bottom: var(--wp--preset--spacing--20);
+	gap: 2px;
+	margin-bottom: var(--wp--preset--spacing--20, 0.75rem);
+	align-items: center;
 }
 
 .sgs-testimonial__stars:not([style*="color"]) {
@@ -67,100 +130,235 @@
 	flex-shrink: 0;
 }
 
-.sgs-testimonial__star--empty svg polygon {
-	opacity: 0.3;
-}
-
-/* ===== Quote ===== */
-.sgs-testimonial__quote {
-	font-size: var(--wp--preset--font-size--medium);
-	line-height: 1.6;
-	margin: 0 0 var(--wp--preset--spacing--30) 0;
-	font-style: italic;
-	position: relative;
-}
-
-.sgs-testimonial__quote:not([style*="color"]) {
-	color: var(--wp--preset--color--text, #1E1E1E);
-}
-
-/* Decorative opening quote mark */
-.sgs-testimonial__quote::before {
-	content: '\201C';
-	display: block;
-	font-size: 4rem;
-	line-height: 1;
-	font-style: normal;
-	font-weight: 700;
-	margin-bottom: calc(var(--wp--preset--spacing--10, 0.25rem) * -1);
-	color: var(--wp--preset--color--primary, #0F7E80);
-	opacity: 0.4;
-}
-
-/* ===== Footer ===== */
-.sgs-testimonial__footer {
+/* ===== Rating — numeric scale ===== */
+.sgs-testimonial__rating--scale {
 	display: flex;
-	align-items: center;
-	gap: var(--wp--preset--spacing--20);
-}
-
-/* ===== Avatar ===== */
-.sgs-testimonial__avatar {
-	flex-shrink: 0;
-}
-
-.sgs-testimonial__avatar-img {
-	width: 48px;
-	height: 48px;
-	border-radius: 50%;
-	object-fit: cover;
-	display: block;
-}
-
-.sgs-testimonial__avatar-initials {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 48px;
-	height: 48px;
-	border-radius: 50%;
-	background-color: var(--wp--preset--color--surface-alt, #F5F7F7);
-	color: var(--wp--preset--color--primary, #0F7E80);
+	align-items: baseline;
+	gap: 2px;
+	margin-bottom: var(--wp--preset--spacing--20, 0.75rem);
 	font-weight: 700;
-	font-size: var(--wp--preset--font-size--small);
+}
+
+.sgs-testimonial__rating--scale:not([style*="color"]) {
+	color: var(--wp--preset--color--accent, #F87A1F);
+}
+
+.sgs-testimonial__score {
+	font-size: var(--wp--preset--font-size--x-large, 1.75rem);
 	line-height: 1;
 }
 
-/* ===== Meta ===== */
-.sgs-testimonial__meta {
+.sgs-testimonial__score-max {
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	opacity: 0.7;
+	font-weight: 600;
+}
+
+/* ===== Rating meta (verified / source / date) ===== */
+.sgs-testimonial__rating-meta {
 	display: flex;
-	flex-direction: column;
-	gap: var(--wp--preset--spacing--5, 2px);
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--wp--preset--spacing--20, 0.75rem);
+	margin-bottom: var(--wp--preset--spacing--20, 0.75rem);
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
 }
 
-.sgs-testimonial__name {
-	font-style: normal;
-	font-weight: 700;
-	font-size: var(--wp--preset--font-size--small);
-}
-
-.sgs-testimonial__name:not([style*="color"]) {
-	color: var(--wp--preset--color--text, #1E1E1E);
-}
-
-.sgs-testimonial__role {
-	font-size: var(--wp--preset--font-size--small);
-}
-
-.sgs-testimonial__role:not([style*="color"]) {
+.sgs-testimonial__rating-meta:not([style*="color"]) {
 	color: var(--wp--preset--color--text-muted, #555);
 }
 
-/* ===== Transitions ===== */
-.sgs-testimonial {
-	transition-property: background-color, color, border-color, transform, box-shadow;
-	transition-duration: var(--sgs-transition-duration, 300ms);
-	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+.sgs-testimonial__verified {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	font-weight: 600;
+	color: var(--wp--preset--color--success, #1A7F4B);
+}
+
+.sgs-testimonial__verified svg {
+	flex-shrink: 0;
+}
+
+/* ============================================================ */
+/* ===== Variant: classic-card (default) ===== */
+/* ============================================================ */
+.sgs-testimonial--classic-card {
+	background: var(--wp--preset--color--surface, #fff);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	box-shadow: var(--wp--preset--shadow--md);
+	padding: var(--wp--preset--spacing--40, 1.5rem);
+}
+
+/* ============================================================ */
+/* ===== Variant: minimal-quote (accent border, type only) ===== */
+/* ============================================================ */
+.sgs-testimonial--minimal-quote {
+	background: transparent;
+	border-left: 3px solid var(--wp--preset--color--accent, #F87A1F);
+	padding: var(--wp--preset--spacing--30, 1rem) var(--wp--preset--spacing--40, 1.5rem);
+}
+
+.sgs-testimonial--minimal-quote .sgs-testimonial__quote {
+	font-size: var(--sgs-testimonial-quote-size, var(--wp--preset--font-size--large, 1.25rem));
+}
+
+/* ============================================================ */
+/* ===== Variant: pull-quote-editorial (big summary; dark treatment) ===== */
+/* ============================================================ */
+.sgs-testimonial--pull-quote-editorial {
+	padding: var(--wp--preset--spacing--50, 2.5rem);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	background: var(--wp--preset--color--surface-alt, #F5F7F7);
+}
+
+.sgs-testimonial--pull-quote-editorial .sgs-testimonial__summary {
+	font-size: var(--sgs-testimonial-summary-size, clamp(1.5rem, 3vw, 2.25rem));
+	line-height: 1.25;
+}
+
+.sgs-testimonial--pull-quote-editorial .sgs-testimonial__quote {
+	font-style: normal;
+	font-size: var(--sgs-testimonial-quote-size, var(--wp--preset--font-size--medium, 1rem));
+	opacity: 0.85;
+}
+
+/* Dark 'featured' colour treatment — absorbed old `featured` style.
+   Apply by adding background:primary-dark via the block's own background
+   colour control; these fallbacks flip text to inverse when the block has
+   a dark background custom property set. Operator sets background → text
+   tokens below win via :not([style*="color"]). */
+.sgs-testimonial--pull-quote-editorial.has-primary-dark-background-color .sgs-testimonial__summary:not([style*="color"]),
+.sgs-testimonial--pull-quote-editorial.has-text-background-color .sgs-testimonial__summary:not([style*="color"]) {
+	color: var(--wp--preset--color--text-inverse, #fff);
+}
+
+.sgs-testimonial--pull-quote-editorial.has-primary-dark-background-color .sgs-testimonial__quote:not([style*="color"]),
+.sgs-testimonial--pull-quote-editorial.has-text-background-color .sgs-testimonial__quote:not([style*="color"]) {
+	color: var(--wp--preset--color--text-inverse, #C0D5D6);
+}
+
+.sgs-testimonial--pull-quote-editorial.has-primary-dark-background-color .sgs-testimonial__name:not([style*="color"]),
+.sgs-testimonial--pull-quote-editorial.has-text-background-color .sgs-testimonial__name:not([style*="color"]) {
+	color: var(--wp--preset--color--text-inverse, #fff);
+}
+
+.sgs-testimonial--pull-quote-editorial.has-primary-dark-background-color .sgs-testimonial__role:not([style*="color"]),
+.sgs-testimonial--pull-quote-editorial.has-text-background-color .sgs-testimonial__role:not([style*="color"]),
+.sgs-testimonial--pull-quote-editorial.has-primary-dark-background-color .sgs-testimonial__org:not([style*="color"]),
+.sgs-testimonial--pull-quote-editorial.has-text-background-color .sgs-testimonial__org:not([style*="color"]) {
+	color: var(--wp--preset--color--text-inverse, #C0D5D6);
+}
+
+/* ============================================================ */
+/* ===== Variant: rating-led (score row leads; e-commerce) ===== */
+/* ============================================================ */
+.sgs-testimonial--rating-led {
+	background: var(--wp--preset--color--surface, #fff);
+	border: 1px solid var(--wp--preset--color--border, #E2E8E8);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	padding: var(--wp--preset--spacing--40, 1.5rem);
+}
+
+.sgs-testimonial--rating-led .sgs-testimonial__quote {
+	font-style: normal;
+}
+
+/* ============================================================ */
+/* ===== Variant: avatar-spotlight (large avatar leads; CSS grid) ===== */
+/* ============================================================ */
+.sgs-testimonial--avatar-spotlight {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: var(--wp--preset--spacing--30, 1rem);
+	text-align: center;
+	justify-items: center;
+	padding: var(--wp--preset--spacing--40, 1.5rem);
+}
+
+.sgs-testimonial--avatar-spotlight .sgs-testimonial__avatar img {
+	width: 96px;
+	height: 96px;
+}
+
+.sgs-testimonial--avatar-spotlight .sgs-testimonial__meta {
+	align-items: center;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 4px 8px;
+}
+
+/* ============================================================ */
+/* ===== Variant: corporate-logo (logo leads; B2B) ===== */
+/* ============================================================ */
+.sgs-testimonial--corporate-logo {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: var(--wp--preset--spacing--30, 1rem);
+	background: var(--wp--preset--color--surface, #fff);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	box-shadow: var(--wp--preset--shadow--sm, var(--wp--preset--shadow--md));
+	padding: var(--wp--preset--spacing--40, 1.5rem);
+}
+
+.sgs-testimonial--corporate-logo .sgs-testimonial__logo img {
+	max-height: 64px;
+}
+
+/* ============================================================ */
+/* ===== Variant: case-study-media (work image/video leads) ===== */
+/* ============================================================ */
+.sgs-testimonial--case-study-media {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: var(--wp--preset--spacing--30, 1rem);
+	background: var(--wp--preset--color--surface, #fff);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	box-shadow: var(--wp--preset--shadow--md);
+	padding: var(--wp--preset--spacing--40, 1.5rem);
+}
+
+.sgs-testimonial--case-study-media .sgs-testimonial__work {
+	margin: calc(var(--wp--preset--spacing--40, 1.5rem) * -1);
+	margin-bottom: 0;
+}
+
+.sgs-testimonial--case-study-media .sgs-testimonial__work img,
+.sgs-testimonial--case-study-media .sgs-testimonial__work video {
+	border-radius: var(--wp--custom--border-radius--medium, 8px) var(--wp--custom--border-radius--medium, 8px) 0 0;
+}
+
+/* ===== Tablet+ (768px) — two-column grids for media-led variants ===== */
+@media (min-width: 768px) {
+	.sgs-testimonial--avatar-spotlight {
+		grid-template-columns: auto 1fr;
+		text-align: left;
+		justify-items: start;
+		align-items: center;
+	}
+
+	.sgs-testimonial--avatar-spotlight .sgs-testimonial__meta {
+		justify-content: flex-start;
+	}
+
+	.sgs-testimonial--case-study-media {
+		grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+		align-items: center;
+	}
+
+	.sgs-testimonial--case-study-media .sgs-testimonial__work {
+		margin: calc(var(--wp--preset--spacing--40, 1.5rem) * -1);
+		grid-row: 1 / span 5;
+		align-self: stretch;
+	}
+
+	.sgs-testimonial--case-study-media .sgs-testimonial__work img,
+	.sgs-testimonial--case-study-media .sgs-testimonial__work video {
+		border-radius: var(--wp--custom--border-radius--medium, 8px) 0 0 var(--wp--custom--border-radius--medium, 8px);
+		height: 100%;
+		object-fit: cover;
+	}
 }
 
 /* ===== Hover colour shifts ===== */
@@ -177,32 +375,29 @@
 }
 
 /* ===== Hover effects ===== */
-.sgs-testimonial--hover-lift:hover {
-	transform: translateY(-4px);
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-}
-
-.sgs-testimonial--hover-scale:hover {
-	transform: scale(1.02);
-}
-
-.sgs-testimonial--hover-glow:hover {
-	box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);
-}
-
-/* ===== Hover Scale (#87, #101) ===== */
-
 @media (prefers-reduced-motion: no-preference) {
+	.sgs-testimonial--hover-lift:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+	}
+
+	.sgs-testimonial--hover-scale:hover {
+		transform: scale(1.02);
+	}
+
+	.sgs-testimonial--hover-glow:hover {
+		box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);
+	}
+
 	.sgs-testimonial.sgs-has-hover-scale {
 		transition: transform var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out),
-		            box-shadow var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
+			box-shadow var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
 	}
 
 	.sgs-testimonial.sgs-has-hover-scale:hover {
 		transform: scale(var(--sgs-hover-scale, 1.05));
 	}
 
-	/* Hover Shadow (#88, #102) */
 	.sgs-testimonial.sgs-has-hover:hover {
 		box-shadow: var(--sgs-hover-shadow, none);
 	}

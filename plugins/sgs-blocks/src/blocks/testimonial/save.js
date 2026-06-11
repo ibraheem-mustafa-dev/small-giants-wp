@@ -1,20 +1,18 @@
 /**
- * FR-22-6 InnerBlocks migration — 2026-05-30.
+ * D8 typed-attr rebuild (2026-06-11).
  *
- * The block is dynamic (render.php drives frontend output) but NOW uses
- * InnerBlocks so the converter-emitted child blocks (sgs/star-rating,
- * sgs/text, etc.) are persisted in post_content and rendered by
- * render.php via echo $content.
+ * sgs/testimonial is now a TYPED dynamic block with NO InnerBlocks — render.php
+ * drives 100% of the frontend output from scalar/object attributes. A dynamic
+ * block with no inner blocks MUST return null from save so WordPress stores only
+ * the block-delimiter comment (the attribute JSON) and lets render.php emit the
+ * markup.
  *
- * IMPORTANT: save MUST return <InnerBlocks.Content /> — never null — when
- * the block has InnerBlocks. Returning null causes WordPress to silently
- * drop all InnerBlocks from post_content on save. (See CLAUDE.md gotcha B4.)
- *
- * The previous null-save shape is preserved as v7 in deprecated.js with a
- * migrate() that creates InnerBlocks from the old scalar attrs.
+ * MIGRATION NOTE: this REPLACES the previous FR-22-6 shape where save returned
+ * <InnerBlocks.Content />. That shape is preserved as a deprecation entry (v8)
+ * in deprecated.js with a migrate() that HOISTS the child-block quote/name/role
+ * text back into the typed attrs and drops the children. Existing posts must be
+ * round-tripped via the WP-CLI batch migrate after deploy.
  */
-import { InnerBlocks } from '@wordpress/block-editor';
-
-export default function Save() {
-	return <InnerBlocks.Content />;
+export default function save() {
+	return null;
 }

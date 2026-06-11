@@ -27,9 +27,336 @@
  */
 
 import { createBlock } from '@wordpress/blocks';
-import { useBlockProps, RichText } from '@wordpress/block-editor';
+import { useBlockProps, RichText, InnerBlocks } from '@wordpress/block-editor';
 import { RawHTML } from '@wordpress/element';
 import { colourVar, fontSizeVar } from '../../utils';
+
+/**
+ * v8 — D8 typed-attr variant rebuild (2026-06-11).
+ *
+ * The block was rebuilt from an FR-22-6 InnerBlocks block into a TYPED,
+ * variant-driven dynamic block. save.js now returns null (no static HTML,
+ * no InnerBlocks); render.php drives 100% of the frontend output from typed
+ * scalar/object attrs. The recognised content fields changed names:
+ *   quote (unchanged) · name → reviewerName · role → reviewerRole ·
+ *   rating → ratingStars (+ showRating) · avatar/authorMedia → avatarMedia ·
+ *   style (enum) → variant (enum).
+ *
+ * TWO legacy shapes exist in the wild and BOTH must round-trip:
+ *
+ *   v8inner — the FR-22-6 shape whose save returned <InnerBlocks.Content />
+ *             (commit 1761eb35, on main → deployed). Quote/name/role text may
+ *             live in CHILD blocks (core/paragraph, sgs/text, sgs/heading,
+ *             sgs/label) and a star count in an sgs/star-rating child. migrate()
+ *             HOISTS that child text back into the typed attrs and returns
+ *             ZERO inner blocks.
+ *
+ *   v8scalar — every PRE-rebuild shape whose save returned null with the
+ *              scalar attribute schema (name/role/rating/avatar|authorMedia/
+ *              style). This is the immediate-prior recognised shape for the
+ *              vast majority of authored posts. migrate() renames the scalar
+ *              attrs to the typed schema and maps style → variant.
+ *
+ * ORDER matters. v8inner is listed BEFORE v8scalar: both share save: () => null
+ * vs save: InnerBlocks, but a post that actually carries inner blocks must be
+ * matched by the InnerBlocks save first (an InnerBlocks post would fail the
+ * null-save validation, so WP would skip v8scalar and try v8inner — but listing
+ * the InnerBlocks entry first makes the match deterministic and lets isEligible
+ * gate it). v8scalar then catches the null-save scalar posts. The existing
+ * v7…v1 entries remain UNCHANGED below as deeper fallbacks.
+ *
+ * R-22-14: migration is the ONLY back-compat path. No server-side fallback
+ * hack is added to render.php (its one-way avatar.url → avatarMedia read is a
+ * synthesise-on-read, not a content fallback branch).
+ */
+
+// Shared scalar attribute schema for the pre-rebuild dynamic (null-save) shape.
+// This is the full authorMedia-era attribute set (matches the old block.json
+// immediately before the D8 rebuild). Declaring it lets WP match the stored
+// block-delimiter comment before running migrate().
+const V8_LEGACY_SCALAR_ATTRIBUTES = {
+	quote: { type: 'string', default: '' },
+	name: { type: 'string', default: '' },
+	role: { type: 'string', default: '' },
+	avatar: { type: 'object' },
+	authorMedia: { type: 'object', default: null },
+	rating: { type: 'number', default: 0 },
+	style: { type: 'string', default: 'card' },
+	quoteColour: { type: 'string', default: 'text' },
+	nameColour: { type: 'string', default: 'primary' },
+	nameFontSize: { type: 'string' },
+	nameFontSizeTablet: { type: 'string', default: '' },
+	nameFontSizeMobile: { type: 'string', default: '' },
+	roleColour: { type: 'string', default: 'text-muted' },
+	ratingColour: { type: 'string', default: 'accent' },
+	reviewSource: { type: 'string', default: '' },
+	reviewDate: { type: 'string', default: '' },
+	hoverBackgroundColour: { type: 'string', default: '' },
+	hoverTextColour: { type: 'string', default: '' },
+	hoverBorderColour: { type: 'string', default: '' },
+	hoverEffect: { type: 'string', default: 'none' },
+	transitionDuration: { type: 'string', default: '300' },
+	transitionEasing: { type: 'string', default: 'ease-in-out' },
+	hoverScale: { type: 'string', default: '' },
+	hoverShadow: { type: 'string', default: '' },
+	staggerDelay: { type: 'number', default: 0 },
+	sgsAnimation: { type: 'string', default: 'fade-up' },
+	sgsAnimationDuration: { type: 'string', default: 'medium' },
+	sgsAnimationEasing: { type: 'string', default: 'default' },
+	schemaEnabled: { type: 'boolean', default: false },
+};
+
+/**
+ * Map the retired `style` enum (card | minimal | featured | …) onto the new
+ * `variant` enum. Unknown / empty styles fall back to the default variant.
+ *
+ * @param {string} style Legacy style value.
+ * @return {string} New variant slug.
+ */
+function v8MapStyleToVariant( style ) {
+	switch ( style ) {
+		case 'minimal':
+			return 'minimal-quote';
+		case 'featured':
+			return 'pull-quote-editorial';
+		case 'card':
+		default:
+			return 'classic-card';
+	}
+}
+
+/**
+ * Lift a legacy avatar/authorMedia value into the new `avatarMedia` object
+ * shape ({ url, type, id, alt, mime }). Returns null when neither is present.
+ *
+ * @param {Object} attributes Legacy attributes.
+ * @return {Object|null} avatarMedia object or null.
+ */
+function v8ResolveAvatarMedia( attributes ) {
+	if ( attributes.authorMedia && attributes.authorMedia.url ) {
+		return attributes.authorMedia;
+	}
+	if ( attributes.avatar && attributes.avatar.url ) {
+		return {
+			url: attributes.avatar.url,
+			type: 'image',
+			id: attributes.avatar.id || 0,
+			alt: attributes.avatar.alt || '',
+			mime: 'image/jpeg',
+		};
+	}
+	return null;
+}
+
+/**
+ * Strip HTML tags from a value (child blocks may store wrapped HTML).
+ *
+ * @param {string} html Raw value.
+ * @return {string} Plain text (trimmed).
+ */
+function v8StripHtml( html ) {
+	if ( ! html ) {
+		return '';
+	}
+	return String( html ).replace( /<[^>]+>/g, '' ).trim();
+}
+
+/**
+ * Build the typed attribute set common to BOTH v8 legacy shapes from the
+ * resolved scalar values. Centralised so the InnerBlocks and scalar entries
+ * cannot drift apart.
+ *
+ * @param {Object} src               Legacy attributes (shell-level).
+ * @param {Object} content           Resolved content: { quote, reviewerName, reviewerRole, ratingStars }.
+ * @return {Object} New typed attributes.
+ */
+function v8BuildTypedAttributes( src, content ) {
+	const ratingStars =
+		typeof content.ratingStars === 'number' && ! Number.isNaN( content.ratingStars )
+			? content.ratingStars
+			: 0;
+
+	return {
+		// Discriminator.
+		variant: v8MapStyleToVariant( src.style ),
+		// Content (renamed).
+		quote: content.quote || '',
+		reviewerName: content.reviewerName || '',
+		reviewerRole: content.reviewerRole || '',
+		orgName: '',
+		summaryPhrase: '',
+		// Media (collapsed avatar/authorMedia → avatarMedia).
+		avatarMedia: v8ResolveAvatarMedia( src ),
+		orgLogo: null,
+		workMedia: null,
+		// Rating (fully optional; show only when a positive star count survived).
+		showRating: ratingStars > 0,
+		ratingType: 'stars',
+		ratingStars,
+		ratingScale: 0,
+		ratingScaleMax: '10',
+		reviewDate: src.reviewDate || '',
+		verified: false,
+		sourcePlatform: src.reviewSource || '',
+		schemaEnabled: src.schemaEnabled ?? false,
+		// Per-element typography — start blank so CSS token defaults win
+		// (:not([style*="color"])). Legacy colour attrs used SGS token slugs
+		// (e.g. 'text'/'primary'), NOT raw CSS, so they are intentionally NOT
+		// carried into the new raw-CSS-or-token controls to avoid a stale value.
+		quoteFontSize: '',
+		quoteColour: '',
+		summaryFontSize: '',
+		summaryColour: '',
+		nameColour: '',
+		roleColour: '',
+		ratingColour: '',
+		// Shell-level hover / animation — preserved verbatim where present.
+		hoverBackgroundColour: src.hoverBackgroundColour ?? '',
+		hoverTextColour: src.hoverTextColour ?? '',
+		hoverBorderColour: src.hoverBorderColour ?? '',
+		hoverEffect: src.hoverEffect ?? 'none',
+		transitionDuration: src.transitionDuration ?? '300',
+		transitionEasing: src.transitionEasing ?? 'ease-in-out',
+		hoverScale: src.hoverScale ?? '',
+		hoverShadow: src.hoverShadow ?? '',
+		staggerDelay: src.staggerDelay ?? 0,
+		sgsAnimation: src.sgsAnimation ?? 'fade-up',
+		sgsAnimationDuration: src.sgsAnimationDuration ?? 'medium',
+		sgsAnimationEasing: src.sgsAnimationEasing ?? 'default',
+		// WS-4 container-mirror CONTENT attrs use their block.json defaults
+		// (widthMode 'default' etc.) — legacy posts never set them.
+	};
+}
+
+/**
+ * v8inner — FR-22-6 InnerBlocks shape (save returned <InnerBlocks.Content />).
+ *
+ * The `save` reproduces that output so WordPress validates posts whose
+ * post_content carries persisted child blocks. `isEligible` fires only when
+ * inner blocks are actually present (a null-save scalar post has none and must
+ * fall through to v8scalar). `migrate( attributes, innerBlocks )` reads the
+ * SECOND arg to hoist child text into the typed attrs, then returns
+ * `[ newAttributes, [] ]` to drop all children.
+ */
+const v8inner = {
+	attributes: V8_LEGACY_SCALAR_ATTRIBUTES,
+
+	// The deployed FR-22-6 save returned <InnerBlocks.Content /> — reproduce it.
+	save() {
+		return <InnerBlocks.Content />;
+	},
+
+	// Match ONLY posts that actually carry inner blocks. A scalar null-save post
+	// has no inner blocks and would wrongly validate against an InnerBlocks save
+	// (empty inner content ≈ empty), so this guard routes those to v8scalar.
+	isEligible( attributes, innerBlocks ) {
+		return Array.isArray( innerBlocks ) && innerBlocks.length > 0;
+	},
+
+	migrate( attributes, innerBlocks = [] ) {
+		// Hoist child-block text back into the typed attrs.
+		// Recognised children: core/paragraph (content), sgs/text (text),
+		// sgs/heading (content), sgs/label (text), sgs/star-rating (rating).
+		let quote = v8StripHtml( attributes.quote );
+		let reviewerName = v8StripHtml( attributes.name );
+		let reviewerRole = v8StripHtml( attributes.role );
+		let ratingStars =
+			typeof attributes.rating === 'number' ? attributes.rating : 0;
+
+		const textOf = ( block ) => {
+			const a = block?.attributes || {};
+			return v8StripHtml( a.content ?? a.text ?? '' );
+		};
+
+		// Walk children. We map by BEM className first (the converter tags the
+		// quote child sgs-testimonial__quote / name / role), then fall back to
+		// document order (1st text = quote, 2nd = name, 3rd = role) when the
+		// className is absent.
+		const orderedTexts = [];
+		( innerBlocks || [] ).forEach( ( block ) => {
+			if ( ! block || ! block.name ) {
+				return;
+			}
+			const cls = String( block.attributes?.className || '' );
+			const value = textOf( block );
+
+			if ( block.name === 'sgs/star-rating' ) {
+				const r = Number( block.attributes?.rating );
+				if ( ! Number.isNaN( r ) && r > 0 ) {
+					ratingStars = r;
+				}
+				return;
+			}
+
+			if ( /sgs-testimonial__quote/.test( cls ) ) {
+				if ( value ) quote = value;
+				return;
+			}
+			if ( /sgs-testimonial__name/.test( cls ) ) {
+				if ( value ) reviewerName = value;
+				return;
+			}
+			if ( /sgs-testimonial__role/.test( cls ) ) {
+				if ( value ) reviewerRole = value;
+				return;
+			}
+
+			if (
+				[ 'core/paragraph', 'sgs/text', 'sgs/heading', 'sgs/label' ].includes(
+					block.name
+				) &&
+				value
+			) {
+				orderedTexts.push( value );
+			}
+		} );
+
+		// Positional fallback for any text not captured by className.
+		if ( ! quote && orderedTexts.length > 0 ) {
+			quote = orderedTexts.shift();
+		}
+		if ( ! reviewerName && orderedTexts.length > 0 ) {
+			reviewerName = orderedTexts.shift();
+		}
+		if ( ! reviewerRole && orderedTexts.length > 0 ) {
+			reviewerRole = orderedTexts.shift();
+		}
+
+		const next = v8BuildTypedAttributes( attributes, {
+			quote,
+			reviewerName,
+			reviewerRole,
+			ratingStars,
+		} );
+
+		// Drop ALL inner blocks — the typed block renders its own elements.
+		return [ next, [] ];
+	},
+};
+
+/**
+ * v8scalar — pre-rebuild dynamic (null-save) scalar shape.
+ *
+ * Quote/name/role/rating/avatar|authorMedia/style all lived as scalar attrs;
+ * save returned null. migrate() renames them to the typed schema and maps
+ * style → variant. Identical `attributes` schema to v8inner but with a
+ * null save, so WP matches whichever validates against the stored innerHTML.
+ */
+const v8scalar = {
+	attributes: V8_LEGACY_SCALAR_ATTRIBUTES,
+
+	save: () => null,
+
+	migrate( attributes ) {
+		return v8BuildTypedAttributes( attributes, {
+			quote: v8StripHtml( attributes.quote ),
+			reviewerName: v8StripHtml( attributes.name ),
+			reviewerRole: v8StripHtml( attributes.role ),
+			ratingStars:
+				typeof attributes.rating === 'number' ? attributes.rating : 0,
+		} );
+	},
+};
 
 function getInitials( fullName ) {
 	if ( ! fullName ) {
@@ -1016,4 +1343,4 @@ const v7 = {
 	},
 };
 
-export default [ v7, v6, v4, v3, v2, v1, v5 ];
+export default [ v8inner, v8scalar, v7, v6, v4, v3, v2, v1, v5 ];

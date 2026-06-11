@@ -2,16 +2,17 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/testimonial",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"title": "SGS Testimonial",
 	"category": "sgs-content",
-	"description": "Single testimonial card with quote, name, role, optional avatar, and star rating.",
+	"description": "Single testimonial with 7 layout variants — quote, attribution, optional avatar, organisation logo, work media, and a fully optional rating.",
 	"keywords": [
 		"testimonial",
 		"review",
 		"quote",
 		"feedback",
-		"rating"
+		"rating",
+		"case study"
 	],
 	"textdomain": "sgs-blocks",
 	"icon": "format-quote",
@@ -46,7 +47,33 @@
 			"style": true
 		},
 		"sgs": {
-			"imageControls": true
+			"imageControls": true,
+			"containerKind": "content",
+			"variantAttr": "variant",
+			"variants": {
+				"classic-card": [
+					"ratingStars"
+				],
+				"pull-quote-editorial": [
+					"summaryPhrase"
+				],
+				"rating-led": [
+					"ratingScale",
+					"verified",
+					"reviewDate",
+					"sourcePlatform"
+				],
+				"avatar-spotlight": [
+					"avatarMedia"
+				],
+				"corporate-logo": [
+					"orgLogo"
+				],
+				"case-study-media": [
+					"workMedia"
+				],
+				"minimal-quote": []
+			}
 		}
 	},
 	"selectors": {
@@ -54,35 +81,127 @@
 		"typography": ".sgs-testimonial__quote"
 	},
 	"attributes": {
+		"variant": {
+			"type": "string",
+			"default": "classic-card",
+			"enum": [
+				"classic-card",
+				"pull-quote-editorial",
+				"rating-led",
+				"avatar-spotlight",
+				"corporate-logo",
+				"case-study-media",
+				"minimal-quote"
+			]
+		},
 		"quote": {
 			"type": "string",
 			"default": "",
 			"role": "content"
 		},
-		"name": {
+		"summaryPhrase": {
 			"type": "string",
 			"default": "",
 			"role": "content"
 		},
-		"role": {
+		"reviewerName": {
 			"type": "string",
-			"default": ""
+			"default": "",
+			"role": "content"
 		},
-		"avatar": {
-			"type": "object"
+		"reviewerRole": {
+			"type": "string",
+			"default": "",
+			"role": "content"
 		},
-		"_comment_authorMedia": "Migrated 2026-05-05 (Gap H-3) — avatar retained for deprecation. New instances should use authorMedia. Image-only by convention (a video makes no semantic sense for a testimonial author photo).",
-		"authorMedia": {
+		"orgName": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"avatarMedia": {
 			"type": "object",
 			"default": null
 		},
-		"rating": {
+		"orgLogo": {
+			"type": "object",
+			"default": null
+		},
+		"workMedia": {
+			"type": "object",
+			"default": null
+		},
+		"showRating": {
+			"type": "boolean",
+			"default": false
+		},
+		"ratingType": {
+			"type": "string",
+			"default": "stars",
+			"enum": [
+				"stars",
+				"scale"
+			]
+		},
+		"ratingStars": {
 			"type": "number",
 			"default": 0
 		},
-		"style": {
+		"ratingScale": {
+			"type": "number",
+			"default": 0
+		},
+		"ratingScaleMax": {
 			"type": "string",
-			"default": "card"
+			"default": "10"
+		},
+		"reviewDate": {
+			"type": "string",
+			"default": ""
+		},
+		"verified": {
+			"type": "boolean",
+			"default": false
+		},
+		"sourcePlatform": {
+			"type": "string",
+			"default": ""
+		},
+		"schemaEnabled": {
+			"type": "boolean",
+			"default": false
+		},
+		"quoteFontSize": {
+			"type": "string",
+			"default": ""
+		},
+		"quoteColour": {
+			"type": "string",
+			"default": ""
+		},
+		"summaryFontSize": {
+			"type": "string",
+			"default": ""
+		},
+		"summaryColour": {
+			"type": "string",
+			"default": ""
+		},
+		"nameColour": {
+			"type": "string",
+			"default": ""
+		},
+		"roleColour": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingColour": {
+			"type": "string",
+			"default": ""
+		},
+		"_comment_legacyAvatar": "RETIRED attr — kept registered ONLY so render.php can one-way READ avatar.url → avatarMedia for un-migrated posts (synthesise-on-read; R-22-14 compliant). deprecated.js v8 migrates it permanently. Do NOT write to this attr from edit.js.",
+		"avatar": {
+			"type": "object"
 		},
 		"hoverBackgroundColour": {
 			"type": "string",
@@ -132,10 +251,6 @@
 			"type": "string",
 			"default": "default"
 		},
-		"schemaEnabled": {
-			"type": "boolean",
-			"default": false
-		},
 		"_comment_wrapperAttrs": "WS-4 container-mirror (CONTENT kind): width/spacing only — mirrored verbatim from sgs/container block.json.",
 		"widthMode": {
 			"type": "string",
@@ -182,11 +297,13 @@
 	"style": "file:./style-index.css",
 	"example": {
 		"attributes": {
+			"variant": "classic-card",
 			"quote": "The quality and reliability of SGS has been outstanding. Next-day delivery keeps our kitchen running smoothly.",
-			"name": "James Thornton",
-			"role": "Head Chef, The Grand Hotel",
-			"rating": 5,
-			"style": "card"
+			"reviewerName": "James Thornton",
+			"reviewerRole": "Head Chef",
+			"orgName": "The Grand Hotel",
+			"showRating": true,
+			"ratingStars": 5
 		}
 	}
 }
