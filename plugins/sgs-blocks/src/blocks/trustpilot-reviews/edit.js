@@ -39,6 +39,11 @@ const DATA_SOURCE_OPTIONS = [
 	{ label: __( 'Placeholder (demo content)', 'sgs-blocks' ), value: 'placeholder' },
 ];
 
+const EMPTY_STATE_OPTIONS = [
+	{ label: __( 'Hide section (no gap)', 'sgs-blocks' ), value: 'hide' },
+	{ label: __( 'Show "Reviews coming soon"', 'sgs-blocks' ), value: 'coming-soon' },
+];
+
 const THEME_OPTIONS = [
 	{ label: __( 'Light', 'sgs-blocks' ), value: 'light' },
 	{ label: __( 'Dark', 'sgs-blocks' ), value: 'dark' },
@@ -63,6 +68,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		variant,
 		dataSource,
+		emptyState,
 		businessUnitUrl,
 		reviews,
 		trustScore,
@@ -170,6 +176,15 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { dataSource: value } ) }
 						help={ __( 'Synced reads from wp_options[sgs_trustpilot_data], populated by Settings > SGS Trustpilot Sync.', 'sgs-blocks' ) }
 					/>
+					{ dataSource === 'synced' && (
+						<SelectControl
+							label={ __( 'When no reviews are available', 'sgs-blocks' ) }
+							value={ emptyState }
+							options={ EMPTY_STATE_OPTIONS }
+							onChange={ ( value ) => setAttributes( { emptyState: value } ) }
+							help={ __( 'Controls what shows when the synced source is empty or unreachable. "Hide" leaves no gap; "Reviews coming soon" shows a placeholder message.', 'sgs-blocks' ) }
+						/>
+					) }
 					<TextControl
 						label={ __( 'Trustpilot business URL', 'sgs-blocks' ) }
 						value={ businessUnitUrl }

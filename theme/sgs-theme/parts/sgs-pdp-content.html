@@ -50,3 +50,15 @@
 
 <!-- Trust bar — full-width, kept from original part; another agent styles the band via CSS -->
 <!-- wp:sgs/trust-bar /-->
+
+<!-- Reviews band — FR-30-10: DMCC-compliant PDP reviews (synced Trustpilot data only).
+     dataSource=synced reads from wp_options[sgs_trustpilot_data] (populated by Settings > SGS Trustpilot Sync).
+     emptyState=hide suppresses the section when no live data is available; set emptyState=coming-soon
+     to display a "Reviews coming soon" placeholder instead of a broken gap. -->
+<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60)">
+
+	<!-- wp:sgs/trustpilot-reviews {"dataSource":"synced","emptyState":"hide","variant":"carousel","showSourceHeader":true,"showTrustpilotLogo":true,"showVerifiedBadge":true,"showDate":true,"showAuthor":true,"showSchema":false} /-->
+
+</div>
+<!-- /wp:group -->

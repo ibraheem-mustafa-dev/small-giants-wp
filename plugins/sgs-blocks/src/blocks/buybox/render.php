@@ -38,6 +38,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-product-manifest.php';
 require_once dirname( __DIR__, 3 ) . '/includes/configurator-seed.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-configurator-pricing.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-value-ladder.php';
 
 /* ── 1. Resolve product ──────────────────────────────────────────────────── */
 
@@ -109,12 +110,102 @@ if ( $def['pctOff'] > 0 ) {
 $stock_text = $def['inStock'] ? '' : __( 'Out of stock', 'sgs-blocks' );
 
 // Per-unit and discount (mirrors product-card B3 pattern).
-/* translators: %s is the unit label, e.g. "per bar" or "per 100g". */
-$per_unit_template = __( 'per %s', 'sgs-blocks' );
-$per_unit_display  = sgs_configurator_per_unit_display( $def, $tax_mode, $decimals, $per_unit_template );
-$discount_label    = ( null !== $def['saleMinor'] )
+// FR-30-8: operator-configurable denomination — sanitised attr wins when non-empty.
+$per_unit_denomination_raw = sanitize_text_field( $attributes['perUnitDenomination'] ?? '' );
+if ( '' !== $per_unit_denomination_raw ) {
+	$per_unit_template = $per_unit_denomination_raw;
+} else {
+	/* translators: %s is the unit label, e.g. "per bar" or "per 100g". */
+	$per_unit_template = __( 'per %s', 'sgs-blocks' );
+}
+$per_unit_display = sgs_configurator_per_unit_display( $def, $tax_mode, $decimals, $per_unit_template );
+$discount_label   = ( null !== $def['saleMinor'] )
 	? __( 'Sale', 'sgs-blocks' )
 	: ( isset( $def['discountLabel'] ) ? (string) $def['discountLabel'] : '' );
+
+// FR-30-8: Comparative value-ladder (mirrors product-card render.php §Step 3).
+// Built here — after $manifest is confirmed non-null and $tax_mode / $decimals
+// are resolved — and stored in $buybox_ladder / $buybox_ladder_hidden for use
+// inside the ob_start() render region below.
+
+// 3a. Reference price with strict attestation guard (legal: FR-28-16).
+$buybox_base_pence = (int) absint( get_post_meta( $buybox_post_id, '_sgs_base_price_pence', true ) );
+$buybox_attested   = ( '1' === (string) get_post_meta( $buybox_post_id, '_sgs_base_price_attested', true ) );
+$buybox_base_pence = ( $buybox_base_pence > 0 && $buybox_attested ) ? $buybox_base_pence : null;
+
+// 3b. Framing mode from block attribute.
+$buybox_framing_mode = sanitize_key( $attributes['framingMode'] ?? 'loss-aversion' );
+if ( ! in_array( $buybox_framing_mode, array( 'savings', 'loss-aversion', 'neutral' ), true ) ) {
+	$buybox_framing_mode = 'loss-aversion';
+}
+
+// 3c. Decoy flag from block attribute (no per-product meta override needed for buybox).
+$buybox_decoy_enabled = (bool) ( $attributes['decoyEnabled'] ?? false );
+
+// 3d. Enrich a copy of the FULL manifest combos with termLabel (mirrors product-card §3d).
+$buybox_size_term_map = array();
+$buybox_size_axis_key = '';
+
+if ( ! empty( $manifest['axes'] ) ) {
+	$buybox_operator_axis_key = sanitize_key( (string) get_post_meta( $buybox_post_id, '_sgs_pack_size_axis', true ) );
+	$buybox_by_operator       = null;
+	$buybox_by_label          = null;
+	$buybox_by_first          = null;
+
+	foreach ( $manifest['axes'] as $buybox_axis_def ) {
+		$buybox_axis_tax = $buybox_axis_def['taxonomy'] ?? '';
+		if ( '' === $buybox_axis_tax ) {
+			continue;
+		}
+		if ( '' !== $buybox_operator_axis_key && $buybox_axis_tax === $buybox_operator_axis_key ) {
+			$buybox_by_operator = $buybox_axis_def;
+		}
+		if ( null === $buybox_by_label && preg_match( '/size/i', (string) ( $buybox_axis_def['label'] ?? '' ) ) ) {
+			$buybox_by_label = $buybox_axis_def;
+		}
+		if ( null === $buybox_by_first ) {
+			$buybox_by_first = $buybox_axis_def;
+		}
+	}
+
+	$buybox_size_axis = $buybox_by_operator ?? $buybox_by_label ?? $buybox_by_first;
+	if ( null !== $buybox_size_axis ) {
+		$buybox_size_axis_key = (string) ( $buybox_size_axis['taxonomy'] ?? '' );
+		foreach ( (array) ( $buybox_size_axis['terms'] ?? array() ) as $buybox_term_row ) {
+			$buybox_t_slug  = (string) ( $buybox_term_row['slug'] ?? '' );
+			$buybox_t_label = (string) ( $buybox_term_row['label'] ?? '' );
+			if ( '' !== $buybox_t_slug ) {
+				$buybox_size_term_map[ $buybox_t_slug ] = $buybox_t_label;
+			}
+		}
+	}
+}
+
+$buybox_ladder_combos = $manifest['combos']; // Full combos, not $seed_combos.
+if ( '' !== $buybox_size_axis_key && ! empty( $buybox_size_term_map ) ) {
+	foreach ( $buybox_ladder_combos as $buybox_c_key => &$buybox_c_val ) {
+		foreach ( explode( '|', $buybox_c_key ) as $buybox_part ) {
+			$buybox_colon = strpos( $buybox_part, ':' );
+			if ( false === $buybox_colon ) {
+				continue;
+			}
+			$buybox_part_tax  = substr( $buybox_part, 0, $buybox_colon );
+			$buybox_part_slug = substr( $buybox_part, $buybox_colon + 1 );
+			if ( $buybox_part_tax === $buybox_size_axis_key && isset( $buybox_size_term_map[ $buybox_part_slug ] ) ) {
+				$buybox_c_val['termLabel'] = $buybox_size_term_map[ $buybox_part_slug ];
+				break;
+			}
+		}
+	}
+	unset( $buybox_c_val );
+}
+
+// 3e. Build ladder rows.
+$buybox_ladder = function_exists( 'sgs_value_ladder' )
+	? sgs_value_ladder( $buybox_ladder_combos, $buybox_base_pence, $buybox_framing_mode, $buybox_decoy_enabled, $tax_mode, $decimals )
+	: array();
+
+$buybox_ladder_hidden = ( count( $buybox_ladder ) < 2 );
 
 // Operator-configurable labels (from block attributes).
 $sold_out_label    = sanitize_text_field( $attributes['soldOutLabel'] ?? __( '(sold out)', 'sgs-blocks' ) );
@@ -245,6 +336,46 @@ ob_start();
 		data-wp-bind--hidden="context.perUnitHidden"
 		data-wp-text="context.perUnitDisplay"
 	><?php echo esc_html( $per_unit_display ); ?></p>
+
+	<?php // ── 8a-ii. Comparative value-ladder (FR-30-8, SSR-only — no data-wp-* on ladder nodes). ?>
+	<?php if ( false !== ( $attributes['showLadder'] ?? true ) && ! $buybox_ladder_hidden ) : ?>
+	<ul
+		class="buybox__value-ladder"
+		aria-label="<?php esc_attr_e( 'Price per unit by pack size', 'sgs-blocks' ); ?>"
+	>
+		<?php foreach ( $buybox_ladder as $buybox_ladder_row ) : ?>
+			<?php
+			// PD-12: aria-current on the row matching the default-selected combo's unitDivisor.
+			// (int)round() on both sides mirrors the data-pack write + view.js comparison.
+			$buybox_row_pack     = (int) round( $buybox_ladder_row['pack'] );
+			$buybox_default_pack = isset( $def['unitDivisor'] ) ? (int) round( (float) $def['unitDivisor'] ) : 0;
+			$buybox_is_default   = ( $buybox_row_pack === $buybox_default_pack );
+			?>
+		<li
+			class="value-ladder__row"
+			data-pack="<?php echo esc_attr( (string) $buybox_row_pack ); ?>"
+			<?php echo $buybox_is_default ? 'aria-current="true"' : ''; ?>
+		>
+			<span class="value-ladder__pack"><?php echo esc_html( $buybox_ladder_row['row_label'] ); ?></span>
+			<span class="value-ladder__per-unit"><?php echo esc_html( $buybox_ladder_row['per_unit_display'] ); ?></span>
+			<?php if ( '' !== $buybox_ladder_row['saving_display'] && ! $buybox_ladder_row['suppressed'] ) : ?>
+			<span class="value-ladder__saving"><?php echo esc_html( $buybox_ladder_row['saving_display'] ); ?></span>
+			<?php endif; ?>
+			<?php if ( $buybox_ladder_row['is_target'] ) : ?>
+				<?php
+				// PD-10: no data-wp-* on this span — directives wipe SSR text on hydration.
+				// Legal: 'Best value' only on the non-decoy target (genuinely cheapest per-unit);
+				// 'Most popular' on the decoy target (not cheapest, so not a superlative claim).
+				$buybox_badge_text = $buybox_decoy_enabled
+					? __( 'Most popular', 'sgs-blocks' )
+					: __( 'Best value', 'sgs-blocks' );
+				?>
+			<span class="wp-block-sgs-label is-style-pill-wrap product-card__best-value-badge"><?php echo esc_html( $buybox_badge_text ); ?></span>
+			<?php endif; ?>
+		</li>
+		<?php endforeach; ?>
+	</ul>
+	<?php endif; ?>
 
 	<?php
 	// ── 8b. Per-axis option-picker blocks (single-variant suppression: skip axes with <2 terms) ──

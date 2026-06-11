@@ -224,6 +224,90 @@
 	--sgs-buybox-gap: 12px;
 }
 
+/* ── Comparative value ladder (FR-30-8) ───────────────────────────────── */
+/*
+ * ALL rules below are scoped to .sgs-buybox so they never leak to or collide
+ * with product-card's byte-identical .value-ladder__* rules (both blocks can
+ * render on the same PDP). The wrapper differs (.buybox__value-ladder vs
+ * .product-card__value-ladder); the row-level classes are intentionally the
+ * same BEM names, so the .sgs-buybox prefix is what keeps them isolated.
+ *
+ * Contrast notes (WCAG 2.2 AA):
+ *   .value-ladder__saving: uses --wp--preset--color--contrast / #1a1a1a
+ *     (same token as product-card — matches any theme primary that could be pale).
+ *   [aria-current] selected row: border-left accent (≥3:1 UI component rule)
+ *     + subtle surface shift. Text colour unchanged → inherits ≥4.5:1.
+ */
+
+.sgs-buybox .buybox__value-ladder {
+	list-style: none;
+	margin: 8px 0 0;
+	padding: 6px 0 0;
+	border-top: 1px solid rgba(0, 0, 0, 0.08);
+	background: rgba(0, 0, 0, 0.025);
+	font-size: 0.92em;
+}
+
+/* Row-level rules are scoped to .sgs-buybox so they NEVER collide with the
+   byte-identical product-card rules when both blocks render on the same PDP
+   (the related-products section also paints .value-ladder__* nodes). The
+   .sgs-buybox prefix raises specificity to (0,2,0): buybox rules win inside
+   the buybox, product-card rules stay isolated to cards — no collision either
+   way, and no future-drift specificity trap. */
+
+.sgs-buybox .value-ladder__row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px 8px;
+	padding: 10px 12px;
+	border-left: 3px solid transparent;
+	background: transparent;
+	border-radius: 0 4px 4px 0;
+	transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+@media (min-width: 480px) {
+	.sgs-buybox .value-ladder__row {
+		flex-wrap: nowrap;
+		justify-content: space-between;
+	}
+}
+
+.sgs-buybox .value-ladder__row[aria-current="true"] {
+	border-left-color: var( --wp--preset--color--primary, #000 );
+	background: var( --wp--preset--color--surface, #f9f4ef );
+}
+
+.sgs-buybox .value-ladder__pack {
+	font-weight: 600;
+	flex: 1 1 auto;
+	white-space: nowrap;
+}
+
+.sgs-buybox .value-ladder__per-unit {
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.sgs-buybox .value-ladder__saving {
+	color: var( --wp--preset--color--contrast, #1a1a1a );
+	font-weight: 600;
+	font-size: 13px;
+	white-space: nowrap;
+}
+
+.sgs-buybox .product-card__best-value-badge {
+	margin-left: 4px;
+	flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-buybox .value-ladder__row {
+		transition: none;
+	}
+}
+
 /* ── Editor placeholder ────────────────────────────────────────────────── */
 
 .sgs-buybox--editor-placeholder {
