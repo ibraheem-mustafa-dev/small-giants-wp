@@ -386,6 +386,51 @@ export function LayoutPanel( { attributes, setAttributes } ) {
 				/>
 			) }
 
+			{ layout === 'flex' && (
+				<>
+					<SelectControl
+						label={ __( 'Flex direction', 'sgs-blocks' ) }
+						value={ attributes.flexDirection || '' }
+						options={ [
+							{ label: __( '— default (row) —', 'sgs-blocks' ), value: '' },
+							{ label: __( 'Row', 'sgs-blocks' ), value: 'row' },
+							{ label: __( 'Row reverse', 'sgs-blocks' ), value: 'row-reverse' },
+							{ label: __( 'Column', 'sgs-blocks' ), value: 'column' },
+							{ label: __( 'Column reverse', 'sgs-blocks' ), value: 'column-reverse' },
+						] }
+						onChange={ ( val ) => setAttributes( { flexDirection: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Flex wrap', 'sgs-blocks' ) }
+						value={ attributes.flexWrap || '' }
+						options={ [
+							{ label: __( '— default (wrap) —', 'sgs-blocks' ), value: '' },
+							{ label: __( 'Wrap', 'sgs-blocks' ), value: 'wrap' },
+							{ label: __( 'No wrap', 'sgs-blocks' ), value: 'nowrap' },
+							{ label: __( 'Wrap reverse', 'sgs-blocks' ), value: 'wrap-reverse' },
+						] }
+						onChange={ ( val ) => setAttributes( { flexWrap: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Justify content', 'sgs-blocks' ) }
+						value={ attributes.justifyContent || '' }
+						options={ [
+							{ label: __( '— default —', 'sgs-blocks' ), value: '' },
+							{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
+							{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+							{ label: __( 'End', 'sgs-blocks' ), value: 'flex-end' },
+							{ label: __( 'Space between', 'sgs-blocks' ), value: 'space-between' },
+							{ label: __( 'Space around', 'sgs-blocks' ), value: 'space-around' },
+							{ label: __( 'Space evenly', 'sgs-blocks' ), value: 'space-evenly' },
+						] }
+						onChange={ ( val ) => setAttributes( { justifyContent: val } ) }
+						__nextHasNoMarginBottom
+					/>
+				</>
+			) }
+
 			{ layout === 'grid' && (
 				<>
 					<hr style={ { margin: '16px 0' } } />

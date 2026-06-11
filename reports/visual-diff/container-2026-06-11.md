@@ -40,6 +40,21 @@ first_paint_capture_passed: true
 
 **Change:** container/edit.js refactored from 1375 → 276 lines: inline duplicate panels (Layout, Width, Grid item defaults, Background, Shape Dividers) replaced by the shared ContainerWrapperControls exports (`LayoutPanel`/`WidthPanel`/`BackgroundPanel`/`ShapeDividersPanel`/`GridItemDefaultsPanel` + shared `MIN_HEIGHT_OPTIONS`/`SHADOW_OPTIONS`). Container-specific panels (min-height, HTML tag, Template mode, Shadow body) stay inline. Zero frontend render change (editor-only refactor).
 
+---
+
+# Addendum — Step 5 flex controls (same day)
+
+verdict: PASS
+first_paint_capture_passed: true
+
+**Change:** the 3 dead flex attrs (`flexDirection`/`flexWrap`/`justifyContent` — rendered by the wrapper, zero controls) wired as SelectControls in the shared `LayoutPanel`, visible when layout=flex. Found + fixed during live verify: the wrapper allowlist (`'', row, column`) and block.json enums silently dropped valid CSS values — both widened to the full set (row/column-reverse, wrap-reverse, space-evenly).
+
+**Validation (live canary):** probe page `layout:flex, flexDirection:row-reverse, justifyContent:space-between, flexWrap:nowrap` → computed `row-reverse` / `space-between` / `nowrap`. Build green ×3 guards; php -l clean; probe deleted.
+
+## Result — PASS (R-22-11)
+
+---
+
 **Validation (live canary editor, page 8):** full inspector enumeration with a container selected — all panels present (Layout, Responsive spacing, Content band, Template mode, Background, Shadow, Shape Dividers + extensions); switching layout→grid in-memory revealed Columns/Custom column template/Row template/Auto rows/Justify items/Align content + the Grid item defaults panel (Padding/Background/Radius/Border/Shadow/Text colour). Matches the before/after inventory; no control lost; reverted without save. Build green ×3 guards.
 
 ## Result — PASS (R-22-11)

@@ -332,9 +332,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$justify_content         = $attributes['justifyContent'] ?? '';
 			$flex_direction          = $attributes['flexDirection'] ?? '';
 			$flex_wrap               = $attributes['flexWrap'] ?? '';
-			$allowed_justify_content = array( '', 'flex-start', 'center', 'flex-end', 'space-between', 'space-around' );
-			$allowed_flex_direction  = array( '', 'row', 'column' );
-			$allowed_flex_wrap       = array( '', 'wrap', 'nowrap' );
+			$allowed_justify_content = array( '', 'flex-start', 'center', 'flex-end', 'space-between', 'space-around', 'space-evenly' );
+			$allowed_flex_direction  = array( '', 'row', 'row-reverse', 'column', 'column-reverse' );
+			$allowed_flex_wrap       = array( '', 'wrap', 'nowrap', 'wrap-reverse' );
 			if ( ! in_array( $justify_content, $allowed_justify_content, true ) ) {
 				$justify_content = '';
 			}
