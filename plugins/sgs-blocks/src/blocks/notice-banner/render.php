@@ -143,9 +143,16 @@ if ( $is_announcement && $dismissible ) {
 $output = '';
 
 if ( $is_announcement && $dismissible ) {
-	// Use the block's anchor if set, otherwise generate a stable unique ID.
-	$anchor      = $attributes['anchor'] ?? '';
-	$block_id    = $anchor ? sanitize_html_class( $anchor ) : wp_unique_id( 'sgs-notice-' );
+	// Stable dismissal key. An explicit anchor wins. Otherwise we must NOT use
+	// wp_unique_id() — it is a per-REQUEST counter, so it would mint a different
+	// key on every page load and the dismissal would never persist (QC-council
+	// BLOCKER, 2026-06-11). Fall back to a deterministic content hash so the same
+	// banner yields the same key across loads. The message lives in $content
+	// (InnerBlocks); hash that + the variant for a stable per-instance id.
+	$anchor   = $attributes['anchor'] ?? '';
+	$block_id = $anchor
+		? sanitize_html_class( $anchor )
+		: 'h' . substr( md5( (string) $content . '|' . $variant ), 0, 12 );
 	$storage_key = 'sgs-notice-dismissed-' . $block_id;
 
 	// Pre-paint inline script — checks sessionStorage / localStorage before

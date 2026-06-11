@@ -196,8 +196,10 @@ Update this table as blocks are committed/deployed.
 
 Every block MUST provide per-element customisation matching Kadence/Spectra depth:
 
+> **TYPOGRAPHY — use the SHARED component, never bespoke font controls (MANDATORY, Bean R-22-13 2026-06-11).** For ANY per-element typography (font size / weight / style / line-height on a title, label, pill, link, price, etc.) use the shared **`TypographyControls`** component (`src/components/TypographyControls.js`, exported from `../../components`) in edit.js + the shared **`sgs_typography_css_rule( $attributes, $prefix, $selector )`** helper (`includes/helpers-typography.php`, auto-loaded via `render-helpers.php`) in render.php. This gives the canonical sgs/text UI everywhere: **font size = responsive RangeControl + unit dropdown** (NOT a freeform text box, NOT a token-slug picker — there is one default per tag), **weight + style = SelectControl dropdowns**, line-height = RangeControl. Attr shape per element: `{prefix}FontSize` (number) + `{prefix}FontSizeUnit`/`Tablet`/`Mobile` + `{prefix}FontWeight`/`FontStyle` + `{prefix}LineHeight`/`Unit`; the helper emits a per-instance uid-scoped `<style>` (base + tablet + mobile) and honours a legacy STRING fontSize verbatim for back-compat. Do NOT hand-roll a TextControl/SelectControl font-size or emit `--x-font-size` CSS vars per block — that path produced the inconsistent "blank box" controls this rule exists to kill. Blocks already on it: text/heading/button/label/quote (canonical) + counter/whatsapp-cta/mobile-nav/option-picker/trust-bar/product-card (migrated 2026-06-11). Adopt it for every new typography control + keep all blocks aligned.
+
 1. Native WordPress `supports` for wrapper-level controls (colour, typography, spacing, border)
-2. Custom attributes + controls for each inner text element (colour, font size)
+2. Custom attributes + controls for each inner text element (colour via `DesignTokenPicker`; font size/weight/style/line-height via the shared `TypographyControls` component — see box above)
 3. Custom attributes + controls for interactive elements like CTAs (text colour, background colour)
 4. CSS fallback colours use `:not([style*="color"])` so custom values always win
 5. Use Block Selectors API in `block.json` to target native typography to primary text element
