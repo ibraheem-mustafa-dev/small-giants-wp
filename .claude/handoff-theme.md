@@ -1,4 +1,56 @@
-# Session Handoff — 2026-06-11 (theme/blocks thread)
+# Session Handoff — 2026-06-11 EVENING (theme thread) — Spec 30 P1 COMPLETE
+
+## Completed This Session
+1. **Spec 30 P1 COMPLETE — working PDP + cart loop shipped, Bean R-22-13 signed off, merged to main.** Executed Steps 5–7 of `.claude/plans/2026-06-11-spec30-p1-wc-chassis.md` + a `/ui-ux-pro-max` design wave + a 9-point Bean fix wave. FR-30-12 (product-page cloning) is now UNGATED.
+2. **FR-30-7 — new block `sgs/buybox`** (commit `17ee951a`): a thin PDP wrapper that mounts the SHIPPED `sgs/product-card` Interactivity store (proxy cart-write M-C2, 409 re-sync, availability greying). Composes N option-pickers + ONE manifest + price row + add-to-cart. Live on product 540: ≥3 combos add exact variation, foreign id 4xx, dismissible error, single-variant axes suppressed. Design rationale: `.claude/reports/spec30-p1/STEP5-BRIDGE-DESIGN.md`.
+3. **FR-30-4 — Mini-Cart/cart/checkout styling + COD** (commit `17ee951a`): core `woocommerce/mini-cart` in header (token-matched icon), branded drawer, COD enabled, test order completed.
+4. **`/ui-ux-pro-max` design wave** (commit `91364a2b`): Bean flagged the missed mandatory design pass; uimax surfaced 4 gate-invisible defects — empty Beta gallery → classic `woocommerce/product-image-gallery` fallback; unstyled CTA → token accent button; price moved above pickers; empty related band → composed `product-collection` + categorised fixtures.
+5. **`sgs/tabs` first-ever deploy** (commit `1ac49442`): PDP "Product details" tabs (Description/Ingredients/Nutritional/Allergens — allergens = FR-30-13f statutory slot). Flushed TWO latent tabs bugs root-caused live: context-stripped child render (post-content rendered empty) + duplicate nested `role=tabpanel` (8 panels for 4 tabs). Both fixed at source.
+6. **Bean R-22-13 9-point fix wave** (commit `1ac49442`): alternating full-width section bands; branded sale badge; buybox 3-pill grid + larger gallery; trust-bar band; full-width related band + equal-height cards (CTAs pinned); cart-icon colour match; shop archive = `sgs/content-collection` of Bound product-cards with pickers off (new additive `showPickers` attr). Multi-image gallery verified live (thumbnails + swap + zoom on product 540).
+7. **Merged to main + reconciled the co-active thread.** FF-pushed P1 (`1ac49442`→`b18fadb0`) to origin/main; then reconciled origin/main with the cloning thread's 25 unpushed local-main commits via merge `9f357129` (zero conflicts; both lines verified present; their local main now FF-clean on next pull). Bean authorised the divergence.
+8. **`/sgs-update` run:** DB reconciled (71 blocks, +4 attrs, 0 orphans).
+
+## Current State
+- **Branch:** `feat/spec30-wc-chassis` at `b18fadb0`; **`origin/main` at `9f357129`** (reconcile merge containing P1 + the cloning thread's 25 commits).
+- **Tests:** no suite run; builds green via `npx wp-scripts build` (the co-active container `control-ux` gate fails `npm run build` — not theme-thread scope).
+- **Build:** passes. Deployed to sandybrown canary throughout; live-verified product 540 + /shop/.
+- **Uncommitted:** the cloning thread's staged converter/orchestrator/conformance files in this worktree's index — LEFT UNTOUCHED (not theme work; path-scoped commits only). Also `lucide-icons.php` + a cloning plan file (working-tree, never-stage / not mine).
+
+## Known Issues / Blockers
+- None block the next theme session. Two parked P1 follow-ups: per-variation gallery image-swap (`P-WC-GALLERY-VARIATION-SWAP`) and notify-me capture (`P-WC-NOTIFY-ME-CAPTURE`).
+- Pre-existing parking dup slug `P-BATCH-GA-14-SKILLS` (not from this session) — flagged for merge/rename.
+
+## Next Priorities (in order)
+1. **P2 Differentiators (recommended):** FR-30-8 live per-unit/value-ladder price coupling on the PDP (the conversion moat) + FR-30-10 DMCC-compliant reviews (Trustpilot/verified-buyer).
+2. **P4 Schema** (parallelisable): FR-30-9 schema audit per page type + FR-30-13 go-live checklist.
+3. **P3 Shop:** FR-30-3 archive UX + FR-30-6 searchable filter + FR-30-5 custom SGS search (effort tentpole, own design gate).
+
+## Files Modified
+| File path | What changed |
+|-----------|-------------|
+| plugins/sgs-blocks/src/blocks/buybox/* | NEW block (render/edit/style/block.json/index/save) — option-picker→cart bridge |
+| plugins/sgs-blocks/src/blocks/product-card/{block.json,render.php,view.js} | `showPickers` attr; engine `dismissCartStatus` + operator labels |
+| plugins/sgs-blocks/src/blocks/content-collection/{block.json,render.php} | forward `showPickers`/`ctaBehaviour`/`showLadder` to cards |
+| plugins/sgs-blocks/src/blocks/{tabs,tab}/render.php | context-preserving child render; removed duplicate tabpanel ARIA |
+| theme/sgs-theme/templates/{single-product,archive-product}.html | section bands; shop = content-collection; related collection |
+| theme/sgs-theme/parts/{sgs-pdp-content,sgs-pdp-gallery,sgs-pdp-buybox,sgs-archive-toolbar,header}.html | tabs section; classic gallery; buybox; query-title prefix; mini-cart |
+| theme/sgs-theme/assets/css/woocommerce.css | sale badge, gallery fill, trust band, equal-height cards (theme 1.4.6) |
+| .claude/{decisions,state,parking,next-session-prompt-theme,handoff-theme}.md | P1-close records |
+| reports/visual-diff/{tabs,tab,content-collection}-2026-06-11.md | visual-diff gate reports |
+
+## Notes for Next Session
+- **Full orchestration plan + STOP catalogue + pre-flight ritual:** `.claude/next-session-prompt-theme.md` (P2/P4 menu).
+- **Gallery does NOT swap per variation at P1** — the classic-gallery fallback severed the Beta block's add-to-cart-form coupling. P2 decision (parked).
+- **Notify-me DEFERRED** — `notifyMeLabel` control ships but renders nothing until a PECR-guarded capture path is built (parked; baselined in dead-controls).
+- **Co-active main reconcile:** their local main (`9c0321e6`) is now an ancestor of origin/main → their next pull FFs cleanly. Their staged converter work in this index was left untouched.
+- **Mini-cart self-hides on cart/checkout = WC-core hardcoded** (`visibility:hidden` when `is_cart()`/`is_checkout()`); intentional, no workaround shipped.
+
+## Next Session Prompt
+The operative theme-thread opener is **`.claude/next-session-prompt-theme.md`** (full orchestration plan, STOP catalogue, pre-flight ritual, P2/P4 menu). Not duplicated here to avoid drift. The root `.claude/next-session-prompt.md` belongs to the co-active cloning thread — do not overwrite it.
+
+---
+
+# Session Handoff — 2026-06-11 AM (theme/blocks thread)
 
 ## Completed This Session
 1. **R-22-13 block-quality remediation — all 12 of Bean's review points shipped + merged to main** (D209). Three waves on `feat/block-quality-mirror`, fast-forwarded to `main` (`26374b51..bd850804`).
