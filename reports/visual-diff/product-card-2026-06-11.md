@@ -72,3 +72,6 @@ were added to scripts/hardcoded-render-defaults-baseline.json with a reason — 
 pre-existing element typography NOT owned by the forwarding attr (Gate B's E1 doesn't
 parse descendant-class selectors; modifying the shared checker is a design-gated change,
 deferred). verdict: PASS.
+
+## Cleanup pass (2026-06-11): packSizes control wired
+Added a "Pack sizes" TextControl (typed/built-in Price panel, comma-separated) using the previously-dead packSizesText/onPackSizesChange helpers — closes the render-without-control gap (pills were rendered with no operator control) + removes dead code. Live editor: control present. verdict: PASS.

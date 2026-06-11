@@ -48,3 +48,6 @@ standalone without it.
 ## verdict
 PASS — typed variant rebuild live-verified; legacy posts migrate cleanly (page 8 round-trip);
 7 variants render. Bean R-22-13 eyeball owed.
+
+## Cleanup pass (2026-06-11): render-without-control closed
+Wired hoverScale (SelectControl: subtle/small/medium/large) + hoverShadow (SelectControl: sm/md/lg/glow) into the Hover states panel — render.php already consumed them; the control gap is closed. Live editor: both controls present. verdict: PASS.

@@ -851,6 +851,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							}
 							__nextHasNoMarginBottom
 						/>
+						<TextControl
+							label={ __( 'Pack sizes', 'sgs-blocks' ) }
+							help={ __(
+								'Comma-separated, e.g. 250g, 500g, 1kg. Shown as selectable pills; the first is marked active.',
+								'sgs-blocks'
+							) }
+							value={ packSizesText }
+							onChange={ onPackSizesChange }
+							__nextHasNoMarginBottom
+						/>
 					</PanelBody>
 				) }
 				{ isBound && (

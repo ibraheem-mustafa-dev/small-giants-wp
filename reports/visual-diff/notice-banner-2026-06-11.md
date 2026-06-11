@@ -40,3 +40,6 @@ adjacent <h3> into the banner is a cloning-thread follow-on.
 ## verdict
 PASS — bg/border/colour are now operator/converter-overridable (the allergen-box capability),
 render-neutral by default. Bean R-22-13 eyeball owed.
+
+## Cleanup pass (2026-06-11): dead dismissible removed
+Deleted the `dismissible` attr + its render.php dismiss-button branch — it rendered a button with no editor control AND no JS handler (broken half-feature). block.json 0.6.0 -> 0.7.0. deprecated.js entry retained for migration. Live block-renderer: no dismiss button, banner renders. verdict: PASS.

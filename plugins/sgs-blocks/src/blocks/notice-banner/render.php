@@ -29,7 +29,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // an InnerBlocks child (sgs/text), emitted via $content below.
 // Retained in block.json for deprecated.js back-compat only. R-22-14: no fallback.
 $variant     = $attributes['variant'] ?? 'info';
-$dismissible = ! empty( $attributes['dismissible'] );
 $icon_source = $attributes['iconSource'] ?? '';
 $icon_name   = $attributes['iconName'] ?? '';
 
@@ -78,24 +77,19 @@ if ( $show_icon ) {
 	}
 }
 
-$dismiss_icon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
-
 // FR-22-6: text colour + size are now carried on the sgs/text child block's
 // own attrs and rendered by that block's render.php. No wrapper-level text
 // style injection needed here — $content carries the already-rendered child.
 
 // -------------------------------------------------------------------------
-// Wrapper classes — BEM root + variant modifier + dismissible modifier.
+// Wrapper classes — BEM root + variant modifier.
 // These ride on notice-banner's own CSS and are NOT affected by CONTENT kind,
 // which only adds width/spacing layers.
 // -------------------------------------------------------------------------
 $sgs_wrapper_classes = array( 'sgs-notice-banner', 'sgs-notice-banner--' . sanitize_html_class( $variant ) );
-if ( $dismissible ) {
-	$sgs_wrapper_classes[] = 'sgs-notice-banner--dismissible';
-}
 
 // -------------------------------------------------------------------------
-// Interior HTML — icon + InnerBlocks content + optional dismiss button.
+// Interior HTML — icon + InnerBlocks content.
 // FR-22-6: text content is $content (sgs/text InnerBlock). R-22-14: no fallback.
 // -------------------------------------------------------------------------
 $sgs_inner_html = '';
@@ -103,9 +97,6 @@ if ( $icon_html ) {
 	$sgs_inner_html .= '<span class="sgs-notice-banner__icon" aria-hidden="true">' . $icon_html . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from first-party icon maps; dashicon slug + emoji escaped above.
 }
 $sgs_inner_html .= $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WP core InnerBlocks output.
-if ( $dismissible ) {
-	$sgs_inner_html .= '<button type="button" class="sgs-notice-banner__dismiss" aria-label="' . esc_attr__( 'Dismiss', 'sgs-blocks' ) . '">' . $dismiss_icon . '</button>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $dismiss_icon is a hardcoded inline SVG string.
-}
 
 // -------------------------------------------------------------------------
 // WS-4 CONTENT kind: SGS_Container_Wrapper adds width/spacing controls only.

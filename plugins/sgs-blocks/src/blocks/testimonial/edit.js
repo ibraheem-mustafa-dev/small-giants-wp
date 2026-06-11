@@ -161,6 +161,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoverBorderColour,
 		transitionDuration,
 		transitionEasing,
+		hoverScale,
+		hoverShadow,
 	} = attributes;
 
 	// Switching variant: seed a sensible default for that variant's discriminating
@@ -613,6 +615,56 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
+						<SelectControl
+							label={ __( 'Hover scale', 'sgs-blocks' ) }
+							value={ hoverScale }
+							options={ [
+								{ label: __( 'None', 'sgs-blocks' ), value: '' },
+								{
+									label: __( 'Subtle (1.02)', 'sgs-blocks' ),
+									value: '1.02',
+								},
+								{
+									label: __( 'Small (1.03)', 'sgs-blocks' ),
+									value: '1.03',
+								},
+								{
+									label: __( 'Medium (1.05)', 'sgs-blocks' ),
+									value: '1.05',
+								},
+								{
+									label: __( 'Large (1.08)', 'sgs-blocks' ),
+									value: '1.08',
+								},
+							] }
+							onChange={ ( val ) =>
+								setAttributes( { hoverScale: val } )
+							}
+							help={ __(
+								'Grows the card on hover (GPU-composited transform).',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+						/>
+						<SelectControl
+							label={ __( 'Hover shadow', 'sgs-blocks' ) }
+							value={ hoverShadow }
+							options={ [
+								{ label: __( 'None', 'sgs-blocks' ), value: '' },
+								{ label: __( 'Small', 'sgs-blocks' ), value: 'sm' },
+								{ label: __( 'Medium', 'sgs-blocks' ), value: 'md' },
+								{ label: __( 'Large', 'sgs-blocks' ), value: 'lg' },
+								{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
+							] }
+							onChange={ ( val ) =>
+								setAttributes( { hoverShadow: val } )
+							}
+							help={ __(
+								'Shadow elevation applied on hover (theme shadow preset).',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+						/>
 				</PanelBody>
 
 				{ /* ── Width / spacing (WS-4 container-mirror, content kind) ── */ }
