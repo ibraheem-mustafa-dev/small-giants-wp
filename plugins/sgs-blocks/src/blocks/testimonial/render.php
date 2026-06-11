@@ -62,8 +62,12 @@ if ( empty( $avatar_media['url'] ) && ! empty( $legacy_avatar['url'] ) ) {
 // ── Rating fields (fully optional — gated by showRating) ────────────────────
 $show_rating      = ! empty( $attributes['showRating'] );
 $rating_type      = $attributes['ratingType'] ?? 'stars';
+// Clamp the rating values to sane ranges so a tampered/garbage attr can never
+// render an out-of-range star loop or an absurd numeric score.
 $rating_stars     = isset( $attributes['ratingStars'] ) ? (float) $attributes['ratingStars'] : 0;
+$rating_stars     = max( 0, min( 5, $rating_stars ) );
 $rating_scale     = isset( $attributes['ratingScale'] ) ? (float) $attributes['ratingScale'] : 0;
+$rating_scale     = max( 0, min( 100, $rating_scale ) );
 $rating_scale_max = trim( (string) ( $attributes['ratingScaleMax'] ?? '10' ) );
 $review_date      = trim( (string) ( $attributes['reviewDate'] ?? '' ) );
 $verified         = ! empty( $attributes['verified'] );
@@ -277,13 +281,13 @@ if ( '' !== $quote ) {
 $attribution_html = '';
 $attr_parts       = array();
 if ( '' !== $reviewer_name ) {
-	$attr_parts[] = '<cite class="sgs-testimonial__name"' . $sgs_testimonial_style_attr( $name_colour ) . '>' . wp_kses_post( $reviewer_name ) . '</cite>';
+	$attr_parts[] = '<cite class="sgs-testimonial__name"' . $sgs_testimonial_style_attr( $name_colour ) . '>' . esc_html( $reviewer_name ) . '</cite>';
 }
 if ( '' !== $reviewer_role ) {
-	$attr_parts[] = '<span class="sgs-testimonial__role"' . $sgs_testimonial_style_attr( $role_colour ) . '>' . wp_kses_post( $reviewer_role ) . '</span>';
+	$attr_parts[] = '<span class="sgs-testimonial__role"' . $sgs_testimonial_style_attr( $role_colour ) . '>' . esc_html( $reviewer_role ) . '</span>';
 }
 if ( '' !== $org_name ) {
-	$attr_parts[] = '<span class="sgs-testimonial__org"' . $sgs_testimonial_style_attr( $org_colour ) . '>' . wp_kses_post( $org_name ) . '</span>';
+	$attr_parts[] = '<span class="sgs-testimonial__org"' . $sgs_testimonial_style_attr( $org_colour ) . '>' . esc_html( $org_name ) . '</span>';
 }
 if ( ! empty( $attr_parts ) ) {
 	$attribution_html = '<div class="sgs-testimonial__meta">' . implode( '', $attr_parts ) . '</div>';

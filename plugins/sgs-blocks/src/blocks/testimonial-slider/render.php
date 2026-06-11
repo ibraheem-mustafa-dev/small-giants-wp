@@ -133,7 +133,7 @@ foreach ( $inner_blocks as $inner_block ) {
 	$child_attrs  = $inner_block->parsed_block['attrs'] ?? array();
 	$child_name   = wp_strip_all_tags( $child_attrs['name'] ?? '' );
 	$child_quote  = wp_strip_all_tags( $child_attrs['quote'] ?? '' );
-	$child_rating = isset( $child_attrs['rating'] ) ? (float) $child_attrs['rating'] : 0;
+	$child_rating = isset( $child_attrs['ratingStars'] ) ? (float) $child_attrs['ratingStars'] : 0;
 
 	if ( '' !== trim( $child_name ) && '' !== trim( $child_quote ) ) {
 		$review = array(

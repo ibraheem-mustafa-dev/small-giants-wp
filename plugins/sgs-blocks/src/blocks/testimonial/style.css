@@ -183,17 +183,25 @@
 /* ============================================================ */
 /* ===== Variant: classic-card (default) ===== */
 /* ============================================================ */
-.sgs-testimonial--classic-card {
+/* Card chrome (background / border-radius / padding) lives in :where() so it is a
+   ZERO-specificity default — any operator value (native Background / Border / Spacing
+   supports → inline style) wins, and a borderless/padding-less clone faithfully drops
+   it. box-shadow stays a normal rule (native `shadow` support lands as inline too, so
+   it still overrides). */
+:where(.sgs-testimonial--classic-card) {
 	background: var(--wp--preset--color--surface, #fff);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	box-shadow: var(--wp--preset--shadow--md);
 	padding: var(--wp--preset--spacing--40, 1.5rem);
+}
+
+.sgs-testimonial--classic-card {
+	box-shadow: var(--wp--preset--shadow--md);
 }
 
 /* ============================================================ */
 /* ===== Variant: minimal-quote (accent border, type only) ===== */
 /* ============================================================ */
-.sgs-testimonial--minimal-quote {
+:where(.sgs-testimonial--minimal-quote) {
 	background: transparent;
 	border-left: 3px solid var(--wp--preset--color--accent, #F87A1F);
 	padding: var(--wp--preset--spacing--30, 1rem) var(--wp--preset--spacing--40, 1.5rem);
@@ -206,7 +214,7 @@
 /* ============================================================ */
 /* ===== Variant: pull-quote-editorial (big summary; dark treatment) ===== */
 /* ============================================================ */
-.sgs-testimonial--pull-quote-editorial {
+:where(.sgs-testimonial--pull-quote-editorial) {
 	padding: var(--wp--preset--spacing--50, 2.5rem);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	background: var(--wp--preset--color--surface-alt, #F5F7F7);
@@ -253,7 +261,7 @@
 /* ============================================================ */
 /* ===== Variant: rating-led (score row leads; e-commerce) ===== */
 /* ============================================================ */
-.sgs-testimonial--rating-led {
+:where(.sgs-testimonial--rating-led) {
 	background: var(--wp--preset--color--surface, #fff);
 	border: 1px solid var(--wp--preset--color--border, #E2E8E8);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
@@ -273,6 +281,9 @@
 	gap: var(--wp--preset--spacing--30, 1rem);
 	text-align: center;
 	justify-items: center;
+}
+
+:where(.sgs-testimonial--avatar-spotlight) {
 	padding: var(--wp--preset--spacing--40, 1.5rem);
 }
 
@@ -296,9 +307,12 @@
 	display: grid;
 	grid-template-columns: 1fr;
 	gap: var(--wp--preset--spacing--30, 1rem);
+	box-shadow: var(--wp--preset--shadow--sm, var(--wp--preset--shadow--md));
+}
+
+:where(.sgs-testimonial--corporate-logo) {
 	background: var(--wp--preset--color--surface, #fff);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	box-shadow: var(--wp--preset--shadow--sm, var(--wp--preset--shadow--md));
 	padding: var(--wp--preset--spacing--40, 1.5rem);
 }
 
@@ -313,9 +327,12 @@
 	display: grid;
 	grid-template-columns: 1fr;
 	gap: var(--wp--preset--spacing--30, 1rem);
+	box-shadow: var(--wp--preset--shadow--md);
+}
+
+:where(.sgs-testimonial--case-study-media) {
 	background: var(--wp--preset--color--surface, #fff);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	box-shadow: var(--wp--preset--shadow--md);
 	padding: var(--wp--preset--spacing--40, 1.5rem);
 }
 
