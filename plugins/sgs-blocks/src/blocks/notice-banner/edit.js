@@ -4,11 +4,32 @@ import {
 	InspectorControls,
 	useInnerBlocksProps,
 } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
+import { PanelBody, SelectControl, ToggleControl, Notice } from '@wordpress/components';
 import { IconPicker, IconPreview, DesignTokenPicker } from '../../components';
 import { colourVar } from '../../utils';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing only).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+
+const DISPLAY_MODE_OPTIONS = [
+	{ label: __( 'Inline', 'sgs-blocks' ), value: 'inline' },
+	{ label: __( 'Announcement bar', 'sgs-blocks' ), value: 'announcement' },
+];
+
+const STICKY_POSITION_OPTIONS = [
+	{ label: __( 'Top', 'sgs-blocks' ), value: 'top' },
+	{ label: __( 'Bottom', 'sgs-blocks' ), value: 'bottom' },
+];
+
+const DISMISS_BEHAVIOUR_OPTIONS = [
+	{
+		label: __( 'Session (resets when tab closes)', 'sgs-blocks' ),
+		value: 'session',
+	},
+	{
+		label: __( 'Permanent (remembered in browser)', 'sgs-blocks' ),
+		value: 'permanent',
+	},
+];
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Info', 'sgs-blocks' ), value: 'info' },
@@ -60,11 +81,28 @@ const NOTICE_BANNER_TEMPLATE = [
 ];
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { variant, showIcon, iconSource, iconColour } = attributes;
+	const {
+		variant,
+		showIcon,
+		iconSource,
+		iconColour,
+		displayMode,
+		stickyPosition,
+		dismissible,
+		dismissBehaviour,
+	} = attributes;
 
-	const className = [ 'sgs-notice-banner', `sgs-notice-banner--${ variant }` ].join(
-		' '
-	);
+	const isAnnouncement = 'announcement' === displayMode;
+
+	const className = [
+		'sgs-notice-banner',
+		`sgs-notice-banner--${ variant }`,
+		isAnnouncement ? 'sgs-notice-banner--announcement' : '',
+		isAnnouncement ? `sgs-notice-banner--sticky-${ stickyPosition }` : '',
+	]
+		.filter( Boolean )
+		.join( ' ' );
+
 	const blockProps = useBlockProps( { className } );
 	const innerBlocksProps = useInnerBlocksProps( {}, {
 		template: NOTICE_BANNER_TEMPLATE,
@@ -75,13 +113,69 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				{ /* WS-4: mirrored sgs/container wrapper controls (content kind = width/spacing only). */ }
-				<ContainerWrapperControls
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					kind="content"
-				/>
+				{ /* WS-4: mirrored sgs/container wrapper controls (content kind = width/spacing only).
+				     Only shown in inline mode — announcement mode is always full-width + fixed. */ }
+				{ ! isAnnouncement && (
+					<ContainerWrapperControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						kind="content"
+					/>
+				) }
 				<PanelBody title={ __( 'Banner Settings', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Display mode', 'sgs-blocks' ) }
+						help={ __(
+							'Inline sits within the page flow. Announcement bar is fixed to the top or bottom of the viewport.',
+							'sgs-blocks'
+						) }
+						value={ displayMode }
+						options={ DISPLAY_MODE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { displayMode: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					{ isAnnouncement && (
+						<>
+							<SelectControl
+								label={ __( 'Position', 'sgs-blocks' ) }
+								value={ stickyPosition }
+								options={ STICKY_POSITION_OPTIONS }
+								onChange={ ( val ) => setAttributes( { stickyPosition: val } ) }
+								__nextHasNoMarginBottom
+							/>
+							<ToggleControl
+								label={ __( 'Dismissible', 'sgs-blocks' ) }
+								help={ __(
+									'Shows a close button so visitors can hide the bar.',
+									'sgs-blocks'
+								) }
+								checked={ !! dismissible }
+								onChange={ ( val ) => setAttributes( { dismissible: val } ) }
+								__nextHasNoMarginBottom
+							/>
+							{ dismissible && (
+								<SelectControl
+									label={ __( 'Dismiss behaviour', 'sgs-blocks' ) }
+									help={ __(
+										'How long the bar stays hidden after the visitor closes it.',
+										'sgs-blocks'
+									) }
+									value={ dismissBehaviour }
+									options={ DISMISS_BEHAVIOUR_OPTIONS }
+									onChange={ ( val ) =>
+										setAttributes( { dismissBehaviour: val } )
+									}
+									__nextHasNoMarginBottom
+								/>
+							) }
+							<Notice status="info" isDismissible={ false }>
+								{ __(
+									'Announcement bar is fixed-position on the live site. In the editor it renders inline so you can still edit the content.',
+									'sgs-blocks'
+								) }
+							</Notice>
+						</>
+					) }
 					<SelectControl
 						label={ __( 'Variant', 'sgs-blocks' ) }
 						help={ __(
@@ -134,8 +228,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			{ /* FR-22-6: the notice text is now an InnerBlocks child (sgs/text).
-			     The wrapper div carries the variant class + role="note". */ }
-			<div { ...blockProps } role="note">
+			     The wrapper div carries the variant class + role="note".
+			     In announcement mode we use role="banner" (a landmark, one per page);
+			     the editor renders it inline — fixed-position only on the frontend. */ }
+			<div { ...blockProps } role={ isAnnouncement ? 'banner' : 'note' }>
 				{ showIcon && (
 					<span
 						className="sgs-notice-banner__icon"
@@ -146,6 +242,16 @@ export default function Edit( { attributes, setAttributes } ) {
 					</span>
 				) }
 				<div { ...innerBlocksProps } />
+				{ isAnnouncement && dismissible && (
+					<button
+						className="sgs-notice-banner__close"
+						aria-label={ __( 'Dismiss announcement', 'sgs-blocks' ) }
+						type="button"
+					>
+						{ /* × character — decorative; the aria-label carries the accessible name. */ }
+						<span aria-hidden="true">{ '×' }</span>
+					</button>
+				) }
 			</div>
 		</>
 	);

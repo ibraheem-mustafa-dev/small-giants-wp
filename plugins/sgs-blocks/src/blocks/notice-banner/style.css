@@ -87,9 +87,84 @@
 /* Links within text */
 .sgs-notice-banner__text a {
 	color: inherit;
-	text-decoration: none; opacity: 0.85;
+	text-decoration: none;
+	opacity: 0.85;
 }
 
 .sgs-notice-banner__text a:hover {
 	text-decoration: none;
+}
+
+/* ===== Announcement mode ===== */
+
+.sgs-notice-banner--announcement {
+	position: fixed;
+	left: 0;
+	right: 0;
+	width: 100%;
+	/* Safe-area insets for notched devices. */
+	padding-left: max(var(--wp--preset--spacing--30), env(safe-area-inset-left));
+	padding-right: max(var(--wp--preset--spacing--30), env(safe-area-inset-right));
+	/* Above page content, below modals (z-index 1000). */
+	z-index: 1000;
+	border-radius: 0;
+	border-left: none;
+	justify-content: center;
+}
+
+.sgs-notice-banner--sticky-top {
+	top: 0;
+	padding-top: max(var(--wp--preset--spacing--20), env(safe-area-inset-top));
+}
+
+.sgs-notice-banner--sticky-bottom {
+	bottom: 0;
+	padding-bottom: max(var(--wp--preset--spacing--20), env(safe-area-inset-bottom));
+}
+
+/* Hide when dismissed via Interactivity context. */
+.sgs-notice-banner--announcement.is-dismissed {
+	display: none;
+}
+
+/* ===== Close button ===== */
+
+.sgs-notice-banner__close {
+	/* Ensure 44 × 44 px minimum touch target (WCAG 2.2 AA). */
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0;
+	margin-left: auto;
+	flex-shrink: 0;
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: inherit;
+	opacity: 0.7;
+	font-size: 1.25rem;
+	line-height: 1;
+	border-radius: 4px;
+	transition: opacity 0.15s ease;
+}
+
+.sgs-notice-banner__close:hover {
+	opacity: 1;
+}
+
+/* Visible focus ring — WCAG 2.2 AA. */
+.sgs-notice-banner__close:focus-visible {
+	outline: 2px solid currentcolor;
+	outline-offset: 2px;
+	opacity: 1;
+}
+
+/* Respect reduced-motion preference — suppress entrance animation if added later. */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-notice-banner--announcement {
+		animation: none !important;
+		transition: none !important;
+	}
 }
