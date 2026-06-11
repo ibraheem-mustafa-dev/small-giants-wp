@@ -1,50 +1,46 @@
-# Session Handoff — 2026-06-10 (cloning thread — D203 root-cause reframe + routing design + step C)
+# Session Handoff — 2026-06-11 (cloning thread — repo consolidation + testimonial-empty root cause [D212])
 
-> Live handoff. Theme thread co-active on the SAME branch + main — commit by explicit path. Prior handoffs: `.claude/memory/handoff-archive.md` + git log.
+> Prior handoffs: git log + `.claude/memory/handoff-archive.md`. **A live theme thread is co-active on `feat/spec30-p2-shop-schema` (Spec 30 P2 shop-schema, FR-30-8/FR-30-10 + uncommitted work incl. a new `collapsible-text` block).** Commit by explicit path; this session wrote to `main` via a throwaway worktree to avoid disrupting that live dir.
 
 ## Completed This Session
-1. **Shipped Stage-1 Commits 3+4** (`fb4ffabb` F6a inheritance, `d3ba8dd5` carve-out retirement) + `/sgs-update` + `/sgs-clone` re-clone/deploy page 8 + refreshed `current-clone-page-source.html`. Recorded D202.
-2. **Live-DOM verification proved the converter changes DON'T land** — clone-parity.js + Playwright on page 8: 0 fixed / 118 stayed vs the 06-07 baseline; 28/28 headings still centre; hero padding still on the outer section. Emit changed, render didn't.
-3. **Root-caused it (single, evidenced)** — `fold_eligible = len(element_children)==1` counts the hero's scalar-media `__media` sibling → `__content` never folds → emits as a nested BEM-classed `sgs/container` (the double-nesting) → Commit-2's cross-node routing (inside the fold branch) is unreachable. Confirmed the orchestrator runs the EDITED converter (not stale) 3 ways; read `convert-trace-b*.jsonl`.
-4. **Confirmed the truth docs are silent on the co-located content+scalar-media fold interaction** — 4 parallel doc-reader agents (Spec 22/29, pipeline-flow/stages, decisions, method2, wave1-hero).
-5. **Wrote the DB-driven routing design** (`reports/wave2/ROUTING-CATEGORISATION-DESIGN.md`, Bean-approved in principle) — slots/aliases → canonical_slot/role → property_suffixes → modifier_suffixes + grid-awareness; carries per-element, per-breakpoint responsive-CSS routing + the corrected block model (preset + child-typography + container-mirror).
-6. **Step C done** — both drafts (homepage 7 + product page 5 sections, header/footer excluded) mapped layer-by-layer with full responsive CSS (`reports/wave2/STEP-C-LAYOUT-MAPPING-2026-06-10.md`); gap register (`STEP-C-STRESS-TEST-2026-06-10.md`). Core holds; 3 buckets of additive work.
-7. **Corrected my overstated "blocks missing per-property attrs" finding** — Bean's live editor review proved preset + child-typography + mirror. Block-side issues handed to the theme thread via `reports/wave2/STEP-C-BLOCK-FIXES-PROMPT.md`.
+1. **Repo consolidated onto `main`** (Bean: "merge everything to main, no random branches or temp folders"). Removed **3 feature branches** (spec30-wc-chassis, block-quality-mirror, stage1-converter-core — first two fully merged; the third's unique docs rescued) + **7 worktrees** (`C:/tmp/*` + 2 locked `.claude/worktrees` agent dirs) + 39 temp items. Rescued the 2 unique cloning-docs commits (D211 + ledger 8-VERIFIED) + the uncommitted GRID-PER-AREA build-plan finding + a visual-diff note onto main (`f8eb532b`). A featured-product **mockup BEM refactor** (Task-2 work) was found in the consolidation stash and PRESERVED there (not lost).
+2. **Testimonial-empty (Task 1): ROOT-CAUSED via /systematic-debugging, 3 evidence sources.** `block_composition.has_inner_blocks=1` is STALE for `sgs/testimonial` (hardcoded `seed-composition-roles.py:60`; the D8 typed rebuild registered typed attrs/variants via `/sgs-update` but never flipped the flag) → the converter descends + emits `sgs/star-rating`+2×`sgs/text` children → the typed render.php ignores them (R-22-14 forbids a `$content` fallback) → empty slides. Evidence: stored page-8 markup (children present) + live `do_blocks` render (0 `sgs-testimonial` elements) + DB flag.
+3. **Design-gated via /adversarial-council (6 personas).** Council's architecture objection ("cosmetic universality / needs bespoke handler / new table") was OVERTURNED by Bean + verified against Spec 22 §FR-22-2 + Spec 00 §3.1: the universal lift already exists and uses EXISTING tables (`block_attributes.role/canonical_slot/derived_selector` + `slots`) — testimonial's content attrs just lack the rows `sgs/text`/`sgs/quote` carry. The council's SECURITY (esc_html names + clamp stars), Rule-4 (dropped card border/bg), flag-child-only, variant-safety + live-verify must-fixes were RETAINED.
+4. **Wrote the 7-step build plan** (`.claude/plans/2026-06-11-testimonial-universal-lift-build.md`) + recorded **D212** + updated next-session-prompt Task 1. Build delegated to a fresh focused session (Bean call — this session was context-heavy).
 
 ## Current State
-- **Branch:** `feat/stage1-converter-core` (HEAD advanced by co-active commits). My doc commits added by explicit path.
-- **Tests:** converter Gate A + commit2/3/4 suites green (121 tests); no converter CODE changed this session — analysis + docs only.
-- **Build:** n/a this session.
-- **Uncommitted:** new wave2 docs committed by explicit path; clone-parity measurement artefacts + co-active theme-thread files left untouched.
+- **`origin/main`** = `2876d0fc` (D212 docs) — this session's cloning docs + the build plan are all on main.
+- **Live theme branch** `feat/spec30-p2-shop-schema` (not pushed) carries my D212 docs commit on its tip incidentally (identical content to main → merges cleanly; can be dropped when that dir is free).
+- **No converter CODE changed this session** — investigation + design + docs only.
+- **Stash** preserved: featured-product mockup BEM refactor (Task-2 featured-product family work).
 
 ## Known Issues / Blockers
-- **The Stage-1 converter changes do not land on the live page** — the converter rebuild (G1–G9) is the fix, gated on Bean's step-C critique first.
-- Branch stays open (justified exception to merge-to-main): rebuild mid-flight + Commit-4 R-22-13 sign-off pending.
+- **Testimonial slides empty on live page 8** — root cause known, build READY (not yet built). Plan: the universal-lift build doc.
+- **Live theme session active despite "sessions ended"** — `state.md` is theme-owned/dirty; left untouched. Bean to confirm whether that session should be closed.
 
 ## Next Priorities (in order)
-1. **Bean's gate-2.5 critique of the step-C mapping accuracy** — apply corrections to `STEP-C-LAYOUT-MAPPING` + the routing design before any code.
-2. **Confirm the 9 converter rules (G1–G9)** with him.
-3. **Build the DB-data bucket** (aliases/tokens/suffixes/variant_attr — deterministic) via `/sgs-update`.
-4. **Build converter rules G1–G9** to the routing design — each its own commit, `/qc-council` + live page-8 verify per commit.
-5. **Coordinate with the theme thread** on block-side fixes.
+1. **Execute `.claude/plans/2026-06-11-testimonial-universal-lift-build.md`** (fresh session) — flag flip child-only + universal DB lift data + the one missing multi-scalar lift + security/Rule-4 fixes + re-clone + live-verify page 8 at 375/768/1440. `/qc-council` per converter commit.
+2. **Ledger family burn-down** (~44 OPEN rows — featured-product 14, social-proof 8, ingredients 5, etc.) per `.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md` — the Task-2 featured-product mockup BEM refactor is in the stash.
+3. **Measurement repairs** — global 16→18px font drift + the clone-parity BEM-class blind spot.
+4. **FR-30-12 product-page clone** (ungated, queued behind the homepage families).
 
-## Files Modified
+## Files Modified (this session, on main)
 | File | What changed |
 |------|-------------|
-| `.claude/decisions.md` | Added D203 |
-| `.claude/reports/wave2/ROUTING-CATEGORISATION-DESIGN.md` | NEW — DB routing design + responsive-CSS + corrected block model |
-| `.claude/reports/wave2/STEP-C-LAYOUT-MAPPING-2026-06-10.md` | NEW — both drafts mapped layer-by-layer with responsive CSS |
-| `.claude/reports/wave2/STEP-C-STRESS-TEST-2026-06-10.md` | NEW — gap register (G1–G9 + DB + block buckets) |
-| `.claude/reports/wave2/STEP-C-BLOCK-FIXES-PROMPT.md` | NEW — block-side fixes prompt for the theme thread |
-| `.claude/reports/wave2/LIVE-LEDGER-VERDICT-2026-06-10.md` | NEW — live-DOM ledger verdict |
-| `.claude/next-session-prompt.md`, `.claude/handoff.md` | this handoff |
+| `.claude/decisions.md` | +D211 (rescued) +D212 |
+| `.claude/next-session-prompt.md` | Task 1 → root-cause-found + build-ready |
+| `.claude/plans/2026-06-11-testimonial-universal-lift-build.md` | NEW — 7-step universal-lift build |
+| `.claude/parking.md` | P-TESTIMONIAL-CONVERTER-FR2220 → READY-TO-BUILD + D212 root cause |
+| `.claude/CLAUDE.md` | decisions pointer → D212 |
+| `plugins/sgs-blocks/CLAUDE.md` | testimonial row: merged (D209) + the D212 has_inner_blocks gotcha |
+| `.claude/handoff.md` | this handoff |
+| `plans/2026-06-09-clone-fix-build-plan.md`, `-sign-off-ledger.md`, `reports/visual-diff/…` | rescued onto main |
 
 ## Notes for Next Session
-- **Emit-green ≠ render-fixed** — live-DOM read per converter commit, always.
-- **The routing design doc is the build reference** — build the converter to it; do not patch the old `fold_eligible`/`html_tag_to_core_block` walker.
-- **`convert-trace-b*.jsonl`** logs the exact route each element took — read before conjecturing.
-- **Bean's live editor beats DB attr-name guesses.**
-- Block-side work is the theme thread's; the converter routes to the preset/mirror/child it produces.
+- **The testimonial fix is DB-data + the universal lift, NOT a bespoke handler and NOT a new table** (Spec 22 §FR-22-2.3). STOP catalogue is in the build plan.
+- **Verify the LIVE DOM, never the pixel/golden** — empty slides score a FALSE pixel win. Acceptance = `innerText.length` on `.sgs-testimonial__quote`/`__name`/`__stars` at 3 viewports, 2-attestation.
+- **Commit by explicit path; main is shared with a live theme thread.** When that dir is free, the throwaway-worktree pattern (`git worktree add C:/tmp/<x> main`) writes to main without disrupting it.
+- **Don't touch `state.md`** while the theme thread has it dirty.
 
 ## Next Session Prompt
-Full orchestration plan in `.claude/next-session-prompt.md` (autopilot reads it at session start): the 7 non-negotiable rules, the 3-bucket breakdown (⚙ G1–G9 / ➕ DB data / 🧱 theme-thread blocks), methodology guardrails (live-DOM gate per commit; read convert-trace; deploy before measure; commit by explicit path; branch stays open), and the Skills/MCP/Agents tables.
+Full orchestration in `.claude/next-session-prompt.md` (autopilot reads it at start) — Task 1 now points straight at the build plan.
