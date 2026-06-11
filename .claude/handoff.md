@@ -1,3 +1,51 @@
+# Session Handoff — 2026-06-12 (cloning thread — testimonial-empty FIXED + live-verified + on main)
+
+> Live handoff. Theme thread co-active (handed off this session) on the SAME branch + main — commit by explicit path; merge to main via temp-worktree cherry-pick. Prior handoffs below + `.claude/memory/handoff-archive.md`.
+
+## Completed This Session
+1. **Fixed the testimonial-empty live bug (D212)** — page-8 testimonials rendered empty; root cause was `block_composition.has_inner_blocks=1` STALE after the D8 typed rebuild. Executed the universal-lift build plan end-to-end (orchestrated; subagents implemented).
+2. **Universal DB-driven scalar-lift** (`_lift_scalar_attrs_by_selector`, convert.py G3-attrs path) — lifts draft `__text`/`__quote`→`quote`, `__author`→`reviewerName`, `__stars`→`ratingStars` via DB `derived_selector`+`role`+`attr_type`; multi-selector; star clamp 0–5; showRating coupling. No per-block branch.
+3. **qc-council caught the fix firing on ~50 blocks** (empirical DB-trigger query) — narrowed to a DB opt-in `scalar-content-lift` capability (`supports.sgs.scalarContentLift` in block.json → `/sgs-update` Stage 1 → `block_capabilities`). Verified end-to-end through `/sgs-update`.
+4. **Security + chrome (block-side)** — esc_html on reviewerName/role/org, star/scale clamps, slider:136 dead `rating`→`ratingStars` (Schema.org), card chrome via `:where()` (Rule-4 faithful + no dead-control attrs).
+5. **Deployed + re-cloned page 8 + LIVE-VERIFIED** — 3 cards, quote+name+5★ visible at 1440/768/~500; card chrome faithful (border 1px/12px/20px/#fff). Reports: `reports/visual-diff/testimonial{,-slider}-2026-06-12.md`.
+6. **Merged to origin/main via temp-worktree cherry-pick** (theme WIP never touched): `3938a7b0` converter, `09a908fd` block-side, `d0c083f8`/`2518914a`/`09188ad0` docs.
+7. **Ran `/sgs-update`** (11 stages clean, 0 orphans pruned); archived the completed plan; updated decisions D212 (SHIPPED), ledger (empty-slides RESOLVED), parking (P-TESTIMONIAL-CONVERTER-FR2220 PARTIAL + new durability entry).
+
+## Current State
+- **Branch:** `feat/spec30-p2-shop-schema` at `09188ad0` (this session's work is on `origin/main` via cherry-pick @ `2518914a`+).
+- **Tests:** 22 converter_v2 + 43 conformance pass. Build compiles. Gate A + visual-diff gates green.
+- **Uncommitted changes:** `lucide-icons.php` (theme-thread auto-gen) + `sites/mamas-munches/theme-snapshot.json` (reclone artifact) + 3 `reports/phase4-*.txt` (/sgs-update output) — none mine; left untouched.
+
+## Known Issues / Blockers
+- **P-TESTIMONIAL-LIFT-DATA-DURABILITY** — 3 attr selector/role rows are direct-SQL in the local DB; a normal `/sgs-update` preserves them (verified) but a FULL rebuild loses them. Needs a durable source home before any full DB rebuild.
+- Stage 1 converter core is emit-green but 0/52 ledger rows closed (padding routes to wrong layer) — the next priority.
+
+## Next Priorities (in order)
+1. **Stage 1 universal converter core** — fix cross-node padding routing to `contentPadding*` (not `gridItemPadding`/outer) + handle shorthand `padding`. Unblocks most F1-family ledger rows. `/qc-council` design-gate (shared mechanism).
+2. **Ledger family burn-down** (~44 OPEN rows) by family, per-row live-DOM probe acceptance.
+3. **Measurement repairs** — global 16→18px base-font drift (theme/global-styles layer) + clone-parity matcher.
+
+## Files Modified
+| File | What changed |
+|------|-------------|
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | universal `_lift_scalar_attrs_by_selector` + opt-in gate |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | `block_attrs()` returns `derived_selector` |
+| `plugins/sgs-blocks/scripts/sgs-update-v2.py` | Stage 1 maps `scalarContentLift` → capability |
+| `plugins/sgs-blocks/scripts/seed-composition-roles.py` | testimonial `has_inner_blocks` 1→0 |
+| `plugins/sgs-blocks/src/blocks/testimonial/{block.json,render.php,style.css}` | scalarContentLift flag, esc_html, clamps, `:where()` chrome, v0.3.3 |
+| `plugins/sgs-blocks/src/blocks/testimonial-slider/render.php` | dead `rating`→`ratingStars` |
+| `.../tests/test_scalar_selector_lift.py` + `.../fixtures/conformance/sgs-testimonial.golden.json` | positive+negative tests + regen'd golden |
+
+## Notes for Next Session
+- The testimonial lift is gated on the `scalar-content-lift` capability — to onboard another typed block to the lift, add `supports.sgs.scalarContentLift:true` to its block.json + populate its content attrs' `role`+`derived_selector` (draft selectors) in the DB, then `/sgs-update`.
+- Merge-to-main pattern with co-active threads: temp-worktree cherry-pick of YOUR commits only (`merge-to-coactive-held-main-via-temp-worktree`), never a branch merge into the primary worktree.
+- New lesson captured: `verify-universal-noop-claim-by-querying-trigger`.
+
+## Next Session Prompt
+The operative opener is `.claude/next-session-prompt.md` (orchestration plan: Stage 1 converter core → family burn-down → measurement repairs → FR-30-12, with the 7 rules + methodology guardrails). Read it + `.claude/plans/2026-06-09-clone-fix-build-plan.md` + the sign-off ledger.
+
+---
+
 # Session Handoff — 2026-06-11 (cloning thread — repo consolidation + testimonial-empty root cause [D212])
 
 > Prior handoffs: git log + `.claude/memory/handoff-archive.md`. **A live theme thread is co-active on `feat/spec30-p2-shop-schema` (Spec 30 P2 shop-schema, FR-30-8/FR-30-10 + uncommitted work incl. a new `collapsible-text` block).** Commit by explicit path; this session wrote to `main` via a throwaway worktree to avoid disrupting that live dir.
