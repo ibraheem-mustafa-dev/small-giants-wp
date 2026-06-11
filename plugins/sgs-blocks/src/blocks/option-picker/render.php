@@ -165,13 +165,16 @@ if ( $pill_sel_text_colour ) {
 	$extra_styles[] = '--sgs-op-sel-text:' . sgs_colour_value( $pill_sel_text_colour );
 }
 if ( '' !== $pill_font_size ) {
-	$extra_styles[] = '--sgs-op-pill-font-size:' . $pill_font_size;
+	// sgs_font_size_value resolves a theme token slug (e.g. "medium") to a
+	// var(...) reference and regex-allowlists a raw CSS length — matching the
+	// colour vars above and the product-card title/price pattern.
+	$extra_styles[] = '--sgs-op-pill-font-size:' . sgs_font_size_value( $pill_font_size );
 }
 if ( '' !== $pill_font_weight ) {
-	$extra_styles[] = '--sgs-op-pill-font-weight:' . $pill_font_weight;
+	$extra_styles[] = '--sgs-op-pill-font-weight:' . sanitize_text_field( $pill_font_weight );
 }
 if ( '' !== $pill_border_radius ) {
-	$extra_styles[] = '--sgs-op-pill-radius:' . $pill_border_radius;
+	$extra_styles[] = '--sgs-op-pill-radius:' . sanitize_text_field( $pill_border_radius );
 }
 
 /* ── FR-27-B2: resolve WooCommerce attribute taxonomy for swatch lookup ──── */
