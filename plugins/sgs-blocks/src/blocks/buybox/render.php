@@ -223,8 +223,31 @@ ob_start();
 	<?php echo wp_interactivity_data_wp_context( $context ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 >
 
+	<?php // ── 8a. Price row FIRST (CRO: price anchor visible before the pickers — uimax e-commerce hierarchy rule). ?>
+	<div class="buybox__price-row" aria-live="polite">
+		<span
+			class="buybox__price buybox__price--current"
+			data-wp-text="context.priceDisplay"
+		><?php echo esc_html( $price_display ); ?></span>
+		<s
+			class="buybox__price--regular"
+			data-wp-bind--hidden="context.hideSale"
+			data-wp-text="context.regularDisplay"
+		><?php echo esc_html( $regular_display ); ?></s>
+		<span
+			class="buybox__price--pct-off"
+			data-wp-bind--hidden="context.hideSale"
+			data-wp-text="context.pctDisplay"
+		><?php echo esc_html( $pct_display ); ?></span>
+	</div>
+	<p
+		class="buybox__price-note buybox__price-note--per-unit"
+		data-wp-bind--hidden="context.perUnitHidden"
+		data-wp-text="context.perUnitDisplay"
+	><?php echo esc_html( $per_unit_display ); ?></p>
+
 	<?php
-	// ── 8a. Per-axis option-picker blocks (single-variant suppression: skip axes with <2 terms) ──
+	// ── 8b. Per-axis option-picker blocks (single-variant suppression: skip axes with <2 terms) ──
 	foreach ( $manifest['axes'] as $axis ) {
 		$terms = $axis['terms'] ?? array();
 
@@ -258,29 +281,6 @@ ob_start();
 	}
 	?>
 
-	<?php // ── 8b. Price row — ctx-bound spans, SSR-seeded (mirrors product-card L807-830). ?>
-	<div class="buybox__price-row" aria-live="polite">
-		<span
-			class="buybox__price buybox__price--current"
-			data-wp-text="context.priceDisplay"
-		><?php echo esc_html( $price_display ); ?></span>
-		<s
-			class="buybox__price--regular"
-			data-wp-bind--hidden="context.hideSale"
-			data-wp-text="context.regularDisplay"
-		><?php echo esc_html( $regular_display ); ?></s>
-		<span
-			class="buybox__price--pct-off"
-			data-wp-bind--hidden="context.hideSale"
-			data-wp-text="context.pctDisplay"
-		><?php echo esc_html( $pct_display ); ?></span>
-	</div>
-	<p
-		class="buybox__price-note buybox__price-note--per-unit"
-		data-wp-bind--hidden="context.perUnitHidden"
-		data-wp-text="context.perUnitDisplay"
-	><?php echo esc_html( $per_unit_display ); ?></p>
-
 	<?php // ── 8c. Stock status — hidden when in stock. ?>
 	<p
 		class="buybox__stock"
@@ -299,7 +299,7 @@ ob_start();
 	>
 		<button
 			type="submit"
-			class="btn btn-primary buybox__add-to-cart"
+			class="wp-element-button buybox__add-to-cart"
 			data-wp-bind--disabled="context.pending"
 			data-wp-bind--aria-busy="context.pending"
 		>

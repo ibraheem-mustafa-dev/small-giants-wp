@@ -2,7 +2,7 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/buybox",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "title": "Buybox",
     "category": "sgs-content",
     "description": "WooCommerce single-product buybox: wires the SGS option-picker pills to the shipped cart proxy engine. Renders per-axis pickers, live price row, stock status, and an accessible add-to-cart form. Falls back to core WC blocks for simple products or when WooCommerce is absent.",

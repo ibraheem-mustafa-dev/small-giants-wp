@@ -67,19 +67,47 @@
 	margin: 0;
 }
 
+/* Primary conversion CTA (uimax e-commerce rule: high-contrast, dominant).
+   Full-width inside the buybox column; brand accent with the theme text
+   colour for contrast (yellow accents need dark text, not white). All
+   colours token-overridable; falls back to wp-element-button theming. */
 .sgs-buybox .buybox__add-to-cart {
-	display: inline-flex;
+	display: flex;
+	width: 100%;
 	align-items: center;
 	justify-content: center;
-	gap: 8px;
-	min-height: 44px;
+	gap: 10px;
+	min-height: 48px;
 	min-width: 44px;
+	padding: 12px 24px;
+	font-size: var(--sgs-buybox-cta-size, 1.05rem);
+	font-weight: 700;
+	border: 0;
+	border-radius: var(--sgs-buybox-cta-radius, 8px);
+	background: var(--sgs-buybox-cta-bg, var(--wp--preset--color--accent, var(--wp--preset--color--primary, #1e1e1e)));
+	color: var(--sgs-buybox-cta-colour, var(--wp--preset--color--text, #fff));
 	cursor: pointer;
+	transition: filter 200ms ease, transform 200ms ease;
+}
+
+.sgs-buybox .buybox__add-to-cart:hover:not([disabled]) {
+	filter: brightness(0.94);
+}
+
+.sgs-buybox .buybox__add-to-cart:focus-visible {
+	outline: 2px solid var(--wp--preset--color--text, currentColor);
+	outline-offset: 2px;
 }
 
 .sgs-buybox .buybox__add-to-cart[disabled] {
 	opacity: 0.6;
 	cursor: progress;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-buybox .buybox__add-to-cart {
+		transition: none;
+	}
 }
 
 .sgs-buybox .buybox__cart-icon {

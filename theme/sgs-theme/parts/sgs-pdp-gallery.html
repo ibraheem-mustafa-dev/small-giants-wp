@@ -1,11 +1,6 @@
-<!-- wp:woocommerce/product-gallery {"isDescendentOfSingleProductBlock":true,"isDescendentOfSingleProductTemplate":true} -->
-<div class="wp-block-woocommerce-product-gallery woocommerce-product-gallery">
-
-	<!-- wp:woocommerce/product-gallery-large-image {"isDescendentOfSingleProductBlock":true} -->
-		<!-- wp:woocommerce/product-gallery-large-image-next-previous /-->
-	<!-- /wp:woocommerce/product-gallery-large-image -->
-
-	<!-- wp:woocommerce/product-gallery-thumbnails {"isDescendentOfSingleProductBlock":true} /-->
-
-</div>
-<!-- /wp:woocommerce/product-gallery -->
+<!-- FR-30-0 fallback executed 2026-06-11: the Beta woocommerce/product-gallery
+     rendered an empty large-image shell on WC 10.8.1 (inner-blocks div empty,
+     only the lightbox dialog emitted — root-caused on the live canary). Swapped
+     to the stable classic gallery block per the dependency manifest's documented
+     fallback; zoom/lightbox/slider come from the theme supports in functions.php. -->
+<!-- wp:woocommerce/product-image-gallery /-->
