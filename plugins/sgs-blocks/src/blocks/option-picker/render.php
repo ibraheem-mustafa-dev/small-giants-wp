@@ -53,6 +53,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 
 $label                = $attributes['label'] ?? __( 'Choose an option', 'sgs-blocks' );
 $show_label           = $attributes['showLabel'] ?? true;
+$label_font_size      = $attributes['labelFontSize'] ?? '';
+$label_colour         = $attributes['labelColour'] ?? '';
 $option_items         = $attributes['optionItems'] ?? array();
 $default_selected     = $attributes['defaultSelected'] ?? '';
 $content_impact       = $attributes['contentImpact'] ?? array();
@@ -239,11 +241,25 @@ if ( '' !== $swatch_taxonomy ) {
 
 /* ── Build $inner_html: legend + options div (data attrs stay here) ──────── */
 
+// C7: optional per-label typography — font-size (raw CSS) + colour (token or hex).
+// Inline on the visible <legend> so it beats the class-level default in style.css.
+$label_style_parts = array();
+if ( '' !== $label_font_size ) {
+	$label_style_parts[] = 'font-size:' . $label_font_size;
+}
+if ( '' !== $label_colour ) {
+	$label_style_parts[] = 'color:' . sgs_colour_value( $label_colour );
+}
+$label_style_attr = ! empty( $label_style_parts )
+	? ' style="' . esc_attr( implode( ';', $label_style_parts ) ) . '"'
+	: '';
+
 // Legend — visible or screen-reader-only.
 if ( $show_label ) {
 	$legend_html = sprintf(
-		'<legend id="%s" class="sgs-option-picker__label">%s</legend>',
+		'<legend id="%s" class="sgs-option-picker__label"%s>%s</legend>',
 		esc_attr( $legend_id ),
+		$label_style_attr,
 		esc_html( $label )
 	);
 } else {

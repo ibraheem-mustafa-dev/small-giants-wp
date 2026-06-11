@@ -54,6 +54,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		label,
 		showLabel,
+		labelFontSize,
+		labelColour,
 		optionItems,
 		defaultSelected,
 		pillStyle,
@@ -200,6 +202,29 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
+					{ showLabel && (
+						<>
+							<TextControl
+								label={ __( 'Label font size', 'sgs-blocks' ) }
+								help={ __(
+									'Any CSS size, e.g. 18px or 1.2rem. Leave empty for the theme default.',
+									'sgs-blocks'
+								) }
+								value={ labelFontSize }
+								onChange={ ( val ) =>
+									setAttributes( { labelFontSize: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<DesignTokenPicker
+								label={ __( 'Label colour', 'sgs-blocks' ) }
+								value={ labelColour }
+								onChange={ ( val ) =>
+									setAttributes( { labelColour: val } )
+								}
+							/>
+						</>
+					) }
 				</PanelBody>
 
 				{ /* Options repeater */ }
@@ -453,7 +478,17 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ /* ── Canvas preview ───────────────────────────────────── */ }
 			<fieldset { ...blockProps } style={ { ...blockProps.style, ...previewVars } }>
 				{ showLabel ? (
-					<legend className="sgs-option-picker__label">
+					<legend
+						className="sgs-option-picker__label"
+						style={ {
+							...( labelFontSize
+								? { fontSize: labelFontSize }
+								: {} ),
+							...( labelColour
+								? { color: colourVar( labelColour ) }
+								: {} ),
+						} }
+					>
 						{ label || __( 'Choose an option', 'sgs-blocks' ) }
 					</legend>
 				) : (
