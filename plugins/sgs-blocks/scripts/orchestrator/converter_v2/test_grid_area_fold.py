@@ -132,3 +132,112 @@ class TestGridItemAreas(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestExpandBoxShorthand(unittest.TestCase):
+    """_expand_box_shorthand — CSS 1-4 value expansion, paren-aware."""
+
+    def test_three_value(self):
+        from convert import _expand_box_shorthand
+        out = _expand_box_shorthand({"padding": "28px 20px 40px"}, "padding")
+        self.assertEqual(out, {"padding-top": "28px", "padding-right": "20px",
+                               "padding-bottom": "40px", "padding-left": "20px"})
+
+    def test_two_value(self):
+        from convert import _expand_box_shorthand
+        out = _expand_box_shorthand({"padding": "56px 48px"}, "padding")
+        self.assertEqual(out["padding-top"], "56px")
+        self.assertEqual(out["padding-left"], "48px")
+
+    def test_one_and_four(self):
+        from convert import _expand_box_shorthand
+        self.assertEqual(_expand_box_shorthand({"padding": "8px"}, "padding")["padding-left"], "8px")
+        out = _expand_box_shorthand({"padding": "1px 2px 3px 4px"}, "padding")
+        self.assertEqual((out["padding-top"], out["padding-right"], out["padding-bottom"], out["padding-left"]),
+                         ("1px", "2px", "3px", "4px"))
+
+    def test_calc_var_paren_aware(self):
+        from convert import _expand_box_shorthand
+        out = _expand_box_shorthand({"padding": "calc(1px + 2px) var(--x, 3px)"}, "padding")
+        self.assertEqual(out["padding-top"], "calc(1px + 2px)")
+        self.assertEqual(out["padding-right"], "var(--x, 3px)")
+
+    def test_existing_longhand_wins(self):
+        from convert import _expand_box_shorthand
+        out = _expand_box_shorthand({"padding": "8px", "padding-top": "99px"}, "padding")
+        self.assertEqual(out["padding-top"], "99px")  # longhand is more specific
+
+    def test_no_shorthand_noop(self):
+        from convert import _expand_box_shorthand
+        d = {"margin-top": "4px"}
+        self.assertEqual(_expand_box_shorthand(d, "padding"), d)
+
+
+class TestAttrForAreaProperty(unittest.TestCase):
+    """db.attr_for_area_property — real-DB per-area resolution (the hero)."""
+
+    def test_hero_content_padding(self):
+        import db_lookup as db
+        self.assertEqual(db.attr_for_area_property("sgs/hero", "content", "padding-top"),
+                         "contentPaddingTop")
+
+    def test_hero_media_padding(self):
+        import db_lookup as db
+        self.assertEqual(db.attr_for_area_property("sgs/hero", "media", "padding-top"),
+                         "mediaPaddingTop")
+
+    def test_miss_returns_none(self):
+        import db_lookup as db
+        self.assertIsNone(db.attr_for_area_property("sgs/hero", "zzz", "padding-top"))
+        self.assertIsNone(db.attr_for_area_property("sgs/hero", "content", "flex-direction"))
+
+
+class TestRouteAreaCssEndToEnd(unittest.TestCase):
+    """_route_area_css_to_block_attrs — final attr VALUES + TYPES (qc finding 4)."""
+
+    def _run(self, css):
+        from convert import _route_area_css_to_block_attrs
+        node = _tag('<div class="sgs-hero__content"></div>', "div")
+        attrs = {}
+        _route_area_css_to_block_attrs(node, "content", "sgs/hero", attrs, css)
+        return attrs
+
+    def test_hero_three_tier_numbers_and_unit(self):
+        attrs = self._run({
+            ".sgs-hero__content": {"padding": "28px 20px 40px"},
+            "@media (min-width: 768px)::.sgs-hero__content": {"padding": "56px 48px"},
+            "@media (min-width: 1280px)::.sgs-hero__content": {"padding": "72px 64px"},
+        })
+        # base attr = desktop (72/64); Tablet = 56/48; Mobile = draft base 28/20/40/20
+        self.assertEqual(attrs["contentPaddingTop"], 72)
+        self.assertEqual(attrs["contentPaddingRight"], 64)
+        self.assertEqual(attrs["contentPaddingTopTablet"], 56)
+        self.assertEqual(attrs["contentPaddingLeftTablet"], 48)
+        self.assertEqual(attrs["contentPaddingTopMobile"], 28)
+        self.assertEqual(attrs["contentPaddingBottomMobile"], 40)
+        self.assertEqual(attrs["contentPaddingUnit"], "px")
+        for k, v in attrs.items():
+            if k.startswith("contentPadding") and k != "contentPaddingUnit":
+                self.assertIsInstance(v, (int, float), f"{k} must be numeric, got {type(v)}")
+
+    def test_rem_unit_captured_not_truncated(self):
+        attrs = self._run({".sgs-hero__content": {"padding-top": "1.5rem"}})
+        self.assertEqual(attrs["contentPaddingTopMobile"], 1.5)
+        self.assertEqual(attrs["contentPaddingUnit"], "rem")
+
+    def test_calc_unrepresentable_in_number_attr_dropped_flagged(self):
+        attrs = self._run({".sgs-hero__content": {"padding-top": "calc(1px + 2vw)"}})
+        self.assertNotIn("contentPaddingTopMobile", attrs)  # gap-candidate, not corruption
+
+    def test_width_family_excluded_no_collision(self):
+        attrs = self._run({".sgs-hero__content": {"width": "50%", "max-width": "600px"}})
+        self.assertNotIn("contentWidth", attrs)  # collision guard (qc finding 3)
+
+    def test_tablet_only_draft_inherits_to_desktop(self):
+        attrs = self._run({
+            ".sgs-hero__content": {"padding-top": "10px"},
+            "@media (min-width: 768px)::.sgs-hero__content": {"padding-top": "30px"},
+        })
+        self.assertEqual(attrs["contentPaddingTop"], 30)        # desktop inherits @768
+        self.assertEqual(attrs["contentPaddingTopTablet"], 30)
+        self.assertEqual(attrs["contentPaddingTopMobile"], 10)

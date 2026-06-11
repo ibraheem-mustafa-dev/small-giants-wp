@@ -2547,6 +2547,76 @@ def attr_for_layer_property(
     return None
 
 
+@functools.lru_cache(maxsize=512)
+def attr_for_area_property(
+    block_slug: str,
+    area: str,
+    css_property: str,
+) -> "str | None":
+    """Per-block GRID-PER-AREA → attr resolver (the `<areaName>+<suffix>` layer).
+
+    Bean design steer 2026-06-11 (next-session-prompt Task 3 / FR-22-21 per-area
+    grid layer candidate): a composite that renders named grid areas itself
+    (hero: "content" / "media") exposes per-AREA styling attrs whose names are
+    DERIVABLE as ``areaName + PropertySuffix`` — ``content``+``PaddingTop`` →
+    ``contentPaddingTop``; ``media``+``PaddingTop`` → ``mediaPaddingTop``.
+    NOTE the deliberate distinction from the CONTENT layer: the hero's
+    ``contentPadding*`` is padding on the grid COLUMN whose area name is
+    "content" — NOT the container-mirror's content-width band (name collision;
+    Bean caught it 2026-06-11).
+
+    Same name-free mechanism as ``attr_for_layer_property`` (D194): the suffix
+    comes from ``property_suffixes`` for the css_property; the candidate is
+    checked against the block's REAL registered attrs; first match wins; None
+    on miss (caller logs a gap-candidate — flag-not-drop). Universal: works for
+    any block + any area name with zero per-block intelligence.
+    """
+    if not block_slug or not area or not css_property:
+        return None
+
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT suffix FROM property_suffixes "
+            "WHERE css_property = ? ORDER BY rowid",
+            (css_property,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return None
+    finally:
+        conn.close()
+
+    if not rows:
+        return None
+
+    block_attr_map = block_attrs(block_slug)
+    if not block_attr_map:
+        return None
+
+    area_prefix = area[0].lower() + area[1:]
+    for (suffix,) in rows:
+        if not suffix:
+            continue
+        candidate = area_prefix + suffix[0].upper() + suffix[1:]
+        if candidate in block_attr_map:
+            _trace(
+                "attr_for_area_property_hit",
+                block_slug=block_slug,
+                area=area,
+                css_property=css_property,
+                attr_name=candidate,
+            )
+            return candidate
+
+    _trace(
+        "attr_for_area_property_miss",
+        block_slug=block_slug,
+        area=area,
+        css_property=css_property,
+    )
+    return None
+
+
 @functools.lru_cache(maxsize=256)
 def child_block_for_parent_token(
     parent_block: str,

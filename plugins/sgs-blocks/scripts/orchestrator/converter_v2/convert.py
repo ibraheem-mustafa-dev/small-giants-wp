@@ -2077,6 +2077,210 @@ def _grid_item_areas(node: "Tag", css_rules: dict) -> frozenset[str]:
     return frozenset(names)
 
 
+def _expand_box_shorthand(decls: dict[str, str], prop: str) -> dict[str, str]:
+    """Expand a `padding`/`margin` SHORTHAND into longhands (CSS 1-4 value rules).
+
+    Returns a NEW dict with the shorthand replaced by -top/-right/-bottom/-left
+    (existing longhands win — they are more specific in the source). Paren-aware
+    top-level token split keeps calc()/var(..., ...) values intact. Needed
+    because per-area / CONTENT destinations register LONGHAND attrs
+    (contentPaddingTop) while drafts write shorthand (`padding: 28px 20px 40px`)
+    — the literal-property DB lookup otherwise misses (the H-B mechanism,
+    2026-06-11).
+    """
+    if prop not in decls:
+        return decls
+    raw = _strip_important(decls[prop]).strip()
+    if not raw:
+        return decls
+    tokens: list[str] = []
+    buf, depth_p = "", 0
+    for ch in raw:
+        if ch == "(":
+            depth_p += 1
+        elif ch == ")":
+            depth_p -= 1
+        if ch.isspace() and depth_p == 0:
+            if buf:
+                tokens.append(buf)
+                buf = ""
+        else:
+            buf += ch
+    if buf:
+        tokens.append(buf)
+    if not 1 <= len(tokens) <= 4:
+        return decls
+    t = tokens
+    if len(t) == 1:
+        top = right = bottom = left = t[0]
+    elif len(t) == 2:
+        top, bottom = t[0], t[0]
+        right, left = t[1], t[1]
+    elif len(t) == 3:
+        top, right, bottom = t[0], t[1], t[2]
+        left = t[1]
+    else:
+        top, right, bottom, left = t
+    out = dict(decls)
+    del out[prop]
+    for side, val in (("top", top), ("right", right), ("bottom", bottom), ("left", left)):
+        out.setdefault(f"{prop}-{side}", val)
+    return out
+
+
+def _route_area_css_to_block_attrs(
+    child_node: "Tag",
+    area: str,
+    owning_block: str,
+    parent_attrs: dict,
+    css_rules: dict,
+) -> None:
+    """GRID-PER-AREA routing (Bean steer 2026-06-11): route a dissolving named
+    grid item's own CSS to the owning block's `<areaName>+<suffix>` attrs.
+
+    The hero case: `.sgs-hero__content { padding: 28px 20px 40px }` (+ @768 /
+    @1280 overrides) routes to contentPaddingTop/Right/Bottom/Left at the right
+    responsive tiers; a media column's equivalents land on mediaPadding* etc.
+    NOT the container-mirror CONTENT layer — this is padding on the grid COLUMN
+    whose AREA NAME is "content" (name collision; Bean caught it 2026-06-11).
+
+    Tier mapping (SGS 3-tier model — base attr = DESKTOP; Tablet/Mobile are
+    overrides — vs the draft's MOBILE-FIRST cascade):
+        draft base (no @media)     → attr + 'Mobile'
+        draft @768 (Tablet)        → attr + 'Tablet'
+        draft @1024/1280 (Desktop) → attr (unsuffixed base)
+    Missing higher draft tiers inherit downward (mobile-first semantics): the
+    base attr takes the HIGHEST declared value (Desktop > Tablet > base) and
+    Tablet takes (@768 else draft base), so the painted cascade matches the
+    draft at every width. A tier whose attr name is unregistered on the block
+    is traced as a gap-candidate (flag-not-drop), never silently dropped.
+
+    Excluded: _CROSS_NODE_EXCLUDED_PROPS (display/grid-template-* — R-22-6),
+    `grid-area` (the structural assignment, owned by render.php) and custom
+    properties.
+    """
+    base_decls, bp_decls = _collect_css_decls_for_element(child_node, css_rules)
+    if not base_decls and not bp_decls:
+        return
+
+    # Shorthand expansion in every tier (the H-B miss).
+    for prop in ("padding", "margin"):
+        base_decls = _expand_box_shorthand(base_decls, prop)
+        bp_decls = {k: _expand_box_shorthand(v, prop) for k, v in bp_decls.items()}
+
+    # width/height excluded (qc-council 2026-06-11 finding 3): `content`+`Width`
+    # resolves to `contentWidth` — the container-mirror BAND attr, not a per-area
+    # column width (the exact name collision this router's docstring warns about).
+    # Grid columns are sized by the parent's template, never per-item width.
+    _area_excluded = _CROSS_NODE_EXCLUDED_PROPS | {"grid-area", "width", "height",
+                                                   "max-width", "min-width",
+                                                   "max-height", "min-height"}
+
+    all_props: set[str] = set(base_decls)
+    for tier in bp_decls.values():
+        all_props.update(tier)
+
+    tab = bp_decls.get("Tablet", {})
+    desk = bp_decls.get("Desktop", {})
+    mob_override = bp_decls.get("Mobile", {})
+    block_attr_names = db.block_attrs(owning_block) or {}
+
+    for css_prop in sorted(all_props):
+        if css_prop in _area_excluded or css_prop.startswith("--"):
+            continue
+        attr_base = db.attr_for_area_property(owning_block, area, css_prop)
+        if attr_base is None:
+            source_class = next(
+                (c for c in (child_node.get("class", []) or []) if c.startswith("sgs-")),
+                area,
+            )
+            _trace(
+                "cross_node_gap_candidate",
+                owning_block=owning_block,
+                element_token=area,
+                css_property=css_prop,
+                reason="no_area_attr",
+                source_class=source_class,
+            )
+            continue
+
+        draft_base = base_decls.get(css_prop)
+        draft_tab = tab.get(css_prop)
+        draft_desk = desk.get(css_prop)
+        draft_mob = mob_override.get(css_prop)
+
+        tier_values: list[tuple[str, "str | None"]] = [
+            ("Mobile", draft_mob or draft_base),
+            ("Tablet", draft_tab or draft_base),
+            ("", draft_desk or draft_tab or draft_base),  # base attr = desktop
+        ]
+        # Type-aware store (qc-council 2026-06-11 BLOCKER): per-area attrs are
+        # number-typed (render.php does `absint($v) . $unit` with a shared
+        # `<family>Unit` companion). Storing the raw "28px" string works only by
+        # px-luck — "1.5rem" would absint to 1px. Split number+unit per the
+        # established convention and set the family Unit attr once.
+        _attr_meta = block_attr_names.get(attr_base) or {}
+        _is_number = (_attr_meta.get("attr_type") == "number")
+        _family_unit_attr = re.sub(r"(Top|Right|Bottom|Left)$", "", attr_base) + "Unit"
+        for tier_suffix, value in tier_values:
+            if value is None:
+                continue
+            dest = f"{attr_base}{tier_suffix}" if tier_suffix else attr_base
+            if dest not in block_attr_names:
+                _trace(
+                    "cross_node_gap_candidate",
+                    owning_block=owning_block,
+                    element_token=area,
+                    css_property=css_prop,
+                    reason="area_attr_tier_missing",
+                    attr_name=dest,
+                )
+                continue
+            raw_val = _strip_important(value).strip()
+            if _is_number:
+                _num, _unit = _split_value_unit(raw_val)
+                if _num is None:
+                    # calc()/var()/keyword — unrepresentable in a number attr.
+                    _trace(
+                        "cross_node_gap_candidate",
+                        owning_block=owning_block,
+                        element_token=area,
+                        css_property=css_prop,
+                        reason="area_attr_number_unparseable",
+                        attr_name=dest,
+                        value=raw_val,
+                    )
+                    continue
+                store_val = int(_num) if float(_num).is_integer() else _num
+                if _unit and _family_unit_attr in block_attr_names:
+                    _existing_unit = parent_attrs.get(_family_unit_attr)
+                    if _existing_unit is None:
+                        parent_attrs[_family_unit_attr] = _unit
+                    elif _existing_unit != _unit:
+                        _trace(
+                            "cross_node_gap_candidate",
+                            owning_block=owning_block,
+                            element_token=area,
+                            css_property=css_prop,
+                            reason="area_attr_mixed_units",
+                            attr_name=dest,
+                            value=raw_val,
+                        )
+                        continue
+            else:
+                store_val = raw_val
+            parent_attrs.setdefault(dest, store_val)
+            _trace(
+                "cross_node_css_lifted",
+                owning_block=owning_block,
+                element_token=area,
+                css_property=css_prop,
+                layer="AREA",
+                dest_attr=dest,
+                value=store_val,
+            )
+
+
 def _route_interior_css_to_parent_slot(
     child_node: "Tag",
     element_token: "str | None",
@@ -4503,7 +4707,11 @@ def _process_container_children(
     # sole-child gate untouched (brand b5 protection).
     _grid_areas = _grid_item_areas(node, css_rules)
     fold_net_sole = False
-    if not fold_eligible and _grid_areas and _parent_has_scalar_media:
+    if not fold_eligible and _grid_areas and parent_slug:
+        # UNIVERSAL (Bean 2026-06-11 — the prior `_parent_has_scalar_media`
+        # precondition was a carve-out; the consumability check below already
+        # requires a per-child scalar-media attr, so the gate adds nothing but
+        # narrowness). Count the element children rule 0 will NOT consume.
         _remaining_n = 0
         for _ec in element_children:
             _ec_classes = [c for c in (_ec.get("class", []) or []) if c.startswith("sgs-")]
@@ -4515,6 +4723,7 @@ def _process_container_children(
                     break
             _consumable = (
                 _ec_element is not None
+                and _parent_has_scalar_media
                 and db.scalar_media_attr_for(parent_slug, _ec_element) is not None
                 and bool(_ec.find_all("img"))
             )
@@ -4617,11 +4826,46 @@ def _process_container_children(
             and _child_element is not None
             and _child_element.lower() in _grid_areas
         )
-        if cslug is None and csgs and (fold_eligible or _is_grid_net_sole_item):
-            # rule 2 — fold this pass-through shell's layout into the parent container.
-            # Reached either as the SOLE element child (FR-22-4.1 count gate) or as the
-            # sole-REMAINING, area-NAMED grid item of a scalar-media grid parent
-            # (net-of-rule-0 grid awareness, 2026-06-11).
+        if cslug is None and csgs and _is_grid_net_sole_item and not fold_eligible:
+            # ── GRID-PER-AREA dissolve (universal, 2026-06-11) ──
+            # The sole-remaining, area-NAMED grid item of a grid parent dissolves
+            # into the composite; its CSS routes to the owning block's per-AREA
+            # attrs (`<areaName>+<suffix>` — contentPadding*, mediaPadding*) at
+            # the right responsive tiers. NEITHER _fold_layout_into_attrs NOR
+            # the 3-layer cross-node router runs here: the PARENT carries the
+            # grid (the item carries no grid to lift) and the 3-layer router was
+            # the H-B mis-route (padding → gridItemPadding/outer instead of the
+            # per-area attrs render.php actually consumes).
+            _route_area_css_to_block_attrs(
+                child_node=child,
+                area=_child_element,
+                owning_block=parent_slug,
+                parent_attrs=container_attrs,
+                css_rules=css_rules,
+            )
+            # Content-band max-width lift (qc-council 2026-06-11 finding 2): the
+            # per-area router deliberately EXCLUDES width-family props (the
+            # contentWidth name collision), but the dissolving sole-remaining
+            # item IS the section's content band — its own max-width is the
+            # band cap and must not vanish. Route it via the CONTENT layer
+            # resolver (string attr, established path), preserving the old
+            # fold's contentWidth semantics.
+            _band_base, _ = _collect_css_decls_for_element(child, css_rules)
+            _band_mw = _band_base.get("max-width")
+            if _band_mw:
+                _band_attr = db.attr_for_layer_property(parent_slug, "CONTENT", "max-width")
+                if _band_attr:
+                    container_attrs.setdefault(_band_attr, _strip_important(_band_mw).strip())
+            _trace("walker_branch_taken", branch="dissolve_grid_area_item",
+                   node_classes=cclasses, depth=depth + 1, area=_child_element)
+            for gc in child.children:
+                r = walk(gc, css_rules, variation_buf, depth=depth + 2, is_top_level=False,
+                         parent_block=parent_slug)
+                if r:
+                    out.append(r)
+        elif cslug is None and csgs and fold_eligible:
+            # rule 2 — fold this SOLE pass-through shell's layout into the parent
+            # container (FR-22-4.1 count gate — unchanged classic path).
             _fold_layout_into_attrs(child, cclasses, container_attrs, css_rules)
             # FR-22-5.3 cross-node CSS routing (Commit 2, 2026-06-10): after the fold
             # lifts grid/layout attrs, also route this slug-None wrapper's structural
@@ -4637,9 +4881,7 @@ def _process_container_children(
                     parent_attrs=container_attrs,
                     css_rules=css_rules,
                 )
-            _trace("walker_branch_taken",
-                   branch=("fold_net_sole_grid_item" if (_is_grid_net_sole_item and not fold_eligible)
-                           else "fold_into_container"),
+            _trace("walker_branch_taken", branch="fold_into_container",
                    node_classes=cclasses, depth=depth + 1)
             # rule 4 — the folded wrapper's children resolve below it
             for gc in child.children:
