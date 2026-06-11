@@ -12,6 +12,7 @@ import {
 	Button,
 	TextControl,
 	SelectControl,
+	TextareaControl,
 	ToggleControl,
 	Notice,
 } from '@wordpress/components';
@@ -45,6 +46,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		videoControls,
 		videoPlaysInline,
 		videoLazyLoad,
+		// SVG.
+		svgContent,
+		svgAnimation,
+		svgAnimationSpeed,
 	} = attributes;
 
 	const blockProps = useBlockProps();
@@ -54,6 +59,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	// -------------------------------------------------------------------------
 	const isImage = 'image' === mediaType || ! mediaType;
 	const isVideo = 'video' === mediaType;
+	const isSvg   = 'svg' === mediaType;
 
 	const onSelectImage = ( media ) => {
 		setAttributes( {
@@ -101,6 +107,12 @@ export default function Edit( { attributes, setAttributes } ) {
 					>
 						{ __( 'Video', 'sgs-blocks' ) }
 					</Button>
+					<Button
+						variant={ isSvg ? 'primary' : 'secondary' }
+						onClick={ () => setAttributes( { mediaType: 'svg' } ) }
+					>
+						{ __( 'SVG / Animation', 'sgs-blocks' ) }
+					</Button>
 				</ButtonGroup>
 			</PanelBody>
 
@@ -127,6 +139,47 @@ export default function Edit( { attributes, setAttributes } ) {
 					>
 						{ __( 'Remove Image', 'sgs-blocks' ) }
 					</Button>
+				</PanelBody>
+			) }
+
+			{ /* SVG controls */ }
+			{ isSvg && (
+				<PanelBody title={ __( 'SVG / Animation', 'sgs-blocks' ) } initialOpen={ true }>
+					<p className="components-base-control__help">
+						{ __( 'Paste SVG markup to render it as a foreground content element. Animations use pure CSS — no JavaScript required.', 'sgs-blocks' ) }
+					</p>
+					<TextareaControl
+						label={ __( 'SVG code', 'sgs-blocks' ) }
+						value={ svgContent || '' }
+						onChange={ ( value ) => setAttributes( { svgContent: value } ) }
+						help={ __( 'Paste your <svg>…</svg> markup here.', 'sgs-blocks' ) }
+						rows={ 8 }
+					/>
+					<SelectControl
+						label={ __( 'Animation', 'sgs-blocks' ) }
+						value={ svgAnimation || 'none' }
+						options={ [
+							{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+							{ label: __( 'Pulse', 'sgs-blocks' ), value: 'pulse' },
+							{ label: __( 'Float', 'sgs-blocks' ), value: 'float' },
+							{ label: __( 'Wave', 'sgs-blocks' ), value: 'wave' },
+						] }
+						onChange={ ( value ) => setAttributes( { svgAnimation: value } ) }
+						__nextHasNoMarginBottom
+					/>
+					{ svgAnimation && 'none' !== svgAnimation && (
+						<SelectControl
+							label={ __( 'Animation speed', 'sgs-blocks' ) }
+							value={ svgAnimationSpeed || 'medium' }
+							options={ [
+								{ label: __( 'Slow', 'sgs-blocks' ), value: 'slow' },
+								{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
+								{ label: __( 'Fast', 'sgs-blocks' ), value: 'fast' },
+							] }
+							onChange={ ( value ) => setAttributes( { svgAnimationSpeed: value } ) }
+							__nextHasNoMarginBottom
+						/>
+					) }
 				</PanelBody>
 			) }
 
@@ -281,6 +334,48 @@ export default function Edit( { attributes, setAttributes } ) {
 			<figure { ...blockProps }>
 				{ inspectorControls }
 				<img src={ imageUrl } alt={ imageAlt } className="sgs-media__img" />
+			</figure>
+		);
+	}
+
+	// -------------------------------------------------------------------------
+	// Canvas — SVG mode.
+	// -------------------------------------------------------------------------
+	if ( isSvg ) {
+		if ( ! svgContent ) {
+			return (
+				<div { ...blockProps }>
+					{ inspectorControls }
+					<div className="components-placeholder">
+						<div className="components-placeholder__label">
+							{ __( 'SGS Media — SVG / Animation', 'sgs-blocks' ) }
+						</div>
+						<div className="components-placeholder__instructions">
+							{ __( 'Paste your SVG markup in the block settings panel.', 'sgs-blocks' ) }
+						</div>
+					</div>
+				</div>
+			);
+		}
+
+		// Editor preview: render SVG inline via dangerouslySetInnerHTML.
+		// This is editor-only — the frontend uses the PHP-sanitised path (render.php).
+		const svgClass = [
+			'sgs-media__svg',
+			svgAnimation && 'none' !== svgAnimation
+				? `sgs-media__svg--${ svgAnimation } sgs-media__svg--speed-${ svgAnimationSpeed || 'medium' }`
+				: '',
+		].filter( Boolean ).join( ' ' );
+
+		return (
+			<figure { ...blockProps }>
+				{ inspectorControls }
+				{ /* eslint-disable-next-line react/no-danger */ }
+				<div
+					className={ svgClass }
+					aria-hidden="true"
+					dangerouslySetInnerHTML={ { __html: svgContent } }
+				/>
 			</figure>
 		);
 	}

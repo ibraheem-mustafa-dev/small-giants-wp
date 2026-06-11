@@ -66,9 +66,9 @@ a.sgs-trust-bar__badge:focus-visible {
 	flex-shrink: 0;
 	width: var(--sgs-trust-badge-circle-size, 44px);
 	height: var(--sgs-trust-badge-circle-size, 44px);
-	border-radius: 50%;
+	border-radius: var(--sgs-trust-badge-circle-radius, 50%);
 	background-color: var(--sgs-trust-badge-circle-bg, var(--wp--preset--color--surface, #ffffff));
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+	box-shadow: var(--sgs-trust-badge-circle-shadow, 0 1px 2px rgba(0, 0, 0, 0.06));
 }
 
 .sgs-trust-bar__circle svg {
@@ -82,7 +82,7 @@ a.sgs-trust-bar__badge:focus-visible {
 }
 
 .sgs-trust-bar--icon-circle .sgs-trust-bar__label {
-	font-size: clamp(0.75rem, 1.2vw, 0.875rem);
+	font-size: var(--sgs-trust-badge-label-font-size, clamp(0.75rem, 1.2vw, 0.875rem));
 	font-weight: 500;
 	line-height: 1.35;
 	color: var(--sgs-trust-badge-text-colour, var(--wp--preset--color--text, #1E1E1E));
@@ -90,7 +90,7 @@ a.sgs-trust-bar__badge:focus-visible {
 
 @media (min-width: 1024px) {
 	.sgs-trust-bar--icon-circle .sgs-trust-bar__label {
-		font-size: 0.875rem;
+		font-size: var(--sgs-trust-badge-label-font-size, 0.875rem);
 	}
 }
 

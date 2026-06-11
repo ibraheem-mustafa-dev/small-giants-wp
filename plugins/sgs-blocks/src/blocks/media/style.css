@@ -53,3 +53,113 @@
 	min-width: 44px;
 	min-height: 44px;
 }
+
+/* ===== SVG foreground mode ===== */
+
+/* Base SVG wrapper — fills the figure, displays block so it takes natural height */
+.wp-block-sgs-media .sgs-media__svg {
+	display: block;
+	width: 100%;
+	line-height: 0; /* collapse whitespace-induced gap below inline SVG */
+}
+
+.wp-block-sgs-media .sgs-media__svg svg {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+/* ===== SVG animations — scoped to .sgs-media, no collision with container keyframes ===== */
+/* Gated inside prefers-reduced-motion: no-preference to respect the user's motion setting.
+   This mirrors the identical pattern used in sgs/container for bgSvg animations. */
+@media ( prefers-reduced-motion: no-preference ) {
+
+	/* Animation: Pulse */
+	@keyframes sgs-media-svg-pulse {
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.5;
+		}
+	}
+
+	.wp-block-sgs-media .sgs-media__svg--pulse {
+		animation: sgs-media-svg-pulse infinite;
+	}
+
+	.wp-block-sgs-media .sgs-media__svg--pulse.sgs-media__svg--speed-slow {
+		animation-duration: 5s;
+	}
+
+	.wp-block-sgs-media .sgs-media__svg--pulse.sgs-media__svg--speed-medium {
+		animation-duration: 3s;
+	}
+
+	.wp-block-sgs-media .sgs-media__svg--pulse.sgs-media__svg--speed-fast {
+		animation-duration: 1.5s;
+	}
+
+	/* Animation: Float */
+	@keyframes sgs-media-svg-float {
+		0%,
+		100% {
+			transform: translateY( 0 );
+		}
+		50% {
+			transform: translateY( -10px );
+		}
+	}
+
+	.wp-block-sgs-media .sgs-media__svg--float {
+		animation: sgs-media-svg-float infinite ease-in-out;
+	}
+
+	.wp-block-sgs-media .sgs-media__svg--float.sgs-media__svg--speed-slow {
+		animation-duration: 6s;
+	}
+
+	.wp-block-sgs-media .sgs-media__svg--float.sgs-media__svg--speed-medium {
+		animation-duration: 4s;
+	}
+
+	.wp-block-sgs-media .sgs-media__svg--float.sgs-media__svg--speed-fast {
+		animation-duration: 2s;
+	}
+
+	/* Animation: Wave */
+	@keyframes sgs-media-svg-wave {
+		0%,
+		100% {
+			transform: scale( 1 ) rotate( 0deg );
+		}
+		25% {
+			transform: scale( 1.05 ) rotate( 1deg );
+		}
+		50% {
+			transform: scale( 1 ) rotate( 0deg );
+		}
+		75% {
+			transform: scale( 1.05 ) rotate( -1deg );
+		}
+	}
+
+	.wp-block-sgs-media .sgs-media__svg--wave {
+		animation: sgs-media-svg-wave infinite ease-in-out;
+		transform-origin: center;
+	}
+
+	.wp-block-sgs-media .sgs-media__svg--wave.sgs-media__svg--speed-slow {
+		animation-duration: 8s;
+	}
+
+	.wp-block-sgs-media .sgs-media__svg--wave.sgs-media__svg--speed-medium {
+		animation-duration: 5s;
+	}
+
+	.wp-block-sgs-media .sgs-media__svg--wave.sgs-media__svg--speed-fast {
+		animation-duration: 3s;
+	}
+
+} /* end prefers-reduced-motion: no-preference */

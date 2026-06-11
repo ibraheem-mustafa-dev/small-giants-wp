@@ -33,10 +33,13 @@ $label_colour   = $attributes['labelColour'] ?? 'text';
 $label_fontsize = $attributes['labelFontSize'] ?? '';
 
 // --- icon-circle attributes ---------------------------------------------------
-$icon_circle_size = absint( $attributes['iconCircleSize'] ?? 44 );
-$icon_circle_bg   = $attributes['iconCircleBackground'] ?? 'surface';
-$icon_colour      = $attributes['iconColour'] ?? 'primary-dark';
-$text_colour      = $attributes['textColour'] ?? 'text';
+$icon_circle_size          = absint( $attributes['iconCircleSize'] ?? 44 );
+$icon_circle_bg            = $attributes['iconCircleBackground'] ?? 'surface';
+$icon_colour               = $attributes['iconColour'] ?? 'primary-dark';
+$text_colour               = $attributes['textColour'] ?? 'text';
+$icon_circle_border_radius = isset( $attributes['iconCircleBorderRadius'] ) ? (string) $attributes['iconCircleBorderRadius'] : '50%';
+$icon_circle_shadow        = isset( $attributes['iconCircleShadow'] ) ? (string) $attributes['iconCircleShadow'] : 'sm';
+// $label_fontsize is shared; re-used below for the icon-circle --sgs-trust-badge-label-font-size prop.
 // $columns and $gap_slug are no longer needed locally:
 // - grid columns are driven by gridTemplateColumns attr via the shared wrapper helper.
 // - gap is consumed by the shared wrapper helper directly from $attributes['gap'].
@@ -74,6 +77,19 @@ if ( 'icon-circle' === $badge_style ) {
 	}
 	if ( $text_colour_value ) {
 		$styles[] = '--sgs-trust-badge-text-colour: ' . $text_colour_value;
+	}
+	// Border-radius: only emit when it differs from the default (full circle).
+	if ( '' !== $icon_circle_border_radius && '50%' !== $icon_circle_border_radius ) {
+		$safe_radius = preg_replace( '/[^A-Za-z0-9\s%().,\-]/', '', $icon_circle_border_radius );
+		$styles[]    = '--sgs-trust-badge-circle-radius: ' . esc_attr( trim( $safe_radius ) );
+	}
+	// Shadow: only emit when non-empty (empty string = resets to CSS default).
+	if ( '' !== $icon_circle_shadow ) {
+		$styles[] = '--sgs-trust-badge-circle-shadow: var(--wp--preset--shadow--' . esc_attr( sanitize_html_class( $icon_circle_shadow ) ) . ')';
+	}
+	// Label font-size for icon-circle variant (shares $label_fontsize with the other variants' inline style).
+	if ( $label_fontsize ) {
+		$styles[] = '--sgs-trust-badge-label-font-size: ' . esc_attr( sgs_font_size_value( $label_fontsize ) );
 	}
 }
 

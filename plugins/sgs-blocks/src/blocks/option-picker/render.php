@@ -55,6 +55,8 @@ $label                = $attributes['label'] ?? __( 'Choose an option', 'sgs-blo
 $show_label           = $attributes['showLabel'] ?? true;
 $label_font_size      = $attributes['labelFontSize'] ?? '';
 $label_colour         = $attributes['labelColour'] ?? '';
+$label_font_weight    = $attributes['labelFontWeight'] ?? '';
+$label_margin_bottom  = $attributes['labelMarginBottom'] ?? '';
 $option_items         = $attributes['optionItems'] ?? array();
 $default_selected     = $attributes['defaultSelected'] ?? '';
 $content_impact       = $attributes['contentImpact'] ?? array();
@@ -66,6 +68,9 @@ $pill_text_colour     = $attributes['pillTextColour'] ?? '';
 $pill_border_colour   = $attributes['pillBorderColour'] ?? '';
 $pill_sel_bg_colour   = $attributes['pillSelectedBgColour'] ?? '';
 $pill_sel_text_colour = $attributes['pillSelectedTextColour'] ?? '';
+$pill_font_size       = $attributes['pillFontSize'] ?? '';
+$pill_font_weight     = $attributes['pillFontWeight'] ?? '';
+$pill_border_radius   = $attributes['pillBorderRadius'] ?? '';
 
 /* ── Guard: render nothing if no options ─────────────────────────────────── */
 
@@ -159,6 +164,15 @@ if ( $pill_sel_bg_colour ) {
 if ( $pill_sel_text_colour ) {
 	$extra_styles[] = '--sgs-op-sel-text:' . sgs_colour_value( $pill_sel_text_colour );
 }
+if ( '' !== $pill_font_size ) {
+	$extra_styles[] = '--sgs-op-pill-font-size:' . $pill_font_size;
+}
+if ( '' !== $pill_font_weight ) {
+	$extra_styles[] = '--sgs-op-pill-font-weight:' . $pill_font_weight;
+}
+if ( '' !== $pill_border_radius ) {
+	$extra_styles[] = '--sgs-op-pill-radius:' . $pill_border_radius;
+}
 
 /* ── FR-27-B2: resolve WooCommerce attribute taxonomy for swatch lookup ──── */
 
@@ -241,14 +255,21 @@ if ( '' !== $swatch_taxonomy ) {
 
 /* ── Build $inner_html: legend + options div (data attrs stay here) ──────── */
 
-// C7: optional per-label typography — font-size (raw CSS) + colour (token or hex).
-// Inline on the visible <legend> so it beats the class-level default in style.css.
+// C7 + new: optional per-label typography — font-size, font-weight, colour (token or hex),
+// and margin-bottom. Inline on the visible <legend> so it beats the class-level default
+// in style.css. Empty values are skipped so the CSS/token default wins.
 $label_style_parts = array();
 if ( '' !== $label_font_size ) {
 	$label_style_parts[] = 'font-size:' . $label_font_size;
 }
+if ( '' !== $label_font_weight ) {
+	$label_style_parts[] = 'font-weight:' . $label_font_weight;
+}
 if ( '' !== $label_colour ) {
 	$label_style_parts[] = 'color:' . sgs_colour_value( $label_colour );
+}
+if ( '' !== $label_margin_bottom ) {
+	$label_style_parts[] = 'margin-bottom:' . $label_margin_bottom;
 }
 $label_style_attr = ! empty( $label_style_parts )
 	? ' style="' . esc_attr( implode( ';', $label_style_parts ) ) . '"'

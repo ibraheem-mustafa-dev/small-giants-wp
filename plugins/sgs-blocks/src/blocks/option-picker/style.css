@@ -88,8 +88,13 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	border-radius: var(--wp--custom--border-radius--medium, 6px);
-	font-weight: 500;
+	border-radius: var(--sgs-op-pill-radius, var(--wp--custom--border-radius--medium, 6px));
+	font-weight: var(--sgs-op-pill-font-weight, 500);
+	/*
+	 * font-size: editor value wins when set; falls back to per-size-variant
+	 * --sgs-op-pill-font-size-default (set by the size modifier rules below).
+	 */
+	font-size: var(--sgs-op-pill-font-size, var(--sgs-op-pill-font-size-default));
 	line-height: 1;
 	white-space: nowrap;
 	/*
@@ -130,19 +135,25 @@
 
 /* ── Size variants ─────────────────────────────────────────────────── */
 
+/*
+ * Per-size font-size defaults. Each falls back to the size-appropriate preset
+ * token, but the editor-set --sgs-op-pill-font-size always wins because it is
+ * set as a higher-specificity inline CSS var on the root fieldset and cascades
+ * down via the var() reference on .sgs-option-picker__pill above.
+ */
 .sgs-option-picker--small .sgs-option-picker__pill {
 	padding: 6px 12px;
-	font-size: var(--wp--preset--font-size--small, 0.8125rem);
+	--sgs-op-pill-font-size-default: var(--wp--preset--font-size--small, 0.8125rem);
 }
 
 .sgs-option-picker--medium .sgs-option-picker__pill {
 	padding: 8px 16px;
-	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	--sgs-op-pill-font-size-default: var(--wp--preset--font-size--small, 0.875rem);
 }
 
 .sgs-option-picker--large .sgs-option-picker__pill {
 	padding: 10px 20px;
-	font-size: var(--wp--preset--font-size--medium, 1rem);
+	--sgs-op-pill-font-size-default: var(--wp--preset--font-size--medium, 1rem);
 }
 
 /* ================================================================

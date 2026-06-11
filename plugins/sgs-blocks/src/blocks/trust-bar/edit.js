@@ -66,7 +66,7 @@ const AUTO_SCROLL_SPEED_OPTIONS = [
 // ─── Editor sub-components ────────────────────────────────────────────────────
 
 /** Circle wrapper with the actual selected icon for editor preview. */
-function EditorIconCircle( { size, circleBg, iconColour, iconSlug } ) {
+function EditorIconCircle( { size, circleBg, iconColour, iconSlug, borderRadius, boxShadow } ) {
 	return (
 		<span
 			className="sgs-trust-bar__circle"
@@ -74,13 +74,13 @@ function EditorIconCircle( { size, circleBg, iconColour, iconSlug } ) {
 			style={ {
 				width: size,
 				height: size,
-				borderRadius: '50%',
+				borderRadius: borderRadius || '50%',
 				backgroundColor: circleBg || '#ffffff',
 				display: 'inline-flex',
 				alignItems: 'center',
 				justifyContent: 'center',
 				flexShrink: 0,
-				boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
+				boxShadow: boxShadow || '0 1px 2px rgba(0,0,0,0.06)',
 				color: iconColour || 'currentColor',
 			} }
 		>
@@ -200,6 +200,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconCircleSize,
 		iconCircleBackground,
 		iconColour,
+		iconCircleBorderRadius,
+		iconCircleShadow,
 		textColour,
 		columns,
 		gap,
@@ -219,6 +221,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		`sgs-trust-bar--${ badgeSize }`,
 	].join( ' ' );
 
+	const circleRadiusValue = ( iconCircleBorderRadius && iconCircleBorderRadius !== '50%' )
+		? iconCircleBorderRadius
+		: undefined;
+	const circleShadowValue = iconCircleShadow
+		? `var(--wp--preset--shadow--${ iconCircleShadow })`
+		: undefined;
+	const labelFontSizeValue = ( badgeStyle === 'icon-circle' && labelFontSize )
+		? fontSizeVar( labelFontSize )
+		: undefined;
+
 	const blockProps = useBlockProps( {
 		className: blockClassName,
 		style: badgeStyle === 'icon-circle' ? {
@@ -227,6 +239,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			'--sgs-trust-badge-circle-bg': circleBgValue,
 			'--sgs-trust-badge-icon-colour': iconColorValue,
 			'--sgs-trust-badge-text-colour': textColorValue,
+			'--sgs-trust-badge-circle-radius': circleRadiusValue,
+			'--sgs-trust-badge-circle-shadow': circleShadowValue,
+			'--sgs-trust-badge-label-font-size': labelFontSizeValue,
 		} : {},
 	} );
 
@@ -314,6 +329,25 @@ export default function Edit( { attributes, setAttributes } ) {
 							value={ iconCircleBackground }
 							onChange={ ( val ) => setAttributes( { iconCircleBackground: val } ) }
 						/>
+						<TextControl
+							label={ __( 'Icon circle border radius', 'sgs-blocks' ) }
+							value={ iconCircleBorderRadius }
+							onChange={ ( val ) => setAttributes( { iconCircleBorderRadius: val } ) }
+							help={ __( "CSS border-radius, e.g. '50%' (circle), '8px' (rounded square).", 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+						/>
+						<SelectControl
+							label={ __( 'Icon circle shadow', 'sgs-blocks' ) }
+							value={ iconCircleShadow }
+							options={ [
+								{ label: __( 'None', 'sgs-blocks' ),   value: '' },
+								{ label: __( 'Small', 'sgs-blocks' ),  value: 'sm' },
+								{ label: __( 'Medium', 'sgs-blocks' ), value: 'md' },
+								{ label: __( 'Large', 'sgs-blocks' ),  value: 'lg' },
+							] }
+							onChange={ ( val ) => setAttributes( { iconCircleShadow: val } ) }
+							__nextHasNoMarginBottom
+						/>
 						<DesignTokenPicker
 							label={ __( 'Icon colour', 'sgs-blocks' ) }
 							value={ iconColour }
@@ -323,6 +357,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Label colour', 'sgs-blocks' ) }
 							value={ textColour }
 							onChange={ ( val ) => setAttributes( { textColour: val } ) }
+						/>
+						<SelectControl
+							label={ __( 'Label font size', 'sgs-blocks' ) }
+							value={ labelFontSize || '' }
+							options={ FONT_SIZE_OPTIONS }
+							onChange={ ( val ) => setAttributes( { labelFontSize: val } ) }
+							__nextHasNoMarginBottom
 						/>
 					</PanelBody>
 				) }
@@ -467,6 +508,8 @@ export default function Edit( { attributes, setAttributes } ) {
 											circleBg={ circleBgValue }
 											iconColour={ iconColorValue }
 											iconSlug={ item.icon || 'check' }
+											borderRadius={ iconCircleBorderRadius !== '50%' ? iconCircleBorderRadius : undefined }
+											boxShadow={ circleShadowValue }
 										/>
 										<span className="sgs-trust-bar__label" style={ { color: textColorValue } }>
 											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }

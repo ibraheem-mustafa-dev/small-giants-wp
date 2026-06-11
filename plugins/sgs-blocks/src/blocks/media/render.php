@@ -11,6 +11,11 @@
  * mediaType = 'image' (default): image render path with imageUrl / imageId.
  * mediaType = 'video': <video> (internal WP-library or direct MP4) or
  *             <iframe> (YouTube / Vimeo embed) depending on the resolved URL.
+ * mediaType = 'svg': inline sanitised SVG with optional CSS animation (pure CSS,
+ *             no JavaScript required). svgContent is sanitised through an explicit
+ *             wp_kses() allowlist — identical to the one used by SGS_Container_Wrapper
+ *             for bgSvgContent — before output. No <script>, no event handlers,
+ *             no <foreignObject>, no external href/xlink:href.
  *
  * @since 1.1.0
  *
@@ -91,7 +96,7 @@ if ( '' === $media_type_raw ) {
 		$media_type_raw = 'image';
 	}
 }
-$media_type = in_array( $media_type_raw, array( 'image', 'video' ), true ) ? $media_type_raw : 'image';
+$media_type = in_array( $media_type_raw, array( 'image', 'video', 'svg' ), true ) ? $media_type_raw : 'image';
 
 // ---------------------------------------------------------------------------
 // 3. Helper: validate allowed CSS dimension units.
@@ -173,6 +178,9 @@ $media_style_attr = implode( ';', $media_styles );
 // ---------------------------------------------------------------------------
 $wrapper_styles  = array();
 $wrapper_classes = array( 'sgs-media', 'sgs-media--align-' . esc_attr( $alignment ) );
+if ( 'svg' === $media_type ) {
+	$wrapper_classes[] = 'sgs-media--svg';
+}
 
 // CSS order for flex/grid placement.
 if ( null !== $css_order ) {
@@ -524,6 +532,133 @@ if ( 'video' === $media_type ) {
 }
 
 // ---------------------------------------------------------------------------
+// 12b. SVG RENDER PATH.
+// ---------------------------------------------------------------------------
+$svg_html = '';
+if ( 'svg' === $media_type ) {
+	$svg_content_raw = isset( $attributes['svgContent'] ) ? (string) $attributes['svgContent'] : '';
+
+	$allowed_svg_animations = array( 'none', 'pulse', 'float', 'wave' );
+	$svg_animation_raw      = $attributes['svgAnimation'] ?? 'none';
+	$svg_animation          = in_array( $svg_animation_raw, $allowed_svg_animations, true ) ? $svg_animation_raw : 'none';
+
+	$allowed_svg_speeds = array( 'slow', 'medium', 'fast' );
+	$svg_speed_raw      = $attributes['svgAnimationSpeed'] ?? 'medium';
+	$svg_speed          = in_array( $svg_speed_raw, $allowed_svg_speeds, true ) ? $svg_speed_raw : 'medium';
+
+	if ( '' === $svg_content_raw ) {
+		echo '<!-- sgs/media: no SVG content set -->';
+		return;
+	}
+
+	// Sanitise SVG through an explicit wp_kses() allowlist.
+	// Mirrors the identical allowlist used by SGS_Container_Wrapper for bgSvgContent.
+	// Strips: <script>, <foreignObject>, event-handler attributes (on*), external
+	// href/xlink:href. Only the shapes/structure tags below pass through.
+	$allowed_svg_tags = array(
+		'svg'      => array(
+			'xmlns'               => true,
+			'viewbox'             => true,
+			'width'               => true,
+			'height'              => true,
+			'preserveaspectratio' => true,
+			'class'               => true,
+			'id'                  => true,
+		),
+		'g'        => array(
+			'transform' => true,
+			'class'     => true,
+			'id'        => true,
+		),
+		'path'     => array(
+			'd'            => true,
+			'fill'         => true,
+			'stroke'       => true,
+			'stroke-width' => true,
+			'class'        => true,
+		),
+		'circle'   => array(
+			'cx'     => true,
+			'cy'     => true,
+			'r'      => true,
+			'fill'   => true,
+			'stroke' => true,
+			'class'  => true,
+		),
+		'rect'     => array(
+			'x'      => true,
+			'y'      => true,
+			'width'  => true,
+			'height' => true,
+			'fill'   => true,
+			'stroke' => true,
+			'class'  => true,
+		),
+		'polygon'  => array(
+			'points' => true,
+			'fill'   => true,
+			'stroke' => true,
+			'class'  => true,
+		),
+		'polyline' => array(
+			'points' => true,
+			'fill'   => true,
+			'stroke' => true,
+			'class'  => true,
+		),
+		'line'     => array(
+			'x1'     => true,
+			'y1'     => true,
+			'x2'     => true,
+			'y2'     => true,
+			'stroke' => true,
+			'class'  => true,
+		),
+		'ellipse'  => array(
+			'cx'     => true,
+			'cy'     => true,
+			'rx'     => true,
+			'ry'     => true,
+			'fill'   => true,
+			'stroke' => true,
+			'class'  => true,
+		),
+		'text'     => array(
+			'x'           => true,
+			'y'           => true,
+			'fill'        => true,
+			'font-size'   => true,
+			'font-family' => true,
+			'class'       => true,
+		),
+		'defs'     => array(),
+		'style'    => array( 'type' => true ),
+		'animate'  => array(
+			'attributename' => true,
+			'from'          => true,
+			'to'            => true,
+			'dur'           => true,
+			'repeatcount'   => true,
+		),
+	);
+
+	$sanitised_svg = wp_kses( $svg_content_raw, $allowed_svg_tags );
+
+	// Build animation class string.
+	$svg_classes = array( 'sgs-media__svg' );
+	if ( 'none' !== $svg_animation ) {
+		$svg_classes[] = 'sgs-media__svg--' . esc_attr( $svg_animation );
+		$svg_classes[] = 'sgs-media__svg--speed-' . esc_attr( $svg_speed );
+	}
+
+	$svg_html = sprintf(
+		'<div class="%s" aria-hidden="true">%s</div>',
+		esc_attr( implode( ' ', $svg_classes ) ),
+		$sanitised_svg // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- processed through wp_kses() with explicit SVG allowlist above; no <script>/event-handlers/external-href pass through.
+	);
+}
+
+// ---------------------------------------------------------------------------
 // 13. Assemble wrapper attributes via get_block_wrapper_attributes().
 // ---------------------------------------------------------------------------
 $wrapper_attr_args = array(
@@ -543,6 +678,7 @@ $wrapper_attributes = get_block_wrapper_attributes( $wrapper_attr_args );
 // Naked-mode is image-only; video always emits a <figure> wrapper.
 // ---------------------------------------------------------------------------
 $naked_mode = ( 'image' === $media_type ) && ( '' === $caption ) && empty( $link_open );
+// SVG mode always uses the <figure> wrapper (needed for consistent sizing + caption support).
 
 if ( $naked_mode && '' !== $image_html ) {
 	// Parse class= and id= from wrapper_attributes string; merge with sgs-media__img.
@@ -633,6 +769,14 @@ if ( 'image' === $media_type ) {
 			$caption_html        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from wp_kses_post() + esc_attr() above.
 		);
 	}
+} elseif ( 'svg' === $media_type ) {
+	// SVG — always wrapped in <figure> for consistent sizing and caption support.
+	printf(
+		'<figure %s>%s%s</figure>',
+		$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes internally.
+		$svg_html,           // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG content processed through wp_kses() with explicit allowlist; wrapper attrs from esc_attr().
+		$caption_html        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from wp_kses_post() + esc_attr() above.
+	);
 } else {
 	// Video always emits a <figure> wrapper (needed for caption + accessible labelling).
 	printf(

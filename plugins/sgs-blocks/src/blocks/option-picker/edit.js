@@ -56,6 +56,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		showLabel,
 		labelFontSize,
 		labelColour,
+		labelFontWeight,
+		labelMarginBottom,
 		optionItems,
 		defaultSelected,
 		pillStyle,
@@ -65,6 +67,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		pillBorderColour,
 		pillSelectedBgColour,
 		pillSelectedTextColour,
+		pillFontSize,
+		pillFontWeight,
+		pillBorderRadius,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -77,11 +82,14 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	/* ── Inline CSS vars for the canvas preview ── */
 	const previewVars = {};
-	if ( pillBgColour )           previewVars[ '--sgs-op-bg' ]          = colourVar( pillBgColour );
-	if ( pillTextColour )         previewVars[ '--sgs-op-text' ]        = colourVar( pillTextColour );
-	if ( pillBorderColour )       previewVars[ '--sgs-op-border' ]      = colourVar( pillBorderColour );
-	if ( pillSelectedBgColour )   previewVars[ '--sgs-op-sel-bg' ]      = colourVar( pillSelectedBgColour );
-	if ( pillSelectedTextColour ) previewVars[ '--sgs-op-sel-text' ]    = colourVar( pillSelectedTextColour );
+	if ( pillBgColour )           previewVars[ '--sgs-op-bg' ]               = colourVar( pillBgColour );
+	if ( pillTextColour )         previewVars[ '--sgs-op-text' ]             = colourVar( pillTextColour );
+	if ( pillBorderColour )       previewVars[ '--sgs-op-border' ]           = colourVar( pillBorderColour );
+	if ( pillSelectedBgColour )   previewVars[ '--sgs-op-sel-bg' ]           = colourVar( pillSelectedBgColour );
+	if ( pillSelectedTextColour ) previewVars[ '--sgs-op-sel-text' ]         = colourVar( pillSelectedTextColour );
+	if ( pillFontSize )           previewVars[ '--sgs-op-pill-font-size' ]   = pillFontSize;
+	if ( pillFontWeight )         previewVars[ '--sgs-op-pill-font-weight' ] = pillFontWeight;
+	if ( pillBorderRadius )       previewVars[ '--sgs-op-pill-radius' ]      = pillBorderRadius;
 
 	/* ── Effective default: first option if defaultSelected is missing ── */
 	const effectiveDefault =
@@ -207,12 +215,36 @@ export default function Edit( { attributes, setAttributes } ) {
 							<TextControl
 								label={ __( 'Label font size', 'sgs-blocks' ) }
 								help={ __(
-									'Any CSS size, e.g. 18px or 1.2rem. Leave empty for the theme default.',
+									'Token slug or CSS value, e.g. 1rem / 0.875rem. Empty = default.',
 									'sgs-blocks'
 								) }
 								value={ labelFontSize }
 								onChange={ ( val ) =>
 									setAttributes( { labelFontSize: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<TextControl
+								label={ __( 'Label font weight', 'sgs-blocks' ) }
+								help={ __(
+									'Token slug or CSS value, e.g. 1rem / 600 / bold. Empty = default.',
+									'sgs-blocks'
+								) }
+								value={ labelFontWeight }
+								onChange={ ( val ) =>
+									setAttributes( { labelFontWeight: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<TextControl
+								label={ __( 'Label margin bottom', 'sgs-blocks' ) }
+								help={ __(
+									'Token slug or CSS value, e.g. 1rem / 8px. Empty = default.',
+									'sgs-blocks'
+								) }
+								value={ labelMarginBottom }
+								onChange={ ( val ) =>
+									setAttributes( { labelMarginBottom: val } )
 								}
 								__nextHasNoMarginBottom
 							/>
@@ -382,6 +414,42 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
+					<TextControl
+						label={ __( 'Pill font size', 'sgs-blocks' ) }
+						help={ __(
+							'Token slug or CSS value, e.g. 1rem / 0.875rem. Empty = default.',
+							'sgs-blocks'
+						) }
+						value={ pillFontSize }
+						onChange={ ( val ) =>
+							setAttributes( { pillFontSize: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Pill font weight', 'sgs-blocks' ) }
+						help={ __(
+							'Token slug or CSS value, e.g. 1rem / 600 / bold. Empty = default.',
+							'sgs-blocks'
+						) }
+						value={ pillFontWeight }
+						onChange={ ( val ) =>
+							setAttributes( { pillFontWeight: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Pill border radius', 'sgs-blocks' ) }
+						help={ __(
+							'Token slug or CSS value, e.g. 1rem / 8px / 50%. Empty = default.',
+							'sgs-blocks'
+						) }
+						value={ pillBorderRadius }
+						onChange={ ( val ) =>
+							setAttributes( { pillBorderRadius: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 
 				{ /* Colours */ }
@@ -481,12 +549,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					<legend
 						className="sgs-option-picker__label"
 						style={ {
-							...( labelFontSize
-								? { fontSize: labelFontSize }
-								: {} ),
-							...( labelColour
-								? { color: colourVar( labelColour ) }
-								: {} ),
+							...( labelFontSize    ? { fontSize:     labelFontSize }             : {} ),
+							...( labelFontWeight  ? { fontWeight:   labelFontWeight }            : {} ),
+							...( labelColour      ? { color:        colourVar( labelColour ) }   : {} ),
+							...( labelMarginBottom ? { marginBottom: labelMarginBottom }          : {} ),
 						} }
 					>
 						{ label || __( 'Choose an option', 'sgs-blocks' ) }

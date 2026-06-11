@@ -121,7 +121,7 @@
 	padding: 7px 13px;
 	font-family: 'Inter', sans-serif;
 	font-size: 13px;
-	font-weight: 600;
+	font-weight: var(--sgs-product-card-pill-font-weight, 600);
 	color: var(--wp--preset--color--text-muted, #6b5c50);
 	cursor: pointer;
 	min-height: 44px;
@@ -158,8 +158,8 @@
 .product-card .price {
 	font-family: 'Fraunces', serif;
 	font-size: 28px;
-	font-weight: 700;
-	color: var(--wp--preset--color--text, #3a2e26);
+	font-weight: var(--sgs-card-price-font-weight, 700);
+	color: var(--sgs-card-price-colour, var(--wp--preset--color--text, #3a2e26));
 }
 
 .product-card .price-note {
@@ -183,7 +183,7 @@
 .product-card .price-from-label {
 	font-family: 'Inter', sans-serif;
 	font-size: 12px;
-	font-weight: 600;
+	font-weight: var(--sgs-card-price-from-label-font-weight, 600);
 	letter-spacing: 0.04em;
 	text-transform: uppercase;
 	color: var(--wp--preset--color--text-muted, #6b5c50);
@@ -192,9 +192,9 @@
 .product-card .price-from-amount {
 	font-family: 'Fraunces', serif;
 	font-size: 28px;
-	font-weight: 700;
+	font-weight: var(--sgs-card-price-font-weight, 700);
 	line-height: 1;
-	color: var(--wp--preset--color--text, #3a2e26);
+	color: var(--sgs-card-price-colour, var(--wp--preset--color--text, #3a2e26));
 }
 
 /* Trial variant — dashed border + gradient overlay (B6, 2026-06-10): wrapped in
@@ -216,7 +216,7 @@
 	background: var(--wp--preset--color--accent, #f5d050);
 	color: var(--wp--preset--color--text, #3a2e26);
 	font-size: 11px;
-	font-weight: 700;
+	font-weight: var(--sgs-product-card-trial-tag-font-weight, 700);
 	padding: 4px 10px;
 	border-radius: 6px;
 	letter-spacing: 0.5px;
@@ -233,7 +233,7 @@
 	border-radius: 10px;
 	font-family: 'Inter', sans-serif;
 	font-size: 15px;
-	font-weight: 600;
+	font-weight: var(--sgs-product-card-btn-font-weight, 600);
 	text-decoration: none;
 	cursor: pointer;
 	transition: all 0.15s;
@@ -1059,9 +1059,9 @@
  */
 .product-card .product-card-body > h2,
 .product-card .product-card-body > h4 {
-	font-size: 20px;
-	font-weight: 500;
-	color: var( --wp--preset--color--text, #3a2e26 );
+	font-size: var(--sgs-card-title-font-size, 20px);
+	font-weight: var(--sgs-card-title-font-weight, 500);
+	color: var(--sgs-card-title-colour, var(--wp--preset--color--text, #3a2e26));
 	margin: 0;
 }
 
