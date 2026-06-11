@@ -13,6 +13,17 @@ inputs:
 
 # Clone-fix build plan
 
+## ⚠ STATUS CORRECTIONS (2026-06-11 — read before building from this plan)
+
+| Plan claim | Current truth |
+|---|---|
+| Stage 0 (gate + baseline + FRs) | **DONE** — Gate A conformance harness wired pre-commit (live: it blocked a commit 2026-06-11); 55-row ledger exists; FR-22-5.3 merged. |
+| Stage 1 Commits (F1-consolidate / F1-cross-node / F6a) | **SHIPPED emit-green (D207) but OUTCOME NOT HIT — 0/52 ledger rows closed.** The cross-node router fires but routes padding to the WRONG layer (gridItemPadding/outer, not contentPadding*) + misses CONTENT on shorthand `padding`. |
+| "`fold_eligible = len==1` already prevents the XS-3 mechanism" (Stage-1 de-risk note) | **FALSIFIED (D207):** that same guard was the ROOT CAUSE of the hero never dissolving. Replaced 2026-06-11 (`d1e30996`) by a net-of-rule-0 + grid-area gate — which itself carries a scalar-media carve-out that **must be removed**: Bean directive 2026-06-11, the UNIVERSAL grid-item router (next-session-prompt Task 3) supersedes that paragraph. |
+| Stage 2 F3 ("build de-hardcode") | **Substantially shipped** by the theme thread's block-quality programme (D206: B3–B6, C7, E9, D8) + D192; remaining F3 items only. |
+| Stage 2 F5 card-grid product capability ("biggest tail item") | **SHIPPED (D204, FP-E/FP-H)** — the sign-off LEDGER's FP-E/FP-H rows are stale (still OPEN); flip them on the next ledger walk. Product-page clone now gates on Spec 30 (WC single-product template, D208), which scopes the remaining F5 alias work. |
+| Acceptance | **Re-bound 2026-06-11:** every converter change reports fixed/stayed PER LEDGER ROW (clone-parity run + ledger walk); "the mechanism fires" is never an outcome. New finding for Stage 3: a global fontSize 16→18px parity drift (3→24 failures) needs its own root-cause. |
+
 ## The objective (Bean, locked 2026-06-09)
 
 **The deliverable is the UNIVERSAL PIPELINE CONVERTER — not a high parity score on the Mama's draft.** The score on one draft is a verification signal, not the product. Consequences that drive this whole plan:
