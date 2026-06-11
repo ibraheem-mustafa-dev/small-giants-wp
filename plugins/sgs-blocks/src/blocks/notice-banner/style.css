@@ -9,8 +9,13 @@
 	border-left: 4px solid transparent;
 }
 
+/* Variant default backgrounds + borders are wrapped in :where() (specificity
+   0,0,0) so the operator's native color.background + __experimentalBorder
+   controls — and any converter-emitted override — always win the cascade.
+   Visible defaults are unchanged; only the specificity is lowered. */
+
 /* ===== Variant: Info ===== */
-.sgs-notice-banner--info {
+:where(.sgs-notice-banner--info) {
 	--_banner-bg: var(--wp--preset--color--info-bg, #EBF5FF);
 	--_banner-border: var(--wp--preset--color--info-border, #3B82F6);
 	background-color: var(--_banner-bg);
@@ -18,7 +23,7 @@
 }
 
 /* ===== Variant: Success ===== */
-.sgs-notice-banner--success {
+:where(.sgs-notice-banner--success) {
 	--_banner-bg: var(--wp--preset--color--success-bg, #ECFDF5);
 	--_banner-border: var(--wp--preset--color--success, #2E7D4F);
 	background-color: var(--_banner-bg);
@@ -28,7 +33,7 @@
 /* ===== Variant: Warning ===== */
 /* Border uses accent-text (#92400E) not accent (#F87A1F) — accent on accent-light bg
    fails contrast at 1.93:1. accent-text gives 6.37:1 against accent-light bg. */
-.sgs-notice-banner--warning {
+:where(.sgs-notice-banner--warning) {
 	--_banner-bg: var(--wp--preset--color--accent-light, #FEE8D4);
 	--_banner-border: var(--wp--preset--color--accent-text, #92400E);
 	background-color: var(--_banner-bg);
@@ -36,7 +41,7 @@
 }
 
 /* ===== Variant: Error ===== */
-.sgs-notice-banner--error {
+:where(.sgs-notice-banner--error) {
 	--_banner-bg: var(--wp--preset--color--error-bg, #FEF2F2);
 	--_banner-border: var(--wp--preset--color--error, #DC2626);
 	background-color: var(--_banner-bg);
@@ -44,7 +49,7 @@
 }
 
 /* ===== Variant: Accent ===== */
-.sgs-notice-banner--accent {
+:where(.sgs-notice-banner--accent) {
 	background-color: var(--wp--preset--color--accent-light, #FEE8D4);
 	border-left-color: var(--wp--preset--color--accent, #F87A1F);
 }

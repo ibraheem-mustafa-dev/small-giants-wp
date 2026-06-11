@@ -44,11 +44,18 @@ function resolveIcon( attrs ) {
 }
 
 /**
- * Default InnerBlocks template — one sgs/text child for the notice message.
- * Operators can replace or supplement it with any block, e.g. a button.
+ * Default InnerBlocks template.
+ *
+ * Seeds an sgs/text body for the notice message. The slot stays OPEN (no
+ * allowedBlocks lock) so an operator — or the cloning converter routing a
+ * draft heading node INTO the banner rather than emitting it as a sibling —
+ * can add an sgs/heading, a list, or a secondary note as additional children.
  */
 const NOTICE_BANNER_TEMPLATE = [
-	[ 'sgs/text', { text: __( 'Write your notice message here.', 'sgs-blocks' ), tag: 'p' } ],
+	[
+		'sgs/text',
+		{ text: __( 'Write your notice message here.', 'sgs-blocks' ), tag: 'p' },
+	],
 ];
 
 export default function Edit( { attributes, setAttributes } ) {
