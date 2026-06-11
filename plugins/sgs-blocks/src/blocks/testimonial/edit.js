@@ -150,6 +150,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		schemaEnabled,
 		quoteFontSize,
 		quoteColour,
+		quoteStyle,
+		quoteLineHeight,
 		summaryFontSize,
 		summaryColour,
 		nameColour,
@@ -207,9 +209,11 @@ export default function Edit( { attributes, setAttributes } ) {
 	} );
 
 	// Per-element inline style — raw colour value (hex or token), best-effort font size.
-	const quoteStyle = {
+	const quoteInlineStyle = {
 		color: quoteColour || undefined,
 		fontSize: quoteFontSize ? fontSizeVar( quoteFontSize ) : undefined,
+		fontStyle: quoteStyle || undefined,
+		lineHeight: quoteLineHeight || undefined,
 	};
 	const summaryStyle = {
 		color: summaryColour || undefined,
@@ -508,6 +512,30 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { quoteColour: val } )
 						}
 					/>
+					<SelectControl
+						label={ __( 'Quote font style', 'sgs-blocks' ) }
+						value={ quoteStyle }
+						options={ [
+							{ label: __( 'Normal', 'sgs-blocks' ), value: '' },
+							{ label: __( 'Italic', 'sgs-blocks' ), value: 'italic' },
+						] }
+						onChange={ ( val ) =>
+							setAttributes( { quoteStyle: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Quote line height', 'sgs-blocks' ) }
+						help={ __(
+							'CSS value (e.g. 1.6, 2em). Leave empty for the variant default.',
+							'sgs-blocks'
+						) }
+						value={ quoteLineHeight }
+						onChange={ ( val ) =>
+							setAttributes( { quoteLineHeight: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
 					{ showSummary && (
 						<>
 							<TextControl
@@ -780,7 +808,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<RichText
 					tagName="blockquote"
 					className="sgs-testimonial__quote"
-					style={ quoteStyle }
+					style={ quoteInlineStyle }
 					value={ quote }
 					onChange={ ( val ) => setAttributes( { quote: val } ) }
 					placeholder={ __(

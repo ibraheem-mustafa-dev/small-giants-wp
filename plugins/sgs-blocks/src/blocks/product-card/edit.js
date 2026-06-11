@@ -604,6 +604,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		ctaBehaviour,
 		pickerLabelFontSize,
 		pickerLabelColour,
+		titleFontSize,
+		titleFontWeight,
+		titleColour,
+		priceFontSize,
+		priceFontWeight,
+		priceColour,
 	} = attributes;
 
 	const isTrial = variantStyle === 'trial';
@@ -785,6 +791,37 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								}
 								__nextHasNoMarginBottom
 							/>
+							<TextControl
+								label={ __( 'Title font size', 'sgs-blocks' ) }
+								help={ __(
+									'A token slug (e.g. medium) or a CSS value (e.g. 1.25rem). Empty = theme default.',
+									'sgs-blocks'
+								) }
+								value={ titleFontSize || '' }
+								onChange={ ( v ) =>
+									setAttributes( { titleFontSize: v } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<TextControl
+								label={ __( 'Title font weight', 'sgs-blocks' ) }
+								help={ __(
+									'e.g. 400, 600, 700, bold. Empty = theme default.',
+									'sgs-blocks'
+								) }
+								value={ titleFontWeight || '' }
+								onChange={ ( v ) =>
+									setAttributes( { titleFontWeight: v } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<DesignTokenPicker
+								label={ __( 'Title colour', 'sgs-blocks' ) }
+								value={ titleColour }
+								onChange={ ( v ) =>
+									setAttributes( { titleColour: v } )
+								}
+							/>
 							{ isTrial && (
 								<TextControl
 									label={ __( 'Trial tag text', 'sgs-blocks' ) }
@@ -860,6 +897,37 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							value={ packSizesText }
 							onChange={ onPackSizesChange }
 							__nextHasNoMarginBottom
+						/>
+						<TextControl
+							label={ __( 'Price font size', 'sgs-blocks' ) }
+							help={ __(
+								'A token slug (e.g. large) or a CSS value (e.g. 2rem). Empty = theme default.',
+								'sgs-blocks'
+							) }
+							value={ priceFontSize || '' }
+							onChange={ ( v ) =>
+								setAttributes( { priceFontSize: v } )
+							}
+							__nextHasNoMarginBottom
+						/>
+						<TextControl
+							label={ __( 'Price font weight', 'sgs-blocks' ) }
+							help={ __(
+								'e.g. 400, 600, 700, bold. Empty = theme default.',
+								'sgs-blocks'
+							) }
+							value={ priceFontWeight || '' }
+							onChange={ ( v ) =>
+								setAttributes( { priceFontWeight: v } )
+							}
+							__nextHasNoMarginBottom
+						/>
+						<DesignTokenPicker
+							label={ __( 'Price colour', 'sgs-blocks' ) }
+							value={ priceColour }
+							onChange={ ( v ) =>
+								setAttributes( { priceColour: v } )
+							}
 						/>
 					</PanelBody>
 				) }

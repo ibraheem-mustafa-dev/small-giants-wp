@@ -31,7 +31,8 @@
 		"typography": {
 			"fontSize": true,
 			"lineHeight": true,
-			"textAlign": true
+			"textAlign": true,
+			"fontStyle": true
 		},
 		"spacing": {
 			"margin": true,

@@ -179,6 +179,16 @@
 			"type": "string",
 			"default": ""
 		},
+		"quoteStyle": {
+			"type": "string",
+			"default": "",
+			"description": "Font style for the quote text. 'italic' or empty for normal."
+		},
+		"quoteLineHeight": {
+			"type": "string",
+			"default": "",
+			"description": "Line height for the quote text. Raw CSS value (e.g. 1.6, 2em). Empty = default."
+		},
 		"summaryFontSize": {
 			"type": "string",
 			"default": ""

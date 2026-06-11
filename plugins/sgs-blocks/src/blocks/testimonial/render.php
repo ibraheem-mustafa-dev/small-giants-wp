@@ -33,16 +33,16 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 // ── Variant + content fields (typed, all optional) ──────────────────────────
-$variant         = $attributes['variant'] ?? 'classic-card';
-$quote           = trim( (string) ( $attributes['quote'] ?? '' ) );
-$summary_phrase  = trim( (string) ( $attributes['summaryPhrase'] ?? '' ) );
-$reviewer_name   = trim( (string) ( $attributes['reviewerName'] ?? '' ) );
-$reviewer_role   = trim( (string) ( $attributes['reviewerRole'] ?? '' ) );
-$org_name        = trim( (string) ( $attributes['orgName'] ?? '' ) );
+$variant        = $attributes['variant'] ?? 'classic-card';
+$quote          = trim( (string) ( $attributes['quote'] ?? '' ) );
+$summary_phrase = trim( (string) ( $attributes['summaryPhrase'] ?? '' ) );
+$reviewer_name  = trim( (string) ( $attributes['reviewerName'] ?? '' ) );
+$reviewer_role  = trim( (string) ( $attributes['reviewerRole'] ?? '' ) );
+$org_name       = trim( (string) ( $attributes['orgName'] ?? '' ) );
 
-$avatar_media    = $attributes['avatarMedia'] ?? null;
-$org_logo        = $attributes['orgLogo'] ?? null;
-$work_media      = $attributes['workMedia'] ?? null;
+$avatar_media = $attributes['avatarMedia'] ?? null;
+$org_logo     = $attributes['orgLogo'] ?? null;
+$work_media   = $attributes['workMedia'] ?? null;
 
 // R-22-14-compliant one-way READ of the retired legacy `avatar` object so
 // un-migrated posts still show their author photo until deprecated.js v8 +
@@ -60,20 +60,22 @@ if ( empty( $avatar_media['url'] ) && ! empty( $legacy_avatar['url'] ) ) {
 }
 
 // ── Rating fields (fully optional — gated by showRating) ────────────────────
-$show_rating     = ! empty( $attributes['showRating'] );
-$rating_type     = $attributes['ratingType'] ?? 'stars';
-$rating_stars    = isset( $attributes['ratingStars'] ) ? (float) $attributes['ratingStars'] : 0;
-$rating_scale    = isset( $attributes['ratingScale'] ) ? (float) $attributes['ratingScale'] : 0;
+$show_rating      = ! empty( $attributes['showRating'] );
+$rating_type      = $attributes['ratingType'] ?? 'stars';
+$rating_stars     = isset( $attributes['ratingStars'] ) ? (float) $attributes['ratingStars'] : 0;
+$rating_scale     = isset( $attributes['ratingScale'] ) ? (float) $attributes['ratingScale'] : 0;
 $rating_scale_max = trim( (string) ( $attributes['ratingScaleMax'] ?? '10' ) );
-$review_date     = trim( (string) ( $attributes['reviewDate'] ?? '' ) );
-$verified        = ! empty( $attributes['verified'] );
-$source_platform = trim( (string) ( $attributes['sourcePlatform'] ?? '' ) );
+$review_date      = trim( (string) ( $attributes['reviewDate'] ?? '' ) );
+$verified         = ! empty( $attributes['verified'] );
+$source_platform  = trim( (string) ( $attributes['sourcePlatform'] ?? '' ) );
 
-$schema_enabled  = ! empty( $attributes['schemaEnabled'] );
+$schema_enabled = ! empty( $attributes['schemaEnabled'] );
 
 // ── Per-element typography (empty → CSS token default via :not([style*=...])) ─
 $quote_font_size   = sgs_font_size_value( $attributes['quoteFontSize'] ?? '' );
 $quote_colour      = sgs_colour_value( $attributes['quoteColour'] ?? '' );
+$quote_style       = in_array( $attributes['quoteStyle'] ?? '', array( 'italic', 'normal' ), true ) ? $attributes['quoteStyle'] : '';
+$quote_line_height = trim( (string) ( $attributes['quoteLineHeight'] ?? '' ) );
 $summary_font_size = sgs_font_size_value( $attributes['summaryFontSize'] ?? '' );
 $summary_colour    = sgs_colour_value( $attributes['summaryColour'] ?? '' );
 $name_colour       = sgs_colour_value( $attributes['nameColour'] ?? '' );
@@ -101,13 +103,18 @@ $stagger_delay           = isset( $attributes['staggerDelay'] ) ? (int) $attribu
  * @param string $font_size Resolved font-size value (already sgs_font_size_value()'d).
  * @return string ` style="..."` or empty string.
  */
-$sgs_testimonial_style_attr = static function ( $colour, $font_size = '' ) {
+$sgs_testimonial_style_attr = static function ( $colour, $font_size = '', $extra = array() ) {
 	$decls = array();
 	if ( '' !== $colour ) {
 		$decls[] = 'color:' . $colour;
 	}
 	if ( '' !== $font_size ) {
 		$decls[] = 'font-size:' . $font_size;
+	}
+	foreach ( $extra as $prop => $val ) {
+		if ( '' !== $val ) {
+			$decls[] = $prop . ':' . $val;
+		}
 	}
 	if ( empty( $decls ) ) {
 		return '';
@@ -116,7 +123,7 @@ $sgs_testimonial_style_attr = static function ( $colour, $font_size = '' ) {
 };
 
 // ── Wrapper classes ─────────────────────────────────────────────────────────
-$classes = array( 'sgs-testimonial' );
+$classes   = array( 'sgs-testimonial' );
 $classes[] = 'sgs-testimonial--' . sanitize_html_class( $variant );
 if ( $hover_effect && 'none' !== $hover_effect ) {
 	$classes[] = 'sgs-testimonial--hover-' . sanitize_html_class( $hover_effect );
@@ -167,10 +174,10 @@ $rating_html = '';
 if ( $show_rating ) {
 	if ( 'scale' === $rating_type && $rating_scale > 0 ) {
 		// Numeric score, e.g. "9.2 / 10".
-		$score = ( floor( $rating_scale ) === $rating_scale )
+		$score        = ( floor( $rating_scale ) === $rating_scale )
 			? (string) (int) $rating_scale
 			: (string) $rating_scale;
-		$max   = ( '' !== $rating_scale_max ) ? $rating_scale_max : '10';
+		$max          = ( '' !== $rating_scale_max ) ? $rating_scale_max : '10';
 		$rating_html  = '<div class="sgs-testimonial__rating sgs-testimonial__rating--scale"' . $sgs_testimonial_style_attr( $rating_colour ) . '>';
 		$rating_html .= '<span class="sgs-testimonial__score">' . esc_html( $score ) . '</span>';
 		$rating_html .= '<span class="sgs-testimonial__score-max"> / ' . esc_html( $max ) . '</span>';
@@ -202,7 +209,7 @@ if ( $show_rating ) {
 			}
 		}
 		/* translators: %s: star rating value out of 5. */
-		$label = sprintf( esc_attr__( '%s out of 5 stars', 'sgs-blocks' ), (string) $rating_stars );
+		$label        = sprintf( esc_attr__( '%s out of 5 stars', 'sgs-blocks' ), (string) $rating_stars );
 		$rating_html  = '<div class="sgs-testimonial__rating sgs-testimonial__stars"' . $sgs_testimonial_style_attr( $rating_colour ) . ' role="img" aria-label="' . $label . '">';
 		$rating_html .= $stars;
 		$rating_html .= '</div>';
@@ -258,7 +265,11 @@ if ( '' !== $summary_phrase ) {
 
 $quote_html = '';
 if ( '' !== $quote ) {
-	$quote_html = '<blockquote class="sgs-testimonial__quote"' . $sgs_testimonial_style_attr( $quote_colour, $quote_font_size ) . '>' . wp_kses_post( $quote ) . '</blockquote>';
+	$quote_extra = array(
+		'font-style'  => $quote_style,
+		'line-height' => $quote_line_height,
+	);
+	$quote_html  = '<blockquote class="sgs-testimonial__quote"' . $sgs_testimonial_style_attr( $quote_colour, $quote_font_size, $quote_extra ) . '>' . wp_kses_post( $quote ) . '</blockquote>';
 }
 
 // Attribution: name / role / org — each gated, only emit the cite block if any present.
@@ -306,7 +317,7 @@ if ( $schema_enabled ) {
 		}
 		// Star rating → reviewRating (bestRating 5); scale rating → reviewRating (bestRating = max).
 		if ( $show_rating && 'scale' === $rating_type && $rating_scale > 0 ) {
-			$best = is_numeric( $rating_scale_max ) ? (float) $rating_scale_max : 10;
+			$best                   = is_numeric( $rating_scale_max ) ? (float) $rating_scale_max : 10;
 			$schema['reviewRating'] = array(
 				'@type'       => 'Rating',
 				'ratingValue' => $rating_scale,

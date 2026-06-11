@@ -961,9 +961,9 @@
 
 /* Title — same rules as .product-card h3 for the new BEM class. */
 .product-card .sgs-product-card__title {
-	font-size: 20px;
-	font-weight: 500;
-	color: var( --wp--preset--color--text, #3a2e26 );
+	font-size: var( --sgs-card-title-font-size, 20px );
+	font-weight: var( --sgs-card-title-font-weight, 500 );
+	color: var( --sgs-card-title-colour, var( --wp--preset--color--text, #3a2e26 ) );
 	margin: 0;
 }
 
@@ -1016,9 +1016,9 @@
 /* Price amount — matches .product-card .price. */
 .product-card .sgs-product-card__price {
 	font-family: 'Fraunces', serif;
-	font-size: 28px;
-	font-weight: 700;
-	color: var( --wp--preset--color--text, #3a2e26 );
+	font-size: var( --sgs-card-price-font-size, 28px );
+	font-weight: var( --sgs-card-price-font-weight, 700 );
+	color: var( --sgs-card-price-colour, var( --wp--preset--color--text, #3a2e26 ) );
 }
 
 /* Price note — matches .product-card .price-note. */

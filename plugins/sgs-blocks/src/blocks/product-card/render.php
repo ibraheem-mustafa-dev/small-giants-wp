@@ -102,6 +102,33 @@ if ( '' !== $inner_padding_css ) {
 	$inline_styles[] = '--sgs-product-card-inner-padding:' . $inner_padding_css . ';';
 }
 
+// ── Per-element typography CSS vars (title heading + price) ─────────────
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+$sgs_title_font_size   = sgs_font_size_value( $attributes['titleFontSize'] ?? '' );
+$sgs_title_font_weight = sanitize_text_field( (string) ( $attributes['titleFontWeight'] ?? '' ) );
+$sgs_title_colour      = sgs_colour_value( $attributes['titleColour'] ?? '' );
+$sgs_price_font_size   = sgs_font_size_value( $attributes['priceFontSize'] ?? '' );
+$sgs_price_font_weight = sanitize_text_field( (string) ( $attributes['priceFontWeight'] ?? '' ) );
+$sgs_price_colour      = sgs_colour_value( $attributes['priceColour'] ?? '' );
+if ( '' !== $sgs_title_font_size ) {
+	$inline_styles[] = '--sgs-card-title-font-size:' . $sgs_title_font_size . ';';
+}
+if ( '' !== $sgs_title_font_weight ) {
+	$inline_styles[] = '--sgs-card-title-font-weight:' . esc_attr( $sgs_title_font_weight ) . ';';
+}
+if ( '' !== $sgs_title_colour ) {
+	$inline_styles[] = '--sgs-card-title-colour:' . $sgs_title_colour . ';';
+}
+if ( '' !== $sgs_price_font_size ) {
+	$inline_styles[] = '--sgs-card-price-font-size:' . $sgs_price_font_size . ';';
+}
+if ( '' !== $sgs_price_font_weight ) {
+	$inline_styles[] = '--sgs-card-price-font-weight:' . esc_attr( $sgs_price_font_weight ) . ';';
+}
+if ( '' !== $sgs_price_colour ) {
+	$inline_styles[] = '--sgs-card-price-colour:' . $sgs_price_colour . ';';
+}
+
 // Base opts shared across all branches (no WP Interactivity attrs).
 $base_opts = array(
 	'tag'           => 'div',
