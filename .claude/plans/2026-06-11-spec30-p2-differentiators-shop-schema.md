@@ -62,7 +62,7 @@ thread: sgs-theme
 
 ## Pre-conditions
 - Spec 30 P1 COMPLETE + on `origin/main` (`1c13a08c`); FR-30-12 ungated
-- Canary reachable; WC 10.8.1; fixture product 540 (published 48-SKU variable); `_sgs_reference_price_pence` + `_sgs_base_price_pence` meta fields shipped (Spec 28)
+- Canary reachable; WC 10.8.1; fixture product 540 (published 48-SKU variable). **Reference-price meta correction (qc-council 2026-06-11):** there is NO `_sgs_reference_price_pence` — the shipped single-unit reference is `_sgs_base_price_pence` gated by the boolean attestation flag `_sgs_base_price_attested` (both in `class-configurator-meta.php`); the strict `'1'===(string)$v` guard applies to the ATTESTATION flag. Reference implementation: `product-card/render.php:548-554`.
 - Branch `feat/spec30-p2-shop-schema` from origin/main before first edit
 - Co-active cloning thread NOT holding the plugin/theme files this phase touches (search block, schema emitters, archive templates)
 
@@ -106,8 +106,8 @@ Step 1 — Branch + P2 ground-truth probe
 Step 2 — FR-30-8: PDP price-display coupling (per-unit + value-ladder, live per tier)
   Model:       sonnet (build) + inline (design of the home/coupling)
   Orchestrator role: delegate the build contract → sonnet implementer; main agent QCs the diff + live-tests the per-unit/value-ladder coupling on 540 + commits.
-  Action:      Wire the per-unit + value-ladder display as a SIBLING output of the buybox/configurator (pre-decided v1.1 — NOT a product-card attr; preserves D204 price-never-overridable). Server-side computation only (render.php/REST, never client arithmetic). Reference price from operator `_sgs_reference_price_pence` with Spec 28 strict `'1'===(string)$v` guard pattern — never derived from regular_price, never auto-computed; no reference → no strikethrough/badge anywhere. Displayed prices follow WC tax-display setting (headline + per-unit agree). Per-unit denomination = inspector control. Selection updates the live value-ladder line per combination via the existing buybox context (reuse `sgs_value_ladder()` / `sgs_saving_display()` from Spec 28; couple to the buybox's selectedKey).
-  Files:       plugins/sgs-blocks/src/blocks/buybox/{render.php,view.js,block.json,style.css}; reuse includes/ Spec 28 helpers (do NOT fork them)
+  Action:      Wire the per-unit + value-ladder display as a SIBLING output of the buybox/configurator (pre-decided v1.1 — NOT a product-card attr; preserves D204 price-never-overridable). Server-side computation only (render.php/REST, never client arithmetic). Reference = operator `_sgs_base_price_pence` gated by `_sgs_base_price_attested` with the strict `'1'===(string)$v` guard on the attestation flag (qc-council correction — NOT `_sgs_reference_price_pence`, which does not exist); never derived from regular_price, never auto-computed; no attested reference → no strikethrough/badge anywhere (reference impl `product-card/render.php:548-554`). Displayed prices follow WC tax-display setting (headline + per-unit agree). Per-unit denomination = inspector control. **JS HOME (qc-council HIGH correction):** the buybox has NO own view.js — it mounts the `sgs/product-card` store. SSR value-ladder rows are seeded in `buybox/render.php`; the live tier-swap update goes in `product-card/view.js` (the running store, in `applyPillSelection`), NOT a new buybox/view.js. Reuse `sgs_value_ladder()` / `sgs_saving_display()` from `includes/helpers-value-ladder.php` server-side.
+  Files:       plugins/sgs-blocks/src/blocks/buybox/{render.php,block.json,style.css} (SSR ladder rows + denomination control); plugins/sgs-blocks/src/blocks/product-card/view.js (live tier-swap ladder update in the shared store — buybox has no view.js); reuse includes/helpers-value-ladder.php (do NOT fork)
   Inputs:      Step 1 ground truth (reference-price state); buybox shipped P1; Spec 28 pricing engine
   Outcome:     PDP shows headline + per-unit derived from real data both tax-consistent; tier selection updates the value-ladder live; no reference price → no badge (grep-confirmed no client %-off math).
   Exec:        SEQUENTIAL
@@ -128,7 +128,7 @@ Step 3 — FR-30-10: DMCC-compliant reviews on the PDP
   Model:       sonnet
   Orchestrator role: delegate; main agent live-tests both the populated AND empty review states + grep-audits for hardcoded text + commits.
   Action:      Wire PDP reviews from the shipped Trustpilot sync (`sgs/trustpilot-reviews`) or a verified-buyer source into the FR-30-2 reviews slot. Static/baked review content BANNED (DMCC — displaying trader liable). Empty/failed/down source → graceful state: inspector toggle chooses hidden vs "Reviews coming soon" placeholder, never a broken gap; schema emits nothing when empty (FR-30-9 gate). Grep templates + converter emit for zero hardcoded review text.
-  Files:       theme/sgs-theme/parts/sgs-pdp-content.html (reviews slot); plugins/sgs-blocks/src/blocks/trustpilot-reviews/* (toggle attr if needed); includes/review-schema.php (empty-gate only)
+  Files:       theme/sgs-theme/parts/sgs-pdp-content.html (reviews slot); plugins/sgs-blocks/src/blocks/trustpilot-reviews/* (shipped `dataSource` enum already has synced/placeholder — qc-council confirmed; wire the empty-state toggle to it); the aggregateRating empty-gate lives in `includes/class-product-schema.php:build_aggregate_rating()` (qc-council: NOT `review-schema.php`, which is the sgs/testimonial emitter)
   Inputs:      Step 1 (live Trustpilot state); shipped Trustpilot sync infra
   Outcome:     PDP renders only synced/verified reviews; empty source → toggle-controlled graceful state, no layout gap; zero hardcoded review text.
   Exec:        PARALLEL with step 2 (disjoint files — buybox vs reviews slot)
@@ -148,7 +148,7 @@ QA Gate A — P2 differentiators live + DMCC/honesty gates
   Model:   inline
   Exec:    SEQUENTIAL
   Deps:    steps 2–3
-  Check:   On canary 540: (1) per-unit + value-ladder update on tier select (chrome-devtools); (2) no-reference-price fixture shows zero badge (`grep -rn 'pctOff\|%.*off' buybox/view.js` → only server-seeded, no arithmetic); (3) reviews empty-state toggle works both ways; (4) `grep -rn` templates+emit for hardcoded review strings = 0; (5) axe 0 on PDP. Evidence → .claude/reports/spec30-p2/.
+  Check:   On canary 540: (1) per-unit + value-ladder update on tier select (chrome-devtools); (2) no-attested-reference fixture shows zero badge — grep gate targets `product-card/view.js` (qc-council: buybox has no view.js): confirm any NEW value-ladder %/saving is server-seeded from `sgs_value_ladder()`, not client-computed (the pre-existing `pctOff` fallback at product-card/view.js ~L481 is NOT a regression — leave it); (3) reviews empty-state toggle works both ways; (4) `grep -rn` templates+emit for hardcoded review strings = 0; (5) axe 0 on PDP. Evidence → .claude/reports/spec30-p2/.
   Pass:    All 5 green with captured evidence.
   Fail:    Per-item root-cause (/systematic-debugging); live DOM only, never assertion output.
   Marker:  QA
@@ -291,20 +291,26 @@ Step 8 — Commit checkpoint: shop (FR-30-3/6/5)
 
 ## ── SCHEMA + GO-LIVE + PARKED FOLLOW-UPS ──
 
-Step 9 — FR-30-9: schema completeness audit per page type
-  Model:       sonnet (audit) + inline opus (adversarial check)
-  Orchestrator role: delegate the audit/align → sonnet; main agent runs the local JSON-LD validator + draft-leak guest probe + grep gates + commits.
-  Action:      AUDIT + ALIGN the SHIPPED emitters (Reuse Inventory — do NOT rewrite). PDP: one Product + nested Offer (price/priceCurrency/availability/priceValidUntil-when-sale-end/url) + brand + sku/gtin/mpn + offers.shippingDetails + hasMerchantReturnPolicy INCLUDING `returnPolicyCountry` (now required; from WC store base-country unless overridden) + BreadcrumbList; variants via shipped ProductGroup gating; NO positiveNotes/negativeNotes. Shop: BreadcrumbList + URL-only ItemList (D204 walker) — NO per-item Product. Cart/checkout/account: no schema + noindex via `is_cart()||is_checkout()||is_account_page()||is_wc_endpoint_url()`. Sitewide: Organization (logo/sameAs/contactPoint/address + org-level hasMerchantReturnPolicy + hasShippingService) + WebSite (NO SearchAction). REMOVE rich-result FAQPage + any SearchAction. Guards: emit only on `get_post_status()==='publish'` AND `$product->is_visible()` (D204 draft-leak); aggregateRating/review ONLY if FR-30-10 has live data (omit, never stub).
-  Files:       plugins/sgs-blocks/includes/class-product-*.php + review-schema.php (audit/align only); theme noindex emitter
+Step 9 — FR-30-9: schema — AUDIT shipped Product/Offer + BUILD the missing sitewide/noindex pieces
+  Model:       sonnet (build) + inline opus (adversarial check)
+  Orchestrator role: split-design the audit-vs-build scope → delegate; main agent runs the local JSON-LD validator + draft-leak guest probe + grep gates + commits.
+  Action:      **qc-council RECLASSIFICATION: this is NOT "audit/align only" — three pieces are NET-NEW (verified absent).**
+    (A) AUDIT/ALIGN the SHIPPED PDP emitter `class-product-schema.php` (ProductGroup): confirm Product + nested Offer (price/priceCurrency/availability/priceValidUntil-when-sale-end/url) + brand + sku/gtin/mpn + offers.shippingDetails + hasMerchantReturnPolicy + BreadcrumbList; variants via shipped ProductGroup gating; NO positiveNotes/negativeNotes. Confirm the Shop URL-only ItemList (D204 walker) — NO per-item Product.
+    (B) ADD `returnPolicyCountry` to the return-policy object (NET-NEW — absent codebase-wide; source from `get_option('woocommerce_default_country')` unless an override is set in the `sgs_configurator_returns` settings) — both PDP + Organization output.
+    (C) BUILD the sitewide Organization (logo/sameAs/contactPoint/address + org-level hasMerchantReturnPolicy + hasShippingService) + WebSite (NO SearchAction) emitters (NET-NEW — no Organization/WebSite emitter exists).
+    (D) BUILD the cart/checkout/account noindex via a `wp_head` hook with `is_cart()||is_checkout()||is_account_page()||is_wc_endpoint_url()` (NET-NEW — `grep is_cart\|is_checkout` returns zero schema/noindex hits).
+    (E) REMOVE rich-result FAQPage: delete the `sgs_emit_faq_page_jsonld()` add_action in `includes/product-faq-schema.php` AND remove its `require_once` from `product-faq/render.php` (qc-council: removing the schema file without updating the render require PHP-FATALS the block) — KJC-4 decides block-retire vs emitter-only. Grep zero SearchAction.
+    GUARD HOME (qc-council MEDIUM): the D204 draft-leak guard is `is_publicly_listable()` in `class-product-item-list.php` (called via `configurator-head.php:sgs_get_bound_configurator_product_ids()`), NOT inside `class-product-schema.php::build_script()` — AUDIT that path is tight; do NOT add a redundant guard in build_script. aggregateRating/review ONLY if FR-30-10 has live data (omit, never stub) — the gate is `class-product-schema.php:build_aggregate_rating()`.
+  Files:       plugins/sgs-blocks/includes/class-product-schema.php (audit + returnPolicyCountry); NEW includes/class-org-website-schema.php (Organization+WebSite); NEW theme or includes noindex `wp_head` emitter; includes/product-faq-schema.php + src/blocks/product-faq/render.php (FAQPage removal); confirm guard in class-product-item-list.php/configurator-head.php
   Inputs:      Step 3 (FR-30-10 review-data state); D204 schema work; Step 1 emitter enumeration
-  Outcome:     Local JSON-LD validator zero errors; draft/scheduled product → zero JSON-LD as guest; cart/checkout/account noindex; grep zero SearchAction + zero rich-result FAQPage; returnPolicyCountry present.
+  Outcome:     Local JSON-LD validator zero errors; draft/scheduled product → zero JSON-LD as guest; cart/checkout/account noindex; grep zero SearchAction + zero rich-result FAQPage; returnPolicyCountry present in PDP + Organization.
   Exec:        PARALLEL with steps 5–8 (schema emitters vs shop templates are disjoint — but the aggregateRating gate depends on step 3's review state)
   Deps:        step 3 (review-data state for the aggregateRating gate)
   Marker:      SESSION-START
-  Time:        40 min
+  Time:        75 min (qc-council: was 40 — Organization+WebSite+noindex+returnPolicyCountry are net-new builds, not an align)
   Tooling:     /subagent-driven-development; /adversarial-council (the codebase had a draft→public JSON-LD leak — red-team it); local JSON-LD validator; Google Rich Results Test (post-deploy verification only)
-  On-Fail:     Revert emitter edits; D204 emitters resume (already live-safe).
-  Cold-Entry:  Spec 30 FR-30-9; D204; review-schema.php + class-product-*.php; `public-text-xml-endpoint-gotchas`
+  On-Fail:     Revert emitter edits; shipped Product/Offer emitter resumes (already live-safe). New Organization/noindex files: delete the require/hook (single line) to disable.
+  Cold-Entry:  Spec 30 FR-30-9; D204; class-product-schema.php + class-product-item-list.php + configurator-head.php + product-faq-schema.php; `public-text-xml-endpoint-gotchas`
   Prompt:      [dispatch via /subagent-prompt — embed the FR-30-9 per-page-type shape table verbatim]
   Test:
     Happy:       local validator zero errors on PDP/shop/sitewide shapes
@@ -389,6 +395,12 @@ Step 12 — Phase close: /qc-council + /sgs-update + Bean R-22-13 + commit/merge
   - **Cost of wrong choice:** High — shipping an unhardened search endpoint re-opens the exact draft-leak/XSS class this codebase shipped before. The design gate + security qc-council are non-negotiable.
   - **Who decides:** architect (taken); security qc-council gates the commit.
 
+- **Decision (KJC-4):** FAQPage removal scope (FR-30-9 step 9E).
+  - **Options:** A) remove only the footer `sgs_emit_faq_page_jsonld()` emitter + its add_action, keep the `sgs/product-faq` block rendering its Q&A content without schema / B) retire the `sgs/product-faq` block entirely
+  - **Recommendation:** A — strip only the rich-result schema (Google dropped FAQ rich results), keep the block + its on-page Q&A content (still useful UX + the AI-citation FAQ framing per FR-27-F2). MUST also remove the `require_once` in `product-faq/render.php` or the block PHP-fatals (qc-council caught this).
+  - **Cost of wrong choice:** Medium — deleting the block loses authored FAQ content; leaving the require after deleting the schema file fatals the block.
+  - **Who decides:** architect, confirm with Bean if any client has authored FAQ content.
+
 ### Pre-emptive decisions (Hidden Decisions pass — inline analysis; gemini-flash/cerebras account-blocked this session, flagged for re-run at execution)
 
 - **Buybox serialisation (FR-30-8 vs notify-me, step 2 vs step 10).** Both touch `buybox/render.php` + `view.js`. They MUST NOT run in parallel — step 10's notify-me build depends on step 4 (FR-30-8 committed first), serialising the buybox edits. Recorded in step 10 Deps.
@@ -397,6 +409,20 @@ Step 12 — Phase close: /qc-council + /sgs-update + Bean R-22-13 + commit/merge
 - **Searchable-filter fixture (FR-30-6, step 6).** The 16-vs-15 boundary test needs a real WC attribute with exactly 16 and exactly 15 terms. Seed both fixtures via SSH BEFORE the boundary test (recorded in step 6 Tooling); the canary's existing flavour attribute (12 terms) is insufficient.
 - **FR-30-11 runs at EVERY phase-close gate, not just the end.** The responsive-audit script + executed-JS measurement is a gate condition on QA Gates A/B/C, not a single final step (recorded in each gate's Check).
 - **Deploy-before-measure on EVERY visible change.** view.js changes need their `*.asset.php` deployed (the ?ver carrier) + opcache reset + served-?ver check before any browser test — else the test measures stale output. Binding across all build steps.
+
+## QC Council receipt (2026-06-11)
+
+Cross-family council (sonnet ground-truth verifier + haiku spec-fidelity checker + inline structural pre-gate + adversarial synthesis) ran on this plan BEFORE execution. **Spec fidelity: FAITHFUL** — every FR Done-when captured, all 8 FR-30-5 server-hardening guards + the SSR-collapse spec + DMCC + thresholds (16+, 30/IP/min, 300ms, <150ms, 44px) exact, zero dropped requirements. **Ground-truth defects found + FIXED in this revision (8, all empirically validated):**
+1. HIGH — `buybox/view.js` does not exist (buybox mounts the product-card store); FR-30-8 live update goes in `product-card/view.js`. Steps 2 + QA-Gate-A corrected.
+2. HIGH — `_sgs_reference_price_pence` absent codebase-wide; real key `_sgs_base_price_pence` + `_sgs_base_price_attested` (strict guard on the attestation flag). Pre-conditions + Step 2 corrected.
+3. HIGH — QA-Gate-A grep gate targeted the non-existent file (false-green); retargeted to `product-card/view.js` with the pre-existing-fallback note.
+4. MEDIUM — D204 draft-leak guard lives in `is_publicly_listable()` (`class-product-item-list.php` via `configurator-head.php`), NOT the schema emitter; Step 9 corrected to audit that path, not add a dup.
+5. MEDIUM — FAQPage removal must update `product-faq/render.php`'s require or the block PHP-fatals; Step 9E + KJC-4 added.
+6. MEDIUM — `returnPolicyCountry` absent → NET-NEW build, not align; Step 9B + time bump.
+7. LOW-MED — `review-schema.php` is the sgs/testimonial emitter; the aggregateRating gate is `class-product-schema.php:build_aggregate_rating()`. Step 3 corrected.
+8. MEDIUM — Organization + WebSite + cart/checkout noindex are UNSHIPPED → FR-30-9 reclassified from "audit-only" to "audit + 3 net-new builds"; Step 9 estimate 40→75 min.
+
+**Verdict: plan VALIDATED-with-corrections.** No falsified steps; the spec contract was sound, the ground-truth file targets were stale. Saved ~1–2 build waves (a subagent told to edit a non-existent `buybox/view.js` or probe a non-existent meta would have produced a dead-on-arrival diff + a false-green gate). gemini-flash/cerebras peer raters were account-blocked — re-run the cross-family pass at execution if a third family is wanted.
 
 ## Parking lot
 
