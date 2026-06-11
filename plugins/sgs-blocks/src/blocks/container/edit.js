@@ -653,6 +653,7 @@ export default function Edit({ attributes, setAttributes }) {
               )}
             </p>
             <SpacingControl
+              freeInput
               label={__("Padding", "sgs-blocks")}
               value={gridItemPadding}
               onChange={(val) => setAttributes({ gridItemPadding: val })}

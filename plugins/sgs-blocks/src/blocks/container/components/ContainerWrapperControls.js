@@ -993,6 +993,7 @@ function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 				) }
 			</p>
 			<SpacingControl
+				freeInput
 				label={ __( 'Padding', 'sgs-blocks' ) }
 				value={ gridItemPadding }
 				onChange={ ( val ) => setAttributes( { gridItemPadding: val } ) }
