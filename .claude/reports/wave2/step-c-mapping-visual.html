@@ -625,14 +625,14 @@ const DRAFT1 = [
       { el: 'h2 (unclassed)', target: 'sgs/heading', s: ['rule'], r: ['G2'], note: 'tag→slot' },
       { el: 'div.sgs-products', target: 'sgs/card-grid or container grid', s: ['rule', 'db'], r: ['G6', 'G7'], note: "No 'products' alias — tie-break needed" },
       { el: '.sgs-product-card--featured', target: 'sgs/product-card variantStyle=featured', s: ['rule', 'db'], r: ['G8'], note: "'featured' compound modifier; variant_attr unset" },
-      { el: 'background / border-radius:16px / border', target: '(no attrs)', s: ['block'], note: '🧱 product-card missing background, borderRadius, border' },
+      { el: 'background / border-radius:16px / border', target: '(no attrs)', s: ['covered'], note: '✅ S21 — product-card border/bg/radius now exposed via the container-mirror supports (A1) + B6 made the trial border overridable' },
       { el: 'h3.__title typography', target: '(no attrs)', s: ['block'], note: '🧱 product-card has NO heading typography attrs' },
       { el: 'p.__description typography', target: '(no attrs)', s: ['block'], note: '🧱 no description typography on product-card' },
       { el: 'img height:220px / objectFit', target: 'imageHeight ✅ / objectFit missing', s: ['covered', 'db'], note: 'objectFit attr missing' },
       { el: 'span.__price typography', target: '(no attrs)', s: ['db'], note: "'price' alias + typography attrs both missing" },
       { el: 'span.__price-note', target: 'product-card.priceNote', s: ['db'], note: "'price-note' alias + typography missing" },
       { el: 'a.sgs-button--primary (standalone)', target: 'product-card.ctaText / sgs/button', s: ['db', 'rule'], note: "'sgs-button' standalone alias path needed" },
-      { el: '.sgs-product-card--trial', target: 'sgs/product-card framingMode=trial', s: ['rule', 'db'], r: ['G8'], note: 'border:2px dashed + backgroundGradient both missing' },
+      { el: '.sgs-product-card--trial', target: 'sgs/product-card framingMode=trial', s: ['rule', 'db'], r: ['G8'], note: 'B6 ✅ — trial border:2px dashed + gradient wrapped in :where(); operator/converter can now override them' },
     ]
   },
   {
@@ -664,7 +664,7 @@ const DRAFT1 = [
       { el: 'info-box heading typography', target: '(no attrs)', s: ['block'], note: '🧱 headingFontFamily/Size/Weight/Colour all absent' },
       { el: 'info-box description typography', target: '(no attrs)', s: ['block'], note: '🧱 no description typography attrs' },
       { el: 'emoji icon font-size / margin', target: '(no attrs)', s: ['db', 'rule'], r: ['G9'], note: 'mediaEmojiSize / margin attrs missing' },
-      { el: 'p.sgs-ingredients-section__disclaimer', target: 'sgs/notice-banner', s: ['covered', 'block'], note: 'Routing ✅; 🧱 missing fontStyle/padding/background/border/borderRadius' },
+      { el: 'p.sgs-ingredients-section__disclaimer', target: 'sgs/notice-banner', s: ['covered', 'db'], note: 'Routing ✅; E9 ✅ — padding/background/border/borderRadius now overridable (:where + native supports); only fontStyle still missing' },
     ]
   },
   {
@@ -675,7 +675,7 @@ const DRAFT1 = [
       { el: 'span.__label / h2 / p.__sub', target: 'sgs/label / sgs/heading / sgs/text', s: ['covered', 'rule'], r: ['G2'], note: 'All typography ✅' },
       { el: 'div.sgs-gift-section__cards (grid)', target: 'sgs/container grid', s: ['rule', 'covered'], r: ['G4'], note: '1|2 col ✅' },
       { el: 'sgs-gift-section__card ×2', target: 'sgs/product-card', s: ['rule'], r: ['G8'], note: 'Content-signature detection needed' },
-      { el: 'card background / border-radius / border', target: '(no attrs)', s: ['block'], note: '🧱 product-card missing background / borderRadius / border' },
+      { el: 'card background / border-radius / border', target: '(no attrs)', s: ['covered'], note: '✅ S21 — product-card border/bg/radius via the container-mirror supports (A1+B6)' },
       { el: 'card heading + description typography', target: '(no attrs)', s: ['block'], note: '🧱 product-card missing heading + description typography' },
       { el: 'div.__card-price', target: 'product-card price / sgs/text', s: ['db'], note: "'card-price' alias missing; price typography missing" },
       { el: 'sgs-announcement-bar--send-to-ward', target: 'sgs/announcement-bar', s: ['db', 'block'], note: "'announcement-bar' alias missing; 🧱 border/radius/padding/layout all absent" },
@@ -691,9 +691,9 @@ const DRAFT1 = [
       { el: 'span.__trustpilot-stars', target: 'sgs/star-rating', s: ['covered'], note: "'stars'→rating slot ✅" },
       { el: 'div.sgs-testimonial-slider', target: 'sgs/testimonial-slider', s: ['covered'], note: 'BEM→blocks.slug; columns Mobile/Tablet ✅' },
       { el: 'article.sgs-testimonial ×3 (routing)', target: 'sgs/testimonial child', s: ['covered'], note: "style='card' ✅ for background" },
-      { el: 'testimonial border-radius / padding / border', target: '(no attrs)', s: ['block'], note: '🧱 cardBorderRadius / cardPadding / cardBorder missing' },
+      { el: 'testimonial border-radius / padding / border', target: '(no attrs)', s: ['covered'], note: '✅ S21 (D8) — testimonial keeps the container-mirror: border/radius/padding available' },
       { el: 'p.__text → testimonial.quote', target: 'testimonial.quote', s: ['db'], note: "'review-text'/'text'→quote alias needed" },
-      { el: 'testimonial quote typography', target: '(no attrs)', s: ['block'], note: '🧱 quoteFontSize/Style/Colour/LineHeight all absent' },
+      { el: 'testimonial quote typography', target: '(no attrs)', s: ['covered', 'db'], note: 'D8 ✅ — quoteFontSize + quoteColour added (+ summary/name/role/rating colour + size); quoteStyle/LineHeight still absent' },
       { el: 'p.__author → testimonial.name', target: 'testimonial.name', s: ['db'], note: "'author'→heading alias needed" },
     ]
   },
@@ -719,7 +719,7 @@ const DRAFT2 = [
       { el: 'h1.product-name', target: 'product-card.productName → child sgs/heading', s: ['covered'], note: 'heading attrs ✅' },
       { el: 'div.product-rating', target: 'sgs/container flex row', s: ['db'], note: "'product-rating' alias missing" },
       { el: 'div.variant-group ×4', target: 'sgs/option-picker', s: ['covered'], note: "'variant-group'→option-picker ✅" },
-      { el: 'div.variant-label', target: 'option-picker.label', s: ['db', 'block'], note: "'variant-label' alias missing; 🧱 labelFontSize/Weight/Colour/MarginBottom absent" },
+      { el: 'div.variant-label', target: 'option-picker.label', s: ['db', 'covered'], note: "'variant-label' alias missing; C7 ✅ added labelFontSize + labelColour; Weight/MarginBottom still absent" },
       { el: 'div.pill-group', target: 'option-picker inner', s: ['covered', 'db'], note: 'pillGap/pillFlexWrap missing' },
       { el: 'button.pill visual attrs', target: 'pillBgColour etc.', s: ['covered', 'db'], note: 'Selected* ✅; pillBorderRadius/pillFontSize/pillFontWeight missing' },
       { el: 'button.pill-coming-soon', target: 'optionItems[] pending state', s: ['db'], note: "'coming-soon'→state; opacity/italic/dashed pending* attrs missing" },
@@ -744,7 +744,7 @@ const DRAFT2 = [
     id: 'p4', name: '§4 Allergen', bem: '.allergen-section', target: 'sgs/container',
     rows: [
       { el: 'section.allergen-section', target: 'sgs/container', s: ['db', 'rule'], r: ['G7'], note: "Alias needed" },
-      { el: 'div.allergen-block', target: 'sgs/notice-banner (variant=warning)', s: ['db', 'block', 'rule'], r: ['G3'], note: "Alias needed; 🧱 background/border/radius/padding all missing" },
+      { el: 'div.allergen-block', target: 'sgs/notice-banner (variant=warning)', s: ['db', 'covered', 'rule'], r: ['G3'], note: "Alias needed; E9 ✅ — background/border/radius/padding now overridable" },
       { el: 'p.allergen-callout', target: 'sgs/label', s: ['db'], note: "'allergen-callout' alias + marginBottom attr" },
       { el: 'h3#allergen-h3', target: 'sgs/heading', s: ['covered', 'rule'], r: ['G2'], note: 'tag→slot; typography ✅' },
       { el: 'p.allergen-list', target: 'sgs/text', s: ['db'], note: "'allergen-list'→text (NOT items) alias" },
@@ -756,8 +756,8 @@ const DRAFT2 = [
     rows: [
       { el: 'section.product-reviews', target: 'sgs/container', s: ['db', 'rule'], r: ['G7'], note: "Alias needed" },
       { el: 'div.reviews-grid', target: 'sgs/testimonial-slider', s: ['db'], note: "'reviews-grid' alias needed" },
-      { el: 'article.review-card ×3 (routing)', target: 'sgs/testimonial', s: ['covered', 'block'], note: 'Routing ✅; 🧱 radius/padding/border missing' },
-      { el: 'p.review-text → testimonial.quote', target: 'testimonial.quote', s: ['db', 'block'], note: "'review-text'→quote alias; 🧱 no quote typography" },
+      { el: 'article.review-card ×3 (routing)', target: 'sgs/testimonial', s: ['covered'], note: 'Routing ✅; D8 ✅ — testimonial container-mirror border/radius/padding available' },
+      { el: 'p.review-text → testimonial.quote', target: 'testimonial.quote', s: ['db', 'covered'], note: "'review-text'→quote alias; D8 ✅ added quote typography (quoteFontSize/Colour)" },
       { el: 'p.review-author → testimonial.name', target: 'testimonial.name', s: ['db'], note: "'review-author'→heading alias" },
       { el: 'span.review-date → testimonial.role', target: 'testimonial.role', s: ['db'], note: "'review-date'→role alias; typography attrs" },
     ]
@@ -974,13 +974,13 @@ function renderSummary() {
           </ul>
         </div>
         <div class="sblock block">
-          <h4>🧱 Block completeness (6 blocks)</h4>
+          <h4>🧱 Block completeness (6 blocks — 4 substantially closed in session-21 block-quality programme: product-card / notice-banner / testimonial / option-picker)</h4>
           <ul>
             <li><strong>sgs/info-box</strong> — headingFontFamily/Size/Weight, description typography, borderRadius, padding, textAlign</li>
-            <li><strong>sgs/testimonial</strong> — quote typography, name/role typography, card border/radius/padding</li>
-            <li><strong>sgs/notice-banner</strong> — background, border, border-radius, padding, fontStyle</li>
-            <li><strong>sgs/product-card</strong> — card border/radius/background/gradient + heading/price typography</li>
-            <li><strong>sgs/option-picker</strong> — pill + label typography/spacing, pillBorderRadius</li>
+            <li><strong>sgs/testimonial</strong> — <s>quote/name/role typography (size+colour), card border/radius/padding</s> ✅ DONE (D8, S21); remaining: quoteStyle/LineHeight</li>
+            <li><strong>sgs/notice-banner</strong> — <s>background, border, border-radius, padding</s> ✅ DONE (E9, S21); remaining: fontStyle</li>
+            <li><strong>sgs/product-card</strong> — <s>card border/radius/background/gradient</s> ✅ DONE (A1+B6, S21); remaining: heading/price typography</li>
+            <li><strong>sgs/option-picker</strong> — label font-size+colour ✅ DONE (C7, S21); remaining: label weight/margin, pill typography, pillBorderRadius</li>
             <li><strong>sgs/announcement-bar</strong> — border/radius/padding/layout (inline use)</li>
           </ul>
         </div>
@@ -1005,7 +1005,7 @@ function render() {
         <span class="t-sky">⚙ converter rules (G1–G9)</span> +
         <span style="color:var(--amber);font-weight:600">➕ DB data (aliases/suffixes/tokens)</span> +
         <span class="t-rose">🧱 block-completeness (add missing per-element attrs)</span>.
-        All three are additive — none is a rearchitecture.
+        All three are additive — none is a rearchitecture.<br><br><strong style="color:var(--rose)">UPDATE 2026-06-11 (session-21 block-quality programme, D206):</strong> the 🧱 visual gaps are now largely closed — product-card / notice-banner / testimonial have border/background/radius/padding (container-mirror + :where overridable); testimonial gained per-element typography (quote/name/role size+colour) via the 7-variant rebuild; option-picker label gained size+colour (C7). Remaining 🧱: per-element <em>heading/price</em> typography (product-card, info-box), pill typography + pillBorderRadius (option-picker), fontStyle/lineHeight/weight tails, and announcement-bar. The ⚙ converter routing (G1–G9) + ➕ DB aliases are unchanged (cloning thread).
       </div>
 
       <div class="toolbar">
