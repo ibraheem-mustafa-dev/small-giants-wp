@@ -60,6 +60,12 @@ $card_max_width = isset( $attributes['cardMaxWidth'] ) ? sanitize_text_field( $a
 $image_height   = isset( $attributes['imageHeight'] ) ? sanitize_text_field( $attributes['imageHeight'] ) : '';
 $inner_padding  = isset( $attributes['innerPadding'] ) ? (string) $attributes['innerPadding'] : '';
 
+// C7 forward: per-instance styling for the in-card option-picker labels
+// (Size/Flavour legends). Forwarded into each render_block('sgs/option-picker')
+// below; the option-picker guards on '' !== $x, so empty values are no-ops.
+$picker_label_font_size = isset( $attributes['pickerLabelFontSize'] ) ? sanitize_text_field( $attributes['pickerLabelFontSize'] ) : '';
+$picker_label_colour    = isset( $attributes['pickerLabelColour'] ) ? sanitize_text_field( $attributes['pickerLabelColour'] ) : '';
+
 $classes = array( 'product-card' );
 if ( 'trial' === $variant_style ) {
 	$classes[] = 'trial-card';
@@ -767,6 +773,8 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 								),
 								'defaultSelected' => $manifest['defaultAxes'][ $axis['taxonomy'] ] ?? '',
 								'typeKey'         => $axis['taxonomy'],
+								'labelFontSize'   => $picker_label_font_size,
+								'labelColour'     => $picker_label_colour,
 							),
 						)
 					);
@@ -1177,6 +1185,8 @@ ob_start();
 					'defaultSelected' => $first_key,
 					'contentImpact'   => $picker_impacts,
 					'typeKey'         => $sgs_pill_type_key,
+					'labelFontSize'   => $picker_label_font_size,
+					'labelColour'     => $picker_label_colour,
 				),
 			)
 		);

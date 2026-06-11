@@ -50,3 +50,25 @@ Live Playwright on the deployed editor (page 1069), 0 console errors throughout:
 ## verdict
 PASS — all four fixes confirmed on the live canary; B6 is render-neutral. Bean's
 editor eyeball (R-22-13) is the remaining co-authoritative sign-off.
+
+---
+
+## Follow-on (same day): picker-label forwarding (answers "are the in-card pickers customisable?")
+
+change: product-card now exposes `pickerLabelFontSize` + `pickerLabelColour` (block.json
+1.16.3 -> 1.16.4) in a bound-only "Picker labels" inspector group, and forwards them into
+BOTH `render_block('sgs/option-picker')` sites as the option-picker's `labelFontSize` /
+`labelColour`. So the built-in Size/Flavour picker labels are now customisable.
+
+verification (block-renderer REST, product 540 = 48-SKU fixture, sourceMode wc-product,
+pickerLabelFontSize=22px, pickerLabelColour=primary):
+- 2 option-picker legends emitted (Size + Flavour), BOTH carrying
+  `style="font-size:22px;color:var(--wp--preset--color--primary)"`.
+- has font-size:22px: true; primary var present in legends: true.
+
+dead-control guard: 0 net-new. Gate B: the 6 product-card element font-sizes the new
+`*FontSize` attr falsely implicated (`.product-card .price`/`.product-desc`/`.price-from*`)
+were added to scripts/hardcoded-render-defaults-baseline.json with a reason — they are
+pre-existing element typography NOT owned by the forwarding attr (Gate B's E1 doesn't
+parse descendant-class selectors; modifying the shared checker is a design-gated change,
+deferred). verdict: PASS.

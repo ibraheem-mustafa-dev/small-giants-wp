@@ -7,7 +7,7 @@ import {
 	RichText,
 } from '@wordpress/block-editor';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { SpacingControl } from '../../components';
+import { SpacingControl, DesignTokenPicker } from '../../components';
 import {
 	PanelBody,
 	SelectControl,
@@ -602,6 +602,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		ctaStyle,
 		cta2Style,
 		ctaBehaviour,
+		pickerLabelFontSize,
+		pickerLabelColour,
 	} = attributes;
 
 	const isTrial = variantStyle === 'trial';
@@ -1104,6 +1106,50 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						/>
 					</PanelBody>
 				) }
+
+				{ /* ── Picker labels panel (connected products only) ── */ }
+					{ isBound && (
+						<PanelBody
+							title={ __( 'Picker labels', 'sgs-blocks' ) }
+							initialOpen={ false }
+						>
+							<p style={ { marginTop: 0 } }>
+								{ __(
+									'Style the in-card option labels (e.g. Size, Flavour) shown above each set of pills.',
+									'sgs-blocks'
+								) }
+							</p>
+							<TextControl
+								label={ __(
+									'Picker label font size',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Any CSS size, e.g. 18px or 1.2rem. Leave empty for the default.',
+									'sgs-blocks'
+								) }
+								value={ pickerLabelFontSize || '' }
+								onChange={ ( v ) =>
+									setAttributes( {
+										pickerLabelFontSize: v,
+									} )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<DesignTokenPicker
+								label={ __(
+									'Picker label colour',
+									'sgs-blocks'
+								) }
+								value={ pickerLabelColour }
+								onChange={ ( v ) =>
+									setAttributes( {
+										pickerLabelColour: v,
+									} )
+								}
+							/>
+						</PanelBody>
+					) }
 
 				{ /* ── Content overrides panel (connected products only) ── */ }
 				{ isBound && (
