@@ -30,3 +30,16 @@ first_paint_capture_passed: true
 - php -l clean; build green ×3 guards; probe pages deleted.
 
 ## Result — PASS (R-22-11)
+
+---
+
+# Addendum — Step 4 inspector dedup (same day)
+
+verdict: PASS
+first_paint_capture_passed: true
+
+**Change:** container/edit.js refactored from 1375 → 276 lines: inline duplicate panels (Layout, Width, Grid item defaults, Background, Shape Dividers) replaced by the shared ContainerWrapperControls exports (`LayoutPanel`/`WidthPanel`/`BackgroundPanel`/`ShapeDividersPanel`/`GridItemDefaultsPanel` + shared `MIN_HEIGHT_OPTIONS`/`SHADOW_OPTIONS`). Container-specific panels (min-height, HTML tag, Template mode, Shadow body) stay inline. Zero frontend render change (editor-only refactor).
+
+**Validation (live canary editor, page 8):** full inspector enumeration with a container selected — all panels present (Layout, Responsive spacing, Content band, Template mode, Background, Shadow, Shape Dividers + extensions); switching layout→grid in-memory revealed Columns/Custom column template/Row template/Auto rows/Justify items/Align content + the Grid item defaults panel (Padding/Background/Radius/Border/Shadow/Text colour). Matches the before/after inventory; no control lost; reverted without save. Build green ×3 guards.
+
+## Result — PASS (R-22-11)

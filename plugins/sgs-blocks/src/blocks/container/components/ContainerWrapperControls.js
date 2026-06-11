@@ -167,7 +167,7 @@ const ALIGN_CONTENT_OPTIONS = [
 	{ label: __( 'Space evenly', 'sgs-blocks' ), value: 'space-evenly' },
 ];
 
-const MIN_HEIGHT_OPTIONS = [
+export const MIN_HEIGHT_OPTIONS = [
 	{ label: __( 'Auto', 'sgs-blocks' ), value: '' },
 	{ label: '50vh', value: '50vh' },
 	{ label: '75vh', value: '75vh' },
@@ -177,7 +177,7 @@ const MIN_HEIGHT_OPTIONS = [
 	{ label: '600px', value: '600px' },
 ];
 
-const SHADOW_OPTIONS = [
+export const SHADOW_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: '' },
 	{ label: 'Small', value: 'sm' },
 	{ label: 'Medium', value: 'md' },
@@ -193,7 +193,7 @@ const SHADOW_OPTIONS = [
  * Width + contentWidth controls.
  * Used by all three kinds.
  */
-function WidthPanel( { attributes, setAttributes } ) {
+export function WidthPanel( { attributes, setAttributes } ) {
 	const {
 		maxWidth = '',
 		widthMode = 'default',
@@ -310,7 +310,7 @@ function WidthPanel( { attributes, setAttributes } ) {
  * Gap (responsive) + layout type + columns (grid) + vertical alignment.
  * Used by section and layout kinds.
  */
-function LayoutPanel( { attributes, setAttributes } ) {
+export function LayoutPanel( { attributes, setAttributes } ) {
 	const {
 		layout = 'stack',
 		verticalAlign = 'start',
@@ -476,7 +476,7 @@ function LayoutPanel( { attributes, setAttributes } ) {
  * Background panel (image/video/overlay/svg/animation tabs).
  * Section kind only.
  */
-function BackgroundPanel( { attributes, setAttributes } ) {
+export function BackgroundPanel( { attributes, setAttributes } ) {
 	const {
 		backgroundImage,
 		backgroundImageTablet,
@@ -877,7 +877,7 @@ function BackgroundPanel( { attributes, setAttributes } ) {
  * Shape dividers panel (top + bottom).
  * Section kind only.
  */
-function ShapeDividersPanel( { attributes, setAttributes } ) {
+export function ShapeDividersPanel( { attributes, setAttributes } ) {
 	return (
 		<PanelBody title={ __( 'Shape Dividers', 'sgs-blocks' ) } initialOpen={ false }>
 			<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '8px' } }>
@@ -969,7 +969,7 @@ function ShapeDividersPanel( { attributes, setAttributes } ) {
  * Grid item defaults panel.
  * Section kind only (grid layout).
  */
-function GridItemDefaultsPanel( { attributes, setAttributes } ) {
+export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 	const {
 		layout = 'stack',
 		gridItemPadding = '',
