@@ -95,6 +95,7 @@
 }
 
 .product-card .product-desc {
+	line-height: var(--sgs-product-card-desc-line-height, 1.55);
 	font-size: 14px;
 	/* Body content — full text colour, NOT muted (Bean: descriptions read as
 	 * real copy; muting is reserved for small necessary contextual text). */
@@ -102,7 +103,6 @@
 	/* A5 (QC): margin removed — flex gap on .product-card-body handles rhythm. */
 	margin: 0;
 	flex: 1;
-	line-height: 1.55;
 }
 
 /* Pack-size pills */
@@ -128,7 +128,7 @@
 	display: flex;
 	align-items: center;
 	transition: all 0.15s;
-	line-height: 1;
+	line-height: var(--sgs-product-card-pill-line-height, 1);
 }
 
 .product-card .pill.active {
@@ -193,7 +193,7 @@
 	font-family: 'Fraunces', serif;
 	font-size: 28px;
 	font-weight: var(--sgs-card-price-font-weight, 700);
-	line-height: 1;
+	line-height: var(--sgs-product-card-price-line-height, 1);
 	color: var(--sgs-card-price-colour, var(--wp--preset--color--text, #3a2e26));
 }
 
@@ -239,7 +239,7 @@
 	transition: all 0.15s;
 	min-height: 44px;
 	box-sizing: border-box;
-	line-height: 1.4;
+	line-height: var(--sgs-product-card-btn-line-height, 1.4);
 }
 
 .product-card .btn-primary {

@@ -7,7 +7,7 @@ import {
 	RichText,
 } from '@wordpress/block-editor';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { SpacingControl, DesignTokenPicker } from '../../components';
+import { SpacingControl, DesignTokenPicker, TypographyControls } from '../../components';
 import {
 	PanelBody,
 	SelectControl,
@@ -604,11 +604,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		ctaBehaviour,
 		pickerLabelFontSize,
 		pickerLabelColour,
-		titleFontSize,
-		titleFontWeight,
 		titleColour,
-		priceFontSize,
-		priceFontWeight,
 		priceColour,
 	} = attributes;
 
@@ -791,29 +787,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								}
 								__nextHasNoMarginBottom
 							/>
-							<TextControl
-								label={ __( 'Title font size', 'sgs-blocks' ) }
-								help={ __(
-									'A token slug (e.g. medium) or a CSS value (e.g. 1.25rem). Empty = theme default.',
-									'sgs-blocks'
-								) }
-								value={ titleFontSize || '' }
-								onChange={ ( v ) =>
-									setAttributes( { titleFontSize: v } )
-								}
-								__nextHasNoMarginBottom
-							/>
-							<TextControl
-								label={ __( 'Title font weight', 'sgs-blocks' ) }
-								help={ __(
-									'e.g. 400, 600, 700, bold. Empty = theme default.',
-									'sgs-blocks'
-								) }
-								value={ titleFontWeight || '' }
-								onChange={ ( v ) =>
-									setAttributes( { titleFontWeight: v } )
-								}
-								__nextHasNoMarginBottom
+							<TypographyControls
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								prefix="title"
 							/>
 							<DesignTokenPicker
 								label={ __( 'Title colour', 'sgs-blocks' ) }
@@ -898,29 +875,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							onChange={ onPackSizesChange }
 							__nextHasNoMarginBottom
 						/>
-						<TextControl
-							label={ __( 'Price font size', 'sgs-blocks' ) }
-							help={ __(
-								'A token slug (e.g. large) or a CSS value (e.g. 2rem). Empty = theme default.',
-								'sgs-blocks'
-							) }
-							value={ priceFontSize || '' }
-							onChange={ ( v ) =>
-								setAttributes( { priceFontSize: v } )
-							}
-							__nextHasNoMarginBottom
-						/>
-						<TextControl
-							label={ __( 'Price font weight', 'sgs-blocks' ) }
-							help={ __(
-								'e.g. 400, 600, 700, bold. Empty = theme default.',
-								'sgs-blocks'
-							) }
-							value={ priceFontWeight || '' }
-							onChange={ ( v ) =>
-								setAttributes( { priceFontWeight: v } )
-							}
-							__nextHasNoMarginBottom
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							prefix="price"
+							showStyle={ false }
+							showLineHeight={ false }
 						/>
 						<DesignTokenPicker
 							label={ __( 'Price colour', 'sgs-blocks' ) }

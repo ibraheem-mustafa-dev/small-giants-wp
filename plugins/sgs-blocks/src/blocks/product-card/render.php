@@ -102,32 +102,27 @@ if ( '' !== $inner_padding_css ) {
 	$inline_styles[] = '--sgs-product-card-inner-padding:' . $inner_padding_css . ';';
 }
 
-// ── Per-element typography CSS vars (title heading + price) ─────────────
+// ── Per-element typography (title heading + price) ──────────────────────
+// Font size/weight/style/line-height now come from the shared
+// TypographyControls component → sgs_typography_css_rule() scoped <style>
+// (built below). Only the COLOUR vars are emitted here (the helper does not
+// handle colour). A per-instance uid scopes the typography rules.
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
-$sgs_title_font_size   = sgs_font_size_value( $attributes['titleFontSize'] ?? '' );
-$sgs_title_font_weight = sanitize_text_field( (string) ( $attributes['titleFontWeight'] ?? '' ) );
-$sgs_title_colour      = sgs_colour_value( $attributes['titleColour'] ?? '' );
-$sgs_price_font_size   = sgs_font_size_value( $attributes['priceFontSize'] ?? '' );
-$sgs_price_font_weight = sanitize_text_field( (string) ( $attributes['priceFontWeight'] ?? '' ) );
-$sgs_price_colour      = sgs_colour_value( $attributes['priceColour'] ?? '' );
-if ( '' !== $sgs_title_font_size ) {
-	$inline_styles[] = '--sgs-card-title-font-size:' . $sgs_title_font_size . ';';
-}
-if ( '' !== $sgs_title_font_weight ) {
-	$inline_styles[] = '--sgs-card-title-font-weight:' . esc_attr( $sgs_title_font_weight ) . ';';
-}
+$sgs_card_uid     = 'sgs-pc-' . wp_unique_id();
+$sgs_title_colour = sgs_colour_value( $attributes['titleColour'] ?? '' );
+$sgs_price_colour = sgs_colour_value( $attributes['priceColour'] ?? '' );
 if ( '' !== $sgs_title_colour ) {
 	$inline_styles[] = '--sgs-card-title-colour:' . $sgs_title_colour . ';';
-}
-if ( '' !== $sgs_price_font_size ) {
-	$inline_styles[] = '--sgs-card-price-font-size:' . $sgs_price_font_size . ';';
-}
-if ( '' !== $sgs_price_font_weight ) {
-	$inline_styles[] = '--sgs-card-price-font-weight:' . esc_attr( $sgs_price_font_weight ) . ';';
 }
 if ( '' !== $sgs_price_colour ) {
 	$inline_styles[] = '--sgs-card-price-colour:' . $sgs_price_colour . ';';
 }
+$classes[] = $sgs_card_uid;
+
+// Built-in title + price typography (scoped to this instance via the uid).
+$sgs_card_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title' );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'price', '.' . $sgs_card_uid . ' .sgs-product-card__price' );
+$sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . $sgs_card_typo_css . '</style>' : '';
 
 // Base opts shared across all branches (no WP Interactivity attrs).
 $base_opts = array(
@@ -158,7 +153,8 @@ if ( 'typed' === $source_mode ) {
 
 	if ( '' !== $typed_name ) {
 		// New built-in element render (FP-H). Function defined in included helper above.
-		$builtin_inner = sgs_product_card_builtin_render( $attributes );
+		// Prepend the scoped typography <style> (title + price) — built-in mode only.
+		$builtin_inner = $sgs_card_typo_tag . sgs_product_card_builtin_render( $attributes );
 
 		// Add BEM modifier classes to the wrapper for the new typed-builtin branch.
 		$builtin_classes   = $classes;
