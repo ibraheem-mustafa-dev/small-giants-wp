@@ -156,6 +156,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		summaryColour,
 		nameColour,
 		roleColour,
+		orgColour,
 		ratingColour,
 		hoverEffect,
 		hoverBackgroundColour,
@@ -221,6 +222,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	};
 	const nameStyle = { color: nameColour || undefined };
 	const roleStyle = { color: roleColour || undefined };
+	const orgStyle = { color: orgColour || undefined };
 	const ratingStyle = { color: ratingColour || undefined };
 
 	const showSummary =
@@ -566,10 +568,17 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 					/>
 					<DesignTokenPicker
-						label={ __( 'Role / org colour', 'sgs-blocks' ) }
+						label={ __( 'Role colour', 'sgs-blocks' ) }
 						value={ roleColour }
 						onChange={ ( val ) =>
 							setAttributes( { roleColour: val } )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __( 'Organisation colour', 'sgs-blocks' ) }
+						value={ orgColour }
+						onChange={ ( val ) =>
+							setAttributes( { orgColour: val } )
 						}
 					/>
 				</PanelBody>
@@ -876,7 +885,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						<RichText
 							tagName="span"
 							className="sgs-testimonial__org"
-							style={ roleStyle }
+							style={ orgStyle }
 							value={ orgName }
 							onChange={ ( val ) =>
 								setAttributes( { orgName: val } )

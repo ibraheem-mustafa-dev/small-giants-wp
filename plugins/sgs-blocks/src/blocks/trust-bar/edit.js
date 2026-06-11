@@ -289,6 +289,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { badgeSize: val } ) }
 						__nextHasNoMarginBottom
 					/>
+					<SelectControl
+						label={ __( 'Label font size', 'sgs-blocks' ) }
+						value={ labelFontSize || '' }
+						options={ FONT_SIZE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { labelFontSize: val } ) }
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 
 				{ /* ── Optional title (text-only + image-badge) ─────────────── */ }
@@ -357,12 +364,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Label colour', 'sgs-blocks' ) }
 							value={ textColour }
 							onChange={ ( val ) => setAttributes( { textColour: val } ) }
-						/>
-						<SelectControl
-							label={ __( 'Label font size', 'sgs-blocks' ) }
-							value={ labelFontSize || '' }
-							options={ FONT_SIZE_OPTIONS }
-							onChange={ ( val ) => setAttributes( { labelFontSize: val } ) }
 							__nextHasNoMarginBottom
 						/>
 					</PanelBody>
@@ -375,12 +376,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Label colour', 'sgs-blocks' ) }
 							value={ labelColour }
 							onChange={ ( val ) => setAttributes( { labelColour: val } ) }
-						/>
-						<SelectControl
-							label={ __( 'Label font size', 'sgs-blocks' ) }
-							value={ labelFontSize || '' }
-							options={ FONT_SIZE_OPTIONS }
-							onChange={ ( val ) => setAttributes( { labelFontSize: val } ) }
 							__nextHasNoMarginBottom
 						/>
 					</PanelBody>

@@ -80,6 +80,7 @@ $summary_font_size = sgs_font_size_value( $attributes['summaryFontSize'] ?? '' )
 $summary_colour    = sgs_colour_value( $attributes['summaryColour'] ?? '' );
 $name_colour       = sgs_colour_value( $attributes['nameColour'] ?? '' );
 $role_colour       = sgs_colour_value( $attributes['roleColour'] ?? '' );
+$org_colour        = sgs_colour_value( $attributes['orgColour'] ?? '' );
 $rating_colour     = sgs_colour_value( $attributes['ratingColour'] ?? '' );
 
 // ── Hover / animation (shell-level) ─────────────────────────────────────────
@@ -282,7 +283,7 @@ if ( '' !== $reviewer_role ) {
 	$attr_parts[] = '<span class="sgs-testimonial__role"' . $sgs_testimonial_style_attr( $role_colour ) . '>' . wp_kses_post( $reviewer_role ) . '</span>';
 }
 if ( '' !== $org_name ) {
-	$attr_parts[] = '<span class="sgs-testimonial__org"' . $sgs_testimonial_style_attr( $role_colour ) . '>' . wp_kses_post( $org_name ) . '</span>';
+	$attr_parts[] = '<span class="sgs-testimonial__org"' . $sgs_testimonial_style_attr( $org_colour ) . '>' . wp_kses_post( $org_name ) . '</span>';
 }
 if ( ! empty( $attr_parts ) ) {
 	$attribution_html = '<div class="sgs-testimonial__meta">' . implode( '', $attr_parts ) . '</div>';

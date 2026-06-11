@@ -205,6 +205,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"orgColour": {
+			"type": "string",
+			"default": ""
+		},
 		"ratingColour": {
 			"type": "string",
 			"default": ""
