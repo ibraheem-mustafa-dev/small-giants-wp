@@ -3096,6 +3096,124 @@ def _atomic_attrs_for(node: Tag, slug: str, allow_text_fallback: bool = True) ->
     return {}
 
 
+def _lift_scalar_attrs_by_selector(node: Tag, slug: str) -> dict:
+    """Universal DB-driven multi-scalar lift for a G3-attrs content block.
+
+    Generalises the single-attr graceful fallback in _atomic_attrs_for
+    (~line 3079) to N scalar attrs keyed by each attr's ``derived_selector``.
+    For every content/rating attr the block declares (block_attrs(slug)), find
+    the FIRST descendant of ``node`` matching that attr's BEM class selector and
+    lift its value into the attr — text via _rich_text_content, star-count via
+    aria-label / glyph count. An attr whose selector matches nothing emits NO
+    key, which makes this a strict NO-OP for grid/gallery blocks (they carry no
+    content derived_selectors) and for absent draft elements (e.g. ratingScale's
+    .sgs-testimonial__rating, missing on page 8).
+
+    Selection rule (the no-op floor):
+      - attr MUST have a non-empty derived_selector, AND
+      - role in {'text-content','content'} with attr_type 'string'  → text lift
+        OR role == 'rating' with attr_type 'number'                 → star lift
+      - any other role/type combination is skipped (no key emitted).
+
+    showRating coupling: if the block declares a ``showRating`` boolean attr and
+    a ratingStars-style number attr was lifted with value > 0, set showRating
+    True (DB-attr-driven, no slug literal).
+
+    Spec refs: FR-22-2 (content-routing into scalar attrs), FR-22-5 D1
+    (faithful per-class transfer), R-22-1 (DB-driven, zero hardcoded dicts /
+    no per-slug branch), R-22-9 (universal — fires for every G3 content block).
+
+    Args:
+        node: The resolved block's root Tag node (draft DOM subtree).
+        slug: The resolved SGS block slug (e.g. 'sgs/testimonial').
+
+    Returns:
+        dict of lifted scalar attrs (possibly empty). No garbage keys.
+    """
+    if not slug.startswith("sgs/"):
+        return {}
+    # COUNCIL-MANDATED OPT-IN GATE (R-22-1 data-driven / R-22-9 universal mechanism):
+    # hard NO-OP (STOP-E) for every block that has NOT declared the
+    # 'scalar-content-lift' capability (block.json supports.sgs.scalarContentLift).
+    # The role+derived_selector trigger alone matches ~50 blocks (date/URL/title
+    # attrs) — only opted-in blocks may dump draft text/stars into their attrs.
+    if "scalar-content-lift" not in db.capabilities_for(slug):
+        return {}
+    catalogue = db.block_attrs(slug)
+    if not catalogue:
+        return {}
+
+    lifted: dict = {}
+    lifted_rating_positive = False
+    for attr_name, info in catalogue.items():
+        if not isinstance(info, dict):
+            continue
+        selector = info.get("derived_selector")
+        if not selector or not isinstance(selector, str):
+            continue
+        role = info.get("role")
+        attr_type = info.get("attr_type")
+
+        is_text = role in ("text-content", "content") and attr_type == "string"
+        is_rating = role == "rating" and attr_type == "number"
+        if not (is_text or is_rating):
+            continue
+
+        # A derived_selector is one OR MORE comma-separated BEM class selectors
+        # ('.sgs-x__y' or '.sgs-x__text, .sgs-x__quote'); multi-selector support
+        # handles the draft naming-space drift (page-8 `__text` vs canonical
+        # `__quote`). Resolve each to a bare class name and find the FIRST matching
+        # descendant (first non-None wins). Single-class selectors work identically.
+        # find(class_=...) keeps the BeautifulSoup surface consistent (no CSS engine).
+        element = None
+        for part in selector.split(","):
+            class_name = part.strip().lstrip(".")
+            if not class_name:
+                continue
+            element = node.find(class_=class_name)
+            if element is not None and isinstance(element, Tag):
+                break
+            element = None
+        if element is None:
+            continue  # no class matched → emit no key (grid no-op / absent draft elem)
+
+        if is_text:
+            value = _rich_text_content(element)
+            if value:
+                lifted[attr_name] = value
+        else:  # is_rating
+            stars = _extract_star_count(element)
+            lifted[attr_name] = stars
+            if stars > 0:
+                lifted_rating_positive = True
+
+    # showRating coupling — only when the block declares the attr and a positive
+    # rating was lifted. DB-driven (presence of the attr in the catalogue).
+    if lifted_rating_positive and "showRating" in catalogue:
+        sr_info = catalogue.get("showRating")
+        if isinstance(sr_info, dict) and sr_info.get("attr_type") == "boolean":
+            lifted["showRating"] = True
+
+    return lifted
+
+
+def _extract_star_count(element: Tag) -> int:
+    """Extract a 0..5 star count from a rating element.
+
+    First tries the element's ``aria-label`` with a bounded ``\\b(\\d{1,2})\\b``
+    regex (so 'aria-label="5 stars"' → 5); if no aria-label digit, counts ★/⭐
+    glyph characters in the element text. Clamped to 0..5 and returned as int.
+    """
+    aria = element.get("aria-label", "")
+    if aria:
+        m = re.search(r"\b(\d{1,2})\b", aria)
+        if m:
+            return min(5, max(0, int(m.group(1))))
+    text = element.get_text()
+    glyphs = sum(1 for ch in text if ch in ("★", "⭐"))  # ★ ⭐
+    return min(5, max(0, glyphs))
+
+
 def _lift_scalar_media_from_img(img_node: Tag) -> dict:
     """Build a scalar-media object value from a bare <img> element.
 
@@ -3770,8 +3888,16 @@ def walk(
         # R-22-1 compliant (DB-driven G3 gate, no per-slug literals here).
         # R-22-9 compliant (universal — fires for every G3 content-block).
         atomic = _atomic_attrs_for(node, slug, allow_text_fallback=False)
-        if atomic:
-            attrs = {**attrs, **atomic}
+        # Universal DB-driven multi-scalar lift (FR-22-2 / FR-22-5 D1, 2026-06-11):
+        # lift every content/rating attr the block declares (keyed by each attr's
+        # derived_selector) from the matching draft element. NO-OP for grid blocks
+        # (no content selectors) and absent draft elements (no key emitted).
+        # R-22-1 (DB-driven, no per-slug branch) + R-22-9 (universal G3 path).
+        selector_lift = _lift_scalar_attrs_by_selector(node, slug)
+        # Merge order: explicit _atomic_attrs_for results WIN over the selector-lift
+        # (e.g. option-picker's optionItems handler is authoritative) — atomic last.
+        if selector_lift or atomic:
+            attrs = {**attrs, **selector_lift, **atomic}
 
     # Spec 11 + P-9: wrap any loose sgs/button runs in sgs/multi-button (WP
     # core/buttons mirror). No-op when there are no loose buttons; already-grouped
