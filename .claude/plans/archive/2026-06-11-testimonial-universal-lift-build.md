@@ -4,7 +4,7 @@ project: small-giants-wp
 thread: cloning-pipeline
 spec: 22
 generated: 2026-06-11
-status: READY-TO-BUILD (investigation + design-gate COMPLETE; root cause confirmed 3 sources; adversarial-council run)
+status: COMPLETE + SHIPPED + LIVE-VERIFIED 2026-06-12 (on main: 3938a7b0 converter + 09a908fd block-side + d0c083f8/2518914a docs/ledger). Page-8 empty-slides fixed; quote/name/5★ render at 1440/768/~500. Residual (other typed fields + FR-22-20 generalisation + lift-data durability) → parking P-TESTIMONIAL-CONVERTER-FR2220 (PARTIAL) + P-TESTIMONIAL-LIFT-DATA-DURABILITY. ARCHIVED.
 primary_goal: "Make the testimonial slider on LIVE page 8 render quote/name/stars again (currently empty) — via the UNIVERSAL DB-driven converter lift (Spec 22 §FR-22-2), NOT a bespoke per-block handler, NOT a new DB table. Then the same mechanism serves every future typed content-block."
 ---
 
