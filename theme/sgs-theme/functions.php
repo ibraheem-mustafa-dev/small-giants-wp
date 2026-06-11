@@ -325,6 +325,21 @@ function enqueue_styles(): void {
 			$theme_version
 		);
 	}
+
+	// Shop archive filter drawer — mobile off-canvas, focus-trap, a11y (FR-30-3, Spec 30).
+	// Only on shop archive surfaces; guard with function_exists so non-WC installs are safe.
+	if (
+		function_exists( 'is_shop' ) &&
+		( is_shop() || is_post_type_archive( 'product' ) || is_tax( 'product_cat' ) || is_tax( 'product_tag' ) )
+	) {
+		wp_enqueue_script(
+			'sgs-shop-filters',
+			get_theme_file_uri( 'assets/js/sgs-shop-filters.js' ),
+			array(),
+			$theme_version,
+			true // Load in footer — no DOM dependency at parse time.
+		);
+	}
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_styles' );
 

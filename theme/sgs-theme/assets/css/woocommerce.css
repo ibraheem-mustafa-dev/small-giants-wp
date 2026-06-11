@@ -426,7 +426,276 @@ h2.wc-block-mini-cart__title {
  * ──────────────────────────────────────────────────────────────────────────
  */
 
-/* ─── 8. PRODUCT DETAIL PAGE (PDP) ─── */
+/* ─── 8. SHOP ARCHIVE LAYOUT — Filter sidebar + product grid (FR-30-3) ─── */
+
+/*
+ * No-JS default: aside stacks above the grid; toggle is hidden.
+ * JS-enhanced (body.is-enhanced): aside becomes an off-canvas drawer on mobile.
+ *
+ * Desktop (≥782px): CSS grid — sidebar left, grid right.
+ * Mobile (<782px, is-enhanced): sidebar is off-canvas; toggle is visible.
+ */
+
+/* ── 8a. Shop layout grid ── */
+
+.sgs-shop-layout {
+	display: grid;
+	grid-template-columns: 260px 1fr;
+	gap: var(--wp--preset--spacing--50, 2rem);
+	align-items: start;
+	/* Fill the constrained parent's content width — WP's is-layout-constrained
+	   would otherwise centre this at the block max-width and leave the grid narrow. */
+	width: 100%;
+}
+
+@media ( max-width: 781px ) {
+	/* Mobile: single column; aside sits above grid (no-JS fallback) */
+	.sgs-shop-layout {
+		display: block;
+	}
+}
+
+/* ── 8b. Filter sidebar / drawer ── */
+
+.sgs-shop-filters {
+	position: sticky;
+	top: var(--wp--preset--spacing--40, 1.5rem);
+	background: var(--wp--preset--color--surface, #fff);
+	border: 1px solid var(--wp--preset--color--surface-alt, #e0e0e0);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	padding: var(--wp--preset--spacing--40, 1.5rem);
+}
+
+/* Filters heading */
+.sgs-shop-filters__heading {
+	font-size: 1rem;
+	font-weight: 700;
+	margin: 0 0 var(--wp--preset--spacing--30, 1rem) 0;
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+/* Filters header row (heading + close button) */
+.sgs-shop-filters__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: var(--wp--preset--spacing--30, 1rem);
+}
+
+/* Close button — hidden on desktop, shown in drawer */
+.sgs-shop-filters__close {
+	display: none;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0;
+	background: transparent;
+	border: none;
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	color: var(--wp--preset--color--text, #1e1e1e);
+	cursor: pointer;
+}
+
+.sgs-shop-filters__close:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	outline-offset: 2px;
+}
+
+/* ── 8c. Mobile filter toggle button ── */
+
+/*
+ * Bean directive (supersedes the earlier bespoke colour patch): the toggle
+ * REUSES the framework primary button. The template adds `btn btn-primary` to
+ * the button, so its background / text colour / border / hover / radius all come
+ * from the primary-button definition — DRY (inherits future button-style
+ * changes) and guaranteed accessible (the primary button default is the
+ * axe-passing dark-text-on-pink combination).
+ *
+ * SCOPE BRIDGE (important): the canonical `.btn` / `.btn-primary` rules live in
+ * the product-card block's style.css and are scoped to `.product-card .btn[...]`,
+ * so a bare `.btn.btn-primary` on the toggle (which is NOT inside a product-card)
+ * would match NOTHING and render an unstyled button. The block plugin file is not
+ * editable from the theme, so we re-apply the SAME design TOKENS the primary
+ * button uses (`--wp--preset--color--primary`, `--sgs-product-card-btn-text`,
+ * `--sgs-product-card-btn-hover-bg`/`--…--primary-dark`) here — a palette/token
+ * change still propagates to both surfaces. Only the visual properties owned by
+ * the primary button are set; everything below the visual block is toggle-only
+ * layout (show/hide + icon+label flex). The hardcoded fallbacks mirror the live
+ * accessible button (dark #3A2E26 text on primary), so it passes even if a token
+ * is unset.
+ */
+
+/* Default (desktop) + no-JS: hidden — the toggle can only function with JS. */
+.sgs-shop-filters__toggle {
+	display: none;
+}
+
+/* JS-enhanced mobile: show the toggle. */
+@media ( max-width: 781px ) {
+	body.is-enhanced .sgs-shop-filters__toggle {
+		/* ── Toggle-only layout (NOT owned by .btn-primary) ── */
+		display: inline-flex;       /* icon + label row (.btn is inline-block) */
+		align-items: center;
+		gap: 0.5em;                 /* space between icon and "Filter" label */
+		margin-bottom: var(--wp--preset--spacing--40, 1.5rem);
+
+		/* ── Primary-button visual properties, via the SAME tokens .btn-primary
+		   uses (scope bridge — see block comment above) ── */
+		min-height: 44px;
+		padding: 0.5em 1.25em;
+		border-radius: var(--wp--custom--border-radius--medium, 8px);
+		font-weight: 600;
+		font-size: 0.9375rem;
+		cursor: pointer;
+		background: var(--wp--preset--color--primary, #E68A95);
+		color: var(--sgs-product-card-btn-text, #3A2E26);
+		border: 2px solid var(--wp--preset--color--primary, #E68A95);
+		transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+	}
+
+	body.is-enhanced .sgs-shop-filters__toggle:hover {
+		background: var(--sgs-product-card-btn-hover-bg, var(--wp--preset--color--primary-dark, #C56A7A));
+		border-color: var(--sgs-product-card-btn-hover-bg, var(--wp--preset--color--primary-dark, #C56A7A));
+		color: var(--sgs-product-card-btn-hover-text, #ffffff);
+	}
+
+	body.is-enhanced .sgs-shop-filters__toggle:focus-visible {
+		outline: 3px solid var(--wp--preset--color--primary, #E68A95);
+		outline-offset: 2px;
+	}
+}
+
+/* ── 8d. Off-canvas drawer (mobile, JS-enhanced) ── */
+
+@media ( max-width: 781px ) {
+	body.is-enhanced .sgs-shop-filters {
+		/* Off-canvas: positioned fixed, slides in from the left */
+		position: fixed;
+		inset: 0;
+		width: min(320px, 90vw);
+		height: 100%;
+		z-index: 9999;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		border-radius: 0;
+		border: none;
+		border-right: 1px solid var(--wp--preset--color--surface-alt, #e0e0e0);
+		box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+		transform: translateX(-100%);
+		transition: transform 0.28s ease;
+	}
+
+	body.is-enhanced .sgs-shop-filters__close {
+		display: inline-flex;
+	}
+}
+
+/* Open state */
+@media ( max-width: 781px ) {
+	body.is-enhanced .sgs-shop-filters.is-open {
+		transform: translateX(0);
+	}
+}
+
+/* Backdrop */
+.sgs-shop-filters__backdrop {
+	display: none;
+	position: fixed;
+	inset: 0;
+	z-index: 9998;
+	background: rgba(0, 0, 0, 0.45);
+	opacity: 0;
+	transition: opacity 0.28s ease;
+}
+
+.sgs-shop-filters__backdrop.is-visible {
+	display: block;
+	opacity: 1;
+}
+
+/* Scroll lock — applied to body by JS when drawer is open */
+body.sgs-scroll-locked {
+	overflow: hidden;
+}
+
+/* ── 8e. Active-filter chips (removable chips row) ── */
+
+.wp-block-woocommerce-product-filter-active {
+	margin-bottom: var(--wp--preset--spacing--30, 1rem);
+}
+
+/* Horizontal scrolling chip row on mobile */
+.wp-block-woocommerce-product-filter-removable-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5em;
+}
+
+@media ( max-width: 481px ) {
+	.wp-block-woocommerce-product-filter-removable-chips {
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+		padding-bottom: 2px;
+	}
+
+	.wp-block-woocommerce-product-filter-removable-chips::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+/* Individual chip */
+.wc-block-components-filter-reset-button,
+.wp-block-woocommerce-product-filter-removable-chips li,
+.wc-block-product-filter-active__item {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35em;
+	padding: 0.25em 0.625em;
+	background: color-mix(in srgb, var(--wp--preset--color--primary, #0f7e80) 12%, transparent);
+	border: 1px solid var(--wp--preset--color--primary, #0f7e80);
+	border-radius: 9999px;
+	font-size: 0.8125rem;
+	color: var(--wp--preset--color--primary, #0f7e80);
+	white-space: nowrap;
+}
+
+/* Remove chip button inside each chip */
+.wc-block-product-filter-active__remove,
+.wc-block-components-filter-reset-button__remove {
+	background: transparent;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	color: inherit;
+	line-height: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 20px;
+	min-height: 20px;
+}
+
+.wc-block-product-filter-active__remove:focus-visible,
+.wc-block-components-filter-reset-button__remove:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	outline-offset: 1px;
+	border-radius: 2px;
+}
+
+/* ── 8f. Reduced motion — drawer + backdrop transitions ── */
+
+@media ( prefers-reduced-motion: reduce ) {
+	body.is-enhanced .sgs-shop-filters,
+	.sgs-shop-filters__backdrop,
+	.sgs-shop-filters__toggle {
+		transition-duration: 0.01ms !important;
+	}
+}
+
+/* ─── 9. PRODUCT DETAIL PAGE (PDP) ─── */
 
 /*
  * VERIFIED selectors (live canary PDP HTML, 2026-06-11):
@@ -639,4 +908,391 @@ body.woocommerce-cart .with-empty-cart-icon,
 .post-type-archive-product .sgs-content-collection__item > .product-card .product-card-body > :has(.product-card__add-to-cart),
 .post-type-archive-product .sgs-content-collection__item > .product-card .product-card-body > .product-card__add-to-cart {
 	margin-top: auto;
+}
+
+/* ─── 10. SHOP ARCHIVE — WC PRODUCT-COLLECTION CARD EQUAL HEIGHT (DEFECT 3) ───
+ *
+ * Scoped under .sgs-shop-layout so only the shop sidebar+grid surface is
+ * affected; homepage / other collection surfaces are untouched.
+ *
+ * WC product-collection renders:
+ *   .sgs-shop-layout
+ *     .wp-block-woocommerce-product-collection
+ *       ul.wc-block-product-template.is-flex-container.columns-3
+ *         li (one per product)
+ *           .sgs-container.product-card (SGS product-card block wrapper)
+ *             .product-card__media
+ *             .product-card__thumbs
+ *             .product-card-body
+ *               (badge, heading, .product-desc, pickers, .price-row,
+ *                .price-note, .product-card__value-ladder,
+ *                .product-card__stock, .product-card__availability,
+ *                CTA button / .product-card__view)
+ *
+ * Body child order confirmed from render.php live-data variable branch.
+ */
+
+/* Each li must stretch to the tallest card in the row */
+.sgs-shop-layout .wc-block-product-template > li {
+	display: flex;
+}
+
+/* Card fills the li height and arranges its direct children vertically */
+.sgs-shop-layout .product-card {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+}
+
+/* product-card-body grows to absorb remaining space */
+.sgs-shop-layout .product-card .product-card-body {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+}
+
+/* Pin the footer group (price onward) to the bottom of the body so price +
+   CTA baseline-align across every card in a row, while title + description
+   stay at the top and the empty vertical slack sits between them.
+   CONFIRMED .product-card-body direct-child order (live DOM):
+     h3.title -> div.product-desc -> div.price-row -> p.price-note ->
+     p.product-card__stock -> p.product-card__availability (sr-only) ->
+     a.btn.product-card__add-to-cart (CTA) -> p.product-card__cart-status
+   Giving .price-row an auto top-margin pushes it (and everything after it)
+   to the bottom. .product-card__view does NOT exist in this render path. */
+.sgs-shop-layout .product-card .product-card-body > .price-row {
+	margin-top: auto;
+}
+
+/* ─── 11. SHOP ARCHIVE — FILTER PANEL STYLES (DEFECT 2) ───
+ *
+ * Styles the now-rendering WC filter controls. All scoped under
+ * .sgs-shop-filters to avoid bleeding onto other WC surfaces.
+ *
+ * Desktop (≥782px): the core WC "Filter products" overlay button and its
+ * overlay/dialog wrappers must be neutralised so the sidebar renders inline.
+ * The SGS drawer (sgs-shop-filters.js) owns the mobile open/close experience.
+ */
+
+/* ── Neutralise the core WC overlay chrome — SGS drawer owns the UX ── */
+/* Hide the core "Filter products" open-overlay button on ALL breakpoints
+   (real class is __open-overlay, no -button suffix). SGS provides its own
+   .sgs-shop-filters__toggle drawer trigger. */
+.sgs-shop-filters .wc-block-product-filters__open-overlay {
+	display: none;
+}
+
+/* Hide the core overlay header (its own heading + close) so it doesn't show
+   in the inline desktop view — the SGS drawer has its own header/close. */
+.sgs-shop-filters .wc-block-product-filters__overlay-header {
+	display: none;
+}
+
+/* The overlay wrapper: render as normal flow, not a fixed dialog */
+.sgs-shop-filters .wc-block-product-filters__overlay,
+.sgs-shop-filters .wc-block-product-filters__overlay-dialog {
+	position: static;
+	inset: auto;
+	width: auto;
+	height: auto;
+	max-height: none;
+	overflow: visible;
+	background: transparent;
+	transform: none;
+	box-shadow: none;
+	border-radius: 0;
+	padding: 0;
+	margin: 0;
+}
+
+/* ── Individual filter group headings ── */
+.sgs-shop-filters h3.wp-block-heading,
+.sgs-shop-filters .wc-block-product-filter__title,
+.sgs-shop-filters .wp-block-woocommerce-product-filter-price > h3,
+.sgs-shop-filters .wp-block-woocommerce-product-filter-attribute > h3,
+.sgs-shop-filters .wp-block-woocommerce-product-filter-status > h3,
+.sgs-shop-filters .wp-block-woocommerce-product-filter-rating > h3 {
+	font-size: 0.875rem;
+	font-weight: 700;
+	color: var(--wp--preset--color--text, #1e1e1e);
+	margin: 0 0 var(--wp--preset--spacing--20, 0.75rem) 0;
+	padding: 0;
+}
+
+/* Spacing between filter groups */
+.sgs-shop-filters .wp-block-woocommerce-product-filter-price,
+.sgs-shop-filters .wp-block-woocommerce-product-filter-attribute,
+.sgs-shop-filters .wp-block-woocommerce-product-filter-status,
+.sgs-shop-filters .wp-block-woocommerce-product-filter-rating {
+	padding-top: var(--wp--preset--spacing--30, 1rem);
+	border-top: 1px solid var(--wp--preset--color--surface-alt, #e0e0e0);
+	margin-top: var(--wp--preset--spacing--20, 0.75rem);
+}
+
+/* ── Price slider ── */
+.sgs-shop-filters .wc-block-product-filter-price-slider {
+	padding: 0.25rem 0 0.5rem;
+}
+
+/* Slider track */
+.sgs-shop-filters .wc-block-product-filter-price-slider__range-input-wrapper,
+.sgs-shop-filters .wc-block-price-filter__range-input-wrapper {
+	position: relative;
+	height: 4px;
+	background: var(--wp--preset--color--surface-alt, #e0e0e0);
+	border-radius: 9999px;
+	margin: 1.5rem 0 0.5rem;
+}
+
+/* Filled track region (WC uses inline style on the progress element) */
+.sgs-shop-filters .wc-block-product-filter-price-slider__progress,
+.sgs-shop-filters .wc-block-price-filter__progress {
+	position: absolute;
+	height: 100%;
+	background: var(--wp--preset--color--primary, #0f7e80);
+	border-radius: 9999px;
+}
+
+/* Range thumb inputs */
+.sgs-shop-filters .wc-block-product-filter-price-slider__range-input,
+.sgs-shop-filters .wc-block-price-filter__range-input {
+	-webkit-appearance: none;
+	appearance: none;
+	position: absolute;
+	width: 100%;
+	height: 4px;
+	background: transparent;
+	pointer-events: none;
+	top: 0;
+}
+
+.sgs-shop-filters .wc-block-product-filter-price-slider__range-input::-webkit-slider-thumb,
+.sgs-shop-filters .wc-block-price-filter__range-input::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: var(--wp--preset--color--primary, #0f7e80);
+	border: 2px solid var(--wp--preset--color--surface, #fff);
+	box-shadow: 0 0 0 1px var(--wp--preset--color--primary, #0f7e80);
+	cursor: pointer;
+	pointer-events: all;
+}
+
+.sgs-shop-filters .wc-block-product-filter-price-slider__range-input::-moz-range-thumb,
+.sgs-shop-filters .wc-block-price-filter__range-input::-moz-range-thumb {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: var(--wp--preset--color--primary, #0f7e80);
+	border: 2px solid var(--wp--preset--color--surface, #fff);
+	box-shadow: 0 0 0 1px var(--wp--preset--color--primary, #0f7e80);
+	cursor: pointer;
+	pointer-events: all;
+}
+
+.sgs-shop-filters .wc-block-product-filter-price-slider__range-input:focus-visible::-webkit-slider-thumb,
+.sgs-shop-filters .wc-block-price-filter__range-input:focus-visible::-webkit-slider-thumb {
+	outline: 3px solid var(--wp--preset--color--primary, #0f7e80);
+	outline-offset: 3px;
+}
+
+/* Price text inputs (min / max fields) */
+.sgs-shop-filters .wc-block-product-filter-price-slider__amount,
+.sgs-shop-filters .wc-block-price-filter__amount {
+	font-size: 0.8125rem;
+	color: var(--wp--preset--color--text, #1e1e1e);
+	border: 1px solid var(--wp--preset--color--surface-alt, #e0e0e0);
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	padding: 0.25em 0.5em;
+	width: 5rem;
+	background: var(--wp--preset--color--surface, #fff);
+}
+
+.sgs-shop-filters .wc-block-product-filter-price-slider__amount:focus-visible,
+.sgs-shop-filters .wc-block-price-filter__amount:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	outline-offset: 2px;
+}
+
+/* ── Attribute chips ── */
+.sgs-shop-filters .wc-block-components-product-filter-chips,
+.sgs-shop-filters .wc-block-product-filter-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.375rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+/* Individual chip button */
+.sgs-shop-filters .wc-block-components-product-filter-chips__item,
+.sgs-shop-filters .wc-block-product-filter-chips__item {
+	list-style: none;
+}
+
+.sgs-shop-filters .wc-block-components-product-filter-chips__item button,
+.sgs-shop-filters .wc-block-product-filter-chips__item button,
+.sgs-shop-filters .wc-block-components-product-filter-chips__button {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3em;
+	min-height: 44px;
+	padding: 0.375em 0.875em;
+	background: var(--wp--preset--color--surface-alt, #f5f5f5);
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--text, #1e1e1e) 25%, transparent);
+	border-radius: 9999px;
+	font-size: 0.8125rem;
+	color: var(--wp--preset--color--text, #1e1e1e);
+	cursor: pointer;
+	white-space: nowrap;
+	transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.sgs-shop-filters .wc-block-components-product-filter-chips__item button:hover,
+.sgs-shop-filters .wc-block-product-filter-chips__item button:hover,
+.sgs-shop-filters .wc-block-components-product-filter-chips__button:hover {
+	background: color-mix(in srgb, var(--wp--preset--color--primary, #0f7e80) 10%, transparent);
+	border-color: var(--wp--preset--color--primary, #0f7e80);
+	color: var(--wp--preset--color--primary, #0f7e80);
+}
+
+/* Selected chip — primary teal fill, white text (contrast verified: primary #0f7e80 vs white = 4.8:1 ✓) */
+.sgs-shop-filters .wc-block-components-product-filter-chips__item button[aria-pressed="true"],
+.sgs-shop-filters .wc-block-product-filter-chips__item button[aria-pressed="true"],
+.sgs-shop-filters .wc-block-components-product-filter-chips__button[aria-pressed="true"],
+.sgs-shop-filters .wc-block-components-product-filter-chips__item button.is-active,
+.sgs-shop-filters .wc-block-product-filter-chips__item button.is-active {
+	background: var(--wp--preset--color--primary, #0f7e80);
+	border-color: var(--wp--preset--color--primary, #0f7e80);
+	color: #ffffff;
+}
+
+.sgs-shop-filters .wc-block-components-product-filter-chips__item button:focus-visible,
+.sgs-shop-filters .wc-block-product-filter-chips__item button:focus-visible,
+.sgs-shop-filters .wc-block-components-product-filter-chips__button:focus-visible {
+	outline: 3px solid var(--wp--preset--color--primary, #0f7e80);
+	outline-offset: 2px;
+}
+
+/* ── Checkbox lists (status + rating filters) ── */
+.sgs-shop-filters .wc-block-components-product-filter-checkbox-list,
+.sgs-shop-filters .wc-block-product-filter-checkbox-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+.sgs-shop-filters .wc-block-components-product-filter-checkbox-list__item,
+.sgs-shop-filters .wc-block-product-filter-checkbox-list__item {
+	list-style: none;
+}
+
+/* Label row — 44px min touch target */
+.sgs-shop-filters .wc-block-components-product-filter-checkbox-list__item label,
+.sgs-shop-filters .wc-block-product-filter-checkbox-list__item label,
+.sgs-shop-filters .wc-block-components-checkbox__label,
+.sgs-shop-filters .wc-block-product-filter-checkbox-list__label {
+	display: flex;
+	align-items: center;
+	gap: 0.625rem;
+	min-height: 44px;
+	font-size: 0.875rem;
+	color: var(--wp--preset--color--text, #1e1e1e);
+	cursor: pointer;
+	padding: 0.125rem 0;
+}
+
+/* Native checkbox — hidden, replaced by custom square */
+.sgs-shop-filters .wc-block-components-checkbox input[type="checkbox"],
+.sgs-shop-filters .wc-block-product-filter-checkbox-list input[type="checkbox"] {
+	appearance: none;
+	-webkit-appearance: none;
+	width: 18px;
+	height: 18px;
+	min-width: 18px;
+	border: 2px solid color-mix(in srgb, var(--wp--preset--color--text, #1e1e1e) 40%, transparent);
+	border-radius: 3px;
+	background: var(--wp--preset--color--surface, #fff);
+	cursor: pointer;
+	position: relative;
+	flex-shrink: 0;
+}
+
+.sgs-shop-filters .wc-block-components-checkbox input[type="checkbox"]:checked,
+.sgs-shop-filters .wc-block-product-filter-checkbox-list input[type="checkbox"]:checked {
+	background: var(--wp--preset--color--primary, #0f7e80);
+	border-color: var(--wp--preset--color--primary, #0f7e80);
+}
+
+/* Checkmark via pseudo-element on the checked input */
+.sgs-shop-filters .wc-block-components-checkbox input[type="checkbox"]:checked::after,
+.sgs-shop-filters .wc-block-product-filter-checkbox-list input[type="checkbox"]:checked::after {
+	content: "";
+	position: absolute;
+	inset: 2px 3px 3px;
+	background: #ffffff;
+	clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+.sgs-shop-filters .wc-block-components-checkbox input[type="checkbox"]:focus-visible,
+.sgs-shop-filters .wc-block-product-filter-checkbox-list input[type="checkbox"]:focus-visible {
+	outline: 3px solid var(--wp--preset--color--primary, #0f7e80);
+	outline-offset: 2px;
+}
+
+/* Count badge beside the label */
+.sgs-shop-filters .wc-block-components-product-filter-checkbox-list__item-count,
+.sgs-shop-filters .wc-block-product-filter-checkbox-list__count {
+	margin-left: auto;
+	font-size: 0.75rem;
+	color: color-mix(in srgb, var(--wp--preset--color--text, #1e1e1e) 55%, transparent);
+}
+
+/* ── Apply / clear buttons ── */
+.sgs-shop-filters .wc-block-product-filters__apply-button,
+.sgs-shop-filters .wp-block-button__link[class*="apply"],
+.sgs-shop-filters .wc-block-product-filter-clear-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: 0.5em 1.25em;
+	background: var(--wp--preset--color--primary, #0f7e80);
+	color: #ffffff;
+	border: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	font-size: 0.9375rem;
+	font-weight: 600;
+	cursor: pointer;
+	text-decoration: none;
+	transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.sgs-shop-filters .wc-block-product-filters__apply-button:hover,
+.sgs-shop-filters .wc-block-product-filter-clear-button:hover {
+	background: var(--wp--preset--color--primary-dark, #0b6668);
+	border-color: var(--wp--preset--color--primary-dark, #0b6668);
+}
+
+.sgs-shop-filters .wc-block-product-filters__apply-button:focus-visible,
+.sgs-shop-filters .wc-block-product-filter-clear-button:focus-visible {
+	outline: 3px solid var(--wp--preset--color--primary, #0f7e80);
+	outline-offset: 3px;
+}
+
+/* Reduced motion: no transitions on filter controls */
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-shop-filters .wc-block-components-product-filter-chips__item button,
+	.sgs-shop-filters .wc-block-product-filter-chips__item button,
+	.sgs-shop-filters .wc-block-product-filters__apply-button,
+	.sgs-shop-filters .wc-block-product-filter-clear-button {
+		transition-duration: 0.01ms !important;
+	}
 }

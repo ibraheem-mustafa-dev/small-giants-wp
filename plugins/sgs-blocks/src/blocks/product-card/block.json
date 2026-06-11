@@ -290,6 +290,7 @@
             "description": "Bound/live-data mode only: when false, suppresses all option-picker renders (both variable-axis and non-variable pill paths) and falls through to the static From-price card appearance. Use on collection grids where picker UI is unwanted. Default true (existing behaviour unchanged)."
         }
     },
+    "usesContext": ["postId"],
     "editorScript": "file:./index.js",
     "style": "file:./style.css",
     "viewScriptModule": "file:./view.js",

@@ -10,19 +10,120 @@
 	</div>
 	<!-- /wp:group -->
 
-	<!-- Product grid -->
-	<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|60"}}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--60)">
+	<!-- Top collapsible text (operator fills copy via block inspector; empty = renders nothing) -->
+	<!-- wp:sgs/collapsible-text {"collapsible":false} /-->
 
-		<!-- sgs/content-collection: queries all WC products (newest first, 12 per page),
-		     renders each through the dual-mode sgs/product-card in bound wc-product mode.
-		     showPickers=false suppresses in-card option-picker UI — browse context shows
-		     image, title, From-price and a View product CTA only.
-		     ctaBehaviour defaults to learn-more (links to the PDP). -->
-		<!-- wp:sgs/content-collection {"contentType":"product","selectionRule":"newest","count":12,"columns":3,"showPickers":false,"ctaBehaviour":"learn-more","showLadder":false} /-->
+	<!-- Shop layout: filter sidebar + product grid -->
+	<!-- wp:group {"align":"wide","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|60"}}},"layout":{"type":"default"}} -->
+	<div class="wp-block-group alignwide" style="padding-top:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--60)">
+
+		<!-- Mobile filter toggle — hidden on desktop via CSS; shown only when JS adds .is-enhanced to body -->
+		<!-- wp:html -->
+		<button
+			type="button"
+			class="btn btn-primary sgs-shop-filters__toggle"
+			aria-expanded="false"
+			aria-controls="sgs-shop-filters"
+		>
+			<svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
+			<span>Filter</span>
+		</button>
+		<!-- /wp:html -->
+
+		<!-- Shop layout grid wrapper — a REAL group so it has exactly TWO children:
+		     the filters aside, and the product-collection. -->
+		<!-- wp:group {"className":"sgs-shop-layout","layout":{"type":"default"}} -->
+		<div class="wp-block-group sgs-shop-layout">
+
+			<!-- Filters sidebar — a REAL group with tagName=aside so the product-filters
+			     block nests INSIDE it. Drawer JS targets #sgs-shop-filters. -->
+			<!-- wp:group {"tagName":"aside","anchor":"sgs-shop-filters","className":"sgs-shop-filters","layout":{"type":"default"}} -->
+			<aside id="sgs-shop-filters" class="wp-block-group sgs-shop-filters" aria-label="Filters">
+
+				<!-- Filters header: heading + close (X) button -->
+				<!-- wp:html -->
+				<div class="sgs-shop-filters__header">
+					<h2 class="sgs-shop-filters__heading">Filters</h2>
+					<button type="button" class="sgs-shop-filters__close" aria-label="Close filters">
+						<svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+					</button>
+				</div>
+				<!-- /wp:html -->
+
+				<!-- Filters block — inner: active-filter chips + individual filter panels -->
+				<!-- wp:woocommerce/product-filters {"style":{"spacing":{"padding":{"top":"0","bottom":"0"}}}} -->
+
+					<!-- Active filter chips row (removable + clear all) -->
+					<!-- wp:woocommerce/product-filter-active {"heading":"","headingLevel":3,"displayStyle":"chips","clearButtonPosition":"after-chips"} -->
+						<!-- wp:woocommerce/product-filter-removable-chips /-->
+						<!-- wp:woocommerce/product-filter-clear-button /-->
+					<!-- /wp:woocommerce/product-filter-active -->
+
+					<!-- Price range filter -->
+					<!-- wp:woocommerce/product-filter-price {"heading":"Price","headingLevel":3} -->
+						<!-- wp:woocommerce/product-filter-price-slider /-->
+					<!-- /wp:woocommerce/product-filter-price -->
+
+					<!-- Attribute: Flavour (pa_flavour) -->
+					<!-- wp:woocommerce/product-filter-attribute {"heading":"Flavour","headingLevel":3,"attributeId":2,"queryType":"or","displayStyle":"woocommerce/product-filter-chips","showCounts":true} -->
+						<!-- wp:woocommerce/product-filter-chips /-->
+					<!-- /wp:woocommerce/product-filter-attribute -->
+
+					<!-- Attribute: Size (pa_size) -->
+					<!-- wp:woocommerce/product-filter-attribute {"heading":"Size","headingLevel":3,"attributeId":1,"queryType":"or","displayStyle":"woocommerce/product-filter-chips","showCounts":true} -->
+						<!-- wp:woocommerce/product-filter-chips /-->
+					<!-- /wp:woocommerce/product-filter-attribute -->
+
+					<!-- Availability / Stock filter -->
+					<!-- wp:woocommerce/product-filter-status {"heading":"Availability","headingLevel":3} -->
+						<!-- wp:woocommerce/product-filter-checkbox-list /-->
+					<!-- /wp:woocommerce/product-filter-status -->
+
+					<!-- Star rating filter -->
+					<!-- wp:woocommerce/product-filter-rating {"heading":"Rating","headingLevel":3} -->
+						<!-- wp:woocommerce/product-filter-checkbox-list /-->
+					<!-- /wp:woocommerce/product-filter-rating -->
+
+				<!-- /wp:woocommerce/product-filters -->
+
+			</aside>
+			<!-- /wp:group -->
+
+			<!-- Product grid: inherits archive query so filters apply in-place via the
+			     Interactivity API router region. The wrapper <div> is REQUIRED — WC's
+			     ProductCollection Renderer adds data-wp-router-region by regex-replacing
+			     the collection's first <div>; without it, filters update the URL/chips
+			     but the grid never re-queries client-side (only on a full page reload). -->
+			<!-- wp:woocommerce/product-collection {"queryId":0,"query":{"inherit":true,"perPage":12,"isProductCollectionBlock":true},"tagName":"div","displayLayout":{"type":"flex","columns":3},"queryContextIncludes":["collection"],"align":"wide"} -->
+			<div class="wp-block-woocommerce-product-collection alignwide">
+
+				<!-- wp:woocommerce/product-template -->
+					<!-- wp:sgs/product-card {"sourceMode":"wc-product","showPickers":false,"ctaBehaviour":"learn-more","showLadder":false} /-->
+				<!-- /wp:woocommerce/product-template -->
+
+				<!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"center"}} -->
+					<!-- wp:query-pagination-previous /-->
+					<!-- wp:query-pagination-numbers /-->
+					<!-- wp:query-pagination-next /-->
+				<!-- /wp:query-pagination -->
+
+				<!-- wp:woocommerce/product-collection-no-results -->
+					<!-- wp:paragraph {"align":"center"} -->
+					<p class="has-text-align-center">No products match your filters. Try adjusting or clearing them.</p>
+					<!-- /wp:paragraph -->
+				<!-- /wp:woocommerce/product-collection-no-results -->
+
+			</div>
+			<!-- /wp:woocommerce/product-collection -->
+
+		</div>
+		<!-- /wp:group -->
 
 	</div>
 	<!-- /wp:group -->
+
+	<!-- Bottom collapsible text (collapsible, operator fills copy) -->
+	<!-- wp:sgs/collapsible-text {"collapsible":true,"collapsedLines":4} /-->
 
 </main>
 <!-- /wp:group -->
