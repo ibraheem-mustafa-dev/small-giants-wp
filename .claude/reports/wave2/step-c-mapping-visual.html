@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step C — Layout Mapping</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* True neutral dark — zero purple tint */
+    --bg:        #0d0f12;
+    --surface:   #161920;
+    --surface2:  #1e2128;
+    --border:    #2a2e38;
+    --border2:   #353a47;
+
+    /* Text — high contrast */
+    --text:      #f0f2f7;
+    --text2:     #b8bfd0;
+    --muted:     #6b7591;
+
+    /* Status — distinct, saturated, no purple overlap */
+    --green:     #34d399;
+    --green-bg:  #06160f;
+    --green-bd:  #0d3d24;
+
+    --amber:     #fbbf24;
+    --amber-bg:  #140d00;
+    --amber-bd:  #3d2c00;
+
+    --sky:       #38bdf8;   /* sky blue — clearly NOT purple */
+    --sky-bg:    #03111c;
+    --sky-bd:    #083654;
+
+    --rose:      #fb7185;
+    --rose-bg:   #160407;
+    --rose-bd:   #4a0c14;
+
+    /* Accent for UI chrome only (not data) */
+    --accent:    #6366f1;
+    --accent-dim: #3730a3;
+
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── Header ─── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 32px 0;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .title-block h1 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+
+  .title-block .subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  .status-legend {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-left: auto;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text2);
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ─── Stats strip ─── */
+  .stats-strip {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: 1px solid;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    min-width: 140px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+
+  .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+
+  .stat-card.active {
+    box-shadow: 0 0 0 2px currentColor, 0 8px 24px rgba(0,0,0,0.4);
+    transform: translateY(-2px);
+  }
+
+  .stat-card.f-all   { background: var(--surface2); border-color: var(--border2); color: var(--text); }
+  .stat-card.f-all::before { background: var(--border2); }
+  .stat-card.f-all.active { box-shadow: 0 0 0 2px var(--border2), 0 8px 24px rgba(0,0,0,0.4); }
+
+  .stat-card.f-covered { background: var(--green-bg);  border-color: var(--green-bd);  color: var(--green); }
+  .stat-card.f-covered::before { background: var(--green); }
+
+  .stat-card.f-db   { background: var(--amber-bg); border-color: var(--amber-bd); color: var(--amber); }
+  .stat-card.f-db::before { background: var(--amber); }
+
+  .stat-card.f-rule { background: var(--sky-bg);   border-color: var(--sky-bd);   color: var(--sky); }
+  .stat-card.f-rule::before { background: var(--sky); }
+
+  .stat-card.f-block { background: var(--rose-bg);  border-color: var(--rose-bd);  color: var(--rose); }
+  .stat-card.f-block::before { background: var(--rose); }
+
+  .stat-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
+
+  .stat-content .count {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+
+  .stat-content .label {
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.75;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ─── Draft tabs ─── */
+  .tabs-row {
+    display: flex;
+    gap: 0;
+  }
+
+  .tab-btn {
+    padding: 11px 22px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    letter-spacing: 0.1px;
+  }
+
+  .tab-btn:hover { color: var(--text2); }
+  .tab-btn.active { color: #fff; border-bottom-color: var(--accent); }
+
+  /* ─── Main ─── */
+  .main {
+    padding: 24px 32px;
+    max-width: 1440px;
+  }
+
+  /* ─── Big finding banner ─── */
+  .banner {
+    background: #120b00;
+    border: 1px solid var(--amber-bd);
+    border-left: 4px solid var(--amber);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: #fde68a;
+    line-height: 1.65;
+  }
+
+  .banner strong { color: var(--amber); font-weight: 700; }
+  .banner .t-sky { color: var(--sky); font-weight: 600; }
+  .banner .t-rose { color: var(--rose); font-weight: 600; }
+
+  /* ─── Progress bar ─── */
+  .progress-wrap {
+    margin-bottom: 22px;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .progress-bar {
+    height: 10px;
+    background: var(--surface2);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    gap: 1px;
+  }
+
+  .progress-bar .seg { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+  .progress-bar .seg.covered { background: var(--green); }
+  .progress-bar .seg.db      { background: var(--amber); }
+  .progress-bar .seg.rule    { background: var(--sky); }
+  .progress-bar .seg.block   { background: var(--rose); }
+
+  /* ─── Toolbar ─── */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 7px;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text2);
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+    font-family: var(--font);
+  }
+
+  .btn:hover { background: var(--border); color: var(--text); }
+
+  .active-filter-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    margin-left: 4px;
+  }
+
+  .toolbar-spacer { flex: 1; }
+
+  /* ─── Sections ─── */
+  .sections-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+
+  .section-card:hover { border-color: var(--border2); }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 15px 18px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .chevron {
+    color: var(--muted);
+    font-size: 11px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    width: 16px;
+    text-align: center;
+  }
+
+  .section-card.open .chevron { transform: rotate(90deg); }
+
+  .section-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    flex: 1;
+    white-space: nowrap;
+  }
+
+  .section-bem {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 3px 9px;
+    border-radius: 5px;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .section-target-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: #fff;
+    background: #1e2638;
+    border: 1px solid #2e3f5c;
+    padding: 3px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+
+  .mini-counts {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .mc {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 7px;
+    border-radius: 5px;
+  }
+
+  .mc.green  { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green-bd); }
+  .mc.amber  { background: var(--amber-bg);  color: var(--amber);  border: 1px solid var(--amber-bd); }
+  .mc.sky    { background: var(--sky-bg);    color: var(--sky);    border: 1px solid var(--sky-bd); }
+  .mc.rose   { background: var(--rose-bg);   color: var(--rose);   border: 1px solid var(--rose-bd); }
+
+  /* ─── Section body / table ─── */
+  .section-body {
+    display: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .section-card.open .section-body { display: block; }
+
+  .rows-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  .rows-table colgroup col:nth-child(1) { width: 22%; }
+  .rows-table colgroup col:nth-child(2) { width: 22%; }
+  .rows-table colgroup col:nth-child(3) { width: 22%; }
+  .rows-table colgroup col:nth-child(4) { width: 34%; }
+
+  .rows-table th {
+    padding: 9px 14px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .rows-table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid #171a21;
+    vertical-align: top;
+  }
+
+  .rows-table tr:last-child td { border-bottom: none; }
+
+  .rows-table tbody tr:hover td { background: rgba(255,255,255,0.025); }
+
+  .rows-table tr.row-hidden { display: none; }
+
+  /* Cell content */
+  .cell-el {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #c8cfe0;
+    line-height: 1.5;
+    word-break: break-all;
+  }
+
+  .cell-target {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #9ecbf7;
+    line-height: 1.5;
+    word-break: break-all;
+  }
+
+  .cell-note {
+    font-size: 12.5px;
+    color: var(--text2);
+    line-height: 1.55;
+  }
+
+  /* Badges */
+  .badges-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-start;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 5px;
+    border: 1px solid;
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+  }
+
+  .badge.covered { background: var(--green-bg); color: var(--green); border-color: var(--green-bd); }
+  .badge.db      { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-bd); }
+  .badge.rule    { background: var(--sky-bg);   color: var(--sky);   border-color: var(--sky-bd); }
+  .badge.block   { background: var(--rose-bg);  color: var(--rose);  border-color: var(--rose-bd); }
+
+  .rule-tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 2px;
+  }
+
+  .rule-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--sky);
+    background: var(--sky-bg);
+    border: 1px solid var(--sky-bd);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  /* ─── Summary card ─── */
+  .summary-card {
+    margin-top: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+  }
+
+  .summary-card h3 {
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 18px;
+    letter-spacing: -0.3px;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 14px;
+  }
+
+  .sblock {
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid;
+  }
+
+  .sblock.covered { background: var(--green-bg);  border-color: var(--green-bd); }
+  .sblock.db      { background: var(--amber-bg);  border-color: var(--amber-bd); }
+  .sblock.rule    { background: var(--sky-bg);    border-color: var(--sky-bd); }
+  .sblock.block   { background: var(--rose-bg);   border-color: var(--rose-bd); }
+
+  .sblock h4 {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: -0.1px;
+  }
+
+  .sblock.covered h4 { color: var(--green); }
+  .sblock.db h4      { color: var(--amber); }
+  .sblock.rule h4    { color: var(--sky); }
+  .sblock.block h4   { color: var(--rose); }
+
+  .sblock ul { list-style: none; }
+
+  .sblock ul li {
+    font-size: 12.5px;
+    color: var(--text2);
+    padding: 3px 0 3px 14px;
+    position: relative;
+    line-height: 1.5;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .sblock ul li:last-child { border-bottom: none; }
+
+  .sblock ul li::before {
+    content: '›';
+    position: absolute;
+    left: 2px;
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .sblock.covered ul li::before { color: var(--green); }
+  .sblock.db ul li::before      { color: var(--amber); }
+  .sblock.rule ul li::before    { color: var(--sky); }
+  .sblock.block ul li::before   { color: var(--rose); }
+
+  .sblock ul li strong { color: #fff; font-weight: 600; }
+
+  /* ─── Empty state ─── */
+  .empty-state {
+    padding: 40px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ─────────────────────────────────────
+   DATA
+───────────────────────────────────── */
+const STATUS = {
+  covered: { label: 'COVERED',   icon: '✅', cls: 'covered', color: 'green' },
+  db:      { label: 'DB GAP',    icon: '➕', cls: 'db',      color: 'amber' },
+  rule:    { label: 'RULE',      icon: '⚙',  cls: 'rule',    color: 'sky'   },
+  block:   { label: 'BLOCK GAP', icon: '🧱', cls: 'block',   color: 'rose'  },
+};
+
+const DRAFT1 = [
+  {
+    id: 's1', name: '§1 Hero', bem: '.sgs-hero', target: 'sgs/hero',
+    rows: [
+      { el: 'section.sgs-hero', target: 'sgs/hero', s: ['covered'], note: 'BEM block-name→blocks.slug' },
+      { el: 'overflow:hidden', target: '(no attr)', s: ['rule'], r: ['G9'], note: 'Gap-candidate — no overflow attr on sgs/hero yet' },
+      { el: 'div.__content (FOLD)', target: 'hero InnerBlocks', s: ['covered'], note: 'Single-child fold' },
+      { el: 'contentPadding* Mobile/Tablet/Desktop', target: 'contentPadding*', s: ['covered'], note: '28px → 56px → 72px ✅' },
+      { el: 'flex/justify-content on content layer', target: '(no attr)', s: ['rule'], r: ['G9'], note: 'Content-layer flex has no attr — render.php default' },
+      { el: 'h1 (unclassed)', target: 'sgs/hero → child sgs/heading', s: ['rule'], r: ['G2', 'G3'], note: 'tag→slot; typed-attr-beats-has_inner_blocks' },
+      { el: 'child heading fontSize 52px/58px', target: 'child sgs/heading fontSize', s: ['covered'], note: 'Tablet / Desktop tiers ✅' },
+      { el: 'p.sgs-hero__sub', target: 'sgs/hero.subHeadline', s: ['covered'], note: "'sub'→subheading slot" },
+      { el: 'div.sgs-hero__ctas (FOLD)', target: 'FOLD; gap→ctaGap', s: ['rule'], r: ['G6'], note: "'ctas' ambiguous — collides button/button-group" },
+      { el: 'a.sgs-button--primary / --secondary', target: 'sgs/hero.ctaPrimary* / ctaSecondary*', s: ['covered'], note: 'button slot + variant ✅' },
+      { el: 'div.sgs-hero__media', target: 'scalar-media lift', s: ['covered'], note: 'splitImage / splitImageMobile ✅' },
+    ]
+  },
+  {
+    id: 's2', name: '§2 Trust-bar', bem: '.sgs-trust-bar', target: 'sgs/trust-bar',
+    rows: [
+      { el: 'section.sgs-trust-bar', target: 'sgs/trust-bar', s: ['covered'], note: 'BEM→blocks.slug' },
+      { el: 'background:var(--surface-pink)', target: 'native color.background', s: ['covered'], note: '✅ FACT-CHECK: covered by trust-bar supports.color.background:true (WP colour panel) — no custom attr needed' },
+      { el: 'gap "16px 12px" (compound)', target: 'gap', s: ['db'], note: 'Confirm compound row+col gap accepted' },
+      { el: 'padding 22px 20px', target: 'paddingTop/Bottom/Left/Right', s: ['covered'], note: '' },
+      { el: '@600 repeat(4,1fr)', target: 'columns=4', s: ['rule'], r: ['G9'], note: '@600 ≠ tier set → Tablet@768 → visual-QA flag' },
+      { el: 'div.sgs-trust-bar__badge ×4', target: 'items[] (has_inner_blocks=0)', s: ['rule', 'db'], r: ['G5'], note: "VERIFIED: 'badge' singular missing from items.aliases (only plural 'badges'; badge slot only aliases 'pill')" },
+      { el: 'span.__icon > svg', target: 'item.icon via icon_resolver', s: ['rule'], r: ['G2'], note: 'Icon resolver route' },
+      { el: 'border-radius:50% / box-shadow', target: 'iconCircleBorderRadius / iconCircleShadow', s: ['covered'], note: '✅ FACT-CHECK: both exist in block.json (defaults 50% / sm) — NOT missing' },
+      { el: 'svg stroke:var(--primary-dark)', target: 'iconColour (stroke)', s: ['covered'], note: '✅ FACT-CHECK: iconColour attr exists (default primary-dark); Stroke suffix in property_suffixes' },
+      { el: 'stroke-width:1.8', target: '(no suffix)', s: ['rule'], r: ['G9'], note: 'No stroke-width property suffix' },
+      { el: 'span.__text', target: 'item.text', s: ['covered'], note: '' },
+      { el: 'textFontSize / fontWeight / lineHeight', target: 'labelFontWeight / labelLineHeight', s: ['covered', 'db'], note: 'VERIFIED: labelFontSize + labelColour shipped; labelFontWeight + labelLineHeight still absent' },
+    ]
+  },
+  {
+    id: 's3', name: '§3 Featured Product', bem: '.sgs-featured-product', target: 'sgs/container (slug-None)',
+    rows: [
+      { el: 'section.sgs-featured-product', target: 'sgs/container (slug-None)', s: ['rule', 'covered'], r: ['G7'], note: 'No named block → container fallback ✅' },
+      { el: 'h2 (unclassed)', target: 'sgs/heading', s: ['rule'], r: ['G2'], note: 'tag→slot' },
+      { el: 'div.sgs-products', target: 'sgs/card-grid or container grid', s: ['rule', 'db'], r: ['G6', 'G7'], note: "No 'products' alias — tie-break needed" },
+      { el: '.sgs-product-card--featured', target: 'sgs/product-card variantStyle=featured', s: ['rule', 'db'], r: ['G8'], note: "'featured' compound modifier; variant_attr unset" },
+      { el: 'background / border-radius:16px / border', target: '(no attrs)', s: ['covered'], note: '✅ S21 — product-card border/bg/radius now exposed via the container-mirror supports (A1) + B6 made the trial border overridable' },
+      { el: 'h3.__title typography', target: '(no attrs)', s: ['block'], note: '🧱 product-card has NO heading typography attrs' },
+      { el: 'p.__description typography', target: '(no attrs)', s: ['block'], note: '🧱 no description typography on product-card' },
+      { el: 'img height:220px / objectFit', target: 'imageHeight ✅ / objectFit missing', s: ['covered', 'db'], note: 'objectFit attr missing' },
+      { el: 'span.__price typography', target: 'price slot ✅ / typography missing', s: ['covered', 'db'], note: "VERIFIED: 'price' slot EXISTS (aliases amount/cost/price-wrapper/ribbon/savings-badge) — alias claim FALSE; price typography attrs still absent" },
+      { el: 'span.__price-note', target: 'product-card.priceNote', s: ['db'], note: "'price-note' alias + typography missing" },
+      { el: 'a.sgs-button--primary (standalone)', target: 'product-card.ctaText / sgs/button', s: ['db', 'rule'], note: "'sgs-button' standalone alias path needed" },
+      { el: '.sgs-product-card--trial', target: 'sgs/product-card framingMode=trial', s: ['rule', 'db'], r: ['G8'], note: 'B6 ✅ — trial border:2px dashed + gradient wrapped in :where(); operator/converter can now override them' },
+    ]
+  },
+  {
+    id: 's4', name: '§4 Brand', bem: '.sgs-brand', target: 'sgs/container',
+    rows: [
+      { el: 'section.sgs-brand', target: 'sgs/container (slug-None)', s: ['rule', 'covered'], r: ['G7'], note: '' },
+      { el: 'grid + gap + padding (Mobile/Tablet)', target: 'gridTemplateColumns / gap / padding*', s: ['covered'], note: '✅ all tiers' },
+      { el: 'div.sgs-brand__content (FOLD multi-child)', target: 'FOLD', s: ['rule'], r: ['G4', 'G9'], note: 'flex/column gap not expressible per-child' },
+      { el: 'h2.sgs-brand__headline', target: 'sgs/heading', s: ['covered'], note: "'headline'→heading slot; fontSize Mobile/Tablet ✅" },
+      { el: 'div.sgs-brand__quote', target: 'sgs/quote', s: ['covered'], note: 'All quote typography attrs ✅' },
+      { el: 'p.sgs-brand__attribution', target: 'sgs/quote.attribution', s: ['covered'], note: 'fontSize / fontWeight / colour / marginTop ✅' },
+      { el: "a.sgs-brand__cta.sgs-button--ghost", target: 'sgs/button (inheritStyle=ghost)', s: ['db'], note: "VERIFIED: button-outline aliases ghost-button/ghostButton/button-ghost — but the bare '--ghost' BEM modifier is still unmapped" },
+      { el: 'min-height:48px on sgs/button', target: 'minHeight', s: ['covered'], note: '✅ FACT-CHECK: minHeight + Mobile/Tablet responsive variants all exist on sgs/button' },
+      { el: 'img.sgs-brand__image', target: 'sgs/media', s: ['covered'], note: 'objectFit / borderRadius ✅' },
+      { el: 'max-height:380px / 440px', target: 'maxHeight / maxHeightTablet', s: ['covered'], note: '✅ FACT-CHECK: maxHeight + maxHeightMobile + maxHeightTablet all exist on sgs/media' },
+      { el: 'order:-1(mobile) / 0(@768)', target: '(no attr)', s: ['db', 'rule'], r: ['G9'], note: "No 'order' property suffix — visual order swap gap" },
+    ]
+  },
+  {
+    id: 's5', name: '§5 Ingredients', bem: '.sgs-ingredients-section', target: 'sgs/container',
+    rows: [
+      { el: 'section.sgs-ingredients-section', target: 'sgs/container (slug-None)', s: ['covered'], note: '' },
+      { el: 'background / padding', target: 'backgroundColour / padding*', s: ['covered'], note: '' },
+      { el: 'text-align:center on container', target: 'native typography.textAlign', s: ['covered'], note: '✅ FACT-CHECK: covered by sgs/container supports.typography.textAlign:true' },
+      { el: 'sgs-section-heading__label / h2 / intro', target: 'sgs/label / sgs/heading / sgs/text', s: ['covered', 'rule'], r: ['G2'], note: '✅ all own-attr typography' },
+      { el: 'div.sgs-feature-grid', target: 'sgs/feature-grid', s: ['rule', 'covered'], r: ['G3'], note: 'BEM→blocks.slug; gridTemplateColumns 2|4 ✅' },
+      { el: 'margin-bottom on feature-grid', target: 'native spacing.margin', s: ['covered'], note: '✅ FACT-CHECK: covered by supports.spacing.margin:true (WP spacing panel)' },
+      { el: 'div.sgs-info-box ×4 (routing)', target: 'sgs/info-box child', s: ['covered'], note: "'card'→info-box slot ✅" },
+      { el: 'info-box heading typography', target: 'native typography via selectors', s: ['covered'], note: '✅ FACT-CHECK: supports.typography (size/weight/style/lineHeight/spacing) + selectors.typography targets .sgs-info-box__heading' },
+      { el: 'info-box description typography', target: '(no attrs)', s: ['block'], note: '🧱 VERIFIED genuine — selectors.typography targets __heading only; description has no per-element typography' },
+      { el: 'emoji icon font-size / margin', target: '(no attrs)', s: ['db', 'rule'], r: ['G9'], note: 'mediaEmojiSize / margin attrs missing' },
+      { el: 'p.sgs-ingredients-section__disclaimer', target: 'sgs/notice-banner', s: ['covered', 'db'], note: 'Routing ✅; E9 ✅ — padding/background/border/borderRadius now overridable (:where + native supports); only fontStyle still missing' },
+    ]
+  },
+  {
+    id: 's6', name: '§6 Gift', bem: '.sgs-gift-section', target: 'sgs/container',
+    rows: [
+      { el: 'section.sgs-gift-section', target: 'sgs/container (slug-None)', s: ['covered'], note: '' },
+      { el: 'div.__card-inner (FOLD) + contentWidth', target: 'FOLD ✅; contentWidth ✅', s: ['covered'], note: '' },
+      { el: 'span.__label / h2 / p.__sub', target: 'sgs/label / sgs/heading / sgs/text', s: ['covered', 'rule'], r: ['G2'], note: 'All typography ✅' },
+      { el: 'div.sgs-gift-section__cards (grid)', target: 'sgs/container grid', s: ['rule', 'covered'], r: ['G4'], note: '1|2 col ✅' },
+      { el: 'sgs-gift-section__card ×2', target: 'sgs/product-card', s: ['rule'], r: ['G8'], note: 'Content-signature detection needed' },
+      { el: 'card background / border-radius / border', target: '(no attrs)', s: ['covered'], note: '✅ S21 — product-card border/bg/radius via the container-mirror supports (A1+B6)' },
+      { el: 'card heading + description typography', target: '(no attrs)', s: ['block'], note: '🧱 product-card missing heading + description typography' },
+      { el: 'div.__card-price', target: 'product-card price / sgs/text', s: ['db'], note: "'card-price' alias missing; price typography missing" },
+      { el: 'sgs-announcement-bar--send-to-ward', target: 'sgs/announcement-bar', s: ['db', 'block'], note: "'announcement-bar' alias missing; 🧱 border/radius/padding/layout all absent" },
+    ]
+  },
+  {
+    id: 's7', name: '§7 Social Proof', bem: '.sgs-social-proof', target: 'sgs/container',
+    rows: [
+      { el: 'section.sgs-social-proof', target: 'sgs/container (slug-None)', s: ['covered'], note: '' },
+      { el: 'h2 (unclassed) + p.sub', target: 'sgs/heading (⚙G2) + sgs/text', s: ['covered', 'rule'], r: ['G2'], note: 'text-align:center→textAlign ✅' },
+      { el: 'div.__trustpilot-bar', target: 'sgs/trustpilot-reviews', s: ['db', 'rule'], r: ['G9'], note: "'trustpilot-bar' alias missing" },
+      { el: 'trustpilot subtitle typography', target: '(no attr)', s: ['db'], note: 'subtitleText fontSize/colour attrs missing' },
+      { el: 'span.__trustpilot-stars', target: 'sgs/star-rating', s: ['covered'], note: "'stars'→rating slot ✅" },
+      { el: 'div.sgs-testimonial-slider', target: 'sgs/testimonial-slider', s: ['covered'], note: 'BEM→blocks.slug; columns Mobile/Tablet ✅' },
+      { el: 'article.sgs-testimonial ×3 (routing)', target: 'sgs/testimonial child', s: ['covered'], note: "style='card' ✅ for background" },
+      { el: 'testimonial border-radius / padding / border', target: '(no attrs)', s: ['covered'], note: '✅ S21 (D8) — testimonial keeps the container-mirror: border/radius/padding available' },
+      { el: 'p.__text → testimonial.quote', target: 'testimonial.quote', s: ['db'], note: "'review-text'/'text'→quote alias needed" },
+      { el: 'testimonial quote typography', target: '(no attrs)', s: ['covered', 'db'], note: 'D8 ✅ — quoteFontSize + quoteColour added (+ summary/name/role/rating colour + size); quoteStyle/LineHeight still absent' },
+      { el: 'p.__author → testimonial.name', target: 'testimonial.name', s: ['covered'], note: "✅ FACT-CHECK: 'author' in text.aliases + 'name' in heading.aliases — reviewer-name path covered" },
+    ]
+  },
+];
+
+const DRAFT2 = [
+  {
+    id: 'p1', name: '§1 Product Gallery', bem: '.product-page / .product-gallery', target: 'sgs/container (2-col)',
+    rows: [
+      { el: 'div.product-page', target: 'WC single-product template', s: ['covered'], note: 'Spec 30: the PDP shell is the WC single-product.html template chassis (FR-30-1) — not an SGS alias' },
+      { el: 'grid @768→1fr 1fr, @1024→3fr 2fr', target: 'gridTemplateColumnsTablet / Desktop', s: ['covered'], note: '' },
+      { el: 'section.product-gallery', target: 'WC Product Gallery block', s: ['covered'], note: 'Spec 30: WC core Product Gallery (variation-aware ≥WC 9.9) — FR-30-0/FR-30-2' },
+      { el: 'div.gallery-main', target: 'WC gallery inner markup', s: ['covered'], note: 'Spec 30: WC gallery inner element — style via :where overrides, no SGS alias' },
+      { el: 'img#gallery-main-img', target: 'WC gallery main image', s: ['covered', 'db'], note: 'Spec 30: WC gallery renders this; (sgs/media imageHeightTablet remains a separate standalone gap — maxHeightTablet exists)' },
+      { el: 'div.gallery-thumbs', target: 'WC gallery Thumbnails block', s: ['covered'], note: 'Spec 30: WC Product Gallery Thumbnails inner block — no SGS alias' },
+      { el: 'button.gallery-thumb ×4', target: 'WC gallery thumb-swap', s: ['covered', 'db'], note: 'Spec 30: WC gallery handles thumb-swap natively; (sgs/gallery selectedItemBorderColour/gridItem* remain standalone-gallery gaps)' },
+    ]
+  },
+  {
+    id: 'p2', name: '§2 Product Info', bem: '.product-info', target: 'sgs/product-card (bound)',
+    rows: [
+      { el: 'section.product-info', target: 'sgs-pdp-buybox template part', s: ['covered'], note: 'Spec 30: WC buybox composition in the sgs-pdp-buybox template part (FR-30-2) — not an SGS alias' },
+      { el: 'h1.product-name', target: 'product-card.productName → child sgs/heading', s: ['covered'], note: 'heading attrs ✅' },
+      { el: 'div.product-rating', target: 'WC Product Rating block', s: ['covered'], note: 'Spec 30: WC core Product Rating block in the buybox' },
+      { el: 'div.variant-group ×4', target: 'sgs/option-picker', s: ['covered'], note: "'variant-group'→option-picker ✅" },
+      { el: 'div.variant-label', target: 'option-picker.label', s: ['db', 'covered'], note: "'variant-label' alias missing; C7 ✅ added labelFontSize + labelColour; Weight/MarginBottom still absent" },
+      { el: 'div.pill-group', target: 'option-picker inner', s: ['covered', 'db'], note: 'pillGap/pillFlexWrap missing' },
+      { el: 'button.pill visual attrs', target: 'pillBgColour etc.', s: ['covered', 'db'], note: 'Selected* ✅; pillBorderRadius/pillFontSize/pillFontWeight missing' },
+      { el: 'button.pill-coming-soon', target: 'optionItems[] pending state', s: ['db'], note: "'coming-soon'→state; opacity/italic/dashed pending* attrs missing" },
+      { el: 'div.price-block', target: 'WC Product Price block', s: ['covered'], note: 'Spec 30: WC Product Price block in the buybox; FR-30-8 styles/couples it' },
+      { el: 'div.price-main (Fraunces 34px 700)', target: 'WC Price + FR-30-8 display', s: ['covered'], note: 'Spec 30: WC Product Price + the FR-30-8 price-display coupling (per-unit/value-ladder)' },
+      { el: 'div.cta-area', target: 'WC Add-to-Cart+Options + FR-30-7', s: ['covered'], note: 'Spec 30: WC Add-to-Cart+Options chassis + FR-30-7 option-picker wiring via the shipped /sgs/v1 cart proxy' },
+      { el: 'div.product-trust', target: 'sgs/trust-bar (typed)', s: ['db'], note: "VERIFIED: 'product-trust' alias still needed; 🧱 claim FALSE — trust-bar padding/border covered by native supports" },
+    ]
+  },
+  {
+    id: 'p3', name: '§3 Ingredients (Product)', bem: '.ingredients-section', target: 'sgs/container',
+    rows: [
+      { el: 'section.ingredients-section', target: 'sgs/container', s: ['rule'], r: ['G7'], note: "Content-generic (Spec 30): 'ingredients-*' never enters framework vocab — G7 bare-section fallback → sgs/container" },
+      { el: 'span.section-label', target: 'sgs/label', s: ['db'], note: "VERIFIED: 'section-label' not in label.aliases — genuine (generic term, safe to add)" },
+      { el: 'div.ingr-grid', target: 'sgs/feature-grid', s: ['rule'], r: ['G1'], note: 'Content-generic (Spec 30): maps to sgs/feature-grid via the G1 positional-grid rule — no alias' },
+      { el: 'div.ingr-card ×4 (routing)', target: 'sgs/info-box', s: ['rule'], note: 'Content-generic alias (food-domain); 🧱 claim FALSE — info-box borderRadius/padding/textAlign covered by native supports' },
+      { el: 'info-box heading typography', target: 'native typography via selectors', s: ['covered'], note: '✅ FACT-CHECK: heading covered — native supports.typography targeted at .sgs-info-box__heading (same as homepage §5)' },
+      { el: 'info-box description typography', target: '(no attrs)', s: ['block'], note: '🧱 same gap as homepage §5' },
+    ]
+  },
+  {
+    id: 'p4', name: '§4 Allergen', bem: '.allergen-section', target: 'sgs/container',
+    rows: [
+      { el: 'section.allergen-section', target: 'sgs/container', s: ['rule'], r: ['G7'], note: "Content-generic (Spec 30): allergen-* never enters framework vocab — G7 fallback → sgs/container" },
+      { el: 'div.allergen-block', target: 'sgs/notice-banner (variant=warning)', s: ['covered', 'rule'], r: ['G3'], note: "Content-generic routing via content-signature → notice-banner variant=warning; E9 ✅ overridable — no framework alias" },
+      { el: 'p.allergen-callout', target: 'sgs/label', s: ['rule'], note: 'Content-generic (Spec 30) → sgs/label generically; no framework alias' },
+      { el: 'h3#allergen-h3', target: 'sgs/heading', s: ['covered', 'rule'], r: ['G2'], note: 'tag→slot; typography ✅' },
+      { el: 'p.allergen-list', target: 'sgs/text', s: ['rule'], note: 'Content-generic (Spec 30) → sgs/text generically; no framework alias' },
+      { el: 'div.allergen-vegan', target: 'sgs/text', s: ['rule'], note: 'Content-generic — confirmed (Spec 30); no framework alias (--success token gap tracked separately)' },
+    ]
+  },
+  {
+    id: 'p5', name: '§5 Product Reviews', bem: '.product-reviews', target: 'sgs/testimonial-slider',
+    rows: [
+      { el: 'section.product-reviews', target: 'FR-30-10 live reviews', s: ['covered'], note: 'Spec 30: PDP reviews = FR-30-10 live review source (Trustpilot/verified — DMCC bans baked reviews) in the single-product template' },
+      { el: 'div.reviews-grid', target: 'FR-30-10 live reviews block', s: ['covered'], note: 'Spec 30: live reviews block renders the grid — never static testimonials on the PDP' },
+      { el: 'article.review-card ×3 (routing)', target: 'sgs/testimonial', s: ['covered'], note: 'Routing ✅; D8 ✅ — testimonial container-mirror border/radius/padding available' },
+      { el: 'p.review-text → testimonial.quote', target: 'testimonial.quote', s: ['db', 'covered'], note: "VERIFIED: 'review-text' not in quote.aliases — genuine for STANDALONE testimonial use (PDP uses FR-30-10); D8 ✅ quote typography shipped" },
+      { el: 'p.review-author → testimonial.name', target: 'testimonial.name', s: ['db'], note: "VERIFIED: 'review-author' in no slot aliases ('author' covers text slot only) — genuine for standalone use" },
+      { el: 'span.review-date → testimonial.role', target: 'testimonial.role', s: ['db'], note: "VERIFIED: 'review-date' not in role.aliases or date.aliases — genuine for standalone use" },
+    ]
+  },
+];
+
+const ALL_MAP = { 1: DRAFT1, 2: DRAFT2 };
+
+/* ─────────────────────────────────────
+   STATE
+───────────────────────────────────── */
+const state = {
+  filter: 'all',
+  draft: 1,
+  open: new Set([...DRAFT1, ...DRAFT2].map(s => s.id)),
+};
+
+/* ─────────────────────────────────────
+   HELPERS
+───────────────────────────────────── */
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function currentSections() {
+  return state.draft === 0 ? [...DRAFT1, ...DRAFT2] : (ALL_MAP[state.draft] || []);
+}
+
+function countAll(sections) {
+  const c = { covered:0, db:0, rule:0, block:0, total:0 };
+  sections.forEach(s => s.rows.forEach(r => {
+    c.total++;
+    new Set(r.s).forEach(k => { if (c[k]!==undefined) c[k]++; });
+  }));
+  return c;
+}
+
+function rowVisible(row) {
+  return state.filter === 'all' || row.s.includes(state.filter);
+}
+
+/* ─────────────────────────────────────
+   BADGE RENDERERS
+───────────────────────────────────── */
+function badge(type) {
+  const d = STATUS[type];
+  return `<span class="badge ${d.cls}">${d.icon} ${d.label}</span>`;
+}
+
+function miniCount(color, icon, n) {
+  if (!n) return '';
+  return `<span class="mc ${color}">${icon} ${n}</span>`;
+}
+
+/* ─────────────────────────────────────
+   RENDER FUNCTIONS
+───────────────────────────────────── */
+function renderHeader() {
+  const allSecs = [...DRAFT1, ...DRAFT2];
+  const c = countAll(allSecs);
+  const t = c.total || 1;
+
+  const statCards = [
+    { key:'all',     cls:'f-all',     icon:'◉',  count:c.total,   label:'All Rows' },
+    { key:'covered', cls:'f-covered', icon:'✅', count:c.covered, label:'Covered' },
+    { key:'db',      cls:'f-db',      icon:'➕', count:c.db,      label:'DB Gap' },
+    { key:'rule',    cls:'f-rule',    icon:'⚙',  count:c.rule,    label:'Rule Needed' },
+    { key:'block',   cls:'f-block',   icon:'🧱', count:c.block,   label:'Block Gap' },
+  ].map(s => `
+    <div class="stat-card ${s.cls} ${state.filter===s.key?'active':''}" onclick="setFilter('${s.key}')">
+      <span class="stat-icon">${s.icon}</span>
+      <div class="stat-content">
+        <div class="count">${s.count}</div>
+        <div class="label">${s.label}</div>
+      </div>
+    </div>`).join('');
+
+  const tabs = [
+    {id:1, label:'🏠 Homepage (Draft 1)'},
+    {id:2, label:'🛍 Product Page (Draft 2)'},
+    {id:0, label:'📋 Both'},
+  ].map(t => `<button class="tab-btn ${state.draft===t.id?'active':''}" onclick="setDraft(${t.id})">${t.label}</button>`).join('');
+
+  const pct = k => Math.round((c[k]/t)*100);
+
+  return `
+    <div class="header">
+      <div class="header-top">
+        <div class="title-block">
+          <h1>Step C — Draft → SGS Clone Mapping</h1>
+          <div class="subtitle">Layout + responsive CSS line-by-line · both drafts · header/footer excluded · DB-grounded 2026-06-10</div>
+        </div>
+        <div class="status-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div> Covered</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div> DB Gap</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#38bdf8"></div> Rule Needed</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#fb7185"></div> Block Gap</div>
+        </div>
+      </div>
+
+      <div class="stats-strip">${statCards}</div>
+
+      <div style="height:10px;background:#1e2128;border-radius:6px;overflow:hidden;display:flex;gap:1px;margin:0 0 20px">
+        <div style="height:100%;background:#34d399;border-radius:3px;width:${pct('covered')}%;transition:width .5s"></div>
+        <div style="height:100%;background:#fbbf24;width:${pct('db')}%;transition:width .5s"></div>
+        <div style="height:100%;background:#38bdf8;width:${pct('rule')}%;transition:width .5s"></div>
+        <div style="height:100%;background:#fb7185;width:${pct('block')}%;transition:width .5s"></div>
+      </div>
+
+      <div class="tabs-row">${tabs}</div>
+    </div>`;
+}
+
+function renderSection(sec) {
+  const counts = {covered:0,db:0,rule:0,block:0};
+  sec.rows.forEach(r => r.s.forEach(k => { if(counts[k]!==undefined) counts[k]++; }));
+  const visibleRows = sec.rows.filter(rowVisible);
+  if (!visibleRows.length && state.filter !== 'all') return '';
+
+  const isOpen = state.open.has(sec.id);
+
+  const rowsHtml = sec.rows.map(row => {
+    const show = rowVisible(row);
+    const badges = row.s.map(badge).join('');
+    const ruleTags = row.r ? `<div class="rule-tags">${row.r.map(x=>`<span class="rule-tag">${x}</span>`).join('')}</div>` : '';
+    return `<tr class="${!show?'row-hidden':''}">
+      <td><div class="cell-el">${esc(row.el)}</div></td>
+      <td><div class="cell-target">${esc(row.target)}</div></td>
+      <td>
+        <div class="badges-cell">
+          <div style="display:flex;flex-wrap:wrap;gap:4px">${badges}</div>
+          ${ruleTags}
+        </div>
+      </td>
+      <td><div class="cell-note">${esc(row.note)}</div></td>
+    </tr>`;
+  }).join('');
+
+  return `
+    <div class="section-card ${isOpen?'open':''}" data-id="${sec.id}">
+      <div class="section-header" onclick="toggleSec('${sec.id}')">
+        <span class="chevron">▶</span>
+        <span class="section-name">${esc(sec.name)}</span>
+        <span class="section-bem">${esc(sec.bem)}</span>
+        <span class="section-target-badge">${esc(sec.target)}</span>
+        <div class="mini-counts">
+          ${miniCount('green','✅',counts.covered)}
+          ${miniCount('amber','➕',counts.db)}
+          ${miniCount('sky','⚙',counts.rule)}
+          ${miniCount('rose','🧱',counts.block)}
+        </div>
+      </div>
+      <div class="section-body">
+        <table class="rows-table">
+          <colgroup><col><col><col><col></colgroup>
+          <thead>
+            <tr>
+              <th>Element / CSS</th>
+              <th>SGS Target</th>
+              <th>Status</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function renderSummary() {
+  return `
+    <div class="summary-card">
+      <h3>Coverage Summary</h3>
+      <div class="summary-grid">
+        <div class="sblock covered">
+          <h4>✅ Covered today</h4>
+          <ul>
+            <li>Section roots — BEM→block.slug routing</li>
+            <li>Single-child folds</li>
+            <li>Scalar-media lift (splitImage / splitImageMobile)</li>
+            <li>Arrays — <code>has_inner_blocks=0</code> path</li>
+            <li>Grid detection + responsive cols / gaps</li>
+            <li>All CTA / button CSS</li>
+            <li>label / heading / text / quote own-attr typography</li>
+            <li>Hero: all padding tiers + grid</li>
+            <li>Brand: quote + attribution attrs</li>
+          </ul>
+        </div>
+        <div class="sblock db">
+          <h4>➕ DB data needed (recount after 2026-06-11 fact-check — most product-page "aliases" were NOT aliases)</h4>
+          <ul>
+            <li>Product-page bare-named classes → <strong>Spec 30</strong> (WC blocks/template) or <strong>content-generic</strong> (no framework aliases) — only variant-label / section-label / product-trust / review-* remain genuine</li>
+            <li>Homepage: <strong>price / price-note / ghost / announcement-bar / trustpilot-* / badge-singular</strong></li>
+            <li>4 design tokens: surface-alt / surface-cream / success / primary-dark</li>
+            <li>1 property_suffix: <strong>Overflow</strong></li>
+            <li>Modifier suffixes: featured / trial / ghost / coming-soon</li>
+            <li>Set product-card <code>variant_attr</code></li>
+            <li><s>trust-bar <code>backgroundColour</code> attr</s> ✅ FALSE — native <code>color.background</code> support</li>
+          </ul>
+        </div>
+        <div class="sblock rule">
+          <h4>⚙ Converter rules (G1–G9)</h4>
+          <ul>
+            <li><strong>G1</strong> — positional-grid fallback (no areas)</li>
+            <li><strong>G2</strong> — tag→SGS-slot (unclassed h1/h2/h3/p)</li>
+            <li><strong>G3</strong> — typed-attr-beats-has_inner_blocks</li>
+            <li><strong>G4</strong> — fold-multi-child before content-slot</li>
+            <li><strong>G5</strong> — array-item route</li>
+            <li><strong>G6</strong> — ambiguous-alias tie-break</li>
+            <li><strong>G7</strong> — section-root Step 0</li>
+            <li><strong>G8</strong> — compound-suffix + modifier</li>
+            <li><strong>G9</strong> — missing property_suffixes / block-attr</li>
+          </ul>
+        </div>
+        <div class="sblock block">
+          <h4>🧱 Block completeness (6 blocks — 4 substantially closed in session-21 block-quality programme: product-card / notice-banner / testimonial / option-picker)</h4>
+          <ul>
+            <li><strong>sgs/info-box</strong> — <s>heading typography, borderRadius, padding, textAlign</s> ✅ FALSE (native supports + selectors target __heading); remaining: description typography + mediaEmojiSize</li>
+            <li><strong>sgs/testimonial</strong> — <s>quote/name/role typography (size+colour), card border/radius/padding</s> ✅ DONE (D8, S21); remaining: quoteStyle/LineHeight</li>
+            <li><strong>sgs/notice-banner</strong> — <s>background, border, border-radius, padding</s> ✅ DONE (E9, S21); remaining: fontStyle</li>
+            <li><strong>sgs/product-card</strong> — <s>card border/radius/background/gradient</s> ✅ DONE (A1+B6, S21); remaining: heading/price typography</li>
+            <li><strong>sgs/option-picker</strong> — label font-size+colour ✅ DONE (C7, S21); remaining: label weight/margin, pill typography, pillBorderRadius</li>
+            <li><strong>sgs/announcement-bar</strong> — border/radius/padding/layout (inline use)</li>
+          </ul>
+        </div>
+      </div>
+    </div>`;
+}
+
+function render() {
+  const sections = currentSections();
+  const sectionsHtml = sections.map(renderSection).filter(Boolean).join('');
+  const filterLabel = state.filter !== 'all'
+    ? `<span class="active-filter-label">Showing: ${STATUS[state.filter].icon} ${STATUS[state.filter].label} only — <a href="#" onclick="setFilter('all');return false" style="color:var(--sky)">show all</a></span>`
+    : '';
+
+  document.getElementById('app').innerHTML = `
+    ${renderHeader()}
+    <div class="main">
+      <div class="banner">
+        <strong>Big finding from the CSS pass:</strong> Structural routing is sound. The CSS pass exposed a second, larger gap class —
+        <strong>built-in-element blocks lack per-element typography/visual attrs</strong> needed to carry the draft's CSS.
+        Work splits cleanly:
+        <span class="t-sky">⚙ converter rules (G1–G9)</span> +
+        <span style="color:var(--amber);font-weight:600">➕ DB data (aliases/suffixes/tokens)</span> +
+        <span class="t-rose">🧱 block-completeness (add missing per-element attrs)</span>.
+        All three are additive — none is a rearchitecture.<br><br><strong style="color:var(--rose)">UPDATE 2026-06-11 (session-21 block-quality programme, D206):</strong> the 🧱 visual gaps are now largely closed — product-card / notice-banner / testimonial have border/background/radius/padding (container-mirror + :where overridable); testimonial gained per-element typography (quote/name/role size+colour) via the 7-variant rebuild; option-picker label gained size+colour (C7). Remaining 🧱: per-element <em>heading/price</em> typography (product-card, info-box), pill typography + pillBorderRadius (option-picker), fontStyle/lineHeight/weight tails, and announcement-bar. The ⚙ converter routing (G1–G9) + ➕ DB aliases are unchanged (cloning thread).<br><br><strong style="color:var(--amber)">UPDATE 2026-06-11 PM (DB fact-check + Spec 30, D208):</strong> a row-by-row DB/block.json verification flipped ~19 more labels — native WP supports (border/background/spacing/textAlign), existing attrs (trust-bar icon*, button minHeight, media maxHeight) and existing aliases (price slot, author/name) covered them. The product-page draft is a <strong>WooCommerce page type</strong> (Spec 30): its gallery/buybox/price/CTA/reviews rows map to WC core blocks + FR-30-2/7/8/10 — NOT new aliases; allergen-*/ingr-* terms are content-generic and never enter framework vocab. Genuine survivors: ~24 rows (product-card/option-picker/announcement-bar/trustpilot per-element attrs + a handful of true aliases + order/objectFit suffix work).
+      </div>
+
+      <div class="toolbar">
+        <button class="btn" onclick="expandAll()">Expand all</button>
+        <button class="btn" onclick="collapseAll()">Collapse all</button>
+        <div class="toolbar-spacer"></div>
+        ${filterLabel}
+      </div>
+
+      <div class="sections-list">
+        ${sectionsHtml || '<div class="empty-state">No rows match this filter.</div>'}
+      </div>
+
+      ${renderSummary()}
+    </div>`;
+}
+
+/* ─────────────────────────────────────
+   INTERACTIONS
+───────────────────────────────────── */
+function toggleSec(id) {
+  state.open.has(id) ? state.open.delete(id) : state.open.add(id);
+  render();
+}
+
+function setFilter(f) { state.filter = f; render(); }
+function setDraft(d)  { state.draft = d;  render(); }
+function expandAll()  { currentSections().forEach(s => state.open.add(s.id)); render(); }
+function collapseAll(){ currentSections().forEach(s => state.open.delete(s.id)); render(); }
+
+render();
+</script>
+</body>
+</html>

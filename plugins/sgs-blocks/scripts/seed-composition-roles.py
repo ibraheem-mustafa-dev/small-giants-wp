@@ -90,6 +90,11 @@ RENAME_HAS_INNER_BLOCKS: dict[str, int] = {
 # target row is absent; once renamed, re-runs must still converge these values).
 ENFORCE_HAS_INNER_BLOCKS: dict[str, int] = {
     "sgs/trust-bar": 0,
+    # sgs/accordion-item: edit.js uses useInnerBlocksProps for the body content;
+    # render.php uses $content (InnerBlocks passthrough). The DB had has_inner_blocks=0
+    # which is a data quality gap — the block DOES accept InnerBlocks.
+    # Corrected Gate A 2026-06-10 alongside the accordion-item slot row fix.
+    "sgs/accordion-item": 1,
 }
 
 # Fresh INSERTS (2026-06-02, Workstream A — D150). Blocks added after the

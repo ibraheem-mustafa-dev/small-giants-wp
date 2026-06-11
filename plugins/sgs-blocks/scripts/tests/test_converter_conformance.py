@@ -375,3 +375,240 @@ class TestHarnessSmoke:
             except (json.JSONDecodeError, OSError) as exc:
                 invalid.append(f"{golden_path.name}: {exc}")
         assert not invalid, f"Invalid golden files:\n" + "\n".join(invalid)
+
+
+# ---------------------------------------------------------------------------
+# Call-graph assertion: each lifter has exactly ONE production caller
+# (Commit 1a enforcement gate)
+# ---------------------------------------------------------------------------
+
+class TestLiftersHaveSingleCaller:
+    """Assert that the three CSS-lift helpers are called ONLY from route_node_css.
+
+    After the Commit-1a call-site consolidation, each lifter must appear as a
+    call expression (name + '(') exclusively inside the body of route_node_css.
+    Any second call site elsewhere in convert.py means the refactor is
+    incomplete — this test will fail immediately, preventing silent regression.
+
+    Exclusions (not counted as production callers):
+      - The def line of each lifter itself (``def _lift_...``)
+      - Comment / docstring lines (lines whose stripped content starts with '#'
+        or whose content is part of a triple-quoted string — approximated by
+        checking for the pattern inside the route_node_css body only)
+      - The def line of route_node_css itself
+
+    How this test would FAIL if a second caller existed:
+      If any code outside route_node_css's body contained, e.g.,
+      ``_lift_root_supports_to_style(`` as a call, the regex scan of lines
+      outside the route_node_css block would find a match and assert would
+      fail with the offending line number and content.
+    """
+
+    _LIFTER_NAMES = (
+        "_lift_typography_to_block_attrs",
+        "_lift_root_supports_to_style",
+        "_lift_wrapper_css_to_container_attrs",
+    )
+
+    @staticmethod
+    def _parse_route_node_css_body(source_lines: list[str]) -> tuple[int, int]:
+        """Return (start_line_idx, end_line_idx) of route_node_css body (0-indexed).
+
+        Start is the first line of the function BODY — i.e., the line AFTER the
+        closing ``) -> None:`` (or ``):`` / ``) -> None:``) of the function signature.
+        End is the line index of the next top-level ``def `` or ``class `` at
+        column 0.
+
+        Works correctly with multi-line function signatures.
+        """
+        # Step 1: find the ``def route_node_css(`` line.
+        def_line: int | None = None
+        for i, line in enumerate(source_lines):
+            if line.startswith("def route_node_css("):
+                def_line = i
+                break
+        assert def_line is not None, "route_node_css not found in convert.py source"
+
+        # Step 2: find the end of the function signature (closing ``:`` at column 0
+        # or indented) by scanning forward until we hit a line that ends with ``:``
+        # and is not a continuation of the parameter list.  The closing line of a
+        # multi-line def always ends with ``) -> None:`` or ``):`` without leading
+        # whitespace for the ``:`` character (it's part of ``) -> None:``).
+        # More robustly: the BODY starts on the first line that is fully indented
+        # (starts with whitespace) AFTER the def and its signature close.
+        sig_end: int | None = None
+        for i in range(def_line, len(source_lines)):
+            stripped = source_lines[i].rstrip()
+            if i == def_line:
+                # The def line itself — keep scanning.
+                if stripped.endswith(":"):
+                    # Single-line def (no params or params on same line).
+                    sig_end = i
+                continue
+            # A line that is part of the signature will NOT start with 4-space indent
+            # used by the function body — it will either be a continuation (deeper
+            # indent, param lines) or the closing ``) -> None:``.
+            # The closing line ends with ``:`` and starts at column 0 (``):`` or
+            # ``) -> None:``).
+            if stripped.endswith(":"):
+                sig_end = i
+                break
+        assert sig_end is not None, "route_node_css signature end not found"
+        start = sig_end + 1
+
+        # Step 3: scan for the next top-level ``def`` or ``class`` at column 0.
+        end = len(source_lines)
+        for i in range(start, len(source_lines)):
+            line = source_lines[i]
+            if not line:
+                continue
+            if line[0] not in (" ", "\t") and line.strip():
+                # Non-empty line at column 0 — this is the next top-level symbol.
+                end = i
+                break
+        return start, end
+
+    def test_lifters_have_single_caller(self) -> None:
+        """Each lifter name must appear as a call ONLY inside route_node_css body."""
+        convert_path = (
+            _SCRIPTS_ROOT / "orchestrator" / "converter_v2" / "convert.py"
+        )
+        source = convert_path.read_text(encoding="utf-8")
+        source_lines = source.splitlines(keepends=False)
+
+        body_start, body_end = self._parse_route_node_css_body(source_lines)
+
+        violations: list[str] = []
+        for lifter in self._LIFTER_NAMES:
+            call_pattern = re.compile(
+                r"(?<!def\s)" + re.escape(lifter) + r"\s*\("
+            )
+            for line_idx, line in enumerate(source_lines):
+                stripped = line.strip()
+                # Skip def lines (the lifter's own definition and route_node_css def).
+                if stripped.startswith("def "):
+                    continue
+                # Skip comment-only lines.
+                if stripped.startswith("#"):
+                    continue
+                if not call_pattern.search(line):
+                    continue
+                # A call expression was found on this line.
+                # It is allowed ONLY if the line falls inside route_node_css body.
+                inside_body = body_start <= line_idx < body_end
+                if not inside_body:
+                    violations.append(
+                        f"Line {line_idx + 1}: {lifter!r} called outside "
+                        f"route_node_css (body lines {body_start + 1}–{body_end}): "
+                        f"{line.rstrip()!r}"
+                    )
+
+        assert not violations, (
+            "Lifters must be called ONLY from route_node_css. "
+            "Violations found:\n" + "\n".join(violations)
+        )
+
+
+# ---------------------------------------------------------------------------
+# Regression guard — no button-group double-nest (D146 gate universality)
+# ---------------------------------------------------------------------------
+
+class TestNoButtonGroupDoubleNest:
+    """Universal regression: a wp:sgs/multi-button block must never appear directly
+    inside another wp:sgs/multi-button block in any fixture's emitted markup.
+
+    Root cause of the bug (2026-06-10): _process_container_children called
+    _group_loose_buttons unconditionally, with no guard checking the parent slug.
+    When the parent was sgs/multi-button itself (the button-group block), its
+    button children were re-wrapped in a bare inner sgs/multi-button.
+    Fix: parent_slug parameter added to _process_container_children; the call site
+    for resolved container-mirror blocks (walk() line ~2934) passes parent_slug=slug;
+    the guard at line ~3862 suppresses _group_loose_buttons when parent_slug ==
+    block_for_slot_token('button-group'). DB-derived (R-22-1), universal (R-22-9).
+
+    This test scans ALL fixture emits — not just sgs-multi-button.html — so any
+    future fixture or converter path that introduces the same double-nest is caught.
+    """
+
+    _MULTI_BUTTON_OPEN_RE = re.compile(r"<!--\s*wp:sgs/multi-button(?:\s|\s*-->|/-->)")
+    _MULTI_BUTTON_CLOSE = "<!-- /wp:sgs/multi-button -->"
+
+    @staticmethod
+    def _find_double_nest(markup: str) -> bool:
+        """Return True if any wp:sgs/multi-button block contains another as a direct
+        or indirect child.
+
+        Implemented as a simple nesting-depth scan: track depth each time an open
+        or close multi-button comment is encountered; a SECOND open while depth > 0
+        means a nested multi-button exists.
+        """
+        depth = 0
+        for line in markup.splitlines():
+            stripped = line.strip()
+            if TestNoButtonGroupDoubleNest._MULTI_BUTTON_OPEN_RE.match(stripped):
+                if depth > 0:
+                    return True  # Found a nested open while already inside one
+                depth += 1
+            elif stripped == TestNoButtonGroupDoubleNest._MULTI_BUTTON_CLOSE:
+                if depth > 0:
+                    depth -= 1
+        return False
+
+    def test_no_double_nest_across_all_fixtures(self) -> None:
+        """No fixture emit may contain wp:sgs/multi-button nested inside wp:sgs/multi-button."""
+        violations: list[str] = []
+        for html_path in sorted(_FIXTURE_DIR.glob("*.html")):
+            html_content = html_path.read_text(encoding="utf-8")
+            try:
+                css_text, section = _extract_fixture_parts(html_content)
+            except ValueError:
+                continue  # Fixture has no <section> — skip (other tests catch this)
+            markup = _run_converter(section, css_text)
+            if self._find_double_nest(markup):
+                violations.append(
+                    f"  {html_path.name}: wp:sgs/multi-button nested inside wp:sgs/multi-button"
+                )
+        assert not violations, (
+            "Button-group double-nest detected in converter output.\n"
+            "Root cause: _process_container_children called _group_loose_buttons "
+            "when the parent IS the button-group block — re-wrapping its children.\n"
+            "Fix: ensure parent_slug is passed to _process_container_children at "
+            "the container-mirror-block call site (walk() line ~2934) so the guard fires.\n"
+            "Violations:\n" + "\n".join(violations)
+        )
+
+
+# ---------------------------------------------------------------------------
+# Dispatch-determinism lock (qc-council residual-risk finding, 2026-06-10)
+# ---------------------------------------------------------------------------
+# attr_for_property's verdicts rest on property_suffixes ROW ORDER. A future
+# /sgs-update reseed that reorders rows for an unrelated reason could silently
+# shift a contested property's destination WITHOUT any golden failing (the
+# fixture corpus cannot cover every (block, contested-property) pair). This
+# class pins the dispatch verdicts for the known contested set, independent of
+# fixture coverage. On intentional dispatch-rule changes, update these pins
+# WITH a cited reason in the same commit (same discipline as golden regen).
+class TestDispatchDeterminism:
+    """Pin db_lookup.attr_for_property verdicts for contested properties."""
+
+    @pytest.fixture(scope="class")
+    def db(self):
+        from orchestrator.converter_v2 import db_lookup
+        return db_lookup
+
+    def _writer(self, result):
+        """Normalise a dispatch result to its writer path (or None)."""
+        return result[0] if result else None
+
+    def test_typography_owns_leaf_text_props(self, db) -> None:
+        assert self._writer(db.attr_for_property("sgs/heading", "color")) == "typography"
+        assert self._writer(db.attr_for_property("sgs/text", "line-height")) == "typography"
+
+    def test_wrapper_owns_container_box_props(self, db) -> None:
+        assert self._writer(db.attr_for_property("sgs/container", "gap")) == "wrapper_css"
+
+    def test_unmatched_props_fall_to_root_supports(self, db) -> None:
+        # No flat attr exists for these (block, property) pairs — the dispatch
+        # must return None so root-supports handles them via style.*.
+        assert db.attr_for_property("sgs/container", "padding-top") is None
+        assert db.attr_for_property("sgs/hero", "font-size") is None

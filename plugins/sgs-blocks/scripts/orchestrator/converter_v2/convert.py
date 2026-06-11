@@ -714,8 +714,8 @@ def _lift_root_supports_to_style(
         1. Lifts base_decls to style.* (unchanged behaviour).
         2. For each bp_suffix in bp_decls, applies _root_lift_rules and emits
            per-device custom attrs where the block schema has them.
-      The per-device attr name convention mirrors the deprecated _lift_styling_attrs
-      pattern: '{css_prop_camel_suffix}{BpSuffix}' (e.g. paddingTopTablet).
+      The per-device attr name convention follows '{css_prop_camel_suffix}{BpSuffix}'
+      (e.g. paddingTopTablet).
       Only attrs present in the block schema are emitted; others are traced as
       'responsive_attr_dropped' for downstream gap-candidate analysis.
 
@@ -982,6 +982,8 @@ def _lift_wrapper_css_to_container_attrs(
     base_decls: dict[str, str],
     bp_decls: dict[str, dict[str, str]],
     container_attr_names: frozenset[str] | set[str],
+    *,
+    _typography_owned_attrs: frozenset[str] | None = None,
 ) -> tuple[dict, list[str]]:
     """Lift base + responsive CSS declarations onto sgs/container attribute names.
 
@@ -990,10 +992,15 @@ def _lift_wrapper_css_to_container_attrs(
     result into block emit paths (A2/A3 handle that).
 
     Args:
-        base_decls:           {css_prop: value} from non-media CSS rules + inline style.
-        bp_decls:             {bp_suffix: {css_prop: value}} from @media rules.
-                              bp_suffix is one of 'Desktop', 'Tablet', 'Mobile'.
-        container_attr_names: Set of valid sgs/container attribute names (from block.json).
+        base_decls:             {css_prop: value} from non-media CSS rules + inline style.
+        bp_decls:               {bp_suffix: {css_prop: value}} from @media rules.
+                                bp_suffix is one of 'Desktop', 'Tablet', 'Mobile'.
+        container_attr_names:   Set of valid sgs/container attribute names (from block.json).
+        _typography_owned_attrs: (Commit 1b — DB dispatch) Optional frozenset of flat
+                                attr names that the typography writer owns for this block.
+                                When provided, this writer skips any attr in the set
+                                (the DB has already decided it belongs to typography).
+                                None = legacy / no-contest path (no filtering applied).
 
     Returns:
         attrs:   {attr_name: value} ready to merge into the block's attrs dict.
@@ -1066,6 +1073,11 @@ def _lift_wrapper_css_to_container_attrs(
                 continue  # Try next suffix; flag at end if none matched.
             if attr_name in attrs:
                 continue  # Never overwrite — first win wins.
+            # Commit 1b — DB dispatch: skip any attr the DB has assigned to the
+            # typography writer.  base_attr is the attr name without bp_suffix;
+            # the typography writer owns the attr regardless of breakpoint.
+            if _typography_owned_attrs and base_attr in _typography_owned_attrs:
+                continue  # Typography owns this attr — wrapper-css must not write it.
 
             # Resolve the value.
             if _is_css_function(value):
@@ -1567,6 +1579,879 @@ def _lift_typography_to_block_attrs(
 
 
 # ============================================================================
+# F6a — Inherited / absent-value resolution  (Commit 3, FR-22-5.1, 2026-06-10)
+# ============================================================================
+#
+# DOM parent-chain walk for CSS-inherited typography properties.  This is
+# explicitly NOT the CSS-selector-ancestry walk that _collect_css_decls_for_element
+# already performs (council MF-4 — that walk matches CSS selectors, this walk
+# climbs the actual DOM parent nodes).
+#
+# Design: always-emit (no block_defaults table required, Commit 0b avoidable).
+# We emit the *resolved effective value* explicitly on every text leaf — even
+# when the value is the browser default — so it overrides the block's own
+# :where() CSS default.  Only falls back to a block_defaults lookup if
+# measured emit-bloat is a problem (not triggered in this build).
+#
+# R-22-9: universal over every leaf block, every inheritable property.
+# R-22-1: DB-gated (block_attr_map check before any emission).
+# R-22-6: values written to block attrs, never inline style.
+
+# The four CSS-inherited properties handled by F6a.
+_INHERITABLE_TYPOGRAPHY_PROPS: tuple[tuple[str, str], ...] = (
+    ("text-align",   "textAlign"),
+    ("color",        "textColour"),
+    ("font-family",  "fontFamily"),
+    ("line-height",  "lineHeight"),
+)
+
+# Browser / LTR default for each inheritable prop (used when NEITHER the leaf
+# NOR any ancestor declares the property — the "absence" case).
+# Only text-align has a meaningful LTR default that conflicts with block
+# :where() defaults (sgs/heading style.css centres by default at some levels).
+# color / font-family / line-height browser defaults vary widely and their
+# "absence" is correctly represented by NOT emitting the attr (faithful-absence).
+# The converter always-emits text-align:left for the absence case because the
+# block's :where() default can be centre; the other three are left absent when
+# neither leaf nor ancestor declares them.
+_TEXT_ALIGN_BROWSER_DEFAULT: str = "left"
+
+
+def _node_has_resolved_block(node: "Tag") -> bool:
+    """Return True when this DOM node itself resolves to a distinct SGS block slug.
+
+    Used as the stop-at-boundary test while walking the DOM parent chain.
+    A node is the boundary when it carries its own sgs- BEM block class (not just
+    an element class) that maps to a block slug.  This is the "resolved-block
+    boundary" the spec defines: stop walking parents when you reach the node that
+    owns the enclosing composite block.
+    """
+    classes = node.get("class", []) or []
+    sgs_classes = [c for c in classes if c.startswith("sgs-")]
+    if not sgs_classes:
+        return False
+    # Use the same resolution as walk() — if any of the classes maps to a block
+    # slug (i.e. resolve_slug_from_bem returns non-None), this node IS a
+    # resolved-block boundary.
+    return db.resolve_slug_from_bem(sgs_classes) is not None
+
+
+def _resolve_inherited_typography(
+    leaf_node: "Tag",
+    slug: str,
+    css_rules: dict,
+) -> dict:
+    """Resolve inherited / absent typography values for a text-leaf block.
+
+    FR-22-5.1 — Commit 3 (always-emit design):
+
+    For each of the four CSS-inherited properties (text-align / color /
+    font-family / line-height):
+
+      1. If the leaf's own CSS declarations contain the property → that value
+         wins (already handled by _lift_typography_to_block_attrs; this
+         function does NOT overwrite attrs already set by that lifter).
+      2. Else walk the DOM parent chain from the leaf upward; the NEAREST
+         ancestor that declares the property wins (nearest-ancestor-wins).
+         Stop at the RESOLVED-BLOCK BOUNDARY — the first ancestor that itself
+         carries a resolved SGS block class — so alignment set by a parent
+         composite's wrapper does not bleed into an adjacent block.
+      3. If neither the leaf nor any ancestor declares text-align → emit the
+         LTR browser default (``left``) so it overrides the block's own
+         :where() centre default.  color / font-family / line-height are NOT
+         emitted for their absent case (browser defaults vary; faithful-absence
+         applies).
+
+    Parameters
+    ----------
+    leaf_node:
+        The BeautifulSoup Tag that resolved to the leaf block.
+    slug:
+        The resolved leaf block slug (used to gate attr emission via DB).
+    css_rules:
+        The full CSS-rules dict for the current draft page.
+
+    Returns
+    -------
+    dict
+        Attr key→value pairs to merge into the leaf's attrs dict using
+        setdefault (caller decides whether to setdefault or assign; the
+        caller in walk() uses setdefault so the leaf's own CSS wins).
+    """
+    if not slug or not slug.startswith("sgs/"):
+        return {}
+
+    block_attr_map = db.block_attrs(slug)
+    if not block_attr_map:
+        return {}
+
+    # Collect the leaf's own CSS declarations (from _collect_css_decls_for_element)
+    # so we can skip properties already present on the leaf itself — those are
+    # resolved by _lift_typography_to_block_attrs; we must not duplicate.
+    leaf_base, _ = _collect_css_decls_for_element(leaf_node, css_rules)
+
+    # ---- DOM parent-chain walk ----
+    # We need the effective value for each of the 4 inheritable properties.
+    # Walk up from leaf_node.parent, collecting base declarations at each level.
+    # Stop when we hit a resolved-block boundary OR the document root.
+
+    # effective_from_ancestor maps css_prop → resolved value from nearest ancestor.
+    effective_from_ancestor: dict[str, str] = {}
+
+    parent = getattr(leaf_node, "parent", None)
+    while parent is not None and hasattr(parent, "name") and parent.name is not None:
+        # Stop condition: this ancestor IS a resolved SGS block — we have crossed
+        # into the enclosing composite's own root element.  Do not read its CSS
+        # as "ancestor CSS" for the leaf; that would bleed the composite's root
+        # alignment into a separate interior leaf.  We stop BEFORE including this
+        # ancestor's declarations.
+        if _node_has_resolved_block(parent):
+            break
+
+        # Collect base declarations for this ancestor (CSS-selector-ancestry on
+        # the ancestor node — this captures any rule targeting this ancestor's
+        # class, e.g. `.sgs-hero__inner { text-align: center }`).
+        anc_base, _ = _collect_css_decls_for_element(parent, css_rules)
+
+        for css_prop, _attr_name in _INHERITABLE_TYPOGRAPHY_PROPS:
+            if css_prop in effective_from_ancestor:
+                continue  # Nearer ancestor already provided this property.
+            if css_prop in anc_base:
+                effective_from_ancestor[css_prop] = _strip_important(anc_base[css_prop]).strip()
+
+        # If we have resolved all 4 properties, no need to climb further.
+        if len(effective_from_ancestor) == len(_INHERITABLE_TYPOGRAPHY_PROPS):
+            break
+
+        parent = getattr(parent, "parent", None)
+
+    # ---- Build the result dict ----
+    result: dict = {}
+
+    for css_prop, attr_name in _INHERITABLE_TYPOGRAPHY_PROPS:
+        # Leaf already declares this property directly → skip.
+        # _lift_typography_to_block_attrs handles it; we must not conflict.
+        if css_prop in leaf_base:
+            continue
+
+        # Block doesn't declare this attr → skip (R-22-1 faithful-absence gate).
+        if attr_name not in block_attr_map:
+            continue
+
+        # Determine the effective value.
+        if css_prop in effective_from_ancestor:
+            effective_val = effective_from_ancestor[css_prop]
+        elif css_prop == "text-align":
+            # Absence case: no text-align anywhere on leaf or ancestors.
+            # Emit the LTR browser default so it overrides the block's
+            # :where() CSS default (e.g. sgs/heading centres headings in
+            # some style.css rules; always-emit 'left' for LTR drafts).
+            effective_val = _TEXT_ALIGN_BROWSER_DEFAULT
+        else:
+            # color / font-family / line-height: faithful-absence — do NOT
+            # emit when the draft has no declaration anywhere on the DOM path.
+            continue
+
+        if not effective_val:
+            continue
+
+        # Colour properties: use the same extraction as _lift_typography_to_block_attrs
+        # (extract bare token slug or hex; do NOT wrap in var:preset|color|... since
+        # SGS render.php's sgs_colour_value() consumes raw tokens, not WP-native refs).
+        if css_prop == "color":
+            v = _extract_token_or_hex(effective_val)
+            if v is not None:
+                result[attr_name] = v
+        else:
+            result[attr_name] = effective_val
+
+    return result
+
+
+# ============================================================================
+# Consolidated CSS-lift entry point  (Commit 1a — call-site consolidation)
+# ============================================================================
+
+def route_node_css(
+    node: "Tag",
+    css_rules: dict,
+    attrs: dict,
+    effective_slug: str,
+    *,
+    lift_typography: bool = False,
+    typo_slug: str | None = None,
+    lift_root_supports: bool = True,
+    lift_wrapper_css: bool = True,
+) -> None:
+    """Single entry point for all three CSS-lift helpers inside walk().
+
+    This is a PURE CALL-SITE consolidation (Commit 1a).  Decision logic is
+    unchanged; each helper is invoked with exactly the same arguments, guards,
+    and setdefault semantics as the call clusters it replaces.  Byte-identical
+    emitted output is the exit contract.
+
+    Parameters
+    ----------
+    node:
+        The BeautifulSoup Tag being converted.
+    css_rules:
+        The full CSS-rules dict for the current draft page.
+    attrs:
+        The block-attrs dict to write into (mutated in-place via setdefault).
+    effective_slug:
+        The block slug used for DB lookups.  A3 path passes 'sgs/container'
+        (slug-None top-level section); A2 path passes the resolved slug.
+    lift_typography:
+        True only on the A2 leaf-block path and the atomic-tag-swap path.
+        When True, typography CSS is lifted onto ``attrs`` before the
+        root-supports + wrapper-css passes (same ordering as the original
+        inline cluster).
+    typo_slug:
+        Slug forwarded to ``_lift_typography_to_block_attrs``.  Must be
+        supplied when ``lift_typography=True``.  Ignored otherwise.
+    lift_root_supports:
+        When False, the ``_lift_root_supports_to_style`` pass is skipped.
+        Default True (all production paths that previously called it directly
+        continue to receive the pass).
+    lift_wrapper_css:
+        When False, the ``_lift_wrapper_css_to_container_attrs`` pass is
+        skipped.  Default True.  Set to False on paths (e.g. fold path) that
+        only need root-supports without the full DB-driven wrapper-css lift.
+
+    Call-site mapping
+    -----------------
+    A3 (slug-None top-level section):
+        route_node_css(node, css_rules, container_attrs,
+                       effective_slug="sgs/container")
+
+    A2 (slug-not-None resolved block):
+        route_node_css(node, css_rules, attrs,
+                       effective_slug=slug,
+                       lift_typography=is_leaf,
+                       typo_slug=slug)
+
+    Atomic-tag-swap path (exception 1, typography only):
+        route_node_css(node, css_rules, _at_attrs,
+                       effective_slug=_at_slug,
+                       lift_typography=True,
+                       typo_slug=_at_slug,
+                       lift_root_supports=False,
+                       lift_wrapper_css=False)
+
+    Fold path (_fold_layout_into_attrs, root-supports only):
+        route_node_css(wrapper_node, css_rules, container_attrs,
+                       effective_slug="sgs/container",
+                       lift_wrapper_css=False)
+    """
+    # ---- GAP 1: typography lift (leaf-block and atomic-tag-swap paths) ----
+    # _typo_written: the set of flat attrs that the typography writer actually
+    # wrote to attrs in this invocation.  Captured here for the Commit-1b DB
+    # dispatch below (wrapper-css must not double-write the same attr).
+    _typo_written: frozenset[str] = frozenset()
+    if lift_typography:
+        typo_lift = _lift_typography_to_block_attrs(node, typo_slug, css_rules)
+        for _tl_k, _tl_v in typo_lift.items():
+            attrs.setdefault(_tl_k, _tl_v)
+        # Capture only the attrs that the lifter PRODUCED (not necessarily written
+        # to attrs — setdefault may have blocked some; but we exclude all produced
+        # keys from wrapper-css to avoid the DB-dispatch contest: if typography
+        # produced it, typography owns it; wrapper-css must not touch it).
+        _typo_written = frozenset(typo_lift.keys())
+
+    # ---- Root WP native supports (spacing/border/colour → style.*) ----
+    if lift_root_supports:
+        _lift_root_supports_to_style(node, effective_slug, css_rules, attrs)
+
+    # ---- UNIVERSAL DB-driven custom-attr lift (Method-2, Spec 22 §FR-22-21) ----
+    if lift_wrapper_css:
+        _base, _bp = _collect_css_decls_for_element(node, css_rules)
+
+        # Commit 1b — DB dispatch: determine which flat attrs the typography writer
+        # owns for this (block, CSS declarations) pair, then suppress wrapper-css
+        # from writing those same attrs.
+        #
+        # Two-step ownership decision (DB-driven, no Python call-order):
+        #   Step A: for each css_prop in the collected declarations, query
+        #           db.attr_for_property(slug, css_prop).  If it returns
+        #           ("typography", attr_name, kind), that attr_name is DB-owned by
+        #           the typography writer.
+        #   Step B: intersect with _typo_written — the attrs typography actually
+        #           produced.  This handles the case where the typography lifter
+        #           CANNOT write a value (e.g. rgba() for colour) even though the
+        #           DB says it owns the property: if typography didn't write it,
+        #           wrapper-css gets a fallback chance (flag-not-suppress).
+        #
+        # Result: a frozenset of attr names to exclude from wrapper-css writes.
+        # This replaces the implicit setdefault-first-wins ordering with an
+        # explicit DB-rule + actual-output gate.
+        _typography_owned_attrs: frozenset[str] | None = None
+        if lift_typography and typo_slug and _typo_written:
+            _owned: set[str] = set()
+            for _css_prop in set(_base) | {
+                _p for _bp_map in _bp.values() for _p in _bp_map
+            }:
+                _dest = db.attr_for_property(typo_slug, _css_prop)
+                if _dest is not None and _dest[0] == "typography":
+                    # DB says typography owns this property's attr.
+                    # Only exclude it from wrapper-css if typography actually wrote it.
+                    if _dest[1] in _typo_written:
+                        _owned.add(_dest[1])
+            if _owned:
+                _typography_owned_attrs = frozenset(_owned)
+
+        _lifted, _flagged = _lift_wrapper_css_to_container_attrs(
+            _base, _bp, _block_attr_names(effective_slug),
+            _typography_owned_attrs=_typography_owned_attrs,
+        )
+        for _k, _v in _lifted.items():
+            attrs.setdefault(_k, _v)
+
+
+# ============================================================================
+# FR-22-5.3 — Cross-node interior CSS routing (Commit 2)
+# ============================================================================
+# When an interior element's CSS is NOT consumed by the element's own resolved
+# block, route its structural box CSS (padding / margin / max-width / gap +
+# responsive companions) to the owning composite's per-slot attr group via a
+# DB-driven, name-free layer lookup.
+#
+# Three layers (Spec 22 FR-22-21):
+#   OUTER   — the composite's full-bleed wrapper (padding, max-width, gap …)
+#   CONTENT — the content-width inner band (max-width / --content-width,
+#             content-padding …)
+#   GRID    — per-grid-item attrs (gridItemPadding …)
+#
+# GAP-3: display + grid-template-* are EXCLUDED from cross-node lifting.
+# Inline display/grid beats @media → collapses 2-col grids (R-22-6).
+#
+# R-22-1 DB-first; R-22-6 no inline CSS; R-22-9 universal.
+
+# CSS properties that MUST NOT be lifted cross-node (GAP-3 rule).
+# display:grid|flex as a block attr generates inline style which overrides
+# @media-query grid/flex layout CSS — collapsing N-col grids to 1-col.
+_CROSS_NODE_EXCLUDED_PROPS: frozenset[str] = frozenset({
+    "display",
+    "grid-template-columns",
+    "grid-template-rows",
+    "grid-template-areas",
+    "grid-template",
+})
+
+# CSS properties considered structural box CSS for cross-node lifting.
+# Any property with a DB entry in `property_suffixes` qualifies provided
+# it is not in _CROSS_NODE_EXCLUDED_PROPS.  This set names the FAMILIES
+# we proactively detect layers for; the actual attr is found by the DB lookup.
+_BOX_CSS_FAMILIES: frozenset[str] = frozenset({
+    "padding", "padding-top", "padding-right", "padding-bottom", "padding-left",
+    "margin", "margin-top", "margin-right", "margin-bottom", "margin-left",
+    "max-width", "min-width", "width",
+    "gap", "row-gap", "column-gap",
+    "min-height",
+})
+
+# CONTENT-layer detection signals.
+# Priority 1 (deterministic): an element declares `--content-width` custom property
+#   — Bean's draft convention: `max-width: var(--content-width); --content-width: 720px`
+# Priority 2 (heuristic): `max-width` + margin-centring signature
+#   (`margin: 0 auto` / `margin-left: auto` + `margin-right: auto`).
+#
+# FALSIFICATION LIST — these patterns must NOT be silently detected as CONTENT;
+# each routes to gap-candidate instead of being misinterpreted:
+#   • `width: min(W, 100%)` / `clamp()` with no max-width — use `min()` shape
+#   • `margin-inline: auto` longhand — no shorthand `margin`
+#   • `margin-left: auto` / `margin-right: auto` WITHOUT both sides present
+#   • section-root `max-width` with NO inner wrapper (catches the outer shell)
+#   • flex-grid: `display:flex; flex-wrap:wrap` + child `width:calc()` — not an inner band
+#   • padding-based centring: `padding: 0 10vw` — no max-width at all
+#
+# Detection is run on the POST-FOLD tree (after _fold_layout_into_attrs resolves).
+
+
+def _detect_content_layer(base_decls: dict[str, str]) -> bool:
+    """Return True when `base_decls` carries a CONTENT-layer signature.
+
+    CONTENT layer = a content-width inner band.  Detection is deterministic-first:
+
+    1. `--content-width` custom-property declared in the element's CSS  →  True.
+    2. `max-width` present AND margin-centring present (both `margin-left:auto`
+       AND `margin-right:auto`, OR the `margin:0 auto` shorthand)  →  True.
+
+    Any other pattern → False (routed to gap-candidate by the caller).
+
+    Falsification: `width:min(...)` / `clamp()` without `max-width`;
+    `margin-inline:auto` longhand; single-sided margin:auto;
+    padding-centring only (`padding:0 10vw`) — all return False.
+    """
+    # Priority 1: `--content-width` custom property anywhere in the declaration block.
+    for prop in base_decls:
+        if prop.strip() == "--content-width":
+            return True
+    for val in base_decls.values():
+        if "--content-width" in (val or ""):
+            return True
+
+    # Priority 2: max-width + margin-centring.
+    raw_mw = _strip_important(base_decls.get("max-width", "")).strip()
+    if not raw_mw:
+        return False
+
+    # Reject width:min()/clamp() shaped values that appear in max-width slot —
+    # these are responsive sizing tricks, not a content-band constraint.
+    if raw_mw.startswith(("min(", "clamp(", "max(")):
+        return False
+
+    # Reject flex-grid containers: `display:flex` + `flex-wrap:wrap` is a
+    # multi-column flex layout pattern, NOT an inner content-width band.
+    # Routing its CSS to a contentWidth attr is always wrong — the grid layout
+    # attrs belong elsewhere (gap-candidate or OUTER).  The build contract
+    # specifies: "flex-grid → gap-candidate, never guess."
+    raw_display = _strip_important(base_decls.get("display", "")).strip().lower()
+    if raw_display in ("flex", "grid", "inline-flex", "inline-grid"):
+        return False
+
+    # Check for margin-centring signature.
+    margin_short = _strip_important(base_decls.get("margin", "")).strip().lower()
+    ml = _strip_important(base_decls.get("margin-left", "")).strip().lower()
+    mr = _strip_important(base_decls.get("margin-right", "")).strip().lower()
+
+    # Shorthand `margin: 0 auto` / `margin: auto` / `margin: N auto` — the auto
+    # value appears as the second (horizontal) token.
+    if margin_short:
+        tokens = margin_short.split()
+        # `auto` as sole token → centred; `N auto` → centred; `auto N auto N` → centred
+        if "auto" in tokens:
+            return True
+
+    # Explicit `margin-left:auto` AND `margin-right:auto` (both must be present).
+    if ml == "auto" and mr == "auto":
+        return True
+
+    # `margin-inline:auto` is NOT detected here (longhand not in standard base_decls
+    # under the current CSS parser — guard the falsification).
+    return False
+
+
+def _grid_item_areas(node: "Tag", css_rules: dict) -> frozenset[str]:
+    """Return the grid-area names a node's OWN CSS declares, else empty.
+
+    Grid awareness (ROUTING-CATEGORISATION-DESIGN §Principle B, D207/D208 gate,
+    Bean-approved 2026-06-11): a wrapper's own `display:grid` +
+    `grid-template-areas` state its structure exactly — its direct descendants
+    are GRID ITEMS named by the areas (hero: "media" / "content"). The caller
+    uses the returned names to widen the FR-22-4.1 fold gate: a slug-None child
+    whose BEM element token matches an area name dissolves into the parent
+    composite REGARDLESS of sibling count (superseding the
+    `fold_eligible = len(children)==1` proxy for grid parents only).
+
+    Detection reads the node's own base CSS plus EVERY breakpoint tier — a
+    mobile-first draft may declare `display:grid` only at base, or only inside
+    a @media tier; either makes the children grid items. Returns the UNION of
+    area names across tiers (the hero declares `"media" "content"` stacked at
+    base and `"content media"` two-col at desktop — same two names).
+
+    Conservative by construction: no `display:grid` → frozenset() (the caller's
+    sole-child count gate keeps protecting non-grid parents — the brand b5
+    +44pp column-collapse evidence). Area strings parse per CSS grammar: each
+    quoted string is a row; whitespace-split tokens are area names; `.` (null
+    cell) is ignored.
+    """
+    base, bp = _collect_css_decls_for_element(node, css_rules)
+    tiers: list[dict[str, str]] = [base, *bp.values()]
+
+    has_grid = any(
+        _strip_important(t.get("display", "")).strip().lower() == "grid"
+        for t in tiers
+    )
+    if not has_grid:
+        return frozenset()
+
+    names: set[str] = set()
+    for t in tiers:
+        raw = _strip_important(t.get("grid-template-areas", "")).strip()
+        if not raw or raw.lower() in ("none", "inherit", "initial", "unset"):
+            continue
+        for row in re.findall(r"[\"']([^\"']*)[\"']", raw):
+            for token in row.split():
+                if token != ".":
+                    names.add(token.lower())
+    return frozenset(names)
+
+
+def _expand_box_shorthand(decls: dict[str, str], prop: str) -> dict[str, str]:
+    """Expand a `padding`/`margin` SHORTHAND into longhands (CSS 1-4 value rules).
+
+    Returns a NEW dict with the shorthand replaced by -top/-right/-bottom/-left
+    (existing longhands win — they are more specific in the source). Paren-aware
+    top-level token split keeps calc()/var(..., ...) values intact. Needed
+    because per-area / CONTENT destinations register LONGHAND attrs
+    (contentPaddingTop) while drafts write shorthand (`padding: 28px 20px 40px`)
+    — the literal-property DB lookup otherwise misses (the H-B mechanism,
+    2026-06-11).
+    """
+    if prop not in decls:
+        return decls
+    raw = _strip_important(decls[prop]).strip()
+    if not raw:
+        return decls
+    tokens: list[str] = []
+    buf, depth_p = "", 0
+    for ch in raw:
+        if ch == "(":
+            depth_p += 1
+        elif ch == ")":
+            depth_p -= 1
+        if ch.isspace() and depth_p == 0:
+            if buf:
+                tokens.append(buf)
+                buf = ""
+        else:
+            buf += ch
+    if buf:
+        tokens.append(buf)
+    if not 1 <= len(tokens) <= 4:
+        return decls
+    t = tokens
+    if len(t) == 1:
+        top = right = bottom = left = t[0]
+    elif len(t) == 2:
+        top, bottom = t[0], t[0]
+        right, left = t[1], t[1]
+    elif len(t) == 3:
+        top, right, bottom = t[0], t[1], t[2]
+        left = t[1]
+    else:
+        top, right, bottom, left = t
+    out = dict(decls)
+    del out[prop]
+    for side, val in (("top", top), ("right", right), ("bottom", bottom), ("left", left)):
+        out.setdefault(f"{prop}-{side}", val)
+    return out
+
+
+def _route_area_css_to_block_attrs(
+    child_node: "Tag",
+    area: str,
+    owning_block: str,
+    parent_attrs: dict,
+    css_rules: dict,
+) -> None:
+    """GRID-PER-AREA routing (Bean steer 2026-06-11): route a dissolving named
+    grid item's own CSS to the owning block's `<areaName>+<suffix>` attrs.
+
+    The hero case: `.sgs-hero__content { padding: 28px 20px 40px }` (+ @768 /
+    @1280 overrides) routes to contentPaddingTop/Right/Bottom/Left at the right
+    responsive tiers; a media column's equivalents land on mediaPadding* etc.
+    NOT the container-mirror CONTENT layer — this is padding on the grid COLUMN
+    whose AREA NAME is "content" (name collision; Bean caught it 2026-06-11).
+
+    Tier mapping (SGS 3-tier model — base attr = DESKTOP; Tablet/Mobile are
+    overrides — vs the draft's MOBILE-FIRST cascade):
+        draft base (no @media)     → attr + 'Mobile'
+        draft @768 (Tablet)        → attr + 'Tablet'
+        draft @1024/1280 (Desktop) → attr (unsuffixed base)
+    Missing higher draft tiers inherit downward (mobile-first semantics): the
+    base attr takes the HIGHEST declared value (Desktop > Tablet > base) and
+    Tablet takes (@768 else draft base), so the painted cascade matches the
+    draft at every width. A tier whose attr name is unregistered on the block
+    is traced as a gap-candidate (flag-not-drop), never silently dropped.
+
+    Excluded: _CROSS_NODE_EXCLUDED_PROPS (display/grid-template-* — R-22-6),
+    `grid-area` (the structural assignment, owned by render.php) and custom
+    properties.
+    """
+    base_decls, bp_decls = _collect_css_decls_for_element(child_node, css_rules)
+    if not base_decls and not bp_decls:
+        return
+
+    # Shorthand expansion in every tier (the H-B miss).
+    for prop in ("padding", "margin"):
+        base_decls = _expand_box_shorthand(base_decls, prop)
+        bp_decls = {k: _expand_box_shorthand(v, prop) for k, v in bp_decls.items()}
+
+    # width/height excluded (qc-council 2026-06-11 finding 3): `content`+`Width`
+    # resolves to `contentWidth` — the container-mirror BAND attr, not a per-area
+    # column width (the exact name collision this router's docstring warns about).
+    # Grid columns are sized by the parent's template, never per-item width.
+    _area_excluded = _CROSS_NODE_EXCLUDED_PROPS | {"grid-area", "width", "height",
+                                                   "max-width", "min-width",
+                                                   "max-height", "min-height"}
+
+    all_props: set[str] = set(base_decls)
+    for tier in bp_decls.values():
+        all_props.update(tier)
+
+    tab = bp_decls.get("Tablet", {})
+    desk = bp_decls.get("Desktop", {})
+    mob_override = bp_decls.get("Mobile", {})
+    block_attr_names = db.block_attrs(owning_block) or {}
+
+    for css_prop in sorted(all_props):
+        if css_prop in _area_excluded or css_prop.startswith("--"):
+            continue
+        attr_base = db.attr_for_area_property(owning_block, area, css_prop)
+        if attr_base is None:
+            source_class = next(
+                (c for c in (child_node.get("class", []) or []) if c.startswith("sgs-")),
+                area,
+            )
+            _trace(
+                "cross_node_gap_candidate",
+                owning_block=owning_block,
+                element_token=area,
+                css_property=css_prop,
+                reason="no_area_attr",
+                source_class=source_class,
+            )
+            continue
+
+        draft_base = base_decls.get(css_prop)
+        draft_tab = tab.get(css_prop)
+        draft_desk = desk.get(css_prop)
+        draft_mob = mob_override.get(css_prop)
+
+        tier_values: list[tuple[str, "str | None"]] = [
+            ("Mobile", draft_mob or draft_base),
+            ("Tablet", draft_tab or draft_base),
+            ("", draft_desk or draft_tab or draft_base),  # base attr = desktop
+        ]
+        # Type-aware store (qc-council 2026-06-11 BLOCKER): per-area attrs are
+        # number-typed (render.php does `absint($v) . $unit` with a shared
+        # `<family>Unit` companion). Storing the raw "28px" string works only by
+        # px-luck — "1.5rem" would absint to 1px. Split number+unit per the
+        # established convention and set the family Unit attr once.
+        _attr_meta = block_attr_names.get(attr_base) or {}
+        _is_number = (_attr_meta.get("attr_type") == "number")
+        _family_unit_attr = re.sub(r"(Top|Right|Bottom|Left)$", "", attr_base) + "Unit"
+        for tier_suffix, value in tier_values:
+            if value is None:
+                continue
+            dest = f"{attr_base}{tier_suffix}" if tier_suffix else attr_base
+            if dest not in block_attr_names:
+                _trace(
+                    "cross_node_gap_candidate",
+                    owning_block=owning_block,
+                    element_token=area,
+                    css_property=css_prop,
+                    reason="area_attr_tier_missing",
+                    attr_name=dest,
+                )
+                continue
+            raw_val = _strip_important(value).strip()
+            if _is_number:
+                _num, _unit = _split_value_unit(raw_val)
+                if _num is None:
+                    # calc()/var()/keyword — unrepresentable in a number attr.
+                    _trace(
+                        "cross_node_gap_candidate",
+                        owning_block=owning_block,
+                        element_token=area,
+                        css_property=css_prop,
+                        reason="area_attr_number_unparseable",
+                        attr_name=dest,
+                        value=raw_val,
+                    )
+                    continue
+                store_val = int(_num) if float(_num).is_integer() else _num
+                if _unit and _family_unit_attr in block_attr_names:
+                    _existing_unit = parent_attrs.get(_family_unit_attr)
+                    if _existing_unit is None:
+                        parent_attrs[_family_unit_attr] = _unit
+                    elif _existing_unit != _unit:
+                        _trace(
+                            "cross_node_gap_candidate",
+                            owning_block=owning_block,
+                            element_token=area,
+                            css_property=css_prop,
+                            reason="area_attr_mixed_units",
+                            attr_name=dest,
+                            value=raw_val,
+                        )
+                        continue
+            else:
+                store_val = raw_val
+            parent_attrs.setdefault(dest, store_val)
+            _trace(
+                "cross_node_css_lifted",
+                owning_block=owning_block,
+                element_token=area,
+                css_property=css_prop,
+                layer="AREA",
+                dest_attr=dest,
+                value=store_val,
+            )
+
+
+def _route_interior_css_to_parent_slot(
+    child_node: "Tag",
+    element_token: "str | None",
+    owning_block: str,
+    parent_attrs: dict,
+    css_rules: dict,
+) -> None:
+    """FR-22-5.3 — Route an interior element's structural box CSS to the owning
+    composite's per-slot attr group when the slot has no equivalent child block.
+
+    Algorithm (Spec 22 STAGE1-DESIGN.md §Commit 2 build contract):
+    1. Resolve the child's BEM element token → slot name (via `slots` table).
+    2. Fork on `db.slot_has_equivalent_block(owning_block, slot_name)`:
+         TRUE  → the slot IS served by a child InnerBlock.  The CSS stays with
+                 the child block (existing D1 path).  This function is a no-op.
+         FALSE → the slot is NOT a content-bearing child block.  Lift the child's
+                 structural box CSS onto the parent's per-layer attrs (DB-driven,
+                 name-free).
+    3. For each collected base + responsive CSS declaration:
+         (a) Exclude _CROSS_NODE_EXCLUDED_PROPS (GAP-3).
+         (b) Detect the destination layer (CONTENT / OUTER / GRID).
+         (c) Resolve the parent attr via `db.attr_for_layer_property(owning_block,
+             layer, css_property)`.
+         (d) On hit  → setdefault into parent_attrs.
+         (e) On miss → record attribute_gap_candidate + unresolved_equivalent_block
+             trace (flag-not-drop, FR-22-21 step 6).
+
+    Parameters
+    ----------
+    child_node:     The interior element Tag (e.g. the `.sgs-hero__content` div).
+    element_token:  BEM element name extracted from the child's primary sgs- class
+                    (e.g. ``'content'``, ``'inner'``).  None → no-op (no slot to route).
+    owning_block:   Resolved slug of the parent composite (e.g. ``'sgs/hero'``).
+    parent_attrs:   The parent composite's attrs dict — mutated in-place.
+    css_rules:      The CSS rules dict threaded from the top-level walk.
+    """
+    if not element_token or not owning_block:
+        return
+
+    # Step 1: resolve element_token → canonical slot name.
+    slot_name: str | None = db.canonical_slot_for(element_token)
+
+    # Step 2: CONTENT-fork check.  If the slot has a content-bearing child block
+    # on this parent, the CSS is not ours to cross-node-lift — leave it to the
+    # child block's own route_node_css call.
+    if slot_name and db.slot_has_equivalent_block(owning_block, slot_name):
+        _trace(
+            "cross_node_content_fork",
+            owning_block=owning_block,
+            element_token=element_token,
+            slot_name=slot_name,
+            branch="content_bearing_child_block_present__skip",
+        )
+        return
+
+    # Step 3: collect the child's CSS declarations.
+    base_decls, bp_decls = _collect_css_decls_for_element(child_node, css_rules)
+
+    if not base_decls and not bp_decls:
+        return  # Nothing to route.
+
+    is_content = _detect_content_layer(base_decls)
+
+    def _lift_decl(css_prop: str, value: str, bp_suffix: "str | None" = None) -> bool:
+        """Attempt to route one declaration; return True on success."""
+        if css_prop in _CROSS_NODE_EXCLUDED_PROPS:
+            return False  # GAP-3: never lift display/grid-template-* cross-node.
+
+        # Determine candidate layer(s) for this property.
+        # A single element can be OUTER + CONTENT + GRID simultaneously (co-located).
+        layers_to_try: list[str] = []
+
+        # max-width / width / --content-width on ANY inner element defaults to CONTENT:
+        # an inner element's max-width is almost always a content-width constraint, not an
+        # outer full-bleed width.  Priority 1 = CONTENT; only try OUTER as fallback if
+        # the CONTENT lookup misses (meaning the block has no contentWidth attr).
+        # `is_content` (margin-centring detected) confirms the CONTENT interpretation;
+        # even WITHOUT centring, the CONTENT attempt is made first because `_fold_layout_into_attrs`
+        # already handles the fold path and we don't want to double-set `maxWidth`.
+        if css_prop in ("max-width", "width", "--content-width"):
+            layers_to_try.append("CONTENT")
+            # Also try OUTER as second-choice (e.g. a block with only `maxWidth` and
+            # no `contentWidth` attr).  The `break` after first hit prevents double-setting.
+            layers_to_try.append("OUTER")
+        elif css_prop.startswith("padding"):
+            if is_content:
+                layers_to_try.append("CONTENT")
+            # GRID layer for per-grid-item padding (e.g. padding on a .sgs-X__grid-item).
+            # `attr_for_layer_property(block, 'GRID', css_prop)` returns None for blocks
+            # that have no gridItem* attrs — the None miss IS the filter; no per-slug
+            # branch needed (R-22-1 DB-first).  GRID wins over OUTER for an element that
+            # IS a grid item: the per-item padding belongs on the item attr, not the
+            # outer container padding.  CONTENT takes priority over GRID (content-area
+            # padding is a different semantic from per-grid-item padding).
+            layers_to_try.append("GRID")
+            layers_to_try.append("OUTER")
+        elif css_prop in ("gap", "row-gap", "column-gap"):
+            # GRID layer covers per-grid-item gap (gridItemGap*) when the block has it;
+            # OUTER covers the container-level gap attr.  GRID wins when both exist because
+            # the element being routed is a grid item, not the outer shell.
+            layers_to_try.append("GRID")
+            layers_to_try.append("OUTER")
+        elif css_prop in ("margin", "margin-top", "margin-right", "margin-bottom", "margin-left"):
+            layers_to_try.append("GRID")
+            layers_to_try.append("OUTER")
+        elif css_prop == "min-height":
+            # GRID layer first — a per-grid-item min-height (e.g. gridItemMinHeight) is
+            # the tighter, more specific destination when the block exposes it.
+            layers_to_try.append("GRID")
+            layers_to_try.append("OUTER")
+        else:
+            # Fallback: try OUTER for any unmatched box property.
+            layers_to_try.append("OUTER")
+
+        placed = False
+        for layer in layers_to_try:
+            # Build the full responsive css_property name for DB lookup:
+            # `padding-top` at `Desktop` bp → still `padding-top` (suffix is on the attr name).
+            attr_name = db.attr_for_layer_property(owning_block, layer, css_prop)
+            if attr_name:
+                # Append responsive breakpoint suffix to attr name if needed.
+                dest_key = f"{attr_name}{bp_suffix}" if bp_suffix else attr_name
+                parent_attrs.setdefault(dest_key, _strip_important(value).strip())
+                _trace(
+                    "cross_node_css_lifted",
+                    owning_block=owning_block,
+                    element_token=element_token,
+                    css_property=css_prop,
+                    layer=layer,
+                    dest_attr=dest_key,
+                    value=value,
+                )
+                placed = True
+                break  # First matching layer wins (CONTENT > OUTER precedence).
+
+        if not placed:
+            # Flag-not-drop: log as gap candidate so the attr can be added later.
+            source_class = next(
+                (c for c in (child_node.get("class", []) or []) if c.startswith("sgs-")),
+                element_token or "",
+            )
+            _record_gap_candidate(
+                block_slug=owning_block,
+                css_property=css_prop,
+                raw_value=value,
+                source_class=source_class,
+            )
+            _trace(
+                "cross_node_gap_candidate",
+                owning_block=owning_block,
+                element_token=element_token,
+                css_property=css_prop,
+                reason="no_matching_layer_attr",
+            )
+
+        return placed
+
+    # --- Base declarations ---
+    for css_prop, value in base_decls.items():
+        _lift_decl(css_prop, value, bp_suffix=None)
+
+    # --- Responsive declarations ---
+    for bp_key, bp_decl_map in bp_decls.items():
+        bp_suffix = _BP_SUFFIX_MAP.get(bp_key)
+        if not bp_suffix or not bp_decl_map:
+            continue
+        for css_prop, value in bp_decl_map.items():
+            _lift_decl(css_prop, value, bp_suffix=bp_suffix)
+
+
+# ============================================================================
 # Transparent wrapper absorber (pre-pass)
 # ============================================================================
 _ABSORB_GAP_PROPS = frozenset({
@@ -1654,170 +2539,6 @@ def _absorb_transparent_wrappers(section_root: "Tag", css_rules: dict) -> list[s
     return added
 
 
-# ============================================================================
-# DEPRECATED Spec-16 styling helpers — ported for test compatibility
-# (test_attribute_gap_candidate.py, test_root_supports_double_lift.py).
-# Spec 22 §FR-22-2 replaces these with the universal walker path.
-# Do NOT use these functions in new code; they exist only to avoid breaking
-# existing tests during the Phase 1.4 transition.
-# ============================================================================
-
-def _slot_attr_prefix(block_slug: str, canonical_slot: str, schema: dict) -> str | None:
-    """DEPRECATED — find the attr-name prefix used for styling attrs in this slot.
-
-    The content attr for the slot (e.g. 'headline' for slot 'heading') IS the
-    prefix: 'headlineColour', 'headlineFontSize*', etc.
-    """
-    styling_suffixes = (
-        "Colour", "Color", "FontSize", "FontWeight", "LineHeight",
-        "LetterSpacing", "TextTransform", "FontFamily", "PaddingTop",
-        "PaddingRight", "PaddingBottom", "PaddingLeft", "BorderRadius",
-        "MaxWidth", "BackgroundColour", "Unit", "Mobile", "Tablet", "Desktop",
-        "MarginBottom", "TextDecoration", "HoverColour", "HoverBackground",
-    )
-    for attr_name, info in schema.items():
-        if info.get("canonical_slot") != canonical_slot:
-            continue
-        if any(attr_name.endswith(s) for s in styling_suffixes):
-            continue
-        return attr_name
-    return None
-
-
-def _lift_styling_attrs(
-    desc: Tag,
-    slot_name: str,
-    block_slug: str,
-    schema: dict,
-    attrs: dict,
-    css_rules: dict,
-) -> None:
-    """DEPRECATED — lift slot CSS styling properties into block attrs.
-
-    Spec 22 §FR-22-2 replaces this with db_lookup.lift_behavioural_attrs()
-    and the universal walker's CSS collection path (collect_css_for_classes).
-    Ported verbatim for test_attribute_gap_candidate.py compatibility.
-    """
-    canonical = db.canonical_slot_for(slot_name) or slot_name
-    prefix = _slot_attr_prefix(block_slug, canonical, schema)
-    if not prefix:
-        return
-    base_decls, bp_decls = _collect_css_decls_for_element(desc, css_rules)
-
-    def _try_set(attr_name: str, value: object) -> None:
-        if attr_name not in schema:
-            return
-        if attr_name in attrs:
-            return
-        if value is None or value == "":
-            return
-        attrs[attr_name] = value
-
-    _known_css_props: set[str] = {cp for cp, _, _ in db.css_property_suffixes()}
-    _lifted_css_props: set[str] = set()
-
-    for css_prop, suffix, kind in db.css_property_suffixes():
-        raw = base_decls.get(css_prop)
-        if raw is None:
-            continue
-        val = _css_value_to_attr(raw, kind)
-        if val is None:
-            continue
-        candidate = f"{prefix}{suffix}"
-        _lifted_css_props.add(css_prop)
-        _try_set(candidate, val)
-        if candidate not in schema:
-            _try_set(f"{prefix}{suffix}Desktop", val)
-        if kind in ("number_px", "number_px_or_em", "number_unitless"):
-            unit_candidate = f"{prefix}{suffix}Unit"
-            if unit_candidate in schema and unit_candidate not in attrs:
-                raw_stripped = raw.strip().lower()
-                if raw_stripped.endswith("rem"):
-                    unit = "rem"
-                elif raw_stripped.endswith("em"):
-                    unit = "em"
-                elif raw_stripped.endswith("%"):
-                    unit = "%"
-                elif kind == "number_unitless":
-                    unit = "em"
-                else:
-                    unit = "px"
-                _try_set(unit_candidate, unit)
-
-    _SUPPORTS_HANDLED_PROPS: frozenset[str] = frozenset({
-        "padding", "margin", "background", "border",
-        "padding-top", "padding-right", "padding-bottom", "padding-left",
-        "margin-top", "margin-right", "margin-bottom", "margin-left",
-        "gap", "border-radius", "border-width", "border-style", "border-color",
-        "background-color", "color", "max-width",
-    })
-    if block_slug and block_slug.startswith("sgs/"):
-        desc_sgs_classes = [c for c in (desc.get("class", []) or []) if c.startswith("sgs-")]
-        source_class = f".{desc_sgs_classes[0]}" if desc_sgs_classes else f".{slot_name}"
-        for css_prop, raw in base_decls.items():
-            if css_prop in _SUPPORTS_HANDLED_PROPS:
-                continue
-            if css_prop not in _known_css_props:
-                _record_gap_candidate(block_slug, css_prop, raw, source_class)
-                continue
-            if css_prop in _lifted_css_props:
-                any_in_schema = any(
-                    f"{prefix}{sfx}" in schema or f"{prefix}{sfx}Desktop" in schema
-                    for cp, sfx, _ in db.css_property_suffixes()
-                    if cp == css_prop
-                )
-                if not any_in_schema:
-                    _record_gap_candidate(block_slug, css_prop, raw, source_class)
-
-    _bp_lifted_keys: set[tuple[str, str]] = set()
-    for bp_suffix, bp_decl_map in bp_decls.items():
-        for css_prop, suffix, kind in db.css_property_suffixes():
-            raw = bp_decl_map.get(css_prop)
-            if raw is None:
-                continue
-            val = _css_value_to_attr(raw, kind)
-            if val is None:
-                continue
-            candidate = f"{prefix}{suffix}{bp_suffix}"
-            if candidate in schema:
-                attrs[candidate] = val
-                _bp_lifted_keys.add((css_prop, bp_suffix))
-            if kind in ("number_px", "number_px_or_em", "number_unitless"):
-                unit_candidate = f"{prefix}{suffix}Unit{bp_suffix}"
-                if unit_candidate not in schema:
-                    unit_candidate = f"{prefix}{suffix}{bp_suffix}Unit"
-                if unit_candidate in schema:
-                    raw_stripped = raw.strip().lower()
-                    if raw_stripped.endswith("rem"):
-                        unit = "rem"
-                    elif raw_stripped.endswith("em"):
-                        unit = "em"
-                    elif raw_stripped.endswith("%"):
-                        unit = "%"
-                    elif kind == "number_unitless":
-                        unit = "em"
-                    else:
-                        unit = "px"
-                    attrs[unit_candidate] = unit
-
-    if block_slug and block_slug.startswith("sgs/"):
-        for bp_suffix, bp_decl_map in bp_decls.items():
-            for css_prop, raw in bp_decl_map.items():
-                if css_prop in _SUPPORTS_HANDLED_PROPS:
-                    continue
-                if (css_prop, bp_suffix) in _bp_lifted_keys:
-                    continue
-                bp_source_class = f"{source_class}@{bp_suffix}"
-                if css_prop not in _known_css_props:
-                    _record_gap_candidate(block_slug, css_prop, raw, bp_source_class)
-                    continue
-                any_in_schema = any(
-                    f"{prefix}{sfx}{bp_suffix}" in schema
-                    for cp, sfx, _ in db.css_property_suffixes()
-                    if cp == css_prop
-                )
-                if not any_in_schema:
-                    _record_gap_candidate(block_slug, css_prop, raw, bp_source_class)
 
 
 # ============================================================================
@@ -2486,7 +3207,8 @@ def _route_composite_interior(
 
         if element is None:
             # No BEM element segment — cannot route by slot; fall back to generic walk.
-            result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
+            result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False,
+                          parent_block=slug)
             if result:
                 children_markup.append(result)
             continue
@@ -2548,7 +3270,7 @@ def _route_composite_interior(
                        attr=None, branch="content_item_block_emitted",
                        child_slug=child_slug, depth=depth + 1)
                 result = walk(child, css_rules, variation_buf,
-                              depth=depth + 1, is_top_level=False)
+                              depth=depth + 1, is_top_level=False, parent_block=slug)
                 if result:
                     children_markup.append(result)
             else:
@@ -2561,13 +3283,26 @@ def _route_composite_interior(
                 # dict, mutated in-place; setdefault() never clobbers the composite's own
                 # already-set layout/grid/background attrs.
                 _fold_layout_into_attrs(child, cclasses, attrs, css_rules)
+                # FR-22-5.3 cross-node CSS routing (Commit 2, 2026-06-10): after the
+                # fold lifts grid/flex, also route this slug-None column's STRUCTURAL
+                # BOX CSS (padding / max-width / gap) onto the composite's per-slot
+                # layer attrs via the DB-driven layer resolver.  Complements the fold
+                # (which covers grid/layout attrs) with the CONTENT-layer attrs the
+                # fold does not set (contentPadding*, contentWidth from __content).
+                _route_interior_css_to_parent_slot(
+                    child_node=child,
+                    element_token=element,
+                    owning_block=slug,
+                    parent_attrs=attrs,
+                    css_rules=css_rules,
+                )
                 _trace("composite_interior_route", slug=slug, element=element,
                        attr=None, branch="content_column_folded",
                        depth=depth + 1,
-                       note="slug-None wrapper folded into bare InnerBlocks; own CSS lifted to composite attrs")
+                       note="slug-None wrapper folded + cross-node CSS routed to composite attrs")
                 for grandchild in child.children:
                     result = walk(grandchild, css_rules, variation_buf,
-                                  depth=depth + 1, is_top_level=False)
+                                  depth=depth + 1, is_top_level=False, parent_block=slug)
                     if result:
                         children_markup.append(result)
 
@@ -2606,6 +3341,7 @@ def walk(
     variation_buf: list[str] | None = None,
     depth: int = 0,
     is_top_level: bool = False,
+    parent_block: "str | None" = None,
 ) -> str | None:
     """Universal walker per Spec 22 §13 Appendix A + R-22-3 (exactly 3 routing branches).
 
@@ -2623,6 +3359,14 @@ def walk(
     The single 'sgs/container' literal (branch 3) is FR-22-4 permitted: every
     top-level section base is sgs/container; non-container top-level slugs are
     wrapped. This is the ONLY block-slug literal permitted anywhere in this file.
+
+    parent_block:
+        The nearest RESOLVED ancestor slug (intermediate slug-None wrappers do not
+        update this).  Used for the FR-22-5.3 parent-scoped child-token pre-check
+        (Commit 2): when a child element's BEM token matches a registered child block
+        of ``parent_block``, that child slug takes precedence over the global ``slots``
+        alias lookup.  Must NOT be threaded into the lru_cache'd
+        ``_resolve_slug_from_bem_tuple`` (cache key is the class tuple only).
 
     Returns: WP block markup string, or None for chrome-skipped / text-only-none nodes.
     """
@@ -2655,9 +3399,21 @@ def walk(
         _at_slug = db.atomic_tag_map().get(node.name)
         _at_attrs = _atomic_attrs_for(node, _at_slug) if _at_slug else {}
         if _at_slug:
-            _at_typo = _lift_typography_to_block_attrs(node, _at_slug, css_rules)
-            for _at_k, _at_v in _at_typo.items():
-                _at_attrs.setdefault(_at_k, _at_v)
+            route_node_css(
+                node, css_rules, _at_attrs,
+                effective_slug=_at_slug,
+                lift_typography=True,
+                typo_slug=_at_slug,
+                lift_root_supports=False,
+                lift_wrapper_css=False,
+            )
+            # F6a — inherited / absent-value resolution (FR-22-5.1, Commit 3).
+            # After the leaf's own typography is lifted, resolve any inherited
+            # or absent values via the DOM parent-chain walk.  Uses setdefault
+            # so the leaf's own CSS (written above by route_node_css) always wins.
+            _f6a = _resolve_inherited_typography(node, _at_slug, css_rules)
+            for _k, _v in _f6a.items():
+                _at_attrs.setdefault(_k, _v)
             _trace("walker_branch_taken", branch="atomic_tag_swap",
                    node_tag=node.name, slug=_at_slug, attrs_keys=list(_at_attrs.keys()))
             return emit_wp_block(_at_slug, _at_attrs, [])
@@ -2692,6 +3448,39 @@ def walk(
 
     # ---- Universal path — BEM → DB → emit ----
     slug = db.resolve_slug_from_bem(sgs_classes)  # FR-22-1 with multi-class disambiguation
+
+    # ---- FR-22-5.3 parent-scoped child-token pre-check (Commit 2, 2026-06-10) ----
+    # When a parent block is resolved, check whether ANY of this node's BEM element
+    # tokens match a registered child block of that parent.  A parent-scoped match
+    # takes precedence over the global `slots` alias lookup — fixing two confirmed
+    # mis-resolutions: accordion `__item` → sgs/info-box (should → sgs/accordion-item);
+    # form `__step` → sgs/process-steps (should → sgs/form-step).
+    #
+    # Build contract (STAGE1-DESIGN.md §Commit 2):
+    #   (a) Pure DB lookup via blocks.parent_block (18 rows) — no Python branch per slug.
+    #   (b) Parent context = nearest RESOLVED ancestor (the `parent_block` arg;
+    #       intermediate slug-None wrappers do NOT update it — their callers pass
+    #       the SAME parent_block down).
+    #   (c) Parent-scoped hit → slug overrides the global resolution; traced.
+    #   (d) NOT threaded into lru_cache'd _resolve_slug_from_bem_tuple.
+    if parent_block and sgs_classes:
+        for _ps_cls in sgs_classes:
+            _ps_bem = db.parse_sgs_bem(_ps_cls)
+            if _ps_bem and _ps_bem.element:
+                _ps_child = db.child_block_for_parent_token(parent_block, _ps_bem.element)
+                if _ps_child is not None:
+                    _trace(
+                        "walker_branch_taken",
+                        branch="parent_scoped_child_token",
+                        parent_block=parent_block,
+                        element_token=_ps_bem.element,
+                        global_slug=slug,
+                        parent_scoped_slug=_ps_child,
+                        node_classes=classes,
+                        depth=depth,
+                    )
+                    slug = _ps_child
+                    break  # First match wins; no further element token tries needed.
 
     # FR-22-4.1 leaf-with-element-children guard (2026-05-31, D115 blind-spot fix).
     # A node that resolves to a LEAF block (sgs/text, sgs/label, sgs/icon, …) renders
@@ -2739,7 +3528,8 @@ def walk(
             # raw text (editor "unexpected/invalid content"). See _route_text_leaf.
             if _node_is_text_leaf(node):
                 return _route_text_leaf(node, classes, sgs_classes, css_rules, variation_buf)
-            return _emit_wrapper_container(node, classes, sgs_classes, css_rules, depth, variation_buf)
+            return _emit_wrapper_container(node, classes, sgs_classes, css_rules, depth, variation_buf,
+                                           parent_block=parent_block)
         return walk_passthrough(node, css_rules, depth, variation_buf)
 
     # FR-22-4.1 top-level section fold (2026-05-31). When the section root has no
@@ -2782,12 +3572,6 @@ def walk(
         # (the existing _sec_base/_  at 2382 discards bp_decls; this pass captures them).
         # setdefault throughout — widthMode/customWidth set above are NEVER overwritten.
         # R-22-1: DB-driven attr-name set; R-22-9: universal (every slug-None section fires).
-        _a3_base, _a3_bp = _collect_css_decls_for_element(node, css_rules)
-        _a3_lifted, _a3_flagged = _lift_wrapper_css_to_container_attrs(
-            _a3_base, _a3_bp, _block_attr_names("sgs/container")
-        )
-        for _a3_k, _a3_v in _a3_lifted.items():
-            container_attrs.setdefault(_a3_k, _a3_v)  # Never clobber widthMode/customWidth set above.
         # NOTE (GAP-3 scope decision, 2026-06-05): display:grid|flex → layout is intentionally
         # NOT lifted here for slug-None top-level sections. Reason: the A3 path emits layout/grid
         # as sgs-container-wrapper.php inline CSS (display:grid + grid-template-columns). For slug-None
@@ -2800,16 +3584,14 @@ def walk(
         # GAP 2 — Padding lift for slug-None top-level sections (wired 2026-06-05).
         # _lift_root_supports_to_style was gated `if slug is not None` (line ~2418)
         # so it never fired here; padding on generic sections was silently dropped.
-        # Fix: call the same function with slug='sgs/container' so padding → style.*
-        # is written onto container_attrs via the native WP supports path.
-        # The A3 _lift_wrapper_css_to_container_attrs pass above handles
-        # width/grid/min-height/gap onto block attrs; this pass handles
-        # padding/margin/border/background-colour onto style.* — no double-lift.
-        # R-22-9: universal (every slug-None section fires).
-        # R-22-1: _lift_root_supports_to_style is entirely DB-driven.
-        # setdefault semantics are enforced inside _lift_root_supports_to_style
-        # (it uses _set_in which never overwrites an existing leaf).
-        _lift_root_supports_to_style(node, "sgs/container", css_rules, container_attrs)
+        # Fix: route_node_css calls it with effective_slug='sgs/container' so
+        # padding → style.* is written onto container_attrs via the native WP supports path.
+        # The wrapper-css pass handles width/grid/min-height/gap onto block attrs; the
+        # root-supports pass handles padding/margin/border/background-colour → style.*
+        # — no double-lift.  R-22-9: universal (every slug-None section fires).
+        # R-22-1: all three helpers are entirely DB-driven.
+        # setdefault semantics are enforced inside each helper.
+        route_node_css(node, css_rules, container_attrs, effective_slug="sgs/container")
         children_markup = _process_container_children(node, css_rules, depth, variation_buf, container_attrs)
         return _emit_section_container(container_attrs, children_markup, css)
 
@@ -2836,44 +3618,35 @@ def walk(
         is_leaf = db.get_block_composition_role(slug) == "leaf"
         if is_leaf:
             attrs = {**attrs, **_atomic_attrs_for(node, slug)}
-            # GAP 1 — Typography lift (wired 2026-06-05).
-            # _lift_typography_to_block_attrs was dead code with zero call sites.
-            # Wire it here so draft heading/text CSS (font-size, colour, weight,
-            # etc.) lands on the emitted block's flat attrs.
-            # Uses setdefault: _atomic_attrs_for content/level are never clobbered.
-            # R-22-9: universal — fires for every leaf block that declares the attr.
-            # R-22-1: DB-gated attr-existence check inside the helper.
-            # Faithful-absence: helper only emits attrs for CSS props actually present.
-            typo_lift = _lift_typography_to_block_attrs(node, slug, css_rules)
-            for _tl_k, _tl_v in typo_lift.items():
-                attrs.setdefault(_tl_k, _tl_v)
     css = collect_css_for_classes(classes, css_rules)  # FR-22-5
     if css and variation_buf is not None:
         variation_buf.append(css)
 
-    # Lift block-root WP native supports (spacing/border/colour → style.*)
+    # A2 — Lift block-root WP native supports + UNIVERSAL DB-driven custom-attr lift
+    # (Method-2, Spec 22 §FR-22-21) + typography lift for leaf blocks.
+    # GAP 1 — Typography lift (wired 2026-06-05): lifted inside route_node_css when
+    # lift_typography=True (leaf path only). _atomic_attrs_for content/level are set
+    # above; typography uses setdefault so they are never clobbered.
+    # R-22-9: universal — every resolved block fires all three lifters.
+    # R-22-1: all three helpers are entirely DB-driven.
+    # setdefault semantics are enforced inside each helper.
     if slug is not None:
-        _lift_root_supports_to_style(node, slug, css_rules, attrs)
-
-    # UNIVERSAL DB-driven custom-attr lift (Method-2, Spec 22 §FR-22-21).
-    # For EVERY resolved block — not only mirror composites — lift the element's own
-    # CSS onto the block's OWN attrs via property_suffixes (DB). This recovers the
-    # properties the hardcoded style.* map (_root_lift_rules, 15 rules) misses —
-    # min-height, max-width, box-shadow, typography, border-radius, object-fit, gap,
-    # grid — onto any block that declares the matching attr (heading/text/button
-    # included), using the same DB-driven helper the container/composite paths use.
-    # setdefault is used throughout — typography (above) + _lift_root_supports_to_style
-    # (style.*) run first and own colour/padding/border; this pass captures the remainder.
-    # R-22-1: DB-gated (property_suffixes + block_attrs); no hardcoded slug list.
-    # R-22-9: universal — every resolved block fires; a block lacking an attr gets that
-    # prop flagged as a gap candidate (flag-not-drop), never silently set on the wrong attr.
-    if slug is not None:
-        _a2_base, _a2_bp = _collect_css_decls_for_element(node, css_rules)
-        _a2_lifted, _a2_flagged = _lift_wrapper_css_to_container_attrs(
-            _a2_base, _a2_bp, _block_attr_names(slug)
+        route_node_css(
+            node, css_rules, attrs,
+            effective_slug=slug,
+            lift_typography=is_leaf,
+            typo_slug=slug,
         )
-        for _a2_k, _a2_v in _a2_lifted.items():
-            attrs.setdefault(_a2_k, _a2_v)  # Never clobber attrs already set above.
+        # F6a — inherited / absent-value resolution (FR-22-5.1, Commit 3).
+        # Fire for leaf blocks only.  After the leaf's own typography is lifted
+        # by route_node_css, resolve any inherited or absent values via the DOM
+        # parent-chain walk.  setdefault semantics: the leaf's own CSS wins.
+        # R-22-9: universal — every leaf block on every resolved-slug path.
+        # R-22-1: DB-gated inside _resolve_inherited_typography.
+        if is_leaf:
+            _f6a_inherited = _resolve_inherited_typography(node, slug, css_rules)
+            for _f6a_k, _f6a_v in _f6a_inherited.items():
+                attrs.setdefault(_f6a_k, _f6a_v)
 
     if slug is not None and _is_container_mirror_block(slug):
         # R1.3 — widthMode fallback for SECTION-kind mirror composites at top level.
@@ -2937,41 +3710,47 @@ def walk(
     # G3: if slug is resolved AND the block declares no InnerBlocks, skip children.
     _slug_accepts_inner = slug is None or db.block_accepts_inner_blocks(slug)
     if not is_leaf and _slug_accepts_inner:
-        if slug is not None and db.has_scalar_media_attrs(slug):
-            # FR-22-19: composite slot-router (mutates attrs in-place for scalar-media).
-            # Gate is has_scalar_media_attrs (NOT is_class_section_block): the router
-            # fires for any composite that renders interior media itself as a scalar
-            # attr — sgs/hero (section-root) AND sgs/testimonial-slider (content-block).
-            # Blocks with no scalar-media attr never enter here, so their interior
-            # routing is unchanged (cta-section/info-box/product-card unaffected).
+        if slug is not None and _is_container_mirror_block(slug):
+            # FR-22-4.1 + FR-22-19 (Commit 4): unified interior dispatch for ALL
+            # container-mirror composites, regardless of whether they also have
+            # scalar-media attrs.  Previously the gate was split:
+            #   - has_scalar_media_attrs → _route_composite_interior (hero, slider)
+            #   - _is_container_mirror_block → _process_container_children (all others)
+            # Both gates were per-composite carve-outs (council C7 / FR-22-19).
+            # The scalar-media lift is now absorbed into _process_container_children
+            # as rule 0 (checked first, before the fold/walk decision), so ONE
+            # universal dispatch serves every container-mirror block:
+            #   • blocks WITH scalar-media attrs get the lift applied inline (rule 0)
+            #     THEN the remaining content children go through fold/walk (rules 2-3)
+            #   • blocks WITHOUT scalar-media attrs are unaffected (rule 0 is a no-op,
+            #     cost = one cached DB call that returns False)
+            # _route_composite_interior body is preserved for rollback reference but is
+            # no longer called from walk() (Commit 4, 2026-06-10).
+            # R-22-1 DB-driven (wraps_block='sgs/container' query, no slug literals).
+            # R-22-9 universal (the whole 29-block container-mirror roster).
+            # R-22-3 compliant: NOT a new top-level walker branch — fires inside the
+            # existing resolved-block emit path only.
+            # fold_eligible (sole-element-child guard) is PRESERVED inside
+            # _process_container_children (prevents +13pp multi-child grid-collapse).
+            children_markup = _process_container_children(
+                node, css_rules, depth, variation_buf, attrs, parent_slug=slug
+            )
+        elif slug is not None and db.has_scalar_media_attrs(slug):
+            # FR-22-19 fallback (Commit 4): a block that has scalar-media attrs but is
+            # NOT a container-mirror block routes through _route_composite_interior as
+            # before.  Currently no such block exists (every scalar-media block is also
+            # a container-mirror block), so this branch is unreachable in practice.
+            # Retained as a safety net: if a future block gains scalar-media attrs
+            # without being added to the mirror roster, it still gets the lift rather
+            # than falling through to the plain walk and silently losing its images.
+            # R-22-1 compliant (DB-driven gate). R-22-9 unaffected (unreachable today).
             children_markup = _route_composite_interior(
                 node, slug, attrs, css_rules, depth, variation_buf
             )
-        elif slug is not None and _is_container_mirror_block(slug):
-            # FR-22-4.1 universal fold for RESOLVED container-equivalent composites.
-            # Route their children through the SAME fold routine slug-None containers
-            # use (_process_container_children) so a SOLE pass-through inner wrapper
-            # (e.g. .sgs-trust-bar__inner — a fake wrapper that only carries the
-            # container's internal grid/max-width CSS) FOLDS its grid-template /
-            # default-grid / contentWidth / per-grid-item CSS onto THIS composite's
-            # mirrored attrs, instead of becoming a redundant nested sgs/container
-            # whose single child lands in the composite's first grid cell ("1 column").
-            # Previously the fold fired ONLY under slug-None container parents; resolved
-            # composites took the plain walk loop below and never folded — the selective
-            # application that caused the trust-bar duplicate-nesting bug.
-            # UNIVERSAL: gated on _is_container_mirror_block (wraps_block='sgs/container',
-            # the whole 29-block roster — R-22-1 DB-driven, R-22-9, NOT section-kind-only,
-            # no per-slug literal). SAFE: the sole-element-child gate inside
-            # _process_container_children means a multi-child composite (real grid/flex
-            # columns) is NOT folded — preventing the +13pp multi-child grid-collapse
-            # that reverted the earlier universal-fold attempt. Closes the Spec 22
-            # §FR-22-4.1 duplicate-nesting FAIL test for resolved composites.
-            children_markup = _process_container_children(
-                node, css_rules, depth, variation_buf, attrs
-            )
         else:
             for child in node.children:
-                result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
+                result = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False,
+                              parent_block=slug)
                 if result:
                     children_markup.append(result)
     elif not is_leaf and not _slug_accepts_inner and slug is not None:
@@ -3761,6 +4540,7 @@ def _emit_wrapper_container(
     css_rules: dict,
     depth: int,
     variation_buf: list[str] | None,
+    parent_block: "str | None" = None,
 ) -> str:
     """Emit a slug-None sgs-classed wrapper as a neutral sgs/container (§FR-22-4.1).
 
@@ -3779,6 +4559,11 @@ def _emit_wrapper_container(
     CSS route (collect_css_for_classes → variation_buf); native grid-attr lifting
     (layout + gridTemplateColumns onto the block attrs) is wired via
     _merge_grid_attrs_into_container (Gap-3 fix, 2026-06-05) — previously deferred.
+
+    parent_block:
+        The nearest RESOLVED ancestor slug — threaded from walk() so children of this
+        wrapper can still resolve against the ancestor's registered child blocks.
+        Intermediate slug-None wrappers do NOT reset parent_block (they are transparent).
     """
     css = collect_css_for_classes(classes, css_rules)
     if css and variation_buf is not None:
@@ -3791,7 +4576,11 @@ def _emit_wrapper_container(
     # native block attrs so the block is block-portable (editor grid engine active).
     # setdefault via shared helper; never clobbers className already set above.
     _merge_grid_attrs_into_container(classes, css_rules, container_attrs)
-    children_markup = _process_container_children(node, css_rules, depth, variation_buf, container_attrs)
+    # Thread parent_block so child items can still resolve against the resolved ancestor.
+    # (This wrapper is slug-None — it does NOT update parent_block for its children.)
+    children_markup = _process_container_children(
+        node, css_rules, depth, variation_buf, container_attrs, parent_slug=parent_block
+    )
     _trace("walker_branch_taken", branch="wrapper_container",
            node_classes=classes, depth=depth)
     return emit_wp_block("sgs/container", container_attrs, children_markup)
@@ -3820,11 +4609,19 @@ def _fold_layout_into_attrs(
     """
     # Reuse shared helper — same setdefault semantics, same detector.
     _merge_grid_attrs_into_container(wrapper_classes, css_rules, container_attrs)
-    _lift_root_supports_to_style(wrapper_node, "sgs/container", css_rules, container_attrs)
+    route_node_css(
+        wrapper_node, css_rules, container_attrs,
+        effective_slug="sgs/container",
+        lift_wrapper_css=False,
+    )
     # B2/A1 (FR-22-21): lift the folded wrapper's own max-width as contentWidth so the
     # section's inner content cap is preserved (e.g. __inner max-width:960px → "960px").
-    # Only fires for the sole-shell fold path (sole element child) — grid/flex item
-    # wrappers are NOT sole children so this code is never reached for them.
+    # Reached only on the fold paths — the literal sole element child, OR (since
+    # 2026-06-11) the sole child REMAINING after rule-0 scalar-media consumption of an
+    # area-named grid parent (e.g. hero __content once __media lifts). In BOTH cases
+    # exactly one wrapper folds per parent, so this wrapper IS the section's content
+    # band and its max-width IS the content cap; multi-fold (where a column's own
+    # max-width would mis-set contentWidth) is impossible by the gate's construction.
     _fw_base, _ = _collect_css_decls_for_element(wrapper_node, css_rules)
     _inner_mw = _fw_base.get("max-width")
     if _inner_mw:
@@ -3832,11 +4629,19 @@ def _fold_layout_into_attrs(
 
 
 def _process_container_children(
-    node: "Tag", css_rules: dict, depth: int, variation_buf: list[str] | None, container_attrs: dict
+    node: "Tag", css_rules: dict, depth: int, variation_buf: list[str] | None, container_attrs: dict,
+    parent_slug: "str | None" = None,
 ) -> list[str]:
     """Process an emitted container's DIRECT children with FR-22-4.1 fold semantics.
 
     For each direct child:
+      - rule 0 (SCALAR-MEDIA LIFT, FR-22-19): when parent_slug has scalar-media attrs
+        (DB-driven via db.has_scalar_media_attrs) AND the child's BEM element maps to a
+        scalar-media attr on the parent, lift any <img> descendants into container_attrs
+        and emit NO markup for that child.  This subsumes the scalar-media lift that
+        previously lived exclusively in _route_composite_interior (now retired as a gate).
+        Breakpoint modifiers (--mobile / --desktop) on the img select the +Mobile attr
+        sibling, matching the exact logic in _route_composite_interior (Commit 4).
       - rule 2 (FOLD): a slug-None sgs-classed wrapper folds its layout into THIS
         container (via _fold_layout_into_attrs, mutating container_attrs) and is NOT
         emitted; its own children are then "below a folded wrapper" → resolved by walk()
@@ -3844,7 +4649,34 @@ def _process_container_children(
       - rule 3 / FR-22-11: block-match, atomic, leaf, or non-sgs wrapper → normal walk().
     The leaf-with-element-children guard is applied here too (a leaf with sgs-classed
     children is a mis-resolution → folds as a wrapper).
+
+    parent_slug — the resolved block slug this container IS (e.g. 'sgs/multi-button').
+    When parent_slug IS the button-group block, _group_loose_buttons is suppressed here
+    (mirrors the gate in walk() at line 2968): the children are the group's OWN items and
+    must not be re-wrapped in a second group block. DB-derived (R-22-1), universal (R-22-9).
     """
+    # Pre-compute breakpoint modifier map for scalar-media lifting (rule 0).
+    # Mirrors the same computation in _route_composite_interior. Cached at DB
+    # module load; the frozenset + dict build here is O(n_suffixes) and cheap.
+    # Only materialised when parent_slug has scalar-media attrs (fast-path: most
+    # composites do not, so the DB call short-circuits on the cached False result).
+    _parent_has_scalar_media = (
+        parent_slug is not None and db.has_scalar_media_attrs(parent_slug)
+    )
+    if _parent_has_scalar_media:
+        try:
+            _bp_rules = db.breakpoint_suffix_rules()
+            _all_bp_suffixes: frozenset[str] = frozenset(
+                sfx for _, sfxes in _bp_rules for sfx in sfxes
+            )
+        except Exception:  # noqa: BLE001 — soft-fail if DB unavailable
+            _all_bp_suffixes = frozenset()
+        _is_mobile_modifier: dict[str, bool] = {
+            sfx.lower(): (sfx == "Mobile") for sfx in _all_bp_suffixes
+        }
+    else:
+        _is_mobile_modifier = {}
+
     # FR-22-4.1 sole-shell gate (2026-05-31, evidence: brand b5 trace + DOM). A direct-
     # child wrapper folds into its parent ONLY when it is the SOLE element child — i.e. a
     # pass-through shell wrapping all the parent's content (e.g. section > __inner). When
@@ -3855,6 +4687,49 @@ def _process_container_children(
     # _absorb_transparent_wrappers "exactly-1-child" gate that the first fold attempt dropped.
     element_children = [c for c in node.children if isinstance(c, Tag)]
     fold_eligible = len(element_children) == 1
+    # ── Grid awareness + net-of-rule-0 fold count (D207 root cause; Bean design
+    # gate 2026-06-11; TIGHTENED by the pre-commit qc-council the same day). ──
+    # The D207 bug: fold-eligibility counted ALL element children BEFORE rule 0
+    # consumed the scalar-media ones — hero __content+__media = 2, so __content
+    # never dissolved (the double-nesting) and the FR-22-5.3 routing inside the
+    # fold branch never fired (the dropped contentPadding*).
+    # The fix requires BOTH signals, ANDed (council finding: area-matching ALONE
+    # lets MULTIPLE named children fold → one flat interleaved InnerBlocks run +
+    # first-wins clobber of the 2nd child's box CSS — the b5 failure class
+    # re-opened):
+    #   (1) NET COUNT — children rule 0 will consume (scalar-media lift) are
+    #       excluded from the count; exactly ONE remaining child may fold.
+    #       Multi-fold is therefore impossible, so _fold_layout_into_attrs keeps
+    #       its sole-shell semantics (incl. the contentWidth lift).
+    #   (2) GRID CONFIRMATION (Principle B) — the parent's own display:grid +
+    #       grid-template-areas must NAME the folding child (hero: "content").
+    # Non-grid parents and parents without scalar-media attrs keep the original
+    # sole-child gate untouched (brand b5 protection).
+    _grid_areas = _grid_item_areas(node, css_rules)
+    fold_net_sole = False
+    if not fold_eligible and _grid_areas and parent_slug:
+        # UNIVERSAL (Bean 2026-06-11 — the prior `_parent_has_scalar_media`
+        # precondition was a carve-out; the consumability check below already
+        # requires a per-child scalar-media attr, so the gate adds nothing but
+        # narrowness). Count the element children rule 0 will NOT consume.
+        _remaining_n = 0
+        for _ec in element_children:
+            _ec_classes = [c for c in (_ec.get("class", []) or []) if c.startswith("sgs-")]
+            _ec_element: "str | None" = None
+            for _ec_cls in _ec_classes:
+                _ec_bem = db.parse_sgs_bem(_ec_cls)
+                if _ec_bem and _ec_bem.element:
+                    _ec_element = _ec_bem.element
+                    break
+            _consumable = (
+                _ec_element is not None
+                and _parent_has_scalar_media
+                and db.scalar_media_attr_for(parent_slug, _ec_element) is not None
+                and bool(_ec.find_all("img"))
+            )
+            if not _consumable:
+                _remaining_n += 1
+        fold_net_sole = _remaining_n == 1
     out: list[str] = []
     for child in node.children:
         if isinstance(child, Comment):
@@ -3868,6 +4743,66 @@ def _process_container_children(
             continue
         cclasses = child.get("class", []) or []
         csgs = [c for c in cclasses if c.startswith("sgs-")]
+
+        # Rule 0 — scalar-media lift (FR-22-19, Commit 4): absorb the lift that
+        # previously lived only in _route_composite_interior into this universal path.
+        # Fires ONLY when the parent block has scalar-media attrs (DB-cached, cheap)
+        # AND the child's BEM element maps to a scalar-media attr on the parent.
+        # When the element does NOT map (None), we fall through to the fold/walk
+        # decision below — preserving existing behaviour for non-media children.
+        # R-22-1 (DB-driven, no per-slug literals), R-22-9 (universal).
+        if _parent_has_scalar_media and csgs:
+            _child_element_sm: "str | None" = None
+            for _sm_cls in csgs:
+                _sm_bem = db.parse_sgs_bem(_sm_cls)
+                if _sm_bem and _sm_bem.element:
+                    _child_element_sm = _sm_bem.element
+                    break
+            if _child_element_sm is not None:
+                _base_attr = db.scalar_media_attr_for(parent_slug, _child_element_sm)
+                if _base_attr is not None:
+                    # --- Scalar-media column (rule 0) ---
+                    imgs = child.find_all("img")
+                    if not imgs:
+                        _trace(
+                            "composite_interior_route",
+                            slug=parent_slug,
+                            element=_child_element_sm,
+                            attr=_base_attr,
+                            branch="scalar_media_no_img_found",
+                            depth=depth + 1,
+                            note="scalar-media column had no <img> descendant; skipped",
+                        )
+                        continue
+                    for _img in imgs:
+                        _img_classes: list[str] = _img.get("class", []) or []
+                        _img_modifier: "str | None" = None
+                        for _img_cls in _img_classes:
+                            _img_bem = db.parse_sgs_bem(_img_cls)
+                            if _img_bem and _img_bem.modifier:
+                                _img_modifier = _img_bem.modifier.lower()
+                                break
+                        _is_mobile = (
+                            _is_mobile_modifier.get(_img_modifier, False)
+                            if _img_modifier
+                            else False
+                        )
+                        _target_attr = f"{_base_attr}Mobile" if _is_mobile else _base_attr
+                        _lifted = _lift_scalar_media_from_img(_img)
+                        container_attrs[_target_attr] = _lifted
+                        _trace(
+                            "composite_interior_route",
+                            slug=parent_slug,
+                            element=_child_element_sm,
+                            attr=_target_attr,
+                            branch="scalar_media_lifted",
+                            depth=depth + 1,
+                            img_src=_img.get("src", ""),
+                            modifier=_img_modifier,
+                            lifted_url=_lifted.get("url", ""),
+                        )
+                    continue  # column consumed — no markup emitted for it
+
         cslug = db.resolve_slug_from_bem(csgs) if csgs else None
         if (
             cslug is not None
@@ -3875,22 +4810,129 @@ def _process_container_children(
             and _has_sgs_child(child)
         ):
             cslug = None  # leaf-misresolution guard (see walk())
-        if cslug is None and csgs and fold_eligible:
-            # rule 2 — fold this sole pass-through shell's layout into the parent container
+        # BEM element token — needed BOTH for the grid-area gate below and for the
+        # FR-22-5.3 cross-node routing inside the fold branch (hoisted, 2026-06-11).
+        _child_element: "str | None" = None
+        for _fc in csgs:
+            _fc_bem = db.parse_sgs_bem(_fc)
+            if _fc_bem and _fc_bem.element:
+                _child_element = _fc_bem.element
+                break
+        # Grid-area gate (Principle B): the child is a NAMED grid item of this node
+        # AND the sole element child remaining after rule-0 scalar-media consumption.
+        # Both conditions required — see the qc-council note above the loop.
+        _is_grid_net_sole_item = (
+            fold_net_sole
+            and _child_element is not None
+            and _child_element.lower() in _grid_areas
+        )
+        if cslug is None and csgs and _is_grid_net_sole_item and not fold_eligible:
+            # ── GRID-PER-AREA dissolve (universal, 2026-06-11) ──
+            # The sole-remaining, area-NAMED grid item of a grid parent dissolves
+            # into the composite; its CSS routes to the owning block's per-AREA
+            # attrs (`<areaName>+<suffix>` — contentPadding*, mediaPadding*) at
+            # the right responsive tiers. NEITHER _fold_layout_into_attrs NOR
+            # the 3-layer cross-node router runs here: the PARENT carries the
+            # grid (the item carries no grid to lift) and the 3-layer router was
+            # the H-B mis-route (padding → gridItemPadding/outer instead of the
+            # per-area attrs render.php actually consumes).
+            _route_area_css_to_block_attrs(
+                child_node=child,
+                area=_child_element,
+                owning_block=parent_slug,
+                parent_attrs=container_attrs,
+                css_rules=css_rules,
+            )
+            # Content-band max-width lift (qc-council 2026-06-11 finding 2): the
+            # per-area router deliberately EXCLUDES width-family props (the
+            # contentWidth name collision), but the dissolving sole-remaining
+            # item IS the section's content band — its own max-width is the
+            # band cap and must not vanish. Route it via the CONTENT layer
+            # resolver (string attr, established path), preserving the old
+            # fold's contentWidth semantics.
+            _band_base, _ = _collect_css_decls_for_element(child, css_rules)
+            _band_mw = _band_base.get("max-width")
+            if _band_mw:
+                _band_attr = db.attr_for_layer_property(parent_slug, "CONTENT", "max-width")
+                if _band_attr:
+                    container_attrs.setdefault(_band_attr, _strip_important(_band_mw).strip())
+            _trace("walker_branch_taken", branch="dissolve_grid_area_item",
+                   node_classes=cclasses, depth=depth + 1, area=_child_element)
+            for gc in child.children:
+                r = walk(gc, css_rules, variation_buf, depth=depth + 2, is_top_level=False,
+                         parent_block=parent_slug)
+                if r:
+                    out.append(r)
+        elif cslug is None and csgs and fold_eligible:
+            # rule 2 — fold this SOLE pass-through shell's layout into the parent
+            # container (FR-22-4.1 count gate — unchanged classic path).
             _fold_layout_into_attrs(child, cclasses, container_attrs, css_rules)
+            # FR-22-5.3 cross-node CSS routing (Commit 2, 2026-06-10): after the fold
+            # lifts grid/layout attrs, also route this slug-None wrapper's structural
+            # box CSS (padding / max-width / gap) onto the parent composite's layer
+            # attrs — specifically CONTENT-layer attrs the fold's contentWidth path
+            # does not cover (contentPadding*, responsively-aware gap).
+            # Only fires when parent_slug is a resolved composite (not None).
+            if parent_slug:
+                _route_interior_css_to_parent_slot(
+                    child_node=child,
+                    element_token=_child_element,
+                    owning_block=parent_slug,
+                    parent_attrs=container_attrs,
+                    css_rules=css_rules,
+                )
             _trace("walker_branch_taken", branch="fold_into_container",
                    node_classes=cclasses, depth=depth + 1)
             # rule 4 — the folded wrapper's children resolve below it
             for gc in child.children:
-                r = walk(gc, css_rules, variation_buf, depth=depth + 2, is_top_level=False)
+                r = walk(gc, css_rules, variation_buf, depth=depth + 2, is_top_level=False,
+                         parent_block=parent_slug)
+                if r:
+                    out.append(r)
+        elif cslug is None and not csgs and fold_eligible and parent_slug:
+            # FR-22-4.1 complement (Commit 2 build contract, 2026-06-10):
+            # A scraped draft wrapper with NO sgs- classes at all (raw <div class="inner">,
+            # <div class="wrapper">, or even <div> with no classes) can still be the sole
+            # content-width shell — its box CSS is lost via the FR-22-11 pass-through
+            # unless we handle it here.
+            # Guard: ONLY fold when the child's CSS carries a CONTENT-layer signature
+            # (max-width + margin-centring, or --content-width custom property) — this
+            # keeps the guard narrow and avoids folding arbitrary classless divs.
+            # `fold_eligible` (len == 1) is already asserted by the `elif` clause.
+            # `parent_slug` being truthy means we have a resolved composite to route to.
+            _child_base, _ = _collect_css_decls_for_element(child, css_rules)
+            if _detect_content_layer(_child_base):
+                _route_interior_css_to_parent_slot(
+                    child_node=child,
+                    element_token=None,  # No sgs- BEM token available; slot resolved from DB
+                    owning_block=parent_slug,
+                    parent_attrs=container_attrs,
+                    css_rules=css_rules,
+                )
+                _trace("walker_branch_taken", branch="fold_non_sgs_content_width_wrapper",
+                       node_classes=cclasses, depth=depth + 1)
+                # The wrapper's children still resolve normally via walk().
+                for gc in child.children:
+                    r = walk(gc, css_rules, variation_buf, depth=depth + 2, is_top_level=False,
+                             parent_block=parent_slug)
+                    if r:
+                        out.append(r)
+            else:
+                r = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False,
+                         parent_block=parent_slug)
                 if r:
                     out.append(r)
         else:
-            r = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False)
+            r = walk(child, css_rules, variation_buf, depth=depth + 1, is_top_level=False,
+                     parent_block=parent_slug)
             if r:
                 out.append(r)
     # Spec 11 + P-9: group loose sgs/button runs into sgs/multi-button (WP mirror).
-    out = _group_loose_buttons(out)
+    # Suppressed when THIS container IS the button-group block itself — its children
+    # are the group's own buttons and must not be re-wrapped (mirrors the gate in
+    # walk() at line 2968; DB-derived R-22-1; universal R-22-9).
+    if parent_slug != db.block_for_slot_token("button-group"):
+        out = _group_loose_buttons(out)
     return out
 
 

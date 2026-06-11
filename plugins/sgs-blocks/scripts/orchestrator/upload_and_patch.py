@@ -4,9 +4,12 @@ patch the converter's block_markup to use the new attachment URLs +
 update the target WP page (or post).
 
 Usage:
-    upload_and_patch.py <pipeline-state/run-dir> [--target page|post] [--target-id N]
+    upload_and_patch.py <pipeline-state/run-dir> --target-id N [--target page|post]
+                        [--client <slug> | --mockup-root <path>]
 
-Defaults: --target page --target-id 131 (cv2-output-mamas-munches).
+--target-id is required (no client-specific default). The mockup root used to
+resolve the draft's relative ``../../research/...`` image paths is derived from
+--client (sites/<client>/mockups/homepage) or given explicitly via --mockup-root.
 
 Why pages, not posts: SGS clones websites; websites are PAGES rendered via
 `page.html` (no .entry-content max-width constraint). Posts render via
@@ -33,8 +36,11 @@ sys.stdout.reconfigure(encoding="utf-8")
 # location at plugins/sgs-blocks/scripts/orchestrator/. parents math shifts
 # to [4] (orchestrator → scripts → sgs-blocks → plugins → repo).
 REPO = Path(__file__).resolve().parents[4]
-MOCKUP_ROOT = REPO / "sites/mamas-munches/mockups/homepage"
 ENV = REPO / ".claude/secrets/sandybrown.env"
+# The mockup root (used to resolve the draft's relative `../../research/...`
+# image paths) is NOT a module-level constant — it is derived per run inside
+# main() from --client (sites/<client>/mockups/homepage) or --mockup-root, so
+# this deploy script is client-agnostic (R-22-1, de-cheat C7 2026-06-10).
 
 # Parse env
 env: dict[str, str] = {}
@@ -82,10 +88,9 @@ def main():
     parser.add_argument(
         "--target-id",
         type=int,
-        default=144,
-        help="WP object ID (default: 144 = rc-fix-verification-mamas-munches page; "
-             "page 131 was deleted between 2026-05-20 and 2026-05-23, see "
-             ".claude/parking.md → P-CANARY-PAGE-131-DELETED)",
+        required=True,
+        help="WP object ID of the page/post to patch (REQUIRED — no client-specific "
+             "default; the orchestrator passes this from --deploy-target page:<id>).",
     )
     parser.add_argument(
         "--client",
@@ -97,6 +102,17 @@ def main():
             "--push-theme-snapshot) the local sites/<client>/theme-snapshot.json "
             "against the target site. Phase 5a (2026-05-22) replacement for the "
             "deleted /wp-json/sgs/v1/active-variation REST endpoint."
+        ),
+    )
+    parser.add_argument(
+        "--mockup-root",
+        type=Path,
+        default=None,
+        help=(
+            "Path to the draft mockup directory whose relative '../../research/...' "
+            "image paths are resolved for upload. Defaults to "
+            "sites/<client>/mockups/homepage when --client is set. Needed (here or "
+            "via --client) only when the markup contains relative image URLs."
         ),
     )
     parser.add_argument(
@@ -125,6 +141,16 @@ def main():
     )
     args = parser.parse_args()
 
+    # Derive the client-agnostic mockup root (de-cheat C7): explicit --mockup-root
+    # wins; else sites/<client>/mockups/homepage; else None (only an error if the
+    # markup actually contains relative image URLs — guarded at the upload loop).
+    if args.mockup_root is not None:
+        mockup_root: Path | None = args.mockup_root.resolve()
+    elif args.client:
+        mockup_root = (REPO / "sites" / args.client / "mockups" / "homepage").resolve()
+    else:
+        mockup_root = None
+
     run_dir: Path = args.run_dir
     if not run_dir.exists():
         print(f"run dir not found: {run_dir}", file=sys.stderr)
@@ -149,9 +175,16 @@ def main():
         print(f"  {u}")
     print()
 
+    if urls and mockup_root is None:
+        print(
+            "Cannot resolve relative image URLs without a mockup root — "
+            "pass --client <slug> or --mockup-root <path>.",
+            file=sys.stderr,
+        )
+        sys.exit(2)
     url_map: dict[str, str] = {}
     for u in urls:
-        local = (MOCKUP_ROOT / u).resolve()
+        local = (mockup_root / u).resolve()
         # Permit any path inside the repo (mockup `../../research/...` is legit).
         try:
             local.relative_to(REPO.resolve())

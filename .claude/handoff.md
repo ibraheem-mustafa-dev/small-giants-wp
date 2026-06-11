@@ -1,48 +1,50 @@
-# Session Handoff — 2026-06-11 (cloning thread)
+# Session Handoff — 2026-06-10 (cloning thread — D203 root-cause reframe + routing design + step C)
 
-> Live handoff. Prior sessions: git history + `.claude/decisions.md` (D194–D207) + `.claude/memory/handoff-archive.md`. Theme thread co-active on `main` — commit by explicit path. **Session was COMPACTED at close** — the warm summary carries detail; this doc + `next-session-prompt.md` + the WooCommerce brief are the durable bridge.
+> Live handoff. Theme thread co-active on the SAME branch + main — commit by explicit path. Prior handoffs: `.claude/memory/handoff-archive.md` + git log.
 
 ## Completed This Session
-1. **Shipped Stage-1 converter Commits 2/3/4 (D201/D202)** on `feat/stage1-converter-core` (cross-node CSS routing, F6a inheritance, carve-out unification) — emit-green, 121 tests + 43 goldens.
-2. **DISCOVERED they did NOT change the live page** — `/sgs-update` → `/sgs-clone` → live page-8 + `convert-trace` proved zero render change. Root-caused to `fold_eligible = len(children)==1` (`convert.py:4435`): hero `__content`+`__media` = 2 children → `__content` never dissolves (the double-nesting) → the Commit-2 routing inside the fold branch never fires (dropped padding).
-3. **Built + APPROVED the routing-categorisation design** (now superseded by `Step C — Layout Mapping.html` + the WC brief after Bean restructured) — DB categorisation layer + per-breakpoint responsive-CSS routing + grid-awareness; corrected block model = preset + child-typography + container-mirror, not per-property attrs.
-4. **Ran Step C** — mapped both drafts layer-by-layer (`Step C — Layout Mapping.html`).
-5. **Fact-checked the 68 gap labels — ~30 were FALSE** (native WP `supports`, presets, child-blocks, or shipped fixes B6/E9/C7/D8 cover them; `ghost` already aliases `button-outline`). The genuine gap list is small.
-6. **6-persona adversarial-council** triaged the product-page draft → it's a **WooCommerce page type**, not a homepage re-author. Wrote the WC page-type design brief + theme-thread delegation plan.
-7. Theme thread (co-active) shipped B3–E9 + C7 block-quality fixes from the prompt I wrote (`BLOCK-QUALITY-BUILD-PROMPT-2026-06-11.md`).
+1. **Shipped Stage-1 Commits 3+4** (`fb4ffabb` F6a inheritance, `d3ba8dd5` carve-out retirement) + `/sgs-update` + `/sgs-clone` re-clone/deploy page 8 + refreshed `current-clone-page-source.html`. Recorded D202.
+2. **Live-DOM verification proved the converter changes DON'T land** — clone-parity.js + Playwright on page 8: 0 fixed / 118 stayed vs the 06-07 baseline; 28/28 headings still centre; hero padding still on the outer section. Emit changed, render didn't.
+3. **Root-caused it (single, evidenced)** — `fold_eligible = len(element_children)==1` counts the hero's scalar-media `__media` sibling → `__content` never folds → emits as a nested BEM-classed `sgs/container` (the double-nesting) → Commit-2's cross-node routing (inside the fold branch) is unreachable. Confirmed the orchestrator runs the EDITED converter (not stale) 3 ways; read `convert-trace-b*.jsonl`.
+4. **Confirmed the truth docs are silent on the co-located content+scalar-media fold interaction** — 4 parallel doc-reader agents (Spec 22/29, pipeline-flow/stages, decisions, method2, wave1-hero).
+5. **Wrote the DB-driven routing design** (`reports/wave2/ROUTING-CATEGORISATION-DESIGN.md`, Bean-approved in principle) — slots/aliases → canonical_slot/role → property_suffixes → modifier_suffixes + grid-awareness; carries per-element, per-breakpoint responsive-CSS routing + the corrected block model (preset + child-typography + container-mirror).
+6. **Step C done** — both drafts (homepage 7 + product page 5 sections, header/footer excluded) mapped layer-by-layer with full responsive CSS (`reports/wave2/STEP-C-LAYOUT-MAPPING-2026-06-10.md`); gap register (`STEP-C-STRESS-TEST-2026-06-10.md`). Core holds; 3 buckets of additive work.
+7. **Corrected my overstated "blocks missing per-property attrs" finding** — Bean's live editor review proved preset + child-typography + mirror. Block-side issues handed to the theme thread via `reports/wave2/STEP-C-BLOCK-FIXES-PROMPT.md`.
 
 ## Current State
-- **Branch:** `feat/stage1-converter-core` (Stage-1 commits) — theme thread on `feat/block-quality-mirror`/`main`.
-- **Tests:** converter suite green (but emit-green ≠ render-fixed — see #2).
-- **Build:** n/a this session (docs).
-- **Uncommitted:** the doc updates from this handoff (WC brief, next-session-prompt, decisions D207, this file) + `Step C — Layout Mapping.html` (untracked, Bean-saved).
+- **Branch:** `feat/stage1-converter-core` (HEAD advanced by co-active commits). My doc commits added by explicit path.
+- **Tests:** converter Gate A + commit2/3/4 suites green (121 tests); no converter CODE changed this session — analysis + docs only.
+- **Build:** n/a this session.
+- **Uncommitted:** new wave2 docs committed by explicit path; clone-parity measurement artefacts + co-active theme-thread files left untouched.
 
 ## Known Issues / Blockers
-- **The homepage clone is still broken on the live page** — Stage-1 Commits 2/3/4 are emit-green but unfixed live (the `fold_eligible` root cause). This is the real next converter task.
-- The product-page clone is **gated** on the WooCommerce page-vs-product-template decision (Task 1 next session).
+- **The Stage-1 converter changes do not land on the live page** — the converter rebuild (G1–G9) is the fix, gated on Bean's step-C critique first.
+- Branch stays open (justified exception to merge-to-main): rebuild mid-flight + Commit-4 R-22-13 sign-off pending.
 
 ## Next Priorities (in order)
-1. **WooCommerce page-type design** — `/brainstorming` + `/research-buddies` → solution → delegate BUILD to theme thread (read the brief).
-2. **Correct the Step C HTML labels** — flip the ~30 FALSE gaps to ✅ with the real reason; keep only the genuine gaps.
-3. **Fix the converter `fold_eligible` miscount** so grid-awareness lands (live-verify the hero dissolves) — the actual Stage-1 unfix.
+1. **Bean's gate-2.5 critique of the step-C mapping accuracy** — apply corrections to `STEP-C-LAYOUT-MAPPING` + the routing design before any code.
+2. **Confirm the 9 converter rules (G1–G9)** with him.
+3. **Build the DB-data bucket** (aliases/tokens/suffixes/variant_attr — deterministic) via `/sgs-update`.
+4. **Build converter rules G1–G9** to the routing design — each its own commit, `/qc-council` + live page-8 verify per commit.
+5. **Coordinate with the theme thread** on block-side fixes.
 
 ## Files Modified
 | File | What changed |
 |------|-------------|
-| `.claude/reports/wave2/WOOCOMMERCE-PAGE-TYPE-BRIEF-2026-06-11.md` | NEW — the WC page-type design brief + delegation plan |
-| `.claude/next-session-prompt.md` | Re-pointed to WC design (Task 1) + Step C correction + the fold-fix; carried the 7 rules + guardrails |
-| `.claude/decisions.md` | Added D207 |
-| `.claude/handoff.md` | This handoff |
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` + tests | Stage-1 Commits 2/3/4 (committed `160a5ebf`/`fb4ffabb`/`d3ba8dd5` on feat/stage1-converter-core) |
+| `.claude/decisions.md` | Added D203 |
+| `.claude/reports/wave2/ROUTING-CATEGORISATION-DESIGN.md` | NEW — DB routing design + responsive-CSS + corrected block model |
+| `.claude/reports/wave2/STEP-C-LAYOUT-MAPPING-2026-06-10.md` | NEW — both drafts mapped layer-by-layer with responsive CSS |
+| `.claude/reports/wave2/STEP-C-STRESS-TEST-2026-06-10.md` | NEW — gap register (G1–G9 + DB + block buckets) |
+| `.claude/reports/wave2/STEP-C-BLOCK-FIXES-PROMPT.md` | NEW — block-side fixes prompt for the theme thread |
+| `.claude/reports/wave2/LIVE-LEDGER-VERDICT-2026-06-10.md` | NEW — live-DOM ledger verdict |
+| `.claude/next-session-prompt.md`, `.claude/handoff.md` | this handoff |
 
 ## Notes for Next Session
-- **Emit-green ≠ render-fixed** — this session's central lesson. Verify the LIVE DOM (R-22-11), never the emit/golden/parity alone. The Stage-1 "ship" was false.
-- **Fact-check gaps against the DB before acting** — query `slots.aliases` incl. synonyms + full `block_attributes` incl. presets/child-blocks/mirror (the `ghost`=outline false-gap).
-- **Lean on WooCommerce native blocks** for commerce machinery; custom only the differentiated UX. Content-specific draft terms map to generic slots, never framework vocab.
-- The WC BUILD goes to the theme thread; this thread designs + continues the homepage pipeline.
-
-## Outcome assessment (Gate 3.5)
-- **CODE SHIPPED, OUTCOME NOT YET HIT** — Stage-1 Commits 2/3/4 shipped but the homepage clone is unchanged on the live page (the `fold_eligible` root cause). Next session continues the converter fix until the hero dissolves live. The session's real outcomes (root-cause found, routing design approved, gap labels fact-checked, WC page-type decided) ARE achieved.
+- **Emit-green ≠ render-fixed** — live-DOM read per converter commit, always.
+- **The routing design doc is the build reference** — build the converter to it; do not patch the old `fold_eligible`/`html_tag_to_core_block` walker.
+- **`convert-trace-b*.jsonl`** logs the exact route each element took — read before conjecturing.
+- **Bean's live editor beats DB attr-name guesses.**
+- Block-side work is the theme thread's; the converter routes to the preset/mirror/child it produces.
 
 ## Next Session Prompt
-The full orchestration plan is in `.claude/next-session-prompt.md` (autopilot reads it at session start). It carries the 7 non-negotiable rules + methodology guardrails, and the 3 tasks (WC page-type design → delegate build; Step C label correction; converter fold-fix).
+Full orchestration plan in `.claude/next-session-prompt.md` (autopilot reads it at session start): the 7 non-negotiable rules, the 3-bucket breakdown (⚙ G1–G9 / ➕ DB data / 🧱 theme-thread blocks), methodology guardrails (live-DOM gate per commit; read convert-trace; deploy before measure; commit by explicit path; branch stays open), and the Skills/MCP/Agents tables.

@@ -442,6 +442,29 @@ NEW_STANDALONE_ROWS: list[tuple[str, list[str], str, dict, str]] = [
         {"pillStyle": "filled", "typeKey": ""},
         "Exclusive radio-group pill chooser — emits sgs/option-picker with optionItems array (FR-24-15)",
     ),
+    # sgs/accordion-item — single expandable panel inside an sgs/accordion.
+    # Recognition: BEM element __accordion-item (full compound token, e.g.
+    # sgs-accordion__accordion-item).  The compound element token is what
+    # parse_sgs_bem() returns for class "sgs-accordion__accordion-item"; it is
+    # distinct from the bare "item" alias (which maps to the generic card slot →
+    # sgs/info-box for card-grid / gallery / icon-list items).  No collision risk:
+    # Path 2 of _resolve_slug_from_bem_tuple looks up the FULL element token
+    # "accordion-item" — the bare "item" key in _slot_alias_to_standalone is a
+    # separate entry and is never consulted for the compound form.
+    # standalone_block_default_attrs: {} — title is extracted from the __heading
+    # child by the walker's text-leaf path; no default attrs needed at emit time.
+    # NOTE: block_composition.has_inner_blocks for sgs/accordion-item must be 1
+    # (the body __body children are InnerBlocks in edit.js / render.php uses
+    # $content).  The DB currently has has_inner_blocks=0 (data quality gap).
+    # This is corrected via seed-composition-roles.py ENFORCE_HAS_INNER_BLOCKS
+    # in the same fix batch (Gate A 2026-06-10).
+    (
+        "accordion-item",
+        [],
+        "sgs/accordion-item",
+        {},
+        "Single expandable panel inside sgs/accordion — emits sgs/accordion-item with title attr from __heading child (Gate A 2026-06-10)",
+    ),
 ]
 
 # ---------------------------------------------------------------------------
