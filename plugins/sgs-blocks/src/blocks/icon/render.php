@@ -80,6 +80,13 @@ if ( 'dashicon' === $icon_source ) {
 	wp_enqueue_style( 'dashicons' );
 }
 
+// ── Alignment ─────────────────────────────────────────────────────────────────
+$allowed_aligns = array( 'left', 'center', 'right' );
+$icon_align     = $attributes['iconAlign'] ?? 'left';
+if ( ! in_array( $icon_align, $allowed_aligns, true ) ) {
+	$icon_align = 'left';
+}
+
 // ── Wrapper classes ───────────────────────────────────────────────────────────
 $classes = array( 'sgs-icon', 'sgs-icon--source-' . $icon_source );
 if ( 'none' !== $bg_shape ) {
@@ -87,6 +94,10 @@ if ( 'none' !== $bg_shape ) {
 	if ( in_array( $bg_shape, $allowed_shapes, true ) ) {
 		$classes[] = 'sgs-icon--bg-' . $bg_shape;
 	}
+}
+// Alignment modifier — only add non-default class; 'left' is the default (no modifier needed).
+if ( 'left' !== $icon_align ) {
+	$classes[] = 'sgs-icon--align-' . $icon_align;
 }
 
 // ── Inline styles ─────────────────────────────────────────────────────────────

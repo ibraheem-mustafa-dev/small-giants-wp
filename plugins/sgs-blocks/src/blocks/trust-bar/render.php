@@ -66,15 +66,22 @@ $label_colour_val  = sgs_colour_value( $label_colour );
 $styles = array();
 
 if ( 'icon-circle' === $badge_style ) {
+	// Circle size: only emit when it differs from the CSS default (44px) to keep
+	// the inline style lean, but size change IS what shifts layout so the opt-out
+	// is safe for the default case.
 	if ( 44 !== $icon_circle_size ) {
 		$styles[] = '--sgs-trust-badge-circle-size: ' . $icon_circle_size . 'px';
 	}
-	if ( $circle_bg_value ) {
-		$styles[] = '--sgs-trust-badge-circle-bg: ' . $circle_bg_value;
-	}
-	if ( $icon_colour_value ) {
-		$styles[] = '--sgs-trust-badge-icon-colour: ' . $icon_colour_value;
-	}
+	// Circle background: always emitted (even for default 'surface') so the CSS
+	// custom property is explicitly defined on the wrapper and the var() chain
+	// resolves to the correct token rather than silently falling back to a value
+	// that may match the section/page background (making the disc invisible).
+	// Falls back to surface-alt (#F1F0EC) in CSS — visually distinct from the
+	// surface (#FAF9F6) page/section background.
+	$styles[] = '--sgs-trust-badge-circle-bg: ' . ( $circle_bg_value ? $circle_bg_value : 'var(--wp--preset--color--surface-alt)' );
+	// Icon colour: always emit so the SVG stroke reliably uses the operator value.
+	$styles[] = '--sgs-trust-badge-icon-colour: ' . ( $icon_colour_value ? $icon_colour_value : 'var(--wp--preset--color--primary-dark)' );
+	// Label (text) colour: emit when resolved.
 	if ( $text_colour_value ) {
 		$styles[] = '--sgs-trust-badge-text-colour: ' . $text_colour_value;
 	}
@@ -139,8 +146,11 @@ $title_style_attr = $title_style_parts
 	: '';
 
 // --- Optional title -----------------------------------------------------------
-$title_html = '';
-if ( $block_title ) {
+// Guard against whitespace-only or HTML-only values (e.g. an empty <br> saved
+// by RichText) so an unset title never renders a visible element.
+$title_html        = '';
+$block_title_plain = trim( wp_strip_all_tags( $block_title ) );
+if ( $block_title_plain ) {
 	$title_html = sprintf(
 		'<p class="sgs-trust-bar__title"%s>%s</p>',
 		$title_style_attr,

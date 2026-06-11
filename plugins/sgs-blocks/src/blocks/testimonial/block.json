@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/testimonial",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"title": "SGS Testimonial",
 	"category": "sgs-content",
 	"description": "Single testimonial with 7 layout variants — quote, attribution, optional avatar, organisation logo, work media, and a fully optional rating.",

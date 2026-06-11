@@ -282,13 +282,19 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { badgeStyle: val } ) }
 						__nextHasNoMarginBottom
 					/>
-					<SelectControl
-						label={ __( 'Badge size', 'sgs-blocks' ) }
-						value={ badgeSize }
-						options={ BADGE_SIZE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { badgeSize: val } ) }
-						__nextHasNoMarginBottom
-					/>
+					{ /* Badge size only applies to text-only and image-badge variants.
+					     In icon-circle mode, sizing is controlled by the Icon circle size
+					     range control in the Appearance panel — showing this control there
+					     would create a dead second size control with no visible effect. */ }
+					{ badgeStyle !== 'icon-circle' && (
+						<SelectControl
+							label={ __( 'Badge size', 'sgs-blocks' ) }
+							value={ badgeSize }
+							options={ BADGE_SIZE_OPTIONS }
+							onChange={ ( val ) => setAttributes( { badgeSize: val } ) }
+							__nextHasNoMarginBottom
+						/>
+					) }
 					<SelectControl
 						label={ __( 'Label font size', 'sgs-blocks' ) }
 						value={ labelFontSize || '' }

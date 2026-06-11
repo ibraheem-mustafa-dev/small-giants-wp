@@ -160,6 +160,33 @@
 	}
 }
 
+/* ── Horizontal alignment ────────────────────────────────────────────────── */
+/*
+ * The .wp-block-sgs-icon wrapper is a block-level element; .sgs-icon inside it
+ * is inline-flex. To align the icon AS A WHOLE UNIT (including any background
+ * shape), we set flexbox on the outer wrapper using :has().
+ *
+ * Default (left / no modifier): the wrapper is not flex — inline-flex .sgs-icon
+ * sits at the block's natural inline start. This matches pre-v0.3.0 behaviour so
+ * existing posts are visually unchanged.
+ *
+ * Centre and right: :has() targets the outer wrapper when the inner .sgs-icon
+ * carries the alignment modifier, then flex + justify-content moves the whole
+ * icon unit (glyph + background shape together).
+ *
+ * :has() is supported in all evergreen browsers (Chrome 105+, Firefox 121+,
+ * Safari 15.4+). Older browsers fall back to left alignment (acceptable degradation).
+ */
+.wp-block-sgs-icon:has(.sgs-icon--align-center) {
+	display: flex;
+	justify-content: center;
+}
+
+.wp-block-sgs-icon:has(.sgs-icon--align-right) {
+	display: flex;
+	justify-content: flex-end;
+}
+
 /* ── Editor preview placeholder ─────────────────────────────────────────── */
 .sgs-icon__placeholder {
 	font-size: 11px;

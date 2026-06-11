@@ -518,7 +518,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Quote font style', 'sgs-blocks' ) }
 						value={ quoteStyle }
 						options={ [
-							{ label: __( 'Normal', 'sgs-blocks' ), value: '' },
+							{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
 							{ label: __( 'Italic', 'sgs-blocks' ), value: 'italic' },
 						] }
 						onChange={ ( val ) =>

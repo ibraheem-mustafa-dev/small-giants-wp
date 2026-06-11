@@ -67,7 +67,11 @@ a.sgs-trust-bar__badge:focus-visible {
 	width: var(--sgs-trust-badge-circle-size, 44px);
 	height: var(--sgs-trust-badge-circle-size, 44px);
 	border-radius: var(--sgs-trust-badge-circle-radius, 50%);
-	background-color: var(--sgs-trust-badge-circle-bg, var(--wp--preset--color--surface, #ffffff));
+	background-color: var(--sgs-trust-badge-circle-bg, var(--wp--preset--color--surface-alt, #F1F0EC));
+	/* Subtle default border so the disc always reads as a circle regardless of
+	   the section background behind it — a white/surface circle on a white
+	   section was invisible (live-verified 2026-06-11). Overridable via the var. */
+	border: var(--sgs-trust-badge-circle-border, 1px solid rgba(0, 0, 0, 0.08));
 	box-shadow: var(--sgs-trust-badge-circle-shadow, 0 1px 2px rgba(0, 0, 0, 0.06));
 }
 

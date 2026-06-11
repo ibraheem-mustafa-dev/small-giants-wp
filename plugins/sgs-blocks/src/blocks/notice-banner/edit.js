@@ -5,7 +5,8 @@ import {
 	useInnerBlocksProps,
 } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
-import { IconPicker, IconPreview } from '../../components';
+import { IconPicker, IconPreview, DesignTokenPicker } from '../../components';
+import { colourVar } from '../../utils';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing only).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
@@ -59,7 +60,7 @@ const NOTICE_BANNER_TEMPLATE = [
 ];
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { variant, showIcon, iconSource } = attributes;
+	const { variant, showIcon, iconSource, iconColour } = attributes;
 
 	const className = [ 'sgs-notice-banner', `sgs-notice-banner--${ variant }` ].join(
 		' '
@@ -121,6 +122,14 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 						/>
 					) }
+					{ showIcon && (
+						<DesignTokenPicker
+							label={ __( 'Icon colour', 'sgs-blocks' ) }
+							value={ iconColour || '' }
+							onChange={ ( val ) => setAttributes( { iconColour: val ?? '' } ) }
+							clearable={ true }
+						/>
+					) }
 				</PanelBody>
 			</InspectorControls>
 
@@ -128,7 +137,11 @@ export default function Edit( { attributes, setAttributes } ) {
 			     The wrapper div carries the variant class + role="note". */ }
 			<div { ...blockProps } role="note">
 				{ showIcon && (
-					<span className="sgs-notice-banner__icon" aria-hidden="true">
+					<span
+						className="sgs-notice-banner__icon"
+						aria-hidden="true"
+						style={ iconColour ? { color: colourVar( iconColour ) } : undefined }
+					>
 						<IconPreview source={ resolved.source } name={ resolved.name } size={ 20 } />
 					</span>
 				) }

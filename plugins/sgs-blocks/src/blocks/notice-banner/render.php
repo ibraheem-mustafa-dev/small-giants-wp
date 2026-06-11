@@ -31,6 +31,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 $variant     = $attributes['variant'] ?? 'info';
 $icon_source = $attributes['iconSource'] ?? '';
 $icon_name   = $attributes['iconName'] ?? '';
+$icon_colour = $attributes['iconColour'] ?? '';
 
 // Show the icon? New posts use the explicit showIcon toggle. Backwards-compat:
 // older posts hid the icon with the legacy icon='none' value.
@@ -94,7 +95,11 @@ $sgs_wrapper_classes = array( 'sgs-notice-banner', 'sgs-notice-banner--' . sanit
 // -------------------------------------------------------------------------
 $sgs_inner_html = '';
 if ( $icon_html ) {
-	$sgs_inner_html .= '<span class="sgs-notice-banner__icon" aria-hidden="true">' . $icon_html . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from first-party icon maps; dashicon slug + emoji escaped above.
+	$icon_colour_style = '';
+	if ( $icon_colour ) {
+		$icon_colour_style = ' style="color:' . esc_attr( sgs_colour_value( $icon_colour ) ) . '"';
+	}
+	$sgs_inner_html .= '<span class="sgs-notice-banner__icon" aria-hidden="true"' . $icon_colour_style . '>' . $icon_html . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from first-party icon maps; dashicon slug + emoji escaped above. $icon_colour_style uses esc_attr().
 }
 $sgs_inner_html .= $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WP core InnerBlocks output.
 

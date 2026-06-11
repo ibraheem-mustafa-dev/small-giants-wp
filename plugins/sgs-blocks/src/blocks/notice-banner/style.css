@@ -61,6 +61,12 @@
 	line-height: 1;
 }
 
+/* Preserve inherited colour when no iconColour override is set.
+   When render.php emits style="color:…" the inline style wins (1,0,0,0). */
+.sgs-notice-banner__icon:not([style*="color"]) {
+	color: inherit;
+}
+
 /* ===== Text ===== */
 .sgs-notice-banner__text {
 	margin: 0;

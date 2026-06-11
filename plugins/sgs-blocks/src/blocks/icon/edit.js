@@ -1,5 +1,10 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	InspectorControls,
+	BlockControls,
+	AlignmentControl,
+} from '@wordpress/block-editor';
 import {
 	PanelBody,
 	SelectControl,
@@ -75,6 +80,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoverIconColour,
 		hoverShapeColour,
 		hoverScale,
+		iconAlign,
 	} = attributes;
 
 	const blockAlign = attributes.align || 'center';
@@ -84,6 +90,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		sizeModifier( iconSize ),
 		backgroundShape !== 'none' && `sgs-icon--bg-${ backgroundShape }`,
 		`align${ blockAlign }`,
+		iconAlign && iconAlign !== 'left' && `sgs-icon--align-${ iconAlign }`,
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -125,6 +132,14 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			<BlockControls group="block">
+				<AlignmentControl
+					value={ iconAlign }
+					onChange={ ( val ) =>
+						setAttributes( { iconAlign: val || 'left' } )
+					}
+				/>
+			</BlockControls>
 			<InspectorControls>
 				<PanelBody title={ __( 'Icon', 'sgs-blocks' ) }>
 					<IconPicker
