@@ -15,7 +15,11 @@ inputs: full container audit (opus agent, 2026-06-11) + independent fact-check (
 
 The converter's 4-layer routing (Bean's standard: L1 outer / L2 inner band / grid check / L4 grid items split uniform + per-area) has nowhere to land values because the container block + the shared wrapper-inserter have incomplete/inconsistent layer attributes and broken/missing editor controls. Audit confirmed all four of Bean's observations with file:line evidence (§Evidence).
 
-## The steps (priority order — converter-unblocking first)
+## The steps
+
+**EXECUTION ORDER (Bean re-cut 2026-06-11 — standard before construction):**
+`Step 1 ✅ → Step 7a (the control STANDARD: shared TypographyControls refactor + check-control-ux guard, legacy blocks baselined) → Step 2 → Step 3 → Step 4 → Step 5 → Step 6 → Step 7b (legacy burn-down: sweep the ~20 baselined blocks)`.
+Rationale: Steps 2/3 ADD new controls — landing the canonical pattern + guard FIRST means they are built to the standard from day one and machine-validated, instead of built old-style and reworked. 7b (the legacy sweep) comes last so it never delays the converter-unblocking steps; the guard's baseline file holds the debt visibly until then.
 
 ### ✅ STEP 1 — freeInput on gridItemPadding (DONE this session, commit pending build)
 `freeInput` added to the two `SpacingControl` call sites: `container/edit.js` (~655) + `container/components/ContainerWrapperControls.js` (~995). Kills the 'None/XXS-only' dropdown (root cause: preset mode builds options from truncated theme `spacing.spacingSizes`; freeInput renders number+unit like the gap control). Verify: build green + the control renders a UnitControl in the editor.
