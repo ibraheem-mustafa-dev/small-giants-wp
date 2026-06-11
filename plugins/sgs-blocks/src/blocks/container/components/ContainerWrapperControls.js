@@ -1034,6 +1034,115 @@ function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 }
 
 // ---------------------------------------------------------------------------
+// Responsive spacing panel — exported for use in container/edit.js too.
+// ---------------------------------------------------------------------------
+
+/**
+ * ResponsiveSpacingPanel
+ *
+ * Exposes tablet and mobile overrides for padding (4 sides) and margin
+ * (4 sides) via a ResponsiveControl device-icon switcher.
+ *
+ * BASE (desktop) padding/margin are set by WP-native `supports.spacing`
+ * (the Dimensions panel). The desktop tier of each switcher therefore
+ * renders a short help note only — never duplicate desktop controls.
+ *
+ * Applies to ALL three wrapper kinds (section / layout / content):
+ * class-sgs-container-wrapper.php processes these attrs on every kind.
+ *
+ * Attr → control mapping:
+ *   paddingTopTablet    → Padding › Tablet › Top
+ *   paddingRightTablet  → Padding › Tablet › Right
+ *   paddingBottomTablet → Padding › Tablet › Bottom
+ *   paddingLeftTablet   → Padding › Tablet › Left
+ *   paddingTopMobile    → Padding › Mobile › Top
+ *   paddingRightMobile  → Padding › Mobile › Right
+ *   paddingBottomMobile → Padding › Mobile › Bottom
+ *   paddingLeftMobile   → Padding › Mobile › Left
+ *   marginTopTablet     → Margin › Tablet › Top
+ *   marginRightTablet   → Margin › Tablet › Right
+ *   marginBottomTablet  → Margin › Tablet › Bottom
+ *   marginLeftTablet    → Margin › Tablet › Left
+ *   marginTopMobile     → Margin › Mobile › Top
+ *   marginRightMobile   → Margin › Mobile › Right
+ *   marginBottomMobile  → Margin › Mobile › Bottom
+ *   marginLeftMobile    → Margin › Mobile › Left
+ */
+export function ResponsiveSpacingPanel( { attributes, setAttributes } ) {
+	const PADDING_SIDES = [
+		{ label: __( 'Top', 'sgs-blocks' ), tablet: 'paddingTopTablet', mobile: 'paddingTopMobile' },
+		{ label: __( 'Right', 'sgs-blocks' ), tablet: 'paddingRightTablet', mobile: 'paddingRightMobile' },
+		{ label: __( 'Bottom', 'sgs-blocks' ), tablet: 'paddingBottomTablet', mobile: 'paddingBottomMobile' },
+		{ label: __( 'Left', 'sgs-blocks' ), tablet: 'paddingLeftTablet', mobile: 'paddingLeftMobile' },
+	];
+
+	const MARGIN_SIDES = [
+		{ label: __( 'Top', 'sgs-blocks' ), tablet: 'marginTopTablet', mobile: 'marginTopMobile' },
+		{ label: __( 'Right', 'sgs-blocks' ), tablet: 'marginRightTablet', mobile: 'marginRightMobile' },
+		{ label: __( 'Bottom', 'sgs-blocks' ), tablet: 'marginBottomTablet', mobile: 'marginBottomMobile' },
+		{ label: __( 'Left', 'sgs-blocks' ), tablet: 'marginLeftTablet', mobile: 'marginLeftMobile' },
+	];
+
+	return (
+		<PanelBody title={ __( 'Responsive spacing', 'sgs-blocks' ) } initialOpen={ false }>
+			<p className="components-base-control__help">
+				{ __( 'Override padding and margin at tablet and mobile breakpoints. Desktop values are set in the Dimensions panel above.', 'sgs-blocks' ) }
+			</p>
+
+			<ResponsiveControl label={ __( 'Padding', 'sgs-blocks' ) }>
+				{ ( breakpoint ) => {
+					if ( breakpoint === 'desktop' ) {
+						return (
+							<p className="sgs-inspector-help">
+								{ __( 'Desktop padding & margin are set in the Dimensions panel above.', 'sgs-blocks' ) }
+							</p>
+						);
+					}
+					return (
+						<>
+							{ PADDING_SIDES.map( ( side ) => (
+								<SpacingControl
+									key={ side[ breakpoint ] }
+									freeInput
+									label={ side.label }
+									value={ attributes[ side[ breakpoint ] ] || '' }
+									onChange={ ( val ) => setAttributes( { [ side[ breakpoint ] ]: val } ) }
+								/>
+							) ) }
+						</>
+					);
+				} }
+			</ResponsiveControl>
+
+			<ResponsiveControl label={ __( 'Margin', 'sgs-blocks' ) }>
+				{ ( breakpoint ) => {
+					if ( breakpoint === 'desktop' ) {
+						return (
+							<p className="sgs-inspector-help">
+								{ __( 'Desktop padding & margin are set in the Dimensions panel above.', 'sgs-blocks' ) }
+							</p>
+						);
+					}
+					return (
+						<>
+							{ MARGIN_SIDES.map( ( side ) => (
+								<SpacingControl
+									key={ side[ breakpoint ] }
+									freeInput
+									label={ side.label }
+									value={ attributes[ side[ breakpoint ] ] || '' }
+									onChange={ ( val ) => setAttributes( { [ side[ breakpoint ] ]: val } ) }
+								/>
+							) ) }
+						</>
+					);
+				} }
+			</ResponsiveControl>
+		</PanelBody>
+	);
+}
+
+// ---------------------------------------------------------------------------
 // KIND → CONTROLS map
 // ---------------------------------------------------------------------------
 //
@@ -1072,6 +1181,7 @@ const KIND_PANELS = {
 				/>
 			</PanelBody>
 		),
+		( props ) => <ResponsiveSpacingPanel { ...props } />,
 		( props ) => <GridItemDefaultsPanel { ...props } />,
 		( props ) => <BackgroundPanel { ...props } />,
 		( props ) => (
@@ -1096,6 +1206,7 @@ const KIND_PANELS = {
 				<WidthPanel { ...props } />
 			</PanelBody>
 		),
+		( props ) => <ResponsiveSpacingPanel { ...props } />,
 	],
 
 	content: [
@@ -1104,12 +1215,9 @@ const KIND_PANELS = {
 				<WidthPanel { ...props } />
 			</PanelBody>
 		),
-		// No shared inner-padding panel: content-kind blocks expose WP-native
-		// spacing.padding (consumed by SGS_Container_Wrapper). A standalone
-		// `innerPadding` control here had no shared consumer — it was a dead
-		// control on every content-kind block (HC2, 2026-06-08). product-card
-		// keeps its OWN bespoke inner-padding control for its genuine two-region
-		// (image vs body) padding case.
+		( props ) => <ResponsiveSpacingPanel { ...props } />,
+		// Note: base (desktop) padding/margin are handled by WP-native supports.spacing
+		// (Dimensions panel). ResponsiveSpacingPanel only adds tablet/mobile overrides.
 	],
 };
 

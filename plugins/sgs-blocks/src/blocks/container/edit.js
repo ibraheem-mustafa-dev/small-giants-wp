@@ -24,6 +24,7 @@ import {
   DesignTokenPicker,
 } from "../../components";
 import { spacingVar, shadowVar } from "../../utils";
+import { ResponsiveSpacingPanel } from "./components/ContainerWrapperControls";
 
 /**
  * Resolve a gap attribute value to a CSS string for editor preview.
@@ -639,6 +640,13 @@ export default function Edit({ attributes, setAttributes }) {
             </>
           )}
         </PanelBody>
+
+        {/* Step 2: Responsive spacing overrides (tablet / mobile padding + margin).
+            Desktop base is handled by WP-native supports.spacing (Dimensions panel). */}
+        <ResponsiveSpacingPanel
+          attributes={ attributes }
+          setAttributes={ setAttributes }
+        />
 
         {/* SB-1: Grid item defaults panel — only shown when layout is grid */}
         {layout === "grid" && (
