@@ -2,12 +2,23 @@
  * TypographyControls — shared, uniform typography UI for every SGS block.
  *
  * Extracted from the canonical sgs/text + sgs/heading pattern so that EVERY
- * block customises the SAME variables in the SAME way (Bean R-22-13, 2026-06-11):
- *   - Font size  → responsive RangeControl (desktop/tablet/mobile) + unit dropdown
- *                  (NOT a freeform text box, NOT a token-slug picker)
- *   - Font weight → SelectControl dropdown
+ * block customises the SAME variables in the SAME way (Bean R-22-13, 2026-06-11).
+ *
+ * CANONICAL UI (device-icon switcher + integrated UnitControl):
+ *   - Font size  → <ResponsiveControl> device-icon switcher wrapping a
+ *                  <UnitControl> whose displayed value combines the numeric
+ *                  breakpoint attr with the shared FontSizeUnit string
+ *                  (e.g. attr 18 + unit 'px' → '18px'). onChange: parse the
+ *                  combined string back to number (breakpoint attr) + unit
+ *                  (FontSizeUnit). When showResponsive=false, a single UnitControl
+ *                  without the switcher wrapper.
+ *   - Line height → single <UnitControl> integrating LineHeight (number) +
+ *                  LineHeightUnit (string). The PHP helper emits the unit verbatim:
+ *                  '' = unitless (e.g. 1.5 with no suffix), any string = suffixed.
+ *                  UnitControl stores '' for the "—" (unitless) option which maps
+ *                  to the PHP helper's empty-string semantic (unitless).
+ *   - Font weight → SelectControl dropdown (enumerations are fine as dropdowns)
  *   - Font style  → SelectControl dropdown (Normal / Italic)
- *   - Line height → responsive RangeControl + unit dropdown
  *
  * Parameterised by `prefix` so one component drives any element's typography:
  *   prefix ''       → fontSize / fontSizeUnit / fontSizeTablet / fontSizeMobile /
@@ -15,13 +26,24 @@
  *   prefix 'label'  → labelFontSize / labelFontSizeUnit / labelFontSizeTablet / …
  *   prefix 'title'  → titleFontSize / …    prefix 'pill' → pillFontSize / …
  *
- * The matching CSS is emitted server-side by sgs_typography_css() in
+ * Attribute shape (UNCHANGED — consumers + PHP helper work with zero changes):
+ *   {prefix}FontSize        number   (e.g. 18)        — desktop
+ *   {prefix}FontSizeUnit    string   (px|em|rem)       — shared across breakpoints
+ *   {prefix}FontSizeTablet  number
+ *   {prefix}FontSizeMobile  number
+ *   {prefix}FontWeight      string   (100–900 | '')
+ *   {prefix}FontStyle       string   (normal|italic | '')
+ *   {prefix}LineHeight      number   (e.g. 1.5)
+ *   {prefix}LineHeightUnit  string   (em|rem|px | '')  — unitless when empty
+ *
+ * The matching CSS is emitted server-side by sgs_typography_css_rule() in
  * includes/helpers-typography.php — one helper, one shape, every block.
  *
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { RangeControl, SelectControl } from '@wordpress/components';
+import { SelectControl, __experimentalUnitControl as UnitControl } from '@wordpress/components';
+import ResponsiveControl from './ResponsiveControl';
 
 export const SGS_FONT_WEIGHT_OPTIONS = [
 	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
@@ -42,10 +64,28 @@ export const SGS_FONT_STYLE_OPTIONS = [
 	{ label: __( 'Italic', 'sgs-blocks' ), value: 'italic' },
 ];
 
-export const SGS_FONT_SIZE_UNIT_OPTIONS = [
-	{ label: 'px', value: 'px' },
-	{ label: 'em', value: 'em' },
-	{ label: 'rem', value: 'rem' },
+/**
+ * Units available in the font-size UnitControl.
+ * Matching the PHP helper's accepted unit set (px/em/rem, stripped to [a-z]).
+ */
+const FONT_SIZE_UNITS = [
+	{ value: 'px', label: 'px', default: 16 },
+	{ value: 'em', label: 'em', default: 1 },
+	{ value: 'rem', label: 'rem', default: 1 },
+];
+
+/**
+ * Units available in the line-height UnitControl.
+ * '' = unitless (the PHP helper emits the number with no suffix when the unit
+ * string is '' — e.g. line-height:1.5 for a pleasing ratio default).
+ * UnitControl uses an empty string for the "—" pseudo-unit option, which maps
+ * exactly to the helper's empty-string → unitless semantic.
+ */
+const LINE_HEIGHT_UNITS = [
+	{ value: '', label: '—', default: 1.5 },
+	{ value: 'em', label: 'em', default: 1.5 },
+	{ value: 'rem', label: 'rem', default: 1.5 },
+	{ value: 'px', label: 'px', default: 24 },
 ];
 
 /**
@@ -82,7 +122,59 @@ export function typographyAttrKeys( prefix ) {
 }
 
 /**
+ * Compose a UnitControl display value from a numeric attr + a unit string.
+ * Returns '' when the number attr is absent/empty so UnitControl shows blank
+ * (allowing the user to perceive "unset" correctly).
+ *
+ * @param {number|undefined} num  The numeric attribute value.
+ * @param {string}           unit The unit string (e.g. 'px', 'em', 'rem').
+ * @return {string} Combined value string or ''.
+ */
+function composeUnitValue( num, unit ) {
+	if ( num === undefined || num === null || num === '' ) {
+		return '';
+	}
+	return `${ num }${ unit || '' }`;
+}
+
+/**
+ * Parse a UnitControl onChange value (e.g. '18px', '1.2em', '24') into its
+ * numeric and unit parts. Returns { num: number|undefined, unit: string }.
+ * When the string is empty/null, returns { num: undefined, unit } preserving
+ * the current unit so it is not wiped on clear.
+ *
+ * @param {string} raw         Raw string from UnitControl onChange.
+ * @param {string} currentUnit The currently-stored unit (used when raw is empty).
+ * @return {{ num: number|undefined, unit: string }}
+ */
+function parseUnitValue( raw, currentUnit ) {
+	if ( ! raw && raw !== 0 ) {
+		return { num: undefined, unit: currentUnit || 'px' };
+	}
+	const str = String( raw ).trim();
+	if ( '' === str ) {
+		return { num: undefined, unit: currentUnit || 'px' };
+	}
+	// Match leading number (int or float), optional unit suffix.
+	const match = str.match( /^([\d.]+)\s*([a-z%]*)$/i );
+	if ( match ) {
+		const num = parseFloat( match[ 1 ] );
+		const unit = match[ 2 ] || currentUnit || 'px';
+		return { num: isNaN( num ) ? undefined : num, unit };
+	}
+	// Couldn't parse — treat as clear.
+	return { num: undefined, unit: currentUnit || 'px' };
+}
+
+/**
  * Uniform typography controls. Drop into any InspectorControls panel.
+ *
+ * Renders:
+ *   - Font size: ResponsiveControl (device-icon switcher) → UnitControl
+ *     (number + unit in one input). showResponsive=false → single UnitControl.
+ *   - Line height: single UnitControl (number + unit; '' unit = unitless).
+ *   - Font weight: SelectControl.
+ *   - Font style: SelectControl.
  *
  * @param {Object}   props
  * @param {Object}   props.attributes    Block attributes.
@@ -92,9 +184,7 @@ export function typographyAttrKeys( prefix ) {
  * @param {boolean}  [props.showWeight=true]
  * @param {boolean}  [props.showStyle=true]
  * @param {boolean}  [props.showLineHeight=true]
- * @param {boolean}  [props.showResponsive=true] Show tablet/mobile size rows.
- * @param {number}   [props.sizeMin=8]
- * @param {number}   [props.sizeMax=96]
+ * @param {boolean}  [props.showResponsive=true] Show device-icon switcher for size.
  * @return {JSX.Element} Controls fragment.
  */
 export default function TypographyControls( {
@@ -106,63 +196,85 @@ export default function TypographyControls( {
 	showStyle = true,
 	showLineHeight = true,
 	showResponsive = true,
-	sizeMin = 8,
-	sizeMax = 96,
 } ) {
 	const k = typographyAttrKeys( prefix );
-	const set = ( key ) => ( val ) => setAttributes( { [ key ]: val } );
+
+	// Shared unit across all breakpoints. Default 'px' if unset.
+	const currentFontSizeUnit = attributes[ k.fontSizeUnit ] || 'px';
+
+	// Responsive breakpoint → attr key map (mirrors the PHP helper's responsive output).
+	const fontSizeAttrMap = {
+		desktop: k.fontSize,
+		tablet: k.fontSizeTablet,
+		mobile: k.fontSizeMobile,
+	};
+
+	/**
+	 * onChange for the font-size UnitControl for a given breakpoint.
+	 * Writes the numeric part to the breakpoint attr and the unit to fontSizeUnit.
+	 *
+	 * @param {string} breakpoint 'desktop'|'tablet'|'mobile'
+	 * @param {string} raw        Raw value from UnitControl onChange.
+	 */
+	function onFontSizeChange( breakpoint, raw ) {
+		const { num, unit } = parseUnitValue( raw, currentFontSizeUnit );
+		const attrKey = fontSizeAttrMap[ breakpoint ];
+		setAttributes( {
+			[ attrKey ]: num,
+			[ k.fontSizeUnit ]: unit,
+		} );
+	}
+
+	const currentLineHeightUnit = attributes[ k.lineHeightUnit ] !== undefined
+		? attributes[ k.lineHeightUnit ]
+		: '';
+
+	/**
+	 * onChange for the line-height UnitControl.
+	 * Writes the numeric part to lineHeight and the unit to lineHeightUnit.
+	 * The PHP helper emits the number with no suffix when unit === '' (unitless).
+	 *
+	 * @param {string} raw Raw value from UnitControl onChange.
+	 */
+	function onLineHeightChange( raw ) {
+		const { num, unit } = parseUnitValue( raw, currentLineHeightUnit );
+		setAttributes( {
+			[ k.lineHeight ]: num,
+			[ k.lineHeightUnit ]: unit,
+		} );
+	}
 
 	return (
 		<>
-			{ showSize && (
-				<>
-					<p className="sgs-inspector-label">
-						{ __( 'Font size', 'sgs-blocks' ) }
-					</p>
-					<div className="sgs-inspector-row">
-						<RangeControl
-							label={ __( 'Desktop', 'sgs-blocks' ) }
-							value={ attributes[ k.fontSize ] ?? '' }
-							onChange={ set( k.fontSize ) }
-							min={ sizeMin }
-							max={ sizeMax }
-							step={ 1 }
-							allowReset
+			{ showSize && showResponsive && (
+				<ResponsiveControl label={ __( 'Font size', 'sgs-blocks' ) }>
+					{ ( breakpoint ) => (
+						<UnitControl
+							label={ __( 'Font size', 'sgs-blocks' ) }
+							hideLabelFromVision
+							value={ composeUnitValue(
+								attributes[ fontSizeAttrMap[ breakpoint ] ],
+								currentFontSizeUnit
+							) }
+							units={ FONT_SIZE_UNITS }
+							onChange={ ( val ) => onFontSizeChange( breakpoint, val ) }
 							__nextHasNoMarginBottom
 						/>
-						<SelectControl
-							label={ __( 'Unit', 'sgs-blocks' ) }
-							value={ attributes[ k.fontSizeUnit ] || 'px' }
-							options={ SGS_FONT_SIZE_UNIT_OPTIONS }
-							onChange={ set( k.fontSizeUnit ) }
-							__nextHasNoMarginBottom
-						/>
-					</div>
-					{ showResponsive && (
-						<div className="sgs-inspector-row">
-							<RangeControl
-								label={ __( 'Tablet', 'sgs-blocks' ) }
-								value={ attributes[ k.fontSizeTablet ] ?? '' }
-								onChange={ set( k.fontSizeTablet ) }
-								min={ sizeMin }
-								max={ sizeMax }
-								step={ 1 }
-								allowReset
-								__nextHasNoMarginBottom
-							/>
-							<RangeControl
-								label={ __( 'Mobile', 'sgs-blocks' ) }
-								value={ attributes[ k.fontSizeMobile ] ?? '' }
-								onChange={ set( k.fontSizeMobile ) }
-								min={ sizeMin }
-								max={ sizeMax }
-								step={ 1 }
-								allowReset
-								__nextHasNoMarginBottom
-							/>
-						</div>
 					) }
-				</>
+				</ResponsiveControl>
+			) }
+
+			{ showSize && ! showResponsive && (
+				<UnitControl
+					label={ __( 'Font size', 'sgs-blocks' ) }
+					value={ composeUnitValue(
+						attributes[ k.fontSize ],
+						currentFontSizeUnit
+					) }
+					units={ FONT_SIZE_UNITS }
+					onChange={ ( val ) => onFontSizeChange( 'desktop', val ) }
+					__nextHasNoMarginBottom
+				/>
 			) }
 
 			{ showWeight && (
@@ -170,7 +282,7 @@ export default function TypographyControls( {
 					label={ __( 'Font weight', 'sgs-blocks' ) }
 					value={ attributes[ k.fontWeight ] || '' }
 					options={ SGS_FONT_WEIGHT_OPTIONS }
-					onChange={ set( k.fontWeight ) }
+					onChange={ ( val ) => setAttributes( { [ k.fontWeight ]: val } ) }
 					__nextHasNoMarginBottom
 				/>
 			) }
@@ -180,20 +292,20 @@ export default function TypographyControls( {
 					label={ __( 'Font style', 'sgs-blocks' ) }
 					value={ attributes[ k.fontStyle ] || '' }
 					options={ SGS_FONT_STYLE_OPTIONS }
-					onChange={ set( k.fontStyle ) }
+					onChange={ ( val ) => setAttributes( { [ k.fontStyle ]: val } ) }
 					__nextHasNoMarginBottom
 				/>
 			) }
 
 			{ showLineHeight && (
-				<RangeControl
+				<UnitControl
 					label={ __( 'Line height', 'sgs-blocks' ) }
-					value={ attributes[ k.lineHeight ] ?? '' }
-					onChange={ set( k.lineHeight ) }
-					min={ 0.8 }
-					max={ 3 }
-					step={ 0.1 }
-					allowReset
+					value={ composeUnitValue(
+						attributes[ k.lineHeight ],
+						currentLineHeightUnit
+					) }
+					units={ LINE_HEIGHT_UNITS }
+					onChange={ onLineHeightChange }
 					__nextHasNoMarginBottom
 				/>
 			) }

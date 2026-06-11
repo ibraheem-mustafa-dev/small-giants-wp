@@ -1,0 +1,831 @@
+{
+	"_comment": "Accepted control-ux violations (check-control-ux.js). Each entry is a known issue accepted with a reason. The guard fails the build on violations NOT listed here. Key shape: { check, block, attr, violation, reason }. To accept, add here; to fix, update the block + delete the entry.",
+	"accepted": [
+		{
+			"check": "control-ux",
+			"block": "sgs/button",
+			"attr": "minHeightMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family minHeight/minHeightMobile and writes minHeightMobile via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/button",
+			"attr": "fontSizeTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family fontSize/fontSizeTablet and writes fontSizeTablet via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/button",
+			"attr": "fontSizeMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family fontSize/fontSizeMobile and writes fontSizeMobile via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/button",
+			"attr": "customWidthUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing customWidthUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/button",
+			"attr": "minHeightUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing minHeightUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/button",
+			"attr": "minHeightTabletUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing minHeightTabletUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/button",
+			"attr": "minHeightMobileUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing minHeightMobileUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/button",
+			"attr": "fontSizeUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing fontSizeUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/card-grid",
+			"attr": "columnsTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes columnsTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/card-grid",
+			"attr": "columnsMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes columnsMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/container",
+			"attr": "columnsTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes columnsTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/container",
+			"attr": "columnsMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes columnsMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/container",
+			"attr": "gridTemplateColumnsTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes gridTemplateColumnsTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/container",
+			"attr": "gridTemplateColumnsMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes gridTemplateColumnsMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/container",
+			"attr": "gapTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes gapTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/container",
+			"attr": "gapMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes gapMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/container",
+			"attr": "backgroundImageTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes backgroundImageTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/container",
+			"attr": "backgroundImageMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes backgroundImageMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/container",
+			"attr": "bgVideoMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes bgVideoMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/container",
+			"attr": "widthModeTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes widthModeTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/container",
+			"attr": "widthModeMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes widthModeMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/container",
+			"attr": "minHeightTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes minHeightTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/container",
+			"attr": "minHeightMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes minHeightMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/container",
+			"attr": "gridTemplateRowsTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes gridTemplateRowsTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/container",
+			"attr": "gridTemplateRowsMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes gridTemplateRowsMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/container",
+			"attr": "customWidthUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing customWidthUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/container",
+			"attr": "customWidthUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing customWidthUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/decorative-image",
+			"attr": "positionXTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family positionX/positionXTablet and writes positionXTablet via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/decorative-image",
+			"attr": "positionXMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family positionX/positionXMobile and writes positionXMobile via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/decorative-image",
+			"attr": "positionYTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family positionY/positionYTablet and writes positionYTablet via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/decorative-image",
+			"attr": "positionYMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family positionY/positionYMobile and writes positionYMobile via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/decorative-image",
+			"attr": "widthTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family width/widthTablet and writes widthTablet via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/decorative-image",
+			"attr": "widthMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family width/widthMobile and writes widthMobile via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/decorative-image",
+			"attr": "rotationTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family rotation/rotationTablet and writes rotationTablet via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/decorative-image",
+			"attr": "rotationMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family rotation/rotationMobile and writes rotationMobile via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/divider",
+			"attr": "widthUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing widthUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/divider",
+			"attr": "marginUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing marginUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/feature-grid",
+			"attr": "columnsTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes columnsTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/feature-grid",
+			"attr": "columnsMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes columnsMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/feature-grid",
+			"attr": "minItemWidthUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing minItemWidthUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/gallery",
+			"attr": "columnsTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes columnsTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/gallery",
+			"attr": "columnsMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes columnsMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/google-reviews",
+			"attr": "columnsTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes columnsTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/google-reviews",
+			"attr": "columnsMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes columnsMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/heading",
+			"attr": "fontSizeTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family fontSize/fontSizeTablet and writes fontSizeTablet via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/heading",
+			"attr": "fontSizeMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family fontSize/fontSizeMobile and writes fontSizeMobile via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/heading",
+			"attr": "fontSizeUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing fontSizeUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/heading",
+			"attr": "lineHeightUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing lineHeightUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/heading",
+			"attr": "letterSpacingUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing letterSpacingUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/hero",
+			"attr": "minHeightTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes minHeightTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/hero",
+			"attr": "minHeightMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes minHeightMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/hero",
+			"attr": "bgVideoMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes bgVideoMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/hero",
+			"attr": "splitColumnRatioTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes splitColumnRatioTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/hero",
+			"attr": "splitColumnRatioMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes splitColumnRatioMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/hero",
+			"attr": "headlineMarginBottomMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes headlineMarginBottomMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/hero",
+			"attr": "subHeadlineMarginBottomMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes subHeadlineMarginBottomMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/hero",
+			"attr": "contentPaddingUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing contentPaddingUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/hero",
+			"attr": "splitGapUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing splitGapUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/hero",
+			"attr": "imageWidthUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing imageWidthUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/hero",
+			"attr": "imageHeightUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing imageHeightUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/hero",
+			"attr": "imageBorderRadiusUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing imageBorderRadiusUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/hero",
+			"attr": "imageBorderWidthUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing imageBorderWidthUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/hero",
+			"attr": "imagePaddingUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing imagePaddingUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/hero",
+			"attr": "mediaPaddingUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing mediaPaddingUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/hero",
+			"attr": "ctaGapUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing ctaGapUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/label",
+			"attr": "fontSizeTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family fontSize/fontSizeTablet and writes fontSizeTablet via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/label",
+			"attr": "fontSizeMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family fontSize/fontSizeMobile and writes fontSizeMobile via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/label",
+			"attr": "fontSizeUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing fontSizeUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/label",
+			"attr": "lineHeightUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing lineHeightUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/label",
+			"attr": "letterSpacingUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing letterSpacingUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/mobile-nav",
+			"attr": "drawerWidthTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family drawerWidth/drawerWidthTablet and writes drawerWidthTablet via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/mobile-nav",
+			"attr": "drawerWidthMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family drawerWidth/drawerWidthMobile and writes drawerWidthMobile via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/mobile-nav",
+			"attr": "logoMaxWidthTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family logoMaxWidth/logoMaxWidthTablet and writes logoMaxWidthTablet via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/mobile-nav",
+			"attr": "logoMaxWidthMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family logoMaxWidth/logoMaxWidthMobile and writes logoMaxWidthMobile via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/mobile-nav",
+			"attr": "closeButtonSizeTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family closeButtonSize/closeButtonSizeTablet and writes closeButtonSizeTablet via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/mobile-nav",
+			"attr": "closeButtonSizeMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family closeButtonSize/closeButtonSizeMobile and writes closeButtonSizeMobile via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/mobile-nav",
+			"attr": "socialIconSizeTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family socialIconSize/socialIconSizeTablet and writes socialIconSizeTablet via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/mobile-nav",
+			"attr": "socialIconSizeMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family socialIconSize/socialIconSizeMobile and writes socialIconSizeMobile via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/multi-button",
+			"attr": "directionTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes directionTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/multi-button",
+			"attr": "directionMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes directionMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/multi-button",
+			"attr": "justifyContentTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes justifyContentTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/multi-button",
+			"attr": "justifyContentMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes justifyContentMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/multi-button",
+			"attr": "wrapTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes wrapTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/multi-button",
+			"attr": "wrapMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes wrapMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/post-grid",
+			"attr": "columnsTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes columnsTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/post-grid",
+			"attr": "columnsMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes columnsMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/quote",
+			"attr": "bodyFontSizeTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes bodyFontSizeTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/quote",
+			"attr": "bodyFontSizeMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes bodyFontSizeMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/quote",
+			"attr": "bodyLineHeightTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes bodyLineHeightTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/quote",
+			"attr": "bodyLineHeightMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes bodyLineHeightMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/quote",
+			"attr": "bodyMarginBottomTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes bodyMarginBottomTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/quote",
+			"attr": "bodyMarginBottomMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes bodyMarginBottomMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/quote",
+			"attr": "attributionFontSizeTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes attributionFontSizeTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/quote",
+			"attr": "attributionFontSizeMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes attributionFontSizeMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/quote",
+			"attr": "attributionMarginTopTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes attributionMarginTopTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/quote",
+			"attr": "attributionMarginTopMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes attributionMarginTopMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/quote",
+			"attr": "bodyFontSizeUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing bodyFontSizeUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/quote",
+			"attr": "bodyLineHeightUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing bodyLineHeightUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/quote",
+			"attr": "bodyLetterSpacingUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing bodyLetterSpacingUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/quote",
+			"attr": "bodyMarginUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing bodyMarginUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/quote",
+			"attr": "attributionFontSizeUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing attributionFontSizeUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/quote",
+			"attr": "attributionMarginUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing attributionMarginUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/quote",
+			"attr": "borderRadiusUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing borderRadiusUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/quote",
+			"attr": "customWidthUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing customWidthUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/text",
+			"attr": "fontSizeTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family fontSize/fontSizeTablet and writes fontSizeTablet via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/text",
+			"attr": "fontSizeMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family fontSize/fontSizeMobile and writes fontSizeMobile via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/text",
+			"attr": "lineHeightTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family lineHeight/lineHeightTablet and writes lineHeightTablet via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/text",
+			"attr": "lineHeightMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family lineHeight/lineHeightMobile and writes lineHeightMobile via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/text",
+			"attr": "fontSizeUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing fontSizeUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/text",
+			"attr": "lineHeightUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing lineHeightUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/text",
+			"attr": "letterSpacingUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing letterSpacingUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/text",
+			"attr": "maxWidthUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing maxWidthUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/text",
+			"attr": "marginUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing marginUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/text",
+			"attr": "paddingUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing paddingUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/text",
+			"attr": "firstLetterFontSizeUnit",
+			"violation": "UNIT-VIA-SELECTCONTROL",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block has a SelectControl writing firstLetterFontSizeUnit via setAttributes in its own edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate to a shared component (TypographyControls/SpacingControl)."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/trustpilot-reviews",
+			"attr": "columnsTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes columnsTablet directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/trustpilot-reviews",
+			"attr": "columnsMobile",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block writes columnsMobile directly via setAttributes in its own edit.js even though a shared responsive component is also mounted. Either remove the direct control (delegate fully to the shared component) or wrap the direct control in <ResponsiveControl>."
+		},
+		{
+			"check": "control-ux",
+			"block": "sgs/button",
+			"attr": "minHeightTablet",
+			"violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+			"reason": "Baselined on seed run 2026-06-11. Fix: Block declares responsive family minHeight/minHeightTablet and writes minHeightTablet via setAttributes in its own edit.js without a <ResponsiveControl> wrapper or delegation to a shared component (TypographyControls/SpacingControl/ContainerWrapperControls)."
+		}
+	]
+}

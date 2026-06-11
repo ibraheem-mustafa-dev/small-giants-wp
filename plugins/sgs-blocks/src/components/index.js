@@ -9,5 +9,4 @@ export {
 	typographyAttrKeys,
 	SGS_FONT_WEIGHT_OPTIONS,
 	SGS_FONT_STYLE_OPTIONS,
-	SGS_FONT_SIZE_UNIT_OPTIONS,
 } from './TypographyControls';
