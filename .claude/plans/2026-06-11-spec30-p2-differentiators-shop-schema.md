@@ -10,6 +10,8 @@ thread: sgs-theme
 
 # Phase 2 — Spec 30 remaining build: differentiators, shop, schema (consolidated)
 
+> **PROGRESS (2026-06-11 NIGHT, D213):** Gate A ✅ (Steps 2–4: FR-30-8 price coupling + FR-30-10 reviews, commit `93ce8706`). Gate B ✅ (Step 5: FR-30-3 shop archive — filters render + filter the grid instantly, equal cards, mobile drawer, `sgs/collapsible-text` read-more, axe-clean, qc-council MERGE-OK, i18n; commits `7b953761` + `8fb94df1`). Both **merged to main (D213)**. **RESUME at Step 6** (FR-30-6 searchable filter) → Step 7a/7b (FR-30-5 search tentpole) → Step 9 (schema) → Steps 11/12 (go-live + close). Note: Step 5's collapsible SEO slots ship EMPTY by design (framework template); the SGS visual-diff gate is satisfied by `reports/visual-diff/product-card-2026-06-11.md` + `collapsible-text-2026-06-11.md`.
+
 **USP:** P1 gave a working PDP + cart loop; this phase ships the things that actually convert and rank — the live value-ladder price coupling (the food-DTC moat core can't do), real reviews, a usable shop with search/filter, and complete structured data. Closing it makes SGS a *sellable* shop framework, not just a buyable one.
 
 **Plan label:** [PLAN: opus] — spans architectural design gates (FR-30-5 search, FR-30-9 schema adversarial pass) + implementation-heavy sonnet steps; the orchestrator stays Opus and dispatches sonnet builders.
@@ -385,7 +387,7 @@ Step 12 — Phase close: /qc-council + /sgs-update + Bean R-22-13 + commit/merge
 
 - **Decision (KJC-2):** Home for the FR-30-3 SEO text slots (top/bottom RichText).
   - **Options:** A) a small new SGS block / B) theme-level RichText in the archive template / C) extend an existing block (e.g. sgs/text)
-  - **Recommendation:** B if the archive template can carry editable RichText cleanly; else A (a thin `sgs/seo-text` block with the read-more SSR-collapse baked in — reusable on category pages too). Decide at step 5 against the live editor surface (archive templates edit in the Site Editor — confirm RichText editability there first).
+  - **Recommendation:** B if the archive template can carry editable RichText cleanly; else A (a thin `sgs/collapsible-text` block with the read-more SSR-collapse baked in — reusable on category pages too). Decide at step 5 against the live editor surface (archive templates edit in the Site Editor — confirm RichText editability there first).
   - **Cost of wrong choice:** Medium — wrong home = re-plumbing the read-more SSR-collapse. Confirm editor surface before building.
   - **Who decides:** architect at step 5, flagged to Bean at R-22-13.
 
