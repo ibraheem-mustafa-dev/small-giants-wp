@@ -719,6 +719,21 @@ Workstreams for these gaps live in **`.claude/plans/archive/2026-06-02-container
 
 **MANDATORY verification (the process that distinguishes the 2026-06-04 reliable fan-out from the 2026-06-03 failed 5-way overload):** small batches (2–3 subagents, 3–4 blocks each — NOT 5+), each subagent runs `npm run build` + `php -l` + a **manual undefined-var grep** (`\$wrapper_attributes|\$wrapper_attr|\$styles\b|\$classes\b` — `php -l` does NOT catch undefined vars), and the ORCHESTRATOR verifies EACH block on a real test page (REST `POST /wp/v2/pages` is not guard-blocked; use a `core/paragraph` child, not `sgs/text`) before commit — sgs-container class present, content renders, 0 PHP errors. Memories: `dont-fan-out-many-heavy-agents-at-once`, `composite-mirror-is-separate-from-cloning-fidelity` (validate in the EDITOR/test-page, NOT a page re-clone — the converter emits containers not composites; page-clone fidelity is the separate converter-lift task).
 
+### FR-22-21.3 — Per-area grid layer (the OFFICIAL Layer-4-per-area standard — Bean-locked 2026-06-11; BUILT on hero + shared component, Step 6 of the container 4-layer programme)
+
+**built_status: BUILT-VERIFIED (hero + shared mechanism, 2026-06-11)** — DB registration via `/sgs-update` pending merge.
+
+The layer model is **OUTER / CONTENT-WIDTH (band) / GRID-uniform (`gridItem*`) / GRID-per-area (`<areaName>*`)**. Bean's four locked decisions (2026-06-11):
+
+1. **Schema = flat `<areaName>+<Suffix>` attr families** (e.g. `contentPaddingTop`, `contentPaddingTopTablet`, `mediaBackground`). NO object/array attrs. Numeric sides carry ONE shared `<areaName>PaddingUnit` companion (the hero family shape). The converter's GRID-PER-AREA router (`db.attr_for_area_property`, c6337eac) routes draft per-area CSS as `areaName+suffix` on the owning block — attr exists → route; missing → gap-candidate. Zero per-block intelligence.
+2. **Standard property set per named area = padding (4-side × 3-tier + Unit) + background (`<areaName>Background`).** Border/radius/shadow are OPT-IN per block, same naming rule. (Hero: `contentBackground` + `mediaBackground` added; its media border family pre-exists under the `image*` prefix — known prefix drift, note in DB rather than migrate.)
+3. **Capability duplicates are retired, never aliased:** hero `splitColumnRatio*` MIGRATED to the mirror's `gridTemplateColumns*` (deprecated.js v7 `migrate()`; attrs/control removed; render.php reads gridTemplateColumns only, defaulting '1fr 1fr' explicitly because block.json defaults the mirror attr to `''`; R-22-14 — no read-time legacy fallback). Legacy `mediaBackgroundColour` control removed (v7 seeds `mediaBackground` from it; render keeps the legacy attr fallback chain for unresaved content).
+4. **Area declaration = `supports.sgs.gridAreas: ["content","media"]`** in block.json. `/sgs-update` registers areas; the converter cross-checks draft `grid-template-areas` names against the declared list.
+
+**Inspector standard (governs every composite + the container):** the shared `ContainerWrapperControls` renders the 4-layer panel order — **Section (outer) → Content band → Responsive spacing → Layout → Grid items** (uniform `GridItemDefaultsPanel` + one `GridAreaPanel` per declared area, passed via the `gridAreas` prop). Every responsive control uses the `ResponsiveControl` device-icon switcher; every spacing input is `SpacingControl freeInput` (integrated unit). Enforced by the `check-control-ux.js` prebuild guard.
+
+**Implementation gotcha (live-caught 2026-06-11):** in hero `deprecated.js`, `V7_ATTRIBUTES` spreads `V6_ATTRIBUTES` — consts are not hoisted, so the newest deprecation must be DEFINED below the one it spreads (export order stays newest-first). Defining it first threw a TDZ ReferenceError at module evaluation that silently unregistered the entire hero block in the editor (frontend unaffected — PHP registration is separate).
+
 ### FR-22-21.2 — Auto-propagation: `/sgs-update` Stage 11 (writer + scanner WIRED; `--apply` auto-propagation REPORT-ONLY / build-pending)
 
 **built_status: PARTIAL** — Stage 11 writer + scanner wired; --apply auto-propagation REPORT-ONLY / build-pending

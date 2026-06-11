@@ -6,6 +6,13 @@ import { InnerBlocks } from '@wordpress/block-editor';
  * Newest first — WordPress walks this array stopping at the first version
  * whose save() output validates against the stored post_content.
  *
+ * v7 (Step 6 / gridTemplateColumns migration, 2026-06-11) — splitColumnRatio*
+ *      attrs retired. render.php now reads gridTemplateColumns* for the split
+ *      grid. migrate() maps splitColumnRatio → gridTemplateColumns (and the
+ *      Tablet/Mobile companions) when the new attr is empty, preserving all
+ *      other attrs. contentBackground attr added (default ''). Save shape
+ *      unchanged: <InnerBlocks.Content />.
+ *
  * v6 (FR-22-6 migration, 2026-05-31) — Full content column now InnerBlocks.
  *      Previous shape: scalar attrs (label, headline, subHeadline) drove
  *      render.php; only the sgs/multi-button subtree was serialised as
@@ -148,6 +155,11 @@ function buildInnerBlocksFromCtas( attributes ) {
 // ---------------------------------------------------------------------------
 // v6 — FR-22-6 migration (2026-05-31): full content column → InnerBlocks
 // ---------------------------------------------------------------------------
+// NOTE: v7 (the newest deprecation) is defined BELOW v6 in this file because
+// V7_ATTRIBUTES spreads V6_ATTRIBUTES — a const, not hoisted; defining v7
+// first throws a temporal-dead-zone ReferenceError at module evaluation,
+// which silently unregisters the whole hero block in the editor (caught
+// live 2026-06-11). The EXPORT array order (newest first) is unaffected.
 
 /**
  * Full attribute snapshot immediately before the FR-22-6 migration.
@@ -387,6 +399,86 @@ const v6 = {
 		};
 
 		return [ newAttributes, newInnerBlocks ];
+	},
+};
+
+// ---------------------------------------------------------------------------
+// v7 — Step 6 / gridTemplateColumns migration (2026-06-11)
+// ---------------------------------------------------------------------------
+
+/**
+ * Full attribute snapshot immediately before splitColumnRatio* was retired.
+ * This is v6's attrs + splitColumnRatio/Tablet/Mobile (the attrs being removed)
+ * and WITHOUT the new contentBackground / mediaBackground attrs.
+ * WordPress matches this deprecation for any post whose serialised attributes
+ * include splitColumnRatio (or lack contentBackground/mediaBackground).
+ */
+const V7_ATTRIBUTES = {
+	...V6_ATTRIBUTES,
+	// splitColumnRatio* — the attrs being retired. Included so WP can read
+	// them from stored post_content during migrate().
+	splitColumnRatio: { type: 'string', default: '1fr 1fr' },
+	splitColumnRatioTablet: { type: 'string', default: '' },
+	splitColumnRatioMobile: { type: 'string', default: '' },
+};
+
+/**
+ * v7 — splitColumnRatio* → gridTemplateColumns* migration.
+ *
+ * Save shape unchanged: <InnerBlocks.Content /> (dynamic block).
+ * migrate() maps splitColumnRatio → gridTemplateColumns (and Tablet/Mobile)
+ * only when the destination attr is empty, so already-migrated posts are safe.
+ * R-22-14: no legacy read-time fallback in render.php.
+ */
+const v7 = {
+	attributes: V7_ATTRIBUTES,
+
+	save() {
+		return <InnerBlocks.Content />;
+	},
+
+	isEligible( attributes ) {
+		// Match posts that still carry splitColumnRatio or lack contentBackground.
+		return (
+			attributes.splitColumnRatio !== undefined ||
+			attributes.contentBackground === undefined
+		);
+	},
+
+	/**
+	 * @param {Object} attributes  Old block attributes.
+	 * @param {Array}  innerBlocks Serialised inner blocks (passed through).
+	 * @return {[Object, Array]} [newAttributes, innerBlocks].
+	 */
+	migrate( attributes, innerBlocks ) {
+		const {
+			splitColumnRatio,
+			splitColumnRatioTablet,
+			splitColumnRatioMobile,
+			...rest
+		} = attributes;
+
+		// Map splitColumnRatio → gridTemplateColumns only when the new attr is
+		// absent or empty (preserves any value set before migration ran).
+		// Do NOT bake in the '1fr 1fr' default — render.php owns the default,
+		// and a standard-variant hero must not gain a stored grid template.
+		const newGTC = rest.gridTemplateColumns || splitColumnRatio || '';
+		const newGTCTablet = rest.gridTemplateColumnsTablet || splitColumnRatioTablet || '';
+		const newGTCMobile = rest.gridTemplateColumnsMobile || splitColumnRatioMobile || '';
+
+		const newAttributes = {
+			...rest,
+			gridTemplateColumns: newGTC,
+			gridTemplateColumnsTablet: newGTCTablet,
+			gridTemplateColumnsMobile: newGTCMobile,
+			// Ensure new per-area attrs exist with their defaults; the legacy
+			// mediaBackgroundColour value (its bespoke control was removed —
+			// one control per setting) seeds the new mediaBackground when unset.
+			contentBackground: rest.contentBackground || '',
+			mediaBackground: rest.mediaBackground || rest.mediaBackgroundColour || '',
+		};
+
+		return [ newAttributes, innerBlocks ];
 	},
 };
 
@@ -634,4 +726,4 @@ const v1 = {
 	},
 };
 
-export default [ v6, v5, v4, v3, v2, v1 ];
+export default [ v7, v6, v5, v4, v3, v2, v1 ];

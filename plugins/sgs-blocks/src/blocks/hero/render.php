@@ -206,10 +206,19 @@ $text_align_tablet  = $attributes['textAlignTablet'] ?? '';
 $text_align_mobile  = $attributes['textAlignMobile'] ?? '';
 $allowed_text_align = array( 'left', 'center', 'right', 'start', 'end', 'justify' );
 
-// Layout grid (split variant).
-$split_col_ratio        = $attributes['splitColumnRatio'] ?? '1fr 1fr';
-$split_col_ratio_tablet = $attributes['splitColumnRatioTablet'] ?? '';
-$split_col_ratio_mobile = $attributes['splitColumnRatioMobile'] ?? '';
+// Layout grid (split variant). splitColumnRatio* was retired (Step 6 / D-next,
+// 2026-06-11) — render.php now reads gridTemplateColumns* exclusively.
+// deprecated.js v7 migrate() maps splitColumnRatio→gridTemplateColumns before resave.
+// R-22-14: no legacy read-time fallback for splitColumnRatio.
+// block.json defaults gridTemplateColumns to '' (unlike the retired
+// splitColumnRatio whose default was '1fr 1fr') — ?? alone would let the
+// empty string through, so default explicitly.
+$split_col_ratio = $attributes['gridTemplateColumns'] ?? '';
+if ( '' === trim( (string) $split_col_ratio ) ) {
+	$split_col_ratio = '1fr 1fr';
+}
+$split_col_ratio_tablet = $attributes['gridTemplateColumnsTablet'] ?? '';
+$split_col_ratio_mobile = $attributes['gridTemplateColumnsMobile'] ?? '';
 $split_gap              = $attributes['splitGap'] ?? 0;
 $split_gap_tablet       = $attributes['splitGapTablet'] ?? null;
 $split_gap_mobile       = $attributes['splitGapMobile'] ?? null;
@@ -635,11 +644,17 @@ $v_align_map = array(
 );
 $justify_content = $v_align_map[ $vertical_alignment ] ?? 'center';
 
+// contentBackground — optional background colour on the content-column wrapper.
+$content_background = isset( $attributes['contentBackground'] ) ? (string) $attributes['contentBackground'] : '';
+
 $content_styles = array(
 	'display:flex',
 	'flex-direction:column',
 	'justify-content:' . $justify_content,
 );
+if ( $content_background ) {
+	$content_styles[] = 'background-color:' . sgs_colour_value( $content_background );
+}
 if ( null !== $content_pad_top || null !== $content_pad_right || null !== $content_pad_bottom || null !== $content_pad_left ) {
 	$cpt = null !== $content_pad_top ? absint( $content_pad_top ) : 0;
 	$cpr = null !== $content_pad_right ? absint( $content_pad_right ) : 0;
@@ -753,8 +768,14 @@ if ( $is_split && ! empty( $split_media ) && isset( $split_media['type'] ) && 'v
 
 	// ── Build .sgs-hero__media wrapper inline styles ──────────────────────
 	$media_styles = array();
-	if ( $media_bg_colour ) {
-		$media_styles[] = 'background-color:' . sgs_colour_value( $media_bg_colour );
+	// mediaBackground (shared per-area schema) takes priority over the legacy
+	// mediaBackgroundColour attr when both are set.
+	$media_bg_resolved = $attributes['mediaBackground'] ?? '';
+	if ( ! $media_bg_resolved ) {
+		$media_bg_resolved = $media_bg_colour;
+	}
+	if ( $media_bg_resolved ) {
+		$media_styles[] = 'background-color:' . sgs_colour_value( $media_bg_resolved );
 	}
 	// mediaPadding — outer padding on .sgs-hero__media wrapper (desktop).
 	if ( null !== $media_pad_top || null !== $media_pad_right || null !== $media_pad_bottom || null !== $media_pad_left ) {

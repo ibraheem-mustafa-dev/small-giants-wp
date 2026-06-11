@@ -55,6 +55,23 @@ first_paint_capture_passed: true
 
 ---
 
+---
+
+# Addendum — Step 6 per-area grid layer + hero alignment (same day)
+
+verdict: PASS
+first_paint_capture_passed: true
+
+**Change:** official Layer-4-per-area standard (Spec 22 §FR-22-21.3): shared `GridAreaPanel` (generic `<areaName>+<Suffix>` controls — 4-side × 3-tier padding writing number + shared `<area>PaddingUnit`, background) + `gridAreas` prop through `ContainerWrapperControls`; KIND_PANELS.section reordered to the 4-layer standard. Hero: `supports.sgs.gridAreas:["content","media"]`; `contentBackground`/`mediaBackground` added + rendered; `splitColumnRatio*` retired → `gridTemplateColumns*` (deprecated.js v7 migrate; render.php explicit '1fr 1fr' default); duplicate `mediaBackgroundColour` + bespoke contentPadding controls removed (one control per setting).
+
+**Defects caught + fixed during the gate:** (1) hero TDZ — v7 deprecation spread `V6_ATTRIBUTES` before its declaration → hero silently unregistered in the editor (core/missing); moved below v6. (2) `GridAreaPanel` discarded the unit on change — now parses number+unit and writes the shared `<area>PaddingUnit`. (3) render.php `?? '1fr 1fr'` never fired (mirror attr defaults `''`) — explicit empty-string default added. (4) migrate() no longer bakes '1fr 1fr' into standard-variant heroes.
+
+**Validation (live canary):** editor page 8 — hero registered (7 deprecations), 0 missing/0 invalid blocks; panel order Section (outer) → Content band → Responsive spacing → Layout → Content area → Media area → Background → Shadow → Shape Dividers; no splitColumnRatio control; per-area write round-trip = `contentPaddingTop:33` (number) + `contentPaddingUnit:'px'`. Frontend — hero grid 2-col, `__content` padding-top 72px, body text intact. Build green ×3 guards; php -l clean.
+
+## Result — PASS (R-22-11)
+
+---
+
 **Validation (live canary editor, page 8):** full inspector enumeration with a container selected — all panels present (Layout, Responsive spacing, Content band, Template mode, Background, Shadow, Shape Dividers + extensions); switching layout→grid in-memory revealed Columns/Custom column template/Row template/Auto rows/Justify items/Align content + the Grid item defaults panel (Padding/Background/Radius/Border/Shadow/Text colour). Matches the before/after inventory; no control lost; reverted without save. Build green ×3 guards.
 
 ## Result — PASS (R-22-11)

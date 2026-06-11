@@ -70,6 +70,10 @@ const COLUMN_RATIO_PRESETS = [
 	{ label: __( 'Custom...', 'sgs-blocks' ), value: 'custom' },
 ];
 
+// gridAreas declared in block.json supports.sgs.gridAreas — passed to the
+// shared ContainerWrapperControls so it renders per-area panels.
+const HERO_GRID_AREAS = [ 'content', 'media' ];
+
 const MOBILE_ORDER_OPTIONS = [
 	{ label: __( 'Media first (image on top)', 'sgs-blocks' ), value: 'media-first' },
 	{ label: __( 'Content first (text on top)', 'sgs-blocks' ), value: 'content-first' },
@@ -256,13 +260,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		imageBorderWidthUnit,
 		imageBorderColour,
 		imagePaddingUnit,
-		mediaBackgroundColour,
+		contentBackground,
 		contentPaddingUnit,
 		mediaPaddingUnit,
-		// Phase 1 — layout grid.
-		splitColumnRatio,
-		splitColumnRatioTablet,
-		splitColumnRatioMobile,
+		// Phase 1 — layout grid. splitColumnRatio* retired (Step 6, 2026-06-11);
+		// render.php now reads gridTemplateColumns* for the split variant.
+		gridTemplateColumns,
+		gridTemplateColumnsTablet,
+		gridTemplateColumnsMobile,
 		splitGap,
 		splitGapTablet,
 		splitGapMobile,
@@ -278,10 +283,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		textAlignTablet,
 		textAlignMobile,
 	} = attributes;
-
-	const isCustomRatio = ! COLUMN_RATIO_PRESETS.some(
-		( p ) => p.value !== 'custom' && p.value === splitColumnRatio
-	);
 
 	const isSplit = variant === 'split';
 	const isVideo = variant === 'video';
@@ -304,9 +305,13 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 
 	// HC2: desktop text-align preview for the content column.
+	// Also preview contentBackground when set.
 	const contentPreviewStyle = {};
 	if ( textAlignDesktop ) {
 		contentPreviewStyle.textAlign = textAlignDesktop;
+	}
+	if ( contentBackground ) {
+		contentPreviewStyle.backgroundColor = contentBackground;
 	}
 
 	const className = [
@@ -460,30 +465,61 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					</ResponsiveControl>
 
-					<DesignTokenPicker label={ __( 'Media background colour', 'sgs-blocks' ) } value={ mediaBackgroundColour } onChange={ ( val ) => setAttributes( { mediaBackgroundColour: val } ) } />
-
-					<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Content padding', 'sgs-blocks' ) }</p>
-					<RRangeControl label={ __( 'Top', 'sgs-blocks' ) } attrDesktop="contentPaddingTop" attrTablet="contentPaddingTopTablet" attrMobile="contentPaddingTopMobile" attributes={ attributes } setAttributes={ setAttributes } />
-					<RRangeControl label={ __( 'Right', 'sgs-blocks' ) } attrDesktop="contentPaddingRight" attrTablet="contentPaddingRightTablet" attrMobile="contentPaddingRightMobile" attributes={ attributes } setAttributes={ setAttributes } />
-					<RRangeControl label={ __( 'Bottom', 'sgs-blocks' ) } attrDesktop="contentPaddingBottom" attrTablet="contentPaddingBottomTablet" attrMobile="contentPaddingBottomMobile" attributes={ attributes } setAttributes={ setAttributes } />
-					<RRangeControl label={ __( 'Left', 'sgs-blocks' ) } attrDesktop="contentPaddingLeft" attrTablet="contentPaddingLeftTablet" attrMobile="contentPaddingLeftMobile" attributes={ attributes } setAttributes={ setAttributes } />
-					<SelectControl label={ __( 'Padding unit', 'sgs-blocks' ) } value={ contentPaddingUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { contentPaddingUnit: val } ) } __nextHasNoMarginBottom />
+					{ /* Media background is the shared "Media area" panel's Background
+					     colour control (mediaBackground attr) — the legacy
+					     mediaBackgroundColour control was removed (one control per
+					     setting); deprecated.js v7 migrates the legacy value.
+					     Content padding is likewise in the shared "Content area" panel
+					     rendered by ContainerWrapperControls gridAreas={HERO_GRID_AREAS}. */ }
 
 					{ isSplit && (
 						<>
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Split layout grid', 'sgs-blocks' ) }</p>
-							<SelectControl
-								label={ __( 'Column ratio (desktop)', 'sgs-blocks' ) }
-								value={ isCustomRatio ? 'custom' : splitColumnRatio }
-								options={ COLUMN_RATIO_PRESETS }
-								onChange={ ( val ) => { if ( val !== 'custom' ) { setAttributes( { splitColumnRatio: val } ); } } }
-								__nextHasNoMarginBottom
-							/>
-							{ isCustomRatio && (
-								<TextControl label={ __( 'Custom ratio', 'sgs-blocks' ) } help={ __( 'CSS grid-template-columns (e.g. "3fr 2fr").', 'sgs-blocks' ) } value={ splitColumnRatio } onChange={ ( val ) => setAttributes( { splitColumnRatio: val } ) } __nextHasNoMarginBottom />
-							) }
-							<TextControl label={ __( 'Column ratio tablet', 'sgs-blocks' ) } help={ __( 'Blank = inherit desktop.', 'sgs-blocks' ) } value={ splitColumnRatioTablet || '' } onChange={ ( val ) => setAttributes( { splitColumnRatioTablet: val } ) } __nextHasNoMarginBottom />
-							<TextControl label={ __( 'Column ratio mobile', 'sgs-blocks' ) } help={ __( 'Blank = stack columns.', 'sgs-blocks' ) } value={ splitColumnRatioMobile || '' } onChange={ ( val ) => setAttributes( { splitColumnRatioMobile: val } ) } __nextHasNoMarginBottom />
+							<ResponsiveControl label={ __( 'Column ratio', 'sgs-blocks' ) }>
+								{ ( breakpoint ) => {
+									const colAttrMap = {
+										desktop: 'gridTemplateColumns',
+										tablet: 'gridTemplateColumnsTablet',
+										mobile: 'gridTemplateColumnsMobile',
+									};
+									const colAttr = colAttrMap[ breakpoint ];
+									if ( breakpoint === 'desktop' ) {
+										const isCustom = ! COLUMN_RATIO_PRESETS.some(
+											( p ) => p.value !== 'custom' && p.value === gridTemplateColumns
+										);
+										return (
+											<>
+												<SelectControl
+													label={ __( 'Preset', 'sgs-blocks' ) }
+													value={ isCustom ? 'custom' : gridTemplateColumns }
+													options={ COLUMN_RATIO_PRESETS }
+													onChange={ ( val ) => { if ( val !== 'custom' ) { setAttributes( { gridTemplateColumns: val } ); } } }
+													__nextHasNoMarginBottom
+												/>
+												{ isCustom && (
+													<TextControl
+														label={ __( 'Custom ratio', 'sgs-blocks' ) }
+														help={ __( 'CSS grid-template-columns (e.g. "3fr 2fr").', 'sgs-blocks' ) }
+														value={ gridTemplateColumns || '' }
+														onChange={ ( val ) => setAttributes( { gridTemplateColumns: val } ) }
+														__nextHasNoMarginBottom
+													/>
+												) }
+											</>
+										);
+									}
+									return (
+										<TextControl
+											help={ breakpoint === 'tablet'
+												? __( 'Blank = inherit desktop ratio.', 'sgs-blocks' )
+												: __( 'Blank = single column (1fr).', 'sgs-blocks' ) }
+											value={ attributes[ colAttr ] || '' }
+											onChange={ ( val ) => setAttributes( { [ colAttr ]: val } ) }
+											__nextHasNoMarginBottom
+										/>
+									);
+								} }
+							</ResponsiveControl>
 							<RRangeControl label={ __( 'Column gap', 'sgs-blocks' ) } attrDesktop="splitGap" attrTablet="splitGapTablet" attrMobile="splitGapMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } />
 							<SelectControl label={ __( 'Gap unit', 'sgs-blocks' ) } value={ splitGapUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { splitGapUnit: val } ) } __nextHasNoMarginBottom />
 							<SelectControl label={ __( 'Mobile column order', 'sgs-blocks' ) } value={ splitContentOrderMobile } options={ MOBILE_ORDER_OPTIONS } onChange={ ( val ) => setAttributes( { splitContentOrderMobile: val } ) } __nextHasNoMarginBottom />
@@ -1033,11 +1069,14 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ /* WS-4: mirrored sgs/container wrapper controls (section KIND).
 				   Legacy "Overlay colour" control above writes overlayColour; this
 				   panel writes backgroundOverlayColour, which render.php prefers
-				   (backgroundOverlayColour ?? overlayColour). */ }
+				   (backgroundOverlayColour ?? overlayColour).
+				   gridAreas passes the declared areas so per-area panels (content + media)
+				   are rendered in the Grid items section. */ }
 				<ContainerWrapperControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					kind="section"
+					gridAreas={ HERO_GRID_AREAS }
 				/>
 			</InspectorControls>
 

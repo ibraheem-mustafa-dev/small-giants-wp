@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/hero",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"title": "SGS Hero",
 	"category": "sgs-layout",
 	"description": "Page hero section with headline, sub-headline, CTAs, and background image.",
@@ -51,6 +51,7 @@
 			"is_section_root": true,
 			"containerKind": "section",
 			"variantAttr": "variant",
+			"gridAreas": [ "content", "media" ],
 			"variants": {
 				"standard": [
 					"backgroundImage"
@@ -58,7 +59,7 @@
 				"split": [
 					"splitImage",
 					"splitImageMobile",
-					"splitColumnRatio",
+					"gridTemplateColumns",
 					"splitGap"
 				],
 				"video": [
@@ -457,6 +458,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"mediaBackground": {
+			"type": "string",
+			"default": ""
+		},
 		"contentPaddingTop": {
 			"type": "number",
 			"default": null
@@ -561,15 +566,7 @@
 			"type": "string",
 			"default": "px"
 		},
-		"splitColumnRatio": {
-			"type": "string",
-			"default": "1fr 1fr"
-		},
-		"splitColumnRatioTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"splitColumnRatioMobile": {
+		"contentBackground": {
 			"type": "string",
 			"default": ""
 		},

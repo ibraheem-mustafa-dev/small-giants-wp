@@ -31,7 +31,7 @@
  * block's own markup — it does NOT wrap children.
  */
 
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
 import {
 	InspectorControls,
@@ -1280,19 +1280,108 @@ export function ContentBandPanel( { attributes, setAttributes } ) {
 }
 
 // ---------------------------------------------------------------------------
+// Per-area panel (Grid areas — decision 5)
+// ---------------------------------------------------------------------------
+
+/**
+ * GridAreaPanel
+ *
+ * Renders per-area styling controls for one named grid area declared in
+ * `supports.sgs.gridAreas`. Generic — derives all attr names from `areaName`
+ * at runtime; zero block-specific code here.
+ *
+ * Attr naming convention (matches hero's existing contentPadding* family):
+ *   <areaName>PaddingTop / Right / Bottom / Left
+ *   <areaName>PaddingTopTablet / RightTablet / BottomTablet / LeftTablet
+ *   <areaName>PaddingTopMobile / RightMobile / BottomMobile / LeftMobile
+ *   <areaName>PaddingUnit
+ *   <areaName>Background
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes setAttributes.
+ * @param {string}   props.areaName      e.g. 'content' | 'media'.
+ * @param {string}   props.label         Human-readable area label for panel title.
+ */
+export function GridAreaPanel( { attributes, setAttributes, areaName, label } ) {
+	// Capitalise first letter of areaName for the compound key (e.g. 'content' → 'Content').
+	const cap = areaName.charAt( 0 ).toUpperCase() + areaName.slice( 1 );
+
+	const SIDES = [
+		{ label: __( 'Top', 'sgs-blocks' ), desktop: `${ areaName }PaddingTop`, tablet: `${ areaName }PaddingTopTablet`, mobile: `${ areaName }PaddingTopMobile` },
+		{ label: __( 'Right', 'sgs-blocks' ), desktop: `${ areaName }PaddingRight`, tablet: `${ areaName }PaddingRightTablet`, mobile: `${ areaName }PaddingRightMobile` },
+		{ label: __( 'Bottom', 'sgs-blocks' ), desktop: `${ areaName }PaddingBottom`, tablet: `${ areaName }PaddingBottomTablet`, mobile: `${ areaName }PaddingBottomMobile` },
+		{ label: __( 'Left', 'sgs-blocks' ), desktop: `${ areaName }PaddingLeft`, tablet: `${ areaName }PaddingLeftTablet`, mobile: `${ areaName }PaddingLeftMobile` },
+	];
+
+	const unitAttr = `${ areaName }PaddingUnit`;
+	const bgAttr = `${ areaName }Background`;
+	const currentUnit = attributes[ unitAttr ] || 'px';
+
+	// The area padding attrs are NUMBERS with one shared <area>PaddingUnit
+	// companion (the hero family shape). The SpacingControl shows the combined
+	// '24px' string; on change the number goes to the side attr and the unit
+	// to the shared companion (same composition pattern as TypographyControls).
+	const parseAreaValue = ( raw ) => {
+		const str = String( raw ?? '' ).trim();
+		if ( '' === str ) {
+			return { num: null, unit: currentUnit };
+		}
+		const match = str.match( /^([\d.]+)\s*([a-z%]*)$/i );
+		if ( ! match ) {
+			return { num: null, unit: currentUnit };
+		}
+		return {
+			num: parseFloat( match[ 1 ] ),
+			unit: match[ 2 ] || currentUnit,
+		};
+	};
+
+	return (
+		<PanelBody title={ label || sprintf( __( '%s area', 'sgs-blocks' ), cap ) } initialOpen={ false }>
+			<DesignTokenPicker
+				label={ __( 'Background colour', 'sgs-blocks' ) }
+				value={ attributes[ bgAttr ] || '' }
+				onChange={ ( val ) => setAttributes( { [ bgAttr ]: val } ) }
+			/>
+
+			<ResponsiveControl label={ __( 'Padding', 'sgs-blocks' ) }>
+				{ ( breakpoint ) => (
+					<>
+						{ SIDES.map( ( side ) => (
+							<SpacingControl
+								key={ side[ breakpoint ] }
+								freeInput
+								label={ side.label }
+								value={ attributes[ side[ breakpoint ] ] != null ? String( attributes[ side[ breakpoint ] ] ) + currentUnit : '' }
+								onChange={ ( val ) => {
+									const { num, unit } = parseAreaValue( val );
+									setAttributes( {
+										[ side[ breakpoint ] ]: num,
+										[ unitAttr ]: unit,
+									} );
+								} }
+							/>
+						) ) }
+					</>
+				) }
+			</ResponsiveControl>
+		</PanelBody>
+	);
+}
+
+// ---------------------------------------------------------------------------
 // KIND → CONTROLS map
 // ---------------------------------------------------------------------------
 //
 // Defines which sub-panels render for each kind value.
-// Entries are render functions that receive ({ attributes, setAttributes }).
+// Entries are render functions that receive ({ attributes, setAttributes, gridAreas }).
 //
 const KIND_PANELS = {
 	section: [
-		// Main layout panel (layout type, columns, gap, width, min-height, contentWidth)
+		// 1. Section (outer) — layout type, columns, gap, width, min-height, contentWidth.
 		( props ) => (
-			<PanelBody title={ __( 'Container / Wrapper', 'sgs-blocks' ) }>
-				<LayoutPanel { ...props } />
-				<hr style={ { margin: '16px 0' } } />
+			<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) }>
 				<WidthPanel { ...props } />
 				<SelectControl
 					label={ __( 'Min height', 'sgs-blocks' ) }
@@ -1318,10 +1407,34 @@ const KIND_PANELS = {
 				/>
 			</PanelBody>
 		),
-		( props ) => <ResponsiveSpacingPanel { ...props } />,
+		// 2. Inner band (content band).
 		( props ) => <ContentBandPanel { ...props } />,
-		( props ) => <GridItemDefaultsPanel { ...props } />,
+		// 3. Responsive spacing (outer padding / margin overrides).
+		( props ) => <ResponsiveSpacingPanel { ...props } />,
+		// 4. Layout.
+		( props ) => (
+			<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+				<LayoutPanel { ...props } />
+			</PanelBody>
+		),
+		// 5. Grid items — uniform defaults then one per-area panel per declared area.
+		( props ) => (
+			<>
+				<GridItemDefaultsPanel { ...props } />
+				{ Array.isArray( props.gridAreas ) && props.gridAreas.map( ( area ) => (
+					<GridAreaPanel
+						key={ area }
+						attributes={ props.attributes }
+						setAttributes={ props.setAttributes }
+						areaName={ area }
+						label={ `${ area.charAt( 0 ).toUpperCase() + area.slice( 1 ) } ${ __( 'area', 'sgs-blocks' ) }` }
+					/>
+				) ) }
+			</>
+		),
+		// 6. Background.
 		( props ) => <BackgroundPanel { ...props } />,
+		// 7. Shadow.
 		( props ) => (
 			<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
 				<SelectControl
@@ -1333,6 +1446,7 @@ const KIND_PANELS = {
 				/>
 			</PanelBody>
 		),
+		// 8. Shape dividers.
 		( props ) => <ShapeDividersPanel { ...props } />,
 	],
 
@@ -1371,8 +1485,12 @@ const KIND_PANELS = {
  * @param {Object}   props.attributes    Block attributes object.
  * @param {Function} props.setAttributes Block setAttributes function.
  * @param {string}   [props.kind]        'section' | 'layout' | 'content'. Default 'section'.
+ * @param {string[]} [props.gridAreas]   Area names from supports.sgs.gridAreas (e.g. ['content','media']).
+ *                                       When provided, the section kind renders one GridAreaPanel per entry
+ *                                       under the Grid items section. Consumers that pass no areas get
+ *                                       behaviour-identical output to before this prop existed.
  */
-export default function ContainerWrapperControls( { attributes, setAttributes, kind = 'section' } ) {
+export default function ContainerWrapperControls( { attributes, setAttributes, kind = 'section', gridAreas } ) {
 	// Guard: fall back gracefully for unknown kind values.
 	const panels = KIND_PANELS[ kind ] ?? KIND_PANELS.section;
 
@@ -1384,7 +1502,7 @@ export default function ContainerWrapperControls( { attributes, setAttributes, k
 				// array children unkeyed → React duplicate-key warnings).
 				// eslint-disable-next-line react/no-array-index-key
 				<Fragment key={ index }>
-					{ renderPanel( { attributes, setAttributes } ) }
+					{ renderPanel( { attributes, setAttributes, gridAreas } ) }
 				</Fragment>
 			) ) }
 		</InspectorControls>
