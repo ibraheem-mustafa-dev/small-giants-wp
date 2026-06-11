@@ -636,6 +636,26 @@
       "area": "mega-menu",
       "name": "mega-menu-sectors",
       "title": "Mega Menu: Sectors"
+    },
+    {
+      "area": "uncategorized",
+      "name": "sgs-pdp-gallery",
+      "title": "PDP: Product Gallery"
+    },
+    {
+      "area": "uncategorized",
+      "name": "sgs-pdp-buybox",
+      "title": "PDP: Buy Box"
+    },
+    {
+      "area": "uncategorized",
+      "name": "sgs-pdp-content",
+      "title": "PDP: Product Content"
+    },
+    {
+      "area": "uncategorized",
+      "name": "sgs-archive-toolbar",
+      "title": "Archive: Toolbar"
     }
   ],
   "customTemplates": [
@@ -644,6 +664,20 @@
       "title": "Front Page",
       "postTypes": [
         "page"
+      ]
+    },
+    {
+      "name": "single-product",
+      "title": "Single Product",
+      "postTypes": [
+        "product"
+      ]
+    },
+    {
+      "name": "archive-product",
+      "title": "Product Archive",
+      "postTypes": [
+        "product"
       ]
     }
   ]

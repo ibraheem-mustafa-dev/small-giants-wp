@@ -91,6 +91,12 @@ function setup(): void {
 	// Enables the Site Icon / favicon field in WP Admin → Appearance → Customise.
 	add_theme_support( 'site-icon' );
 
+	// WooCommerce theme support — enables product templates, gallery features.
+	add_theme_support( 'woocommerce' );
+	add_theme_support( 'wc-product-gallery-zoom' );
+	add_theme_support( 'wc-product-gallery-lightbox' );
+	add_theme_support( 'wc-product-gallery-slider' );
+
 	add_editor_style( 'assets/css/core-blocks-critical.css' );
 	add_editor_style( 'assets/css/core-blocks.css' );
 }

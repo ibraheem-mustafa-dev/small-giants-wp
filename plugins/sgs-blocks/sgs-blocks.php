@@ -266,6 +266,13 @@ Product_CPT::register();
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-configurator-compat.php';
 Sgs_Configurator_Compat::register();
 
+// WooCommerce runtime compatibility self-check (Spec 30 FR-30-0a) — version-band
+// audit + relied-on block registry check. Surfaces one dismissible admin notice
+// when WC is outside the tested band or blocks are missing. Written contract:
+// plugins/sgs-blocks/WC-DEPENDENCY-MANIFEST.md.
+require_once SGS_BLOCKS_PATH . 'includes/class-wc-compat-check.php';
+Wc_Compat_Check::init();
+
 // SGS Product Authoring — REST controller for FR-27-R1: updates variable-product
 // parent attributes + individual variations via WC data-store setters so the
 // wc_product_attributes_lookup table is kept in sync (byte-identical to the
