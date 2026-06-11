@@ -8,6 +8,12 @@ last_updated: 2026-06-11 (D206 block-quality programme close — added P-TESTIMO
 
 ## 2026-06-11 — block-quality programme deferred follow-on
 
+## 2026-06-11 (theme thread) — Spec 30 P2 Gate B shop-archive follow-ons
+
+> **P-NO-GLOBAL-BUTTON-COMPONENT** — the framework has NO global `.btn`/`.btn-primary` style; those rules live ONLY in `plugins/sgs-blocks/src/blocks/product-card/style.css` scoped to `.product-card`. Surfaced when the shop filter toggle (`.sgs-shop-filters__toggle`) was given `btn btn-primary` classes per Bean's directive but matched zero rules outside a card — worked around by re-applying the same design TOKENS (`--wp--preset--color--primary` + `--sgs-product-card-btn-text` fallbacks) on the toggle. **Status: OPEN** — true class-level DRY needs the button definitions extracted to an unscoped theme utility partial (or `.btn` added as a global theme component) so any element can reuse the primary button look. Low priority (token-level reuse already gives the accessible result). **Bucket:** Framework. Surfaced 2026-06-11 (D213).
+>
+> **P-COLLAPSIBLE-TEXT-DEFAULT-COPY** — the framework `archive-product.html` ships its two `sgs/collapsible-text` SEO slots EMPTY (they render nothing) so no client copy is hardcoded into the shared framework template; per-client shop intro / SEO copy is added via the Site Editor. **Status: OPEN** (by design) — confirm the per-client onboarding flow documents seeding this copy; consider a sector-neutral default pattern operators clone. **Bucket:** Content. Surfaced 2026-06-11 (D213).
+
 ## 2026-06-10 — cloning thread: deferred composite-interior fix-shapes (adversarial-council NO-GO as standalone; folded into Stage-1 Commit 2/4 contracts)
 
 > **P-PARENT-SCOPED-SLOTS** — `__item`/`__step` child-token collisions: accordion `__item` → info-box (should be accordion-item) AND **form `__step` → process-steps (should be form-step — confirmed second collision; forms ARE client-roadmap, so this has real value)**. **Status: DEFERRED** — 2026-06-10 4-persona adversarial-council: NO-GO as a standalone pre-commit; the mechanism IS Commit 2's slot resolution (build constraints written into `reports/wave2/STAGE1-DESIGN.md` Commit-2 contract: pure DB lookup keyed (parent_block, element_token), lru_cache purity, nearest-resolved-ancestor rule, precedence over global aliases, 18-pair audit, `card`-alias `"item"` hygiene). **Bucket:** Cloning pipeline.

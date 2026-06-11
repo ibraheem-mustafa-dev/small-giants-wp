@@ -1,3 +1,50 @@
+# Session Handoff — 2026-06-11 NIGHT (theme thread) — Spec 30 P2 Gate A + Gate B COMPLETE + merged to main (D213)
+
+## Completed This Session
+1. **FR-30-3 shop archive SHIPPED + live-verified + merged (Gate B, D213).** The WC filter sidebar renders AND filters the grid instantly on canary `/shop/` (click 12-pack → 5→3 products in 253ms, no reload). Two hand-authored-markup bugs root-caused against WC 10.8's canonical `templates/blockified/archive-product.html`. Commit `7b953761` (16 files).
+2. **Root cause #1 — empty filter panels:** the `woocommerce/product-filter-*` blocks were authored SELF-CLOSING; WC parent filters server-render their inner control block (the view modules only wire existing markup). Fixed by nesting `product-filter-price-slider` / `product-filter-chips` / `product-filter-checkbox-list` per WC `ancestor` decls + correcting `displayStyle` `"chips"` → `"woocommerce/product-filter-chips"`.
+3. **Root cause #2 — no instant filtering:** the `product-collection` lacked `tagName:"div"` + its wrapper `<div class="wp-block-woocommerce-product-collection">` + `queryId:0`/`isProductCollectionBlock:true`; WC injects `data-wp-router-region` into the collection's first `<div>` only when `forcePageReload` false → no wrapper = no router region = URL changed but grid never re-queried. Fixed to match WC's canonical structure.
+4. **Equal-height cards + baseline-aligned CTAs** (theme CSS, `.sgs-shop-layout`; `.price-row margin-top:auto`); redundant core "Filter products" overlay button hidden on desktop; mobile "Filter" toggle reuses primary-button tokens (FINDING: no global `.btn` in theme — parked).
+5. **Accessible mobile filter drawer** (`assets/js/sgs-shop-filters.js`): off-canvas, focus-trap, scroll-lock, Escape-close, return-focus — all live-verified at 375px.
+6. **NEW `sgs/collapsible-text` block** verified: operator SEO read-more, full text always SSR'd (CSS line-clamp not display:none), empty renders nothing, labels i18n'd via server `data-read-more`/`data-read-less` (commit `8fb94df1` + plugin rebuild/deploy).
+7. **axe-clean shop content** (1 pre-existing core nav-block `list` issue = header chrome, FR-30-13); cross-family qc-council MERGE-OK — 2 rater HIGHs (resize-listener accumulation, price-slider target-size) REFUTED against code + axe + the alternative price text-inputs.
+8. **Merged Gate A (`93ce8706`) + Gate B + i18n to main (D213)** via isolated temp-worktree cherry-pick (co-active cloning thread holds the shared tree + has staged testimonial work — left untouched).
+
+## Current State
+- **Branch:** work done on `feat/spec30-p2-shop-schema`; theme commits cherry-picked to `main` (D213). HEAD of feature branch `8fb94df1`.
+- **Tests:** no unit suite for this work; live Playwright verification + axe-core 4.10 (0 shop violations) + pre-commit visual-diff gate + SGS pre-merge gate all green.
+- **Build:** sgs-blocks `npm run build` passes (dead-control guard green); theme v1.5.1 deployed to canary.
+- **Uncommitted changes:** co-active cloning thread's STAGED testimonial/converter work in the shared tree (NOT mine — do not sweep).
+
+## Known Issues / Blockers
+- The PDP `aggregateRating` source is unresolved for FR-30-9: `build_aggregate_rating()` reads WC-native review count but the displayed reviews are Trustpilot (won't emit despite 5 live reviews) — decide a DMCC-honest source in Step 9.
+- One pre-existing core WP nav-block `list` axe issue (header chrome) — tracked for FR-30-13, not introduced by this work.
+
+## Next Priorities (in order)
+1. Step 6 — FR-30-6 searchable attribute filter (seed 16-term + 15-term fixtures first).
+2. Step 7a/7b — FR-30-5 product search: design-gate (`/brainstorming` + `/adversarial-council`) then hardened-REST build; security-critical (draft-leak/429/XSS zero-tolerance).
+3. Step 9 — FR-30-9 schema (audit shipped PDP + build Organization/WebSite/noindex/returnPolicyCountry; drop FAQPage; decide aggregateRating source).
+4. Steps 11/12 — go-live checklist + phase close + merge.
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| theme/sgs-theme/templates/archive-product.html | filter inner control blocks + product-collection wrapper/tagName/queryId + query-pagination + collapsible slots |
+| theme/sgs-theme/assets/css/woocommerce.css | filter UI styling, equal-height cards + CTA baseline, overlay-button hide, toggle primary-button tokens |
+| theme/sgs-theme/assets/js/sgs-shop-filters.js | NEW accessible mobile filter drawer |
+| theme/sgs-theme/functions.php | enqueue sgs-shop-filters.js on shop/archive |
+| theme/sgs-theme/style.css | Version 1.4.8 → 1.5.1 (theme-CSS cache-bust) |
+| plugins/sgs-blocks/src/blocks/product-card/{block.json,render.php} | loop-context binding (usesContext postId) |
+| plugins/sgs-blocks/src/blocks/collapsible-text/* | NEW block + i18n'd read-more labels |
+| reports/visual-diff/{product-card,collapsible-text}-2026-06-11.md | visual-diff PASS reports |
+| .claude/{state.md,decisions.md,parking.md,plans/2026-06-11-spec30-p2-...md} | D213 + progress + parked follow-ons |
+
+## Notes for Next Session
+- WC block markup is the trap: when a WC block renders empty/half, read its block.json `ancestor` chain + WC's own canonical template (`woocommerce/templates/templates/blockified/`) BEFORE theorising CSS/hydration.
+- There is no global `.btn`/`.btn-primary` in the theme (product-card-scoped) — reuse tokens or extract a utility.
+- Merge to the shared main via temp-worktree cherry-pick only; the cloning thread holds the tree with staged work.
+- The plugin build output is `plugins/sgs-blocks/build/blocks/<block>/`, not repo-root `build/`.
+
 # Session Handoff — 2026-06-11 EVENING (theme thread) — Spec 30 P1 COMPLETE
 
 ## Completed This Session
