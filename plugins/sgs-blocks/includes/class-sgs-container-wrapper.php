@@ -239,6 +239,40 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$has_responsive_margin  = ( '' !== $margin_top_tablet || '' !== $margin_right_tablet || '' !== $margin_bottom_tablet || '' !== $margin_left_tablet
 				|| '' !== $margin_top_mobile || '' !== $margin_right_mobile || '' !== $margin_bottom_mobile || '' !== $margin_left_mobile );
 
+			// Content-band (Layer 2: __inner) attrs — section + layout kinds only, since
+			// those are the only kinds that can emit the __inner wrapper (content kind
+			// uses contentWidth/padding natively; no __inner layer is emitted).
+			$band_padding_top    = $sgs_css_length( $attributes['contentBandPaddingTop'] ?? '' );
+			$band_padding_right  = $sgs_css_length( $attributes['contentBandPaddingRight'] ?? '' );
+			$band_padding_bottom = $sgs_css_length( $attributes['contentBandPaddingBottom'] ?? '' );
+			$band_padding_left   = $sgs_css_length( $attributes['contentBandPaddingLeft'] ?? '' );
+
+			$band_padding_top_tablet    = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentBandPaddingTopTablet'] ?? '' ) : '';
+			$band_padding_right_tablet  = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentBandPaddingRightTablet'] ?? '' ) : '';
+			$band_padding_bottom_tablet = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentBandPaddingBottomTablet'] ?? '' ) : '';
+			$band_padding_left_tablet   = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentBandPaddingLeftTablet'] ?? '' ) : '';
+
+			$band_padding_top_mobile    = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentBandPaddingTopMobile'] ?? '' ) : '';
+			$band_padding_right_mobile  = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentBandPaddingRightMobile'] ?? '' ) : '';
+			$band_padding_bottom_mobile = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentBandPaddingBottomMobile'] ?? '' ) : '';
+			$band_padding_left_mobile   = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentBandPaddingLeftMobile'] ?? '' ) : '';
+
+			// Band background — section + layout kinds only; sanitise via sgs_colour_value
+			// (returns a CSS-safe string or empty; reuse the same sanitiser as gridItemBackground).
+			$band_background = ( $is_section || $is_layout ) ? ( $attributes['contentBandBackground'] ?? '' ) : '';
+
+			// Responsive content-width overrides for the band (tablet / mobile).
+			$content_width_tablet = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentWidthTablet'] ?? '' ) : '';
+			$content_width_mobile = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentWidthMobile'] ?? '' ) : '';
+
+			$has_band_responsive = ( $is_section || $is_layout ) && (
+				'' !== $band_padding_top_tablet || '' !== $band_padding_right_tablet ||
+				'' !== $band_padding_bottom_tablet || '' !== $band_padding_left_tablet ||
+				'' !== $band_padding_top_mobile || '' !== $band_padding_right_mobile ||
+				'' !== $band_padding_bottom_mobile || '' !== $band_padding_left_mobile ||
+				'' !== $content_width_tablet || '' !== $content_width_mobile
+			);
+
 			// HTML tag.
 			$html_tag     = $opt_tag ? $opt_tag : ( $attributes['htmlTag'] ?? 'section' );
 			$allowed_tags = array( 'section', 'div', 'article', 'aside', 'main', 'details', 'fieldset' );
@@ -355,8 +389,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			$styles = array_merge( array(), $opt_extra_styles );
 
-			// gap — section + layout kinds.
-			if ( ( $is_section || $is_layout ) && '' !== $gap ) {
+			// gap — section + layout kinds. When responsive gap tiers exist the base
+			// is emitted via the per-instance uid CSS instead (an inline base would
+			// override every @media tier — same convention as min-height below).
+			if ( ( $is_section || $is_layout ) && '' !== $gap && ! ( $gap_tablet || $gap_mobile ) ) {
 				$styles[] = 'gap:' . sgs_container_gap_value( $gap );
 			}
 
@@ -392,10 +428,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			if ( $is_section || $is_layout ) {
 				if ( 'grid' === $layout ) {
 					$styles[] = 'display:grid';
-					if ( '' !== trim( (string) $grid_template ) ) {
-						$styles[] = 'grid-template-columns:' . sgs_sanitize_grid_template( $grid_template );
-					} else {
-						$styles[] = 'grid-template-columns:repeat(' . absint( $columns ) . ',1fr)';
+					// Base column template — deferred to the uid stylesheet when
+					// responsive template tiers exist (inline beats @media otherwise).
+					$gtc_base = '' !== trim( (string) $grid_template )
+						? sgs_sanitize_grid_template( $grid_template )
+						: 'repeat(' . absint( $columns ) . ',1fr)';
+					if ( ! ( $grid_template_tablet || $grid_template_mobile ) ) {
+						$styles[] = 'grid-template-columns:' . $gtc_base;
 					}
 					$styles[] = 'align-items:' . esc_attr( $vertical_align );
 					if ( 'stretch' !== $justify_items ) {
@@ -447,7 +486,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// QB-1: gridTemplateRows + gridAutoRows — section + layout kinds.
 			if ( ( $is_section || $is_layout ) && 'grid' === $layout ) {
-				if ( '' !== trim( (string) $grid_template_rows ) ) {
+				// Base row template deferred to the uid stylesheet when responsive
+				// row tiers exist (inline beats @media otherwise).
+				if ( '' !== trim( (string) $grid_template_rows ) && ! ( $grid_template_rows_tablet || $grid_template_rows_mobile ) ) {
 					$styles[] = 'grid-template-rows:' . esc_attr( sgs_sanitize_grid_template( $grid_template_rows ) );
 				}
 				if ( '' !== trim( (string) $grid_auto_rows ) ) {
@@ -657,7 +698,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$responsive_css      = '';
 			$has_responsive_bg   = $is_section && ( ! empty( $bg_image_tablet['url'] ) || ! empty( $bg_image_mobile['url'] ) );
 			$has_responsive_attr = ( $gap_tablet || $gap_mobile || $width_mode_mobile || $width_mode_tablet || $width_mode_desktop || $has_responsive_bg || $has_responsive_min_height
-				|| $has_responsive_padding || $has_responsive_margin )
+				|| $has_responsive_padding || $has_responsive_margin || $has_band_responsive )
 				|| ( ( $is_section || $is_layout ) && ( $grid_template_tablet || $grid_template_mobile || $grid_template_rows_tablet || $grid_template_rows_mobile ) );
 
 			// uid also needed when parallax/ken-burns is active or bg-video is responsive.
@@ -673,6 +714,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 
 			if ( $has_responsive_attr ) {
+				// Base gap — deferred from inline when tiers exist (see gap above):
+				// base rule first, @media tiers after, so source order decides per viewport.
+				if ( ( $is_section || $is_layout ) && '' !== $gap && ( $gap_tablet || $gap_mobile ) ) {
+					$responsive_css .= '.' . $uid . '{gap:' . sgs_container_gap_value( $gap ) . '}';
+				}
 				if ( $gap_tablet ) {
 					$responsive_css .= '@media (max-width:1023px){.' . $uid . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';
 				}
@@ -715,7 +761,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$tablet_padding_decls[] = 'padding-left:' . $padding_left_tablet;
 					}
 					if ( $tablet_padding_decls ) {
-						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{' . implode( ';', $tablet_padding_decls ) . '}}';
+						// !important: the base padding is WP-native (style engine) and
+						// lands INLINE on the wrapper — a plain @media class rule can
+						// never beat it. Tiers are viewport-scoped overrides; at ≤599px
+						// the mobile rule (same importance, later source) wins.
+						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{' . implode( ' !important;', $tablet_padding_decls ) . ' !important}}';
 					}
 
 					// Mobile (≤599px).
@@ -733,7 +783,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$mobile_padding_decls[] = 'padding-left:' . $padding_left_mobile;
 					}
 					if ( $mobile_padding_decls ) {
-						$responsive_css .= '@media (max-width:599px){.' . $uid . '{' . implode( ';', $mobile_padding_decls ) . '}}';
+						$responsive_css .= '@media (max-width:599px){.' . $uid . '{' . implode( ' !important;', $mobile_padding_decls ) . ' !important}}';
 					}
 				}
 
@@ -754,7 +804,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$tablet_margin_decls[] = 'margin-left:' . $margin_left_tablet;
 					}
 					if ( $tablet_margin_decls ) {
-						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{' . implode( ';', $tablet_margin_decls ) . '}}';
+						// !important for the same reason as padding: WP-native base
+						// margin is inline on the wrapper.
+						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{' . implode( ' !important;', $tablet_margin_decls ) . ' !important}}';
 					}
 
 					// Mobile (≤599px).
@@ -772,7 +824,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$mobile_margin_decls[] = 'margin-left:' . $margin_left_mobile;
 					}
 					if ( $mobile_margin_decls ) {
-						$responsive_css .= '@media (max-width:599px){.' . $uid . '{' . implode( ';', $mobile_margin_decls ) . '}}';
+						$responsive_css .= '@media (max-width:599px){.' . $uid . '{' . implode( ' !important;', $mobile_margin_decls ) . ' !important}}';
 					}
 				}
 
@@ -823,6 +875,14 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 				// QB-2: Responsive gridTemplateColumns — section + layout kinds.
 				if ( $is_section || $is_layout ) {
+					// Deferred base templates (moved out of the inline style when tiers
+					// exist — inline beats @media): base rule first, tiers after.
+					if ( isset( $gtc_base ) && ( $grid_template_tablet || $grid_template_mobile ) ) {
+						$responsive_css .= '.' . $uid . '{grid-template-columns:' . $gtc_base . '}';
+					}
+					if ( 'grid' === $layout && '' !== trim( (string) $grid_template_rows ) && ( $grid_template_rows_tablet || $grid_template_rows_mobile ) ) {
+						$responsive_css .= '.' . $uid . '{grid-template-rows:' . sgs_sanitize_grid_template( $grid_template_rows ) . '}';
+					}
 					if ( '' !== sgs_sanitize_grid_template( $grid_template_tablet ) ) {
 						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{grid-template-columns:' . sgs_sanitize_grid_template( $grid_template_tablet ) . '}}';
 					}
@@ -836,6 +896,87 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					}
 					if ( '' !== sgs_sanitize_grid_template( $grid_template_rows_mobile ) ) {
 						$responsive_css .= '@media (max-width:599px){.' . $uid . '{grid-template-rows:' . sgs_sanitize_grid_template( $grid_template_rows_mobile ) . '}}';
+					}
+				}
+
+				// Content-band (Layer 2: __inner) responsive CSS — section + layout kinds.
+				// Band selector: .sgs-container-<uid> > .sgs-container__inner
+				// This matches the child div emitted at the __inner guard (line ~980) and
+				// correctly scopes the rules to the instance via the uid class prefix.
+				if ( $has_band_responsive ) {
+					$band_sel = '.' . $uid . '>.sgs-container__inner';
+
+					// Base band rule FIRST — when responsive band tiers exist, the base
+					// (max-width / margin-inline / padding / background) MUST live in the
+					// stylesheet too: an inline base on __inner would override every
+					// @media tier (same convention as min-height above). The __inner
+					// builder emits a bare <div> (no inline style) in this case.
+					$band_base_decls = array();
+					if ( '' !== $content_width ) {
+						$band_base_decls[] = 'max-width:' . $content_width;
+						$band_base_decls[] = 'margin-inline:auto';
+					}
+					if ( '' !== $band_padding_top ) {
+						$band_base_decls[] = 'padding-top:' . $band_padding_top;
+					}
+					if ( '' !== $band_padding_right ) {
+						$band_base_decls[] = 'padding-right:' . $band_padding_right;
+					}
+					if ( '' !== $band_padding_bottom ) {
+						$band_base_decls[] = 'padding-bottom:' . $band_padding_bottom;
+					}
+					if ( '' !== $band_padding_left ) {
+						$band_base_decls[] = 'padding-left:' . $band_padding_left;
+					}
+					if ( '' !== $band_background ) {
+						$band_base_decls[] = 'background-color:' . sgs_colour_value( $band_background );
+					}
+					if ( $band_base_decls ) {
+						$responsive_css .= $band_sel . '{' . implode( ';', $band_base_decls ) . '}';
+					}
+
+					// Responsive content-width overrides for the band max-width.
+					if ( '' !== $content_width_tablet ) {
+						$responsive_css .= '@media (max-width:1023px){' . $band_sel . '{max-width:' . $content_width_tablet . '}}';
+					}
+					if ( '' !== $content_width_mobile ) {
+						$responsive_css .= '@media (max-width:599px){' . $band_sel . '{max-width:' . $content_width_mobile . '}}';
+					}
+
+					// Band padding — tablet tier (≤1023px).
+					$band_tablet_decls = array();
+					if ( '' !== $band_padding_top_tablet ) {
+						$band_tablet_decls[] = 'padding-top:' . $band_padding_top_tablet;
+					}
+					if ( '' !== $band_padding_right_tablet ) {
+						$band_tablet_decls[] = 'padding-right:' . $band_padding_right_tablet;
+					}
+					if ( '' !== $band_padding_bottom_tablet ) {
+						$band_tablet_decls[] = 'padding-bottom:' . $band_padding_bottom_tablet;
+					}
+					if ( '' !== $band_padding_left_tablet ) {
+						$band_tablet_decls[] = 'padding-left:' . $band_padding_left_tablet;
+					}
+					if ( $band_tablet_decls ) {
+						$responsive_css .= '@media (max-width:1023px){' . $band_sel . '{' . implode( ';', $band_tablet_decls ) . '}}';
+					}
+
+					// Band padding — mobile tier (≤599px).
+					$band_mobile_decls = array();
+					if ( '' !== $band_padding_top_mobile ) {
+						$band_mobile_decls[] = 'padding-top:' . $band_padding_top_mobile;
+					}
+					if ( '' !== $band_padding_right_mobile ) {
+						$band_mobile_decls[] = 'padding-right:' . $band_padding_right_mobile;
+					}
+					if ( '' !== $band_padding_bottom_mobile ) {
+						$band_mobile_decls[] = 'padding-bottom:' . $band_padding_bottom_mobile;
+					}
+					if ( '' !== $band_padding_left_mobile ) {
+						$band_mobile_decls[] = 'padding-left:' . $band_padding_left_mobile;
+					}
+					if ( $band_mobile_decls ) {
+						$responsive_css .= '@media (max-width:599px){' . $band_sel . '{' . implode( ';', $band_mobile_decls ) . '}}';
 					}
 				}
 			}
@@ -965,7 +1106,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			$style_tag = '';
 			if ( $responsive_css && $uid ) {
-				$style_tag = sprintf( '<style id="%s">%s</style>', esc_attr( $uid ), esc_html( $responsive_css ) );
+				// NOT esc_html() — the band selector uses the child combinator '>'
+				// which esc_html() turns into '&gt;', breaking every band rule.
+				// Every value component is pre-sanitised ($sgs_css_length /
+				// sgs_colour_value / sgs_sanitize_grid_template / esc_url);
+				// wp_strip_all_tags() guards against '</style>' injection.
+				$style_tag = sprintf( '<style id="%s">%s</style>', esc_attr( $uid ), wp_strip_all_tags( $responsive_css ) );
 			}
 
 			// ----------------------------------------------------------------
@@ -976,8 +1122,41 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$inner_open  = '';
 			$inner_close = '';
 			$do_wrap     = null !== $opt_wrap_inner ? (bool) $opt_wrap_inner : ( '' !== $content_width && '' === $layout );
-			if ( $do_wrap ) {
-				$inner_open  = '<div class="sgs-container__inner" style="max-width:' . esc_attr( $content_width ) . ';margin-inline:auto">';
+			if ( $do_wrap && $has_band_responsive && '' !== $uid ) {
+				// Responsive band tiers exist: the base band styles were emitted into
+				// the uid stylesheet (band base rule before the @media tiers) — an
+				// inline base here would override every @media rule. Bare div only.
+				$inner_open  = '<div class="sgs-container__inner">';
+				$inner_close = '</div>';
+			} elseif ( $do_wrap ) {
+				// Build inline style for the band — max-width + margin-inline:auto always
+				// present when contentWidth is set; base band padding + background appended
+				// when set. Responsive overrides for these are emitted via the uid @media
+				// CSS block above (band selector .uid > .sgs-container__inner).
+				$inner_style_parts = array( 'max-width:' . esc_attr( $content_width ), 'margin-inline:auto' );
+
+				// Base band padding (desktop tier — section + layout kinds).
+				if ( $is_section || $is_layout ) {
+					if ( '' !== $band_padding_top ) {
+						$inner_style_parts[] = 'padding-top:' . esc_attr( $band_padding_top );
+					}
+					if ( '' !== $band_padding_right ) {
+						$inner_style_parts[] = 'padding-right:' . esc_attr( $band_padding_right );
+					}
+					if ( '' !== $band_padding_bottom ) {
+						$inner_style_parts[] = 'padding-bottom:' . esc_attr( $band_padding_bottom );
+					}
+					if ( '' !== $band_padding_left ) {
+						$inner_style_parts[] = 'padding-left:' . esc_attr( $band_padding_left );
+					}
+					// Band background — sanitise via sgs_colour_value() (same sanitiser as
+					// gridItemBackground and overlay colour to remain consistent).
+					if ( '' !== $band_background ) {
+						$inner_style_parts[] = 'background-color:' . esc_attr( sgs_colour_value( $band_background ) );
+					}
+				}
+
+				$inner_open  = '<div class="sgs-container__inner" style="' . esc_attr( implode( ';', $inner_style_parts ) ) . '">';
 				$inner_close = '</div>';
 			}
 

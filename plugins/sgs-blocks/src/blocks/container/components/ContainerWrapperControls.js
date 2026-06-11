@@ -1143,6 +1143,98 @@ export function ResponsiveSpacingPanel( { attributes, setAttributes } ) {
 }
 
 // ---------------------------------------------------------------------------
+// Content band panel — exported for use in container/edit.js too.
+// ---------------------------------------------------------------------------
+
+/**
+ * ContentBandPanel
+ *
+ * Controls for the Layer-2 content band (__inner wrapper) — background colour,
+ * base padding (4 sides, desktop), and responsive padding overrides (tablet /
+ * mobile). Also exposes tablet and mobile overrides for the band's max-width
+ * (contentWidthTablet / contentWidthMobile); desktop content width is already
+ * in the Width panel so only a help note is shown at the desktop tier.
+ *
+ * Gating: section + layout kinds only — these are the only kinds whose PHP
+ * render path can emit the __inner wrapper. The 'content' kind uses WP-native
+ * padding controls directly; it has no __inner layer.
+ *
+ * Attr → control mapping:
+ *   contentBandBackground         → Background colour (DesignTokenPicker)
+ *   contentBandPaddingTop         → Padding › Desktop › Top
+ *   contentBandPaddingRight       → Padding › Desktop › Right
+ *   contentBandPaddingBottom      → Padding › Desktop › Bottom
+ *   contentBandPaddingLeft        → Padding › Desktop › Left
+ *   contentBandPaddingTopTablet   → Padding › Tablet › Top
+ *   contentBandPaddingRightTablet → Padding › Tablet › Right
+ *   ...etc.
+ *   contentWidthTablet            → Band width › Tablet
+ *   contentWidthMobile            → Band width › Mobile
+ */
+export function ContentBandPanel( { attributes, setAttributes } ) {
+	const BAND_PADDING_SIDES = [
+		{ label: __( 'Top', 'sgs-blocks' ), desktop: 'contentBandPaddingTop', tablet: 'contentBandPaddingTopTablet', mobile: 'contentBandPaddingTopMobile' },
+		{ label: __( 'Right', 'sgs-blocks' ), desktop: 'contentBandPaddingRight', tablet: 'contentBandPaddingRightTablet', mobile: 'contentBandPaddingRightMobile' },
+		{ label: __( 'Bottom', 'sgs-blocks' ), desktop: 'contentBandPaddingBottom', tablet: 'contentBandPaddingBottomTablet', mobile: 'contentBandPaddingBottomMobile' },
+		{ label: __( 'Left', 'sgs-blocks' ), desktop: 'contentBandPaddingLeft', tablet: 'contentBandPaddingLeftTablet', mobile: 'contentBandPaddingLeftMobile' },
+	];
+
+	return (
+		<PanelBody title={ __( 'Content band', 'sgs-blocks' ) } initialOpen={ false }>
+			<p className="components-base-control__help">
+				{ __( 'Styles the inner content band (the max-width wrapper set by Content width). Only active when Content width is set.', 'sgs-blocks' ) }
+			</p>
+
+			<DesignTokenPicker
+				label={ __( 'Band background colour', 'sgs-blocks' ) }
+				value={ attributes.contentBandBackground || '' }
+				onChange={ ( val ) => setAttributes( { contentBandBackground: val } ) }
+			/>
+
+			<ResponsiveControl label={ __( 'Band padding', 'sgs-blocks' ) }>
+				{ ( breakpoint ) => (
+					<>
+						{ BAND_PADDING_SIDES.map( ( side ) => (
+							<SpacingControl
+								key={ side[ breakpoint ] }
+								freeInput
+								label={ side.label }
+								value={ attributes[ side[ breakpoint ] ] || '' }
+								onChange={ ( val ) => setAttributes( { [ side[ breakpoint ] ]: val } ) }
+							/>
+						) ) }
+					</>
+				) }
+			</ResponsiveControl>
+
+			<ResponsiveControl label={ __( 'Band width', 'sgs-blocks' ) }>
+				{ ( breakpoint ) => {
+					if ( breakpoint === 'desktop' ) {
+						return (
+							<p className="sgs-inspector-help">
+								{ __( 'Desktop band width is set via Content width in the Width panel above.', 'sgs-blocks' ) }
+							</p>
+						);
+					}
+					const attrMap = {
+						tablet: 'contentWidthTablet',
+						mobile: 'contentWidthMobile',
+					};
+					return (
+						<SpacingControl
+							freeInput
+							label={ __( 'Max width', 'sgs-blocks' ) }
+							value={ attributes[ attrMap[ breakpoint ] ] || '' }
+							onChange={ ( val ) => setAttributes( { [ attrMap[ breakpoint ] ]: val } ) }
+						/>
+					);
+				} }
+			</ResponsiveControl>
+		</PanelBody>
+	);
+}
+
+// ---------------------------------------------------------------------------
 // KIND → CONTROLS map
 // ---------------------------------------------------------------------------
 //
@@ -1182,6 +1274,7 @@ const KIND_PANELS = {
 			</PanelBody>
 		),
 		( props ) => <ResponsiveSpacingPanel { ...props } />,
+		( props ) => <ContentBandPanel { ...props } />,
 		( props ) => <GridItemDefaultsPanel { ...props } />,
 		( props ) => <BackgroundPanel { ...props } />,
 		( props ) => (
@@ -1207,6 +1300,7 @@ const KIND_PANELS = {
 			</PanelBody>
 		),
 		( props ) => <ResponsiveSpacingPanel { ...props } />,
+		( props ) => <ContentBandPanel { ...props } />,
 	],
 
 	content: [

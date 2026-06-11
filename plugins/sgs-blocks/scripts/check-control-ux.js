@@ -109,6 +109,18 @@ const SHARED_COMPONENT_JSX_NAMES = [
 	'ContainerWrapperControls',
 ];
 
+// Local component FILES that are themselves the shared component (they live
+// under a block's own components/ dir but are consumed library-wide — e.g.
+// ContainerWrapperControls.js sits under container/components/ yet is the
+// canonical wrapper-controls component for all 29 composites). Writes inside
+// these files are shared-component writes, NOT the host block's own direct
+// controls — excluding them prevents false RESPONSIVE-FAMILY violations on
+// the host block (the container) for controls that ARE wrapped in
+// <ResponsiveControl> inside the shared file.
+const SHARED_COMPONENT_FILE_BASENAMES = [
+	'ContainerWrapperControls.js',
+];
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -237,7 +249,7 @@ function checkResponsiveSwitcher( blockName, blockDir, attrs ) {
 	const blockComponentsDir = path.join( blockDir, 'components' );
 	if ( fs.existsSync( blockComponentsDir ) ) {
 		for ( const f of fs.readdirSync( blockComponentsDir ) ) {
-			if ( f.endsWith( '.js' ) ) {
+			if ( f.endsWith( '.js' ) && ! SHARED_COMPONENT_FILE_BASENAMES.includes( f ) ) {
 				blockOwnSrc += '\n' + stripComments( readIfExists( path.join( blockComponentsDir, f ) ) );
 			}
 		}
@@ -334,7 +346,7 @@ function checkUnitSelectControl( blockName, blockDir, attrs ) {
 	const blockComponentsDir = path.join( blockDir, 'components' );
 	if ( fs.existsSync( blockComponentsDir ) ) {
 		for ( const f of fs.readdirSync( blockComponentsDir ) ) {
-			if ( f.endsWith( '.js' ) ) {
+			if ( f.endsWith( '.js' ) && ! SHARED_COMPONENT_FILE_BASENAMES.includes( f ) ) {
 				blockOwnSrc += '\n' + stripComments( readIfExists( path.join( blockComponentsDir, f ) ) );
 			}
 		}

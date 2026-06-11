@@ -24,7 +24,7 @@ import {
   DesignTokenPicker,
 } from "../../components";
 import { spacingVar, shadowVar } from "../../utils";
-import { ResponsiveSpacingPanel } from "./components/ContainerWrapperControls";
+import { ResponsiveSpacingPanel, ContentBandPanel } from "./components/ContainerWrapperControls";
 
 /**
  * Resolve a gap attribute value to a CSS string for editor preview.
@@ -644,6 +644,13 @@ export default function Edit({ attributes, setAttributes }) {
         {/* Step 2: Responsive spacing overrides (tablet / mobile padding + margin).
             Desktop base is handled by WP-native supports.spacing (Dimensions panel). */}
         <ResponsiveSpacingPanel
+          attributes={ attributes }
+          setAttributes={ setAttributes }
+        />
+
+        {/* Step 3: Content band (Layer 2 __inner) — background, padding, responsive width.
+            Section kind only in edit.js since the container is always a section. */}
+        <ContentBandPanel
           attributes={ attributes }
           setAttributes={ setAttributes }
         />

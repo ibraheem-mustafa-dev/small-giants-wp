@@ -12,3 +12,21 @@ first_paint_capture_passed: true
 
 ## Result — PASS (R-22-11)
 Live DOM verified at two viewports; editor controls reachable for all 16 attrs; zero guard regressions; no frontend rendering change for existing content (attrs previously rendered, now merely controllable).
+
+---
+
+# Addendum — Step 3 content band + universal inline-vs-@media cascade fix (same day)
+
+verdict: PASS
+first_paint_capture_passed: true
+
+**Change:** (1) Layer-2 content band shipped end-to-end: 17 new attrs (`contentBandPadding{side}{,Tablet,Mobile}` ×12 + `contentBandBackground` + `contentWidthTablet/Mobile`), wrapper renders them on `__inner`, shared `ContentBandPanel` (section+layout kinds) in the inspector + edit.js. (2) Two render bugs found live and fixed in the main thread: the `<style>` tag used `esc_html()` which turned the band selector's `>` into `&gt;` (rules matched nothing) → `wp_strip_all_tags()`; the band base was inline on `__inner` so @media tiers could never win → base now emitted via the uid stylesheet when tiers exist. (3) The SAME inline-beats-@media class bug was then probed and confirmed on the ROOT tiers and fixed universally: WP-native inline base padding/margin → tier decls now `!important`; our own inline bases (gap, grid-template-columns, grid-template-rows) → deferred to the uid stylesheet when tiers exist (the file's existing min-height convention).
+
+**Validation (live on sandybrown, 2026-06-11):**
+- Band probe (`contentWidth` 800px→tablet 600px; band paddingTop 40→24→12; bg #ffeecc): `.sgs-container__inner` computed = 40px/800px/rgb(255,238,204) @1440 · 24px/600px @768 · 12px @≤599. No inline style on `__inner` (base in uid stylesheet).
+- Root conflict probe (native inline base padding-top 50px + `paddingTopTablet` 21px): 50px @1440, **21px @768** (was 50px before the fix — the Step 2 tiers silently lost to inline base; now win via !important).
+- Page-8 regression smoke: hero 2-col grid intact, 37 containers, grid gaps painting, content renders.
+- Editor: "Content band" panel reachable on a page-8 container — Band padding + Band width ResponsiveControls + colour control.
+- php -l clean; build green ×3 guards; probe pages deleted.
+
+## Result — PASS (R-22-11)
