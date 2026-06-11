@@ -1,10 +1,14 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-06-10 (D204 close + plans-folder consolidation — added P-FP-COUNCIL; archived 7 superseded/historical plans, added 3 carried-forward orphans + updated 4 existing entries in place (coverage-verified by 6 parallel agents + cross-model falsification); removed the empty 2026-06-05 wave header; de-bolded the P-GAP-CONSOLIDATION-FOLLOWUPS cross-reference that tripped the slug gate)
+last_updated: 2026-06-11 (D206 block-quality programme close — added P-TESTIMONIAL-CONVERTER-FR2220 deferred follow-on; prior: D204 close + plans-folder consolidation — added P-FP-COUNCIL; archived 7 superseded/historical plans, added 3 carried-forward orphans + updated 4 existing entries in place (coverage-verified by 6 parallel agents + cross-model falsification); removed the empty 2026-06-05 wave header; de-bolded the P-GAP-CONSOLIDATION-FOLLOWUPS cross-reference that tripped the slug gate)
 ---
 
 > **STANDARD PRACTICE (Bean-locked 2026-06-02):** this doc holds ONLY parked work — entries with `**Status:** OPEN | PARTIAL | BLOCKED | DEFERRED`. The MOMENT a task is **CLOSED / RESOLVED / DROPPED / SUPERSEDED**, MOVE it (verbatim, with completion date) to `memory/parking-archive.md` — do NOT leave it here. Enforce this every `/handoff` (Gate 4.5). Keeps parking concise + purposeful; prevents the balloon that hit 1,400+ lines.
+
+## 2026-06-11 — block-quality programme deferred follow-on
+
+> **P-TESTIMONIAL-CONVERTER-FR2220** — NEW 2026-06-11 (D206). The testimonial D8 rebuild (typed-attr, 7 variants, on `feat/block-quality-mirror`) is converter-READY (`blocks.variant_attr` + `variant_slots` map + the +27 typed attrs registered via `/sgs-update`) but the cloning converter does NOT yet (a) route the draft `__quote`/`__author`/`__stars`/`__summary`/`__org`/`__logo`/`__work`/`__date`/etc. onto the typed attrs, nor (b) auto-detect the variant (FR-22-20 — testimonial = the 2nd variant block onboarded after hero; the generalisation past hero is still pending). The block is fully functional standalone; this is the cloning-thread wiring needed to clone a testimonial section faithfully. **Status: DEFERRED** · **Bucket:** Pipeline / converter · **Trigger:** cloning Stage-2 routing wave.
 
 ## 2026-06-10 — orphan work carried forward from archived plans (plans-folder consolidation)
 

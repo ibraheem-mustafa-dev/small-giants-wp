@@ -1,3 +1,24 @@
+# Session Handoff — 2026-06-11 (SGS THEME thread, session 21 — BLOCK-QUALITY PROGRAMME shipped on feat/block-quality-mirror; D206)
+
+> Theme/blocks thread, block-quality wave. Built on a DEDICATED branch `feat/block-quality-mirror` (off `main`@26374b51) — NOT merged to main yet (close-out = /qc-council + Bean R-22-13 + merge). The cloning thread (`feat/stage1-converter-core`) is co-active on shared `main`; its consolidation added D205 there (unmerged) — this session used D206 to avoid a collision.
+
+## Completed This Session
+1. **Plans-folder consolidation (cloning/housekeeping, D205, on feat/stage1):** archived 7 superseded plans → 2 live; cherry-picked to `main` (`26374b51`); ~37 pointer refs rewired. WS-3 **C7 de-cheat** of `upload_and_patch.py` (client-agnostic, no hardcoded Mama's/144); `--Array` variant bug verified already-fixed (D6 guard, no change).
+2. **Product-card B3–B6 (`4dc6fcab`):** Advanced-SEO crash fixed (`NumberControl`→`__experimentalNumberControl`); fresh-card legacy warning gone (detect legacy by stored InnerBlocks); duplicate bound-mode CTA text/url gated out; trial border overridable (`:where()`). Live-verified canary page 1069.
+3. **Picker-label forwarding (`36f878ac`):** product-card forwards picker-label font-size+colour into the built-in Size/Flavour pickers — both legends styled (block-renderer).
+4. **Option-picker C7 (`a89a2fe3`):** group-label font-size + colour controls; editor + render.php verified.
+5. **Notice-banner E9 (`c54055c1`):** variant bg/border/colour operator-overridable (`:where()`); v0.6.0.
+6. **Testimonial D8 (`e74fe7c5`):** typed-attr **7-variant** rebuild (visual thumbnail picker, rich gated optional field set, per-element typography); save.js→null; deprecated.js v8. **Live-verified migrating page 8's 3 real testimonials clean** (positional hoist, all valid, saved, frontend renders) + all 7 variants render.
+7. **Cleanup pass (`80200a9d`):** wired testimonial hoverScale/hoverShadow + product-card packSizes (revived dead helpers); removed notice-banner dead `dismissible` (v0.7.0). Captured Bean's **"clean up superseded controls" rule**. ALL block attrs now editable.
+
+## Current State (block-quality)
+- **Branch:** `feat/block-quality-mirror` at `80200a9d` (+ lucide chore). NOT merged to main.
+- **Build:** passes (0 net-new dead controls / F3; uniformity + pre-merge clean).
+- **Deployed:** sandybrown canary (all blocks); OPcache reset each deploy.
+- **Owed (close-out):** /qc-council finishing gate · Bean R-22-13 eyeball · merge to main.
+
+---
+
 # Session Handoff — 2026-06-10 (SGS THEME thread, session 20 — FP-H/FP-E built-in product-card + grid product mode + page-level ItemList SHIPPED TO FINAL FORM; D204)
 
 > Theme/blocks thread. Cloning → `.claude/handoff.md`. Co-active cloning session shares `main` AND held the working checkout on `feat/stage1-converter-core` all session — every theme commit landed on `main` via a TEMP WORKTREE (`C:/tmp/sgs-specs`), path-scoped (`git commit -- <paths>`), never `git add -A`; never-commit artefacts (lucide-icons.php, sgs-framework.db, phase4 reports, 02-SGS-BLOCKS-REFERENCE.md) left uncommitted.
