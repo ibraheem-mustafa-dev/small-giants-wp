@@ -22,7 +22,7 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 |---|---|---|---|---|
 | H-A | Hero | F7 | Stage2-F7 | OPEN |
 | H-A2 | Hero | F4 | Stage2-F4 (cause-needs-trace) | OPEN |
-| H-B | Hero | F1 cross-node | Stage1 | OPEN |
+| H-B | Hero | F1 cross-node | Stage1 | **VERIFIED (c6337eac, 2026-06-11)** — GRID-PER-AREA router; live .sgs-hero__content padding 28/56/72 at 375/768/1440 |
 | H-C1 | Hero | F6a + draft-convention | Stage1 + draft | OPEN |
 | H-C2 | Hero | F3 inert controls | — | **SHIPPED (D192)** |
 | TB-A | Trust Bar | F1 cross-node + F1b | Stage1 + Stage1b | OPEN |
@@ -36,10 +36,10 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 | FP-B | Featured-prod | F1 | Stage1 | OPEN |
 | FP-C | Featured-prod | F1 cross-node | Stage1 | OPEN |
 | FP-D | Featured-prod | F5 | Stage2-F5 | OPEN |
-| FP-E | Featured-prod | NEW block-capability | Spec 27 (card-grid product) | OPEN |
+| FP-E | Featured-prod | NEW block-capability | Spec 27 (card-grid product) | **SHIPPED (D204, 2026-06-10)** — card-grid wc-product mode; was stale-OPEN, flipped on 2026-06-11 ledger walk |
 | FP-F | Featured-prod | NEW rest-validation | — | **SHIPPED (D191)** |
 | FP-G | Featured-prod | F3 | Stage2-F3 | OPEN |
-| FP-H | Featured-prod | NEW block-arch-mismatch | Spec 27 | OPEN |
+| FP-H | Featured-prod | NEW block-arch-mismatch | Spec 27 | **SHIPPED (D204, 2026-06-10)** — product-card built-in-element rebuild; was stale-OPEN, flipped on 2026-06-11 ledger walk |
 | FP-I | Featured-prod | F3 (council-added) | Stage2-F3 | OPEN |
 | FP-J | Featured-prod | F1 cross-node | Stage1 | OPEN |
 | FP-K | Featured-prod | F3 (showLabel render-side boolean default — NOT F6; corrected per qc-council) | Stage2-F3 | OPEN |
