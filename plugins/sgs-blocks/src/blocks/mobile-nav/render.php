@@ -44,7 +44,7 @@ $backdrop_blur_px = $attributes['backdropBlurAmount'] ?? 8;
 
 // Resolve preset to timing values. Skip when "custom" is selected.
 if ( 'custom' !== $animation_preset ) {
-	$preset_map = array(
+	$preset_map         = array(
 		'snappy' => array(
 			'duration' => 280,
 			'easing'   => 'cubic-bezier(0.4, 0, 0.2, 1)',
@@ -81,13 +81,8 @@ if ( 'custom' !== $animation_preset ) {
 	$exit_duration      = $attributes['exitDuration'] ?? 280;
 }
 
-// Navigation panel.
-$link_font_size        = $attributes['linkFontSize'] ?? 'medium';
-$link_font_size_mobile = $attributes['linkFontSizeMobile'] ?? '';
-$link_font_weight      = $attributes['linkFontWeight'] ?? '600';
-$sublink_font_size     = $attributes['sublinkFontSize'] ?? 'small';
-$sublink_font_size_mob = $attributes['sublinkFontSizeMobile'] ?? '';
-$submenu_indent        = $attributes['submenuIndent'] ?? 24;
+// Navigation panel — typography handled by sgs_typography_css_rule() below.
+$submenu_indent = $attributes['submenuIndent'] ?? 24;
 
 // Social panel.
 $social_icon_size = $attributes['socialIconSize'] ?? 44;
@@ -133,16 +128,6 @@ if ( 60 !== (int) $backdrop_opacity ) {
 	$css_vars[]      = '--sgs-mn-backdrop-opacity:' . $opacity_decimal;
 }
 
-// Navigation typography.
-if ( 'medium' !== $link_font_size && $link_font_size ) {
-	$css_vars[] = '--sgs-mn-link-size:' . sgs_font_size_value( sanitize_html_class( $link_font_size ) );
-}
-if ( $link_font_weight && '600' !== $link_font_weight ) {
-	$css_vars[] = '--sgs-mn-link-weight:' . absint( $link_font_weight );
-}
-if ( 'small' !== $sublink_font_size && $sublink_font_size ) {
-	$css_vars[] = '--sgs-mn-sublink-size:' . sgs_font_size_value( sanitize_html_class( $sublink_font_size ) );
-}
 if ( 24 !== (int) $submenu_indent ) {
 	$css_vars[] = '--sgs-mn-indent:' . absint( $submenu_indent ) . 'px';
 }
@@ -229,6 +214,8 @@ if ( 'top' !== $drawer_position ) {
 }
 
 // ── Get block wrapper attributes ──────────────────────────────────────────────
+// The id 'sgs-mobile-nav' is intentionally fixed: block.json declares
+// "multiple": false (only one drawer per page) and view.js targets it by id.
 $wrapper_attrs = get_block_wrapper_attributes(
 	array(
 		'id'                  => 'sgs-mobile-nav',
@@ -261,21 +248,21 @@ $menu_html    = $renderer->render_menu_items( $nav_blocks );
 $socials_html = $renderer->render_socials_zone();
 $tagline_html = $renderer->render_tagline();
 
-// ── Per-device responsive overrides ───────────────────────────────────────────
-// Only emit a <style> block when at least one override is set.
-// Mobile breakpoint  : max-width 480px (numeric) / 767px (font-size — existing pattern).
-// Tablet breakpoint  : max-width 768px.
-$mobile_style_tag = '';
-$mobile_vars      = array();
-$tablet_vars      = array();
+// ── Typography CSS (shared helper) ────────────────────────────────────────────
+// sgs_typography_css_rule() handles desktop + tablet + mobile breakpoints,
+// back-compat for legacy string values, and emits nothing when attrs are unset.
+// The block is "multiple": false so the fixed id is a safe unique scope.
+$link_sel    = '#sgs-mobile-nav .sgs-mobile-nav__link';
+$sublink_sel = '#sgs-mobile-nav .sgs-mobile-nav__sublink';
 
-// Font-size mobile overrides (existing 767px breakpoint).
-if ( $link_font_size_mobile ) {
-	$mobile_vars[] = '--sgs-mn-link-size-mobile:' . sgs_font_size_value( sanitize_html_class( $link_font_size_mobile ) );
-}
-if ( $sublink_font_size_mob ) {
-	$mobile_vars[] = '--sgs-mn-sublink-size-mobile:' . sgs_font_size_value( sanitize_html_class( $sublink_font_size_mob ) );
-}
+$typo_css  = sgs_typography_css_rule( $attributes, 'link', $link_sel );
+$typo_css .= sgs_typography_css_rule( $attributes, 'sublink', $sublink_sel );
+
+// ── Per-device responsive overrides (non-typography numeric attrs) ─────────────
+// Only emit a <style> block when at least one override is set.
+// Mobile breakpoint : max-width 480px. Tablet breakpoint : max-width 768px.
+$mobile_vars = array();
+$tablet_vars = array();
 
 // Shared config for numeric responsive attributes.
 // Each entry: attr-key => [ CSS custom property, unit, min allowed, max allowed ].
@@ -307,38 +294,23 @@ foreach ( $responsive_attrs as $base => $cfg ) {
 	}
 }
 
-// Build the <style> tag — only when at least one override is present.
-// CSS content is constructed entirely from validated integers + hardcoded safe strings.
-if ( $mobile_vars || $tablet_vars ) {
-	$style_parts = array();
+// Build the combined <style> tag — typography rules + numeric responsive overrides.
+// CSS content is constructed entirely from validated values and hardcoded safe strings.
+$mobile_style_tag = '';
+$style_parts      = array();
 
-	// Split mobile vars: font-size overrides use 767px, numeric use 480px.
-	$font_vars    = array();
-	$numeric_vars = array();
+if ( $typo_css ) {
+	$style_parts[] = $typo_css;
+}
+if ( $mobile_vars ) {
+	$style_parts[] = '@media (max-width:480px){#sgs-mobile-nav{' . implode( ';', $mobile_vars ) . '}}';
+}
+if ( $tablet_vars ) {
+	$style_parts[] = '@media (max-width:768px){#sgs-mobile-nav{' . implode( ';', $tablet_vars ) . '}}';
+}
 
-	foreach ( $mobile_vars as $var ) {
-		$is_font = (
-			false !== strpos( $var, '--sgs-mn-link-size-mobile' ) ||
-			false !== strpos( $var, '--sgs-mn-sublink-size-mobile' )
-		);
-		if ( $is_font ) {
-			$font_vars[] = $var;
-		} else {
-			$numeric_vars[] = $var;
-		}
-	}
-
-	if ( $font_vars ) {
-		$style_parts[] = '@media (max-width:767px){#sgs-mobile-nav{' . implode( ';', $font_vars ) . '}}';
-	}
-	if ( $numeric_vars ) {
-		$style_parts[] = '@media (max-width:480px){#sgs-mobile-nav{' . implode( ';', $numeric_vars ) . '}}';
-	}
-	if ( $tablet_vars ) {
-		$style_parts[] = '@media (max-width:768px){#sgs-mobile-nav{' . implode( ';', $tablet_vars ) . '}}';
-	}
-
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS built from validated integers and hardcoded safe strings only.
+if ( $style_parts ) {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS built from sgs_typography_css_rule() (helper-escaped) + validated integers + hardcoded safe strings only.
 	$mobile_style_tag = '<style>' . implode( '', $style_parts ) . '</style>';
 }
 

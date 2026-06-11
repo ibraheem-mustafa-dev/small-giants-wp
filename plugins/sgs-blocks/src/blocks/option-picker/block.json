@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/option-picker",
-	"version": "0.1.8",
+	"version": "0.1.9",
 	"title": "SGS Option Picker",
 	"category": "sgs-interactive",
 	"description": "Exclusive single-select pill chooser for pack sizes, flavours, colours, plan tiers, or any option set. Emits a custom DOM event on selection — fully decoupled from any parent block.",
@@ -57,6 +57,19 @@
 			"default": true
 		},
 		"labelFontSize": {
+			"type": "number"
+		},
+		"labelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"labelFontSizeTablet": {
+			"type": "number"
+		},
+		"labelFontSizeMobile": {
+			"type": "number"
+		},
+		"labelFontStyle": {
 			"type": "string",
 			"default": ""
 		},
@@ -133,16 +146,25 @@
 			"default": ""
 		},
 		"pillFontSize": {
+			"type": "number"
+		},
+		"pillFontSizeUnit": {
 			"type": "string",
-			"default": ""
+			"default": "px"
+		},
+		"pillFontSizeTablet": {
+			"type": "number"
+		},
+		"pillFontSizeMobile": {
+			"type": "number"
 		},
 		"pillFontWeight": {
 			"type": "string",
 			"default": ""
 		},
 		"pillBorderRadius": {
-			"type": "string",
-			"default": ""
+			"type": "number",
+			"default": 0
 		},
 		"labelFontWeight": {
 			"type": "string",

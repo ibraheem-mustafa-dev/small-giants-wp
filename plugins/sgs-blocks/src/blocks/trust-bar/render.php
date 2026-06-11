@@ -20,17 +20,19 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-typography.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
+// --- Unique ID for scoped typography <style> ----------------------------------
+$uid = wp_unique_id( 'sgs-tb-' );
+
 // --- Shared attributes --------------------------------------------------------
-$badge_style    = sanitize_html_class( $attributes['badgeStyle'] ?? 'icon-circle' );
-$badge_size     = sanitize_html_class( $attributes['badgeSize'] ?? 'medium' );
-$block_title    = $attributes['title'] ?? '';
-$title_colour   = $attributes['titleColour'] ?? 'text-muted';
-$title_fontsize = $attributes['titleFontSize'] ?? '';
-$label_colour   = $attributes['labelColour'] ?? 'text';
-$label_fontsize = $attributes['labelFontSize'] ?? '';
+$badge_style  = sanitize_html_class( $attributes['badgeStyle'] ?? 'icon-circle' );
+$badge_size   = sanitize_html_class( $attributes['badgeSize'] ?? 'medium' );
+$block_title  = $attributes['title'] ?? '';
+$title_colour = $attributes['titleColour'] ?? 'text-muted';
+$label_colour = $attributes['labelColour'] ?? 'text';
 
 // --- icon-circle attributes ---------------------------------------------------
 $icon_circle_size          = absint( $attributes['iconCircleSize'] ?? 44 );
@@ -39,7 +41,6 @@ $icon_colour               = $attributes['iconColour'] ?? 'primary-dark';
 $text_colour               = $attributes['textColour'] ?? 'text';
 $icon_circle_border_radius = isset( $attributes['iconCircleBorderRadius'] ) ? (string) $attributes['iconCircleBorderRadius'] : '50%';
 $icon_circle_shadow        = isset( $attributes['iconCircleShadow'] ) ? (string) $attributes['iconCircleShadow'] : 'sm';
-// $label_fontsize is shared; re-used below for the icon-circle --sgs-trust-badge-label-font-size prop.
 // $columns and $gap_slug are no longer needed locally:
 // - grid columns are driven by gridTemplateColumns attr via the shared wrapper helper.
 // - gap is consumed by the shared wrapper helper directly from $attributes['gap'].
@@ -94,10 +95,6 @@ if ( 'icon-circle' === $badge_style ) {
 	if ( '' !== $icon_circle_shadow ) {
 		$styles[] = '--sgs-trust-badge-circle-shadow: var(--wp--preset--shadow--' . esc_attr( sanitize_html_class( $icon_circle_shadow ) ) . ')';
 	}
-	// Label font-size for icon-circle variant (shares $label_fontsize with the other variants' inline style).
-	if ( $label_fontsize ) {
-		$styles[] = '--sgs-trust-badge-label-font-size: ' . esc_attr( sgs_font_size_value( $label_fontsize ) );
-	}
 }
 
 // --- Wrapper classes + data attributes (WS-4: passed to the shared helper) -----
@@ -107,6 +104,7 @@ $tb_extra_classes = array(
 	'sgs-trust-bar',
 	'sgs-trust-bar--' . $badge_style,
 	'sgs-trust-bar--' . $badge_size,
+	esc_attr( $uid ),
 );
 
 $tb_extra_attrs = array(
@@ -133,16 +131,9 @@ $tb_wrapper_opts = array(
 	'no_overlay'    => true,
 );
 
-// --- Title inline style -------------------------------------------------------
-$title_style_parts = array();
-if ( $title_colour_val ) {
-	$title_style_parts[] = 'color:' . $title_colour_val;
-}
-if ( $title_fontsize ) {
-	$title_style_parts[] = 'font-size:' . sgs_font_size_value( $title_fontsize );
-}
-$title_style_attr = $title_style_parts
-	? ' style="' . esc_attr( implode( ';', $title_style_parts ) ) . '"'
+// --- Title inline style (colour only — font-size/weight/style via helper) -----
+$title_style_attr = $title_colour_val
+	? ' style="' . esc_attr( 'color:' . $title_colour_val ) . '"'
 	: '';
 
 // --- Optional title -----------------------------------------------------------
@@ -163,16 +154,9 @@ if ( $block_title_plain ) {
 // =============================================================================
 $items = $attributes['items'] ?? array();
 
-// --- Label inline style -------------------------------------------------------
-$label_style_parts = array();
-if ( $label_colour_val ) {
-	$label_style_parts[] = 'color:' . $label_colour_val;
-}
-if ( $label_fontsize ) {
-	$label_style_parts[] = 'font-size:' . sgs_font_size_value( $label_fontsize );
-}
-$label_style_attr = $label_style_parts
-	? ' style="' . esc_attr( implode( ';', $label_style_parts ) ) . '"'
+// --- Label inline style (colour only — font-size/weight/style via helper) -----
+$label_style_attr = $label_colour_val
+	? ' style="' . esc_attr( 'color:' . $label_colour_val ) . '"'
 	: '';
 
 // --- Build badge items HTML ---------------------------------------------------
@@ -282,9 +266,21 @@ $badges_html = $auto_scroll
 	? '<div class="sgs-trust-bar__track">' . $items_html . '</div>'
 	: $items_html;
 
+// --- Scoped typography <style> ------------------------------------------------
+// Label selector covers both variants:
+// .sgs-trust-bar__label      → icon-circle variant
+// .sgs-trust-bar__badge-label → text-only + image-badge variants
+$uid_scope   = '.' . esc_attr( $uid );
+$label_sel   = $uid_scope . ' .sgs-trust-bar__label,' . $uid_scope . ' .sgs-trust-bar__badge-label';
+$title_sel   = $uid_scope . ' .sgs-trust-bar__title';
+$typo_css    = sgs_typography_css_rule( $attributes, 'label', $label_sel );
+$typo_css   .= sgs_typography_css_rule( $attributes, 'title', $title_sel );
+$style_block = $typo_css ? '<style>' . $typo_css . '</style>' : '';
+
 // WS-4: outer wrapper via the shared helper; trust-bar keeps its interior.
+// $style_block — built entirely from sgs_typography_css_rule() with no user data.
 // $title_html  — built with wp_kses_post + esc_attr.
 // $badges_html — all user content escaped via esc_html/esc_url/esc_attr/sgs_get_lucide_icon.
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-echo SGS_Container_Wrapper::render( $attributes, $block, $title_html . $badges_html, 'section', $tb_wrapper_opts );
+echo $style_block . SGS_Container_Wrapper::render( $attributes, $block, $title_html . $badges_html, 'section', $tb_wrapper_opts );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

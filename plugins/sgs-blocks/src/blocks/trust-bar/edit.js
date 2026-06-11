@@ -9,9 +9,9 @@ import {
 	RangeControl,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, IconPreview } from '../../components';
+import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar, fontSizeVar } from '../../utils';
+import { colourVar } from '../../utils';
 // WS-4: shared container-wrapper editor controls (section kind = full surface).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
@@ -46,15 +46,6 @@ const BADGE_SIZE_OPTIONS = [
 	{ label: __( 'Small', 'sgs-blocks' ),  value: 'small' },
 	{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
 	{ label: __( 'Large', 'sgs-blocks' ),  value: 'large' },
-];
-
-const FONT_SIZE_OPTIONS = [
-	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Small', 'sgs-blocks' ),   value: 'small' },
-	{ label: __( 'Medium', 'sgs-blocks' ),  value: 'medium' },
-	{ label: __( 'Large', 'sgs-blocks' ),   value: 'large' },
-	{ label: __( 'XL', 'sgs-blocks' ),      value: 'x-large' },
-	{ label: __( 'XXL', 'sgs-blocks' ),     value: 'xx-large' },
 ];
 
 const AUTO_SCROLL_SPEED_OPTIONS = [
@@ -193,9 +184,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		items,
 		title,
 		titleColour,
-		titleFontSize,
 		labelColour,
-		labelFontSize,
 		badgeSize,
 		iconCircleSize,
 		iconCircleBackground,
@@ -227,9 +216,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	const circleShadowValue = iconCircleShadow
 		? `var(--wp--preset--shadow--${ iconCircleShadow })`
 		: undefined;
-	const labelFontSizeValue = ( badgeStyle === 'icon-circle' && labelFontSize )
-		? fontSizeVar( labelFontSize )
-		: undefined;
 
 	const blockProps = useBlockProps( {
 		className: blockClassName,
@@ -241,7 +227,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			'--sgs-trust-badge-text-colour': textColorValue,
 			'--sgs-trust-badge-circle-radius': circleRadiusValue,
 			'--sgs-trust-badge-circle-shadow': circleShadowValue,
-			'--sgs-trust-badge-label-font-size': labelFontSizeValue,
 		} : {},
 	} );
 
@@ -295,12 +280,14 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 						/>
 					) }
-					<SelectControl
-						label={ __( 'Label font size', 'sgs-blocks' ) }
-						value={ labelFontSize || '' }
-						options={ FONT_SIZE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { labelFontSize: val } ) }
-						__nextHasNoMarginBottom
+					<p style={ { fontSize: '12px', fontWeight: 600, marginBottom: '4px' } }>
+						{ __( 'Label typography', 'sgs-blocks' ) }
+					</p>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="label"
+						showLineHeight={ false }
 					/>
 				</PanelBody>
 
@@ -315,12 +302,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							value={ titleColour }
 							onChange={ ( val ) => setAttributes( { titleColour: val } ) }
 						/>
-						<SelectControl
-							label={ __( 'Title font size', 'sgs-blocks' ) }
-							value={ titleFontSize || '' }
-							options={ FONT_SIZE_OPTIONS }
-							onChange={ ( val ) => setAttributes( { titleFontSize: val } ) }
-							__nextHasNoMarginBottom
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							prefix="title"
 						/>
 					</PanelBody>
 				) }
@@ -483,7 +468,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						placeholder={ __( 'Trusted certifications & memberships', 'sgs-blocks' ) }
 						style={ {
 							color: colourVar( titleColour ) || undefined,
-							fontSize: fontSizeVar( titleFontSize ) || undefined,
 						} }
 					/>
 				) }
@@ -536,7 +520,6 @@ export default function Edit( { attributes, setAttributes } ) {
 											className="sgs-trust-bar__badge-label"
 											style={ {
 												color: colourVar( labelColour ) || undefined,
-												fontSize: fontSizeVar( labelFontSize ) || undefined,
 											} }
 										>
 											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }
@@ -562,7 +545,6 @@ export default function Edit( { attributes, setAttributes } ) {
 											className="sgs-trust-bar__badge-label"
 											style={ {
 												color: colourVar( labelColour ) || undefined,
-												fontSize: fontSizeVar( labelFontSize ) || undefined,
 											} }
 										>
 											{ item.label }

@@ -1,5 +1,10 @@
 /**
- * Navigation Panel — font sizes, weights, dividers, indent for Panel 4.
+ * Navigation Panel — typography, dividers, and indent for Panel 4.
+ *
+ * Migrated from legacy blank-box/token SelectControl font controls to the
+ * shared TypographyControls component (Bean R-22-13, 2026-06-11).
+ * Two prefixes: 'link' (top-level nav links) and 'sublink' (sub-menu items).
+ * Line-height is hidden for both — not a meaningful control for nav items.
  *
  * Extracted from edit.js to keep it under 500 lines.
  *
@@ -8,27 +13,8 @@
 
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
-import { SelectControl, ToggleControl, RangeControl, Button } from '@wordpress/components';
-
-const FONT_SIZE_OPTIONS = [
-	{ label: __( 'Extra Small', 'sgs-blocks' ), value: 'x-small' },
-	{ label: __( 'Small', 'sgs-blocks' ), value: 'small' },
-	{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
-	{ label: __( 'Large', 'sgs-blocks' ), value: 'large' },
-	{ label: __( 'Extra Large', 'sgs-blocks' ), value: 'x-large' },
-];
-
-const FONT_SIZE_WITH_DEFAULT_OPTIONS = [
-	{ label: __( 'Default (same as desktop)', 'sgs-blocks' ), value: '' },
-	...FONT_SIZE_OPTIONS,
-];
-
-const FONT_WEIGHT_OPTIONS = [
-	{ label: __( 'Regular (400)', 'sgs-blocks' ), value: '400' },
-	{ label: __( 'Medium (500)', 'sgs-blocks' ), value: '500' },
-	{ label: __( 'Semi-Bold (600)', 'sgs-blocks' ), value: '600' },
-	{ label: __( 'Bold (700)', 'sgs-blocks' ), value: '700' },
-];
+import { ToggleControl, RangeControl, Button } from '@wordpress/components';
+import TypographyControls from '../../components/TypographyControls';
 
 /**
  * @param {Object}   props
@@ -37,11 +23,6 @@ const FONT_WEIGHT_OPTIONS = [
  */
 export default function NavigationPanel( { attributes, setAttributes } ) {
 	const {
-		linkFontSize,
-		linkFontSizeMobile,
-		linkFontWeight,
-		sublinkFontSize,
-		sublinkFontSizeMobile,
 		showDividers,
 		submenuIndent,
 		submenuIndentMobile,
@@ -52,38 +33,26 @@ export default function NavigationPanel( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			<SelectControl
-				label={ __( 'Link Font Size', 'sgs-blocks' ) }
-				value={ linkFontSize }
-				options={ FONT_SIZE_OPTIONS }
-				onChange={ ( value ) => setAttributes( { linkFontSize: value } ) }
+			<p className="sgs-inspector-label">
+				{ __( 'Link typography', 'sgs-blocks' ) }
+			</p>
+			<TypographyControls
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				prefix="link"
+				showLineHeight={ false }
 			/>
-			<SelectControl
-				label={ __( 'Link Font Size (Mobile Override)', 'sgs-blocks' ) }
-				help={ __( 'Overrides link font size below 768px. Leave as Default to match desktop.', 'sgs-blocks' ) }
-				value={ linkFontSizeMobile }
-				options={ FONT_SIZE_WITH_DEFAULT_OPTIONS }
-				onChange={ ( value ) => setAttributes( { linkFontSizeMobile: value } ) }
+
+			<p className="sgs-inspector-label" style={ { marginTop: '16px' } }>
+				{ __( 'Sub-link typography', 'sgs-blocks' ) }
+			</p>
+			<TypographyControls
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				prefix="sublink"
+				showLineHeight={ false }
 			/>
-			<SelectControl
-				label={ __( 'Link Font Weight', 'sgs-blocks' ) }
-				value={ linkFontWeight }
-				options={ FONT_WEIGHT_OPTIONS }
-				onChange={ ( value ) => setAttributes( { linkFontWeight: value } ) }
-			/>
-			<SelectControl
-				label={ __( 'Sub-link Font Size', 'sgs-blocks' ) }
-				value={ sublinkFontSize }
-				options={ FONT_SIZE_OPTIONS }
-				onChange={ ( value ) => setAttributes( { sublinkFontSize: value } ) }
-			/>
-			<SelectControl
-				label={ __( 'Sub-link Font Size (Mobile Override)', 'sgs-blocks' ) }
-				help={ __( 'Leave as Default to match desktop.', 'sgs-blocks' ) }
-				value={ sublinkFontSizeMobile }
-				options={ FONT_SIZE_WITH_DEFAULT_OPTIONS }
-				onChange={ ( value ) => setAttributes( { sublinkFontSizeMobile: value } ) }
-			/>
+
 			<ToggleControl
 				label={ __( 'Show Dividers Between Links', 'sgs-blocks' ) }
 				checked={ showDividers }

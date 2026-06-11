@@ -11,17 +11,8 @@ import {
 	TextareaControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
-import { colourVar, fontSizeVar } from '../../utils';
-
-const FONT_SIZE_OPTIONS = [
-	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Small', 'sgs-blocks' ), value: 'small' },
-	{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
-	{ label: __( 'Large', 'sgs-blocks' ), value: 'large' },
-	{ label: __( 'XL', 'sgs-blocks' ), value: 'x-large' },
-	{ label: __( 'XXL', 'sgs-blocks' ), value: 'xx-large' },
-];
+import { DesignTokenPicker, TypographyControls } from '../../components';
+import { colourVar } from '../../utils';
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Inline button', 'sgs-blocks' ), value: 'inline' },
@@ -38,7 +29,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		showOnMobile,
 		showOnDesktop,
 		labelColour,
-		labelFontSize,
 		backgroundColour,
 	} = attributes;
 
@@ -127,14 +117,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { labelColour: val } )
 						}
 					/>
-					<SelectControl
-						label={ __( 'Label font size', 'sgs-blocks' ) }
-						value={ labelFontSize || '' }
-						options={ FONT_SIZE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { labelFontSize: val } )
-						}
-						__nextHasNoMarginBottom
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="label"
+						showLineHeight={ false }
 					/>
 					<DesignTokenPicker
 						label={ __(

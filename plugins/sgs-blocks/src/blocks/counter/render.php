@@ -25,17 +25,23 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
-$number          = isset( $attributes['number'] ) ? absint( $attributes['number'] ) : 0;
-$prefix          = isset( $attributes['prefix'] ) ? (string) $attributes['prefix'] : '';
-$suffix          = isset( $attributes['suffix'] ) ? (string) $attributes['suffix'] : '';
-$label           = isset( $attributes['label'] ) ? (string) $attributes['label'] : '';
-$duration        = isset( $attributes['duration'] ) ? absint( $attributes['duration'] ) : 2000;
-$separator       = ! empty( $attributes['separator'] );
-$number_colour   = $attributes['numberColour'] ?? '';
-$label_colour    = $attributes['labelColour'] ?? '';
-$label_font_size = $attributes['labelFontSize'] ?? '';
-$icon            = $attributes['icon'] ?? '';
-$accent_stroke   = ! empty( $attributes['accentStroke'] );
+$number        = isset( $attributes['number'] ) ? absint( $attributes['number'] ) : 0;
+$prefix        = isset( $attributes['prefix'] ) ? (string) $attributes['prefix'] : '';
+$suffix        = isset( $attributes['suffix'] ) ? (string) $attributes['suffix'] : '';
+$label         = isset( $attributes['label'] ) ? (string) $attributes['label'] : '';
+$duration      = isset( $attributes['duration'] ) ? absint( $attributes['duration'] ) : 2000;
+$separator     = ! empty( $attributes['separator'] );
+$number_colour = $attributes['numberColour'] ?? '';
+$label_colour  = $attributes['labelColour'] ?? '';
+$icon          = $attributes['icon'] ?? '';
+$accent_stroke = ! empty( $attributes['accentStroke'] );
+
+// Per-instance uid for scoped typography CSS.
+$uid = wp_unique_id( 'sgs-counter-' );
+$sel = '.' . $uid . ' .sgs-counter__label';
+
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-typography.php';
+$typo_css = sgs_typography_css_rule( $attributes, 'label', $sel );
 
 /**
  * Format a number with thousand separators using en-GB locale.
@@ -55,8 +61,8 @@ function sgs_format_counter_number( int $num, bool $separator ): string {
 
 $formatted_number = sgs_format_counter_number( $number, $separator );
 
-// Wrapper class — preserves SGS-BEM root + optional accent-stroke modifier.
-$wrapper_classes = array( 'sgs-counter' );
+// Wrapper class — preserves SGS-BEM root + optional accent-stroke modifier + uid for scoped typography.
+$wrapper_classes = array( 'sgs-counter', $uid );
 if ( $accent_stroke ) {
 	$wrapper_classes[] = 'sgs-counter--accent-stroke';
 }
@@ -73,13 +79,10 @@ if ( $number_colour ) {
 }
 $number_style_attr = $number_style_parts ? ' style="' . esc_attr( implode( ';', $number_style_parts ) ) . '"' : '';
 
-// Label inline style (colour + font-size).
+// Label inline style (colour only — typography handled via scoped <style> block).
 $label_style_parts = array();
 if ( $label_colour ) {
 	$label_style_parts[] = 'color:' . sgs_colour_value( $label_colour );
-}
-if ( $label_font_size ) {
-	$label_style_parts[] = 'font-size:' . sgs_font_size_value( $label_font_size );
 }
 $label_style_attr = $label_style_parts ? ' style="' . esc_attr( implode( ';', $label_style_parts ) ) . '"' : '';
 
@@ -87,6 +90,9 @@ $label_style_attr = $label_style_parts ? ' style="' . esc_attr( implode( ';', $l
 $full_text = $prefix . $formatted_number . $suffix . ' ' . $label;
 
 ?>
+<?php if ( '' !== $typo_css ) : ?>
+<style><?php echo $typo_css; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_typography_css_rule() output is CSS-safe (numeric values, sanitised unit, whitelisted font-style). ?></style>
+<?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<?php if ( $icon ) : ?>
 		<span class="sgs-counter__icon-placeholder" data-icon="<?php echo esc_attr( $icon ); ?>" aria-hidden="true"></span>

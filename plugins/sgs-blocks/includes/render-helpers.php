@@ -38,6 +38,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-tokens.php';
+require_once __DIR__ . '/helpers-typography.php';
 require_once __DIR__ . '/helpers-colour-wcag.php';
 require_once __DIR__ . '/helpers-media.php';
 require_once __DIR__ . '/helpers-configurator-pricing.php';

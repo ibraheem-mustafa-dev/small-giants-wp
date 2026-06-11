@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/trust-bar",
-	"version": "0.5.3",
+	"version": "0.5.4",
 	"title": "SGS Trust Bar",
 	"category": "sgs-content",
 	"description": "Horizontal strip of trust signals. Three variants: icon-in-circle (default), text-only pill badges, and image-badge (certification logos). Typed mode only: curated items[] repeater. Merged from sgs/certification-bar 2026-05-29 D95.",
@@ -126,14 +126,57 @@
 			"default": "text-muted"
 		},
 		"titleFontSize": {
-			"type": "string"
+			"type": "number"
+		},
+		"titleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"titleFontSizeTablet": {
+			"type": "number"
+		},
+		"titleFontSizeMobile": {
+			"type": "number"
+		},
+		"titleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"titleFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"titleLineHeight": {
+			"type": "number"
+		},
+		"titleLineHeightUnit": {
+			"type": "string",
+			"default": ""
 		},
 		"labelColour": {
 			"type": "string",
 			"default": "text"
 		},
 		"labelFontSize": {
-			"type": "string"
+			"type": "number"
+		},
+		"labelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"labelFontSizeTablet": {
+			"type": "number"
+		},
+		"labelFontSizeMobile": {
+			"type": "number"
+		},
+		"labelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"labelFontStyle": {
+			"type": "string",
+			"default": ""
 		},
 		"badgeSize": {
 			"type": "string",

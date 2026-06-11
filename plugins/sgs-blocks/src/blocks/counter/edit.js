@@ -6,22 +6,13 @@ import {
 } from "@wordpress/block-editor";
 import {
   PanelBody,
-  SelectControl,
   TextControl,
   RangeControl,
   ToggleControl,
 } from "@wordpress/components";
-import { DesignTokenPicker, IconPicker, IconPreview } from "../../components";
-import { colourVar, fontSizeVar } from "../../utils";
+import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls } from "../../components";
+import { colourVar } from "../../utils";
 
-const FONT_SIZE_OPTIONS = [
-  { label: __("Default", "sgs-blocks"), value: "" },
-  { label: __("Small", "sgs-blocks"), value: "small" },
-  { label: __("Medium", "sgs-blocks"), value: "medium" },
-  { label: __("Large", "sgs-blocks"), value: "large" },
-  { label: __("XL", "sgs-blocks"), value: "x-large" },
-  { label: __("XXL", "sgs-blocks"), value: "xx-large" },
-];
 
 function formatNumber(num, separator) {
   if (separator) {
@@ -40,7 +31,6 @@ export default function Edit({ attributes, setAttributes }) {
     separator,
     numberColour,
     labelColour,
-    labelFontSize,
     icon,
     accentStroke,
   } = attributes;
@@ -60,7 +50,6 @@ export default function Edit({ attributes, setAttributes }) {
 
   const labelStyle = {
     color: colourVar(labelColour) || undefined,
-    fontSize: fontSizeVar(labelFontSize) || undefined,
   };
 
   return (
@@ -129,12 +118,11 @@ export default function Edit({ attributes, setAttributes }) {
             value={labelColour}
             onChange={(val) => setAttributes({ labelColour: val })}
           />
-          <SelectControl
-            label={__("Label font size", "sgs-blocks")}
-            value={labelFontSize || ""}
-            options={FONT_SIZE_OPTIONS}
-            onChange={(val) => setAttributes({ labelFontSize: val })}
-            __nextHasNoMarginBottom
+          <TypographyControls
+            attributes={attributes}
+            setAttributes={setAttributes}
+            prefix="label"
+            showLineHeight={true}
           />
         </PanelBody>
 
