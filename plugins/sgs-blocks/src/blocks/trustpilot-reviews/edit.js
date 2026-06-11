@@ -10,6 +10,7 @@ import {
 	InspectorControls,
 	useBlockProps,
 } from '@wordpress/block-editor';
+import { ResponsiveControl } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
@@ -255,27 +256,25 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ VARIANT_OPTIONS }
 						onChange={ ( value ) => setAttributes( { variant: value } ) }
 					/>
-					<RangeControl
-						label={ __( 'Columns (desktop)', 'sgs-blocks' ) }
-						value={ columns }
-						onChange={ ( value ) => setAttributes( { columns: value } ) }
-						min={ 1 }
-						max={ 6 }
-					/>
-					<RangeControl
-						label={ __( 'Columns (tablet)', 'sgs-blocks' ) }
-						value={ columnsTablet }
-						onChange={ ( value ) => setAttributes( { columnsTablet: value } ) }
-						min={ 1 }
-						max={ 4 }
-					/>
-					<RangeControl
-						label={ __( 'Columns (mobile)', 'sgs-blocks' ) }
-						value={ columnsMobile }
-						onChange={ ( value ) => setAttributes( { columnsMobile: value } ) }
-						min={ 1 }
-						max={ 2 }
-					/>
+					<ResponsiveControl label={ __( 'Columns', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'columns',
+								tablet:  'columnsTablet',
+								mobile:  'columnsMobile',
+							};
+							const maxMap = { desktop: 6, tablet: 4, mobile: 2 };
+							return (
+								<RangeControl
+									value={ attributes[ attrMap[ breakpoint ] ] }
+									onChange={ ( value ) => setAttributes( { [ attrMap[ breakpoint ] ]: value } ) }
+									min={ 1 }
+									max={ maxMap[ breakpoint ] }
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
+					</ResponsiveControl>
 					<SelectControl
 						label={ __( 'Theme', 'sgs-blocks' ) }
 						value={ theme }

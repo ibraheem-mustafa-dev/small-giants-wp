@@ -9,6 +9,7 @@ import {
   SelectControl,
 } from "@wordpress/components";
 import { shadowVar } from "../../utils";
+import { ResponsiveControl } from "../../components";
 import {
   ResponsiveSpacingPanel,
   ContentBandPanel,
@@ -182,31 +183,26 @@ export default function Edit({ attributes, setAttributes }) {
           <LayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
           <hr style={ { margin: "16px 0" } } />
           <WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
-          <SelectControl
-            label={ __( "Min height", "sgs-blocks" ) }
-            value={ attributes.minHeight || "" }
-            options={ MIN_HEIGHT_OPTIONS }
-            onChange={ ( val ) => setAttributes( { minHeight: val } ) }
-            help={ __(
-              "Desktop / base. Tablet and mobile override it at narrower widths.",
-              "sgs-blocks",
-            ) }
-            __nextHasNoMarginBottom
-          />
-          <SelectControl
-            label={ __( "Min height (tablet)", "sgs-blocks" ) }
-            value={ attributes.minHeightTablet || "" }
-            options={ MIN_HEIGHT_OPTIONS }
-            onChange={ ( val ) => setAttributes( { minHeightTablet: val } ) }
-            __nextHasNoMarginBottom
-          />
-          <SelectControl
-            label={ __( "Min height (mobile)", "sgs-blocks" ) }
-            value={ attributes.minHeightMobile || "" }
-            options={ MIN_HEIGHT_OPTIONS }
-            onChange={ ( val ) => setAttributes( { minHeightMobile: val } ) }
-            __nextHasNoMarginBottom
-          />
+          <ResponsiveControl label={ __( "Min height", "sgs-blocks" ) }>
+            { ( breakpoint ) => {
+              const attrMap = {
+                desktop: "minHeight",
+                tablet:  "minHeightTablet",
+                mobile:  "minHeightMobile",
+              };
+              return (
+                <SelectControl
+                  value={ attributes[ attrMap[ breakpoint ] ] || "" }
+                  options={ MIN_HEIGHT_OPTIONS }
+                  onChange={ ( val ) => setAttributes( { [ attrMap[ breakpoint ] ]: val } ) }
+                  help={ breakpoint === "desktop"
+                    ? __( "Desktop / base. Tablet and mobile override it at narrower widths.", "sgs-blocks" )
+                    : undefined }
+                  __nextHasNoMarginBottom
+                />
+              );
+            } }
+          </ResponsiveControl>
           {/* Container-specific: HTML tag selector. Composite blocks have fixed tags. */}
           <SelectControl
             label={ __( "HTML tag", "sgs-blocks" ) }

@@ -7,11 +7,11 @@ import {
 import {
 	PanelBody,
 	SelectControl,
-	RangeControl,
 	RadioControl,
 	ToggleControl,
+	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, TypographyControls } from '../../components';
 import { colourVar } from '../../utils';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
@@ -63,25 +63,37 @@ const TEXT_ALIGN_OPTIONS = [
 	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
 ];
 
-const FONT_WEIGHT_OPTIONS = [
-	{ label: __( 'Regular (400)', 'sgs-blocks' ), value: '400' },
-	{ label: __( 'Medium (500)', 'sgs-blocks' ), value: '500' },
-	{ label: __( 'Semi-bold (600)', 'sgs-blocks' ), value: '600' },
-	{ label: __( 'Bold (700)', 'sgs-blocks' ), value: '700' },
-	{ label: __( 'Extra-bold (800)', 'sgs-blocks' ), value: '800' },
+const LETTER_SPACING_UNITS = [
+	{ value: 'em', label: 'em', default: 0 },
+	{ value: 'rem', label: 'rem', default: 0 },
+	{ value: 'px', label: 'px', default: 0 },
 ];
 
-const UNIT_OPTIONS_EM = [
-	{ label: 'em', value: 'em' },
-	{ label: 'rem', value: 'rem' },
-	{ label: 'px', value: 'px' },
-];
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const UNIT_OPTIONS_PX = [
-	{ label: 'px', value: 'px' },
-	{ label: 'em', value: 'em' },
-	{ label: 'rem', value: 'rem' },
-];
+function composeUnit( num, unit ) {
+	if ( num === undefined || num === null || num === '' ) {
+		return '';
+	}
+	return `${ num }${ unit || '' }`;
+}
+
+function parseUnit( raw, currentUnit ) {
+	if ( ! raw && raw !== 0 ) {
+		return { num: undefined, unit: currentUnit || 'em' };
+	}
+	const str = String( raw ).trim();
+	if ( '' === str ) {
+		return { num: undefined, unit: currentUnit || 'em' };
+	}
+	const match = str.match( /^([\d.+-][\d.]*)\s*([a-z%]*)$/i );
+	if ( match ) {
+		const num = parseFloat( match[ 1 ] );
+		const unit = match[ 2 ] || currentUnit || 'em';
+		return { num: isNaN( num ) ? undefined : num, unit };
+	}
+	return { num: undefined, unit: currentUnit || 'em' };
+}
 
 // ─── Inline style builder ─────────────────────────────────────────────────────
 
@@ -147,6 +159,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		fontStyle,
 		textDecoration,
 		inheritStyle,
+		letterSpacing,
+		letterSpacingUnit,
+		textTransform,
 	} = attributes;
 
 	const isSubheading = headingRole === 'subheading';
@@ -220,65 +235,29 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ /* ── Typography panel ── */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<div className="sgs-inspector-row">
-						<RangeControl
-							label={ __( 'Font size (desktop)', 'sgs-blocks' ) }
-							value={ attributes.fontSize }
-							onChange={ ( val ) => setAttributes( { fontSize: val } ) }
-							min={ 8 }
-							max={ 120 }
-							step={ 1 }
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Unit', 'sgs-blocks' ) }
-							value={ attributes.fontSizeUnit }
-							options={ UNIT_OPTIONS_PX }
-							onChange={ ( val ) => setAttributes( { fontSizeUnit: val } ) }
-							__nextHasNoMarginBottom
-						/>
-					</div>
-					<div className="sgs-inspector-row">
-						<RangeControl
-							label={ __( 'Font size (tablet)', 'sgs-blocks' ) }
-							value={ attributes.fontSizeTablet || '' }
-							onChange={ ( val ) => setAttributes( { fontSizeTablet: val } ) }
-							min={ 8 }
-							max={ 120 }
-							step={ 1 }
-							__nextHasNoMarginBottom
-							allowReset
-						/>
-						<RangeControl
-							label={ __( 'Font size (mobile)', 'sgs-blocks' ) }
-							value={ attributes.fontSizeMobile || '' }
-							onChange={ ( val ) => setAttributes( { fontSizeMobile: val } ) }
-							min={ 8 }
-							max={ 96 }
-							step={ 1 }
-							__nextHasNoMarginBottom
-							allowReset
-						/>
-					</div>
-					<SelectControl
-						label={ __( 'Font weight', 'sgs-blocks' ) }
-						value={ attributes.fontWeight }
-						options={ FONT_WEIGHT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { fontWeight: val } ) }
-						__nextHasNoMarginBottom
+					{ /*
+					 * Font size (responsive) + line height + font weight + font style
+					 * via shared TypographyControls.
+					 * Handles: fontSize/fontSizeUnit/fontSizeTablet/fontSizeMobile
+					 *           lineHeight/lineHeightUnit
+					 *           fontWeight / fontStyle
+					 */ }
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+						showSize={ true }
+						showWeight={ true }
+						showStyle={ true }
+						showLineHeight={ true }
+						showResponsive={ true }
 					/>
+
 					<SelectControl
 						label={ __( 'Text transform', 'sgs-blocks' ) }
-						value={ attributes.textTransform }
+						value={ textTransform }
 						options={ TEXT_TRANSFORM_OPTIONS }
 						onChange={ ( val ) => setAttributes( { textTransform: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Font style', 'sgs-blocks' ) }
-						value={ fontStyle }
-						options={ FONT_STYLE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { fontStyle: val } ) }
 						__nextHasNoMarginBottom
 					/>
 					<SelectControl
@@ -288,42 +267,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { textDecoration: val } ) }
 						__nextHasNoMarginBottom
 					/>
-					<div className="sgs-inspector-row">
-						<RangeControl
-							label={ __( 'Line height', 'sgs-blocks' ) }
-							value={ attributes.lineHeight }
-							onChange={ ( val ) => setAttributes( { lineHeight: val } ) }
-							min={ 0.8 }
-							max={ 3 }
-							step={ 0.05 }
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Unit', 'sgs-blocks' ) }
-							value={ attributes.lineHeightUnit }
-							options={ UNIT_OPTIONS_EM }
-							onChange={ ( val ) => setAttributes( { lineHeightUnit: val } ) }
-							__nextHasNoMarginBottom
-						/>
-					</div>
-					<div className="sgs-inspector-row">
-						<RangeControl
-							label={ __( 'Letter spacing', 'sgs-blocks' ) }
-							value={ attributes.letterSpacing }
-							onChange={ ( val ) => setAttributes( { letterSpacing: val } ) }
-							min={ -0.1 }
-							max={ 0.5 }
-							step={ 0.01 }
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Unit', 'sgs-blocks' ) }
-							value={ attributes.letterSpacingUnit }
-							options={ UNIT_OPTIONS_EM }
-							onChange={ ( val ) => setAttributes( { letterSpacingUnit: val } ) }
-							__nextHasNoMarginBottom
-						/>
-					</div>
+
+					{ /* Letter spacing — UnitControl (number + unit in one input) */ }
+					<UnitControl
+						label={ __( 'Letter spacing', 'sgs-blocks' ) }
+						value={ composeUnit( letterSpacing, letterSpacingUnit ) }
+						units={ LETTER_SPACING_UNITS }
+						onChange={ ( raw ) => {
+							const { num, unit } = parseUnit( raw, letterSpacingUnit || 'em' );
+							setAttributes( { letterSpacing: num, letterSpacingUnit: unit } );
+						} }
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 
 				{ /* ── Layout panel ── */ }

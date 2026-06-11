@@ -8,8 +8,9 @@ import {
 	ToggleControl,
 	Notice,
 	__experimentalHStack as HStack,
+	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { IconPicker } from '../../components';
+import { IconPicker, TypographyControls, ResponsiveControl } from '../../components';
 
 const PRESET_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
@@ -42,18 +43,6 @@ const WIDTH_OPTIONS = [
 	{ label: __( 'Custom', 'sgs-blocks' ), value: 'custom' },
 ];
 
-const FONT_WEIGHT_OPTIONS = [
-	{ label: __( 'Regular (400)', 'sgs-blocks' ), value: '400' },
-	{ label: __( 'Medium (500)', 'sgs-blocks' ), value: '500' },
-	{ label: __( 'Semi-bold (600)', 'sgs-blocks' ), value: '600' },
-	{ label: __( 'Bold (700)', 'sgs-blocks' ), value: '700' },
-];
-
-const FONT_STYLE_OPTIONS = [
-	{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
-	{ label: __( 'Italic', 'sgs-blocks' ), value: 'italic' },
-];
-
 const TEXT_TRANSFORM_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Uppercase', 'sgs-blocks' ), value: 'uppercase' },
@@ -66,12 +55,6 @@ const TEXT_DECORATION_OPTIONS = [
 	{ label: __( 'Underline', 'sgs-blocks' ), value: 'underline' },
 	{ label: __( 'Overline', 'sgs-blocks' ), value: 'overline' },
 	{ label: __( 'Strike-through', 'sgs-blocks' ), value: 'line-through' },
-];
-
-const SIZE_UNIT_OPTIONS = [
-	{ label: 'px', value: 'px' },
-	{ label: 'em', value: 'em' },
-	{ label: 'rem', value: 'rem' },
 ];
 
 const BORDER_STYLE_OPTIONS = [
@@ -88,6 +71,53 @@ const EASING_OPTIONS = [
 	{ label: 'ease-in-out', value: 'ease-in-out' },
 	{ label: 'linear', value: 'linear' },
 ];
+
+// UnitControl unit sets.
+const CUSTOM_WIDTH_UNITS = [
+	{ value: 'px', label: 'px', default: 200 },
+	{ value: '%', label: '%', default: 50 },
+];
+
+const MIN_HEIGHT_UNITS = [
+	{ value: 'px', label: 'px', default: 48 },
+	{ value: 'em', label: 'em', default: 3 },
+	{ value: 'rem', label: 'rem', default: 3 },
+];
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function composeUnit( num, unit ) {
+	if ( num === undefined || num === null || num === '' ) {
+		return '';
+	}
+	return `${ num }${ unit || '' }`;
+}
+
+function parseUnit( raw, currentUnit ) {
+	if ( ! raw && raw !== 0 ) {
+		return { num: undefined, unit: currentUnit || 'px' };
+	}
+	const str = String( raw ).trim();
+	if ( '' === str ) {
+		return { num: undefined, unit: currentUnit || 'px' };
+	}
+	const match = str.match( /^([\d.]+)\s*([a-z%]*)$/i );
+	if ( match ) {
+		const num = parseFloat( match[ 1 ] );
+		const unit = match[ 2 ] || currentUnit || 'px';
+		return { num: isNaN( num ) ? undefined : num, unit };
+	}
+	return { num: undefined, unit: currentUnit || 'px' };
+}
+
+// Per-breakpoint attr names for minHeight (value + unit are separate attrs).
+const MIN_HEIGHT_BREAKPOINTS = {
+	desktop: { value: 'minHeight', unit: 'minHeightUnit' },
+	tablet:  { value: 'minHeightTablet', unit: 'minHeightTabletUnit' },
+	mobile:  { value: 'minHeightMobile', unit: 'minHeightMobileUnit' },
+};
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -121,8 +151,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		textTransform,
 		textDecoration,
 		fontSize,
-		fontSizeTablet,
-		fontSizeMobile,
 		fontSizeUnit,
 		lineHeight,
 		letterSpacing,
@@ -354,92 +382,65 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 					{ 'custom' === widthType && (
-						<HStack spacing={ 2 } style={ { marginTop: '8px' } }>
-							<TextControl
-								label={ __( 'Custom width', 'sgs-blocks' ) }
-								value={ customWidth || '' }
-								type="number"
-								onChange={ ( val ) => setAttributes( { customWidth: val ? Number( val ) : null } ) }
-								__nextHasNoMarginBottom
-							/>
-							<SelectControl
-								label={ __( 'Unit', 'sgs-blocks' ) }
-								value={ customWidthUnit }
-								options={ [ { label: 'px', value: 'px' }, { label: '%', value: '%' } ] }
-								onChange={ ( val ) => setAttributes( { customWidthUnit: val } ) }
-								__nextHasNoMarginBottom
-							/>
-						</HStack>
+						<UnitControl
+							label={ __( 'Custom width', 'sgs-blocks' ) }
+							value={ composeUnit( customWidth, customWidthUnit ) }
+							units={ CUSTOM_WIDTH_UNITS }
+							onChange={ ( raw ) => {
+								const { num, unit } = parseUnit( raw, customWidthUnit || 'px' );
+								setAttributes( { customWidth: num, customWidthUnit: unit } );
+							} }
+							__nextHasNoMarginBottom
+							style={ { marginTop: '8px' } }
+						/>
 					) }
-					<p style={ { fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', margin: '8px 0 4px' } }>{ __( 'Min height', 'sgs-blocks' ) }</p>
-					<HStack spacing={ 2 }>
-						<TextControl
-							label={ __( 'Desktop', 'sgs-blocks' ) }
-							value={ minHeight || '' }
-							type="number"
-							onChange={ ( val ) => setAttributes( { minHeight: val ? Number( val ) : null } ) }
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Unit', 'sgs-blocks' ) }
-							value={ minHeightUnit }
-							options={ SIZE_UNIT_OPTIONS }
-							onChange={ ( val ) => setAttributes( { minHeightUnit: val } ) }
-							__nextHasNoMarginBottom
-						/>
-					</HStack>
-					<HStack spacing={ 2 } style={ { marginTop: '8px' } }>
-						<TextControl
-							label={ __( 'Tablet', 'sgs-blocks' ) }
-							value={ minHeightTablet || '' }
-							type="number"
-							onChange={ ( val ) => setAttributes( { minHeightTablet: val ? Number( val ) : null } ) }
-							help={ __( '≤1023px', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Unit', 'sgs-blocks' ) }
-							value={ minHeightTabletUnit }
-							options={ SIZE_UNIT_OPTIONS }
-							onChange={ ( val ) => setAttributes( { minHeightTabletUnit: val } ) }
-							__nextHasNoMarginBottom
-						/>
-					</HStack>
-					<HStack spacing={ 2 } style={ { marginTop: '8px' } }>
-						<TextControl
-							label={ __( 'Mobile', 'sgs-blocks' ) }
-							value={ minHeightMobile || '' }
-							type="number"
-							onChange={ ( val ) => setAttributes( { minHeightMobile: val ? Number( val ) : null } ) }
-							help={ __( '≤767px', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Unit', 'sgs-blocks' ) }
-							value={ minHeightMobileUnit }
-							options={ SIZE_UNIT_OPTIONS }
-							onChange={ ( val ) => setAttributes( { minHeightMobileUnit: val } ) }
-							__nextHasNoMarginBottom
-						/>
-					</HStack>
+
+					{ /* Min height — ResponsiveControl with one UnitControl per breakpoint.
+					   Each breakpoint has its own number attr AND its own unit attr. */ }
+					<ResponsiveControl label={ __( 'Min height', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => {
+							const bp = MIN_HEIGHT_BREAKPOINTS[ breakpoint ];
+							const numVal = attributes[ bp.value ];
+							const unitVal = attributes[ bp.unit ] || 'px';
+							return (
+								<UnitControl
+									label={ __( 'Min height', 'sgs-blocks' ) }
+									hideLabelFromVision
+									value={ composeUnit( numVal, unitVal ) }
+									units={ MIN_HEIGHT_UNITS }
+									onChange={ ( raw ) => {
+										const { num, unit } = parseUnit( raw, unitVal );
+										setAttributes( {
+											[ bp.value ]: num,
+											[ bp.unit ]: unit,
+										} );
+									} }
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
+					</ResponsiveControl>
 				</PanelBody>
 
 				{ /* Typography — custom mode only */ }
 				{ isCustom && (
 					<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-						<SelectControl
-							label={ __( 'Font weight', 'sgs-blocks' ) }
-							value={ fontWeight }
-							options={ [ { label: __( '— inherit —', 'sgs-blocks' ), value: '' }, ...FONT_WEIGHT_OPTIONS ] }
-							onChange={ ( val ) => setAttributes( { fontWeight: val } ) }
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Font style', 'sgs-blocks' ) }
-							value={ fontStyle }
-							options={ FONT_STYLE_OPTIONS }
-							onChange={ ( val ) => setAttributes( { fontStyle: val } ) }
-							__nextHasNoMarginBottom
+						{ /*
+						 * Font size (responsive) + line height + font weight + font style
+						 * via shared TypographyControls.
+						 * Handles: fontSize/fontSizeUnit/fontSizeTablet/fontSizeMobile
+						 *           lineHeight/lineHeightUnit
+						 *           fontWeight / fontStyle
+						 */ }
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							prefix=""
+							showSize={ true }
+							showWeight={ true }
+							showStyle={ true }
+							showLineHeight={ true }
+							showResponsive={ true }
 						/>
 						<SelectControl
 							label={ __( 'Text transform', 'sgs-blocks' ) }
@@ -453,49 +454,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							value={ textDecoration }
 							options={ TEXT_DECORATION_OPTIONS }
 							onChange={ ( val ) => setAttributes( { textDecoration: val } ) }
-							__nextHasNoMarginBottom
-						/>
-						<RangeControl
-							label={ __( 'Font size — desktop', 'sgs-blocks' ) }
-							value={ fontSize || '' }
-							onChange={ ( val ) => setAttributes( { fontSize: val } ) }
-							min={ 8 }
-							max={ 72 }
-							step={ 1 }
-							__nextHasNoMarginBottom
-						/>
-						<RangeControl
-							label={ __( 'Font size — tablet', 'sgs-blocks' ) }
-							value={ fontSizeTablet || '' }
-							onChange={ ( val ) => setAttributes( { fontSizeTablet: val } ) }
-							min={ 8 }
-							max={ 72 }
-							step={ 1 }
-							__nextHasNoMarginBottom
-						/>
-						<RangeControl
-							label={ __( 'Font size — mobile', 'sgs-blocks' ) }
-							value={ fontSizeMobile || '' }
-							onChange={ ( val ) => setAttributes( { fontSizeMobile: val } ) }
-							min={ 8 }
-							max={ 72 }
-							step={ 1 }
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Font size unit', 'sgs-blocks' ) }
-							value={ fontSizeUnit }
-							options={ SIZE_UNIT_OPTIONS }
-							onChange={ ( val ) => setAttributes( { fontSizeUnit: val } ) }
-							__nextHasNoMarginBottom
-						/>
-						<RangeControl
-							label={ __( 'Line height', 'sgs-blocks' ) }
-							value={ lineHeight || '' }
-							onChange={ ( val ) => setAttributes( { lineHeight: val } ) }
-							min={ 0 }
-							max={ 3 }
-							step={ 0.1 }
 							__nextHasNoMarginBottom
 						/>
 						<RangeControl

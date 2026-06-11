@@ -18,7 +18,7 @@ import {
 	ProductTaxonomyChecklist,
 	ProductHandpickPanel,
 } from './components/product-panels';
-import { DesignTokenPicker, ResponsiveControl } from '../../components';
+import { DesignTokenPicker } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, spacingVar } from '../../utils';
 
@@ -445,39 +445,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
-					<ResponsiveControl
-						label={ __( 'Columns', 'sgs-blocks' ) }
-					>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'columns',
-								tablet: 'columnsTablet',
-								mobile: 'columnsMobile',
-							};
-							return (
-								<RangeControl
-									value={
-										attributes[
-											attrMap[ breakpoint ]
-										]
-									}
-									onChange={ ( val ) =>
-										setAttributes( {
-											[ attrMap[ breakpoint ] ]:
-												val,
-										} )
-									}
-									min={ 1 }
-									max={
-										breakpoint === 'mobile'
-											? 2
-											: 4
-									}
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
+					{ /* Responsive columns (desktop/tablet/mobile) are provided by the
+					     ContainerWrapperControls LayoutPanel above when layout=grid.
+					     Duplicate direct controls removed (Rule 3, Step 7b). */ }
 					<SelectControl
 						label={ __( 'Aspect ratio', 'sgs-blocks' ) }
 						value={ aspectRatio }

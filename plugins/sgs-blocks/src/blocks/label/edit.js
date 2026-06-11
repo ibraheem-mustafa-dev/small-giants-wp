@@ -9,8 +9,9 @@ import {
 	SelectControl,
 	RangeControl,
 	TextControl,
+	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, TypographyControls } from '../../components';
 import { colourVar } from '../../utils';
 
 const TAG_OPTIONS = [
@@ -47,17 +48,44 @@ const FONT_WEIGHT_OPTIONS = [
 	{ label: __( 'Bold (700)', 'sgs-blocks' ), value: '700' },
 ];
 
-const UNIT_OPTIONS_EM = [
-	{ label: 'em', value: 'em' },
-	{ label: 'rem', value: 'rem' },
-	{ label: 'px', value: 'px' },
+const LETTER_SPACING_UNITS = [
+	{ value: 'em', label: 'em', default: 0.08 },
+	{ value: 'rem', label: 'rem', default: 0.08 },
+	{ value: 'px', label: 'px', default: 1 },
 ];
 
-const UNIT_OPTIONS_PX = [
-	{ label: 'px', value: 'px' },
-	{ label: 'em', value: 'em' },
-	{ label: 'rem', value: 'rem' },
+const LINE_HEIGHT_UNITS = [
+	{ value: '', label: '—', default: 1.2 },
+	{ value: 'em', label: 'em', default: 1.2 },
+	{ value: 'rem', label: 'rem', default: 1.2 },
+	{ value: 'px', label: 'px', default: 18 },
 ];
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function composeUnit( num, unit ) {
+	if ( num === undefined || num === null || num === '' ) {
+		return '';
+	}
+	return `${ num }${ unit || '' }`;
+}
+
+function parseUnit( raw, currentUnit ) {
+	if ( ! raw && raw !== 0 ) {
+		return { num: undefined, unit: currentUnit || 'em' };
+	}
+	const str = String( raw ).trim();
+	if ( '' === str ) {
+		return { num: undefined, unit: currentUnit || 'em' };
+	}
+	const match = str.match( /^([\d.+-][\d.]*)\s*([a-z%]*)$/i );
+	if ( match ) {
+		const num = parseFloat( match[ 1 ] );
+		const unit = match[ 2 ] !== undefined ? match[ 2 ] : ( currentUnit || 'em' );
+		return { num: isNaN( num ) ? undefined : num, unit };
+	}
+	return { num: undefined, unit: currentUnit || 'em' };
+}
 
 /**
  * Build the inline style object for the label element.
@@ -201,54 +229,24 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Typography', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<div className="sgs-inspector-row">
-						<RangeControl
-							label={ __( 'Font size (desktop)', 'sgs-blocks' ) }
-							value={ fontSize }
-							onChange={ ( val ) =>
-								setAttributes( { fontSize: val } )
-							}
-							min={ 8 }
-							max={ 48 }
-							step={ 1 }
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Unit', 'sgs-blocks' ) }
-							value={ fontSizeUnit }
-							options={ UNIT_OPTIONS_PX }
-							onChange={ ( val ) =>
-								setAttributes( { fontSizeUnit: val } )
-							}
-							__nextHasNoMarginBottom
-						/>
-					</div>
-					<div className="sgs-inspector-row">
-						<RangeControl
-							label={ __( 'Font size (tablet)', 'sgs-blocks' ) }
-							value={ fontSizeTablet || '' }
-							onChange={ ( val ) =>
-								setAttributes( { fontSizeTablet: val } )
-							}
-							min={ 8 }
-							max={ 48 }
-							step={ 1 }
-							__nextHasNoMarginBottom
-							allowReset
-						/>
-						<RangeControl
-							label={ __( 'Font size (mobile)', 'sgs-blocks' ) }
-							value={ fontSizeMobile || '' }
-							onChange={ ( val ) =>
-								setAttributes( { fontSizeMobile: val } )
-							}
-							min={ 8 }
-							max={ 48 }
-							step={ 1 }
-							__nextHasNoMarginBottom
-							allowReset
-						/>
-					</div>
+					{ /*
+					 * Font size (responsive: desktop/tablet/mobile) via TypographyControls.
+					 * Handles: fontSize/fontSizeUnit/fontSizeTablet/fontSizeMobile
+					 * showWeight=false because label uses its own weight SelectControl below
+					 * (fontWeight options are a restricted subset, not the full weight set).
+					 * showLineHeight=false / showStyle=false because those use UnitControl below.
+					 */ }
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+						showSize={ true }
+						showWeight={ false }
+						showStyle={ false }
+						showLineHeight={ false }
+						showResponsive={ true }
+					/>
+
 					<SelectControl
 						label={ __( 'Font weight', 'sgs-blocks' ) }
 						value={ fontWeight }
@@ -267,50 +265,31 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
-					<div className="sgs-inspector-row">
-						<RangeControl
-							label={ __( 'Line height', 'sgs-blocks' ) }
-							value={ lineHeight }
-							onChange={ ( val ) =>
-								setAttributes( { lineHeight: val } )
-							}
-							min={ 0.8 }
-							max={ 3 }
-							step={ 0.05 }
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Unit', 'sgs-blocks' ) }
-							value={ lineHeightUnit }
-							options={ UNIT_OPTIONS_EM }
-							onChange={ ( val ) =>
-								setAttributes( { lineHeightUnit: val } )
-							}
-							__nextHasNoMarginBottom
-						/>
-					</div>
-					<div className="sgs-inspector-row">
-						<RangeControl
-							label={ __( 'Letter spacing', 'sgs-blocks' ) }
-							value={ letterSpacing }
-							onChange={ ( val ) =>
-								setAttributes( { letterSpacing: val } )
-							}
-							min={ -0.1 }
-							max={ 0.5 }
-							step={ 0.01 }
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Unit', 'sgs-blocks' ) }
-							value={ letterSpacingUnit }
-							options={ UNIT_OPTIONS_EM }
-							onChange={ ( val ) =>
-								setAttributes( { letterSpacingUnit: val } )
-							}
-							__nextHasNoMarginBottom
-						/>
-					</div>
+
+					{ /* Line height — UnitControl (number + unit in one input) */ }
+					<UnitControl
+						label={ __( 'Line height', 'sgs-blocks' ) }
+						value={ composeUnit( lineHeight, lineHeightUnit ) }
+						units={ LINE_HEIGHT_UNITS }
+						onChange={ ( raw ) => {
+							const { num, unit } = parseUnit( raw, lineHeightUnit !== undefined ? lineHeightUnit : '' );
+							setAttributes( { lineHeight: num, lineHeightUnit: unit } );
+						} }
+						__nextHasNoMarginBottom
+					/>
+
+					{ /* Letter spacing — UnitControl (number + unit in one input) */ }
+					<UnitControl
+						label={ __( 'Letter spacing', 'sgs-blocks' ) }
+						value={ composeUnit( letterSpacing, letterSpacingUnit ) }
+						units={ LETTER_SPACING_UNITS }
+						onChange={ ( raw ) => {
+							const { num, unit } = parseUnit( raw, letterSpacingUnit || 'em' );
+							setAttributes( { letterSpacing: num, letterSpacingUnit: unit } );
+						} }
+						__nextHasNoMarginBottom
+					/>
+
 					<TextControl
 						label={ __( 'Text decoration', 'sgs-blocks' ) }
 						value={ textDecoration }

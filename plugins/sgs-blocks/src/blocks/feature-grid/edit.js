@@ -9,7 +9,9 @@ import {
 	PanelBody,
 	SelectControl,
 	RangeControl,
+	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
+import { ResponsiveControl } from '../../components';
 
 const LAYOUT_MODE_OPTIONS = [
 	{
@@ -146,81 +148,46 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 
 					{ 'auto-flex' === layoutMode && (
-						<>
-							<div
-								style={ {
-									display: 'flex',
-									gap: '8px',
-									alignItems: 'flex-end',
-								} }
-							>
-								<div style={ { flex: 1 } }>
-									<RangeControl
-										label={ __(
-											'Min item width',
-											'sgs-blocks'
-										) }
-										value={ minItemWidth }
-										onChange={ ( val ) =>
-											setAttributes( {
-												minItemWidth: val,
-											} )
-										}
-										min={ 120 }
-										max={ 400 }
-										step={ 10 }
-										__nextHasNoMarginBottom
-									/>
-								</div>
-								<SelectControl
-									label={ __( 'Unit', 'sgs-blocks' ) }
-									value={ minItemWidthUnit }
-									options={ UNIT_OPTIONS }
-									onChange={ ( val ) =>
-										setAttributes( {
-											minItemWidthUnit: val,
-										} )
-									}
-									style={ { width: '70px' } }
-									__nextHasNoMarginBottom
-								/>
-							</div>
-						</>
+						<UnitControl
+							label={ __( 'Min item width', 'sgs-blocks' ) }
+							value={ `${ minItemWidth }${ minItemWidthUnit || 'px' }` }
+							units={ [
+								{ value: 'px',  label: 'px',  default: 200 },
+								{ value: 'em',  label: 'em',  default: 10 },
+								{ value: 'rem', label: 'rem', default: 10 },
+							] }
+							onChange={ ( val ) => {
+								const unit = val?.replace( /[\d.]+/, '' ) || 'px';
+								const num  = parseFloat( val ) || 120;
+								setAttributes( { minItemWidth: num, minItemWidthUnit: unit } );
+							} }
+							__nextHasNoMarginBottom
+						/>
 					) }
 
 					{ 'fixed-columns' === layoutMode && (
-						<>
-							<RangeControl
-								label={ __( 'Columns — desktop', 'sgs-blocks' ) }
-								value={ columnsDesktop }
-								onChange={ ( val ) =>
-									setAttributes( { columnsDesktop: val } )
-								}
-								min={ 1 }
-								max={ 6 }
-								__nextHasNoMarginBottom
-							/>
-							<RangeControl
-								label={ __( 'Columns — tablet', 'sgs-blocks' ) }
-								value={ columnsTablet }
-								onChange={ ( val ) =>
-									setAttributes( { columnsTablet: val } )
-								}
-								min={ 1 }
-								max={ 4 }
-								__nextHasNoMarginBottom
-							/>
-							<RangeControl
-								label={ __( 'Columns — mobile', 'sgs-blocks' ) }
-								value={ columnsMobile }
-								onChange={ ( val ) =>
-									setAttributes( { columnsMobile: val } )
-								}
-								min={ 1 }
-								max={ 2 }
-								__nextHasNoMarginBottom
-							/>
-						</>
+						<ResponsiveControl label={ __( 'Columns', 'sgs-blocks' ) }>
+							{ ( breakpoint ) => {
+								const attrMap = {
+									desktop: 'columnsDesktop',
+									tablet:  'columnsTablet',
+									mobile:  'columnsMobile',
+								};
+								const maxMap = { desktop: 6, tablet: 4, mobile: 2 };
+								const attr = attrMap[ breakpoint ];
+								return (
+									<RangeControl
+										value={ attributes[ attr ] }
+										onChange={ ( val ) =>
+											setAttributes( { [ attr ]: val } )
+										}
+										min={ 1 }
+										max={ maxMap[ breakpoint ] }
+										__nextHasNoMarginBottom
+									/>
+								);
+							} }
+						</ResponsiveControl>
 					) }
 				</PanelBody>
 

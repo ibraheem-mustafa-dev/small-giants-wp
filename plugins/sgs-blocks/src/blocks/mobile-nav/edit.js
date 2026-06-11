@@ -16,7 +16,6 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
 import { useBlockProps, InspectorControls, InnerBlocks } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -24,10 +23,9 @@ import {
 	ToggleControl,
 	TextControl,
 	RangeControl,
-	Button,
 	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker } from '../../components';
+import { DesignTokenPicker, IconPicker, ResponsiveControl } from '../../components';
 import ColoursPanel from './ColoursPanel';
 import NavigationPanel from './NavigationPanel';
 import AnimationPanel from './AnimationPanel';
@@ -137,11 +135,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		desktopHamburger,
 	} = attributes;
 
-	// ── Responsive toggle state (editor-only, not block attributes) ──
-	const [ showDrawerWidthResponsive, setShowDrawerWidthResponsive ] = useState( false );
-	const [ showLogoResponsive, setShowLogoResponsive ] = useState( false );
-	const [ showCloseButtonResponsive, setShowCloseButtonResponsive ] = useState( false );
-	const [ showSocialSizeResponsive, setShowSocialSizeResponsive ] = useState( false );
 
 	const isSlideVariant = variant === 'slide-left' || variant === 'slide-right';
 
@@ -210,55 +203,38 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ isSlideVariant && (
 						<>
-							<RangeControl
-								label={ __( 'Drawer Width (%)', 'sgs-blocks' ) }
-								help={ __( 'Percentage of viewport width. Slide variants only.', 'sgs-blocks' ) }
-								value={ drawerWidth }
-								min={ 60 }
-								max={ 100 }
-								step={ 5 }
-								onChange={ ( value ) => setAttributes( { drawerWidth: value } ) }
-							/>
-							<Button
-								variant="tertiary"
-								isSmall
-								onClick={ () => setShowDrawerWidthResponsive( ( v ) => ! v ) }
-								style={ { marginBottom: '8px' } }
-							>
-								{ showDrawerWidthResponsive
-									? __( '- Hide responsive overrides', 'sgs-blocks' )
-									: __( '+ Responsive width overrides', 'sgs-blocks' ) }
-							</Button>
-							{ showDrawerWidthResponsive && (
-								<>
-									<RangeControl
-										label={ __( 'Drawer Width — Tablet (%)', 'sgs-blocks' ) }
-										help={ __( 'Override below 768px. Set to 60 to use base value.', 'sgs-blocks' ) }
-										value={ drawerWidthTablet === '' ? 60 : parseInt( drawerWidthTablet, 10 ) }
-										min={ 60 }
-										max={ 100 }
-										step={ 5 }
-										onChange={ ( value ) =>
-											setAttributes( {
-												drawerWidthTablet: value === 60 ? '' : String( value ),
-											} )
-										}
-									/>
-									<RangeControl
-										label={ __( 'Drawer Width — Mobile (%)', 'sgs-blocks' ) }
-										help={ __( 'Override below 480px. Set to 60 to use base value.', 'sgs-blocks' ) }
-										value={ drawerWidthMobile === '' ? 60 : parseInt( drawerWidthMobile, 10 ) }
-										min={ 60 }
-										max={ 100 }
-										step={ 5 }
-										onChange={ ( value ) =>
-											setAttributes( {
-												drawerWidthMobile: value === 60 ? '' : String( value ),
-											} )
-										}
-									/>
-								</>
-							) }
+							<ResponsiveControl label={ __( 'Drawer Width (%)', 'sgs-blocks' ) }>
+								{ ( breakpoint ) => {
+									const attrMap = {
+										desktop: 'drawerWidth',
+										tablet:  'drawerWidthTablet',
+										mobile:  'drawerWidthMobile',
+									};
+									const attr = attrMap[ breakpoint ];
+									const val = breakpoint === 'desktop'
+										? drawerWidth
+										: ( attributes[ attr ] === '' ? 60 : parseInt( attributes[ attr ], 10 ) );
+									return (
+										<RangeControl
+											help={ breakpoint === 'desktop'
+												? __( 'Percentage of viewport width. Slide variants only.', 'sgs-blocks' )
+												: __( 'Override for this breakpoint. Set to 60 to use base value.', 'sgs-blocks' ) }
+											value={ val }
+											min={ 60 }
+											max={ 100 }
+											step={ 5 }
+											onChange={ ( value ) => {
+												if ( breakpoint === 'desktop' ) {
+													setAttributes( { drawerWidth: value } );
+												} else {
+													setAttributes( { [ attr ]: value === 60 ? '' : String( value ) } );
+												}
+											} }
+											__nextHasNoMarginBottom
+										/>
+									);
+								} }
+							</ResponsiveControl>
 							<NumberControl
 								label={ __( 'Max Width (px)', 'sgs-blocks' ) }
 								help={ __( 'Prevents the drawer exceeding this width on large viewports.', 'sgs-blocks' ) }
@@ -291,113 +267,66 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ showLogo && (
 						<>
-							<NumberControl
-								label={ __( 'Logo Max Width (px)', 'sgs-blocks' ) }
-								value={ logoMaxWidth }
-								min={ 60 }
-								max={ 300 }
-								step={ 10 }
-								onChange={ ( value ) =>
-									setAttributes( { logoMaxWidth: parseInt( value, 10 ) || 120 } )
-								}
-							/>
-							<Button
-								variant="tertiary"
-								isSmall
-								onClick={ () => setShowLogoResponsive( ( v ) => ! v ) }
-								style={ { marginBottom: '8px' } }
-							>
-								{ showLogoResponsive
-									? __( '- Hide responsive overrides', 'sgs-blocks' )
-									: __( '+ Responsive logo width overrides', 'sgs-blocks' ) }
-							</Button>
-							{ showLogoResponsive && (
-								<>
-									<NumberControl
-										label={ __( 'Logo Max Width — Tablet (px)', 'sgs-blocks' ) }
-										help={ __( 'Override below 768px. Leave blank to use base value.', 'sgs-blocks' ) }
-										value={ logoMaxWidthTablet }
-										min={ 40 }
-										max={ 300 }
-										step={ 10 }
-										placeholder="—"
-										onChange={ ( value ) =>
-											setAttributes( {
-												logoMaxWidthTablet: value === undefined || value === '' ? '' : String( parseInt( value, 10 ) || '' ),
-											} )
-										}
-									/>
-									<NumberControl
-										label={ __( 'Logo Max Width — Mobile (px)', 'sgs-blocks' ) }
-										help={ __( 'Override below 480px. Leave blank to use base value.', 'sgs-blocks' ) }
-										value={ logoMaxWidthMobile }
-										min={ 40 }
-										max={ 300 }
-										step={ 10 }
-										placeholder="—"
-										onChange={ ( value ) =>
-											setAttributes( {
-												logoMaxWidthMobile: value === undefined || value === '' ? '' : String( parseInt( value, 10 ) || '' ),
-											} )
-										}
-									/>
-								</>
-							) }
+							<ResponsiveControl label={ __( 'Logo Max Width (px)', 'sgs-blocks' ) }>
+								{ ( breakpoint ) => {
+									const attrMap = {
+										desktop: 'logoMaxWidth',
+										tablet:  'logoMaxWidthTablet',
+										mobile:  'logoMaxWidthMobile',
+									};
+									const attr = attrMap[ breakpoint ];
+									return (
+										<NumberControl
+											help={ breakpoint !== 'desktop'
+												? __( 'Leave blank to use base value.', 'sgs-blocks' )
+												: undefined }
+											value={ breakpoint === 'desktop' ? logoMaxWidth : attributes[ attr ] }
+											min={ breakpoint === 'desktop' ? 60 : 40 }
+											max={ 300 }
+											step={ 10 }
+											placeholder={ breakpoint !== 'desktop' ? '—' : undefined }
+											onChange={ ( value ) => {
+												if ( breakpoint === 'desktop' ) {
+													setAttributes( { logoMaxWidth: parseInt( value, 10 ) || 120 } );
+												} else {
+													setAttributes( { [ attr ]: value === undefined || value === '' ? '' : String( parseInt( value, 10 ) || '' ) } );
+												}
+											} }
+										/>
+									);
+								} }
+							</ResponsiveControl>
 						</>
 					) }
-					<NumberControl
-						label={ __( 'Close Button Size (px)', 'sgs-blocks' ) }
-						help={ __( 'Minimum 44px required for WCAG touch target compliance.', 'sgs-blocks' ) }
-						value={ closeButtonSize }
-						min={ 44 }
-						max={ 80 }
-						step={ 2 }
-						onChange={ ( value ) =>
-							setAttributes( { closeButtonSize: Math.max( 44, parseInt( value, 10 ) || 48 ) } )
-						}
-					/>
-					<Button
-						variant="tertiary"
-						isSmall
-						onClick={ () => setShowCloseButtonResponsive( ( v ) => ! v ) }
-						style={ { marginBottom: '8px' } }
-					>
-						{ showCloseButtonResponsive
-							? __( '- Hide responsive overrides', 'sgs-blocks' )
-							: __( '+ Responsive close button overrides', 'sgs-blocks' ) }
-					</Button>
-					{ showCloseButtonResponsive && (
-						<>
-							<NumberControl
-								label={ __( 'Close Button Size — Tablet (px)', 'sgs-blocks' ) }
-								help={ __( 'Override below 768px. Leave blank to use base value.', 'sgs-blocks' ) }
-								value={ closeButtonSizeTablet }
-								min={ 44 }
-								max={ 80 }
-								step={ 2 }
-								placeholder="—"
-								onChange={ ( value ) =>
-									setAttributes( {
-										closeButtonSizeTablet: value === undefined || value === '' ? '' : String( Math.max( 44, parseInt( value, 10 ) || 44 ) ),
-									} )
-								}
-							/>
-							<NumberControl
-								label={ __( 'Close Button Size — Mobile (px)', 'sgs-blocks' ) }
-								help={ __( 'Override below 480px. Leave blank to use base value.', 'sgs-blocks' ) }
-								value={ closeButtonSizeMobile }
-								min={ 44 }
-								max={ 80 }
-								step={ 2 }
-								placeholder="—"
-								onChange={ ( value ) =>
-									setAttributes( {
-										closeButtonSizeMobile: value === undefined || value === '' ? '' : String( Math.max( 44, parseInt( value, 10 ) || 44 ) ),
-									} )
-								}
-							/>
-						</>
-					) }
+					<ResponsiveControl label={ __( 'Close Button Size (px)', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'closeButtonSize',
+								tablet:  'closeButtonSizeTablet',
+								mobile:  'closeButtonSizeMobile',
+							};
+							const attr = attrMap[ breakpoint ];
+							return (
+								<NumberControl
+									help={ breakpoint === 'desktop'
+										? __( 'Minimum 44px required for WCAG touch target compliance.', 'sgs-blocks' )
+										: __( 'Leave blank to use base value.', 'sgs-blocks' ) }
+									value={ breakpoint === 'desktop' ? closeButtonSize : attributes[ attr ] }
+									min={ 44 }
+									max={ 80 }
+									step={ 2 }
+									placeholder={ breakpoint !== 'desktop' ? '—' : undefined }
+									onChange={ ( value ) => {
+										if ( breakpoint === 'desktop' ) {
+											setAttributes( { closeButtonSize: Math.max( 44, parseInt( value, 10 ) || 48 ) } );
+										} else {
+											setAttributes( { [ attr ]: value === undefined || value === '' ? '' : String( Math.max( 44, parseInt( value, 10 ) || 44 ) ) } );
+										}
+									} }
+								/>
+							);
+						} }
+					</ResponsiveControl>
 					<SelectControl
 						label={ __( 'Close Button Style', 'sgs-blocks' ) }
 						value={ closeButtonStyle }
@@ -520,59 +449,35 @@ export default function Edit( { attributes, setAttributes } ) {
 								options={ SOCIAL_STYLE_OPTIONS }
 								onChange={ ( value ) => setAttributes( { socialStyle: value } ) }
 							/>
-							<NumberControl
-								label={ __( 'Icon Size (px)', 'sgs-blocks' ) }
-								help={ __( 'Minimum 44px for WCAG touch targets.', 'sgs-blocks' ) }
-								value={ socialIconSize }
-								min={ 44 }
-								max={ 80 }
-								step={ 2 }
-								onChange={ ( value ) =>
-									setAttributes( { socialIconSize: Math.max( 44, parseInt( value, 10 ) || 44 ) } )
-								}
-							/>
-							<Button
-								variant="tertiary"
-								isSmall
-								onClick={ () => setShowSocialSizeResponsive( ( v ) => ! v ) }
-								style={ { marginBottom: '8px' } }
-							>
-								{ showSocialSizeResponsive
-									? __( '- Hide responsive overrides', 'sgs-blocks' )
-									: __( '+ Responsive icon size overrides', 'sgs-blocks' ) }
-							</Button>
-							{ showSocialSizeResponsive && (
-								<>
-									<NumberControl
-										label={ __( 'Icon Size — Tablet (px)', 'sgs-blocks' ) }
-										help={ __( 'Override below 768px. Leave blank to use base value.', 'sgs-blocks' ) }
-										value={ socialIconSizeTablet }
-										min={ 44 }
-										max={ 80 }
-										step={ 2 }
-										placeholder="—"
-										onChange={ ( value ) =>
-											setAttributes( {
-												socialIconSizeTablet: value === undefined || value === '' ? '' : String( Math.max( 44, parseInt( value, 10 ) || 44 ) ),
-											} )
-										}
-									/>
-									<NumberControl
-										label={ __( 'Icon Size — Mobile (px)', 'sgs-blocks' ) }
-										help={ __( 'Override below 480px. Leave blank to use base value.', 'sgs-blocks' ) }
-										value={ socialIconSizeMobile }
-										min={ 44 }
-										max={ 80 }
-										step={ 2 }
-										placeholder="—"
-										onChange={ ( value ) =>
-											setAttributes( {
-												socialIconSizeMobile: value === undefined || value === '' ? '' : String( Math.max( 44, parseInt( value, 10 ) || 44 ) ),
-											} )
-										}
-									/>
-								</>
-							) }
+							<ResponsiveControl label={ __( 'Icon Size (px)', 'sgs-blocks' ) }>
+								{ ( breakpoint ) => {
+									const attrMap = {
+										desktop: 'socialIconSize',
+										tablet:  'socialIconSizeTablet',
+										mobile:  'socialIconSizeMobile',
+									};
+									const attr = attrMap[ breakpoint ];
+									return (
+										<NumberControl
+											help={ breakpoint === 'desktop'
+												? __( 'Minimum 44px for WCAG touch targets.', 'sgs-blocks' )
+												: __( 'Leave blank to use base value.', 'sgs-blocks' ) }
+											value={ breakpoint === 'desktop' ? socialIconSize : attributes[ attr ] }
+											min={ 44 }
+											max={ 80 }
+											step={ 2 }
+											placeholder={ breakpoint !== 'desktop' ? '—' : undefined }
+											onChange={ ( value ) => {
+												if ( breakpoint === 'desktop' ) {
+													setAttributes( { socialIconSize: Math.max( 44, parseInt( value, 10 ) || 44 ) } );
+												} else {
+													setAttributes( { [ attr ]: value === undefined || value === '' ? '' : String( Math.max( 44, parseInt( value, 10 ) || 44 ) ) } );
+												}
+											} }
+										/>
+									);
+								} }
+							</ResponsiveControl>
 						</>
 					) }
 					<ToggleControl

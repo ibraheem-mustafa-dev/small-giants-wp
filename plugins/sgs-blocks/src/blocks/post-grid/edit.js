@@ -473,29 +473,25 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ set( 'layout' ) }
 					/>
 					<ResponsiveControl label={ __( 'Columns', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => (
-							<RangeControl
-								label={ __( 'Columns', 'sgs-blocks' ) }
-								hideLabelFromVision
-								value={
-									breakpoint === 'desktop' ? columns
-										: breakpoint === 'tablet' ? columnsTablet
-										: columnsMobile
-								}
-								onChange={ ( val ) => {
-									if ( breakpoint === 'desktop' ) {
-										setAttributes( { columns: val } );
-									} else if ( breakpoint === 'tablet' ) {
-										setAttributes( { columnsTablet: val } );
-									} else {
-										setAttributes( { columnsMobile: val } );
-									}
-								} }
-								min={ 1 }
-								max={ 6 }
-								__nextHasNoMarginBottom
-							/>
-						) }
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'columns',
+								tablet: 'columnsTablet',
+								mobile: 'columnsMobile',
+							};
+							const attr = attrMap[ breakpoint ];
+							return (
+								<RangeControl
+									label={ __( 'Columns', 'sgs-blocks' ) }
+									hideLabelFromVision
+									value={ attributes[ attr ] }
+									onChange={ ( val ) => setAttributes( { [ attr ]: val } ) }
+									min={ 1 }
+									max={ 6 }
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
 					</ResponsiveControl>
 					{ /* Gap is provided by the shared ContainerWrapperControls panel below. */ }
 					<SelectControl

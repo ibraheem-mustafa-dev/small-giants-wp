@@ -24,7 +24,7 @@ import {
 	ToggleControl,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, TypographyControls, ResponsiveControl } from '../../components';
 import { colourVar } from '../../utils';
 
 // ---------------------------------------------------------------------------
@@ -82,16 +82,30 @@ const TEXT_ALIGN_OPTIONS = [
 	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
 ];
 
-const UNIT_OPTIONS_PX = [
-	{ label: 'px', value: 'px' },
-	{ label: 'em', value: 'em' },
-	{ label: 'rem', value: 'rem' },
+const MAX_WIDTH_UNITS = [
+	{ value: 'px', label: 'px', default: 800 },
+	{ value: 'em', label: 'em', default: 60 },
+	{ value: 'rem', label: 'rem', default: 60 },
+	{ value: '%', label: '%', default: 100 },
+	{ value: 'ch', label: 'ch', default: 65 },
 ];
 
-const UNIT_OPTIONS_EM = [
-	{ label: 'em', value: 'em' },
-	{ label: 'rem', value: 'rem' },
-	{ label: 'px', value: 'px' },
+const LETTER_SPACING_UNITS = [
+	{ value: 'em', label: 'em', default: 0 },
+	{ value: 'rem', label: 'rem', default: 0 },
+	{ value: 'px', label: 'px', default: 0 },
+];
+
+const SPACING_UNITS = [
+	{ value: 'px', label: 'px', default: 0 },
+	{ value: 'em', label: 'em', default: 0 },
+	{ value: 'rem', label: 'rem', default: 0 },
+];
+
+const FIRST_LETTER_SIZE_UNITS = [
+	{ value: 'em', label: 'em', default: 3 },
+	{ value: 'rem', label: 'rem', default: 3 },
+	{ value: 'px', label: 'px', default: 48 },
 ];
 
 // ---------------------------------------------------------------------------
@@ -195,6 +209,34 @@ function buildEditorStyle( attributes ) {
 }
 
 // ---------------------------------------------------------------------------
+// Helpers: UnitControl compose/parse (letter spacing, max width, spacing)
+// ---------------------------------------------------------------------------
+
+function composeUnit( num, unit ) {
+	if ( num === undefined || num === null || num === '' ) {
+		return '';
+	}
+	return `${ num }${ unit || '' }`;
+}
+
+function parseUnit( raw, currentUnit ) {
+	if ( ! raw && raw !== 0 ) {
+		return { num: undefined, unit: currentUnit || 'px' };
+	}
+	const str = String( raw ).trim();
+	if ( '' === str ) {
+		return { num: undefined, unit: currentUnit || 'px' };
+	}
+	const match = str.match( /^([\d.+-][\d.]*)\s*([a-z%]*)$/i );
+	if ( match ) {
+		const num = parseFloat( match[ 1 ] );
+		const unit = match[ 2 ] || currentUnit || 'px';
+		return { num: isNaN( num ) ? undefined : num, unit };
+	}
+	return { num: undefined, unit: currentUnit || 'px' };
+}
+
+// ---------------------------------------------------------------------------
 // Edit component
 // ---------------------------------------------------------------------------
 
@@ -259,6 +301,39 @@ export default function Edit( { attributes, setAttributes } ) {
 		style: buildEditorStyle( attributes ),
 	} );
 
+	// ---- Helpers for margin/padding responsive breakpoints ----
+	// Each breakpoint writes 4 side attrs; unit is shared per axis.
+
+	const marginAttrMap = {
+		desktop: {
+			Top: 'marginTop', Right: 'marginRight',
+			Bottom: 'marginBottom', Left: 'marginLeft',
+		},
+		tablet: {
+			Top: 'marginTopTablet', Right: 'marginRightTablet',
+			Bottom: 'marginBottomTablet', Left: 'marginLeftTablet',
+		},
+		mobile: {
+			Top: 'marginTopMobile', Right: 'marginRightMobile',
+			Bottom: 'marginBottomMobile', Left: 'marginLeftMobile',
+		},
+	};
+
+	const paddingAttrMap = {
+		desktop: {
+			Top: 'paddingTop', Right: 'paddingRight',
+			Bottom: 'paddingBottom', Left: 'paddingLeft',
+		},
+		tablet: {
+			Top: 'paddingTopTablet', Right: 'paddingRightTablet',
+			Bottom: 'paddingBottomTablet', Left: 'paddingLeftTablet',
+		},
+		mobile: {
+			Top: 'paddingTopMobile', Right: 'paddingRightMobile',
+			Bottom: 'paddingBottomMobile', Left: 'paddingLeftMobile',
+		},
+	};
+
 	return (
 		<>
 			<InspectorControls>
@@ -292,158 +367,65 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Typography', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					{ /* Font size — responsive */ }
-					<p className="sgs-inspector-label">
-						{ __( 'Font size', 'sgs-blocks' ) }
-					</p>
-					<div className="sgs-inspector-row">
-						<RangeControl
-							label={ __( 'Desktop', 'sgs-blocks' ) }
-							value={ fontSize ?? '' }
-							onChange={ ( val ) =>
-								setAttributes( { fontSize: val } )
-							}
-							min={ 8 }
-							max={ 96 }
-							step={ 1 }
-							allowReset
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Unit', 'sgs-blocks' ) }
-							value={ fontSizeUnit }
-							options={ UNIT_OPTIONS_PX }
-							onChange={ ( val ) =>
-								setAttributes( { fontSizeUnit: val } )
-							}
-							__nextHasNoMarginBottom
-						/>
-					</div>
-					<div className="sgs-inspector-row">
-						<RangeControl
-							label={ __( 'Tablet', 'sgs-blocks' ) }
-							value={ fontSizeTablet ?? '' }
-							onChange={ ( val ) =>
-								setAttributes( { fontSizeTablet: val } )
-							}
-							min={ 8 }
-							max={ 96 }
-							step={ 1 }
-							allowReset
-							__nextHasNoMarginBottom
-						/>
-						<RangeControl
-							label={ __( 'Mobile', 'sgs-blocks' ) }
-							value={ fontSizeMobile ?? '' }
-							onChange={ ( val ) =>
-								setAttributes( { fontSizeMobile: val } )
-							}
-							min={ 8 }
-							max={ 96 }
-							step={ 1 }
-							allowReset
-							__nextHasNoMarginBottom
-						/>
-					</div>
+					{ /*
+					 * Font size + line height via shared TypographyControls.
+					 * Handles: fontSize/fontSizeUnit/fontSizeTablet/fontSizeMobile
+					 *           lineHeight/lineHeightUnit
+					 *           fontWeight / fontStyle
+					 */ }
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+						showSize={ true }
+						showWeight={ true }
+						showStyle={ true }
+						showLineHeight={ true }
+						showResponsive={ true }
+					/>
 
-					<SelectControl
-						label={ __( 'Font weight', 'sgs-blocks' ) }
-						value={ fontWeight }
-						options={ FONT_WEIGHT_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { fontWeight: val } )
-						}
+					{ /* Line height tablet/mobile via ResponsiveControl (TypographyControls
+					   handles only the desktop lineHeight; the Tablet/Mobile breakpoints
+					   for line height are managed here since TypographyControls' lineHeight
+					   control is a single UnitControl without a responsive switcher).
+					   We attach it directly below TypographyControls. */ }
+					<ResponsiveControl label={ __( 'Line height (tablet / mobile)', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => {
+							if ( breakpoint === 'desktop' ) {
+								return null; // desktop handled by TypographyControls above
+							}
+							const attrKey = breakpoint === 'tablet' ? 'lineHeightTablet' : 'lineHeightMobile';
+							const val = breakpoint === 'tablet' ? lineHeightTablet : lineHeightMobile;
+							return (
+								<RangeControl
+									label={ breakpoint === 'tablet'
+										? __( 'Line height (tablet)', 'sgs-blocks' )
+										: __( 'Line height (mobile)', 'sgs-blocks' )
+									}
+									value={ val ?? '' }
+									onChange={ ( v ) => setAttributes( { [ attrKey ]: v } ) }
+									min={ 0.8 }
+									max={ 3 }
+									step={ 0.05 }
+									allowReset
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
+					</ResponsiveControl>
+
+					{ /* Letter spacing — UnitControl (number + unit in one input) */ }
+					<UnitControl
+						label={ __( 'Letter spacing', 'sgs-blocks' ) }
+						value={ composeUnit( letterSpacing, letterSpacingUnit ) }
+						units={ LETTER_SPACING_UNITS }
+						onChange={ ( raw ) => {
+							const { num, unit } = parseUnit( raw, letterSpacingUnit || 'em' );
+							setAttributes( { letterSpacing: num, letterSpacingUnit: unit } );
+						} }
 						__nextHasNoMarginBottom
 					/>
 
-					{ /* Line height — responsive */ }
-					<p className="sgs-inspector-label">
-						{ __( 'Line height', 'sgs-blocks' ) }
-					</p>
-					<div className="sgs-inspector-row">
-						<RangeControl
-							label={ __( 'Desktop', 'sgs-blocks' ) }
-							value={ lineHeight ?? '' }
-							onChange={ ( val ) =>
-								setAttributes( { lineHeight: val } )
-							}
-							min={ 0.8 }
-							max={ 3 }
-							step={ 0.05 }
-							allowReset
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Unit', 'sgs-blocks' ) }
-							value={ lineHeightUnit }
-							options={ UNIT_OPTIONS_EM }
-							onChange={ ( val ) =>
-								setAttributes( { lineHeightUnit: val } )
-							}
-							__nextHasNoMarginBottom
-						/>
-					</div>
-					<div className="sgs-inspector-row">
-						<RangeControl
-							label={ __( 'Tablet', 'sgs-blocks' ) }
-							value={ lineHeightTablet ?? '' }
-							onChange={ ( val ) =>
-								setAttributes( { lineHeightTablet: val } )
-							}
-							min={ 0.8 }
-							max={ 3 }
-							step={ 0.05 }
-							allowReset
-							__nextHasNoMarginBottom
-						/>
-						<RangeControl
-							label={ __( 'Mobile', 'sgs-blocks' ) }
-							value={ lineHeightMobile ?? '' }
-							onChange={ ( val ) =>
-								setAttributes( { lineHeightMobile: val } )
-							}
-							min={ 0.8 }
-							max={ 3 }
-							step={ 0.05 }
-							allowReset
-							__nextHasNoMarginBottom
-						/>
-					</div>
-
-					{ /* Letter spacing */ }
-					<div className="sgs-inspector-row">
-						<RangeControl
-							label={ __( 'Letter spacing', 'sgs-blocks' ) }
-							value={ letterSpacing ?? '' }
-							onChange={ ( val ) =>
-								setAttributes( { letterSpacing: val } )
-							}
-							min={ -0.1 }
-							max={ 0.5 }
-							step={ 0.01 }
-							allowReset
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Unit', 'sgs-blocks' ) }
-							value={ letterSpacingUnit }
-							options={ UNIT_OPTIONS_EM }
-							onChange={ ( val ) =>
-								setAttributes( { letterSpacingUnit: val } )
-							}
-							__nextHasNoMarginBottom
-						/>
-					</div>
-
-					<SelectControl
-						label={ __( 'Font style', 'sgs-blocks' ) }
-						value={ fontStyle }
-						options={ FONT_STYLE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { fontStyle: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
 					<SelectControl
 						label={ __( 'Text decoration', 'sgs-blocks' ) }
 						value={ textDecoration }
@@ -487,33 +469,17 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
-					<div className="sgs-inspector-row">
-						<RangeControl
-							label={ __( 'Max width', 'sgs-blocks' ) }
-							value={ maxWidth ?? '' }
-							onChange={ ( val ) =>
-								setAttributes( { maxWidth: val } )
-							}
-							min={ 0 }
-							max={ 1600 }
-							step={ 1 }
-							allowReset
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Unit', 'sgs-blocks' ) }
-							value={ maxWidthUnit }
-							options={ [
-								...UNIT_OPTIONS_PX,
-								{ label: '%', value: '%' },
-								{ label: 'ch', value: 'ch' },
-							] }
-							onChange={ ( val ) =>
-								setAttributes( { maxWidthUnit: val } )
-							}
-							__nextHasNoMarginBottom
-						/>
-					</div>
+					{ /* Max width — UnitControl (number + unit in one input) */ }
+					<UnitControl
+						label={ __( 'Max width', 'sgs-blocks' ) }
+						value={ composeUnit( maxWidth, maxWidthUnit ) }
+						units={ MAX_WIDTH_UNITS }
+						onChange={ ( raw ) => {
+							const { num, unit } = parseUnit( raw, maxWidthUnit || 'px' );
+							setAttributes( { maxWidth: num, maxWidthUnit: unit } );
+						} }
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 
 				{ /* ---- Spacing ---- */ }
@@ -521,175 +487,83 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<SelectControl
-						label={ __( 'Margin unit', 'sgs-blocks' ) }
-						value={ marginUnit }
-						options={ UNIT_OPTIONS_PX }
-						onChange={ ( val ) =>
-							setAttributes( { marginUnit: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<p className="sgs-inspector-label">
-						{ __( 'Margin — Desktop', 'sgs-blocks' ) }
-					</p>
-					<div className="sgs-inspector-row">
-						{ [
-							[ 'Top', marginTop, 'marginTop' ],
-							[ 'Right', marginRight, 'marginRight' ],
-							[ 'Bottom', marginBottom, 'marginBottom' ],
-							[ 'Left', marginLeft, 'marginLeft' ],
-						].map( ( [ label, val, key ] ) => (
-							<RangeControl
-								key={ key }
-								label={ __( label, 'sgs-blocks' ) }
-								value={ val ?? '' }
-								onChange={ ( v ) =>
-									setAttributes( { [ key ]: v } )
-								}
-								min={ -100 }
-								max={ 200 }
-								step={ 1 }
-								allowReset
-								__nextHasNoMarginBottom
-							/>
-						) ) }
-					</div>
-					<p className="sgs-inspector-label">
-						{ __( 'Margin — Tablet', 'sgs-blocks' ) }
-					</p>
-					<div className="sgs-inspector-row">
-						{ [
-							[ 'Top', marginTopTablet, 'marginTopTablet' ],
-							[ 'Right', marginRightTablet, 'marginRightTablet' ],
-							[ 'Bottom', marginBottomTablet, 'marginBottomTablet' ],
-							[ 'Left', marginLeftTablet, 'marginLeftTablet' ],
-						].map( ( [ label, val, key ] ) => (
-							<RangeControl
-								key={ key }
-								label={ __( label, 'sgs-blocks' ) }
-								value={ val ?? '' }
-								onChange={ ( v ) =>
-									setAttributes( { [ key ]: v } )
-								}
-								min={ -100 }
-								max={ 200 }
-								step={ 1 }
-								allowReset
-								__nextHasNoMarginBottom
-							/>
-						) ) }
-					</div>
-					<p className="sgs-inspector-label">
-						{ __( 'Margin — Mobile', 'sgs-blocks' ) }
-					</p>
-					<div className="sgs-inspector-row">
-						{ [
-							[ 'Top', marginTopMobile, 'marginTopMobile' ],
-							[ 'Right', marginRightMobile, 'marginRightMobile' ],
-							[ 'Bottom', marginBottomMobile, 'marginBottomMobile' ],
-							[ 'Left', marginLeftMobile, 'marginLeftMobile' ],
-						].map( ( [ label, val, key ] ) => (
-							<RangeControl
-								key={ key }
-								label={ __( label, 'sgs-blocks' ) }
-								value={ val ?? '' }
-								onChange={ ( v ) =>
-									setAttributes( { [ key ]: v } )
-								}
-								min={ -100 }
-								max={ 200 }
-								step={ 1 }
-								allowReset
-								__nextHasNoMarginBottom
-							/>
-						) ) }
-					</div>
+					{ /* Margin — ResponsiveControl wraps all breakpoints */ }
+					<ResponsiveControl label={ __( 'Margin', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => {
+							const sideMap = marginAttrMap[ breakpoint ];
+							const unit = marginUnit || 'px';
+							return (
+								<>
+									{ [ 'Top', 'Right', 'Bottom', 'Left' ].map( ( side ) => (
+										<RangeControl
+											key={ sideMap[ side ] }
+											label={ __( side, 'sgs-blocks' ) }
+											value={ attributes[ sideMap[ side ] ] ?? '' }
+											onChange={ ( v ) =>
+												setAttributes( { [ sideMap[ side ] ]: v } )
+											}
+											min={ -100 }
+											max={ 200 }
+											step={ 1 }
+											allowReset
+											__nextHasNoMarginBottom
+										/>
+									) ) }
+									{ breakpoint === 'desktop' && (
+										<UnitControl
+											label={ __( 'Margin unit', 'sgs-blocks' ) }
+											value={ composeUnit( undefined, unit ) || unit }
+											units={ SPACING_UNITS }
+											onChange={ ( raw ) => {
+												const { unit: u } = parseUnit( raw, unit );
+												setAttributes( { marginUnit: u } );
+											} }
+											__nextHasNoMarginBottom
+										/>
+									) }
+								</>
+							);
+						} }
+					</ResponsiveControl>
 
-					<SelectControl
-						label={ __( 'Padding unit', 'sgs-blocks' ) }
-						value={ paddingUnit }
-						options={ UNIT_OPTIONS_PX }
-						onChange={ ( val ) =>
-							setAttributes( { paddingUnit: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<p className="sgs-inspector-label">
-						{ __( 'Padding — Desktop', 'sgs-blocks' ) }
-					</p>
-					<div className="sgs-inspector-row">
-						{ [
-							[ 'Top', paddingTop, 'paddingTop' ],
-							[ 'Right', paddingRight, 'paddingRight' ],
-							[ 'Bottom', paddingBottom, 'paddingBottom' ],
-							[ 'Left', paddingLeft, 'paddingLeft' ],
-						].map( ( [ label, val, key ] ) => (
-							<RangeControl
-								key={ key }
-								label={ __( label, 'sgs-blocks' ) }
-								value={ val ?? '' }
-								onChange={ ( v ) =>
-									setAttributes( { [ key ]: v } )
-								}
-								min={ 0 }
-								max={ 200 }
-								step={ 1 }
-								allowReset
-								__nextHasNoMarginBottom
-							/>
-						) ) }
-					</div>
-					<p className="sgs-inspector-label">
-						{ __( 'Padding — Tablet', 'sgs-blocks' ) }
-					</p>
-					<div className="sgs-inspector-row">
-						{ [
-							[ 'Top', paddingTopTablet, 'paddingTopTablet' ],
-							[ 'Right', paddingRightTablet, 'paddingRightTablet' ],
-							[ 'Bottom', paddingBottomTablet, 'paddingBottomTablet' ],
-							[ 'Left', paddingLeftTablet, 'paddingLeftTablet' ],
-						].map( ( [ label, val, key ] ) => (
-							<RangeControl
-								key={ key }
-								label={ __( label, 'sgs-blocks' ) }
-								value={ val ?? '' }
-								onChange={ ( v ) =>
-									setAttributes( { [ key ]: v } )
-								}
-								min={ 0 }
-								max={ 200 }
-								step={ 1 }
-								allowReset
-								__nextHasNoMarginBottom
-							/>
-						) ) }
-					</div>
-					<p className="sgs-inspector-label">
-						{ __( 'Padding — Mobile', 'sgs-blocks' ) }
-					</p>
-					<div className="sgs-inspector-row">
-						{ [
-							[ 'Top', paddingTopMobile, 'paddingTopMobile' ],
-							[ 'Right', paddingRightMobile, 'paddingRightMobile' ],
-							[ 'Bottom', paddingBottomMobile, 'paddingBottomMobile' ],
-							[ 'Left', paddingLeftMobile, 'paddingLeftMobile' ],
-						].map( ( [ label, val, key ] ) => (
-							<RangeControl
-								key={ key }
-								label={ __( label, 'sgs-blocks' ) }
-								value={ val ?? '' }
-								onChange={ ( v ) =>
-									setAttributes( { [ key ]: v } )
-								}
-								min={ 0 }
-								max={ 200 }
-								step={ 1 }
-								allowReset
-								__nextHasNoMarginBottom
-							/>
-						) ) }
-					</div>
+					{ /* Padding — ResponsiveControl wraps all breakpoints */ }
+					<ResponsiveControl label={ __( 'Padding', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => {
+							const sideMap = paddingAttrMap[ breakpoint ];
+							const unit = paddingUnit || 'px';
+							return (
+								<>
+									{ [ 'Top', 'Right', 'Bottom', 'Left' ].map( ( side ) => (
+										<RangeControl
+											key={ sideMap[ side ] }
+											label={ __( side, 'sgs-blocks' ) }
+											value={ attributes[ sideMap[ side ] ] ?? '' }
+											onChange={ ( v ) =>
+												setAttributes( { [ sideMap[ side ] ]: v } )
+											}
+											min={ 0 }
+											max={ 200 }
+											step={ 1 }
+											allowReset
+											__nextHasNoMarginBottom
+										/>
+									) ) }
+									{ breakpoint === 'desktop' && (
+										<UnitControl
+											label={ __( 'Padding unit', 'sgs-blocks' ) }
+											value={ composeUnit( undefined, unit ) || unit }
+											units={ SPACING_UNITS }
+											onChange={ ( raw ) => {
+												const { unit: u } = parseUnit( raw, unit );
+												setAttributes( { paddingUnit: u } );
+											} }
+											__nextHasNoMarginBottom
+										/>
+									) }
+								</>
+							);
+						} }
+					</ResponsiveControl>
 				</PanelBody>
 
 				{ /* ---- Drop cap ---- */ }
@@ -716,33 +590,20 @@ export default function Edit( { attributes, setAttributes } ) {
 									} )
 								}
 							/>
-							<div className="sgs-inspector-row">
-								<RangeControl
-									label={ __( 'First-letter size', 'sgs-blocks' ) }
-									value={ firstLetterFontSize ?? '' }
-									onChange={ ( val ) =>
-										setAttributes( {
-											firstLetterFontSize: val,
-										} )
-									}
-									min={ 1 }
-									max={ 10 }
-									step={ 0.1 }
-									allowReset
-									__nextHasNoMarginBottom
-								/>
-								<SelectControl
-									label={ __( 'Unit', 'sgs-blocks' ) }
-									value={ firstLetterFontSizeUnit }
-									options={ UNIT_OPTIONS_EM }
-									onChange={ ( val ) =>
-										setAttributes( {
-											firstLetterFontSizeUnit: val,
-										} )
-									}
-									__nextHasNoMarginBottom
-								/>
-							</div>
+							{ /* First-letter size — UnitControl (number + unit in one input) */ }
+							<UnitControl
+								label={ __( 'First-letter size', 'sgs-blocks' ) }
+								value={ composeUnit( firstLetterFontSize, firstLetterFontSizeUnit ) }
+								units={ FIRST_LETTER_SIZE_UNITS }
+								onChange={ ( raw ) => {
+									const { num, unit } = parseUnit( raw, firstLetterFontSizeUnit || 'em' );
+									setAttributes( {
+										firstLetterFontSize: num,
+										firstLetterFontSizeUnit: unit,
+									} );
+								} }
+								__nextHasNoMarginBottom
+							/>
 							<SelectControl
 								label={ __( 'First-letter weight', 'sgs-blocks' ) }
 								value={ firstLetterFontWeight }

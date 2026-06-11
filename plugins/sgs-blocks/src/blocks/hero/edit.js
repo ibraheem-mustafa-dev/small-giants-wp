@@ -17,6 +17,7 @@ import {
 	Notice,
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
+	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
@@ -521,7 +522,19 @@ export default function Edit( { attributes, setAttributes } ) {
 								} }
 							</ResponsiveControl>
 							<RRangeControl label={ __( 'Column gap', 'sgs-blocks' ) } attrDesktop="splitGap" attrTablet="splitGapTablet" attrMobile="splitGapMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } />
-							<SelectControl label={ __( 'Gap unit', 'sgs-blocks' ) } value={ splitGapUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { splitGapUnit: val } ) } __nextHasNoMarginBottom />
+							<UnitControl
+								label={ __( 'Gap unit', 'sgs-blocks' ) }
+								value={ `${ splitGap || 0 }${ splitGapUnit || 'px' }` }
+								units={ [
+									{ value: 'px', label: 'px', default: 0 },
+									{ value: '%',  label: '%',  default: 0 },
+								] }
+								onChange={ ( val ) => {
+									const unit = val?.replace( /[\d.]+/, '' ) || 'px';
+									setAttributes( { splitGapUnit: unit } );
+								} }
+								__nextHasNoMarginBottom
+							/>
 							<SelectControl label={ __( 'Mobile column order', 'sgs-blocks' ) } value={ splitContentOrderMobile } options={ MOBILE_ORDER_OPTIONS } onChange={ ( val ) => setAttributes( { splitContentOrderMobile: val } ) } __nextHasNoMarginBottom />
 							<ToggleControl
 								label={ __( 'Image bleed to edge', 'sgs-blocks' ) }
@@ -538,30 +551,20 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{/* ── 4. Headline (h1) ── */}
 				<PanelBody title={ __( 'Headline (h1)', 'sgs-blocks' ) } initialOpen={ false }>
-					<RangeControl
-						label={ __( 'Margin bottom — desktop (px)', 'sgs-blocks' ) }
-						help={ __( '0 = inherit from theme.', 'sgs-blocks' ) }
-						value={ headlineMarginBottom || 0 }
-						onChange={ ( val ) =>
-							setAttributes( { headlineMarginBottom: val || null } )
-						}
+					<RRangeControl
+						label={ __( 'Margin bottom', 'sgs-blocks' ) }
+						attrDesktop="headlineMarginBottom"
+						attrTablet="headlineMarginBottom"
+						attrMobile="headlineMarginBottomMobile"
+						attributes={ attributes }
+						setAttributes={ setAttributes }
 						min={ 0 }
 						max={ 120 }
 						step={ 1 }
-						__nextHasNoMarginBottom
 					/>
-					<RangeControl
-						label={ __( 'Margin bottom — mobile (px)', 'sgs-blocks' ) }
-						help={ __( '0 = inherit from theme.', 'sgs-blocks' ) }
-						value={ headlineMarginBottomMobile || 0 }
-						onChange={ ( val ) =>
-							setAttributes( { headlineMarginBottomMobile: val || null } )
-						}
-						min={ 0 }
-						max={ 120 }
-						step={ 1 }
-						__nextHasNoMarginBottom
-					/>
+					<p style={ { fontSize: '11px', color: '#757575', margin: '-4px 0 8px' } }>
+						{ __( '0 = inherit from theme.', 'sgs-blocks' ) }
+					</p>
 				</PanelBody>
 
 				{/* ── 5. Subheadline ── */}
@@ -580,30 +583,20 @@ export default function Edit( { attributes, setAttributes } ) {
 						step={ 10 }
 						__nextHasNoMarginBottom
 					/>
-					<RangeControl
-						label={ __( 'Margin bottom — desktop (px)', 'sgs-blocks' ) }
-						help={ __( '0 = inherit from theme.', 'sgs-blocks' ) }
-						value={ subHeadlineMarginBottom || 0 }
-						onChange={ ( val ) =>
-							setAttributes( { subHeadlineMarginBottom: val || null } )
-						}
+					<RRangeControl
+						label={ __( 'Margin bottom', 'sgs-blocks' ) }
+						attrDesktop="subHeadlineMarginBottom"
+						attrTablet="subHeadlineMarginBottom"
+						attrMobile="subHeadlineMarginBottomMobile"
+						attributes={ attributes }
+						setAttributes={ setAttributes }
 						min={ 0 }
 						max={ 120 }
 						step={ 1 }
-						__nextHasNoMarginBottom
 					/>
-					<RangeControl
-						label={ __( 'Margin bottom — mobile (px)', 'sgs-blocks' ) }
-						help={ __( '0 = inherit from theme.', 'sgs-blocks' ) }
-						value={ subHeadlineMarginBottomMobile || 0 }
-						onChange={ ( val ) =>
-							setAttributes( { subHeadlineMarginBottomMobile: val || null } )
-						}
-						min={ 0 }
-						max={ 120 }
-						step={ 1 }
-						__nextHasNoMarginBottom
-					/>
+					<p style={ { fontSize: '11px', color: '#757575', margin: '-4px 0 8px' } }>
+						{ __( '0 = inherit from theme.', 'sgs-blocks' ) }
+					</p>
 				</PanelBody>
 
 				{/* ── 6. Image (background + split) ── */}
@@ -746,9 +739,33 @@ export default function Edit( { attributes, setAttributes } ) {
 								<>
 									<p style={ { fontWeight: 600, margin: '12px 0 4px' } }>{ __( 'Custom dimensions', 'sgs-blocks' ) }</p>
 									<RRangeControl label={ __( 'Width', 'sgs-blocks' ) } attrDesktop="imageWidth" attrTablet="imageWidthTablet" attrMobile="imageWidthMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 1200 } step={ 1 } />
-									<SelectControl label={ __( 'Width unit', 'sgs-blocks' ) } value={ imageWidthUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { imageWidthUnit: val } ) } __nextHasNoMarginBottom />
+									<UnitControl
+										label={ __( 'Width unit', 'sgs-blocks' ) }
+										value={ `${ imageWidth || 0 }${ imageWidthUnit || 'px' }` }
+										units={ [
+											{ value: 'px', label: 'px', default: 0 },
+											{ value: '%',  label: '%',  default: 0 },
+										] }
+										onChange={ ( val ) => {
+											const unit = val?.replace( /[\d.]+/, '' ) || 'px';
+											setAttributes( { imageWidthUnit: unit } );
+										} }
+										__nextHasNoMarginBottom
+									/>
 									<RRangeControl label={ __( 'Height', 'sgs-blocks' ) } attrDesktop="imageHeight" attrTablet="imageHeightTablet" attrMobile="imageHeightMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 1200 } step={ 1 } />
-									<SelectControl label={ __( 'Height unit', 'sgs-blocks' ) } value={ imageHeightUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { imageHeightUnit: val } ) } __nextHasNoMarginBottom />
+									<UnitControl
+										label={ __( 'Height unit', 'sgs-blocks' ) }
+										value={ `${ imageHeight || 0 }${ imageHeightUnit || 'px' }` }
+										units={ [
+											{ value: 'px', label: 'px', default: 0 },
+											{ value: '%',  label: '%',  default: 0 },
+										] }
+										onChange={ ( val ) => {
+											const unit = val?.replace( /[\d.]+/, '' ) || 'px';
+											setAttributes( { imageHeightUnit: unit } );
+										} }
+										__nextHasNoMarginBottom
+									/>
 								</>
 							) }
 
@@ -757,7 +774,19 @@ export default function Edit( { attributes, setAttributes } ) {
 							<RRangeControl label={ __( 'Top-right', 'sgs-blocks' ) } attrDesktop="imageBorderRadiusTR" attrTablet="imageBorderRadiusTabletTR" attrMobile="imageBorderRadiusMobileTR" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } nullOnZero={ false } />
 							<RRangeControl label={ __( 'Bottom-right', 'sgs-blocks' ) } attrDesktop="imageBorderRadiusBR" attrTablet="imageBorderRadiusTabletBR" attrMobile="imageBorderRadiusMobileBR" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } nullOnZero={ false } />
 							<RRangeControl label={ __( 'Bottom-left', 'sgs-blocks' ) } attrDesktop="imageBorderRadiusBL" attrTablet="imageBorderRadiusTabletBL" attrMobile="imageBorderRadiusMobileBL" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } nullOnZero={ false } />
-							<SelectControl label={ __( 'Border radius unit', 'sgs-blocks' ) } value={ imageBorderRadiusUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { imageBorderRadiusUnit: val } ) } __nextHasNoMarginBottom />
+							<UnitControl
+								label={ __( 'Border radius unit', 'sgs-blocks' ) }
+								value={ `${ imageBorderRadiusTL || 0 }${ imageBorderRadiusUnit || 'px' }` }
+								units={ [
+									{ value: 'px', label: 'px', default: 0 },
+									{ value: '%',  label: '%',  default: 0 },
+								] }
+								onChange={ ( val ) => {
+									const unit = val?.replace( /[\d.]+/, '' ) || 'px';
+									setAttributes( { imageBorderRadiusUnit: unit } );
+								} }
+								__nextHasNoMarginBottom
+							/>
 
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Border', 'sgs-blocks' ) }</p>
 							<SelectControl label={ __( 'Border style', 'sgs-blocks' ) } value={ imageBorderStyle } options={ BORDER_STYLE_OPTIONS } onChange={ ( val ) => setAttributes( { imageBorderStyle: val } ) } __nextHasNoMarginBottom />
@@ -767,7 +796,20 @@ export default function Edit( { attributes, setAttributes } ) {
 									<RangeControl label={ __( 'Border right', 'sgs-blocks' ) } value={ imageBorderWidthRight || 0 } onChange={ ( val ) => setAttributes( { imageBorderWidthRight: val } ) } min={ 0 } max={ 20 } step={ 1 } __nextHasNoMarginBottom />
 									<RangeControl label={ __( 'Border bottom', 'sgs-blocks' ) } value={ imageBorderWidthBottom || 0 } onChange={ ( val ) => setAttributes( { imageBorderWidthBottom: val } ) } min={ 0 } max={ 20 } step={ 1 } __nextHasNoMarginBottom />
 									<RangeControl label={ __( 'Border left', 'sgs-blocks' ) } value={ imageBorderWidthLeft || 0 } onChange={ ( val ) => setAttributes( { imageBorderWidthLeft: val } ) } min={ 0 } max={ 20 } step={ 1 } __nextHasNoMarginBottom />
-									<SelectControl label={ __( 'Border width unit', 'sgs-blocks' ) } value={ imageBorderWidthUnit } options={ UNIT_PX_EM_REM } onChange={ ( val ) => setAttributes( { imageBorderWidthUnit: val } ) } __nextHasNoMarginBottom />
+									<UnitControl
+										label={ __( 'Border width unit', 'sgs-blocks' ) }
+										value={ `${ imageBorderWidthTop || 0 }${ imageBorderWidthUnit || 'px' }` }
+										units={ [
+											{ value: 'px',  label: 'px',  default: 0 },
+											{ value: 'em',  label: 'em',  default: 0 },
+											{ value: 'rem', label: 'rem', default: 0 },
+										] }
+										onChange={ ( val ) => {
+											const unit = val?.replace( /[\d.]+/, '' ) || 'px';
+											setAttributes( { imageBorderWidthUnit: unit } );
+										} }
+										__nextHasNoMarginBottom
+									/>
 									<DesignTokenPicker label={ __( 'Border colour', 'sgs-blocks' ) } value={ imageBorderColour } onChange={ ( val ) => setAttributes( { imageBorderColour: val } ) } />
 								</>
 							) }
@@ -778,7 +820,19 @@ export default function Edit( { attributes, setAttributes } ) {
 							<RRangeControl label={ __( 'Right', 'sgs-blocks' ) } attrDesktop="imagePaddingRight" attrTablet="imagePaddingRightTablet" attrMobile="imagePaddingRightMobile" attributes={ attributes } setAttributes={ setAttributes } />
 							<RRangeControl label={ __( 'Bottom', 'sgs-blocks' ) } attrDesktop="imagePaddingBottom" attrTablet="imagePaddingBottomTablet" attrMobile="imagePaddingBottomMobile" attributes={ attributes } setAttributes={ setAttributes } />
 							<RRangeControl label={ __( 'Left', 'sgs-blocks' ) } attrDesktop="imagePaddingLeft" attrTablet="imagePaddingLeftTablet" attrMobile="imagePaddingLeftMobile" attributes={ attributes } setAttributes={ setAttributes } />
-							<SelectControl label={ __( 'Inner padding unit', 'sgs-blocks' ) } value={ imagePaddingUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { imagePaddingUnit: val } ) } __nextHasNoMarginBottom />
+							<UnitControl
+								label={ __( 'Inner padding unit', 'sgs-blocks' ) }
+								value={ `0${ imagePaddingUnit || 'px' }` }
+								units={ [
+									{ value: 'px', label: 'px', default: 0 },
+									{ value: '%',  label: '%',  default: 0 },
+								] }
+								onChange={ ( val ) => {
+									const unit = val?.replace( /[\d.]+/, '' ) || 'px';
+									setAttributes( { imagePaddingUnit: unit } );
+								} }
+								__nextHasNoMarginBottom
+							/>
 
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Outer padding (around the whole media wrapper)', 'sgs-blocks' ) }</p>
 							<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Affects the gap between the wrapper and the surrounding section.', 'sgs-blocks' ) }</p>
@@ -786,7 +840,19 @@ export default function Edit( { attributes, setAttributes } ) {
 							<RRangeControl label={ __( 'Right', 'sgs-blocks' ) } attrDesktop="mediaPaddingRight" attrTablet="mediaPaddingRightTablet" attrMobile="mediaPaddingRightMobile" attributes={ attributes } setAttributes={ setAttributes } />
 							<RRangeControl label={ __( 'Bottom', 'sgs-blocks' ) } attrDesktop="mediaPaddingBottom" attrTablet="mediaPaddingBottomTablet" attrMobile="mediaPaddingBottomMobile" attributes={ attributes } setAttributes={ setAttributes } />
 							<RRangeControl label={ __( 'Left', 'sgs-blocks' ) } attrDesktop="mediaPaddingLeft" attrTablet="mediaPaddingLeftTablet" attrMobile="mediaPaddingLeftMobile" attributes={ attributes } setAttributes={ setAttributes } />
-							<SelectControl label={ __( 'Outer padding unit', 'sgs-blocks' ) } value={ mediaPaddingUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { mediaPaddingUnit: val } ) } __nextHasNoMarginBottom />
+							<UnitControl
+								label={ __( 'Outer padding unit', 'sgs-blocks' ) }
+								value={ `0${ mediaPaddingUnit || 'px' }` }
+								units={ [
+									{ value: 'px', label: 'px', default: 0 },
+									{ value: '%',  label: '%',  default: 0 },
+								] }
+								onChange={ ( val ) => {
+									const unit = val?.replace( /[\d.]+/, '' ) || 'px';
+									setAttributes( { mediaPaddingUnit: unit } );
+								} }
+								__nextHasNoMarginBottom
+							/>
 						</>
 					) }
 
@@ -817,82 +883,52 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 								__nextHasNoMarginBottom
 							/>
-							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>
-								{ __( 'Background video (desktop)', 'sgs-blocks' ) }
-							</p>
-							<MediaUploadCheck>
-								<MediaUpload
-									onSelect={ ( media ) =>
-										setAttributes( {
-											bgVideo: { id: media.id, url: media.url },
-										} )
-									}
-									allowedTypes={ [ 'video' ] }
-									value={ bgVideo?.id }
-									render={ ( { open } ) => (
-										<div>
-											{ bgVideo?.url ? (
-												<>
-													<p style={ { fontSize: '12px', margin: '0 0 4px' } }>
-														{ bgVideo.url.split( '/' ).pop() }
-													</p>
-													<Button
-														variant="secondary"
-														isDestructive
-														onClick={ () =>
-															setAttributes( { bgVideo: undefined } )
-														}
-													>
-														{ __( 'Remove', 'sgs-blocks' ) }
-													</Button>
-												</>
-											) : (
-												<Button variant="secondary" onClick={ open }>
-													{ __( 'Select video', 'sgs-blocks' ) }
-												</Button>
-											) }
-										</div>
-									) }
-								/>
-							</MediaUploadCheck>
-							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>
-								{ __( 'Background video (mobile)', 'sgs-blocks' ) }
-							</p>
-							<MediaUploadCheck>
-								<MediaUpload
-									onSelect={ ( media ) =>
-										setAttributes( {
-											bgVideoMobile: { id: media.id, url: media.url },
-										} )
-									}
-									allowedTypes={ [ 'video' ] }
-									value={ bgVideoMobile?.id }
-									render={ ( { open } ) => (
-										<div>
-											{ bgVideoMobile?.url ? (
-												<>
-													<p style={ { fontSize: '12px', margin: '0 0 4px' } }>
-														{ bgVideoMobile.url.split( '/' ).pop() }
-													</p>
-													<Button
-														variant="secondary"
-														isDestructive
-														onClick={ () =>
-															setAttributes( { bgVideoMobile: undefined } )
-														}
-													>
-														{ __( 'Remove', 'sgs-blocks' ) }
-													</Button>
-												</>
-											) : (
-												<Button variant="secondary" onClick={ open }>
-													{ __( 'Select mobile video', 'sgs-blocks' ) }
-												</Button>
-											) }
-										</div>
-									) }
-								/>
-							</MediaUploadCheck>
+							<ResponsiveControl label={ __( 'Background video', 'sgs-blocks' ) }>
+								{ ( breakpoint ) => {
+									const isDesktop = breakpoint !== 'mobile';
+									const videoAttr   = isDesktop ? bgVideo   : bgVideoMobile;
+									const attrKey     = isDesktop ? 'bgVideo' : 'bgVideoMobile';
+									return (
+										<MediaUploadCheck>
+											<MediaUpload
+												onSelect={ ( media ) =>
+													setAttributes( {
+														[ attrKey ]: { id: media.id, url: media.url },
+													} )
+												}
+												allowedTypes={ [ 'video' ] }
+												value={ videoAttr?.id }
+												render={ ( { open } ) => (
+													<div>
+														{ videoAttr?.url ? (
+															<>
+																<p style={ { fontSize: '12px', margin: '0 0 4px' } }>
+																	{ videoAttr.url.split( '/' ).pop() }
+																</p>
+																<Button
+																	variant="secondary"
+																	isDestructive
+																	onClick={ () =>
+																		setAttributes( { [ attrKey ]: undefined } )
+																	}
+																>
+																	{ __( 'Remove', 'sgs-blocks' ) }
+																</Button>
+															</>
+														) : (
+															<Button variant="secondary" onClick={ open }>
+																{ isDesktop
+																	? __( 'Select video', 'sgs-blocks' )
+																	: __( 'Select mobile video', 'sgs-blocks' ) }
+															</Button>
+														) }
+													</div>
+												) }
+											/>
+										</MediaUploadCheck>
+									);
+								} }
+							</ResponsiveControl>
 						</>
 					) }
 				</PanelBody>
@@ -1036,11 +1072,17 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 80 }
 						step={ 1 }
 					/>
-					<SelectControl
+					<UnitControl
 						label={ __( 'Gap unit', 'sgs-blocks' ) }
-						value={ ctaGapUnit }
-						options={ UNIT_PX_PCT }
-						onChange={ ( val ) => setAttributes( { ctaGapUnit: val } ) }
+						value={ `${ ctaGap || 0 }${ ctaGapUnit || 'px' }` }
+						units={ [
+							{ value: 'px', label: 'px', default: 0 },
+							{ value: '%',  label: '%',  default: 0 },
+						] }
+						onChange={ ( val ) => {
+							const unit = val?.replace( /[\d.]+/, '' ) || 'px';
+							setAttributes( { ctaGapUnit: unit } );
+						} }
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>

@@ -275,6 +275,20 @@ function checkResponsiveSwitcher( blockName, blockDir, attrs ) {
 				continue;
 			}
 
+			// COMPLIANT IDIOM EXEMPTION: the canonical ResponsiveControl pattern
+			// maps breakpoint → attr name ({ desktop: 'x', tablet: 'xTablet',
+			// mobile: 'xMobile' }) and writes via a computed key inside the
+			// render-prop. collectSetAttrsKeys harvests those map values, which
+			// would otherwise false-flag every correctly-wrapped block. A variant
+			// appearing as the VALUE of a tablet:/mobile: key is that idiom —
+			// only used inside ResponsiveControl render-props in this codebase.
+			const breakpointMapRe = new RegExp(
+				"(?:tablet|mobile)\\s*:\\s*['\"]" + variant + "['\"]"
+			);
+			if ( breakpointMapRe.test( blockOwnSrc ) ) {
+				continue;
+			}
+
 			// The block's own code writes a Tablet/Mobile variant directly.
 			// Is this writing inside a shared-component call? We check by verifying
 			// whether the block delegates the entire family to a shared component

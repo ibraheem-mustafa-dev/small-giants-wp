@@ -6,6 +6,7 @@ import {
 	RangeControl,
 	ButtonGroup,
 	Button,
+	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
 import { colourVar } from '../../utils';
@@ -189,27 +190,20 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					) }
 
-					<div className="sgs-inspector-row">
-						<RangeControl
-							label={ __( 'Width', 'sgs-blocks' ) }
-							value={ width }
-							onChange={ ( val ) => setAttributes( { width: val } ) }
-							min={ 10 }
-							max={ 'px' === widthUnit ? 1200 : 100 }
-							step={ 1 }
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Unit', 'sgs-blocks' ) }
-							value={ widthUnit }
-							options={ [
-								{ label: '%', value: '%' },
-								{ label: 'px', value: 'px' },
-							] }
-							onChange={ ( val ) => setAttributes( { widthUnit: val } ) }
-							__nextHasNoMarginBottom
-						/>
-					</div>
+					<UnitControl
+						label={ __( 'Width', 'sgs-blocks' ) }
+						value={ `${ width }${ widthUnit || '%' }` }
+						units={ [
+							{ value: '%',  label: '%',  default: 100 },
+							{ value: 'px', label: 'px', default: 200 },
+						] }
+						onChange={ ( val ) => {
+							const unit = val?.replace( /[\d.]+/, '' ) || '%';
+							const num  = parseFloat( val ) || 0;
+							setAttributes( { width: num, widthUnit: unit } );
+						} }
+						__nextHasNoMarginBottom
+					/>
 
 					<div style={ { marginBottom: '8px' } }>
 						<p style={ { marginBottom: '4px', fontSize: '11px', fontWeight: 500, textTransform: 'uppercase' } }>
@@ -274,35 +268,34 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<div className="sgs-inspector-row">
-						<RangeControl
-							label={ __( 'Margin top', 'sgs-blocks' ) }
-							value={ marginTop }
-							onChange={ ( val ) => setAttributes( { marginTop: val } ) }
-							min={ 0 }
-							max={ 200 }
-							step={ 4 }
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Unit', 'sgs-blocks' ) }
-							value={ marginUnit }
-							options={ [
-								{ label: 'px', value: 'px' },
-								{ label: 'em', value: 'em' },
-								{ label: 'rem', value: 'rem' },
-							] }
-							onChange={ ( val ) => setAttributes( { marginUnit: val } ) }
-							__nextHasNoMarginBottom
-						/>
-					</div>
-					<RangeControl
+					<UnitControl
+						label={ __( 'Margin top', 'sgs-blocks' ) }
+						value={ `${ marginTop }${ marginUnit || 'px' }` }
+						units={ [
+							{ value: 'px',  label: 'px',  default: 0 },
+							{ value: 'em',  label: 'em',  default: 0 },
+							{ value: 'rem', label: 'rem', default: 0 },
+						] }
+						onChange={ ( val ) => {
+							const unit = val?.replace( /[\d.]+/, '' ) || 'px';
+							const num  = parseFloat( val ) || 0;
+							setAttributes( { marginTop: num, marginUnit: unit } );
+						} }
+						__nextHasNoMarginBottom
+					/>
+					<UnitControl
 						label={ __( 'Margin bottom', 'sgs-blocks' ) }
-						value={ marginBottom }
-						onChange={ ( val ) => setAttributes( { marginBottom: val } ) }
-						min={ 0 }
-						max={ 200 }
-						step={ 4 }
+						value={ `${ marginBottom }${ marginUnit || 'px' }` }
+						units={ [
+							{ value: 'px',  label: 'px',  default: 0 },
+							{ value: 'em',  label: 'em',  default: 0 },
+							{ value: 'rem', label: 'rem', default: 0 },
+						] }
+						onChange={ ( val ) => {
+							const unit = val?.replace( /[\d.]+/, '' ) || 'px';
+							const num  = parseFloat( val ) || 0;
+							setAttributes( { marginBottom: num, marginUnit: unit } );
+						} }
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>

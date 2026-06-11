@@ -18,6 +18,7 @@ import {
 	TextControl,
 	Notice,
 } from '@wordpress/components';
+import { ResponsiveControl } from '../../components';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -85,29 +86,27 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ [ 'grid', 'slider', 'wall' ].includes( variant ) && (
 					<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
-						<RangeControl
-							label={ __( 'Columns (Desktop)', 'sgs-blocks' ) }
-							value={ columns }
-							onChange={ ( value ) => setAttributes( { columns: value } ) }
-							min={ 1 }
-							max={ 4 }
-						/>
-
-						<RangeControl
-							label={ __( 'Columns (Tablet)', 'sgs-blocks' ) }
-							value={ columnsTablet }
-							onChange={ ( value ) => setAttributes( { columnsTablet: value } ) }
-							min={ 1 }
-							max={ 3 }
-						/>
-
-						<RangeControl
-							label={ __( 'Columns (Mobile)', 'sgs-blocks' ) }
-							value={ columnsMobile }
-							onChange={ ( value ) => setAttributes( { columnsMobile: value } ) }
-							min={ 1 }
-							max={ 2 }
-						/>
+						<ResponsiveControl label={ __( 'Columns', 'sgs-blocks' ) }>
+							{ ( breakpoint ) => {
+								const attrMap = {
+									desktop: 'columns',
+									tablet:  'columnsTablet',
+									mobile:  'columnsMobile',
+								};
+								const maxMap = { desktop: 4, tablet: 3, mobile: 2 };
+								return (
+									<RangeControl
+										value={ attributes[ attrMap[ breakpoint ] ] }
+										onChange={ ( value ) =>
+											setAttributes( { [ attrMap[ breakpoint ] ]: value } )
+										}
+										min={ 1 }
+										max={ maxMap[ breakpoint ] }
+										__nextHasNoMarginBottom
+									/>
+								);
+							} }
+						</ResponsiveControl>
 					</PanelBody>
 				) }
 
