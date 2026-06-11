@@ -13,7 +13,7 @@ import {
 	SelectControl,
 	TextControl,
 	TextareaControl,
-	NumberControl,
+	__experimentalNumberControl as NumberControl,
 	ComboboxControl,
 	ToggleControl,
 	CheckboxControl,
@@ -577,7 +577,7 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 	);
 }
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		variantStyle,
 		sourceMode,
@@ -608,9 +608,22 @@ export default function Edit( { attributes, setAttributes } ) {
 	const isFeatured = variantStyle === 'featured';
 	const isBound = sourceMode !== 'typed';
 
-	// In typed mode, determine whether we are in the new built-in branch
-	// (productName set) or the legacy InnerBlocks bridge path.
-	const isBuiltIn = ! isBound && productName !== '';
+	// Legacy detection (B4, 2026-06-10): a pre-D204 page-144 clone stores child
+	// InnerBlocks; a freshly-inserted card has none. Detect legacy by the
+	// presence of stored inner blocks — NOT by an empty productName. A fresh
+	// card also has an empty name and must default to the built-in template,
+	// not the legacy bridge warning (which was leaking into the default UX).
+	const hasLegacyInnerBlocks = useSelect(
+		( select ) => {
+			const block = select( 'core/block-editor' ).getBlock( clientId );
+			return !! ( block && block.innerBlocks && block.innerBlocks.length > 0 );
+		},
+		[ clientId ]
+	);
+
+	// Typed mode: built-in template by default; the legacy InnerBlocks bridge
+	// is reachable ONLY for existing content that still carries the old layout.
+	const isBuiltIn = ! isBound && ! hasLegacyInnerBlocks;
 
 	// FP-H final unit: SINGLE shared /wc/v3/products/{id} fetch for the
 	// connected product — reused by ProductOptionsPanel (axes), the overrides
@@ -857,20 +870,27 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Buttons', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					{ /* Primary CTA */ }
-					<TextControl
-						label={ __( 'Primary button text', 'sgs-blocks' ) }
-						value={ ctaText || '' }
-						onChange={ ( v ) => setAttributes( { ctaText: v } ) }
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'Primary button URL', 'sgs-blocks' ) }
-						value={ ctaUrl || '' }
-						onChange={ ( v ) => setAttributes( { ctaUrl: v } ) }
-						type="url"
-						__nextHasNoMarginBottom
-					/>
+					{ /* Primary CTA text + URL — typed mode only (B5, 2026-06-10).
+					     In bound mode the CTA text/url are set via the Content
+					     overrides panel ("Override button"), so duplicating them
+					     here is redundant. Style + behaviour stay below (both modes). */ }
+					{ ! isBound && (
+						<>
+							<TextControl
+								label={ __( 'Primary button text', 'sgs-blocks' ) }
+								value={ ctaText || '' }
+								onChange={ ( v ) => setAttributes( { ctaText: v } ) }
+								__nextHasNoMarginBottom
+							/>
+							<TextControl
+								label={ __( 'Primary button URL', 'sgs-blocks' ) }
+								value={ ctaUrl || '' }
+								onChange={ ( v ) => setAttributes( { ctaUrl: v } ) }
+								type="url"
+								__nextHasNoMarginBottom
+							/>
+						</>
+					) }
 					<SelectControl
 						label={ __( 'Primary button style', 'sgs-blocks' ) }
 						value={ ctaStyle || 'primary' }

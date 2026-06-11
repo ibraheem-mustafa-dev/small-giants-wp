@@ -197,8 +197,10 @@
 	color: var(--wp--preset--color--text, #3a2e26);
 }
 
-/* Trial variant — dashed border + gradient overlay + accent tag */
-.product-card.trial-card {
+/* Trial variant — dashed border + gradient overlay (B6, 2026-06-10): wrapped in
+   :where() so specificity is 0 and the operator's border/background controls
+   (universal container-mirror supports, A1) always override these defaults. */
+:where(.product-card.trial-card) {
 	border: 2px dashed var(--wp--preset--color--accent, #f5d050);
 	background:
 		linear-gradient(
