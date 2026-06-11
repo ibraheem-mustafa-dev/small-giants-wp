@@ -3,50 +3,23 @@
 <!-- wp:group {"tagName":"main","anchor":"main","layout":{"type":"constrained"}} -->
 <main class="wp-block-group" id="main">
 
-	<!-- Archive toolbar: breadcrumb + title -->
+	<!-- Archive toolbar: breadcrumb + title + sort controls -->
 	<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|30"}}},"backgroundColor":"surface-alt","layout":{"type":"constrained"}} -->
 	<div class="wp-block-group has-surface-alt-background-color has-background" style="padding-top:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--30)">
 		<!-- wp:template-part {"slug":"sgs-archive-toolbar"} /-->
 	</div>
 	<!-- /wp:group -->
 
-	<!-- Product grid + pagination -->
+	<!-- Product grid -->
 	<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|60"}}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--60)">
 
-		<!-- wp:woocommerce/product-collection {"queryId":0,"query":{"perPage":12,"pages":0,"offset":0,"postType":"product","order":"asc","orderBy":"menu_order","inherit":true},"displayLayout":{"type":"flex","columns":3,"shrinkColumns":true},"tagName":"div","isCustomQueryByUser":false} -->
-		<div class="wp-block-woocommerce-product-collection">
-
-			<!-- wp:woocommerce/product-template -->
-
-				<!-- wp:woocommerce/product-image {"showSaleBadge":true,"saleBadgeAlign":"left","isDescendentOfQueryLoop":true} /-->
-
-				<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30","right":"var:preset|spacing|30"}}},"layout":{"type":"default"}} -->
-				<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)">
-
-					<!-- wp:woocommerce/product-title {"headingLevel":3,"isDescendentOfQueryLoop":true} /-->
-
-					<!-- wp:woocommerce/product-price {"isDescendentOfQueryLoop":true,"fontSize":"medium"} /-->
-
-				</div>
-				<!-- /wp:group -->
-
-			<!-- /wp:woocommerce/product-template -->
-
-			<!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|50"}}}} -->
-				<!-- wp:query-pagination-previous /-->
-				<!-- wp:query-pagination-numbers /-->
-				<!-- wp:query-pagination-next /-->
-			<!-- /wp:query-pagination -->
-
-			<!-- wp:woocommerce/product-collection-no-results -->
-				<!-- wp:paragraph {"align":"center","textColor":"text-muted"} -->
-				<p class="has-text-align-center has-text-muted-color has-text-color">No products found.</p>
-				<!-- /wp:paragraph -->
-			<!-- /wp:woocommerce/product-collection-no-results -->
-
-		</div>
-		<!-- /wp:woocommerce/product-collection -->
+		<!-- sgs/content-collection: queries all WC products (newest first, 12 per page),
+		     renders each through the dual-mode sgs/product-card in bound wc-product mode.
+		     showPickers=false suppresses in-card option-picker UI — browse context shows
+		     image, title, From-price and a View product CTA only.
+		     ctaBehaviour defaults to learn-more (links to the PDP). -->
+		<!-- wp:sgs/content-collection {"contentType":"product","selectionRule":"newest","count":12,"columns":3,"showPickers":false,"ctaBehaviour":"learn-more","showLadder":false} /-->
 
 	</div>
 	<!-- /wp:group -->

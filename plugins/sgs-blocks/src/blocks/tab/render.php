@@ -29,9 +29,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 
 // Generate stable IDs for ARIA relationships.
 // The parent tabs block provides tab IDs; we derive the panel ID from the block's anchor.
-$block_id   = isset( $attributes['anchor'] ) ? sanitize_html_class( $attributes['anchor'] ) : '';
-$panel_id   = ! empty( $block_id ) ? $block_id : '';
-$tab_id_ref = ! empty( $block_id ) ? str_replace( '-panel-', '-tab-', $block_id ) : '';
+$block_id = isset( $attributes['anchor'] ) ? sanitize_html_class( $attributes['anchor'] ) : '';
+$panel_id = ! empty( $block_id ) ? $block_id : '';
 
 // The tab content is wrapped in a .sgs-tab__content div (unchanged from original).
 $inner_html = sprintf(
@@ -39,17 +38,16 @@ $inner_html = sprintf(
 	$content // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inner blocks are already escaped.
 );
 
-// Build extra_attrs — ALL four ARIA/role attrs the tabs view.js depends on.
-$extra_attrs = array(
-	'role'     => 'tabpanel',
-	'tabindex' => '0',
-);
+// NO ARIA tab attrs here — the parent sgs/tabs render.php wraps every tab in
+// its own .sgs-tabs__panel[role="tabpanel"] wrapper and its view.js toggles
+// THOSE (verified: view.js queries .sgs-tabs__panel only). The child emitting
+// role="tabpanel"/tabindex too produced NESTED duplicate tabpanels (8 for 4
+// tabs — caught live on the canary PDP 2026-06-11). Keep the optional anchor
+// id for deep links; drop the duplicated semantics.
+$extra_attrs = array();
 
 if ( '' !== $panel_id ) {
 	$extra_attrs['id'] = esc_attr( $panel_id );
-}
-if ( '' !== $tab_id_ref ) {
-	$extra_attrs['aria-labelledby'] = esc_attr( $tab_id_ref );
 }
 
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() output is pre-sanitised; arrays are caller-built with esc_attr().

@@ -66,6 +66,10 @@ $inner_padding  = isset( $attributes['innerPadding'] ) ? (string) $attributes['i
 $picker_label_font_size = isset( $attributes['pickerLabelFontSize'] ) ? sanitize_text_field( $attributes['pickerLabelFontSize'] ) : '';
 $picker_label_colour    = isset( $attributes['pickerLabelColour'] ) ? sanitize_text_field( $attributes['pickerLabelColour'] ) : '';
 
+// showPickers: when false, suppress all in-card option-picker renders (variable
+// and non-variable paths). Default true = existing behaviour unchanged (R-22-9).
+$sgs_show_pickers = isset( $attributes['showPickers'] ) ? (bool) $attributes['showPickers'] : true;
+
 $classes = array( 'product-card' );
 if ( 'trial' === $variant_style ) {
 	$classes[] = 'trial-card';
@@ -773,7 +777,8 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					? array_map( 'sanitize_key', $attributes['visibleAxes'] )
 					: array();
 
-				foreach ( $manifest['axes'] as $axis ) {
+				// showPickers=false: skip all axis pickers (collection-grid browsing context).
+				foreach ( $sgs_show_pickers ? $manifest['axes'] : array() as $axis ) {
 					// Skip if visibleAxes is set and this taxonomy is not in it.
 					if ( ! empty( $sgs_visible_axes ) && ! in_array( sanitize_key( (string) ( $axis['taxonomy'] ?? '' ) ), $sgs_visible_axes, true ) ) {
 						continue;
@@ -1179,7 +1184,9 @@ ob_start();
 		: array();
 
 	$sgs_pill_type_key = null !== $pill_type ? sanitize_key( (string) ( $pill_type['type_key'] ?? '' ) ) : '';
-	$sgs_show_picker   = null !== $pill_type
+	// showPickers=false short-circuits before visibleAxes filtering (collection-grid browsing context).
+	$sgs_show_picker   = $sgs_show_pickers
+		&& null !== $pill_type
 		&& ( empty( $sgs_visible_axes_nv ) || in_array( $sgs_pill_type_key, $sgs_visible_axes_nv, true ) );
 
 	if ( $sgs_show_picker ) :

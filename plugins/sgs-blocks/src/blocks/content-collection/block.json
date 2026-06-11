@@ -213,6 +213,26 @@
 		"columnsTablet": {
 			"type": "number",
 			"default": 2
+		},
+		"showPickers": {
+			"type": "boolean",
+			"default": true,
+			"description": "Forwarded to each rendered product-card. When false, suppresses in-card option-picker UI (axis pickers and pill pickers) — useful for browsing/shop grids where picker UI is unwanted. Default true."
+		},
+		"ctaBehaviour": {
+			"type": "string",
+			"default": "learn-more",
+			"enum": [
+				"learn-more",
+				"add-to-basket",
+				"buy-now"
+			],
+			"description": "Forwarded to each rendered product-card. Controls the primary CTA: learn-more = link to PDP; add-to-basket = SGS cart proxy; buy-now = add then redirect to checkout."
+		},
+		"showLadder": {
+			"type": "boolean",
+			"default": false,
+			"description": "Forwarded to each rendered product-card. Browsing/shop grids default false (price + per-unit note only, no multi-row value ladder). PDP configurator cards use true."
 		}
 	},
 	"render": "file:./render.php",

@@ -39,7 +39,12 @@ foreach ( $block->inner_blocks as $inner_block ) {
 		'label'   => isset( $inner_block->attributes['label'] )
 			? wp_strip_all_tags( $inner_block->attributes['label'] )
 			: __( 'Tab', 'sgs-blocks' ),
-		'content' => ( new WP_Block( $inner_block->parsed_block ) )->render(),
+		// Render the EXISTING WP_Block instance — it carries the inherited
+		// block context (postId/postType). Re-constructing from parsed_block
+		// without passing context stripped it, so context-dependent children
+		// (core/post-content in the PDP details tab) rendered EMPTY.
+		// Root-caused live on the canary 2026-06-11.
+		'content' => $inner_block->render(),
 	);
 }
 

@@ -233,9 +233,18 @@ ob_start();
 			$item_source_mode = 'sgs-cpt';
 		}
 
+		// Forward collection-level card-behaviour attrs to each card.
+		// Defaults match product-card defaults so omitting them from the collection block
+		// is backwards-compatible (R-22-9 — no per-item logic).
 		$card_attrs = array(
-			'sourceMode' => $item_source_mode,
-			'productId'  => $collection_post_id,
+			'sourceMode'   => $item_source_mode,
+			'productId'    => $collection_post_id,
+			// showPickers: false on browsing grids — suppresses axis + pill pickers.
+			'showPickers'  => isset( $attributes['showPickers'] ) ? (bool) $attributes['showPickers'] : true,
+			// ctaBehaviour: learn-more (link to PDP) is the browsing-grid default.
+			'ctaBehaviour' => isset( $attributes['ctaBehaviour'] ) ? sanitize_key( $attributes['ctaBehaviour'] ) : 'learn-more',
+			// showLadder: false on browsing grids — price + per-unit note only, no ladder.
+			'showLadder'   => isset( $attributes['showLadder'] ) ? (bool) $attributes['showLadder'] : false,
 		);
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.

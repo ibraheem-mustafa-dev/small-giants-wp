@@ -165,6 +165,65 @@
 	outline-offset: 2px;
 }
 
+/* ── Option-picker grid layout (buybox-scoped only) ───────────────────── */
+/*
+ * All selectors below are prefixed with .sgs-buybox so they ONLY affect
+ * option-pickers rendered inside this block. The global sgs/option-picker
+ * styles (flex layout, inline-flex pill) are untouched — shared surfaces
+ * (homepage sections, product-card) see zero change.
+ * (scope-shared-block-changes-to-unused-variant rule)
+ */
+
+/* Switch the options row from flex to a 3-column grid so 12 flavour pills
+   sit in 4 neat rows instead of wrapping loosely. Column gap matches row gap
+   for visual balance; both use the same 8px rhythm. The legend-to-pills gap
+   is tightened by overriding the margin-bottom on the label. */
+.sgs-buybox .sgs-option-picker__options {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 8px;
+	/* Override the default align-items: center so grid items stretch to fill
+	   their cell height uniformly (all pills in a row are the same height). */
+	align-items: stretch;
+}
+
+/* 2-column fallback at narrow widths — 3 × ~80 px minimum columns need at
+   least ~260 px of usable space; below 480 px a 2-column grid is safer. */
+@media (max-width: 480px) {
+	.sgs-buybox .sgs-option-picker__options {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+/* Each label (option wrapper) must fill its grid cell so the pill inside
+   stretches to the full cell width. Override inline-flex → flex so width:
+   100% on the pill can take effect (inline-flex ignores block-level width). */
+.sgs-buybox .sgs-option-picker__option {
+	display: flex;
+	width: 100%;
+}
+
+/* Pills fill the full cell width and centre their label text. min-height 44px
+   is preserved (WCAG 2.2 AA §2.5.8 — 44 px touch target). */
+.sgs-buybox .sgs-option-picker__pill {
+	width: 100%;
+	justify-content: center;
+}
+
+/* Tighten the space between the legend label and the pill grid — the default
+   --wp--preset--spacing--20 (8 px) is kept but explicitly restated here for
+   clarity; if the preset resolves larger, this caps it at 6 px. */
+.sgs-buybox .sgs-option-picker__label {
+	margin-bottom: 6px;
+}
+
+/* Reduce the gap between consecutive picker groups from the default 16px to
+   12px. This cuts the column height without crowding (each group already has
+   its legend + pill rows; 12px between groups is visually clear). */
+.sgs-buybox {
+	--sgs-buybox-gap: 12px;
+}
+
 /* ── Editor placeholder ────────────────────────────────────────────────── */
 
 .sgs-buybox--editor-placeholder {

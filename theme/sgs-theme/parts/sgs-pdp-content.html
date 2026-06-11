@@ -1,9 +1,52 @@
-<!-- wp:sgs/trust-bar /-->
+<!-- Product details band — default/surface background (alternates with surface-alt hero band above) -->
+<!-- wp:group {"align":"full","layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull">
 
-<!-- wp:group {"tagName":"section","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group" style="padding-top:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50)">
+	<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60)">
 
-	<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+		<!-- wp:heading {"level":2,"textColor":"text","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|50"}}}} -->
+		<h2 class="wp-block-heading has-text-color" style="margin-bottom:var(--wp--preset--spacing--50)">Product details</h2>
+		<!-- /wp:heading -->
 
-</section>
+		<!-- wp:sgs/tabs {"orientation":"horizontal","tabStyle":"underline","tabAlignment":"left"} -->
+
+			<!-- wp:sgs/tab {"label":"Description"} -->
+				<!-- core/post-content renders the product's long description on a product post.
+				     NOT woocommerce/product-details — that block emits WC's whole CLASSIC tab set
+				     (Description / Additional information / Reviews), which nested a second tab
+				     row inside this tab (caught live 2026-06-11). -->
+				<!-- wp:post-content /-->
+			<!-- /wp:sgs/tab -->
+
+			<!-- wp:sgs/tab {"label":"Ingredients"} -->
+				<!-- wp:paragraph -->
+				<p>Update this tab with the full ingredient list for this product.</p>
+				<!-- /wp:paragraph -->
+			<!-- /wp:sgs/tab -->
+
+			<!-- wp:sgs/tab {"label":"Nutritional information"} -->
+				<!-- wp:paragraph -->
+				<p>Update this tab with the nutritional information for this product.</p>
+				<!-- /wp:paragraph -->
+			<!-- /wp:sgs/tab -->
+
+			<!-- wp:sgs/tab {"label":"Allergens"} -->
+				<!-- Spec 30 FR-30-13(f): statutory allergen disclosure slot (food clients).
+				     Operators must replace the sample copy below with accurate product-specific
+				     allergen information before publishing. -->
+				<!-- wp:paragraph -->
+				<p>Contains: <strong>wheat (gluten)</strong>. May contain traces of nuts, milk, eggs, and soya. Produced in a facility that handles all major allergens. Always check the product label before consuming.</p>
+				<!-- /wp:paragraph -->
+			<!-- /wp:sgs/tab -->
+
+		<!-- /wp:sgs/tabs -->
+
+	</div>
+	<!-- /wp:group -->
+
+</div>
 <!-- /wp:group -->
+
+<!-- Trust bar — full-width, kept from original part; another agent styles the band via CSS -->
+<!-- wp:sgs/trust-bar /-->

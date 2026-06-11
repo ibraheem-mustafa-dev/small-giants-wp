@@ -283,6 +283,11 @@
             "type": "string",
             "default": "",
             "description": "Colour for the price element. Theme token slug or raw hex. Empty = theme default."
+        },
+        "showPickers": {
+            "type": "boolean",
+            "default": true,
+            "description": "Bound/live-data mode only: when false, suppresses all option-picker renders (both variable-axis and non-variable pill paths) and falls through to the static From-price card appearance. Use on collection grids where picker UI is unwanted. Default true (existing behaviour unchanged)."
         }
     },
     "editorScript": "file:./index.js",

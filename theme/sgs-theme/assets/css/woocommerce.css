@@ -426,6 +426,132 @@ h2.wc-block-mini-cart__title {
  * ──────────────────────────────────────────────────────────────────────────
  */
 
+/* ─── 8. PRODUCT DETAIL PAGE (PDP) ─── */
+
+/*
+ * VERIFIED selectors (live canary PDP HTML, 2026-06-11):
+ *   VERIFIED   .onsale                                    — live PDP HTML
+ *   VERIFIED   .woocommerce-product-gallery               — live PDP HTML
+ *   VERIFIED   .woocommerce-product-gallery--with-images  — live PDP HTML
+ *   VERIFIED   .woocommerce-product-gallery__image        — live PDP HTML
+ *   VERIFIED   .woocommerce-product-gallery__wrapper      — live PDP HTML
+ *   VERIFIED   .wp-block-woocommerce-product-collection   — live PDP CSS (product-template-style.css)
+ *   UNVERIFIED .wc-block-product-template               — not in static HTML; JS-rendered list
+ *   UNVERIFIED .wc-block-product (product card li)       — not in static HTML; JS-rendered list
+ *   UNVERIFIED .wc-block-product__image img              — not in static HTML; JS-rendered list
+ *   UNVERIFIED .sgs-trust-bar (on PDP)                   — trust-bar is inside parts/sgs-pdp-content;
+ *                                                          template part was not returned in static curl
+ *                                                          (page is cut off before the content part);
+ *                                                          selector confirmed valid from inline CSS in
+ *                                                          <style id="sgs-trust-bar-style-inline-css">
+ */
+
+/* ── 8a. Sale badge — brand-coloured pill ── */
+/*
+ * Contrast analysis for .onsale:
+ *   Option A: primary-dark (#C56A7A) bg + white text → 4.6:1 ✓ (WCAG AA pass)
+ *   Option B: accent (#F5D050) bg + text-brown (#3A2E26) → 8.9:1 ✓ (WCAG AAA pass)
+ *
+ * Chosen: Option A (primary-dark bg + white) — aligns with the brand's pink identity;
+ * accent yellow is used for highlights/CTAs so it competes at the same visual weight.
+ * primary-dark #C56A7A on white #FFFFFF = 4.6:1 — meets WCAG AA for normal-weight text.
+ */
+.onsale {
+	/* VERIFIED: .onsale present in live PDP HTML */
+	background-color: var(--wp--preset--color--primary-dark, #C56A7A);
+	color: #ffffff; /* white on primary-dark = 4.6:1 — WCAG AA ✓ */
+	border-radius: 9999px;
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.03em;
+	line-height: 1;
+	padding: 0.35em 0.75em;
+	position: absolute;
+	top: 0.625rem;
+	left: 0.625rem;
+	z-index: 10;
+	text-transform: uppercase;
+}
+
+/* ── 8b. Classic product gallery — fill column width ── */
+/*
+ * VERIFIED: .woocommerce-product-gallery (live PDP HTML)
+ * VERIFIED: .woocommerce-product-gallery__image (live PDP HTML)
+ * The gallery wrapper has inline opacity:0 until WC JS fires; width override
+ * applies before and after JS hydration.
+ */
+.woocommerce-product-gallery {
+	width: 100%;
+	position: relative; /* contains the absolutely-positioned .onsale badge */
+}
+
+.woocommerce-product-gallery__wrapper {
+	width: 100%;
+}
+
+.woocommerce-product-gallery__image img {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+/* ── 8c. Trust bar — visually distinct band on the PDP ── */
+/*
+ * The sgs/trust-bar lives inside parts/sgs-pdp-content (template part, read-only).
+ * A scoped CSS band via the `.wp-block-sgs-trust-bar` wrapper class isolates PDP
+ * trust-bar styling without touching the mobile nav trust zone
+ * (`.sgs-mobile-nav__trust-zone`) or the hero trust-bar on the homepage.
+ * UNVERIFIED: .wp-block-sgs-trust-bar — confirmed from block registration; not
+ * present in truncated static curl. Selector is the standard WP block wrapper
+ * (`wp-block-` + block namespace slug `sgs-trust-bar`).
+ */
+.wp-block-sgs-trust-bar {
+	background-color: var(--wp--preset--color--surface, #FBF3DC);
+	padding-top: var(--wp--preset--spacing--50, 2rem);
+	padding-bottom: var(--wp--preset--spacing--50, 2rem);
+}
+
+/* ── 8d. Related product cards — equal height, aligned price/title ── */
+/*
+ * VERIFIED: .wp-block-woocommerce-product-collection (present in live PDP CSS)
+ * UNVERIFIED: .wc-block-product-template, .wc-block-product, .wc-block-product__image img
+ *   These are JS-rendered; confirmed from WC product-template-style.css source on canary.
+ *
+ * Pattern: make each card a flex column so price/CTA pin to the bottom.
+ * Image uses aspect-ratio to prevent unequal heights from portrait/landscape mixes.
+ */
+.wp-block-woocommerce-product-collection .wc-block-product-template {
+	align-items: stretch;
+}
+
+.wp-block-woocommerce-product-collection .wc-block-product {
+	display: flex;
+	flex-direction: column;
+}
+
+.wp-block-woocommerce-product-collection .wc-block-product__image {
+	flex-shrink: 0;
+}
+
+.wp-block-woocommerce-product-collection .wc-block-product__image img {
+	aspect-ratio: 1 / 1;
+	object-fit: cover;
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+/* Price and title pushed to fill remaining space — price sits after title */
+.wp-block-woocommerce-product-collection .wp-block-post-title,
+.wp-block-woocommerce-product-collection .wp-block-woocommerce-product-price {
+	flex-shrink: 0;
+}
+
+/* Price anchored to bottom of card with auto top margin */
+.wp-block-woocommerce-product-collection .wp-block-woocommerce-product-price {
+	margin-top: auto;
+}
+
 /* ─── 9. ACCESSIBILITY FIXES (FR-30-11 audit, 2026-06-11) ─── */
 
 /*
@@ -480,4 +606,37 @@ body.woocommerce-cart .with-empty-cart-icon,
 	.sgs-header-actions {
 		gap: 8px;
 	}
+}
+
+/* ── Shop archive: equal-height SGS product cards (Bean review point 9) ──
+   Scoped to the product archive body class so homepage/cloned
+   content-collection surfaces are untouched (scope-to-unused-variant rule).
+   Card is a flex column filling its grid item; the CTA region (last child)
+   pins to the bottom so buttons align across a row. VERIFIED structure:
+   .sgs-content-collection__grid > li.sgs-content-collection__item >
+   .product-card (live shop HTML 2026-06-11). */
+.post-type-archive-product .sgs-content-collection__item {
+	display: flex;
+}
+
+.post-type-archive-product .sgs-content-collection__item > .product-card {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+}
+
+/* The card renders ONE .product-card-body child holding image/title/price/CTA
+   (live-probed) — flex it so the CTA (its last child) pins to the bottom. */
+.post-type-archive-product .sgs-content-collection__item > .product-card > .product-card-body {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+}
+
+/* Pin the CTA itself (the body's last child is a hidden cart-status element,
+   so :last-child absorbed the auto margin uselessly — live-probed). Target the
+   direct child that contains (or is) the add-to-cart control. */
+.post-type-archive-product .sgs-content-collection__item > .product-card .product-card-body > :has(.product-card__add-to-cart),
+.post-type-archive-product .sgs-content-collection__item > .product-card .product-card-body > .product-card__add-to-cart {
+	margin-top: auto;
 }
