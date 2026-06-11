@@ -314,8 +314,38 @@ function enqueue_styles(): void {
 
 	// Animation system is now in sgs-blocks plugin (extensions.css + animation-observer.js).
 	// Old theme files (sgs-animations.css, sgs-animations.js) removed in Session 11.
+
+	// WooCommerce brand styles — Cart, Checkout, Mini-Cart drawer (FR-30-4, Spec 30).
+	// Only loaded when WooCommerce is active.
+	if ( class_exists( 'WooCommerce' ) ) {
+		wp_enqueue_style(
+			'sgs-woocommerce',
+			get_theme_file_uri( 'assets/css/woocommerce.css' ),
+			array( 'sgs-core-blocks-critical' ),
+			$theme_version
+		);
+	}
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_styles' );
+
+/**
+ * Signal to WooCommerce that the SGS theme provides its own button styles.
+ *
+ * WC checks for the `woocommerce-block-theme-has-button-styles` body class
+ * before applying its own fallback button rules. Adding this class prevents
+ * WC from overriding our themed buttons on cart/checkout/mini-cart surfaces.
+ *
+ * Spec 30 FR-30-4.
+ */
+add_filter(
+	'body_class',
+	function ( array $classes ): array {
+		if ( class_exists( 'WooCommerce' ) ) {
+			$classes[] = 'woocommerce-block-theme-has-button-styles';
+		}
+		return $classes;
+	}
+);
 
 /**
  * Output critical layout fix CSS as an inline <style> block.

@@ -1,0 +1,17 @@
+{
+  "description": "SGS WooCommerce FR-30-4 — Mini-Cart drawer width custom property and WC block element colours. Merge into the existing wp_global_styles post (canary ID 7) by GET /wp/v2/global-styles/7, deep-merge these settings, then POST the merged body back.",
+  "settings": {
+    "custom": {
+      "sgs-mini-cart-drawer-width": "420px"
+    }
+  },
+  "styles": {
+    "blocks": {
+      "woocommerce/mini-cart": {
+        "color": {
+          "text": "var(--wp--preset--color--text)"
+        }
+      }
+    }
+  }
+}

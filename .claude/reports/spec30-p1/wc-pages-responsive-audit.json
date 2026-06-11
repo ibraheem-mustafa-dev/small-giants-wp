@@ -1,0 +1,932 @@
+[
+  {
+    "page": "pdp",
+    "viewport": "375",
+    "url": "https://sandybrown-nightingale-600381.hostingersite.com/product/mamas-test-box-48-sku-fixture/?cb=audit1781197628391",
+    "hOverflow": false,
+    "scrollWidth": 375,
+    "executedJsBytes": 74910,
+    "executedJsCount": 24,
+    "overBudget": true,
+    "smallTargets": [
+      {
+        "tag": "A",
+        "cls": "skip-link screen-reader-text",
+        "w": 1,
+        "h": 1
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 36,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 90,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 36,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 37,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 53,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 27,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 48,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 86,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 120,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 156,
+        "h": 38
+      }
+    ],
+    "smallTargetCount": 11,
+    "axeViolations": 0,
+    "axeDetail": [],
+    "screenshot": "audit-pdp-375.png"
+  },
+  {
+    "page": "pdp",
+    "viewport": "768",
+    "url": "https://sandybrown-nightingale-600381.hostingersite.com/product/mamas-test-box-48-sku-fixture/?cb=audit1781197632617",
+    "hOverflow": false,
+    "scrollWidth": 768,
+    "executedJsBytes": 74910,
+    "executedJsCount": 24,
+    "overBudget": true,
+    "smallTargets": [
+      {
+        "tag": "A",
+        "cls": "skip-link screen-reader-text",
+        "w": 1,
+        "h": 1
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 38,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 94,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 38,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 38,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 55,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 28,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 50,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 89,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 124,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 197,
+        "h": 16
+      }
+    ],
+    "smallTargetCount": 11,
+    "axeViolations": 0,
+    "axeDetail": [],
+    "screenshot": "audit-pdp-768.png"
+  },
+  {
+    "page": "pdp",
+    "viewport": "1440",
+    "url": "https://sandybrown-nightingale-600381.hostingersite.com/product/mamas-test-box-48-sku-fixture/?cb=audit1781197636450",
+    "hOverflow": false,
+    "scrollWidth": 1440,
+    "executedJsBytes": 74910,
+    "executedJsCount": 24,
+    "overBudget": true,
+    "smallTargets": [
+      {
+        "tag": "A",
+        "cls": "skip-link screen-reader-text",
+        "w": 1,
+        "h": 1
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 39,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 97,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 39,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 39,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 57,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 30,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 52,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 93,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 129,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 205,
+        "h": 17
+      }
+    ],
+    "smallTargetCount": 11,
+    "axeViolations": 1,
+    "axeDetail": [
+      {
+        "id": "list",
+        "impact": "serious",
+        "nodes": 1,
+        "target": [
+          ".wp-block-navigation__container"
+        ]
+      }
+    ],
+    "screenshot": "audit-pdp-1440.png"
+  },
+  {
+    "page": "shop",
+    "viewport": "375",
+    "url": "https://sandybrown-nightingale-600381.hostingersite.com/shop/?cb=audit1781197639968",
+    "hOverflow": false,
+    "scrollWidth": 375,
+    "executedJsBytes": 76131,
+    "executedJsCount": 20,
+    "overBudget": true,
+    "smallTargets": [
+      {
+        "tag": "A",
+        "cls": "skip-link screen-reader-text",
+        "w": 1,
+        "h": 1
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 36,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 36,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 37,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 53,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 27,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 48,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 86,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 120,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 156,
+        "h": 38
+      }
+    ],
+    "smallTargetCount": 10,
+    "axeViolations": 0,
+    "axeDetail": [],
+    "screenshot": "audit-shop-375.png"
+  },
+  {
+    "page": "shop",
+    "viewport": "768",
+    "url": "https://sandybrown-nightingale-600381.hostingersite.com/shop/?cb=audit1781197643233",
+    "hOverflow": false,
+    "scrollWidth": 768,
+    "executedJsBytes": 76131,
+    "executedJsCount": 20,
+    "overBudget": true,
+    "smallTargets": [
+      {
+        "tag": "A",
+        "cls": "skip-link screen-reader-text",
+        "w": 1,
+        "h": 1
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 38,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 38,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 38,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 55,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 28,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 50,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 89,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 124,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 197,
+        "h": 16
+      }
+    ],
+    "smallTargetCount": 10,
+    "axeViolations": 0,
+    "axeDetail": [],
+    "screenshot": "audit-shop-768.png"
+  },
+  {
+    "page": "shop",
+    "viewport": "1440",
+    "url": "https://sandybrown-nightingale-600381.hostingersite.com/shop/?cb=audit1781197646569",
+    "hOverflow": false,
+    "scrollWidth": 1440,
+    "executedJsBytes": 76131,
+    "executedJsCount": 20,
+    "overBudget": true,
+    "smallTargets": [
+      {
+        "tag": "A",
+        "cls": "skip-link screen-reader-text",
+        "w": 1,
+        "h": 1
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 39,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 39,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 39,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 57,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 30,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 52,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 93,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 129,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 205,
+        "h": 17
+      }
+    ],
+    "smallTargetCount": 10,
+    "axeViolations": 1,
+    "axeDetail": [
+      {
+        "id": "list",
+        "impact": "serious",
+        "nodes": 1,
+        "target": [
+          ".wp-block-navigation__container"
+        ]
+      }
+    ],
+    "screenshot": "audit-shop-1440.png"
+  },
+  {
+    "page": "cart",
+    "viewport": "375",
+    "url": "https://sandybrown-nightingale-600381.hostingersite.com/cart/?cb=audit1781197650028",
+    "hOverflow": false,
+    "scrollWidth": 375,
+    "executedJsBytes": 660877,
+    "executedJsCount": 69,
+    "overBudget": true,
+    "smallTargets": [
+      {
+        "tag": "A",
+        "cls": "skip-link screen-reader-text",
+        "w": 1,
+        "h": 1
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 36,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 37,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 53,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 27,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 48,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 86,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 120,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 156,
+        "h": 38
+      }
+    ],
+    "smallTargetCount": 9,
+    "axeViolations": 0,
+    "axeDetail": [],
+    "screenshot": "audit-cart-375.png"
+  },
+  {
+    "page": "cart",
+    "viewport": "768",
+    "url": "https://sandybrown-nightingale-600381.hostingersite.com/cart/?cb=audit1781197653244",
+    "hOverflow": false,
+    "scrollWidth": 768,
+    "executedJsBytes": 660877,
+    "executedJsCount": 69,
+    "overBudget": true,
+    "smallTargets": [
+      {
+        "tag": "A",
+        "cls": "skip-link screen-reader-text",
+        "w": 1,
+        "h": 1
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 38,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 38,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 55,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 28,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 50,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 89,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 124,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 197,
+        "h": 16
+      }
+    ],
+    "smallTargetCount": 9,
+    "axeViolations": 0,
+    "axeDetail": [],
+    "screenshot": "audit-cart-768.png"
+  },
+  {
+    "page": "cart",
+    "viewport": "1440",
+    "url": "https://sandybrown-nightingale-600381.hostingersite.com/cart/?cb=audit1781197656399",
+    "hOverflow": false,
+    "scrollWidth": 1440,
+    "executedJsBytes": 660877,
+    "executedJsCount": 69,
+    "overBudget": true,
+    "smallTargets": [
+      {
+        "tag": "A",
+        "cls": "skip-link screen-reader-text",
+        "w": 1,
+        "h": 1
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 39,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 39,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 57,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 30,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 52,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 93,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 129,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 205,
+        "h": 17
+      }
+    ],
+    "smallTargetCount": 9,
+    "axeViolations": 1,
+    "axeDetail": [
+      {
+        "id": "list",
+        "impact": "serious",
+        "nodes": 1,
+        "target": [
+          ".wp-block-navigation__container"
+        ]
+      }
+    ],
+    "screenshot": "audit-cart-1440.png"
+  },
+  {
+    "page": "checkout",
+    "viewport": "375",
+    "url": "https://sandybrown-nightingale-600381.hostingersite.com/checkout/?cb=audit1781197659619",
+    "hOverflow": false,
+    "scrollWidth": 375,
+    "executedJsBytes": 660877,
+    "executedJsCount": 69,
+    "overBudget": true,
+    "smallTargets": [
+      {
+        "tag": "A",
+        "cls": "skip-link screen-reader-text",
+        "w": 1,
+        "h": 1
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 36,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 37,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 53,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 27,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 48,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 86,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 120,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 156,
+        "h": 38
+      }
+    ],
+    "smallTargetCount": 9,
+    "axeViolations": 0,
+    "axeDetail": [],
+    "screenshot": "audit-checkout-375.png"
+  },
+  {
+    "page": "checkout",
+    "viewport": "768",
+    "url": "https://sandybrown-nightingale-600381.hostingersite.com/checkout/?cb=audit1781197662965",
+    "hOverflow": false,
+    "scrollWidth": 768,
+    "executedJsBytes": 660877,
+    "executedJsCount": 69,
+    "overBudget": true,
+    "smallTargets": [
+      {
+        "tag": "A",
+        "cls": "skip-link screen-reader-text",
+        "w": 1,
+        "h": 1
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 38,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 38,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 55,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 28,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 50,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 89,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 124,
+        "h": 16
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 197,
+        "h": 16
+      }
+    ],
+    "smallTargetCount": 9,
+    "axeViolations": 0,
+    "axeDetail": [],
+    "screenshot": "audit-checkout-768.png"
+  },
+  {
+    "page": "checkout",
+    "viewport": "1440",
+    "url": "https://sandybrown-nightingale-600381.hostingersite.com/checkout/?cb=audit1781197666323",
+    "hOverflow": false,
+    "scrollWidth": 1440,
+    "executedJsBytes": 660877,
+    "executedJsCount": 69,
+    "overBudget": true,
+    "smallTargets": [
+      {
+        "tag": "A",
+        "cls": "skip-link screen-reader-text",
+        "w": 1,
+        "h": 1
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 39,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 39,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 57,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 30,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 52,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 93,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 129,
+        "h": 17
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "w": 205,
+        "h": 17
+      }
+    ],
+    "smallTargetCount": 9,
+    "axeViolations": 1,
+    "axeDetail": [
+      {
+        "id": "list",
+        "impact": "serious",
+        "nodes": 1,
+        "target": [
+          ".wp-block-navigation__container"
+        ]
+      }
+    ],
+    "screenshot": "audit-checkout-1440.png"
+  }
+]

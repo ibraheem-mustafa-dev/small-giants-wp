@@ -1,0 +1,59 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "sgs/buybox",
+    "version": "1.0.0",
+    "title": "Buybox",
+    "category": "sgs-content",
+    "description": "WooCommerce single-product buybox: wires the SGS option-picker pills to the shipped cart proxy engine. Renders per-axis pickers, live price row, stock status, and an accessible add-to-cart form. Falls back to core WC blocks for simple products or when WooCommerce is absent.",
+    "keywords": [
+        "buybox",
+        "product",
+        "cart",
+        "add to cart",
+        "woocommerce",
+        "configurator",
+        "pdp"
+    ],
+    "textdomain": "sgs-blocks",
+    "icon": "cart",
+    "supports": {
+        "html": false,
+        "align": false,
+        "interactivity": true,
+        "color": {
+            "background": false,
+            "text": false
+        },
+        "spacing": {
+            "margin": true,
+            "padding": false
+        }
+    },
+    "usesContext": ["postId"],
+    "attributes": {
+        "soldOutLabel": {
+            "type": "string",
+            "default": "(sold out)",
+            "description": "Aria-label suffix appended to pill labels when a combination is sold out. Shown to screen readers only."
+        },
+        "unavailableLabel": {
+            "type": "string",
+            "default": "(unavailable)",
+            "description": "Aria-label suffix appended to pill labels when a combination does not exist for the current selections."
+        },
+        "notifyMeLabel": {
+            "type": "string",
+            "default": "Notify me",
+            "description": "Label for the notify-me CTA. Notify-me capture is deferred to a future release — this label is stored now for seamless activation when it ships."
+        },
+        "addToCartLabel": {
+            "type": "string",
+            "default": "",
+            "description": "Override the Add to Cart button label. Empty = use the default translated string."
+        }
+    },
+    "editorScript": "file:./index.js",
+    "style": "file:./style-index.css",
+    "render": "file:./render.php"
+}

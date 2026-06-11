@@ -1,0 +1,161 @@
+/**
+ * sgs/buybox — frontend layout.
+ *
+ * Minimal layout for the PDP buybox: stacked gap, price-row typography via
+ * theme custom properties, dismissible error region with a >=44px touch
+ * target. Colour values come from overridable custom properties — no
+ * hardcoded client values (block-style-controls rule).
+ */
+
+.sgs-buybox {
+	display: flex;
+	flex-direction: column;
+	gap: var(--sgs-buybox-gap, 16px);
+}
+
+/* ── Price row (mirrors the product-card price scale) ──────────────────── */
+
+.sgs-buybox .buybox__price-row {
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.sgs-buybox .buybox__price--current {
+	font-size: var(--sgs-buybox-price-size, var(--wp--preset--font-size--large, 1.75rem));
+	font-weight: 700;
+	color: var(--sgs-buybox-price-colour, inherit);
+}
+
+.sgs-buybox .buybox__price--regular {
+	font-size: var(--sgs-buybox-regular-size, 1.1rem);
+	opacity: 0.7;
+}
+
+.sgs-buybox .buybox__price--regular[hidden],
+.sgs-buybox .buybox__price--pct-off[hidden],
+.sgs-buybox .buybox__price-note[hidden],
+.sgs-buybox .buybox__stock[hidden] {
+	display: none;
+}
+
+.sgs-buybox .buybox__price--pct-off {
+	font-size: 0.95rem;
+	font-weight: 600;
+	color: var(--sgs-buybox-sale-colour, var(--wp--preset--color--primary, currentColor));
+}
+
+.sgs-buybox .buybox__price-note {
+	margin: 0;
+	font-size: 0.9rem;
+	opacity: 0.8;
+}
+
+/* ── Stock line ────────────────────────────────────────────────────────── */
+
+.sgs-buybox .buybox__stock {
+	margin: 0;
+	font-weight: 600;
+	/* 4.5:1 against white — token-overridable. */
+	color: var(--sgs-buybox-stock-colour, #b32d2e);
+}
+
+/* ── Add-to-cart form ──────────────────────────────────────────────────── */
+
+.sgs-buybox .buybox__cart-form {
+	margin: 0;
+}
+
+.sgs-buybox .buybox__add-to-cart {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-height: 44px;
+	min-width: 44px;
+	cursor: pointer;
+}
+
+.sgs-buybox .buybox__add-to-cart[disabled] {
+	opacity: 0.6;
+	cursor: progress;
+}
+
+.sgs-buybox .buybox__cart-icon {
+	flex-shrink: 0;
+}
+
+/* ── Cart-status error region (dismissible, ARIA-live) ────────────────── */
+
+/* Hidden by default; data-wp-class adds the --visible modifier when
+   context.cartStatus is non-empty (truthy string). */
+.sgs-buybox .buybox__cart-status-region {
+	display: none;
+	align-items: flex-start;
+	gap: 8px;
+	padding: 12px;
+	border-radius: 6px;
+	/* 4.5:1 text on the tinted background — token-overridable. */
+	background: var(--sgs-buybox-error-bg, #fcf0f1);
+	color: var(--sgs-buybox-error-colour, #8a1f21);
+	border: 1px solid var(--sgs-buybox-error-border, #e8c4c5);
+}
+
+.sgs-buybox .buybox__cart-status-region--visible {
+	display: flex;
+}
+
+.sgs-buybox .buybox__cart-status {
+	margin: 0;
+	flex: 1 1 auto;
+	font-size: 0.95rem;
+}
+
+.sgs-buybox .buybox__dismiss-status {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	margin: -10px -10px -10px 0;
+	padding: 0;
+	background: transparent;
+	border: 0;
+	border-radius: 6px;
+	color: inherit;
+	cursor: pointer;
+}
+
+.sgs-buybox .buybox__dismiss-status:hover {
+	background: var(--sgs-buybox-error-border, #e8c4c5);
+}
+
+.sgs-buybox .buybox__dismiss-status:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
+/* ── Editor placeholder ────────────────────────────────────────────────── */
+
+.sgs-buybox--editor-placeholder {
+	align-items: center;
+	text-align: center;
+	padding: 32px 16px;
+	border: 1px dashed var(--sgs-buybox-placeholder-border, #949494);
+	border-radius: 6px;
+	gap: 8px;
+}
+
+.sgs-buybox--editor-placeholder .sgs-buybox__placeholder-title {
+	margin: 0;
+	font-weight: 700;
+}
+
+.sgs-buybox--editor-placeholder .sgs-buybox__placeholder-help {
+	margin: 0;
+	font-size: 0.85rem;
+	opacity: 0.75;
+	max-width: 36em;
+}

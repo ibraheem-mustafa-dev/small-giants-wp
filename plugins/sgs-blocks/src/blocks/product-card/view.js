@@ -250,9 +250,18 @@ function applyAvailability( ref, ctx, isInit ) {
 						input.dataset.sgsOriginalLabel = original;
 					}
 				}
+				// FR-30-7: operator-editable unavailability labels (seeded by
+				// sgs/buybox). ctx.soldOutLabel / ctx.unavailableLabel are
+				// OPTIONAL context keys — product-card instances do not seed
+				// them, so contexts without the keys (existing cards) fall
+				// back to the previous literals — byte-identical behaviour.
 				input.setAttribute(
 					'aria-label',
-					term.label + ( isSoldOut ? ' (sold out)' : ' (unavailable)' )
+					term.label +
+						' ' +
+						( isSoldOut
+							? ctx.soldOutLabel || '(sold out)'
+							: ctx.unavailableLabel || '(unavailable)' )
 				);
 				totalUnavailable++;
 			}
@@ -864,6 +873,19 @@ store( 'sgs/product-card', {
 					new CustomEvent( 'wc-blocks_added_to_cart' )
 				);
 
+				// FR-30-4: open the core Mini-Cart drawer after a successful add.
+				// The proxy add bypasses WC's client cart store, so the drawer's
+				// native auto-open never fires. A programmatic click on the
+				// mini-cart button is the version-stable path — it runs WC's own
+				// actions.openDrawer binding with no cross-store API coupling.
+				// Pages without a mini-cart (e.g. card grids on non-shop headers)
+				// skip silently and keep the cartStatus message as the feedback.
+				if ( ctx.ctaBehaviour !== 'buy-now' ) {
+					document
+						.querySelector( '.wc-block-mini-cart__button' )
+						?.click();
+				}
+
 				// FP-H buy-now: redirect to checkout immediately after a successful
 				// add. context.ctaBehaviour is seeded server-side from the block attr;
 				// context.checkoutUrl is the esc_url'd wc_get_checkout_url() value.
@@ -916,6 +938,20 @@ store( 'sgs/product-card', {
 					}
 				}
 			}
+		},
+
+		/**
+		 * Dismiss the cart-status message (FR-30-7 dismissible error).
+		 *
+		 * Bound via data-wp-on--click on the sgs/buybox dismiss button.
+		 * Clearing context.cartStatus empties the data-wp-text span and
+		 * (in the buybox) removes the --visible modifier via data-wp-class,
+		 * collapsing the region. Backwards-compatible: cards without a
+		 * dismiss button simply never call it.
+		 */
+		dismissCartStatus() {
+			const ctx = getContext();
+			ctx.cartStatus = '';
 		},
 	},
 } );

@@ -2,7 +2,7 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/product-card",
-    "version": "1.16.6",
+    "version": "1.16.7",
     "title": "Product Card",
     "category": "sgs-content",
     "description": "Product card with pack-size variant pills, price and CTA. Typed mode = built-in elements authored directly from block attributes (no InnerBlocks). Live product data mode = render a live WooCommerce or SGS product (price, image, stock, add-to-cart) through the SGS design.",
