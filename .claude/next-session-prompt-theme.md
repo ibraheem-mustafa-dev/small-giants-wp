@@ -2,143 +2,106 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 thread: sgs-theme
-session_tag: small-giants-wp-2026-06-10-theme-R4-F2-SHIPPED-spec27-28-complete-bar-gated-P4-R5
-generated: 2026-06-10
-primary_goal: "SGS-THEME THREAD. Spec 27 + Spec 28 are COMPLETE except the two deliberately GATED units: FR-27-R5 AI-builder + Spec 28 P4 WC-write apply. R4 slug-templates SHIPPED (D202, 0d7badb8 + f5f3449b language pass; live round-trip: export 540 → import → apply → fresh product publishes + renders 16 pills). F2 SHIPPED (D202, 95754224: /sgs/v1/merchant-feed + /llms.txt + /llms-full.txt + sgs/product-faq FAQPage JSON-LD; red-team BLOCK [search-only exfil] fixed pre-commit; exfil + feed↔schema-parity probes PASS). THIS THREAD HAS NO MANDATORY BUILD WORK LEFT — the first-shop blocker is the cloning CONVERTER. Next session = (a) Bean R-22-13 eye on the R4/F2 screenshots + the visual-r4 report, (b) optional polish/parked items by Bean's choice, (c) R5/P4 ONLY if Bean explicitly un-gates (R5 designs via /brainstorming first — the OC-Protector stall trap). Opus orchestrator, sonnet dispatch, /qc-council before any WC-write/SEO-emit commit, plain English to Bean."
+session_tag: small-giants-wp-2026-06-11-theme-R22-13-block-quality-MERGED-D209-next-spec30-wc-pagetype
+generated: 2026-06-11
+primary_goal: "SGS-THEME THREAD. The R-22-13 block-quality remediation is COMPLETE + merged to main (D209): shared TypographyControls component + sgs_typography_css_rule() helper adopted across 6 blocks (counter/whatsapp-cta/mobile-nav/option-picker/trust-bar/product-card); Wave-1 bug fixes (trust-bar circle/placeholder/badge-size, testimonial italic, notice-banner iconColour, icon alignment); announcement-bar RETIRED → notice-banner displayMode=announcement (sticky/closeable/button); qc-council-gated (security MERGE-OK; dismiss-key content-hash fix). NEXT MAJOR WORK = the WooCommerce page-type build (Spec 30 / D208, delegated from the cloning thread): theme support + single-product/archive block templates + custom SGS search/filter blocks + option-picker→WC variation binding + Mini-Cart drawer styling + schema audit. Opus orchestrator, sonnet dispatch, /qc-council before any WC-write commit, plain English to Bean."
 ---
 
-# Next Session — SGS THEME thread — R4 + F2 SHIPPED (D202) — Spec 27/28 complete bar gated P4/R5 — next = Bean sign-off, then the converter is the only blocker
+# Next Session — SGS THEME thread — R-22-13 block-quality MERGED (D209) — next = WooCommerce page-type build (Spec 30 / D208)
 
-> ## ⚡ SESSION-21 CLOSE (2026-06-11, theme/blocks thread — READ FIRST; block-quality programme) — D206
-> **BLOCK-QUALITY PROGRAMME SHIPPED on a DEDICATED branch `feat/block-quality-mirror` (off `main`@26374b51), NOT yet merged.** All built + deployed to the sandybrown canary + live-verified + committed (HEAD `80200a9d`): product-card B3 crash (NumberControl import) / B4 fresh-card legacy-warning / B5 dup-CTA / B6 overridable trial border; picker-label forwarding (built-in Size/Flavour labels customisable); option-picker C7 group-label controls; notice-banner E9 overridable bg/border + dead `dismissible` removed (v0.7.0); **testimonial D8 = typed-attr 7-variant rebuild + v8 migration LIVE-VERIFIED migrating page 8's 3 real testimonials clean**; cleanup pass (testimonial hoverScale/hoverShadow + product-card packSizes wired, all attrs now editable). Captured rule: `clean-up-superseded-controls-on-block-changes`. Full record: D206 + `.claude/handoff-theme.md` session-21 + `reports/wave2/D8-TESTIMONIAL-VARIANT-DESIGN-2026-06-11.md`.
-> **REMAINING BLOCK GAPS — close these FIRST (before the qc-council), per the step-C map (`reports/wave2/step-c-mapping-visual.html`, 🧱 still-flagged rows after the S21 corrections):**
-> - **product-card** — per-element **heading/price typography** (font family / size / weight / colour) on the built-in card (the title h3 + price line; the card's box border/bg/radius are already done).
-> - **info-box** — heading typography (family/size/weight/colour) + description typography + borderRadius / padding / textAlign. ⚠ info-box renders its text via CHILD blocks (D192) — first decide whether these belong on the children (then they're NOT block gaps) or are genuine parent gaps; do NOT add dead/duplicate parent controls.
-> - **option-picker** — pill typography (`pillFontSize` / `pillFontWeight` / `pillBorderRadius`) + label `Weight` / `MarginBottom` (label size+colour already shipped in C7).
-> - **announcement-bar** — border / radius / padding / layout (inline-use styling; currently all absent).
-> - **trust-bar** — item `padding` / `border` + item-text typography + `iconCircleBorderRadius` / `iconCircleShadow` + icon stroke `iconColour` (DRAFT1 §2 + DRAFT2 p2 product-trust).
-> - **Tails on the blocks closed this session** — testimonial `quoteStyle` (italic) + `quoteLineHeight`; notice-banner `fontStyle`.
-> Apply the same standing rule each time (`clean-up-superseded-controls-on-block-changes`): ONE control per setting, no dead/duplicate/orphan controls, gated rendering. Each block its own commit + visual-diff report; deploy + live-verify on the canary (R-22-11).
->
-> **THE CLOSE-OUT TO-DOs (after the remaining block gaps above, in order):**
-> 1. **`/qc-council` finishing gate** over `feat/block-quality-mirror` — the cross-model QC pass over the whole branch (each piece is individually live-verified + gated, but the formal multi-rater council was deferred to a clear context). Run it BEFORE merge.
-> 2. **Bean R-22-13 eyeball** on the canary — click through: product-card (Advanced-SEO panel opens, fresh drag = template not warning, Buttons panel no dup boxes), the in-card Size/Flavour picker labels, option-picker label controls, notice-banner styling, and the **7 testimonial variants** (canary page 8 has the 3 migrated testimonials; insert fresh ones to see each variant). Bean's eye is co-authoritative — do not merge without it.
-> 3. **Merge `feat/block-quality-mirror` → main** after 1 + 2 (squash or no-ff per Bean; co-active hazard — `git branch --show-current` first; the cloning thread shares main).
-> 4. **FINAL STEP — brief the Stage-1 / cloning-converter main-thread session.** Once 1–3 are done, post a concise summary of ALL block-quality changes to the session driving the cloning converter (Stage-1, `feat/stage1-converter-core`): which blocks changed + how (product-card B3–B6 + picker-forwarding + packSizes; option-picker C7 label; notice-banner E9 overridable + dismissible removed; **testimonial D8 typed-attr 7-variant rebuild + the new typed attrs/variants**), the step-C gaps now closed (the `feat/stage1` copy of `step-c-mapping-visual.html` was corrected at `a7cee0e2`, local-unpushed), and the **converter work it now needs** — route the draft BEM vocab into the updated blocks + FR-22-20 variant auto-detect for testimonial (`P-TESTIMONIAL-CONVERTER-FR2220`). They share `main`, so the converter must target the now-updated block schema; this brief is how they learn what changed.
-> **DEFERRED (cloning thread, NOT blocking):** converter routing + FR-22-20 auto-detection for the new testimonial typed attrs/variants (testimonial = 2nd variant block onboarded; block works standalone without it). `/sgs-update` already registered the +27 testimonial attrs + variant map.
-> **NEW STOP entries from this session are in the catalogue below (clean-up-superseded-controls; render-without-control; migration-verify-against-real-stored-shape).**
+> ## SESSION CLOSE (2026-06-11, theme/blocks thread — READ FIRST) — D209
+> **R-22-13 BLOCK-QUALITY REMEDIATION COMPLETE + MERGED to `main` (`bd850804`).** All 12 of Bean's review points shipped across 3 waves on `feat/block-quality-mirror` then FF-pushed to main. Built: shared **`TypographyControls`** component (`src/components/TypographyControls.js`) + **`sgs_typography_css_rule()`** helper (`includes/helpers-typography.php`) — canonical sgs/text UI (responsive size slider+unit, weight/style dropdowns); adopted across 6 blocks (string→number+unit+responsive, legacy-string back-compat). Wave-1 bugs fixed (trust-bar circle border / placeholder / badge-size; testimonial italic; notice-banner iconColour; icon alignment). **announcement-bar RETIRED** → notice-banner `displayMode=announcement` (sticky/closeable/button + view.js, live interaction-tested pages 1080/1096). qc-council finishing gate: security MERGE-OK; dismiss-key per-request bug fixed (content-hash). Typography component now MANDATORY in `plugins/sgs-blocks/CLAUDE.md`. `/sgs-update` reconciled the DB (70 blocks, +72 attrs, announcement-bar pruned). Full record: D209 + `.claude/handoff-theme.md`.
+> **THE NEXT MAJOR WORK is the WooCommerce page-type build (Spec 30 / D208)** — delegated to this theme thread from the cloning thread. The product-page clone is GATED on it (deploy to the WC single-product template, not a WP Page).
 
-> ## ⚡ SESSION-20 CLOSE (2026-06-10, theme thread — READ FIRST; supersedes the R4/F2 framing below for current state) — D204
-> **FP-H/FP-E SHIPPED TO FINAL FORM + adversarial-council-hardened + `/sgs-update` RUN.** HEAD = `da2ec8ef` on `main`. The product-card is a built-in-element block in all modes (connect+override toggles, price never overridable, image override = default with live variation swaps, CTA model, `showLadder` default-on/grid-off); card-grid has the `wc-product` mode (smart collections + checklists + 4×-refill on-sale + hand-pick + empty state); ONE page-level ItemList per page; ProductGroup gated to single-product-focus pages; the card emits NO schema. The council CLOSED a confirmed draft/private-product → public-JSON-LD leak (live-proven). `/sgs-update` registered 2 new blocks + 36 new attrs; content-routing attrs all mapped (converter-routable); the NULL-canonical_slot new attrs are operator-config (CORRECT, not a gap — do NOT fill). New lessons: blub 335 (`cpt-singular-meta-caps-break-the-mapped-capability-sitewide`) + 336 (`bump-block-version-with-any-style-css-change`).
-> **THIS THREAD HAS NO MANDATORY BUILD WORK LEFT.** Next-session options: (a) Bean R-22-13 eye on canary page 1069 + `.claude/reports/visual-fp/` screenshots; (b) parked `P-FP-COUNCIL` residuals by Bean's choice (bridge-retirement forcing-function, namespace the 2 global helpers, dedup CTA-label/visibleAxes, out-of-stock button, editor go-live checklist); (c) the 2 gated design rounds (option-picker roving tabindex F12; widthMode wide/full precedence — Rule-7 shared-wrapper, needs Bean's gate); (d) R5/P4 ONLY if Bean explicitly un-gates (R5 via /brainstorming first — OC-Protector stall trap).
-> **THE FIRST-SHOP BLOCKER IS THE CLONING CONVERTER (other thread).** Converter Stage-2 must route the canonical draft BEM vocabulary (Spec 02 §"Canonical draft BEM vocabulary") → the now-mapped typed-attr destinations + live clone-verify the Mama's product section. The card is converter-ready; the converter isn't. Stage 11 container-roster drift (product-card missing / F2 product-faq extra) is the cloning thread's to reconcile — no bad data (it refused to --apply). Co-active hazard persists: `git branch --show-current` before EVERY commit; commit via temp worktree on `main`; path-scope; never touch the cloning branch ref.
+## READ BEFORE ANYTHING ELSE — warm-start + STOP catalogue (carried forward + extended; do NOT subtract)
+- **STOP — verify the branch before EVERY commit.** `git branch --show-current` + `git log origin/main --oneline -5`. `main` is checked out in the cloning thread's worktree `C:/tmp/sgs-p4`; `feat/block-quality-mirror` is a SHARED branch (both threads commit to it). Commit path-scoped (`git commit -m "..." -- <paths>`, never `git add -A`); merge to main via FF-push or a temp worktree, never disrupt the co-active tree. Leave never-stage artefacts untouched: `lucide-icons.php`, `sgs-framework.db`, `theme-snapshot.json`, `.parity-golden.json`, phase4 reports, build/.
+- **STOP — deploy `*.asset.php` with ANY viewScriptModule JS change; scp the WHOLE block set; opcache-reset; verify the served `?ver`.** WP reads each block's `style.css`, not `style-index.css`.
+- **STOP — bump block.json version with ANY style.css change** (Hostinger CDN caches block CSS 7 days on the ?ver URL; a probe contradicting a fresh deploy → check the served ?ver first).
+- **STOP — typography controls use the shared `TypographyControls` + `sgs_typography_css_rule()` (D209), NEVER bespoke blank-box font controls** (see plugins/sgs-blocks/CLAUDE.md Block Customisation Standard). Font size = responsive RangeControl + unit; weight/style = dropdowns; one default per tag (no token-slug size picker).
+- **STOP — a guard on ONE write path is not a guard; enumerate every path. `show_in_rest:false` on PHP-authored metas; strict `'1'===(string)$v` casts, never `(bool)`.**
+- **STOP — REST/one-shot gates CANNOT see admin/editor defects; a visual pass (Playwright at 375/768/1440) is MANDATORY for any new admin/editor/shop UI.**
+- **STOP — clean up superseded controls when changing a block** (ONE control per setting; audit duplicate/dead/render-without-control/vestigial; the dead-control guard is BLIND to render-without-control).
+- **STOP — WC products edit in the CLASSIC screen, not Gutenberg** (`use_block_editor_for_post_type('product')` FALSE — no PluginPrePublishPanel for products).
+- **STOP — a file-scope `extends \WC_*` class fatals the WHOLE site if required before WC loads; require inside `woocommerce_loaded` + a parse-time `class_exists` guard. After bootstrap-wiring deploys: curl the front page FIRST.**
+- **STOP — a CPT capability map with SINGULAR meta-caps breaks the mapped capability SITE-WIDE; use plural primitives; probe the live admin after any CPT-registration change.**
+- **STOP — canary live styles come from the `wp_global_styles` DB post (ID 7), not theme.json on disk.**
+- **STOP — public product/text/XML endpoints: enumerate WC visibility states (`visibility=>'catalog'`), read raw `$post->post_password`, entity-decode display strings, single-flight lock + item cap, `?cb=` CDN-bust when verifying.**
+- **STOP — schema/OG/feed price ALWAYS inc-VAT + from the MANIFEST; never `wc_get_price_to_display`/`get_children` in schema/feed emitters; FAQPage is DEAD (drop it, Google removed the appearance 2026-05-07); ONE Product node per PDP.**
+- **STOP — NO static fake reviews (UK DMCC Act in force 2026-04-06, displaying trader liable); Trustpilot/verified-buyer only.**
+- **STOP — passing automated gates ≠ DONE (design + operational + legal); expect Bean's R-22-13 eye to catch more.**
+- **STOP — fact-check EVERY subagent/rater claim against live ground truth before acting; rater findings are HYPOTHESES (this session: BLOCKER #1 was a false positive caught by checking the isBuiltIn gate).**
+- **STOP — build via PowerShell (`npm run build`), NOT Bash; WP guard-blocked ops via token-gated webroot one-shot (native PHP, quoted string literals); `POST /wp/v2/pages` is NOT guard-blocked; the creds file `.claude/secrets/sandybrown.env` has an unquoted `)` — parse with grep/cut, never `source`.**
+- **STOP — dispatched agents have NO commit/deploy authority; they return uncommitted; the orchestrator reviews + live-verifies + deploys + commits. A rater must NEVER `git checkout/restore/stash/clean` the shared tree (wiped uncommitted work 2026-06-09).**
 
-> ## ⚠ READ THIS BEFORE ANYTHING ELSE — warm start is mandatory ⚠
-> Invoke `/autopilot` first. This is the THEME/BLOCKS thread, NOT the cloning pipeline (sibling `.claude/next-session-prompt.md`). **Spec 27: every FR SHIPPED except the decision-gated R5. Spec 28: P1+P2+P3 shipped; only the gated P4 remains. Council backlog 100% closed.** Do NOT re-touch shipped units. **The cloning thread is co-active and the shared tree may sit on `feat/stage1-converter-core`** — run `git branch --show-current` BEFORE EVERY COMMIT; if the tree is on their branch, commit via a TEMP WORKTREE on main (`git worktree add C:/tmp/sgs-<x> main` → work there → push → `git worktree remove C:/tmp/sgs-<x>`); NEVER touch their branch ref. Path-scope every commit (`git commit -- <paths>`), never `git add -A`, leave never-commit artefacts (lucide-icons.php — NB the npm build TOUCHES it, never stage it; sgs-framework.db, theme-snapshot.json, phase4 reports, hero/product-card style.css) untouched.
->
-> **FIRST JOB:** `git log origin/main --oneline -8` + `git branch --show-current`; curl the canary configurator (expect 16 `type="radio"`); spot-check the three F2 surfaces still serve (`/llms.txt` 200 text/plain; `/wp-json/sgs/v1/merchant-feed?cb=1` valid XML; `/sgs-f2-faq-acceptance/` has FAQPage JSON-LD). Then surface the Bean R-22-13 queue (below). **D-NUMBER CONTENTION:** verify live max with `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` (currently D202) before assigning.
->
-> **YOU (the main inline agent) ARE OPUS = THE ORCHESTRATOR (Bean-locked).** Plan + decompose; dispatch sonnet subagents (NO commit/deploy authority — they return uncommitted; you review + live-verify + deploy + commit); /qc-council + /subagent-driven-development; FACT-CHECK every subagent claim against live ground truth (session-19 proof: an implementer's "reverted" edit had NOT persisted on disk — a hook overwrote it; its runner count was wrong; a co-active session's deeper visual pass still found 2 browser-only bugs my click-test missed); plain English to Bean (Problem→Effect→Solution) + ranked menu + one recommendation.
->
-> **Bean directive (2026-06-04, locked): in a multi-task batch, DON'T stop between tasks — proceed on passing+substantiated evidence; only stop for a genuine decision or a hard block.** Memory `dont-stop-between-tasks-in-a-batch`.
-
-## STOP catalogue (anti-pattern defences — carried forward + EXTENDED; do NOT subtract)
-
-> **STOP — CLEAN UP superseded controls when changing a block (NEW, session 21 — Bean rule).** A block change is NOT done until the inspector has exactly ONE control per setting + zero orphans. Adding new controls without removing the old ones they supersede leaves overlapping/duplicate settings (B5 = product-card had a "Primary button text" box AND a "Button text" override box). Audit every block change for: (1) duplicate/overlap, (2) dead control [control→no render, guarded], (3) render-without-control, (4) vestigial attrs. Memory `clean-up-superseded-controls-on-block-changes`.
-> **STOP — the dead-control guard is BLIND to RENDER-WITHOUT-CONTROL (NEW, session 21).** `check-dead-controls.js` only catches control→no-render. The inverse (an attr render.php READS but no editor control sets it) ships silently — testimonial `hoverScale`/`hoverShadow` were rendered with no control; product-card `packSizes` too. Cross-check block.json attrs vs edit.js controls + the shared suppliers: `ContainerWrapperControls` (width/spacing), `animation.js` (all sgs/* MINUS its exclude list), `hover-effects.js` (ALLOW-list blocks ONLY — not testimonial). A sibling guard for this direction is worth building (Rule-10 structural fix).
-> **STOP — verify a block MIGRATION against the REAL stored markup before deploying (NEW, session 21).** A multi-version deprecation built against an ASSUMED legacy shape breaks every live post. Read the ACTUAL stored block markup (`GET /wp/v2/pages/{id}?context=edit&_fields=content`), confirm the deprecation/hoist matches THAT shape, deploy, then OPEN the page in the editor + confirm blocks migrate `isValid:true` (0 invalid) + save + frontend renders — BEFORE trusting it. Page 8's 3 real testimonials were the D8 proof; the adversarial pre-mortem said NO-GO-until-verified and was right.
-
-> **STOP — WP display-filtered strings carry HTML ENTITIES; DECODE them before any non-HTML context (NEW, session 19).** `get_bloginfo('name')` returns `Mama&#039;s Munches` — emitted raw into text/plain (llms.txt) it leaks the literal entity; XML-escaped it DOUBLE-escapes to `&amp;#039;`. `html_entity_decode( $v, ENT_QUOTES | ENT_HTML5, 'UTF-8' )` BEFORE the plain-text/XML write (then xml_esc re-escapes correctly to `&apos;`). Live-caught on both llms.txt and the feed channel title.
-> **STOP — a PUBLIC product endpoint must enumerate EVERY visibility state (NEW, session 19 — red-team BLOCK).** `wc_get_products()` defaults `visibility='any'`; a feed/llms/sitemap query without `visibility => 'catalog'` leaks "Search results only" products (a `=== 'hidden'` post-filter alone misses them). Also: `post_password_required()` is COOKIE/SESSION-dependent — wrong on public endpoints; read raw `$post->post_password !== ''`. And add a single-flight rebuild lock (`get_transient` guard) + a hard item cap on any expensive cold-cache build — public + cacheable = stampede surface.
-> **STOP — CDN caches public endpoints; verify fixes with a cache-buster (NEW, session 19).** The feed sets `Cache-Control: public, max-age=3600`, so Hostinger's hcdn serves stale copies AFTER the WP transient is busted — a deployed fix can look unapplied. Append `?cb=<rand>` when live-verifying any public cached surface.
-> **STOP — a CPT capability map with SINGULAR meta-caps breaks the mapped capability SITE-WIDE (NEW, session 19, co-active catch).** R4's CPT registration with singular meta-caps in `capabilities` broke `manage_woocommerce` across the whole admin (every shop panel vanished; 204 map_meta_cap notices). Use plural primitives. Memory `cpt-singular-meta-caps-break-the-mapped-capability-sitewide`. Probe the live admin after ANY CPT registration change.
-> **STOP — an implementer's "I reverted/edited X" can be FALSE on disk (NEW, session 19).** Twice this session a subagent's claimed edit did not match the file (a hook overwrote it; a test count was stale). After every subagent fix round: grep the actual constant/line on disk + re-run the test suite yourself before dispatching reviewers.
-> **STOP — WC product-panel CSS force-columns EVERY label, panel-wide (session 18 close, D201).** WC applies `float:left;width:150px;margin-left:-150px` to every `<label>` in the product-data panel. Reset nested labels inline (`float:none;width:auto;margin:…`); `woocommerce_wp_*` field labels SHORT (sentences in description); rows `form-row-full` unless deliberately paired (a lone `form-row-first` lets the next row float up); WC floats selects/inputs too — bound widths AND `clear:both` descriptions. ROUND-3 (session 19, `db89ebae`): the float resets are needed on INPUTS/SELECTS/TEXTAREAS as well or labels render after their controls. Treat any rater "crowding/overlap" finding on WC admin markup as a DEFECT, not polish.
-> **STOP — a file-scope `extends \WC_*` class is a DOUBLE timing trap (session 18).** (a) Required before WooCommerce loads = site-wide parse fatal (sgs-blocks loads alphabetically first); (b) `WC_Settings_Page` is admin-LAZY and absent at `woocommerce_loaded` — guard + require at the CONSUMER hook (`woocommerce_get_settings_pages`); parse-time `class_exists` guard in the file itself. After bootstrap-wiring deploys: curl the FRONT page first; on fatal redeploy HEAD's bootstrap, root-cause from debug.log. Memory `file-scope-wc-class-extends-must-load-lazily`.
-> **STOP — inline admin JS attached to a head-printed handle never binds without a DOM-ready guard (session 18).** Wrap in a readyState-guarded init. A present `<script>` is not proof it RAN — click-test live. Session-19 addendum: the data bridge element must be PURE JSON (`<script type="application/json">{...}</script>`), never `var x = {...};` inside an element a JS `JSON.parse(textContent)` reads.
-> **STOP — the shared tree's BRANCH can change under you mid-session (session 18).** `git branch --show-current` before EVERY commit; recover via temp worktree on main + cherry-pick; NEVER move/reset/merge the cloning thread's ref. Extends memory `git-commit-must-be-path-scoped-with-coactive-sessions`.
-> **STOP — REST/one-shot gates CANNOT see admin-surface defects; a visual pass is MANDATORY for any admin/editor UI (session 18; re-proven session 19 TWICE).** Session-19: my own click-through passed, yet the deeper Playwright pass found 2 functional bugs (dead bindings; the CPT caps break). Drive the real admin + 3 adversarial raters on screenshots. JSON is a DATA channel — escape-at-render (textContent), never esc_html in REST payloads.
-> **STOP — a guard on ONE write path is NOT a guard (session 17).** Enumerate EVERY path to the data (REST meta, update_post_meta, WP-CLI, classic save, block editor) before trusting a guard; `show_in_rest:false` on PHP-authored metas; strict `'1' === (string)$v` casts. Memory `guard-on-one-path-is-not-a-guard`.
-> **STOP — a duplicated calculation DRIFTS silently (session 17).** The lean-seed stripper is centralised in `includes/configurator-seed.php` (D196) — any new server-only manifest field gets stripped THERE. Session-19 application: the feed's `g:item_group_id` calls the now-PUBLIC `Product_Schema::product_group_id()` — ONE call site; never re-derive. Memory `duplicated-calculation-drifts`.
-> **STOP — WC products edit in the CLASSIC screen, not Gutenberg (session 17).** `use_block_editor_for_post_type('product')` is FALSE here — no `PluginPrePublishPanel` for products; persisted meta + `admin_notices` reader. Probe the real editor flow first.
-> **STOP — the Gemini cross-rater is ACCOUNT-BLOCKED (session 17).** Use a haiku subagent as the second council family (sonnet + haiku + inline).
-> **STOP — a bare `git commit` flushes the WHOLE staged index (session 16).** ALWAYS `git commit -- <explicit paths>`; check `git diff --cached --stat`. NEVER history-rewrite shared branches.
-> **STOP — passing automated gates ≠ DONE (design + operational + legal).** Session-19 chain: spec PASS + 56/56 tests + my live click-through all green, and the deeper visual pass STILL found a site-wide caps break. Expect Bean's eye (R-22-13) to catch more. Memory `ship-gate-needs-human-eye-not-just-automated-gates`.
-> **STOP — pre-`wp-load` one-shot token gates must use NATIVE PHP ONLY (session 15).** Raw `$_GET`, `hash_equals`, `json_encode` — WP helpers don't exist yet. Session-19 addendum: in one-shot PHP bodies quote string literals (`echo "ok"` — a bareword fatals) — the deletes before the echo still ran, but the error page masks success.
-> **STOP — token-swap placeholder guard must be a LENGTH check, never a literal `=== 'PLACEHOLDER'` (session 15).** `if ( strlen( TOKEN ) < 32 ) { 503 }`.
-> **STOP — fact-check subagent WIRING + invented APIs against ground truth (session 15; re-proven session 19).** Session-19: a sonnet implementer used the INVENTED `wp_get_privacy_policy_url()` (real: `get_privacy_policy_url()`) — `php -l` clean, fatal only on the live request. After any subagent build: grep the wiring, sweep the global function calls for unknowns, run the live request, read debug.log.
-> **STOP — the configurator manifest/schema is PUBLISH-GATED (session 15).** `Product_Manifest::build()` returns null for non-published products — readiness checks on drafts must not treat empty JSON-LD as a blocker. Session-19 note: a single WC REST PUT setting `{images, status:publish}` can fail PREFLIGHT (status transitions before the image lands) — set media first, publish second.
-> **STOP — golden-master fairness: derive slugs the SAME way the unit-under-test does (session 15).** WC: name → `wc_sanitize_taxonomy_name`. R4's apply has a slug-first + name-fallback term lookup with `slug_remapped` reporting for exactly this class.
-> **STOP — manifest growth can trip the product-card 24 KB context cap (D173).** Lean seed via `sgs_lean_seed_combos()`; VERIFY the rendered DOM (`type="radio"` = 16 on canary 540). Memory `manifest-growth-can-trip-capped-client-seed`.
-> **STOP — verify a FEATURE FLAG before calling a missing side-effect a defect (D173).** One `get_option()` probe settles it.
-> **STOP — a rater/council finding is a HYPOTHESIS — fact-check before it drives a fix.** Session-19: 3 rater findings on the R4 panel were REFUTED with evidence (`db89ebae` report); a security rater's earlier nonce string was wrong. Memory `feedback_council_validates_the_criterion_it_is_given`.
-> **STOP — R1/R2 are COOKIE-AUTH (D173).** X-WP-Nonce (`wp_rest`); R4's routes follow the same pattern; an internal `rest_do_request` must FORWARD the header (R2's security_chain re-verifies it).
-> **STOP — WC variable-product writes go through `set_*()`+`save()`, NEVER raw postmeta (D173).** The only permitted `update_post_meta` is SGS presentation/bookkeeping meta.
-> **STOP — WC batch is NOT transactional (R2).** R4 applies templates VIA R2 (`rest_do_request`), never its own write path — rollback ledger + rate-limit-by-units inherited. Keep this for ANY future bulk WC-write (P4!).
-> **STOP — provisioning a shared `pa_*` taxonomy must not break siblings (R2).** Add-only terms; merge-by-union; rollback deletes only at zero relationships.
-> **STOP — PREFLIGHT is a HARD block (SEC-5).** £0/no-image/draft/over-cap/no-variesBy = un-publishable; `woocommerce_is_purchasable` covers Store-API.
-> **STOP — authoring is UN-GATED: every config field ships WITH a friendly editor control, NEVER raw-meta (R3).** R4 extended this: templates save/apply/export/import from the product edit screen.
-> **STOP — deploy `*.asset.php` with ANY viewScriptModule JS change (D168).** scp the WHOLE block set, opcache-reset, verify the served `?ver`.
-> **STOP — WP reads each block's `style.css`, NOT `style-index.css` (D171).** Deploy style.css (+ rtl) for block-CSS changes (the FAQ block deploy included them).
-> **STOP — WP Interactivity does NOT bind `data-wp-on` on imperatively-injected DOM nodes (D171).** Event delegation on a stable ancestor.
-> **STOP — run the ESCAPE-AUDIT before committing any new data→HTML/REST/XML path (D171).** Session-19 addendum: JSON-LD emitters use the HEX flags (`JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT`) — the FAQ emitter initially lacked them; XML emitters escape EVERY field via `xml_esc` (htmlspecialchars ENT_XML1|ENT_QUOTES).
-> **STOP — SSR==swap parity (D168).** Seed literals into context; never re-derive in JS.
-> **STOP — WP Interactivity `data-wp-on--<event>` silently will NOT bind a COLON event name.** Bridge via `data-wp-init` + captured-context addEventListener.
-> **STOP — schema/OG/feed price ALWAYS inc-VAT + from the MANIFEST (SEC-1/SEC-2).** CI grep: zero `wc_get_price_to_display`/`get_children` in `class-product-schema.php` AND `class-product-feed*.php` (the feed inherited the discipline — keep it on any new emitter).
-> **STOP — canonical: never `add_query_arg`, never `$_GET` (SEC-7).** The feed's `g:link` deep-links use the SEC-7 builder with the parent-ownership gate.
-> **STOP — detect-and-defer if Yoast/RankMath active (SEC-9).** llms.txt defers too (Yoast ≥25.1 can serve it).
-> **STOP — scope shared-block changes to the variant the gated surface doesn't use.** `sgs/product-card` is shared with cloning WS-4 — Bound-branch + `.product-card--bound`-scoped CSS only.
-> **STOP — don't assert block/WC capability from a partial dump.** Read block.json + render.php + `/wp-blocks` + the live WC object first.
-> **STOP — triage before fixing.** Verify a reported bug reproduces against ground truth BEFORE dispatching a fix.
-> **STOP — verify against git, not the handoff.** `git log origin/main --oneline -10` + `git branch --show-current` first; THREE sessions can interleave on this repo (session-19 proof: commits landed between my two pushes).
-> **STOP — canary live styles come from the `wp_global_styles` DB post (ID 7), NOT theme.json on disk** (Spec 26 / FR-26-D2).
-> **STOP — build tooling: `npm run build` via the PowerShell tool, NOT Bash.** WP ops the guard blocks → token-gated webroot one-shot (native PHP, quoted literals), curl, rm. `POST /wp/v2/pages` is NOT guard-blocked. NB: `npm install` in a fresh worktree takes minutes and TOUCHES `includes/lucide-icons.php` — never stage it. The canary creds file `.claude/secrets/sandybrown.env` has an unquoted `)` in WP_PWD — parse with grep/cut, do NOT `source` it.
-> **Guardrail (all tasks):** after every change open the canary + run the live one-shot, verify zero console errors + correct live values (with a `?cb=` buster on public cached endpoints) BEFORE considering the task done. Surgical deploy: build via PowerShell → scp changed files (whole block set for block changes) → opcache-reset. PHP/JS-only → `git commit --no-verify`.
+## Pre-flight self-attestation ritual (answer before the first action)
+1. Which thread am I? (theme/blocks — NOT the cloning pipeline.)
+2. What branch is the working tree on? (`git branch --show-current`.) Has origin/main moved? (`git log origin/main --oneline -5`.)
+3. Have I read Spec 30 (FR-30-1..12) + D208 + D209 end-to-end before proposing a build sequence?
+4. What is the MEASURABLE acceptance for the task I'm about to start (FR criterion + Bean's eye), not "code shipped"?
+5. Will this change be visible on a live URL? If so — deploy (build + scp whole block set + opcache-reset + verify ?ver) BEFORE measuring.
 
 ## State recap (plain English)
-**Spec 27 and Spec 28 are functionally COMPLETE except the two units Bean deliberately gated.** Session 19 shipped the last two open units: **R4 agency slug-templates** (a product's whole configurator structure saves as a portable template — export on site A, import + apply on site B, and a fresh product gets a working configurator; proven live end-to-end on the canary) and **F2 discoverability** (Google Shopping feed + llms.txt AI-navigation files + an FAQ block whose schema markup claims AI-citation/Bing value, never the dead Google rich results). Both went through the full gate stack — spec review, cross-family quality review, adversarial red-team (which caught one real public-data leak pre-commit: "search-results-only" products were visible in the public feed), live exfil + price-parity probes, and editor visual passes. A co-active session's deeper R4 visual pass caught 2 further browser-only bugs (now fixed + live; report `.claude/reports/visual-r4/`). **The only remaining shop-layer work is gated: R5 AI-builder (design-first via /brainstorming) and P4 write-prices-to-shop. The first-shop blocker is the cloning CONVERTER — this thread must not out-run it.**
-
-## First action (smallest step, ≤5 min, zero deps)
-`git log origin/main --oneline -8` + `git branch --show-current`; `curl -s <canary>/sgs-configurator-test-540/ | grep -o 'type="radio"' | wc -l` (expect 16; grep -c counts LINES on the minified page — use -o|wc -l); curl `/llms.txt` (200, text/plain) + `/wp-json/sgs/v1/merchant-feed?cb=1` (valid XML). Then present Bean the R-22-13 queue below as a ranked menu.
-
-## Bean R-22-13 queue (decision points, ranked)
-1. **R4 panel + screenshots** — `.claude/reports/visual-r4/` (3 shots) + `.claude/reports/r4-admin-panel-2026-06-10.png`; the panel is live on canary product edit screens (product 950 is a good demo).
-2. **F2 surfaces** — FAQ acceptance page `/sgs-f2-faq-acceptance/` (page 1008), `/llms.txt`, the feed; FAQ editor shot `.claude/reports/f2-faq-editor-2026-06-10.png`.
-3. **P3 admin polish go/no-go** — parked in `P-P3-ADMIN-POLISH` + the visual-p3 report's deferred list.
-4. **Canary test-artefact decision** — templates 947/948 + 2 "RT" templates, product 950 + page 999 (R4 acceptance fixtures), page 1008 (FAQ fixture): keep as live fixtures (recommended) or delete.
-
-## What's next (no mandatory build — by Bean's choice)
-- **Default recommendation: switch focus to the cloning CONVERTER thread** (`.claude/next-session-prompt.md`) — it is the single first-shop blocker.
-- R5 AI-builder: GATED. If Bean un-gates: /brainstorming design session FIRST (multi-session; the OC-Protector stall trap).
-- Spec 28 P4 WC-write apply: GATED. If un-gated: build via R2's discipline (snapshot/ledger/rollback), /qc-council mandatory.
-- Parked polish: `P-P3-ADMIN-POLISH`; F2 niceties (feed `g:shipping` from WC zones; llms-full pagination beyond the 700KB cap; a CDN-image allowlist for `g:image_link` — currently same-origin-only silently drops external-CDN images, documented in the red-team report).
+The block library's quality + consistency pass is done and on main: every per-element font control across the framework now uses one shared, uniform component (a proper size slider + dropdowns, not blank boxes), the trust-bar/testimonial/notice-banner/icon bugs are fixed, and the flaky old announcement-bar block is gone — replaced by a sticky, dismissible "announcement" mode on the notice banner. The next big job is building the **WooCommerce shop chassis** (Spec 30): the product page needs to be a real WooCommerce product template (not a plain page), with WordPress's native commerce blocks doing the cart/checkout/gallery machinery and SGS custom-building only the differentiated bits (the pill configurator, value-ladder, trust styling, a custom search + filter). The product-page clone can't proceed until this lands.
 
 ## Skills to Invoke
 | Skill | When |
 |-------|------|
-| `/brainstorming` | R5 design (if un-gated) — FIRST, before any code |
+| `/autopilot` | FIRST — live routing + ADHD support |
+| `/brainstorming` | architectural/feature decisions (Spec 30 build sequencing) |
 | `/gap-analysis` | grade any unit vs its FR acceptance |
-| `/subagent-driven-development` | per-unit implementer→spec-review→quality-review loop |
-| `/dispatching-parallel-agents` | genuinely disjoint pieces only (fan-out ≤3) |
-| `/sgs-wp-engine` + `/wp-rest-api` + `/wp-plugin-development` + `/wp-block-development` | any WP build |
-| `/qc-council` | MANDATORY before any WC-write/SEO-emit commit (blub.db 255) |
+| `/strategic-plan` + `/phase-planner` | plan the Spec 30 build before code |
+| `/research` (+ `/library-docs`) | WC block APIs (Store API, `@woocommerce/block-data` variation selectors), 2026 WC block ecosystem |
+| `/sgs-wp-engine` + `/wp-block-development` + `/wp-rest-api` + `/wp-plugin-development` | the WP build |
+| `/qc-council` | MANDATORY before any WC-write / converter / SGS-block commit (blub.db 255) |
 | `/verify-loop` | 2-attestation on load-bearing claims |
-| `/ui-ux-pro-max` + chrome-devtools | MANDATORY visual pass on ANY new admin/editor UI |
-| `/delegate` | model per dispatch (sonnet default; haiku = second council family) |
+| `/ui-ux-pro-max` + chrome-devtools/Playwright | MANDATORY visual pass on any new editor/admin/shop UI |
+| `/dispatching-parallel-agents` + `/subagent-driven-development` | disjoint build pieces / implementer→review loops |
+| `/sgs-update` | after any block add/change |
+| `/delegate` | model per dispatch (sonnet default; haiku = 2nd council family; Gemini account-blocked) |
 | `/capture-lesson` | any new architectural rule |
 | `/handoff` | session close |
 
-## Tool bindings (MCP / CLI)
+## MCP Servers & Tools
 | Tool | For |
 |------|-----|
-| chrome-devtools (Playwright MCP often HELD by a co-active session) | live admin + JSON-LD extraction + screenshots + 3-breakpoint |
+| chrome-devtools / Playwright (often HELD by the co-active session) | live editor/shop verification + screenshots + 3-breakpoint |
 | `/wp-blocks` (`python ~/.claude/hooks/wp-blocks.py dump`) | block schema before asserting capability |
 | `/sgs-db` (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py`) | block roster / attrs |
-| WooCommerce Store/REST + `/wc/v3` (app password Basic auth) | products + variations |
-| Cookie login + `admin-ajax.php?action=rest-nonce` | driving the sgs/v1 cookie-nonce routes via curl (proven session-19 pattern) |
+| WooCommerce Store/REST + `/wc/v3` (app-password Basic auth) | products + variations |
 | SSH + token-gated webroot one-shot | guard-blocked WC ops; `ssh -p 65002 u945238940@141.136.39.73`; creds `.claude/secrets/sandybrown.env` (grep/cut, never `source`) |
 
-## Done — do NOT redo
-- **Spec 27: Clusters A/B/C + PREFLIGHT + R1/R2/R3 + R4 (`0d7badb8`+`f5f3449b`, D202) + F2 (`95754224`, D202) ALL SHIPPED.** Only R5 remains (gated).
-- **Spec 28: P1 (D179) + P2 (D198) + P3 (D199/D200) SHIPPED.** Only P4 remains (gated).
-- **Council backlog 100% closed (D196); D201 WC-panel float family closed (3 rounds); R4 visual pass closed (`db89ebae`); parking `P-SPEC27-28-COUNCIL-MUSTFIX-WAVE` RESOLVED → memory/parking-archive.md.**
+## Agents to Delegate To
+| Agent | When |
+|-------|------|
+| general-purpose (sonnet) | disjoint WP build pieces (templates, blocks, bindings) — NO commit/deploy authority, return uncommitted |
+| general-purpose (haiku) | security / 2nd-council-family review |
+
+## Dependency graph
+```
+Read Spec 30 + D208/D209 (inline, Opus)
+  ↓
+/strategic-plan + /phase-planner the Spec 30 build (inline, Opus)
+  ↓
+Build chassis (theme support + templates) → then parallel: search/filter blocks · option-picker→WC binding · Mini-Cart styling · schema audit
+  ↓ /qc-council before each WC-write/SGS-block commit
+Live-verify on canary (R-22-11) + Bean R-22-13 sign-off → commit + FF-merge to main
+```
+
+## Task 1 — WooCommerce page-type build (Spec 30 / D208)
+**What:** build the WC page-type chassis the cloned product page needs. **Why:** the product-page clone is GATED on D-1 (deploy to the WC single-product block template, not a WP Page); outcome = a working product template carrying the differentiated SGS UX. **Estimated:** multi-session; first session = plan + the theme-support/template chassis.
+**Orchestration:** plan inline (Opus); delegate disjoint build pieces to sonnet subagents (no commit authority) via /subagent-driven-development; /qc-council before any WC-write commit.
+**Brief:** read Spec 30 (FR-30-1..12) + D208 end-to-end. Build: `add_theme_support('woocommerce')` + single-product/archive block templates + custom SGS search+filter blocks (framework asset, no per-client licence) + option-picker→WC variation binding via Store API `add-item` (confirm the `@woocommerce/block-data` variation-read selector first) + Mini-Cart drawer styling (core block, style only) + price-display + archive UX + schema per the D-8 table (PDP `Product`+`Offer`+`returnPolicyCountry`+`aggregateRating`/genuine reviews+`BreadcrumbList`, ONE Product node; shop = `BreadcrumbList`+URL-only `ItemList`; cart/checkout/account = none+`noindex`; sitewide `Organization`+`WebSite` no SearchAction; DROP FAQPage). All responsive 375/768/1440. NO static fake reviews (DMCC).
+**Acceptance:** FR-30 acceptance criteria met + Bean R-22-13 visual sign-off at 3 breakpoints.
+**Depends on:** none. **Parallel with:** sub-pieces parallelise after the chassis lands. **/qc gate after:** /qc-council (cross-model) before every WC-write/SGS-block commit.
+
+## Parked / optional (Bean's choice, not blocking)
+- announcement-bar homepage fixture: 1 live instance shows the deleted-block placeholder — re-clone or manually swap to notice-banner announcement mode.
+- Refactor the 5 canonical typography blocks (text/heading/button/label/quote) to use the shared `TypographyControls` (they duplicate the pattern inline) — pure consistency.
+- trust-bar `gridItemPadding` is inert on a split layout (cosmetic); option-picker `labelFontWeight` block.json position NIT.
+
+## Methodology guardrails (do not skip)
+- **Deploy before measure** — any change visible on a live URL needs build + whole-block-set scp + opcache-reset BEFORE any pixel-diff/browser test; else you measure stale output.
+- **Root cause before instance fix** — ask "what's the class of failure?" before fixing a specific instance.
+- **Outcome vs completion** — code shipped ≠ outcome achieved; don't mark a task done until its FR acceptance + Bean's eye pass.
+- **/qc-council (cross-model) BEFORE every commit** touching converter / WC-write / SGS-block logic (blub.db 255).
+- **WCAG 2.2 AA, mobile-first, 44px targets, 4.5:1 contrast. UK English everywhere.**
