@@ -188,6 +188,15 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-product-manifest.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-configurator-compat.php';
 
 $product_id = absint( $attributes['productId'] ?? 0 );
+
+// FR-30-3 Option C: when placed inside a core Product Collection product-template
+// with no explicitly-connected product, bind to the loop's current product via the
+// postId context. Only fills when nothing was explicitly connected — every existing
+// usage (explicit productId, typed mode, built-in mode) is unchanged.
+if ( 0 === $product_id && isset( $block->context['postId'] ) ) {
+	$product_id = absint( $block->context['postId'] );
+}
+
 $data       = \SGS\Blocks\Product_Bindings::get_product_data( $product_id, $source_mode );
 
 // FP-H: bound-branch title heading tag from headingLevel, clamped 2–4 (same

@@ -1,0 +1,94 @@
+/* ===== SGS Collapsible Text — Frontend + Editor ===== */
+
+.sgs-collapsible-text {
+	/* Layout only — colour/spacing come from the block's native supports. */
+}
+
+/* ─── Body copy ─────────────────────────────────────────────────────────── */
+
+.sgs-collapsible-text__body {
+	/* Prose defaults — inherits theme typography. */
+}
+
+.sgs-collapsible-text__body > * + * {
+	margin-top: 0.75em;
+}
+
+/* ─── Collapsible: collapsed state ───────────────────────────────────────── */
+
+/*
+ * `is-collapsed` is added by view.js. With no JS the body has no such class →
+ * full text visible (the toggle button stays `hidden`). When collapsed we
+ * apply CSS line-clamp to visually clip the body to
+ * --sgs-collapsible-text-collapsed-lines.
+ *
+ * Security/SEO note: the text remains in the DOM, accessible to crawlers and
+ * assistive technology. We use overflow:hidden + line-clamp only — never
+ * display:none or visibility:hidden — so the content is always crawlable.
+ */
+.sgs-collapsible-text__body.is-collapsed {
+	/* stylelint-disable value-no-vendor-prefix, property-no-vendor-prefix */
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: var(--sgs-collapsible-text-collapsed-lines, 4);
+	/* stylelint-enable value-no-vendor-prefix, property-no-vendor-prefix */
+	overflow: hidden;
+	/* Standard property alongside the webkit prefix. */
+	line-clamp: var(--sgs-collapsible-text-collapsed-lines, 4);
+}
+
+/* ─── Toggle (button) ─────────────────────────────────────────────────────  */
+
+/*
+ * `hidden` by default in the server output (no-JS = no broken control);
+ * view.js removes it. Belt-and-braces hide [hidden] against UA quirks.
+ */
+.sgs-collapsible-text__toggle[hidden] {
+	display: none;
+}
+
+/* Button-like styling with a minimum 44×44 px touch target (WCAG 2.5.5). */
+.sgs-collapsible-text__toggle {
+	display: inline-flex;
+	align-items: center;
+	margin-top: 0.5em;
+	padding: 0.5rem 0.75rem;
+	min-height: 44px;
+	min-width: 44px;
+	cursor: pointer;
+	/* Colour: contrast vs background ≥4.5:1. */
+	color: var(--wp--preset--color--primary, #1e40af);
+	font-weight: 600;
+	font-size: 0.9375em; /* ~15px when base = 16px. */
+	text-underline-offset: 3px;
+	border: none;
+	background: none;
+	appearance: none;
+}
+
+/* Focus-visible ring — 2px solid, ≥3:1 contrast per WCAG 2.4.11 (AA). */
+.sgs-collapsible-text__toggle:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #1e40af);
+	outline-offset: 3px;
+	border-radius: 3px;
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-collapsible-text__body,
+	.sgs-collapsible-text__toggle {
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+	}
+}
+
+/* ─── Editor preview ─────────────────────────────────────────────────────── */
+
+/*
+ * In the block editor the edit component renders a plain div + RichText (no
+ * toggle). This keeps prose spacing consistent in both contexts.
+ */
+.wp-block-sgs-collapsible-text .sgs-collapsible-text__body > * + * {
+	margin-top: 0.75em;
+}

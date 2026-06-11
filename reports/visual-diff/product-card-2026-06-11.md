@@ -75,3 +75,23 @@ deferred). verdict: PASS.
 
 ## Cleanup pass (2026-06-11): packSizes control wired
 Added a "Pack sizes" TextControl (typed/built-in Price panel, comma-separated) using the previously-dead packSizesText/onPackSizesChange helpers — closes the render-without-control gap (pills were rendered with no operator control) + removes dead code. Live editor: control present. verdict: PASS.
+
+## Shop-archive loop-context binding (2026-06-11 PM, Spec 30 P2 FR-30-3, Gate B)
+**Block src change:** `block.json` adds `usesContext: ["postId"]`; `render.php` resolves the loop's
+current product when `sourceMode=wc-product` AND no explicit `productId` is set — binds to the
+`woocommerce/product-template` loop product so the SGS card renders inside a core WooCommerce Product
+Collection (FR-30-3 Option C). Existing explicit-productId / typed / built-in modes unchanged.
+
+Live verification — canary `/shop/` (after build+deploy+cache-bust):
+
+| Check | Result | Verdict |
+|---|---|---|
+| First paint — SGS cards in core Product Collection | 5 cards, `sgs-container product-card product-card--live` | PASS |
+| Loop-context binding (wc-product, no productId) | each card resolves loop product (title/price/per-unit/CTA) | PASS |
+| Equal-height cards (theme CSS, `.sgs-shop-layout`) | 598 / 598 / 598 px | PASS |
+| CTA baseline alignment | 28 / 28 / 28 px from card base | PASS |
+| Survives Interactivity-API filter re-render | after 12-pack filter (5→3), 3 cards still 598px + CTA 28px | PASS |
+| axe WCAG 2.2 AA (shop content) | 0 violations (1 site-wide nav-block `list` is pre-existing header chrome, FR-30-13) | PASS |
+| Console errors | 0 (favicon 404 only) | PASS |
+
+verdict: PASS. first_paint_capture_passed: true.

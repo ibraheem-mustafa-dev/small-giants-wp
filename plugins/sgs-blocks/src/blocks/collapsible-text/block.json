@@ -1,0 +1,99 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/collapsible-text",
+	"version": "1.0.0",
+	"title": "Collapsible Text",
+	"category": "sgs-content",
+	"description": "Operator-editable body copy that optionally collapses behind a Read more / Read less toggle. The full text is always emitted into the page HTML so it stays accessible to crawlers and assistive technology in every state.",
+	"keywords": [
+		"text",
+		"copy",
+		"collapsible",
+		"expandable",
+		"read more",
+		"collapse",
+		"archive",
+		"category",
+		"shop"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "editor-alignleft",
+	"supports": {
+		"align": [ "wide", "full" ],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"text": true,
+			"background": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": false,
+			"textAlign": true
+		}
+	},
+	"selectors": {
+		"root": ".sgs-collapsible-text",
+		"typography": ".sgs-collapsible-text__body"
+	},
+	"attributes": {
+		"text": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"collapsible": {
+			"type": "boolean",
+			"default": false
+		},
+		"collapsedLines": {
+			"type": "integer",
+			"default": 4,
+			"minimum": 1
+		},
+		"fontSize": {
+			"type": "number"
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontSizeTablet": {
+			"type": "number"
+		},
+		"fontSizeMobile": {
+			"type": "number"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "number"
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"text": "<p>Discover our full range of premium products, carefully curated for quality and value.</p><p>From everyday essentials to speciality items, we source directly from trusted suppliers to bring you the best selection at competitive prices. Our range is updated regularly with new arrivals and seasonal favourites, so there is always something new to explore.</p>",
+			"collapsible": true,
+			"collapsedLines": 3
+		}
+	}
+}
