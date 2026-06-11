@@ -47,6 +47,7 @@ import argparse
 import base64
 import hashlib
 import json
+import re
 import sqlite3
 import subprocess
 import sys
@@ -580,6 +581,222 @@ def _run_canonical_assignment(conn: sqlite3.Connection) -> None:
         print(f"Stage 1 tail (canonical assignment): WARN {exc}")
 
 
+# ---------------------------------------------------------------------------
+# Stage 1 sub-step — scrape allowedBlocks from edit.js files
+# ---------------------------------------------------------------------------
+# Design notes:
+#   - Captures ONLY literal string-array declarations; any dynamic expression
+#     (conditional, spread, function call, computed value) is intentionally
+#     skipped and counted in `dynamic_skipped`.
+#   - No hardcoded block slugs: discovery is purely filesystem-driven.
+#   - Writes only the JSON-array string; NULL means "no restriction declared"
+#     (absence ≠ empty restriction).
+#   - Write-on-drift: UPDATE fires only when the stored value differs from the
+#     freshly scraped value — idempotent across repeat runs.
+# ---------------------------------------------------------------------------
+
+# Regex that matches the opening of an allowedBlocks array literal.
+# Two accepted forms:
+#   1. Named const whose identifier contains "ALLOWED" (case-sensitive):
+#      ALLOWED_BLOCKS = [  or  CTA_ALLOWED_BLOCKS = [
+#   2. Inline object property:  allowedBlocks: [
+_ALLOWED_BLOCKS_OPEN_RE = re.compile(
+    r"""
+    (?:
+        \b[A-Z0-9_]*ALLOWED[A-Z0-9_]*\s*=\s*\[   # named const: *ALLOWED* = [
+        |
+        allowedBlocks\s*:\s*\[                    # inline prop:  allowedBlocks: [
+    )
+    """,
+    re.VERBOSE,
+)
+
+# Match a single quoted block-slug string inside the array.
+# The backreference \1 ensures opening and closing quotes match (no mixing).
+# Slug pattern: <namespace>/<name> where both parts are lowercase+hyphens only.
+_BLOCK_SLUG_RE = re.compile(r"""(["'])([a-z][a-z0-9-]*/[a-z][a-z0-9-]*)\1""")
+
+# Signs that the allowedBlocks value is dynamic rather than a literal array.
+# If any of these appear INSIDE what looks like the array body, the whole
+# declaration is classified as dynamic and skipped.
+_DYNAMIC_MARKERS = (
+    "?",          # ternary / conditional
+    "...",        # spread operator
+    "undefined",  # computed / conditional result
+    "templateMode",  # runtime variable
+)
+
+
+def scrape_allowed_blocks(edit_js_path: Path) -> list[str] | None:
+    """Parse edit.js for a literal allowedBlocks / ALLOWED_BLOCKS array.
+
+    Returns:
+        list[str]  — the block slugs found in the literal array (may include
+                     non-sgs slugs such as 'core/heading').
+        None       — the file has no allowedBlocks declaration at all, OR the
+                     declaration is dynamic (runtime expression); callers must
+                     treat both as "leave NULL in DB".  The distinction between
+                     "absent" and "dynamic" is surfaced only via the
+                     dynamic_skipped counter in the summary stats.
+
+    Raises nothing — on any read or parse error the function returns None and
+    the caller counts the block in dynamic_skipped.
+    """
+    try:
+        text = edit_js_path.read_text(encoding="utf-8", errors="replace")
+    except Exception:  # noqa: BLE001
+        return None
+
+    # Fast-path: no relevant keyword at all → absent (leave NULL, no skip count)
+    if "allowedBlocks" not in text and "ALLOWED_BLOCKS" not in text:
+        return None
+
+    # Locate the first opening bracket of an allowedBlocks declaration.
+    match = _ALLOWED_BLOCKS_OPEN_RE.search(text)
+    if not match:
+        # Keyword present but not in a recognisable pattern — treat as dynamic.
+        return None
+
+    bracket_start = text.index("[", match.start())
+
+    # Walk forward to find the matching closing bracket, respecting nesting.
+    depth = 0
+    array_end = bracket_start
+    for i, ch in enumerate(text[bracket_start:], start=bracket_start):
+        if ch == "[":
+            depth += 1
+        elif ch == "]":
+            depth -= 1
+            if depth == 0:
+                array_end = i
+                break
+
+    array_body = text[bracket_start : array_end + 1]
+
+    # Check for dynamic markers — if found, skip the whole declaration.
+    for marker in _DYNAMIC_MARKERS:
+        if marker in array_body:
+            # Signal "dynamic" by returning the sentinel DYNAMIC_SKIP constant.
+            # Callers check `result is _DYNAMIC_SKIP`.
+            return _DYNAMIC_SKIP  # type: ignore[return-value]
+
+    # Extract all quoted block-slug strings from the array body.
+    # Group 1 = quote character, group 2 = the slug — use group 2.
+    slugs = [m.group(2) for m in _BLOCK_SLUG_RE.finditer(array_body)]
+
+    # If the pattern matched but yielded no slugs (e.g. empty array or
+    # only comments), honour NULL semantics — empty restriction ≠ no restriction.
+    if not slugs:
+        return None
+
+    return slugs
+
+
+# Sentinel — distinct from None — returned when a dynamic expression is found.
+_DYNAMIC_SKIP = object()
+
+
+def _populate_allowed_blocks(
+    blocks_dir: Path,
+    c: "sqlite3.Cursor",
+    dry_run: bool,
+) -> dict:
+    """Stage 1 sub-step: scrape edit.js allowedBlocks → block_composition.
+
+    For each sgs/* block whose edit.js declares a literal allowedBlocks array,
+    write a JSON-array string into block_composition.accepts_allowed_blocks
+    (UPDATE only when the stored value differs — write-on-drift, idempotent).
+
+    Blocks with no allowedBlocks at all → leave column NULL.
+    Blocks with a dynamic allowedBlocks expression → leave column NULL and
+    count in dynamic_skipped.
+
+    Returns counters:
+        allowed_blocks_scanned    — edit.js files examined
+        allowed_blocks_populated  — rows that now carry a non-NULL value
+                                    (newly written + already-correct)
+        allowed_blocks_updated    — rows actually UPDATEd this run (drift)
+        allowed_blocks_dynamic_skipped — edit.js with dynamic expressions
+    """
+    scanned = 0
+    populated = 0
+    updated = 0
+    dynamic_skipped = 0
+
+    for block_dir in sorted(blocks_dir.iterdir()):
+        if not block_dir.is_dir() or block_dir.name in EXCLUDED_DIRS:
+            continue
+
+        edit_js = block_dir / "edit.js"
+        if not edit_js.exists():
+            continue
+
+        scanned += 1
+        result = scrape_allowed_blocks(edit_js)
+
+        if result is _DYNAMIC_SKIP:
+            dynamic_skipped += 1
+            continue  # leave column NULL — dynamic means we cannot know statically
+
+        if result is None:
+            continue  # no declaration → leave column NULL
+
+        # Literal array found — serialise to canonical JSON.
+        new_value = json.dumps(result, ensure_ascii=False)
+
+        # Derive block slug from block.json (same logic as _index_sgs_block_files).
+        block_json_path = block_dir / "block.json"
+        if block_json_path.exists():
+            try:
+                with open(block_json_path, encoding="utf-8") as f:
+                    bj = json.load(f)
+                slug = bj.get("name", f"sgs/{block_dir.name}")
+            except Exception:  # noqa: BLE001
+                slug = f"sgs/{block_dir.name}"
+        else:
+            slug = f"sgs/{block_dir.name}"
+
+        if dry_run:
+            # Simulate: count as populated if a row exists (or would exist).
+            existing_row = c.execute(
+                "SELECT accepts_allowed_blocks FROM block_composition WHERE block_slug = ?",
+                (slug,),
+            ).fetchone()
+            if existing_row is not None:
+                populated += 1
+                if existing_row[0] != new_value:
+                    updated += 1
+            continue
+
+        # Write-on-drift: fetch current stored value.
+        existing_row = c.execute(
+            "SELECT accepts_allowed_blocks FROM block_composition WHERE block_slug = ?",
+            (slug,),
+        ).fetchone()
+
+        if existing_row is None:
+            # No block_composition row — cannot write (foreign key requires blocks row).
+            # This is expected for blocks not yet in the DB; silently skip.
+            continue
+
+        stored_value = existing_row[0]
+        if stored_value != new_value:
+            c.execute(
+                "UPDATE block_composition SET accepts_allowed_blocks = ? WHERE block_slug = ?",
+                (new_value, slug),
+            )
+            updated += 1
+
+        populated += 1
+
+    return {
+        "allowed_blocks_scanned": scanned,
+        "allowed_blocks_populated": populated,
+        "allowed_blocks_updated": updated,
+        "allowed_blocks_dynamic_skipped": dynamic_skipped,
+    }
+
+
 def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
     """Walk src/blocks/*/block.json → INSERT-or-UPDATE blocks + block_attributes.
 
@@ -590,6 +807,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
 
     Updates indexed_files mtime + content_hash.
     Updates schema_metadata.indexed_blocks_count after scan.
+    Sub-step: scrapes edit.js allowedBlocks into block_composition (write-on-drift).
 
     PORTED FROM: ~/.agents/skills/sgs-wp-engine/scripts/update-db.py + populate-db.py
     """
@@ -609,6 +827,13 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
     indexed_inserted = counts["indexed_inserted"]
     indexed_updated = counts["indexed_updated"]
     indexed_skipped = counts["indexed_skipped"]
+
+    # --- Stage 1 sub-step: populate block_composition.accepts_allowed_blocks ---
+    ab_counts = _populate_allowed_blocks(blocks_dir, c, dry_run)
+    ab_scanned = ab_counts["allowed_blocks_scanned"]
+    ab_populated = ab_counts["allowed_blocks_populated"]
+    ab_updated = ab_counts["allowed_blocks_updated"]
+    ab_dynamic_skipped = ab_counts["allowed_blocks_dynamic_skipped"]
 
     if not dry_run:
         conn.commit()
@@ -641,11 +866,23 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
                 f"{indexed_skipped} unchanged."
             )
         print(summary)
+        print(
+            f"Stage 1 (allowed_blocks): allowed_blocks_scanned={ab_scanned}, "
+            f"allowed_blocks_populated={ab_populated}, "
+            f"allowed_blocks_updated={ab_updated}, "
+            f"allowed_blocks_dynamic_skipped={ab_dynamic_skipped}."
+        )
     else:
         print(
             f"Stage 1 [dry-run]: {scanned} blocks scanned. "
             f"Would insert: {new_blocks} block rows, {new_attrs} attr rows. "
             f"Would update (drift): {updated_blocks} block rows, {updated_attrs} attr rows."
+        )
+        print(
+            f"Stage 1 (allowed_blocks) [dry-run]: allowed_blocks_scanned={ab_scanned}, "
+            f"allowed_blocks_populated={ab_populated} (already stored), "
+            f"allowed_blocks_updated={ab_updated} (would drift), "
+            f"allowed_blocks_dynamic_skipped={ab_dynamic_skipped}."
         )
 
     return {
@@ -659,6 +896,10 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         "indexed_inserted": indexed_inserted,
         "indexed_updated": indexed_updated,
         "indexed_skipped": indexed_skipped,
+        "allowed_blocks_scanned": ab_scanned,
+        "allowed_blocks_populated": ab_populated,
+        "allowed_blocks_updated": ab_updated,
+        "allowed_blocks_dynamic_skipped": ab_dynamic_skipped,
         "dry_run": dry_run,
     }
 

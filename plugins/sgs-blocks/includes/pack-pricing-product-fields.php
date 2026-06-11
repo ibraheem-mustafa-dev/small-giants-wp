@@ -38,12 +38,6 @@ defined( 'ABSPATH' ) || exit;
 // Configurator_Meta's sanitisers (single validation path — never duplicate).
 require_once __DIR__ . '/class-pack-pricing-cascade.php';
 require_once __DIR__ . '/class-configurator-meta.php';
-// The panel markup helpers + the inline admin JS live in their own files to
-// keep every file under the 300-line limit. They define
-// sgs_render_pack_pricing_input_fields(), sgs_render_pack_pricing_apply_controls()
-// and sgs_pack_pricing_preview_js() respectively.
-require_once __DIR__ . '/pack-pricing-product-fields-markup.php';
-require_once __DIR__ . '/pack-pricing-product-fields-js.php';
 
 /**
  * Register hooks — silent no-op when WooCommerce is inactive.
@@ -138,38 +132,106 @@ function sgs_render_pack_pricing_product_fields(): void {
 	echo '</ul>';
 	echo '</div>';
 
-	// ── Steepness + pack-size + manual-override input controls (P3) ──────────
-	// Markup lives in the JS-companion file so this file stays under 300 lines.
-	sgs_render_pack_pricing_input_fields( $cfg, $current_k, $current_sizes, $overrides );
+	// ── Steepness (k_notch) radio ────────────────────────────────────────────
+	echo '<p class="form-field form-row form-row-full" style="padding-left:12px;">';
+	echo '<label>' . \esc_html__( 'Discount strength', 'sgs-blocks' ) . '</label>';
+	echo '<span class="description" style="display:block;margin-bottom:6px;">';
+	echo \esc_html__( 'How much cheaper each larger pack gets versus buying singles. ', 'sgs-blocks' );
+	\printf(
+		/* translators: %s: the source layer that is supplying the k value (e.g. "site", "category", "default"). */
+		\esc_html__( 'Overrides the site or category default for this product. Current source: %s.', 'sgs-blocks' ),
+		'<strong>' . \esc_html( $cfg['source_k'] ) . '</strong>'
+	);
+	echo '</span>';
+
+	$k_options = array(
+		''           => \__( 'Inherit (use site/category default)', 'sgs-blocks' ),
+		'gentle'     => \__( 'Gentle (~8-20% saving on largest pack)', 'sgs-blocks' ),
+		'standard'   => \__( 'Standard (~17-35% saving on largest pack)', 'sgs-blocks' ),
+		'aggressive' => \__( 'Aggressive (~20-40% saving on largest pack)', 'sgs-blocks' ),
+	);
+	foreach ( $k_options as $value => $label ) {
+		\printf(
+			'<label style="float:none;width:auto;display:inline-block;margin:0 16px 4px 0;font-weight:normal;">'
+			. '<input type="radio" name="_sgs_pack_k" value="%s"%s> %s'
+			. '</label>',
+			\esc_attr( $value ),
+			\checked( $current_k, $value, false ),
+			\esc_html( $label )
+		);
+	}
+	echo '</p>';
+
+	// ── Pack sizes checkboxes ────────────────────────────────────────────────
+	$default_sizes = array( 6, 12, 24, 48 );
+	$cascade_sizes = $cfg['pack_sizes'];
+	$all_sizes     = \array_unique( \array_merge( $default_sizes, $cascade_sizes, $current_sizes ) );
+	\sort( $all_sizes );
+
+	echo '<p class="form-field form-row form-row-full" style="padding-left:12px;">';
+	echo '<label>' . \esc_html__( 'Pack sizes offered', 'sgs-blocks' ) . '</label>';
+	echo '<span class="description" style="display:block;margin-bottom:6px;">';
+	\printf(
+		/* translators: %s: the source layer supplying pack sizes (e.g. "site", "default"). */
+		\esc_html__( 'Override the pack sizes for this product. Current source: %s.', 'sgs-blocks' ),
+		'<strong>' . \esc_html( $cfg['source_sizes'] ) . '</strong>'
+	);
+	echo '</span>';
+
+	foreach ( $all_sizes as $n ) {
+		$checked = \in_array( (int) $n, $current_sizes, true ) || empty( $current_sizes );
+		\printf(
+			'<label style="float:none;width:auto;display:inline-block;margin:0 16px 4px 0;font-weight:normal;">'
+			. '<input type="checkbox" name="_sgs_pack_sizes[]" value="%d"%s> %s'
+			. '</label>',
+			(int) $n,
+			$checked ? ' checked' : '',
+			/* translators: %d: the pack size number. */
+			\sprintf( \esc_html__( 'Pack of %d', 'sgs-blocks' ), (int) $n )
+		);
+	}
+	echo '</p>';
+
+	// ── Per-pack manual override fields ─────────────────────────────────────
+	echo '<div class="sgs-pack-manual-overrides" style="padding-left:12px;margin-bottom:8px;">';
+	// float:none/width:auto/margin:0 are load-bearing: WC's panel CSS targets
+	// labels PANEL-WIDE (not just p.form-field), and this div lacks the field
+	// row's 150px column padding — without the reset the label is floated
+	// 150px off the div's left edge and clips (Bean's 2026-06-10 orphan).
+	echo '<label style="float:none;width:auto;margin:0 0 4px;display:block;">' . \esc_html__( 'Manual price overrides (optional)', 'sgs-blocks' ) . '</label>';
+	echo '<span class="description" style="display:block;margin-bottom:6px;">';
+	// Unit blocker (visual-pass F1): the £-pounds field above and these PENCE
+	// inputs sit close together — a "p" suffix is rendered ON each input so an
+	// operator cannot mistake the unit from prose alone.
+	echo \esc_html__( 'Whole pence per pack — a "p" sits after each box. Example: 499p locks that pack at £4.99. Leave blank to use the auto-generated price.', 'sgs-blocks' );
+	echo '</span>';
+
+	// flex-wrap (visual-pass design fix): the four inputs wrap as whole units
+	// at narrow admin widths instead of breaking mid-label.
+	echo '<span style="display:flex;flex-wrap:wrap;gap:8px 16px;">';
+	foreach ( $all_sizes as $n ) {
+		$override_val = isset( $overrides[ (string) $n ] ) ? (int) $overrides[ (string) $n ] : '';
+		\printf(
+			'<label style="flex:0 0 auto;width:auto;margin:0;font-weight:normal;">'
+			. '%s: <input type="number" name="_sgs_pack_manual_overrides[%d]" value="%s" min="2" max="999999" style="width:90px;" placeholder="%s">p'
+			. '</label>',
+			/* translators: %d: the pack size number. */
+			\esc_html( \sprintf( \__( 'Pack of %d', 'sgs-blocks' ), (int) $n ) ),
+			(int) $n,
+			\esc_attr( (string) $override_val ),
+			\esc_attr__( 'Auto', 'sgs-blocks' )
+		);
+	}
+	echo '</span>';
+	echo '</div>';
 
 	// ── Generate Preview button ──────────────────────────────────────────────
-	// Apply + Revert URLs + nonce (P4 FR-28-10).
-	$apply_url  = \esc_url( \rest_url( 'sgs/v1/pack-pricing/apply' ) );
-	$revert_url = \esc_url( \rest_url( 'sgs/v1/pack-pricing/revert' ) );
-	$has_backup = false;
-	// Show "Revert" only when at least one variation has a backup snapshot.
-	$child_ids = \get_children(
-		array(
-			'post_parent' => $product_id,
-			'post_type'   => 'product_variation',
-			'fields'      => 'ids',
-		)
-	);
-	foreach ( (array) $child_ids as $cid ) {
-		if ( '' !== \get_post_meta( (int) $cid, '_sgs_pack_price_backup', true ) ) {
-			$has_backup = true;
-			break;
-		}
-	}
-
 	echo '<p class="form-field form-row form-row-full" style="padding-left:12px;">';
 	\printf(
 		'<button type="button" id="sgs-pack-pricing-preview-btn" class="button button-secondary" '
-		. 'data-product-id="%d" data-preview-url="%s" data-apply-url="%s" data-revert-url="%s" data-nonce="%s">%s</button>',
+		. 'data-product-id="%d" data-preview-url="%s" data-nonce="%s">%s</button>',
 		(int) $product_id,
 		\esc_attr( $preview_url ),
-		\esc_attr( $apply_url ),
-		\esc_attr( $revert_url ),
 		\esc_attr( $rest_nonce ),
 		\esc_html__( 'Generate preview', 'sgs-blocks' )
 	);
@@ -193,12 +255,7 @@ function sgs_render_pack_pricing_product_fields(): void {
 	echo '<tbody id="sgs-pack-pricing-preview-tbody"></tbody>';
 	echo '</table>';
 	echo '<p class="description" id="sgs-pack-pricing-preview-meta"></p>';
-
-	echo '</div>'; // End #sgs-pack-pricing-preview-wrap.
-
-	// ── P4 apply + revert buttons + confirm modal (FR-28-10/14) ───────────────
-	// Markup lives in the JS-companion file so this file stays under 300 lines.
-	sgs_render_pack_pricing_apply_controls( $has_backup );
+	echo '</div>';
 
 	echo '</div>'; // .sgs-smart-pricing-fields
 }
@@ -265,4 +322,162 @@ function sgs_save_pack_pricing_product_fields( int $product_id ): void {
 	\update_post_meta( $product_id, '_sgs_pack_manual_overrides', $overrides_json );
 
 	// phpcs:enable WordPress.Security.NonceVerification.Missing
+}
+
+/**
+ * Return the inline JS for the "Generate preview" button.
+ *
+ * Fetches POST /sgs/v1/pack-pricing/preview, reads the current form values
+ * (k_notch, pack_sizes, base_pence), and renders server-returned rows into
+ * the preview table.
+ *
+ * No price maths in JS — all formatting comes from the server (SSR==swap rule).
+ *
+ * @return string Raw JS (no <script> tags; caller uses wp_add_inline_script).
+ */
+function sgs_pack_pricing_preview_js(): string {
+	return <<<'JS'
+( function() {
+	'use strict';
+
+	// DOM-ready guard (visual-pass finding, 2026-06-09): this inline script is
+	// attached to the woocommerce_admin handle, which WP prints in the HEAD —
+	// before the product-data panel (and the button) exists. Without the guard
+	// the IIFE's `if ( ! btn ) return;` silently never binds.
+	function sgsPackPricingInit() {
+
+	var btn = document.getElementById( 'sgs-pack-pricing-preview-btn' );
+	if ( ! btn ) { return; }
+
+	btn.addEventListener( 'click', function() {
+		var productId  = parseInt( btn.dataset.productId, 10 );
+		var previewUrl = btn.dataset.previewUrl;
+		var nonce      = btn.dataset.nonce;
+		var status     = document.getElementById( 'sgs-pack-pricing-preview-status' );
+		var wrap       = document.getElementById( 'sgs-pack-pricing-preview-wrap' );
+		var tbody      = document.getElementById( 'sgs-pack-pricing-preview-tbody' );
+		var metaEl     = document.getElementById( 'sgs-pack-pricing-preview-meta' );
+
+		if ( ! productId || ! previewUrl ) { return; }
+
+		// Read base_pence from the existing Wave-2 field (pence = pounds × 100).
+		var basePoundsEl = document.getElementById( '_sgs_base_price_pounds' );
+		var basePence    = basePoundsEl && basePoundsEl.value
+			? Math.round( parseFloat( basePoundsEl.value ) * 100 )
+			: 0;
+
+		// Read current k_notch radio.
+		var kRadio = document.querySelector( 'input[name="_sgs_pack_k"]:checked' );
+		var kNotch = kRadio ? kRadio.value : '';
+
+		// Read checked pack-size checkboxes.
+		var sizeCheckboxes = document.querySelectorAll( 'input[name="_sgs_pack_sizes[]"]:checked' );
+		var packSizes = [];
+		sizeCheckboxes.forEach( function( cb ) {
+			packSizes.push( parseInt( cb.value, 10 ) );
+		} );
+
+		// Build request body.
+		var body = { product_id: productId };
+		if ( basePence >= 10 ) { body.base_pence = basePence; }
+		if ( kNotch )          { body.k_notch    = kNotch; }
+		if ( packSizes.length ) { body.pack_sizes  = packSizes; }
+
+		status.textContent = 'Generating preview…';
+		btn.disabled       = true;
+
+		fetch( previewUrl, {
+			method:  'POST',
+			headers: {
+				'Content-Type':  'application/json',
+				'X-WP-Nonce':    nonce,
+			},
+			body: JSON.stringify( body ),
+		} )
+		.then( function( res ) { return res.json(); } )
+		.then( function( data ) {
+			btn.disabled = false;
+			if ( data.code ) {
+				// WP_Error response.
+				status.style.color = '#c62828';
+				status.textContent = data.message || 'Error generating preview.';
+				wrap.style.display = 'none';
+				return;
+			}
+
+			status.style.color = '#2e7d32';
+			status.textContent = 'Preview generated (no prices saved to shop).';
+
+			// Render rows via createElement/textContent ONLY — never innerHTML
+			// with server data. Server strings are esc_html()'d too, but the
+			// DOM-injection layer must not rely on that holding for every
+			// future response field (structural XSS defence, security review
+			// Finding 1, 2026-06-09).
+			while ( tbody.firstChild ) {
+				tbody.removeChild( tbody.firstChild );
+			}
+			( data.preview_rows || [] ).forEach( function( row ) {
+				var tr   = document.createElement( 'tr' );
+				var note = row.clamped ? ( '⚠️ ' + row.guardrail_note ) : ( row.locked ? '🔒 ' + row.guardrail_note : '' );
+
+				var tdSize   = document.createElement( 'td' );
+				var strongEl = document.createElement( 'strong' );
+				strongEl.textContent = String( row.pack_size );
+				tdSize.appendChild( strongEl );
+				tr.appendChild( tdSize );
+
+				[ row.pack_price_fmt, row.per_unit_fmt, row.saving_display ].forEach( function( cellText ) {
+					var td = document.createElement( 'td' );
+					td.textContent = String( cellText || '' );
+					tr.appendChild( td );
+				} );
+
+				var tdNote = document.createElement( 'td' );
+				// #bf360c = 5.8:1 on white at 12px — clears WCAG 4.5:1 for
+				// normal text. The previous #e65100 at 11px measured 3.79:1
+				// (visual-pass FAIL-AA #1).
+				tdNote.style.color    = row.clamped ? '#bf360c' : '#666';
+				tdNote.style.fontSize = '12px';
+				tdNote.textContent    = note;
+				tr.appendChild( tdNote );
+
+				tbody.appendChild( tr );
+			} );
+
+			// Config summary — plain English, no internals (visual-pass F2):
+			// the operator must be able to verify which settings layer drove
+			// the numbers without knowing what "k" is.
+			if ( data.config ) {
+				var c = data.config;
+				var sourceLabels = {
+					'default':  'site default',
+					'site':     'your site settings',
+					'category': 'this product’s category',
+					'product':  'this product’s own setting',
+					'request':  'your selection above'
+				};
+				metaEl.textContent = 'Calculated using: £' + ( c.base_pence / 100 ).toFixed( 2 ) + ' single-unit price' +
+					' · discount strength from ' + ( sourceLabels[ c.source_k ] || c.source_k ) +
+					' · pack sizes from ' + ( sourceLabels[ c.source_sizes ] || c.source_sizes ) +
+					' · .99 price endings ' + ( c.charm_round ? 'on' : 'off' ) + '.';
+			}
+
+			wrap.style.display = 'block';
+		} )
+		.catch( function( err ) {
+			btn.disabled       = false;
+			status.style.color = '#c62828';
+			status.textContent = 'Network error: ' + err.message;
+		} );
+	} );
+
+	}
+
+	if ( 'loading' === document.readyState ) {
+		document.addEventListener( 'DOMContentLoaded', sgsPackPricingInit );
+	} else {
+		sgsPackPricingInit();
+	}
+} )();
+JS;
 }
