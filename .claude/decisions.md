@@ -6,6 +6,12 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-11 (cloning thread) — D211: container 4-layer close folded in; ledger 8 rows VERIFIED; next priority = testimonial-empty live bug
+
+**D211 — Cross-thread close accepted + priorities re-cut.** The container/blocks thread completed ALL 8 steps of the container 4-layer programme (on `main`): full responsive padding/margin (16 attrs) + Layer-2 content band (17 attrs) + per-area grid layer (Spec 22 §FR-22-21.3, `<area>+<Suffix>` flat schema) + flex controls wired + inspector deduped (edit.js 1375→276) + hero aligned (`splitColumnRatio`→`gridTemplateColumns`, deprecated.js v7) + the universal responsive-cascade bug fixed (inline base values no longer beat tier stylesheets) + `check-control-ux.js` prebuild guard at zero-tolerance (100 legacy violations swept across 16 blocks). `/sgs-update` ran (new attrs registered, query-confirmed). **Re-clone + 55-row ledger walk (`72ce4855`): 8 rows newly VERIFIED live — H-B (hero per-area padding 72/56/28) + GF-B.1/B.3/B.4/D.1/G/H/I** — the programme's first real ledger movement; ~44 rows stay OPEN (per-family converter routing: featured-product 14, social-proof 8, ingredients 5, hero/trust-bar/brand tails 9, GF-B.2/C). **Two new ledger findings:** (a) **testimonial slides render EMPTY live** (inner sgs/testimonial content not surfacing in the slider) — customer-visible, blocks SP-C/D/E measurement; **call: next session's FIRST task**. (b) clone-parity.js pairs by draft BEM class → false "ELEMENT MISSING" on legitimate native output (memory `parity-bem-class-blind-spot-for-converted-output`); **the differ's aggregate score is RETIRED as a gate** — per-row acceptance = targeted live-DOM probes. Plus the global 16→18px base-font drift (theme/global-styles layer) must be root-caused before any aggregate is trusted. Spec 30 P1 COMPLETE + merged (theme thread, D210) → **FR-30-12 product-page clone UNGATED**, queued behind the homepage ledger families.
+
+---
+
 ## 2026-06-11 (theme thread) — Spec 30 P1 COMPLETE: working PDP + cart loop SHIPPED, Bean R-22-13 signed off, FR-30-12 UNGATED (D210 cont.)
 
 **P1 is closed. The product-page cloning gate (FR-30-12) is OPEN.** Steps 5–7 of `.claude/plans/2026-06-11-spec30-p1-wc-chassis.md` all shipped + live-verified on the canary (`sandybrown`, product 540) + merged to `main` (FF-push `3d2107f8..1ac49442`; Bean accepted the divergence from the co-active cloning thread's 25 unpushed local-main commits — they reconcile by integrating `1ac49442` on their next pass, exactly as they did `17ee951a`/`91364a2b`).

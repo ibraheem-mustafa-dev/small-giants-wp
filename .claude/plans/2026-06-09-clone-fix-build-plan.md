@@ -23,6 +23,8 @@ inputs:
 | Stage 2 F3 ("build de-hardcode") | **Substantially shipped** by the theme thread's block-quality programme (D206: B3–B6, C7, E9, D8) + D192; remaining F3 items only. |
 | Stage 2 F5 card-grid product capability ("biggest tail item") | **SHIPPED (D204, FP-E/FP-H)** — the sign-off LEDGER's FP-E/FP-H rows are stale (still OPEN); flip them on the next ledger walk. Product-page clone now gates on Spec 30 (WC single-product template, D208), which scopes the remaining F5 alias work. |
 | Acceptance | **Re-bound 2026-06-11:** every converter change reports fixed/stayed PER LEDGER ROW (clone-parity run + ledger walk); "the mechanism fires" is never an outcome. New finding for Stage 3: a global fontSize 16→18px parity drift (3→24 failures) needs its own root-cause. |
+| Stage-1 DEC-3 three-layer model (OUTER/CONTENT/GRID) | **INCOMPLETE (proven live 2026-06-11):** composites that render NAMED grid areas expose a FOURTH destination family — **GRID-PER-AREA, `<areaName>+<suffix>`** (hero `contentPadding*` = padding on the grid column whose AREA is "content"; `mediaPadding*` likewise). A 3-layer router can never deliver H-B because the correct destination isn't in its vocabulary. Built 2026-06-11: `db.attr_for_area_property` + `_route_area_css_to_block_attrs` (net-new, same D194 name-free mechanism). |
+| The plan lists `contentPadding` among "the parent container's box attrs" (F1-cross-node bullet) | **NAME COLLISION (Bean caught it):** the hero's `contentPadding*` is NOT the container-mirror CONTENT-band attr — it is the per-AREA attr for the grid column named "content". Do not route content-band semantics to it. |
 
 ## The objective (Bean, locked 2026-06-09)
 

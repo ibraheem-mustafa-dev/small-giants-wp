@@ -13,8 +13,8 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 ## Status summary (baseline 2026-06-09)
 - Total tracked: **55 issues** (incl. council-added FP-I + split sub-IDs).
 - **SHIPPED (already fixed, pre-build):** 3 — H-C2 (D192), FP-F (D191), SP-G binding-half (D191).
-- **OPEN:** 52.
-- **VERIFIED (fixed + live-confirmed this programme):** 0 (build not started).
+- **OPEN:** 44.
+- **VERIFIED (fixed + live-confirmed this programme):** 8 — H-B (hero per-area padding) + 7 Gift rows (GF-B.1/B.3/B.4/D.1/G/H/I), all live-confirmed on canary page 8 from the 2026-06-11 re-clone on the merged tree (container 4-layer block work + per-area converter). The Gift section converts to a universal-nesting `sgs/container` which now carries responsive padding/gap/grid-breakpoint/flex/font/bg faithfully.
 
 ## Ledger
 
@@ -56,18 +56,18 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 | IN-E | Ingredients | F6a | Stage1-F6a | OPEN |
 | IN-F | Ingredients | F8 + F6 | Stage2-F8 + Stage1-F6a | OPEN |
 | GF-A | Gift | F6a / F3 | Stage1-F6a / Stage2-F3 | OPEN |
-| GF-B.1 | Gift | F1 | Stage1 | OPEN |
+| GF-B.1 | Gift | F1 | Stage1 | **VERIFIED (2026-06-11 re-clone)** — live page-8 `.sgs-gift-section` padding = 64px 20px (draft 64/20) |
 | GF-B.2 | Gift | F1 (cross-slot leak) | Stage1 | OPEN |
-| GF-B.3 | Gift | F4 (min-width:640) | Stage2-F4 | OPEN |
-| GF-B.4 | Gift | F2 | Stage2-F2 | OPEN |
+| GF-B.3 | Gift | F4 (min-width:640) | Stage2-F4 | **VERIFIED (2026-06-11 re-clone)** — live page-8 cards grid = 1-col @mobile, 2-col 668/668 @1440 (breakpoint fires) |
+| GF-B.4 | Gift | F2 | Stage2-F2 | **VERIFIED (2026-06-11 re-clone)** — live page-8 `.sgs-gift-section` font-family = Inter, sans-serif (draft Inter) |
 | GF-C | Gift | F1 (spacing-support gate) | Stage1 | OPEN |
-| GF-D.1 | Gift | F3 (bg default) | Stage2-F3 | OPEN |
+| GF-D.1 | Gift | F3 (bg default) | Stage2-F3 | **VERIFIED (2026-06-11 re-clone, parity2)** — gift card bg = rgb(255,255,255) (draft white); sgs/info-box default aligns |
 | GF-D.2 | Gift | F3 (pill style) | Stage2-F3 | OPEN |
 | GF-E | Gift | F6a / F3 | Stage1-F6a / Stage2-F3 | OPEN |
 | GF-F | Gift | F2 | Stage2-F2 | OPEN |
-| GF-G | Gift | F1 (absorbed gap) | Stage1 | OPEN |
-| GF-H | Gift | F3 (multi-button auto-wrap) | Stage2-F3 | OPEN |
-| GF-I | Gift | F8 + F5 | Stage2-F8 + F5 | OPEN |
+| GF-G | Gift | F1 (absorbed gap) | Stage1 | **VERIFIED (2026-06-11 re-clone)** — live page-8 `.sgs-gift-section__cards` gap = 16px, margin-bottom = 20px (draft 16/20) |
+| GF-H | Gift | F3 (multi-button auto-wrap) | Stage2-F3 | **VERIFIED (2026-06-11 re-clone)** — live page-8 send-to-ward bar = flex / wrap / space-between / gap 12px (draft match) |
+| GF-I | Gift | F8 + F5 | Stage2-F8 + F5 | **VERIFIED (2026-06-11 re-clone, parity2)** — gift section content transfer 100% all 3 viewports |
 | SP-A | Social Proof | F4 (min-width:640) | Stage2-F4 | OPEN |
 | SP-B | Social Proof | F1 (spacing-support gate) | Stage1 | OPEN |
 | SP-C | Social Proof | F3 (verticalAlign) | Stage2-F3 | OPEN |
@@ -96,3 +96,5 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 - **Mobile/tablet defects** — the source review was DESKTOP-ONLY. The responsiveness *failure-mode* is captured (F4 + per-device CSS vars), and universal fixes apply to all devices — but the **375/768 verification pass at Stage 3 may surface device-specific defects** not in this ledger. Add them here when found.
 - **FP-F drift guard** — the binding fix shipped, but its `generate-extension-attributes.js --check` is only wired to prebuild, not CI/pre-commit. Confirm the pre-commit wiring (memory `dont-claim-a-guard-is-enforced-unless-wired`).
 - Any new issue found during build/verify gets a row here — the ledger is the single close-out source.
+- **NEW 2026-06-11 (re-clone ledger walk):** **testimonial slides render EMPTY on live page 8** — the social-proof testimonial-slider renders slide wrappers but the inner `sgs/testimonial` content (quote/author/stars) does NOT surface in the live DOM. This blocks measurement of SP-C/D.1/D.2/E and is a genuine content-surfacing bug (not just a routing gap). Root-cause separately (InnerBlocks not rendering inside the slider on the converter emit).
+- **NEW 2026-06-11 (re-clone ledger walk):** **parity tooling has a BEM-class blind spot for converted output.** `clone-parity.js` matches elements by draft BEM class (`sgs-hero__content` etc.), but the converter correctly emits NATIVE SGS blocks (Rule 1: convert-don't-mirror), which do NOT carry those draft classes — so the differ reports them "ELEMENT MISSING" and the aggregate score is junk (`1/130`). `parity2/` (content-transfer by abstract node) is the more honest aggregate but mis-matches some nodes. **Per-row acceptance must use targeted live-DOM probes on the rendered SGS-block elements, not the BEM-class differ.** Also live-confirmed: a **global base-font drift (16→18px)** on the clone inflates every text element's fontSize/lineHeight failure — a theme/global-styles-layer issue, NOT any converter row; root-cause at the theme layer.
