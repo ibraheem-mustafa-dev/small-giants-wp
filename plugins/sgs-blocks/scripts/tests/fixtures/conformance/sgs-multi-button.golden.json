@@ -1,5 +1,5 @@
 {
   "fixture": "sgs-multi-button.html",
   "primary_block_emitted": "sgs/container",
-  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/multi-button {\"layout\":\"flex\",\"gap\":\"12px\"} -->\n<!-- wp:sgs/button {\"label\":\"Primary Action\",\"url\":\"/shop/\",\"inheritStyle\":\"primary\"} /-->\n<!-- wp:sgs/button {\"label\":\"Secondary Action\",\"url\":\"/about/\",\"inheritStyle\":\"secondary\"} /-->\n<!-- /wp:sgs/multi-button -->\n<!-- /wp:sgs/container -->"
+  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/multi-button {\"layout\":\"flex\",\"flexWrap\":\"wrap\",\"gap\":\"12px\"} -->\n<!-- wp:sgs/button {\"label\":\"Primary Action\",\"url\":\"/shop/\",\"inheritStyle\":\"primary\"} /-->\n<!-- wp:sgs/button {\"label\":\"Secondary Action\",\"url\":\"/about/\",\"inheritStyle\":\"secondary\"} /-->\n<!-- /wp:sgs/multi-button -->\n<!-- /wp:sgs/container -->"
 }

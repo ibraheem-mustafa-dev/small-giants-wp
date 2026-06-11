@@ -2031,6 +2031,52 @@ def _detect_content_layer(base_decls: dict[str, str]) -> bool:
     return False
 
 
+def _grid_item_areas(node: "Tag", css_rules: dict) -> frozenset[str]:
+    """Return the grid-area names a node's OWN CSS declares, else empty.
+
+    Grid awareness (ROUTING-CATEGORISATION-DESIGN §Principle B, D207/D208 gate,
+    Bean-approved 2026-06-11): a wrapper's own `display:grid` +
+    `grid-template-areas` state its structure exactly — its direct descendants
+    are GRID ITEMS named by the areas (hero: "media" / "content"). The caller
+    uses the returned names to widen the FR-22-4.1 fold gate: a slug-None child
+    whose BEM element token matches an area name dissolves into the parent
+    composite REGARDLESS of sibling count (superseding the
+    `fold_eligible = len(children)==1` proxy for grid parents only).
+
+    Detection reads the node's own base CSS plus EVERY breakpoint tier — a
+    mobile-first draft may declare `display:grid` only at base, or only inside
+    a @media tier; either makes the children grid items. Returns the UNION of
+    area names across tiers (the hero declares `"media" "content"` stacked at
+    base and `"content media"` two-col at desktop — same two names).
+
+    Conservative by construction: no `display:grid` → frozenset() (the caller's
+    sole-child count gate keeps protecting non-grid parents — the brand b5
+    +44pp column-collapse evidence). Area strings parse per CSS grammar: each
+    quoted string is a row; whitespace-split tokens are area names; `.` (null
+    cell) is ignored.
+    """
+    base, bp = _collect_css_decls_for_element(node, css_rules)
+    tiers: list[dict[str, str]] = [base, *bp.values()]
+
+    has_grid = any(
+        _strip_important(t.get("display", "")).strip().lower() == "grid"
+        for t in tiers
+    )
+    if not has_grid:
+        return frozenset()
+
+    names: set[str] = set()
+    for t in tiers:
+        raw = _strip_important(t.get("grid-template-areas", "")).strip()
+        if not raw or raw.lower() in ("none", "inherit", "initial", "unset"):
+            continue
+        for row in re.findall(r"[\"']([^\"']*)[\"']", raw):
+            for token in row.split():
+                if token != ".":
+                    names.add(token.lower())
+    return frozenset(names)
+
+
 def _route_interior_css_to_parent_slot(
     child_node: "Tag",
     element_token: "str | None",
@@ -4366,8 +4412,12 @@ def _fold_layout_into_attrs(
     )
     # B2/A1 (FR-22-21): lift the folded wrapper's own max-width as contentWidth so the
     # section's inner content cap is preserved (e.g. __inner max-width:960px → "960px").
-    # Only fires for the sole-shell fold path (sole element child) — grid/flex item
-    # wrappers are NOT sole children so this code is never reached for them.
+    # Reached only on the fold paths — the literal sole element child, OR (since
+    # 2026-06-11) the sole child REMAINING after rule-0 scalar-media consumption of an
+    # area-named grid parent (e.g. hero __content once __media lifts). In BOTH cases
+    # exactly one wrapper folds per parent, so this wrapper IS the section's content
+    # band and its max-width IS the content cap; multi-fold (where a column's own
+    # max-width would mis-set contentWidth) is impossible by the gate's construction.
     _fw_base, _ = _collect_css_decls_for_element(wrapper_node, css_rules)
     _inner_mw = _fw_base.get("max-width")
     if _inner_mw:
@@ -4433,6 +4483,44 @@ def _process_container_children(
     # _absorb_transparent_wrappers "exactly-1-child" gate that the first fold attempt dropped.
     element_children = [c for c in node.children if isinstance(c, Tag)]
     fold_eligible = len(element_children) == 1
+    # ── Grid awareness + net-of-rule-0 fold count (D207 root cause; Bean design
+    # gate 2026-06-11; TIGHTENED by the pre-commit qc-council the same day). ──
+    # The D207 bug: fold-eligibility counted ALL element children BEFORE rule 0
+    # consumed the scalar-media ones — hero __content+__media = 2, so __content
+    # never dissolved (the double-nesting) and the FR-22-5.3 routing inside the
+    # fold branch never fired (the dropped contentPadding*).
+    # The fix requires BOTH signals, ANDed (council finding: area-matching ALONE
+    # lets MULTIPLE named children fold → one flat interleaved InnerBlocks run +
+    # first-wins clobber of the 2nd child's box CSS — the b5 failure class
+    # re-opened):
+    #   (1) NET COUNT — children rule 0 will consume (scalar-media lift) are
+    #       excluded from the count; exactly ONE remaining child may fold.
+    #       Multi-fold is therefore impossible, so _fold_layout_into_attrs keeps
+    #       its sole-shell semantics (incl. the contentWidth lift).
+    #   (2) GRID CONFIRMATION (Principle B) — the parent's own display:grid +
+    #       grid-template-areas must NAME the folding child (hero: "content").
+    # Non-grid parents and parents without scalar-media attrs keep the original
+    # sole-child gate untouched (brand b5 protection).
+    _grid_areas = _grid_item_areas(node, css_rules)
+    fold_net_sole = False
+    if not fold_eligible and _grid_areas and _parent_has_scalar_media:
+        _remaining_n = 0
+        for _ec in element_children:
+            _ec_classes = [c for c in (_ec.get("class", []) or []) if c.startswith("sgs-")]
+            _ec_element: "str | None" = None
+            for _ec_cls in _ec_classes:
+                _ec_bem = db.parse_sgs_bem(_ec_cls)
+                if _ec_bem and _ec_bem.element:
+                    _ec_element = _ec_bem.element
+                    break
+            _consumable = (
+                _ec_element is not None
+                and db.scalar_media_attr_for(parent_slug, _ec_element) is not None
+                and bool(_ec.find_all("img"))
+            )
+            if not _consumable:
+                _remaining_n += 1
+        fold_net_sole = _remaining_n == 1
     out: list[str] = []
     for child in node.children:
         if isinstance(child, Comment):
@@ -4513,8 +4601,27 @@ def _process_container_children(
             and _has_sgs_child(child)
         ):
             cslug = None  # leaf-misresolution guard (see walk())
-        if cslug is None and csgs and fold_eligible:
-            # rule 2 — fold this sole pass-through shell's layout into the parent container
+        # BEM element token — needed BOTH for the grid-area gate below and for the
+        # FR-22-5.3 cross-node routing inside the fold branch (hoisted, 2026-06-11).
+        _child_element: "str | None" = None
+        for _fc in csgs:
+            _fc_bem = db.parse_sgs_bem(_fc)
+            if _fc_bem and _fc_bem.element:
+                _child_element = _fc_bem.element
+                break
+        # Grid-area gate (Principle B): the child is a NAMED grid item of this node
+        # AND the sole element child remaining after rule-0 scalar-media consumption.
+        # Both conditions required — see the qc-council note above the loop.
+        _is_grid_net_sole_item = (
+            fold_net_sole
+            and _child_element is not None
+            and _child_element.lower() in _grid_areas
+        )
+        if cslug is None and csgs and (fold_eligible or _is_grid_net_sole_item):
+            # rule 2 — fold this pass-through shell's layout into the parent container.
+            # Reached either as the SOLE element child (FR-22-4.1 count gate) or as the
+            # sole-REMAINING, area-NAMED grid item of a scalar-media grid parent
+            # (net-of-rule-0 grid awareness, 2026-06-11).
             _fold_layout_into_attrs(child, cclasses, container_attrs, css_rules)
             # FR-22-5.3 cross-node CSS routing (Commit 2, 2026-06-10): after the fold
             # lifts grid/layout attrs, also route this slug-None wrapper's structural
@@ -4523,12 +4630,6 @@ def _process_container_children(
             # does not cover (contentPadding*, responsively-aware gap).
             # Only fires when parent_slug is a resolved composite (not None).
             if parent_slug:
-                _child_element: "str | None" = None
-                for _fc in csgs:
-                    _fc_bem = db.parse_sgs_bem(_fc)
-                    if _fc_bem and _fc_bem.element:
-                        _child_element = _fc_bem.element
-                        break
                 _route_interior_css_to_parent_slot(
                     child_node=child,
                     element_token=_child_element,
@@ -4536,7 +4637,9 @@ def _process_container_children(
                     parent_attrs=container_attrs,
                     css_rules=css_rules,
                 )
-            _trace("walker_branch_taken", branch="fold_into_container",
+            _trace("walker_branch_taken",
+                   branch=("fold_net_sole_grid_item" if (_is_grid_net_sole_item and not fold_eligible)
+                           else "fold_into_container"),
                    node_classes=cclasses, depth=depth + 1)
             # rule 4 — the folded wrapper's children resolve below it
             for gc in child.children:
