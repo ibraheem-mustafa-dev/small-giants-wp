@@ -1,3 +1,48 @@
+# Session Handoff — 2026-06-12 (theme thread) — Spec 30 P2 SHOP LAYER COMPLETE + merged to main (D214)
+
+## Completed This Session
+1. **QA Gate C — FR-30-5 product search, 7/7 live-verified on canary** (security-critical). Hammered `GET /sgs/v1/product-search`: draft 1017 never leaks (`q=pricing/P4/test` → only published 540); >30/IP/min → 429 + `Retry-After`; response `{id,title,permalink,thumbnail}` only + `no-store` + `q=1char`→400; XSS-inert (server `wp_strip_all_tags` + client `textContent`); no-JS `<form method=get name=s>`+hidden `post_type=product`; `check-product-search-guards.js` (11 guards) wired to prebuild. Report `plugins/sgs-blocks/reports/spec30-p2/QA-Gate-C-FR-30-5-search-2026-06-12.md`.
+2. **Placed the search block** in `parts/sgs-archive-toolbar.html` (it was registered but UNPLACED — the lone homepage `sgs-product-search` string was the editor-script handle) → re-ran C-6 live on `/shop/`: axe 0, `aria-expanded` flip, listbox populated, "2 products found" live region, ArrowDown→`aria-activedescendant`. Commit `30b6ed71`.
+3. **QA Gate B filter half — FR-30-6 live-verified.** Seeded the real `pa_flavour` block across the 16/15 boundary (+4 published terms → input at 16; −1 → absent at 15; a draft-only term stayed at 15), narrowing announced "4 of 16 options shown", then **restored the canary to its 12-term clean state**. Report `QA-Gate-B-FR-30-6-filter-2026-06-12.md`. Commit `ef7d7bbb`.
+4. **`/sgs-update`** confirmed both blocks registered; **D214** recorded; shop layer (FR-30-3/5/6) marked complete. Commit `28cb542f`.
+5. **`sgs/product-search` `displayMode` variants** (Bean request) — `inline` (always-visible bar) + `icon` (native `<details>` disclosure, expand-on-click, no-JS-safe; JS only focuses the field on open + Escape/outside-click closes). Sonnet-built, QC'd (inline output byte-identical), live-verified both on `/shop/` (axe 0, keyboard combobox, no-JS forms). v1.0.0→1.1.0. Commit `2ed98a1e`.
+6. **Search is opt-in via patterns, not a forced default** (Bean architectural call). Reverted search from `parts/header.html`; created 3 header patterns `sgs/header-search-bar-above`/`-below`/`-icon` (Block Types `core/template-part/header`, category `sgs-headers`) → Site Editor "Replace" picker. Theme `style.css` 1.5.1→1.5.2 (required for the new pattern files to register — WP caches the pattern-file list against the theme version). Commit `53ccf6f9`.
+7. **Doc sync (5 docs)** to D191–D214 via 5 parallel sonnet agents, each grounded in decisions.md + the auto-gen reference + real block dirs, QC'd against ground truth (fixed one hard-coded count): specs 01/02/17 + plugin/theme CLAUDE.md. The auto-gen `02-SGS-BLOCKS-REFERENCE.md` untouched. Commit `b3dbc5c1`.
+8. **Merged to main** (`141ddd71`) via the co-active-safe temp-worktree cherry-pick — 9 theme commits onto `origin/main`, resolving one Testimonial-row conflict (kept main's newer v0.3.1 + D212 gotcha + my D206/D209 attribution); cloning thread's WIP on the feat branch left untouched; local main fast-forwarded.
+
+## Current State
+- **Branch:** `feat/spec30-p2-shop-schema` at `b3dbc5c1` (primary worktree, undisturbed); **`origin/main` at `141ddd71`** (carries all this session's theme work).
+- **Tests:** no unit suite run; live QA gates B+C passed on canary; prebuild guards pass.
+- **Build:** plugin builds clean (v1.1.0); theme deployed v1.5.2.
+- **Uncommitted:** only never-stage drift (`lucide-icons.php`, `reports/phase4-*.txt`, `theme-snapshot.json`) + the cloning thread's unmerged WIP commits on the feat branch.
+
+## Known Issues / Blockers
+- None blocking. The header `list` axe violation is the pre-existing core nav block (`.wp-block-navigation__container`), tracked for FR-30-13 — not the search blocks (both axe-0).
+
+## Next Priorities (in order)
+1. **Step 9 — FR-30-9 schema** (net-new Organization+WebSite JSON-LD + cart/checkout/account noindex + returnPolicyCountry + drop FAQPage). `/adversarial-council` draft-leak red-team FIRST.
+2. **Step 10** — parked P1 follow-ups (gallery-swap decision + notify-me build-or-defer).
+3. **Step 11/12** — go-live checklist + phase close + R-22-13 + merge → Spec 30 COMPLETE.
+
+## Files Modified
+| File | What changed |
+|------|--------------|
+| `plugins/sgs-blocks/src/blocks/product-search/{block.json,edit.js,render.php,view.js,style.css}` | `displayMode` inline+icon variants (v1.1.0) |
+| `theme/sgs-theme/parts/sgs-archive-toolbar.html` | placed `sgs/product-search` (FR-30-5) |
+| `theme/sgs-theme/parts/header.html` | reverted search (kept default search-free) |
+| `theme/sgs-theme/patterns/header-search-bar-above.php`, `-below.php`, `-icon.php` | new opt-in header search patterns |
+| `theme/sgs-theme/style.css` | Version 1.5.1→1.5.2 (pattern-cache bust) |
+| `.claude/specs/{01,02,17}*.md`, `plugins/sgs-blocks/CLAUDE.md`, `theme/sgs-theme/CLAUDE.md` | doc sync to D191–D214 |
+| `.claude/decisions.md`, `.claude/state.md`, `.claude/plans/2026-06-11-spec30-p2-*.md` | D214 + state + plan progress |
+| `plugins/sgs-blocks/reports/spec30-p2/QA-Gate-{B,C}-*.md` | QA evidence |
+
+## Notes for Next Session
+- New lesson captured: **theme-pattern-cache-busts-off-theme-version** (new `patterns/*.php` won't register until `style.css` Version bumps — feedback file + dashboard id 346 + theme CLAUDE.md Gotchas).
+- The `<details>`/`<summary>` native-disclosure pattern is the no-JS-safe way to build expand-on-click in a WP block (see `product-search` icon mode) — STOP entry added.
+- Merge to a co-active-held main: temp-worktree cherry-pick of THIS thread's commits only; expect a conflict on shared append-files (`decisions.md`, `CLAUDE.md`) — keep both sides.
+
+---
+
 # Session Handoff — 2026-06-11 NIGHT (theme thread) — Spec 30 P2 Gate A + Gate B COMPLETE + merged to main (D213)
 
 ## Completed This Session
