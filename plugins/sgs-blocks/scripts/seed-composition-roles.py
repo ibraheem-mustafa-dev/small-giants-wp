@@ -12,6 +12,16 @@ There is no derive-from-code populator for composition_role (it is seed data),
 so this script is the reproducible source of truth for the corrections. It is
 idempotent — safe to re-run. Run after any DB rebuild that resets block_composition.
 
+NOTE — has_inner_blocks responsibility RETIRED (2026-06-12):
+  The canonical has_inner_blocks derivation now lives in sgs-update-v2.py
+  (_populate_has_inner_blocks sub-step of Stage 1). The three manual dicts that
+  used to live here (HAS_INNER_BLOCKS, RENAME_HAS_INNER_BLOCKS,
+  ENFORCE_HAS_INNER_BLOCKS) have been retired. They are replaced by the
+  HAS_INNER_BLOCKS_OVERRIDES dict below (start EMPTY). The AND rule
+  (save emits InnerBlocks.Content AND render.php consumes $content non-trivially)
+  is self-correcting — no overrides are needed unless a block has a genuine
+  structural reason to diverge from the derived value (document with a D-number).
+
 Corrections (2026-05-31):
   - sgs/testimonial         leaf -> content-block  (now echoes $content; holds star-rating + text children)
   - sgs/testimonial-slider  leaf -> content-block  (now iterates inner_blocks; holds sgs/testimonial children)
@@ -55,52 +65,40 @@ CORRECTIONS: dict[str, str] = {
     "sgs/option-picker": "content-block",
 }
 
-# Blocks whose content-block role implies inner blocks; keep has_inner_blocks in sync.
-HAS_INNER_BLOCKS = {
-    "sgs/testimonial": 0,
-    "sgs/testimonial-slider": 1,
-    "sgs/label": 0,
-    # post-grid / gallery / card-grid render from PHP (no InnerBlocks slot);
-    # has_inner_blocks stays 0 — the walker must not recurse into them.
-    "sgs/post-grid": 0,
-    "sgs/gallery": 0,
-    "sgs/card-grid": 0,
-    # option-picker: G3 gate suppresses child recursion; items extracted via
-    # _atomic_attrs_for in the G3-attrs path (convert.py).
-    "sgs/option-picker": 0,
+# ---------------------------------------------------------------------------
+# HAS_INNER_BLOCKS_OVERRIDES — start EMPTY.
+#
+# has_inner_blocks is now auto-derived by sgs-update-v2.py Stage 1 sub-step B
+# (_populate_has_inner_blocks) using the AND rule:
+#   1 IFF save.js/index.js emits <InnerBlocks.Content (non-comment, not
+#   deprecated.js) AND render.php consumes $content/$block->inner_blocks
+#   non-trivially.
+#
+# The AND rule is self-correcting — a typed leaf that still carries an old
+# save marker but ignores $content in render.php correctly derives to 0,
+# preventing the D212 testimonial-empty class of bug.
+#
+# ⛔ CANONICAL OVERRIDE HOME = sgs-update-v2.py `HAS_INNER_BLOCKS_OVERRIDES`
+# (mirrored in check-composition-sync.py). Add real overrides THERE, not here —
+# Stage 1 (_populate_has_inner_blocks) is the path /sgs-update always runs, and a
+# second dict here would drift (the exact failure WS-B exists to remove). This
+# dict stays EMPTY; the loop below is a harmless no-op kept only for structural
+# symmetry with the rename step.
+# ---------------------------------------------------------------------------
+HAS_INNER_BLOCKS_OVERRIDES: dict[str, int] = {
+    # Intentionally empty — canonical overrides live in sgs-update-v2.py.
 }
 
 # Slug RENAMES (2026-06-02, Workstream A — D150). The block_composition table
 # carries the pre-D123 slug `sgs/trust-badges`; the block was renamed to
-# `sgs/trust-bar`. Rename the row (preserving its composition_role) and set
-# has_inner_blocks=0 — TYPED-ONLY post-bound-purge (D182, 2026-06-06): trust-bar
-# renders its badge grid from its own items[] attrs (typed loop in render.php), it
-# does NOT wrap walked InnerBlocks. has_inner_blocks=0 drops it to the converter
-# G3-attrs path so the typed items[] extraction handler fires (like option-picker)
-# and the child-walk is suppressed — preventing the duplicate-nesting orphan
-# InnerBlocks that deleting the bound stamp alone would leave.
+# `sgs/trust-bar`. Rename the row (preserving its composition_role).
+# has_inner_blocks for sgs/trust-bar is now derived automatically by Stage 1
+# sub-step B (save returns null → no InnerBlocks marker → derived=0). The rename
+# here only fires when the old row exists and the new one does not; subsequent
+# runs converge via the auto-derive, not a manual enforce dict.
 # Idempotent: only renames when the old row exists and the new one does not.
 RENAMES: dict[str, str] = {
     "sgs/trust-badges": "sgs/trust-bar",
-}
-RENAME_HAS_INNER_BLOCKS: dict[str, int] = {
-    "sgs/trust-bar": 0,
-}
-# Enforce has_inner_blocks on EXISTING rows (the rename above only fires when the
-# target row is absent; once renamed, re-runs must still converge these values).
-ENFORCE_HAS_INNER_BLOCKS: dict[str, int] = {
-    "sgs/trust-bar": 0,
-    # sgs/accordion-item: edit.js uses useInnerBlocksProps for the body content;
-    # render.php uses $content (InnerBlocks passthrough). The DB had has_inner_blocks=0
-    # which is a data quality gap — the block DOES accept InnerBlocks.
-    # Corrected Gate A 2026-06-10 alongside the accordion-item slot row fix.
-    "sgs/accordion-item": 1,
-    # sgs/notice-banner: FR-22-6 InnerBlocks block — edit.js uses useInnerBlocksProps
-    # (sgs/text child carries the message), render.php echoes $content (R-22-14: no
-    # server-side fallback). DB had has_inner_blocks=0 (data quality gap), so the
-    # converter emitted a self-closing banner with a dead `text` scalar → empty render
-    # on a clone (row IN-F). Same class as accordion-item. Corrected 2026-06-12.
-    "sgs/notice-banner": 1,
 }
 
 # Fresh INSERTS (2026-06-02, Workstream A — D150). Blocks added after the
@@ -108,16 +106,25 @@ ENFORCE_HAS_INNER_BLOCKS: dict[str, int] = {
 # row. Without a row, sync-container-wrapping-blocks.py --apply silently skips
 # them. Values derived from each block's block.json + roster KIND (R-22-1).
 # Idempotent: only inserts when the row is absent.
-#   sgs/option-picker — CONTENT-kind, save.js uses InnerBlocks → has_inner_blocks=1,
-#                       no allowedBlocks restriction → accepts_allowed_blocks NULL.
-# NOTE: sgs/cart is also missing a row but is NOT container-bearing (not in the
-# 28-block roster), so it does not block --apply — left as a catalogue gap.
+#
+# NOTE on has_inner_blocks in INSERTS: the value seeded here is a bootstrap
+# placeholder. sgs-update-v2.py Stage 1 sub-step B (_populate_has_inner_blocks)
+# will auto-correct it on the next run using the AND rule. Use 0 as the safe
+# placeholder for new inserts unless the block obviously needs 1 to function
+# before the next sgs-update run.
+#
+#   sgs/option-picker — CONTENT-kind, save.js returns null (no InnerBlocks);
+#                       has_inner_blocks=0 (auto-derive will confirm this).
+# NOTE: sgs/cart/collapsible-text/filter-search/product-search are also missing
+# rows. They are NOT container-bearing (not in the 28-block roster), so they do
+# not block --apply. Added here so the DB is complete. All derive to 0.
+# NOTE: sgs/buybox — catalogue gap; save.js returns null → derives 0.
 INSERTS: list[dict] = [
     {
         "block_slug": "sgs/option-picker",
         "wraps_block": None,
         "composition_role": "content-block",
-        "has_inner_blocks": 1,
+        "has_inner_blocks": 0,  # auto-derive confirms 0 (save returns null)
         "accepts_allowed_blocks": None,
     },
     {
@@ -127,6 +134,43 @@ INSERTS: list[dict] = [
         # (composition_role='content-block', has_inner_blocks=0). wraps_block +
         # container_kind='layout' are set by sync-container-wrapping-blocks.py --apply.
         "block_slug": "sgs/content-collection",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "has_inner_blocks": 0,  # auto-derive confirms 0 (no InnerBlocks)
+        "accepts_allowed_blocks": None,
+    },
+    # Catalogue-gap blocks (missing block_composition rows, not container-bearing).
+    # has_inner_blocks=0 for all — auto-derive confirms (save returns null for each).
+    {
+        "block_slug": "sgs/buybox",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "has_inner_blocks": 0,
+        "accepts_allowed_blocks": None,
+    },
+    {
+        "block_slug": "sgs/cart",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "has_inner_blocks": 0,
+        "accepts_allowed_blocks": None,
+    },
+    {
+        "block_slug": "sgs/collapsible-text",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "has_inner_blocks": 0,
+        "accepts_allowed_blocks": None,
+    },
+    {
+        "block_slug": "sgs/filter-search",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "has_inner_blocks": 0,
+        "accepts_allowed_blocks": None,
+    },
+    {
+        "block_slug": "sgs/product-search",
         "wraps_block": None,
         "composition_role": "content-block",
         "has_inner_blocks": 0,
@@ -145,6 +189,8 @@ def main() -> int:
     changed = 0
 
     # 1. Slug RENAMES (idempotent — only when old row exists and new does not).
+    #    has_inner_blocks for the renamed target is left to the auto-derive in
+    #    sgs-update-v2.py Stage 1 sub-step B; no manual value is set here.
     for old_slug, new_slug in RENAMES.items():
         old = cur.execute(
             "SELECT 1 FROM block_composition WHERE block_slug = ?", (old_slug,)
@@ -158,37 +204,33 @@ def main() -> int:
         if old is None:
             print(f"  [skip] rename {old_slug} -> {new_slug}: source row absent")
             continue
-        want_inner = RENAME_HAS_INNER_BLOCKS.get(new_slug)
-        if want_inner is not None:
-            cur.execute(
-                "UPDATE block_composition SET block_slug = ?, has_inner_blocks = ? WHERE block_slug = ?",
-                (new_slug, want_inner, old_slug),
-            )
-            print(f"  [set]  rename {old_slug} -> {new_slug} (has_inner_blocks={want_inner})")
-        else:
-            cur.execute(
-                "UPDATE block_composition SET block_slug = ? WHERE block_slug = ?",
-                (new_slug, old_slug),
-            )
-            print(f"  [set]  rename {old_slug} -> {new_slug}")
+        cur.execute(
+            "UPDATE block_composition SET block_slug = ? WHERE block_slug = ?",
+            (new_slug, old_slug),
+        )
+        print(f"  [set]  rename {old_slug} -> {new_slug}")
         changed += cur.rowcount
 
-    # 1b. ENFORCE has_inner_blocks on existing rows (converges re-runs — the rename
-    #     above is a no-op once the target row exists, so values set post-rename
-    #     must be re-asserted here). Idempotent: UPDATE only when the value differs.
-    for slug, want in ENFORCE_HAS_INNER_BLOCKS.items():
+    # 1b. HAS_INNER_BLOCKS_OVERRIDES — apply after the rename so the target slug
+    #     exists. Idempotent: UPDATE only when the stored value differs. Normally
+    #     empty — the AND rule in sgs-update-v2.py makes manual overrides
+    #     unnecessary. Only add entries with a D-number comment.
+    for slug, want in HAS_INNER_BLOCKS_OVERRIDES.items():
         row = cur.execute(
             "SELECT has_inner_blocks FROM block_composition WHERE block_slug = ?", (slug,)
         ).fetchone()
-        if row is not None and row[0] != want:
+        if row is None:
+            print(f"  [skip] override {slug}: no block_composition row")
+            continue
+        if row[0] != want:
             cur.execute(
                 "UPDATE block_composition SET has_inner_blocks = ? WHERE block_slug = ?",
                 (want, slug),
             )
             changed += cur.rowcount
-            print(f"  [set]  enforce {slug} has_inner_blocks={want} (was {row[0]})")
+            print(f"  [set]  override {slug} has_inner_blocks={want} (was {row[0]})")
         else:
-            print(f"  [ok]   enforce {slug} has_inner_blocks={want}: already correct")
+            print(f"  [ok]   override {slug} has_inner_blocks={want}: already correct")
 
     # 2. Fresh INSERTS (idempotent — only when the row is absent).
     for spec in INSERTS:
@@ -217,23 +259,22 @@ def main() -> int:
     # 3. composition_role corrections.
     for slug, role in CORRECTIONS.items():
         cur.execute(
-            "SELECT composition_role, has_inner_blocks FROM block_composition WHERE block_slug = ?",
+            "SELECT composition_role FROM block_composition WHERE block_slug = ?",
             (slug,),
         )
         row = cur.fetchone()
         if row is None:
             print(f"  [skip] {slug}: no block_composition row")
             continue
-        want_inner = HAS_INNER_BLOCKS.get(slug, row[1])
-        if row[0] == role and row[1] == want_inner:
-            print(f"  [ok]   {slug}: already {role} (has_inner_blocks={want_inner})")
+        if row[0] == role:
+            print(f"  [ok]   {slug}: already {role}")
             continue
         cur.execute(
-            "UPDATE block_composition SET composition_role = ?, has_inner_blocks = ? WHERE block_slug = ?",
-            (role, want_inner, slug),
+            "UPDATE block_composition SET composition_role = ? WHERE block_slug = ?",
+            (role, slug),
         )
         changed += cur.rowcount
-        print(f"  [set]  {slug}: {row[0]} -> {role} (has_inner_blocks={want_inner})")
+        print(f"  [set]  {slug}: {row[0]} -> {role}")
     con.commit()
     con.close()
     print(f"[seed-composition-roles] done: {changed} row(s) corrected.")
