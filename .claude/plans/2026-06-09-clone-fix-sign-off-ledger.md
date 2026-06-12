@@ -17,7 +17,8 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 - Total tracked: **55 issues**.
 - **SHIPPED (pre-programme):** H-C2 (D192), FP-F (D191), FP-E/FP-H (D204), SP-G binding-half (D191).
 - **VERIFIED (live-confirmed):** prior 8 (H-B + GF-B.1/B.3/B.4/D.1/G/H/I) **+ 12 newly-closed on the 2026-06-12 re-baseline** — H-A, H-A2, FP-A, FP-B, FP-C, FP-G, FP-J, FP-L1, BR-A, IN-A, GF-A, SP-D.2.
-- **STILL-BROKEN (live-evidenced, clustered into 8 fix-patterns P1–P8):** ~22 — none are section-padding. P1 margin-bottom transfer (IN-B/GF-C/SP-B/GF-E), P2 Fraunces font (FP-M/GF-E/F), P3 inner max-width (IN-B/H-C1), P4 border-radius (GF-D.2), P5 render-defaults (BR-C/SP-F/TB-A/B/FP-I/N/O/P/IN-C), P6 text-align (IN-E/GF-B.2), P7 content/icon extraction (IN-D/IN-F; BR-B = media-sideload NOT converter), P8 testimonial typography (SP-D.1/SP-E).
+- **2026-06-12 P5/P7/P8 block-quality cluster CLOSED (commit 9275328c, live page-8 verified — 10 rows):** TB-A, TB-B (gap 12px + circle white), FP-N (price baseline), FP-O (cards equal), FP-I (image 220px), BR-C (ghost button via theme.json), SP-D.1 (star 15px), SP-E (quote italic/14px/text-muted + author 600), IN-D (emoji icons) → **VERIFIED**. SP-F → **VERIFIED (non-defect/false-positive)**. qc-council GO (2 cross-model raters); 21 conformance goldens re-baselined; regression sweep of VERIFIED sections clean. Mechanisms: universal grid-stretch (verticalAlign/alignItems for absent-align-items grids), maxHeight lift, named-colour bg lift, sgs/icon emoji handler, testimonial ratingSize/nameFontWeight attrs.
+- **STILL-BROKEN (live-evidenced):** P1 margin (IN-B), P2 Fraunces (closed), P3 inner max-width (IN-B/H-C1), P6 text-align (IN-E/GF-B.2 — under re-verify). **2 from this cluster still open:** IN-C (feature-grid emit-fixed but render-gap — wrapper reads verticalAlign not the emitted alignItems; proper fix = shared-wrapper default Rule-7 design-gate; cards render equal anyway), IN-F content (bg fixed; empty content deferred to universal-lift mechanism). BR-B = media-sideload NOT converter.
 - **DESIGN/SPEC DECISION (not converter fidelity rows):** FP-D, FP-K, FP-DRAFT, TB-C, TB-C-draft, SP-A, SP-C, SP-G.
 - **2026-06-12 text-CSS cluster CLOSED (commits 87cd3ba0 + 691298d7, live page-8 verified):** P1 margin (GF-C/GF-E + IN-B-margin), P2 Fraunces font (FP-M/GF-E/F) → VERIFIED. The lift was emit-correct but blocked by a 3-layer render chain (number-typed attr rejecting a unit-combined string; `esc_attr` mangling the font-family quotes; both fixed). Report: `reports/visual-diff/text-2026-06-12.md`. Lesson: `memory/feedback_converter_attr_lift_must_verify_full_render_chain`. **Still to re-probe with the same mechanism (likely-closed, not yet element-verified):** SP-B (social sub margin), the colour/text-align rows on directly-lifted text; **IN-B max-width + IN-E info-box inherited-centering are DIFFERENT mechanisms (P3/F6a), still OPEN.**
 
@@ -30,13 +31,13 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 | H-B | Hero | F1 cross-node | Stage1 | **VERIFIED (c6337eac, 2026-06-11)** — GRID-PER-AREA router; live .sgs-hero__content padding 28/56/72 at 375/768/1440 |
 | H-C1 | Hero | F6a (P3 per-area max-width) | Stage1 | OPEN — live `maxWidth:none`; subHeadline max-width is a hero per-area attr (`subHeadlineMaxWidth`), not sgs/text.maxWidth — needs per-area extraction, not the leaf-lift opt-in (7867372f). Verify draft value (var vs literal) |
 | H-C2 | Hero | F3 inert controls | — | **SHIPPED (D192)** |
-| TB-A | Trust Bar | F1 cross-node + F1b (P5) | Stage1 + Stage1b | OPEN — gap live 7px≠draft 12px; circle bg cream≠white (converter emits no gap/iconCircleBackground → block defaults) |
-| TB-B | Trust Bar | F1b array + F4 (P5) | Stage1b | OPEN — breakpoint OK (2-col@375→4-col@768+); same gap/circle-bg gap as TB-A |
+| TB-A | Trust Bar | F1 cross-node + F1b (P5) | Stage1 + Stage1b | **VERIFIED (2026-06-12, 9275328c)** — live grid column-gap 12px + `.sgs-trust-bar__circle` bg `rgb(255,255,255)` white. Converter now lifts `gap:"16px 12px"` + `iconCircleBackground:"#ffffff"` |
+| TB-B | Trust Bar | F1b array + F4 (P5) | Stage1b | **VERIFIED (2026-06-12, 9275328c)** — same gap+circle-bg fix as TB-A; breakpoint intact (2→4 col) |
 | TB-C | Trust Bar | NEW icon-drift | DESIGN/VISUAL | NEEDS-VISUAL — emitted attrs correct (home/check/truck/star, 2026-06-07 resolver); confirm rendered SVG glyph |
 | TB-C-draft | Trust Bar | NEW draft | draft edit | DRAFT-EDIT (not a fidelity row) |
 | BR-A | Brand | F4 | Stage2-F4 | **VERIFIED (2026-06-12)** — 2-col desktop (450/450 @1440) |
 | BR-B | Brand | F8 → MEDIA | media-sideload | OPEN — brand image renders 0×0 = sideload/404, NOT converter CSS (`distinguish-render-artefact-from-converter-emission`); route to media pipeline |
-| BR-C | Brand | F3 (P5) | Stage2-F3 | OPEN — outline button border transparent + text pink≠dark |
+| BR-C | Brand | F3 (P5) | Stage2-F3 | **VERIFIED (2026-06-12, 9275328c)** — live outline btn: color `rgb(58,46,38)` dark, border `rgb(232,213,192)` 2px visible, bg transparent. `is-style-outline` ghost via theme.json `custom.buttonPresets.outline` (Bean-approved). Report: `reports/visual-diff/button-2026-06-12.md` |
 | FP-A | Featured-prod | F6a / F3 | Stage1-F6a / Stage2-F3 | **VERIFIED (2026-06-12)** — heading `textAlign:left` |
 | FP-B | Featured-prod | F1 | Stage1 | **VERIFIED (2026-06-12)** — label 12px/600; section 56/20 |
 | FP-C | Featured-prod | F1 cross-node | Stage1 | **VERIFIED (2026-06-12)** — section 56/20 + gaps 7/10px = draft |
@@ -45,21 +46,21 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 | FP-F | Featured-prod | NEW rest-validation | — | **SHIPPED (D191)** |
 | FP-G | Featured-prod | F3 | Stage2-F3 | **VERIFIED (2026-06-12)** — no black border on card |
 | FP-H | Featured-prod | NEW block-arch-mismatch | Spec 27 | **SHIPPED (D204, 2026-06-10)** — product-card built-in-element rebuild; was stale-OPEN, flipped on 2026-06-11 ledger walk |
-| FP-I | Featured-prod | F3 / NEW (P5) | Stage2-F3 | OPEN — card image height ≠ 220px (live 468/433px, unequal) |
+| FP-I | Featured-prod | F3 / NEW (P5) | Stage2-F3 | **VERIFIED (2026-06-12, 9275328c)** — live img height 220px both cards. Converter lifts draft `height:220px` → sgs/media `maxHeight:220`+`maxHeightUnit:px` (the rendered attr; `imageHeight` was dead) |
 | FP-J | Featured-prod | F1 cross-node | Stage1 | **VERIFIED (2026-06-12)** — in-card spacing matches draft |
 | FP-K | Featured-prod | F3 | Spec 27 | DESIGN — pack-size label now intentionally emitted (row pre-dates D204 rebuild) |
 | FP-L1 | Featured-prod | F3 | Stage2-F3 | **VERIFIED (2026-06-12)** — pills grey `rgb(229,231,235)`, not primary-pink |
 | FP-M | Featured-prod | F2 (P2) | Stage2-F2 | **VERIFIED (2026-06-12)** — live featured price `font-family:"Fraunces", serif`. Fix 691298d7 |
-| FP-N | Featured-prod | F3 (P5) | Stage2-F3 | OPEN — price-row `align:start`≠`baseline` |
-| FP-O | Featured-prod | F3 (P5) | Stage2-F3 | OPEN — product cards unequal height (no grid-stretch) |
+| FP-N | Featured-prod | F3 (P5) | Stage2-F3 | **VERIFIED (2026-06-12, 9275328c)** — live price-row `align-items:baseline`. Converter lifts flex align-items → container `verticalAlign:"baseline"` |
+| FP-O | Featured-prod | F3 (P5) | Stage2-F3 | **VERIFIED (2026-06-12, 9275328c)** — live cards equal height (613/613). Universal grid-stretch (`.sgs-products` grid → `verticalAlign:stretch`) + FP-I image fix |
 | FP-P | Featured-prod | F3 (P5) | Stage2-F3 | OPEN — CTA not full-width (182px in 833px body) |
 | FP-DRAFT | Featured-prod | NEW draft-naming | draft edit | DRAFT-EDIT (not a fidelity row) |
 | IN-A | Ingredients | F6a | Stage1-F6a | **VERIFIED (2026-06-12)** — label+intro `textAlign:center` |
 | IN-B | Ingredients | P1 done / P3 content-band | Stage1 | **PARTIAL (2026-06-12)** — margin VERIFIED (live intro `margin-bottom:32px` + `margin:0 auto` centring, 691298d7). **max-width CORRECTED:** draft is `max-width:var(--content-width)` (a content-band, NOT literal 540px) — can't lift to a number `maxWidth` attr; needs content-band/contentWidth handling (P3 literal-max-width opt-in shipped 7867372f but doesn't apply to a var). STILL OPEN |
-| IN-C | Ingredients | F3 (P5) | Stage2-F3 | OPEN — feature-grid `alignItems:start`≠stretch (unequal card heights) |
-| IN-D | Ingredients | F8 (P7) | Stage2-F8 | OPEN — emoji 🌾🍺🌿🌱 → Lucide SVG (wrong field extracted) |
+| IN-C | Ingredients | F3 (P5) | Stage2-F3 | OPEN (emit fixed, render-gap) — converter now emits `alignItems:stretch` on sgs/feature-grid, but its container-wrapper render reads `verticalAlign` (default `start`) not `alignItems`, so live still renders `align-items:start`. Cards render equal-height anyway (137/137). PROPER FIX = shared container-wrapper `verticalAlign ?? 'start'`→`'stretch'` default (Rule-7 design-gate, high blast radius) OR feature-grid render reads alignItems. Deferred 2026-06-12 |
+| IN-D | Ingredients | F8 (P7) | Stage2-F8 | **VERIFIED (2026-06-12, 9275328c)** — live feature icons render emoji 🌾🍺🌿🌱 (not Lucide). New `_atomic_attrs_for` sgs/icon handler: emoji→`iconSource:emoji`+`emojiChar`; slug→`iconSource:lucide` |
 | IN-E | Ingredients | F6a (P6) | Stage1-F6a | OPEN-SUSPECT-MISDIAGNOSIS — P6 inherited-typography now resolves on the leaf path (7867372f), but feature-card text emits `textAlign:left` because it genuinely computes left (card overrides section centre). Re-check the DRAFT's actual computed text-align before treating as a defect |
-| IN-F | Ingredients | F8 (P7) | Stage2-F8 | OPEN — notice-banner EMPTY + info-blue bg≠white |
+| IN-F | Ingredients | F8 (P7) | Stage2-F8 | PARTIAL (2026-06-12, 9275328c) — bg FIXED (live `rgb(255,255,255)` white; converter lifts `style.color.background:#ffffff`). CONTENT still empty: `has_inner_blocks=1` flag flip (seed-composition) didn't make the atomic handler recurse a `sgs/text` child. Deferred to the universal-lift mechanism (`.claude/plans/2026-06-11-testimonial-universal-lift-build.md`) — not a per-block recursion carve-out |
 | GF-A | Gift | F6a / F3 | Stage1-F6a / Stage2-F3 | **VERIFIED (2026-06-12)** — gift h2 `textAlign:left` = draft |
 | GF-B.1 | Gift | F1 | Stage1 | **VERIFIED (2026-06-11 re-clone)** — live page-8 `.sgs-gift-section` padding = 64px 20px (draft 64/20) |
 | GF-B.2 | Gift | F6a (P6) | Stage1 | OPEN — gift sub `textAlign:center` leak (draft has none) |
@@ -76,10 +77,10 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 | SP-A | Social Proof | F4 | DESIGN | STALE — testimonial-slider is a flex slider (works); the "1-col mobile / multi-col" grid framing no longer applies |
 | SP-B | Social Proof | P1 | Stage1 | **VERIFIED (2026-06-12)** — live social sub `margin-bottom:32px` + centred + text-muted (691298d7) |
 | SP-C | Social Proof | F3 (verticalAlign) | DESIGN | NEEDS-DESCRIPTION — no concrete expected value; re-describe or drop |
-| SP-D.1 | Social Proof | F3 typography (P8) | Stage2-F3 | OPEN — star `fontSize:18px`≠draft 15px. **Fix-shape SUPERSEDED** (stars now typed `ratingStars` SVG, not child block) — testimonial-block CSS/attr question |
+| SP-D.1 | Social Proof | F3 typography (P8) | Stage2-F3 | **VERIFIED (2026-06-12, 9275328c)** — live star SVG 15px. New testimonial `ratingSize` attr (default 16) drives the SVG width/height; converter lifts draft 15px |
 | SP-D.2 | Social Proof | F1 | Stage1 | **VERIFIED (2026-06-12)** — star colour `rgb(245,208,80)` = accent |
-| SP-E | Social Proof | F3 typography (P8) | Stage2-F3 | OPEN — quote `fontStyle:normal`≠italic, size/colour off; author weight 700≠600 |
-| SP-F | Social Proof | F3 (P5) | Stage2-F3 | OPEN — slide wrapper cream bg + 8px radius (double-card effect; card itself is white/12px) |
+| SP-E | Social Proof | F3 typography (P8) | Stage2-F3 | **VERIFIED (2026-06-12, 9275328c)** — live quote `font-style:italic`, 14px, `rgb(107,92,80)` text-muted; author weight 600. Converter lifts quoteStyle/quoteFontSize/quoteColour (wired attrs) + new `nameFontWeight` attr |
+| SP-F | Social Proof | F3 (P5) | Stage2-F3 | **VERIFIED (2026-06-12)** — NOT A DEFECT (false positive). Live already renders the double-card: slide wrapper cream `rgb(251,243,220)` + 8px radius, inner card white + 12px. No code change |
 | SP-G | Social Proof | F5 wrong-block | DESIGN | NEEDS-DECISION — testimonial-slider vs grid is a block-TYPE choice (Bean sign-off); binding-half SHIPPED D191 |
 
 ## Workstream load (open issues only)
