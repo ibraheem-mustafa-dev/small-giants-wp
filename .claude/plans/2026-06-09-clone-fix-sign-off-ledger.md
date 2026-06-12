@@ -19,6 +19,7 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 - **VERIFIED (live-confirmed):** prior 8 (H-B + GF-B.1/B.3/B.4/D.1/G/H/I) **+ 12 newly-closed on the 2026-06-12 re-baseline** — H-A, H-A2, FP-A, FP-B, FP-C, FP-G, FP-J, FP-L1, BR-A, IN-A, GF-A, SP-D.2.
 - **STILL-BROKEN (live-evidenced, clustered into 8 fix-patterns P1–P8):** ~22 — none are section-padding. P1 margin-bottom transfer (IN-B/GF-C/SP-B/GF-E), P2 Fraunces font (FP-M/GF-E/F), P3 inner max-width (IN-B/H-C1), P4 border-radius (GF-D.2), P5 render-defaults (BR-C/SP-F/TB-A/B/FP-I/N/O/P/IN-C), P6 text-align (IN-E/GF-B.2), P7 content/icon extraction (IN-D/IN-F; BR-B = media-sideload NOT converter), P8 testimonial typography (SP-D.1/SP-E).
 - **DESIGN/SPEC DECISION (not converter fidelity rows):** FP-D, FP-K, FP-DRAFT, TB-C, TB-C-draft, SP-A, SP-C, SP-G.
+- **2026-06-12 text-CSS cluster CLOSED (commits 87cd3ba0 + 691298d7, live page-8 verified):** P1 margin (GF-C/GF-E + IN-B-margin), P2 Fraunces font (FP-M/GF-E/F) → VERIFIED. The lift was emit-correct but blocked by a 3-layer render chain (number-typed attr rejecting a unit-combined string; `esc_attr` mangling the font-family quotes; both fixed). Report: `reports/visual-diff/text-2026-06-12.md`. Lesson: `memory/feedback_converter_attr_lift_must_verify_full_render_chain`. **Still to re-probe with the same mechanism (likely-closed, not yet element-verified):** SP-B (social sub margin), the colour/text-align rows on directly-lifted text; **IN-B max-width + IN-E info-box inherited-centering are DIFFERENT mechanisms (P3/F6a), still OPEN.**
 
 ## Ledger
 
@@ -48,13 +49,13 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 | FP-J | Featured-prod | F1 cross-node | Stage1 | **VERIFIED (2026-06-12)** — in-card spacing matches draft |
 | FP-K | Featured-prod | F3 | Spec 27 | DESIGN — pack-size label now intentionally emitted (row pre-dates D204 rebuild) |
 | FP-L1 | Featured-prod | F3 | Stage2-F3 | **VERIFIED (2026-06-12)** — pills grey `rgb(229,231,235)`, not primary-pink |
-| FP-M | Featured-prod | F2 (P2) | Stage2-F2 | OPEN — price text `Inter`≠draft `Fraunces` |
+| FP-M | Featured-prod | F2 (P2) | Stage2-F2 | **VERIFIED (2026-06-12)** — live featured price `font-family:"Fraunces", serif`. Fix 691298d7 |
 | FP-N | Featured-prod | F3 (P5) | Stage2-F3 | OPEN — price-row `align:start`≠`baseline` |
 | FP-O | Featured-prod | F3 (P5) | Stage2-F3 | OPEN — product cards unequal height (no grid-stretch) |
 | FP-P | Featured-prod | F3 (P5) | Stage2-F3 | OPEN — CTA not full-width (182px in 833px body) |
 | FP-DRAFT | Featured-prod | NEW draft-naming | draft edit | DRAFT-EDIT (not a fidelity row) |
 | IN-A | Ingredients | F6a | Stage1-F6a | **VERIFIED (2026-06-12)** — label+intro `textAlign:center` |
-| IN-B | Ingredients | F6a/spacing (P1+P3) | Stage1 | OPEN — intro `maxWidth:none`≠540px; `marginBottom:0`≠36px |
+| IN-B | Ingredients | F6a/spacing (P1+P3) | Stage1 | **PARTIAL (2026-06-12)** — margin VERIFIED (live intro `margin-bottom:32px`, fix 691298d7); `max-width:540px` STILL OPEN (P3 — max-width is _LIFT_EXCLUDED, routes via widthMode/contentWidth, not the box lifter) |
 | IN-C | Ingredients | F3 (P5) | Stage2-F3 | OPEN — feature-grid `alignItems:start`≠stretch (unequal card heights) |
 | IN-D | Ingredients | F8 (P7) | Stage2-F8 | OPEN — emoji 🌾🍺🌿🌱 → Lucide SVG (wrong field extracted) |
 | IN-E | Ingredients | F6a (P6) | Stage1-F6a | OPEN — info-box text left≠draft centred (ancestor align not reaching children) |
@@ -64,11 +65,11 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 | GF-B.2 | Gift | F6a (P6) | Stage1 | OPEN — gift sub `textAlign:center` leak (draft has none) |
 | GF-B.3 | Gift | F4 (min-width:640) | Stage2-F4 | **VERIFIED (2026-06-11 re-clone)** — live page-8 cards grid = 1-col @mobile, 2-col 668/668 @1440 (breakpoint fires) |
 | GF-B.4 | Gift | F2 | Stage2-F2 | **VERIFIED (2026-06-11 re-clone)** — live page-8 `.sgs-gift-section` font-family = Inter, sans-serif (draft Inter) |
-| GF-C | Gift | spacing-support gate (P1) | Stage1 | OPEN — gift sub `marginBottom:0`≠32px |
+| GF-C | Gift | P1 (number+unit split) | Stage1 | **VERIFIED (2026-06-12)** — live gift sub `margin-bottom:32px` (= draft). Fix: 691298d7. Report: `reports/visual-diff/text-2026-06-12.md` |
 | GF-D.1 | Gift | F3 (bg default) | Stage2-F3 | **VERIFIED (2026-06-11 re-clone, parity2)** — gift card bg = rgb(255,255,255) (draft white); sgs/info-box default aligns |
 | GF-D.2 | Gift | F3 (P4) | Stage2-F3 | OPEN — gift pill `borderRadius:0`≠6px (bg colour correct) |
-| GF-E | Gift | spacing+F2 (P1+P2) | Stage1 / Stage2-F2 | OPEN — price `marginBottom:0`≠16px; `Inter`≠`Fraunces` |
-| GF-F | Gift | F2 (P2) | Stage2-F2 | OPEN — price `fontFamily:Inter`≠`Fraunces` (same element as GF-E) |
+| GF-E | Gift | P1+P2 | Stage1 / Stage2-F2 | **VERIFIED (2026-06-12)** — live gift price `margin-bottom:16px` + `font-family:"Fraunces", serif`. Fix 691298d7 |
+| GF-F | Gift | P2 | Stage2-F2 | **VERIFIED (2026-06-12)** — live gift price `font-family:"Fraunces", serif` (same element as GF-E) |
 | GF-G | Gift | F1 (absorbed gap) | Stage1 | **VERIFIED (2026-06-11 re-clone)** — live page-8 `.sgs-gift-section__cards` gap = 16px, margin-bottom = 20px (draft 16/20) |
 | GF-H | Gift | F3 (multi-button auto-wrap) | Stage2-F3 | **VERIFIED (2026-06-11 re-clone)** — live page-8 send-to-ward bar = flex / wrap / space-between / gap 12px (draft match) |
 | GF-I | Gift | F8 + F5 | Stage2-F8 + F5 | **VERIFIED (2026-06-11 re-clone, parity2)** — gift section content transfer 100% all 3 viewports |
