@@ -4614,6 +4614,20 @@ def _route_text_leaf(
         variation_buf.append(css)
 
     attrs = _atomic_attrs_for(node, target)
+    # CSS-lift: mirror the atomic-tag-swap path — raise typography from the draft
+    # element's own CSS rules onto the block's own attrs so they survive wrapper
+    # dissolution (scoped-CSS via variation_buf is kept additively below; this
+    # lift is ADDITIVE, not a replacement).  Gated to text-capable targets so
+    # sgs/media / core/separator are never passed to route_node_css here.
+    if _is_text_capable_block(target):
+        route_node_css(
+            node, css_rules, attrs,
+            effective_slug=target,
+            lift_typography=True,
+            typo_slug=target,
+            lift_root_supports=False,
+            lift_wrapper_css=True,
+        )
     attrs["className"] = " ".join(sgs_classes)
     _trace("walker_branch_taken", branch="text_leaf",
            node_classes=classes, target=target, content_keys=list(attrs.keys()))
