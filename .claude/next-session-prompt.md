@@ -3,10 +3,12 @@ doc_type: next-session-prompt
 project: small-giants-wp
 thread: cloning-pipeline
 generated: 2026-06-12
-primary_goal: "Build the universalisation programme A/B/C (cloning thread), design-gated 2026-06-12. SEQUENCE LOCKED: (C) trust-bar gap via the universal helper [bounded] → (B) has_inner_blocks auto-derive REDESIGNED [save-marker AND render-consumes-$content, sgs/* only, keep a ~3-row override] → (A) the name-free align LAYER-ROUTER [Bean chose the proper universal fix over the rename; needs its OWN design-gate + adversarial-council before code]. Full register + redesigned specs: .claude/plans/2026-06-12-universal-align-router-programme.md. ALSO still open from P5: IN-C (folds into A), IN-F notice-banner content (universal-lift), and run /sgs-update to register ratingSize/nameFontWeight into the DB reproducibly (stopgap-inserted 2026-06-12). Acceptance = each row VERIFIED on live page 8 + golden conformance green."
+primary_goal: "A/B/C universalisation programme BUILT + shipped to main 2026-06-12 (D216): WS-C trust-bar gap via universal detector (6d8ebcd4), WS-B has_inner_blocks auto-derive + sync gate (0507973a), WS-A wrapper dual-key fallback that CLOSED IN-C live (1f107711). REMAINING (gated/flagged): (1) the FULL name-free layer-router unification — remove the convert.py attr-name fork + GRID per-item routing for gap/iconCircleBackground + unify the 8 blocks to one canonical align attr — needs its OWN adversarial-council on the router mechanism; (2) mobile-nav save:()=>null block bug (drops drawer InnerBlocks) → fix save, remove override; (3) team-member → FR-22-19 scalar-interior roster, remove override; (4) IN-F notice-banner empty content (universal-lift). Plan: .claude/plans/2026-06-12-universal-align-router-programme.md."
 ---
 
 # Next session — universalisation programme (C → B → A-layer-router)
+
+> ✅ **2026-06-12: C + B + A-dual-key are BUILT + on main (D216).** IN-C is CLOSED (feature-grid live `align-items:stretch`). What remains below is the GATED full router unification + 2 flagged block bugs (mobile-nav save, team-member FR-22-19) + IN-F content. The C→B→A build instructions below are retained as the record; the NEXT build is the full name-free router, which gets its OWN `/adversarial-council` first.
 
 > Invoke `/autopilot` first. Read this prompt + **`.claude/plans/2026-06-12-universal-align-router-programme.md`** (THE programme + the adversarial-council must-fix register — trust it) + `.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md` (the acceptance surface) before acting.
 

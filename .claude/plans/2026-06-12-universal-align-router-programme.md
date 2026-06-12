@@ -44,3 +44,16 @@ Bean chose the PROPER universal fix (2026-06-12). The carve-out is the *hardcode
 - Live page-8 / canary DOM probe per affected row (R-22-11); NOT emit-only (R-22-6).
 - Per-block deprecated.js regression-locked in `tests/php/BlockDeprecationsTest.php`.
 - /qc-council before each converter/SGS-block commit (blub.db 255). Commit by explicit path; merge to main via temp-worktree cherry-pick.
+
+
+## BUILT 2026-06-12 (C + B + A-dual-key shipped to main)
+
+- **WS-C** `6d8ebcd4` — trust-bar gap via universal detector. DONE.
+- **WS-B** `0507973a` — has_inner_blocks auto-derive + override (mobile-nav=1, team-member=0) + check-composition-sync gate + 5 catalogue rows. DONE. Gate green across 74 blocks; conformance 43/43.
+- **WS-A** `1f107711` — wrapper dual-key fallback (`verticalAlign ?? alignItems ?? start`). **IN-C CLOSED** (live: feature-grid align-items:stretch). NO default flip, NO rename, NO client re-save.
+
+### Remaining (gated / flagged follow-ups)
+- **Full name-free layer-router** (the unification): remove the convert.py attr-name fork (`~4075-4082`), route gap + iconCircleBackground through the GRID per-item layer, unify the 8 blocks to ONE canonical align attr (with deprecated.js + render dual-key already in place + a WP-CLI batch re-save). Needs its OWN design-gate + adversarial-council on the router mechanism (Bean chose this end-state; the dual-key fallback is the safe interim that already delivers the functional universality).
+- **mobile-nav block bug**: `save:()=>null` drops its InnerBlocks drawer (CLAUDE.md gotcha). Fix save → `<InnerBlocks.Content/>`, then remove the mobile-nav override.
+- **team-member**: add to the FR-22-19 scalar-interior composite roster (photo/name/role/bio scalar, social-icons InnerBlocks), then remove the team-member override.
+- **IN-F notice-banner content** (P5 leftover): bg fixed; empty content needs the universal-lift mechanism.
