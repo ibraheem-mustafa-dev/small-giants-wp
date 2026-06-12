@@ -1,5 +1,5 @@
 {
   "fixture": "sgs-accordion-item.html",
   "primary_block_emitted": "sgs/container",
-  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/accordion-item -->\n<!-- wp:sgs/heading {\"content\":\"Item Heading\",\"level\":\"h3\",\"fontSize\":18,\"fontSizeUnit\":\"px\",\"fontWeight\":\"600\",\"textColour\":\"#3a2e26\",\"style\":{\"color\":{\"text\":\"#3a2e26\"}},\"textAlign\":\"left\"} /-->\n<!-- wp:sgs/text {\"text\":\"Item body content goes here.\",\"fontSize\":16,\"fontSizeUnit\":\"px\",\"textColour\":\"#5c4f46\",\"paddingUnit\":\"px\",\"paddingTop\":8,\"textAlign\":\"left\"} /-->\n<!-- /wp:sgs/accordion-item -->\n<!-- /wp:sgs/container -->"
+  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/accordion-item -->\n<!-- wp:sgs/heading {\"content\":\"Item Heading\",\"level\":\"h3\",\"fontSize\":18,\"fontSizeUnit\":\"px\",\"fontWeight\":\"600\",\"textColour\":\"#3a2e26\",\"style\":{\"color\":{\"text\":\"#3a2e26\"}},\"textAlign\":\"left\"} /-->\n<!-- wp:sgs/text {\"text\":\"Item body content goes here.\",\"fontSize\":16,\"fontSizeUnit\":\"px\",\"textColour\":\"#5c4f46\",\"style\":{\"spacing\":{\"padding\":{\"top\":\"8px\"}}},\"paddingUnit\":\"px\",\"paddingTop\":8,\"textAlign\":\"left\"} /-->\n<!-- /wp:sgs/accordion-item -->\n<!-- /wp:sgs/container -->"
 }
