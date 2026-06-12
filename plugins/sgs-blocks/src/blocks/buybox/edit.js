@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, TextControl, Icon } from '@wordpress/components';
+import { PanelBody, TextControl, ToggleControl, Icon } from '@wordpress/components';
 
 /**
  * Editor view for sgs/buybox.
@@ -15,6 +15,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		soldOutLabel,
 		unavailableLabel,
+		notifyEnabled,
 		notifyMeLabel,
 		addToCartLabel,
 		perUnitDenomination,
@@ -78,6 +79,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						__nextHasNoMarginBottom
 					/>
+					<ToggleControl
+						label={ __( 'Show back-in-stock notify form', 'sgs-blocks' ) }
+						checked={ notifyEnabled }
+						onChange={ ( val ) =>
+							setAttributes( { notifyEnabled: val } )
+						}
+						help={ __(
+							'Show the email-capture form on out-of-stock variations so shoppers can request a notification.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
 					<TextControl
 						label={ __( 'Notify-me label', 'sgs-blocks' ) }
 						value={ notifyMeLabel }
@@ -85,7 +98,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { notifyMeLabel: val } )
 						}
 						help={ __(
-							'Notify-me capture is deferred — this label is stored now and used when the feature ships.',
+							'Heading shown above the email form when a variation is out of stock.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom

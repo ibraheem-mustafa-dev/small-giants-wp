@@ -330,3 +330,155 @@
 	opacity: 0.75;
 	max-width: 36em;
 }
+
+/* ── Back-in-stock notify-me form (FR-30-10) ──────────────────────────── */
+/*
+ * Scoped to .sgs-buybox so these rules only affect the notify form inside
+ * this block. Mobile-first; stacked layout with 44px touch targets.
+ * Colours pair with text labels (never colour as sole indicator):
+ *   success: green prefix character + data-status="success" tint
+ *   error:   "!" prefix character + data-status="error" tint
+ * Contrast: token values + fallbacks are >= 4.5:1 against white.
+ */
+
+.sgs-buybox__notify[hidden] {
+	display: none;
+}
+
+.sgs-buybox__notify {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding: 16px;
+	border: 1px solid rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+	background: var(--sgs-buybox-notify-bg, rgba(0, 0, 0, 0.02));
+}
+
+.sgs-buybox__notify-heading {
+	margin: 0;
+	font-weight: 700;
+	font-size: 1rem;
+}
+
+.sgs-buybox__notify-form {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin: 0;
+}
+
+.sgs-buybox__notify-field {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.sgs-buybox__notify-label {
+	font-size: 0.9rem;
+	font-weight: 600;
+}
+
+/* Full-width email input with 44px min-height (WCAG 2.2 AA 2.5.8). */
+.sgs-buybox__notify-email {
+	width: 100%;
+	min-height: 44px;
+	padding: 10px 12px;
+	border: 2px solid var(--sgs-buybox-notify-input-border, rgba(0, 0, 0, 0.3));
+	border-radius: 6px;
+	font-size: 1rem;
+	background: var(--sgs-buybox-notify-input-bg, #fff);
+	color: var(--sgs-buybox-notify-input-colour, inherit);
+	box-sizing: border-box;
+}
+
+.sgs-buybox__notify-email:focus {
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
+	outline-offset: 2px;
+	border-color: var(--wp--preset--color--primary, currentColor);
+}
+
+/* Consent row — 44px touch target via padding on the label. */
+.sgs-buybox__notify-consent-row {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+}
+
+/* The checkbox itself is visually small; the label provides the 44px target. */
+.sgs-buybox__notify-consent {
+	margin-top: 4px;
+	flex-shrink: 0;
+	cursor: pointer;
+}
+
+.sgs-buybox__notify-consent-label {
+	font-size: 0.9rem;
+	line-height: 1.5;
+	cursor: pointer;
+	/* 44px minimum touch height via min-height on the label. */
+	min-height: 44px;
+	display: flex;
+	align-items: center;
+}
+
+.sgs-buybox__notify-consent-label a {
+	color: var(--wp--preset--color--primary, currentColor);
+	text-underline-offset: 2px;
+}
+
+.sgs-buybox__notify-consent-label a:hover {
+	text-decoration: none;
+}
+
+/* Submit button — reuses wp-element-button theming. Full width on mobile. */
+.sgs-buybox__notify-submit {
+	width: 100%;
+	min-height: 44px;
+	padding: 10px 20px;
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.sgs-buybox__notify-submit:focus-visible {
+	outline: 2px solid var(--wp--preset--color--text, currentColor);
+	outline-offset: 2px;
+}
+
+/* Status region — empty by default; content written by notify-view.js.
+   Colour is NEVER the sole indicator: success uses "checkmark + green",
+   error uses "!" prefix + red tint, both visible in monochrome. */
+.sgs-buybox__notify-status {
+	margin: 0;
+	font-size: 0.9rem;
+	min-height: 0;
+	/* Collapse when empty so it takes no vertical space. */
+}
+
+.sgs-buybox__notify-status:empty {
+	display: none;
+}
+
+.sgs-buybox__notify-status[data-status="success"] {
+	/* 4.5:1 against white — green text (WCAG AA). */
+	color: var(--sgs-buybox-notify-success-colour, #1a6b1a);
+	background: var(--sgs-buybox-notify-success-bg, #edf7ed);
+	border-radius: 4px;
+	padding: 8px 12px;
+}
+
+.sgs-buybox__notify-status[data-status="error"] {
+	/* 4.5:1 against white — red text (WCAG AA). */
+	color: var(--sgs-buybox-notify-error-colour, #8a1f21);
+	background: var(--sgs-buybox-notify-error-bg, #fcf0f1);
+	border-radius: 4px;
+	padding: 8px 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-buybox__notify-email,
+	.sgs-buybox__notify-submit {
+		transition: none;
+	}
+}

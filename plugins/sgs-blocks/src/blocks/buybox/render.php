@@ -421,6 +421,25 @@ ob_start();
 		data-wp-text="context.stockText"
 	><?php echo esc_html( $stock_text ); ?></p>
 
+	<?php
+	// ── 8c-ii. Back-in-stock notify-me form (FR-30-10, Step 10).
+	// Gated on notifyEnabled attribute (default true). Shown ONLY when the
+	// selected variation is out of stock via data-wp-bind--hidden="context.inStock"
+	// on the outer wrapper (pure read of existing context — no new store state).
+	$notify_enabled = (bool) ( $attributes['notifyEnabled'] ?? true );
+	if ( $notify_enabled ) {
+		$notify_me_label = sanitize_text_field( $attributes['notifyMeLabel'] ?? __( 'Notify me', 'sgs-blocks' ) );
+		if ( '' === $notify_me_label ) {
+			$notify_me_label = __( 'Notify me', 'sgs-blocks' );
+		}
+		// Enqueue Turnstile script when configured.
+		if ( \SGS\Blocks\Turnstile::is_configured() ) {
+			\SGS\Blocks\Turnstile::enqueue_script();
+		}
+		require __DIR__ . '/notify-form.php';
+	}
+	?>
+
 	<?php // ── 8d. Add-to-cart form (mirrors product-card L948-963 proxy form pattern). ?>
 	<form
 		class="buybox__cart-form"

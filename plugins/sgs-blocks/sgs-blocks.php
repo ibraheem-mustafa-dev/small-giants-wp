@@ -88,6 +88,17 @@ require_once SGS_BLOCKS_PATH . 'includes/configurator-product-fields.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-demand-analytics.php';
 Demand_Analytics::register();
 
+// Turnstile — Cloudflare Turnstile helper + Settings > SGS Turnstile page.
+// Provides bot-protection for public REST endpoints (Stock Notify et al.).
+require_once SGS_BLOCKS_PATH . 'includes/class-turnstile.php';
+Turnstile::register();
+
+// Stock Notify — back-in-stock email capture (Spec 30 Step 10).
+// REST endpoint POST /sgs/v1/notify/subscribe + product edit-screen meta-box.
+// Stores ONLY email + timestamp — no IP ever persisted.
+require_once SGS_BLOCKS_PATH . 'includes/class-stock-notify.php';
+Stock_Notify::register();
+
 // Configurator — swatch fields on WooCommerce attribute term screens (FR-27-B2 authoring UI).
 require_once SGS_BLOCKS_PATH . 'includes/configurator-term-fields.php';
 

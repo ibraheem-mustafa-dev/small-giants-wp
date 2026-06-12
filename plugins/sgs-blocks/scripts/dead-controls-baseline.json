@@ -1,11 +1,4 @@
 {
 	"_comment": "Accepted dead-control findings (HC2 guard, check-dead-controls.js). Each entry is a finding the team has consciously accepted, with a reason. The guard fails the build ONLY on findings NOT listed here. Key shape: { check, block, attr, reason }. To accept a finding add it here with a reason; to fix one, wire or remove the control and delete the entry. Empty `accepted` = zero tolerance.",
-	"accepted": [
-		{
-			"check": "block",
-			"block": "sgs/buybox",
-			"attr": "notifyMeLabel",
-			"reason": "FR-30-7 P1: notify-me capture is explicitly DEFERRED (no PECR-compliant capture path shipped). The label control ships now per the Step-5 bridge design so operators can pre-configure it; render consumption lands with the notify-me feature. Delete this entry when notify-me ships."
-		}
-	]
+	"accepted": []
 }
