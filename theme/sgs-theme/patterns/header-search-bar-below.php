@@ -1,3 +1,19 @@
+<?php
+/**
+ * Title: SGS Header — Search Bar (below menu)
+ * Slug: sgs/header-search-bar-below
+ * Block Types: core/template-part/header
+ * Categories: sgs-headers
+ * Keywords: header, search, shop, product, woocommerce, bar
+ * Viewport Width: 1440
+ * Inserter: true
+ * Description: SGS header with a full product-search bar in its own row below the logo/menu row. Keeps the top row clean while keeping search always visible. Includes mini-cart.
+ *
+ * @package SGS\Theme
+ */
+
+?>
+
 <!-- wp:group {"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"backgroundColor":"surface","layout":{"type":"default"},"metadata":{"name":"Site Header"}} -->
 <div class="wp-block-group has-surface-background-color has-background" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
 
@@ -18,6 +34,12 @@
 		</div>
 		<!-- /wp:group -->
 
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"bottom":{"color":"var:preset|color|surface-alt","width":"1px"}}},"backgroundColor":"surface-alt","layout":{"type":"constrained","contentSize":"640px"},"metadata":{"name":"Header Search Row"}} -->
+	<div class="wp-block-group has-surface-alt-background-color has-background" style="border-bottom-color:var(--wp--preset--color--surface-alt);border-bottom-width:1px;padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--40)">
+		<!-- wp:sgs/product-search {"displayMode":"inline","placeholder":"Search products…"} /-->
 	</div>
 	<!-- /wp:group -->
 

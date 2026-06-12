@@ -1,3 +1,19 @@
+<?php
+/**
+ * Title: SGS Header — Search Icon
+ * Slug: sgs/header-search-icon
+ * Block Types: core/template-part/header
+ * Categories: sgs-headers
+ * Keywords: header, search, icon, shop, product, woocommerce, compact
+ * Viewport Width: 1440
+ * Inserter: true
+ * Description: SGS header with a compact search icon in the nav row that expands the search field on click. Space-saving — best when the nav row is tight. Includes mini-cart.
+ *
+ * @package SGS\Theme
+ */
+
+?>
+
 <!-- wp:group {"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"backgroundColor":"surface","layout":{"type":"default"},"metadata":{"name":"Site Header"}} -->
 <div class="wp-block-group has-surface-background-color has-background" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
 
@@ -12,6 +28,8 @@
 			<!-- wp:sgs/mobile-nav-toggle /-->
 
 			<!-- wp:navigation {"textColor":"text","layout":{"type":"flex","justifyContent":"right"},"style":{"typography":{"fontWeight":"600"},"spacing":{"blockGap":"var:preset|spacing|40"}},"fontSize":"medium"} /-->
+
+			<!-- wp:sgs/product-search {"displayMode":"icon","buttonLabel":"Search products"} /-->
 
 			<!-- wp:woocommerce/mini-cart {"hasHiddenPrice":true,"priceColorValue":"","iconColorValue":"var(--wp--preset--color--text, #3A2E26)","productCountColorValue":"var(--wp--preset--color--text, #3A2E26)","cartIcon":"bag","style":{"typography":{"fontSize":"var(--wp--preset--font-size--small)"}}} /-->
 
