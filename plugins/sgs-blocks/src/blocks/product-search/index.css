@@ -1,0 +1,24 @@
+/**
+ * SGS Product Search — editor-only styles (block.json "editorStyle").
+ *
+ * Minimal overrides for the editor preview. Frontend styles live in style.css.
+ */
+
+/* Communicate the disabled state in the editor preview. */
+.sgs-product-search__input[disabled] {
+	opacity: 0.7;
+	cursor: not-allowed;
+}
+
+.sgs-product-search__submit[disabled] {
+	opacity: 0.7;
+	cursor: not-allowed;
+}
+
+/* Editor hint text below the disabled input. */
+.sgs-product-search__editor-hint {
+	margin: 0.5rem 0 0;
+	font-size: 0.8125rem;
+	color: #757575;
+	font-style: italic;
+}
