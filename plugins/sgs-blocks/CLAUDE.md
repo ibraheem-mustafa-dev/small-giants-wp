@@ -88,7 +88,7 @@ rm sgs-deploy.tar
 
 ## Block Build Status
 
-### Content/Layout Blocks (26 built)
+### Content/Layout Blocks
 
 | Block | Status |
 |---|---|
@@ -96,16 +96,16 @@ rm sgs-deploy.tar
 | Hero | Deployed |
 | Info Box | Deployed |
 | Counter | Deployed |
-| Trust Bar | Deployed (merged certification-bar capability + auto-scroll 2026-05-29 D95 — badgeStyle variants: icon-circle (default), text-only, image-badge; auto-scroll marquee when items overflow columns. Renamed from Trust Badges 2026-05-31. Dual-mode shipped 2026-06-01 FR-24-10: sourceMode='typed' (curated repeater) or 'bound' (echoes $content from converter). version 1.0.0+) |
+| Trust Bar | Deployed (merged certification-bar capability + auto-scroll 2026-05-29 D95 — badgeStyle variants: icon-circle (default), text-only, image-badge; auto-scroll marquee when items overflow columns. Renamed from Trust Badges 2026-05-31. Dual-mode shipped 2026-06-01 FR-24-10. **sourceMode='bound' RETIRED for cloning D182 2026-06-06** (6-persona adversarial-council gated) — converter now emits `sourceMode='typed'` with native item attrs via icon-identity resolver. Canonical modes: `typed` (curated repeater, 3 variants — THE mode for cloned + authored trust-bars) / `wc-product` / `sgs-cpt` (live WC configurator only). `bound` is dead — do NOT add new `bound` emits. version 1.0.0+) |
 | Icon List | Deployed |
 | Card Grid | Deployed |
 | CTA Section | Deployed |
 | Process Steps | Deployed |
-| Testimonial | Deployed (D8 2026-06-11 — typed-attr **7-VARIANT** rebuild: classic-card / pull-quote-editorial / rating-led / avatar-spotlight / corporate-logo / case-study-media / minimal-quote; visual thumbnail picker; rich gated optional fields [quote / summary-phrase / name / role / org / avatar / logo / work-image+video / stars-OR-/10-scale / date / verified / source] + per-element typography + hover scale/shadow. save.js→null; deprecated.js v8 migrates legacy scalar+InnerBlocks shapes [page-8 3-testimonial round-trip live-verified]. version 0.3.0. ON feat/block-quality-mirror — NOT yet merged) |
+| Testimonial | Deployed (D8/D206/D209 — typed-attr **7-VARIANT** rebuild: classic-card / pull-quote-editorial / rating-led / avatar-spotlight / corporate-logo / case-study-media / minimal-quote; visual thumbnail picker; rich gated optional fields [quote / summary-phrase / name / role / org / avatar / logo / work-image+video / stars-OR-/10-scale / date / verified / source] + per-element typography + hover scale/shadow. save.js→null; deprecated.js v8 migrates legacy scalar+InnerBlocks shapes [page-8 3-testimonial round-trip live-verified]. Merged to main D209 2026-06-11. version 0.3.0) |
 | Testimonial Slider | Deployed |
 | Heritage Strip | Deployed |
 | Brand Strip | Deployed |
-| Notice Banner | Deployed (FR-22-6 InnerBlocks migration 2026-06-02 — render.php echoes `$content` + `sgs/text` child; deprecated.js v3. **E9 2026-06-11:** variant bg/border/colour made operator-overridable (`:where()`); dead `dismissible` button (no control / no JS handler) removed. version 0.7.0. feat/block-quality-mirror, not merged) |
+| Notice Banner | Deployed (FR-22-6 InnerBlocks migration 2026-06-02 — render.php echoes `$content` + `sgs/text` child; deprecated.js v3. **E9/D206:** variant bg/border/colour made operator-overridable (`:where()`); dead `dismissible` button (no control / no JS handler) removed. **D209:** `displayMode=announcement` (sticky top/bottom, full-width, z-1000, accessible close + WP-Interactivity dismiss with session/permanent storage, anti-flash script) — announcement-bar block retired and absorbed. Merged to main D209 2026-06-11. version 0.7.0) |
 | Icon | Deployed (shape backgrounds 2026-06-02 — `backgroundShape`: none/circle/pill/square/outline; clickable via existing linkUrl/linkTarget; hover controls: hoverIconColour / hoverShapeColour / hoverScale; deprecated.js v1. version 0.2.0) |
 | WhatsApp CTA | Deployed |
 | Accordion + Accordion Item | Deployed |
@@ -118,8 +118,14 @@ rm sgs-deploy.tar
 | Decorative Image | Built (L14, needs build + deploy) |
 | Mega Menu | Built (L3, needs build + deploy) |
 | Content Collection | Deployed (NEW 2026-06-03 — own WP_Query, selection rules: newest/featured/most-expensive/cheapest/most-popular/handpicked/category; renders each result as a Bound sgs/product-card; designed empty state; Inspector controls only. Spec 24 FR-24-4/5/6. version 1.1.0. Deployed to sandybrown canary.) |
-| Option Picker | Deployed (sgs-interactive — exclusive radio-group pill chooser; Spec 24 FR-24-15 / D144 Phase A; no-JS-safe SSR + bubbling `sgs:option-selected` event; WCAG contrast fix on selected pill + overridable `--sgs-option-picker-*` colour vars. **C7 2026-06-11:** group-label font-size + colour controls (legend inline style). version 0.1.7. feat/block-quality-mirror) |
+| Option Picker | Deployed (sgs-interactive — exclusive radio-group pill chooser; Spec 24 FR-24-15 / D144 Phase A; no-JS-safe SSR + bubbling `sgs:option-selected` event; WCAG contrast fix on selected pill + overridable `--sgs-option-picker-*` colour vars. **C7/D206:** group-label font-size + colour controls (legend inline style). Merged to main D209. version 0.1.7) |
 | Product Card | Deployed (dual-mode: Typed = InnerBlocks; Bound = live WooCommerce/CPT. **Spec 27 Phase-1 CONFIGURATOR SHIPPED D164:** Bound variable products read WC's live 48-SKU manifest (`includes/class-product-manifest.php`) seeded into per-instance `data-wp-context`; Size+Flavour pickers swap price/sale/stock/image with 0 XHR; secure add-to-cart via `/sgs/v1/cart/add-item` proxy; cross-attribute availability grey-out + `GET /sgs/v1/cart/availability/{id}`; all 4 a11y gates pass. Colon-event bridge via `data-wp-init` (WP won't bind `data-wp-on--` colon events). overridable `--sgs-product-card-*` vars + cardMaxWidth. **Spec 28 P1 value-ladder SHIPPED 2026-06-05 (D-pending):** SSR comparative per-unit ladder (Bound-mode only, NOT seeded into the 24KB client context) — one row per pack size with per-unit price + Rule-of-100 saving + "Best value" badge; monotonicity guard suppresses worse-value rows; honest claim-suppression when no `_sgs_base_price_pence` single-item reference is set (`framingMode`/`decoyEnabled` attrs; `sgs_value_ladder()`/`sgs_saving_display()` helpers; live-verified contrast 15.71:1). D151/D164 / Spec 27 FR-27-A/B/C/G/H + Spec 28 FR-28-7/8/9/9a/16. **D204 (main):** FP-H built-in-element card (connect+override). **Block-quality 2026-06-11 (feat/block-quality-mirror, not merged):** B3 Advanced-SEO crash fixed (`__experimentalNumberControl`), B4 fresh-card defaults to built-in template (legacy detected by stored InnerBlocks), B5 duplicate bound-mode CTA text/url gated out, B6 trial border overridable (`:where()`); picker-label forwarding (built-in Size/Flavour labels customisable via `pickerLabelFontSize`/`pickerLabelColour`); `packSizes` control wired (typed mode). version 1.16.4) |
+| Tabs + Tab | Deployed (first-ever deploy D210 2026-06-11 — native details/summary context-passing, tab-panel `role=tabpanel`; two latent bugs root-caused + fixed live: context-stripped child render and duplicate nested `role=tabpanel`. version 0.2.0) |
+| Buybox | Deployed (FR-30-7 / D210 2026-06-11 — thin wrapper block mounting the sgs/product-card Interactivity store; composes N sgs/option-picker pickers + ONE manifest + price row + add-to-cart; proxy-wires the card's view module (`view_script_module_ids`); zero engine duplication; dismissible cart status; operator `soldOutLabel`/`unavailableLabel`; single-variant axes suppressed; foreign-id 4xx handled. version 1.0.4) |
+| Product FAQ + Product FAQ Item | Deployed (FR-27-F2 / D202 2026-06-10 — native `<details>`/`<summary>` accordion; ONE merged `FAQPage` JSON-LD via `wp_footer` collector; copy grep-gated to "AI search citation and Bing visibility" — Google deprecated FAQ rich results 2026-05-07. version 0.1.0) |
+| Product Search | Deployed (FR-30-5 / D214 2026-06-12 — accessible combobox (ARIA listbox + live region); REST endpoint `GET /sgs/v1/product-search` with 9-step security chain: fail-closed visibility filter (draft products never leak), fixed-window rate-limit (30/IP/min → 429 + `Retry-After`), fixed response shape `{id,title,permalink,thumbnail}` only, `no-store`, 1-char guard → 400, XSS-inert (server `wp_strip_all_tags` + client `span.textContent`). `displayMode` attr: `inline` (always-visible search bar) / `icon` (native `<details>` expand-on-click). No-JS GET form fallback (`name=s` + hidden `post_type=product`). `check-product-search-guards.js` (11 guards) wired to prebuild. version 1.1.0) |
+| Filter Search | Deployed (FR-30-6 / D214 2026-06-12 — type-to-find narrowing inside a WC Product Filter group; auto-shown at ≥16 visible terms (Baymard threshold); visibility-scoped term counting (`hide_empty` excludes draft-only terms so the threshold uses published-only counts); ARIA "N of M options shown" live region; "No matching options" empty state; core URL-filtering untouched. version 1.0.0) |
+| Collapsible Text | Deployed (D213 2026-06-11 — operator SEO copy block with accessible read-more; full text always SSR'd via CSS `line-clamp` (not `display:none`); toggle labels i18n'd via server-emitted `data-read-more`/`data-read-less`; empty content renders nothing. version 1.0.0) |
 | Cart | Deployed (WooCommerce mini-cart count badge v1 — Store API hydrate, SSR 0 then client-hydrate, no jQuery, cart-fragments dequeued, editor static placeholder; badge-increment E2E verified 2026-06-03; drawer mode = Phase 2) |
 | Heading | Deployed (redundant `hero` block-style removed 2026-06-03 Task D. version 0.5.1) |
 
@@ -173,7 +179,6 @@ rm sgs-deploy.tar
 |---|---|
 | Post Grid / Query Loop | Grid/list/masonry/carousel + AJAX pagination + category filtering |
 | Image Gallery + Lightbox | Grid/masonry/carousel + Interactivity API lightbox |
-| Tabs | Built — not yet deployed |
 | Countdown Timer | Date-based + evergreen; flip/simple variants |
 | Star Rating | SVG stars; Schema.org/Rating |
 | Team Member | Photo/name/role/bio/socials; Schema.org/Person |
@@ -273,7 +278,13 @@ Whenever you change a static block's `save.js` output OR a block.json attribute 
 
 **Canonical examples:** `src/blocks/process-steps/deprecated.js` (empty-innerHTML → null-save), `src/blocks/testimonial/deprecated.js` (static→null, multiple historical shapes), `src/blocks/notice-banner/deprecated.js` (emoji→SVG icon change with default-attribute backfill).
 
-## Retired blocks — back-to-top + reading-progress (2026-05-18, Spec 17 Wave 2 Polish 1b)
+## Retired blocks
+
+### announcement-bar (D209 2026-06-11)
+
+`sgs/announcement-bar` retired and **absorbed into `sgs/notice-banner`** as `displayMode=announcement`. `/sgs-update` Stage-10 pruned it + 25 orphan attrs from the DB. Any live homepage instance that carried the old block now shows the deleted-block placeholder — re-clone or swap to `sgs/notice-banner displayMode=announcement`.
+
+### back-to-top + reading-progress (2026-05-18, Spec 17 Wave 2 Polish 1b)
 
 The `sgs/back-to-top` and `sgs/reading-progress` blocks were fully removed (`src/` + `build/` directories deleted, no `deprecated.js` shim). Floating UI for both behaviours migrates to the Customiser at *Appearance → Customise → SGS Floating UI* (separate spec; ship date TBD). Existing post content carrying `wp:sgs/back-to-top` or `wp:sgs/reading-progress` markers will render WordPress's generic "block has been deleted" placeholder until operators remove the blocks and reconfigure via the Customiser. A one-shot dismissible admin notice (`Sgs_Site_Info_Admin_Notices::maybe_show_deprecated_blocks_notice`) surfaces the migration path on next admin load for `edit_theme_options` users.
 
