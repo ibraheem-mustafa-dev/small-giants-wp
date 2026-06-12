@@ -6,6 +6,14 @@ last_updated: 2026-06-11 (D206 block-quality programme close — added P-TESTIMO
 
 > **STANDARD PRACTICE (Bean-locked 2026-06-02):** this doc holds ONLY parked work — entries with `**Status:** OPEN | PARTIAL | BLOCKED | DEFERRED`. The MOMENT a task is **CLOSED / RESOLVED / DROPPED / SUPERSEDED**, MOVE it (verbatim, with completion date) to `memory/parking-archive.md` — do NOT leave it here. Enforce this every `/handoff` (Gate 4.5). Keeps parking concise + purposeful; prevents the balloon that hit 1,400+ lines.
 
+## 2026-06-12 (theme thread) — Spec 30 P2 Step 9 (FR-30-9 schema) follow-ons
+
+> **P-JSONLD-HEX-FLAG-GUARD** — build the structural prebuild gate `plugins/sgs-blocks/scripts/check-jsonld-hex-flags.js` (sibling of `check-dead-controls.js`, wired to `prebuild`): fail the build if any `wp_json_encode(...)` feeding a `<script type="application/ld+json">` lacks `JSON_HEX_TAG`. Would have auto-caught the accordion FAQPage XSS gap the adversarial-council found (R-22-12: gates are structural, not prompt). **Status: OPEN** — deferred from D215 §F10; ~20 min. **Bucket:** Framework. Surfaced 2026-06-12 (D215).
+>
+> **P-ORG-SCHEMA-SETTINGS-UI** — the new `Organization` emitter (`class-org-website-schema.php`) emits identity from data that already exists (name/url/logo/address/returns/shipping) but `sameAs` (social URLs) + `contactPoint` are SCOPED OUT because no operator option/UI exists (`sgs_org_schema` is absent codebase-wide). Build a WC Settings tab (or Site Identity panel) writing `sgs_org_schema` via `register_setting` with a recursive `sanitize_callback` (`esc_url_raw` per `sameAs` URL dropping non-http(s)/`javascript:`, `sanitize_text_field` on text) + `show_in_rest => false`; then wire `sameAs`/`contactPoint` into the emitter. Until then the Organization node is valid without them. **Status: OPEN** — deferred from D215 §F5; ~40 min. **Bucket:** Framework. Surfaced 2026-06-12 (D215).
+>
+> **P-VAT-ZERO-RATED-PRECISION** — the FR-30-9 VAT label gate (`class-llms-txt-products.php vat_suffix()`) is a simple store-level check (`woocommerce_calc_taxes==='yes'`). A VAT-registered seller of zero-rated goods (most groceries/bread, 0% VAT) with tax-calc on would still get "(inc. VAT)"; a VAT-registered seller with WC tax-calc off would get a bare label. Per-product precision = also check the product's effective tax rate (`WC_Tax::get_rates($product->get_tax_class())`). **Status: DEFERRED** (Bean chose the simple gate 2026-06-12; canary is `calc_taxes='no'`). Add as an FR-30-13 go-live verification item (confirm client VAT-registration state matches the label). **Bucket:** Framework. Surfaced 2026-06-12 (D215). See memory `inc-vat-not-default-gate-on-vat-registered`.
+
 ## 2026-06-11 — block-quality programme deferred follow-on
 
 ## 2026-06-11 (theme thread) — Spec 30 P2 Gate B shop-archive follow-ons

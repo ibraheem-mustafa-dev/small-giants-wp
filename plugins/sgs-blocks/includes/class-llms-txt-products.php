@@ -167,6 +167,18 @@ final class Llms_Txt_Products {
 	}
 
 	/**
+	 * Returns the VAT suffix string when taxes are enabled, or an empty string.
+	 *
+	 * Used by build_price_line() at all three label sites so the wording
+	 * stays consistent and can never drift between call sites.
+	 *
+	 * @return string ' (inc. VAT)' when woocommerce_calc_taxes === 'yes', else ''.
+	 */
+	private static function vat_suffix(): string {
+		return 'yes' === get_option( 'woocommerce_calc_taxes' ) ? ' (inc. VAT)' : '';
+	}
+
+	/**
 	 * Build an inc-VAT price-range line for a product.
 	 *
 	 * Variable products: derived from the manifest's per-combo incMinor values
@@ -196,9 +208,9 @@ final class Llms_Txt_Products {
 					$min        = number_format( min( $prices ) / $multiplier, $decimals );
 					$max        = number_format( max( $prices ) / $multiplier, $decimals );
 					if ( $min === $max ) {
-						return 'Price (inc. VAT): ' . $symbol . $min;
+						return 'Price' . self::vat_suffix() . ': ' . $symbol . $min;
 					}
-					return 'Price range (inc. VAT): ' . $symbol . $min . '–' . $symbol . $max;
+					return 'Price range' . self::vat_suffix() . ': ' . $symbol . $min . '–' . $symbol . $max;
 				}
 			}
 		}
@@ -207,7 +219,7 @@ final class Llms_Txt_Products {
 		if ( \function_exists( 'wc_get_price_including_tax' ) ) {
 			$inc = \wc_get_price_including_tax( $product );
 			if ( $inc > 0 ) {
-				return 'Price (inc. VAT): ' . $symbol . number_format( $inc, $decimals );
+				return 'Price' . self::vat_suffix() . ': ' . $symbol . number_format( $inc, $decimals );
 			}
 		}
 
