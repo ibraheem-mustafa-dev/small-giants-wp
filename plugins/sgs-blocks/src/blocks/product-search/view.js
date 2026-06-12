@@ -4,6 +4,11 @@
  * Accessible combobox with debounced REST fetch, keyboard navigation, and
  * AbortController-based request cancellation.
  *
+ * Supports two display modes set by render.php via data-display:
+ *   (none / "inline") — always-visible search bar, unchanged behaviour.
+ *   "icon"            — <details>/<summary> disclosure; JS enhances focus
+ *                       management and Escape/outside-click to close the panel.
+ *
  * No jQuery. No dependencies.
  */
 
@@ -24,7 +29,11 @@ function initInstance( root ) {
 	const noResults     = root.dataset.noResults      || 'No products found';
 	const busy          = root.dataset.busy           || 'Search is busy — please try again in a moment';
 	const countTemplate = root.dataset.countTemplate  || '%d products found';
-	const maxResults    = parseInt( root.dataset.maxResults, 10 ) || 10;
+	const maxResults    = Number.parseInt( root.dataset.maxResults, 10 ) || 10;
+
+	// Icon-mode detection — set by render.php as data-display="icon".
+	const isIcon  = root.dataset.display === 'icon';
+	const details = isIcon ? root.querySelector( '.sgs-product-search__disclosure' ) : null;
 
 	// DOM refs.
 	const input  = root.querySelector( '.sgs-product-search__input' );
@@ -38,9 +47,9 @@ function initInstance( root ) {
 	const listId = ul.id; // e.g. "sgs-product-search-1-listbox"
 
 	// State.
-	let debounceTimer  = null;
+	let debounceTimer    = null;
 	let activeController = null; // AbortController for the in-flight fetch.
-	let activeIndex    = -1;     // Index into visible <li> options.
+	let activeIndex      = -1;   // Index into visible <li> options.
 
 	// -------------------------------------------------------------------------
 	// Helpers
@@ -77,8 +86,34 @@ function initInstance( root ) {
 		clearActive();
 	}
 
+	/**
+	 * Close the icon-mode disclosure panel and return focus to the summary toggle.
+	 * No-op in inline mode.
+	 */
+	function closeDisclosure() {
+		if ( isIcon && details ) {
+			details.open = false;
+			const summary = root.querySelector( 'summary' );
+			if ( summary ) {
+				summary.focus();
+			}
+		}
+	}
+
 	function announce( message ) {
 		status.textContent = message;
+	}
+
+	// -------------------------------------------------------------------------
+	// Icon mode — move focus into the input when the disclosure opens.
+	// The <details> toggle event fires after open state changes.
+	// -------------------------------------------------------------------------
+	if ( details ) {
+		details.addEventListener( 'toggle', () => {
+			if ( details.open && input ) {
+				input.focus();
+			}
+		} );
 	}
 
 	// -------------------------------------------------------------------------
@@ -216,8 +251,15 @@ function initInstance( root ) {
 
 			case 'Escape':
 				event.preventDefault();
-				closeDropdown();
-				input.focus();
+				if ( ! ul.hidden ) {
+					// First Escape press: close the suggestions dropdown, keep focus in input.
+					closeDropdown();
+					input.focus();
+				} else if ( isIcon && details && details.open ) {
+					// Second Escape press (dropdown already closed): close the icon panel
+					// and return focus to the summary toggle.
+					closeDisclosure();
+				}
 				break;
 		}
 	} );
@@ -239,11 +281,17 @@ function initInstance( root ) {
 
 	// -------------------------------------------------------------------------
 	// Close on outside click
+	// Inline: close the dropdown.
+	// Icon: also close the disclosure panel when the click is outside the root.
 	// -------------------------------------------------------------------------
 
 	document.addEventListener( 'click', ( event ) => {
 		if ( ! root.contains( event.target ) ) {
 			closeDropdown();
+			// In icon mode, also close the <details> disclosure.
+			if ( isIcon && details ) {
+				details.open = false;
+			}
 		}
 	} );
 
