@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/filter-search",
+	"version": "1.0.0",
+	"title": "Filter Search",
+	"category": "sgs-interactive",
+	"description": "A type-to-find input that narrows a WooCommerce attribute filter's options. Auto-shown only when the attribute has more than 15 terms. Nest inside a Product Filter (Attribute) block, before its chips.",
+	"keywords": [ "filter", "search", "attribute", "woocommerce", "shop", "type to find" ],
+	"textdomain": "sgs-blocks",
+	"icon": "search",
+	"ancestor": [ "woocommerce/product-filter-attribute" ],
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"spacing": {
+			"margin": true
+		}
+	},
+	"attributes": {
+		"attributeId": { "type": "number", "default": 0 },
+		"threshold":   { "type": "integer", "default": 16, "minimum": 2 },
+		"placeholder": { "type": "string", "default": "" }
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js"
+}
