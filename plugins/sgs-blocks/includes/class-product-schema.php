@@ -21,6 +21,7 @@ defined( 'ABSPATH' ) || exit;
 
 // Own-deps (this runs in wp_head, where render.php has not yet required the
 // manifest): require_once its dependencies. require_once is idempotent.
+require_once __DIR__ . '/class-sgs-schema.php';
 require_once __DIR__ . '/class-product-manifest.php';
 require_once __DIR__ . '/class-configurator-meta.php';
 
@@ -148,7 +149,15 @@ final class Product_Schema {
 		if ( ! empty( $shipping ) ) {
 			$data['shippingDetails'] = $shipping;
 		}
-		if ( ! empty( $returns ) ) {
+		if ( \is_array( $returns ) && ! empty( $returns ) ) {
+			// F1 (FR-30-9): inject returnPolicyCountry from WooCommerce store setting.
+			// OMIT the key entirely when the store country is absent or malformed —
+			// never emit returnPolicyCountry:"" (council: unanimous must-fix).
+			$raw_cc = (string) \get_option( 'woocommerce_default_country', '' );
+			$cc     = \strtoupper( \strtok( $raw_cc, ':' ) ); // 'GB:ENG' -> 'GB'; '' -> ''.
+			if ( \preg_match( '/^[A-Z]{2}$/', $cc ) ) {
+				$returns['returnPolicyCountry'] = $cc; // runtime-only; never written back.
+			}
 			$data['hasMerchantReturnPolicy'] = $returns;
 		}
 
@@ -177,15 +186,13 @@ final class Product_Schema {
 	/**
 	 * JSON-encode with the XSS-safe HEX flags for inline <script> output (SEC-3).
 	 *
+	 * Delegates to Sgs_Schema::encode_jsonld() — one encoder, zero drift (FR-30-9).
+	 *
 	 * @param array $data Data to encode.
 	 * @return string|false Encoded JSON, or false on failure.
 	 */
 	private static function encode( array $data ) {
-		return \wp_json_encode(
-			$data,
-			\JSON_HEX_TAG | \JSON_HEX_AMP | \JSON_HEX_APOS | \JSON_HEX_QUOT
-			| \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE
-		);
+		return Sgs_Schema::encode_jsonld( $data );
 	}
 
 	// ── Private helpers ───────────────────────────────────────────────────────

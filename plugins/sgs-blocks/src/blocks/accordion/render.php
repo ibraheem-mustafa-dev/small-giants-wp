@@ -88,7 +88,7 @@ if ( $faq_schema && ! empty( $block->inner_blocks ) ) {
 			'name'           => $question,
 			'acceptedAnswer' => array(
 				'@type' => 'Answer',
-				'text'  => $answer_html,
+				'text'  => wp_strip_all_tags( $answer_html ),
 			),
 		);
 	}
@@ -100,9 +100,10 @@ if ( $faq_schema && ! empty( $block->inner_blocks ) ) {
 			'mainEntity' => $faq_items,
 		);
 
-		printf(
-			'<script type="application/ld+json">%s</script>',
-			wp_json_encode( $schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES )
-		);
+		$faq_json = wp_json_encode( $schema, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+		if ( false !== $faq_json ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-encoded ld+json (wp_json_encode HEX flags), not HTML.
+			printf( '<script type="application/ld+json">%s</script>', $faq_json );
+		}
 	}
 }

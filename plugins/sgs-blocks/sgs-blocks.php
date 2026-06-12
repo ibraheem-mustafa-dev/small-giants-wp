@@ -124,6 +124,16 @@ Product_Sitemap::register();
 require_once SGS_BLOCKS_PATH . 'includes/class-product-item-list.php';
 Product_Item_List::register();
 
+// Organization + WebSite JSON-LD emitter — front page only (FR-30-9 F2).
+// SEC-9: defers to any of the 7 recognised SEO plugins when active.
+require_once SGS_BLOCKS_PATH . 'includes/class-org-website-schema.php';
+Org_Website_Schema::register();
+
+// Store-page noindex emitter — cart/checkout/account/WC endpoints (FR-30-9 F3).
+// SEC-9: defers to active SEO plugin on cart/checkout; always noindexes account + endpoints.
+require_once SGS_BLOCKS_PATH . 'includes/class-noindex-store-pages.php';
+Noindex_Store_Pages::register();
+
 // llms.txt + llms-full.txt — AI navigation files at site root (FR-27-F2 llms clause).
 // Serves curated navigation map + per-product expansion in llmstxt.org shape.
 // SEC-9: defers to Yoast / RankMath when active. Rate-limited 60/hr per IP.

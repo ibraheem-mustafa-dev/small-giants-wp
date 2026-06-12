@@ -117,13 +117,13 @@ export default function Edit({ attributes, setAttributes }) {
         </PanelBody>
 
         <PanelBody
-          title={__("FAQ Schema (SEO)", "sgs-blocks")}
+          title={__("FAQ structured data (AI search & Bing)", "sgs-blocks")}
           initialOpen={false}
         >
           <ToggleControl
             label={__("Enable FAQ Schema", "sgs-blocks")}
             help={__(
-              "Outputs schema.org/FAQPage JSON-LD for search engine rich results. Only enable when items contain genuine Q&A content.",
+              "Outputs schema.org FAQPage JSON-LD. Google removed the FAQ rich result (May 2026), but AI search engines (ChatGPT, Perplexity, Google AI Overviews) and Bing still use it to cite your Q&A. Only enable when items contain genuine Q&A content.",
               "sgs-blocks",
             )}
             checked={faqSchema}
