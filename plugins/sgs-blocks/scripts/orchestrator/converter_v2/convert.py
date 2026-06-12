@@ -984,6 +984,7 @@ def _lift_wrapper_css_to_container_attrs(
     container_attr_names: frozenset[str] | set[str],
     *,
     _typography_owned_attrs: frozenset[str] | None = None,
+    container_attr_meta: dict[str, dict] | None = None,
 ) -> tuple[dict, list[str]]:
     """Lift base + responsive CSS declarations onto sgs/container attribute names.
 
@@ -1001,6 +1002,12 @@ def _lift_wrapper_css_to_container_attrs(
                                 When provided, this writer skips any attr in the set
                                 (the DB has already decided it belongs to typography).
                                 None = legacy / no-contest path (no filtering applied).
+        container_attr_meta:    Optional {attr_name: {attr_type, ...}} metadata dict
+                                (from db.block_attrs()). When provided, number-typed
+                                destination attrs receive split number + Unit companion
+                                (mirrors the AREA router type-aware store); string-typed
+                                attrs (sgs/container) keep existing raw-string behaviour.
+                                None = legacy path (all attrs treated as string-typed).
 
     Returns:
         attrs:   {attr_name: value} ready to merge into the block's attrs dict.
@@ -1080,21 +1087,79 @@ def _lift_wrapper_css_to_container_attrs(
                 continue  # Typography owns this attr — wrapper-css must not write it.
 
             # Resolve the value.
+            # Type-aware store: if the destination attr is declared as number-typed
+            # in block.json (e.g. sgs/text marginBottom, sgs/heading paddingTop),
+            # split the raw value into a numeric part + a companion Unit attr,
+            # mirroring _route_area_css_to_block_attrs (the AREA router).
+            # String-typed attrs (sgs/container contentBandPadding*, minHeight, gap…)
+            # keep the existing _preserve_unit raw-string path — no regression.
+            _dest_meta = (container_attr_meta or {}).get(base_attr) or {}
+            _dest_is_number = _dest_meta.get("attr_type") == "number"
+
             if _is_css_function(value):
                 # CSS function (clamp/calc/var/min/max/url/etc.) → raw string passthrough.
                 # Container string-type attrs accept raw CSS. Never route via
                 # _split_value_unit() which drops these.
+                # Number-typed attrs cannot represent CSS functions — flag-not-drop.
+                if _dest_is_number:
+                    _trace(
+                        "lift_gap_candidate",
+                        prop=css_prop,
+                        value=value,
+                        reason="number_attr_unparseable_css_function",
+                        attr_name=attr_name,
+                    )
+                    continue  # Try next suffix; outer caller flags if none match.
                 resolved: object = value
             elif kind == "colour":
                 resolved = _colour_value_to_style(value)
             elif kind in ("number_px", "number_unitless", "number_px_or_em"):
-                # Container dimension attrs (minHeight, gap, gridTemplateColumns…) are
-                # type "string" in block.json — they accept raw CSS values like "520px".
-                # Use raw passthrough via _preserve_unit rather than _split_value_unit
-                # (which would produce float notation "520.0px").
-                resolved = _preserve_unit(value)
-                if resolved is None:
-                    resolved = value  # Last-resort: keep the raw string.
+                if _dest_is_number:
+                    # Destination is number-typed: split value + unit, store the
+                    # numeric part here; write the family Unit companion attr once.
+                    # Mirrors the AREA router type-aware store (lines 2240-2271).
+                    _num, _unit = _split_value_unit(value)
+                    if _num is None:
+                        # calc()/var()/keyword — unrepresentable in a number attr.
+                        _trace(
+                            "lift_gap_candidate",
+                            prop=css_prop,
+                            value=value,
+                            reason="number_attr_number_unparseable",
+                            attr_name=attr_name,
+                        )
+                        continue  # Try next suffix.
+                    resolved = int(_num) if float(_num).is_integer() else _num
+                    # Derive the family Unit attr: strip trailing Top/Right/Bottom/Left
+                    # from base_attr (not attr_name — bp_suffix must not bleed in).
+                    _family_unit_attr = (
+                        re.sub(r"(Top|Right|Bottom|Left)$", "", base_attr) + "Unit"
+                    )
+                    if _family_unit_attr in container_attr_names and _unit:
+                        _existing_unit = attrs.get(_family_unit_attr)
+                        if _existing_unit is None:
+                            # Set the Unit companion. Use setdefault-equivalent logic:
+                            # only write if not already present (first-win convention).
+                            attrs[_family_unit_attr] = _unit
+                        elif _existing_unit != _unit:
+                            # Mixed units within the same block (e.g. px + rem) —
+                            # flag-not-drop, consistent with the AREA router.
+                            _trace(
+                                "lift_gap_candidate",
+                                prop=css_prop,
+                                value=value,
+                                reason="number_attr_mixed_units",
+                                attr_name=attr_name,
+                                unit_conflict=f"{_existing_unit} vs {_unit}",
+                            )
+                            continue
+                else:
+                    # Destination is string-typed (sgs/container and any other
+                    # block whose dimension attrs are declared as strings).
+                    # Keep existing raw-string passthrough — no regression.
+                    resolved = _preserve_unit(value)
+                    if resolved is None:
+                        resolved = value  # Last-resort: keep the raw string.
             else:
                 # kind == "string" or anything else → raw passthrough.
                 resolved = value
@@ -1902,6 +1967,7 @@ def route_node_css(
         _lifted, _flagged = _lift_wrapper_css_to_container_attrs(
             _base, _bp, _block_attr_names(effective_slug),
             _typography_owned_attrs=_typography_owned_attrs,
+            container_attr_meta=db.block_attrs(effective_slug),
         )
         for _k, _v in _lifted.items():
             attrs.setdefault(_k, _v)
