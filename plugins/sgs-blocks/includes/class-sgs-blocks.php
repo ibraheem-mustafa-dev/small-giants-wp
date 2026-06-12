@@ -61,6 +61,14 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/class-cart-proxy.php';
 		Cart_Proxy::register();
 
+		// Product Search REST (GET /sgs/v1/product-search) — guest typeahead
+		// with zero data leakage. Security chain: global circuit breaker →
+		// per-IP rate-limit → input guards → visibility tax_query (fail-closed)
+		// → result-level re-gate → fixed {id,title,permalink,thumbnail} shape.
+		// FR-30-5 build contract: reports/FR-30-5-search-design.md.
+		require_once SGS_BLOCKS_PATH . 'includes/class-product-search-rest.php';
+		Product_Search_REST::register();
+
 		// Smart Bulk Pricing P3 (Spec 28 FR-28-3/4/6/10/11) — PREVIEW: cascade
 		// site→category→product, WC settings tab, term/product fields, and POST
 		// /sgs/v1/pack-pricing/preview. The fields/settings files self-register
