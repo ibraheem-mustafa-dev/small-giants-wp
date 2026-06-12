@@ -54,6 +54,6 @@ Bean chose the PROPER universal fix (2026-06-12). The carve-out is the *hardcode
 
 ### Remaining (gated / flagged follow-ups)
 - **Full name-free layer-router** (the unification): remove the convert.py attr-name fork (`~4075-4082`), route gap + iconCircleBackground through the GRID per-item layer, unify the 8 blocks to ONE canonical align attr (with deprecated.js + render dual-key already in place + a WP-CLI batch re-save). Needs its OWN design-gate + adversarial-council on the router mechanism (Bean chose this end-state; the dual-key fallback is the safe interim that already delivers the functional universality).
-- **mobile-nav block bug**: `save:()=>null` drops its InnerBlocks drawer (CLAUDE.md gotcha). Fix save → `<InnerBlocks.Content/>`, then remove the mobile-nav override.
-- **team-member**: add to the FR-22-19 scalar-interior composite roster (photo/name/role/bio scalar, social-icons InnerBlocks), then remove the team-member override.
+- ~~**mobile-nav block bug**~~ **DONE 2026-06-13 (D221, commit `e20f0bd5`)** — `save:()=>null` → `<InnerBlocks.Content/>` + vNull deprecation + version 3.1.1 + deprecation-test entry; mobile-nav `has_inner_blocks` override removed.
+- ~~**team-member**~~ **DONE 2026-06-13 (D221, commit `e20f0bd5`)** — root cause was NOT missing plumbing (Bean's correction): `equivalent_block_for(name)` mis-returned `sgs/heading`. Fixed via the new durable `ATTR_CLASSIFICATION_OVERRIDES` layer (`team-member.name role=NULL` → scalar, matching render.php); team-member `has_inner_blocks` override removed. Both override dicts now empty.
 - **IN-F notice-banner content** (P5 leftover): bg fixed; empty content needs the universal-lift mechanism.
