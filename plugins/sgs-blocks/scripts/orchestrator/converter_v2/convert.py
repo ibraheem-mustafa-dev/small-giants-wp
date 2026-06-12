@@ -3308,10 +3308,29 @@ def _atomic_attrs_for(node: Tag, slug: str, allow_text_fallback: bool = True, cs
                 )
             )
             if _inner is not None:
-                _inner_base, _ = _collect_css_decls_for_element(_inner, css_rules)
-                _tb_gap = _strip_important(_inner_base.get("gap", ""))
-                if _tb_gap:
-                    trust_result.setdefault("gap", _tb_gap)
+                # WS-C (2026-06-12): the __inner grid's gap + responsive
+                # grid-template-columns route through the SAME name-free detector
+                # every nested grid uses — not a bespoke hand-read (the "cheat"
+                # Bean flagged). `verticalAlign` is deliberately NOT lifted here:
+                # cross-axis align is owned by the align layer-router (WS-A), and
+                # adding stretch here would change the just-verified badge layout.
+                _inner_classes = _inner.get("class", []) or []
+                _inner_grid = _detect_grid_container_from_css(_inner_classes, css_rules)
+                if _inner_grid:
+                    for _gk in (
+                        "gap", "gapTablet", "gapMobile",
+                        "gridTemplateColumns", "gridTemplateColumnsTablet",
+                        "gridTemplateColumnsMobile", "columns", "columnsTablet",
+                        "columnsMobile",
+                    ):
+                        if _inner_grid.get(_gk) is not None:
+                            trust_result.setdefault(_gk, _inner_grid[_gk])
+                # Backstop: if the detector yielded no gap, keep the raw hand-read.
+                if "gap" not in trust_result:
+                    _inner_base, _ = _collect_css_decls_for_element(_inner, css_rules)
+                    _tb_gap = _strip_important(_inner_base.get("gap", ""))
+                    if _tb_gap:
+                        trust_result.setdefault("gap", _tb_gap)
 
             # iconCircleBackground from .sgs-trust-bar__icon CSS.
             _icon_el = node.find(
