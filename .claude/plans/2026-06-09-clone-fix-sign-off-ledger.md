@@ -10,72 +10,76 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 
 # Sign-off ledger
 
-## Status summary (baseline 2026-06-09)
-- Total tracked: **55 issues** (incl. council-added FP-I + split sub-IDs).
-- **SHIPPED (already fixed, pre-build):** 3 — H-C2 (D192), FP-F (D191), SP-G binding-half (D191).
-- **OPEN:** 44.
-- **VERIFIED (fixed + live-confirmed this programme):** 8 — H-B (hero per-area padding) + 7 Gift rows (GF-B.1/B.3/B.4/D.1/G/H/I), all live-confirmed on canary page 8 from the 2026-06-11 re-clone on the merged tree (container 4-layer block work + per-area converter). The Gift section converts to a universal-nesting `sgs/container` which now carries responsive padding/gap/grid-breakpoint/flex/font/bg faithfully.
+## Status summary (RE-BASELINED 2026-06-12 against live page-8 DOM)
+
+**⚠ The "F1 padding routing" framing was a MISDIAGNOSIS.** Section padding renders correctly at every breakpoint (live-verified). Full re-baseline: [`../reports/2026-06-12-ledger-rebaseline-live-dom.md`](../reports/2026-06-12-ledger-rebaseline-live-dom.md). Captures: `pipeline-state/rebaseline-2026-06-12/live-capture-{1440,768,375}.json`.
+
+- Total tracked: **55 issues**.
+- **SHIPPED (pre-programme):** H-C2 (D192), FP-F (D191), FP-E/FP-H (D204), SP-G binding-half (D191).
+- **VERIFIED (live-confirmed):** prior 8 (H-B + GF-B.1/B.3/B.4/D.1/G/H/I) **+ 12 newly-closed on the 2026-06-12 re-baseline** — H-A, H-A2, FP-A, FP-B, FP-C, FP-G, FP-J, FP-L1, BR-A, IN-A, GF-A, SP-D.2.
+- **STILL-BROKEN (live-evidenced, clustered into 8 fix-patterns P1–P8):** ~22 — none are section-padding. P1 margin-bottom transfer (IN-B/GF-C/SP-B/GF-E), P2 Fraunces font (FP-M/GF-E/F), P3 inner max-width (IN-B/H-C1), P4 border-radius (GF-D.2), P5 render-defaults (BR-C/SP-F/TB-A/B/FP-I/N/O/P/IN-C), P6 text-align (IN-E/GF-B.2), P7 content/icon extraction (IN-D/IN-F; BR-B = media-sideload NOT converter), P8 testimonial typography (SP-D.1/SP-E).
+- **DESIGN/SPEC DECISION (not converter fidelity rows):** FP-D, FP-K, FP-DRAFT, TB-C, TB-C-draft, SP-A, SP-C, SP-G.
 
 ## Ledger
 
 | Issue | Section | Family | Owning workstream | Status |
 |---|---|---|---|---|
-| H-A | Hero | F7 | Stage2-F7 | OPEN |
-| H-A2 | Hero | F4 | Stage2-F4 (cause-needs-trace) | OPEN |
+| H-A | Hero | F7 | Stage2-F7 | **VERIFIED (2026-06-12)** — double-wrap purged; single `<section class="sgs-hero">` |
+| H-A2 | Hero | F4 | Stage2-F4 | **VERIFIED (2026-06-12)** — 1-col @375, 2-col @768/1440 |
 | H-B | Hero | F1 cross-node | Stage1 | **VERIFIED (c6337eac, 2026-06-11)** — GRID-PER-AREA router; live .sgs-hero__content padding 28/56/72 at 375/768/1440 |
-| H-C1 | Hero | F6a + draft-convention | Stage1 + draft | OPEN |
+| H-C1 | Hero | F6a (P3 inner max-width) | Stage1 | OPEN — live `maxWidth:none`, draft subHeadline 420px not extracted/emitted |
 | H-C2 | Hero | F3 inert controls | — | **SHIPPED (D192)** |
-| TB-A | Trust Bar | F1 cross-node + F1b | Stage1 + Stage1b | OPEN |
-| TB-B | Trust Bar | F1b array + F4 | Stage1b + Stage2-F4 | OPEN |
-| TB-C | Trust Bar | NEW icon-drift | NEW (draft + iconFill flag) | OPEN |
-| TB-C-draft | Trust Bar | NEW draft | draft edit | OPEN |
-| BR-A | Brand | F4 | Stage2-F4 | OPEN |
-| BR-B | Brand | F8 (was F1) | Stage2-F8 | OPEN |
-| BR-C | Brand | F3 (was F5) | Stage2-F3 | OPEN |
-| FP-A | Featured-prod | F6a / F3 | Stage1-F6a / Stage2-F3 | OPEN |
-| FP-B | Featured-prod | F1 | Stage1 | OPEN |
-| FP-C | Featured-prod | F1 cross-node | Stage1 | OPEN |
-| FP-D | Featured-prod | F5 | Stage2-F5 | OPEN |
+| TB-A | Trust Bar | F1 cross-node + F1b (P5) | Stage1 + Stage1b | OPEN — gap live 7px≠draft 12px; circle bg cream≠white (converter emits no gap/iconCircleBackground → block defaults) |
+| TB-B | Trust Bar | F1b array + F4 (P5) | Stage1b | OPEN — breakpoint OK (2-col@375→4-col@768+); same gap/circle-bg gap as TB-A |
+| TB-C | Trust Bar | NEW icon-drift | DESIGN/VISUAL | NEEDS-VISUAL — emitted attrs correct (home/check/truck/star, 2026-06-07 resolver); confirm rendered SVG glyph |
+| TB-C-draft | Trust Bar | NEW draft | draft edit | DRAFT-EDIT (not a fidelity row) |
+| BR-A | Brand | F4 | Stage2-F4 | **VERIFIED (2026-06-12)** — 2-col desktop (450/450 @1440) |
+| BR-B | Brand | F8 → MEDIA | media-sideload | OPEN — brand image renders 0×0 = sideload/404, NOT converter CSS (`distinguish-render-artefact-from-converter-emission`); route to media pipeline |
+| BR-C | Brand | F3 (P5) | Stage2-F3 | OPEN — outline button border transparent + text pink≠dark |
+| FP-A | Featured-prod | F6a / F3 | Stage1-F6a / Stage2-F3 | **VERIFIED (2026-06-12)** — heading `textAlign:left` |
+| FP-B | Featured-prod | F1 | Stage1 | **VERIFIED (2026-06-12)** — label 12px/600; section 56/20 |
+| FP-C | Featured-prod | F1 cross-node | Stage1 | **VERIFIED (2026-06-12)** — section 56/20 + gaps 7/10px = draft |
+| FP-D | Featured-prod | F5 | Spec 27 (card-grid) | DESIGN — card-grid block resolution (D204 architecture); confirm under Spec 27 |
 | FP-E | Featured-prod | NEW block-capability | Spec 27 (card-grid product) | **SHIPPED (D204, 2026-06-10)** — card-grid wc-product mode; was stale-OPEN, flipped on 2026-06-11 ledger walk |
 | FP-F | Featured-prod | NEW rest-validation | — | **SHIPPED (D191)** |
-| FP-G | Featured-prod | F3 | Stage2-F3 | OPEN |
+| FP-G | Featured-prod | F3 | Stage2-F3 | **VERIFIED (2026-06-12)** — no black border on card |
 | FP-H | Featured-prod | NEW block-arch-mismatch | Spec 27 | **SHIPPED (D204, 2026-06-10)** — product-card built-in-element rebuild; was stale-OPEN, flipped on 2026-06-11 ledger walk |
-| FP-I | Featured-prod | F3 (council-added) | Stage2-F3 | OPEN |
-| FP-J | Featured-prod | F1 cross-node | Stage1 | OPEN |
-| FP-K | Featured-prod | F3 (showLabel render-side boolean default — NOT F6; corrected per qc-council) | Stage2-F3 | OPEN |
-| FP-L1 | Featured-prod | F3 | Stage2-F3 | OPEN |
-| FP-M | Featured-prod | F2 | Stage2-F2 | OPEN |
-| FP-N | Featured-prod | F3 + F1 | Stage2-F3 + Stage1 | OPEN |
-| FP-O | Featured-prod | F3 | Stage2-F3 | OPEN |
-| FP-P | Featured-prod | F1 | Stage1 | OPEN |
-| FP-DRAFT | Featured-prod | NEW draft-naming | draft edit | OPEN |
-| IN-A | Ingredients | F6a | Stage1-F6a | OPEN |
-| IN-B | Ingredients | F1 cross-node | Stage1 | OPEN |
-| IN-C | Ingredients | F3 (feature-grid auto-flex) | Stage2-F3 | OPEN |
-| IN-D | Ingredients | F8 (emoji icon) | Stage2-F8 | OPEN |
-| IN-E | Ingredients | F6a | Stage1-F6a | OPEN |
-| IN-F | Ingredients | F8 + F6 | Stage2-F8 + Stage1-F6a | OPEN |
-| GF-A | Gift | F6a / F3 | Stage1-F6a / Stage2-F3 | OPEN |
+| FP-I | Featured-prod | F3 / NEW (P5) | Stage2-F3 | OPEN — card image height ≠ 220px (live 468/433px, unequal) |
+| FP-J | Featured-prod | F1 cross-node | Stage1 | **VERIFIED (2026-06-12)** — in-card spacing matches draft |
+| FP-K | Featured-prod | F3 | Spec 27 | DESIGN — pack-size label now intentionally emitted (row pre-dates D204 rebuild) |
+| FP-L1 | Featured-prod | F3 | Stage2-F3 | **VERIFIED (2026-06-12)** — pills grey `rgb(229,231,235)`, not primary-pink |
+| FP-M | Featured-prod | F2 (P2) | Stage2-F2 | OPEN — price text `Inter`≠draft `Fraunces` |
+| FP-N | Featured-prod | F3 (P5) | Stage2-F3 | OPEN — price-row `align:start`≠`baseline` |
+| FP-O | Featured-prod | F3 (P5) | Stage2-F3 | OPEN — product cards unequal height (no grid-stretch) |
+| FP-P | Featured-prod | F3 (P5) | Stage2-F3 | OPEN — CTA not full-width (182px in 833px body) |
+| FP-DRAFT | Featured-prod | NEW draft-naming | draft edit | DRAFT-EDIT (not a fidelity row) |
+| IN-A | Ingredients | F6a | Stage1-F6a | **VERIFIED (2026-06-12)** — label+intro `textAlign:center` |
+| IN-B | Ingredients | F6a/spacing (P1+P3) | Stage1 | OPEN — intro `maxWidth:none`≠540px; `marginBottom:0`≠36px |
+| IN-C | Ingredients | F3 (P5) | Stage2-F3 | OPEN — feature-grid `alignItems:start`≠stretch (unequal card heights) |
+| IN-D | Ingredients | F8 (P7) | Stage2-F8 | OPEN — emoji 🌾🍺🌿🌱 → Lucide SVG (wrong field extracted) |
+| IN-E | Ingredients | F6a (P6) | Stage1-F6a | OPEN — info-box text left≠draft centred (ancestor align not reaching children) |
+| IN-F | Ingredients | F8 (P7) | Stage2-F8 | OPEN — notice-banner EMPTY + info-blue bg≠white |
+| GF-A | Gift | F6a / F3 | Stage1-F6a / Stage2-F3 | **VERIFIED (2026-06-12)** — gift h2 `textAlign:left` = draft |
 | GF-B.1 | Gift | F1 | Stage1 | **VERIFIED (2026-06-11 re-clone)** — live page-8 `.sgs-gift-section` padding = 64px 20px (draft 64/20) |
-| GF-B.2 | Gift | F1 (cross-slot leak) | Stage1 | OPEN |
+| GF-B.2 | Gift | F6a (P6) | Stage1 | OPEN — gift sub `textAlign:center` leak (draft has none) |
 | GF-B.3 | Gift | F4 (min-width:640) | Stage2-F4 | **VERIFIED (2026-06-11 re-clone)** — live page-8 cards grid = 1-col @mobile, 2-col 668/668 @1440 (breakpoint fires) |
 | GF-B.4 | Gift | F2 | Stage2-F2 | **VERIFIED (2026-06-11 re-clone)** — live page-8 `.sgs-gift-section` font-family = Inter, sans-serif (draft Inter) |
-| GF-C | Gift | F1 (spacing-support gate) | Stage1 | OPEN |
+| GF-C | Gift | spacing-support gate (P1) | Stage1 | OPEN — gift sub `marginBottom:0`≠32px |
 | GF-D.1 | Gift | F3 (bg default) | Stage2-F3 | **VERIFIED (2026-06-11 re-clone, parity2)** — gift card bg = rgb(255,255,255) (draft white); sgs/info-box default aligns |
-| GF-D.2 | Gift | F3 (pill style) | Stage2-F3 | OPEN |
-| GF-E | Gift | F6a / F3 | Stage1-F6a / Stage2-F3 | OPEN |
-| GF-F | Gift | F2 | Stage2-F2 | OPEN |
+| GF-D.2 | Gift | F3 (P4) | Stage2-F3 | OPEN — gift pill `borderRadius:0`≠6px (bg colour correct) |
+| GF-E | Gift | spacing+F2 (P1+P2) | Stage1 / Stage2-F2 | OPEN — price `marginBottom:0`≠16px; `Inter`≠`Fraunces` |
+| GF-F | Gift | F2 (P2) | Stage2-F2 | OPEN — price `fontFamily:Inter`≠`Fraunces` (same element as GF-E) |
 | GF-G | Gift | F1 (absorbed gap) | Stage1 | **VERIFIED (2026-06-11 re-clone)** — live page-8 `.sgs-gift-section__cards` gap = 16px, margin-bottom = 20px (draft 16/20) |
 | GF-H | Gift | F3 (multi-button auto-wrap) | Stage2-F3 | **VERIFIED (2026-06-11 re-clone)** — live page-8 send-to-ward bar = flex / wrap / space-between / gap 12px (draft match) |
 | GF-I | Gift | F8 + F5 | Stage2-F8 + F5 | **VERIFIED (2026-06-11 re-clone, parity2)** — gift section content transfer 100% all 3 viewports |
-| SP-A | Social Proof | F4 (min-width:640) | Stage2-F4 | OPEN |
-| SP-B | Social Proof | F1 (spacing-support gate) | Stage1 | OPEN |
-| SP-C | Social Proof | F3 (verticalAlign) | Stage2-F3 | OPEN |
-| SP-D.1 | Social Proof | F1 (NOT F3 — qc-council: `starSize` is already attr-driven; the fix is the converter routing `.sgs-testimonial__stars` `font-size:15px` → the child `sgs/star-rating`'s size attr via the dispatch, a typography→child-block-attr route) | Stage1 (dispatch — typography to child) | OPEN |
-| SP-D.2 | Social Proof | F1 | Stage1 | OPEN |
-| SP-E | Social Proof | F3 + F8 | Stage2-F3 + F8 | OPEN |
-| SP-F | Social Proof | F3 (slide-card token) | Stage2-F3 | OPEN |
-| SP-G | Social Proof | F5 wrong-block (+ binding SHIPPED D191) | Stage2-F5 | OPEN (binding half done) |
+| SP-A | Social Proof | F4 | DESIGN | STALE — testimonial-slider is a flex slider (works); the "1-col mobile / multi-col" grid framing no longer applies |
+| SP-B | Social Proof | spacing-support gate (P1) | Stage1 | OPEN — sub `marginBottom:0`≠32px |
+| SP-C | Social Proof | F3 (verticalAlign) | DESIGN | NEEDS-DESCRIPTION — no concrete expected value; re-describe or drop |
+| SP-D.1 | Social Proof | F3 typography (P8) | Stage2-F3 | OPEN — star `fontSize:18px`≠draft 15px. **Fix-shape SUPERSEDED** (stars now typed `ratingStars` SVG, not child block) — testimonial-block CSS/attr question |
+| SP-D.2 | Social Proof | F1 | Stage1 | **VERIFIED (2026-06-12)** — star colour `rgb(245,208,80)` = accent |
+| SP-E | Social Proof | F3 typography (P8) | Stage2-F3 | OPEN — quote `fontStyle:normal`≠italic, size/colour off; author weight 700≠600 |
+| SP-F | Social Proof | F3 (P5) | Stage2-F3 | OPEN — slide wrapper cream bg + 8px radius (double-card effect; card itself is white/12px) |
+| SP-G | Social Proof | F5 wrong-block | DESIGN | NEEDS-DECISION — testimonial-slider vs grid is a block-TYPE choice (Bean sign-off); binding-half SHIPPED D191 |
 
 ## Workstream load (open issues only)
 - **Stage 1 (F1 cross-node + F6a):** ~18 (the biggest — H-B, FP-B/C/J/N/P, GF-B.1/B.2/C/G, SP-B/D.2, IN-B + F6a: H-C1, FP-A/K, IN-A/E/F, GF-A/E)
