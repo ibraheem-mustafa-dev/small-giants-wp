@@ -46,7 +46,7 @@ Ship a complete WordPress block framework + theme + supporting plugins (forms, b
 ## Non-goals (out of scope this milestone)
 
 - Pipelines P8 (content), P10 (scroll-animation premium), P11 (email campaign), P13 (app delivery) — deferred per `plans/strategy/2026-04-21-non-essential-pipelines-deferred.md`
-- ~~WooCommerce integration (intentionally avoided)~~ **SUPERSEDED 2026-06-03 (D161/D164):** the SGS shop layer IS now in scope — Spec 27 (SGS Product & WooCommerce Layer) wraps WooCommerce (WC = single source of truth, never mirrored). Phase-1 sell-loop SHIPPED 2026-06-04 (U0/U6 backend + U3/U4/U7/U5 pill-swap, live on canary page 589). Remaining Phase-1 hardening: U9/U10/U8/U11/U1/U12 → the single whole ship gate. Spec: `.claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md`.
+- ~~WooCommerce integration (intentionally avoided)~~ **SUPERSEDED 2026-06-03 (D161/D164):** the SGS shop layer IS now in scope — Spec 27 (SGS Product & WooCommerce Layer) wraps WooCommerce (WC = single source of truth, never mirrored). Phase-1 sell-loop SHIPPED 2026-06-04 (U0/U6 backend + U3/U4/U7/U5 pill-swap, live on canary page 589). Remaining Phase-1 hardening: U9/U10/U8/U11/U1/U12 → the single whole ship gate. Spec: `.claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md`. **Spec 30 (WooCommerce page-types — PDP/shop/cart/search/schema/variation-gallery/notify-me) COMPLETE + merged to main 2026-06-12 (D220) — SGS is a sellable shop.**
 - Dynamic content system / AI content generation — Phase 6 (not this milestone)
 
 ## Hard constraints
