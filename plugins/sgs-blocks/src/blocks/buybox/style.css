@@ -482,3 +482,158 @@
 		transition: none;
 	}
 }
+
+/* ── FR-30-10 Step-10a: 2-column PDP layout (gallery + configurator) ────── */
+/*
+ * .sgs-buybox becomes a 2-column CSS Grid on tablet and up.
+ * Gallery column is in source order FIRST so mobile stacks gallery above
+ * configurator without needing an `order` hack.
+ * The outer .sgs-buybox flex-direction:column is OVERRIDDEN here by
+ * `display:grid` — the existing flex gap var is replaced by a grid gap.
+ *
+ * Rationale for NOT using the template columns approach:
+ * The PDP hero band uses wp:columns (55%/45%) already. The buybox now
+ * SPANS the full product area (both old columns) and provides its own grid.
+ * single-product.html is updated to a single column so the buybox owns it.
+ *
+ * Scoped entirely under .sgs-buybox so product-card in listing contexts is
+ * unaffected. All .product-card__* rules below are further scoped under
+ * .sgs-buybox to prevent leaking to product cards in the listing/related section.
+ */
+
+@media (min-width: 768px) {
+	.sgs-buybox {
+		display: grid;
+		grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+		gap: clamp(1.5rem, 4vw, 3rem);
+		align-items: start;
+	}
+}
+
+/* ── Gallery column ────────────────────────────────────────────────────── */
+
+.sgs-buybox__gallery-col {
+	/* Mobile: full width, natural flow. */
+	min-width: 0;
+}
+
+@media (min-width: 1024px) {
+	.sgs-buybox__gallery-col {
+		/* Sticky gallery while the configurator column scrolls. */
+		position: sticky;
+		top: 2rem;
+	}
+}
+
+/* ── Main image (scoped: MUST NOT leak to product cards in listing rows) ── */
+
+.sgs-buybox .product-card__media {
+	aspect-ratio: 1 / 1;
+	overflow: hidden;
+	border-radius: var(--sgs-buybox-img-radius, var(--wp--preset--spacing--10, 8px));
+	border: 1px solid rgba(0, 0, 0, 0.08);
+	background: var(--wp--preset--color--surface-alt, #f9f4ef);
+}
+
+.sgs-buybox .product-card__media .product-card-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	/* Crossfade on variation swap (driven by data-wp-bind--src in the store). */
+	transition: opacity 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-buybox .product-card__media .product-card-img {
+		transition: none;
+	}
+}
+
+.sgs-buybox .product-card__no-image {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	color: rgba(0, 0, 0, 0.3);
+}
+
+/* ── Thumbnail strip (PDP scale — scoped to .sgs-buybox) ──────────────── */
+/*
+ * .product-card__thumbs and .product-card__thumb are shared class names with
+ * the product-card block. ALL rules here are prefixed with .sgs-buybox so
+ * they never leak to cards in the related-products section.
+ *
+ * Contrast: [aria-current="true"] uses border-color token (≥3:1 UI component
+ * rule) AND a scale transform — colour is never the sole indicator (WCAG 1.4.1).
+ */
+
+.sgs-buybox .product-card__thumbs {
+	display: flex;
+	flex-wrap: nowrap;
+	gap: 0.5rem;
+	margin-top: 0.75rem;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	-webkit-overflow-scrolling: touch;
+}
+
+.sgs-buybox .product-card__thumbs[hidden] {
+	display: none;
+}
+
+/* 48 × 48 px minimum (exceeds the 44 px WCAG 2.2 AA touch-target floor). */
+.sgs-buybox .product-card__thumb {
+	flex-shrink: 0;
+	width: 64px;
+	height: 64px;
+	min-width: 48px;
+	min-height: 48px;
+	padding: 0;
+	border: 2px solid transparent;
+	border-radius: var(--sgs-buybox-img-radius, 8px);
+	background: none;
+	cursor: pointer;
+	overflow: hidden;
+	scroll-snap-align: start;
+	/* Colour is not the sole indicator — scale + border both change on selection. */
+	transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.sgs-buybox .product-card__thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+	pointer-events: none;
+}
+
+.sgs-buybox .product-card__thumb:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	outline-offset: 2px;
+}
+
+/* Selected state: accent border (≥3:1 UI component contrast) + subtle scale. */
+.sgs-buybox .product-card__thumb[aria-current="true"] {
+	border-color: var(--wp--preset--color--primary, #0f7e80);
+	transform: scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-buybox .product-card__thumb {
+		transition: none;
+	}
+
+	.sgs-buybox .product-card__thumb[aria-current="true"] {
+		transform: none;
+	}
+}
+
+/* ── Configurator column ───────────────────────────────────────────────── */
+
+.sgs-buybox__config-col {
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: var(--sgs-buybox-gap, 12px);
+}

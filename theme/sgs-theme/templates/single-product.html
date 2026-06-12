@@ -13,23 +13,12 @@
 			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50"}}},"layout":{"type":"constrained"}} -->
 			<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50)">
 
-				<!-- wp:columns {"isStackedOnMobile":true,"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|40","left":"var:preset|spacing|50"}}}} -->
-				<div class="wp-block-columns is-layout-flex is-stacked-on-mobile">
-
-					<!-- wp:column {"width":"55%"} -->
-					<div class="wp-block-column" style="flex-basis:55%">
-						<!-- wp:template-part {"slug":"sgs-pdp-gallery"} /-->
-					</div>
-					<!-- /wp:column -->
-
-					<!-- wp:column {"width":"45%"} -->
-					<div class="wp-block-column" style="flex-basis:45%">
-						<!-- wp:template-part {"slug":"sgs-pdp-buybox"} /-->
-					</div>
-					<!-- /wp:column -->
-
-				</div>
-				<!-- /wp:columns -->
+				<!-- FR-30-10 Step-10a: the buybox now owns the full product area (gallery + configurator
+				     in a 2-column CSS Grid). The old wp:columns (55% gallery | 45% buybox) is replaced
+				     with a single-column constrained group that holds the buybox block, which renders its
+				     own gallery column internally. sgs-pdp-gallery.html is no longer placed here.
+				     single-product.html template version: 2.0.0 (2026-06-12). -->
+				<!-- wp:template-part {"slug":"sgs-pdp-buybox"} /-->
 
 			</div>
 			<!-- /wp:group -->

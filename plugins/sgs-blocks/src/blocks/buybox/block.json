@@ -2,10 +2,10 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "sgs/buybox",
-  "version": "1.1.0",
+  "version": "1.2.1",
   "title": "Buybox",
   "category": "sgs-content",
-  "description": "WooCommerce single-product buybox: wires the SGS option-picker pills to the shipped cart proxy engine. Renders per-axis pickers, live price row, stock status, and an accessible add-to-cart form. Falls back to core WC blocks for simple products or when WooCommerce is absent.",
+  "description": "WooCommerce single-product PDP area: renders the full product hero (gallery column + configurator column) as a responsive 2-column CSS Grid. Gallery column shows the variation-aware image gallery (main image + thumbnail strip, driven by the sgs/product-card Interactivity store). Configurator column renders per-axis option-picker pills, live price row, comparative value ladder, stock status, back-in-stock notify form, and an accessible add-to-cart form. Falls back to core WC blocks for simple products or when WooCommerce is absent.",
   "keywords": [
     "buybox",
     "product",

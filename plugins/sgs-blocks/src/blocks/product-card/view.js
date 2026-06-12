@@ -70,6 +70,26 @@ import { store, getContext, getElement } from '@wordpress/interactivity';
 const cardRefByCtx = new WeakMap();
 
 /**
+ * Parsed buybox gallery data-island, cached per card element.
+ *
+ * The buybox (sgs/buybox) emits ALL its variation galleries as a JSON
+ * data-island (`<script class="sgs-buybox-galleries">`) inside the cardRef
+ * wrapper, because seeding every per-variation gallery into data-wp-context
+ * would overflow the 24 KB context cap (FR-30-10 Step-10a, all-variation fix).
+ * On a pill swap, applyPillSelection reads the selected combo's gallery from
+ * this island when the seeded combo gallery has < 2 images.
+ *
+ * Keyed by cardRef so the JSON is parsed once per element, not per swap.
+ * Value: the parsed island object (comboKey -> [{url,w,h,alt},...]) or null
+ * when no island is present. The product-card block emits NO island (its
+ * galleries all fit the seed), so this stays null there and behaviour is
+ * identical to before this change.
+ *
+ * @type {WeakMap<Element, (Object|null)>}
+ */
+const galleryIslandByRef = new WeakMap();
+
+/**
  * Determine whether a term on a given axis has at least one in-stock combo
  * given the current selections on all OTHER axes (general case, ≥2 axes).
  *
@@ -492,7 +512,40 @@ function applyPillSelection( ctx, detail ) {
 
 		// A4: gallery swap — update strip + main image, reset selected thumb.
 		// gallery is always present in v4+ manifests; guard for pre-v4 cached HTML.
-		const newGallery = combo.gallery || [];
+		let newGallery = combo.gallery || [];
+		// FR-30-10 Step-10a (all-variation fix): if the seeded combo gallery has
+		// < 2 images, try the buybox gallery data-island. The buybox seeds only
+		// the default combo's gallery into context (to stay under the 24 KB cap)
+		// and emits the rest as an on-page JSON island. Pure additive fallback:
+		// product-card cards have no island element, so island stays null and the
+		// path below is skipped — identical behaviour to before.
+		if ( newGallery.length < 2 ) {
+			const islandCardRef = cardRefByCtx.get( ctx );
+			if ( islandCardRef ) {
+				let island = galleryIslandByRef.get( islandCardRef );
+				if ( island === undefined ) {
+					island = null;
+					const islandEl = islandCardRef.querySelector(
+						'script.sgs-buybox-galleries'
+					);
+					if ( islandEl ) {
+						try {
+							island = JSON.parse( islandEl.textContent || '{}' );
+						} catch ( e ) {
+							island = null;
+						}
+					}
+					galleryIslandByRef.set( islandCardRef, island );
+				}
+				if (
+					island &&
+					Array.isArray( island[ comboKey ] ) &&
+					island[ comboKey ].length >= 2
+				) {
+					newGallery = island[ comboKey ];
+				}
+			}
+		}
 		ctx.gallery = newGallery;
 		ctx.thumbsHidden = newGallery.length < 2;
 		ctx.selectedThumb = 0;

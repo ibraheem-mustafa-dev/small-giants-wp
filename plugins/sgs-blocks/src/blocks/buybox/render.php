@@ -44,7 +44,10 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-value-ladder.php';
 
 // Core-blocks fallback markup (FR-30-2): simple products, WC absent, manifest
 // null, and cap-exceeded all fall back to the standard WC price + add-to-cart.
-$buybox_core_fallback = '<!-- wp:woocommerce/product-price {"isDescendentOfSingleProductBlock":true} /--><!-- wp:woocommerce/add-to-cart-with-options {"isDescendentOfSingleProductBlock":true} /-->';
+// FR-30-10 Step-10a: include the classic WC gallery so simple products and fallback
+// cases still show a product image. The buybox column layout is the PDP product area
+// for variable products — simple/WC-absent cases use the core fallback here.
+$buybox_core_fallback = '<!-- wp:woocommerce/product-image-gallery /--><!-- wp:woocommerce/product-price {"isDescendentOfSingleProductBlock":true} /--><!-- wp:woocommerce/add-to-cart-with-options {"isDescendentOfSingleProductBlock":true} /-->';
 
 // usesContext['postId'] resolves to the current queried post on a PDP template.
 $buybox_post_id = isset( $block->context['postId'] ) ? absint( $block->context['postId'] ) : 0;
@@ -211,11 +214,50 @@ $buybox_ladder_hidden = ( count( $buybox_ladder ) < 2 );
 $sold_out_label    = sanitize_text_field( $attributes['soldOutLabel'] ?? __( '(sold out)', 'sgs-blocks' ) );
 $unavailable_label = sanitize_text_field( $attributes['unavailableLabel'] ?? __( '(unavailable)', 'sgs-blocks' ) );
 
+// FR-30-10 Step-10a (all-variation fix): build the gallery DATA-ISLAND from the
+// FULL combos (not the lean seed). Every combo with a >=2-image gallery is keyed
+// by its combo key; the island is emitted as an on-page JSON <script> inside the
+// .sgs-buybox wrapper (NOT subject to the 24 KB context cap), so EVERY variation's
+// gallery is available to the store on swap, not just the few that fit the seed.
+$buybox_gallery_island = array();
+foreach ( $manifest['combos'] as $buybox_island_key => $buybox_island_combo ) {
+	if ( ! empty( $buybox_island_combo['gallery'] )
+		&& is_array( $buybox_island_combo['gallery'] )
+		&& count( $buybox_island_combo['gallery'] ) >= 2 ) {
+		$buybox_gallery_island[ $buybox_island_key ] = $buybox_island_combo['gallery'];
+	}
+}
+
 // Lean seed — 24 KB cap guard (mirrors product-card M-C9).
+// sgs_lean_seed_combos keeps gallery arrays when count >= 2, empties when < 2.
 $seed_combos = sgs_lean_seed_combos( $manifest['combos'] );
 
+// FR-30-10 Step-10a (all-variation fix): shrink the seed so it never trips the
+// 24 KB cap regardless of variation count. Only the DEFAULT combo keeps its
+// gallery (for SSR/first-paint parity with gallery-col.php); every other combo's
+// gallery is emptied in the seed and comes from the data-island on swap instead.
+foreach ( $seed_combos as $buybox_seed_key => &$buybox_seed_combo ) {
+	if ( $buybox_seed_key !== $manifest['defaultKey'] ) {
+		$buybox_seed_combo['gallery'] = array();
+	}
+}
+unset( $buybox_seed_combo );
+
+// FR-30-10 Step-10a: resolve gallery seed values from the default combo.
+// Mirrors product-card context L509-511 exactly.
+$buybox_def_gallery   = isset( $def['gallery'] ) && is_array( $def['gallery'] ) ? $def['gallery'] : array();
+$buybox_img_src       = ! empty( $buybox_def_gallery[0]['url'] )
+	? $buybox_def_gallery[0]['url']
+	: ( '' !== $def['imageUrl'] ? $def['imageUrl'] : '' );
+// WCAG fallback: empty image alt falls back to the product name. applyPillSelection
+// never updates ctx.imageAlt, so this seeded value persists across swaps too.
+$buybox_img_alt       = ! empty( $buybox_def_gallery[0]['alt'] )
+	? $buybox_def_gallery[0]['alt']
+	: ( $product instanceof \WC_Product ? $product->get_name() : '' );
+$buybox_thumbs_hidden = count( $buybox_def_gallery ) < 2;
+
 // Context array — key shape is IDENTICAL to product-card (L445-504).
-// Gallery keys seeded neutral: gallery=[], thumbsHidden=true (no gallery on buybox).
+// Gallery keys now seeded with real values from the default combo (FR-30-10 Step-10a).
 // ctaBehaviour fixed to 'add-to-cart' (buybox always adds, no learn-more mode).
 $context = array(
 	'productId'           => (string) $buybox_post_id,
@@ -237,8 +279,9 @@ $context = array(
 	'hideSale'            => ! $show_sale,
 	'stockText'           => $stock_text,
 	'inStock'             => (bool) $def['inStock'],
-	'imageSrc'            => '' !== $def['imageUrl'] ? $def['imageUrl'] : '',
-	'imageAlt'            => '',
+	// FR-30-10 Step-10a: real gallery seed (was neutral '' / '' / [] / true before).
+	'imageSrc'            => $buybox_img_src,
+	'imageAlt'            => $buybox_img_alt,
 	'cartStatus'          => '',
 	'pending'             => false,
 	'restNonce'           => wp_create_nonce( 'wp_rest' ),
@@ -249,9 +292,9 @@ $context = array(
 	'discountLabel'       => $discount_label,
 	'discountHidden'      => ( '' === $discount_label ),
 	'saleLabel'           => __( 'Sale', 'sgs-blocks' ),
-	// Gallery-neutral values (no gallery on buybox — engine null-guards on cardRef).
-	'gallery'             => array(),
-	'thumbsHidden'        => true,
+	// FR-30-10 Step-10a: real gallery seed (mirrors product-card L509-511).
+	'gallery'             => $buybox_def_gallery,
+	'thumbsHidden'        => $buybox_thumbs_hidden,
 	'selectedThumb'       => 0,
 	// buybox always add-to-cart (no buy-now / learn-more modes at P1).
 	'ctaBehaviour'        => 'add-to-cart',
@@ -313,6 +356,14 @@ ob_start();
 	data-wp-init="callbacks.initPillBridge"
 	<?php echo wp_interactivity_data_wp_context( $context ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 >
+
+	<?php // ── 8-gallery. Gallery column (FR-30-10 Step-10a) — left column, sticky on desktop. ?>
+	<div class="sgs-buybox__gallery-col">
+		<?php require __DIR__ . '/gallery-col.php'; ?>
+	</div>
+
+	<?php // ── 8-config. Configurator column — right column, all interactive content. ?>
+	<div class="sgs-buybox__config-col">
 
 	<?php // ── 8a. Price row FIRST (CRO: price anchor visible before the pickers — uimax e-commerce hierarchy rule). ?>
 	<div class="buybox__price-row" aria-live="polite">
@@ -495,6 +546,27 @@ ob_start();
 		data-wp-text="context.availabilityNote"
 	></p>
 
+	</div><?php // end .sgs-buybox__config-col ?>
+
+	<?php
+	// ── 8-island. Gallery data-island (FR-30-10 Step-10a, all-variation fix).
+	// All >=2-image variation galleries, keyed by combo key, emitted as JSON
+	// inside the .sgs-buybox wrapper so the product-card store (which registers
+	// this wrapper as its cardRef in initPillBridge) can read each variation's
+	// gallery on swap WITHOUT the 24 KB context-cap limit. The HEX flags neutralise
+	// </script>, &, ', and " so the JSON cannot break out of the script element
+	// or inject markup (XSS-safe). wp_json_encode returns false on failure → {}.
+	$buybox_island_json = wp_json_encode(
+		$buybox_gallery_island,
+		JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES
+	);
+	if ( false === $buybox_island_json ) {
+		$buybox_island_json = '{}';
+	}
+	?>
+	<script type="application/json" class="sgs-buybox-galleries"><?php echo $buybox_island_json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode with JSON_HEX_TAG|AMP|APOS|QUOT neutralises all script-breakout / XSS vectors. ?></script>
+
 </div>
 <?php
 echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ob_get_clean() returns the buffered HTML built above with esc_* on all dynamic values.
+
