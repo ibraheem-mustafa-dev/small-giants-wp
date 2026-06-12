@@ -240,7 +240,12 @@ if ( $text_transform ) {
 }
 
 if ( $font_family ) {
-	$style_parts[] = 'font-family:' . esc_attr( $font_family );
+	// CSS value, not an HTML attribute — esc_attr() HTML-encodes quotes
+	// ('Fraunces' → &#039;Fraunces&#039;) which safecss_filter_attr() then
+	// strips, leaving only the fallback. Keep CSS-safe chars only; the real
+	// security gate is safecss_filter_attr() inside get_block_wrapper_attributes().
+	$safe_font_family = preg_replace( '/[^A-Za-z0-9 ,\.\'"\-]/', '', (string) $font_family );
+	$style_parts[]    = 'font-family:' . $safe_font_family;
 }
 
 if ( $text_align ) {
