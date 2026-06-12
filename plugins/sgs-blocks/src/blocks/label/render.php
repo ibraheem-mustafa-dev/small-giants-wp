@@ -96,7 +96,11 @@ if ( $text_align ) {
 	$style_parts[] = 'text-align:' . esc_attr( $text_align );
 }
 if ( '' !== $border_radius && null !== $border_radius ) {
-	$style_parts[] = '--sgs-label-border-radius:' . intval( $border_radius ) . 'px';
+	$br_px         = intval( $border_radius ) . 'px';
+	$style_parts[] = '--sgs-label-border-radius:' . $br_px;
+	// Also emit as a direct property so non-pill variants (which lack the
+	// var(--sgs-label-border-radius) CSS rule) still respect the attr value.
+	$style_parts[] = 'border-radius:' . $br_px;
 }
 // Emit padding custom property for pill styles (derived from block-style className).
 $extra_classes = isset( $attributes['className'] ) ? $attributes['className'] : '';

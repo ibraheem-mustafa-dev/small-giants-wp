@@ -985,6 +985,7 @@ def _lift_wrapper_css_to_container_attrs(
     *,
     _typography_owned_attrs: frozenset[str] | None = None,
     container_attr_meta: dict[str, dict] | None = None,
+    allow_max_width: bool = False,
 ) -> tuple[dict, list[str]]:
     """Lift base + responsive CSS declarations onto sgs/container attribute names.
 
@@ -1008,6 +1009,13 @@ def _lift_wrapper_css_to_container_attrs(
                                 (mirrors the AREA router type-aware store); string-typed
                                 attrs (sgs/container) keep existing raw-string behaviour.
                                 None = legacy path (all attrs treated as string-typed).
+        allow_max_width:        When True, ``max-width`` is lifted onto the block's
+                                ``maxWidth`` attr (number-typed with split Unit companion)
+                                rather than being excluded.  Default False (containers
+                                use the existing widthMode/customWidth path via
+                                _lift_root_supports_to_style / _lift_root_supports_to_style;
+                                text-leaf blocks like sgs/text declare their own maxWidth
+                                attr that widthMode does not cover).
 
     Returns:
         attrs:   {attr_name: value} ready to merge into the block's attrs dict.
@@ -1029,8 +1037,11 @@ def _lift_wrapper_css_to_container_attrs(
         and emitted via _trace("lift_gap_candidate") — never silently dropped.
 
     Excluded properties:
-        max-width and width are handled by path-specific widthMode logic
-        (§FR-22-21 steps 2-3, shipped D159) and must NOT be processed here.
+        max-width and width are excluded by default — containers use path-specific
+        widthMode logic (§FR-22-21 steps 2-3, shipped D159).
+        When allow_max_width=True, max-width is processed as a number+unit prop
+        (text-leaf opt-in: sgs/text.maxWidth + maxWidthUnit).
+        width remains excluded always.
     """
     # Build a lookup: css_prop → list of (suffix, kind) from the DB.
     # One css_prop may have multiple suffixes (e.g. background-color → Background,
@@ -1052,8 +1063,14 @@ def _lift_wrapper_css_to_container_attrs(
         Returns True when at least one attr was successfully set.
         bp_suffix: if set, append it to the attr name (e.g. 'Tablet' → 'gapTablet').
         """
-        if css_prop in _LIFT_EXCLUDED_PROPS:
-            return True  # Silently skip excluded props — not a gap candidate.
+        # P3 opt-in: when allow_max_width=True, max-width is processed as
+        # a number+unit prop onto the block's maxWidth attr (text-leaf path).
+        # width is always excluded. Containers (allow_max_width=False default)
+        # still use the existing widthMode/customWidth path — no regression.
+        if css_prop == "width":
+            return True  # Always excluded — not a gap candidate.
+        if css_prop == "max-width" and not allow_max_width:
+            return True  # Excluded on container paths — not a gap candidate.
 
         value = _strip_important(raw_value).strip()
         if not value:
@@ -1175,7 +1192,10 @@ def _lift_wrapper_css_to_container_attrs(
 
     # ---- Base declarations ----
     for css_prop, value in base_decls.items():
-        if css_prop in _LIFT_EXCLUDED_PROPS:
+        # Skip always-excluded 'width'; skip 'max-width' unless allow_max_width opt-in.
+        if css_prop == "width":
+            continue
+        if css_prop == "max-width" and not allow_max_width:
             continue
         placed = _try_lift_prop(css_prop, value, bp_suffix=None)
         if not placed and css_prop in prop_to_suffixes:
@@ -1195,7 +1215,10 @@ def _lift_wrapper_css_to_container_attrs(
         if not bp_suffix or not bp_decl_map:
             continue
         for css_prop, value in bp_decl_map.items():
-            if css_prop in _LIFT_EXCLUDED_PROPS:
+            # Skip always-excluded 'width'; skip 'max-width' unless allow_max_width opt-in.
+            if css_prop == "width":
+                continue
+            if css_prop == "max-width" and not allow_max_width:
                 continue
             placed = _try_lift_prop(css_prop, value, bp_suffix=bp_suffix)
             if not placed and css_prop in prop_to_suffixes:
@@ -1208,7 +1231,8 @@ def _lift_wrapper_css_to_container_attrs(
                 # as a floor (mobile won't usually be taller). Only fires when the
                 # responsive attr truly does not exist on the block.
                 collapsed = False
-                if css_prop not in _LIFT_EXCLUDED_PROPS:
+                _is_excluded = css_prop == "width" or (css_prop == "max-width" and not allow_max_width)
+                if not _is_excluded:
                     for suffix, _kind in prop_to_suffixes.get(css_prop, []):
                         override_key = (css_prop, suffix)
                         if override_key in _SUFFIX_ATTR_OVERRIDES:
@@ -1847,6 +1871,7 @@ def route_node_css(
     typo_slug: str | None = None,
     lift_root_supports: bool = True,
     lift_wrapper_css: bool = True,
+    allow_max_width: bool = False,
 ) -> None:
     """Single entry point for all three CSS-lift helpers inside walk().
 
@@ -1870,7 +1895,9 @@ def route_node_css(
         True only on the A2 leaf-block path and the atomic-tag-swap path.
         When True, typography CSS is lifted onto ``attrs`` before the
         root-supports + wrapper-css passes (same ordering as the original
-        inline cluster).
+        inline cluster).  Also enables the inherited-typography resolution
+        pass (P6 — _resolve_inherited_typography) for text-align and other
+        inheritable props not declared on the leaf itself.
     typo_slug:
         Slug forwarded to ``_lift_typography_to_block_attrs``.  Must be
         supplied when ``lift_typography=True``.  Ignored otherwise.
@@ -1882,6 +1909,11 @@ def route_node_css(
         When False, the ``_lift_wrapper_css_to_container_attrs`` pass is
         skipped.  Default True.  Set to False on paths (e.g. fold path) that
         only need root-supports without the full DB-driven wrapper-css lift.
+    allow_max_width:
+        When True, forwards to ``_lift_wrapper_css_to_container_attrs`` to
+        allow ``max-width`` to be lifted onto the block's ``maxWidth`` attr
+        (text-leaf opt-in: sgs/text has maxWidth + maxWidthUnit; containers
+        use the widthMode path and must NOT pass this flag).  Default False.
 
     Call-site mapping
     -----------------
@@ -1907,6 +1939,15 @@ def route_node_css(
         route_node_css(wrapper_node, css_rules, container_attrs,
                        effective_slug="sgs/container",
                        lift_wrapper_css=False)
+
+    Text-leaf path (_route_text_leaf — P3 opt-in):
+        route_node_css(node, css_rules, attrs,
+                       effective_slug=target,
+                       lift_typography=True,
+                       typo_slug=target,
+                       lift_root_supports=False,
+                       lift_wrapper_css=True,
+                       allow_max_width=True)
     """
     # ---- GAP 1: typography lift (leaf-block and atomic-tag-swap paths) ----
     # _typo_written: the set of flat attrs that the typography writer actually
@@ -1968,9 +2009,25 @@ def route_node_css(
             _base, _bp, _block_attr_names(effective_slug),
             _typography_owned_attrs=_typography_owned_attrs,
             container_attr_meta=db.block_attrs(effective_slug),
+            allow_max_width=allow_max_width,
         )
         for _k, _v in _lifted.items():
             attrs.setdefault(_k, _v)
+
+    # ---- P6: Inherited typography resolution (text-leaf paths only) ----
+    # After the leaf's own CSS is lifted, resolve any inherited or absent values
+    # (text-align / color / font-family / line-height) via the DOM parent-chain walk.
+    # Mirrors the existing call at walk() line ~3831 for the A2-resolved-slug path;
+    # this wires the same resolution into route_node_css so _route_text_leaf benefits
+    # automatically without duplicating the call in every call-site.
+    # setdefault semantics: the leaf's own CSS already written above always wins.
+    # Scoped to lift_typography=True (leaf paths) to avoid firing on container paths.
+    # R-22-9: universal — every text-capable leaf on every path.
+    # R-22-1: DB-gated inside _resolve_inherited_typography.
+    if lift_typography and typo_slug:
+        _rit_inherited = _resolve_inherited_typography(node, typo_slug, css_rules)
+        for _rit_k, _rit_v in _rit_inherited.items():
+            attrs.setdefault(_rit_k, _rit_v)
 
 
 # ============================================================================
@@ -3591,13 +3648,8 @@ def walk(
                 lift_root_supports=False,
                 lift_wrapper_css=False,
             )
-            # F6a — inherited / absent-value resolution (FR-22-5.1, Commit 3).
-            # After the leaf's own typography is lifted, resolve any inherited
-            # or absent values via the DOM parent-chain walk.  Uses setdefault
-            # so the leaf's own CSS (written above by route_node_css) always wins.
-            _f6a = _resolve_inherited_typography(node, _at_slug, css_rules)
-            for _k, _v in _f6a.items():
-                _at_attrs.setdefault(_k, _v)
+            # F6a — inherited / absent-value resolution now handled INSIDE route_node_css
+            # (P6 fix: fires when lift_typography=True + typo_slug set).
             _trace("walker_branch_taken", branch="atomic_tag_swap",
                    node_tag=node.name, slug=_at_slug, attrs_keys=list(_at_attrs.keys()))
             return emit_wp_block(_at_slug, _at_attrs, [])
@@ -3822,15 +3874,10 @@ def walk(
             typo_slug=slug,
         )
         # F6a — inherited / absent-value resolution (FR-22-5.1, Commit 3).
-        # Fire for leaf blocks only.  After the leaf's own typography is lifted
-        # by route_node_css, resolve any inherited or absent values via the DOM
-        # parent-chain walk.  setdefault semantics: the leaf's own CSS wins.
-        # R-22-9: universal — every leaf block on every resolved-slug path.
-        # R-22-1: DB-gated inside _resolve_inherited_typography.
-        if is_leaf:
-            _f6a_inherited = _resolve_inherited_typography(node, slug, css_rules)
-            for _f6a_k, _f6a_v in _f6a_inherited.items():
-                attrs.setdefault(_f6a_k, _f6a_v)
+        # Moved INTO route_node_css (fires when lift_typography=True + typo_slug set).
+        # No separate call needed here — route_node_css above handles it for leaf
+        # blocks (is_leaf → lift_typography=True) via the P6 inherited-typography
+        # pass at the bottom of route_node_css.  Kept as comment for audit trail.
 
     if slug is not None and _is_container_mirror_block(slug):
         # R1.3 — widthMode fallback for SECTION-kind mirror composites at top level.
@@ -4693,6 +4740,7 @@ def _route_text_leaf(
             typo_slug=target,
             lift_root_supports=False,
             lift_wrapper_css=True,
+            allow_max_width=True,  # P3: text-leaf blocks (sgs/text) have maxWidth + maxWidthUnit
         )
     attrs["className"] = " ".join(sgs_classes)
     _trace("walker_branch_taken", branch="text_leaf",
