@@ -117,3 +117,80 @@
 		transition-duration: 0.01ms;
 	}
 }
+
+/* ==========================================================================
+   Icon display mode  (.sgs-product-search--icon)
+   All rules scoped to icon mode — zero impact on inline instances.
+   ========================================================================== */
+
+/* Disclosure root — positioned so the panel can anchor to it. */
+.sgs-product-search--icon .sgs-product-search__disclosure {
+	position: relative;
+}
+
+/* Remove the native disclosure triangle across all browsers. */
+.sgs-product-search--icon summary.sgs-product-search__icon-toggle {
+	list-style: none;
+	-webkit-appearance: none;
+}
+
+.sgs-product-search--icon summary.sgs-product-search__icon-toggle::-webkit-details-marker {
+	display: none;
+}
+
+/* Icon toggle button — 44×44 px minimum touch target (WCAG 2.2 AA). */
+.sgs-product-search--icon summary.sgs-product-search__icon-toggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0;
+	background: var( --wp--preset--color--primary, #0f7e80 );
+	color: var( --wp--preset--color--base, #fff );
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+/* Visible focus ring — matches the pattern used on __submit and __input. */
+.sgs-product-search--icon summary.sgs-product-search__icon-toggle:focus-visible {
+	outline: 2px solid var( --wp--preset--color--primary, #0f7e80 );
+	outline-offset: 2px;
+}
+
+.sgs-product-search--icon summary.sgs-product-search__icon-toggle:hover {
+	opacity: 0.9;
+}
+
+/* Expanded search panel — absolute popover so it does not push header layout. */
+.sgs-product-search--icon .sgs-product-search__panel {
+	position: absolute;
+	top: 100%;
+	right: 0;
+	z-index: 30;
+	margin-top: 0.25rem;
+	width: min( 320px, 90vw );
+	padding: 0.5rem;
+	background: var( --wp--preset--color--base, #fff );
+	border: 1px solid var( --wp--preset--color--border-subtle, #ccc );
+	border-radius: 8px;
+	box-shadow: 0 6px 24px rgba( 0, 0, 0, 0.12 );
+}
+
+/* Results listbox inside the panel — anchor below the input, full panel width.
+   The existing __results rule is position:absolute top:100% left:0 right:0
+   relative to .sgs-product-search; inside the panel that anchors to the
+   __field-wrap correctly without override. The z-index is raised so the
+   listbox floats above the panel border. */
+.sgs-product-search--icon .sgs-product-search__results {
+	z-index: 31;
+}
+
+/* Reduced motion — icon mode has no transitions, but guard any future ones. */
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-product-search--icon .sgs-product-search__disclosure,
+	.sgs-product-search--icon .sgs-product-search__panel {
+		transition-duration: 0.01ms;
+		animation-duration: 0.01ms;
+	}
+}

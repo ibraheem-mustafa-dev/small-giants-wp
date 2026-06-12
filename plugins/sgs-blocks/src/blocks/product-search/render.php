@@ -16,6 +16,13 @@
  * Security: all output is escaped. REST URL + i18n strings are carried on
  * data-attributes so view.js never touches raw PHP output.
  *
+ * Display modes:
+ *   inline — (default) always-visible search bar, unchanged from v1.0.0.
+ *   icon   — collapsed icon button that expands the search panel via a
+ *             native <details>/<summary> disclosure element. Works with
+ *             JS disabled (native browser behaviour). JS enhances focus
+ *             management only.
+ *
  * @var array     $attributes Block attributes.
  * @var string    $content    InnerBlocks HTML (unused — dynamic block).
  * @var \WP_Block $block      Block instance.
@@ -37,6 +44,11 @@ $button_label = ! empty( $attributes['buttonLabel'] )
 	: __( 'Search', 'sgs-blocks' );
 
 $max_results = isset( $attributes['maxResults'] ) ? max( 1, min( 20, (int) $attributes['maxResults'] ) ) : 10;
+
+// Validate display mode — only 'inline' and 'icon' are accepted.
+$display = in_array( $attributes['displayMode'] ?? 'inline', array( 'inline', 'icon' ), true )
+	? ( $attributes['displayMode'] ?? 'inline' )
+	: 'inline';
 
 // -------------------------------------------------------------------------
 // Unique IDs for ARIA wiring (stable per request — not per page-load).
@@ -62,21 +74,47 @@ $i18n_count_template = esc_attr__( '%d products found', 'sgs-blocks' );
 $rest_url = esc_url( rest_url( 'sgs/v1/product-search' ) );
 
 // -------------------------------------------------------------------------
-// Wrapper attributes — carries the data-sgs-product-search hook + REST data.
+// Wrapper attributes — varies by display mode.
+// Inline: identical to v1.0.0 (class + data attrs only).
+// Icon: adds sgs-product-search--icon class and data-display="icon".
 // -------------------------------------------------------------------------
-$wrapper_attrs = get_block_wrapper_attributes(
-	array(
-		'class'                   => 'sgs-product-search',
-		'data-sgs-product-search' => '',
-		'data-rest'               => $rest_url,
-		'data-no-results'         => $i18n_no_results,
-		'data-busy'               => $i18n_busy,
-		'data-count-template'     => $i18n_count_template,
-		'data-max-results'        => esc_attr( (string) $max_results ),
-	)
-);
+if ( 'icon' === $display ) {
+	$wrapper_attrs = get_block_wrapper_attributes(
+		array(
+			'class'                   => 'sgs-product-search sgs-product-search--icon',
+			'data-sgs-product-search' => '',
+			'data-display'            => 'icon',
+			'data-rest'               => $rest_url,
+			'data-no-results'         => $i18n_no_results,
+			'data-busy'               => $i18n_busy,
+			'data-count-template'     => $i18n_count_template,
+			'data-max-results'        => esc_attr( (string) $max_results ),
+		)
+	);
+} else {
+	// Inline mode — wrapper is byte-for-byte identical to v1.0.0.
+	$wrapper_attrs = get_block_wrapper_attributes(
+		array(
+			'class'                   => 'sgs-product-search',
+			'data-sgs-product-search' => '',
+			'data-rest'               => $rest_url,
+			'data-no-results'         => $i18n_no_results,
+			'data-busy'               => $i18n_busy,
+			'data-count-template'     => $i18n_count_template,
+			'data-max-results'        => esc_attr( (string) $max_results ),
+		)
+	);
+}
+
+// -------------------------------------------------------------------------
+// Inner form markup — built once, used in both display modes.
+//
+// The form is identical whether displayed inline or inside a <details> panel.
+// Escaping matches the original: esc_attr() on IDs/attrs, esc_html_e() /
+// esc_html() on visible text, esc_url() on URLs, esc_attr_e() on aria-label.
+// -------------------------------------------------------------------------
+ob_start();
 ?>
-<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from get_block_wrapper_attributes() and esc_* functions. ?>>
 	<form
 		role="search"
 		method="get"
@@ -154,4 +192,42 @@ $wrapper_attrs = get_block_wrapper_attributes(
 			aria-atomic="true"
 		></p>
 	</form>
+<?php
+$form_html = ob_get_clean();
+
+// -------------------------------------------------------------------------
+// Output — branch by display mode.
+// -------------------------------------------------------------------------
+?>
+<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from get_block_wrapper_attributes() and esc_* functions. ?>>
+<?php if ( 'icon' === $display ) : ?>
+	<details class="sgs-product-search__disclosure">
+		<summary
+			class="sgs-product-search__icon-toggle"
+			aria-label="<?php echo esc_attr( $button_label ); ?>"
+		>
+			<?php /* Search icon — aria-hidden so the aria-label on <summary> is the sole accessible name. */ ?>
+			<svg
+				aria-hidden="true"
+				focusable="false"
+				width="20"
+				height="20"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<circle cx="11" cy="11" r="8"></circle>
+				<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+			</svg>
+		</summary>
+		<div class="sgs-product-search__panel">
+			<?php echo $form_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $form_html is built entirely from esc_* calls above. ?>
+		</div>
+	</details>
+<?php else : ?>
+	<?php echo $form_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $form_html is built entirely from esc_* calls above. ?>
+<?php endif; ?>
 </div>
