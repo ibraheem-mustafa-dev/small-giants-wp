@@ -28,7 +28,7 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 | H-A | Hero | F7 | Stage2-F7 | **VERIFIED (2026-06-12)** — double-wrap purged; single `<section class="sgs-hero">` |
 | H-A2 | Hero | F4 | Stage2-F4 | **VERIFIED (2026-06-12)** — 1-col @375, 2-col @768/1440 |
 | H-B | Hero | F1 cross-node | Stage1 | **VERIFIED (c6337eac, 2026-06-11)** — GRID-PER-AREA router; live .sgs-hero__content padding 28/56/72 at 375/768/1440 |
-| H-C1 | Hero | F6a (P3 inner max-width) | Stage1 | OPEN — live `maxWidth:none`, draft subHeadline 420px not extracted/emitted |
+| H-C1 | Hero | F6a (P3 per-area max-width) | Stage1 | OPEN — live `maxWidth:none`; subHeadline max-width is a hero per-area attr (`subHeadlineMaxWidth`), not sgs/text.maxWidth — needs per-area extraction, not the leaf-lift opt-in (7867372f). Verify draft value (var vs literal) |
 | H-C2 | Hero | F3 inert controls | — | **SHIPPED (D192)** |
 | TB-A | Trust Bar | F1 cross-node + F1b (P5) | Stage1 + Stage1b | OPEN — gap live 7px≠draft 12px; circle bg cream≠white (converter emits no gap/iconCircleBackground → block defaults) |
 | TB-B | Trust Bar | F1b array + F4 (P5) | Stage1b | OPEN — breakpoint OK (2-col@375→4-col@768+); same gap/circle-bg gap as TB-A |
@@ -55,10 +55,10 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 | FP-P | Featured-prod | F3 (P5) | Stage2-F3 | OPEN — CTA not full-width (182px in 833px body) |
 | FP-DRAFT | Featured-prod | NEW draft-naming | draft edit | DRAFT-EDIT (not a fidelity row) |
 | IN-A | Ingredients | F6a | Stage1-F6a | **VERIFIED (2026-06-12)** — label+intro `textAlign:center` |
-| IN-B | Ingredients | F6a/spacing (P1+P3) | Stage1 | **PARTIAL (2026-06-12)** — margin VERIFIED (live intro `margin-bottom:32px`, fix 691298d7); `max-width:540px` STILL OPEN (P3 — max-width is _LIFT_EXCLUDED, routes via widthMode/contentWidth, not the box lifter) |
+| IN-B | Ingredients | P1 done / P3 content-band | Stage1 | **PARTIAL (2026-06-12)** — margin VERIFIED (live intro `margin-bottom:32px` + `margin:0 auto` centring, 691298d7). **max-width CORRECTED:** draft is `max-width:var(--content-width)` (a content-band, NOT literal 540px) — can't lift to a number `maxWidth` attr; needs content-band/contentWidth handling (P3 literal-max-width opt-in shipped 7867372f but doesn't apply to a var). STILL OPEN |
 | IN-C | Ingredients | F3 (P5) | Stage2-F3 | OPEN — feature-grid `alignItems:start`≠stretch (unequal card heights) |
 | IN-D | Ingredients | F8 (P7) | Stage2-F8 | OPEN — emoji 🌾🍺🌿🌱 → Lucide SVG (wrong field extracted) |
-| IN-E | Ingredients | F6a (P6) | Stage1-F6a | OPEN — info-box text left≠draft centred (ancestor align not reaching children) |
+| IN-E | Ingredients | F6a (P6) | Stage1-F6a | OPEN-SUSPECT-MISDIAGNOSIS — P6 inherited-typography now resolves on the leaf path (7867372f), but feature-card text emits `textAlign:left` because it genuinely computes left (card overrides section centre). Re-check the DRAFT's actual computed text-align before treating as a defect |
 | IN-F | Ingredients | F8 (P7) | Stage2-F8 | OPEN — notice-banner EMPTY + info-blue bg≠white |
 | GF-A | Gift | F6a / F3 | Stage1-F6a / Stage2-F3 | **VERIFIED (2026-06-12)** — gift h2 `textAlign:left` = draft |
 | GF-B.1 | Gift | F1 | Stage1 | **VERIFIED (2026-06-11 re-clone)** — live page-8 `.sgs-gift-section` padding = 64px 20px (draft 64/20) |
@@ -67,14 +67,14 @@ legend: "Family: F1 per-slot CSS routing · F1b array per-item · F2 font-family
 | GF-B.4 | Gift | F2 | Stage2-F2 | **VERIFIED (2026-06-11 re-clone)** — live page-8 `.sgs-gift-section` font-family = Inter, sans-serif (draft Inter) |
 | GF-C | Gift | P1 (number+unit split) | Stage1 | **VERIFIED (2026-06-12)** — live gift sub `margin-bottom:32px` (= draft). Fix: 691298d7. Report: `reports/visual-diff/text-2026-06-12.md` |
 | GF-D.1 | Gift | F3 (bg default) | Stage2-F3 | **VERIFIED (2026-06-11 re-clone, parity2)** — gift card bg = rgb(255,255,255) (draft white); sgs/info-box default aligns |
-| GF-D.2 | Gift | F3 (P4) | Stage2-F3 | OPEN — gift pill `borderRadius:0`≠6px (bg colour correct) |
+| GF-D.2 | Gift | F3 (P4) | Stage2-F3 | **VERIFIED (2026-06-12)** — live gift label `border-radius:6px` (= draft). Fix 7867372f (label render.php emitted radius only via a pill-variant CSS var; now inline). Report: `reports/visual-diff/label-2026-06-12.md` |
 | GF-E | Gift | P1+P2 | Stage1 / Stage2-F2 | **VERIFIED (2026-06-12)** — live gift price `margin-bottom:16px` + `font-family:"Fraunces", serif`. Fix 691298d7 |
 | GF-F | Gift | P2 | Stage2-F2 | **VERIFIED (2026-06-12)** — live gift price `font-family:"Fraunces", serif` (same element as GF-E) |
 | GF-G | Gift | F1 (absorbed gap) | Stage1 | **VERIFIED (2026-06-11 re-clone)** — live page-8 `.sgs-gift-section__cards` gap = 16px, margin-bottom = 20px (draft 16/20) |
 | GF-H | Gift | F3 (multi-button auto-wrap) | Stage2-F3 | **VERIFIED (2026-06-11 re-clone)** — live page-8 send-to-ward bar = flex / wrap / space-between / gap 12px (draft match) |
 | GF-I | Gift | F8 + F5 | Stage2-F8 + F5 | **VERIFIED (2026-06-11 re-clone, parity2)** — gift section content transfer 100% all 3 viewports |
 | SP-A | Social Proof | F4 | DESIGN | STALE — testimonial-slider is a flex slider (works); the "1-col mobile / multi-col" grid framing no longer applies |
-| SP-B | Social Proof | spacing-support gate (P1) | Stage1 | OPEN — sub `marginBottom:0`≠32px |
+| SP-B | Social Proof | P1 | Stage1 | **VERIFIED (2026-06-12)** — live social sub `margin-bottom:32px` + centred + text-muted (691298d7) |
 | SP-C | Social Proof | F3 (verticalAlign) | DESIGN | NEEDS-DESCRIPTION — no concrete expected value; re-describe or drop |
 | SP-D.1 | Social Proof | F3 typography (P8) | Stage2-F3 | OPEN — star `fontSize:18px`≠draft 15px. **Fix-shape SUPERSEDED** (stars now typed `ratingStars` SVG, not child block) — testimonial-block CSS/attr question |
 | SP-D.2 | Social Proof | F1 | Stage1 | **VERIFIED (2026-06-12)** — star colour `rgb(245,208,80)` = accent |
