@@ -1,5 +1,5 @@
 {
   "fixture": "sgs-trustpilot-reviews.html",
   "primary_block_emitted": "sgs/container",
-  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/trustpilot-reviews /-->\n<!-- /wp:sgs/container -->"
+  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/trustpilot-reviews {\"style\":{\"color\":{\"background\":\"#ffffff\"}}} /-->\n<!-- /wp:sgs/container -->"
 }

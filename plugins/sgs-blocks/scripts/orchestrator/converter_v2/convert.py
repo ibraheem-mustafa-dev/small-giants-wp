@@ -422,10 +422,19 @@ def _extract_token_or_hex(value: str) -> str | None:
     return None
 
 
+_CSS_NAMED_COLOURS: dict[str, str] = {
+    "white": "#ffffff",
+    "black": "#000000",
+}
+
+
 def _colour_value_to_style(raw: str) -> str | None:
     """Convert a CSS colour expression to WP style.* colour form."""
     if not raw:
         return None
+    v = raw.strip()
+    if v in _CSS_NAMED_COLOURS:
+        return _CSS_NAMED_COLOURS[v]
     token_or_hex = _extract_token_or_hex(raw)
     if token_or_hex is None:
         return None
@@ -2902,7 +2911,7 @@ def _rich_text_content(node: Tag) -> str:
     return "".join(parts).strip()
 
 
-def _atomic_attrs_for(node: Tag, slug: str, allow_text_fallback: bool = True) -> dict:
+def _atomic_attrs_for(node: Tag, slug: str, allow_text_fallback: bool = True, css_rules: dict | None = None) -> dict:
     """Return the attrs dict for a node emitted as `slug` via the atomic-tag swap.
 
     Schema-aligned to current block.json (2026-05-27). Returns {} when no
@@ -2940,12 +2949,28 @@ def _atomic_attrs_for(node: Tag, slug: str, allow_text_fallback: bool = True) ->
     if slug == "core/paragraph" and tag in ("p", "span", "div"):
         return {"content": _rich_text_content(node)}
 
-    # sgs/media — current schema: imageUrl, imageAlt
+    # sgs/media — current schema: imageUrl, imageAlt, maxHeight + maxHeightUnit, objectFit.
+    # render.php reads maxHeight/maxHeightUnit (emits max-height:Npx); imageHeight is a
+    # dead/unrendered DB attr, so the height lift MUST land on maxHeight (string) +
+    # maxHeightUnit (string, default "px") to actually paint a fixed image height.
     if slug == "sgs/media" and tag == "img":
-        return {
+        attrs_m: dict = {
             "imageUrl": _resolve_media_url(node.get("src", "")),
             "imageAlt": node.get("alt", ""),
         }
+        if css_rules:
+            _m_base, _ = _collect_css_decls_for_element(node, css_rules)
+            _h_raw = _strip_important(_m_base.get("height", ""))
+            if _h_raw:
+                import re as _re_m
+                _h_m = _re_m.match(r"^(\d+)(px|rem|em|vh|%)?$", _h_raw.strip())
+                if _h_m:
+                    attrs_m["maxHeight"] = _h_m.group(1)
+                    attrs_m["maxHeightUnit"] = _h_m.group(2) or "px"
+            _fit_raw = _strip_important(_m_base.get("object-fit", ""))
+            if _fit_raw and _fit_raw != "cover":  # "cover" is the default — skip
+                attrs_m["objectFit"] = _fit_raw
+        return attrs_m
 
     # sgs/media (video) — <video>/<iframe> → mediaType=video + videoUrl (D97 video
     # support: external embeds — YouTube/Vimeo/MP4). <video src> or first <source>;
@@ -3058,6 +3083,92 @@ def _atomic_attrs_for(node: Tag, slug: str, allow_text_fallback: bool = True) ->
         # contentImpact: cannot be inferred from draft HTML — leave as default []
         # Authors configure this post-clone in the block editor inspector.
         return result
+
+    # sgs/icon — detect emoji vs lucide-slug content and route to correct attrs.
+    # Draft `.sgs-info-box__icon` contains literal emoji (🌾🍺🌿🌱) or a slug text.
+    # Graceful fallback in _atomic_attrs_for previously dumped this into `linkUrl`.
+    # R-22-9 universal: fires for any node resolved as sgs/icon regardless of client.
+    if slug == "sgs/icon":
+        import re as _re_icon
+        text = node.get_text(strip=True)
+        if text:
+            # Emoji detection: contains any char outside ASCII printable + basic Latin range
+            # (code point > 127 and not a plain letter/digit/hyphen slug character).
+            _is_emoji = any(ord(ch) > 127 for ch in text)
+            _is_slug = bool(_re_icon.match(r"^[a-z0-9-]+$", text))
+            if _is_emoji:
+                return {"iconSource": "emoji", "emojiChar": text}
+            if _is_slug:
+                return {"iconSource": "lucide", "iconName": text}
+        return {}
+
+    # sgs/testimonial — lift quote typography + rating/author CSS attrs.
+    # draft .sgs-testimonial__text carries font-size/color/font-style;
+    # .sgs-testimonial__stars carries font-size; .sgs-testimonial__author carries font-weight.
+    # quoteColour uses the same token-or-hex extraction as other colour attrs.
+    # ratingSize and nameFontWeight are new attrs added by the parallel block-quality agent.
+    # R-22-9 universal (fires for every sgs/testimonial G3 node when css_rules present).
+    if slug == "sgs/testimonial" and css_rules:
+        _t_attrs: dict = {}
+        _block_schema = db.block_attrs("sgs/testimonial")
+
+        # .sgs-testimonial__text → quoteStyle, quoteFontSize, quoteColour
+        _text_el = node.find(class_="sgs-testimonial__text")
+        if _text_el is not None:
+            _t_base, _ = _collect_css_decls_for_element(_text_el, css_rules)
+            _fs = _strip_important(_t_base.get("font-size", ""))
+            if _fs and "quoteFontSize" in _block_schema:
+                _t_attrs.setdefault("quoteFontSize", _fs)
+            _fstyle = _strip_important(_t_base.get("font-style", ""))
+            if _fstyle and "quoteStyle" in _block_schema:
+                _t_attrs.setdefault("quoteStyle", _fstyle)
+            _col = _strip_important(_t_base.get("color", ""))
+            if _col and "quoteColour" in _block_schema:
+                _col_val = _extract_token_or_hex(_col)
+                if _col_val:
+                    _t_attrs.setdefault("quoteColour", _col_val)
+
+        # .sgs-testimonial__stars → ratingSize (new attr, added by parallel agent)
+        _stars_el = node.find(class_="sgs-testimonial__stars")
+        if _stars_el is not None and "ratingSize" in _block_schema:
+            _s_base, _ = _collect_css_decls_for_element(_stars_el, css_rules)
+            _sfs_raw = _strip_important(_s_base.get("font-size", ""))
+            if _sfs_raw:
+                import re as _re_t
+                _sfs_m = _re_t.match(r"^(\d+)px$", _sfs_raw.strip())
+                if _sfs_m:
+                    _t_attrs.setdefault("ratingSize", int(_sfs_m.group(1)))
+
+        # .sgs-testimonial__author → nameFontWeight (new attr, added by parallel agent)
+        _author_el = node.find(class_="sgs-testimonial__author")
+        if _author_el is not None and "nameFontWeight" in _block_schema:
+            _a_base, _ = _collect_css_decls_for_element(_author_el, css_rules)
+            _fw_raw = _strip_important(_a_base.get("font-weight", ""))
+            if _fw_raw:
+                _t_attrs.setdefault("nameFontWeight", _fw_raw)
+
+        return _t_attrs
+
+    # sgs/notice-banner — lift style.color.background from draft element CSS.
+    # The disclaimer element has `background: white` which the standard root-supports
+    # lift already handles IF `white` resolves through _colour_value_to_style.
+    # This handler is a no-op guard: if route_node_css hasn't already written the
+    # background (e.g. when called from the G3-attrs path before route_node_css fires),
+    # emit it here so it is available for merge. R-22-9 universal.
+    if slug == "sgs/notice-banner" and css_rules:
+        _nb_base, _ = _collect_css_decls_for_element(node, css_rules)
+        _nb_bg = _strip_important(
+            _nb_base.get("background-color", _nb_base.get("background", ""))
+        )
+        if _nb_bg:
+            # Only lift single-colour values (not gradients/images).
+            if "url(" not in _nb_bg and "gradient" not in _nb_bg:
+                # Take the first token (handles `background: white solid` edge cases)
+                _nb_tok = _nb_bg.split()[0] if _nb_bg.split() else _nb_bg
+                _nb_col = _colour_value_to_style(_nb_tok)
+                if _nb_col:
+                    return {"style": {"color": {"background": _nb_col}}}
+        return {}
 
     # sgs/trust-bar — FR-24-10 purge / D182 (2026-06-06): TYPED native emission.
     # Replaces the old 'bound' cheat (Rules 1+2 violation). The block now flows
@@ -3186,6 +3297,39 @@ def _atomic_attrs_for(node: Tag, slug: str, allow_text_fallback: bool = True) ->
         }
         if trust_items:
             trust_result["items"] = trust_items
+
+        # Lift layout CSS from .sgs-trust-bar__inner (internal wrapper — not the
+        # BEM root, so its CSS is NOT on `node` itself). Read from css_rules when
+        # available. R-22-9 universal: only executes when the CSS is present.
+        if css_rules:
+            _inner = node.find(
+                lambda t: t.name is not None and any(
+                    "sgs-trust-bar__inner" in c for c in (t.get("class") or [])
+                )
+            )
+            if _inner is not None:
+                _inner_base, _ = _collect_css_decls_for_element(_inner, css_rules)
+                _tb_gap = _strip_important(_inner_base.get("gap", ""))
+                if _tb_gap:
+                    trust_result.setdefault("gap", _tb_gap)
+
+            # iconCircleBackground from .sgs-trust-bar__icon CSS.
+            _icon_el = node.find(
+                lambda t: t.name is not None and any(
+                    "sgs-trust-bar__icon" in c for c in (t.get("class") or [])
+                )
+            )
+            if _icon_el is not None:
+                _icon_base, _ = _collect_css_decls_for_element(_icon_el, css_rules)
+                _bg_raw = _strip_important(
+                    _icon_base.get("background-color", _icon_base.get("background", ""))
+                )
+                if _bg_raw:
+                    # Normalise named colours; pass through tokens/hex.
+                    _bg_val = _CSS_NAMED_COLOURS.get(_bg_raw.split()[0], _bg_raw.split()[0]) if _bg_raw.split() else None
+                    if _bg_val:
+                        trust_result.setdefault("iconCircleBackground", _bg_val)
+
         return trust_result
 
     # core/list — WP core: inner blocks of core/list-item with content
@@ -3853,7 +3997,7 @@ def walk(
         # P-FEATURED-PRODUCT-GRID-LAYOUT.
         is_leaf = db.get_block_composition_role(slug) == "leaf"
         if is_leaf:
-            attrs = {**attrs, **_atomic_attrs_for(node, slug)}
+            attrs = {**attrs, **_atomic_attrs_for(node, slug, css_rules=css_rules)}
     css = collect_css_for_classes(classes, css_rules)  # FR-22-5
     if css and variation_buf is not None:
         variation_buf.append(css)
@@ -3915,6 +4059,27 @@ def walk(
         # GAP-3 is wired only on the NESTED sgs/container path (_emit_wrapper_container)
         # and the FOLD path (_fold_layout_into_attrs).
         # gridTemplateColumns + gap are already lifted by the _lift_wrapper_css_to_container_attrs pass.
+        # grid align — equal-height default. The wrapper-css pass only lifts align-items
+        # when EXPLICITLY declared; a grid with ABSENT align-items has no declaration to
+        # lift, so the CSS grid default (stretch) is lost and render.php falls back to its
+        # container-wrapper "start". _detect_grid_container_from_css encodes the rule
+        # (grid + absent/stretch → "stretch"; explicit → that value). The destination
+        # attr name differs per block: container/hero/cta/trust-bar use `verticalAlign`,
+        # while grid mirror blocks (feature-grid/card-grid/gallery/…) use `alignItems`.
+        # Emit onto whichever the block DECLARES (DB-driven), so every RESOLVED grid
+        # mirror block (not just feature-grid) gets explicit equal-height. setdefault: an
+        # explicit value already lifted by the wrapper-css pass wins. R-22-9 universal
+        # (any grid mirror block); R-22-1 DB-driven (target attr name from block schema).
+        _grid_va = _detect_grid_container_from_css(classes, css_rules)
+        if _grid_va and _grid_va.get("verticalAlign"):
+            _align_names = _block_attr_names(slug)
+            _align_attr = (
+                "verticalAlign" if "verticalAlign" in _align_names
+                else "alignItems" if "alignItems" in _align_names
+                else None
+            )
+            if _align_attr is not None:
+                attrs.setdefault(_align_attr, _grid_va["verticalAlign"])
 
     # Recursively walk children for InnerBlocks — EXCEPT:
     #   (G1) leaf blocks: content lives in the lifted content attr above.
@@ -4000,7 +4165,7 @@ def walk(
         # Blocks with no explicit handler return {} — zero overhead, no garbage attrs.
         # R-22-1 compliant (DB-driven G3 gate, no per-slug literals here).
         # R-22-9 compliant (universal — fires for every G3 content-block).
-        atomic = _atomic_attrs_for(node, slug, allow_text_fallback=False)
+        atomic = _atomic_attrs_for(node, slug, allow_text_fallback=False, css_rules=css_rules)
         # Universal DB-driven multi-scalar lift (FR-22-2 / FR-22-5 D1, 2026-06-11):
         # lift every content/rating attr the block declares (keyed by each attr's
         # derived_selector) from the matching draft element. NO-OP for grid blocks
@@ -4525,6 +4690,19 @@ def _detect_grid_container_from_css(classes: list[str], css_rules: dict) -> dict
         return None
     result: dict = {"layout": display}
 
+    # Grid default: CSS grid align-items defaults to "stretch" (equal-height rows).
+    # sgs/container.verticalAlign defaults to "start" which breaks equal-height cards.
+    # Emit "stretch" explicitly when layout is grid AND align-items is absent or "stretch".
+    # For flex, only emit verticalAlign when align-items is explicitly non-default.
+    _align_items = _strip_important(base_decls.get("align-items", "")).lower()
+    if display == "grid":
+        if not _align_items or _align_items == "stretch":
+            result["verticalAlign"] = "stretch"
+        elif _align_items:
+            result["verticalAlign"] = _align_items
+    elif display == "flex" and _align_items and _align_items not in ("normal", ""):
+        result["verticalAlign"] = _align_items
+
     # --- Responsive grid-template-columns (mobile-first → desktop-first inversion) ---
     responsive = _collect_responsive_grid_from_css(classes, css_rules, base_decls)
     if responsive:
@@ -4594,6 +4772,10 @@ def _merge_grid_attrs_into_container(
     for attr in ("columns", "columnsTablet", "columnsMobile"):
         if grid.get(attr) is not None:
             container_attrs.setdefault(attr, grid[attr])
+    # verticalAlign (grid equal-height default / explicit align-items). setdefault so
+    # an earlier wrapper-CSS lift of an explicit align-items value still wins.
+    if grid.get("verticalAlign"):
+        container_attrs.setdefault("verticalAlign", grid["verticalAlign"])
 
 
 # ----------------------------------------------------------------------------
@@ -4830,6 +5012,17 @@ def _emit_wrapper_container(
     # native block attrs so the block is block-portable (editor grid engine active).
     # setdefault via shared helper; never clobbers className already set above.
     _merge_grid_attrs_into_container(classes, css_rules, container_attrs)
+    # Lift remaining wrapper CSS (align-items → verticalAlign etc.) via the universal
+    # DB-driven lifter. Typography lift skipped (wrappers are structural, not text).
+    # Root supports (padding/margin/border) are also applied here (lift_root_supports=True).
+    # R-22-9 universal: fires on every slug-None wrapper container.
+    route_node_css(
+        node, css_rules, container_attrs,
+        effective_slug="sgs/container",
+        lift_wrapper_css=True,
+        lift_root_supports=True,
+        lift_typography=False,
+    )
     # Thread parent_block so child items can still resolve against the resolved ancestor.
     # (This wrapper is slug-None — it does NOT update parent_block for its children.)
     children_markup = _process_container_children(

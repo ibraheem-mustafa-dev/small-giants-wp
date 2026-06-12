@@ -198,6 +198,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"nameFontWeight": {
+			"type": "string",
+			"default": "700"
+		},
 		"nameColour": {
 			"type": "string",
 			"default": ""
@@ -209,6 +213,10 @@
 		"orgColour": {
 			"type": "string",
 			"default": ""
+		},
+		"ratingSize": {
+			"type": "number",
+			"default": 16
 		},
 		"ratingColour": {
 			"type": "string",

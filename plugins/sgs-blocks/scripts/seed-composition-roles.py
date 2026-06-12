@@ -95,6 +95,12 @@ ENFORCE_HAS_INNER_BLOCKS: dict[str, int] = {
     # which is a data quality gap — the block DOES accept InnerBlocks.
     # Corrected Gate A 2026-06-10 alongside the accordion-item slot row fix.
     "sgs/accordion-item": 1,
+    # sgs/notice-banner: FR-22-6 InnerBlocks block — edit.js uses useInnerBlocksProps
+    # (sgs/text child carries the message), render.php echoes $content (R-22-14: no
+    # server-side fallback). DB had has_inner_blocks=0 (data quality gap), so the
+    # converter emitted a self-closing banner with a dead `text` scalar → empty render
+    # on a clone (row IN-F). Same class as accordion-item. Corrected 2026-06-12.
+    "sgs/notice-banner": 1,
 }
 
 # Fresh INSERTS (2026-06-02, Workstream A — D150). Blocks added after the

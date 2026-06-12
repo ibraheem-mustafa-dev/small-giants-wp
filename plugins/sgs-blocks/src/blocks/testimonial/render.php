@@ -83,9 +83,13 @@ $quote_line_height = trim( (string) ( $attributes['quoteLineHeight'] ?? '' ) );
 $summary_font_size = sgs_font_size_value( $attributes['summaryFontSize'] ?? '' );
 $summary_colour    = sgs_colour_value( $attributes['summaryColour'] ?? '' );
 $name_colour       = sgs_colour_value( $attributes['nameColour'] ?? '' );
+$name_font_weight  = in_array( (string) ( $attributes['nameFontWeight'] ?? '700' ), array( '400', '500', '600', '700', '800', '900' ), true )
+	? (string) $attributes['nameFontWeight']
+	: '700';
 $role_colour       = sgs_colour_value( $attributes['roleColour'] ?? '' );
 $org_colour        = sgs_colour_value( $attributes['orgColour'] ?? '' );
 $rating_colour     = sgs_colour_value( $attributes['ratingColour'] ?? '' );
+$rating_size       = isset( $attributes['ratingSize'] ) && (int) $attributes['ratingSize'] > 0 ? absint( $attributes['ratingSize'] ) : 16;
 
 // ── Hover / animation (shell-level) ─────────────────────────────────────────
 $hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
@@ -196,7 +200,7 @@ if ( $show_rating ) {
 			if ( $half ) {
 				$grad_id = 'sgs-th-' . absint( $i ) . '-' . wp_unique_id();
 				$stars  .= '<span class="sgs-testimonial__star sgs-testimonial__star--half" aria-hidden="true">';
-				$stars  .= '<svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">';
+				$stars  .= '<svg width="' . $rating_size . '" height="' . $rating_size . '" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">';
 				$stars  .= '<defs><linearGradient id="' . esc_attr( $grad_id ) . '">';
 				$stars  .= '<stop offset="50%" stop-color="currentColor" />';
 				$stars  .= '<stop offset="50%" stop-color="currentColor" stop-opacity="0.2" />';
@@ -208,7 +212,7 @@ if ( $show_rating ) {
 				$fill   = $filled ? 'currentColor' : 'none';
 				$stroke = $filled ? '0' : '1.5';
 				$stars .= '<span class="sgs-testimonial__star ' . esc_attr( $cls ) . '" aria-hidden="true">';
-				$stars .= '<svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">';
+				$stars .= '<svg width="' . $rating_size . '" height="' . $rating_size . '" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">';
 				$stars .= '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="' . esc_attr( $fill ) . '" stroke="currentColor" stroke-width="' . esc_attr( $stroke ) . '" stroke-linecap="round" stroke-linejoin="round" />';
 				$stars .= '</svg></span>';
 			}
@@ -281,7 +285,7 @@ if ( '' !== $quote ) {
 $attribution_html = '';
 $attr_parts       = array();
 if ( '' !== $reviewer_name ) {
-	$attr_parts[] = '<cite class="sgs-testimonial__name"' . $sgs_testimonial_style_attr( $name_colour ) . '>' . esc_html( $reviewer_name ) . '</cite>';
+	$attr_parts[] = '<cite class="sgs-testimonial__name"' . $sgs_testimonial_style_attr( $name_colour, '', array( 'font-weight' => $name_font_weight ) ) . '>' . esc_html( $reviewer_name ) . '</cite>';
 }
 if ( '' !== $reviewer_role ) {
 	$attr_parts[] = '<span class="sgs-testimonial__role"' . $sgs_testimonial_style_attr( $role_colour ) . '>' . esc_html( $reviewer_role ) . '</span>';

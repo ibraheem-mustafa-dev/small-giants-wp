@@ -52,8 +52,11 @@
 
 .sgs-testimonial__name {
 	font-style: normal;
-	font-weight: 700;
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
+}
+
+.sgs-testimonial__name:not([style*="font-weight"]) {
+	font-weight: 700;
 }
 
 .sgs-testimonial__name:not([style*="color"]) {

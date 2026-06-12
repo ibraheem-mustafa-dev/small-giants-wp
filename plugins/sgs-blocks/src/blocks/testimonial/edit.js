@@ -158,6 +158,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		roleColour,
 		orgColour,
 		ratingColour,
+		ratingSize,
+		nameFontWeight,
 		hoverEffect,
 		hoverBackgroundColour,
 		hoverTextColour,
@@ -448,6 +450,19 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 							/>
 						) }
+						{ showRating && (
+							<RangeControl
+								label={ __( 'Star size (px)', 'sgs-blocks' ) }
+								value={ ratingSize }
+								onChange={ ( val ) =>
+									setAttributes( { ratingSize: val } )
+								}
+								min={ 10 }
+								max={ 32 }
+								step={ 1 }
+								__nextHasNoMarginBottom
+							/>
+						) }
 					</PanelBody>
 				) }
 
@@ -566,6 +581,21 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) =>
 							setAttributes( { nameColour: val } )
 						}
+					/>
+					<SelectControl
+						label={ __( 'Name font weight', 'sgs-blocks' ) }
+						value={ nameFontWeight }
+						options={ [
+							{ label: __( 'Regular (400)', 'sgs-blocks' ), value: '400' },
+							{ label: __( 'Medium (500)', 'sgs-blocks' ), value: '500' },
+							{ label: __( 'Semi-bold (600)', 'sgs-blocks' ), value: '600' },
+							{ label: __( 'Bold (700)', 'sgs-blocks' ), value: '700' },
+							{ label: __( 'Extra bold (800)', 'sgs-blocks' ), value: '800' },
+						] }
+						onChange={ ( val ) =>
+							setAttributes( { nameFontWeight: val } )
+						}
+						__nextHasNoMarginBottom
 					/>
 					<DesignTokenPicker
 						label={ __( 'Role colour', 'sgs-blocks' ) }

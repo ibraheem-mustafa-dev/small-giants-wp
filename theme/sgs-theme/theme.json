@@ -351,6 +351,20 @@
           "hover-background": "var(--wp--preset--color--primary)",
           "hover-text": "#ffffff",
           "hover-border": "var(--wp--preset--color--primary)"
+        },
+        "outline": {
+          "background": "transparent",
+          "text": "var(--wp--preset--color--text)",
+          "border": "var(--wp--preset--color--border-subtle)",
+          "border-width": "2px",
+          "border-radius": "8px",
+          "padding": "12px 24px 12px 24px",
+          "font-size": "15px",
+          "font-weight": "600",
+          "min-height": "48px",
+          "hover-background": "var(--wp--preset--color--surface-alt)",
+          "hover-text": "var(--wp--preset--color--text)",
+          "hover-border": "var(--wp--preset--color--primary)"
         }
       },
       "borderRadius": {

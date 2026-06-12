@@ -1,5 +1,5 @@
 {
   "fixture": "sgs-trust-bar.html",
   "primary_block_emitted": "sgs/trust-bar",
-  "markup": "<!-- wp:sgs/trust-bar {\"style\":{\"color\":{\"background\":\"#f5c2c8\"},\"spacing\":{\"padding\":{\"top\":\"22px\",\"right\":\"20px\",\"bottom\":\"22px\",\"left\":\"20px\"}}},\"widthMode\":\"full\",\"badgeStyle\":\"icon-circle\",\"columns\":2,\"items\":[{\"label\":\"Handmade in Birmingham\",\"icon\":\"home\"},{\"label\":\"Free UK Delivery Over £35\",\"icon\":\"check\"}]} /-->"
+  "markup": "<!-- wp:sgs/trust-bar {\"style\":{\"color\":{\"background\":\"#f5c2c8\"},\"spacing\":{\"padding\":{\"top\":\"22px\",\"right\":\"20px\",\"bottom\":\"22px\",\"left\":\"20px\"}}},\"widthMode\":\"full\",\"verticalAlign\":\"center\",\"badgeStyle\":\"icon-circle\",\"columns\":2,\"items\":[{\"label\":\"Handmade in Birmingham\",\"icon\":\"home\"},{\"label\":\"Free UK Delivery Over £35\",\"icon\":\"check\"}],\"gap\":\"16px 12px\",\"iconCircleBackground\":\"#ffffff\"} /-->"
 }
