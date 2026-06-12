@@ -128,14 +128,7 @@ def _derive(block_dir: Path) -> int:
 # sgs-update-v2.py (genuine serialisation != routing cases + a cited source-bug
 # follow-up). Keep the two dicts in sync.
 HAS_INNER_BLOCKS_OVERRIDES: dict[str, int] = {
-    # sgs/mobile-nav: InnerBlocks drawer + render walks $block->inner_blocks; the
-    # rule derives 0 only because of a latent `save: () => null` bug. Pin to 1
-    # until the save is fixed to <InnerBlocks.Content/>.
-    "sgs/mobile-nav": 1,
-    # sgs/team-member: mixed scalar+InnerBlocks composite — full recursion at 1
-    # emits dead photo/name children render.php ignores. Pin 0 until it joins the
-    # FR-22-19 scalar-interior roster.
-    "sgs/team-member": 0,
+    # (empty — all current blocks derive correctly; entries added only for genuine serialisation≠routing cases)
 }
 
 

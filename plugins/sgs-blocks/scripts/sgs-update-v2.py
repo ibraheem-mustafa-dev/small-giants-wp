@@ -831,21 +831,28 @@ def _render_consumes_content(block_dir: Path) -> bool:
 # derivation (_populate_has_inner_blocks) AND the gate (check-composition-sync.py)
 # — keep the two in sync.
 HAS_INNER_BLOCKS_OVERRIDES: dict[str, int] = {
-    # sgs/mobile-nav: edit.js exposes an InnerBlocks drawer area AND render.php
-    # walks $block->inner_blocks (the nav items), so a faithful clone MUST recurse
-    # its children. The rule derives 0 only because its `save: () => null` is a
-    # LATENT BUG (drops InnerBlocks on save — CLAUDE.md gotcha). Pin to 1 until the
-    # mobile-nav save is fixed to <InnerBlocks.Content/>; then remove this row.
-    "sgs/mobile-nav": 1,
-    # sgs/team-member: a MIXED scalar+InnerBlocks composite — photo/name/role/bio
-    # render from SCALAR attrs, only social-icons is the $content InnerBlocks slot.
-    # The AND rule derives 1 (render consumes $content for social), but a full
-    # child-recursion at 1 emits dead photo/name children that render.php ignores
-    # (D212-class). Pin to 0 until team-member joins the FR-22-19 scalar-interior
-    # composite roster (scalar extraction for photo/name/role/bio + social as the
-    # only InnerBlocks child); then remove this row. team-member is not a current
-    # clone target, so practical impact is nil.
-    "sgs/team-member": 0,
+    # (empty — all current blocks derive correctly; entries added only for genuine serialisation≠routing cases)
+}
+
+
+# Per-attr classification overrides — applied as Stage 1 sub-step C, AFTER
+# `_run_canonical_assignment` (assign-canonical.py), so they are the final
+# writer and survive every /sgs-update. Mirrors the HAS_INNER_BLOCKS_OVERRIDES
+# pattern: a tiny, cited override layer for genuine source-truth corrections
+# the heuristic mis-derives. Each entry MUST cite the reason + date.
+# Keyed (block_slug, attr_name) -> {column: value, ...} to UPDATE on block_attributes.
+ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
+    # sgs/team-member.name: assign-canonical heuristically maps this block's OWN
+    # scalar `__name` heading element to canonical_slot='heading', whose generic
+    # slot resolves to the block-equivalent sgs/heading. But render.php renders
+    # `name` as a SCALAR element (<h3 class="sgs-team-member__name"> with bespoke
+    # nameColour + Schema.org/Person), and edit.js only allows sgs/social-icons as
+    # a child. So equivalent_block_for() wrongly returns sgs/heading → on a clone
+    # the walker would emit a dead sgs/heading child render.php ignores (the bug
+    # the has_inner_blocks=0 override was masking). Force role=NULL (matching the
+    # sibling `role` attr, which is correctly scalar) so equivalent_block_for
+    # returns None. Root-cause fix; DB-driven, no converter code change. 2026-06-12.
+    ("sgs/team-member", "name"): {"role": None},
 }
 
 
@@ -960,6 +967,58 @@ def _populate_has_inner_blocks(
         "hib_set_0": set_0,
         "hib_missing_row": missing_row,
     }
+
+
+def _apply_attr_classification_overrides(
+    conn: sqlite3.Connection,
+    dry_run: bool = False,
+) -> dict:
+    """Stage 1 sub-step C: apply ATTR_CLASSIFICATION_OVERRIDES.
+
+    Runs AFTER `_run_canonical_assignment` so it is the final writer on
+    block_attributes.role/canonical_slot for the listed (slug, attr) pairs —
+    correcting genuine mis-derivations the assign-canonical heuristic makes.
+    Idempotent; the override re-applies on every /sgs-update.
+
+    Returns counts dict: {"override_applied": int, "override_missing_row": int}.
+    """
+    c = conn.cursor()
+    applied = 0
+    missing = 0
+    for (slug, attr), fields in ATTR_CLASSIFICATION_OVERRIDES.items():
+        if not fields:
+            continue
+        # Column names come from a code-level constant (not user input) — safe to
+        # interpolate; values are bound parameters.
+        set_clause = ", ".join(f"{col} = ?" for col in fields)
+        params = list(fields.values()) + [slug, attr]
+        if dry_run:
+            row = c.execute(
+                "SELECT " + ", ".join(fields.keys())
+                + " FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
+                (slug, attr),
+            ).fetchone()
+            if row is None:
+                missing += 1
+                print(f"Stage 1 (attr-override) [dry-run]: MISSING ROW {slug}.{attr}")
+            else:
+                print(
+                    f"Stage 1 (attr-override) [dry-run]: {slug}.{attr} "
+                    f"current={row} -> {fields}"
+                )
+            continue
+        cur = c.execute(
+            f"UPDATE block_attributes SET {set_clause} "
+            "WHERE block_slug = ? AND attr_name = ?",
+            params,
+        )
+        if cur.rowcount == 0:
+            missing += 1
+        else:
+            applied += cur.rowcount
+    if not dry_run:
+        conn.commit()
+    return {"override_applied": applied, "override_missing_row": missing}
 
 
 def _populate_allowed_blocks(
@@ -1115,6 +1174,14 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         conn.commit()
         _run_canonical_assignment(conn)
 
+        # --- Stage 1 sub-step C: apply per-attr classification overrides ---
+        # (AFTER canonical assignment so overrides are the final writer.)
+        ov_counts = _apply_attr_classification_overrides(conn, dry_run=False)
+        print(
+            f"Stage 1 (attr-overrides): applied={ov_counts['override_applied']}, "
+            f"missing_row={ov_counts['override_missing_row']}."
+        )
+
         # Update schema_metadata.indexed_blocks_count
         count_row = c.execute(
             "SELECT COUNT(*) FROM blocks WHERE source = 'sgs'"
@@ -1171,6 +1238,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
             f"hib_set_1={hib_set_1}, hib_set_0={hib_set_0}, "
             f"hib_missing_row={hib_missing_row} (see drift lines above)."
         )
+        _apply_attr_classification_overrides(conn, dry_run=True)
 
     return {
         "scanned": scanned,

@@ -47,6 +47,9 @@ class BlockDeprecationsTest extends TestCase {
 		// Static save -> InnerBlocks.Content (gained InnerBlocks slot).
 		'cta-section',
 		'info-box',
+		// save() => null restored to <InnerBlocks.Content /> 2026-06-12 (drawer
+		// InnerBlocks were being dropped on save). vNull deprecation added.
+		'mobile-nav',
 		// Static save modified (HTML output diverged from stored shape).
 		// 'certification-bar' removed 2026-05-29 D95 — retired, merged into sgs/trust-bar.
 		'counter',
