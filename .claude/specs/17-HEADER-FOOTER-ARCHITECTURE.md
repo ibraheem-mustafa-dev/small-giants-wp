@@ -1,14 +1,16 @@
 ---
 doc_type: spec
 spec_version: 17
-revision: 2
+revision: 3
 project: small-giants-wp
 title: Header/Footer Architecture (WP 7.0 canonical, per-site)
 date: 2026-05-19
+last_verified: 2026-06-12
 status: active
 status_history:
   - 2026-05-19: council-passed (ready to implement)
   - 2026-05-24: normalised to canonical enum (council-passed → active)
+  - 2026-06-12: search block + 3 header search patterns (D214)
 input_brief: .claude/plans/strategy/2026-05-19-header-footer-research-brief.md
 council_outcome: .claude/reports/council-outcome-spec-17.md
 parent_session: small-giants-wp-2026-05-19-phase-9b-foundation
@@ -187,6 +189,25 @@ Each FR carries: behaviour, acceptance criteria, model recommendation, 4-layer t
 
 ---
 
+### FR-S1-5 — `sgs/product-search` as a header-eligible block (2026-06-12, D214)
+
+**Plain English:** The `sgs/product-search` block (shipped FR-30-5, D214) is available for use inside any header pattern. It exposes two `displayMode` values:
+
+| `displayMode` | Behaviour | Typical header placement |
+|---|---|---|
+| `inline` | Always-visible search bar; renders as an `<input>` combobox with live AJAX suggestions and a no-JS `<form>` fallback | Dedicated row above or below the nav row |
+| `icon` | Compact search icon using a native `<details>` disclosure element; expands the search field on click; no-JS-safe | Inside the nav row alongside logo + navigation |
+
+The block is **not included in the framework-default header** (`parts/header.html` remains search-free — see design principle below). It ships exclusively as part of the three opt-in search header patterns (FR-S3-1 roster).
+
+**Design principle — search is opt-in, not default.** Most SGS sites are service businesses that do not require product search. Including search in the framework default would impose WooCommerce coupling on every site. Instead, search ships as a separate layer: operators who want it select one of the three search header patterns via the Site Editor "Replace" picker. This follows the same pattern-delegation model as the rest of Spec 17 — markup lives in patterns, the operator selects via Replace.
+
+**Operational note — theme version bump required for pattern file registration.** WordPress caches the list of theme pattern files against the theme `Version:` header in `style.css`. When new `.php` pattern files are added to `theme/sgs-theme/patterns/`, the theme version **must** be bumped (e.g. `1.5.1 → 1.5.2`) or WordPress will not pick up the new files. The three search patterns below were registered when theme version was bumped to `1.5.2` (D213/D214).
+
+**Universal-benefit:** Yes — any SGS client with WooCommerce can enable product search by swapping to a search header pattern; no framework code change required.
+
+---
+
 ## §S2 — Style Variation → Template Part Linkage
 
 **Plain English:** Activating a style variation seeds the matching header/footer pattern into `wp_template_part` DB records. Slug comparison + transient lock guard against races. Per-record post meta marks pipeline-generated content for safe re-clones. Resolves gap #1.
@@ -239,6 +260,25 @@ The `settings.custom.sgs.headerPattern` / `footerPattern` fields in variation JS
 **Tests:** Registry query returns ≥3 patterns per area with description + viewportWidth; snapshot rendered output of each pattern on empty + populated stores; Playwright picker shows label + preview thumbnail.
 **Depends on:** §S1, §S4
 **Universal-benefit:** Yes
+
+#### Framework header pattern roster (shipped)
+
+The table below lists all registered framework header patterns. Each is in `theme/sgs-theme/patterns/`, declared with `Block Types: core/template-part/header`, `Categories: sgs-headers`, and `Viewport Width: 1440`. Operators select via the Site Editor "Replace" picker.
+
+| Slug | File | Description | Search block |
+|------|------|-------------|-------------|
+| `sgs/framework-header-default` | `framework-header-default.php` | Minimal colour-neutral header — logo + primary nav + mobile-nav drawer | No |
+| `sgs/framework-header-sticky` | `framework-header-sticky.php` | Sticky variant (behaviour layer via body class) | No |
+| `sgs/framework-header-transparent` | `framework-header-transparent.php` | Transparent-on-load variant (behaviour layer via body class) | No |
+| `sgs/framework-header-shrink` | `framework-header-shrink.php` | Shrink-on-scroll variant (behaviour layer via body class) | No |
+| `sgs/header-centred` | `header-centred.php` | Centred logo + nav layout | No |
+| `sgs/header-minimal` | `header-minimal.php` | Stripped-back single-row header | No |
+| `sgs/header-full` | `header-full.php` | Full-width header with expanded nav area | No |
+| `sgs/header-search-bar-above` | `header-search-bar-above.php` | Search bar in a dedicated row **above** the logo/menu row; `sgs/product-search displayMode=inline`; includes mini-cart. Best for shops where search is a primary action. | `inline` |
+| `sgs/header-search-bar-below` | `header-search-bar-below.php` | Search bar in a dedicated row **below** the logo/menu row; `sgs/product-search displayMode=inline`; includes mini-cart. Keeps the top row clean while keeping search always visible. | `inline` |
+| `sgs/header-search-icon` | `header-search-icon.php` | Compact search icon in the nav row; `sgs/product-search displayMode=icon` (native `<details>` disclosure, no-JS-safe); includes mini-cart. Best when the nav row is tight. | `icon` |
+
+**Footer patterns** (`Block Types: core/template-part/footer`) follow the same registration convention and are separate from the header roster above.
 
 ### FR-S3-2 — Conditional Header rules (with correct hook + ReDoS guard)
 
@@ -704,6 +744,7 @@ Spec ships successfully if all observable on sandybrown canary site:
 | 2026-05-19 | v2 | Council-revised. Applied 10 must-fixes (M1-M10) + 5 recommended additions (A1-A5). Added FR-S5-3 (WP-CLI surface), FR-S7-4 (re-clone idempotence meta). Hardened §7.1 with 5 new requirements. Added 4 new risks (R7-R10). Logo workflow stays in Site Editor (M8). REST pattern endpoint rejected (Council A4). Spec marked council-passed, ready to implement. |
 | 2026-05-19 | v2.1 | Promoted P-S17-A to in-scope. Added §S8 Two-Axis Style Variations (FR-S8-1 + FR-S8-2). Updated §6 header to 8 spec sections. All 8 existing variations split into `styles/colours/` + `styles/typography/` axes; 16 new files created; 8 bundled top-level files annotated. 44/44 tests passing. |
 | 2026-05-21 | v3 | Architecture staging doc decisions applied: §3 architecture paragraph rewritten (variation-triggered seeding removed; explicit CLI / activation hook replaces it). FR-S2-1 and FR-S2-2 retired (variation trigger no longer exists). §S5-2 variation picker retired (Decision 18 deletes the variation system). §S8 two-axis style variations retired (variations deleted entirely). New §Customiser migration section added (Decision 21). Cross-reference to Spec 18 added as canonical Customiser pattern. |
+| 2026-06-12 | r3 | D214 additions: FR-S1-5 (sgs/product-search as a header-eligible block; `inline` + `icon` displayMode; opt-in design principle; theme version bump gotcha). FR-S3-1 extended with a full shipped header pattern roster table (10 patterns); three new search patterns added — `sgs/header-search-bar-above`, `sgs/header-search-bar-below`, `sgs/header-search-icon` (all `Block Types: core/template-part/header`, `Categories: sgs-headers`). Framework-default header confirmed search-free. |
 
 ---
 

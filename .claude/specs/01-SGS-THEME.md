@@ -1,5 +1,13 @@
 # SGS Theme — Custom WordPress Block Theme
 
+<!--
+spec_id: 1
+spec_version: 1.3.0
+last_verified: 2026-06-12
+status_history:
+  - 2026-06-12: v1.3.0 — Added WooCommerce layer (Spec 30: templates, parts, woocommerce.css, sgs-shop-filters.js); search header patterns (3 patterns, sgs-headers category); collapsible-text SEO block note; updated theme version to 1.5.2; corrected WordPress requirements (WooCommerce dependency now present); updated File Structure to match real filesystem (parts, patterns, assets).
+-->
+
 ## Purpose
 
 A lightweight, performance-first WordPress block theme that replaces Astra Pro. Provides the foundation for all Small Giants Studio client sites: global styles via `theme.json`, custom templates, responsive typography, and zero bloat.
@@ -19,7 +27,7 @@ A lightweight, performance-first WordPress block theme that replaces Astra Pro. 
 | Custom fonts | `theme.json` font face declarations (local hosting, no Google Fonts CDN) |
 | White label | Not needed (we own the theme) |
 | Blog layouts | Block patterns for archive/single templates |
-| WooCommerce integration | Not in scope (client uses own sales software) |
+| WooCommerce integration | Full WC block-theme layer via `add_theme_support('woocommerce')` + custom templates/parts (Spec 30, 2026-06-11) |
 
 ---
 
@@ -34,19 +42,23 @@ sgs-theme/
 │
 ├── assets/
 │   ├── css/
-│   │   ├── core-blocks.css      # Style overrides for WordPress core blocks
-│   │   └── utilities.css        # Utility classes (.sr-only, .container, etc.)
+│   │   ├── core-blocks.css          # Style overrides for WordPress core blocks
+│   │   ├── core-blocks-critical.css # Critical-path subset inlined above the fold
+│   │   ├── dark-mode.css            # Dark mode colour overrides
+│   │   ├── header-modes.css         # Header mode variants (sticky, transparent, shrink)
+│   │   ├── mega-menu-panels.css     # Mega-menu panel layout styles
+│   │   ├── utilities.css            # Utility classes (.sr-only, .container, etc.)
+│   │   └── woocommerce.css          # WooCommerce block theme styles — shop, PDP, cart, mini-cart (Spec 30, D213)
 │   ├── js/
-│   │   ├── back-to-top.js          # Back-to-top floating button
-│   │   ├── customiser-preview.js   # Live preview for Customiser controls
-│   │   ├── dark-mode.js            # Dark mode toggle + system preference
-│   │   ├── header-behaviour.js     # Header scroll behaviour (sticky, shrink, smart-reveal)
-│   │   ├── header-editor-panel.js  # Editor panel for per-page header overrides
-│   │   ├── nav-accessibility.js    # Keyboard nav + ARIA management for menus
-│   │   ├── reading-progress.js     # Reading progress bar
-│   │   └── smooth-scroll.js        # Smooth anchor scrolling
-│   ├── fonts/                   # Self-hosted font files (WOFF2)
-│   └── svg/                     # Reusable SVG assets (icons, decorative elements)
+│   │   ├── dark-mode.js             # Dark mode toggle + system preference
+│   │   ├── header-behaviour.js      # Header scroll behaviour (sticky, shrink, smart-reveal)
+│   │   ├── header-editor-panel.js   # Editor panel for per-page header overrides
+│   │   ├── nav-accessibility.js     # Keyboard nav + ARIA management for menus
+│   │   ├── sgs-shop-filters.js      # Accessible mobile filter drawer for shop archive (Spec 30, D213)
+│   │   ├── smooth-scroll.js         # Smooth anchor scrolling
+│   │   └── viewport-width.js        # Viewport-width helper for responsive JS
+│   ├── fonts/                       # Self-hosted font files (WOFF2)
+│   └── decorative-foods/            # Decorative food PNG assets (client-specific, Indus Foods)
 │
 ├── templates/
 │   ├── index.html               # Default fallback template
@@ -55,10 +67,15 @@ sgs-theme/
 │   ├── single.html              # Single post template
 │   ├── archive.html             # Archive/blog listing template
 │   ├── 404.html                 # Not found template
-│   └── search.html              # Search results template
+│   ├── search.html              # Search results template (general + WooCommerce product search)
+│   ├── archive-product.html     # WooCommerce shop archive — product grid + filter/search toolbar (Spec 30, D213)
+│   └── single-product.html      # WooCommerce PDP — composes sgs-pdp-* template parts (Spec 30, D210)
 │
 ├── parts/
-│   ├── header.html                 # Consolidated site header (logo, nav, CTA, mode controls)
+│   ├── header.html                 # Consolidated site header (logo, nav, CTA, mode controls) — search-free default
+│   ├── header-shrink.html          # Header variant: shrink-on-scroll
+│   ├── header-sticky.html          # Header variant: always sticky
+│   ├── header-transparent.html     # Header variant: transparent with scroll reveal
 │   ├── footer.html                 # Site footer (columns, copyright, socials)
 │   ├── footer-minimal.html         # Minimal footer (for landing pages)
 │   ├── sidebar.html                # Optional sidebar template part
@@ -68,9 +85,15 @@ sgs-theme/
 │   ├── mega-menu-products.html     # Mega-menu panel: Products
 │   ├── mega-menu-resources.html    # Mega-menu panel: Resources
 │   ├── mega-menu-sectors.html      # Mega-menu panel: Sectors
-│   └── mega-menu-services.html     # Mega-menu panel: Services
+│   ├── mega-menu-services.html     # Mega-menu panel: Services
+│   ├── sgs-archive-toolbar.html    # Shop archive: product-search bar + filter-search chips (Spec 30, D214)
+│   ├── sgs-pdp-buybox.html         # PDP: option pickers + add-to-cart (sgs/buybox, Spec 30, D210)
+│   ├── sgs-pdp-content.html        # PDP: description, tabs (ingredients/allergens/nutritional), collapsible SEO copy
+│   └── sgs-pdp-gallery.html        # PDP: product gallery — core gallery fallback + variation-image swap (Spec 30, D210)
 │
-├── patterns/                       # 29 patterns total — categorised below
+├── patterns/                       # See §Patterns for category breakdown — count is DB/fs authoritative
+│   │
+│   │   # Content patterns
 │   ├── about-image-left.php
 │   ├── about-mission.php
 │   ├── about-stats.php
@@ -80,15 +103,8 @@ sgs-theme/
 │   ├── cta-banner.php
 │   ├── cta-centred.php
 │   ├── faq-section.php
-│   ├── footer-centred.php
-│   ├── footer-columns.php
-│   ├── footer-compact.php
-│   ├── footer-informational.php
-│   ├── footer-minimal.php
-│   ├── footer-simple.php
-│   ├── header-centred.php
-│   ├── header-full.php
-│   ├── header-minimal.php
+│   ├── heading-subheading-cluster.php
+│   ├── label-heading-subheading-cluster.php
 │   ├── hero-centred.php
 │   ├── hero-split.php
 │   ├── hero-video-background.php
@@ -100,7 +116,38 @@ sgs-theme/
 │   ├── team-section.php
 │   ├── testimonials-cards.php
 │   ├── testimonials-highlight.php
-│   └── testimonials-large.php
+│   ├── testimonials-large.php
+│   │
+│   │   # Footer patterns
+│   ├── footer-centred.php
+│   ├── footer-columns.php
+│   ├── footer-compact.php
+│   ├── footer-indus-foods.php     # Client-specific footer (Indus Foods)
+│   ├── footer-informational.php
+│   ├── footer-minimal.php
+│   ├── footer-simple.php
+│   ├── framework-footer-default.php
+│   │
+│   │   # Header patterns (sgs-headers category)
+│   ├── header-centred.php
+│   ├── header-full.php
+│   ├── header-minimal.php
+│   ├── header-search-bar-above.php    # Search bar row ABOVE logo/nav; Block Types: core/template-part/header (Spec 30, D214)
+│   ├── header-search-bar-below.php    # Search bar row BELOW logo/nav; Block Types: core/template-part/header (Spec 30, D214)
+│   ├── header-search-icon.php         # Compact icon-only search trigger in nav; Block Types: core/template-part/header (Spec 30, D214)
+│   ├── framework-header-default.php
+│   ├── framework-header-shrink.php
+│   ├── framework-header-sticky.php
+│   ├── framework-header-transparent.php
+│   │
+│   │   # Mega-menu layout patterns (mega-menu-layouts category — shipped 2026-06-02)
+│   ├── mega-menu-card-grid.php
+│   ├── mega-menu-featured-promo.php
+│   ├── mega-menu-logo-wall.php
+│   ├── mega-menu-simple-links.php
+│   ├── mega-menu-split-info-cta.php
+│   ├── mega-menu-split-story-links.php
+│   └── mega-menu-two-column.php
 │
 └── styles/                         # EMPTIED (RETIRED 2026-05-21 — see §Per-site theme.json model)
     #                               # Per-client variation files deleted by Decision 18.
@@ -319,6 +366,83 @@ Standard footer with:
 
 ---
 
+## WooCommerce Layer (Spec 30 — shipped 2026-06-11/12)
+
+The theme now provides a full WC block-theme layer declared via `add_theme_support('woocommerce')` in `functions.php`. This was originally listed as "not in scope" and is now a first-class framework feature.
+
+### WC theme support declarations (`functions.php`)
+
+```php
+add_theme_support( 'woocommerce' );
+add_theme_support( 'wc-product-gallery-zoom' );
+add_theme_support( 'wc-product-gallery-lightbox' );
+add_theme_support( 'wc-product-gallery-slider' );
+```
+
+### WC template override priority
+
+`archive-product.html` and `single-product.html` are registered as theme templates. WordPress's `get_block_template()` returns the theme source, so the theme overrides WC's injected defaults (verified live — D210).
+
+**Note:** WC 10 ships with `woocommerce_coming_soon=yes` by default, which masks all store pages behind a Coming Soon template. This must be set to `no` at go-live (tracked in FR-30-13 go-live checklist).
+
+### WC template parts
+
+| Part | Purpose |
+|------|---------|
+| `sgs-archive-toolbar.html` | Shop archive: `sgs/product-search` + `sgs/filter-search` chips toolbar |
+| `sgs-pdp-buybox.html` | PDP option pickers → cart bridge (`sgs/buybox`); variation manifest; add-to-cart |
+| `sgs-pdp-content.html` | PDP description, `sgs/tabs` (Description/Ingredients/Nutritional/Allergens), collapsible SEO copy (`sgs/collapsible-text`) |
+| `sgs-pdp-gallery.html` | PDP product gallery — core `woocommerce/product-image-gallery` fallback; per-variation image swap at Phase 2 |
+
+### WC assets
+
+| Asset | Purpose |
+|-------|---------|
+| `assets/css/woocommerce.css` | WC block theme styles: shop grid equal-height cards, `.sgs-shop-layout`-scoped baseline CTA alignment (`margin-top: auto`), mini-cart drawer width custom-prop, cart/checkout brand pass, PDP band layout |
+| `assets/js/sgs-shop-filters.js` | Accessible mobile filter drawer — toggle with `aria-expanded`, focus-trap, primary-button token for the "Filter" trigger |
+
+### `sgs/collapsible-text` block (D213)
+
+Operator SEO copy with accessible read-more. Full text is always server-side-rendered (CSS `line-clamp`, not `display:none`) so search crawlers see the full copy. Empty content renders nothing. Labels (`data-read-more` / `data-read-less`) are i18n'd via server-emitted data attributes. Lives in `plugins/sgs-blocks` but is documented here because its primary use site is `sgs-pdp-content.html`.
+
+### Compatibility check
+
+`class-wc-compat-check.php` performs a lazy, version-keyed runtime self-check on `woocommerce_loaded`. On a version mismatch it shows a dismissible admin notice. The ceiling uses integer arithmetic to avoid float-comparison errors (e.g. WC 10.10 was previously mis-passed under a 10.8 ceiling — fixed D210). The `WC-DEPENDENCY-MANIFEST.md` records the relied-upon core WC blocks and the gateway record per site.
+
+---
+
+## Patterns
+
+### Header patterns (category: `sgs-headers`)
+
+Three operator-selectable header alternatives that embed the `sgs/product-search` block. All are registered with `Block Types: core/template-part/header` so they appear in the Site Editor header-part selector.
+
+| Pattern | Search placement | Mini-cart |
+|---------|-----------------|-----------|
+| `header-search-bar-above.php` | Full search bar in its own row **above** the logo/nav row | Yes |
+| `header-search-bar-below.php` | Full search bar in its own row **below** the logo/nav row | Yes |
+| `header-search-icon.php` | Compact icon-only trigger in the nav bar | No (icon only) |
+
+The default `parts/header.html` remains **search-free**. Search patterns are opt-in at go-live.
+
+### Mega-menu layout patterns (category: `mega-menu-layouts` — shipped 2026-06-02)
+
+Seven generic mega-menu panel layout patterns registered under the `mega-menu-layouts` category. A create-panel inspector shortcut was added at the same time. The seven patterns are:
+
+- `mega-menu-card-grid.php`
+- `mega-menu-featured-promo.php`
+- `mega-menu-logo-wall.php`
+- `mega-menu-simple-links.php`
+- `mega-menu-split-info-cta.php`
+- `mega-menu-split-story-links.php`
+- `mega-menu-two-column.php`
+
+### Typography helper (`plugins/sgs-blocks/includes/helpers-typography.php`)
+
+The `sgs_typography_css_rule()` PHP helper (auto-loaded via `render-helpers.php`) and the shared `TypographyControls` JS component (`src/components/TypographyControls.js`) define the canonical SGS typography control pattern: responsive RangeControl + unit dropdown for font size; weight/style dropdowns; line-height. Both are block-plugin concerns, but the token contract (font-size slugs, weight values) is defined by `theme.json` tokens documented in §Design Tokens above. Any new block **must** use `TypographyControls` rather than freeform controls (documented in `plugins/sgs-blocks/CLAUDE.md`, D209).
+
+---
+
 ## Performance Strategy
 
 ### CSS
@@ -362,7 +486,7 @@ Standard footer with:
 
 - WordPress 6.7+ (block theme features, theme.json v3)
 - PHP 8.0+
-- No WooCommerce dependency
+- WooCommerce 9.9+ — **required** for shop/PDP templates (Spec 30, D210). The theme detects the WC version via `class-wc-compat-check.php` and shows a dismissible admin notice if the requirement is unmet. The theme still activates cleanly on non-WC installs — WC template parts simply go unused.
 - No page builder plugin dependency
 
 **theme.json v3 note:** Version 3 was introduced in WordPress 6.6 (August 2024) and should be supported on WP 6.9.1. Verify on the development site before committing. If the dev site runs an older WP version, use v2 instead (the schema is largely compatible, but v3 adds `defaultFontSizes` control and other refinements).

@@ -1,21 +1,26 @@
 ---
 doc_type: spec
 spec_id: 2
-spec_version: "1.2"
+spec_version: "1.3"
 project: small-giants-wp
 title: SGS Blocks — Custom Gutenberg Block Library
 status: shipped
-last_verified: 2026-06-07
+last_verified: 2026-06-12
 authors: Bean + Claude
 session_date: 2026-02-01
 status_history:
   - 2026-02-01: initial draft
   - 2026-05-22: Phase 6 markup-examples + apiVersion 3 audit shipped
   - 2026-05-24: frontmatter added per Phase 13 spec template
+  - 2026-06-12: blocks-layer + TypographyControls standard + product-search/filter-search/collapsible-text sync
 ---
 
 # SGS Blocks — Custom Gutenberg Block Library
 
+> **2026-06-12 update (D213/D214 — Spec 30 P2 shop layer).** Three new SGS blocks shipped: `sgs/product-search` (FR-30-5 combobox search + hardened REST endpoint + `inline`/`icon` display modes + no-JS GET fallback, v1.1.0), `sgs/filter-search` (FR-30-6 type-to-find narrowing for ≥16 attribute terms, Baymard threshold, `woocommerce/product-filter-attribute` ancestor), `sgs/collapsible-text` (D213 — operator SEO copy, accessible CSS line-clamp read-more, always SSR'd, i18n toggle labels). Two pre-existing blocks now documented below: `sgs/buybox` (FR-30-7/D210 — PDP configurator wrapper composing `sgs/option-picker` pickers + cart proxy) and `sgs/content-collection` (FR-24-4/D210 — query-driven product grid with forwarded `showPickers`/`ctaBehaviour`/`showLadder`). **Blocks registered clean via `/sgs-update` (0 new = already registered from their feature commits).** `02-SGS-BLOCKS-REFERENCE.md` unchanged.
+>
+> **2026-06-11 update (D209 — R-22-13 block-quality programme + TypographyControls).** Shared `TypographyControls` component + `sgs_typography_css_rule()` helper are now MANDATORY for all per-element typography (see Block Customisation Standard below). `announcement-bar` RETIRED → `notice-banner` with `displayMode=announcement`. `sgs/testimonial` rebuilt as a 7-variant typed-attr block (D206). `/sgs-update` reconciled the block roster post-retirement (live count is DB-authoritative — query `/sgs-db` or see `02-SGS-BLOCKS-REFERENCE.md`; never hard-code it here).
+>
 > **Session B 2026-05-22 update — Phase 6 (commit `d307c8b0`).** Markup examples seeded for 69 SGS blocks (56 auto-generated from `block.json` defaults via `plugins/sgs-blocks/scripts/generate-markup-examples.py`; 13 hand-authored composite examples for sgs/hero, sgs/card-grid, sgs/tabs, sgs/testimonial, sgs/accordion, sgs/gallery, sgs/post-grid, sgs/form, sgs/form-row, sgs/pricing-table, sgs/countdown-timer, sgs/team-member, sgs/multi-column). 4 DB rows reference blocks with no source `block.json` file (parked as P-6-MISSING-BLOCK-JSON). Block-supports audit found ZERO gaps — the original 2:1 under-documentation prediction was wrong; 360 active rows + 44 flagged `is_stale=true` (retired/planned blocks). 87 content-bearing attributes across 40 blocks now carry `"role": "content"`. All 69 source blocks already at `apiVersion: 3` — no bulk bump needed. `wp_set_script_module_translations()` wired in `class-sgs-blocks.php` registration loop for 25 blocks using `viewScriptModule`. Lucide icon delivery untouched (sibling REST file `class-sgs-lucide-icons-rest.php` shipped defensively with double guards; existing `sgs_get_lucide_icon()` shim still canonical). Device-visibility coexistence rule documented in `includes/device-visibility.php`. Sandybrown upgraded to **WP 7.0** mid-session — `wp_set_script_module_translations` + `WP_REST_Icons_Controller` + `wp_get_connector` now natively available.
 >
 > **Last block-architecture update: 2026-05-22.** Phase 1.5 of the architecture programme added inserter-discoverable variations + block styles + default-style declarations to 12 composite blocks (hero, card-grid, cta-section, testimonial, team-member, pricing-table, accordion, tabs, gallery, post-grid, form, info-box). 40 variations + 30 styles total. Registered via PHP sibling files under `plugins/sgs-blocks/includes/variations/sgs-<block>-variations.php` auto-discovered by `class-sgs-block-variations.php` loader. Variations register via `add_filter('get_block_type_variations', ...)` (WP 6.5+ canonical PHP path); block styles via `register_block_style()`. Each variation declares default style via `className` attribute. See "Block Variation + Style Registration" section below. Also (2026-05-22): `core/button` double-`is_default` bug fixed in `theme/sgs-theme/functions.php` — `sgs-accent` no longer claims default, leaving WP's native `fill` as the single default.
@@ -46,9 +51,9 @@ sgs-blocks/
 │   │   ├── hero/                 # Hero section (multiple variants) — refactor to InnerBlocks composition queued (spec 11)
 │   │   ├── info-box/             # Info/feature card
 │   │   ├── counter/              # Animated statistic counter
-│   │   ├── trust-bar/ — ACTIVE (rebuilt from trust-badges, renamed D123; dual-mode FR-24-10; absorbed certification-bar D95). NB the ORIGINAL composite trust-bar was retired D72 — slug reused. See §5.
-│   │   ├── card-grid/            # Flexible image+content grid (overlay/card variants)
-│   │   ├── testimonial/          # Single testimonial card
+│   │   ├── trust-bar/ — ACTIVE (rebuilt from trust-badges, renamed D123; typed mode + icon resolver D214; absorbed certification-bar D95). NB the ORIGINAL composite trust-bar was retired D72 — slug reused. See §5.
+│   │   ├── card-grid/            # Flexible image+content grid (overlay/card variants; wc-product mode D204)
+│   │   ├── testimonial/          # Single testimonial — 7-variant typed-attr rebuild (D206). See §7.
 │   │   ├── testimonial-slider/   # Multi-testimonial carousel
 │   │   ├── cta-section/          # Call-to-action section
 │   │   ├── icon-list/            # Checkmark/icon list
@@ -57,18 +62,24 @@ sgs-blocks/
 │   │   ├── tabs/                 # Tabbed content panels
 │   │   ├── brand-strip/          # Logo/brand carousel strip
 │   │   # certification-bar/ — RETIRED 2026-05-29 D95, merged into trust-bar (badgeStyle variants)
-│   │   ├── notice-banner/        # Inline informational banner (MOV, delivery terms, promos)
-│   │   ├── announcement-bar/     # Top-of-page announcement banner (countdown, scheduling, rotation)
+│   │   ├── notice-banner/        # Inline banner — now supports displayMode=announcement (D209, absorbs retired announcement-bar)
+│   │   # announcement-bar/ — RETIRED D209 (2026-06-11). Use notice-banner displayMode=announcement instead.
 │   │   ├── whatsapp-cta/         # WhatsApp floating button + contextual CTA
 │   │   ├── pricing-table/        # Service/pricing comparison table
 │   │   ├── modal/                # Lightbox/modal overlay
 │   │   ├── google-reviews/       # Google Business Profile reviews display
 │   │   ├── mega-menu/            # Block-based mega menu for Navigation block
 │   │   ├── decorative-image/     # Absolute-positioned decorative floating images
-│   │   ├── option-picker/        # ★ NEW 2026-06-02 — Radio-group pill chooser (sgs-interactive; atomic). See Spec 24 FR-24-15
-│   │   └── cart/                 # ★ NEW 2026-06-02 — WooCommerce cart count badge v1 (sgs-interactive)
+│   │   ├── option-picker/        # Radio-group pill chooser (sgs-interactive; atomic). Spec 24 FR-24-15; C7 group-label controls D206
+│   │   ├── cart/                 # WooCommerce cart count badge v1 (sgs-interactive)
+│   │   ├── content-collection/   # ★ Query-driven product grid. Spec 24 FR-24-4/5/6; showPickers/ctaBehaviour/showLadder attrs (D210)
+│   │   ├── buybox/               # ★ PDP configurator — option-picker→cart bridge (FR-30-7/D210). sgs-content category.
+│   │   ├── product-search/       # ★ NEW FR-30-5/D214 — Accessible combobox search + REST /sgs/v1/product-search + inline|icon displayMode (v1.1.0)
+│   │   ├── filter-search/        # ★ NEW FR-30-6/D214 — Type-to-find filter narrowing (≥16 terms threshold, woocommerce/product-filter-attribute ancestor)
+│   │   └── collapsible-text/     # ★ NEW D213 — Operator SEO copy; CSS line-clamp read-more; always SSR'd; i18n toggle labels
 │   │
 │   ├── components/               # Shared React components for editor UI
+│   │   ├── TypographyControls.js # ★ MANDATORY — shared per-element typography UI (D209). See Block Customisation Standard.
 │   │   ├── ResponsiveControl.js  # Breakpoint switcher (mobile/tablet/desktop)
 │   │   ├── DesignTokenPicker.js  # Colour picker that reads theme.json tokens
 │   │   ├── SpacingControl.js     # Margin/padding control with presets
@@ -272,7 +283,13 @@ block-name/
 
 1. **ORIGINAL composite** (counter + badge) — retired: counter use-cases → `sgs/counter`; badge use-cases → universal-nesting (`sgs/container` + `sgs/label`/`sgs/icon` children).
 
-2. **CURRENT block** — **`sgs/trust-badges` was rebuilt then renamed → `sgs/trust-bar` (D123, 2026-05-31)**; it absorbed `certification-bar` (D95, `badgeStyle` variants: icon-circle / text-only / image-badge + auto-scroll marquee). As of 2026-06-01 it is **dual-mode (FR-24-10, SHIPPED)**: `sourceMode='typed'` (curated repeater) OR `sourceMode='bound'` (echoes `$content` → renders the converter's emitted badge InnerBlocks). render.php branches on the explicit `sourceMode` (R-22-14, never `empty($content)`); ~~the converter sets `sourceMode='bound'` on cloned trust-bars~~. ⚠ **SUPERSEDED FOR CLONING (2026-06-06):** the converter's bound-emit path is a **test cheat** — it mirrors the draft DOM structure instead of converting to native `items[]` attributes. Being purged per reports/2026-06-06-bound-mode-purge-plan.md. Cloning MUST produce Typed mode (`items[]` populated). The live WC configurator modes (`wc-product`/`sgs-cpt`) are unaffected. `src/blocks/trust-bar/` is the ACTIVE directory (the old `src/blocks/trust-badges/` dir was removed in the rename). See decisions.md D72 (original retire) + D95 (certification-bar merge) + D123 (rename) + Spec 27 §FR-24-10.
+2. **CURRENT block** — **`sgs/trust-badges` was rebuilt then renamed → `sgs/trust-bar` (D123, 2026-05-31)**; it absorbed `certification-bar` (D95, `badgeStyle` variants: icon-circle / text-only / image-badge + auto-scroll marquee). As of 2026-06-01 it is **dual-mode (FR-24-10, SHIPPED)**: `sourceMode='typed'` (curated repeater) OR `sourceMode='bound'` (echoes `$content` → renders the converter's emitted badge InnerBlocks). render.php branches on the explicit `sourceMode` (R-22-14, never `empty($content)`).
+
+   **⚠ `sourceMode='bound'` is PURGED FROM CLONING (D182, 2026-06-06):** the bound-emit path was a test cheat (mirrored the draft DOM structure instead of converting to native `items[]` attributes). The converter now emits `sourceMode='typed'` with native `items[]` populated by the icon-identity resolver (`converter_v2/icon_resolver.py`) — badges clone to the correct icon slugs (home/check/truck/star). The live WC configurator modes (`wc-product`/`sgs-cpt`) are unaffected and remain legitimate.
+
+   **Wave-1 bug fixes (D209):** trust-bar icon circle was invisible (white-on-white — fixed with an overridable default border); title placeholder leak fixed (trim guard); badge-size hidden for icon-circle mode now surfaced (`iconCircleSize` governs). Typography controls migrated to the shared `TypographyControls` component (D209).
+
+   `src/blocks/trust-bar/` is the ACTIVE directory (the old `src/blocks/trust-badges/` dir was removed in the rename). See decisions.md D72 (original retire) + D95 (certification-bar merge) + D123 (rename) + D182 (bound-purge) + Spec 27 §FR-24-10.
 
 #### Historical content (for migration reference only — block does NOT exist post-D72)
 
@@ -331,17 +348,35 @@ block-name/
 
 ### 7. Testimonial (`sgs/testimonial`)
 
-**Purpose:** Single testimonial card.
+**Purpose:** Single testimonial card. **REBUILT D206 (2026-06-11) — typed-attr, 7-variant block.** All content rendered from typed attributes; no InnerBlocks in production (legacy InnerBlocks shapes preserved via `deprecated.js` v8).
 
-**Attributes:**
-- `quote` — RichText
-- `name` — string
-- `role` — string (e.g., "Owner — Bombay Kitchen, Leicester")
-- `avatar` — media object (optional, falls back to initials)
-- `rating` — 0-5 (optional star rating)
-- `style` — card | minimal | featured
+**Variants:**
+- `classic-card` — Avatar + quote + name/role (default)
+- `pull-quote-editorial` — Large editorial pull-quote
+- `rating-led` — Star rating prominent, quote secondary
+- `avatar-spotlight` — Full-bleed avatar with quote overlay
+- `corporate-logo` — Company logo + attributed quote
+- `case-study-media` — Image/video alongside structured quote
+- `minimal-quote` — Text-only minimal format
 
-**Render:** Static `save()`.
+**Key attributes (see `02-SGS-BLOCKS-REFERENCE.md` for full schema):**
+- `variant` — one of the 7 variants above
+- `quote` — RichText (primary content)
+- `summaryPhrase` — string (optional short pull-quote or headline)
+- `reviewerName` / `reviewerRole` / `reviewerOrg` — string fields
+- `avatar` — media object (optional)
+- `logo` — media object (optional, for corporate-logo variant)
+- `workImage` / `workVideo` — media objects (for case-study-media variant)
+- `rating` — 0-5 stars (optional)
+- `ratingScale` — integer (alternative /10 or /100 scale; default 5)
+- `datePublished` — ISO string (optional)
+- `isVerified` — boolean
+- `sourceName` / `sourceUrl` — string (review source attribution)
+- Per-element typography via shared `TypographyControls` component (D209)
+
+**Render:** Dynamic `render.php` (`save.js` returns `null`). `deprecated.js` v8 migrates BOTH legacy shapes (old InnerBlocks children + old scalar attrs). Live-verified migrating 3 real testimonials on page 8 (D206).
+
+**Converter routing:** The converter registers this as the second variant block. Converter routing of typed attrs is deferred — block is fully functional standalone (D206). Universal lift (quote/name/stars scalar slots) onboarded in D212 via the `scalar-content-lift` opt-in capability.
 
 ---
 
@@ -470,30 +505,42 @@ block-name/
 
 ### 16. Notice Banner (`sgs/notice-banner`)
 
-**Purpose:** Inline informational banner for contextual messages like minimum order values, delivery terms, or promotional notices. Appears within page content (not fixed to top like announcement-bar).
+**Purpose:** Inline informational banner for contextual messages like minimum order values, delivery terms, or promotional notices. **Also serves as the replacement for the retired `announcement-bar` via `displayMode=announcement` (D209, 2026-06-11).**
+
+**`displayMode` attribute (D209):**
+- `inline` — (default) embedded within page content at the drop point
+- `announcement` — sticky top/bottom bar (full-width, `z-index: 1000`), dismissible via WP Interactivity API (`session`/`permanent` storage), pre-paint anti-flash script prevents FOUC
 
 **Attributes:**
+- `displayMode` — inline | announcement (default: inline)
 - `icon` — string (emoji or SVG slug)
+- `iconColour` — token slug (control added D209)
 - `text` — RichText (supports inline bold, links)
 - `variant` — info | success | warning | accent
   - `info` — light blue background
   - `success` — light green background, green border (used for MOV banners in Indus Foods)
   - `warning` — light amber background
   - `accent` — light gold background
+  - Variant bg/border/colour are overridable via `:where()` (E9, D206)
 - `alignment` — left | centre (default: centre)
 - `borderRadius` — preset slug (default: medium)
+- `position` — top | bottom (announcement mode only, default: top)
 
-**Render:** Dynamic `render.php` (FR-22-6 InnerBlocks migration shipped 2026-06-02 — `$content` echo replaces static save; `deprecated.js` entry preserves existing posts). `save.js` returns `null`.
+**Render:** Dynamic `render.php` (FR-22-6 InnerBlocks migration shipped 2026-06-02 — `$content` echo replaces static save; `deprecated.js` entry preserves existing posts). `save.js` returns `null`. Dead `dismissible` button (no control, no JS handler) removed in D206 (v0.7.0).
 
 **Indus Foods usage:** The MOV banner ("Minimum order just £75 — lower than most wholesalers...") uses `success` variant with truck icon and centred text.
 
+**Migration from announcement-bar:** any existing block editor instance of `sgs/announcement-bar` shows the WordPress "block has been deleted" placeholder after D209. Replace with `sgs/notice-banner` using `displayMode=announcement`.
+
 ---
 
-### 17. Announcement Bar (`sgs/announcement-bar`)
+### 17. Announcement Bar (`sgs/announcement-bar`) — RETIRED D209 (2026-06-11)
 
-**Replaces:** HelloBar, OptinMonster top bars, HashBar
+> **RETIRED.** `sgs/announcement-bar` was deleted in D209 (`/sgs-update` Stage-10 pruned it + 25 orphan attrs). `announement-bar` use-cases are now served by `sgs/notice-banner` with `displayMode=announcement`. Existing page content carrying `wp:sgs/announcement-bar` shows the WordPress "block has been deleted" placeholder (1 live homepage instance flagged for re-clone/swap). Use `sgs/notice-banner` with `displayMode=announcement` for all new builds.
 
-**Purpose:** Dismissible top-of-page banner for time-sensitive announcements, promotions, and alerts. Fixed to the top of the viewport above the header. Supports countdown timers, CTA buttons, message rotation, and date-range scheduling — all as block attributes with zero external dependencies.
+**The original spec text is preserved below for migration reference only — the block does NOT exist post-D209.**
+
+**Original Purpose:** Dismissible top-of-page banner for time-sensitive announcements, promotions, and alerts. Fixed to the top of the viewport above the header. Supports countdown timers, CTA buttons, message rotation, and date-range scheduling — all as block attributes with zero external dependencies.
 
 **Competitive edge over Elementor:** HelloBar charges $29/month. OptinMonster requires a 3rd-party account. Elementor's "Hello Bar" is a popup workaround. SGS delivers this natively as a block in the header template part with zero CLS, zero external JS, and no per-site licensing.
 
@@ -1102,7 +1149,18 @@ Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (`block_co
 
 ---
 
-## product-card `featured` variant
+## `sgs/product-card` — Build status
+
+`sgs/product-card` has evolved significantly. Current canonical state (D204/D206/D209):
+
+- **BUILT-IN-ELEMENT card (D204, Bean sign-off 2026-06-10):** all content rendered from typed attributes via the element-MIRROR pattern. ZERO InnerBlocks in typed mode (no deprecation needed — typed card was unused in content). Connect+override UX: "Connected product" picker is the primary control; `overrideElements` toggles (name/description/badge/image/cta); PRICE NEVER overridable (grep-proven, D204).
+- **48-SKU configurator:** value-ladder, per-axis pickers, live price row via `/sgs/v1` proxy.
+- **CTA model:** max 2 text buttons (1 primary + 1 secondary); behaviours learn-more / add-to-basket / buy-now; express-pay = phase-2 gateway toggle.
+- **B3–B6 fixes (D206):** Advanced-SEO crash fixed (`__experimentalNumberControl`); fresh-card legacy warning improved; duplicate bound-mode CTA boxes removed; trial dashed border made overridable.
+- **Typography controls (D209):** migrated to shared `TypographyControls` component (string→number+unit+responsive; `sgs_typography_css_rule()` for PHP render; legacy string `fontSize` handled for back-compat).
+- **Schema (D204):** card emits NO schema itself; ONE page-level ItemList per singular page (recursive walker, shared public API). `ProductGroup` emission gated to single-product-focus pages.
+
+### product-card `featured` variant
 
 `sgs/product-card` gained a new `featured` variant + `featuredTag` attribute + render branch (shipped commit `669115f0`). When `variant: featured` is set, the render path emits a tag overlay (sourced from `featuredTag` string) and applies the `--featured` BEM modifier for elevated card styling. Sibling architecture to D112-adjacent block-variation work; not a numbered decision.
 
@@ -1126,6 +1184,77 @@ A drafted product card uses ONE block prefix — `sgs-product-card` — for the 
 **Converter scope note:** these are DRAFT INPUT tokens (what the converter reads from a draft's HTML). They are NOT identical to the runtime SSR classes that bound-mode `render.php` emits — the live variable branch uses `price-row`/`product-card__media` (no BEM prefix), the typed built-in + non-variable branches use `sgs-product-card__price-row`/`sgs-product-card__media-wrap`. A live-DOM parity check will see this divergence; it is intentional (only the typed built-in path is converter-input-shaped). The image container class differs by branch (`product-card__media` variable vs `sgs-product-card__media-wrap` non-variable/typed) — CSS targets all forms; a future unifier should converge them but must update all three render sites together.
 
 Converter routing of these classes to TYPED-ATTR destinations (not child InnerBlocks) is the FP-H direction — `canonical_slot`/`role`/`attr_type` metadata via `/sgs-update`, per the design gate above.
+
+---
+
+## Block Customisation Standard (MANDATORY — D209)
+
+Every new SGS block MUST follow this customisation standard. Violations are caught by the `check-dead-controls.js` prebuild guard.
+
+### 1. Native `supports` for wrapper-level controls
+
+Use WP core `supports` for spacing, colour, border, and typography controls on the block wrapper. Do NOT re-implement these with custom attributes.
+
+### 2. Shared `TypographyControls` component (MANDATORY since D209)
+
+**All per-element typography UI MUST use the shared `TypographyControls` component** (`src/components/TypographyControls.js`) for editor controls, and the **`sgs_typography_css_rule()` helper** (`includes/helpers-typography.php`, auto-loaded via `render-helpers.php`) for PHP render output.
+
+**What `TypographyControls` provides:**
+- Font size: responsive `RangeControl` + unit dropdown (NOT freeform, NOT token slugs — one default per tag)
+- Font weight: dropdown
+- Font style: dropdown
+- Line height: `RangeControl` + unit dropdown
+
+**Why this is mandatory (D209 — Bean R-22-13):**
+> "Blank-box/token font controls are the wrong UI pattern. The inconsistency across 6 blocks (counter, whatsapp-cta, mobile-nav, option-picker, trust-bar, product-card) was audited and all migrated. The shared component is documented here so future blocks use it and the inconsistency does not recur."
+
+**Usage (edit.js):**
+```js
+import { TypographyControls } from '../../components/TypographyControls';
+// In InspectorControls:
+<TypographyControls
+    label={ __( 'Quote typography', 'sgs-blocks' ) }
+    baseProp="quoteFontSize"
+    attributes={ attributes }
+    setAttributes={ setAttributes }
+/>
+```
+
+**Usage (render.php):**
+```php
+$quote_typography_css = sgs_typography_css_rule(
+    '.sgs-testimonial__quote',
+    $attributes,
+    'quoteFontSize'  // base prop name
+);
+// Output inside a uid-scoped <style> block
+```
+
+**Hand-rolled font controls are BANNED** — if you find one in an existing block, file a gap candidate and migrate it.
+
+### 3. Custom attrs + controls for inner text elements
+
+Per-element typography (quote text, heading, label, price, etc.) uses the `TypographyControls` component per the above. Per-element colour uses `sgs_colour_value()`.
+
+### 4. CTAs via `sgs/multi-button` + `sgs/button` InnerBlocks
+
+Every composite block that renders CTAs uses an InnerBlocks slot defaulting to `sgs/multi-button` + `sgs/button`. Exception: `sgs/product-card` is a built-in-element card — its CTA renders from typed attributes via the element-MIRROR pattern (D204, Bean sign-off 2026-06-10).
+
+### 5. CSS fallback colours use `:not([style*="color"])`
+
+So custom values win over the fallback. Variant bg/border/colour made overridable via `:where()` (E9 pattern, D206).
+
+### 6. Block Selectors API
+
+`"selectors": { "typography": ".sgs-block__text-element" }` in `block.json` targets native WP typography controls to the primary text element, not the wrapper.
+
+### 7. `imageControls: true` for any block rendering `<img>`
+
+Declare `"supports": { "sgs": { "imageControls": true } }` in `block.json` so the universal image-controls extension applies. Document deliberate opt-out.
+
+### 8. Dead-control audit before shipping
+
+A block change is not done until the inspector has ONE control per setting + zero orphans. Audit: (1) duplicate/overlap controls, (2) dead control [control → no render], (3) render-without-control [attr render.php reads but no editor control — the guard is BLIND to this], (4) vestigial attrs.
 
 ---
 
@@ -1422,23 +1551,27 @@ Retired: the legacy sgs/icon-block slug (was a backward-compat shim) was deleted
 
 **2026-06-02 enhancements:** shape backgrounds (circle / square / rounded-square variants with background colour + padding attrs), clickable mode (wraps icon in `<a>` with `linkUrl` / `linkTarget` / `linkRel` attrs), and hover effects (lift / scale / colour-shift via the universal hover extension). These bring sgs/icon to parity with the converter's emit needs for icon slots within `sgs/trust-bar` Bound mode and `sgs/info-box` icon areas.
 
-### sgs/option-picker (NEW — 2026-06-02, theme thread)
+### sgs/option-picker (2026-06-02, theme thread; C7 group-label controls D206)
 
 Atomic radio-group pill chooser. Category: `sgs-interactive`. Built as Phase A of Spec 24 FR-24-15 (variation-sets + option-picker system). Battle-ready as both a standalone editor block and the converter's emit target for pill-group slots.
 
 Semantics: visually-hidden `<input type=radio>` + `<label>` + pill `<span>` per option. CSS `:checked` active state (no JS required for selection display). Bubbles a `sgs:option-selected` custom event for parent-block Interactivity API stores to consume. NOT `sgs/button` — distinct atomic block.
 
+**Note on `data-wp-on--sgs:option-selected`:** WP Interactivity silently does NOT bind custom event names containing a colon — use a `data-wp-init` + captured-context bridge (`getContext()` + plain `addEventListener`) instead. Memory: `wp-interactivity-data-wp-on-rejects-colon-event-names`.
+
 Attributes: `options` (array of `{ value, label, isDefault }`), `variant` (source toggle: `typed` | `bound` — mirrors FR-24-2), `display_as` (`pills` | `static-list` | `hidden`), `pillStyle` (`filled` | `outlined`), plus standard animation/hover extension attrs.
+
+**C7 additions (D206):** group-label font-size + colour controls (legend inline style; `sgs_colour_value()`). Typography migrated to `TypographyControls` component (D209).
 
 Render: Dynamic `render.php`. `viewScriptModule` bubbles `sgs:option-selected`. No-JS default state: options render as visible static labels (FR-24-16).
 
 SGS-BEM: `.sgs-option-picker` root + `__option` / `__input` / `__label` / `__pill` + `--style-filled/outlined` + `--display-pills/static-list` + `.is-selected` state on checked option.
 
-See: Spec 24 §FR-24-11..FR-24-17 + D144.
+See: Spec 24 §FR-24-11..FR-24-17 + D144 + D206.
 
 ---
 
-### sgs/cart (NEW — 2026-06-02, theme thread)
+### sgs/cart (2026-06-02, theme thread)
 
 WooCommerce cart count badge (v1). Category: `sgs-interactive`. Displays a live item count from the WC cart; intended for use in headers/navigation alongside `sgs/mega-menu` or `core/navigation`. Gracefully absent (renders nothing) when WooCommerce is not active.
 
@@ -1447,6 +1580,120 @@ Attributes: `iconSlug` (default `shopping-cart` Lucide icon), `badgeColour` (tok
 Render: Dynamic `render.php`. `viewScriptModule` uses the WC `wc-cart-fragments` mechanism to update count without full page reload.
 
 SGS-BEM: `.sgs-cart` root + `__icon` / `__count` + `--empty` modifier.
+
+---
+
+## WooCommerce Blocks Layer (Spec 27/28/30 — D204, D210, D213, D214)
+
+The blocks below form the WooCommerce commerce layer shipped as part of the SGS product/shop build. They are production blocks — not experimental. All integrate with the SGS design-token system and WC REST API/Store API.
+
+### sgs/content-collection (Spec 24 FR-24-4/5/6; showPickers attr D210)
+
+Query-driven grid of content items. Category: `sgs-content`. Runs its own `WP_Query` (or `wc_get_products`) with a named selection rule and renders each result through the dual-mode `sgs/product-card`.
+
+**Version:** 1.2.0
+
+**Attributes (key; see `02-SGS-BLOCKS-REFERENCE.md` for full schema):**
+- `contentType` — `sgs_product` (default)
+- `selectionRule` — newest | featured | most-expensive | cheapest | most-popular | handpicked | category
+- `count` — integer (default: 12)
+- `columns` / `columnsTablet` / `columnsMobile` — responsive grid columns
+- `gap` / `gapTablet` / `gapMobile` — raw CSS length (shared ContainerWrapperControls pattern)
+- `showPickers` — boolean (default: `true`). Forwarded to each rendered `sgs/product-card`. When `false`, suppresses in-card option-picker UI — useful for browsing/shop grids. Added D210.
+- `ctaBehaviour` — learn-more | add-to-basket | buy-now (forwarded to each product-card)
+- `showLadder` — boolean (default: `false`). Forwarded to each product-card (browsing grids default false)
+- `handpickedIds` — array of post IDs (for handpicked selectionRule)
+- `emptyMessage` — string shown when query returns 0 results (FR-24-6)
+- Full container-mirror attrs: `widthMode`, `contentWidth`, `maxWidth`, `gridTemplateColumns*`, etc.
+
+**Render:** Dynamic `render.php`. Editor preview uses `ServerSideRender`.
+
+**SGS-BEM:** `.sgs-content-collection` root.
+
+### sgs/buybox (FR-30-7 / D210)
+
+WooCommerce single-product buybox: wires `sgs/option-picker` pill axes to the shipped cart proxy engine. Thin wrapper block that mounts the `sgs/product-card` Interactivity store (proxy-wire M-C2, 409 re-sync, availability greying) via `view_script_module_ids`. Designed for placement in the single-product page template alongside `woocommerce/product-gallery` and `woocommerce/add-to-cart-form`.
+
+**Version:** 1.0.4. Category: `sgs-content`.
+
+**Attributes:**
+- `soldOutLabel` — string (aria-label suffix for sold-out pills; screen-reader only)
+- `unavailableLabel` — string (aria-label suffix for unavailable combinations)
+- `notifyMeLabel` — string (stored now; notify-me capture deferred to future release)
+- `addToCartLabel` — string (override Add to Cart label; empty = translated default)
+- `perUnitDenomination` — string template using `%s` as unit placeholder
+- `showLadder` — boolean (default: `true`; set `false` in narrow sidebar contexts)
+- `framingMode` — savings | loss-aversion | neutral (saving-label framing; default: loss-aversion)
+- `decoyEnabled` — boolean (default: `false`; targets 2nd-largest pack with "Best value" badge when true)
+
+**Context:** `usesContext: ["postId"]` — reads the WC product from the surrounding post context.
+
+**Render:** Dynamic `render.php`. Falls back to core WC blocks for simple products or when WooCommerce is absent.
+
+**Live-verified:** Product 540 on sandybrown canary — 3 combos add exact variation via `/sgs/v1`, foreign id 4xx handled, dismissible error, single-variant axes suppressed (D210).
+
+### sgs/product-search (FR-30-5 / D214)
+
+Accessible combobox search that fetches live product suggestions. Includes a no-JS fallback `<form method="get">` that submits to the theme's product-scoped search results page.
+
+**Version:** 1.1.0. Category: `sgs-interactive`.
+
+**Attributes:**
+- `displayMode` — `inline` | `icon` (default: `inline`). `inline` = always-visible search bar. `icon` = native `<details>`/`<summary>` disclosure widget (no JS required to open/close).
+- `placeholder` — string (input placeholder text)
+- `buttonLabel` — string (submit button label)
+- `maxResults` — integer (default: 10; max results shown in the live list)
+
+**REST endpoint:** `GET /wp-json/sgs/v1/product-search?q=<query>` — registered REST route, nonce-optional (public), rate-limited (>30/IP/min → 429 + `Retry-After`), returns `[{id, title, permalink, thumbnail}]` only. Draft products never leaked (live-verified D214). Response is `no-store` cache. XSS-inert: server uses `wp_strip_all_tags` + `html_entity_decode`; client inserts via `span.textContent`.
+
+**Security guard:** `check-product-search-guards.js` (11 assertions) wired to the `prebuild` npm script. Passes on every build; no CI exists in this repo (same floor as the dead-control guard).
+
+**Render:** Dynamic `render.php`. `viewScriptModule` handles live suggestion fetching + combobox ARIA (`role="combobox"`, `aria-expanded`, `aria-activedescendant`, `aria-live`).
+
+**Placement:** Nested in `theme/sgs-theme/parts/sgs-archive-toolbar.html` (live-verified D214 — `aria-expanded` false→true, listbox populated, live region "N products found", ArrowDown→`aria-activedescendant`).
+
+### sgs/filter-search (FR-30-6 / D214)
+
+Type-to-find input that narrows a WooCommerce attribute filter's visible options. Auto-shown only when the attribute has ≥16 visible (published-only, `hide_empty=true`) terms — the Baymard Research threshold above which users need a finder.
+
+**Version:** 1.0.0. Category: `sgs-interactive`.
+
+**Parent constraint:** `ancestor: ["woocommerce/product-filter-attribute"]` — must be nested inside a WC Product Filter (Attribute) block, before its chips.
+
+**Attributes:**
+- `attributeId` — integer (WC attribute taxonomy ID; 0 = auto-detect from ancestor)
+- `threshold` — integer (default: 16; minimum: 2; terms below this = block renders nothing)
+- `placeholder` — string (input placeholder text)
+
+**Visibility behaviour:** render.php counts published-only terms via `get_terms` with `hide_empty=true`. Block renders nothing when the term count is below `threshold` — no empty wrapper emitted.
+
+**Render:** Dynamic `render.php`. `viewScriptModule` handles keystroke-narrowing of the ancestor's term chips; ARIA: `role="searchbox"`, live region "N of M options shown", "No matching options" message. Core WC URL-filtering is untouched — the block only hides/shows chips client-side.
+
+**Live-verified D214:** 12 published terms → input renders at exactly 16 with a 4th added; drops at 15; draft-only term excluded from count. Typing "test" narrowed chips to 4 with correct ARIA count. Zero console errors. Canary restored to clean 12-term state after verification.
+
+### sgs/collapsible-text (D213 — 2026-06-11)
+
+Operator-editable body copy that optionally collapses behind a "Read more / Read less" toggle. Designed for shop archive SEO copy where the full text must be available to crawlers and assistive technology in every state.
+
+**Version:** 1.0.0. Category: `sgs-content`.
+
+**Key behaviour:** Full text is always SSR'd into the page HTML (CSS `line-clamp` hides the overflow visually, NOT `display:none`). Toggle labels are i18n'd via server-emitted `data-read-more` / `data-read-less` attributes — no hardcoded strings in JS.
+
+**Attributes:**
+- `text` — string (RichText body copy; `role: "content"`)
+- `collapsible` — boolean (default: `false`; when `false` renders as plain text block)
+- `collapsedLines` — integer (default: 4; minimum: 1; CSS `--sgs-ct-lines` custom property)
+- `fontSize` / `fontSizeTablet` / `fontSizeMobile` — responsive font size (number; via `TypographyControls`)
+- `fontSizeUnit` — string (default: `px`)
+- `fontWeight` / `fontStyle` / `lineHeight` / `lineHeightUnit` — typography controls
+
+**Supports:** `align` (wide/full), `anchor`, `color` (text + background), `spacing` (margin + padding), `typography.textAlign`. Block Selectors API: `".sgs-collapsible-text__body"` for native font controls.
+
+**Render:** Dynamic `render.php`. `viewScriptModule` toggles the `--is-expanded` state + updates the toggle label.
+
+**Empty-guard:** when `text` is empty (or whitespace only), render.php emits nothing — no wrapper element.
+
+**SGS-BEM:** `.sgs-collapsible-text` root + `__body` + `__toggle` + `--collapsible` / `--expanded` modifiers.
 
 ---
 
