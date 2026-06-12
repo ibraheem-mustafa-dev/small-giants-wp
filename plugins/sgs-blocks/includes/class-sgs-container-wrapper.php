@@ -197,7 +197,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$min_height        = $attributes['minHeight'] ?? '';
 			$min_height_tablet = $attributes['minHeightTablet'] ?? '';
 			$min_height_mobile = $attributes['minHeightMobile'] ?? '';
-			$vertical_align    = $attributes['verticalAlign'] ?? 'start';
+			// WS-A dual-key fallback (2026-06-12): read EITHER align attr name —
+			// `verticalAlign` (container/hero/cta/trust-bar) or `alignItems` (grid-
+			// mirror blocks: feature-grid/card-grid/gallery). verticalAlign wins when
+			// both set (back-compat); default stays `start` (NOT flipped). Universal
+			// bridge that paints a block's emitted align value, fixing IN-C without an
+			// 8-block rename or client re-save.
+			$vertical_align    = $attributes['verticalAlign'] ?? $attributes['alignItems'] ?? 'start';
 
 			// CSS-length sanitiser for min-height (inline + injected <style> contexts).
 			// Strips everything except digits, dot, %, and unit letters so a value can
