@@ -4860,21 +4860,30 @@ def _merge_grid_attrs_into_container(
             container_attrs.setdefault(attr, grid[attr])
     # Align-items: resolve attr name name-free from DB (A-layer-router 2026-06-13).
     # setdefault so an earlier wrapper-CSS lift of an explicit align-items value wins.
+    # FULLY name-free: zero literal attr names. slug-None wrappers resolve via
+    # 'sgs/container' (which declares verticalAlign). A block that declares NO align
+    # attr at the OUTER layer is flag-not-dropped (FR-22-21 step 6) — NEVER assigned an
+    # invented attr name. This matches the removed fork's `else None` branch and avoids
+    # emitting an attr a block does not declare (a literal fallback would have done so
+    # for any future mirror block declaring neither verticalAlign nor alignItems).
     _align_val = grid.get("align_items_value")
     if _align_val:
         _effective_slug = slug or "sgs/container"
         _align_attr = db.attr_for_layer_property(_effective_slug, "OUTER", "align-items")
-        if _align_attr is None:
-            # Block declares no align attr — fall back to 'verticalAlign' for slug-None
-            # container wrappers so existing behaviour is preserved on the null path.
-            _align_attr = "verticalAlign"
-        _trace(
-            "grid_align_resolved",
-            slug=_effective_slug,
-            resolved_attr=_align_attr,
-            value=_align_val,
-        )
-        container_attrs.setdefault(_align_attr, _align_val)
+        if _align_attr is not None:
+            _trace(
+                "grid_align_resolved",
+                slug=_effective_slug,
+                resolved_attr=_align_attr,
+                value=_align_val,
+            )
+            container_attrs.setdefault(_align_attr, _align_val)
+        else:
+            _trace(
+                "grid_align_unresolved_gap_candidate",
+                slug=_effective_slug,
+                value=_align_val,
+            )
 
 
 # ----------------------------------------------------------------------------
