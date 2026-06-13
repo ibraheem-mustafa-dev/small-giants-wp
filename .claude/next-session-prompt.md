@@ -2,62 +2,108 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 thread: cloning-pipeline
-generated: 2026-06-12
-primary_goal: "A/B/C universalisation programme BUILT + shipped to main 2026-06-12 (D216): WS-C trust-bar gap via universal detector (6d8ebcd4), WS-B has_inner_blocks auto-derive + sync gate (0507973a), WS-A wrapper dual-key fallback that CLOSED IN-C live (1f107711). REMAINING (gated/flagged): (1) the FULL name-free layer-router unification — remove the convert.py attr-name fork + GRID per-item routing for gap/iconCircleBackground + unify the 8 blocks to one canonical align attr — needs its OWN adversarial-council on the router mechanism; (4) IN-F notice-banner empty content (universal-lift). DONE 2026-06-13 (D221, commit e20f0bd5): (2) mobile-nav save bug → save:()=>InnerBlocks.Content + vNull deprecation + override removed; (3) team-member → root cause was equivalent_block_for(name)→sgs/heading mis-classification (NOT missing plumbing), fixed via durable ATTR_CLASSIFICATION_OVERRIDES (name role=NULL→scalar) + override removed; both has_inner_blocks override dicts now empty. Plan: .claude/plans/archive/2026-06-12-universal-align-router-programme.md."
+generated: 2026-06-13
+primary_goal: "Converter DE-LITERALISATION programme. D222 SHIPPED to main (the name-free align/grid layer-router is DONE — zero align-attr literals; IN-F notice-banner content-lift; team-member scalar-lift regression fixed). NEXT = rip out the ~13 per-block `if slug == \"sgs/X\"` literal carve-outs in convert.py (convert.py:2744-3350), each reduced to the universal DB-driven scalar-lift (`_lift_scalar_attrs_by_selector` via block_attributes.derived_selector) OR kept as a documented exception. Canonical plan + full literal register (line numbers + per-literal reducible/exception assessment): .claude/plans/2026-06-13-converter-de-literalisation-audit.md. Rule 7: convert.py is the highest-blast shared mechanism — DESIGN + /adversarial-council on the de-lit approach BEFORE building. The align router (D222, commit c5ecb4eb) is the proven template."
 ---
 
-# Next session — universalisation programme (C → B → A-layer-router)
+# Next session — converter de-literalisation programme (rip out the per-block `if slug==` carve-outs)
 
-> ✅ **2026-06-12: C + B + A-dual-key are BUILT + on main (D216).** IN-C is CLOSED (feature-grid live `align-items:stretch`). ✅ **2026-06-13 (D221, commit `e20f0bd5`): the 2 flagged block bugs are DONE** — mobile-nav save (`()=>null`→`<InnerBlocks.Content/>` + vNull deprecation) and team-member (root cause was `equivalent_block_for(name)→sgs/heading` mis-classification, fixed via the new durable `ATTR_CLASSIFICATION_OVERRIDES`); both `has_inner_blocks` override dicts now empty. What remains is the GATED full router unification + IN-F content. The C→B→A build instructions below are retained as the record; the NEXT build is the full name-free router, which gets its OWN `/adversarial-council` first.
+> Invoke `/autopilot` first. Then read, end-to-end, BEFORE acting: **`.claude/plans/2026-06-13-converter-de-literalisation-audit.md`** (THE programme + the 13-literal register with line numbers + reducible-vs-exception first-pass) + `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §FR-22-2/FR-22-3/FR-22-21 (per-block behaviour = DB rows, not code branches; the layer model) + `.claude/decisions.md` D222 (the align-router template + the lessons) + the LIVE clone-fix ledger `.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md` (~14 rows still OPEN — the broader clone-fix work, separate from this programme).
 
-> Invoke `/autopilot` first. Read this prompt + **`.claude/plans/archive/2026-06-12-universal-align-router-programme.md`** (THE programme + the adversarial-council must-fix register — trust it) + `.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md` (the acceptance surface) before acting.
-
-## ⛔ THE 7 NON-NEGOTIABLE RULES (Bean-set; gate every converter/block action)
+## ⛔ THE 7 NON-NEGOTIABLE RULES (Bean-set; gate every converter/block action — carried forward verbatim)
 
 1. **CONVERT, don't mirror** — output = native SGS blocks driven by attributes; NOT a div-by-div copy of draft classes/DOM.
-2. **NO CHEATS** — no `sourceMode='bound'` converter emit, no echo-`$content` passthrough, no shallow-test workaround. Only the live WC configurator `sourceMode='wc-product'/'sgs-cpt'` is legitimate. *(This programme exists because Bean called the trust-bar typed wrapper-CSS hand-read a "cheat" — C removes it.)*
-3. **UNIVERSAL, no carve-outs** — a fix applies to every qualifying block/case; no per-block/per-tier exception. Over-broad universality is ALSO a break. *(The whole point of A = the layer-router: remove the hardcoded attr-name fork, don't just rename it.)*
+2. **NO CHEATS** — no `sourceMode='bound'` converter emit, no echo-`$content` passthrough, no shallow-test workaround. Only the live WC configurator `sourceMode='wc-product'/'sgs-cpt'` is legitimate.
+3. **UNIVERSAL, no carve-outs** — a fix applies to every qualifying block/case; no per-block/per-tier exception. Over-broad universality is ALSO a break. *(This whole programme exists to remove the per-block `if slug==` carve-outs — replace with DB-driven resolution, do not just relocate the literal.)*
 4. **NO SKIPPING** — every draft class's content + CSS transfers, OR is reported skipped-with-reason, per class.
-5. **VERIFY ON THE REAL HOMEPAGE** — Playwright/chrome-devtools live DOM + computed-style on page 8 vs the draft's real values. *(Emit-green ≠ rendered — a lift can be correct in the emit and paint NOTHING; verify the full render chain. `feedback_converter_attr_must_match_the_attr_render_reads`.)*
+5. **VERIFY ON THE REAL HOMEPAGE** — Playwright/chrome-devtools live DOM + computed-style on page 8 vs the draft's real values. *(Emit-green ≠ rendered — verify the full render chain.)*
 6. **RESPONSIVE VALUES IN BLOCK ATTRIBUTES, never inline CSS.**
-7. **DESIGN-GATE sensitive/high-blast-radius changes** (shared wrapper, walker, converter, most-used block) via `/adversarial-council` or `/qc-council` + Bean approval BEFORE building. *(A — the layer-router — gets its OWN council before code.)*
+7. **DESIGN-GATE sensitive/high-blast-radius changes** (shared wrapper, walker, converter, most-used block) via `/adversarial-council` or `/qc-council` + Bean approval BEFORE building. *(convert.py de-lit is THE highest-blast mechanism — its own `/adversarial-council` on the de-lit approach before any code.)*
 
-## State recap (plain English, 2026-06-12 close)
+## State recap (plain English, 2026-06-13 close)
 
-**P5/P7/P8 cluster DONE + shipped (commit `9275328c`, ledger close `535c3bd9`).** 10 rows live-verified (TB-A/B, FP-N/O/I, BR-C, SP-D.1, SP-E, IN-D + SP-F). 21 conformance goldens re-baselined.
+**D222 SHIPPED to `main`** (commits `1b03b8c7` + `c5ecb4eb`): the name-free align/grid layer-router is DONE — the live align route has **zero attr-name literals** (align resolves via `db.attr_for_layer_property(slug,"OUTER","align-items")` backed by a dated property_suffixes migration). **IN-F** notice-banner now lifts direct text into an `sgs/text` child (live-verified page 8). **team-member** is a typed leaf again (scalar name/role/photo via `scalar-content-lift` + reproducible `ATTR_CLASSIFICATION_OVERRIDES`; D221 regression fixed). Gate A green on main. Doc set swept accurate through D222; 2 completed plans + the completed theme thread's session docs archived.
 
-**This session designed + council-gated the A/B/C universalisation programme** (Bean's follow-on: make those fixes properly universal). The adversarial council returned **NO-GO as originally specified** — the original plan (rename across 8 blocks + flip the shared wrapper default + retire all overrides) would silently break live client pages 3 ways, one re-creating the D212 testimonial-empty bug. **Restaged + must-fixes are in the programme plan.** Bean chose the **proper name-free layer-router** for A (not the band-aid rename).
+**The remaining converter debt = ~13 per-block `if slug == "sgs/X"` literal carve-outs** in `convert.py` (`_atomic_attrs_for` 2936-3035 leaf handlers + the css-rules handlers 3111/3158/3191 + the trust-bar hand-read 3191-3350 incl. iconCircleBackground + multi-button 2744). These predate + duplicate the universal DB-driven scalar-lift. They conflict with FR-22-3 ("per-block behaviour = DB rows, not code branches"). This programme rips them out.
 
-## The build — execute in this order (all detail in the programme plan)
+## The task — execute via the plan (its own design-gate first)
 
-### C — trust-bar gap via the universal helper [START HERE — bounded]
-Replace the hand-read at `convert.py:3304-3314` with `_merge_grid_attrs_into_container(_inner_classes, css_rules, trust_result)` (keep the hand-read as a backstop). **MUST:** assert the emitted gap CSS is byte-identical (`16px 12px`) — only `gridTemplateColumns*` may be added to the 2 trust-bar goldens; confirm trust-bar render.php doesn't read a stranded `verticalAlign`. iconCircleBackground STAYS typed (genuinely trust-bar-specific). Re-clone → live-verify TB-A/B unchanged (gap + white circle). /qc-council before commit.
+### Task 1 — DESIGN the de-literalisation approach + `/adversarial-council` (NO code first)
+**What:** read the 13-literal register in the plan; for each literal decide reducible-to-DB (via `derived_selector`/`scalar-content-lift` like testimonial D212 + team-member D222) vs genuine exception (tag-shape transforms like `core/heading` level=int(tag[1]); complex array extraction like option-picker). Produce the phased rip-out design (one wave per handler/cluster). Then `/adversarial-council` on the approach (Rule 7).
+**Why:** convert.py is the highest-blast file; a wrong de-lit shape regresses every clone. Outcome = a council-GO'd, phased, conformance-gated plan.
+**Estimated:** 30 min (design) + the council.
+**Orchestration:** INLINE Opus design → `/adversarial-council` (6 personas) on the de-lit mechanism. Context the design needs: the align-router (D222) is the template — find the universal DB primitive that already exists, route the literal through it, prove byte-identical via roster parity + conformance, keep a small documented exception set. `_lift_scalar_attrs_by_selector` (convert.py G3-attrs path ~4171) is the universal mechanism; `block_attributes.derived_selector` is the per-block routing data.
+**Depends on:** none. **Parallel with:** none. **/qc gate after:** the adversarial-council IS the gate.
+**Acceptance:** a phased, council-GO'd build plan where each of the 13 literals has a verdict (reduce → which DB rows/migration; or keep → documented reason).
 
-### B — has_inner_blocks auto-derive [REDESIGNED per council must-fix #1]
-New `_populate_has_inner_blocks()` in `sgs-update-v2.py` Stage 1 (sibling of `_populate_allowed_blocks` ~726). **Rule = save-marker AND render-consumes-`$content`, `sgs/*` ONLY (never core/*). KEEP a ~3-row `HAS_INNER_BLOCKS_OVERRIDES`** for genuine serialisation≠routing cases (NOT "retire all"). Dry-run printing per-row would-change; the team-member 0→1 flip is a real correction (verify its render consumes children, not a double-render). Insert the 5 missing block_composition rows. Add the `check-composition-sync.js` prebuild gate.
+### Task 2 — Build wave-by-wave (one handler/cluster per wave)
+**What:** per the council-GO'd plan, convert each reducible literal to the DB lift (DB rows via `/sgs-update`/dated migration, NOT manual edits) and remove the `if slug==` branch; keep + document the genuine exceptions.
+**Why:** removes the FR-22-3 carve-outs; the converter becomes truly per-block-DB-driven. Outcome = fewer literals, same emit.
+**Estimated:** ~20-40 min per wave.
+**Orchestration:** DELEGATE each wave to a sonnet subagent (via `/delegate`); main agent `/qc-council` + live-verify + commit. Dispatch pattern: sequential per handler (`/subagent-driven-development`) — shared convert.py, do NOT parallelise edits to it. Brief per wave: "convert handler X to the DB scalar-lift, remove the literal, prove byte-identical emit + Gate A + converter_v2 green + roster parity 0-mismatch." Context: DB changes MUST be reproducible (dated migration / overrides), verified by a full `/sgs-update` reseed — never a manual DB edit or module-load side-effect ([[db-changes-reproducible-via-migration-not-manual-or-moduleload]]).
+**Depends on:** Task 1. **Parallel with:** none (shared file). **/qc gate after:** yes — `/qc-council` before each commit (blub.db 255) + Gate A.
+**Acceptance:** per wave — the literal is gone, emit byte-identical (roster parity 0 mismatches), BOTH conformance suites green, live page-8 unchanged for affected blocks.
 
-### A — the name-free align LAYER-ROUTER [OWN design-gate + council FIRST]
-Do NOT start code. First design the router: resolve align/gap/per-item-bg by **CSS-property → block-attr via `attr_for_layer_property(slug, layer, css-property)`**, zero attr-name literals. Remove the fork at `convert.py:4075-4082`. Route gap + iconCircleBackground through the GRID layer. THEN reconcile the 8 blocks' attr names with: render-side `verticalAlign ?? alignItems ?? default` fallback + per-block deprecated.js pinning existing instances + a WP-CLI batch re-save + per-block live verify. Run `/adversarial-council` on the router design before building.
+## Dependency graph
+```
+Task 1 (inline Opus design -> /adversarial-council)   <- Rule 7 gate, NO code until GO
+  |
+Task 2 wave 1 (sonnet build -> /qc-council -> live-verify -> commit)
+  |  (sequential — shared convert.py)
+Task 2 wave 2 ... wave N
+  |
+each commit: path-scoped; merge to main via temp-worktree if main is co-actively held
+```
 
-## Methodology guardrails (do not skip)
-- **Emit-green ≠ rendered** — verify the full render chain on the LIVE DOM (attr TYPE → WP supports → render.php → safecss). Grep render.php + the wrapper for the attr BEFORE lifting onto it.
-- **Deploy before measure** — `build-deploy.py --skip-build --allow-dirty` (canary) + OPcache reset; re-clone via `sgs-clone-orchestrator.py … --converter-v2 --mode draft`; upload via `upload_and_patch.py <run-dir> --target-id 8 --target page --client mamas-munches`. `npm run build` via PowerShell (broken node wrapper in Bash).
-- **Per-row live probes are the acceptance** (R-22-11); aggregate parity differ is RETIRED (BEM-blind-spot).
-- **/qc-council BEFORE every converter/SGS-block commit** (blub.db 255). **/adversarial-council before A** (Rule 7).
-- **Conformance Gate A** will block the commit if goldens drift — re-baseline with a cited reason (REGEN=1).
-- **The visual-diff gate** blocks a commit touching a block's style.css without a passing `reports/visual-diff/<block>-<date>.md` (verdict: PASS + first_paint_capture_passed: true).
-- **Commit by explicit path** (`git commit -- <paths>`; the path-scoped hook enforces it). **Merge to main via temp-worktree cherry-pick** (the primary worktree is often held by the theme thread on its branch — NEVER switch it). `git worktree add --detach <tmp> origin/main` → cherry-pick → push HEAD:main.
-- **Subagents implement; Opus orchestrates** (plan/delegate/QC/live-test/commit) — Bean directive.
+## Methodology guardrails (do not skip — carried forward + extended)
+- **Emit-green ≠ rendered** — verify the full render chain on the LIVE DOM (attr TYPE → WP supports → render.php → safecss). Grep render.php + the wrapper for the attr BEFORE lifting onto it ([[converter-attr-must-match-the-attr-render-reads]]).
+- **TWO conformance suites** — `converter_v2/tests/` (26) AND the Gate A golden harness `plugins/sgs-blocks/scripts/tests/test_converter_conformance.py` (43, the pre-commit one). Run BOTH; a subagent "conformance passed" can miss Gate A (D222 lesson).
+- **DB changes must be reproducible** — dated `migrations/*.py` for property_suffixes/schema; `ATTR_CLASSIFICATION_OVERRIDES`/`HAS_INNER_BLOCKS_OVERRIDES` for per-attr/composition; `block.json supports.sgs` reproduced by `/sgs-update`. NEVER a manual DB edit or module-load write-side-effect. Verify with a FULL `/sgs-update` reseed ([[db-changes-reproducible-via-migration-not-manual-or-moduleload]]).
+- **Roster parity is the byte-identical proof** — for any converter routing change, compare old-branch logic vs the new DB resolver across the whole relevant roster; expect 0 mismatches (D222 used a 31-block parity check). Watch "declares neither" cases (flag-not-drop, FR-22-21 step 6 — never invent an attr name).
+- **Deploy before measure** — re-clone via `sgs-clone-orchestrator.py … --converter-v2 --mode draft`; upload via `upload_and_patch.py <run-dir> --target-id 8 --target page --client mamas-munches`. `npm run build` via PowerShell (broken node wrapper in Bash).
+- **/qc-council BEFORE every converter/SGS-block commit** (blub.db 255). **/adversarial-council before the de-lit approach** (Rule 7). Fact-check EVERY rater/subagent claim against live ground truth — findings are HYPOTHESES.
+- **Commit by explicit path** (`git commit -- <paths>`; the path-scoped hook enforces it). **Merge to main via temp-worktree cherry-pick** if main is co-actively held; verify is-ancestor + staged-count after each push.
+- **Subagents implement; Opus orchestrates** (plan/delegate/QC/live-test/commit) — Bean directive. Subagents have NO commit/deploy authority; NEVER `git checkout/restore/stash/reset/clean` the shared tree.
+- **Bean's "are you sure?" on a deletion = a mandate to research, not reassure.** Default KEEP+document over DELETE when a literal's reducibility is uncertain.
+- **Pixel-diff is misleading — verify the LIVE DOM (R-22-11), not the number** (empty section = false WIN). Per-row live probes are the acceptance, never the aggregate differ (BEM-blind-spot).
 
-## Skills / tools / agents
+## Pre-flight self-attestation ritual (answer before the first action)
+1. Which thread am I? (cloning-pipeline — owner of convert.py + the homepage pipeline.)
+2. What branch is the tree on? (`git branch --show-current`.) Has `origin/main` moved? Is anything co-actively staged? (`git status` — if so, commit ONLY by explicit path.)
+3. Have I read the de-literalisation plan (13-literal register) + Spec 22 §FR-22-2/3/21 + decisions D222 end-to-end before proposing a de-lit shape?
+4. What is the MEASURABLE acceptance for the wave I'm about to start (byte-identical emit + roster parity 0 + both conformance suites + live page-8), not "code shipped"?
+5. Is this change Rule-7 high-blast (it is — convert.py)? Then it goes through `/adversarial-council` (approach) + `/qc-council` (per commit) BEFORE/AROUND the build.
+
+## Skills to Invoke
 | Skill | When |
 |-------|------|
-| `/adversarial-council` | BEFORE building A (the layer-router) — Rule 7 |
-| `/qc-council` | before every converter/SGS-block commit (C, B) |
+| `/brainstorming` | the de-lit design (Task 1) — per-literal reduce-vs-keep judgement |
+| `/gap-analysis` | grade any unit vs its FR acceptance before delivery |
+| `/lifecycle` | before any skill/agent/pipeline change |
+| `/research` (+ `/library-docs`) | any WP/converter pattern you're unsure of |
+| `/strategic-plan` + `/phase-planner` | if Task 1 needs the phased plan formalised |
+| `/adversarial-council` | MANDATORY on the de-lit approach BEFORE building (Rule 7) |
+| `/qc-council` | MANDATORY before every converter/SGS-block commit (blub.db 255) |
 | `/sgs-clone` · `/sgs-update` · `/wp-blocks` · `/sgs-db` | re-clone / DB sync / schema + attr TYPES ground truth |
 | `/systematic-debugging` | root-cause any "fix didn't render" (emit≠render) |
-| `/dispatching-parallel-agents` · `/subagent-driven-development` | parallel build across disjoint files |
-| chrome-devtools MCP (Playwright fallback) | live page-8 DOM probes (creds `.claude/secrets/sandybrown.env`) |
+| `/subagent-driven-development` · `/dispatching-parallel-agents` · `/subagent-prompt` | per-wave dispatch (sequential on shared convert.py) |
+| `/verify-loop` · `/capture-lesson` · `/handoff` | 2-attestation / new rules / session close |
+
+## MCP Servers & Tools
+| Tool | For |
+|------|-----|
+| chrome-devtools (Playwright fallback on "Browser already in use") | live page-8 DOM + computed-style probes (creds `.claude/secrets/sandybrown.env` — grep/cut, never `source`) |
+| `/wp-blocks` (`python ~/.claude/hooks/wp-blocks.py dump`) | block schema + attr TYPES before asserting capability |
+| `/sgs-db` (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py`) | block roster / attrs / classification (DB-authoritative; never hardcode counts) |
+| WooCommerce Store/REST + `/wc/v3` (app-password Basic auth) | only if a literal touches a WC-bound block |
+
+## Agents to Delegate To
+| Agent | When |
+|-------|------|
+| general-purpose (sonnet) | per-wave de-lit build — NO commit/deploy authority, returns uncommitted |
+| general-purpose (haiku / gemini-flash) | 2nd-council-family rater on the /qc-council pass |
+| `wp-sgs-developer` | if a wave needs heavier WP/block work |
+| `design-reviewer` | if a wave changes a visible surface (live page-8 3-breakpoint) |
 
 ## Guardrails
-Cloning thread owns the converter + homepage pipeline; WC build = theme thread. Build C → B → A in order; A is its own council-gated session. Per-row live probes, never the aggregate. Verify the full render chain. The programme plan is the acceptance surface — lead every report with the must-fix register + the ledger delta.
+Cloning thread owns the converter + homepage pipeline. The de-lit programme is council-gated (Rule 7) — design + `/adversarial-council` before any code. Build wave-by-wave, sequential on the shared convert.py, `/qc-council` + Gate A + live page-8 per commit. The align router (D222) is the proven template. The broader clone-fix ledger has ~14 rows still OPEN — those are separate from this programme; the de-lit is the FR-22-3 cleanup, not a ledger-row fix.
