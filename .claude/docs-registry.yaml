@@ -21,8 +21,6 @@ canonical_docs:
   - {path: .claude/state.md,                                           scope: forever_auto_regen,               doc_type: state}
   - {path: .claude/handoff.md,                                         scope: forever_auto_regen,               doc_type: handoff, thread: cloning-pipeline}
   - {path: .claude/next-session-prompt.md,                             scope: forever_auto_regen,               doc_type: next-session-prompt, thread: cloning-pipeline}
-  - {path: .claude/handoff-theme.md,                                   scope: forever_auto_regen,               doc_type: handoff, thread: sgs-theme}
-  - {path: .claude/next-session-prompt-theme.md,                       scope: forever_auto_regen,               doc_type: next-session-prompt, thread: sgs-theme}
   - {path: .claude/decisions.md,                                       scope: forever_append_only,              doc_type: decisions}
   - {path: .claude/mistakes.md,                                        scope: forever_append_only,              doc_type: mistakes, sot_note: "blub.db /api/corrections + memory/feedback_*.md are SoT; this is keyword-stub index"}
   - {path: .claude/parking.md,                                         scope: forever_append_only_with_status,  doc_type: parking}
@@ -283,8 +281,8 @@ cold_start_reading_order:   # CLONING-PIPELINE thread
 
 cold_start_reading_order_theme:   # SGS-THEME thread (added 2026-06-06 — was missing; a theme session following the cloning order read the wrong specs)
   - 1. .claude/state.md (read the SGS-THEME block + the GROUND-TRUTH-FIRST block)
-  - 2. .claude/handoff-theme.md (latest session — what shipped + this session's lessons)
-  - 3. .claude/next-session-prompt-theme.md (the operative opener — STOP catalogue + the orchestration plan)
+  - 2. .claude/memory/handoff-theme-2026-06-12.md (ARCHIVED — theme thread COMPLETE D220; last theme session record)
+  - 3. (theme thread COMPLETE — a fresh /handoff regenerates the opener if a theme session runs; roadmap lives in Spec 30 Open Qs + parking.md)
   - 4. .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md (product/WooCommerce master spec)
   - 5. .claude/specs/28-SGS-SMART-BULK-PRICING.md (value-ladder/bulk pricing — for any pricing work)
   - 6. .claude/decisions.md (head — last 5-10; theme D-numbers interleave with cloning)
