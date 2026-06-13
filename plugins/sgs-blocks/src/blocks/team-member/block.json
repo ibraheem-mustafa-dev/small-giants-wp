@@ -39,7 +39,8 @@
 			"style": true
 		},
 		"sgs": {
-			"imageControls": true
+			"imageControls": true,
+			"scalarContentLift": true
 		}
 	},
 	"selectors": {

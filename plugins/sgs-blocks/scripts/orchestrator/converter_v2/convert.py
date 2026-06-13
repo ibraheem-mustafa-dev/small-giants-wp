@@ -3442,7 +3442,14 @@ def _lift_scalar_attrs_by_selector(node: Tag, slug: str) -> dict:
 
         is_text = role in ("text-content", "content") and attr_type == "string"
         is_rating = role == "rating" and attr_type == "number"
-        if not (is_text or is_rating):
+        # image-object: object-typed attr with role='image-object' — find the first
+        # <img> descendant inside the matched element and lift via
+        # _lift_scalar_media_from_img (same helper used by _route_composite_interior).
+        # Covers blocks like sgs/team-member where the photo is a scalar object attr
+        # not an InnerBlock. R-22-1 (DB-driven via role column) / R-22-9 (universal
+        # — fires for any G3 block with a scalar image attr). 2026-06-13.
+        is_media_object = role == "image-object" and attr_type == "object"
+        if not (is_text or is_rating or is_media_object):
             continue
 
         # A derived_selector is one OR MORE comma-separated BEM class selectors
@@ -3467,6 +3474,13 @@ def _lift_scalar_attrs_by_selector(node: Tag, slug: str) -> dict:
             value = _rich_text_content(element)
             if value:
                 lifted[attr_name] = value
+        elif is_media_object:
+            # Find the first <img> inside (or as) the matched element.
+            # The element may BE the <img> (e.g. fixture: <img class="sgs-team-member__photo">)
+            # or contain it inside a wrapper div (e.g. render.php's __photo wrapper).
+            img_node = element if element.name == "img" else element.find("img")
+            if img_node is not None and isinstance(img_node, Tag):
+                lifted[attr_name] = _lift_scalar_media_from_img(img_node)
         else:  # is_rating
             stars = _extract_star_count(element)
             lifted[attr_name] = stars
@@ -4082,23 +4096,23 @@ def walk(
         # when EXPLICITLY declared; a grid with ABSENT align-items has no declaration to
         # lift, so the CSS grid default (stretch) is lost and render.php falls back to its
         # container-wrapper "start". _detect_grid_container_from_css encodes the rule
-        # (grid + absent/stretch → "stretch"; explicit → that value). The destination
-        # attr name differs per block: container/hero/cta/trust-bar use `verticalAlign`,
-        # while grid mirror blocks (feature-grid/card-grid/gallery/…) use `alignItems`.
-        # Emit onto whichever the block DECLARES (DB-driven), so every RESOLVED grid
-        # mirror block (not just feature-grid) gets explicit equal-height. setdefault: an
-        # explicit value already lifted by the wrapper-css pass wins. R-22-9 universal
-        # (any grid mirror block); R-22-1 DB-driven (target attr name from block schema).
+        # (grid + absent/stretch → "stretch"; explicit → that value).
+        # A-layer-router (2026-06-13 Change 3): attr name resolved name-free via DB
+        # (db.attr_for_layer_property). Hardcoded verticalAlign/alignItems fork removed.
+        # NOTE: layout is intentionally NOT lifted here for composite mirror blocks —
+        # each composite has its own layout logic in render.php (see GAP-3 comment above).
+        # Only the align-items value is lifted; setdefault: explicit wrapper-css lift wins.
         _grid_va = _detect_grid_container_from_css(classes, css_rules)
-        if _grid_va and _grid_va.get("verticalAlign"):
-            _align_names = _block_attr_names(slug)
-            _align_attr = (
-                "verticalAlign" if "verticalAlign" in _align_names
-                else "alignItems" if "alignItems" in _align_names
-                else None
-            )
+        if _grid_va and _grid_va.get("align_items_value"):
+            _align_attr = db.attr_for_layer_property(slug, "OUTER", "align-items")
             if _align_attr is not None:
-                attrs.setdefault(_align_attr, _grid_va["verticalAlign"])
+                _trace(
+                    "grid_align_resolved_composite",
+                    slug=slug,
+                    resolved_attr=_align_attr,
+                    value=_grid_va["align_items_value"],
+                )
+                attrs.setdefault(_align_attr, _grid_va["align_items_value"])
 
     # Recursively walk children for InnerBlocks — EXCEPT:
     #   (G1) leaf blocks: content lives in the lifted content attr above.
@@ -4407,6 +4421,51 @@ def walk(
     if is_top_level and slug != "sgs/container" and not _is_section_kind_mirror_block(slug):
         return db.emit_sgs_container_wrapping(slug, attrs, children_markup, css)
 
+    # IN-F (2026-06-13) — faithful-transfer for has_inner_blocks container-mirror
+    # composites whose draft node carries ONLY direct rich text (no element children).
+    #
+    # Root cause: <p class="sgs-ingredients-section__disclaimer">…</p> resolves to
+    # sgs/notice-banner via the DB slot (disclaimer→sgs/notice-banner). The banner has
+    # block_composition.has_inner_blocks=1 + composition_role='leaf'. The 'leaf' role
+    # triggers is_leaf=True at line 4017, so the children-recursion gate at line 4127
+    # is skipped (not is_leaf → False). children_markup stays []. The _atomic_attrs_for
+    # lift puts text into attrs["text"] — but notice-banner's render.php echoes $content
+    # (the sgs/text InnerBlock) and deliberately ignores the "text" scalar attr (R-22-14).
+    # Result: an empty banner. Rule 4 violation (text silently lost).
+    #
+    # Fix: when all three conditions hold —
+    #   (a) the block accepts InnerBlocks (DB: has_inner_blocks=1),
+    #   (b) the block is a container-mirror composite (DB: wraps_block='sgs/container'),
+    #   (c) children_markup is empty AND the node has non-empty direct rich text —
+    # emit exactly ONE sgs/text child carrying that rich text, and remove the scalar
+    # "text" attr that _atomic_attrs_for incorrectly lifted (it is ignored by render.php).
+    #
+    # Design constraints (Rule 7 — shared mechanism):
+    # • DB-gated on both conditions (a) and (b): no per-slug literals (R-22-1).
+    # • Universal (R-22-9): fires for any has_inner_blocks container-mirror block
+    #   that ends up with empty children AND direct text — not just notice-banner.
+    # • No double-render: children_markup must be empty; if ANY child was produced
+    #   by _process_container_children or the child-recursion loop this is a no-op.
+    # • Reuses the canonical emit path: _rich_text_content (XSS-hardened) +
+    #   emit_wp_block — no new serialiser.
+    if (slug is not None
+            and not children_markup
+            and db.block_accepts_inner_blocks(slug)
+            and _is_container_mirror_block(slug)):
+        _direct_text = _rich_text_content(node)
+        if _direct_text:
+            _text_slug = db.atomic_tag_map().get("p") or "sgs/text"
+            children_markup = [emit_wp_block(_text_slug, {"text": _direct_text}, [])]
+            # Remove the scalar attr _atomic_attrs_for incorrectly lifted: render.php
+            # reads $content (the InnerBlock), not the "text" attr (R-22-14).
+            attrs.pop("text", None)
+            _trace(
+                "in_f_direct_text_child",
+                parent_slug=slug,
+                text_slug=_text_slug,
+                text_preview=_direct_text[:80],
+            )
+
     return emit_wp_block(slug, attrs, children_markup)
 
 
@@ -4712,15 +4771,18 @@ def _detect_grid_container_from_css(classes: list[str], css_rules: dict) -> dict
     # Grid default: CSS grid align-items defaults to "stretch" (equal-height rows).
     # sgs/container.verticalAlign defaults to "start" which breaks equal-height cards.
     # Emit "stretch" explicitly when layout is grid AND align-items is absent or "stretch".
-    # For flex, only emit verticalAlign when align-items is explicitly non-default.
+    # For flex, only emit when align-items is explicitly non-default.
+    # Key is CSS-neutral "align_items_value" — the destination attr name is resolved
+    # per-block via db.attr_for_layer_property in _merge_grid_attrs_into_container
+    # (A-layer-router 2026-06-13, Change 4).
     _align_items = _strip_important(base_decls.get("align-items", "")).lower()
     if display == "grid":
         if not _align_items or _align_items == "stretch":
-            result["verticalAlign"] = "stretch"
+            result["align_items_value"] = "stretch"
         elif _align_items:
-            result["verticalAlign"] = _align_items
+            result["align_items_value"] = _align_items
     elif display == "flex" and _align_items and _align_items not in ("normal", ""):
-        result["verticalAlign"] = _align_items
+        result["align_items_value"] = _align_items
 
     # --- Responsive grid-template-columns (mobile-first → desktop-first inversion) ---
     responsive = _collect_responsive_grid_from_css(classes, css_rules, base_decls)
@@ -4761,7 +4823,8 @@ def _detect_grid_container_from_css(classes: list[str], css_rules: dict) -> dict
 
 
 def _merge_grid_attrs_into_container(
-    classes: list[str], css_rules: dict, container_attrs: dict
+    classes: list[str], css_rules: dict, container_attrs: dict,
+    slug: "str | None" = None,
 ) -> None:
     """Detect display:grid|flex on a node's CSS and merge native layout attrs.
 
@@ -4774,6 +4837,10 @@ def _merge_grid_attrs_into_container(
     Gap-3 fix (wired 2026-06-05): `display:grid/flex` has no DB row in
     property_suffixes so _lift_wrapper_css_to_container_attrs silently flags
     `display` and never sets `layout`. This helper closes that gap.
+
+    A-layer-router (2026-06-13): pass ``slug`` to resolve the correct align-items
+    attr per block (verticalAlign vs alignItems) name-free via the DB resolver.
+    slug=None → defaults to 'sgs/container' (all slug-None wrappers are containers).
     """
     grid = _detect_grid_container_from_css(classes, css_rules)
     if not grid:
@@ -4791,10 +4858,23 @@ def _merge_grid_attrs_into_container(
     for attr in ("columns", "columnsTablet", "columnsMobile"):
         if grid.get(attr) is not None:
             container_attrs.setdefault(attr, grid[attr])
-    # verticalAlign (grid equal-height default / explicit align-items). setdefault so
-    # an earlier wrapper-CSS lift of an explicit align-items value still wins.
-    if grid.get("verticalAlign"):
-        container_attrs.setdefault("verticalAlign", grid["verticalAlign"])
+    # Align-items: resolve attr name name-free from DB (A-layer-router 2026-06-13).
+    # setdefault so an earlier wrapper-CSS lift of an explicit align-items value wins.
+    _align_val = grid.get("align_items_value")
+    if _align_val:
+        _effective_slug = slug or "sgs/container"
+        _align_attr = db.attr_for_layer_property(_effective_slug, "OUTER", "align-items")
+        if _align_attr is None:
+            # Block declares no align attr — fall back to 'verticalAlign' for slug-None
+            # container wrappers so existing behaviour is preserved on the null path.
+            _align_attr = "verticalAlign"
+        _trace(
+            "grid_align_resolved",
+            slug=_effective_slug,
+            resolved_attr=_align_attr,
+            value=_align_val,
+        )
+        container_attrs.setdefault(_align_attr, _align_val)
 
 
 # ----------------------------------------------------------------------------
@@ -5030,7 +5110,8 @@ def _emit_wrapper_container(
     # GAP 3 (wrapper path) — lift display:grid|flex → layout + gridTemplateColumns onto
     # native block attrs so the block is block-portable (editor grid engine active).
     # setdefault via shared helper; never clobbers className already set above.
-    _merge_grid_attrs_into_container(classes, css_rules, container_attrs)
+    # slug=None (slug-None wrappers are always sgs/container — default in helper).
+    _merge_grid_attrs_into_container(classes, css_rules, container_attrs, slug=None)
     # Lift remaining wrapper CSS (align-items → verticalAlign etc.) via the universal
     # DB-driven lifter. Typography lift skipped (wrappers are structural, not text).
     # Root supports (padding/margin/border) are also applied here (lift_root_supports=True).
@@ -5074,7 +5155,8 @@ def _fold_layout_into_attrs(
     setdefault() never overwrites the container's own already-set layout.
     """
     # Reuse shared helper — same setdefault semantics, same detector.
-    _merge_grid_attrs_into_container(wrapper_classes, css_rules, container_attrs)
+    # slug=None (fold path always emits sgs/container — default in helper).
+    _merge_grid_attrs_into_container(wrapper_classes, css_rules, container_attrs, slug=None)
     route_node_css(
         wrapper_node, css_rules, container_attrs,
         effective_slug="sgs/container",

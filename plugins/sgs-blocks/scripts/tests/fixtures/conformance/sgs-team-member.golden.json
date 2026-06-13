@@ -1,5 +1,5 @@
 {
   "fixture": "sgs-team-member.html",
   "primary_block_emitted": "sgs/container",
-  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/team-member {\"style\":{\"border\":{\"radius\":\"12px\"},\"color\":{\"background\":\"#ffffff\"},\"spacing\":{\"padding\":{\"top\":\"24px\",\"right\":\"24px\",\"bottom\":\"24px\",\"left\":\"24px\"}}}} /-->\n<!-- /wp:sgs/container -->"
+  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/team-member {\"style\":{\"border\":{\"radius\":\"12px\"},\"color\":{\"background\":\"#ffffff\"},\"spacing\":{\"padding\":{\"top\":\"24px\",\"right\":\"24px\",\"bottom\":\"24px\",\"left\":\"24px\"}}},\"memberMedia\":{\"url\":\"/team/jane-smith.jpg\",\"id\":0,\"alt\":\"Jane Smith\"},\"photo\":{\"url\":\"/team/jane-smith.jpg\",\"id\":0,\"alt\":\"Jane Smith\"},\"name\":\"Jane Smith\",\"role\":\"Founder &amp; CEO\"} /-->\n<!-- /wp:sgs/container -->"
 }

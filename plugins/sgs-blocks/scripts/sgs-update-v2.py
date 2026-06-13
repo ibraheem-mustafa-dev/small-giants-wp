@@ -831,7 +831,16 @@ def _render_consumes_content(block_dir: Path) -> bool:
 # derivation (_populate_has_inner_blocks) AND the gate (check-composition-sync.py)
 # — keep the two in sync.
 HAS_INNER_BLOCKS_OVERRIDES: dict[str, int] = {
-    # (empty — all current blocks derive correctly; entries added only for genuine serialisation≠routing cases)
+    # sgs/team-member: save.js emits <InnerBlocks.Content /> for the optional
+    # sgs/social-icons child — so the AND rule (_derive_has_inner_blocks) correctly
+    # returns 1. But for CLONING, team-member is a typed scalar leaf: name/role/bio/photo
+    # are its own attrs, render.php builds the card itself, and $content is only used
+    # for the optional social-icons slot (never present in draft mockups). Walking the
+    # DOM children would emit sgs/media + sgs/heading + sgs/label as dead children that
+    # render.php ignores, losing the content. Override to 0 so the G3-attrs path fires
+    # (_lift_scalar_attrs_by_selector lifts name/role/photo). D221 regression fix.
+    # Source-truth fix: save.js should ideally be save=null; tracked as future cleanup.
+    "sgs/team-member": 0,
 }
 
 
@@ -842,17 +851,35 @@ HAS_INNER_BLOCKS_OVERRIDES: dict[str, int] = {
 # the heuristic mis-derives. Each entry MUST cite the reason + date.
 # Keyed (block_slug, attr_name) -> {column: value, ...} to UPDATE on block_attributes.
 ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
-    # sgs/team-member.name: assign-canonical heuristically maps this block's OWN
-    # scalar `__name` heading element to canonical_slot='heading', whose generic
-    # slot resolves to the block-equivalent sgs/heading. But render.php renders
-    # `name` as a SCALAR element (<h3 class="sgs-team-member__name"> with bespoke
-    # nameColour + Schema.org/Person), and edit.js only allows sgs/social-icons as
-    # a child. So equivalent_block_for() wrongly returns sgs/heading → on a clone
-    # the walker would emit a dead sgs/heading child render.php ignores (the bug
-    # the has_inner_blocks=0 override was masking). Force role=NULL (matching the
-    # sibling `role` attr, which is correctly scalar) so equivalent_block_for
-    # returns None. Root-cause fix; DB-driven, no converter code change. 2026-06-12.
-    ("sgs/team-member", "name"): {"role": None},
+    # sgs/team-member.name: assign-canonical routes this to canonical_slot='heading'
+    # → standalone_block='sgs/heading' → equivalent_block_for() returns 'sgs/heading'.
+    # With has_inner_blocks=0 (HAS_INNER_BLOCKS_OVERRIDES above), the walker never
+    # recurses children, so equivalent_block_for is never consulted for child routing.
+    # But the G3-attrs path (_lift_scalar_attrs_by_selector) needs role='text-content'
+    # to lift the person's name from the <h3 class="sgs-team-member__name"> element.
+    # Setting role='text-content' is safe: equivalent_block_for is gated by
+    # block_accepts_inner_blocks (which returns False with the override) so the
+    # sgs/heading dead-child bug cannot recur. D221 regression fix. 2026-06-13.
+    ("sgs/team-member", "name"): {"role": "text-content"},
+    # sgs/team-member.role: person's job title. canonical_slot='role' →
+    # standalone_block='sgs/label' → would emit a dead child with has_inner_blocks=1.
+    # With has_inner_blocks=0, force role='text-content' so the scalar text of the
+    # <p class="sgs-team-member__role"> element is lifted into this string attr. 2026-06-13.
+    ("sgs/team-member", "role"): {"role": "text-content"},
+    # sgs/team-member.photo + .memberMedia: object-typed scalar image attrs. Two
+    # corrections the heuristic gets wrong:
+    #   (1) derived_selector: assign-canonical derives '.sgs-team-member__media' from
+    #       the 'media' canonical_slot, but render.php + edit.js BOTH emit the image
+    #       under class '.sgs-team-member__photo' (render.php:125/133). The lift element
+    #       must match the REAL BEM class, so force '.sgs-team-member__photo'.
+    #   (2) role: NULL by default → _lift_scalar_attrs_by_selector skips it. Force
+    #       role='image-object' (content-bearing) so the G3-attrs path lifts the <img>
+    #       into the object attr via _lift_scalar_media_from_img.
+    # Both fields MUST live in this override (not a direct DB edit) so they survive
+    # every /sgs-update reseed — assign-canonical would otherwise re-derive __media +
+    # reset role to NULL, breaking the photo lift. 2026-06-13.
+    ("sgs/team-member", "photo"): {"role": "image-object", "derived_selector": ".sgs-team-member__photo"},
+    ("sgs/team-member", "memberMedia"): {"role": "image-object", "derived_selector": ".sgs-team-member__photo"},
 }
 
 
