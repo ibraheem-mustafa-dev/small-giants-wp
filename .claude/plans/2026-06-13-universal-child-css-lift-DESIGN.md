@@ -4,7 +4,14 @@ project: small-giants-wp
 thread: cloning-pipeline
 title: "Universal child-element CSS lift — extend the selector-lift to typography/colour so ANY draft CSS at ANY depth transfers (fidelity fix = de-literalisation)"
 created: 2026-06-13
-status: DESIGN COMPLETE (mechanism + Track B inventory + Track C deterministic DB-fill integrated). NEXT = /adversarial-council (Rule 7) before any build.
+status: BUILT + VERIFIED + REPRODUCIBLE (2026-06-13). Item 1 (dead-core removal) + Item 2a (testimonial DB-fill) + Item 2b (`_lift_styling_attrs_by_selector`, capability-gated) SHIPPED. Both conformance suites green (43+26) post FULL `/sgs-update` reseed; classifications + `scalar-styling-lift` capability survive reseed; lift values exact-match the fixture draft CSS (quoteFontSize 17px / quoteColour #3a2e26 / quoteLineHeight 1.6). NEXT = live re-clone page-8 + check the 14 OPEN ledger rows.
+
+## BUILD-COMPLETE NOTES (2026-06-13)
+- **Mechanism proven faithful:** the sibling `_lift_styling_attrs_by_selector` (capability-gated `scalar-styling-lift`, testimonial only) lifts child-element typography/colour by `derived_selector`, css_property resolved from the attr suffix, colour via `_extract_token_or_hex`, font-weight keyword→numeric, double-write tripwire vs route_node_css. Golden regen is faithful (3 attrs added, nothing dropped).
+- **Two documented fidelity gaps (mechanism-correct, DB-data refinements for the broad pass — NOT blockers):**
+  1. `quoteStyle` (font-style:italic) does NOT transfer — the `Style` suffix has `css_property=NULL` (and is shared by ~28 `behaviour` attrs, so cannot be globally remapped). Fix later: rename attr to `quoteFontStyle` (block change) OR a per-attr css_property mapping.
+  2. `nameFontWeight` derived_selector is the RENDER class `.sgs-testimonial__name`, but the draft fixture uses `.sgs-testimonial__author` — naming drift. Fix later: multi-selector `.sgs-testimonial__name, .sgs-testimonial__author`.
+- **ratingSize** is an SVG width/height attribute (not CSS) — correctly excluded (Size suffix css_property=NULL); stays as-is.
 parent: supersedes the de-lit Option-1 approach (NO-GO'd by council 2026-06-13 — it would have DROPPED child CSS). Bean reframe: the hand-reads are a SYMPTOM of a universal-mechanism gap; fix the gap, don't document the symptom.
 template: align-router D222 + the EXISTING cross-node routers (_route_interior_css_to_parent_slot FR-22-5.3, _route_area_css_to_block_attrs GRID-PER-AREA).
 ---
@@ -129,7 +136,43 @@ All four are dated migrations / derivation fixes reproduced by a full `/sgs-upda
 
 **STATUS: NO-GO as written. Build shape re-decision required (see handoff to Bean).**
 
-## Build sequence (post-council — SUPERSEDED by the trimmed shape above; retained for reference)
+## LOCKED BUILD PLAN (post-council #2, fly-through — Bean chose "Both") 2026-06-13
+
+Two items. Item 1 (free win) is independent + low-risk. Item 2 (the slice) is sensitive — testimonial-only, capability-gated. Orchestration: subagents implement; Opus QC + live-verify + commit. Commit path-scoped; merge via temp-worktree only if origin/main has co-actively moved.
+
+### ITEM 1 — Remove the 6 dead core/* handlers (free win, independent)
+- **Edit:** delete the 6 unreachable branches in `_atomic_attrs_for`: `core/heading` (2940), `core/paragraph` (2949), `core/image` (2987), `core/button` (3005), `core/quote` (3015), `core/list` (3355). Also re-check `_CORE_TEXT_CAPABLE` frozenset (~line 4916, council SF-2) — clean up any now-orphaned core entries there too.
+- **Guard:** remove the 6 `core/*` entries from `check-atomic-slug-literals.py` ALLOW_LIST (allow-list shrinks — the intended direction).
+- **GATES:** (a) static reachability proof — `atomic_tag_map()` yields zero core slugs (DONE this session); (b) BOTH conformance suites green (`scripts/tests/test_converter_conformance.py` 43 + `converter_v2/tests/` 26) over the FULL fixtures corpus (not just page-8, council SF-2); (c) a page-8 re-clone emits zero `core/` blocks; (d) the guard passes with the shrunk allow-list.
+
+### ITEM 2 — Universal styling-lift, TESTIMONIAL ONLY (the slice)
+**Order is mandatory (council DB-realist + live-verify):**
+
+**2a. DB-fill (deterministic, dry-run gated) — Track C, council-corrected:**
+- **VERIFY FIRST (council DB-realist X3):** run `peel_property_suffix('quoteStyle', …)` — if it already peels `FontStyle` (longest-match) then the `Style→select-from-enum` migration is UNNEEDED + dangerous (would reclassify 28 live `behaviour` attrs). Do NOT touch the global `Style` suffix; if `quoteStyle` mis-peels, fix it via `ATTR_CLASSIFICATION_OVERRIDES` for that ONE attr only.
+- **Gap-path role write (Fix 1):** modify `assign-canonical.py` gap branch to write the suffix-derived role when stem has no slot match. **Run `--dry-run` FIRST + diff the role column across ALL attrs** (council: 437-attr blast); keep role-assignment SEPARATE from lift-eligibility (the capability gate decides lift, not the role).
+- **Correct the testimonial selectors:** the render element is `.sgs-testimonial__quote` NOT `__text` (council live-verify M1) — the existing hand-read's `__text` is a DEAD selector. The derived_selector fill for quote attrs must target `.sgs-testimonial__quote` (+ `__stars`/`__author` — verify the real rendered classes against render.php first).
+- **Stale-row clear (Fix 4):** NULL canonical_slot/role/derived_selector for `nameFontWeight`+`ratingSize` (the 2 stale rows), re-derive. Ensure `Size`/`FontWeight` resolve to a styling role WITH a non-NULL `css_property` (council X2: `Size`→css_property is NULL → ratingSize would be unreachable; resolve before relying on it).
+- **DROP iconCircleBackground (Fix 2 / R-22-7):** decisions.md D216 council ruled it "stays typed" — keep the hand-read, do NOT add the iconCircle alias this session.
+- **Reproduce via a FULL `/sgs-update` reseed**; verify target attrs resolve correctly. No manual edits.
+
+**2b. Extend the styling-lift (capability-gated, arbiter-routed):**
+- Add a styling arm — decide council Q1/MF-2: prefer routing typography/colour through the EXISTING `attr_for_property` arbiter (db_lookup:1280, council cynic MF-1) rather than hand-reversing `property_suffixes`. Resolve the architectural fork (extend `_lift_scalar_attrs_by_selector` vs fold into `_route_interior_css_to_parent_slot`) — document the choice + assert mutual-exclusivity (tripwire on double-write, MF-3).
+- **Class membership:** `role in {color, typography}` + font-style ONLY where `css_property IS NOT NULL`. EXCLUDE `select-from-enum` wholesale + EXCLUDE any `derived_selector` referencing `__hover/__active/__focus` (council M2/M3/regression).
+- **MANDATORY opt-in capability** (council M1): keep behind a per-block capability (reuse `scalar-content-lift` or a new `scalar-styling-lift`); enable on `sgs/testimonial` ONLY for this slice. The capability — NOT just the selector-match — is the over-fire gate.
+- **Normalisers:** colour via `_extract_token_or_hex`/`_colour_value_to_style` (verify `white` round-trips identically to the trust-bar hand-read, council cynic MISSING); font-weight keyword→numeric (render.php enum-guards to 700, council MP3); responsive tiers (does the lift populate `quoteFontSizeTablet/Mobile` from `@media` rules? council G3 — decide in/out of scope).
+
+**2c. Live-verify BEFORE removing anything (3-state, council live-verify MP1):**
+- After 2a+2b: clone page-8, confirm the lift EMITS non-empty quote attrs (the before-state was empty due to the dead `__text` selector — so the gate is "lift fires + matches the CORRECTED hand-read", not "before==after").
+- Computed-style probes on a **classic-card** testimonial variant (variant CSS overrides font-style, council MP2) at 1440/768/375: `.sgs-testimonial__quote` fontSize/color/fontStyle; `__stars` fontSize; `__author` fontWeight.
+- **Do NOT remove the hand-read** (3111) this session — leave it dead-but-safe; removal is deferred hygiene (council ship-PM).
+- BOTH conformance suites green; emitted-attrs JSON diff (not BEM-blind roster-parity) on the page-8 testimonial node.
+
+### NOT in this build (deferred, council ship-PM): all branch removals (3111/3335/sgs-text) — pure hygiene, no fidelity, behind the ~14 OPEN ledger rows. iconCircleBackground — R-22-7 locked. The FR-22-2.4 reframe — deleted (use FR-22-2.2-safe-by-construction).
+
+---
+
+## Build sequence (original draft — SUPERSEDED by the LOCKED BUILD PLAN above; retained for reference)
 1. **DB-fill first (Track C output)** — correct the styling attrs' roles + granular `derived_selector`s deterministically via `/sgs-update`; full reseed; verify the target attrs resolve correctly. (No converter change yet.)
 2. **Extend the selector-lift** to styling roles. Unit tests on the new branch (colour, font-size, font-weight, font-style; no-op on absent element; no-op on grid block).
 3. **Live-verify the lift PRODUCES the same values** the hand-reads produce — computed-style probe on page-8 testimonial (`__text` font-size/colour, `__stars` size, `__author` weight) + trust-bar `__icon` background, BEFORE removing anything.

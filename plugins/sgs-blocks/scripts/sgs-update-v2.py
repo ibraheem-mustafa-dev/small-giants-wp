@@ -438,6 +438,24 @@ def _index_sgs_block_files(
                 (slug,),
             )
 
+        # --- scalar-styling-lift capability (styling-attr opt-in gate) ---
+        # block.json supports.sgs.scalarStylingLift === true → upsert a
+        # block_capabilities row (slug, 'scalar-styling-lift'); absent/false →
+        # remove it. Idempotent. Mirrors scalar-content-lift above.
+        wants_styling_lift = bool(sgs_supports.get("scalarStylingLift", False)) if isinstance(sgs_supports, dict) else False
+        if wants_styling_lift:
+            c.execute(
+                "INSERT OR IGNORE INTO block_capabilities "
+                "(block_slug, capability) VALUES (?, 'scalar-styling-lift')",
+                (slug,),
+            )
+        else:
+            c.execute(
+                "DELETE FROM block_capabilities "
+                "WHERE block_slug = ? AND capability = 'scalar-styling-lift'",
+                (slug,),
+            )
+
         scanned += 1
 
         # --- INSERT OR IGNORE attributes; UPDATE on drift ---
@@ -880,6 +898,40 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     # reset role to NULL, breaking the photo lift. 2026-06-13.
     ("sgs/team-member", "photo"): {"role": "image-object", "derived_selector": ".sgs-team-member__photo"},
     ("sgs/team-member", "memberMedia"): {"role": "image-object", "derived_selector": ".sgs-team-member__photo"},
+    # sgs/testimonial — 5 styling attrs mis-classified by assign-canonical.
+    # Verified against render.php (D222 2026-06-13).
+    #
+    # quoteFontSize: assign-canonical likely derives role='typography' + selector
+    #   '.sgs-testimonial__quote' correctly (DB confirmed). No change — left here
+    #   for completeness of the audit (do not add an override for a correct row).
+    #
+    # quoteColour: assign-canonical derives role='color' + selector
+    #   '.sgs-testimonial__quote' correctly (DB confirmed). No change.
+    #
+    # quoteStyle: peels suffix 'Style' (longest-match; 'FontStyle' doesn't match
+    #   'quoteStyle') → role='behaviour', css_property=NULL. Correct semantic:
+    #   it is font-style (select from ['italic','normal']), matching FontStyle's
+    #   role='select-from-enum'. Fix to 'select-from-enum' + real selector.
+    #   render.php line 277–281: $quote_style emitted as font-style inline on
+    #   <blockquote class="sgs-testimonial__quote">.
+    ("sgs/testimonial", "quoteStyle"): {"role": "select-from-enum", "derived_selector": ".sgs-testimonial__quote"},
+    #
+    # nameFontWeight: stale role='content' + canonical_slot='quote' + selector
+    #   '.sgs-testimonial__text, .sgs-testimonial__quote'. The __text class does
+    #   not exist in render.php. Real element: <cite class="sgs-testimonial__name">
+    #   (render.php line 288). FontWeight suffix → role='typography'. Fix both.
+    ("sgs/testimonial", "nameFontWeight"): {"role": "typography", "derived_selector": ".sgs-testimonial__name"},
+    #
+    # ratingSize: stale role='content' + selector '.sgs-testimonial__text, ...'.
+    #   Real element: <svg width="$rating_size" height="$rating_size"> inside
+    #   <div class="sgs-testimonial__rating sgs-testimonial__stars"> (lines 203/215).
+    #   ratingSize drives SVG width/height attributes, NOT a CSS font-size property.
+    #   Size.css_property = NULL in property_suffixes → NOT CSS-liftable by suffix.
+    #   BLOCKER: the CSS-lift cannot resolve ratingSize via suffix alone. Fix the
+    #   role to 'select-from-enum' (closest correct: it controls a dimension) and
+    #   the selector to the real rating container. The lift-capability gap is a
+    #   separate task — documented here, not papered over.
+    ("sgs/testimonial", "ratingSize"): {"role": "select-from-enum", "derived_selector": ".sgs-testimonial__rating"},
 }
 
 

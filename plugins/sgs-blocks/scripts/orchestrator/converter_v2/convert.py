@@ -2936,18 +2936,12 @@ def _atomic_attrs_for(node: Tag, slug: str, allow_text_fallback: bool = True, cs
     if slug == "sgs/heading" and tag in ("h1", "h2", "h3", "h4", "h5", "h6"):
         return {"content": _rich_text_content(node), "level": tag}
 
-    # core/heading — WP core schema: level (int 1..6), content (rich-text)
-    if slug == "core/heading" and tag in ("h1", "h2", "h3", "h4", "h5", "h6"):
-        return {"level": int(tag[1]), "content": _rich_text_content(node)}
 
     # sgs/text — current schema: text (rich-text via wp_kses_post in render.php:607)
     # XS-9.1 fix 2026-05-30: render.php audit confirmed wp_kses_post escape.
     if slug == "sgs/text" and tag in ("p", "span", "div"):
         return {"text": _rich_text_content(node)}
 
-    # core/paragraph — WP core schema: content (rich-text)
-    if slug == "core/paragraph" and tag in ("p", "span", "div"):
-        return {"content": _rich_text_content(node)}
 
     # sgs/media — current schema: imageUrl, imageAlt, maxHeight + maxHeightUnit, objectFit.
     # render.php reads maxHeight/maxHeightUnit (emits max-height:Npx); imageHeight is a
@@ -2983,12 +2977,6 @@ def _atomic_attrs_for(node: Tag, slug: str, allow_text_fallback: bool = True, cs
                 src = source.get("src", "")
         return {"mediaType": "video", "videoUrl": _resolve_media_url(src), "videoSource": "external"}
 
-    # core/image — WP core schema: url, alt
-    if slug == "core/image" and tag == "img":
-        return {
-            "url": _resolve_media_url(node.get("src", "")),
-            "alt": node.get("alt", ""),
-        }
 
     # sgs/button — current schema: label (rich-text via wp_kses with no-<a>
     # allowlist in render.php:570). XS-9.2 fix 2026-05-30: tightened allowlist
@@ -3001,19 +2989,12 @@ def _atomic_attrs_for(node: Tag, slug: str, allow_text_fallback: bool = True, cs
     if slug == "sgs/button" and tag in ("a", "button"):
         safe_url = _safe_href(node.get("href", "")) or ""
         return {"label": _rich_text_content(node), "url": safe_url}
-    # core/button — WP core schema: text (rich-text), url
-    if slug == "core/button" and tag in ("a", "button"):
-        safe_url = _safe_href(node.get("href", "")) or ""
-        return {"text": _rich_text_content(node), "url": safe_url}
 
     # sgs/quote — current schema: body (array of rich-text strings via wp_kses_post in render.php:727)
     # XS-9.1 fix 2026-05-30: render.php audit confirmed wp_kses_post escape on body items.
     if slug == "sgs/quote" and tag == "blockquote":
         return {"body": [_rich_text_content(node)]}
 
-    # core/quote — WP core schema: value (rich-text)
-    if slug == "core/quote" and tag == "blockquote":
-        return {"value": _rich_text_content(node)}
 
     # sgs/icon-list — current schema: items (array of {icon, text})
     if slug == "sgs/icon-list" and tag in ("ul", "ol"):
@@ -3351,9 +3332,6 @@ def _atomic_attrs_for(node: Tag, slug: str, allow_text_fallback: bool = True, cs
 
         return trust_result
 
-    # core/list — WP core: inner blocks of core/list-item with content
-    if slug == "core/list" and tag in ("ul", "ol"):
-        return {"ordered": tag == "ol"}
 
     # sgs/divider, core/separator, core/separator-like — no content attrs
     if tag == "hr":
@@ -3493,6 +3471,191 @@ def _lift_scalar_attrs_by_selector(node: Tag, slug: str) -> dict:
         sr_info = catalogue.get("showRating")
         if isinstance(sr_info, dict) and sr_info.get("attr_type") == "boolean":
             lifted["showRating"] = True
+
+    return lifted
+
+
+# font-weight keyword → numeric string (render.php enum-guards '400'..'900').
+_FONT_WEIGHT_KEYWORDS: dict[str, str] = {
+    "normal": "400",
+    "bold": "700",
+}
+
+
+def _lift_styling_attrs_by_selector(node: Tag, slug: str, css_rules: dict) -> dict:
+    """Universal DB-driven styling-attr lift for a G3-attrs content block.
+
+    Sibling of _lift_scalar_attrs_by_selector — lifts STYLING (typography /
+    colour) attrs from named child elements, keyed by each attr's
+    derived_selector.  Does NOT modify _lift_scalar_attrs_by_selector.
+
+    Selection rule (no-op floor):
+      - capability gate: block MUST have 'scalar-styling-lift' capability
+        (block.json supports.sgs.scalarStylingLift === true).
+      - attr MUST have role in ('color', 'typography') — all other roles
+        (select-from-enum, behaviour, content …) are excluded.
+      - attr MUST have a non-empty derived_selector.
+      - derived_selector MUST NOT contain a state pseudo token
+        (__hover, __active, __focus) — hover/focus variants are not lifted
+        from base draft CSS.
+      - css_property for this attr MUST be non-NULL in property_suffixes
+        (correct excludes quoteStyle/ratingSize whose suffixes Style/Size have
+        NULL css_property).
+
+    css_property resolution: peel the attr name's PascalCase suffix against
+    property_suffixes (longest match wins; same DB table _lift_typography_to_
+    block_attrs reads).
+
+    Value normalisation per css_property:
+      - color / background-color → _extract_token_or_hex (bare slug or hex;
+        matches flat SGS colour attr contract in _lift_typography_to_block_attrs).
+      - font-size → raw string (e.g. '18px'); if attr_type is 'number' split via
+        _split_value_unit and write companion Unit attr when block declares it.
+      - font-weight → normalise keywords: 'bold'→'700', 'normal'→'400';
+        pass-through numeric strings; skip anything else with a _trace note.
+
+    Double-write tripwire: at the call site, each key is only written when
+    absent from the already-merged attrs dict (atomic wins — see G3 wiring).
+
+    Spec refs: FR-22-2 (content-routing), FR-22-5 D1 (faithful transfer),
+    R-22-1 (DB-driven, no per-slug branch), R-22-9 (universal G3 path).
+
+    Args:
+        node:      The resolved block's root Tag node (draft DOM subtree).
+        slug:      The resolved SGS block slug (e.g. 'sgs/testimonial').
+        css_rules: The CSS rule-set dict in scope at the G3 call site
+                   (passed to _collect_css_decls_for_element).
+
+    Returns:
+        dict of lifted styling attrs (possibly empty). No garbage keys.
+    """
+    if not slug.startswith("sgs/"):
+        return {}
+    # CAPABILITY GATE: hard NO-OP for every block that has NOT declared
+    # 'scalar-styling-lift' (block.json supports.sgs.scalarStylingLift).
+    # Prevents the role='color'/'typography' trigger from touching every block
+    # that happens to declare colour/typography attrs (e.g. sgs/container).
+    if "scalar-styling-lift" not in db.capabilities_for(slug):
+        return {}
+    catalogue = db.block_attrs(slug)
+    if not catalogue:
+        return {}
+
+    # Build a fast suffix → (css_property, kind) reverse map from the DB.
+    # css_property_suffixes() returns only rows with non-NULL css_property and
+    # resolvable kind — exactly the set we can act on.
+    # Key: suffix uppercased (e.g. 'FONTSIZE'); value: (css_property, kind).
+    suffix_map: dict[str, tuple[str, str]] = {}
+    for css_prop, suffix, kind in db.css_property_suffixes():
+        suffix_map[suffix.upper()] = (css_prop, kind)
+
+    lifted: dict = {}
+
+    for attr_name, info in catalogue.items():
+        if not isinstance(info, dict):
+            continue
+        role = info.get("role")
+        if role not in ("color", "typography"):
+            continue
+        selector = info.get("derived_selector")
+        if not selector or not isinstance(selector, str):
+            continue
+        # Skip state pseudo-tokens — hover/active/focus variants are not
+        # read from base draft CSS.
+        if any(tok in selector for tok in ("__hover", "__active", "__focus")):
+            continue
+
+        # Resolve css_property by peeling the longest matching suffix from
+        # attr_name (PascalCase tail).  Longest-first avoids 'Colour' being
+        # shadowed by the 1-char tail of a longer suffix.
+        css_property: str | None = None
+        matched_kind: str | None = None
+        # Try suffixes longest-first (sort by suffix length descending).
+        for suf_upper, (cp, kd) in sorted(
+            suffix_map.items(), key=lambda kv: len(kv[0]), reverse=True
+        ):
+            if attr_name.upper().endswith(suf_upper):
+                css_property = cp
+                matched_kind = kd
+                break
+
+        if css_property is None:
+            _trace(
+                "styling_lift_no_css_property",
+                slug=slug,
+                attr_name=attr_name,
+                role=role,
+            )
+            continue
+
+        # Resolve the element via derived_selector (same multi-selector pattern
+        # as _lift_scalar_attrs_by_selector — comma-separated BEM classes,
+        # first non-None match wins).
+        element = None
+        for part in selector.split(","):
+            class_name = part.strip().lstrip(".")
+            if not class_name:
+                continue
+            element = node.find(class_=class_name)
+            if element is not None and isinstance(element, Tag):
+                break
+            element = None
+        if element is None:
+            continue  # absent draft element → emit no key
+
+        # Collect CSS declarations for the matched element.
+        base_decls, _bp_decls = _collect_css_decls_for_element(element, css_rules)
+        raw = base_decls.get(css_property)
+        if not raw:
+            continue
+        raw = _strip_important(raw).strip()
+        if not raw:
+            continue
+
+        # Normalise value per css_property and attr_type.
+        attr_type = info.get("attr_type", "string")
+
+        if css_property in ("color", "background-color"):
+            # Flat SGS colour attrs: emit bare token slug or hex (same
+            # contract as _lift_typography_to_block_attrs lines 1577-1589).
+            # Do NOT use _colour_value_to_style — that wraps in
+            # "var:preset|color|..." which sgs_colour_value() mangles.
+            v = _extract_token_or_hex(raw)
+            if v is not None:
+                lifted[attr_name] = v
+
+        elif css_property == "font-weight":
+            # Normalise to numeric string (render.php enum-guards '400'..'900').
+            lc = raw.lower()
+            if lc in _FONT_WEIGHT_KEYWORDS:
+                lifted[attr_name] = _FONT_WEIGHT_KEYWORDS[lc]
+            elif lc.isdigit():
+                lifted[attr_name] = lc
+            else:
+                _trace(
+                    "styling_lift_font_weight_skip",
+                    slug=slug,
+                    attr_name=attr_name,
+                    raw=raw,
+                )
+
+        elif css_property == "font-size":
+            if attr_type == "number":
+                num, unit = _split_value_unit(raw)
+                if num is not None:
+                    lifted[attr_name] = int(num) if num == int(num) else num
+                    # Unit companion attr (e.g. quoteFontSizeUnit) if declared.
+                    unit_attr = attr_name + "Unit"
+                    if unit_attr in catalogue and unit:
+                        lifted[unit_attr] = unit
+            else:
+                # string-typed font-size attr — store raw CSS value.
+                lifted[attr_name] = raw
+
+        else:
+            # Remaining typography properties (line-height, letter-spacing,
+            # text-align, etc.) — store raw CSS value as string.
+            lifted[attr_name] = raw
 
     return lifted
 
@@ -4205,10 +4368,32 @@ def walk(
         # (no content selectors) and absent draft elements (no key emitted).
         # R-22-1 (DB-driven, no per-slug branch) + R-22-9 (universal G3 path).
         selector_lift = _lift_scalar_attrs_by_selector(node, slug)
-        # Merge order: explicit _atomic_attrs_for results WIN over the selector-lift
-        # (e.g. option-picker's optionItems handler is authoritative) — atomic last.
-        if selector_lift or atomic:
-            attrs = {**attrs, **selector_lift, **atomic}
+        # Universal DB-driven styling-attr lift (scalar-styling-lift capability,
+        # 2026-06-13): lift colour/typography attrs from named child elements via
+        # derived_selector, capability-gated (block.json scalarStylingLift).
+        # SIBLING of _lift_scalar_attrs_by_selector — does NOT modify content lift.
+        # R-22-1 (DB-driven) + R-22-9 (universal G3 path).
+        styling_lift = _lift_styling_attrs_by_selector(node, slug, css_rules)
+        # Merge order: explicit _atomic_attrs_for results WIN over both lifts.
+        # Double-write tripwire: styling_lift only fills keys atomic did NOT set.
+        # If styling_lift would overwrite a key already in selector_lift or
+        # atomic, emit a trace and skip that key.
+        if selector_lift or styling_lift or atomic:
+            # Base: wrap-order is selector_lift < styling_lift < atomic.
+            # Build styling_lift filtered by what atomic + selector_lift already own.
+            pre_merge = {**attrs, **selector_lift}
+            styling_lift_safe: dict = {}
+            for _sk, _sv in styling_lift.items():
+                if _sk in pre_merge or _sk in atomic:
+                    _trace(
+                        "styling_lift_double_owner",
+                        slug=slug,
+                        attr_name=_sk,
+                        existing_owner="atomic_or_selector_lift",
+                    )
+                else:
+                    styling_lift_safe[_sk] = _sv
+            attrs = {**attrs, **selector_lift, **styling_lift_safe, **atomic}
 
     # Spec 11 + P-9: wrap any loose sgs/button runs in sgs/multi-button (WP
     # core/buttons mirror). No-op when there are no loose buttons; already-grouped

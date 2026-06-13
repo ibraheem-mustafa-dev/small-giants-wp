@@ -35,22 +35,16 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 ALLOW_LIST: dict[str, str] = {
     "sgs/heading":      "core",       # level attr (string "h1"…"h6") vs int for core/heading
-    "core/heading":     "core",       # level attr is int 1..6; schema differs from sgs/heading
     "sgs/text":         "core",       # attr key "text" differs from core/paragraph "content"
-    "core/paragraph":   "core",       # attr key "content"; WP core schema
     "sgs/media":        "media",      # img / video / iframe routing; maxHeight unit split
-    "core/image":       "core",       # attr keys "url"/"alt" differ from sgs/media schema
     "sgs/button":       "security",   # _safe_href XS-9.2 + wp_kses no-<a> allowlist comment
-    "core/button":      "security",   # _safe_href XS-9.2; attr key "text" vs sgs/button "label"
     "sgs/quote":        "array",      # body is array of rich-text strings, not a scalar
-    "core/quote":       "core",       # attr key "value"; WP core schema
     "sgs/icon-list":    "array",      # items is array of {icon, text} dicts
     "sgs/option-picker": "array",     # optionItems is array; typeKey/defaultSelected derived from DOM
     "sgs/icon":         "pending",    # emoji vs lucide-slug detection; pending universal emoji support
     "sgs/testimonial":  "pending",    # CSS-lift for quote/rating/author; pending universal CSS-lift
     "sgs/notice-banner": "pending",   # background CSS-lift guard; pending universal single-colour lift
     "sgs/trust-bar":    "array",      # items array + icon resolver; D182 TYPED native emission
-    "core/list":        "core",       # ordered: bool from tag name; WP core schema
 }
 
 # ---------------------------------------------------------------------------

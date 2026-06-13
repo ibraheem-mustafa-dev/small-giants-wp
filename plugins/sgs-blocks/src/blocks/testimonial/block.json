@@ -74,7 +74,8 @@
 					"workMedia"
 				],
 				"minimal-quote": []
-			}
+			},
+			"scalarStylingLift": true
 		}
 	},
 	"selectors": {
