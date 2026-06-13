@@ -6,7 +6,7 @@ title: "A — the name-free align/grid LAYER-ROUTER (design for adversarial-coun
 created: 2026-06-13
 status: SHIPPED + CLOSED (2026-06-13). Council verdict: CONDITIONAL GO on the corrected smaller build (see §ADVERSARIAL-COUNCIL VERDICT below). Built as designed; router unification FINISHED commit c5ecb4eb. D222.
 supersedes: the interim WS-A dual-key render fallback (shipped 1f107711) — now permanently the regression floor; the converter is name-free. See §CORRECTED build section below for the acceptance surface that was executed.
-parent_programme: .claude/plans/2026-06-12-universal-align-router-programme.md
+parent_programme: .claude/plans/archive/2026-06-12-universal-align-router-programme.md
 ---
 
 # A — the name-free align/grid layer-router

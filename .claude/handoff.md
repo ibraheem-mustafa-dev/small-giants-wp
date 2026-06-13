@@ -41,7 +41,7 @@ generated: 2026-06-12
 | `plugins/sgs-blocks/scripts/check-composition-sync.py` | WS-B: NEW prebuild sync gate (mirrors the overrides) |
 | `plugins/sgs-blocks/package.json` | WS-B: wired check-composition-sync into prebuild/prestart |
 | `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php` | WS-A: dual-key align fallback (fixes IN-C) |
-| `.claude/{decisions.md,plans/2026-06-09-...ledger.md,plans/2026-06-12-universal-align-router-programme.md,next-session-prompt.md}` | D216 + IN-C VERIFIED + programme status |
+| `.claude/{decisions.md,plans/2026-06-09-...ledger.md,plans/archive/2026-06-12-universal-align-router-programme.md,next-session-prompt.md}` | D216 + IN-C VERIFIED + programme status |
 | `tests/fixtures/conformance/{mamas-trust-bar-real,sgs-trust-bar}.golden.json` | re-baselined (gridTemplateColumns* added) |
 
 ## Notes for Next Session
