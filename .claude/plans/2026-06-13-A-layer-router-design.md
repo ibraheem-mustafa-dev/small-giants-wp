@@ -4,8 +4,8 @@ project: small-giants-wp
 thread: cloning-pipeline
 title: "A — the name-free align/grid LAYER-ROUTER (design for adversarial-council gate)"
 created: 2026-06-13
-status: DESIGN — pre-build. Rule 7 gate: /adversarial-council on the router MECHANISM BEFORE any code.
-supersedes: the interim WS-A dual-key render fallback (shipped 1f107711) is the SAFE INTERIM this router makes permanent/redundant on the converter side.
+status: SHIPPED + CLOSED (2026-06-13). Council verdict: CONDITIONAL GO on the corrected smaller build (see §ADVERSARIAL-COUNCIL VERDICT below). Built as designed; router unification FINISHED commit c5ecb4eb. D222.
+supersedes: the interim WS-A dual-key render fallback (shipped 1f107711) — now permanently the regression floor; the converter is name-free. See §CORRECTED build section below for the acceptance surface that was executed.
 parent_programme: .claude/plans/2026-06-12-universal-align-router-programme.md
 ---
 
@@ -96,6 +96,13 @@ The programme plan's original "unify 8 blocks to one align attr + deprecated.js 
 4. Neutralise `_detect_grid_container_from_css` internal key → CSS-neutral name; update its readers.
 5. Determinism pins + non-regennable align-present assertion + full conformance run. [Commit 2]
 6. /qc-council before commit (blub.db 255); commit by explicit path; merge to main via temp-worktree cherry-pick.
+
+## BUILD RECORD (SHIPPED 2026-06-13, D222)
+
+- **Commit 1b03b8c7** — `property_suffixes` row `align-items → AlignItems` added via dated migration `migrations/2026-06-13-property-suffixes-align-items.py`; call-site relocated into `_merge_grid_attrs_into_container` (receives `slug`); fork at `convert.py:4092-4101` removed; `_detect_grid_container_from_css` internal key neutralised; determinism pins + non-regennable align-present assertion green. qc-council (2 cross-model raters) GO before commit.
+- **Commit c5ecb4eb** — last `verticalAlign` literal (slug-None fallback in `_merge_grid_attrs_into_container`) removed; align now resolves purely via `attr_for_layer_property` + flag-not-drop for blocks that declare no OUTER align attr. 31-block roster old-fork-vs-resolver parity = 0 mismatches. Latent over-emit on 20-of-31 mirror blocks also fixed. **Router unification CLOSED.**
+- **Remaining literal:** only `iconCircleBackground` — council-ruled trust-bar-specific per-item attr, not a carve-out. Zero align/gap name literals remain.
+- **Render-side dual-key retained permanently** (`verticalAlign ?? alignItems ?? start`) as the regression floor per council must-fix #6. Guard comment added at the render site.
 
 ## Open questions for the adversarial council (ORIGINAL — now answered above; retained for audit)
 - **OQ-1.** Option A vs C as the primary mechanism — does Option A (new mapping) fully remove the rename from the critical path, or does a residual need for canonical naming remain?

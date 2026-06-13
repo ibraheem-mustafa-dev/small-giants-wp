@@ -3,7 +3,7 @@ doc_type: reference
 project: small-giants-wp
 purpose: Per-stage annotated blocks for the SGS Cloning Pipeline. Every stage shows scripts that run, files read/written, DB tables touched, skills dispatched, and wiring status. Also contains the absorbed script inventory, skill dispatch chain (full), and DB heat-map (full). Overview and stage-index table are in cloning-pipeline-flow.md.
 session_date: 2026-05-13
-last_annotated: 2026-06-07
+last_annotated: 2026-06-13
 line_number_policy: Line numbers cited are accurate as of 2026-05-13 against sgs-clone-orchestrator.py HEAD (1277 lines). If they drift, grep for the function or constant name instead.
 update_triggers:
   - Pipeline stage change (new stage, retired stage, renumbered)
@@ -18,7 +18,7 @@ update_triggers:
 
 Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 
-> **ACTIVE BUILD TARGET (2026-06-09, D193) — affects the CSS-routing + composite-interior stages.** Per the Wave-2 clone-fix plan (`.claude/reports/wave2/CLONE-FIX-BUILD-PLAN.md`): the 4 existing lift paths (`_lift_typography_to_block_attrs`, `_lift_wrapper_css_to_container_attrs`, `_lift_root_supports_to_style`, scalar-media) consolidate into ONE DB-driven dispatch (delete the dead `_lift_styling_attrs`/`_slot_attr_prefix`); the NET-NEW capability is cross-node child→parent CSS routing; `_route_composite_interior` is retired (FR-22-19 retirement) in favour of that universal dispatch (preserving the `_process_container_children:2956` sole-element-child guard); breakpoint detection becomes draft-driven (FR-22-5.2). None built yet — Stage 1/1b/2 of the plan.
+> **ACTIVE BUILD TARGET (updated 2026-06-13, D222):** Wave-2 core largely SHIPPED. Cross-node child→parent CSS routing (D201), FR-22-5.1 inherited/absent-value resolution (D202 Commit 3), FR-22-19 retirement / unified composite interior (D202 Commit 4), Gate A + Gate B conformance gates wired (D195). **D222 SHIPPED:** name-free align LAYER-ROUTER (`verticalAlign`/`alignItems` fork removed from `convert.py`; resolves via `db.attr_for_layer_property` + D222 `property_suffixes` migration); notice-banner content-lift (IN-F, DB-gated); team-member scalar-content-lift (`HAS_INNER_BLOCKS_OVERRIDES` + `ATTR_CLASSIFICATION_OVERRIDES` in `sgs-update-v2.py`). **OPEN:** ~13 per-block `if slug=="sgs/X"` literal carve-outs — see `.claude/plans/2026-06-13-converter-de-literalisation-audit.md`. FR-22-5.2 draft-driven breakpoints not yet built. **NOTE (D222 lesson): TWO separate conformance suites exist — `converter_v2/tests/` ≠ `scripts/tests/test_converter_conformance.py` (Gate A golden harness wired to pre-commit hook). Both must pass on every converter commit.**
 
 ## Per-stage annotated flow
 
@@ -719,8 +719,8 @@ python ~/.claude/hooks/wp-blocks.py dump
 
 | Layer | Table / Column | Status |
 |-------|---------------|--------|
-| Block name | `sgs-framework.blocks.slug` | ✅ 68 sgs blocks (190 total incl. core/wp) |
-| Attribute names | `sgs-framework.block_attributes.attr_name` | ✅ 2,074 rows |
+| Block name | `sgs-framework.blocks.slug` | ✅ 74 SGS blocks (196 total incl. core/wp; verified 2026-06-13 DB — counts drift, `/sgs-db` authoritative) |
+| Attribute names | `sgs-framework.block_attributes.attr_name` | ✅ counts drift — query `/sgs-db` (was 2,935 at 2026-06-13) |
 | Canonical slot | `sgs-framework.block_attributes.canonical_slot` | ✅ + `slots` (scope='element', 92 rows) |
 | Attribute role | `sgs-framework.block_attributes.role` | ✅ |
 | Output signature | `sgs-framework.block_attributes.output_signature` | ✅ |
@@ -780,14 +780,14 @@ python ~/.claude/hooks/wp-blocks.py dump
 
 | Table | Rows | Pipeline use |
 |---|---|---|
-| block_attributes | 2,739 (post-WS-4 /sgs-update 2026-06-04; 29-block roster synced; counts drift — /sgs-db authoritative) | Stages 3+4 R; cv2 D3 W. D110 backfill (historical): canonical_slot 659 (31.8%), role 676 (32.6%) |
-| blocks | 68 sgs (+ 122 core/wp indexed = 190) | Stage 2 cross-check; /sgs-update S3 uimax sync. `tier` column (D107) — 2 rows class-section |
+| block_attributes | counts drift — `/sgs-db` authoritative (was 2,935 at 2026-06-13; was 2,739 post-WS-4 2026-06-04) | Stages 3+4 R; cv2 D3 W. D110 backfill (historical): canonical_slot 659 (31.8%), role 676 (32.6%) |
+| blocks | 74 SGS (+ 122 core/wp = 196; verified 2026-06-13 DB — counts drift, `/sgs-db` authoritative) | Stage 2 cross-check; /sgs-update S3 uimax sync. `tier` column (D107) — 2 rows class-section |
 | block_composition (D108/D152/D167) | 189+ (post-D152; +content-collection D167 = 29-block container roster) | Data layer LIVE for Stage 1 queries; `container_kind` column added D152 (values `section|layout|content`; 29-block container roster post-D167: 4 section / 14 layout / 11 content; modal + mobile-nav excluded); walker consumption code REVERTED — P-XS-3-TRIGGER-REFINEMENT. Schema: block_slug PK, wraps_block, composition_role enum, has_inner_blocks, accepts_allowed_blocks, container_kind |
 | slots | 92 element + 4 section = 96 | Stage 1 R via db_lookup |
 | roles | 21 (20 base + scalar-media) | Stage 1 R; walker resolution |
 | block_supports | 1,160 (post-D100 prune) | Stage 5 supports_writer R |
 | block_capabilities (D99 wired as FR-22-15) | 88 | Walker capability-aware BEM tiebreaker |
-| property_suffixes | 117 (+ kind_override column, 17 populated per D99) | assign-canonical; cv2 db_lookup.css_property_suffixes() |
+| property_suffixes | 124 rows post-D222 (+ `kind_override` column, 17 populated per D99; `align-items` has TWO rows — `VerticalAlign` + `AlignItems` added D222 migration) | assign-canonical; cv2 db_lookup.attr_for_layer_property() |
 | patterns | 47 | Stage 2 confidence boost; +REGISTER W |
 | attribute_gap_candidates | 107+ | Stage 9 W; D3 emission W (Wave 3) |
 
@@ -854,7 +854,18 @@ The Phase 2A pricing-table additions (Branch E) also extend the recogniser surfa
 | `__init__.py` | LIVE — Public API: `convert_section()` + `convert_page()` |
 | `convert.py` | LIVE — Slot-aware DOM-to-WP-blocks converter |
 | `convert_page.py` | LIVE — Page-level wrapper, `--mode pipeline` CLI |
-| `db_lookup.py` | LIVE — `css_property_suffixes()` (117 rows) + `breakpoint_suffix_rules()` + `block_supports_for()` + `legacy_role_lookup_for()` |
+| `db_lookup.py` | LIVE — `attr_for_layer_property(slug, layer, css_prop)` (D201/D222 name-free router) + `css_property_suffixes()` (124 rows) + `breakpoint_suffix_rules()` + `block_supports_for()` + `legacy_role_lookup_for()` |
+
+### Conformance gates (D195, wired 2026-06-09)
+
+**CRITICAL (D222 lesson): TWO separate conformance suites — both must be green on every converter commit.**
+
+| Gate | Script | What it tests | Wired to |
+|------|--------|---------------|----------|
+| **Gate A** | `scripts/tests/test_converter_conformance.py` | 43 golden fixtures (29 DB-derived container-mirror composites + precedence-collision + real Mama's trust-bar) + 2 DB invariants | `.git/hooks/pre-commit` (local hook — honest enforcement floor; NO CI in repo) |
+| **Gate B** | `scripts/check-hardcoded-render-defaults.js` | Net-new F3 hardcodes (baseline 11 honest debt entries) | `prebuild` + `prestart` npm scripts |
+
+`converter_v2/tests/` — 26 unit tests; separate scope. A passing run here does NOT guarantee Gate A passes.
 
 ### Live pipeline core (`plugins/sgs-blocks/scripts/orchestrator/`)
 

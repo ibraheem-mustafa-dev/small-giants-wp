@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 2
-spec_version: "1.3"
+spec_version: "1.4"
 project: small-giants-wp
 title: SGS Blocks — Custom Gutenberg Block Library
 status: shipped
-last_verified: 2026-06-12
+last_verified: 2026-06-13
 authors: Bean + Claude
 session_date: 2026-02-01
 status_history:
@@ -13,6 +13,7 @@ status_history:
   - 2026-05-22: Phase 6 markup-examples + apiVersion 3 audit shipped
   - 2026-05-24: frontmatter added per Phase 13 spec template
   - 2026-06-12: blocks-layer + TypographyControls standard + product-search/filter-search/collapsible-text sync
+  - 2026-06-13: testimonial attr names corrected to match block.json; converter routing updated (D212 shipped); notice-banner save.js corrected to InnerBlocks.Content; stale WIP warning on testimonial-slider removed; 29-block hardcode replaced with DB query
 ---
 
 # SGS Blocks — Custom Gutenberg Block Library
@@ -189,7 +190,7 @@ block-name/
 
 `containerKind` is declared in each composite block's `block.json` as `supports.sgs.containerKind`. It gates which `ContainerWrapperControls` panels render in the editor and which layers the shared `SGS_Container_Wrapper::render()` PHP helper emits at runtime. `sgs/modal` and `sgs/mobile-nav` carry `supports.sgs.containerMirror: false` and are excluded from the roster entirely (their outer shell is a Popover/dialog, not a container).
 
-**Composite-mirror rule (R-22-9 / D152, BLOCK-SIDE COMPLETE D167 2026-06-04):** Every composite block in the 29-block roster mirrors `sgs/container`'s wrapper capabilities via the shared helper `includes/class-sgs-container-wrapper.php`. No per-block reimplementation — the helper handles all rendering. When `sgs/container` gains a new capability, `/sgs-update` Stage 11 propagates it to all roster blocks. Canonical procedure: Spec 22 §FR-22-21 + `.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md`.
+**Composite-mirror rule (R-22-9 / D152, BLOCK-SIDE COMPLETE D167 2026-06-04):** Every composite block in the DB container-mirror roster (query: `SELECT block_slug FROM block_composition WHERE container_kind IS NOT NULL`) mirrors `sgs/container`'s wrapper capabilities via the shared helper `includes/class-sgs-container-wrapper.php`. No per-block reimplementation — the helper handles all rendering. When `sgs/container` gains a new capability, `/sgs-update` Stage 11 propagates it to all roster blocks. Canonical procedure: Spec 22 §FR-22-21 + `.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md`.
 
 **Render:** **Dynamic** — `render: file:./render.php`. Server-side rendering needed for layout/columns/gap responsive logic and `useInnerBlocksProps` integration. `save.js` returns `<InnerBlocks.Content />`.
 
@@ -361,28 +362,26 @@ block-name/
 
 **Key attributes (see `02-SGS-BLOCKS-REFERENCE.md` for full schema):**
 - `variant` — one of the 7 variants above
-- `quote` — RichText (primary content)
-- `summaryPhrase` — string (optional short pull-quote or headline)
-- `reviewerName` / `reviewerRole` / `reviewerOrg` — string fields
-- `avatar` — media object (optional)
-- `logo` — media object (optional, for corporate-logo variant)
-- `workImage` / `workVideo` — media objects (for case-study-media variant)
-- `rating` — 0-5 stars (optional)
-- `ratingScale` — integer (alternative /10 or /100 scale; default 5)
-- `datePublished` — ISO string (optional)
-- `isVerified` — boolean
-- `sourceName` / `sourceUrl` — string (review source attribution)
+- `quote` — string (primary quote text)
+- `summaryPhrase` — string (optional short pull-quote; `pull-quote-editorial` variant)
+- `reviewerName` / `reviewerRole` / `orgName` — string fields
+- `avatarMedia` — media object (optional; `avatar-spotlight` variant)
+- `orgLogo` — media object (optional; `corporate-logo` variant)
+- `workMedia` — media object (optional; `case-study-media` variant — image or video)
+- `ratingStars` — 0–5 (optional; `classic-card` variant)
+- `ratingScale` / `ratingScaleMax` — numeric /N rating (optional; `rating-led` variant)
+- `reviewDate` — ISO date string (optional)
+- `verified` — boolean
+- `sourcePlatform` — string (review source platform name)
 - Per-element typography via shared `TypographyControls` component (D209)
 
 **Render:** Dynamic `render.php` (`save.js` returns `null`). `deprecated.js` v8 migrates BOTH legacy shapes (old InnerBlocks children + old scalar attrs). Live-verified migrating 3 real testimonials on page 8 (D206).
 
-**Converter routing:** The converter registers this as the second variant block. Converter routing of typed attrs is deferred — block is fully functional standalone (D206). Universal lift (quote/name/stars scalar slots) onboarded in D212 via the `scalar-content-lift` opt-in capability.
+**Converter routing:** `scalarContentLift` capability declared in `block.json` (`supports.sgs.scalarContentLift: true`). The universal scalar-content-lift path (D212, 2026-06-12, main commit `3938a7b0`) routes `quote`/`reviewerName`/`ratingStars` from draft BEM elements to these typed attrs via `derived_selector` DB rows — no bespoke handler. Live-verified on canary page 8 (quote/name/5★ render at 1440/768/~500px). `has_inner_blocks` is 0 for this block (TYPED leaf — the slider parent has `has_inner_blocks=1`; the leaf emits scalar attrs only).
 
 ---
 
 ### 8. Testimonial Slider (`sgs/testimonial-slider`)
-
-> **⚠️ WIP — layout rebuild in progress, UNCOMMITTED (2026-06-03 session).** Arrows converted to flex siblings, controls markup updated, `slidesVisible` default changed 1→3, infinite-loop logic added. Currently deployed to canary but NOT committed — cards rendering too thin; rebuild pending before next commit. Do NOT treat this as a shipped state.
 
 **Purpose:** Carousel/slider of multiple testimonials.
 
@@ -526,7 +525,7 @@ block-name/
 - `borderRadius` — preset slug (default: medium)
 - `position` — top | bottom (announcement mode only, default: top)
 
-**Render:** Dynamic `render.php` (FR-22-6 InnerBlocks migration shipped 2026-06-02 — `$content` echo replaces static save; `deprecated.js` entry preserves existing posts). `save.js` returns `null`. Dead `dismissible` button (no control, no JS handler) removed in D206 (v0.7.0).
+**Render:** Dynamic `render.php` echoes `$content` (the `sgs/text` InnerBlocks child carrying the notice message). `save.js` returns `<InnerBlocks.Content />` — WordPress serialises the child block into `post_content`; render.php drives all frontend output. FR-22-6 InnerBlocks migration shipped 2026-06-02; `deprecated.js` v3 preserves existing posts (prior null-save shape). Dead `dismissible` button (no control, no JS handler) removed in D206 (v0.7.0).
 
 **Indus Foods usage:** The MOV banner ("Minimum order just £75 — lower than most wholesalers...") uses `success` variant with truck icon and centred text.
 

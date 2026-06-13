@@ -4,7 +4,7 @@ project: small-giants-wp
 thread: cloning-pipeline
 title: "Universalisation programme — has_inner_blocks auto-derive (B), trust-bar gap (C), name-free align layer-router (A)"
 created: 2026-06-12
-status: DESIGN-GATED (adversarial-council run 2026-06-12 — NO-GO as originally specified; GO restaged + must-fixes). Bean chose the PROPER layer-router for A. Sequence locked: C → B(redesigned) → A(layer-router).
+status: COMPLETE (2026-06-13). All three workstreams + both follow-ups + IN-F SHIPPED to main. Successor: de-literalisation programme (.claude/plans/2026-06-13-converter-de-literalisation-audit.md). Original council gate (2026-06-12 NO-GO on the rename shape; GO on the layer-router) preserved below as the decision record.
 gate: "/adversarial-council 6-persona panel, 2026-06-12. Convergent NO-GO on the original 'rename + wrapper-default-flip + retire-all-overrides' design. Restaged below."
 supersedes: the inline 'rename alignItems→verticalAlign' proposal (now demoted to an interim that A-layer-router replaces).
 ---
@@ -52,8 +52,12 @@ Bean chose the PROPER universal fix (2026-06-12). The carve-out is the *hardcode
 - **WS-B** `0507973a` — has_inner_blocks auto-derive + override (mobile-nav=1, team-member=0) + check-composition-sync gate + 5 catalogue rows. DONE. Gate green across 74 blocks; conformance 43/43.
 - **WS-A** `1f107711` — wrapper dual-key fallback (`verticalAlign ?? alignItems ?? start`). **IN-C CLOSED** (live: feature-grid align-items:stretch). NO default flip, NO rename, NO client re-save.
 
-### Remaining (gated / flagged follow-ups)
-- **Full name-free layer-router** (the unification): remove the convert.py attr-name fork (`~4075-4082`), route gap + iconCircleBackground through the GRID per-item layer, unify the 8 blocks to ONE canonical align attr (with deprecated.js + render dual-key already in place + a WP-CLI batch re-save). Needs its OWN design-gate + adversarial-council on the router mechanism (Bean chose this end-state; the dual-key fallback is the safe interim that already delivers the functional universality).
+### Remaining (gated / flagged follow-ups) — ALL DONE 2026-06-13
+
+- ~~**Full name-free layer-router (A)**~~ **DONE 2026-06-13 (D222, commits `1b03b8c7` + `c5ecb4eb`)** — `property_suffixes` row `align-items → AlignItems` added via dated migration; fork at `convert.py:4092-4101` removed; `_merge_grid_attrs_into_container` now receives `slug` + resolves via `attr_for_layer_property(slug, "OUTER", "align-items")`; last `verticalAlign` literal (slug-None fallback) removed in `c5ecb4eb` — router unification CLOSED. 31-block parity = 0 mismatches. Design + council verdict: `.claude/plans/2026-06-13-A-layer-router-design.md`. Render-side dual-key (`verticalAlign ?? alignItems ?? start`) retained permanently as the regression floor (council must-fix #6).
 - ~~**mobile-nav block bug**~~ **DONE 2026-06-13 (D221, commit `e20f0bd5`)** — `save:()=>null` → `<InnerBlocks.Content/>` + vNull deprecation + version 3.1.1 + deprecation-test entry; mobile-nav `has_inner_blocks` override removed.
 - ~~**team-member**~~ **DONE 2026-06-13 (D221, commit `e20f0bd5`)** — root cause was NOT missing plumbing (Bean's correction): `equivalent_block_for(name)` mis-returned `sgs/heading`. Fixed via the new durable `ATTR_CLASSIFICATION_OVERRIDES` layer (`team-member.name role=NULL` → scalar, matching render.php); team-member `has_inner_blocks` override removed. Both override dicts now empty.
-- **IN-F notice-banner content** (P5 leftover): bg fixed; empty content needs the universal-lift mechanism.
+- ~~**IN-F notice-banner content**~~ **DONE 2026-06-13 (D222, commit `1b03b8c7`)** — a node resolving to a `has_inner_blocks` composite with direct rich-text but zero child blocks now lifts that text into one `sgs/text` child (DB-gated, no per-slug branch). Ingredients disclaimer text live-verified on canary page 8.
+
+### Successor
+The only remaining converter-literalisation work is the **de-literalisation programme**: 13 per-block literals + line numbers scoped in `.claude/plans/2026-06-13-converter-de-literalisation-audit.md` (docs commit `ac17af9b`).

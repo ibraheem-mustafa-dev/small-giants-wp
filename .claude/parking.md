@@ -1,10 +1,14 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-06-11 (D206 block-quality programme close — added P-TESTIMONIAL-CONVERTER-FR2220 deferred follow-on; prior: D204 close + plans-folder consolidation — added P-FP-COUNCIL; archived 7 superseded/historical plans, added 3 carried-forward orphans + updated 4 existing entries in place (coverage-verified by 6 parallel agents + cross-model falsification); removed the empty 2026-06-05 wave header; de-bolded the P-GAP-CONSOLIDATION-FOLLOWUPS cross-reference that tripped the slug gate)
+last_updated: 2026-06-13 (D222 — added P-CONVERTER-DE-LITERALISATION programme entry; no D222/D221/D220 work created resolvable parking entries — those shipped to main without pre-existing parked slots; Spec 30 COMPLETE but its follow-on parking entries (P-JSONLD-HEX-FLAG-GUARD, P-ORG-SCHEMA-SETTINGS-UI, P-VAT-ZERO-RATED-PRECISION) remain OPEN/DEFERRED)
 ---
 
 > **STANDARD PRACTICE (Bean-locked 2026-06-02):** this doc holds ONLY parked work — entries with `**Status:** OPEN | PARTIAL | BLOCKED | DEFERRED`. The MOMENT a task is **CLOSED / RESOLVED / DROPPED / SUPERSEDED**, MOVE it (verbatim, with completion date) to `memory/parking-archive.md` — do NOT leave it here. Enforce this every `/handoff` (Gate 4.5). Keeps parking concise + purposeful; prevents the balloon that hit 1,400+ lines.
+
+## 2026-06-13 (cloning thread) — Converter de-literalisation programme
+
+> **P-CONVERTER-DE-LITERALISATION** — NEW 2026-06-13 (D222 close; Bean-set programme). `convert.py` has ~13 legacy per-block `if slug == "sgs/X"` branches that hardcode each block's content-attr schema in code — conflicting with Spec 22 FR-22-3 (per-block behaviour from DB rows, not code branches) + R-22-1 (DB-first). The A align layer-router (D222) was the FIRST slice (proved the pattern). This is the bigger slice. Full register (line numbers + first-pass assessments): `.claude/plans/2026-06-13-converter-de-literalisation-audit.md`. Exemplar anti-pattern: `iconCircleBackground` trust-bar hand-read at lines 3335-3350 — should be a DB `derived_selector` mapping. **Method (per Bean):** per literal — (1) investigate WHY hardcoded, (2) decide: reducible to DB entry/`derived_selector` OR standard BEM convention vs genuine exception, (3) rip out + replace or keep + document. **Gating (Rule 7 — convert.py is highest-blast-radius):** own design pass + `/adversarial-council` BEFORE building; phase one handler/cluster at a time; `/qc-council` before each commit (blub.db 255); run BOTH conformance suites (Gate A `plugins/sgs-blocks/scripts/tests/test_converter_conformance.py` + `plugins/sgs-blocks/scripts/orchestrator/converter_v2/tests/`) — D222 lesson. New DB rows via dated `migrations/*.py` ONLY (never module-load side-effect). **Priority:** next cloning session after the design pass. **Status: OPEN** · **Bucket:** Pipeline / converter · **Trigger:** design + adversarial-council gate (see plan).
 
 ## 2026-06-12 (theme thread) — Spec 30 P2 Step 9 (FR-30-9 schema) follow-ons
 

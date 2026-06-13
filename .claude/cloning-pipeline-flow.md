@@ -3,7 +3,7 @@ doc_type: visual-reference
 project: small-giants-wp
 purpose: Overview of the SGS Cloning Pipeline — stage-index table, entry-point chain, cross-cutting principles, and pointers to per-stage detail. Per-stage annotated blocks live in cloning-pipeline-stages.md.
 session_date: 2026-05-13
-last_annotated: 2026-06-07
+last_annotated: 2026-06-13
 registry_entry: docs-registry.yaml canonical_docs (cloning-pipeline-flow.md)
 companion_docs:
   - .claude/cloning-pipeline-stages.md - per-stage annotated blocks (scripts, files, DB, skills, status)
@@ -21,7 +21,7 @@ update_triggers:
 Per-stage annotated blocks (scripts, files, DB tables, skills, status) are in
 `.claude/cloning-pipeline-stages.md`. This file is the cold-start map.
 
-> **ACTIVE BUILD TARGET (2026-06-09, D193):** the Wave-2 clone-fix programme — `.claude/reports/wave2/CLONE-FIX-BUILD-PLAN.md`. It changes pipeline behaviour via 3 ratified Spec-22 FRs: **FR-22-5.1** (inherited/absent-value resolution), **FR-22-5.2** (draft-driven breakpoints — replaces the fixed `_BREAKPOINT_RULES`/`_GRID_DESKTOP_BP` constants), and the **FR-22-19 retirement** (the `_route_composite_interior` carve-out → one universal per-slot dispatch). The headline new capability is **cross-node child→parent CSS routing** (an interior element's CSS → the parent composite's container/slot attrs) — net-new, not yet built. A **conformance gate** (golden-fixture converter regression + an F3 hardcode guard) is approved to stop the recurring undelivered-code rot (D178).
+> **ACTIVE BUILD TARGET (updated 2026-06-13, D222):** The Wave-2 clone-fix programme core is largely SHIPPED. **Shipped:** FR-22-5.1 inherited/absent-value resolution (D201 Commit 3), FR-22-19 retirement / `_route_composite_interior` unified (D202 Commit 4), cross-node child→parent CSS routing (D201 Commit 2), Gate A + Gate B conformance suites built + wired (D195). **D222 SHIPPED:** name-free align/grid LAYER-ROUTER — hardcoded `verticalAlign`/`alignItems` attr-name fork removed; align resolves via `db.attr_for_layer_property(slug,"OUTER","align-items")` backed by the D222 `property_suffixes` migration; router-unification commit (`c5ecb4eb`) removed the last `verticalAlign` literal from `_merge_grid_attrs_into_container`. `iconCircleBackground` is the ONLY remaining named literal (council-ruled trust-bar-specific). notice-banner content-lift (IN-F) shipped. **OPEN:** ~13 per-block `if slug=="sgs/X"` literal carve-outs — de-literalisation programme at `.claude/plans/2026-06-13-converter-de-literalisation-audit.md`. FR-22-5.2 draft-driven breakpoints not yet built. Canonical plan: `.claude/plans/2026-06-09-clone-fix-build-plan.md` + sign-off ledger.
 
 ---
 
@@ -137,7 +137,7 @@ No other branches. Adding a 4th requires spec amendment with empirical justifica
 
 **FR21 invariant** — NO mutation outside `pipeline-state/` until `autonomy_gate` approves promotion. Every stage writes artefacts to `pipeline-state/<run_id>/`; staged_merge validates schema; only `--promote` copies scaffolds to canonical locations.
 
-**DB-first** — Before adding hardcoded lookup dicts, check `sgs-framework.db`: `blocks.tier` (D107 column — `class-section` vs `block`), `block_composition` (D108 — 189 rows post-D152; `container_kind` column added D152; walker consumption DEFERRED but data layer live), `slots` scope='element' (92 rows post-D111) / scope='section' (4 rows post-D111), `roles` (21 rows: D99 base 20 + `scalar-media` D128), `property_suffixes` (117 + `kind_override` column 17 rows), `block_supports`, `modifier_suffixes` (19), `block_attributes` (2,739 post-WS-4 `/sgs-update` 2026-06-04; counts drift, `/sgs-db` is authoritative), **`blocks.variant_attr`** (DESIGN — FR-22-20; names each block's variant-selector attr), **`variant_slots`** (DESIGN — FR-22-20; per-block discriminating slots by variant value; populated by `/sgs-update` from `supports.sgs.variants`). Refactor to `db_lookup.py`.
+**DB-first** — Before adding hardcoded lookup dicts, check `sgs-framework.db`: `blocks.tier` (D107 column — `class-section` vs `block`), `block_composition` (D108 — 189 rows post-D152; `container_kind` column added D152; walker consumption DEFERRED but data layer live), `slots` scope='element' (92 rows post-D111) / scope='section' (4 rows post-D111), `roles` (21 rows: D99 base 20 + `scalar-media` D128), `property_suffixes` (124 rows post-D222 migration; `kind_override` column 17 rows; **`align-items` now has TWO rows: `VerticalAlign` + `AlignItems` — added D222 migration `2026-06-13-property-suffixes-align-items.py`**), `block_supports`, `modifier_suffixes` (19), `block_attributes` (counts drift — `/sgs-db` is authoritative; was 2,739 post-WS-4 2026-06-04), **`blocks.variant_attr`** (FR-22-20; names each block's variant-selector attr), **`variant_slots`** (FR-22-20; per-block discriminating slots by variant value; populated by `/sgs-update` from `supports.sgs.variants`). Refactor to `db_lookup.py`. New rows belong in DATED MIGRATIONS (`migrations/YYYY-MM-DD-*.py`), never as module-load write side-effects in `db_lookup.py` (D222 lesson).
 
 **Token-snap strict exact-match** — Snap only when token's resolved value equals the literal within tight tolerance (ΔE ≤ 1.0 for colour, ≤ 1px for spacing/font-size). Nearest-match (confidence 0.85) is NOT snap-eligible. See `mistakes.md` 2026-05-20 lesson 1.
 

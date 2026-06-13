@@ -88,7 +88,7 @@ Bean chose **`content` + `role='layout'`**. Implemented:
 
 ## Comprehensive impact map (ADD / CHANGE / REMOVE / OBSOLETE)
 
-> Nothing below is edited yet — this is the change-list pending approval.
+> **STATUS 2026-06-13 (D222):** The name-free layer router is now FULLY IMPLEMENTED in `convert.py`. The last `verticalAlign` literal removed (commit `c5ecb4eb`); align now resolves purely via `db.attr_for_layer_property()` + `property_suffixes` rows (no attr-name literals in the align/grid path). The items below record the original change-list; most were applied at D194/D222. Wave-2 reports referenced here (STAGE1-DESIGN, STAGE0-FRS-AND-GATE, SIGN-OFF-LEDGER) are in `reports/wave2/` — treat as historical.
 
 ### Specs
 

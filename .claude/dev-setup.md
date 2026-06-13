@@ -115,7 +115,13 @@ The build uses `--experimental-modules` to support `viewScriptModule` (the Inter
 
 A `prebuild` / `prestart` hook runs `scripts/generate-icons.js` automatically. This generates `includes/lucide-icons.php` from the `lucide-static` package — a flat PHP array of 1,900+ SVG icons. Do not edit `lucide-icons.php` directly.
 
-The same `prebuild` chain runs the **dead-control guard** (`scripts/check-dead-controls.js --check`, D192). **PLANNED additions (D193, approved 2026-06-09, NOT yet wired — do not assume they run until built):** a converter golden-fixture conformance gate + `scripts/check-hardcoded-render-defaults.js`, both landing with the Wave-2 clone-fix build (design in `.claude/reports/wave2/STAGE0-FRS-AND-GATE.md`).
+The same `prebuild` chain runs the **dead-control guard** (`scripts/check-dead-controls.js --check`, D192). **PLANNED addition (D193, approved 2026-06-09, NOT yet wired):** `scripts/check-hardcoded-render-defaults.js` (design in `.claude/reports/wave2/STAGE0-FRS-AND-GATE.md`).
+
+**Two converter conformance suites (run BOTH — D222 lesson):**
+- **Gate A (golden-fixture harness):** `plugins/sgs-blocks/scripts/tests/test_converter_conformance.py` — 43 fixtures, run manually with `pytest plugins/sgs-blocks/scripts/tests/`. This is the pre-commit gating harness. **A subagent claiming "conformance passed" may mean only `converter_v2/tests/` ran, NOT Gate A.**
+- **Unit tests:** `plugins/sgs-blocks/scripts/orchestrator/converter_v2/tests/` — per-mechanism unit tests. Run with `pytest plugins/sgs-blocks/scripts/orchestrator/converter_v2/tests/`.
+
+**Dated migration pattern (D222, mandatory):** any new `property_suffixes` row or other DB seed data MUST live in a dated `migrations/YYYY-MM-DD-<descriptor>.py` beside the existing siblings — never a module-load side-effect in `db_lookup.py`. Example: `migrations/2026-06-13-property-suffixes-align-items.py`.
 
 **Output:** `build/blocks/{block-name}/` contains the compiled files. All files in `build/` are version-controlled and deployed directly to the server — Node.js is not available on the Hostinger host.
 

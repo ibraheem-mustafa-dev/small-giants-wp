@@ -13,7 +13,7 @@ inputs:
 
 # Clone-fix build plan
 
-## ⚠ STATUS CORRECTIONS (2026-06-11 — read before building from this plan)
+## ⚠ STATUS CORRECTIONS (last updated 2026-06-13 — read before building from this plan)
 
 | Plan claim | Current truth |
 |---|---|
@@ -25,6 +25,9 @@ inputs:
 | Acceptance | **Re-bound 2026-06-11:** every converter change reports fixed/stayed PER LEDGER ROW (clone-parity run + ledger walk); "the mechanism fires" is never an outcome. New finding for Stage 3: a global fontSize 16→18px parity drift (3→24 failures) needs its own root-cause. |
 | Stage-1 DEC-3 three-layer model (OUTER/CONTENT/GRID) | **INCOMPLETE (proven live 2026-06-11):** composites that render NAMED grid areas expose a FOURTH destination family — **GRID-PER-AREA, `<areaName>+<suffix>`** (hero `contentPadding*` = padding on the grid column whose AREA is "content"; `mediaPadding*` likewise). A 3-layer router can never deliver H-B because the correct destination isn't in its vocabulary. Built 2026-06-11: `db.attr_for_area_property` + `_route_area_css_to_block_attrs` (net-new, same D194 name-free mechanism). |
 | The plan lists `contentPadding` among "the parent container's box attrs" (F1-cross-node bullet) | **NAME COLLISION (Bean caught it):** the hero's `contentPadding*` is NOT the container-mirror CONTENT-band attr — it is the per-AREA attr for the grid column named "content". Do not route content-band semantics to it. |
+| Name-free align/grid layer-router (A) — listed as future work | **SHIPPED + CLOSED 2026-06-13 (D222, commits `1b03b8c7` + `c5ecb4eb`).** `property_suffixes` row `align-items → AlignItems` added via dated migration; fork at `convert.py:4092-4101` removed; last `verticalAlign` literal removed (`c5ecb4eb`). Router unification closed. Design + council record: `.claude/plans/2026-06-13-A-layer-router-design.md`. |
+| IN-F (notice-banner content — empty content) | **VERIFIED 2026-06-13 (D222, commit `1b03b8c7`).** Universal-lift: composite node with direct rich-text emits one `sgs/text` child (DB-gated `scalarContentLift`, no per-slug branch). Live-verified on canary page 8. Ledger row updated. |
+| team-member (D221 regression + scalar-lift) | **SHIPPED 2026-06-13 (D221, commit `e20f0bd5`).** Durable `ATTR_CLASSIFICATION_OVERRIDES` layer forces `team-member.name role=NULL` → scalar; `has_inner_blocks` override removed. Gate A 43 green. |
 
 ## The objective (Bean, locked 2026-06-09)
 

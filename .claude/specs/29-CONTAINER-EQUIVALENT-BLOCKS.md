@@ -102,9 +102,9 @@ python plugins/sgs-blocks/scripts/sgs-db.py query \
   "SELECT block_slug, container_kind FROM block_composition WHERE container_kind IS NOT NULL ORDER BY container_kind, block_slug"
 ```
 
-Or via `/sgs-db`. Do NOT hardcode the count here — query the DB. The counts below reflect D167 (2026-06-04): 4 section / 14 layout / 11 content.
+Or via `/sgs-db`. Do NOT hardcode the count here — query the DB. The tables below reflect the DB state as at 2026-06-13 (D222). Two blocks carry `container_kind` but are **excluded from mirroring** (`containerMirror: false`) — `sgs/modal` (section) and `sgs/mobile-nav` (content); see §3.
 
-### KIND: `section` (4 blocks)
+### KIND: `section`
 
 Full-bleed outer wrappers — background + spacing + width + layout.
 
@@ -113,46 +113,48 @@ Full-bleed outer wrappers — background + spacing + width + layout.
 | `sgs/hero` | Page hero section — headline, sub-headline, CTAs, background image/video/SVG. Appears at the top of a page. |
 | `sgs/cta-section` | Call-to-action section — headline, supporting text, button group. Full-width coloured or image-backed strip. |
 | `sgs/trust-bar` | Horizontal trust/badge row — curated icon-badge items or certification logos. Appears as a full-width section strip. |
-| `sgs/content-collection` | WP_Query-driven product/content grid at the section level — owns its own query, renders child `sgs/product-card` via InnerBlocks. |
+| `sgs/modal` | *(excluded — `containerMirror: false`)* Lightbox/modal overlay — outer shell is a `<dialog>` element; container mapping does not apply. |
 
-### KIND: `layout` (14 blocks)
+### KIND: `layout`
 
 Inner layout wrappers — grid/flex arrangement + width + gap; no background layer.
 
 | Block | Purpose |
 |---|---|
-| `sgs/card-grid` | Responsive image+content tile grid (overlay or card variants). |
-| `sgs/gallery` | Media gallery grid — responsive columns, lightbox-ready. |
-| `sgs/post-grid` | Blog post grid — query-driven, filterable. |
 | `sgs/accordion` | Expandable FAQ/content panels — vertical stack of `sgs/accordion-item` children. |
-| `sgs/tabs` | Tabbed content panels — horizontal tab bar + `sgs/tab` children. |
+| `sgs/card-grid` | Responsive image+content tile grid (overlay or card variants). |
+| `sgs/content-collection` | WP_Query-driven product/content grid — owns its own query, renders child `sgs/product-card` via InnerBlocks. |
+| `sgs/feature-grid` | Feature/benefit grid — icon + heading + copy items. |
 | `sgs/form` | Multi-step form container — wraps `sgs/form-step` and `sgs/form-field-*` children. |
-| `sgs/multi-button` | Button group container — wraps `sgs/button` children in a flex/grid row. Gap is via `ContainerWrapperControls`. |
-| `sgs/testimonial-slider` | Carousel of testimonial cards — scroll-snap + Interactivity API. |
+| `sgs/form-field-tiles` | Tile-based form field — wraps tile options in a grid row. |
+| `sgs/gallery` | Media gallery grid — responsive columns, lightbox-ready. |
 | `sgs/google-reviews` | Grid/carousel of Google Business Profile review cards. |
-| `sgs/trustpilot-reviews` | Grid/carousel of Trustpilot review cards. |
-| `sgs/mega-menu` | Block-based mega menu dropdown panel — wraps any blocks as the nav panel. |
+| `sgs/multi-button` | Button group container — wraps `sgs/button` children in a flex/grid row. Gap is via `ContainerWrapperControls`. |
+| `sgs/post-grid` | Blog post grid — query-driven, filterable. |
 | `sgs/pricing-table` | Pricing plan comparison grid. |
-| `sgs/brand-strip` | Horizontal logo carousel/strip. |
-| `sgs/timeline` | Date-based timeline — vertical or horizontal, scroll-reveal. |
+| `sgs/tabs` | Tabbed content panels — horizontal tab bar + `sgs/tab` children. |
+| `sgs/testimonial-slider` | Carousel of testimonial cards — scroll-snap + Interactivity API. |
+| `sgs/trustpilot-reviews` | Grid/carousel of Trustpilot review cards. |
 
-### KIND: `content` (11 blocks)
+### KIND: `content`
 
 Content-level composites — width/contentWidth + inner padding; no grid/bg engine.
 
 | Block | Purpose |
 |---|---|
+| `sgs/accordion-item` | Single accordion panel — trigger + collapsible body (child of `sgs/accordion`). |
+| `sgs/form-step` | Single form step (child of `sgs/form`). |
 | `sgs/info-box` | Feature/benefit card — icon, heading, description, optional link. |
-| `sgs/testimonial` | Single testimonial card — quote, name, role, avatar, star rating. |
-| `sgs/product-card` | Dual-mode product card — Typed (InnerBlocks) or Bound (live WooCommerce/CPT). Includes variable-product configurator. |
-| `sgs/counter` | Animated number counter with optional animation (counts up on scroll). |
-| `sgs/notice-banner` | Inline informational banner — info/success/warning/accent variants. |
-| `sgs/icon-list` | Checkmark/icon list — per-item icon with text. |
-| `sgs/process-steps` | Horizontal step timeline — numbered or icon-based steps. |
-| `sgs/announcement-bar` | Fixed top-of-page announcement strip — countdown, rotation, scheduling. |
-| `sgs/whatsapp-cta` | WhatsApp integration — floating button and/or inline CTA. |
-| `sgs/decorative-image` | Absolute-positioned decorative floating image — no layout impact. |
-| `sgs/media` | Responsive media block — image or video with optional caption and poster. |
+| `sgs/mobile-nav` | *(excluded — `containerMirror: false`)* Off-canvas mobile navigation drawer — outer shell is a Popover overlay; container mapping does not apply. |
+| `sgs/notice-banner` | Inline informational banner — info/success/warning/accent variants. Also serves announcement mode (`displayMode=announcement`). |
+| `sgs/option-picker` | Radio-group pill chooser (sgs-interactive — exclusive selection, no-JS safe). |
+| `sgs/product-card` | Dual-mode product card — Typed (built-in-element) or Bound (live WooCommerce/CPT). Includes variable-product configurator. |
+| `sgs/product-faq` | Product FAQ accordion container — owns `FAQPage` JSON-LD collector. |
+| `sgs/product-faq-item` | Single FAQ item (child of `sgs/product-faq`). |
+| `sgs/quote` | Standalone blockquote — citation + optional source URL. |
+| `sgs/tab` | Single tab panel (child of `sgs/tabs`). |
+| `sgs/team-member` | Team member card — photo, name, role, bio, optional social icons. Typed leaf block (`scalarContentLift`). |
+| `sgs/testimonial` | Single testimonial — 7-variant typed-attr block (D206/D212). Quote/name/rating rendered from scalar attrs; `scalarContentLift` capability declared. |
 
 ---
 
@@ -251,7 +253,7 @@ Cross-refs: Spec 22 §FR-22-21 (layer→prefix table + 6-step procedure), §FR-2
 | Topic | Where |
 |---|---|
 | Canonical wrapper-conversion procedure (6-step) | Spec 22 §FR-22-21 |
-| 29-block roster + KIND assignments (live, DB-authoritative) | `python sgs-db.py query "SELECT block_slug, container_kind FROM block_composition WHERE container_kind IS NOT NULL"` |
+| Container-mirror roster + KIND assignments (live, DB-authoritative) | `python sgs-db.py query "SELECT block_slug, container_kind FROM block_composition WHERE container_kind IS NOT NULL"` |
 | Standardisation programme (WS-1 through WS-5) | `.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md` |
 | Composite-mirror migration recipe (4-step per block) | Spec 22 §FR-22-21.1 |
 | Auto-propagation via `/sgs-update` Stage 11 | Spec 22 §FR-22-21.2 |

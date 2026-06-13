@@ -5,7 +5,7 @@ thread: cloning-pipeline (design) → theme-thread (build)
 title: "WooCommerce page-type SOLUTION + theme-thread delegation brief"
 created: 2026-06-11
 supersedes_input: WOOCOMMERCE-PAGE-TYPE-BRIEF-2026-06-11.md (that was the design INPUT; this is the resolved solution)
-status: SUPERSEDED by Spec 30 (`.claude/specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md`) — the canonical build spec with FR-30-1…FR-30-12. This doc remains the decision NARRATIVE (Part A rationale + research provenance); the theme thread builds from Spec 30, not Part B here.
+status: COMPLETE — Spec 30 fully shipped (D220, 2026-06-12). All phases (P1 PDP+cart / P2 differentiators / P3 shop / P4 schema) merged to main; Bean R-22-13 signed off; SGS is a sellable shop. FR-30-12 product-page clone ungated (cloning thread's call). This doc is the decision NARRATIVE (Part A rationale + research provenance) — superseded as a build spec by Spec 30.
 decision_ref: D208
 inputs: 3 research agents (WC block ecosystem 2026; shop/PDP UX best-practice; ecommerce schema completeness) + 6-persona adversarial-council (product-page naming) + the gap fact-check.
 ---

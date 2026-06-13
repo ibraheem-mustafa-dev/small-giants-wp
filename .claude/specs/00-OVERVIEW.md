@@ -1,5 +1,11 @@
 # Small Giants Studio — WordPress Framework
 
+## Current State (as at 2026-06-13)
+
+SGS is now a **complete, sellable WooCommerce shop framework** (D220, 2026-06-12). Spec 30 P2 closed: product pages, cart, filterable shop archive, product search, structured data, value-ladder pricing, reviews, and notify-me capture are all live on the canary. The cloning pipeline is the active development focus — converting any SGS-BEM draft into native SGS blocks faithful to the homepage design with zero manual CSS.
+
+---
+
 ## What This Is
 
 A custom WordPress development framework built and maintained by Claude Code for Small Giants Studio. It replaces the Astra Pro + Spectra Pro + commercial plugin stack with purpose-built components that Claude can develop, deploy, debug, and iterate on autonomously across all client sites.
@@ -129,7 +135,8 @@ No "it works on desktop but breaks on mobile" — mobile is the starting point.
 - **Source code:** Git repository (GitHub, one repo per component or monorepo — TBD)
 - **Deployment:** SFTP to Hostinger via Claude Code
 - **Local testing:** WordPress Playground or Local by Flywheel
-- **Live testing:** Hostinger test site (lightsalmon-tarsier-683012.hostingersite.com)
+- **Dev site:** palestine-lives.org (WP 6.9.1) — primary integration target
+- **Staging/canary:** sandybrown-nightingale-600381.hostingersite.com (WP 7.0) — Mama's Munches canary (page 144)
 - **Automation:** N8N workflows on VPS (72.62.212.169) for notifications, webhooks, scheduled tasks
 - **Updates:** Claude deploys updates to all client sites via SFTP. Theme/plugin updates are code changes, not WordPress auto-updates.
 
