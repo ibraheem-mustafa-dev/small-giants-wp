@@ -187,7 +187,7 @@ This log is registered in Spec 21 artefact catalogue (cross-doc impact list §8 
 
 #### FR-22-2.5 — Array-of-objects resolution (replaces ARRAY_LIFT_PATTERNS)
 
-**built_status: DESCRIBED** — backfills + array_item_slot_for() helper listed; no ship evidence cited
+**built_status:** PARTIAL — `array_item_slot_for` BUILT + unit-tested (`db_lookup.py:2870`) but has NO walker call-site (D224 code-verified); the per-item emit machinery (sibling-class DOM traversal + emit_wp_block-per-item loop) is ABSENT. Wiring it is a DESIGN-GATE phase (changes serialised structure → needs deprecated.js shims; target blocks have has_inner_blocks=0 for these areas).
 
 For array-typed attrs (e.g. `packSizes`, `testimonials`, `badges` — block_attributes.attr_type = 'array'), the walker treats EACH item as a separate slot. The resolution path:
 
@@ -239,7 +239,7 @@ Top-level section nodes are unconditionally wrapped in `sgs/container` per archi
 
 ### FR-22-4.1 — Universal wrapper/container resolution (Bean-directed, 2026-05-31; the FR-22-4 refinement D109 mandates; closes P-XS-3-TRIGGER-REFINEMENT)
 
-**built_status: PARTIAL** — rule written D118; padding-lift A1 (1cf0692d, D178); gridItem*/full PASS tests not met
+**built_status:** PARTIAL — rule written D118; padding-lift A1 (1cf0692d, D178); widthMode:full BUILT (`convert.py:4240`). gridItem* uniform per-item CSS writer SHIPPED D224 (`_lift_uniform_grid_item_css` `convert.py:2734`, wired at `:4414` top-level + `:5574` nested wrapper, R-22-9 universal). REMAINING: 'border' shorthand has no `property_suffixes` row so gridItemBorder is not lifted from a shorthand (DB-data follow-up).
 
 The single rule for EVERY DOM wrapper the walker meets below a section. **No wrapper is EVER silently dropped.** This SUPERSEDES the three patchwork mechanisms it grew out of — `walk_passthrough`'s drop-and-bubble for `sgs-`-classed wrappers, the depth-2 `_is_layout_bearing_wrapper` gate, and the single-wrapper `_absorb_transparent_wrappers` (D52) — folding all three into one coherent mechanism.
 
@@ -274,7 +274,7 @@ Resolution at each node, in precedence order:
 
 ### FR-22-5 — CSS routes to direct-owner via four-destination policy
 
-**built_status: PARTIAL** — _lift_wrapper_css_to_container_attrs shipped A1 (e9eaf013, D172); typography lift partial (D178); **align-items layer-router SHIPPED D222 (commit `c5ecb4eb`)** — D1 routing for `align-items` now resolves name-free via `db.attr_for_layer_property(slug,"OUTER","align-items")` backed by the `property_suffixes` AlignItems row; hardcoded fork removed.
+**built_status:** PARTIAL — _lift_wrapper_css_to_container_attrs shipped A1 (e9eaf013, D172); typography lift partial (D178); **align-items layer-router SHIPPED D222 (commit `c5ecb4eb`)** — D1 routing for `align-items` now resolves name-free via `db.attr_for_layer_property(slug,"OUTER","align-items")` backed by the `property_suffixes` AlignItems row; hardcoded fork removed. GF-B.2 selector-scope matcher fix SHIPPED D224 (`convert.py:619-622` class-branch now respects descendant-combinator ancestor scope — no cross-section CSS bleed; compound .A.B edge preserved).
 
 Four-destination CSS router (D0 / D1 / D2 / D3):
 
@@ -290,7 +290,7 @@ D1 child-attribution rule: when a CSS rule targets `.sgs-X__Y`, D1 routing calls
 
 ### FR-22-5.1 — Inherited / absent-value resolution
 
-**built_status: PLANNED** — ratified 2026-06-09 (Wave-2 clone-fix, D193); build is Stage-1 of `.claude/reports/wave2/CLONE-FIX-BUILD-PLAN.md` (the F6a family).
+**built_status:** BUILT (D224 code-verified 2026-06-14) — `convert.py:1805` `_resolve_inherited_typography` walks the ancestor chain for inherited text-align/color/font-family/line-height + emits the LTR text-align absence-default (`:1842`) to beat a block's :where() centre default; wired into route_node_css. REMAINING GAP (IN-E): emits only onto attrs present in the `block_attributes` table, not WP-native `supports.typography.textAlign` attrs — so sgs/info-box (which declares text-align via supports, not a DB attr) drops at the emit gate `:1836`.
 
 **Requirement.** When a content leaf's *effective* value for an inheritable property (`text-align`, `color`, `font-family`, `line-height`) derives from an **ancestor** selector rather than the leaf's own, OR is **absent** (browser default) where a block's own CSS default would otherwise override it, the converter resolves the property to an **explicit** value on the leaf's block attrs. Inheritable properties only; resolved via an ancestor-chain walk in `_collect_css_decls_for_element`. Pairs with the draft-authoring convention (text classes SHOULD declare explicit alignment) as the forward path; this FR is the converter's safety net for drafts that don't.
 
@@ -299,7 +299,7 @@ D1 child-attribution rule: when a CSS rule targets `.sgs-X__Y`, D1 routing calls
 
 ### FR-22-5.2 — Draft-driven responsive breakpoints
 
-**built_status: PLANNED** — ratified 2026-06-09 (D193); build is Stage-2 of the clone-fix plan (the F4 family).
+**built_status:** PLANNED — DESIGN-GATE confirmed D224 (NOT a contained tweak): needs (a) a tiering policy for arbitrary draft breakpoints (ambiguous when 2 draft min-widths fall in one tier), (b) preservation of `_BREAKPOINT_RULES`' second role as a suffix-validation gate (`db_lookup.py:~1437`), (c) coordination of two independent bucketing mechanisms (`convert.py:~5006` grid + `db_lookup.py:~1409` general). Fixed constants today: `_GRID_DESKTOP_BP=1024`/`_GRID_TABLET_BP=600`.
 
 **Requirement.** The converter reads the draft's **actual** `@media` breakpoints rather than snapping to fixed constants (`_BREAKPOINT_RULES` `db_lookup.py:1233-1239`; `_GRID_DESKTOP_BP=1024` / `_GRID_TABLET_BP=600` `convert.py:3317-3318`). Each detected breakpoint maps to the block's existing responsive attr tier (`+Tablet`/`+Mobile`, the FR-22-21 step-4 companions). A breakpoint with no matching attr tier is logged as a D3 `attribute_gap_candidate` — never emitted as inline `@media` (R-22-6).
 
@@ -308,7 +308,7 @@ D1 child-attribution rule: when a CSS rule targets `.sgs-X__Y`, D1 routing calls
 
 ### FR-22-5.3 — Cross-node interior box-CSS → parent per-slot attr group
 
-**built_status: PLANNED** — ratified 2026-06-09 (D193), council-hardened 2026-06-09 + 2026-06-10; build is Stage-1 Commit 2 (the F1 cross-node capability, `.claude/reports/wave2/STAGE1-DESIGN.md`). Merged from the STAGE0-FRS-AND-GATE.md draft 2026-06-10.
+**built_status:** BUILT/PARTIAL (D224 code-verified 2026-06-14) — `db_lookup.py:2400` `attr_for_layer_property` (name-free layer-prefix + `property_suffixes`, NOT canonical_slot per D194) + `slot_has_equivalent_block`; live at `convert.py:2523` via `_route_interior_css_to_parent_slot`. Covers padding/max-width/min-height/gap/margin. SHIPPED D224: per-slot max-width routing (`convert.py:2399`, mirrors subHeadlineMarginBottom, around the `_area_excluded` guard) closes H-C1; co-declared var() resolution (`_resolve_co_declared_var` `convert.py:384`) closes IN-B.
 
 **Requirement.** When an interior element's CSS is not consumed by the element's own block, the converter routes its **box/layout** properties (padding, margin, max-width, gap) to the **owning composite's per-slot attr group**, resolved DB-driven:
 
@@ -437,7 +437,7 @@ When `wp-blocks.py` is asked for an entity that exists in both DBs, it returns t
 
 ### FR-22-9 — Selected uimax tables as recognition oracle
 
-**built_status: DESCRIBED** — uimax oracle table roles defined; no evidence walker queries them at runtime
+**built_status:** DESCRIBED — uimax oracle table roles defined; no evidence walker queries them at runtime (D224 code-verified ABSENT: `db_lookup.py:256` `_sgs_bem_regex` returns a hardcoded regex; the walker/converter never queries any uimax table at runtime — uimax is opened only by recogniser gap-writer side-files. Consider retiring this FR.)
 
 Only the SGS-WP-relevant subset of uimax tables routes through `wp-blocks.py` per FR-22-8:
 
@@ -629,7 +629,7 @@ This is **FR-22-2 content-routing applied to class-section composites** — the 
 
 ### FR-22-20 — Universal variant detection (Bean-directed 2026-06-01; supersedes the hero `$is_split` band-aid; PARTIALLY SHIPPED — hero Commits 1–5/6 built + live-DOM verified 2026-06-01 per D134; Commit 6 modifier-class→enum path redesign-pending per D135; generalisation to the other 32 variant blocks still pending)
 
-**built_status: PARTIAL** — hero Commits 1-5/6 live-DOM verified D134; Commit 6 pending; 32 other variant blocks pending
+**built_status:** PARTIAL — note this is a DATA gap, NOT a code gap (D224 code-verified): the variant-detection CODE is fully universal (`convert.py:4661`, `db_lookup.py:1824` `variant_attr_for`/`detect_variant`, generic by slug, no hero gate). The 'pending' blocks need their `block.json` variants populated + seeded by /sgs-update — code does not gate them.
 
 > **Doc status ≠ built status** — see `decisions.md` + `state.md` for the authoritative built-status; the converter still emits containers, not native composites (Method-2 pending). A "PARTIALLY SHIPPED" header here documents the design, not a verified live deliverable.
 
