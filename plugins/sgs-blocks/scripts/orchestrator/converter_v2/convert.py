@@ -378,6 +378,35 @@ def _strip_important(value: str) -> str:
     return _IMPORTANT_RE.sub("", value).strip()
 
 
+# --- FIX B (IN-B): co-declared var() resolution ------------------------------
+_VAR_RE = re.compile(r"^var\(\s*(--[\w-]+)\s*(?:,\s*([^)]*))?\s*\)$", re.IGNORECASE)
+
+def _resolve_co_declared_var(value: str, decls: dict) -> str:
+    """Resolve a CSS ``var(--name[, fallback])`` against co-declared custom props.
+
+    If ``value`` is a bare var() reference AND ``decls`` contains the named
+    custom property, return the resolved value.  Otherwise return the fallback
+    (if provided) or the original ``value`` unchanged (flag-not-drop, per
+    FR-22-21 step 6 — never silently drop an unresolvable var()).
+
+    Only resolves ONE level of indirection (sufficient for Bean's convention:
+    ``max-width:var(--content-width); --content-width:960px`` on the same rule).
+    """
+    m = _VAR_RE.match(value.strip())
+    if not m:
+        return value
+    prop_name = m.group(1)   # e.g. "--content-width"
+    fallback = (m.group(2) or "").strip() or None
+    resolved = decls.get(prop_name)
+    if resolved is not None:
+        return resolved.strip()
+    if fallback:
+        return fallback
+    # Unresolvable — return original so caller can flag-not-drop
+    return value
+# -----------------------------------------------------------------------------
+
+
 # ============================================================================
 # CSS helpers — collect, lift, token-snap
 # ============================================================================
@@ -618,8 +647,47 @@ def _collect_css_decls_for_element(
                 continue
             last_part = parts[-1]
             if last_part.startswith(".") and last_part[1:] in desc_classes:
-                matched_sel = individual_sel
-                break
+                # CLASS match: verify every ancestor token in parts[:-1] resolves
+                # to a real ancestor of node (fixes GF-B.2 cross-section CSS bleed).
+                # A compound single-element selector (no whitespace tokens before the
+                # final class) means parts[:-1] is empty → no ancestor required → MATCH.
+                ancestor_tokens = parts[:-1]
+                class_match = True
+                if ancestor_tokens:
+                    idx = len(ancestor_tokens) - 1
+                    while idx >= 0:
+                        token = ancestor_tokens[idx]
+                        if token in (">", "+", "~"):
+                            idx -= 1
+                            continue
+                        if token.startswith("."):
+                            req_cls = token[1:]
+                            ancestor = node.parent
+                            found = False
+                            while ancestor and ancestor.name:
+                                if req_cls in (ancestor.get("class", []) or []):
+                                    found = True
+                                    break
+                                ancestor = ancestor.parent
+                            if not found:
+                                class_match = False
+                                break
+                        elif token and not token.startswith(("#", "[", ":")):
+                            # Tag ancestor token
+                            ancestor = node.parent
+                            found = False
+                            while ancestor and ancestor.name:
+                                if ancestor.name == token:
+                                    found = True
+                                    break
+                                ancestor = ancestor.parent
+                            if not found:
+                                class_match = False
+                                break
+                        idx -= 1
+                if class_match:
+                    matched_sel = individual_sel
+                    break
             elif last_part == desc_tag:
                 parent_match = True
                 if len(parts) > 1:
@@ -2317,6 +2385,45 @@ def _route_area_css_to_block_attrs(
     mob_override = bp_decls.get("Mobile", {})
     block_attr_names = db.block_attrs(owning_block) or {}
 
+    # --- FIX A (H-C1): per-slot max-width routing ----------------------------
+    # max-width is in _area_excluded to guard the OUTER/section widthMode path
+    # (the `content`+`Width` name-collision).  But a LEAF area element's OWN
+    # max-width (e.g. `.sgs-hero__sub { max-width:420px }`) belongs on a
+    # per-slot attr like `subHeadlineMaxWidth`, NOT on contentWidth.  Route it
+    # BEFORE the exclusion loop, gated on the DB actually registering such an
+    # attr.  The _area_excluded set is intentionally NOT modified — the section
+    # widthMode path is untouched (this block runs before the loop; `max-width`
+    # is still excluded inside the loop for any area that lacks a per-slot attr).
+    _mw_raw = base_decls.get("max-width")
+    if _mw_raw:
+        _mw_per_slot_attr = db.attr_for_area_property(owning_block, area, "max-width")
+        if _mw_per_slot_attr and _mw_per_slot_attr in block_attr_names:
+            _mw_resolved = _resolve_co_declared_var(_strip_important(_mw_raw).strip(), base_decls)
+            _mw_meta = block_attr_names.get(_mw_per_slot_attr) or {}
+            if _mw_meta.get("attr_type") == "number":
+                _mw_num, _mw_unit = _split_value_unit(_mw_resolved)
+                if _mw_num is not None:
+                    _mw_store: "int | float | str" = int(_mw_num) if float(_mw_num).is_integer() else _mw_num
+                    parent_attrs.setdefault(_mw_per_slot_attr, _mw_store)
+                    _mw_unit_attr = re.sub(r"(Top|Right|Bottom|Left)$", "", _mw_per_slot_attr) + "Unit"
+                    if _mw_unit and _mw_unit_attr in block_attr_names:
+                        parent_attrs.setdefault(_mw_unit_attr, _mw_unit)
+                    _trace("cross_node_css_lifted", owning_block=owning_block,
+                           element_token=area, css_property="max-width",
+                           layer="AREA_PER_SLOT_MAX_WIDTH", dest_attr=_mw_per_slot_attr)
+                else:
+                    _trace("cross_node_gap_candidate", owning_block=owning_block,
+                           element_token=area, css_property="max-width",
+                           reason="per_slot_mw_number_unparseable", value=_mw_resolved)
+            else:
+                parent_attrs.setdefault(_mw_per_slot_attr, _mw_resolved)
+                _trace("cross_node_css_lifted", owning_block=owning_block,
+                       element_token=area, css_property="max-width",
+                       layer="AREA_PER_SLOT_MAX_WIDTH", dest_attr=_mw_per_slot_attr)
+        # If no per-slot attr exists, fall through — max-width remains in
+        # _area_excluded and the loop will silently skip it (existing behaviour).
+    # -------------------------------------------------------------------------
+
     for css_prop in sorted(all_props):
         if css_prop in _area_excluded or css_prop.startswith("--"):
             continue
@@ -2581,6 +2688,138 @@ def _route_interior_css_to_parent_slot(
             continue
         for css_prop, value in bp_decl_map.items():
             _lift_decl(css_prop, value, bp_suffix=bp_suffix)
+
+
+# ============================================================================
+# FR-22-21 §step 4 — Uniform grid-item box CSS lift (SDD Task 1, 2026-06-14)
+# ============================================================================
+# When a section's container has N≥2 direct element children that are RESOLVED
+# blocks (grid items), the universal wrapper procedure says: collect each item's
+# box CSS, find the UNIFORM subset (property+value identical across ALL items),
+# and lift those uniform values onto the parent container's matching gridItem*
+# attrs.  Properties that differ between items stay on the child blocks (not
+# lifted).  DB-driven (R-22-1), no inline CSS written (R-22-6), universal
+# (R-22-9).
+#
+# CSS properties in scope (those with property_suffixes rows that resolve to
+# gridItem* attrs on sgs/container):
+#   padding       → gridItemPadding
+#   background-color → gridItemBackground
+#   border-radius → gridItemBorderRadius
+#   box-shadow    → gridItemShadow
+#   color         → gridItemTextColour
+#   border        → gridItemBorder  (NOTE: 'border' has no property_suffixes row
+#                                    yet; it is flag-not-dropped as a gap candidate)
+#
+# The lift uses attr_for_layer_property(container_slug, 'GRID', css_prop) which
+# already returns None for unknown props — the None miss IS the filter (R-22-1).
+
+# CSS properties to probe on each grid item for uniform-lift eligibility.
+# Ordered: most commonly uniform first (padding → background → border-radius →
+# box-shadow → text colour) so gap-candidate logs are meaningful.
+_GRID_ITEM_BOX_PROPS: tuple[str, ...] = (
+    "padding",
+    "padding-top",
+    "padding-right",
+    "padding-bottom",
+    "padding-left",
+    "background-color",
+    "border-radius",
+    "box-shadow",
+    "color",
+    "border",
+)
+
+
+def _lift_uniform_grid_item_css(
+    section_node: "Tag",
+    css_rules: dict,
+    container_attrs: dict,
+    container_slug: str = "sgs/container",
+) -> None:
+    """Collect uniform box CSS from direct element children; lift to gridItem* attrs.
+
+    Fires AFTER children_markup is built so it does not interfere with child
+    resolution.  Mutates ``container_attrs`` in place (setdefault — never
+    overwrites an attr already set by earlier paths).
+
+    Contract:
+      • N < 2 direct element children → no-op (nothing to compare for uniformity).
+      • A property is UNIFORM when every child has the SAME non-empty value for it.
+      • attr_for_layer_property(container_slug, 'GRID', css_prop) → None → flag-not-
+        drop (the attr does not exist on the block; logged as a gap candidate).
+      • Responsive bp_decls are NOT lifted here — item-level responsive CSS belongs
+        to the item block's own attrs (per-item breakpoint controls, not a uniform
+        container override).  Base CSS only (R-22-6 safe: block attrs generate no
+        inline style at responsive breakpoints).
+    """
+    # Collect direct element children only.
+    element_children: list["Tag"] = [
+        c for c in section_node.children if isinstance(c, Tag)
+    ]
+    if len(element_children) < 2:
+        # Single child or empty — nothing to compare; no lift.
+        return
+
+    # Gather base CSS for each child (responsive bp_decls intentionally excluded).
+    per_child_decls: list[dict[str, str]] = []
+    for child in element_children:
+        base_decls, _bp = _collect_css_decls_for_element(child, css_rules)
+        per_child_decls.append(base_decls)
+
+    # For each probe property, determine whether all children share the same value.
+    for css_prop in _GRID_ITEM_BOX_PROPS:
+        values: list[str] = []
+        for decls in per_child_decls:
+            raw = decls.get(css_prop, "")
+            val = _strip_important(raw).strip() if raw else ""
+            values.append(val)
+
+        # Skip if ANY child has no value for this property (not uniformly set).
+        if not all(values):
+            continue
+
+        # Skip if values are not all identical.
+        if len(set(values)) != 1:
+            continue
+
+        uniform_value = values[0]
+
+        # DB-driven attr resolution: GRID layer, container_slug.
+        # Returns None when no gridItem* attr exists for this css_prop — flag-not-drop.
+        attr_name = db.attr_for_layer_property(container_slug, "GRID", css_prop)
+        if attr_name is None:
+            # Flag as gap candidate so the attr can be added to sgs/container later.
+            source_class = next(
+                (c for c in (element_children[0].get("class", []) or [])
+                 if c.startswith("sgs-")),
+                css_prop,
+            )
+            _record_gap_candidate(
+                block_slug=container_slug,
+                css_property=css_prop,
+                raw_value=uniform_value,
+                source_class=source_class,
+            )
+            _trace(
+                "grid_item_uniform_gap_candidate",
+                container_slug=container_slug,
+                css_property=css_prop,
+                uniform_value=uniform_value,
+                reason="no_gridItem_attr_for_property",
+            )
+            continue
+
+        # Write to container attrs (setdefault — earlier paths win).
+        container_attrs.setdefault(attr_name, uniform_value)
+        _trace(
+            "grid_item_uniform_lifted",
+            container_slug=container_slug,
+            css_property=css_prop,
+            attr_name=attr_name,
+            uniform_value=uniform_value,
+            n_children=len(element_children),
+        )
 
 
 # ============================================================================
@@ -4169,6 +4408,10 @@ def walk(
         # setdefault semantics are enforced inside each helper.
         route_node_css(node, css_rules, container_attrs, effective_slug="sgs/container")
         children_markup = _process_container_children(node, css_rules, depth, variation_buf, container_attrs)
+        # FR-22-21 step 4 / SDD Task 1 (2026-06-14): lift uniform grid-item box CSS
+        # onto gridItem* attrs AFTER children resolve (setdefault — child paths win).
+        # R-22-1 DB-driven; R-22-6 no inline CSS; R-22-9 universal (every slug-None section).
+        _lift_uniform_grid_item_css(node, css_rules, container_attrs)
         return _emit_section_container(container_attrs, children_markup, css)
 
     # When slug is None at top level, skip attr-lifting + root-supports-lift
@@ -5322,6 +5565,13 @@ def _emit_wrapper_container(
     children_markup = _process_container_children(
         node, css_rules, depth, variation_buf, container_attrs, parent_slug=parent_block
     )
+    # FR-22-21 step 4 / SDD Task 1 (2026-06-14): a NESTED slug-None grid (e.g. a
+    # `.sgs-products` grid under a `__inner`, the FR-22-4.1 featured-product worked
+    # example) is its OWN sgs/container here — it must get the uniform grid-item box-CSS
+    # lift too, identically to the top-level section path (convert.py ~4414). Without
+    # this the lift was a top-level-only carve-out (R-22-9 breach: "applies at every
+    # nesting depth"). setdefault — child paths win. R-22-1 DB-driven; R-22-6 no inline CSS.
+    _lift_uniform_grid_item_css(node, css_rules, container_attrs)
     _trace("walker_branch_taken", branch="wrapper_container",
            node_classes=classes, depth=depth)
     return emit_wp_block("sgs/container", container_attrs, children_markup)
@@ -5367,7 +5617,10 @@ def _fold_layout_into_attrs(
     _fw_base, _ = _collect_css_decls_for_element(wrapper_node, css_rules)
     _inner_mw = _fw_base.get("max-width")
     if _inner_mw:
-        container_attrs.setdefault("contentWidth", _strip_important(_inner_mw).strip())
+        # FIX B (IN-B): resolve co-declared var() before storing (e.g. max-width:var(--content-width)
+        # with --content-width:960px on the same element → "960px").
+        container_attrs.setdefault("contentWidth", _resolve_co_declared_var(
+            _strip_important(_inner_mw).strip(), _fw_base))
 
 
 def _process_container_children(
@@ -5597,7 +5850,9 @@ def _process_container_children(
             if _band_mw:
                 _band_attr = db.attr_for_layer_property(parent_slug, "CONTENT", "max-width")
                 if _band_attr:
-                    container_attrs.setdefault(_band_attr, _strip_important(_band_mw).strip())
+                    # FIX B (IN-B): resolve co-declared var() before storing.
+                    container_attrs.setdefault(_band_attr, _resolve_co_declared_var(
+                        _strip_important(_band_mw).strip(), _band_base))
             _trace("walker_branch_taken", branch="dissolve_grid_area_item",
                    node_classes=cclasses, depth=depth + 1, area=_child_element)
             for gc in child.children:
