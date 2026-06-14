@@ -2,50 +2,52 @@
 doc_type: handoff
 project: small-giants-wp
 thread: cloning-pipeline
-session_date: 2026-06-13
+session_date: 2026-06-14
 ---
 
-# Session Handoff — 2026-06-13 (cloning thread, D223)
+# Session Handoff — 2026-06-14 (cloning thread)
 
 ## Completed This Session
-1. **Redesigned the de-literalisation programme** after Bean's correction: the per-block `if slug==` branches are a SYMPTOM of the universal mechanism never being taught child-element typography/colour CSS. Two `/adversarial-council` rounds — #1 NO-GO'd a mechanism that would have silently DROPPED child CSS on every clone; #2 GO'd a hard-trimmed shape.
-2. **Shipped the universal child-CSS styling-lift** (commit `c1543df5`): new SIBLING `_lift_styling_attrs_by_selector` (capability-gated `scalar-styling-lift`, `sgs/testimonial` only) lifts child typography/colour by `derived_selector`. Verified: lift values exact-match the fixture draft CSS; golden regen faithful (nothing dropped); BOTH conformance suites green (43+26) after a FULL `/sgs-update` reseed; classifications + capability survive reseed.
-3. **Removed 6 dead `core/*` handlers** from `_atomic_attrs_for` (unreachable — `atomic_tag_map()` resolves every tag to sgs/* via `blocks.replaces`; Bean's "why core" catch; conformance proves it).
-4. **FR-22-3 slug-literal guard** (commit `524c7aa5`): `check-atomic-slug-literals.py` wired to prebuild — fails the build on a new `if slug==` branch outside the allow-list (shrink-only).
-5. **8-row OPEN-ledger root-cause RE-VERIFICATION** (7 parallel agents, Bean directive): report `.claude/reports/2026-06-13-open-row-rootcause-verification.md`. The ledger's diagnoses were WRONG/PARTIAL on IN-B, FP-P, IN-E, BR-B; GF-B.2 pinned a broad CSS selector-scope bug; SP-C dropped (not a defect).
+1. **4 converter fixes SHIPPED to `main`** (commit `a8bf5616`, path-scoped, each with a fire-proof lock-in test, both conformance suites green 84/84): **GF-B.2** selector-scope matcher (`convert.py:619-622` — class-branch now respects descendant-combinator ancestor scope, no cross-section CSS bleed; compound `.A.B` edge preserved); **H-C1** per-slot max-width (`convert.py:2399` via `attr_for_area_property`, around the `_area_excluded` guard, widthMode untouched); **IN-B** general `_resolve_co_declared_var` (`convert.py:384`, flag-not-drop); **gridItem\*** uniform per-item CSS (`_lift_uniform_grid_item_css` `:2734`, wired top-level `:4414` + nested `:5574`, R-22-9 universal).
+2. **Testimonial styling bridge** committed (`32e73f44`) — 5 styling attrs get draft-class multi-aliases; golden +`nameColour=#5c4f46`.
+3. **3 Spec-22 "gaps" DEFERRED** by verify-first as design-gate PHASES (NOT built): array→child wiring (FR-22-2.5), draft breakpoints (FR-22-5.2), D1 sidecar.
+4. **nameFontWeight hardcode REVERTED** (`d62d0d2f`) — Bean rejected hardcoded selectors; zero hardcoded `nameFontWeight` selector across all 3 channels. Still transfers for the fixture via the generic `typography_css_to_attrs()` path.
+5. **Routing-redesign exploration RETIRED + unified element-pass council NO-GO** (D224) — code analysis proved the routing was already BUILT; both dead-end specs deleted, reasoning preserved in D224.
+6. **Spec-22 built_status TRUTH-SYNC** (`ee0f572e`) — stale labels corrected with code-verified file:line (FR-22-5.1/5.3 mislabelled PLANNED but BUILT; gridItem* shipped; FR-22-20 data-not-code; FR-22-5.2/2.5 design-gate; FR-22-9 absent).
+7. **Lesson captured** (blub.db 353, 3 layers): read the implementing script before proposing/critiquing any converter mechanism — never trust spec `built_status:` labels or attr/column names.
+8. **Architecture decision (D225):** selector-seeding should be block.json-declared + auto-seeded, not hardcoded in `/sgs-update` (parked P-BLOCKJSON-SELECTOR-AUTOSEED, top next task).
 
 ## Current State
-- **Branch:** `main` at `c1543df5` (+ docs commit from this handoff). In sync with origin.
-- **Tests:** both conformance suites green — Gate A 43/43, converter_v2 26/26.
-- **Build:** n/a (no plugin rebuild needed — styling-lift is converter+DB side; the `scalarStylingLift` block.json flag is non-visual metadata).
-- **Uncommitted changes:** the doc set committed by this handoff (next-session-prompt, root-cause report, decisions, state, handoff).
+- **Branch:** `main` at `ee0f572e` (pushed; origin in sync 0/0).
+- **Tests:** 84 pass, 0 fail (Gate A golden harness + `converter_v2/tests/`).
+- **Build:** conformance green; converter fixes NOT live-verified (Bean deploys).
+- **Uncommitted changes:** none of this session's work (only pre-existing non-mine `reports/phase4-*.txt` + a gap-analysis report remain untracked).
 
 ## Known Issues / Blockers
-- Styling-lift has 2 documented DB-data gaps (not blockers): quoteStyle font-style (`Style` suffix css_property=NULL) + nameFontWeight `__name`-vs-`__author` draft-class drift.
-- The styling-lift's live RENDER on canary page 8 is NOT yet verified (emit + conformance proven; rendered-DOM probe is Task 1 next session).
+- The 4 converter fixes are CODE SHIPPED, OUTCOME NOT YET HIT — they pass conformance (no-regression) but are **not live-verified on canary page 8**. Closing the ledger rows requires Bean's deploy + live computed-style check.
+- `nameFontWeight` won't transfer via the scalar-lift path on a clean reseed (hardcode reverted) until the block.json auto-seed is built (still works for the conformance fixture via the typography path).
+- `border` shorthand has no `property_suffixes` row → `gridItemBorder` not lifted from a shorthand (DB-data follow-up).
 
 ## Next Priorities (in order)
-1. Live-verify the D223 styling-lift renders on canary page 8 (close the R-22-11 loop).
-2. Design + build the OPEN-row fixes from the VERIFIED root causes — 3 are Rule-7 shared-mechanism (GF-B.2 CSS matcher, IN-E container-wrapper transfer, IN-B co-declared-var resolution); the rest are localised per-block extraction maps. Drop SP-C. Close FP-D (design-decision).
+1. **block.json-declared selector auto-seed** (P-BLOCKJSON-SELECTOR-AUTOSEED) — design-gate + `/adversarial-council`, then build. The proper fix for the hardcoded-selector smell.
+2. **Bean: deploy + live-verify** the 4 shipped converter fixes on canary page 8.
+3. **The 3 deferred design-gate phases** — array→child, draft breakpoints, D1 sidecar — each a design session before build.
+4. **IN-E** emit-gate widen — after the live-probe confirms it's a real defect.
 
 ## Files Modified
-| File | What changed |
-|------|--------------|
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | removed 6 dead core/* handlers; added `_lift_styling_attrs_by_selector` + G3 wiring + tripwire |
-| `plugins/sgs-blocks/scripts/check-atomic-slug-literals.py` | NEW guard (allow-list 17→11) |
-| `plugins/sgs-blocks/scripts/sgs-update-v2.py` | `scalarStylingLift` capability seeding + 3 `ATTR_CLASSIFICATION_OVERRIDES` |
-| `plugins/sgs-blocks/src/blocks/testimonial/block.json` | `supports.sgs.scalarStylingLift: true` |
-| `plugins/sgs-blocks/scripts/tests/fixtures/conformance/sgs-testimonial.golden.json` | faithful regen (+3 lifted attrs) |
-| `.claude/plans/2026-06-13-*-DESIGN.md` (×2) | de-lit NO-GO + universal-lift design + build plan |
-| `.claude/reports/2026-06-13-open-row-rootcause-verification.md` | NEW — corrected OPEN-row root causes |
-| `.claude/decisions.md` · `state.md` · `next-session-prompt.md` | D223 + status + OPEN-row orchestration plan |
+| File path | What changed |
+|-----------|--------------|
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | GF-B.2 matcher + H-C1 max-width + IN-B var-resolver + gridItem* writer |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/tests/` | 3 new lock-in test files |
+| `plugins/sgs-blocks/scripts/sgs-update-v2.py` | removed hardcoded `nameFontWeight` selector |
+| `tools/recogniser/data/fingerprints.json` + the 2026-06-13 migration | removed dead `nameFontWeight` copies |
+| `.claude/specs/22-…EXTRACTION.md` | built_status truth-sync (8 FRs, file:line) |
+| `.claude/decisions.md` · `CLAUDE.md` · `parking.md` · `state.md` | D224 + D225; pointer → D225; 2 parking entries; cloning block |
 
 ## Notes for Next Session
-- **The ledger's diagnoses are hypotheses (R-22-7) — 4 of 8 were wrong.** Use the root-cause report, not the stale ledger row-notes, when building.
-- **A subagent regenerating a golden can bake an unfaithful emit** — always diff a regen vs the fixture DRAFT CSS (D223 verified faithful this way).
-- **GF-B.2's CSS selector-scope bug is broad** — `_collect_css_decls_for_element` matches ancestor-scoped compound selectors as single-class; fixing it may close other cross-section leaks.
-- **Spec 27 + 30 are built → nothing is gated** (Bean confirmed). FP-E/FP-H shipped; FP-D is a design-decision close.
+- **Hardcoded-selector root cause:** `assign-canonical.py:485` is `WHERE canonical_slot IS NULL` — so assign-canonical AND fingerprints both skip `canonical_slot`-populated rows; the only channel reaching the 5 testimonial styling attrs was the hardcoded override dict. The auto-seed fix must reach canonical_slot-populated rows.
+- **Verify-first paid off:** of the 4 "Spec-22 gaps", only gridItem* was a clean build; the other 3 were bigger-than-labelled phases. Apply verify-first to any "gap" — labels lie.
+- **The block.json-auto-seed is Rule-7** (every block's selector seeding) — design-gate before build.
 
 ## Next Session Prompt
-
-See `.claude/next-session-prompt.md` — full orchestration plan (live-verify Task 1 + design/build the OPEN-row fixes Task 2, with the corrected root-cause table, the 3 Rule-7 shared-mechanism flags, the 7 NON-NEGOTIABLE RULES, methodology guardrails, pre-flight ritual, and Skills/MCP/Agents tables). It is the operative opener — the SessionStart hook auto-loads it.
+See `.claude/next-session-prompt.md` — the operative opener (7 rules, methodology guardrails, pre-flight ritual, orchestration plan).
