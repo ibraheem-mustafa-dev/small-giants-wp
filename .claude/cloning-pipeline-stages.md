@@ -176,11 +176,11 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │                                                                             │
 │ DB tables (R) — post-D107/D108/D111/D128/D152:                               │
 │   blocks.tier (D107 — new column, 2 rows class-section)                     │
-│   block_composition (D108/D152 — 189 rows post-D152; container_kind column  │
+│   block_composition (D108/D152 — 197 rows post-D152; container_kind column  │
 │     added D152, values section|layout|content, 29-block roster fully        │
 │     populated (D167 2026-06-04; was 28 pre-D167);                           │
 │     AVAILABLE for queries, walker consumption DEFERRED — P-XS-3-TRIGGER)    │
-│   slots WHERE scope='element' (92 rows post-D111)                            │
+│   slots WHERE scope='element' (99 rows)                                      │
 │   slots WHERE scope='section' (4 rows post-D111; was 16 pre-D111)            │
 │   roles (D99/D128 — 21 rows; replaces slot_synonyms.role_classification;    │
 │     scalar-media role added D128 2026-06-01)                                │
@@ -721,7 +721,7 @@ python ~/.claude/hooks/wp-blocks.py dump
 |-------|---------------|--------|
 | Block name | `sgs-framework.blocks.slug` | ✅ 74 SGS blocks (196 total incl. core/wp; verified 2026-06-13 DB — counts drift, `/sgs-db` authoritative) |
 | Attribute names | `sgs-framework.block_attributes.attr_name` | ✅ counts drift — query `/sgs-db` (was 2,935 at 2026-06-13) |
-| Canonical slot | `sgs-framework.block_attributes.canonical_slot` | ✅ + `slots` (scope='element', 92 rows) |
+| Canonical slot | `sgs-framework.block_attributes.canonical_slot` | ✅ + `slots` (scope='element', 99 rows) |
 | Attribute role | `sgs-framework.block_attributes.role` | ✅ |
 | Output signature | `sgs-framework.block_attributes.output_signature` | ✅ |
 | Equivalent implementations (Rosetta Stone) | `sgs-framework.block_attributes.equivalent_implementations` | ✅ 1630 rows |
@@ -774,7 +774,7 @@ python ~/.claude/hooks/wp-blocks.py dump
 **DEAD tables (zero rows — retirement candidates):**
 `sections_detected`, `extraction_cache`, `block_opportunities`, `weaknesses`, `animations` (all in sgs-framework.db).
 
-**Retired tables (no longer in schema):** `legacy_role_lookup` and `slot_synonyms` — both unified into the `slots` table (D99). Use `slots WHERE scope='element'` (92 rows) and `slots WHERE scope='section'` (4 rows). The old `role_classification` column is now the `roles` table (21 rows).
+**Retired tables (no longer in schema):** `legacy_role_lookup` and `slot_synonyms` — both unified into the `slots` table (D99). Use `slots WHERE scope='element'` (99 rows) and `slots WHERE scope='section'` (4 rows). The old `role_classification` column is now the `roles` table (21 rows).
 
 ### sgs-framework.db key tables
 
@@ -782,8 +782,8 @@ python ~/.claude/hooks/wp-blocks.py dump
 |---|---|---|
 | block_attributes | counts drift — `/sgs-db` authoritative (was 2,935 at 2026-06-13; was 2,739 post-WS-4 2026-06-04) | Stages 3+4 R; cv2 D3 W. D110 backfill (historical): canonical_slot 659 (31.8%), role 676 (32.6%) |
 | blocks | 74 SGS (+ 122 core/wp = 196; verified 2026-06-13 DB — counts drift, `/sgs-db` authoritative) | Stage 2 cross-check; /sgs-update S3 uimax sync. `tier` column (D107) — 2 rows class-section |
-| block_composition (D108/D152/D167) | 189+ (post-D152; +content-collection D167 = 29-block container roster) | Data layer LIVE for Stage 1 queries; `container_kind` column added D152 (values `section|layout|content`; 29-block container roster post-D167: 4 section / 14 layout / 11 content; modal + mobile-nav excluded); walker consumption code REVERTED — P-XS-3-TRIGGER-REFINEMENT. Schema: block_slug PK, wraps_block, composition_role enum, has_inner_blocks, accepts_allowed_blocks, container_kind |
-| slots | 92 element + 4 section = 96 | Stage 1 R via db_lookup |
+| block_composition (D108/D152/D167) | 197 (post-D152; +content-collection D167 = 29-block container roster) | Data layer LIVE for Stage 1 queries; `container_kind` column added D152 (values `section|layout|content`; 29-block container roster post-D167: 4 section / 14 layout / 11 content; modal + mobile-nav excluded); walker consumption code REVERTED — P-XS-3-TRIGGER-REFINEMENT. Schema: block_slug PK, wraps_block, composition_role enum, has_inner_blocks, accepts_allowed_blocks, container_kind |
+| slots | 99 element + 4 section = 103 | Stage 1 R via db_lookup |
 | roles | 21 (20 base + scalar-media) | Stage 1 R; walker resolution |
 | block_supports | 1,160 (post-D100 prune) | Stage 5 supports_writer R |
 | block_capabilities (D99 wired as FR-22-15) | 88 | Walker capability-aware BEM tiebreaker |

@@ -145,7 +145,7 @@ Bean chose **`content` + `role='layout'`**. Implemented:
 
 | Target | Action | What |
 |---|---|---|
-| `.claude/docs-registry.yaml` | **ADD** | Register this doc (`reports/wave2/WRAPPER-CSS-ROUTING-DESIGN-GATE.md`, doc_type reference, canonical_spec → spec 22). |
+| `.claude/docs-registry.yaml` | **ADD** | Register this doc at its REAL path `.claude/specs/WRAPPER-CSS-ROUTING-DESIGN-GATE.md` (doc_type reference, canonical_spec → spec 22). *(Path corrected 2026-06-14 — earlier draft said `reports/wave2/...`; the file was moved to `specs/` and the registry ADD was never applied.)* |
 
 ## What stayed the same vs the original session prompt
 

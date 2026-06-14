@@ -6,6 +6,18 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-14 (cloning thread) — D227: Task-1 doc-read+align complete — contentSize 780→1200/1400 restored (Bean decision), 13-doc alignment pass, audit register's own over-stated claims corrected
+
+**D227 — The mandated comprehensive doc-read+align ran. The two CRITICAL Bean-decision findings resolved: one was a real regression (fixed), one was a false alarm by the audit agent. Doc-alignment applied across 13 docs, and the verify-first mandate corrected the audit register itself where it over-stated.**
+
+- **CRITICAL #1 (content width) — REAL regression, FIXED + Bean-decided.** Live `theme/sgs-theme/theme.json` shipped `contentSize:780px/wideSize:1200px`; theme CLAUDE.md + Spec 01 both document the canonical `1200px/1400px` ("fixed 2026-02-22"). The 780 was a forgotten regression = THE "content feels really tight" root cause. **Bean chose: widen the global default** (over the per-section-only option). Restored to `1200px/1400px`. Committed-but-not-yet-live-verified (verifies on Task-3 page-8 re-clone+deploy).
+- **CRITICAL #2 (button presets) — FALSE ALARM, no breakage.** Audit claimed `--wp--custom--button-presets--*` vars undefined (admin PHP file gone). VERIFIED: the file was *deliberately* deleted (D24, commit `60220b13`) because WP 6.9+ generates those vars natively from `theme.json.settings.custom.buttonPresets` — confirmed fully populated. Spec 11 already documents this correctly. Buttons fall back to real preset colours, not bare CSS. Bean's real button issue is a separate cause → Task 2 diff. No action.
+- **Count-drift sweep (agent 1):** 8 docs corrected — `block_composition` 189→197, container roster 28/29→31 (4 section/14 layout/13 content), `slots` element 92→99, `block_attributes` 2,739→2,935, `property_suffixes`→124, class-section roster +`sgs/trust-bar` everywhere (Spec 00/02/21). Historical D-log snapshots left untouched.
+- **Remaining alignment (agent 2, all HIGH claims code-grep-verified before edit):** Spec 02 info-box real attrs (`blockLink`/`cardStyle`/`hoverEffect`, not `iconColour`/`link`); testimonial-slider InnerBlocks-ONLY +8 missing attrs; cta-section + process-steps are dynamic render.php not "Static save()", attr `numberStyle` not `numberedStyle`; announcement-bar §17→tombstone. Spec 22 FR-22-9 uimax→RETIREMENT-CANDIDATE, FR-22-19→"RATIFIED, CODE REMOVAL PENDING" (branches still at convert.py:985/5626), FR-22-5.1 widthMode line refs corrected (4372/4477+, not 4240). Spec 29 Method-2 "converter does NOT route to composites on live clone" callout added (hero/cta-section). Spec 20 Stage 9c runs BEFORE 4k (was "after"). docs-registry.yaml: added the missing WRAPPER-CSS-ROUTING entry at the real `specs/` path.
+- **Audit register corrected by verify-first (the meta-win):** the audit's Spec-21 artefact claims (`stage-7.json`/`stage-4i`/`stage-4j` "not emitted/unconfirmed") were OVER-STATED — all three ARE emitted, by the top-level `sgs-clone-orchestrator.py`, not the `converter_v2/` submodule the audit grepped. `css-d1-assignments.json` confirmed RETIRED (only in `_retired/`). Lesson reinforced: distrust audit labels too; grep the real emitter. **D-CEILING: D227.**
+
+---
+
 ## 2026-06-14 (cloning thread) — D226: live-verify of D225's a8bf5616 on canary page 8 (IN-B + GF-B.2 VERIFIED, H-C1 NOT landed) + IN-E/FP-P confirmed real defects + 12-doc alignment audit
 
 **D226 — The skipped gate, finally run: live computed-style verification on the real page, plus a 3-agent doc-alignment audit. Honest result: 2 of 3 fixes land, 1 doesn't; 2 probed rows confirmed real; docs carry critical drift.**

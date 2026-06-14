@@ -68,7 +68,7 @@ Recognition path (deterministic, tier-driven post-D107):
 1. Walker reads the block segment from `sgs-<block>` on a section-root candidate
 2. Voter (`per-section-convention-voter.py:295-305`) queries `blocks.tier` — if `tier='class-section'`, emit the literal block slug with confidence 1.0 (reason: `class-section-block-equivalent`)
 3. If `sgs-` prefix is present but no `class-section` row exists, voter emits `gap-candidate-class-section` instead of literal-slug-match — surfaces unregistered section blocks as gap candidates, never silently routed
-4. Current class-section roster: `sgs/hero`, `sgs/cta-section` (sourced from `supports.sgs.is_section_root: true` in each block.json; populated into `blocks.tier` column by `/sgs-update`)
+4. Current class-section roster: `sgs/hero`, `sgs/cta-section`, `sgs/trust-bar` (sourced from `supports.sgs.is_section_root: true` in each block.json; populated into `blocks.tier` column by `/sgs-update`)
 
 **ELEMENT path (BEM element inside a section):**
 1. Walker reads the BEM element from the class (`sgs-X__<element>`)
@@ -96,7 +96,7 @@ Every **short standalone label or cosmetic badge** text element routes to the `l
 
 To declare a new section-root block (a block whose `sgs-<block>` class identifies a whole page section, not an element within one), set `"is_section_root": true` under `supports.sgs` in the block's `block.json`. `/sgs-update` reads this flag and writes `blocks.tier='class-section'`. The voter then routes section recognition to the literal slug at confidence 1.0.
 
-Current roster: `sgs/hero`, `sgs/cta-section`. Adding a new section-root block requires:
+Current roster: `sgs/hero`, `sgs/cta-section`, `sgs/trust-bar`. Adding a new section-root block requires:
 1. `block.json` declares `supports.sgs.is_section_root: true`
 2. Run `/sgs-update` to populate `blocks.tier`
 3. Walker recognition flows automatically — no code branches needed

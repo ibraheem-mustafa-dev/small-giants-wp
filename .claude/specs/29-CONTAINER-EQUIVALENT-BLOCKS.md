@@ -108,6 +108,8 @@ Or via `/sgs-db`. Do NOT hardcode the count here — query the DB. The tables be
 
 Full-bleed outer wrappers — background + spacing + width + layout.
 
+> **NOTE: the converter does NOT yet route to these composite blocks on a live clone — it emits `sgs/container` + draft CSS (Method-2 pending, see §1).** The detailed `sgs/hero` / `sgs/cta-section` entries below describe the TARGET block these sections SHOULD resolve to, not current live clone behaviour. This is the direct cause of the "2 class-section blocks not resolving spacing" report — on a live run those sections currently land as `sgs/container` with the draft section CSS carried as variation CSS, not as a mirrored composite.
+
 | Block | Purpose |
 |---|---|
 | `sgs/hero` | Page hero section — headline, sub-headline, CTAs, background image/video/SVG. Appears at the top of a page. |

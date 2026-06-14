@@ -39,7 +39,7 @@ Emit per-severity sidecar log files into each pipeline-state run directory at th
 
 ### Stage 9c — surface_pipeline_logs
 
-A new orchestrator stage runs AFTER Stage 4k (critical-fix-verification) and BEFORE the final `[orchestrator] DONE` banner. It invokes `plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py:surface(run_dir)`.
+A new orchestrator stage runs late in `main()`. **Order corrected 2026-06-14 against live `sgs-clone-orchestrator.py`:** Stage 9c fires **BEFORE Stage 4k (critical-fix-verification), not after** — and BOTH run BEFORE the `--skip-autonomy-gate` early return so logs surface (and a dev deploy lands) even on gate-skipped runs. The orchestrator's own comments are the ground truth: ~L2540 "9c MUST run BEFORE the --skip-autonomy-gate early return" + ~L2564 "4k fires AFTER Stage 9c". Stage 9c invokes `plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py:surface(run_dir)` and emits before the final `[orchestrator] DONE` banner.
 
 The surfacer:
 1. Reads `<run_dir>/trace.jsonl` (soft-fails if absent).

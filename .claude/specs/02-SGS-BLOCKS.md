@@ -242,19 +242,24 @@ block-name/
 
 **Purpose:** Feature/benefit card with icon, heading, and description.
 
-**Attributes:**
-- `icon` — SVG slug from icon library or custom SVG
-- `heading` — RichText
-- `description` — RichText
-- `link` — URL (optional, makes entire card clickable)
-- `iconColour` — token slug
-- `iconBackgroundColour` — token slug
-- `iconSize` — small | medium | large
-- `cardStyle` — flat | bordered | elevated | filled
-- `hoverEffect` — none | lift | border-accent | glow (default: lift for bordered/elevated styles)
-  - `lift` — translateY(-4px) + shadow increase on hover
-  - `border-accent` — accent-colour top border slides in via `::before` scaleX + card lifts
-  - `glow` — accent-colour box-shadow glow on hover
+**Attributes** (verified against block.json 2026-06-14):
+- `mediaType` — icon | emoji | image (default: icon)
+- `icon` — SVG slug from icon library (default: `star-filled`)
+- `mediaEmoji` — string (when `mediaType=emoji`)
+- `boxMedia` — media object (when `mediaType=image`; `image` retained for deprecation back-compat)
+- `iconPosition` — top | left | right (default: top)
+- `heading` — string (RichText, `role: content`)
+- `subtitle` — string (RichText, `role: content`)
+- `description` — string (RichText, `role: content`)
+- `cardStyle` — string (default: `elevated`)
+- `hoverEffect` — string (default: `lift`)
+- `blockLink` — URL string (optional, makes entire card clickable)
+- `blockLinkTarget` — boolean (open link in new tab)
+- Hover/transition attrs: `hoverBackgroundColour`, `hoverTextColour`, `hoverBorderColour`, `hoverScale`, `hoverShadow`, `hoverGrayscale`, `transitionDuration`, `transitionEasing`
+- Width attrs: `widthMode`/`widthModeMobile`/`Tablet`/`Desktop`, `customWidth`/`customWidthUnit`, `contentWidth`, `maxWidth`
+- Animation attrs: `sgsAnimation`/`sgsAnimationDuration`/`sgsAnimationEasing`, `staggerDelay`
+
+> NOTE: There is no `iconColour`/`iconBackgroundColour`/`iconSize`/`link` attribute — icon colour/size come from native `color` + `__experimentalBorder` supports and the universal image-controls extension (`supports.sgs.imageControls`).
 
 **Render:** **Dynamic** — `render: file:./render.php`. Server-side render handles icon SVG injection from the icon library, conditional link wrapper, and per-element colour token resolution. `save.js` returns `null`.
 
@@ -385,17 +390,23 @@ block-name/
 
 **Purpose:** Carousel/slider of multiple testimonials.
 
-**Attributes:**
-- `testimonials` — array of testimonial objects
-- `autoplay` — boolean
-- `autoplaySpeed` — ms
-- `showDots` — boolean
-- `showArrows` — boolean
-- `slidesVisible` — 1-3 (desktop)
+**Inner blocks:** REQUIRED. Slides are `sgs/testimonial` InnerBlocks (FR-22-6 migration 2026-05-30). render.php iterates `$block->inner_blocks` and renders each child; the `testimonials` array attribute still exists in block.json for back-compat but render.php does NOT read it — this block is **InnerBlocks-ONLY** in production.
 
-**Inner blocks:** Alternatively, can use inner `sgs/testimonial` blocks.
+**Attributes** (verified against block.json 2026-06-14):
+- `layout` — full | split (default: full; `split` shows a `sideImage` beside the carousel)
+- `sideImage` — media object (split layout only)
+- `cardStyle` — string (default: `card`)
+- `autoplay` — boolean / `autoplaySpeed` — ms
+- `showDots` / `showArrows` — boolean
+- `slidesVisible` — number (default: 3)
+- `columns`/`columnsMobile`/`columnsTablet` — grid columns
+- `gridTemplateColumns`/`Tablet`/`Mobile`, `gridTemplateRows`/`Tablet`/`Mobile`, `gridAutoRows` — explicit grid templates
+- `gap`/`gapTablet`/`gapMobile`, `justifyItems`, `alignContent`, `templateMode` (free | grid-section | card-grid)
+- `nameFontSize`, hover attrs (`hoverBackgroundColour`/`hoverTextColour`/`hoverBorderColour`/`hoverEffect`), `transitionDuration`/`transitionEasing`
+- Width/flex attrs: `widthMode`/`Mobile`/`Tablet`/`Desktop`, `customWidth`/`customWidthUnit`, `contentWidth`, `maxWidth`, `flexDirection`, `flexWrap`, `justifyContent`
+- `supports.sgs.containerKind: layout` — mirrors `sgs/container` wrapper capabilities via `SGS_Container_Wrapper`.
 
-**Render:** Dynamic `render.php` + `viewScriptModule` for carousel logic.
+**Render:** Dynamic `render.php` (via `SGS_Container_Wrapper::render(..., 'layout', ...)`) + `viewScriptModule` for carousel logic.
 
 **No external carousel library** — custom implementation using CSS scroll-snap + minimal JS for autoplay/navigation. < 3KB JS.
 
@@ -416,7 +427,7 @@ block-name/
 - `stats` — array of { text } for inline social proof
 - `layout` — centred | left-aligned | split
 
-**Render:** Static `save()`.
+**Render:** **Dynamic** — `render: file:./render.php` (verified 2026-06-14). `save.js` returns the InnerBlocks marker / `null`.
 
 ---
 
@@ -426,10 +437,11 @@ block-name/
 
 **Attributes:**
 - `steps` — array of { number, title, description, icon } objects
-- `connectorStyle` — line | arrow | dots
-- `numberedStyle` — circle | square | none
+- `connectorStyle` — line | arrow | dots (default: line)
+- `numberStyle` — circle | square | none (default: circle) — *(attr is `numberStyle`, not `numberedStyle`)*
+- `numberColour` / `numberBackground` / `titleColour` / `descriptionColour` — token slugs
 
-**Render:** Static `save()`.
+**Render:** **Dynamic** — `render: file:./render.php` (verified 2026-06-14).
 
 **Responsive:** Switches from horizontal to vertical stacked layout on mobile.
 
@@ -535,76 +547,7 @@ block-name/
 
 ### 17. Announcement Bar (`sgs/announcement-bar`) — RETIRED D209 (2026-06-11)
 
-> **RETIRED.** `sgs/announcement-bar` was deleted in D209 (`/sgs-update` Stage-10 pruned it + 25 orphan attrs). `announement-bar` use-cases are now served by `sgs/notice-banner` with `displayMode=announcement`. Existing page content carrying `wp:sgs/announcement-bar` shows the WordPress "block has been deleted" placeholder (1 live homepage instance flagged for re-clone/swap). Use `sgs/notice-banner` with `displayMode=announcement` for all new builds.
-
-**The original spec text is preserved below for migration reference only — the block does NOT exist post-D209.**
-
-**Original Purpose:** Dismissible top-of-page banner for time-sensitive announcements, promotions, and alerts. Fixed to the top of the viewport above the header. Supports countdown timers, CTA buttons, message rotation, and date-range scheduling — all as block attributes with zero external dependencies.
-
-**Competitive edge over Elementor:** HelloBar charges $29/month. OptinMonster requires a 3rd-party account. Elementor's "Hello Bar" is a popup workaround. SGS delivers this natively as a block in the header template part with zero CLS, zero external JS, and no per-site licensing.
-
-**Variants:**
-- `standard` — Single message with optional CTA button
-- `countdown` — Message with live countdown timer to a target date/time
-- `rotating` — Multiple messages cycling on a timer
-
-**Attributes:**
-- `messages` — array of { text (RichText), ctaText (string), ctaUrl (string) } objects. Minimum 1 message.
-- `variant` — standard | countdown | rotating (default: standard)
-- `backgroundColour` — token slug (default: primary)
-- `textColour` — token slug (default: text-inverse)
-- `ctaStyle` — filled | outline | text-link (default: outline)
-- `ctaColour` — token slug (default: accent)
-- `position` — top | bottom (default: top)
-- `sticky` — boolean (default: true — stays fixed on scroll)
-- `dismissible` — boolean (default: true — shows close button)
-- `closeBehaviour` — session | persistent | none (default: session)
-  - `session` — dismissed for current browser session (sessionStorage)
-  - `persistent` — dismissed permanently via localStorage with configurable expiry
-  - `none` — cannot be dismissed (no close button shown)
-- `cookieDays` — integer (default: 7 — days before persistent dismissal expires)
-- `targetDate` — ISO 8601 datetime string (for countdown variant)
-- `showDays` — boolean (default: true)
-- `showHours` — boolean (default: true)
-- `showMinutes` — boolean (default: true)
-- `showSeconds` — boolean (default: true)
-- `countdownEndAction` — hide | show-message (default: hide — hides bar when countdown reaches zero)
-- `countdownEndMessage` — string (shown when countdown ends, if countdownEndAction is show-message)
-- `rotationInterval` — integer ms (default: 5000 — for rotating variant)
-- `rotationType` — fade | slide (default: fade — transition between messages)
-- `startDate` — ISO 8601 date string (optional — bar hidden before this date)
-- `endDate` — ISO 8601 date string (optional — bar hidden after this date)
-- `icon` — SVG slug (optional — displayed before message text)
-- `fontSize` — token slug (default: small)
-
-**Render:** Dynamic `render.php` — server checks startDate/endDate and hides bar outside the scheduled range. Client-side JS handles dismissal, countdown, and rotation.
-
-**Source-data fix (2026-05-29):** `block.json:38` default-value mojibake corrected (non-UTF-8 bytes replaced with proper UK-English punctuation). New installs and re-seeded patterns now ship clean defaults.
-
-**Interactivity:** Uses `viewScriptModule` with WordPress Interactivity API:
-- `data-wp-interactive="sgs/announcement-bar"` on root element
-- `data-wp-context` stores `{ isDismissed, currentMessage, countdownRemaining }`
-- `data-wp-bind--hidden="context.isDismissed"` hides when dismissed
-- `data-wp-on--click="actions.dismiss"` on close button
-- Countdown: `data-wp-watch="callbacks.updateCountdown"` ticks every second
-- Rotation: `data-wp-watch="callbacks.rotateMessage"` cycles messages on interval
-- All animation respects `prefers-reduced-motion` (no slide/fade, instant switch)
-
-**Responsive:**
-- Desktop: full-width strip, text + CTA inline
-- Mobile: text wraps, CTA stacks below message, countdown digits smaller
-- Touch target for close button: minimum 44×44px
-
-**Accessibility:**
-- `role="alert"` with `aria-live="polite"` for message updates
-- Close button: `aria-label="Dismiss announcement"`
-- Countdown: `aria-hidden="true"` on decorative timer digits, `aria-live="off"` (not announced every second)
-
-**Performance:**
-- Zero CLS: bar height reserved via CSS `min-height` before JS hydrates
-- JS loaded as viewScriptModule — deferred, non-blocking
-- No external dependencies — pure CSS transitions + Interactivity API
-- sessionStorage/localStorage for dismissal state — no cookies
+> **RETIRED — TOMBSTONE.** `sgs/announcement-bar` was deleted in D209 (`/sgs-update` Stage-10 pruned it + 25 orphan attrs). Its dismissible-banner / countdown / rotating-message use-cases are now served by `sgs/notice-banner` with `displayMode=announcement` (see §16). Existing page content carrying `wp:sgs/announcement-bar` shows the WordPress "block has been deleted" placeholder (1 live homepage instance flagged for re-clone/swap). Use `sgs/notice-banner displayMode=announcement` for all new builds. The block's source, build output, and DB rows no longer exist — its former attribute/interactivity spec is intentionally not retained here.
 
 ---
 
@@ -1136,6 +1079,7 @@ Blocks recognised by the converter walker at confidence 1.0 from their literal `
 |---|---|
 | `sgs/hero` | Page hero (variants: standard / split / video / svg-animated). XS-9.1 rich-text via `sgs/heading` + `wp_kses_post`. |
 | `sgs/cta-section` | Call-to-action section (centred / left-aligned / split layouts). |
+| `sgs/trust-bar` | Trust/badge section strip — curated icon-badge items or certification logos (added D123/D182). |
 
 **Criteria for adding a new section-root block:**
 1. The block represents an entire page section, not an element-within-a-section
@@ -1329,7 +1273,7 @@ All SGS blocks receive animation and interaction controls via the block extensio
 - `sgsStaggerDelay` — stagger delay for child animations
 - `sgsBlockLink`, `sgsBlockLinkTarget` — wrap entire block in link
 
-**26 blocks opted out of universal scale/shadow/image-zoom defaults** (announcement-bar, breadcrumbs, container, countdown-timer, counter, form, form-step, all 11 form-field-* blocks, hero, mega-menu, tabs, tab) — these blocks shouldn't lift or scale visually. Colour hovers and block-link still work on them.
+**Several blocks opt out of universal scale/shadow/image-zoom defaults** (breadcrumbs, container, countdown-timer, counter, form, form-step, all form-field-* blocks, hero, mega-menu, tabs, tab — `announcement-bar` removed from this roster, RETIRED D209) — these blocks shouldn't lift or scale visually. Colour hovers and block-link still work on them. (Exact roster is DB-authoritative — query `/sgs-db`.)
 
 **Inner element hover effects (for specific blocks):**
 - Card Grid, Info Box, Card: already have per-block hover attributes
