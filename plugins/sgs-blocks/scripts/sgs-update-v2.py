@@ -916,11 +916,13 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     #   <blockquote class="sgs-testimonial__quote">.
     ("sgs/testimonial", "quoteStyle"): {"role": "select-from-enum", "derived_selector": ".sgs-testimonial__quote"},
     #
-    # nameFontWeight: stale role='content' + canonical_slot='quote' + selector
-    #   '.sgs-testimonial__text, .sgs-testimonial__quote'. The __text class does
-    #   not exist in render.php. Real element: <cite class="sgs-testimonial__name">
-    #   (render.php line 288). FontWeight suffix → role='typography'. Fix both.
-    ("sgs/testimonial", "nameFontWeight"): {"role": "typography", "derived_selector": ".sgs-testimonial__name"},
+    # nameFontWeight: deliberately NOT overridden here (Bean, 2026-06-14). Its
+    #   selector is NOT hardcoded in any channel (no override entry, no
+    #   fingerprints.json entry, no migration). assign-canonical skips the row
+    #   (canonical_slot='quote' populated), so on a clean reseed nameFontWeight
+    #   gets no draft-matching multi-alias and the name's font-weight will not
+    #   transfer from a draft using .sgs-testimonial__author. ACCEPTED until the
+    #   proper block.json-declared auto-seed is built (separate future task).
     #
     # ratingSize: stale role='content' + selector '.sgs-testimonial__text, ...'.
     #   Real element: <svg width="$rating_size" height="$rating_size"> inside

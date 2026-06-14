@@ -1629,11 +1629,6 @@
         "selector": ".sgs-testimonial__quote, .sgs-testimonial__text"
       },
       {
-        "attr": "nameFontWeight",
-        "extract": "style",
-        "selector": ".sgs-testimonial__name, .sgs-testimonial__author"
-      },
-      {
         "attr": "nameColour",
         "extract": "style",
         "selector": ".sgs-testimonial__heading, .sgs-testimonial__author"

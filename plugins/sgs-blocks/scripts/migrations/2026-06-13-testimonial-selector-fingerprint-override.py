@@ -30,11 +30,17 @@ from pathlib import Path
 DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
 # (attr_name, derived_selector)  — must match fingerprints.json entries exactly.
+#
+# NOTE (2026-06-14): nameFontWeight was REMOVED from this list. Its selector is
+# now owned solely by ATTR_CLASSIFICATION_OVERRIDES in sgs-update-v2.py — the
+# only channel that re-writes it on every reseed (assign-canonical skips
+# canonical_slot-populated rows so the fingerprint channel never reaches it, and
+# this migration only runs when invoked manually). Keeping a second copy here
+# was part of the triple-source drift that caused the revert. Do not re-add it.
 UPDATES = [
     ("quoteFontSize",   ".sgs-testimonial__quote, .sgs-testimonial__text"),
     ("quoteColour",     ".sgs-testimonial__quote, .sgs-testimonial__text"),
     ("quoteLineHeight", ".sgs-testimonial__quote, .sgs-testimonial__text"),
-    ("nameFontWeight",  ".sgs-testimonial__name, .sgs-testimonial__author"),
     ("nameColour",      ".sgs-testimonial__heading, .sgs-testimonial__author"),
 ]
 
