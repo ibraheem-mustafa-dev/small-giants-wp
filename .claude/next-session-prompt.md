@@ -3,109 +3,131 @@ doc_type: next-session-prompt
 project: small-giants-wp
 thread: cloning-pipeline
 generated: 2026-06-14
-primary_goal: "TOP TASK = the block.json-declared, auto-seeded selector mechanism (P-BLOCKJSON-SELECTOR-AUTOSEED) — replace the hardcoded selector dict in /sgs-update with block-owned declarations seeded by /sgs-update, COVERING canonical_slot-populated rows (which assign-canonical's `WHERE canonical_slot IS NULL` + fingerprints.json both skip). Rule-7 seeding-pipeline change → DESIGN-GATE + /adversarial-council BEFORE build. THEN: Bean deploys + live-verifies the 4 shipped converter fixes (GF-B.2 / H-C1 / IN-B / gridItem*, commit a8bf5616, conformance-green but NOT live-verified) on canary page 8. THEN the 3 deferred design-gate phases (array→child FR-22-2.5, draft breakpoints FR-22-5.2, D1 sidecar) each get their own design session. IN-E after the live-probe."
+primary_goal: "Close the FULL clone-vs-draft fidelity gap on the Mama's homepage — much larger than the 55-ledger tracked. START by (1) comprehensively READING + ALIGNING the 12 canonical docs (grounded by the D226 audit register), then (2) a direct HTML diff of the live clone (`current-clone-page-source.html`) vs the draft (`index.html`) to enumerate the COMPLETE defect set, then (3) fix by root-cause family with the 2 class-section blocks' spacing (content-width / max-width / grid sizing / grid padding / alignment) as the biggest lever. Product-page redesign (oversized Trustpilot + tight content width) is a SEPARATE after-fidelity task."
 ---
 
-# Next session — block.json selector auto-seed (design-gate first), then live-verify the shipped fixes
+# Next session — full clone-fidelity alignment (doc-read+align → HTML-diff defect map → root-cause-family fixes)
 
-> Invoke `/autopilot` first. Then READ end-to-end BEFORE acting: `.claude/decisions.md` D225 (this session) + `.claude/parking.md` P-BLOCKJSON-SELECTOR-AUTOSEED + P-SPEC22-DESIGN-GATE-PHASES + `.claude/state.md` cloning block + Spec 22 §FR-22-2 (capability-seeding pattern) + §FR-22-5.1/5.3/21 (now built_status-corrected with file:line).
+> Invoke `/autopilot` first. Then READ COMPREHENSIVELY before acting (Bean-mandated full reads, not greps) — the 12 docs in the reading list below + the D226 audit register + the live ground truth (clone HTML, draft HTML, ledger, state/decisions/parking).
 
 ## ⛔ THE 7 NON-NEGOTIABLE RULES (Bean-set; gate every converter/block/seeding action — carry forward verbatim)
 1. **CONVERT, don't mirror** — output = native SGS blocks driven by attributes; NOT a div-by-div copy of draft classes/DOM.
 2. **NO CHEATS** — no `sourceMode='bound'` converter emit, no echo-`$content` passthrough, no shallow-test workaround. Only the live WC configurator `wc-product`/`sgs-cpt` is legitimate.
 3. **UNIVERSAL, no carve-outs** — a fix applies to every qualifying block/case; no per-block/per-tier exception. Over-broad universality is ALSO a break.
 4. **NO SKIPPING** — every draft class's content + CSS transfers, OR is reported skipped-with-reason, per class.
-5. **VERIFY ON THE REAL HOMEPAGE** — Playwright/chrome-devtools live DOM + computed-style on canary page 8 vs the draft. Emit-green ≠ rendered.
+5. **VERIFY ON THE REAL HOMEPAGE** — Playwright/chrome-devtools live DOM + computed-style on canary page 8 vs the draft. Emit-green ≠ rendered. (Proven AGAIN D226: H-C1 was conformance-green but did nothing on the live page.)
 6. **RESPONSIVE VALUES IN BLOCK ATTRIBUTES, never inline CSS.**
-7. **DESIGN-GATE sensitive/high-blast-radius changes** (shared wrapper, walker, converter, **the /sgs-update seeding pipeline**, most-used block) via `/adversarial-council` or `/qc-council` + Bean approval BEFORE building.
+7. **DESIGN-GATE sensitive/high-blast-radius changes** (shared wrapper, walker, converter, the /sgs-update seeding pipeline, most-used block) via `/adversarial-council` or `/qc-council` + Bean approval BEFORE building.
 
-## State recap (plain English, 2026-06-14 close — D225)
-A subagent-driven build run shipped **4 converter fixes** to `main` (commit `a8bf5616`, each with a fire-proof lock-in test, both conformance suites green 84/84 — but **NOT live-verified**): GF-B.2 selector-scope matcher (no cross-section CSS bleed), H-C1 per-slot max-width, IN-B co-declared `var()` resolver, gridItem* uniform per-item CSS. The **verify-first discipline correctly DEFERRED** the other "Spec-22 gaps" (array→child, draft breakpoints, D1 sidecar) as design-gate PHASES — they were bigger-than-labelled, not quick wires. Bean's questioning exposed a **selector-seeding smell**: per-attr styling selectors were hardcoded in `ATTR_CLASSIFICATION_OVERRIDES` (a code dict in `sgs-update-v2.py`) because assign-canonical (`:485 WHERE canonical_slot IS NULL`) + fingerprints.json both **skip canonical_slot-populated rows** — so the override dict was the only channel reaching the 5 testimonial styling attrs. The hardcoded `nameFontWeight` selector was **reverted entirely** (Bean: no hardcoded selectors). The proper fix is the **top task below**. Spec-22 `built_status:` labels were truth-synced (FR-22-5.1/5.3 were mislabelled PLANNED but are BUILT). **D-CEILING: D225.**
+## State recap (plain English, 2026-06-14 close — D226)
+The skipped gate finally ran. We deployed D225's 4 committed converter fixes (`a8bf5616`) to the live canary page 8 and **checked the rendered page**, not the tests. Result: **IN-B (ingredients content band → 960px) and GF-B.2 (gift sub-text → left) genuinely work on the live page; H-C1 (hero sub-headline width) does NOT** — its value never got extracted (leftover bin) and it targeted a hero-level setting that can't reach the sub-headline (now a child text block). Two probed rows — **IN-E** (ingredient cards should inherit centre, clone emits left) and **FP-P** (CTA should be full-width 598px, clone is 183px) — were **confirmed real defects, not misdiagnoses**. Two new small bugs surfaced (hero sub `line-height:1.65unitless`, duplicated margin). Separately, a 3-agent doc-alignment audit of the 12 canonical docs found **critical drift** — most importantly **the theme ships 780px content width while Spec 01 documents 1200px** (that IS the "content feels tight" complaint), and **the button-presets admin source file is gone while the CSS still references its variables** (likely the brand/announcement button breakage). **Bean's verdict: the 55-issue ledger undercounts — the real fix is a direct clone-vs-draft HTML comparison + a comprehensive doc-read+align FIRST.** **D-CEILING: D226.**
+
+## 📚 MANDATORY READING (comprehensive — full reads, Bean-mandated; do this BEFORE any fix-shape)
+Reading order:
+1. `.claude/reports/2026-06-14-doc-alignment-audit.md` — the audit register; it tells you what in the 12 docs is stale BEFORE you trust them.
+2. `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` · `29-CONTAINER-EQUIVALENT-BLOCKS.md` · `WRAPPER-CSS-ROUTING-DESIGN-GATE.md` · `11-SGS-BUTTON-ARCHITECTURE.md` · `20-STRUCTURED-PIPELINE-LOG-SURFACING.md` · `21-PIPELINE-STATE-ARTEFACTS.md` · `00-naming-conventions.md` · `00-OVERVIEW.md` · `01-SGS-THEME.md` · `02-SGS-BLOCKS.md`
+3. `.claude/cloning-pipeline-flow.md` + `cloning-pipeline-stages.md`
+4. Ground truth for the diff: `sites/mamas-munches/mockups/homepage/current-clone-page-source.html` (live clone, Bean-saved) + `index.html` (truth source).
+5. `.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md` (live status) + `.claude/decisions.md` D226/D225 + `.claude/parking.md` P-CLONE-FIDELITY-FULL-ALIGNMENT / P-DOC-ALIGNMENT-12-DOCS / P-PRODUCT-PAGE-REDESIGN.
 
 ## Tasks
 
-### Task 1 — block.json-declared, auto-seeded selector mechanism (TOP — design-gate first)
-**What:** make per-attr styling selectors BLOCK-OWNED (declared in `block.json` `supports.sgs`, same rails as `scalarStylingLift`/`variants`/`containerKind`) and AUTO-SEEDED by `/sgs-update` into `block_attributes.derived_selector` — COVERING `canonical_slot`-populated rows. Remove the hardcoded selector dict (`ATTR_CLASSIFICATION_OVERRIDES`) + the fingerprint/migration copies; `ATTR_CLASSIFICATION_OVERRIDES` keeps only genuine `role` corrections.
-**Why:** R-22-1 (DB-driven, no hardcoded Python selector dict) + single-source (kills the override/fingerprint/migration triple-drift). Bean directive (D225).
-**Estimated:** design ~20 min, council ~10 min, build ~30 min.
-**Orchestration:** Execution = **design inline (Opus)** → `/brainstorming` design mode for the block.json schema + the /sgs-update seed step → `/adversarial-council` on the seeding-pipeline approach (Rule 7 — touches every block's selector seeding) → then **delegate the build to a sonnet subagent** (`/delegate`), main agent `/qc-council` + full `/sgs-update` reseed verify + commit. Context the subagent needs: assign-canonical `:485 WHERE canonical_slot IS NULL` is why the auto-channels skip these rows; the fix must seed canonical_slot-populated rows; verify via a FULL reseed that all 5 testimonial styling selectors survive from the block.json source alone; both conformance suites green.
-**Depends on:** none. **/qc gate after:** `/qc-council` + full reseed + both suites.
-**Acceptance:** selectors declared only in block.json; a full `/sgs-update` reseed reproduces all derived_selectors (incl canonical_slot-populated rows) with ZERO hardcoded Python selector dict + ZERO fingerprint/migration duplicate; 84/84 suites green.
+### Task 1 — Comprehensive doc-read + ALIGN the 12 docs (grounded by the audit register) [FIRST]
+**What:** Read all 12 docs in full; as you read, apply the corrections in `reports/2026-06-14-doc-alignment-audit.md`. Surface the 2 CRITICAL Bean-decisions before changing them: (a) Spec 01 contentSize 780-live vs 1200-documented — is 780 intentional or revert? (b) Spec 11 button-presets admin PHP absent + orphaned CSS vars — built+deleted or never built?
+**Why:** every prior session reasoned from stale doc labels and re-fixed built code (blub 353). Aligned docs = the foundation for the diff.
+**Estimated:** read ~30 min; mechanical count-sweep ~10 min; critical investigations ~15 min.
+**Orchestration:** Execution = **inline (Opus) reads** the docs (Bean wants the main agent to actually understand them) → **delegate the mechanical count-drift sweep** to a sonnet subagent (`/delegate`; the register's count table is a clean find-replace across named files) → Opus does the 2 critical investigations (grep theme.json + the button-preset var source) + presents the Bean-decisions. Verify-before-edit the Spec 21 artefact claims (grep the writer exists; don't trust the agent's "likely").
+**Depends on:** none. **/qc gate after:** `/docscore` on each edited doc + `/handoff` Gate 4.5 doc-walk.
+**Acceptance:** every audit-register high/critical finding either fixed or has a recorded Bean-decision; count-drift sweep done; `/docscore` ≥ A- on edited docs.
 
-### Task 2 — Bean: deploy + live-verify the 4 shipped converter fixes (closes ledger rows)
-**What:** re-clone the Mama's mockup + deploy + computed-style probe page 8 to confirm GF-B.2 (no cross-section bleed), H-C1 (sub-headline max-width = draft), IN-B (content band = resolved literal), gridItem* (uniform card CSS) RENDER.
-**Why:** conformance = no-regression only; R-22-11 demands live computed-style. Emit-green ≠ rendered.
-**Orchestration:** Bean deploys (per the orchestration model — deploy + live-verify on canary is Bean's); main agent drives the computed-style probe via chrome-devtools (Playwright fallback on "Browser already in use"). Build via PowerShell `npm run build`. Then flip the GF-B.2/H-C1/IN-B/gridItem* ledger rows to VERIFIED with the commit hash.
-**Depends on:** none. **Acceptance:** live computed-style on page 8 = draft values, no regression on other sections/clients.
+### Task 2 — Clone-vs-draft HTML diff → COMPLETE defect register [the enumeration]
+**What:** Directly compare `current-clone-page-source.html` vs `index.html` section-by-section. Content passes 100%, so pair by content + position (NOT by draft BEM class — the converter emits native blocks; clone-parity's class matcher has a blind spot). Produce a defect register (one row per real mismatch: section / element / draft value / clone value / root-cause family / fix layer). Must capture Bean's named set + anything else found: **2 class-section blocks (hero, cta-section) spacing — content-width, max-width, grid sizing, grid padding, alignment** (biggest); product-card CSS; brand button + image styling; ingredients text-align (IN-E); grid items-per-row; disclaimer block styling; gift-card label; button padding; announcement-bar button; testimonial-slider double-nested container; + carry-over H-C1/FP-P/BR-B + the 2 hero-sub inline bugs.
+**Why:** the 55-ledger undercounts; a measured register is the single honest to-do list.
+**Estimated:** ~30 min.
+**Orchestration:** Execution = **`/dispatching-parallel-agents`** — fan out ~3-4 sonnet agents, each owning 2-3 sections, each returning a structured per-section defect table (draft CSS+markup line refs vs clone). Opus merges into one register + maps each to the 8 root-cause families. **PROBE-FIRST live** (chrome-devtools/Playwright on page 8) for any computed-style claim — emit-green≠live (Rule 5).
+**Depends on:** Task 1 (aligned docs). **Parallel with:** none. **/qc gate after:** `/qc-council` cross-family sanity on the merged register before any build.
+**Acceptance:** a committed defect register covering every Bean-named item + extras, each with draft-vs-clone evidence + family + fix layer.
 
-### Task 3 — the 3 deferred Spec-22 design-gate phases (each its own design session)
-**What:** (a) FR-22-2.5 array→child wiring (per-item emit machinery absent + deprecations + has_inner_blocks=0); (b) FR-22-5.2 draft-driven breakpoints (tiering policy + _BREAKPOINT_RULES suffix-validation + dual-mechanism); (c) D1 layout sidecar (verify-first whether superseded by the name-free router). See P-SPEC22-DESIGN-GATE-PHASES.
-**Orchestration:** each = `/brainstorming` design + `/adversarial-council` BEFORE build (Rule 7). Do NOT build any blindly — verify-first confirmed they're phases, not wires.
-**Depends on:** none (independent). **Acceptance:** per phase — design-gate GO + built + both suites + live-verify.
+### Task 3 — Fix by root-cause FAMILY, biggest lever first (2 class-section blocks' spacing) [the build]
+**What:** Group the register by family and fix universally. The 2 class-section composites (hero, cta-section) not resolving content-width / max-width / grid sizing / grid padding / alignment is the biggest — this is the Spec 29 "Method-2" gap (the converter still emits `sgs/container` for sections, not the composite blocks). H-C1's re-fix lands here (right layer: the sub-headline is a child block → cap on that block, not the hero attr).
+**Why:** root-cause families compound across sections; per-instance tuning is the anti-pattern.
+**Estimated:** per-family ~30-45 min; the class-section/Method-2 one is bigger (own design session).
+**Orchestration:** Execution = **design inline (Opus)** per family → **`/brainstorming`** for the class-section/Method-2 routing shape → **`/adversarial-council`** on each shared-mechanism/converter change (Rule 7) → **delegate the build** to sonnet subagents (`/subagent-driven-development`; subagents implement, NO commit authority) → Opus `/qc-council` + BOTH conformance suites + **live page-8 verify per row** + commit path-scoped. Fix the 2 hero-sub inline bugs (`line-height:1.65unitless`, dup margin) in the sgs/text styling-lift emit while in convert.py.
+**Depends on:** Task 2 register. **/qc gate after:** `/qc-council` per converter commit + live-DOM per row.
+**Acceptance:** each family's rows flip to VERIFIED via live computed-style on page 8 (R-22-11), both suites green, no regression on already-VERIFIED rows.
 
-### Task 4 — IN-E inherited text-align emit-gate widen
-**What:** widen the `_resolve_inherited_typography` emit gate (`convert.py:1836`) to emit onto WP-native `supports.typography.textAlign` attrs (universal, R-22-9) so info-box (which uses supports, not a DB attr) gets the inherited centre.
-**Orchestration:** PROBE-FIRST (Bean deploy) — the ledger flags IN-E "SUSPECT-MISDIAGNOSIS"; confirm it's a real defect on the live draft before building. Then `/adversarial-council` (widening the universal inherited path is high-blast). Orchestrator pre-resolves the exact WP attr name via `/wp-blocks` + render.php.
-**Depends on:** Task 2 (live baseline). **Acceptance:** live info-box computed `text-align: center`; no `textAlign:left` over-emit on the ~16 supports-typography blocks.
+### Task 4 — block.json selector auto-seed (carried from D225, still OPEN) [design-gate]
+**What:** P-BLOCKJSON-SELECTOR-AUTOSEED — make per-attr lift selectors block-owned + auto-seeded, retiring the override-dict/fingerprints/migration channels (see decisions D225/D226 + the seeding-vs-runtime split: the converter reads `block_attributes.derived_selector`; the question is which /sgs-update SEEDING source writes it). NOTE the D226 correction: there are already 4 selector channels — consolidate, don't add a 5th.
+**Orchestration:** `/brainstorming` design + `/adversarial-council` on the seeding-pipeline approach (Rule 7) BEFORE build; full `/sgs-update` reseed verify; both suites.
+**Depends on:** none (independent). **Acceptance:** one selector channel; full reseed reproduces all derived_selectors with zero hardcoded Python selector dict.
+
+### Task 5 — Product-page redesign (oversized Trustpilot + tight content) [DEFERRED — after fidelity]
+**What:** the product page design doesn't line up with the draft; Trustpilot review block "stupidly large"; content width "really tight" (ties to Spec 01 contentSize 780). Redesign post-fidelity.
+**Orchestration:** `/brainstorming` design + `/innovative-design`; Bean sign-off (R-22-13). **Depends on:** Task 3 (fidelity closed). **Acceptance:** product page matches the draft layout; Bean visual sign-off.
 
 ## Dependency graph
 ```
-Task 1 (block.json selector auto-seed: design inline → /adversarial-council → sonnet build → /qc-council → reseed-verify → commit)   [TOP]
-Task 2 (Bean deploy + live-verify the 4 shipped fixes → flip ledger rows)   [parallel with Task 1]
-Task 3 (3 design-gate phases — each /brainstorming + /adversarial-council BEFORE build; independent)
-Task 4 (IN-E — depends on Task 2 live baseline; probe-first then council)
-each commit: path-scoped (`git commit -- <paths>`); merge to main via temp-worktree if co-actively held
+Task 1 (doc-read+align: inline Opus reads + delegated count-sweep + Bean-decisions)   [FIRST]
+  ↓
+Task 2 (clone-vs-draft HTML diff → defect register: /dispatching-parallel-agents, /qc-council gate)
+  ↓
+Task 3 (root-cause-family fixes, class-section/Method-2 biggest: /brainstorming → /adversarial-council → SDD build → /qc-council + live-verify per row)
+Task 4 (block.json selector auto-seed: design-gate; independent — can interleave)
+  ↓
+Task 5 (product-page redesign — DEFERRED until Task 3 fidelity closes)
+each commit: path-scoped (`git commit -- <paths>`); merge to co-actively-held main via temp-worktree if needed
 ```
 
-## Methodology guardrails (do not skip — carried forward + extended)
-- **Read the implementing SCRIPT before proposing/critiquing ANY converter/seeding mechanism** — never trust spec `built_status:` labels, attr/column names, or "probably true" (blub.db 353, D225). A council/subagent finding is a HYPOTHESIS — fact-check it against the code.
-- **Verify-first on any "gap"** — labels undersell scope. Of 4 Spec-22 "gaps" this session, only 1 was a clean build; 3 were design-gate phases. Confirm a gap is a contained wire before dispatching a build (D225).
-- **Emit-green ≠ rendered** — verify the full render chain on the LIVE DOM (attr TYPE → WP supports → render.php → safecss). Grep render.php + the wrapper for the attr BEFORE lifting onto it.
-- **TWO conformance suites** — Gate A golden harness `plugins/sgs-blocks/scripts/tests/test_converter_conformance.py` (pre-commit) AND `converter_v2/tests/`. Run BOTH; a subagent "conformance passed" can miss Gate A.
-- **DB changes reproducible from the CANONICAL PATH** — block.json `supports.sgs` (preferred, auto-seeded) OR dated `migrations/*.py` OR `ATTR_CLASSIFICATION_OVERRIDES` (role-only, NOT selectors after Task 1); verified by a FULL `/sgs-update` reseed. NEVER a manual DB edit, a module-load write-side-effect, or a hardcoded Python selector dict.
-- **Golden regen is high-risk** — a subagent can pass conformance by rewriting the golden to its own (wrong) output. ALWAYS diff a regenerated golden vs the FIXTURE DRAFT CSS; confirm nothing dropped (Rule 4).
-- **Deploy before measure** — `npm run build` (PowerShell) + deploy + OPcache reset BEFORE any pixel-diff/computed-style. Bump block.json/style.css version on any CSS change (Hostinger CDN 7-day cache).
-- **/qc-council BEFORE every converter/SGS-block/seeding commit** (blub.db 255). **/adversarial-council before any shared-mechanism change** (Rule 7).
-- **Commit by explicit path** (`git commit -- <paths>`). Merge to co-actively-held main via temp-worktree cherry-pick; verify is-ancestor + staged-count after each push.
-- **Subagents implement; Opus orchestrates** (plan/delegate/QC/live-test/commit). Subagents have NO commit/deploy authority; NEVER `git checkout/restore/stash/reset/clean` the shared tree.
-- **Pixel-diff is misleading — verify the LIVE DOM (R-22-11), not the number** (empty section = false WIN). Per-row live probes are the acceptance, never the aggregate differ.
-- **Bean's "are you sure?"/"why?" on a hardcode/deletion = a mandate to investigate the architecture, not reassure.** Default to the block-owned/DB-driven pattern over a command-script hack.
+## Methodology guardrails (do not skip — carried forward + extended D226)
+- **Emit-green ≠ live-verified — verify the rendered page (R-22-11).** D226 PROVED it again: H-C1 passed both conformance suites + was committed, and rendered NOTHING on page 8. NO ledger row closes without a live computed-style read on canary page 8 (or a draft-vs-clone measurement). The parity2 aggregate + clone-parity BEM matcher are triage-only (blind spot for native-block output).
+- **Read the implementing SCRIPT before proposing/critiquing ANY converter/seeding mechanism** — never trust spec `built_status:` labels, attr/column names, or "probably true" (blub 353). The D226 audit found the docs themselves carry stale labels — distrust them, verify against code/DB.
+- **Verify-first on any "gap"** — labels undersell scope. Confirm a gap is a contained wire before dispatching a build.
+- **Draft is the truth source; pair by content+position, not draft BEM class** — the converter emits native blocks that don't carry draft classes (clone-parity reports false "ELEMENT MISSING").
+- **Deploy before measure** — `/sgs-clone … --deploy-target page:8` (re-clone + deploy) BEFORE any computed-style/pixel probe. Converter changes (convert.py) need no build; block.json/render.php/style.css changes need `npm run build` (PowerShell) + deploy + bump version (Hostinger CDN 7-day cache).
+- **Root-cause FAMILY before instance fix** — group by the 8-family map; fix universally (R-22-9). Per-section tuning is the anti-pattern.
+- **TWO conformance suites** — Gate A `plugins/sgs-blocks/scripts/tests/test_converter_conformance.py` (pre-commit) AND `converter_v2/tests/`. Run BOTH.
+- **DB changes reproducible from the canonical path** (block.json `supports.sgs` auto-seed OR dated `migrations/*.py`), verified by a FULL `/sgs-update` reseed — NEVER a manual DB edit or hardcoded Python selector dict.
+- **/qc-council BEFORE every converter/SGS-block/seeding commit** (blub 255). **/adversarial-council before any shared-mechanism change** (Rule 7).
+- **Commit path-scoped** (`git commit -m "msg" -- <paths>` — `-m` BEFORE `--`). Merge to co-actively-held main via temp-worktree cherry-pick; verify is-ancestor after each push.
+- **Subagents implement; Opus orchestrates** (plan/delegate/QC/live-test/commit). Subagents have NO commit/deploy authority; NEVER `git checkout/restore/stash/reset/clean` the shared tree (a rater once wiped uncommitted work this way).
+- **Bean's "are you sure?"/"why?" on a hardcode/deletion = a mandate to investigate the architecture, not reassure.**
 
 ## Pre-flight self-attestation ritual (answer before the first action)
 1. Which thread am I? (cloning-pipeline — owner of convert.py + the homepage pipeline + state.md/handoff/next-session-prompt.)
 2. What branch is the tree on? (`git branch --show-current`.) Has `origin/main` moved? Anything co-actively staged? (`git status` — commit ONLY by explicit path.)
-3. Have I read decisions D225 + the parking entries + the relevant Spec 22 FR (built_status now code-verified) end-to-end before proposing a fix-shape?
-4. What is the MEASURABLE acceptance (live computed-style on page 8 = draft, OR a full-reseed reproduction for seeding) — not "code shipped"?
-5. Is this Rule-7 high-blast (seeding pipeline / cross-node router / convert.py / most-used block)? Then `/adversarial-council` (approach) + `/qc-council` (per commit) BEFORE/AROUND the build.
+3. Have I READ (not grepped) the 12 docs + the audit register + clone/draft HTML before proposing any fix-shape? Have I distrusted the docs' stale labels per the register?
+4. What is the MEASURABLE acceptance (live computed-style on page 8 = draft) — not "code shipped" / "conformance green"?
+5. Is this Rule-7 high-blast (converter / shared wrapper / seeding pipeline / most-used block)? Then `/adversarial-council` (approach) + `/qc-council` (per commit) BEFORE/AROUND the build.
 
 ## Skills to Invoke
 | Skill | When |
 |-------|------|
-| `/brainstorming` | Task 1 schema design + each Task-3 phase design (design mode) |
-| `/gap-analysis` | grade any unit vs its FR acceptance before delivery |
+| `/brainstorming` | Task 3 family fix-shapes + Task 4 schema + Task 5 redesign (design mode) |
+| `/gap-analysis` | grade any unit/register vs its acceptance before delivery |
 | `/lifecycle` | before any skill/agent/pipeline change |
-| `/research` (+ `/library-docs`) | any WP/block.json `supports.sgs` pattern you're unsure of |
-| `/strategic-plan` + `/phase-planner` | if Task 1/3 needs a formal phased plan |
-| `/adversarial-council` | MANDATORY on the seeding-pipeline approach (Task 1) + each Task-3 phase + IN-E BEFORE building (Rule 7) |
-| `/qc-council` | MANDATORY before every converter/SGS-block/seeding commit (blub.db 255) |
-| `/subagent-driven-development` · `/dispatching-parallel-agents` · `/subagent-prompt` | per-task dispatch (subagents implement) |
-| `/sgs-clone` · `/sgs-update` · `/wp-blocks` · `/sgs-db` | re-clone / DB reseed / schema + attr TYPES ground truth |
-| `/verify-loop` · `/capture-lesson` · `/handoff` | 2-attestation / new rules / session close |
+| `/research` (+ `/library-docs`) | any WP/theme.json/block.json pattern you're unsure of (e.g. flex-column stretch for FP-P) |
+| `/strategic-plan` + `/phase-planner` | if Task 3's class-section/Method-2 fix needs a formal phased plan |
+| `/dispatching-parallel-agents` | Task 2 section-by-section HTML diff (fan-out) |
+| `/adversarial-council` | MANDATORY on every shared-mechanism/converter change + the seeding approach (Rule 7) |
+| `/qc-council` | MANDATORY before every converter/SGS-block/seeding commit (blub 255) |
+| `/subagent-driven-development` · `/subagent-prompt` | Task 3 per-family dispatch (subagents implement) |
+| `/sgs-clone` · `/sgs-update` · `/wp-blocks` · `/sgs-db` | re-clone+deploy / DB reseed / schema + attr TYPES ground truth |
+| `/systematic-debugging` · `/verify-loop` · `/capture-lesson` · `/handoff` | root-cause / 2-attestation / new rules / session close |
 
 ## MCP Servers & Tools
 | Tool | For |
 |------|-----|
-| chrome-devtools (Playwright fallback on "Browser already in use") | live page-8 DOM + computed-style probes (creds `.claude/secrets/sandybrown.env` — grep/cut, never `source`) |
-| `/wp-blocks` (`python ~/.claude/hooks/wp-blocks.py dump`) | block schema + attr TYPES + the WP-native supports attr name (Task 4) |
-| `/sgs-db` (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py`) | block roster / attrs / derived_selector / classification (DB-authoritative) |
+| Playwright (chrome-devtools fallback on "Browser already in use") | live page-8 DOM + computed-style probes; serve the draft via `python -m http.server` in the mockup dir to measure draft truth (file:// is blocked) — creds `.claude/secrets/sandybrown.env` (grep/cut, never `source`) |
+| `/wp-blocks` (`python ~/.claude/hooks/wp-blocks.py dump`) | block schema + attr TYPES + WP-native supports attr names |
+| `/sgs-db` (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py`) | block roster / attrs / derived_selector / container_kind / blocks.tier (DB-authoritative; the docs' counts are stale) |
 
 ## Agents to Delegate To
 | Agent | When |
 |-------|------|
-| general-purpose (sonnet) | Task 1 build + each Task-3 build — NO commit/deploy authority, returns uncommitted |
-| general-purpose (haiku / gemini-flash) | 2nd cross-family rater on the /qc-council pass |
-| `wp-sgs-developer` | if a task needs heavier WP/block.json/seeding work |
-| `design-reviewer` | if a fix changes a visible surface (live page-8 3-breakpoint) |
+| general-purpose (sonnet) | Task 1 count-sweep + Task 2 per-section diff + Task 3 per-family build — NO commit/deploy authority, return uncommitted |
+| general-purpose (haiku / gemini-flash) | 2nd cross-family rater on `/qc-council` passes |
+| `wp-sgs-developer` | heavier WP/block.json/render.php work (button presets, product-card, composite blocks) |
+| `design-reviewer` | visible-surface changes (live page-8 at 375/768/1440) + Task 5 product-page redesign |
 
 ## Guardrails
-Cloning thread owns the converter + homepage pipeline + the /sgs-update seeding path. The seeding-pipeline change (Task 1) is Rule-7 high-blast → design-gate. Build per task, `/qc-council` + Gate A + (live page-8 for visible work) per commit. The FR-22-3 guard blocks new `if slug==` literals. Run BOTH conformance suites. D-ceiling check before any new D (`grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1`).
+Cloning thread owns the converter + homepage pipeline + /sgs-update seeding path. Converter + shared-wrapper + seeding changes are Rule-7 high-blast → design-gate. Build per family, `/qc-council` + Gate A + (live page-8) per commit. The FR-22-3 guard blocks new `if slug==` literals. Run BOTH conformance suites. D-ceiling check before any new D (`grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` → D226).

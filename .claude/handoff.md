@@ -5,6 +5,55 @@ thread: cloning-pipeline
 session_date: 2026-06-14
 ---
 
+# Session Handoff — 2026-06-14 (D226 — live-verify gate + 12-doc alignment audit)
+
+## Completed This Session
+1. **Ran the live-verify gate that's been skipped every cycle.** Re-cloned the Mama's homepage with D225's committed converter fixes (`a8bf5616`) and deployed to canary page 8 (`/sgs-clone … --deploy-target page:8`, run `mamas-munches-homepage-2026-06-14-081059`), then probed the LIVE rendered DOM with computed styles.
+2. **Verdict on D225's fixes (draft-vs-clone @1440):** IN-B **VERIFIED** (live `.sgs-container__inner` max-width 960px = draft); GF-B.2 **VERIFIED** (gift sub `text-align:left`, no centre leak); **H-C1 did NOT land** (`subHeadlineMaxWidth` in leftover bucket + wrong layer — hero attr can't reach the child sgs/text sub-headline). gridItem* unprobed.
+3. **Probed IN-E + FP-P live — both confirmed REAL defects, not misdiagnoses.** IN-E: draft cards inherit `center`, clone emits `left`. FP-P: draft CTA 598px full-width, clone 183px `inline-flex`. Found 2 new bugs: hero sub `line-height:1.65unitless` (invalid) + duplicated margin.
+4. **Updated + committed the 55-issue sign-off ledger** with all live verdicts (commits `6652659c`, `9befed3f`).
+5. **Ran a 3-agent parallel doc-alignment audit** across the 12 canonical docs vs live code/DB → register at `.claude/reports/2026-06-14-doc-alignment-audit.md`.
+6. **Surfaced 2 CRITICAL doc findings** that explain Bean's reports: Spec 01 documents contentSize 1200px but live theme.json ships **780px** (= "content too tight"); Spec 11 button-presets admin PHP is absent but `style.css` still references its CSS vars (= likely brand/announcement button breakage). Plus pervasive count drift + class-section roster missing `sgs/trust-bar`.
+7. **Recorded everything** to decisions (D226), state, parking (3 new entries: P-CLONE-FIDELITY-FULL-ALIGNMENT, P-DOC-ALIGNMENT-12-DOCS, P-PRODUCT-PAGE-REDESIGN).
+
+## Current State
+- **Branch:** `main` at the ledger/decisions commits (run `git log -1`).
+- **Tests:** both conformance suites green as of D225 (84/84); not re-run this session (no converter code changed — verify + docs only).
+- **Build:** n/a (no block build this session).
+- **Uncommitted changes:** doc updates from this handoff (decisions/state/parking/handoff/next-session-prompt/audit register) — committed in Gate 2. Pre-existing `reports/phase4-*.txt` + `sites/mamas-munches/theme-snapshot.json` (pipeline side-effect) + untracked gap-analysis report are NOT this session's and left alone.
+- **Live canary:** page 8 (`mamas-munches-homepage`) re-deployed with the `a8bf5616` converter.
+
+## Known Issues / Blockers
+- The 55-issue ledger UNDERCOUNTS — Bean reports a much larger defect set (see next-session-prompt Task 2). Next session enumerates it via direct HTML diff.
+- H-C1 fix is in the wrong layer (needs re-doing on the child block, not the hero attr).
+- Spec 01 contentSize 780 vs documented 1200 + Spec 11 button-preset var source = 2 Bean-decisions pending.
+
+## Next Priorities (in order)
+1. **Comprehensive read + ALIGN the 12 docs** grounded by the audit register (read+fix one pass). Surface the 2 critical Bean-decisions.
+2. **Clone-vs-draft HTML diff** (`current-clone-page-source.html` vs `index.html`) → complete defect register, grouped by root-cause family.
+3. **Fix by family**, biggest lever = the 2 class-section blocks' spacing (content-width/max-width/grid sizing/padding/alignment — the Spec 29 Method-2 gap); H-C1 re-fix + 2 hero-sub bugs land here.
+4. **block.json selector auto-seed** (D225 carry-over, design-gate).
+5. **Product-page redesign** (oversized Trustpilot + tight content) — AFTER fidelity.
+
+## Files Modified
+| File path | What changed |
+|-----------|-------------|
+| `.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md` | IN-B + GF-B.2 → VERIFIED; H-C1 stays OPEN w/ root cause; IN-E + FP-P confirmed real defects; 2 new hero-sub bugs in residue |
+| `.claude/reports/2026-06-14-doc-alignment-audit.md` | NEW — 3-agent audit register for the 12 docs |
+| `.claude/decisions.md` | D226 entry |
+| `.claude/state.md` | cloning one-line where-we-are → D226; last_updated |
+| `.claude/parking.md` | 3 new entries (full-fidelity, doc-alignment, product-page redesign) |
+| `.claude/next-session-prompt.md` | full orchestration plan for the next session |
+
+## Notes for Next Session
+- **Emit-green ≠ live-verified — proven AGAIN this session.** Never close a ledger row without a live computed-style read on page 8.
+- **To measure draft truth:** `file://` is blocked in Playwright — serve the mockup dir with `python -m http.server <port>` and navigate to localhost.
+- **clone-parity BEM matcher has a blind spot** for native-block output — pair by content+position, not draft class; its aggregate is junk.
+- The docs themselves carry stale `built_status`/counts — distrust them, use the audit register + live DB.
+
+## Next Session Prompt
+The full orchestration plan lives in `.claude/next-session-prompt.md` (the SessionStart hook auto-loads it). It carries the 7 non-negotiable rules, the pre-flight self-attestation ritual, the methodology guardrails, the mandatory reading list, and the 5 tasks with per-task orchestration blocks + dependency graph + Skills/MCP/Agents tables. Do not duplicate it here.
+
 # Session Handoff — 2026-06-14 (cloning thread)
 
 ## Completed This Session
