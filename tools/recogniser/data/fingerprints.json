@@ -1601,7 +1601,7 @@
       {
         "attr": "quote",
         "extract": "text",
-        "selector": ".sgs-testimonial__quote"
+        "selector": ".sgs-testimonial__quote, .sgs-testimonial__text"
       },
       {
         "attr": "name",
@@ -1612,6 +1612,31 @@
         "attr": "role",
         "extract": "text",
         "selector": ".sgs-testimonial__role"
+      },
+      {
+        "attr": "quoteFontSize",
+        "extract": "style",
+        "selector": ".sgs-testimonial__quote, .sgs-testimonial__text"
+      },
+      {
+        "attr": "quoteColour",
+        "extract": "style",
+        "selector": ".sgs-testimonial__quote, .sgs-testimonial__text"
+      },
+      {
+        "attr": "quoteLineHeight",
+        "extract": "style",
+        "selector": ".sgs-testimonial__quote, .sgs-testimonial__text"
+      },
+      {
+        "attr": "nameFontWeight",
+        "extract": "style",
+        "selector": ".sgs-testimonial__name, .sgs-testimonial__author"
+      },
+      {
+        "attr": "nameColour",
+        "extract": "style",
+        "selector": ".sgs-testimonial__heading, .sgs-testimonial__author"
       }
     ],
     "block_name": "sgs/testimonial",

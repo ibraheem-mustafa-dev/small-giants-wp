@@ -1,5 +1,5 @@
 {
   "fixture": "sgs-testimonial.html",
   "primary_block_emitted": "sgs/container",
-  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/testimonial {\"style\":{\"border\":{\"radius\":\"12px\",\"width\":\"1px\",\"style\":\"solid\",\"color\":\"#e5e0db\"},\"color\":{\"background\":\"#ffffff\"},\"spacing\":{\"padding\":{\"top\":\"32px\",\"right\":\"24px\",\"bottom\":\"32px\",\"left\":\"24px\"}}},\"quote\":\"These lactation cookies genuinely boosted my supply — ordered three packs already!\",\"reviewerName\":\"Sarah M., Birmingham\",\"quoteFontSize\":\"17px\",\"quoteColour\":\"#3a2e26\",\"quoteLineHeight\":\"1.6\",\"nameFontWeight\":\"600\"} /-->\n<!-- /wp:sgs/container -->"
+  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/testimonial {\"style\":{\"border\":{\"radius\":\"12px\",\"width\":\"1px\",\"style\":\"solid\",\"color\":\"#e5e0db\"},\"color\":{\"background\":\"#ffffff\"},\"spacing\":{\"padding\":{\"top\":\"32px\",\"right\":\"24px\",\"bottom\":\"32px\",\"left\":\"24px\"}}},\"quote\":\"These lactation cookies genuinely boosted my supply — ordered three packs already!\",\"reviewerName\":\"Sarah M., Birmingham\",\"quoteFontSize\":\"17px\",\"quoteColour\":\"#3a2e26\",\"nameColour\":\"#5c4f46\",\"quoteLineHeight\":\"1.6\",\"nameFontWeight\":\"600\"} /-->\n<!-- /wp:sgs/container -->"
 }
