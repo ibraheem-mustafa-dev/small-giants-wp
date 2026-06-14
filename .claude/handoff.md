@@ -5,98 +5,90 @@ thread: cloning-pipeline
 session_date: 2026-06-14
 ---
 
-# Session Handoff — 2026-06-14 (D226 — live-verify gate + 12-doc alignment audit)
+# Session Handoff — 2026-06-14 (D227 — Tasks 1+2 of full-fidelity plan: doc-align + defect register)
 
 ## Completed This Session
-1. **Ran the live-verify gate that's been skipped every cycle.** Re-cloned the Mama's homepage with D225's committed converter fixes (`a8bf5616`) and deployed to canary page 8 (`/sgs-clone … --deploy-target page:8`, run `mamas-munches-homepage-2026-06-14-081059`), then probed the LIVE rendered DOM with computed styles.
-2. **Verdict on D225's fixes (draft-vs-clone @1440):** IN-B **VERIFIED** (live `.sgs-container__inner` max-width 960px = draft); GF-B.2 **VERIFIED** (gift sub `text-align:left`, no centre leak); **H-C1 did NOT land** (`subHeadlineMaxWidth` in leftover bucket + wrong layer — hero attr can't reach the child sgs/text sub-headline). gridItem* unprobed.
-3. **Probed IN-E + FP-P live — both confirmed REAL defects, not misdiagnoses.** IN-E: draft cards inherit `center`, clone emits `left`. FP-P: draft CTA 598px full-width, clone 183px `inline-flex`. Found 2 new bugs: hero sub `line-height:1.65unitless` (invalid) + duplicated margin.
-4. **Updated + committed the 55-issue sign-off ledger** with all live verdicts (commits `6652659c`, `9befed3f`).
-5. **Ran a 3-agent parallel doc-alignment audit** across the 12 canonical docs vs live code/DB → register at `.claude/reports/2026-06-14-doc-alignment-audit.md`.
-6. **Surfaced 2 CRITICAL doc findings** that explain Bean's reports: Spec 01 documents contentSize 1200px but live theme.json ships **780px** (= "content too tight"); Spec 11 button-presets admin PHP is absent but `style.css` still references its CSS vars (= likely brand/announcement button breakage). Plus pervasive count drift + class-section roster missing `sgs/trust-bar`.
-7. **Recorded everything** to decisions (D226), state, parking (3 new entries: P-CLONE-FIDELITY-FULL-ALIGNMENT, P-DOC-ALIGNMENT-12-DOCS, P-PRODUCT-PAGE-REDESIGN).
+1. **Task 1 — doc-read + align (D227, commit `7b112d3a`).** Resolved the 2 critical Bean-decision findings from the D226 audit: (a) content-width — live `theme.json` had drifted to `contentSize:780px`; restored to documented `1200px/1400px` (Bean chose widen-global); (b) button-presets — FALSE ALARM, WP generates the vars natively from `theme.json` (confirmed populated), admin file deliberately deleted D24.
+2. **Count-drift sweep across 8 docs** (background agent): `block_composition` 189→197, container roster →31, `slots`-element →99, `block_attributes` →2,935, `property_suffixes`→124, +`sgs/trust-bar` in class-section rosters.
+3. **Remaining doc-alignment (agent 2, all HIGH claims code-grep-verified):** Spec 02 info-box/testimonial-slider/cta-section/process-steps attr corrections; Spec 22 FR-22-9/19/5.1; Spec 29 Method-2 callout; Spec 20 9c-before-4k; docs-registry WRAPPER-CSS entry added.
+4. **Verify-first corrected the audit register itself:** the audit's Spec-21 artefact "not emitted" claims were over-stated — `stage-7/4i/4j.json` ARE emitted (by `sgs-clone-orchestrator.py`, not `converter_v2/`).
+5. **Task 2 — clone-vs-draft defect register (commit `33feb5ab`).** 4 parallel agents diffed the live clone vs draft section-by-section → `.claude/reports/2026-06-14-clone-vs-draft-defect-register.md` (~44 real defects), replacing the 55-issue ledger.
+6. **Synthesised 5 systemic converter families** (fix once, fix many): B malformed `unitless` line-heights · C mobile heading tier dropped · D max-width dropped · E image styling dropped · F grid breakpoint mismatch. Plus 5 block-match decisions + 7 header/footer template-part gaps.
+7. **Live-probed page 8 @1440+@502 (R-22-11):** CONFIRMED C/D/E/IN-E/ingredients-2-col/disclaimer; CORRECTED 2 false positives (label-as-pill computes transparent; testimonial author font matches) — killed before a wasted build wave.
+8. **Next-session-prompt rewritten** for Task 3 (fix-by-family) with all structural defences carried forward + extended (commit `90860192`).
 
 ## Current State
-- **Branch:** `main` at the ledger/decisions commits (run `git log -1`).
-- **Tests:** both conformance suites green as of D225 (84/84); not re-run this session (no converter code changed — verify + docs only).
-- **Build:** n/a (no block build this session).
-- **Uncommitted changes:** doc updates from this handoff (decisions/state/parking/handoff/next-session-prompt/audit register) — committed in Gate 2. Pre-existing `reports/phase4-*.txt` + `sites/mamas-munches/theme-snapshot.json` (pipeline side-effect) + untracked gap-analysis report are NOT this session's and left alone.
-- **Live canary:** page 8 (`mamas-munches-homepage`) re-deployed with the `a8bf5616` converter.
+- **Branch:** `main` at `90860192` (+ next-session-prompt heading fix, committed at handoff close)
+- **Tests:** no suite run — changes are docs + one theme.json config value
+- **Build:** n/a (converter unchanged; no `npm run build` needed)
+- **Uncommitted changes:** 6 pre-existing files NOT from this session (phase4 reports, `current-clone-page-source.html` [read-only input], `theme-snapshot.json`, an untracked gap-analysis report) — deliberately left
+- **Deploy status:** theme.json width fix committed but NOT yet deployed to page 8 (Task 3 step 0)
 
 ## Known Issues / Blockers
-- The 55-issue ledger UNDERCOUNTS — Bean reports a much larger defect set (see next-session-prompt Task 2). Next session enumerates it via direct HTML diff.
-- H-C1 fix is in the wrong layer (needs re-doing on the child block, not the hero attr).
-- Spec 01 contentSize 780 vs documented 1200 + Spec 11 button-preset var source = 2 Bean-decisions pending.
+- The `contentSize 1200/1400` fix is committed-but-not-live-verified — page 8 still renders 780px until Task 3 step 0 deploys it.
+- decisions.md carries 6 pre-existing US spellings (lines 84/114/117) + 1 TBD in historical entries (not this session's D227) — noted, not rewritten (archived content).
 
 ## Next Priorities (in order)
-1. **Comprehensive read + ALIGN the 12 docs** grounded by the audit register (read+fix one pass). Surface the 2 critical Bean-decisions.
-2. **Clone-vs-draft HTML diff** (`current-clone-page-source.html` vs `index.html`) → complete defect register, grouped by root-cause family.
-3. **Fix by family**, biggest lever = the 2 class-section blocks' spacing (content-width/max-width/grid sizing/padding/alignment — the Spec 29 Method-2 gap); H-C1 re-fix + 2 hero-sub bugs land here.
-4. **block.json selector auto-seed** (D225 carry-over, design-gate).
-5. **Product-page redesign** (oversized Trustpilot + tight content) — AFTER fidelity.
-
-## Files Modified
-| File path | What changed |
-|-----------|-------------|
-| `.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md` | IN-B + GF-B.2 → VERIFIED; H-C1 stays OPEN w/ root cause; IN-E + FP-P confirmed real defects; 2 new hero-sub bugs in residue |
-| `.claude/reports/2026-06-14-doc-alignment-audit.md` | NEW — 3-agent audit register for the 12 docs |
-| `.claude/decisions.md` | D226 entry |
-| `.claude/state.md` | cloning one-line where-we-are → D226; last_updated |
-| `.claude/parking.md` | 3 new entries (full-fidelity, doc-alignment, product-page redesign) |
-| `.claude/next-session-prompt.md` | full orchestration plan for the next session |
-
-## Notes for Next Session
-- **Emit-green ≠ live-verified — proven AGAIN this session.** Never close a ledger row without a live computed-style read on page 8.
-- **To measure draft truth:** `file://` is blocked in Playwright — serve the mockup dir with `python -m http.server <port>` and navigate to localhost.
-- **clone-parity BEM matcher has a blind spot** for native-block output — pair by content+position, not draft class; its aggregate is junk.
-- The docs themselves carry stale `built_status`/counts — distrust them, use the audit register + live DB.
-
-## Next Session Prompt
-The full orchestration plan lives in `.claude/next-session-prompt.md` (the SessionStart hook auto-loads it). It carries the 7 non-negotiable rules, the pre-flight self-attestation ritual, the methodology guardrails, the mandatory reading list, and the 5 tasks with per-task orchestration blocks + dependency graph + Skills/MCP/Agents tables. Do not duplicate it here.
-
-# Session Handoff — 2026-06-14 (cloning thread)
-
-## Completed This Session
-1. **4 converter fixes SHIPPED to `main`** (commit `a8bf5616`, path-scoped, each with a fire-proof lock-in test, both conformance suites green 84/84): **GF-B.2** selector-scope matcher (`convert.py:619-622` — class-branch now respects descendant-combinator ancestor scope, no cross-section CSS bleed; compound `.A.B` edge preserved); **H-C1** per-slot max-width (`convert.py:2399` via `attr_for_area_property`, around the `_area_excluded` guard, widthMode untouched); **IN-B** general `_resolve_co_declared_var` (`convert.py:384`, flag-not-drop); **gridItem\*** uniform per-item CSS (`_lift_uniform_grid_item_css` `:2734`, wired top-level `:4414` + nested `:5574`, R-22-9 universal).
-2. **Testimonial styling bridge** committed (`32e73f44`) — 5 styling attrs get draft-class multi-aliases; golden +`nameColour=#5c4f46`.
-3. **3 Spec-22 "gaps" DEFERRED** by verify-first as design-gate PHASES (NOT built): array→child wiring (FR-22-2.5), draft breakpoints (FR-22-5.2), D1 sidecar.
-4. **nameFontWeight hardcode REVERTED** (`d62d0d2f`) — Bean rejected hardcoded selectors; zero hardcoded `nameFontWeight` selector across all 3 channels. Still transfers for the fixture via the generic `typography_css_to_attrs()` path.
-5. **Routing-redesign exploration RETIRED + unified element-pass council NO-GO** (D224) — code analysis proved the routing was already BUILT; both dead-end specs deleted, reasoning preserved in D224.
-6. **Spec-22 built_status TRUTH-SYNC** (`ee0f572e`) — stale labels corrected with code-verified file:line (FR-22-5.1/5.3 mislabelled PLANNED but BUILT; gridItem* shipped; FR-22-20 data-not-code; FR-22-5.2/2.5 design-gate; FR-22-9 absent).
-7. **Lesson captured** (blub.db 353, 3 layers): read the implementing script before proposing/critiquing any converter mechanism — never trust spec `built_status:` labels or attr/column names.
-8. **Architecture decision (D225):** selector-seeding should be block.json-declared + auto-seeded, not hardcoded in `/sgs-update` (parked P-BLOCKJSON-SELECTOR-AUTOSEED, top next task).
-
-## Current State
-- **Branch:** `main` at `ee0f572e` (pushed; origin in sync 0/0).
-- **Tests:** 84 pass, 0 fail (Gate A golden harness + `converter_v2/tests/`).
-- **Build:** conformance green; converter fixes NOT live-verified (Bean deploys).
-- **Uncommitted changes:** none of this session's work (only pre-existing non-mine `reports/phase4-*.txt` + a gap-analysis report remain untracked).
-
-## Known Issues / Blockers
-- The 4 converter fixes are CODE SHIPPED, OUTCOME NOT YET HIT — they pass conformance (no-regression) but are **not live-verified on canary page 8**. Closing the ledger rows requires Bean's deploy + live computed-style check.
-- `nameFontWeight` won't transfer via the scalar-lift path on a clean reseed (hardcode reverted) until the block.json auto-seed is built (still works for the conformance fixture via the typography path).
-- `border` shorthand has no `property_suffixes` row → `gridItemBorder` not lifted from a shorthand (DB-data follow-up).
-
-## Next Priorities (in order)
-1. **block.json-declared selector auto-seed** (P-BLOCKJSON-SELECTOR-AUTOSEED) — design-gate + `/adversarial-council`, then build. The proper fix for the hardcoded-selector smell.
-2. **Bean: deploy + live-verify** the 4 shipped converter fixes on canary page 8.
-3. **The 3 deferred design-gate phases** — array→child, draft breakpoints, D1 sidecar — each a design session before build.
-4. **IN-E** emit-gate widen — after the live-probe confirms it's a real defect.
+1. **Task 3 step 0** — deploy width fix + re-clone page 8 for a fresh live baseline (smallest first action).
+2. **Task 3 step 1** — resolve the 5 block-match decisions (DEC-1..5) with Bean.
+3. **Task 3 step 2** — fix the systemic families universally, biggest lever first (D → F → C → E → B), design-gated, live-verify per row.
+4. **Task 3b** — header/footer content gap (theme/data layer, not converter).
+5. **Task 4** — block.json selector auto-seed (design-gate, independent).
 
 ## Files Modified
 | File path | What changed |
 |-----------|--------------|
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | GF-B.2 matcher + H-C1 max-width + IN-B var-resolver + gridItem* writer |
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/tests/` | 3 new lock-in test files |
-| `plugins/sgs-blocks/scripts/sgs-update-v2.py` | removed hardcoded `nameFontWeight` selector |
-| `tools/recogniser/data/fingerprints.json` + the 2026-06-13 migration | removed dead `nameFontWeight` copies |
-| `.claude/specs/22-…EXTRACTION.md` | built_status truth-sync (8 FRs, file:line) |
-| `.claude/decisions.md` · `CLAUDE.md` · `parking.md` · `state.md` | D224 + D225; pointer → D225; 2 parking entries; cloning block |
+| theme/sgs-theme/theme.json | contentSize 780→1200, wideSize 1200→1400 |
+| CLAUDE.md (root) | DB-first counts: slots 103/99, block_attributes 2,935, container roster 31 |
+| .claude/decisions.md | +D227 |
+| .claude/specs/{00,02,20,21,22,29,WRAPPER-CSS-ROUTING-DESIGN-GATE}.md | count + attr + artefact alignment |
+| .claude/cloning-pipeline-flow.md, -stages.md | count alignment |
+| .claude/docs-registry.yaml | WRAPPER-CSS entry added |
+| .claude/reports/2026-06-14-clone-vs-draft-defect-register.md | NEW — Task 2 deliverable |
+| .claude/next-session-prompt.md | rewritten for Task 3 |
 
 ## Notes for Next Session
-- **Hardcoded-selector root cause:** `assign-canonical.py:485` is `WHERE canonical_slot IS NULL` — so assign-canonical AND fingerprints both skip `canonical_slot`-populated rows; the only channel reaching the 5 testimonial styling attrs was the hardcoded override dict. The auto-seed fix must reach canonical_slot-populated rows.
-- **Verify-first paid off:** of the 4 "Spec-22 gaps", only gridItem* was a clean build; the other 3 were bigger-than-labelled phases. Apply verify-first to any "gap" — labels lie.
-- **The block.json-auto-seed is Rule-7** (every block's selector seeding) — design-gate before build.
+- The defect register's family view is the lever: ~32 of ~44 defects are converter-side and collapse into 5 families. Fix the family, not the instance (R-22-9).
+- Live-probe BEFORE believing any static-diff "defect" — an inline CSS-var declaration is not the rendered value (blub 355, instance of 207).
+- Fam D (max-width / class-section Method-2 gap) is the biggest lever and likely needs its own `/brainstorming` design session.
+- Header/footer gaps (HF-1..7) are theme template-part + SGS Site Info data, NOT converter bugs — different fix layer.
 
 ## Next Session Prompt
-See `.claude/next-session-prompt.md` — the operative opener (7 rules, methodology guardrails, pre-flight ritual, orchestration plan).
+
+The full orchestration plan is already written to `.claude/next-session-prompt.md` (Task 3 fix-by-family, with per-step orchestration, the 5 block-match decisions, dependency graph, methodology guardrails, pre-flight ritual, Skills/MCP/Agents tables). The SessionStart hook auto-loads it. Key bindings below.
+
+## Skills to Invoke
+
+| Skill | When to use |
+|-------|-------------|
+| `/brainstorming` | Fam-D Method-2 routing shape + Task 4 schema design |
+| `/gap-analysis` | grade any unit/register vs acceptance before delivery |
+| `/lifecycle` | before any skill/agent/pipeline change |
+| `/research` (+ `/library-docs`) | WP/theme.json/block.json patterns (grid auto-fill, flex stretch) |
+| `/strategic-plan` | if Fam-D fix needs a formal phased plan |
+| `/adversarial-council` | MANDATORY on every shared-mechanism/converter change (Rule 7) |
+| `/qc-council` | MANDATORY before every converter/SGS-block/seeding commit (blub 255) |
+| `/subagent-driven-development` · `/sgs-clone` · `/sgs-update` · `/wp-blocks` · `/sgs-db` | per-family build / re-clone / reseed / schema ground truth |
+
+## MCP Servers & Tools
+
+| Tool | What to use it for |
+|------|-------------------|
+| Playwright (chrome-devtools fallback on "Browser already in use") | live page-8 computed-style probes; canary `?page_id=8` on `WP_URL_SANDYBROWN`, creds `.claude/secrets/sandybrown.env` |
+| `/wp-blocks` (`python ~/.claude/hooks/wp-blocks.py dump`) | block schema + attr TYPES |
+| `/sgs-db` (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py`) | roster / attrs / derived_selector / container_kind (DB-authoritative) |
+
+## Agents to Delegate To
+
+| Agent | When |
+|-------|------|
+| general-purpose (sonnet) | per-family build — NO commit/deploy authority, return uncommitted |
+| general-purpose (haiku / gemini-flash) | 2nd cross-family rater on /qc-council |
+| `wp-sgs-developer` | heavier block.json/render.php work (product-card, media attrs, composites) |
+| `design-reviewer` | visible-surface review at 375/768/1440 + Task 5 product-page redesign |
+
+## Research Approach
+Not required for Task 3 step 0-1. For step 2: use `/research-check` + `/library-docs` on specific WP patterns where unsure (CSS grid explicit-columns vs auto-fill for the ingredients 4-up; flex-column stretch for full-width CTA). Not a research-heavy session.
+
+## Guardrails
+Verify on the REAL page 8 (R-22-11) — emit-green ≠ live; live-probe before believing a static-diff defect. Fix by family (R-22-9). /adversarial-council before shared-mechanism changes + /qc-council per converter commit. Run BOTH conformance suites (Gate A `scripts/tests/test_converter_conformance.py` + `converter_v2/tests/`). Commit path-scoped (`-m` before `--`). Subagents implement; never `git checkout/restore/stash/reset/clean` the shared tree. D-ceiling D227.

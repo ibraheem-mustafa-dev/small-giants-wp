@@ -22,7 +22,10 @@ primary_goal: "Close the FULL clone-vs-draft fidelity gap on the Mama's homepage
 ## State recap (plain English, 2026-06-14 close — D227)
 **Tasks 1 + 2 of the prior handoff are COMPLETE.** (1) Doc-align: the "content feels tight" root cause was a forgotten theme regression — `contentSize` had drifted to 780px; restored to the documented **1200px/1400px** (Bean chose widen-global). The button "breakage" was a FALSE ALARM (WP generates button-preset vars natively from theme.json — confirmed populated; admin file deliberately deleted D24). 8 docs count-corrected + 6 specs attr/artefact-corrected, all code-grep-verified — which caught the audit register OVER-STATING the Spec-21 artefact claims (the artefacts ARE emitted, by `sgs-clone-orchestrator.py` not `converter_v2/`). (2) Defect enumeration: a direct 4-agent clone-vs-draft diff produced **the honest ~44-defect register** (`.claude/reports/2026-06-14-clone-vs-draft-defect-register.md`) — it replaces the under-counting 55-ledger. Most defects collapse into **5 systemic converter families** (fix once, fix many): **B** malformed `Xunitless` line-heights · **C** mobile heading font-size tier dropped · **D** section/element max-width dropped (the class-section Method-2 gap; includes old H-C1) · **E** image radius/height/order dropped · **F** wrong/inverted grid breakpoints. PLUS 5 block-match DECISIONS (DEC-1..5, need Bean's eye) + 7 header/footer template-part gaps (theme/data layer, not converter). **Live-probe @1440+@502 CONFIRMED** C/D/E/IN-E/ingredients-2-col/disclaimer and CORRECTED 2 false positives (label-pill + author-font render correctly). **D-CEILING: D227.**
 
-## 📚 MANDATORY READING (before any fix-shape)
+## First action
+Smallest first action (~5 min, zero deps): Task 3 step 0 — deploy the committed `contentSize 1200/1400` theme fix to page 8 (bump `style.css` Version for CDN) + re-clone page 8, then re-probe the Fam-D max-width rows to establish the live baseline.
+
+## Mandatory READING (before any fix-shape)
 1. `.claude/reports/2026-06-14-clone-vs-draft-defect-register.md` — THE to-do list (systemic families + per-section + DECISIONS + live-probe results). Start here.
 2. `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` · `29-CONTAINER-EQUIVALENT-BLOCKS.md` (Method-2 callout now added — converter does NOT yet route to composites) · `WRAPPER-CSS-ROUTING-DESIGN-GATE.md` · `11-SGS-BUTTON-ARCHITECTURE.md` · `21-PIPELINE-STATE-ARTEFACTS.md` · `02-SGS-BLOCKS.md` (now attr-accurate).
 3. `.claude/cloning-pipeline-flow.md` + `cloning-pipeline-stages.md` (now count-accurate).
@@ -92,7 +95,9 @@ each commit: path-scoped (`git commit -m "msg" -- <paths>`, -m BEFORE --); merge
 4. What is the MEASURABLE acceptance (live computed-style on page 8 = draft) — not "code shipped" / "conformance green"? Have I confirmed the defect is REAL on the live page (not a static-diff false positive)?
 5. Is this Rule-7 high-blast (converter / shared wrapper / seeding pipeline / most-used block)? Then `/adversarial-council` (approach) + `/qc-council` (per commit) BEFORE/AROUND the build.
 
-## Skills to Invoke
+## Tool bindings
+
+### Skills to Invoke
 | Skill | When |
 |-------|------|
 | `/brainstorming` | Task 3 Fam-D Method-2 routing shape + Task 4 schema + Task 5 redesign (design mode) |
