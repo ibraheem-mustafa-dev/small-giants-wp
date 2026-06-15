@@ -181,8 +181,17 @@ def _is_old_home(svg_str: str) -> bool:
 
 
 # Ordered heuristics: (predicate, slug)
+#
+# Note: _has_polygon_star is intentionally NOT listed here.
+# A filled-polygon star (fill=currentColor, stroke=none) cannot be faithfully
+# represented by the "star" slug — that Lucide entry is a path-based outline
+# (fill="none", stroke="currentColor"), a geometrically different shape.
+# Mapping the polygon star to "star" renders a hollow outline instead of a
+# filled polygon. Instead, polygon stars fall through to Stage 3 so their
+# raw SVG is preserved verbatim via item["iconSvg"] (confidence="none").
+# Stroked stars in the draft still resolve via Stage 1 path-fingerprint → "star"
+# (high confidence), which is unaffected by this change.
 _STRUCTURAL_HINTS: list[tuple] = [
-    (_has_polygon_star, "star"),
     (_is_vehicle_truck, "truck"),
     (_is_old_home, "home"),
 ]
