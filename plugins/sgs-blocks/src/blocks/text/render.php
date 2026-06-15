@@ -43,6 +43,8 @@ $font_size_mobile            = isset( $attributes['fontSizeMobile'] ) ? $attribu
 $font_weight                 = $attributes['fontWeight'] ?? '';
 $line_height                 = isset( $attributes['lineHeight'] ) ? $attributes['lineHeight'] : null;
 $line_height_unit            = $attributes['lineHeightUnit'] ?? 'em';
+// Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
+$line_height_unit            = ( 'unitless' === $line_height_unit ) ? '' : $line_height_unit;
 $line_height_tablet          = isset( $attributes['lineHeightTablet'] ) ? $attributes['lineHeightTablet'] : null;
 $line_height_mobile          = isset( $attributes['lineHeightMobile'] ) ? $attributes['lineHeightMobile'] : null;
 $letter_spacing              = isset( $attributes['letterSpacing'] ) ? $attributes['letterSpacing'] : null;

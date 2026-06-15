@@ -95,6 +95,8 @@ $body_line_height          = isset( $attributes['bodyLineHeight'] ) ? $attribute
 $body_line_height_tablet   = isset( $attributes['bodyLineHeightTablet'] ) ? $attributes['bodyLineHeightTablet'] : null;
 $body_line_height_mobile   = isset( $attributes['bodyLineHeightMobile'] ) ? $attributes['bodyLineHeightMobile'] : null;
 $body_line_height_unit     = $attributes['bodyLineHeightUnit'] ?? 'em';
+// Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
+$body_line_height_unit     = ( 'unitless' === $body_line_height_unit ) ? '' : $body_line_height_unit;
 $body_letter_spacing       = isset( $attributes['bodyLetterSpacing'] ) ? $attributes['bodyLetterSpacing'] : null;
 $body_letter_spacing_unit  = $attributes['bodyLetterSpacingUnit'] ?? 'em';
 $body_margin_bottom        = isset( $attributes['bodyMarginBottom'] ) ? $attributes['bodyMarginBottom'] : null;
@@ -124,6 +126,8 @@ $attrib_text_decoration   = $attributes['attributionTextDecoration'] ?? '';
 $attrib_text_transform    = $attributes['attributionTextTransform'] ?? '';
 $attrib_line_height       = isset( $attributes['attributionLineHeight'] ) ? $attributes['attributionLineHeight'] : null;
 $attrib_line_height_unit  = $attributes['attributionLineHeightUnit'] ?? 'em';
+// Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
+$attrib_line_height_unit  = ( 'unitless' === $attrib_line_height_unit ) ? '' : $attrib_line_height_unit;
 $attrib_margin_top        = isset( $attributes['attributionMarginTop'] ) ? $attributes['attributionMarginTop'] : null;
 $attrib_margin_top_tablet = isset( $attributes['attributionMarginTopTablet'] ) ? $attributes['attributionMarginTopTablet'] : null;
 $attrib_margin_top_mobile = isset( $attributes['attributionMarginTopMobile'] ) ? $attributes['attributionMarginTopMobile'] : null;

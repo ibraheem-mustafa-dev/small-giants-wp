@@ -93,7 +93,11 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 			$base_decls[] = 'font-style:' . $attributes[ $k_style ] . ';';
 		}
 		if ( isset( $attributes[ $k_lh ] ) && '' !== $attributes[ $k_lh ] && is_numeric( $attributes[ $k_lh ] ) ) {
-			$lh_unit      = isset( $attributes[ $k_lh_unit ] ) ? preg_replace( '/[^a-z%]/i', '', (string) $attributes[ $k_lh_unit ] ) : '';
+			// Decode the "unitless" sentinel before the regex strip -- the regex keeps
+			// all letters so "unitless" would pass through unchanged and produce
+			// invalid CSS like `line-height:1.65unitless`. Mirror heading/render.php:222.
+			$raw_lh_unit  = isset( $attributes[ $k_lh_unit ] ) ? (string) $attributes[ $k_lh_unit ] : '';
+			$lh_unit      = ( 'unitless' === $raw_lh_unit ) ? '' : preg_replace( '/[^a-z%]/i', '', $raw_lh_unit );
 			$base_decls[] = 'line-height:' . floatval( $attributes[ $k_lh ] ) . $lh_unit . ';';
 		}
 

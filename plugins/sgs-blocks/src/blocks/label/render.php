@@ -37,6 +37,8 @@ $font_size_mobile    = isset( $attributes['fontSizeMobile'] ) ? $attributes['fon
 $font_weight         = $attributes['fontWeight'] ?? '';
 $line_height         = $attributes['lineHeight'] ?? '';
 $line_height_unit    = $attributes['lineHeightUnit'] ?? '';
+// Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
+$line_height_unit    = ( 'unitless' === $line_height_unit ) ? '' : $line_height_unit;
 $letter_spacing      = $attributes['letterSpacing'] ?? '';
 $letter_spacing_unit = $attributes['letterSpacingUnit'] ?? 'px';
 $text_transform      = $attributes['textTransform'] ?? '';

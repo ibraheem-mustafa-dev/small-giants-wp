@@ -106,6 +106,8 @@ $line_height         = isset( $attributes['lineHeight'] ) && null !== $attribute
 $line_height_tab     = isset( $attributes['lineHeightTablet'] ) && null !== $attributes['lineHeightTablet'] ? (float) $attributes['lineHeightTablet'] : null;
 $line_height_mob     = isset( $attributes['lineHeightMobile'] ) && null !== $attributes['lineHeightMobile'] ? (float) $attributes['lineHeightMobile'] : null;
 $line_height_unit    = isset( $attributes['lineHeightUnit'] ) ? sanitize_text_field( $attributes['lineHeightUnit'] ) : 'em';
+// Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
+$line_height_unit    = ( 'unitless' === $line_height_unit ) ? '' : $line_height_unit;
 $letter_spacing      = isset( $attributes['letterSpacing'] ) && null !== $attributes['letterSpacing'] ? (float) $attributes['letterSpacing'] : null;
 $letter_spacing_tab  = isset( $attributes['letterSpacingTablet'] ) && null !== $attributes['letterSpacingTablet'] ? (float) $attributes['letterSpacingTablet'] : null;
 $letter_spacing_mob  = isset( $attributes['letterSpacingMobile'] ) && null !== $attributes['letterSpacingMobile'] ? (float) $attributes['letterSpacingMobile'] : null;
