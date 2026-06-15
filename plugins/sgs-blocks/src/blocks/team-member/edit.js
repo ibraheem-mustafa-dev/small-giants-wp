@@ -1,7 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
-	useInnerBlocksProps,
 	InspectorControls,
 	RichText,
 } from '@wordpress/block-editor';
@@ -9,6 +8,8 @@ import {
 	PanelBody,
 	SelectControl,
 	ToggleControl,
+	TextControl,
+	Button,
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
@@ -33,14 +34,61 @@ const DISPLAY_MODES = [
 	{ label: __( 'Compact (photo, name, role)', 'sgs-blocks' ), value: 'compact' },
 ];
 
+const PLATFORM_OPTIONS = [
+	{ label: __( 'Facebook', 'sgs-blocks' ),     value: 'facebook' },
+	{ label: __( 'Instagram', 'sgs-blocks' ),    value: 'instagram' },
+	{ label: __( 'LinkedIn', 'sgs-blocks' ),     value: 'linkedin' },
+	{ label: __( 'X / Twitter', 'sgs-blocks' ),  value: 'twitter' },
+	{ label: __( 'YouTube', 'sgs-blocks' ),      value: 'youtube' },
+	{ label: __( 'TikTok', 'sgs-blocks' ),       value: 'tiktok' },
+	{ label: __( 'GitHub', 'sgs-blocks' ),       value: 'github' },
+	{ label: __( 'WhatsApp', 'sgs-blocks' ),     value: 'whatsapp' },
+	{ label: __( 'Email', 'sgs-blocks' ),        value: 'email' },
+	{ label: __( 'Website', 'sgs-blocks' ),      value: 'website' },
+	{ label: __( 'Pinterest', 'sgs-blocks' ),    value: 'pinterest' },
+	{ label: __( 'Snapchat', 'sgs-blocks' ),     value: 'snapchat' },
+	{ label: __( 'Telegram', 'sgs-blocks' ),     value: 'telegram' },
+	{ label: __( 'Discord', 'sgs-blocks' ),      value: 'discord' },
+];
+
 /**
- * InnerBlocks template: default to one sgs/social-icons child.
- * Social links are now composed via InnerBlocks rather than a flat
- * socialLinks array attribute — allows full block editor control over
- * each sgs/social-icons instance including its own icon/label/style
- * controls without bespoke inspector UI here.
+ * Single social link row editor in the inspector panel.
+ * Mirrors the GenericBadgeItemEditor pattern from trust-bar.
  */
-const TEMPLATE = [ [ 'sgs/social-icons' ] ];
+function SocialLinkItemEditor( { item, index, onChange, onRemove } ) {
+	const update = ( key, value ) => onChange( { ...item, [ key ]: value } );
+	return (
+		<div style={ { borderBottom: '1px solid #ddd', paddingBottom: '12px', marginBottom: '12px' } }>
+			<p style={ { fontWeight: 600, margin: '0 0 8px' } }>
+				{ `#${ index + 1 }` }{ item.platform ? ` — ${ item.platform }` : '' }
+			</p>
+			<SelectControl
+				label={ __( 'Platform', 'sgs-blocks' ) }
+				value={ item.platform || 'website' }
+				options={ PLATFORM_OPTIONS }
+				onChange={ ( val ) => update( 'platform', val ) }
+				__nextHasNoMarginBottom
+			/>
+			<TextControl
+				label={ __( 'URL', 'sgs-blocks' ) }
+				value={ item.url || '' }
+				onChange={ ( val ) => update( 'url', val ) }
+				type={ item.platform === 'email' ? 'email' : 'url' }
+				placeholder={ item.platform === 'email' ? 'hello@example.com' : 'https://' }
+				__nextHasNoMarginBottom
+			/>
+			<Button
+				variant="secondary"
+				isDestructive
+				onClick={ onRemove }
+				size="small"
+				style={ { marginTop: '8px' } }
+			>
+				{ __( 'Remove link', 'sgs-blocks' ) }
+			</Button>
+		</div>
+	);
+}
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -55,6 +103,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		photoShape,
 		hoverOverlay,
 		displayMode,
+		socialLinks,
 	} = attributes;
 
 	const isCompact = 'compact' === displayMode;
@@ -85,6 +134,21 @@ export default function Edit( { attributes, setAttributes } ) {
 		} );
 	};
 
+	// Social links repeater helpers — mirror trust-bar pattern.
+	const updateSocialLink = ( index, updated ) => {
+		const next = [ ...socialLinks ];
+		next[ index ] = updated;
+		setAttributes( { socialLinks: next } );
+	};
+
+	const removeSocialLink = ( index ) => {
+		setAttributes( { socialLinks: socialLinks.filter( ( _, i ) => i !== index ) } );
+	};
+
+	const addSocialLink = () => {
+		setAttributes( { socialLinks: [ ...socialLinks, { platform: 'website', url: '' } ] } );
+	};
+
 	const className = [
 		'sgs-team-member',
 		`sgs-team-member--${ cardStyle }`,
@@ -94,17 +158,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		.join( ' ' );
 
 	const blockProps = useBlockProps( { className } );
-
-	// Social icons rendered as InnerBlocks — editors use the sgs/social-icons
-	// block inspector directly for platform/URL/label/style controls.
-	const innerBlocksProps = useInnerBlocksProps(
-		{ className: 'sgs-team-member__social' },
-		{
-			template: TEMPLATE,
-			templateLock: false,
-			allowedBlocks: [ 'sgs/social-icons' ],
-		}
-	);
 
 	return (
 		<>
@@ -163,6 +216,30 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { roleColour: val } ) }
 					/>
 				</PanelBody>
+
+				{ ! isCompact && (
+					<PanelBody title={ __( 'Social Links', 'sgs-blocks' ) } initialOpen={ false }>
+						<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
+							{ __( 'Social profile links displayed below the bio. Hidden in Compact mode.', 'sgs-blocks' ) }
+						</p>
+						{ socialLinks.map( ( link, index ) => (
+							<SocialLinkItemEditor
+								key={ index }
+								item={ link }
+								index={ index }
+								onChange={ ( updated ) => updateSocialLink( index, updated ) }
+								onRemove={ () => removeSocialLink( index ) }
+							/>
+						) ) }
+						<Button
+							variant="secondary"
+							onClick={ addSocialLink }
+							style={ { width: '100%', justifyContent: 'center' } }
+						>
+							{ __( 'Add social link', 'sgs-blocks' ) }
+						</Button>
+					</PanelBody>
+				) }
 			</InspectorControls>
 
 			<div { ...blockProps }>
@@ -201,8 +278,28 @@ export default function Edit( { attributes, setAttributes } ) {
 						placeholder={ __( 'Short bio…', 'sgs-blocks' ) }
 					/>
 				) }
-				{ /* Social InnerBlocks persist in data; only shown in full mode. */ }
-				<div { ...innerBlocksProps } hidden={ isCompact } />
+				{ /* Social links preview in editor — shown only in full mode. */ }
+				{ ! isCompact && socialLinks.length > 0 && (
+					<div className="sgs-team-member__social">
+						{ socialLinks.map( ( link, i ) => (
+							link.url && (
+								<span
+									key={ i }
+									className="sgs-team-member__social-preview"
+									title={ link.url }
+									aria-hidden="true"
+								>
+									{ link.platform || 'website' }
+								</span>
+							)
+						) ) }
+					</div>
+				) }
+				{ ! isCompact && socialLinks.length === 0 && (
+					<p style={ { color: '#757575', fontStyle: 'italic', fontSize: '12px' } }>
+						{ __( 'Add social links in the sidebar panel.', 'sgs-blocks' ) }
+					</p>
+				) }
 			</div>
 		</>
 	);

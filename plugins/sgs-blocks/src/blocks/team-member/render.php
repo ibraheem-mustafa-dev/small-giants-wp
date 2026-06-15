@@ -4,15 +4,19 @@
  *
  * WS-4: CONTENT kind — width/spacing layers only (no bg/overlay/grid).
  * The block's own colour/border/hover CSS rides on $sgs_classes (extra_classes)
- * and CSS custom properties ($sgs_wrapper_styles → extra_styles).
+ * and CSS custom properties ($sgs_wrapper_styles -> extra_styles).
  * R-22-14: explicit attribute discriminators used throughout; no empty($content) branching.
  *
+ * Social links are driven by the socialLinks scalar attribute (array of
+ * {platform, url} objects) — NOT InnerBlocks. This block is a pure typed leaf:
+ * save returns null, render.php never reads $content.
+ *
  * Wrapper split:
- *  - OUTER shell   → SGS_Container_Wrapper::render() handles widthMode/contentWidth/padding.
- *  - Interior HTML → photo + name + role + bio + social InnerBlocks + Schema.org JSON-LD.
+ *  - OUTER shell   -> SGS_Container_Wrapper::render() handles widthMode/contentWidth/padding.
+ *  - Interior HTML -> photo + name + role + bio + social links + Schema.org JSON-LD.
  *
  * @var array    $attributes Block attributes.
- * @var string   $content    Inner block content (sgs/social-icons InnerBlocks).
+ * @var string   $content    Unused — pure leaf block.
  * @var \WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
@@ -22,6 +26,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 // ---------------------------------------------------------------------------
 // Media / photo — prefer memberMedia, fall back to legacy photo.
@@ -66,10 +71,10 @@ $display_mode      = $attributes['displayMode'] ?? 'full';
 $is_compact        = 'compact' === $display_mode;
 $block_link        = $attributes['blockLink'] ?? '';
 $block_link_target = (bool) ( $attributes['blockLinkTarget'] ?? false );
+$social_links      = is_array( $attributes['socialLinks'] ?? null ) ? $attributes['socialLinks'] : array();
 
 // ---------------------------------------------------------------------------
-// Wrapper classes — the block's own BEM classes ride on extra_classes so the
-// container-wrapper shell gets sgs-container + sgs-team-member + modifiers.
+// Wrapper classes.
 // ---------------------------------------------------------------------------
 $sgs_classes = array(
 	'sgs-team-member',
@@ -149,34 +154,81 @@ $role_html  = $sgs_role ? sprintf( '<p class="sgs-team-member__role"%s>%s</p>', 
 $bio_html = ( $bio && ! $is_compact ) ? sprintf( '<p class="sgs-team-member__bio">%s</p>', wp_kses_post( $bio ) ) : '';
 
 // ---------------------------------------------------------------------------
-// Social icons — InnerBlocks ($content) — hidden in Compact mode.
-// R-22-14: discriminate on explicit $display_mode attr, not empty($content).
+// Social links — rendered as nested elements from the socialLinks scalar attr.
+// NOT from $content (pure leaf block). Hidden in Compact mode.
+// Platform -> Lucide icon name mapping (mirrors sgs/social-icons render.php).
 // ---------------------------------------------------------------------------
-$social_html = $is_compact ? '' : $content;
+$social_html = '';
+if ( ! $is_compact && ! empty( $social_links ) ) {
+	$platform_icons = array(
+		'facebook'  => 'facebook',
+		'twitter'   => 'twitter',
+		'linkedin'  => 'linkedin',
+		'instagram' => 'instagram',
+		'youtube'   => 'youtube',
+		'tiktok'    => 'music',
+		'github'    => 'github',
+		'whatsapp'  => 'message-circle',
+		'email'     => 'mail',
+		'website'   => 'globe',
+		'pinterest' => 'pin',
+		'snapchat'  => 'ghost',
+		'telegram'  => 'send',
+		'discord'   => 'message-square',
+	);
+
+	$platform_labels = array(
+		'facebook'  => 'Facebook',
+		'twitter'   => 'X (Twitter)',
+		'linkedin'  => 'LinkedIn',
+		'instagram' => 'Instagram',
+		'youtube'   => 'YouTube',
+		'tiktok'    => 'TikTok',
+		'github'    => 'GitHub',
+		'whatsapp'  => 'WhatsApp',
+		'email'     => 'Email',
+		'website'   => 'Website',
+		'pinterest' => 'Pinterest',
+		'snapchat'  => 'Snapchat',
+		'telegram'  => 'Telegram',
+		'discord'   => 'Discord',
+	);
+
+	$items_html = '';
+	foreach ( $social_links as $link ) {
+		$url = $link['url'] ?? '';
+		if ( empty( $url ) ) {
+			continue;
+		}
+		$platform  = $link['platform'] ?? 'website';
+		$icon_name = $platform_icons[ $platform ] ?? 'link';
+		$label     = $platform_labels[ $platform ] ?? ucfirst( $platform );
+		$href      = 'email' === $platform ? 'mailto:' . esc_attr( $url ) : esc_url( $url );
+		$icon_svg  = sgs_get_lucide_icon( $icon_name );
+
+		$items_html .= sprintf(
+			'<a href="%s" class="sgs-team-member__social-link" target="_blank" rel="noopener noreferrer" aria-label="%s">%s</a>',
+			$href,
+			esc_attr( $label ),
+			$icon_svg
+		);
+	}
+
+	if ( '' !== $items_html ) {
+		$social_html = sprintf( '<div class="sgs-team-member__social">%s</div>', $items_html );
+	}
+}
 
 // ---------------------------------------------------------------------------
-// Schema.org/Person — sameAs: collect social URLs from child sgs/social-icons
-// InnerBlocks. Each sgs/social-icons block stores its links in an `icons` attr
-// (array of { platform, url, … }). Walk $block->inner_blocks to find the first
-// sgs/social-icons block and extract non-empty URL values.
+// Schema.org/Person — sameAs URLs from socialLinks scalar attr.
 // ---------------------------------------------------------------------------
 $schema_same_as = array();
-if ( ! empty( $block->inner_blocks ) ) {
-	foreach ( $block->inner_blocks as $child_block ) {
-		if ( 'sgs/social-icons' === ( $child_block->name ?? '' ) ) {
-			$child_icons = $child_block->attributes['icons'] ?? array();
-			if ( is_array( $child_icons ) ) {
-				foreach ( $child_icons as $icon_item ) {
-					$icon_url = $icon_item['url'] ?? '';
-					if ( '' !== $icon_url ) {
-						$safe_url = esc_url_raw( $icon_url );
-						if ( '' !== $safe_url ) {
-							$schema_same_as[] = $safe_url;
-						}
-					}
-				}
-			}
-			break; // Only the first sgs/social-icons block is used.
+foreach ( $social_links as $link ) {
+	$link_url = $link['url'] ?? '';
+	if ( '' !== $link_url ) {
+		$safe_url = esc_url_raw( $link_url );
+		if ( '' !== $safe_url ) {
+			$schema_same_as[] = $safe_url;
 		}
 	}
 }
@@ -224,8 +276,6 @@ $sgs_inner_html = sprintf(
 
 // ---------------------------------------------------------------------------
 // Render via SGS_Container_Wrapper (CONTENT kind = width/spacing only).
-// The block's own BEM classes + hover CSS vars ride on extra_classes/extra_styles.
-// No overlay, no bg-image, no grid layers emitted for content kind.
 // ---------------------------------------------------------------------------
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $sgs_inner_html built with esc_*/wp_kses()/wp_json_encode(); SGS_Container_Wrapper::render() output is pre-sanitised.
 $sgs_card_html = SGS_Container_Wrapper::render(

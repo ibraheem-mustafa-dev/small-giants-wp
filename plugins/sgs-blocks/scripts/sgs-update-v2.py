@@ -866,24 +866,23 @@ def _has_inner_blocks_from_block_json(bj: dict) -> "int | None":
 
 # Per-attr classification overrides — applied as Stage 1 sub-step C, AFTER
 # `_run_canonical_assignment` (assign-canonical.py), so they are the final
-# writer and survive every /sgs-update. Mirrors the HAS_INNER_BLOCKS_OVERRIDES
-# pattern: a tiny, cited override layer for genuine source-truth corrections
+# writer and survive every /sgs-update. a tiny, cited override layer for genuine source-truth corrections
 # the heuristic mis-derives. Each entry MUST cite the reason + date.
 # Keyed (block_slug, attr_name) -> {column: value, ...} to UPDATE on block_attributes.
 ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     # sgs/team-member.name: assign-canonical routes this to canonical_slot='heading'
     # → standalone_block='sgs/heading' → equivalent_block_for() returns 'sgs/heading'.
-    # With has_inner_blocks=0 (HAS_INNER_BLOCKS_OVERRIDES above), the walker never
-    # recurses children, so equivalent_block_for is never consulted for child routing.
-    # But the G3-attrs path (_lift_scalar_attrs_by_selector) needs role='text-content'
+    # has_inner_blocks derives to 0 naturally (save.js returns null, render.php never
+    # reads $content) so the walker never recurses children, and equivalent_block_for
+    # is never consulted for child routing.
     # to lift the person's name from the <h3 class="sgs-team-member__name"> element.
     # Setting role='text-content' is safe: equivalent_block_for is gated by
-    # block_accepts_inner_blocks (which returns False with the override) so the
+    # block_accepts_inner_blocks (false when has_inner_blocks=0) so the
     # sgs/heading dead-child bug cannot recur. D221 regression fix. 2026-06-13.
     ("sgs/team-member", "name"): {"role": "text-content"},
     # sgs/team-member.role: person's job title. canonical_slot='role' →
     # standalone_block='sgs/label' → would emit a dead child with has_inner_blocks=1.
-    # With has_inner_blocks=0, force role='text-content' so the scalar text of the
+    # has_inner_blocks derives to 0 naturally. Force role='text-content' so the scalar text of the
     # <p class="sgs-team-member__role"> element is lifted into this string attr. 2026-06-13.
     ("sgs/team-member", "role"): {"role": "text-content"},
     # sgs/team-member.photo + .memberMedia: object-typed scalar image attrs. Two
