@@ -822,6 +822,26 @@ def _lift_root_supports_to_style(
                 else:
                     if len(bg.split()) == 1:
                         base_decls["background-color"] = bg
+            elif bg and "gradient" in bg:
+                # Fix #6: CSS gradient backgrounds have no SGS converter destination.
+                # WP supports.color.gradients routes through WP's block serialisation
+                # (style.color.gradient preset path) — but the converter only writes
+                # style.color.background (solid colour) via _root_lift_rules, and there
+                # is no `style.color.gradient` entry.  Gradient CSS values cannot safely
+                # be mapped to a preset slug without a live DB lookup against the theme's
+                # registered gradient presets (which the converter doesn't have access to
+                # at clone time).  Emitting a raw CSS gradient string into WP's preset
+                # slot would produce invalid serialised block output.
+                # Result: gradient drop is intentional until a destination attr or WP
+                # gradient-preset lookup is added to the SGS pipeline.
+                _trace("gradient_background_gap", {
+                    "reason": "CSS gradient background has no converter destination — "
+                              "no style.color.gradient in _root_lift_rules; "
+                              "WP gradient preset lookup not available at clone time. "
+                              "Gap candidate: add style.color.gradient to _root_lift_rules "
+                              "when a gradient-slug resolver is available.",
+                    "raw": bg,
+                })
         if "border" in base_decls and "border-width" not in base_decls:
             parts = base_decls["border"].strip().split()
             for tok in parts:
@@ -1740,6 +1760,60 @@ def _lift_typography_to_block_attrs(
                 continue
             _resolve_typo_value(css_prop, primary_attr, unit_attr, raw,
                                 tgt=primary_attr)
+
+    # ---- Fix #4: Mobile tier rescue after A-collapse ----
+    # When the Desktop A-collapse wrote the desktop value onto fontSize (the base
+    # attr), the base-decls pass above was silently blocked by setdefault — so
+    # the mobile-first CSS value (e.g. 34px vs desktop 58px) is lost.
+    # Recovery: after both passes, if (a) the base attr was claimed by a Desktop
+    # A-collapse value, (b) the block declares a Mobile variant attr (e.g.
+    # fontSizeMobile), and (c) the mobile-first base value differs from the
+    # claimed desktop value — write the base value to the Mobile variant attr.
+    # Gate is purely on `f"{primary_attr}Mobile" in block_attr_map` (self-limits
+    # to blocks that declare it: button/collapsible-text/heading/label/text).
+    # No slug branch (R-22-9 universal).
+    if base_decls:
+        desktop_bp_decls = bp_decls.get("Desktop", {})
+        for css_prop, primary_attr, unit_attr in _get_typography_css_to_attrs():
+            mobile_attr = f"{primary_attr}Mobile"
+            if mobile_attr not in block_attr_map:
+                continue  # Block doesn't have a Mobile variant for this property.
+            if primary_attr not in result:
+                continue  # Base attr was never written — nothing to rescue.
+            base_raw = base_decls.get(css_prop)
+            if not base_raw:
+                continue  # No mobile-first base value to rescue.
+            desktop_raw = desktop_bp_decls.get(css_prop)
+            if not desktop_raw:
+                continue  # No Desktop A-collapse happened for this property.
+            # Only rescue if the base (mobile) value differs from the desktop value
+            # that was claimed. Normalise whitespace for comparison.
+            if _strip_important(base_raw).strip() == _strip_important(desktop_raw).strip():
+                continue  # Same value — no rescue needed.
+            if mobile_attr in result:
+                continue  # Already written (shouldn't happen but guard it).
+            # Write the mobile-first base value to the Mobile variant attr.
+            _resolve_typo_value(css_prop, primary_attr, unit_attr, base_raw,
+                                tgt=mobile_attr)
+            # Unit companion for Mobile attr (e.g. fontSizeUnitMobile):
+            # _resolve_typo_value only writes the unit companion when tgt==primary_attr,
+            # so handle it explicitly here for the Mobile variant.
+            mobile_unit_attr = f"{unit_attr}Mobile" if unit_attr else None
+            if mobile_unit_attr and mobile_unit_attr in block_attr_map and mobile_attr in result:
+                primary_info = block_attr_map.get(primary_attr, {})
+                if primary_info.get("attr_type", "string") == "number" and unit_attr:
+                    _, unit = _split_value_unit(_strip_important(base_raw).strip(), default_unit="")
+                    effective_unit = unit if unit else ("unitless" if unit_attr else unit)
+                    if effective_unit:
+                        result.setdefault(mobile_unit_attr, effective_unit)
+            _trace("typo_mobile_rescued", {
+                "css_prop": css_prop,
+                "primary_attr": primary_attr,
+                "mobile_attr": mobile_attr,
+                "base_raw": base_raw,
+                "desktop_raw": desktop_raw,
+                "written_value": result.get(mobile_attr),
+            })
 
     return result
 
@@ -3182,27 +3256,89 @@ def _atomic_attrs_for(node: Tag, slug: str, allow_text_fallback: bool = True, cs
         return {"text": _rich_text_content(node)}
 
 
-    # sgs/media — current schema: imageUrl, imageAlt, maxHeight + maxHeightUnit, objectFit.
-    # render.php reads maxHeight/maxHeightUnit (emits max-height:Npx); imageHeight is a
-    # dead/unrendered DB attr, so the height lift MUST land on maxHeight (string) +
-    # maxHeightUnit (string, default "px") to actually paint a fixed image height.
+    # sgs/media — current schema: imageUrl, imageAlt, maxHeight + maxHeightUnit, objectFit,
+    # borderRadius + borderRadiusUnit, order / orderMobile / orderTablet.
+    # render.php (lines 36-70, 53-58, 68-70) reads:
+    #   maxHeight/maxHeightUnit (line 41-44): emits max-height on the media element
+    #   borderRadius/borderRadiusUnit + TL/TR/BL/BR (lines 53-58): emits border-radius
+    #   order/orderMobile/orderTablet (lines 68-70): emits CSS order on the <figure> wrapper
+    #   objectFit (lines 48-50): emits object-fit (default "cover")
+    # imageHeight is a dead/unrendered attr — DO NOT lift onto it.
+    # Faithful-absence rule: only lift a CSS property when it is declared in the draft CSS.
     if slug == "sgs/media" and tag == "img":
         attrs_m: dict = {
             "imageUrl": _resolve_media_url(node.get("src", "")),
             "imageAlt": node.get("alt", ""),
         }
         if css_rules:
-            _m_base, _ = _collect_css_decls_for_element(node, css_rules)
-            _h_raw = _strip_important(_m_base.get("height", ""))
-            if _h_raw:
+            _m_base, _m_bp = _collect_css_decls_for_element(node, css_rules)
+
+            # max-height → maxHeight + maxHeightUnit (prefer max-height CSS property
+            # over height — render.php emits max-height not height).
+            _mh_raw = _strip_important(_m_base.get("max-height", ""))
+            if not _mh_raw:
+                # Fall back to height if no explicit max-height in draft.
+                _mh_raw = _strip_important(_m_base.get("height", ""))
+            if _mh_raw:
                 import re as _re_m
-                _h_m = _re_m.match(r"^(\d+)(px|rem|em|vh|%)?$", _h_raw.strip())
-                if _h_m:
-                    attrs_m["maxHeight"] = _h_m.group(1)
-                    attrs_m["maxHeightUnit"] = _h_m.group(2) or "px"
+                _mh_m = _re_m.match(r"^(\d+(?:\.\d+)?)(px|rem|em|vh|%|svh|svw|ch)?$", _mh_raw.strip())
+                if _mh_m:
+                    attrs_m["maxHeight"] = _mh_m.group(1)
+                    attrs_m["maxHeightUnit"] = _mh_m.group(2) or "px"
+
+            # object-fit (render.php default is "cover" — only emit when different).
             _fit_raw = _strip_important(_m_base.get("object-fit", ""))
-            if _fit_raw and _fit_raw != "cover":  # "cover" is the default — skip
+            if _fit_raw and _fit_raw != "cover":
                 attrs_m["objectFit"] = _fit_raw
+
+            # border-radius → borderRadius + borderRadiusUnit.
+            # render.php reads the bare borderRadius attr when no per-corner attrs set.
+            _br_raw = _strip_important(_m_base.get("border-radius", ""))
+            if _br_raw:
+                import re as _re_br
+                _br_m = _re_br.match(r"^(\d+(?:\.\d+)?)(px|rem|em|%)?$", _br_raw.strip())
+                if _br_m:
+                    attrs_m["borderRadius"] = _br_m.group(1)
+                    attrs_m["borderRadiusUnit"] = _br_m.group(2) or "px"
+                else:
+                    # Non-simple shorthand (e.g. "8px 0 0 8px") — gap candidate.
+                    _trace("media_border_radius_gap", {
+                        "reason": "complex border-radius shorthand not lifted to per-corner attrs",
+                        "raw": _br_raw,
+                    })
+
+            # CSS order — only lift when the rendered parent is a flex/grid container.
+            # render.php emits order on the <figure> wrapper (lines 186-188).
+            # We check the draft CSS of the img's parent for display:flex/grid.
+            _order_raw = _strip_important(_m_base.get("order", ""))
+            if not _order_raw:
+                # order may be on the parent wrapper, not the img itself.
+                _parent = node.parent
+                if _parent is not None:
+                    _p_base, _ = _collect_css_decls_for_element(_parent, css_rules)
+                    _p_display = _strip_important(_p_base.get("display", ""))
+                    if _p_display in ("flex", "grid", "inline-flex", "inline-grid"):
+                        _order_raw = _strip_important(_p_base.get("order", ""))
+            if _order_raw:
+                import re as _re_ord
+                _ord_m = _re_ord.match(r"^(-?\d+)$", _order_raw.strip())
+                if _ord_m:
+                    attrs_m["order"] = int(_ord_m.group(1))
+                    # Mobile order from responsive breakpoints.
+                    _m_mobile_bp = _m_bp.get("Mobile", {})
+                    _ord_mobile_raw = _strip_important(_m_mobile_bp.get("order", ""))
+                    if _ord_mobile_raw:
+                        _ord_mob_m = _re_ord.match(r"^(-?\d+)$", _ord_mobile_raw.strip())
+                        if _ord_mob_m:
+                            attrs_m["orderMobile"] = int(_ord_mob_m.group(1))
+            else:
+                # gap candidate — log if order appeared on a non-flex/grid parent.
+                _order_check = _strip_important(_m_base.get("order", ""))
+                if _order_check:
+                    _trace("media_order_gap", {
+                        "reason": "order declared but parent is not flex/grid — lift skipped (dead lift)",
+                        "raw": _order_check,
+                    })
         return attrs_m
 
     # sgs/media (video) — <video>/<iframe> → mediaType=video + videoUrl (D97 video
