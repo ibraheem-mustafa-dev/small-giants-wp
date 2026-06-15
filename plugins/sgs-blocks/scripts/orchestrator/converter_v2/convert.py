@@ -3687,6 +3687,49 @@ def _atomic_attrs_for(node: Tag, slug: str, allow_text_fallback: bool = True, cs
                     _tb_gap = _strip_important(_inner_base.get("gap", ""))
                     if _tb_gap:
                         trust_result.setdefault("gap", _tb_gap)
+                # FR-22-21 content-band max-width lift (2026-06-15): the composite's
+                # named inner band is reached HERE via the responsive-grid path
+                # (has_inner_blocks=false scalar composite), NOT the G3 direct-element-
+                # child scan in walk() — so the shared content-band helper must also be
+                # called at this site or the composite's content cap is lost.
+                #
+                # The G3 scan's gate (_detect_content_layer) structurally REJECTS any
+                # display:grid|flex node (convert.py:2283) because a generic flex/grid
+                # container's max-width must not become a contentWidth. But this site is
+                # narrower and already proven: the responsive-grid lift only reaches a
+                # node it has CONFIRMED is the composite's layout band (`_inner_grid`
+                # truthy), so the band's own max-width + margin-centring IS the content
+                # cap by construction. Gate therefore on the POSITIVE content-band
+                # signature directly (the centring half of _detect_content_layer, minus
+                # the grid/flex exclusion that this band legitimately trips), still
+                # requiring the block to declare contentWidth (R-22-1 DB-first; R-22-9
+                # universal — no slug literal; setdefault in the helper never overwrites).
+                _band_base, _ = _collect_css_decls_for_element(_inner, css_rules)
+                _band_margin = _strip_important(
+                    _band_base.get("margin", "")
+                ).strip().lower()
+                _band_ml = _strip_important(
+                    _band_base.get("margin-left", "")
+                ).strip().lower()
+                _band_mr = _strip_important(
+                    _band_base.get("margin-right", "")
+                ).strip().lower()
+                _band_centred = (
+                    "auto" in _band_margin.split()
+                    or (_band_ml == "auto" and _band_mr == "auto")
+                )
+                if (
+                    _inner_grid
+                    and _band_centred
+                    and "contentWidth" in (db.block_attrs(slug) or {})
+                ):
+                    if _lift_content_band_max_width(_inner, css_rules, trust_result):
+                        _trace(
+                            "content_band_max_width_lifted",
+                            slug=slug,
+                            classes=_inner_classes,
+                            value=trust_result.get("contentWidth"),
+                        )
 
             # iconCircleBackground from .sgs-trust-bar__icon CSS.
             _icon_el = node.find(
@@ -4774,6 +4817,52 @@ def walk(
                     styling_lift_safe[_sk] = _sv
             attrs = {**attrs, **selector_lift, **styling_lift_safe, **atomic}
 
+    # G3 content-band max-width lift (Fam D fix, 2026-06-15).
+    # G3 blocks (has_inner_blocks=0) bypass _process_container_children entirely
+    # so _fold_layout_into_attrs never fires for them — their __inner element's
+    # max-width (the content-band cap) is never lifted to contentWidth.  This block
+    # closes the gap by scanning the G3 block's direct element children for any
+    # child whose CSS carries a CONTENT-layer signature (_detect_content_layer:
+    # --content-width custom property OR max-width + margin-centring).  The FIRST
+    # matching child is treated as the content band and its max-width is lifted to
+    # contentWidth via the shared helper.
+    #
+    # R-22-1 (DB-first): gated on ``'contentWidth' in db.block_attrs(slug)`` — only
+    #   fires when the resolved block actually declares the attr; self-limits to the
+    #   container-mirror roster without any slug literals.
+    # R-22-9 (universal): no slug branch — every G3 block with contentWidth gets the
+    #   scan; blocks without the attr are a single cached DB call that returns False.
+    # R-22-6 (responsive to ATTRIBUTES): _lift_content_band_max_width writes the
+    #   block attr, never an inline style.
+    # Double-set guard: _lift_content_band_max_width uses setdefault internally; if
+    #   contentWidth was already set by route_node_css / _atomic_attrs_for, it wins.
+    if (
+        not is_leaf
+        and not _slug_accepts_inner
+        and slug is not None
+        and "contentWidth" not in attrs  # fast-path: skip scan if already set
+        and "contentWidth" in (db.block_attrs(slug) or {})
+    ):
+        _cw_dest = db.attr_for_layer_property(slug, "CONTENT", "max-width")
+        if _cw_dest:
+            for _g3_child in node.children:
+                if not isinstance(_g3_child, Tag):
+                    continue
+                _g3_base, _ = _collect_css_decls_for_element(_g3_child, css_rules)
+                if _detect_content_layer(_g3_base):
+                    _lifted = _lift_content_band_max_width(
+                        _g3_child, css_rules, attrs, dest_attr=_cw_dest
+                    )
+                    if _lifted:
+                        _trace(
+                            "content_band_max_width_lifted",
+                            slug=slug,
+                            child_classes=list(_g3_child.get("class") or []),
+                            dest_attr=_cw_dest,
+                            resolved=attrs.get(_cw_dest),
+                        )
+                    break  # only the first content-band child counts
+
     # Spec 11 + P-9: wrap any loose sgs/button runs in sgs/multi-button (WP
     # core/buttons mirror). No-op when there are no loose buttons; already-grouped
     # buttons (a __ctas wrapper → sgs/multi-button) pass through untouched. Skip
@@ -5721,6 +5810,48 @@ def _has_sgs_child(node: "Tag") -> bool:
     )
 
 
+def _lift_content_band_max_width(
+    band_node: "Tag", css_rules: dict, attrs: dict,
+    dest_attr: "str | None" = "contentWidth",
+) -> bool:
+    """Shared helper: lift a content-band element's max-width onto a block attr.
+
+    Extracts the ``max-width`` CSS declaration from ``band_node`` (resolving any
+    co-declared ``var()`` references per FIX B / IN-B) and stores the resolved
+    value into ``attrs[dest_attr]`` via ``setdefault`` (never overwrites a value
+    already set by a higher-priority path).
+
+    Returns True when a value was available (max-width present on the node),
+    False otherwise.  The caller decides whether to emit a trace event.
+
+    Usage contexts:
+      1. ``_fold_layout_into_attrs`` — the folded sole-shell is the band by
+         construction; calls this directly on the wrapper node.
+      2. G3 content-band scan (G3-attrs path in walk()) — iterates direct children
+         looking for a ``_detect_content_layer`` signature, calls this on the
+         matching child.  Gated on ``'contentWidth' in db.block_attrs(slug)`` so
+         it only fires when the resolved block actually declares that attr (R-22-1
+         DB-first; R-22-9 universal — no slug literals, the DB gate self-limits
+         to the container-mirror roster that has the attr).
+
+    The ``dest_attr`` is normally ``"contentWidth"``; the caller may supply the
+    result of ``db.attr_for_layer_property(slug, "CONTENT", "max-width")`` for
+    blocks whose canonical attr name differs (currently all map to
+    ``"contentWidth"`` but passing it explicitly keeps the call-site honest).
+    """
+    if dest_attr is None:
+        return False
+    _base, _ = _collect_css_decls_for_element(band_node, css_rules)
+    _mw = _base.get("max-width")
+    if not _mw:
+        return False
+    # FIX B (IN-B): resolve co-declared var() before storing.
+    # e.g. max-width:var(--content-width); --content-width:1100px → "1100px".
+    attrs.setdefault(dest_attr, _resolve_co_declared_var(
+        _strip_important(_mw).strip(), _base))
+    return True
+
+
 def _fold_layout_into_attrs(
     wrapper_node: "Tag", wrapper_classes: list[str], container_attrs: dict, css_rules: dict
 ) -> None:
@@ -5750,13 +5881,7 @@ def _fold_layout_into_attrs(
     # exactly one wrapper folds per parent, so this wrapper IS the section's content
     # band and its max-width IS the content cap; multi-fold (where a column's own
     # max-width would mis-set contentWidth) is impossible by the gate's construction.
-    _fw_base, _ = _collect_css_decls_for_element(wrapper_node, css_rules)
-    _inner_mw = _fw_base.get("max-width")
-    if _inner_mw:
-        # FIX B (IN-B): resolve co-declared var() before storing (e.g. max-width:var(--content-width)
-        # with --content-width:960px on the same element → "960px").
-        container_attrs.setdefault("contentWidth", _resolve_co_declared_var(
-            _strip_important(_inner_mw).strip(), _fw_base))
+    _lift_content_band_max_width(wrapper_node, css_rules, container_attrs)
 
 
 def _process_container_children(

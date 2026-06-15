@@ -1,5 +1,5 @@
 {
   "fixture": "sgs-content-collection.html",
   "primary_block_emitted": "sgs/container",
-  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/content-collection /-->\n<!-- /wp:sgs/container -->"
+  "markup": "<!-- wp:sgs/container {\"widthMode\":\"full\"} -->\n<!-- wp:sgs/content-collection {\"contentWidth\":\"1200px\"} /-->\n<!-- /wp:sgs/container -->"
 }
