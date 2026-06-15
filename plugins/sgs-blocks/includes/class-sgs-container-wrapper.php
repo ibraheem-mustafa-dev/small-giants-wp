@@ -543,6 +543,55 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$styles[] = 'max-width:' . esc_attr( $style_dim['maxWidth'] );
 			}
 
+			// ----------------------------------------------------------------
+			// Grid/flex + band CSS coexistence (Spec 22 FR-22-4.1 grid case).
+			// When a block uses a grid or flex layout, the __inner band layer is
+			// folded ONTO the outer container element (the same element that is
+			// the grid/flex container) rather than emitting a separate __inner
+			// div — a separate __inner would become the sole grid item and break
+			// the grid. Any band CSS (contentWidth / band padding / band
+			// background) must therefore be applied directly to $styles here so
+			// it is present when get_block_wrapper_attributes() is called below.
+			//
+			// Guard: only the default path (opt_wrap_inner === null). An explicit
+			// wrap_inner=false (hero, product-card) disables band entirely;
+			// wrap_inner=true forces __inner even on grids (caller-controlled).
+			// ----------------------------------------------------------------
+			$has_band_css = '' !== $content_width || '' !== $band_padding_top || '' !== $band_padding_right
+				|| '' !== $band_padding_bottom || '' !== $band_padding_left || '' !== $band_background;
+
+			if ( null === $opt_wrap_inner && '' !== $layout && $has_band_css ) {
+				// contentWidth caps the grid container; margin-inline:auto centres it.
+				// This wins over widthMode='full' (alignfull class -> max-width:none)
+				// because an inline style has higher specificity than a class rule.
+				// Non-responsive only: when responsive tiers exist, the base is
+				// emitted into the uid stylesheet (see band_sel below) so it
+				// doesn't override the @media tiers via inline specificity.
+				if ( '' !== $content_width && ! $has_band_responsive ) {
+					$styles[] = 'max-width:' . esc_attr( $content_width );
+					$styles[] = 'margin-inline:auto';
+				}
+				// Base band padding + background -- inline, non-responsive path only.
+				// (Responsive path emits all base + tier CSS via the uid stylesheet.)
+				if ( ! $has_band_responsive && ( $is_section || $is_layout ) ) {
+					if ( '' !== $band_padding_top ) {
+						$styles[] = 'padding-top:' . esc_attr( $band_padding_top );
+					}
+					if ( '' !== $band_padding_right ) {
+						$styles[] = 'padding-right:' . esc_attr( $band_padding_right );
+					}
+					if ( '' !== $band_padding_bottom ) {
+						$styles[] = 'padding-bottom:' . esc_attr( $band_padding_bottom );
+					}
+					if ( '' !== $band_padding_left ) {
+						$styles[] = 'padding-left:' . esc_attr( $band_padding_left );
+					}
+					if ( '' !== $band_background ) {
+						$styles[] = 'background-color:' . esc_attr( sgs_colour_value( $band_background ) );
+					}
+				}
+			}
+
 			// Min-height flex-centring class — ONLY when the design asks for centring
 			// (verticalAlign === 'center'). A min-height section with default/start/
 			// stretch alignment must NOT be force-centred: doing so overrides grid
@@ -910,7 +959,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// This matches the child div emitted at the __inner guard (line ~980) and
 				// correctly scopes the rules to the instance via the uid class prefix.
 				if ( $has_band_responsive ) {
-					$band_sel = '.' . $uid . '>.sgs-container__inner';
+					// When the block has a grid/flex layout, the band lives on the
+					// outer container itself (no __inner emitted) — target uid directly.
+					// Layout-empty path keeps the child combinator for __inner as before.
+					$band_sel = ( '' !== $layout && null === $opt_wrap_inner )
+						? '.' . $uid
+						: '.' . $uid . '>.sgs-container__inner';
 
 					// Base band rule FIRST — when responsive band tiers exist, the base
 					// (max-width / margin-inline / padding / background) MUST live in the
