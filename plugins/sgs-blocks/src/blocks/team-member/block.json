@@ -40,7 +40,8 @@
 		},
 		"sgs": {
 			"imageControls": true,
-			"scalarContentLift": true
+			"scalarContentLift": true,
+			"hasInnerBlocks": false
 		}
 	},
 	"selectors": {

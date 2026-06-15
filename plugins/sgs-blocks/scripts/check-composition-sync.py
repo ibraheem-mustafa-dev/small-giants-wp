@@ -124,12 +124,23 @@ def _derive(block_dir: Path) -> int:
     return 1 if (_has_save_marker(block_dir) and _render_consumes(block_dir)) else 0
 
 
-# Canonical override layer — MUST mirror HAS_INNER_BLOCKS_OVERRIDES in
-# sgs-update-v2.py (genuine serialisation != routing cases + a cited source-bug
-# follow-up). Keep the two dicts in sync.
-HAS_INNER_BLOCKS_OVERRIDES: dict[str, int] = {
-    # (empty — all current blocks derive correctly; entries added only for genuine serialisation≠routing cases)
-}
+# has_inner_blocks block-owned override (single source, 2026-06-15).
+# The override now lives in each block's block.json supports.sgs.hasInnerBlocks
+# (bool). Both this gate and sgs-update-v2.py read the SAME source so drift is
+# structurally impossible. No hardcoded dict needed here. R-22-1 DB-first.
+def _has_inner_blocks_from_block_json(bj: dict) -> "int | None":
+    """Read supports.sgs.hasInnerBlocks from a parsed block.json.
+
+    Returns the declared int (0 or 1) when the key is present, or None when
+    absent (caller should fall back to the AND-rule derivation).
+    """
+    supports = bj.get("supports", {}) if isinstance(bj, dict) else {}
+    sgs = supports.get("sgs", {}) if isinstance(supports, dict) else {}
+    if not isinstance(sgs, dict):
+        return None
+    if "hasInnerBlocks" in sgs:
+        return 0 if not sgs["hasInnerBlocks"] else 1
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -167,6 +178,7 @@ def main() -> int:
             meta = json.loads(bj_path.read_text(encoding="utf-8"))
             slug = meta.get("name", f"sgs/{block_dir.name}")
         except Exception:  # noqa: BLE001
+            meta = {}
             slug = f"sgs/{block_dir.name}"
 
         if not slug.startswith("sgs/"):
@@ -180,7 +192,8 @@ def main() -> int:
             continue  # missing row — not this guard's responsibility
 
         stored = row[0]
-        derived = HAS_INNER_BLOCKS_OVERRIDES.get(slug, _derive(block_dir))
+        _bj_override = _has_inner_blocks_from_block_json(meta)
+        derived = _bj_override if _bj_override is not None else _derive(block_dir)
         checked += 1
 
         if stored != derived:

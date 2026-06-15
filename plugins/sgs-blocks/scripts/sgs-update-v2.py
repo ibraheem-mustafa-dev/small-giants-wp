@@ -841,25 +841,27 @@ def _render_consumes_content(block_dir: Path) -> bool:
     return False
 
 
-# Canonical override layer for has_inner_blocks (WS-B, 2026-06-12). The AND rule
-# (_derive_has_inner_blocks) is self-correcting for every block EXCEPT genuine
-# serialisation != routing cases, where the block's source has a latent bug the
-# rule honestly reflects but the cloning pipeline must not inherit. Each row MUST
-# cite the reason + the follow-up source fix. Applied AFTER the rule in BOTH the
-# derivation (_populate_has_inner_blocks) AND the gate (check-composition-sync.py)
-# — keep the two in sync.
-HAS_INNER_BLOCKS_OVERRIDES: dict[str, int] = {
-    # sgs/team-member: save.js emits <InnerBlocks.Content /> for the optional
-    # sgs/social-icons child — so the AND rule (_derive_has_inner_blocks) correctly
-    # returns 1. But for CLONING, team-member is a typed scalar leaf: name/role/bio/photo
-    # are its own attrs, render.php builds the card itself, and $content is only used
-    # for the optional social-icons slot (never present in draft mockups). Walking the
-    # DOM children would emit sgs/media + sgs/heading + sgs/label as dead children that
-    # render.php ignores, losing the content. Override to 0 so the G3-attrs path fires
-    # (_lift_scalar_attrs_by_selector lifts name/role/photo). D221 regression fix.
-    # Source-truth fix: save.js should ideally be save=null; tracked as future cleanup.
-    "sgs/team-member": 0,
-}
+# has_inner_blocks block-owned override (single source, 2026-06-15).
+# Previously a hardcoded Python dict duplicated in sgs-update-v2.py +
+# check-composition-sync.py that could drift. Now the override lives in each
+# block's block.json supports.sgs.hasInnerBlocks (bool). When a block declares the
+# key, that value wins over the AND-rule derivation. When absent, the AND rule fires
+# as before. Both this script and the gate read the SAME source (block.json), so
+# drift is structurally impossible. R-22-1 DB-first (block.json is the canonical
+# block metadata, not a seed-script dict). 2026-06-15.
+def _has_inner_blocks_from_block_json(bj: dict) -> "int | None":
+    """Read supports.sgs.hasInnerBlocks from a parsed block.json.
+
+    Returns the declared int (0 or 1) when the key is present, or None when
+    absent (caller should fall back to the AND-rule derivation).
+    """
+    supports = bj.get("supports", {}) if isinstance(bj, dict) else {}
+    sgs = supports.get("sgs", {}) if isinstance(supports, dict) else {}
+    if not isinstance(sgs, dict):
+        return None
+    if "hasInnerBlocks" in sgs:
+        return 0 if not sgs["hasInnerBlocks"] else 1
+    return None
 
 
 # Per-attr classification overrides — applied as Stage 1 sub-step C, AFTER
@@ -995,15 +997,15 @@ def _populate_has_inner_blocks(
                 bj = json.load(f)
             slug = bj.get("name", f"sgs/{block_dir.name}")
         except Exception:  # noqa: BLE001
+            bj = {}
             slug = f"sgs/{block_dir.name}"
 
         if not slug.startswith("sgs/"):
             continue  # never touch core/* rows
 
         scanned += 1
-        derived = HAS_INNER_BLOCKS_OVERRIDES.get(
-            slug, _derive_has_inner_blocks(block_dir)
-        )
+        _bj_override = _has_inner_blocks_from_block_json(bj)
+        derived = _bj_override if _bj_override is not None else _derive_has_inner_blocks(block_dir)
 
         row = c.execute(
             "SELECT has_inner_blocks FROM block_composition WHERE block_slug = ?",
