@@ -5223,13 +5223,14 @@ _MIN_WIDTH_RE = re.compile(r"min-width\s*:\s*(\d+)", re.IGNORECASE)
 # render.php breakpoint thresholds (max-width model):
 #   gridTemplateColumns           → base/desktop inline style (all sizes, unless overridden)
 #   gridTemplateColumnsTablet     → @media (max-width:1023px)
-#   gridTemplateColumnsMobile     → @media (max-width:599px)
+#   gridTemplateColumnsMobile     → @media (max-width:767px)
 # Mockup CSS uses min-width (mobile-first), so we invert:
 #   min-width ≥ 1024 → desktop attr (gridTemplateColumns)
-#   min-width 600–1023 → tablet attr (gridTemplateColumnsTablet)
+#   min-width 768–1023 → tablet attr (gridTemplateColumnsTablet)
 #   base (no @media) → mobile attr (gridTemplateColumnsMobile)
+# Device-tier standard 768/1024 (D228) — pairs with SGS_Container_Wrapper's 767/1023 render breakpoints.
 _GRID_DESKTOP_BP = 1024  # px — min-width at or above this maps to the desktop (base) attr
-_GRID_TABLET_BP  = 600   # px — min-width at or above this (below desktop) maps to tablet attr
+_GRID_TABLET_BP  = 768   # px — min-width at or above this (below desktop) maps to tablet attr
 
 
 def _css_selector_has_class(sel_key: str, selector: str) -> bool:
