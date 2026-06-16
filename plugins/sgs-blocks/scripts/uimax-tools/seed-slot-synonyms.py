@@ -180,9 +180,15 @@ ALIAS_EXTENSIONS: list[tuple[str, list[str]]] = [
     # ----- button / CTA aliases ----------------------------------------
     ("button", [
         "btn",                # abbreviated button element
-        "ctas",               # plural CTA container (holds primary + secondary btns)
+        # NOTE: plural group terms "ctas" / "buttons" intentionally NOT here.
+        # They name a button-GROUP (a div holding primary + secondary buttons),
+        # not a single button, and belong solely to the `button-group` slot
+        # (→ sgs/multi-button). Listing them on `button` made
+        # resolve_slug_from_bem(['sgs-hero__ctas']) ambiguously win for
+        # sgs/button (first-writer-wins), so a cloned CTA group emitted a
+        # redundant sgs/container wrapper instead of dissolving into
+        # sgs/multi-button. See migration 2026-06-16-button-group-alias-disambiguation.py.
         "cta-inputs",         # CTA with inline input (email capture CTAs)
-        "buttons",            # multiple-button group container
         "readmore",           # read-more link element
         "load-more",          # load-more pagination trigger
     ]),
