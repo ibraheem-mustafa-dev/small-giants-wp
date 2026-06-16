@@ -4,7 +4,7 @@ project: small-giants-wp
 thread: cloning-pipeline
 title: "Design: universal 3-layer band absorption — remove the 3 wrapper carve-outs"
 created: 2026-06-16
-status: APPROVED 2026-06-16 (Bean, design-gate). Build staged 1→4.
+status: PARTIAL 2026-06-16 (D228). Stage 1 (band A+C) SHIPPED + the grid DE-CHEAT prerequisite SHIPPED. Stages 2-4 (hero fold / product-card / remove wrap_inner) PENDING — now unblocked.
 supersedes_conception: "$grid_on_inner gated on contentWidth + wrap_inner + block-kind (commit 9dde2f2d)"
 inputs:
   - Bean correction 2026-06-15/16 (foundational L1/L2/L3 rule)
@@ -54,3 +54,10 @@ band-level CSS to place", never by a single property or block-kind.
   — a no-contentWidth band keeps its padding; a content-kind clone keeps its inner CSS;
   hero-split renders correctly at 375/768/1440; no full-bleed section loses its background span.
 - Pixel-diff pre/post (R-22-4); commit cites predicted vs actual delta.
+
+## Build progress (D228, 2026-06-16)
+
+- **Stage 1 (band A+C) — SHIPPED** (commit `69ee706e`, on main): band emits on `$has_band_props`; content-kind kind-gates removed; live-verified A (padding survives no-contentWidth) + B (content-kind band bg) + C (full-bleed grid no regression).
+- **Grid DE-CHEAT — SHIPPED** (commit `e66f8973`, NEW prerequisite discovered this session): attempting Stage 2 (hero fold) surfaced that the shared wrapper's grid had TWO hardcoded cheats that would crush a folded hero's split ratio — (1) `sgs-cols-tablet/mobile-N` classes forcing `grid-template-columns:repeat(N,1fr) !important` over the faithful explicit `gridTemplateColumns*` ratio, and (2) a 599px device-tier mobile breakpoint inconsistent with the `sgs-cols-*` 767. Per Bean (`feedback_wrapper_hardcoded_defaults_are_cheats_to_remove_not_blockers`) these are R-22-1 cheats to REMOVE, not blockers: gated `sgs-cols-*` on empty-ratio (faithful ratio now wins) + unified device-tier breakpoints to **768/1024** (wrapper 599→767 + converter `_GRID_TABLET_BP` 600→768, commit `f997af25`). **The hero fold (Stage 2) is now unblocked** — the helper renders a passed `gridTemplateColumns*` faithfully.
+- **Stages 2-4 — PENDING.** First step of the next session's grid/container-extraction rebuild. Ground the hero's split setup in the variant DB (`variant_slots`: sgs/hero split = gridTemplateColumns/splitGap), route the split grid through the now-faithful helper, keep the order-swap @media, drop `wrap_inner=false`, then product-card (Stage 3) + remove the option (Stage 4). Verify the split hero renders IDENTICALLY at 375/768/1440.
+- Carve-out B verdict refined: `wrap_inner=false` masks the hero rendering its grid on L1 outer; the fold needs the faithful helper (now shipped) before it can land without regressing the split hero's bespoke responsive ratio/order-swap.

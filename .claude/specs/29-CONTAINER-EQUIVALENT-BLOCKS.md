@@ -260,6 +260,8 @@ Cross-refs: Spec 22 §FR-22-21 (layer→prefix table + 6-step procedure), §FR-2
 | Composite-mirror migration recipe (4-step per block) | Spec 22 §FR-22-21.1 |
 | Auto-propagation via `/sgs-update` Stage 11 | Spec 22 §FR-22-21.2 |
 | Gap consolidation decision | D167 + commit `668e26ad` (2026-06-07) |
+
+**Container-bearing vs styles-directly (D228, 2026-06-16).** The Stage-11 `sync-container-wrapping-blocks.py` container-mirror roster (which blocks RECEIVE the sgs/container attr-mirror) is NOT the same as "renders via SGS_Container_Wrapper". A scalar/built-in-element composite can use the wrapper for its OUTER shell (widthMode/contentWidth/padding) yet have its OWN color/border/typography supports + NO `sgs/container` InnerBlocks — it then **styles directly**, not mirror-managed, and is EXCLUDED from the roster. `sgs/product-card` was removed this way (D204); `sgs/team-member` removed for the identical reason at D228 (`70bcf164`) — it was wrongly left in after its scalar rebuild, which was the Stage-11 sync WARN root cause. The container-bearing detection currently keys on `sgs/container` InnerBlocks, so wrapper-attr scalar blocks must be hand-curated out of the roster (a follow-up: broaden the detection to wrapper-attr blocks). `block_composition.container_kind` (the converter's composite-mirror source) is a SEPARATE axis — both product-card + team-member remain `content` there.
 | Excluded blocks (modal, mobile-nav) | `block_composition WHERE containerMirror = false` + `.claude/decisions.md` D167 |
 | Shared PHP helper full source | `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php` |
 | Shared editor component full source | `plugins/sgs-blocks/src/blocks/container/components/ContainerWrapperControls.js` |

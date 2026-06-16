@@ -59,6 +59,8 @@ Mirrors how `core/buttons` wraps `core/button` instances, but with per-breakpoin
 
 ### Composition pattern in composite blocks
 
+> **Converter button-group resolution (D228, 2026-06-16).** When `/sgs-clone` converts a draft CTA-group div (`__ctas`/`__buttons`/`cta-group`), it must emit `sgs/multi-button` DIRECTLY (with the div's flex/gap lifted onto it), NOT a redundant `sgs/container` wrapping the multi-button. Root cause of the prior double-nesting: the plural group aliases `ctas`/`buttons` were wrongly on BOTH the `button` slot (→`sgs/button`) AND `button-group` (→`sgs/multi-button`); first-writer-wins resolved `__ctas`→`sgs/button` → the walker fell back to `sgs/container`. Fixed by removing `ctas`/`buttons` from the `button` slot aliases (kept singular `cta`) — they belong solely to `button-group`. Dated migration `migrations/2026-06-16-button-group-alias-disambiguation.py` + `seed-slot-synonyms.py` (commit `437b2f82`).
+
 Every block that renders CTAs (`sgs/hero`, `sgs/cta-section`, `sgs/product-card`, `sgs/feature-grid` etc.) exposes an `<InnerBlocks>` slot whose default template is `sgs/multi-button` containing 2 `sgs/button` instances. The user can:
 
 - Delete one button → 1-CTA block
