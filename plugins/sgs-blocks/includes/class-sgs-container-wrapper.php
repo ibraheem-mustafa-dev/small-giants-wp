@@ -395,11 +395,25 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			$styles = array_merge( array(), $opt_extra_styles );
 
+			// Grid-on-inner (Spec 22 FR-22-4.1; Bean correction 2026-06-15): when a
+			// block has a grid/flex layout AND a content band (contentWidth), the grid
+			// (display/columns/gap) AND the band (max-width/margin) BOTH live on the
+			// __inner content-band element — NOT the full-bleed outer — so the outer's
+			// section background spans full width while the content caps + centres.
+			// Base grid/gap decls collected into $inner_grid_decls (emitted on the
+			// __inner below); responsive grid/gap tiers route to $grid_sel.
+			$grid_on_inner    = ( ( 'grid' === $layout || 'flex' === $layout ) && '' !== $content_width && null === $opt_wrap_inner );
+			$inner_grid_decls = array();
+
 			// gap — section + layout kinds. When responsive gap tiers exist the base
 			// is emitted via the per-instance uid CSS instead (an inline base would
 			// override every @media tier — same convention as min-height below).
 			if ( ( $is_section || $is_layout ) && '' !== $gap && ! ( $gap_tablet || $gap_mobile ) ) {
-				$styles[] = 'gap:' . sgs_container_gap_value( $gap );
+				if ( $grid_on_inner ) {
+					$inner_grid_decls[] = 'gap:' . sgs_container_gap_value( $gap );
+				} else {
+					$styles[] = 'gap:' . sgs_container_gap_value( $gap );
+				}
 			}
 
 			// Base min-height — section kind. When responsive variants exist it is
@@ -430,35 +444,43 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$styles[] = '--sgs-ken-burns-duration:' . absint( $bg_animation_duration ) . 's';
 			}
 
-			// Grid / flex display — section + layout kinds.
+			// Grid / flex display — section + layout kinds. When $grid_on_inner the
+			// grid/flex decls live on the __inner content band ($inner_grid_decls)
+			// instead of the full-bleed outer $styles (so the section bg spans full).
 			if ( $is_section || $is_layout ) {
+				$gd = array();
 				if ( 'grid' === $layout ) {
-					$styles[] = 'display:grid';
+					$gd[] = 'display:grid';
 					// Base column template — deferred to the uid stylesheet when
 					// responsive template tiers exist (inline beats @media otherwise).
 					$gtc_base = '' !== trim( (string) $grid_template )
 						? sgs_sanitize_grid_template( $grid_template )
 						: 'repeat(' . absint( $columns ) . ',1fr)';
 					if ( ! ( $grid_template_tablet || $grid_template_mobile ) ) {
-						$styles[] = 'grid-template-columns:' . $gtc_base;
+						$gd[] = 'grid-template-columns:' . $gtc_base;
 					}
-					$styles[] = 'align-items:' . esc_attr( $vertical_align );
+					$gd[] = 'align-items:' . esc_attr( $vertical_align );
 					if ( 'stretch' !== $justify_items ) {
-						$styles[] = 'justify-items:' . esc_attr( $justify_items );
+						$gd[] = 'justify-items:' . esc_attr( $justify_items );
 					}
 					if ( 'stretch' !== $align_content ) {
-						$styles[] = 'align-content:' . esc_attr( $align_content );
+						$gd[] = 'align-content:' . esc_attr( $align_content );
 					}
 				} elseif ( 'flex' === $layout ) {
-					$styles[] = 'display:flex';
-					$styles[] = 'flex-wrap:' . esc_attr( '' !== $flex_wrap ? $flex_wrap : 'wrap' );
-					$styles[] = 'align-items:' . esc_attr( $vertical_align );
+					$gd[] = 'display:flex';
+					$gd[] = 'flex-wrap:' . esc_attr( '' !== $flex_wrap ? $flex_wrap : 'wrap' );
+					$gd[] = 'align-items:' . esc_attr( $vertical_align );
 					if ( '' !== $flex_direction ) {
-						$styles[] = 'flex-direction:' . esc_attr( $flex_direction );
+						$gd[] = 'flex-direction:' . esc_attr( $flex_direction );
 					}
 					if ( '' !== $justify_content ) {
-						$styles[] = 'justify-content:' . esc_attr( $justify_content );
+						$gd[] = 'justify-content:' . esc_attr( $justify_content );
 					}
+				}
+				if ( $grid_on_inner ) {
+					$inner_grid_decls = array_merge( $inner_grid_decls, $gd );
+				} else {
+					$styles = array_merge( $styles, $gd );
 				}
 			}
 
@@ -467,26 +489,35 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$styles[] = '--sgs-svg-min-height:' . esc_attr( $bg_svg_min_height );
 			}
 
-			// Grid item defaults (SB-1) — section + layout kinds.
+			// Grid item defaults (SB-1) — section + layout kinds. When $grid_on_inner
+			// these CSS-vars co-locate with the grid on the __inner band; else on the
+			// outer. They are custom properties that inherit to the grid items either
+			// way (L3 per-item layer) — co-locating with the grid keeps L1/L2/L3 clean.
 			if ( ( $is_section || $is_layout ) && 'grid' === $layout ) {
+				$gi = array();
 				if ( '' !== $grid_item_padding ) {
-					$styles[] = '--sgs-gi-padding:' . esc_attr( sgs_sanitize_grid_template( $grid_item_padding ) );
+					$gi[] = '--sgs-gi-padding:' . esc_attr( sgs_sanitize_grid_template( $grid_item_padding ) );
 				}
 				if ( '' !== $grid_item_background ) {
-					$styles[] = '--sgs-gi-bg:' . esc_attr( sgs_colour_value( $grid_item_background ) );
+					$gi[] = '--sgs-gi-bg:' . esc_attr( sgs_colour_value( $grid_item_background ) );
 				}
 				if ( '' !== $grid_item_border_radius ) {
-					$styles[] = '--sgs-gi-radius:' . esc_attr( sgs_sanitize_grid_template( $grid_item_border_radius ) );
+					$gi[] = '--sgs-gi-radius:' . esc_attr( sgs_sanitize_grid_template( $grid_item_border_radius ) );
 				}
 				if ( '' !== $grid_item_border ) {
 					$safe_border = preg_replace( '/[^A-Za-z0-9\s%(),.\-#]/', '', $grid_item_border );
-					$styles[]    = '--sgs-gi-border:' . esc_attr( trim( $safe_border ) );
+					$gi[]        = '--sgs-gi-border:' . esc_attr( trim( $safe_border ) );
 				}
 				if ( '' !== $grid_item_shadow ) {
-					$styles[] = '--sgs-gi-shadow:var(--wp--preset--shadow--' . esc_attr( $grid_item_shadow ) . ')';
+					$gi[] = '--sgs-gi-shadow:var(--wp--preset--shadow--' . esc_attr( $grid_item_shadow ) . ')';
 				}
 				if ( '' !== $grid_item_text_colour ) {
-					$styles[] = '--sgs-gi-color:' . esc_attr( sgs_colour_value( $grid_item_text_colour ) );
+					$gi[] = '--sgs-gi-color:' . esc_attr( sgs_colour_value( $grid_item_text_colour ) );
+				}
+				if ( $grid_on_inner ) {
+					$inner_grid_decls = array_merge( $inner_grid_decls, $gi );
+				} else {
+					$styles = array_merge( $styles, $gi );
 				}
 			}
 
@@ -543,54 +574,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$styles[] = 'max-width:' . esc_attr( $style_dim['maxWidth'] );
 			}
 
-			// ----------------------------------------------------------------
-			// Grid/flex + band CSS coexistence (Spec 22 FR-22-4.1 grid case).
-			// When a block uses a grid or flex layout, the __inner band layer is
-			// folded ONTO the outer container element (the same element that is
-			// the grid/flex container) rather than emitting a separate __inner
-			// div — a separate __inner would become the sole grid item and break
-			// the grid. Any band CSS (contentWidth / band padding / band
-			// background) must therefore be applied directly to $styles here so
-			// it is present when get_block_wrapper_attributes() is called below.
-			//
-			// Guard: only the default path (opt_wrap_inner === null). An explicit
-			// wrap_inner=false (hero, product-card) disables band entirely;
-			// wrap_inner=true forces __inner even on grids (caller-controlled).
-			// ----------------------------------------------------------------
-			$has_band_css = '' !== $content_width || '' !== $band_padding_top || '' !== $band_padding_right
-				|| '' !== $band_padding_bottom || '' !== $band_padding_left || '' !== $band_background;
-
-			if ( null === $opt_wrap_inner && '' !== $layout && $has_band_css ) {
-				// contentWidth caps the grid container; margin-inline:auto centres it.
-				// This wins over widthMode='full' (alignfull class -> max-width:none)
-				// because an inline style has higher specificity than a class rule.
-				// Non-responsive only: when responsive tiers exist, the base is
-				// emitted into the uid stylesheet (see band_sel below) so it
-				// doesn't override the @media tiers via inline specificity.
-				if ( '' !== $content_width && ! $has_band_responsive ) {
-					$styles[] = 'max-width:' . esc_attr( $content_width );
-					$styles[] = 'margin-inline:auto';
-				}
-				// Base band padding + background -- inline, non-responsive path only.
-				// (Responsive path emits all base + tier CSS via the uid stylesheet.)
-				if ( ! $has_band_responsive && ( $is_section || $is_layout ) ) {
-					if ( '' !== $band_padding_top ) {
-						$styles[] = 'padding-top:' . esc_attr( $band_padding_top );
-					}
-					if ( '' !== $band_padding_right ) {
-						$styles[] = 'padding-right:' . esc_attr( $band_padding_right );
-					}
-					if ( '' !== $band_padding_bottom ) {
-						$styles[] = 'padding-bottom:' . esc_attr( $band_padding_bottom );
-					}
-					if ( '' !== $band_padding_left ) {
-						$styles[] = 'padding-left:' . esc_attr( $band_padding_left );
-					}
-					if ( '' !== $band_background ) {
-						$styles[] = 'background-color:' . esc_attr( sgs_colour_value( $band_background ) );
-					}
-				}
-			}
+			// NOTE (2026-06-16): the prior "Grid/flex + band CSS coexistence" block
+			// that folded band CSS (max-width/margin/band-padding/band-bg) onto the
+			// OUTER $styles was REMOVED — it wrongly capped the full-bleed outer (the
+			// section background stopped spanning full width). The band (L2) now lives
+			// ONLY on the __inner element; when the block is a grid/flex container with
+			// a content band ($grid_on_inner), the grid (L3) also lives on __inner via
+			// $inner_grid_decls. Single mechanism — see the __inner emission below.
 
 			// Min-height flex-centring class — ONLY when the design asks for centring
 			// (verticalAlign === 'center'). A min-height section with default/start/
@@ -769,16 +759,21 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 
 			if ( $has_responsive_attr ) {
+				// Grid CSS lives on the __inner band when $grid_on_inner (so the outer
+				// stays full-bleed); else on the outer (.uid). $grid_sel selects the
+				// element the responsive grid + gap rules target.
+				$grid_sel = $grid_on_inner ? ( '.' . $uid . '>.sgs-container__inner' ) : ( '.' . $uid );
+
 				// Base gap — deferred from inline when tiers exist (see gap above):
 				// base rule first, @media tiers after, so source order decides per viewport.
 				if ( ( $is_section || $is_layout ) && '' !== $gap && ( $gap_tablet || $gap_mobile ) ) {
-					$responsive_css .= '.' . $uid . '{gap:' . sgs_container_gap_value( $gap ) . '}';
+					$responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}';
 				}
 				if ( $gap_tablet ) {
-					$responsive_css .= '@media (max-width:1023px){.' . $uid . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';
+					$responsive_css .= '@media (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';
 				}
 				if ( $gap_mobile ) {
-					$responsive_css .= '@media (max-width:599px){.' . $uid . '{gap:' . sgs_container_gap_value( $gap_mobile ) . '}}';
+					$responsive_css .= '@media (max-width:599px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_mobile ) . '}}';
 				}
 
 				// Responsive min-height — section kind. Base + variants all emit via
@@ -933,16 +928,16 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					// Deferred base templates (moved out of the inline style when tiers
 					// exist — inline beats @media): base rule first, tiers after.
 					if ( isset( $gtc_base ) && ( $grid_template_tablet || $grid_template_mobile ) ) {
-						$responsive_css .= '.' . $uid . '{grid-template-columns:' . $gtc_base . '}';
+						$responsive_css .= $grid_sel . '{grid-template-columns:' . $gtc_base . '}';
 					}
 					if ( 'grid' === $layout && '' !== trim( (string) $grid_template_rows ) && ( $grid_template_rows_tablet || $grid_template_rows_mobile ) ) {
-						$responsive_css .= '.' . $uid . '{grid-template-rows:' . sgs_sanitize_grid_template( $grid_template_rows ) . '}';
+						$responsive_css .= $grid_sel . '{grid-template-rows:' . sgs_sanitize_grid_template( $grid_template_rows ) . '}';
 					}
 					if ( '' !== sgs_sanitize_grid_template( $grid_template_tablet ) ) {
-						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{grid-template-columns:' . sgs_sanitize_grid_template( $grid_template_tablet ) . '}}';
+						$responsive_css .= '@media (max-width:1023px){' . $grid_sel . '{grid-template-columns:' . sgs_sanitize_grid_template( $grid_template_tablet ) . '}}';
 					}
 					if ( '' !== sgs_sanitize_grid_template( $grid_template_mobile ) ) {
-						$responsive_css .= '@media (max-width:599px){.' . $uid . '{grid-template-columns:' . sgs_sanitize_grid_template( $grid_template_mobile ) . '}}';
+						$responsive_css .= '@media (max-width:599px){' . $grid_sel . '{grid-template-columns:' . sgs_sanitize_grid_template( $grid_template_mobile ) . '}}';
 					}
 
 					// QB-1: Responsive gridTemplateRows — section + layout kinds.
@@ -959,12 +954,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// This matches the child div emitted at the __inner guard (line ~980) and
 				// correctly scopes the rules to the instance via the uid class prefix.
 				if ( $has_band_responsive ) {
-					// When the block has a grid/flex layout, the band lives on the
-					// outer container itself (no __inner emitted) — target uid directly.
-					// Layout-empty path keeps the child combinator for __inner as before.
-					$band_sel = ( '' !== $layout && null === $opt_wrap_inner )
-						? '.' . $uid
-						: '.' . $uid . '>.sgs-container__inner';
+					// The band (L2) ALWAYS lives on the __inner element now — __inner is
+					// emitted whenever a content band exists (layout-empty OR grid_on_inner),
+					// so band-responsive CSS always targets the child combinator.
+					$band_sel = '.' . $uid . '>.sgs-container__inner';
 
 					// Base band rule FIRST — when responsive band tiers exist, the base
 					// (max-width / margin-inline / padding / background) MUST live in the
@@ -1181,12 +1174,20 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			$inner_open  = '';
 			$inner_close = '';
-			$do_wrap     = null !== $opt_wrap_inner ? (bool) $opt_wrap_inner : ( '' !== $content_width && '' === $layout );
+			// Emit __inner when a content band exists: layout-empty (the original
+			// case) OR a grid/flex container with a band ($grid_on_inner). In the
+			// grid case the grid (L3) lives on the band element via $inner_grid_decls.
+			$do_wrap     = null !== $opt_wrap_inner ? (bool) $opt_wrap_inner : ( '' !== $content_width && ( '' === $layout || $grid_on_inner ) );
 			if ( $do_wrap && $has_band_responsive && '' !== $uid ) {
 				// Responsive band tiers exist: the base band styles were emitted into
 				// the uid stylesheet (band base rule before the @media tiers) — an
-				// inline base here would override every @media rule. Bare div only.
-				$inner_open  = '<div class="sgs-container__inner">';
+				// inline base here would override every @media rule. The grid decls
+				// ($inner_grid_decls — display:grid/align/gap, not responsive) are
+				// inline-safe, so add them here so the grid lands on the band element.
+				$io_style    = ( $grid_on_inner && $inner_grid_decls )
+					? ' style="' . esc_attr( implode( ';', $inner_grid_decls ) ) . '"'
+					: '';
+				$inner_open  = '<div class="sgs-container__inner"' . $io_style . '>';
 				$inner_close = '</div>';
 			} elseif ( $do_wrap ) {
 				// Build inline style for the band — max-width + margin-inline:auto always
@@ -1214,6 +1215,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					if ( '' !== $band_background ) {
 						$inner_style_parts[] = 'background-color:' . esc_attr( sgs_colour_value( $band_background ) );
 					}
+				}
+
+				// L3 grid decls (display:grid + base grid-template-columns + align + gap)
+				// live on the __inner band when this is a grid/flex container (FR-22-21).
+				if ( $grid_on_inner && $inner_grid_decls ) {
+					$inner_style_parts = array_merge( $inner_style_parts, $inner_grid_decls );
 				}
 
 				$inner_open  = '<div class="sgs-container__inner" style="' . esc_attr( implode( ';', $inner_style_parts ) ) . '">';
