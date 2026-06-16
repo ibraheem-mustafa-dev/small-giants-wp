@@ -635,12 +635,18 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 
 			// Grid column count classes — section + layout kinds.
+			// Emit a shorthand sgs-cols-* class ONLY when the corresponding tier has
+			// NO explicit grid-template ratio. When an explicit ratio is set the faithful
+			// @media grid-template-columns rule (below) carries it; the hardcoded
+			// repeat(N,1fr) !important shorthand class would otherwise crush that ratio.
 			if ( ( $is_section || $is_layout ) && 'grid' === $layout ) {
-				$classes[] = 'sgs-cols-' . absint( $columns );
-				if ( $columns_tablet ) {
+				if ( '' === trim( (string) $grid_template ) ) {
+					$classes[] = 'sgs-cols-' . absint( $columns );
+				}
+				if ( $columns_tablet && '' === trim( (string) $grid_template_tablet ) ) {
 					$classes[] = 'sgs-cols-tablet-' . absint( $columns_tablet );
 				}
-				if ( $columns_mobile ) {
+				if ( $columns_mobile && '' === trim( (string) $grid_template_mobile ) ) {
 					$classes[] = 'sgs-cols-mobile-' . absint( $columns_mobile );
 				}
 			}
@@ -791,13 +797,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$responsive_css .= '@media (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';
 				}
 				if ( $gap_mobile ) {
-					$responsive_css .= '@media (max-width:599px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_mobile ) . '}}';
+					$responsive_css .= '@media (max-width:767px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_mobile ) . '}}';
 				}
 
 				// Responsive min-height — section kind. Base + variants all emit via
 				// the uid selector so source-order + @media decide the winner per
 				// viewport (an inline base would override every @media rule). Cascade:
-				// base (all) → tablet (≤1023) → mobile (≤599), later wins at narrower.
+				// base (all) → tablet (≤1023) → mobile (≤767), later wins at narrower.
 				if ( $has_responsive_min_height ) {
 					if ( '' !== $min_height ) {
 						$responsive_css .= '.' . $uid . '{min-height:' . $min_height . '}';
@@ -806,7 +812,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{min-height:' . $min_height_tablet . '}}';
 					}
 					if ( '' !== $min_height_mobile ) {
-						$responsive_css .= '@media (max-width:599px){.' . $uid . '{min-height:' . $min_height_mobile . '}}';
+						$responsive_css .= '@media (max-width:767px){.' . $uid . '{min-height:' . $min_height_mobile . '}}';
 					}
 				}
 
@@ -831,12 +837,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					if ( $tablet_padding_decls ) {
 						// !important: the base padding is WP-native (style engine) and
 						// lands INLINE on the wrapper — a plain @media class rule can
-						// never beat it. Tiers are viewport-scoped overrides; at ≤599px
+						// never beat it. Tiers are viewport-scoped overrides; at ≤767px
 						// the mobile rule (same importance, later source) wins.
 						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{' . implode( ' !important;', $tablet_padding_decls ) . ' !important}}';
 					}
 
-					// Mobile (≤599px).
+					// Mobile (≤767px).
 					$mobile_padding_decls = array();
 					if ( '' !== $padding_top_mobile ) {
 						$mobile_padding_decls[] = 'padding-top:' . $padding_top_mobile;
@@ -851,7 +857,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$mobile_padding_decls[] = 'padding-left:' . $padding_left_mobile;
 					}
 					if ( $mobile_padding_decls ) {
-						$responsive_css .= '@media (max-width:599px){.' . $uid . '{' . implode( ' !important;', $mobile_padding_decls ) . ' !important}}';
+						$responsive_css .= '@media (max-width:767px){.' . $uid . '{' . implode( ' !important;', $mobile_padding_decls ) . ' !important}}';
 					}
 				}
 
@@ -877,7 +883,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{' . implode( ' !important;', $tablet_margin_decls ) . ' !important}}';
 					}
 
-					// Mobile (≤599px).
+					// Mobile (≤767px).
 					$mobile_margin_decls = array();
 					if ( '' !== $margin_top_mobile ) {
 						$mobile_margin_decls[] = 'margin-top:' . $margin_top_mobile;
@@ -892,7 +898,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$mobile_margin_decls[] = 'margin-left:' . $margin_left_mobile;
 					}
 					if ( $mobile_margin_decls ) {
-						$responsive_css .= '@media (max-width:599px){.' . $uid . '{' . implode( ' !important;', $mobile_margin_decls ) . ' !important}}';
+						$responsive_css .= '@media (max-width:767px){.' . $uid . '{' . implode( ' !important;', $mobile_margin_decls ) . ' !important}}';
 					}
 				}
 
@@ -915,7 +921,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				if ( '' !== $width_mode_mobile ) {
 					$decl = $width_mode_to_css( $width_mode_mobile );
 					if ( '' !== $decl ) {
-						$responsive_css .= '@media (max-width:599px){.' . $uid . '{' . $decl . '}}';
+						$responsive_css .= '@media (max-width:767px){.' . $uid . '{' . $decl . '}}';
 					}
 				}
 				if ( '' !== $width_mode_tablet ) {
@@ -937,7 +943,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{background-image:url(' . esc_url( $bg_image_tablet['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
 					}
 					if ( ! empty( $bg_image_mobile['url'] ) ) {
-						$responsive_css .= '@media (max-width:599px){.' . $uid . '{background-image:url(' . esc_url( $bg_image_mobile['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
+						$responsive_css .= '@media (max-width:767px){.' . $uid . '{background-image:url(' . esc_url( $bg_image_mobile['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
 					}
 				}
 
@@ -955,7 +961,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$responsive_css .= '@media (max-width:1023px){' . $grid_sel . '{grid-template-columns:' . sgs_sanitize_grid_template( $grid_template_tablet ) . '}}';
 					}
 					if ( '' !== sgs_sanitize_grid_template( $grid_template_mobile ) ) {
-						$responsive_css .= '@media (max-width:599px){' . $grid_sel . '{grid-template-columns:' . sgs_sanitize_grid_template( $grid_template_mobile ) . '}}';
+						$responsive_css .= '@media (max-width:767px){' . $grid_sel . '{grid-template-columns:' . sgs_sanitize_grid_template( $grid_template_mobile ) . '}}';
 					}
 
 					// QB-1: Responsive gridTemplateRows — section + layout kinds.
@@ -963,7 +969,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{grid-template-rows:' . sgs_sanitize_grid_template( $grid_template_rows_tablet ) . '}}';
 					}
 					if ( '' !== sgs_sanitize_grid_template( $grid_template_rows_mobile ) ) {
-						$responsive_css .= '@media (max-width:599px){.' . $uid . '{grid-template-rows:' . sgs_sanitize_grid_template( $grid_template_rows_mobile ) . '}}';
+						$responsive_css .= '@media (max-width:767px){.' . $uid . '{grid-template-rows:' . sgs_sanitize_grid_template( $grid_template_rows_mobile ) . '}}';
 					}
 				}
 
@@ -1011,7 +1017,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$responsive_css .= '@media (max-width:1023px){' . $band_sel . '{max-width:' . $content_width_tablet . '}}';
 					}
 					if ( '' !== $content_width_mobile ) {
-						$responsive_css .= '@media (max-width:599px){' . $band_sel . '{max-width:' . $content_width_mobile . '}}';
+						$responsive_css .= '@media (max-width:767px){' . $band_sel . '{max-width:' . $content_width_mobile . '}}';
 					}
 
 					// Band padding — tablet tier (≤1023px).
@@ -1032,7 +1038,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$responsive_css .= '@media (max-width:1023px){' . $band_sel . '{' . implode( ';', $band_tablet_decls ) . '}}';
 					}
 
-					// Band padding — mobile tier (≤599px).
+					// Band padding — mobile tier (≤767px).
 					$band_mobile_decls = array();
 					if ( '' !== $band_padding_top_mobile ) {
 						$band_mobile_decls[] = 'padding-top:' . $band_padding_top_mobile;
@@ -1047,7 +1053,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$band_mobile_decls[] = 'padding-left:' . $band_padding_left_mobile;
 					}
 					if ( $band_mobile_decls ) {
-						$responsive_css .= '@media (max-width:599px){' . $band_sel . '{' . implode( ';', $band_mobile_decls ) . '}}';
+						$responsive_css .= '@media (max-width:767px){' . $band_sel . '{' . implode( ';', $band_mobile_decls ) . '}}';
 					}
 				}
 			}

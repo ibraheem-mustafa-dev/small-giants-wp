@@ -85,7 +85,7 @@
 	.sgs-cols-mobile-3 { grid-template-columns: repeat(3, 1fr) !important; }
 }
 
-@media (min-width: 768px) and (max-width: 1024px) {
+@media (min-width: 768px) and (max-width: 1023px) {
 	.sgs-cols-tablet-1 { grid-template-columns: 1fr !important; }
 	.sgs-cols-tablet-2 { grid-template-columns: repeat(2, 1fr) !important; }
 	.sgs-cols-tablet-3 { grid-template-columns: repeat(3, 1fr) !important; }
