@@ -834,7 +834,7 @@ def _lift_root_supports_to_style(
                 # slot would produce invalid serialised block output.
                 # Result: gradient drop is intentional until a destination attr or WP
                 # gradient-preset lookup is added to the SGS pipeline.
-                _trace("gradient_background_gap", {
+                _trace("gradient_background_gap", **{
                     "reason": "CSS gradient background has no converter destination — "
                               "no style.color.gradient in _root_lift_rules; "
                               "WP gradient preset lookup not available at clone time. "
@@ -1806,7 +1806,7 @@ def _lift_typography_to_block_attrs(
                     effective_unit = unit if unit else ("unitless" if unit_attr else unit)
                     if effective_unit:
                         result.setdefault(mobile_unit_attr, effective_unit)
-            _trace("typo_mobile_rescued", {
+            _trace("typo_mobile_rescued", **{
                 "css_prop": css_prop,
                 "primary_attr": primary_attr,
                 "mobile_attr": mobile_attr,
@@ -3302,7 +3302,7 @@ def _atomic_attrs_for(node: Tag, slug: str, allow_text_fallback: bool = True, cs
                     attrs_m["borderRadiusUnit"] = _br_m.group(2) or "px"
                 else:
                     # Non-simple shorthand (e.g. "8px 0 0 8px") — gap candidate.
-                    _trace("media_border_radius_gap", {
+                    _trace("media_border_radius_gap", **{
                         "reason": "complex border-radius shorthand not lifted to per-corner attrs",
                         "raw": _br_raw,
                     })
@@ -3335,7 +3335,7 @@ def _atomic_attrs_for(node: Tag, slug: str, allow_text_fallback: bool = True, cs
                 # gap candidate — log if order appeared on a non-flex/grid parent.
                 _order_check = _strip_important(_m_base.get("order", ""))
                 if _order_check:
-                    _trace("media_order_gap", {
+                    _trace("media_order_gap", **{
                         "reason": "order declared but parent is not flex/grid — lift skipped (dead lift)",
                         "raw": _order_check,
                     })
