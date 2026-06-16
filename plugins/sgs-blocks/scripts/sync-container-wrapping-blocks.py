@@ -1107,13 +1107,19 @@ def main() -> int:
         "content": {
             "sgs/info-box", "sgs/testimonial", "sgs/quote",
             "sgs/tab", "sgs/accordion-item", "sgs/form-step", "sgs/notice-banner",
-            "sgs/option-picker", "sgs/team-member", "sgs/mobile-nav",
+            "sgs/option-picker", "sgs/mobile-nav",
             # product-faq + product-faq-item added 2026-06-10 (new since D160 — F2/D197).
             "sgs/product-faq", "sgs/product-faq-item",
             # product-card REMOVED 2026-06-10: the D204 built-in-element rebuild made it
             # a standalone block (no sgs/container InnerBlocks wrapper) — it is no longer
             # structurally container-bearing, so it is styled directly (own color+border
             # supports) rather than mirror-managed.
+            # team-member REMOVED 2026-06-16 (D228): structurally identical to product-card
+            # post scalar-rebuild — it uses SGS_Container_Wrapper for its OUTER shell but has
+            # built-in/scalar children (no sgs/container InnerBlocks) + its own color/border/
+            # typography supports, so it styles directly rather than mirror-managed. The
+            # container-bearing detection correctly excludes both; the roster just wasn't
+            # updated after team-member's scalar rebuild (the Stage-11 sync WARN root cause).
         },
     }
     got: Dict[str, Set[str]] = {"section": set(), "layout": set(), "content": set()}
