@@ -432,3 +432,29 @@ Cross-family council (sonnet ground-truth verifier + haiku spec-fidelity checker
 - Subscriptions / subscribe-and-save / one-click reorder / build-a-box / A-B price hooks — Spec 30 Open Question 4 (council: subscriptions = the food-DTC deal-winner); Bean's scope call + extension-licence decision. Stays parked roadmap.
 - Account page styling (FR: "none — CSS only, deferred") — not in this phase.
 - GA4 funnel events on the configurator — parked (Spec 27 sibling).
+
+## Ground truth (Step 1 probe — 2026-06-11, canary sandybrown, WC 10.x / WP 7.0)
+
+Live state of every precondition each downstream FR rests on. Branch `feat/spec30-p2-shop-schema` created from `origin/main` (`f8eb532b`). Working tree clean — the co-active cloning thread already consolidated to main and released its worktree (the next-session-prompt's co-active-hold warning is now STALE; no uncommitted converter index here).
+
+**FR-30-8 (price coupling) — reference-price state on fixture 540:**
+- Product 540: `post_status=publish`, `post_type=product`, variable (48-SKU). Title "Mama's Test Box — 48 SKU fixture".
+- `_sgs_base_price_pence = 0`; `_sgs_base_price_attested = ` (empty/false).
+- ⇒ **No attested single-unit reference on 540 → the strikethrough/savings BADGE is correctly a NO-OP** (`verify-feature-flag-before-asserting-defect`; plan Step 2 Edge + Pre-emptive decision encode this). The per-unit + value-ladder ROWS still render (they don't need a reference); only the "vs buying singly" savings framing is gated on attestation. **To live-test the badge/savings path, seed `_sgs_base_price_pence>0` + `_sgs_base_price_attested='1'` on a fixture** via the webroot one-shot before QA Gate A; test the no-badge path on 540 as-is.
+- Tax: `woocommerce_calc_taxes = no`, `woocommerce_tax_display_shop = excl` ⇒ no tax math; headline + per-unit are trivially tax-consistent (display as-entered). FR-30-8 "tax-consistent" criterion is satisfied by reusing the WC display setting, not by computing tax.
+
+**FR-30-6 (searchable filter) — term population:**
+- `woocommerce_attribute_lookup_enabled = no`. ⇒ Core filtering uses taxonomy queries, NOT the lookup table. FR-30-6's visibility-scoped `get_terms()` approach is correct regardless; do NOT rely on the lookup table. The 16-vs-15-term boundary fixture still must be SEEDED (canary has no 16+-term attribute) — Step 6 Tooling.
+
+**FR-30-10 (reviews) — source state: LIVE + POPULATED.**
+- `sgs_trustpilot_sync_settings`: business_url `uk.trustpilot.com/review/mamasmunches.com`, auto_sync weekly, `last_sync_status=success`, `last_sync_message="Synced 5 reviews, TrustScore 4.1."` (last sync 2026-06-08).
+- `sgs_trustpilot_data` present: TrustScore 4.1, 5 reviews, captured 2026-06-08 via JSON-LD sync.
+- ⇒ **FR-30-10 populated state is live-testable NOW**; the empty-state toggle still needs testing by disabling/clearing the source on a throwaway probe. **Resolves the step-3⟂step-9 dependency: real review data exists ⇒ the FR-30-9 `aggregateRating` gate (`build_aggregate_rating()`) WILL emit (not omit/stub).**
+
+**FR-30-9 (schema) — shipped vs net-new (confirms the qc-council reclassification):**
+- SHIPPED emitters: `class-product-schema.php` (PDP Product/Offer; `build_aggregate_rating()` gate at :302), `class-product-item-list.php` (Shop ItemList + the D204 draft-leak guard `is_publicly_listable()` at :159 — single source of truth, confirmed), `product-faq-schema.php` (`sgs_emit_faq_page_jsonld()` at :37 — FAQPage to remove, Step 9E), `review-schema.php` (sgs/testimonial — NOT the PDP aggregateRating), `class-product-feed.php` + `class-llms-txt.php` (own `X-Robots-Tag: noindex`, unrelated to store-page noindex).
+- NET-NEW confirmed ABSENT (grep-zero): `returnPolicyCountry` (Step 9B — source `default_country=GB`), Organization/WebSite emitter (Step 9C), cart/checkout/account `noindex` via `is_cart()/is_checkout()/is_account_page()` (Step 9D — zero schema/noindex hits on those conditionals). `SearchAction`: zero anywhere ✓.
+
+**Go-live (FR-30-13):** `woocommerce_coming_soon = no` (guests see the store — not masking pages); `default_country = GB`.
+
+**Net effect on the plan:** no step falsified; all 8 qc-council corrections hold against live state. One new actionable: FR-30-8 badge path needs a seeded attested-reference fixture (the no-badge path is testable on 540 directly).
