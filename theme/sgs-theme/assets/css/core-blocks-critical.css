@@ -207,22 +207,14 @@ body .is-root-container > .wp-block {
 
 /* ─── HERO BLOCK ─── */
 
-/*
- * When a hero block is placed directly in the site root (no container),
- * width:100% fills the full viewport — correct.
- *
- * When placed INSIDE a Group/container block, the hero should stay within
- * that container's bounds. We remove any breakout margin that a parent's
- * alignfull layout might introduce, so the hero fills the container exactly
- * rather than escaping to 100vw.
- */
-.wp-block-group .wp-block-sgs-hero,
-.wp-block-column .wp-block-sgs-hero {
-	margin-left: 0 !important;
-	margin-right: 0 !important;
-	width: 100% !important;
-	max-width: 100% !important;
-}
+/* The prior ".wp-block-group .wp-block-sgs-hero { max-width:100% !important; ... }"
+ * containment hack was REMOVED (Bean 2026-06-16): the hero is always a self-
+ * contained widthMode:full alignfull container (built-in wrapper, like trust-bar)
+ * — it is never nested inside a Group/column, so the "keep it in bounds" rule had
+ * no valid case and wrongly capped the top-level full-bleed hero (the <main> is a
+ * wp-block-group, so this caught every hero). The hero now uses the universal
+ * alignfull mechanism (max-width:none, WP-native breakout) identically to every
+ * other full-bleed SGS container. */
 
 /* ─── NAVIGATION — above-the-fold base styles ─── */
 
