@@ -6,6 +6,30 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-16 — D228: hero-recovery + reconciliation + grid de-cheat + 4 corrected agent-mistakes (docs hardened)
+
+**D228 — A long session that recovered a missing-hero bug, reconciled all loose branches into main, fixed two visible bugs + de-cheated the container grid, and (after several Bean corrections) hardened the docs against the wrong mental models the agent kept reaching for.**
+
+SHIPPED + on `main` (live-verified on canary page 8):
+- **Converter `_trace()` dict-positional bug** (`convert.py`, commit `2e437a4d`): four `_trace("x",{dict})` calls passed a dict as a 2nd positional to `_trace(stage,**kwargs)` → `TypeError` → caught as `unmatched-cv2-softfail` → whole sections emitted EMPTY. Dropped the entire sgs/hero (+ featured-product + brand) off the Mama's homepage → page 8 had NO hero. Fix: `**{`. Extract 265→621 attrs; hero now emits `wp:sgs/hero`. (Lesson: an empty cloned section is usually a cv2 soft-fail — read extract.json `status` + trace.jsonl exception FIRST.)
+- **Branch reconciliation**: 11 unpushed cloning-thread commits + 2 fixes fast-forwarded to `origin/main`; `feat/spec30-p2-shop-schema` merged (its code was already cherry-picked; merge formalised it + 3 doc files) → single clean `main`, all feat branches deleted, stale stash dropped (commit `9cbdddb1`).
+- **Issue A** (commit `7736432c`): removed 2 hero-specific full-bleed CSS hacks (`.wp-block-group .wp-block-sgs-hero{max-width:100%!important}` containment + `margin-inline:-24px` breakout). Hero now uses universal `alignfull` identically to trust-bar (right-gap 55px→15px, bg spans full).
+- **Issue B** (commit `437b2f82`): `ctas`/`buttons` (plural group terms) were aliased to BOTH the `button` slot AND `button-group`; first-writer-wins resolved `__ctas` to `sgs/button` → walker fell back to a redundant `sgs/container` wrapping the multi-button. Removed them from `button` (kept singular `cta`) → `resolve_slug_from_bem('sgs-hero__ctas')→sgs/multi-button`, no double-nesting. DB-first via dated `migrations/2026-06-16-button-group-alias-disambiguation.py`.
+
+STAGED + deployed + live-verified, commit blocked by the visual-diff pre-commit gate (pending /sgs-clone+parity report):
+- **Wrapper grid de-cheat**: (1) `sgs-cols-tablet/mobile-N` classes forced `repeat(N,1fr) !important`, crushing the faithful explicit `gridTemplateColumns*` ratio → now emit the shorthand class for a tier ONLY when that tier has no explicit ratio. (2) device-tier mobile breakpoint `599→767` (unify with `sgs-cols-*` 767; tablet 1023 kept) → the **768/1024 documented standard**. `container/style.css` tablet `1024→1023`, block.json `0.2.0→0.2.1`.
+
+DECISIONS / corrections (Bean-driven — the agent's wrong mental models, now guarded in docs):
+- **Device-tier ≠ visual breakpoints** (Bean): the SGS Mobile/Tablet/Desktop attr system must use 768/1024 consistently; an arbitrary VISUAL breakpoint (`min-width:600`, WP-columns `781`) is legitimate + must NOT be blanket-changed. A Haiku blanket-sweep of all 599/600 broke WP's 781 column breakpoint → **reverted entirely**; only the device-tier wrapper+container fix kept.
+- **Hardcoded wrapper defaults are CHEATS to remove, not blockers** (Bean): the agent framed the `!important` sgs-cols override + align default + fixed breakpoint as "4 blockers preventing the hero fold"; they are R-22-1 violations to delete. The pipeline transfers the draft's CSS faithfully; it never injects anticipated defaults.
+- **Composites are NEVER a separate system** (Bean): hero uses the universal `SGS_Container_Wrapper` like every composite; per-block hacks are bugs.
+- **Ground variant setups in the variant DB** (Bean): `variant_slots`/`blocks.variant_attr` DEFINE each variant's setup (sgs/hero split = gridTemplateColumns/splitGap/splitImage*); query, don't guess from attrs.
+- New memory guards: `feedback_device_tier_vs_visual_breakpoints_are_distinct`, `feedback_wrapper_hardcoded_defaults_are_cheats_to_remove_not_blockers`, `feedback_ground_in_variant_db_for_variant_block_setups`, `feedback_empty_section_check_cv2_softfail_trace_first`, `feedback_l1_l2_l3_are_extraction_side_only_css_survives_regardless`. CLAUDE.md architecture rules added (3 new sections).
+
+NEXT SESSION (Bean-scoped): the full grid/container-extraction rebuild — analyse `sgs/container` block.json + DB (variant_slots, property_suffixes, modifier_suffixes) + `SGS_Container_Wrapper` end-to-end, so the converter faithfully maps EVERY value the container can hold (and the draft's equivalent wrappers hold) into EVERY composite, with correct responsive. First concrete step = the hero fold (Stage 2: drop hero manual grid + `wrap_inner=false`, route grid through the now-faithful helper) → Stage 3 (product-card) → Stage 4 (remove `wrap_inner` option). The de-cheat foundation is in place. Also pending: converter `_GRID_TABLET_BP=600→768` (device-tier mapping pairing — deferred to the rebuild with the full analysis).
+
+---
+
 ## 2026-06-14 (cloning thread) — D227: Task-1 doc-read+align complete — contentSize 780→1200/1400 restored (Bean decision), 13-doc alignment pass, audit register's own over-stated claims corrected
 
 **D227 — The mandated comprehensive doc-read+align ran. The two CRITICAL Bean-decision findings resolved: one was a real regression (fixed), one was a false alarm by the audit agent. Doc-alignment applied across 13 docs, and the verify-first mandate corrected the audit register itself where it over-stated.**
