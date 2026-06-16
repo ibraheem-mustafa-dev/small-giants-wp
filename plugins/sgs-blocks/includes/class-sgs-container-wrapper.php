@@ -263,9 +263,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$band_padding_bottom_mobile = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentBandPaddingBottomMobile'] ?? '' ) : '';
 			$band_padding_left_mobile   = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentBandPaddingLeftMobile'] ?? '' ) : '';
 
-			// Band background — section + layout kinds only; sanitise via sgs_colour_value
-			// (returns a CSS-safe string or empty; reuse the same sanitiser as gridItemBackground).
-			$band_background = ( $is_section || $is_layout ) ? ( $attributes['contentBandBackground'] ?? '' ) : '';
+			// Band background — ALL kinds (Bean-locked 2026-06-16: band-level CSS must
+			// survive cloning regardless of block kind; the content-kind carve-out
+			// dropped content-band background on content composites). Sanitise via
+			// sgs_colour_value (returns a CSS-safe string or empty; reuse the same
+			// sanitiser as gridItemBackground).
+			$band_background = $attributes['contentBandBackground'] ?? '';
 
 			// Responsive content-width overrides for the band (tablet / mobile).
 			$content_width_tablet = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentWidthTablet'] ?? '' ) : '';
@@ -402,7 +405,22 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// section background spans full width while the content caps + centres.
 			// Base grid/gap decls collected into $inner_grid_decls (emitted on the
 			// __inner below); responsive grid/gap tiers route to $grid_sel.
-			$grid_on_inner    = ( ( 'grid' === $layout || 'flex' === $layout ) && '' !== $content_width && null === $opt_wrap_inner );
+			// Band-presence predicate (Bean-locked 2026-06-16): true when ANY band-level
+			// CSS exists — content-width, band padding (any side), or band background.
+			// Drives both grid-on-inner folding and __inner existence so band CSS
+			// survives cloning regardless of which draft layer it came from or the
+			// block's kind. Defined here because all five band vars are read above
+			// ( $content_width ~L196, $band_padding_* ~L251-254, $band_background ~L268 ).
+			$has_band_props = (
+				'' !== $content_width ||
+				'' !== $band_padding_top ||
+				'' !== $band_padding_right ||
+				'' !== $band_padding_bottom ||
+				'' !== $band_padding_left ||
+				'' !== $band_background
+			);
+
+			$grid_on_inner    = ( ( 'grid' === $layout || 'flex' === $layout ) && $has_band_props && null === $opt_wrap_inner );
 			$inner_grid_decls = array();
 
 			// gap — section + layout kinds. When responsive gap tiers exist the base
@@ -1174,10 +1192,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			$inner_open  = '';
 			$inner_close = '';
-			// Emit __inner when a content band exists: layout-empty (the original
-			// case) OR a grid/flex container with a band ($grid_on_inner). In the
-			// grid case the grid (L3) lives on the band element via $inner_grid_decls.
-			$do_wrap     = null !== $opt_wrap_inner ? (bool) $opt_wrap_inner : ( '' !== $content_width && ( '' === $layout || $grid_on_inner ) );
+			// Emit __inner whenever ANY band-level CSS exists (Bean-locked 2026-06-16):
+			// content-width, band padding, or band background — NOT only when
+			// contentWidth is set and NOT gated by block-kind. $grid_on_inner implies
+			// $has_band_props, so the grid case is covered (grid L3 lives on the band
+			// element via $inner_grid_decls). A grid with NO band props → $has_band_props
+			// false → grid stays full-bleed on the outer, no __inner (trust-bar-style
+			// full-bleed grids unchanged). The wrap_inner caller override is byte-
+			// identical (hero-split / product-card still depend on it).
+			$do_wrap     = null !== $opt_wrap_inner ? (bool) $opt_wrap_inner : $has_band_props;
 			if ( $do_wrap && $has_band_responsive && '' !== $uid ) {
 				// Responsive band tiers exist: the base band styles were emitted into
 				// the uid stylesheet (band base rule before the @media tiers) — an
@@ -1190,31 +1213,37 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$inner_open  = '<div class="sgs-container__inner"' . $io_style . '>';
 				$inner_close = '</div>';
 			} elseif ( $do_wrap ) {
-				// Build inline style for the band — max-width + margin-inline:auto always
-				// present when contentWidth is set; base band padding + background appended
+				// Build inline style for the band — max-width + margin-inline:auto when
+				// contentWidth is set (guarded: __inner can now exist for band padding /
+				// background with NO content-width, so an unguarded 'max-width:' would
+				// emit a malformed empty value); base band padding + background appended
 				// when set. Responsive overrides for these are emitted via the uid @media
 				// CSS block above (band selector .uid > .sgs-container__inner).
-				$inner_style_parts = array( 'max-width:' . esc_attr( $content_width ), 'margin-inline:auto' );
+				$inner_style_parts = array();
+				if ( '' !== $content_width ) {
+					$inner_style_parts[] = 'max-width:' . esc_attr( $content_width );
+					$inner_style_parts[] = 'margin-inline:auto';
+				}
 
-				// Base band padding (desktop tier — section + layout kinds).
-				if ( $is_section || $is_layout ) {
-					if ( '' !== $band_padding_top ) {
-						$inner_style_parts[] = 'padding-top:' . esc_attr( $band_padding_top );
-					}
-					if ( '' !== $band_padding_right ) {
-						$inner_style_parts[] = 'padding-right:' . esc_attr( $band_padding_right );
-					}
-					if ( '' !== $band_padding_bottom ) {
-						$inner_style_parts[] = 'padding-bottom:' . esc_attr( $band_padding_bottom );
-					}
-					if ( '' !== $band_padding_left ) {
-						$inner_style_parts[] = 'padding-left:' . esc_attr( $band_padding_left );
-					}
-					// Band background — sanitise via sgs_colour_value() (same sanitiser as
-					// gridItemBackground and overlay colour to remain consistent).
-					if ( '' !== $band_background ) {
-						$inner_style_parts[] = 'background-color:' . esc_attr( sgs_colour_value( $band_background ) );
-					}
+				// Base band padding + background (desktop tier — ALL kinds; Bean-locked
+				// 2026-06-16: the section/layout-only carve-out dropped content-band CSS
+				// on content-kind composites. Each property keeps its own non-empty guard.
+				if ( '' !== $band_padding_top ) {
+					$inner_style_parts[] = 'padding-top:' . esc_attr( $band_padding_top );
+				}
+				if ( '' !== $band_padding_right ) {
+					$inner_style_parts[] = 'padding-right:' . esc_attr( $band_padding_right );
+				}
+				if ( '' !== $band_padding_bottom ) {
+					$inner_style_parts[] = 'padding-bottom:' . esc_attr( $band_padding_bottom );
+				}
+				if ( '' !== $band_padding_left ) {
+					$inner_style_parts[] = 'padding-left:' . esc_attr( $band_padding_left );
+				}
+				// Band background — sanitise via sgs_colour_value() (same sanitiser as
+				// gridItemBackground and overlay colour to remain consistent).
+				if ( '' !== $band_background ) {
+					$inner_style_parts[] = 'background-color:' . esc_attr( sgs_colour_value( $band_background ) );
 				}
 
 				// L3 grid decls (display:grid + base grid-template-columns + align + gap)
