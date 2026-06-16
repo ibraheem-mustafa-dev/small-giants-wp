@@ -2,93 +2,51 @@
 doc_type: handoff
 project: small-giants-wp
 thread: cloning-pipeline
-session_date: 2026-06-14
+session_date: 2026-06-16
 ---
 
-# Session Handoff — 2026-06-14 (D227 — Tasks 1+2 of full-fidelity plan: doc-align + defect register)
+# Session Handoff — 2026-06-16
 
 ## Completed This Session
-1. **Task 1 — doc-read + align (D227, commit `7b112d3a`).** Resolved the 2 critical Bean-decision findings from the D226 audit: (a) content-width — live `theme.json` had drifted to `contentSize:780px`; restored to documented `1200px/1400px` (Bean chose widen-global); (b) button-presets — FALSE ALARM, WP generates the vars natively from `theme.json` (confirmed populated), admin file deliberately deleted D24.
-2. **Count-drift sweep across 8 docs** (background agent): `block_composition` 189→197, container roster →31, `slots`-element →99, `block_attributes` →2,935, `property_suffixes`→124, +`sgs/trust-bar` in class-section rosters.
-3. **Remaining doc-alignment (agent 2, all HIGH claims code-grep-verified):** Spec 02 info-box/testimonial-slider/cta-section/process-steps attr corrections; Spec 22 FR-22-9/19/5.1; Spec 29 Method-2 callout; Spec 20 9c-before-4k; docs-registry WRAPPER-CSS entry added.
-4. **Verify-first corrected the audit register itself:** the audit's Spec-21 artefact "not emitted" claims were over-stated — `stage-7/4i/4j.json` ARE emitted (by `sgs-clone-orchestrator.py`, not `converter_v2/`).
-5. **Task 2 — clone-vs-draft defect register (commit `33feb5ab`).** 4 parallel agents diffed the live clone vs draft section-by-section → `.claude/reports/2026-06-14-clone-vs-draft-defect-register.md` (~44 real defects), replacing the 55-issue ledger.
-6. **Synthesised 5 systemic converter families** (fix once, fix many): B malformed `unitless` line-heights · C mobile heading tier dropped · D max-width dropped · E image styling dropped · F grid breakpoint mismatch. Plus 5 block-match decisions + 7 header/footer template-part gaps.
-7. **Live-probed page 8 @1440+@502 (R-22-11):** CONFIRMED C/D/E/IN-E/ingredients-2-col/disclaimer; CORRECTED 2 false positives (label-as-pill computes transparent; testimonial author font matches) — killed before a wasted build wave.
-8. **Next-session-prompt rewritten** for Task 3 (fix-by-family) with all structural defences carried forward + extended (commit `90860192`).
+1. **Recovered the missing hero (converter `_trace` bug)** — four `_trace("x",{dict})` calls passed a dict as a 2nd positional to `_trace(stage,**kwargs)` → `TypeError` → caught as `unmatched-cv2-softfail` → whole sections emitted EMPTY. Killed the entire sgs/hero (+ featured-product + brand) off the Mama's homepage. Fix `**{` (commit `2e437a4d`). Extract 265→621 attrs; hero now emits `wp:sgs/hero`, live on page 8.
+2. **Full branch reconciliation** — 11 unpushed cloning-thread commits + fixes fast-forwarded to main; `feat/spec30-p2-shop-schema` merged (code already cherry-picked; formalised + 3 doc files, `9cbdddb1`). Single clean main, all feat branches deleted, stale stash dropped.
+3. **Issue A** (`7736432c`) — removed 2 hero-specific full-bleed CSS hacks (`.wp-block-group .wp-block-sgs-hero{max-width:100%!important}` + `margin-inline:-24px`). Hero uses universal `alignfull` like trust-bar (right gap 55px→15px). Live-verified.
+4. **Issue B** (`437b2f82`) — `ctas`/`buttons` aliased to BOTH `button` + `button-group`; resolved `__ctas`→`sgs/button` → redundant `sgs/container` wrapping the multi-button. Removed from `button` (kept singular `cta`) → no double-nesting. DB-first dated migration.
+5. **Wrapper grid de-cheat** (`e66f8973`) — (1) gate `sgs-cols-*` classes on empty ratio so the faithful explicit `gridTemplateColumns*` ratio wins (was crushed by `repeat(N,1fr)!important`); (2) device-tier mobile breakpoint 599→767 (768/1024 standard). Visual-diff report `reports/visual-diff/container-2026-06-16.md` (PASS).
+6. **Converter `_GRID_TABLET_BP` 600→768** (`f997af25`) — device-tier extraction mapping now pairs with the wrapper's 768/1024.
+7. **Stage-11 container-wrapping WARN fixed** (`70bcf164`) — `sgs/team-member` is structurally identical to product-card (scalar rebuild, own supports, wrapper outer shell, NO sgs/container InnerBlocks) → removed from the container-mirror roster like product-card (D204). Sync now `[VALIDATION PASS]`.
+8. **Docs hardened (D228)** (`98859a6e`) — 3 new CLAUDE.md architecture rules + 3 memory guards against this session's wrong mental models; `/qc-council` validated them (2 GUARDED, 3 WEAK gaps fixed). decisions.md D228; mistakes.md 2 stubs. /sgs-update ran (DB synced, 196-block reference regenerated).
 
 ## Current State
-- **Branch:** `main` at `90860192` (+ next-session-prompt heading fix, committed at handoff close)
-- **Tests:** no suite run — changes are docs + one theme.json config value
-- **Build:** n/a (converter unchanged; no `npm run build` needed)
-- **Uncommitted changes:** 6 pre-existing files NOT from this session (phase4 reports, `current-clone-page-source.html` [read-only input], `theme-snapshot.json`, an untracked gap-analysis report) — deliberately left
-- **Deploy status:** theme.json width fix committed but NOT yet deployed to page 8 (Task 3 step 0)
+- **Branch:** main at `70bcf164` (in sync with origin/main)
+- **Tests:** conformance 43 pass (Gate A); converter_v2 suite green
+- **Build:** passes (sgs-blocks webpack)
+- **Uncommitted changes:** none (auto-gen noise discarded)
+- **Deployed:** sandybrown canary page 8 (`?page_id=8`) reflects all fixes; hero renders, full-bleed correct.
 
 ## Known Issues / Blockers
-- The `contentSize 1200/1400` fix is committed-but-not-live-verified — page 8 still renders 780px until Task 3 step 0 deploys it.
-- decisions.md carries 6 pre-existing US spellings (lines 84/114/117) + 1 TBD in historical entries (not this session's D227) — noted, not rewritten (archived content).
+- Parity full-fidelity is mobile 61.82% / tablet 59.09% / desktop 55.45% (content 100%) — the grid/container-extraction rebuild (next session) closes the layout+css gap. Fidelity drops as viewport widens (desktop weakest).
+- Container-bearing detection in `sync-container-wrapping-blocks.py` only catches sgs/container-InnerBlocks blocks; wrapper-attr scalar blocks (team-member, product-card) must be hand-curated in the roster. Non-blocking; flagged.
 
 ## Next Priorities (in order)
-1. **Task 3 step 0** — deploy width fix + re-clone page 8 for a fresh live baseline (smallest first action).
-2. **Task 3 step 1** — resolve the 5 block-match decisions (DEC-1..5) with Bean.
-3. **Task 3 step 2** — fix the systemic families universally, biggest lever first (D → F → C → E → B), design-gated, live-verify per row.
-4. **Task 3b** — header/footer content gap (theme/data layer, not converter).
-5. **Task 4** — block.json selector auto-seed (design-gate, independent).
+1. **Grid/container-extraction rebuild** (Bean-scoped) — analyse `sgs/container` block.json + DB (variant_slots/property_suffixes/modifier_suffixes) + `SGS_Container_Wrapper` end-to-end so the converter faithfully maps EVERY container value (and draft-wrapper equivalent) into EVERY composite, with correct responsive.
+2. **Hero fold (Stage 2)** — first concrete step: drop hero manual grid + `wrap_inner=false`, route the split grid through the now-faithful helper (ground in `variant_slots`: split = gridTemplateColumns/splitGap). Then Stage 3 (product-card) → Stage 4 (remove `wrap_inner` option).
+3. **Then the family defect register** (Fam B/C/D/E/F per the prior register) — once the grid foundation is rebuilt.
 
 ## Files Modified
-| File path | What changed |
-|-----------|--------------|
-| theme/sgs-theme/theme.json | contentSize 780→1200, wideSize 1200→1400 |
-| CLAUDE.md (root) | DB-first counts: slots 103/99, block_attributes 2,935, container roster 31 |
-| .claude/decisions.md | +D227 |
-| .claude/specs/{00,02,20,21,22,29,WRAPPER-CSS-ROUTING-DESIGN-GATE}.md | count + attr + artefact alignment |
-| .claude/cloning-pipeline-flow.md, -stages.md | count alignment |
-| .claude/docs-registry.yaml | WRAPPER-CSS entry added |
-| .claude/reports/2026-06-14-clone-vs-draft-defect-register.md | NEW — Task 2 deliverable |
-| .claude/next-session-prompt.md | rewritten for Task 3 |
+| File | What changed |
+|------|--------------|
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | `_trace` `**{` fix (hero) + `_GRID_TABLET_BP` 600→768 |
+| `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php` | gate sgs-cols-* on empty ratio + 599→767 breakpoints |
+| `plugins/sgs-blocks/src/blocks/container/{style.css,block.json}` | sgs-cols tablet 1024→1023; version 0.2.1 |
+| `theme/sgs-theme/assets/css/{core-blocks,core-blocks-critical}.css` + `style.css` | removed 2 hero full-bleed hacks; v1.5.6 |
+| `plugins/sgs-blocks/scripts/uimax-tools/seed-slot-synonyms.py` + `migrations/2026-06-16-button-group-alias-disambiguation.py` | ctas/buttons → button-group only |
+| `plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py` | remove sgs/team-member from roster |
+| `CLAUDE.md` · `.claude/decisions.md` · `.claude/mistakes.md` | D228 architecture rules + decision + stubs |
 
 ## Notes for Next Session
-- The defect register's family view is the lever: ~32 of ~44 defects are converter-side and collapse into 5 families. Fix the family, not the instance (R-22-9).
-- Live-probe BEFORE believing any static-diff "defect" — an inline CSS-var declaration is not the rendered value (blub 355, instance of 207).
-- Fam D (max-width / class-section Method-2 gap) is the biggest lever and likely needs its own `/brainstorming` design session.
-- Header/footer gaps (HF-1..7) are theme template-part + SGS Site Info data, NOT converter bugs — different fix layer.
-
-## Next Session Prompt
-
-The full orchestration plan is already written to `.claude/next-session-prompt.md` (Task 3 fix-by-family, with per-step orchestration, the 5 block-match decisions, dependency graph, methodology guardrails, pre-flight ritual, Skills/MCP/Agents tables). The SessionStart hook auto-loads it. Key bindings below.
-
-## Skills to Invoke
-
-| Skill | When to use |
-|-------|-------------|
-| `/brainstorming` | Fam-D Method-2 routing shape + Task 4 schema design |
-| `/gap-analysis` | grade any unit/register vs acceptance before delivery |
-| `/lifecycle` | before any skill/agent/pipeline change |
-| `/research` (+ `/library-docs`) | WP/theme.json/block.json patterns (grid auto-fill, flex stretch) |
-| `/strategic-plan` | if Fam-D fix needs a formal phased plan |
-| `/adversarial-council` | MANDATORY on every shared-mechanism/converter change (Rule 7) |
-| `/qc-council` | MANDATORY before every converter/SGS-block/seeding commit (blub 255) |
-| `/subagent-driven-development` · `/sgs-clone` · `/sgs-update` · `/wp-blocks` · `/sgs-db` | per-family build / re-clone / reseed / schema ground truth |
-
-## MCP Servers & Tools
-
-| Tool | What to use it for |
-|------|-------------------|
-| Playwright (chrome-devtools fallback on "Browser already in use") | live page-8 computed-style probes; canary `?page_id=8` on `WP_URL_SANDYBROWN`, creds `.claude/secrets/sandybrown.env` |
-| `/wp-blocks` (`python ~/.claude/hooks/wp-blocks.py dump`) | block schema + attr TYPES |
-| `/sgs-db` (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py`) | roster / attrs / derived_selector / container_kind (DB-authoritative) |
-
-## Agents to Delegate To
-
-| Agent | When |
-|-------|------|
-| general-purpose (sonnet) | per-family build — NO commit/deploy authority, return uncommitted |
-| general-purpose (haiku / gemini-flash) | 2nd cross-family rater on /qc-council |
-| `wp-sgs-developer` | heavier block.json/render.php work (product-card, media attrs, composites) |
-| `design-reviewer` | visible-surface review at 375/768/1440 + Task 5 product-page redesign |
-
-## Research Approach
-Not required for Task 3 step 0-1. For step 2: use `/research-check` + `/library-docs` on specific WP patterns where unsure (CSS grid explicit-columns vs auto-fill for the ingredients 4-up; flex-column stretch for full-width CTA). Not a research-heavy session.
-
-## Guardrails
-Verify on the REAL page 8 (R-22-11) — emit-green ≠ live; live-probe before believing a static-diff defect. Fix by family (R-22-9). /adversarial-council before shared-mechanism changes + /qc-council per converter commit. Run BOTH conformance suites (Gate A `scripts/tests/test_converter_conformance.py` + `converter_v2/tests/`). Commit path-scoped (`-m` before `--`). Subagents implement; never `git checkout/restore/stash/reset/clean` the shared tree. D-ceiling D227.
+- **Device-tier vs visual breakpoints are DISTINCT** — the SGS Mobile/Tablet/Desktop attr system must be 768/1024; an arbitrary visual breakpoint (min-width:600, WP-columns 781) is legitimate and must NOT be blanket-changed.
+- **Hardcoded wrapper defaults are CHEATS to remove, not blockers** — a `!important` injection that overrides faithful CSS transfer is an R-22-1 violation to remove/gate, not a wall.
+- **Composites are NEVER a separate system** — hero uses `SGS_Container_Wrapper` like every composite; per-block hacks are bugs.
+- **Ground variant setups in `variant_slots`/`blocks.variant_attr`** — sgs/hero split = gridTemplateColumns/splitGap; query, don't guess.
+- An empty cloned section is usually a cv2 soft-fail — read extract.json `status` + trace.jsonl exception FIRST.
