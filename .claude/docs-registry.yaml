@@ -267,18 +267,19 @@ architecture_session_artefacts:
 #   If genuinely ambiguous, ASK Bean which thread before reading a thread-specific prompt.
 #   state.md (item 1 of either order) is now a LEAN per-thread pointer — read only YOUR block.
 
-cold_start_reading_order:   # CLONING-PIPELINE thread
+cold_start_reading_order:   # CLONING-PIPELINE thread (RESTRUCTURED 2026-06-17, D229 — the REBUILD is the active work; read these IN FULL before any build assumption)
   - 1. .claude/state.md (read the CLONING block + the GROUND-TRUTH-FIRST block)
-  - 2. .claude/handoff.md
-  - 3. .claude/next-session-prompt.md
-  - 4. .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md (canonical pipeline spec — read §0 Purpose + §2 architecture diagram + §3 FRs + §16 ratification gate)
-  - 5. .claude/plans/2026-06-09-clone-fix-build-plan.md (LIVE canonical cloning plan — phase-plan) + .claude/plans/2026-06-09-clone-fix-sign-off-ledger.md (55-issue tracker). Superseded re-cuts archived at plans/archive/ (2026-06-03-cloning-fidelity-triage / 2026-06-02-container-wrapper-standardisation / 2026-05-28-phase-2-hybrid-block-migration).
-  - 6. .claude/cloning-pipeline-flow.md (pipeline work) OR .claude/architecture.md (other)
-  - 7. .claude/decisions.md (last 5-10 entries; D90/D91/D92 = this-session Phase 1.5 close + Phase 2 reorder + R-22-14; D78-D83 = Spec 22 ratification chain)
-  - 8. .claude/parking.md (last 5 entries)
-  - 9. Domain reference: cloning-pipeline-flow.md (absorbed tooling-map + skills-commands-map + db-tables-map). Spec 22 is the canonical cloning-pipeline spec.
-  - 10. .claude/specs/common-wp-styling-errors.md (sections A-R catalogue — check BEFORE filing new "I've seen this" tickets)
-  - 11. pipeline-state/<latest-run>/leftover-buckets.json (MANDATORY before any converter-quality conjecture — see feedback_read_leftover_buckets_before_conjecturing.md)
+  - 2. .claude/handoff.md (latest session)
+  - 3. .claude/next-session-prompt.md (the operative opener — MANDATORY READING gate + STOP catalogue + pre-flight ritual)
+  - 4. .claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md — THE BUILD BLUEPRINT. Read the top banner + §12 FIRST (clean-modular-rebuild direction); §12.2 = Tier-1 foundation, §12.6/12.7 = build order + gap-to-stage map; then §1-§11 (architecture). READ IN FULL, do not skim — v0.3 exists BECAUSE prior sessions guessed/assumed and shipped cheats.
+  - 5. .claude/reports/pipeline-routing-map-2026-06-17.html — exhaustive 24-stage routing/logic map (every branch/DB-call/terminal + the 3 cross-stage mechanism traces M1/M2/M3 + the 22-finding gap register). THE structural map the rebuild is built against. Open it; read M1/M2/M3 + the gap table.
+  - 6. .claude/reports/2026-06-17-adversarial-council-register-and-rebuild-direction.md — convergence-weighted must-fix register + Bean's locked decisions (why clean rebuild, why draft-derived ledger, why modular files).
+  - 7. .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md (underlying pipeline architecture — §0 Purpose + §2 diagram + §3 FRs + R-22-* binding rules)
+  - 8. .claude/cloning-pipeline-flow.md + .claude/cloning-pipeline-stages.md (the as-is pipeline the rebuild maps from)
+  - 9. .claude/decisions.md (last 5-10 entries; D229 = this rebuild decision; D228/D211/D152 = container/wrapper history)
+  - 10. .claude/parking.md (last 5 entries) + .claude/specs/common-wp-styling-errors.md (sections A-R catalogue)
+  - 11. .claude/reports/2026-06-17-cross-stage-reviewer-personas.md (reviewer-persona roster — for audit subagents you dispatch)
+  - 12. pipeline-state/<latest-run>/leftover-buckets.json + extract.json + trace.jsonl (MANDATORY before any converter-quality conjecture — read raw artefacts, never reason from a doc's cached status)
 
 cold_start_reading_order_theme:   # SGS-THEME thread (added 2026-06-06 — was missing; a theme session following the cloning order read the wrong specs)
   - 1. .claude/state.md (read the SGS-THEME block + the GROUND-TRUTH-FIRST block)

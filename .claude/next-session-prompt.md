@@ -2,122 +2,112 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 thread: cloning-pipeline
-generated: 2026-06-16
-primary_goal: "Rebuild the grid/container-extraction system so the converter faithfully maps EVERY value sgs/container can hold (and the draft's equivalent wrappers hold) into EVERY composite block, with correct responsive — then fold the hero (Stage 2) + product-card (Stage 3) + remove the wrap_inner carve-out (Stage 4). The de-cheat foundation (faithful ratios + 768/1024 device-tier breakpoints) is SHIPPED. Parity baseline: content 100% all sections; full mobile 61.82% / tablet 59.09% / desktop 55.45% (fidelity drops as viewport widens — desktop layout weakest)."
+generated: 2026-06-17
+primary_goal: "Build the cloning CSS-transfer system as a CLEAN MODULAR STAGE-BY-STAGE REBUILD per Spec 31 v0.3 §12. Phase F FIRST (the Tier-1 foundation: multi-shape fixture set → draft-DERIVED CSS Accounting Ledger → render-diff oracle → closed EXCLUDED set → the 3 missing gates built+ARMED → DB-consistency suite), then the stage-by-stage rebuild gated by the ledger. The prior converter is unsoundly patchable (22-finding persona audit, 6 HIGH); spot-fixes regress (trust-bar precedent). Mama's parity is the METRIC (content 100%; full mobile 61.82/tablet 59.09/desktop 55.45%), not the goal."
 ---
 
-# Next session — grid/container-extraction rebuild → hero fold (Stage 2-4)
+# Next session — CLONING CSS-TRANSFER: clean modular rebuild (Phase F foundation first)
 
-> Invoke `/autopilot` first. READ Spec 22 + 29 + WRAPPER-CSS-ROUTING-DESIGN-GATE + the wrapper + the variant DB BEFORE proposing any fix-shape. D-ceiling: D228.
+## ⛔⛔ READ THIS FIRST — MANDATORY READING GATE (Bean directive 2026-06-17: do NOT guess, assume, or proceed under-read)
+
+This rebuild has failed repeatedly because sessions GUESSED, ASSUMED things were missing, or reasoned from a doc's cached status instead of ground truth. **You may not propose a single fix-shape, dispatch a subagent, or write code until you have READ IN FULL and can self-attest to each of these.** Tick them in your first message:
+
+1. ☐ `.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md` — **the build blueprint.** Read the TOP BANNER + **§12 in full** (the clean-modular-rebuild direction: §12.0 Bean's locked decisions · §12.2 the Tier-1 foundation · §12.3 the HIGH gaps · §12.4 modular architecture · §12.6 build sequence · §12.7 foundation build order F1-F6 + the gap-to-stage map), THEN §1-§11 (the architecture). §12 SUPERSEDES the v0.2 fix-in-place wording in §1/§11.
+2. ☐ `.claude/reports/pipeline-routing-map-2026-06-17.html` — the exhaustive 24-stage routing map. Open it. Read the 3 cross-stage mechanism traces (**M1** nested grid/wrapper layers · **M2** child-block/atomic/CSS/variant classification fork · **M3** complete CSS transfer) + the **22-finding gap register** (6 HIGH). This is the structural map you build the modular files against.
+3. ☐ `.claude/reports/2026-06-17-adversarial-council-register-and-rebuild-direction.md` — WHY clean rebuild, WHY the draft-derived ledger, WHY modular files. The convergence-weighted must-fix register.
+4. ☐ `.claude/specs/22-...md` (underlying architecture) + `.claude/cloning-pipeline-flow.md` + `-stages.md` (the as-is pipeline you map from).
+5. ☐ `.claude/decisions.md` D229 (this rebuild decision) + the GROUND-TRUTH-FIRST block in `.claude/state.md`.
+
+**If you skip the reading and start guessing, you WILL recreate the exact failure this whole session existed to end. Do not.** The reading order is `docs-registry.yaml` `cold_start_reading_order` (restructured D229 — Spec 31 + the map are now items 4-6).
 
 ## ⛔ THE 7 NON-NEGOTIABLE RULES (Bean-set; gate every converter/block/wrapper action — verbatim)
 1. **CONVERT, don't mirror** — output = native SGS blocks driven by attributes; NOT a div-by-div copy of draft classes/DOM.
-2. **NO CHEATS** — no `sourceMode='bound'` converter emit, no echo-`$content` passthrough, no hardcoded `!important` default that overrides faithfully-transferred draft CSS. Only the live WC configurator `wc-product`/`sgs-cpt` is legitimate.
+2. **NO CHEATS** — no `sourceMode='bound'` converter emit, no echo-`$content` passthrough, no hardcoded `!important`/default that overrides faithfully-transferred draft CSS. Only the live WC configurator `wc-product`/`sgs-cpt` is legitimate.
 3. **UNIVERSAL, no carve-outs** — a fix applies to every qualifying block/case; no per-block/per-tier exception. Over-broad universality is ALSO a break.
-4. **NO SKIPPING** — every draft class's content + CSS transfers, OR is reported skipped-with-reason, per class.
-5. **VERIFY ON THE REAL HOMEPAGE** — Playwright/chrome-devtools live DOM + computed-style on canary page 8 vs the draft. Emit-green ≠ rendered.
+4. **NO SKIPPING** — every draft CSS declaration transfers, OR is EXCLUDED-with-reason, OR is a tracked GAP. Zero silent drops (the draft-derived ledger enforces this structurally).
+5. **VERIFY ON THE REAL HOMEPAGE** — Playwright/chrome-devtools live computed-style + the draft-vs-clone render-diff. Emit-green ≠ rendered. WRITTEN (attr set) ≠ LANDED (pixel matches draft).
 6. **RESPONSIVE VALUES IN BLOCK ATTRIBUTES, never inline CSS.**
-7. **DESIGN-GATE sensitive/high-blast-radius changes** (shared wrapper, walker, converter, seeding pipeline, most-used block) via `/adversarial-council` or `/qc-council` + Bean approval BEFORE building.
+7. **DESIGN-GATE sensitive/high-blast-radius changes** (shared wrapper, walker, converter, seeding, ledger, gates) via `/adversarial-council` or `/qc-council` + Bean approval BEFORE building.
 
-## State recap (plain English, 2026-06-16 close — D228)
-This session recovered a missing-hero bug (converter `_trace` dict-positional → whole-section soft-fail), reconciled all loose branches into a single clean `main`, fixed two visible bugs (Issue A hero full-bleed hacks; Issue B multi-button double-nesting), and **de-cheated the container grid**: the wrapper now transfers the explicit `gridTemplateColumns*` ratio FAITHFULLY (the `sgs-cols-* repeat(N,1fr) !important` shorthand only emits when no explicit ratio is set) and device-tier breakpoints are unified to **768/1024** across the wrapper + the converter's `_GRID_TABLET_BP`. That is the FOUNDATION for the rebuild. Bean's framing (now CLAUDE.md rules): composites are never a separate system; hardcoded wrapper defaults are cheats to remove not blockers; device-tier vs arbitrary visual breakpoints are distinct; variant setups are DB-defined.
+## State recap (plain English, 2026-06-17 close — D229)
+Last session was **planning only — no code shipped.** It concluded (adversarial-council + qc-council gated, Bean-locked) that the cloning CSS-transfer system is not soundly patchable and must be **rebuilt clean**: per-resolver modular files behind one dispatch table, a remade orchestrator, built **stage-by-stage** (each stage proven universal on a multi-shape fixture set before the next starts). The spine is a **draft-DERIVED CSS Accounting Ledger** — its input is the draft's parsed CSS declarations (Stage 0.7, BEFORE any routing), so the ~15 property classes the old converter silently drops (background-image, filter, opacity, transform, object-fit, pseudo-elements, font shorthand) become UNACCOUNTED → hard fail. The build blueprint is **Spec 31 v0.3 §12**; the structural map is the **24-stage pipeline routing chart**.
 
-## First action
-Smallest first action (~5 min, zero deps): query the variant DB + read the container schema to ground the rebuild — `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT block_slug,variant_value,unique_slot FROM variant_slots"` + `... block_attributes WHERE block_slug='sgs/container'`, and skim `SGS_Container_Wrapper` grid/responsive emission (class-sgs-container-wrapper.php ~L400-520, ~L760-1000).
-
-## Mandatory READING (before any fix-shape)
-1. `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §FR-22-21 (3-layer model) · `29-CONTAINER-EQUIVALENT-BLOCKS.md` · `WRAPPER-CSS-ROUTING-DESIGN-GATE.md`.
-2. `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php` — the SHARED wrapper (every composite renders through it). Grid: ~L405 `$grid_on_inner`/`$has_band_props`, ~L639 sgs-cols gating, ~L948-958 responsive ratio emit, ~L1180 `$do_wrap`/`__inner`.
-3. `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` — `_GRID_TABLET_BP` (~5232), the composite-interior routing (~L4195-4308), `_fold_layout_into_attrs`, `_route_interior_css_to_parent_slot`.
-4. **The variant DB** — `variant_slots` + `blocks.variant_attr` DEFINE each variant's setup (sgs/hero split = gridTemplateColumns/splitGap/splitImage*). Query, never guess (`feedback_ground_in_variant_db_for_variant_block_setups`).
-5. The hero render: `src/blocks/hero/render.php` ~L290-387 (manual split grid + wrap_inner=false — the divergence to fold) + the per-client mockup CSS `theme/sgs-theme/styles/mamas-munches.css` (hero 1-col <768, 2-col ≥768).
-6. `.claude/decisions.md` D228 + `.claude/parking.md` + the prior defect register `.claude/reports/2026-06-14-clone-vs-draft-defect-register.md` (Fam B/C/D/E/F — fix AFTER the grid foundation).
+## First action (~5 min, zero deps)
+Complete the MANDATORY READING GATE above, then run the pre-flight self-attestation ritual (below). Then re-confirm ground truth: `git branch --show-current` + `git status` + `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` (D-ceiling D229). Verify the 3 gates DON'T exist yet (`ls plugins/sgs-blocks/scripts/check-converter-cheats.py plugins/sgs-blocks/scripts/orchestrator/generate-coverage-matrix.py 2>&1` → absent; building them IS Phase F).
 
 ## Tasks
 
-### Task 1 — Grid/container-extraction rebuild [THE FOUNDATION — design first]
-**What:** make the converter recognise + faithfully insert EVERY value `sgs/container` can hold (and the draft's equivalent wrapper holds) into EVERY composite with the shared wrapper, including responsive (Mobile/Tablet/Desktop at 768/1024). Ground in `sgs/container` block.json + the DB (variant_slots, property_suffixes, modifier_suffixes, block_attributes) + `SGS_Container_Wrapper` END-TO-END.
-**Why:** the de-cheat fixed the ratio + breakpoints, but the full container-capability → composite mapping is incomplete (parity full-fidelity drops to 55% desktop). This is the root lever.
-**Estimated:** design ~30 min; build per-capability.
-**Orchestration:** `/brainstorming` design mode (Opus) → `/adversarial-council` on the routing shape (Rule 7, shared mechanism) → Bean design-gate → delegate build to sonnet subagents (`/subagent-driven-development`, NO commit authority) → `/qc-council` + BOTH conformance suites + live page-8 verify.
-**Depends on:** none. **/qc gate after:** `/qc-council` + live-DOM.
-**Acceptance:** a draft container/composite's full capability set (width, padding, gap, grid ratio, responsive tiers, align, background) round-trips to the live clone at all 3 breakpoints; parity full-fidelity rises measurably.
+### Task 1 — Phase F: the Tier-1 FOUNDATION (build FIRST, the spine) [Spec 31 §12.2 + §12.7]
+**What:** build the foundation the whole rebuild is gated against, ARMED against current/legacy output so any later change is provably non-regressing. Steps F1-F6 in §12.7: (F1) multi-shape fixture set + red-team fixture per HIGH gap; (F2) draft-declaration parser → the surjective input ledger; (F3) render-diff oracle (draft-render vs clone-render, gated on innerText>0 + non-default value) + 3 metamorphic relations; (F4) closed DB-backed `excluded_properties` table + migration; (F5) the 3 gates built + WIRED (`check-converter-cheats.py` + `generate-coverage-matrix.py` + pipeline-close ledger check; `check_no_mirror.py --enforce` + a `PreToolUse` git-commit hook into prebuild); (F6) DB-as-code consistency suite.
+**Why:** without the draft-derived ledger + render-oracle + armed gates, "no silent drops / cheat-proof" is theatre (the v0.2 plan's fatal flaw the council caught). This is the only thing that makes each stage's "universal" claim TESTABLE.
+**Orchestration:** `/brainstorming` design-mode (Opus) to design the module/dispatch-table shape → `/adversarial-council` on the foundation design (Rule 7) → Bean design-gate → delegate per-file builds to subagents (NO commit authority; RETURN data/files, never write shared docs) → `/qc-council` + run BOTH conformance suites.
+**Depends on:** none. **/qc gate after:** `/qc-council` + the foundation must flag the KNOWN legacy cheats/drops on current output (baseline captured).
+**Acceptance:** the ledger reports the legacy converter's UNACCOUNTED set + CHEAT cells + render-diff deltas as the measured baseline; gates run automatically on prebuild + pre-commit; no green-on-broken.
 
-### Task 2 — Hero fold (Stage 2) → product-card (Stage 3) → remove wrap_inner option (Stage 4)
-**What:** drop the hero's manual `$styles` grid + `wrap_inner=false` and route its split grid through the now-faithful helper (the variant DB defines split = gridTemplateColumns/splitGap; keep the order-swap @media which the helper doesn't do). Then drop product-card's `wrap_inner=false` (Stage 3), then remove the `wrap_inner` option entirely from the wrapper (Stage 4).
-**Why:** `wrap_inner=false` is the last hero carve-out; the de-cheat removed the blockers (sgs-cols override, breakpoint mismatch) that made an earlier attempt regress.
-**Estimated:** Stage 2 high-risk (~45 min, bespoke split responsive); 3+4 low.
-**Orchestration:** design plan from Task 1 → `/adversarial-council` (Rule 7) → SDD build → `/qc-council` + live page-8 verify the split hero at 375/768/1440 renders IDENTICALLY (2-col ≥768, 1-col stacked <768, order-swap).
-**Depends on:** Task 1 (faithful wrapper). **Parallel with:** none. **/qc gate after:** yes — live-verify the split hero per breakpoint.
-**Acceptance:** the split hero renders identically post-fold at all 3 breakpoints; wrap_inner option gone; conformance green.
-
-### Task 3 — Family defect register (Fam B/C/D/E/F) [after the grid foundation]
-**What:** the prior register's 5 systemic converter families (B unitless line-height · C mobile heading type · D max-width/Method-2 · E image styling · F grid breakpoints). Several may partially resolve once Task 1 lands.
-**Orchestration:** per-family `/brainstorming` + `/adversarial-council` + SDD + `/qc-council` + live per-row. **Depends on:** Task 1. **Acceptance:** each family's rows VERIFIED via live computed-style on page 8.
+### Task 2 — Stage-by-stage modular rebuild [Spec 31 §12.6 step 3 + the §12.7 gap-to-stage map]
+**What:** rebuild the converter in pipeline order (Stage 2 recognition incl. Method-2 native-composite routing → Stage 3 fold → Stage 4 lift → …), each stage a set of per-resolver files behind the dispatch table, each owning its mapped Tier-2 HIGH gaps (see §12.7 table). Do NOT start stage N+1 until stage N passes the ledger gate (zero UNACCOUNTED + zero WRITTEN-not-LANDED) on the fixture set.
+**Why:** stage-by-stage isolates failures (if stage 4 fails, only stage 4 needs fixing) and never builds on a flawed lower stage. The ledger is the per-stage universality TEST (correctness is cross-stage; the stage is just the build order).
+**Orchestration:** per stage — `/brainstorming` design → `/adversarial-council` (shared mechanism) → SDD build (subagents, no commit/no-shared-write) → `/qc-council` + ledger gate + live page-8 + render-diff verify.
+**Depends on:** Task 1. **/qc gate after:** every stage, before the next.
+**Acceptance:** each stage's declarations are TRANSFERRED-and-LANDED / EXCLUDED-with-reason / tracked-GAP on the multi-shape fixture set; render-diff passes per section at 375/768/1440.
 
 ## Dependency graph
 ```
-First action (variant DB + container schema + wrapper grounding)
-  → Task 1 (grid rebuild — /brainstorming → /adversarial-council → Bean gate → SDD → /qc-council + live)
-      → Task 2 (hero fold Stage 2 → product-card 3 → remove wrap_inner 4; live-verify split hero 3 breakpoints)
-      → Task 3 (Fam B/C/D/E/F register — several resolve post-Task-1)
-each commit: path-scoped (`git commit -m "msg" -- <paths>`, -m BEFORE --); visual change needs reports/visual-diff/<block>-<date>.md (verdict PASS) or the pre-commit gate blocks
+MANDATORY READING GATE + pre-flight ritual (inline, Opus)
+  → Task 1 Phase F foundation (/brainstorming → /adversarial-council → Bean gate → SDD → /qc-council)  [the spine]
+      → Task 2 stage-by-stage rebuild (per stage: design → council → SDD → ledger gate + live + render-diff, before next stage)
+each commit: path-scoped (`git commit -m "msg" -- <paths>`, -m BEFORE --); BOTH conformance suites; D-ceiling check before any new D (→ D229)
 ```
 
-## Methodology guardrails (do not skip — carried forward + extended D228)
-- **Device-tier ≠ arbitrary visual breakpoints (NEW D228).** Device-tier (SGS Mobile/Tablet/Desktop attrs, wrapper + `_GRID_TABLET_BP`) = 768/1024, consistent. A single rule's VISUAL breakpoint (min-width:600, WP-columns 781) is legitimate + must NOT be blanket-changed. NEVER a blind "fix all 599/600" sweep; classify each. A mechanical/Haiku agent cannot make this call. (`feedback_device_tier_vs_visual_breakpoints_are_distinct`.)
-- **Hardcoded wrapper defaults are CHEATS to remove, not blockers (NEW D228).** A `!important` injection overriding faithful CSS transfer is an R-22-1 violation — remove/gate it; don't frame it as a wall. (`feedback_wrapper_hardcoded_defaults_are_cheats_to_remove_not_blockers`.)
-- **Composites are NEVER a separate system (NEW D228).** Hero/cta-section/trust-bar all render through `SGS_Container_Wrapper`; per-block hacks are bugs. Ground variant grids in `variant_slots`/`blocks.variant_attr`, don't guess.
-- **An empty cloned section is usually a cv2 soft-fail (NEW D228)** — read extract.json per_section `status` + trace.jsonl `stage_4_converter_v2_softfail` exception BEFORE blaming recognition.
-- **Emit-green ≠ live-verified — verify the rendered page (R-22-11).** NO register row closes without a live computed-style read on page 8. clone-parity BEM matcher + parity2 aggregate are triage-only.
-- **Read the implementing SCRIPT before proposing/critiquing ANY converter/wrapper/seeding mechanism** — never trust spec `built_status:` labels or attr/column names; grep the real emitter (blub 353).
-- **Deploy before measure** — convert.py needs no build; block.json/render.php/style.css/theme changes need `npm run build` (PowerShell) + deploy + bump version (Hostinger CDN 7-day) BEFORE any pixel/DOM probe.
-- **Root-cause FAMILY before instance fix** — group + fix universally (R-22-9). Per-section tuning is the anti-pattern.
-- **TWO conformance suites** — Gate A `scripts/tests/test_converter_conformance.py` (pre-commit) AND `converter_v2/tests/`. Run BOTH (`python -m pytest`).
-- **DB changes reproducible from the canonical path** (block.json `supports.sgs` auto-seed OR dated `migrations/*.py`), verified by a FULL `/sgs-update` reseed — NEVER a manual DB edit.
-- **/qc-council BEFORE every converter/SGS-block/seeding commit** (blub 255). **/adversarial-council before any shared-mechanism change** (Rule 7).
-- **Commit path-scoped** (`git commit -m "msg" -- <paths>` — `-m` BEFORE `--`; a `-m` after `--` is silently treated as a pathspec and the commit fails). A visual change needs `reports/visual-diff/<block>-<date>.md` (verdict PASS + first_paint_capture_passed true) or the pre-commit gate blocks; `--no-verify` only with Bean's explicit OK.
-- **Subagents implement; Opus orchestrates** (plan/delegate/QC/live-test/commit). Subagents have NO commit/deploy authority; NEVER `git checkout/restore/stash/reset/clean` the shared tree (a rater once wiped uncommitted work this way).
-- **Bean's "are you sure?"/"why?"/"how does X work?" on a hardcode/deletion/claim = a mandate to GROUND in the architecture (block.json + DB + wrapper + render), not reassure.**
-- **The SGS evidence gate is ARMED** — emit `GROUND-TRUTH:` before any SGS framework edit; toggle it OFF for a mechanical multi-edit run via `touch ~/.claude/.sgs-gate-off` and re-arm (`rm`) at close.
+## Methodology guardrails / STOP catalogue (carried forward + extended D229 — do NOT subtract)
+- **STOP-1 — READ before you conjecture (Bean directive D229).** Never propose a fix-shape, dispatch a build, or assert built/not-built from a doc's cached status. Read the implementing SCRIPT (file:line), the raw pipeline-state artefacts (extract.json/trace.jsonl/leftover-buckets.json), Spec 31 §12, and the routing map. The MANDATORY READING GATE is non-skippable. (blub 353, this session's whole reason for existing.)
+- **STOP-2 — Subagents RETURN data, never write shared files (NEW D229).** A reviewer overwrote the master pipeline-map this session. Every audit/review/extraction cold prompt MUST say "return findings in your final message; do NOT write/edit/create any file." Orchestrator owns shared writes. Commit valuable artefacts BEFORE dispatching file-capable subagents. (`feedback_subagents_must_not_write_shared_files`.)
+- **STOP-3 — The ledger input is the DRAFT's declarations, NOT the converter's recognised set (NEW D229).** A ledger fed by the suffix table / what the converter mapped is circular and hides the ~15 no-suffix-row drops. Parse the draft CSS independently at Stage 0.7. (Spec 31 §12.2.1; the council's keystone finding.)
+- **STOP-4 — WRITTEN ≠ LANDED (NEW D229).** "An attr was emitted" is a progress signal, never a gate. A value can land on the WRONG layer and still be WRITTEN. Only LANDED (live computed-style = draft on a non-default fixture) closes a cell. (Spec 31 §12.2.2.)
+- **STOP-5 — Stage-by-stage is the BUILD ORDER; the ledger is the cross-stage TEST (NEW D229).** Don't mistake "stage 2 green" for "correct" — a value recognised right at stage 2 can be dropped at stage 4. Gate each stage on the end-to-end ledger, not an in-stage conformance suite. (Spec 31 §12.1/§12.6.)
+- **STOP-6 — A gate that exists but isn't WIRED protects nothing (NEW D229).** `check_no_mirror.py` runs in report-only mode today; `check-converter-cheats.py`/`generate-coverage-matrix.py` don't exist. Build + ARM them in prebuild + a PreToolUse git hook FIRST. Distinguish "code can check" from "something runs the check on every build." (Spec 31 §12.2.5; `dont-claim-a-guard-is-enforced-unless-wired`.)
+- **STOP-7 — Hardcoded wrapper/converter defaults are CHEATS to remove, not blockers.** A `!important`/default injection overriding faithful CSS = R-22-1 violation. (`feedback_wrapper_hardcoded_defaults_are_cheats_to_remove_not_blockers`.)
+- **STOP-8 — Device-tier ≠ arbitrary visual breakpoints.** Device-tier = 768/1024 consistent; a single-rule visual breakpoint (600/781) is legitimate + must NOT be blanket-changed. Classify each; a mechanical/Haiku agent can't make this call. (`feedback_device_tier_vs_visual_breakpoints_are_distinct`.)
+- **STOP-9 — Composites are NEVER a separate system; variant grids are DB-defined.** Ground variant structure in `variant_slots` + `blocks.variant_attr`, never guess. (`feedback_ground_in_variant_db_for_variant_block_setups`.)
+- **STOP-10 — Empty cloned section = usually a cv2 soft-fail, NOT a recognition miss.** Read extract.json `status` + trace.jsonl soft-fail exception FIRST. Empty section scores a FALSE pixel-diff WIN — gate on innerText.length>0. (`feedback_empty_section_check_cv2_softfail_trace_first`.)
+- **Deploy before measure** — convert.py needs no build; block.json/render.php/style.css/theme changes need `npm run build` (PowerShell) + deploy + version bump (Hostinger CDN 7-day) BEFORE any pixel/DOM probe.
+- **Root-cause FAMILY before instance fix** (R-22-9). **TWO conformance suites** — Gate A `scripts/tests/test_converter_conformance.py` (pre-commit) AND `converter_v2/tests/` — run BOTH. **DB changes reproducible** from a dated `migrations/*.py` OR `block.json supports.sgs`, verified by a FULL `/sgs-update` reseed — never a manual DB edit. **Commit path-scoped** (`git commit -m "msg" -- <paths>`, -m BEFORE --); a visual change needs a passing `reports/visual-diff/<block>-<date>.md`. **Subagents implement; Opus orchestrates** (plan/delegate/QC/live-test/commit); subagents NEVER `git checkout/restore/stash/reset/clean` the shared tree. **Bean's "are you sure?"/"why?" = a mandate to GROUND in the architecture, not reassure.**
 
-## Pre-flight self-attestation ritual (answer before the first action)
-1. Which thread am I? (cloning-pipeline — owner of convert.py + the homepage pipeline + the SHARED wrapper + state.md/handoff/next-session-prompt.)
-2. What branch is the tree on? (`git branch --show-current`.) Has `origin/main` moved? Anything uncommitted? (`git status` — commit ONLY by explicit path, `-m` before `--`.)
-3. Have I QUERIED the variant DB + READ the container block.json + `SGS_Container_Wrapper` + the implementing convert.py line BEFORE proposing any fix-shape? Am I treating a wrapper hardcoded default as a cheat-to-remove, not a blocker?
-4. Is this breakpoint a DEVICE-TIER value (fix to 768/1024) or an arbitrary VISUAL breakpoint (leave alone)? Have I classified it before touching it?
-5. What is the MEASURABLE acceptance (live computed-style on page 8 = draft at all 3 breakpoints) — not "code shipped"/"conformance green"? Is this Rule-7 high-blast (converter/shared wrapper/seeding)? → `/adversarial-council` + `/qc-council` BEFORE/AROUND the build.
+## Pre-flight self-attestation ritual (answer in your first message, before the first action)
+1. Have I completed the MANDATORY READING GATE — Spec 31 §12 (full) + the routing map M1/M2/M3 + the gap register + the council register? (Quote one specific thing from §12.2 to prove it.)
+2. Which thread am I? (cloning-pipeline — owner of convert.py, the homepage pipeline, the SHARED wrapper, state.md/handoff/next-session-prompt.) What branch + D-ceiling? (`git branch --show-current`; D229.)
+3. Am I building the FOUNDATION (Phase F: draft-derived ledger + render-oracle + armed gates) BEFORE any stage? Is the ledger's input the DRAFT's parsed declarations, not the converter's recognised set?
+4. For any subagent I dispatch: did I tell it "return data, do NOT write shared files"? Did I commit valuable artefacts first?
+5. What is the MEASURABLE acceptance — LANDED (live computed-style = draft on a non-default fixture) + zero UNACCOUNTED on the ledger — NOT "code shipped"/"WRITTEN"/"conformance green"? Is this Rule-7 high-blast (converter/shared wrapper/ledger/gates)? → `/adversarial-council` + `/qc-council` BEFORE/AROUND the build.
 
-## Tool bindings
-
-### Skills to Invoke
+## Skills to Invoke
 | Skill | When |
 |-------|------|
-| `/brainstorming` | Task 1 grid-rebuild routing shape + Task 2 hero-fold design (design mode) |
-| `/gap-analysis` | grade any unit/plan vs its acceptance before delivery |
-| `/lifecycle` | before any skill/agent/pipeline change |
-| `/research` (+ `/library-docs`) | any WP/theme.json/block.json/grid pattern you're unsure of |
-| `/strategic-plan` + `/phase-planner` | if the grid rebuild needs a formal phased plan |
-| `/adversarial-council` | MANDATORY on every shared-mechanism/wrapper/converter change (Rule 7) |
-| `/qc-council` | MANDATORY before every converter/SGS-block/seeding commit (blub 255) |
-| `/subagent-driven-development` · `/subagent-prompt` | per-task dispatch (subagents implement, no commit authority) |
+| `/brainstorming` | ALWAYS — design the foundation module/dispatch shape + each stage before building |
+| `/gap-analysis` | ALWAYS — grade any unit/plan vs its acceptance before delivery |
+| `/lifecycle` | ALWAYS — before any skill/agent/pipeline change |
+| `/research` (+ `/library-docs`) | ALWAYS — any WP/grid/CSS-cascade/transpiler pattern you're unsure of (don't guess) |
+| `/strategic-plan` + `/phase-planner` | if Phase F or a stage needs a formal step breakdown (Spec 31 §12 is the strategic plan; phase-plan only the foundation/stage internals) |
+| `/adversarial-council` | MANDATORY on the foundation design + every shared-mechanism/converter change (Rule 7) |
+| `/qc-council` | MANDATORY before every converter/SGS-block/seeding/gate commit (blub 255) |
+| `/subagent-driven-development` · `/subagent-prompt` · `/dispatching-parallel-agents` | per-task dispatch (subagents implement, NO commit authority, NO shared-file writes) |
 | `/sgs-clone` · `/sgs-update` · `/wp-blocks` · `/sgs-db` | re-clone+deploy / DB reseed / schema + attr TYPES + variant_slots ground truth |
 | `/systematic-debugging` · `/verify-loop` · `/capture-lesson` · `/handoff` | root-cause / 2-attestation / new rules / session close |
 
 ## MCP Servers & Tools
 | Tool | For |
 |------|-----|
-| Playwright (chrome-devtools fallback on "Browser already in use") | live page-8 DOM + computed-style at 375/768/1440 — creds `.claude/secrets/sandybrown.env` (grep/cut, never `source`); canary = `?page_id=8` on `WP_URL_SANDYBROWN` |
-| `/wp-blocks` (`python ~/.claude/hooks/wp-blocks.py dump`) | block schema + attr TYPES + WP-native supports |
-| `/sgs-db` (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py`) | container attrs / variant_slots / blocks.variant_attr / container_kind / derived_selector (DB-authoritative) |
+| Playwright (chrome-devtools fallback on "Browser already in use") | live page-8 DOM + computed-style + the draft-vs-clone render-diff at 375/768/1440 — creds `.claude/secrets/sandybrown.env` (grep/cut, never `source`); canary = `?page_id=8` on `WP_URL_SANDYBROWN` |
+| `/wp-blocks` (`python ~/.claude/hooks/wp-blocks.py dump`) | block schema + attr TYPES + WP-native supports (query before "missing X") |
+| `/sgs-db` (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py`) | container attrs / property_suffixes / variant_slots / block_composition / derived_selector (DB-authoritative) |
 
 ## Agents to Delegate To
 | Agent | When |
 |-------|------|
-| general-purpose (sonnet) | Task 1/2 build — NO commit/deploy authority, return uncommitted |
-| general-purpose (haiku / gemini-flash) | 2nd cross-family rater on `/qc-council` passes (NOT for breakpoint or container-architecture judgment calls) |
-| `wp-sgs-developer` | heavier WP/block.json/render.php work (hero render, composite blocks) |
-| `design-reviewer` | visible-surface changes (live page-8 at 375/768/1440) |
+| general-purpose (sonnet) | Phase F per-file builds + stage resolvers — NO commit/deploy authority, NO shared-file writes, return uncommitted |
+| general-purpose (haiku / gemini-flash) | 2nd cross-family rater on `/qc-council` (NOT for breakpoint or architecture judgment) |
+| `wp-sgs-developer` | heavier WP/block.json/render.php work |
+| `design-reviewer` | visible-surface changes (live page-8 + render-diff at 3 breakpoints) |
 
 ## Guardrails
-Cloning thread owns the converter + homepage pipeline + the SHARED `SGS_Container_Wrapper` + /sgs-update seeding. Converter + shared-wrapper + seeding changes are Rule-7 high-blast → design-gate. Build per capability/family, `/qc-council` + Gate A + live page-8 per commit. Run BOTH conformance suites. A visual change needs a passing `reports/visual-diff/<block>-<date>.md`. D-ceiling check before any new D (`grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` → D228).
+Cloning thread owns convert.py + the homepage pipeline + the SHARED `SGS_Container_Wrapper` + /sgs-update seeding + (now) the new modular converter + ledger + gates. ALL of these are Rule-7 high-blast → design-gate. Build per the §12.7 order; `/qc-council` + Gate A + the ledger gate + live page-8 + render-diff per commit. A visual change needs a passing `reports/visual-diff/<block>-<date>.md`. D-ceiling check before any new D (`grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` → D229).

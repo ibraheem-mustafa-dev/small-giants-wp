@@ -2,7 +2,49 @@
 doc_type: handoff
 project: small-giants-wp
 thread: cloning-pipeline
-session_date: 2026-06-16
+session_date: 2026-06-17
+---
+
+# Session Handoff — 2026-06-17
+
+## Completed This Session
+1. **Wrote Spec 31 — Universal Container/Grid CSS-Transfer architecture** (`.claude/specs/31-...md`), then corrected it through two councils to **v0.3** (the build blueprint). §1-§11 = architecture; §12 = the clean-modular-rebuild direction (build-ready).
+2. **Built an exhaustive 24-stage pipeline routing map** (`.claude/reports/pipeline-routing-map-2026-06-17.html`) from direct code extraction — every branch/if, DB table.column, and terminal, + 3 cross-stage mechanism traces (M1 nested grid · M2 classification fork · M3 complete CSS transfer) + a **22-finding gap register (6 HIGH)**. Verified rendering (24 stages, 134 nodes).
+3. **Ran 3 specialist reviewing subagents** (personas scoped via `/research-check`) over the 3 vital cross-stage mechanisms — surfaced the 22 gaps + the **CSS Accounting Ledger** cure (roster saved at `reports/2026-06-17-cross-stage-reviewer-personas.md`).
+4. **Ran `/adversarial-council`** (5 personas) on the whole approach → CONDITIONAL GO; convergent must-fixes (draft-derived ledger, WRITTEN-vs-LANDED, render-diff oracle, closed EXCLUDED set, gates-as-prerequisite). Register: `reports/2026-06-17-adversarial-council-register-and-rebuild-direction.md`.
+5. **Bean locked the direction (D229):** clean rebuild (not spot-fixes) · modular per-resolver files + remade orchestrator · stage-by-stage build order with a per-stage ledger test.
+6. **Folded all council must-fixes into Spec 31 §12** + appended §12.7 (foundation build order F1-F6 + gap-to-stage map). **`/qc-council`-verified** the fixes landed; fixed 2 stale-text reconciliations (§6.7 Method-2 in-scope, §5 ledger-supersedes-matrix).
+7. **Updated living docs:** decisions.md D229, state.md cloning block, docs-registry reading order (Spec 31 + the map now mandatory top reads), this handoff, the next-session-prompt (with a hard MANDATORY READING GATE), MEMORY.md.
+
+## Current State
+- **Branch:** main at [SHORT_HASH — set at commit]
+- **Tests:** no test run this session (planning only — no code shipped)
+- **Build:** n/a (no code changed)
+- **Uncommitted changes:** 5 new docs (Spec 31, 3 reports, 1 superseded draft plan) + edited decisions/state/registry/handoff/next-session-prompt — committed this handoff.
+
+## Known Issues / Blockers
+- None block the next session. The 3 anti-cheat gates (check-converter-cheats.py / generate-coverage-matrix.py / pipeline-close ledger check) DO NOT EXIST yet — building + arming them is Phase F (the first build task), not a blocker.
+
+## Next Priorities (in order)
+1. **Phase F — the Tier-1 foundation** (Spec 31 §12.2 + §12.7): multi-shape fixture set → draft-DERIVED CSS Accounting Ledger → render-diff oracle → closed EXCLUDED set → the 3 gates built+ARMED → DB-consistency suite. This is the spine; build it before any stage.
+2. **Stage-by-stage modular rebuild** (§12.6 step 3 + the §12.7 gap-to-stage map), each stage gated by the ledger before the next.
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md` | NEW — the build blueprint v0.3 (banner + §12 rebuild direction + §12.7 build order) |
+| `.claude/reports/pipeline-routing-map-2026-06-17.html` | NEW — exhaustive 24-stage routing map + M1/M2/M3 traces + 22-gap register |
+| `.claude/reports/2026-06-17-adversarial-council-register-and-rebuild-direction.md` | NEW — council must-fix register + locked direction |
+| `.claude/reports/2026-06-17-cross-stage-reviewer-personas.md` | NEW — reviewer-persona roster |
+| `.claude/plans/2026-06-16-grid-container-extraction-rebuild-design.md` | NEW — earlier draft (superseded by Spec 31; kept for trail) |
+| `.claude/decisions.md` · `state.md` · `docs-registry.yaml` · `next-session-prompt.md` · MEMORY.md | D229 + cloning block + reading order + the forced-reading opener + lesson index |
+
+## Notes for Next Session
+- **Mama's parity is the METRIC, not the goal** — content 100%; full mobile 61.82/tablet 59.09/desktop 55.45%. The hero IS already live on page 8; do not let "it renders" justify spot-fixes (they regress — trust-bar precedent).
+- **The keystone insight:** the ledger's input must be the DRAFT's parsed declarations (independent of the converter), or it's circular and hides the ~15 silently-dropped property classes.
+- **A subagent overwrote the master pipeline-map this session** (recovered). Bake "return data, never write shared files" into every audit/build subagent prompt. Captured: `feedback_subagents_must_not_write_shared_files`.
+- **No code shipped — OUTCOME ACHIEVED for this session's goal** (produce a verified build-ready blueprint). The build outcome (a faithful universal clone) is the NEXT phase, gated by the ledger.
+
 ---
 
 # Session Handoff — 2026-06-16

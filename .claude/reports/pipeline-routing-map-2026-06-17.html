@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SGS Cloning Pipeline — Exhaustive Routing & Logic Map (2026-06-17)</title>
+<style>
+:root{
+  --bg:#0d1117;--panel:#161b22;--panel2:#1c2330;--ink:#e6edf3;--muted:#8b949e;
+  --line:#30363d;--accent:#58a6ff;--proc:#388bfd;--dec:#d29922;--db:#3fb950;
+  --gate:#a371f7;--term:#f85149;--termok:#2ea043;--chip:#21262d;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+header.top{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,#0d1117,#0d1117f0);
+  border-bottom:1px solid var(--line);padding:14px 20px;backdrop-filter:blur(6px)}
+header.top h1{margin:0 0 4px;font-size:18px}
+header.top .sub{color:var(--muted);font-size:12.5px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.controls input{background:var(--panel2);border:1px solid var(--line);color:var(--ink);
+  border-radius:7px;padding:7px 11px;font-size:13px;min-width:240px}
+.rail{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.rail a{font-size:11.5px;text-decoration:none;color:var(--ink);background:var(--chip);
+  border:1px solid var(--line);border-radius:20px;padding:3px 10px}
+.rail a:hover{border-color:var(--accent);color:var(--accent)}
+.rail a.xstage{border-color:var(--gate);color:#d2a8ff}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 120px}
+.stage{margin:26px 0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+.stage.xstage{border-color:#5a3a8c}
+.stage>h2{margin:0;padding:14px 18px;background:var(--panel2);font-size:15.5px;cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;gap:12px}
+.stage.xstage>h2{background:#241b33}
+.stage>h2 .num{color:var(--accent);font-variant-numeric:tabular-nums;margin-right:8px}
+.stage.xstage>h2 .num{color:#d2a8ff}
+.stage>h2 .file{font:12px var(--mono);color:var(--muted);font-weight:400}
+.stage .meta{padding:10px 18px;color:var(--muted);font-size:12.5px;border-bottom:1px solid var(--line)}
+.stage .meta b{color:var(--ink);font-weight:600}
+.nodes{padding:8px 14px 16px}
+.node{border:1px solid var(--line);border-left-width:4px;border-radius:9px;margin:10px 0;
+  padding:11px 13px;background:var(--panel2)}
+.node.process{border-left-color:var(--proc)}
+.node.decision{border-left-color:var(--dec)}
+.node.db_check{border-left-color:var(--db)}
+.node.gate{border-left-color:var(--gate)}
+.node.terminal{border-left-color:var(--term)}
+.node .hd{display:flex;gap:9px;align-items:baseline;flex-wrap:wrap}
+.node .id{font:11px var(--mono);color:var(--muted)}
+.node .type{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;padding:1px 7px;border-radius:10px;border:1px solid var(--line)}
+.type.process{color:var(--proc)} .type.decision{color:var(--dec)} .type.db_check{color:var(--db)}
+.type.gate{color:var(--gate)} .type.terminal{color:var(--term)}
+.node .label{font-weight:600;font-size:13.5px}
+.node .logic{font:12px var(--mono);background:#0d1117;border:1px solid var(--line);border-radius:6px;
+  padding:7px 9px;margin:8px 0;white-space:pre-wrap;color:#c9d1d9;overflow-x:auto}
+.node .ref{font:11px var(--mono);color:var(--muted)}
+.node .db{display:inline-block;font:11px var(--mono);color:var(--db);background:#0d1117;
+  border:1px solid #22351f;border-radius:5px;padding:1px 7px;margin-top:4px}
+.branches{margin:8px 0 2px;border-top:1px dashed var(--line);padding-top:7px}
+.branch{display:flex;gap:8px;font-size:12.5px;margin:3px 0;align-items:baseline}
+.branch .cond{flex:1;color:var(--ink)}
+.branch .arrow{color:var(--muted)}
+.branch .to{font:11.5px var(--mono);color:var(--accent);white-space:nowrap}
+.branch .to.term{color:var(--term)}
+.branch .to.termok{color:var(--termok)}
+.explain{font-size:12.5px;color:var(--muted);margin-top:7px;font-style:italic}
+.idx{border:1px solid var(--line);border-radius:12px;background:var(--panel);margin:26px 0;padding:16px 18px}
+.idx h3{margin:0 0 10px;font-size:14.5px}
+.idx .row{font-size:12.5px;padding:3px 0;border-bottom:1px solid #21262d}
+.idx .row code{font:11.5px var(--mono);color:var(--db)}
+.idx .term{color:var(--term)}
+.gapwrap{border:1px solid #5a3a3a;border-radius:12px;background:#1a1414;margin:26px 0;padding:16px 18px}
+.gapwrap h3{margin:0 0 4px;font-size:15px;color:#ff9b95}
+.gapwrap .sub{color:var(--muted);font-size:12px;margin-bottom:10px}
+table.gaps{width:100%;border-collapse:collapse;font-size:12px}
+table.gaps th{text-align:left;color:var(--muted);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line)}
+table.gaps td{padding:6px 8px;border-bottom:1px solid #2a1f1f;vertical-align:top}
+table.gaps code{font:11px var(--mono);color:#79c0ff}
+.sev{font-weight:700;font-size:11px;padding:1px 6px;border-radius:9px}
+.sev.HIGH{color:#fff;background:#b62324}.sev.MED{color:#3d2c00;background:#e3b341}.sev.LOW{color:var(--muted);background:#30363d}
+.kind{font-size:10.5px;padding:1px 6px;border-radius:9px;border:1px solid var(--line)}
+.kind.BUG{color:#ff9b95}.kind.SPEC{color:#d2a8ff}
+.hidden{display:none}
+.stage.collapsed .meta,.stage.collapsed .nodes{display:none}
+.stage>h2::after{content:"▾";color:var(--muted);font-size:12px}
+.stage.collapsed>h2::after{content:"▸"}
+.count{color:var(--muted);font-size:11.5px;font-weight:400}
+footer{color:var(--muted);font-size:12px;text-align:center;padding:30px}
+a.codelink{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>SGS Cloning Pipeline — Exhaustive Routing &amp; Logic Map</h1>
+  <div class="sub">Every stage · every routing choice · every branch/if · every DB table.column check · every terminal finish-point. Built from direct code extraction 2026-06-17 (Spec 31 prerequisite). Source of truth for the stage-by-stage build. <b>Purple = the 3 vital CROSS-STAGE mechanisms</b> (nested grid · classification fork · complete CSS transfer) + a consolidated gap register from the persona-reviewer audit.</div>
+  <div class="controls">
+    <input id="filter" placeholder="Filter nodes (logic, label, db table, code ref)…" oninput="applyFilter()">
+    <button onclick="toggleAll(true)" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:7px 11px;cursor:pointer">Expand all</button>
+    <button onclick="toggleAll(false)" style="background:var(--chip);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:7px 11px;cursor:pointer">Collapse all</button>
+  </div>
+  <div class="legend">
+    <span><i class="dot" style="background:var(--proc)"></i>process</span>
+    <span><i class="dot" style="background:var(--dec)"></i>decision / if</span>
+    <span><i class="dot" style="background:var(--db)"></i>DB check</span>
+    <span><i class="dot" style="background:var(--gate)"></i>gate</span>
+    <span><i class="dot" style="background:var(--term)"></i>terminal / finish-point</span>
+  </div>
+  <div class="rail" id="rail"></div>
+</header>
+<div class="wrap" id="wrap"></div>
+<footer>SGS cloning pipeline · exhaustive decision graph + cross-stage mechanism traces + persona-audit gap register · generated 2026-06-17</footer>
+
+<script>
+/* type: process | decision | db_check | gate | terminal
+   branches[].to: a node id, or "TERMINAL:<finish>" (red), or "OK:<finish>" (green) */
+const PIPELINE = [
+{stage:"0",name:"Pre-flight chain",file:"preflight_chain.py + mutex.py",runs:"once, before any stage (orchestrator_main 5e.1)",
+ purpose:"Verify every prerequisite + no conflicting lock before the pipeline runs. Fail-ANY: a single failed check aborts.",
+ io:"IN: run_id + paths. OUT: {abort:bool, checks:[…]}",
+ nodes:[
+ {id:"OM-N1",type:"process",label:"Invoke run_preflight",logic:"orchestrator_main.run() → _pf.run_preflight(run_id, **kwargs)",ref:"orchestrator_main.py:89",db:"",branches:[{cond:"always",to:"PF-N1"}],explain:"Entry; all checks collected, abort decided at end."},
+ {id:"PF-N1",type:"decision",label:"Timer file present?",logic:"timer_path.exists()  (default .claude/scratch/spec-15-session-start.txt)",ref:"preflight_chain.py:85-89",db:"",branches:[{cond:"exists → ok",to:"PF-N2"},{cond:"absent → ok=False (collected)",to:"PF-N2"}],explain:"Confirms a spec-15 session was formally started. Does not abort immediately — all checks run first."},
+ {id:"PF-N2",type:"process",label:"Probe mutex state",logic:"BuildMutex('preflight-probe').status()",ref:"preflight_chain.py:93-99",db:"",branches:[{cond:"always",to:"PF-N3"}],explain:"Reads .claude/scratch/spec-15-mutex.lock."},
+ {id:"PF-N3",type:"decision",label:"Mutex free or stale?",logic:"state in ('free','stale') → ok; 'held' → ok=False",ref:"preflight_chain.py:95 / mutex.py:114",db:"",branches:[{cond:"free (no lock)",to:"PF-N4"},{cond:"stale (age>3600s)",to:"PF-N4"},{cond:"held (live lock)",to:"PF-N4"}],explain:"Stops a parallel /sgs-update or /sgs-clone corrupting the DB."},
+ {id:"PF-N4",type:"db_check",label:"sgs-framework.db reachable + populated?",logic:"SELECT COUNT(*) FROM block_attributes → db_ok = count>0",ref:"preflight_chain.py:103-118",db:"block_attributes (COUNT)",branches:[{cond:"db absent",to:"PF-N5"},{cond:"sqlite error",to:"PF-N5"},{cond:"COUNT>0 → ok",to:"PF-N5"},{cond:"COUNT==0 → ok=False",to:"PF-N5"}],explain:"Confirms the knowledge base is seeded. Only DB query in the whole pre-flight."},
+ {id:"PF-N5",type:"decision",label:"visual-qa skill present?",logic:"visual_qa_skill.exists()",ref:"preflight_chain.py:121-125",db:"",branches:[{cond:"exists → ok",to:"PF-N6"},{cond:"absent → ok=False",to:"PF-N6"}],explain:"Pipeline can't run parity checks without /visual-qa."},
+ {id:"PF-N6",type:"decision",label:"Expected files present? (optional)",logic:"for f in expected_files: check(f.exists())",ref:"preflight_chain.py:127-133",db:"",branches:[{cond:"none specified → skip",to:"PF-N7"},{cond:"each exists → ok",to:"PF-N7"},{cond:"any absent → ok=False",to:"PF-N7"}],explain:"Caller-specified entry-precondition files."},
+ {id:"PF-N7",type:"gate",label:"Any check failed? (fail-ANY)",logic:"abort = bool([c for c in checks if not c.ok])",ref:"preflight_chain.py:136-142",db:"",branches:[{cond:"all ok",to:"OK:proceed to staged-merge (Stages 1-9)"},{cond:"≥1 failed",to:"TERMINAL:HALT — emit deliverable, no stages run"}],explain:"A single failure aborts; deliverable names every failing check."},
+ {id:"MX-1",type:"decision",label:"[mutex.acquire] Lock exists AND not stale?",logic:"current=_read_lock(); if current and not _is_stale(current): raise MutexBusy",ref:"mutex.py:88-92",db:"",branches:[{cond:"absent → acquire",to:"OK:lock acquired"},{cond:"age>3600s stale → acquire",to:"OK:lock acquired"},{cond:"live (≤3600s) → raise",to:"TERMINAL:MutexBusy — caller aborts"}],explain:"File lock at spec-15-mutex.lock. Malformed (no epoch) treated as stale."},
+ ]},
+
+{stage:"0b",name:"Pre-commit gate",file:"preflight_chain.py",runs:"before any git commit (5e.2, fail-CLOSED)",
+ purpose:"Block a commit when BEM/token/drift/unit-test gates fail. Missing command = fail-closed by design.",
+ io:"IN: validator + lint commands. OUT: {abort:bool}",
+ nodes:[
+ {id:"PC-N1",type:"gate",label:"Drift validator present + passing?",logic:"drift-validator/validate.py --strict (rc==0)",ref:"preflight_chain.py:173-178",db:"",branches:[{cond:"absent → fail-closed",to:"PC-N2"},{cond:"rc==0 → ok",to:"PC-N2"},{cond:"rc!=0 → fail",to:"PC-N2"}],explain:"Canonical-slot drift blocks the commit."},
+ {id:"PC-N2",type:"gate",label:"BEM lint passing?",logic:"bem_lint_cmd (rc==0); None → fail-closed",ref:"preflight_chain.py:183-188",db:"",branches:[{cond:"no cmd → fail-closed",to:"PC-N3"},{cond:"rc==0 → ok",to:"PC-N3"},{cond:"rc!=0 → fail",to:"PC-N3"}],explain:"5e.2 contract: missing command is a failure, not a skip."},
+ {id:"PC-N3",type:"gate",label:"Token lint passing?",logic:"token_lint_cmd (rc==0); None → fail-closed",ref:"preflight_chain.py:193-197",db:"",branches:[{cond:"no cmd → fail-closed",to:"PC-N4"},{cond:"rc==0",to:"PC-N4"},{cond:"rc!=0",to:"PC-N4"}],explain:"Same fail-closed semantics."},
+ {id:"PC-N4",type:"gate",label:"Phase-1 unit tests passing? (optional)",logic:"for t in phase_1_tests: run(t) rc==0",ref:"preflight_chain.py:199-206",db:"",branches:[{cond:"none → skip",to:"PC-N5"},{cond:"absent → fail",to:"PC-N5"},{cond:"rc==0",to:"PC-N5"},{cond:"rc!=0",to:"PC-N5"}],explain:"One failing test blocks the commit."},
+ {id:"PC-N5",type:"gate",label:"Any pre-commit check failed?",logic:"abort = bool(failed)",ref:"preflight_chain.py:208-213",db:"",branches:[{cond:"all pass",to:"OK:commit may proceed"},{cond:"any fail",to:"TERMINAL:commit BLOCKED"}],explain:"Fail-closed: callers MUST NOT commit when abort=True."},
+ ]},
+
+{stage:"0.7",name:"CSS Router — 4-destination",file:"css_router.py (route_css)",runs:"during extraction; every CSS rule → exactly one of D0/D1/D2/D3",
+ purpose:"Split the draft <style> so every CSS rule hits exactly ONE destination — NO silent drops. D0 global, D1 typed-attr lift, D2 scoped CSS, D3 gap-candidate.",
+ io:"IN: css_text, boundaries, theme_json. OUT: {d0:[],d1:{section:{attr}},d2:[],d3:[]}",
+ nodes:[
+ {id:"CR-N0",type:"gate",label:"Empty input?",logic:"if not css_text.strip()",ref:"css_router.py:379",db:"",branches:[{cond:"empty",to:"TERMINAL:return empty buckets"},{cond:"has content",to:"CR-N1"}]},
+ {id:"CR-N1",type:"process",label:"Parse CSS (tinycss2)",logic:"_parse_qualified_rules → handles @media/@supports nesting; skips @keyframes/@font-face/@import; strips !important",ref:"css_router.py:107-168,382",db:"",branches:[{cond:"parse error → WARNING, no D2 fallback",to:"TERMINAL:⚠ SILENT-DROP RISK (whole block lost)"},{cond:"per-rule loop",to:"CR-N2"}]},
+ {id:"CR-N2",type:"decision",label:"Selector empty?",logic:"if not selector",ref:"css_router.py:388-392",db:"",branches:[{cond:"empty (malformed)",to:"TERMINAL:D2 + malformed++"},{cond:"has selector",to:"CR-N3"}],explain:"Malformed rules still go D2, never dropped."},
+ {id:"CR-N3",type:"decision",label:"Chrome-skip? (header/footer/nav first token)",logic:"_selector_targets_chrome(selector)  (hardcoded {header,footer,nav})",ref:"css_router.py:223-246,412",db:"",branches:[{cond:"chrome",to:"TERMINAL:D0 unscoped (template part overrides)"},{cond:"not chrome",to:"CR-N4"}],explain:"F6 fix: was silent skip, now routes D0 (no silent drops)."},
+ {id:"CR-N4",type:"decision",label:"D0 global selector AND not @media?",logic:"_is_d0_global(selector) and media is None",ref:"css_router.py:188-220,428",db:"",branches:[{cond:"global top-level",to:"TERMINAL:D0"},{cond:"else",to:"CR-N5"}],explain:"F7: @media-wrapped globals fall through to D2 to keep their media wrapper."},
+ {id:"CR-N5",type:"process",label:"Extract classes from selector",logic:"_selector_classes(selector)  (strip pseudos, collect .class)",ref:"css_router.py:175-185,436",db:"",branches:[{cond:"always",to:"CR-N6"}],explain:"⚠ pseudo-element CSS (::before/::after) routed as its base class to D2; no block attr ever set."},
+ {id:"CR-N6",type:"decision",label:"Any classes?",logic:"if not classes",ref:"css_router.py:438-443",db:"",branches:[{cond:"none (ID/attr selector)",to:"TERMINAL:D2"},{cond:"has classes",to:"CR-N7"}]},
+ {id:"CR-N7",type:"db_check",label:"Resolve block slug from classes",logic:"_find_block_root_in_classes → db.parse_sgs_bem(cls) → db.block_exists('sgs/'+block)",ref:"css_router.py:249-273,445",db:"slots (parse_sgs_bem), blocks (block_exists)",branches:[{cond:"no class → known block",to:"TERMINAL:D2"},{cond:"slug found",to:"CR-N8"}],explain:"BEM is the only recognition signal (R-22-2)."},
+ {id:"CR-N8",type:"process",label:"Build section_key + init D1 dict",logic:"section_key=f'{slug}:{selector}' (F3 — keep distinct instances)",ref:"css_router.py:467-484",db:"",branches:[{cond:"per-property loop",to:"CR-N10"}]},
+ {id:"CR-N10",type:"db_check",label:"Typed-attr check (D1 gate)",logic:"_css_prop_maps_to_typed_attr: scan ALL block_attrs for any attr ending with the suffix for css_prop (F4 full scan)",ref:"css_router.py:275-302,491",db:"property_suffixes, block_attributes",branches:[{cond:"block has typed attr",to:"CR-N11"},{cond:"no typed attr",to:"CR-N12"}]},
+ {id:"CR-N11",type:"terminal",label:"D1 — typed-attr lift",logic:"d1[section][attr_path]={value,role,…}; d1_lifted_props.add(css_prop)",ref:"css_router.py:493-508",db:"",branches:[{cond:"written",to:"TERMINAL:D1 entry (token-snap downstream)"}],explain:"var() substitution happens in Stage 4.5 token_resolver, not here."},
+ {id:"CR-N12",type:"db_check",label:"Prop in suffix table at all? (D3 gate)",logic:"any(p==css_prop for p,_,_ in _css_prop_suffixes())",ref:"css_router.py:514-516",db:"property_suffixes",branches:[{cond:"in table but block lacks attr",to:"CR-N13"},{cond:"not in table",to:"CR-N14"}],explain:"Distinguishes 'block gap' (D3) from 'not a typed prop' (D2)."},
+ {id:"CR-N13",type:"terminal",label:"D3 — gap candidate (+D2 fallback)",logic:"d3.append({slug,css_property,raw_value,…})",ref:"css_router.py:519-530",db:"attribute_gap_candidates (post-route)",branches:[{cond:"always",to:"TERMINAL:D3 + D2 fallback"}]},
+ {id:"CR-N14",type:"terminal",label:"D2-only prop (no suffix mapping)",logic:"prop stays in props → post-loop D2 emission",ref:"css_router.py:533-536",db:"",branches:[{cond:"always",to:"CR-N15"}],explain:"e.g. display, position, z-index → straight D2 (rendered, but no block attr — see M3)."},
+ {id:"CR-N15",type:"process",label:"Post-loop D2 emission (F2 filter)",logic:"remaining = props minus d1_lifted_props → D2 rule with only non-D1 props",ref:"css_router.py:538-550",db:"",branches:[{cond:"remaining non-empty",to:"TERMINAL:D2 (non-D1 props only)"},{cond:"all D1-lifted",to:"CR-N16"}],explain:"F2: excludes D1 props from D2 to avoid specificity fights."},
+ {id:"CR-N16",type:"gate",label:"Safety net — nothing routed?",logic:"if not rule_routed",ref:"css_router.py:552-557",db:"",branches:[{cond:"nothing routed",to:"TERMINAL:D2 full rule (no silent drop)"},{cond:"routed",to:"CR-N2"}]},
+ ]},
+
+{stage:"0.7b",name:"Token Resolver",file:"token_resolver.py",runs:"Stage 4.5 — snap a lifted value to a theme token or flag gap",
+ purpose:"Resolve one (block,attr,raw_value) to var(--wp--preset--…) or a gap candidate. Below confidence 0.6 → gap, not emitted.",
+ io:"IN: block, attr, raw_value, theme_json. OUT: {token_slug, css_var, is_gap_candidate}",
+ nodes:[
+ {id:"TR-N1",type:"process",label:"Infer role from attr name",logic:"_role_for_attr: fontfamily→family; fontsize→font_size; shadow→shadow; color/bg/border→color; padding/margin/gap→spacing; else None",ref:"token_resolver.py:81-95",db:"",branches:[{cond:"role None",to:"TERMINAL:snap skipped (no role)"},{cond:"role found",to:"TR-N4"}]},
+ {id:"TR-N4",type:"db_check",label:"theme.json registry slice for role",logic:"color→palette; spacing→spacingSizes; font_size→fontSizes; shadow→presets; family→fontFamilies",ref:"token_resolver.py:98-111,181",db:"theme.json (base + client variation)",branches:[{cond:"empty slice",to:"TERMINAL:gap candidate"},{cond:"has entries",to:"TR-N6"}]},
+ {id:"TR-N6",type:"decision",label:"confidence ≥ 0.6?",logic:"if confidence >= min_confidence (0.6)",ref:"token_resolver.py:202-216",db:"",branches:[{cond:"≥0.6",to:"OK:SNAPPED → var(--wp--preset--ns--slug)"},{cond:"<0.6",to:"TERMINAL:gap candidate"}]},
+ ]},
+
+{stage:"1",name:"Boundary hook + Lingua-franca",file:"stage1_boundary_hook.py + lingua_franca.py",runs:"after Stage-1 boundary detection; enriches each boundary",
+ purpose:"FR9: never rewrite Bean-controlled SGS-BEM drafts. Classify naming convention + convert non-SGS to SGS-BEM equivalents.",
+ io:"IN: stage-1-boundary.json. OUT: + source_convention/primary_sgs_bem/equivalent_implementations/gap_candidate_classes",
+ nodes:[
+ {id:"S1H-N3",type:"decision",label:"Already SGS-BEM canonical? (FR9 fast path)",logic:"all(round_trip_check(c)) — is_canonical_for_drafts AND sgs_bem_class==c",ref:"stage1_boundary_hook.py:137",db:"",branches:[{cond:"empty signature",to:"S1H-N5"},{cond:"ALL pass round-trip",to:"TERMINAL:identity pass-through (no conversion)"},{cond:"ANY fails",to:"S1H-N5"}],explain:"Bean SGS-BEM drafts must NOT be rewritten."},
+ {id:"S1H-N5",type:"decision",label:"Classify source convention",logic:"classifier or heuristic: SGS / Bootstrap5 / Tailwind / BEM / kebab-semantic (highest class-match)",ref:"stage1_boundary_hook.py:160",db:"",branches:[{cond:"production → /uimax-classify-naming",to:"S1H-N6b"},{cond:"heuristic / None",to:"S1H-N6b"}]},
+ {id:"S1H-N6b",type:"decision",label:"Apply convention rules in order (hint re-orders)",logic:"rules=[SGS,BEM,Bootstrap,kebab,Tailwind,shadcn]; first match wins",ref:"lingua_franca.py:269-282",db:"",branches:[{cond:"hashed/minified class",to:"TERMINAL:gap candidate → sgs-container"},{cond:"SGS canonical",to:"TERMINAL:identity"},{cond:"BEM/Bootstrap/kebab + slot_map hit",to:"TERMINAL:mapped SGS block"},{cond:"miss / Tailwind / shadcn",to:"TERMINAL:default 'container'"}],explain:"Slot maps: card→card-grid, btn→button, hero-copy→hero. trust-bar mapping REMOVED D72."},
+ ]},
+
+{stage:"2",name:"Walker — recognition + block-match",file:"convert.py walk() + db_lookup.py",runs:"Stage 2/3 — the universal recursive walker; 3 permitted exceptions",
+ purpose:"Every BEM-classed node → a block slug (or slug-None wrapper) via DB lookup. Exactly 3 permitted walker exceptions; no per-block code branches.",
+ io:"IN: node, css_rules, depth, is_top_level, parent_block. OUT: WP block markup or None",
+ nodes:[
+ {id:"W-P1",type:"decision",label:"Node is Comment / NavigableString / Tag?",logic:"Comment → drop; NavigableString → text; Tag → continue",ref:"convert.py:4376-4384",db:"",branches:[{cond:"Comment",to:"TERMINAL:drop (None)"},{cond:"text",to:"TERMINAL:emit stripped text"},{cond:"not Tag",to:"TERMINAL:None"},{cond:"Tag",to:"W-E1"}]},
+ {id:"W-E1",type:"process",label:"Extract sgs-* BEM classes",logic:"sgs_classes=[c for c in classes if c.startswith('sgs-')]",ref:"convert.py:4387-4388",db:"",branches:[{cond:"always",to:"W-B1"}]},
+ {id:"W-B1",type:"decision",label:"Exception 1 — Atomic tag swap?",logic:"not sgs_classes and node.name in db.atomic_tag_map()",ref:"convert.py:4397",db:"html_tag_to_core_block (atomic_tag_map)",branches:[{cond:"no sgs-class + tag mapped",to:"TERMINAL:emit atomic block (typography lifted)"},{cond:"else",to:"W-B2"}]},
+ {id:"W-B2",type:"decision",label:"Exception 2 — Chrome-skip at top level?",logic:"is_top_level and node.name in {header,footer,nav}",ref:"convert.py:4429-4436",db:"(SKIP_TOP_LEVEL_TAGS — only permitted constant)",branches:[{cond:"no sgs-class OR bem.block is chrome",to:"TERMINAL:chrome-skip (None)"},{cond:"sgs-hero on <header> etc.",to:"W-R1"}],explain:"A content block wearing a semantic tag is NOT skipped."},
+ {id:"W-R1",type:"db_check",label:"Resolve slug from BEM classes",logic:"db.resolve_slug_from_bem(sgs_classes)",ref:"convert.py:4444 / db_lookup.py:3080",db:"blocks (status=built), slots, block_capabilities",branches:[{cond:"→ resolution sub-graph",to:"W-BEM1"}]},
+ {id:"W-BEM1",type:"decision",label:"Path 1 — bare block classes (element=None)?",logic:"bare = ['sgs/'+bem.block for … if element is None and in registered]",ref:"db_lookup.py:2974-2981",db:"blocks WHERE status='built'",branches:[{cond:"exactly 1",to:"TERMINAL:return sgs/<block>"},{cond:">1",to:"W-BEM-CAP"},{cond:"0",to:"W-BEM2"}],explain:".sgs-hero → sgs/hero."},
+ {id:"W-BEM-CAP",type:"db_check",label:"Capability tiebreaker (FR-22-15/D96)",logic:"sort by (_capability_rank, slug); first = most specific",ref:"db_lookup.py:2988-2994",db:"block_capabilities (28-tag priority)",branches:[{cond:"always",to:"TERMINAL:most-specific-capability slug"}]},
+ {id:"W-BEM2",type:"db_check",label:"Path 2 — element-only slot alias",logic:"slot_alias_map.get(bem.element) → standalone_block",ref:"db_lookup.py:2999-3007",db:"slots (aliases, standalone_block)",branches:[{cond:"alias hit",to:"TERMINAL:standalone block (label→sgs/label)"},{cond:"miss",to:"W-BEM3"}]},
+ {id:"W-BEM3",type:"db_check",label:"Path 2b — compound element prefix-strip",logic:"head-tail: if both real slots → slot_alias_map[tail]",ref:"db_lookup.py:3049-3060",db:"slots",branches:[{cond:"both head+tail slots",to:"TERMINAL:slot_alias_map[tail]"},{cond:"no match",to:"TERMINAL:None (slug-None wrapper)"}]},
+ {id:"W-R4",type:"decision",label:"Dispatch on slug + level",logic:"slug None? is_top_level?",ref:"convert.py:4517",db:"",branches:[{cond:"slug=None + nested + sgs-classes",to:"W-R4a"},{cond:"slug=None + nested + no sgs-classes",to:"TERMINAL:walk_passthrough (transparent wrapper)"},{cond:"slug=None + top-level",to:"W-TL1"},{cond:"slug resolved",to:"W-NZ1"}]},
+ {id:"W-R4a",type:"decision",label:"slug-None sgs node — text leaf or wrapper?",logic:"_node_is_text_leaf(node)?",ref:"convert.py:4523-4526",db:"html_tag_to_core_block, slots",branches:[{cond:"text leaf",to:"TERMINAL:_route_text_leaf → sgs/text|heading|media"},{cond:"has block-level/sgs children",to:"TERMINAL:_emit_wrapper_container → sgs/container"}]},
+ ]},
+
+{stage:"3a",name:"Text-leaf routing",file:"convert.py _route_text_leaf()",runs:"resolve a slug-None content-only node to a leaf block",
+ purpose:"A content-only node with an sgs-class but no resolved block → correct text/media leaf. HTML tag authoritative for content TYPE.",
+ io:"IN: node. OUT: leaf block slug",
+ nodes:[
+ {id:"TL-1",type:"db_check",label:"HTML tag has atomic mapping?",logic:"db.atomic_tag_map().get(node.name)",ref:"convert.py:5644",db:"html_tag_to_core_block",branches:[{cond:"img/p/h*/etc.",to:"TERMINAL:atomic slug (img→sgs/media)"},{cond:"span/div",to:"TL-2"}]},
+ {id:"TL-2",type:"db_check",label:"BEM element hyphen-segment → text-capable block",logic:"reversed segments: block_for_slot_token AND _is_text_capable_block",ref:"convert.py:5651-5663",db:"slots, block_attributes (text/content string)",branches:[{cond:"tail resolves + text-capable",to:"TERMINAL:that block (price→sgs/text)"},{cond:"no match",to:"TL-3"}]},
+ {id:"TL-3",type:"terminal",label:"Default — sgs/text",logic:"target='sgs/text'",ref:"convert.py:5667",db:"",branches:[{cond:"always",to:"TERMINAL:sgs/text"}]},
+ ]},
+
+{stage:"3b",name:"Top-level section + width mode",file:"convert.py walk() slug-None top-level",runs:"slug-None section → sgs/container with widthMode",
+ purpose:"Every top-level section becomes sgs/container (FR-22-4). max-width → widthMode (full/default/wide/custom).",
+ io:"IN: section node. OUT: sgs/container markup",
+ nodes:[
+ {id:"W-TL2",type:"decision",label:"widthMode from own max-width",logic:"no mw→full; ~contentSize→default; ~wideSize→wide; numeric→custom (5% tol)",ref:"convert.py:4551-4561",db:"theme-snapshot.json / theme.json",branches:[{cond:"no max-width",to:"TERMINAL:widthMode=full"},{cond:"≈contentSize",to:"TERMINAL:widthMode=default"},{cond:"≈wideSize",to:"TERMINAL:widthMode=wide"},{cond:"numeric",to:"TERMINAL:widthMode=custom + customWidth"}]},
+ {id:"W-TL3",type:"process",label:"A3 route_node_css (wrapper-css + root-supports)",logic:"route_node_css(node, effective_slug='sgs/container')",ref:"convert.py:4588",db:"block_attributes, property_suffixes, block_supports",branches:[{cond:"always",to:"W-TL4"}],explain:"GAP-3: display:grid NOT lifted inline on slug-None sections."},
+ {id:"W-TL4",type:"process",label:"_process_container_children (fold/walk)",logic:"applies the FOLD DECISION TREE to direct children",ref:"convert.py:4589",db:"(see Stage 3c)",branches:[{cond:"always",to:"W-TL5"}]},
+ {id:"W-TL5",type:"process",label:"_lift_uniform_grid_item_css (FR-22-21 step 4)",logic:"uniform child box-CSS → gridItem* attrs",ref:"convert.py:4593",db:"block_attributes (gridItem*)",branches:[{cond:"always",to:"TERMINAL:_emit_section_container → sgs/container"}]},
+ ]},
+
+{stage:"3c",name:"Fold decision tree",file:"convert.py _process_container_children()",runs:"process direct children of an emitting container — fold vs walk",
+ purpose:"FR-22-4.1: per child — scalar-media lift / grid-per-area dissolve / classic fold / non-sgs content fold / plain walk. No wrapper silently dropped.",
+ io:"IN: container node, parent_slug. OUT: children markup; parent attrs mutated",
+ nodes:[
+ {id:"F-0",type:"process",label:"Pre-compute fold eligibility",logic:"fold_eligible=(1 child); fold_net_sole=(1 non-scalar-media child AND grid-areas AND parent_slug)",ref:"convert.py:5945-5989",db:"block_attributes (scalar-media), CSS grid-template-areas",branches:[{cond:"always",to:"F-2"}]},
+ {id:"F-2",type:"decision",label:"Rule 0 — Scalar-media lift? (FR-22-19)",logic:"_parent_has_scalar_media AND db.scalar_media_attr_for(parent_slug, child_element)",ref:"convert.py:6011-6019",db:"block_attributes (role='scalar-media')",branches:[{cond:"child element maps to scalar-media attr",to:"F-R0"},{cond:"no match",to:"F-3"}],explain:"sgs/hero splitImage from img in __media."},
+ {id:"F-R0",type:"process",label:"Rule 0 — lift <img> into scalar-media attr",logic:"container_attrs[target]=_lift_scalar_media_from_img(img)",ref:"convert.py:6022-6060",db:"",branches:[{cond:"no imgs (e.g. <video>)",to:"TERMINAL:⚠ column consumed, NOTHING emitted (M2-G2/G13 silent drop)"},{cond:"imgs",to:"TERMINAL:column consumed — NO markup"}]},
+ {id:"F-3",type:"decision",label:"Rule 2 — fold type?",logic:"grid-net-sole vs fold_eligible vs non-sgs content-width vs walk",ref:"convert.py:6081-6086",db:"(pre-computed grid-areas)",branches:[{cond:"grid net-sole + area-named",to:"F-GA"},{cond:"sole child (classic)",to:"F-CF"},{cond:"non-sgs + content-layer CSS",to:"F-NCS"},{cond:"all other",to:"F-WALK"}]},
+ {id:"F-GA",type:"process",label:"Grid-per-area dissolve (D207, L4)",logic:"_route_area_css_to_block_attrs(child, area, owning=parent_slug); recurse grandchildren",ref:"convert.py:6096-6124",db:"block_attributes (per-area via attr_for_area_property)",branches:[{cond:"always",to:"TERMINAL:grandchildren emitted; NO wrapper"}],explain:"Hero __content padding → contentPadding* at responsive tiers."},
+ {id:"F-CF",type:"process",label:"Classic fold (sole element child)",logic:"_fold_layout_into_attrs(child) + _route_interior_css_to_parent_slot",ref:"convert.py:6128-6150",db:"block_attributes, property_suffixes, block_supports",branches:[{cond:"always",to:"TERMINAL:parent attrs gain folded grid/max-width/padding"}]},
+ {id:"F-NCS",type:"process",label:"Non-sgs classless content-width fold",logic:"if _detect_content_layer → _route_interior_css_to_parent_slot(element_token=None)",ref:"convert.py:6162-6178",db:"block_attributes",branches:[{cond:"content-layer",to:"TERMINAL:fold non-sgs content wrapper"},{cond:"not",to:"F-WALK"}]},
+ {id:"F-WALK",type:"process",label:"Rule 3 / FR-22-11 — normal walk()",logic:"walk(child, depth+1, parent_block=parent_slug)",ref:"convert.py:6185",db:"(full walk graph)",branches:[{cond:"always",to:"TERMINAL:child's own markup (or None)"}]},
+ ]},
+
+{stage:"3d",name:"Layer detection",file:"convert.py _detect_content_layer()",runs:"classify a CSS decl-block as CONTENT-WIDTH layer or not",
+ purpose:"The name-free signal that decides if a wrapper is the content-width band (L2). MF-3: caller MUST guarantee non-root inner element.",
+ io:"IN: base_decls. OUT: True (CONTENT layer) / False",
+ nodes:[
+ {id:"L-1",type:"decision",label:"--content-width custom property?",logic:"'--content-width' in props or any value",ref:"convert.py:2260-2265",db:"",branches:[{cond:"yes",to:"TERMINAL:CONTENT = True (deterministic)"},{cond:"no",to:"L-2"}]},
+ {id:"L-2",type:"decision",label:"max-width present?",logic:"if not raw_mw: return False",ref:"convert.py:2268-2270",db:"",branches:[{cond:"no",to:"TERMINAL:CONTENT = False"},{cond:"present",to:"L-3"}]},
+ {id:"L-3",type:"decision",label:"max-width is min()/clamp()/max()?",logic:"startswith (min(,clamp(,max()",ref:"convert.py:2274-2275",db:"",branches:[{cond:"function",to:"TERMINAL:CONTENT = False (responsive sizing)"},{cond:"plain",to:"L-4"}]},
+ {id:"L-4",type:"decision",label:"display flex/grid?",logic:"display in (flex,grid,inline-flex,inline-grid)",ref:"convert.py:2282-2284",db:"",branches:[{cond:"flex/grid",to:"TERMINAL:CONTENT = False (⚠ M1: nested grid-with-max-width misroutes here)"},{cond:"not",to:"L-5"}]},
+ {id:"L-5",type:"decision",label:"Margin-centring signature?",logic:"margin:0 auto OR margin-left:auto AND margin-right:auto",ref:"convert.py:2287-2301",db:"",branches:[{cond:"centred",to:"TERMINAL:CONTENT = True"},{cond:"no centring",to:"TERMINAL:CONTENT = False"}],explain:"⚠ margin-inline:auto longhand NOT detected (M1 gap)."},
+ ]},
+
+{stage:"4a",name:"CSS-lift dispatcher",file:"convert.py route_node_css()",runs:"Stage 4 — single entry for all 3 CSS-lift helpers inside walk()",
+ purpose:"Dispatch a node's CSS to: typography / root-supports / wrapper-css lift, gated by flags per call-site. setdefault throughout.",
+ io:"IN: node, css_rules, attrs, effective_slug, flags. OUT: attrs mutated",
+ nodes:[
+ {id:"D-N5",type:"process",label:"lift_root_supports → _lift_root_supports_to_style",logic:"writes style.* WP-native paths",ref:"convert.py:2119-2120",db:"block_supports",branches:[{cond:"always",to:"D-N7"}]},
+ {id:"D-N7",type:"process",label:"Build typography-ownership set (Commit 1b)",logic:"db.attr_for_property(typo_slug, prop) → if typography-owned → _owned.add",ref:"convert.py:2124-2157",db:"property_suffixes + block_attributes",branches:[{cond:"always",to:"D-N8"}]},
+ {id:"D-N8",type:"process",label:"lift_wrapper_css → _lift_wrapper_css_to_container_attrs",logic:"DB-driven Method-2 lift onto container attrs",ref:"convert.py:2159-2166",db:"block_attributes, property_suffixes",branches:[{cond:"always",to:"TERMINAL:route_node_css done"}]},
+ ]},
+
+{stage:"4b",name:"Cascade resolver",file:"convert.py _collect_css_decls_for_element()",runs:"resolve which CSS decls target a node (base + @media tiers)",
+ purpose:"Correct CSS specificity + source-order; inline wins; @media rules bucket into Mobile/Tablet/Desktop. THE place breakpoints become device tiers.",
+ io:"IN: node, css_rules. OUT: (base_decls, bp_decls{Mobile|Tablet|Desktop})",
+ nodes:[
+ {id:"C-N4",type:"process",label:"Sort base by specificity+source-order; inline wins",logic:"matched_base.sort((spec, src_order)); update; then inline.update",ref:"convert.py:732-737",db:"",branches:[{cond:"always",to:"C-N5"}],explain:"last-wins = higher specificity wins (fixes first-wins Family-K bug)."},
+ {id:"C-N5",type:"db_check",label:"Route @media → breakpoint suffix bucket",logic:"for (substr, suffixes) in db.breakpoint_suffix_rules(): if substr in media → bp_decls[suffix].update",ref:"convert.py:748-756 / db_lookup.py:1419",db:"modifier_suffixes (kind='breakpoint')",branches:[{cond:"min-width:768",to:"TERMINAL:[Tablet, Desktop]"},{cond:"min-width:1024 / 1280",to:"TERMINAL:[Desktop]"},{cond:"max-width:767 / 640",to:"TERMINAL:[Mobile]"},{cond:"@media at any OTHER value (e.g. 600)",to:"TERMINAL:⚠ SILENT DROP — not in _BREAKPOINT_RULES (M1/M3-S2)"}],explain:"_BREAKPOINT_RULES (db_lookup.py:1409). The grid path uses separate _GRID_*_BP=768/1024 constants — values aligned but 3 parallel code paths."},
+ ]},
+
+{stage:"4c",name:"Wrapper-CSS lift (Method-2)",file:"convert.py _lift_wrapper_css_to_container_attrs() + _try_lift_prop()",runs:"lift any CSS decl onto a container attr via the DB suffix table",
+ purpose:"The universal property→attr lift. property_suffixes → suffix → block attr. Type-aware. A-collapse. No destination → gap candidate.",
+ io:"IN: base_decls, bp_decls, container_attr_names. OUT: (attrs, flagged_gaps)",
+ nodes:[
+ {id:"W-N1",type:"db_check",label:"Build prop→suffixes map from DB",logic:"for css_prop,suffix,kind in db.css_property_suffixes()",ref:"convert.py:1147 / db_lookup.py:1030",db:"property_suffixes",branches:[{cond:"always",to:"T-N1"}]},
+ {id:"T-N1",type:"gate",label:"Exclude width / max-width",logic:"width always excluded; max-width excluded unless allow_max_width",ref:"convert.py:1167-1170",db:"",branches:[{cond:"excluded",to:"TERMINAL:skip (not flagged — documented)"},{cond:"passes",to:"T-N2"}]},
+ {id:"T-N2",type:"db_check",label:"Prop has DB suffixes?",logic:"suffix_list = prop_to_suffixes.get(css_prop)",ref:"convert.py:1172-1178",db:"property_suffixes",branches:[{cond:"none",to:"TERMINAL:return False → caller flags gap"},{cond:"has",to:"T-N4"}]},
+ {id:"T-N4",type:"db_check",label:"attr in container_attr_names + unset?",logic:"if not in names: try next suffix; if all miss → False",ref:"convert.py:1193-1196",db:"block_attributes",branches:[{cond:"unavailable",to:"T-N4 (next suffix → else flag gap)"},{cond:"available",to:"T-N6"}]},
+ {id:"T-N6",type:"decision",label:"kind dispatch + dest number-typed?",logic:"colour→_colour_value_to_style; number*+number dest→split value+unit; else string",ref:"convert.py:1210-1279",db:"block_attributes.attr_type",branches:[{cond:"colour ok",to:"TERMINAL:write attr"},{cond:"number-typed",to:"TERMINAL:write number + Unit companion"},{cond:"unparseable / mixed units / css-function on number",to:"TERMINAL:⚠ lift_gap_candidate TRACE-ONLY (no DB write — M3)"},{cond:"string",to:"TERMINAL:write raw string"}]},
+ {id:"W-N4",type:"process",label:"A-collapse — responsive attr missing, base exists",logic:"minHeightDesktop absent but minHeight present → write base",ref:"convert.py:1323-1354",db:"block_attributes",branches:[{cond:"collapsed",to:"TERMINAL:base attr written"},{cond:"still not placed",to:"TERMINAL:flag gap"}]},
+ ]},
+
+{stage:"4d",name:"Typography lift",file:"convert.py _lift_typography_to_block_attrs()",runs:"lift typography CSS onto leaf block flat attrs",
+ purpose:"8 props onto SGS flat attrs, Desktop→Tablet→base priority. Family B + C live here. Container-level typography NOT lifted (text-node only).",
+ io:"IN: node, slug. OUT: lifted typography attrs",
+ nodes:[
+ {id:"TY-N3",type:"process",label:"Desktop→Tablet→Mobile @media pass",logic:"for bp in (Desktop,Tablet,Mobile): responsive_attr=f'{primary}{bp}'",ref:"convert.py:1724-1748",db:"block_attributes",branches:[{cond:"per-device attr exists",to:"TERMINAL:write {attr}{bp}"},{cond:"no per-device attr (A-collapse)",to:"TERMINAL:write base attr (desktop wins)"}]},
+ {id:"TY-N6",type:"process",label:"Fix #4 — Mobile tier rescue",logic:"if base claimed by Desktop AND has fontSizeMobile AND base≠desktop → write base→{attr}Mobile",ref:"convert.py:1775-1808",db:"block_attributes",branches:[{cond:"always",to:"TERMINAL:rescue mobile tier"}],explain:"Family C: gated by the breakpoint vocabulary reaching Mobile."},
+ {id:"TY-R3",type:"decision",label:"number-typed + unit companion?",logic:"split value+unit; unit='' → 'unitless' sentinel",ref:"convert.py:1682-1700",db:"block_attributes.attr_type",branches:[{cond:"colour",to:"TERMINAL:write token-or-hex"},{cond:"number + unit attr",to:"TERMINAL:write number + unitless sentinel"},{cond:"string",to:"TERMINAL:write raw string"}],explain:"Family B: render.php MUST strip the 'unitless' sentinel."},
+ ]},
+
+{stage:"4e",name:"Cross-node + area routing + DB resolvers",file:"convert.py _route_interior_css_to_parent_slot / _route_area_css_to_block_attrs + db_lookup resolvers",runs:"route interior/area CSS onto the owning composite's per-layer/per-area attrs",
+ purpose:"When an interior element's CSS isn't owned by its block, route box/layout CSS to the parent. GAP-3 excludes display/grid-template-*.",
+ io:"IN: child node, owning block, parent_attrs. OUT: parent_attrs mutated",
+ nodes:[
+ {id:"RI-N3",type:"db_check",label:"slot_has_equivalent_block? (CONTENT fork)",logic:"SELECT 1 FROM block_attributes WHERE block_slug=? AND canonical_slot=? AND role IN (content-bearing)",ref:"convert.py:2642 / db_lookup.py:2298",db:"block_attributes (canonical_slot, role)",branches:[{cond:"content-bearing child block exists",to:"TERMINAL:skip (child owns CSS)"},{cond:"no equivalent",to:"LD-N1"}]},
+ {id:"LD-N1",type:"gate",label:"GAP-3 exclude display/grid-template-*",logic:"if css_prop in _CROSS_NODE_EXCLUDED_PROPS: return False",ref:"convert.py:2206-2212,2662",db:"",branches:[{cond:"excluded",to:"TERMINAL:⚠ SILENT skip (no trace — docstring says flag-not-drop but doesn't; M3-S3)"},{cond:"passes",to:"LD-N2"}]},
+ {id:"LD-N2",type:"decision",label:"Which layers to try? (priority)",logic:"max-width→[CONTENT,OUTER]; padding(content)→[CONTENT,GRID,OUTER]; gap/margin/min-height→[GRID,OUTER]; other→[OUTER]",ref:"convert.py:2666-2708",db:"",branches:[{cond:"always",to:"LD-N3"}]},
+ {id:"LD-N3",type:"db_check",label:"attr_for_layer_property per candidate layer",logic:"db.attr_for_layer_property(owning_block, layer, css_prop); first hit wins",ref:"convert.py:2712-2730 / db_lookup.py:2400",db:"property_suffixes + block_attributes (rowid-first)",branches:[{cond:"attr found",to:"TERMINAL:write parent attr (cross-node lift)"},{cond:"no layer hit",to:"TERMINAL:flag gap (_record_gap_candidate)"}],explain:"MF-4: rowid-first-match — fragile if a block declares 2 candidates."},
+ {id:"AR-N4",type:"db_check",label:"[area] attr_for_area_property lookup",logic:"area_prefix + suffix; 3-tier (base→Mobile, @768→Tablet, @1024+→base)",ref:"convert.py:2504-2585 / db_lookup.py:2558",db:"property_suffixes + block_attributes",branches:[{cond:"area attr found",to:"TERMINAL:write area tier-attr"},{cond:"excluded (width/height/--var)",to:"TERMINAL:⚠ silent skip (M3-D0)"},{cond:"None",to:"TERMINAL:flag gap (cross_node_gap_candidate trace)"}]},
+ ]},
+
+{stage:"4f",name:"Variant detection + post-emit enrichment",file:"db_lookup.py detect_variant() + convert.py walk() post-emit",runs:"after all attr lifting — pick the block variant + carry modifiers",
+ purpose:"FR-22-20: detect variant from slots extracted THIS run. Carry is-style-*/BEM modifiers, slot defaults, inheritStyle, variantStyle. Exception 3 wraps top-level non-section blocks.",
+ io:"IN: slug, attrs. OUT: variant attr set + className + Exception-3 wrap",
+ nodes:[
+ {id:"V-1",type:"db_check",label:"Block declares variant_slots?",logic:"variant_slots WHERE block_slug=?",ref:"db_lookup.py:1908",db:"variant_slots, blocks.variant_attr",branches:[{cond:"empty",to:"TERMINAL:None"},{cond:"populated",to:"V-3"}]},
+ {id:"V-3",type:"decision",label:"Score variants — top 0 or tied?",logic:"count slots populated from THIS run's extract; top_count==0 → None; tie → None",ref:"db_lookup.py:1911-1926",db:"",branches:[{cond:"0 matched",to:"TERMINAL:None (keep default)"},{cond:"tie",to:"TERMINAL:None (ambiguous — ⚠ M2-G3 no DB-default agreement check)"},{cond:"unique top",to:"TERMINAL:return variant"}],explain:"⚠ M2-G4: CSS-lifted structural attrs matching a discriminating slot can cause false variant detection."},
+ {id:"W-NZ5",type:"db_check",label:"Container-mirror block? + section-kind?",logic:"_is_container_mirror_block(slug); _is_section_kind_mirror_block(slug)",ref:"convert.py:4644-4652",db:"block_composition (wraps_block, container_kind)",branches:[{cond:"DB error (broad except)",to:"TERMINAL:⚠ returns False → wrong routing (M3-G1-C)"},{cond:"section-kind mirror + no widthMode",to:"TERMINAL:widthMode fallback"},{cond:"not mirror",to:"W-NZ6"}]},
+ {id:"W-NZ6",type:"db_check",label:"Recurse children? (child-shape fork)",logic:"_slug_accepts_inner = db.block_accepts_inner_blocks(slug)",ref:"convert.py:4725-4768",db:"block_composition.has_inner_blocks",branches:[{cond:"leaf (G1)",to:"TERMINAL:no children — attrs only"},{cond:"has_inner_blocks=0 (G3)",to:"TERMINAL:_lift_scalar/styling_attrs — scalar"},{cond:"has_inner_blocks=1 + mirror",to:"TERMINAL:_process_container_children"},{cond:"ordinary",to:"TERMINAL:plain child recursion"}],explain:"⚠ M2-G9 HIGH: stale has_inner_blocks (save.js changed without /sgs-update) mis-routes ALL nodes of that type."},
+ {id:"W-EX3",type:"decision",label:"Exception 3 — top-level container wrap?",logic:"is_top_level and slug!='sgs/container' and not section-kind-mirror",ref:"convert.py:5074-5075",db:"block_composition",branches:[{cond:"top-level non-container non-section-mirror",to:"TERMINAL:wrap in sgs/container"},{cond:"section-kind mirror",to:"TERMINAL:bare composite (R1 exemption)"},{cond:"nested",to:"TERMINAL:emit block"}],explain:"The ONLY 'sgs/container' literal in the walker."},
+ ]},
+
+{stage:"5",name:"Supports-writer — emit vs omit",file:"supports_writer.py",runs:"Stage 5 composition — decide emit/omit per attr vs theme.json defaults",
+ purpose:"OMIT an attr when its value equals the inherited theme.json default (WP native handles it). EMIT only real per-instance overrides.",
+ io:"IN: pending attrs, block_json, theme_json. OUT: emit/omit per attr",
+ nodes:[
+ {id:"S5-N1",type:"process",label:"attr → support key (substring)",logic:"8 keys: background/textcolor/color/bordercolor/fontfamily/fontsize/padding/margin",ref:"supports_writer.py:105-111",db:"",branches:[{cond:"no mapping",to:"TERMINAL:EMIT (no supports mapping)"},{cond:"key found",to:"S5-N2"}]},
+ {id:"S5-N2",type:"decision",label:"block.json declares this support?",logic:"_walk(block_json, supports_path)",ref:"supports_writer.py:125-127",db:"",branches:[{cond:"not declared",to:"TERMINAL:EMIT"},{cond:"declared",to:"S5-N3"}]},
+ {id:"S5-N3",type:"decision",label:"theme.json default exists?",logic:"_walk(theme_json, theme_path)",ref:"supports_writer.py:130-132",db:"theme.json",branches:[{cond:"absent",to:"TERMINAL:EMIT"},{cond:"found",to:"S5-N4"}]},
+ {id:"S5-N4",type:"decision",label:"resolved value == default?",logic:"resolved_value == default",ref:"supports_writer.py:162-163",db:"",branches:[{cond:"equal",to:"TERMINAL:OMIT (matches default)"},{cond:"differs",to:"TERMINAL:EMIT (override)"}]},
+ ]},
+
+{stage:"7b",name:"Staged merge + schema validation",file:"staged_merge.py + validate-stage-artifact.py",runs:"Stage 7b — apply every stage artefact in order; rollback atomically on failure",
+ purpose:"FR21 no-canonical-mutation: validate + apply each stage; ANY failure rolls back ALL applied stages.",
+ io:"IN: stage artefacts 1-9. OUT: MergeResult(success/rolled-back)",
+ nodes:[
+ {id:"SM-N2",type:"decision",label:"Artefact file exists?",logic:"stage_path(run_id, stage, name).exists()",ref:"staged_merge.py:118-125",db:"pipeline-state/<run_id>/stage-N-*.json",branches:[{cond:"missing",to:"TERMINAL:SM-FAIL → rollback"},{cond:"exists",to:"SM-N3"}]},
+ {id:"SM-N3",type:"decision",label:"Valid JSON?",logic:"json.loads()",ref:"staged_merge.py:126-134",db:"",branches:[{cond:"JSONDecodeError",to:"TERMINAL:SM-FAIL → rollback"},{cond:"parses",to:"SM-N4"}]},
+ {id:"SM-N4",type:"gate",label:"Schema validation (if require_schema)",logic:"validate_path(path, stage); stages 5+8 have NO schema → fail if require_schema",ref:"staged_merge.py:135-151",db:"schemas/stage-N.json (1,2,3,4,6,7,9)",branches:[{cond:"valid",to:"SM-N5"},{cond:"violations / no schema",to:"TERMINAL:SM-FAIL → rollback"}]},
+ {id:"SM-N5",type:"process",label:"handler.apply(artefact)",logic:"per-stage apply; exception → fail",ref:"staged_merge.py:153-163",db:"",branches:[{cond:"raises",to:"TERMINAL:SM-FAIL → rollback"},{cond:"ok",to:"SM-N7"}]},
+ {id:"SM-N7",type:"decision",label:"All applied — outcome?",logic:"outcome=='rolled-back'?",ref:"staged_merge.py:168",db:"merge-log.md",branches:[{cond:"rolled-back",to:"TERMINAL:reverse applied, rollback() each"},{cond:"success",to:"OK:MergeResult(success)"}]},
+ ]},
+
+{stage:"8",name:"Visual-QA capture + autonomy gate",file:"visual_qa_capture.py + autonomy_gate.py",runs:"Stage 8 — pixel-diff clone vs mockup at 375/768/1440; decide auto/surface/halt",
+ purpose:"The acceptance gate. ≤1% auto; 0.5–1% surface; >1% halt. Hard Rule 8 (unresolved slots) halts FIRST. EMPTY-SECTION false-win trap here.",
+ io:"IN: clone url, mockup. OUT: autonomy decision",
+ nodes:[
+ {id:"VQC-N4",type:"process",label:"Pixel diff (PIL) — crop both to MIN(w,h)",logic:"abs(Δr)+abs(Δg)+abs(Δb)>30 → diff pixel; ratio=diff/(min_w*min_h)",ref:"visual_qa_capture.py:182-219",db:"",branches:[{cond:"clone/PIL fail",to:"TERMINAL:diff_ratio=1.0"},{cond:"ok",to:"AG-AD"}]},
+ {id:"VQC-EMPTY",type:"gate",label:"EMPTY-SECTION false-win trap",logic:"empty section scores diff_ratio=0.0 (matches background) → false auto-proceed",ref:"visual_qa_capture.py (memory rule)",db:"",branches:[{cond:"UNGUARDED today",to:"TERMINAL:⚠ false PASS — Spec 31 §7b adds innerText.length>0 guard"}]},
+ {id:"AG-AD",type:"decision",label:"autonomy_decision matrix (priority)",logic:"Hard Rule 8 first, then skip/abort/console/diff bands",ref:"autonomy_gate.py:324-454",db:"stage-9-coverage.json, stage-8-visual_qa.json",branches:[{cond:"unresolved_slots>0",to:"TERMINAL:HALT (before any visual QA)"},{cond:"stage_8_skipped",to:"TERMINAL:surface-to-operator"},{cond:"console_errors / abort",to:"TERMINAL:HALT"},{cond:"diff>1%",to:"TERMINAL:HALT"},{cond:"0.5%<diff≤1%",to:"TERMINAL:surface-to-operator"},{cond:"diff≤0.5% + clean",to:"OK:auto-proceed → /sgs-update"}]},
+ ]},
+
+{stage:"10",name:"Deploy — upload + REST patch",file:"upload_and_patch.py + wp_integration.py",runs:"Stage 10 — upload media, patch the WP page, push theme snapshot",
+ purpose:"Sideload images, prepend variation CSS, PATCH the page via REST. Per-file errors don't abort; REST errors exit with distinct codes.",
+ io:"IN: extract.json, target page id. OUT: live page patched (exit code)",
+ nodes:[
+ {id:"WP-N1",type:"gate",label:"validate_block_markup (wp-blocks.py)",logic:"subprocess validate via stdin",ref:"wp_integration.py:43-90",db:"",branches:[{cond:"rc!=0",to:"TERMINAL:WpBlocksValidateError"},{cond:"valid",to:"UP-N5"}]},
+ {id:"UP-N5",type:"process",label:"Upload images (path-traversal guarded)",logic:"POST /wp/v2/media per file",ref:"upload_and_patch.py:185-209",db:"WP Media Library",branches:[{cond:"all fail",to:"TERMINAL:exit 1"},{cond:"ok",to:"UP-N9"}]},
+ {id:"UP-N9",type:"decision",label:"REST PATCH page/post",logic:"POST /wp/v2/{pages|posts}/{id}",ref:"upload_and_patch.py:258-292",db:"WP REST API",branches:[{cond:"404",to:"TERMINAL:exit 4"},{cond:"200 wrong id",to:"TERMINAL:exit 5"},{cond:"200 id matches",to:"UP-N10"}]},
+ {id:"UP-N10",type:"decision",label:"Push theme snapshot?",logic:"--client → push-theme-snapshot.py",ref:"upload_and_patch.py:319-353",db:"WP global styles",branches:[{cond:"snapshot fail + flag",to:"TERMINAL:exit 3"},{cond:"ok",to:"OK:exit 0 (deployed)"}]},
+ ]},
+
+{stage:"11+REG",name:"Pixel-diff gate + pattern registration",file:"register_patterns.py + essence_match_detector.py",runs:"Stage 11 — per-section live pixel-diff; register deferred-composed patterns",
+ purpose:"Register only sections passing ≤1% pixel-diff at ALL THREE viewports. Rosetta Stone chokepoint. Essence-match routes near-miss blocks to variations.",
+ io:"IN: stage-4 deferred sections, stage-11-pixel-diff.json. OUT: registered/skipped patterns",
+ nodes:[
+ {id:"REG-N4",type:"gate",label:"Slug valid?",logic:"^[a-z][a-z0-9-]*$",ref:"register_patterns.py:565-568",db:"",branches:[{cond:"invalid",to:"TERMINAL:SKIPPED"},{cond:"valid",to:"REG-N5"}]},
+ {id:"REG-N5",type:"gate",label:"Pixel-diff gate (≤1% at 375/768/1440)",logic:"for vp: missing/val>1.0 → fail",ref:"register_patterns.py:207-245",db:"stage-11-pixel-diff.json",branches:[{cond:"any vp >1% or missing",to:"TERMINAL:SKIPPED (no PHP, no INSERT)"},{cond:"all ≤1%",to:"REG-N6"}]},
+ {id:"REG-N6",type:"gate",label:"PHP file exists? (idempotent)",logic:"patterns/<slug>.php exists",ref:"register_patterns.py:618-633",db:"theme/.../patterns/<slug>.php",branches:[{cond:"exists",to:"TERMINAL:SKIPPED (preserved)"},{cond:"new",to:"REG-N9"}]},
+ {id:"REG-N9",type:"db_check",label:"Insert pattern (Rosetta Stone chokepoint)",logic:"validate_and_write — equivalent_implementations col MUST exist",ref:"register_patterns.py:368-504",db:"sgs-framework.db.patterns, uimax-pro-max.db.patterns",branches:[{cond:"soft-fail",to:"TERMINAL:registered (sgs only)"},{cond:"ok",to:"OK:registered (sgs + uimax)"}]},
+ {id:"EM-N4",type:"decision",label:"[essence-match] 0.70 ≤ score < 0.90?",logic:"weighted: slot_overlap .55 + modifier .20 + fragment .25",ref:"essence_match_detector.py:299-300",db:"blocks, block_attributes",branches:[{cond:"<0.70",to:"TERMINAL:None (new-block scaffold)"},{cond:"≥0.90",to:"TERMINAL:None (FR1 full match)"},{cond:"in band",to:"TERMINAL:register block variation"}]},
+ ]},
+
+{stage:"M1",name:"✦ CROSS-STAGE: Nested wrapper/grid layer recognition",file:"convert.py fold tree + layer detection + grid + db resolvers",runs:"weaves Stages 2/3b/3c/3d/4c/4e — how nested layers map to OUTER/CONTENT/GRID/PER-AREA at any depth",xstage:true,
+ purpose:"The complete path a nested wrapper/grid (depth 1→4) takes to reach its layer at its responsive tier. Audited by persona P4+P5 (Nested Layout Depth + Responsive Transfer).",
+ io:"IN: a wrapper/grid node at depth N. OUT: CSS on the right layer attr at the right tier, or gap-candidate.",
+ nodes:[
+ {id:"M1-1",type:"process",label:"Depth-N child enters fold tree",logic:"_process_container_children iterates direct children; recursion threads parent_slug down (F-WALK → walk → _process_container_children again)",ref:"convert.py:5888,6185",db:"",branches:[{cond:"recursion → each deeper level re-enters the SAME fold tree",to:"M1-2"}],explain:"Depth is handled by RECURSION — each level re-runs the fold tree. No depth cap; no special depth>1 path."},
+ {id:"M1-2",type:"decision",label:"Is this level a grid host?",logic:"_detect_grid_container_from_css(classes) → display:grid|flex + align_items + _collect_responsive_grid_from_css",ref:"convert.py:5402-5476",db:"block_attributes (via _collect_responsive_grid)",branches:[{cond:"grid/flex",to:"M1-3"},{cond:"not grid",to:"M1-4 (content-layer test)"}],explain:"Grid detection is per-level on the node's OWN sgs-classed CSS."},
+ {id:"M1-3",type:"db_check",label:"Grid → which layer? (L3 vs per-area L4)",logic:"_grid_item_areas(node) UNION across tiers → if area-named & net-sole → F-GA (area dissolve) else gridTemplateColumns* on THIS container",ref:"convert.py:2308-2351,6096",db:"block_attributes (attr_for_area_property / gridTemplateColumns*)",branches:[{cond:"named grid-template-areas",to:"TERMINAL:L4 per-area attrs (contentPadding*, mediaPadding*)"},{cond:"plain grid",to:"TERMINAL:L3 gridTemplateColumns* + gridItem* (uniform)"}],explain:"⚠ M1 RISK: inner grid columns can land on the OUTER/CONTENT layer if _detect_content_layer mis-fires one level up (layer collapse)."},
+ {id:"M1-4",type:"decision",label:"Non-grid wrapper → CONTENT-WIDTH band? (L2)",logic:"_detect_content_layer(base_decls)",ref:"convert.py:2244-2305",db:"",branches:[{cond:"--content-width OR max-width+margin-auto",to:"TERMINAL:L2 contentWidth + contentPadding*"},{cond:"display:flex/grid present",to:"TERMINAL:⚠ returns False — a nested grid-with-max-width is NOT treated as content-band → routes to gap-candidate not L2"},{cond:"plain wrapper",to:"M1-5 (OUTER fallback)"}]},
+ {id:"M1-5",type:"db_check",label:"Else → OUTER (L1) box CSS",logic:"_route_interior_css_to_parent_slot layer priority → OUTER fallback via attr_for_layer_property",ref:"convert.py:2666-2730",db:"property_suffixes + block_attributes",branches:[{cond:"OUTER attr found",to:"TERMINAL:L1 padding/margin/background on container"},{cond:"none",to:"TERMINAL:flag gap"}]},
+ {id:"M1-6",type:"db_check",label:"Tier assignment (every layer)",logic:"@media → bp_decls via db.breakpoint_suffix_rules() (768/1024); grid path → _GRID_*_BP 768/1024; suffix re-append via _BP_SUFFIX_MAP",ref:"convert.py:585,980,5232 / db_lookup.py:1409",db:"modifier_suffixes",branches:[{cond:"768→Tablet, 1024→Desktop, 767/640→Mobile",to:"TERMINAL:tier attr written"},{cond:"any OTHER breakpoint (600, 781…)",to:"TERMINAL:⚠ NOT in _BREAKPOINT_RULES → responsive CSS silently dropped"}],explain:"THREE parallel breakpoint code paths (db rules / _GRID_*_BP / _BP_SUFFIX_MAP). Values currently aligned at 768/1024 but not single-sourced — Spec 31 MF unifies them."},
+ ]},
+
+{stage:"M2",name:"✦ CROSS-STAGE: Classification fork (child/atomic/CSS/variant)",file:"convert.py walk() + db_lookup resolve_slug_from_bem",runs:"weaves Stages 2/3a/3c/4f — what a DOM node BECOMES, in precedence order",xstage:true,
+ purpose:"The complete precedence-ordered decision a node walks to become a child block, atomic element, CSS rule, or variant. Audited by persona P2+P6 (Classification + Variant/Composite Integrity).",
+ io:"IN: a DOM node. OUT: one classification + emit.",
+ nodes:[
+ {id:"M2-1",type:"gate",label:"Type guard",logic:"Comment→None; NavigableString→text; non-Tag→None",ref:"convert.py:4376-4385",db:"",branches:[{cond:"Tag",to:"M2-2"},{cond:"else",to:"TERMINAL:drop/text"}]},
+ {id:"M2-2",type:"decision",label:"PRECEDENCE 1 — atomic-tag swap?",logic:"not sgs_classes and tag in atomic_tag_map",ref:"convert.py:4397",db:"html_tag_to_core_block",branches:[{cond:"yes",to:"TERMINAL:ATOMIC element (core/heading…)"},{cond:"no",to:"M2-3"}]},
+ {id:"M2-3",type:"decision",label:"PRECEDENCE 2 — chrome-skip?",logic:"top-level header/footer/nav + chrome condition",ref:"convert.py:4429",db:"",branches:[{cond:"chrome",to:"TERMINAL:dropped (⚠ M2-G12: sgs-classed nav chrome-skipped — naming discipline)"},{cond:"no",to:"M2-4"}]},
+ {id:"M2-4",type:"db_check",label:"PRECEDENCE 3 — BEM → block slug",logic:"resolve_slug_from_bem: bare-block → capability tiebreak → element alias → compound prefix-strip",ref:"db_lookup.py:3080",db:"blocks, slots, block_capabilities, blocks.parent_block",branches:[{cond:"resolves to a block",to:"M2-5 (CHILD BLOCK candidate)"},{cond:"slug=None",to:"M2-6 (slug-None fork)"}],explain:"⚠ M2-G1: compound prefix-strip iterates alphabetically not by specificity — wrong block on dual-class text leaves."},
+ {id:"M2-5",type:"db_check",label:"Leaf guard + child-shape",logic:"leaf with sgs-classed children → slug=None; else has_inner_blocks fork",ref:"convert.py:4492,4725",db:"block_composition.composition_role, has_inner_blocks",branches:[{cond:"leaf",to:"TERMINAL:ATOMIC (content lift)"},{cond:"has_inner_blocks=1",to:"TERMINAL:CHILD BLOCK (InnerBlocks)"},{cond:"has_inner_blocks=0",to:"TERMINAL:scalar attrs (G3)"}],explain:"⚠ M2-G9 HIGH: stale has_inner_blocks mis-routes ALL nodes of the type."},
+ {id:"M2-6",type:"decision",label:"slug-None → text-leaf / wrapper / CSS-fold",logic:"_node_is_text_leaf → _route_text_leaf; else _emit_wrapper_container OR fold (CSS rule)",ref:"convert.py:4517-4526,6128",db:"",branches:[{cond:"text leaf",to:"TERMINAL:ATOMIC (sgs/text…)"},{cond:"sole shell wrapper",to:"TERMINAL:CSS RULE (folds into parent attrs)"},{cond:"has children",to:"TERMINAL:sgs/container wrapper"}]},
+ {id:"M2-7",type:"db_check",label:"VARIANT discriminator (post-emit)",logic:"detect_variant: score variant_slots from extract; unique top wins",ref:"convert.py:4885 / db_lookup.py:1892",db:"variant_slots, blocks.variant_attr",branches:[{cond:"unique top",to:"TERMINAL:VARIANT attr set"},{cond:"0/tie",to:"TERMINAL:default variant (⚠ M2-G3/G4 false-positive risk)"}]},
+ {id:"M2-X",type:"gate",label:"⚠ EXHAUSTIVENESS — 12 hardcoded if-slug handlers",logic:"_atomic_attrs_for has 12 per-block `if slug==` content handlers",ref:"convert.py _atomic_attrs_for",db:"",branches:[{cond:"new G3 block with NO handler",to:"TERMINAL:⚠ M2-G5 — emits with EMPTY content attrs (silent)"}],explain:"Non-exhaustive: the fork has no assert_never; a node class with no handler silently degrades."},
+ ]},
+
+{stage:"M3",name:"✦ CROSS-STAGE: Complete CSS transfer (no exceptions)",file:"css_router.py + the 8 lift functions + gap-candidate sinks",runs:"weaves Stages 0.7/4a-4e — every CSS declaration's FATE; the conservation/no-silent-drop audit",xstage:true,
+ purpose:"The accounting path of one CSS declaration to its fate: TRANSFERRED | EXCLUDED-with-reason | GAP-CANDIDATE | ⚠ SILENT-DROP. Audited by persona P3+P1 (Completeness + Translation Validator).",
+ io:"IN: one CSS declaration. OUT: its fate (accounted or silent-drop).",
+ nodes:[
+ {id:"M3-1",type:"decision",label:"Stage 0.7 — does the declaration reach a destination?",logic:"css_router routes the RULE to D0/D1/D2/D3 — every rule hits one (no silent drop at router level)",ref:"css_router.py:379-557",db:"property_suffixes, block_attributes, blocks",branches:[{cond:"tinycss2 parse error",to:"TERMINAL:⚠ whole block lost, no D2 fallback (M3-S8)"},{cond:"typed attr",to:"TERMINAL:D1 (ACCOUNTED)"},{cond:"in suffix table, block lacks attr",to:"TERMINAL:D3 gap + D2 (ACCOUNTED)"},{cond:"no suffix",to:"TERMINAL:D2 wrapper CSS (renders, but NO block attr)"}],explain:"Router level is robust. The silent drops are in the cv2 LIFT functions below."},
+ {id:"M3-2",type:"gate",label:"Lift: excluded props",logic:"_LIFT_EXCLUDED_PROPS {width,max-width}; _CROSS_NODE_EXCLUDED_PROPS {display,grid-template-*}",ref:"convert.py:966,2206",db:"",branches:[{cond:"width/max-width",to:"TERMINAL:EXCLUDED (documented, widthMode handles)"},{cond:"display/grid-template* in cross-node",to:"TERMINAL:⚠ SILENT (M3-S3 — docstring claims flag-not-drop, doesn't)"}]},
+ {id:"M3-3",type:"decision",label:"Lift: background/font shorthand",logic:"_lift_root_supports background shorthand normalise; font shorthand never expanded",ref:"convert.py:815-844",db:"",branches:[{cond:"background:url(...)",to:"TERMINAL:⚠ HIGH SILENT DROP (M3-S1 — url() exits normaliser, no trace)"},{cond:"background:rgb(255 0 0) multi-token",to:"TERMINAL:⚠ SILENT (M3-S12)"},{cond:"font: shorthand",to:"TERMINAL:⚠ SILENT (never expanded)"},{cond:"single colour",to:"TERMINAL:→ background-color (ACCOUNTED)"}]},
+ {id:"M3-4",type:"decision",label:"Lift: property has property_suffixes row?",logic:"css_property_suffixes membership",ref:"convert.py:1147",db:"property_suffixes",branches:[{cond:"has row + attr exists",to:"TERMINAL:TRANSFERRED (ACCOUNTED)"},{cond:"has row, no attr",to:"TERMINAL:gap-candidate (ACCOUNTED)"},{cond:"NO row (background-image/-size/-position, filter, mix-blend, opacity, overflow, position, z-index, transform, object-fit…)",to:"TERMINAL:⚠ D2-only, NOT gap-candidated in cv2 (M3-S list)"}],explain:"The biggest M3 hole: ~15 common property classes have no suffix row → D2 render only, never logged as a block-attr gap."},
+ {id:"M3-5",type:"decision",label:"Lift: value parse fate (TRACE vs DB-write)",logic:"unparseable/mixed-units/css-function → lift_gap_candidate; some paths _trace ONLY, no _record_gap_candidate",ref:"convert.py:1218-1269,2504,5536",db:"attribute_gap_candidates",branches:[{cond:"_record_gap_candidate path",to:"TERMINAL:gap in DB (ACCOUNTED)"},{cond:"trace-ONLY paths (gradient, align-items, css-function-number, area-tier)",to:"TERMINAL:⚠ PARTIALLY accounted — in trace.jsonl but NOT in attribute_gap_candidates DB"}]},
+ {id:"M3-6",type:"gate",label:"Pseudo-element CSS (::before/::after)",logic:"_collect_css_decls_for_element splits on '::' as MEDIA separator → pseudo CSS never collected",ref:"convert.py:628",db:"",branches:[{cond:"::before/::after",to:"TERMINAL:⚠ never reaches any cv2 lift (M3-S7) — D2 render only"}]},
+ {id:"M3-7",type:"gate",label:"Broad-except swallow sites",logic:"~14 try/except: _is_container_mirror_block, _breakpoint_suffix_rules DB, flush_gap_candidates, etc.",ref:"convert.py:1028,5929,300",db:"",branches:[{cond:"breakpoint_suffix_rules DB fail",to:"TERMINAL:⚠ HIGH — ALL responsive CSS dropped for the session (M3-S11)"},{cond:"flush_gap_candidates DB fail",to:"TERMINAL:⚠ gap register incomplete (M3-G1-K)"},{cond:"container-mirror DB fail",to:"TERMINAL:⚠ block misclassified → wrong routing (M3-G1-C)"}]},
+ {id:"M3-LEDGER",type:"process",label:"THE FIX — CSS Accounting Ledger (conservation law)",logic:"emit declare_input at every _collect_css_decls call + declare_fate at every terminal; post-join → any decl with no fate = UNACCOUNTED (failing)",ref:"proposed (M3 feasibility: hooks partially exist via trace.jsonl; missing declare_input events)",db:"trace.jsonl → ledger-violations.json",branches:[{cond:"every decl accounted",to:"OK:|input| = |transferred| + |excluded-with-reason| + |gap|"},{cond:"any UNACCOUNTED",to:"TERMINAL:hard FAIL — silent drop made impossible"}],explain:"Bean's 'without exception' answer. Makes M3-S1/S3/S7/S11/S12 + the no-suffix-row classes structurally impossible to hide. Spec 31 §7 anti-cheat addition."},
+ ]},
+];
+
+/* consolidated persona-audit gap register (M1 synthesised + M2 13 findings + M3 silent-drop list) */
+const GAPS = [
+ {id:"M2-G2",mech:"M2",sev:"HIGH",kind:"BUG",ref:"convert.py:6022",sum:"Scalar-media column with NO <img> (e.g. <video>/caption in hero __media) → `continue` swallows the child entirely: no walk, no emit, no gap. Content silently lost."},
+ {id:"M2-G13",mech:"M2",sev:"HIGH",kind:"BUG",ref:"convert.py:6022",sum:"<video> in a scalar-media column matched by Rule 0 but exited with `continue` — video dropped AND scalar attr not populated."},
+ {id:"M2-G9",mech:"M2",sev:"HIGH",kind:"SPEC",ref:"convert.py:4725",sum:"Stale has_inner_blocks (block save.js changed without /sgs-update) mis-routes EVERY node of that type — all children lost or invalid. The child-shape fork trusts a possibly-stale flag."},
+ {id:"M3-S11",mech:"M3",sev:"HIGH",kind:"BUG",ref:"convert.py:5929",sum:"breakpoint_suffix_rules DB query in a broad try/except → on failure bp_decls stays empty for the whole session: ALL responsive CSS silently dropped."},
+ {id:"M3-S1",mech:"M3",sev:"HIGH",kind:"BUG",ref:"convert.py:817-818",sum:"background:url(...) shorthand exits the normaliser with no trace and no gap candidate — background images silently dropped from the lift (D2 render only)."},
+ {id:"M3-NOSUFFIX",mech:"M3",sev:"HIGH",kind:"SPEC",ref:"property_suffixes",sum:"~15 common property classes have NO property_suffixes row → routed D2 (renders) but NEVER gap-candidated in cv2: background-image/-size/-position/-repeat, filter, mix-blend-mode, opacity, overflow, position/inset/z-index, transform, object-fit, font shorthand. The bulk of 'incomplete CSS transfer'."},
+ {id:"M3-S3",mech:"M3",sev:"MED",kind:"SPEC",ref:"convert.py:2662",sum:"_CROSS_NODE_EXCLUDED_PROPS in _lift_decl returns False with NO trace/gap; outer loop ignores the return. Docstring says 'flag-not-drop' — INCORRECT. display/grid-template-* silently skipped cross-node."},
+ {id:"M3-S7",mech:"M3",sev:"MED",kind:"SPEC",ref:"convert.py:628",sum:"::before/::after pseudo-element CSS mis-parsed (':: ' used as media separator) → never collected into base_decls → never reaches any cv2 lift. Decorative overlays/underlines lost from attrs."},
+ {id:"M3-S2",mech:"M1/M3",sev:"MED",kind:"SPEC",ref:"convert.py:748 / db_lookup.py:1409",sum:"@media at a breakpoint not in _BREAKPOINT_RULES (e.g. 600px) never added to bp_decls → never processed, no trace, no gap. Non-standard responsive breakpoints silently dropped."},
+ {id:"M3-S12",mech:"M3",sev:"MED",kind:"BUG",ref:"convert.py:823-824",sum:"Multi-token solid background (rgb(255 0 0)) not normalised, not traced — only single-token colours extracted."},
+ {id:"M3-G1C",mech:"M3",sev:"MED",kind:"BUG",ref:"convert.py:1028-1029",sum:"_is_container_mirror_block broad except → DB failure returns False → block misclassified as non-mirror → wrong CSS routing path."},
+ {id:"M3-G1K",mech:"M3",sev:"MED",kind:"BUG",ref:"convert.py:300-304",sum:"flush_gap_candidates DB-write failure → stderr only, in-memory list cleared → the gap register itself is silently incomplete."},
+ {id:"M3-TRACE",mech:"M3",sev:"MED",kind:"BUG",ref:"convert.py:1218,2504,5536",sum:"Several gap paths call _trace() ONLY (no _record_gap_candidate DB write): gradient bg, align-items unresolved, css-function-on-number, area-tier miss. Inconsistent accounting — present in trace.jsonl, absent from attribute_gap_candidates."},
+ {id:"M2-G5",mech:"M2",sev:"MED",kind:"SPEC",ref:"convert.py _atomic_attrs_for",sum:"12 hardcoded `if slug==` content handlers — a new G3 block with no handler silently emits empty content attrs. Fork is non-exhaustive (no assert_never)."},
+ {id:"M2-G4",mech:"M2",sev:"MED",kind:"SPEC",ref:"convert.py:4885",sum:"Cross-variant attr bleed: CSS-lifted structural attrs (padding, gap) whose names match a variant's discriminating slot can cause FALSE variant detection."},
+ {id:"M2-G3",mech:"M2",sev:"MED",kind:"SPEC",ref:"db_lookup.py:1892",sum:"detect_variant tie → None, with no assertion that the DB default and render.php fallback agree on the variant."},
+ {id:"M1-LAYER",mech:"M1",sev:"MED",kind:"SPEC",ref:"convert.py:2282",sum:"_detect_content_layer returns False on any display:flex/grid — a NESTED grid that ALSO has max-width (a real content-band-inside-grid) is not treated as L2 CONTENT → routed to gap-candidate. Layer-collapse risk at depth>1."},
+ {id:"M1-BP3",mech:"M1",sev:"MED",kind:"SPEC",ref:"convert.py:980,5232 / db_lookup.py:1409",sum:"THREE parallel breakpoint code paths: db.breakpoint_suffix_rules(), _GRID_*_BP constants, _BP_SUFFIX_MAP identity map. Values aligned at 768/1024 today but not single-sourced — drift risk; Spec 31 MF unifies onto the DB vocabulary."},
+ {id:"M2-G1",mech:"M2",sev:"MED",kind:"SPEC",ref:"convert.py:5651",sum:"_route_text_leaf compound-class iteration is alphabetical, not specificity — wrong block chosen on a text leaf carrying two sgs- classes."},
+ {id:"M2-G12",mech:"M2",sev:"LOW",kind:"SPEC",ref:"convert.py:4429",sum:"Chrome-skip fires before BEM resolution — a top-level <nav class='sgs-mega-menu'> is chrome-skipped even if a block was intended. Relies on drafter naming discipline."},
+ {id:"M2-G11",mech:"M2",sev:"LOW",kind:"BUG",ref:"convert.py _BLOCK_LEVEL_CHILD_TAGS",sum:"<iframe> not in _BLOCK_LEVEL_CHILD_TAGS → an sgs-classed node containing only an iframe is classed as text-leaf and the iframe silently dropped."},
+ {id:"M2-G6",mech:"M2",sev:"LOW",kind:"BUG",ref:"convert.py:5046",sum:"variantStyle block opens a raw sqlite3.connect() per node — bypasses LRU caching, 50+ file-opens on a large page (perf, not correctness)."},
+];
+const LEDGER_NOTE = "The CSS Accounting Ledger (node M3-LEDGER) is the structural cure for the HIGH/MED silent-drop rows: instrument declare_input at every _collect_css_decls call + declare_fate at every terminal, post-join to surface any UNACCOUNTED declaration as a hard fail. Hooks partially exist (trace.jsonl); missing piece = declare_input events. This is the concrete answer to Bean's 'all CSS transferred without exception'.";
+
+/* ===================== RENDERER ===================== */
+const wrap=document.getElementById('wrap'), rail=document.getElementById('rail');
+function termClass(to){ if(to.startsWith('OK:'))return'termok'; if(to.startsWith('TERMINAL:'))return'term'; return''; }
+function termText(to){ return to.replace(/^OK:/,'✓ ').replace(/^TERMINAL:/,'■ '); }
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+PIPELINE.forEach((st)=>{
+  const sid='stage-'+st.stage.replace(/[^a-z0-9]/gi,'');
+  const a=document.createElement('a'); a.href='#'+sid; a.textContent=(st.xstage?'✦ ':'')+st.stage+' '+st.name; if(st.xstage)a.className='xstage'; rail.appendChild(a);
+  const sec=document.createElement('section'); sec.className='stage'+(st.xstage?' xstage':''); sec.id=sid;
+  let nodesHtml=st.nodes.map(n=>{
+    const br=(n.branches||[]).map(b=>`<div class="branch"><span class="cond">${esc(b.cond)}</span><span class="arrow">→</span><span class="to ${termClass(b.to)}">${esc(termText(b.to))}</span></div>`).join('');
+    return `<div class="node ${n.type}" data-search="${esc((n.id+' '+n.label+' '+n.logic+' '+n.db+' '+n.ref+' '+(n.explain||'')).toLowerCase())}">
+      <div class="hd"><span class="id">${esc(n.id)}</span><span class="type ${n.type}">${n.type}</span><span class="label">${esc(n.label)}</span></div>
+      ${n.logic?`<div class="logic">${esc(n.logic)}</div>`:''}
+      <div class="ref">${esc(n.ref)}</div>
+      ${n.db?`<div class="db">DB: ${esc(n.db)}</div>`:''}
+      ${br?`<div class="branches">${br}</div>`:''}
+      ${n.explain?`<div class="explain">${esc(n.explain)}</div>`:''}
+    </div>`;
+  }).join('');
+  sec.innerHTML=`<h2 onclick="this.parentNode.classList.toggle('collapsed')">
+      <span><span class="num">${st.stage}</span>${esc(st.name)} <span class="count">· ${st.nodes.length} nodes</span></span>
+      <span class="file">${esc(st.file)}</span></h2>
+    <div class="meta"><b>Runs:</b> ${esc(st.runs)} &nbsp;·&nbsp; <b>Purpose:</b> ${esc(st.purpose)}<br><b>I/O:</b> ${esc(st.io)}</div>
+    <div class="nodes">${nodesHtml}</div>`;
+  wrap.appendChild(sec);
+});
+
+/* gap register */
+const gw=document.createElement('div'); gw.className='gapwrap';
+const sevOrder={HIGH:0,MED:1,LOW:2};
+const gapsSorted=[...GAPS].sort((a,b)=>sevOrder[a.sev]-sevOrder[b.sev]);
+const hi=GAPS.filter(g=>g.sev==='HIGH').length, me=GAPS.filter(g=>g.sev==='MED').length, lo=GAPS.filter(g=>g.sev==='LOW').length;
+gw.innerHTML=`<h3>⚠ Cross-stage persona-audit gap register — ${GAPS.length} findings (${hi} HIGH · ${me} MED · ${lo} LOW)</h3>
+  <div class="sub">From the 3 specialist reviewing subagents (P2/P6 classification · P3/P1 transfer · P4/P5 nested layout), each with falsification duty. Each row verified against real code (file:line). These are the build's robustness targets.</div>
+  <table class="gaps"><thead><tr><th>ID</th><th>Mech</th><th>Sev</th><th>Kind</th><th>Code</th><th>Finding</th></tr></thead><tbody>
+  ${gapsSorted.map(g=>`<tr><td><code>${esc(g.id)}</code></td><td>${esc(g.mech)}</td><td><span class="sev ${g.sev}">${g.sev}</span></td><td><span class="kind ${g.kind}">${g.kind}</span></td><td><code>${esc(g.ref)}</code></td><td>${esc(g.sum)}</td></tr>`).join('')}
+  </tbody></table>
+  <div class="section-note" style="margin-top:14px;background:#0d1a12;border:1px solid #1f4d33;color:#9fe0b8;padding:12px 16px;border-radius:8px"><strong>The structural cure →</strong> ${esc(LEDGER_NOTE)}</div>`;
+wrap.appendChild(gw);
+
+/* DB index + terminal index */
+const dbset={}, terms=[];
+PIPELINE.forEach(st=>st.nodes.forEach(n=>{
+  if(n.db) n.db.split(/[,(]/).forEach(t=>{t=t.trim().split(' ')[0]; if(t && /^[a-z]/i.test(t)) dbset[t]=(dbset[t]||0)+1;});
+  (n.branches||[]).forEach(b=>{ if(b.to.startsWith('TERMINAL:')||b.to.startsWith('OK:')) terms.push({s:st.stage,t:termText(b.to),ok:b.to.startsWith('OK:')}); });
+}));
+const dbIdx=document.createElement('div'); dbIdx.className='idx';
+dbIdx.innerHTML='<h3>DB tables consulted across the pipeline</h3>'+Object.entries(dbset).sort((a,b)=>b[1]-a[1]).map(([t,c])=>`<div class="row"><code>${esc(t)}</code> — referenced in ${c} node${c>1?'s':''}</div>`).join('');
+wrap.appendChild(dbIdx);
+const tIdx=document.createElement('div'); tIdx.className='idx';
+tIdx.innerHTML='<h3>Every terminal / finish-point ('+terms.length+')</h3>'+terms.map(t=>`<div class="row"><span class="${t.ok?'':'term'}">${esc(t.s)} · ${esc(t.t)}</span></div>`).join('');
+wrap.appendChild(tIdx);
+
+function applyFilter(){
+  const q=document.getElementById('filter').value.toLowerCase().trim();
+  document.querySelectorAll('.node').forEach(n=>{ n.classList.toggle('hidden', q && !n.dataset.search.includes(q)); });
+  document.querySelectorAll('.stage').forEach(s=>{ const vis=[...s.querySelectorAll('.node')].some(n=>!n.classList.contains('hidden')); s.classList.toggle('hidden', q && !vis); });
+}
+function toggleAll(open){ document.querySelectorAll('.stage').forEach(s=>s.classList.toggle('collapsed', !open)); }
+</script>
+</body>
+</html>
