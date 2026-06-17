@@ -17,7 +17,7 @@ session_date: 2026-06-17
 7. **Updated living docs:** decisions.md D229, state.md cloning block, docs-registry reading order (Spec 31 + the map now mandatory top reads), this handoff, the next-session-prompt (with a hard MANDATORY READING GATE), MEMORY.md.
 
 ## Current State
-- **Branch:** main at [SHORT_HASH — set at commit]
+- **Branch:** main at d8a4475f
 - **Tests:** no test run this session (planning only — no code shipped)
 - **Build:** n/a (no code changed)
 - **Uncommitted changes:** 5 new docs (Spec 31, 3 reports, 1 superseded draft plan) + edited decisions/state/registry/handoff/next-session-prompt — committed this handoff.
