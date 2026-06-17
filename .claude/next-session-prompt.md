@@ -75,7 +75,7 @@ each commit: path-scoped (`git commit -m "msg" -- <paths>`, -m BEFORE --); BOTH 
 
 ## Pre-flight self-attestation ritual (answer in your first message, before the first action)
 1. Have I completed the MANDATORY READING GATE — Spec 31 §12 (full) + the routing map M1/M2/M3 + the gap register + the council register? (Quote one specific thing from §12.2 to prove it.)
-2. Which thread am I? (cloning-pipeline — owner of convert.py, the homepage pipeline, the SHARED wrapper, state.md/handoff/next-session-prompt.) What branch + D-ceiling? (`git branch --show-current`; D229.)
+2. What branch + D-ceiling? (`git branch --show-current` → main; `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` → D229.) Anything uncommitted? (Commit by explicit path, `-m` before `--`.) [This is the only active workstream — the theme/Spec-30 work is COMPLETE + archived; there are no parallel threads.]
 3. Am I building the FOUNDATION (Phase F: draft-derived ledger + render-oracle + armed gates) BEFORE any stage? Is the ledger's input the DRAFT's parsed declarations, not the converter's recognised set?
 4. For any subagent I dispatch: did I tell it "return data, do NOT write shared files"? Did I commit valuable artefacts first?
 5. What is the MEASURABLE acceptance — LANDED (live computed-style = draft on a non-default fixture) + zero UNACCOUNTED on the ledger — NOT "code shipped"/"WRITTEN"/"conformance green"? Is this Rule-7 high-blast (converter/shared wrapper/ledger/gates)? → `/adversarial-council` + `/qc-council` BEFORE/AROUND the build.
@@ -110,4 +110,4 @@ each commit: path-scoped (`git commit -m "msg" -- <paths>`, -m BEFORE --); BOTH 
 | `design-reviewer` | visible-surface changes (live page-8 + render-diff at 3 breakpoints) |
 
 ## Guardrails
-Cloning thread owns convert.py + the homepage pipeline + the SHARED `SGS_Container_Wrapper` + /sgs-update seeding + (now) the new modular converter + ledger + gates. ALL of these are Rule-7 high-blast → design-gate. Build per the §12.7 order; `/qc-council` + Gate A + the ledger gate + live page-8 + render-diff per commit. A visual change needs a passing `reports/visual-diff/<block>-<date>.md`. D-ceiling check before any new D (`grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` → D229).
+This is the only active workstream. It owns convert.py + the homepage pipeline + the SHARED `SGS_Container_Wrapper` + /sgs-update seeding + (now) the new modular converter + ledger + gates. ALL of these are Rule-7 high-blast → design-gate. Build per the §12.7 order; `/qc-council` + Gate A + the ledger gate + live page-8 + render-diff per commit. A visual change needs a passing `reports/visual-diff/<block>-<date>.md`. D-ceiling check before any new D (`grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` → D229).

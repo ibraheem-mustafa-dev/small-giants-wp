@@ -3,38 +3,30 @@ doc_type: state
 project: small-giants-wp
 project_id: 14
 last_updated: 2026-06-16
-note: "LEAN per-thread snapshot (restructured 2026-06-06 per doc-council). Full pre-restructure history → memory/state-archive.md. This file holds ONLY the current per-thread pointer; detail lives in each thread's handoff + next-session-prompt (the SoT). Do NOT restate D-numbers / counts / commit hashes here — they drift. ≤24576 bytes."
+note: "LEAN snapshot (single active workstream as of 2026-06-17 — the cloning CSS-transfer rebuild; theme/Spec-30 work COMPLETE + archived). Full history → memory/state-archive.md. This file holds ONLY the current pointer; detail lives in handoff.md + next-session-prompt.md (the SoT). Do NOT restate D-numbers / counts / commit hashes here — they drift. ≤24576 bytes."
 ---
 
 # small-giants-wp — State Snapshot (lean)
 
 ## GROUND TRUTH FIRST — do not trust any doc's cached status; verify these every session
-- **HEAD + tree:** `git log -1 --stat` + `git status` + `git branch --show-current`. NO doc's "latest_commit"/"working_tree" line is authoritative — they are stale the moment the other thread commits.
-- **D-number ceiling:** `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` — `decisions.md` is the SOLE source of truth for the D-ceiling. Never assign a D without this check (two threads share one decisions.md).
+- **HEAD + tree:** `git log -1 --stat` + `git status` + `git branch --show-current`. NO doc's "latest_commit"/"working_tree" line is authoritative — verify against git.
+- **D-number ceiling:** `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` — `decisions.md` is the SOLE source of truth for the D-ceiling. Never assign a D without this check.
 - **Framework counts (blocks/attrs/slots/roles):** query `/sgs-db` or `/wp-blocks` — the DB is authoritative; counts are NOT maintained in prose anywhere.
-- **Which thread am I on?** TWO co-active threads share `main`. Pick your thread, then read ONLY its block below + its handoff + its next-session-prompt. Commit by EXPLICIT PATH (`git commit -- <paths>`), never `git add -A`.
+- **Commit discipline:** commit by EXPLICIT PATH (`git commit -- <paths>`), never `git add -A` — keeps unrelated in-flight edits out of a commit. `main` is the source of truth.
 
-## NEXT SESSION = CLONING-PIPELINE THREAD (theme thread COMPLETE — Spec 30 done D220; see cloning block below)
-- **Spec 30 P2 COMPLETE + MERGED (D220, 2026-06-12).** All FRs shipped: FR-30-3/5/6 shop layer, FR-30-8/10 differentiators, FR-30-9 schema (D215), FR-30-7 buybox, FR-30-10 notify-me (D217), FR-30-13 go-live checklist. Plan archived. **SGS is a sellable shop.** Theme session docs ARCHIVED to `memory/` (theme thread complete); next theme work = roadmap (Spec 30 Open Q3 B2B ex-VAT / Q4 subscriptions + parking F-items), picked up via a fresh `/handoff` when a theme session runs. The cloning converter is the first-shop blocker — see cloning thread block below.
-
-## CLONING-PIPELINE THREAD  (owner of: this block, handoff.md, next-session-prompt.md)
-- **DOC-COUNCIL BACKLOG CLOSED 2026-06-06** (all FATAL + HIGH shipped/recalibrated/dismissed — see `.claude/reports/2026-06-06-doc-council-findings.md` STATUS table).
-- **SoT for current status:** `.claude/handoff.md` (latest session) + `.claude/next-session-prompt.md` (the operative opener). READ THOSE — do not rely on a summary here.
+## ACTIVE WORKSTREAM — Cloning CSS-transfer rebuild (the ONLY active work)
+- **SoT for current status:** `.claude/handoff.md` (latest session) + `.claude/next-session-prompt.md` (the operative opener, with the MANDATORY READING GATE). READ THOSE — do not rely on a summary here.
 - **One-line where-we-are (2026-06-17, D229):** **PLANNING SESSION — no code shipped. Concluded the cloning CSS-transfer system is not soundly patchable → CLEAN MODULAR STAGE-BY-STAGE REBUILD, gated by adversarial-council + qc-council, Bean-locked.** Produced the build blueprint: **`specs/31-...` v0.3** (§12 = the rebuild direction; build-ready), the **exhaustive 24-stage pipeline routing map** (`reports/pipeline-routing-map-2026-06-17.html` — every branch/DB-call/terminal + 3 cross-stage mechanism traces M1/M2/M3 + a 22-finding gap register, 6 HIGH), the **council register** (`reports/2026-06-17-adversarial-council-register-and-rebuild-direction.md`), and the **reviewer-persona roster** (`reports/2026-06-17-cross-stage-reviewer-personas.md`). Parity baseline (the METRIC, not the goal): content 100%; full mobile 61.82% / tablet 59.09% / desktop 55.45%. **Locked direction (D229):** clean rebuild (not spot-fixes); modular per-resolver files behind one dispatch table + remade orchestrator; stage-by-stage build order with a per-stage universality test; the **draft-derived CSS Accounting Ledger + render-diff oracle + armed gates** are the Tier-1 FOUNDATION built FIRST (the spine that gates each stage). **NEXT SESSION = build Phase F (the Tier-1 foundation) per Spec 31 §12.2 + §12.7, then the stage-by-stage rebuild.** **D-CEILING: D229.** Gate A + `converter_v2/tests/` — run BOTH; the new gates (check-converter-cheats.py / generate-coverage-matrix.py / ledger checker) do NOT exist yet — building them is Phase F.
 - **Canonical specs:** `.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md` (v0.3 — THE build blueprint; read §12 FIRST) + `.claude/specs/22-...` (the underlying pipeline architecture). Reading order: see `docs-registry.yaml` `cold_start_reading_order` (Spec 31 + the pipeline map are now mandatory top reads).
 
-## SGS-THEME THREAD  (COMPLETE — Spec 30 D220; session docs archived to memory/handoff-theme-2026-06-12.md + next-session-prompt-theme-2026-06-12.md)
-- **Status:** Spec 30 COMPLETE + MERGED (D220). Session docs archived to `memory/`. Next theme work = roadmap (Spec 30 Open Qs + parking); a fresh `/handoff` regenerates session docs when a theme session next runs.
-- **One-line where-we-are (2026-06-12, D220):** **Spec 30 COMPLETE + MERGED to main (D220).** All Spec 30 P2 FRs shipped and Bean R-22-13 sign-off given. Plan archived (`.claude/plans/archive/2026-06-11-spec30-p2-differentiators-shop-schema-COMPLETE.md`). Open deferred items (B2B ex-VAT, subscriptions/build-a-box, F10 hex-flag guard, F5 org settings UI) are in parking. Binding ORCHESTRATION MODEL: Opus main agent plans/delegates/QCs/live-tests/commits ONLY; subagents implement (Bean directive 2026-06-11).
-- **Canonical specs:** `.claude/specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md` (COMPLETE), `.claude/specs/27-...md` (product/configurator master), `.claude/specs/28-...md` (smart bulk pricing, COMPLETE), `.claude/specs/26-...md` (global styles, build-deferred). Reading order: `docs-registry.yaml` `cold_start_reading_order_theme`.
+## DONE / ARCHIVED — theme + WooCommerce layer (Spec 30, no longer an active thread)
+- **Spec 30 COMPLETE + MERGED (D220, 2026-06-12) — SGS is a sellable shop.** This work is finished; it is NOT a parallel thread anymore. Session docs archived to `memory/handoff-theme-2026-06-12.md` + `next-session-prompt-theme-2026-06-12.md`. Deferred roadmap items (B2B ex-VAT, subscriptions/build-a-box, F5/F10) live in `parking.md` — pick up via a fresh `/handoff` only if/when a theme task is explicitly started. Specs: 30 (COMPLETE) · 27 (product/configurator master) · 28 (bulk pricing, COMPLETE) · 26 (global styles, build-deferred).
 
-## SHARED-STATE DISCIPLINE (two threads, one main)
-- **Per-thread ownership:** each thread's `/handoff` writes ONLY its own block above + its own handoff/next-session-prompt. Never overwrite the other thread's block.
-- **decisions.md / parking.md / mistakes.md** are shared append-only — append your entries, never interleave/clobber; D-ceiling check (above) is MANDATORY before a new D.
-- **The real first-shop blocker is the CLONING converter** (the theme shop layer is complete + safe). Do not pull deferred theme work (Spec 28 P4 / R5) ahead of the converter.
-- **RECONCILE NOTE (2026-06-11, superseded 2026-06-13):** the co-active worktree reconcile + staged-converter-work caveat from 2026-06-11 is now superseded — D221/D222 shipped those staged changes to `main`. No outstanding staged converter work remains as of 2026-06-13 (`git status` clean except uncommitted doc/plan files). Both threads sharing `main` — path-scoped commits remain mandatory; D-ceiling check before every new D.
+## DOC DISCIPLINE
+- `decisions.md` / `parking.md` / `mistakes.md` are append-only — append, never clobber; D-ceiling check (above) MANDATORY before a new D.
+- `/handoff` writes `handoff.md` + `next-session-prompt.md` + this block.
 
 ## BLOCKERS
-- None block either thread's next session. (Per-thread known-open items live in each thread's handoff "Known Issues".)
+- None block the next session. Known-open items live in `handoff.md` "Known Issues".
 
 <!-- Caps: this file ≤24576 bytes, ≤60 lines of body. History → memory/state-archive.md. If a fact here also lives in another doc, that other doc is the SoT and this is a POINTER — do not duplicate detail. -->
