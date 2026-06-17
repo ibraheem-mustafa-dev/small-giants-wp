@@ -36,7 +36,7 @@ A custom WordPress block framework built by Claude Code: theme + blocks plugin (
 
 ## Binding rules (Spec 22 R-22-1 through R-22-15; gate every commit)
 
-<!-- NOTE: R-* (binding rules) and FR-* (functional requirements) are SEPARATE numbering series — FR-22-15 (capability-aware BEM tiebreaking, D96) and R-22-15 (the anti-mirror gate) are NOT a collision. R-22-15 = "no mirror emit": the cloning thread's anti-cheat rule, enforced via plugins/sgs-blocks/scripts/orchestrator/check_no_mirror.py (--report now, flips to --enforce when the converter stops cheating). See Spec 22 §FR-22-11 PASS-test + next-session-prompt.md. The 14 headlines below predate R-22-15; it is the 15th. -->
+<!-- NOTE: R-* (binding rules) and FR-* (functional requirements) are SEPARATE numbering series — FR-22-15 (capability-aware BEM tiebreaking, D96) and R-22-15 (the anti-mirror gate) are NOT a collision. R-22-15 = "no mirror emit": the cloning pipeline's anti-cheat rule, enforced via plugins/sgs-blocks/scripts/orchestrator/check_no_mirror.py (--report now, flips to --enforce when the converter stops cheating). See Spec 22 §FR-22-11 PASS-test + next-session-prompt.md. The 14 headlines below predate R-22-15; it is the 15th. -->
 
 
 Full text in Spec 22 §6. Headlines:

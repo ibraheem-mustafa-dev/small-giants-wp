@@ -255,19 +255,15 @@ architecture_session_artefacts:
     owns: "Research finding: WP 7.0 Pattern Overrides is orthogonal to converter logic (Decision 24 resolved). Keep DB-backed approach for Phase 3; Pattern Overrides is additive operator-UX layer in Phase 6."
     update_triggers: []
 
-# THREAD-SELECTION GATE (read FIRST — added 2026-06-06, doc-council findings #4/MF-3):
-# TWO co-active threads share `main`. Before reading anything else:
+# SESSION-START GATE (read FIRST — single active workstream as of 2026-06-17, D229; the multi-thread split ENDED when the theme/Spec-30 work completed):
 #   0a. Run ground truth: `git log -1 --stat` + `git status` + `git branch --show-current`
 #       + `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` (the D-ceiling).
-#   0b. Determine your THREAD from the task / Bean's request:
-#       - CLONING-PIPELINE (converter, /sgs-clone, pixel-diff, blocks-as-clone-output)
-#         → follow `cold_start_reading_order` below.
-#       - SGS-THEME (Spec 27/28 shop layer, blocks, theme.json, configurator, WooCommerce)
-#         → follow `cold_start_reading_order_theme`.
-#   If genuinely ambiguous, ASK Bean which thread before reading a thread-specific prompt.
-#   state.md (item 1 of either order) is now a LEAN per-thread pointer — read only YOUR block.
+#   0b. Follow `cold_start_reading_order` below — it is THE order. There is only one active
+#       workstream now (the cloning CSS-transfer rebuild). `cold_start_reading_order_theme`
+#       is RETAINED ONLY as an archived reference for the COMPLETE theme/Spec-30 work — use it
+#       solely if Bean explicitly starts a deferred theme task; it is not a parallel thread.
 
-cold_start_reading_order:   # CLONING-PIPELINE thread (RESTRUCTURED 2026-06-17, D229 — the REBUILD is the active work; read these IN FULL before any build assumption)
+cold_start_reading_order:   # THE active workstream (cloning CSS-transfer rebuild). RESTRUCTURED 2026-06-17, D229 — read these IN FULL before any build assumption.
   - 1. .claude/state.md (read the CLONING block + the GROUND-TRUTH-FIRST block)
   - 2. .claude/handoff.md (latest session)
   - 3. .claude/next-session-prompt.md (the operative opener — MANDATORY READING gate + STOP catalogue + pre-flight ritual)
@@ -281,7 +277,7 @@ cold_start_reading_order:   # CLONING-PIPELINE thread (RESTRUCTURED 2026-06-17, 
   - 11. .claude/reports/2026-06-17-cross-stage-reviewer-personas.md (reviewer-persona roster — for audit subagents you dispatch)
   - 12. pipeline-state/<latest-run>/leftover-buckets.json + extract.json + trace.jsonl (MANDATORY before any converter-quality conjecture — read raw artefacts, never reason from a doc's cached status)
 
-cold_start_reading_order_theme:   # SGS-THEME thread (added 2026-06-06 — was missing; a theme session following the cloning order read the wrong specs)
+cold_start_reading_order_theme:   # ARCHIVED reference — theme/Spec-30 work COMPLETE (D220), NOT a parallel thread. Use only if Bean explicitly starts a deferred theme task.
   - 1. .claude/state.md (read the SGS-THEME block + the GROUND-TRUTH-FIRST block)
   - 2. .claude/memory/handoff-theme-2026-06-12.md (ARCHIVED — theme thread COMPLETE D220; last theme session record)
   - 3. (theme thread COMPLETE — a fresh /handoff regenerates the opener if a theme session runs; roadmap lives in Spec 30 Open Qs + parking.md)
