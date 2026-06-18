@@ -3,7 +3,7 @@
  * Server-side render for the SGS Pricing Table block.
  *
  * WS-4: outer wrapper now delegates to SGS_Container_Wrapper (kind='layout')
- * so the block mirrors sgs/container's grid/flex + widthMode + gap controls.
+ * so the block mirrors sgs/container's grid/flex + align/maxWidth + gap controls.
  *
  * Outputs responsive pricing plans with an optional monthly/yearly billing
  * toggle, per-plan icons (Lucide), per-plan ribbons, per-feature

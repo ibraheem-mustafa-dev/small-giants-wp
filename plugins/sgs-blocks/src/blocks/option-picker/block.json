@@ -174,28 +174,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"widthMode": {
-			"type": "string",
-			"default": "default",
-			"enum": [
-				"default",
-				"wide",
-				"full",
-				"custom"
-			]
-		},
-		"widthModeMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"widthModeTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"widthModeDesktop": {
-			"type": "string",
-			"default": ""
-		},
 		"customWidth": {
 			"type": "number",
 			"default": 0

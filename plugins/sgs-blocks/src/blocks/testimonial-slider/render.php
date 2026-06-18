@@ -67,7 +67,7 @@ if ( 'none' !== $safe_hover_effect ) {
 
 // ── Own CSS vars — carried as extra_styles into the wrapper helper ─────────
 // SGS_Container_Wrapper merges these with any container-level style declarations
-// (gap, widthMode custom width, etc.) before calling get_block_wrapper_attributes().
+// (gap, align/maxWidth/contentWidth, etc.) before calling get_block_wrapper_attributes().
 $css_vars = sgs_transition_vars( $attributes );
 if ( $hover_bg_colour ) {
 	$css_vars[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_bg_colour );

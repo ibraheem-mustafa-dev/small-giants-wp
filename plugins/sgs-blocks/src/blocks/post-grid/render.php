@@ -3,7 +3,7 @@
  * Server-side render for sgs/post-grid.
  *
  * WS-4: outer wrapper now delegates to SGS_Container_Wrapper (kind='layout')
- * so the block mirrors sgs/container's grid/flex + widthMode + gap controls.
+ * so the block mirrors sgs/container's grid/flex + align/maxWidth + gap controls.
  *
  * Card markup is produced by Post_Grid_REST::render_card() — the same method
  * the REST endpoint uses — so there is exactly one place where card HTML is defined.
@@ -150,7 +150,7 @@ $card_params = array(
 
 // -------------------------------------------------------------------------
 // Inline CSS custom properties — block-own grid vars (NOT overridden by helper).
-// The helper owns gap/widthMode; we keep the card-specific vars here.
+// The helper owns gap/align/maxWidth; we keep the card-specific vars here.
 // -------------------------------------------------------------------------
 $extra_styles = array_filter(
 	array_merge(

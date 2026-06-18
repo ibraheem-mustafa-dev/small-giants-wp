@@ -311,28 +311,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"widthMode": {
-			"type": "string",
-			"default": "default",
-			"enum": [
-				"default",
-				"wide",
-				"full",
-				"custom"
-			]
-		},
-		"widthModeMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"widthModeTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"widthModeDesktop": {
-			"type": "string",
-			"default": ""
-		},
 		"customWidth": {
 			"type": "number",
 			"default": 0
@@ -509,17 +487,32 @@
 		"justifyContent": {
 			"type": "string",
 			"default": "",
-			"enum": ["", "flex-start", "center", "flex-end", "space-between", "space-around"]
+			"enum": [
+				"",
+				"flex-start",
+				"center",
+				"flex-end",
+				"space-between",
+				"space-around"
+			]
 		},
 		"flexDirection": {
 			"type": "string",
 			"default": "",
-			"enum": ["", "row", "column"]
+			"enum": [
+				"",
+				"row",
+				"column"
+			]
 		},
 		"flexWrap": {
 			"type": "string",
 			"default": "",
-			"enum": ["", "wrap", "nowrap"]
+			"enum": [
+				"",
+				"wrap",
+				"nowrap"
+			]
 		},
 		"templateMode": {
 			"type": "string",

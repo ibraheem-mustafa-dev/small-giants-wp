@@ -18,7 +18,7 @@
  *
  * WS-4 (composite-mirror): render.php now delegates the OUTER wrapper to
  * SGS_Container_Wrapper::render() so sgs/product-card mirrors sgs/container's
- * wrapper capabilities (widthMode, contentWidth, maxWidth, etc.). The block is
+ * wrapper capabilities (align, contentWidth, maxWidth, etc.). The block is
  * a CONTENT-KIND composite — only width layers are emitted (no bg/grid/shapes).
  *
  * Shell classes:

@@ -4,8 +4,8 @@
  *
  * WS-4 (composite-mirror, 2026-06-04): outer wrapper now emitted by
  * SGS_Container_Wrapper::render( ..., 'layout', ... ) so the block inherits
- * sgs/container's full LAYOUT-scope capabilities (widthMode/customWidth/
- * contentWidth, gap, grid/flex, responsive gridTemplateColumns, etc.).
+ * sgs/container's full LAYOUT-scope capabilities (align/maxWidth/contentWidth,
+ * customWidth, gap, grid/flex, responsive gridTemplateColumns, etc.).
  *
  * The Interactivity API data-* attributes, focus-ring CSS vars, form ID and
  * store-submissions flags are carried through via the `extra_attrs` opt.

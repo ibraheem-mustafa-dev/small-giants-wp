@@ -5,7 +5,7 @@
 	"version": "0.2.1",
 	"title": "SGS Container",
 	"category": "sgs-layout",
-	"description": "Flexible layout wrapper — the fundamental building block for all page sections. Breakout via WP-native align (wide/full toolbar); outer cap via maxWidth literal; inner band via contentWidth token (narrow/default/full) or literal.",
+	"description": "Flexible layout wrapper — the fundamental building block for all page sections. Breakout via WP-native align (wide/full toolbar); outer cap via maxWidth literal; inner band via contentWidth token (normal/wide/full) or literal.",
 	"keywords": [
 		"container",
 		"section",
@@ -352,7 +352,7 @@
 		},
 		"contentWidth": {
 			"type": "string",
-			"default": "default"
+			"default": "full"
 		},
 		"paddingTopTablet": {
 			"type": "string",

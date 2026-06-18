@@ -276,28 +276,6 @@
 			"default": "default"
 		},
 		"_comment_wrapperAttrs": "WS-4 container-mirror (CONTENT kind): width/spacing only — mirrored verbatim from sgs/container block.json.",
-		"widthMode": {
-			"type": "string",
-			"default": "default",
-			"enum": [
-				"default",
-				"wide",
-				"full",
-				"custom"
-			]
-		},
-		"widthModeMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"widthModeTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"widthModeDesktop": {
-			"type": "string",
-			"default": ""
-		},
 		"customWidth": {
 			"type": "number",
 			"default": 0

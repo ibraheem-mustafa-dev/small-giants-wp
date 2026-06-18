@@ -51,7 +51,10 @@
 			"is_section_root": true,
 			"containerKind": "section",
 			"variantAttr": "variant",
-			"gridAreas": [ "content", "media" ],
+			"gridAreas": [
+				"content",
+				"media"
+			],
 			"variants": {
 				"standard": [
 					"backgroundImage"
@@ -642,17 +645,32 @@
 		"justifyContent": {
 			"type": "string",
 			"default": "",
-			"enum": ["", "flex-start", "center", "flex-end", "space-between", "space-around"]
+			"enum": [
+				"",
+				"flex-start",
+				"center",
+				"flex-end",
+				"space-between",
+				"space-around"
+			]
 		},
 		"flexDirection": {
 			"type": "string",
 			"default": "",
-			"enum": ["", "row", "column"]
+			"enum": [
+				"",
+				"row",
+				"column"
+			]
 		},
 		"flexWrap": {
 			"type": "string",
 			"default": "",
-			"enum": ["", "wrap", "nowrap"]
+			"enum": [
+				"",
+				"wrap",
+				"nowrap"
+			]
 		},
 		"backgroundAttachment": {
 			"type": "string",
@@ -926,28 +944,6 @@
 		"verticalAlign": {
 			"type": "string",
 			"default": "start"
-		},
-		"widthMode": {
-			"type": "string",
-			"default": "default",
-			"enum": [
-				"default",
-				"wide",
-				"full",
-				"custom"
-			]
-		},
-		"widthModeDesktop": {
-			"type": "string",
-			"default": ""
-		},
-		"widthModeMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"widthModeTablet": {
-			"type": "string",
-			"default": ""
 		},
 		"paddingTopTablet": {
 			"type": "string",

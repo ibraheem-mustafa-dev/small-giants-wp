@@ -13,7 +13,7 @@
  * WS-4 (composite-mirror): the outer wrapper is now delegated to
  * SGS_Container_Wrapper::render() with kind='content' so sgs/quote mirrors
  * sgs/container's width/spacing capabilities without diverging.
- * KIND='content' = widthMode/maxWidth/contentWidth + padding/spacing only.
+ * KIND='content' = align/maxWidth/contentWidth + padding/spacing only.
  * NO bg/overlay/svg/shape-divider/grid layers.
  *
  * Responsive per-viewport overrides for the body/attribution SLOTS are still

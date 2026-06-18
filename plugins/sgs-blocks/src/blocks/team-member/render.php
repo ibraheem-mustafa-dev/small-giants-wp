@@ -12,7 +12,7 @@
  * save returns null, render.php never reads $content.
  *
  * Wrapper split:
- *  - OUTER shell   -> SGS_Container_Wrapper::render() handles widthMode/contentWidth/padding.
+ *  - OUTER shell   -> SGS_Container_Wrapper::render() handles align/contentWidth/maxWidth/padding.
  *  - Interior HTML -> photo + name + role + bio + social links + Schema.org JSON-LD.
  *
  * @var array    $attributes Block attributes.

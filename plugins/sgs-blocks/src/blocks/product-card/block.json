@@ -1,335 +1,353 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/product-card",
-    "version": "1.16.8",
-    "title": "Product Card",
-    "category": "sgs-content",
-    "description": "Product card with pack-size variant pills, price and CTA. Typed mode = built-in elements authored directly from block attributes (no InnerBlocks). Live product data mode = render a live WooCommerce or SGS product (price, image, stock, add-to-cart) through the SGS design.",
-    "keywords": [
-        "product",
-        "card",
-        "ecommerce",
-        "shop",
-        "variant",
-        "pack",
-        "pricing"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "products",
-    "supports": {
-        "sgs": {
-            "imageControls": true
-        },
-        "html": false,
-        "align": false,
-        "interactivity": true,
-        "color": {
-            "background": true,
-            "gradients": true,
-            "text": true
-        },
-        "spacing": {
-            "margin": true,
-            "padding": false
-        },
-        "__experimentalBorder": {
-            "radius": true,
-            "width": true,
-            "style": true,
-            "color": true
-        }
-    },
-    "attributes": {
-        "sourceMode": {
-            "type": "string",
-            "default": "typed",
-            "enum": [
-                "typed",
-                "wc-product",
-                "sgs-cpt"
-            ]
-        },
-        "productId": {
-            "type": "number",
-            "default": 0
-        },
-        "taxDisplayMode": {
-            "type": "string",
-            "default": "auto",
-            "enum": [
-                "auto",
-                "inc-suffix",
-                "ex-plus-vat"
-            ]
-        },
-        "image": {
-            "type": "string",
-            "default": ""
-        },
-        "imageAlt": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "productName": {
-            "type": "string",
-            "default": ""
-        },
-        "description": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "variantStyle": {
-            "type": "string",
-            "default": "standard",
-            "enum": [
-                "standard",
-                "trial",
-                "featured"
-            ]
-        },
-        "trialTag": {
-            "type": "string",
-            "default": ""
-        },
-        "featuredTag": {
-            "type": "string",
-            "default": "",
-            "description": "Tag text for featured variant (e.g. Most popular, Best selling, Flagship product). Mirror of trialTag for the featured variant. Rendered as a coloured strip above the card content when variantStyle='featured'."
-        },
-        "packSizes": {
-            "type": "array",
-            "default": []
-        },
-        "priceLarge": {
-            "type": "string",
-            "default": ""
-        },
-        "priceNote": {
-            "type": "string",
-            "default": ""
-        },
-        "ctaText": {
-            "type": "string",
-            "default": ""
-        },
-        "ctaUrl": {
-            "type": "string",
-            "default": ""
-        },
-        "cardMaxWidth": {
-            "type": "string",
-            "default": "",
-            "description": "Override the card max-width (e.g. 320px, 100%). Empty = use theme default (380px). Sets --sgs-product-card-max-width inline."
-        },
-        "imageHeight": {
-            "type": "string",
-            "default": "",
-            "description": "Override the product image box height (e.g. 180px, 16rem). Empty = use theme default (220px). Sets --sgs-product-card-image-height inline."
-        },
-        "innerPadding": {
-            "type": "string",
-            "default": "",
-            "description": "Inner padding of the card body (ContainerWrapperControls content-kind Spacing panel). A numeric spacing-preset slug (e.g. \"40\") resolves to var(--wp--preset--spacing--40); a raw CSS length (e.g. \"24px\") is emitted directly. Empty = theme default (20px). Sets --sgs-product-card-inner-padding inline."
-        },
-        "widthMode": {
-            "type": "string",
-            "default": "default",
-            "enum": [
-                "default",
-                "wide",
-                "full",
-                "custom"
-            ]
-        },
-        "widthModeMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "widthModeTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "widthModeDesktop": {
-            "type": "string",
-            "default": ""
-        },
-        "customWidth": {
-            "type": "number",
-            "default": 0
-        },
-        "customWidthUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "contentWidth": {
-            "type": "string",
-            "default": ""
-        },
-        "maxWidth": {
-            "type": "string",
-            "default": ""
-        },
-        "indexVariationUrl": {
-            "type": "number",
-            "default": 0,
-            "description": "FR-27-E2 escape-hatch: set to a variation ID to override the page canonical URL to that variation's URL, enabling it to be indexed. 0 = default (WP core canonical, recommended)."
-        },
-        "framingMode": {
-            "type": "string",
-            "enum": [
-                "savings",
-                "loss-aversion",
-                "neutral"
-            ],
-            "default": "loss-aversion",
-            "description": "Spec 28 P1 (FR-28-8): how the comparative value-ladder frames the per-unit saving. loss-aversion = 'save Xp each vs …'; savings = 'save X%'; neutral = no saving text. Placement-level (a card block renders many products)."
-        },
-        "decoyEnabled": {
-            "type": "boolean",
-            "default": false,
-            "description": "Spec 28 P1 (FR-28-9a): when true, the 'Best value' badge targets the 2nd-largest pack (decoy) instead of the largest. In live-data mode the per-product meta _sgs_decoy_enabled overrides this."
-        },
-        "headingLevel": {
-            "type": "number",
-            "default": 3,
-            "enum": [
-                2,
-                3,
-                4
-            ],
-            "description": "HTML heading level for the product title in typed built-in mode (h2, h3, or h4)."
-        },
-        "ctaBehaviour": {
-            "type": "string",
-            "default": "learn-more",
-            "enum": [
-                "learn-more",
-                "add-to-basket",
-                "buy-now"
-            ],
-            "description": "Primary CTA behaviour in bound mode. 'learn-more' = plain link. 'add-to-basket' = SGS cart proxy add. 'buy-now' = add then redirect to WC checkout. Typed mode always renders plain links regardless of this setting."
-        },
-        "ctaStyle": {
-            "type": "string",
-            "default": "primary",
-            "description": "Primary CTA visual style — maps to btn-{ctaStyle} class (matches existing btn-primary / btn-secondary vocabulary in style.css)."
-        },
-        "cta2Text": {
-            "type": "string",
-            "default": "",
-            "role": "content",
-            "description": "Secondary CTA label. Empty string = no secondary button rendered."
-        },
-        "cta2Url": {
-            "type": "string",
-            "default": ""
-        },
-        "cta2Style": {
-            "type": "string",
-            "default": "secondary",
-            "description": "Secondary CTA visual style — maps to btn-{cta2Style} class."
-        },
-        "visibleAxes": {
-            "type": "array",
-            "default": [],
-            "description": "Bound mode only: taxonomy slugs of attribute axes to show in the option picker. Empty array = show all axes. Display filter only — never alters the seeded context or manifest."
-        },
-        "overrideElements": {
-            "type": "array",
-            "default": [],
-            "items": {
-                "type": "string",
-                "enum": ["name", "description", "badge", "image", "cta"]
-            },
-            "description": "Connected (bound) mode only: which card elements render the operator's typed value instead of the live product value. Members: 'name','description','badge','image','cta'. An element's typed value is preserved when its override is off; an empty typed value never blanks the card (live value renders). PRICE IS NEVER OVERRIDABLE (page-schema-feed parity) - deliberately not an enum member."
-        },
-        "showLadder": {
-            "type": "boolean",
-            "default": true,
-            "description": "Show the comparative per-pack price ladder. The grid block sets this false on its cards by default - browsing context shows just price + per-item note."
-        },
-        "pickerLabelFontSize": {
-            "type": "string",
-            "default": "",
-            "description": "Bound/configurator mode only: font-size for the in-card option-picker labels (Size/Flavour legends). Raw CSS size (e.g. 18px, 1.2rem). Empty = default. Forwarded to each sgs/option-picker as labelFontSize."
-        },
-        "pickerLabelColour": {
-            "type": "string",
-            "default": "",
-            "description": "Bound/configurator mode only: colour for the in-card option-picker labels (Size/Flavour legends). Theme colour token slug (e.g. primary) or raw hex. Empty = default. Forwarded to each sgs/option-picker as labelColour."
-        },
-        "titleFontSize": { "type": "number" },
-        "titleFontSizeUnit": { "type": "string", "default": "px" },
-        "titleFontSizeTablet": { "type": "number" },
-        "titleFontSizeMobile": { "type": "number" },
-        "titleFontWeight": { "type": "string", "default": "" },
-        "titleFontStyle": { "type": "string", "default": "" },
-        "titleLineHeight": { "type": "number" },
-        "titleLineHeightUnit": { "type": "string", "default": "" },
-        "titleColour": {
-            "type": "string",
-            "default": "",
-            "description": "Colour for the product title heading. Theme token slug or raw hex. Empty = theme default."
-        },
-        "priceFontSize": { "type": "number" },
-        "priceFontSizeUnit": { "type": "string", "default": "px" },
-        "priceFontSizeTablet": { "type": "number" },
-        "priceFontSizeMobile": { "type": "number" },
-        "priceFontWeight": { "type": "string", "default": "" },
-        "priceColour": {
-            "type": "string",
-            "default": "",
-            "description": "Colour for the price element. Theme token slug or raw hex. Empty = theme default."
-        },
-        "showPickers": {
-            "type": "boolean",
-            "default": true,
-            "description": "Bound/live-data mode only: when false, suppresses all option-picker renders (both variable-axis and non-variable pill paths) and falls through to the static From-price card appearance. Use on collection grids where picker UI is unwanted. Default true (existing behaviour unchanged)."
-        }
-    },
-    "usesContext": ["postId"],
-    "editorScript": "file:./index.js",
-    "style": "file:./style.css",
-    "viewScriptModule": "file:./view.js",
-    "render": "file:./render.php",
-    "allowedBlocks": [
-        "sgs/media",
-        "core/heading",
-        "sgs/text",
-        "sgs/label",
-        "sgs/multi-button",
-        "sgs/button"
-    ],
-    "example": {
-        "attributes": {
-            "productName": "Mama's Munches Zookies",
-            "description": "Baked fresh every week and posted the same day.",
-            "variantStyle": "standard",
-            "packSizes": [
-                {
-                    "label": "8-pack",
-                    "selected": true
-                },
-                {
-                    "label": "12-pack",
-                    "selected": false
-                },
-                {
-                    "label": "20-pack",
-                    "selected": false
-                },
-                {
-                    "label": "40-pack",
-                    "selected": false
-                }
-            ],
-            "priceLarge": "£10.00",
-            "priceNote": "8-pack · Free delivery over £35",
-            "ctaText": "Add to Cart — £10",
-            "ctaUrl": "/product/zookies/"
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/product-card",
+	"version": "1.16.8",
+	"title": "Product Card",
+	"category": "sgs-content",
+	"description": "Product card with pack-size variant pills, price and CTA. Typed mode = built-in elements authored directly from block attributes (no InnerBlocks). Live product data mode = render a live WooCommerce or SGS product (price, image, stock, add-to-cart) through the SGS design.",
+	"keywords": [
+		"product",
+		"card",
+		"ecommerce",
+		"shop",
+		"variant",
+		"pack",
+		"pricing"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "products",
+	"supports": {
+		"sgs": {
+			"imageControls": true
+		},
+		"html": false,
+		"align": false,
+		"interactivity": true,
+		"color": {
+			"background": true,
+			"gradients": true,
+			"text": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": false
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"style": true,
+			"color": true
+		}
+	},
+	"attributes": {
+		"sourceMode": {
+			"type": "string",
+			"default": "typed",
+			"enum": [
+				"typed",
+				"wc-product",
+				"sgs-cpt"
+			]
+		},
+		"productId": {
+			"type": "number",
+			"default": 0
+		},
+		"taxDisplayMode": {
+			"type": "string",
+			"default": "auto",
+			"enum": [
+				"auto",
+				"inc-suffix",
+				"ex-plus-vat"
+			]
+		},
+		"image": {
+			"type": "string",
+			"default": ""
+		},
+		"imageAlt": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"productName": {
+			"type": "string",
+			"default": ""
+		},
+		"description": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"variantStyle": {
+			"type": "string",
+			"default": "standard",
+			"enum": [
+				"standard",
+				"trial",
+				"featured"
+			]
+		},
+		"trialTag": {
+			"type": "string",
+			"default": ""
+		},
+		"featuredTag": {
+			"type": "string",
+			"default": "",
+			"description": "Tag text for featured variant (e.g. Most popular, Best selling, Flagship product). Mirror of trialTag for the featured variant. Rendered as a coloured strip above the card content when variantStyle='featured'."
+		},
+		"packSizes": {
+			"type": "array",
+			"default": []
+		},
+		"priceLarge": {
+			"type": "string",
+			"default": ""
+		},
+		"priceNote": {
+			"type": "string",
+			"default": ""
+		},
+		"ctaText": {
+			"type": "string",
+			"default": ""
+		},
+		"ctaUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"cardMaxWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Override the card max-width (e.g. 320px, 100%). Empty = use theme default (380px). Sets --sgs-product-card-max-width inline."
+		},
+		"imageHeight": {
+			"type": "string",
+			"default": "",
+			"description": "Override the product image box height (e.g. 180px, 16rem). Empty = use theme default (220px). Sets --sgs-product-card-image-height inline."
+		},
+		"innerPadding": {
+			"type": "string",
+			"default": "",
+			"description": "Inner padding of the card body (ContainerWrapperControls content-kind Spacing panel). A numeric spacing-preset slug (e.g. \"40\") resolves to var(--wp--preset--spacing--40); a raw CSS length (e.g. \"24px\") is emitted directly. Empty = theme default (20px). Sets --sgs-product-card-inner-padding inline."
+		},
+		"customWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"indexVariationUrl": {
+			"type": "number",
+			"default": 0,
+			"description": "FR-27-E2 escape-hatch: set to a variation ID to override the page canonical URL to that variation's URL, enabling it to be indexed. 0 = default (WP core canonical, recommended)."
+		},
+		"framingMode": {
+			"type": "string",
+			"enum": [
+				"savings",
+				"loss-aversion",
+				"neutral"
+			],
+			"default": "loss-aversion",
+			"description": "Spec 28 P1 (FR-28-8): how the comparative value-ladder frames the per-unit saving. loss-aversion = 'save Xp each vs …'; savings = 'save X%'; neutral = no saving text. Placement-level (a card block renders many products)."
+		},
+		"decoyEnabled": {
+			"type": "boolean",
+			"default": false,
+			"description": "Spec 28 P1 (FR-28-9a): when true, the 'Best value' badge targets the 2nd-largest pack (decoy) instead of the largest. In live-data mode the per-product meta _sgs_decoy_enabled overrides this."
+		},
+		"headingLevel": {
+			"type": "number",
+			"default": 3,
+			"enum": [
+				2,
+				3,
+				4
+			],
+			"description": "HTML heading level for the product title in typed built-in mode (h2, h3, or h4)."
+		},
+		"ctaBehaviour": {
+			"type": "string",
+			"default": "learn-more",
+			"enum": [
+				"learn-more",
+				"add-to-basket",
+				"buy-now"
+			],
+			"description": "Primary CTA behaviour in bound mode. 'learn-more' = plain link. 'add-to-basket' = SGS cart proxy add. 'buy-now' = add then redirect to WC checkout. Typed mode always renders plain links regardless of this setting."
+		},
+		"ctaStyle": {
+			"type": "string",
+			"default": "primary",
+			"description": "Primary CTA visual style — maps to btn-{ctaStyle} class (matches existing btn-primary / btn-secondary vocabulary in style.css)."
+		},
+		"cta2Text": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "Secondary CTA label. Empty string = no secondary button rendered."
+		},
+		"cta2Url": {
+			"type": "string",
+			"default": ""
+		},
+		"cta2Style": {
+			"type": "string",
+			"default": "secondary",
+			"description": "Secondary CTA visual style — maps to btn-{cta2Style} class."
+		},
+		"visibleAxes": {
+			"type": "array",
+			"default": [],
+			"description": "Bound mode only: taxonomy slugs of attribute axes to show in the option picker. Empty array = show all axes. Display filter only — never alters the seeded context or manifest."
+		},
+		"overrideElements": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "string",
+				"enum": [
+					"name",
+					"description",
+					"badge",
+					"image",
+					"cta"
+				]
+			},
+			"description": "Connected (bound) mode only: which card elements render the operator's typed value instead of the live product value. Members: 'name','description','badge','image','cta'. An element's typed value is preserved when its override is off; an empty typed value never blanks the card (live value renders). PRICE IS NEVER OVERRIDABLE (page-schema-feed parity) - deliberately not an enum member."
+		},
+		"showLadder": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the comparative per-pack price ladder. The grid block sets this false on its cards by default - browsing context shows just price + per-item note."
+		},
+		"pickerLabelFontSize": {
+			"type": "string",
+			"default": "",
+			"description": "Bound/configurator mode only: font-size for the in-card option-picker labels (Size/Flavour legends). Raw CSS size (e.g. 18px, 1.2rem). Empty = default. Forwarded to each sgs/option-picker as labelFontSize."
+		},
+		"pickerLabelColour": {
+			"type": "string",
+			"default": "",
+			"description": "Bound/configurator mode only: colour for the in-card option-picker labels (Size/Flavour legends). Theme colour token slug (e.g. primary) or raw hex. Empty = default. Forwarded to each sgs/option-picker as labelColour."
+		},
+		"titleFontSize": {
+			"type": "number"
+		},
+		"titleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"titleFontSizeTablet": {
+			"type": "number"
+		},
+		"titleFontSizeMobile": {
+			"type": "number"
+		},
+		"titleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"titleFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"titleLineHeight": {
+			"type": "number"
+		},
+		"titleLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"titleColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour for the product title heading. Theme token slug or raw hex. Empty = theme default."
+		},
+		"priceFontSize": {
+			"type": "number"
+		},
+		"priceFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"priceFontSizeTablet": {
+			"type": "number"
+		},
+		"priceFontSizeMobile": {
+			"type": "number"
+		},
+		"priceFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"priceColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour for the price element. Theme token slug or raw hex. Empty = theme default."
+		},
+		"showPickers": {
+			"type": "boolean",
+			"default": true,
+			"description": "Bound/live-data mode only: when false, suppresses all option-picker renders (both variable-axis and non-variable pill paths) and falls through to the static From-price card appearance. Use on collection grids where picker UI is unwanted. Default true (existing behaviour unchanged)."
+		}
+	},
+	"usesContext": [
+		"postId"
+	],
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"viewScriptModule": "file:./view.js",
+	"render": "file:./render.php",
+	"allowedBlocks": [
+		"sgs/media",
+		"core/heading",
+		"sgs/text",
+		"sgs/label",
+		"sgs/multi-button",
+		"sgs/button"
+	],
+	"example": {
+		"attributes": {
+			"productName": "Mama's Munches Zookies",
+			"description": "Baked fresh every week and posted the same day.",
+			"variantStyle": "standard",
+			"packSizes": [
+				{
+					"label": "8-pack",
+					"selected": true
+				},
+				{
+					"label": "12-pack",
+					"selected": false
+				},
+				{
+					"label": "20-pack",
+					"selected": false
+				},
+				{
+					"label": "40-pack",
+					"selected": false
+				}
+			],
+			"priceLarge": "£10.00",
+			"priceNote": "8-pack · Free delivery over £35",
+			"ctaText": "Add to Cart — £10",
+			"ctaUrl": "/product/zookies/"
+		}
+	}
 }

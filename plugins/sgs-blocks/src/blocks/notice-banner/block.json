@@ -82,22 +82,6 @@
 		"textFontSize": {
 			"type": "string"
 		},
-		"widthMode": {
-			"type": "string",
-			"default": "default"
-		},
-		"widthModeMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"widthModeTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"widthModeDesktop": {
-			"type": "string",
-			"default": ""
-		},
 		"customWidth": {
 			"type": "number",
 			"default": 0
@@ -121,12 +105,18 @@
 		"displayMode": {
 			"type": "string",
 			"default": "inline",
-			"enum": [ "inline", "announcement" ]
+			"enum": [
+				"inline",
+				"announcement"
+			]
 		},
 		"stickyPosition": {
 			"type": "string",
 			"default": "top",
-			"enum": [ "top", "bottom" ]
+			"enum": [
+				"top",
+				"bottom"
+			]
 		},
 		"dismissible": {
 			"type": "boolean",
@@ -135,7 +125,10 @@
 		"dismissBehaviour": {
 			"type": "string",
 			"default": "session",
-			"enum": [ "session", "permanent" ]
+			"enum": [
+				"session",
+				"permanent"
+			]
 		}
 	},
 	"render": "file:./render.php",

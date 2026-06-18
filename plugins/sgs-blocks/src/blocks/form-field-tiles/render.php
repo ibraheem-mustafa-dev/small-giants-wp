@@ -4,7 +4,7 @@
  *
  * WS-4: the tile grid container (previously a bare <div style="grid-template-columns">)
  * now delegates to SGS_Container_Wrapper (kind='layout') so it mirrors sgs/container's
- * grid/flex + widthMode + gap controls.
+ * grid/flex + align/maxWidth + gap controls.
  *
  * The outer form-field wrapper (field_open/field_close) is preserved — it carries
  * conditional-logic data-attrs and the sgs-form-field BEM classes essential to the
@@ -131,7 +131,7 @@ $tiles_inner_html = ob_get_clean();
 
 // ── WS-4: tile grid via shared wrapper helper (kind='layout') ─────────────────
 // extra_classes carries 'sgs-form-tiles' so existing CSS selectors are unchanged.
-// The helper provides grid-template-columns / widthMode / gap controls.
+// The helper provides grid-template-columns / align/maxWidth / gap controls.
 // No extra_attrs needed — data-* are on the individual tile <label> elements above.
 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — SGS_Container_Wrapper::render() output is pre-sanitised.
 echo SGS_Container_Wrapper::render(

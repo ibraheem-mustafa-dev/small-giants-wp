@@ -31,5 +31,11 @@ Browser computed-style via Playwright (`document.fonts.ready` awaited → first 
 ## first-paint capture
 `document.fonts.status === 'loaded'` confirmed true before the computed-style read — values are not a FOUT artefact.
 
+## v0.5 follow-up (same day, D231) — content-band token rename + default-full
+The live theme's content-size=1200 / wide-size=1400 (not the assumed 780/1200), so the token labels were corrected and the default changed:
+- `normal` → content-size (was `narrow`); `wide` → wide-size (was `default`); `full` → no cap.
+- `contentWidth` default `"default"` → `"full"` (blank → content fills the outer maxWidth, no imposed band — also resolves the earlier outer-800+1200-band nuance).
+- Live-verified on the deployed wrapper (do_blocks): `normal`→`var(--content-size,1200px)`, `wide`→`var(--wide-size,1400px)`, `full`→no cap, **blank→no cap (default full)**, `900px`→`max-width:900px`. The browser computed-style of these vars was Playwright-proven in the v0.4 capture above (identical resolution path; only token keys + default changed). 29 vestigial `widthMode` block.json declarations + 8 stale render.php comments swept (non-visual).
+
 ## Process
 Designed via /brainstorming → /adversarial-council (caught a fatal maxWidth-occupied premise pre-build) → Bean design-gate (4 iterations, model evolved to v0.4) → SDD build (subagents implement, Opus orchestrates) → /qc-council (caught a responsive-specificity WRITTEN-not-LANDED bug pre-commit) → this live LANDED verify.

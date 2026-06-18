@@ -212,33 +212,33 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
 			};
 
-			// contentWidth token-or-literal resolver (v0.4 spec §0d).
+			// contentWidth token-or-literal resolver (v0.5 spec — token rename: narrow→normal, default→wide).
 			// Named tokens map to WP global CSS custom properties so the band width
-			// follows the theme's registered content/wide sizes. Literals are sanitised
-			// via $sgs_css_length (safe to use as a CSS length value). 'full' → empty
-			// string = no band cap (the '' !== $content_width guard below suppresses emit).
-			// Empty input (attr not set) → '' (no band max-width — preserves existing
-			// behaviour where an unset contentWidth does not constrain the band).
+			// follows the theme's registered content/wide sizes (content-size=1200, wide-size=1400
+			// on this theme). Literals are sanitised via $sgs_css_length (safe to use as a CSS
+			// length value). 'full' → empty string = no band cap (the '' !== $content_width guard
+			// below suppresses emit). Empty input (attr not set or default "full") → '' (no band
+			// max-width — content fills the outer maxWidth, no imposed band).
 			$sgs_resolve_content_width = static function ( $value ) use ( $sgs_css_length ) {
 				$v = (string) $value;
-				if ( 'narrow' === $v ) {
-					// Rarely-useful blog width (~780px); maps to theme content-size global.
-					return 'var(--wp--style--global--content-size,780px)';
+				if ( 'normal' === $v ) {
+					// Standard content width; maps to theme content-size global (~1200px on this theme).
+					return 'var(--wp--style--global--content-size,1200px)';
 				}
-				if ( 'default' === $v ) {
-					// Standard band cap (~1200px); maps to theme wide-size global.
-					return 'var(--wp--style--global--wide-size,1200px)';
+				if ( 'wide' === $v ) {
+					// Wide content width; maps to theme wide-size global (~1400px on this theme).
+					return 'var(--wp--style--global--wide-size,1400px)';
 				}
-				if ( 'full' === $v ) {
-					// No inner cap — dissolves the band max-width constraint entirely.
+				if ( 'full' === $v || '' === $v ) {
+					// No inner cap — content fills the outer maxWidth, no imposed band.
 					return '';
 				}
 				// Any other non-empty value is a literal CSS length — sanitise and pass through.
 				return $sgs_css_length( $v );
 			};
 
-			// Resolve contentWidth (was: raw $sgs_css_length strip — would pass "narrow"
-			// or "default" through as invalid CSS lengths; now: token-aware resolver).
+			// Resolve contentWidth (was: raw $sgs_css_length strip — would pass token names
+			// through as invalid CSS lengths; now: token-aware resolver — v0.5 tokens: normal/wide/full).
 			$content_width = $sgs_resolve_content_width( $content_width );
 			// Responsive outer max-width — literal CSS lengths (empty = not set by converter yet).
 			$max_width_tablet  = $sgs_css_length( $attributes['maxWidthTablet'] ?? '' );

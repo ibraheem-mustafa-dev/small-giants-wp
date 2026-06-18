@@ -176,15 +176,15 @@ const LENGTH_UNITS = [
 ];
 
 /**
- * Content-band token options (v0.4 model).
- *   narrow  → var(--wp--style--global--content-size) (~780px)
- *   default → var(--wp--style--global--wide-size) (~1200px) — the new default
- *   full    → no inner cap
- *   custom  → reveals a UnitControl for a literal value
+ * Content-band token options (v0.5 model).
+ *   normal → var(--wp--style--global--content-size) (~1200px on this theme)
+ *   wide   → var(--wp--style--global--wide-size) (~1400px on this theme)
+ *   full   → no inner cap (default)
+ *   custom → reveals a UnitControl for a literal value
  */
 const CONTENT_WIDTH_PRESET_OPTIONS = [
-	{ label: __( 'Narrow (~780px)', 'sgs-blocks' ), value: 'narrow' },
-	{ label: __( 'Default (~1200px)', 'sgs-blocks' ), value: 'default' },
+	{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
+	{ label: __( 'Wide', 'sgs-blocks' ), value: 'wide' },
 	{ label: __( 'Full (no cap)', 'sgs-blocks' ), value: 'full' },
 	{ label: __( 'Custom…', 'sgs-blocks' ), value: 'custom' },
 ];
@@ -197,12 +197,12 @@ const CONTENT_WIDTH_PRESET_OPTIONS = [
  * @returns {boolean}
  */
 function isToken( v ) {
-	return [ 'narrow', 'default', 'full' ].includes( v );
+	return [ 'normal', 'wide', 'full' ].includes( v );
 }
 
 /**
  * Derive the preset selector value from a raw contentWidth attribute value.
- * Returns 'narrow' | 'default' | 'full' when value is a token, or 'custom'
+ * Returns 'normal' | 'wide' | 'full' when value is a token, or 'custom'
  * when value is a literal CSS length (contains at least one digit).
  *
  * @param {string} v
@@ -216,17 +216,18 @@ function contentWidthPreset( v ) {
 	if ( v && /\d/.test( v ) ) {
 		return 'custom';
 	}
-	// Empty / unrecognised → treat as default.
-	return 'default';
+	// Empty / unrecognised → treat as full (no band cap).
+	return 'full';
 }
 
 /**
- * Width + contentWidth controls (v0.4 model — widthMode retired).
+ * Width + contentWidth controls (v0.5 model — widthMode retired).
  *
  * OUTER layer: maxWidth UnitControl (literal CSS length or empty → full-width).
  *   Responsive: maxWidthTablet / maxWidthMobile via ResponsiveControl.
  *
- * CONTENT BAND: ToggleGroupControl with tokens narrow / default / full / custom.
+ * CONTENT BAND: ToggleGroupControl with tokens normal / wide / full / custom.
+ *   Default is 'full' (no band cap — content fills outer maxWidth).
  *   When custom is selected a UnitControl for the literal value is revealed.
  *   Responsive: contentWidthTablet / contentWidthMobile (same pattern).
  *
@@ -240,7 +241,7 @@ export function WidthPanel( { attributes, setAttributes } ) {
 		maxWidth = '',
 		maxWidthTablet = '',
 		maxWidthMobile = '',
-		contentWidth = 'default',
+		contentWidth = 'full',
 		contentWidthTablet = '',
 		contentWidthMobile = '',
 	} = attributes;
@@ -316,7 +317,7 @@ export function WidthPanel( { attributes, setAttributes } ) {
 				) ) }
 			</ToggleGroupControl>
 			<p className="components-base-control__help">
-				{ __( 'Caps the inner content band. Narrow ≈ 780px (blog), Default ≈ 1200px (standard), Full = no cap.', 'sgs-blocks' ) }
+				{ __( 'Caps the inner content band. Normal ≈ 1200px (content-size), Wide ≈ 1400px (wide-size), Full = no cap (default).', 'sgs-blocks' ) }
 			</p>
 			{ cwPreset === 'custom' && (
 				<UnitControl

@@ -57,16 +57,6 @@
 		"maxWidth": {
 			"type": "string",
 			"default": ""
-		},
-		"widthMode": {
-			"type": "string",
-			"default": "default",
-			"enum": [
-				"default",
-				"wide",
-				"full",
-				"custom"
-			]
 		}
 	},
 	"render": "file:./render.php",
