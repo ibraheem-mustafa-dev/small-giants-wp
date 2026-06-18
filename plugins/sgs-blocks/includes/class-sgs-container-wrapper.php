@@ -25,12 +25,12 @@
  *
  * KIND gating — which layers are emitted
  * ----------------------------------------
- * 'section' — Full surface: bg-image/video/overlay/svg, shape-dividers, widthMode/
- *             customWidth, min-height, grid/flex, gridItem*, gap, contentWidth/__inner.
+ * 'section' — Full surface: bg-image/video/overlay/svg, shape-dividers,
+ *             maxWidth/align, min-height, grid/flex, gridItem*, gap, contentWidth/__inner.
  *             Matches the complete sgs/container output exactly.
- * 'layout'  — grid/flex + widthMode/customWidth/contentWidth + gap only.
+ * 'layout'  — grid/flex + maxWidth/align/contentWidth + gap only.
  *             No bg/overlay/svg/shape-divider layers.
- * 'content' — widthMode/customWidth/contentWidth + padding/spacing only.
+ * 'content' — maxWidth/align/contentWidth + padding/spacing only.
  *             No bg/overlay/svg/shape/grid layers.
  *
  * @package SGS\Blocks
@@ -119,7 +119,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			$is_section = 'section' === $kind;
 			$is_layout  = 'layout' === $kind;
-			// content kind = only widthMode/contentWidth/padding; used by content-level composites.
+			// content kind = only maxWidth/align/contentWidth/padding; used by content-level composites.
 
 			// ----------------------------------------------------------------
 			// Extract attributes (mirrors container/render.php exactly).
@@ -190,10 +190,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$bg_animation_duration  = 20;
 			}
 
-			$shadow            = $attributes['shadow'] ?? '';
-			$max_width         = $attributes['maxWidth'] ?? '';
+			$shadow    = $attributes['shadow'] ?? '';
+			$max_width = $attributes['maxWidth'] ?? '';
+			// Raw read — sanitised via $sgs_css_length after the closure is defined (~line 211).
 			$content_width     = $attributes['contentWidth'] ?? '';
-			$content_width     = preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $content_width );
 			$min_height        = $attributes['minHeight'] ?? '';
 			$min_height_tablet = $attributes['minHeightTablet'] ?? '';
 			$min_height_mobile = $attributes['minHeightMobile'] ?? '';
@@ -203,14 +203,50 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// both set (back-compat); default stays `start` (NOT flipped). Universal
 			// bridge that paints a block's emitted align value, fixing IN-C without an
 			// 8-block rename or client re-save.
-			$vertical_align    = $attributes['verticalAlign'] ?? $attributes['alignItems'] ?? 'start';
+			$vertical_align = $attributes['verticalAlign'] ?? $attributes['alignItems'] ?? 'start';
 
 			// CSS-length sanitiser for min-height (inline + injected <style> contexts).
 			// Strips everything except digits, dot, %, and unit letters so a value can
-			// never break out of its declaration (mirrors the contentWidth strip above).
-			$sgs_css_length    = static function ( $value ) {
+			// never break out of its declaration.
+			$sgs_css_length = static function ( $value ) {
 				return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
 			};
+
+			// contentWidth token-or-literal resolver (v0.4 spec §0d).
+			// Named tokens map to WP global CSS custom properties so the band width
+			// follows the theme's registered content/wide sizes. Literals are sanitised
+			// via $sgs_css_length (safe to use as a CSS length value). 'full' → empty
+			// string = no band cap (the '' !== $content_width guard below suppresses emit).
+			// Empty input (attr not set) → '' (no band max-width — preserves existing
+			// behaviour where an unset contentWidth does not constrain the band).
+			$sgs_resolve_content_width = static function ( $value ) use ( $sgs_css_length ) {
+				$v = (string) $value;
+				if ( 'narrow' === $v ) {
+					// Rarely-useful blog width (~780px); maps to theme content-size global.
+					return 'var(--wp--style--global--content-size,780px)';
+				}
+				if ( 'default' === $v ) {
+					// Standard band cap (~1200px); maps to theme wide-size global.
+					return 'var(--wp--style--global--wide-size,1200px)';
+				}
+				if ( 'full' === $v ) {
+					// No inner cap — dissolves the band max-width constraint entirely.
+					return '';
+				}
+				// Any other non-empty value is a literal CSS length — sanitise and pass through.
+				return $sgs_css_length( $v );
+			};
+
+			// Resolve contentWidth (was: raw $sgs_css_length strip — would pass "narrow"
+			// or "default" through as invalid CSS lengths; now: token-aware resolver).
+			$content_width = $sgs_resolve_content_width( $content_width );
+			// Responsive outer max-width — literal CSS lengths (empty = not set by converter yet).
+			$max_width_tablet  = $sgs_css_length( $attributes['maxWidthTablet'] ?? '' );
+			$max_width_mobile  = $sgs_css_length( $attributes['maxWidthMobile'] ?? '' );
+			// When responsive outer max-width tiers exist, the base maxWidth must NOT be
+			// emitted inline (inline beats class-based @media). It is deferred to a .uid
+			// stylesheet rule in the responsive block so the cascade decides per viewport.
+			$has_responsive_max_width = ( '' !== $max_width_tablet || '' !== $max_width_mobile );
 			$min_height        = $sgs_css_length( $min_height );
 			$min_height_tablet = $is_section ? $sgs_css_length( $min_height_tablet ) : '';
 			$min_height_mobile = $is_section ? $sgs_css_length( $min_height_mobile ) : '';
@@ -271,8 +307,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$band_background = $attributes['contentBandBackground'] ?? '';
 
 			// Responsive content-width overrides for the band (tablet / mobile).
-			$content_width_tablet = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentWidthTablet'] ?? '' ) : '';
-			$content_width_mobile = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentWidthMobile'] ?? '' ) : '';
+			// Use the token-or-literal resolver (same as the base) so 'narrow'/'default'/
+			// 'full'/literal all resolve correctly at every tier.
+			$content_width_tablet = ( $is_section || $is_layout ) ? $sgs_resolve_content_width( $attributes['contentWidthTablet'] ?? '' ) : '';
+			$content_width_mobile = ( $is_section || $is_layout ) ? $sgs_resolve_content_width( $attributes['contentWidthMobile'] ?? '' ) : '';
 
 			$has_band_responsive = ( $is_section || $is_layout ) && (
 				'' !== $band_padding_top_tablet || '' !== $band_padding_right_tablet ||
@@ -289,29 +327,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$html_tag = 'section';
 			}
 
-			// widthMode.
-			$allowed_width_modes   = array( 'default', 'wide', 'full', 'custom' );
-			$width_mode            = $attributes['widthMode'] ?? 'default';
-			$width_mode_mobile     = $attributes['widthModeMobile'] ?? '';
-			$width_mode_tablet     = $attributes['widthModeTablet'] ?? '';
-			$width_mode_desktop    = $attributes['widthModeDesktop'] ?? '';
-			$custom_width_value    = isset( $attributes['customWidth'] ) ? absint( $attributes['customWidth'] ) : 0;
-			$custom_width_unit_raw = $attributes['customWidthUnit'] ?? 'px';
-			$allowed_width_units   = array( 'px', 'em', 'rem', '%', 'vw' );
-			$custom_width_unit     = in_array( $custom_width_unit_raw, $allowed_width_units, true ) ? $custom_width_unit_raw : 'px';
-
-			if ( ! in_array( $width_mode, $allowed_width_modes, true ) ) {
-				$width_mode = 'default';
-			}
-			if ( '' !== $width_mode_mobile && ! in_array( $width_mode_mobile, $allowed_width_modes, true ) ) {
-				$width_mode_mobile = '';
-			}
-			if ( '' !== $width_mode_tablet && ! in_array( $width_mode_tablet, $allowed_width_modes, true ) ) {
-				$width_mode_tablet = '';
-			}
-			if ( '' !== $width_mode_desktop && ! in_array( $width_mode_desktop, $allowed_width_modes, true ) ) {
-				$width_mode_desktop = '';
-			}
+			// WP-native align — breakout control (v0.4: widthMode retired; align replaces
+			// widthMode's breakout job per spec §0e). Reads the block's WP 'align' attribute
+			// (set by the toolbar via supports.align:['wide','full']); emits alignwide /
+			// alignfull class so WP theme styles handle the breakout correctly.
+			$align = $attributes['align'] ?? '';
 
 			// Grid item defaults (SB-1) — section + layout kinds only.
 			$grid_item_padding       = $attributes['gridItemPadding'] ?? '';
@@ -572,23 +592,31 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			if ( '' !== $layout ) {
 				$classes[] = 'sgs-container--' . esc_attr( $layout );
 			}
+
+			// Outer max-width — literal only (v0.4 model per spec §0d).
+			// maxWidth non-empty → exact draft value, sanitised via $sgs_css_length.
+			// maxWidth empty → full-width outer; emit nothing (no max-width constraint).
+			// Defer to a .uid stylesheet rule when responsive tiers exist, so the
+			// @media tiers can override the base (inline would beat them).
 			if ( '' !== $max_width ) {
-				$classes[] = 'sgs-container--width-' . esc_attr( $max_width );
+				if ( ! $has_responsive_max_width ) {
+					$styles[] = 'max-width:' . $sgs_css_length( $max_width );
+					$styles[] = 'margin-inline:auto';
+				}
 			}
+			// No else — empty maxWidth = full-width outer; nothing emitted.
 
-			// widthMode alignment classes.
-			if ( 'wide' === $width_mode ) {
+			// WP-native align breakout classes (v0.4: align attr replaces widthMode breakout).
+			if ( 'wide' === $align ) {
 				$classes[] = 'alignwide';
-			} elseif ( 'full' === $width_mode ) {
+			} elseif ( 'full' === $align ) {
 				$classes[] = 'alignfull';
-			} elseif ( 'custom' === $width_mode && $custom_width_value > 0 ) {
-				$styles[] = 'max-width:' . $custom_width_value . $custom_width_unit;
-				$styles[] = 'margin-inline:auto';
 			}
 
-			// style.dimensions.maxWidth.
+			// style.dimensions.maxWidth — WP-native path. Only emit when the top-level
+			// maxWidth attr is NOT set (that wins); avoids double-emitting max-width.
 			$style_dim = $attributes['style']['dimensions'] ?? array();
-			if ( ! empty( $style_dim['maxWidth'] ) ) {
+			if ( '' === $max_width && ! empty( $style_dim['maxWidth'] ) ) {
 				$styles[] = 'max-width:' . esc_attr( $style_dim['maxWidth'] );
 			}
 
@@ -766,8 +794,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			$responsive_css      = '';
 			$has_responsive_bg   = $is_section && ( ! empty( $bg_image_tablet['url'] ) || ! empty( $bg_image_mobile['url'] ) );
-			$has_responsive_attr = ( $gap_tablet || $gap_mobile || $width_mode_mobile || $width_mode_tablet || $width_mode_desktop || $has_responsive_bg || $has_responsive_min_height
-				|| $has_responsive_padding || $has_responsive_margin || $has_band_responsive )
+			$has_responsive_attr = ( $gap_tablet || $gap_mobile || $has_responsive_bg || $has_responsive_min_height
+				|| $has_responsive_padding || $has_responsive_margin || $has_band_responsive || $max_width_tablet || $max_width_mobile )
 				|| ( ( $is_section || $is_layout ) && ( $grid_template_tablet || $grid_template_mobile || $grid_template_rows_tablet || $grid_template_rows_mobile ) );
 
 			// uid also needed when parallax/ken-burns is active or bg-video is responsive.
@@ -814,6 +842,20 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					if ( '' !== $min_height_mobile ) {
 						$responsive_css .= '@media (max-width:767px){.' . $uid . '{min-height:' . $min_height_mobile . '}}';
 					}
+				}
+
+				// Responsive outer max-width — section/layout/content kinds. Mirrors the
+				// min-height pattern above: base + @media tiers all on the .$uid selector
+				// (base deferred from inline at the width branch) so source-order + @media
+				// decide the winner per viewport. Cascade: base → tablet(≤1023) → mobile(≤767).
+				if ( $has_responsive_max_width && '' !== $max_width ) {
+					$responsive_css .= '.' . $uid . '{max-width:' . $sgs_css_length( $max_width ) . ';margin-inline:auto}';
+				}
+				if ( '' !== $max_width_tablet ) {
+					$responsive_css .= '@media (max-width:1023px){.' . $uid . '{max-width:' . $max_width_tablet . '}}';
+				}
+				if ( '' !== $max_width_mobile ) {
+					$responsive_css .= '@media (max-width:767px){.' . $uid . '{max-width:' . $max_width_mobile . '}}';
 				}
 
 				// Responsive padding — all kinds. Base padding is handled by WP's spacing.padding
@@ -899,41 +941,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					}
 					if ( $mobile_margin_decls ) {
 						$responsive_css .= '@media (max-width:767px){.' . $uid . '{' . implode( ' !important;', $mobile_margin_decls ) . ' !important}}';
-					}
-				}
-
-				$width_mode_to_css = static function ( $mode ) use ( $custom_width_value, $custom_width_unit ) {
-					if ( 'wide' === $mode ) {
-						return 'max-width:var(--wp--style--global--wide-size,1200px)';
-					}
-					if ( 'default' === $mode ) {
-						return 'max-width:var(--wp--style--global--content-size,780px)';
-					}
-					if ( 'full' === $mode ) {
-						return 'max-width:none';
-					}
-					if ( 'custom' === $mode && $custom_width_value > 0 ) {
-						return 'max-width:' . $custom_width_value . $custom_width_unit;
-					}
-					return '';
-				};
-
-				if ( '' !== $width_mode_mobile ) {
-					$decl = $width_mode_to_css( $width_mode_mobile );
-					if ( '' !== $decl ) {
-						$responsive_css .= '@media (max-width:767px){.' . $uid . '{' . $decl . '}}';
-					}
-				}
-				if ( '' !== $width_mode_tablet ) {
-					$decl = $width_mode_to_css( $width_mode_tablet );
-					if ( '' !== $decl ) {
-						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{' . $decl . '}}';
-					}
-				}
-				if ( '' !== $width_mode_desktop ) {
-					$decl = $width_mode_to_css( $width_mode_desktop );
-					if ( '' !== $decl ) {
-						$responsive_css .= '@media (min-width:1024px){.' . $uid . '{' . $decl . '}}';
 					}
 				}
 
@@ -1206,7 +1213,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// false → grid stays full-bleed on the outer, no __inner (trust-bar-style
 			// full-bleed grids unchanged). The wrap_inner caller override is byte-
 			// identical (hero-split / product-card still depend on it).
-			$do_wrap     = null !== $opt_wrap_inner ? (bool) $opt_wrap_inner : $has_band_props;
+			$do_wrap = null !== $opt_wrap_inner ? (bool) $opt_wrap_inner : $has_band_props;
 			if ( $do_wrap && $has_band_responsive && '' !== $uid ) {
 				// Responsive band tiers exist: the base band styles were emitted into
 				// the uid stylesheet (band base rule before the @media tiers) — an

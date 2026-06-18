@@ -1492,7 +1492,7 @@ def _match_theme_width(value_str: str, theme_widths: dict) -> str | None:
         if not tw:
             continue
         tw_px = _parse_px_length(tw)
-        if tw_px and abs(val_px - tw_px) / max(tw_px, 1) <= _WIDTH_MATCH_TOLERANCE_PCT / 100:
+        if tw_px and abs(val_px - tw_px) <= 1.0:  # exact-match: ≤1px (was 5% snap; _WIDTH_MATCH_TOLERANCE_PCT kept — used by width clusterer at line ~1421)
             return "default" if key == "contentSize" else "wide"
     return None
 
@@ -4542,23 +4542,22 @@ def walk(
         container_attrs: dict = {}
         if sgs_classes:
             container_attrs["className"] = " ".join(sgs_classes)
-        # A2 (FR-22-21): set widthMode from the section element's OWN max-width.
-        # ABSENT → full-bleed (widthMode "full"); PRESENT → match theme widths or custom px.
+        # A2 (FR-22-21 v0.4): set outer width from the section element's OWN max-width.
+        # ABSENT → full-bleed breakout via WP-native align:"full".
+        # PRESENT → maxWidth literal (exact, decimal-safe). NO widthMode emitted.
+        # Theme-snap (_match_theme_width) is DROPPED for the outer box — literals only.
         # setdefault() so _process_container_children fold can't overwrite.
         _sec_base, _ = _collect_css_decls_for_element(node, css_rules)
         _own_mw = _sec_base.get("max-width")
         if not _own_mw:
-            container_attrs.setdefault("widthMode", "full")
+            container_attrs.setdefault("align", "full")
         else:
-            _sec_mode = _match_theme_width(_strip_important(_own_mw), _LIFT_CONTEXT.get("theme_widths", {}))
-            if _sec_mode in ("default", "wide"):
-                container_attrs.setdefault("widthMode", _sec_mode)
-            else:
-                _mw_m = re.match(r"^\s*(\d+(?:\.\d+)?)\s*(px|rem|em|vw|%)?\s*$", _strip_important(_own_mw))
-                if _mw_m:
-                    container_attrs.setdefault("widthMode", "custom")
-                    container_attrs.setdefault("customWidth", int(float(_mw_m.group(1))))
-                    container_attrs.setdefault("customWidthUnit", _mw_m.group(2) or "px")
+            # Exact-match model (v0.4): write the verbatim literal to maxWidth.
+            # Preserves decimals + unit (e.g. "62.5rem", "800px"). No int() truncation.
+            # No theme-snap; no widthMode; no customWidth/customWidthUnit.
+            _mw_literal = _strip_important(_own_mw).strip()
+            if _mw_literal:
+                container_attrs.setdefault("maxWidth", _mw_literal)
         # A3 — lift the section root's wrapper-capability CSS (min-height, box-shadow,
         # grid-template-columns, gap, etc.) onto the container attrs (Method-2, Spec 22
         # §FR-22-21). Mirrors A2 (composite path) — same A1 helper, different call site.
@@ -4591,6 +4590,16 @@ def walk(
         # onto gridItem* attrs AFTER children resolve (setdefault — child paths win).
         # R-22-1 DB-driven; R-22-6 no inline CSS; R-22-9 universal (every slug-None section).
         _lift_uniform_grid_item_css(node, css_rules, container_attrs)
+        # FR-22-21 / v0.4 width model: if no content-band was detected (no fold
+        # lifted a max-width, no G3 scan set contentWidth), the block.json default
+        # of "default" (~1200px wide-size) would silently constrain content that the
+        # draft intended to be full-width.  For cloning fidelity, explicitly emit
+        # "full" so the clone's content area fills the full-bleed section width.
+        # setdefault() preserves any contentWidth already written by the fold path
+        # (_fold_layout_into_attrs → _lift_content_band_max_width) or route_node_css.
+        # Scoped to this slug-None top-level section path only (R-22-9 universal
+        # within scope; does not touch composite paths or non-top-level containers).
+        container_attrs.setdefault("contentWidth", "full")
         return _emit_section_container(container_attrs, children_markup, css)
 
     # When slug is None at top level, skip attr-lifting + root-supports-lift
@@ -4642,30 +4651,28 @@ def walk(
         # pass at the bottom of route_node_css.  Kept as comment for audit trail.
 
     if slug is not None and _is_container_mirror_block(slug):
-        # R1.3 — widthMode fallback for SECTION-kind mirror composites at top level.
+        # R1.3 (v0.4) — outer width for SECTION-kind mirror composites at top level.
         # When exempted from the exception-3 outer wrap (R1.2), the bare composite must
-        # carry the widthMode that outer container used to inject ({"widthMode":"full"}).
-        # Mirrors the slug-None section path's max-width → widthMode logic exactly.
-        # setdefault: draft-set widthMode is never clobbered. Layout/content-kind mirror
-        # blocks are not section composites at top level, so this gate is safe.
+        # carry the outer width that the slug-None section path emits: align:"full" for
+        # no max-width, maxWidth literal for a constrained box. NO widthMode emitted.
+        # Mirrors the slug-None section path's A2 logic (v0.4) exactly.
+        # setdefault: draft-set align/maxWidth is never clobbered. Layout/content-kind
+        # mirror blocks are not section composites at top level, so this gate is safe.
         # R-22-1 DB-gated; R-22-9 universal over every section-kind mirror block.
-        if _is_section_kind_mirror_block(slug) and "widthMode" not in attrs:
+        if _is_section_kind_mirror_block(slug) and "align" not in attrs and "maxWidth" not in attrs:
             _r1_base, _ = _collect_css_decls_for_element(node, css_rules)
             _r1_own_mw = _r1_base.get("max-width")
             if not _r1_own_mw:
-                attrs.setdefault("widthMode", "full")
+                attrs.setdefault("align", "full")
             else:
-                _r1_mode = _match_theme_width(_strip_important(_r1_own_mw), _LIFT_CONTEXT.get("theme_widths", {}))
-                if _r1_mode in ("default", "wide"):
-                    attrs.setdefault("widthMode", _r1_mode)
+                # Exact-match model (v0.4): write the verbatim literal to maxWidth.
+                # Preserves decimals + unit (e.g. "62.5rem", "800px"). No int() truncation.
+                # No theme-snap; no widthMode; no customWidth/customWidthUnit.
+                _r1_mw_literal = _strip_important(_r1_own_mw).strip()
+                if _r1_mw_literal:
+                    attrs.setdefault("maxWidth", _r1_mw_literal)
                 else:
-                    _r1_mw_m = re.match(r"^\s*(\d+(?:\.\d+)?)\s*(px|rem|em|vw|%)?\s*$", _strip_important(_r1_own_mw))
-                    if _r1_mw_m:
-                        attrs.setdefault("widthMode", "custom")
-                        attrs.setdefault("customWidth", int(float(_r1_mw_m.group(1))))
-                        attrs.setdefault("customWidthUnit", _r1_mw_m.group(2) or "px")
-                    else:
-                        attrs.setdefault("widthMode", "full")
+                    attrs.setdefault("align", "full")
         # GAP 3 (A2 path) — display:grid|flex → layout attr for composite mirror blocks.
         # Same gap as A3: _lift_wrapper_css_to_container_attrs cannot set `layout`
         # NOTE (GAP-3 scope decision, 2026-06-05): `layout` is intentionally NOT lifted

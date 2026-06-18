@@ -70,12 +70,6 @@ export default function Edit({ attributes, setAttributes }) {
     shadow,
     maxWidth,
     minHeight,
-    widthMode = "default",
-    widthModeMobile = "",
-    widthModeTablet = "",
-    widthModeDesktop = "",
-    customWidth = 0,
-    customWidthUnit = "px",
     gridTemplateColumns = "",
     verticalAlign,
     justifyItems = "stretch",
@@ -86,11 +80,6 @@ export default function Edit({ attributes, setAttributes }) {
   // Editor preview: show bg-image if set (video not previewed inline — too complex for editor).
   const hasBgImage = !!backgroundImage?.url;
   const hasBgVideo = !!bgVideo?.url;
-
-  const CUSTOM_WIDTH_UNIT_VALUES = [ "px", "em", "rem", "%", "vw" ];
-  const safeCustomUnit = CUSTOM_WIDTH_UNIT_VALUES.includes( customWidthUnit )
-    ? customWidthUnit
-    : "px";
 
   const style = {
     gap: gapCssValue( gap ),
@@ -132,16 +121,15 @@ export default function Edit({ attributes, setAttributes }) {
     style.alignItems = verticalAlign;
   }
 
-  if (widthMode === "custom" && customWidth > 0) {
-    style.maxWidth = `${customWidth}${safeCustomUnit}`;
+  // Editor preview: when a literal maxWidth is set, apply it as inline max-width.
+  // Breakout (alignwide / alignfull) is driven by WP-native align attr — no inline style needed.
+  if ( maxWidth ) {
+    style.maxWidth = maxWidth;
   }
 
   const className = [
     "sgs-container",
     `sgs-container--${layout}`,
-    `sgs-container--width-${maxWidth}`,
-    widthMode === "wide" && "alignwide",
-    widthMode === "full" && "alignfull",
   ]
     .filter(Boolean)
     .join(" ");

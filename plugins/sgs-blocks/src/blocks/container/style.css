@@ -55,23 +55,6 @@
    inherit per active style variation. WP core supplies the layout rules for
    .alignwide / .alignfull inside .entry-content; no overrides needed here. */
 
-/* Width variants */
-.sgs-container--width-content {
-	max-width: var(--wp--style--global--content-size, 800px);
-	margin-left: auto;
-	margin-right: auto;
-}
-
-.sgs-container--width-wide {
-	max-width: var(--wp--style--global--wide-size, 1200px);
-	margin-left: auto;
-	margin-right: auto;
-}
-
-.sgs-container--width-full {
-	max-width: none;
-}
-
 /* Layout: stack */
 .sgs-container--stack {
 	display: flex;

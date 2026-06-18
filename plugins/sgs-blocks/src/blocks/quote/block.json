@@ -421,14 +421,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"customWidth": {
-			"type": "string",
-			"default": ""
-		},
-		"customWidthUnit": {
-			"type": "string",
-			"default": "px"
-		},
 		"widthMode": {
 			"type": "string",
 			"enum": [
@@ -456,6 +448,14 @@
 			"default": ""
 		},
 		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidthTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidthMobile": {
 			"type": "string",
 			"default": ""
 		},

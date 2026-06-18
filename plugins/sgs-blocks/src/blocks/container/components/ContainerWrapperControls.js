@@ -9,11 +9,13 @@
  *
  * KIND GATING
  * -----------
- *  section  — full surface: width, contentWidth, gap (responsive), layout
- *             (grid/flex), background (image/video/overlay/svg/animation),
- *             shape dividers, min-height, grid-item defaults, shadow.
- *  layout   — grid/flex + width (widthMode/customWidth/contentWidth) + gap only.
- *  content  — width (widthMode/customWidth/contentWidth) + padding/spacing only.
+ *  section  — full surface: outer maxWidth (literal), contentWidth (token or
+ *             literal), gap (responsive), layout (grid/flex), background
+ *             (image/video/overlay/svg/animation), shape dividers, min-height,
+ *             grid-item defaults, shadow. Breakout (alignwide/alignfull) via
+ *             WP-native align toolbar — no custom control needed.
+ *  layout   — grid/flex + width (maxWidth/contentWidth) + gap only.
+ *  content  — width (maxWidth/contentWidth) + padding/spacing only.
  *
  * IMPORT LINE (adjust relative depth as needed)
  * ---------------------------------------------
@@ -48,6 +50,7 @@ import {
 	TextControl,
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
+	__experimentalUnitControl as UnitControl,
 	TabPanel,
 } from '@wordpress/components';
 import {
@@ -115,34 +118,6 @@ const LAYOUT_OPTIONS = [
 	{ label: __( 'Grid', 'sgs-blocks' ), value: 'grid' },
 ];
 
-const WIDTH_OPTIONS = [
-	{ label: __( 'Content', 'sgs-blocks' ), value: 'content' },
-	{ label: __( 'Wide', 'sgs-blocks' ), value: 'wide' },
-	{ label: __( 'Full', 'sgs-blocks' ), value: 'full' },
-];
-
-const WIDTH_MODE_OPTIONS = [
-	{ label: __( 'Default', 'sgs-blocks' ), value: 'default' },
-	{ label: __( 'Wide (alignwide)', 'sgs-blocks' ), value: 'wide' },
-	{ label: __( 'Full (alignfull)', 'sgs-blocks' ), value: 'full' },
-	{ label: __( 'Custom', 'sgs-blocks' ), value: 'custom' },
-];
-
-const WIDTH_MODE_INHERIT_OPTIONS = [
-	{ label: __( 'Inherit', 'sgs-blocks' ), value: '' },
-	...WIDTH_MODE_OPTIONS,
-];
-
-const CUSTOM_WIDTH_UNIT_OPTIONS = [
-	{ label: 'px', value: 'px' },
-	{ label: 'em', value: 'em' },
-	{ label: 'rem', value: 'rem' },
-	{ label: '%', value: '%' },
-	{ label: 'vw', value: 'vw' },
-];
-
-const CUSTOM_WIDTH_UNIT_VALUES = CUSTOM_WIDTH_UNIT_OPTIONS.map( ( o ) => o.value );
-
 const ALIGN_OPTIONS = [
 	{ label: __( 'Top', 'sgs-blocks' ), value: 'start' },
 	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
@@ -190,57 +165,149 @@ export const SHADOW_OPTIONS = [
 // ---------------------------------------------------------------------------
 
 /**
- * Width + contentWidth controls.
+ * Units list for UnitControl inputs (maxWidth / contentWidth custom literal).
+ */
+const LENGTH_UNITS = [
+	{ value: 'px', label: 'px' },
+	{ value: 'rem', label: 'rem' },
+	{ value: 'em', label: 'em' },
+	{ value: '%', label: '%' },
+	{ value: 'vw', label: 'vw' },
+];
+
+/**
+ * Content-band token options (v0.4 model).
+ *   narrow  → var(--wp--style--global--content-size) (~780px)
+ *   default → var(--wp--style--global--wide-size) (~1200px) — the new default
+ *   full    → no inner cap
+ *   custom  → reveals a UnitControl for a literal value
+ */
+const CONTENT_WIDTH_PRESET_OPTIONS = [
+	{ label: __( 'Narrow (~780px)', 'sgs-blocks' ), value: 'narrow' },
+	{ label: __( 'Default (~1200px)', 'sgs-blocks' ), value: 'default' },
+	{ label: __( 'Full (no cap)', 'sgs-blocks' ), value: 'full' },
+	{ label: __( 'Custom…', 'sgs-blocks' ), value: 'custom' },
+];
+
+/**
+ * Returns true when the given contentWidth value is a named token rather than
+ * a literal CSS length.
+ *
+ * @param {string} v The contentWidth attribute value.
+ * @returns {boolean}
+ */
+function isToken( v ) {
+	return [ 'narrow', 'default', 'full' ].includes( v );
+}
+
+/**
+ * Derive the preset selector value from a raw contentWidth attribute value.
+ * Returns 'narrow' | 'default' | 'full' when value is a token, or 'custom'
+ * when value is a literal CSS length (contains at least one digit).
+ *
+ * @param {string} v
+ * @returns {string}
+ */
+function contentWidthPreset( v ) {
+	if ( isToken( v ) ) {
+		return v;
+	}
+	// A non-token non-empty value is a literal (e.g. "800px") → custom.
+	if ( v && /\d/.test( v ) ) {
+		return 'custom';
+	}
+	// Empty / unrecognised → treat as default.
+	return 'default';
+}
+
+/**
+ * Width + contentWidth controls (v0.4 model — widthMode retired).
+ *
+ * OUTER layer: maxWidth UnitControl (literal CSS length or empty → full-width).
+ *   Responsive: maxWidthTablet / maxWidthMobile via ResponsiveControl.
+ *
+ * CONTENT BAND: ToggleGroupControl with tokens narrow / default / full / custom.
+ *   When custom is selected a UnitControl for the literal value is revealed.
+ *   Responsive: contentWidthTablet / contentWidthMobile (same pattern).
+ *
+ * Breakout (alignwide / alignfull) is handled by WP-native supports.align
+ * toolbar — NO custom control is rendered here.
+ *
  * Used by all three kinds.
  */
 export function WidthPanel( { attributes, setAttributes } ) {
 	const {
 		maxWidth = '',
-		widthMode = 'default',
-		widthModeMobile = '',
-		widthModeTablet = '',
-		widthModeDesktop = '',
-		customWidth = 0,
-		customWidthUnit = 'px',
-		contentWidth = '',
+		maxWidthTablet = '',
+		maxWidthMobile = '',
+		contentWidth = 'default',
+		contentWidthTablet = '',
+		contentWidthMobile = '',
 	} = attributes;
 
-	const safeCustomUnit = CUSTOM_WIDTH_UNIT_VALUES.includes( customWidthUnit )
-		? customWidthUnit
-		: 'px';
+	const cwPreset = contentWidthPreset( contentWidth );
+	const cwLiteral = ! isToken( contentWidth ) && /\d/.test( contentWidth ) ? contentWidth : '';
 
-	const anyCustom =
-		widthMode === 'custom' ||
-		widthModeMobile === 'custom' ||
-		widthModeTablet === 'custom' ||
-		widthModeDesktop === 'custom';
+	const cwTabletPreset = contentWidthPreset( contentWidthTablet );
+	const cwTabletLiteral = ! isToken( contentWidthTablet ) && /\d/.test( contentWidthTablet ) ? contentWidthTablet : '';
+
+	const cwMobilePreset = contentWidthPreset( contentWidthMobile );
+	const cwMobileLiteral = ! isToken( contentWidthMobile ) && /\d/.test( contentWidthMobile ) ? contentWidthMobile : '';
 
 	return (
 		<>
-			<ToggleGroupControl
-				label={ __( 'Max width', 'sgs-blocks' ) }
-				value={ maxWidth }
-				onChange={ ( val ) => setAttributes( { maxWidth: val } ) }
-				isBlock
+			{ /* ---- OUTER max-width ---- */ }
+			<UnitControl
+				label={ __( 'Outer max-width', 'sgs-blocks' ) }
+				value={ maxWidth || '' }
+				units={ LENGTH_UNITS }
+				onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
+				help={ __( 'Exact CSS length applied as max-width on the outer block (e.g. 800px). Leave blank for no cap. Breakout (wide / full) is set via the block toolbar.', 'sgs-blocks' ) }
 				__nextHasNoMarginBottom
-			>
-				{ WIDTH_OPTIONS.map( ( opt ) => (
-					<ToggleGroupControlOption
-						key={ opt.value }
-						value={ opt.value }
-						label={ opt.label }
-					/>
-				) ) }
-			</ToggleGroupControl>
+			/>
+			<ResponsiveControl label={ __( 'Outer max-width by viewport', 'sgs-blocks' ) }>
+				{ ( breakpoint ) => {
+					if ( breakpoint === 'desktop' ) {
+						return (
+							<p className="sgs-inspector-help">
+								{ __( 'Desktop max-width is set above.', 'sgs-blocks' ) }
+							</p>
+						);
+					}
+					const attrMap = {
+						tablet: 'maxWidthTablet',
+						mobile: 'maxWidthMobile',
+					};
+					return (
+						<UnitControl
+							value={ attributes[ attrMap[ breakpoint ] ] || '' }
+							units={ LENGTH_UNITS }
+							onChange={ ( val ) => setAttributes( { [ attrMap[ breakpoint ] ]: val ?? '' } ) }
+							help={ __( 'Override outer max-width at this viewport. Leave blank to inherit desktop.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+						/>
+					);
+				} }
+			</ResponsiveControl>
 
+			<hr style={ { margin: '16px 0' } } />
+
+			{ /* ---- CONTENT BAND width ---- */ }
 			<ToggleGroupControl
-				label={ __( 'Width mode', 'sgs-blocks' ) }
-				value={ widthMode }
-				onChange={ ( val ) => setAttributes( { widthMode: val } ) }
+				label={ __( 'Content band width', 'sgs-blocks' ) }
+				value={ cwPreset }
+				onChange={ ( val ) => {
+					if ( val === 'custom' ) {
+						// Keep existing literal if already set, otherwise seed empty so UnitControl appears.
+						setAttributes( { contentWidth: cwLiteral || '' } );
+					} else {
+						setAttributes( { contentWidth: val } );
+					}
+				} }
 				isBlock
 				__nextHasNoMarginBottom
 			>
-				{ WIDTH_MODE_OPTIONS.map( ( opt ) => (
+				{ CONTENT_WIDTH_PRESET_OPTIONS.map( ( opt ) => (
 					<ToggleGroupControlOption
 						key={ opt.value }
 						value={ opt.value }
@@ -249,59 +316,68 @@ export function WidthPanel( { attributes, setAttributes } ) {
 				) ) }
 			</ToggleGroupControl>
 			<p className="components-base-control__help">
-				{ __( 'Composes with WP-native alignment. Per-viewport overrides below.', 'sgs-blocks' ) }
+				{ __( 'Caps the inner content band. Narrow ≈ 780px (blog), Default ≈ 1200px (standard), Full = no cap.', 'sgs-blocks' ) }
 			</p>
+			{ cwPreset === 'custom' && (
+				<UnitControl
+					label={ __( 'Custom content band width', 'sgs-blocks' ) }
+					value={ cwLiteral }
+					units={ LENGTH_UNITS }
+					onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
+					help={ __( 'Exact CSS length, e.g. 900px or 60rem.', 'sgs-blocks' ) }
+					__nextHasNoMarginBottom
+				/>
+			) }
 
-			<ResponsiveControl label={ __( 'Width mode by viewport', 'sgs-blocks' ) }>
+			<ResponsiveControl label={ __( 'Content band width by viewport', 'sgs-blocks' ) }>
 				{ ( breakpoint ) => {
+					if ( breakpoint === 'desktop' ) {
+						return (
+							<p className="sgs-inspector-help">
+								{ __( 'Desktop content band width is set above.', 'sgs-blocks' ) }
+							</p>
+						);
+					}
 					const attrMap = {
-						desktop: 'widthModeDesktop',
-						tablet: 'widthModeTablet',
-						mobile: 'widthModeMobile',
+						tablet: { preset: cwTabletPreset, literal: cwTabletLiteral, attr: 'contentWidthTablet' },
+						mobile: { preset: cwMobilePreset, literal: cwMobileLiteral, attr: 'contentWidthMobile' },
 					};
-					const attr = attrMap[ breakpoint ];
+					const { preset, literal, attr } = attrMap[ breakpoint ];
 					return (
-						<SelectControl
-							value={ attributes[ attr ] || '' }
-							options={ WIDTH_MODE_INHERIT_OPTIONS }
-							onChange={ ( val ) => setAttributes( { [ attr ]: val } ) }
-							__nextHasNoMarginBottom
-						/>
+						<>
+							<ToggleGroupControl
+								value={ preset }
+								onChange={ ( val ) => {
+									if ( val === 'custom' ) {
+										setAttributes( { [ attr ]: literal || '' } );
+									} else {
+										setAttributes( { [ attr ]: val } );
+									}
+								} }
+								isBlock
+								__nextHasNoMarginBottom
+							>
+								{ CONTENT_WIDTH_PRESET_OPTIONS.map( ( opt ) => (
+									<ToggleGroupControlOption
+										key={ opt.value }
+										value={ opt.value }
+										label={ opt.label }
+									/>
+								) ) }
+							</ToggleGroupControl>
+							{ preset === 'custom' && (
+								<UnitControl
+									value={ literal }
+									units={ LENGTH_UNITS }
+									onChange={ ( val ) => setAttributes( { [ attr ]: val ?? '' } ) }
+									help={ __( 'Exact CSS length for this viewport.', 'sgs-blocks' ) }
+									__nextHasNoMarginBottom
+								/>
+							) }
+						</>
 					);
 				} }
 			</ResponsiveControl>
-
-			{ anyCustom && (
-				<>
-					<RangeControl
-						label={ __( 'Custom width', 'sgs-blocks' ) }
-						value={ customWidth }
-						onChange={ ( val ) => setAttributes( { customWidth: val || 0 } ) }
-						min={ 0 }
-						max={ 2000 }
-						step={ 10 }
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Unit', 'sgs-blocks' ) }
-						value={ safeCustomUnit }
-						options={ CUSTOM_WIDTH_UNIT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { customWidthUnit: val } ) }
-						__nextHasNoMarginBottom
-					/>
-				</>
-			) }
-
-			<TextControl
-				label={ __( 'Content width', 'sgs-blocks' ) }
-				value={ contentWidth }
-				onChange={ ( val ) => setAttributes( { contentWidth: val } ) }
-				help={ __(
-					'Caps inner content to this max-width and centres it while the background stays full-width. Leave blank for no cap.',
-					'sgs-blocks'
-				) }
-				__nextHasNoMarginBottom
-			/>
 		</>
 	);
 }
@@ -1196,9 +1272,8 @@ export function ResponsiveSpacingPanel( { attributes, setAttributes } ) {
  *
  * Controls for the Layer-2 content band (__inner wrapper) — background colour,
  * base padding (4 sides, desktop), and responsive padding overrides (tablet /
- * mobile). Also exposes tablet and mobile overrides for the band's max-width
- * (contentWidthTablet / contentWidthMobile); desktop content width is already
- * in the Width panel so only a help note is shown at the desktop tier.
+ * mobile). Band width (contentWidth / contentWidthTablet / contentWidthMobile)
+ * is owned by WidthPanel — not duplicated here.
  *
  * Gating: section + layout kinds only — these are the only kinds whose PHP
  * render path can emit the __inner wrapper. The 'content' kind uses WP-native
@@ -1213,8 +1288,7 @@ export function ResponsiveSpacingPanel( { attributes, setAttributes } ) {
  *   contentBandPaddingTopTablet   → Padding › Tablet › Top
  *   contentBandPaddingRightTablet → Padding › Tablet › Right
  *   ...etc.
- *   contentWidthTablet            → Band width › Tablet
- *   contentWidthMobile            → Band width › Mobile
+ *   (contentWidthTablet / Mobile → owned by WidthPanel, not rendered here)
  */
 export function ContentBandPanel( { attributes, setAttributes } ) {
 	const BAND_PADDING_SIDES = [
@@ -1252,29 +1326,6 @@ export function ContentBandPanel( { attributes, setAttributes } ) {
 				) }
 			</ResponsiveControl>
 
-			<ResponsiveControl label={ __( 'Band width', 'sgs-blocks' ) }>
-				{ ( breakpoint ) => {
-					if ( breakpoint === 'desktop' ) {
-						return (
-							<p className="sgs-inspector-help">
-								{ __( 'Desktop band width is set via Content width in the Width panel above.', 'sgs-blocks' ) }
-							</p>
-						);
-					}
-					const attrMap = {
-						tablet: 'contentWidthTablet',
-						mobile: 'contentWidthMobile',
-					};
-					return (
-						<SpacingControl
-							freeInput
-							label={ __( 'Max width', 'sgs-blocks' ) }
-							value={ attributes[ attrMap[ breakpoint ] ] || '' }
-							onChange={ ( val ) => setAttributes( { [ attrMap[ breakpoint ] ]: val } ) }
-						/>
-					);
-				} }
-			</ResponsiveControl>
 		</PanelBody>
 	);
 }

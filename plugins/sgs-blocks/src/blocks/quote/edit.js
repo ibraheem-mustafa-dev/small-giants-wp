@@ -158,7 +158,7 @@ function buildWrapperStyle( attributes ) {
 		borderColour,
 		marginTop, marginRight, marginBottom, marginLeft, marginUnit,
 		paddingTop, paddingRight, paddingBottom, paddingLeft, paddingUnit,
-		customWidth, customWidthUnit,
+		maxWidth,
 	} = attributes;
 
 	if ( inheritStyle ) {
@@ -191,7 +191,7 @@ function buildWrapperStyle( attributes ) {
 	if ( paddingRight != null ) { style.paddingRight = `${ paddingRight }${ paddingUnit }`; }
 	if ( paddingBottom != null ) { style.paddingBottom = `${ paddingBottom }${ paddingUnit }`; }
 	if ( paddingLeft != null ) { style.paddingLeft = `${ paddingLeft }${ paddingUnit }`; }
-	if ( customWidth != null ) { style.maxWidth = `${ customWidth }${ customWidthUnit }`; }
+	if ( maxWidth ) { style.maxWidth = maxWidth; }
 
 	return style;
 }
@@ -299,8 +299,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoverBackground,
 		marginTop, marginRight, marginBottom, marginLeft, marginUnit,
 		paddingTop, paddingRight, paddingBottom, paddingLeft, paddingUnit,
-		customWidth,
-		customWidthUnit,
 		inheritStyle,
 		transitionDuration,
 		transitionEasing,
@@ -740,22 +738,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							value={ boxShadow }
 							onChange={ ( val ) => setAttributes( { boxShadow: val } ) }
 							placeholder={ __( '0 4px 12px rgba(0,0,0,0.1)', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-						/>
-						{ /* Max width — UnitControl (number + unit in one input) */ }
-						<UnitControl
-							label={ __( 'Max width', 'sgs-blocks' ) }
-							value={ composeUnit( customWidth, customWidthUnit ) }
-							units={ [
-								{ value: 'px', label: 'px', default: 800 },
-								{ value: 'em', label: 'em', default: 60 },
-								{ value: 'rem', label: 'rem', default: 60 },
-								{ value: '%', label: '%', default: 100 },
-							] }
-							onChange={ ( raw ) => {
-								const { num, unit } = parseUnit( raw, customWidthUnit || 'px' );
-								setAttributes( { customWidth: num, customWidthUnit: unit } );
-							} }
 							__nextHasNoMarginBottom
 						/>
 						<p className="sgs-inspector-label">{ __( 'Padding', 'sgs-blocks' ) }</p>
