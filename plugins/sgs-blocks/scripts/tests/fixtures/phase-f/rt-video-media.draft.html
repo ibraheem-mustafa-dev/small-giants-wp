@@ -1,0 +1,51 @@
+<!-- fixture: red-team rt-video-media — hero section with a <video> element in the __media grid-area column; tests HIGH gap M2-G2/G13: the scalar-media path (_lift_scalar_media_from_img) only processes <img> nodes and swallows <video> via a bare continue; all values deliberately differ from wrapper defaults -->
+<style>
+.sgs-hero--video { padding: 0; background: #0d0d0d; min-height: 560px; }
+.sgs-hero--video__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: center;
+  min-height: inherit;
+}
+.sgs-hero--video__content { padding: 64px 48px; }
+.sgs-hero--video__heading { font-size: 44px; font-weight: 800; color: #ffffff; line-height: 1.1; }
+.sgs-hero--video__text { font-size: 18px; color: rgba(255,255,255,0.75); margin-top: 16px; }
+.sgs-hero--video__media { position: relative; overflow: hidden; }
+.sgs-hero--video__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+@media (max-width: 767px) {
+  .sgs-hero--video__inner { grid-template-columns: 1fr; }
+  .sgs-hero--video__content { padding: 40px 20px; }
+  .sgs-hero--video__video { max-height: 260px; }
+  .sgs-hero--video__heading { font-size: 28px; }
+}
+</style>
+<section class="sgs-hero sgs-hero--video">
+  <div class="sgs-hero--video__inner">
+    <div class="sgs-hero--video__content">
+      <h1 class="sgs-hero--video__heading">Cook. Share. Thrive.</h1>
+      <p class="sgs-hero--video__text">Handmade snacks delivered to your door.</p>
+      <a class="sgs-button sgs-button--primary" href="/shop/">Order Now</a>
+    </div>
+    <div class="sgs-hero--video__media">
+      <video
+        class="sgs-hero--video__video"
+        autoplay
+        muted
+        loop
+        playsinline
+        poster="/media/hero-poster.jpg"
+      >
+        <source src="/media/hero.mp4" type="video/mp4" />
+      </video>
+    </div>
+  </div>
+</section>

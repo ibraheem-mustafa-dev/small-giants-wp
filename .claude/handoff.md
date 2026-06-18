@@ -2,8 +2,40 @@
 doc_type: handoff
 project: small-giants-wp
 thread: cloning-pipeline
-session_date: 2026-06-17
+session_date: 2026-06-18
 ---
+
+# Session Handoff — 2026-06-18
+
+## Completed This Session
+1. **Exact-match WIDTH model SHIPPED (D230 `484d04d9` + D231 `d5416ae8`)** — a Bean-initiated fidelity fix (NOT the planned Phase-F work, but real forward progress). Retired `widthMode`/`customWidth` end-to-end for a **3-layer model**: `align` (WP-native breakout) / `maxWidth` (string literal, exact draft value — no 5% snap, no decimal truncation, responsive tiers) / `contentWidth` (token `normal`→content-size / `wide`→wide-size / `full`→no cap, OR literal; default `full`). Editor controls → `UnitControl` (number+unit). `sgs/quote` bespoke control migrated to the shared one. 6 conformance goldens rebaselined (`widthMode:full`→`align:full` only).
+2. **Process:** designed via `/brainstorming` → `/adversarial-council` (6-persona; caught a FATAL premise — `maxWidth` was wrongly assumed unused, it was a live keyword attr) → Bean design-gate (4 iterations, model evolved v0.1→v0.5) → SDD build (subagents implement, Opus orchestrates) → `/qc-council` (caught a responsive-specificity WRITTEN-not-LANDED bug pre-commit) → **LANDED-verified live on the canary** (Playwright computed-style + do_blocks, fonts loaded).
+3. **DB reseeded** (`/sgs-update` ×2) — pruned 8 then 113 orphan attrs (widthMode×4 across 30 blocks + customWidth). DB now matches code; zero widthMode anywhere.
+4. **Phase F step F1 DONE** — multi-shape fixture corpus at `plugins/sgs-blocks/scripts/tests/fixtures/phase-f/` (README index + `sgs-media` + 5 red-team fixtures `rt-pseudo-before`/`rt-video-media`/`rt-media-600`/`rt-background-url`/`rt-centred-maxwidth`, each with an `expected.md`: HIGH gap + current-failure + target behaviour).
+5. **Cosmetic sweep:** 29 composite block.json vestigial `widthMode*` declarations removed + 8 stale render.php comments fixed.
+6. **Docs updated thoroughly:** decisions.md D230+D231; Spec 22 §FR-22-21 (3-layer model); Spec 31 §2 Axis 1 / §3 step 3 / §8 Family D (shipped width model) + §12.7 F1 marked done; cloning-pipeline-flow.md + -stages.md + architecture.md (width refs); the width design doc marked SHIPPED; state.md, this handoff, next-session-prompt (carried forward the reading gate + STOP catalogue, added STOP-11 schema≠usage, retasked to F2).
+
+## Current State
+- **Branch:** main at `d5416ae8` (pushed). **D-CEILING: D231.**
+- Width model shipped + LANDED on canary; both conformance suites green (43+41); build green.
+- Phase F: F1 done. F2-F6 pending.
+
+## Known Issues / Blockers
+- None blocking. The width work is a spot-fix the clean rebuild will re-absorb as a per-resolver module (noted in Spec 31 §8 Family D) — do not redo it.
+- Minor: a section with an outer `maxWidth` + default `contentWidth:full` now fills correctly (the earlier outer-800+1200-band nuance is resolved by default-full).
+
+## Next Priorities (in order)
+1. **Phase F step F2** — the draft-declaration parser → CSS Accounting Ledger (Spec 31 §12.2.1 + §12.7), independent of css_router's parse (STOP-3).
+2. F3 render-diff oracle (canary-only) + metamorphic relations; F4 closed EXCLUDED set (ships empty); F5 the 3 gates built+armed; F6 DB-consistency suite.
+3. Then the stage-by-stage modular rebuild.
+
+## Files Modified
+convert.py · class-sgs-container-wrapper.php · container/{block.json,edit.js,components/ContainerWrapperControls.js,style.css} · quote/{block.json,edit.js,render.php} · 29 composite block.json (widthMode sweep) · 8 render.php comments · 6 conformance goldens · tests/fixtures/phase-f/* (F1, new) · specs/22 · specs/31 · cloning-pipeline-flow.md · -stages.md · architecture.md · decisions.md · plans/2026-06-17-exact-match-width-model-design.md · reports/visual-diff/{container,quote}-2026-06-18.md
+
+## Notes for Next Session
+- Read the MANDATORY READING GATE + STOP catalogue (now incl. STOP-11) in next-session-prompt.md before any code.
+- The width design doc (`plans/2026-06-17-exact-match-width-model-design.md`) carries the full v0.1→v0.5 council/decision trail if width context is needed.
+- F1 fixtures are the universality test bed F2's ledger parses + F3's oracle renders.
 
 # Session Handoff — 2026-06-17
 

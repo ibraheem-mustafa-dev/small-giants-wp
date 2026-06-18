@@ -1,0 +1,25 @@
+<!-- fixture: red-team rt-pseudo-before — section using ::before pseudo-element for a decorative background overlay; tests HIGH gap M3-S7: pseudo-element CSS is never collected by the current Stage 0.7 parser; all values deliberately differ from wrapper defaults -->
+<style>
+.sgs-info-box { position: relative; padding: 56px 32px; background: #1a1a2e; overflow: hidden; }
+.sgs-info-box__inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+.sgs-info-box__heading { font-size: 34px; font-weight: 700; color: #ffffff; line-height: 1.2; }
+.sgs-info-box__text { font-size: 16px; color: rgba(255, 255, 255, 0.80); margin-top: 14px; }
+.sgs-info-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(90, 40, 160, 0.55) 0%, rgba(20, 100, 200, 0.35) 100%);
+  z-index: 0;
+  pointer-events: none;
+}
+@media (max-width: 767px) {
+  .sgs-info-box { padding: 40px 20px; }
+  .sgs-info-box__heading { font-size: 24px; }
+}
+</style>
+<section class="sgs-info-box">
+  <div class="sgs-info-box__inner">
+    <h2 class="sgs-info-box__heading">Why Our Framework Wins</h2>
+    <p class="sgs-info-box__text">AI-native, accessible, and built for real-world clients.</p>
+  </div>
+</section>

@@ -1,0 +1,46 @@
+<!-- fixture: red-team rt-media-600 — section with a @media (max-width:600px) rule (a VISUAL breakpoint, not an SGS device-tier threshold); tests HIGH gap M3-S2: non-device-tier breakpoints are silently dropped by the current converter; all values deliberately differ from wrapper defaults -->
+<style>
+.sgs-feature-grid { padding: 56px 24px; background: #fafaf8; }
+.sgs-feature-grid__inner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.sgs-feature-grid__item {
+  padding: 32px 24px;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e8e3de;
+}
+.sgs-feature-grid__icon { width: 48px; height: 48px; margin-bottom: 16px; }
+.sgs-feature-grid__title { font-size: 18px; font-weight: 700; color: #2d2d2d; }
+.sgs-feature-grid__text { font-size: 15px; color: #555550; margin-top: 8px; line-height: 1.55; }
+@media (max-width: 600px) {
+  .sgs-feature-grid__inner { grid-template-columns: 1fr; gap: 16px; }
+  .sgs-feature-grid { padding: 40px 16px; }
+}
+@media (max-width: 767px) {
+  .sgs-feature-grid__inner { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+<section class="sgs-feature-grid">
+  <div class="sgs-feature-grid__inner">
+    <div class="sgs-feature-grid__item">
+      <div class="sgs-feature-grid__icon" aria-hidden="true">🌿</div>
+      <h3 class="sgs-feature-grid__title">Natural Ingredients</h3>
+      <p class="sgs-feature-grid__text">No artificial flavours or preservatives.</p>
+    </div>
+    <div class="sgs-feature-grid__item">
+      <div class="sgs-feature-grid__icon" aria-hidden="true">🚚</div>
+      <h3 class="sgs-feature-grid__title">Free UK Delivery</h3>
+      <p class="sgs-feature-grid__text">Orders over £35 ship free, next-day.</p>
+    </div>
+    <div class="sgs-feature-grid__item">
+      <div class="sgs-feature-grid__icon" aria-hidden="true">⭐</div>
+      <h3 class="sgs-feature-grid__title">5-Star Rated</h3>
+      <p class="sgs-feature-grid__text">Trusted by thousands of UK families.</p>
+    </div>
+  </div>
+</section>

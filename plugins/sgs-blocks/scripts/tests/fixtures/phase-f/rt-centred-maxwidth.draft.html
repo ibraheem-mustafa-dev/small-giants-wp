@@ -1,0 +1,66 @@
+<!-- fixture: red-team rt-centred-maxwidth — SECTION ROOT with max-width:1200px;margin:0 auto (no inner band); tests HIGH gap MF-3 layer-detection trap: a centred section-root's max-width must route to OUTER widthMode/customWidth (L1), NOT mis-detect as the L2 content-width band; all values deliberately differ from wrapper defaults -->
+<style>
+.sgs-team-member-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 64px 24px;
+  background: #f5f0eb;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+.sgs-team-member-grid__item {
+  text-align: center;
+  padding: 24px 16px;
+  background: #ffffff;
+  border-radius: 12px;
+}
+.sgs-team-member-grid__photo {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 12px;
+  display: block;
+}
+.sgs-team-member-grid__name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2d2d2d;
+}
+.sgs-team-member-grid__role {
+  font-size: 13px;
+  color: #666660;
+  margin-top: 4px;
+}
+@media (max-width: 767px) {
+  .sgs-team-member-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 40px 16px;
+  }
+}
+</style>
+<section class="sgs-team-member-grid">
+  <div class="sgs-team-member-grid__item">
+    <img class="sgs-team-member-grid__photo" src="/team/alice.jpg" alt="Alice Osei" />
+    <p class="sgs-team-member-grid__name">Alice Osei</p>
+    <p class="sgs-team-member-grid__role">Head Baker</p>
+  </div>
+  <div class="sgs-team-member-grid__item">
+    <img class="sgs-team-member-grid__photo" src="/team/ben.jpg" alt="Ben Traoré" />
+    <p class="sgs-team-member-grid__name">Ben Traoré</p>
+    <p class="sgs-team-member-grid__role">Delivery Lead</p>
+  </div>
+  <div class="sgs-team-member-grid__item">
+    <img class="sgs-team-member-grid__photo" src="/team/chloe.jpg" alt="Chloe Patel" />
+    <p class="sgs-team-member-grid__name">Chloe Patel</p>
+    <p class="sgs-team-member-grid__role">Customer Joy</p>
+  </div>
+  <div class="sgs-team-member-grid__item">
+    <img class="sgs-team-member-grid__photo" src="/team/dani.jpg" alt="Dani Muñoz" />
+    <p class="sgs-team-member-grid__name">Dani Muñoz</p>
+    <p class="sgs-team-member-grid__role">Flavour Designer</p>
+  </div>
+</section>

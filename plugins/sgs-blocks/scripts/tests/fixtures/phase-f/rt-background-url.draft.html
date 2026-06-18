@@ -1,0 +1,41 @@
+<!-- fixture: red-team rt-background-url — section with background:url(...) / background-image / background-size / background-position; tests HIGH gap M3-NOSUFFIX / M3-S1: no property_suffixes row for background-image means it never reaches declare_input→D1; falls only to D2 scoped CSS without gap-candidating; all values deliberately differ from wrapper defaults -->
+<style>
+.sgs-cta-section--bg {
+  background-image: url('/media/pattern-dots.svg');
+  background-size: 320px 320px;
+  background-position: center right;
+  background-repeat: repeat;
+  background-color: #2d1b4e;
+  padding: 72px 32px;
+  position: relative;
+}
+.sgs-cta-section--bg__inner {
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+.sgs-cta-section--bg__heading {
+  font-size: 36px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.15;
+}
+.sgs-cta-section--bg__text {
+  font-size: 17px;
+  color: rgba(255, 255, 255, 0.82);
+  margin-top: 14px;
+}
+@media (max-width: 767px) {
+  .sgs-cta-section--bg { padding: 48px 20px; background-size: 200px 200px; }
+  .sgs-cta-section--bg__heading { font-size: 26px; }
+}
+</style>
+<section class="sgs-cta-section sgs-cta-section--bg">
+  <div class="sgs-cta-section--bg__inner">
+    <h2 class="sgs-cta-section--bg__heading">Join Our Baking Community</h2>
+    <p class="sgs-cta-section--bg__text">Thousands of families already loving every bite.</p>
+    <a class="sgs-button sgs-button--primary" href="/join/">Get Started</a>
+  </div>
+</section>

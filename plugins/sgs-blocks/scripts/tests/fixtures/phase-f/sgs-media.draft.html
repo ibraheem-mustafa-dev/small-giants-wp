@@ -1,0 +1,29 @@
+<!-- fixture: sgs/media — atomic-media scalar block (object-fit / border-radius / max-width / aspect-ratio); the "family E" shape absent from page 8; all values deliberately differ from wrapper defaults to prevent coincidental-default COVERED verdicts -->
+<style>
+.sgs-media { display: block; }
+.sgs-media__image {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 16px;
+  margin: 0 auto;
+}
+@media (max-width: 767px) {
+  .sgs-media__image {
+    max-width: 100%;
+    border-radius: 8px;
+  }
+}
+</style>
+<figure class="sgs-media">
+  <img
+    class="sgs-media__image"
+    src="/media/product-hero.jpg"
+    alt="Product hero image"
+    width="640"
+    height="360"
+  />
+</figure>

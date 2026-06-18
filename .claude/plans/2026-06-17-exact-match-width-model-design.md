@@ -6,7 +6,7 @@ title: "Exact-match width model — literal outer max-width on a NEW attr, via t
 created: 2026-06-17
 revised: 2026-06-18
 version: 0.3 (Bean-locked — name-match maxWidth, no new attr; +contentWidth fix folded in; ground-truth: keyword maxWidth is vestigial)
-status: DESIGN v0.3 — Bean-approved, BUILDING (orchestrated; council must-fixes folded in)
+status: ✅ SHIPPED + LANDED 2026-06-18 — D230 (484d04d9) widthMode→align/maxWidth/contentWidth + D231 (d5416ae8) v0.5 token rename (normal/wide/full, default full) + widthMode vestigial sweep. Live-verified on canary; both conformance suites green; Spec 22 §FR-22-21 + Spec 31 §2/§3/§8 + flow/stages/architecture docs updated. Final model = v0.4 §0d + v0.5 §0e overrides. Superseded the v0.1-v0.3 evolution below (kept for the council/decision trail).
 council_register: inline §9 (this doc)
 binding_rules: R-22-1, R-22-8, R-22-9, R-22-11, R-22-13, R-22-15
 related_memory: clean-up-superseded-controls-on-block-changes, dual-key-fallback-beats-shared-default-flip, wrapper-hardcoded-defaults-are-cheats-to-remove-not-blockers, duplicated-calculation-drifts, converter-attr-must-match-the-attr-render-reads, device-tier-vs-visual-breakpoints-are-distinct
