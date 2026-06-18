@@ -1,0 +1,85 @@
+{
+  "fixture": "sgs-tab",
+  "generated_by": {
+    "module": "ledger.declare_input",
+    "module_version": "0.1.0",
+    "tinycss2_version": "1.5.1"
+  },
+  "row_count": 5,
+  "by_kind": {
+    "box-css": 5
+  },
+  "plain_summary": "sgs-tab: 5 total declarations (5 non-shadowed, non-structural); tiers: Base=5. [PREDICTION — confirmed by F5/F4 gate, not by this parser]",
+  "rows": [
+    {
+      "fixture": "sgs-tab",
+      "selector": ".sgs-tab",
+      "property": "padding",
+      "value": "24px",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-tab",
+      "selector": ".sgs-tab__content",
+      "property": "color",
+      "value": "#5c4f46",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 3,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-tab",
+      "selector": ".sgs-tab__content",
+      "property": "font-size",
+      "value": "16px",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 2,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-tab",
+      "selector": ".sgs-tab__content",
+      "property": "line-height",
+      "value": "1.7",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 4,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-tab",
+      "selector": ".sgs-tab__inner",
+      "property": "max-width",
+      "value": "720px",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    }
+  ]
+}

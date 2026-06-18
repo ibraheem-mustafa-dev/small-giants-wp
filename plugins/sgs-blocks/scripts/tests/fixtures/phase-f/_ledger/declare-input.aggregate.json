@@ -1,0 +1,274 @@
+{
+  "generated_by": {
+    "module": "ledger.declare_input",
+    "module_version": "0.1.0",
+    "tinycss2_version": "1.5.1",
+    "generated_at": "2026-06-18T07:46:43.721230+00:00"
+  },
+  "fixture_count": 37,
+  "grand_total_rows": 515,
+  "by_kind_totals": {
+    "box-css": 515
+  },
+  "fixtures": {
+    "mamas-trust-bar-real": {
+      "row_count": 32,
+      "by_kind": {
+        "box-css": 32
+      },
+      "plain_summary": "mamas-trust-bar-real: 32 total declarations (32 non-shadowed, non-structural); tiers: Base=30, Desktop=1, Other:(min-width: 600px)=1. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "precedence-collision": {
+      "row_count": 12,
+      "by_kind": {
+        "box-css": 12
+      },
+      "plain_summary": "precedence-collision: 12 total declarations (12 non-shadowed, non-structural); tiers: Base=12. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "rt-background-url": {
+      "row_count": 22,
+      "by_kind": {
+        "box-css": 22
+      },
+      "plain_summary": "rt-background-url: 22 total declarations (22 non-shadowed, non-structural); tiers: Base=19, Mobile=3. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "rt-centred-maxwidth": {
+      "row_count": 27,
+      "by_kind": {
+        "box-css": 27
+      },
+      "plain_summary": "rt-centred-maxwidth: 27 total declarations (27 non-shadowed, non-structural); tiers: Base=24, Mobile=3. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "rt-media-600": {
+      "row_count": 25,
+      "by_kind": {
+        "box-css": 25
+      },
+      "plain_summary": "rt-media-600: 25 total declarations (25 non-shadowed, non-structural); tiers: Base=21, Mobile=1, Other:(max-width: 600px)=3. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "rt-pseudo-before": {
+      "row_count": 23,
+      "by_kind": {
+        "box-css": 23
+      },
+      "plain_summary": "rt-pseudo-before: 23 total declarations (23 non-shadowed, non-structural); tiers: Base=21, Mobile=2. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "rt-video-media": {
+      "row_count": 29,
+      "by_kind": {
+        "box-css": 29
+      },
+      "plain_summary": "rt-video-media: 29 total declarations (29 non-shadowed, non-structural); tiers: Base=25, Mobile=4. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-accordion": {
+      "row_count": 9,
+      "by_kind": {
+        "box-css": 9
+      },
+      "plain_summary": "sgs-accordion: 9 total declarations (9 non-shadowed, non-structural); tiers: Base=9. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-accordion-item": {
+      "row_count": 8,
+      "by_kind": {
+        "box-css": 8
+      },
+      "plain_summary": "sgs-accordion-item: 8 total declarations (8 non-shadowed, non-structural); tiers: Base=8. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-card-grid": {
+      "row_count": 10,
+      "by_kind": {
+        "box-css": 10
+      },
+      "plain_summary": "sgs-card-grid: 10 total declarations (10 non-shadowed, non-structural); tiers: Base=10. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-content-collection": {
+      "row_count": 7,
+      "by_kind": {
+        "box-css": 7
+      },
+      "plain_summary": "sgs-content-collection: 7 total declarations (7 non-shadowed, non-structural); tiers: Base=7. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-cta-section": {
+      "row_count": 11,
+      "by_kind": {
+        "box-css": 11
+      },
+      "plain_summary": "sgs-cta-section: 11 total declarations (11 non-shadowed, non-structural); tiers: Base=11. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-feature-grid": {
+      "row_count": 15,
+      "by_kind": {
+        "box-css": 15
+      },
+      "plain_summary": "sgs-feature-grid: 15 total declarations (15 non-shadowed, non-structural); tiers: Base=15. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-form": {
+      "row_count": 10,
+      "by_kind": {
+        "box-css": 10
+      },
+      "plain_summary": "sgs-form: 10 total declarations (10 non-shadowed, non-structural); tiers: Base=10. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-form-field-tiles": {
+      "row_count": 13,
+      "by_kind": {
+        "box-css": 13
+      },
+      "plain_summary": "sgs-form-field-tiles: 13 total declarations (13 non-shadowed, non-structural); tiers: Base=13. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-form-step": {
+      "row_count": 8,
+      "by_kind": {
+        "box-css": 8
+      },
+      "plain_summary": "sgs-form-step: 8 total declarations (8 non-shadowed, non-structural); tiers: Base=8. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-gallery": {
+      "row_count": 10,
+      "by_kind": {
+        "box-css": 10
+      },
+      "plain_summary": "sgs-gallery: 10 total declarations (10 non-shadowed, non-structural); tiers: Base=10. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-google-reviews": {
+      "row_count": 8,
+      "by_kind": {
+        "box-css": 8
+      },
+      "plain_summary": "sgs-google-reviews: 8 total declarations (8 non-shadowed, non-structural); tiers: Base=8. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-hero": {
+      "row_count": 13,
+      "by_kind": {
+        "box-css": 13
+      },
+      "plain_summary": "sgs-hero: 13 total declarations (13 non-shadowed, non-structural); tiers: Base=11, Mobile=2. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-info-box": {
+      "row_count": 12,
+      "by_kind": {
+        "box-css": 12
+      },
+      "plain_summary": "sgs-info-box: 12 total declarations (12 non-shadowed, non-structural); tiers: Base=12. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-media": {
+      "row_count": 11,
+      "by_kind": {
+        "box-css": 11
+      },
+      "plain_summary": "sgs-media: 11 total declarations (11 non-shadowed, non-structural); tiers: Base=9, Mobile=2. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-mobile-nav": {
+      "row_count": 15,
+      "by_kind": {
+        "box-css": 15
+      },
+      "plain_summary": "sgs-mobile-nav: 15 total declarations (15 non-shadowed, non-structural); tiers: Base=15. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-modal": {
+      "row_count": 22,
+      "by_kind": {
+        "box-css": 22
+      },
+      "plain_summary": "sgs-modal: 22 total declarations (22 non-shadowed, non-structural); tiers: Base=22. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-multi-button": {
+      "row_count": 4,
+      "by_kind": {
+        "box-css": 4
+      },
+      "plain_summary": "sgs-multi-button: 4 total declarations (4 non-shadowed, non-structural); tiers: Base=4. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-notice-banner": {
+      "row_count": 7,
+      "by_kind": {
+        "box-css": 7
+      },
+      "plain_summary": "sgs-notice-banner: 7 total declarations (7 non-shadowed, non-structural); tiers: Base=7. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-option-picker": {
+      "row_count": 15,
+      "by_kind": {
+        "box-css": 15
+      },
+      "plain_summary": "sgs-option-picker: 15 total declarations (15 non-shadowed, non-structural); tiers: Base=15. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-post-grid": {
+      "row_count": 7,
+      "by_kind": {
+        "box-css": 7
+      },
+      "plain_summary": "sgs-post-grid: 7 total declarations (7 non-shadowed, non-structural); tiers: Base=7. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-pricing-table": {
+      "row_count": 18,
+      "by_kind": {
+        "box-css": 18
+      },
+      "plain_summary": "sgs-pricing-table: 18 total declarations (18 non-shadowed, non-structural); tiers: Base=18. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-product-card": {
+      "row_count": 16,
+      "by_kind": {
+        "box-css": 16
+      },
+      "plain_summary": "sgs-product-card: 16 total declarations (16 non-shadowed, non-structural); tiers: Base=16. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-quote": {
+      "row_count": 10,
+      "by_kind": {
+        "box-css": 10
+      },
+      "plain_summary": "sgs-quote: 10 total declarations (10 non-shadowed, non-structural); tiers: Base=10. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-tab": {
+      "row_count": 5,
+      "by_kind": {
+        "box-css": 5
+      },
+      "plain_summary": "sgs-tab: 5 total declarations (5 non-shadowed, non-structural); tiers: Base=5. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-tabs": {
+      "row_count": 13,
+      "by_kind": {
+        "box-css": 13
+      },
+      "plain_summary": "sgs-tabs: 13 total declarations (13 non-shadowed, non-structural); tiers: Base=13. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-team-member": {
+      "row_count": 16,
+      "by_kind": {
+        "box-css": 16
+      },
+      "plain_summary": "sgs-team-member: 16 total declarations (16 non-shadowed, non-structural); tiers: Base=16. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-testimonial": {
+      "row_count": 12,
+      "by_kind": {
+        "box-css": 12
+      },
+      "plain_summary": "sgs-testimonial: 12 total declarations (12 non-shadowed, non-structural); tiers: Base=12. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-testimonial-slider": {
+      "row_count": 13,
+      "by_kind": {
+        "box-css": 13
+      },
+      "plain_summary": "sgs-testimonial-slider: 13 total declarations (13 non-shadowed, non-structural); tiers: Base=13. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-trust-bar": {
+      "row_count": 18,
+      "by_kind": {
+        "box-css": 18
+      },
+      "plain_summary": "sgs-trust-bar: 18 total declarations (18 non-shadowed, non-structural); tiers: Base=17, Other:(min-width: 600px)=1. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    },
+    "sgs-trustpilot-reviews": {
+      "row_count": 9,
+      "by_kind": {
+        "box-css": 9
+      },
+      "plain_summary": "sgs-trustpilot-reviews: 9 total declarations (9 non-shadowed, non-structural); tiers: Base=9. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+    }
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "fixture": "sgs-post-grid",
+  "generated_by": {
+    "module": "ledger.declare_input",
+    "module_version": "0.1.0",
+    "tinycss2_version": "1.5.1"
+  },
+  "row_count": 7,
+  "by_kind": {
+    "box-css": 7
+  },
+  "plain_summary": "sgs-post-grid: 7 total declarations (7 non-shadowed, non-structural); tiers: Base=7. [PREDICTION — confirmed by F5/F4 gate, not by this parser]",
+  "rows": [
+    {
+      "fixture": "sgs-post-grid",
+      "selector": ".sgs-post-grid",
+      "property": "padding",
+      "value": "64px 24px",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-post-grid",
+      "selector": ".sgs-post-grid__heading",
+      "property": "color",
+      "value": "#3a2e26",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 5,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-post-grid",
+      "selector": ".sgs-post-grid__heading",
+      "property": "font-size",
+      "value": "28px",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 3,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-post-grid",
+      "selector": ".sgs-post-grid__heading",
+      "property": "font-weight",
+      "value": "700",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 4,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-post-grid",
+      "selector": ".sgs-post-grid__heading",
+      "property": "margin-bottom",
+      "value": "32px",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 6,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-post-grid",
+      "selector": ".sgs-post-grid__inner",
+      "property": "margin",
+      "value": "0 auto",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 2,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-post-grid",
+      "selector": ".sgs-post-grid__inner",
+      "property": "max-width",
+      "value": "1200px",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "fixture": "sgs-google-reviews",
+  "generated_by": {
+    "module": "ledger.declare_input",
+    "module_version": "0.1.0",
+    "tinycss2_version": "1.5.1"
+  },
+  "row_count": 8,
+  "by_kind": {
+    "box-css": 8
+  },
+  "plain_summary": "sgs-google-reviews: 8 total declarations (8 non-shadowed, non-structural); tiers: Base=8. [PREDICTION — confirmed by F5/F4 gate, not by this parser]",
+  "rows": [
+    {
+      "fixture": "sgs-google-reviews",
+      "selector": ".sgs-google-reviews",
+      "property": "background",
+      "value": "#f8f4ef",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-google-reviews",
+      "selector": ".sgs-google-reviews",
+      "property": "padding",
+      "value": "64px 24px",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-google-reviews",
+      "selector": ".sgs-google-reviews__heading",
+      "property": "color",
+      "value": "#3a2e26",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 6,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-google-reviews",
+      "selector": ".sgs-google-reviews__heading",
+      "property": "font-size",
+      "value": "28px",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 4,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-google-reviews",
+      "selector": ".sgs-google-reviews__heading",
+      "property": "font-weight",
+      "value": "700",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 5,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-google-reviews",
+      "selector": ".sgs-google-reviews__heading",
+      "property": "margin-bottom",
+      "value": "24px",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 7,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-google-reviews",
+      "selector": ".sgs-google-reviews__inner",
+      "property": "margin",
+      "value": "0 auto",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 3,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-google-reviews",
+      "selector": ".sgs-google-reviews__inner",
+      "property": "max-width",
+      "value": "900px",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 2,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    }
+  ]
+}

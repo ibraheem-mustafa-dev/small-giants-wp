@@ -1,0 +1,141 @@
+{
+  "fixture": "sgs-trustpilot-reviews",
+  "generated_by": {
+    "module": "ledger.declare_input",
+    "module_version": "0.1.0",
+    "tinycss2_version": "1.5.1"
+  },
+  "row_count": 9,
+  "by_kind": {
+    "box-css": 9
+  },
+  "plain_summary": "sgs-trustpilot-reviews: 9 total declarations (9 non-shadowed, non-structural); tiers: Base=9. [PREDICTION — confirmed by F5/F4 gate, not by this parser]",
+  "rows": [
+    {
+      "fixture": "sgs-trustpilot-reviews",
+      "selector": ".sgs-trustpilot-reviews",
+      "property": "background",
+      "value": "white",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-trustpilot-reviews",
+      "selector": ".sgs-trustpilot-reviews",
+      "property": "padding",
+      "value": "48px 24px",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-trustpilot-reviews",
+      "selector": ".sgs-trustpilot-reviews__heading",
+      "property": "color",
+      "value": "#3a2e26",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 7,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-trustpilot-reviews",
+      "selector": ".sgs-trustpilot-reviews__heading",
+      "property": "font-size",
+      "value": "24px",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 5,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-trustpilot-reviews",
+      "selector": ".sgs-trustpilot-reviews__heading",
+      "property": "font-weight",
+      "value": "700",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 6,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-trustpilot-reviews",
+      "selector": ".sgs-trustpilot-reviews__heading",
+      "property": "margin-bottom",
+      "value": "16px",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 8,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-trustpilot-reviews",
+      "selector": ".sgs-trustpilot-reviews__inner",
+      "property": "margin",
+      "value": "0 auto",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 3,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-trustpilot-reviews",
+      "selector": ".sgs-trustpilot-reviews__inner",
+      "property": "max-width",
+      "value": "900px",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 2,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-trustpilot-reviews",
+      "selector": ".sgs-trustpilot-reviews__inner",
+      "property": "text-align",
+      "value": "center",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 4,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    }
+  ]
+}

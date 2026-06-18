@@ -1,0 +1,113 @@
+{
+  "fixture": "sgs-notice-banner",
+  "generated_by": {
+    "module": "ledger.declare_input",
+    "module_version": "0.1.0",
+    "tinycss2_version": "1.5.1"
+  },
+  "row_count": 7,
+  "by_kind": {
+    "box-css": 7
+  },
+  "plain_summary": "sgs-notice-banner: 7 total declarations (7 non-shadowed, non-structural); tiers: Base=7. [PREDICTION — confirmed by F5/F4 gate, not by this parser]",
+  "rows": [
+    {
+      "fixture": "sgs-notice-banner",
+      "selector": ".sgs-notice-banner",
+      "property": "background",
+      "value": "#2d5016",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-notice-banner",
+      "selector": ".sgs-notice-banner",
+      "property": "color",
+      "value": "white",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-notice-banner",
+      "selector": ".sgs-notice-banner",
+      "property": "padding",
+      "value": "12px 24px",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 2,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-notice-banner",
+      "selector": ".sgs-notice-banner",
+      "property": "text-align",
+      "value": "center",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 3,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-notice-banner",
+      "selector": ".sgs-notice-banner__text",
+      "property": "font-size",
+      "value": "14px",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 4,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-notice-banner",
+      "selector": ".sgs-notice-banner__text",
+      "property": "font-weight",
+      "value": "500",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 5,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-notice-banner",
+      "selector": ".sgs-notice-banner__text",
+      "property": "line-height",
+      "value": "1.4",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 6,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    }
+  ]
+}

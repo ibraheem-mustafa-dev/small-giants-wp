@@ -92,11 +92,11 @@ No `shorthand.py` (v2 — expansion removed). Small single-purpose files, indepe
 
 ## 5. Tier derivation (accounting-only — precise algorithm, council DEFECT 1/7/13)
 
-Operate on the **parsed numeric value** of `min-width`/`max-width` (tinycss2 tokenises `767px`→767), not string match. For a `media_kind=media` condition:
-- contains `max-width ≤ 767` (any feature) → **Mobile**;
-- forms exactly `[min-width ≥ 768] AND [max-width ≤ 1023]` → **Tablet**;
-- `min-width ≥ 1024` with no max-width (or max-width ≥ theme wideSize) → **Desktop**;
-- **anything else** (`min-width:768` alone, `max-width:600/640/781`, `min-width:1280` standalone, `orientation`, `print`, `min-resolution`, `prefers-*`, any compound not matching the above) → **`Other:<verbatim-condition>`**. Never coerced into a device tier, never dropped (STOP-8 / Family-F lock).
+Operate on the **parsed numeric value** of `min-width`/`max-width` (tinycss2 tokenises `767px`→767), not string match. Device-tier classification matches **only the canonical SGS device-tier threshold values** — it is NOT a range test (a range test conflates visual breakpoints with device tiers, the D228/STOP-8 CHEAT — see `rt-media-600.expected.md` CHEAT-FORBIDDEN). The canonical device thresholds are: mobile `max-width ∈ {767, 767.98, 768}`; tablet `min-width ∈ {768} AND max-width ∈ {1023, 1024}`; desktop `min-width ∈ {1024}`. For a `media_kind=media` condition:
+- `max-width` value in the mobile device band {767, 767.98, 768} (and no conflicting min-width) → **Mobile**;
+- `min-width` 768 AND `max-width` in {1023, 1024} → **Tablet**;
+- `min-width` 1024 with no max-width → **Desktop**;
+- **anything else** — including `max-width:600 / 640 / 481 / 781` (visual breakpoints), `min-width:768` alone (spans tablet+desktop), `min-width:1280`, `orientation`, `print`, `min-resolution`, `prefers-*`, any compound not matching the above → **`Other:<verbatim-condition>`**. Never coerced into a device tier, never dropped (STOP-8 / Family-F / D228 lock). **A `max-width:600px` is `Other:(max-width:600px)`, NEVER Mobile** — snapping it to Mobile is the CHEAT the rt-media-600 fixture red-teams.
 `media_kind=supports` or `none` → `Base` (unless an `@media` is also in the stack). Document explicitly: a standalone `@media (min-width:768px)` is `Other:` by design (it spans Tablet+Desktop — a visual breakpoint, not a device tier).
 
 ## 6. (REMOVED in v2) Shorthand expansion

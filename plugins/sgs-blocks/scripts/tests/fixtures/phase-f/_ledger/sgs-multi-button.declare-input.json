@@ -1,0 +1,71 @@
+{
+  "fixture": "sgs-multi-button",
+  "generated_by": {
+    "module": "ledger.declare_input",
+    "module_version": "0.1.0",
+    "tinycss2_version": "1.5.1"
+  },
+  "row_count": 4,
+  "by_kind": {
+    "box-css": 4
+  },
+  "plain_summary": "sgs-multi-button: 4 total declarations (4 non-shadowed, non-structural); tiers: Base=4. [PREDICTION — confirmed by F5/F4 gate, not by this parser]",
+  "rows": [
+    {
+      "fixture": "sgs-multi-button",
+      "selector": ".sgs-multi-button",
+      "property": "display",
+      "value": "flex",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-multi-button",
+      "selector": ".sgs-multi-button",
+      "property": "flex-wrap",
+      "value": "wrap",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-multi-button",
+      "selector": ".sgs-multi-button",
+      "property": "gap",
+      "value": "12px",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 2,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-multi-button",
+      "selector": ".sgs-multi-button",
+      "property": "padding",
+      "value": "16px 0",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 3,
+      "shadowed": false,
+      "kind": "box-css",
+      "excluded_candidate": false
+    }
+  ]
+}
