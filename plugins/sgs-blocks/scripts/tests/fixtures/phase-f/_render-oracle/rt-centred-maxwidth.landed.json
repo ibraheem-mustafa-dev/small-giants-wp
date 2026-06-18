@@ -1,0 +1,72 @@
+{
+  "fixture": "rt-centred-maxwidth",
+  "generated_by": {
+    "module": "oracle.verdict",
+    "version": "0.1.0"
+  },
+  "sections": [
+    {
+      "section_id": "section-1",
+      "block_slug": "sgs/container",
+      "guards": {
+        "empty": true,
+        "element": true,
+        "height": true,
+        "non_default": true
+      },
+      "element_selector": ".wp-block-sgs-container",
+      "cells": [
+        {
+          "property": "max-width",
+          "tier": "Desktop",
+          "draft_value": "1200px",
+          "computed_value": "1200px",
+          "expected_default": "",
+          "verdict": "LANDED"
+        },
+        {
+          "property": "padding-top",
+          "tier": "Desktop",
+          "draft_value": "64px",
+          "computed_value": "64px",
+          "expected_default": "",
+          "verdict": "LANDED"
+        },
+        {
+          "property": "background-color",
+          "tier": "Desktop",
+          "draft_value": "#f5f0eb",
+          "computed_value": "rgb(245, 240, 235)",
+          "expected_default": "",
+          "verdict": "LANDED"
+        },
+        {
+          "property": "gap",
+          "tier": "Desktop",
+          "draft_value": "32px",
+          "computed_value": "32px",
+          "expected_default": "",
+          "verdict": "LANDED"
+        },
+        {
+          "property": "align-items",
+          "tier": "Desktop",
+          "draft_value": "start",
+          "computed_value": "start",
+          "expected_default": "start",
+          "verdict": "UNVERIFIED"
+        },
+        {
+          "property": "grid-template-columns",
+          "tier": "Desktop",
+          "draft_value": "repeat(4, 1fr)",
+          "computed_value": "264px 264px 264px 264px",
+          "expected_default": "",
+          "verdict": "UNVERIFIED"
+        }
+      ]
+    }
+  ],
+  "plain_summary": "Section 'section-1' (container): 4 LANDED, 2 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+  "page_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-rt-centred-maxwidth/"
+}

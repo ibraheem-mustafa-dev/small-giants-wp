@@ -4,7 +4,7 @@
   "private": true,
   "description": "Custom Gutenberg block library for Small Giants Studio",
   "scripts": {
-    "prebuild": "node scripts/generate-icons.js && node scripts/generate-extension-attributes.js && node scripts/check-dead-controls.js --check && node scripts/check-hardcoded-render-defaults.js --check && node scripts/check-control-ux.js --check && node scripts/check-product-search-guards.js && python scripts/check-composition-sync.py --check && python scripts/check-atomic-slug-literals.py --check && python scripts/ledger/declare_input.py --check",
+    "prebuild": "node scripts/generate-icons.js && node scripts/generate-extension-attributes.js && node scripts/check-dead-controls.js --check && node scripts/check-hardcoded-render-defaults.js --check && node scripts/check-control-ux.js --check && node scripts/check-product-search-guards.js && python scripts/check-composition-sync.py --check && python scripts/check-atomic-slug-literals.py --check && python scripts/ledger/declare_input.py --check && python -m pytest scripts/oracle/tests/ -q",
     "prestart": "node scripts/generate-icons.js && node scripts/generate-extension-attributes.js && node scripts/check-dead-controls.js --check && node scripts/check-hardcoded-render-defaults.js --check && node scripts/check-control-ux.js --check && node scripts/check-product-search-guards.js && python scripts/check-composition-sync.py --check && python scripts/check-atomic-slug-literals.py --check",
     "check:dead-controls": "node scripts/check-dead-controls.js --check",
     "check:hardcoded-defaults": "node scripts/check-hardcoded-render-defaults.js --check",

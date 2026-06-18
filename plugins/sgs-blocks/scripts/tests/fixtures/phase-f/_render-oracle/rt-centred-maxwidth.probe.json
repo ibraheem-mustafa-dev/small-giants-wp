@@ -1,0 +1,24 @@
+{
+  "fixture": "rt-centred-maxwidth",
+  "page_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-rt-centred-maxwidth/",
+  "page_loaded": true,
+  "sections": [
+    {
+      "section_id": "section-1",
+      "block_slug": "sgs/container",
+      "element_selector": ".wp-block-sgs-container",
+      "element_present": true,
+      "inner_text_len": 99,
+      "rendered_height_px": 264.4,
+      "draft_height_px": null,
+      "cells": [
+        {"property": "max-width", "tier": "Desktop", "draft_value": "1200px", "computed_value": "1200px", "expected_default": "", "written": true},
+        {"property": "padding-top", "tier": "Desktop", "draft_value": "64px", "computed_value": "64px", "expected_default": "", "written": true},
+        {"property": "background-color", "tier": "Desktop", "draft_value": "#f5f0eb", "computed_value": "rgb(245, 240, 235)", "expected_default": "", "written": true},
+        {"property": "gap", "tier": "Desktop", "draft_value": "32px", "computed_value": "32px", "expected_default": "", "written": true},
+        {"property": "align-items", "tier": "Desktop", "draft_value": "start", "computed_value": "start", "expected_default": "start", "written": true},
+        {"property": "grid-template-columns", "tier": "Desktop", "draft_value": "repeat(4, 1fr)", "computed_value": "264px 264px 264px 264px", "expected_default": "", "written": true}
+      ]
+    }
+  ]
+}
