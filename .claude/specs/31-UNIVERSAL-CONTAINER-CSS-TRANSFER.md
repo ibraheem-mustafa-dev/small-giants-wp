@@ -196,7 +196,7 @@ Every register family resolves to a Spec-31 mechanism — no family is orphaned:
 |--------|-------------------|
 | **B** `1.65unitless` | §3 step 5 — sentinel round-trip + render-side strip (verify render.php) |
 | **C** dropped mobile font tier | §3 step 4 — tier-attr re-append + the F-fork breakpoint vocabulary reaching `…Mobile` |
-| **D** dropped max-width | §3 step 3 — max-width by layer. **RESOLVED for the OUTER box (D230/D231 SHIPPED 2026-06-18):** OUTER `max-width` → `maxWidth` literal (exact) or `align:"full"`; `widthMode`/`customWidth` retired. L2 band → `contentWidth` (token/literal). The clean rebuild re-implements this as a per-resolver module. |
+| **D** dropped max-width | §3 step 3 — max-width by layer. **RESOLVED for the OUTER box via the D230/D231 architectural width-model upgrade (SHIPPED 2026-06-18):** OUTER `max-width` → `maxWidth` literal (exact) or `align:"full"`; `widthMode`/`customWidth` retired. L2 band → `contentWidth` (token/literal). This is a genuine universal architectural primitive (not a spot-fix); the clean rebuild ADOPTS it as a per-resolver module rather than redoing it. |
 | **E** dropped image styling | §5 — seed `order`/`object-fit`/`border-radius`-shorthand GAP rows; route media box-CSS to `sgs/media` |
 | **F** grid breakpoint inversion | §3 — one breakpoint vocabulary + F-i/F-ii; delete parallel constants |
 | **K** duplicate emit | §1 — one lift path (collapse the ~5 functions); cascade last-wins fix |
