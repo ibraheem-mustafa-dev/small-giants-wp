@@ -91,24 +91,38 @@ Port the existing AND-rule derivation + block.json override verbatim, then add:
 - **G-D:** lives in the F6 module with shared runner + report; `check-composition-sync.py` retired,
   its prebuild/prestart entry replaced by the F6 module.
 
-### Check #3 — variant discriminator collision (NEW)
-**Rule:** no `variant_slots.unique_slot` discriminator may be a **liftable structural attr** (an
-attr the converter populates from draft CSS via the `property_suffixes`-derived lift).
+### Check #3 — variant discriminator collision (NEW) — REVISED post-council (2026-06-20)
+**Rule (REVISED, fail-closed):** every `variant_slots.unique_slot` discriminator MUST have a
+**content/media role** in `block_attributes.role`. Any other role (or NULL) → flagged as a
+collision risk. (Original "matches a property_suffixes-derived lift attr" derivation was
+**falsified by the council** — the live join returns ZERO rows because `gridTemplateColumns` is
+lifted via the `_SUFFIX_ATTR_OVERRIDES` constant, not a plain `property_suffixes` row, and
+`splitGap` is a block-specific name — so it would have MISSED the very collision it exists to
+catch. Bean-chosen replacement: a fail-closed content/media-role allowlist.)
 
-**Operational definition:**
-- "Liftable structural attr" = a `unique_slot` whose name corresponds to a css-lift target
-  (grid/gap/layout structural properties the lift writes). Media/content slots (`splitImage`,
-  `backgroundVideo`, `avatarMedia`, …) are NOT liftable → safe.
-- **Current violation (to FIX, per Bean):** `sgs/hero split` → `gridTemplateColumns`, `splitGap`.
+**Operational definition (DB-driven, R-22-1):**
+- Content/media-safe roles (allowlist) = `{scalar-media, image-object, content, text-content,
+  link-href, rating, identity}` (final set to be locked in the build's report-mode run).
+- A discriminator is SAFE iff `block_attributes.role` ∈ allowlist. Otherwise FLAGGED — this is
+  fail-closed (a NULL role flags, surfacing a data-quality gap rather than passing silently).
 
-**The fix (universal, DB-driven):** edit `src/blocks/hero/block.json`
-`supports.sgs.variants.split` to drop the liftable structural slots, leaving the content signal:
-`split: ["splitImage", "splitImageMobile"]`. `gridTemplateColumns`/`splitGap` remain valid hero
-attrs the lift can populate — they simply stop *discriminating* the variant. Re-seed `variant_slots`
-via a dated migration + a full `/sgs-update` (the reproducible path — never a manual DB edit;
-`db-changes-reproducible-via-migration`). After reseed, `split` is discriminated by `splitImage`
-(present only on a genuine split hero), robust against generic grid CSS. Check #3 then goes green
-with an EMPTY baseline.
+**Current violations measured against the live DB (council Stage-5 enumeration):**
+- `sgs/hero split` → `gridTemplateColumns` (role NULL) + `splitGap` (role `layout`) — REAL
+  collision. **Empirically confirmed:** `detect_variant('sgs/hero', {backgroundImage, gridTemplateColumns,
+  splitGap})` returns `'split'` (a standard hero with generic grid CSS mis-routes to split).
+- `sgs/hero svg-animated` → `svgContent` (role NULL) — a FALSE collision (genuine SVG content,
+  not lifted CSS); the fix is to give `svgContent` the `content` role, not to weaken the check.
+
+**The fixes (universal, DB-driven):**
+1. Edit `src/blocks/hero/block.json` `supports.sgs.variants.split` → `["splitImage",
+   "splitImageMobile"]` (drop the two structural slots). They remain valid hero attrs the lift can
+   populate; they just stop *discriminating*. **Post-fix simulation confirmed:** the confound case
+   → `'standard'` (fixed); a genuine split (splitImage only) → `'split'` (preserved).
+2. Assign `svgContent` the `content` role via the canonical reseed path (so it passes legitimately).
+3. Re-seed `variant_slots` + roles via a dated migration + a full `/sgs-update` (reproducible —
+   never a manual DB edit; `db-changes-reproducible-via-migration`).
+
+After the fixes, check #3 goes green with an EMPTY baseline.
 
 ## 4. Arming / baseline model (STOP-14)
 
@@ -156,17 +170,33 @@ scripts/db-consistency/
    (ledger/oracle/baseline) still green.
 5. `convert.py` UNTOUCHED (D-MODULAR). DB change via dated migration, not manual.
 
-## 8. Risks / open questions for the council (Rule 7 red-team)
+## 8. Risks / open questions — COUNCIL VERDICTS (2026-06-20, /qc-council)
 
-- **R1 — Check #1 definition fidelity.** Does "competing flat attrs in same write-path" match the
-  live resolver's actual ambiguity surface? Could it false-positive the dual-write case or
-  false-negative a real ambiguity the resolver silently resolves by row-order?
-- **R2 — "Liftable structural attr" set.** How is the liftable-set derived without a hardcoded list
-  (R-22-1)? Candidate: `property_suffixes` rows whose derived attr name matches a `unique_slot`.
-  Council must confirm this captures grid/gap and excludes media/content correctly.
-- **R3 — Hero fix blast radius.** Does dropping the two discriminators regress detection of any
-  genuine split hero, or any live homepage hero? (detect_variant on splitImage alone.)
-- **R4 — Reseed determinism.** Confirm `/sgs-update` regenerates `variant_slots` purely from
-  `block.json supports.sgs.variants` (set-difference) so the migration is reproducible.
-- **R5 — G-B reason field.** Is `supports.sgs.hasInnerBlocksReason` the right justification channel,
-  or should it be a baseline-with-reason entry instead?
+- **R1 — Check #1 definition fidelity.** Verdict: **MEASURE-FIRST.** Definition plausible but
+  unverified against the live resolver inline. The build's FIRST step runs check #1 in report mode
+  against the live DB (STOP-14 precondition), confirms it does not false-positive the documented
+  dual-write case (`color`→`textColour`+`style.color.text`, different write-paths), and brings the
+  enumeration back BEFORE arming. If it surfaces real ambiguities they are enumerated + baselined.
+- **R2 — "Liftable structural attr" set.** Verdict: **FALSIFIED → REVISED.** The property_suffixes
+  join returns ZERO rows on the live DB (misses gridTemplateColumns/splitGap). Replaced by the
+  fail-closed content/media-role allowlist (see revised check #3).
+- **R3 — Hero fix blast radius.** Verdict: **VALIDATED — no regression.** Measured: confound
+  → `standard`, genuine split → `split`. splitImage is present only on a real split hero.
+- **R4 — Reseed determinism.** Confirm in build: `/sgs-update` regenerates `variant_slots` purely
+  from `block.json supports.sgs.variants` (set-difference). Migration must be reproducible.
+- **R5 — G-B reason field.** Decision: `supports.sgs.hasInnerBlocksReason` string in block.json
+  (single-source with the override, no separate baseline channel).
+
+## 9. Council record (/qc-council, 2026-06-20 — empirical Stage-5 gate)
+
+Cross-model Gemini rater tool-blocked on the Windows harness (STOP-13) → stood in with direct
+empirical measurement (the decisive evidence for fix-shapes) + structured branch trace.
+
+| Fix-shape | Verdict | Empirical evidence |
+|-----------|---------|--------------------|
+| #3 hero discriminator fix | **VALIDATED-SHIPPABLE** | `detect_variant` confound `split`→`standard` post-fix; genuine split preserved |
+| #3 check derivation | **FALSIFIED→REVISED** | property_suffixes join = 0 rows; replaced with content/media-role allowlist |
+| #1 ambiguity check | **MEASURE-FIRST** | run report-mode vs live DB as build step 1 before arming |
+| #2 absorb+upgrade | **VALIDATED** | AND-rule sound; override path real; no current false-negatives/orphans |
+
+Status: design council-cleared, **AWAITING BEAN APPROVAL** to build.
