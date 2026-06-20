@@ -1,0 +1,12 @@
+[
+  "a:sgs/container:sgs-brand__content",
+  "a:sgs/container:sgs-gift-section__cards",
+  "a:sgs/container:sgs-product-card__body",
+  "a:sgs/container:sgs-product-card__price-row",
+  "a:sgs/container:sgs-social-proof__trustpilot-bar",
+  "a:sgs/label:sgs-product-card__tag--trial",
+  "a:sgs/text:sgs-product-card__price-note",
+  "a:sgs/text:sgs-social-proof__trustpilot-logo",
+  "a:sgs/text:sgs-social-proof__trustpilot-stars",
+  "a:sgs/text:sgs-social-proof__trustpilot-text"
+]

@@ -4,24 +4,45 @@ check_no_mirror.py — R-22-15 anti-mirror gate for the cloning converter.
 
 ENFORCED GATE STATUS
 ====================
-DEFAULT MODE  : --report  (informational, exits 0 always)
-ENFORCE MODE  : --enforce (exits non-zero on any (a)/(b) violation)
+DEFAULT MODE       : --report           (informational, exits 0 always)
+ENFORCE MODE       : --enforce          (exits non-zero on any NEW (a)/(b) violation)
+BASELINE ENFORCE   : --enforce --baseline <path>
+                      Grandfathers known legacy violations; only NEW violations
+                      (keys absent from the baseline) cause exit 1.
+UPDATE BASELINE    : --update-baseline <path>
+                      Writes the current violation keys to the baseline file and
+                      exits 0.  This is the ONLY sanctioned way to change the
+                      baseline.
 
-The converter currently cheats — every run will fire violations today.
-Run with --report during the fix pipeline. Switch to --enforce once the
-converter no longer emits draft-class containers or sourceMode='bound'.
+BASELINE PATTERN (Spec 31 §12.6 step 1)
+=========================================
+The converter is mid-rebuild and still emits legacy draft-class violations.
+Rather than blocking all enforce runs until the rebuild is 100 % complete, we
+commit the 13 known legacy violations as a baseline (see
+check-no-mirror-baseline.json alongside this file).  --enforce --baseline then
+fails ONLY on a NEW violation beyond that baseline.  The baseline shrinks as
+each converter fix lands; the gate remains armed throughout.
+
+Stable violation key format (deterministic, order-independent):
+  Rule (a) → "a:{block_slug}:{violating_class}"
+  Rule (b) → "b:{block_slug}:{sourceMode}"
 
 WIRING NOTE (for pipeline-stage-gate.py)
 =========================================
-Wire into pipeline-stage-gate.py as a pre-commit gate AFTER the converter
-fix is confirmed clean. Look for the comment "# R-22-15 WIRE POINT" in
-pipeline-stage-gate.py to add the call:
+Wire into pipeline-stage-gate.py as a post-clone gate.  Look for the comment
+"# R-22-15 WIRE POINT" in pipeline-stage-gate.py and add the call:
 
-    subprocess.run([sys.executable, CHECK_NO_MIRROR, run_dir, '--enforce'],
-                   check=True)
+    subprocess.run(
+        [sys.executable, CHECK_NO_MIRROR, run_dir,
+         '--enforce', '--baseline', str(BASELINE_PATH)],
+        check=True,
+    )
 
-Do NOT activate --enforce until 'python check_no_mirror.py <run_dir> --report'
-returns zero violations on two consecutive clean runs.
+NOTE on §12.7 "prebuild" wording: §12.7 lists this gate under "prebuild" but
+"prebuild" (npm build) produces no clone run — there is no run_dir to inspect.
+The gate validates converter OUTPUT (extract.json block_markup), which is only
+produced post-clone.  The correct wire point is therefore AFTER a clone run
+completes (pipeline-stage-gate.py), not in package.json prebuild.
 
 WHAT THIS CHECKS (R-22-15, Bean-directed 2026-06-06)
 =====================================================
@@ -44,8 +65,8 @@ WHAT THIS CHECKS (R-22-15, Bean-directed 2026-06-06)
 
 EXIT CODES (--enforce mode)
 ===========================
-0 — no (a)/(b) violations found (WARNINGs do not affect exit code)
-1 — one or more (a)/(b) violations found
+0 — no NEW (a)/(b) violations found; baselined violations are grandfathered
+1 — one or more NEW (a)/(b) violations found (not in baseline)
 2 — usage error (missing files, unreadable artefacts)
 
 EXIT CODES (--report mode, default)
@@ -58,8 +79,14 @@ USAGE
     python check_no_mirror.py [<run_dir>]
     python check_no_mirror.py [<run_dir>] --report
 
-    # Enforce mode — blocks on violation; wire into commit gate once clean
+    # Enforce mode without baseline — blocks on ANY (a)/(b) violation
     python check_no_mirror.py [<run_dir>] --enforce
+
+    # Enforce mode with baseline — blocks only on NEW violations
+    python check_no_mirror.py [<run_dir>] --enforce --baseline check-no-mirror-baseline.json
+
+    # Update (regenerate) the baseline from the current run output
+    python check_no_mirror.py [<run_dir>] --update-baseline check-no-mirror-baseline.json
 
     # <run_dir> defaults to the most-recent directory under pipeline-state/
 
@@ -353,6 +380,203 @@ def print_report(
 # Main
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# Baseline helpers
+# ---------------------------------------------------------------------------
+
+def violation_key_a(slug: str, violating_class: str) -> str:
+    """Stable, deterministic key for a rule-(a) violation."""
+    return f"a:{slug}:{violating_class}"
+
+
+def violation_key_b(slug: str, source_mode: str) -> str:
+    """Stable, deterministic key for a rule-(b) violation."""
+    return f"b:{slug}:{source_mode}"
+
+
+def collect_violation_keys(
+    violations_a: list[dict],
+    violations_b: list[dict],
+) -> list[str]:
+    """Return a sorted, deduplicated list of stable violation keys."""
+    keys: set[str] = set()
+    for v in violations_a:
+        keys.add(violation_key_a(v["block"], v["violating_class"]))
+    for v in violations_b:
+        keys.add(violation_key_b(v["block"], v["sourceMode"]))
+    return sorted(keys)
+
+
+def load_baseline(path: Path) -> set[str]:
+    """Load a baseline JSON file and return the keys as a set."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, list):
+        raise ValueError(f"Baseline file must contain a JSON array: {path}")
+    return set(data)
+
+
+def write_baseline(path: Path, keys: list[str]) -> None:
+    """Write sorted violation keys to the baseline JSON file (deterministic)."""
+    path.write_text(
+        json.dumps(sorted(keys), indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
+# ---------------------------------------------------------------------------
+# Baseline-aware report printing
+# ---------------------------------------------------------------------------
+
+def print_report_with_baseline(
+    run_dir: Path,
+    markup_source: str,
+    violations_a: list[dict],
+    violations_b: list[dict],
+    warnings_c: list[dict],
+    enforce: bool,
+    baselined_keys: set[str] | None,
+) -> tuple[list[dict], list[dict]]:
+    """
+    Print the full report and return (new_a, new_b) — the NEW violations
+    (i.e. those NOT in the baseline).
+
+    When baselined_keys is None (no --baseline given), all violations are
+    treated as "new" and the output matches the original print_report().
+    When baselined_keys is provided, each violation is tagged as either
+    "baselined (legacy)" or "NEW (blocking)".
+    """
+    all_hard = violations_a + violations_b
+    total_hard = len(all_hard)
+
+    if baselined_keys is None:
+        # Original behaviour — no baseline awareness.
+        print_report(
+            run_dir=run_dir,
+            markup_source=markup_source,
+            violations_a=violations_a,
+            violations_b=violations_b,
+            warnings_c=warnings_c,
+            enforce=enforce,
+        )
+        return violations_a, violations_b
+
+    # ---- Partition into baselined vs new ----
+    new_a: list[dict] = []
+    old_a: list[dict] = []
+    for v in violations_a:
+        key = violation_key_a(v["block"], v["violating_class"])
+        if key in baselined_keys:
+            old_a.append(v)
+        else:
+            new_a.append(v)
+
+    new_b: list[dict] = []
+    old_b: list[dict] = []
+    for v in violations_b:
+        key = violation_key_b(v["block"], v["sourceMode"])
+        if key in baselined_keys:
+            old_b.append(v)
+        else:
+            new_b.append(v)
+
+    total_new = len(new_a) + len(new_b)
+    total_baselined = len(old_a) + len(old_b)
+    status_label = "FAIL" if (enforce and total_new) else "PASS"
+    mode_label = "--enforce --baseline" if enforce else "--report (informational)"
+
+    print(_hr("═"))
+    print(f"  R-22-15 Anti-Mirror Gate — {status_label}")
+    print(f"  Run dir  : {run_dir.name}")
+    print(f"  Mode     : {mode_label}")
+    print(f"  Source   : {markup_source or '(not found)'}")
+    print(_hr("═"))
+
+    # --- Rule (a) ---
+    print(f"\nRule (a) Draft-class containers : {len(violations_a)} violation(s) "
+          f"({total_baselined} baselined, {total_new} NEW)")
+    if violations_a:
+        print(_hr())
+        # Baselined group
+        if old_a:
+            print(f"  Baselined (legacy — grandfathered, {len(old_a)} instance(s)):")
+            for v in old_a:
+                print(f"    · baselined: wp:{v['block']} carries '{v['violating_class']}'")
+        # New / blocking group
+        if new_a:
+            print(f"  NEW (blocking — {len(new_a)} instance(s)):")
+            for v in new_a:
+                cls = v["violating_class"]
+                blk = v["block"]
+                print(
+                    f"  ✗ NEW mirror violation not in the baseline: "
+                    f"wp:{blk} carries draft class '{cls}'. "
+                    f"The converter introduced a NEW draft-class container — "
+                    f"fix it or, if intended, regenerate the baseline with --update-baseline."
+                )
+
+    # --- Rule (b) ---
+    total_b_new = len(new_b)
+    total_b_old = len(old_b)
+    print(f"\nRule (b) Bound sourceMode       : {len(violations_b)} violation(s) "
+          f"({total_b_old} baselined, {total_b_new} NEW)")
+    if violations_b:
+        print(_hr())
+        for v in old_b:
+            print(f"    · baselined: wp:{v['block']} sourceMode='{v['sourceMode']}'")
+        for v in new_b:
+            blk = v["block"]
+            sm = v["sourceMode"]
+            print(
+                f"  ✗ NEW mirror violation not in the baseline: "
+                f"wp:{blk} has sourceMode='{sm}'. "
+                f"The converter introduced a NEW bound sourceMode — "
+                f"fix it or, if intended, regenerate the baseline with --update-baseline."
+            )
+
+    # --- Rule (c) ---
+    print(f"\nRule (c) D2-stranded layout CSS : {len(warnings_c)} warning(s) [soft, informational]")
+    if warnings_c:
+        print(_hr())
+        by_prop: dict[str, int] = {}
+        for w in warnings_c:
+            by_prop[w["property"]] = by_prop.get(w["property"], 0) + 1
+        for prop, cnt in sorted(by_prop.items(), key=lambda x: -x[1]):
+            print(f"  {cnt:3}× {prop}")
+        print(_hr())
+        print("  Sample (first 10):")
+        for w in warnings_c[:10]:
+            print(f"       [{w['property']}] {w['selector'].strip()[:70]}")
+            print(f"              → {w['declaration'][:90]}")
+
+    # --- Summary ---
+    print()
+    print(_hr("─"))
+    print(
+        f"  SUMMARY: {total_hard} total violation(s) "
+        f"[{total_baselined} baselined / {total_new} NEW]  "
+        f"|  {len(warnings_c)} warning(s)"
+    )
+    print(f"  Hard violations = rule (a) + (b).  Warnings (c) never block.")
+    if total_new == 0:
+        print(f"  RESULT: PASS — {total_baselined} legacy violation(s) grandfathered; "
+              f"no NEW mirror-cheat violations detected.")
+    else:
+        if enforce:
+            print(
+                f"  RESULT: FAIL — {total_new} NEW violation(s) not in the baseline. "
+                f"Fix the converter or run --update-baseline if the violation is intentional."
+            )
+        else:
+            print(f"  RESULT: FAIL (report mode — exits 0, informational only).")
+    print(_hr("─"))
+
+    return new_a, new_b
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="R-22-15 anti-mirror gate: detect when the converter cheated.",
@@ -377,8 +601,24 @@ def main(argv: list[str] | None = None) -> int:
         "--enforce",
         action="store_true",
         default=False,
-        help="Enforce mode: exit non-zero on any (a)/(b) violation. "
-             "Wire this into pipeline-stage-gate.py once the converter is clean.",
+        help="Enforce mode: exit non-zero on NEW (a)/(b) violations not in --baseline. "
+             "Without --baseline, ANY (a)/(b) violation triggers exit 1.",
+    )
+    parser.add_argument(
+        "--baseline",
+        metavar="PATH",
+        default=None,
+        help="Path to a baseline JSON file (list of stable violation keys). "
+             "When given with --enforce, baselined keys are grandfathered; "
+             "only NEW keys (absent from the baseline) cause exit 1.",
+    )
+    parser.add_argument(
+        "--update-baseline",
+        metavar="PATH",
+        default=None,
+        dest="update_baseline",
+        help="Write the current violation keys to the given path as a sorted "
+             "JSON array, then exit 0.  The ONLY sanctioned way to change the baseline.",
     )
     args = parser.parse_args(argv)
 
@@ -417,7 +657,47 @@ def main(argv: list[str] | None = None) -> int:
     violations_b = check_b_bound_source_mode(blocks)
     warnings_c = check_c_d2_stranded_layout(run_dir)
 
-    # Print report
+    # ---- --update-baseline mode ----
+    if args.update_baseline:
+        keys = collect_violation_keys(violations_a, violations_b)
+        out_path = Path(args.update_baseline)
+        write_baseline(out_path, keys)
+        print(f"Wrote {len(keys)} baseline key(s) to {out_path}")
+        return 0
+
+    # ---- Load baseline (if supplied) ----
+    baselined_keys: set[str] | None = None
+    if args.baseline:
+        baseline_path = Path(args.baseline)
+        if not baseline_path.exists():
+            print(
+                f"ERROR: baseline file not found: {baseline_path}",
+                file=sys.stderr,
+            )
+            return 2
+        try:
+            baselined_keys = load_baseline(baseline_path)
+        except (json.JSONDecodeError, ValueError) as exc:
+            print(f"ERROR: could not parse baseline file: {exc}", file=sys.stderr)
+            return 2
+
+    # ---- Print report (baseline-aware) ----
+    if baselined_keys is not None:
+        new_a, new_b = print_report_with_baseline(
+            run_dir=run_dir,
+            markup_source=markup_source,
+            violations_a=violations_a,
+            violations_b=violations_b,
+            warnings_c=warnings_c,
+            enforce=enforce,
+            baselined_keys=baselined_keys,
+        )
+        total_new = len(new_a) + len(new_b)
+        if enforce and total_new:
+            return 1
+        return 0
+
+    # ---- Original behaviour (no baseline) ----
     print_report(
         run_dir=run_dir,
         markup_source=markup_source,
