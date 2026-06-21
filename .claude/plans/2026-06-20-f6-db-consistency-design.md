@@ -100,11 +100,19 @@ lifted via the `_SUFFIX_ATTR_OVERRIDES` constant, not a plain `property_suffixes
 `splitGap` is a block-specific name — so it would have MISSED the very collision it exists to
 catch. Bean-chosen replacement: a fail-closed content/media-role allowlist.)
 
-**Operational definition (DB-driven, R-22-1):**
-- Content/media-safe roles (allowlist) = `{scalar-media, image-object, content, text-content,
-  link-href, rating, identity}` (final set to be locked in the build's report-mode run).
-- A discriminator is SAFE iff `block_attributes.role` ∈ allowlist. Otherwise FLAGGED — this is
-  fail-closed (a NULL role flags, surfacing a data-quality gap rather than passing silently).
+**Operational definition (DB-driven, R-22-1) — FINAL (Bean-locked 2026-06-20):**
+- The hazard is specifically attrs the **universal CSS lift can spuriously populate** → those
+  spuriously raise `detect_variant`'s score. So the UNSAFE (CSS-liftable) role set =
+  `{layout, typography, color, colour-gradient, number-css-px, number-css-percent, visual, motion}`
+  (final set locked in the build's report-mode run vs the live lift surface).
+- A discriminator is SAFE iff `block_attributes.role` is present AND NOT in the CSS-liftable set
+  (so enum/rating/media/content/identity/boolean discriminators pass — they're only populated when
+  the content genuinely exists). FLAGGED iff role ∈ CSS-liftable set OR role IS NULL (fail-closed:
+  an unclassified attr can't be *proven* non-liftable, so it flags + forces classification).
+
+**UNIVERSAL (Rule 3 / R-22-9):** the check + its tests run across EVERY variant-bearing block
+(`blocks.variant_attr` populated) — today `sgs/hero` + `sgs/testimonial`, plus any future block,
+with zero per-block branching. Tests assert correct verdicts on both blocks' real discriminators.
 
 **Current violations measured against the live DB (council Stage-5 enumeration):**
 - `sgs/hero split` → `gridTemplateColumns` (role NULL) + `splitGap` (role `layout`) — REAL
@@ -113,16 +121,25 @@ catch. Bean-chosen replacement: a fail-closed content/media-role allowlist.)
 - `sgs/hero svg-animated` → `svgContent` (role NULL) — a FALSE collision (genuine SVG content,
   not lifted CSS); the fix is to give `svgContent` the `content` role, not to weaken the check.
 
-**The fixes (universal, DB-driven):**
+**The fixes (universal, DB-driven; disposition = FIX ALL NOW, zero baseline — Bean 2026-06-20):**
 1. Edit `src/blocks/hero/block.json` `supports.sgs.variants.split` → `["splitImage",
    "splitImageMobile"]` (drop the two structural slots). They remain valid hero attrs the lift can
    populate; they just stop *discriminating*. **Post-fix simulation confirmed:** the confound case
    → `'standard'` (fixed); a genuine split (splitImage only) → `'split'` (preserved).
-2. Assign `svgContent` the `content` role via the canonical reseed path (so it passes legitimately).
-3. Re-seed `variant_slots` + roles via a dated migration + a full `/sgs-update` (reproducible —
-   never a manual DB edit; `db-changes-reproducible-via-migration`).
+2. Classify the role-`None` discriminators that REMAIN discriminators, via the canonical reseed
+   path, so they pass legitimately (none are CSS-liftable — they're media/content):
+   - hero: `svgContent` → `content`
+   - testimonial: `avatarMedia`/`workMedia` → `scalar-media`; `orgLogo` → `image-object`;
+     `summaryPhrase` → `content`; `sourcePlatform` → `identity`; `verified` → `boolean-visibility`
+   (final role per attr confirmed against the block.json attr definition in the build.)
+   `ratingScale` (`select-from-enum`), `ratingStars` (`rating`), `reviewDate` (`text-content`)
+   already pass — no change.
+3. **Role-source grounding is the build's first task:** confirm HOW `block_attributes.role` is
+   populated (`/sgs-update` derivation step vs an override channel) so the assignments flow through
+   the reproducible reseed path, NOT a manual DB edit (`db-changes-reproducible-via-migration`).
+4. Re-seed `variant_slots` + roles via a dated migration + a full `/sgs-update`.
 
-After the fixes, check #3 goes green with an EMPTY baseline.
+After the fixes, check #3 goes green across BOTH variant-bearing blocks with an EMPTY baseline.
 
 ## 4. Arming / baseline model (STOP-14)
 
@@ -161,11 +178,14 @@ scripts/db-consistency/
 
 1. Suite runs in `prebuild` + `prestart`, exits 0 on the current (post-hero-fix) DB.
 2. Each check proven to **reject a planted violation**: a planted stale `has_inner_blocks`; a
-   planted ambiguous `(block, property)` with no disambiguator; a planted liftable discriminator.
-3. The hero collision is FIXED: `block.json` updated, dated migration + `/sgs-update` reseed,
-   `variant_slots` for `sgs/hero split` no longer lists `gridTemplateColumns`/`splitGap`;
-   a clone of a split hero still detects `split` (live-verify on canary if a split fixture exists,
-   else converter conformance test).
+   planted ambiguous `(block, property)` with no disambiguator; a planted CSS-liftable-role
+   discriminator. Check #3 + its tests run UNIVERSALLY over every `variant_attr` block (hero +
+   testimonial), asserting correct verdicts on both blocks' real discriminators (Rule 3).
+3. The hero collision is FIXED + all role-gaps classified: `block.json` updated, dated migration +
+   `/sgs-update` reseed, `variant_slots` for `sgs/hero split` no longer lists
+   `gridTemplateColumns`/`splitGap`, and every remaining discriminator on hero+testimonial has a
+   non-NULL non-CSS-liftable role; a clone of a split hero still detects `split` (live-verify on
+   canary if a split fixture exists, else converter conformance test).
 4. `check-composition-sync.py` deleted; prebuild/prestart entry replaced; Gate A + foundation tests
    (ledger/oracle/baseline) still green.
 5. `convert.py` UNTOUCHED (D-MODULAR). DB change via dated migration, not manual.
