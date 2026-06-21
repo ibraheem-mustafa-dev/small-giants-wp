@@ -136,11 +136,20 @@ scripts/db-consistency/
    replaced. Gate A + foundation tests (ledger/oracle/baseline, 358) stay green.
 5. `convert.py` UNTOUCHED (D-MODULAR). Reseed via dated path, not manual.
 
-## 7. Out of scope (flagged, not built now — Bean scope: no-preference → tight+correct)
-Candidate follow-up checks the audit surfaced, deferred to keep F6 spec-faithful + correct:
-`_SUFFIX_ATTR_OVERRIDES`↔`_ATTR_NAME_OVERRIDES` drift; `variant_slots`↔block.json reseed
-determinism; orphan-role (`rating`) registration; `tier`↔`composition_role` (unproven invariant —
-needs a human-confirmed rule first). Recorded in parking if F6 ships without them.
+## 7. Follow-up checks — SHIPPED 2026-06-20 (Bean: "do all the F6 follow-up checks") — commit `502f849e`
+All 4 audit-surfaced follow-ups built as checks #4–#7 in the same module (each a genuine invariant
+holding on the live DB today + a planted-violation reject test; suite now 7 checks, 51 tests, 0
+violations):
+- **#4 override drift** — `_SUFFIX_ATTR_OVERRIDES` (convert.py, AST-extracted, no import) ==
+  `_ATTR_NAME_OVERRIDES` (db_lookup.py).
+- **#5 variant_slots ↔ block.json determinism** (keystone) — recompute set-difference from block.json,
+  assert == DB `variant_slots`; catches a stale reseed. Universal.
+- **#6 orphan-role integrity** — every `block_attributes.role` ∈ `roles`. Fixed the one orphan
+  (`rating` → content-bearing) via dated migration `2026-06-21-register-rating-role.py` (commit `b533690e`).
+- **#7 tier ↔ composition_role** — `tier='class-section'` ⇒ `composition_role ∈ {section-root,
+  content-block}` AND `container_kind NOT NULL`. **Safe form** (allows `content-block` — trust-bar
+  NOT false-flagged; the "unproven invariant" concern resolved by grounding: all 3 class-section
+  blocks pass today).
 
 ## 8. Council/fact-check provenance
 v1 → `/qc-council` (empirical, validated hero fix on a since-corrected synthetic input) →
