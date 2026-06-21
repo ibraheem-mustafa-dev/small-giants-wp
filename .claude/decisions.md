@@ -6,6 +6,24 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-21 — D241: F5 residuals fact-checked + closed — bound-emit tripwire, harness-canary, 2 evidenced deferrals only
+
+**D241 — Bean directed: don't defer the residuals out of habit — fact-check each, then do all that are genuinely doable now. Fact-checked all 7 P-F5-RESIDUALS items against ground truth; the real ones shipped, the non-issues were dismissed WITH evidence, and only 2 genuinely-blocked items remain (both arm as part of the rebuild). Commit `2b597e92`.**
+
+Fact-check outcomes:
+- **#3 CSS-shorthand: NOT a real gate bug.** `css_router._parse_declarations` keeps `padding`/`margin` WHOLE (verbatim), matching `declare_input` — both sides of the gate's join agree. The council assumed the gate measured convert.py's decomposition, but the gate measures css_router. Dismissed.
+- **#5 inline styles: already fail-safe.** Inline declarations surface as UNACCOUNTED (loud), never silently dropped, and no draft fixture has any (SGS-BEM uses classes). Documented, not a code gap.
+- **#6 --update-baseline laundering / #7 fail-open:** #6's silent-hand-edit path is already closed by the SHA-256 hashes (--update-baseline is a deliberate visible act); #7 is now closed (harness-canary below).
+
+SHIPPED (the genuinely-doable items):
+- **check #8 (`cheat-gate/check_bound_emit.py`):** AST-based commit-time tripwire for a static `sourceMode='bound'` EMIT in `converter_v2/` — closes the headline mirror-cheat's only commit-time gap (check #5/check_no_mirror is post-clone-only). AST so docstrings/comments describing the cheat aren't flagged; scoped to the converter (not the gate infra, which legitimately references 'bound'). Baseline-clean (0 today; tripwire for the future). 5 tests.
+- **f5-commit-gate harness-canary:** if EVERY present gate fails to run (broken harness) the hook now fails CLOSED (a disabled gate can't wave commits through silently); partial failures emit a visible stderr warning.
+- **coverage_check SCOPE note:** documents it proves css_router's coverage-conservation, NOT convert.py's transfer (the LANDED leg + the rebuild rewire close that) — so the guarantee is never over-claimed.
+
+REMAINING (2 only, both evidenced as not-now, NOT habit-deferral — `P-F5-RESIDUALS`): **F3-RUNTIME LANDED leg** (infra-blocked: needs a Playwright render-harness + deploy over the 37-fixture corpus; arms with the rebuild) + **css_router D1 media-axis** (rebuild-scope: D1 is a dead output convert.py doesn't consume, the gate already fails-safe on the collapse, and the rebuild's MF-2 owns D1's fate). 544 tests green. convert.py untouched (D-MODULAR).
+
+---
+
 ## 2026-06-21 — D240: F5 gates HARDENED after an adversarial council found a fatal soundness hole + bypass surfaces
 
 **D240 — Bean directed an `/adversarial-council` on the F5 commits. A 5-persona panel (fact-checked per STOP-15 — all 3 deadliest findings confirmed true ground truth, unlike the F6 council) found the gates were architecturally sound but NOT yet a hard barrier. Fixed the convergent must-fixes + all small items this session; committed `cacde1a9`.**
