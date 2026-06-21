@@ -56,6 +56,7 @@ def _bootstrap() -> None:
         "check_parallel_bp",
         "check_d2_when_d1",
         "check_sentinel",
+        "check_bound_emit",
     ):
         mod_id = f"cheat_gate.{name}"
         if mod_id in sys.modules:
@@ -78,6 +79,7 @@ from cheat_gate.models import (  # noqa: E402
     parallel_bp_key,
     d2_when_d1_key,
     sentinel_key,
+    bound_emit_key,
 )
 from cheat_gate import (  # noqa: E402
     check_slug_literals,
@@ -86,6 +88,7 @@ from cheat_gate import (  # noqa: E402
     check_parallel_bp,
     check_d2_when_d1,
     check_sentinel,
+    check_bound_emit,
 )
 
 # ---------------------------------------------------------------------------
@@ -715,3 +718,49 @@ class TestCheck3LiveDB:
             assert expected in props, (
                 f"Expected '{expected}' in property_suffixes, got: {sorted(props)[:20]}"
             )
+
+
+class TestCheck8BoundEmit:
+    """Check #8 — static sourceMode='bound' emit tripwire (AST, converter_v2 scope)."""
+
+    def _conv(self, tmp_path):
+        d = tmp_path / "converter_v2"
+        d.mkdir()
+        return d
+
+    def test_flags_bound_dict_emit(self, tmp_path):
+        d = self._conv(tmp_path)
+        (d / "emit.py").write_text(
+            'def build():\n    return {"sourceMode": "bound"}\n', encoding="utf-8"
+        )
+        v = check_bound_emit.run(converter_dir=d)
+        assert len(v) == 1 and v[0].check == "bound_emit"
+
+    def test_flags_bound_kwarg_emit(self, tmp_path):
+        d = self._conv(tmp_path)
+        (d / "emit.py").write_text(
+            'def f(**k): pass\ndef build():\n    f(sourceMode="bound")\n', encoding="utf-8"
+        )
+        assert len(check_bound_emit.run(converter_dir=d)) == 1
+
+    def test_legit_modes_not_flagged(self, tmp_path):
+        d = self._conv(tmp_path)
+        (d / "emit.py").write_text(
+            'def build():\n    return {"sourceMode": "wc-product"}\n', encoding="utf-8"
+        )
+        assert check_bound_emit.run(converter_dir=d) == []
+
+    def test_descriptive_text_not_flagged(self, tmp_path):
+        """A docstring/comment describing the cheat must NOT be flagged (AST, not regex)."""
+        d = self._conv(tmp_path)
+        (d / "doc.py").write_text(
+            '"""Never emit sourceMode=\'bound\' — it is the cheat."""\n'
+            '# sourceMode: "bound" is forbidden\n'
+            'x = 1\n',
+            encoding="utf-8",
+        )
+        assert check_bound_emit.run(converter_dir=d) == []
+
+    def test_clean_converter_tree_passes(self):
+        """The real converter_v2 tree ships with zero bound emits (D182 purge)."""
+        assert check_bound_emit.run() == []

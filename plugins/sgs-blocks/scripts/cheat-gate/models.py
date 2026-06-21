@@ -67,3 +67,13 @@ def d2_when_d1_key(block_slug: str, css_property: str) -> str:
 def sentinel_key(file: str, context: str) -> str:
     """Check #7 stable dedup key — 'unitless' sentinel leakage."""
     return f"sentinel:{file}:{context}"
+
+
+def bound_emit_key(file: str, line: int) -> str:
+    """Check #8 stable dedup key — static sourceMode='bound' emit in converter source.
+
+    Keyed by file + line so a new bound-emit anywhere is a NEW violation. (Line is
+    acceptable here: this baseline is expected to stay EMPTY — the bound emit was
+    purged D182 — so there are no legacy entries whose line-shifts would churn it.)
+    """
+    return f"bound:{file}:{line}"

@@ -79,15 +79,23 @@ def _is_gated_commit(cmd: str) -> bool:
     return True
 
 
-def _run_gates() -> list[str]:
-    """Run each present gate's --check; return a list of failure description lines."""
+def _run_gates() -> tuple[list[str], int]:
+    """Run each present gate's --check.
+
+    Returns (failures, present_count) where present_count is how many gate scripts
+    actually existed and were attempted. present_count lets main() distinguish a
+    TOTAL harness failure (every present gate crashed — suspicious, fail-closed) from
+    an individual gate hiccup (fail-open with a visible warning).
+    """
     failures: list[str] = []
+    present_count = 0
     for label, rel in _GATES:
         script = _SCRIPTS / rel
         if not script.exists():
             # Gate not present (e.g. a fresh checkout missing a module) → skip,
             # don't wedge the commit on a missing optional gate.
             continue
+        present_count += 1
         try:
             proc = subprocess.run(
                 [sys.executable, str(script), "--check"],
@@ -105,7 +113,7 @@ def _run_gates() -> list[str]:
             tail = (proc.stdout or "").strip().splitlines()
             snippet = tail[-1] if tail else "(see `python plugins/sgs-blocks/scripts/" + rel + " --report`)"
             failures.append(f"  • {label}: NEW violation — {snippet}")
-    return failures
+    return failures, present_count
 
 
 def main() -> int:
@@ -123,9 +131,11 @@ def main() -> int:
     if not _is_gated_commit(cmd):
         return 0
 
-    failures = _run_gates()
-    # Only DENY when a gate reported an actual NEW violation (returncode != 0).
+    failures, present_count = _run_gates()
     real_blocks = [f for f in failures if "could not run" not in f]
+    could_not_run = [f for f in failures if "could not run" in f]
+
+    # 1. A gate reported an actual NEW violation (returncode != 0) → DENY.
     if real_blocks:
         reason = (
             "Spec-31 F5 commit gate: a CSS-transfer quality gate found a NEW violation "
@@ -140,7 +150,29 @@ def main() -> int:
         )
         return _deny(reason)
 
-    return 0  # all gates green (or only fail-open skips) → allow
+    # 2. Harness-canary: if gates EXIST but EVERY one of them failed to run, that is
+    #    a broken harness (python missing, all modules crash, DB lock), not a clean
+    #    pass — fail CLOSED so a silently-disabled gate can't wave commits through.
+    if present_count > 0 and len(could_not_run) == present_count:
+        return _deny(
+            "Spec-31 F5 commit gate: the gate HARNESS is broken — every gate failed to "
+            "run, so nothing was actually checked. A clean pass cannot be distinguished "
+            "from a disabled gate, so the commit is blocked.\n\n"
+            + "\n".join(could_not_run)
+            + "\n\nFix the harness (run `cd plugins/sgs-blocks/scripts && python cheat-gate/run.py "
+            "--check` to see the error), or add `[gates-ok:<reason>]` to bypass deliberately."
+        )
+
+    # 3. SOME gates couldn't run (partial) → allow, but make it VISIBLE on stderr so a
+    #    degraded gate is never silent (PreToolUse stderr surfaces to the session).
+    if could_not_run:
+        print(
+            "[f5-commit-gate] WARNING: some F5 gates could not run this commit "
+            "(allowed, but re-run them manually):\n" + "\n".join(could_not_run),
+            file=sys.stderr,
+        )
+
+    return 0  # all present gates green (or only partial fail-open skips) → allow
 
 
 if __name__ == "__main__":

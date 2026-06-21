@@ -23,6 +23,24 @@ where:
 UNACCOUNTED > 0 means a declaration was silently dropped — the gate FAILS on any
 new UNACCOUNTED key not already in the baseline.
 
+SCOPE — what "accounted" does and does NOT prove (read before trusting)
+----------------------------------------------------------------------
+This gate proves css_router's COVERAGE-CONSERVATION invariant: every draft
+declaration lands in at least one css_router bucket (D0/D1/D2/D3) or is
+excluded-with-reason. That is the §12.2.1 instrument and it is sound (the join is
+keyed on full declaration identity incl. responsive tier/media — D240).
+
+It does NOT yet prove the declaration was TRANSFERRED CORRECTLY by convert.py:
+today convert.py (Stage 4) does not consume css_router's D1 (the merge was deleted
+2026-05-27), so "bucketed" means "css_router dispositioned it", not "the converter
+emitted a landed attr for it". Closing that gap is (a) the LANDED leg below and
+(b) the rebuild's MF-2 decision to rewire convert.py onto css_router. Failure
+direction is SAFE: when a declaration is NOT bucketed it is reported UNACCOUNTED
+(loud), never silently passed — inline `style=""` declarations (which css_router
+cannot bucket) therefore surface as UNACCOUNTED rather than being hidden; SGS-BEM
+drafts transfer via classes, so a draft with inline styles is a Stage-0 lint error,
+not this gate's transfer surface.
+
 WHAT IS DEFERRED — the LANDED leg
 ----------------------------------
 Checking that a *transferred* attr actually RENDERS correctly on the live clone

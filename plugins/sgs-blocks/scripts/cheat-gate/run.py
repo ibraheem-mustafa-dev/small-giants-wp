@@ -91,6 +91,7 @@ _check_imp_mod = _load_sibling("check_important_render")
 _check_bp_mod = _load_sibling("check_parallel_bp")
 _check_d2_mod = _load_sibling("check_d2_when_d1")
 _check_sentinel_mod = _load_sibling("check_sentinel")
+_check_bound_mod = _load_sibling("check_bound_emit")
 
 Violation = _models_mod.Violation
 
@@ -156,11 +157,12 @@ _CHECK_LABELS = {
     # Check #5 is delegated to check_no_mirror.py — documented, not re-run here.
     "d2_when_d1":        "Check #6 — D2-stranded property with D1 destination",
     "sentinel":          "Check #7 — 'unitless' sentinel leakage",
+    "bound_emit":        "Check #8 — static sourceMode='bound' emit in source (commit-time mirror tripwire)",
 }
 
 _CHECK_ORDER = (
     "slug_literal", "hardcoded_dict", "important_render",
-    "parallel_bp", "d2_when_d1", "sentinel",
+    "parallel_bp", "d2_when_d1", "sentinel", "bound_emit",
 )
 
 
@@ -286,6 +288,9 @@ def main() -> int:
 
         # Check #7 — sentinel leakage
         violations.extend(_check_sentinel_mod.run(run_dir=run_dir))
+
+        # Check #8 — static sourceMode='bound' emit (commit-time mirror tripwire)
+        violations.extend(_check_bound_mod.run())
 
     finally:
         if conn is not None:
