@@ -6,6 +6,25 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-21 — D240: F5 gates HARDENED after an adversarial council found a fatal soundness hole + bypass surfaces
+
+**D240 — Bean directed an `/adversarial-council` on the F5 commits. A 5-persona panel (fact-checked per STOP-15 — all 3 deadliest findings confirmed true ground truth, unlike the F6 council) found the gates were architecturally sound but NOT yet a hard barrier. Fixed the convergent must-fixes + all small items this session; committed `cacde1a9`.**
+
+The council's convergent headline: a careless future session could keep a gate GREEN while a real regression shipped. Fixed:
+- **FATAL (coverage_check soundness):** the UNACCOUNTED join was tier/media-BLIND — `bucketed` keyed on `(selector,property)` while the draft keyed on `(selector,property,tier)`, so a declaration dropped at a non-base breakpoint reported UNACCOUNTED=0. The "no-silent-drop guarantee" was hollow for responsive CSS (the pipeline's whole point). Added media/tier to BOTH sides of the join → surfaced **19 previously-hidden cross-tier drops** (now baselined; a real regression on them now fails).
+- **check_no_mirror count-blindness:** a baselined `(slug,class)` pair could recur N times (real regression) and pass GREEN. Baseline is now `{key: max-count}` + SHA-256 hash; a count regression fails.
+- **check-converter-cheats #2 vacuous pass:** the NAMED violation `_SUFFIX_ATTR_OVERRIDES` (tuple keys) was silently skipped. Now detects tuple-keyed CSS-prop dicts (catches it + `_ATTR_NAME_OVERRIDES`).
+- **check #6:** removed the hardcoded `_LAYOUT_PROP_RE` pre-filter (itself an R-22-1 violation defeating its own DB cross-join). **check #4:** `_BP_SUFFIX_MAP` scan now walks the whole orchestrator tree.
+- **Self-blessing:** hashed the 3 unhashed baselines (cheat-gate / coverage / check_no_mirror) — a hand-edit is now caught (excluded-gate already had this).
+- **Universal-floor wiring (the convergent STOP-6 finding):** the 4 static gates now run in `.githooks/pre-commit` (SHARED, fires on a real terminal `git commit`, not just CC sessions — verified firing on this session's commit). `f5-commit-gate.py` hardened: matcher catches `git -C`/global-flag commits; `[gates-ok]` now REQUIRES a reason (bare token no longer bypasses).
+- **integration_error** in coverage_check now FAILS `--check` (was silently scored 0). **pytest.ini** (`--import-mode=importlib`) fixes the combined-pytest collision.
+
+539 tests green (per-dir + combined-in-one-run now works). convert.py untouched (D-MODULAR). Lesson captured: [[verify-subagent-test-claims-from-canonical-cwd]] + the cross-tier soundness pattern.
+
+**STILL DEFERRED (genuinely large/architectural — `P-F5-RESIDUALS`, NOT small tasks):** F3-RUNTIME (the LANDED leg); css_router D1 `attr_path` media-axis (the gate-side join now catches the symptom, but css_router still collapses same-property/different-media into one D1 entry — rebuild-scope); CSS shorthand decomposition in the ledger; a commit-time STATIC `sourceMode='bound'` scan (check #5 is post-clone-only); inline-style bucketing; a guard against `--update-baseline` laundering (the hash stops hand-edits; --update-baseline is still a deliberate visible path); fail-open canary/heartbeat.
+
+---
+
 ## 2026-06-21 — D239: F5 COMPLETE — the Tier-1 gate cluster is built, armed + WIRED-to-run
 
 **D239 — Phase-F step F5 (the Spec-31 §12.7 gate cluster) is DONE. All gates exist, are baseline-armed against current legacy output (STOP-14), and are WIRED to something that runs (STOP-6). Built this session after Task 1 (D238) on Bean's "do all the F5 tasks + the git hook" directive.**
