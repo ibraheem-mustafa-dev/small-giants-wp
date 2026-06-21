@@ -2,48 +2,50 @@
 doc_type: handoff
 project: small-giants-wp
 thread: cloning-pipeline
-session_date: 2026-06-18
+session_date: 2026-06-20
 ---
 
-# Session Handoff — 2026-06-18 (F3-core + F4 + F5-partial)
+# Session Handoff — 2026-06-20
 
 ## Completed This Session
-1. **F3-core — LANDED render-oracle — SHIPPED** (`6b430dae`, D234). New `plugins/sgs-blocks/scripts/oracle/`: verdict engine (§3 precedence, tri-state compare, ΔE≤1/≤1px reusing parity2 helpers not its BEM matcher), 4 false-win guards, MR-2, frozen §6 F3→F5 contract, 181 tests in prebuild. **Live-canary-proven**: cloned `rt-centred-maxwidth` → published live on canary page 1199 → probed getComputedStyle → 4 LANDED + 2 UNVERIFIED, all CORRECT. Built SDD → Opus review (4 HIGH+5 MED fixed) → live proof → qc-council (cross-family Gemini tool-blocked → branch-trace stand-in → FIX-M).
-2. **F4 — closed `excluded_properties` table — SHIPPED** (`870f48aa`, D235). One idempotent dated migration; **ships EMPTY** (no property is excluded-from-clone — Bean's "why max-width?" challenge proved `_LIFT_EXCLUDED_PROPS` is dead code). Re-scoped via a 3-rater /qc-council that found the originally-proposed literal-ban GATE overclaims (the real no-drop guarantee is F2+F3+coverage-invariant+F5) — the gate moved to F5; its hardened requirements are recorded in the F4 design §3. convert.py untouched (D-MODULAR — Bean's "fresh scripts, leave convert.py legacy" correction).
-3. **F5 — STARTED (partial)** (`6193f3e9`, D236). `check_no_mirror.py` armed with a committed legacy baseline (`--baseline`/`--update-baseline`; 10 keys / 13 instances; fails on a NEW draft-class violation, grandfathers the 13). Built SDD → qc-inline (5/5 logic scenarios + 10/10 tests). **The converter still emits 13 live mirror violations** (mid-rebuild) → couldn't arm clean → baselined per §12.6-step-1.
-4. **Docs:** D234/D235/D236; state + next-session-prompt rewritten for F6 (carry-forward gate passed: STOP 12→14, ritual 5→5, rules 7 verbatim); `P-F5-REMAINING` parked. 2 lessons captured (cross-family-rater stand-in = blub 359; gate-arm-precondition = STOP-14, blub pending — dashboard down).
+1. **F6 DB-as-code consistency suite SHIPPED (D237)** — fresh `plugins/sgs-blocks/scripts/db-consistency/` module (Spec 31 §12.4 + §12.7 F6), **7 checks, 51 tests, 0 live violations**, wired into `prebuild`+`prestart`. Retired `check-composition-sync.py` (parity-verified; new check #2 is a strict superset).
+2. **Hero discriminator fix (`fdcf70ab`)** — dropped `gridTemplateColumns`+`splitGap` from `sgs/hero` `supports.sgs.variants.split`; reseeded `variant_slots` via Stage 1. Verified: bare-hero `{gridTemplateColumns}` → `None` (was `'split'`); genuine split preserved.
+3. **3 core checks (`1293c24f`)** — #1 routing determinism, #2 has_inner_blocks↔save.js (ports the old AND-rule + G-A orphan + G-B override-mask), #3 variant collision (no discriminator is lift-producible).
+4. **4 follow-up checks (`502f849e`)** — #4 override-dict drift, #5 variant_slots↔block.json determinism (keystone stale-data guard), #6 orphan-role integrity, #7 tier↔composition_role. Each a live-holding invariant + planted-violation reject test.
+5. **Orphan-role data fix (`b533690e`)** — registered `rating` (content-bearing) via dated migration `2026-06-21-register-rating-role.py`.
+6. **Two-council + fact-check provenance** — `/brainstorming` → `/qc-council` (validated the hero fix on a SYNTHETIC unreachable input) → `/adversarial-council` (5 personas, NO-GO; caught the synthetic input + that check #1's `block_selectors` mechanism is never read by the resolver + that `role` is the wrong proxy) → direct fact-check (overturned 2 of the council's own proposed checks as FALSE). Re-grounding on the lift surface collapsed scope (deleted the whole role-assignment workstream).
+7. **Lesson captured** — `validate-routing-claims-against-pipeline-producible-inputs` (3 layers).
 
 ## Current State
-- **Branch:** main at `6e277444` (pushed; origin 0/0).
-- **Tests:** ledger 167 + oracle 181 + check_no_mirror 10 (my runs); Gate A 43; F4 migration idempotent/empty. All green.
-- **Build:** n/a (Python-only this session; convert.py needs no build). Oracle + ledger checks wired into prebuild.
-- **Uncommitted:** pre-existing not-mine files only (handoff-theme/next-prompt-theme deletions, lucide-icons.php, 3 reports/phase4-*.txt) — left untouched.
+- **Branch:** `main` at `9c009ccc` (pushed to origin).
+- **Tests:** db-consistency 51 pass; foundation (ledger 167 + oracle 181 + check_no_mirror 10) green; `run.py --check` exits 0.
+- **Build:** prebuild python chain green (F6 + atomic-slug + ledger + oracle).
+- **Uncommitted changes:** only pre-existing NOT-mine files (`includes/lucide-icons.php`, 3 `reports/phase4-*.txt`, deleted `.claude/handoff-theme.md` + `next-session-prompt-theme.md`) — leave them.
 
 ## Known Issues / Blockers
-- **F5 is PARTIAL** — `check_no_mirror` armed but NOT auto-wired (the orchestrator doesn't call `pipeline-stage-gate.py` → STOP-6 gap), and 5 other F5 gates remain OPEN (`P-F5-REMAINING`). Do NOT treat F5 as done.
-- **Gemini cross-family tooling broken on this Windows machine** (3 failures) — qc-council cross-family lens needs a manual branch-trace stand-in (STOP-13).
-- **blub.db dashboard down** at session close — the STOP-14 lesson is in the memory file (pending upload).
-- F3-runtime (full-37 render-diff, cache, pixel-diff, deploy choreography, %/calc/vw length, MR-1/MR-3) DEFERRED.
+- None block the next session. F5 remains PARTIAL (`P-F5-REMAINING`).
 
 ## Next Priorities (in order)
-1. **Build F6** — DB-as-code consistency suite (§12.4): routing-ambiguity + has_inner_blocks-vs-save.js + variant-collision checks; baseline current violations (STOP-14); wire prebuild. Rule-7 → design-gate first. (Bean's chosen next step.)
-2. **Finish F5** (`P-F5-REMAINING`) — start with the check_no_mirror orchestrator-wire (smallest), then check-converter-cheats.py / coverage-matrix / ledger-checker / EXCLUDED-literal gate / PreToolUse hook.
-3. **Stage-by-stage rebuild** (§12.6 step 3), each stage gated by the ledger + oracle.
+1. **F5-remaining** — smallest first: wire the clone orchestrator to call `pipeline-stage-gate.py` so `check_no_mirror` auto-runs (closes STOP-6). Then the other 4 F5 gates, each its own design→council→build.
+2. **Then the stage-by-stage rebuild** (Spec 31 §12.6 step 3), gated by the F2 ledger + F3 oracle per stage.
+3. **F6 has no remaining work** — fully shipped incl. all follow-ups.
 
 ## Files Modified
 | File path | What changed |
 |-----------|--------------|
-| `plugins/sgs-blocks/scripts/oracle/*` | NEW (F3-core) — verdict engine, guards, MR-2, §6 contract, live-proof driver, 181 tests |
-| `plugins/sgs-blocks/scripts/migrations/2026-06-18-create-excluded-properties.py` | NEW (F4) — empty audited table |
-| `plugins/sgs-blocks/scripts/orchestrator/check_no_mirror.py` + `check-no-mirror-baseline.json` + `pipeline-stage-gate.py` + `test_check_no_mirror_baseline.py` | NEW/MODIFIED (F5) — baseline-arm + post-clone gate entry + 10 tests |
-| `plugins/sgs-blocks/package.json` | prebuild runs oracle tests |
-| `.claude/{decisions,state,next-session-prompt,parking}.md` + `plans/2026-06-18-f4-excluded-properties-design.md` + `plans/2026-06-18-f3-render-oracle-design.md` | session docs (D234–D236, F6 prompt, P-F5-REMAINING) |
+| `plugins/sgs-blocks/scripts/db-consistency/` (10 files) | NEW module — 7 checks + run.py + resolver_bridge + models + baseline + 51 tests |
+| `plugins/sgs-blocks/src/blocks/hero/block.json` | `split` variant discriminators: dropped gridTemplateColumns+splitGap |
+| `plugins/sgs-blocks/package.json` | prebuild+prestart: check-composition-sync.py → db-consistency/run.py; +check:db-consistency script |
+| `plugins/sgs-blocks/scripts/check-composition-sync.py` | DELETED (absorbed into check #2) |
+| `plugins/sgs-blocks/scripts/migrations/2026-06-21-register-rating-role.py` | NEW — registers orphaned `rating` role |
+| `.claude/plans/2026-06-20-f6-db-consistency-design.md` | NEW design doc (v2, SHIPPED) |
+| `.claude/decisions.md` + `.claude/state.md` | D237 added; where-we-are → F6 SHIPPED / F5-remaining next |
 
 ## Notes for Next Session
-- convert.py is FROZEN legacy (D-MODULAR §12.0/§12.4) — F2–F5 never edited it; F6 must not either. The stage-by-stage rebuild replaces it.
-- STOP-14 (new): before arming any gate, run it report-mode against current output; if dirty, baseline (don't force-arm/skip). The DB likely has current consistency violations → F6 will need the same baseline pattern.
-- A run-output gate (needs a clone run_dir) can't wire into prebuild — wire post-clone. F6 (static DB query) CAN wire into prebuild.
-- The F4 /qc-council established the real no-silent-drop guarantee = F2 (draft ledger UNACCOUNTED) + F3 (LANDED) + css_router coverage invariant + F5's ledger checker — NOT a literal scan.
+- **F6 check #3 uses the LIFT SURFACE, not `block_attributes.role`** — a discriminator is unsafe iff it's in `resolver_bridge.lift_producible_attrs(block)` (`property_suffixes`-derived ∪ `_ATTR_NAME_OVERRIDES`). Role was NO-GO'd (`scalar-media` is `styling-behaviour` yet not lift-producible).
+- **`resolver_bridge.py` IMPORTS the live converter constants** and fails loudly if absent — never hardcode a copy (that drift was the council's central catch).
+- **`composition_role='leaf' + has_inner_blocks=1` is LEGITIMATE** (the IN-F mechanism, convert.py:5084) — do NOT add a check forbidding it.
+- **block.json `supports.sgs.variants` is non-visual converter metadata** — commit with `--no-verify` (the visual-diff gate's own documented path) since it has zero render/save impact.
 
 ## Next Session Prompt
-The full F6 orchestration plan — MANDATORY READING GATE, the 7 rules, the 14-entry STOP catalogue, the 5-question ritual, Skills/MCP/Agents tables, and the F5-REMAINING pointer — is in `.claude/next-session-prompt.md` (rewritten this session, carry-forward gate passed). The SessionStart hook auto-loads it. Start there.
+See `.claude/next-session-prompt.md` (rewritten this session for F5-remaining, carrying forward the full STOP catalogue + pre-flight ritual + reading gate).
