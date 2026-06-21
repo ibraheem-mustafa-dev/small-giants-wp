@@ -1,0 +1,12 @@
+{
+  "hash": "cd4ff8df1a92850b54eef06a826d2273147d75801fdc360dabfde3bdc7f7f74e",
+  "signatures": [
+    "excl:orchestrator\\converter_v2\\convert.py:1293:inline_equality:width",
+    "excl:orchestrator\\converter_v2\\convert.py:1295:inline_equality:max-width",
+    "excl:orchestrator\\converter_v2\\convert.py:1316:inline_equality:width",
+    "excl:orchestrator\\converter_v2\\convert.py:1318:inline_equality:max-width",
+    "excl:orchestrator\\converter_v2\\convert.py:1957:membership:effective_from_ancestor",
+    "excl:orchestrator\\converter_v2\\convert.py:1974:membership:leaf_base",
+    "excl:orchestrator\\converter_v2\\convert.py:2502:membership:_area_excluded"
+  ]
+}
