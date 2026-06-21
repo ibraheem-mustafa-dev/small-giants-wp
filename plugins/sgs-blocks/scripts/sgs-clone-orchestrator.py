@@ -67,6 +67,11 @@ FUNCTIONALITY_BULK_APPLY_SCRIPT = ORCHESTRATOR_DIR / "functionality-bulk-apply.p
 MEDIA_SIDELOAD_SCRIPT = ORCHESTRATOR_DIR / "media-sideload.py"
 WP_INTEGRATION_SCRIPT = ORCHESTRATOR_DIR / "wp_integration.py"
 CRITICAL_FIX_VERIFICATION_SCRIPT = ORCHESTRATOR_DIR / "critical-fix-verification.py"
+# R-22-15 post-clone structural gate (anti-mirror, baseline-aware). Runs on the
+# converter output (extract.json) the moment Stage 9 has written it, BEFORE any
+# media-sideload / deploy / +REGISTER tail, so a mirror-cheat clone halts before
+# it can reach the live page. Wired into main() after stage_9_report().
+PIPELINE_STAGE_GATE_SCRIPT = ORCHESTRATOR_DIR / "pipeline-stage-gate.py"
 
 # ---------------------------------------------------------------------------
 # 5.3.x — wp-* CLI paths (advisory integration, soft-fail on any failure)
@@ -2166,6 +2171,15 @@ def main():
              "visual_qa + autonomy_decision + deliverable). Useful for diagnostic runs.",
     )
     parser.add_argument(
+        "--skip-stage-gate", action="store_true",
+        help="Skip the R-22-15 anti-mirror post-clone gate (pipeline-stage-gate.py). "
+             "By default the gate runs on the converter output (extract.json) right "
+             "after Stage 9 and HARD-HALTS the clone before deploy/register if a NEW "
+             "mirror-cheat violation (draft-class container or bound sourceMode not in "
+             "the baseline) is found. Use this flag only for diagnostic runs where you "
+             "need to inspect the output without halting. (default: False — gate runs)",
+    )
+    parser.add_argument(
         "--enforce-autonomy-gate", action="store_true",
         help="Force the autonomy gate ON even in --mode draft. By default draft runs "
              "(dev/verification) auto-skip the gate so the deploy stays inspectable; "
@@ -2378,6 +2392,38 @@ def main():
         print(f"[stage-9b] autonomy: {autonomy.get('scaffolded_count', 0)} scaffolded ({autonomy.get('promoted_count', 0)} promoted) from {autonomy.get('candidates_seen', 0)} candidates")
 
     # ------------------------------------------------------------------
+    # R-22-15 ANTI-MIRROR GATE (STOP-6 wire — 2026-06-21).
+    # Stage 9 has just written extract.json. Run the post-clone structural
+    # gate on the converter output NOW, before media-sideload / deploy /
+    # +REGISTER, so a clone that introduced a NEW draft-class container or a
+    # bound sourceMode (a "mirror cheat") halts before it can reach the live
+    # page. The gate is baseline-aware: the 13 known legacy violations are
+    # grandfathered; only NEW violations cause a hard halt. It reads
+    # extract.json deterministically, so it runs identically in every --mode
+    # (unlike the autonomy gate, which needs a real visual-QA signal).
+    # Pass --skip-stage-gate to opt out for diagnostic runs.
+    # ------------------------------------------------------------------
+    if args.skip_stage_gate:
+        print("[stage-gate] skipped per --skip-stage-gate")
+    else:
+        gate_proc = subprocess.run(
+            [sys.executable, str(PIPELINE_STAGE_GATE_SCRIPT), str(run_dir)],
+        )
+        if gate_proc.returncode != 0:
+            print(
+                "[stage-gate] HALTED: the anti-mirror gate found a NEW mirror-cheat "
+                "violation in the converter output (a draft-class container or a "
+                "bound sourceMode that is not in the baseline). The clone was NOT "
+                "deployed or registered. Fix the converter so it converts the "
+                "section to native block attributes instead of mirroring the draft "
+                "wrapper, then re-run. If the violation is genuinely intended, "
+                "regenerate the baseline with check_no_mirror.py --update-baseline.",
+                file=sys.stderr,
+            )
+            sys.exit(gate_proc.returncode)
+        print("[stage-gate] anti-mirror gate passed (no NEW violations).")
+
+    # ------------------------------------------------------------------
     # Phase 6 v2 Step 4i — Apply-module surface (between Stage 7 compose
     # and Stage 8 autonomy-gate / deploy). All three apply modules are
     # operator-gated by FR21 contract; they stage + emit deploy commands
@@ -2572,7 +2618,9 @@ def main():
             target_id = int(target_id_str)
             if target_kind not in ("page", "post"):
                 raise ValueError(f"--deploy-target kind must be 'page' or 'post', got {target_kind!r}")
-            import subprocess
+            # subprocess is imported at module scope (line ~36); no local re-import
+            # (a local `import subprocess` here would make the name function-local
+            # for the whole of main() and shadow the module import upstream).
             _upload_script = Path(__file__).parent / "orchestrator" / "upload_and_patch.py"
             # Pass --client so Stage 10 diffs (or pushes, with --push-theme-snapshot)
             # the matching theme.json snapshot at sites/<client>/theme-snapshot.json
