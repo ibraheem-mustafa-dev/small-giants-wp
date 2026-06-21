@@ -137,63 +137,108 @@ def _scan_convert_py_for_parallel_bp(path: Path) -> tuple[bool, list[tuple[int, 
     return map_detector.found_bp_map, unique_ints
 
 
-def run(convert_py: Path | None = None) -> list[Violation]:
-    """Check for parallel breakpoint vocabulary in convert.py.
+def _scan_file_for_bp_map_symbol(path: Path) -> bool:
+    """Return True if path contains a _BP_SUFFIX_MAP dict assignment."""
+    try:
+        source = path.read_text(encoding="utf-8", errors="replace")
+        tree = ast.parse(source, filename=str(path))
+    except (SyntaxError, OSError):
+        return False
+    detector = _BPMapDetector()
+    detector.visit(tree)
+    return detector.found_bp_map
+
+
+def run(
+    convert_py: Path | None = None,
+    orchestrator_dir: Path | None = None,
+) -> list[Violation]:
+    """Check for parallel breakpoint vocabulary.
+
+    (a) Scans the ENTIRE orchestrator/ tree for _BP_SUFFIX_MAP-named dict
+        literals.  The original spec named convert.py as the known offender, but
+        the same violation class can appear in modular files (db_lookup.py etc.)
+        so the scan is tree-wide.  convert_py is kept as an override for tests.
+
+        When convert_py is explicitly provided but orchestrator_dir is not, the
+        tree scan uses the directory that contains convert_py.  This keeps test
+        isolation correct — a test that passes a tmp_path/convert.py should not
+        accidentally scan the real orchestrator/.
+
+    (b) Scans ONLY convert.py for raw integer literals in the breakpoint range
+        640–1100 (whole-tree integer scan produces too many false positives from
+        non-breakpoint numeric constants; convert.py is the known offender for
+        this sub-check).
 
     Returns a list of Violation objects.
     """
-    target = convert_py or _CONVERT_PY
     violations: list[Violation] = []
 
-    if not target.exists():
-        return violations
+    # --- (a) _BP_SUFFIX_MAP symbol — whole orchestrator tree ---
+    if orchestrator_dir is not None:
+        scan_dir = orchestrator_dir
+    elif convert_py is not None:
+        # Test mode: scope tree scan to the same directory as the supplied file.
+        scan_dir = convert_py.parent
+    else:
+        scan_dir = _ORCHESTRATOR
+    if scan_dir.exists():
+        for py_path in sorted(scan_dir.rglob("*.py")):
+            # Skip test files
+            if (
+                py_path.name.startswith("test_")
+                or "_tests" in [p.name for p in py_path.parents]
+                or "tests" in [p.name for p in py_path.parents]
+            ):
+                continue
+            file_rel = _rel(py_path)
+            if _scan_file_for_bp_map_symbol(py_path):
+                key = parallel_bp_key(file_rel, _BP_MAP_SYMBOL)
+                detail = (
+                    f"Hardcoded '{_BP_MAP_SYMBOL}' dict found in {file_rel}. "
+                    f"This parallel breakpoint vocabulary must be replaced by a DB query: "
+                    f"SELECT suffix FROM modifier_suffixes WHERE kind='breakpoint'. "
+                    f"(Spec 31 §7a check 4 / §6 goal 3.)"
+                )
+                fix = (
+                    f"Delete '{_BP_MAP_SYMBOL}' from {file_rel}. "
+                    f"Replace every _BP_SUFFIX_MAP.get(key) call with a call to "
+                    f"db.breakpoint_suffix_rules() so the breakpoint vocabulary is DB-driven. "
+                    f"This is a LEGACY violation — it is baselined and will vanish when "
+                    f"the modular rebuild replaces these code paths."
+                )
+                violations.append(Violation(
+                    check="parallel_bp",
+                    file=file_rel,
+                    detail=detail,
+                    fix=fix,
+                    key=key,
+                ))
 
-    file_rel = _rel(target)
-    has_bp_map, bp_ints = _scan_convert_py_for_parallel_bp(target)
-
-    # (a) _BP_SUFFIX_MAP symbol
-    if has_bp_map:
-        key = parallel_bp_key(file_rel, _BP_MAP_SYMBOL)
-        detail = (
-            f"Hardcoded '{_BP_MAP_SYMBOL}' dict found in {file_rel}. "
-            f"This parallel breakpoint vocabulary must be replaced by a DB query: "
-            f"SELECT suffix FROM modifier_suffixes WHERE kind='breakpoint'. "
-            f"(Spec 31 §7a check 4 / §6 goal 3.)"
-        )
-        fix = (
-            f"Delete '{_BP_MAP_SYMBOL}' from {file_rel}. "
-            f"Replace every _BP_SUFFIX_MAP.get(key) call with a call to "
-            f"db.breakpoint_suffix_rules() so the breakpoint vocabulary is DB-driven. "
-            f"This is a LEGACY violation in the frozen convert.py — it is baselined and "
-            f"will vanish when the modular rebuild replaces these code paths."
-        )
-        violations.append(Violation(
-            check="parallel_bp",
-            file=file_rel,
-            detail=detail,
-            fix=fix,
-            key=key,
-        ))
-
-    # (b) Integer literals in breakpoint range
-    for val, line in bp_ints:
-        key = parallel_bp_key(file_rel, str(val))
-        detail = (
-            f"Hardcoded breakpoint integer {val} in {file_rel} "
-            f"(approx. line {line}), outside a db.breakpoint_suffix_rules() call. "
-            f"Device-tier breakpoints must come from modifier_suffixes, not literals."
-        )
-        fix = (
-            f"Replace the hardcoded integer {val} in {file_rel} with a DB-driven "
-            f"breakpoint value from db.breakpoint_suffix_rules(). "
-            f"This is a LEGACY violation in the frozen convert.py — it is baselined."
-        )
-        violations.append(Violation(
-            check="parallel_bp",
-            file=file_rel,
-            detail=detail,
-            fix=fix,
-            key=key,
-        ))
+    # --- (b) Integer literals in breakpoint range — convert.py only ---
+    target = convert_py or _CONVERT_PY
+    if target.exists():
+        file_rel = _rel(target)
+        _has_bp_map, bp_ints = _scan_convert_py_for_parallel_bp(target)
+        # (bp_map detection above already covered convert.py; only add integers here)
+        for val, line in bp_ints:
+            key = parallel_bp_key(file_rel, str(val))
+            detail = (
+                f"Hardcoded breakpoint integer {val} in {file_rel} "
+                f"(approx. line {line}), outside a db.breakpoint_suffix_rules() call. "
+                f"Device-tier breakpoints must come from modifier_suffixes, not literals."
+            )
+            fix = (
+                f"Replace the hardcoded integer {val} in {file_rel} with a DB-driven "
+                f"breakpoint value from db.breakpoint_suffix_rules(). "
+                f"This is a LEGACY violation in the frozen convert.py — it is baselined."
+            )
+            violations.append(Violation(
+                check="parallel_bp",
+                file=file_rel,
+                detail=detail,
+                fix=fix,
+                key=key,
+            ))
 
     return violations

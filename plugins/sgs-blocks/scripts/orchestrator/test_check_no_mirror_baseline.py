@@ -4,14 +4,16 @@ test_check_no_mirror_baseline.py — pytest suite for the --baseline / --update-
 additions to check_no_mirror.py.
 
 Covers:
-  (i)  Real run with committed baseline → exit 0 (all 13 violations grandfathered
-       via 10 unique keys).
-  (ii) Synthetic run with ONE new draft-class violation not in the baseline
-       → exit 1 with the NEW-violation message.
+  (i)   Real run with committed baseline → exit 0 (all legacy violations grandfathered).
+  (ii)  Synthetic run with ONE new draft-class violation not in the baseline
+        → exit 1 with the NEW-violation message.
   (iii) --report (no baseline) → always exit 0.
+  (iv)  Count-regression test: a (slug, class) pair baselined at N emitted N+1
+        times → exit 1 naming the count regression.
+  (v)   In-memory unit tests for count-aware baseline helpers.
 
 All tests are self-contained: they use a real extract.json from the committed
-pipeline-state run plus an in-memory/temp-dir synthetic extract.json.
+pipeline-state run plus in-memory/temp-dir synthetic extracts.
 No network or npm build required.
 
 Run:
@@ -41,8 +43,10 @@ _spec.loader.exec_module(_mod)
 # Convenience aliases
 main = _mod.main
 collect_violation_keys = _mod.collect_violation_keys
+collect_violation_counts = _mod.collect_violation_counts
 write_baseline = _mod.write_baseline
 load_baseline = _mod.load_baseline
+_compute_baseline_hash = _mod._compute_baseline_hash
 
 # ---------------------------------------------------------------------------
 # Paths to the committed run and baseline
@@ -230,7 +234,7 @@ def test_report_mode_exits_zero_with_violations(tmp_path):
 
 
 def test_update_baseline_writes_correct_keys(tmp_path):
-    """--update-baseline writes sorted, deterministic keys and exits 0."""
+    """--update-baseline writes count-aware baseline with hash and exits 0."""
     markup = (
         '<!-- wp:sgs/container {"className":"sgs-hero__ctas"} -->'
         '<!-- /wp:sgs/container -->'
@@ -244,10 +248,24 @@ def test_update_baseline_writes_correct_keys(tmp_path):
     assert rc == 0, "--update-baseline should exit 0."
     assert baseline_path.exists(), "Baseline file should have been written."
 
-    keys = json.loads(baseline_path.read_text(encoding="utf-8"))
-    assert keys == sorted(keys), "Baseline keys must be sorted."
-    assert "a:sgs/container:sgs-hero__ctas" in keys
-    assert "a:sgs/text:sgs-card__body" in keys
+    data = json.loads(baseline_path.read_text(encoding="utf-8"))
+    assert isinstance(data, dict), "New baseline format must be a JSON object."
+    assert "hash" in data, "New baseline must contain a 'hash' field."
+    assert "counts" in data, "New baseline must contain a 'counts' field."
+
+    counts = data["counts"]
+    assert "a:sgs/container:sgs-hero__ctas" in counts
+    assert "a:sgs/text:sgs-card__body" in counts
+    # Each key should have been emitted exactly once in this markup
+    assert counts["a:sgs/container:sgs-hero__ctas"] == 1
+    assert counts["a:sgs/text:sgs-card__body"] == 1
+
+    # Keys should be in sorted order in the JSON
+    assert list(counts.keys()) == sorted(counts.keys()), "Baseline counts keys must be sorted."
+
+    # Hash should be self-consistent
+    expected_hash = _compute_baseline_hash(counts)
+    assert data["hash"] == expected_hash, "Stored hash must match computed hash of counts."
 
 
 def test_collect_violation_keys_deduplicates():
@@ -260,6 +278,20 @@ def test_collect_violation_keys_deduplicates():
     keys = collect_violation_keys(viol_a, [])
     assert len(keys) == 2, "Duplicate (slug, class) pairs must be merged."
     assert keys == sorted(keys), "Keys must be sorted."
+
+
+def test_collect_violation_counts_tracks_occurrences():
+    """collect_violation_counts preserves occurrence counts, not just unique keys."""
+    viol_a = [
+        {"block": "sgs/container", "violating_class": "sgs-hero__ctas"},
+        {"block": "sgs/container", "violating_class": "sgs-hero__ctas"},  # same key twice
+        {"block": "sgs/text", "violating_class": "sgs-card__body"},
+    ]
+    counts = collect_violation_counts(viol_a, [])
+    assert counts["a:sgs/container:sgs-hero__ctas"] == 2, (
+        "The same (slug, class) pair emitted twice must count as 2."
+    )
+    assert counts["a:sgs/text:sgs-card__body"] == 1
 
 
 def test_empty_baseline_blocks_all(tmp_path):
@@ -285,3 +317,116 @@ def test_no_violations_exits_zero_no_baseline(tmp_path):
     run_dir = _make_minimal_run(tmp_path, markup)
     rc = main([str(run_dir), "--enforce"])
     assert rc == 0, "No violations → exit 0 in --enforce mode."
+
+
+# ---------------------------------------------------------------------------
+# Count-regression tests (STOP-15 soundness fix)
+# ---------------------------------------------------------------------------
+
+def test_count_regression_detected(tmp_path, capsys):
+    """
+    Core STOP-15 test: a (slug, class) pair baselined at count=1 but emitted
+    TWICE in the current run must cause exit 1 (count regression).
+
+    This is the bug the count-aware baseline was added to catch.
+    """
+    # Baseline: sgs-hero__ctas on sgs/container is allowed ONCE.
+    baseline_path = tmp_path / "baseline.json"
+    write_baseline(baseline_path, {"a:sgs/container:sgs-hero__ctas": 1})
+
+    # Run: the SAME class is emitted TWICE (regression).
+    markup = (
+        '<!-- wp:sgs/container {"className":"sgs-hero__ctas"} -->'
+        '<!-- /wp:sgs/container -->'
+        '<!-- wp:sgs/container {"className":"sgs-hero__ctas"} -->'   # second instance
+        '<!-- /wp:sgs/container -->'
+    )
+    run_dir = _make_minimal_run(tmp_path, markup)
+
+    rc = main([str(run_dir), "--enforce", "--baseline", str(baseline_path)])
+    assert rc == 1, (
+        "Count regression (2 > 1 allowed) must cause exit 1."
+    )
+
+    captured = capsys.readouterr()
+    combined = captured.out + captured.err
+    assert "sgs-hero__ctas" in combined, (
+        "The regressing class must appear in the output."
+    )
+    # Output should mention current vs allowed counts
+    assert "current=2" in combined or "current = 2" in combined or "[2/" in combined, (
+        "Output must report the current count that exceeded the baseline."
+    )
+    assert "NEW mirror violation not in the baseline" in combined, (
+        "The NEW-violation message must appear for a count regression."
+    )
+
+
+def test_count_within_baseline_passes(tmp_path):
+    """A (slug, class) pair emitted exactly as many times as baselined → exit 0."""
+    baseline_path = tmp_path / "baseline.json"
+    write_baseline(baseline_path, {"a:sgs/container:sgs-hero__ctas": 2})
+
+    markup = (
+        '<!-- wp:sgs/container {"className":"sgs-hero__ctas"} -->'
+        '<!-- /wp:sgs/container -->'
+        '<!-- wp:sgs/container {"className":"sgs-hero__ctas"} -->'
+        '<!-- /wp:sgs/container -->'
+    )
+    run_dir = _make_minimal_run(tmp_path, markup)
+
+    rc = main([str(run_dir), "--enforce", "--baseline", str(baseline_path)])
+    assert rc == 0, (
+        "Emitting a class exactly as many times as baselined must not block."
+    )
+
+
+def test_baseline_tamper_detected(tmp_path):
+    """A hand-edited baseline (count changed without recomputing hash) → exit 2."""
+    baseline_path = tmp_path / "baseline.json"
+    # Write a legitimate baseline first
+    write_baseline(baseline_path, {"a:sgs/container:sgs-hero__ctas": 1})
+
+    # Now hand-edit the counts without recomputing the hash → tampered
+    data = json.loads(baseline_path.read_text(encoding="utf-8"))
+    data["counts"]["a:sgs/container:sgs-hero__ctas"] = 99  # tampered
+    baseline_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+    markup = (
+        '<!-- wp:sgs/container {"className":"sgs-hero__ctas"} -->'
+        '<!-- /wp:sgs/container -->'
+    )
+    run_dir = _make_minimal_run(tmp_path, markup)
+
+    rc = main([str(run_dir), "--enforce", "--baseline", str(baseline_path)])
+    assert rc == 2, (
+        "A tampered baseline (hash mismatch) must cause exit 2 (usage error)."
+    )
+
+
+def test_load_baseline_legacy_list_migrated(tmp_path):
+    """Legacy flat-list baseline is migrated in-memory to a count-1 map."""
+    baseline_path = tmp_path / "legacy-baseline.json"
+    baseline_path.write_text(
+        json.dumps(["a:sgs/container:sgs-hero__ctas", "a:sgs/text:sgs-card__body"]),
+        encoding="utf-8",
+    )
+    counts = load_baseline(baseline_path)
+    assert isinstance(counts, dict), "load_baseline must return a dict."
+    assert counts["a:sgs/container:sgs-hero__ctas"] == 1
+    assert counts["a:sgs/text:sgs-card__body"] == 1
+
+
+def test_write_baseline_dict_input(tmp_path):
+    """write_baseline accepts a count dict and writes a valid count-aware file."""
+    baseline_path = tmp_path / "out.json"
+    counts = {"a:sgs/container:sgs-hero__ctas": 3, "a:sgs/text:sgs-card__body": 1}
+    write_baseline(baseline_path, counts)
+
+    data = json.loads(baseline_path.read_text(encoding="utf-8"))
+    assert data["counts"] == dict(sorted(counts.items()))
+    assert data["hash"] == _compute_baseline_hash(counts)
+
+    # Round-trip: load_baseline must return the same counts
+    loaded = load_baseline(baseline_path)
+    assert loaded == counts

@@ -55,30 +55,32 @@ def _deny(reason: str) -> int:
     return 0
 
 
-def main() -> int:
-    try:
-        raw = sys.stdin.read()
-        data = json.loads(raw) if raw.strip() else {}
-    except Exception:
-        return 0  # fail-open
+# Match `git commit` even with global flags between `git` and `commit`
+# (e.g. `git -C <path> commit`, `git --no-pager commit`, `git -c k=v commit`).
+# A bare `\bgit\s+commit\b` missed all of those, letting a commit slip ungated.
+_GIT_COMMIT = re.compile(
+    r"\bgit\b(?:\s+(?:-C\s+\S+|--git-dir(?:=\S+|\s+\S+)|--work-tree(?:=\S+|\s+\S+)"
+    r"|-c\s+\S+|--no-pager|--paginate|--no-replace-objects|--literal-pathspecs))*"
+    r"\s+commit\b"
+)
 
-    if data.get("tool_name") != "Bash":
-        return 0
-    cmd = (data.get("tool_input") or {}).get("command", "")
-    if not isinstance(cmd, str) or not cmd:
-        return 0
 
-    # Only an actual `git commit` (not commit-tree / log / etc.).
-    if not re.search(r"\bgit\s+commit\b", cmd):
-        return 0
+def _is_gated_commit(cmd: str) -> bool:
+    """True iff this Bash command is a `git commit` the gate should run on."""
+    if not _GIT_COMMIT.search(cmd):
+        return False
     # `--amend` is a distinct, usually-intentional op — don't gate it (avoid friction).
-    if re.search(r"\bgit\s+commit\b[^\n]*--amend\b", cmd):
-        return 0
-    # Conscious bypass.
-    if "[gates-ok" in cmd:
-        return 0
+    if re.search(r"--amend\b", cmd):
+        return False
+    # Conscious bypass — REQUIRES a non-empty reason: `[gates-ok:<reason>]`.
+    # A bare `[gates-ok` is rejected (no free pass without a recorded reason).
+    if re.search(r"\[gates-ok:[^\]]+\]", cmd):
+        return False
+    return True
 
-    # Run each gate's --check. Collect failures (non-zero = NEW violation).
+
+def _run_gates() -> list[str]:
+    """Run each present gate's --check; return a list of failure description lines."""
     failures: list[str] = []
     for label, rel in _GATES:
         script = _SCRIPTS / rel
@@ -103,7 +105,25 @@ def main() -> int:
             tail = (proc.stdout or "").strip().splitlines()
             snippet = tail[-1] if tail else "(see `python plugins/sgs-blocks/scripts/" + rel + " --report`)"
             failures.append(f"  • {label}: NEW violation — {snippet}")
+    return failures
 
+
+def main() -> int:
+    try:
+        raw = sys.stdin.read()
+        data = json.loads(raw) if raw.strip() else {}
+    except Exception:
+        return 0  # fail-open
+
+    if data.get("tool_name") != "Bash":
+        return 0
+    cmd = (data.get("tool_input") or {}).get("command", "")
+    if not isinstance(cmd, str) or not cmd:
+        return 0
+    if not _is_gated_commit(cmd):
+        return 0
+
+    failures = _run_gates()
     # Only DENY when a gate reported an actual NEW violation (returncode != 0).
     real_blocks = [f for f in failures if "could not run" not in f]
     if real_blocks:

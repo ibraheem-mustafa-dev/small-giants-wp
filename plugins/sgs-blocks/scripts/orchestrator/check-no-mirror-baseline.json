@@ -1,12 +1,15 @@
-[
-  "a:sgs/container:sgs-brand__content",
-  "a:sgs/container:sgs-gift-section__cards",
-  "a:sgs/container:sgs-product-card__body",
-  "a:sgs/container:sgs-product-card__price-row",
-  "a:sgs/container:sgs-social-proof__trustpilot-bar",
-  "a:sgs/label:sgs-product-card__tag--trial",
-  "a:sgs/text:sgs-product-card__price-note",
-  "a:sgs/text:sgs-social-proof__trustpilot-logo",
-  "a:sgs/text:sgs-social-proof__trustpilot-stars",
-  "a:sgs/text:sgs-social-proof__trustpilot-text"
-]
+{
+  "hash": "264c89ea6f53514fac933845b74329255bce06e90ba6132d471f48966c8a807c",
+  "counts": {
+    "a:sgs/container:sgs-brand__content": 1,
+    "a:sgs/container:sgs-gift-section__cards": 1,
+    "a:sgs/container:sgs-product-card__body": 2,
+    "a:sgs/container:sgs-product-card__price-row": 2,
+    "a:sgs/container:sgs-social-proof__trustpilot-bar": 1,
+    "a:sgs/label:sgs-product-card__tag--trial": 1,
+    "a:sgs/text:sgs-product-card__price-note": 2,
+    "a:sgs/text:sgs-social-proof__trustpilot-logo": 1,
+    "a:sgs/text:sgs-social-proof__trustpilot-stars": 1,
+    "a:sgs/text:sgs-social-proof__trustpilot-text": 1
+  }
+}

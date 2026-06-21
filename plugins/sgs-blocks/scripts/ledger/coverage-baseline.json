@@ -1,4 +1,26 @@
-[
-  "mamas-trust-bar-real|.sgs-trust-bar__badge[data-pending=\"true\"]|display|Base",
-  "mamas-trust-bar-real|.sgs-trust-bar__badge[hidden]|display|Base"
-]
+{
+  "hash": "b074f81ac210d3e1801bf6c765050edce8ef9b4273ef1463e87cd26c4e21e206",
+  "keys": [
+    "mamas-trust-bar-real|.sgs-trust-bar__badge[data-pending=\"true\"]|display|Base",
+    "mamas-trust-bar-real|.sgs-trust-bar__badge[hidden]|display|Base",
+    "mamas-trust-bar-real|.sgs-trust-bar__inner|grid-template-columns|Base",
+    "mamas-trust-bar-real|.sgs-trust-bar__inner|grid-template-columns|Other:(min-width: 600px)",
+    "mamas-trust-bar-real|.sgs-trust-bar__text|font-size|Base",
+    "mamas-trust-bar-real|.sgs-trust-bar__text|font-size|Desktop",
+    "rt-background-url|.sgs-cta-section--bg|padding|Base",
+    "rt-background-url|.sgs-cta-section--bg|padding|Mobile",
+    "rt-media-600|.sgs-feature-grid__inner|gap|Base",
+    "rt-media-600|.sgs-feature-grid__inner|gap|Other:(max-width: 600px)",
+    "rt-media-600|.sgs-feature-grid__inner|grid-template-columns|Base",
+    "rt-media-600|.sgs-feature-grid__inner|grid-template-columns|Mobile",
+    "rt-media-600|.sgs-feature-grid__inner|grid-template-columns|Other:(max-width: 600px)",
+    "sgs-hero|.sgs-hero|padding|Base",
+    "sgs-hero|.sgs-hero|padding|Mobile",
+    "sgs-media|.sgs-media__image|border-radius|Base",
+    "sgs-media|.sgs-media__image|border-radius|Mobile",
+    "sgs-media|.sgs-media__image|max-width|Base",
+    "sgs-media|.sgs-media__image|max-width|Mobile",
+    "sgs-trust-bar|.sgs-trust-bar__inner|grid-template-columns|Base",
+    "sgs-trust-bar|.sgs-trust-bar__inner|grid-template-columns|Other:(min-width: 600px)"
+  ]
+}

@@ -110,7 +110,14 @@ def _looks_like_css_prop(s: str) -> bool:
 
 
 def _is_css_prop_to_attr_dict(node: ast.Dict) -> bool:
-    """Heuristic: at least half the key→value pairs are css-prop → attr-name."""
+    """Heuristic: at least half the key→value pairs are css-prop → attr-name.
+
+    Keys may be:
+    - ast.Constant str  — simple string key e.g. 'grid-template-columns'
+    - ast.Tuple         — composite key e.g. ("grid-template-columns", "Columns")
+                          whose FIRST element is a CSS-property string.  This is the
+                          shape used by _SUFFIX_ATTR_OVERRIDES and _ATTR_NAME_OVERRIDES.
+    """
     if not node.keys:
         return False
     total = 0
@@ -118,19 +125,38 @@ def _is_css_prop_to_attr_dict(node: ast.Dict) -> bool:
     for k, v in zip(node.keys, node.values):
         if k is None:
             continue
-        if not isinstance(k, ast.Constant) or not isinstance(k.value, str):
+
+        # --- determine the candidate CSS-property string from the key ---
+        css_candidate: str | None = None
+
+        if isinstance(k, ast.Constant) and isinstance(k.value, str):
+            # Simple string key.
+            css_candidate = k.value
+
+        elif isinstance(k, ast.Tuple) and k.elts:
+            # Tuple key: treat the first element as the CSS property if it is a
+            # string constant.  Handles (_SUFFIX_ATTR_OVERRIDES / _ATTR_NAME_OVERRIDES
+            # whose keys are ("grid-template-columns", "Columns") etc.)
+            first = k.elts[0]
+            if isinstance(first, ast.Constant) and isinstance(first.value, str):
+                css_candidate = first.value
+
+        if css_candidate is None:
             continue
+
         if not isinstance(v, ast.Constant) or not isinstance(v.value, str):
             # Allow tuple values (like prop_map's (top, sub, kind))
             if isinstance(v, ast.Tuple):
                 if all(isinstance(e, ast.Constant) for e in v.elts):
                     total += 1
-                    if _looks_like_css_prop(k.value):
+                    if _looks_like_css_prop(css_candidate):
                         matches += 1
             continue
+
         total += 1
-        if _looks_like_css_prop(k.value):
+        if _looks_like_css_prop(css_candidate):
             matches += 1
+
     if total == 0:
         return False
     return matches >= max(1, total // 2)

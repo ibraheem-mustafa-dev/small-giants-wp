@@ -41,6 +41,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib
 import importlib.util
 import json
@@ -98,24 +99,47 @@ _BASELINE_PATH = _SCRIPT_DIR / "cheat-gate-baseline.json"
 
 
 # ---------------------------------------------------------------------------
-# Baseline helpers
+# Baseline helpers — self-blessing protection (mirrors excluded-gate pattern)
 # ---------------------------------------------------------------------------
 
-def _load_baseline() -> set[str]:
+def _compute_hash(keys: list[str]) -> str:
+    """SHA-256 of the sorted, newline-joined key list."""
+    payload = "\n".join(sorted(keys)).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _load_baseline() -> tuple[set[str], str | None]:
+    """Return (baseline_keys, stored_hash).
+
+    stored_hash is None when the file is absent or in the legacy list format.
+    A missing hash means self-blessing protection cannot fire — the gate logs a
+    warning but does NOT fail outright (backwards-compatible with existing
+    baseline files).  Run --update-baseline once to seed the hash.
+    """
     if not _BASELINE_PATH.exists():
-        return set()
+        return set(), None
     try:
         data = json.loads(_BASELINE_PATH.read_text(encoding="utf-8"))
+        if isinstance(data, dict):
+            keys = set(data.get("keys", []))
+            stored_hash = data.get("hash")
+            return keys, stored_hash
+        # Legacy plain-list format — treat as no hash.
         if isinstance(data, list):
-            return set(data)
+            return set(data), None
     except Exception:  # noqa: BLE001
         pass
-    return set()
+    return set(), None
 
 
 def _save_baseline(keys: set[str]) -> None:
+    sorted_keys = sorted(keys)
+    data = {
+        "hash": _compute_hash(sorted_keys),
+        "keys": sorted_keys,
+    }
     _BASELINE_PATH.write_text(
-        json.dumps(sorted(keys), indent=2),
+        json.dumps(data, indent=2),
         encoding="utf-8",
     )
 
@@ -267,7 +291,7 @@ def main() -> int:
         if conn is not None:
             conn.close()
 
-    baseline = _load_baseline()
+    baseline, stored_hash = _load_baseline()
 
     if args.update_baseline:
         new_baseline = {v.key for v in violations}
@@ -280,6 +304,28 @@ def main() -> int:
     _print_report(violations, baseline)
 
     if args.check:
+        # --- self-blessing protection: verify hash integrity ---
+        if baseline and stored_hash is not None:
+            expected_hash = _compute_hash(list(baseline))
+            if expected_hash != stored_hash:
+                print(
+                    "\n[cheat-gate] GATE FAILED — baseline file has been TAMPERED.\n"
+                    f"  Stored hash:   {stored_hash}\n"
+                    f"  Expected hash: {expected_hash}\n"
+                    "  The baseline 'keys' list was modified without recomputing the hash.\n"
+                    "  This is the self-blessing protection.  Run --update-baseline to\n"
+                    "  produce a legitimate baseline from the current codebase.\n"
+                    "  Do NOT hand-edit the baseline JSON."
+                )
+                return 1
+        elif baseline and stored_hash is None:
+            # Legacy plain-list format — warn but don't fail.
+            print(
+                "[cheat-gate] WARNING: baseline is in the legacy list format (no hash). "
+                "Run --update-baseline to upgrade to the hashed format and enable "
+                "self-blessing protection."
+            )
+
         new_violations = [v for v in violations if v.key not in baseline]
         if new_violations:
             print(

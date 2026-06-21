@@ -51,6 +51,7 @@ DB path: ~/.claude/skills/sgs-wp-engine/sgs-framework.db
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sqlite3
@@ -106,31 +107,40 @@ def _extract_css_from_html(html: str) -> str:
 # D2/D0 re-parse: recover (selector, property) pairs from raw CSS text
 # ---------------------------------------------------------------------------
 
-def _extract_sel_props_from_raw_css(raw_css_lines: list[str]) -> set[tuple[str, str]]:
-    """Parse raw CSS text lines from D0/D2 buckets and recover (selector, property) pairs.
+def _extract_sel_props_from_raw_css(raw_css_lines: list[str]) -> set[tuple[str, str, str | None]]:
+    """Parse raw CSS text lines from D0/D2 buckets and recover (selector, property, media) triples.
 
     css_router emits D0 and D2 as raw CSS *strings* (one rule per entry), losing
     per-property granularity. This function re-parses them so we can mark
     individual declarations as BUCKETED.
 
+    The media component is the enclosing @media condition verbatim (e.g.
+    '(max-width: 767px)'), or None for rules that are not wrapped in @media.
+    Preserving it means that a Base declaration and a 600px declaration of the
+    SAME (selector, property) are distinct bucketed entries — FIX 1.
+
     Uses a lightweight regex-based approach (not tinycss2) to avoid a circular
     import and to keep this module self-contained.
     """
-    result: set[tuple[str, str]] = set()
+    result: set[tuple[str, str, str | None]] = set()
     for rule_text in raw_css_lines:
-        # Strip enclosing @media {...} to get at the qualified rules inside.
-        # Pattern: @media ... { selector { decls } }
-        media_inner = re.sub(
-            r"@(?:media|supports)[^{]+\{(.*)\}\s*$",
-            r"\1",
-            rule_text,
+        # Extract the enclosing @media condition verbatim (if any).
+        media_match = re.match(
+            r"@(?:media|supports)\s*([^{]+)\{(.*)\}\s*$",
+            rule_text.strip(),
             flags=re.DOTALL,
-        ).strip()
+        )
+        if media_match:
+            media_condition: str | None = media_match.group(1).strip()
+            inner_css = media_match.group(2).strip()
+        else:
+            media_condition = None
+            inner_css = rule_text
 
         # Match: selector { declaration; declaration; ... }
         matches = re.findall(
             r"([^{]+)\{([^}]*)\}",
-            media_inner or rule_text,
+            inner_css,
             re.DOTALL,
         )
         for raw_sel, raw_decls in matches:
@@ -140,7 +150,7 @@ def _extract_sel_props_from_raw_css(raw_css_lines: list[str]) -> set[tuple[str, 
                 if ":" in decl:
                     prop = decl.split(":", 1)[0].strip().lower()
                     if prop:
-                        result.add((selector, prop))
+                        result.add((selector, prop, media_condition))
     return result
 
 
@@ -148,18 +158,24 @@ def _extract_sel_props_from_raw_css(raw_css_lines: list[str]) -> set[tuple[str, 
 # Bucketed set extraction from css_router result
 # ---------------------------------------------------------------------------
 
-def _bucketed_sel_props(router_result: dict) -> set[tuple[str, str]]:
-    """Collect every (selector, property) pair that landed in ANY css_router bucket.
+def _bucketed_sel_props(router_result: dict) -> set[tuple[str, str, str | None]]:
+    """Collect every (selector, property, media) triple that landed in ANY css_router bucket.
+
+    The media component is the enclosing @media condition verbatim (same as
+    InputDecl.media), or None for base (no enclosing @media).  Adding the media
+    axis means a Base declaration and a breakpoint declaration of the SAME
+    (selector, property) are DISTINCT bucketed entries — FIX 1 (tier/media-blind
+    join bug).
 
     D1: per-property entries keyed by '<block_slug>:<selector>' → attr_path dicts.
-        Each entry carries 'css_prop' and the original selector is recoverable
-        from the section_key split.
-    D3: per-property dicts with 'source_class' and 'css_property'.
+        Each entry carries 'css_prop', 'media', and the original selector is
+        recoverable from the section_key split.
+    D3: per-property dicts with 'source_class', 'css_property', and 'media'.
         Note: source_class is the class *name*, not the full selector — we normalise
         to '.{source_class}' to match the declare_input selector format.
-    D0/D2: raw CSS text strings — re-parsed for granularity.
+    D0/D2: raw CSS text strings — re-parsed for (selector, property, media) triples.
     """
-    bucketed: set[tuple[str, str]] = set()
+    bucketed: set[tuple[str, str, str | None]] = set()
 
     # D1 — the richest bucket: exact (selector, property, media) info preserved.
     for section_key, attrs in router_result.get("d1", {}).items():
@@ -168,23 +184,26 @@ def _bucketed_sel_props(router_result: dict) -> set[tuple[str, str]]:
         _, _, selector = section_key.partition(":")
         for _attr_path, info in attrs.items():
             prop = info.get("css_prop", "").lower()
+            # D1 carries the media condition verbatim (None = base).
+            media: str | None = info.get("media", None)
             if selector and prop:
-                bucketed.add((selector, prop))
+                bucketed.add((selector, prop, media))
 
-    # D3 — gap candidates: property-level info preserved.
+    # D3 — gap candidates: property-level info and media preserved.
     for entry in router_result.get("d3", []):
         src_cls = entry.get("source_class", "")
         prop = entry.get("css_property", "").lower()
+        media = entry.get("media", None)
         if src_cls and prop:
             # source_class is the bare class name (e.g. 'sgs-hero'); normalise to selector.
             selector = f".{src_cls}"
-            bucketed.add((selector, prop))
+            bucketed.add((selector, prop, media))
 
-    # D0 — global/reset rules (raw CSS text).
+    # D0 — global/reset rules (raw CSS text) — re-parsed with media extracted.
     d0_sel_props = _extract_sel_props_from_raw_css(router_result.get("d0", []))
     bucketed.update(d0_sel_props)
 
-    # D2 — scoped wrapper CSS (raw CSS text).
+    # D2 — scoped wrapper CSS (raw CSS text) — re-parsed with media extracted.
     d2_sel_props = _extract_sel_props_from_raw_css(router_result.get("d2", []))
     bucketed.update(d2_sel_props)
 
@@ -334,12 +353,20 @@ def _analyse_fixture(
     # A declaration is excluded if its property is in the excluded set.
 
     # Step 4: UNACCOUNTED = DRAFT − (BUCKETED ∪ EXCLUDED).
+    # FIX 1: join on (selector, property, media) so a Base declaration and a
+    # breakpoint declaration of the same (sel, prop) are distinct keys on both
+    # sides.  Conservative rule: if the draft row's media is None (Base) we also
+    # accept a bucketed entry with media=None; if the media is set, only an entry
+    # with the SAME media string counts as a bucket hit.  This means a breakpoint
+    # declaration that is only bucketed at base (or at a different breakpoint) will
+    # be reported UNACCOUNTED — a false-positive is acceptable; a false-PASS is
+    # the bug being fixed.
     unaccounted: list[dict] = []
     for row in relevant_rows:
         sel = row.selector
         prop = row.property
 
-        is_bucketed = (sel, prop) in bucketed
+        is_bucketed = (sel, prop, row.media) in bucketed
         is_excluded = prop in excluded_props
 
         if not is_bucketed and not is_excluded:
@@ -412,6 +439,7 @@ def run_corpus(
 
     per_fixture: dict[str, dict] = {}
     all_unaccounted_keys: list[str] = []
+    integration_error_stems: list[str] = []
     total_relevant = 0
     total_unaccounted = 0
 
@@ -435,7 +463,11 @@ def run_corpus(
                 f"  [coverage_check] ERROR analysing fixture {stem!r}: {exc}",
                 file=sys.stderr,
             )
-            # Count as integration-impossible — document, do not silently skip.
+            # FIX 3: track integration_error fixtures explicitly so --check can
+            # fail on them.  A fixture that cannot be analysed is an UNVERIFIED
+            # surface, not a pass.  Assign a stable baseline key so genuinely
+            # expected errors can be grandfathered via --update-baseline.
+            error_key = f"__integration_error__|{stem}"
             per_fixture[stem] = {
                 "relevant_count": 0,
                 "bucketed_count": 0,
@@ -443,7 +475,9 @@ def run_corpus(
                 "unaccounted_count": 0,
                 "unaccounted": [],
                 "integration_error": str(exc),
+                "integration_error_key": error_key,
             }
+            integration_error_stems.append(stem)
             continue
 
         # Count excluded declarations (for reporting — does not change UNACCOUNTED).
@@ -469,28 +503,63 @@ def run_corpus(
         "total_relevant": total_relevant,
         "total_unaccounted": total_unaccounted,
         "all_unaccounted_keys": sorted(set(all_unaccounted_keys)),
+        "integration_error_stems": integration_error_stems,
     }
 
 
 # ---------------------------------------------------------------------------
-# Baseline helpers (mirrors F6 pattern)
+# Baseline helpers (mirrors excluded-gate pattern — FIX 2: hash protection)
 # ---------------------------------------------------------------------------
 
-def _load_baseline() -> set[str]:
+def _compute_hash(keys: list[str]) -> str:
+    """SHA-256 of the sorted, newline-joined key list.
+
+    Mirrors excluded-gate/run.py _compute_hash — any hand-edit to the baseline
+    JSON that alters the 'keys' list without recomputing the hash is caught by
+    --check (self-blessing protection).
+    """
+    payload = "\n".join(sorted(keys)).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _load_baseline() -> tuple[set[str], str | None]:
+    """Return (baseline_keys, stored_hash).
+
+    stored_hash is None if the baseline file does not exist, is malformed, or
+    was written in the legacy plain-list format (pre-FIX-2).  The caller MUST
+    check the hash before trusting the key set.
+    """
     if not _BASELINE_PATH.exists():
-        return set()
+        return set(), None
     try:
         data = json.loads(_BASELINE_PATH.read_text(encoding="utf-8"))
+        if isinstance(data, dict):
+            keys = set(data.get("keys", []))
+            stored_hash: str | None = data.get("hash")
+            return keys, stored_hash
+        # Legacy plain-list format written before FIX-2 — treat as no hash.
         if isinstance(data, list):
-            return set(data)
+            return set(data), None
     except Exception:
         pass
-    return set()
+    return set(), None
 
 
 def _save_baseline(keys: set[str]) -> None:
+    """Write the baseline in the hashed format.
+
+    Format: {"hash": "<sha256>", "keys": [...sorted...]}
+    The ONLY legitimate way to update the baseline is via --update-baseline,
+    which calls this function.  Any hand-edit that changes 'keys' without
+    recomputing 'hash' will be caught on the next --check run.
+    """
+    sorted_keys = sorted(keys)
+    data = {
+        "hash": _compute_hash(sorted_keys),
+        "keys": sorted_keys,
+    }
     _BASELINE_PATH.write_text(
-        json.dumps(sorted(keys), indent=2, ensure_ascii=False),
+        json.dumps(data, indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
 
@@ -641,10 +710,18 @@ def main(argv: list[str] | None = None) -> int:
 
     summary = run_corpus(fixtures_dir, conformance_dir, db_path)
 
-    baseline = _load_baseline()
+    # FIX 2: _load_baseline now returns (keys, hash) tuple.
+    baseline, stored_hash = _load_baseline()
 
     if args.update_baseline:
-        new_baseline = set(summary["all_unaccounted_keys"])
+        # Include both UNACCOUNTED declaration keys AND integration_error keys so
+        # genuinely expected errors can be grandfathered (FIX 3 + FIX 2).
+        error_keys: set[str] = {
+            fdata["integration_error_key"]
+            for fdata in summary["per_fixture"].values()
+            if "integration_error_key" in fdata
+        }
+        new_baseline = set(summary["all_unaccounted_keys"]) | error_keys
         _save_baseline(new_baseline)
         print(
             f"[F5] Baseline updated — {len(new_baseline)} key(s) written to {_BASELINE_PATH}"
@@ -654,6 +731,38 @@ def main(argv: list[str] | None = None) -> int:
     _print_report(summary, baseline)
 
     if args.check:
+        # FIX 2: Hash integrity check — catches hand-edited baselines (self-blessing protection).
+        if baseline and stored_hash is not None:
+            expected_hash = _compute_hash(sorted(baseline))
+            if expected_hash != stored_hash:
+                print(
+                    "\n[F5] GATE FAILED — baseline file has been TAMPERED.\n"
+                    f"  Stored hash:   {stored_hash}\n"
+                    f"  Expected hash: {expected_hash}\n"
+                    "  The 'keys' list was modified without recomputing the hash.\n"
+                    "  This is the self-blessing protection.  Run --update-baseline\n"
+                    "  to produce a legitimate baseline from the current output.\n"
+                    "  Do NOT hand-edit the baseline JSON."
+                )
+                return 1
+
+        # FIX 3: Fail on any unbaselined integration_error fixture.
+        # A fixture that cannot be analysed is an UNVERIFIED surface, not a pass.
+        integration_error_stems = summary.get("integration_error_stems", [])
+        new_integration_errors = [
+            stem for stem in integration_error_stems
+            if f"__integration_error__|{stem}" not in baseline
+        ]
+        if new_integration_errors:
+            print(
+                f"\n[F5] GATE FAILED — {len(new_integration_errors)} fixture(s) could not be "
+                "analysed (integration_error) and are not in the baseline.\n"
+                "  An unanalysable fixture is an UNVERIFIED surface — it cannot count as a pass.\n"
+                "  Fix the underlying error (preferred) or run --update-baseline to grandfather it.\n"
+                f"  Fixtures: {new_integration_errors}"
+            )
+            return 1
+
         all_keys = set(summary["all_unaccounted_keys"])
         new_keys = all_keys - baseline
         if new_keys:

@@ -36,16 +36,11 @@ _SCRIPTS_DIR = _HERE.parent                        # scripts/
 _PIPELINE_STATE = _SCRIPTS_DIR / "pipeline-state"
 _DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
-# Layout properties the converter should be lifting to D1 attrs
-_LAYOUT_PROP_RE = re.compile(
-    r"(grid-template-columns|grid-template-rows|gap|column-gap|row-gap|display|"
-    r"max-width|min-height|flex-direction|align-items|justify-content|flex-wrap|"
-    r"grid-column|grid-row|padding|margin|background-color|font-size|"
-    r"font-weight|color|line-height|letter-spacing|text-align|vertical-align)",
-    re.IGNORECASE,
-)
-
 # CSS rule extractor: selector { declarations }
+# Note: _LAYOUT_PROP_RE pre-filter REMOVED — it was itself an R-22-1 hardcoded
+# property literal and silently skipped any D2-stranded property that wasn't in
+# the ~18-item list.  We now pass EVERY property to the DB cross-join, which is
+# the authoritative answer to "does a D1 destination exist for this property?"
 _RULE_RE = re.compile(r"([.#][\w\s,.:>#~\[\]=*@()-]+?)\{([^{}]+)\}", re.DOTALL)
 # Block slug from .sgs- selector: e.g. .sgs-hero or .page-id-N .sgs-hero
 _SLUG_FROM_SELECTOR_RE = re.compile(r"\.sgs-([\w-]+)")
@@ -77,8 +72,17 @@ def _block_has_d1_destination(conn: sqlite3.Connection, block_slug: str, css_pro
     return bool(rows)
 
 
+# Individual declaration extractor: captures the property name from each
+# "property: value;" line inside a CSS rule body.
+_DECL_PROP_RE = re.compile(r"^\s*([\w-]+)\s*:", re.MULTILINE)
+
+
 def _parse_d2_css(css_text: str) -> list[tuple[str, str]]:
-    """Return list of (selector, css_property) from D2 section of the CSS file."""
+    """Return list of (selector, css_property) from D2 section of the CSS file.
+
+    Every declaration property is extracted (no pre-filter).  The DB cross-join
+    in _block_has_d1_destination is the authoritative gate.
+    """
     # Find the D2 section
     d2_start = css_text.find("D2 —")
     if d2_start == -1:
@@ -91,7 +95,7 @@ def _parse_d2_css(css_text: str) -> list[tuple[str, str]]:
         body = m.group(2)
         if ".sgs-" not in selector and ".page-id-" not in selector:
             continue
-        for prop_m in _LAYOUT_PROP_RE.finditer(body):
+        for prop_m in _DECL_PROP_RE.finditer(body):
             results.append((selector, prop_m.group(1).lower()))
     return results
 

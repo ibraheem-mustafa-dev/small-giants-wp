@@ -38,6 +38,7 @@ if str(_SCRIPTS_DIR) not in sys.path:
 
 from ledger.coverage_check import (
     _bucketed_sel_props,
+    _compute_hash,
     _decl_key,
     _extract_css_from_html,
     _extract_sel_props_from_raw_css,
@@ -135,15 +136,41 @@ class TestExtractCssFromHtml:
 
 class TestExtractSelPropsFromRawCss:
     def test_simple_rule(self):
+        # Base rule (no @media) → media component is None.
         rules = [".sgs-hero { padding: 40px; margin: 0; }"]
         result = _extract_sel_props_from_raw_css(rules)
-        assert (".sgs-hero", "padding") in result
-        assert (".sgs-hero", "margin") in result
+        assert (".sgs-hero", "padding", None) in result
+        assert (".sgs-hero", "margin", None) in result
 
-    def test_media_wrapped_rule(self):
+    def test_media_wrapped_rule_preserves_condition(self):
+        # FIX 1: @media-wrapped rule must carry the verbatim condition.
         rules = ["@media (max-width: 767px) { .sgs-hero { padding: 20px } }"]
         result = _extract_sel_props_from_raw_css(rules)
-        assert (".sgs-hero", "padding") in result
+        # The media component must be the verbatim condition string.
+        assert any(
+            sel == ".sgs-hero" and prop == "padding" and media is not None
+            for (sel, prop, media) in result
+        ), "media-wrapped rule should carry a non-None media component"
+        # Must NOT also be present as a Base (None) entry.
+        assert (".sgs-hero", "padding", None) not in result, (
+            "media-wrapped rule must not collapse to Base media=None"
+        )
+
+    def test_base_and_breakpoint_are_distinct_entries(self):
+        # FIX 1 core assertion: the same (selector, property) at base and at a
+        # breakpoint must produce TWO distinct entries in the result set.
+        rules = [
+            ".sgs-hero { color: red; }",
+            "@media (max-width: 767px) { .sgs-hero { color: blue; } }",
+        ]
+        result = _extract_sel_props_from_raw_css(rules)
+        base_entry = (".sgs-hero", "color", None)
+        breakpoint_entries = [
+            e for e in result
+            if e[0] == ".sgs-hero" and e[1] == "color" and e[2] is not None
+        ]
+        assert base_entry in result, "Base (media=None) entry must be present"
+        assert len(breakpoint_entries) == 1, "Exactly one breakpoint entry must be present"
 
     def test_empty_input(self):
         assert _extract_sel_props_from_raw_css([]) == set()
@@ -154,9 +181,9 @@ class TestExtractSelPropsFromRawCss:
             ".sgs-card { background: #000; border-radius: 8px; }",
         ]
         result = _extract_sel_props_from_raw_css(rules)
-        assert (".sgs-hero", "color") in result
-        assert (".sgs-card", "background") in result
-        assert (".sgs-card", "border-radius") in result
+        assert (".sgs-hero", "color", None) in result
+        assert (".sgs-card", "background", None) in result
+        assert (".sgs-card", "border-radius", None) in result
 
 
 # ---------------------------------------------------------------------------
@@ -183,6 +210,7 @@ class TestBucketedSelProps:
         }
 
     def test_d1_entry_is_collected(self):
+        # D1 with media=None → (selector, property, None).
         router_result = self._make_router_result(d1={
             "sgs/hero:.sgs-hero": {
                 "sgs/hero.padding": {
@@ -193,7 +221,24 @@ class TestBucketedSelProps:
             }
         })
         bucketed = _bucketed_sel_props(router_result)
-        assert (".sgs-hero", "padding") in bucketed
+        assert (".sgs-hero", "padding", None) in bucketed
+
+    def test_d1_entry_with_media_is_collected(self):
+        # FIX 1: D1 entry at a breakpoint must carry the media component.
+        router_result = self._make_router_result(d1={
+            "sgs/hero:.sgs-hero": {
+                "sgs/hero.padding": {
+                    "value": "20px", "role": "spacing",
+                    "source_class": "sgs-hero", "snap_skipped": False,
+                    "block_slug": "sgs/hero", "css_prop": "padding",
+                    "media": "(max-width: 767px)",
+                }
+            }
+        })
+        bucketed = _bucketed_sel_props(router_result)
+        assert (".sgs-hero", "padding", "(max-width: 767px)") in bucketed
+        # Must NOT be present as Base.
+        assert (".sgs-hero", "padding", None) not in bucketed
 
     def test_d3_entry_is_collected(self):
         router_result = self._make_router_result(d3=[{
@@ -205,24 +250,24 @@ class TestBucketedSelProps:
             "media": None,
         }])
         bucketed = _bucketed_sel_props(router_result)
-        # D3 uses source_class → '.{source_class}'
-        assert (".sgs-hero__media", "border-radius") in bucketed
+        # D3 uses source_class → '.{source_class}', media=None.
+        assert (".sgs-hero__media", "border-radius", None) in bucketed
 
     def test_d2_entry_is_collected(self):
         router_result = self._make_router_result(
             d2=[".sgs-cta { background-size: 320px; margin: 0; }"]
         )
         bucketed = _bucketed_sel_props(router_result)
-        assert (".sgs-cta", "background-size") in bucketed
-        assert (".sgs-cta", "margin") in bucketed
+        assert (".sgs-cta", "background-size", None) in bucketed
+        assert (".sgs-cta", "margin", None) in bucketed
 
     def test_d0_entry_is_collected(self):
         router_result = self._make_router_result(
             d0=["h1, h2 { font-size: 24px; }"]
         )
         bucketed = _bucketed_sel_props(router_result)
-        # h1 and/or h2 with font-size should appear
-        assert any(prop == "font-size" for (sel, prop) in bucketed)
+        # h1 and/or h2 with font-size should appear (media=None for base rule).
+        assert any(prop == "font-size" for (sel, prop, media) in bucketed)
 
     def test_empty_result(self):
         router_result = self._make_router_result()
@@ -435,6 +480,61 @@ class TestGateJoinLogic:
         key = unaccounted[0]["key"]
         assert key == "synthetic|.sgs-card|color|Desktop"
 
+    # ------------------------------------------------------------------
+    # FIX 1: cross-tier drop detection
+    # A draft has two declarations for the SAME (selector, property):
+    # one at Base (media=None) and one at a 600px breakpoint.
+    # The router ONLY buckets the Base entry.
+    # The 600px declaration must be UNACCOUNTED (not silently swallowed).
+    # ------------------------------------------------------------------
+    def test_fix1_cross_tier_drop_detected(self):
+        """FIX 1 proof: a breakpoint declaration dropped by the router is UNACCOUNTED.
+
+        Pre-fix behaviour: the join was on (selector, property) only — the Base
+        bucket entry would satisfy BOTH draft rows, hiding the breakpoint drop.
+        Post-fix behaviour: the join is on (selector, property, media) — the Base
+        bucket entry only satisfies the Base draft row; the breakpoint draft row
+        (media='(max-width:600px)') has no matching bucket entry and is UNACCOUNTED.
+        """
+        # Draft: base + 600px breakpoint for the SAME (selector, property).
+        base_row = _make_decl(
+            prop="color", selector=".sgs-hero",
+            tier="Base", media=None,
+        )
+        breakpoint_row = _make_decl(
+            prop="color", selector=".sgs-hero",
+            tier="Other:(max-width:600px)", media="(max-width:600px)",
+        )
+        draft_rows = [base_row, breakpoint_row]
+
+        # Router only buckets the Base entry (no @media wrapper → media=None).
+        # Build D2 directly so we control the media component precisely.
+        router_result = {
+            "d0": [], "d1": {}, "d3": [],
+            # Plain CSS rule (no @media) → _extract_sel_props_from_raw_css → media=None.
+            "d2": [".sgs-hero { color: red; }"],
+            "stats": {
+                "d0_count": 0, "d1_count": 0,
+                "d2_count": 1, "d3_count": 0,
+                "total_rules": 1, "chrome_skipped": 0, "malformed": 0,
+            },
+        }
+
+        unaccounted, relevant_rows = self._run_analyse(draft_rows, router_result)
+
+        assert len(relevant_rows) == 2, "Both the base and breakpoint rows must be relevant"
+        assert len(unaccounted) == 1, (
+            "Exactly the breakpoint declaration must be UNACCOUNTED "
+            "(pre-fix: 0 unaccounted because the base bucket hit covered both)"
+        )
+        entry = unaccounted[0]
+        assert entry["property"] == "color"
+        assert entry["selector"] == ".sgs-hero"
+        assert entry["media"] == "(max-width:600px)", (
+            "The UNACCOUNTED entry must carry the breakpoint media condition"
+        )
+        assert entry["tier"] == "Other:(max-width:600px)"
+
 
 # ---------------------------------------------------------------------------
 # 6. check_landed placeholder raises NotImplementedError
@@ -461,7 +561,7 @@ class TestCheckLandedDeferred:
 
 class TestBaselineRoundTrip:
     def test_save_and_load(self, tmp_path):
-        """Baseline file can be written and read back as the same set."""
+        """Baseline file can be written and read back as the same set (FIX 2: hashed format)."""
         from ledger.coverage_check import _load_baseline, _save_baseline
         import ledger.coverage_check as cc
 
@@ -474,25 +574,27 @@ class TestBaselineRoundTrip:
             keys = {"fix1|.sgs-hero|padding|Base", "fix2|.sgs-card|color|Mobile"}
             _save_baseline(keys)
 
-            loaded = _load_baseline()
-            assert loaded == keys
+            loaded_keys, loaded_hash = _load_baseline()
+            assert loaded_keys == keys
+            assert loaded_hash is not None, "Hash must be stored in the hashed format"
         finally:
             cc._BASELINE_PATH = original
 
     def test_load_missing_baseline_returns_empty_set(self, tmp_path):
-        """Missing baseline file → empty set (not an error)."""
+        """Missing baseline file → (empty set, None hash) — not an error."""
         import ledger.coverage_check as cc
 
         original = cc._BASELINE_PATH
         try:
             cc._BASELINE_PATH = tmp_path / "nonexistent-baseline.json"
-            loaded = _load_baseline()
-            assert loaded == set()
+            loaded_keys, loaded_hash = _load_baseline()
+            assert loaded_keys == set()
+            assert loaded_hash is None
         finally:
             cc._BASELINE_PATH = original
 
-    def test_baseline_file_is_sorted_json_list(self, tmp_path):
-        """Baseline file must be a sorted JSON list (deterministic, diffable)."""
+    def test_baseline_file_is_hashed_json_object(self, tmp_path):
+        """FIX 2: Baseline file must be a JSON object with 'hash' and 'keys' fields."""
         import ledger.coverage_check as cc
 
         baseline_path = tmp_path / "coverage-baseline.json"
@@ -503,8 +605,53 @@ class TestBaselineRoundTrip:
             _save_baseline(keys)
 
             content = json.loads(baseline_path.read_text(encoding="utf-8"))
-            assert isinstance(content, list)
-            assert content == sorted(keys)
+            assert isinstance(content, dict), "Baseline must be a JSON object, not a list"
+            assert "hash" in content, "Baseline must have a 'hash' field"
+            assert "keys" in content, "Baseline must have a 'keys' field"
+            assert content["keys"] == sorted(keys), "Keys must be sorted"
+        finally:
+            cc._BASELINE_PATH = original
+
+    def test_hash_mismatch_detected(self, tmp_path):
+        """FIX 2: A tampered baseline (hand-edited keys without updating hash) is detectable."""
+        from ledger.coverage_check import _compute_hash, _save_baseline
+        import ledger.coverage_check as cc
+
+        baseline_path = tmp_path / "coverage-baseline.json"
+        original = cc._BASELINE_PATH
+        try:
+            cc._BASELINE_PATH = baseline_path
+            keys = {"key-a", "key-b"}
+            _save_baseline(keys)
+
+            # Simulate hand-edit: add a key without recomputing hash.
+            data = json.loads(baseline_path.read_text(encoding="utf-8"))
+            data["keys"].append("injected-key")
+            baseline_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+            loaded_keys, stored_hash = _load_baseline()
+            expected_hash = _compute_hash(sorted(loaded_keys))
+            assert expected_hash != stored_hash, (
+                "Hash mismatch should be detected after hand-editing the keys list"
+            )
+        finally:
+            cc._BASELINE_PATH = original
+
+    def test_legacy_list_format_loads_without_hash(self, tmp_path):
+        """Legacy plain-list baseline (pre-FIX-2) loads with hash=None (graceful migration)."""
+        import ledger.coverage_check as cc
+
+        baseline_path = tmp_path / "legacy-baseline.json"
+        original = cc._BASELINE_PATH
+        try:
+            cc._BASELINE_PATH = baseline_path
+            # Write legacy format.
+            legacy_keys = ["old-key-1", "old-key-2"]
+            baseline_path.write_text(json.dumps(legacy_keys, indent=2), encoding="utf-8")
+
+            loaded_keys, loaded_hash = _load_baseline()
+            assert loaded_keys == set(legacy_keys)
+            assert loaded_hash is None, "Legacy list format must return hash=None"
         finally:
             cc._BASELINE_PATH = original
 

@@ -8,9 +8,10 @@ DEFAULT MODE       : --report           (informational, exits 0 always)
 ENFORCE MODE       : --enforce          (exits non-zero on any NEW (a)/(b) violation)
 BASELINE ENFORCE   : --enforce --baseline <path>
                       Grandfathers known legacy violations; only NEW violations
-                      (keys absent from the baseline) cause exit 1.
+                      (keys absent from the baseline, OR whose count EXCEEDS the
+                      baselined count) cause exit 1.
 UPDATE BASELINE    : --update-baseline <path>
-                      Writes the current violation keys to the baseline file and
+                      Writes the current violation counts to the baseline file and
                       exits 0.  This is the ONLY sanctioned way to change the
                       baseline.
 
@@ -18,10 +19,36 @@ BASELINE PATTERN (Spec 31 §12.6 step 1)
 =========================================
 The converter is mid-rebuild and still emits legacy draft-class violations.
 Rather than blocking all enforce runs until the rebuild is 100 % complete, we
-commit the 13 known legacy violations as a baseline (see
+commit the known legacy violations as a baseline (see
 check-no-mirror-baseline.json alongside this file).  --enforce --baseline then
-fails ONLY on a NEW violation beyond that baseline.  The baseline shrinks as
-each converter fix lands; the gate remains armed throughout.
+fails ONLY on a NEW violation beyond that baseline (i.e. a key whose current
+occurrence count exceeds the baselined max_allowed_count).
+
+COUNT-AWARE BASELINE (soundness fix — STOP-15 2026-06-21)
+==========================================================
+The old baseline was a flat list of keys (set-membership check only).  This
+allowed the converter to emit the SAME mirrored class on 50 block instances
+(a real regression) while the gate still reported GREEN, because the key
+already existed in the baseline.
+
+The new baseline format is a count map: the gate fails if
+current_count > baselined_count for any key.  A key absent from the baseline
+has baselined_count = 0 (so any occurrence is NEW — preserving previous
+behaviour for genuinely new keys).
+
+Baseline file format:
+  {
+    "hash": "<sha256 of canonical serialisation>",
+    "counts": {
+      "a:sgs/container:sgs-brand__content": 1,
+      "a:sgs/container:sgs-product-card__body": 3,
+      ...
+    }
+  }
+
+Self-blessing protection: the SHA-256 hash covers the sorted JSON of the
+counts dict.  Any hand-edit that changes counts without recomputing the hash
+fails with "baseline tampered" → exit 2.
 
 Stable violation key format (deterministic, order-independent):
   Rule (a) → "a:{block_slug}:{violating_class}"
@@ -66,8 +93,9 @@ WHAT THIS CHECKS (R-22-15, Bean-directed 2026-06-06)
 EXIT CODES (--enforce mode)
 ===========================
 0 — no NEW (a)/(b) violations found; baselined violations are grandfathered
-1 — one or more NEW (a)/(b) violations found (not in baseline)
-2 — usage error (missing files, unreadable artefacts)
+1 — one or more NEW (a)/(b) violations found (key absent from baseline, or
+    count exceeds baselined max_allowed_count)
+2 — usage error (missing files, unreadable artefacts, tampered baseline)
 
 EXIT CODES (--report mode, default)
 ====================================
@@ -82,7 +110,7 @@ USAGE
     # Enforce mode without baseline — blocks on ANY (a)/(b) violation
     python check_no_mirror.py [<run_dir>] --enforce
 
-    # Enforce mode with baseline — blocks only on NEW violations
+    # Enforce mode with baseline — blocks only on NEW/increased violations
     python check_no_mirror.py [<run_dir>] --enforce --baseline check-no-mirror-baseline.json
 
     # Update (regenerate) the baseline from the current run output
@@ -95,6 +123,7 @@ UK English in all output.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -394,31 +423,113 @@ def violation_key_b(slug: str, source_mode: str) -> str:
     return f"b:{slug}:{source_mode}"
 
 
+def collect_violation_counts(
+    violations_a: list[dict],
+    violations_b: list[dict],
+) -> dict[str, int]:
+    """Return a count map {stable_key: occurrence_count} for all hard violations.
+
+    Unlike the old collect_violation_keys(), this preserves occurrence counts
+    so the baseline can enforce per-key maximums (count-aware baseline).
+    """
+    counts: dict[str, int] = {}
+    for v in violations_a:
+        key = violation_key_a(v["block"], v["violating_class"])
+        counts[key] = counts.get(key, 0) + 1
+    for v in violations_b:
+        key = violation_key_b(v["block"], v["sourceMode"])
+        counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
 def collect_violation_keys(
     violations_a: list[dict],
     violations_b: list[dict],
 ) -> list[str]:
-    """Return a sorted, deduplicated list of stable violation keys."""
-    keys: set[str] = set()
-    for v in violations_a:
-        keys.add(violation_key_a(v["block"], v["violating_class"]))
-    for v in violations_b:
-        keys.add(violation_key_b(v["block"], v["sourceMode"]))
-    return sorted(keys)
+    """Return a sorted, deduplicated list of stable violation keys.
+
+    Kept for backward compatibility with existing callers (e.g. tests that
+    call this directly).  Prefer collect_violation_counts() for new code.
+    """
+    return sorted(collect_violation_counts(violations_a, violations_b).keys())
 
 
-def load_baseline(path: Path) -> set[str]:
-    """Load a baseline JSON file and return the keys as a set."""
+# ---------------------------------------------------------------------------
+# Count-aware baseline: {hash, counts}
+# ---------------------------------------------------------------------------
+
+def _compute_baseline_hash(counts: dict[str, int]) -> str:
+    """SHA-256 over the canonical JSON serialisation of the counts dict.
+
+    The canonical form is a JSON object with keys sorted and no trailing
+    whitespace — identical to what json.dumps(..., sort_keys=True) produces.
+    Mirrors the _compute_hash idiom in excluded-gate/run.py.
+    """
+    canonical = json.dumps(counts, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def load_baseline(path: Path) -> dict[str, int]:
+    """Load a baseline JSON file and return a count map {key: max_allowed_count}.
+
+    Accepted formats:
+      • New (count-aware): {"hash": "...", "counts": {"key": N, ...}}
+      • Legacy (flat list): ["key1", "key2", ...]  — migrated in-memory to
+        {key: 1} for each entry (no hash verification possible).
+
+    Raises ValueError on tampered new-format baselines (hash mismatch).
+    """
     data = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(data, list):
-        raise ValueError(f"Baseline file must contain a JSON array: {path}")
-    return set(data)
+
+    # New count-aware format
+    if isinstance(data, dict):
+        stored_hash = data.get("hash")
+        counts: dict[str, int] = data.get("counts", {})
+        if not isinstance(counts, dict):
+            raise ValueError(
+                f"Baseline 'counts' field must be a JSON object: {path}"
+            )
+        if stored_hash is not None:
+            expected = _compute_baseline_hash(counts)
+            if stored_hash != expected:
+                raise ValueError(
+                    f"Baseline tampered: stored hash does not match computed hash.\n"
+                    f"  Stored  : {stored_hash}\n"
+                    f"  Computed: {expected}\n"
+                    f"  File    : {path}\n"
+                    f"Re-run --update-baseline to regenerate the baseline legitimately."
+                )
+        return {k: int(v) for k, v in counts.items()}
+
+    # Legacy flat-list format — migrate to count map, treat each key as max 1.
+    if isinstance(data, list):
+        return {key: 1 for key in data}
+
+    raise ValueError(
+        f"Baseline file must be a JSON object (new format) or array (legacy): {path}"
+    )
 
 
-def write_baseline(path: Path, keys: list[str]) -> None:
-    """Write sorted violation keys to the baseline JSON file (deterministic)."""
+def write_baseline(path: Path, keys_or_counts: list[str] | dict[str, int]) -> None:
+    """Write a count-aware baseline JSON file (new format).
+
+    Accepts either:
+      • A pre-built count dict {key: count}  (from collect_violation_counts)
+      • A plain list of keys (each treated as count=1, for backward compat
+        with in-memory tests that call write_baseline directly)
+    """
+    if isinstance(keys_or_counts, dict):
+        counts = keys_or_counts
+    else:
+        # Plain list → count-1 map
+        counts = {key: 1 for key in keys_or_counts}
+
+    data = {
+        "hash": _compute_baseline_hash(counts),
+        "counts": dict(sorted(counts.items())),
+    }
     path.write_text(
-        json.dumps(sorted(keys), indent=2, ensure_ascii=False) + "\n",
+        json.dumps(data, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
 
@@ -434,21 +545,31 @@ def print_report_with_baseline(
     violations_b: list[dict],
     warnings_c: list[dict],
     enforce: bool,
-    baselined_keys: set[str] | None,
+    baseline_counts: dict[str, int] | None,
 ) -> tuple[list[dict], list[dict]]:
     """
-    Print the full report and return (new_a, new_b) — the NEW violations
-    (i.e. those NOT in the baseline).
+    Print the full report and return (new_a, new_b) — the violations that
+    exceed their baselined max_allowed_count (i.e. genuine regressions).
 
-    When baselined_keys is None (no --baseline given), all violations are
+    When baseline_counts is None (no --baseline given), all violations are
     treated as "new" and the output matches the original print_report().
-    When baselined_keys is provided, each violation is tagged as either
-    "baselined (legacy)" or "NEW (blocking)".
+    When baseline_counts is provided, each violation is compared against its
+    baselined count.  A violation key is "NEW/blocking" if its current count
+    exceeds the baselined max_allowed_count for that key (a key absent from
+    the baseline has max_allowed_count = 0).
+
+    Count-aware logic (STOP-15 fix):
+      baselined_count = baseline_counts.get(key, 0)
+      current_count   = number of times this key appears in the run
+      blocking = current_count > baselined_count
+
+    This catches the regression where the SAME draft class is emitted on 50
+    block instances when only 1 was baselined.
     """
     all_hard = violations_a + violations_b
     total_hard = len(all_hard)
 
-    if baselined_keys is None:
+    if baseline_counts is None:
         # Original behaviour — no baseline awareness.
         print_report(
             run_dir=run_dir,
@@ -460,24 +581,38 @@ def print_report_with_baseline(
         )
         return violations_a, violations_b
 
-    # ---- Partition into baselined vs new ----
-    new_a: list[dict] = []
-    old_a: list[dict] = []
-    for v in violations_a:
-        key = violation_key_a(v["block"], v["violating_class"])
-        if key in baselined_keys:
-            old_a.append(v)
-        else:
-            new_a.append(v)
+    # ---- Compute per-key current counts ----
+    current_counts: dict[str, int] = collect_violation_counts(violations_a, violations_b)
 
-    new_b: list[dict] = []
-    old_b: list[dict] = []
-    for v in violations_b:
-        key = violation_key_b(v["block"], v["sourceMode"])
-        if key in baselined_keys:
-            old_b.append(v)
-        else:
-            new_b.append(v)
+    # ---- Partition rule-(a) violations into baselined vs new ----
+    # We tag each violation instance individually; "old" = within baselined allowance,
+    # "new" = the excess instances that push the count over the limit.
+    # To keep the output readable we group by key and report count deltas.
+
+    # Identify which keys are blocking (current > baselined)
+    blocking_keys: set[str] = set()
+    for key, current in current_counts.items():
+        allowed = baseline_counts.get(key, 0)
+        if current > allowed:
+            blocking_keys.add(key)
+
+    new_a: list[dict] = [
+        v for v in violations_a
+        if violation_key_a(v["block"], v["violating_class"]) in blocking_keys
+    ]
+    old_a: list[dict] = [
+        v for v in violations_a
+        if violation_key_a(v["block"], v["violating_class"]) not in blocking_keys
+    ]
+
+    new_b: list[dict] = [
+        v for v in violations_b
+        if violation_key_b(v["block"], v["sourceMode"]) in blocking_keys
+    ]
+    old_b: list[dict] = [
+        v for v in violations_b
+        if violation_key_b(v["block"], v["sourceMode"]) not in blocking_keys
+    ]
 
     total_new = len(new_a) + len(new_b)
     total_baselined = len(old_a) + len(old_b)
@@ -493,44 +628,75 @@ def print_report_with_baseline(
 
     # --- Rule (a) ---
     print(f"\nRule (a) Draft-class containers : {len(violations_a)} violation(s) "
-          f"({total_baselined} baselined, {total_new} NEW)")
+          f"({total_baselined} within baseline, {total_new} NEW/blocking)")
     if violations_a:
         print(_hr())
         # Baselined group
         if old_a:
             print(f"  Baselined (legacy — grandfathered, {len(old_a)} instance(s)):")
             for v in old_a:
-                print(f"    · baselined: wp:{v['block']} carries '{v['violating_class']}'")
+                key = violation_key_a(v["block"], v["violating_class"])
+                allowed = baseline_counts.get(key, 0)
+                current = current_counts.get(key, 0)
+                print(
+                    f"    · baselined: wp:{v['block']} carries '{v['violating_class']}' "
+                    f"[{current}/{allowed} allowed]"
+                )
         # New / blocking group
         if new_a:
-            print(f"  NEW (blocking — {len(new_a)} instance(s)):")
+            print(f"  NEW/blocking — count exceeded baseline ({len(new_a)} instance(s)):")
+            # Deduplicate by key for the detailed message
+            reported: set[str] = set()
             for v in new_a:
+                key = violation_key_a(v["block"], v["violating_class"])
+                if key in reported:
+                    continue
+                reported.add(key)
                 cls = v["violating_class"]
                 blk = v["block"]
+                current = current_counts.get(key, 0)
+                allowed = baseline_counts.get(key, 0)
                 print(
                     f"  ✗ NEW mirror violation not in the baseline: "
-                    f"wp:{blk} carries draft class '{cls}'. "
-                    f"The converter introduced a NEW draft-class container — "
-                    f"fix it or, if intended, regenerate the baseline with --update-baseline."
+                    f"wp:{blk} carries draft class '{cls}' "
+                    f"[current={current}, allowed={allowed}]. "
+                    f"The converter introduced a NEW draft-class container (or increased "
+                    f"an existing one) — fix it or, if intended, regenerate the baseline "
+                    f"with --update-baseline."
                 )
 
     # --- Rule (b) ---
     total_b_new = len(new_b)
     total_b_old = len(old_b)
     print(f"\nRule (b) Bound sourceMode       : {len(violations_b)} violation(s) "
-          f"({total_b_old} baselined, {total_b_new} NEW)")
+          f"({total_b_old} within baseline, {total_b_new} NEW/blocking)")
     if violations_b:
         print(_hr())
         for v in old_b:
-            print(f"    · baselined: wp:{v['block']} sourceMode='{v['sourceMode']}'")
+            key = violation_key_b(v["block"], v["sourceMode"])
+            allowed = baseline_counts.get(key, 0)
+            current = current_counts.get(key, 0)
+            print(
+                f"    · baselined: wp:{v['block']} sourceMode='{v['sourceMode']}' "
+                f"[{current}/{allowed} allowed]"
+            )
+        reported_b: set[str] = set()
         for v in new_b:
+            key = violation_key_b(v["block"], v["sourceMode"])
+            if key in reported_b:
+                continue
+            reported_b.add(key)
             blk = v["block"]
             sm = v["sourceMode"]
+            current = current_counts.get(key, 0)
+            allowed = baseline_counts.get(key, 0)
             print(
                 f"  ✗ NEW mirror violation not in the baseline: "
-                f"wp:{blk} has sourceMode='{sm}'. "
-                f"The converter introduced a NEW bound sourceMode — "
-                f"fix it or, if intended, regenerate the baseline with --update-baseline."
+                f"wp:{blk} has sourceMode='{sm}' "
+                f"[current={current}, allowed={allowed}]. "
+                f"The converter introduced a NEW bound sourceMode (or increased "
+                f"an existing one) — fix it or, if intended, regenerate the baseline "
+                f"with --update-baseline."
             )
 
     # --- Rule (c) ---
@@ -553,7 +719,7 @@ def print_report_with_baseline(
     print(_hr("─"))
     print(
         f"  SUMMARY: {total_hard} total violation(s) "
-        f"[{total_baselined} baselined / {total_new} NEW]  "
+        f"[{total_baselined} within baseline / {total_new} NEW/blocking]  "
         f"|  {len(warnings_c)} warning(s)"
     )
     print(f"  Hard violations = rule (a) + (b).  Warnings (c) never block.")
@@ -563,7 +729,8 @@ def print_report_with_baseline(
     else:
         if enforce:
             print(
-                f"  RESULT: FAIL — {total_new} NEW violation(s) not in the baseline. "
+                f"  RESULT: FAIL — {total_new} NEW/blocking violation(s). "
+                f"The current occurrence count exceeds the baselined maximum. "
                 f"Fix the converter or run --update-baseline if the violation is intentional."
             )
         else:
@@ -659,14 +826,17 @@ def main(argv: list[str] | None = None) -> int:
 
     # ---- --update-baseline mode ----
     if args.update_baseline:
-        keys = collect_violation_keys(violations_a, violations_b)
+        counts = collect_violation_counts(violations_a, violations_b)
         out_path = Path(args.update_baseline)
-        write_baseline(out_path, keys)
-        print(f"Wrote {len(keys)} baseline key(s) to {out_path}")
+        write_baseline(out_path, counts)
+        print(
+            f"Wrote {len(counts)} baseline key(s) to {out_path} "
+            f"(count-aware format with SHA-256 self-blessing hash)."
+        )
         return 0
 
     # ---- Load baseline (if supplied) ----
-    baselined_keys: set[str] | None = None
+    baseline_counts: dict[str, int] | None = None
     if args.baseline:
         baseline_path = Path(args.baseline)
         if not baseline_path.exists():
@@ -676,13 +846,13 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 2
         try:
-            baselined_keys = load_baseline(baseline_path)
+            baseline_counts = load_baseline(baseline_path)
         except (json.JSONDecodeError, ValueError) as exc:
-            print(f"ERROR: could not parse baseline file: {exc}", file=sys.stderr)
+            print(f"ERROR: could not load baseline file: {exc}", file=sys.stderr)
             return 2
 
     # ---- Print report (baseline-aware) ----
-    if baselined_keys is not None:
+    if baseline_counts is not None:
         new_a, new_b = print_report_with_baseline(
             run_dir=run_dir,
             markup_source=markup_source,
@@ -690,7 +860,7 @@ def main(argv: list[str] | None = None) -> int:
             violations_b=violations_b,
             warnings_c=warnings_c,
             enforce=enforce,
-            baselined_keys=baselined_keys,
+            baseline_counts=baseline_counts,
         )
         total_new = len(new_a) + len(new_b)
         if enforce and total_new:

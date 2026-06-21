@@ -38,4 +38,34 @@ if git diff --cached --name-only | grep -Eq 'plugins/sgs-blocks/src/blocks/exten
 	fi
 fi
 
+# ─── F5 CSS-transfer gates (the universal commit floor) ──────────────────────
+# CSS-routing/cloning code is pure Python — `npm build` never runs it, so the
+# package.json prebuild gates never fire for a Python-only change, and there is
+# no CI. This is the ONLY git-level floor (the Claude Code PreToolUse hook
+# f5-commit-gate.py is a session-scoped early-warning layer that does NOT fire
+# for a terminal `git commit` / GUI commit). Runs the 4 static gates' --check
+# (baseline-aware: only a NEW violation blocks) when the commit touches the
+# sgs-blocks plugin. Bypass: `git commit --no-verify` (deliberate, leaves a gap).
+if git diff --cached --name-only | grep -Eq '^plugins/sgs-blocks/'; then
+	if command -v python.exe >/dev/null 2>&1; then PY=python.exe
+	elif command -v python >/dev/null 2>&1; then PY=python
+	elif command -v py >/dev/null 2>&1; then PY=py
+	else PY=""; fi
+	if [ -z "$PY" ]; then
+		echo "pre-commit: python not found — F5 gates SKIPPED (install python to enforce)." >&2
+	else
+		F5_DIR="plugins/sgs-blocks/scripts"
+		F5_FAIL=0
+		for g in cheat-gate/run.py excluded-gate/run.py ledger/coverage_check.py db-consistency/run.py; do
+			if [ -f "$F5_DIR/$g" ]; then
+				if ! ( cd "$F5_DIR" && "$PY" "$g" --check ); then
+					echo "pre-commit BLOCKED by F5 gate: $g found a NEW violation (run it with --report for detail)." >&2
+					F5_FAIL=1
+				fi
+			fi
+		done
+		[ "$F5_FAIL" -eq 0 ] || exit 1
+	fi
+fi
+
 exit 0

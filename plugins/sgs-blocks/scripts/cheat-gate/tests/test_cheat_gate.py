@@ -280,6 +280,30 @@ class TestCheck2HardcodedDicts:
         violations = check_hardcoded_dicts.run(orchestrator_dir=tmp_path)
         assert violations == [], f"Non-CSS dict should not be flagged, got: {violations}"
 
+    def test_flags_tuple_keyed_css_prop_dict(self, tmp_path):
+        """Dict with tuple keys whose first element is a CSS property → Violation.
+
+        This is the shape of _SUFFIX_ATTR_OVERRIDES and _ATTR_NAME_OVERRIDES
+        (keys are ("grid-template-columns", "Columns") etc.).  Previously these
+        were silently skipped because the check only inspected ast.Constant keys.
+        """
+        py = tmp_path / "db_lookup.py"
+        py.write_text(
+            textwrap.dedent("""\
+                _ATTR_NAME_OVERRIDES = {
+                    ("grid-template-columns", "Columns"): "gridTemplateColumns",
+                }
+            """),
+            encoding="utf-8",
+        )
+        violations = check_hardcoded_dicts.run(orchestrator_dir=tmp_path)
+        assert len(violations) >= 1, (
+            "Expected a hardcoded-dict violation for tuple-keyed CSS-prop dict, got 0"
+        )
+        v = violations[0]
+        assert v.check == "hardcoded_dict"
+        assert "_ATTR_NAME_OVERRIDES" in v.detail or "_ATTR_NAME_OVERRIDES" in v.key
+
 
 # ===========================================================================
 # 4. Check #3 — important_render
@@ -413,6 +437,33 @@ class TestCheck4ParallelBp:
         bp_map_violations = [v for v in violations if "_BP_SUFFIX_MAP" in v.key]
         assert bp_map_violations == []
 
+    def test_flags_bp_suffix_map_in_non_convert_file(self, tmp_path):
+        """_BP_SUFFIX_MAP in a file other than convert.py must be detected.
+
+        FIX 3: the symbol scan now walks the whole orchestrator tree, not just
+        convert.py.  A _BP_SUFFIX_MAP in db_lookup.py or a future modular file
+        is the same violation class and must be caught.
+        """
+        (tmp_path / "converter_v2").mkdir()
+        non_convert = tmp_path / "converter_v2" / "db_lookup.py"
+        non_convert.write_text(
+            textwrap.dedent("""\
+                _BP_SUFFIX_MAP = {
+                    'Tablet': 'Tablet',
+                    'Mobile': 'Mobile',
+                }
+            """),
+            encoding="utf-8",
+        )
+        violations = check_parallel_bp.run(
+            convert_py=tmp_path / "no_such_file.py",  # disable integer scan
+            orchestrator_dir=tmp_path,
+        )
+        bp_map_violations = [v for v in violations if "_BP_SUFFIX_MAP" in v.key]
+        assert len(bp_map_violations) >= 1, (
+            f"Expected _BP_SUFFIX_MAP violation from db_lookup.py, got: {violations}"
+        )
+
 
 # ===========================================================================
 # 6. Check #7 — sentinel
@@ -521,6 +572,110 @@ class TestBaselineMechanics:
         new_violations = [v for v in current_violations if v.key not in baseline]
         assert len(new_violations) == 1
         assert new_violations[0].key == "slug:canary.py:_fn:sgs/new"
+
+
+# ===========================================================================
+# 8b. Baseline hash mechanics (FIX 4 — self-blessing protection)
+# ===========================================================================
+
+class TestBaselineHashMechanics:
+    """Verify hash-based self-blessing protection on the cheat-gate baseline."""
+
+    def _import_run_module(self):
+        """Load cheat_gate.run via importlib (avoids re-running __main__)."""
+        mod_id = "cheat_gate.run"
+        if mod_id in sys.modules:
+            return sys.modules[mod_id]
+        spec = importlib.util.spec_from_file_location(
+            mod_id, str(_PKG_DIR / "run.py")
+        )
+        mod = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
+        sys.modules[mod_id] = mod
+        spec.loader.exec_module(mod)  # type: ignore[union-attr]
+        return mod
+
+    def test_compute_hash_is_deterministic(self):
+        """_compute_hash must return the same value for the same key list."""
+        run_mod = self._import_run_module()
+        keys = ["hdict:convert.py:_X", "bp:convert.py:768"]
+        h1 = run_mod._compute_hash(keys)
+        h2 = run_mod._compute_hash(list(reversed(keys)))  # order should not matter
+        assert h1 == h2, "Hash must be order-independent (sorted internally)"
+        assert len(h1) == 64, "Expected 64-hex SHA-256 digest"
+
+    def test_save_baseline_writes_hashed_format(self, tmp_path):
+        """_save_baseline must write {'hash': ..., 'keys': [...]} (not a plain list)."""
+        run_mod = self._import_run_module()
+        orig_path = run_mod._BASELINE_PATH
+        run_mod._BASELINE_PATH = tmp_path / "test-baseline.json"
+        try:
+            run_mod._save_baseline({"key:A", "key:B"})
+            data = json.loads((tmp_path / "test-baseline.json").read_text(encoding="utf-8"))
+            assert isinstance(data, dict), "Saved baseline must be a JSON object, not a list"
+            assert "hash" in data, "Saved baseline must include 'hash' field"
+            assert "keys" in data, "Saved baseline must include 'keys' field"
+            assert set(data["keys"]) == {"key:A", "key:B"}
+        finally:
+            run_mod._BASELINE_PATH = orig_path
+
+    def test_load_baseline_reads_hashed_format(self, tmp_path):
+        """_load_baseline must return (keys, hash) from the new format."""
+        run_mod = self._import_run_module()
+        orig_path = run_mod._BASELINE_PATH
+        baseline_file = tmp_path / "test-baseline.json"
+        keys_list = ["key:A", "key:B"]
+        expected_hash = run_mod._compute_hash(keys_list)
+        baseline_file.write_text(
+            json.dumps({"hash": expected_hash, "keys": keys_list}),
+            encoding="utf-8",
+        )
+        run_mod._BASELINE_PATH = baseline_file
+        try:
+            loaded_keys, loaded_hash = run_mod._load_baseline()
+            assert loaded_keys == {"key:A", "key:B"}
+            assert loaded_hash == expected_hash
+        finally:
+            run_mod._BASELINE_PATH = orig_path
+
+    def test_tampered_baseline_detected(self, tmp_path):
+        """Hand-editing 'keys' without updating 'hash' → hash mismatch detected."""
+        run_mod = self._import_run_module()
+        orig_path = run_mod._BASELINE_PATH
+        baseline_file = tmp_path / "test-baseline.json"
+        # Write a valid baseline for key:A only
+        valid_keys = ["key:A"]
+        baseline_file.write_text(
+            json.dumps({"hash": run_mod._compute_hash(valid_keys), "keys": valid_keys}),
+            encoding="utf-8",
+        )
+        # Hand-edit: add key:B WITHOUT recomputing hash
+        data = json.loads(baseline_file.read_text(encoding="utf-8"))
+        data["keys"].append("key:B")
+        baseline_file.write_text(json.dumps(data), encoding="utf-8")
+
+        run_mod._BASELINE_PATH = baseline_file
+        try:
+            loaded_keys, loaded_hash = run_mod._load_baseline()
+            expected_hash = run_mod._compute_hash(list(loaded_keys))
+            assert expected_hash != loaded_hash, (
+                "A hand-edited baseline must produce a hash mismatch"
+            )
+        finally:
+            run_mod._BASELINE_PATH = orig_path
+
+    def test_load_baseline_handles_legacy_list_format(self, tmp_path):
+        """Legacy plain-list baseline is loaded as (keys, None) — no hash."""
+        run_mod = self._import_run_module()
+        orig_path = run_mod._BASELINE_PATH
+        baseline_file = tmp_path / "legacy-baseline.json"
+        baseline_file.write_text(json.dumps(["key:X", "key:Y"]), encoding="utf-8")
+        run_mod._BASELINE_PATH = baseline_file
+        try:
+            loaded_keys, loaded_hash = run_mod._load_baseline()
+            assert loaded_keys == {"key:X", "key:Y"}
+            assert loaded_hash is None, "Legacy format must return None for hash"
+        finally:
+            run_mod._BASELINE_PATH = orig_path
 
 
 # ===========================================================================
