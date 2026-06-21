@@ -61,9 +61,7 @@
 				],
 				"split": [
 					"splitImage",
-					"splitImageMobile",
-					"gridTemplateColumns",
-					"splitGap"
+					"splitImageMobile"
 				],
 				"video": [
 					"backgroundVideo",
