@@ -5,50 +5,47 @@ thread: cloning-pipeline
 session_date: 2026-06-21
 ---
 
-# Session Handoff — 2026-06-21
+# Session Handoff — 2026-06-21 (F5 build → council hardening → fact-check close)
 
 ## Completed This Session
-1. **Task 1 (F5 STOP-6 wire, D238)** — wired the R-22-15 anti-mirror gate to auto-run: `sgs-clone-orchestrator.py main()` now calls `pipeline-stage-gate.py` after `stage_9_report()` writes `extract.json`, before deploy/+REGISTER. Hard-halts on a NEW mirror-cheat; `--skip-stage-gate` opts out. Also fixed a redundant local `import subprocess` that shadowed the module import. Commit `2341e761`.
-2. **Then Bean directed: do ALL remaining F5 tasks + the git hook this session.** Built the full F5 gate cluster (4 gates + the wiring), each its own STOP-14 baseline + planted-violation proof + path-scoped commit.
-3. **check-converter-cheats** (`scripts/cheat-gate/`, §7a, 7 checks, 106-key baseline, 30 tests). `a77ff324`. Fixed the implementer's loose dict check (false-flagged block names) → DB `property_suffixes.css_property` membership; removed a stale plant from its baseline.
-4. **EXCLUDED-literal gate** (`scripts/excluded-gate/`, F4 §3, SHA-256 self-blessing baseline, 31 tests). `64b2a4d9`.
-5. **generate-coverage-matrix** (`scripts/coverage-matrix/`, §5, 33×44 DB-derived, 20 tests). `76f2883f`. Fixed bare sibling imports so it runs from any cwd.
-6. **pipeline-close ledger checker** (`scripts/ledger/coverage_check.py`, §12.2.1 UNACCOUNTED leg via F2 ledger ⨝ css_router buckets ⨝ F4 excluded; LANDED leg deferred; 31 tests). `f97e7ae0`.
-7. **STOP-6 capstone wiring** — new `.claude/hooks/f5-commit-gate.py` PreToolUse hook runs the 4 static gates on every `git commit` + added them to `package.json` prebuild/prestart. `e7679b09`.
-8. **Living docs** — D238 + D239 (decisions.md), P-F5-REMAINING resolved → P-F5-RESIDUALS deferred (parking.md), state.md one-liner → F5 COMPLETE. Captured lesson STOP-16 (verify subagent test claims from canonical cwd).
+1. **F5 built (Task 1 + 4 gates + wiring), then hardened + fact-checked** — a long session that took Phase-F step F5 from PARTIAL to COMPLETE-and-hardened. D238–D241.
+2. **Task 1 (D238):** wired check_no_mirror to auto-run — `sgs-clone-orchestrator.py` now calls `pipeline-stage-gate.py` post-Stage-9; closes STOP-6. Fixed a shadowing local `import subprocess`. `2341e761`.
+3. **4 gates built (D239):** `cheat-gate/` (§7a), `excluded-gate/` (F4 §3), `coverage-matrix/` (§5), `ledger/coverage_check.py` (UNACCOUNTED leg) + the `f5-commit-gate.py` PreToolUse hook + prebuild/prestart wiring. `a77ff324`/`64b2a4d9`/`76f2883f`/`f97e7ae0`/`e7679b09`.
+4. **Adversarial council (D240):** 5 personas red-teamed the F5 commits; all 3 deadliest findings confirmed true ground truth (fact-checked, STOP-15). Fixed: the FATAL tier-blind coverage join (surfaced **19 hidden cross-tier drops**), count-blind check_no_mirror baseline, the `_SUFFIX_ATTR_OVERRIDES` tuple-key vacuous pass, 3 unhashed baselines, and the universal-floor wiring (`.githooks/pre-commit` now runs the gates). `cacde1a9`.
+5. **Fact-check-all + close (D241):** Bean directed "don't defer small polish; fact-check residuals first." Fact-checked all 7 residuals — dismissed 2 as non-issues with evidence (shorthand, inline), shipped 3 (check #8 bound-emit tripwire, harness-canary, scope-honesty doc), deferred only 2 with cited blockers. `2b597e92`.
+6. **Docs:** decisions D238–D241; `P-F5-RESIDUALS` pruned to 2 evidenced deferrals; state.md + next-session-prompt updated. Captured 3 lessons (canonical-cwd verification, coverage-join identity, fact-check-residuals).
 
 ## Current State
-- **Branch:** main at 82f140e7 (pre-doc-commit; +1 docs commit lands at Gate 2)
-- **Tests:** 511 pass across the 6 foundation modules (cheat-gate 30, excluded-gate 31, coverage-matrix 20, ledger 198, db-consistency 51, oracle 181) — run PER-DIR.
+- **Branch:** main at cd384b0f (+ this handoff's doc commit at Gate 2)
+- **Tests:** 544 pass across the 7 foundation modules (run per-dir or combined via `pytest.ini` import-mode); 0 fail.
 - **Build:** n/a (pure-Python gate work; convert.py untouched, D-MODULAR)
-- **Uncommitted changes:** pre-existing not-mine files only (lucide-icons.php, reports/phase4-*, theme-handoff deletions) + this gate's doc edits.
+- **Uncommitted changes:** pre-existing not-mine files only (lucide-icons.php, reports/phase4-*, theme-handoff deletions).
 
 ## Known Issues / Blockers
-- None block the next session. Deferred residuals tracked in `P-F5-RESIDUALS` (F3-runtime LANDED leg, 2 D2-reparse precision gaps, cheat-gate tuple-key dict gap, combined-pytest module-basename collision).
+- None block the next session. Two F5 residuals remain (`P-F5-RESIDUALS`), both evidenced as rebuild/infra-scope (not habit-deferral): the F3-runtime LANDED leg (needs a browser render-harness) + the css_router D1 media-axis (dead output; rebuild's MF-2 owns it; gate already fails-safe).
 
 ## Next Priorities (in order)
-1. Validate/refresh the pipeline routing chart (`reports/pipeline-routing-map-2026-06-17.html`) — the §11 prerequisite to the stage rebuild.
-2. Begin the stage-by-stage rebuild (Spec 31 §12.6 step 3), Stage 2 (recognition/match incl. Method-2) first, universal across all block-shapes, design-gated, ledger+oracle-gated.
-3. Arm the F3-runtime LANDED leg as part of the rebuild (it gates each stage's WRITTEN→LANDED).
+1. **DOC AUDIT** (this is the next session's task — see next-session-prompt): review every `.claude/`, `specs/`, `plans/` doc against ground truth + the universal-pipeline end goal; archive stale/complete, merge/individuate duplicates, rewrite clearly, fix inconsistencies.
+2. **After the audit:** resume the stage-by-stage rebuild (Spec 31 §12.6 step 3) — Stage 2 (recognition/match incl. Method-2) first, design-gated, ledger+oracle-gated.
 
 ## Files Modified
 | File path | What changed |
 |-----------|--------------|
-| `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | Wired pipeline-stage-gate post-Stage-9; removed shadowing local import |
-| `plugins/sgs-blocks/scripts/cheat-gate/` (new) | §7a cheat gate (run.py + 6 checks + baseline + 30 tests) |
-| `plugins/sgs-blocks/scripts/excluded-gate/` (new) | F4 §3 EXCLUDED-literal gate (+ 31 tests) |
-| `plugins/sgs-blocks/scripts/coverage-matrix/` (new) | §5 coverage dashboard (+ 20 tests) |
-| `plugins/sgs-blocks/scripts/ledger/coverage_check.py` (new) | §12.2.1 UNACCOUNTED ledger checker (+ 31 tests) |
-| `.claude/hooks/f5-commit-gate.py` (new) | PreToolUse commit gate running the 4 static gates |
-| `.claude/settings.json` · `plugins/sgs-blocks/package.json` | Registered the commit hook + prebuild/prestart wiring |
-| `.claude/decisions.md` · `parking.md` · `state.md` | D238/D239, P-F5-RESIDUALS, state one-liner |
+| `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | Wired pipeline-stage-gate post-Stage-9 (D238) |
+| `plugins/sgs-blocks/scripts/cheat-gate/` | §7a gate + check #8 bound-emit + tuple-key fix + hashed baseline (8 checks, 42 tests) |
+| `plugins/sgs-blocks/scripts/excluded-gate/` | F4 §3 EXCLUDED-literal gate (31 tests) |
+| `plugins/sgs-blocks/scripts/coverage-matrix/` | §5 dashboard (20 tests) |
+| `plugins/sgs-blocks/scripts/ledger/coverage_check.py` | UNACCOUNTED gate + tier-aware join + hash + scope-honesty doc (31 tests) |
+| `plugins/sgs-blocks/scripts/orchestrator/check_no_mirror.py` | count-aware baseline + hash |
+| `.claude/hooks/f5-commit-gate.py` + `.githooks/pre-commit` + `plugins/sgs-blocks/package.json` + `pytest.ini` | gate wiring (CC hook + git floor + prebuild + import-mode) |
+| `.claude/decisions.md` · `parking.md` · `state.md` · `next-session-prompt.md` · `handoff.md` | D238–D241, P-F5-RESIDUALS, audit handoff |
 
 ## Notes for Next Session
-- **F5 is COMPLETE — do not rebuild the gates.** Build the rebuild stages ON TOP of them.
-- **Run gate test suites PER-DIR** — combined `pytest scripts/` errors on duplicate module basenames (`models.py`/`run.py` in hyphenated non-package dirs). prebuild already invokes each gate separately.
-- **css_router.route_css already enforces the coverage invariant** ("every rule → exactly one bucket", D0/D1/D2/D3) — the ledger checker joins against it. That's why the UNACCOUNTED leg is real, not hollow.
-- The cheat-gate scans the whole `orchestrator/` tree incl. `_retired/`; those legacy violations are baselined (acceptable, they vanish with the rebuild).
-- STOP-16 (this session): subagents' "tests pass" claims were false from a different cwd — always re-verify from the canonical cwd + prove the failure path.
+- **The next session is a DOC AUDIT, not a build** — the foundation/gates are done; do not rebuild them. Audit guardrails (LOAD-BEARING vs ARCHIVABLE) are in the next-session-prompt.
+- **Run gate test suites PER-DIR** or rely on `pytest.ini` (`--import-mode=importlib`) for a combined run — hyphenated dirs share module basenames.
+- **The adversarial-council on built gates was high-value** — it found a fatal soundness bug self-QC missed (STOP-17). Apply the same red-team-the-built-artefact discipline in the audit.
+- **Fact-check before deferring/archiving** (STOP-18) — several "residuals" turned out to be non-issues once checked against code; the same will be true of "stale" docs.
+- The cloning-thread docs are the audit focus; the WooCommerce-layer specs (26/27/28/30) are COMPLETE work, not cloning cruft — flag if mis-described, don't delete.
 
 ## Next Session Prompt
-See `.claude/next-session-prompt.md` (rewritten this session — points at the stage-by-stage rebuild; carries the 7 rules + the STOP catalogue 1-16 + the pre-flight ritual + the mandatory reading gate). The SessionStart hook auto-loads it.
+See `.claude/next-session-prompt.md` (rewritten this session for the doc-audit task; carries the 7 rules + STOP catalogue 1–18 + the pre-flight ritual + the LOAD-BEARING-vs-ARCHIVABLE guidance). The SessionStart hook auto-loads it.
