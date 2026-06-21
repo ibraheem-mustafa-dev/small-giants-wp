@@ -6,6 +6,20 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-21 — D238: F5 STOP-6 closed — anti-mirror gate now auto-runs on every clone
+
+**D238 — The smallest remaining F5 piece shipped: the clone orchestrator now wires the R-22-15 anti-mirror gate so it actually runs on every clone, closing the STOP-6 overclaim risk (a gate that existed + was baselined + tested but was never invoked).**
+
+SHIPPED + on `main` (commit `2341e761`):
+- **Wire** (`sgs-clone-orchestrator.py`): `main()` now invokes `pipeline-stage-gate.py <run_dir>` immediately after `stage_9_report()` writes `extract.json`, BEFORE media-sideload / deploy / +REGISTER. A clone that introduces a NEW mirror-cheat (draft-class container or bound sourceMode not in the baseline) HARD-HALTS (`sys.exit`) before it can reach the live page. The gate reads `extract.json` deterministically, so it runs identically in every `--mode` (unlike the autonomy gate). 13 legacy violations stay grandfathered; only NEW ones halt. New `--skip-stage-gate` flag (default OFF) for diagnostics.
+- **Bug found + fixed by the wire**: a redundant local `import subprocess` inside `main()` (deploy-target branch) made `subprocess` function-local for the whole function and shadowed the module-level import → the new gate call `UnboundLocalError`'d on the first real run. Removed the local re-import.
+- **Acceptance proven (all 3 legs, not "call added")**: (a) a real mamas-munches clone fires the gate — `[stage-gate] anti-mirror gate passed`, exit 0; (b) a planted NEW violation (`sgs-planted__newviolation`) into a real run dir makes the orchestrator's exact gate command exit 1 with the NEW-blocking message; (c) the orchestrator does `sys.exit(gate_proc.returncode)` on non-zero. Gate A conformance 43/43 + foundation suite 409 (ledger 167 / oracle 181 / baseline 10 / db-consistency 51) + orchestrator tests 6/6 all green.
+- **Decision — placement + always-on**: gate runs PRE-deploy (a mirror-cheat must halt before going live) and in ALL modes (it has no stubbed-signal weakness, so no draft-mode auto-skip). `--skip-stage-gate` is the only escape hatch.
+
+NEXT (F5-remaining, per `P-F5-REMAINING`): the OTHER 4 F5 gates — `check-converter-cheats.py` (§7a), `generate-coverage-matrix.py` (§5), the pipeline-close ledger checker, the EXCLUDED-literal gate, the PreToolUse git hook. Each is its own `/brainstorming` → `/adversarial-council`/`/qc-council` → Bean design-gate → SDD → qc; do NOT batch (high-blast); per STOP-14 run each against current output first + baseline today's violations.
+
+---
+
 ## 2026-06-16 — D228: hero-recovery + reconciliation + grid de-cheat + 4 corrected agent-mistakes (docs hardened)
 
 **D228 — A long session that recovered a missing-hero bug, reconciled all loose branches into main, fixed two visible bugs + de-cheated the container grid, and (after several Bean corrections) hardened the docs against the wrong mental models the agent kept reaching for.**
