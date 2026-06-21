@@ -81,18 +81,30 @@ def _bootstrap_db_consistency():
     _load("check_routing")
     _load("check_composition")
     _load("check_variants")
+    _load("check_overrides_drift")
+    _load("check_variant_reseed")
+    _load("check_orphan_roles")
+    _load("check_tier_composition")
 
 
 _bootstrap_db_consistency()
 
-from db_consistency.models import Violation, routing_key, composition_key, variant_key  # noqa: E402
-from db_consistency import check_routing, check_composition, check_variants  # noqa: E402
+from db_consistency.models import (  # noqa: E402
+    Violation, routing_key, composition_key, variant_key,
+    variant_reseed_key, orphan_role_key, tier_composition_key,
+)
+from db_consistency import (  # noqa: E402
+    check_routing, check_composition, check_variants,
+    check_overrides_drift, check_variant_reseed,
+    check_orphan_roles, check_tier_composition,
+)
 from db_consistency.resolver_bridge import (  # noqa: E402
     lift_producible_attrs,
     enumerate_candidates,
     _ATTR_NAME_OVERRIDES,
     _TYPOGRAPHY_CSS_SCOPE,
 )
+from db_consistency.check_variant_reseed import recompute_discriminators  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Live DB fixture
@@ -120,12 +132,20 @@ def live_conn():
 def _make_minimal_db(
     *,
     property_suffixes: list[tuple],  # (css_property, suffix, role, kind_override)
-    block_attributes: list[tuple],   # (block_slug, attr_name)
-    blocks: list[tuple] | None = None,  # (slug, variant_attr)
+    block_attributes: list[tuple],   # (block_slug, attr_name) or (block_slug, attr_name, role)
+    blocks: list[tuple] | None = None,  # (slug, variant_attr) or (slug, variant_attr, tier)
     variant_slots: list[tuple] | None = None,  # (block_slug, variant_value, unique_slot)
-    block_composition: list[tuple] | None = None,  # (block_slug, has_inner_blocks)
+    block_composition: list[tuple] | None = None,  # (block_slug, has_inner_blocks) or (..., composition_role, container_kind)
+    roles: list[tuple] | None = None,  # (role_name,)
 ) -> sqlite3.Connection:
-    """Create a minimal in-memory SQLite DB for unit tests."""
+    """Create a minimal in-memory SQLite DB for unit tests.
+
+    block_attributes rows may be 2-tuples (block_slug, attr_name) or
+    3-tuples (block_slug, attr_name, role).
+    blocks rows may be 2-tuples (slug, variant_attr) or 3-tuples (slug, variant_attr, tier).
+    block_composition rows may be 2-tuples (block_slug, has_inner_blocks) or
+    4-tuples (block_slug, has_inner_blocks, composition_role, container_kind).
+    """
     conn = sqlite3.connect(":memory:")
     conn.execute(
         "CREATE TABLE property_suffixes "
@@ -137,7 +157,7 @@ def _make_minimal_db(
     )
     conn.execute(
         "CREATE TABLE blocks "
-        "(slug TEXT, variant_attr TEXT)"
+        "(slug TEXT, variant_attr TEXT, tier TEXT)"
     )
     conn.execute(
         "CREATE TABLE variant_slots "
@@ -145,26 +165,50 @@ def _make_minimal_db(
     )
     conn.execute(
         "CREATE TABLE block_composition "
-        "(block_slug TEXT, has_inner_blocks INTEGER)"
+        "(block_slug TEXT, has_inner_blocks INTEGER, composition_role TEXT, container_kind TEXT)"
+    )
+    conn.execute(
+        "CREATE TABLE roles (role_name TEXT)"
     )
 
     conn.executemany(
         "INSERT INTO property_suffixes VALUES (?,?,?,?)",
         property_suffixes,
     )
-    conn.executemany(
-        "INSERT INTO block_attributes (block_slug, attr_name) VALUES (?,?)",
-        block_attributes,
-    )
+    for row in block_attributes:
+        if len(row) == 2:
+            conn.execute(
+                "INSERT INTO block_attributes (block_slug, attr_name) VALUES (?,?)",
+                row,
+            )
+        else:
+            conn.execute(
+                "INSERT INTO block_attributes (block_slug, attr_name, role) VALUES (?,?,?)",
+                row,
+            )
     if blocks:
-        conn.executemany("INSERT INTO blocks VALUES (?,?)", blocks)
+        for row in blocks:
+            if len(row) == 2:
+                conn.execute("INSERT INTO blocks (slug, variant_attr) VALUES (?,?)", row)
+            else:
+                conn.execute("INSERT INTO blocks (slug, variant_attr, tier) VALUES (?,?,?)", row)
     if variant_slots:
         conn.executemany("INSERT INTO variant_slots VALUES (?,?,?)", variant_slots)
     if block_composition:
-        conn.executemany(
-            "INSERT INTO block_composition VALUES (?,?)",
-            block_composition,
-        )
+        for row in block_composition:
+            if len(row) == 2:
+                conn.execute(
+                    "INSERT INTO block_composition (block_slug, has_inner_blocks) VALUES (?,?)",
+                    row,
+                )
+            else:
+                conn.execute(
+                    "INSERT INTO block_composition "
+                    "(block_slug, has_inner_blocks, composition_role, container_kind) VALUES (?,?,?,?)",
+                    row,
+                )
+    if roles:
+        conn.executemany("INSERT INTO roles (role_name) VALUES (?)", roles)
     conn.commit()
     return conn
 
@@ -716,3 +760,393 @@ class TestEnumerateCandidates:
 
         assert ("grid-template-columns", "wrapper_css") in candidates
         assert "gridTemplateColumns" in candidates[("grid-template-columns", "wrapper_css")]
+
+
+# ===========================================================================
+# 6. Check #4 — override-dict drift
+# ===========================================================================
+
+class TestCheck4OverridesDrift:
+    """Check #4: _SUFFIX_ATTR_OVERRIDES (convert.py) == _ATTR_NAME_OVERRIDES (db_lookup.py)."""
+
+    @_skip_no_db
+    def test_check4_zero_violations_today(self, live_conn):
+        """The two override dicts are identical today → 0 violations."""
+        violations = check_overrides_drift.run(live_conn)
+        assert violations == [], (
+            f"Expected 0 drift violations, got {len(violations)}: "
+            + "\n".join(v.detail for v in violations)
+        )
+
+    def test_check4_extracts_suffix_attr_overrides_from_convert_py(self):
+        """The AST extractor reads the real _SUFFIX_ATTR_OVERRIDES from convert.py."""
+        extracted = check_overrides_drift._extract_suffix_attr_overrides()
+        assert extracted == {("grid-template-columns", "Columns"): "gridTemplateColumns"}, (
+            f"AST extraction of _SUFFIX_ATTR_OVERRIDES returned unexpected: {extracted}"
+        )
+
+    def test_check4_flags_drift(self, monkeypatch):
+        """Plant: monkeypatch _ATTR_NAME_OVERRIDES to differ → Violation."""
+        # Make db_lookup's dict (imported into check_overrides_drift) differ.
+        bad_dict = {("some-prop", "Some"): "someAttr"}
+        monkeypatch.setattr(check_overrides_drift, "_ATTR_NAME_OVERRIDES", bad_dict)
+
+        violations = check_overrides_drift.run(None)  # conn unused by this check
+        assert len(violations) == 1, (
+            f"Expected 1 drift violation, got {len(violations)}"
+        )
+        v = violations[0]
+        assert v.check == "overrides_drift"
+        assert "drifted" in v.detail
+        assert v.key == check_overrides_drift._DRIFT_KEY
+
+    def test_check4_passes_identical_dict(self, monkeypatch):
+        """Plant: monkeypatch _ATTR_NAME_OVERRIDES to match convert.py exactly → no Violation."""
+        good_dict = {("grid-template-columns", "Columns"): "gridTemplateColumns"}
+        monkeypatch.setattr(check_overrides_drift, "_ATTR_NAME_OVERRIDES", good_dict)
+
+        violations = check_overrides_drift.run(None)
+        assert violations == [], (
+            f"Expected 0 violations when dicts match, got {len(violations)}"
+        )
+
+
+# ===========================================================================
+# 7. Check #5 — variant_slots ↔ block.json determinism (THE valuable one)
+# ===========================================================================
+
+class TestCheck5VariantReseed:
+    """Check #5: DB variant_slots equals the block.json set-difference recompute."""
+
+    @_skip_no_db
+    def test_check5_zero_violations_today(self, live_conn):
+        """variant_slots is in sync with block.json today → 0 violations."""
+        violations = check_variant_reseed.run(live_conn)
+        assert violations == [], (
+            f"Expected 0 variant-reseed violations, got {len(violations)}: "
+            + "\n".join(v.detail for v in violations)
+        )
+
+    @_skip_no_db
+    def test_check5_universal_over_all_variant_blocks(self, live_conn):
+        """Check #5 must inspect every variant_attr block (hero + testimonial)."""
+        variant_blocks = {
+            r[0] for r in live_conn.execute(
+                "SELECT slug FROM blocks WHERE variant_attr IS NOT NULL AND variant_attr != ''"
+            ).fetchall()
+        }
+        assert "sgs/hero" in variant_blocks
+        assert "sgs/testimonial" in variant_blocks
+
+    def test_recompute_discriminators_set_difference(self):
+        """The recompute mirrors sgs-update-v2.py: shared slots are NOT discriminators."""
+        variants = {
+            "standard": ["backgroundImage", "minHeight"],
+            "split": ["splitImage", "minHeight"],  # minHeight shared → not a discriminator
+        }
+        result = recompute_discriminators(variants)
+        assert ("standard", "backgroundImage") in result
+        assert ("split", "splitImage") in result
+        # minHeight is shared between both variants → excluded from BOTH.
+        assert ("standard", "minHeight") not in result
+        assert ("split", "minHeight") not in result
+
+    def test_check5_flags_stale_variant_slots(self, tmp_path):
+        """Plant: block.json says {split:splitImage}, DB has a stale gridTemplateColumns row → Violation."""
+        # Build a block.json fixture.
+        block_dir = tmp_path / "stale-variant"
+        block_dir.mkdir()
+        bj = {
+            "name": "sgs/stale-variant",
+            "supports": {
+                "sgs": {
+                    "variants": {
+                        "standard": ["backgroundImage"],
+                        "split": ["splitImage"],
+                    }
+                }
+            }
+        }
+        (block_dir / "block.json").write_text(json.dumps(bj), encoding="utf-8")
+
+        # DB has a STALE extra row that block.json no longer lists.
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            blocks=[("sgs/stale-variant", "variant")],
+            variant_slots=[
+                ("sgs/stale-variant", "standard", "backgroundImage"),
+                ("sgs/stale-variant", "split", "splitImage"),
+                ("sgs/stale-variant", "split", "gridTemplateColumns"),  # STALE extra
+            ],
+        )
+
+        with patch.object(check_variant_reseed, "_BLOCKS_DIR", tmp_path):
+            violations = check_variant_reseed.run(conn)
+        conn.close()
+
+        assert len(violations) == 1, (
+            f"Expected 1 variant-reseed violation for the stale row, got {len(violations)}: "
+            + "\n".join(v.detail for v in violations)
+        )
+        v = violations[0]
+        assert v.block == "sgs/stale-variant"
+        assert v.check == "variant_reseed"
+        assert "gridTemplateColumns" in v.detail
+        assert v.key == variant_reseed_key("sgs/stale-variant", "gridTemplateColumns")
+
+    def test_check5_flags_missing_variant_slot(self, tmp_path):
+        """Plant: block.json adds a discriminator the DB is missing → Violation."""
+        block_dir = tmp_path / "missing-variant"
+        block_dir.mkdir()
+        bj = {
+            "name": "sgs/missing-variant",
+            "supports": {
+                "sgs": {
+                    "variants": {
+                        "standard": ["backgroundImage"],
+                        "split": ["splitImage", "splitImageMobile"],  # mobile not in DB
+                    }
+                }
+            }
+        }
+        (block_dir / "block.json").write_text(json.dumps(bj), encoding="utf-8")
+
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            blocks=[("sgs/missing-variant", "variant")],
+            variant_slots=[
+                ("sgs/missing-variant", "standard", "backgroundImage"),
+                ("sgs/missing-variant", "split", "splitImage"),
+                # splitImageMobile MISSING from DB
+            ],
+        )
+
+        with patch.object(check_variant_reseed, "_BLOCKS_DIR", tmp_path):
+            violations = check_variant_reseed.run(conn)
+        conn.close()
+
+        assert len(violations) == 1
+        v = violations[0]
+        assert "splitImageMobile" in v.detail
+        assert "missing from DB" in v.detail
+
+    def test_check5_passes_when_in_sync(self, tmp_path):
+        """block.json recompute == DB rows → no Violation."""
+        block_dir = tmp_path / "synced-variant"
+        block_dir.mkdir()
+        bj = {
+            "name": "sgs/synced-variant",
+            "supports": {
+                "sgs": {
+                    "variants": {
+                        "standard": ["backgroundImage"],
+                        "split": ["splitImage", "splitImageMobile"],
+                    }
+                }
+            }
+        }
+        (block_dir / "block.json").write_text(json.dumps(bj), encoding="utf-8")
+
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            blocks=[("sgs/synced-variant", "variant")],
+            variant_slots=[
+                ("sgs/synced-variant", "standard", "backgroundImage"),
+                ("sgs/synced-variant", "split", "splitImage"),
+                ("sgs/synced-variant", "split", "splitImageMobile"),
+            ],
+        )
+
+        with patch.object(check_variant_reseed, "_BLOCKS_DIR", tmp_path):
+            violations = check_variant_reseed.run(conn)
+        conn.close()
+
+        assert violations == [], (
+            f"Expected 0 violations when in sync, got {len(violations)}: "
+            + "\n".join(v.detail for v in violations)
+        )
+
+
+# ===========================================================================
+# 8. Check #6 — orphan roles (role referential integrity)
+# ===========================================================================
+
+class TestCheck6OrphanRoles:
+    """Check #6: every block_attributes.role exists in the roles table."""
+
+    @_skip_no_db
+    def test_check6_zero_violations_today(self, live_conn):
+        """No orphan roles today (rating registered) → 0 violations."""
+        violations = check_orphan_roles.run(live_conn)
+        assert violations == [], (
+            f"Expected 0 orphan-role violations, got {len(violations)}: "
+            + "\n".join(v.detail for v in violations)
+        )
+
+    def test_check6_flags_orphan_role(self):
+        """Plant: an attr role not in the roles table → Violation."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[
+                ("sgs/test-block", "someAttr", "phantom-role"),  # role with no roles row
+            ],
+            roles=[("known-role",)],  # phantom-role NOT registered
+        )
+        violations = check_orphan_roles.run(conn)
+        conn.close()
+
+        assert len(violations) == 1, (
+            f"Expected 1 orphan-role violation, got {len(violations)}"
+        )
+        v = violations[0]
+        assert v.check == "orphan_roles"
+        assert "phantom-role" in v.detail
+        assert v.key == orphan_role_key("phantom-role")
+
+    def test_check6_passes_registered_role(self):
+        """A role present in the roles table → no Violation."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[
+                ("sgs/test-block", "someAttr", "rating"),
+            ],
+            roles=[("rating",), ("layout",)],
+        )
+        violations = check_orphan_roles.run(conn)
+        conn.close()
+        assert violations == [], (
+            f"Expected 0 violations for a registered role, got {len(violations)}"
+        )
+
+    def test_check6_ignores_null_and_empty_roles(self):
+        """NULL/empty roles are not flagged (they're not classified)."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[
+                ("sgs/test-block", "attrA", None),
+                ("sgs/test-block", "attrB", ""),
+            ],
+            roles=[("layout",)],
+        )
+        violations = check_orphan_roles.run(conn)
+        conn.close()
+        assert violations == [], "NULL/empty roles must not be flagged as orphans"
+
+
+# ===========================================================================
+# 9. Check #7 — tier ↔ composition_role/container_kind
+# ===========================================================================
+
+class TestCheck7TierComposition:
+    """Check #7: tier=class-section blocks have valid composition_role + container_kind."""
+
+    @_skip_no_db
+    def test_check7_zero_violations_today(self, live_conn):
+        """All 3 class-section blocks pass today → 0 violations."""
+        violations = check_tier_composition.run(live_conn)
+        assert violations == [], (
+            f"Expected 0 tier-composition violations, got {len(violations)}: "
+            + "\n".join(v.detail for v in violations)
+        )
+
+    @_skip_no_db
+    def test_check7_content_block_role_allowed(self, live_conn):
+        """trust-bar uses composition_role='content-block' — must NOT be flagged."""
+        # trust-bar is tier=class-section with content-block — verify it passes.
+        violations = check_tier_composition.run(live_conn)
+        flagged = {v.block for v in violations}
+        assert "sgs/trust-bar" not in flagged, (
+            "sgs/trust-bar (content-block) was wrongly flagged — content-block IS valid"
+        )
+
+    def test_check7_flags_null_container_kind(self):
+        """Plant: a class-section block with NULL container_kind → Violation."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            blocks=[("sgs/bad-section", None, "class-section")],
+            block_composition=[("sgs/bad-section", 0, "section-root", None)],  # container_kind NULL
+        )
+        violations = check_tier_composition.run(conn)
+        conn.close()
+
+        assert len(violations) == 1, (
+            f"Expected 1 tier-composition violation, got {len(violations)}"
+        )
+        v = violations[0]
+        assert v.check == "tier_composition"
+        assert "container_kind" in v.detail
+        assert v.key == tier_composition_key("sgs/bad-section")
+
+    def test_check7_flags_invalid_composition_role(self):
+        """Plant: a class-section block with composition_role='leaf' → Violation."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            blocks=[("sgs/bad-role", None, "class-section")],
+            block_composition=[("sgs/bad-role", 0, "leaf", "section")],  # leaf is invalid for class-section
+        )
+        violations = check_tier_composition.run(conn)
+        conn.close()
+
+        assert len(violations) == 1
+        v = violations[0]
+        assert "composition_role" in v.detail
+
+    def test_check7_passes_content_block(self):
+        """A class-section block with content-block role + container_kind → no Violation."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            blocks=[("sgs/good-section", None, "class-section")],
+            block_composition=[("sgs/good-section", 0, "content-block", "section")],
+        )
+        violations = check_tier_composition.run(conn)
+        conn.close()
+        assert violations == [], (
+            f"Expected 0 violations for a valid content-block class-section, got {len(violations)}"
+        )
+
+    def test_check7_passes_section_root(self):
+        """A class-section block with section-root role → no Violation."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            blocks=[("sgs/root-section", None, "class-section")],
+            block_composition=[("sgs/root-section", 0, "section-root", "section")],
+        )
+        violations = check_tier_composition.run(conn)
+        conn.close()
+        assert violations == []
+
+    def test_check7_ignores_non_class_section_blocks(self):
+        """A tier='block' block is not subject to this check even with NULL container_kind."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            blocks=[("sgs/plain-block", None, "block")],
+            block_composition=[("sgs/plain-block", 0, "leaf", None)],
+        )
+        violations = check_tier_composition.run(conn)
+        conn.close()
+        assert violations == [], "Non-class-section blocks must not be checked"
+
+
+# ===========================================================================
+# 10. New model keys — stable format
+# ===========================================================================
+
+class TestNewModelKeys:
+    """Verify the 4 new stable dedup keys match the specified prefixes."""
+
+    def test_variant_reseed_key_format(self):
+        assert variant_reseed_key("sgs/hero", "splitImage") == "vslot:sgs/hero:splitImage"
+
+    def test_orphan_role_key_format(self):
+        assert orphan_role_key("rating") == "orphan:rating"
+
+    def test_tier_composition_key_format(self):
+        assert tier_composition_key("sgs/hero") == "tiercomp:sgs/hero"

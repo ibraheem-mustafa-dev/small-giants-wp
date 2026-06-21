@@ -47,3 +47,18 @@ def composition_key(block: str) -> str:
 def variant_key(block: str, slot: str) -> str:
     """Check #3 stable dedup key."""
     return f"vc:{block}:{slot}"
+
+
+def variant_reseed_key(block: str, slot: str) -> str:
+    """Check #5 stable dedup key."""
+    return f"vslot:{block}:{slot}"
+
+
+def orphan_role_key(role: str) -> str:
+    """Check #6 stable dedup key."""
+    return f"orphan:{role}"
+
+
+def tier_composition_key(block: str) -> str:
+    """Check #7 stable dedup key."""
+    return f"tiercomp:{block}"
