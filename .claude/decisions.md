@@ -6,6 +6,25 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-21 — D239: F5 COMPLETE — the Tier-1 gate cluster is built, armed + WIRED-to-run
+
+**D239 — Phase-F step F5 (the Spec-31 §12.7 gate cluster) is DONE. All gates exist, are baseline-armed against current legacy output (STOP-14), and are WIRED to something that runs (STOP-6). Built this session after Task 1 (D238) on Bean's "do all the F5 tasks + the git hook" directive.**
+
+SHIPPED + on `main` (5 commits this session: `2341e761` D238 wire, `a77ff324` cheat-gate, `64b2a4d9` excluded-gate, `76f2883f` coverage-matrix, `f97e7ae0` ledger-checker, `e7679b09` hook+prebuild wiring):
+- **check-converter-cheats** (`scripts/cheat-gate/`, Spec 31 §7a, MF-6) — whole-tree + PHP/CSS cheat detector, 7 checks (per-block slug literals whole-tree+indirect, hardcoded prop→attr dicts via DB css_property authority, `!important` on PHP/CSS render surface, parallel-breakpoint literals + `_BP_SUFFIX_MAP`, mirror-emit delegated to check_no_mirror, D2-when-D1 cross-join, sentinel leakage). Baseline 106 keys. 30 tests. (Implementer overflowed mid-build; I fixed the false-positive dict check — it had treated any hyphenated string like `cta-section` as a CSS property — to use DB `property_suffixes.css_property` membership, and removed a stale plant from its baseline.)
+- **EXCLUDED-literal gate** (`scripts/excluded-gate/`, F4 design §3) — import-graph-wide AST scan for in-code CSS-property drops (inline equality / anonymous-set membership / `--`-guard); a property may be dropped only if in the `excluded_properties` table. SHA-256 self-blessing-proof baseline (7 keys). Honestly scoped (delegates value-transform→F3, None-lookup→F2, broad-except→lint). 31 tests.
+- **generate-coverage-matrix** (`scripts/coverage-matrix/`, §5, MF-7) — auto-generated dashboard, 33 DB-derived rows × 44 cols; classifies N/A/BLOCKED/GAP/UNVERIFIED; COVERED+CHEAT explicitly deferred (need F3 + §7a gate output). Secondary, not the completeness gate. 20 tests. (Fixed the implementer's bare sibling imports so it runs from any cwd.)
+- **pipeline-close ledger checker** (`scripts/ledger/coverage_check.py`, §12.2.1) — the real no-silent-drop guarantee: joins the F2 declare_input ledger against `css_router.route_css`'s per-rule bucketing (D0/D1/D2/D3, which already enforces "every rule → exactly one bucket") + the F4 excluded table → `UNACCOUNTED = draft − (bucketed ∪ excluded)`. phase-f corpus = 0 UNACCOUNTED; 2 D2-reparse precision gaps (compound attribute-selectors) honestly baselined. WRITTEN-not-LANDED leg DEFERRED (raises NotImplementedError, documented) — arms with F3-runtime. 31 tests.
+- **WIRED to run (STOP-6 capstone)** — NEW `.claude/hooks/f5-commit-gate.py` PreToolUse(Bash) hook runs the 4 static gates' `--check` on every `git commit` and denies on a NEW violation (the only catch-point, since CSS-routing is pure-Python → no `npm build` → prebuild never fires for it, no CI). Fail-open on wrapper error, fail-closed on a real gate failure, `[gates-ok:<reason>]` bypass. ~2.2s. Also added the 3 new gates to `package.json prebuild`+`prestart`. Proven: hook allows a green commit (this session's), denies a planted slug-literal, allows bypass/non-commit/amend.
+
+511 tests green across the 6 foundation modules (cheat-gate 30 / excluded-gate 31 / coverage-matrix 20 / ledger 198 / db-consistency 51 / oracle 181). convert.py UNTOUCHED (D-MODULAR) throughout.
+
+**STILL DEFERRED (residuals, NOT F5 — see parking `P-F5-RESIDUALS`):** F3-RUNTIME (the LANDED leg: full-37 render, cache, pixel-diff, deploy choreography) — arms `check_landed()` + the coverage matrix's COVERED/CHEAT classification; the 2 D2-reparse precision gaps (compound attribute-selectors) baselined-not-fixed; the cheat-gate's tuple-keyed `_SUFFIX_ATTR_OVERRIDES` not caught by the string-key dict scan (frozen-convert.py, vanishes with the rebuild); the combined-`pytest scripts/` module-basename collision (run per-dir — prebuild already does).
+
+**NEXT:** the stage-by-stage rebuild (Spec 31 §12.6 step 3) — the foundation (F1–F6 + the armed/wired gates) is the spine it gates against.
+
+---
+
 ## 2026-06-21 — D238: F5 STOP-6 closed — anti-mirror gate now auto-runs on every clone
 
 **D238 — The smallest remaining F5 piece shipped: the clone orchestrator now wires the R-22-15 anti-mirror gate so it actually runs on every clone, closing the STOP-6 overclaim risk (a gate that existed + was baselined + tested but was never invoked).**
