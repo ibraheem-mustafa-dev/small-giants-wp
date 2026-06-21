@@ -4,219 +4,147 @@ project: small-giants-wp
 thread: cloning-pipeline
 phase: F6
 generated: 2026-06-20
-status: AWAITING-COUNCIL-THEN-BEAN-APPROVAL
+revised: 2026-06-20 (v2 — post-adversarial-council + fact-check)
+status: APPROVED-TO-BUILD (Bean 2026-06-20)
 spec: 31-UNIVERSAL-CONTAINER-CSS-TRANSFER §12.4 + §12.7 F6
+supersedes: v1 (role-based check #3, NO-GO'd by adversarial council)
 ---
 
-# F6 — DB-as-code consistency suite (design)
+# F6 — DB-as-code consistency suite (design v2)
 
-## 0. One-paragraph summary
+## 0. What changed from v1 (and why)
 
-A fresh `plugins/sgs-blocks/scripts/db-consistency/` module (sibling of `ledger/` F2 and
-`oracle/` F3) that proves the routing DATA is safe for name-free routing. Three checks, one
-shared runner, one baseline file, plain-English failures (MF-5), wired into `prebuild` (and
-`prestart`). It **absorbs and upgrades** the existing `check-composition-sync.py` (check #2) —
-which is then retired — and adds two genuinely new checks (#1 routing ambiguity, #3 variant
-collision). Per Bean (2026-06-20) the one real current violation it surfaces — the `sgs/hero`
-`split` variant discriminated by liftable structural attrs — is **fixed now**, not baselined.
+v1 was taken through `/qc-council` (empirical) then `/adversarial-council` (holistic). The
+adversarial council + a direct ground-truth fact-check **NO-GO'd v1's two new checks** and
+overturned two of the council's own proposed extra-checks. The verified corrections:
 
-## 1. Why F6 exists (the failure class it makes structural)
+- **Check #3 was role-based — WRONG axis.** The collision hazard is "can the universal CSS lift
+  spuriously populate this attr?" That is a **lift-surface** question (`property_suffixes` +
+  `_ATTR_NAME_OVERRIDES`), NOT a `block_attributes.role` question. Verified: `scalar-media` is
+  classified `styling-behaviour` in `roles.classification`, yet `splitImage` (scalar-media) is
+  NOT lift-producible — so role mis-classifies it. Re-grounding on the lift surface is correct AND
+  **collapses scope**: no role assignments, no `ATTR_CLASSIFICATION_OVERRIDES` work, no orphan-role
+  blocker, no roles migration. The ONLY fix needed is the hero block.json discriminator drop.
+- **Check #1's `block_selectors.element` disambiguator — WRONG mechanism.** Verified: the resolver
+  has ZERO non-comment references to `block_selectors`; it routes on `property_suffixes` rowid
+  order. So presence/absence of a `block_selectors` row has no effect on routing. Drop it; reframe
+  check #1 as the real forward-looking determinism invariant (below).
+- **Hero collision severity corrected.** Verified: the realistic confound `{backgroundImage,
+  gridTemplateColumns}` → `None` → defaults to `"standard"` (benign). The REAL bug is a **bare
+  hero** (no bg/video/svg) + incidental grid CSS → `{gridTemplateColumns}` → `'split'`. Genuine
+  mis-route, narrower than v1 claimed. Fix still worthwhile.
+- **Two council "extra checks" were FALSE and are NOT added:** `composition_role='leaf' +
+  has_inner_blocks=1` is a *documented, code-handled* state (the IN-F mechanism, D223 — verified at
+  convert.py:5084-5108), not a contradiction. `query-descriptor` is in the `roles` table (not an
+  orphan). Adding the leaf check would false-positive notice-banner and break the build.
 
-Name-free routing (the whole converter architecture, FR-22-3) is only safe if the routing DATA
-is internally consistent. Three silent-inconsistency classes mis-route a clone:
+## 1. The three checks (verified, implementable)
 
-1. **Routing ambiguity** — a `(block, layer, property)` that resolves to ≥2 competing flat attrs
-   with no disambiguator → the resolver picks arbitrarily.
-2. **Stale `has_inner_blocks`** — the D212/D221 testimonial-empty bug: a cached flag disagreeing
-   with the block's real save.js/render → empty cloned slides.
-3. **Variant discriminator collision** — a `variant_slots` discriminator that is also a liftable
-   structural attr → the CSS lift writes the very attr that decides the variant → mis-detection.
+### Check #1 — routing determinism (re-grounded; `block_selectors` mechanism DROPPED)
+**Rule:** for every `sgs/*` block, no css_property may have ≥2 of the block's own declared attrs
+derivable from it in the **same writer_path**, because the resolver (`attr_for_property`,
+db_lookup.py:1290) returns the FIRST matching attr by `property_suffixes` rowid order — a silent
+arbitrary pick if two compete.
+- **Writer_path** = the resolver's own two values: `"typography" | "wrapper_css"` (db_lookup.py:1294).
+  `style.*` root-supports is a different destination, never in contest (db_lookup.py:1249-1252) →
+  excluded.
+- **Implementation (reuse, R-22-1):** for each block, for each css_property in `property_suffixes`,
+  enumerate every (suffix→attr) the block declares (via `_ATTR_NAME_OVERRIDES` or suffix-lowercase,
+  exactly db_lookup.py:1352-1358) and group by writer_path; flag any (block, css_property,
+  writer_path) with ≥2 declared attrs.
+- **MEASURE-FIRST (STOP-14):** run report-mode vs live DB first. Verified-likely empty today
+  (forward-looking guard). If it surfaces real cases, enumerate + baseline; do NOT false-arm.
+- **Universal:** iterate ALL `slug LIKE 'sgs/%'` blocks from `blocks`; a block with no competing
+  attrs trivially passes. (Closes the universality red-team's MF-4.)
 
-F6 turns all three into **build-time failures** instead of live-clone surprises.
-
-## 2. Ground truth established (reading gate, 2026-06-20)
-
-- DB schema confirmed live: `block_composition(has_inner_blocks, container_kind, …)`,
-  `block_selectors(block_slug, element, selector)` (the disambiguator), `variant_slots(block_slug,
-  variant_value, unique_slot)`, `blocks.variant_attr`.
-- `block_selectors` = 72 rows; `variant_slots` = 17 rows.
-- The converter **does** read `has_inner_blocks` live (`db_lookup.py:566`) — so the column is
-  consumed, the guard is real. §12.3's "derive at convert-time, don't cache" fix is NOT yet
-  implemented — F6 is the interim consistency net.
-- Resolver model: `db_lookup._resolve_one` (line 1187) — most css_props map to exactly one
-  `property_suffixes` row; ambiguous typography/colour props pick a canonical suffix; `color` on
-  `sgs/heading` writes BOTH `textColour` AND `style.color.text` (legitimate **dual-destination**,
-  different write-paths — NOT an ambiguity).
-- `detect_variant` (`db_lookup.py:1892`) scores each variant by how many of its discriminating
-  slots were **populated/lifted this run**, highest wins, tie→None.
-- Hero `split` discriminators (`block.json supports.sgs.variants.split`) =
-  `[splitImage, splitImageMobile, gridTemplateColumns, splitGap]`. The last two are liftable
-  structural CSS → the collision. Testimonial discriminators are all content (no collision).
-- `check-composition-sync.py` already exists, wired into prebuild+prestart; AND-rule derivation
-  (save-marker AND render-consumes) + a `block.json supports.sgs.hasInnerBlocks` override; no
-  current false-negatives, no coverage gaps **today**.
-
-## 3. The three checks (exact semantics + queries)
-
-### Check #1 — routing ambiguity (NEW)
-**Rule:** for each `sgs/*` block, no css_property may resolve to ≥2 **competing flat attrs in the
-same write-path** without a `block_selectors.element` disambiguator.
-
-**Operational definition (to be locked with the council):**
-- Enumerate, per block, each css_property's candidate flat-attr destinations using the SAME
-  resolution data `db_lookup` uses (`property_suffixes` rows joined to the block's
-  `block_attributes`).
-- A property is **ambiguous** when ≥2 candidate flat attrs share the same write-path (both
-  wrapper-css, or both typography) for that block.
-- **Excluded (not ambiguity):** dual-destination across DIFFERENT write-paths (typography flat
-  attr + `style.*` root-supports — the documented `color`→`textColour`+`style.color.text` case);
-  the canonical-suffix-selected typography/colour props (`_TYPO_CSS_SUFFIX_SELECTION`), which are
-  already deterministically disambiguated in code.
-- **Pass condition:** an ambiguous property is OK iff the block has a `block_selectors.element`
-  row that pins which element/selector the property targets (the disambiguator).
-- **Fail:** ambiguous property + no disambiguator row.
-
-> The council MUST pressure-test this definition against the live resolver so the check matches
-> how routing actually decides, not a guessed model (R-22-7: council shapes are hypotheses).
-
-### Check #2 — `has_inner_blocks` ↔ save.js (ABSORBED + UPGRADED)
-Port the existing AND-rule derivation + block.json override verbatim, then add:
-- **G-A (fail-CLOSED on orphans):** a block present in `src/blocks/` but absent from
-  `block_composition` is a violation (today: none — clean baseline). The old `continue`-on-missing
-  is a fail-open the spec forbids (§12.3 fail-CLOSED on every DB path).
+### Check #2 — has_inner_blocks ↔ save.js (ABSORB + UPGRADE; A-grade, kept)
+Port `check-composition-sync.py`'s AND-rule (save-marker AND render-consumes) + `block.json
+hasInnerBlocks` override verbatim, then add:
+- **G-A (fail-CLOSED on orphans):** a `sgs/*` block in `src/blocks/` absent from `block_composition`
+  is a violation (today: 0). Replaces the old `continue`-on-missing fail-open.
 - **G-B (override can't mask a stale marker):** when a `block.json hasInnerBlocks` override
-  **contradicts** the AND-rule derivation, **hard-fail** unless the block.json carries a documented
-  reason (e.g. `supports.sgs.hasInnerBlocksReason`). (Bean 2026-06-20: hard-fail + justification.)
-- **G-C:** participates in the shared F6 baseline (its own baseline is empty today).
-- **G-D:** lives in the F6 module with shared runner + report; `check-composition-sync.py` retired,
-  its prebuild/prestart entry replaced by the F6 module.
+  contradicts the AND-rule derivation, hard-fail unless block.json carries
+  `supports.sgs.hasInnerBlocksReason`. block.json read from `src/blocks/<slug>/block.json`; absent
+  file = fail-CLOSED (spec-lawyer M4).
+- **PARITY GATE before deletion (maintenance Landmine 3):** run old + new check #2 side-by-side on
+  the current DB, assert identical verdict on every block, THEN delete `check-composition-sync.py`.
+- **NOT added:** the `composition_role='leaf' + has_inner_blocks=1` check (verified FALSE — IN-F).
 
-### Check #3 — variant discriminator collision (NEW) — REVISED post-council (2026-06-20)
-**Rule (REVISED, fail-closed):** every `variant_slots.unique_slot` discriminator MUST have a
-**content/media role** in `block_attributes.role`. Any other role (or NULL) → flagged as a
-collision risk. (Original "matches a property_suffixes-derived lift attr" derivation was
-**falsified by the council** — the live join returns ZERO rows because `gridTemplateColumns` is
-lifted via the `_SUFFIX_ATTR_OVERRIDES` constant, not a plain `property_suffixes` row, and
-`splitGap` is a block-specific name — so it would have MISSED the very collision it exists to
-catch. Bean-chosen replacement: a fail-closed content/media-role allowlist.)
+### Check #3 — variant discriminator collision (RE-GROUNDED on the lift surface)
+**Rule:** no `variant_slots.unique_slot` discriminator may be **lift-producible** for its block — i.e.
+no css_property resolves (via `attr_for_property`) to that discriminator's attr name. A lift-producible
+discriminator gets spuriously populated by generic draft CSS → mis-scores `detect_variant`.
+- **Implementation (reuse, R-22-1):** compute each block's lift-producible attr set by running the
+  REAL resolver `attr_for_property(block, css_property)` over every css_property in
+  `property_suffixes` ∪ `_ATTR_NAME_OVERRIDES` keys; a discriminator in that set is FLAGGED. NO role
+  dependency. (Verified: catches `gridTemplateColumns` via its `_ATTR_NAME_OVERRIDES` entry;
+  correctly passes `splitImage`/`splitGap` — not lift-producible.)
+- **Universal:** iterate every `blocks.variant_attr`-populated block (hero + testimonial today; any
+  future block auto-included) — zero per-block code.
+- **Current violation (verified):** `sgs/hero split` → `gridTemplateColumns`. Verified live:
+  bare hero `{gridTemplateColumns}` → `detect_variant` = `'split'` (mis-route). `splitGap` is NOT
+  lift-producible (verified — only a comment) so it was never a problem.
 
-**Operational definition (DB-driven, R-22-1) — FINAL (Bean-locked 2026-06-20):**
-- The hazard is specifically attrs the **universal CSS lift can spuriously populate** → those
-  spuriously raise `detect_variant`'s score. So the UNSAFE (CSS-liftable) role set =
-  `{layout, typography, color, colour-gradient, number-css-px, number-css-percent, visual, motion}`
-  (final set locked in the build's report-mode run vs the live lift surface).
-- A discriminator is SAFE iff `block_attributes.role` is present AND NOT in the CSS-liftable set
-  (so enum/rating/media/content/identity/boolean discriminators pass — they're only populated when
-  the content genuinely exists). FLAGGED iff role ∈ CSS-liftable set OR role IS NULL (fail-closed:
-  an unclassified attr can't be *proven* non-liftable, so it flags + forces classification).
+## 2. The fix (verified-minimal)
 
-**UNIVERSAL (Rule 3 / R-22-9):** the check + its tests run across EVERY variant-bearing block
-(`blocks.variant_attr` populated) — today `sgs/hero` + `sgs/testimonial`, plus any future block,
-with zero per-block branching. Tests assert correct verdicts on both blocks' real discriminators.
+ONE change: `src/blocks/hero/block.json` `supports.sgs.variants.split` →
+`["splitImage", "splitImageMobile"]` (drop `gridTemplateColumns` + `splitGap`). They remain valid
+hero attrs the lift can populate; they stop *discriminating*. Reseed `variant_slots` via a dated
+migration-trigger + full `/sgs-update` (set-difference reseed; reproducible, not manual).
+**Verified post-fix (simulated):** confound → `'standard'`/safe; genuine split (splitImage) →
+`'split'` (preserved). No role assignments. No `excluded_properties`/roles migration.
 
-**Current violations measured against the live DB (council Stage-5 enumeration):**
-- `sgs/hero split` → `gridTemplateColumns` (role NULL) + `splitGap` (role `layout`) — REAL
-  collision. **Empirically confirmed:** `detect_variant('sgs/hero', {backgroundImage, gridTemplateColumns,
-  splitGap})` returns `'split'` (a standard hero with generic grid CSS mis-routes to split).
-- `sgs/hero svg-animated` → `svgContent` (role NULL) — a FALSE collision (genuine SVG content,
-  not lifted CSS); the fix is to give `svgContent` the `content` role, not to weaken the check.
+## 3. Arming / baseline (STOP-14)
 
-**The fixes (universal, DB-driven; disposition = FIX ALL NOW, zero baseline — Bean 2026-06-20):**
-1. Edit `src/blocks/hero/block.json` `supports.sgs.variants.split` → `["splitImage",
-   "splitImageMobile"]` (drop the two structural slots). They remain valid hero attrs the lift can
-   populate; they just stop *discriminating*. **Post-fix simulation confirmed:** the confound case
-   → `'standard'` (fixed); a genuine split (splitImage only) → `'split'` (preserved).
-2. Classify the role-`None` discriminators that REMAIN discriminators, via the canonical reseed
-   path, so they pass legitimately (none are CSS-liftable — they're media/content):
-   - hero: `svgContent` → `content`
-   - testimonial: `avatarMedia`/`workMedia` → `scalar-media`; `orgLogo` → `image-object`;
-     `summaryPhrase` → `content`; `sourcePlatform` → `identity`; `verified` → `boolean-visibility`
-   (final role per attr confirmed against the block.json attr definition in the build.)
-   `ratingScale` (`select-from-enum`), `ratingStars` (`rating`), `reviewDate` (`text-content`)
-   already pass — no change.
-3. **Role-source grounding is the build's first task:** confirm HOW `block_attributes.role` is
-   populated (`/sgs-update` derivation step vs an override channel) so the assignments flow through
-   the reproducible reseed path, NOT a manual DB edit (`db-changes-reproducible-via-migration`).
-4. Re-seed `variant_slots` + roles via a dated migration + a full `/sgs-update`.
+`db-consistency-baseline.json`, stable keys per check (`amb:{block}:{prop}:{path}` /
+`ihb:{block}` / `vc:{block}:{slot}`). `--report` (exit 0) / `--check` (exit 1 on NEW key) /
+`--update-baseline`. After the hero fix, check #3 baseline is EMPTY. Check #1 baseline =
+report-mode result (likely empty). Check #2 baseline empty (current DB in sync).
 
-After the fixes, check #3 goes green across BOTH variant-bearing blocks with an EMPTY baseline.
+## 4. Wiring (STOP-6)
 
-## 4. Arming / baseline model (STOP-14)
+`prebuild` AND `prestart`: replace the `check-composition-sync.py` entry with
+`python scripts/db-consistency/run.py --check`. DB-only static check, no clone run_dir → prebuild
+is correct. Plain-English failures naming block + problem + the EXACT fix command (maintenance MF
+LANDMINE 4 — e.g. for check #3: name the block.json `supports.sgs.variants` edit + reseed command).
 
-- One `db-consistency-baseline.json` with stable keys per check (mirrors check_no_mirror's pattern):
-  `#1 → "amb:{block}:{property}"`, `#2 → "ihb:{block}"`, `#3 → "vc:{block}:{slot}"`.
-- `--report` (default, exit 0), `--check`/`--enforce` (exit 1 on any NEW key not in baseline),
-  `--update-baseline` (the only sanctioned way to change it).
-- **Per Bean:** check #3's hero violation is FIXED, so its baseline is EMPTY. Check #1's current
-  violations (if any) are enumerated; if real-and-deferrable they are baselined with a documented
-  reason, if spurious the definition is tightened — council decides per finding.
-- Run the suite against the CURRENT DB FIRST to establish the precondition before arming.
-
-## 5. Wiring (STOP-6 — wired to something that runs)
-
-- `prebuild` AND `prestart` in `package.json`: replace the `check-composition-sync.py` entry with
-  `python scripts/db-consistency/run.py --check`.
-- This is a DB-only static check (no clone run_dir needed) → prebuild is the correct home (unlike
-  check_no_mirror, which needs a clone run and lives in pipeline-stage-gate.py).
-- Plain-English failure messages naming the block, the inconsistency, and the fix command (MF-5).
-
-## 6. Module shape
+## 5. Module shape
 
 ```
 scripts/db-consistency/
   __init__.py
-  models.py            # CheckResult / Violation dataclasses, stable-key helpers
+  models.py            # Violation dataclass + stable-key helpers
+  resolver_bridge.py   # imports db_lookup.attr_for_property; computes per-block lift-producible set (R-22-1 reuse)
   check_routing.py     # check #1
-  check_composition.py # check #2 (ported + G-A/G-B upgrades)
-  check_variants.py    # check #3
-  run.py               # shared runner: --report / --check / --update-baseline; plain-English report
+  check_composition.py # check #2 (ported AND-rule + G-A + G-B)
+  check_variants.py    # check #3 (lift-surface)
+  run.py               # shared runner: --report/--check/--update-baseline; plain-English report
   db-consistency-baseline.json
-  tests/               # per-check unit tests + planted-violation tests (the acceptance gate)
+  tests/               # per-check unit + planted-violation tests, universal over both variant blocks
 ```
 
-## 7. Acceptance (measurable — NOT "suite written")
+## 6. Acceptance (measurable)
 
-1. Suite runs in `prebuild` + `prestart`, exits 0 on the current (post-hero-fix) DB.
-2. Each check proven to **reject a planted violation**: a planted stale `has_inner_blocks`; a
-   planted ambiguous `(block, property)` with no disambiguator; a planted CSS-liftable-role
-   discriminator. Check #3 + its tests run UNIVERSALLY over every `variant_attr` block (hero +
-   testimonial), asserting correct verdicts on both blocks' real discriminators (Rule 3).
-3. The hero collision is FIXED + all role-gaps classified: `block.json` updated, dated migration +
-   `/sgs-update` reseed, `variant_slots` for `sgs/hero split` no longer lists
-   `gridTemplateColumns`/`splitGap`, and every remaining discriminator on hero+testimonial has a
-   non-NULL non-CSS-liftable role; a clone of a split hero still detects `split` (live-verify on
-   canary if a split fixture exists, else converter conformance test).
-4. `check-composition-sync.py` deleted; prebuild/prestart entry replaced; Gate A + foundation tests
-   (ledger/oracle/baseline) still green.
-5. `convert.py` UNTOUCHED (D-MODULAR). DB change via dated migration, not manual.
+1. Suite runs in prebuild + prestart; exits 0 on the post-hero-fix DB.
+2. Each check REJECTS a planted violation: planted stale `has_inner_blocks`; planted same-writer_path
+   ≥2-attr ambiguity; planted lift-producible discriminator. Check #3 tests run UNIVERSALLY over
+   hero + testimonial, asserting correct verdicts on both blocks' real discriminators.
+3. Hero fix applied via block.json + dated reseed; `variant_slots` for `sgs/hero split` no longer
+   lists `gridTemplateColumns`; bare-hero `{gridTemplateColumns}` no longer detects `split`
+   (verified via `detect_variant`).
+4. check #2 parity test passes, THEN `check-composition-sync.py` deleted + prebuild/prestart entry
+   replaced. Gate A + foundation tests (ledger/oracle/baseline, 358) stay green.
+5. `convert.py` UNTOUCHED (D-MODULAR). Reseed via dated path, not manual.
 
-## 8. Risks / open questions — COUNCIL VERDICTS (2026-06-20, /qc-council)
+## 7. Out of scope (flagged, not built now — Bean scope: no-preference → tight+correct)
+Candidate follow-up checks the audit surfaced, deferred to keep F6 spec-faithful + correct:
+`_SUFFIX_ATTR_OVERRIDES`↔`_ATTR_NAME_OVERRIDES` drift; `variant_slots`↔block.json reseed
+determinism; orphan-role (`rating`) registration; `tier`↔`composition_role` (unproven invariant —
+needs a human-confirmed rule first). Recorded in parking if F6 ships without them.
 
-- **R1 — Check #1 definition fidelity.** Verdict: **MEASURE-FIRST.** Definition plausible but
-  unverified against the live resolver inline. The build's FIRST step runs check #1 in report mode
-  against the live DB (STOP-14 precondition), confirms it does not false-positive the documented
-  dual-write case (`color`→`textColour`+`style.color.text`, different write-paths), and brings the
-  enumeration back BEFORE arming. If it surfaces real ambiguities they are enumerated + baselined.
-- **R2 — "Liftable structural attr" set.** Verdict: **FALSIFIED → REVISED.** The property_suffixes
-  join returns ZERO rows on the live DB (misses gridTemplateColumns/splitGap). Replaced by the
-  fail-closed content/media-role allowlist (see revised check #3).
-- **R3 — Hero fix blast radius.** Verdict: **VALIDATED — no regression.** Measured: confound
-  → `standard`, genuine split → `split`. splitImage is present only on a real split hero.
-- **R4 — Reseed determinism.** Confirm in build: `/sgs-update` regenerates `variant_slots` purely
-  from `block.json supports.sgs.variants` (set-difference). Migration must be reproducible.
-- **R5 — G-B reason field.** Decision: `supports.sgs.hasInnerBlocksReason` string in block.json
-  (single-source with the override, no separate baseline channel).
-
-## 9. Council record (/qc-council, 2026-06-20 — empirical Stage-5 gate)
-
-Cross-model Gemini rater tool-blocked on the Windows harness (STOP-13) → stood in with direct
-empirical measurement (the decisive evidence for fix-shapes) + structured branch trace.
-
-| Fix-shape | Verdict | Empirical evidence |
-|-----------|---------|--------------------|
-| #3 hero discriminator fix | **VALIDATED-SHIPPABLE** | `detect_variant` confound `split`→`standard` post-fix; genuine split preserved |
-| #3 check derivation | **FALSIFIED→REVISED** | property_suffixes join = 0 rows; replaced with content/media-role allowlist |
-| #1 ambiguity check | **MEASURE-FIRST** | run report-mode vs live DB as build step 1 before arming |
-| #2 absorb+upgrade | **VALIDATED** | AND-rule sound; override path real; no current false-negatives/orphans |
-
-Status: design council-cleared, **AWAITING BEAN APPROVAL** to build.
+## 8. Council/fact-check provenance
+v1 → `/qc-council` (empirical, validated hero fix on a since-corrected synthetic input) →
+`/adversarial-council` (5 personas: spec-lawyer B−, system-fit C+, db-util C+, universality D,
+maintenance C+ → NO-GO) → direct ground-truth fact-check (this v2). Every v2 element verified
+against db_lookup.py / convert.py / the live DB. Council agent IDs + full register in the session
+transcript.
