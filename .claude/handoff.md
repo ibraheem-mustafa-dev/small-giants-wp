@@ -5,6 +5,51 @@ thread: cloning-pipeline
 session_date: 2026-06-23
 ---
 
+# Session Handoff — 2026-06-23 (slice BUILT + LANDED, D243)
+
+## Completed This Session
+1. **Built + LANDED the modular-scaffold vertical slice (D242→D243).** The new `converter/` engine transfers a draft `max-width:1200px` → `maxWidth` and it renders correctly on a live canary — proven by `oracle/verdict.py` = LANDED. Bean signed off (R-22-13).
+2. **Gate spine (`51737bb0`):** 2 static anti-cheat gates under `plugins/sgs-blocks/scripts/converter/gates/` — `no_slug_literal.py` (AST carve-out gate, hardened past the design vs getattr/match/aliased/dynamic dodges) + `import_ban.py` (frozen-engine import ban except `db_lookup`). Baselined clean, proven exit-1 from the canonical cwd, wired into `.claude/hooks/f5-commit-gate.py`.
+3. **Routing spine (`576afce3`):** `dispatch_table.py` (block-naming-free routing) + typed `context.py` (Ctx/Decl). 12 tests.
+4. **Resolver layer (`abe35427`):** models (Write/GAP/GapOrigin) + 7 typed services + the ONE real `outer_box.py` (max-width→maxWidth, D230 exact literal) + 6 GAP-stubs + registry + `orchestrator.py` (conservation/totality/UNROUTED-hard-fail + `emit_block_markup`) + `coverage_report.py`. 52 passed + 6 xfail(strict) stub metamorphics (never vacuous).
+5. **LANDED proof on live canary:** deployed the genuine `emit_block_markup()` output (not a frozen clone) via guard-safe REST create → anonymous Playwright `getComputedStyle` (`max-width:1200px`, box 1200px @1920) → `oracle/verdict.py` all 4 guards green = LANDED. Test page deleted post-proof.
+6. **Recorded D243 + step-3 handoff (`243da3bc`):** decisions.md (D243), state.md (→ step-3), next-session-prompt.md (recognition-first plan; STOP catalogue 20→21). Pushed to main.
+
+## Current State
+- **Branch:** `main` at `243da3bc`
+- **Tests:** 580 passed + 6 xfailed (foundation + converter, scoped run); 25 new gate/slice tests
+- **Build:** n/a for `converter/` (pure-Python); `convert.py` byte-identical (D-MODULAR)
+- **Uncommitted changes:** only pre-existing dirty files NOT mine (lucide-icons.php, phase4-*.txt, handoff-theme*.md) — untouched
+
+## Known Issues / Blockers
+- None block step 3. The slice deferreds (per A14) are expected: 6 stub resolvers' real logic + per-stage LANDED, golden-source gate (A8) + fixture-corpus conservation runnable (need the full walk), `media_signal` DB-source (A11, scalar stage).
+- Combined `pytest` from scripts/ hits pre-existing `converter_v2/test_*.py` collection errors (cwd-relative `from convert import`) — NOT mine; scope regression to the foundation+converter dirs.
+
+## Next Priorities (in order)
+1. **Stage 2 (recognition / Method-2):** route `.sgs-hero` → `sgs/hero` (DB-driven, name-free) instead of raw `sgs/container`@conf-0.10. Its own design-gate first (Rule 7).
+2. **Next pipeline stage in order** (scalar/child fork — `media_signal` DB-source, A11). Same per-stage ritual; arm the deferred gates as inputs land.
+3. **Continue stage-by-stage to the §8 decommission trigger** (100% fixture set TRANSFER-and-LAND → delete `convert.py` at the final swap).
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `plugins/sgs-blocks/scripts/converter/**` (22 new files) | The modular slice: gates, dispatch_table, context, models, 7 services, outer_box + 6 stubs, orchestrator, coverage_report, README, tests |
+| `.claude/hooks/f5-commit-gate.py` | Added the 2 converter gates to `_GATES` |
+| `.claude/decisions.md` | Appended D243 |
+| `.claude/state.md` | Flipped where-we-are to step-3 |
+| `.claude/next-session-prompt.md` | Step-3 orchestration plan (recognition first; STOP 20→21) |
+
+## Notes for Next Session
+- **D-MODULAR is absolute:** never edit `convert.py`; fill the existing `converter/resolvers/<id>.py` stubs (copy the `outer_box.py` pattern). The import-ban gate enforces this.
+- **LANDED-proof recipe (STOP-21):** deploy the GENUINE `emit_block_markup()` output to a fresh canary page (REST create is guard-safe; the wp-content-guard blocks post_content *rewrites* like `str_replace`, not REST *create*), anonymous Playwright `getComputedStyle`, feed `oracle/verdict.py`. New-vs-frozen equivalence is NOT a LANDED proof (STOP-4). Creds: `.claude/secrets/sandybrown.env` (grep/cut, never `source`).
+- **Verified-not-assumed:** `background-color`/`color` → typography stub is faithful to `db_lookup._TYPOGRAPHY_CSS_SCOPE`, not a bug.
+- **Each step-3 stage needs its OWN design-gate** — the D242 slice gate does not cover recognition/scalar/variant.
+
+## Next Session Prompt
+The canonical step-3 orchestration plan already lives at `.claude/next-session-prompt.md` (committed `243da3bc`): agent identity, 7-item reading gate, the 7 rules, state recap, Task 1 (Stage 2 recognition design-gate + build) → Task 3 (decommission trigger), dependency graph, the full 21-entry STOP catalogue, the 5-question ritual, and Skills/MCP/Agents tables (WordPress tooling included). Open that file — do not regenerate it.
+
+---
+
 # Session Handoff — 2026-06-23 (modular-scaffold design-gate)
 
 ## Completed This Session

@@ -277,7 +277,7 @@ A red-team fixture per HIGH gap (a `::before` section, a `<video>` hero media co
 
 ### 12.6 Build sequence (replaces §11's legacy sequence)
 
-> **STATUS (2026-06-21, D241): Step 1 (Phase F foundation) COMPLETE** — F1–F6 + the F5 gate cluster are built, armed, wired, hardened (D240) + residual-closed (D241); 544 tests green; convert.py FROZEN (D-MODULAR). The current next action is **Step 2 (modular scaffold)** → **Step 3 (stage-by-stage rebuild)**, Stage 2 (recognition) first.
+> **STATUS (2026-06-23, D243): Step 1 (Phase F foundation) + Step 2 (modular scaffold, VERTICAL SLICE) COMPLETE.** Step 1: F1–F6 + the F5 gate cluster built/armed/wired/hardened (D240/D241). Step 2 (D242 design-gate → D243 build): the fresh `plugins/sgs-blocks/scripts/converter/` modular home — 2 armed static anti-cheat gates + block-naming-free dispatch table + typed Ctx/Decl + 7 services + the ONE real `outer_box` resolver (max-width→maxWidth) + 6 honest GAP-stubs + orchestrator (conservation spine) + coverage report — **LANDED-proven on a live canary** (oracle/verdict.py = LANDED). 580+6xfail tests; convert.py byte-identical (D-MODULAR). The current next action is **Step 3 (stage-by-stage rebuild)**, **Stage 2 (recognition / Method-2) first** — each stage its own design-gate + LANDED proof (A14, never bank from the slice).
 
 1. **Foundation first** (12.2): the draft-derived ledger + WRITTEN/LANDED + render-oracle + closed EXCLUDED + all gates, built and ARMED against the current/legacy output (today's cheats show as CHEAT/GAP) so any later change is provably non-regressing. **[DONE — Phase F, D232–D241.]**
 2. **Modular scaffold** (12.4): the dispatch table + empty per-resolver file structure + the multi-shape fixture set + DB-consistency suite.
