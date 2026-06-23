@@ -285,7 +285,7 @@ Four-destination CSS router (D0 / D1 / D2 / D3):
 
 D1 child-attribution rule: when a CSS rule targets `.sgs-X__Y`, D1 routing calls `equivalent_block_for(parent_X, Y)`. If non-NULL, the rule attributes to the CHILD block, not the parent's `Y` attr. Same function call as FR-22-2 — single authoritative implementation in `converter_v2/db_lookup.py`.
 
-**PASS test:** `css-d1-assignments.json` contains zero entries where a CSS rule targeting `.sgs-X__Y` is attributed to the parent block's `Y` attr when `equivalent_block_for(parent, Y)` returns non-NULL.
+**PASS test:** the per-section `extracted_attributes` in `extract.json` contain zero entries where a CSS rule targeting `.sgs-X__Y` is attributed to the parent block's `Y` attr when `equivalent_block_for(parent, Y)` returns non-NULL. *(Was `css-d1-assignments.json` — RETIRED; the D1 sidecar reader lives only in `_retired/`, per Spec 21. The live D1-routing truth is `extract.json`.)*
 **FAIL test:** any D1 assignment violates the child-attribution rule.
 
 ### FR-22-5.1 — Inherited / absent-value resolution
@@ -308,7 +308,7 @@ D1 child-attribution rule: when a CSS rule targets `.sgs-X__Y`, D1 routing calls
 
 ### FR-22-5.3 — Cross-node interior box-CSS → parent per-slot attr group
 
-**built_status:** BUILT/PARTIAL (D224 code-verified 2026-06-14) — `db_lookup.py:2400` `attr_for_layer_property` (name-free layer-prefix + `property_suffixes`, NOT canonical_slot per D194) + `slot_has_equivalent_block`; live at `convert.py:2523` via `_route_interior_css_to_parent_slot`. Covers padding/max-width/min-height/gap/margin. SHIPPED D224: per-slot max-width routing (`convert.py:2399`, mirrors subHeadlineMarginBottom, around the `_area_excluded` guard) closes H-C1; co-declared var() resolution (`_resolve_co_declared_var` `convert.py:384`) closes IN-B.
+**built_status:** BUILT/PARTIAL (D224 code-verified 2026-06-14) — `db_lookup.py:2400` `attr_for_layer_property` (name-free layer-prefix + `property_suffixes`, NOT canonical_slot per D194) + `slot_has_equivalent_block`; live at `convert.py:2523` via `_route_interior_css_to_parent_slot`. Covers padding/max-width/min-height/gap/margin. SHIPPED D224: per-slot max-width routing (`convert.py:2399`, mirrors subHeadlineMarginBottom, around the `_area_excluded` guard) — **WRITTEN but NOT LANDED (D226 live-verify):** `subHeadlineMaxWidth` is a hero-level attr but the sub renders as a child `sgs/text` block, so the value targets the wrong layer + sits in the leftover bucket; H-C1 is NOT closed on the live page (classic emit-green ≠ LANDED). The rebuild owns the correct-layer fix. co-declared var() resolution (`_resolve_co_declared_var` `convert.py:384`) closes IN-B (VERIFIED D226).
 
 **Requirement.** When an interior element's CSS is not consumed by the element's own block, the converter routes its **box/layout** properties (padding, margin, max-width, gap) to the **owning composite's per-slot attr group**, resolved DB-driven:
 
@@ -712,7 +712,7 @@ Universal wrapper-conversion procedure — for any draft wrapper (container / se
 - **gridItem\* never written** (A6, WS-1c) — step 4's uniform-item path has no writer; gated on WS-4 lift landing. Still pending.
 - **D1 typed-attr sidecar written-but-not-consumed** (B1, WS-2) (`seed_d1_sidecar` stub) — layout CSS strands in variation CSS instead of landing on block attributes. Still pending.
 - **converter routing: composites still receive sgs/container** (next session "Method 2") — re-clone of page 144 shows stage-2 confidence-matrix top = sgs/container (conf 0.10) across all 9 sections; converter emits containers, not composite blocks (memory `composite-mirror-is-separate-from-cloning-fidelity`). Remaining: routing fix (`.sgs-hero` → `sgs/hero`), converter-lift (post-WS-4; reinstated per `universal-lift-was-premature-not-falsified`), triage items #6 + #4a, image sideload.
-- **~13 per-block literal carve-outs in convert.py** — approximately 13 `if slug == 'sgs/X'` branches remain (FR-22-3 violation: per-block behaviour should be DB rows, not slug literals). De-literalisation programme planned: `.claude/plans/2026-06-13-converter-de-literalisation-audit.md`. Exception: `iconCircleBackground` (trust-bar per-item attr, council-ruled typed — not included in the count).
+- **~13 per-block literal carve-outs in convert.py** — approximately 13 `if slug == 'sgs/X'` branches remain (FR-22-3 violation: per-block behaviour should be DB rows, not slug literals). De-literalisation programme planned: `.claude/plans/archive/2026-06-13-converter-de-literalisation-audit.md`. Exception: `iconCircleBackground` (trust-bar per-item attr, council-ruled typed — not included in the count).
 
 Workstreams for these gaps live in **`.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md`** (archived).
 

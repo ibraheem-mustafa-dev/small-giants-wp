@@ -55,7 +55,7 @@ Live data proving the convention (how same-type CSS is categorised today):
 
   | Layer | Detected by | Container attr prefix | Example attrs |
   |---|---|---|---|
-  | OUTER box | the section-root element itself (emitted as the container) | native `style.spacing.*`, background, border, `widthMode`/`customWidth` | `paddingTop`, `backgroundColor`, `customWidth` |
+  | OUTER box | the section-root element itself (emitted as the container) | native `style.spacing.*`, background, border, `align`/`maxWidth` *(widthMode/customWidth RETIRED D230/D231)* | `paddingTop`, `backgroundColor`, `maxWidth` |
   | CONTENT-WIDTH (inner) | slug-None direct child whose CSS is `max-width` + `margin:auto` (± padding) | `content` | `contentWidth`, `contentPadding*` |
   | GRID / PER-ITEM | the level with `display:grid`/columns | `gridTemplateColumns`/`gap`/`gridItem` | `gridTemplateColumns`, `gap`, `gridItemPadding` |
 

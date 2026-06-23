@@ -484,7 +484,7 @@ The `sgs_typography_css_rule()` PHP helper (auto-loaded via `render-helpers.php`
 
 ## WordPress Requirements
 
-- WordPress 6.7+ (block theme features, theme.json v3)
+- WordPress 7.0+ recommended (canary/sandybrown runs WP 7.0); 6.7+ minimum (block theme features, theme.json v3)
 - PHP 8.0+
 - WooCommerce 9.9+ — **required** for shop/PDP templates (Spec 30, D210). The theme detects the WC version via `class-wc-compat-check.php` and shows a dismissible admin notice if the requirement is unmet. The theme still activates cleanly on non-WC installs — WC template parts simply go unused.
 - No page builder plugin dependency

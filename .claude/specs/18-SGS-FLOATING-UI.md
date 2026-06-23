@@ -13,11 +13,11 @@ shipped: true
 session_date: 2026-05-19
 authors: Bean + Claude (Sonnet 4.6)
 references:
-  - plugins/sgs-blocks/includes/class-sgs-floating-ui-customiser.php (to be created)
-  - plugins/sgs-blocks/includes/class-sgs-floating-ui-renderer.php (to be created)
-  - plugins/sgs-blocks/assets/floating-ui/floating-ui.js (to be created)
-  - plugins/sgs-blocks/assets/floating-ui/floating-ui.css (to be created)
-  - tests/php/FloatingUiCustomiserTest.php (to be created)
+  - plugins/sgs-blocks/includes/class-sgs-floating-ui-customiser.php (shipped Phase 5b, commit 60220b13)
+  - plugins/sgs-blocks/includes/class-sgs-floating-ui-renderer.php (shipped Phase 5b, commit 60220b13)
+  - plugins/sgs-blocks/assets/floating-ui/floating-ui.js (shipped Phase 5b, commit 60220b13)
+  - plugins/sgs-blocks/assets/floating-ui/floating-ui.css (shipped Phase 5b, commit 60220b13)
+  - tests/php/FloatingUiCustomiserTest.php (shipped Phase 5b, commit 60220b13)
   - .claude/memory/project_floating_ui_architecture.md (existing parking note)
 ---
 

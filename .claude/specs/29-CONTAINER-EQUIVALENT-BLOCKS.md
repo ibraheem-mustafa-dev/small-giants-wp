@@ -27,7 +27,7 @@ cross_refs:
 Every SGS composite or layout block that has a built-in outer wrapper **mirrors `sgs/container`** via the shared PHP helper `includes/class-sgs-container-wrapper.php`. There is no per-block reimplementation. The same helper, the same attribute names, the same CSS output.
 
 **What "mirror" means:**
-- The composite block's `block.json` carries the same `gap`, `widthMode`, `contentWidth`, `columns`, `backgroundImage`, etc. attributes as `sgs/container` (scoped to the block's KIND — see §2).
+- The composite block's `block.json` carries the same `gap`, `align`, `maxWidth`, `contentWidth`, `columns`, `backgroundImage`, etc. attributes as `sgs/container` (scoped to the block's KIND — see §2). *(`widthMode`/`customWidth` RETIRED D230/D231 — replaced by the 3-layer `align`/`maxWidth`/`contentWidth` model.)*
 - Its `edit.js` renders `<ContainerWrapperControls kind="…" />` from `src/blocks/container/components/ContainerWrapperControls.js` — so the editor panel is literally the same component.
 - Its `render.php` calls `SGS_Container_Wrapper::render( $attributes, $block, $inner_html, $kind )` — so the PHP output path is the same function.
 
@@ -55,7 +55,7 @@ Every roster block declares `supports.sgs.containerKind` in its `block.json`. Th
 
 **Controls exposed:**
 - Layout panel: layout type (stack/flex/grid), columns (responsive), gap (responsive).
-- Width panel: widthMode, customWidth, contentWidth, per-viewport overrides.
+- Width panel: align, maxWidth, contentWidth, per-viewport maxWidthTablet/maxWidthMobile. *(widthMode/customWidth RETIRED D230/D231.)*
 - Min-height selector.
 - Grid-item defaults panel (when layout = grid).
 - Background panel: image (responsive), video, animation (ken-burns/parallax), overlay, SVG.
@@ -69,7 +69,7 @@ Every roster block declares `supports.sgs.containerKind` in its `block.json`. Th
 
 **Controls exposed:**
 - Layout panel: layout type, columns (responsive), gap (responsive).
-- Width panel: widthMode, customWidth, contentWidth, per-viewport overrides.
+- Width panel: align, maxWidth, contentWidth, per-viewport maxWidthTablet/maxWidthMobile. *(widthMode/customWidth RETIRED D230/D231.)*
 
 ### `content`
 **Purpose:** Content-level composite with its own visual chrome (card frame, product box, etc.) that needs a width cap and inner padding, but not a grid engine or background layer.
@@ -77,7 +77,7 @@ Every roster block declares `supports.sgs.containerKind` in its `block.json`. Th
 **When to use:** A block that is a self-contained content unit with its own visual design. It may appear inside a grid (a card-grid cell, a pricing column) and needs to control its own inner width and spacing, but the outer grid/layout is managed by its parent.
 
 **Controls exposed:**
-- Width panel: widthMode, customWidth, contentWidth.
+- Width panel: align, maxWidth, contentWidth. *(widthMode/customWidth RETIRED D230/D231.)*
 - Spacing panel: inner padding.
 
 ---

@@ -8,7 +8,7 @@ Framework **v1 shipped** 2026-04-29. Phases 0–5 complete.
 
 | Component | State | Notes |
 |---|---|---|
-| `sgs-theme` | Shipped | 8 style variations, 29 patterns, mega-menu template parts, 8 frontend JS modules. theme.json v3, Inter variable + DM Serif/Sans + Montserrat/Source Sans 3 (per variation). |
+| `sgs-theme` | Shipped | Per-client theming via `theme-snapshot.json` (WP style-variations system DELETED — Decision 18, 2026-05-21). 29 patterns, mega-menu template parts, frontend JS modules. theme.json v3, Inter variable + DM Serif/Sans + Montserrat/Source Sans 3. |
 | `sgs-blocks` | Shipped | 59 blocks (51 dynamic + 8 static), block extensions (animation, hover, visibility, off-canvas), Block Defaults system. Pre-commit uniformity audit (added 2026-04-30). |
 | `sgs-blocks/forms` | Shipped | 12 form field blocks, REST endpoint, N8N webhook integration, 4-step pattern. |
 | Style variations | 8 shipped | `eye-care-ward-end`, `helping-doctors`, `indus-foods`, `mamas-munches` (added 2026-04-30 — coral/cream/Fraunces), `sgs-construction`, `sgs-healthcare`, `sgs-mosque`, `sgs-professional`. |
@@ -25,7 +25,7 @@ Framework **v1 shipped** 2026-04-29. Phases 0–5 complete.
 
 **Canonical spec:** [`Spec 22 — Universal Block-Equivalent Extraction`](.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) — single-path universal walker; R-22-1 through R-22-14 binding rules.
 
-**Active plan:** [`.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md`](../.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md) (archived) — 5-workstream programme (WS-1 SHIPPED; WS-4 block-side COMPLETE 2026-06-04 D167; converter-lift deferred).
+**Active plan:** the cloning CSS-transfer rebuild — blueprint [`.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md`](31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md) §12; live build plan [`.claude/plans/2026-06-09-clone-fix-build-plan.md`](../plans/2026-06-09-clone-fix-build-plan.md) + sign-off ledger. Foundation (Phase F) COMPLETE; convert.py FROZEN (D-MODULAR D229); next = stage-by-stage modular rebuild. (The old 5-workstream container-wrapper programme is superseded + archived.)
 
 **Current focus:** Converter method-2 lift (CSS → block attrs) and responsive fidelity (9 root-cause fixes per `.claude/reports/2026-06-05-clone-fix-spec-9-roots.md`).
 
