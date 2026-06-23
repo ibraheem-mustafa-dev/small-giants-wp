@@ -6,6 +6,21 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-23 — D242: modular-scaffold design-gate PASSED (vertical slice) — 6-persona council + 3 Bean-ratified decisions
+
+**D242 — Spec 31 §12.6 step 2 (the modular scaffold) was designed inline, red-teamed by a 6-persona `/adversarial-council`, fact-checked (STOP-15), and Bean-gated (Rule 7). Design doc: `.claude/plans/2026-06-23-modular-scaffold-design.md` v2 (APPROVED, build pending). NO code built yet — this is the design-gate ratification.**
+
+The council (cynic / spec-lawyer / ship-PM / transpiler-correctness / cheat-red-teamer / non-coder-QC) graded v1 **D/D+ across all six dimensions** — CONDITIONAL GO. Convergent headline (6/6): the v1 "build 16 empty stub resolvers" shape is the **stall trap** (weeks of work, 55%→55% fidelity, zero Bean-visible change). Fact-check confirmed 3 mechanical ground-truth errors in v1 (layers are OUTER/CONTENT/GRID not L1–L4; `writer_path` is `db_lookup._writer_path()` not a column; the value-transfer lift lives in `convert.py` 774/1598/2808/4337 NOT `db_lookup.py` — so "services wrap tested db_lookup logic" was false) and **dismissed** one council headline with evidence (cheat MF-D "f5-commit-gate.py doesn't exist" is FALSE — it exists at `.claude/hooks/` + is wired in settings.json; narrow-true residual: the shared `.githooks/pre-commit` doesn't run F5 + `core.hooksPath` unset → P-F5 follow-up, not a blocker).
+
+**Bean's 3 ratified decisions (supersede the council where they differ):**
+- **D-A — VERTICAL SLICE, not horizontal scaffold.** Build ONE resolver (`outer_box`, `max-width`→`maxWidth`) end-to-end first; prove the architecture on one LANDED property before stamping out the rest. Other resolvers come one-per-stage in step 3.
+- **D-B — NO shadow-mode / NO new-vs-old comparison.** The old `convert.py` is NEVER an oracle or golden source ("old+broken vs new+unproven is meaningless"). The ONLY correctness comparison is **draft-vs-clone** (F3 render-oracle). convert.py stays frozen+live for un-rebuilt stages, deleted at 100% coverage (§8 decommission trigger). OVERRIDES the council's shadow-mode recommendation.
+- **D-C — MF-4 fail-loud is report-only first** (run F6, baseline today's ≥2-candidate ambiguities, fail only on NEW — the D236 pattern).
+
+Folded-in must-fixes for build: anti-cheat gates the scaffold itself ships (no-slug-literal AST gate, import-ban so no resolver calls back into frozen convert.py, golden-source gate, GAP `origin` enum stub/real/excluded/unrouted), correctness invariants as tests (tier-invariance, layer-precedence grid-wins, conservation as the step-2 oracle, stubs `xfail` not vacuous), typed Ctx/Decl + service signatures, F6 baseline, and the Bean-visible coverage report + symptom→file cheatsheet. NEXT = build the slice via `/subagent-driven-development` (F6 baseline + gates wired before resolver logic), `/qc-council` before commit, deploy + F3 live-verify draft-vs-clone on canary page 8, Bean sign-off. convert.py untouched (D-MODULAR).
+
+---
+
 ## 2026-06-21 — D241: F5 residuals fact-checked + closed — bound-emit tripwire, harness-canary, 2 evidenced deferrals only
 
 **D241 — Bean directed: don't defer the residuals out of habit — fact-check each, then do all that are genuinely doable now. Fact-checked all 7 P-F5-RESIDUALS items against ground truth; the real ones shipped, the non-issues were dismissed WITH evidence, and only 2 genuinely-blocked items remain (both arm as part of the rebuild). Commit `2b597e92`.**
