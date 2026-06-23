@@ -5,8 +5,8 @@ thread: cloning-pipeline
 spec_ref: specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md §12.4 / §12.6 step 2
 created: 2026-06-23
 updated: 2026-06-23
-version: v2 — ADVERSARIAL-COUNCIL-CORRECTED + Bean-design-gate-APPROVED
-status: APPROVED for build (vertical slice). Council register folded in; Bean ratified 3 decisions (D-A/D-B/D-C below).
+version: v3 — + 3-AUDITOR CONFORMANCE PASS (§10 binding corrections folded in)
+status: APPROVED for build (vertical slice). Council + 3 conformance audits folded in (§10); Bean ratified 3 decisions (D-A/D-B/D-C). All audits = GO conditional on §10; folded.
 authors: Opus rebuild-orchestrator
 council: 6-persona adversarial-council 2026-06-23 (cynic / spec-lawyer / ship-PM / transpiler-correctness / cheat-red-teamer / non-coder-QC), all graded D/D+ on v1; CONDITIONAL GO → corrected here
 binding_rules: R-22-1 (DB-first), R-22-9 (universal), R-22-11 (verify rendered output), R-22-13 (Bean eye co-authoritative), MF-3 (structural-position guard), MF-4 (≥2-attr ambiguity guard), MF-6 (ledger spine)
@@ -163,3 +163,34 @@ plugins/sgs-blocks/scripts/converter/        # NEW clean modular home (converter
 
 ## 9. Build orchestration
 `/subagent-driven-development` (sonnet implementers + spec & quality reviewers per file); Opus orchestrates all shared-file writes (STOP-2); F6 baseline + the gates wired before the resolver logic; `/qc-council` before commit; deploy + F3 live-verify on the canary (page 8) draft-vs-clone; Bean sign-off. Per-stage, do NOT batch.
+
+**STOP-16 self-verification (mandatory):** Opus (not the implementer) re-runs every gate's `--check` AND the full test suite from the project-root canonical cwd (`--import-mode=importlib`), plants a violation to prove each gate exits 1 (the FAILURE path), and inspects committed goldens for stale captures — never accepts a subagent's "green" as fact.
+
+## 10. Pre-build conformance corrections — 3-auditor pass (2026-06-23), BINDING
+
+Three read-only conformance audits (Spec-31 / anti-cheat-rules / end-goal), each fact-checked against the code (STOP-15/16), returned **GO on the slice conditional on these folds**. Every item below is binding on the build and amends the cited section.
+
+**Headline-signal corrections (end-goal M1/M2/M3 — converge: LANDED, not conservation, measures the goal):**
+- **A1 (amends §4/§5/§7).** **LANDED is the headline pass criterion, NOT conservation.** Conservation (§4 #1) is a FLOOR (no leaks) — it goes 100% green while transferring almost nothing (every other property → `UNIMPLEMENTED_STUB`), so it must never be read as "faithful". The coverage report (§5) legend states STUB/GAP rows are **not-yet-faithful**; only `LANDED` cell count measures progress.
+- **A2 (amends §4 #2/§5).** The slice's machine-LANDED = the BUILT `oracle/verdict.py` engine run on `oracle/capture.py probe_rendered_observation` computed-style of a **deployed** page section (verified built + tested). The full pixel-diff **screenshot pair is F3-runtime = deferred** — do NOT promise it as the sign-off surface. Bean sign-off = the computed-style match verdict + one manual screenshot.
+- **A3 (amends §7, Rule 5).** `outer_box` must LAND `maxWidth` on **at least one real section of canary page 8**, not only the synthetic `rt-centred-maxwidth` fixture — the proof must touch real-homepage markup (Rule 5), even at one property. Deploy + live-verify is Bean's step.
+
+**Tier / breakpoint conformance (spec O-2 — the F-fork, most material spec gap):**
+- **A4 (amends §2.1/§3.1).** `Decl.tier ∈ {base,mobile,tablet,desktop}` has NO bucket for a non-device-tier breakpoint (e.g. a `max-width` rule at `@media 600px`). The slice MUST route a non-device-tier breakpoint's value to **UNACCOUNTED/gap (`origin=NO_DESTINATION`), NEVER coerce it into a device tier** (the Family-F forbidden conflation, Spec 31 §3 F-fork + §12.7). State this at the tier-resolution seam; the `rt-media-600` fixture exercises it.
+
+**Gate-hardening (anti-cheat GAP-1..5 + MISS-2/3 — STOP-6/14/16/19):**
+- **A5 (amends §4.1, STOP-6).** EVERY gate (no-slug-literal, import-ban, golden-source, conservation) names its RUN-TRIGGER: collected by `tests/` in the prebuild suite (project-root cwd) AND added to `f5-commit-gate.py`'s gate list. A gate with no run-trigger is deleted-or-wired, never "ships".
+- **A6 (amends §7, STOP-14).** Run ALL FOUR gates in report-mode against current output + baseline today's violations BEFORE arming (not just MF-4) — fail only on NEW.
+- **A7 (amends §4.1 no-slug-literal, GAP-1).** The gate is **AST, not grep**: fail any `Compare`/`In` node whose operand chain touches `block_slug`/`variant_value`/`variant_attr` against a string literal or string-set (catches `.split("/")[1]=="hero"`, `_SPECIAL={"hero"}` membership). Ship a planted-carve-out positive test it must catch (STOP-16).
+- **A8 (amends §4.1 golden-source, GAP-5/STOP-19).** The gate **mechanically re-captures from the F3 draft-oracle and byte-diffs** the committed golden — the `# captured:` header alone is not the test (a header is hand-typable). Reject on divergence OR missing/invalid header.
+- **A9 (amends §6/§7, MISS-2, Rule 4/STOP-3).** Add `test_unrouted_fails.py`: feed a `(block,layer,property)` with a known writer_path but no attr → assert a HARD failure, not a GAP write. "UNROUTED fails" must be a tested failure-path, not a prose promise.
+- **A10 (amends §4 #1, MISS-3).** The conservation test asserts **DISJOINTNESS** — each declaration in exactly one bucket, no UNROUTED→UNIMPLEMENTED_STUB re-binning — not just sum-balance (a sum balances even if a declaration is mis-binned).
+
+**R-22-1 hardening (anti-cheat MISS-1):**
+- **A11 (amends §2 `media_signal`).** The inline `{background-image, object-fit, aspect-ratio}` / `{img, video}` brace-sets are an R-22-1 smuggled-dict smell. `media_signal` is NOT exercised by the OUTER-`max-width` slice → its DB-source (a named `property_suffixes.role` / media-slot query + a "set is read from DB" test) is **pinned at the scalar stage (step 3), not faked inline now**. The slice's routing function does not depend on it.
+
+**Spec-reconciliation + expectation framing (spec C-1/C-3/O-1/O-3/O-4 + end-goal G1–G4):**
+- **A12 (reconciles §0.1 D-B with Spec 31 §12.6-step-1/§12.7).** D-B retires shadow-mode **value comparison**; it does NOT drop the spec's non-regression requirement. The non-regression baseline is the **legacy output's LEDGER/ORACLE METRICS** (its UNACCOUNTED set / CHEAT cells / render-diff deltas, already measured in Phase F) — NOT a live new-vs-old value diff. Compatible; stated explicitly.
+- **A13 (amends §2, spec C-1).** `typography` and `excluded` branch BEFORE layer detection **by intent** — they are pre-layer SINKS that legitimately bypass `layer_detect` (typography is layer-agnostic; excluded never lifts). Not a §3-step-1 violation.
+- **A14 (expectation lock, end-goal G1–G4).** The slice proves the **SPINE/plumbing** (dispatch + conservation + gates + one OUTER property), NOT the hard branches. Generalisation to scalar/child composites, variant grids, and ambiguous-disambiguation (`align-items`, `box-shadow`) is **explicitly deferred to per-resolver LANDED proof at each step-3 stage** — never banked from the slice (the project's history: spot-fixes don't generalise, §12.0). The `resolver(decl,ctx)->Write|GAP` contract may need extension for child-block-emitting scalar resolvers (Axis 3) — flagged as a step-3 contract-review point.
+- **A15 (minor folds).** F6 slice-run includes the variant-discriminator-collision check (§12.4, spec O-1); note D1/MF-2 is deferred to its owning stage (spec O-3); §7 adds one KIND-illegality assertion (a content-KIND block rejects a grid resolver, spec O-4); mark §2.1 tier-invariance **slice-scoped/provisional**, re-validated at the grid stage against a `display`-switch fixture (end-goal M4).
