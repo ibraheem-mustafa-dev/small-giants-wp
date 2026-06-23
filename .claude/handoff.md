@@ -5,50 +5,45 @@ thread: cloning-pipeline
 session_date: 2026-06-23
 ---
 
-# Session Handoff — 2026-06-23
+# Session Handoff — 2026-06-23 (modular-scaffold design-gate)
 
-## TL;DR
-Doc audit of every `.claude`/`specs`/`plans` doc against ground truth — archived 12 shipped/superseded plans, fixed every stale status (Spec 31 F5, Spec 22 H-C1, widthMode→align across specs), repaired the registry, de-hardcoded Spec 22 counts, trimmed mistakes.md to ≤30. 3 commits on `main` (`1c803bde`). No code touched (convert.py FROZEN). NEXT = the stage-by-stage modular rebuild (Spec 31 §12.6 step 2).
+## Completed This Session
+1. **Completed the mandatory reading gate** — Spec 31 §0/§12 (the build blueprint), Spec 22 architecture, decisions.md head (D229 D-MODULAR + D238–D241 F5 cluster), state.md, parking.md, and the on-disk foundation modules (`ledger/ oracle/ cheat-gate/ excluded-gate/ coverage-matrix/ db-consistency/`). Confirmed branch `main`, D-ceiling D241→now D242.
+2. **Designed the modular scaffold (Spec 31 §12.6 step 2)** inline — the ONE DB-driven dispatch table `(block, layer, property, tier) → resolver`, the per-resolver file structure, the shared services, and the orchestrator seam (`walk`/`convert_page`). Written to `.claude/plans/2026-06-23-modular-scaffold-design.md`.
+3. **Ran a 6-persona `/adversarial-council`** (cynic / spec-lawyer / ship-PM / transpiler-correctness / cheat-red-teamer / non-coder-QC). All graded v1 **D/D+** — CONDITIONAL GO. Convergent headline (6/6): the "16 empty stub files" shape is the **stall trap**; restructure to a **vertical slice**.
+4. **Fact-checked the council against the code (STOP-15/16)** — confirmed 3 real ground-truth errors (layers are OUTER/CONTENT/GRID not L1–L4; `writer_path` is `db_lookup._writer_path()` not a column; the value-transfer lift lives in `convert.py` not `db_lookup.py`) and **dismissed** the council's scariest claim with evidence (`f5-commit-gate.py` DOES exist + is wired; only a narrow `.githooks` residual is true).
+5. **Bean ratified 3 design decisions at the gate** — **D-A** vertical slice not horizontal scaffold; **D-B** draft-vs-clone ONLY, the old engine is never a comparison oracle; **D-C** report-only fail-loud first.
+6. **Wrote design v2** folding in the council must-fixes + the 3 decisions + the ground-truth corrections; recorded the gate as **D242**; committed (`90e44377`).
+7. **Ran 3 read-only conformance audits** (vs Spec 31, vs the 7 rules + R-22-* + STOP catalogue, vs the end-goal). All **GO conditional**; no fatal flaw, no redesign. Fact-checked the key claim (LANDED infra) — `oracle/verdict.py` + `capture.py` are BUILT; only the deploy choreography is deferred (covered by the normal pipeline deploy).
+8. **Wrote design v3** folding the audits into a binding §10 (LANDED-not-conservation is the signal; non-device-tier breakpoint → UNACCOUNTED never coerced; every gate gets run-trigger + report-baseline + failure-path test; generalisation deferred to per-resolver proof); committed (`07350ac1`).
 
-## Completed this session
-1. **Doc audit (Bean-directed) of every `.claude` / `specs` / `plans` doc** against ground truth (decisions.md D241 + Spec 31 §12 end goal). 5 parallel read-only review slices + fact-check of every archive/stale call (STOP-1/STOP-15). Committed in 3 commits: `73fe1b95`, `efdc277b`, `1c803bde`.
-2. **Archived 12 shipped/superseded plans** (`git mv` → `plans/archive/`), each cited to a D-number: F2/F3/F4/F6 + exact-match-width + converter-gaps + child-css-lift (shipped D223/D230–D237); composite-fidelity + universal-band (D228 + absorbed into rebuild); the 2 de-literalisation docs + grid-extraction design (superseded by D229 D-MODULAR / Spec 31 §12). Only `2026-06-09-clone-fix-build-plan.md` + `-sign-off-ledger.md` remain active.
-3. **Closed parking `P-CONVERTER-DE-LITERALISATION`** → `memory/parking-archive.md` (SUPERSEDED by D229; convert.py frozen).
-4. **Fixed stale statuses in place (load-bearing):** Spec 31 §12.7 F5 row PARTIAL→DONE (D239–D241) + §12.2/§5/§7a gate notes; Spec 22 H-C1 "closed"→WRITTEN-not-LANDED (D226) + retired `css-d1-assignments` PASS test; Spec 29 + WRAPPER DEC-3 `widthMode`→`align`/`maxWidth`; architecture #14 `slot_synonyms`→`slots`; goals Goal A 5-workstream→rebuild; state.md/`.claude/CLAUDE.md` D-pointers.
-5. **Repaired `docs-registry.yaml`:** repointed 2 dead phase-3/4 paths; added Spec 30, Spec 31, go-live-checklist; Spec 27/28 status; `plan.md` scope→archived; `last_updated`→2026-06-23.
-6. **De-hardcoded Spec 22 counts** to `/sgs-db` pointers — live `block_attributes`=2819 was neither the doc's "2,739" nor the agent's "2,935"; roster fixed 29→31 / 11→13 content (live DB=31).
-7. **Spec 02 counter** static→dynamic; **mistakes.md** +D240/D241 lessons, retired 17 oldest → 26 stubs (≤30 cap; was 41 not 30).
-8. **DISMISSED by fact-check (no change):** `wrap_inner` still present in `class-sgs-container-wrapper.php` (Spec 29 §6 correct); form-block count = field-types vs total; Sections Q/R exist.
-9. **Verified:** registry resolves every path; live dangling links repointed to `archive/`; docscore A/A- on every rewritten in-scope doc.
-
-## Current state
-- **Branch:** `main` at `1c803bde`
-- **Tests:** 544 foundation tests green (docs-only session; no code changed)
-- **Build:** n/a (convert.py FROZEN, D-MODULAR)
-- **Uncommitted changes:** pre-existing only (lucide-icons.php, phase4 reports, theme-handoff deletions) — none are this audit's
+## Current State
+- **Branch:** `main` at `07350ac1`
+- **Tests:** no suite run (design-only session); foundation suite was 544 green at session start (unchanged — no code touched)
+- **Build:** n/a (no code shipped — `convert.py` byte-identical, D-MODULAR)
+- **Uncommitted changes:** the pre-existing not-mine set only (`lucide-icons.php`, `phase4-*.txt`, `handoff-theme.md`, `next-session-prompt-theme.md`) — left untouched per the prompt.
 
 ## Known Issues / Blockers
-- None block the rebuild. The git-mv rename-detection bug that left plan duplicates mid-session was caught + fixed (lesson captured, blub.db 364).
+- None block the next session. The vertical-slice LANDED check needs the canary deploy step (Bean's), but the verdict engine + probe are built.
 
-## Next priorities
-1. **Resume the stage-by-stage modular rebuild** — Spec 31 §12.6 **step 2** (modular scaffold: dispatch table `(block,layer,property,tier)→resolver` + empty per-resolver files; F1 fixtures + F6 db-consistency already shipped), then **step 3** Stage 2 (recognition / Method-2: `.sgs-hero`→`sgs/hero`) first.
-2. Each stage gated by the ledger+oracle (zero UNACCOUNTED + zero WRITTEN-not-LANDED on the multi-shape fixture set) before the next.
-3. Arm the 2 deferred F5 residuals (P-F5-RESIDUALS) as the rebuild reaches their stage.
+## Next Priorities (in order)
+1. **Build the vertical slice** — orchestrator + dispatch table + context + the ONE `outer_box` resolver + the services it needs + 6 GAP-stubs, per design doc §3 + the binding §10 corrections. F6 baseline + the anti-cheat gates wired BEFORE the resolver logic.
+2. **Prove it draft-vs-clone** — `outer_box` lands `maxWidth` on the `rt-centred-maxwidth` fixture AND on a real page-8 section (Rule 5); conservation + totality + no-slug-literal + import-ban + golden-source + `test_unrouted_fails` all green; 6 stubs `xfail`.
+3. **Bean sign-off** on the draft-vs-clone verdict + coverage grid, then begin step-3 stage-by-stage (Stage 2 recognition first).
 
-## Files modified
+## Files Modified
 | File path | What changed |
 |-----------|-------------|
-| `.claude/plans/archive/*` (12 files) | Plans archived with forward-notes (git mv) |
-| `.claude/docs-registry.yaml` | 2 dead paths repointed; +Spec 30/31/go-live; status/last_updated |
-| `.claude/specs/{31,22,29,02,01,06,11,18,README,WRAPPER-CSS-ROUTING}.md` | Stale-status + retired-attr + count + counter fixes |
-| `.claude/{state,goals,architecture,cloning-pipeline-flow,cloning-pipeline-stages,CLAUDE,parking,mistakes}.md` | Status / pointer / de-hardcode / archive-on-resolve edits |
-| `.claude/memory/{parking-archive,mistakes-archive}.md` | Received closed parking entry + 17 retired mistake stubs |
+| `.claude/plans/2026-06-23-modular-scaffold-design.md` | NEW — the scaffold design (v3, APPROVED for build; §10 = binding conformance corrections) |
+| `.claude/decisions.md` | Appended D242 (design-gate passed + D-A/D-B/D-C) |
+| `.claude/state.md` | Human summary + one-line where-we-are flipped to "design-gate passed; next = build the slice"; D-ceiling D242 |
+| `.claude/handoff.md` · `.claude/next-session-prompt.md` | This handoff + the build orchestration prompt |
 
 ## Notes for Next Session
-- **De-hardcode counts, don't "correct" them** — the live DB (2819) was already past the agent's "corrected" 2935. Prose counts re-drift; use `/sgs-db` pointers.
-- **git-mv + path-scoped commit gotcha** — `git commit -- $(git diff --cached --name-only)` drops the rename source deletion; always `git ls-tree -r HEAD | grep <oldpath>` after. (blub.db 364.)
-- **convert.py is FROZEN (D-MODULAR)** — the rebuild builds fresh per-resolver files, not convert.py edits.
-- Spec 31 §12 is THE blueprint; the audit aligned every doc to it — a fresh session can trust the doc set's statuses now.
+- **D-B is binding and overrides the council's shadow-mode recommendation.** Do NOT run convert.py alongside the new engine as a baseline. The ONLY correctness comparison is draft-vs-clone (F3 render-oracle). convert.py stays frozen+live for un-rebuilt stages, deleted at 100% coverage (§8 decommission trigger).
+- **The slice proves the SPINE, not the hard branches.** scalar/child composites, variant grids, and ambiguous disambiguation are explicitly deferred to per-resolver LANDED proof at each step-3 stage (§10 A14) — never banked from the slice (spot-fixes don't generalise, §12.0).
+- **`media_signal`'s inline brace-sets are a known R-22-1 smell** — not exercised by the OUTER slice; its DB-source is pinned at the scalar stage, not faked inline now (§10 A11).
+- **Lesson captured** (blub.db 366): vertical-slice-over-horizontal-scaffold + LANDED-not-conservation + double-verify (council + audits) then fact-check the verifiers.
 
 ## Next Session Prompt
-See `.claude/next-session-prompt.md` — full orchestration plan for the stage-by-stage modular rebuild, with the carried-forward STOP catalogue (1–19), pre-flight ritual, and mandatory reading gate.
+See `.claude/next-session-prompt.md` — the build orchestration plan with the full reading gate, the 7 rules, the STOP-1..19 catalogue, the pre-flight ritual, and the per-task orchestration blocks.

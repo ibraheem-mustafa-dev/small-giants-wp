@@ -2,14 +2,14 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-last_updated: 2026-06-21
+last_updated: 2026-06-23
 note: "LEAN snapshot (single active workstream as of 2026-06-17 — the cloning CSS-transfer rebuild; theme/Spec-30 work COMPLETE + archived). Full history → memory/state-archive.md. This file holds ONLY the current pointer; detail lives in handoff.md + next-session-prompt.md (the SoT). Do NOT restate D-numbers / counts / commit hashes here — they drift. ≤24576 bytes."
 ---
 
 # small-giants-wp — State Snapshot (lean)
 
 ## Human Summary
-Cloning CSS-transfer foundation (Phase F) is COMPLETE and the 2026-06-23 doc audit aligned every doc to the universal-pipeline goal. The single active workstream is the stage-by-stage MODULAR REBUILD (Spec 31 §12.6 step 2 → step 3); `convert.py` is FROZEN (D-MODULAR). D-ceiling D241, branch `main`.
+Cloning CSS-transfer foundation (Phase F) is COMPLETE. The modular-scaffold DESIGN-GATE (Spec 31 §12.6 step 2) PASSED 2026-06-23 (D242): 6-persona adversarial-council + 3 conformance audits (spec/anti-cheat/end-goal), all GO, on a corrected design. Bean ratified 3 decisions — VERTICAL SLICE not horizontal scaffold (D-A), draft-vs-clone only / NO shadow-vs-old (D-B), report-only fail-loud first (D-C). The single active workstream is now the BUILD of that vertical slice (one OUTER `max-width`→`maxWidth` resolver, end-to-end, LANDED on real page 8); `convert.py` is FROZEN (D-MODULAR). Design doc (APPROVED, build-ready): `.claude/plans/2026-06-23-modular-scaffold-design.md` v3. D-ceiling D242, branch `main`.
 
 ## State Snapshot
 
@@ -21,7 +21,7 @@ Cloning CSS-transfer foundation (Phase F) is COMPLETE and the 2026-06-23 doc aud
 
 ## ACTIVE WORKSTREAM — Cloning CSS-transfer rebuild (the ONLY active work)
 - **SoT for current status:** `.claude/handoff.md` (latest session) + `.claude/next-session-prompt.md` (the operative opener, with the MANDATORY READING GATE). READ THOSE — do not rely on a summary here.
-- **One-line where-we-are (2026-06-23, D241):** **Phase-F COMPLETE + the DOC AUDIT COMPLETE; NEXT = the stage-by-stage modular rebuild (Spec 31 §12.6 step 2 → step 3).** Foundation (F1–F6 + the F5 gate cluster) all SHIPPED/armed/wired/hardened (D232–D241); 544 tests green; convert.py FROZEN (D-MODULAR). **Doc audit (2026-06-23, commits `73fe1b95`/`efdc277b`/`1c803bde`):** 12 shipped/superseded plans archived (only the 2 live clone-fix docs + the rebuild blueprint remain); stale statuses fixed (Spec 31 F5 row, Spec 22 H-C1/css-d1, Spec 29/WRAPPER widthMode→align/maxWidth, architecture slot_synonyms→slots, goals Goal A); registry repaired (added Spec 30/31/go-live-checklist, repointed 2 dead paths); Spec 22 counts de-hardcoded to `/sgs-db` pointers (live block_attributes=2819 ≠ the doc's old numbers — proof a fixed count re-drifts); mistakes.md trimmed 41→26 (≤30 cap); counter doc fixed static→dynamic. **D-CEILING: D241.** **DEFERRED (P-F5-RESIDUALS — 2, both rebuild/infra-scope):** F3-RUNTIME LANDED leg (needs a Playwright render-harness) + css_router D1 media-axis (D1 is a dead output; gate fails-safe; rebuild MF-2 owns it).
+- **One-line where-we-are (2026-06-23, D242):** **Phase-F COMPLETE + the modular-scaffold DESIGN-GATE PASSED; NEXT = BUILD the vertical slice (Spec 31 §12.6 step 2, vertical-slice form).** Foundation (F1–F6 + the F5 gate cluster) all SHIPPED/armed/wired/hardened (D232–D241); 544 tests green; convert.py FROZEN (D-MODULAR). **Design-gate (2026-06-23, D242, commits `90e44377`/`07350ac1`):** the §12.6-step-2 scaffold was designed → 6-persona `/adversarial-council` (graded v1 D/D+, CONDITIONAL GO) → STOP-15 fact-check (3 real ground-truth errors fixed, 1 false council headline dismissed with evidence) → Bean design-gate ratified 3 decisions → 3 read-only conformance audits (spec-31 / anti-cheat-rules / end-goal, all GO conditional) folded in → design doc v3 APPROVED. **Bean's 3 decisions:** D-A vertical slice not horizontal scaffold · D-B draft-vs-clone ONLY (old engine never an oracle) · D-C report-only fail-loud first. **Design doc (build-ready):** `.claude/plans/2026-06-23-modular-scaffold-design.md` v3 (§10 = the binding conformance corrections). **D-CEILING: D242.** **DEFERRED (P-F5-RESIDUALS — 2, both rebuild/infra-scope):** F3-RUNTIME LANDED leg (the slice arms a minimal one-fixture form of it via `oracle/verdict.py`+`capture.py`, both BUILT) + css_router D1 media-axis (rebuild MF-2 owns it).
 - **Canonical specs:** `.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md` (v0.3 — THE build blueprint; read §12 FIRST) + `.claude/specs/22-...` (the underlying pipeline architecture). Reading order: see `docs-registry.yaml` `cold_start_reading_order` (Spec 31 + the pipeline map are now mandatory top reads).
 
 ## DONE / ARCHIVED — theme + WooCommerce layer (Spec 30, no longer an active thread)
