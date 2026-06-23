@@ -12,7 +12,7 @@ council_register: reports/2026-06-17-adversarial-council-register-and-rebuild-di
 pipeline_map: reports/pipeline-routing-map-2026-06-17.html
 
 # ⚠ READ §12 FIRST. As of v0.3 (adversarial-council, Bean-locked) this is a CLEAN MODULAR REBUILD, not a fix-in-place of the legacy converter. §12 supersedes the fix-in-place assumptions in §1 (consolidate-the-8-functions) and §11 (legacy build strategy). §1-§11 remain the canonical ARCHITECTURE (layers, routing, anti-cheat intent); §12 is the corrected BUILD DIRECTION + the Tier-1 foundation the rebuild is sequenced against.
-supersedes: plans/2026-06-16-grid-container-extraction-rebuild-design.md (under-specified earlier draft)
+supersedes: plans/archive/2026-06-16-grid-container-extraction-rebuild-design.md (under-specified earlier draft; archived 2026-06-23)
 amends: specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md §FR-22-5, §FR-22-21
 acceptance_baseline: reports/2026-06-14-clone-vs-draft-defect-register.md (families B/C/D/E/F/K)
 binding_rules: R-22-1, R-22-2, R-22-3, R-22-6, R-22-9, R-22-11, R-22-15

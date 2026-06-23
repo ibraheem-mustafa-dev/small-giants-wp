@@ -313,7 +313,7 @@ block-name/
 
 **Inner blocks:** No — uses structured attributes.
 
-**Render:** Static `save()` with optional `viewScriptModule` for counter animations.
+**Render:** Dynamic `render.php` (save returns null; converted static→dynamic 2026-05-19, commit `a9083ca9`, with a `deprecated.js` shim for existing posts). `viewScriptModule` drives the count-up animation.
 
 **Responsive:** Wraps to 2x2 grid on mobile, stays horizontal on desktop.
 

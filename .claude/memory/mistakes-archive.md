@@ -468,3 +468,91 @@ Programmatic translation captures structure + tokens but misses design choices i
 ---
 
 *Archive created 2026-05-24 by Phase 6a doc-op migration.*
+
+
+## Retired from mistakes.md active set 2026-06-23 (doc audit — ≤30 cap; all dated ≤2026-05-24)
+
+### [2026-05-24] wp eval blocked by project hook; use wp-load + HTTP curl instead
+- **Pattern key:** `wp-eval-blocked-use-wp-load-curl-pattern`
+- **blub.db row:** `<pending sync>`
+- **Feedback file:** [feedback_verify_wp_api_surface_before_dismissing_static_analyser.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_wp_api_surface_before_dismissing_static_analyser.md)
+
+### [2026-05-22] register_block_variation() does not exist as PHP in WP 7.0; polyfill via get_block_type_variations filter is load-bearing
+- **Pattern key:** `register-block-variation-not-a-php-function-use-filter`
+- **blub.db row:** `<pending sync>`
+- **Feedback file:** [feedback_verify_wp_api_surface_before_dismissing_static_analyser.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_wp_api_surface_before_dismissing_static_analyser.md)
+
+### [2026-05-22] Verify renderer paint targets against actual DOM emission, not assumed wrapper classes
+- **Pattern key:** `verify-paint-target-against-live-dom-before-shipping`
+- **blub.db row:** `<pending sync>`
+- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md)
+
+### [2026-05-24] Surface-level fix via HTML-tag side-channel violates Spec 00 BEM-as-canonical
+- **Pattern key:** `evidence-based-deduction-not-probabilistic`
+- **blub.db row:** `<pending sync>`
+- **Feedback file:** [feedback_evidence_based_deduction_not_probabilistic.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_evidence_based_deduction_not_probabilistic.md)
+
+### [2026-05-24] Single-column DB fix leaves seed-script stale; future /sgs-update re-seeds the bug
+- **Pattern key:** `comprehensive-db-audit-before-data-layer-changes`
+- **blub.db row:** `<pending sync>`
+- **Feedback file:** [feedback_comprehensive_db_audit_before_data_layer_changes.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_comprehensive_db_audit_before_data_layer_changes.md)
+
+### [2026-05-24] Spec-vs-impl drift: declared pipeline stages may not actually run
+- **Pattern key:** `shipped-claims-need-grep-verify`
+- **blub.db row:** `<pending sync>`
+- **Feedback file:** [feedback_shipped_claims_need_grep_verify.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_shipped_claims_need_grep_verify.md)
+
+### [2026-05-24] Hardcoded dicts in scripts drift silently from DB-canonical data
+- **Pattern key:** `db-first-no-hardcoded-dicts`
+- **blub.db row:** `<pending sync>`
+- **Feedback file:** [feedback_db_first_no_hardcoded_dicts.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_db_first_no_hardcoded_dicts.md)
+
+### [2026-05-24] Architectural changes touch 10-15 docs, not 3 — comprehensive doc walk required
+- **Pattern key:** `active-prune-over-age-cutoff-archive`
+- **blub.db row:** `<pending sync>`
+- **Feedback file:** [feedback_active_prune_over_age_cutoff_archive.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_active_prune_over_age_cutoff_archive.md)
+
+### [2026-05-24] Walker pre-pass commit without Stage 11 pixel-diff measurement caused post-hoc regressions
+- **Pattern key:** `pixel-diff-required-before-converter-commit`
+- **blub.db row:** `<pending sync>`
+- **Feedback file:** [feedback_per_section_cropped_pixel_diff.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_per_section_cropped_pixel_diff.md)
+
+### [2026-05-24] match.json confidence gate cannot be met by Stage 4 walker pre-pass alone
+- **Pattern key:** `pipeline-gate-must-match-stage-that-produces-it`
+- **blub.db row:** `<pending sync>`
+- **Feedback file:** [feedback_read_leftover_buckets_before_conjecturing.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_read_leftover_buckets_before_conjecturing.md)
+
+### [2026-05-23] Subagent fabricated non-existent DB table claim — schema enumerate before trusting
+- **Pattern key:** `schema-enumeration-before-gap-claims`
+- **blub.db row:** `272`
+- **Feedback file:** [feedback_schema_enumeration_before_gap_claims.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_schema_enumeration_before_gap_claims.md)
+
+### [2026-05-23] Page 131 deleted; orchestrator silently reported OK via phantom-page path
+- **Pattern key:** `verify-canary-page-exists-before-pipeline`
+- **blub.db row:** `<pending sync>`
+- **Feedback file:** [feedback_shipped_claims_need_grep_verify.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_shipped_claims_need_grep_verify.md)
+
+### [2026-05-23] Hand-authored patterns are structural debt — 0.95 confidence from a PHP file is not converter quality
+- **Pattern key:** `pattern-production-readiness-gate`
+- **blub.db row:** `<pending sync>`
+- **Feedback file:** [feedback_pattern_production_readiness_gate.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_pattern_production_readiness_gate.md)
+
+### [2026-05-22] Verify WP API surface before dismissing static-analyser "Undefined function" warnings (blub.db row 283)
+- **Pattern key:** `verify-wp-api-surface-before-dismissing-static-analyser`
+- **blub.db row:** `283`
+- **Feedback file:** [feedback_verify_wp_api_surface_before_dismissing_static_analyser.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_wp_api_surface_before_dismissing_static_analyser.md)
+
+### [2026-05-22] wp-content-guard hook over-matches on stdout — guard should match argv only
+- **Pattern key:** `wp-content-guard-scope-argv-not-output`
+- **blub.db row:** `283`
+- **Feedback file:** [feedback_wp7_live_verification_corrects_audit_assumptions.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_wp7_live_verification_corrects_audit_assumptions.md)
+
+### [2026-05-22] Audit findings must be verified live on WP 7.0 before reporting as fact
+- **Pattern key:** `wp7-live-verification-corrects-audit-assumptions`
+- **blub.db row:** `<pending sync>`
+- **Feedback file:** [feedback_wp7_live_verification_corrects_audit_assumptions.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_wp7_live_verification_corrects_audit_assumptions.md)
+
+### [2026-05-21] QC binding rule violated 3+ times in one session — structural hook enforcement is the only fix (row 281)
+- **Pattern key:** `qc-gate-must-be-structural-not-prompt`
+- **blub.db row:** `281`
+- **Feedback file:** [feedback_multi_model_qc_before_commit.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_multi_model_qc_before_commit.md)
