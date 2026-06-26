@@ -52,8 +52,8 @@ recognise(node: bs4.Tag, css_rules: dict) -> Recognition:
         slug = _pick_root(candidates, conn)        # MF-6 tie-break: prefer container_kind='section' > 'layout' > 'content';
                                                    # if still ≥2 → UNRECOGNISED + WARN (never source-order pick)
         kind             = "named"
-        container_kind   = _get_container_kind(slug, conn)            # §9-fold-A: NEW db_lookup.get_container_kind (no phantom)
-        has_inner_blocks = db_lookup.block_accepts_inner_blocks(slug) # db_lookup.py:539 ✓ (NOT check_composition filesystem scan)
+        container_kind   = _get_container_kind(slug)                  # §9-fold-A: NEW db_lookup.get_container_kind (no phantom)
+        has_inner_blocks = derive_has_inner_blocks(slug)              # §3: DERIVE fresh from save.js+render.php (NOT the cached column — Spec 31 §12.7)
         return Recognition(kind, slug, container_kind, has_inner_blocks)
 
     # 2. ATOMIC-TAG — no sgs- root class, tag maps to a block (h1→sgs/heading).
@@ -106,15 +106,17 @@ class Recognition:
 
 **Anti-cheat (cheat MF-1):** the no_slug_literal gate catches `variant_value == "split"` comparisons but NOT a bare `return "split"`. §9-fold-G extends the gate to flag bare string-constant returns/assigns in `variant_detect.py`, AND a **DB-coupling test** (point the detector at a `variant_slots` view returning WRONG slots → variant output must change) proves it reads the table, not a smuggled dict. Because step 2's slot list and step 3's counter are both straight `variant_slots`/`db_lookup` reads, the only honest implementation IS the table-driven one.
 
-## 3. has_inner_blocks — the verified DB reader (council fold, replaces v1 filesystem scan)
-`has_inner_blocks = db_lookup.block_accepts_inner_blocks(slug)` ([db_lookup.py:539](plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py#L539)) — DB-driven, on the permitted-import side. Drops the v1 `check_composition._derive` plan entirely (it's a filesystem scan in a hyphenated package that can't be imported — cheat MF-4 / cynic MF-1). F6 db-consistency already guarantees that column agrees with the save.js AND-rule, so the column IS the trustworthy single source. Atomic/scalar leaves assert `0` (SF-2).
+## 3. has_inner_blocks — DERIVED at convert-time from save.js (Spec 31 §12.7 LITERAL requirement)
+
+**Spec 31 §12.7 Stage-2 row is explicit: "derive at convert-time from the save.js marker, NOT a cached column."** So recognition does NOT read the cached `block_composition.has_inner_blocks` column (`block_accepts_inner_blocks` is rejected here — qc-inline 2026-06-26 flagged it as a literal-spec deviation: a stale column mis-routes silently, the exact failure the spec forbids). Instead, `derive_has_inner_blocks(slug)` is built FRESH in the converter and computes the AND-rule from the block's own source: `1 iff (the block's save.js emits <InnerBlocks.Content) AND (its render.php consumes $content)`, honouring a `block.json supports.sgs.hasInnerBlocks` override (+ `hasInnerBlocksReason`). This is a small, self-contained reader of `src/blocks/<name>/{save.js,render.php,block.json}` — convert-time derivation, NOT a cached read, NOT an import of `check_composition` (build fresh; the AND-rule is re-implemented in `services/has_inner.py`, not borrowed across the db-consistency package). **F6 db-consistency remains the cross-check** (the spec says "Stage 2 / 4f + F6 pre-flight"): F6 already verifies the cached column agrees with this same AND-rule, so a divergence between the convert-time derivation and the column is a F6 violation surfaced pre-flight. Atomic/scalar leaves assert `0` (SF-2 — leaves cannot host children).
 
 ## 4. Module shape (a new upstream component; gates extended to it)
 ```
 converter/
 ├── recognition.py            # NEW — recognise() (§1). Added to no_slug_literal scan (§9-fold-G).
 ├── services/
-│   ├── variant_detect.py     # NEW — reuse frozen detect_variant + discriminator gather (§2). Scanned ✓.
+│   ├── variant_detect.py     # NEW — db_lookup.detect_variant + variant_slots discriminator gather (§2). Scanned ✓.
+│   ├── has_inner.py          # NEW — derive_has_inner_blocks(slug): fresh save.js+render.php AND-rule, NOT the cached column (§3). Scanned ✓.
 │   └── recognise_helpers.py  # NEW — _get_container_kind, _bem_element_to_canonical_slot, _pick_root. Scanned ✓.
 ├── context.py                # Recognition dataclass added (typed seam, frozen) (§1).
 └── tests/
