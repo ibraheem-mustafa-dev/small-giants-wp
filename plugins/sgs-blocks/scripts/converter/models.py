@@ -26,6 +26,9 @@ class GapOrigin(str, enum.Enum):
                                                 # block (distinct from UNROUTED, a known-writer-path property
                                                 # finding no attr). Loud RED, never a silent empty sgs/container
                                                 # emit (Spec 31 §12.7 classification exhaustiveness).
+    CONTENT_GAP = "CONTENT_GAP"                # Stage 3-4 content extraction: a content child that did not
+                                                # transfer (distinct from UNRECOGNISED block-id and UNROUTED
+                                                # CSS-decl). Loud, never a silent drop.
 
 
 @dataclass(frozen=True)

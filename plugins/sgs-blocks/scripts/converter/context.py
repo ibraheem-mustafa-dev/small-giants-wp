@@ -74,3 +74,37 @@ class Recognition:
     has_inner_blocks: int | None
     variant_attr: str | None = None
     variant_value: str | None = None
+
+
+# NOTE: AttrInfo lives in orchestrator.converter_v2.db_lookup (it is what
+# content_attrs_with_selector returns); extraction imports it from there to
+# avoid a duplicate type + a reverse converter->frozen-tree import.
+
+
+@dataclass(frozen=True)
+class ScalarLift:
+    """A content child lifted into a parent typed scalar attribute."""
+    attr: str
+    value: str
+
+
+@dataclass(frozen=True)
+class ChildBlock:
+    """A content child emitted as a child InnerBlock."""
+    slug: str
+    content: str
+
+
+@dataclass(frozen=True)
+class ContentGap:
+    """A content unit that did NOT transfer — tracked, never silent."""
+    where: str    # a human label — a BEM class or attr_name
+    detail: str
+
+
+class ContentConservationError(AssertionError):
+    """Raised when a content-stream conservation invariant is violated.
+
+    Per-mechanism: Mechanism A `attrs_attempted == lifts + content_gaps`;
+    Mechanism B `content_leaves_seen == child_blocks + content_gaps`.
+    """

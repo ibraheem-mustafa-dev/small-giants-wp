@@ -94,6 +94,32 @@ def test_catches_match_statement(tmp_path):
 
 
 # ---------------------------------------------------------------------------
+# Slot-name carve-outs (new cheat surface — content-extraction stage keys on slots)
+# These tests FAIL before _TARGET_IDENTS includes slot/slot_name/canonical_slot
+# and PASS after (Task 1).
+# ---------------------------------------------------------------------------
+
+def test_catches_slot_compare(tmp_path):
+    # if slot == "quote": ... — per-slot carve-out via bare `slot` identifier.
+    v = _scan(tmp_path, "def r(slot):\n    return slot == 'quote'\n")
+    assert len(v) >= 1
+    assert any("slot" in vi["src"] for vi in v)
+
+
+def test_catches_canonical_slot_compare(tmp_path):
+    # if canonical_slot == "heading": ... — carve-out via canonical_slot identifier.
+    v = _scan(tmp_path, "def r(canonical_slot):\n    return canonical_slot == 'heading'\n")
+    assert len(v) >= 1
+    assert any("canonical_slot" in vi["src"] for vi in v)
+
+
+def test_catches_slot_name_membership(tmp_path):
+    # slot_name in ("quote", "heading") — membership form.
+    v = _scan(tmp_path, "def r(slot_name):\n    return slot_name in ('quote', 'heading')\n")
+    assert len(v) >= 1
+
+
+# ---------------------------------------------------------------------------
 # Clean code the gate must NOT flag (zero false positives)
 # ---------------------------------------------------------------------------
 

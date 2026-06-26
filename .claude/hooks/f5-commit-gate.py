@@ -39,6 +39,7 @@ _GATES = [
     ("anti-cheat (Spec 31 §7a)", "cheat-gate/run.py"),
     ("excluded-property drops (F4 §3)", "excluded-gate/run.py"),
     ("coverage / no-silent-drop (§12.2.1)", "ledger/coverage_check.py"),
+    ("content-gap visibility (stage-3 §4)", "ledger/content_gap_check.py"),
     ("DB-as-code consistency (§12.4)", "db-consistency/run.py"),
     # Modular-rebuild scaffold anti-cheat gates (design §4.1 / A7, D242).
     ("converter carve-out (no-slug-literal §4.1)", "converter/gates/no_slug_literal.py"),

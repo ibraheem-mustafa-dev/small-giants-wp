@@ -3349,6 +3349,141 @@ def emit_sgs_container_wrapping(
 
 
 # ----------------------------------------------------------------------------
+# content_attrs_with_selector / content_role_for_slot — Stage 3 helpers
+# ----------------------------------------------------------------------------
+# Two read-only DB accessors for Stage 3 recognition: which content-bearing
+# attrs on a block carry a derived_selector (for CSS-to-attr routing), and
+# what content role does a given canonical_slot carry on a block?
+#
+# Both use _content_bearing_roles() live (R-22-1 — no hardcoded role lists).
+# Both use the same lru_cache + sqlite3.connect(SGS_DB) idiom as neighbours.
+# ----------------------------------------------------------------------------
+
+
+class AttrInfo(NamedTuple):
+    """A content-bearing attr on a block that has a derived_selector."""
+    attr_name: str
+    role: str
+    derived_selector: str
+
+
+@functools.lru_cache(maxsize=256)
+def content_attrs_with_selector(block_slug: str) -> tuple[AttrInfo, ...]:
+    """Return content-bearing attrs for `block_slug` that have a derived_selector.
+
+    Queries block_attributes for rows where:
+      - block_slug = the given slug
+      - derived_selector IS NOT NULL
+      - role is in the live content-bearing role set (_content_bearing_roles())
+
+    Returns a tuple of AttrInfo(attr_name, role, derived_selector). Empty tuple
+    if none exist or the block is unknown. LRU-cached per slug.
+
+    R-22-1: roles queried live from DB via _content_bearing_roles(); never
+    hardcoded here. Used by Stage 3 content-extraction step to route draft CSS
+    selectors to the correct block attr without per-block branches.
+
+    Args:
+        block_slug: Fully-qualified SGS slug, e.g. 'sgs/testimonial'.
+
+    Returns:
+        Tuple of AttrInfo named tuples; empty tuple when none found.
+    """
+    content_roles = _content_bearing_roles()
+    if not content_roles:
+        _trace("db_lookup_miss", lookup="content_attrs_with_selector",
+               block_slug=block_slug, reason="no_content_roles")
+        return ()
+
+    placeholders = ",".join("?" for _ in content_roles)
+    params = (block_slug, *content_roles)
+
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            f"SELECT attr_name, role, derived_selector FROM block_attributes "
+            f"WHERE block_slug = ? AND derived_selector IS NOT NULL "
+            f"AND role IN ({placeholders})",
+            params,
+        ).fetchall()
+    except sqlite3.OperationalError:
+        _trace("db_lookup_miss", lookup="content_attrs_with_selector",
+               block_slug=block_slug, reason="operational_error")
+        return ()
+    finally:
+        conn.close()
+
+    result = tuple(AttrInfo(attr_name=r[0], role=r[1], derived_selector=r[2]) for r in rows)
+    if result:
+        _trace("db_lookup_hit", lookup="content_attrs_with_selector",
+               block_slug=block_slug, count=len(result))
+    else:
+        _trace("db_lookup_miss", lookup="content_attrs_with_selector",
+               block_slug=block_slug)
+    return result
+
+
+@functools.lru_cache(maxsize=2048)
+def content_role_for_slot(block_slug: str, slot: str) -> str | None:
+    """Return the content-bearing role of the attr on `block_slug` for `slot`.
+
+    Queries block_attributes for a row where:
+      - block_slug = the given slug
+      - canonical_slot = the given slot
+      - role is in the live content-bearing role set (_content_bearing_roles())
+
+    Returns the role string (e.g. 'text-content') or None when no such attr
+    exists or its role is not content-bearing. LRU-cached per (slug, slot).
+
+    R-22-1: roles queried live from DB via _content_bearing_roles(); never
+    hardcoded here. Slot-keyed (canonical_slot), NOT attr-keyed — mirrors the
+    existing slot_has_content_equivalent predicate pattern. Used by Stage 3 to
+    determine how to extract a slot's content from the draft DOM.
+
+    Args:
+        block_slug: Fully-qualified SGS slug, e.g. 'sgs/testimonial'.
+        slot:       Canonical slot name, e.g. 'quote', 'heading', 'media'.
+
+    Returns:
+        Role string or None.
+    """
+    if not block_slug or not slot:
+        return None
+
+    content_roles = _content_bearing_roles()
+    if not content_roles:
+        _trace("db_lookup_miss", lookup="content_role_for_slot",
+               block_slug=block_slug, slot=slot, reason="no_content_roles")
+        return None
+
+    placeholders = ",".join("?" for _ in content_roles)
+    params = (block_slug, slot, *content_roles)
+
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            f"SELECT role FROM block_attributes "
+            f"WHERE block_slug = ? AND canonical_slot = ? "
+            f"AND role IN ({placeholders}) LIMIT 1",
+            params,
+        ).fetchone()
+    except sqlite3.OperationalError:
+        _trace("db_lookup_miss", lookup="content_role_for_slot",
+               block_slug=block_slug, slot=slot, reason="operational_error")
+        return None
+    finally:
+        conn.close()
+
+    if row:
+        _trace("db_lookup_hit", lookup="content_role_for_slot",
+               block_slug=block_slug, slot=slot, role=row[0])
+        return row[0]
+    _trace("db_lookup_miss", lookup="content_role_for_slot",
+           block_slug=block_slug, slot=slot)
+    return None
+
+
+# ----------------------------------------------------------------------------
 # Smoke test
 # ----------------------------------------------------------------------------
 

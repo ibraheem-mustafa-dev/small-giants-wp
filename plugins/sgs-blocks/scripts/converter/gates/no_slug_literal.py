@@ -1,13 +1,14 @@
-"""no_slug_literal.py — AST gate: no block-slug / variant carve-outs in resolver bodies.
+"""no_slug_literal.py — AST gate: no block-slug / variant / slot carve-outs in resolver bodies.
 
 Design ref: `.claude/plans/2026-06-23-modular-scaffold-design.md` §4.1 + §10 A7.
 
 WHAT IT REJECTS
     Any comparison whose operand chain touches one of the carve-out identifiers
-    (`block_slug`, `variant_value`, `variant_attr` — as an attribute, a bare name,
-    or a local alias assigned from one) AGAINST a string literal or a literal
-    string-collection. This enforces "the resolver bodies name no block" (R-22-1 /
-    R-22-9) — per-block behaviour must come from the DB, never an `if slug ==` branch.
+    (`block_slug`, `variant_value`, `variant_attr`, `slot`, `slot_name`,
+    `canonical_slot` — as an attribute, a bare name, or a local alias assigned from
+    one) AGAINST a string literal or a literal string-collection. This enforces
+    "the resolver bodies name no block" (R-22-1 / R-22-9) — per-block behaviour
+    must come from the DB, never an `if slug ==` or `if slot == "quote"` branch.
 
     Caught forms (the planted-carve-out positives in the test suite):
         ctx.block_slug == "sgs/hero"
@@ -15,6 +16,8 @@ WHAT IT REJECTS
         ctx.block_slug.split("/")[1] == "hero"          # namespace-stripped carve-out
         slug = ctx.block_slug; slug == "hero"           # aliased
         _SPECIAL = {"hero"}; ctx.variant_value in _SPECIAL   # smuggled-set membership
+        slot == "quote"                                 # slot-name carve-out
+        canonical_slot == "heading"                     # canonical-slot carve-out
 
     This is COMPLEMENTARY to cheat-gate/check_slug_literals.py: that gate matches
     `"sgs/..."` string literals anywhere in orchestrator/; THIS gate matches the
@@ -58,7 +61,10 @@ _SCAN_FILES = [_CONVERTER / "recognition.py"]
 _BASELINE = _HERE / "no-slug-literal-baseline.json"
 
 # The carve-out identifiers the gate guards.
-_TARGET_IDENTS = frozenset({"block_slug", "variant_value", "variant_attr"})
+_TARGET_IDENTS = frozenset({
+    "block_slug", "variant_value", "variant_attr",
+    "slot", "slot_name", "canonical_slot",
+})
 
 
 # ---------------------------------------------------------------------------
