@@ -5,10 +5,10 @@ thread: cloning-pipeline
 spec_ref: specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md §12.0/§12.6 step 3/§12.7 (Stage 3-4, the content / block-equivalent extraction) · cloning-pipeline-stages.md Stage 3 (slot list) + Stage 4 (universal block-equivalent extraction) · specs/22 FR-22-2 / FR-22-2.1 / FR-22-2.2 / FR-22-5.3 / FR-22-2.5
 created: 2026-06-26
 updated: 2026-06-26
-version: v2 — COUNCIL-CORRECTED (6-persona adversarial-council 2026-06-26 NO-GO-as-written + Opus DB/spec fact-check) + Bean scope ratification
-status: DRAFT v2 — pending a round-2 council re-gate of the CORRECTED mechanism + Bean sign-off (Rule 7). No code until both.
+version: v3 — TWO council rounds + Opus DB/spec fact-check of every load-bearing claim. Round-1 fixed the fatal fork mechanism (v1→v2); round-2 validated the corrected mechanism SOUND + surfaced 12 concrete implementation must-fixes (folded here, v2→v3). Build-ready pending Bean sign-off.
+status: DRAFT v3 — pending Bean sign-off (Rule 7). No code until sign-off. Mechanism validated across 2 council rounds.
 authors: Opus rebuild-orchestrator
-supersedes: v1 (same file; v1's fork mechanism was FATALLY wrong — see §12)
+supersedes: v1 (fatal fork mechanism) + v2 (phantom funcs / missing guards) — see §12
 binding_rules: R-22-1 (DB-first, names-no-block) · R-22-2 (BEM is the only signal) · R-22-9 (universal, no carve-outs) · R-22-11 (verify rendered output) · R-22-13 (Bean eye co-authoritative) · FR-22-2/2.1/2.2 (content fork) · FR-22-5.3 (the SLOT-KEYED predicate, NOT equivalent_block_for(block,slot)) · FR-22-3 (single recursive walker, 3 exceptions)
 council: 6-persona adversarial-council 2026-06-26 (cynic/transpiler-correctness/ship-PM/spec-lawyer/cheat-red-teamer/non-coder-QC). Grades C+/D/C+/C+/C+/C-. NO-GO as written — fatal fork-mechanism error, Opus-fact-checked TRUE against the live DB + Spec 22 §FR-22-5.3. Corrected in §1 + §12.
 bean_decisions:
@@ -49,48 +49,77 @@ A real draft testimonial clones to a `wp:sgs/testimonial` whose **quote text app
 - **A plain-English content report:** one row per piece of content — *what it is* (first ~40 chars of the actual text, or "image: [alt]") | *found in draft?* | *visible on live page?* The last column is the only one Bean must read. A missing piece says in plain words: "This content was NOT transferred — the rest of the section still cloned. Flag to developer; the slot isn't in the database yet." (non-coder MF-1/MF-2).
 - **A 404 confirmation** that the temporary test page was deleted (non-coder MF-3/SF-4).
 
-## 1. The two mechanisms — DB-driven, names no block (corrected, verified signatures)
+## 1. The content mechanisms — DB-driven, names no block (v3, every function real)
 
-The destination of a composite's content is decided **per block by DB facts**, never the parent's `has_inner_blocks` alone (council cynic M5):
+The mechanism is selected **per block by DB facts** — `has_inner_blocks` (parent shape) AND the `scalar-content-lift` capability — never one alone (council cynic M5). **Three exhaustive cases** (round-2 spec-lawyer MF-3 — the v2 third-case gap closed):
+
+```
+caps = db_lookup.capabilities_for(rec.slug)
+if rec.has_inner_blocks == 0 and "scalar-content-lift" in caps:   run_mechanism_a(rec, section_root)
+elif rec.has_inner_blocks == 1:                                    run_mechanism_b(rec, section_root)
+else:  # has_inner_blocks==0 AND NOT scalar-content-lift (e.g. sgs/trust-bar) — loud, never silent
+    yield ContentGap(section_root, f"{rec.slug} has no content-extraction capability "
+                     "(not scalar-content-lift, not InnerBlocks) — a DB-capability gap; flag to developer")
+```
+**Capability-based mutual exclusion (round-2 transpiler SF-2):** a `scalar-content-lift` block NEVER enters Mechanism B — asserted on the capability, so even a future `has_inner_blocks` mis-derivation cannot re-route the quote to a child block (the D212 regression guard).
 
 ### Mechanism A — scalar-content-lift via `derived_selector` (the SHIPPED D212/D222 mechanism, re-derived)
-For a block carrying the `scalar-content-lift` capability (`db_lookup.capabilities_for(slug)` — VERIFIED: `db_lookup.py:765`; live scope = `sgs/testimonial`, `sgs/team-member`):
+Live scope = `sgs/testimonial`, `sgs/team-member` (VERIFIED). All helpers below are real or NEW-to-build (labelled):
 ```
-for attr_name, info in content_bearing_attrs_with_selector(slug):     # role∈content-bearing AND derived_selector NOT NULL
-    node = section_root.select_one(info.derived_selector)            # bs4 CSS-select within the recognised section (BeautifulSoup)
-    if node is None:
-        yield ContentGap(attr_name, info.derived_selector, "no draft node matched this selector")   # tracked, loud, never silent
-        continue
-    yield ScalarLift(attr=attr_name, value=extract_payload(node, info.role))   # lift content into the parent's typed scalar attr
+def run_mechanism_a(rec, section_root):
+    attrs = content_attrs_with_selector(rec.slug)   # NEW (build in db_lookup.py); SQL below. attempted-set is FIXED here.
+    attempted = 0
+    for info in attrs:                              # info: AttrInfo(attr_name, role, derived_selector)
+        attempted += 1
+        node = section_root.select_one(info.derived_selector)        # bs4 (BeautifulSoup) CSS-select
+        if node is None:
+            yield ContentGap(info.attr_name, "no draft node matched derived_selector"); continue
+        if _has_bem_element_descendant(node):       # wrapper-shell over-capture guard (round-2 transpiler MF-3)
+            yield ContentGap(info.attr_name, "derived_selector matched a wrapper, not a content leaf"); continue
+        payload = extract_payload(node, info.role)
+        if not payload:                             # empty -> gap, NEVER ScalarLift("") (cheat G2)
+            yield ContentGap(info.attr_name, "matched node has no extractable content"); continue
+        yield ScalarLift(attr=info.attr_name, value=payload)
 ```
-- **No tree-walk** — selector-driven (`bs4 .select_one`), which sidesteps the v1 "minimal walk becomes the whole walker" trap (council cynic M3 / ship-PM M-1).
-- **Iterates ATTRS (not slots), keyed on `derived_selector`** — so `reviewerName` (canonical_slot=NULL, role=text-content, derived_selector=`.sgs-testimonial__author`, VERIFIED) is covered; the canonical_slot multi-match ambiguity (council spec-lawyer MF-2) does not arise because we key on the attr's own `derived_selector`, not a slot→attr lookup.
-- **The content-bearing role set is DB-authoritative** (`_content_bearing_roles()`: text-content, image-object, content, link-href, identity — VERIFIED in `db_lookup.py`), never a hardcoded set (R-22-1).
+**`content_attrs_with_selector(block_slug)` — NEW, build in `db_lookup.py`** (round-2 transpiler MF-4 / spec-lawyer MF-1 — the v2 phantom, now pinned). Exact SQL:
+```sql
+SELECT attr_name, role, derived_selector FROM block_attributes
+WHERE block_slug=? AND derived_selector IS NOT NULL AND role IN (<_content_bearing_roles()>)
+```
+returning a list of frozen `AttrInfo(attr_name:str, role:str, derived_selector:str)`. `_content_bearing_roles()` is the DB-authoritative set — **6 roles, VERIFIED live: `content, identity, image-object, link-href, rating, text-content`** (round-2 transpiler MF-1 — v2 wrongly cited 5, missing `rating`).
 
-### Mechanism B — child-block via the SLOT-KEYED predicate (for `has_inner_blocks=1` composites)
-For a composite that composes child InnerBlocks (`rec.has_inner_blocks == 1`; ~20 blocks incl. hero/cta-section — VERIFIED):
-```
-for child in content_children(section_root):                         # §2 — content-leaf BEM children (not wrapper shells)
-    slot = recognise_helpers.bem_element_to_canonical_slot(child)     # built (Stage 2): DB synonym map → canonical slot
-    if slot is None:
-        yield ContentGap(child, "no canonical slot for this BEM element"); continue
-    if db_lookup.slot_has_equivalent_block(rec.slug, slot):           # SLOT-KEYED + role-gated (VERIFIED db_lookup.py:2334)
-        yield ChildBlock(slug=db_lookup.standalone_block_for(slot), content=extract_payload(child, role_for(slot)))
-    else:
-        yield ContentGap(child, f"{rec.slug} slot '{slot}' is not a content-bearing child slot")
-```
-- **`slot_has_equivalent_block(block_slug, slot_name)`** is the spec-mandated SLOT-KEYED, role-gated predicate (Spec 22 §FR-22-5.3 step 2; its own docstring documents the exact v1 bug). VERIFIED `db_lookup.py:2334`.
-- Mechanism B emits child InnerBlocks → the parent block's `save.js` must emit `<InnerBlocks.Content/>` and a `deprecated.js` shim is required where the save-shape changes (council transpiler M-4 / cynic MISSING). This is part of Mechanism B's per-block LANDED proof (cadence step 3), NOT the testimonial-quote first proof.
+- **No tree-walk** — selector-driven, sidesteps the "minimal walk → whole walker" trap (council cynic M3).
+- **Keyed on the attr's own `derived_selector`** — so `reviewerName` (canonical_slot NULL, derived_selector `.sgs-testimonial__author`) is covered; the slot multi-match ambiguity does not arise.
+- **Silent-drop coverage (round-2 cheat MF-4):** `avatarMedia`/`orgLogo`/`workMedia` have `role=NULL` + `derived_selector=NULL` (VERIFIED) → Mechanism A never attempts them → an **invisible** drop. Fix = the **expected-content coverage check** (§6): enumerate every attr whose `attr_type` is object/string with a content-semantic name but role/derived_selector NULL, emit a visible `ContentGap` per block (so it's tracked, never silent), + a dated `/sgs-update` migration to give those attrs `role`+`derived_selector`. The avatar is NOT needed for the first LANDED proof (the quote) — it lands as a tracked gap, fixed in the same stage's generalisation.
 
-### `extract_payload(node, role)` — the content payload contract (council transpiler MF-4 / spec-lawyer MS-2)
+### Mechanism B — child-block via the SLOT-KEYED predicate (`has_inner_blocks=1` composites)
+~20 composites incl. hero/cta-section (VERIFIED). Walks content-leaf children (§2):
+```
+def run_mechanism_b(rec, section_root):
+    for child in content_children(section_root):    # §2 — content-leaf BEM children (recurses shells, never crosses a nested composite)
+        slot = recognise_helpers.bem_element_to_canonical_slot(child)   # built (Stage 2)
+        if slot is None:
+            yield ContentGap(child, "BEM element has no DB slot mapping (data gap)"); continue
+        if not db_lookup.slot_has_equivalent_block(rec.slug, slot):     # SLOT-KEYED + role-gated (VERIFIED db_lookup.py:2334)
+            yield ContentGap(child, f"slot '{slot}' is not a content-bearing child slot"); continue
+        child_slug = db_lookup.standalone_block_for(slot)              # VERIFIED db_lookup.py:356
+        if child_slug is None:                                         # None-guard (round-2 transpiler MF-2: 50 slots lack a standalone_block)
+            yield ContentGap(child, f"slot '{slot}' content-bearing but no standalone_block (DB data limit)"); continue
+        role = db_lookup.content_role_for_slot(rec.slug, slot)         # NEW (build): the role of the content-bearing attr for this slot (replaces v2 phantom role_for)
+        yield ChildBlock(slug=child_slug, content=extract_payload(child, role))
+```
+- Mechanism B emits child InnerBlocks → the parent's `save.js` must emit `<InnerBlocks.Content/>`; a `deprecated.js` shim is required **only where the save-shape changes** (round-2 spec-lawyer M-4) — a block already emitting `<InnerBlocks.Content/>` needs none. Part of Mechanism B's per-block LANDED proof (cadence step 3), NOT the testimonial-quote first proof.
+- **Chrome filter (round-2 transpiler SF-1):** `image-object`/`content`-role slots that map to wrapper-level scalars (hero `backgroundMedia`/`items`) are NOT body content — Mechanism B applies the same content-leaf vs wrapper-shell discrimination (§2) before emitting a child block, so a hero's background image never becomes a spurious child media block.
+
+### `extract_payload(node, role)` — the content payload contract (6 roles; round-2 transpiler MF-1)
 | role | extraction | escaping / shape |
 |------|-----------|------------------|
-| text-content | the node's inner content. **DECISION: preserve a fixed inline-tag allowlist** (`<strong> <em> <b> <i> <br> <a>`); strip all other tags to text. (A `string`/RichText attr stores inline HTML; flattening to plain text would silently drop `<strong>` = a faithfulness break.) | output is `wp_kses`-safe inline HTML; entities normalised once (no double-encode — the WP serialiser re-escapes) |
-| image-object / media | `<img src>` (+ `alt`, `width`, `height` where present) / `<video src>` + `poster` | URL only; never the class |
-| link-href | `<a href>` (+ inner text via the text-content rule) | |
-| identity / content | node inner text (allowlist as text-content) | |
+| text-content / content / identity | inner content, preserving a fixed inline-tag allowlist (`<strong> <em> <b> <i> <br> <a>`); strip other tags to text. (`quote` renders via `wp_kses_post` — VERIFIED render.php:281 — so inline HTML is safe + not double-escaped.) `html.unescape` ONCE before store, then the WP serialiser stores verbatim (round-2 transpiler/spec-lawyer SF-4: no double-encode). | `wp_kses_post`-safe inline HTML |
+| image-object | `<img src>` (+ `alt`/`width`/`height`) / `<video src>`+`poster` | URL only; never the class |
+| link-href | `<a href>` + inner text (text-content rule) | |
+| **rating** (round-2 transpiler MF-1) | the rating SIGNAL: count of star glyphs / `aria-label` number / numeric text → a number | numeric (e.g. `4.5`) |
 
-**Rules:** (a) **first matching node wins** (`select_one`); a 2nd match is logged as a `ContentGap`-warn, never silently concatenated (spec-lawyer MF-2). (b) **NEVER the node's `className`** — if extraction yields empty, raise a `ContentGap`, never fall back to the BEM class (council cheat MF-3 / R-22-15a). (c) **empty payload is a `ContentGap`, never a `ScalarLift("")`** (council cheat G2 — an empty string reproduces the blank-testimonial symptom).
+**Rules:** (a) **empty = `node.get_text(strip=True)==''`** → `ContentGap`, never `ScalarLift("")` (cheat G2). (b) **NEVER the node's `className`** — extraction failure raises a `ContentGap`, never a BEM-class fallback (cheat MF-3 / R-22-15a). (c) **child-block payload (round-2 spec-lawyer SF-3):** for a `ChildBlock`, `content` is the child's extractable inner content for that role (NOT serialised WP markup — the emitter wraps it); the child block's own CSS is the CSS-stream's concern (later stage).
 
 ## 2. Conservation + the Stage-3c no-content-dropping `continue` (§12.7)
 
@@ -98,33 +127,48 @@ for child in content_children(section_root):                         # §2 — c
 
 **"A child" is DEFINED (council cynic M4 / transpiler SF-2/SF-3 / spec-lawyer SF-2/MF-4):** a **content-leaf** BEM node (carries a `sgs-<block>__<element>` class AND has no BEM-element descendants of its own). A **wrapper-shell** BEM node (e.g. `.sgs-testimonial__inner`, `__body` — has BEM-element descendants) is **recursed into, not counted as a child** (Spec 22 line 666: `__inner`/`__content` are routing-irrelevant). A **non-BEM node with real text** but no BEM class is surfaced as a `ContentGap` (NOT dropped — "zero silent content drops"; council transpiler M-3).
 
-**Mutual exclusion (council transpiler SF-2):** each content node routes to **exactly one** of `{ScalarLift, ChildBlock, ContentGap}`. The conservation invariant — wired as a hard fail in the orchestrator, mirroring the slice's `_check_conservation` (`orchestrator.py:51`) — is `content_nodes_seen == lifts + child_blocks + content_gaps`. Any leak raises a named `ContentConservationError`.
+**Mutual exclusion + per-mechanism conservation (round-2 spec-lawyer MF-4 — the v2 invariant was ill-defined for the attr-iterating Mechanism A):** each unit routes to **exactly one** outcome. The invariant is stated PER mechanism (they iterate different domains), wired as a hard `ContentConservationError` mirroring the slice's `_check_conservation` (`orchestrator.py:51`):
+- **Mechanism A (iterates ATTRS):** `attrs_attempted == lifts + content_gaps` (no child_blocks). `attrs_attempted` = the count returned by `content_attrs_with_selector` (the fixed set) PLUS the expected-content-coverage gaps (§6). So an attr that is neither lifted nor gapped is a hard fail.
+- **Mechanism B (iterates NODES):** `content_leaves_seen == child_blocks + content_gaps`. Wrapper-shell nodes are **recursed into, not counted** (they are not leaves). A non-BEM node with `get_text(strip=True)!=''` is counted as a leaf → must gap (never drop).
+`ContentConservationError` names which invariant it enforces. If `_content_bearing_roles()` ever returns empty (migration soft-fail), Mechanism A's `attempted==0` with a non-empty section is a **hard error**, not a silent zero (round-2 transpiler MISSING) — caught additionally by the §7 planted-canary.
 
 ## 3. has_inner_blocks — parent-shape only; destination decided per-block (council cynic M5)
 `rec.has_inner_blocks` (derived fresh from save.js in Stage 2 — `has_inner.py`, NOT a cached column) selects which **mechanism** runs (A for 0+scalar-content-lift, B for 1). It does NOT decide an individual child's destination — that's the per-block DB predicate (`capabilities_for` / `slot_has_equivalent_block`). F6 db-consistency remains the cross-check.
 
-## 4. Module shape + gate scope (council cheat MF-6 / G4)
+## 4. Module shape + gate scope (corrected — round-2 cheat MF-1/MF-2/MF-3)
 ```
 converter/
-├── extraction.py             # NEW — the content-extraction entry: run_mechanism_a / run_mechanism_b + content_children + extract_payload.
-│                             #   MUST be added to no_slug_literal _SCAN_FILES (cheat MF-6) — it names no block; the gate proves it.
-├── services/
-│   ├── content_select.py     # NEW — bs4 selector match (select_one), content-leaf vs wrapper-shell discrimination (§2). Scanned (under services/).
-│   └── payload.py            # NEW — extract_payload + the inline-tag allowlist (§1). Scanned.
-├── context.py                # add ScalarLift / ChildBlock / ContentGap dataclasses + ContentConservationError (typed, frozen).
-├── models.py                 # GapOrigin.CONTENT_GAP (distinct from UNRECOGNISED/UNROUTED).
-└── tests/ …                  # mechanism-A landed, mechanism-B child-emit, conservation, payload-allowlist, oracle-independence, no-mirror.
+├── services/                 # ALL new logic under services/ so it is auto-scanned by no_slug_literal _SCAN_DIRS (round-2 MF-2)
+│   ├── extraction.py         # NEW — run_mechanism_a / run_mechanism_b / the 3-case selector + content_children. Under services/ = scanned.
+│   ├── content_select.py     # NEW — bs4 select_one + content-leaf vs wrapper-shell + _has_bem_element_descendant (§2).
+│   └── payload.py            # NEW — extract_payload (6-role table) + inline-tag allowlist + html.unescape-once.
+├── context.py                # add ScalarLift / ChildBlock / ContentGap + AttrInfo (frozen) + ContentConservationError.
+├── models.py                 # GapOrigin.CONTENT_GAP (distinct from UNRECOGNISED / UNROUTED).
+├── gates/no_slug_literal.py  # EDIT: add 'slot','slot_name','canonical_slot' to _TARGET_IDENTS (round-2 cheat MF-1 — the NEW carve-out surface).
+└── tests/ …                  # mechanism-A landed, mechanism-B child-emit + None-guard, per-mechanism conservation, payload 6-role, oracle-canary, no-mirror, slot-carve-out-caught.
 ```
-**ContentGap → the existing ledger (cheat G4):** a `ContentGap` writes to the same coverage/ledger store the F2/F5 checker reads (`attribute_gap_candidates` or the ledger's content-gap channel), so a dropped child is visible to the armed F5 gate at commit — not a private list. The HTML parser is **BeautifulSoup (`bs4`)**, matching `recognition.recognise(node: bs4.Tag)` (council ship-PM M-2 / cynic "name the parser").
+**Three gate corrections (round-2 cheat — all VERIFIED holes):**
+1. **`no_slug_literal` `_TARGET_IDENTS` += `slot`/`slot_name`/`canonical_slot`** — the mechanism now keys on SLOTS, so a slot-name carve-out (`if slot == 'quote'`) is the new cheat surface; today's gate (`{block_slug, variant_value, variant_attr}`) misses it. After the edit, a planted `if slot=='quote'` must exit-1 (proven, STOP-16).
+2. **New logic under `services/`** (auto-scanned) — NOT a converter-root `extraction.py` (which `_SCAN_DIRS` would miss). Acceptance (§8) runs `no_slug_literal --check` against the ACTUAL final file list.
+3. **ContentGap → a REAL F5-visible channel** — `coverage_check.py` does NOT read `attribute_gap_candidates` (VERIFIED round-2 cheat MF-3), so the v2 "writes to the ledger" claim was aspirational. v3 builds `ledger/content_gap_check.py` that reads a per-run `content-gaps.json` (written by extraction) + a committed `content-gap-baseline.json`, fails on NEW, and is **wired into `f5-commit-gate.py` `_GATES`** alongside the existing checks. A dropped child is then a commit-blocking event, not a private list.
+
+The HTML parser is **BeautifulSoup (`bs4`)**, matching `recognition.recognise(node: bs4.Tag)`.
 
 ## 5. The CSS-on-scalar-children resolvers — NOT this stage (explicit deferral)
 `scalar_content.py` / `scalar_media.py` (CSS-declaration resolvers) + `media_signal`'s DB source stay honest `UNIMPLEMENTED_STUB` / `NotImplementedError` — their own follow-on stage (the quote's *colour/typography*, mechanism mirrors `outer_box.resolve`). This stage lands the quote *text*; its *styling* is later. (Council ship-PM MF-4 / cynic S1 / spec-lawyer SF-1 — accepted: cut from this stage.)
 
-## 6. DB data limit + baseline-before-arming (STOP-14; council spec-lawyer MF-5)
-Element-scope `slots.standalone_block` = **36/99 populated** (VERIFIED live DB 2026-06-26; the handoff/D244 "40/103" is stale — the live DB is authoritative). An unmatched selector / unmapped slot → a loud `ContentGap` (honest, never silent). **Arming sequence (fixes the v1 "baseline a set from a walker that doesn't exist" contradiction — spec-lawyer MF-5):** (1) build the extraction; (2) run it in **report mode** over the page-8 + fixture-set drafts; (3) capture today's `ContentGap` set as `content-gap-baseline.json` (key by `(block, slot/selector, fixture)` identity, not line — STOP-17); (4) THEN arm `--check` to fail on NEW only. Seed the 63 unmapped slots later via `/sgs-update` (dated migration + reseed — `db-changes-reproducible-via-migration`), never manual.
+## 6. DB data limit + expected-content coverage + baseline-before-arming (STOP-14)
+Element-scope `slots.standalone_block` = **36/99 populated** (VERIFIED live DB 2026-06-26; the "40/103" in the handoff/D244 is stale). An unmatched selector / unmapped slot / NULL-standalone-block → a loud `ContentGap` (honest, never silent).
 
-## 7. The LANDED gate — independent draft oracle (council cheat MF-5 / non-coder)
-- **L1 — THIS stage's gate:** deploy the genuine `extraction → emit_block_markup()` output to a fresh canary page (guard-safe REST CREATE, STOP-21 recipe) → anonymous Chrome-DevTools/Playwright → assert the live quote element's `innerText` **equals the draft quote text read INDEPENDENTLY** by a draft-fixture reader (NOT the engine's own output — non-circular, STOP-3). **Planted-canary negative test (cheat MF-5):** a fixture whose quote is `"ORACLE_CANARY_QZX"` (a string absent from every block default) — if the live page shows the block's default instead, LANDED **FAILS**. Gate on `innerText.length > 0` + element-present FIRST (the §7b empty-section guard — a missing element is a FAIL, never a match).
+**Expected-content coverage check (round-2 cheat MF-4 — the silent-drop hole):** a content-semantic attr with `role=NULL`+`derived_selector=NULL` (e.g. `avatarMedia`/`orgLogo`/`workMedia`) is never *attempted* by Mechanism A → an INVISIBLE drop. v3 adds a coverage pass: for each block in scope, enumerate attrs whose `attr_type ∈ {object,string}` and name matches a content-semantic pattern (media/image/logo/text/title/quote/…) but have NULL role/selector → emit a visible `ContentGap("attr has no role/derived_selector — DB-data gap")` so it's tracked + counted in Mechanism A's conservation (§2). A dated `/sgs-update` migration then gives `avatarMedia`/`orgLogo`/`workMedia` proper `role`+`derived_selector` (also fixes the `reviewDate.derived_selector='.sgs-testimonial__card'` wrapper over-capture — round-2 transpiler MF-3 — to `.sgs-testimonial__date`). DB changes via migration + full reseed, never manual (`db-changes-reproducible-via-migration`).
+
+**Arming sequence (fixes the v1 "baseline a walker that doesn't exist" contradiction — spec-lawyer MF-5):** (1) build the extraction; (2) run it in **report mode** over the page-8 + fixture-set drafts; (3) capture today's `ContentGap` set as `content-gap-baseline.json` (key by `(block, attr/slot, fixture)` identity, not line — STOP-17); (4) THEN arm `content_gap_check.py --check` to fail on NEW only (§4).
+
+## 7. The LANDED gate — independent draft oracle (council cheat MF-5 / round-2 SF-2/SF-5)
+- **L1 — THIS stage's gate:** deploy the genuine `extraction → emit_block_markup()` output to a fresh canary page (guard-safe REST CREATE, STOP-21 recipe) → anonymous Chrome-DevTools/Playwright → assert the live quote element's `innerText` **equals the draft quote text read INDEPENDENTLY** by a **draft-fixture reader** (round-2 spec-lawyer SF-1 — defined, not phantom): `BeautifulSoup(open(fixture+'.draft.html')).select_one(derived_selector).get_text(strip=True)` — reads the raw draft HTML directly, NEVER the engine's output (non-circular, STOP-3).
+- **Planted-canary negative test (cheat MF-5, build it — round-2 cheat MISS-3):** a real fixture whose quote is `"ORACLE_CANARY_QZX"` — a string **definitionally absent from every block default INCLUDING the empty-string default** (round-2 spec-lawyer SF-5). The test asserts the live page shows exactly `"ORACLE_CANARY_QZX"`; if it shows the block default (empty or otherwise), LANDED **FAILS**. This is what blocks the "seed the attr from the block's stored default" cheat.
+- Gate on `innerText.length > 0` + element-present FIRST (the §7b empty-section guard — a missing element is a FAIL, never a match).
+- **Per-mechanism acceptance boundary (round-2 spec-lawyer SF-2):** Mechanism A acceptance (testimonial quote LANDED) closes INDEPENDENTLY of Mechanism B — a Mechanism-B (hero) regression does NOT block Bean's sign-off on the working testimonial content. The universal Spec-31 gate requires BOTH; the per-mechanism LANDED proofs close separately (the cadence).
 - **WRITTEN-not-LANDED guard (memory `converter-attr-must-match-the-attr-render-reads`):** the attr the lift writes MUST be the attr `render.php` reads — verified by the live `innerText`, not by "the attr was emitted."
 - **Ledger (F2):** every content child on the fixture set → zero UNACCOUNTED + zero silent drop; an intentionally-unmapped-slot fixture → exactly one loud `ContentGap` AND the rest of the section still clones (a separate test asserts the N-1 other pieces still land — council cheat / non-coder SF-2).
 - **Metamorphic (real, DB-backed — council transpiler SF-1):** the synonym-rename test uses a REAL alias pair from the DB (`__text` ↔ `__quote`, both in the `quote` attr's `derived_selector` — VERIFIED) so it isn't vacuous; source-order permutation → identical lifts.
@@ -150,7 +194,7 @@ round-2 `/adversarial-council` on THIS v2 (validate the corrected mechanism has 
 ## 11. Risks / guardrails carried
 - **STOP-9** variant grids DB-defined — Mechanism B reads `variant_slots`, never `if slug==`.
 - **STOP-10** content-gated block renders empty WITHOUT content BY DESIGN (D244 A14) — this stage fills it; L1 gates on `innerText.length>0`, so an empty render is a FAIL, never a false win.
-- **STOP-11** schema≠usage — every reused function VERIFIED for real signature this session: `capabilities_for` (db_lookup.py:765), `slot_has_equivalent_block` (2334), `attr_for_slot` (621), `standalone_block_for` (356), `bem_element_to_canonical_slot` (recognise_helpers.py). `equivalent_block_for(slug,slot)` REJECTED (attr-keyed, FR-22-5.3 fatal catch). `scalar_attr_for` was a v1 PHANTOM — removed.
+- **STOP-11** schema≠usage — every reused function VERIFIED live: `capabilities_for` (db_lookup.py:765), `slot_has_equivalent_block` (2334), `standalone_block_for` (356), `_content_bearing_roles` (returns **6** roles incl `rating`), `bem_element_to_canonical_slot` (recognise_helpers.py). **NEW functions to build (labelled, not phantoms):** `content_attrs_with_selector(block_slug)` + `content_role_for_slot(block_slug, slot)` (db_lookup.py, exact SQL in §1). REJECTED: `equivalent_block_for(slug,slot)` (attr-keyed, FR-22-5.3 fatal catch — v1); `scalar_attr_for`/`content_bearing_attrs_with_selector`/`role_for` (phantoms — v1/v2, replaced).
 - **A14** generalisation NEVER banked — Mechanism A (testimonial) does not bank Mechanism B (hero); each earns its own LANDED proof.
 - **STOP-3/4/5** ledger/oracle input is the DRAFT; WRITTEN≠LANDED; stage-by-stage is the build ORDER, ledger+oracle the cross-stage TEST.
 - **STOP-22** built FRESH from Spec 22/31 + DB + draft; `convert.py` consulted ONLY to NAME the D212 bug being avoided, never to learn the mechanism.
@@ -175,3 +219,23 @@ round-2 `/adversarial-council` on THIS v2 (validate the corrected mechanism has 
 | **C10** | reviewerName (canonical_slot NULL) silently unextractable (spec-lawyer SF-4) | **VERIFIED** (DB) | §1: Mechanism A keys on `derived_selector` (reviewerName has one), not canonical_slot — covered. |
 | **C11** | deprecated.js for the hero child-block branch (transpiler M-4, cynic MISSING) | accepted | §1/§8: Mechanism B's per-block LANDED proof includes the save-marker + deprecated.js. |
 | **C12** | arrays (FR-22-2.5) machinery absent (cynic S3, ship-PM S-1) | **VERIFIED** (no call-site) | §0.1: IN/OUT by fixture-set evidence (STOP-18); not cited as "built". |
+
+### Round-2 fold (v2 → v3) — the corrected mechanism validated SOUND + 12 concrete must-fixes folded
+6-persona round-1 NO-GO fixed the fatal fork (v1→v2); 3-persona round-2 (transpiler B−, spec-lawyer C, cheat C−) confirmed v2's mechanism SOUND (v1's fatal error genuinely gone, first-LANDED proof reachable, escaping correct) and surfaced v2's OWN concrete defects — all Opus-fact-checked TRUE:
+
+| # | Round-2 finding | Fact-check | Fix in v3 |
+|---|-----------------|-----------|-----------|
+| **R-1** | `_content_bearing_roles()` is **6** roles (incl `rating`), v2 cited 5 → `rating` attrs silently dropped | **VERIFIED** (live) | §1: 6-role set + `rating` row in extract_payload. |
+| **R-2** | `content_bearing_attrs_with_selector` + `role_for` are PHANTOMS (v2 repeated the FATAL-2 pattern) | **VERIFIED** (grep) | §1: defined as NEW with exact SQL → `content_attrs_with_selector` + `content_role_for_slot`. |
+| **R-3** | Mechanism B `ChildBlock(slug=None)` — **50** content slots lack a `standalone_block` → invalid `wp:None` | **VERIFIED** (live, 50 slots) | §1: None-guard after `standalone_block_for` → ContentGap. |
+| **R-4** | `avatarMedia`/`orgLogo`/`workMedia` role+selector NULL → **silent** drop, no gap | **VERIFIED** (DB) | §6: expected-content coverage check (visible gap) + migration. |
+| **R-5** | `reviewDate.derived_selector='.sgs-testimonial__card'` (a wrapper) → Mechanism A over-captures whole card | **VERIFIED** (DB+render) | §1: wrapper-shell guard in Mechanism A; §6: migration to `.sgs-testimonial__date`. |
+| **R-6** | Third case unhandled: `has_inner_blocks=0` WITHOUT scalar-content-lift (trust-bar) → silent | **VERIFIED** (DB) | §1: explicit 3-case dispatch + loud ContentGap. |
+| **R-7** | Conservation invariant ill-defined for Mechanism A (iterates attrs, not nodes) | **VERIFIED** | §2: per-mechanism invariants (A=attrs, B=nodes). |
+| **R-8** | `no_slug_literal` `_TARGET_IDENTS` lacks `slot`/`canonical_slot` → slot-name carve-out uncaught | **VERIFIED** (gate code) | §4: add slot idents; prove exit-1 on a planted `if slot==`. |
+| **R-9** | New converter-root file not scanned by the gate | **VERIFIED** (`_SCAN_DIRS`) | §4: all new logic under `services/` (auto-scanned). |
+| **R-10** | ContentGap→F5 ledger ASPIRATIONAL — `coverage_check` doesn't read the gap table | **VERIFIED** (grep) | §4: build `content_gap_check.py` + wire into `f5-commit-gate.py`. |
+| **R-11** | Planted-canary `ORACLE_CANARY_QZX` + draft-fixture reader don't exist | **VERIFIED** (grep) | §7: build both; canary string ≠ all defaults incl empty. |
+| **R-12** | Capability mis-derivation could still re-route quote to a child block (D212 regression) | accepted | §1: capability-based mutual exclusion (scalar-content-lift NEVER enters Mechanism B). |
+
+**Round-2 verdict:** the corrected mechanism is SOUND (clears the gate on the headline); the 12 fixes are bounded specifications, not redesigns — all folded. No round-3: the SDD build + `/qc-council` + the armed gates + the live LANDED proof are the structural backstops.
