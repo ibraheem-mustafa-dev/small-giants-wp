@@ -313,9 +313,11 @@ def build_block_markup(rec: Recognition, section_root: Any) -> str:
     for r in results:
         if isinstance(r, ScalarLift):
             attrs[r.attr] = r.value
-    inner = "".join(
-        emit_block_markup(r.slug, {}, r.content)
-        for r in results
-        if isinstance(r, ChildBlock)
-    )
+    def _child_markup(cb: ChildBlock) -> str:
+        attr = db_lookup.primary_content_attr(cb.slug)
+        if attr:
+            return emit_block_markup(cb.slug, {attr: cb.content}, "")
+        return emit_block_markup(cb.slug, {}, cb.content)  # fallback for ambiguous/none
+
+    inner = "".join(_child_markup(r) for r in results if isinstance(r, ChildBlock))
     return emit_block_markup(rec.slug, attrs, inner)

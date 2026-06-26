@@ -24,6 +24,7 @@ from converter.services.draft_oracle import read_draft_field
 _FIXTURES = pathlib.Path(__file__).parent / "fixtures" / "recognition"
 _TESTIMONIAL = str(_FIXTURES / "testimonial.html")
 _CANARY = str(_FIXTURES / "testimonial-canary.html")
+_HERO_SPLIT = str(_FIXTURES / "hero-split.html")
 
 
 def _node(html: str):
@@ -105,6 +106,21 @@ def test_conservation_holds():
 # ---------------------------------------------------------------------------
 # test_third_case_loud_gap
 # ---------------------------------------------------------------------------
+
+
+def test_hero_child_block_emits_content_attr():
+    """build_block_markup on hero-split must emit the heading text as a typed
+    content attr, not as bare inner HTML — sgs/heading is dynamic and reads
+    its text from the 'content' attr; bare innerHTML renders blank."""
+    node = _node_from_file(_HERO_SPLIT)
+    rec = recognise(node)
+    markup = build_block_markup(rec, node)
+    assert "wp:sgs/heading" in markup, (
+        f"sgs/heading child block missing from markup:\n{markup}"
+    )
+    assert '"content":"Hi"' in markup, (
+        f"Heading text 'Hi' not found in content attr in markup:\n{markup}"
+    )
 
 
 def test_third_case_loud_gap():

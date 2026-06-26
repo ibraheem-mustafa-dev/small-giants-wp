@@ -3483,6 +3483,78 @@ def content_role_for_slot(block_slug: str, slot: str) -> str | None:
     return None
 
 
+@functools.lru_cache(maxsize=256)
+def primary_content_attr(block_slug: str) -> str | None:
+    """Return the primary TEXT content attr name for `block_slug`, or None.
+
+    Queries block_attributes for rows where:
+      - block_slug = the given slug
+      - role IN ('content', 'text-content')  — DB-authoritative text-content signal
+      - attr_type = 'string'                 — scalar text, not object/array
+
+    Resolution:
+      - Exactly one row → return it.
+      - More than one → prefer by name order: 'content', 'text', 'label', 'body',
+        'title' (SGS/WP primary-text convention); return the first match, else None
+        (ambiguous — caller should fall back to inner HTML).
+      - Zero rows → None.
+
+    LRU-cached per slug. Used by Stage 3 build_block_markup to emit child-block
+    text into the child's typed attr (not as bare inner HTML) so dynamic render.php
+    blocks (e.g. sgs/heading) read the correct attr and don't render blank.
+
+    R-22-1: DB-only read path. No hardcoded slug→attr dicts.
+
+    Args:
+        block_slug: Fully-qualified SGS slug, e.g. 'sgs/heading'.
+
+    Returns:
+        Attr name string (e.g. 'content') or None.
+    """
+    if not block_slug:
+        return None
+
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT attr_name FROM block_attributes "
+            "WHERE block_slug = ? AND role IN ('content', 'text-content') "
+            "AND attr_type = 'string'",
+            (block_slug,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        _trace("db_lookup_miss", lookup="primary_content_attr",
+               block_slug=block_slug, reason="operational_error")
+        return None
+    finally:
+        conn.close()
+
+    if not rows:
+        _trace("db_lookup_miss", lookup="primary_content_attr",
+               block_slug=block_slug, reason="no_rows")
+        return None
+
+    names = [r[0] for r in rows]
+
+    if len(names) == 1:
+        _trace("db_lookup_hit", lookup="primary_content_attr",
+               block_slug=block_slug, attr_name=names[0])
+        return names[0]
+
+    # More than one row — prefer by SGS/WP primary-text convention name order.
+    _PREFERRED = ("content", "text", "label", "body", "title")
+    for preferred in _PREFERRED:
+        if preferred in names:
+            _trace("db_lookup_hit", lookup="primary_content_attr",
+                   block_slug=block_slug, attr_name=preferred, via="preference")
+            return preferred
+
+    # Ambiguous (multiple rows, none matching preferred names) — caller falls back.
+    _trace("db_lookup_miss", lookup="primary_content_attr",
+           block_slug=block_slug, reason="ambiguous", candidates=names)
+    return None
+
+
 # ----------------------------------------------------------------------------
 # Smoke test
 # ----------------------------------------------------------------------------
