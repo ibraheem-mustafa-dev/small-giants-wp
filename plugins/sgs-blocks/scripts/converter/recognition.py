@@ -54,18 +54,18 @@ def recognise(node: Any, css_rules: dict | None = None) -> Recognition:
 
     # 1. NAMED / composite — a BEM root class mapping to a registered slug.
     candidates = [
-        slug for c in root_classes
-        if db_lookup.block_exists(slug := "sgs/" + c[4:])
+        s for c in root_classes
+        if db_lookup.block_exists(s := "sgs/" + c[4:])
     ]
     if candidates:
-        slug = recognise_helpers.pick_root(candidates)  # None if ambiguous (>=2 same-rank)
-        if slug is not None:
-            variant_attr, variant_value = variant_detect.detect_variant_for_node(node, slug)
+        picked = recognise_helpers.pick_root(candidates)  # None if ambiguous (>=2 same-rank)
+        if picked is not None:
+            variant_attr, variant_value = variant_detect.detect_variant_for_node(node, picked)
             return Recognition(
                 kind="named",
-                slug=slug,
-                container_kind=recognise_helpers.get_container_kind(slug),
-                has_inner_blocks=derive_has_inner_blocks(slug),
+                slug=picked,
+                container_kind=recognise_helpers.get_container_kind(picked),
+                has_inner_blocks=derive_has_inner_blocks(picked),
                 variant_attr=variant_attr,
                 variant_value=variant_value,
             )
@@ -117,7 +117,10 @@ def build_ctx(rec: Recognition, node: Any, is_root: bool, conn: sqlite3.Connecti
     AS the section via the slice's emit_block_markup — not the frozen walk.
     """
     kind = rec.kind
-    if kind in ("named", "atomic", "scalar"):
+    # Explicit ==/or chain (NOT `kind in (tuple)`): mypy narrows the former to reach
+    # `Never` at assert_never, but does NOT narrow tuple-membership — so this is what
+    # makes the static-exhaustiveness guarantee real (review BUG-1, 2026-06-26).
+    if kind == "named" or kind == "atomic" or kind == "scalar":
         assert rec.slug is not None  # guaranteed for recognised kinds
         return Ctx(
             block_slug=rec.slug,

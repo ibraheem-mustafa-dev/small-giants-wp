@@ -60,12 +60,6 @@ _BASELINE = _HERE / "no-slug-literal-baseline.json"
 # The carve-out identifiers the gate guards.
 _TARGET_IDENTS = frozenset({"block_slug", "variant_value", "variant_attr"})
 
-# The variant-detection module: its returns/assigns must carry NO bare string constant
-# (the variant value + attr come from the DB / the node, never a literal — cheat MF-1:
-# `return "split"` bypasses the comparison gate). Scoped to this file to avoid
-# false-positives on services that legitimately build strings (value_serialise etc.).
-_VARIANT_FILE = "variant_detect.py"
-
 
 # ---------------------------------------------------------------------------
 # AST helpers
@@ -142,16 +136,26 @@ class _CarveOutVisitor(ast.NodeVisitor):
         while changed:
             changed = False
             for node in ast.walk(tree):
-                if not isinstance(node, ast.Assign):
+                # Assign has many targets; AnnAssign (`x: T = v`) has one. Treat both
+                # (cheat Gap B: an annotated alias `slug: str = ctx.block_slug` was
+                # untracked). NamedExpr/walrus operands are caught at the Compare site
+                # because ast.walk descends into them.
+                if isinstance(node, ast.Assign):
+                    targets = node.targets
+                    value = node.value
+                elif isinstance(node, ast.AnnAssign) and node.value is not None:
+                    targets = [node.target]
+                    value = node.value
+                else:
                     continue
-                for tgt in node.targets:
+                for tgt in targets:
                     if not isinstance(tgt, ast.Name):
                         continue
-                    if _is_string_collection_literal(node.value):
+                    if _is_string_collection_literal(value):
                         if tgt.id not in self.str_collection_names:
                             self.str_collection_names.add(tgt.id)
                             changed = True
-                    if _subtree_touches_target(node.value, self.tainted):
+                    if _subtree_touches_target(value, self.tainted):
                         if tgt.id not in self.tainted:
                             self.tainted.add(tgt.id)
                             changed = True
@@ -208,32 +212,77 @@ def _is_test_file(path: Path) -> bool:
     return path.name.startswith("test_") or "tests" in {p.name for p in path.parents}
 
 
-def _bare_string(node: ast.AST) -> bool:
-    """A non-empty string Constant, or a tuple/list containing one (the returned
-    (variant_attr, variant_value) shape). Empty strings are ignored (harmless)."""
+def _is_variant_file(name: str) -> bool:
+    """A variant-detection module — its returns/assigns must carry NO bare string (any
+    value, not just slugs). Matched by name so a NEW services/variant_*.py is covered too
+    (cheat Gap C: `return "split"` in a new helper bypassed an exact-filename check)."""
+    return "variant" in name
+
+
+def _contains_string_shallow(node: ast.AST) -> bool:
+    """True if node is a non-empty str Constant, or a tuple/list DIRECTLY containing one
+    — the returned (variant_attr, variant_value) shape. Deliberately shallow: it does NOT
+    descend into a BinOp like `\"sgs-\" + slug`, so the legitimate Spec-00 prefix
+    construction in variant_detect._bem_prefix is not a false-positive."""
     if isinstance(node, ast.Constant) and isinstance(node.value, str) and node.value:
         return True
     if isinstance(node, (ast.Tuple, ast.List)):
-        return any(_bare_string(e) for e in node.elts)
+        return any(_contains_string_shallow(e) for e in node.elts)
     return False
 
 
-def _scan_variant_bare_strings(tree: ast.AST) -> list[dict]:
-    """Findings for bare string-constant returns/assigns in variant_detect.py.
+def _value_of(node: ast.AST) -> ast.AST | None:
+    """The assigned/returned value of a Return/Assign/AnnAssign, else None."""
+    if isinstance(node, ast.Return):
+        return node.value
+    if isinstance(node, (ast.Assign, ast.AnnAssign)):
+        return node.value
+    return None
 
-    The variant value + attr must come from the DB (variant_slots / db_lookup) or the
-    node — never a literal. A `return "split"` / `value = "split"` is the cheat MF-1
-    the comparison gate misses. Flags any Return/Assign whose value is (or contains) a
-    non-empty string constant.
-    """
+
+def _slug_literal_outside_compare(val: ast.AST) -> bool:
+    """A slug literal in `val`'s subtree, EXCLUDING any inside a Compare node (those are
+    already reported by visit_Compare — don't double-count). Catches a slug as a call arg
+    / bare return; ignores `block_slug == \"sgs/hero\"`."""
+    stack = [val]
+    while stack:
+        n = stack.pop()
+        if isinstance(n, ast.Compare):
+            continue  # handled by visit_Compare
+        if _is_slug_literal(n):
+            return True
+        stack.extend(ast.iter_child_nodes(n))
+    return False
+
+
+def _scan_slug_literal_values(tree: ast.AST) -> list[dict]:
+    """Findings for a slug literal ("sgs/...") in a Return/Assign/AnnAssign value subtree
+    that is NOT part of a comparison — incl. as a call argument
+    (`return Recognition(\"named\", \"sgs/hero\", ...)`). A slug is never legitimate as a
+    literal in converter code (DB-resolved via block_exists); the \"sgs-\" prefix is not a
+    slug literal so it never matches."""
     findings: list[dict] = []
     for node in ast.walk(tree):
-        target = None
-        if isinstance(node, ast.Return) and node.value is not None and _bare_string(node.value):
-            target = node.value
-        elif isinstance(node, ast.Assign) and _bare_string(node.value):
-            target = node.value
-        if target is not None:
+        val = _value_of(node)
+        if val is None:
+            continue
+        if _slug_literal_outside_compare(val):
+            try:
+                src = ast.unparse(node)
+            except Exception:
+                src = f"<slug-literal@line{getattr(node, 'lineno', 0)}>"
+            findings.append({"line": getattr(node, "lineno", 0), "src": src})
+    return findings
+
+
+def _scan_variant_bare_strings(tree: ast.AST) -> list[dict]:
+    """Findings for a bare string Constant returned/assigned in a variant file (the
+    `return \"split\"` cheat). Shallow (see _contains_string_shallow) to avoid the
+    \"sgs-\"-prefix false positive. Covers Return/Assign/AnnAssign."""
+    findings: list[dict] = []
+    for node in ast.walk(tree):
+        val = _value_of(node)
+        if val is not None and _contains_string_shallow(val):
             try:
                 src = ast.unparse(node)
             except Exception:
@@ -282,19 +331,36 @@ def _process_file(py: Path, scan_dir: Path, violations: list[dict]) -> None:
                 f"(db_lookup / property_suffixes / variant_slots), not an `if slug ==` branch."
             ),
         })
-    # variant_detect.py: also flag bare variant string returns/assigns (cheat MF-1).
-    if py.name == _VARIANT_FILE:
+    # Slug-literal in ANY scanned file's Return/Assign value subtree (cheat Gap A — a
+    # hardcoded `return Recognition("named", "sgs/hero", ...)` with no comparison).
+    seen_keys = {v["key"] for v in violations if v["file"] == rel}
+    for f in _scan_slug_literal_values(tree):
+        key = _violation_key(rel, f["src"])
+        if key in seen_keys:
+            continue
+        seen_keys.add(key)
+        violations.append({
+            "key": key, "file": rel, "line": f["line"], "src": f["src"],
+            "detail": (
+                f"Bare slug literal in converter/{rel}:{f['line']} — `{f['src']}`. "
+                f"A block slug must be DB-resolved (db_lookup.block_exists), never a "
+                f"hardcoded `\"sgs/...\"` return/assign/arg (R-22-1; cheat Gap A)."
+            ),
+        })
+    # variant files: a bare string Constant return/assign (cheat Gap C — `return "split"`).
+    if _is_variant_file(py.name):
         for f in _scan_variant_bare_strings(tree):
+            key = _violation_key(rel, f["src"])
+            if key in seen_keys:
+                continue
+            seen_keys.add(key)
             violations.append({
-                "key": _violation_key(rel, f["src"]),
-                "file": rel,
-                "line": f["line"],
-                "src": f["src"],
+                "key": key, "file": rel, "line": f["line"], "src": f["src"],
                 "detail": (
                     f"Bare variant string in converter/{rel}:{f['line']} — `{f['src']}`. "
                     f"The variant value/attr must come from the DB (variant_slots / "
                     f"db_lookup) or the node, never a literal — a `return \"split\"` "
-                    f"bypasses the comparison gate (cheat MF-1)."
+                    f"bypasses the comparison gate (cheat MF-1 / Gap C)."
                 ),
             })
 
