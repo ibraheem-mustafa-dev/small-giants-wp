@@ -83,9 +83,13 @@ class Recognition:
 
 @dataclass(frozen=True)
 class ScalarLift:
-    """A content child lifted into a parent typed scalar attribute."""
+    """A content child lifted into a parent typed scalar attribute.
+
+    `value` is a str for text-content roles and a dict for image-object roles
+    (object-typed attrs expect {"url": ..., "id": 0, "alt": ...}).
+    """
     attr: str
-    value: str
+    value: str | dict
 
 
 @dataclass(frozen=True)

@@ -14,8 +14,9 @@ from bs4 import BeautifulSoup
 
 from converter.context import ScalarLift, ContentGap
 from converter.recognition import recognise
-from converter.services.extraction import extract_content, build_block_markup
+from converter.services.extraction import extract_content, build_block_markup, run_mechanism_a
 from converter.services.draft_oracle import read_draft_field
+from orchestrator.converter_v2.db_lookup import AttrInfo
 
 # ---------------------------------------------------------------------------
 # Fixture paths (resolved relative to this file so tests pass from any cwd)
@@ -138,4 +139,65 @@ def test_third_case_loud_gap():
     )
     assert isinstance(results[0], ContentGap), (
         f"Expected ContentGap, got {type(results[0])}: {results[0]}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# test_media_lifts_as_object_shape
+# ---------------------------------------------------------------------------
+
+
+def test_media_lifts_as_object_shape(monkeypatch):
+    """When an attr has role=image-object + attr_type=object, run_mechanism_a
+    must produce a ScalarLift whose value is the object dict shape
+    {"url": ..., "id": 0, "alt": ...} — not a bare src string.
+
+    Monkeypatches content_attrs_with_selector to avoid dependency on the DB
+    seed landing in the test environment (the seeding is done by a separate
+    agent concurrently; unit-testing the shaping logic is independent).
+    """
+    import orchestrator.converter_v2.db_lookup as db_lookup_mod
+
+    stub_info = AttrInfo(
+        attr_name="avatarMedia",
+        role="image-object",
+        derived_selector=".sgs-testimonial__avatar",
+        attr_type="object",
+    )
+
+    # Monkeypatch content_attrs_with_selector to return our stub AttrInfo.
+    monkeypatch.setattr(
+        db_lookup_mod,
+        "content_attrs_with_selector",
+        lambda slug: (stub_info,),
+    )
+
+    html_snippet = (
+        '<div class="sgs-testimonial">'
+        '<img class="sgs-testimonial__avatar" src="/cdn/jane.jpg" alt="Jane">'
+        "</div>"
+    )
+    section_root = _node(html_snippet)
+
+    # Build a minimal Recognition stub for the Mechanism A entry.
+    from converter.context import Recognition
+    rec = Recognition(
+        kind="named",
+        slug="sgs/testimonial",
+        container_kind="content",
+        has_inner_blocks=0,
+    )
+
+    results = run_mechanism_a(rec, section_root)
+
+    scalar_lifts = [r for r in results if isinstance(r, ScalarLift)]
+    assert scalar_lifts, f"Expected at least one ScalarLift, got: {results}"
+
+    avatar_lift = next((r for r in scalar_lifts if r.attr == "avatarMedia"), None)
+    assert avatar_lift is not None, (
+        f"No ScalarLift with attr='avatarMedia' in results: {results}"
+    )
+    expected = {"url": "/cdn/jane.jpg", "id": 0, "alt": "Jane"}
+    assert avatar_lift.value == expected, (
+        f"ScalarLift.value is {avatar_lift.value!r} — expected {expected!r}"
     )

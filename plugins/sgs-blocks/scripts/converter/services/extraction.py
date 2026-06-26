@@ -107,13 +107,27 @@ def run_mechanism_a(rec: Recognition, section_root: Any) -> list:
                 )
             )
             continue
-        payload = extract_payload(node, info.role)
-        if not payload:
-            results.append(
-                ContentGap(info.attr_name, "matched node has no extractable content")
-            )
-            continue
-        results.append(ScalarLift(attr=info.attr_name, value=payload))
+        if info.role == "image-object" and info.attr_type == "object":
+            src = extract_payload(node, "image-object")
+            if not src:
+                results.append(
+                    ContentGap(info.attr_name, "media node has no extractable src")
+                )
+                continue
+            alt = (node.get("alt") if hasattr(node, "get") else "") or ""
+            if not alt and hasattr(node, "find"):
+                img = node.find("img")
+                if img is not None:
+                    alt = img.get("alt", "") or ""
+            value: str | dict = {"url": src, "id": 0, "alt": alt}
+        else:
+            value = extract_payload(node, info.role)
+            if not value:
+                results.append(
+                    ContentGap(info.attr_name, "matched node has no extractable content")
+                )
+                continue
+        results.append(ScalarLift(attr=info.attr_name, value=value))
 
     # Per-mechanism conservation invariant (Mechanism A iterates ATTRS).
     lifts = sum(1 for r in results if isinstance(r, ScalarLift))

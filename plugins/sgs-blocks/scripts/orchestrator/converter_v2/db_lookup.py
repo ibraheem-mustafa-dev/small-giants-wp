@@ -3365,6 +3365,7 @@ class AttrInfo(NamedTuple):
     attr_name: str
     role: str
     derived_selector: str
+    attr_type: str
 
 
 @functools.lru_cache(maxsize=256)
@@ -3401,7 +3402,7 @@ def content_attrs_with_selector(block_slug: str) -> tuple[AttrInfo, ...]:
     conn = sqlite3.connect(SGS_DB)
     try:
         rows = conn.execute(
-            f"SELECT attr_name, role, derived_selector FROM block_attributes "
+            f"SELECT attr_name, role, derived_selector, attr_type FROM block_attributes "
             f"WHERE block_slug = ? AND derived_selector IS NOT NULL "
             f"AND role IN ({placeholders})",
             params,
@@ -3413,7 +3414,10 @@ def content_attrs_with_selector(block_slug: str) -> tuple[AttrInfo, ...]:
     finally:
         conn.close()
 
-    result = tuple(AttrInfo(attr_name=r[0], role=r[1], derived_selector=r[2]) for r in rows)
+    result = tuple(
+        AttrInfo(attr_name=r[0], role=r[1], derived_selector=r[2], attr_type=r[3] or "")
+        for r in rows
+    )
     if result:
         _trace("db_lookup_hit", lookup="content_attrs_with_selector",
                block_slug=block_slug, count=len(result))

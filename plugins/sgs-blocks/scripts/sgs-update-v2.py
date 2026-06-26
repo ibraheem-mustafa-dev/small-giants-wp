@@ -935,6 +935,20 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     #   the selector to the real rating container. The lift-capability gap is a
     #   separate task — documented here, not papered over.
     ("sgs/testimonial", "ratingSize"): {"role": "select-from-enum", "derived_selector": ".sgs-testimonial__rating"},
+    # sgs/testimonial — 3 object-typed media attrs. assign-canonical leaves their
+    # role=NULL + derived_selector=NULL because 'Media' suffix matches no typed
+    # property_suffix row → the content-extraction engine skips them entirely.
+    # Correct: role='image-object' (lifts <img> via _lift_scalar_media_from_img)
+    # + derived_selector matching the real BEM element in render.php + the draft.
+    #   avatarMedia: rendered in <div class="sgs-testimonial__avatar"> (render.php:249)
+    #   orgLogo:     rendered in <div class="sgs-testimonial__logo">   (render.php:257)
+    #   workMedia:   rendered in <figure class="sgs-testimonial__work"> (render.php:265)
+    # Must live here (not DB-only) so they survive every /sgs-update reseed.
+    # Paired with migration 2026-06-26-testimonial-media-role-selector.py for
+    # immediate effect without a full reseed. 2026-06-26.
+    ("sgs/testimonial", "avatarMedia"): {"role": "image-object", "derived_selector": ".sgs-testimonial__avatar"},
+    ("sgs/testimonial", "orgLogo"):     {"role": "image-object", "derived_selector": ".sgs-testimonial__logo"},
+    ("sgs/testimonial", "workMedia"):   {"role": "image-object", "derived_selector": ".sgs-testimonial__work"},
 }
 
 
