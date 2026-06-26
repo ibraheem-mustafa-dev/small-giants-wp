@@ -5,52 +5,53 @@ thread: cloning-pipeline
 session_date: 2026-06-26
 ---
 
-# Session Handoff — 2026-06-26 (Step-3 Stage 2 recognition BUILT + LANDED, D244)
+# Session Handoff — 2026-06-26 (Step-3 content extraction stage BUILT + LANDED, D245)
+
+> Prior handoffs (incl. D244 Stage-2 recognition) are in git history.
 
 ## Completed This Session
-1. **Stage 2 recognition (Method-2) BUILT in the fresh `converter/` engine** — `recognition.recognise(node)` 4-branch (named→atomic→scalar→unrecognised), name-free + DB-driven. Routes a draft `.sgs-hero`→`sgs/hero` (not `sgs/container`), atomic `h1`→`sgs/heading`, unknown→loud `GapOrigin.UNRECOGNISED`. Files: `converter/recognition.py` + `services/{has_inner,recognise_helpers,variant_detect}.py` + `Recognition` dataclass + `db_lookup.get_container_kind`.
-2. **Variant detection via BEM modifier ↔ `variant_slots.variant_value`** (Bean's mechanism — I'd twice wrongly called it impossible). `has_inner_blocks` derived FRESH from save.js+render.php AND-rule (Spec 31 §12.7, NOT the cached column).
-3. **LANDED on a live canary, universal** — genuine `emit_block_markup()` output deployed via REST, anonymous Chrome-DevTools `getComputedStyle`/classList: all 10 variants (hero ×4, testimonial ×6-with-content) render as their native block with their own exclusive `--variant` class, never a container fallback. Test pages deleted post-proof.
-4. **Gates hardened + tests** — `no_slug_literal` extended (scan recognition.py + slug-literal-as-call-arg + variant bare-string + AnnAssign; 4 cheat-gaps closed, all failure-paths proven); `coverage_report --check` (loud UNRECOGNISED). 75 converter + 603 scoped-regression green; cheat-gate 0-new, F6 0 violations.
-5. **Gating chain run** — qc-council falsified a stale "hero is broken" premise pre-build; qc-inline caught the has_inner spec deviation; adversarial-council gated the design; multi-model review (correctness+cheat) on the built code, all findings fixed.
-6. **Stale-doc corrections** — Spec 31 §Stage-2 row + next-session-prompt's "conf 0.10 → container" framing marked STALE (frozen engine already routes composites; Stage 2 is a fresh PORT). D244 recorded; state.md updated.
-7. **Lesson captured** — `rebuild-stage-authority-is-spec-and-db-never-frozen-engine` (workspace + CC-memory; blub.db pending, dashboard offline).
+1. **Stage-3 content/block-equivalent extraction stage — DESIGNED, BUILT, LANDED, signed off (D245).** Spec 31 §12.6 step-3's content fork: a recognised composite's child content lifts to native attributes/child-blocks in the fresh `converter/` engine. Was blank after D244.
+2. **Design-gate caught a project-threatening fatal error before any code.** v1's fork used `equivalent_block_for(slug, slot)` — fact-checked TRUE against the live DB + Spec 22 §FR-22-5.3 as a "fatal catch" that would have recreated the D212 empty-testimonial bug. 2 `/adversarial-council` rounds (6 + 3 personas) → v3 design with the corrected mechanism + 26 folded must-fixes.
+3. **Mechanism A (scalar-content-lift via `derived_selector`) built + LANDED:** testimonial quote + name text lift to typed attrs and render live. `converter/services/{extraction,payload,content_select,draft_oracle}.py` + `db_lookup.content_attrs_with_selector`/`content_role_for_slot`.
+4. **Mechanism B (child-block via `slot_has_equivalent_block`) built + LANDED:** hero `<h1 class=sgs-hero__heading>` → child `sgs/heading`; `db_lookup.primary_content_attr` emits the child's text into its content attr so the dynamic child renders (live `<h2>` on canary).
+5. **Scalar media (object-shaping) built + LANDED:** testimonial avatar image → `{url,id,alt}` object via the reseed-surviving `ATTR_CLASSIFICATION_OVERRIDES` channel (`sgs-update-v2.py`) + dated migration `migrations/2026-06-26-testimonial-media-role-selector.py`. qc-inline 8/8.
+6. **Gates:** `content_gap_check.py` built + wired to `f5-commit-gate.py` (a silent content-drop now blocks a commit); `no_slug_literal` extended to slot/canonical_slot idents (proves exit-1 on a slot carve-out). qc-council found+fixed 4 bugs self-tests missed.
+7. **All 3 content shape-classes LAND live** (text, child-block, media), each verified against Spec 31 §2 Axis 3, each its own genuine draft→engine→emit→canonical-render proof. All canary test pages deleted + swept clean.
 
 ## Current State
-- **Branch:** `main` at `0de2df6f`
-- **Tests:** 75 converter + 603 scoped-regression pass (`ledger oracle cheat-gate excluded-gate db-consistency coverage-matrix converter`, `--import-mode=importlib`); 6 xfailed (stubs, intentional)
-- **Build:** n/a (pure-Python converter, no npm build)
-- **Uncommitted changes:** none of mine (pre-existing `lucide-icons.php` / `reports/phase4-*` / `*-theme.md` are NOT mine — leave them)
-- **D-ceiling:** D244. convert.py byte-identical (D-MODULAR). 7 commits pushed (`81971f00`→`0de2df6f`).
+- **Branch:** `main` at `e1f7eae3` (pushed)
+- **Tests:** 318 converter+ledger pass (1 skip, 6 xfail) + 558 gate-suite pass
+- **Build:** n/a (pure-Python converter; no npm build for these changes)
+- **Uncommitted changes:** none of mine (pre-existing lucide-icons/phase4/handoff-theme dirty files are NOT mine — leave them)
+- **convert.py:** byte-identical (D-MODULAR)
 
 ## Known Issues / Blockers
-- **Scalar branch is data-limited** — `slots.standalone_block` is 40/103 populated; the 63 unmapped element-slots loud-fail (UNRECOGNISED) honestly. Seed via `/sgs-update` before relying on scalar coverage; baseline today's unmapped-slot set before arming the coverage gate as a build-blocker.
-- **Content-requiring blocks** (testimonial etc.) render nothing without content (by-design empty-content guard) — their full visual LANDED is Stage-4f's job, not recognition's.
-- blub.db dashboard offline (localhost:5050) — the lesson's 3rd layer is pending sync.
+- None block the next session. Remaining content slots are data/cadence work, not blocked.
 
 ## Next Priorities (in order)
-1. **The next pipeline stage in order — slot list / scalar-media child-shape fork (Stage 3c/4f)** — its OWN `/brainstorming` → `/adversarial-council` design-gate (Rule 7) + Bean approval BEFORE build, then SDD → qc-council → deploy → LANDED. Do NOT batch stages.
-2. Seed `slots.standalone_block` for the unmapped element-slots via `/sgs-update` (unblocks scalar recognition coverage).
-3. Continue per-stage to the §8 decommission trigger (delete convert.py when the full multi-shape fixture set TRANSFER-and-LANDs).
+1. **Remaining testimonial text slots** (rating/date/role/org) — same Mechanism A, each its own LANDED proof (A14).
+2. **`team-member`** (the other scalar-content-lift block) — same Mechanism A.
+3. **The other `has_inner_blocks=1` composites** (cta-section, info-box, card-grid…) — Mechanism B, each with its `deprecated.js` where the save-shape changes.
+4. **The full multi-shape fixture-set ledger+oracle gate** (Spec 31 §12.0 universal); arrays (FR-22-2.5) decided by fixture-set evidence (STOP-18).
 
 ## Files Modified
 | File path | What changed |
-|-----------|-------------|
-| `plugins/sgs-blocks/scripts/converter/recognition.py` | NEW — recognise() 4-branch + build_ctx + unrecognised_gap |
-| `plugins/sgs-blocks/scripts/converter/services/{has_inner,recognise_helpers,variant_detect}.py` | NEW — the 3 recognition services |
-| `plugins/sgs-blocks/scripts/converter/context.py` + `models.py` | Recognition dataclass + GapOrigin.UNRECOGNISED |
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | +get_container_kind (additive DB reader) |
-| `plugins/sgs-blocks/scripts/converter/gates/no_slug_literal.py` | hardened (4 cheat-gaps) |
-| `plugins/sgs-blocks/scripts/converter/coverage_report.py` | +--check (loud UNRECOGNISED) |
-| `plugins/sgs-blocks/scripts/converter/tests/*` | 4 test files + fixtures (75 pass) |
-| `.claude/plans/2026-06-23-stage2-recognition-design.md` | v2 (council/qc-corrected) |
-| `.claude/{decisions,state}.md` + `specs/31-*` + `next-session-prompt.md` | D244 + stale-framing corrections |
+|-----------|--------------|
+| `.claude/plans/2026-06-26-stage3-child-shape-fork-design.md` | NEW — v3 design (2 council rounds folded) |
+| `plugins/sgs-blocks/scripts/converter/services/{extraction,payload,content_select,draft_oracle}.py` | NEW — the content mechanisms |
+| `plugins/sgs-blocks/scripts/converter/{context,models}.py` | NEW types + GapOrigin.CONTENT_GAP |
+| `plugins/sgs-blocks/scripts/converter/gates/no_slug_literal.py` | slot/slot_name/canonical_slot idents |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | content_attrs_with_selector, content_role_for_slot, primary_content_attr |
+| `plugins/sgs-blocks/scripts/ledger/content_gap_check.py` | NEW gate + baseline; wired to f5-commit-gate |
+| `plugins/sgs-blocks/scripts/sgs-update-v2.py` | ATTR_CLASSIFICATION_OVERRIDES media entries |
+| `plugins/sgs-blocks/scripts/migrations/2026-06-26-testimonial-media-role-selector.py` | NEW migration |
+| `.claude/{decisions,state}.md` | D245 + state pointer |
 
 ## Notes for Next Session
-- **The mechanism is universal by construction** — recognition names no block and no variant; a new variant or variant-block needs zero code change. Proven: 10/10 variants recognise + land.
-- **A14 in action:** testimonial's render path genuinely differs from hero's (content-gated) — do NOT bank generalisation across blocks; each earns its own LANDED proof.
-- **The frozen engine is NEVER the reference** (the captured lesson). Design the next stage from Spec 22/31 + the DB + the draft; read `convert.py` only to name the bug being killed.
-- **Canary deploy recipe** (STOP-21): `recognise()`→`emit_block_markup()` → REST page CREATE (guard-safe) → anonymous Chrome-DevTools `getComputedStyle`/classList → delete page. Creds: `.claude/secrets/sandybrown.env` (grep/cut, never source).
+- **The mechanism is already universal** — generalising to a new slot/block is usually a *proof*, not new code (the name slot needed zero code). Exception: a new attr-shape (like object media) needs shaping logic.
+- **Object media attrs need the reseed-surviving `ATTR_CLASSIFICATION_OVERRIDES` channel** — a bare migration is overwritten by `/sgs-update`'s assign-canonical re-derivation.
+- **Input class ≠ output class:** draft uses `.sgs-testimonial__author`; render paints `.sgs-testimonial__name`. `derived_selector` finds the draft node; LANDED reads the OUTPUT class.
+- **STOP-21 canary recipe works cleanly:** REST page CREATE (guard-safe) → anonymous render check → delete + 404. Creds `.claude/secrets/sandybrown.env` (grep/cut, never source).
 
 ## Next Session Prompt
-See `.claude/next-session-prompt.md` (full orchestration plan + carried-forward STOP catalogue).
+See `.claude/next-session-prompt.md` (canonical) — the orchestration plan with the carried-forward STOP catalogue.
