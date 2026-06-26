@@ -40,6 +40,7 @@ import argparse
 import ast
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -51,18 +52,39 @@ sys.stdout.reconfigure(encoding="utf-8")
 _HERE = Path(__file__).resolve().parent              # scripts/converter/gates/
 _CONVERTER = _HERE.parent                            # scripts/converter/
 _SCAN_DIRS = [_CONVERTER / "resolvers", _CONVERTER / "services"]
+# Individual converter-root files in scope (Stage-2 recognition lives at the root, not
+# under resolvers/services — design §9-fold-G / cheat MF-2 closed the scope gap).
+_SCAN_FILES = [_CONVERTER / "recognition.py"]
 _BASELINE = _HERE / "no-slug-literal-baseline.json"
 
 # The carve-out identifiers the gate guards.
 _TARGET_IDENTS = frozenset({"block_slug", "variant_value", "variant_attr"})
+
+# The variant-detection module: its returns/assigns must carry NO bare string constant
+# (the variant value + attr come from the DB / the node, never a literal — cheat MF-1:
+# `return "split"` bypasses the comparison gate). Scoped to this file to avoid
+# false-positives on services that legitimately build strings (value_serialise etc.).
+_VARIANT_FILE = "variant_detect.py"
 
 
 # ---------------------------------------------------------------------------
 # AST helpers
 # ---------------------------------------------------------------------------
 
+# A bare SGS slug literal, e.g. "sgs/hero". Comparing ANY variable to one of these in a
+# converter body is a per-block carve-out (R-22-9) regardless of the variable's name —
+# closes the gap where a local `slug` (built via prefix-strip, not from ctx.block_slug)
+# is compared to a slug literal and the identifier-tracking misses it.
+_SLUG_LITERAL_RE = re.compile(r"^sgs/[a-z0-9-]+$")
+
+
 def _is_string_constant(node: ast.AST) -> bool:
     return isinstance(node, ast.Constant) and isinstance(node.value, str)
+
+
+def _is_slug_literal(node: ast.AST) -> bool:
+    return (isinstance(node, ast.Constant) and isinstance(node.value, str)
+            and bool(_SLUG_LITERAL_RE.match(node.value)))
 
 
 def _is_string_collection_literal(node: ast.AST) -> bool:
@@ -145,7 +167,10 @@ class _CarveOutVisitor(ast.NodeVisitor):
         operands = [node.left, *node.comparators]
         touches = any(_subtree_touches_target(o, self.tainted) for o in operands)
         literalish = any(self._literalish(o) for o in operands)
-        if touches and literalish:
+        # A slug literal as ANY operand is a carve-out regardless of the other operand's
+        # identifier (catches a local `slug == "sgs/hero"` the target-tracking misses).
+        slug_lit = any(_is_slug_literal(o) for o in operands)
+        if (touches and literalish) or slug_lit:
             self._record(node)
         self.generic_visit(node)
 
@@ -183,6 +208,40 @@ def _is_test_file(path: Path) -> bool:
     return path.name.startswith("test_") or "tests" in {p.name for p in path.parents}
 
 
+def _bare_string(node: ast.AST) -> bool:
+    """A non-empty string Constant, or a tuple/list containing one (the returned
+    (variant_attr, variant_value) shape). Empty strings are ignored (harmless)."""
+    if isinstance(node, ast.Constant) and isinstance(node.value, str) and node.value:
+        return True
+    if isinstance(node, (ast.Tuple, ast.List)):
+        return any(_bare_string(e) for e in node.elts)
+    return False
+
+
+def _scan_variant_bare_strings(tree: ast.AST) -> list[dict]:
+    """Findings for bare string-constant returns/assigns in variant_detect.py.
+
+    The variant value + attr must come from the DB (variant_slots / db_lookup) or the
+    node — never a literal. A `return "split"` / `value = "split"` is the cheat MF-1
+    the comparison gate misses. Flags any Return/Assign whose value is (or contains) a
+    non-empty string constant.
+    """
+    findings: list[dict] = []
+    for node in ast.walk(tree):
+        target = None
+        if isinstance(node, ast.Return) and node.value is not None and _bare_string(node.value):
+            target = node.value
+        elif isinstance(node, ast.Assign) and _bare_string(node.value):
+            target = node.value
+        if target is not None:
+            try:
+                src = ast.unparse(node)
+            except Exception:
+                src = f"<bare-string@line{getattr(node, 'lineno', 0)}>"
+            findings.append({"line": getattr(node, "lineno", 0), "src": src})
+    return findings
+
+
 def _violation_key(rel: str, src: str) -> str:
     h = hashlib.sha256(src.encode("utf-8")).hexdigest()[:16]
     return f"{rel}::{h}"
@@ -199,6 +258,47 @@ def _rel_path(py: Path, scan_dir: Path) -> str:
     return py.name
 
 
+def _process_file(py: Path, scan_dir: Path, violations: list[dict]) -> None:
+    if _is_test_file(py):
+        return
+    try:
+        tree = ast.parse(py.read_text(encoding="utf-8", errors="replace"), filename=str(py))
+    except SyntaxError:
+        return
+    rel = _rel_path(py, scan_dir)
+    visitor = _CarveOutVisitor()
+    visitor._collect_assignments(tree)
+    visitor.visit(tree)
+    for f in visitor.findings:
+        violations.append({
+            "key": _violation_key(rel, f["src"]),
+            "file": rel,
+            "line": f["line"],
+            "src": f["src"],
+            "detail": (
+                f"Carve-out: a block-slug/variant identifier is compared to a "
+                f"string literal in converter/{rel}:{f['line']} — `{f['src']}`. "
+                f"Bodies must name no block (R-22-1/R-22-9); route via the DB "
+                f"(db_lookup / property_suffixes / variant_slots), not an `if slug ==` branch."
+            ),
+        })
+    # variant_detect.py: also flag bare variant string returns/assigns (cheat MF-1).
+    if py.name == _VARIANT_FILE:
+        for f in _scan_variant_bare_strings(tree):
+            violations.append({
+                "key": _violation_key(rel, f["src"]),
+                "file": rel,
+                "line": f["line"],
+                "src": f["src"],
+                "detail": (
+                    f"Bare variant string in converter/{rel}:{f['line']} — `{f['src']}`. "
+                    f"The variant value/attr must come from the DB (variant_slots / "
+                    f"db_lookup) or the node, never a literal — a `return \"split\"` "
+                    f"bypasses the comparison gate (cheat MF-1)."
+                ),
+            })
+
+
 def run(scan_dirs: list[Path] | None = None) -> list[dict]:
     """Return a list of violation dicts {key, file, line, src, detail}."""
     dirs = scan_dirs if scan_dirs is not None else _SCAN_DIRS
@@ -207,31 +307,12 @@ def run(scan_dirs: list[Path] | None = None) -> list[dict]:
         if not scan_dir.exists():
             continue
         for py in sorted(scan_dir.rglob("*.py")):
-            if _is_test_file(py):
-                continue
-            try:
-                tree = ast.parse(py.read_text(encoding="utf-8", errors="replace"),
-                                 filename=str(py))
-            except SyntaxError:
-                continue
-            visitor = _CarveOutVisitor()
-            visitor._collect_assignments(tree)
-            visitor.visit(tree)
-            rel = _rel_path(py, scan_dir)
-            for f in visitor.findings:
-                violations.append({
-                    "key": _violation_key(rel, f["src"]),
-                    "file": rel,
-                    "line": f["line"],
-                    "src": f["src"],
-                    "detail": (
-                        f"Carve-out: a block-slug/variant identifier is compared to a "
-                        f"string literal in converter/{rel}:{f['line']} — `{f['src']}`. "
-                        f"Resolver bodies must name no block (R-22-1/R-22-9); route via "
-                        f"the DB (db_lookup / property_suffixes / variant_slots), not an "
-                        f"`if slug ==` branch."
-                    ),
-                })
+            _process_file(py, scan_dir, violations)
+    # Individual converter-root files (recognition.py) — only when scanning defaults.
+    if scan_dirs is None:
+        for py in _SCAN_FILES:
+            if py.exists():
+                _process_file(py, _CONVERTER, violations)
     return violations
 
 
