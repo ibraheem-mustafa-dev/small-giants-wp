@@ -22,6 +22,10 @@ class GapOrigin(str, enum.Enum):
     NO_DESTINATION = "NO_DESTINATION"           # real gap — the block has no attr for it (add one)
     EXCLUDED = "EXCLUDED"                        # F4 excluded_properties — intentional non-lift
     UNROUTED = "UNROUTED"                        # suspected routing bug — must FAIL, never laundered
+    UNRECOGNISED = "UNRECOGNISED"               # Stage-2 recognition: a BEM node resolved to NO registered
+                                                # block (distinct from UNROUTED, a known-writer-path property
+                                                # finding no attr). Loud RED, never a silent empty sgs/container
+                                                # emit (Spec 31 §12.7 classification exhaustiveness).
 
 
 @dataclass(frozen=True)

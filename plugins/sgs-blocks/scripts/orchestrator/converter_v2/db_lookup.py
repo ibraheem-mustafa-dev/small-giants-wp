@@ -536,6 +536,42 @@ def get_block_composition_role(block_slug: str) -> str | None:
 
 
 @functools.lru_cache(maxsize=256)
+def get_container_kind(block_slug: str) -> str | None:
+    """Return block_composition.container_kind for a block, or None.
+
+    Values: 'section' | 'layout' | 'content' (populated 2026-06-02 D152 by
+    /sgs-update from block.json supports.sgs.containerKind). Used by the modular
+    converter's Stage-2 recognition (services.recognise_helpers._get_container_kind)
+    to label a recognised block's container KIND and to tie-break multiple registered
+    BEM root classes (prefer 'section' > 'layout' > 'content', design 2026-06-23-stage2
+    §1 fold-L). Pure DB read; soft-fails to None on missing table/row/column.
+
+    Args:
+        block_slug: Fully-qualified SGS slug, e.g. 'sgs/hero'.
+
+    Returns:
+        'section' | 'layout' | 'content', or None when the block has no row or the
+        column is NULL.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT container_kind FROM block_composition WHERE block_slug = ?",
+            (block_slug,),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        row = None
+    finally:
+        conn.close()
+    if row and row[0]:
+        _trace("db_lookup_hit", lookup="get_container_kind",
+               block_slug=block_slug, container_kind=row[0])
+        return row[0]
+    _trace("db_lookup_miss", lookup="get_container_kind", block_slug=block_slug)
+    return None
+
+
+@functools.lru_cache(maxsize=256)
 def block_accepts_inner_blocks(block_slug: str) -> bool:
     """Return True when the block declares InnerBlocks in its block.json.
 
