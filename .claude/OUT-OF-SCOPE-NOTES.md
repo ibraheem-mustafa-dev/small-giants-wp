@@ -1,63 +1,40 @@
-# What's NOT done yet — and why (plain-English tracker)
+# What's not done yet — mapped to its pipeline STAGE (not a gap list)
 
-**Why this doc exists:** so we stop re-discovering the same "wait, what's left?" every session. Each item says what it is, why it's parked, and the ONE thing that unblocks it. No jargon.
+**Why this doc exists + the correction (2026-06-28, Bean):** an earlier version of this read like a bag of ad-hoc "out-of-scope gaps." That was wrong framing. This is a **universal pipeline** — so every item below is one of three things: a **pipeline STAGE not built yet** (Spec 31 already maps it), a **data-model item to finish** (model it in the DB, the Path-A way), or **already solved**. None are permanent exceptions.
 
-_Last updated: 2026-06-28._
-
----
-
-## The array feature (cloning repeated items — stats, logos, steps, plans, badges, icons)
-
-### ✅ What IS done
-- Repeated items now clone their **text**, **images**, **links**, **icons** (the named kind, e.g. `data-icon="star"`), and **plain numbers** ("500+", "01"). 8 blocks wired. Every field we can't do yet is a **loud, tracked gap** — never a silent disappearance.
-
-### ⏳ What's parked (and why)
-
-1. **Item *styling* (each item's own fonts/colours/spacing).**
-   - *What:* right now an item's words and pictures transfer, but not its own colours/fonts.
-   - *Why parked:* in the pipeline, content moves first, then its styling — that styling step is the next build ("the CSS half").
-   - *Unblocks it:* apply the existing styling-lifter to each item.
-
-2. **Icons drawn as raw SVG shapes** (rather than a named `data-icon`).
-   - *What:* an icon written as a named label clones fine; an icon drawn as raw shape-code doesn't resolve to the right icon yet.
-   - *Why parked:* a safety gate currently blocks the new engine from reusing the existing icon-recogniser.
-   - *Unblocks it:* open that gate for the icon-recogniser (it's a trusted, shared tool).
-
-3. **Style *switches* on items** — a badge's light/dark variant, a card badge's colour, a plan's "Popular" highlight, a billing period (monthly/yearly).
-   - *What:* these aren't text — they're on/off style choices baked into a CSS class or a true/false flag.
-   - *Why parked:* they need a different kind of handler (a "style-modifier" reader), not the text/image one.
-   - *Unblocks it:* the CSS-half build adds that handler.
-
-4. **A plan's *features list*** (the ticked bullet list in a pricing plan).
-   - *What:* a list-inside-an-item (a list within a list).
-   - *Why parked:* nested lists need their own handling; out of scope for the first pass.
-   - *Unblocks it:* a future nested-array handler.
-
-5. **The hero badge "number + suffix" split** (e.g. "500" + "+").
-   - *What:* the number and its little suffix live in one element and need splitting.
-   - *Why parked:* tiny edge case; needs a small split rule.
+The universal stream (Spec 31 §3): for EVERY element — block, child block, nested element, built-in element, array item — **A. identify it → B. migrate its content → C. transfer its attached CSS**, through ONE dispatch. Everything below is a piece of that stream not yet built/wired.
 
 ---
 
-## The bigger engine (cross-cutting)
+## A — STAGES of the universal pipeline, not yet built/wired (Spec 31 owns each)
 
-6. **Make the item-handlers *shared* (the universal alignment).**
-   - *What:* the handlers that read text/icons/links were built inside the array feature. They should be **one shared toolkit** used everywhere — built-in elements, nested blocks, AND array items — so we don't rebuild them per place.
-   - *Why it matters:* this is the misalignment that keeps creeping back. **This is the fix being done right now.**
+| Item | Spec 31 stage that owns it | Status |
+|---|---|---|
+| **Per-item styling** (each item's own fonts/colours) | **CSS branch §3.A** + per-element styling-lift (B2). The "CSS step after content", universal to every element. | Stage not wired per-item yet |
+| **Nested content** (a pricing plan's features *list* inside an item) | **Recursive walker (W3 / Stage 3c)** — recursion handles list-inside-item | Stage = W3, pending |
+| **Nested child blocks generally** (hero columns, accordion items…) | **W3 walker port** (FR-22-3 recursive interior routing) | Stage = W3, pending (design approved) |
+| **Media re-pointed to WP library** (A1) | **Production-wiring stage** (§8) — the media-map loads when the engine goes live | Stage = production-wiring |
+| **Content "nothing-dropped" ledger** (A2) | **Conservation-ledger instrument** (§12.2.1) — extend `declare_input` to content nodes | Stage = ledger extension |
+| **Engine inert in real clones** | **Production-wiring stage** (§8) — new engine switches on once A1/A2 safe | Stage = production-wiring (deliberate) |
 
-7. **Media images re-pointed to the WordPress library (A1).**
-   - *What:* a cloned image still points at the mockup's address, not the uploaded WordPress copy.
-   - *Why parked:* the new engine has no "media-map loader" until it's switched on in production.
-   - *Unblocks it:* the production-wiring step loads the real media map.
+→ These aren't gaps in the universal *logic*; they're stages of the universal pipeline not yet built or not yet switched on live.
 
-8. **The content "nothing-went-missing" ledger (A2).**
-   - *What:* we have a safety ledger that catches dropped *styling*; it doesn't yet catch a dropped *content node*.
-   - *Why parked:* extending the ledger is a deliberate design job.
+## B — Data-model items to FINISH (the Path-A "model it in the DB" way — not code gaps)
 
-9. **W3 — the structured-content engine** (hero columns, nested child blocks).
-   - *What:* the big one — converting complex laid-out content + nested blocks.
-   - *Why parked:* highest-risk piece (~1,650 lines), deliberately given its own fresh session.
+| Item | The data to add | Then it just works |
+|---|---|---|
+| **hero `position` / `style`** (two style-switches on one badge element) | Add each field's **value-allowlist** to `arrayItemSchema` (the DB already is the home; we modelled name+selector+role, not the allowed values). | The `css-modifier` handler becomes enum-aware — picks `bottom-left` for position, `light` for style, by matching each field's allowlist. |
+| **hero `number` + `suffix`** (combined in one span) | A split rule (or a draft-shape expectation that they're separate BEM elements). | Number and its suffix separate cleanly. |
+| **pricing `highlighted` / `period`** (boolean / enum flags) | Model as a boolean/enum field in `arrayItemSchema` (DB-driven). | Lifts as the typed value. |
 
-10. **The new engine is "inert" in real clones.**
-    - *What:* all this new code is built + tested but **not switched on** for live cloning yet (live cloning still runs the old frozen engine).
-    - *Why:* on purpose — it switches on once the pieces above (esp. 7 + 8) are safe.
+→ All consistent with the array feature being **fully data-driven** — finishing the per-item schema in the DB, not adding code branches.
+
+## C — Already solved since the first draft of this note (stale lines removed)
+
+- **Icons drawn as raw SVG** — DONE. The shared-library keystone opened the import-ban to `icon_resolver`, so `icon-slug` now resolves inline SVG (commit 305d5396).
+- **Shared handler library** — DONE. The handlers are one shared module both paths use (305d5396). This was the misalignment; it's closed.
+
+---
+
+## The honest one-liner (Q2)
+The pipeline is **designed** as the single universal identify→content→CSS stream (Spec 31 §3). The **content half is substantially built** in the new engine (scalar + array). Still pending: **A's recursion (W3 walker), C's CSS branch (the core fidelity work), and production-wiring** — and the new engine is **inert in live clones** until wired. So it is not *yet* one complete stream doing A+B+C for every element — it's being built toward exactly that.
