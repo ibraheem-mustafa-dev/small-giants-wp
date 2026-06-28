@@ -48,6 +48,7 @@ from converter.services.payload import extract_payload
 from converter.services.recognise_helpers import bem_element_to_canonical_slot
 from converter.resolvers.scalar_content import lift_scalar_content
 from converter.resolvers.array_content import lift_array_content
+from converter.resolvers.styling_content import lift_styling_content
 from orchestrator.converter_v2 import db_lookup
 
 # Emit-glue imports (stage 3 §1 walk/emit — design §1).
@@ -208,6 +209,41 @@ def run_mechanism_array(rec: Recognition, section_root: Any, media_map: dict | N
 
 
 # ---------------------------------------------------------------------------
+# Mechanism Styling — CSS-on-content lift via derived_selector (W3 step 2b)
+# ---------------------------------------------------------------------------
+
+
+def run_mechanism_styling(
+    rec: Recognition, section_root: Any, css_rules: dict | None = None
+) -> list:
+    """Mechanism Styling: lift CSS-on-content attrs (typography / colour).
+
+    Spec 31 §3 universal stream (identify -> content -> CSS): this is the CSS leg
+    for a content block's named child elements. Wraps the already-built modular
+    ``lift_styling_content`` (``converter.resolvers.styling_content``) -- the
+    faithful port of ``_lift_styling_attrs_by_selector`` (convert.py:3903) with the
+    B2 responsive fix (``_bp_decls`` consumed -> ``{attr}{bp_suffix}`` companions).
+
+    The resolver SELF-GATES on the ``scalar-styling-lift`` capability and returns
+    ``{}`` for any block that has not declared it (currently only ``sgs/testimonial``).
+    So this is a universal, DB-driven call with no per-block carve-out: a block that
+    has not opted in produces no styling keys.
+
+    ``css_rules`` is the draft CSS rule-set dict. It defaults to ``{}`` -- with an
+    empty rule-set the lift finds no declarations and returns no keys (a safe no-op),
+    which is also why pre-existing callers that do not yet thread css_rules see no
+    behaviour change. The LANDED recipe / pipeline passes the run's real rule-set.
+
+    Returns a list of ``ScalarLift`` items (one per lifted styling attr). The styling
+    attrs (e.g. ``quoteColour``, ``quoteFontSize``) never collide with Mechanism A's
+    content attrs (e.g. ``quote``): different keys, so merging order in
+    ``build_block_markup`` is irrelevant.
+    """
+    lifted = lift_styling_content(section_root, rec.slug, css_rules or {})
+    return [ScalarLift(attr=name, value=value) for name, value in lifted.items()]
+
+
+# ---------------------------------------------------------------------------
 # Expected-content coverage — silent-drop guard (design §6)
 # ---------------------------------------------------------------------------
 
@@ -262,14 +298,23 @@ def expected_content_gaps(slug: str) -> list:
 # ---------------------------------------------------------------------------
 
 
-def extract_content(rec: Recognition, section_root: Any, media_map: dict | None = None) -> list:
+def extract_content(
+    rec: Recognition,
+    section_root: Any,
+    media_map: dict | None = None,
+    css_rules: dict | None = None,
+) -> list:
     """Dispatch content extraction for a recognised composite.
 
     Four exhaustive cases (design §1, capability mutual exclusion):
 
     1. has_inner_blocks == 0 AND scalar-content-lift capability present
-       → Mechanism A (selector-driven scalar lifts) + Mechanism Array (if also
-         array-content-lift) + expected_content_gaps.
+       → Mechanism A (selector-driven scalar lifts) + Mechanism Styling
+         (CSS-on-content, self-gated on scalar-styling-lift) + Mechanism Array
+         (if also array-content-lift) + expected_content_gaps.
+
+    ``css_rules`` is the draft CSS rule-set threaded to Mechanism Styling so the
+    CSS leg of the Spec 31 §3 universal stream lands. Defaults to ``{}`` (safe no-op).
 
     2. has_inner_blocks == 1
        → Mechanism B (slot-keyed child-block walk).
@@ -291,6 +336,10 @@ def extract_content(rec: Recognition, section_root: Any, media_map: dict | None 
 
     if rec.has_inner_blocks == 0 and SCALAR_LIFT in caps:
         results = run_mechanism_a(rec, section_root, media_map) + expected_content_gaps(rec.slug)
+        # Case 1 + styling arm (W3 step 2b): lift CSS-on-content (typography/colour)
+        # for the block's named child elements. Self-gated on scalar-styling-lift,
+        # so a no-op for blocks that have not opted in (universal, DB-driven).
+        results = results + run_mechanism_styling(rec, section_root, css_rules)
         # Case 1 + array arm: if the block also opts into array-content-lift,
         # merge array lifts alongside the scalar lifts (MF-6 / D248).
         if ARRAY_LIFT in caps:
@@ -340,7 +389,12 @@ def extract_content(rec: Recognition, section_root: Any, media_map: dict | None 
 # ---------------------------------------------------------------------------
 
 
-def build_block_markup(rec: Recognition, section_root: Any, media_map: dict | None = None) -> str:
+def build_block_markup(
+    rec: Recognition,
+    section_root: Any,
+    media_map: dict | None = None,
+    css_rules: dict | None = None,
+) -> str:
     """Assemble native WP block markup from extraction results.
 
     Combines variant attrs (e.g. {'variant': 'split'}) with every ScalarLift
@@ -348,10 +402,13 @@ def build_block_markup(rec: Recognition, section_root: Any, media_map: dict | No
     block markup.  ContentGaps contribute nothing to the emit — they are the
     tracked-not-transferred record.
 
+    ``css_rules`` is threaded to ``extract_content`` for the CSS-on-content
+    (styling) leg of the Spec 31 §3 universal stream. Defaults to ``{}``.
+
     Design ref: `.claude/plans/2026-06-26-stage3-child-shape-fork-design.md` §1.
     No block or slot string literals (scanned by gates/no_slug_literal).
     """
-    results = extract_content(rec, section_root, media_map)
+    results = extract_content(rec, section_root, media_map, css_rules)
     attrs: dict = dict(variant_attrs(rec))  # variant attrs first (e.g. {'variant': 'split'})
     for r in results:
         if isinstance(r, ScalarLift):
