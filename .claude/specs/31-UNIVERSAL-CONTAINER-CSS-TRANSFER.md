@@ -20,6 +20,21 @@ binding_rules: R-22-1, R-22-2, R-22-3, R-22-6, R-22-9, R-22-11, R-22-15
 
 # Spec 31 — Universal Container/Grid Content + CSS Transfer Architecture
 
+> ## ⛔ SCOPE CONTRACT / DEFINITION OF DONE — read BEFORE scoping ANY work on this spec (STOP-29, D248)
+>
+> This is a UNIVERSAL pipeline. It does NOT have ad-hoc "out-of-scope gaps." Anything not done is a named STAGE (mapped in §12) or a data-model item to finish — never a vague exception.
+>
+> **The one universal stream (§3):** for EVERY element on the page — `sgs/container`, every composite, every **nested child block**, every **built-in element / scalar attr** (content the block renders itself instead of as a nested child), and every **array item** — the pipeline must **A. identify it correctly → B. migrate its content → C. transfer its directly-attached CSS**, through ONE dispatch. The "block vs element" fork chooses only the OUTPUT destination (child InnerBlock vs scalar attr); recognition + content + CSS extraction is the SAME shared machinery (§3.B.0).
+>
+> **Definition-of-done for ANY increment of this spec:** done = the spec's FULL universal scope for the surface you touch — NOT "the minimum that ships." Before building, READ §1 (the complete function inventory) + §3 (the universal algorithm) + §3.B.0 (universality) + the §12 stage map IN FULL (holistically, not greps). Then:
+> 1. State the surface's full universal scope in plain English first.
+> 2. If shipping an increment, **map every not-yet-built part to its named §12 STAGE** (or a named data-model item). Present that map. NEVER write "out of scope" / silently defer.
+> 3. If a deferral can't be mapped to a §12 stage, that is the signal the scope wasn't read — go read it.
+>
+> A minimum increment that ignores the spec's full scope is a HALF-JOB even if it passes its gates. (Captured 2026-06-28 after repeated content-only/array-private builds that the spec already answered — `feedback_bind_done_to_full_spec_scope.md`; extends STOP-26 to definition-of-done.)
+
+
+
 > **Scope (D246):** ALL draft→block transfer through the one container dispatch — **content (text/media/array/child-block) AND CSS** — not CSS alone. The historical title "CSS-Transfer" predates the content-unification correction; read it as "Content + CSS Transfer."
 
 ## 0. Plain English (what this is, why it exists)
