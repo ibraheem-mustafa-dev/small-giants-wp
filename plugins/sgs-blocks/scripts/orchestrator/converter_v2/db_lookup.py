@@ -825,6 +825,101 @@ def blocks_with_capability(capability: str) -> frozenset[str]:
     return frozenset(r[0] for r in rows)
 
 
+# ----------------------------------------------------------------------------
+# Idempotent schema migration — array_item_fields (D248, array-resolver)
+# ----------------------------------------------------------------------------
+# Stores per-item field schema for array-content-lift blocks. Seeded by
+# sgs-update-v2.py Stage 1 from block.json supports.sgs.arrayItemSchema.
+# Consumed by the array_content resolver + array_item_fields() accessor.
+# Safe to call repeatedly. Runs at module load.
+
+def _migrate_array_item_fields_schema() -> None:
+    """Idempotent migration: create array_item_fields table if absent."""
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS array_item_fields (
+              block_slug      TEXT NOT NULL,
+              array_attr      TEXT NOT NULL,
+              item_selector   TEXT NOT NULL,
+              field_key       TEXT NOT NULL,
+              field_selector  TEXT NOT NULL,
+              role            TEXT NOT NULL,
+              attr_type       TEXT NOT NULL DEFAULT 'string',
+              enum_values     TEXT,
+              created_at      TEXT DEFAULT CURRENT_TIMESTAMP,
+              PRIMARY KEY (block_slug, array_attr, field_key)
+            )
+            """
+        )
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass
+    finally:
+        conn.close()
+
+
+# Run migration at module load (idempotent).
+_migrate_array_item_fields_schema()
+
+
+@functools.lru_cache(maxsize=256)
+def array_item_fields(block_slug: str, array_attr: str) -> list[dict]:
+    """Return per-item field schema rows for a block's array attr.
+
+    Queries ``array_item_fields`` (created by _migrate_array_item_fields_schema
+    + seeded by sgs-update-v2.py Stage 1 from block.json
+    ``supports.sgs.arrayItemSchema``). Returns an empty list when no rows
+    exist (block not yet authored) — the caller gates on non-empty.
+
+    Each dict contains:
+      - ``item_selector``   — BEM class of the repeated item element in the draft
+      - ``field_key``       — the render.php item dict key (e.g. ``'text'``)
+      - ``field_selector``  — BEM class for this field inside the item element
+      - ``role``            — 'text-content' | 'image-object' | 'number'
+      - ``attr_type``       — 'string' | 'object' | 'number'
+      - ``enum_values``     — parsed list or None
+
+    R-22-1 compliant — DB-only read path; no per-block slug literals.
+    """
+    import json as _json
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            """
+            SELECT item_selector, field_key, field_selector, role,
+                   attr_type, enum_values
+            FROM array_item_fields
+            WHERE block_slug = ? AND array_attr = ?
+            ORDER BY rowid
+            """,
+            (block_slug, array_attr),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        # Table absent (pre-D248 state) — soft-fail to empty.
+        rows = []
+    finally:
+        conn.close()
+    result = []
+    for item_selector, field_key, field_selector, role, attr_type, enum_json in rows:
+        enum_vals = None
+        if enum_json:
+            try:
+                enum_vals = _json.loads(enum_json)
+            except (ValueError, TypeError):
+                pass
+        result.append({
+            "item_selector": item_selector,
+            "field_key": field_key,
+            "field_selector": field_selector,
+            "role": role,
+            "attr_type": attr_type,
+            "enum_values": enum_vals,
+        })
+    return result
+
+
 def _capability_rank(block_slug: str) -> int:
     """Return a capability-priority rank for `block_slug` (lower = higher priority).
 

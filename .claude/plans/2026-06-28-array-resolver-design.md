@@ -128,6 +128,49 @@ then the resolver + dispatch arm + LANDED. A material pre-build revision (STOP-1
    `array_item_slot_for`→`standalone_block_for`; loud gaps; conservation `raise`.
 5. **Dispatch arm** in `extract_content`; **gates + STOP-23 council on built code + LANDED**.
 
+## 6.7 PATH A CHOSEN (Bean, 2026-06-28) — data-driven per-item-field model (no migrations, no cheat)
+
+Bean's ruling: making 9 blocks into child blocks is messier; Path A IS fully data-driven if the
+per-item fields are MODELLED in the DB (enums/selectors/roles) — the same kind of data as
+`derived_selector`/`enum_values`. Correct. Each array item's fields ARE bespoke per block (verified:
+`brand-strip.logos` item = image-object `{media:{url,alt}}`; `cta-section.stats` item = text fields;
+etc.) and live only in render.php today — so we lift them into the DB as data.
+
+**The data model (DB-source = block.json `supports.sgs`, seeded by `/sgs-update`, the established channel):**
+```jsonc
+"supports": { "sgs": {
+  "arrayContentLift": true,
+  "arrayItemSchema": {
+    "<arrayAttr>": {                         // e.g. "stats"
+      "itemSelector": ".sgs-<block>__<item>",   // each repeated item element in the DRAFT
+      "fields": {
+        "<fieldKey>": { "selector": ".sgs-<block>__<sub>", "role": "text-content|image-object|number", "enum": [...]? }
+      }
+    }
+  }
+}}
+```
+- `/sgs-update` seeds this into a new DB table `array_item_fields(block_slug, array_attr, item_selector,
+  field_key, field_selector, role, attr_type, enum_values)` — DB-as-code (STOP-24; survives reseed).
+- The resolver `converter/resolvers/array_content.py` (gated by `array-content-lift`): for each array
+  attr with a schema, `find_all(itemSelector)`; per item, per field, lift via `field_selector`+`role`
+  (reuse the role-aware lift core: text→rich_text_content, image-object→scalar_media_from_img,
+  number→star/number); assemble `{field_key: value}`; `attrs[arrayAttr] = [dict,...]`. The dict KEYS
+  are the parent's render keys (from the schema) — so render.php reads them correctly (closes MF-1).
+- Conservation: items_seen == filled + gaps (raise); a field that matches nothing → omit key (the
+  parent's per-field default applies); an item that matches nothing → loud ContentGap.
+
+**Why this is fully data-driven (Bean's point):** zero per-block code; the field keys + selectors +
+roles + enums are ALL DB rows. R-22-1 clean. No migration, no deprecated.js (the array attr shape is
+unchanged — we just populate it). The only authoring cost is the per-block `arrayItemSchema` DATA
+(enumerated from each block's render.php item-field reads + the draft item BEM), verified per block.
+
+**Build order:** (1) define `array_item_fields` table + `/sgs-update` seeder; (2) author
+`arrayItemSchema` in the 9 block.jsons (verify each against render.php + draft fixtures);
+(3) `array_content.py` resolver + dispatch arm in `extract_content`; (4) tests + STOP-23 qc-council
+on built code; (5) LANDED on a real array section (draft-vs-clone). Vertical slice: prove ONE block
+(e.g. cta-section.stats or brand-strip.logos) end-to-end first, then the schema-authoring rolls out.
+
 ## 6. Gates
 - no-slug-literal + import-ban gates green.
 - Tests from canonical cwd (STOP-16); failure-path proven.

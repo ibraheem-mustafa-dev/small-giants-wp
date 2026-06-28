@@ -232,6 +232,28 @@ def _index_sgs_block_files(
         """
     )
 
+    # --- array_item_fields schema (D248, array-resolver) ---
+    # Stores the per-item field schema for array-content-lift blocks.
+    # Seeded from block.json supports.sgs.arrayItemSchema by the per-block
+    # loop below.  Consumed by the array_content resolver + the
+    # db_lookup.array_item_fields() accessor.  Idempotent.
+    c.execute(
+        """
+        CREATE TABLE IF NOT EXISTS array_item_fields (
+          block_slug      TEXT NOT NULL,
+          array_attr      TEXT NOT NULL,
+          item_selector   TEXT NOT NULL,
+          field_key       TEXT NOT NULL,
+          field_selector  TEXT NOT NULL,
+          role            TEXT NOT NULL,
+          attr_type       TEXT NOT NULL DEFAULT 'string',
+          enum_values     TEXT,
+          created_at      TEXT DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (block_slug, array_attr, field_key)
+        )
+        """
+    )
+
     for block_dir in sorted(blocks_dir.iterdir()):
         if not block_dir.is_dir() or block_dir.name in EXCLUDED_DIRS:
             continue
@@ -481,6 +503,50 @@ def _index_sgs_block_files(
             )
 
         scanned += 1
+
+        # --- array_item_fields seeder (D248, array-resolver) ---
+        # block.json supports.sgs.arrayItemSchema → array_item_fields rows.
+        # Idempotent: DELETE-then-INSERT per (block_slug, array_attr) pair —
+        # same discipline as variant_slots above (delete-then-insert per block).
+        # Honours STOP-24: DB data changes via migration/block.json + reseed,
+        # never manual. R-22-1: seeder only; resolver reads the table, not code.
+        array_item_schema = (
+            sgs_supports.get("arrayItemSchema", {}) if isinstance(sgs_supports, dict) else {}
+        )
+        if isinstance(array_item_schema, dict) and array_item_schema:
+            # Delete current rows for this block (covers ALL its array attrs in
+            # one pass — any removed attr-key in block.json is pruned automatically)
+            c.execute(
+                "DELETE FROM array_item_fields WHERE block_slug = ?",
+                (slug,),
+            )
+            for array_attr, schema in array_item_schema.items():
+                if not isinstance(schema, dict):
+                    continue
+                item_selector = schema.get("itemSelector", "")
+                fields = schema.get("fields", {})
+                if not item_selector or not isinstance(fields, dict):
+                    continue
+                for field_key, field_def in fields.items():
+                    if not isinstance(field_def, dict):
+                        continue
+                    field_selector = field_def.get("selector", "")
+                    role = field_def.get("role", "text-content")
+                    attr_type = field_def.get("attr_type", "string")
+                    enum_vals = field_def.get("enum")
+                    enum_json = json.dumps(enum_vals) if enum_vals else None
+                    if not field_selector or not role:
+                        continue
+                    c.execute(
+                        """
+                        INSERT OR REPLACE INTO array_item_fields
+                            (block_slug, array_attr, item_selector, field_key,
+                             field_selector, role, attr_type, enum_values)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        (slug, array_attr, item_selector, field_key,
+                         field_selector, role, attr_type, enum_json),
+                    )
 
         # --- INSERT OR IGNORE attributes; UPDATE on drift ---
         for attr_name, attr_def in attrs.items():

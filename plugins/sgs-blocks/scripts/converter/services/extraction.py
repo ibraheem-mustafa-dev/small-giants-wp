@@ -47,6 +47,7 @@ from converter.services.content_select import (
 from converter.services.payload import extract_payload
 from converter.services.recognise_helpers import bem_element_to_canonical_slot
 from converter.resolvers.scalar_content import lift_scalar_content
+from converter.resolvers.array_content import lift_array_content
 from orchestrator.converter_v2 import db_lookup
 
 # Emit-glue imports (stage 3 §1 walk/emit — design §1).
@@ -179,6 +180,34 @@ def run_mechanism_b(rec: Recognition, section_root: Any) -> list:
 
 
 # ---------------------------------------------------------------------------
+# Mechanism Array — array-content-lift via array_item_fields schema
+# ---------------------------------------------------------------------------
+
+
+def run_mechanism_array(rec: Recognition, section_root: Any, media_map: dict | None = None) -> list:
+    """Mechanism Array: lift array / repeater attrs from a draft DOM subtree.
+
+    Gated by the ``array-content-lift`` capability (identical pattern to
+    ``scalar-content-lift``).  Calls ``lift_array_content`` which is fully
+    DB-driven via ``array_item_fields``; no block-slug literals here.
+
+    Returns a list of ``ScalarLift`` items (one per non-empty array attr
+    whose schema is seeded) plus any ``ContentGap`` items for items that
+    produced zero field lifts.  An empty list is a valid no-op when:
+      - the block has no array attrs with a seeded schema, OR
+      - the draft has no item elements matching the item_selector.
+
+    Conservation is enforced inside ``lift_array_content`` (STOP-27 / Rule 4).
+    """
+    array_attrs, gaps = lift_array_content(section_root, rec.slug, media_map=media_map or {})
+    results: list = []
+    for attr_name, item_list in array_attrs.items():
+        results.append(ScalarLift(attr=attr_name, value=item_list))
+    results.extend(gaps)
+    return results
+
+
+# ---------------------------------------------------------------------------
 # Expected-content coverage — silent-drop guard (design §6)
 # ---------------------------------------------------------------------------
 
@@ -236,28 +265,37 @@ def expected_content_gaps(slug: str) -> list:
 def extract_content(rec: Recognition, section_root: Any, media_map: dict | None = None) -> list:
     """Dispatch content extraction for a recognised composite.
 
-    Three exhaustive cases (design §1, capability mutual exclusion):
+    Four exhaustive cases (design §1, capability mutual exclusion):
 
     1. has_inner_blocks == 0 AND scalar-content-lift capability present
-       → Mechanism A (selector-driven scalar lifts) + expected_content_gaps.
+       → Mechanism A (selector-driven scalar lifts) + Mechanism Array (if also
+         array-content-lift) + expected_content_gaps.
 
     2. has_inner_blocks == 1
        → Mechanism B (slot-keyed child-block walk).
        Asserts the block does NOT also carry scalar-content-lift (D212 regression guard).
 
-    3. has_inner_blocks == 0 AND scalar-content-lift NOT present
+    3. has_inner_blocks == 0 AND array-content-lift present (but NOT scalar-content-lift)
+       → Mechanism Array only (MF-6: explicit 4th arm before the Case-3 gap so array-only
+         blocks don't fall through to the loud ContentGap). D248.
+
+    4. has_inner_blocks == 0 AND neither scalar-content-lift nor array-content-lift
        → loud ContentGap — DB capability gap; never a silent empty.
     """
     caps = db_lookup.capabilities_for(rec.slug)
 
-    # "scalar-content-lift" is a CAPABILITY TAG queried against the DB capability
-    # set — NOT a block or slot name.  It is the permitted exception in this file
-    # (the no_slug_literal gate tracks block_slug/variant/slot idents, not
-    # capability strings).
+    # CAPABILITY TAGS queried against the DB capability set — NOT block or slot names.
+    # The no_slug_literal gate tracks block_slug/variant/slot idents, not capability strings.
     SCALAR_LIFT = "scalar-content-lift"
+    ARRAY_LIFT = "array-content-lift"
 
     if rec.has_inner_blocks == 0 and SCALAR_LIFT in caps:
-        return run_mechanism_a(rec, section_root, media_map) + expected_content_gaps(rec.slug)
+        results = run_mechanism_a(rec, section_root, media_map) + expected_content_gaps(rec.slug)
+        # Case 1 + array arm: if the block also opts into array-content-lift,
+        # merge array lifts alongside the scalar lifts (MF-6 / D248).
+        if ARRAY_LIFT in caps:
+            results = results + run_mechanism_array(rec, section_root, media_map)
+        return results
 
     if rec.has_inner_blocks == 1:
         # Capability mutual exclusion: a scalar-content-lift block must NEVER enter
@@ -269,15 +307,29 @@ def extract_content(rec: Recognition, section_root: Any, media_map: dict | None 
             raise ContentConservationError(
                 "scalar-content-lift block routed to Mechanism B — D212 regression guard"
             )
-        return run_mechanism_b(rec, section_root)
+        results = run_mechanism_b(rec, section_root)
+        # Case 2 + array arm (D248 fix): a has_inner_blocks=1 composite can ALSO
+        # carry array attrs (cta-section.stats, hero.badges, quote.body) alongside
+        # its child InnerBlocks. array-content-lift is independent of the D212
+        # scalar-content-lift guard, so merge array lifts into the Mechanism B
+        # results. Without this, every has_inner_blocks=1 array block (the 3 of 9)
+        # silently dropped its array attr — the dispatch routed past the resolver.
+        if ARRAY_LIFT in caps:
+            results = results + run_mechanism_array(rec, section_root, media_map)
+        return results
 
-    # Third case: has_inner_blocks == 0 AND not scalar-content-lift.
+    # Case 3: has_inner_blocks == 0, no scalar-content-lift, but array-content-lift
+    # present — run the array arm alone (MF-6 explicit 4th arm before the gap case).
+    if rec.has_inner_blocks == 0 and ARRAY_LIFT in caps:
+        return run_mechanism_array(rec, section_root, media_map)
+
+    # Fourth case: has_inner_blocks == 0 AND neither capability.
     # Loud, never silent — a DB-capability gap to surface and track.
     return [
         ContentGap(
             rec.slug,
             "block has no content-extraction capability"
-            " (not scalar-content-lift, not InnerBlocks)"
+            " (not scalar-content-lift, not array-content-lift, not InnerBlocks)"
             " — DB-capability gap; flag to developer",
         )
     ]

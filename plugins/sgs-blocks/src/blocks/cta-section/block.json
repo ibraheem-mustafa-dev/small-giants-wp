@@ -19,7 +19,18 @@
 		"sgs": {
 			"imageControls": false,
 			"is_section_root": true,
-			"arrayContentLift": true
+			"arrayContentLift": true,
+			"arrayItemSchema": {
+				"stats": {
+					"itemSelector": ".sgs-cta-section__stat",
+					"fields": {
+						"text": {
+							"selector": ".sgs-cta-section__stat",
+							"role": "text-content"
+						}
+					}
+				}
+			}
 		},
 		"align": [
 			"wide",

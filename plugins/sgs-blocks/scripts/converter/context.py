@@ -85,11 +85,12 @@ class Recognition:
 class ScalarLift:
     """A content child lifted into a parent typed scalar attribute.
 
-    `value` is a str for text-content roles and a dict for image-object roles
-    (object-typed attrs expect {"url": ..., "id": 0, "alt": ...}).
+    `value` is a str for text-content roles, a dict for image-object roles
+    (object-typed attrs expect {"url": ..., "id": 0, "alt": ...}), or a list
+    for array-content roles (array attrs expect [{field_key: value, ...}, ...]).
     """
     attr: str
-    value: str | dict
+    value: str | dict | list
 
 
 @dataclass(frozen=True)
