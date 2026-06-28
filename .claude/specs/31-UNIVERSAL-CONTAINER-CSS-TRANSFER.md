@@ -18,7 +18,9 @@ acceptance_baseline: reports/2026-06-14-clone-vs-draft-defect-register.md (famil
 binding_rules: R-22-1, R-22-2, R-22-3, R-22-6, R-22-9, R-22-11, R-22-15
 ---
 
-# Spec 31 — Universal Container/Grid CSS-Transfer Architecture
+# Spec 31 — Universal Container/Grid Content + CSS Transfer Architecture
+
+> **Scope (D246):** ALL draft→block transfer through the one container dispatch — **content (text/media/array/child-block) AND CSS** — not CSS alone. The historical title "CSS-Transfer" predates the content-unification correction; read it as "Content + CSS Transfer."
 
 ## 0. Plain English (what this is, why it exists)
 
@@ -26,7 +28,9 @@ binding_rules: R-22-1, R-22-2, R-22-3, R-22-6, R-22-9, R-22-11, R-22-15
 
 **Why a full architecture, not patches.** This stage has failed repeatedly because fixes were local: one block made to work in one context, score inflated by a cheat, then collapse everywhere else. This spec defines the *whole* target system — every block type, every layer, every screen tier, every child-shape — plus the completion goals and the cheat-detection that make a partial or cheated implementation **impossible to mistake for done**.
 
-**The one-sentence target.** A single DB-driven, name-free routing engine reads any draft CSS property and places it on the correct block attribute at the correct responsive tier, for `sgs/container` and every container-bearing composite identically — with completeness measured against a live coverage ledger and cheats caught by structural gates, not by eye.
+**The one-sentence target.** A single DB-driven, name-free routing engine reads any draft routing unit — a CSS property OR a content node (text/media/array) — and places it on the correct block attribute (or child InnerBlock) at the correct responsive tier, for `sgs/container` and every container-bearing composite identically — with completeness measured against a live coverage ledger and cheats caught by structural gates, not by eye.
+
+> **SCOPE — content extraction is IN, and UNIFIED with CSS (added 2026-06-27, D246).** Despite the title saying "CSS-Transfer", this spec governs the WHOLE draft→block transfer through the one container dispatch: **CSS routing AND content routing (scalar text lift, scalar media object-shaping, array/repeater lift, child-block emission)**. Content is NOT a separate engine, NOT a separate stage, NOT out-of-scope. The content fork (which child becomes a block vs a scalar attr — Spec 22 FR-22-2/2.1/2.2/2.5) is INCORPORATED here as part of the same name-free DB dispatch; CSS simply adds the L1–L4 layers + more DB columns on top of the SAME recognise→resolve-destination→tier→serialise pipeline. When this spec is complete, Spec 22's working content logic is absorbed here and Spec 22 is archived. **Do not infer content is excluded because the title or §8 says "container-CSS transfer."**
 
 ---
 
@@ -44,7 +48,9 @@ The pipeline (`cloning-pipeline-flow.md`) touches CSS transfer at exactly these 
 | **Stage 8 / 11 / 11.5** | Live pixel-diff + draft-centric parity gate (375/768/1440) | the verification floor |
 | **Stage 9** | 5-bucket leftover router → writes `attribute_gap_candidates` | **the live completeness ledger** — central to Spec 31 |
 
-**Architectural principle #1 — ONE lift path.** The lift functions in `convert.py` (**8 active, not ~5** — `_lift_root_supports_to_style`, `_lift_wrapper_css_to_container_attrs`, `_lift_typography_to_block_attrs`, `_lift_content_band_max_width`, `_lift_uniform_grid_item_css`, `_lift_scalar_attrs_by_selector`, `_lift_styling_attrs_by_selector`, `_lift_scalar_media_from_img`; council-verified count), the css_router D1 path, and any retired sidecar remnant collapse into a single DB-driven dispatch. They have genuinely DIFFERENT destinations (WP supports / container box / typography / grid-item / scalar content / scalar media) — so the consolidation is a larger, higher-regression-risk task than "~5" implied; it MUST gate on both conformance suites. Two paths that can disagree is itself a defect class (Family K duplicate-emit is a symptom). **css_router.py decision (MF-2):** Stage 0.7 routes CSS to D1 but Stage 4 no longer consumes it (merge deleted 2026-05-27). The build MUST formally either (a) retire css_router's D1 path or (b) rewire Stage 4 to consume it — leaving it as a dead stage that silently strands properties is forbidden.
+**Architectural principle #1 — ONE lift path. CONTENT AND CSS ARE THE SAME DISPATCH — do not build them separately.** The lift functions in `convert.py` (**8 active, not ~5** — `_lift_root_supports_to_style`, `_lift_wrapper_css_to_container_attrs`, `_lift_typography_to_block_attrs`, `_lift_content_band_max_width`, `_lift_uniform_grid_item_css`, `_lift_scalar_attrs_by_selector`, `_lift_styling_attrs_by_selector`, `_lift_scalar_media_from_img`; council-verified count), the css_router D1 path, and any retired sidecar remnant collapse into a single DB-driven dispatch. They have genuinely DIFFERENT destinations (WP supports / container box / typography / grid-item / scalar content / scalar media) — so the consolidation is a larger, higher-regression-risk task than "~5" implied; it MUST gate on both conformance suites. Two paths that can disagree is itself a defect class (Family K duplicate-emit is a symptom). **css_router.py decision (MF-2):** Stage 0.7 routes CSS to D1 but Stage 4 no longer consumes it (merge deleted 2026-05-27). The build MUST formally either (a) retire css_router's D1 path or (b) rewire Stage 4 to consume it — leaving it as a dead stage that silently strands properties is forbidden.
+
+> **MODULARISE, do not RECREATE (added 2026-06-27, D246 — the doc-council root-cause fix).** Of the 8 functions, **`_lift_scalar_attrs_by_selector` (scalar CONTENT) and `_lift_scalar_media_from_img` (scalar MEDIA) are WORKING** (content was ~100% draft→clone in the legacy engine — the broken half is the CSS side). The clean modular rebuild (§12.0) **MODULARISES these working functions into resolvers inside the ONE `(block, layer, property/role, tier) → resolver` dispatch (§12.4), alongside the CSS resolvers — it does NOT recreate content with a separate engine, new `run_mechanism_*` logic, or new DB columns.** The existing DB data (`derived_selector`, `canonical_slot`, `standalone_block`, `parent_block`, `accepts_allowed_blocks`, `slots.aliases`) already drives content routing — query it, do not duplicate it. **Reading these two functions in full to port them faithfully is MANDATORY and sanctioned** — the STOP-22 "never read convert.py" ban targets the BROKEN CSS-side assumptions, NOT the working content functions §1 names here (reading-to-port ≠ importing-brokenness). The D245 separate `converter/services/extraction.py` engine (extract_content / run_mechanism_a/b + new accessors) violated this and is SUPERSEDED (D246).
 
 ---
 
@@ -67,8 +73,8 @@ Rules that bind every layer: the container **NEVER imposes alignment on children
 ### Axis 2 — KIND (which layers a block exposes)
 `block_composition.container_kind` (31 blocks): **section** (all layers + background/overlay/SVG/shape), **layout** (L1–L4 width+grid, no background layer), **content** (L1+L2 width+padding only, no grid, no background). KIND **gates which attrs exist as a destination**; it does NOT change routing logic (Spec 29 §8, D194).
 
-### Axis 3 — CHILD-SHAPE (where per-item / child CSS goes)
-The axis Bean called out explicitly. Decided by `block_composition.has_inner_blocks` + the DEC-4 fork (`canonical_slot` + `role` + `attr_type` read together):
+### Axis 3 — CHILD-SHAPE (where per-item / child CONTENT **and** CSS goes)
+The axis Bean called out explicitly. Decided by `block_composition.has_inner_blocks` + the DEC-4 fork (`canonical_slot` + `role` + `attr_type` read together). **NOTE (D246): this axis governs BOTH "which child block / scalar attr the element's CONTENT becomes" AND "where the child's CSS goes" — they are the SAME fork in the SAME dispatch, not separate stages. The content-resolution body below (the 2026-06-27 child-block CONTENT resolution subsection) is first-class, not a footnote; its full integration into §3's unified algorithm + closing the v1 G1–G5 gaps is Step 2a.** The table's column says "CSS destination" but read it as content+CSS destination (per Step-2a rewrite):
 
 | Child-shape | has_inner_blocks | Per-item / child CSS destination |
 |-------------|------------------|----------------------------------|
@@ -91,6 +97,8 @@ The table above answers "where does child **CSS** go". It did NOT answer "**whic
 ---
 
 ## 3. The routing algorithm (DB-driven, name-free) — the heart of the system
+
+> **⚠ TO BE REWRITTEN UNIFIED (D246, doc-council keystone fix — pending Step 2a).** As written below, §3 routes ONLY a CSS declaration — that CSS-only framing of "the heart of the system" is the root cause of the D245 separate-content build (a builder follows §3, finds no content path, builds content separately). The unified §3 routes a **draft routing unit = a CSS declaration `(css_property, value)` OR a content node `(element, role, attr_type)`** through the SAME dispatch: the content branch resolves the destination via the modularised working functions (`_lift_scalar_attrs_by_selector` → scalar text/attr by `derived_selector`; `_lift_scalar_media_from_img` → media object `{url,id,alt}`) + the FR-22-2 fork (`equivalent_block_for`/`slot_has_equivalent_block` → child InnerBlock vs scalar attr; `parent_block`/`accepts_allowed_blocks` for child-block identity; FR-22-2.5 for arrays). The full unified algorithm is authored in Step 2a after reading those functions, so it is written correctly — NOT as a parallel mechanism. The CSS steps below are correct as the CSS branch of that unified dispatch.
 
 For each draft CSS declaration `(css_property, value)` resolved for an element at a given tier:
 
@@ -212,7 +220,7 @@ Every register family resolves to a Spec-31 mechanism — no family is orphaned:
 | **F** grid breakpoint inversion | §3 — one breakpoint vocabulary + F-i/F-ii; delete parallel constants |
 | **K** duplicate emit | §1 — one lift path (collapse the ~5 functions); cascade last-wins fix |
 
-DEC-1…5 (block-match / Bean's-eye) and HF-1…7 (theme template-part) are **explicitly out of scope** for Spec 31 — they are recognition / theme-layer, not container-CSS transfer.
+DEC-1…5 (block-match / Bean's-eye) and HF-1…7 (theme template-part) are **explicitly out of scope** for Spec 31 — they are recognition / theme-layer, not container-CSS transfer. **CLARIFICATION (D246): "out of scope" here means recognition + theme-layer ONLY. Content EXTRACTION (scalar text lift, media object-shaping, array/repeater lift, child-block emission) is IN scope and UNIFIED into the same dispatch (§0 scope note + §1 ONE-lift-path + §3 unified). Do NOT read "not container-CSS transfer" as "content is excluded" — that misread is exactly the D246 root cause.**
 
 ---
 
@@ -311,7 +319,7 @@ A red-team fixture per HIGH gap (a `::before` section, a `<video>` hero media co
 
 Phase F output: the ledger + oracle + armed gates form the spine. The current converter's output now has a **measured baseline** (its UNACCOUNTED set, its CHEAT cells, its render-diff deltas) — any rebuild step is provably non-regressing against it.
 
-**Gap-to-stage map** — each Tier-2 HIGH gap is owned by the stage that rebuilds it (so no gap is orphaned between stages):
+**Gap-to-stage map** — each Tier-2 HIGH gap is owned by the stage that rebuilds it (so no gap is orphaned between stages). **NOTE (D246): the "Stage 3c (fold tree)" + "Stage 4f (child-shape fork)" content rows below are CONTENT RESOLVERS inside the ONE dispatch table (§12.4) — built by MODULARISING the working `_lift_scalar_attrs_by_selector` / `_lift_scalar_media_from_img` functions (§1) into the same `(block, layer, property/role, tier) → resolver` table as the CSS resolvers. They are NOT a separate content engine or a parallel pipeline. "Stage 3c/4f" names a fork/branch within the unified dispatch at that stage, never a second system (the D245 separate-engine misread of this framing is what D246 corrects).**
 
 | Tier-2 gap | Owning stage in the rebuild | Fix |
 |-----------|----------------------------|-----|

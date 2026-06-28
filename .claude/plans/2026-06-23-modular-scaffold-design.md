@@ -14,6 +14,8 @@ binding_rules: R-22-1 (DB-first), R-22-9 (universal), R-22-11 (verify rendered o
 
 # Modular scaffold design v2 — vertical slice (Spec 31 §12.6 step 2)
 
+> **⚠ PARTIAL-CORRECTION (D246, 2026-06-27 — doc-council named this doc PATIENT ZERO for the separate-content misframing).** The dispatch-table + one-entry-point architecture here is CORRECT and stands. BUT this doc named `scalar_content` / `scalar_media` as from-scratch GAP-stub resolver files on the same footing as the CSS stubs ("fill the stubs with real logic / copy the pattern") — which framed CONTENT as a from-scratch build rather than a MODULARISATION of the WORKING `_lift_scalar_attrs_by_selector` / `_lift_scalar_media_from_img` functions (Spec 31 §1). That framing, carried forward by every handoff, produced the D245 separate-content engine (now superseded). CORRECTION: the `scalar_content` / `scalar_media` (and the content branch generally) resolver slots are filled by **MODULARISING the working functions into the one dispatch**, NOT building new content logic. Read those two functions in full to port them (sanctioned — STOP-22 carve-out, D246).
+
 ## 0. Plain English — what we are building and why
 
 **Problem.** The frozen converter (`orchestrator/converter_v2/convert.py`, 6,379 lines) decides "this draft CSS value → that block setting" inside ~8 overlapping lift functions plus ~13 per-block `if slug==` carve-outs. They disagree, and a cheat or a silent drop is invisible in that much code (the D229 failure mode).
