@@ -5,47 +5,53 @@ thread: cloning-pipeline
 session_date: 2026-06-28
 ---
 
-# Session Handoff — 2026-06-28 (D246/D247 content-UNIFY: W1+W2 wrap-up, both `/qc-council` gates run, A1-seam+A3 fixed, A2 ruled a ledger gap)
+# Session Handoff — 2026-06-28 (array universal-alignment; W3 deferred)
 
-> Prior handoffs (D245 Stage-3 content build, D244 Stage-2 recognition) are in git history + `memory/`.
+_Prior handoffs in git history (previous: D247 session-close)._
 
 ## Completed This Session
-1. **Wrap-up of the W1+W2 milestone (committed by the prior context window).** W1 (`a4c0de86`) modularised the working scalar-content lift (`_lift_scalar_attrs_by_selector` → `converter/resolvers/scalar_content.py:lift_scalar_content` + helpers in `lift_helpers.py`); W2 (`57209f48`) wired it via the thin wrapper `run_mechanism_a` + retired the D245 from-scratch scalar path + re-LANDED live; Spec 31 §3 rewritten unified (`661d3357`). Wrote handoff.md + next-session-prompt.md (carried the full STOP-1..26 catalogue forward) + state.md (`2d2327f9`).
-2. **Ran BOTH `/qc-council` gates (6 raters, cross-model), every finding fact-checked against live code + DB (STOP-15).** No `sourceMode='bound'` / echo-`$content` / hardcoded-`!important` cheat exists — the no-cheat floor HOLDS. Results captured as Register A (W1+W2 built code) + Register B (W3 plan) in next-session-prompt.
-3. **A3 — false-green test FIXED (`afbcaa99`).** `test_extraction.py` monkeypatched `content_attrs_with_selector`, a function `run_mechanism_a` no longer calls (vacuous green). Now patches `block_attrs` + `capabilities_for`; failure-path proven (starving `capabilities_for` → `[]`). 318 converter+ledger tests green.
-4. **A1 — `media_map` seam FIXED (`afbcaa99`).** Killed the hardcoded `{}`; `media_map` now threads `build_block_markup`→`extract_content`→`run_mechanism_a`→`lift_scalar_content` (§3.B1-aligned). NO url-shape heuristic added (would be a non-DB hardcoded rule). FULL fix (images resolving to WP URLs) needs the media-map LOADER/driver — the new engine has no production caller yet — so it's folded into the W3 engine-wiring.
-5. **A2 — ruled a §12.2.1 conservation-ledger gap, NOT a lift patch (D247).** Spec 31 §3.B1 mandates the lift's strict no-op, so a per-attr `ContentGap` inside the lift would breach the spec + re-introduce a D245-style parallel tracker (STOP-25). Spec-aligned fix = extend `declare_input` to capture CONTENT routing units. Design-gated; Bean folded it into the W3 engine-wiring.
-6. **Specs + registry updated.** Spec 31 §3.B1 status note (W1/W2 done + A1 driver pending) + §12.2.1 CONTENT-LEDGER GAP note (A2); `docs-registry.yaml` `last_updated` + Spec 31 note refreshed.
+1. **Verified W1/W2 done-state** (a4c0de86/57209f48/afbcaa99/661d3357) vs ground truth — scalar-content path modularised + landed; both qc-councils run; Register A resolved.
+2. **W3 walker-port design** written + Bean-approved (full-breadth); scoped the ~1,650-line transitive surface (`walk`+`route_node_css`+`_route_interior_css_to_parent_slot`+fold+emit). `.claude/plans/2026-06-28-w3-walker-port-design.md`. Build deferred (highest-blast, fresh session).
+3. **Array feature — full Path-A build (Bean: rebuild arrays correctly per spec):** DB foundation (`array-content-lift` capability + 3 item-selector fixes) → `array_content.py` resolver (slice cta-section.stats, 2 bugs caught) → 8-block rollout via 8 parallel agents → 2-rater `qc-council` (NO-GO-as-authored → gap-pending safety net) → wire-up → content extractors (url-href/icon-slug/plain-integer) → css-modifier flip. Commits b74986b0→8a7aa41f.
+4. **Universal-alignment keystone (305d5396)** — ONE shared `converter/services/field_extractors.py`; B1 (scalar) + B4 (array) both delegate (drift structurally impossible); import-ban opened to `icon_resolver` (proven still tight); Spec 31 §3.B.0 universal principle added.
+5. **Two proper visual-diff gate fixes** (no `--no-verify`) — metadata-only block.json detection + a utf-8 fix in that detector.
+6. **Docs:** `.claude/OUT-OF-SCOPE-NOTES.md` (reframed gap-list → Spec-31-stage map) + captured lesson `bind-definition-of-done-to-full-spec-scope`.
 
 ## Current State
-- **Branch:** `main` (this session's commits: `2d2327f9` docs wrap-up → `988d8113`/`bc04534e`/`50a5b930` council registers + roadmap → `afbcaa99` A1-seam+A3 fix → this handoff/decisions/spec/registry commit).
-- **Tests:** 318 converter+ledger pass (1 skip, 6 xfailed); F5 + F6 commit gates green.
-- **Build:** n/a (pure-Python converter changes).
-- **Uncommitted (NOT mine — leave them):** `plugins/sgs-blocks/includes/lucide-icons.php`, `reports/phase4-*.txt`, `.claude/handoff-theme.md` + `.claude/next-session-prompt-theme.md` (deletions). Pre-existing, not this session's — dropped from every commit.
-- **convert.py:** byte-identical (D-MODULAR). **D-ceiling:** D247.
+- **Branch:** main at f2008bf8 (9 commits this session: b74986b0→f2008bf8)
+- **Tests:** 219 pass, 1 skip, 6 xfail (from `plugins/sgs-blocks/scripts`, `--import-mode=importlib`)
+- **Build:** n/a (Python converter; no npm build)
+- **Uncommitted:** none mine (pre-existing theme-handoff deletions are NOT mine)
+- **New engine INERT in production** — frozen `convert.py` runs live clones (STOP-28)
+
+## Outcome vs Completion (Gate 3.5)
+- Array feature: **OUTCOME ACHIEVED** for content (text/image/icon/url/number migrate + css-modifier where unambiguous), with un-modellable fields LOUDLY tracked (Rule-4 safe). **CODE SHIPPED, OUTCOME NOT YET LIVE** — the new engine is inert; faithful clones need W3 + the CSS branch + production-wiring.
+- Universal alignment: **OUTCOME ACHIEVED** — handlers shared; per-path drift structurally closed.
 
 ## Known Issues / Blockers
-- None block the next session. A1-full + A2 are deliberately deferred to the W3 engine-wiring (neither can bite a real clone until the engine is production-wired — `build_block_markup` has no production caller yet).
+- **blub.db dashboard DOWN** (localhost:5050 refused) — captured lesson's blub.db layer PENDING (file layers landed); re-POST when up. Same for handoff dashboard gates 4b/4c.5.
 
 ## Next Priorities (in order)
-1. **Build W3** (only on Bean sign-off, Rule 7) — port the FULL `convert.py` walker (`_route_composite_interior`) into `run_mechanism_b` honouring Register B (B1 scalar-media + fold/CSS-route, B2 styling-lift consuming `_bp_decls`, B3 arrays port-as-is, B4 ambiguous-attr loud gap, B-order delete-dead-last). See next-session-prompt Task 3 + Register B.
-2. **Close A1-full + A2 with the engine-wiring** (post-W3 roadmap item 2): media-map loader/driver + extend `declare_input` to content routing units.
-3. **Continue the post-W3 roadmap** — generalise mechanisms to all content blocks → wire resolvers into the unified dispatch → finish §3 unified → full fixture-set gate → convert.py decommission (§8).
+1. **W3 walker port** — last big content piece (recursion → nested child blocks). Design ready.
+2. **CSS branch (§3.A)** — transfer attached CSS per element (the core remaining fidelity work).
+3. **Array residuals** — hero position/style enum-aware disambiguation, hero.suffix split, pricing nested/boolean/enum (all in OUT-OF-SCOPE-NOTES.md).
+4. **Production-wiring** (A1 media-map + A2 content ledger) — switches the new engine live.
 
 ## Files Modified
-| File path | What changed |
-|-----------|--------------|
-| `plugins/sgs-blocks/scripts/converter/services/extraction.py` | A1 seam (media_map threaded) + honest docstring (A2) |
-| `plugins/sgs-blocks/scripts/converter/tests/test_extraction.py` | A3 false-green test repaired |
-| `.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md` | §3.B1 W1/W2 status note + §12.2.1 content-ledger gap (A2) |
-| `.claude/docs-registry.yaml` | last_updated + Spec 31 note refreshed |
-| `.claude/next-session-prompt.md` | Register A/B + post-W3 roadmap + A2 fold-in decision |
-| `.claude/handoff.md` + `.claude/state.md` + `.claude/decisions.md` | this session record + D247 |
+| File | What changed |
+|------|-------------|
+| `.../converter/services/field_extractors.py` | NEW — shared role→value dispatcher (B1+B4) |
+| `.../converter/resolvers/array_content.py` | NEW→extended — array resolver + gap-pending |
+| `.../converter/resolvers/scalar_content.py` | B1 delegates to field_extractors |
+| `.../converter/gates/import_ban.py` | allowlist += icon_resolver |
+| `.../orchestrator/converter_v2/db_lookup.py` | array_item_fields table + gap_reason + accessors |
+| `.../scripts/sgs-update-v2.py` | arrayContentLift + arrayItemSchema seeders |
+| `.../src/blocks/{9 blocks}/block.json` | arrayItemSchema + arrayContentLift |
+| `.claude/specs/31-...md` | §3.B.0 universal-extraction principle |
+| `.claude/OUT-OF-SCOPE-NOTES.md` | NEW — Spec-31-stage map |
 
 ## Notes for Next Session
-- **A2 is the load-bearing ruling:** content completeness lives in the ONE conservation ledger (§12.2.1 extended to content routing units), never as a gap inside the lift (§3.B1 strict no-op). Hacking it into the lift = breaking the spec + the D246 parallel-system mistake. Memory: `content-completeness-is-a-ledger-gap-not-a-lift-patch`.
-- **A1/A2 can't bite until the engine is production-wired** — `build_block_markup` is test/canary-only; that wiring is post-W3 roadmap item 2.
-- The W3 walker port is HIGH blast-radius (Register B B1): a thinned port re-opens the hero-split image + content-CSS evaporation (D212/MF-1). Port ALL three walker branches.
-
-## Next Session Prompt
-The operative orchestration plan is already written and current at `.claude/next-session-prompt.md` — it carries the full STOP-1..26 catalogue, the pre-flight ritual, the tiered reading gate, Register A + Register B (the council must-fix registers), and the post-W3 roadmap. Skills/MCP/Agents tables are in that file. Do NOT regenerate it from scratch — it is the carry-forward-complete version (Gate 6.5). Open it and execute Task 3 (build W3) after the reading gate + Bean sign-off.
+- **THE captured lesson (binding):** before building any increment of a spec'd subsystem, read the WHOLE spec scope + set definition-of-done = the spec's FULL universal scope; map every deferral to a named spec STAGE, never "out of scope". `feedback_bind_done_to_full_spec_scope.md`.
+- Universal stream (Spec 31 §3) = identify → content → CSS, every element, ONE dispatch. Content half built; recursion (W3) + CSS branch + wiring remain.
+- Array role handlers are SHARED now (`field_extractors.py`) — extend THAT, never per-path.
+- convert.py FROZEN (D-MODULAR). DB changes via override channel + reseed (STOP-24).
