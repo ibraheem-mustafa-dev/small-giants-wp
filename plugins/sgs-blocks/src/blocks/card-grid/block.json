@@ -73,8 +73,7 @@
 						},
 						"link": {
 							"selector": ".sgs-card-grid__link",
-							"role": "gap-pending",
-							"gapReason": "url-href — no href handler yet"
+							"role": "url-href"
 						},
 						"badgeVariant": {
 							"selector": ".sgs-card-grid__badge--variant",

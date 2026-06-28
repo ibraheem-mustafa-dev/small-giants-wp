@@ -65,8 +65,7 @@
 						},
 						"ctaUrl": {
 							"selector": ".sgs-pricing-table__cta",
-							"role": "gap-pending",
-							"gapReason": "url-href — text role lifts label not href"
+							"role": "url-href"
 						},
 						"ribbonText": {
 							"selector": ".sgs-pricing-table__ribbon",
@@ -78,8 +77,7 @@
 						},
 						"iconName": {
 							"selector": ".sgs-pricing-table__icon",
-							"role": "gap-pending",
-							"gapReason": "icon-slug — no handler"
+							"role": "icon-slug"
 						},
 						"features": {
 							"selector": ".sgs-pricing-table__features",

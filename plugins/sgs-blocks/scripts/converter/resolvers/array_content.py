@@ -45,6 +45,7 @@ from bs4 import Tag
 
 from converter.context import ContentConservationError, ContentGap
 from converter.services.lift_helpers import (
+    _safe_href,
     extract_star_count,
     rich_text_content,
     scalar_media_from_img,
@@ -106,6 +107,38 @@ def _lift_field(item_node: Tag, field_selector: str, role: str, media_map: dict)
 
     if role == "number":
         return extract_star_count(element)
+
+    if role == "url-href":
+        # Lift an href from the element itself or the first descendant <a>.
+        anchor = element if element.name == "a" else element.find("a")
+        if anchor is not None and isinstance(anchor, Tag):
+            raw = anchor.get("href", "")
+            return _safe_href(raw) if isinstance(raw, str) else None
+        return None
+
+    if role == "icon-slug":
+        # Resolution order (no SVG path-matching — icon_resolver import is
+        # banned by import_ban.py; only orchestrator.converter_v2.db_lookup is
+        # permitted from that package):
+        # 1. data-icon or data-lucide attribute on the element.
+        for attr in ("data-icon", "data-lucide"):
+            val = element.get(attr)
+            if val and isinstance(val, str):
+                return val.strip() or None
+        # 2. BEM modifier --<slug> on the element's class string
+        #    (e.g. sgs-social-icons__icon--facebook → "facebook").
+        for cls in (element.get("class") or []):
+            if isinstance(cls, str) and "--" in cls:
+                slug = cls.rsplit("--", 1)[-1].strip()
+                if slug:
+                    return slug
+        return None
+
+    if role == "plain-integer":
+        # Return raw text verbatim — "500+" and "01" must survive unchanged.
+        # Do NOT cast to int (that would corrupt "500+" and strip leading zeros).
+        text = element.get_text(strip=True)
+        return text if text else None
 
     # Unknown role → omit key (no gap — the schema author's responsibility).
     return None

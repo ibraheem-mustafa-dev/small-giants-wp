@@ -111,6 +111,21 @@ These are existing, working resolvers (content was ~100% draft→clone). The reb
 
 **The content fork (scalar-attr vs child-InnerBlock) is the same DB decision throughout (Spec 22 FR-22-2.1/2.2, absorbed here):** a content-bearing slot that maps to a `standalone_block` AND whose parent composes InnerBlocks → child block (B3); a `scalar-content-lift` leaf → scalar attr (B1). `slot_has_equivalent_block`/`equivalent_block_for` are the CONTENT fork — never confused with the CSS layer fork.
 
+#### 3.B.0 — UNIVERSAL element extraction: ONE shared recognise→content→CSS machinery for EVERY element (added 2026-06-28, Bean — load-bearing universal principle)
+
+> **The recognise → extract-content → extract-CSS machinery is UNIVERSAL across EVERY element on the page, regardless of its OUTPUT form.** The block-vs-element fork (§3.B above) decides ONLY the DESTINATION; the recognition + content-value extraction + per-element CSS lift is the SAME shared mechanism whether the element becomes:
+> - a standalone **section block**,
+> - a **nested child block** (B3 — emitted as InnerBlocks),
+> - a **BUILT-IN element / scalar attr** — the same content the block renders ITSELF instead of as a nested child block (e.g. a testimonial's avatar/quote, a card's built-in heading, an icon-list item's icon),
+> - an **array-item field** (B4).
+>
+> The SAME draft `<h3>` / `<a>` / `<img>` / icon / `<span>` — by CONTEXT — becomes EITHER a nested child block OR a built-in scalar element OR an array-item field; but its content AND its CSS are recognised + lifted by the SAME shared extractors either way (**R-22-2:** tag is shape, context is meaning; the bare-tag→block/element map `html_tag_to_core_block` is that shape layer. **R-22-9:** one universal mechanism). Bean's example: a `<p>` inside a `sgs/container` becomes a `sgs/text` child block; the SAME `<p>` inside a `sgs/button` is the button's built-in text element — different output, identical recognition+extraction.
+>
+> **Binding consequences:**
+> 1. The **role-handler library** (the per-element value extractors: `text-content`, `image-object`, `rating`, `icon-slug`, `url-href`, `plain-integer`, …) MUST live in ONE shared module used by B1 / B2 / B3 / B4 + the atomic-tag swap. Building a handler block-private or array-private (as the 2026-06-28 array build did, `array_content.py`) is an **R-22-9 violation to refactor into the shared library** — content extraction for a built-in element and for an array item is the SAME operation.
+> 2. The shared **recognition primitives** (`icon_resolver.resolve_icon` for icon identity, `html_tag_to_core_block` for tag shape, `_safe_href` for hrefs, `lift_styling_content` for per-element CSS) MUST be reusable from EVERY extraction path. The `import_ban` gate's allowlist therefore extends beyond `db_lookup` to these shared recognition modules (`icon_resolver` etc.) — walling them off forces per-path duplication, the exact R-22-9 break this principle forbids.
+> 3. **CSS follows content at EVERY granularity** (§3 unification): every recognised element — built-in, nested-block, or array-item — carries its own typography/colour/box CSS that the per-element styling-lift (B2 `lift_styling_content`) must transfer. The array path's 2026-06-28 content-only handling is INCOMPLETE until the per-item CSS lift is applied (the "CSS step after content"). This is not array-specific — it is the universal per-element content+CSS pairing.
+
 ### 3.A — CSS branch
 For each draft CSS declaration `(css_property, value)` resolved for an element at a given tier:
 

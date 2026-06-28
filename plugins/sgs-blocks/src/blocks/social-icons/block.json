@@ -39,13 +39,11 @@
 					"fields": {
 						"platform": {
 							"selector": ".sgs-social-icons__icon",
-							"role": "gap-pending",
-							"gapReason": "icon-slug/enum — no handler"
+							"role": "icon-slug"
 						},
 						"url": {
 							"selector": ".sgs-social-icons__icon",
-							"role": "gap-pending",
-							"gapReason": "url-href — lifts label garbage; render skips item"
+							"role": "url-href"
 						},
 						"label": {
 							"selector": ".sgs-social-icons__label",

@@ -78,8 +78,7 @@
 					"fields": {
 						"number": {
 							"selector": ".sgs-hero__badge-number",
-							"role": "gap-pending",
-							"gapReason": "plain-integer — number role is star-count, corrupts to 0"
+							"role": "plain-integer"
 						},
 						"suffix": {
 							"selector": ".sgs-hero__badge-number",

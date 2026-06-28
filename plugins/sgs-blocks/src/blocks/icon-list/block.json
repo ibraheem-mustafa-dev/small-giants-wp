@@ -52,18 +52,15 @@
 						},
 						"iconSource": {
 							"selector": ".sgs-icon-list__icon-source",
-							"role": "gap-pending",
-							"gapReason": "icon-slug — no icon handler"
+							"role": "icon-slug"
 						},
 						"iconName": {
 							"selector": ".sgs-icon-list__icon-name",
-							"role": "gap-pending",
-							"gapReason": "icon-slug — no icon handler"
+							"role": "icon-slug"
 						},
 						"url": {
 							"selector": ".sgs-icon-list__link",
-							"role": "gap-pending",
-							"gapReason": "url-href — no handler"
+							"role": "url-href"
 						}
 					}
 				}

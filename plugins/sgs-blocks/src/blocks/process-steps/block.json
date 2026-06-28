@@ -54,13 +54,11 @@
 					"fields": {
 						"icon": {
 							"selector": ".sgs-process-steps__icon",
-							"role": "gap-pending",
-							"gapReason": "icon-slug — no handler"
+							"role": "icon-slug"
 						},
 						"number": {
 							"selector": ".sgs-process-steps__number",
-							"role": "gap-pending",
-							"gapReason": "plain-integer — star-count corrupts to 0"
+							"role": "plain-integer"
 						},
 						"title": {
 							"selector": ".sgs-process-steps__title",

@@ -364,3 +364,138 @@ def test_gap_pending_item_counts_as_filled(monkeypatch):
     assert len(attrs.get("items", [])) == 2, (
         f"Expected 2 filled items in attrs, got: {attrs}"
     )
+
+
+# ---------------------------------------------------------------------------
+# Tests — new role handlers (url-href, icon-slug, plain-integer)
+# D248 / Step 3: one test per handler, plus BEM-modifier variant for icon-slug.
+# ---------------------------------------------------------------------------
+
+from converter.resolvers.array_content import _lift_field  # noqa: E402
+
+
+def _item(html: str):
+    """Parse HTML and return the first real element (Tag, not NavigableString)."""
+    from bs4 import BeautifulSoup
+    return BeautifulSoup(html, "html.parser").find(True)
+
+
+# --- url-href ---------------------------------------------------------------
+
+def test_url_href_lifts_href_from_anchor():
+    """url-href handler returns the href string, not the link text."""
+    elem = _item('<a class="sgs-card-grid__link" href="https://example.com">Read more</a>')
+    result = _lift_field(elem, ".sgs-card-grid__link", "url-href", {})
+    assert result == "https://example.com", (
+        f"Expected 'https://example.com', got: {result!r}"
+    )
+
+
+def test_url_href_lifts_href_from_descendant_anchor():
+    """url-href handler finds a descendant <a> when the element is not itself an anchor."""
+    elem = _item(
+        '<div class="sgs-pricing-table__cta">'
+        '<a href="https://shop.example.com/pricing">Get started</a>'
+        '</div>'
+    )
+    result = _lift_field(elem, ".sgs-pricing-table__cta", "url-href", {})
+    assert result == "https://shop.example.com/pricing", (
+        f"Expected 'https://shop.example.com/pricing', got: {result!r}"
+    )
+
+
+def test_url_href_rejects_javascript_scheme():
+    """url-href handler returns None for javascript: hrefs (scheme-blocked by _safe_href)."""
+    elem = _item('<a class="sgs-link" href="javascript:void(0)">Click</a>')
+    result = _lift_field(elem, ".sgs-link", "url-href", {})
+    assert result is None, (
+        f"Expected None for javascript: href, got: {result!r}"
+    )
+
+
+def test_url_href_returns_none_when_no_anchor():
+    """url-href handler returns None when no <a> is present."""
+    elem = _item('<span class="sgs-card-grid__link">No anchor here</span>')
+    result = _lift_field(elem, ".sgs-card-grid__link", "url-href", {})
+    assert result is None, (
+        f"Expected None when no anchor element found, got: {result!r}"
+    )
+
+
+# --- icon-slug from data-icon attribute -------------------------------------
+
+def test_icon_slug_from_data_icon_attr():
+    """icon-slug handler returns the data-icon attribute value directly."""
+    elem = _item('<span class="sgs-icon-list__icon-name" data-icon="star"></span>')
+    result = _lift_field(elem, ".sgs-icon-list__icon-name", "icon-slug", {})
+    assert result == "star", (
+        f"Expected 'star', got: {result!r}"
+    )
+
+
+def test_icon_slug_from_data_lucide_attr():
+    """icon-slug handler returns the data-lucide attribute when data-icon is absent."""
+    elem = _item('<span class="sgs-process-steps__icon" data-lucide="check-circle"></span>')
+    result = _lift_field(elem, ".sgs-process-steps__icon", "icon-slug", {})
+    assert result == "check-circle", (
+        f"Expected 'check-circle', got: {result!r}"
+    )
+
+
+# --- icon-slug from BEM modifier --------------------------------------------
+
+def test_icon_slug_from_bem_modifier():
+    """icon-slug handler parses a BEM modifier class --<slug> when no data-* attr is present."""
+    elem = _item('<a class="sgs-social-icons__icon sgs-social-icons__icon--facebook" '
+                 'href="https://facebook.com/example"></a>')
+    result = _lift_field(elem, ".sgs-social-icons__icon", "icon-slug", {})
+    assert result == "facebook", (
+        f"Expected 'facebook' from BEM modifier, got: {result!r}"
+    )
+
+
+def test_icon_slug_returns_none_when_no_signal():
+    """icon-slug handler returns None when no data-* attr or BEM modifier is present."""
+    elem = _item('<span class="sgs-process-steps__icon"></span>')
+    result = _lift_field(elem, ".sgs-process-steps__icon", "icon-slug", {})
+    assert result is None, (
+        f"Expected None when no icon signal, got: {result!r}"
+    )
+
+
+# --- plain-integer ----------------------------------------------------------
+
+def test_plain_integer_preserves_number_with_suffix():
+    """plain-integer returns '500+' verbatim — not cast to int (which would corrupt it)."""
+    elem = _item('<span class="sgs-hero__badge-number">500+</span>')
+    result = _lift_field(elem, ".sgs-hero__badge-number", "plain-integer", {})
+    assert result == "500+", (
+        f"Expected '500+' verbatim, got: {result!r}"
+    )
+
+
+def test_plain_integer_preserves_leading_zero():
+    """plain-integer returns '01' verbatim — int('01') would return 1, losing the zero."""
+    elem = _item('<span class="sgs-process-steps__number">01</span>')
+    result = _lift_field(elem, ".sgs-process-steps__number", "plain-integer", {})
+    assert result == "01", (
+        f"Expected '01' verbatim, got: {result!r}"
+    )
+
+
+def test_plain_integer_returns_bare_digit():
+    """plain-integer returns a plain digit string like '3'."""
+    elem = _item('<span class="sgs-process-steps__number">3</span>')
+    result = _lift_field(elem, ".sgs-process-steps__number", "plain-integer", {})
+    assert result == "3", (
+        f"Expected '3', got: {result!r}"
+    )
+
+
+def test_plain_integer_returns_none_for_empty_element():
+    """plain-integer returns None when the element has no text (selector matched empty node)."""
+    elem = _item('<span class="sgs-process-steps__number"></span>')
+    result = _lift_field(elem, ".sgs-process-steps__number", "plain-integer", {})
+    assert result is None, (
+        f"Expected None for empty element, got: {result!r}"
+    )
