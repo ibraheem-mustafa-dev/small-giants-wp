@@ -46,6 +46,7 @@ from converter.services.content_select import (
 )
 from converter.services.payload import extract_payload
 from converter.services.recognise_helpers import bem_element_to_canonical_slot
+from converter.resolvers.scalar_content import lift_scalar_content
 from orchestrator.converter_v2 import db_lookup
 
 # Emit-glue imports (stage 3 §1 walk/emit — design §1).
@@ -78,65 +79,22 @@ def _label(child: Any) -> str:
 
 
 def run_mechanism_a(rec: Recognition, section_root: Any) -> list:
-    """Mechanism A: lift scalar content from the draft via DB-derived CSS selectors.
+    """Mechanism A: scalar content lift — the MODULARISED working function (D246, W2).
 
-    Iterates every attr for rec.slug that has a derived_selector (and a
-    content-bearing role).  Each attr resolves to exactly one of:
-      - ScalarLift   — selector matched a content leaf with payload
-      - ContentGap   — selector missed / matched a wrapper / payload empty
+    Spec 31 §1/§3.B1: this is the modularised `_lift_scalar_attrs_by_selector`
+    (now `converter.resolvers.scalar_content.lift_scalar_content`), the proven
+    working content-lift — NOT a from-scratch reimplementation (the D245 from-scratch
+    `content_attrs_with_selector`/`extract_payload`/object-shaping path is superseded).
 
-    Conservation: attrs_attempted == lifts + content_gaps (hard assertion).
+    `lift_scalar_content` returns a plain attr dict; absent draft elements emit no
+    key (the working function's no-op-on-absent behaviour — completeness is the F2
+    draft-derived ledger's job per Spec 31 §12.2.1, NOT a per-attr ContentGap).
+    Wrapped here as ScalarLifts so build_block_markup's assembly is unchanged.
+    The silent-drop coverage for NULL-role/selector attrs stays via
+    expected_content_gaps (called in extract_content's scalar branch).
     """
-    results: list = []
-    attrs = db_lookup.content_attrs_with_selector(rec.slug)
-    attempted = 0
-
-    for info in attrs:
-        attempted += 1
-        node = select_one(section_root, info.derived_selector)
-        if node is None:
-            results.append(
-                ContentGap(info.attr_name, "no draft node matched derived_selector")
-            )
-            continue
-        if has_bem_element_descendant(node):
-            results.append(
-                ContentGap(
-                    info.attr_name,
-                    "derived_selector matched a wrapper, not a content leaf",
-                )
-            )
-            continue
-        if info.role == "image-object" and info.attr_type == "object":
-            src = extract_payload(node, "image-object")
-            if not src:
-                results.append(
-                    ContentGap(info.attr_name, "media node has no extractable src")
-                )
-                continue
-            alt = (node.get("alt") if hasattr(node, "get") else "") or ""
-            if not alt and hasattr(node, "find"):
-                img = node.find("img")
-                if img is not None:
-                    alt = img.get("alt", "") or ""
-            value: str | dict = {"url": src, "id": 0, "alt": alt}
-        else:
-            value = extract_payload(node, info.role)
-            if not value:
-                results.append(
-                    ContentGap(info.attr_name, "matched node has no extractable content")
-                )
-                continue
-        results.append(ScalarLift(attr=info.attr_name, value=value))
-
-    # Per-mechanism conservation invariant (Mechanism A iterates ATTRS).
-    lifts = sum(1 for r in results if isinstance(r, ScalarLift))
-    gaps = sum(1 for r in results if isinstance(r, ContentGap))
-    if attempted != lifts + gaps:
-        raise ContentConservationError(
-            f"Mechanism A: {attempted} attrs attempted != {lifts} lifts + {gaps} gaps"
-        )
-    return results
+    lifted = lift_scalar_content(section_root, rec.slug, media_map={})
+    return [ScalarLift(attr=name, value=value) for name, value in lifted.items()]
 
 
 # ---------------------------------------------------------------------------
