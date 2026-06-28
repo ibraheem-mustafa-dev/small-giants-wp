@@ -76,9 +76,8 @@
 							"role": "url-href"
 						},
 						"badgeVariant": {
-							"selector": ".sgs-card-grid__badge--variant",
-							"role": "gap-pending",
-							"gapReason": "css-modifier — no modifier handler; badge won't render without it"
+							"selector": ".sgs-card-grid__badge",
+							"role": "css-modifier"
 						}
 					}
 				}

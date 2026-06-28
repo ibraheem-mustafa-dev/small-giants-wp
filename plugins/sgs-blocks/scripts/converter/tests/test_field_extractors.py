@@ -170,6 +170,46 @@ def test_css_modifier_returns_none_when_no_modifier():
     assert result is None
 
 
+def test_css_modifier_card_grid_badge_variant_new():
+    """css-modifier on .sgs-card-grid__badge extracts the variant modifier.
+
+    card-grid badgeVariant was flipped from gap-pending to css-modifier (D248+).
+    render.php emits: class="sgs-card-grid__badge sgs-card-grid__badge--{badgeVariant}"
+    The handler must return the modifier value (e.g. "new") from that element.
+    The selector .sgs-card-grid__badge (base class) matches the element; the
+    handler reads the --modifier from the class list.
+    """
+    el = _el('<span class="sgs-card-grid__badge sgs-card-grid__badge--new">New</span>')
+    result = extract_field_value(el, "css-modifier")
+    assert result == "new"
+
+
+def test_css_modifier_card_grid_badge_variant_sale():
+    """css-modifier correctly extracts a different variant value (sale)."""
+    el = _el('<span class="sgs-card-grid__badge sgs-card-grid__badge--sale">Sale</span>')
+    result = extract_field_value(el, "css-modifier")
+    assert result == "sale"
+
+
+def test_css_modifier_returns_first_modifier_only():
+    """When an element has multiple --modifier classes, only the FIRST is returned.
+
+    This is the documented behaviour — and the reason hero badges position + style
+    remain gap-pending: both map to the same .sgs-hero__badge element which carries
+    TWO modifiers (--bottom-left --light), so the handler can't distinguish them.
+    """
+    el = _el(
+        '<div class="sgs-hero__badge sgs-hero__badge--bottom-left sgs-hero__badge--light">'
+        '<span class="sgs-hero__badge-number">4.9</span>'
+        '</div>'
+    )
+    result = extract_field_value(el, "css-modifier")
+    # Returns the FIRST modifier found — "bottom-left" — not "light".
+    # This proves why position + style are still gap-pending: the generic handler
+    # cannot distinguish which modifier is position vs style.
+    assert result == "bottom-left"
+
+
 # ---------------------------------------------------------------------------
 # icon-slug — data-icon / data-lucide / BEM modifier
 # ---------------------------------------------------------------------------

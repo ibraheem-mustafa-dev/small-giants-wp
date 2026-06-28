@@ -90,14 +90,14 @@
 							"role": "text-content"
 						},
 						"position": {
-							"selector": ".sgs-hero__review-position",
+							"selector": ".sgs-hero__badge",
 							"role": "gap-pending",
-							"gapReason": "css-modifier — no handler"
+							"gapReason": "disambiguation: render.php emits both position and style as separate --modifier classes on the same .sgs-hero__badge div (e.g. sgs-hero__badge--bottom-left sgs-hero__badge--light). The generic css-modifier handler returns only the FIRST modifier — it cannot distinguish position from style without a valueAllowlist or two-pass approach. Both fields share one element; needs per-field allowlist matching or a dedicated handler."
 						},
 						"style": {
-							"selector": ".sgs-hero__review-style",
+							"selector": ".sgs-hero__badge",
 							"role": "gap-pending",
-							"gapReason": "css-modifier — no handler"
+							"gapReason": "disambiguation: same as position — both fields read --modifier classes on the same .sgs-hero__badge element. The generic css-modifier handler would return the first modifier for both, assigning the position value to style or vice versa. Previous selectors (.sgs-hero__review-position / .sgs-hero__review-style) were fictional — they match nothing in actual drafts. Fix requires a valueAllowlist mechanism or two separate child elements."
 						}
 					}
 				}
