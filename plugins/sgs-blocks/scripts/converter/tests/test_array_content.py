@@ -231,3 +231,136 @@ def test_extract_content_includes_array_lifts():
     assert len(stats_lift.value) > 0, (
         "ScalarLift.value for 'stats' should be non-empty (3 items in draft)"
     )
+
+
+# ---------------------------------------------------------------------------
+# Tests — gap-pending fields
+# ---------------------------------------------------------------------------
+
+# A draft with 2 items: each has a real text field (.sgs-test__label) and a
+# gap-pending field (.sgs-test__link).
+_GAP_PENDING_DRAFT = """
+<div class="sgs-test-block">
+  <div class="sgs-test__item">
+    <span class="sgs-test__label">First label</span>
+    <a class="sgs-test__link" href="/one">Link one</a>
+  </div>
+  <div class="sgs-test__item">
+    <span class="sgs-test__label">Second label</span>
+    <a class="sgs-test__link" href="/two">Link two</a>
+  </div>
+</div>
+"""
+
+# Mock field rows: one real text-content field + one gap-pending field.
+_GAP_PENDING_FIELD_ROWS = [
+    {
+        "item_selector": ".sgs-test__item",
+        "field_key": "label",
+        "field_selector": ".sgs-test__label",
+        "role": "text-content",
+        "attr_type": "string",
+        "enum_values": None,
+        "gap_reason": None,
+    },
+    {
+        "item_selector": ".sgs-test__item",
+        "field_key": "url",
+        "field_selector": ".sgs-test__link",
+        "role": "gap-pending",
+        "attr_type": "string",
+        "enum_values": None,
+        "gap_reason": "url-href — no href handler yet",
+    },
+]
+
+
+def test_gap_pending_field_emits_content_gap(monkeypatch):
+    """A gap-pending field emits a ContentGap for each item (2 items → 2 field gaps)."""
+    import orchestrator.converter_v2.db_lookup as db_mod
+    from converter.resolvers.array_content import lift_array_content
+
+    # Patch capability gate to allow processing.
+    monkeypatch.setattr(db_mod, "capabilities_for",
+                        lambda slug: frozenset({"array-content-lift"}))
+    # Patch block_attrs to declare one array attr 'items'.
+    monkeypatch.setattr(db_mod, "block_attrs",
+                        lambda slug: {"items": {"attr_type": "array"}})
+    # Patch array_item_fields to return our mixed field rows.
+    monkeypatch.setattr(db_mod, "array_item_fields",
+                        lambda slug, attr: _GAP_PENDING_FIELD_ROWS)
+
+    node = _node(_GAP_PENDING_DRAFT)
+    attrs, gaps = lift_array_content(node, "sgs/test-block")
+
+    # 2 items × 1 gap-pending field = 2 ContentGaps
+    gap_pending_gaps = [g for g in gaps if isinstance(g, ContentGap)
+                        and "url-href" in g.detail]
+    assert len(gap_pending_gaps) == 2, (
+        f"Expected 2 ContentGaps for gap-pending 'url' field, got: {gaps}"
+    )
+
+
+def test_gap_pending_text_field_still_resolves(monkeypatch):
+    """The real text-content field resolves successfully alongside gap-pending fields."""
+    import orchestrator.converter_v2.db_lookup as db_mod
+    from converter.resolvers.array_content import lift_array_content
+
+    monkeypatch.setattr(db_mod, "capabilities_for",
+                        lambda slug: frozenset({"array-content-lift"}))
+    monkeypatch.setattr(db_mod, "block_attrs",
+                        lambda slug: {"items": {"attr_type": "array"}})
+    monkeypatch.setattr(db_mod, "array_item_fields",
+                        lambda slug, attr: _GAP_PENDING_FIELD_ROWS)
+
+    node = _node(_GAP_PENDING_DRAFT)
+    attrs, gaps = lift_array_content(node, "sgs/test-block")
+
+    assert "items" in attrs, f"Expected 'items' key in attrs: {attrs}"
+    items = attrs["items"]
+    assert len(items) == 2, f"Expected 2 resolved items, got {len(items)}"
+    for i, item in enumerate(items):
+        assert "label" in item, (
+            f"items[{i}] missing 'label' key — real field should resolve: {item}"
+        )
+        assert "url" not in item, (
+            f"items[{i}] should NOT contain 'url' (gap-pending must not be lifted): {item}"
+        )
+
+
+def test_gap_pending_item_counts_as_filled(monkeypatch):
+    """An item with ≥1 real field resolved counts as filled, not as an item gap.
+
+    Conservation invariant: items_seen == filled + item_gaps (field_gaps are separate).
+    With 2 items each having 1 real field resolved, item_gaps must be 0.
+    """
+    import orchestrator.converter_v2.db_lookup as db_mod
+    from converter.resolvers.array_content import lift_array_content
+
+    monkeypatch.setattr(db_mod, "capabilities_for",
+                        lambda slug: frozenset({"array-content-lift"}))
+    monkeypatch.setattr(db_mod, "block_attrs",
+                        lambda slug: {"items": {"attr_type": "array"}})
+    monkeypatch.setattr(db_mod, "array_item_fields",
+                        lambda slug, attr: _GAP_PENDING_FIELD_ROWS)
+
+    node = _node(_GAP_PENDING_DRAFT)
+    # Should not raise ContentConservationError
+    attrs, gaps = lift_array_content(node, "sgs/test-block")
+
+    # 2 filled items — no item-level gap
+    item_gaps = [g for g in gaps if isinstance(g, ContentGap)
+                 and "no non-gap-pending fields" in g.detail]
+    assert item_gaps == [], (
+        f"Expected zero item-level gaps (items ARE filled via 'label'), got: {item_gaps}"
+    )
+
+    # Total gaps = 2 field-level gaps (one per item for 'url')
+    assert len(gaps) == 2, (
+        f"Expected exactly 2 field gaps total (2 items × 1 gap-pending field), got: {gaps}"
+    )
+
+    # items resolved
+    assert len(attrs.get("items", [])) == 2, (
+        f"Expected 2 filled items in attrs, got: {attrs}"
+    )

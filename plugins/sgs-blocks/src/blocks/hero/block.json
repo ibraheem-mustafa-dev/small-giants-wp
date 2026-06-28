@@ -71,7 +71,38 @@
 					"svgContent"
 				]
 			},
-			"arrayContentLift": true
+			"arrayContentLift": true,
+			"arrayItemSchema": {
+				"badges": {
+					"itemSelector": ".sgs-hero__badge",
+					"fields": {
+						"number": {
+							"selector": ".sgs-hero__badge-number",
+							"role": "gap-pending",
+							"gapReason": "plain-integer — number role is star-count, corrupts to 0"
+						},
+						"suffix": {
+							"selector": ".sgs-hero__badge-number",
+							"role": "gap-pending",
+							"gapReason": "number/suffix share one element; needs split"
+						},
+						"label": {
+							"selector": ".sgs-hero__badge-label",
+							"role": "text-content"
+						},
+						"position": {
+							"selector": ".sgs-hero__review-position",
+							"role": "gap-pending",
+							"gapReason": "css-modifier — no handler"
+						},
+						"style": {
+							"selector": ".sgs-hero__review-style",
+							"role": "gap-pending",
+							"gapReason": "css-modifier — no handler"
+						}
+					}
+				}
+			}
 		}
 	},
 	"selectors": {
@@ -135,7 +166,7 @@
 		"splitImage": {
 			"type": "object"
 		},
-		"_comment_splitMedia": "Migrated 2026-05-05 \u00e2\u20ac\u201d splitImage retained for deprecation. New instances should use splitMedia.",
+		"_comment_splitMedia": "Migrated 2026-05-05 â€” splitImage retained for deprecation. New instances should use splitMedia.",
 		"splitMedia": {
 			"type": "object",
 			"default": null

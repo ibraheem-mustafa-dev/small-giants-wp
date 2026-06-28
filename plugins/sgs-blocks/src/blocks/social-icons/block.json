@@ -32,7 +32,28 @@
 			"textAlign": true
 		},
 		"sgs": {
-			"arrayContentLift": true
+			"arrayContentLift": true,
+			"arrayItemSchema": {
+				"icons": {
+					"itemSelector": ".sgs-social-icons__icon",
+					"fields": {
+						"platform": {
+							"selector": ".sgs-social-icons__icon",
+							"role": "gap-pending",
+							"gapReason": "icon-slug/enum — no handler"
+						},
+						"url": {
+							"selector": ".sgs-social-icons__icon",
+							"role": "gap-pending",
+							"gapReason": "url-href — lifts label garbage; render skips item"
+						},
+						"label": {
+							"selector": ".sgs-social-icons__label",
+							"role": "text-content"
+						}
+					}
+				}
+			}
 		}
 	},
 	"selectors": {

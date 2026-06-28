@@ -20,7 +20,18 @@
 	"supports": {
 		"sgs": {
 			"imageControls": true,
-			"arrayContentLift": true
+			"arrayContentLift": true,
+			"arrayItemSchema": {
+				"logos": {
+					"itemSelector": ".sgs-brand-strip__logo",
+					"fields": {
+						"media": {
+							"selector": ".sgs-brand-strip__logo",
+							"role": "image-object"
+						}
+					}
+				}
+			}
 		},
 		"align": [
 			"wide",

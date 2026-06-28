@@ -47,7 +47,32 @@
 			"style": true
 		},
 		"sgs": {
-			"arrayContentLift": true
+			"arrayContentLift": true,
+			"arrayItemSchema": {
+				"steps": {
+					"itemSelector": ".sgs-process-steps__step",
+					"fields": {
+						"icon": {
+							"selector": ".sgs-process-steps__icon",
+							"role": "gap-pending",
+							"gapReason": "icon-slug — no handler"
+						},
+						"number": {
+							"selector": ".sgs-process-steps__number",
+							"role": "gap-pending",
+							"gapReason": "plain-integer — star-count corrupts to 0"
+						},
+						"title": {
+							"selector": ".sgs-process-steps__title",
+							"role": "text-content"
+						},
+						"description": {
+							"selector": ".sgs-process-steps__description",
+							"role": "text-content"
+						}
+					}
+				}
+			}
 		}
 	},
 	"selectors": {

@@ -41,7 +41,33 @@
 			"style": true
 		},
 		"sgs": {
-			"arrayContentLift": true
+			"arrayContentLift": true,
+			"arrayItemSchema": {
+				"items": {
+					"itemSelector": ".sgs-icon-list__item",
+					"fields": {
+						"text": {
+							"selector": ".sgs-icon-list__text",
+							"role": "text-content"
+						},
+						"iconSource": {
+							"selector": ".sgs-icon-list__icon-source",
+							"role": "gap-pending",
+							"gapReason": "icon-slug — no icon handler"
+						},
+						"iconName": {
+							"selector": ".sgs-icon-list__icon-name",
+							"role": "gap-pending",
+							"gapReason": "icon-slug — no icon handler"
+						},
+						"url": {
+							"selector": ".sgs-icon-list__link",
+							"role": "gap-pending",
+							"gapReason": "url-href — no handler"
+						}
+					}
+				}
+			}
 		}
 	},
 	"selectors": {
@@ -115,7 +141,7 @@
 				},
 				{
 					"icon": "check",
-					"text": "Minimum order \u00c2\u00a3250"
+					"text": "Minimum order Â£250"
 				}
 			]
 		}

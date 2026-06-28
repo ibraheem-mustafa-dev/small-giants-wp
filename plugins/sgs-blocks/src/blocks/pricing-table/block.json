@@ -38,7 +38,67 @@
 		},
 		"sgs": {
 			"imageControls": false,
-			"arrayContentLift": true
+			"arrayContentLift": true,
+			"arrayItemSchema": {
+				"plans": {
+					"itemSelector": ".sgs-pricing-table__card",
+					"fields": {
+						"name": {
+							"selector": ".sgs-pricing-table__name",
+							"role": "text-content"
+						},
+						"price": {
+							"selector": ".sgs-pricing-table__price--monthly",
+							"role": "text-content"
+						},
+						"priceYearly": {
+							"selector": ".sgs-pricing-table__price--yearly",
+							"role": "text-content"
+						},
+						"description": {
+							"selector": ".sgs-pricing-table__description",
+							"role": "text-content"
+						},
+						"ctaText": {
+							"selector": ".sgs-pricing-table__cta",
+							"role": "text-content"
+						},
+						"ctaUrl": {
+							"selector": ".sgs-pricing-table__cta",
+							"role": "gap-pending",
+							"gapReason": "url-href — text role lifts label not href"
+						},
+						"ribbonText": {
+							"selector": ".sgs-pricing-table__ribbon",
+							"role": "text-content"
+						},
+						"savingsBadgeText": {
+							"selector": ".sgs-pricing-table__savings-badge",
+							"role": "text-content"
+						},
+						"iconName": {
+							"selector": ".sgs-pricing-table__icon",
+							"role": "gap-pending",
+							"gapReason": "icon-slug — no handler"
+						},
+						"features": {
+							"selector": ".sgs-pricing-table__features",
+							"role": "gap-pending",
+							"gapReason": "nested-array — no nested handler"
+						},
+						"highlighted": {
+							"selector": ".sgs-pricing-table__highlighted",
+							"role": "gap-pending",
+							"gapReason": "boolean flag — no handler"
+						},
+						"period": {
+							"selector": ".sgs-pricing-table__period",
+							"role": "gap-pending",
+							"gapReason": "enum — no handler"
+						}
+					}
+				}
+			}
 		},
 		"__experimentalBorder": {
 			"radius": true,
@@ -87,8 +147,8 @@
 			"default": [
 				{
 					"name": "Starter",
-					"price": "\u00c2\u00a39",
-					"priceYearly": "\u00c2\u00a390",
+					"price": "Â£9",
+					"priceYearly": "Â£90",
 					"period": "monthly",
 					"description": "Everything you need to get started.",
 					"features": [
@@ -115,8 +175,8 @@
 				},
 				{
 					"name": "Professional",
-					"price": "\u00c2\u00a329",
-					"priceYearly": "\u00c2\u00a3290",
+					"price": "Â£29",
+					"priceYearly": "Â£290",
 					"period": "monthly",
 					"description": "For growing teams who need more.",
 					"features": [
@@ -151,8 +211,8 @@
 				},
 				{
 					"name": "Enterprise",
-					"price": "\u00c2\u00a399",
-					"priceYearly": "\u00c2\u00a3990",
+					"price": "Â£99",
+					"priceYearly": "Â£990",
 					"period": "monthly",
 					"description": "For large organisations with custom needs.",
 					"features": [

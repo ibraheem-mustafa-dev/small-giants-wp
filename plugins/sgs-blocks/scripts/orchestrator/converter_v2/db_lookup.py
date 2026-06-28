@@ -848,11 +848,20 @@ def _migrate_array_item_fields_schema() -> None:
               role            TEXT NOT NULL,
               attr_type       TEXT NOT NULL DEFAULT 'string',
               enum_values     TEXT,
+              gap_reason      TEXT,
               created_at      TEXT DEFAULT CURRENT_TIMESTAMP,
               PRIMARY KEY (block_slug, array_attr, field_key)
             )
             """
         )
+        # Idempotent column migration for DBs created before gap_reason was added.
+        cols = {row[1] for row in conn.execute(
+            "PRAGMA table_info(array_item_fields)"
+        ).fetchall()}
+        if "gap_reason" not in cols:
+            conn.execute(
+                "ALTER TABLE array_item_fields ADD COLUMN gap_reason TEXT"
+            )
         conn.commit()
     except sqlite3.OperationalError:
         pass
@@ -877,9 +886,10 @@ def array_item_fields(block_slug: str, array_attr: str) -> list[dict]:
       - ``item_selector``   — BEM class of the repeated item element in the draft
       - ``field_key``       — the render.php item dict key (e.g. ``'text'``)
       - ``field_selector``  — BEM class for this field inside the item element
-      - ``role``            — 'text-content' | 'image-object' | 'number'
+      - ``role``            — 'text-content' | 'image-object' | 'number' | 'gap-pending'
       - ``attr_type``       — 'string' | 'object' | 'number'
       - ``enum_values``     — parsed list or None
+      - ``gap_reason``      — str reason (when role='gap-pending') or None
 
     R-22-1 compliant — DB-only read path; no per-block slug literals.
     """
@@ -889,7 +899,7 @@ def array_item_fields(block_slug: str, array_attr: str) -> list[dict]:
         rows = conn.execute(
             """
             SELECT item_selector, field_key, field_selector, role,
-                   attr_type, enum_values
+                   attr_type, enum_values, gap_reason
             FROM array_item_fields
             WHERE block_slug = ? AND array_attr = ?
             ORDER BY rowid
@@ -902,7 +912,7 @@ def array_item_fields(block_slug: str, array_attr: str) -> list[dict]:
     finally:
         conn.close()
     result = []
-    for item_selector, field_key, field_selector, role, attr_type, enum_json in rows:
+    for item_selector, field_key, field_selector, role, attr_type, enum_json, gap_reason in rows:
         enum_vals = None
         if enum_json:
             try:
@@ -916,6 +926,7 @@ def array_item_fields(block_slug: str, array_attr: str) -> list[dict]:
             "role": role,
             "attr_type": attr_type,
             "enum_values": enum_vals,
+            "gap_reason": gap_reason,
         })
     return result
 

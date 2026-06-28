@@ -248,11 +248,19 @@ def _index_sgs_block_files(
           role            TEXT NOT NULL,
           attr_type       TEXT NOT NULL DEFAULT 'string',
           enum_values     TEXT,
+          gap_reason      TEXT,
           created_at      TEXT DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (block_slug, array_attr, field_key)
         )
         """
     )
+    # Idempotent column migration: add gap_reason if the table was created
+    # by an earlier run that predates this column.
+    _aif_cols = {row[1] for row in c.execute(
+        "PRAGMA table_info(array_item_fields)"
+    ).fetchall()}
+    if "gap_reason" not in _aif_cols:
+        c.execute("ALTER TABLE array_item_fields ADD COLUMN gap_reason TEXT")
 
     for block_dir in sorted(blocks_dir.iterdir()):
         if not block_dir.is_dir() or block_dir.name in EXCLUDED_DIRS:
@@ -535,17 +543,18 @@ def _index_sgs_block_files(
                     attr_type = field_def.get("attr_type", "string")
                     enum_vals = field_def.get("enum")
                     enum_json = json.dumps(enum_vals) if enum_vals else None
+                    gap_reason = field_def.get("gapReason", None)
                     if not field_selector or not role:
                         continue
                     c.execute(
                         """
                         INSERT OR REPLACE INTO array_item_fields
                             (block_slug, array_attr, item_selector, field_key,
-                             field_selector, role, attr_type, enum_values)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                             field_selector, role, attr_type, enum_values, gap_reason)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                         """,
                         (slug, array_attr, item_selector, field_key,
-                         field_selector, role, attr_type, enum_json),
+                         field_selector, role, attr_type, enum_json, gap_reason),
                     )
 
         # --- INSERT OR IGNORE attributes; UPDATE on drift ---

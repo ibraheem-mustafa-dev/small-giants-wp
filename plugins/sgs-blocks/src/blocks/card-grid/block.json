@@ -50,7 +50,40 @@
 		},
 		"sgs": {
 			"imageControls": true,
-			"arrayContentLift": true
+			"arrayContentLift": true,
+			"arrayItemSchema": {
+				"items": {
+					"itemSelector": ".sgs-card-grid__item",
+					"fields": {
+						"title": {
+							"selector": ".sgs-card-grid__title",
+							"role": "text-content"
+						},
+						"subtitle": {
+							"selector": ".sgs-card-grid__subtitle",
+							"role": "text-content"
+						},
+						"media": {
+							"selector": ".sgs-card-grid__image-wrap",
+							"role": "image-object"
+						},
+						"badge": {
+							"selector": ".sgs-card-grid__badge",
+							"role": "text-content"
+						},
+						"link": {
+							"selector": ".sgs-card-grid__link",
+							"role": "gap-pending",
+							"gapReason": "url-href — no href handler yet"
+						},
+						"badgeVariant": {
+							"selector": ".sgs-card-grid__badge--variant",
+							"role": "gap-pending",
+							"gapReason": "css-modifier — no modifier handler; badge won't render without it"
+						}
+					}
+				}
+			}
 		}
 	},
 	"selectors": {

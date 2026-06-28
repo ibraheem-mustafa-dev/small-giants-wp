@@ -37,7 +37,7 @@ def _git_show(ref_path: str) -> str | None:
     try:
         out = subprocess.run(
             ["git", "show", ref_path],
-            capture_output=True, text=True, check=True,
+            capture_output=True, text=True, encoding="utf-8", check=True,
         )
         return out.stdout
     except subprocess.CalledProcessError:
