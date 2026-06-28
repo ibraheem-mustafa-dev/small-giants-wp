@@ -16,7 +16,6 @@ from converter.context import ScalarLift, ContentGap
 from converter.recognition import recognise
 from converter.services.extraction import extract_content, build_block_markup, run_mechanism_a
 from converter.services.draft_oracle import read_draft_field
-from orchestrator.converter_v2.db_lookup import AttrInfo
 
 # ---------------------------------------------------------------------------
 # Fixture paths (resolved relative to this file so tests pass from any cwd)
@@ -152,24 +151,32 @@ def test_media_lifts_as_object_shape(monkeypatch):
     must produce a ScalarLift whose value is the object dict shape
     {"url": ..., "id": 0, "alt": ...} — not a bare src string.
 
-    Monkeypatches content_attrs_with_selector to avoid dependency on the DB
-    seed landing in the test environment (the seeding is done by a separate
-    agent concurrently; unit-testing the shaping logic is independent).
+    Monkeypatches the DB accessors `lift_scalar_content` actually calls
+    (`block_attrs` + `capabilities_for`) to avoid depending on the DB seed in the
+    test environment. (A3 fix, 2026-06-28: the prior version patched
+    `content_attrs_with_selector` — a function `run_mechanism_a` no longer calls
+    after the W2 modularisation — so the monkeypatch was dead and the test was
+    false-green. `lift_scalar_content` reads `block_attrs(slug)` +
+    `capabilities_for(slug)`.)
     """
     import orchestrator.converter_v2.db_lookup as db_lookup_mod
 
-    stub_info = AttrInfo(
-        attr_name="avatarMedia",
-        role="image-object",
-        derived_selector=".sgs-testimonial__avatar",
-        attr_type="object",
-    )
-
-    # Monkeypatch content_attrs_with_selector to return our stub AttrInfo.
+    # Patch the two accessors the modularised lift_scalar_content actually reads.
     monkeypatch.setattr(
         db_lookup_mod,
-        "content_attrs_with_selector",
-        lambda slug: (stub_info,),
+        "capabilities_for",
+        lambda slug: {"scalar-content-lift"},
+    )
+    monkeypatch.setattr(
+        db_lookup_mod,
+        "block_attrs",
+        lambda slug: {
+            "avatarMedia": {
+                "role": "image-object",
+                "attr_type": "object",
+                "derived_selector": ".sgs-testimonial__avatar",
+            }
+        },
     )
 
     html_snippet = (

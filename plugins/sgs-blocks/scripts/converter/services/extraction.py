@@ -78,7 +78,7 @@ def _label(child: Any) -> str:
 # ---------------------------------------------------------------------------
 
 
-def run_mechanism_a(rec: Recognition, section_root: Any) -> list:
+def run_mechanism_a(rec: Recognition, section_root: Any, media_map: dict | None = None) -> list:
     """Mechanism A: scalar content lift — the MODULARISED working function (D246, W2).
 
     Spec 31 §1/§3.B1: this is the modularised `_lift_scalar_attrs_by_selector`
@@ -86,14 +86,30 @@ def run_mechanism_a(rec: Recognition, section_root: Any) -> list:
     working content-lift — NOT a from-scratch reimplementation (the D245 from-scratch
     `content_attrs_with_selector`/`extract_payload`/object-shaping path is superseded).
 
-    `lift_scalar_content` returns a plain attr dict; absent draft elements emit no
-    key (the working function's no-op-on-absent behaviour — completeness is the F2
-    draft-derived ledger's job per Spec 31 §12.2.1, NOT a per-attr ContentGap).
-    Wrapped here as ScalarLifts so build_block_markup's assembly is unchanged.
-    The silent-drop coverage for NULL-role/selector attrs stays via
-    expected_content_gaps (called in extract_content's scalar branch).
+    `lift_scalar_content` returns a plain attr dict; an attr whose selector matches
+    nothing emits NO key — Spec 31 §3.B1 mandates this strict no-op (it is the
+    faithful behaviour of `_lift_scalar_attrs_by_selector`). Wrapped here as
+    ScalarLifts so build_block_markup's assembly is unchanged.
+
+    ``media_map`` is threaded through to ``lift_scalar_content`` so the image-object
+    branch resolves a mockup src to its uploaded WP URL per §3.B1
+    (`{url: resolve_media_url(src), ...}`). It defaults to ``{}`` — the new engine
+    has no media-map LOADER/driver yet (this entry has no production caller; it is
+    driven via the STOP-21 LANDED recipe), so until the engine is wired into the
+    pipeline the map is empty and image srcs stay un-remapped. That is a tracked
+    dependency, NOT a silent claim of completeness.
+
+    CONTENT COMPLETENESS NOTE (council A2, 2026-06-28): scalar content drops
+    (selector matched nothing / empty text / no <img>) are NOT yet caught by any
+    gate — Spec 31 §12.2.1's conservation ledger (`declare_input`) currently
+    captures only the CSS `(selector, property, value)` stream, not content routing
+    units. `expected_content_gaps` (below) covers only attrs with NO role/selector.
+    Closing this hole is a ledger/instrument change (extend `declare_input` to
+    capture CONTENT routing units per Spec 31 §3 line 101) — design-gated, NOT a
+    patch here (a per-attr ContentGap inside the lift would breach §3.B1's strict
+    no-op). Tracked in next-session-prompt Register A / A2.
     """
-    lifted = lift_scalar_content(section_root, rec.slug, media_map={})
+    lifted = lift_scalar_content(section_root, rec.slug, media_map=media_map or {})
     return [ScalarLift(attr=name, value=value) for name, value in lifted.items()]
 
 
@@ -217,7 +233,7 @@ def expected_content_gaps(slug: str) -> list:
 # ---------------------------------------------------------------------------
 
 
-def extract_content(rec: Recognition, section_root: Any) -> list:
+def extract_content(rec: Recognition, section_root: Any, media_map: dict | None = None) -> list:
     """Dispatch content extraction for a recognised composite.
 
     Three exhaustive cases (design §1, capability mutual exclusion):
@@ -241,7 +257,7 @@ def extract_content(rec: Recognition, section_root: Any) -> list:
     SCALAR_LIFT = "scalar-content-lift"
 
     if rec.has_inner_blocks == 0 and SCALAR_LIFT in caps:
-        return run_mechanism_a(rec, section_root) + expected_content_gaps(rec.slug)
+        return run_mechanism_a(rec, section_root, media_map) + expected_content_gaps(rec.slug)
 
     if rec.has_inner_blocks == 1:
         # Capability mutual exclusion: a scalar-content-lift block must NEVER enter
@@ -269,7 +285,7 @@ def extract_content(rec: Recognition, section_root: Any) -> list:
 # ---------------------------------------------------------------------------
 
 
-def build_block_markup(rec: Recognition, section_root: Any) -> str:
+def build_block_markup(rec: Recognition, section_root: Any, media_map: dict | None = None) -> str:
     """Assemble native WP block markup from extraction results.
 
     Combines variant attrs (e.g. {'variant': 'split'}) with every ScalarLift
@@ -280,7 +296,7 @@ def build_block_markup(rec: Recognition, section_root: Any) -> str:
     Design ref: `.claude/plans/2026-06-26-stage3-child-shape-fork-design.md` §1.
     No block or slot string literals (scanned by gates/no_slug_literal).
     """
-    results = extract_content(rec, section_root)
+    results = extract_content(rec, section_root, media_map)
     attrs: dict = dict(variant_attrs(rec))  # variant attrs first (e.g. {'variant': 'split'})
     for r in results:
         if isinstance(r, ScalarLift):
