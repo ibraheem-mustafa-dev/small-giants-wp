@@ -1,116 +1,117 @@
 {
-    "$schema":  "https://schemas.wp.org/trunk/block.json",
-    "apiVersion":  3,
-    "name":  "sgs/brand-strip",
-    "version":  "0.2.0",
-    "title":  "SGS Brand Strip",
-    "category":  "sgs-content",
-    "description":  "Horizontal logo strip with infinite marquee scroll, fade edges, direction control, and greyscale effect.",
-    "keywords":  [
-                     "brand",
-                     "logo",
-                     "partner",
-                     "client",
-                     "strip",
-                     "carousel",
-                     "marquee"
-                 ],
-    "textdomain":  "sgs-blocks",
-    "icon":  "images-alt2",
-    "supports":  {
-                     "sgs":  {
-                                 "imageControls":  true
-                             },
-                     "align":  [
-                                   "wide",
-                                   "full"
-                               ],
-                     "anchor":  true,
-                     "html":  false,
-                     "color":  {
-                                   "background":  true,
-                                   "text":  false
-                               },
-                     "spacing":  {
-                                     "margin":  true,
-                                     "padding":  true
-                                 },
-                     "__experimentalBorder":  {
-                                                  "radius":  true,
-                                                  "width":  true,
-                                                  "color":  true,
-                                                  "style":  true
-                                              }
-                 },
-    "attributes":  {
-                       "_comment_logos_media":  "Migrated 2026-05-05 — each logo entry uses the unified media-slot shape { url, type: 'image', id, alt, mime } via shared MediaPicker (image-only). Legacy { image: {...} } shape retained on existing posts via deprecated.js v2 migrate. New instances write the unified shape. allowedTypes={ [ 'image' ] } enforces no video on logos.",
-                       "logos":  {
-                                     "type":  "array",
-                                     "default":  []
-                                 },
-                       "scrolling":  {
-                                         "type":  "boolean",
-                                         "default":  false
-                                     },
-                       "scrollSpeed":  {
-                                           "type":  "string",
-                                           "default":  "medium"
-                                       },
-                       "scrollDirection":  {
-                                              "type":  "string",
-                                              "default":  "left"
-                                          },
-                       "fadeEdges":  {
-                                        "type":  "boolean",
-                                        "default":  false
-                                    },
-                       "fadeWidth":  {
-                                        "type":  "number",
-                                        "default":  60
-                                    },
-                       "greyscale":  {
-                                         "type":  "boolean",
-                                         "default":  false
-                                     },
-                       "maxHeight":  {
-                                         "type":  "number",
-                                         "default":  80
-                                     },
-                       "hoverBackgroundColour":  {
-                                                     "type":  "string",
-                                                     "default":  ""
-                                                 },
-                       "hoverTextColour":  {
-                                               "type":  "string",
-                                               "default":  ""
-                                           },
-                       "hoverBorderColour":  {
-                                                 "type":  "string",
-                                                 "default":  ""
-                                             },
-                       "hoverEffect":  {
-                                           "type":  "string",
-                                           "default":  "none"
-                                       },
-                       "transitionDuration":  {
-                                                  "type":  "string",
-                                                  "default":  "300"
-                                              },
-                       "transitionEasing":  {
-                                                "type":  "string",
-                                                "default":  "ease-in-out"
-                                            }
-                   },
-    "editorScript":  "file:./index.js",
-    "editorStyle":  "file:./index.css",
-    "style":  "file:./style-index.css",
-    "viewScriptModule":  "file:./view.js",
-    "render":  "file:./render.php",
-    "example":  {
-                    "attributes":  {
-                                       "scrolling":  true,
-                                       "greyscale":  false,
-                                       "maxHeight":  80
-                                   }
-                }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/brand-strip",
+	"version": "0.2.0",
+	"title": "SGS Brand Strip",
+	"category": "sgs-content",
+	"description": "Horizontal logo strip with infinite marquee scroll, fade edges, direction control, and greyscale effect.",
+	"keywords": [
+		"brand",
+		"logo",
+		"partner",
+		"client",
+		"strip",
+		"carousel",
+		"marquee"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "images-alt2",
+	"supports": {
+		"sgs": {
+			"imageControls": true,
+			"arrayContentLift": true
+		},
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"text": false
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
+	},
+	"attributes": {
+		"_comment_logos_media": "Migrated 2026-05-05 \u00e2\u20ac\u201d each logo entry uses the unified media-slot shape { url, type: 'image', id, alt, mime } via shared MediaPicker (image-only). Legacy { image: {...} } shape retained on existing posts via deprecated.js v2 migrate. New instances write the unified shape. allowedTypes={ [ 'image' ] } enforces no video on logos.",
+		"logos": {
+			"type": "array",
+			"default": []
+		},
+		"scrolling": {
+			"type": "boolean",
+			"default": false
+		},
+		"scrollSpeed": {
+			"type": "string",
+			"default": "medium"
+		},
+		"scrollDirection": {
+			"type": "string",
+			"default": "left"
+		},
+		"fadeEdges": {
+			"type": "boolean",
+			"default": false
+		},
+		"fadeWidth": {
+			"type": "number",
+			"default": 60
+		},
+		"greyscale": {
+			"type": "boolean",
+			"default": false
+		},
+		"maxHeight": {
+			"type": "number",
+			"default": 80
+		},
+		"hoverBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverEffect": {
+			"type": "string",
+			"default": "none"
+		},
+		"transitionDuration": {
+			"type": "string",
+			"default": "300"
+		},
+		"transitionEasing": {
+			"type": "string",
+			"default": "ease-in-out"
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"render": "file:./render.php",
+	"example": {
+		"attributes": {
+			"scrolling": true,
+			"greyscale": false,
+			"maxHeight": 80
+		}
+	}
 }

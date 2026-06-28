@@ -18,7 +18,8 @@
 	"supports": {
 		"sgs": {
 			"imageControls": false,
-			"is_section_root": true
+			"is_section_root": true,
+			"arrayContentLift": true
 		},
 		"align": [
 			"wide",
@@ -103,7 +104,7 @@
 			"type": "object",
 			"default": null
 		},
-		"_comment_backgroundMedia": "Migrated 2026-05-05 — backgroundImage retained for deprecation. New instances should use backgroundMedia (accepts image OR video).",
+		"_comment_backgroundMedia": "Migrated 2026-05-05 \u00e2\u20ac\u201d backgroundImage retained for deprecation. New instances should use backgroundMedia (accepts image OR video).",
 		"backgroundMedia": {
 			"type": "object",
 			"default": null

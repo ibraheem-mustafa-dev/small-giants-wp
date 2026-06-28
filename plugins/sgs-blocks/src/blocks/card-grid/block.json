@@ -49,7 +49,8 @@
 			"style": true
 		},
 		"sgs": {
-			"imageControls": true
+			"imageControls": true,
+			"arrayContentLift": true
 		}
 	},
 	"selectors": {
@@ -61,7 +62,7 @@
 			"type": "string",
 			"default": "card"
 		},
-		"_comment_items_media": "Migrated 2026-05-05 — each item gains a unified `media` slot (image OR video). Legacy `image` retained on items for deprecation back-compat. New instances should write `media` via MediaPicker.",
+		"_comment_items_media": "Migrated 2026-05-05 \u00e2\u20ac\u201d each item gains a unified `media` slot (image OR video). Legacy `image` retained on items for deprecation back-compat. New instances should write `media` via MediaPicker.",
 		"items": {
 			"type": "array",
 			"default": []
@@ -216,7 +217,7 @@
 		"productLimit": {
 			"type": "number",
 			"default": 6,
-			"description": "Maximum number of products to return (1–24). Server-side cap enforced at 24. The on-sale filter over-fetches and refills to this limit; fewer are returned only when fewer on-sale products exist."
+			"description": "Maximum number of products to return (1\u00e2\u20ac\u201c24). Server-side cap enforced at 24. The on-sale filter over-fetches and refills to this limit; fewer are returned only when fewer on-sale products exist."
 		},
 		"productIds": {
 			"type": "array",
@@ -229,7 +230,7 @@
 		"productShowLadder": {
 			"type": "boolean",
 			"default": false,
-			"description": "Show the per-pack price ladder on each card. Off by default — grids are a browsing context; the ladder does its upsell work on the product page."
+			"description": "Show the per-pack price ladder on each card. Off by default \u00e2\u20ac\u201d grids are a browsing context; the ladder does its upsell work on the product page."
 		},
 		"productEmptyMessage": {
 			"type": "string",

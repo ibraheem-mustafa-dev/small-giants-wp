@@ -37,7 +37,8 @@
 			"padding": true
 		},
 		"sgs": {
-			"imageControls": false
+			"imageControls": false,
+			"arrayContentLift": true
 		},
 		"__experimentalBorder": {
 			"radius": true,
@@ -86,8 +87,8 @@
 			"default": [
 				{
 					"name": "Starter",
-					"price": "£9",
-					"priceYearly": "£90",
+					"price": "\u00c2\u00a39",
+					"priceYearly": "\u00c2\u00a390",
 					"period": "monthly",
 					"description": "Everything you need to get started.",
 					"features": [
@@ -114,8 +115,8 @@
 				},
 				{
 					"name": "Professional",
-					"price": "£29",
-					"priceYearly": "£290",
+					"price": "\u00c2\u00a329",
+					"priceYearly": "\u00c2\u00a3290",
 					"period": "monthly",
 					"description": "For growing teams who need more.",
 					"features": [
@@ -150,8 +151,8 @@
 				},
 				{
 					"name": "Enterprise",
-					"price": "£99",
-					"priceYearly": "£990",
+					"price": "\u00c2\u00a399",
+					"priceYearly": "\u00c2\u00a3990",
 					"period": "monthly",
 					"description": "For large organisations with custom needs.",
 					"features": [

@@ -2923,7 +2923,11 @@ def array_item_slot_for(block_slug: str, attr_name: str) -> str | None:
     equivalent_block_for or standalone_block_for to get the emitted block slug.
 
     Examples:
-        array_item_slot_for('sgs/product-card', 'packSizes') -> 'button'
+        array_item_slot_for('sgs/product-card', 'packSizes') -> None
+            (Tier B — canonical_slot=NULL; packSizes is OUT of array-resolver
+            scope: render.php reads it 0×, not a per-item content repeater.
+            Council MF-4, 2026-06-28. Previous docstring incorrectly showed
+            -> 'button'; the live DB has canonical_slot=NULL.)
         array_item_slot_for('sgs/gallery', 'mediaItems')     -> 'media'
         array_item_slot_for('sgs/form-field-tiles', 'tiles') -> 'options'
         array_item_slot_for('sgs/info-box', 'elementOrder')  -> None

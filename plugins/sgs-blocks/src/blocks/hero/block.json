@@ -70,7 +70,8 @@
 				"svg-animated": [
 					"svgContent"
 				]
-			}
+			},
+			"arrayContentLift": true
 		}
 	},
 	"selectors": {
@@ -134,7 +135,7 @@
 		"splitImage": {
 			"type": "object"
 		},
-		"_comment_splitMedia": "Migrated 2026-05-05 — splitImage retained for deprecation. New instances should use splitMedia.",
+		"_comment_splitMedia": "Migrated 2026-05-05 \u00e2\u20ac\u201d splitImage retained for deprecation. New instances should use splitMedia.",
 		"splitMedia": {
 			"type": "object",
 			"default": null

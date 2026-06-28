@@ -456,6 +456,30 @@ def _index_sgs_block_files(
                 (slug,),
             )
 
+        # --- array-content-lift capability (array-resolver opt-in gate) ---
+        # block.json supports.sgs.arrayContentLift === true → upsert a
+        # block_capabilities row (slug, 'array-content-lift'); absent/false →
+        # remove it. This is the DATA half of the array-resolver's universal
+        # opt-in gate (R-22-1 DB-driven / R-22-9 universal mechanism). The
+        # array resolver only processes blocks with this capability, preventing
+        # accidental array-content lifting on blocks whose array attrs are config
+        # arrays, not repeater content. Idempotent: present→INSERT OR IGNORE
+        # (UNIQUE(block_slug, capability)); absent→DELETE. Exact mirror of
+        # scalar-content-lift above. Added per design-gate council 2026-06-28.
+        wants_array_lift = bool(sgs_supports.get("arrayContentLift", False)) if isinstance(sgs_supports, dict) else False
+        if wants_array_lift:
+            c.execute(
+                "INSERT OR IGNORE INTO block_capabilities "
+                "(block_slug, capability) VALUES (?, 'array-content-lift')",
+                (slug,),
+            )
+        else:
+            c.execute(
+                "DELETE FROM block_capabilities "
+                "WHERE block_slug = ? AND capability = 'array-content-lift'",
+                (slug,),
+            )
+
         scanned += 1
 
         # --- INSERT OR IGNORE attributes; UPDATE on drift ---
@@ -949,6 +973,19 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/testimonial", "avatarMedia"): {"role": "image-object", "derived_selector": ".sgs-testimonial__avatar"},
     ("sgs/testimonial", "orgLogo"):     {"role": "image-object", "derived_selector": ".sgs-testimonial__logo"},
     ("sgs/testimonial", "workMedia"):   {"role": "image-object", "derived_selector": ".sgs-testimonial__work"},
+    # Container→item selector fixes — council MF-2, 2026-06-28.
+    # assign-canonical derives __items (the container) from the plural BEM convention;
+    # the CSS-lift and array-resolver both need the PER-ITEM element selector so they
+    # target the rendered child, not the wrapper.
+    # sgs/card-grid.items: render.php:288 emits class="sgs-card-grid__item" (singular).
+    # Current derived_selector .sgs-card-grid__items is the container wrapper — wrong target.
+    ("sgs/card-grid", "items"): {"derived_selector": ".sgs-card-grid__item"},
+    # sgs/icon-list.items: render.php:140 emits class="sgs-icon-list__item" (singular).
+    # Current derived_selector .sgs-icon-list__items is the container wrapper — wrong target.
+    ("sgs/icon-list", "items"): {"derived_selector": ".sgs-icon-list__item"},
+    # sgs/hero.badges: render.php:621 emits class="sgs-hero__badge sgs-hero__badge--..." per item.
+    # Container is .sgs-hero__badges (render.php:633). Per-item class is .sgs-hero__badge.
+    ("sgs/hero", "badges"): {"derived_selector": ".sgs-hero__badge"},
 }
 
 

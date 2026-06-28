@@ -31,6 +31,9 @@
 			"width": true,
 			"color": true,
 			"style": true
+		},
+		"sgs": {
+			"arrayContentLift": true
 		}
 	},
 	"attributes": {
@@ -460,7 +463,7 @@
 				"Place the source's words here for emphasis and credibility.",
 				"A short third line keeps the example representative."
 			],
-			"attribution": "— Jane Smith, Customer",
+			"attribution": "\u00e2\u20ac\u201d Jane Smith, Customer",
 			"attributionColour": "primary",
 			"bodyFontStyle": "italic",
 			"paddingTop": 24,
