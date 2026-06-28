@@ -5,8 +5,13 @@ Design ref: `.claude/plans/2026-06-23-modular-scaffold-design.md` §4.1.
 WHAT IT REJECTS
     Any import, anywhere under converter/, of the frozen converter_v2 engine —
     `convert`, `convert_page`, or any `orchestrator.converter_v2.*` symbol —
-    with the SINGLE exception of `db_lookup` (the vetted attr-NAME resolver the
-    services legitimately wrap).
+    with TWO exceptions:
+      1. `db_lookup`     — the vetted attr-NAME resolver the services legitimately wrap.
+      2. `icon_resolver` — the vetted shared icon-recognition primitive (path-data
+                           fingerprint + structural heuristics against lucide-icons.json).
+                           Permitted per D248 / Spec 31 §3.B.0; equivalent in role to
+                           db_lookup (both are shared recognition primitives, not the
+                           frozen engine logic).
 
     This closes the freeze-callback backdoor: convert_page.py:114 calls v3.walk;
     if a rebuilt resolver imported back into convert.py, "old engine is never an
@@ -21,6 +26,9 @@ WHAT IT REJECTS
     Allowed:  from orchestrator.converter_v2 import db_lookup
               from orchestrator.converter_v2.db_lookup import x
               import orchestrator.converter_v2.db_lookup
+              from orchestrator.converter_v2 import icon_resolver
+              from orchestrator.converter_v2.icon_resolver import resolve_icon
+              import orchestrator.converter_v2.icon_resolver
 
 SCOPE
     All of converter/ recursively, EXCLUDING this gates/ dir and test files
@@ -47,7 +55,12 @@ _BASELINE = _HERE / "import-ban-baseline.json"
 # Bare module names that ARE the frozen engine.
 _FROZEN_BARE = frozenset({"convert", "convert_page"})
 _FROZEN_PKG_SEGMENT = "converter_v2"
-_ALLOWED_LEAF = "db_lookup"
+# Vetted shared primitives that MAY be imported from orchestrator.converter_v2.
+# db_lookup     — attr-name resolver / DB accessor (original allowance).
+# icon_resolver — path-data fingerprint + structural heuristic icon recogniser;
+#                 permitted per D248 / Spec 31 §3.B.0 (same class as db_lookup:
+#                 a shared recognition primitive, NOT the frozen engine logic).
+_ALLOWED_LEAVES = frozenset({"db_lookup", "icon_resolver"})
 
 
 def _module_is_frozen(module: str | None, imported_name: str | None) -> bool:
@@ -64,12 +77,12 @@ def _module_is_frozen(module: str | None, imported_name: str | None) -> bool:
         return True
     # Anything inside the converter_v2 package.
     if _FROZEN_PKG_SEGMENT in parts:
-        # Allowed only when the leaf module is db_lookup …
-        if parts[-1] == _ALLOWED_LEAF:
+        # Allowed when the leaf module is a permitted shared primitive …
+        if parts[-1] in _ALLOWED_LEAVES:
             return False
-        # … or `from orchestrator.converter_v2 import db_lookup` (module ends at
-        #    the package, the imported symbol is db_lookup).
-        if parts[-1] == _FROZEN_PKG_SEGMENT and imported_name == _ALLOWED_LEAF:
+        # … or `from orchestrator.converter_v2 import <leaf>` (module ends at
+        #    the package, the imported symbol is a permitted shared primitive).
+        if parts[-1] == _FROZEN_PKG_SEGMENT and imported_name in _ALLOWED_LEAVES:
             return False
         return True
     return False

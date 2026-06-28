@@ -44,12 +44,7 @@ from typing import Any
 from bs4 import Tag
 
 from converter.context import ContentConservationError, ContentGap
-from converter.services.lift_helpers import (
-    _safe_href,
-    extract_star_count,
-    rich_text_content,
-    scalar_media_from_img,
-)
+from converter.services.field_extractors import extract_field_value
 from orchestrator.converter_v2 import db_lookup
 
 
@@ -76,6 +71,14 @@ def _lift_field(item_node: Tag, field_selector: str, role: str, media_map: dict)
     applies (item blocks like ``sgs/button`` / ``sgs/label`` / ``sgs/icon`` do NOT
     carry the scalar-content-lift capability, so re-using that function would
     return ``{}`` for every item — MF-3 hole).
+
+    Role→value dispatch is DELEGATED to ``field_extractors.extract_field_value``
+    (Spec 31 §3.B.0 shared library).  Only the element-finding logic (class-
+    selector lookup + item-IS-element check) lives here.
+
+    Legacy DB rows may carry role ``"number"`` for the star-count role; this
+    is mapped to ``"rating"`` before dispatch so both labels reach the same
+    handler in the shared lib.
     """
     # Selector is a BEM class (with or without leading '.'); strip the dot for
     # BeautifulSoup's class= lookup (same pattern as lift_scalar_content).
@@ -95,53 +98,11 @@ def _lift_field(item_node: Tag, field_selector: str, role: str, media_map: dict)
     if element is None or not isinstance(element, Tag):
         return None
 
-    if role == "text-content":
-        value = rich_text_content(element)
-        return value if value else None
+    # Map legacy "number" role → canonical "rating" so both reach the same
+    # star-count handler in the shared lib.  No other remapping needed.
+    resolved_role = "rating" if role == "number" else role
 
-    if role == "image-object":
-        img_node = element if element.name == "img" else element.find("img")
-        if img_node is not None and isinstance(img_node, Tag):
-            return scalar_media_from_img(img_node, media_map)
-        return None
-
-    if role == "number":
-        return extract_star_count(element)
-
-    if role == "url-href":
-        # Lift an href from the element itself or the first descendant <a>.
-        anchor = element if element.name == "a" else element.find("a")
-        if anchor is not None and isinstance(anchor, Tag):
-            raw = anchor.get("href", "")
-            return _safe_href(raw) if isinstance(raw, str) else None
-        return None
-
-    if role == "icon-slug":
-        # Resolution order (no SVG path-matching — icon_resolver import is
-        # banned by import_ban.py; only orchestrator.converter_v2.db_lookup is
-        # permitted from that package):
-        # 1. data-icon or data-lucide attribute on the element.
-        for attr in ("data-icon", "data-lucide"):
-            val = element.get(attr)
-            if val and isinstance(val, str):
-                return val.strip() or None
-        # 2. BEM modifier --<slug> on the element's class string
-        #    (e.g. sgs-social-icons__icon--facebook → "facebook").
-        for cls in (element.get("class") or []):
-            if isinstance(cls, str) and "--" in cls:
-                slug = cls.rsplit("--", 1)[-1].strip()
-                if slug:
-                    return slug
-        return None
-
-    if role == "plain-integer":
-        # Return raw text verbatim — "500+" and "01" must survive unchanged.
-        # Do NOT cast to int (that would corrupt "500+" and strip leading zeros).
-        text = element.get_text(strip=True)
-        return text if text else None
-
-    # Unknown role → omit key (no gap — the schema author's responsibility).
-    return None
+    return extract_field_value(element, resolved_role, media_map)
 
 
 # ---------------------------------------------------------------------------

@@ -22,11 +22,7 @@ from typing import Any
 from bs4 import Tag
 
 from converter.models import GAP, GapOrigin
-from converter.services.lift_helpers import (
-    extract_star_count,
-    rich_text_content,
-    scalar_media_from_img,
-)
+from converter.services.field_extractors import extract_field_value
 from orchestrator.converter_v2 import db_lookup
 
 
@@ -122,18 +118,20 @@ def lift_scalar_content(node: Tag, slug: str, media_map: dict) -> dict:
             continue  # no class matched → emit no key (grid no-op / absent draft elem)
 
         if is_text:
-            value = rich_text_content(element)
+            # Delegate to shared field_extractors (Spec 31 §3.B.0 shared lib).
+            value = extract_field_value(element, "text-content", media_map)
             if value:
                 lifted[attr_name] = value
         elif is_media_object:
-            # Find the first <img> inside (or as) the matched element.
-            # The element may BE the <img> (e.g. fixture: <img class="sgs-team-member__photo">)
-            # or contain it inside a wrapper div (e.g. render.php's __photo wrapper).
-            img_node = element if element.name == "img" else element.find("img")
-            if img_node is not None and isinstance(img_node, Tag):
-                lifted[attr_name] = scalar_media_from_img(img_node, media_map)
+            # Delegate to shared field_extractors — same handler as array items.
+            value = extract_field_value(element, "image-object", media_map)
+            if value is not None:
+                lifted[attr_name] = value
         else:  # is_rating
-            stars = extract_star_count(element)
+            # Delegate to shared field_extractors — "rating" = STAR-count role.
+            stars = extract_field_value(element, "rating", media_map)
+            if stars is None:
+                stars = 0
             lifted[attr_name] = stars
             if stars > 0:
                 lifted_rating_positive = True
