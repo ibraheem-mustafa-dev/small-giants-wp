@@ -5,53 +5,47 @@ thread: cloning-pipeline
 session_date: 2026-06-28
 ---
 
-# Session Handoff — 2026-06-28 (D246 content-UNIFY: W1+W2 modularised the scalar content path into the one dispatch; W3 teed-up, not built)
+# Session Handoff — 2026-06-28 (D246/D247 content-UNIFY: W1+W2 wrap-up, both `/qc-council` gates run, A1-seam+A3 fixed, A2 ruled a ledger gap)
 
 > Prior handoffs (D245 Stage-3 content build, D244 Stage-2 recognition) are in git history + `memory/`.
 
-## Plain-English summary (what we did, why it matters)
-Last session (D246) Bean caught an architecture mistake: the D245 build had created a **separate, parallel content-extraction engine** that *recreated* two functions that already work in the frozen `convert.py`. Spec 31 §1 says content and CSS must flow through **ONE dispatch**, not two. This session executed the first half of the correction — **modularising** (re-housing) the working content functions into the one dispatch instead of rebuilding them.
-
-Two verified refactor waves shipped (W1, W2). The scalar content path — the testimonial/team-member worked example, the thing that actually LANDED — now runs on the proven working function, not the D245 recreation. The third wave (W3 — the child-block / CSS-on-content / arrays half) is **defined and teed-up but deliberately NOT built**: it needs a fresh, substantial read-and-port of the big `convert.py` walker, and Bean banked at the milestone for fresh care. Bean's instruction for next session: run `/qc-council` over the W1+W2 *built code* to catch cheats/rule-breaks, then a second `/qc-council` over the W3 *plan + functions* before building it.
-
 ## Completed This Session
-
-1. **Root-cause council → doc fixes → unified §3.** Spec 31 §3 rewritten as the UNIFIED content+CSS routing algorithm (commit `661d3357`) — the D246 keystone fix. The corrected understanding is now locked in the spec.
-2. **W1 — MODULARISED the working scalar-content lift (commit `a4c0de86`), QC'd behaviour-identical across every case.** Faithful port, no `convert.py` import, no block-slug literals, no module-global media map (passed explicitly):
-   - NEW `converter/services/lift_helpers.py` (+170) — ports `_safe_href`, `_rich_text_content`→`rich_text_content`, `_extract_star_count`→`extract_star_count`, `_resolve_media_url`→`resolve_media_url` (global `_MEDIA_MAP`→param), `_lift_scalar_media_from_img`→`scalar_media_from_img`, plus `_RICH_TEXT_INLINE_TAGS` / safe-href schemes verbatim.
-   - EXTENDED `converter/resolvers/scalar_content.py` (+152) — `lift_scalar_content(node, slug, media_map) -> dict`, the modularised `_lift_scalar_attrs_by_selector`; DB-driven (gates on the `scalar-content-lift` capability, iterates the attrs catalogue, matches per-attr `derived_selector`); absent draft elements emit no key (the working function's no-op-on-absent behaviour). The existing `resolve()` stub is left untouched — the unified-dispatch-table WIRING of this resolver is itself a noted SEPARATE follow-on (scalar_content.py:12), not done in W2.
-3. **W2 — WIRED the modularised lift into the live path + RETIRED the D245 from-scratch scalar logic (commit `57209f48`); re-LANDED live.** `run_mechanism_a` is now a thin wrapper: `lift_scalar_content(section_root, rec.slug, media_map={})` → wrap each item as a `ScalarLift`. The D245 from-scratch scalar path (`content_attrs_with_selector` iteration + `extract_payload` + bespoke object-shaping + per-attr `ContentGap`) is **dead for scalar**; `content_attrs_with_selector` is now unused. Completeness for scalar = the F2 draft-derived ledger (Spec 31 §12.2.1) + `expected_content_gaps`. `build_block_markup` unchanged. **Re-LANDED live on the canary — quote + name + avatar all render via the modularised path.**
-4. **Verified (STOP-21 recipe).** Genuine `build_block_markup()` emit byte-identical; 318 converter+ledger tests + gates green; `convert.py` byte-identical (D-MODULAR) throughout.
-5. **Kept (legit):** the `avatarMedia` role/selector migration stays — real DB data the working function consumes, not part of the superseded from-scratch engine.
-
-## W3 — DEFINED + TEED-UP, NOT BUILT (the work Bean wants `/qc-council`'d before building)
-W3 is the larger, qualitatively different remainder. The four pieces (from the W2 commit message + Bean's milestone note):
-
-1. **The child-block path — `run_mechanism_b`.** To modularise this faithfully requires reading + porting the `convert.py` **single-recursive walker / `_route_composite_interior`** (the big FR-22-3 walker) — **NOT yet read.** A meaty read-and-port on its own; this is the bulk of W3 and why Bean banked for fresh care.
-2. **`_lift_styling_attrs_by_selector`** (CSS-on-content, the "B2" path) + its 5-helper closure.
-3. **Arrays** (the "B4" path, FR-22-2.5) — was only PARTIAL even in `convert.py`.
-4. **Dead-code cleanup** — remove the now-unused `content_attrs_with_selector` accessor once nothing reads it.
-
-No W3 code is committed. The residual D245 engine in `converter/services/extraction.py` (`run_mechanism_b`, `extract_content`, `payload.py`, `content_select.py`, the unused `content_attrs_with_selector`) is the material to **repurpose/port**, NOT extend — and W3 must port FROM the working `convert.py` walker, not bless the D245 recreation.
+1. **Wrap-up of the W1+W2 milestone (committed by the prior context window).** W1 (`a4c0de86`) modularised the working scalar-content lift (`_lift_scalar_attrs_by_selector` → `converter/resolvers/scalar_content.py:lift_scalar_content` + helpers in `lift_helpers.py`); W2 (`57209f48`) wired it via the thin wrapper `run_mechanism_a` + retired the D245 from-scratch scalar path + re-LANDED live; Spec 31 §3 rewritten unified (`661d3357`). Wrote handoff.md + next-session-prompt.md (carried the full STOP-1..26 catalogue forward) + state.md (`2d2327f9`).
+2. **Ran BOTH `/qc-council` gates (6 raters, cross-model), every finding fact-checked against live code + DB (STOP-15).** No `sourceMode='bound'` / echo-`$content` / hardcoded-`!important` cheat exists — the no-cheat floor HOLDS. Results captured as Register A (W1+W2 built code) + Register B (W3 plan) in next-session-prompt.
+3. **A3 — false-green test FIXED (`afbcaa99`).** `test_extraction.py` monkeypatched `content_attrs_with_selector`, a function `run_mechanism_a` no longer calls (vacuous green). Now patches `block_attrs` + `capabilities_for`; failure-path proven (starving `capabilities_for` → `[]`). 318 converter+ledger tests green.
+4. **A1 — `media_map` seam FIXED (`afbcaa99`).** Killed the hardcoded `{}`; `media_map` now threads `build_block_markup`→`extract_content`→`run_mechanism_a`→`lift_scalar_content` (§3.B1-aligned). NO url-shape heuristic added (would be a non-DB hardcoded rule). FULL fix (images resolving to WP URLs) needs the media-map LOADER/driver — the new engine has no production caller yet — so it's folded into the W3 engine-wiring.
+5. **A2 — ruled a §12.2.1 conservation-ledger gap, NOT a lift patch (D247).** Spec 31 §3.B1 mandates the lift's strict no-op, so a per-attr `ContentGap` inside the lift would breach the spec + re-introduce a D245-style parallel tracker (STOP-25). Spec-aligned fix = extend `declare_input` to capture CONTENT routing units. Design-gated; Bean folded it into the W3 engine-wiring.
+6. **Specs + registry updated.** Spec 31 §3.B1 status note (W1/W2 done + A1 driver pending) + §12.2.1 CONTENT-LEDGER GAP note (A2); `docs-registry.yaml` `last_updated` + Spec 31 note refreshed.
 
 ## Current State
-- **Branch:** `main` (W2 `57209f48` is HEAD of this thread's work).
-- **Tests:** 318 converter+ledger pass + gate-suite green at the W2 commit.
-- **Uncommitted changes:** NONE of mine. The dirty files (`plugins/sgs-blocks/includes/lucide-icons.php`, `reports/phase4-*.txt`, `.claude/handoff-theme.md`, `.claude/next-session-prompt-theme.md`) are pre-existing and NOT mine — leave them.
-- **convert.py:** byte-identical (D-MODULAR). **D-ceiling:** D246 (W1/W2 implement D246's corrected direction — no new D-number).
+- **Branch:** `main` (this session's commits: `2d2327f9` docs wrap-up → `988d8113`/`bc04534e`/`50a5b930` council registers + roadmap → `afbcaa99` A1-seam+A3 fix → this handoff/decisions/spec/registry commit).
+- **Tests:** 318 converter+ledger pass (1 skip, 6 xfailed); F5 + F6 commit gates green.
+- **Build:** n/a (pure-Python converter changes).
+- **Uncommitted (NOT mine — leave them):** `plugins/sgs-blocks/includes/lucide-icons.php`, `reports/phase4-*.txt`, `.claude/handoff-theme.md` + `.claude/next-session-prompt-theme.md` (deletions). Pre-existing, not this session's — dropped from every commit.
+- **convert.py:** byte-identical (D-MODULAR). **D-ceiling:** D247.
 
 ## Known Issues / Blockers
-- None block the next session. W3 is designed-not-built BY INTENT — Bean wants the two `/qc-council` gates run first, and the walker-port given fresh care.
+- None block the next session. A1-full + A2 are deliberately deferred to the W3 engine-wiring (neither can bite a real clone until the engine is production-wired — `build_block_markup` has no production caller yet).
 
-## Next Priorities (in order) — Bean's explicit instruction
-1. **`/qc-council` on the W1+W2 BUILT code** (commits `a4c0de86` + `57209f48`) — did the modularisation introduce any cheats / rule-breaks (the 7 rules + R-22-* + STOP catalogue)? Did porting drop any draft content silently? Does the thin-wrapper `run_mechanism_a` preserve the working function's behaviour exactly? Is anything from the dead from-scratch path still reachable? (STOP-23 — qc-council on built code, blub 255.)
-2. **`/qc-council` on the W3 functions + plan** — before building W3, validate the plan to repurpose `run_mechanism_b` / the `convert.py` walker-interior + `_lift_styling_attrs_by_selector` + arrays against Spec 31 §1's "ONE dispatch" + the D246 architectural-completeness pre-question ("does this RECREATE something §1 already names as working?"). Confirm the `content_attrs_with_selector` deletion is safe (nothing reads it).
-3. **Build W3** only after both councils GO + Bean sign-off (Rule 7 design-gate) — starting with the walker read-and-port.
+## Next Priorities (in order)
+1. **Build W3** (only on Bean sign-off, Rule 7) — port the FULL `convert.py` walker (`_route_composite_interior`) into `run_mechanism_b` honouring Register B (B1 scalar-media + fold/CSS-route, B2 styling-lift consuming `_bp_decls`, B3 arrays port-as-is, B4 ambiguous-attr loud gap, B-order delete-dead-last). See next-session-prompt Task 3 + Register B.
+2. **Close A1-full + A2 with the engine-wiring** (post-W3 roadmap item 2): media-map loader/driver + extend `declare_input` to content routing units.
+3. **Continue the post-W3 roadmap** — generalise mechanisms to all content blocks → wire resolvers into the unified dispatch → finish §3 unified → full fixture-set gate → convert.py decommission (§8).
 
 ## Files Modified
 | File path | What changed |
 |-----------|--------------|
-| `plugins/sgs-blocks/scripts/converter/services/lift_helpers.py` | NEW — ported working content/media helpers (W1) |
-| `plugins/sgs-blocks/scripts/converter/resolvers/scalar_content.py` | EXTENDED — `lift_scalar_content` modularised lift (W1) |
-| `plugins/sgs-blocks/scripts/converter/services/extraction.py` | `run_mechanism_a` now a thin wrapper; from-scratch scalar path retired (W2) |
-| `.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md` | §3 rewritten as the unified content+CSS routing algorithm |
+| `plugins/sgs-blocks/scripts/converter/services/extraction.py` | A1 seam (media_map threaded) + honest docstring (A2) |
+| `plugins/sgs-blocks/scripts/converter/tests/test_extraction.py` | A3 false-green test repaired |
+| `.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md` | §3.B1 W1/W2 status note + §12.2.1 content-ledger gap (A2) |
+| `.claude/docs-registry.yaml` | last_updated + Spec 31 note refreshed |
+| `.claude/next-session-prompt.md` | Register A/B + post-W3 roadmap + A2 fold-in decision |
+| `.claude/handoff.md` + `.claude/state.md` + `.claude/decisions.md` | this session record + D247 |
+
+## Notes for Next Session
+- **A2 is the load-bearing ruling:** content completeness lives in the ONE conservation ledger (§12.2.1 extended to content routing units), never as a gap inside the lift (§3.B1 strict no-op). Hacking it into the lift = breaking the spec + the D246 parallel-system mistake. Memory: `content-completeness-is-a-ledger-gap-not-a-lift-patch`.
+- **A1/A2 can't bite until the engine is production-wired** — `build_block_markup` is test/canary-only; that wiring is post-W3 roadmap item 2.
+- The W3 walker port is HIGH blast-radius (Register B B1): a thinned port re-opens the hero-split image + content-CSS evaporation (D212/MF-1). Port ALL three walker branches.
+
+## Next Session Prompt
+The operative orchestration plan is already written and current at `.claude/next-session-prompt.md` — it carries the full STOP-1..26 catalogue, the pre-flight ritual, the tiered reading gate, Register A + Register B (the council must-fix registers), and the post-W3 roadmap. Skills/MCP/Agents tables are in that file. Do NOT regenerate it from scratch — it is the carry-forward-complete version (Gate 6.5). Open it and execute Task 3 (build W3) after the reading gate + Bean sign-off.
