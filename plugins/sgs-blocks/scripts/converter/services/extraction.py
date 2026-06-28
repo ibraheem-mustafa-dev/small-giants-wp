@@ -263,9 +263,12 @@ def extract_content(rec: Recognition, section_root: Any, media_map: dict | None 
         # Capability mutual exclusion: a scalar-content-lift block must NEVER enter
         # Mechanism B — guards against the D212 empty-block regression where the
         # quote attr would be emitted as a child InnerBlock the typed render ignores.
-        assert SCALAR_LIFT not in caps, (
-            "scalar-content-lift block routed to Mechanism B — D212 regression guard"
-        )
+        # raise, NOT assert: a bare `assert` is stripped under `python -O`, which would
+        # silently disable this regression guard (a Rule-4 silent-drop hole). D247.
+        if SCALAR_LIFT in caps:
+            raise ContentConservationError(
+                "scalar-content-lift block routed to Mechanism B — D212 regression guard"
+            )
         return run_mechanism_b(rec, section_root)
 
     # Third case: has_inner_blocks == 0 AND not scalar-content-lift.
