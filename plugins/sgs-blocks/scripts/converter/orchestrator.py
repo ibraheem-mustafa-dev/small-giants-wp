@@ -5,9 +5,18 @@ D-MODULAR). For the vertical slice it exposes:
 
   process_element(ctx, decls) -> ElementResult
       route each declaration through dispatch_table → REGISTRY → resolver, collect
-      Write/GAP, and enforce the step-2 oracle invariants:
-        • TOTALITY     — every declaration produced exactly one Write or GAP
-        • DISJOINTNESS — no declaration lands in two buckets (A10)
+      Write/GAP, and enforce the per-declaration-result oracle invariants:
+        • TOTALITY     — every declaration produced AT LEAST ONE routed result (a
+                         Write, a non-empty list[Write], or a GAP); none leaked into
+                         the void (a resolver returning None or []). The old
+                         ``len(writes)+len(gaps)==decl_count`` DISJOINTNESS guarantee
+                         is RETIRED: a single declaration may faithfully produce a
+                         list[Write] of >1 attribute (font-size → fontSize+fontSizeUnit;
+                         grid-template-columns → gridTemplateColumns+columns), so write
+                         count no longer equals declaration count.
+        • COLLISION    — within ONE declaration's list[Write], two writes to the SAME
+                         attr would silently lose one; a duplicate non-synthetic attr
+                         name is a HARD failure.
         • NO-UNROUTED  — a GAP(origin=UNROUTED) is a HARD failure (design §2/§3.2)
 
 The full draft walk (parse → per-node Ctx/Decl) is step-3 work; the slice constructs
@@ -57,7 +66,7 @@ class ElementResult:
 
 
 def _check_conservation(result: ElementResult) -> None:
-    """Per-declaration-result TOTALITY + NO-UNROUTED (seam decision Option A).
+    """Per-declaration-result TOTALITY + COLLISION + NO-UNROUTED.
 
     TOTALITY is no longer ``len(writes)+len(gaps) == decl_count`` — a declaration
     may legitimately produce a list[Write] of >1 attribute (Spec 31 §3.A.3 grid
@@ -66,7 +75,15 @@ def _check_conservation(result: ElementResult) -> None:
     non-empty list[Write], or a GAP) — none leaked into the void (returned None or
     an empty list). This still hard-fails a genuine leak: a resolver that returns
     None or [] for a declaration drops ``decl_results`` below ``decl_count`` and
-    trips here. GapOrigin.UNROUTED remains an independent hard failure.
+    trips here.
+
+    COLLISION: because a declaration can return MULTIPLE writes, two writes to the
+    SAME attr would silently lose one (dict last-wins in ``attrs()``). A duplicate
+    attr name across the element's writes is therefore a HARD failure — raised, never
+    asserted (STOP-27). Synthetic writes (the align_finalise post-pass) are appended
+    AFTER this check, so the writes seen here are all real per-declaration writes.
+
+    GapOrigin.UNROUTED remains an independent hard failure.
     """
     # TOTALITY: every input declaration produced ≥1 routed result (no leak).
     if result.decl_results != result.decl_count:
@@ -75,6 +92,19 @@ def _check_conservation(result: ElementResult) -> None:
             f"{result.decl_results} routed results — a declaration leaked "
             f"(a resolver returned None or an empty list for some decl). "
             f"Every declaration must produce ≥1 Write or a GAP."
+        )
+    # COLLISION: no two writes may target the same attr (silent last-wins data loss).
+    seen: set[str] = set()
+    dupes: list[str] = []
+    for w in result.writes:
+        if w.attr in seen:
+            dupes.append(w.attr)
+        seen.add(w.attr)
+    if dupes:
+        raise ConservationError(
+            f"COLLISION: duplicate attr write(s) {sorted(set(dupes))} for "
+            f"{result.block_slug} — two declarations/results target the same "
+            f"attribute, one would be silently lost (dict last-wins)."
         )
     # NO-UNROUTED: a suspected routing bug must fail loud, never be absorbed.
     bad = result.unrouted()

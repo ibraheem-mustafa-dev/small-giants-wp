@@ -112,3 +112,28 @@ def test_check_conservation_fails_on_unrouted_origin():
     r.gaps.append(GAP(origin=GapOrigin.UNROUTED, property="x", tier="Base"))
     with pytest.raises(ConservationError, match="UNROUTED"):
         _check_conservation(r)
+
+
+# ---------------------------------------------------------------------------
+# PROOF 5 (FIX 4): a one-declaration list[Write] with two writes to the SAME
+# attr is a silent-data-loss COLLISION → ConservationError (raise, not assert).
+# ---------------------------------------------------------------------------
+
+def test_collision_same_attr_two_writes_fails(conn, monkeypatch):
+    def _dup_writes(decl, ctx):
+        return [
+            Write(attr="maxWidth", value="1200px", property=decl.property, tier=decl.tier),
+            Write(attr="maxWidth", value="900px", property=decl.property, tier=decl.tier),
+        ]
+    monkeypatch.setitem(REGISTRY, "outer_box", _dup_writes)
+    with pytest.raises(ConservationError, match="COLLISION"):
+        process_element(_ctx(conn), [Decl("max-width", "1200px", "Base")])
+
+
+def test_collision_check_direct_on_element_result():
+    # Direct invariant check: two writes of the same attr in the result.
+    r = ElementResult(block_slug="sgs/container", decl_count=1, decl_results=1)
+    r.writes.append(Write("gap", 16, "gap", "Base"))
+    r.writes.append(Write("gap", 24, "gap", "Base"))
+    with pytest.raises(ConservationError, match="COLLISION"):
+        _check_conservation(r)
