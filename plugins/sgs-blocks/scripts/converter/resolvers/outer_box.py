@@ -1,13 +1,34 @@
-"""outer_box — the OUTER-layer resolver (the ONE real resolver in the slice).
+"""outer_box — the OUTER-layer resolver (Spec 31 §3.A, layer L1).
 
-Design §3: the vertical-slice property is `max-width` on a section root → OUTER layer
-→ `maxWidth` exact string literal (D230/D231), proven to LAND draft-vs-clone.
+Spec 31 §3.A routes every OUTER-layer box declaration to the block's OUTER attr via
+``db.attr_for_layer_property(block, 'OUTER', css_property)`` (step 2), re-appends the
+tier suffix (step 4), serialises by attr_type (step 5), token-snaps literals as
+identity (step 6 — max-width is a D230 exact literal), validates (step 7) and gaps
+with a reason on no destination (step 8 — never silent).
 
-SLICE SCOPE (A14 — generalisation deferred to step-3 per-resolver proof): only
-`max-width` is transferred for real. Other OUTER properties (padding/gap/background/
-align) route here too (layer==OUTER) and are returned as a TRACKED GAP
-(UNIMPLEMENTED_STUB) — honest non-transfer, accounted by conservation, never a silent
-drop — pending step-3 OUTER completion.
+Real transfers (this resolver OWNS the OUTER layer):
+  - ``max-width``  → ``maxWidth*`` (exact literal, D230/D231 — no token snap)
+  - ``min-height`` → ``minHeight*``
+  - ``gap``        → ``gap*`` (the OUTER flex/grid gap on a container)
+  - ``padding-{side}`` longhands → ``padding{Side}*`` WHEN the block declares the
+    attr (number+Unit companion as a list[Write] when the attr is numeric); else a
+    tracked NO_DESTINATION gap (e.g. sgs/container has only tier-suffixed padding
+    longhands, no base ``paddingTop`` — that is a faithful DB absence, gapped).
+
+``padding`` SHORTHAND is expanded to longhands at the pre-dispatch extraction stage
+(``fold_helpers._expand_box_shorthand``); a raw ``padding`` shorthand reaching this
+resolver means that stage was not wired for this path — gapped UNIMPLEMENTED_STUB
+naming the seam, never silently mis-transferred.
+
+``align_finalise`` (Spec 31 §3.A.3) is an ELEMENT-level post-pass the orchestrator
+calls AFTER per-declaration conservation: when an OUTER element declares NO
+``max-width`` at base and the block ``supports.align`` includes ``"full"``, it emits
+a synthetic ``align:"full"`` Write (the full-bleed default). It is appended OUTSIDE
+the conservation count (no source declaration).
+
+REUSES main's shared helpers (do NOT redefine): ``styling_helpers.split_value_unit``
+for number+unit parsing. NO block-slug literals (F5 gate); all destinations are
+DB-resolved.
 """
 from __future__ import annotations
 
@@ -16,38 +37,75 @@ from typing import Any
 from converter.models import GAP, GapOrigin, Write
 from converter.services.attr_resolve import attr_resolve
 from converter.services.gap_writer import gap_writer
+from converter.services.styling_helpers import split_value_unit
 from converter.services.tier_suffix import tier_suffix
 from converter.services.token_snap import token_snap
 from converter.services.validate import validate
 from converter.services.value_serialise import value_serialise
 
+# OUTER box CSS properties this resolver transfers (Spec 31 §3.A L1). A `padding`
+# shorthand is NOT here — it is expanded to longhands pre-dispatch; arriving raw is
+# a wiring gap (UNIMPLEMENTED_STUB), never a silent drop.
+_OUTER_TRANSFER_PROPS = frozenset({
+    "max-width", "min-height", "gap",
+    "padding-top", "padding-right", "padding-bottom", "padding-left",
+})
 
-def resolve(decl: Any, ctx: Any) -> Write | GAP:
+# Length-literal properties written verbatim (D230 — no token snap, no truncation).
+_LITERAL_PROPS = frozenset({"max-width", "min-height"})
+
+
+def _attr_is_number(ctx: Any, attr: str) -> bool:
+    # The attr_type='number' predicate is done IN SQL (returns a presence row, not a
+    # string to compare in Python) — mirrors validate.py's `row is None` idiom so the
+    # block_slug-bearing query does not taint a local that is then string-compared
+    # (the no-slug-literal carve-out gate taints any local assigned from a
+    # block_slug-bearing expression).
+    row = ctx.conn.execute(
+        "SELECT 1 FROM block_attributes "
+        "WHERE block_slug=? AND attr_name=? AND attr_type='number'",
+        (ctx.block_slug, attr),
+    ).fetchone()
+    return row is not None
+
+
+def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     prop = decl.property
 
-    # Slice scope: only max-width is a real transfer. Everything else OUTER is
-    # an honest tracked stub pending step 3 (A14).
-    if prop != "max-width":
+    # A raw `padding` shorthand should have been expanded pre-dispatch (one decl →
+    # 4 longhands). If it reaches here, the extraction stage was not wired for this
+    # path — gap it honestly, naming the seam (never a half-transfer).
+    if prop == "padding":
         return gap_writer(
             ctx, decl, GapOrigin.UNIMPLEMENTED_STUB,
-            f"outer_box slice transfers max-width only; '{prop}' pending step-3 OUTER completion",
+            "padding shorthand must be expanded to longhands by the pre-dispatch "
+            "extraction stage (fold_helpers._expand_box_shorthand); it reached "
+            "outer_box unexpanded — wire shorthand expansion at extraction",
+        )
+
+    if prop not in _OUTER_TRANSFER_PROPS:
+        return gap_writer(
+            ctx, decl, GapOrigin.UNIMPLEMENTED_STUB,
+            f"outer_box does not own OUTER property '{prop}' yet "
+            f"(transfers: {sorted(_OUTER_TRANSFER_PROPS)})",
         )
 
     # A4: a non-device-tier breakpoint has no device bucket — gap it, never coerce.
     if not decl.is_device_tier:
         return gap_writer(
             ctx, decl, GapOrigin.NO_DESTINATION,
-            f"non-device-tier breakpoint {decl.tier!r} for max-width (design §10 A4)",
+            f"non-device-tier breakpoint {decl.tier!r} for {prop} (Spec 31 §3.A A4)",
         )
 
-    # Name resolution (db_lookup), then tier suffix — fixed order (design §3.1).
-    base_attr = attr_resolve(ctx, "OUTER", "max-width")   # → 'maxWidth' for sgs/container
+    # Step 2: name resolution (per-block, DB-driven — never prefix concat).
+    base_attr = attr_resolve(ctx, "OUTER", prop)
     if base_attr is None:
         return gap_writer(
             ctx, decl, GapOrigin.NO_DESTINATION,
-            f"{ctx.block_slug} has no OUTER attr for max-width",
+            f"{ctx.block_slug} has no OUTER attr for {prop}",
         )
 
+    # Step 4: re-append the tier suffix; step 7: validate the suffixed attr exists.
     attr = tier_suffix(base_attr, decl.tier, ctx.conn)
     if not validate(ctx, attr, decl.value):
         return gap_writer(
@@ -55,6 +113,72 @@ def resolve(decl: Any, ctx: Any) -> Write | GAP:
             f"{ctx.block_slug} does not declare {attr!r} (tier {decl.tier})",
         )
 
-    # Exact literal (D230): serialise verbatim, no token snap for a length literal.
-    value = token_snap("max-width", value_serialise("string", None, decl.value), ctx.conn)
-    return Write(attr=attr, value=value, property="max-width", tier=decl.tier)
+    # Step 5: serialise by attr type. A numeric OUTER attr (e.g. a numeric gap)
+    # stores the number + a Unit companion (Spec 31 §3.A.5) — a list[Write] for the
+    # one declaration. A length-literal/string attr stores the verbatim value.
+    if _attr_is_number(ctx, attr):
+        num, unit = split_value_unit(decl.value)
+        if num is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{prop} value {decl.value!r} is not a parseable number for "
+                f"numeric attr {attr!r}",
+            )
+        num_out: int | float = int(num) if float(num).is_integer() else num
+        writes: list[Write] = [Write(attr=attr, value=num_out, property=prop, tier=decl.tier)]
+        unit_attr = f"{attr}Unit"
+        if unit and validate(ctx, unit_attr, unit):
+            writes.append(Write(attr=unit_attr, value=unit, property=prop, tier=decl.tier))
+        return writes
+
+    # String/length-literal attr: verbatim (D230 for max-width/min-height).
+    value = token_snap(prop, value_serialise("string", None, decl.value), ctx.conn)
+    return Write(attr=attr, value=value, property=prop, tier=decl.tier)
+
+
+def _block_supports_full_align(ctx: Any) -> bool:
+    """True iff the block's ``align`` support includes ``"full"`` (Spec 31 §3.A.7
+    gate — full-bleed only when the block declares it). DB-driven, no slug literal.
+
+    The ``full`` membership is done IN SQL (LIKE) so the block_slug-bearing query
+    does not taint a local that is then string-compared (no-slug-literal gate)."""
+    row = ctx.conn.execute(
+        "SELECT 1 FROM block_supports "
+        "WHERE block_slug=? AND support_name='align' "
+        "AND support_value LIKE '%full%'",
+        (ctx.block_slug,),
+    ).fetchone()
+    return row is not None
+
+
+def align_finalise(decls: list[Any], writes: list[Write], ctx: Any) -> Write | None:
+    """Element-level post-pass: emit ``align:"full"`` on max-width ABSENCE (§3.A.3).
+
+    Spec 31 §3.A.3: ``max-width`` → OUTER ``maxWidth`` (literal) WHEN PRESENT, **else
+    align:"full"**. The full-bleed default is a property of the element's CSS as a
+    WHOLE (the ABSENCE of a base-tier max-width), not of any one declaration — so it
+    cannot be a per-decl resolver output. The orchestrator calls this after per-decl
+    conservation and appends the synthetic Write OUTSIDE the conservation count.
+
+    Fires ONLY when:
+      • no base-tier ``max-width`` declaration exists for the element, AND
+      • no ``maxWidth`` Write was produced (defensive — same condition, two angles), AND
+      • this is an OUTER element (``ctx.base_layer == 'OUTER'``), AND
+      • the block ``supports.align`` includes ``"full"`` (§3.A.7 gate — this IS the
+        destination; ``align`` is a WP-NATIVE supports attribute serialised straight
+        into the block markup as ``"align":"full"``, NOT a custom block_attributes
+        row, so the §3.A.7 block_supports check is the complete §3.A.8 gate).
+    Returns the synthetic Write, or None.
+    """
+    if getattr(ctx, "base_layer", None) != "OUTER":
+        return None
+    has_base_max_width = any(
+        d.property == "max-width" and d.tier == "Base" for d in decls
+    )
+    if has_base_max_width:
+        return None
+    if any(w.attr == "maxWidth" for w in writes):
+        return None
+    if not _block_supports_full_align(ctx):
+        return None
+    return Write(attr="align", value="full", property="max-width", tier="Base")
