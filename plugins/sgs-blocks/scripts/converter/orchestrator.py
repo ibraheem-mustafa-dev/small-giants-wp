@@ -5,9 +5,18 @@ D-MODULAR). For the vertical slice it exposes:
 
   process_element(ctx, decls) -> ElementResult
       route each declaration through dispatch_table → REGISTRY → resolver, collect
-      Write/GAP, and enforce the step-2 oracle invariants:
-        • TOTALITY     — every declaration produced exactly one Write or GAP
-        • DISJOINTNESS — no declaration lands in two buckets (A10)
+      Write/GAP, and enforce the per-declaration-result oracle invariants:
+        • TOTALITY     — every declaration produced AT LEAST ONE routed result (a
+                         Write, a non-empty list[Write], or a GAP); none leaked into
+                         the void (a resolver returning None or []). The old
+                         ``len(writes)+len(gaps)==decl_count`` DISJOINTNESS guarantee
+                         is RETIRED: a single declaration may faithfully produce a
+                         list[Write] of >1 attribute (font-size → fontSize+fontSizeUnit;
+                         grid-template-columns → gridTemplateColumns+columns), so write
+                         count no longer equals declaration count.
+        • COLLISION    — within ONE declaration's list[Write], two writes to the SAME
+                         attr would silently lose one; a duplicate non-synthetic attr
+                         name is a HARD failure.
         • NO-UNROUTED  — a GAP(origin=UNROUTED) is a HARD failure (design §2/§3.2)
 
 The full draft walk (parse → per-node Ctx/Decl) is step-3 work; the slice constructs
@@ -25,7 +34,7 @@ from typing import Any
 
 from converter.dispatch_table import resolver_id
 from converter.models import GAP, GapOrigin, Write
-from converter.resolvers import REGISTRY
+from converter.resolvers import REGISTRY, outer_box
 from converter.services.layer_detect import layer_detect
 
 
@@ -39,8 +48,16 @@ class ElementResult:
     writes: list[Write] = field(default_factory=list)
     gaps: list[GAP] = field(default_factory=list)
     decl_count: int = 0
+    # Per-declaration result COUNT (each decl produced ≥1 routed result of any
+    # arity: a Write, a list[Write], or a GAP). The 2026-06-29 seam decision
+    # (Option A, Spec 31 §3.A/§12.4) widened the conservation invariant from
+    # per-write TOTALITY to per-DECLARATION-RESULT totality, because a single
+    # declaration can faithfully produce MULTIPLE attribute writes (font-size →
+    # fontSize + fontSizeUnit; grid-template-columns → gridTemplateColumns +
+    # columns) — convert.py's lifters setdefault multiple attrs per element.
+    decl_results: int = 0
 
-    def attrs(self) -> dict[str, str]:
+    def attrs(self) -> dict[str, int | float | str]:
         """The native block attribute dict the Writes produce (for emit)."""
         return {w.attr: w.value for w in self.writes}
 
@@ -49,13 +66,45 @@ class ElementResult:
 
 
 def _check_conservation(result: ElementResult) -> None:
-    # TOTALITY: every input declaration is in exactly one output bucket.
-    produced = len(result.writes) + len(result.gaps)
-    if produced != result.decl_count:
+    """Per-declaration-result TOTALITY + COLLISION + NO-UNROUTED.
+
+    TOTALITY is no longer ``len(writes)+len(gaps) == decl_count`` — a declaration
+    may legitimately produce a list[Write] of >1 attribute (Spec 31 §3.A.3 grid
+    template+count; §3.A.5/§3.B2 value+unit companion). Instead the invariant is:
+    EVERY input declaration produced AT LEAST ONE routed result (a Write, a
+    non-empty list[Write], or a GAP) — none leaked into the void (returned None or
+    an empty list). This still hard-fails a genuine leak: a resolver that returns
+    None or [] for a declaration drops ``decl_results`` below ``decl_count`` and
+    trips here.
+
+    COLLISION: because a declaration can return MULTIPLE writes, two writes to the
+    SAME attr would silently lose one (dict last-wins in ``attrs()``). A duplicate
+    attr name across the element's writes is therefore a HARD failure — raised, never
+    asserted (STOP-27). Synthetic writes (the align_finalise post-pass) are appended
+    AFTER this check, so the writes seen here are all real per-declaration writes.
+
+    GapOrigin.UNROUTED remains an independent hard failure.
+    """
+    # TOTALITY: every input declaration produced ≥1 routed result (no leak).
+    if result.decl_results != result.decl_count:
         raise ConservationError(
-            f"TOTALITY: {result.decl_count} declarations produced {produced} results "
-            f"({len(result.writes)} writes + {len(result.gaps)} gaps) — a declaration "
-            f"leaked or was double-counted."
+            f"TOTALITY: {result.decl_count} declarations produced "
+            f"{result.decl_results} routed results — a declaration leaked "
+            f"(a resolver returned None or an empty list for some decl). "
+            f"Every declaration must produce ≥1 Write or a GAP."
+        )
+    # COLLISION: no two writes may target the same attr (silent last-wins data loss).
+    seen: set[str] = set()
+    dupes: list[str] = []
+    for w in result.writes:
+        if w.attr in seen:
+            dupes.append(w.attr)
+        seen.add(w.attr)
+    if dupes:
+        raise ConservationError(
+            f"COLLISION: duplicate attr write(s) {sorted(set(dupes))} for "
+            f"{result.block_slug} — two declarations/results target the same "
+            f"attribute, one would be silently lost (dict last-wins)."
         )
     # NO-UNROUTED: a suspected routing bug must fail loud, never be absorbed.
     bad = result.unrouted()
@@ -68,7 +117,14 @@ def _check_conservation(result: ElementResult) -> None:
 
 
 def process_element(ctx: Any, decls: list[Any]) -> ElementResult:
-    """Dispatch every declaration of one element; enforce the step-2 invariants."""
+    """Dispatch every declaration of one element; enforce the seam invariants.
+
+    A resolver returns ``Write | list[Write] | GAP`` (seam decision Option A). A
+    list[Write] contributes ONE decl-result (the declaration was routed, faithfully
+    producing multiple attrs); a Write or GAP contributes ONE decl-result. A None
+    or empty-list return is a LEAK — it does not increment ``decl_results``, so
+    ``_check_conservation`` fails closed.
+    """
     # Cache the layer ONCE on the base declaration set (tier-invariance §2.1).
     if ctx.base_layer is None:
         base_decls = {d.property: d.value for d in decls if d.tier == "Base"}
@@ -83,14 +139,30 @@ def process_element(ctx: Any, decls: list[Any]) -> ElementResult:
         out = REGISTRY[rid](decl, ctx)
         if isinstance(out, Write):
             result.writes.append(out)
-        else:
+            result.decl_results += 1
+        elif isinstance(out, GAP):
             result.gaps.append(out)
+            result.decl_results += 1
+        elif isinstance(out, list) and out and all(isinstance(w, Write) for w in out):
+            # Faithful multi-attribute transfer for ONE declaration (Option A).
+            result.writes.extend(out)
+            result.decl_results += 1
+        # else: None / [] / wrong-type → a LEAK. decl_results NOT incremented;
+        # _check_conservation will raise (fail-closed, never laundered).
 
+    # Element-level post-pass (§3.A.3): outer_box.align_finalise emits a SYNTHETIC
+    # align:"full" Write on max-width ABSENCE (not tied to any single declaration),
+    # appended OUTSIDE the conservation count (it has no source declaration).
     _check_conservation(result)
+    synth = outer_box.align_finalise(decls, result.writes, ctx)
+    if synth is not None:
+        result.writes.append(synth)
     return result
 
 
-def emit_block_markup(block_slug: str, attrs: dict[str, str], inner: str = "") -> str:
+def emit_block_markup(
+    block_slug: str, attrs: dict[str, int | float | str], inner: str = ""
+) -> str:
     """Serialise a native SGS block to WP block markup (for the LANDED deploy).
 
     e.g. emit_block_markup('sgs/container', {'maxWidth': '1200px'})

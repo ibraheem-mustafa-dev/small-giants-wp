@@ -1588,6 +1588,62 @@ def breakpoint_suffix_rules() -> list[tuple[str, list[str]]]:
     return _BREAKPOINT_RULES
 
 
+@functools.lru_cache(maxsize=None)
+def modifier_suffixes(kind: str) -> tuple[str, ...]:
+    """Return the suffix vocabulary for one ``modifier_suffixes.kind`` from the DB.
+
+    R-22-1: the suffix grammar (side={Top,Right,Bottom,Left}, breakpoint=
+    {Mobile,Tablet,Desktop}, unit={Unit}, corner={TL,TR,BL,BR}, state, variant) is
+    DB-OWNED — hardcoding any of these literals in the resolvers is a violation.
+    Cached per-kind (the vocabulary is process-stable). Spec 31 §4 (modifier_suffixes
+    row) + §3.A step 4 (breakpoint) / Unit-companion derivation.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT suffix FROM modifier_suffixes WHERE kind = ? ORDER BY rowid",
+            (kind,),
+        ).fetchall()
+    finally:
+        conn.close()
+    return tuple(s for (s,) in rows)
+
+
+def unit_companion_attr(attr: str, conn: sqlite3.Connection) -> str | None:
+    """Derive the ``…Unit`` companion attr name for a (possibly tier/side-suffixed)
+    numeric attr — entirely from the DB suffix vocabulary (R-22-1, NO hardcoded
+    suffix literals).
+
+    A numeric box/typography attr stores its CSS unit on a shared companion attr:
+    the per-area padding family (``contentPaddingTop`` / ``contentPaddingRight`` /
+    ``contentPaddingTopTablet`` …) all share ONE ``contentPaddingUnit``. The
+    companion is the base name with any breakpoint suffix THEN any side suffix
+    stripped, with the DB ``unit`` suffix appended.
+
+    Derivation (all suffix sets sourced from ``modifier_suffixes`` via the
+    :func:`modifier_suffixes` accessor — no ``Top``/``Mobile``/etc. literals):
+      1. strip a trailing breakpoint suffix (``Mobile``/``Tablet``/``Desktop``);
+      2. then strip a trailing side suffix (``Top``/``Right``/``Bottom``/``Left``);
+      3. append the DB ``unit`` suffix (``Unit``).
+
+    ``conn`` is accepted for call-site symmetry with the other DB services (and to
+    keep the signature stable); the suffix vocabulary itself is read via the cached
+    module accessor. Returns ``None`` only if the DB has no ``unit`` suffix (a
+    seeding error); the caller validates the derived name against the block schema,
+    so a base that takes no unit simply fails that downstream ``validate`` check.
+    """
+    unit_suffixes = modifier_suffixes("unit")
+    if not unit_suffixes:
+        return None
+    base = attr
+    for kind in ("breakpoint", "side"):
+        for sfx in modifier_suffixes(kind):
+            if base.endswith(sfx) and len(base) > len(sfx):
+                base = base[: -len(sfx)]
+                break  # at most one suffix of each kind, longest-match irrelevant (disjoint)
+    return f"{base}{unit_suffixes[0]}"
+
+
 # ----------------------------------------------------------------------------
 # D3 — Attribute gap candidate helpers
 # ----------------------------------------------------------------------------

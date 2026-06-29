@@ -7,7 +7,8 @@ original is the **B2 fix** (qc-council D247):
   The frozen source discards ``_bp_decls`` at line ~4025, dropping responsive
   typography/colour to base-only.  This port consumes ``bp_decls`` and emits
   ``{attr}{bp_suffix}`` companion keys (e.g. ``quoteFontSizeTablet``,
-  ``quoteColourMobile``) keyed off ``_BP_SUFFIX_MAP`` + the ``property_suffixes``
+  ``quoteColourMobile``) keyed off the DB-owned breakpoint suffix vocabulary
+  (``modifier_suffixes(kind='breakpoint')``) + the ``property_suffixes``
   DB table — the EXACT pattern ``_lift_typography_to_block_attrs`` uses
   (convert.py:~1718).
 
@@ -38,24 +39,20 @@ from orchestrator.converter_v2 import db_lookup
 # ---------------------------------------------------------------------------
 
 # font-weight keyword → numeric string (render.php enum-guards '400'..'900').
-# R-22-1 named-constant exception (CSS-spec fact)
+# R-22-1 PERMITTED named-constant exception (CSS-spec fact, no DB table); do NOT
+# extend with other hardcoded sets.
 _FONT_WEIGHT_KEYWORDS: dict[str, str] = {
     "normal": "400",
     "bold": "700",
 }
 
-# Responsive suffix pairs: bp_decls key → attr suffix appended to base attr name.
-# Matches the convention used in _lift_root_supports_to_style and block.json.
-# Ported from convert.py:980.
-_BP_SUFFIX_MAP: dict[str, str] = {
-    "Tablet":  "Tablet",
-    "Mobile":  "Mobile",
-    "Desktop": "Desktop",
-}
-
-# Processing order for breakpoint passes — Desktop first so A-collapse (no
+# Processing ORDER for breakpoint passes — Desktop first so A-collapse (no
 # per-device attr) writes to the base attr before the mobile base pass can,
-# matching _lift_typography_to_block_attrs (convert.py:1721).
+# matching _lift_typography_to_block_attrs (convert.py:1721). This is an ORDERING
+# constant (Desktop→Tablet→Mobile precedence), NOT a suffix vocabulary: each entry
+# is validated against the DB-owned modifier_suffixes(kind='breakpoint') set at use
+# (R-22-1 — the suffix grammar is DB-owned; the bp_decls key IS the device suffix,
+# so the former identity _BP_SUFFIX_MAP was redundant and is removed).
 _BP_ORDER = ("Desktop", "Tablet", "Mobile")
 
 
@@ -88,8 +85,8 @@ def lift_styling_content(node: Tag, slug: str, css_rules: dict) -> dict:
     **B2 fix (D247):** the frozen source discards ``_bp_decls`` at line 4025 of
     convert.py, dropping responsive typography/colour to base-only. This port
     consumes ``bp_decls`` and emits ``{attr}{bp_suffix}`` companion keys
-    (e.g. ``quoteFontSizeTablet``) keyed off ``_BP_SUFFIX_MAP`` + the
-    ``property_suffixes`` DB table — the EXACT pattern
+    (e.g. ``quoteFontSizeTablet``) keyed off ``modifier_suffixes(kind='breakpoint')``
+    + the ``property_suffixes`` DB table — the EXACT pattern
     ``_lift_typography_to_block_attrs`` uses (convert.py:~1718). When the block
     does NOT declare a per-device companion attr (e.g. no ``quoteFontSizeDesktop``),
     the A-collapse rule applies: the Desktop bp value is written to the base attr
@@ -200,13 +197,16 @@ def lift_styling_content(node: Tag, slug: str, css_rules: dict) -> dict:
         # Mirrors _lift_typography_to_block_attrs (convert.py:1718-1748):
         # process Desktop first so A-collapse writes to base attr before
         # the mobile base pass can overwrite it.
+        # DB-owned breakpoint suffix vocabulary (R-22-1) — the bp_decls key IS the
+        # device suffix; gate each pass on DB membership rather than a hardcoded set.
+        _bp_suffixes = set(db_lookup.modifier_suffixes("breakpoint"))
         for bp_key in _BP_ORDER:
             bp_decl_map = bp_decls.get(bp_key)
             if not bp_decl_map:
                 continue
-            bp_suffix = _BP_SUFFIX_MAP.get(bp_key)
-            if not bp_suffix:
+            if bp_key not in _bp_suffixes:
                 continue
+            bp_suffix = bp_key
             bp_raw_val = bp_decl_map.get(css_property)
             if not bp_raw_val:
                 continue
