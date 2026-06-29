@@ -33,11 +33,11 @@
 - **Binding methodology rules:** `decisions.md` (search for "binding" + recent D-numbers) — DO NOT restate inline here. Spec 22 binding rules: R-22-1 through R-22-14 (R-22-14 added 2026-05-27 per D92 — no legacy fallback hacks in FR-22-6 migrations).
 - **Pipeline-state artefacts:** `specs/21-PIPELINE-STATE-ARTEFACTS.md` (mandatory read before conjecturing about pipeline failures)
 - **Doc-op canonical templates:** `~/.agents/skills/shared-references/doc-templates/`
-- **Registry:** `docs-registry.yaml` — every canonical doc is tracked there + walked by `/handoff` Gate 4.5
+- **Registry:** `docs-registry.yaml` — a plain INVENTORY of project-tracked docs. The per-entry "did it change this session" doc-walk was RETIRED 2026-06-29 (it checked modification status, not correctness). `/handoff` now updates the living docs only; doc-correctness is the on-demand `/doc-audit` (docs vs live code + DB), not a registry walk.
 
 ## Conventions
 
 - Doc shapes per template in `~/.agents/skills/shared-references/doc-templates/`
-- `/handoff` runs slug-uniqueness gate on parking.md + walks every docs-registry.yaml entry
+- `/handoff` runs slug-uniqueness gate on parking.md + reconciles the living docs (registry is an inventory, not a per-entry walk — see Registry note above; doc-correctness = on-demand `/doc-audit`)
 - **parking.md = parked work ONLY (Bean-locked 2026-06-02, D150):** entries are `OPEN | PARTIAL | BLOCKED | DEFERRED` only. The moment a task is `CLOSED | RESOLVED | DROPPED | SUPERSEDED`, MOVE it to `memory/parking-archive.md` (verbatim + completion date). Enforce every `/handoff`. Same archive-on-resolve discipline for `decisions.md` → `memory/decisions-archive.md` (retired/superseded/non-load-bearing) and `MEMORY.md` ≤ 24,576 bytes → `MEMORY-archive.md`. Prevents the doc-balloon (parking hit 1,400+ lines; MEMORY 34KB, silently dropping autoload rules).
 - Recent decisions: read `decisions.md` head (most-recent-first; D-ceiling verified via `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1`). Do NOT cache a D-summary here — it drifts (the previous D225 inline summary was 16 decisions stale by the 2026-06-23 doc audit). Key milestones: cloning CSS-transfer foundation (Phase F, F1–F6 + F5 gates) COMPLETE; convert.py FROZEN (D-MODULAR, D229); next = stage-by-stage modular rebuild (Spec 31 §12). Spec 30 (WooCommerce) COMPLETE (D220).
