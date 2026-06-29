@@ -1,57 +1,42 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-thread: cloning-pipeline
-session_date: 2026-06-28
+thread: cloning-pipeline / CSS-resolver unification
+session_date: 2026-06-29
+written_under: NEAR-EXHAUSTED CONTEXT — lean capture; a FULL /handoff hygiene pass (docscore, registry walk, D-number assignment, parking sweep, STOP-catalogue carry-forward) is OWED next session.
 ---
 
-# Session Handoff — 2026-06-28 (array universal-alignment; W3 deferred)
+# Handoff — 2026-06-29 (CSS-resolver unification merged; route-coverage UNVERIFIED)
 
-_Prior handoffs in git history (previous: D247 session-close)._
+## ⛔ NEXT SESSION TASK 1 — FACT-CHECK THIS HANDOFF + THE ROUTE COVERAGE BEFORE BUILDING
+This session repeatedly produced confident-but-unverified subagent claims (the worst: an audit that reported "9 routes" confidently and hand-waved the "17 routes" Bean asked about — conjecture, NOT verified). DO NOT trust any "covered / no-cheating / N routes" claim below or in the agent transcripts until re-checked against ground truth (dispatch_table.py + each resolver + the DB + the draft). Separate VERIFIED from UNVERIFIED on sight; treat every unlabelled claim as suspect.
 
-## Completed This Session
-1. **Verified W1/W2 done-state** (a4c0de86/57209f48/afbcaa99/661d3357) vs ground truth — scalar-content path modularised + landed; both qc-councils run; Register A resolved.
-2. **W3 walker-port design** written + Bean-approved (full-breadth); scoped the ~1,650-line transitive surface (`walk`+`route_node_css`+`_route_interior_css_to_parent_slot`+fold+emit). `.claude/plans/2026-06-28-w3-walker-port-design.md`. Build deferred (highest-blast, fresh session).
-3. **Array feature — full Path-A build (Bean: rebuild arrays correctly per spec):** DB foundation (`array-content-lift` capability + 3 item-selector fixes) → `array_content.py` resolver (slice cta-section.stats, 2 bugs caught) → 8-block rollout via 8 parallel agents → 2-rater `qc-council` (NO-GO-as-authored → gap-pending safety net) → wire-up → content extractors (url-href/icon-slug/plain-integer) → css-modifier flip. Commits b74986b0→8a7aa41f.
-4. **Universal-alignment keystone (305d5396)** — ONE shared `converter/services/field_extractors.py`; B1 (scalar) + B4 (array) both delegate (drift structurally impossible); import-ban opened to `icon_resolver` (proven still tight); Spec 31 §3.B.0 universal principle added.
-5. **Two proper visual-diff gate fixes** (no `--no-verify`) — metadata-only block.json detection + a utf-8 fix in that detector.
-6. **Docs:** `.claude/OUT-OF-SCOPE-NOTES.md` (reframed gap-list → Spec-31-stage map) + captured lesson `bind-definition-of-done-to-full-spec-scope`.
+## VERIFIED THIS SESSION (I personally ran the check — evidence noted)
+- **CSS-resolver unification MERGED to main at `311c120f`** (merge of branch unify-v2). Fast-forward was impossible (main had moved to 688788a2 via 3 docs/config commits — no converter overlap, confirmed by `git diff --name-only`); merged via `--no-ff`.
+- **176 converter tests pass** (`python -m pytest converter/tests -q --import-mode=importlib` from `plugins/sgs-blocks/scripts`, run by me on main post-merge; 1 skip, 2 xfail = the honest scalar_content/scalar_media stubs).
+- **convert.py + fold_helpers/text_leaf/button_group byte-identical** vs c3014874 (`git diff --stat` empty — I ran it). D-MODULAR held.
+- **No hardcoded side/breakpoint suffix vocab in live resolver code** (I grepped: `re.sub`/`_BP_SUFFIX_MAP`/frozenset over Top|…|Mobile — none; only docstrings).
+- **Conservation catches a planted leak** — I monkeypatched a resolver to return None → `ConservationError: TOTALITY: 1 declarations produced 0 routed results`. Proven myself, not trusted.
+- **R-22-1 hardcoded-suffix cheat fixed** (Bean caught it): `grid_area.py` regex `(Top|Right|Bottom|Left)(Mobile|Tablet|Desktop)?` → DB-driven via new `db_lookup.modifier_suffixes(kind)` + `unit_companion_attr(attr,conn)`; a 2nd violation (`styling_content._BP_SUFFIX_MAP`) also DB-driven. Suffixes confirmed DB-owned in `modifier_suffixes` (side/breakpoint/unit).
 
-## Current State
-- **Branch:** main at f2008bf8 (9 commits this session: b74986b0→f2008bf8)
-- **Tests:** 219 pass, 1 skip, 6 xfail (from `plugins/sgs-blocks/scripts`, `--import-mode=importlib`)
-- **Build:** n/a (Python converter; no npm build)
-- **Uncommitted:** none mine (pre-existing theme-handoff deletions are NOT mine)
-- **New engine INERT in production** — frozen `convert.py` runs live clones (STOP-28)
+## BUILT THIS SESSION (verified to TEST/GATE level, NOT to LANDED)
+- **The Option-A seam:** `process_element` accepts `Write|list[Write]|GAP`; conservation = per-declaration-result TOTALITY + a collision guard (duplicate-attr in one decl raises); `Write.value` widened int|float|str; `align_finalise` element hook; `Ctx.area_name` + `layer_detect` GRID_AREA branch.
+- **5 resolvers** (outer_box/content_band/grid/typography/grid_area) built REAL against main's reused helpers. scalar_media stays UNIMPLEMENTED_STUB (A11-deferred — media_signal has no DB predicate yet; the media CONTENT lift already lives in the content branch).
+- **STOP-23 3-rater qc-council** on the built code found 2 real bugs (align_finalise tier-blind → wrong align:"full" on tablet-only max-width; synthetic Write `property="max-width"` mis-keyed the F5 ledger) + should-fixes — ALL fixed + re-verified (added tests for both).
+- **Evidence gate hardened + de-bugged + committed** (4704b12 + later): covers `.py`, converter surface requires `spec=22|31` citation, ignores tool-result boundary entries; the stale `.sgs-gate-off` flag (off for ~10 days) deleted.
+- **Session-grounding fix prompt** committed (`.claude/plans/2026-06-29-cc-session-grounding-fix-PROMPT.md`) — the GAP-1 SessionStart spec-anchor hook is now LIVE (it injected this session).
 
-## Outcome vs Completion (Gate 3.5)
-- Array feature: **OUTCOME ACHIEVED** for content (text/image/icon/url/number migrate + css-modifier where unambiguous), with un-modellable fields LOUDLY tracked (Rule-4 safe). **CODE SHIPPED, OUTCOME NOT YET LIVE** — the new engine is inert; faithful clones need W3 + the CSS branch + production-wiring.
-- Universal alignment: **OUTCOME ACHIEVED** — handlers shared; per-path drift structurally closed.
+## NOT VERIFIED / SUSPECT — fact-check before relying on any of these
+- **"All 17 routes covered without cheating" — NOT ANSWERED.** The audit reported 9 resolver-ids and did NOT reconcile the 17. RE-DO: enumerate what Bean means by the 17 routes (likely the (layer/role × property-family × has_inner_blocks) routing branches, NOT the 9 REGISTRY ids), then verify EACH is covered-real / honestly-deferred / cheat, against dispatch_table.py + each resolver + the draft. The "no-cheating" partial finding is UNVERIFIED — re-confirm.
+- **`OUT-OF-SCOPE-NOTES.md` was NOT updated** (the audit subagent was killed before writing it). Still owed: map every deferral to a named Spec 31 stage.
+- **LANDED proof NOT done.** The resolvers are WRITTEN + emit-green + test-green + conservation-safe ONLY. No draft-vs-clone computed-style proof (STOP-21). This is the real "is it faithful" gate and it is OWED.
+- **Engine is NOT production-wired (STOP-28).** The resolvers don't drive a real clone yet — `build_block_markup` has no production caller. The interior-walker WIRING (the Ctx-builder that populates `area_name` + walks the draft + calls the dispatch) is the next build stage; A1 (media-map loader) + A2 (content conservation-ledger) gate production-wiring.
 
-## Known Issues / Blockers
-- **blub.db dashboard DOWN** (localhost:5050 refused) — captured lesson's blub.db layer PENDING (file layers landed); re-POST when up. Same for handoff dashboard gates 4b/4c.5.
+## NEXT BUILD STAGES (after Task 1 fact-check)
+1. **17-route coverage verdict** (re-done properly) + **finish OUT-OF-SCOPE-NOTES.md** audit.
+2. **LANDED proof** for ≥1 resolver via genuine `emit_block_markup` on a canary (STOP-21 recipe).
+3. **Interior-walker wiring** (Spec 31 §3.B3 + the Ctx-builder for area_name) — makes the resolvers reach a real clone.
+4. **A1 media-map + A2 content-ledger** before production-wiring (STOP-28 precondition).
 
-## Next Priorities (in order)
-1. **W3 walker port** — last big content piece (recursion → nested child blocks). Design ready.
-2. **CSS branch (§3.A)** — transfer attached CSS per element (the core remaining fidelity work).
-3. **Array residuals** — hero position/style enum-aware disambiguation, hero.suffix split, pricing nested/boolean/enum (all in OUT-OF-SCOPE-NOTES.md).
-4. **Production-wiring** (A1 media-map + A2 content ledger) — switches the new engine live.
-
-## Files Modified
-| File | What changed |
-|------|-------------|
-| `.../converter/services/field_extractors.py` | NEW — shared role→value dispatcher (B1+B4) |
-| `.../converter/resolvers/array_content.py` | NEW→extended — array resolver + gap-pending |
-| `.../converter/resolvers/scalar_content.py` | B1 delegates to field_extractors |
-| `.../converter/gates/import_ban.py` | allowlist += icon_resolver |
-| `.../orchestrator/converter_v2/db_lookup.py` | array_item_fields table + gap_reason + accessors |
-| `.../scripts/sgs-update-v2.py` | arrayContentLift + arrayItemSchema seeders |
-| `.../src/blocks/{9 blocks}/block.json` | arrayItemSchema + arrayContentLift |
-| `.claude/specs/31-...md` | §3.B.0 universal-extraction principle |
-| `.claude/OUT-OF-SCOPE-NOTES.md` | NEW — Spec-31-stage map |
-
-## Notes for Next Session
-- **THE captured lesson (binding):** before building any increment of a spec'd subsystem, read the WHOLE spec scope + set definition-of-done = the spec's FULL universal scope; map every deferral to a named spec STAGE, never "out of scope". `feedback_bind_done_to_full_spec_scope.md`.
-- Universal stream (Spec 31 §3) = identify → content → CSS, every element, ONE dispatch. Content half built; recursion (W3) + CSS branch + wiring remain.
-- Array role handlers are SHARED now (`field_extractors.py`) — extend THAT, never per-path.
-- convert.py FROZEN (D-MODULAR). DB changes via override channel + reseed (STOP-24).
+## CARRY-FORWARD (do NOT subtract — D101)
+The full STOP catalogue (STOP-1..29) + the pre-flight ritual + tiered reading gate live in `.claude/next-session-prompt.md` (the D247/D248 version) — it is INTACT; the next full /handoff must carry it forward verbatim + extended, never subtracted. D-ceiling was D248; **assign a D-number for the CSS-resolver unification merge (311c120f)** in the full /handoff. Branch: main. Uncommitted/not-mine: lucide-icons.php, phase4 reports, theme-handoff deletions.
