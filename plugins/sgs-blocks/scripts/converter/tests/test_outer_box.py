@@ -65,10 +65,16 @@ def test_max_width_is_written_to_maxWidth(conn):
 def test_conservation_total_and_no_unrouted(conn):
     decls = _rt_decls()
     result = process_element(_ctx(conn), decls)
-    # TOTALITY: every declaration in exactly one bucket.
-    assert len(result.writes) + len(result.gaps) == len(decls)
-    # The box props are honest stub GAPs, not silent drops.
-    assert {g.origin for g in result.gaps} == {GapOrigin.UNIMPLEMENTED_STUB}
+    # Per-declaration-result TOTALITY (seam decision Option A): every declaration
+    # produced ≥1 routed result. (writes may exceed decl_count when a decl produces
+    # a list[Write]; here it doesn't, but the invariant is decl_results==decl_count.)
+    assert result.decl_results == len(decls)
+    # The box props are honest tracked GAPs, not silent drops: padding (shorthand,
+    # pre-dispatch-expansion seam) is UNIMPLEMENTED_STUB; background-color has no
+    # OUTER attr on sgs/container so it is a faithful NO_DESTINATION.
+    assert {g.origin for g in result.gaps} == {
+        GapOrigin.UNIMPLEMENTED_STUB, GapOrigin.NO_DESTINATION
+    }
     assert result.unrouted() == []
 
 
@@ -83,10 +89,31 @@ def test_emit_produces_maxwidth_block_markup(conn):
 # ---------------------------------------------------------------------------
 
 def test_non_device_tier_max_width_is_gapped(conn):
+    # A non-device-tier max-width has no device bucket → NO_DESTINATION gap (A4),
+    # never coerced. (sgs/container supports align:full and has no BASE max-width
+    # here, so align_finalise also emits a synthetic align:"full" per §3.A.3 — the
+    # gap-behaviour under test is unaffected by that element-level post-pass.)
     decls = [Decl("max-width", "600px", "Other:(max-width: 600px)")]
     result = process_element(_ctx(conn), decls)
-    assert not result.writes
     assert result.gaps[0].origin is GapOrigin.NO_DESTINATION
+    # No maxWidth write (the decl gapped); only the synthetic full-bleed align.
+    assert not any(w.attr == "maxWidth" for w in result.writes)
+
+
+def test_align_finalise_full_on_max_width_absence(conn):
+    # Spec 31 §3.A.3: an OUTER element with NO base max-width and a block that
+    # supports align:full gets a synthetic align:"full" (full-bleed default),
+    # appended OUTSIDE the conservation count.
+    decls = [Decl("padding", "40px", "Base")]
+    result = process_element(_ctx(conn), decls)
+    assert result.attrs().get("align") == "full"
+
+
+def test_align_finalise_suppressed_when_max_width_present(conn):
+    # When a base max-width IS present (and writes maxWidth), no synthetic align.
+    result = process_element(_ctx(conn), _rt_decls())
+    assert "align" not in result.attrs()
+    assert result.attrs().get("maxWidth") == "1200px"
 
 
 # ---------------------------------------------------------------------------

@@ -1,10 +1,18 @@
-"""test_stub_metamorphic.py — the 6 stub resolvers' metamorphic tests are xfail.
+"""test_stub_metamorphic.py — the REMAINING stub resolvers' metamorphic tests xfail.
 
 Design §4 #3 / §10 A14 / cheat MF-G: a stub's metamorphic test must be
 @pytest.mark.xfail(strict=True), NEVER vacuously green — so an honest empty stub is
 distinguishable from a finished resolver, and the test flips to a real PASS (xpass →
 failure under strict) only when that stage builds real logic, forcing the test to be
 rewritten as a genuine relation.
+
+The CSS-resolver UNIFICATION (2026-06-29) built the 4 structural CSS resolvers
+(content_band, grid, grid_area, typography) against the multi-Write seam — their
+real metamorphic relations now live in their own test files
+(test_css_resolvers.py). The ONLY resolvers that REMAIN honest stubs here are the
+CSS-decl forms of scalar_content / scalar_media (the CONTENT-side B1/B2 lift is a
+separate engine — run_mechanism_a + styling_content — not a CSS-decl resolver;
+scalar_media's CSS path is A11-deferred per dispatch_table.media_signal).
 """
 from __future__ import annotations
 
@@ -15,20 +23,12 @@ import pytest
 from converter.context import Ctx, Decl
 from converter.models import GAP, GapOrigin
 from converter.resolvers import (
-    content_band,
-    grid,
-    grid_area,
     scalar_content,
     scalar_media,
-    typography,
 )
 from orchestrator.converter_v2.db_lookup import SGS_DB
 
 _STUBS = {
-    "content_band": content_band.resolve,
-    "grid": grid.resolve,
-    "grid_area": grid_area.resolve,
-    "typography": typography.resolve,
     "scalar_content": scalar_content.resolve,
     "scalar_media": scalar_media.resolve,
 }
