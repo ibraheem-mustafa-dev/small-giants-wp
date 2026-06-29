@@ -48,8 +48,16 @@ def resolve(decl: Any, ctx: Any) -> Write | GAP:
     prop = decl.property
 
     if prop not in _CONTENT_TRANSFER_PROPS:
-        # CONTENT-layer padding/margin/etc. — resolve a destination if the block has
-        # one; else an HONEST gap (e.g. container's contentBandPadding* divergence).
+        # CONTENT-layer padding/margin/etc. Check the device-tier gate FIRST (match
+        # the max-width branch + the other resolvers): a non-device-tier breakpoint
+        # gaps for the accurate reason and avoids a wasted attr_resolve DB query.
+        if not decl.is_device_tier:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"non-device-tier breakpoint {decl.tier!r} for {prop} (§3.A A4)",
+            )
+        # Resolve a destination if the block has one; else an HONEST gap (e.g.
+        # container's contentBandPadding* divergence).
         base_attr = attr_resolve(ctx, "CONTENT", prop)
         if base_attr is None:
             return gap_writer(
@@ -57,11 +65,6 @@ def resolve(decl: Any, ctx: Any) -> Write | GAP:
                 f"{ctx.block_slug} has no CONTENT-layer attr for {prop} "
                 f"(proposed_action: add attr or seed property_suffixes; "
                 f"e.g. container uses contentBandPadding* not contentPadding*)",
-            )
-        if not decl.is_device_tier:
-            return gap_writer(
-                ctx, decl, GapOrigin.NO_DESTINATION,
-                f"non-device-tier breakpoint {decl.tier!r} for {prop} (§3.A A4)",
             )
         attr = tier_suffix(base_attr, decl.tier, ctx.conn)
         if not validate(ctx, attr, decl.value):

@@ -12,7 +12,11 @@ per-property normalisation:
     value (``line-height:1.15``) writes the number with NO unit companion (render.php
     Bug-2 fix) — or the ``"unitless"`` sentinel when the block declares the unit attr.
   - ``font-weight`` → numeric STRING, normalising keywords (``bold``→``700``,
-    ``normal``→``400``) faithful to convert.py ``_FONT_WEIGHT_KEYWORDS`` (3897).
+    ``normal``→``400``) faithful to convert.py ``_FONT_WEIGHT_KEYWORDS`` (3897). This
+    keyword→numeric normalisation is INTENTIONAL, NOT a divergence bug: it matches
+    ``_lift_styling_attrs_by_selector`` (convert.py:3897) and render.php enum-guards
+    the weight to the '400'..'900' set — a raw ``'bold'`` would be REJECTED at render.
+    Do NOT "fix" this to pass the keyword through.
   - ``font-style`` / ``text-align`` → raw string (enum-typed attrs).
   - ``color`` / ``background-color`` → the BARE token slug or hex (Bug-1 fix —
     ``_extract_token_or_hex``, NOT ``_colour_value_to_style``; sgs_colour_value() in
@@ -29,6 +33,7 @@ REUSES main's shared helpers (do NOT redefine): ``styling_helpers.strip_importan
 """
 from __future__ import annotations
 
+import functools
 from typing import Any
 
 from converter.models import GAP, GapOrigin, Write
@@ -48,8 +53,12 @@ _FONT_WEIGHT_KEYWORDS: dict[str, str] = {"normal": "400", "bold": "700"}
 _COLOUR_PROPS = frozenset({"color", "background-color"})
 
 
+@functools.lru_cache(maxsize=1)
 def _typo_map() -> dict[str, tuple[str, str | None]]:
-    """{css_prop: (primary_attr, unit_attr_or_None)} from the DB (R-22-1)."""
+    """{css_prop: (primary_attr, unit_attr_or_None)} from the DB (R-22-1).
+
+    Cached (the DB map is process-stable) so resolve() does not rebuild the dict on
+    every declaration."""
     return {css: (primary, unit) for css, primary, unit in typography_css_to_attrs()}
 
 

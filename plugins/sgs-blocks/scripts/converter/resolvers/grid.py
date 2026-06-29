@@ -141,6 +141,19 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
         value = value_serialise("string", None, strip_important(decl.value).strip())
         return Write(attr=attr, value=value, property=prop, tier=decl.tier)
 
+    # align-items is NOT a GRID-resolver destination by DESIGN (D172): for
+    # container-wrapper blocks align-items routes via the OUTER VerticalAlign path
+    # (the wrapper renders `verticalAlign`, memory `converter-attr-must-match-the-
+    # attr-render-reads`), NOT the grid layer. Emit an explicit NO_DESTINATION gap
+    # naming that routing decision — a documented routing choice, never a silent stub.
+    if prop == "align-items":
+        return gap_writer(
+            ctx, decl, GapOrigin.NO_DESTINATION,
+            "align-items routes via the OUTER VerticalAlign path (D172 — wrapper "
+            "blocks render verticalAlign), not the GRID resolver; this is a "
+            "documented routing decision, not an unbuilt grid destination",
+        )
+
     # A GRID-layer property this resolver does not yet own — honest tracked stub.
     return gap_writer(
         ctx, decl, GapOrigin.UNIMPLEMENTED_STUB,
