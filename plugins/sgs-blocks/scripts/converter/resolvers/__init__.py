@@ -3,10 +3,18 @@
 The orchestrator dispatches by DATA: dispatch_table names an id, REGISTRY maps it to
 a `resolve(decl, ctx) -> Write | GAP` callable. No `if slug ==` branching anywhere.
 
-outer_box is the ONE real resolver (the slice). The other six are honest GAP-stubs
-(UNIMPLEMENTED_STUB) built one-per-stage in step 3. `excluded` and `unrouted` are
-sinks: `excluded` is an intentional non-lift (F4); `unrouted` is a suspected routing
-bug that MUST fail loud (GAP origin=UNROUTED) — never laundered into a silent gap.
+Resolver status (corrected D249 — the prior "outer_box is the ONE real resolver, the
+other six are GAP-stubs" was STALE):
+  - REAL (CSS-side):  outer_box, content_band, grid, grid_area, typography — each
+    transfers real properties to DB-resolved attrs and emits an HONEST GAP only when a
+    block declares no destination attr / a property is unowned.
+  - STUB:  scalar_content.resolve + scalar_media.resolve return UNIMPLEMENTED_STUB on
+    the CSS dispatch. (NB: the REAL scalar CONTENT lift `lift_scalar_content` lives in
+    the same module but is reachable only via the content dispatch in
+    services.extraction, NOT this REGISTRY — see §3.B1. scalar_media is unbuilt; its
+    `media_signal` predicate raises by design, A11.)
+  - SINKS:  `excluded` is an intentional non-lift (F4); `unrouted` is a suspected
+    routing bug that MUST fail loud (GAP origin=UNROUTED) — never laundered to a silent gap.
 """
 from __future__ import annotations
 

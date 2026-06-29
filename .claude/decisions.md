@@ -6,6 +6,17 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-29 — D249: CSS-resolver unification merged to main (311c120f) + FACT-CHECKED before any further build (the merge's coverage claims were unverified)
+
+**D249 — Task 1 fact-check of the 2026-06-29 unification merge (`311c120f`, branch unify-v2 → main; HEAD now `8018ac15`). The prior session merged the Option-A seam + 5 CSS resolvers but ran out of context and produced confident-but-unverified "covers N routes / no-cheating" claims (worst: a 9-routes audit that hand-waved Bean's "17"). Every load-bearing claim re-verified by me at file:line + DB (STOP-30); two cross-model cheat/route subagents corroborated.**
+
+- **HEADLINE (Finding A, verified):** the engine is TWO disconnected, INERT subsystems, not the unified §3 dispatch. `process_element` (CSS spine, `converter/orchestrator.py`) has ZERO production callers; `build_block_markup` (content emit, `extraction.py:392`) has ZERO production callers AND never calls `process_element`. So wrapper/box/grid CSS (L1–L4) has no path to a real clone — every resolver is WRITTEN, never LANDED. The frozen `convert.py` remains the live conductor (D-MODULAR). The unification + interior-walker wiring is the NEXT build (the keystone), not done.
+- **Resolvers (Finding B, verified):** 5 are REAL (outer_box/content_band/grid/grid_area/typography); `scalar_content.resolve` (REGISTRY) + `scalar_media` are stubs while the REAL `lift_scalar_content` lives content-side only; `resolvers/__init__.py` docstring ("6 GAP-stubs") is STALE.
+- **"DB-data gaps" (Finding C, verified):** mostly mapping bugs, not missing data — `contentBandPadding*` attrs EXIST (name-divergence: `attr_for_layer_property` resolves nothing for CONTENT padding); grid_area FIX-A = honest DB-absence; `slots.standalone_block` 40/103 confirmed; `media_signal` intentionally deferred (A11). The DB is sound; /sgs-update is deterministic — the gaps are code hardcoding instead of reading + an unseeded mapping row.
+- **Cheat sweep (Finding D, verified):** LIVE emit path CLEAN of banned cheats. Violations: #1 `_TIER_SUFFIX` hardcoded suffix vocab (`tier_suffix.py:19`, LIVE/reachable, R-22-1) — same class Bean caught last session; #2/#3 `_BP_SUFFIX_MAP` + side-suffix regex (`fold_helpers.py`, dead-ported); #4 className BEM mirror-emit (`text_leaf.py:239`, CHEAT but QUARANTINED — no live importer). Gate blind-spot: `no_slug_literal`/`import_ban` detect neither className-mirror nor suffix-vocab dicts.
+- **"17 routes" — RESOLVED vs Spec 31:** Spec 31 defines NO "17 routes" (grep-confirmed). Completeness is the §5 coverage matrix + §12.2.1 ledger, not a route count. The "17" framing is dropped.
+- **Build decision (Bean-approved):** Wire + LAND. Task 2 remediations (DB-source `_TIER_SUFFIX`; purge className-mirror AND extend gates — Bean chose BOTH; fix stale docstring; fix contentBandPadding mapping) → Task 3 keystone interior-walker wiring + CSS↔content unification (design-gated) → Task 4 LANDED proof. Plan: `~/.claude/plans/go-declarative-lerdorf.md`. D-CEILING now D249. convert.py byte-identical (D-MODULAR).
+
 ## 2026-06-28 — D248: array path rebuilt Path-A data-driven (Spec 31 §3.B4/FR-22-2.5) + UNIVERSAL ALIGNMENT (shared field-extractor library) + Spec 31 §3.B.0 universal-extraction principle + STOP-29
 
 **D248 — Bean-directed detour from W3: rebuild the ARRAY path correctly per spec (not chop it), then make the per-element extraction UNIVERSAL. Built on `main` (b74986b0→f2008bf8).**
