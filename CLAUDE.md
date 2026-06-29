@@ -139,6 +139,10 @@ Full rules: [`.claude/specs/00-naming-conventions.md`](.claude/specs/00-naming-c
 | DB query | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` |
 | Session close | `/handoff` |
 
+## Session workflow
+
+**This project defaults to PLAN MODE** (`.claude/settings.json` `permissions.defaultMode: "plan"`, set 2026-06-29). Every session starts read-only — investigate + get an approved plan before editing. This is deliberate (the cause-agnostic grounding floor that kills the cold-start doom-loop), NOT a bug; Shift+Tab exits for trivial turns. If it doesn't fire on startup (Windows bug #34509), set the VS Code extension's permission mode instead. The SessionStart hook `~/.claude/hooks/session-spec-anchor.py` also injects the governing spec pointer + next action each session. Rationale: `~/.claude/rules/prove-the-cause-before-fix.md` + the 2026-06-29 session-grounding work.
+
 ## Git workflow
 
 **Before every commit/push:** run `git branch --show-current` and verify branch matches scope.
