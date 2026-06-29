@@ -33,11 +33,19 @@ class GapOrigin(str, enum.Enum):
 
 @dataclass(frozen=True)
 class Write:
-    """A declaration that transferred to a native attribute."""
-    attr: str          # the (tier-suffixed) block attribute, e.g. 'maxWidth' / 'maxWidthTablet'
-    value: str         # the serialised value written
-    property: str      # source CSS property (for the ledger/coverage join)
-    tier: str          # Base|Mobile|Tablet|Desktop|Other:<cond>
+    """A declaration that transferred to a native attribute.
+
+    `value` is `int | float | str` (widened from `str` per the 2026-06-29 seam
+    decision Option A, grounded in Spec 31 §3.A.5): number attrs (fontSize,
+    columns, lineHeight-unitless) store numerics faithful to convert.py's lifters.
+    emit_block_markup serialises via json.dumps so a numeric value renders unquoted
+    in the block comment, matching the native block schema (number attrs are JSON
+    numbers).
+    """
+    attr: str                  # the (tier-suffixed) block attribute, e.g. 'maxWidth' / 'maxWidthTablet'
+    value: int | float | str   # the serialised value written (numeric for number attrs)
+    property: str              # source CSS property (for the ledger/coverage join)
+    tier: str                  # Base|Mobile|Tablet|Desktop|Other:<cond>
 
 
 @dataclass(frozen=True)

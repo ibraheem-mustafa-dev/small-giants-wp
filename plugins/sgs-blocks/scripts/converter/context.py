@@ -49,6 +49,14 @@ class Ctx:
     is_root: bool
     base_layer: str | None       # cached by layer_detect (§2.1)
     conn: sqlite3.Connection
+    # The named grid-area this element occupies in its PARENT's grid-template-areas
+    # (Spec 31 §3.A L4 — D207 grid-per-area dissolve). Set by the Ctx-builder when
+    # the element's BEM token ∈ the parent grid's area names (reuse
+    # fold_helpers.grid_item_areas); read by the grid_area resolver to route the
+    # element's box CSS onto the owning block's <areaName>+<suffix> attrs. None for
+    # a non-grid-area element. Has a default so existing positional Ctx(...) callers
+    # (tests, slice) are unaffected.
+    area_name: str | None = None
 
 
 @dataclass(frozen=True)
