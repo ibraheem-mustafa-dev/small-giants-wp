@@ -236,7 +236,11 @@ def route_text_leaf(
             allow_max_width=True,
         )
 
-    attrs["className"] = " ".join(sgs_classes)
+    # className-mirror PURGED (D249, R-22-15 / 7-rules #1 CONVERT-don't-mirror): a
+    # native converted block carries its identity via its block NAME, never the draft's
+    # BEM element classes. Re-emitting `sgs_classes` onto className was the mirror cheat
+    # (now caught statically by the Check #9 converter-source gate). `sgs_classes` is
+    # still consumed above for target detection — input use only, not an output mirror.
 
     if trace is not None:
         trace(

@@ -92,6 +92,7 @@ _check_bp_mod = _load_sibling("check_parallel_bp")
 _check_d2_mod = _load_sibling("check_d2_when_d1")
 _check_sentinel_mod = _load_sibling("check_sentinel")
 _check_bound_mod = _load_sibling("check_bound_emit")
+_check_convsrc_mod = _load_sibling("check_converter_source")
 
 Violation = _models_mod.Violation
 
@@ -158,11 +159,12 @@ _CHECK_LABELS = {
     "d2_when_d1":        "Check #6 — D2-stranded property with D1 destination",
     "sentinel":          "Check #7 — 'unitless' sentinel leakage",
     "bound_emit":        "Check #8 — static sourceMode='bound' emit in source (commit-time mirror tripwire)",
+    "converter_source":  "Check #9 — static source cheats in converter/ (className-mirror / suffix-vocab dict / side-regex)",
 }
 
 _CHECK_ORDER = (
     "slug_literal", "hardcoded_dict", "important_render",
-    "parallel_bp", "d2_when_d1", "sentinel", "bound_emit",
+    "parallel_bp", "d2_when_d1", "sentinel", "bound_emit", "converter_source",
 )
 
 
@@ -291,6 +293,10 @@ def main() -> int:
 
         # Check #8 — static sourceMode='bound' emit (commit-time mirror tripwire)
         violations.extend(_check_bound_mod.run())
+
+        # Check #9 — static source cheats in the new converter/ tree (className-mirror,
+        # suffix-vocab dict, side-suffix regex). Empty baseline after the D249 purge.
+        violations.extend(_check_convsrc_mod.run())
 
     finally:
         if conn is not None:

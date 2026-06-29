@@ -69,6 +69,16 @@ def sentinel_key(file: str, context: str) -> str:
     return f"sentinel:{file}:{context}"
 
 
+def converter_source_key(kind: str, file: str, symbol: str) -> str:
+    """Check #9 stable dedup key — static source cheat in the new converter/ tree.
+
+    kind ∈ {'classname', 'suffix_dict', 'side_regex'}. Keyed by kind + file + symbol
+    (NOT line) so the key survives line shifts — the converter/ tree is actively edited,
+    unlike the empty-baseline bound-emit case. After the D249 purge this check ships an
+    EMPTY baseline (a pure tripwire for re-introduction)."""
+    return f"convsrc:{kind}:{file}:{symbol}"
+
+
 def bound_emit_key(file: str, line: int) -> str:
     """Check #8 stable dedup key — static sourceMode='bound' emit in converter source.
 

@@ -57,6 +57,7 @@ def _bootstrap() -> None:
         "check_d2_when_d1",
         "check_sentinel",
         "check_bound_emit",
+        "check_converter_source",
     ):
         mod_id = f"cheat_gate.{name}"
         if mod_id in sys.modules:
@@ -80,6 +81,7 @@ from cheat_gate.models import (  # noqa: E402
     d2_when_d1_key,
     sentinel_key,
     bound_emit_key,
+    converter_source_key,
 )
 from cheat_gate import (  # noqa: E402
     check_slug_literals,
@@ -89,6 +91,7 @@ from cheat_gate import (  # noqa: E402
     check_d2_when_d1,
     check_sentinel,
     check_bound_emit,
+    check_converter_source,
 )
 
 # ---------------------------------------------------------------------------
@@ -98,6 +101,44 @@ from cheat_gate import (  # noqa: E402
 _DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 _DB_AVAILABLE = _DB_PATH.exists()
 _skip_no_db = pytest.mark.skipif(not _DB_AVAILABLE, reason="sgs-framework.db not found")
+
+
+# ===========================================================================
+# Check #9 (converter_source) — className-mirror / suffix-vocab dict / side-regex
+# ===========================================================================
+
+class TestCheck9ConverterSource:
+    """Static source-cheat gate over the new converter/ tree (D249)."""
+
+    def test_key_format(self):
+        assert converter_source_key("classname", "services/text_leaf.py", "className") == (
+            "convsrc:classname:services/text_leaf.py:className"
+        )
+
+    @_skip_no_db
+    def test_fires_on_all_three_cheat_kinds(self, tmp_path):
+        (tmp_path / "p.py").write_text(textwrap.dedent('''
+            import re
+            attrs = {}
+            attrs["className"] = " ".join(sgs_classes)        # (a) mirror
+            _TIER = {"Mobile": "Mobile", "Tablet": "Tablet"}  # (b) suffix dict
+            x = re.sub(r"(Top|Right|Bottom|Left)$", "", a)    # (c) side regex
+        ''').strip(), encoding="utf-8")
+        kinds = {v.key.split(":")[1] for v in check_converter_source.run(converter_dir=tmp_path)}
+        assert {"classname", "suffix_dict", "side_regex"} <= kinds
+
+    @_skip_no_db
+    def test_clean_and_docstring_quote_pass(self, tmp_path):
+        # A docstring that merely QUOTES the (Top|Right|Bottom|Left) pattern, a className
+        # READ, and a non-suffix dict must NOT fire (precision guard).
+        (tmp_path / "ok.py").write_text(textwrap.dedent('''
+            def f(node):
+                """Strip a side suffix (Top|Right|Bottom|Left) via the DB vocabulary."""
+                cn = node.get("className", "")
+                m = {"normal": "400", "bold": "700"}
+                return cn, m
+        ''').strip(), encoding="utf-8")
+        assert check_converter_source.run(converter_dir=tmp_path) == []
 
 
 # ===========================================================================

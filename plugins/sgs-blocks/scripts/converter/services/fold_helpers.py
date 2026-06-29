@@ -34,6 +34,8 @@ from typing import Any
 
 from bs4 import Tag
 
+from orchestrator.converter_v2.db_lookup import modifier_suffixes
+
 from orchestrator.converter_v2 import db_lookup
 from converter.services.styling_helpers import (
     collect_css_decls_for_element,
@@ -62,13 +64,20 @@ _BOX_CSS_FAMILIES: frozenset[str] = frozenset({
     "min-height",
 })
 
-# Responsive suffix pairs: bp_decls key -> attr suffix appended to base attr name.
-# (convert.py:980 — verbatim copy)
-_BP_SUFFIX_MAP: dict[str, str] = {
-    "Tablet":  "Tablet",
-    "Mobile":  "Mobile",
-    "Desktop": "Desktop",
-}
+# Breakpoint + side suffix grammar is DB-OWNED (R-22-1 / Spec 31 §4 / §7a.4 — D249).
+# The former hardcoded `_BP_SUFFIX_MAP` identity dict (convert.py:980 verbatim copy)
+# and the inline `(Top|Right|Bottom|Left)` regexes were the live-class R-22-1 violation;
+# both now read the vocabulary from db_lookup.modifier_suffixes (cached).
+
+
+def _strip_side_suffix(attr: str) -> str:
+    """Strip a trailing side suffix (Top/Right/Bottom/Left) from an attr name using the
+    DB-owned `side` vocabulary (R-22-1 — was a hardcoded `(Top|Right|Bottom|Left)$`
+    regex). Used to derive the shared `…Unit` companion attr name (Spec 31 §4)."""
+    sides = modifier_suffixes("side")
+    if not sides:
+        return attr
+    return re.sub(r"(" + "|".join(re.escape(s) for s in sides) + r")$", "", attr)
 
 # var() resolver regex (convert.py:382 — verbatim copy)
 _VAR_RE = re.compile(r"^var\(\s*(--[\w-]+)\s*(?:,\s*([^)]*))?\s*\)$", re.IGNORECASE)
@@ -350,7 +359,7 @@ def route_area_css_to_block_attrs(
                 if _mw_num is not None:
                     _mw_store: int | float | str = int(_mw_num) if float(_mw_num).is_integer() else _mw_num
                     parent_attrs.setdefault(_mw_per_slot_attr, _mw_store)
-                    _mw_unit_attr = re.sub(r"(Top|Right|Bottom|Left)$", "", _mw_per_slot_attr) + "Unit"
+                    _mw_unit_attr = _strip_side_suffix(_mw_per_slot_attr) + "Unit"
                     if _mw_unit and _mw_unit_attr in block_attr_names:
                         parent_attrs.setdefault(_mw_unit_attr, _mw_unit)
                     trace("cross_node_css_lifted", owning_block=owning_block,
@@ -398,7 +407,7 @@ def route_area_css_to_block_attrs(
         ]
         _attr_meta = block_attr_names.get(attr_base) or {}
         _is_number = (_attr_meta.get("attr_type") == "number")
-        _family_unit_attr = re.sub(r"(Top|Right|Bottom|Left)$", "", attr_base) + "Unit"
+        _family_unit_attr = _strip_side_suffix(attr_base) + "Unit"
         for tier_suffix, value in tier_values:
             if value is None:
                 continue
@@ -572,7 +581,9 @@ def route_interior_css_to_parent_slot(
         _lift_decl(css_prop, value, bp_suffix=None)
 
     for bp_key, bp_decl_map in bp_decls.items():
-        bp_sfx = _BP_SUFFIX_MAP.get(bp_key)
+        # DB-owned breakpoint suffix vocabulary (R-22-1 / Spec 31 §4 — was _BP_SUFFIX_MAP,
+        # an identity map; the suffix IS the tier name for a valid device tier).
+        bp_sfx = bp_key if bp_key in modifier_suffixes("breakpoint") else None
         if not bp_sfx or not bp_decl_map:
             continue
         for css_prop, value in bp_decl_map.items():
