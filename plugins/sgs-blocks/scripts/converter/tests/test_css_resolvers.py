@@ -197,3 +197,34 @@ def test_grid_area_tier_suffix(conn):
     assert "contentPaddingTopTablet" in attrs
     # Unit companion only on Base tier.
     assert not any(a.endswith("Unit") for a in attrs)
+
+
+# ---------------------------------------------------------------------------
+# R-22-1 DB-driven Unit-companion derivation (replaces the hardcoded
+# re.sub(r"(Top|Right|Bottom|Left)(Mobile|Tablet|Desktop)?$") at grid_area:119).
+# The side + breakpoint + unit suffix grammar is DB-OWNED (modifier_suffixes).
+# ---------------------------------------------------------------------------
+
+def test_unit_companion_attr_strips_side_and_breakpoint_via_db(conn):
+    from orchestrator.converter_v2.db_lookup import unit_companion_attr
+
+    # base + side                → strip side, append Unit
+    assert unit_companion_attr("contentPaddingTop", conn) == "contentPaddingUnit"
+    # base + side + breakpoint   → strip both, append Unit (the family shares ONE Unit)
+    assert unit_companion_attr("contentPaddingTopTablet", conn) == "contentPaddingUnit"
+    assert unit_companion_attr("contentPaddingRightMobile", conn) == "contentPaddingUnit"
+    # bare numeric (no side/breakpoint) → append Unit only
+    assert unit_companion_attr("gap", conn) == "gapUnit"
+
+
+def test_grid_area_unit_companion_resolves_via_db_path(conn):
+    # End-to-end: contentPaddingTop (a side-suffixed numeric per-area attr) resolves
+    # its shared Unit companion to contentPaddingUnit through the DB-driven helper —
+    # identical output to the pre-fix regex path (behaviour unchanged).
+    out = grid_area.resolve(
+        Decl("padding-bottom", "24px", "Base"),
+        _ctx(conn, slug="sgs/hero", layer="GRID_AREA", area="content"),
+    )
+    pairs = {(w.attr, w.value) for w in out}
+    assert ("contentPaddingBottom", 24) in pairs
+    assert ("contentPaddingUnit", "px") in pairs

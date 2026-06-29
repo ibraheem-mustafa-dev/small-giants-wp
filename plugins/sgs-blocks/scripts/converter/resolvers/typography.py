@@ -48,6 +48,11 @@ from converter.services.validate import validate
 from orchestrator.converter_v2.db_lookup import typography_css_to_attrs
 
 # font-weight keyword → numeric string (faithful port of convert.py:3897).
+# R-22-1 PERMITTED named-constant exception (same class as SKIP_TOP_LEVEL_TAGS):
+# these are CSS-spec facts (the two keyword font-weights), NOT SGS per-block data, so
+# there is no DB table to source them from. render.php enum-guards the weight to the
+# '400'..'900' set, so a raw 'bold' would be REJECTED at render — this normalisation
+# is REQUIRED, not a divergence. Do NOT extend this dict with other hardcoded sets.
 _FONT_WEIGHT_KEYWORDS: dict[str, str] = {"normal": "400", "bold": "700"}
 # Colour properties whose value is a bare slug/hex (Bug-1 path).
 _COLOUR_PROPS = frozenset({"color", "background-color"})
