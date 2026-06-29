@@ -30,6 +30,7 @@ REUSES main's shared helpers: ``styling_helpers.split_value_unit``,
 """
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from converter.models import GAP, GapOrigin, Write
@@ -115,8 +116,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
         writes: list[Write] = [Write(attr=attr, value=num_out, property=prop, tier=decl.tier)]
         # The per-area padding family shares ONE Unit attr (e.g. contentPaddingUnit) —
         # strip the side + tier to derive it (faithful to convert.py:2353).
-        import re as _re
-        unit_base = _re.sub(r"(Top|Right|Bottom|Left)(Mobile|Tablet|Desktop)?$", "", attr)
+        unit_base = re.sub(r"(Top|Right|Bottom|Left)(Mobile|Tablet|Desktop)?$", "", attr)
         unit_attr = f"{unit_base}Unit"
         if unit and decl.tier == "Base" and validate(ctx, unit_attr, unit):
             writes.append(Write(attr=unit_attr, value=unit, property=prop, tier=decl.tier))

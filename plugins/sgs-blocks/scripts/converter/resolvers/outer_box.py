@@ -126,8 +126,10 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             )
         num_out: int | float = int(num) if float(num).is_integer() else num
         writes: list[Write] = [Write(attr=attr, value=num_out, property=prop, tier=decl.tier)]
-        unit_attr = f"{attr}Unit"
-        if unit and validate(ctx, unit_attr, unit):
+        # Unit companion: derive from the BASE attr (not the tier-suffixed name) and
+        # write ONLY alongside the Base tier — matching typography.py / grid_area.py.
+        unit_attr = f"{base_attr}Unit"
+        if unit and decl.tier == "Base" and validate(ctx, unit_attr, unit):
             writes.append(Write(attr=unit_attr, value=unit, property=prop, tier=decl.tier))
         return writes
 
@@ -161,24 +163,34 @@ def align_finalise(decls: list[Any], writes: list[Write], ctx: Any) -> Write | N
     conservation and appends the synthetic Write OUTSIDE the conservation count.
 
     Fires ONLY when:
-      • no base-tier ``max-width`` declaration exists for the element, AND
-      • no ``maxWidth`` Write was produced (defensive — same condition, two angles), AND
+      • NO ``max-width`` declaration exists for the element at ANY tier (a tablet- or
+        mobile-only ``max-width`` still suppresses full-bleed — the element is NOT
+        full at every viewport, so emitting ``align:"full"`` would be wrong), AND
+      • no max-width Write was produced at ANY tier (``maxWidth``/``maxWidthTablet``/
+        ``maxWidthMobile`` — defensive, keyed on the source property), AND
       • this is an OUTER element (``ctx.base_layer == 'OUTER'``), AND
       • the block ``supports.align`` includes ``"full"`` (§3.A.7 gate — this IS the
         destination; ``align`` is a WP-NATIVE supports attribute serialised straight
         into the block markup as ``"align":"full"``, NOT a custom block_attributes
         row, so the §3.A.7 block_supports check is the complete §3.A.8 gate).
+
+    The synthetic Write carries the sentinel ``property="__align_finalise__"`` (NOT
+    ``"max-width"``): it has no source declaration, so keying it on a real CSS
+    property mis-joins the F5 coverage/conservation ledger (D240). The sentinel keeps
+    the ledger join honest.
     Returns the synthetic Write, or None.
     """
     if getattr(ctx, "base_layer", None) != "OUTER":
         return None
-    has_base_max_width = any(
-        d.property == "max-width" and d.tier == "Base" for d in decls
-    )
-    if has_base_max_width:
+    # Tier-blind: a max-width at ANY tier means the element is capped somewhere, so it
+    # is not an unconditional full-bleed — suppress the synthetic align:"full".
+    has_max_width = any(d.property == "max-width" for d in decls)
+    if has_max_width:
         return None
-    if any(w.attr == "maxWidth" for w in writes):
+    # Defensive (same condition, by Write): any maxWidth* Write came from a max-width
+    # declaration — key on the source property so maxWidthTablet/Mobile also count.
+    if any(w.property == "max-width" for w in writes):
         return None
     if not _block_supports_full_align(ctx):
         return None
-    return Write(attr="align", value="full", property="max-width", tier="Base")
+    return Write(attr="align", value="full", property="__align_finalise__", tier="Base")

@@ -44,7 +44,12 @@ class Write:
     """
     attr: str                  # the (tier-suffixed) block attribute, e.g. 'maxWidth' / 'maxWidthTablet'
     value: int | float | str   # the serialised value written (numeric for number attrs)
-    property: str              # source CSS property (for the ledger/coverage join)
+    property: str              # source CSS property (for the ledger/coverage join).
+                               # SYNTHETIC writes that have no source declaration (the
+                               # element-level align_finalise post-pass) carry a
+                               # SENTINEL property (e.g. '__align_finalise__') instead
+                               # of a real CSS property, so the F5 ledger join (D240)
+                               # does not mis-key them onto a real declaration.
     tier: str                  # Base|Mobile|Tablet|Desktop|Other:<cond>
 
 

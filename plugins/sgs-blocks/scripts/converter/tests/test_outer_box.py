@@ -116,6 +116,30 @@ def test_align_finalise_suppressed_when_max_width_present(conn):
     assert result.attrs().get("maxWidth") == "1200px"
 
 
+def test_align_finalise_suppressed_by_tablet_only_max_width(conn):
+    # FIX 1 (tier-blind absence): a max-width that exists ONLY at the Tablet tier
+    # (no Base max-width) must STILL suppress the synthetic align:"full" — the
+    # element is capped at tablet, so it is NOT an unconditional full-bleed. The
+    # pre-fix Base-only absence test wrongly emitted align:"full" here.
+    decls = [
+        Decl("padding", "40px", "Base"),
+        Decl("max-width", "900px", "Tablet"),
+    ]
+    result = process_element(_ctx(conn), decls)
+    assert result.attrs().get("align") != "full"
+    assert "align" not in result.attrs()
+
+
+def test_align_finalise_synthetic_write_carries_sentinel_property(conn):
+    # FIX 2: the synthetic align write must carry the sentinel property
+    # '__align_finalise__' (not 'max-width'), so the F5 ledger join does not
+    # mis-key it onto a real declaration (D240).
+    decls = [Decl("padding", "40px", "Base")]
+    result = process_element(_ctx(conn), decls)
+    synth = [w for w in result.writes if w.attr == "align"]
+    assert synth and synth[0].property == "__align_finalise__"
+
+
 # ---------------------------------------------------------------------------
 # Real metamorphic relations on outer_box (design §4 #3)
 # ---------------------------------------------------------------------------
