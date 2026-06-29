@@ -13,7 +13,7 @@ Invoke `/autopilot` before anything else.
 ## ⛔ READ FIRST + the carry-forward (D101 — do NOT subtract)
 - `.claude/handoff.md` (2026-06-29) — the VERIFIED-vs-UNVERIFIED split. Trust only what's labelled verified-with-evidence.
 - **CARRY FORWARD the full STOP catalogue (STOP-1..29) + the pre-flight self-attestation ritual + the tiered MANDATORY READING GATE** from the PRIOR next-session-prompt — recover verbatim via `git show <prior-commit>:.claude/next-session-prompt.md` (the D247/D248 version) and re-merge them into this doc as your FIRST hygiene act. D101 forbids subtraction; this version was written under exhausted context and points to them rather than reproducing 29 verbatim. NEW STOP this session: **STOP-30 — a subagent's "covered / N routes / no-cheating" verdict is a HYPOTHESIS; the 9-routes audit confidently conflated REGISTRY-ids with routes + hand-waved the 17. Re-enumerate + verify against ground truth; never relay a count you didn't derive.** Also: a worktree dispatched via `isolation:worktree` may branch from a STALE base — always `git merge-base main <branch>` before trusting/merging a worktree's "all green".
-- `.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md` — read §3 (the unified content+CSS routing algorithm) + §12 (the rebuild stages + §12.7 gap-to-stage map) IN FULL (Bean's instruction — not greps).
+- `.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md` — read all of the spec document from start to finish. Regarding the tasks we have this session, these sections are especially important - §3 (the unified content+CSS routing algorithm) + §12 (the rebuild stages + §12.7 gap-to-stage map) IN FULL (Bean's instruction — not greps).
 
 ## VERIFIED state (last session, evidence in handoff.md)
 CSS-resolver UNIFICATION merged to main **311c120f**: Option-A seam (per-decl `Write|list[Write]|GAP`, per-declaration TOTALITY + collision guard, `Write.value` int|float|str, `align_finalise` hook, `Ctx.area_name` + `layer_detect` GRID_AREA) + 5 resolvers (outer_box/content_band/grid/typography/grid_area; scalar_media A11-deferred). 176 converter tests pass; convert.py byte-identical (D-MODULAR); no hardcoded suffix vocab (the R-22-1 cheat Bean caught is DB-driven via `modifier_suffixes`); conservation catches a planted leak. Engine still INERT (STOP-28 — `build_block_markup` has no production caller).
@@ -26,7 +26,13 @@ CSS-resolver UNIFICATION merged to main **311c120f**: Option-A seam (per-decl `W
 
 **1c — OUT-OF-SCOPE-NOTES.md** was NEVER written last session (the agent was killed). Audit every deferral: is it JUSTIFIED (a real named Spec 31 stage) or conjecture/avoidable? Map each to its stage (padding-shorthand pre-dispatch expansion; FIX-A; scalar_media A11; content_band DB-routing; align-items→OUTER/VerticalAlign D172; interior-walker wiring; A1 media-map; A2 content-ledger). Then DECIDE what to build next.
 
-## BUILD STAGES (only AFTER Task 1 + Bean sign-off)
+## AFTER TASK 1 — what to do next (Tasks 2-6, each GATED on Task 1's findings + Bean sign-off)
+Task 1 is fact-finding; it DECIDES the rest. Once it's done + Bean signs off, proceed IN ORDER (each gated by the prior landing):
+- **Task 2 - REMEDIATE Task-1 findings.** Fix any cheat/rule-break the sweep found (file:line). Seed any GENUINE DB-data gap (a real `wp-blocks dump`-confirmed missing row, NOT a routing bug) via the `ATTR_CLASSIFICATION_OVERRIDES` channel + a dated migration + full `/sgs-update` reseed (STOP-24 — never a hardcoded dict/manual edit). Close or justify each OUT-OF-SCOPE deferral against its named Spec 31 stage.
+- **Tasks 3-5 = the build stages below**, in order.
+- **Task 6 - GENERALISE + DECOMMISSION convert.py** (Spec 31 Section 8 trigger): once the multi-shape fixture set is TRANSFER-and-LAND green across all draft composites, DELETE the frozen convert.py. That is the proof the rebuild is complete. END-GOAL = the universal pipeline: any SGS-BEM draft becomes faithful native SGS blocks on the real homepage, zero cheats, Bean as QC only.
+
+### Build stages (Tasks 3-5, in order; only AFTER Task 1 + Task 2 + Bean sign-off)
 1. **LANDED proof** for ≥1 resolver via genuine `emit_block_markup` on a canary (STOP-21 recipe) — resolvers are WRITTEN, not LANDED; this is the real faithfulness gate.
 2. **Interior-walker wiring** (Spec 31 §3.B3 + the Ctx-builder that populates `area_name` + walks the draft + drives the dispatch) — makes the resolvers reach a real clone.
 3. **A1 (media-map loader) + A2 (content conservation-ledger)** — STOP-28 preconditions before production-wiring.
