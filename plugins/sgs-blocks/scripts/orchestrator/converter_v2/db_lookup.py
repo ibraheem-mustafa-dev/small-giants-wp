@@ -22,6 +22,7 @@ The architecture matches Spec 15 §3 (Convention Layer) + §4 (Mapping Layer).
 from __future__ import annotations
 
 import functools
+import json
 import re
 import sqlite3
 from pathlib import Path
@@ -3595,6 +3596,63 @@ def content_role_for_slot(block_slug: str, slot: str) -> str | None:
     _trace("db_lookup_miss", lookup="content_role_for_slot",
            block_slug=block_slug, slot=slot)
     return None
+
+
+def accepts_allowed_blocks(block_slug: str) -> list[str] | None:
+    """Return the parent's allowed child-block list, or None for "no restriction".
+
+    Spec 31 §3.B3(3) / Axis-3 child-routing: the VALIDATION gate for child-block
+    CONTENT resolution. A resolved child block MUST be in this list, else the child
+    is a flagged GAP (never silently dropped, never a per-block carve-out, R-22-9).
+
+    Three-state contract (the G3 NULL case the design names explicitly):
+      - ``None``  — ``block_composition.accepts_allowed_blocks`` is NULL/absent:
+                    the parent declares NO restriction → caller emits the child
+                    UNCONDITIONALLY (skip validation, do NOT fail). NULL != [].
+      - ``[]``    — an explicit empty list: NO children allowed.
+      - ``[...]`` — the allow-list (e.g. ``["sgs/accordion-item"]``); membership
+                    is required.
+
+    The column stores a JSON string. A malformed value traces + returns None
+    (lenient — the validation step skips rather than crashing a clone; mirrors the
+    existing accessors' fail-soft-with-trace pattern).
+
+    R-22-1: pure DB read, no per-slug branch. Used by the interior walker (Stage 4f).
+    """
+    if not block_slug:
+        return None
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT accepts_allowed_blocks FROM block_composition "
+            "WHERE block_slug = ? LIMIT 1",
+            (block_slug,),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        _trace("db_lookup_miss", lookup="accepts_allowed_blocks",
+               block_slug=block_slug, reason="operational_error")
+        return None
+    finally:
+        conn.close()
+
+    if not row or row[0] is None or str(row[0]).strip() == "":
+        _trace("db_lookup_miss", lookup="accepts_allowed_blocks",
+               block_slug=block_slug, reason="null_no_restriction")
+        return None  # NULL = no restriction (distinct from [] = allow nothing)
+    try:
+        parsed = json.loads(row[0])
+    except (ValueError, TypeError):
+        _trace("db_lookup_miss", lookup="accepts_allowed_blocks",
+               block_slug=block_slug, reason="malformed_json")
+        return None
+    if not isinstance(parsed, list):
+        _trace("db_lookup_miss", lookup="accepts_allowed_blocks",
+               block_slug=block_slug, reason="not_a_list")
+        return None
+    result = [str(x) for x in parsed]
+    _trace("db_lookup_hit", lookup="accepts_allowed_blocks",
+           block_slug=block_slug, count=len(result))
+    return result
 
 
 @functools.lru_cache(maxsize=256)
