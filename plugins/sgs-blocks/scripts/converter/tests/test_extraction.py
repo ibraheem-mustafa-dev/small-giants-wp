@@ -272,14 +272,24 @@ def test_mech_b_scalar_media_column_emits_scalar_lift(monkeypatch):
 
 
 def test_mech_b_scalar_media_mobile_modifier_appends_Mobile(monkeypatch):
-    """Branch A mobile path: an <img> with BEM modifier '--mobile' picks base_attr+'Mobile'."""
+    """Branch A mobile path: an <img> with BEM modifier '--mobile' picks base_attr+'Mobile'.
+
+    Regression guard (W3 LANDED proof, 2026-06-30): breakpoint_suffix_rules() is
+    mocked with the REAL DB shape ``[(media_condition, [tier_marker, ...])]`` —
+    the media CONDITION first, the tier MARKERS second. The prior mock used the
+    INVERTED shape ``[("Mobile", ["Mobile"]), ...]`` which let the buggy
+    _mobile_suffixes() (testing the first element == 'Mobile') pass while the real
+    DB (condition first) silently returned an empty set → mobile image dropped.
+    """
     import orchestrator.converter_v2.db_lookup as db
 
     monkeypatch.setattr(db, "is_class_section_block", lambda s: True)
     monkeypatch.setattr(db, "scalar_media_attr_for",
                         lambda slug, elem: "splitImage" if elem == "split-image" else None)
+    # REAL DB shape: (media_condition, [tier_markers]).
     monkeypatch.setattr(db, "breakpoint_suffix_rules",
-                        lambda: [("Mobile", ["Mobile"]), ("Desktop", ["Desktop"])])
+                        lambda: [("min-width: 768", ["Tablet", "Desktop"]),
+                                 ("max-width: 767", ["Mobile"])])
 
     html = (
         '<section class="sgs-hero sgs-hero--split">'
@@ -299,6 +309,40 @@ def test_mech_b_scalar_media_mobile_modifier_appends_Mobile(monkeypatch):
     assert scalar_lifts[0].attr == "splitImageMobile", (
         f"Expected attr='splitImageMobile', got {scalar_lifts[0].attr!r}"
     )
+
+
+def test_mech_b_scalar_media_dual_art_direction_keeps_both(monkeypatch):
+    """Art-directed dual <img> (--mobile + --desktop) must emit BOTH splitImage AND
+    splitImageMobile — the W3 LANDED-proof bug was both collapsing onto splitImage
+    (the desktop image winning by source order) because _mobile_suffixes() was empty.
+    """
+    import orchestrator.converter_v2.db_lookup as db
+
+    monkeypatch.setattr(db, "is_class_section_block", lambda s: True)
+    monkeypatch.setattr(db, "scalar_media_attr_for",
+                        lambda slug, elem: "splitImage" if elem == "split-image" else None)
+    monkeypatch.setattr(db, "breakpoint_suffix_rules",
+                        lambda: [("min-width: 768", ["Tablet", "Desktop"]),
+                                 ("max-width: 767", ["Mobile"])])
+
+    html = (
+        '<section class="sgs-hero sgs-hero--split">'
+        '  <div class="sgs-hero__split-image">'
+        '    <img class="sgs-hero__split-image--mobile" src="/hero-mob.jpg" alt="Mobile" />'
+        '    <img class="sgs-hero__split-image--desktop" src="/hero-desk.webp" alt="Desktop" />'
+        '  </div>'
+        '</section>'
+    )
+    root = _node(html)
+    rec = _stub_rec("sgs/hero")
+
+    results = run_mechanism_b(rec, root)
+    by_attr = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
+
+    assert "splitImage" in by_attr, f"desktop image dropped; got {list(by_attr)}"
+    assert "splitImageMobile" in by_attr, f"mobile image dropped; got {list(by_attr)}"
+    assert by_attr["splitImage"]["url"] == "/hero-desk.webp"
+    assert by_attr["splitImageMobile"]["url"] == "/hero-mob.jpg"
 
 
 def test_mech_b_scalar_media_no_img_emits_content_gap(monkeypatch):

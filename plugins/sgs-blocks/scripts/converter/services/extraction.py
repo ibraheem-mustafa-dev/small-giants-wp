@@ -144,8 +144,21 @@ def _mobile_suffixes() -> frozenset[str]:
 
     Ported from convert.py:4178-4187 (_route_composite_interior preamble).
     Uses db_lookup.breakpoint_suffix_rules() — no hardcoded suffix dict (R-22-1).
-    The DB returns [(marker, [suffixes])] where 'Mobile' is one marker.
-    We collect every suffix whose marker equals 'Mobile' (case-exact).
+
+    SHAPE (verified against the live DB, 2026-06-30): breakpoint_suffix_rules()
+    returns ``[(media_condition, [tier_marker, ...]), ...]`` — the FIRST tuple
+    element is the @media CONDITION (e.g. ``'max-width: 767'``), the SECOND is
+    the list of tier MARKERS (e.g. ``['Mobile']`` or ``['Tablet', 'Desktop']``).
+    We therefore flatten the SECOND element and collect every marker that IS
+    'Mobile' — exactly the ``_is_mobile_modifier`` semantics of the working
+    convert.py oracle (sfx == 'Mobile').
+
+    PRIOR BUG (fixed 2026-06-30, W3 LANDED proof): this iterated as
+    ``for marker, suffixes in bp_rules: if marker == 'Mobile'`` — testing the
+    media CONDITION against 'Mobile', which NEVER matches, so the set was always
+    empty and ``is_mobile`` was always False.  That collapsed both art-directed
+    images (``--mobile`` + ``--desktop``) onto the base ``splitImage`` attr
+    (desktop wins by source order), silently dropping ``splitImageMobile``.
 
     Returns a frozenset of lowercase suffix strings so callers can do:
         ``img_modifier.lower() in _mobile_suffixes()``
@@ -155,10 +168,10 @@ def _mobile_suffixes() -> frozenset[str]:
     except Exception:  # noqa: BLE001 — soft-fail; DB unavailable during tests
         return frozenset()
     mobile: set[str] = set()
-    for marker, suffixes in bp_rules:
-        if marker == "Mobile":
-            for sfx in suffixes:
-                mobile.add(sfx.lower())
+    for _media_condition, tier_markers in bp_rules:
+        for marker in tier_markers:
+            if marker == "Mobile":
+                mobile.add(marker.lower())
     return frozenset(mobile)
 
 
