@@ -3,7 +3,7 @@ doc_type: next-session-prompt
 project: small-giants-wp
 thread: cloning-pipeline / Phase W3 — interior-walker wiring + CSS↔content unification
 generated: 2026-06-30
-primary_goal: "Execute Phase W3 (Spec 31 §12.6 step-3): connect the two inert halves of the converter so wrapper CSS + content reach a real clone, draft-faithful. Start at W3 Step 1 — the design-gate council (G1–G5 disposition) + Bean sign-off — BEFORE any W3 code (Rule 7 / A14). Full 12-step plan: `.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md`."
+primary_goal: "W3 Steps 1–7 BUILT this session (D250): walker port + CSS↔content unification conductor + grid fix + native-style/box-shadow/§5 fixes — the two inert halves now connect. EVERYTHING IS WRITTEN, NOTHING IS LANDED. Next = the LANDED proof (Step 10, the real faithfulness gate, STOP-21) + A1 media-map + A2 ledger (Steps 8–9, STOP-28 preconditions) + the §5 lift-path + the broader base-selector !important sweep. Plan: `.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md`; D250 in decisions.md."
 ---
 
 # Next session — Phase W3 (the keystone: wire the engine + LAND it)
@@ -12,7 +12,7 @@ Invoke `/autopilot` before anything else.
 
 **Agent identity.** You are the SGS cloning-pipeline engineer executing Phase W3 — the step that turns the converter from tested-but-inert parts into a live engine that converts an SGS-BEM draft into faithful native SGS blocks on the real homepage, zero cheats.
 
-**State recap (plain English).** The new modular converter (`plugins/sgs-blocks/scripts/converter/`) has all its parts built + tested but they are INERT and DISCONNECTED — the CSS spine (`process_element` + 5 resolvers) and the content emit (`build_block_markup`/`extract_content`) both have ZERO production callers and don't call each other (verified D249, Finding A). The frozen `convert.py` still runs every live clone (D-MODULAR). W3 builds the top-level conductor that walks a draft node, drives BOTH halves into ONE emitted block, and LANDS it on a canary. The architecture is already specified (Spec 31 §3/§12.6/§12.7 + Register B); W3 is execution, gated per-stage.
+**State recap (plain English).** W3 Steps 1–7 are BUILT (D250, this session): `run_mechanism_b` is now the faithful `_route_composite_interior` walker port (Step 4), and `build_block_markup`'s `_build_css_attrs` (Step 7) drives BOTH `process_element` (CSS — incl. the new `root_supports.py` native-`style.*` lift + `outer_box` background-*/box-shadow) AND `extract_content` (content) into ONE emit. Finding A is fixed — the two halves connect; `process_element` has a production caller. BUT it is all WRITTEN, not LANDED: the new engine is still INERT in production (frozen `convert.py` runs every live clone, STOP-28), and nothing has been computed-style-verified on a real page. The §5 properties are SEEDED (Fix 3) but not LIFTED. A `/adversarial-council` this session corrected 2 phantom over-claims (the "padding/background/radius dropped" was BS — they emit via native `style.*`); the four-channel-check rule (memory + blub #373) is the fix. Next = LANDED proof (Step 10) + A1/A2 (Steps 8–9) + §5 lift-path + the base-selector !important sweep.
 
 ---
 
@@ -75,26 +75,23 @@ Invoke `/autopilot` before anything else.
 - **STOP-29 — BIND DEFINITION-OF-DONE TO THE SPEC'S FULL SCOPE; never ship a minimum increment and call the rest "out of scope".** Read the subsystem's COMPLETE spec section first; set done = the spec's FULL universal scope; map every not-built part to a named spec STAGE (or a data-model item). The universal stream = identify → migrate content → transfer attached CSS, for EVERY element, ONE dispatch.
 - **STOP-30 — A subagent's "covered / N routes / no-cheating" verdict is a HYPOTHESIS; the 9-routes audit confidently conflated REGISTRY-ids with routes + hand-waved the 17. Re-enumerate + verify against ground truth; never relay a count you didn't derive.** Also: a worktree dispatched via `isolation:worktree` may branch from a STALE base — always `git merge-base main <branch>` before trusting/merging a worktree's "all green".
 - **STOP-31 (NEW, D249) — A commit-blocking static gate must be scoped to the cheat's ACTUAL syntactic context (e.g. a side-suffix regex flagged ONLY inside `re.*` call args), NOT all string constants — else it false-positives on docstrings/prose that quote the pattern.** Plant-test every new gate (it FIRES on each real cheat kind) AND verify it stays SILENT on a docstring that merely quotes the cheat, BEFORE wiring it. Caught in QC this session: Check #9 (`check_converter_source.py`) flagged its own docstring; fixed by scoping the side-regex detector to `re.*` calls + `visit_Call`.
+- **STOP-32 (NEW, D250) — FOUR-CHANNEL CHECK before claiming a CSS property is "dropped / not routed / unbuilt".** A property has a destination if ANY of FOUR channels is positive — check ALL before declaring a gap: (a) WP native `supports` in `block.json` → the `style.*` path (padding/background-color/border-radius land via WP core, NO custom attr), (b) custom block attributes, (c) the wrapper render (`class-sgs-container-wrapper.php`), (d) the spec's declared destination (Spec 31 §2 line 81 + `property_suffixes`). A gap is real ONLY after all four are negative. I claimed "a clone DROPS padding/background/radius — not universal" after checking ONLY `block_attributes` — BS: `convert.py._lift_root_supports_to_style` emits them via native `style.*`. This was the SECOND phantom over-claim in one session (the "17 routes" was the first). Also: the INERT new engine ≠ the LIVE `convert.py` pipeline — say "the new engine hasn't ported X yet", never "a clone drops X". A 5-persona `/adversarial-council` Bean forced caught it. Memory `four-channel-check-before-claiming-a-property-is-not-routed` + blub #373.
 
 ---
 
 ## W3 ORCHESTRATION PLAN
-Full 12-step detail (16-field step blocks, QA gates, KJCs, pre-written prompts): **`.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md`**. Execute in order; each step's `Marker`/`Deps`/`Prompt` are in the plan. Summary:
+**Steps 1–7 DONE this session (D250) — see handoff.md.** Full 12-step detail: **`.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md`**. The REMAINING work (start here):
 
 | Step | What | Execution | /qc gate after | Acceptance |
 |------|------|-----------|----------------|------------|
-| 1 | DESIGN-GATE council + G1–G5 disposition + Bean sign-off | inline Opus + /qc-council | — (this IS the gate) | every G1–G5 row labelled DONE-BY-PORT/CLOSE-IN-W3/DEFER; Bean signs |
-| 2 | Port the 5 styling helpers | Sonnet via /subagent-driven-development | QA Gate A | helpers convert.py-faithful, tested |
-| 3 | Port `_lift_styling_attrs_by_selector` + `_bp_decls` + wire | Sonnet | QA Gate A | responsive typography/colour LANDS in tests |
-| 4 | Port the FULL `_route_composite_interior` walker (B1, 3 branches) | **inline Opus** (HIGH-risk) | QA Gate B | hero split image + slug-None content CSS route (no evaporation) |
-| 5 | Arrays port-as-is + TODO (B3) | Sonnet | QA Gate B | array lift convert.py-faithful, no slug literals |
-| 6 | B4 ambiguous-attr → loud ContentGap | Sonnet | QA Gate B | ambiguous emit is tracked, not silent |
-| 7 | **KEYSTONE** — conductor unifies CSS+content into ONE emit | **inline Opus** | QA Gate C | `process_element` gets a production caller; both halves connected |
-| 8 | A1 media-map loader | Sonnet | QA Gate C | srcs remap to WP URLs on a wired run |
-| 9 | A2 content-conservation ledger (`declare_input` → content units) | inline Opus + Sonnet | QA Gate C | a dropped content node shows UNACCOUNTED |
-| 10 | **LANDED proof** on a canary (hero split, 375/768/1440) | inline Opus + Playwright | — | computed-style matches draft; Bean signs (R-22-13) |
+| ~~1–7~~ | ✅ DONE (walker port + conductor unification + grid fix + Fix 1/2/3 + cheat fixes) | — | — | committed `bf1922b3`→`1b3d108c`, 267 tests, 6 gates green |
+| **10** | **LANDED proof** on a canary (hero split, 375/768/1440) — THE real faithfulness gate; everything is WRITTEN not LANDED | **inline Opus** + Playwright/chrome-devtools | — | computed-style matches draft; Bean signs (R-22-13, STOP-21). Creds `.claude/secrets/sandybrown.env` |
+| 8 | A1 media-map loader (image srcs → WP URLs) | Sonnet | QA Gate C | srcs remap on a wired run (STOP-28 precondition) |
+| 9 | A2 content-conservation ledger (`declare_input` → content units) | inline Opus + Sonnet | QA Gate C | a dropped content node shows UNACCOUNTED (STOP-28 precondition) |
+| NEW-a | **§5 lift-path** — make the seeded §5 props (object-fit/position/overflow/etc.) actually lift to their destinations | Sonnet | QA + coverage gate | seeded props COVER instead of UNACCOUNTED; baseline shrinks |
+| NEW-b | **base-selector `!important` sweep** — ~30 now accurately flagged across blocks; assess each (real cheat → fix via specificity / variant-scope; legit WP-override → exclude) | Sonnet + inline judgement | cheat-gate Check #3 | base-selector !important on faithful props removed or justified |
 | 11 | Delete dead `content_attrs_with_selector` (grep 0 readers, STOP-11) | Sonnet | — | 0 readers, suite green |
-| 12 | Commit (split per R-22-5) + D-number + /handoff | inline | — | main carries W3; handoff written |
+| 12 | Commit (split per R-22-5) + D-number + /handoff | inline | — | main carries the work |
 
 **Dependency graph:**
 ```

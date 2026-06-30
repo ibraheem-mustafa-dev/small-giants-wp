@@ -1,52 +1,57 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-thread: cloning-pipeline / D249 fact-check + remediation + W3 plan
+thread: cloning-pipeline / Phase W3 BUILT + all-routes fixes
 session_date: 2026-06-30
 ---
 
 # Session Handoff — 2026-06-30
 
 ## Completed This Session
-1. **FACT-CHECKED the merged CSS-resolver unification (D249)** — verified every claim from the `311c120f` merge at file:line + DB myself (STOP-30); two cross-model subagents corroborated. **Headline (Finding A):** the engine is TWO disconnected, INERT halves — `process_element` (CSS spine) + `build_block_markup` (content emit) both have ZERO production callers and never call each other; wrapper CSS has no path to a clone (WRITTEN, never LANDED). Frozen `convert.py` still runs every live clone.
-2. **Resolver/DB findings verified:** 5 CSS resolvers REAL (outer_box/content_band/grid/grid_area/typography); `scalar_content.resolve` + `scalar_media` are stubs; the `__init__.py` "6 GAP-stubs" docstring was STALE. `contentBandPadding*` attrs EXIST (name-divergence mapping bug, not missing data). `slots.standalone_block` 40/103 confirmed. "17 routes" has NO basis in Spec 31 (grep-confirmed) — dropped in favour of the §5 matrix + §12.2.1 ledger.
-3. **Cheat sweep verified:** LIVE emit path clean of all banned cheats. Violations were 1 live R-22-1 (`_TIER_SUFFIX`) + dead-ported className-mirror (`text_leaf.py`) + suffix dicts (`fold_helpers.py`).
-4. **D249 pt.1 (`6f96e36a`):** DB-sourced `_TIER_SUFFIX` (Spec 31 §4) + fixed stale docstring + hygiene (D249 logged, OUT-OF-SCOPE-NOTES rewritten reality-first per Bean, state.md pointer).
-5. **D249 pt.2 (`1dc6d26f`):** purged the quarantined className-mirror + DB-sourced the dead `fold_helpers` suffix dicts, AND armed a NEW Check #9 (`cheat-gate/check_converter_source.py`) — static AST gate over the converter/ tree (className-writes + suffix-vocab dicts + side-regex), DB-sourced vocab, plant-tested, false-positive-fixed in QC.
-6. **W3 phase-plan written (`cb6b4b64`):** `.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md` — executable 12-step plan for the keystone (wire both halves into one emit + faithful walker port + LANDED proof).
+1. **W3 Step 1 design-gate + sign-off** (`bf1922b3`) — G1–G5 disposition verified against the working `_route_composite_interior` walker. G1/G2/G4/G5 DONE-BY-PORT; G3 built (Bean override: `accepts_allowed_blocks` validation, NULL→permissive+trace). Steps 2–3 found already done (D247).
+2. **W3 Step 4 walker port** (`9498f3a7`) — faithful port of the FULL `_route_composite_interior` into `run_mechanism_b` (scalar-media column, content-block recurse, slug-None fold, G1 parent-token, G3). Replaced the thinned D245 recreation. 185 tests.
+3. **W3 Step 7 KEYSTONE conductor** (`46d93612`) — `build_block_markup` now runs BOTH `process_element` (CSS, via new `_build_css_attrs`) AND `extract_content` into ONE emit. **Finding A fixed** — the two inert halves connect; `process_element` has a production caller.
+4. **Grid-routing all-routes fix** (`625d4ba6`) — `grid-template-*` route PRE-LAYER to the grid resolver (a section root is OUTER for box CSS, GRID for child tracks). `gridTemplateColumns` lands.
+5. **`/adversarial-council` (Bean-forced) corrected 2 phantom over-claims** — the "padding/background/radius dropped" claim was BS: convert.py `_lift_root_supports_to_style` emits them via native WP `style.*` + WP core lands them; I'd measured only `block_attributes`. Root-cause rule captured (four-channel check, blub #373).
+6. **Fix 1 native `style.*` lift port** (`fa8418c8`) — `root_supports.py`: padding/background-color/border-radius now emit nested `style.*` (verified by smoke test).
+7. **Fix 2 box-shadow** (`a3608bac`) — → the `shadow` preset attr via DB-first token-snap to `design_tokens` (sm/md/lg/glow; honest gap on no match).
+8. **Fix 3 §5 seeds** (`fa8418c8`) — 20 `property_suffixes` rows (object-fit/position/overflow/aspect-ratio/etc.), idempotent, §9 Q5 data-only. + background-* lift + a **pre-existing `validate.py` enum-parse bug** fixed.
+9. **Cheats FIXED not baselined** (`1b3d108c`) — mega-menu `!important` (real cheat) → raised specificity (behaviour-preserving, visual-diff PASS); container `!important` verified NOT a cheat (variant-scoped). **Check #3 made selector-aware** → removed 43 false-flagged variant `!important` (baseline 118→75).
 
 ## Current State
-- **Branch:** main at dc428046 (pushed) — incl. the handoff-doc + working-tree-drift cleanup commits
-- **Tests:** 176 converter pass (1 skip, 2 xfail) + 45 cheat-gate pass
-- **Build:** n/a (Python converter; no npm build this session). convert.py byte-identical (D-MODULAR).
-- **Uncommitted changes:** none of mine. Pre-existing not-mine: `lucide-icons.php`, phase4 reports, theme-handoff deletions (`.claude/handoff-theme.md`, `next-session-prompt-theme.md`).
+- **Branch:** main at 1b3d108c (pushed)
+- **Tests:** 267 pass (converter + cheat-gate), 1 skip, 2 xfail; all 6 commit gates exit 0
+- **Build:** Python converter (no npm needed for converter). One npm build ran (PowerShell) to regenerate mega-menu/container build CSS.
+- **Uncommitted changes:** none of mine (`lucide-icons.php` = npm-regen timestamp drift, not mine). convert.py byte-identical (D-MODULAR).
 
 ## Known Issues / Blockers
-- The new converter engine is INERT — nothing LANDS until W3 (Task Step 7 unification). Live clones still run through frozen `convert.py`. This is by-design mid-rebuild, NOT a regression.
+- New engine still INERT in production (frozen `convert.py` runs live clones — STOP-28). NOT yet LANDED on a real page (Step 10 owed — the real faithfulness gate).
+- §5 properties are SEEDED (data) but not LIFTED yet — they show as tracked gaps until the lift-path is built.
 
 ## Next Priorities (in order)
-1. **Execute W3 Step 1 — design-gate council + G1–G5 disposition + Bean sign-off** (the per-stage gate Spec 31 §12.6 A14 / Rule 7 mandates) before any W3 code.
-2. **W3 Steps 2–6** — port the working `convert.py` interior walker into the new engine (styling-lift+`_bp_decls`, full 3-branch walker, arrays, ambiguous-attr gap) — dispatched Sonnet per the plan's prompts.
-3. **W3 Step 7 (keystone) + 8–9** — the conductor unifying CSS+content into one emit, then A1 media-map + A2 content-ledger.
-4. **W3 Step 10 — LANDED proof** on a canary (hero `split`), draft-vs-clone at 3 breakpoints, Bean signs off.
+1. **LANDED proof (W3 Step 10)** — deploy a genuine `emit_block_markup` clone to a canary (hero split), computed-style vs draft at 375/768/1440 + Bean eye (STOP-21). The real "is it faithful" gate — everything is WRITTEN, nothing LANDED.
+2. **A1 media-map loader + A2 content-ledger** (W3 Steps 8–9) — STOP-28 preconditions before production-wiring.
+3. **§5 lift-path** — make the seeded §5 properties actually lift (each → its destination); shrinks the coverage baseline.
+4. **Broader base-selector `!important` sweep** — ~30 now accurately flagged across blocks; each needs assessment (real cheat vs legit WP-default override).
 
 ## Files Modified
 | File path | What changed |
 |-----------|--------------|
-| `plugins/sgs-blocks/scripts/converter/services/tier_suffix.py` | DB-source `_TIER_SUFFIX` via `modifier_suffixes` (R-22-1) |
-| `plugins/sgs-blocks/scripts/converter/resolvers/__init__.py` | corrected stale resolver-status docstring |
-| `plugins/sgs-blocks/scripts/converter/services/text_leaf.py` | purged className BEM mirror-emit |
-| `plugins/sgs-blocks/scripts/converter/services/fold_helpers.py` | DB-source `_BP_SUFFIX_MAP` + side-regexes (`_strip_side_suffix`) |
-| `plugins/sgs-blocks/scripts/cheat-gate/check_converter_source.py` | NEW Check #9 static source-cheat gate |
-| `plugins/sgs-blocks/scripts/cheat-gate/{run.py,models.py,tests/test_cheat_gate.py}` | register + key + tests for Check #9 |
-| `.claude/{decisions.md,state.md,OUT-OF-SCOPE-NOTES.md}` | D249 + reality-first OUT-OF-SCOPE rewrite |
-| `.claude/plans/2026-06-30-phase-W3-...md` | NEW W3 phase-plan |
+| `plugins/sgs-blocks/scripts/converter/services/extraction.py` | run_mechanism_b walker port (Step 4) + _build_css_attrs conductor (Step 7) |
+| `plugins/sgs-blocks/scripts/converter/services/root_supports.py` | NEW — native style.* lift port (Fix 1) |
+| `plugins/sgs-blocks/scripts/converter/dispatch_table.py` | grid-template-* pre-layer routing |
+| `plugins/sgs-blocks/scripts/converter/resolvers/outer_box.py` | background-* + box-shadow lift (Fix 2) |
+| `plugins/sgs-blocks/scripts/converter/services/validate.py` | enum_values JSON-parse bug fix |
+| `plugins/sgs-blocks/scripts/migrations/2026-06-30-*.py` | NEW — §5 property_suffixes seeds (Fix 3) |
+| `plugins/sgs-blocks/scripts/cheat-gate/check_important_render.py` | Check #3 selector-aware (variant-scope skip) |
+| `plugins/sgs-blocks/src/blocks/mega-menu/style.css` | !important → specificity (real cheat fix) |
+| `.claude/{decisions.md,handoff.md,next-session-prompt.md,state.md}` | D250 + handoff |
 
 ## Notes for Next Session
-- **Register A + B** (the W3 port spec) live verbatim in the prior next-session-prompt: `git show 71a7fbad:.claude/next-session-prompt.md`. The W3 plan is grounded in them + the fact-check's CSS-unification addition.
-- **Check #9 is commit-blocking** — if it fires on a NEW className-write or suffix-dict during W3, that's the gate working; DB-source it (don't baseline). It ships EMPTY baseline (pure tripwire).
-- **The walker port (W3 Step 4) is HIGH-risk** — a thinned port makes the hero split image evaporate (Register B B1). Keep it inline-Opus; roll back fast on regression (STOP #19).
-- **CLAUDE.md "LIVE cloning plan" pointer** still references the 2026-06-09 plan — update it to the W3 plan when W3 starts.
+- **The four-channel check** (memory + blub #373) — never claim a property is "not routed/dropped" until ALL four destination channels are negative (native supports→style.*, custom attrs, wrapper render, spec). I over-claimed twice this session; this rule is the fix.
+- **A 316-word Bean message never reached me** (only the brain-dump hook fired, twice) — if Bean gave new direction it may be unaddressed; ask.
+- **Check #3 is now variant-scope-aware** — a `!important` on a `--modifier`/`:pseudo` selector is skipped (overrides a variant render, not the base transfer). Base-selector !important still flags.
+- **box-shadow uses preset SLUGS not raw values** — the `shadow` attr holds `sm/md/lg/glow`; the resolver token-snaps; arbitrary box-shadow with no preset match → honest gap.
 
 ## Next Session Prompt
-See `.claude/next-session-prompt.md` (orchestration plan for W3, with the carried-forward STOP catalogue + reading gate).
+See `.claude/next-session-prompt.md` (W3-remainder orchestration + carried-forward STOP catalogue 1..32 + ritual + reading gate).
