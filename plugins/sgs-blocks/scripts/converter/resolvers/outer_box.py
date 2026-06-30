@@ -7,13 +7,22 @@ identity (step 6 — max-width is a D230 exact literal), validates (step 7) and 
 with a reason on no destination (step 8 — never silent).
 
 Real transfers (this resolver OWNS the OUTER layer):
-  - ``max-width``  → ``maxWidth*`` (exact literal, D230/D231 — no token snap)
-  - ``min-height`` → ``minHeight*``
-  - ``gap``        → ``gap*`` (the OUTER flex/grid gap on a container)
+  - ``max-width``          → ``maxWidth*`` (exact literal, D230/D231 — no token snap)
+  - ``min-height``         → ``minHeight*``
+  - ``gap``                → ``gap*`` (the OUTER flex/grid gap on a container)
   - ``padding-{side}`` longhands → ``padding{Side}*`` WHEN the block declares the
     attr (number+Unit companion as a list[Write] when the attr is numeric); else a
     tracked NO_DESTINATION gap (e.g. sgs/container has only tier-suffixed padding
     longhands, no base ``paddingTop`` — that is a faithful DB absence, gapped).
+  - ``background-size``    → ``backgroundSize*`` (string; DB-resolved attr name)
+  - ``background-position``→ ``backgroundPosition*`` (string; DB-resolved attr name)
+  - ``background-repeat``  → ``backgroundRepeat*`` (string; DB-resolved attr name)
+  - ``background-attachment``→``backgroundAttachment*`` (string; DB-resolved attr name)
+  - ``box-shadow``         → block's shadow attr (DB-resolved); value TOKEN-SNAPPED to
+    a shadow preset slug from ``design_tokens`` (e.g. ``0 4px 12px rgba(0,0,0,0.1)``
+    → ``"md"``). On NO preset match: honest NO_DESTINATION gap (the wrapper expects a
+    slug; a raw CSS value would render nothing — no-cheats rule). Preset list is read
+    from DB at call-time, never hardcoded.
 
 ``padding`` SHORTHAND is expanded to longhands at the pre-dispatch extraction stage
 (``fold_helpers._expand_box_shorthand``); a raw ``padding`` shorthand reaching this
@@ -29,9 +38,20 @@ the conservation count (no source declaration).
 REUSES main's shared helpers (do NOT redefine): ``styling_helpers.split_value_unit``
 for number+unit parsing. NO block-slug literals (F5 gate); all destinations are
 DB-resolved.
+
+GROUND-TRUTH: spec=31 source=db evidence=attr_for_layer_property('sgs/container','OUTER',
+'background-size')='backgroundSize'; ('background-position')='backgroundPosition';
+('background-repeat')='backgroundRepeat'; ('background-attachment')='backgroundAttachment';
+('box-shadow')='shadow' (role=color wins over BoxShadow/role=visual via rowid ordering).
+Shadow presets sourced from design_tokens WHERE token_type='size' AND slug LIKE 'shadow-%':
+shadow-sm='0 1px 3px rgba(0,0,0,0.08)', shadow-md='0 4px 12px rgba(0,0,0,0.1)',
+shadow-lg='0 8px 30px rgba(0,0,0,0.12)', shadow-glow='0 0 20px rgba(248,122,31,0.3)'.
+Wrapper renders box-shadow:var(--wp--preset--shadow--{slug}) where slug=suffix after 'shadow-'.
 """
 from __future__ import annotations
 
+import re
+import sqlite3
 from typing import Any
 
 from converter.models import GAP, GapOrigin, Write
@@ -46,13 +66,59 @@ from converter.services.value_serialise import value_serialise
 # OUTER box CSS properties this resolver transfers (Spec 31 §3.A L1). A `padding`
 # shorthand is NOT here — it is expanded to longhands pre-dispatch; arriving raw is
 # a wiring gap (UNIMPLEMENTED_STUB), never a silent drop.
+#
+# background-size/position/repeat/attachment: DB-resolved to backgroundSize* etc. attrs.
+# box-shadow: DB-resolved to the block's shadow attr; token-snapped to a preset slug.
 _OUTER_TRANSFER_PROPS = frozenset({
     "max-width", "min-height", "gap",
     "padding-top", "padding-right", "padding-bottom", "padding-left",
+    "background-size", "background-position", "background-repeat", "background-attachment",
+    "box-shadow",
 })
 
 # Length-literal properties written verbatim (D230 — no token snap, no truncation).
 _LITERAL_PROPS = frozenset({"max-width", "min-height"})
+
+# The shadow preset slug prefix that must be stripped before storing (e.g. "shadow-sm" → "sm").
+# This is the structural prefix defined by the WP preset naming convention: the design_tokens
+# slug carries it; the wrapper renders box-shadow:var(--wp--preset--shadow--{slug-without-prefix}).
+# Named here as a convention constant (not a hardcoded preset list — the preset list comes from DB).
+_SHADOW_SLUG_PREFIX = "shadow-"
+
+
+def _normalise_shadow(value: str) -> str:
+    """Collapse multiple whitespace runs to single spaces for shadow comparison.
+
+    Draft CSS often has `0  4px  12px rgba(0,0,0,0.1)` (extra spaces); DB default_value
+    stores the canonical form. Normalise both sides before comparing.
+    """
+    return re.sub(r"\s+", " ", value).strip()
+
+
+def _shadow_token_snap(raw_value: str, conn: sqlite3.Connection) -> str | None:
+    """Return the WP preset slug (without the 'shadow-' prefix) if the draft box-shadow
+    value exactly matches (after whitespace normalisation) a design_tokens shadow preset.
+    Returns None if no preset matches — the caller must emit an honest gap.
+
+    Shadow presets live in design_tokens WHERE token_type='size' AND slug LIKE 'shadow-%'.
+    The default_value column holds the canonical CSS value (e.g. '0 4px 12px rgba(0,0,0,0.1)').
+    The wrapper renders box-shadow:var(--wp--preset--shadow--{slug-after-shadow-prefix}).
+
+    Never hardcodes the preset list — reads from DB at call-time (R-22-1 DB-first rule).
+    """
+    normalised = _normalise_shadow(raw_value)
+    rows = conn.execute(
+        "SELECT slug, default_value FROM design_tokens "
+        "WHERE slug LIKE ? AND token_type='size'",
+        (f"{_SHADOW_SLUG_PREFIX}%",),
+    ).fetchall()
+    for slug, default_value in rows:
+        if _normalise_shadow(default_value) == normalised:
+            # Strip the 'shadow-' prefix: 'shadow-md' → 'md'.
+            if slug.startswith(_SHADOW_SLUG_PREFIX):
+                return slug[len(_SHADOW_SLUG_PREFIX):]
+            return slug  # Defensive: return as-is if prefix absent (unexpected DB row).
+    return None
 
 
 def _attr_is_number(ctx: Any, attr: str) -> bool:
@@ -113,6 +179,32 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             f"{ctx.block_slug} does not declare {attr!r} (tier {decl.tier})",
         )
 
+    # --- box-shadow: TOKEN-SNAP to a shadow preset slug (DB-sourced), never raw value.
+    #
+    # The shadow attr (DB-resolved above via attr_resolve) stores a PRESET SLUG, not a
+    # raw CSS box-shadow value. The wrapper renders:
+    #     box-shadow: var(--wp--preset--shadow--{slug})
+    # A raw CSS value would NOT match any WP preset var → the wrapper renders nothing.
+    # This is the no-cheats rule for box-shadow: if no preset matches, gap it honestly.
+    #
+    # The preset list is read from design_tokens at call-time (R-22-1 DB-first — not
+    # hardcoded). Slugs carry the 'shadow-' prefix in the DB; the wrapper expects the
+    # suffix only (e.g. 'md', not 'shadow-md').
+    if prop == "box-shadow":
+        slug = _shadow_token_snap(decl.value, ctx.conn)
+        if slug is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"box-shadow value {decl.value!r} does not match any shadow preset in "
+                f"design_tokens (token_type='size', slug LIKE 'shadow-%'); the shadow "
+                f"attr expects a preset slug, not a raw CSS value — add a matching "
+                f"preset to design_tokens or rework the draft to use a standard shadow",
+            )
+        # The slug itself ('sm'/'md'/'lg'/'glow') is a string, not an enum-constrained
+        # attr on sgs/container (enum_values IS NULL for the shadow attr), so validate()
+        # already passed above (attr existence only). Write the slug directly.
+        return Write(attr=attr, value=slug, property=prop, tier=decl.tier)
+
     # Step 5: serialise by attr type. A numeric OUTER attr (e.g. a numeric gap)
     # stores the number + a Unit companion (Spec 31 §3.A.5) — a list[Write] for the
     # one declaration. A length-literal/string attr stores the verbatim value.
@@ -134,6 +226,9 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
         return writes
 
     # String/length-literal attr: verbatim (D230 for max-width/min-height).
+    # background-size/position/repeat/attachment: written as-is (the enum constraint,
+    # if any, was already checked by validate() above — a value not in the enum failed
+    # validate and would have gapped, so we never reach here with an illegal value).
     value = token_snap(prop, value_serialise("string", None, decl.value), ctx.conn)
     return Write(attr=attr, value=value, property=prop, tier=decl.tier)
 

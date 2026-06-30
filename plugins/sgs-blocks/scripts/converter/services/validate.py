@@ -9,10 +9,35 @@ Three checks (design §2 named enforcement point + §10 A15):
 
 Returns True iff the write is legal. A False return means the caller gaps it
 (NO_DESTINATION) — never a silent write.
+
+enum_values column format: JSON array string, e.g. '["cover", "contain", "auto"]'.
+All enum_values rows in block_attributes use this format (verified by inspection).
+The parser uses ``json.loads`` to decode; falls back to the old comma-split on
+malformed JSON so no existing passing behaviour regresses.
 """
 from __future__ import annotations
 
+import json
 from typing import Any
+
+
+def _parse_enum_values(raw: str) -> set[str]:
+    """Parse an enum_values string into a set of allowed string values.
+
+    Handles the canonical JSON-array format ('["cover", "contain", "auto"]') that
+    ALL block_attributes enum_values rows use. Falls back to a comma-split for any
+    legacy plain-comma row so no existing passing test regresses.
+    """
+    raw = raw.strip()
+    if raw.startswith("["):
+        try:
+            parsed = json.loads(raw)
+            if isinstance(parsed, list):
+                return {str(v) for v in parsed if v is not None}
+        except json.JSONDecodeError:
+            pass
+    # Fallback: plain comma-separated list (no known rows use this, but kept defensive).
+    return {v.strip() for v in raw.split(",") if v.strip()}
 
 
 def validate(ctx: Any, attr: str, value: str) -> bool:
@@ -35,7 +60,7 @@ def validate(ctx: Any, attr: str, value: str) -> bool:
         (ctx.block_slug, attr),
     ).fetchone()
     if enum_row and enum_row[0]:
-        allowed = {v.strip() for v in str(enum_row[0]).split(",") if v.strip()}
+        allowed = _parse_enum_values(str(enum_row[0]))
         if allowed and value not in allowed:
             return False
 
