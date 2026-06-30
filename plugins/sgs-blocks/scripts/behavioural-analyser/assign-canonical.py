@@ -620,6 +620,20 @@ def run() -> None:
     )
 
     # ------------------------------------------------------------------
+    # Role detection — WIRED into the standard flow (2026-06-30).
+    # Previously CLI-only (--apply-roles), so the deterministic reseed never
+    # ran it (root cause: .claude/reports/2026-06-30-role-derivation-root-cause.md).
+    # Fills NULL content roles + UPGRADES the generic 'content' catch-all to a
+    # specific content-bearing role (high-confidence name-regex only). DB-driven;
+    # never touches a specific non-'content' role (protects scalar-media etc.).
+    # ------------------------------------------------------------------
+    _rd = apply_role_detection_inline(conn)
+    print(
+        f"[role-detection] content-bearing roles: filled={_rd['filled']} "
+        f"upgraded={_rd['upgraded']}"
+    )
+
+    # ------------------------------------------------------------------
     # Self-checks
     # ------------------------------------------------------------------
 
@@ -1284,6 +1298,61 @@ def run_role_detection_apply(conn: sqlite3.Connection, diff_path: Path) -> dict:
         "skipped_drift": skipped_drift,
         "skipped_unsafe": skipped_unsafe,
     }
+
+
+def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
+    """Role detection wired into the standard /sgs-update flow (2026-06-30).
+
+    Root cause (`.claude/reports/2026-06-30-role-derivation-root-cause.md`): the
+    role-detection classifier was a CLI-only mode (--apply-roles) that the
+    deterministic reseed (`sgs-update-v2.py` runs `assign-canonical.py` with NO
+    args) never invoked — so content-bearing roles for url/image/icon/text attrs
+    were never auto-derived (7 attrs sat at NULL → content silently dropped on
+    clones; 4 carried the generic catch-all 'content' where a specific role is
+    correct). And the old apply was NULL-only, so it never CORRECTED a wrong role.
+
+    This is called from run() so the no-arg invocation completes role derivation.
+    Two deterministic actions, both DB-driven (R-22-1, no slug literals):
+      - FILL: role IS NULL  → any content-bearing proposal (existing behaviour).
+      - UPGRADE: role = 'content' (the generic catch-all) → a SPECIFIC
+        content-bearing role, ONLY on a high-confidence Tier-1 attr-name regex
+        match (proposed != 'content'). Never touches a row whose role is a
+        specific non-'content' value (protects 'scalar-media' etc.).
+    """
+    rows = conn.execute(
+        "SELECT id, block_slug, attr_name, attr_type, enum_values, description, role "
+        "FROM block_attributes WHERE role IS NULL OR role = 'content'"
+    ).fetchall()
+    cur = conn.cursor()
+    filled = 0
+    upgraded = 0
+    for row_id, block_slug, attr_name, attr_type, enum_values, description, current in rows:
+        proposed, source, confidence = detect_role_from_block_json(
+            block_slug, attr_name,
+            {
+                "attr_type": attr_type,
+                "enum_values": enum_values,
+                "description": description,
+                "format": None,
+            },
+        )
+        if proposed is None or proposed not in _CONTENT_BEARING_ROLES:
+            continue
+        if current is None:
+            cur.execute(
+                "UPDATE block_attributes SET role = ? WHERE id = ?", (proposed, row_id)
+            )
+            filled += 1
+        elif current == "content":
+            # UPGRADE only: a specific role from a high-confidence name-regex match.
+            is_name_regex = isinstance(source, str) and source.startswith("attr_name_regex")
+            if proposed != "content" and confidence == "high" and is_name_regex:
+                cur.execute(
+                    "UPDATE block_attributes SET role = ? WHERE id = ?", (proposed, row_id)
+                )
+                upgraded += 1
+    conn.commit()
+    return {"filled": filled, "upgraded": upgraded}
 
 
 # ---------------------------------------------------------------------------
