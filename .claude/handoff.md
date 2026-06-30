@@ -1,8 +1,53 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-thread: cloning-pipeline / Phase W3 BUILT + all-routes fixes
+thread: cloning-pipeline / Phase W3 remainder — A1 + hero bugs + child-lift design-gate + DB role root-cause
 session_date: 2026-06-30
+---
+
+# Session Handoff — 2026-06-30 (W3 remainder — D251)
+
+## Completed This Session
+1. **A1 media-map (`8ea61b58`):** built `converter/services/media_map.py` loader + threaded `media_map` through `run_mechanism_b` AND the `_child_content_for_node`→`build_block_markup` recursion (nested-child images remap too). 273 tests.
+2. **Hero LANDED bug 1 (`0b9bc509`):** `_mobile_suffixes` read the wrong tuple element → `splitImageMobile` dropped. Fixed.
+3. **Hero LANDED bug 3 (`1ef2afc2`):** ported FR-22-20 variant detection into `build_block_markup` so render.php's `$is_split` gate fires (split image+grid were ignored).
+4. **6-persona `/adversarial-council` design-gate** of the universal child-lift (hero bug 2 — CTAs lose url+inheritStyle). Council REVISED the design: route every child through `build_block_markup`, reuse the shared `field_extractors` handlers. Register: `.claude/reports/2026-06-30-role-derivation-root-cause.md`.
+5. **DB role-derivation root-cause fix (`b921a909`):** `/systematic-debugging` proved the role classifier was never wired into `/sgs-update` (ran with no args) AND was NULL-only. Wired `apply_role_detection_inline` into `run()` + upgrade generic `content`→specific (high-confidence only). 11 roles corrected (4 upgrade + 7 fill), 2 scalar-media correctly excluded; report-first per Bean; 2 regression tests; F5/F6 gates green.
+
+## Current State
+- **Branch:** main at `b921a909` (pushed)
+- **Tests:** 276 pass (converter + cheat-gate) + 2 new role-detection tests; F5/F6 commit gates exit 0
+- **Build:** Python converter (no npm needed). Live DB roles corrected (deterministic on reseed via the wiring).
+- **Uncommitted changes:** doc updates only (decisions/state/handoff/next-session-prompt/mistakes); convert.py byte-identical (D-MODULAR).
+
+## Known Issues / Blockers
+- New engine still INERT in production (frozen `convert.py` runs live clones — STOP-28). Not yet LANDED.
+- Hero bug 2 (CTA child-lift) is OPEN — the keystone B work, design-gated, fresh-session per STOP-19 (highest-regression walker).
+
+## Next Priorities (in order)
+1. **B — universal child-lift** (route every child through `build_block_markup`; reconcile `url-href`→`link-href`; shared-handler atomic leaf; `/qc-council` before commit). READ the register doc first.
+2. **Re-run LANDED hero proof** (full hero incl CTAs) + Bean eye (page-source compare + computed-style; the JS parity scripts are unreliable, blub #374).
+3. **W3 remainder:** A2 ledger, §5 lift, !important sweep, dead-code, commit.
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `plugins/sgs-blocks/scripts/converter/services/media_map.py` | NEW — media-map loader (A1) |
+| `plugins/sgs-blocks/scripts/converter/services/extraction.py` | media_map threaded through walker + recursion |
+| `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py` | `apply_role_detection_inline` + wired into `run()` (role root-cause fix) |
+| `plugins/sgs-blocks/scripts/converter/tests/test_role_detection_inline.py` | NEW — 2 regression tests |
+| `.claude/reports/2026-06-30-role-derivation-root-cause.md` | NEW — proven root cause + council design register |
+| `.claude/{decisions.md,handoff.md,next-session-prompt.md,state.md}` | D251 + handoff |
+
+## Notes for Next Session
+- **The B-design is council-validated and captured** in `.claude/reports/2026-06-30-role-derivation-root-cause.md` — read it before touching the walker. The fix is SMALLER than first proposed (delete the bypass, reuse `field_extractors`), not a ChildBlock rewrite + `_atomic_attrs_for` clone.
+- **DB role data is now correct** (icon.linkUrl=link-href etc.) and deterministic on reseed — B can rely on it.
+- **Council DB false-positives** (already corrected): multi-button=layout wrapper, social-icons=array, `icon-slug` role doesn't exist (use `identity`).
+- **Handoff gates run:** living docs (Gate 1/4.5), D251, lesson already captured this session (blub #374). SKIPPED (context length): OC-sync POSTs, independent /qc subagent, docscore — flagged honestly, not silently.
+
+## Next Session Prompt
+See `.claude/next-session-prompt.md` (B orchestration + carried-forward STOP catalogue 1..33 + ritual + reading gate).
+
 ---
 
 # Session Handoff — 2026-06-30

@@ -6,6 +6,18 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-30 — D251: W3 remainder — A1 media-map + 2 hero LANDED-bugs fixed + universal child-lift design-gated + DB role-derivation root-cause fixed
+
+**D251 — Building the W3 LANDED proof surfaced engine gaps; fixed the landable ones + design-gated the walker recode + root-caused the DB role data. All on `main`.**
+
+- **A1 media-map (`8ea61b58`):** `run_mechanism_b` had no `media_map` param (the Step-4 walker rebuild re-introduced a hardcoded `{}` at the splitImage column); built the loader (`converter/services/media_map.py`) + threaded `media_map` through the walker AND `_child_content_for_node`→`build_block_markup` recursion (nested-child images remap too, Rule 3). 273 tests.
+- **Hero LANDED bug 1 (`0b9bc509`):** `_mobile_suffixes` read the wrong tuple element → `splitImageMobile` dropped. Fixed.
+- **Hero LANDED bug 3 (`1ef2afc2`):** FR-22-20 variant detection not ported into `build_block_markup` → render.php's `$is_split` gate never fired, split image+grid ignored. Ported. Hero bug 2 (CTAs) → design-gated below.
+- **Universal child-lift DESIGN-GATE (6-persona adversarial-council):** the child emit is LOSSY — `_child_content_for_node` returns ONE text value; `ChildBlock(slug, content:str)` can't carry a button's url+inheritStyle. Council REVISED the fix: **route EVERY child through `build_block_markup` (delete the scalar `primary_attr` bypass, extraction.py:209-225)** so content+CSS+variant fire uniformly (Spec 31 §3.B.0); use the EXISTING shared `field_extractors` handlers (NOT a clone of convert.py `_atomic_attrs_for` — that carries slug literals the gate rejects). Build = next session (STOP-19, highest-regression walker). Full register: `.claude/reports/2026-06-30-role-derivation-root-cause.md`.
+- **DB role-derivation root-cause fix (`b921a909`):** the name-regex role classifier (assigns link-href/image-object/identity) was a CLI-only mode `/sgs-update` never invoked (`sgs-update-v2.py:703` runs `assign-canonical.py` with no args) AND was NULL-only — so 7 content attrs sat at role=NULL (dropped on clones) + 4 carried generic `content` where specific is correct; the only fix path was hand-written overrides (the treadmill). Wired `apply_role_detection_inline` into `run()` + made it UPGRADE generic `content`→specific (high-confidence name-regex only; never touches a specific role like scalar-media). 11 roles corrected, deterministic on reseed, 2 regression tests. Council DB-truth false-positives corrected: multi-button = layout wrapper (not a bug), social-icons = array (separate path), `icon-slug` role doesn't exist (use `identity`). NEW code bug for B: DB convention is `link-href` (30 attrs); new-engine `field_extractors` uses `url-href` (0 attrs) — reconcile in B.
+
+---
+
 ## 2026-06-30 — D250: W3 BUILT (walker port + CSS↔content unification + grid fix) + native-style/box-shadow/§5 fixes + adversarial-council corrected 2 phantom over-claims
 
 **D250 — Phase W3 (Spec 31 §12.6 step-3) executed end-to-end this session: the converter's two inert halves are now connected + the "all-routes" fixes landed. All on `main` (`bf1922b3`→`1b3d108c`), all 6 commit gates green, 267 tests.**

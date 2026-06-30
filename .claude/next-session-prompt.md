@@ -3,7 +3,7 @@ doc_type: next-session-prompt
 project: small-giants-wp
 thread: cloning-pipeline / Phase W3 — interior-walker wiring + CSS↔content unification
 generated: 2026-06-30
-primary_goal: "W3 Steps 1–7 BUILT this session (D250): walker port + CSS↔content unification conductor + grid fix + native-style/box-shadow/§5 fixes — the two inert halves now connect. EVERYTHING IS WRITTEN, NOTHING IS LANDED. Next = the LANDED proof (Step 10, the real faithfulness gate, STOP-21) + A1 media-map + A2 ledger (Steps 8–9, STOP-28 preconditions) + the §5 lift-path + the broader base-selector !important sweep. Plan: `.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md`; D250 in decisions.md."
+primary_goal: "W3-remainder progressed (D251): A1 media-map + 2 hero LANDED-bugs FIXED + the DB role-derivation root cause FIXED (b921a909). The keystone NEXT job is B = the UNIVERSAL CHILD-LIFT (highest-regression walker, STOP-19, design-gated this session by a 6-persona council): route EVERY child through `build_block_markup` (delete the scalar `primary_attr` bypass, extraction.py:209-225) so content+CSS+variant fire uniformly per Spec 31 §3.B.0, using the EXISTING shared `field_extractors` handlers (reconcile `url-href`→`link-href`, the DB convention; add link-href + css-modifier branches; NOT a clone of convert.py `_atomic_attrs_for`). Then re-run the LANDED hero proof (canary, page-source compare + computed-style + Bean eye), then the W3 remainder (A2 ledger, §5 lift, !important sweep, dead-code). FULL design + council must-fix register: `.claude/reports/2026-06-30-role-derivation-root-cause.md`. D251 in decisions.md."
 ---
 
 # Next session — Phase W3 (the keystone: wire the engine + LAND it)
@@ -12,7 +12,7 @@ Invoke `/autopilot` before anything else.
 
 **Agent identity.** You are the SGS cloning-pipeline engineer executing Phase W3 — the step that turns the converter from tested-but-inert parts into a live engine that converts an SGS-BEM draft into faithful native SGS blocks on the real homepage, zero cheats.
 
-**State recap (plain English).** W3 Steps 1–7 are BUILT (D250, this session): `run_mechanism_b` is now the faithful `_route_composite_interior` walker port (Step 4), and `build_block_markup`'s `_build_css_attrs` (Step 7) drives BOTH `process_element` (CSS — incl. the new `root_supports.py` native-`style.*` lift + `outer_box` background-*/box-shadow) AND `extract_content` (content) into ONE emit. Finding A is fixed — the two halves connect; `process_element` has a production caller. BUT it is all WRITTEN, not LANDED: the new engine is still INERT in production (frozen `convert.py` runs every live clone, STOP-28), and nothing has been computed-style-verified on a real page. The §5 properties are SEEDED (Fix 3) but not LIFTED. A `/adversarial-council` this session corrected 2 phantom over-claims (the "padding/background/radius dropped" was BS — they emit via native `style.*`); the four-channel-check rule (memory + blub #373) is the fix. Next = LANDED proof (Step 10) + A1/A2 (Steps 8–9) + §5 lift-path + the base-selector !important sweep.
+**State recap (plain English).** Building the W3 LANDED proof (genuine `build_block_markup` emit of the real Mama's hero split) surfaced engine gaps. THREE fixed + committed this session (D251): **A1 media-map** (`8ea61b58` — `media_map` now threads through `run_mechanism_b` + the `_child_content_for_node` recursion; images remap), **hero bug 1** (`0b9bc509` — `splitImageMobile` no longer dropped), **hero bug 3** (`1ef2afc2` — variant detection fires so render.php's split gate works). **Hero bug 2 (the CTA buttons) is the keystone left:** child blocks emit LOSSY — a `<a class="sgs-button--primary" href>` emits `{label}` only, dropping `url`+`inheritStyle`, because `_child_content_for_node` returns ONE text value and `ChildBlock(slug, content:str)` can't carry more. A 6-persona `/adversarial-council` design-gated the fix (see register doc) and REVISED it: **route EVERY child through `build_block_markup`** (the same path top-level blocks use) so content+CSS+variant lift uniformly — using the EXISTING shared `field_extractors` role handlers, NOT a clone of `_atomic_attrs_for`. Separately, the DB ROLE DATA root cause was found + FIXED (`b921a909`): the role classifier was never wired into `/sgs-update` (ran with no args) AND was NULL-only, so 11 content roles were wrong/missing — now wired + upgrades generic `content`→specific, deterministic. B = the walker recode is fresh-session work (STOP-19: don't grind the highest-regression surface under context pressure). The new engine is still INERT in production (frozen `convert.py` runs live clones, STOP-28).
 
 ---
 
@@ -76,38 +76,33 @@ Invoke `/autopilot` before anything else.
 - **STOP-30 — A subagent's "covered / N routes / no-cheating" verdict is a HYPOTHESIS; the 9-routes audit confidently conflated REGISTRY-ids with routes + hand-waved the 17. Re-enumerate + verify against ground truth; never relay a count you didn't derive.** Also: a worktree dispatched via `isolation:worktree` may branch from a STALE base — always `git merge-base main <branch>` before trusting/merging a worktree's "all green".
 - **STOP-31 (NEW, D249) — A commit-blocking static gate must be scoped to the cheat's ACTUAL syntactic context (e.g. a side-suffix regex flagged ONLY inside `re.*` call args), NOT all string constants — else it false-positives on docstrings/prose that quote the pattern.** Plant-test every new gate (it FIRES on each real cheat kind) AND verify it stays SILENT on a docstring that merely quotes the cheat, BEFORE wiring it. Caught in QC this session: Check #9 (`check_converter_source.py`) flagged its own docstring; fixed by scoping the side-regex detector to `re.*` calls + `visit_Call`.
 - **STOP-32 (NEW, D250) — FOUR-CHANNEL CHECK before claiming a CSS property is "dropped / not routed / unbuilt".** A property has a destination if ANY of FOUR channels is positive — check ALL before declaring a gap: (a) WP native `supports` in `block.json` → the `style.*` path (padding/background-color/border-radius land via WP core, NO custom attr), (b) custom block attributes, (c) the wrapper render (`class-sgs-container-wrapper.php`), (d) the spec's declared destination (Spec 31 §2 line 81 + `property_suffixes`). A gap is real ONLY after all four are negative. I claimed "a clone DROPS padding/background/radius — not universal" after checking ONLY `block_attributes` — BS: `convert.py._lift_root_supports_to_style` emits them via native `style.*`. This was the SECOND phantom over-claim in one session (the "17 routes" was the first). Also: the INERT new engine ≠ the LIVE `convert.py` pipeline — say "the new engine hasn't ported X yet", never "a clone drops X". A 5-persona `/adversarial-council` Bean forced caught it. Memory `four-channel-check-before-claiming-a-property-is-not-routed` + blub #373.
+- **STOP-33 (NEW, D251) — A "deterministic" DB tool only guarantees correct data for the steps it ACTUALLY runs.** Before blaming wrong/missing DB data on a block.json or a per-attr error, check whether the derivation STEP that should set it is even WIRED INTO the standard flow. Root cause this session: the role classifier (`assign-canonical.py --apply-roles`) was a manual CLI mode `/sgs-update` never invoked (`sgs-update-v2.py:703` runs it with NO args) AND was NULL-only (never corrected a wrong populated role) — so wrong/missing roles were only ever fixed by hand-written `ATTR_CLASSIFICATION_OVERRIDES` (the treadmill Bean rejects). FIX the derivation (wire it in + let high-confidence name-regex UPGRADE the generic `content` catch-all), NEVER a per-entry override. And FACT-CHECK council DB claims: 3 of 4 DB-truth findings were false (multi-button=layout wrapper, social-icons=array, `icon-slug` role doesn't exist → use `identity`). Report-first (baseline the changes, Bean eyeballs) before auto-applying a derivation change across all blocks (STOP-14). Report doc: `.claude/reports/2026-06-30-role-derivation-root-cause.md`.
 
 ---
 
 ## W3 ORCHESTRATION PLAN
-**Steps 1–7 DONE this session (D250) — see handoff.md.** Full 12-step detail: **`.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md`**. The REMAINING work (start here):
+**A1 media-map + hero bugs 1&3 + DB role-derivation root-cause fix DONE this session (D251).** The DESIGN for B is council-validated + in `.claude/reports/2026-06-30-role-derivation-root-cause.md` (READ IT FIRST — it has the 6-persona must-fix register + the role facts). Remaining work, start here:
 
 | Step | What | Execution | /qc gate after | Acceptance |
 |------|------|-----------|----------------|------------|
-| ~~1–7~~ | ✅ DONE (walker port + conductor unification + grid fix + Fix 1/2/3 + cheat fixes) | — | — | committed `bf1922b3`→`1b3d108c`, 267 tests, 6 gates green |
-| **10** | **LANDED proof** on a canary (hero split, 375/768/1440) — THE real faithfulness gate; everything is WRITTEN not LANDED | **inline Opus** + Playwright/chrome-devtools | — | computed-style matches draft; Bean signs (R-22-13, STOP-21). Creds `.claude/secrets/sandybrown.env` |
-| 8 | A1 media-map loader (image srcs → WP URLs) | Sonnet | QA Gate C | srcs remap on a wired run (STOP-28 precondition) |
-| 9 | A2 content-conservation ledger (`declare_input` → content units) | inline Opus + Sonnet | QA Gate C | a dropped content node shows UNACCOUNTED (STOP-28 precondition) |
-| NEW-a | **§5 lift-path** — make the seeded §5 props (object-fit/position/overflow/etc.) actually lift to their destinations | Sonnet | QA + coverage gate | seeded props COVER instead of UNACCOUNTED; baseline shrinks |
-| NEW-b | **base-selector `!important` sweep** — ~30 now accurately flagged across blocks; assess each (real cheat → fix via specificity / variant-scope; legit WP-override → exclude) | Sonnet + inline judgement | cheat-gate Check #3 | base-selector !important on faithful props removed or justified |
-| 11 | Delete dead `content_attrs_with_selector` (grep 0 readers, STOP-11) | Sonnet | — | 0 readers, suite green |
-| 12 | Commit (split per R-22-5) + D-number + /handoff | inline | — | main carries the work |
+| ~~A1, hero 1&3, role-fix~~ | ✅ DONE D251 (`8ea61b58`/`0b9bc509`/`1ef2afc2`/`b921a909`) | — | — | committed, 276 tests, F5/F6 gates green |
+| **B — UNIVERSAL CHILD-LIFT (KEYSTONE)** | route EVERY child through `build_block_markup` (delete the scalar `primary_attr` bypass, `extraction.py:209-225`) so content+CSS+variant lift uniformly (Spec 31 §3.B.0); reconcile `field_extractors` role `url-href`→`link-href` (DB convention, 30 attrs); add `link-href`+`css-modifier` branches to the shared lift; make a capability-less leaf (button) lift label+url+inheritStyle via the SHARED handlers (NOT a `_atomic_attrs_for` clone — slug literals fail the gate); handle `None` `has_inner_blocks`; tests across child/array/top-level shapes | **inline Opus** (highest-regression walker, STOP-19) | `/qc-council` BEFORE commit (blub 255) | a hero CTA emits `{label,url,inheritStyle}`; `/qc-council` GREEN; 276+ tests hold |
+| LANDED | re-run the LANDED hero proof on a canary (full hero incl CTAs, 375/768/1440) — direct page-source compare + computed-style + Bean eye (blub #374; the JS parity scripts are UNRELIABLE — do NOT use them) | inline Opus + chrome-devtools/Playwright | — | CTAs render with link + primary/secondary style; Bean signs (R-22-13, STOP-21). Creds `.claude/secrets/sandybrown.env` |
+| A2 | content-conservation ledger (`declare_input` → content routing units) | inline Opus + Sonnet | QA Gate C | a dropped content node shows UNACCOUNTED (STOP-28 precondition for prod-wiring) |
+| §5 lift | make the seeded §5 props (object-fit/position/overflow/etc.) actually lift | Sonnet | QA + coverage gate | seeded props COVER instead of UNACCOUNTED; baseline shrinks |
+| !important sweep | base-selector `!important` flagged across blocks; assess each (real cheat → specificity/variant-scope; legit WP-override → exclude) | Sonnet + inline judgement | cheat-gate Check #3 | base-selector !important on faithful props removed or justified |
+| dead-code | delete dead `content_attrs_with_selector` (grep 0 readers, STOP-11) | Sonnet | — | 0 readers, suite green |
+| commit | split per R-22-5 + D-number + /handoff | inline | — | main carries the work |
 
 **Dependency graph:**
 ```
-Step 1 (design-gate, Bean sign-off)
+B — universal child-lift (inline Opus; READ the register doc first; STOP-19/22/25)
+  ↓ /qc-council
+LANDED proof (full hero incl CTAs) + Bean sign-off (R-22-13, STOP-21)
   ↓
-Step 2 → Step 3 → QA Gate A
+A2 ledger + §5 lift + !important sweep + dead-code (parallel-ish where disjoint)
   ↓
-Step 4 (walker, inline Opus) + Step 5 + Step 6 → QA Gate B
-  ↓
-Step 7 (KEYSTONE unification, inline Opus)
-  ↓
-Step 8 + Step 9 → QA Gate C
-  ↓
-Step 10 (LANDED proof + Bean sign-off)
-  ↓
-Step 11 → Step 12 (commit + handoff)
+commit (split) + D-number + /handoff
 ```
 
 ## Methodology guardrails (do not skip)

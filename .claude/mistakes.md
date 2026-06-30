@@ -4,6 +4,12 @@
 <!-- ACTIVE — recent 30 mistakes as keyword stubs. Full body in blub.db `learnings` table or feedback_*.md files. Archive: memory/mistakes-archive.md. Search: grep -r KEYWORD memory/ + curl localhost:5050/api/learning?search=KEYWORD -->
 
 ## Active stubs (most recent 30)
+### [2026-06-30] LANDED verification = direct page-source comparison, not the JS parity scripts
+- **Pattern key:** `landed-verification-direct-page-source-compare-not-js-parity-scripts`
+- **blub.db row:** `374`
+- **Feedback file:** [feedback_landed_verification_direct_page_source_compare.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_landed_verification_direct_page_source_compare.md)
+- **Rule:** SGS clone LANDED gate = deploy → copy rendered page-source HTML to a file → direct manual section comparison (tag converted / content moved / every CSS rule migrated / each rule on the CORRECT block-element) + computed-style at 375/768/1440 + Bean's eye. The JS parity scripts (mockup-parity-validator.js, screenshot-diff-helper.js) are unreliable — do NOT rely on them.
+
 ### [2026-06-28] Bind definition-of-done to the spec's FULL scope — never ship a minimum increment + call the rest "out of scope"
 - **Pattern key:** `bind-definition-of-done-to-full-spec-scope`
 - **blub.db row:** `<pending sync — dashboard down 2026-06-28>`
