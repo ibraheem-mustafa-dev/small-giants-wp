@@ -79,10 +79,22 @@ def recognise(node: Any, css_rules: dict | None = None) -> Recognition:
         return Recognition("atomic", atom, recognise_helpers.get_container_kind(atom), 0)
 
     # 3. SCALAR element-slot — a BEM element class (sgs-x__y) mapping to a slot's block.
+    # has_inner_blocks is DERIVED from the DB (NOT hardcoded 0): a slot can map to an
+    # InnerBlocks PARENT (e.g. .sgs-hero__ctas -> sgs/multi-button, has_inner=1), which
+    # MUST route to Mechanism B and recurse its children. Hardcoding 0 here mis-typed
+    # every element-class-recognised composite as a leaf -> Case-4 "no content" gap ->
+    # its children silently dropped (the real-hero CTA loss, found by the full-homepage
+    # run 2026-06-30; a synthetic test using the NAMED root-class path masked it). The
+    # named branch (above) already derives this; the scalar branch must match.
     canonical_slot = recognise_helpers.bem_element_to_canonical_slot(node)
     slot_slug = db_lookup.standalone_block_for(canonical_slot) if canonical_slot else None
     if slot_slug is not None:
-        return Recognition("scalar", slot_slug, recognise_helpers.get_container_kind(slot_slug), 0)
+        return Recognition(
+            "scalar",
+            slot_slug,
+            recognise_helpers.get_container_kind(slot_slug),
+            derive_has_inner_blocks(slot_slug),
+        )
 
     # 4. UNRECOGNISED — a BEM-classed node resolving to no registered block. Loud RED.
     return Recognition("unrecognised", None, None, None)
@@ -150,3 +162,31 @@ def variant_attrs(rec: Recognition) -> dict[str, str]:
     if rec.variant_attr and rec.variant_value:
         return {rec.variant_attr: rec.variant_value}
     return {}
+
+
+def recognition_for_slug(slug: str, node: Any) -> Recognition:
+    """Build a Recognition for a child whose slug the CALLER already resolved.
+
+    The child-resolution in ``run_mechanism_b`` is PARENT-SCOPED: a token under an
+    InnerBlocks parent can resolve via ``child_block_for_parent_token`` (G1) to a
+    slug the global ``recognise()`` would NOT pick (e.g. accordion ``__item`` ->
+    ``sgs/accordion-item``, not the global ``card`` alias — Spec 22 §FR-22-5.3).
+    The W3 child-lift collapse routes every child through ``build_block_markup``,
+    which needs a full Recognition; re-recognising the node here would DROP that
+    parent-scoped override. So: if global ``recognise()`` already agrees on the
+    slug, return its result verbatim (it carries the variant); otherwise rebuild
+    the Recognition for the caller's resolved slug, deriving the DB facts +
+    variant for THAT slug. DB-driven (R-22-1); names no block.
+    """
+    base = recognise(node)
+    if base.slug == slug:
+        return base
+    variant_attr, variant_value = variant_detect.detect_variant_for_node(node, slug)
+    return Recognition(
+        kind="named",
+        slug=slug,
+        container_kind=recognise_helpers.get_container_kind(slug),
+        has_inner_blocks=derive_has_inner_blocks(slug),
+        variant_attr=variant_attr,
+        variant_value=variant_value,
+    )

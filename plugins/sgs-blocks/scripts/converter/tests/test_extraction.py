@@ -14,7 +14,9 @@ from bs4 import BeautifulSoup
 
 from converter.context import ScalarLift, ContentGap, ChildBlock, ContentConservationError, Recognition
 from converter.recognition import recognise
-from converter.services.extraction import extract_content, build_block_markup, run_mechanism_a, run_mechanism_b
+from converter.services.extraction import (
+    extract_content, build_block_markup, run_mechanism_a, run_mechanism_b, run_mechanism_leaf,
+)
 from converter.services.draft_oracle import read_draft_field
 
 # ---------------------------------------------------------------------------
@@ -749,6 +751,140 @@ def test_build_block_markup_no_css_rules_behaves_as_before(monkeypatch):
         f"Canary content missing — no-css-rules path regressed:\n{markup}"
     )
     assert "sgs/testimonial" in markup, f"Block slug missing:\n{markup}"
+
+
+# ---------------------------------------------------------------------------
+# W3 named-leaf arm — the hero-CTA child-lift fix (council MF1/MF2/MF4)
+# These use the LIVE DB (sgs/button + sgs/multi-button are real blocks) so they
+# are the real integration proof, not stubbed.
+# ---------------------------------------------------------------------------
+
+
+def test_named_leaf_button_lifts_label_url_inheritstyle():
+    """A bare <a class="sgs-button sgs-button--primary" href="/shop"> must lift ALL
+    of {label, url, inheritStyle} — not just the primary 'label' attr (the hero-CTA
+    bug). The url is read ELEMENT-SELF (the draft has NO .sgs-button__link child;
+    council MF4) and inheritStyle from the --primary modifier (Spec 11 §4)."""
+    node = _node('<a class="sgs-button sgs-button--primary" href="/shop">Shop Now</a>')
+    rec = recognise(node)
+    assert rec.slug == "sgs/button" and rec.has_inner_blocks == 0
+    markup = build_block_markup(rec, node)
+    assert '"label":"Shop Now"' in markup, f"label dropped:\n{markup}"
+    assert '"url":"/shop"' in markup, f"url dropped (element-self href):\n{markup}"
+    assert '"inheritStyle":"primary"' in markup, f"inheritStyle (preset) dropped:\n{markup}"
+    # Over-lift guard (pre-commit MF): the leaf arm must emit the oracle's TIGHT
+    # {label, url} set — NOT a phantom iconTitle=label (iconTitle is also role
+    # text-content with a selector, but it is NOT the primary attr).
+    assert "iconTitle" not in markup, f"phantom iconTitle over-lifted:\n{markup}"
+
+
+def test_named_leaf_no_overlift_into_secondary_or_typed_attrs():
+    """The leaf arm must not dump element text into a block's SECONDARY text attrs
+    or its boolean/date attrs (DB role mis-seeds). A form-field-date leaf lifts only
+    its label — never minDate/maxDate; a post-grid leaf never sets showDate (boolean)."""
+    node = _node('<div class="sgs-form-field-date">Pick a date</div>')
+    rec = recognise(node)
+    if rec.slug == "sgs/form-field-date":  # guard: only assert if recognised as expected
+        results = run_mechanism_leaf(rec, node)
+        lifted = {r.attr for r in results if isinstance(r, ScalarLift)}
+        assert "minDate" not in lifted and "maxDate" not in lifted, (
+            f"date bounds over-lifted from element text: {lifted}"
+        )
+
+
+def test_named_leaf_extract_content_returns_scalar_lifts_not_gap():
+    """extract_content on a capability-less named leaf (sgs/button) routes to the
+    named-leaf arm and returns ScalarLifts for label + url — NOT the Case-4 gap."""
+    node = _node('<a class="sgs-button sgs-button--secondary" href="/order">Order</a>')
+    rec = recognise(node)
+    results = extract_content(rec, node)
+    lifted = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
+    assert lifted.get("label") == "Order", f"label not lifted: {results}"
+    assert lifted.get("url") == "/order", f"url not lifted: {results}"
+    assert not [r for r in results if isinstance(r, ContentGap)], (
+        f"named leaf with content must not emit a gap: {results}"
+    )
+
+
+def test_named_leaf_no_extractable_content_emits_gap():
+    """Conservation (Rule 4): a named leaf that lifts NOTHING emits a tracked
+    ContentGap, never a silent empty."""
+    node = _node('<a class="sgs-button"></a>')  # no text, no href
+    rec = recognise(node)
+    results = run_mechanism_leaf(rec, node)
+    assert results and isinstance(results[0], ContentGap), (
+        f"empty leaf must emit a ContentGap, got: {results}"
+    )
+
+
+def test_r6_strips_lifted_background_for_preset_button(monkeypatch):
+    """R6 (council MF2): once inheritStyle resolves to a PRESET, the lifted
+    style.color.background must be stripped (WP would paint it as a coloured wrapper
+    box; the face colour comes from is-style-<preset>). Background only, never text."""
+    import converter.services.extraction as ext_mod
+
+    def _fake_css_attrs(rec, node, css_rules, is_root):
+        # Simulate lift_root_supports_to_style lifting the button's background-color.
+        return {"style": {"color": {"background": "#f5c2c8", "text": "#2b2b2b"}}}
+
+    monkeypatch.setattr(ext_mod, "_build_css_attrs", _fake_css_attrs)
+
+    node = _node('<a class="sgs-button sgs-button--primary" href="/x">Go</a>')
+    rec = recognise(node)
+    markup = build_block_markup(rec, node, css_rules={"dummy": {}})
+
+    assert "#f5c2c8" not in markup, f"preset button background NOT stripped:\n{markup}"
+    assert "#2b2b2b" in markup, f"R6 wrongly stripped the TEXT colour too:\n{markup}"
+    assert '"inheritStyle":"primary"' in markup
+
+
+def test_r6_keeps_background_for_custom_button(monkeypatch):
+    """R6 negative: a button with no preset modifier (inheritStyle not a preset)
+    keeps its lifted background — custom buttons read style.color.background legitimately."""
+    import converter.services.extraction as ext_mod
+
+    def _fake_css_attrs(rec, node, css_rules, is_root):
+        return {"style": {"color": {"background": "#abcdef"}}}
+
+    monkeypatch.setattr(ext_mod, "_build_css_attrs", _fake_css_attrs)
+
+    # Bare sgs-button (no --primary/--secondary/--outline modifier) → inheritStyle unset.
+    node = _node('<a class="sgs-button" href="/x">Go</a>')
+    rec = recognise(node)
+    markup = build_block_markup(rec, node, css_rules={"dummy": {}})
+
+    assert "#abcdef" in markup, f"custom button background wrongly stripped:\n{markup}"
+
+
+def test_hero_cta_multi_button_button_recursion():
+    """The real recursion path: a sgs/multi-button group with two sgs/button children
+    must emit BOTH buttons with their own {label, url, inheritStyle} via the collapse
+    (every child routes through build_block_markup -> named-leaf arm)."""
+    node = _node(
+        '<div class="sgs-multi-button">'
+        '<a class="sgs-button sgs-button--primary" href="/a">Primary</a>'
+        '<a class="sgs-button sgs-button--secondary" href="/b">Secondary</a>'
+        '</div>'
+    )
+    rec = recognise(node)
+    assert rec.slug == "sgs/multi-button" and rec.has_inner_blocks == 1
+    markup = build_block_markup(rec, node)
+    # Both buttons present with their full attr sets.
+    assert markup.count("wp:sgs/button") >= 2, f"both buttons not emitted:\n{markup}"
+    assert '"label":"Primary"' in markup and '"url":"/a"' in markup
+    assert '"label":"Secondary"' in markup and '"url":"/b"' in markup
+    assert '"inheritStyle":"primary"' in markup and '"inheritStyle":"secondary"' in markup
+
+
+def test_none_has_inner_blocks_emits_loud_gap():
+    """MF5: extract_content reached with has_inner_blocks=None (corrupt/unrecognised
+    Recognition) must fail LOUD with a ContentGap, never a silent empty."""
+    rec = Recognition(kind="named", slug="sgs/button", container_kind="content",
+                      has_inner_blocks=None)
+    node = _node('<a class="sgs-button" href="/x">Go</a>')
+    results = extract_content(rec, node)
+    assert len(results) == 1 and isinstance(results[0], ContentGap)
+    assert "has_inner_blocks=None" in results[0].detail
 
 
 def test_build_block_markup_is_root_false_child_no_outer_layer(monkeypatch):

@@ -19,6 +19,7 @@ rating           aria-label / ★ glyph count             int 0-5 (STAR role onl
 icon-slug        data-icon / data-lucide / inline <svg> str slug | None
                  / BEM --<modifier>
 url-href         <a href> (element or descendant)        str | None
+link-href        ALIAS of url-href (DB scalar-attr role)  str | None
 plain-integer    element text verbatim                   str | None
 css-modifier     BEM --<modifier> suffix on element cls  str | None
 
@@ -132,9 +133,18 @@ def extract_field_value(element: Tag, role: str, media_map: dict | None = None) 
         return None
 
     # ------------------------------------------------------------------
-    # url-href — <a href> on the element itself or first descendant <a>
+    # url-href / link-href — <a href> on the element itself or first descendant <a>
+    #
+    # ``url-href`` is the array-schema role name; ``link-href`` is the DB role on
+    # scalar URL attrs (block_attributes.role — 30 attrs, e.g. sgs/button.url).
+    # They are the SAME operation (resolve the nearest <a href> via _safe_href), so
+    # link-href is a true ALIAS of url-href, never a parallel handler that can drift
+    # (Spec 31 §3.B.0 single-source role library; council MF3, 2026-06-30). For a
+    # leaf <a class="sgs-button" href> the element IS the anchor (element-self href),
+    # so this resolves the button's own href — the .sgs-button__link derived_selector
+    # is a DESCENDANT that does not exist on the real draft (council MF4).
     # ------------------------------------------------------------------
-    if role == "url-href":
+    if role in ("url-href", "link-href"):
         anchor = element if element.name == "a" else element.find("a")
         if anchor is not None and isinstance(anchor, Tag):
             raw = anchor.get("href", "")

@@ -51,7 +51,6 @@ from converter.services.content_select import (
     has_bem_element_descendant,
     select_one,
 )
-from converter.services.payload import extract_payload
 from converter.services.recognise_helpers import bem_element_to_canonical_slot
 from converter.resolvers.scalar_content import lift_scalar_content
 from converter.resolvers.array_content import lift_array_content
@@ -62,8 +61,9 @@ from orchestrator.converter_v2 import db_lookup
 
 # Emit-glue imports (stage 3 §1 walk/emit — design §1).
 # Imported here so that build_block_markup lives in the same service module.
-from converter.recognition import variant_attrs, recognise, build_ctx
+from converter.recognition import variant_attrs, recognise, recognition_for_slug, build_ctx
 from converter.orchestrator import emit_block_markup, process_element
+from converter.services.field_extractors import extract_field_value
 
 # SGS DB path — used to open a read-only connection for the CSS resolver dispatch.
 # Path is relative to the user's home dir (same convention as dev-setup.md).
@@ -181,48 +181,41 @@ def _child_content_for_node(
     css_rules: dict | None = None,
     media_map: dict | None = None,
 ) -> str:
-    """Produce the correct ChildBlock.content string for a resolved child node.
+    """Produce the FULL WP block markup for a resolved child node.
 
-    The ChildBlock.content field has a DUAL contract (consumed by build_block_markup
-    _child_markup helper):
+    W3 child-lift collapse (council MF4, 2026-06-30): the prior DUAL contract
+    (TEXT value for a scalar child via extract_payload + the primary attr; inner
+    markup for an InnerBlocks parent) is COLLAPSED. Every child now routes through
+    ``build_block_markup(is_root=False)`` — the ONE unified content+CSS+variant
+    dispatch (Spec 31 §3.B.0: identical recognise→content→CSS machinery whatever
+    the output form). ``ChildBlock.content`` therefore ALWAYS carries the child's
+    COMPLETE block markup; ``_child_markup`` returns it verbatim (no re-emit).
 
-      - primary_content_attr is non-None (e.g. sgs/heading → 'content'):
-          cb.content = TEXT value for that attr (via extract_payload with the attr's role).
-          emit_block_markup(slug, {attr: cb.content}, "") assembles the final markup.
+    Why the collapse is correct, not just cleaner:
+      - The old scalar branch lifted ONLY the child's primary content attr (label),
+        silently dropping every other content attr (url, etc.) — the hero-CTA bug.
+        Routing through build_block_markup runs the named-leaf arm, which lifts the
+        FULL attr set (label + url + inheritStyle).
+      - The old InnerBlocks-parent branch ALSO returned full child markup, but the
+        old _child_markup then RE-WRAPPED it via emit_block_markup(slug, {}, content)
+        — a latent double-wrap. Returning full markup once and emitting it verbatim
+        removes that bug.
 
-      - primary_content_attr is None (nested InnerBlocks parent):
-          cb.content = inner WP block markup string (recursive Mechanism B output).
-          emit_block_markup(slug, {}, cb.content) assembles the final markup.
+    ``child_slug`` is the caller's PARENT-SCOPED resolution (G1 child_block_for_parent_token
+    can override the global alias — Spec 22 §FR-22-5.3). recognition_for_slug
+    preserves it (re-recognising would lose accordion __item -> sgs/accordion-item).
 
-    This is the recursion seam for branch B (content-item block emitted)
-    and branch C (slug-None grandchildren). Mirrors what convert.py:4271-4274
-    achieved via a single walk() call (which naturally produced the right output
-    for the parent's emit path).
+    ``css_rules`` is threaded so the CSS pass (Spec 31 §3.A) fires for child nodes.
+    Children are non-root (is_root=False — layer_detect must not force OUTER, MF-3).
 
-    ``css_rules`` is threaded so the CSS pass (Spec 31 §3.A) fires for child
-    nodes when build_block_markup recurses. Children are non-root (is_root=False).
-
-    Returns "" if the child does not recognise or has no content.
+    Returns "" if the child does not recognise.
     """
-    primary_attr = db_lookup.primary_content_attr(child_slug)
-
-    if primary_attr is not None:
-        # Scalar child: extract the TEXT content via the attr's role.
-        # Look up the role from block_attrs so we use the right extractor.
-        attrs_info = db_lookup.block_attrs(child_slug)
-        attr_info = attrs_info.get(primary_attr, {})
-        role = attr_info.get("role") or "text-content"
-        return extract_payload(child_node, role)
-    else:
-        # InnerBlocks parent: recurse to produce inner block markup.
-        # is_root=False — children are never the section root (layer_detect
-        # must not force OUTER on them, per Spec 31 §3.A / layer_detect MF-3).
-        child_rec = recognise(child_node)
-        if child_rec.kind == "unrecognised" or child_rec.slug is None:
-            return ""
-        return build_block_markup(
-            child_rec, child_node, css_rules=css_rules, is_root=False, media_map=media_map
-        )
+    child_rec = recognition_for_slug(child_slug, child_node)
+    if child_rec.kind == "unrecognised" or child_rec.slug is None:
+        return ""
+    return build_block_markup(
+        child_rec, child_node, css_rules=css_rules, is_root=False, media_map=media_map
+    )
 
 
 def run_mechanism_b(rec: Recognition, section_root: Any, css_rules: dict | None = None, media_map: dict | None = None) -> list:
@@ -595,6 +588,98 @@ def expected_content_gaps(slug: str) -> list:
 
 
 # ---------------------------------------------------------------------------
+# Mechanism Leaf — named-leaf own-element content lift (W3 step B, council MF1)
+# ---------------------------------------------------------------------------
+
+
+def run_mechanism_leaf(rec: Recognition, node: Any, media_map: dict | None = None) -> list:
+    """Lift a recognised NAMED LEAF's OWN content (e.g. sgs/button).
+
+    A named leaf is a recognised block with a content slot but NO content-extraction
+    capability (``capabilities==frozenset()``) and ``has_inner_blocks==0``. Its content
+    lives on the leaf element ITSELF — text in its own body, href on its own ``<a>``,
+    variant in its own ``--modifier`` — NOT in ``.sgs-x__y`` descendants (the real draft
+    ``<a class="sgs-button" href>`` has no ``.sgs-button__link`` child; council MF4).
+
+    So this applies the SHARED ``field_extractors`` role handler to the NODE ITSELF for
+    every content-role attr the block declares. An attr is a content target when it has
+    BOTH a ``role`` AND a non-None ``derived_selector`` (the selector's PRESENCE marks it
+    a content slot; we read element-self, not the descendant). The handler does the rest:
+    ``text-content`` -> label, ``link-href`` -> url. Non-content roles
+    (``select-from-enum`` / ``layout``) return None from ``extract_field_value`` and are
+    skipped, so e.g. the button's ``widthType`` / ``minHeight`` are never mis-lifted.
+
+    ``inheritStyle`` (the ``--modifier`` style preset) has ``role=None`` and is resolved
+    SEPARATELY in ``build_block_markup`` (the convert.py:4994-5028 port + R6 strip).
+
+    Port source: convert.py:3364-3366 ``_atomic_attrs_for`` sgs/button branch
+    (``{label: rich-text, url: safe-href}``) — generalised DB-driven, no slug literal.
+    convert.py's leaf handlers are PER-TAG and emit a TIGHT set (button -> {label, url};
+    media-img -> {imageUrl, alt}; heading -> {content}). This generalises that without
+    a slug literal by lifting AT MOST ONE attr per content shape, NOT every role+selector
+    attr (council pre-commit MF, 2026-06-30 — the loose "all attrs" version over-lifted a
+    phantom iconTitle=label onto every button and dumped element text into date/boolean
+    attrs like targetDate/showDate/minDate; both confirmed live):
+
+      - ONE primary-TEXT — the block's ``primary_content_attr`` when it is a
+        ``text-content``/``content`` STRING (e.g. button.label, heading.content). Other
+        text attrs (button.iconTitle, consent.consentText) are NOT primary -> skipped.
+      - ONE image-object — the FIRST ``image-object``/object attr (e.g. media.imageUrl).
+        media's primary is ``caption`` not the image, so the image needs its own arm.
+      - ONE url — the FIRST ``link-href``/``url-href`` STRING attr (e.g. button.url).
+
+    The role<->attr_type guard (text<->string, image<->object, link<->string) defends the
+    known DB mis-seeds where a boolean/date attr carries role='text-content' (showDate,
+    minDate) — they fail the type guard and are skipped, never receiving string HTML.
+
+    Conservation (Rule 4 / STOP-27): a leaf that lifts NOTHING emits a tracked
+    ``ContentGap`` (never a silent empty).
+    """
+    results: list = []
+    primary = db_lookup.primary_content_attr(rec.slug)
+    catalogue = db_lookup.block_attrs(rec.slug)
+    image_lifted = False
+    link_lifted = False
+    for attr_name, info in catalogue.items():
+        if not isinstance(info, dict):
+            continue
+        role = info.get("role")
+        selector = info.get("derived_selector")
+        attr_type = info.get("attr_type")
+        if not role or not selector:
+            continue
+        is_text = (
+            attr_name == primary
+            and role in ("text-content", "content")
+            and attr_type == "string"
+        )
+        is_image = (not image_lifted) and role == "image-object" and attr_type == "object"
+        is_link = (
+            (not link_lifted)
+            and role in ("link-href", "url-href")
+            and attr_type == "string"
+        )
+        if not (is_text or is_image or is_link):
+            continue
+        value = extract_field_value(node, role, media_map or {})
+        if value is None or value == "":
+            continue
+        results.append(ScalarLift(attr=attr_name, value=value))
+        if is_image:
+            image_lifted = True
+        if is_link:
+            link_lifted = True
+
+    if not any(isinstance(r, ScalarLift) for r in results):
+        results.append(ContentGap(
+            rec.slug,
+            "named-leaf produced no content lift — element carried no extractable"
+            " text/href/media for any role+selector attr (flag to developer)",
+        ))
+    return results
+
+
+# ---------------------------------------------------------------------------
 # 3-case dispatch — the public entry point
 # ---------------------------------------------------------------------------
 
@@ -628,6 +713,18 @@ def extract_content(
     4. has_inner_blocks == 0 AND neither scalar-content-lift nor array-content-lift
        → loud ContentGap — DB capability gap; never a silent empty.
     """
+    # MF5 — None has_inner_blocks guard. Per context.py, has_inner_blocks is None
+    # ONLY when kind=='unrecognised' (slug also None); recognised blocks always carry
+    # an int (derive_has_inner_blocks). If a None reaches here the Recognition is
+    # unrecognised/corrupt — fail LOUD (Rule 4), never a misleading "no capability"
+    # gap and never a silent empty. Routed BEFORE caps (capabilities_for needs slug).
+    if rec.has_inner_blocks is None:
+        return [ContentGap(
+            rec.slug or "<unrecognised>",
+            "extract_content reached with has_inner_blocks=None — recognition is"
+            " unrecognised/corrupt; route via unrecognised_gap upstream",
+        )]
+
     caps = db_lookup.capabilities_for(rec.slug)
 
     # CAPABILITY TAGS queried against the DB capability set — NOT block or slot names.
@@ -672,6 +769,21 @@ def extract_content(
     # present — run the array arm alone (MF-6 explicit 4th arm before the gap case).
     if rec.has_inner_blocks == 0 and ARRAY_LIFT in caps:
         return run_mechanism_array(rec, section_root, media_map)
+
+    # Named-leaf arm (W3 MF1): a recognised leaf with a content slot but NO
+    # content-lift capability (e.g. sgs/button) lifts its OWN element's content via
+    # the shared field_extractors. Trigger is a DB SIGNAL (primary_content_attr
+    # present), NOT recognition kind — sgs/button is kind='named' (resolved via its
+    # sgs-button BEM root class), not kind='atomic'. Spacers/separators/decorative
+    # leaves (primary_content_attr None) fall through to the Case-4 loud gap, so
+    # element-self lifting never manufactures phantom content for them.
+    if (
+        rec.has_inner_blocks == 0
+        and SCALAR_LIFT not in caps
+        and ARRAY_LIFT not in caps
+        and db_lookup.primary_content_attr(rec.slug) is not None
+    ):
+        return run_mechanism_leaf(rec, section_root, media_map)
 
     # Fourth case: has_inner_blocks == 0 AND neither capability.
     # Loud, never silent — a DB-capability gap to surface and track.
@@ -885,11 +997,61 @@ def build_block_markup(
             if isinstance(_detected, str):
                 attrs[_variant_attr] = _detected
 
+    # step 5: inheritStyle resolution (port convert.py:4994-5007, W3 MF2). A button's
+    # style preset (primary/secondary/outline) is encoded in its --modifier BEM class
+    # (Spec 11 §4); render.php emits is-style-<preset>. Gated on the block declaring a
+    # STRING inheritStyle attr — distinguishes sgs/button's style ENUM from the BOOLEAN
+    # inheritStyle on text/heading/quote (setting a string on those suppresses their
+    # styling). DB-driven (R-22-1), universal over string-enum inheritStyle blocks
+    # (R-22-9), no slug literal. NOT a content role — read from the node's own class.
+    if (
+        rec.slug is not None
+        and "inheritStyle" not in attrs
+        and db_lookup.block_attrs(rec.slug).get("inheritStyle", {}).get("attr_type") == "string"
+    ):
+        _presets = db_lookup.inherit_style_presets()
+        _node_classes = section_root.get("class", []) if hasattr(section_root, "get") else []
+        for _cls in (_node_classes or []):
+            if not isinstance(_cls, str):
+                continue
+            _bem = db_lookup.parse_sgs_bem(_cls)
+            if _bem is None or not _bem.modifier:
+                continue
+            _mod = _bem.modifier.lower()
+            if _mod in _presets:
+                attrs["inheritStyle"] = _mod
+                break
+            # 'ghost' is the draft's term for the outline preset. A bare branch (NOT a
+            # dict literal) so the cheat-gate Check #9 suffix-dict detector cannot flag it.
+            if _mod == "ghost":
+                attrs["inheritStyle"] = "outline"
+                break
+
+    # step 6: R6 background-strip (port convert.py:5017-5028, W3 MF2). The CSS pass
+    # (_build_css_attrs -> lift_root_supports_to_style) lifts background-color into
+    # style.color.background; for a PRESET button WP paints that onto the
+    # .sgs-button-wrapper as a coloured box while the face colour comes from the
+    # is-style-<preset> class — so the lifted background MUST be removed (background
+    # only, never text). Custom buttons (inheritStyle absent/'custom') keep it.
+    if rec.slug is not None and attrs.get("inheritStyle") in db_lookup.inherit_style_presets():
+        _style = attrs.get("style")
+        if isinstance(_style, dict):
+            _colour = _style.get("color")
+            if isinstance(_colour, dict) and "background" in _colour:
+                del _colour["background"]
+                if not _colour:
+                    _style.pop("color", None)
+                if not _style:
+                    attrs.pop("style", None)
+
+    # ChildBlock.content is now ALWAYS the child's COMPLETE block markup (W3 MF4
+    # collapse) — emit it verbatim. The prior `if attr: emit_block_markup(slug,
+    # {attr: content}, "")` fork is DELETED: it dropped every non-primary content
+    # attr (the hero-CTA url/inheritStyle loss) and double-wrapped the InnerBlocks
+    # path. Deleting it atomically with the _child_content_for_node collapse is
+    # required — a stale fork would stuff full markup into an attr value (corruption).
     def _child_markup(cb: ChildBlock) -> str:
-        attr = db_lookup.primary_content_attr(cb.slug)
-        if attr:
-            return emit_block_markup(cb.slug, {attr: cb.content}, "")
-        return emit_block_markup(cb.slug, {}, cb.content)  # fallback for ambiguous/none
+        return cb.content
 
     inner = "".join(_child_markup(r) for r in results if isinstance(r, ChildBlock))
     return emit_block_markup(rec.slug, attrs, inner)
