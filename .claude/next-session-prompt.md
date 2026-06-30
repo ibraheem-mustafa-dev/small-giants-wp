@@ -1,59 +1,154 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: cloning-pipeline / CSS-resolver unification
-generated: 2026-06-29
-primary_goal: "FACT-CHECK the merged CSS-resolver unification BEFORE building anything else. Last session merged the unification to main (311c120f) but produced confident-but-UNVERIFIED claims (worst: an audit that said '9 routes' and hand-waved Bean's '17'). Task 1 = verify universality / route-coverage / no-cheating / the claimed DB-data gaps against GROUND TRUTH (wp-blocks dump + the ENTIRE Spec 31), via subagents that read the rules + known cheats first. Then justify (or reject) the OUT-OF-SCOPE deferrals and decide what to build next. Only AFTER fact-check: LANDED proof + interior-walker production-wiring. Do a full /handoff hygiene pass early (it was owed — last session ran out of context)."
+thread: cloning-pipeline / Phase W3 — interior-walker wiring + CSS↔content unification
+generated: 2026-06-30
+primary_goal: "Execute Phase W3 (Spec 31 §12.6 step-3): connect the two inert halves of the converter so wrapper CSS + content reach a real clone, draft-faithful. Start at W3 Step 1 — the design-gate council (G1–G5 disposition) + Bean sign-off — BEFORE any W3 code (Rule 7 / A14). Full 12-step plan: `.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md`."
 ---
 
-# Next session — FACT-CHECK the merged unification, THEN decide the build
+# Next session — Phase W3 (the keystone: wire the engine + LAND it)
 
 Invoke `/autopilot` before anything else.
 
-## ⛔ READ FIRST + the carry-forward (D101 — do NOT subtract)
-- `.claude/handoff.md` (2026-06-29) — the VERIFIED-vs-UNVERIFIED split. Trust only what's labelled verified-with-evidence.
-- **CARRY FORWARD the full STOP catalogue (STOP-1..29) + the pre-flight self-attestation ritual + the tiered MANDATORY READING GATE** from the PRIOR next-session-prompt — recover verbatim via `git show <prior-commit>:.claude/next-session-prompt.md` (the D247/D248 version) and re-merge them into this doc as your FIRST hygiene act. D101 forbids subtraction; this version was written under exhausted context and points to them rather than reproducing 29 verbatim. NEW STOP this session: **STOP-30 — a subagent's "covered / N routes / no-cheating" verdict is a HYPOTHESIS; the 9-routes audit confidently conflated REGISTRY-ids with routes + hand-waved the 17. Re-enumerate + verify against ground truth; never relay a count you didn't derive.** Also: a worktree dispatched via `isolation:worktree` may branch from a STALE base — always `git merge-base main <branch>` before trusting/merging a worktree's "all green".
-- `.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md` — read all of the spec document from start to finish. Regarding the tasks we have this session, these sections are especially important - §3 (the unified content+CSS routing algorithm) + §12 (the rebuild stages + §12.7 gap-to-stage map) IN FULL (Bean's instruction — not greps).
+**Agent identity.** You are the SGS cloning-pipeline engineer executing Phase W3 — the step that turns the converter from tested-but-inert parts into a live engine that converts an SGS-BEM draft into faithful native SGS blocks on the real homepage, zero cheats.
 
-## VERIFIED state (last session, evidence in handoff.md)
-CSS-resolver UNIFICATION merged to main **311c120f**: Option-A seam (per-decl `Write|list[Write]|GAP`, per-declaration TOTALITY + collision guard, `Write.value` int|float|str, `align_finalise` hook, `Ctx.area_name` + `layer_detect` GRID_AREA) + 5 resolvers (outer_box/content_band/grid/typography/grid_area; scalar_media A11-deferred). 176 converter tests pass; convert.py byte-identical (D-MODULAR); no hardcoded suffix vocab (the R-22-1 cheat Bean caught is DB-driven via `modifier_suffixes`); conservation catches a planted leak. Engine still INERT (STOP-28 — `build_block_markup` has no production caller).
+**State recap (plain English).** The new modular converter (`plugins/sgs-blocks/scripts/converter/`) has all its parts built + tested but they are INERT and DISCONNECTED — the CSS spine (`process_element` + 5 resolvers) and the content emit (`build_block_markup`/`extract_content`) both have ZERO production callers and don't call each other (verified D249, Finding A). The frozen `convert.py` still runs every live clone (D-MODULAR). W3 builds the top-level conductor that walks a draft node, drives BOTH halves into ONE emitted block, and LANDS it on a canary. The architecture is already specified (Spec 31 §3/§12.6/§12.7 + Register B); W3 is execution, gated per-stage.
 
-## TASK 1 — FACT-CHECK (do this BEFORE any build; dispatch subagents, then verify their findings yourself)
+---
 
-**1a — Universality + route-coverage + DB-data fact-check.** Enumerate what the dispatch ACTUALLY routes (read `converter/dispatch_table.py` `resolver_id` + `REGISTRY` + each resolver). Reconcile Bean's **"17 routes"** — figure out what the 17 are (likely the (layer/role × property-family × has_inner_blocks) routing branches, NOT the 9 REGISTRY ids) and verify EACH is covered-real / honestly-deferred / cheat. **Fact-check every claimed "DB-data gap"** (content_band's `contentBandPadding*`, grid_area FIX-A per-area max-width, scalar_media `media_signal` predicate, the `slots.standalone_block` 40/103) by running `python ~/.claude/hooks/wp-blocks.py dump` + `/sgs-db` — is the data REALLY missing, or is it a routing bug / conjecture? Read the ENTIRE Spec 31 to ground the universality claim (does the dispatch cover §3.A's 8 steps + §3.B's B1-B4 for every element shape?).
+## ⛔ THE 7 NON-NEGOTIABLE RULES (Bean-set; gate every change AND every council)
+1. **CONVERT, don't mirror** — output = native SGS blocks driven by attributes; NOT a div-by-div copy of draft classes/DOM.
+2. **NO CHEATS** — no `sourceMode='bound'` emit, no echo-`$content` passthrough, no hardcoded `!important`/default overriding faithful draft CSS. Only the live WC configurator `wc-product`/`sgs-cpt` is legitimate.
+3. **UNIVERSAL, no carve-outs** — a fix applies to every qualifying block/case; no per-block/per-slot exception. Over-broad universality is ALSO a break.
+4. **NO SKIPPING** — every draft content node + CSS declaration transfers, OR is EXCLUDED-with-reason, OR is a tracked GAP (ContentGap visible to F5). Zero silent drops.
+5. **VERIFY ON THE REAL HOMEPAGE** — live computed-style/innerText + draft-vs-clone. Emit-green ≠ rendered. WRITTEN (attr set) ≠ LANDED (renders on the page).
+6. **RESPONSIVE VALUES IN BLOCK ATTRIBUTES, never inline CSS.**
+7. **DESIGN-GATE sensitive/high-blast-radius changes** (shared wrapper, walker, converter, seeding, ledger, oracle, gates, EACH rebuild stage) via `/adversarial-council` or `/qc-council` + Bean approval BEFORE building. The W3 walker-port is EXACTLY this — its own design-gate is W3 Step 1.
 
-**1b — Comprehensive cheat / rule-break sweep (subagents).** Dispatch ≥2 cross-model subagents, each FIRST reading: the 7 project rules (project CLAUDE.md §⛔), R-22-1..R-22-15 (decisions.md / Spec 22 §6), the STOP catalogue, and the known-cheats list (no `sourceMode='bound'`, no echo-`$content`, no hardcoded `!important`/default/dict/suffix overriding faithful CSS, no slug literals, no input-class≠output-class, no silent drops). Then have them comprehensively search the MERGED converter (`converter/**`) for ANY rule-break or cheat — file:line evidence, no hand-waving. Fact-check their findings against ground truth (a finding is a hypothesis — STOP-15/STOP-30).
+## ⛔⛔ MANDATORY READING GATE (Bean directive: verify against ground truth, never guess; read WHOLE docs/files, not greps). Tick each in your first message:
+1. ☐ **`.claude/handoff.md` (2026-06-30)** — the D249 fact-check outcome + the W3 entry. AND **`.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md`** — the 12-step W3 plan you are executing.
+2. ☐ **The new converter engine** (`plugins/sgs-blocks/scripts/converter/`, a SIBLING of `scripts/orchestrator/`): `orchestrator.py` (`process_element` — CSS spine, **no production caller** — the gap W3 Step 7 closes) + `services/extraction.py` (`extract_content`/`build_block_markup`/`run_mechanism_b` — the current flat content path) + `resolvers/*` (the 5 REAL CSS resolvers) + `dispatch_table.py`. Task-1 fact-check of this is DONE (D249) — read the findings, don't re-litigate.
+3. ☐ **`.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md`** — §1 "ONE lift path" (the COMPLETE function inventory, in FULL — names the working content + walker functions) + §3 (unified content+CSS routing) + §3.B3 (child-routing G1–G5) + §2 Axis-3 + §12.0/§12.6/§12.7 (stage map).
+4. ☐ **The W3 port-SOURCE in `convert.py` (read-to-port SANCTIONED for working functions — STOP-22 carve-out):** `_route_composite_interior` (:4124) + the single-recursive walker (FR-22-3) + `_lift_styling_attrs_by_selector` (:3903) + its 5-helper closure + the array path (B4, PARTIAL even here). The meaty read — do it before W3 Step 4.
+5. ☐ **`.claude/decisions.md` (head → D249)** — D249 = the fact-check; D247/D246/D245/D244/D229. Verify D-ceiling: `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` → D249.
+6. ☐ **`.claude/specs/22-...`** — FR-22-2/2.1/2.2 (child-vs-scalar fork) + FR-22-3 (single-recursive walker) + §FR-22-5.3 (the SLOT-KEYED `slot_has_equivalent_block`, NOT `equivalent_block_for`) + R-22-* rules.
+7. ☐ **`.claude/state.md` + `.claude/parking.md` + `.claude/OUT-OF-SCOPE-NOTES.md`** (the reality-first stage map) + the foundation modules (`ledger/` F2, `oracle/` F3, `cheat-gate/` incl. the new Check #9, `coverage-matrix/`, `db-consistency/` F6) + `orchestrator/converter_v2/db_lookup.py`.
+8. ☐ `pipeline-state/<latest-run>/{leftover-buckets,extract,trace}.json` — raw artefacts before ANY converter-quality conjecture.
+9. ☐ **Register A + B (the W3 port spec, verbatim):** `git show 71a7fbad:.claude/next-session-prompt.md` — B1 full-walker / B2 styling-lift+`_bp_decls` / B3 arrays-as-is / B4 ambiguous-attr / B5 G1–G5 disposition / B-order.
 
-**1c — OUT-OF-SCOPE-NOTES.md** was NEVER written last session (the agent was killed). Audit every deferral: is it JUSTIFIED (a real named Spec 31 stage) or conjecture/avoidable? Map each to its stage (padding-shorthand pre-dispatch expansion; FIX-A; scalar_media A11; content_band DB-routing; align-items→OUTER/VerticalAlign D172; interior-walker wiring; A1 media-map; A2 content-ledger). Then DECIDE what to build next.
+## Pre-flight self-attestation ritual (answer in your first message)
+1. Have I completed the READING GATE — handoff.md (2026-06-30) + the W3 plan + Spec 31 §1/§3/§12 + the convert.py walker (`_route_composite_interior`/FR-22-3) + decisions.md→D249 + Spec 22 (FR-22-2/2.1/2.2 + FR-22-3 + §FR-22-5.3) + Register A/B? (Quote one specific thing — a §1 inventory line, or the `_route_composite_interior` 3 branches — to prove it.)
+2. What branch + D-ceiling? (`git branch --show-current` → main; `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` → D249.) Anything uncommitted that's MINE? (lucide/phase4/theme-handoff are NOT mine.)
+3. Am I running the W3 Step-1 DESIGN-GATE (council + G1–G5 disposition + Bean sign-off) BEFORE any W3 code, and FACT-CHECKING every council finding against ground truth (STOP-15) before acting on it? **And verifying every subagent "covered / N-routes / no-cheating / tests-pass" claim against ground truth MYSELF (STOP-30) — never relaying a count I didn't derive?**
+4. For W3, am I PORTING the working walker faithfully (read-to-port sanctioned, STOP-22 carve-out) — NOT recreating it (STOP-25) — and gating on draft-vs-clone LANDED (computed-style/innerText, input-class≠output-class checked, STOP-21/23) + Bean sign-off — not emit-green, not a passing self-test alone (Rules 4/5, A14)?
+5. For any subagent: did I tell it "implement only your assigned files / RETURN findings; do NOT write shared docs or touch the shared git tree" (STOP-2)? Am I verifying its test/gate claims from the canonical cwd + proving the FAILURE path (STOP-16)?
 
-## AFTER TASK 1 — what to do next (Tasks 2-6, each GATED on Task 1's findings + Bean sign-off)
-Task 1 is fact-finding; it DECIDES the rest. Once it's done + Bean signs off, proceed IN ORDER (each gated by the prior landing):
-- **Task 2 - REMEDIATE Task-1 findings.** Fix any cheat/rule-break the sweep found (file:line). Seed any GENUINE DB-data gap (a real `wp-blocks dump`-confirmed missing row, NOT a routing bug) via the `ATTR_CLASSIFICATION_OVERRIDES` channel + a dated migration + full `/sgs-update` reseed (STOP-24 — never a hardcoded dict/manual edit). Close or justify each OUT-OF-SCOPE deferral against its named Spec 31 stage.
-- **Tasks 3-5 = the build stages below**, in order.
-- **Task 6 - GENERALISE + DECOMMISSION convert.py** (Spec 31 Section 8 trigger): once the multi-shape fixture set is TRANSFER-and-LAND green across all draft composites, DELETE the frozen convert.py. That is the proof the rebuild is complete. END-GOAL = the universal pipeline: any SGS-BEM draft becomes faithful native SGS blocks on the real homepage, zero cheats, Bean as QC only.
+## ⛔ ANTI-PATTERN STOP CATALOGUE (carried forward, D101 — verbatim; do NOT subtract)
+- **STOP-1 — READ before you conjecture.** Verify every claim (yours, a subagent's, a doc's, a metric's) against ground truth — live code (file:line), the DB, decisions.md, the raw run artefacts. The reading gate is non-skippable. (blub 353.)
+- **STOP-2 — Subagents RETURN data / implement assigned files; NEVER write shared files.** Opus orchestrates all shared-file writes; commit valuable artefacts BEFORE dispatching.
+- **STOP-3 — The ledger/oracle input is the DRAFT/rendered-clone, NOT the converter's recognised set.** (Spec 31 §12.2.1.)
+- **STOP-4 — WRITTEN ≠ LANDED.** "An attr was emitted" is a progress signal, never a gate.
+- **STOP-5 — Stage-by-stage is the BUILD ORDER; the ledger+oracle is the cross-stage TEST.**
+- **STOP-6 — A gate that EXISTS but isn't WIRED-TO-SOMETHING-THAT-RUNS protects nothing.** The F5 gates run on every CC `git commit` (`.claude/hooks/f5-commit-gate.py`). Before claiming "enforced", grep the wiring + confirm it RUNS.
+- **STOP-7 — Hardcoded wrapper/converter defaults are CHEATS to remove, not blockers** (R-22-1).
+- **STOP-8 — Device-tier ≠ arbitrary visual breakpoints.** Device-tier = {767/768, 1023/1024}; a single-rule visual breakpoint (600/640/781) is legitimate + must NOT be snapped to a tier.
+- **STOP-9 — Composites are NEVER a separate system; variant grids are DB-defined** (`variant_slots` + `blocks.variant_attr`; query, don't guess).
+- **STOP-10 — Empty cloned section = usually a cv2 soft-fail, NOT a recognition miss.** Read extract.json `status` + trace.jsonl FIRST; gate on `innerText.length>0`. A content-gated block renders EMPTY without content BY DESIGN.
+- **STOP-11 — SCHEMA enumeration ≠ USAGE enumeration.** Knowing an attr/column/function EXISTS is necessary but NOT sufficient; grep the real signature + how it's WRITTEN and READ first. (The `content_attrs_with_selector` deletion in W3 Step 11 needs this — grep every reader before removing.)
+- **STOP-12 — A cross-environment verifier must be apples-to-apples; reusing infra ≠ inheriting its assumptions** (D233).
+- **STOP-13 — A cross-FAMILY rater catches what same-family review misses; if its tooling is broken, stand in with a structured branch trace** (D234).
+- **STOP-14 — Before ARMING any gate, run it in report mode against CURRENT output + baseline today's legacy violations (key by identity, not line); fail only on NEW** (D236).
+- **STOP-15 — Validate routing/variant claims against pipeline-PRODUCIBLE inputs, not synthetic dicts; run an adversarial-council AFTER a qc-council; then FACT-CHECK the council against ground truth** (D237/D242 — a council finding is a HYPOTHESIS).
+- **STOP-16 — A subagent's "N tests pass / gate green" is a HYPOTHESIS.** Re-run the suite + the gate's `--check` YOURSELF from the CANONICAL cwd (`plugins/sgs-blocks/scripts`, `--import-mode=importlib`); prove the FAILURE path; inspect the committed baseline for stale plants.
+- **STOP-17 — A coverage/no-drop/diff gate's set-difference join must key BOTH sides on the FULL unit identity incl. responsive tier/media; red-team a BUILT gate before trusting it** (D240).
+- **STOP-18 — Don't defer residuals out of habit; fact-check each against ground truth first** (D241). Label each DONE-NOW / DISMISSED-with-evidence / DEFERRED-with-cited-blocker. (Arrays B4/FR-22-2.5 is PARTIAL even in convert.py — decide by fixture-set evidence, not habit.)
+- **STOP-19 — A path-scoped `git commit -- $(...)` can DROP the source-path deletion of a `git mv`.** After any rename commit, verify `git ls-tree -r HEAD --name-only | grep <oldpath>`; commit by an explicit path list naming BOTH sides of every rename.
+- **STOP-20 — Restructure a multi-file rebuild as a VERTICAL SLICE (one real output LANDED), not a horizontal scaffold of empty stubs; make LANDED the headline signal; DOUBLE-VERIFY a design before build then FACT-CHECK the verifiers** (D242).
+- **STOP-21 — A new-engine resolver is only LANDED-proven by deploying its GENUINE output to a live page + computed-style/innerText + verdict — NOT by new-vs-frozen attr equivalence** (D243). Recipe: build markup via the engine → `orchestrator.emit_block_markup()` → REST-create a FRESH canary page (guard-safe; the wp-content-guard blocks post_content REWRITES, not REST page CREATE) → anonymous Chrome-DevTools/Playwright `getComputedStyle`/innerText (no admin bar) → require the OUTPUT marker + non-default. Delete the test page + 404-confirm. Creds: `.claude/secrets/sandybrown.env` (grep/cut, never `source`).
+- **STOP-22 — The frozen `convert.py` is NEVER the design reference or the fact-check oracle for a rebuild stage — WITH ONE CARVE-OUT (D246).** Authority = Spec 31/22 + the modern DB tables + the draft. `convert.py` is consulted only to (1) NAME the bug being killed; (2) READ-TO-PORT a function Spec 31 §1's "ONE lift path" names as WORKING + in-scope for modularisation (the W3 walker `_route_composite_interior`/FR-22-3, `_lift_styling_attrs_by_selector`, the working scalar functions ARE the port source — reading them in full to port faithfully is MANDATORY). Tell raters to fact-check against Spec+DB+draft, never the BROKEN engine logic.
+- **STOP-23 — Run a pre-commit `/qc-council` on the BUILT converter code, not just the design** (blub 255). Input class ≠ output class is a live trap (draft `__author` → render `__name`): verify render.php reads the attr you write AND paints the element you check (WRITTEN-not-LANDED).
+- **STOP-24 — A DB change to a column `/sgs-update` RE-DERIVES (role/canonical_slot/derived_selector) must use the reseed-surviving `ATTR_CLASSIFICATION_OVERRIDES` channel (sgs-update-v2.py), not a bare migration** (a reseed overwrites a bare migration). Pair the override with a dated migration.
+- **STOP-25 — A rebuild's "fresh/modular" = RE-HOUSE the existing WORKING logic into smaller files behind one dispatch; NEVER recreate it with new logic + new DB columns.** Read the WHOLE spec/file holistically; enumerate what ALREADY works (Spec 31 §1); PORT working code rather than re-derive. A council "X is missing from the spec" is a HYPOTHESIS about the spec TEXT — ask "is X actually missing, or elsewhere in the same system?" before adding a parallel mechanism.
+- **STOP-26 — Before designing ANY rebuild stage, read the WHOLE target spec holistically (not greps), and state Spec 31 §1's COMPLETE function inventory in plain English BEFORE the first design sketch.** §1 is the SYSTEM MAP naming what exists+works vs what is genuinely absent.
+- **STOP-27 — A regression/conservation guard is `raise`, NEVER a bare `assert`.** `python -O` strips `assert`, silently disabling the guard (a Rule-4 silent-drop hole). Audit any new guard — if it protects against a silent drop, it must `raise`/emit a loud `ContentGap`.
+- **STOP-28 — Do NOT seat the new engine (`build_block_markup`/the W3 walker/`process_element`) into the PRODUCTION dispatch/clone path until A1-FULL (media-map loader, W3 Step 8) AND A2 (content conservation-ledger, W3 Step 9) are both green.** The "can't bite a real clone yet" safety rests on no production caller existing. Gate the wiring on both being green — structural precondition, not a memory item.
+- **STOP-29 — BIND DEFINITION-OF-DONE TO THE SPEC'S FULL SCOPE; never ship a minimum increment and call the rest "out of scope".** Read the subsystem's COMPLETE spec section first; set done = the spec's FULL universal scope; map every not-built part to a named spec STAGE (or a data-model item). The universal stream = identify → migrate content → transfer attached CSS, for EVERY element, ONE dispatch.
+- **STOP-30 — A subagent's "covered / N routes / no-cheating" verdict is a HYPOTHESIS; the 9-routes audit confidently conflated REGISTRY-ids with routes + hand-waved the 17. Re-enumerate + verify against ground truth; never relay a count you didn't derive.** Also: a worktree dispatched via `isolation:worktree` may branch from a STALE base — always `git merge-base main <branch>` before trusting/merging a worktree's "all green".
+- **STOP-31 (NEW, D249) — A commit-blocking static gate must be scoped to the cheat's ACTUAL syntactic context (e.g. a side-suffix regex flagged ONLY inside `re.*` call args), NOT all string constants — else it false-positives on docstrings/prose that quote the pattern.** Plant-test every new gate (it FIRES on each real cheat kind) AND verify it stays SILENT on a docstring that merely quotes the cheat, BEFORE wiring it. Caught in QC this session: Check #9 (`check_converter_source.py`) flagged its own docstring; fixed by scoping the side-regex detector to `re.*` calls + `visit_Call`.
 
-### Build stages (Tasks 3-5, in order; only AFTER Task 1 + Task 2 + Bean sign-off)
-1. **LANDED proof** for ≥1 resolver via genuine `emit_block_markup` on a canary (STOP-21 recipe) — resolvers are WRITTEN, not LANDED; this is the real faithfulness gate.
-2. **Interior-walker wiring** (Spec 31 §3.B3 + the Ctx-builder that populates `area_name` + walks the draft + drives the dispatch) — makes the resolvers reach a real clone.
-3. **A1 (media-map loader) + A2 (content conservation-ledger)** — STOP-28 preconditions before production-wiring.
+---
 
-## Skills / Tools / Agents
-| Use | For |
-|-----|-----|
-| `/qc-council` · `/adversarial-council` | the cheat-sweep + the route-coverage verdict (cross-model raters; fact-check their output) |
-| `/sgs-wp-engine` · `/sgs-db` · `python ~/.claude/hooks/wp-blocks.py dump` | DB-data fact-check (the authoritative source) |
-| `/systematic-debugging` · `/verify-loop` | root-cause + 2-attestation per load-bearing claim |
-| `/dispatching-parallel-agents` · `/subagent-driven-development` · `/subagent-prompt` | the subagent sweeps (RETURN data, never write shared files — STOP-2) |
-| `/sgs-clone` · Playwright/Chrome-DevTools | the LANDED proof (creds `.claude/secrets/sandybrown.env`) |
-| `/handoff` · `/doc-audit` · `/capture-lesson` | the OWED hygiene pass + session close |
-| `wp-sgs-developer` agent | heavy build (interior-walker wiring) |
+## W3 ORCHESTRATION PLAN
+Full 12-step detail (16-field step blocks, QA gates, KJCs, pre-written prompts): **`.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md`**. Execute in order; each step's `Marker`/`Deps`/`Prompt` are in the plan. Summary:
 
-## OWED HYGIENE (do early — last session ran out of context)
-- Full `/handoff`: assign a D-number for the unification merge (311c120f); update state.md's next-action cleanly (it drifted + couldn't be edited last session — the hook may inject a stale "BUILD W3"); registry/parking/docscore.
-- Re-merge the full STOP catalogue + ritual + reading gate (above).
+| Step | What | Execution | /qc gate after | Acceptance |
+|------|------|-----------|----------------|------------|
+| 1 | DESIGN-GATE council + G1–G5 disposition + Bean sign-off | inline Opus + /qc-council | — (this IS the gate) | every G1–G5 row labelled DONE-BY-PORT/CLOSE-IN-W3/DEFER; Bean signs |
+| 2 | Port the 5 styling helpers | Sonnet via /subagent-driven-development | QA Gate A | helpers convert.py-faithful, tested |
+| 3 | Port `_lift_styling_attrs_by_selector` + `_bp_decls` + wire | Sonnet | QA Gate A | responsive typography/colour LANDS in tests |
+| 4 | Port the FULL `_route_composite_interior` walker (B1, 3 branches) | **inline Opus** (HIGH-risk) | QA Gate B | hero split image + slug-None content CSS route (no evaporation) |
+| 5 | Arrays port-as-is + TODO (B3) | Sonnet | QA Gate B | array lift convert.py-faithful, no slug literals |
+| 6 | B4 ambiguous-attr → loud ContentGap | Sonnet | QA Gate B | ambiguous emit is tracked, not silent |
+| 7 | **KEYSTONE** — conductor unifies CSS+content into ONE emit | **inline Opus** | QA Gate C | `process_element` gets a production caller; both halves connected |
+| 8 | A1 media-map loader | Sonnet | QA Gate C | srcs remap to WP URLs on a wired run |
+| 9 | A2 content-conservation ledger (`declare_input` → content units) | inline Opus + Sonnet | QA Gate C | a dropped content node shows UNACCOUNTED |
+| 10 | **LANDED proof** on a canary (hero split, 375/768/1440) | inline Opus + Playwright | — | computed-style matches draft; Bean signs (R-22-13) |
+| 11 | Delete dead `content_attrs_with_selector` (grep 0 readers, STOP-11) | Sonnet | — | 0 readers, suite green |
+| 12 | Commit (split per R-22-5) + D-number + /handoff | inline | — | main carries W3; handoff written |
 
-## Pre-flight ritual (answer in your first message)
-1. Quote one VERIFIED fact from handoff.md (with how it was verified) to prove you read it — not the summary.
-2. `git branch --show-current` (→ main), `git rev-parse --short HEAD` (→ 311c120f or later), D-ceiling (`grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1`).
-3. Am I FACT-CHECKING (Task 1) before building, and verifying every subagent "covered/N-routes/no-cheating" claim against ground truth myself (STOP-30)?
-4. Did I read the ENTIRE Spec 31 §3 + §12 (not greps) before judging universality?
+**Dependency graph:**
+```
+Step 1 (design-gate, Bean sign-off)
+  ↓
+Step 2 → Step 3 → QA Gate A
+  ↓
+Step 4 (walker, inline Opus) + Step 5 + Step 6 → QA Gate B
+  ↓
+Step 7 (KEYSTONE unification, inline Opus)
+  ↓
+Step 8 + Step 9 → QA Gate C
+  ↓
+Step 10 (LANDED proof + Bean sign-off)
+  ↓
+Step 11 → Step 12 (commit + handoff)
+```
+
+## Methodology guardrails (do not skip)
+- **Deploy before measure** — any LANDED check requires the genuine emit deployed to the live canary (STOP-21 recipe) BEFORE any computed-style read. A read against stale output measures nothing.
+- **Root cause before instance fix** — when a section fails, ask "what's the class of failure?" (converter / walker / DB) before a per-section tweak.
+- **Outcome vs completion** — code shipped ≠ outcome. W3 is done only when a composite LANDS draft-faithful (Step 10), not when the walker compiles.
+- **/qc-council BEFORE every commit** touching converter/walker/SGS-block logic (blub 255). **Per-section cropped pixel-diff** via `--selector`, never full-page (blub 256).
+- **WRITTEN ≠ LANDED; verify on the real homepage** (Rules 4/5). Gate every probe on `innerText.length>0` (empty section = false win, STOP-10).
+- **convert.py stays byte-identical** (D-MODULAR) — never edit the frozen engine; the new conductor lives behind a flag until Step 10 proves it.
+
+## Skills to Invoke
+| Skill | When to use |
+|-------|-------------|
+| `/brainstorming` | architectural decisions (e.g. the conductor's Ctx contract, MF-2) |
+| `/gap-analysis` | grade any output before delivery |
+| `/lifecycle` | before any skill/agent/pipeline change |
+| `/research` | auto-routes if a W3 unknown surfaces (unlikely — Register B is pre-resolved) |
+| `/strategic-plan` | only if W3 scope shifts materially |
+| `/qc-council` · `/adversarial-council` | Step 1 design-gate + every pre-commit on converter/walker code (STOP-23) |
+| `/subagent-driven-development` · `/subagent-prompt` · `/delegate` | Steps 2,3,5,6,8,11 (dispatch; prompts in the plan) |
+| `/systematic-debugging` · `/verify-loop` | Step 4/7 regressions + 2-attestation per load-bearing claim |
+| `/sgs-clone` · `/sgs-db` · `/wp-blocks` | DB ground-truth; the LANDED run |
+| `/handoff` · `/capture-lesson` | session close |
+
+## MCP Servers & Tools
+| Tool | What to use it for |
+|------|-------------------|
+| Playwright / chrome-devtools | Step 10 LANDED proof (anonymous computed-style at 375/768/1440) |
+| `python ~/.claude/hooks/wp-blocks.py dump` · `sgs-db.py` | schema/DB ground-truth before any "missing X" claim |
+| REST (Store-API basic auth) | Step 10 guard-safe canary page CREATE (creds `.claude/secrets/sandybrown.env`) |
+
+## Agents to Delegate To
+| Agent | When |
+|-------|------|
+| `wp-sgs-developer` | heavy W3 build steps (walker port, conductor) if dispatched |
+| `code-reviewer` (feature-dev) | pre-commit review on the walker/conductor diffs |
+
+## Guardrails (commands)
+- Tests: `cd plugins/sgs-blocks/scripts && python -m pytest converter/tests cheat-gate/tests -q --import-mode=importlib` (176+45 baseline; never let the count drop).
+- Cheat gate: `python cheat-gate/run.py --check` must exit 0 (Check #9 now armed — a NEW className-write/suffix-dict fails it; DB-source it, don't baseline).
+- Branch: `git branch --show-current` → main; D-ceiling D249; commit path-scoped (lucide/phase4/theme-handoff are NOT yours).

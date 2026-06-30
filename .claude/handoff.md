@@ -1,42 +1,52 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-thread: cloning-pipeline / CSS-resolver unification
-session_date: 2026-06-29
-written_under: NEAR-EXHAUSTED CONTEXT — lean capture; a FULL /handoff hygiene pass (docscore, registry walk, D-number assignment, parking sweep, STOP-catalogue carry-forward) is OWED next session.
+thread: cloning-pipeline / D249 fact-check + remediation + W3 plan
+session_date: 2026-06-30
 ---
 
-# Handoff — 2026-06-29 (CSS-resolver unification merged; route-coverage UNVERIFIED)
+# Session Handoff — 2026-06-30
 
-## ⛔ NEXT SESSION TASK 1 — FACT-CHECK THIS HANDOFF + THE ROUTE COVERAGE BEFORE BUILDING
-This session repeatedly produced confident-but-unverified subagent claims (the worst: an audit that reported "9 routes" confidently and hand-waved the "17 routes" Bean asked about — conjecture, NOT verified). DO NOT trust any "covered / no-cheating / N routes" claim below or in the agent transcripts until re-checked against ground truth (dispatch_table.py + each resolver + the DB + the draft). Separate VERIFIED from UNVERIFIED on sight; treat every unlabelled claim as suspect.
+## Completed This Session
+1. **FACT-CHECKED the merged CSS-resolver unification (D249)** — verified every claim from the `311c120f` merge at file:line + DB myself (STOP-30); two cross-model subagents corroborated. **Headline (Finding A):** the engine is TWO disconnected, INERT halves — `process_element` (CSS spine) + `build_block_markup` (content emit) both have ZERO production callers and never call each other; wrapper CSS has no path to a clone (WRITTEN, never LANDED). Frozen `convert.py` still runs every live clone.
+2. **Resolver/DB findings verified:** 5 CSS resolvers REAL (outer_box/content_band/grid/grid_area/typography); `scalar_content.resolve` + `scalar_media` are stubs; the `__init__.py` "6 GAP-stubs" docstring was STALE. `contentBandPadding*` attrs EXIST (name-divergence mapping bug, not missing data). `slots.standalone_block` 40/103 confirmed. "17 routes" has NO basis in Spec 31 (grep-confirmed) — dropped in favour of the §5 matrix + §12.2.1 ledger.
+3. **Cheat sweep verified:** LIVE emit path clean of all banned cheats. Violations were 1 live R-22-1 (`_TIER_SUFFIX`) + dead-ported className-mirror (`text_leaf.py`) + suffix dicts (`fold_helpers.py`).
+4. **D249 pt.1 (`6f96e36a`):** DB-sourced `_TIER_SUFFIX` (Spec 31 §4) + fixed stale docstring + hygiene (D249 logged, OUT-OF-SCOPE-NOTES rewritten reality-first per Bean, state.md pointer).
+5. **D249 pt.2 (`1dc6d26f`):** purged the quarantined className-mirror + DB-sourced the dead `fold_helpers` suffix dicts, AND armed a NEW Check #9 (`cheat-gate/check_converter_source.py`) — static AST gate over the converter/ tree (className-writes + suffix-vocab dicts + side-regex), DB-sourced vocab, plant-tested, false-positive-fixed in QC.
+6. **W3 phase-plan written (`cb6b4b64`):** `.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md` — executable 12-step plan for the keystone (wire both halves into one emit + faithful walker port + LANDED proof).
 
-## VERIFIED THIS SESSION (I personally ran the check — evidence noted)
-- **CSS-resolver unification MERGED to main at `311c120f`** (merge of branch unify-v2). Fast-forward was impossible (main had moved to 688788a2 via 3 docs/config commits — no converter overlap, confirmed by `git diff --name-only`); merged via `--no-ff`.
-- **176 converter tests pass** (`python -m pytest converter/tests -q --import-mode=importlib` from `plugins/sgs-blocks/scripts`, run by me on main post-merge; 1 skip, 2 xfail = the honest scalar_content/scalar_media stubs).
-- **convert.py + fold_helpers/text_leaf/button_group byte-identical** vs c3014874 (`git diff --stat` empty — I ran it). D-MODULAR held.
-- **No hardcoded side/breakpoint suffix vocab in live resolver code** (I grepped: `re.sub`/`_BP_SUFFIX_MAP`/frozenset over Top|…|Mobile — none; only docstrings).
-- **Conservation catches a planted leak** — I monkeypatched a resolver to return None → `ConservationError: TOTALITY: 1 declarations produced 0 routed results`. Proven myself, not trusted.
-- **R-22-1 hardcoded-suffix cheat fixed** (Bean caught it): `grid_area.py` regex `(Top|Right|Bottom|Left)(Mobile|Tablet|Desktop)?` → DB-driven via new `db_lookup.modifier_suffixes(kind)` + `unit_companion_attr(attr,conn)`; a 2nd violation (`styling_content._BP_SUFFIX_MAP`) also DB-driven. Suffixes confirmed DB-owned in `modifier_suffixes` (side/breakpoint/unit).
+## Current State
+- **Branch:** main at cb6b4b64 (pushed)
+- **Tests:** 176 converter pass (1 skip, 2 xfail) + 45 cheat-gate pass
+- **Build:** n/a (Python converter; no npm build this session). convert.py byte-identical (D-MODULAR).
+- **Uncommitted changes:** none of mine. Pre-existing not-mine: `lucide-icons.php`, phase4 reports, theme-handoff deletions (`.claude/handoff-theme.md`, `next-session-prompt-theme.md`).
 
-## BUILT THIS SESSION (verified to TEST/GATE level, NOT to LANDED)
-- **The Option-A seam:** `process_element` accepts `Write|list[Write]|GAP`; conservation = per-declaration-result TOTALITY + a collision guard (duplicate-attr in one decl raises); `Write.value` widened int|float|str; `align_finalise` element hook; `Ctx.area_name` + `layer_detect` GRID_AREA branch.
-- **5 resolvers** (outer_box/content_band/grid/typography/grid_area) built REAL against main's reused helpers. scalar_media stays UNIMPLEMENTED_STUB (A11-deferred — media_signal has no DB predicate yet; the media CONTENT lift already lives in the content branch).
-- **STOP-23 3-rater qc-council** on the built code found 2 real bugs (align_finalise tier-blind → wrong align:"full" on tablet-only max-width; synthetic Write `property="max-width"` mis-keyed the F5 ledger) + should-fixes — ALL fixed + re-verified (added tests for both).
-- **Evidence gate hardened + de-bugged + committed** (4704b12 + later): covers `.py`, converter surface requires `spec=22|31` citation, ignores tool-result boundary entries; the stale `.sgs-gate-off` flag (off for ~10 days) deleted.
-- **Session-grounding fix prompt** committed (`.claude/plans/2026-06-29-cc-session-grounding-fix-PROMPT.md`) — the GAP-1 SessionStart spec-anchor hook is now LIVE (it injected this session).
+## Known Issues / Blockers
+- The new converter engine is INERT — nothing LANDS until W3 (Task Step 7 unification). Live clones still run through frozen `convert.py`. This is by-design mid-rebuild, NOT a regression.
 
-## NOT VERIFIED / SUSPECT — fact-check before relying on any of these
-- **"All 17 routes covered without cheating" — NOT ANSWERED.** The audit reported 9 resolver-ids and did NOT reconcile the 17. RE-DO: enumerate what Bean means by the 17 routes (likely the (layer/role × property-family × has_inner_blocks) routing branches, NOT the 9 REGISTRY ids), then verify EACH is covered-real / honestly-deferred / cheat, against dispatch_table.py + each resolver + the draft. The "no-cheating" partial finding is UNVERIFIED — re-confirm.
-- **`OUT-OF-SCOPE-NOTES.md` was NOT updated** (the audit subagent was killed before writing it). Still owed: map every deferral to a named Spec 31 stage.
-- **LANDED proof NOT done.** The resolvers are WRITTEN + emit-green + test-green + conservation-safe ONLY. No draft-vs-clone computed-style proof (STOP-21). This is the real "is it faithful" gate and it is OWED.
-- **Engine is NOT production-wired (STOP-28).** The resolvers don't drive a real clone yet — `build_block_markup` has no production caller. The interior-walker WIRING (the Ctx-builder that populates `area_name` + walks the draft + calls the dispatch) is the next build stage; A1 (media-map loader) + A2 (content conservation-ledger) gate production-wiring.
+## Next Priorities (in order)
+1. **Execute W3 Step 1 — design-gate council + G1–G5 disposition + Bean sign-off** (the per-stage gate Spec 31 §12.6 A14 / Rule 7 mandates) before any W3 code.
+2. **W3 Steps 2–6** — port the working `convert.py` interior walker into the new engine (styling-lift+`_bp_decls`, full 3-branch walker, arrays, ambiguous-attr gap) — dispatched Sonnet per the plan's prompts.
+3. **W3 Step 7 (keystone) + 8–9** — the conductor unifying CSS+content into one emit, then A1 media-map + A2 content-ledger.
+4. **W3 Step 10 — LANDED proof** on a canary (hero `split`), draft-vs-clone at 3 breakpoints, Bean signs off.
 
-## NEXT BUILD STAGES (after Task 1 fact-check)
-1. **17-route coverage verdict** (re-done properly) + **finish OUT-OF-SCOPE-NOTES.md** audit.
-2. **LANDED proof** for ≥1 resolver via genuine `emit_block_markup` on a canary (STOP-21 recipe).
-3. **Interior-walker wiring** (Spec 31 §3.B3 + the Ctx-builder for area_name) — makes the resolvers reach a real clone.
-4. **A1 media-map + A2 content-ledger** before production-wiring (STOP-28 precondition).
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `plugins/sgs-blocks/scripts/converter/services/tier_suffix.py` | DB-source `_TIER_SUFFIX` via `modifier_suffixes` (R-22-1) |
+| `plugins/sgs-blocks/scripts/converter/resolvers/__init__.py` | corrected stale resolver-status docstring |
+| `plugins/sgs-blocks/scripts/converter/services/text_leaf.py` | purged className BEM mirror-emit |
+| `plugins/sgs-blocks/scripts/converter/services/fold_helpers.py` | DB-source `_BP_SUFFIX_MAP` + side-regexes (`_strip_side_suffix`) |
+| `plugins/sgs-blocks/scripts/cheat-gate/check_converter_source.py` | NEW Check #9 static source-cheat gate |
+| `plugins/sgs-blocks/scripts/cheat-gate/{run.py,models.py,tests/test_cheat_gate.py}` | register + key + tests for Check #9 |
+| `.claude/{decisions.md,state.md,OUT-OF-SCOPE-NOTES.md}` | D249 + reality-first OUT-OF-SCOPE rewrite |
+| `.claude/plans/2026-06-30-phase-W3-...md` | NEW W3 phase-plan |
 
-## CARRY-FORWARD (do NOT subtract — D101)
-The full STOP catalogue (STOP-1..29) + the pre-flight ritual + tiered reading gate live in `.claude/next-session-prompt.md` (the D247/D248 version) — it is INTACT; the next full /handoff must carry it forward verbatim + extended, never subtracted. D-ceiling was D248; **assign a D-number for the CSS-resolver unification merge (311c120f)** in the full /handoff. Branch: main. Uncommitted/not-mine: lucide-icons.php, phase4 reports, theme-handoff deletions.
+## Notes for Next Session
+- **Register A + B** (the W3 port spec) live verbatim in the prior next-session-prompt: `git show 71a7fbad:.claude/next-session-prompt.md`. The W3 plan is grounded in them + the fact-check's CSS-unification addition.
+- **Check #9 is commit-blocking** — if it fires on a NEW className-write or suffix-dict during W3, that's the gate working; DB-source it (don't baseline). It ships EMPTY baseline (pure tripwire).
+- **The walker port (W3 Step 4) is HIGH-risk** — a thinned port makes the hero split image evaporate (Register B B1). Keep it inline-Opus; roll back fast on regression (STOP #19).
+- **CLAUDE.md "LIVE cloning plan" pointer** still references the 2026-06-09 plan — update it to the W3 plan when W3 starts.
+
+## Next Session Prompt
+See `.claude/next-session-prompt.md` (orchestration plan for W3, with the carried-forward STOP catalogue + reading gate).
