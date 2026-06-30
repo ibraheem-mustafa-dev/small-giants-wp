@@ -48,6 +48,18 @@ _LAYER_TO_RESOLVER = {
     "GRID_AREA": "grid_area",
 }
 
+# GRID-layer-INTRINSIC properties (D249 / W3 all-routes fix). A node carrying
+# `grid-template-*` IS a grid container for those declarations, regardless of its own
+# BOX layer — a section ROOT is OUTER for its box CSS (max-width/padding/background) but
+# GRID for its children's TRACK layout. So these route to the grid resolver as a
+# PRE-LAYER concern (the same idiom as typography), never to the node's box-layer
+# resolver. `gap`/`column-gap`/`row-gap` are deliberately NOT here — gap is layer-
+# AMBIGUOUS (an OUTER box gap vs a grid gap) and stays with the by-layer dispatch.
+_GRID_LAYOUT_PROPS = frozenset({
+    "grid-template-columns", "grid-template-rows", "grid-template-areas",
+    "grid-auto-columns", "grid-auto-rows", "grid-auto-flow",
+})
+
 
 def _writer_path(css_property: str) -> str:
     """'typography' iff css_property is in db_lookup's typography scope, else
@@ -101,6 +113,12 @@ def resolver_id(
         return "typography"
     if css_property in _load_excluded_properties(conn):
         return "excluded"
+    # Grid-layer-intrinsic (D249 W3 all-routes fix): grid-template-* describe the node's
+    # OWN grid, so they route to the grid resolver regardless of the node's box layer
+    # (Spec 31 §2 Axis-1: a section root is OUTER for its box CSS but GRID for its child
+    # tracks). Mirrors the typography pre-layer sink. gap stays by-layer (ambiguous).
+    if css_property in _GRID_LAYOUT_PROPS:
+        return "grid"
 
     # Layer-driven structural resolvers.
     by_layer = _LAYER_TO_RESOLVER.get(layer)
