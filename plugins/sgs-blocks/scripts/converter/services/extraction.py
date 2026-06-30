@@ -166,6 +166,7 @@ def _child_content_for_node(
     child_node: Any,
     child_slug: str,
     css_rules: dict | None = None,
+    media_map: dict | None = None,
 ) -> str:
     """Produce the correct ChildBlock.content string for a resolved child node.
 
@@ -206,10 +207,12 @@ def _child_content_for_node(
         child_rec = recognise(child_node)
         if child_rec.kind == "unrecognised" or child_rec.slug is None:
             return ""
-        return build_block_markup(child_rec, child_node, css_rules=css_rules, is_root=False)
+        return build_block_markup(
+            child_rec, child_node, css_rules=css_rules, is_root=False, media_map=media_map
+        )
 
 
-def run_mechanism_b(rec: Recognition, section_root: Any, css_rules: dict | None = None) -> list:
+def run_mechanism_b(rec: Recognition, section_root: Any, css_rules: dict | None = None, media_map: dict | None = None) -> list:
     """Mechanism B: faithful port of _route_composite_interior + walk() child-resolution.
 
     PORT SOURCE (read verbatim before any edit):
@@ -324,7 +327,7 @@ def run_mechanism_b(rec: Recognition, section_root: Any, css_rules: dict | None 
                     is_mobile = (img_modifier in mobile_sfxs) if img_modifier else False
                     target_attr = f"{base_attr}Mobile" if is_mobile else base_attr
 
-                    lifted = scalar_media_from_img(img, media_map={})
+                    lifted = scalar_media_from_img(img, media_map=media_map or {})
                     results.append(ScalarLift(attr=target_attr, value=lifted))
 
             else:
@@ -337,7 +340,9 @@ def run_mechanism_b(rec: Recognition, section_root: Any, css_rules: dict | None 
                     # _child_content_for_node produces the correct ChildBlock.content:
                     # TEXT for scalar blocks (primary_content_attr set), inner WP markup
                     # for nested InnerBlocks parents (primary_content_attr None).
-                    content = _child_content_for_node(child, child_slug, css_rules=css_rules)
+                    content = _child_content_for_node(
+                        child, child_slug, css_rules=css_rules, media_map=media_map
+                    )
                     results.append(ChildBlock(slug=child_slug, content=content))
 
                 else:
@@ -352,7 +357,9 @@ def run_mechanism_b(rec: Recognition, section_root: Any, css_rules: dict | None 
                             continue
                         gc_rec = recognise(grandchild)
                         if gc_rec.slug is not None:
-                            gc_content = _child_content_for_node(grandchild, gc_rec.slug, css_rules=css_rules)
+                            gc_content = _child_content_for_node(
+                                grandchild, gc_rec.slug, css_rules=css_rules, media_map=media_map
+                            )
                             grandchild_results.append(
                                 ChildBlock(slug=gc_rec.slug, content=gc_content)
                             )
@@ -447,7 +454,9 @@ def run_mechanism_b(rec: Recognition, section_root: Any, css_rules: dict | None 
             continue
 
         # Emit ChildBlock. _child_content_for_node picks TEXT or inner markup per block type.
-        content = _child_content_for_node(child, child_slug, css_rules=css_rules)
+        content = _child_content_for_node(
+            child, child_slug, css_rules=css_rules, media_map=media_map
+        )
         results.append(ChildBlock(slug=child_slug, content=content))
 
     # Generic path conservation: every Tag child → ≥1 result.
@@ -635,7 +644,7 @@ def extract_content(
             raise ContentConservationError(
                 "scalar-content-lift block routed to Mechanism B — D212 regression guard"
             )
-        results = run_mechanism_b(rec, section_root, css_rules=css_rules)
+        results = run_mechanism_b(rec, section_root, css_rules=css_rules, media_map=media_map)
         # Case 2 + array arm (D248 fix): a has_inner_blocks=1 composite can ALSO
         # carry array attrs (cta-section.stats, hero.badges, quote.body) alongside
         # its child InnerBlocks. array-content-lift is independent of the D212
