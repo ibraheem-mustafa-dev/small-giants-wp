@@ -1,102 +1,52 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-thread: cloning-pipeline / Phase W3 remainder — A1 + hero bugs + child-lift design-gate + DB role root-cause
+thread: cloning-pipeline / W3 keystone LANDED-in-engine + new-engine wired + Spec 22→31 merge
 session_date: 2026-06-30
 ---
 
-# Session Handoff — 2026-06-30 (W3 remainder — D251)
+# Session Handoff — 2026-06-30 (W3 keystone child-lift + /sgs-clone wiring + Spec 22→31 merge — D252/D253)
 
 ## Completed This Session
-1. **A1 media-map (`8ea61b58`):** built `converter/services/media_map.py` loader + threaded `media_map` through `run_mechanism_b` AND the `_child_content_for_node`→`build_block_markup` recursion (nested-child images remap too). 273 tests.
-2. **Hero LANDED bug 1 (`0b9bc509`):** `_mobile_suffixes` read the wrong tuple element → `splitImageMobile` dropped. Fixed.
-3. **Hero LANDED bug 3 (`1ef2afc2`):** ported FR-22-20 variant detection into `build_block_markup` so render.php's `$is_split` gate fires (split image+grid were ignored).
-4. **6-persona `/adversarial-council` design-gate** of the universal child-lift (hero bug 2 — CTAs lose url+inheritStyle). Council REVISED the design: route every child through `build_block_markup`, reuse the shared `field_extractors` handlers. Register: `.claude/reports/2026-06-30-role-derivation-root-cause.md`.
-5. **DB role-derivation root-cause fix (`b921a909`):** `/systematic-debugging` proved the role classifier was never wired into `/sgs-update` (ran with no args) AND was NULL-only. Wired `apply_role_detection_inline` into `run()` + upgrade generic `content`→specific (high-confidence only). 11 roles corrected (4 upgrade + 7 fill), 2 scalar-media correctly excluded; report-first per Bean; 2 regression tests; F5/F6 gates green.
+1. **W3 keystone — universal child-lift (D252, `df9798a9`):** collapsed the lossy `_child_content_for_node` bypass — every child now routes through `build_block_markup` (one unified content+CSS+variant dispatch). New `run_mechanism_leaf` arm lifts a capability-less leaf's OWN element content (primary text + one image + one url via the shared `field_extractors`) + the inheritStyle preset resolution + R6 background-strip. A 6-persona `/adversarial-council` design-gated it; a pre-commit 2-rater review caught + fixed an over-lift (phantom iconTitle + boolean/date attrs) via a tight one-per-shape gate.
+2. **Recognition has_inner fix (same commit):** `recognition.py` scalar branch hardcoded `has_inner_blocks=0`, mis-typing an element-class-recognised InnerBlocks parent (`.sgs-hero__ctas`→`sgs/multi-button`) as a leaf → buttons silently dropped. Now derives from the DB. **Found by the FULL-HOMEPAGE run** — a synthetic multi-button test used the named-root-class path and masked it (STOP-34).
+3. **New engine WIRED into `/sgs-clone` (`798febc7`):** `converter_v2/__init__.py:_convert_section_body` — when `SGS_NEW_ENGINE=1`, uses the new engine per section where it recognises + emits, else falls back to frozen `walk()`. Flag UNSET = 100% frozen. convert.py byte-identical (D-MODULAR).
+4. **Full-homepage universality map:** ran the new engine on all 9 Mama's sections — 2/9 (hero with CTAs, trust-bar) clone via the new engine; 7/9 honestly GAP (no registered composite). Found the **DEFAULT-IS-CONTAINER deviation** (STOP-35): the new engine's recognition 4th branch FAILS LOUD for a slug-None section instead of defaulting to `sgs/container`+recurse (FR-31-4) — the #1 remaining engine fix.
+5. **Spec 22 MERGED into Spec 31 (D253, `bb7b1e99`):** Spec 22 absorbed into Spec 31 §13 (binding rules R-31-1..15, 3-exception walker, content fork, variant detection, appendices) + archived behind a redirect stub. Renumbered R-22→R-31 / FR-22→FR-31 across 69 active files via script (frozen convert.py + archives keep the 22 series; ID mapping R-22-N ≡ R-31-N documented). 286 tests + cheat-gate green.
+6. **QC-council on the merged Spec 31 (`1e41c1df`):** 4 raters (completeness/consistency/accuracy/formatting) — verdict SOUND (13 carry-forward items + 15 rules present, G1-G5 closed, zero overstated build-claims). Fixed 9 surfaced defects (rule-ID miscites, phantom FR-31-18, stale "~5 functions", contradictions, frontmatter rule-list) + backfilled 3 absorption gaps (FR-31-11 non-sgs pass-through, FR-31-12 stage-2.json, FR-31-6.1 parallel-session protocol).
 
 ## Current State
-- **Branch:** main at `b921a909` (pushed)
-- **Tests:** 276 pass (converter + cheat-gate) + 2 new role-detection tests; F5/F6 commit gates exit 0
-- **Build:** Python converter (no npm needed). Live DB roles corrected (deterministic on reseed via the wiring).
-- **Uncommitted changes:** doc updates only (decisions/state/handoff/next-session-prompt/mistakes); convert.py byte-identical (D-MODULAR).
+- **Branch:** main at `1e41c1df` (pushed). D-ceiling **D253**.
+- **Tests:** 286 pass (converter + cheat-gate) + Gate A 43, 1 skip, 2 xfail; F5/F6 commit gates exit 0.
+- **Build:** Python converter (no npm). convert.py byte-identical (D-MODULAR).
+- **Uncommitted (NOT mine):** `lucide-icons.php` (npm drift), the W3 plan (session-start), src `render.php` ×18 (R-22 comments kept — reverted from renumber, visual-diff-gate; mapping note covers them).
 
 ## Known Issues / Blockers
-- New engine still INERT in production (frozen `convert.py` runs live clones — STOP-28). Not yet LANDED.
-- Hero bug 2 (CTA child-lift) is OPEN — the keystone B work, design-gated, fresh-session per STOP-19 (highest-regression walker).
+- New engine still INERT in prod by default (frozen `convert.py` runs live clones; `SGS_NEW_ENGINE=1` is opt-in). NOT yet LANDED on a real canary page.
+- **The DEFAULT-IS-CONTAINER deviation** (STOP-35): the new engine refuses to emit `sgs/container` for a slug-None section (recognition.py 4th branch = loud RED) — blocks 7/9 real homepage sections. This is the #1 engine fix.
 
 ## Next Priorities (in order)
-1. **B — universal child-lift** (route every child through `build_block_markup`; reconcile `url-href`→`link-href`; shared-handler atomic leaf; `/qc-council` before commit). READ the register doc first.
-2. **Re-run LANDED hero proof** (full hero incl CTAs) + Bean eye (page-source compare + computed-style; the JS parity scripts are unreliable, blub #374).
-3. **W3 remainder:** A2 ledger, §5 lift, !important sweep, dead-code, commit.
+1. **sgs/container DEFAULT for slug-None sections (FR-31-4 / §13.2)** — make the new engine default a no-name-match section to `sgs/container` + recurse children, instead of failing loud. Unblocks 7/9 real sections. Design-gate (walker-adjacent, STOP-19) then build.
+2. **Canary LANDED test** — run `/sgs-clone` with `SGS_NEW_ENGINE=1` on the Mama's homepage, deploy to sandybrown, computed-style + page-source-vs-draft at 375/768/1440 + Bean eye (R-31-13, STOP-21). The real validation — keystone is WRITTEN+tested but not LANDED.
+3. **W3 remainder:** A2 content-conservation ledger, §5 lift-path, base-selector !important sweep, dead-code (`content_attrs_with_selector`).
 
 ## Files Modified
 | File path | What changed |
 |-----------|--------------|
-| `plugins/sgs-blocks/scripts/converter/services/media_map.py` | NEW — media-map loader (A1) |
-| `plugins/sgs-blocks/scripts/converter/services/extraction.py` | media_map threaded through walker + recursion |
-| `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py` | `apply_role_detection_inline` + wired into `run()` (role root-cause fix) |
-| `plugins/sgs-blocks/scripts/converter/tests/test_role_detection_inline.py` | NEW — 2 regression tests |
-| `.claude/reports/2026-06-30-role-derivation-root-cause.md` | NEW — proven root cause + council design register |
-| `.claude/{decisions.md,handoff.md,next-session-prompt.md,state.md}` | D251 + handoff |
+| `plugins/sgs-blocks/scripts/converter/services/extraction.py` | child-lift collapse + `run_mechanism_leaf` + inheritStyle/R6 + None guard (D252) |
+| `plugins/sgs-blocks/scripts/converter/recognition.py` | scalar branch derives has_inner_blocks + `recognition_for_slug` (D252) |
+| `plugins/sgs-blocks/scripts/converter/services/field_extractors.py` | `link-href` alias on url-href handler (D252) |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/__init__.py` | `SGS_NEW_ENGINE=1` hybrid wiring (798febc7) |
+| `.claude/specs/31-...md` | §13 absorbed Spec 22 + DEFAULT-IS-CONTAINER + build-state + QC fixes (D253) |
+| `.claude/specs/22-...md` → `specs/archive/` + stub | Spec 22 archived + redirect (D253) |
+| 69 active files (renumber) | R-22→R-31 / FR-22→FR-31 |
+| `.claude/decisions.md` | D252 + D253 |
 
 ## Notes for Next Session
-- **The B-design is council-validated and captured** in `.claude/reports/2026-06-30-role-derivation-root-cause.md` — read it before touching the walker. The fix is SMALLER than first proposed (delete the bypass, reuse `field_extractors`), not a ChildBlock rewrite + `_atomic_attrs_for` clone.
-- **DB role data is now correct** (icon.linkUrl=link-href etc.) and deterministic on reseed — B can rely on it.
-- **Council DB false-positives** (already corrected): multi-button=layout wrapper, social-icons=array, `icon-slug` role doesn't exist (use `identity`).
-- **Handoff gates run:** living docs (Gate 1/4.5), D251, lesson already captured this session (blub #374). SKIPPED (context length): OC-sync POSTs, independent /qc subagent, docscore — flagged honestly, not silently.
+- **DEFAULT-IS-CONTAINER is the unlock** — most class-sections have no block; they DEFAULT to sgs/container+children (FR-31-4); a name-match (hero/trust-bar) is the exception. The new engine has this backwards. Fix recognition/dispatch, not the walker (which already recurses).
+- **The full-homepage run is the real universality test** — synthetic fixtures masked the recognition bug. Run the new engine across ALL 9 sections, not one synthetic node.
+- **SGS_NEW_ENGINE=1 is the test switch** — the new engine is reachable in `/sgs-clone` now; default-off = zero risk.
+- **Spec 31 is now THE pipeline spec** (Spec 22 archived). R-22-N ≡ R-31-N; frozen convert.py keeps R-22.
 
 ## Next Session Prompt
-See `.claude/next-session-prompt.md` (B orchestration + carried-forward STOP catalogue 1..33 + ritual + reading gate).
-
----
-
-# Session Handoff — 2026-06-30
-
-## Completed This Session
-1. **W3 Step 1 design-gate + sign-off** (`bf1922b3`) — G1–G5 disposition verified against the working `_route_composite_interior` walker. G1/G2/G4/G5 DONE-BY-PORT; G3 built (Bean override: `accepts_allowed_blocks` validation, NULL→permissive+trace). Steps 2–3 found already done (D247).
-2. **W3 Step 4 walker port** (`9498f3a7`) — faithful port of the FULL `_route_composite_interior` into `run_mechanism_b` (scalar-media column, content-block recurse, slug-None fold, G1 parent-token, G3). Replaced the thinned D245 recreation. 185 tests.
-3. **W3 Step 7 KEYSTONE conductor** (`46d93612`) — `build_block_markup` now runs BOTH `process_element` (CSS, via new `_build_css_attrs`) AND `extract_content` into ONE emit. **Finding A fixed** — the two inert halves connect; `process_element` has a production caller.
-4. **Grid-routing all-routes fix** (`625d4ba6`) — `grid-template-*` route PRE-LAYER to the grid resolver (a section root is OUTER for box CSS, GRID for child tracks). `gridTemplateColumns` lands.
-5. **`/adversarial-council` (Bean-forced) corrected 2 phantom over-claims** — the "padding/background/radius dropped" claim was BS: convert.py `_lift_root_supports_to_style` emits them via native WP `style.*` + WP core lands them; I'd measured only `block_attributes`. Root-cause rule captured (four-channel check, blub #373).
-6. **Fix 1 native `style.*` lift port** (`fa8418c8`) — `root_supports.py`: padding/background-color/border-radius now emit nested `style.*` (verified by smoke test).
-7. **Fix 2 box-shadow** (`a3608bac`) — → the `shadow` preset attr via DB-first token-snap to `design_tokens` (sm/md/lg/glow; honest gap on no match).
-8. **Fix 3 §5 seeds** (`fa8418c8`) — 20 `property_suffixes` rows (object-fit/position/overflow/aspect-ratio/etc.), idempotent, §9 Q5 data-only. + background-* lift + a **pre-existing `validate.py` enum-parse bug** fixed.
-9. **Cheats FIXED not baselined** (`1b3d108c`) — mega-menu `!important` (real cheat) → raised specificity (behaviour-preserving, visual-diff PASS); container `!important` verified NOT a cheat (variant-scoped). **Check #3 made selector-aware** → removed 43 false-flagged variant `!important` (baseline 118→75).
-
-## Current State
-- **Branch:** main at 1b3d108c (pushed)
-- **Tests:** 267 pass (converter + cheat-gate), 1 skip, 2 xfail; all 6 commit gates exit 0
-- **Build:** Python converter (no npm needed for converter). One npm build ran (PowerShell) to regenerate mega-menu/container build CSS.
-- **Uncommitted changes:** none of mine (`lucide-icons.php` = npm-regen timestamp drift, not mine). convert.py byte-identical (D-MODULAR).
-
-## Known Issues / Blockers
-- New engine still INERT in production (frozen `convert.py` runs live clones — STOP-28). NOT yet LANDED on a real page (Step 10 owed — the real faithfulness gate).
-- §5 properties are SEEDED (data) but not LIFTED yet — they show as tracked gaps until the lift-path is built.
-
-## Next Priorities (in order)
-1. **LANDED proof (W3 Step 10)** — deploy a genuine `emit_block_markup` clone to a canary (hero split), computed-style vs draft at 375/768/1440 + Bean eye (STOP-21). The real "is it faithful" gate — everything is WRITTEN, nothing LANDED.
-2. **A1 media-map loader + A2 content-ledger** (W3 Steps 8–9) — STOP-28 preconditions before production-wiring.
-3. **§5 lift-path** — make the seeded §5 properties actually lift (each → its destination); shrinks the coverage baseline.
-4. **Broader base-selector `!important` sweep** — ~30 now accurately flagged across blocks; each needs assessment (real cheat vs legit WP-default override).
-
-## Files Modified
-| File path | What changed |
-|-----------|--------------|
-| `plugins/sgs-blocks/scripts/converter/services/extraction.py` | run_mechanism_b walker port (Step 4) + _build_css_attrs conductor (Step 7) |
-| `plugins/sgs-blocks/scripts/converter/services/root_supports.py` | NEW — native style.* lift port (Fix 1) |
-| `plugins/sgs-blocks/scripts/converter/dispatch_table.py` | grid-template-* pre-layer routing |
-| `plugins/sgs-blocks/scripts/converter/resolvers/outer_box.py` | background-* + box-shadow lift (Fix 2) |
-| `plugins/sgs-blocks/scripts/converter/services/validate.py` | enum_values JSON-parse bug fix |
-| `plugins/sgs-blocks/scripts/migrations/2026-06-30-*.py` | NEW — §5 property_suffixes seeds (Fix 3) |
-| `plugins/sgs-blocks/scripts/cheat-gate/check_important_render.py` | Check #3 selector-aware (variant-scope skip) |
-| `plugins/sgs-blocks/src/blocks/mega-menu/style.css` | !important → specificity (real cheat fix) |
-| `.claude/{decisions.md,handoff.md,next-session-prompt.md,state.md}` | D250 + handoff |
-
-## Notes for Next Session
-- **The four-channel check** (memory + blub #373) — never claim a property is "not routed/dropped" until ALL four destination channels are negative (native supports→style.*, custom attrs, wrapper render, spec). I over-claimed twice this session; this rule is the fix.
-- **A 316-word Bean message never reached me** (only the brain-dump hook fired, twice) — if Bean gave new direction it may be unaddressed; ask.
-- **Check #3 is now variant-scope-aware** — a `!important` on a `--modifier`/`:pseudo` selector is skipped (overrides a variant render, not the base transfer). Base-selector !important still flags.
-- **box-shadow uses preset SLUGS not raw values** — the `shadow` attr holds `sm/md/lg/glow`; the resolver token-snaps; arbitrary box-shadow with no preset match → honest gap.
-
-## Next Session Prompt
-See `.claude/next-session-prompt.md` (W3-remainder orchestration + carried-forward STOP catalogue 1..32 + ritual + reading gate).
+See `.claude/next-session-prompt.md` (carried-forward 7 rules + reading gate + ritual + STOP catalogue 1..36 + the container-default + canary-LANDED orchestration).
