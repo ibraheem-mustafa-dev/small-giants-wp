@@ -1,5 +1,5 @@
 {
-  "hash": "b074f81ac210d3e1801bf6c765050edce8ef9b4273ef1463e87cd26c4e21e206",
+  "hash": "7bdcb478305bcd8ac35a4e0e0bf812fcc7216d83e4ccfbf501719073fe413029",
   "keys": [
     "mamas-trust-bar-real|.sgs-trust-bar__badge[data-pending=\"true\"]|display|Base",
     "mamas-trust-bar-real|.sgs-trust-bar__badge[hidden]|display|Base",
@@ -7,6 +7,8 @@
     "mamas-trust-bar-real|.sgs-trust-bar__inner|grid-template-columns|Other:(min-width: 600px)",
     "mamas-trust-bar-real|.sgs-trust-bar__text|font-size|Base",
     "mamas-trust-bar-real|.sgs-trust-bar__text|font-size|Desktop",
+    "rt-background-url|.sgs-cta-section--bg|background-size|Base",
+    "rt-background-url|.sgs-cta-section--bg|background-size|Mobile",
     "rt-background-url|.sgs-cta-section--bg|padding|Base",
     "rt-background-url|.sgs-cta-section--bg|padding|Mobile",
     "rt-media-600|.sgs-feature-grid__inner|gap|Base",

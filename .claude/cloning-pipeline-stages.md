@@ -789,7 +789,7 @@ python ~/.claude/hooks/wp-blocks.py dump
 | roles | 21 (20 base + scalar-media) | Stage 1 R; walker resolution |
 | block_supports | 1,160 (post-D100 prune) | Stage 5 supports_writer R |
 | block_capabilities (D99 wired as FR-22-15) | 88 | Walker capability-aware BEM tiebreaker |
-| property_suffixes | 124 rows post-D222 (+ `kind_override` column, 17 populated per D99; `align-items` has TWO rows — `VerticalAlign` + `AlignItems` added D222 migration) | assign-canonical; cv2 db_lookup.attr_for_layer_property() |
+| property_suffixes | 144 rows (+ `kind_override` column, 17 populated per D99; `align-items` has TWO rows — `VerticalAlign` + `AlignItems` added D222 migration; 20 new rows added 2026-06-30 for grid-placement/overflow/position/bg-placement/flex — Spec 31 §5; `CssPosition` suffix used for `css_property=position`) | assign-canonical; cv2 db_lookup.attr_for_layer_property() |
 | patterns | 47 | Stage 2 confidence boost; +REGISTER W |
 | attribute_gap_candidates | 107+ | Stage 9 W; D3 emission W (Wave 3) |
 
@@ -856,7 +856,7 @@ The Phase 2A pricing-table additions (Branch E) also extend the recogniser surfa
 | `__init__.py` | LIVE — Public API: `convert_section()` + `convert_page()` |
 | `convert.py` | LIVE — Slot-aware DOM-to-WP-blocks converter |
 | `convert_page.py` | LIVE — Page-level wrapper, `--mode pipeline` CLI |
-| `db_lookup.py` | LIVE — `attr_for_layer_property(slug, layer, css_prop)` (D201/D222 name-free router) + `css_property_suffixes()` (124 rows) + `breakpoint_suffix_rules()` + `block_supports_for()` + `legacy_role_lookup_for()` |
+| `db_lookup.py` | LIVE — `attr_for_layer_property(slug, layer, css_prop)` (D201/D222 name-free router) + `css_property_suffixes()` (144 rows) + `breakpoint_suffix_rules()` + `block_supports_for()` + `legacy_role_lookup_for()` |
 
 ### Conformance gates (D195, wired 2026-06-09)
 
