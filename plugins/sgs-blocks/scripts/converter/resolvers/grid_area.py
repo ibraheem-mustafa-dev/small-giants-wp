@@ -115,7 +115,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
         writes: list[Write] = [Write(attr=attr, value=num_out, property=prop, tier=decl.tier)]
         # The per-area padding family shares ONE Unit attr (e.g. contentPaddingUnit) —
         # derive it by stripping the DB-owned breakpoint + side suffixes and appending
-        # the DB unit suffix (R-22-1 — modifier_suffixes owns the grammar, no hardcoded
+        # the DB unit suffix (R-31-1 — modifier_suffixes owns the grammar, no hardcoded
         # Top|Right|…|Mobile|… literals; faithful to convert.py:2353).
         unit_attr = unit_companion_attr(attr, ctx.conn)
         if unit and unit_attr and decl.tier == "Base" and validate(ctx, unit_attr, unit):

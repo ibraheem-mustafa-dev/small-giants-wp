@@ -20,7 +20,7 @@ The migration is the ONLY seed path. The table being created here is empty and s
 empty until a reasoned, dated migration adds a row.
 
 This migration is idempotent: `CREATE TABLE IF NOT EXISTS` + a no-op seed, so
-re-running it on a DB that already has the table is a no-op. R-22-1 (DB-first, no
+re-running it on a DB that already has the table is a no-op. R-31-1 (DB-first, no
 hardcoded dicts). Run manually before/independently of `/sgs-update` (which does NOT
 auto-run migrations — the canonical pattern, e.g.
 migrations/2026-06-13-property-suffixes-align-items.py).

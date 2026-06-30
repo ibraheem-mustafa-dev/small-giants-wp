@@ -27,7 +27,7 @@ The companion seed-source edit (uimax-tools/seed-slot-synonyms.py — `ctas`/
 migration does the removal. Run both: this migration removes the live data,
 the seed edit stops re-addition.
 
-R-22-1 (DB-first, no hardcoded dicts in the converter). R-22-9 (universal —
+R-31-1 (DB-first, no hardcoded dicts in the converter). R-31-9 (universal —
 applies to every button-group BEM element across every composite/section, not
 a per-block carve-out; no `ctas`/`hero` literals introduced in convert.py).
 

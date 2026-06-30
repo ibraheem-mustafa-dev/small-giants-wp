@@ -63,7 +63,7 @@ SGS is one custom WP 7.0 block theme serving many client sites. Two problems are
 
 ## Hard constraints
 
-- R-22-1 DB-first; R-22-9 universal mechanism; R-22-14 no legacy fallback hacks.
+- R-31-1 DB-first; R-31-9 universal mechanism; R-31-14 no legacy fallback hacks.
 - WCAG 2.2 AA; mobile-first; vanilla JS; `viewScriptModule`.
 - Clients use the block editor + Site Editor EXCLUSIVELY — never code/CLI.
 - No client-specific values in the framework baseline `theme.json` or `style.css`.

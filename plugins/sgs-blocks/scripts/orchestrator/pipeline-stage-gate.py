@@ -8,7 +8,7 @@ It runs every armed gate in sequence; any gate failure raises SystemExit(1).
 
 CURRENT GATES
 =============
-R-22-15  Anti-mirror gate (check_no_mirror.py)
+R-31-15  Anti-mirror gate (check_no_mirror.py)
          Detects draft-class container violations and sourceMode='bound'.
          Armed with --baseline so the 10 legacy violations are grandfathered.
          Only NEW violations (absent from the baseline) cause a hard fail.
@@ -59,21 +59,21 @@ BASELINE_PATH = HERE / "check-no-mirror-baseline.json"
 # ---------------------------------------------------------------------------
 
 def gate_r22_15_anti_mirror(run_dir: Path) -> None:
-    """R-22-15 anti-mirror gate.
+    """R-31-15 anti-mirror gate.
 
     Runs check_no_mirror.py in --enforce --baseline mode.
     Grandfathered (baselined) violations exit 0.
     Any NEW violation (absent from the baseline) causes exit 1, blocking the
     pipeline.
 
-    WIRE POINT — this is the # R-22-15 WIRE POINT referenced in
+    WIRE POINT — this is the # R-31-15 WIRE POINT referenced in
     check_no_mirror.py's docstring.  The call is here, not in package.json
     prebuild, because the gate inspects clone-run output (extract.json
     block_markup) which only exists post-clone.  §12.7 says "prebuild" but
     npm prebuild precedes any clone run and has no run_dir to inspect —
     post-clone is the correct (and only viable) wire point.
     """
-    # R-22-15 WIRE POINT
+    # R-31-15 WIRE POINT
     subprocess.run(
         [
             sys.executable,

@@ -2,7 +2,7 @@
 
 Given a declaration's (layer, css_property) plus the element's structural facts
 (has_inner_blocks) the table returns exactly ONE resolver id, or an explicit sink.
-It NAMES NO BLOCK (R-22-1 / R-22-9): block-specific behaviour comes from the DB
+It NAMES NO BLOCK (R-31-1 / R-31-9): block-specific behaviour comes from the DB
 (property_suffixes / block_attributes / excluded_properties), never an `if slug ==`.
 
 Routing algorithm (design §2, with the §10 conformance corrections folded in):
@@ -86,7 +86,7 @@ def media_signal(css_property: str, conn: sqlite3.Connection) -> bool:
     branch, so media_signal is NOT exercised now. Its DB source (a named
     property_suffixes.role / media-slot query + a 'set read from DB' test) is pinned
     at the scalar stage in step 3 — NOT faked inline as a brace-set dict here
-    (that would be an R-22-1 smuggled-dict smell). Calling it in the slice is a bug.
+    (that would be an R-31-1 smuggled-dict smell). Calling it in the slice is a bug.
     """
     raise NotImplementedError(
         "media_signal is owned by the step-3 scalar stage (design §10 A11); the "

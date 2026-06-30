@@ -1,4 +1,4 @@
-"""check_hardcoded_dicts.py — Check #2: hardcoded property→attr dict literals (R-22-1).
+"""check_hardcoded_dicts.py — Check #2: hardcoded property→attr dict literals (R-31-1).
 
 Spec 31 §7a check 2:
   Flag dict literals with CSS-property string keys → attr-name string values
@@ -34,7 +34,7 @@ _SCRIPTS_DIR = _HERE.parent                        # scripts/
 _ORCHESTRATOR = _SCRIPTS_DIR / "orchestrator"
 
 # ---------------------------------------------------------------------------
-# CSS-property authority — DB-first (R-22-1).
+# CSS-property authority — DB-first (R-31-1).
 #
 # A dict key counts as a CSS property ONLY if it is a real CSS property. The
 # authoritative source is property_suffixes.css_property in the framework DB;
@@ -76,7 +76,7 @@ _CSS_PROP_SET_CACHE: frozenset[str] | None = None
 def _css_property_authority() -> frozenset[str]:
     """Return the authoritative CSS-property set: DB ∪ standard fallback.
 
-    Cached for the process. Reading the DB makes the gate DB-first (R-22-1):
+    Cached for the process. Reading the DB makes the gate DB-first (R-31-1):
     a dict key is only a CSS property if it is one the framework actually knows.
     """
     global _CSS_PROP_SET_CACHE
@@ -257,7 +257,7 @@ def run(orchestrator_dir: Path | None = None) -> list[Violation]:
             detail = (
                 f"Hardcoded CSS-property → attr-name dict '{name}' in {file_rel} "
                 f"(function: {f['func']}, approx. line {f['line']}). "
-                f"R-22-1: all property→attr lookups must come from property_suffixes in the DB, "
+                f"R-31-1: all property→attr lookups must come from property_suffixes in the DB, "
                 f"not a hardcoded dict."
             )
             fix = (

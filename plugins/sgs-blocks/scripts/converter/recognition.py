@@ -3,14 +3,14 @@
 Design ref: `.claude/plans/2026-06-23-stage2-recognition-design.md`.
 
 The recognition CONTRACT, defined ONLY from the DRAFT + DB + Spec (never from what the
-frozen `convert.py` does): per Spec 22 §FR-22-3 + the Spec 00 naming convention
+frozen `convert.py` does): per Spec 22 §FR-31-3 + the Spec 00 naming convention
 (`.sgs-<block>` BEM root ↔ block `sgs/<block>`), every BEM-classed draft node resolves
 to a block slug via a DB lookup. A top-level section whose BEM root maps to a registered
 composite emits AS that composite (the hero IS the section), never a generic wrapper.
 
-BEM is the ONLY recognition signal (R-22-2 / Spec 00 §3.1 / Spec 22 FR-22-3). No
+BEM is the ONLY recognition signal (R-31-2 / Spec 00 §3.1 / Spec 22 FR-31-3). No
 structural heuristics, no frozen-engine logic. The only frozen-package import is
-`db_lookup` (the permitted DB-accessor layer). Names no block (R-22-1 / R-22-9) — every
+`db_lookup` (the permitted DB-accessor layer). Names no block (R-31-1 / R-31-9) — every
 fork keys on DB facts (`block_exists`, `atomic_tag_map`, `get_container_kind`,
 `standalone_block_for`, `variant_slots`), never an `if slug == "sgs/..."`.
 
@@ -170,13 +170,13 @@ def recognition_for_slug(slug: str, node: Any) -> Recognition:
     The child-resolution in ``run_mechanism_b`` is PARENT-SCOPED: a token under an
     InnerBlocks parent can resolve via ``child_block_for_parent_token`` (G1) to a
     slug the global ``recognise()`` would NOT pick (e.g. accordion ``__item`` ->
-    ``sgs/accordion-item``, not the global ``card`` alias — Spec 22 §FR-22-5.3).
+    ``sgs/accordion-item``, not the global ``card`` alias — Spec 22 §FR-31-5.3).
     The W3 child-lift collapse routes every child through ``build_block_markup``,
     which needs a full Recognition; re-recognising the node here would DROP that
     parent-scoped override. So: if global ``recognise()`` already agrees on the
     slug, return its result verbatim (it carries the variant); otherwise rebuild
     the Recognition for the caller's resolved slug, deriving the DB facts +
-    variant for THAT slug. DB-driven (R-22-1); names no block.
+    variant for THAT slug. DB-driven (R-31-1); names no block.
     """
     base = recognise(node)
     if base.slug == slug:

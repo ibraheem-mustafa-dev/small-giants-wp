@@ -21,7 +21,7 @@ CSS-class naming divergence (draft uses __text/__author; block uses
 __quote/__name/__heading). At that point the block's render.php or CSS will
 be updated to match, and this migration becomes historical record.
 
-R-22-1 (DB-first, no hardcoded dicts).
+R-31-1 (DB-first, no hardcoded dicts).
 """
 from __future__ import annotations
 import sqlite3

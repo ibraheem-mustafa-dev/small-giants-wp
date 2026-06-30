@@ -23,7 +23,7 @@ UPDATEs the css_property from NULL → 'display' so that css_property_suffixes()
 The idempotency check for 'Layout' is: skip if css_property is already 'display'.
 
 This migration is idempotent: re-running it on a DB that already has these
-rows/updates is a no-op. R-22-1 (DB-first, no hardcoded dicts). R-22-9 (universal).
+rows/updates is a no-op. R-31-1 (DB-first, no hardcoded dicts). R-31-9 (universal).
 """
 from __future__ import annotations
 import sqlite3

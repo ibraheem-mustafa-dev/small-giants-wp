@@ -1,8 +1,8 @@
-# FR-22-4.1 Recursive-Fold — Acceptance Gate (hard)
+# FR-31-4.1 Recursive-Fold — Acceptance Gate (hard)
 
 **Branch:** `feat/fr22-4-1-universal-wrapper` · **Baseline:** main run `mamas-munches-homepage-2026-05-31-102445` (mean 64.60%) · **Set:** 2026-05-31
 
-Every criterion needs **2 independent evidence sources** (/verify-loop): (A) the walker **trace** (`convert-trace-bN.jsonl` `walker_branch_taken` events) and (B) the **live DOM** (Playwright `getComputedStyle` / textLen / layout). Pixel-diff is a third signal but is NOT authoritative alone (R-22-11 / STOP #24).
+Every criterion needs **2 independent evidence sources** (/verify-loop): (A) the walker **trace** (`convert-trace-bN.jsonl` `walker_branch_taken` events) and (B) the **live DOM** (Playwright `getComputedStyle` / textLen / layout). Pixel-diff is a third signal but is NOT authoritative alone (R-31-11 / STOP #24).
 
 | # | Criterion | Evidence A (trace) | Evidence B (live DOM) |
 |---|-----------|--------------------|------------------------|
@@ -13,4 +13,4 @@ Every criterion needs **2 independent evidence sources** (/verify-loop): (A) the
 | G5 | **No over-nesting explosion** | container counts bounded (social-proof ≤ ~3, not 13) | extra neutral containers don't shift layout |
 | G6 | **/qc-council on the code diff** PASS before commit | — | multi-model raters on `convert.py` fold diff |
 
-**Gate:** all of G1–G6. On any regression → root-cause from the trace first (not pixel alone), then iterate or roll back fast (STOP #19). Commit only when G1–G6 hold; commit message cites predicted-vs-actual per-section delta (R-22-4).
+**Gate:** all of G1–G6. On any regression → root-cause from the trace first (not pixel alone), then iterate or roll back fast (STOP #19). Commit only when G1–G6 hold; commit message cites predicted-vs-actual per-section delta (R-31-4).

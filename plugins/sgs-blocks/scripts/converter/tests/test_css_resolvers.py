@@ -200,7 +200,7 @@ def test_grid_area_tier_suffix(conn):
 
 
 # ---------------------------------------------------------------------------
-# R-22-1 DB-driven Unit-companion derivation (replaces the hardcoded
+# R-31-1 DB-driven Unit-companion derivation (replaces the hardcoded
 # re.sub(r"(Top|Right|Bottom|Left)(Mobile|Tablet|Desktop)?$") at grid_area:119).
 # The side + breakpoint + unit suffix grammar is DB-OWNED (modifier_suffixes).
 # ---------------------------------------------------------------------------

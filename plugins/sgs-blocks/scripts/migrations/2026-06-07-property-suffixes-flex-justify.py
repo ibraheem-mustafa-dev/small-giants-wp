@@ -11,7 +11,7 @@ not yet exist on sgs/container at that time:
 
 Now that the sister process has added those attrs, this migration adds the matching
 property_suffixes rows so the converter lift can transfer these CSS props from draft
-sections onto the sgs/container block attributes. R-22-1 (DB-first, no hardcoded dicts).
+sections onto the sgs/container block attributes. R-31-1 (DB-first, no hardcoded dicts).
 
 Suffix naming follows the same camelCase convention as the existing rows:
   - JustifyContent  → matches the justifyContent attr on sgs/container
@@ -23,7 +23,7 @@ collision), so all three are plain INSERTs.
 
 This migration writes to BOTH DB copies (.claude and .agents) to keep them in sync.
 This migration is idempotent: re-running it on a DB that already has these rows is a
-no-op (idempotency check: skip INSERT if the suffix already exists). R-22-9 (universal).
+no-op (idempotency check: skip INSERT if the suffix already exists). R-31-9 (universal).
 """
 from __future__ import annotations
 import sqlite3

@@ -23,7 +23,7 @@ link-href        ALIAS of url-href (DB scalar-attr role)  str | None
 plain-integer    element text verbatim                   str | None
 css-modifier     BEM --<modifier> suffix on element cls  str | None
 
-Design constraints (all inherited from Spec 31 §3.B.0 / R-22-1 / R-22-9):
+Design constraints (all inherited from Spec 31 §3.B.0 / R-31-1 / R-31-9):
   - No block-slug literals.
   - No hardcoded dicts.
   - icon_resolver (orchestrator.converter_v2.icon_resolver) is imported here as a

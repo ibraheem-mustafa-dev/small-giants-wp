@@ -212,7 +212,7 @@ def _index_sgs_block_files(
     indexed_updated = 0
     indexed_skipped = 0
 
-    # --- Ensure variant-detection schema (FR-22-20 D133) ---
+    # --- Ensure variant-detection schema (FR-31-20 D133) ---
     # Idempotent: matches db_lookup._migrate_variant_detection_schema so an
     # update run can populate blocks.variant_attr + variant_slots without
     # depending on the converter module being imported. Guarded ALTER +
@@ -401,12 +401,12 @@ def _index_sgs_block_files(
                 (computed_tier, slug),
             )
 
-        # --- Variant-detection population (FR-22-20 D133) ---
+        # --- Variant-detection population (FR-31-20 D133) ---
         # blocks.variant_attr ← supports.sgs.variantAttr; variant_slots ← each
         # variant's DISCRIMINATING slots (set-difference vs sibling variants)
         # from supports.sgs.variants. So the converter detects a block's variant
         # from the draft's extracted fingerprint, universally, without per-block
-        # code (R-22-1 DB-driven, R-22-9 universal). Idempotent: variant_attr
+        # code (R-31-1 DB-driven, R-31-9 universal). Idempotent: variant_attr
         # writes only on drift; variant_slots is delete-then-insert.
         variant_attr_name = sgs_supports.get("variantAttr") if isinstance(sgs_supports, dict) else None
         variants_map = sgs_supports.get("variants") if isinstance(sgs_supports, dict) else None
@@ -450,8 +450,8 @@ def _index_sgs_block_files(
         # block.json supports.sgs.scalarContentLift === true → upsert a
         # block_capabilities row (slug, 'scalar-content-lift'); absent/false →
         # remove it. This is the DATA half of the converter's universal
-        # _lift_scalar_attrs_by_selector opt-in gate (R-22-1 DB-driven /
-        # R-22-9 universal mechanism). Idempotent: present→INSERT OR IGNORE
+        # _lift_scalar_attrs_by_selector opt-in gate (R-31-1 DB-driven /
+        # R-31-9 universal mechanism). Idempotent: present→INSERT OR IGNORE
         # (UNIQUE(block_slug, capability)); absent→DELETE. Mirrors variant_attr's
         # presence/absence handling.
         wants_scalar_lift = bool(sgs_supports.get("scalarContentLift", False)) if isinstance(sgs_supports, dict) else False
@@ -490,7 +490,7 @@ def _index_sgs_block_files(
         # block.json supports.sgs.arrayContentLift === true → upsert a
         # block_capabilities row (slug, 'array-content-lift'); absent/false →
         # remove it. This is the DATA half of the array-resolver's universal
-        # opt-in gate (R-22-1 DB-driven / R-22-9 universal mechanism). The
+        # opt-in gate (R-31-1 DB-driven / R-31-9 universal mechanism). The
         # array resolver only processes blocks with this capability, preventing
         # accidental array-content lifting on blocks whose array attrs are config
         # arrays, not repeater content. Idempotent: present→INSERT OR IGNORE
@@ -517,7 +517,7 @@ def _index_sgs_block_files(
         # Idempotent: DELETE-then-INSERT per (block_slug, array_attr) pair —
         # same discipline as variant_slots above (delete-then-insert per block).
         # Honours STOP-24: DB data changes via migration/block.json + reseed,
-        # never manual. R-22-1: seeder only; resolver reads the table, not code.
+        # never manual. R-31-1: seeder only; resolver reads the table, not code.
         array_item_schema = (
             sgs_supports.get("arrayItemSchema", {}) if isinstance(sgs_supports, dict) else {}
         )
@@ -946,7 +946,7 @@ def _render_consumes_content(block_dir: Path) -> bool:
 # block's block.json supports.sgs.hasInnerBlocks (bool). When a block declares the
 # key, that value wins over the AND-rule derivation. When absent, the AND rule fires
 # as before. Both this script and the gate read the SAME source (block.json), so
-# drift is structurally impossible. R-22-1 DB-first (block.json is the canonical
+# drift is structurally impossible. R-31-1 DB-first (block.json is the canonical
 # block metadata, not a seed-script dict). 2026-06-15.
 def _has_inner_blocks_from_block_json(bj: dict) -> "int | None":
     """Read supports.sgs.hasInnerBlocks from a parsed block.json.

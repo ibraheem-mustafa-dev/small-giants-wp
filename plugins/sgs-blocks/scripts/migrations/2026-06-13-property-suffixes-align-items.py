@@ -24,8 +24,8 @@ which was a Rule-3 carve-out contradicting Spec 22 line 134 (structural box CSS
 must route name-free).
 
 This migration is idempotent: re-running it on a DB that already has the row is a
-no-op (existence-gated on `suffix=?`). R-22-1 (DB-first, no hardcoded dicts).
-R-22-9 (universal — applies to every grid-mirror block, not a per-block carve-out).
+no-op (existence-gated on `suffix=?`). R-31-1 (DB-first, no hardcoded dicts).
+R-31-9 (universal — applies to every grid-mirror block, not a per-block carve-out).
 """
 from __future__ import annotations
 import sqlite3

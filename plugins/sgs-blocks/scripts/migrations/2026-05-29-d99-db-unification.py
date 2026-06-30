@@ -214,7 +214,7 @@ def migrate_fix2_roles(conn: sqlite3.Connection, dry_run: bool) -> dict:
         )
     """)
 
-    # INSERT OR REPLACE so updates to the seed dict propagate on re-run (R-22-1)
+    # INSERT OR REPLACE so updates to the seed dict propagate on re-run (R-31-1)
     upserted = 0
     for role_name, classification in _ROLE_CLASSIFICATION_MAP.items():
         conn.execute(

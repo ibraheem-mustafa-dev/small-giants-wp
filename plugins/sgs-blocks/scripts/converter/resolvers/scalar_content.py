@@ -13,7 +13,7 @@ structural difference is:
     stub so the dispatch table and existing tests are untouched.
 
 Source reference: convert.py:3781 (``_lift_scalar_attrs_by_selector``).
-Spec refs: FR-22-2, FR-22-5 D1, R-22-1, R-22-9.
+Spec refs: FR-31-2, FR-31-5 D1, R-31-1, R-31-9.
 """
 from __future__ import annotations
 
@@ -65,7 +65,7 @@ def lift_scalar_content(node: Tag, slug: str, media_map: dict) -> dict:
     """
     if not slug.startswith("sgs/"):
         return {}
-    # COUNCIL-MANDATED OPT-IN GATE (R-22-1 data-driven / R-22-9 universal mechanism):
+    # COUNCIL-MANDATED OPT-IN GATE (R-31-1 data-driven / R-31-9 universal mechanism):
     # hard NO-OP (STOP-E) for every block that has NOT declared the
     # 'scalar-content-lift' capability (block.json supports.sgs.scalarContentLift).
     # The role+derived_selector trigger alone matches ~50 blocks (date/URL/title
@@ -93,7 +93,7 @@ def lift_scalar_content(node: Tag, slug: str, media_map: dict) -> dict:
         # <img> descendant inside the matched element and lift via
         # scalar_media_from_img (same helper used by _route_composite_interior).
         # Covers blocks like sgs/team-member where the photo is a scalar object attr
-        # not an InnerBlock. R-22-1 (DB-driven via role column) / R-22-9 (universal
+        # not an InnerBlock. R-31-1 (DB-driven via role column) / R-31-9 (universal
         # — fires for any G3 block with a scalar image attr). 2026-06-13.
         is_media_object = role == "image-object" and attr_type == "object"
         if not (is_text or is_rating or is_media_object):

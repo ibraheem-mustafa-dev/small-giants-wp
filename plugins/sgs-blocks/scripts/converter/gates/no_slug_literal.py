@@ -7,7 +7,7 @@ WHAT IT REJECTS
     (`block_slug`, `variant_value`, `variant_attr`, `slot`, `slot_name`,
     `canonical_slot` — as an attribute, a bare name, or a local alias assigned from
     one) AGAINST a string literal or a literal string-collection. This enforces
-    "the resolver bodies name no block" (R-22-1 / R-22-9) — per-block behaviour
+    "the resolver bodies name no block" (R-31-1 / R-31-9) — per-block behaviour
     must come from the DB, never an `if slug ==` or `if slot == "quote"` branch.
 
     Caught forms (the planted-carve-out positives in the test suite):
@@ -72,7 +72,7 @@ _TARGET_IDENTS = frozenset({
 # ---------------------------------------------------------------------------
 
 # A bare SGS slug literal, e.g. "sgs/hero". Comparing ANY variable to one of these in a
-# converter body is a per-block carve-out (R-22-9) regardless of the variable's name —
+# converter body is a per-block carve-out (R-31-9) regardless of the variable's name —
 # closes the gap where a local `slug` (built via prefix-strip, not from ctx.block_slug)
 # is compared to a slug literal and the identifier-tracking misses it.
 _SLUG_LITERAL_RE = re.compile(r"^sgs/[a-z0-9-]+$")
@@ -333,7 +333,7 @@ def _process_file(py: Path, scan_dir: Path, violations: list[dict]) -> None:
             "detail": (
                 f"Carve-out: a block-slug/variant identifier is compared to a "
                 f"string literal in converter/{rel}:{f['line']} — `{f['src']}`. "
-                f"Bodies must name no block (R-22-1/R-22-9); route via the DB "
+                f"Bodies must name no block (R-31-1/R-31-9); route via the DB "
                 f"(db_lookup / property_suffixes / variant_slots), not an `if slug ==` branch."
             ),
         })
@@ -350,7 +350,7 @@ def _process_file(py: Path, scan_dir: Path, violations: list[dict]) -> None:
             "detail": (
                 f"Bare slug literal in converter/{rel}:{f['line']} — `{f['src']}`. "
                 f"A block slug must be DB-resolved (db_lookup.block_exists), never a "
-                f"hardcoded `\"sgs/...\"` return/assign/arg (R-22-1; cheat Gap A)."
+                f"hardcoded `\"sgs/...\"` return/assign/arg (R-31-1; cheat Gap A)."
             ),
         })
     # variant files: a bare string Constant return/assign (cheat Gap C — `return "split"`).

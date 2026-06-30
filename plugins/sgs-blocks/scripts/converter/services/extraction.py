@@ -21,7 +21,7 @@ from bs4 import Tag
 # ---------------------------------------------------------------------------
 # Content-noun / styling-suffix regexes for expected_content_gaps (FIX 3).
 # Used ONLY as a GAP-only completeness heuristic — never affects block/slot
-# routing (no name list, no per-block carve-out, per R-22-1 "no hardcoded dicts").
+# routing (no name list, no per-block carve-out, per R-31-1 "no hardcoded dicts").
 # ---------------------------------------------------------------------------
 
 _CONTENT_NAME_RE = re.compile(
@@ -143,7 +143,7 @@ def _mobile_suffixes() -> frozenset[str]:
     """Return the set of breakpoint suffix names that map to 'Mobile' tier.
 
     Ported from convert.py:4178-4187 (_route_composite_interior preamble).
-    Uses db_lookup.breakpoint_suffix_rules() — no hardcoded suffix dict (R-22-1).
+    Uses db_lookup.breakpoint_suffix_rules() — no hardcoded suffix dict (R-31-1).
 
     SHAPE (verified against the live DB, 2026-06-30): breakpoint_suffix_rules()
     returns ``[(media_condition, [tier_marker, ...]), ...]`` — the FIRST tuple
@@ -202,7 +202,7 @@ def _child_content_for_node(
         removes that bug.
 
     ``child_slug`` is the caller's PARENT-SCOPED resolution (G1 child_block_for_parent_token
-    can override the global alias — Spec 22 §FR-22-5.3). recognition_for_slug
+    can override the global alias — Spec 22 §FR-31-5.3). recognition_for_slug
     preserves it (re-recognising would lose accordion __item -> sgs/accordion-item).
 
     ``css_rules`` is threaded so the CSS pass (Spec 31 §3.A) fires for child nodes.
@@ -553,7 +553,7 @@ def expected_content_gaps(slug: str) -> list:
     2. attr_type == 'string'  — flagged when the attr NAME matches _CONTENT_NAME_RE
                                 AND does NOT match _STYLING_RE.  This is a
                                 GAP-ONLY completeness heuristic (never affects
-                                routing), acceptable per R-22-1 (no block/slot
+                                routing), acceptable per R-31-1 (no block/slot
                                 literals; keyed on a naming pattern, not a name
                                 list or per-block carve-out).
 
@@ -980,14 +980,14 @@ def build_block_markup(
         if isinstance(r, ScalarLift):
             attrs[r.attr] = r.value
 
-    # step 4: FR-22-20 variant detection (port of convert.py:4892-4919). Set the
+    # step 4: FR-31-20 variant detection (port of convert.py:4892-4919). Set the
     # variant-selector attr from the draft's LIFTED fingerprint (the attrs just
     # assembled — content ScalarLifts like splitImage are now present) so
     # render.php's ORIGINAL variant gate fires (e.g. hero render.php:250
     # `$is_split = 'split' === $variant`). Without this the new engine left the
     # variant unset and render.php fell back to the standard hero, IGNORING the
     # split image + grid attrs entirely (W3 LANDED proof, hero bug 3). DB-driven
-    # (R-22-1) via variant_slots; universal (R-22-9) — variant_attr_for returns
+    # (R-31-1) via variant_slots; universal (R-31-9) — variant_attr_for returns
     # None for non-variant blocks, making this a no-op for them. NOT a 4th walk
     # branch (it reads the lifted attrs, mirrors the convert.py oracle exactly).
     if rec.slug is not None:
@@ -1002,8 +1002,8 @@ def build_block_markup(
     # (Spec 11 §4); render.php emits is-style-<preset>. Gated on the block declaring a
     # STRING inheritStyle attr — distinguishes sgs/button's style ENUM from the BOOLEAN
     # inheritStyle on text/heading/quote (setting a string on those suppresses their
-    # styling). DB-driven (R-22-1), universal over string-enum inheritStyle blocks
-    # (R-22-9), no slug literal. NOT a content role — read from the node's own class.
+    # styling). DB-driven (R-31-1), universal over string-enum inheritStyle blocks
+    # (R-31-9), no slug literal. NOT a content role — read from the node's own class.
     if (
         rec.slug is not None
         and "inheritStyle" not in attrs

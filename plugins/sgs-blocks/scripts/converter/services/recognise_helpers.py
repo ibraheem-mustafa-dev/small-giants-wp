@@ -2,7 +2,7 @@
 
 Design ref: `.claude/plans/2026-06-23-stage2-recognition-design.md` §1.
 
-All three helpers key on DB facts only (R-22-1, names no block). None of them reads
+All three helpers key on DB facts only (R-31-1, names no block). None of them reads
 the frozen `convert.py`; the only frozen-package import is `db_lookup` (the permitted
 DB-accessor layer — same as the slice's dispatch_table).
 """

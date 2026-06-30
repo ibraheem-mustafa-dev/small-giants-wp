@@ -104,7 +104,7 @@ def _shadow_token_snap(raw_value: str, conn: sqlite3.Connection) -> str | None:
     The default_value column holds the canonical CSS value (e.g. '0 4px 12px rgba(0,0,0,0.1)').
     The wrapper renders box-shadow:var(--wp--preset--shadow--{slug-after-shadow-prefix}).
 
-    Never hardcodes the preset list — reads from DB at call-time (R-22-1 DB-first rule).
+    Never hardcodes the preset list — reads from DB at call-time (R-31-1 DB-first rule).
     """
     normalised = _normalise_shadow(raw_value)
     rows = conn.execute(
@@ -187,7 +187,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     # A raw CSS value would NOT match any WP preset var → the wrapper renders nothing.
     # This is the no-cheats rule for box-shadow: if no preset matches, gap it honestly.
     #
-    # The preset list is read from design_tokens at call-time (R-22-1 DB-first — not
+    # The preset list is read from design_tokens at call-time (R-31-1 DB-first — not
     # hardcoded). Slugs carry the 'shadow-' prefix in the DB; the wrapper expects the
     # suffix only (e.g. 'md', not 'shadow-md').
     if prop == "box-shadow":

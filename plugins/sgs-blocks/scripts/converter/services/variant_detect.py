@@ -10,9 +10,9 @@ So recognition reads the root's `--<modifier>` tokens and matches them against t
 block's `variant_slots.variant_value` set (queried, never guessed). `--align-left`,
 `--desktop`, `--mobile` match no variant_value and are correctly ignored.
 
-This is pure BEM (R-22-2 — the only signal) + DB (R-22-1 — variant_value comes from
-`variant_slots`, FR-22-20). It runs at recognition time with NO dependency on Stage-4
-extraction and NO per-slot hand-dict (the forbidden R-22-1 cheat the earlier
+This is pure BEM (R-31-2 — the only signal) + DB (R-31-1 — variant_value comes from
+`variant_slots`, FR-31-20). It runs at recognition time with NO dependency on Stage-4
+extraction and NO per-slot hand-dict (the forbidden R-31-1 cheat the earlier
 emit-seam/detect_variant framing risked). The `sgs-<block>` ↔ `sgs/<block>` mapping is
 the Spec 00 naming convention.
 """
@@ -35,7 +35,7 @@ def _bem_prefix(slug: str) -> str:
 
 
 def _variant_values(slug: str) -> frozenset[str]:
-    """The block's DISTINCT variant_value set from variant_slots (DB, FR-22-20)."""
+    """The block's DISTINCT variant_value set from variant_slots (DB, FR-31-20)."""
     return frozenset(vv for vv, _slots in db_lookup._variant_slots_map(slug))
 
 

@@ -37,7 +37,7 @@ _PIPELINE_STATE = _SCRIPTS_DIR / "pipeline-state"
 _DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
 # CSS rule extractor: selector { declarations }
-# Note: _LAYOUT_PROP_RE pre-filter REMOVED — it was itself an R-22-1 hardcoded
+# Note: _LAYOUT_PROP_RE pre-filter REMOVED — it was itself an R-31-1 hardcoded
 # property literal and silently skipped any D2-stranded property that wasn't in
 # the ~18-item list.  We now pass EVERY property to the DB cross-join, which is
 # the authoritative answer to "does a D1 destination exist for this property?"

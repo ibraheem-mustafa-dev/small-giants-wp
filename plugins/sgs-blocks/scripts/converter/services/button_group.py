@@ -49,7 +49,7 @@ def group_loose_buttons(children: list[str]) -> list[str]:
       string beginning with ``<!-- wp:sgs/multi-button``; the regex does NOT
       match that prefix, so the group is never re-wrapped.  Idempotent.
     - The group slug is DB-derived via ``db_lookup.block_for_slot_token``
-      (R-22-1 — no hardcoded slug). If the DB has no ``button-group`` slot-token
+      (R-31-1 — no hardcoded slug). If the DB has no ``button-group`` slot-token
       row, the children pass through UNGROUPED (a DB-data gap, never a content
       drop) — the new engine carries NO fallback slug literal (the frozen
       ``or 'sgs/multi-button'`` fallback would violate the no-slug-literal gate).
@@ -79,7 +79,7 @@ def group_loose_buttons(children: list[str]) -> list[str]:
     if not group_slug:
         # No DB mapping for the button-group slot token -> cannot form the wrapper.
         # Pass children through ungrouped (a DB-data gap, NOT a content drop); never
-        # hardcode the slug (R-22-1 / the no-slug-literal F5 gate).
+        # hardcode the slug (R-31-1 / the no-slug-literal F5 gate).
         return list(children)
     open_tag: str = f"<!-- wp:{group_slug} -->\n"
     close_tag: str = f"\n<!-- /wp:{group_slug} -->"

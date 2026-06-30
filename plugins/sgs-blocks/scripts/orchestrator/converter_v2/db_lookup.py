@@ -53,7 +53,7 @@ if not UIMAX_DB.exists():
 #
 # Runtime callers query this table via _content_bearing_roles() and
 # _styling_behaviour_roles() below. _ROLE_CLASSIFICATION_MAP is the seed
-# source only — never a runtime lookup dict (R-22-1).
+# source only — never a runtime lookup dict (R-31-1).
 _ROLE_CLASSIFICATION_MAP: dict[str, str] = {
     # Content-bearing roles (5 total — includes link-href, previously missing)
     "text-content":         "content-bearing",
@@ -77,7 +77,7 @@ _ROLE_CLASSIFICATION_MAP: dict[str, str] = {
     "select-from-enum":     "styling-behaviour",
     "enum-class-probe":     "styling-behaviour",
     "query-descriptor":     "styling-behaviour",
-    # FR-22-19 composite scalar-media (2026-06-01): foreground images that a
+    # FR-31-19 composite scalar-media (2026-06-01): foreground images that a
     # composite block renders through its own scalar pipeline (art-direction,
     # srcset, object-fit, bleed, responsive show/hide authored in render.php).
     # Classification 'styling-behaviour' → equivalent_block_for() returns None →
@@ -96,7 +96,7 @@ def _migrate_roles_table() -> None:
     INSERT OR REPLACE (not OR IGNORE) means updates to the seed dict above
     propagate to the DB on every module load. This is intentional — the dict
     is the canonical source for the 20 entries defined at spec time; the DB
-    is the authoritative runtime query target. Honours R-22-1.
+    is the authoritative runtime query target. Honours R-31-1.
 
     Safe to call repeatedly. Runs at module load.
     """
@@ -132,7 +132,7 @@ _migrate_roles_table()
 # ----------------------------------------------------------------------------
 # Idempotent schema migration — html_tag_to_core_block
 # ----------------------------------------------------------------------------
-# Spec 22 §14 Appendix B / R-22-1 (2026-05-28 hardening): the bridge between
+# Spec 22 §14 Appendix B / R-31-1 (2026-05-28 hardening): the bridge between
 # HTML primitive tags and canonical WordPress core block slugs moves out of
 # a hardcoded Python dict into a DB table. Runtime path (atomic_tag_map()
 # below) queries the DB ONLY.
@@ -178,7 +178,7 @@ def _migrate_html_tag_to_core_block() -> None:
     """Idempotent migration: create html_tag_to_core_block table if absent
     and populate it from _HTML_TAG_TO_CORE_BLOCK_SEED.
 
-    Safe to call repeatedly. Runs at module load. Honours R-22-1: the seed
+    Safe to call repeatedly. Runs at module load. Honours R-31-1: the seed
     dict above is one-time migration data, NOT runtime lookup — atomic_tag_map()
     queries the DB table only.
     """
@@ -481,7 +481,7 @@ def block_attrs(block_slug: str) -> dict[str, dict]:
     `derived_selector` (added 2026-06-11 for the universal scalar-lift,
     _lift_scalar_attrs_by_selector) is the BEM class selector for the draft
     element this attr extracts from (e.g. '.sgs-testimonial__text'). NULL for
-    attrs with no draft element. Consumed by FR-22-2 / FR-22-5 D1 selector-lift.
+    attrs with no draft element. Consumed by FR-31-2 / FR-31-5 D1 selector-lift.
     """
     conn = sqlite3.connect(SGS_DB)
     try:
@@ -594,8 +594,8 @@ def block_accepts_inner_blocks(block_slug: str) -> bool:
     Soft-fails to True on missing table / missing row (conservative: allow
     children, which is safer than silently dropping them for unknown blocks).
 
-    R-22-1 compliant — DB-driven, no per-block slug literals.
-    R-22-9 compliant — universal gate: fires for every resolved non-leaf block.
+    R-31-1 compliant — DB-driven, no per-block slug literals.
+    R-31-9 compliant — universal gate: fires for every resolved non-leaf block.
     """
     conn = sqlite3.connect(SGS_DB)
     try:
@@ -774,7 +774,7 @@ def capabilities_for(block_slug: str) -> frozenset[str]:
     Safe to call per-node in the walker — the cache eliminates DB round-trips on
     repeated calls for the same slug within a section.
 
-    R-22-1 compliance: no hardcoded slug→capability mapping in code. All data
+    R-31-1 compliance: no hardcoded slug→capability mapping in code. All data
     lives in the DB; this function is the single read path. The CAPABILITY_RULES
     dict in populate-db.py is one-time-seed data only.
 
@@ -811,7 +811,7 @@ def blocks_with_capability(capability: str) -> frozenset[str]:
     Intended for pattern-generation and diagnostic tooling — not hot-path during
     section walks (use capabilities_for() for per-node lookups instead).
 
-    R-22-1 compliance: DB-only read path.
+    R-31-1 compliance: DB-only read path.
     """
     conn = sqlite3.connect(SGS_DB)
     try:
@@ -892,7 +892,7 @@ def array_item_fields(block_slug: str, array_attr: str) -> list[dict]:
       - ``enum_values``     — parsed list or None
       - ``gap_reason``      — str reason (when role='gap-pending') or None
 
-    R-22-1 compliant — DB-only read path; no per-block slug literals.
+    R-31-1 compliant — DB-only read path; no per-block slug literals.
     """
     import json as _json
     conn = sqlite3.connect(SGS_DB)
@@ -992,7 +992,7 @@ _KIND_BY_SUFFIX: dict[str, str] = {
 # Idempotent schema migration — property_suffixes.kind_override (D99 2026-05-29)
 # ----------------------------------------------------------------------------
 # Fix 4: _KIND_BY_SUFFIX dict (17 entries, defined above) moves into the DB as
-# a `kind_override` column on property_suffixes. Honours R-22-1 (DB-first,
+# a `kind_override` column on property_suffixes. Honours R-31-1 (DB-first,
 # no hardcoded dicts; blub.db row 260).
 #
 # _KIND_BY_SUFFIX is the ONE-TIME SEED source. _kind_for() queries DB first;
@@ -1032,9 +1032,9 @@ _migrate_property_suffixes_kind_override()
 
 
 # ----------------------------------------------------------------------------
-# Idempotent schema migration — variant detection (FR-22-20, D133 2026-06-01)
+# Idempotent schema migration — variant detection (FR-31-20, D133 2026-06-01)
 # ----------------------------------------------------------------------------
-# Universal variant detection (Spec 22 §FR-22-20) needs two schema additions:
+# Universal variant detection (Spec 22 §FR-31-20) needs two schema additions:
 #   - blocks.variant_attr  — names the variant-selector attr per block (e.g.
 #     'variant', 'variantStyle', 'layout') so the converter never guesses it.
 #     Populated by /sgs-update Stage 1 from block.json supports.sgs.variantAttr.
@@ -1043,7 +1043,7 @@ _migrate_property_suffixes_kind_override()
 #     Populated by /sgs-update Stage 1 from block.json supports.sgs.variants.
 #
 # This migration is pure schema (additive, no data). Population is a /sgs-update
-# responsibility, so there is no seed dict here (R-22-1 dict-as-seed N/A).
+# responsibility, so there is no seed dict here (R-31-1 dict-as-seed N/A).
 #
 # Safe to call repeatedly. Runs at module load.
 def _migrate_variant_detection_schema() -> None:
@@ -1125,7 +1125,7 @@ def _kind_for(suffix: str, role: str | None) -> str | None:
     select-from-enum, content roles — these aren't CSS-driven).
 
     D99 2026-05-29 (Fix 4): queries property_suffixes.kind_override FIRST
-    (R-22-1 — DB-first, no hardcoded dicts). Falls through to role-based
+    (R-31-1 — DB-first, no hardcoded dicts). Falls through to role-based
     inference for suffixes not covered by the DB column. _KIND_BY_SUFFIX is
     retained as the seed source for _migrate_property_suffixes_kind_override()
     but is no longer the runtime lookup path.
@@ -1138,7 +1138,7 @@ def _kind_for(suffix: str, role: str | None) -> str | None:
       - spacing-token: suffix='Spacing', css_property='padding/margin (preset)' — skipped
         (multi-property; no single CSS prop to match)
     """
-    # DB-first (R-22-1): query kind_override column seeded from _KIND_BY_SUFFIX.
+    # DB-first (R-31-1): query kind_override column seeded from _KIND_BY_SUFFIX.
     conn = sqlite3.connect(SGS_DB)
     try:
         row = conn.execute(
@@ -1212,7 +1212,7 @@ def css_property_suffixes() -> list[tuple[str, str, str]]:
 # ----------------------------------------------------------------------------
 # Typography CSS → block-attr lift map (DB-driven, replaces _TYPOGRAPHY_CSS_TO_ATTRS)
 # ----------------------------------------------------------------------------
-# R-22-1: no hardcoded css-property→attribute literal dict/list.
+# R-31-1: no hardcoded css-property→attribute literal dict/list.
 # The 8 entries formerly hardcoded in convert.py._TYPOGRAPHY_CSS_TO_ATTRS are
 # now derived at runtime from property_suffixes. The DB's css_property column
 # already holds the css_property→suffix direction; iteration is driven entirely
@@ -1259,7 +1259,7 @@ def typography_css_to_attrs() -> list[tuple[str, str, "str | None"]]:
     """Return list of (css_prop, primary_attr, unit_attr_or_None) tuples used by
     _lift_typography_to_block_attrs in convert.py.
 
-    Fully DB-driven from property_suffixes (R-22-1). Replaces the hardcoded
+    Fully DB-driven from property_suffixes (R-31-1). Replaces the hardcoded
     _TYPOGRAPHY_CSS_TO_ATTRS list. The css_property→suffix→attr→unit derivation
     reads the DB; only the lift SCOPE (which css_properties to lift) and the
     2-property colour disambiguation are module constants.
@@ -1394,7 +1394,7 @@ def typography_css_to_attrs() -> list[tuple[str, str, "str | None"]]:
 # both can legitimately fire for the same css_property (e.g. `color` on
 # sgs/heading writes BOTH `textColour` AND `style.color.text`).
 #
-# R-22-1 compliance: all lookups via DB tables (property_suffixes,
+# R-31-1 compliance: all lookups via DB tables (property_suffixes,
 # block_attributes).  _SUFFIX_ATTR_OVERRIDES is the ONLY constant (same
 # exception class as SKIP_TOP_LEVEL_TAGS — handles `grid-template-columns`
 # whose naive suffix derivation lands on the wrong attr, a WP-schema constant).
@@ -1403,7 +1403,7 @@ def typography_css_to_attrs() -> list[tuple[str, str, "str | None"]]:
 # walker's per-node loop.
 # ----------------------------------------------------------------------------
 
-# The set of css_properties owned by the typography writer (R-22-1 permitted
+# The set of css_properties owned by the typography writer (R-31-1 permitted
 # constant: these are the scope of _lift_typography_to_block_attrs, defined by
 # the lift SCOPE decision documented in typography_css_to_attrs() above, not by
 # per-block data.  Adding a new typography css_property to the DB scope is the
@@ -1414,7 +1414,7 @@ _TYPOGRAPHY_CSS_SCOPE: frozenset[str] = frozenset(
 
 # Explicit attr-name overrides: mirrors the _SUFFIX_ATTR_OVERRIDES dict in
 # convert.py._lift_wrapper_css_to_container_attrs so the derivation is
-# consistent (R-22-1: these are WP-schema constants, not per-block data).
+# consistent (R-31-1: these are WP-schema constants, not per-block data).
 _ATTR_NAME_OVERRIDES: dict[tuple[str, str], str] = {
     ("grid-template-columns", "Columns"): "gridTemplateColumns",
 }
@@ -1463,7 +1463,7 @@ def attr_for_property(
     Performance: LRU-cached per (block_slug, css_property); cache size 4096 covers
     the typical walker's per-node-per-property call pattern across a full page.
 
-    R-22-1: property_suffixes and block_attributes are the sole lookup sources.
+    R-31-1: property_suffixes and block_attributes are the sole lookup sources.
     No hardcoded css_property→attr_name dict.
     """
     if not block_slug or not css_property:
@@ -1544,7 +1544,7 @@ def attr_for_property(
 # the converter wants to populate both responsive attrs from that single rule.
 # This mapping is convention, not data — the DB has the suffix vocabulary; this
 # function maps @media query breakpoints to which suffixes those queries apply to.
-# R-22-1 permitted-constant exception (same class as SKIP_TOP_LEVEL_TAGS): these
+# R-31-1 permitted-constant exception (same class as SKIP_TOP_LEVEL_TAGS): these
 # are CSS @media-query breakpoint thresholds from the W3C / web-platform standard,
 # not SGS per-block data. There is no DB table for @media boundary values.
 # The suffix vocabulary IS DB-driven (verified via modifier_suffixes in
@@ -1592,7 +1592,7 @@ def breakpoint_suffix_rules() -> list[tuple[str, list[str]]]:
 def modifier_suffixes(kind: str) -> tuple[str, ...]:
     """Return the suffix vocabulary for one ``modifier_suffixes.kind`` from the DB.
 
-    R-22-1: the suffix grammar (side={Top,Right,Bottom,Left}, breakpoint=
+    R-31-1: the suffix grammar (side={Top,Right,Bottom,Left}, breakpoint=
     {Mobile,Tablet,Desktop}, unit={Unit}, corner={TL,TR,BL,BR}, state, variant) is
     DB-OWNED — hardcoding any of these literals in the resolvers is a violation.
     Cached per-kind (the vocabulary is process-stable). Spec 31 §4 (modifier_suffixes
@@ -1611,7 +1611,7 @@ def modifier_suffixes(kind: str) -> tuple[str, ...]:
 
 def unit_companion_attr(attr: str, conn: sqlite3.Connection) -> str | None:
     """Derive the ``…Unit`` companion attr name for a (possibly tier/side-suffixed)
-    numeric attr — entirely from the DB suffix vocabulary (R-22-1, NO hardcoded
+    numeric attr — entirely from the DB suffix vocabulary (R-31-1, NO hardcoded
     suffix literals).
 
     A numeric box/typography attr stores its CSS unit on a shared companion attr:
@@ -1804,13 +1804,13 @@ def legacy_role_lookup_for(kebab_role: str) -> str | None:
 
 
 # ----------------------------------------------------------------------------
-# is_class_section_block — Spec 22 §FR-22-3 exception 3 + D1 explicit flag
+# is_class_section_block — Spec 22 §FR-31-3 exception 3 + D1 explicit flag
 # ----------------------------------------------------------------------------
 # Returns True iff the given block slug is registered in the `blocks` table
 # with tier='class-section'. Used by the per-section convention voter to gate
 # the literal-slug fast-path: only class-section blocks (sgs/hero, sgs/cta-section)
 # may be returned from a section-scope SGS-BEM class signature; everything
-# else falls through to gap-candidate routing (Stage 2 FR-22-4 default to
+# else falls through to gap-candidate routing (Stage 2 FR-31-4 default to
 # sgs/container).
 #
 # Cached after first call — `tier` is static for the lifetime of a pipeline run.
@@ -1843,7 +1843,7 @@ def is_class_section_block(slug: str) -> bool:
 
 
 # ----------------------------------------------------------------------------
-# scalar_media_attr_for — FR-22-19 composite scalar-media slot lookup
+# scalar_media_attr_for — FR-31-19 composite scalar-media slot lookup
 # ----------------------------------------------------------------------------
 # Returns the attr_name of the 'scalar-media' attr on `block_slug` whose slot
 # matches `bem_element`.  Used by _route_composite_interior in convert.py to
@@ -1856,7 +1856,7 @@ def is_class_section_block(slug: str) -> bool:
 # number of composites × their child columns is small (≤4 per section) so even
 # cache-cold hits never cause measurable latency.
 #
-# R-22-1 compliance: no per-block slug literals.  Routing is driven entirely by
+# R-31-1 compliance: no per-block slug literals.  Routing is driven entirely by
 # the `block_attributes.role='scalar-media'` column and the `slots` aliases.
 
 
@@ -1864,7 +1864,7 @@ def is_class_section_block(slug: str) -> bool:
 def has_scalar_media_attrs(block_slug: str) -> bool:
     """True if `block_slug` declares >=1 attr with role='scalar-media'.
 
-    FR-22-19 gate (2026-06-01, corrected): the composite-interior router fires
+    FR-31-19 gate (2026-06-01, corrected): the composite-interior router fires
     for any COMPOSITE that renders part of its interior itself as a scalar-media
     attr (sgs/hero.splitImage, sgs/testimonial-slider.sideImage) — NOT only
     class-section/section-root blocks (testimonial-slider is a composite but a
@@ -1872,7 +1872,7 @@ def has_scalar_media_attrs(block_slug: str) -> bool:
     attr is precise: it covers every such composite AND naturally excludes blocks
     with no scalar-media attr (cta-section, info-box, product-card) so their
     interior routing is unchanged (resolves the cta-section over-fire risk).
-    R-22-1: DB-driven, no slug literals; R-22-9: universal mechanism.
+    R-31-1: DB-driven, no slug literals; R-31-9: universal mechanism.
     """
     if not block_slug:
         return False
@@ -2001,12 +2001,12 @@ def _scalar_media_attr_for_cached(block_slug: str, bem_element: str) -> str | No
 
 
 # ----------------------------------------------------------------------------
-# Variant detection — FR-22-20 (D133 2026-06-01)
+# Variant detection — FR-31-20 (D133 2026-06-01)
 # ----------------------------------------------------------------------------
 # A block with multiple layout variants (hero: standard/split/video/svg-animated)
 # renders the correct variant ONLY when its variant-selector attr is set. The
 # cloning converter populates a variant's CONTENT (e.g. the hero's split images)
-# but does not set the variant attr → the block renders its DEFAULT. FR-22-20
+# but does not set the variant attr → the block renders its DEFAULT. FR-31-20
 # closes this DB-first: each variant block declares supports.sgs.variantAttr +
 # variants in block.json (→ blocks.variant_attr + variant_slots via /sgs-update),
 # and the converter detects the variant from what the DRAFT extracted this run.
@@ -2015,7 +2015,7 @@ def _scalar_media_attr_for_cached(block_slug: str, bem_element: str) -> str | No
 #   detect_variant(slug, attrs)  → the variant whose discriminating slots best
 #                                  match the draft's extracted attrs, or None.
 #
-# R-22-1 (DB-driven — no per-block dict/slug literal). R-22-9 (one mechanism, all
+# R-31-1 (DB-driven — no per-block dict/slug literal). R-31-9 (one mechanism, all
 # variant blocks). The detector reads the draft's extracted attrs (NOT the block's
 # stored attrs) → closes the stale-data hole the $is_split band-aid had.
 
@@ -2037,7 +2037,7 @@ def variant_attr_for(block_slug: str) -> str | None:
             (block_slug,),
         ).fetchone()
     except sqlite3.OperationalError:
-        # Column absent (pre-FR-22-20 DB) — soft-fail to None.
+        # Column absent (pre-FR-31-20 DB) — soft-fail to None.
         row = None
     finally:
         conn.close()
@@ -2102,7 +2102,7 @@ def detect_variant(block_slug: str, populated_attrs: dict) -> str | None:
       - the top score is a tie between >=2 variants (ambiguous — leave the
         block's default rather than guess).
 
-    R-22-1 (DB-driven, no slug literal).
+    R-31-1 (DB-driven, no slug literal).
     """
     variants = _variant_slots_map(block_slug)
     if not variants:
@@ -2128,7 +2128,7 @@ def detect_variant(block_slug: str, populated_attrs: dict) -> str | None:
 
 
 # ----------------------------------------------------------------------------
-# equivalent_block_for — Spec 22 §FR-22-2.1 two-tier derivation
+# equivalent_block_for — Spec 22 §FR-31-2.1 two-tier derivation
 # ----------------------------------------------------------------------------
 # Canonical implementation of the universal walker's block-equivalence question:
 # "Given (block_slug, attr_name), is the attr block-equivalent — and if so,
@@ -2145,19 +2145,19 @@ def detect_variant(block_slug: str, populated_attrs: dict) -> str | None:
 #      (regex __([a-z0-9-]+)) → match against slot_synonyms.aliases
 #      (JSON-decoded) → return standalone_block.
 #
-# FR-22-2.2 role-exclusion is applied BEFORE tier matching as a positive
+# FR-31-2.2 role-exclusion is applied BEFORE tier matching as a positive
 # allowlist: return None when the attr's role is NOT classified
 # 'content-bearing' on slot_synonyms.role_classification. Prevents the
 # "typography looks like heading" trap (headlineFontSizeDesktop has
 # canonical_slot='heading' but role='typography' → must NOT route content
 # to a heading block). Per D85 the classification lives in the DB
 # (slot_synonyms.role_classification), not in hardcoded Python frozensets
-# (honours R-22-1; blub.db row 260).
+# (honours R-31-1; blub.db row 260).
 #
 # LRU cache (maxsize=2048): walker calls this function per-node-per-attr;
 # canonical_slot + derived_selector + role are static for the lifetime of a
 # pipeline run, so cached lookups are safe and necessary for the ≤2ms
-# cache-warm performance threshold (FR-22-8).
+# cache-warm performance threshold (FR-31-8).
 
 
 @functools.lru_cache(maxsize=1)
@@ -2333,7 +2333,7 @@ def slot_default_attrs_for(sgs_classes: list[str]) -> dict:
     carries defaults (mirrors resolve_slug_from_bem Path 2 element matching, incl.
     the compound-element prefix-strip). E.g. `__buttonSecondary` →
     {'inheritStyle':'secondary'}. Empty dict when none. The walker applies these via
-    setdefault so any draft-extracted value wins (R-22-1 DB-driven, R-22-9 universal)."""
+    setdefault so any draft-extracted value wins (R-31-1 DB-driven, R-31-9 universal)."""
     dmap = _slot_alias_to_default_attrs()
     if not dmap:
         return {}
@@ -2371,7 +2371,7 @@ def equivalent_block_for(block_slug: str, attr_name: str) -> str | None:
     """Return the standalone block slug if (block_slug, attr_name) is block-equivalent,
     else None.
 
-    Spec 22 §FR-22-2.1 two-tier derivation + §FR-22-2.2 role-exclusion.
+    Spec 22 §FR-31-2.1 two-tier derivation + §FR-31-2.2 role-exclusion.
     (Tier C deleted 2026-05-27 per D85 / qc-council Rater B — see module
     docstring above. Re-introduction gated on
     P-SGS-UPDATE-ROLE-DETECTION-IMPROVE generating real Tier C inputs.)
@@ -2408,9 +2408,9 @@ def equivalent_block_for(block_slug: str, attr_name: str) -> str | None:
 
     canonical_slot, derived_selector, role = row
 
-    # FR-22-2.2 role-exclusion as positive-allowlist (D85 2026-05-27 — moved
+    # FR-31-2.2 role-exclusion as positive-allowlist (D85 2026-05-27 — moved
     # from hardcoded frozenset to DB-driven query of slot_synonyms.role_classification
-    # per Rater B finding; honours R-22-1).
+    # per Rater B finding; honours R-31-1).
     #
     # The original negative-blocklist `if role and role in _ROLE_EXCLUSION_ALLOWLIST`
     # short-circuited on falsy role (NULL/empty), letting 171 rows with
@@ -2466,7 +2466,7 @@ def equivalent_block_for(block_slug: str, attr_name: str) -> str | None:
 
 
 # ----------------------------------------------------------------------------
-# Commit 2 — cross-node routing helpers (FR-22-5.3, 2026-06-10)
+# Commit 2 — cross-node routing helpers (FR-31-5.3, 2026-06-10)
 # ----------------------------------------------------------------------------
 # Three pure DB-lookup functions required by the cross-node interior box-CSS
 # routing step (`_route_interior_css_to_parent_slot`) described in
@@ -2482,15 +2482,15 @@ def equivalent_block_for(block_slug: str, attr_name: str) -> str | None:
 #     (b) If NOT content-bearing → which parent attr owns this CSS for the
 #         given layer (OUTER / CONTENT / GRID)?
 #     (c) Does the parent have a dedicated child block that resolves this
-#         element token?  (parent-scoped child-block resolution, FR-22-5.3
+#         element token?  (parent-scoped child-block resolution, FR-31-5.3
 #         clause 5.)
 #
 # Design decisions used here:
 #   DEC-1 (D194) — `canonical_slot` is NOT the structural-CSS routing key.
 #   DEC-3 (D194) — Layer prefix families: OUTER = '' (unprefixed wrapper attrs),
 #                  CONTENT = 'content', GRID = 'gridItem'.
-#   R-22-1        — Pure DB lookups; no hardcoded per-slug dicts.
-#   R-22-9        — Universal: applies to all 29 container-mirror composites.
+#   R-31-1        — Pure DB lookups; no hardcoded per-slug dicts.
+#   R-31-9        — Universal: applies to all 29 container-mirror composites.
 
 
 @functools.lru_cache(maxsize=4096)
@@ -2498,7 +2498,7 @@ def slot_has_equivalent_block(block_slug: str, slot_name: str) -> bool:
     """CONTENT-fork predicate: does `block_slug` have a content-bearing attr
     tagged with `canonical_slot = slot_name`?
 
-    Purpose (Spec 22 FR-22-5.3 / STAGE1-DESIGN.md §Commit 2 step 2):
+    Purpose (Spec 22 FR-31-5.3 / STAGE1-DESIGN.md §Commit 2 step 2):
         Before routing a child element's CSS to the parent's per-slot attr group,
         the walker must confirm the slot is NOT already served by a child InnerBlock
         (the D1 content path).  This predicate fires the CONTENT fork when True —
@@ -2517,7 +2517,7 @@ def slot_has_equivalent_block(block_slug: str, slot_name: str) -> bool:
     is exactly the bug class this predicate exists to avoid.
 
     Content-bearing role set (DB-authoritative, queried live via
-    ``_content_bearing_roles()``; do NOT duplicate here — R-22-1):
+    ``_content_bearing_roles()``; do NOT duplicate here — R-31-1):
         text-content, image-object, content, link-href, identity
     Evidence: ``_ROLE_CLASSIFICATION_MAP`` in this module + the ``roles`` table
     seeded by ``_migrate_roles_table()``.
@@ -2578,8 +2578,8 @@ def slot_has_equivalent_block(block_slug: str, slot_name: str) -> bool:
 # Layer prefix map (DEC-3, D194).  These are the ONLY three permitted layer
 # names for ``attr_for_layer_property``.  The values are the camelCase prefix
 # that the block's attr names carry for that layer.
-# R-22-1 permitted-constant: these are CSS-architecture constants (the 3-layer
-# model from Spec 22 FR-22-21), not per-block data.  There is no DB table for
+# R-31-1 permitted-constant: these are CSS-architecture constants (the 3-layer
+# model from Spec 22 FR-31-21), not per-block data.  There is no DB table for
 # layer prefixes.
 _LAYER_PREFIXES: dict[str, str] = {
     "OUTER":   "",          # unprefixed wrapper attrs: maxWidth, gap, padding*
@@ -2591,7 +2591,7 @@ _LAYER_PREFIXES: dict[str, str] = {
 # element is semantically the content-width constraint, equivalent to ``width``
 # for attr-matching purposes.  This mirrors the existing converter logic at
 # convert.py line 3800 where ``max-width`` is lifted directly into
-# ``contentWidth``.  (R-22-1 permitted-constant: CSS standard knowledge.)
+# ``contentWidth``.  (R-31-1 permitted-constant: CSS standard knowledge.)
 _CONTENT_LAYER_MAX_WIDTH_EQUIV: frozenset[str] = frozenset({"max-width", "width"})
 
 
@@ -2606,7 +2606,7 @@ def attr_for_layer_property(
     Given ``(block_slug, layer, css_property)``, returns the block's ACTUAL
     ``attr_name`` from its registered attrs for that CSS property at that layer.
 
-    Purpose (Spec 22 FR-22-5.3 / STAGE1-DESIGN.md §Commit 2 step 2, DEC-1/DEC-3):
+    Purpose (Spec 22 FR-31-5.3 / STAGE1-DESIGN.md §Commit 2 step 2, DEC-1/DEC-3):
         When the CONTENT fork is False (the slot is NOT content-bearing), the
         cross-node step lifts the child element's structural box CSS onto the
         parent composite's layer-specific attr.  This function resolves WHICH
@@ -2640,7 +2640,7 @@ def attr_for_layer_property(
            First match wins (preserves ``property_suffixes`` rowid ordering).
         5. Return the matched ``attr_name``, or None when the block has no matching
            attr for this layer/property combination.
-           Callers log a gap-candidate on None (flag-not-drop, FR-22-21 step 6).
+           Callers log a gap-candidate on None (flag-not-drop, FR-31-21 step 6).
 
     Rationale for per-block lookup (NOT string concat):
         Attr names vary per block.  Hero historically used ``contentMaxWidth*``
@@ -2761,7 +2761,7 @@ def attr_for_area_property(
 ) -> "str | None":
     """Per-block GRID-PER-AREA → attr resolver (the `<areaName>+<suffix>` layer).
 
-    Bean design steer 2026-06-11 (next-session-prompt Task 3 / FR-22-21 per-area
+    Bean design steer 2026-06-11 (next-session-prompt Task 3 / FR-31-21 per-area
     grid layer candidate): a composite that renders named grid areas itself
     (hero: "content" / "media") exposes per-AREA styling attrs whose names are
     DERIVABLE as ``areaName + PropertySuffix`` — ``content``+``PaddingTop`` →
@@ -2828,7 +2828,7 @@ def child_block_for_parent_token(
     parent_block: str,
     element_token: str,
 ) -> "str | None":
-    """Parent-scoped child-block resolver (FR-22-5.3 clause 5).
+    """Parent-scoped child-block resolver (FR-31-5.3 clause 5).
 
     Given ``(parent_block, element_token)``, returns the child block slug whose
     DB-derived token matches ``element_token`` within ``parent_block``'s roster,
@@ -2844,7 +2844,7 @@ def child_block_for_parent_token(
             (wrong); correct → ``sgs/form-step``.
 
         A parent-scoped pre-check that beats the global alias resolves both
-        without a per-slug Python branch (R-22-1 / R-22-9).
+        without a per-slug Python branch (R-31-1 / R-31-9).
 
     Mechanism — pure DB lookup via ``blocks.parent_block`` (18 rows as of 2026-06-10):
         For each child registered under ``parent_block``, a token is derived
@@ -2957,7 +2957,7 @@ def child_block_for_parent_token(
 # atomic_tag_map — Spec 22 §14 Appendix B / Commit 1.2
 # ----------------------------------------------------------------------------
 # DB-driven replacement for the legacy hardcoded ATOMIC_TAG_MAP dict in
-# _retired/convert_pre_spec22.py (9-entry dict, violated R-22-1).
+# _retired/convert_pre_spec22.py (9-entry dict, violated R-31-1).
 #
 # The atomic_tag_map operates at the walker's NO-BEM-CLASS fallback level —
 # when a DOM node carries no `sgs-*` BEM classification, the walker uses this
@@ -2979,7 +2979,7 @@ def child_block_for_parent_token(
 #   produced slot-contextual routing where html-canonical routing is needed.
 #   slot_synonyms data stays unchanged; atomic_tag_map simply does not query it.
 #
-# R-22-1 compliance (2026-05-28 hardening):
+# R-31-1 compliance (2026-05-28 hardening):
 #   No hardcoded SGS routing dict in code. The html-tag→core-block bridge data
 #   lives in the html_tag_to_core_block DB table, seeded once at module load
 #   from _HTML_TAG_TO_CORE_BLOCK_SEED. Runtime path queries DB only.
@@ -3014,7 +3014,7 @@ def _blocks_replaces_reverse() -> dict[str, str]:
 def atomic_tag_map() -> dict[str, str]:
     """Return {html_tag: block_slug} for all HTML tags the universal walker may encounter.
 
-    Fully DB-driven (R-22-1 compliance, 2026-05-28 hardening). Reads
+    Fully DB-driven (R-31-1 compliance, 2026-05-28 hardening). Reads
     html_tag_to_core_block at runtime and joins against blocks.replaces.
     No hardcoded routing dict in code.
 
@@ -3044,7 +3044,7 @@ def atomic_tag_map() -> dict[str, str]:
 
 
 # ----------------------------------------------------------------------------
-# array_item_slot_for — Spec 22 §FR-22-2.5 / Commit 1.3
+# array_item_slot_for — Spec 22 §FR-31-2.5 / Commit 1.3
 # ----------------------------------------------------------------------------
 # DB-driven resolution for array-typed attrs. When the walker encounters an
 # array attr (block_attributes.attr_type='array') on a block, it asks this
@@ -3059,11 +3059,11 @@ def atomic_tag_map() -> dict[str, str]:
 #
 #   Tier B (NULL canonical_slot — walker falls back to children's BEM):
 #     If canonical_slot is NULL, the walker queries the children's BEM
-#     signature for the slot (per FR-22-2.5 §4). This helper returns None
+#     signature for the slot (per FR-31-2.5 §4). This helper returns None
 #     for that case — the walker handles the BEM-fallback path itself.
 #
 # Replaces hardcoded ARRAY_LIFT_PATTERNS dict at _retired/convert_pre_spec22.py:1008-1031
-# (R-22-1 compliance).
+# (R-31-1 compliance).
 
 @functools.lru_cache(maxsize=2048)
 def array_item_slot_for(block_slug: str, attr_name: str) -> str | None:
@@ -3073,13 +3073,13 @@ def array_item_slot_for(block_slug: str, attr_name: str) -> str | None:
         - The canonical_slot string when populated (Tier A — walker emits
           one child block per item via equivalent_block_for + standalone_block).
         - None when canonical_slot is NULL on a true array attr (Tier B —
-          walker falls back to children's BEM signature per FR-22-2.5 §4).
+          walker falls back to children's BEM signature per FR-31-2.5 §4).
         - None when the attribute does not exist OR is not array-typed
           (caller should not have invoked this helper for non-array attrs).
 
     The role gate is INCLUSIVE here (unlike equivalent_block_for): array
     attrs whose role is None but canonical_slot is populated still resolve.
-    This matches the FR-22-2.5 §1 statement: "If the parent block's attr
+    This matches the FR-31-2.5 §1 statement: "If the parent block's attr
     has canonical_slot populated → that's the array slot's content type".
 
     Caller (the walker) is responsible for then resolving canonical_slot via
@@ -3121,11 +3121,11 @@ def array_item_slot_for(block_slug: str, attr_name: str) -> str | None:
 # ============================================================================
 # These three helpers are consumed by the universal walker (Pass 2).
 # They encode the three core walker operations without any per-block branches:
-#   1. resolve_slug_from_bem  — FR-22-1 BEM→slug resolution
-#   2. lift_behavioural_attrs — FR-22-2 scalar attr lifting
-#   3. emit_sgs_container_wrapping — FR-22-3 exception 3 + FR-22-4
+#   1. resolve_slug_from_bem  — FR-31-1 BEM→slug resolution
+#   2. lift_behavioural_attrs — FR-31-2 scalar attr lifting
+#   3. emit_sgs_container_wrapping — FR-31-3 exception 3 + FR-31-4
 #
-# R-22-1 compliance: no hardcoded SGS routing dicts; every routing decision
+# R-31-1 compliance: no hardcoded SGS routing dicts; every routing decision
 # queries the DB or delegates to existing helpers. No `if slug == 'sgs/X'`
 # conditionals anywhere in this section.
 # ============================================================================
@@ -3133,19 +3133,19 @@ def array_item_slot_for(block_slug: str, attr_name: str) -> str | None:
 
 # ----------------------------------------------------------------------------
 # Helper 1 — resolve_slug_from_bem
-# Spec 22 §FR-22-1 multi-class BEM→slug resolution
+# Spec 22 §FR-31-1 multi-class BEM→slug resolution
 # ----------------------------------------------------------------------------
 
 @functools.lru_cache(maxsize=4096)
 def _resolve_slug_from_bem_tuple(classes_tuple: tuple[str, ...]) -> str | None:
     """Core resolution logic — operates on a frozen sorted tuple for caching.
 
-    Multi-class disambiguation rule (FR-22-1 + FR-22-15):
+    Multi-class disambiguation rule (FR-31-1 + FR-31-15):
       Path 1 — bare block class (no __element suffix) present:
         Each class whose BemParse.element is None is a block-root candidate.
         Filter to those where `sgs/<block>` is a registered built slug.
         If exactly one → return it.
-        If multiple → capability-aware tiebreaker (FR-22-15, D96 2026-05-29):
+        If multiple → capability-aware tiebreaker (FR-31-15, D96 2026-05-29):
           Sort by (_capability_rank, slug) ascending so the most semantically
           specific block wins. Alphabetical is the final tiebreaker when two
           slugs share the same capability rank. Emits trace with all candidates
@@ -3184,7 +3184,7 @@ def _resolve_slug_from_bem_tuple(classes_tuple: tuple[str, ...]) -> str | None:
 
     if bare_block_slugs:
         if len(bare_block_slugs) > 1:
-            # FR-22-15 (D96 2026-05-29): capability-aware tiebreaker.
+            # FR-31-15 (D96 2026-05-29): capability-aware tiebreaker.
             # Sort by (_capability_rank, slug) so the block with the most
             # semantically specific capability tag ranks first. Alphabetical
             # slug is the final tiebreaker for equal-rank candidates.
@@ -3230,8 +3230,8 @@ def _resolve_slug_from_bem_tuple(classes_tuple: tuple[str, ...]) -> str | None:
     # "unexpected/invalid content".
     #
     # Resolution = prefix/suffix decomposition against the SAME DB slot vocabulary
-    # (no new table, no per-class Python literals — R-22-1; universal across every
-    # `<slot>-<slot>` compound — R-22-9). Split on the FIRST hyphen and route the
+    # (no new table, no per-class Python literals — R-31-1; universal across every
+    # `<slot>-<slot>` compound — R-31-9). Split on the FIRST hyphen and route the
     # tail ONLY when BOTH head and tail are themselves routable slots. Gating on
     # `head in slot_alias_map` is the safety boundary: it fires for container
     # prefixes (`card-`, `panel-`) but NEVER for non-slot prefixes (`skip-link`,
@@ -3270,7 +3270,7 @@ def block_for_slot_token(token: str) -> str | None:
 
     Thin public accessor over the element-scope slot/alias map (the same map
     `resolve_slug_from_bem` uses). Used by the walker's text-leaf routing
-    (Spec 22 §FR-22-4.1 content-leaf step) to resolve a compound element's
+    (Spec 22 §FR-31-4.1 content-leaf step) to resolve a compound element's
     individual hyphen-segments (e.g. `price` → sgs/text, `stars` →
     sgs/star-rating) so a content leaf can pick its correct content block.
     Hyphen/case-insensitive via the map's no-hyphen variant keys.
@@ -3283,7 +3283,7 @@ def block_for_slot_token(token: str) -> str | None:
 def resolve_slug_from_bem(sgs_classes: list[str]) -> str | None:
     """Return the canonical SGS block slug for a list of sgs-* BEM classes, or None.
 
-    Spec 22 §FR-22-1 + §FR-22-15 — multi-class disambiguation:
+    Spec 22 §FR-31-1 + §FR-31-15 — multi-class disambiguation:
       - Path 1: a class whose BEM block segment maps to a registered built
         slug (no __element suffix). Multiple matches → capability-aware
         tiebreaker (_capability_rank) + alphabetical final tiebreaker (D96).
@@ -3300,17 +3300,17 @@ def resolve_slug_from_bem(sgs_classes: list[str]) -> str | None:
 
 # ----------------------------------------------------------------------------
 # Helper 2 — lift_behavioural_attrs
-# Spec 22 §FR-22-2 — scalar attr lifting (NULL equivalent_block only)
+# Spec 22 §FR-31-2 — scalar attr lifting (NULL equivalent_block only)
 # ----------------------------------------------------------------------------
 
 def lift_behavioural_attrs(node: object, slug: str) -> dict:
     """Return a dict of scalar block attrs inferred from node's DOM attributes and classes.
 
-    # TODO: FR-22-2 scalar lift — refine in Pass 2 as walker discovers attrs that
+    # TODO: FR-31-2 scalar lift — refine in Pass 2 as walker discovers attrs that
     # need lifting beyond the simple cases handled here. Current implementation
     # covers: (a) explicit data-sgs-X="Y" attributes, and (b) sgs-block--modifier
     # class patterns that map to known property_suffixes / modifier_suffixes rows.
-    # Array attrs (FR-22-2.5) and equivalent_block-routed attrs (FR-22-2.1) are
+    # Array attrs (FR-31-2.5) and equivalent_block-routed attrs (FR-31-2.1) are
     # walker concerns — this helper does NOT lift those.
 
     Args:
@@ -3402,7 +3402,7 @@ def lift_behavioural_attrs(node: object, slug: str) -> dict:
 
 # ----------------------------------------------------------------------------
 # Helper 3 — emit_sgs_container_wrapping
-# Spec 22 §FR-22-3 exception 3 + §FR-22-4 (top-level section container wrap)
+# Spec 22 §FR-31-3 exception 3 + §FR-31-4 (top-level section container wrap)
 # ----------------------------------------------------------------------------
 
 def _emit_wp_block_markup(slug: str, attrs: dict, children: list[str]) -> str:
@@ -3446,17 +3446,17 @@ def emit_sgs_container_wrapping(
     children_markup: list[str],
     css: str,
 ) -> str:
-    """Wrap a resolved block in a sgs/container parent (FR-22-3 exception 3 + FR-22-4).
+    """Wrap a resolved block in a sgs/container parent (FR-31-3 exception 3 + FR-31-4).
 
     Called by the walker when: is_top_level=True AND resolved slug != 'sgs/container'.
-    Every top-level section's base is sgs/container (FR-22-4); non-container
+    Every top-level section's base is sgs/container (FR-31-4); non-container
     top-level sections are wrapped rather than emitted bare.
 
-    When slug is None (top-level node had no BEM-resolved block slug per FR-22-11),
+    When slug is None (top-level node had no BEM-resolved block slug per FR-31-11),
     no inner block is emitted — the walked children become direct InnerBlocks of
-    the sgs/container wrapper. This preserves FR-22-4's invariant ("every top-level
+    the sgs/container wrapper. This preserves FR-31-4's invariant ("every top-level
     section is based on sgs/container") for sections whose root class is unknown
-    to the slot_synonyms table, while keeping FR-22-11 pass-through semantics for
+    to the slot_synonyms table, while keeping FR-31-11 pass-through semantics for
     non-top-level slug-None nodes (which never reach this function).
 
     Args:
@@ -3466,7 +3466,7 @@ def emit_sgs_container_wrapping(
         attrs: Block attrs dict to set on the inner block (ignored when slug=None)
         children_markup: List of child block markup strings (inner blocks)
         css: Section-scoped CSS string; appended as <style> inside the container
-             div when non-empty (Spec 22 §FR-22-5 routing)
+             div when non-empty (Spec 22 §FR-31-5 routing)
 
     Returns:
         WP block serialisation string with sgs/container as the outer wrapper.
@@ -3488,7 +3488,7 @@ def emit_sgs_container_wrapping(
     # Build the container's inner HTML.
     # When slug is not None: emit inner resolved block (+ its attrs + children),
     # then optional CSS.
-    # When slug is None (top-level FR-22-11 pass-through): children become direct
+    # When slug is None (top-level FR-31-11 pass-through): children become direct
     # InnerBlocks of the container (no synthetic inner block emitted).
     container_children: list[str] = []
     if slug is not None:
@@ -3508,7 +3508,7 @@ def emit_sgs_container_wrapping(
     #   * The section's scoped CSS is already collected into variation_buf by the caller
     #     (walk: collect_css_for_classes → variation_buf.append) and deployed at Stage 10,
     #     so embedding an inline <style> here would only duplicate it.
-    # FR-22-4: every top-level section is full-width (widthMode='full') so its background
+    # FR-31-4: every top-level section is full-width (widthMode='full') so its background
     # fills the viewport; content is constrained by the inner block's own content-width
     # logic. The className post-process (guarantee_section_className) MERGES the section BEM
     # class on top, so widthMode is preserved.
@@ -3522,7 +3522,7 @@ def emit_sgs_container_wrapping(
 # attrs on a block carry a derived_selector (for CSS-to-attr routing), and
 # what content role does a given canonical_slot carry on a block?
 #
-# Both use _content_bearing_roles() live (R-22-1 — no hardcoded role lists).
+# Both use _content_bearing_roles() live (R-31-1 — no hardcoded role lists).
 # Both use the same lru_cache + sqlite3.connect(SGS_DB) idiom as neighbours.
 # ----------------------------------------------------------------------------
 
@@ -3547,7 +3547,7 @@ def content_attrs_with_selector(block_slug: str) -> tuple[AttrInfo, ...]:
     Returns a tuple of AttrInfo(attr_name, role, derived_selector). Empty tuple
     if none exist or the block is unknown. LRU-cached per slug.
 
-    R-22-1: roles queried live from DB via _content_bearing_roles(); never
+    R-31-1: roles queried live from DB via _content_bearing_roles(); never
     hardcoded here. Used by Stage 3 content-extraction step to route draft CSS
     selectors to the correct block attr without per-block branches.
 
@@ -3606,7 +3606,7 @@ def content_role_for_slot(block_slug: str, slot: str) -> str | None:
     Returns the role string (e.g. 'text-content') or None when no such attr
     exists or its role is not content-bearing. LRU-cached per (slug, slot).
 
-    R-22-1: roles queried live from DB via _content_bearing_roles(); never
+    R-31-1: roles queried live from DB via _content_bearing_roles(); never
     hardcoded here. Slot-keyed (canonical_slot), NOT attr-keyed — mirrors the
     existing slot_has_content_equivalent predicate pattern. Used by Stage 3 to
     determine how to extract a slot's content from the draft DOM.
@@ -3659,7 +3659,7 @@ def accepts_allowed_blocks(block_slug: str) -> list[str] | None:
 
     Spec 31 §3.B3(3) / Axis-3 child-routing: the VALIDATION gate for child-block
     CONTENT resolution. A resolved child block MUST be in this list, else the child
-    is a flagged GAP (never silently dropped, never a per-block carve-out, R-22-9).
+    is a flagged GAP (never silently dropped, never a per-block carve-out, R-31-9).
 
     Three-state contract (the G3 NULL case the design names explicitly):
       - ``None``  — ``block_composition.accepts_allowed_blocks`` is NULL/absent:
@@ -3673,7 +3673,7 @@ def accepts_allowed_blocks(block_slug: str) -> list[str] | None:
     (lenient — the validation step skips rather than crashing a clone; mirrors the
     existing accessors' fail-soft-with-trace pattern).
 
-    R-22-1: pure DB read, no per-slug branch. Used by the interior walker (Stage 4f).
+    R-31-1: pure DB read, no per-slug branch. Used by the interior walker (Stage 4f).
     """
     if not block_slug:
         return None
@@ -3731,7 +3731,7 @@ def primary_content_attr(block_slug: str) -> str | None:
     text into the child's typed attr (not as bare inner HTML) so dynamic render.php
     blocks (e.g. sgs/heading) read the correct attr and don't render blank.
 
-    R-22-1: DB-only read path. No hardcoded slug→attr dicts.
+    R-31-1: DB-only read path. No hardcoded slug→attr dicts.
 
     Args:
         block_slug: Fully-qualified SGS slug, e.g. 'sgs/heading'.
@@ -3811,9 +3811,9 @@ if __name__ == "__main__":
         print(f"  {a:25} -> {info}")
 
     # -----------------------------------------------------------------
-    # equivalent_block_for — Spec 22 §FR-22-2.1 unit tests
+    # equivalent_block_for — Spec 22 §FR-31-2.1 unit tests
     # -----------------------------------------------------------------
-    print("\n== equivalent_block_for (Spec 22 §FR-22-2.1) ==")
+    print("\n== equivalent_block_for (Spec 22 §FR-31-2.1) ==")
     cases: list[tuple[str, str, str | None, str]] = [
         # (block_slug, attr_name, expected, label)
         ("sgs/product-card", "description", "sgs/text",
@@ -3829,10 +3829,10 @@ if __name__ == "__main__":
         # Rater A adversarial test (2026-05-27 /qc-council finding): textTransform is a
         # styling attr whose canonical_slot was set to 'text' in the DB; original
         # negative-blocklist short-circuited on role=NULL and returned 'sgs/text',
-        # producing the FR-22-2.2 "typography looks like heading" misroute. Positive-
+        # producing the FR-31-2.2 "typography looks like heading" misroute. Positive-
         # allowlist closes the hole because role=None is not in _CONTENT_BEARING_ROLES.
         ("sgs/cta-section", "textTransform", None,
-         "FR-22-2.2 adversarial (Rater A 2026-05-27): canonical_slot='text' matches "
+         "FR-31-2.2 adversarial (Rater A 2026-05-27): canonical_slot='text' matches "
          "Tier A but role=None bypasses content allowlist → None (was 'sgs/text' pre-fix)"),
     ]
     failures: list[str] = []

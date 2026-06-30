@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-check_no_mirror.py — R-22-15 anti-mirror gate for the cloning converter.
+check_no_mirror.py — R-31-15 anti-mirror gate for the cloning converter.
 
 ENFORCED GATE STATUS
 ====================
@@ -57,7 +57,7 @@ Stable violation key format (deterministic, order-independent):
 WIRING NOTE (for pipeline-stage-gate.py)
 =========================================
 Wire into pipeline-stage-gate.py as a post-clone gate.  Look for the comment
-"# R-22-15 WIRE POINT" in pipeline-stage-gate.py and add the call:
+"# R-31-15 WIRE POINT" in pipeline-stage-gate.py and add the call:
 
     subprocess.run(
         [sys.executable, CHECK_NO_MIRROR, run_dir,
@@ -71,7 +71,7 @@ The gate validates converter OUTPUT (extract.json block_markup), which is only
 produced post-clone.  The correct wire point is therefore AFTER a clone run
 completes (pipeline-stage-gate.py), not in package.json prebuild.
 
-WHAT THIS CHECKS (R-22-15, Bean-directed 2026-06-06)
+WHAT THIS CHECKS (R-31-15, Bean-directed 2026-06-06)
 =====================================================
 (a) DRAFT-CLASS CONTAINER — any emitted block whose className carries a BEM
     ELEMENT class matching /sgs-[a-z0-9-]+__[a-z0-9-]+/ (with optional --modifier
@@ -343,7 +343,7 @@ def print_report(
     mode_label = "--enforce" if enforce else "--report (informational)"
 
     print(_hr("═"))
-    print(f"  R-22-15 Anti-Mirror Gate — {status_label}")
+    print(f"  R-31-15 Anti-Mirror Gate — {status_label}")
     print(f"  Run dir : {run_dir.name}")
     print(f"  Mode    : {mode_label}")
     print(f"  Source  : {markup_source or '(not found)'}")
@@ -620,7 +620,7 @@ def print_report_with_baseline(
     mode_label = "--enforce --baseline" if enforce else "--report (informational)"
 
     print(_hr("═"))
-    print(f"  R-22-15 Anti-Mirror Gate — {status_label}")
+    print(f"  R-31-15 Anti-Mirror Gate — {status_label}")
     print(f"  Run dir  : {run_dir.name}")
     print(f"  Mode     : {mode_label}")
     print(f"  Source   : {markup_source or '(not found)'}")
@@ -746,7 +746,7 @@ def print_report_with_baseline(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="R-22-15 anti-mirror gate: detect when the converter cheated.",
+        description="R-31-15 anti-mirror gate: detect when the converter cheated.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )

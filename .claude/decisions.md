@@ -6,6 +6,29 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-06-30 — D253: Spec 22 MERGED into Spec 31 (single canonical pipeline spec); R-22->R-31 / FR-22->FR-31 renumbered in active files
+
+**D253 — Spec 22 (v1.0 universal block-equivalent extraction) absorbed into Spec 31 §13 + archived; Bean directive "make Spec 31 the complete unified pipeline spec".**
+
+- **Why now:** Spec 31 had scoped the merge as a "when complete, Spec 22 archived" event that never fired, leaving two overlapping specs (Bean flagged the split-brain). Merged regardless of completion.
+- **Process:** 3 parallel inventory agents (R-rules verbatim+citations; FR built-status+citations; 31-vs-22 dedup/contradiction map). Blueprint: `.claude/reports/2026-06-30-spec-22-31-merge-blueprint.md`.
+- **Authoring:** harmonised the carry-forward architecture into Spec 31's voice as **§13** — R-31-1..15 binding rules (single authoritative list), the 3-exception single-recursive walker (FR-31-3), the `sgs/container` DEFAULT (FR-31-4/4.1, now prominent), the content fork (FR-31-2/2.1/2.2/2.5 — closes §3.B's G1–G5 NO-GO), CSS routing (FR-31-5/5.1/5.3), variant detection (FR-31-20), composite-mirror + render.php migration (FR-31-21.1/2 + FR-31-6 + R-31-14), walker + atomic_tag_map appendices. Contradictions resolved: widthMode purged (C1, D230/D231), pixel-diff demoted to diagnostic (R-31-4 vs §7b), lift-count 8-not-5 (C4).
+- **Renumber:** `R-22-N`→`R-31-N`, `FR-22-N`→`FR-31-N` across **69 active files** (293 R + 219 FR) via script (allowlist: new `converter/` engine, gates, migrations, db_lookup, active docs). **Frozen `convert.py` (D-MODULAR) + all archives/historical EXCLUDED** — a clean repo-wide renumber is impossible (convert.py holds ~150 refs + can't be edited; gates are named after R-22-15). They keep the `22` series; **ID mapping R-22-N ≡ R-31-N** documented in §13 + the archive stub, so every old citation still resolves. 286 tests + cheat-gate green after renumber (no functional break).
+- **Archive:** `specs/22-...` → `specs/archive/22-...` (full history) + a redirect stub at the old path (so `specs/22` references resolve). Spec 31 frontmatter `amends:`→`absorbs:`.
+
+---
+
+## 2026-06-30 — D252: W3 keystone — universal child-lift LANDS hero CTAs + recognition has_inner fix + new engine WIRED to /sgs-clone
+
+**D252 — the W3 keystone built, reviewed, fixed, committed (`df9798a9`); new engine wired behind a flag (`798febc7`). All on `main`.**
+
+- **Child-lift (`df9798a9`):** collapsed the lossy `_child_content_for_node` bypass — every child now routes through `build_block_markup` (one unified content+CSS+variant dispatch). New `run_mechanism_leaf` arm lifts a capability-less leaf's OWN element content (primary text + one image + one url via the SHARED `field_extractors`) + the inheritStyle preset resolution + R6 background-strip (port of `convert.py:3364-3366`/`4994-5028`). `link-href` added as an alias on the `url-href` handler. A 6-persona adversarial-council design-gated it; a pre-commit 2-rater review caught + fixed an over-lift (phantom iconTitle + boolean/date attrs) via a tight one-per-shape gate + role/type guards.
+- **Recognition fix (same commit):** `recognition.py` scalar branch hardcoded `has_inner_blocks=0`, mis-typing an element-class-recognised InnerBlocks parent (`.sgs-hero__ctas`→`sgs/multi-button`) as a leaf → Case-4 gap → its buttons silently dropped. Now derives `has_inner_blocks` from the DB. **This was found by the FULL-HOMEPAGE run** (not a synthetic test — the synthetic multi-button test used the named-root-class path and masked it). Bean's "test the full homepage" directive caught it.
+- **Wiring (`798febc7`):** `converter_v2/__init__.py:_convert_section_body` now, when `SGS_NEW_ENGINE=1`, uses the new engine per section where it recognises to a registered block + emits non-empty markup, else falls back to the frozen `walk()`. Flag UNSET = 100% frozen (unchanged). convert.py byte-identical (D-MODULAR).
+- **Full-homepage universality map:** 2/9 Mama's sections (hero with CTAs, trust-bar) clone via the new engine; 7/9 honestly GAP (no registered composite → the `sgs/container` DEFAULT path, FR-31-4, is the #1 remaining engine fix; the new engine wrongly fails instead of defaulting). Zero cheats. Spec 31 §12.6 updated with the build state + what's-left.
+
+---
+
 ## 2026-06-30 — D251: W3 remainder — A1 media-map + 2 hero LANDED-bugs fixed + universal child-lift design-gated + DB role-derivation root-cause fixed
 
 **D251 — Building the W3 LANDED proof surfaced engine gaps; fixed the landable ones + design-gated the walker recode + root-caused the DB role data. All on `main`.**

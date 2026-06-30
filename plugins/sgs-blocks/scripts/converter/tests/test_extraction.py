@@ -663,7 +663,7 @@ def test_build_block_markup_merges_css_attrs_with_content(monkeypatch):
 
 
 def test_build_block_markup_sets_detected_variant(monkeypatch):
-    """FR-22-20 variant detection wiring (W3 LANDED proof, hero bug 3): build_block_markup
+    """FR-31-20 variant detection wiring (W3 LANDED proof, hero bug 3): build_block_markup
     must set the variant-selector attr from the draft's lifted fingerprint via the
     DB-driven detect_variant, so render.php's variant gate fires
     (hero render.php:250 `$is_split = 'split' === $variant`). The new engine omitted

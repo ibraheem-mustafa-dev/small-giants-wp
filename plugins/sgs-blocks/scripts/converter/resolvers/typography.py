@@ -23,7 +23,7 @@ per-property normalisation:
     render.php expects a bare slug/hex, not ``var:preset|color|…``).
 
 The css_property → (primary_attr, unit_attr) mapping is fully DB-driven via
-``db_lookup.typography_css_to_attrs()`` (R-22-1 — no hardcoded prop→attr dict). Tier
+``db_lookup.typography_css_to_attrs()`` (R-31-1 — no hardcoded prop→attr dict). Tier
 handling re-appends the device-tier suffix to the primary attr (``fontSizeTablet``);
 the unit companion is written ONLY alongside the BASE attr (convert.py:1699), never a
 tier variant.
@@ -48,7 +48,7 @@ from converter.services.validate import validate
 from orchestrator.converter_v2.db_lookup import typography_css_to_attrs
 
 # font-weight keyword → numeric string (faithful port of convert.py:3897).
-# R-22-1 PERMITTED named-constant exception (same class as SKIP_TOP_LEVEL_TAGS):
+# R-31-1 PERMITTED named-constant exception (same class as SKIP_TOP_LEVEL_TAGS):
 # these are CSS-spec facts (the two keyword font-weights), NOT SGS per-block data, so
 # there is no DB table to source them from. render.php enum-guards the weight to the
 # '400'..'900' set, so a raw 'bold' would be REJECTED at render — this normalisation
@@ -60,7 +60,7 @@ _COLOUR_PROPS = frozenset({"color", "background-color"})
 
 @functools.lru_cache(maxsize=1)
 def _typo_map() -> dict[str, tuple[str, str | None]]:
-    """{css_prop: (primary_attr, unit_attr_or_None)} from the DB (R-22-1).
+    """{css_prop: (primary_attr, unit_attr_or_None)} from the DB (R-31-1).
 
     Cached (the DB map is process-stable) so resolve() does not rebuild the dict on
     every declaration."""

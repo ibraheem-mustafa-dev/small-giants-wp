@@ -9,7 +9,7 @@ behaviour-IDENTICAL (Spec 31 §12.4, D246):
   - ``_is_text_capable_block``    (convert.py:5597) -> ``is_text_capable_block``
   - ``_route_text_leaf``          (convert.py:5620) -> ``route_text_leaf``
 
-These three functions form the FR-22-4.1 content-leaf step: given a slug-None
+These three functions form the FR-31-4.1 content-leaf step: given a slug-None
 sgs-classed node whose children are all text or inline content, decide which block
 it becomes (3-rung ladder: atomic-tag -> BEM-segment -> default sgs/text) and emit
 the block markup with CSS/typography lifted onto it.
@@ -86,7 +86,7 @@ class _EmitWpBlockProto(Protocol):
 class _AtomicAttrsForProto(Protocol):
     """atomic_attrs_for (_atomic_attrs_for, convert.py:3227) — NOT YET ported.
 
-    FLAGGED (R-22-1): the source function contains per-block slug literals
+    FLAGGED (R-31-1): the source function contains per-block slug literals
     (``if slug == 'sgs/heading'`` etc.). The orchestrator MUST NOT reproduce
     those literals when porting; it must use DB-driven dispatch.
     """
@@ -208,7 +208,7 @@ def route_text_leaf(
                     break
 
     # (c) default — genuine text content (a bare-text leaf IS a paragraph).
-    #     DB-derived (R-22-1 / no-slug-literal gate): the 'text' canonical slot
+    #     DB-derived (R-31-1 / no-slug-literal gate): the 'text' canonical slot
     #     resolves to the default text block (sgs/text) via the slots table.
     if target is None:
         target = db_lookup.standalone_block_for("text")
@@ -236,7 +236,7 @@ def route_text_leaf(
             allow_max_width=True,
         )
 
-    # className-mirror PURGED (D249, R-22-15 / 7-rules #1 CONVERT-don't-mirror): a
+    # className-mirror PURGED (D249, R-31-15 / 7-rules #1 CONVERT-don't-mirror): a
     # native converted block carries its identity via its block NAME, never the draft's
     # BEM element classes. Re-emitting `sgs_classes` onto className was the mirror cheat
     # (now caught statically by the Check #9 converter-source gate). `sgs_classes` is

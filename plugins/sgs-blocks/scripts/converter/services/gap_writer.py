@@ -1,4 +1,4 @@
-"""gap_writer — record a tracked GAP (design §3.1, FR-22-21 step 6).
+"""gap_writer — record a tracked GAP (design §3.1, FR-31-21 step 6).
 
 Builds the GAP result the resolver returns. A GAP is a TRACKED non-transfer with a
 reason (origin) — the opposite of a silent drop. The orchestrator collects every GAP

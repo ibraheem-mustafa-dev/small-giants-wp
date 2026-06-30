@@ -248,7 +248,7 @@ def run(orchestrator_dir: Path | None = None) -> list[Violation]:
             detail = (
                 f"Per-block slug literal '{slug}' in {file_rel} "
                 f"(function: {func}, form: {form}). "
-                f"Per-block code branches violate R-22-1 — behaviour must come from the DB."
+                f"Per-block code branches violate R-31-1 — behaviour must come from the DB."
             )
             fix = (
                 f"Replace the per-block branch for '{slug}' in {file_rel}::{func} "

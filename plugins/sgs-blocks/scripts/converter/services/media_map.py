@@ -19,7 +19,7 @@ def load_media_map(path: str | None) -> dict:
     Returns {} when path is None or the file does not exist (safe no-op — the
     new engine has no production media-map driver yet; an empty map means image
     srcs stay un-remapped, a tracked dependency NOT a silent completeness claim).
-    NO url-shape heuristic (R-22-1 / Spec 31 §3.B1) — only the explicit JSON map.
+    NO url-shape heuristic (R-31-1 / Spec 31 §3.B1) — only the explicit JSON map.
     """
     if path is None:
         return {}

@@ -64,15 +64,15 @@ _BOX_CSS_FAMILIES: frozenset[str] = frozenset({
     "min-height",
 })
 
-# Breakpoint + side suffix grammar is DB-OWNED (R-22-1 / Spec 31 §4 / §7a.4 — D249).
+# Breakpoint + side suffix grammar is DB-OWNED (R-31-1 / Spec 31 §4 / §7a.4 — D249).
 # The former hardcoded `_BP_SUFFIX_MAP` identity dict (convert.py:980 verbatim copy)
-# and the inline `(Top|Right|Bottom|Left)` regexes were the live-class R-22-1 violation;
+# and the inline `(Top|Right|Bottom|Left)` regexes were the live-class R-31-1 violation;
 # both now read the vocabulary from db_lookup.modifier_suffixes (cached).
 
 
 def _strip_side_suffix(attr: str) -> str:
     """Strip a trailing side suffix (Top/Right/Bottom/Left) from an attr name using the
-    DB-owned `side` vocabulary (R-22-1 — was a hardcoded `(Top|Right|Bottom|Left)$`
+    DB-owned `side` vocabulary (R-31-1 — was a hardcoded `(Top|Right|Bottom|Left)$`
     regex). Used to derive the shared `…Unit` companion attr name (Spec 31 §4)."""
     sides = modifier_suffixes("side")
     if not sides:
@@ -110,7 +110,7 @@ def _resolve_co_declared_var(value: str, decls: dict) -> str:
     If ``value`` is a bare var() reference AND ``decls`` contains the named
     custom property, return the resolved value. Otherwise return the fallback
     (if provided) or the original ``value`` unchanged (flag-not-drop, per
-    FR-22-21 step 6 — never silently drop an unresolvable var()).
+    FR-31-21 step 6 — never silently drop an unresolvable var()).
 
     Only resolves ONE level of indirection.
 
@@ -480,7 +480,7 @@ def route_interior_css_to_parent_slot(
     trace: Callable[..., None] = _noop_trace,
     record_gap: Callable[..., None] = _noop_record_gap,
 ) -> None:
-    """FR-22-5.3 — Route an interior element's structural box CSS to the owning
+    """FR-31-5.3 — Route an interior element's structural box CSS to the owning
     composite's per-slot attr group when the slot has no equivalent child block.
 
     Fork on ``db_lookup.slot_has_equivalent_block(owning_block, slot_name)``:
@@ -581,7 +581,7 @@ def route_interior_css_to_parent_slot(
         _lift_decl(css_prop, value, bp_suffix=None)
 
     for bp_key, bp_decl_map in bp_decls.items():
-        # DB-owned breakpoint suffix vocabulary (R-22-1 / Spec 31 §4 — was _BP_SUFFIX_MAP,
+        # DB-owned breakpoint suffix vocabulary (R-31-1 / Spec 31 §4 — was _BP_SUFFIX_MAP,
         # an identity map; the suffix IS the tier name for a valid device tier).
         bp_sfx = bp_key if bp_key in modifier_suffixes("breakpoint") else None
         if not bp_sfx or not bp_decl_map:

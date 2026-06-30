@@ -50,7 +50,7 @@ channel for block_attributes (different table); it is NOT needed here.
 ## Idempotency
 
 Every INSERT is suffix-existence-gated: re-running on a DB that already has the row
-is a no-op. R-22-1 (DB-first, no hardcoded dicts). R-22-9 (universal).
+is a no-op. R-31-1 (DB-first, no hardcoded dicts). R-31-9 (universal).
 
 Applies to BOTH DB copies (.claude and .agents).
 """

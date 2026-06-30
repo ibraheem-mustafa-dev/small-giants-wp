@@ -12,9 +12,9 @@ a programming error, raised loudly rather than coerced.
 Whether the suffixed attr actually EXISTS on the block is validated downstream by
 services.validate (a non-existent tier attr → gap, never a silent write).
 
-R-22-1 (D249): the Mobile/Tablet/Desktop breakpoint suffix vocabulary is DB-OWNED —
+R-31-1 (D249): the Mobile/Tablet/Desktop breakpoint suffix vocabulary is DB-OWNED —
 read from ``db_lookup.modifier_suffixes('breakpoint')``, NEVER a hardcoded dict (the
-former ``_TIER_SUFFIX`` literal was the live R-22-1 violation, same class as the
+former ``_TIER_SUFFIX`` literal was the live R-31-1 violation, same class as the
 grid_area side-suffix regex Bean caught). For a device tier the suffix IS the tier
 name (``Mobile`` → ``'Mobile'``).
 """
@@ -26,7 +26,7 @@ from orchestrator.converter_v2.db_lookup import modifier_suffixes
 
 # "Base" is the UNSUFFIXED device tier (SGS desktop) — a structural pipeline convention,
 # NOT a row in the DB suffix vocabulary. This single named constant is the permitted
-# R-22-1 exception (same class as SKIP_TOP_LEVEL_TAGS): an empty BASE suffix has no DB
+# R-31-1 exception (same class as SKIP_TOP_LEVEL_TAGS): an empty BASE suffix has no DB
 # row to source. The Mobile/Tablet/Desktop suffixes themselves come from the DB below.
 _BASE_TIER = "Base"
 
@@ -36,7 +36,7 @@ def tier_suffix(base_attr: str, tier: str, conn: sqlite3.Connection) -> str:
     # ctx.conn); the DB suffix vocabulary is sourced via the cached modifier_suffixes.
     if tier == _BASE_TIER:
         return base_attr
-    # The breakpoint suffix vocabulary is DB-owned (R-22-1). Validate the tier against
+    # The breakpoint suffix vocabulary is DB-owned (R-31-1). Validate the tier against
     # the DB set so a non-device tier fails loud rather than appending a bogus suffix.
     if tier not in modifier_suffixes("breakpoint"):
         raise ValueError(

@@ -22,7 +22,7 @@ Baseline file
 7 Checks implemented
 --------------------
 1. slug_literal      — per-block slug literals (whole-tree + indirect forms)
-2. hardcoded_dict    — hardcoded CSS-property→attr dict literals (R-22-1)
+2. hardcoded_dict    — hardcoded CSS-property→attr dict literals (R-31-1)
 3. important_render  — !important over a faithful property in PHP/CSS render surface
 4. parallel_bp       — parallel breakpoint vocabulary (_BP_SUFFIX_MAP + raw integers)
 5. (delegated)       — mirror-emit / sourceMode='bound' / BEM-element className
@@ -152,7 +152,7 @@ def _save_baseline(keys: set[str]) -> None:
 
 _CHECK_LABELS = {
     "slug_literal":      "Check #1 — Per-block slug literals (whole-tree)",
-    "hardcoded_dict":    "Check #2 — Hardcoded property→attr dicts (R-22-1)",
+    "hardcoded_dict":    "Check #2 — Hardcoded property→attr dicts (R-31-1)",
     "important_render":  "Check #3 — !important in render surface",
     "parallel_bp":       "Check #4 — Parallel breakpoint vocabulary",
     # Check #5 is delegated to check_no_mirror.py — documented, not re-run here.

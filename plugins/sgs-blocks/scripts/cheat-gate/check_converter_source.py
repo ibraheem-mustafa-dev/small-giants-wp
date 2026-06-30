@@ -15,13 +15,13 @@ converter/ tree (calibrated D249 — after the purge it ships an EMPTY baseline:
 tripwire for re-introduction, including when Task-3 wires the interior walker):
 
   (a) className WRITE   attrs["className"]=…  /  className=…  /  {"className": …}
-        → 7-rules #1 CONVERT-don't-mirror / R-22-15. A native block carries identity via
+        → 7-rules #1 CONVERT-don't-mirror / R-31-15. A native block carries identity via
           its block NAME; re-emitting draft BEM classes onto className is the mirror cheat.
           Reading className (node.get("className")) is NOT a write — never flagged.
   (b) suffix-vocab dict  {"Mobile":"Mobile", …}  (≥2 string values, ALL in the DB suffix
-        vocabulary) → R-22-1 / Spec 31 §7a.4: the suffix grammar is DB-owned.
+        vocabulary) → R-31-1 / Spec 31 §7a.4: the suffix grammar is DB-owned.
   (c) side-suffix regex  re.sub(r"(Top|Right|Bottom|Left)…", …)  (≥2 DB side words
-        pipe-joined in a string that is an ARGUMENT to an re.* call) → R-22-1: the side
+        pipe-joined in a string that is an ARGUMENT to an re.* call) → R-31-1: the side
         vocabulary is DB-owned. Scoped to re.* call args (not all string literals) so a
         docstring/comment that merely QUOTES the pattern is never matched.
 
@@ -48,7 +48,7 @@ _CONVERTER_DIR = _SCRIPTS_DIR / "converter"        # the NEW modular converter t
 _DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
 # Structural suffix kinds whose vocabulary, if hardcoded as an identity dict, is the
-# R-22-1 violation. state/variant excluded (not the box/grid suffix grammar).
+# R-31-1 violation. state/variant excluded (not the box/grid suffix grammar).
 _STRUCTURAL_KINDS = ("breakpoint", "side", "corner", "unit")
 
 
@@ -162,17 +162,17 @@ _DETAIL = {
     "classname": (
         "Converter source WRITES a block className in {file}:{line}. A native converted "
         "block carries its identity via its block NAME — re-emitting draft BEM classes "
-        "onto className is the mirror cheat (7-rules #1 CONVERT-don't-mirror / R-22-15)."
+        "onto className is the mirror cheat (7-rules #1 CONVERT-don't-mirror / R-31-15)."
     ),
     "suffix_dict": (
         "Hardcoded suffix-vocabulary dict in {file}:{line} (values: {sym}). The "
         "breakpoint/side/unit suffix grammar is DB-OWNED — read it from "
-        "db_lookup.modifier_suffixes, never a literal dict (R-22-1 / Spec 31 §7a.4)."
+        "db_lookup.modifier_suffixes, never a literal dict (R-31-1 / Spec 31 §7a.4)."
     ),
     "side_regex": (
         "Hardcoded side-suffix regex literal in {file}:{line} (`{sym}`). The side "
         "vocabulary (Top/Right/Bottom/Left) is DB-OWNED — build the strip from "
-        "db_lookup.modifier_suffixes('side'), never a literal alternation (R-22-1)."
+        "db_lookup.modifier_suffixes('side'), never a literal alternation (R-31-1)."
     ),
 }
 _FIX = {

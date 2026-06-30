@@ -15,7 +15,7 @@ original is the **B2 fix** (qc-council D247):
 All other behaviour is behaviour-IDENTICAL to the original.
 
 Source reference: convert.py:3903 (``_lift_styling_attrs_by_selector``).
-Spec refs: FR-22-2, FR-22-5 D1, R-22-1, R-22-9.
+Spec refs: FR-31-2, FR-31-5 D1, R-31-1, R-31-9.
 """
 from __future__ import annotations
 
@@ -39,7 +39,7 @@ from orchestrator.converter_v2 import db_lookup
 # ---------------------------------------------------------------------------
 
 # font-weight keyword → numeric string (render.php enum-guards '400'..'900').
-# R-22-1 PERMITTED named-constant exception (CSS-spec fact, no DB table); do NOT
+# R-31-1 PERMITTED named-constant exception (CSS-spec fact, no DB table); do NOT
 # extend with other hardcoded sets.
 _FONT_WEIGHT_KEYWORDS: dict[str, str] = {
     "normal": "400",
@@ -51,7 +51,7 @@ _FONT_WEIGHT_KEYWORDS: dict[str, str] = {
 # matching _lift_typography_to_block_attrs (convert.py:1721). This is an ORDERING
 # constant (Desktop→Tablet→Mobile precedence), NOT a suffix vocabulary: each entry
 # is validated against the DB-owned modifier_suffixes(kind='breakpoint') set at use
-# (R-22-1 — the suffix grammar is DB-owned; the bp_decls key IS the device suffix,
+# (R-31-1 — the suffix grammar is DB-owned; the bp_decls key IS the device suffix,
 # so the former identity _BP_SUFFIX_MAP was redundant and is removed).
 _BP_ORDER = ("Desktop", "Tablet", "Mobile")
 
@@ -97,8 +97,8 @@ def lift_styling_content(node: Tag, slug: str, css_rules: dict) -> dict:
     ``setdefault`` is used within the per-breakpoint loop to honour the same
     tripwire for the companion attrs.
 
-    Spec refs: FR-22-2 (content-routing), FR-22-5 D1 (faithful transfer),
-    R-22-1 (DB-driven, no per-slug branch), R-22-9 (universal G3 path).
+    Spec refs: FR-31-2 (content-routing), FR-31-5 D1 (faithful transfer),
+    R-31-1 (DB-driven, no per-slug branch), R-31-9 (universal G3 path).
 
     Args:
         node:      The resolved block's root Tag node (draft DOM subtree).
@@ -197,7 +197,7 @@ def lift_styling_content(node: Tag, slug: str, css_rules: dict) -> dict:
         # Mirrors _lift_typography_to_block_attrs (convert.py:1718-1748):
         # process Desktop first so A-collapse writes to base attr before
         # the mobile base pass can overwrite it.
-        # DB-owned breakpoint suffix vocabulary (R-22-1) — the bp_decls key IS the
+        # DB-owned breakpoint suffix vocabulary (R-31-1) — the bp_decls key IS the
         # device suffix; gate each pass on DB membership rather than a hardcoded set.
         _bp_suffixes = set(db_lookup.modifier_suffixes("breakpoint"))
         for bp_key in _BP_ORDER:

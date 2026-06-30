@@ -67,7 +67,7 @@ FUNCTIONALITY_BULK_APPLY_SCRIPT = ORCHESTRATOR_DIR / "functionality-bulk-apply.p
 MEDIA_SIDELOAD_SCRIPT = ORCHESTRATOR_DIR / "media-sideload.py"
 WP_INTEGRATION_SCRIPT = ORCHESTRATOR_DIR / "wp_integration.py"
 CRITICAL_FIX_VERIFICATION_SCRIPT = ORCHESTRATOR_DIR / "critical-fix-verification.py"
-# R-22-15 post-clone structural gate (anti-mirror, baseline-aware). Runs on the
+# R-31-15 post-clone structural gate (anti-mirror, baseline-aware). Runs on the
 # converter output (extract.json) the moment Stage 9 has written it, BEFORE any
 # media-sideload / deploy / +REGISTER tail, so a mirror-cheat clone halts before
 # it can reach the live page. Wired into main() after stage_9_report().
@@ -2172,7 +2172,7 @@ def main():
     )
     parser.add_argument(
         "--skip-stage-gate", action="store_true",
-        help="Skip the R-22-15 anti-mirror post-clone gate (pipeline-stage-gate.py). "
+        help="Skip the R-31-15 anti-mirror post-clone gate (pipeline-stage-gate.py). "
              "By default the gate runs on the converter output (extract.json) right "
              "after Stage 9 and HARD-HALTS the clone before deploy/register if a NEW "
              "mirror-cheat violation (draft-class container or bound sourceMode not in "
@@ -2225,7 +2225,7 @@ def main():
         "--spec-22-acceptance", action="store_true", default=False,
         help="Spec 22 Phase 1 acceptance-gate mode. Propagates --wait-fonts to "
              "Stage 11 pixel-diff invocations so the ≤5%% per-section gate "
-             "(FR-22-7) is measured against `document.fonts.ready`-stable "
+             "(FR-31-7) is measured against `document.fonts.ready`-stable "
              "screenshots, not flash-of-unstyled-text noise. OFF by default "
              "for backward-compat with pre-Spec-22 runs.",
     )
@@ -2392,7 +2392,7 @@ def main():
         print(f"[stage-9b] autonomy: {autonomy.get('scaffolded_count', 0)} scaffolded ({autonomy.get('promoted_count', 0)} promoted) from {autonomy.get('candidates_seen', 0)} candidates")
 
     # ------------------------------------------------------------------
-    # R-22-15 ANTI-MIRROR GATE (STOP-6 wire — 2026-06-21).
+    # R-31-15 ANTI-MIRROR GATE (STOP-6 wire — 2026-06-21).
     # Stage 9 has just written extract.json. Run the post-clone structural
     # gate on the converter output NOW, before media-sideload / deploy /
     # +REGISTER, so a clone that introduced a NEW draft-class container or a
@@ -2739,7 +2739,7 @@ def main():
                     viewports = ("375x812", "768x1024", "1440x900")
                     # Spec 22 Phase 0.3.b — propagate --wait-fonts to pixel-diff
                     # when the run is a Spec 22-gated acceptance run or a
-                    # debug-trace walkdown. Without this the ≤5% gate (FR-22-7)
+                    # debug-trace walkdown. Without this the ≤5% gate (FR-31-7)
                     # measures against FOUT-noisy screenshots. Backward-compat:
                     # pre-Spec-22 runs (no --spec-22-acceptance, no --debug-trace)
                     # behave exactly as before. See P-SGS-CLONE-WAIT-FONTS-ORCHESTRATION.
@@ -2795,7 +2795,7 @@ def main():
                                     "selector": selector, "viewport": vp,
                                     "error": f"{type(inner_exc).__name__}: {inner_exc}"[:200],
                                 })
-                    # Spec 22 FR-22-7 wait_fonts assertion — count cells whose
+                    # Spec 22 FR-31-7 wait_fonts assertion — count cells whose
                     # diff.json reports wait_fonts=false. Soft-warn by default;
                     # --strict-spec-22-gate elevates to hard exit.
                     _wait_fonts_false_cells = [
@@ -2830,13 +2830,13 @@ def main():
                         if s11_summary['mean_mismatch_percent'] is not None
                         else f"[stage-11] pixel-diff: {s11_summary['captures_ok']}/{s11_summary['captures_attempted']} captures, no valid measurements"
                     )
-                    # Spec 22 FR-22-7 wait_fonts gate.
+                    # Spec 22 FR-31-7 wait_fonts gate.
                     if _wait_fonts_false_cells:
                         for _cell in _wait_fonts_false_cells:
                             print(
                                 f"[stage-11] WARNING: diff.json.wait_fonts=false on "
                                 f"section.{_cell['selector']}.{_cell['viewport']} — "
-                                f"Spec 22 acceptance gate (FR-22-7) requires "
+                                f"Spec 22 acceptance gate (FR-31-7) requires "
                                 f"wait_fonts=true. Re-run with --spec-22-acceptance "
                                 f"(or --debug-trace) to propagate --wait-fonts.",
                                 file=sys.stderr,
@@ -2846,11 +2846,11 @@ def main():
                                 f"[stage-11] FATAL: --strict-spec-22-gate set and "
                                 f"{len(_wait_fonts_false_cells)} of "
                                 f"{s11_summary['captures_ok']} pixel-diff cells reported "
-                                f"wait_fonts=false. FR-22-7 acceptance measurement invalid."
+                                f"wait_fonts=false. FR-31-7 acceptance measurement invalid."
                             )
                     elif _wait_fonts_on and s11_summary['captures_ok']:
                         print(
-                            f"[stage-11] FR-22-7 wait_fonts gate PASS: all "
+                            f"[stage-11] FR-31-7 wait_fonts gate PASS: all "
                             f"{s11_summary['captures_ok']} cells report wait_fonts=true."
                         )
         except Exception as exc:  # noqa: BLE001 — Stage 11 is observability; soft-fail

@@ -20,7 +20,7 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 
 > **STATUS (2026-06-23, D241):** the cloning CSS-transfer **foundation (Phase F) is COMPLETE**; `convert.py` is FROZEN (D-MODULAR, D229). Active target = the **clean modular stage-by-stage rebuild (Spec 31 §12)**. The de-literalisation programme referenced below is SUPERSEDED (archived 2026-06-23). The D222 detail below is retained as shipped-history.
 >
-> **ACTIVE BUILD TARGET (updated 2026-06-13, D222 — historical):** Wave-2 core largely SHIPPED. Cross-node child→parent CSS routing (D201), FR-22-5.1 inherited/absent-value resolution (D202 Commit 3), FR-22-19 retirement / unified composite interior (D202 Commit 4), Gate A + Gate B conformance gates wired (D195). **D222 SHIPPED:** name-free align LAYER-ROUTER (`verticalAlign`/`alignItems` fork removed from `convert.py`; resolves via `db.attr_for_layer_property` + D222 `property_suffixes` migration); notice-banner content-lift (IN-F, DB-gated); team-member scalar-content-lift (`HAS_INNER_BLOCKS_OVERRIDES` + `ATTR_CLASSIFICATION_OVERRIDES` in `sgs-update-v2.py`). **OPEN:** ~13 per-block `if slug=="sgs/X"` literal carve-outs — see `.claude/plans/archive/2026-06-13-converter-de-literalisation-audit.md`. FR-22-5.2 draft-driven breakpoints not yet built. **NOTE (D222 lesson): TWO separate conformance suites exist — `converter_v2/tests/` ≠ `scripts/tests/test_converter_conformance.py` (Gate A golden harness wired to pre-commit hook). Both must pass on every converter commit.**
+> **ACTIVE BUILD TARGET (updated 2026-06-13, D222 — historical):** Wave-2 core largely SHIPPED. Cross-node child→parent CSS routing (D201), FR-31-5.1 inherited/absent-value resolution (D202 Commit 3), FR-31-19 retirement / unified composite interior (D202 Commit 4), Gate A + Gate B conformance gates wired (D195). **D222 SHIPPED:** name-free align LAYER-ROUTER (`verticalAlign`/`alignItems` fork removed from `convert.py`; resolves via `db.attr_for_layer_property` + D222 `property_suffixes` migration); notice-banner content-lift (IN-F, DB-gated); team-member scalar-content-lift (`HAS_INNER_BLOCKS_OVERRIDES` + `ATTR_CLASSIFICATION_OVERRIDES` in `sgs-update-v2.py`). **OPEN:** ~13 per-block `if slug=="sgs/X"` literal carve-outs — see `.claude/plans/archive/2026-06-13-converter-de-literalisation-audit.md`. FR-31-5.2 draft-driven breakpoints not yet built. **NOTE (D222 lesson): TWO separate conformance suites exist — `converter_v2/tests/` ≠ `scripts/tests/test_converter_conformance.py` (Gate A golden harness wired to pre-commit hook). Both must pass on every converter commit.**
 
 ## Per-stage annotated flow
 
@@ -102,7 +102,7 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Stage 0.7 — CSS lift (four-destination router, Spec 22 §FR-22-5)
+### Stage 0.7 — CSS lift (four-destination router, Spec 22 §FR-31-5)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -123,7 +123,7 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │ DB tables:    none                                                          │
 │ Skills:       none                                                          │
 │                                                                             │
-│ STATUS:       LIVE — Spec 22 §FR-22-5 (four-destination router; D0/D1/D2/D3). │
+│ STATUS:       LIVE — Spec 22 §FR-31-5 (four-destination router; D0/D1/D2/D3). │
 │               Previous monolithic CSS dump architecture replaced.            │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -205,12 +205,12 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │                                                                             │
 │ DB tables (R):  blocks (sgs-framework.db, via filesystem scan)              │
 │                                                                             │
-│ UNIVERSAL-PATH TOPOLOGY (Spec 22 FR-22-3):                                  │
+│ UNIVERSAL-PATH TOPOLOGY (Spec 22 FR-31-3):                                  │
 │   Single recursive walker; per-block behaviour from DB rows, not branches.  │
 │   Exactly 3 permitted exceptions: atomic-tag swap / chrome-skip /           │
 │   top-level container wrap. No 4th exception without spec amendment.        │
 │                                                                             │
-│ Stage 2 produces match.json for every section boundary (FR-22-12) even      │
+│ Stage 2 produces match.json for every section boundary (FR-31-12) even      │
 │ when walker bypasses top_pick via unambiguous BEM signal.                   │
 │                                                                             │
 │ Q1A FIX (commit d8ae4a2a, 2026-05-23): Stage 2 fallback emits sgs/container │
@@ -247,11 +247,11 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 
 ### Stage 4 — Universal block-equivalent extraction (Spec 22)
 
-> **Architecture:** single universal walker path with exactly 3 permitted exceptions per Spec 22 FR-22-3. Per-block behaviour comes from DB rows (`slots` (scope='element') `standalone_block` + `block_attributes.canonical_slot` + role-exclusion via `roles` table), not code branches. Acceptance gate: per-section ≤5% × 3 viewports (≤1% target).
+> **Architecture:** single universal walker path with exactly 3 permitted exceptions per Spec 22 FR-31-3. Per-block behaviour comes from DB rows (`slots` (scope='element') `standalone_block` + `block_attributes.canonical_slot` + role-exclusion via `roles` table), not code branches. Acceptance gate: per-section ≤5% × 3 viewports (≤1% target).
 >
-> **Wrapper/container resolution (D118, 2026-05-31):** §FR-22-4.1 (Universal wrapper/container resolution) is the canonical Stage 4 rule for every sgs-classed wrapper below a section root. It supersedes `walk_passthrough` drop-and-bubble for sgs-classed wrappers, the depth-2 `_is_layout_bearing_wrapper` gate, and `_absorb_transparent_wrappers` (D52). Precedence: (1) block-match → emit block; (2) direct descendant with no block match → fold CSS into parent container (1-child: inner-CSS layer; grid/flex: container absorbs layout + grid-item CSS); (3) direct descendant matching a block → emit as block (the grid item); (4) non-direct-descendant → own sgs/container, recurse. FR-22-11 (non-sgs-classed transparent wrappers) is unchanged.
+> **Wrapper/container resolution (D118, 2026-05-31):** §FR-31-4.1 (Universal wrapper/container resolution) is the canonical Stage 4 rule for every sgs-classed wrapper below a section root. It supersedes `walk_passthrough` drop-and-bubble for sgs-classed wrappers, the depth-2 `_is_layout_bearing_wrapper` gate, and `_absorb_transparent_wrappers` (D52). Precedence: (1) block-match → emit block; (2) direct descendant with no block match → fold CSS into parent container (1-child: inner-CSS layer; grid/flex: container absorbs layout + grid-item CSS); (3) direct descendant matching a block → emit as block (the grid item); (4) non-direct-descendant → own sgs/container, recurse. FR-31-11 (non-sgs-classed transparent wrappers) is unchanged.
 >
-> **Universal wrapper-conversion procedure (FR-22-21, 2026-06-02):** This procedure applies at every nesting depth — to every `sgs/container` and every composite wrapper in the draft tree, not only to top-level section-root wrappers. Canonical 6-step TARGET for the fold + CSS-lift at this stage (OUTER box → container supports/attrs; INNER `__inner` max-width → `contentWidth`; GRID → native grid attrs + `gridItem*`; carry-all-CSS / flag-never-drop). **Empirical current behaviour vs that target (updated 2026-06-03, A1+A2 commit 2f86d9e6, D159):** ~~fold DELETES `__inner` and DISCARDS its `max-width`~~ — **SHIPPED (A2):** `_fold_layout_into_attrs` now lifts the folded `__inner`'s max-width into `contentWidth`; ~~`contentWidth` has no destination~~ — **SHIPPED (A1):** `sgs/container` gained `contentWidth` attr + render.php guarded inner div + block.json 0.2.0; ~~outer max-width transfer broken on slug-None path~~ — **SHIPPED (A2):** slug-None section path now sets width from the section's own max-width. ~~`widthMode`/`customWidth`~~ — **RETIRED D230 `484d04d9` / D231 `d5416ae8` 2026-06-18 → 3-layer model `align`/`maxWidth`/`contentWidth`; `align:"full"` for full-bleed; `maxWidth` = exact literal (decimals+unit preserved); `contentWidth` tokens `normal`/`wide`/`full`, default `full`. LANDED-verified on canary.** **Remaining gaps:** D1 typed-attr sidecar written-but-not-consumed (`seed_d1_sidecar` stub, B1 WS-2) so layout CSS still strands in variation CSS. **WS-4 BLOCK-SIDE COMPLETE (D167, 2026-06-04):** whole 29-block container roster mirrors `sgs/container` (hero + product-card done; modal + mobile-nav excluded; content-collection registered as 29th); `/sgs-update` reconciled (`block_attributes` 2,739; roster 29; 0 orphans); `/sgs-update` Stage 11 auto-propagation §FR-22-21.2 still REPORT-ONLY (pending). **Converter-side gaps remain (next-session "Method 2"):** D1 sidecar still not consumed; converter still routes to `sgs/container` (conf 0.10) — composite routing fix (`.sgs-hero`→`sgs/hero`), converter-lift (post-WS-4), triage #6 + #4a, image sideload. Full TARGET + gap list: Spec 22 §FR-22-21 + `.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md`. **NOTE — WS-4 block-side mirror does NOT fix page-clone fidelity:** re-clone of page 144 shows stage-2 confidence-matrix top = sgs/container (conf 0.10) across all 9 sections; the converter still emits containers, not composite blocks. Routing fix + converter-lift are the separate Method-2 work. Validate composite BLOCKS in the EDITOR (fresh block), not via a page re-clone (memory `composite-mirror-is-separate-from-cloning-fidelity`).
+> **Universal wrapper-conversion procedure (FR-31-21, 2026-06-02):** This procedure applies at every nesting depth — to every `sgs/container` and every composite wrapper in the draft tree, not only to top-level section-root wrappers. Canonical 6-step TARGET for the fold + CSS-lift at this stage (OUTER box → container supports/attrs; INNER `__inner` max-width → `contentWidth`; GRID → native grid attrs + `gridItem*`; carry-all-CSS / flag-never-drop). **Empirical current behaviour vs that target (updated 2026-06-03, A1+A2 commit 2f86d9e6, D159):** ~~fold DELETES `__inner` and DISCARDS its `max-width`~~ — **SHIPPED (A2):** `_fold_layout_into_attrs` now lifts the folded `__inner`'s max-width into `contentWidth`; ~~`contentWidth` has no destination~~ — **SHIPPED (A1):** `sgs/container` gained `contentWidth` attr + render.php guarded inner div + block.json 0.2.0; ~~outer max-width transfer broken on slug-None path~~ — **SHIPPED (A2):** slug-None section path now sets width from the section's own max-width. ~~`widthMode`/`customWidth`~~ — **RETIRED D230 `484d04d9` / D231 `d5416ae8` 2026-06-18 → 3-layer model `align`/`maxWidth`/`contentWidth`; `align:"full"` for full-bleed; `maxWidth` = exact literal (decimals+unit preserved); `contentWidth` tokens `normal`/`wide`/`full`, default `full`. LANDED-verified on canary.** **Remaining gaps:** D1 typed-attr sidecar written-but-not-consumed (`seed_d1_sidecar` stub, B1 WS-2) so layout CSS still strands in variation CSS. **WS-4 BLOCK-SIDE COMPLETE (D167, 2026-06-04):** whole 29-block container roster mirrors `sgs/container` (hero + product-card done; modal + mobile-nav excluded; content-collection registered as 29th); `/sgs-update` reconciled (`block_attributes` 2,739; roster 29; 0 orphans); `/sgs-update` Stage 11 auto-propagation §FR-31-21.2 still REPORT-ONLY (pending). **Converter-side gaps remain (next-session "Method 2"):** D1 sidecar still not consumed; converter still routes to `sgs/container` (conf 0.10) — composite routing fix (`.sgs-hero`→`sgs/hero`), converter-lift (post-WS-4), triage #6 + #4a, image sideload. Full TARGET + gap list: Spec 22 §FR-31-21 + `.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md`. **NOTE — WS-4 block-side mirror does NOT fix page-clone fidelity:** re-clone of page 144 shows stage-2 confidence-matrix top = sgs/container (conf 0.10) across all 9 sections; the converter still emits containers, not composite blocks. Routing fix + converter-lift are the separate Method-2 work. Validate composite BLOCKS in the EDITOR (fresh block), not via a page re-clone (memory `composite-mirror-is-separate-from-cloning-fidelity`).
 
 
 ```
@@ -280,8 +280,8 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │   discriminating slots (variant_slots table) appear in the draft's extract  │
 │   THIS run, picks the highest-count variant, and sets the variant attr →    │
 │   render.php's original gate fires correctly. Reverts the hero $is_split    │
-│   band-aid. Universal across 33 variant blocks (R-22-1/R-22-9). Build =     │
-│   next session opening task. Full spec: Spec 22 §FR-22-20 + D133.           │
+│   band-aid. Universal across 33 variant blocks (R-31-1/R-31-9). Build =     │
+│   next session opening task. Full spec: Spec 22 §FR-31-20 + D133.           │
 │ External tools: Playwright (computed-style extraction at 3 viewports)       │
 │                                                                             │
 │ STATUS (post-2026-05-24 second pass — SHIPPED): 5 data-layer + walker      │
@@ -339,7 +339,7 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 
 ### Stage 6 — Block.json emission
 
-**Spec 17 framework pattern targets:** the `/sgs-clone` Stage 6 (cv2 emission) can now target the 9 framework header/footer patterns shipped in Spec 17 (`sgs/framework-header-{default,sticky,transparent,shrink,minimal,centred}` + `sgs/framework-footer-{default,compact,informational}`) instead of always generating bespoke header/footer markup. (Header/footer cloner is a Phase 2 sibling spec, parked — see `.claude/plans/archive/2026-05-24-phase-2-header-footer-cloner.md`.) Spec 22 §3 FR-22-6 (hybrid block render.php migration) governs the equivalent work for body sections.
+**Spec 17 framework pattern targets:** the `/sgs-clone` Stage 6 (cv2 emission) can now target the 9 framework header/footer patterns shipped in Spec 17 (`sgs/framework-header-{default,sticky,transparent,shrink,minimal,centred}` + `sgs/framework-footer-{default,compact,informational}`) instead of always generating bespoke header/footer markup. (Header/footer cloner is a Phase 2 sibling spec, parked — see `.claude/plans/archive/2026-05-24-phase-2-header-footer-cloner.md`.) Spec 22 §3 FR-31-6 (hybrid block render.php migration) governs the equivalent work for body sections.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -624,7 +624,7 @@ The 5-bucket `leftover-bucket-router.py` classifier. Vocabulary update 2026-05-2
 │                                                                             │
 │ DESIGN PRINCIPLE (memory fidelity-denominator-is-the-source-not-the-target):│
 │   Replaces pixel-diff + old clone-parity as the canonical fidelity signal.  │
-│   Pairs with Bean R-22-13 visual sign-off — numbers alone don't close.     │
+│   Pairs with Bean R-31-13 visual sign-off — numbers alone don't close.     │
 │                                                                             │
 │ VIEWPORTS: 375 / 768 / 1440 (all 3 scored per run).                        │
 │ GATE MODE: soft-fail — never blocks the autonomy chain.                     │
@@ -788,7 +788,7 @@ python ~/.claude/hooks/wp-blocks.py dump
 | slots | 99 element + 4 section = 103 | Stage 1 R via db_lookup |
 | roles | 21 (20 base + scalar-media) | Stage 1 R; walker resolution |
 | block_supports | 1,160 (post-D100 prune) | Stage 5 supports_writer R |
-| block_capabilities (D99 wired as FR-22-15) | 88 | Walker capability-aware BEM tiebreaker |
+| block_capabilities (D99 wired as FR-31-15) | 88 | Walker capability-aware BEM tiebreaker |
 | property_suffixes | 144 rows (+ `kind_override` column, 17 populated per D99; `align-items` has TWO rows — `VerticalAlign` + `AlignItems` added D222 migration; 20 new rows added 2026-06-30 for grid-placement/overflow/position/bg-placement/flex — Spec 31 §5; `CssPosition` suffix used for `css_property=position`) | assign-canonical; cv2 db_lookup.attr_for_layer_property() |
 | patterns | 47 | Stage 2 confidence boost; +REGISTER W |
 | attribute_gap_candidates | 107+ | Stage 9 W; D3 emission W (Wave 3) |
@@ -933,7 +933,7 @@ G1+G3+G5 are manifestations of one gap: cv2 doesn't walk all classes + assign CS
 
 ### Architectural debt (not blocking)
 
-1. **Stage 0.7 CSS lift** — four-destination router active (Spec 22 §FR-22-5). D3/D2 split still evolving.
+1. **Stage 0.7 CSS lift** — four-destination router active (Spec 22 §FR-31-5). D3/D2 split still evolving.
 2. **Stage 2 has no pattern-level matcher** — sections matching pattern slugs fall to normal route. Tracked: Phase 1 of strategic-plan.
 3. **5 dead DB tables** — `sections_detected`, `extraction_cache`, `block_opportunities`, `weaknesses`, `animations` — retire or remove from schema.
 4. **ARRAY_LIFT_PATTERNS hardcoded dict** — `count_stars` + multi-selector fallback not yet migrated to universal 1e-B path. Tracked: `P-ARRAY-LIFT-PATTERNS-FULL-MIGRATION`.

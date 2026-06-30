@@ -42,7 +42,7 @@ _LOG = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Root lift rules — faithful port of convert.py:514-547
 #
-# R-22-1 permitted-constant exception (WP-core schema): the style_path + supports
+# R-31-1 permitted-constant exception (WP-core schema): the style_path + supports
 # keys below encode WordPress Core's serialised block-style schema (wp-includes/
 # blocks/block-serialization-spec). This path structure is defined by WordPress,
 # not by the SGS DB — there is no property_suffixes column for WP's nested

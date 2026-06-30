@@ -20,7 +20,7 @@ status_history:
 
 > **2026-06-12 update (D213/D214 — Spec 30 P2 shop layer).** Three new SGS blocks shipped: `sgs/product-search` (FR-30-5 combobox search + hardened REST endpoint + `inline`/`icon` display modes + no-JS GET fallback, v1.1.0), `sgs/filter-search` (FR-30-6 type-to-find narrowing for ≥16 attribute terms, Baymard threshold, `woocommerce/product-filter-attribute` ancestor), `sgs/collapsible-text` (D213 — operator SEO copy, accessible CSS line-clamp read-more, always SSR'd, i18n toggle labels). Two pre-existing blocks now documented below: `sgs/buybox` (FR-30-7/D210 — PDP configurator wrapper composing `sgs/option-picker` pickers + cart proxy) and `sgs/content-collection` (FR-24-4/D210 — query-driven product grid with forwarded `showPickers`/`ctaBehaviour`/`showLadder`). **Blocks registered clean via `/sgs-update` (0 new = already registered from their feature commits).** `02-SGS-BLOCKS-REFERENCE.md` unchanged.
 >
-> **2026-06-11 update (D209 — R-22-13 block-quality programme + TypographyControls).** Shared `TypographyControls` component + `sgs_typography_css_rule()` helper are now MANDATORY for all per-element typography (see Block Customisation Standard below). `announcement-bar` RETIRED → `notice-banner` with `displayMode=announcement`. `sgs/testimonial` rebuilt as a 7-variant typed-attr block (D206). `/sgs-update` reconciled the block roster post-retirement (live count is DB-authoritative — query `/sgs-db` or see `02-SGS-BLOCKS-REFERENCE.md`; never hard-code it here).
+> **2026-06-11 update (D209 — R-31-13 block-quality programme + TypographyControls).** Shared `TypographyControls` component + `sgs_typography_css_rule()` helper are now MANDATORY for all per-element typography (see Block Customisation Standard below). `announcement-bar` RETIRED → `notice-banner` with `displayMode=announcement`. `sgs/testimonial` rebuilt as a 7-variant typed-attr block (D206). `/sgs-update` reconciled the block roster post-retirement (live count is DB-authoritative — query `/sgs-db` or see `02-SGS-BLOCKS-REFERENCE.md`; never hard-code it here).
 >
 > **Session B 2026-05-22 update — Phase 6 (commit `d307c8b0`).** Markup examples seeded for 69 SGS blocks (56 auto-generated from `block.json` defaults via `plugins/sgs-blocks/scripts/generate-markup-examples.py`; 13 hand-authored composite examples for sgs/hero, sgs/card-grid, sgs/tabs, sgs/testimonial, sgs/accordion, sgs/gallery, sgs/post-grid, sgs/form, sgs/form-row, sgs/pricing-table, sgs/countdown-timer, sgs/team-member, sgs/multi-column). 4 DB rows reference blocks with no source `block.json` file (parked as P-6-MISSING-BLOCK-JSON). Block-supports audit found ZERO gaps — the original 2:1 under-documentation prediction was wrong; 360 active rows + 44 flagged `is_stale=true` (retired/planned blocks). 87 content-bearing attributes across 40 blocks now carry `"role": "content"`. All 69 source blocks already at `apiVersion: 3` — no bulk bump needed. `wp_set_script_module_translations()` wired in `class-sgs-blocks.php` registration loop for 25 blocks using `viewScriptModule`. Lucide icon delivery untouched (sibling REST file `class-sgs-lucide-icons-rest.php` shipped defensively with double guards; existing `sgs_get_lucide_icon()` shim still canonical). Device-visibility coexistence rule documented in `includes/device-visibility.php`. Sandybrown upgraded to **WP 7.0** mid-session — `wp_set_script_module_translations` + `WP_REST_Icons_Controller` + `wp_get_connector` now natively available.
 >
@@ -174,7 +174,7 @@ block-name/
 - `minHeight` — CSS value
 - `verticalAlign` — start | centre | end | stretch
 - `htmlTag` — section | div | article | aside | main
-- `contentWidth` — string (CSS max-width value, default `""` = full-bleed). When set, render.php emits an inner `<div class="sgs-container__inner">` with `max-width: {contentWidth}; margin-inline: auto` — allowing the outer box to remain full-bleed (background, padding) while capping the readable content width. Guard: only emits `__inner` when `layout === '' || layout === 'stack'` (i.e. not a grid/flex layout that manages its own content width). "Content width" inspector control exposed in edit.js. **WS-1 A1 / D159.** **Cloning routing (D194):** `__inner` is a fake wrapper — when cloning a draft, the converter FOLDS it structurally (slug-None direct descendant, Spec 22 §FR-22-4.1) and maps its `max-width`+`margin:auto` to this `contentWidth` attr **by CSS signature, never by the `__inner` class name** (D85 removed inner/content aliases for causing wrong collapse). `canonical_slot` is content-routing metadata (child-block-vs-scalar fork, gated by `role`; Spec 22 §FR-22-2.1) and is **inert for structural-CSS layout routing** — the layer is detected name-free via `{layer-prefix}+property_suffixes` (Spec 22 §FR-22-21).
+- `contentWidth` — string (CSS max-width value, default `""` = full-bleed). When set, render.php emits an inner `<div class="sgs-container__inner">` with `max-width: {contentWidth}; margin-inline: auto` — allowing the outer box to remain full-bleed (background, padding) while capping the readable content width. Guard: only emits `__inner` when `layout === '' || layout === 'stack'` (i.e. not a grid/flex layout that manages its own content width). "Content width" inspector control exposed in edit.js. **WS-1 A1 / D159.** **Cloning routing (D194):** `__inner` is a fake wrapper — when cloning a draft, the converter FOLDS it structurally (slug-None direct descendant, Spec 22 §FR-31-4.1) and maps its `max-width`+`margin:auto` to this `contentWidth` attr **by CSS signature, never by the `__inner` class name** (D85 removed inner/content aliases for causing wrong collapse). `canonical_slot` is content-routing metadata (child-block-vs-scalar fork, gated by `role`; Spec 22 §FR-31-2.1) and is **inert for structural-CSS layout routing** — the layer is detected name-free via `{layer-prefix}+property_suffixes` (Spec 22 §FR-31-21).
 
 **Supports:** align (wide, full), anchor, className, colour (background, text), spacing (margin, padding)
 
@@ -190,7 +190,7 @@ block-name/
 
 `containerKind` is declared in each composite block's `block.json` as `supports.sgs.containerKind`. It gates which `ContainerWrapperControls` panels render in the editor and which layers the shared `SGS_Container_Wrapper::render()` PHP helper emits at runtime. `sgs/modal` and `sgs/mobile-nav` carry `supports.sgs.containerMirror: false` and are excluded from the roster entirely (their outer shell is a Popover/dialog, not a container).
 
-**Composite-mirror rule (R-22-9 / D152, BLOCK-SIDE COMPLETE D167 2026-06-04):** Every composite block in the DB container-mirror roster (query: `SELECT block_slug FROM block_composition WHERE container_kind IS NOT NULL`) mirrors `sgs/container`'s wrapper capabilities via the shared helper `includes/class-sgs-container-wrapper.php`. No per-block reimplementation — the helper handles all rendering. When `sgs/container` gains a new capability, `/sgs-update` Stage 11 propagates it to all roster blocks. Canonical procedure: Spec 22 §FR-22-21 + `.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md`.
+**Composite-mirror rule (R-31-9 / D152, BLOCK-SIDE COMPLETE D167 2026-06-04):** Every composite block in the DB container-mirror roster (query: `SELECT block_slug FROM block_composition WHERE container_kind IS NOT NULL`) mirrors `sgs/container`'s wrapper capabilities via the shared helper `includes/class-sgs-container-wrapper.php`. No per-block reimplementation — the helper handles all rendering. When `sgs/container` gains a new capability, `/sgs-update` Stage 11 propagates it to all roster blocks. Canonical procedure: Spec 22 §FR-31-21 + `.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md`.
 
 **Render:** **Dynamic** — `render: file:./render.php`. Server-side rendering needed for layout/columns/gap responsive logic and `useInnerBlocksProps` integration. `save.js` returns `<InnerBlocks.Content />`.
 
@@ -289,7 +289,7 @@ block-name/
 
 1. **ORIGINAL composite** (counter + badge) — retired: counter use-cases → `sgs/counter`; badge use-cases → universal-nesting (`sgs/container` + `sgs/label`/`sgs/icon` children).
 
-2. **CURRENT block** — **`sgs/trust-badges` was rebuilt then renamed → `sgs/trust-bar` (D123, 2026-05-31)**; it absorbed `certification-bar` (D95, `badgeStyle` variants: icon-circle / text-only / image-badge + auto-scroll marquee). As of 2026-06-01 it is **dual-mode (FR-24-10, SHIPPED)**: `sourceMode='typed'` (curated repeater) OR `sourceMode='bound'` (echoes `$content` → renders the converter's emitted badge InnerBlocks). render.php branches on the explicit `sourceMode` (R-22-14, never `empty($content)`).
+2. **CURRENT block** — **`sgs/trust-badges` was rebuilt then renamed → `sgs/trust-bar` (D123, 2026-05-31)**; it absorbed `certification-bar` (D95, `badgeStyle` variants: icon-circle / text-only / image-badge + auto-scroll marquee). As of 2026-06-01 it is **dual-mode (FR-24-10, SHIPPED)**: `sourceMode='typed'` (curated repeater) OR `sourceMode='bound'` (echoes `$content` → renders the converter's emitted badge InnerBlocks). render.php branches on the explicit `sourceMode` (R-31-14, never `empty($content)`).
 
    **⚠ `sourceMode='bound'` is PURGED FROM CLONING (D182, 2026-06-06):** the bound-emit path was a test cheat (mirrored the draft DOM structure instead of converting to native `items[]` attributes). The converter now emits `sourceMode='typed'` with native `items[]` populated by the icon-identity resolver (`converter_v2/icon_resolver.py`) — badges clone to the correct icon slugs (home/check/truck/star). The live WC configurator modes (`wc-product`/`sgs-cpt`) are unaffected and remain legitimate.
 
@@ -390,7 +390,7 @@ block-name/
 
 **Purpose:** Carousel/slider of multiple testimonials.
 
-**Inner blocks:** REQUIRED. Slides are `sgs/testimonial` InnerBlocks (FR-22-6 migration 2026-05-30). render.php iterates `$block->inner_blocks` and renders each child; the `testimonials` array attribute still exists in block.json for back-compat but render.php does NOT read it — this block is **InnerBlocks-ONLY** in production.
+**Inner blocks:** REQUIRED. Slides are `sgs/testimonial` InnerBlocks (FR-31-6 migration 2026-05-30). render.php iterates `$block->inner_blocks` and renders each child; the `testimonials` array attribute still exists in block.json for back-compat but render.php does NOT read it — this block is **InnerBlocks-ONLY** in production.
 
 **Attributes** (verified against block.json 2026-06-14):
 - `layout` — full | split (default: full; `split` shows a `sideImage` beside the carousel)
@@ -537,7 +537,7 @@ block-name/
 - `borderRadius` — preset slug (default: medium)
 - `position` — top | bottom (announcement mode only, default: top)
 
-**Render:** Dynamic `render.php` echoes `$content` (the `sgs/text` InnerBlocks child carrying the notice message). `save.js` returns `<InnerBlocks.Content />` — WordPress serialises the child block into `post_content`; render.php drives all frontend output. FR-22-6 InnerBlocks migration shipped 2026-06-02; `deprecated.js` v3 preserves existing posts (prior null-save shape). Dead `dismissible` button (no control, no JS handler) removed in D206 (v0.7.0).
+**Render:** Dynamic `render.php` echoes `$content` (the `sgs/text` InnerBlocks child carrying the notice message). `save.js` returns `<InnerBlocks.Content />` — WordPress serialises the child block into `post_content`; render.php drives all frontend output. FR-31-6 InnerBlocks migration shipped 2026-06-02; `deprecated.js` v3 preserves existing posts (prior null-save shape). Dead `dismissible` button (no control, no JS handler) removed in D206 (v0.7.0).
 
 **Indus Foods usage:** The MOV banner ("Minimum order just £75 — lower than most wholesalers...") uses `success` variant with truck icon and centred text.
 
@@ -1088,7 +1088,7 @@ Blocks recognised by the converter walker at confidence 1.0 from their literal `
 
 To add: set `supports.sgs.is_section_root: true` in `block.json`, run `/sgs-update`, then run `/sgs-clone` on a representative mockup and verify `voter.json` emits the literal slug at confidence 1.0 with reason `class-section-block-equivalent`. Any non-section-root `sgs-` prefixed class encountered by the voter emits `gap-candidate-class-section` instead — surfacing the gap for review rather than mis-routing.
 
-Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (`block_composition` table — sibling routing data), D152 (`block_composition.container_kind` 3-KIND model + composite-mirror rule → Spec 22 §FR-22-21 + `.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md`).
+Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (`block_composition` table — sibling routing data), D152 (`block_composition.container_kind` 3-KIND model + composite-mirror rule → Spec 22 §FR-31-21 + `.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md`).
 
 ---
 
@@ -1148,7 +1148,7 @@ Use WP core `supports` for spacing, colour, border, and typography controls on t
 - Font style: dropdown
 - Line height: `RangeControl` + unit dropdown
 
-**Why this is mandatory (D209 — Bean R-22-13):**
+**Why this is mandatory (D209 — Bean R-31-13):**
 > "Blank-box/token font controls are the wrong UI pattern. The inconsistency across 6 blocks (counter, whatsapp-cta, mobile-nav, option-picker, trust-bar, product-card) was audited and all migrated. The shared component is documented here so future blocks use it and the inconsistency does not recur."
 
 **Usage (edit.js):**
@@ -1675,4 +1675,4 @@ Audit report at reports/2026-05-20-block-attribute-audit.csv. 9 block.json retro
 
 **Attribute promotion:** new operator-driven CLI `stage_attribute_promotion.py` (commands: `list --top N`, `promote --id <row_id>`, `status`) mutates block.json `attributes` + emits render.php inline-style branch for promoted gap candidates. Reads from BOTH uimax DB + sgs-framework DB candidates (1128-row backlog). Manual confirmation gate + idempotent. Commit `37c92950`.
 
-**How blocks evolve over time:** during clone runs, the universal walker routes gap candidates to D3 (per Spec 22 FR-22-5). Operator periodically runs the promotion CLI to convert high-confidence candidates into block.json schema additions. Next clone run picks up the new attrs, lifting them via D1 instead of flagging as gap. Each promoted attr permanently expands the block's typed surface for future clones.
+**How blocks evolve over time:** during clone runs, the universal walker routes gap candidates to D3 (per Spec 22 FR-31-5). Operator periodically runs the promotion CLI to convert high-confidence candidates into block.json schema additions. Next clone run picks up the new attrs, lifting them via D1 instead of flagging as gap. Each promoted attr permanently expands the block's typed surface for future clones.

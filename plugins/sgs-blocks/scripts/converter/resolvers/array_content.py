@@ -7,7 +7,7 @@ DB table, seeded from ``block.json supports.sgs.arrayItemSchema`` by
 sgs-update-v2.py Stage 1.
 
 Capability gate: a block MUST carry ``array-content-lift`` in
-``block_capabilities`` to be processed (MF-5 / R-22-1 / R-22-9 opt-in pattern,
+``block_capabilities`` to be processed (MF-5 / R-31-1 / R-31-9 opt-in pattern,
 identical to ``scalar-content-lift``).  Config arrays (role=layout) are never
 in the schema, so no explicit role-filter is needed in this resolver.
 
@@ -183,7 +183,7 @@ def lift_array_content(
     """
     _media = media_map or {}
 
-    # Capability gate (MF-5 / R-22-1 opt-in pattern, mirrors scalar_content.py).
+    # Capability gate (MF-5 / R-31-1 opt-in pattern, mirrors scalar_content.py).
     if _ARRAY_LIFT_CAP not in db_lookup.capabilities_for(slug):
         return {}, []
 
