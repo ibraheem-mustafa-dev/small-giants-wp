@@ -868,6 +868,23 @@ def build_block_markup(
         if isinstance(r, ScalarLift):
             attrs[r.attr] = r.value
 
+    # step 4: FR-22-20 variant detection (port of convert.py:4892-4919). Set the
+    # variant-selector attr from the draft's LIFTED fingerprint (the attrs just
+    # assembled — content ScalarLifts like splitImage are now present) so
+    # render.php's ORIGINAL variant gate fires (e.g. hero render.php:250
+    # `$is_split = 'split' === $variant`). Without this the new engine left the
+    # variant unset and render.php fell back to the standard hero, IGNORING the
+    # split image + grid attrs entirely (W3 LANDED proof, hero bug 3). DB-driven
+    # (R-22-1) via variant_slots; universal (R-22-9) — variant_attr_for returns
+    # None for non-variant blocks, making this a no-op for them. NOT a 4th walk
+    # branch (it reads the lifted attrs, mirrors the convert.py oracle exactly).
+    if rec.slug is not None:
+        _variant_attr = db_lookup.variant_attr_for(rec.slug)
+        if _variant_attr is not None:
+            _detected = db_lookup.detect_variant(rec.slug, attrs)
+            if isinstance(_detected, str):
+                attrs[_variant_attr] = _detected
+
     def _child_markup(cb: ChildBlock) -> str:
         attr = db_lookup.primary_content_attr(cb.slug)
         if attr:

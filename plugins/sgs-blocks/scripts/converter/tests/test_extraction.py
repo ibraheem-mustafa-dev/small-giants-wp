@@ -660,6 +660,48 @@ def test_build_block_markup_merges_css_attrs_with_content(monkeypatch):
     assert "sgs/testimonial" in markup, f"Block slug missing:\n{markup}"
 
 
+def test_build_block_markup_sets_detected_variant(monkeypatch):
+    """FR-22-20 variant detection wiring (W3 LANDED proof, hero bug 3): build_block_markup
+    must set the variant-selector attr from the draft's lifted fingerprint via the
+    DB-driven detect_variant, so render.php's variant gate fires
+    (hero render.php:250 `$is_split = 'split' === $variant`). The new engine omitted
+    this port step, leaving variant unset → render.php ignored the split image + grid.
+    """
+    import converter.services.extraction as ext_mod
+
+    monkeypatch.setattr(ext_mod.db_lookup, "variant_attr_for",
+                        lambda slug: "variant" if slug == "sgs/testimonial" else None)
+    monkeypatch.setattr(ext_mod.db_lookup, "detect_variant",
+                        lambda slug, attrs: "split")
+
+    node = _node_from_file(_TESTIMONIAL)
+    rec = recognise(node)
+    markup = build_block_markup(rec, node)
+
+    assert '"variant":"split"' in markup, (
+        f"detected variant not set on the block — variant gate would not fire:\n{markup}"
+    )
+
+
+def test_build_block_markup_no_variant_attr_is_noop(monkeypatch):
+    """A block with no variant-selector attr (variant_attr_for → None) must NOT gain
+    a stray variant attr — the detection step is a universal no-op for non-variant blocks.
+    """
+    import converter.services.extraction as ext_mod
+
+    monkeypatch.setattr(ext_mod.db_lookup, "variant_attr_for", lambda slug: None)
+    monkeypatch.setattr(ext_mod.db_lookup, "detect_variant",
+                        lambda slug, attrs: "should-not-appear")
+
+    node = _node_from_file(_TESTIMONIAL)
+    rec = recognise(node)
+    markup = build_block_markup(rec, node)
+
+    assert "should-not-appear" not in markup, (
+        f"non-variant block gained a stray variant value:\n{markup}"
+    )
+
+
 def test_build_block_markup_bp_decls_tier_attrs_land(monkeypatch):
     """§3 unification (b): @media bp_decls → tier-suffixed CSS attrs land in markup.
 
