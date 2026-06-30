@@ -70,6 +70,15 @@ order-of-magnitude ~0.7M tokens across the phase (calibrate down — Register B 
 
 ---
 
+## Pre-conditions (must be true before W3 Step 1)
+- [ ] Branch `main`, D-ceiling D249, tests green (176 converter + 45 cheat-gate), `cheat-gate/run.py --check` exit 0.
+- [ ] The D249 fact-check is read + accepted (engine = two inert disconnected halves; do not re-litigate).
+- [ ] The reading gate (next-session-prompt §MANDATORY READING GATE) is ticked — incl. the `convert.py` walker `_route_composite_interior` read (the meaty one) BEFORE Step 4.
+- [ ] convert.py is byte-identical to its frozen state (D-MODULAR) — never edit it; the new conductor lives behind a flag until Step 10.
+- [ ] Bean is available to sign off at Step 1 (design-gate) and Step 10 (LANDED) — both are co-authoritative gates (R-22-13), not optional.
+
+---
+
 ## Steps
 
 ### Step 1 — DESIGN-GATE the W3 stage + resolve the G1–G5 disposition (Rule 7 / A14 / B5)
@@ -365,6 +374,19 @@ order-of-magnitude ~0.7M tokens across the phase (calibrate down — Register B 
   - **Recommendation:** start with hero `split` (exercises scalar-media column + content + L1–L4). Add a
     slug-None section (cross-node CSS fold) as the second. Page 8 is ONE fixture, never the gate (§7b).
   - **Why:** the single-canary blind spot — a page-8 match doesn't prove universality.
+
+---
+
+## Parking lot (deferred during W3 planning — not in W3 scope)
+- **FR-22-2.5 array completion** — W3 Step 5 ports arrays as-is with `# TODO FR-22-2.5`; completing the
+  array slot-wiring (`array_item_slot_for`, the `_atomic_attrs_for` slug-literal de-literalisation) is
+  its own design-gated stage (STOP-18). **Status:** DEFERRED (own design-gate).
+- **css_router D1 retire vs rewire (MF-2)** — decided at Step 7 (recommend retire); if rewire is chosen
+  instead, that's a separate sub-task. **Status:** OPEN (resolved in Step 7).
+- **Production-wiring / convert.py decommission** — swapping the new conductor in as the live engine is
+  Spec 31 §8, gated on A1+A2+LANDED across the full fixture set, AFTER W3. **Status:** DEFERRED (post-W3 roadmap).
+- **CLAUDE.md "LIVE cloning plan" pointer** still names the 2026-06-09 plan — update it to this W3 plan
+  when W3 starts. **Status:** OPEN (1-line doc fix).
 
 ---
 

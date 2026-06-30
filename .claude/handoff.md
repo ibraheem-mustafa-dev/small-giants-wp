@@ -16,7 +16,7 @@ session_date: 2026-06-30
 6. **W3 phase-plan written (`cb6b4b64`):** `.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md` — executable 12-step plan for the keystone (wire both halves into one emit + faithful walker port + LANDED proof).
 
 ## Current State
-- **Branch:** main at cb6b4b64 (pushed)
+- **Branch:** main at dc428046 (pushed) — incl. the handoff-doc + working-tree-drift cleanup commits
 - **Tests:** 176 converter pass (1 skip, 2 xfail) + 45 cheat-gate pass
 - **Build:** n/a (Python converter; no npm build this session). convert.py byte-identical (D-MODULAR).
 - **Uncommitted changes:** none of mine. Pre-existing not-mine: `lucide-icons.php`, phase4 reports, theme-handoff deletions (`.claude/handoff-theme.md`, `next-session-prompt-theme.md`).
