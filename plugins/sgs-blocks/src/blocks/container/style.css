@@ -138,7 +138,13 @@
 }
 
 /* Parallax — background-attachment:fixed is set inline by render.php.
-   On touch devices view.js adds .no-parallax to disable it (iOS jitter). */
+   On touch devices view.js adds .no-parallax to disable it (iOS jitter).
+   !important is structurally required here: render.php sets background-attachment:fixed
+   as an INLINE STYLE (specificity 1,0,0,0). No selector-based rule can beat an inline
+   style without !important. The JS only adds the class — it does not remove the inline
+   style. This !important is therefore NOT a cheat: it does not override a converter
+   attribute value; it overrides a hardcoded render.php infrastructure value specifically
+   to implement the no-parallax touch fallback. Retained intentionally. */
 .sgs-container--parallax.no-parallax {
 	background-attachment: scroll !important;
 }

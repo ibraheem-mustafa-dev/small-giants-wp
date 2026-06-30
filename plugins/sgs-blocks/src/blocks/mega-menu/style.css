@@ -185,17 +185,20 @@
  */
 
 /*
- * !important on position/left/top is intentional — LiteSpeed CSS Combine
- * incorrectly merges this rule with .sgs-mega-menu--align-centre, dropping
- * position:fixed and overwriting left:0 with left:50%. The !important
- * ensures full-width panels always use fixed positioning regardless of
- * LiteSpeed's CSS optimiser rewriting. See memory: feedback_litespeed_gotchas.md
+ * Specificity raised to (0,3,0) by chaining .sgs-mega-menu onto each selector.
+ * This beats .sgs-mega-menu--align-centre .sgs-mega-menu__panel (0,2,0) without
+ * needing !important, resolving the LiteSpeed CSS Combine merge problem that
+ * previously required !important — LiteSpeed collapses equal-specificity rules and
+ * can overwrite position:fixed with position:absolute from the align-centre rule.
+ * The chained .sgs-mega-menu ancestor class is always present on the same element
+ * as .sgs-mega-menu--layout-full-width / .sgs-mega-menu--panel-full.
+ * See memory: feedback_litespeed_gotchas.md
  */
-.sgs-mega-menu--layout-full-width .sgs-mega-menu__panel,
-.sgs-mega-menu--panel-full .sgs-mega-menu__panel {
-	position:  fixed !important;
-	top:       var(--sgs-mm-fixed-top, 0px) !important;
-	left:      0 !important;
+.sgs-mega-menu.sgs-mega-menu--layout-full-width .sgs-mega-menu__panel,
+.sgs-mega-menu.sgs-mega-menu--panel-full .sgs-mega-menu__panel {
+	position:  fixed;
+	top:       var(--sgs-mm-fixed-top, 0px);
+	left:      0;
 	right:     auto;
 	width:     100vw;
 	max-width: 100vw;

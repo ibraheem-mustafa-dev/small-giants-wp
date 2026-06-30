@@ -61,13 +61,45 @@ def _faithful_properties(conn: sqlite3.Connection) -> frozenset[str]:
     return frozenset(r[0].lower() for r in rows)
 
 
+def _enclosing_selector(text: str, decl_start: int) -> str:
+    """Return the CSS selector of the rule containing the declaration at decl_start.
+
+    Back-scans to the `{` opening this rule, then to the previous `}`/`{` to slice out
+    the selector text. Good enough for flagging variant/state scope (not a full parser)."""
+    open_brace = text.rfind("{", 0, decl_start)
+    if open_brace == -1:
+        return ""
+    prev = max(text.rfind("}", 0, open_brace), text.rfind("{", 0, open_brace))
+    return text[prev + 1:open_brace].strip()
+
+
+def _is_variant_scoped(selector: str) -> bool:
+    """A !important on a VARIANT/STATE selector overrides a variant-specific render (e.g.
+    the wrapper's OWN inline animation style for `--ken-burns`/`--parallax`, or a `:hover`
+    state) — NOT the base faithful transfer, so it is not a converter cheat. Detected by a
+    BEM modifier (`--`) or a pseudo-class/state (`:`) in the enclosing selector. A BASE
+    selector (`.sgs-container`, `.sgs-x__y`) has neither → a real base-transfer override.
+    (D249 accuracy fix — STOP-31 class: scope the gate to the real cheat context.)"""
+    return "--" in selector or ":" in selector
+
+
 def _scan_file_for_important(path: Path) -> list[str]:
-    """Return list of CSS property names (lowercased) that use !important in path."""
+    """Return CSS property names (lowercased) that use !important on a BASE selector.
+
+    For .css files, a !important whose enclosing selector is variant/state-scoped is
+    SKIPPED (not a base-transfer override). The PHP wrapper is scanned flat (it builds
+    inline styles, not CSS rules with selectors)."""
     try:
         text = path.read_text(encoding="utf-8", errors="replace")
     except OSError:
         return []
-    return [m.group(1).lower() for m in _IMPORTANT_DECL_RE.finditer(text)]
+    is_css = path.suffix.lower() == ".css"
+    props: list[str] = []
+    for m in _IMPORTANT_DECL_RE.finditer(text):
+        if is_css and _is_variant_scoped(_enclosing_selector(text, m.start())):
+            continue  # variant/state-scoped — overrides a variant render, not the transfer
+        props.append(m.group(1).lower())
+    return props
 
 
 def _rel(path: Path) -> str:
