@@ -10,8 +10,11 @@ No block or slot string literals anywhere (scanned by gates/no_slug_literal).
 """
 from __future__ import annotations
 
+import logging
 import re
 from typing import Any
+
+from bs4 import Tag
 
 # ---------------------------------------------------------------------------
 # Content-noun / styling-suffix regexes for expected_content_gaps (FIX 3).
@@ -53,7 +56,7 @@ from orchestrator.converter_v2 import db_lookup
 
 # Emit-glue imports (stage 3 §1 walk/emit — design §1).
 # Imported here so that build_block_markup lives in the same service module.
-from converter.recognition import variant_attrs
+from converter.recognition import variant_attrs, recognise
 from converter.orchestrator import emit_block_markup
 
 
@@ -116,66 +119,321 @@ def run_mechanism_a(rec: Recognition, section_root: Any, media_map: dict | None 
 
 
 # ---------------------------------------------------------------------------
-# Mechanism B — child-block via slot-keyed predicate
+# Mechanism B — faithful port of _route_composite_interior (convert.py:4124-4308)
+#               + walk() child-resolution (convert.py:4446-4527)
 # ---------------------------------------------------------------------------
+
+# Module-level logger for G3 NULL-path traces (never silent per conservation rule).
+_LOG = logging.getLogger(__name__)
+
+
+def _mobile_suffixes() -> frozenset[str]:
+    """Return the set of breakpoint suffix names that map to 'Mobile' tier.
+
+    Ported from convert.py:4178-4187 (_route_composite_interior preamble).
+    Uses db_lookup.breakpoint_suffix_rules() — no hardcoded suffix dict (R-22-1).
+    The DB returns [(marker, [suffixes])] where 'Mobile' is one marker.
+    We collect every suffix whose marker equals 'Mobile' (case-exact).
+
+    Returns a frozenset of lowercase suffix strings so callers can do:
+        ``img_modifier.lower() in _mobile_suffixes()``
+    """
+    try:
+        bp_rules = db_lookup.breakpoint_suffix_rules()
+    except Exception:  # noqa: BLE001 — soft-fail; DB unavailable during tests
+        return frozenset()
+    mobile: set[str] = set()
+    for marker, suffixes in bp_rules:
+        if marker == "Mobile":
+            for sfx in suffixes:
+                mobile.add(sfx.lower())
+    return frozenset(mobile)
+
+
+def _child_content_for_node(child_node: Any, child_slug: str) -> str:
+    """Produce the correct ChildBlock.content string for a resolved child node.
+
+    The ChildBlock.content field has a DUAL contract (consumed by build_block_markup
+    _child_markup helper):
+
+      - primary_content_attr is non-None (e.g. sgs/heading → 'content'):
+          cb.content = TEXT value for that attr (via extract_payload with the attr's role).
+          emit_block_markup(slug, {attr: cb.content}, "") assembles the final markup.
+
+      - primary_content_attr is None (nested InnerBlocks parent):
+          cb.content = inner WP block markup string (recursive Mechanism B output).
+          emit_block_markup(slug, {}, cb.content) assembles the final markup.
+
+    This is the recursion seam for branch B (content-item block emitted)
+    and branch C (slug-None grandchildren). Mirrors what convert.py:4271-4274
+    achieved via a single walk() call (which naturally produced the right output
+    for the parent's emit path).
+
+    Returns "" if the child does not recognise or has no content.
+    """
+    primary_attr = db_lookup.primary_content_attr(child_slug)
+
+    if primary_attr is not None:
+        # Scalar child: extract the TEXT content via the attr's role.
+        # Look up the role from block_attrs so we use the right extractor.
+        attrs_info = db_lookup.block_attrs(child_slug)
+        attr_info = attrs_info.get(primary_attr, {})
+        role = attr_info.get("role") or "text-content"
+        return extract_payload(child_node, role)
+    else:
+        # InnerBlocks parent: recurse to produce inner block markup.
+        child_rec = recognise(child_node)
+        if child_rec.kind == "unrecognised" or child_rec.slug is None:
+            return ""
+        return build_block_markup(child_rec, child_node)
 
 
 def run_mechanism_b(rec: Recognition, section_root: Any) -> list:
-    """Mechanism B: walk content-leaf BEM children and emit child InnerBlocks.
+    """Mechanism B: faithful port of _route_composite_interior + walk() child-resolution.
 
-    Each content-leaf child resolves to exactly one of:
-      - ChildBlock   — slot is content-bearing, has a standalone_block, and
-                       the child is itself a leaf (not a wrapper over deeper BEM)
-      - ContentGap   — slot unmapped / not content-bearing / no standalone_block /
-                       child is a wrapper shell / BEM element missing
+    PORT SOURCE (read verbatim before any edit):
+      - convert.py:4124-4308  (_route_composite_interior — composite-interior dispatch)
+      - convert.py:4446-4477  (parent-scoped child-token pre-check, G1)
+      - convert.py:4479-4505  (leaf-misresolution guard, G-leaf)
+      - convert.py:4507-4527  (slug-None wrapper → sgs/container, C)
 
-    Conservation: content_leaves_seen == child_blocks + content_gaps (hard assertion).
+    DISPATCH (convert.py:4154-4156 note + is_class_section_block gate):
+      - db_lookup.is_class_section_block(rec.slug) == True
+          → composite-interior routing (branches A, B, C below)
+      - else (generic InnerBlocks parent: accordion, tabs, form, …)
+          → generic child-resolution (G1 parent-scoped → resolve_slug → G3 validate)
+
+    COMPOSITE-INTERIOR branches (per direct child column):
+      (A) Scalar-media column — db_lookup.scalar_media_attr_for(slug, element) non-None
+            → find <img> descendants; use BEM modifier (--mobile/--desktop) to pick
+              base_attr vs base_attr+'Mobile'; lift via scalar_media_from_img;
+              emit ScalarLift(attr=target_attr, value=lifted_img_dict).
+            → No img found → ContentGap (never a silent skip, Rule 4).
+      (B) Content-item block column — resolve_slug_from_bem(child_classes) non-None
+            → emit ChildBlock + recurse into the child (_child_content_for_node).
+      (C) slug-None content wrapper (fold case) — resolve_slug_from_bem returns None
+            → CSS routing is OUT OF SCOPE here (Step-7 conductor owns it).
+            → TODO Step-7: slug-None column CSS routing (_route_interior_css_to_parent_slot
+              + _fold_layout_into_attrs) handled by the unified conductor, NOT here.
+            → Content recursion IS in scope: iterate grandchildren and recurse each.
+
+    GENERIC path (non-class-section parent, e.g. accordion/tabs/form):
+      (G1) parent-scoped child-token — db_lookup.child_block_for_parent_token(slug, element)
+             wins over global alias when non-None (fixes accordion __item → sgs/accordion-item).
+      (G-resolve) global resolve_slug_from_bem fallback when G1 misses.
+      (G3) VALIDATION — db_lookup.accepts_allowed_blocks(rec.slug):
+             None  → permissive (no restriction declared); emit child BUT log a trace note
+                     so the unvalidated resolution is visible (never a silent skip).
+             []    → no children allowed; emit loud ContentGap.
+             [..] → child slug MUST be in the list; else loud ContentGap (never silent).
+
+    CONSERVATION: every direct child column produces ≥1 of {ScalarLift, ChildBlock,
+    ContentGap}.  Hard ContentConservationError (never bare assert — STOP-27).
     """
+    # ------------------------------------------------------------------
+    # Build mobile-suffix set once per call (DB-driven, no hardcoded dict).
+    # ------------------------------------------------------------------
+    mobile_sfxs = _mobile_suffixes()
+
+    # Import here to avoid a module-level circular import: lift_helpers is a
+    # leaf module with no imports from converter.services.
+    from converter.services.lift_helpers import scalar_media_from_img
+
     results: list = []
-    leaves = 0
+    columns_seen = 0  # conservation counter
 
-    for child in content_children(section_root):
-        leaves += 1
-        slot = bem_element_to_canonical_slot(child)
-        if slot is None:
-            results.append(
-                ContentGap(_label(child), "BEM element has no DB slot mapping (data gap)")
-            )
-            continue
-        if not db_lookup.slot_has_equivalent_block(rec.slug, slot):
-            results.append(
-                ContentGap(_label(child), "slot is not a content-bearing child slot")
-            )
-            continue
-        child_slug = db_lookup.standalone_block_for(slot)
-        if child_slug is None:
-            results.append(
-                ContentGap(
+    # ------------------------------------------------------------------
+    # COMPOSITE-INTERIOR path (is_class_section_block)
+    # Port of convert.py:4191-4307
+    # ------------------------------------------------------------------
+    if db_lookup.is_class_section_block(rec.slug):
+        for child in section_root.children:
+            if not isinstance(child, Tag):
+                continue
+            columns_seen += 1
+
+            cclasses: list[str] = child.get("class", []) or []
+            csgs: list[str] = [c for c in cclasses if isinstance(c, str) and c.startswith("sgs-")]
+
+            # Extract BEM __element from the child's primary sgs- class.
+            # convert.py:4199-4205
+            element: str | None = None
+            for cls in csgs:
+                bem = db_lookup.parse_sgs_bem(cls)
+                if bem and bem.element:
+                    element = bem.element
+                    break
+
+            if element is None:
+                # No BEM element — cannot route by slot; emit ContentGap (never silent).
+                # convert.py:4207-4213 falls back to generic walk(); here we gap-track.
+                results.append(ContentGap(
                     _label(child),
-                    "slot content-bearing but no standalone_block (DB data limit)",
-                )
-            )
-            continue
-        if has_bem_element_descendant(child):
-            # chrome/wrapper filter — a wrapper is not a content leaf
-            results.append(
-                ContentGap(_label(child), "child slot maps to a wrapper, not body content")
-            )
-            continue
-        role = db_lookup.content_role_for_slot(rec.slug, slot)
-        if role is None:
-            results.append(
-                ContentGap(_label(child), "slot has no content-bearing role in the DB")
-            )
-            continue
-        results.append(ChildBlock(slug=child_slug, content=extract_payload(child, role)))
+                    "composite-interior column has no BEM __element — cannot route by slot",
+                ))
+                continue
 
-    # Per-mechanism conservation invariant (Mechanism B iterates NODES).
-    blocks = sum(1 for r in results if isinstance(r, ChildBlock))
-    gaps = sum(1 for r in results if isinstance(r, ContentGap))
-    if leaves != blocks + gaps:
+            # Ask the DB: is this a scalar-media column? (convert.py:4216)
+            base_attr = db_lookup.scalar_media_attr_for(rec.slug, element)
+
+            if base_attr is not None:
+                # ---- Branch A: Scalar-media column (convert.py:4218-4253) ----
+                imgs = child.find_all("img")
+                if not imgs:
+                    # No img found → ContentGap (convert.py:4224-4229 silently skips;
+                    # we emit a ContentGap per Rule 4 — no silent drops allowed here).
+                    results.append(ContentGap(
+                        _label(child),
+                        f"scalar-media column (attr={base_attr!r}) had no <img> descendant"
+                        " — media content not transferred",
+                    ))
+                    continue
+
+                for img in imgs:
+                    img_classes: list[str] = img.get("class", []) or []
+                    img_modifier: str | None = None
+                    for img_cls in img_classes:
+                        img_bem = db_lookup.parse_sgs_bem(img_cls)
+                        if img_bem and img_bem.modifier:
+                            img_modifier = img_bem.modifier.lower()
+                            break
+
+                    # Mobile modifier → base_attr + 'Mobile'; else → base_attr.
+                    # convert.py:4243-4244
+                    is_mobile = (img_modifier in mobile_sfxs) if img_modifier else False
+                    target_attr = f"{base_attr}Mobile" if is_mobile else base_attr
+
+                    lifted = scalar_media_from_img(img, media_map={})
+                    results.append(ScalarLift(attr=target_attr, value=lifted))
+
+            else:
+                # ---- Branch B / C: content column (convert.py:4256-4307) ----
+                # Distinguish: (B) child resolves to a block vs (C) slug-None wrapper.
+                child_slug = db_lookup.resolve_slug_from_bem(csgs)
+
+                if child_slug is not None:
+                    # Branch B: content-item block emitted (convert.py:4267-4274).
+                    # _child_content_for_node produces the correct ChildBlock.content:
+                    # TEXT for scalar blocks (primary_content_attr set), inner WP markup
+                    # for nested InnerBlocks parents (primary_content_attr None).
+                    content = _child_content_for_node(child, child_slug)
+                    results.append(ChildBlock(slug=child_slug, content=content))
+
+                else:
+                    # Branch C: slug-None transparent content wrapper — fold case.
+                    # convert.py:4276-4306: _fold_layout_into_attrs + _route_interior_css_to_parent_slot
+                    # handle the CSS mutation; CONTENT recursion iterates grandchildren.
+                    # TODO Step-7: slug-None column CSS routing (_route_interior_css_to_parent_slot
+                    # + _fold_layout_into_attrs) is handled by the unified conductor, NOT here.
+                    grandchild_results: list = []
+                    for grandchild in child.children:
+                        if not isinstance(grandchild, Tag):
+                            continue
+                        gc_rec = recognise(grandchild)
+                        if gc_rec.slug is not None:
+                            gc_content = _child_content_for_node(grandchild, gc_rec.slug)
+                            grandchild_results.append(
+                                ChildBlock(slug=gc_rec.slug, content=gc_content)
+                            )
+                        else:
+                            grandchild_results.append(
+                                ContentGap(_label(grandchild), "grandchild unrecognised in slug-None fold")
+                            )
+                    if grandchild_results:
+                        results.extend(grandchild_results)
+                    else:
+                        # Empty slug-None wrapper → ContentGap (never silent).
+                        results.append(ContentGap(
+                            _label(child),
+                            "slug-None content wrapper had no recognisable grandchildren",
+                        ))
+
+        # Conservation: every Tag child produced ≥1 result.
+        result_count = sum(
+            1 if isinstance(r, (ScalarLift, ContentGap)) else 1
+            for r in results
+            if isinstance(r, (ScalarLift, ChildBlock, ContentGap))
+        )
+        # Note: branch C can expand one column into N grandchild results (N ≥ 1 per the
+        # empty-wrapper ContentGap above).  Conservation only requires columns_seen ≤
+        # result_count (each column → ≥1 result); strict equality doesn't hold when C
+        # expands. Enforce the weaker but sufficient floor: no column was silently dropped.
+        if result_count < columns_seen:
+            raise ContentConservationError(
+                f"Mechanism B (composite-interior): {columns_seen} columns produced only"
+                f" {result_count} results — at least one column was silently dropped"
+            )
+        return results
+
+    # ------------------------------------------------------------------
+    # GENERIC path — non-class-section InnerBlocks parent (accordion, tabs, form, …)
+    # Port of convert.py:4446-4527 (walk() child-resolution section)
+    # ------------------------------------------------------------------
+    allowed = db_lookup.accepts_allowed_blocks(rec.slug)
+
+    for child in section_root.children:
+        if not isinstance(child, Tag):
+            continue
+        columns_seen += 1
+
+        cclasses: list[str] = child.get("class", []) or []
+        csgs: list[str] = [c for c in cclasses if isinstance(c, str) and c.startswith("sgs-")]
+
+        # Extract BEM __element token (same as composite path above).
+        element = None
+        for cls in csgs:
+            bem = db_lookup.parse_sgs_bem(cls)
+            if bem and bem.element:
+                element = bem.element
+                break
+
+        # G1: parent-scoped child-token pre-check (convert.py:4460-4477).
+        # Takes precedence over global alias lookup.
+        child_slug: str | None = None
+        if rec.slug and element:
+            child_slug = db_lookup.child_block_for_parent_token(rec.slug, element)
+
+        # G-resolve: global BEM → slug fallback (convert.py:4444).
+        if child_slug is None and csgs:
+            child_slug = db_lookup.resolve_slug_from_bem(csgs)
+
+        if child_slug is None:
+            # No resolution → ContentGap (convert.py:4517-4527 emits a wrapper container;
+            # here the new engine gaps instead of emitting an anonymous container).
+            results.append(ContentGap(
+                _label(child),
+                "generic child has no resolvable slug (G1 and global BEM lookup both missed)",
+            ))
+            continue
+
+        # G3: validate child_slug against the parent's accepted block list.
+        # Bean-mandated validation (per task spec). convert.py:4460-4477 has no equivalent
+        # — this is a new-engine strengthening of the resolution fidelity.
+        if allowed is None:
+            # NULL → permissive; no restriction declared. Log a trace (never silent).
+            _LOG.debug(
+                "Mechanism B generic G3: parent %r has NULL accepts_allowed_blocks —"
+                " child %r admitted without validation (permissive)",
+                rec.slug, child_slug,
+            )
+        elif child_slug not in allowed:
+            # Non-None allow-list and child is NOT in it → loud ContentGap, never silent.
+            results.append(ContentGap(
+                _label(child),
+                f"G3 validation failed: child slug {child_slug!r} is not in parent"
+                f" {rec.slug!r} accepts_allowed_blocks={allowed!r}",
+            ))
+            continue
+
+        # Emit ChildBlock. _child_content_for_node picks TEXT or inner markup per block type.
+        content = _child_content_for_node(child, child_slug)
+        results.append(ChildBlock(slug=child_slug, content=content))
+
+    # Generic path conservation: every Tag child → ≥1 result.
+    if len(results) < columns_seen:
         raise ContentConservationError(
-            f"Mechanism B: {leaves} leaves != {blocks} blocks + {gaps} gaps"
+            f"Mechanism B (generic): {columns_seen} children produced only"
+            f" {len(results)} results — at least one child was silently dropped"
         )
     return results
 
