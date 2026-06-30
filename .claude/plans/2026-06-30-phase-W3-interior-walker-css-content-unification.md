@@ -79,9 +79,44 @@ order-of-magnitude ~0.7M tokens across the phase (calibrate down — Register B 
 
 ---
 
+## Step 1 OUTCOME — disposition signed off 2026-06-30 (Bean)
+Verified against the WORKING walker (`_route_composite_interior` + `walk()`, convert.py), per STOP-22's
+read-to-port carve-out. The v1 "G1–G5 NO-GO" was about the SEPARATE D245 flat `run_mechanism_b`, NOT
+this walker. Disposition:
+- **G1 (token→child predicate) — DONE-BY-PORT.** `child_block_for_parent_token` (db_lookup:2827), pure DB
+  lookup via `blocks.parent_block` (18 rows); called at walker:4464.
+- **G2 (recursion) — DONE-BY-PORT.** Single recursive `walk(child, …, parent_block=slug)`; slug-None
+  wrappers don't reset `parent_block`.
+- **G3 (accepts_allowed_blocks validation) — CLOSE-IN-W3 (Bean override of my DEFER, 2026-06-30):** "we're
+  building the FINAL system, not copy-pasting." The working walker never calls `accepts_allowed_blocks`,
+  but Spec 31 §3.B3 mandates the validation gate. Build it in Step 4: after a child slug resolves,
+  validate it ∈ `db.accepts_allowed_blocks(parent)`; not-in → a flagged `ContentGap` (never silent).
+  **NULL semantics:** NULL = no declared restriction → permissive (allow), but emit a trace/log so the
+  unvalidated resolution is VISIBLE, never a silent skip (this closes G3's "NULL unhandled" concern).
+- **G4 (scalar-vs-child fork) — DONE-BY-PORT.** `scalar_media_attr_for` non-None → scalar lift; else
+  `resolve_slug_from_bem` → child block / slug-None fold. DB decides per-element.
+- **G5 (slot_has_equivalent_block CSS-fork) — DONE-BY-PORT behaviourally.** Resolve-slug branch IS the
+  fork (block→child CSS via walk; slug-None→parent CSS via `_fold_layout_into_attrs` +
+  `_route_interior_css_to_parent_slot`). The §3-text integration is a spec-doc note, not a code gap.
+
+**Verdict: GO** (with G3 built in Step 4).
+
+**Build-status check (2026-06-30) — Steps 2 + 3 were ALREADY DONE in prior sessions:**
+- **Step 2 ✅ ALREADY DONE** — all 5 styling helpers present in `converter/services/styling_helpers.py`
+  (`collect_css_decls_for_element`, `extract_token_or_hex`, `split_value_unit`, `css_value_to_attr`,
+  `css_selector_has_class`).
+- **Step 3 ✅ ALREADY DONE (D247)** — `converter/resolvers/styling_content.py` already consumes `_bp_decls`
+  and emits `{attr}{bp_suffix}` companions off `modifier_suffixes('breakpoint')` (the B2 responsive fix;
+  lines 181–196). Wired via `run_mechanism_styling`.
+- **Step 4 ⏳ THE REAL WORK** — `run_mechanism_b` (extraction.py:123) is STILL the flat D245 recreation
+  (`content_children` + `extract_payload`, no scalar-media/fold/recursion branches). The faithful
+  `_route_composite_interior` port + G3 is the next build. **HIGH-risk inline-Opus** — best on fresh context.
+
+---
+
 ## Steps
 
-### Step 1 — DESIGN-GATE the W3 stage + resolve the G1–G5 disposition (Rule 7 / A14 / B5)
+### Step 1 — DESIGN-GATE the W3 stage + resolve the G1–G5 disposition (Rule 7 / A14 / B5)  ✅ DONE 2026-06-30
   Model:       inline (Opus) + /qc-council (cross-model raters)
   Action:      Run a council on THIS plan + the port-source. Produce the per-gap table labelling
                G1 (token-match predicate) / G2 (recursion) / G3 (NULL accepts_allowed_blocks) /
@@ -163,8 +198,12 @@ order-of-magnitude ~0.7M tokens across the phase (calibrate down — Register B 
                (ii) slug-None content-column FOLD + cross-node CSS routing
                (`_route_interior_css_to_parent_slot` — the hero `__content` 0%-transfer fix);
                (iii) recursion into child InnerBlocks. DB-keyed; NO slug literals; do NOT port or call
-               `_atomic_attrs_for` (sibling, out of walker scope — STOP-18). Close exactly the G1–G5
-               gaps Step 1 labelled CLOSE-IN-W3; carry `# TODO` for DEFER ones.
+               `_atomic_attrs_for` (sibling, out of walker scope — STOP-18). **G3 (Bean-mandated
+               CLOSE-IN-W3, 2026-06-30):** after a child slug resolves, validate it ∈
+               `db.accepts_allowed_blocks(parent)`; not-in → a flagged `ContentGap` (loud, never silent).
+               NULL `accepts_allowed_blocks` → permissive (allow) BUT emit a trace so the unvalidated
+               resolution is visible (closes the G3 NULL-unhandled concern). G1/G2/G4/G5 are DONE-BY-PORT
+               (Step-1 outcome) — port them faithfully.
   Files:       converter/services/extraction.py (run_mechanism_b), converter/services/fold_helpers.py
                (the now-DB-sourced interior-routing helpers become live), tests
   Inputs:      Step 1 G1–G5 disposition, convert.py:4124 + the recursive walker (FR-22-3)
