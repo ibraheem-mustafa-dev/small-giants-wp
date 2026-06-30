@@ -32,7 +32,6 @@ A custom WordPress block framework built by Claude Code: theme + blocks plugin (
 - **Canonical spec:** [Spec 31 §13.6 / FR-31-21](.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md) — the universal wrapper-conversion procedure + 3-layer model (OUTER / CONTENT-WIDTH / PER-GRID-ITEM) + composite-mirror rule.
 - **LIVE cloning plan (phase-plan):** [`.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md`](.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md) — W3 phase-plan (interior-walker wiring + CSS↔content unification, D250, 2026-06-30).
 - **Previous cloning plan (archived context):** [`.claude/plans/2026-06-09-clone-fix-build-plan.md`](.claude/plans/2026-06-09-clone-fix-build-plan.md) + sign-off ledger [`2026-06-09-clone-fix-sign-off-ledger.md`](.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md) (superseded by W3 plan).
-- **Archived (superseded re-cuts, at `plans/archive/`):** [`2026-06-03-cloning-fidelity-triage-and-composite-remodel.md`](.claude/plans/archive/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md) (triage #1-#8 + WS-4 build spec) · [`2026-06-02-container-wrapper-standardisation.md`](.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md) (5-workstream programme) · [`2026-05-28-phase-2-hybrid-block-migration.md`](.claude/plans/archive/2026-05-28-phase-2-hybrid-block-migration.md) (pixel-diff thread).
 
 ## Binding rules (Spec 31 §13.1 R-31-1 through R-31-15; gate every commit)
 
@@ -98,8 +97,6 @@ Each sub-project + each client site has its own CLAUDE.md. Read the relevant one
 | [`.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md`](.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md) | **LIVE canonical cloning plan (phase-plan) — W3 interior-walker + CSS↔content unification (D250)** |
 | [`.claude/plans/2026-06-09-clone-fix-build-plan.md`](.claude/plans/2026-06-09-clone-fix-build-plan.md) | Previous canonical plan + sign-off ledger (superseded by W3 plan) |
 | [`.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md`](.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md) | 55-issue sign-off ledger (archived context — superseded) |
-| [`.claude/plans/archive/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md`](.claude/plans/archive/2026-06-03-cloning-fidelity-triage-and-composite-remodel.md) | Cloning-fidelity triage #1-#8 + WS-4 build spec (archived — superseded) |
-| [`.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md`](.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md) | Standardisation programme, 5 workstreams (archived — superseded) |
 | [`.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md`](.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md) §13 | Absorbed Spec 22 (merged D253): single-recursive walker (FR-31-3), content fork (FR-31-2), sgs/container default (FR-31-4), binding rules R-31-1..15. |
 | [`.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md`](.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md) | Pipeline-state artefact map (read BEFORE conjecturing) |
 | [`.claude/cloning-pipeline-flow.md`](.claude/cloning-pipeline-flow.md) + [`-stages.md`](.claude/cloning-pipeline-stages.md) | Stage map + per-stage detail |

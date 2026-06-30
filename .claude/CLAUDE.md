@@ -27,8 +27,8 @@
 
 ## Authoritative pointers
 
-- **Canonical cloning-pipeline spec:** `specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md` (Spec 31 — absorbed Spec 22 in full, §13, D253)
-- **LIVE canonical cloning plan:** `plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md` — W3 phase-plan (interior-walker wiring + CSS↔content unification, D250, 2026-06-30). **Previous plan (archived context):** `plans/2026-06-09-clone-fix-build-plan.md` + `plans/2026-06-09-clone-fix-sign-off-ledger.md` (55-issue tracker, superseded by W3 plan). **Archived (superseded, at `plans/archive/`):** `plans/archive/2026-06-02-container-wrapper-standardisation.md` (5-workstream programme) + `plans/archive/2026-05-28-phase-2-hybrid-block-migration.md` (pixel-diff thread).
+- **Canonical cloning-pipeline spec:** `specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md` (Spec 31)
+- **LIVE canonical cloning plan:** `plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md` — W3 phase-plan (interior-walker wiring + CSS↔content unification, D250, 2026-06-30).
 - **Pipeline overview:** `cloning-pipeline-flow.md` (stage-index + cross-cutting principles); per-stage detail → `cloning-pipeline-stages.md`
 - **Binding methodology rules:** `decisions.md` (search for "binding" + recent D-numbers) — DO NOT restate inline here. Spec 31 §13.1 binding rules: R-31-1 through R-31-15 (R-31-14 added 2026-05-27 per D92 — no legacy fallback hacks in FR-31-6 migrations).
 - **Pipeline-state artefacts:** `specs/21-PIPELINE-STATE-ARTEFACTS.md` (mandatory read before conjecturing about pipeline failures)

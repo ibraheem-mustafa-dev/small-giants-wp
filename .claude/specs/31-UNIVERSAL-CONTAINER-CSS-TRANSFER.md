@@ -13,7 +13,7 @@ pipeline_map: reports/pipeline-routing-map-2026-06-17.html
 
 # ⚠ READ §12 FIRST. As of v0.3 (adversarial-council, Bean-locked) this is a CLEAN MODULAR REBUILD, not a fix-in-place of the legacy converter. §12 supersedes the fix-in-place assumptions in §1 (consolidate-the-8-functions) and §11 (legacy build strategy). §1-§11 remain the canonical ARCHITECTURE (layers, routing, anti-cheat intent); §12 is the corrected BUILD DIRECTION + the Tier-1 foundation the rebuild is sequenced against.
 supersedes: plans/archive/2026-06-16-grid-container-extraction-rebuild-design.md (under-specified earlier draft; archived 2026-06-23)
-absorbs: specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md (merged in full -> §13, D253 2026-06-30; standalone archived at specs/archive/)
+absorbs_spec_22: true  # merged in full -> §13 (D253). R-22-N == R-31-N.
 acceptance_baseline: reports/2026-06-14-clone-vs-draft-defect-register.md (families B/C/D/E/F/K)
 binding_rules: R-31-1, R-31-2, R-31-3, R-31-4, R-31-5, R-31-6, R-31-7, R-31-8, R-31-9, R-31-10, R-31-11, R-31-12, R-31-13, R-31-14, R-31-15  # full set defined in §13.1
 ---
@@ -401,9 +401,9 @@ With Phase F + this map, the stage-by-stage rebuild (§12.6 step 3) proceeds in 
 
 ---
 
-## 13. Absorbed pipeline architecture (ex-Spec 22 — merged 2026-06-30, D253)
+## 13. Pipeline architecture — binding rules, walker, content fork, variant detection
 
-This section absorbs the v1.0-ratified universal block-equivalent extraction architecture (the former Spec 22) so Spec 31 is the **single canonical pipeline spec**. The standalone Spec 22 is archived at `specs/archive/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` (implementation history only). **ID mapping: every `R-22-N` ≡ `R-31-N` and `FR-22-N` ≡ `FR-31-N` (same N).** The IDs were renumbered to the `31` series in this spec, the new `converter/` engine, and active docs; the frozen `convert.py` (D-MODULAR byte-identical) + archived/historical files retain the `22` series — they map 1:1, so any older `R-22-N`/`FR-22-N` citation still resolves.
+The pipeline's binding rules + recognition/walker/content-fork architecture. **ID note:** `R-22-N` ≡ `R-31-N` and `FR-22-N` ≡ `FR-31-N` (same N) — the frozen `convert.py` (D-MODULAR) keeps the `22` series, everything else uses `31`.
 
 ### 13.1 Binding rules (R-31-1 … R-31-15) — the single authoritative list
 
@@ -414,7 +414,7 @@ Every commit on the pipeline is gated by these. (Sibling project-methodology rul
 | **R-31-1** | **DB-first, no hardcoded dicts.** All lookups via DB tables; the only permitted constant is `SKIP_TOP_LEVEL_TAGS` (3 bounded HTML tags: header/footer/nav). Role classification lives in the `roles` table. No Python block/property dicts. |
 | **R-31-2** | **BEM is the only recognition signal** (Spec 00 §3.1). HTML tag is rendering-shape only, except in the bounded atomic-tag-swap exception. |
 | **R-31-3** | **Three permitted walker exceptions, no others** (FR-31-3). A 4th branch needs a spec amendment with empirical justification; a deferred refinement lands as a refinement to the FR-31-4 container-default behaviour or as enrichment of an existing exception, NEVER as a 4th conditional. |
-| **R-31-4** | **Pixel-diff is a per-commit DIAGNOSTIC, not the closing gate.** (DEMOTED from Spec 22's "gates every commit": §7b's live-homepage-vs-draft computed-style check + Bean's eye is the closing gate; pixel-diff mis-scores reflowed/empty sections.) `/sgs-clone --debug-trace` Stage 11 captures pre/post deltas for the commit message. |
+| **R-31-4** | **Pixel-diff is a per-commit DIAGNOSTIC, not the closing gate.** §7b's live-homepage-vs-draft computed-style check + Bean's eye is the closing gate; pixel-diff mis-scores reflowed/empty sections. `/sgs-clone --debug-trace` Stage 11 captures pre/post deltas for the commit message. |
 | **R-31-5** | **Phases never ship as single commits.** A walker/architecture phase splits into ≥3 commits. |
 | **R-31-6** | **Output-only inference is a trap.** Verify mockup HTML AND extract.json AND live DOM at each milestone. |
 | **R-31-7** | **Council fix-shapes are hypotheses, not specs.** Multi-rater proposals require empirical pre/post measurement before subagent dispatch. |
@@ -489,7 +489,3 @@ walk(node, css_rules, is_top_level):
 ```
 
 **Appendix B — `atomic_tag_map()` resolution** (FR-31-3 exception 1): a reverse-walk of `blocks.replaces` (Tier 1) then `html_tag_to_core_block` (Tier 2 shape fallback) maps a bare HTML tag to its block (`h1→sgs/heading`, `img→sgs/media`, `a→core/button`, `blockquote→sgs/quote`, `p→sgs/text`). Tag is shape, context is meaning (R-31-2).
-
-### 13.9 Historical (archived, not load-bearing)
-
-The former Spec 22's implementation history — §5 survives/retires, §7 phases 0–5, §8 cross-doc impact, §10 risks, §11 success criteria, §12 time estimate, §15 council findings (48), §16 ratification gate, and the per-FR `built_status` tags — is **archived with the standalone file**. Current build status is single-sourced via `state.md` + `handoff.md` + §12 of this spec. Retired requirements: FR-31-2.3 (Tier-C derivation, D85), FR-31-9 runtime-oracle role (down-scoped to gap-writing), FR-31-10 (doc-only), FR-31-19 (class-section interior carve-out, superseded by the universal §3.B path; code removal owed).
