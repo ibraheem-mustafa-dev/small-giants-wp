@@ -384,7 +384,35 @@ def _convert_section_body(html: str, css: str, media_map: dict,
     # Full rule + trace events in convert.py:_absorb_transparent_wrappers docstring.
     v3._absorb_transparent_wrappers(root, css_rules)
 
-    block_markup = v3.walk(root, css_rules, variation_buf, depth=0, is_top_level=True) or ""
+    # NEW-ENGINE HYBRID (SGS_NEW_ENGINE=1) — wired for canary testing 2026-06-30
+    # (Bean: "wire the new pipeline to /sgs-clone so we can test it in a real
+    # situation"). Per section: try the modular converter/ engine; use its emit
+    # when the section RECOGNISES to a registered block and produces non-empty WP
+    # markup (currently the composite sections — hero, trust-bar, …), else fall
+    # back to the frozen walk() for the not-yet-built container/pattern sections.
+    # Default (flag UNSET) is 100% the frozen path — unchanged. The new engine
+    # stays inert in production; this opt-in flag is the only way to reach it.
+    import os as _os
+    block_markup = ""
+    if _os.environ.get("SGS_NEW_ENGINE") == "1":
+        try:
+            import sys as _sys
+            from pathlib import Path as _P
+            _scripts = str(_P(__file__).resolve().parents[2])  # …/plugins/sgs-blocks/scripts
+            if _scripts not in _sys.path:
+                _sys.path.insert(0, _scripts)
+            from converter.recognition import recognise as _recognise
+            from converter.services.extraction import build_block_markup as _bbm
+            _rec = _recognise(root)
+            if _rec.slug and _rec.kind != "unrecognised":
+                _new = _bbm(_rec, root, css_rules=css_rules, media_map=media_map or {})
+                if _new and "wp:" in _new:
+                    block_markup = _new
+        except Exception:  # noqa: BLE001 — experimental engine; always fall back to frozen
+            block_markup = ""
+
+    if not block_markup:
+        block_markup = v3.walk(root, css_rules, variation_buf, depth=0, is_top_level=True) or ""
 
     # Universal section-wrapper className guarantee (2026-05-21).
     # The Stage-3 section_id (e.g. "featured-product") is the canonical
