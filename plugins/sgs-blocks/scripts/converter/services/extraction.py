@@ -11,7 +11,9 @@ No block or slot string literals anywhere (scanned by gates/no_slug_literal).
 from __future__ import annotations
 
 import logging
+import pathlib
 import re
+import sqlite3
 from typing import Any
 
 from bs4 import Tag
@@ -39,6 +41,8 @@ from converter.context import (
     ChildBlock,
     ContentConservationError,
     ContentGap,
+    Ctx,
+    Decl,
     Recognition,
     ScalarLift,
 )
@@ -52,12 +56,19 @@ from converter.services.recognise_helpers import bem_element_to_canonical_slot
 from converter.resolvers.scalar_content import lift_scalar_content
 from converter.resolvers.array_content import lift_array_content
 from converter.resolvers.styling_content import lift_styling_content
+from converter.services.styling_helpers import collect_css_decls_for_element
 from orchestrator.converter_v2 import db_lookup
 
 # Emit-glue imports (stage 3 §1 walk/emit — design §1).
 # Imported here so that build_block_markup lives in the same service module.
-from converter.recognition import variant_attrs, recognise
-from converter.orchestrator import emit_block_markup
+from converter.recognition import variant_attrs, recognise, build_ctx
+from converter.orchestrator import emit_block_markup, process_element
+
+# SGS DB path — used to open a read-only connection for the CSS resolver dispatch.
+# Path is relative to the user's home dir (same convention as dev-setup.md).
+_SGS_DB_PATH = (
+    pathlib.Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+)
 
 
 # ---------------------------------------------------------------------------
@@ -150,7 +161,11 @@ def _mobile_suffixes() -> frozenset[str]:
     return frozenset(mobile)
 
 
-def _child_content_for_node(child_node: Any, child_slug: str) -> str:
+def _child_content_for_node(
+    child_node: Any,
+    child_slug: str,
+    css_rules: dict | None = None,
+) -> str:
     """Produce the correct ChildBlock.content string for a resolved child node.
 
     The ChildBlock.content field has a DUAL contract (consumed by build_block_markup
@@ -169,6 +184,9 @@ def _child_content_for_node(child_node: Any, child_slug: str) -> str:
     achieved via a single walk() call (which naturally produced the right output
     for the parent's emit path).
 
+    ``css_rules`` is threaded so the CSS pass (Spec 31 §3.A) fires for child
+    nodes when build_block_markup recurses. Children are non-root (is_root=False).
+
     Returns "" if the child does not recognise or has no content.
     """
     primary_attr = db_lookup.primary_content_attr(child_slug)
@@ -182,13 +200,15 @@ def _child_content_for_node(child_node: Any, child_slug: str) -> str:
         return extract_payload(child_node, role)
     else:
         # InnerBlocks parent: recurse to produce inner block markup.
+        # is_root=False — children are never the section root (layer_detect
+        # must not force OUTER on them, per Spec 31 §3.A / layer_detect MF-3).
         child_rec = recognise(child_node)
         if child_rec.kind == "unrecognised" or child_rec.slug is None:
             return ""
-        return build_block_markup(child_rec, child_node)
+        return build_block_markup(child_rec, child_node, css_rules=css_rules, is_root=False)
 
 
-def run_mechanism_b(rec: Recognition, section_root: Any) -> list:
+def run_mechanism_b(rec: Recognition, section_root: Any, css_rules: dict | None = None) -> list:
     """Mechanism B: faithful port of _route_composite_interior + walk() child-resolution.
 
     PORT SOURCE (read verbatim before any edit):
@@ -316,7 +336,7 @@ def run_mechanism_b(rec: Recognition, section_root: Any) -> list:
                     # _child_content_for_node produces the correct ChildBlock.content:
                     # TEXT for scalar blocks (primary_content_attr set), inner WP markup
                     # for nested InnerBlocks parents (primary_content_attr None).
-                    content = _child_content_for_node(child, child_slug)
+                    content = _child_content_for_node(child, child_slug, css_rules=css_rules)
                     results.append(ChildBlock(slug=child_slug, content=content))
 
                 else:
@@ -331,7 +351,7 @@ def run_mechanism_b(rec: Recognition, section_root: Any) -> list:
                             continue
                         gc_rec = recognise(grandchild)
                         if gc_rec.slug is not None:
-                            gc_content = _child_content_for_node(grandchild, gc_rec.slug)
+                            gc_content = _child_content_for_node(grandchild, gc_rec.slug, css_rules=css_rules)
                             grandchild_results.append(
                                 ChildBlock(slug=gc_rec.slug, content=gc_content)
                             )
@@ -426,7 +446,7 @@ def run_mechanism_b(rec: Recognition, section_root: Any) -> list:
             continue
 
         # Emit ChildBlock. _child_content_for_node picks TEXT or inner markup per block type.
-        content = _child_content_for_node(child, child_slug)
+        content = _child_content_for_node(child, child_slug, css_rules=css_rules)
         results.append(ChildBlock(slug=child_slug, content=content))
 
     # Generic path conservation: every Tag child → ≥1 result.
@@ -614,7 +634,7 @@ def extract_content(
             raise ContentConservationError(
                 "scalar-content-lift block routed to Mechanism B — D212 regression guard"
             )
-        results = run_mechanism_b(rec, section_root)
+        results = run_mechanism_b(rec, section_root, css_rules=css_rules)
         # Case 2 + array arm (D248 fix): a has_inner_blocks=1 composite can ALSO
         # carry array attrs (cta-section.stats, hero.badges, quote.body) alongside
         # its child InnerBlocks. array-content-lift is independent of the D212
@@ -643,6 +663,75 @@ def extract_content(
 
 
 # ---------------------------------------------------------------------------
+# CSS-pass helper — Spec 31 §3.A unification
+# ---------------------------------------------------------------------------
+
+
+def _build_css_attrs(
+    rec: Recognition,
+    node: Any,
+    css_rules: dict,
+    is_root: bool,
+) -> dict:
+    """Run the CSS branch (Spec 31 §3.A) for one node and return the attr dict.
+
+    Steps:
+      1. Build a Ctx from the Recognition + node via the recognition.build_ctx adapter.
+      2. Collect CSS declarations from the node's css_rules via
+         collect_css_decls_for_element → base_decls + bp_decls.
+      3. Assemble a list[Decl] (Base tier first, then breakpoint tiers).
+      4. If non-empty, dispatch through process_element and return result.attrs().
+      5. If empty (no css_rules matched), return {} — no crash, exact prior behaviour.
+
+    Conservation errors from process_element PROPAGATE (never swallowed) — a
+    leaked/unrouted declaration must fail loud (Rule 4 / STOP-27).
+
+    Opens a read-only SQLite connection to the SGS DB per call.  The connection
+    is opened with check_same_thread=False and closed in a finally block so it
+    is always released even when process_element raises.
+
+    Returns {} when:
+      - css_rules is empty / no rules matched the node, OR
+      - the DB file does not exist (test environments without the real DB).
+    This keeps the pre-existing content-only behaviour as the no-CSS-rules
+    fallback — no regression for callers that omit css_rules.
+    """
+    if rec.slug is None:
+        return {}
+
+    # Open DB connection (read-only; tests that mock db_lookup don't need the file).
+    conn: sqlite3.Connection | None = None
+    try:
+        if _SGS_DB_PATH.exists():
+            conn = sqlite3.connect(str(_SGS_DB_PATH), check_same_thread=False)
+        else:
+            # DB absent (CI / test environment) — CSS pass is a no-op.
+            return {}
+
+        ctx = build_ctx(rec, node, is_root=is_root, conn=conn)
+
+        base_decls, bp_decls = collect_css_decls_for_element(node, css_rules)
+
+        decls: list[Decl] = [
+            Decl(property=prop, value=val, tier="Base")
+            for prop, val in base_decls.items()
+        ]
+        for bp_suffix, tier_decls in bp_decls.items():
+            for prop, val in tier_decls.items():
+                decls.append(Decl(property=prop, value=val, tier=bp_suffix))
+
+        if not decls:
+            return {}
+
+        result = process_element(ctx, decls)
+        return result.attrs()
+
+    finally:
+        if conn is not None:
+            conn.close()
+
+
+# ---------------------------------------------------------------------------
 # Emit glue — Stage 3 §1 walk/emit (design §1)
 # ---------------------------------------------------------------------------
 
@@ -652,25 +741,55 @@ def build_block_markup(
     section_root: Any,
     media_map: dict | None = None,
     css_rules: dict | None = None,
+    is_root: bool = True,
 ) -> str:
     """Assemble native WP block markup from extraction results.
 
-    Combines variant attrs (e.g. {'variant': 'split'}) with every ScalarLift
-    into the parent block's attr dict, then wraps any ChildBlocks as inner
-    block markup.  ContentGaps contribute nothing to the emit — they are the
-    tracked-not-transferred record.
+    Implements the Spec 31 §3 ONE-dispatch unification: CSS attrs (§3.A) and
+    content attrs (§3.B) both write into the SAME emitted block attrs dict.
 
-    ``css_rules`` is threaded to ``extract_content`` for the CSS-on-content
-    (styling) leg of the Spec 31 §3 universal stream. Defaults to ``{}``.
+    Merge order (Spec 31 §3 — content wins on collision):
+      1. variant attrs     (e.g. {'variant': 'split'})
+      2. CSS attrs         from _build_css_attrs → process_element → Write.attrs()
+      3. content ScalarLifts from extract_content (overwrite CSS on same key)
+
+    The COLLISION guard inside process_element hard-fails two CSS declarations
+    targeting the same attr, so step-2 is already internally collision-free.
+    A genuine cross-branch collision (CSS Write + content ScalarLift on the same
+    attr key) is intentional: content is the ground-truth value, CSS is the
+    layout floor — content wins.  If the orchestrator's COLLISION guard fires
+    within the CSS branch itself, it propagates as ConservationError (never
+    swallowed, Rule 4 / STOP-27).
+
+    ``is_root``: True for the section root (layer_detect → OUTER); False for
+    every child node (layer_detect → CONTENT/GRID per the node's own decls).
+    The recursion seam ``_child_content_for_node`` passes is_root=False so
+    the CSS pass is universal — it fires for the section AND every child.
+
+    ``css_rules`` is threaded to both the CSS pass and ``extract_content``
+    (the CSS-on-content / styling leg). Defaults to ``{}`` — a safe no-op
+    that preserves the pre-existing content-only behaviour when no css_rules
+    are provided.
 
     Design ref: `.claude/plans/2026-06-26-stage3-child-shape-fork-design.md` §1.
     No block or slot string literals (scanned by gates/no_slug_literal).
     """
-    results = extract_content(rec, section_root, media_map, css_rules)
-    attrs: dict = dict(variant_attrs(rec))  # variant attrs first (e.g. {'variant': 'split'})
-    for r in results:
+    _css_rules = css_rules or {}
+
+    # §3.A — CSS pass: route every CSS declaration through the resolver dispatch.
+    # Returns {} when css_rules is empty / DB absent (safe no-op).
+    css_attrs: dict = _build_css_attrs(rec, section_root, _css_rules, is_root)
+
+    # §3.B — Content pass: ScalarLifts + ChildBlocks + ContentGaps.
+    results = extract_content(rec, section_root, media_map, _css_rules)
+
+    # Assemble the final attr dict: variant → CSS → content (content wins collision).
+    attrs: dict = dict(variant_attrs(rec))   # step 1: variant attrs
+    attrs.update(css_attrs)                  # step 2: CSS Writes (OUTER box/grid/etc.)
+    for r in results:                        # step 3: content ScalarLifts overwrite
         if isinstance(r, ScalarLift):
             attrs[r.attr] = r.value
+
     def _child_markup(cb: ChildBlock) -> str:
         attr = db_lookup.primary_content_attr(cb.slug)
         if attr:
