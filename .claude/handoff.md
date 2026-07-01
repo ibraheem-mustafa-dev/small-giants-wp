@@ -5,7 +5,45 @@ thread: cloning-pipeline / FR-31-4 container-default BUILT + LANDED + Bean-revie
 session_date: 2026-07-01
 ---
 
-# Session Handoff — 2026-07-01 (FR-31-4 sgs/container DEFAULT built + LANDED on page 8 + Bean-review #1/#2 fixed — D254)
+# Session Handoff — 2026-07-01 LATE (Spec 31 → UNIVERSAL-CLONING-PIPELINE rewrite + rename + cheat-gate coverage; §2 build teed up)
+
+## What this session actually established (diagnosis — supersedes the #3-7 framing below)
+The Bean-review defects #3-7 are NOT five separate patches. Deep source-verified investigation (systematic-debugging + ~6 read-only Explore/council agents + live page-8 + block.json/save.js/render.php/DB ground truth) collapsed them into ONE root cause: **the new engine never got the name-free layer-extraction system.** Corrections proven along the way:
+- **Media-map is already wired + working** (hero images remap to WP URLs); images vanish because the *containers holding them* are dropped, not the map.
+- **DB capabilities are NOT the cause** — the converter DERIVES `has_inner_blocks` fresh from save.js+render.php (`has_inner.py:115`); product-card/trust-bar cloned fine in the frozen engine on the same DB.
+- **The atomic element→block mappings already exist** (`blocks.replaces`: p→sgs/text, h4→sgs/heading, a→sgs/button, img→sgs/media, blockquote→sgs/quote).
+- **The real gap:** `_descend_container_children` (extraction.py:302-345) blindly unwraps every wrapper; the CSS-fold "conductor" is unwired (TODO-only). §2 of the spec is the target.
+
+## The canonical model (Bean-taught, clarity-verified) — now Spec 31 §2
+- **One recursive stream**, section by section, content + CSS TOGETHER (not the frozen engine's separate routes).
+- **Container-equivalent blocks** (DB `container_kind` + `wraps_block`) at BOTH section-class AND div-class levels, treated identically. No class-section/div-section carve-out.
+- **Per node:** recognise BEM → **variant lookup at recognition** (can set grid-or-not/slots; hero `split`, product-card `featured`/`trial`) → layer decomposition → content, same pass.
+- **Layers (name-free, CSS signature):** OUTER / CONTENT (`max-width`+`margin:auto`) / ARRANGEMENT (`display:grid`|`flex` on the direct parent of items) / PER-ITEM (`gridItem*`).
+- **Recursive fold:** a SOLE pass-through child folds in (content-band and/or arrangement CSS); a SIBLING'D child or one with block identity recurses as its OWN container. **Grid-item test first:** direct children of a `display:grid`/`flex` element are grid items → InnerBlocks + per-property uniform box-CSS → `gridItem*` (NOT the fold/recurse test).
+
+## Completed + COMMITTED this session
+1. **Spec 31 renamed `31-UNIVERSAL-CONTAINER-CSS-TRANSFER` → `31-UNIVERSAL-CLONING-PIPELINE` + new canonical §2 core chapter** (`c28a0086`). Authored by me, VERIFIED across 2 adversarial clarity-council rounds (fresh-implementer / pedantic-literalist / deliberate-misreader / plain-English) — all misreads closed. Old §2 axes preserved as §2.9; §3/§13 defer to §2; 17 cross-refs swept; Spec 22 stub relinked. This is the "never-explain-again" durable blueprint.
+2. **Cheat-gate coverage on `converter/`** (`ab947ea3`). Checks #1/#2 (slug-literal + hardcoded-dict) now scan the new `converter/` tree (was a blind spot); whole-file allowlist for db_lookup/icon_resolver; bare-`sgs/` namespace-guard exempt; plant-tested (fires on real cheats, silent on docstrings+guards); 304 tests, gate exit 0. Arms the gate BEFORE the §2 build lands in converter/.
+3. **Build-design doc:** `.claude/reports/2026-07-01-build-design-layer-extraction-slice.md` (the build plan, port-refs, cheat-strip list).
+
+## THE BUILD (next — the highest-regression walker rewrite; do it INLINE, not via coding subagents)
+Wire §2 into the new engine's single stream, universal across the `container_kind` roster.
+- **First vertical slice = LAND the BRAND section** (D242): `.sgs-brand` root grid → 2 grid items (`__content` w/ heading+quote-paragraphs+cta, `__image`). Build the GENERAL §2 mechanism, prove it by LANDING brand on page 8, then confirm gift/social-proof/ingredients/featured-product land too.
+- **Port-refs (frozen convert.py, READ-TO-PORT the logic, adapt to single stream, STRIP cheats):** `_process_container_children` (fold gate), `_detect_content_layer`, `_grid_item_areas`, `_merge_grid_attrs_into_container`, `_lift_uniform_grid_item_css`, `_route_interior_css_to_parent_slot`. Cheats to strip: `'sgs/container'`/`'sgs/multi-button'` literals → `db_lookup`; hardcoded sets → DB; verify `breakpoint_suffix_rules()` tuple shape.
+- **Target files:** `converter/services/extraction.py` (`_descend_container_children` → §2 recursive fold + grid-item test), new arrangement/CSS-lift + gridItem* helpers, `field_extractors.py`. DB-driven, no per-block branches.
+- **Gates:** cheat-gate green (armed) + `/qc-council` on BUILT code (STOP-23) + LANDED verify page 8 (computed-style/innerText 375/768/1440 + draft-vs-clone + Bean eye — R-31-11/13) + hero/trust-bar regression diff. Design-gate: §2 IS the vetted blueprint → build + qc-council-on-built-code (no new pre-build council).
+
+## Current State
+- **Branch:** main. Commits this session: `c28a0086` (spec) + `ab947ea3` (cheat-gate). The 9 EARLIER D254 commits (`c2105981`→`4e35522d`) still on main, NOT pushed (pending Bean sign-off on #3-7 — now the §2 build). D-ceiling D254 (no new D-number added this session; the §2 rewrite could warrant a D255 in decisions.md next session).
+- **Tests:** 304 pass + cheat-gate exit 0. convert.py byte-identical (D-MODULAR).
+- **Uncommitted (NOT mine):** `phase-W3` plan (WIP), `lucide-icons.php` (npm drift), + my untracked `build-design` report.
+
+## Known issues / notes for next session
+- **A subagent reverted `sites/mamas-munches/theme-snapshot.json`** (a pre-existing not-mine dirty file) — its change is lost (not recoverable). Flagged to Bean.
+- **CODING SUBAGENTS CASCADE-FAIL in this environment** (STOP-39, new): a write/coding Agent returns a placeholder "running in the background, I'll relay results", does no work, and spawns more of itself (~94K tokens each). Read-only analysis/council agents work fine. DO THE BUILD INLINE. If a coding subagent is unavoidable, brief it "do the work yourself; do NOT spawn agents" + foreground + verify its edits yourself (one DID eventually complete correctly with that instruction, but only after a chaotic cascade).
+- The §2 build is teed up from a committed, clarity-verified blueprint — start clean.
+
+
 
 ## Completed This Session
 1. **FR-31-4 sgs/container DEFAULT (`c2105981`) — the #1 engine unblock.** The new engine now defaults a slug-None class-section to `sgs/container` + recurse-descends its children (was: `unrecognised`, emitted nothing). New `db_lookup.container_default_slug()` (DB-derived, no slug literal), `recognition.recognise_section()` (only defaults a GENUINE no-match; ambiguous tie stays loud), `extraction.run_container_default()`/`_descend_container_children()` (recurse through `__inner` wrappers to grandchildren; text-leaf→text-capable block; conservation `raise` on empty). **New engine clones 2/9 -> 9/9 Mama's homepage sections.**

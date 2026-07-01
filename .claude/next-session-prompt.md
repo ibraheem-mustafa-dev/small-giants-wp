@@ -1,18 +1,22 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: cloning-pipeline / new-engine LANDED — Bean-review defects #3-7 (A1 media-map first)
-generated: 2026-07-01
-primary_goal: "The new engine now clones a FULL Mama's homepage (2/9->9/9) + full-width + chrome-skip, LANDED on sandybrown page 8. Bean's page-8 eye-review (R-31-13) surfaced 5 remaining defects. NEXT = fix them, biggest first: #3 A1 MEDIA-MAP not wired (only hero img + trust icons show — the new engine accepts media_map but never remaps <img src> to uploaded WP URLs), then #5/#6 composite fidelity (trust-bar spurious all-caps column; product-card renders as text not sgs/product-card), then #4/#7 (hero split variant on desktop; ingredient card content). Each is a root-cause investigation on the highest-regression surface — design-gate + LANDED-verify per section."
+thread: cloning-pipeline / BUILD the §2 layer-extraction system into the walker
+generated: 2026-07-01 (LATE — supersedes the #3-7 framing)
+primary_goal: "Bean-review defects #3-7 collapsed (diagnosis, 2026-07-01 late) into ONE root cause: the new engine never got the name-free layer-extraction system. That system is now the canonical, clarity-verified Spec 31 §2 (committed c28a0086). The cheat-gate is armed on converter/ (committed ab947ea3). NEXT = BUILD §2 into the new engine's single content+CSS stream, universal across the container_kind roster. First vertical slice: LAND the BRAND section on page 8 (root grid → 2 grid items, quote paragraphs, image), then confirm gift/social-proof/ingredients/featured-product land. Do it INLINE (coding subagents cascade-fail here — STOP-39). The AUTHORITATIVE build plan + port-refs + the corrected diagnosis are in handoff.md (top entry) + reports/2026-07-01-build-design-layer-extraction-slice.md."
 ---
 
-# Next session — new engine is LANDED; close the Bean-review fidelity defects #3-7 (A1 media-map first)
+# Next session — BUILD the §2 layer-extraction system (read handoff.md top entry for the plan)
 
 Invoke `/autopilot` before anything else.
 
-**Agent identity.** You are the SGS cloning-pipeline engineer. The new converter engine now clones a full homepage (all 9 sections), full-width and chrome-skip are correct, and it is LANDED on the sandybrown homepage (page 8). Your job: close the 5 fidelity defects Bean's eye caught — starting with wiring the A1 media-map so images actually migrate, then the composite-recognition/extraction gaps.
+**Agent identity.** You are the SGS cloning-pipeline engineer. The canonical pipeline mechanism is now Spec 31 §2 (`specs/31-UNIVERSAL-CLONING-PIPELINE.md`) — the recursive single content+CSS stream, name-free layer decomposition, recursive fold, grid-item test, variant-at-recognition. Your job: build it into the new engine (`converter/services/extraction.py`), first LANDING the brand section, then the other container-default sections.
 
-**State recap (plain English).** A "class-section" is a top-level page section (`<section class="sgs-hero">`, `<section class="sgs-brand">`, …). The new engine (behind `SGS_NEW_ENGINE=1`, opt-in; prod default = frozen convert.py) now: recognises every section (composites like hero/trust-bar directly; everything else defaults to `sgs/container`+recurse-descend children, FR-31-4); emits full-bleed `align:"full"` for no-max-width sections UNIVERSALLY (container + composites, gated on `block_supports.align`); and chrome-skips header/footer/nav. It LANDED on page 8. **What's still wrong (Bean's eye):** images barely migrate (A1 media-map not wired — #3), and 4 composite-fidelity gaps (#4 hero split, #5 trust-bar extra column, #6 product-card→text, #7 ingredient cards empty). D-ceiling D254; branch main; 6 commits `c2105981`->`7d694a54` NOT pushed (pending Bean sign-off).
+> **⛔ THE #3-7 ORCHESTRATION PLAN LATER IN THIS DOC IS SUPERSEDED.** This session's diagnosis proved #3-7 are ONE root cause (the §2 layer-extraction system, unbuilt in the new engine), not five patches. Read **handoff.md (top entry) → "THE BUILD"** for the authoritative plan + port-refs + acceptance, and **Spec 31 §2 IN FULL** as the blueprint. The 7 RULES + PRE-FLIGHT RITUAL + STOP CATALOGUE below STILL APPLY verbatim (plus STOP-39 added this session).
+
+**STOP-39 (NEW, 2026-07-01 late) — CODING SUBAGENTS CASCADE-FAIL in this environment.** A write/coding Agent returns a placeholder "running in the background, I'll relay results", does no real work, and spawns more of itself (~94K tokens each). Read-only analysis/council/Explore agents work fine. **DO THE BUILD INLINE.** If a coding subagent is truly needed: foreground only, brief it "do the work yourself; do NOT spawn agents", and VERIFY its edits + tests + plant-tests yourself from the canonical cwd (STOP-16) — one eventually completed correctly under that instruction, but only after a chaotic cascade that reverted an unrelated dirty file.
+
+**State recap (plain English).** Spec 31 §2 is the committed, clarity-verified blueprint. The cheat-gate now covers `converter/`. The build is the highest-regression walker rewrite — grounded in §2 + the frozen port-refs (read-to-port the logic, strip the cheats). First slice = LAND brand. Branch main; 2 new commits this session (`c28a0086` spec, `ab947ea3` cheat-gate) + the 9 earlier D254 commits, all NOT pushed (pending Bean sign-off on the §2 build landing the sections). D-ceiling D254.
 
 ---
 
