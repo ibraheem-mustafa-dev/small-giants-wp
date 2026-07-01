@@ -81,7 +81,10 @@ def test_conservation_total_and_no_unrouted(conn):
 def test_emit_produces_maxwidth_block_markup(conn):
     result = process_element(_ctx(conn), _rt_decls())
     markup = emit_block_markup("sgs/container", result.attrs())
-    assert markup == '<!-- wp:sgs/container {"maxWidth":"1200px"} --><!-- /wp:sgs/container -->'
+    # No inner content → SELF-CLOSING form (WP save=null dynamic-block contract;
+    # open+close fails block validation and drops the section on the rendered page —
+    # wired-pipeline LANDED fix #2, 2026-07-01).
+    assert markup == '<!-- wp:sgs/container {"maxWidth":"1200px"} /-->'
 
 
 # ---------------------------------------------------------------------------

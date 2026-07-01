@@ -180,4 +180,11 @@ def emit_block_markup(
     # touches only the opening comment. (Wired-pipeline LANDED bug, 2026-07-01.)
     if inner:
         return f"{open_comment}\n{inner}\n<!-- /wp:{name} -->"
-    return f"{open_comment}<!-- /wp:{name} -->"
+    # No inner content → SELF-CLOSING (`/-->`), not open+close. WP block validation
+    # REJECTS the open+close form for a block whose save() returns null (all dynamic
+    # SGS blocks: sgs/media, sgs/icon, sgs/button, sgs/text, …) — an invalid block
+    # cascades and silently drops the whole section on the rendered page. Mirrors the
+    # frozen db_lookup._emit_wp_block_markup self-close contract. (Wired-pipeline
+    # LANDED bug #2, 2026-07-01 — found by the canary render, not unit tests.)
+    self_close = f"<!-- wp:{name} {attr_json} /-->" if attrs else f"<!-- wp:{name} /-->"
+    return self_close
