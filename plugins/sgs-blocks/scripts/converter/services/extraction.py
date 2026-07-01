@@ -683,12 +683,27 @@ def run_mechanism_b(rec: Recognition, section_root: Any, css_rules: dict | None 
         if child_slug is None and csgs:
             child_slug = db_lookup.resolve_slug_from_bem(csgs)
 
+        # G-atomic: a BARE content tag (a <p> body paragraph, an <h4>, …) carries no
+        # parent-scoped token and no sgs class, so G1 + global-BEM both miss — but it is
+        # real CONTENT, not a gap. Fall back to recognise(), which resolves an atomic tag
+        # to its block (p->sgs/text, h2->sgs/heading, img->sgs/media — §2.6 / Spec 31
+        # §3.B.0 universal element extraction: the same tag becomes a child block by
+        # context) or an sgs-element to its scalar slot. UNIVERSAL (R-31-9): every
+        # InnerBlocks parent (quote, info-box, notice-banner, accordion, …) lands its
+        # bare content children instead of dropping them (the brand-quote body drop —
+        # Layer A, diagnosed 2026-07-01). Only a genuine unrecognised node still gaps.
+        if child_slug is None:
+            fb = recognise(child)
+            if fb.slug is not None and fb.kind != "unrecognised":
+                child_slug = fb.slug
+
         if child_slug is None:
             # No resolution → ContentGap (convert.py:4517-4527 emits a wrapper container;
             # here the new engine gaps instead of emitting an anonymous container).
             results.append(ContentGap(
                 _label(child),
-                "generic child has no resolvable slug (G1 and global BEM lookup both missed)",
+                "generic child has no resolvable slug (G1, global BEM, and atomic-tag "
+                "recognition all missed)",
             ))
             continue
 

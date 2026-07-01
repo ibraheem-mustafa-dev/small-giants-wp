@@ -27,6 +27,82 @@ from orchestrator.converter_v2 import db_lookup
 
 
 # ---------------------------------------------------------------------------
+# Bare-tag fallback (Layer B front-load, 2026-07-01) — Spec 31 §3.B.0 / §2.6
+# ---------------------------------------------------------------------------
+# The SAME content tag becomes a nested child block (in an InnerBlocks parent) OR a
+# block's BUILT-IN scalar element (in a typed block) — recognised + lifted by the SAME
+# shared machinery (§3.B.0). Mechanism A matches a built-in element by its class-based
+# derived_selector; a real draft often carries that content as a BARE tag with no BEM
+# class (e.g. `<h4>Oats</h4><p>Rich in iron</p>` in the ingredients cards, bare `<p>`s
+# in the brand quote). This maps an attr's BEM element token to the tag set that
+# atomic-represents the same content, fully DB-driven (block_for_slot_token +
+# atomic_tag_map — no literal map, R-31-1), so a bare tag lifts into its built-in
+# element. Universal over every scalar-content-lift block (R-31-9); fallback-ONLY (it
+# fires only when the class selector matched nothing, so well-classed drafts are
+# unchanged).
+
+
+def _reverse_atomic_tag_map() -> dict[str, list[str]]:
+    """block slug -> the HTML tags that atomic-map to it (reverse of atomic_tag_map)."""
+    rev: dict[str, list[str]] = {}
+    for tag, blk in db_lookup.atomic_tag_map().items():
+        rev.setdefault(blk, []).append(tag)
+    return rev
+
+
+def _candidate_bare_tags(selector: str) -> set[str]:
+    """The bare HTML tags that carry the same content as ``selector``'s built-in element.
+
+    Chain (all DB-driven): each comma-separated BEM class -> its element token ->
+    ``block_for_slot_token`` (the slot's block, e.g. heading->sgs/heading,
+    description->sgs/text) -> reverse ``atomic_tag_map`` (sgs/heading->{h1..h6},
+    sgs/text->{p}, sgs/media->{img,video,iframe}). A multi-segment token (e.g.
+    ``sub-heading``) falls back to its tail segment (``heading``).
+    """
+    rev = _reverse_atomic_tag_map()
+    tags: set[str] = set()
+    for part in selector.split(","):
+        cls = part.strip().lstrip(".")
+        if not cls:
+            continue
+        bem = db_lookup.parse_sgs_bem(cls)
+        token = bem.element if bem else None
+        if not token:
+            continue
+        blk = db_lookup.block_for_slot_token(token)
+        if blk is None:
+            for seg in reversed(token.split("-")):
+                blk = db_lookup.block_for_slot_token(seg)
+                if blk:
+                    break
+        if blk is not None:
+            tags.update(rev.get(blk, []))
+    return tags
+
+
+def _match_bare_tag(node: Tag, selector: str, consumed: set[int]) -> Tag | None:
+    """Find the first UNCONSUMED bare (no sgs- class) descendant tag of the candidate
+    type for ``selector``, in document order. Returns None when none is available.
+
+    "Bare" = the element carries no ``sgs-`` class of its own — it is loose content
+    belonging to the block, not a separately-recognised sub-element. Consume-once
+    (via ``consumed`` = a set of ``id()``) stops two text attrs claiming the same
+    paragraph.
+    """
+    candidates = _candidate_bare_tags(selector)
+    if not candidates:
+        return None
+    for el in node.find_all(list(candidates)):
+        if not isinstance(el, Tag) or id(el) in consumed:
+            continue
+        classes = el.get("class") or []
+        if any(isinstance(c, str) and c.startswith("sgs-") for c in classes):
+            continue  # a recognised sub-element, not loose content
+        return el
+    return None
+
+
+# ---------------------------------------------------------------------------
 # Faithful port of _lift_scalar_attrs_by_selector (convert.py:3781)
 # ---------------------------------------------------------------------------
 
@@ -78,6 +154,7 @@ def lift_scalar_content(node: Tag, slug: str, media_map: dict) -> dict:
 
     lifted: dict = {}
     lifted_rating_positive = False
+    consumed_bare: set[int] = set()  # id() of bare tags already claimed (fallback path)
     for attr_name, info in catalogue.items():
         if not isinstance(info, dict):
             continue
@@ -115,7 +192,14 @@ def lift_scalar_content(node: Tag, slug: str, media_map: dict) -> dict:
                 break
             element = None
         if element is None:
-            continue  # no class matched → emit no key (grid no-op / absent draft elem)
+            # BARE-TAG FALLBACK (§3.B.0 / §2.6): the class selector matched nothing, but
+            # the draft may carry this content as a bare tag (no BEM class). Claim the
+            # first unconsumed bare tag of the DB-derived candidate type. Fallback-ONLY,
+            # so a well-classed draft never reaches here (element already set above).
+            element = _match_bare_tag(node, selector, consumed_bare)
+            if element is None:
+                continue  # no class AND no bare tag → emit no key (strict no-op floor)
+            consumed_bare.add(id(element))
 
         if is_text:
             # Delegate to shared field_extractors (Spec 31 §3.B.0 shared lib).
