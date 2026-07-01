@@ -26,8 +26,17 @@ The Bean-review defects #3-7 are NOT five separate patches. Deep source-verified
 2. **Cheat-gate coverage on `converter/`** (`ab947ea3`). Checks #1/#2 (slug-literal + hardcoded-dict) now scan the new `converter/` tree (was a blind spot); whole-file allowlist for db_lookup/icon_resolver; bare-`sgs/` namespace-guard exempt; plant-tested (fires on real cheats, silent on docstrings+guards); 304 tests, gate exit 0. Arms the gate BEFORE the §2 build lands in converter/.
 3. **Build-design doc:** `.claude/reports/2026-07-01-build-design-layer-extraction-slice.md` (the build plan, port-refs, cheat-strip list).
 
-## THE BUILD (next — the highest-regression walker rewrite; do it INLINE, not via coding subagents)
-Wire §2 into the new engine's single stream, universal across the `container_kind` roster.
+## THE BUILD (next — TWO workstreams, done first/parallel so one combined page-8 review shows everything)
+Bean-directed sequencing (2026-07-01 late): run **WS-B (block rebuilds) first or in parallel with WS-A (§2)** so that when we LANDED-verify after §2, the review shows BOTH the faithful content/CSS extraction AND the element-based blocks together — one comprehensive sign-off, not two.
+
+**WS-B — rebuild composites to element-based (block-dev; doesn't need pipeline context; via `wp-sgs-developer` specialist agent per-block OR inline — NOT general-purpose coding subagents, STOP-39):**
+- **info-box** — InnerBlocks → element. Its scalar attrs already exist in block.json (`heading`/`description`/`subtitle`/`icon`/`mediaType`/`mediaEmoji`, role:content); wire render.php to read them (drop `$content`), edit.js inspector controls, `save.js`→null, `deprecated.js` for the InnerBlocks shape, version bump, `npm run build`.
+- **notice-banner** — element-based text + **add an optional button element** (toggle on/off + full button customisation via the shared button controls).
+- **quote** — paragraphs → text elements (+ attribution element, already scalar); no InnerBlocks children.
+- **product-card** — ALREADY element-based (Spec 27 FP-H); no rebuild — §2 scalar-lifts it.
+Each: no dead controls (HC2 guard); existing posts migrate via deprecation with zero "invalid block". After rebuild, the converter's `derive_has_inner_blocks` returns 0 for these → §2 scalar-lifts them automatically.
+
+**WS-A — wire §2 into the new engine's single stream, universal across the `container_kind` roster (highest-regression; INLINE).**
 - **First vertical slice = LAND the BRAND section** (D242): `.sgs-brand` root grid → 2 grid items (`__content` w/ heading+quote-paragraphs+cta, `__image`). Build the GENERAL §2 mechanism, prove it by LANDING brand on page 8, then confirm gift/social-proof/ingredients/featured-product land too.
 - **Port-refs (frozen convert.py, READ-TO-PORT the logic, adapt to single stream, STRIP cheats):** `_process_container_children` (fold gate), `_detect_content_layer`, `_grid_item_areas`, `_merge_grid_attrs_into_container`, `_lift_uniform_grid_item_css`, `_route_interior_css_to_parent_slot`. Cheats to strip: `'sgs/container'`/`'sgs/multi-button'` literals → `db_lookup`; hardcoded sets → DB; verify `breakpoint_suffix_rules()` tuple shape.
 - **Target files:** `converter/services/extraction.py` (`_descend_container_children` → §2 recursive fold + grid-item test), new arrangement/CSS-lift + gridItem* helpers, `field_extractors.py`. DB-driven, no per-block branches.
