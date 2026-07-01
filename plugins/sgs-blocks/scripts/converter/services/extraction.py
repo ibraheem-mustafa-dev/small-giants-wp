@@ -16,7 +16,7 @@ import re
 import sqlite3
 from typing import Any
 
-from bs4 import Tag
+from bs4 import NavigableString, Tag
 
 # ---------------------------------------------------------------------------
 # Content-noun / styling-suffix regexes for expected_content_gaps (FIX 3).
@@ -218,8 +218,166 @@ def _child_content_for_node(
     )
 
 
+def _emit_content_leaf(node: Any, css_rules: dict | None, media_map: dict | None) -> tuple[str | None, str]:
+    """Emit a slug-None text-leaf as its ladder-target CONTENT block (FR-31-4.1 #5).
+
+    A text-only sgs-classed node is CONTENT, never a `sgs/container` wrapping raw
+    text (which fails WP block validation). Target ladder (port of
+    text_leaf.route_text_leaf's target selection, DB-driven / no slug literal):
+      (a) the node's OWN tag via atomic_tag_map (h2->heading, p->text, …);
+      (b) else a text-capable BEM-element hyphen-segment (tail-first);
+      (c) else the DB default text block (`standalone_block_for('text')`).
+    The content itself lands via build_block_markup -> run_mechanism_leaf (the
+    leaf lifts its own element text). The leaf's own typography/colour CSS lift is
+    DEFERRED to Step-7 (scope A: content now, interior CSS-fold later).
+
+    Returns (target_slug, markup) or (None, "") when no text-capable target exists.
+    """
+    from converter.services.text_leaf import is_text_capable_block
+
+    # A text-leaf with no text AND no image has nothing to lift — return a gap
+    # signal (caller emits ContentGap) rather than manufacturing an EMPTY sgs/text
+    # ChildBlock, which would falsely satisfy the run_container_default conservation
+    # guard (STOP-27 empty-container masking — QC correctness finding 3, 2026-07-01).
+    if not node.get_text(strip=True) and node.find("img") is None:
+        return None, ""
+
+    target: str | None = db_lookup.atomic_tag_map().get(getattr(node, "name", None))
+    # Rung (a) is text-CAPABILITY gated (matching rung (b)): the node's own tag must
+    # map to a text-capable block. An <a>/<hr> text-leaf must NOT emit core/button /
+    # core/separator (a non-text block carrying no readable content, STOP-23 — QC
+    # correctness finding 2). Non-text-capable → fall through to (b)/(c) -> sgs/text.
+    if target is not None and not is_text_capable_block(target):
+        target = None
+    if target is None:
+        sgs = [c for c in (node.get("class", []) or [])
+               if isinstance(c, str) and c.startswith("sgs-")]
+        for cls in sgs:
+            bem = db_lookup.parse_sgs_bem(cls)
+            if bem and bem.element:
+                for seg in reversed(bem.element.split("-")):
+                    cand = db_lookup.block_for_slot_token(seg)
+                    if cand and is_text_capable_block(cand):
+                        target = cand
+                        break
+            if target:
+                break
+    if target is None:
+        target = db_lookup.standalone_block_for("text")
+    if target is None:
+        return None, ""
+
+    leaf_rec = recognition_for_slug(target, node)
+    if leaf_rec.slug is None or leaf_rec.kind == "unrecognised":
+        return None, ""
+    markup = build_block_markup(
+        leaf_rec, node, css_rules=css_rules, is_root=False, media_map=media_map
+    ) or ""
+    return (target, markup) if markup else (None, "")
+
+
+def _descend_container_children(
+    parent: Any, results: list, css_rules: dict | None, media_map: dict | None
+) -> None:
+    """FR-31-4.1 recurse-descent for a default `sgs/container` section.
+
+    Per direct child (Spec 31 §13.2 FR-31-4.1 precedence, CONTENT leg):
+      1. recognise() resolves a block (named/atomic/scalar) -> emit ChildBlock
+         (recurse its own content via _child_content_for_node).
+      2. slug-None + text-leaf -> emit its ladder-target CONTENT block (never a
+         container wrapping raw text — precedence #5).
+      3. slug-None wrapper WITH element children (the `__inner` shells) -> DESCEND
+         (unwrap): its real content is grandchildren/great-grandchildren. Also
+         covers FR-31-11 non-sgs transparent pass-through.
+      4. slug-None leaf with no content/children -> tracked ContentGap.
+
+    Recursion re-enters via the UNCHANGED recursive ``recognise()`` (never
+    ``recognise_section``), so a nested slug-None wrapper resolves the same way
+    and a text leaf terminates as a content block — termination holds on the
+    finite DOM. Interior wrapper LAYOUT CSS-fold (grid/flex -> parent attrs) is
+    OUT OF SCOPE here (Step-7 conductor owns it, scope A).
+    """
+    from converter.services.text_leaf import node_is_text_leaf
+
+    for child in parent.children:
+        if not isinstance(child, Tag):
+            # Loose (non-Tag) text directly under the container is real content —
+            # track it as a ContentGap rather than silently dropping it (Rule 4 —
+            # QC correctness finding 1, 2026-07-01). Whitespace-only is ignored.
+            if isinstance(child, NavigableString) and child.strip():
+                results.append(ContentGap(
+                    _label(parent),
+                    f"loose text {child.strip()[:40]!r} directly under the container "
+                    "was not routed to a content block",
+                ))
+            continue
+        child_rec = recognise(child)
+        if child_rec.slug is not None and child_rec.kind != "unrecognised":
+            content = _child_content_for_node(
+                child, child_rec.slug, css_rules=css_rules, media_map=media_map
+            )
+            if content:
+                results.append(ChildBlock(slug=child_rec.slug, content=content))
+            else:
+                results.append(ContentGap(
+                    _label(child),
+                    f"resolved child {child_rec.slug!r} produced no markup",
+                ))
+            continue
+
+        csgs = [c for c in (child.get("class", []) or [])
+                if isinstance(c, str) and c.startswith("sgs-")]
+        if csgs and node_is_text_leaf(child):
+            tslug, markup = _emit_content_leaf(child, css_rules, media_map)
+            if markup:
+                results.append(ChildBlock(slug=tslug, content=markup))
+            else:
+                results.append(ContentGap(
+                    _label(child), "text-leaf produced no content block"))
+        elif child.find(True) is not None:
+            # slug-None wrapper (sgs `__inner` OR transparent non-sgs) with element
+            # children — descend/unwrap to reach the real content below it.
+            _descend_container_children(child, results, css_rules, media_map)
+        else:
+            results.append(ContentGap(
+                _label(child),
+                "slug-None node with no recognisable content or child elements",
+            ))
+
+
+def run_container_default(
+    rec: Recognition, section_root: Any, css_rules: dict | None = None,
+    media_map: dict | None = None
+) -> list:
+    """FR-31-4 default-container dispatch: recurse-descend a slug-None section's
+    children into content blocks (the #1 unblock — 2/9 -> 9/9).
+
+    A top-level class-section with no registered composite recognised as the
+    default `sgs/container` (recognise_section). Its children recurse via
+    _descend_container_children. Conservation (Rule 4 / STOP-27): a container that
+    recursed to ZERO content blocks is the D244 empty-container bad case — `raise`
+    a ContentConservationError (never a silent empty container). `raise`, not a
+    bare `assert` (stripped by `python -O`).
+    """
+    results: list = []
+    _descend_container_children(section_root, results, css_rules, media_map)
+    if not any(isinstance(r, (ChildBlock, ScalarLift)) for r in results):
+        raise ContentConservationError(
+            f"default sgs/container recursed to {len(results)} result(s) with ZERO "
+            "content blocks — an empty container is the D244 bad case (FR-31-4 / "
+            "STOP-35: a container must CARRY its recursed children, never be empty)"
+        )
+    return results
+
+
 def run_mechanism_b(rec: Recognition, section_root: Any, css_rules: dict | None = None, media_map: dict | None = None) -> list:
     """Mechanism B: faithful port of _route_composite_interior + walk() child-resolution.
+
+    FR-31-4 DEFAULT-CONTAINER arm (checked FIRST, additive): a section recognised
+    as the DB's default container (recognise_section, DB-derived slug — never a
+    literal) routes to the recurse-descent (run_container_default), NOT the generic
+    accordion/tabs allow-list path below. Gated on the DB container slug so the
+    generic path (accordion/tabs/form) is untouched.
 
     PORT SOURCE (read verbatim before any edit):
       - convert.py:4124-4308  (_route_composite_interior — composite-interior dispatch)
@@ -260,6 +418,16 @@ def run_mechanism_b(rec: Recognition, section_root: Any, css_rules: dict | None 
     CONSERVATION: every direct child column produces ≥1 of {ScalarLift, ChildBlock,
     ContentGap}.  Hard ContentConservationError (never bare assert — STOP-27).
     """
+    # ------------------------------------------------------------------
+    # FR-31-4 DEFAULT-CONTAINER arm (additive; checked BEFORE is_class_section_block
+    # + the generic path). A section defaulted to the DB container by recognise_section
+    # is NOT an accordion/tabs allow-list parent — it recurse-descends its children.
+    # DB-driven gate (R-31-1): no slug literal. Soft-fails to the paths below when the
+    # DB is absent (container_default_slug() -> None ≠ rec.slug).
+    # ------------------------------------------------------------------
+    if rec.slug is not None and rec.slug == db_lookup.container_default_slug():
+        return run_container_default(rec, section_root, css_rules=css_rules, media_map=media_map)
+
     # ------------------------------------------------------------------
     # Build mobile-suffix set once per call (DB-driven, no hardcoded dict).
     # ------------------------------------------------------------------

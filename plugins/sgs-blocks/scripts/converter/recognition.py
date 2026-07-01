@@ -164,6 +164,66 @@ def variant_attrs(rec: Recognition) -> dict[str, str]:
     return {}
 
 
+def recognise_section(node: Any) -> Recognition:
+    """Recognise a TOP-LEVEL section root, applying the FR-31-4 container DEFAULT.
+
+    Spec 31 §13.2 FR-31-4 ("section base is always sgs/container") + §12.6
+    DEFAULT-IS-CONTAINER: a top-level class-section whose BEM root maps to NO
+    registered composite DEFAULTS to the container block + recurses its children —
+    it does NOT fail loud. A registered-composite name-match (hero/trust-bar/
+    cta-section) is the EXCEPTION; a no-name-match section is the COMMON case.
+
+    This is the FR-31-4 default, NOT a 4th walker conditional (R-31-3): it is a
+    top-level-scoped REFINEMENT that runs the full 4-branch ``recognise()`` first
+    and only promotes a *genuine no-match* to the container. It is called ONLY on
+    the section root (the SGS_NEW_ENGINE wiring); the recursive ``recognise()`` used
+    on descendants is UNCHANGED, so a bare text grandchild is never forced into a
+    container (FR-31-4.1 #5 — the content-leaf rule lives in the dispatch, not here).
+
+    Precedence:
+      1. ``recognise()`` returns anything other than ``unrecognised`` (named /
+         atomic / scalar) → return it verbatim. Hero/trust-bar still win via
+         branch 1 (FR-31-16); the 2 working sections are untouched.
+      2. ``unrecognised`` + the node has BEM ROOT classes + a GENUINE no-match
+         (zero registered candidates) → the container default.
+      3. ``unrecognised`` from an AMBIGUOUS tie (≥2 registered roots at the same
+         rank — ``recognise()`` line 73) → return ``unrecognised`` verbatim (loud
+         RED). A real recognition failure is NEVER silently swallowed into a
+         container (R-31-9 over-broad-universality is also a break).
+
+    DB-driven (R-31-1): the container slug comes from
+    ``db_lookup.container_default_slug()`` (the block composites wrap), never a
+    literal. Soft-fails to the ``recognise()`` result when the DB is absent.
+    """
+    base = recognise(node)
+    if base.kind != "unrecognised":
+        return base
+
+    # Only the genuine NO-MATCH case defaults. Re-derive the registered candidates
+    # the same way recognise() branch 1 does: a non-empty set here means the
+    # unrecognised was an AMBIGUOUS TIE (pick_root → None), which must stay loud.
+    root_classes = _root_classes(node)
+    if not root_classes:
+        return base  # no BEM root class → not a class-section; stay unrecognised.
+    candidates = [
+        s for c in root_classes
+        if db_lookup.block_exists(s := "sgs/" + c[4:])
+    ]
+    if candidates:
+        return base  # ambiguous tie — a real failure, never a silent container.
+
+    container_slug = db_lookup.container_default_slug()
+    if container_slug is None:
+        return base  # DB absent — no-op fall-through, never a crash.
+
+    return Recognition(
+        kind="named",
+        slug=container_slug,
+        container_kind=recognise_helpers.get_container_kind(container_slug),
+        has_inner_blocks=derive_has_inner_blocks(container_slug),
+    )
+
+
 def recognition_for_slug(slug: str, node: Any) -> Recognition:
     """Build a Recognition for a child whose slug the CALLER already resolved.
 

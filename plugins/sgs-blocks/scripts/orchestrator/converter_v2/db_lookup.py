@@ -572,6 +572,40 @@ def get_container_kind(block_slug: str) -> str | None:
     return None
 
 
+@functools.lru_cache(maxsize=1)
+def container_default_slug() -> str | None:
+    """Return the DB's canonical default-container slug (FR-31-4), DB-derived.
+
+    FR-31-4 ("section base is always sgs/container"): a top-level class-section
+    with no registered composite defaults to THE container block + recurses its
+    children. This returns that container slug WITHOUT a block-slug literal
+    (R-31-1 / the no_slug_literal contract) by deriving it from the DB as "the
+    block that composites wrap" — every composite with a built-in wrapper carries
+    `block_composition.wraps_block = <the container>` (the 31-block composite-mirror
+    roster, FR-31-21.1). The most-wrapped `wraps_block` value IS the canonical
+    container, name-free.
+
+    Pure DB read; soft-fails to None on missing table/column (test/CI environments
+    without the DB), so a caller can fall through to its own no-op — never a crash.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT wraps_block FROM block_composition "
+            "WHERE wraps_block IS NOT NULL "
+            "GROUP BY wraps_block ORDER BY COUNT(*) DESC LIMIT 1"
+        ).fetchone()
+    except sqlite3.OperationalError:
+        row = None
+    finally:
+        conn.close()
+    if row and row[0]:
+        _trace("db_lookup_hit", lookup="container_default_slug", slug=row[0])
+        return row[0]
+    _trace("db_lookup_miss", lookup="container_default_slug")
+    return None
+
+
 @functools.lru_cache(maxsize=256)
 def block_accepts_inner_blocks(block_slug: str) -> bool:
     """Return True when the block declares InnerBlocks in its block.json.

@@ -401,7 +401,13 @@ def _convert_section_body(html: str, css: str, media_map: dict,
             _scripts = str(_P(__file__).resolve().parents[2])  # …/plugins/sgs-blocks/scripts
             if _scripts not in _sys.path:
                 _sys.path.insert(0, _scripts)
-            from converter.recognition import recognise as _recognise
+            # recognise_SECTION (not recognise): a top-level section with no
+            # registered composite DEFAULTS to sgs/container + recurse children
+            # (FR-31-4), instead of returning unrecognised (which would fall back
+            # to frozen walk()). This is the call-site that routes the 7 slug-None
+            # sections through the new engine (D-container-default). The recursive
+            # recognise() used on descendants is unchanged.
+            from converter.recognition import recognise_section as _recognise
             from converter.services.extraction import build_block_markup as _bbm
             _rec = _recognise(root)
             if _rec.slug and _rec.kind != "unrecognised":
