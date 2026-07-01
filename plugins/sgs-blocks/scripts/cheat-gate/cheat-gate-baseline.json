@@ -1,5 +1,5 @@
 {
-  "hash": "c915f0f3660fd71894ed3d4027084295fc5c2b395301596ea2bac950749ae4c9",
+  "hash": "81075e7f4a842b7db3322dd572502e64113f524a4333a1ae65e54c61055b7e6f",
   "keys": [
     "bp:converter_v2\\convert.py:1024",
     "bp:converter_v2\\convert.py:768",
@@ -47,14 +47,10 @@
     "slug:_retired\\convert_pre_spec22.py:_flatten_wp_style_to_sgs_flat:sgs/text",
     "slug:_retired\\convert_pre_spec22.py:_lift_inner_block_attrs:sgs/button",
     "slug:_retired\\convert_pre_spec22.py:_lift_inner_block_attrs:sgs/info-box",
-    "slug:_retired\\convert_pre_spec22.py:_lift_root_supports_to_style:sgs/",
-    "slug:_retired\\convert_pre_spec22.py:_lift_styling_attrs:sgs/",
     "slug:_retired\\convert_pre_spec22.py:lift_attrs_for_block:sgs/button",
     "slug:_retired\\convert_pre_spec22.py:lift_subtree_into_block_attrs:sgs/hero",
-    "slug:_retired\\convert_pre_spec22.py:walk:sgs/",
     "slug:_retired\\convert_pre_spec22.py:walk:sgs/button",
     "slug:_retired\\convert_pre_spec22.py:walk:sgs/container",
-    "slug:converter_v2\\convert.py:_atomic_attrs_for:sgs/",
     "slug:converter_v2\\convert.py:_atomic_attrs_for:sgs/button",
     "slug:converter_v2\\convert.py:_atomic_attrs_for:sgs/heading",
     "slug:converter_v2\\convert.py:_atomic_attrs_for:sgs/icon",
@@ -66,14 +62,7 @@
     "slug:converter_v2\\convert.py:_atomic_attrs_for:sgs/testimonial",
     "slug:converter_v2\\convert.py:_atomic_attrs_for:sgs/text",
     "slug:converter_v2\\convert.py:_atomic_attrs_for:sgs/trust-bar",
-    "slug:converter_v2\\convert.py:_is_text_capable_block:sgs/",
     "slug:converter_v2\\convert.py:_lift_inner_blocks:sgs/multi-button",
-    "slug:converter_v2\\convert.py:_lift_root_supports_to_style:sgs/",
-    "slug:converter_v2\\convert.py:_lift_scalar_attrs_by_selector:sgs/",
-    "slug:converter_v2\\convert.py:_lift_styling_attrs_by_selector:sgs/",
-    "slug:converter_v2\\convert.py:_lift_typography_to_block_attrs:sgs/",
-    "slug:converter_v2\\convert.py:_resolve_inherited_typography:sgs/",
-    "slug:converter_v2\\convert.py:_test_walker_branches:sgs/",
     "slug:converter_v2\\convert.py:_test_walker_smoke:sgs/container",
     "slug:converter_v2\\convert.py:_test_walker_smoke:sgs/hero"
   ]

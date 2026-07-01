@@ -350,6 +350,142 @@ class TestCheck2HardcodedDicts:
 
 
 # ===========================================================================
+# 3b. Check #1 + #2 converter/ tree coverage (the gap this session closes:
+# a per-block slug literal or hardcoded css-prop->attr dict written directly
+# into the NEW modular converter/ tree, not just orchestrator/, must fire).
+# ===========================================================================
+
+class TestConverterTreeCoverage:
+    """Checks #1 and #2 must ALSO scan converter/, not just orchestrator/.
+
+    Prevents a regression back to the coverage gap where a cheat written into
+    plugins/sgs-blocks/scripts/converter/ was invisible to the commit-time gate.
+    """
+
+    def test_slug_literal_fires_in_converter_tree(self, tmp_path):
+        """A per-block slug literal planted in the converter/ tree must fire."""
+        py = tmp_path / "services" / "planted.py"
+        py.parent.mkdir(parents=True, exist_ok=True)
+        py.write_text(
+            textwrap.dedent("""\
+                def route_by_slug(slug):
+                    if slug == 'sgs/planted-converter-fake':
+                        return True
+                    return False
+            """),
+            encoding="utf-8",
+        )
+        violations = check_slug_literals.run(orchestrator_dir=tmp_path, converter_dir=tmp_path)
+        keys = [v.key for v in violations]
+        assert any("sgs/planted-converter-fake" in k for k in keys), (
+            f"Expected converter/-tree slug literal to fire, got: {keys}"
+        )
+
+    def test_hardcoded_dict_fires_in_converter_tree(self, tmp_path):
+        """A hardcoded css-prop->attr dict planted in the converter/ tree must fire."""
+        py = tmp_path / "services" / "planted_dict.py"
+        py.parent.mkdir(parents=True, exist_ok=True)
+        py.write_text(
+            textwrap.dedent("""\
+                _PLANTED_PADDING_MAP = {
+                    'padding': 'somePaddingAttr',
+                    'margin': 'someMarginAttr',
+                }
+            """),
+            encoding="utf-8",
+        )
+        violations = check_hardcoded_dicts.run(orchestrator_dir=tmp_path, converter_dir=tmp_path)
+        keys = [v.key for v in violations]
+        assert any("_PLANTED_PADDING_MAP" in k for k in keys), (
+            f"Expected converter/-tree hardcoded-dict to fire, got: {keys}"
+        )
+
+    def test_docstring_quote_of_slug_and_dict_patterns_does_not_fire(self, tmp_path):
+        """A docstring/comment merely QUOTING the cheat patterns must stay silent."""
+        py = tmp_path / "services" / "planted_docstring.py"
+        py.parent.mkdir(parents=True, exist_ok=True)
+        py.write_text(
+            textwrap.dedent('''\
+                """Note: do not write code like slug == 'sgs/bar' or a css-prop-to-attr
+                dict such as {'padding': 'x'}."""
+            '''),
+            encoding="utf-8",
+        )
+        slug_violations = check_slug_literals.run(orchestrator_dir=tmp_path, converter_dir=tmp_path)
+        dict_violations = check_hardcoded_dicts.run(orchestrator_dir=tmp_path, converter_dir=tmp_path)
+        assert slug_violations == [], f"Docstring quote must not fire, got: {slug_violations}"
+        assert dict_violations == [], f"Docstring quote must not fire, got: {dict_violations}"
+
+    def test_bare_sgs_namespace_guard_is_not_a_false_positive(self, tmp_path):
+        """`slug.startswith("sgs/")` (bare 4-char prefix, no block name) is a universal
+        SGS-namespace guard, NOT a per-block slug literal — must NOT fire.
+
+        Regression guard for the false positive found in root_supports.py /
+        text_leaf.py / scalar_content.py / styling_content.py, where the bare
+        "sgs/" constant was previously being recorded as a per-block literal.
+        """
+        py = tmp_path / "services" / "namespace_guard.py"
+        py.parent.mkdir(parents=True, exist_ok=True)
+        py.write_text(
+            textwrap.dedent("""\
+                def lift_something(slug):
+                    if not slug or not slug.startswith("sgs/"):
+                        return {}
+                    return {"lifted": True}
+            """),
+            encoding="utf-8",
+        )
+        violations = check_slug_literals.run(orchestrator_dir=tmp_path, converter_dir=tmp_path)
+        assert violations == [], (
+            f"Bare 'sgs/' namespace guard must not be flagged as a per-block literal, "
+            f"got: {violations}"
+        )
+
+    def test_whole_file_allowlist_exempts_db_lookup_and_icon_resolver(self, tmp_path):
+        """services/db_lookup.py and services/icon_resolver.py are exempt whole-file
+        (they legitimately hold DB-resolved lookup / icon-identity tables).
+
+        Uses an empty separate orchestrator_dir so only the converter_dir pass (which
+        applies the whole-file allowlist) contributes findings — isolates the
+        allowlist behaviour from the orchestrator pass, which has no such allowlist.
+        """
+        empty_orchestrator = tmp_path / "empty_orchestrator"
+        empty_orchestrator.mkdir()
+        converter_root = tmp_path / "converter_root"
+        converter_root.mkdir()
+
+        db_lookup = converter_root / "services" / "db_lookup.py"
+        db_lookup.parent.mkdir(parents=True, exist_ok=True)
+        db_lookup.write_text(
+            textwrap.dedent("""\
+                _ATTR_NAME_OVERRIDES = {
+                    ("grid-template-columns", "Columns"): "gridTemplateColumns",
+                }
+                if True:
+                    slug = 'sgs/allowlisted-fake'
+            """),
+            encoding="utf-8",
+        )
+        icon_resolver = converter_root / "services" / "icon_resolver.py"
+        icon_resolver.write_text(
+            "ICONS = {'sgs/hero': 'star', 'sgs/cta-section': 'megaphone'}\n",
+            encoding="utf-8",
+        )
+        slug_violations = check_slug_literals.run(
+            orchestrator_dir=empty_orchestrator, converter_dir=converter_root
+        )
+        dict_violations = check_hardcoded_dicts.run(
+            orchestrator_dir=empty_orchestrator, converter_dir=converter_root
+        )
+        assert slug_violations == [], (
+            f"Allowlisted DB-access files must not fire on slug literals, got: {slug_violations}"
+        )
+        assert dict_violations == [], (
+            f"Allowlisted DB-access files must not fire on hardcoded dicts, got: {dict_violations}"
+        )
+
+
+# ===========================================================================
 # 4. Check #3 — important_render
 # ===========================================================================
 

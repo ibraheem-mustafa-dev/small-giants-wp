@@ -1,7 +1,9 @@
 """check_slug_literals.py — Check #1: per-block slug literals (whole-tree + indirect forms).
 
 Spec 31 §7a check 1:
-  Scan every .py under orchestrator/ (recursively) for:
+  Scan every .py under orchestrator/ (recursively) AND converter/ (recursively;
+  the new modular tree — added so a cheat written into converter/ is no longer
+  invisible to this gate) for:
     - slug == 'sgs/foo'  /  slug == 'sgs/foo'  (comparison forms)
     - slug in (…)  /  slug in {…}  /  slug in […]
     - slug.startswith('sgs/…')
@@ -36,6 +38,7 @@ from cheat_gate.models import Violation, slug_literal_key  # type: ignore[import
 _HERE = Path(__file__).resolve().parent           # scripts/cheat-gate/
 _SCRIPTS_DIR = _HERE.parent                        # scripts/
 _ORCHESTRATOR = _SCRIPTS_DIR / "orchestrator"
+_CONVERTER = _SCRIPTS_DIR / "converter"            # NEW modular converter tree (D249+)
 
 # SGS block slug pattern
 _SLUG_RE = re.compile(r'"(sgs/[a-z0-9-]+)"')
@@ -66,11 +69,28 @@ _FUNC_SCOPED_ALLOWLIST: dict[str, str] = {
     _ATOMIC_FILE_REL: _ATOMIC_FUNC,
 }
 
+# ---------------------------------------------------------------------------
+# converter/ tree — legitimate DB-access modules allowlisted whole-file.
+#
+# These modules exist SPECIFICALLY to hold DB-resolved lookup tables / icon
+# identity maps; a slug literal appearing in them is expected (mirrors the
+# orchestrator's _ATOMIC_FUNC allowance above). Paths are relative to
+# _CONVERTER, matching the shape of _FUNC_SCOPED_ALLOWLIST's file_rel keys.
+# Both entries are forward-looking (no converter/services/db_lookup.py or
+# icon_resolver.py exist yet as of D249 — the orchestrator equivalents live
+# at orchestrator/converter_v2/db_lookup.py + icon_resolver.py) so that when
+# those modules are ported into the new tree they are allowlisted on day one.
+# ---------------------------------------------------------------------------
+_CONVERTER_WHOLE_FILE_ALLOWLIST: frozenset[str] = frozenset({
+    "services/db_lookup.py",
+    "services/icon_resolver.py",
+})
 
-def _rel(path: Path) -> str:
-    """Return a path relative to _ORCHESTRATOR (or absolute if outside)."""
+
+def _rel(path: Path, base: Path = _ORCHESTRATOR) -> str:
+    """Return a path relative to base (or absolute if outside)."""
     try:
-        return str(path.relative_to(_ORCHESTRATOR))
+        return str(path.relative_to(base))
     except ValueError:
         return str(path)
 
@@ -106,10 +126,17 @@ class _SlugLiteralVisitor(ast.NodeVisitor):
         })
 
     def _extract_slugs_from_node(self, node: ast.AST) -> list[str]:
-        """Return sgs/ slug literals found in a node (Constant or collection)."""
+        """Return sgs/ slug literals found in a node (Constant or collection).
+
+        Requires at least one character AFTER "sgs/" — the bare 4-char "sgs/"
+        constant is a universal SGS-namespace guard (e.g.
+        `slug.startswith("sgs/")` in root_supports.py / text_leaf.py /
+        scalar_content.py / styling_content.py), not a per-block slug literal.
+        Flagging it as R-31-1 per-block dispatch would be a false positive.
+        """
         slugs: list[str] = []
         if isinstance(node, ast.Constant) and isinstance(node.value, str):
-            if node.value.startswith("sgs/"):
+            if node.value.startswith("sgs/") and len(node.value) > len("sgs/"):
                 slugs.append(node.value)
         elif isinstance(node, (ast.Tuple, ast.List, ast.Set)):
             for elt in node.elts:
@@ -209,12 +236,15 @@ def _is_allowed(file_rel: str, func_name: str, slug: str) -> bool:
 # Public entry point
 # ---------------------------------------------------------------------------
 
-def run(orchestrator_dir: Path | None = None) -> list[Violation]:
-    """Scan the orchestrator tree for per-block slug literals.
+def _scan_tree(
+    scan_dir: Path,
+    base: Path,
+    whole_file_allowlist: frozenset[str] = frozenset(),
+) -> list[Violation]:
+    """Scan one directory tree for per-block slug literals. Returns Violations.
 
-    Returns a list of Violation objects.
+    file_rel keys (for allowlist lookups + reporting) are relative to `base`.
     """
-    scan_dir = orchestrator_dir or _ORCHESTRATOR
     violations: list[Violation] = []
 
     if not scan_dir.exists():
@@ -233,7 +263,15 @@ def run(orchestrator_dir: Path | None = None) -> list[Violation]:
         ):
             continue
 
-        file_rel = _rel(py_path)
+        file_rel = _rel(py_path, base)
+
+        # Normalise to forward-slash for the allowlist comparison — file_rel is
+        # OS-native (backslash on Windows), allowlist entries are written
+        # forward-slash-style. Without this, the allowlist silently never
+        # matches on Windows.
+        if file_rel.replace("\\", "/") in whole_file_allowlist:
+            continue
+
         findings = _collect_slug_literals_in_file(py_path)
 
         for f in findings:
@@ -265,4 +303,46 @@ def run(orchestrator_dir: Path | None = None) -> list[Violation]:
                 key=key,
             ))
 
+    return violations
+
+
+_UNSET = object()  # sentinel — distinguishes "not passed" from an explicit None/path
+
+
+def run(
+    orchestrator_dir: Path | None = None,
+    converter_dir: Path | None | object = _UNSET,
+) -> list[Violation]:
+    """Scan the orchestrator tree AND the converter/ tree for per-block slug literals.
+
+    orchestrator_dir / converter_dir let tests override either scan root
+    independently. Test isolation: a caller that supplies orchestrator_dir but
+    leaves converter_dir unset (the existing test-suite calling convention,
+    e.g. `run(orchestrator_dir=tmp_path)`) scans ONLY the supplied orchestrator
+    tree — it must not also sweep in findings from the real converter/ tree.
+    A bare `run()` call (both left at default — the real production/--check
+    invocation from run.py) scans BOTH real project trees.
+    """
+    violations: list[Violation] = []
+    resolved_orchestrator_dir = orchestrator_dir or _ORCHESTRATOR
+    # `base` tracks whichever dir was actually scanned (real or test-supplied) so
+    # _rel() can compute a proper relative path instead of falling through to an
+    # absolute path when a test overrides the scan root.
+    violations.extend(_scan_tree(resolved_orchestrator_dir, resolved_orchestrator_dir))
+
+    if converter_dir is _UNSET:
+        if orchestrator_dir is None:
+            # Bare run() — real production scan of both trees.
+            resolved_converter_dir: Path | None = _CONVERTER
+        else:
+            # orchestrator_dir was explicitly overridden (test isolation) and
+            # converter_dir was not supplied — do not scan the real tree.
+            resolved_converter_dir = None
+    else:
+        resolved_converter_dir = converter_dir  # type: ignore[assignment]
+
+    if resolved_converter_dir is not None:
+        violations.extend(_scan_tree(
+            resolved_converter_dir, resolved_converter_dir, _CONVERTER_WHOLE_FILE_ALLOWLIST
+        ))
     return violations

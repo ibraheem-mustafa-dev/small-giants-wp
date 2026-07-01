@@ -2,7 +2,8 @@
 
 Spec 31 §7a check 2:
   Flag dict literals with CSS-property string keys → attr-name string values
-  in any orchestrator/*.py.
+  in any orchestrator/*.py AND converter/*.py (the new modular tree — added so
+  a cheat written into converter/ is no longer invisible to this gate).
 
   Known legacy violations (convert.py FROZEN — D-MODULAR):
     - _SUFFIX_ATTR_OVERRIDES at convert.py:972
@@ -32,6 +33,23 @@ from cheat_gate.models import Violation, hardcoded_dict_key  # type: ignore[impo
 _HERE = Path(__file__).resolve().parent           # scripts/cheat-gate/
 _SCRIPTS_DIR = _HERE.parent                        # scripts/
 _ORCHESTRATOR = _SCRIPTS_DIR / "orchestrator"
+_CONVERTER = _SCRIPTS_DIR / "converter"            # NEW modular converter tree (D249+)
+
+# ---------------------------------------------------------------------------
+# converter/ tree — legitimate DB-access modules allowlisted whole-file.
+#
+# Mirrors the orchestrator's db_lookup.py / icon_resolver.py exemption: these
+# modules exist SPECIFICALLY to hold DB-resolved property/attr or icon-identity
+# lookup tables, so a dict literal there that superficially resembles a
+# css-prop→attr map is expected. Both entries are forward-looking (no
+# converter/services/db_lookup.py or icon_resolver.py exist yet as of D249 —
+# the orchestrator equivalents live at orchestrator/converter_v2/db_lookup.py
+# + icon_resolver.py) so those modules are allowlisted on day one when ported.
+# ---------------------------------------------------------------------------
+_CONVERTER_WHOLE_FILE_ALLOWLIST: frozenset[str] = frozenset({
+    "services/db_lookup.py",
+    "services/icon_resolver.py",
+})
 
 # ---------------------------------------------------------------------------
 # CSS-property authority — DB-first (R-31-1).
@@ -221,19 +239,22 @@ def _collect_hardcoded_dicts_in_file(path: Path) -> list[dict]:
     return visitor.findings
 
 
-def _rel(path: Path) -> str:
+def _rel(path: Path, base: Path = _ORCHESTRATOR) -> str:
     try:
-        return str(path.relative_to(_ORCHESTRATOR))
+        return str(path.relative_to(base))
     except ValueError:
         return str(path)
 
 
-def run(orchestrator_dir: Path | None = None) -> list[Violation]:
-    """Scan orchestrator tree for hardcoded CSS-property→attr dicts.
+def _scan_tree(
+    scan_dir: Path,
+    base: Path,
+    whole_file_allowlist: frozenset[str] = frozenset(),
+) -> list[Violation]:
+    """Scan one directory tree for hardcoded CSS-property→attr dicts. Returns Violations.
 
-    Returns a list of Violation objects.
+    file_rel keys (for allowlist lookups + reporting) are relative to `base`.
     """
-    scan_dir = orchestrator_dir or _ORCHESTRATOR
     violations: list[Violation] = []
 
     if not scan_dir.exists():
@@ -248,7 +269,15 @@ def run(orchestrator_dir: Path | None = None) -> list[Violation]:
         ):
             continue
 
-        file_rel = _rel(py_path)
+        file_rel = _rel(py_path, base)
+
+        # Normalise to forward-slash for the allowlist comparison — file_rel is
+        # OS-native (backslash on Windows), allowlist entries are written
+        # forward-slash-style. Without this, the allowlist silently never
+        # matches on Windows.
+        if file_rel.replace("\\", "/") in whole_file_allowlist:
+            continue
+
         findings = _collect_hardcoded_dicts_in_file(py_path)
 
         for f in findings:
@@ -274,4 +303,46 @@ def run(orchestrator_dir: Path | None = None) -> list[Violation]:
                 key=key,
             ))
 
+    return violations
+
+
+_UNSET = object()  # sentinel — distinguishes "not passed" from an explicit None/path
+
+
+def run(
+    orchestrator_dir: Path | None = None,
+    converter_dir: Path | None | object = _UNSET,
+) -> list[Violation]:
+    """Scan the orchestrator tree AND the converter/ tree for hardcoded dicts.
+
+    orchestrator_dir / converter_dir let tests override either scan root
+    independently. Test isolation: a caller that supplies orchestrator_dir but
+    leaves converter_dir unset (the existing test-suite calling convention,
+    e.g. `run(orchestrator_dir=tmp_path)`) scans ONLY the supplied orchestrator
+    tree — it must not also sweep in findings from the real converter/ tree.
+    A bare `run()` call (both left at default — the real production/--check
+    invocation from run.py) scans BOTH real project trees.
+    """
+    violations: list[Violation] = []
+    resolved_orchestrator_dir = orchestrator_dir or _ORCHESTRATOR
+    # `base` tracks whichever dir was actually scanned (real or test-supplied) so
+    # _rel() can compute a proper relative path instead of falling through to an
+    # absolute path when a test overrides the scan root.
+    violations.extend(_scan_tree(resolved_orchestrator_dir, resolved_orchestrator_dir))
+
+    if converter_dir is _UNSET:
+        if orchestrator_dir is None:
+            # Bare run() — real production scan of both trees.
+            resolved_converter_dir: Path | None = _CONVERTER
+        else:
+            # orchestrator_dir was explicitly overridden (test isolation) and
+            # converter_dir was not supplied — do not scan the real tree.
+            resolved_converter_dir = None
+    else:
+        resolved_converter_dir = converter_dir  # type: ignore[assignment]
+
+    if resolved_converter_dir is not None:
+        violations.extend(_scan_tree(
+            resolved_converter_dir, resolved_converter_dir, _CONVERTER_WHOLE_FILE_ALLOWLIST
+        ))
     return violations
