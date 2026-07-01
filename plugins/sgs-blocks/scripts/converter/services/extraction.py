@@ -1212,18 +1212,20 @@ def build_block_markup(
                 if not _style:
                     attrs.pop("style", None)
 
-    # step 7: FR-31-4 section-outer width (Bean review 2026-07-01, defect #1). A
-    # default-container SECTION with NO own max-width is FULL-BLEED (WP-native
-    # align:"full"); a section WITH a max-width stays constrained (its maxWidth
-    # already lands via the CSS pass — e.g. the brand/about section). setdefault so
-    # an align already emitted upstream is never overwritten (no overlapping fix —
-    # idempotent). Port convert.py:4551-4553. Scoped to is_root + the DB container
-    # slug so it never touches composites or child blocks.
-    if (
-        is_root
-        and rec.slug is not None
-        and rec.slug == db_lookup.container_default_slug()
-    ):
+    # step 7: FR-31-4 section-outer width — UNIVERSAL across EVERY section-class-level
+    # block (Bean review 2026-07-01, defects #1 + trust-bar-width). A block emitted as
+    # the top-level SECTION root (is_root) with NO own max-width is FULL-BLEED (WP-native
+    # align:"full"); WITH a max-width it stays constrained (its maxWidth already lands via
+    # the CSS pass — e.g. the brand/about section). This fires for EVERY section-class
+    # block identically — sgs/container, container-equivalents, AND composites (hero /
+    # trust-bar / cta-section) — because they all declare supports.align:['wide','full'],
+    # carry supports.sgs.is_section_root, and render through the shared SGS_Container_Wrapper
+    # (composite-mirror, FR-31-21.1). Gating on the container slug was a carve-out CHEAT
+    # (R-31-9) that left composites constrained. The universal signal is is_root itself:
+    # build_block_markup is is_root=True ONLY for the top-level section (children pass
+    # is_root=False), so this never touches a nested block. setdefault = idempotent (never
+    # overrides an align emitted upstream). Port convert.py:4551-4553.
+    if is_root and rec.slug is not None:
         _sec_base, _ = collect_css_decls_for_element(section_root, _css_rules)
         if not _sec_base.get("max-width"):
             attrs.setdefault("align", "full")
