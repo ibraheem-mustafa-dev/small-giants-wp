@@ -375,6 +375,28 @@ def _convert_section_body(html: str, css: str, media_map: dict,
             "essence_matches": [],
         }
 
+    # CHROME-SKIP (new-engine path). A header/footer/nav top-level element is a
+    # template PART (chrome), never page content — it must NOT be cloned into the
+    # page (FR-31-3 exception 2 / SKIP_TOP_LEVEL_TAGS, the one permitted constant).
+    # The container-default (recognise_section) would otherwise wrap it in an
+    # sgs/container and emit it as a section (Bean review 2026-07-01, defect #2).
+    # Gated to SGS_NEW_ENGINE=1 so the frozen production path is unchanged (STOP-28).
+    import os as _os_chrome
+    if _os_chrome.environ.get("SGS_NEW_ENGINE") == "1" and root.name in v3.SKIP_TOP_LEVEL_TAGS:
+        return {
+            "boundary_id": section_id or root.name,
+            "section_id": section_id,
+            "selector": root.name,
+            "block_name": "",
+            "status": "chrome-skipped",
+            "extracted_attributes": {},
+            "block_markup": "",
+            "variation_css": "",
+            "attribute_gap_candidates": [],
+            "token_resolutions": [],
+            "essence_matches": [],
+        }
+
     # Transparent-wrapper absorb pre-pass (2026-05-24).
     # When a section has exactly one direct element child that's a transparent
     # wrapper (BEM-named, no internal block-spacing or positioning, not a

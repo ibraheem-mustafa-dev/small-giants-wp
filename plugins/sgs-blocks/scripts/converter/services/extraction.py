@@ -1212,6 +1212,22 @@ def build_block_markup(
                 if not _style:
                     attrs.pop("style", None)
 
+    # step 7: FR-31-4 section-outer width (Bean review 2026-07-01, defect #1). A
+    # default-container SECTION with NO own max-width is FULL-BLEED (WP-native
+    # align:"full"); a section WITH a max-width stays constrained (its maxWidth
+    # already lands via the CSS pass — e.g. the brand/about section). setdefault so
+    # an align already emitted upstream is never overwritten (no overlapping fix —
+    # idempotent). Port convert.py:4551-4553. Scoped to is_root + the DB container
+    # slug so it never touches composites or child blocks.
+    if (
+        is_root
+        and rec.slug is not None
+        and rec.slug == db_lookup.container_default_slug()
+    ):
+        _sec_base, _ = collect_css_decls_for_element(section_root, _css_rules)
+        if not _sec_base.get("max-width"):
+            attrs.setdefault("align", "full")
+
     # ChildBlock.content is now ALWAYS the child's COMPLETE block markup (W3 MF4
     # collapse) — emit it verbatim. The prior `if attr: emit_block_markup(slug,
     # {attr: content}, "")` fork is DELETED: it dropped every non-primary content
