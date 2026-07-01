@@ -7,7 +7,7 @@ created: 2026-06-18
 updated: 2026-06-18
 version: v2 (adversarial-council-corrected — re-scoped to F3-core; render-mechanism fixed)
 status: DESIGN v2 — Bean-approved re-scope (2026-06-18); F3-core to build in a fresh session
-spec_ref: specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md §12.2.2 (WRITTEN vs LANDED) + §12.2.3 (render-oracle + metamorphic) + §7b (false-win guards) + §12.7 (row F3)
+spec_ref: specs/31-UNIVERSAL-CLONING-PIPELINE.md §12.2.2 (WRITTEN vs LANDED) + §12.2.3 (render-oracle + metamorphic) + §7b (false-win guards) + §12.7 (row F3)
 depends_on: F1 (fixtures, done) + F2 (declare_input ledger, done, f8a746c7)
 council: adversarial-council 2026-06-18 (6 personas) — synthesis + Bean-filtered verdicts in §11
 binding_rules: R-22-11, R-22-13, STOP-4 (WRITTEN≠LANDED), STOP-10 (empty-section false-win), R-22-1 (reuse not duplicate), parity-bem-class-blind-spot, measurement-vs-eye

@@ -6,7 +6,7 @@ phase: F6
 generated: 2026-06-20
 revised: 2026-06-20 (v2 — post-adversarial-council + fact-check)
 status: SHIPPED 2026-06-20 (D237) — commits fdcf70ab (hero fix) + 1293c24f (module); 27 tests, 0 live violations, wired prebuild+prestart, old guard retired
-spec: 31-UNIVERSAL-CONTAINER-CSS-TRANSFER §12.4 + §12.7 F6
+spec: 31-UNIVERSAL-CLONING-PIPELINE §12.4 + §12.7 F6
 supersedes: v1 (role-based check #3, NO-GO'd by adversarial council)
 ---
 

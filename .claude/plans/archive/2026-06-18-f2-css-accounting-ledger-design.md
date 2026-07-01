@@ -7,7 +7,7 @@ created: 2026-06-18
 updated: 2026-06-18
 version: v2 (adversarial-council-corrected + Bean DB-duplication catch)
 status: DESIGN v2 — pending Bean design-gate sign-off
-spec_ref: specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md §12.2.1 + §12.7 (row F2)
+spec_ref: specs/31-UNIVERSAL-CLONING-PIPELINE.md §12.2.1 + §12.7 (row F2)
 council: adversarial-council 2026-06-18 (6 personas) — synthesis folded in below (§10)
 binding_rules: R-22-1 (DB-first / no hardcoded dicts), R-22-6 (no inline @media), R-22-8 (schema enumeration), STOP-3 (ledger input is DRAFT-derived not converter-derived), STOP-11 (schema enumeration ≠ usage enumeration)
 ---

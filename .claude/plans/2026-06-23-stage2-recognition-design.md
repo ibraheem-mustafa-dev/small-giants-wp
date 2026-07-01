@@ -2,7 +2,7 @@
 doc_type: design
 project: small-giants-wp
 thread: cloning-pipeline
-spec_ref: specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md §12.6 step 3 / §12.7 (Stage 2)
+spec_ref: specs/31-UNIVERSAL-CLONING-PIPELINE.md §12.6 step 3 / §12.7 (Stage 2)
 created: 2026-06-23
 updated: 2026-06-24
 version: v2 — ADVERSARIAL-COUNCIL-CORRECTED (6 personas, fact-checked STOP-15) + Bean scope decision

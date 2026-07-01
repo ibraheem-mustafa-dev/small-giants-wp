@@ -5,7 +5,7 @@ The fresh modular home that replaces the frozen `orchestrator/converter_v2/conve
 end-to-end first, the rest one-per-stage in step 3.
 
 **Authoritative design:** `.claude/plans/2026-06-23-modular-scaffold-design.md` v3
-(§3 slice + §10 binding conformance corrections). Spec: `.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md` §12.
+(§3 slice + §10 binding conformance corrections). Spec: `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` §12.
 
 ## How it works (one sentence)
 

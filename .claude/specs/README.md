@@ -46,7 +46,7 @@ Specs are versioned, status-tracked artifacts that document architectural commit
 | 28 | [28-SGS-SMART-BULK-PRICING.md](28-SGS-SMART-BULK-PRICING.md) | Smart bulk pricing / comparative value-ladder | active |
 | 29 | [29-CONTAINER-EQUIVALENT-BLOCKS.md](29-CONTAINER-EQUIVALENT-BLOCKS.md) | Container-equivalent blocks reference — 3-KIND map, mirror roster, shared helper | active |
 | 30 | [30-SGS-WOOCOMMERCE-PAGE-TYPES.md](30-SGS-WOOCOMMERCE-PAGE-TYPES.md) | WC page types — single-product/archive/cart/checkout templates, SGS search + searchable filter, option-picker WC binding, schema | complete (D220) |
-| 31 | [31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md](31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md) | **THE cloning CSS-transfer rebuild blueprint** — DB-driven name-free routing engine; read §0 + §12 first. Foundation (Phase F) COMPLETE; stage-by-stage modular rebuild next. | active |
+| 31 | [31-UNIVERSAL-CLONING-PIPELINE.md](31-UNIVERSAL-CLONING-PIPELINE.md) | **THE cloning CSS-transfer rebuild blueprint** — DB-driven name-free routing engine; read §0 + §12 first. Foundation (Phase F) COMPLETE; stage-by-stage modular rebuild next. | active |
 
 ## Architecture programme (2026-05-21+) — archived
 

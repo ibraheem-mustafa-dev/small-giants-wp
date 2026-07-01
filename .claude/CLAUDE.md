@@ -27,7 +27,7 @@
 
 ## Authoritative pointers
 
-- **Canonical cloning-pipeline spec:** `specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md` (Spec 31)
+- **Canonical cloning-pipeline spec:** `specs/31-UNIVERSAL-CLONING-PIPELINE.md` (Spec 31)
 - **LIVE canonical cloning plan:** `plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md` — W3 phase-plan (interior-walker wiring + CSS↔content unification, D250, 2026-06-30).
 - **Pipeline overview:** `cloning-pipeline-flow.md` (stage-index + cross-cutting principles); per-stage detail → `cloning-pipeline-stages.md`
 - **Binding methodology rules:** `decisions.md` (search for "binding" + recent D-numbers) — DO NOT restate inline here. Spec 31 §13.1 binding rules: R-31-1 through R-31-15 (R-31-14 added 2026-05-27 per D92 — no legacy fallback hacks in FR-31-6 migrations).

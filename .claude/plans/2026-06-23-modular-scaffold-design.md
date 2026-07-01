@@ -2,7 +2,7 @@
 doc_type: design
 project: small-giants-wp
 thread: cloning-pipeline
-spec_ref: specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md §12.4 / §12.6 step 2
+spec_ref: specs/31-UNIVERSAL-CLONING-PIPELINE.md §12.4 / §12.6 step 2
 created: 2026-06-23
 updated: 2026-06-23
 version: v3 — + 3-AUDITOR CONFORMANCE PASS (§10 binding corrections folded in)

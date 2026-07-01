@@ -29,7 +29,7 @@ A custom WordPress block framework built by Claude Code: theme + blocks plugin (
 
 > **Live status is single-sourced — do NOT track shipped-status / D-numbers / counts here (they drift; the F1/F2 doc-staleness on 2026-06-03 was exactly this).** For "what's shipped vs pending, current step, D-ceiling, blockers" read **`.claude/state.md` + `.claude/next-session-prompt.md`**. Decisions → `.claude/decisions.md`. Parked work → `.claude/parking.md`.
 
-- **Canonical spec:** [Spec 31 §13.6 / FR-31-21](.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md) — the universal wrapper-conversion procedure + 3-layer model (OUTER / CONTENT-WIDTH / PER-GRID-ITEM) + composite-mirror rule.
+- **Canonical spec:** [Spec 31 §13.6 / FR-31-21](.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md) — the universal wrapper-conversion procedure + 3-layer model (OUTER / CONTENT-WIDTH / PER-GRID-ITEM) + composite-mirror rule.
 - **LIVE cloning plan (phase-plan):** [`.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md`](.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md) — W3 phase-plan (interior-walker wiring + CSS↔content unification, D250, 2026-06-30).
 - **Previous cloning plan (archived context):** [`.claude/plans/2026-06-09-clone-fix-build-plan.md`](.claude/plans/2026-06-09-clone-fix-build-plan.md) + sign-off ledger [`2026-06-09-clone-fix-sign-off-ledger.md`](.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md) (superseded by W3 plan).
 
@@ -97,7 +97,7 @@ Each sub-project + each client site has its own CLAUDE.md. Read the relevant one
 | [`.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md`](.claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md) | **LIVE canonical cloning plan (phase-plan) — W3 interior-walker + CSS↔content unification (D250)** |
 | [`.claude/plans/2026-06-09-clone-fix-build-plan.md`](.claude/plans/2026-06-09-clone-fix-build-plan.md) | Previous canonical plan + sign-off ledger (superseded by W3 plan) |
 | [`.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md`](.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md) | 55-issue sign-off ledger (archived context — superseded) |
-| [`.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md`](.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md) §13 | Absorbed Spec 22 (merged D253): single-recursive walker (FR-31-3), content fork (FR-31-2), sgs/container default (FR-31-4), binding rules R-31-1..15. |
+| [`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`](.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md) §13 | Absorbed Spec 22 (merged D253): single-recursive walker (FR-31-3), content fork (FR-31-2), sgs/container default (FR-31-4), binding rules R-31-1..15. |
 | [`.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md`](.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md) | Pipeline-state artefact map (read BEFORE conjecturing) |
 | [`.claude/cloning-pipeline-flow.md`](.claude/cloning-pipeline-flow.md) + [`-stages.md`](.claude/cloning-pipeline-stages.md) | Stage map + per-stage detail |
 | [`.claude/dev-setup.md`](.claude/dev-setup.md) | Build / deploy / SSH / local environment / gotchas |
@@ -141,7 +141,7 @@ Full rules: [`.claude/specs/00-naming-conventions.md`](.claude/specs/00-naming-c
 
 **This project defaults to PLAN MODE** (`.claude/settings.json` `permissions.defaultMode: "plan"`, set 2026-06-29). Every session starts read-only — investigate + get an approved plan before editing. This is deliberate (the cause-agnostic grounding floor that kills the cold-start doom-loop), NOT a bug; Shift+Tab exits for trivial turns. If it doesn't fire on startup (Windows bug #34509), set the VS Code extension's permission mode instead. The SessionStart hook `~/.claude/hooks/session-spec-anchor.py` also injects the governing spec pointer + next action each session. Rationale: `~/.claude/rules/prove-the-cause-before-fix.md` + the 2026-06-29 session-grounding work.
 
-**ALWAYS read the governing spec IN FULL at session start (Bean-locked 2026-07-01; extends STOP-26).** Every cloning-pipeline session reads `.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md` END TO END before starting work — NOT just the sections for the day's task, NOT a grep-and-skim. **Why:** issues surface mid-work in sections you weren't planning to touch; with the whole spec already in context you have the grounding to diagnose them instead of being in the dark. This is not optional and applies every session regardless of how narrow the task looks. (This is why the next-session-prompt reading gate says "read it in full".)
+**ALWAYS read the governing spec IN FULL at session start (Bean-locked 2026-07-01; extends STOP-26).** Every cloning-pipeline session reads `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` END TO END before starting work — NOT just the sections for the day's task, NOT a grep-and-skim. **Why:** issues surface mid-work in sections you weren't planning to touch; with the whole spec already in context you have the grounding to diagnose them instead of being in the dark. This is not optional and applies every session regardless of how narrow the task looks. (This is why the next-session-prompt reading gate says "read it in full".)
 
 ## Git workflow
 

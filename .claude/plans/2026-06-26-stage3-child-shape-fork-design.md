@@ -2,7 +2,7 @@
 doc_type: design
 project: small-giants-wp
 thread: cloning-pipeline
-spec_ref: specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md §12.0/§12.6 step 3/§12.7 (Stage 3-4, the content / block-equivalent extraction) · cloning-pipeline-stages.md Stage 3 (slot list) + Stage 4 (universal block-equivalent extraction) · specs/22 FR-22-2 / FR-22-2.1 / FR-22-2.2 / FR-22-5.3 / FR-22-2.5
+spec_ref: specs/31-UNIVERSAL-CLONING-PIPELINE.md §12.0/§12.6 step 3/§12.7 (Stage 3-4, the content / block-equivalent extraction) · cloning-pipeline-stages.md Stage 3 (slot list) + Stage 4 (universal block-equivalent extraction) · specs/22 FR-22-2 / FR-22-2.1 / FR-22-2.2 / FR-22-5.3 / FR-22-2.5
 created: 2026-06-26
 updated: 2026-06-26
 version: v3 — TWO council rounds + Opus DB/spec fact-check of every load-bearing claim. Round-1 fixed the fatal fork mechanism (v1→v2); round-2 validated the corrected mechanism SOUND + surfaced 12 concrete implementation must-fixes (folded here, v2→v3). Build-ready pending Bean sign-off.

@@ -6,7 +6,7 @@ title: "Phase F step F4 — closed, audited EXCLUDED-properties TABLE (MF-4); th
 created: 2026-06-18
 updated: 2026-06-18
 status: DESIGN v2 — Bean-approved RE-SCOPE after /qc-council (2026-06-18): F4 = the empty table + migration ONLY; the literal-ban gate is MOVED to F5 (designed there around the coverage invariant). Ready to build.
-spec_ref: specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md §12.2.4 (MF-4) + §12.2.1 (the no-silent-drop equation) + §12.0/§12.4 (D-MODULAR) + §12.7 F4/F5
+spec_ref: specs/31-UNIVERSAL-CLONING-PIPELINE.md §12.2.4 (MF-4) + §12.2.1 (the no-silent-drop equation) + §12.0/§12.4 (D-MODULAR) + §12.7 F4/F5
 depends_on: F2 (declare_input ledger, f8a746c7) + F3-core (oracle, 6b430dae)
 council: /qc-council 2026-06-18 (3 raters: spec-fidelity / adversarial-gamer / D-MODULAR-blast-radius)
 binding_rules: R-22-1 (DB-first), STOP-3 (closed audited set not in-code dict), STOP-6 (a gate must be WIRED to something that runs)
