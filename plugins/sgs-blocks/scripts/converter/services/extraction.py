@@ -1227,7 +1227,14 @@ def build_block_markup(
     # overrides an align emitted upstream). Port convert.py:4551-4553.
     if is_root and rec.slug is not None:
         _sec_base, _ = collect_css_decls_for_element(section_root, _css_rules)
-        if not _sec_base.get("max-width"):
+        # Spec 31 §3 step 7 (spec:157/179): gate L1 full-bleed on the block actually
+        # DECLARING align:["full"] in block_supports — never emit an align the block
+        # cannot honour. Universal + DB-driven: every section-class block (container +
+        # composites) declares it, so this passes for all of them, but a future is_root
+        # block without align support is correctly left constrained rather than carrying
+        # a dead attr. widthMode is RETIRED (D230/D231) — align is the OUTER full-bleed.
+        _align_support = db_lookup.block_supports_for(rec.slug).get("align") or []
+        if not _sec_base.get("max-width") and "full" in _align_support:
             attrs.setdefault("align", "full")
 
     # ChildBlock.content is now ALWAYS the child's COMPLETE block markup (W3 MF4
