@@ -141,6 +141,8 @@ Full rules: [`.claude/specs/00-naming-conventions.md`](.claude/specs/00-naming-c
 
 **This project defaults to PLAN MODE** (`.claude/settings.json` `permissions.defaultMode: "plan"`, set 2026-06-29). Every session starts read-only — investigate + get an approved plan before editing. This is deliberate (the cause-agnostic grounding floor that kills the cold-start doom-loop), NOT a bug; Shift+Tab exits for trivial turns. If it doesn't fire on startup (Windows bug #34509), set the VS Code extension's permission mode instead. The SessionStart hook `~/.claude/hooks/session-spec-anchor.py` also injects the governing spec pointer + next action each session. Rationale: `~/.claude/rules/prove-the-cause-before-fix.md` + the 2026-06-29 session-grounding work.
 
+**ALWAYS read the governing spec IN FULL at session start (Bean-locked 2026-07-01; extends STOP-26).** Every cloning-pipeline session reads `.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md` END TO END before starting work — NOT just the sections for the day's task, NOT a grep-and-skim. **Why:** issues surface mid-work in sections you weren't planning to touch; with the whole spec already in context you have the grounding to diagnose them instead of being in the dark. This is not optional and applies every session regardless of how narrow the task looks. (This is why the next-session-prompt reading gate says "read it in full".)
+
 ## Git workflow
 
 **Before every commit/push:** run `git branch --show-current` and verify branch matches scope.
