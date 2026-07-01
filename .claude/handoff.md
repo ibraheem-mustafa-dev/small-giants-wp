@@ -1,9 +1,58 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-thread: cloning-pipeline / W3 keystone LANDED-in-engine + new-engine wired + Spec 22→31 merge
-session_date: 2026-06-30
+thread: cloning-pipeline / FR-31-4 container-default BUILT + LANDED + Bean-review fixes
+session_date: 2026-07-01
 ---
+
+# Session Handoff — 2026-07-01 (FR-31-4 sgs/container DEFAULT built + LANDED on page 8 + Bean-review #1/#2 fixed — D254)
+
+## Completed This Session
+1. **FR-31-4 sgs/container DEFAULT (`c2105981`) — the #1 engine unblock.** The new engine now defaults a slug-None class-section to `sgs/container` + recurse-descends its children (was: `unrecognised`, emitted nothing). New `db_lookup.container_default_slug()` (DB-derived, no slug literal), `recognition.recognise_section()` (only defaults a GENUINE no-match; ambiguous tie stays loud), `extraction.run_container_default()`/`_descend_container_children()` (recurse through `__inner` wrappers to grandchildren; text-leaf→text-capable block; conservation `raise` on empty). **New engine clones 2/9 -> 9/9 Mama's homepage sections.**
+2. **6-persona `/adversarial-council` design-gate BEFORE build** — all findings fact-checked vs live code + the real draft (caught a wrong DB-predicate proposal). Bean approved scope A (content now, interior layout-CSS = Step-7).
+3. **3-reviewer pre-commit QC on the BUILT code (STOP-23)** — rule-compliance A, regression B+ (none), correctness C → fixed 3 real edge-case holes (loose-text NavigableString drop, ungated core/* rung, empty-leaf phantom sgs/text). 10 new tests; 299 total + cheat-gate green.
+4. **2 wired-pipeline LANDED bugs found ONLY by deploying (STOP-21):** (`e18b48df`) `emit_block_markup` one-lined blocks → the line-based `ensure_root_section_class` dropped every child (84 blocks → 9 empty shells); fixed by newline-separating inner. (`c51c161d`) empty dynamic blocks (save=null) as open+close → WP validation dropped 5 of 9 sections silently; fixed by self-closing empties.
+5. **Full `/sgs-clone` pipeline LANDED** end-to-end with `SGS_NEW_ENGINE=1` (all stage-gates + anti-mirror + wp-blocks-validate + critical-fix 4/4 pass); deployed to sandybrown **page 8** (the real homepage).
+6. **Bean page-8 eye-review (R-31-13) — fixed #1 + #2:** #1 full-width made **UNIVERSAL** across container + composites (`666aae26`; the first cut was a slug carve-out CHEAT, R-31-9; universal signal = `is_root`) + **gated on `block_supports.align` per Spec 31 §3 step 7** (`7d694a54`). #2 chrome-skip header/footer/nav (`466ca73b`, SKIP_TOP_LEVEL_TAGS, gated to SGS_NEW_ENGINE=1).
+
+## Current State
+- **Branch:** `main` at `7d694a54`. D-ceiling **D254**.
+- **Tests:** 299 pass (converter + cheat-gate), 1 skip, 2 xfail; cheat-gate + F5/F6 + Gate A commit gates exit 0.
+- **Build:** Python converter (no npm for this work). convert.py byte-identical (D-MODULAR).
+- **Uncommitted (NOT mine):** `lucide-icons.php` (npm drift), the W3 plan (session-start), src `render.php` ×N (R-22 comments), + screenshot pngs at repo root (canary-*.png / homepage-*.png — gitignore or delete).
+- **Push status: NOT pushed.** 6 local commits `c2105981`→`7d694a54` on main, held pending Bean sign-off (composite fidelity #4-7 not there yet).
+- **Live:** clone is on sandybrown **page 8** (the homepage, `https://sandybrown-nightingale-600381.hostingersite.com/`). New engine still opt-in (STOP-28) — prod default = frozen convert.py.
+
+## Known Issues / Blockers
+- **Bean-review defects #3-7 OPEN** (next session's primary tasks — `next-session-prompt.md`): #3 A1 media-map not wired (only hero img + trust icons show — BIGGEST, Bean priority); #4 hero split variant not on desktop; #5 trust-bar extra grid item (col-1 = all 4 columns' text in caps); #6 product-card renders as text not sgs/product-card; #7 ingredient cards empty. Each is a root-cause investigation (walker/recognition/media-adjacent).
+- `MEMORY.md` at the 24576-byte autoload cap — needs compaction (parking `P-MEMORY-MD-COMPACT`).
+
+## Next Priorities (in order)
+1. **#3 A1 media-map** — script + wire the media-map loader through the new engine so `<img src>` remaps to uploaded WP URLs (biggest content blocker; media-map at `sites/mamas-munches/research/sandybrown-media-map.json`).
+2. **#5 + #6 composite fidelity** — trust-bar spurious all-caps column; product-card recognised as text not `sgs/product-card` (recognition-coverage gap).
+3. **#4 + #7** — hero split variant on desktop; ingredient card content lift.
+4. **Push decision** — once #3-7 land + Bean signs off, push the 6 commits to `main`.
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | `container_default_slug()` accessor (DB-derived) |
+| `plugins/sgs-blocks/scripts/converter/recognition.py` | `recognise_section()` FR-31-4 default + ambiguous-tie guard |
+| `plugins/sgs-blocks/scripts/converter/services/extraction.py` | `run_container_default`/`_descend_container_children`/`_emit_content_leaf` + universal `align:full` (block_supports.align gated) |
+| `plugins/sgs-blocks/scripts/converter/orchestrator.py` | `emit_block_markup` newline-separate + self-close empty dynamic blocks |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/__init__.py` | wiring calls `recognise_section`; chrome-skip header/footer/nav |
+| `plugins/sgs-blocks/scripts/converter/tests/test_container_default.py` | 13 new tests (recognition default, recurse, text-leaf, conservation, 9/9 real draft) |
+| `plugins/sgs-blocks/scripts/converter/tests/test_outer_box.py` | emit self-close assertion update |
+| `.claude/decisions.md` · `state.md` · `parking.md` · `handoff.md` · `next-session-prompt.md` | D254 + reconciliation |
+
+## Notes for Next Session
+- **STOP-21 earned its keep twice this session** — the 84-block markup string looked perfect; deploying caught two content-dropping bugs unit tests passed. LANDED (Bean's eye on a real page) is the only gate that counts.
+- **Universal or it's a cheat** — Bean rejected the slug-scoped full-width fix as an R-31-9 carve-out. Section-outer fixes fire on `is_root` for ALL section-class blocks (they share `SGS_Container_Wrapper` + `supports.align`). Memory: `section-wrapper-fixes-must-be-universal-across-container-and-composites`.
+- **"Deploy to homepage" = overwrite the real homepage page** (sandybrown page 8), not a new page + front-page repoint. I got this wrong twice. Memory: `deploy-to-homepage-means-overwrite-the-real-homepage-page`.
+- **A1 media-map (#3) is the next big lever** — without it the clone is text-faithful but image-sparse, which dominates Bean's visual read.
+
+## Next Session Prompt
+See `.claude/next-session-prompt.md` (carried-forward 7 rules + reading gate + ritual + STOP catalogue 1..36 + the #3-7 defect orchestration).
 
 # Session Handoff — 2026-06-30 (W3 keystone child-lift + /sgs-clone wiring + Spec 22→31 merge — D252/D253)
 
