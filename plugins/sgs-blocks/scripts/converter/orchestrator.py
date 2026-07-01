@@ -172,4 +172,12 @@ def emit_block_markup(
     attr_json = json.dumps(attrs, separators=(",", ":"), sort_keys=True)
     name = block_slug  # already 'sgs/<x>'
     open_comment = f"<!-- wp:{name} {attr_json} -->" if attrs else f"<!-- wp:{name} -->"
-    return f"{open_comment}{inner}<!-- /wp:{name} -->"
+    # Newline-separate the inner content — WP's canonical block serialisation puts
+    # each block on its own line, and the pipeline's line-based post-processing
+    # (convert.ensure_root_section_class splits on "\n" and rewrites the FIRST block
+    # line) DROPS every child when the whole block is on one line. Emitting the inner
+    # on its own line(s) keeps children off line 0 so the section-className rewrite
+    # touches only the opening comment. (Wired-pipeline LANDED bug, 2026-07-01.)
+    if inner:
+        return f"{open_comment}\n{inner}\n<!-- /wp:{name} -->"
+    return f"{open_comment}<!-- /wp:{name} -->"
