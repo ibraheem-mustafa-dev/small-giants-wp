@@ -276,34 +276,140 @@ def _emit_content_leaf(node: Any, css_rules: dict | None, media_map: dict | None
     return (target, markup) if markup else (None, "")
 
 
-def _descend_container_children(
-    parent: Any, results: list, css_rules: dict | None, media_map: dict | None
+def _route_container_child(
+    child: Any, results: list, css_rules: dict | None, media_map: dict | None
 ) -> None:
-    """FR-31-4.1 recurse-descent for a default `sgs/container` section.
+    """Route ONE direct child of a default `sgs/container` (Spec 31 §2.4/§2.5 + FR-31-4.1).
 
-    Per direct child (Spec 31 §13.2 FR-31-4.1 precedence, CONTENT leg):
+    Precedence (CONTENT leg — a grid item and a sibling'd child route identically here;
+    the §2.4 grid-item-vs-fold decision is made by the caller):
       1. recognise() resolves a block (named/atomic/scalar) -> emit ChildBlock
-         (recurse its own content via _child_content_for_node).
-      2. slug-None + text-leaf -> emit its ladder-target CONTENT block (never a
-         container wrapping raw text — precedence #5).
-      3. slug-None wrapper WITH element children (the `__inner` shells) -> DESCEND
-         (unwrap): its real content is grandchildren/great-grandchildren. Also
-         covers FR-31-11 non-sgs transparent pass-through.
+         (recurse its own content via _child_content_for_node). Covers brand's
+         `__image` (-> atomic sgs/media), a heading, a button, a nested composite.
+      2. slug-None text-leaf -> emit its ladder-target CONTENT block (never a
+         container wrapping raw text — FR-31-4.1 #5).
+      3. slug-None WRAPPER (element children) -> becomes its OWN `sgs/container`,
+         recursed (§2.4 "a sibling'd child, or one with no block identity, recurses
+         as its own container"). This REPLACES the D254 blind-descend that flattened
+         a wrapper's children up into this container — the brand `__content` bug: the
+         2-col grid saw [h2, quote, cta, img] as 4 items instead of 2 grid items
+         (`__content`, `__image`). Recursion routes through build_block_markup ->
+         run_container_default so the wrapper's OWN CSS (its flex/grid + band) lands
+         on ITS own container, not this one.
       4. slug-None leaf with no content/children -> tracked ContentGap.
-
-    Recursion re-enters via the UNCHANGED recursive ``recognise()`` (never
-    ``recognise_section``), so a nested slug-None wrapper resolves the same way
-    and a text leaf terminates as a content block — termination holds on the
-    finite DOM. Interior wrapper LAYOUT CSS-fold (grid/flex -> parent attrs) is
-    OUT OF SCOPE here (Step-7 conductor owns it, scope A).
     """
     from converter.services.text_leaf import node_is_text_leaf
 
+    child_rec = recognise(child)
+    if child_rec.slug is not None and child_rec.kind != "unrecognised":
+        content = _child_content_for_node(
+            child, child_rec.slug, css_rules=css_rules, media_map=media_map
+        )
+        if content:
+            results.append(ChildBlock(slug=child_rec.slug, content=content))
+        else:
+            results.append(ContentGap(
+                _label(child),
+                f"resolved child {child_rec.slug!r} produced no markup",
+            ))
+        return
+
+    csgs = [c for c in (child.get("class", []) or [])
+            if isinstance(c, str) and c.startswith("sgs-")]
+    if csgs and node_is_text_leaf(child):
+        tslug, markup = _emit_content_leaf(child, css_rules, media_map)
+        if markup:
+            results.append(ChildBlock(slug=tslug, content=markup))
+        else:
+            results.append(ContentGap(
+                _label(child), "text-leaf produced no content block"))
+    elif child.find(True) is not None:
+        # slug-None WRAPPER -> its OWN sgs/container (grid item / sibling'd recurse),
+        # NOT flattened (§2.4). DB-driven default slug (R-31-1), no literal.
+        default_slug = db_lookup.container_default_slug()
+        if default_slug is None:
+            results.append(ContentGap(
+                _label(child),
+                "slug-None wrapper: container default slug unavailable (DB absent)",
+            ))
+            return
+        content = _child_content_for_node(
+            child, default_slug, css_rules=css_rules, media_map=media_map
+        )
+        if content:
+            results.append(ChildBlock(slug=default_slug, content=content))
+        else:
+            results.append(ContentGap(
+                _label(child), "slug-None wrapper produced no container markup"))
+    else:
+        results.append(ContentGap(
+            _label(child),
+            "slug-None node with no recognisable content or child elements",
+        ))
+
+
+def _descend_container_children(
+    parent: Any, results: list, css_rules: dict | None, media_map: dict | None
+) -> None:
+    """FR-31-4.1 / Spec 31 §2.4 recurse-descent for a default `sgs/container`.
+
+    The §2.4 procedure, per container node:
+
+    * **Sole pass-through fold** — when the container does NOT itself arrange its
+      children (no grid/flex) AND has exactly ONE real child that is a slug-None
+      pass-through wrapper (the `__inner`/band shells), that inner FOLDS: its
+      content-band `max-width` lifts to this container's `contentWidth` (a ScalarLift
+      `build_block_markup` merges) and its children become THIS container's children
+      (re-descend). (§2.4 "a sole pass-through child folds in".)
+    * **Route each child** via `_route_container_child` — a recognised block emits as
+      itself; a slug-None wrapper becomes its OWN `sgs/container` (grid item /
+      sibling'd recurse — §2.4), NEVER flattened.
+    * **Uniform grid-item fold** — when THIS container arranges its direct children as
+      grid/flex items (§2.3), any box-CSS property IDENTICAL across every item folds
+      to this container's `gridItem*` defaults (§2.5, via `arrangement`). A recognised
+      content child still emits as its own block — folding only lifts the *uniform*
+      box-CSS, never the content (§2.5 "a heading … is content, not a grid item").
+
+    Recursion re-enters via the UNCHANGED recursive `recognise()`, so a nested
+    slug-None wrapper resolves the same way and a text leaf terminates as a content
+    block — termination holds on the finite DOM.
+    """
+    from converter.services.text_leaf import node_is_text_leaf
+    from converter.services import arrangement
+    from converter.services.fold_helpers import lift_content_band_max_width
+
+    element_children = [c for c in parent.children if isinstance(c, Tag)]
+    loose_text = [
+        c for c in parent.children
+        if isinstance(c, NavigableString) and c.strip()
+    ]
+    parent_arranges = arrangement.carries_arrangement(parent, css_rules or {})
+
+    # ---- Sole pass-through fold (§2.4) --------------------------------------------
+    # A non-arranging container with exactly ONE real child that is a slug-None
+    # pass-through wrapper: fold its band CSS up, then descend it. (Multiple real
+    # children, or a container that itself arranges its items, do NOT fold — each
+    # child keeps its own block/container.)
+    if not parent_arranges and len(element_children) == 1 and not loose_text:
+        only = element_children[0]
+        only_rec = recognise(only)
+        if (
+            (only_rec.slug is None or only_rec.kind == "unrecognised")
+            and not node_is_text_leaf(only)
+            and only.find(True) is not None
+        ):
+            _band: dict = {}
+            if lift_content_band_max_width(only, css_rules or {}, _band):
+                for _attr, _val in _band.items():
+                    results.append(ScalarLift(attr=_attr, value=_val))
+            _descend_container_children(only, results, css_rules, media_map)
+            return
+
+    # ---- Route each direct child (§2.4 grid item / sibling'd recurse) -------------
     for child in parent.children:
         if not isinstance(child, Tag):
             # Loose (non-Tag) text directly under the container is real content —
-            # track it as a ContentGap rather than silently dropping it (Rule 4 —
-            # QC correctness finding 1, 2026-07-01). Whitespace-only is ignored.
+            # track it as a ContentGap rather than silently dropping it (Rule 4).
             if isinstance(child, NavigableString) and child.strip():
                 results.append(ContentGap(
                     _label(parent),
@@ -311,37 +417,15 @@ def _descend_container_children(
                     "was not routed to a content block",
                 ))
             continue
-        child_rec = recognise(child)
-        if child_rec.slug is not None and child_rec.kind != "unrecognised":
-            content = _child_content_for_node(
-                child, child_rec.slug, css_rules=css_rules, media_map=media_map
-            )
-            if content:
-                results.append(ChildBlock(slug=child_rec.slug, content=content))
-            else:
-                results.append(ContentGap(
-                    _label(child),
-                    f"resolved child {child_rec.slug!r} produced no markup",
-                ))
-            continue
+        _route_container_child(child, results, css_rules, media_map)
 
-        csgs = [c for c in (child.get("class", []) or [])
-                if isinstance(c, str) and c.startswith("sgs-")]
-        if csgs and node_is_text_leaf(child):
-            tslug, markup = _emit_content_leaf(child, css_rules, media_map)
-            if markup:
-                results.append(ChildBlock(slug=tslug, content=markup))
-            else:
-                results.append(ContentGap(
-                    _label(child), "text-leaf produced no content block"))
-        elif child.find(True) is not None:
-            # slug-None wrapper (sgs `__inner` OR transparent non-sgs) with element
-            # children — descend/unwrap to reach the real content below it.
-            _descend_container_children(child, results, css_rules, media_map)
-        else:
-            results.append(ContentGap(
-                _label(child),
-                "slug-None node with no recognisable content or child elements",
+    # ---- Uniform grid-item box-CSS fold -> gridItem* (§2.5) -----------------------
+    # Only when THIS container arranges its direct children as grid/flex items.
+    if parent_arranges and len(element_children) >= 2:
+        default_slug = db_lookup.container_default_slug()
+        if default_slug is not None:
+            results.extend(arrangement.lift_uniform_grid_item_css(
+                element_children, css_rules or {}, default_slug,
             ))
 
 
@@ -1144,9 +1228,20 @@ def build_block_markup(
     # Assemble the final attr dict: variant → CSS → content (content wins collision).
     attrs: dict = dict(variant_attrs(rec))   # step 1: variant attrs
     attrs.update(css_attrs)                  # step 2: CSS Writes (OUTER box/grid/etc.)
-    for r in results:                        # step 3: content ScalarLifts overwrite
+    # step 3: ScalarLifts. CONTENT lifts OVERWRITE css_attrs (content is ground truth,
+    # CSS the layout floor — documented). But the §2.5 uniform grid-item fold emits
+    # gridItem* (GRID-layer) DEFAULTS, which must NOT overwrite a value the CSS pass
+    # already set — the frozen `_lift_uniform_grid_item_css` setdefault contract
+    # (convert.py:2888, "earlier paths win"; QC council MAJOR). Content NEVER targets a
+    # gridItem* attr (the content resolvers emit none), so keying the setdefault on the
+    # DB-sourced GRID-layer prefix affects ONLY the arrangement fold, never content.
+    _grid_prefix = db_lookup.layer_attr_prefix("GRID")  # 'gridItem' (DB layer map, not a literal)
+    for r in results:
         if isinstance(r, ScalarLift):
-            attrs[r.attr] = r.value
+            if _grid_prefix and r.attr.startswith(_grid_prefix):
+                attrs.setdefault(r.attr, r.value)  # grid-item default — CSS pass wins
+            else:
+                attrs[r.attr] = r.value            # content wins on collision
 
     # step 4: FR-31-20 variant detection (port of convert.py:4892-4919). Set the
     # variant-selector attr from the draft's LIFTED fingerprint (the attrs just

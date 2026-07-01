@@ -2621,6 +2621,18 @@ _LAYER_PREFIXES: dict[str, str] = {
     "GRID":    "gridItem",  # per-grid-item attrs:      gridItemPadding, gridItemShadow
 }
 
+
+def layer_attr_prefix(layer: str) -> str | None:
+    """Return the camelCase attr prefix for a structural layer (OUTER/CONTENT/GRID).
+
+    The single public accessor for ``_LAYER_PREFIXES`` (GRID -> 'gridItem') so callers
+    identify a layer's attr family WITHOUT hardcoding the prefix literal (R-31-1). Used
+    by build_block_markup to apply setdefault (CSS-pass-wins) semantics to the uniform
+    grid-item fold, mirroring the frozen ``_lift_uniform_grid_item_css`` setdefault
+    contract (convert.py:2888). Returns None for an unknown layer.
+    """
+    return _LAYER_PREFIXES.get(layer)
+
 # CSS property equivalence for the CONTENT layer: max-width on a content-area
 # element is semantically the content-width constraint, equivalent to ``width``
 # for attr-matching purposes.  This mirrors the existing converter logic at
