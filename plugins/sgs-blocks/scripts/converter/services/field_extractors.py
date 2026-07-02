@@ -102,8 +102,10 @@ def extract_field_value(element: Tag, role: str, media_map: dict | None = None) 
     # ------------------------------------------------------------------
     # icon-slug — priority chain (data-icon > data-lucide > inline <svg>
     #             via icon_resolver > BEM modifier)
+    # 'identity' is the DB role on an icon block's source attr (sgs/icon.iconSource);
+    # it resolves to an icon slug via the SAME chain (D-2026-07-02).
     # ------------------------------------------------------------------
-    if role == "icon-slug":
+    if role in ("icon-slug", "identity"):
         # Priority 1: data-icon / data-lucide attribute on the element.
         for attr_name in ("data-icon", "data-lucide"):
             val = element.get(attr_name)

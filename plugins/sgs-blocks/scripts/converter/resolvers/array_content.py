@@ -1,158 +1,206 @@
-"""array_content.py — Array / repeater content lift (Spec 31 §3.B4, D248).
+"""array_content.py — Array / repeater content lift (Spec 31 §3.B4 / §13.3 FR-31-2.5).
 
-PATH A (Bean 2026-06-28): lift each item's content directly into the block's
-existing array attr (``attrs[arrayAttr] = [item_dict, ...]``).  Zero per-block
-code; the field keys / selectors / roles are DATA in the ``array_item_fields``
-DB table, seeded from ``block.json supports.sgs.arrayItemSchema`` by
-sgs-update-v2.py Stage 1.
+DB-RECOGNITION lift (2026-07-02 rewrite — replaces the hand-declared
+``array_item_fields`` mechanism, which the spec's own §3.B.0.1 named an R-31-9
+violation). NO hand-declared per-block selectors anywhere: item detection is
+structural (sibling-class DOM traversal, §2.4) and each item's fields are matched
+to the block's own item schema by the shared recognition machinery
+(``bem_element_to_canonical_slot`` → ``canonical_slot_for`` → role), with the
+role-fallback layer for a draft child whose element name doesn't match a field
+name but whose ROLE does (Bean 2026-07-02: a badge caption classed ``__text``
+carries ``text-content`` functionality, so it fills the ``label`` field which is
+also ``text-content``).
 
-Capability gate: a block MUST carry ``array-content-lift`` in
-``block_capabilities`` to be processed (MF-5 / R-31-1 / R-31-9 opt-in pattern,
-identical to ``scalar-content-lift``).  Config arrays (role=layout) are never
-in the schema, so no explicit role-filter is needed in this resolver.
+The block's item field NAMES come from its own ``block.json`` ``items.properties``
+(the block's declared data model — read at convert-time exactly as
+``has_inner.py`` reads ``save.js``/``render.php``; NOT a hardcoded selector).
+Each field's (slot, extraction-role) is DERIVED from the DB:
+``canonical_slot_for(field_name)`` → ``standalone_block_for(slot)`` →
+``block_attributes.role``. A draft child's slot + role are derived the same way.
 
-Conservation (STOP-27 / Rule 4):
-  - items_seen == filled_items + item_gaps — hard ``raise ContentConservationError``,
-    never ``assert`` (``-O`` strips assert, Rule 4 hole).
-  - An item with ZERO non-gap-pending fields lifted → loud ``ContentGap``, never
-    silent skip.  An item with ≥1 non-gap-pending field resolved counts as
-    "filled" even if it also has gap-pending fields.
-  - A field whose selector matches nothing in the item element → omit the key
-    (the block's render.php per-field default applies); this is NOT a gap because
-    the field is optional in the rendered output.
+Two matching layers per draft child (Bean's design, verified on real data):
+  L1 — name/slot match: child's canonical slot == a field's canonical slot.
+  L2 — role fallback:   else child's content role == an unmatched field's role,
+       when that role is unique among the item's remaining fields.
 
-Gap-pending fields (role='gap-pending'):
-  - These fields are NOT lifted — the role has no handler yet (icon slugs,
-    url-href, boolean flags, nested arrays, etc.).
-  - Instead, a ``ContentGap`` is emitted for each gap-pending field across all
-    items, with the ``gap_reason`` from the DB row (seeded from block.json
-    ``gapReason``).  These field-level gaps go into a SEPARATE ``field_gaps``
-    list and are returned alongside item-level gaps.
-  - Gap-pending fields are EXCLUDED from item conservation counting — an item
-    is still "filled" if it has ≥1 real (non-gap-pending) field resolved.
+Output shape = Tier B (scalar array-of-dicts): ``attrs[arrayAttr] = [item_dict…]``,
+one dict per item keyed by the block's field names — what the block's render.php
+``foreach($items)`` reads. (Tier A "one child block per item" — array_item_slot_for
+canonical_slot populated — is a future branch; no current block uses that shape.)
 
-No block-slug literals (scanned by gates/no_slug_literal.py):
-  - the resolved array attrs come from db_lookup.block_attrs() (attr_type='array')
-  - the per-item schemas come from db_lookup.array_item_fields()
-  - the capability gate uses db_lookup.capabilities_for()
-  all three are DB-driven; the resolver names no block.
+Capability gate: a block MUST carry ``array-content-lift`` (opt-in, R-31-1).
+Conservation (STOP-27 / Rule 4): items_seen == filled + item_gaps, hard ``raise``.
+
+No block-slug literals (gates/no_slug_literal.py): array attrs from
+``block_attrs(attr_type='array')``; field names from the block's own block.json;
+all resolution via ``db_lookup`` / ``recognise_helpers`` DB accessors.
 """
 from __future__ import annotations
 
+import functools
+import json
+import re
+import sqlite3
+from pathlib import Path
 from typing import Any
 
 from bs4 import Tag
 
 from converter.context import ContentConservationError, ContentGap
 from converter.services.field_extractors import extract_field_value
+from converter.services.recognise_helpers import bem_element_to_canonical_slot
 from orchestrator.converter_v2 import db_lookup
 
-
-# ---------------------------------------------------------------------------
-# Capability tag constant (NOT a block slug — the no_slug_literal gate tracks
-# slug/variant/slot idents, not capability strings, per the gate's docstring).
-# ---------------------------------------------------------------------------
 _ARRAY_LIFT_CAP = "array-content-lift"
 
+# scripts/converter/resolvers/array_content.py -> plugins/sgs-blocks/
+_PLUGIN_DIR = Path(__file__).resolve().parents[3]
+_BLOCKS_DIR = _PLUGIN_DIR / "src" / "blocks"
 
-# ---------------------------------------------------------------------------
-# Per-item field extractor (capability-bypassed per MF-3)
-# ---------------------------------------------------------------------------
+# A BEM element class: sgs-<block>__<element>[--<modifier>]. Capture <element>.
+_BEM_ELEMENT_RE = re.compile(r"^sgs-[a-z0-9-]+__([a-z0-9-]+?)(?:--[a-z0-9-]+)*$")
 
-def _lift_field(item_node: Tag, field_selector: str, role: str, media_map: dict) -> Any:
-    """Lift one field from an item element by its selector + role.
 
-    Returns the lifted value (str / dict / int) or ``None`` when the selector
-    matched nothing inside the item.  A ``None`` return means the key is
-    OMITTED from the item dict (not a gap — the field is optional).
+@functools.lru_cache(maxsize=1)
+def _content_roles() -> frozenset[str]:
+    """The content-bearing role names, DB-derived (roles.classification), used to
+    pick a slot's EXTRACTION role from its standalone block's attrs. DB-driven,
+    not a hardcoded vocabulary (R-31-1)."""
+    conn = sqlite3.connect(db_lookup.SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT role_name FROM roles WHERE classification = 'content-bearing'"
+        ).fetchall()
+    finally:
+        conn.close()
+    return frozenset(r[0] for r in rows)
 
-    This helper is capability-bypassed: it operates directly on the item sub-
-    element, without the ``scalar-content-lift`` DB gate that ``lift_scalar_content``
-    applies (item blocks like ``sgs/button`` / ``sgs/label`` / ``sgs/icon`` do NOT
-    carry the scalar-content-lift capability, so re-using that function would
-    return ``{}`` for every item — MF-3 hole).
 
-    Role→value dispatch is DELEGATED to ``field_extractors.extract_field_value``
-    (Spec 31 §3.B.0 shared library).  Only the element-finding logic (class-
-    selector lookup + item-IS-element check) lives here.
+def _bem_token(node: Tag) -> str | None:
+    for c in (node.get("class") or []):
+        m = _BEM_ELEMENT_RE.match(c)
+        if m:
+            return m.group(1)
+    return None
 
-    Legacy DB rows may carry role ``"number"`` for the star-count role; this
-    is mapped to ``"rating"`` before dispatch so both labels reach the same
-    handler in the shared lib.
+
+def _slot_extraction_role(slot: str | None) -> str | None:
+    """Derive the field_extractors role for a canonical slot, DB-driven.
+
+    slot -> standalone block -> its content-bearing attr role. Two documented
+    normalisations for slots whose block role isn't a field_extractors handler:
+      - the ``icon`` slot's block (sgs/icon) carries role='identity' → extract as
+        'icon-slug' (the shared icon handler).
+      - the ``link`` slot's block (sgs/button) → 'url-href' (nearest <a href>).
     """
-    # Selector is a BEM class (with or without leading '.'); strip the dot for
-    # BeautifulSoup's class= lookup (same pattern as lift_scalar_content).
-    class_name = field_selector.strip().lstrip(".")
-    if not class_name:
+    if not slot:
         return None
-
-    element = item_node.find(class_=class_name) if item_node.get("class") and \
-        class_name not in (item_node.get("class") or []) else None
-    # Also check if the item node itself carries the class (item IS the field element)
-    if element is None:
-        if class_name in (item_node.get("class") or []):
-            element = item_node
-        else:
-            element = item_node.find(class_=class_name)
-
-    if element is None or not isinstance(element, Tag):
+    block = db_lookup.standalone_block_for(slot)
+    if not block:
         return None
+    content_roles = _content_roles()
+    for name, info in (db_lookup.block_attrs(block) or {}).items():
+        role = info.get("role")
+        if role in content_roles:
+            # Return the block's own content role verbatim — the shared
+            # field_extractors dispatches it (incl. 'identity' → icon-slug, in the
+            # extractor, not here: 'role' is a no_slug_literal-guarded name).
+            return role
+    return None
 
-    # Map legacy "number" role → canonical "rating" so both reach the same
-    # star-count handler in the shared lib.  No other remapping needed.
-    resolved_role = "rating" if role == "number" else role
 
-    return extract_field_value(element, resolved_role, media_map)
+def _item_field_schema(slug: str, array_attr: str) -> list[tuple[str, str | None, str | None]]:
+    """The block's item field schema for an array attr: [(field_key, slot, role)].
+
+    Field NAMES come from the block's own block.json ``items.properties`` (the
+    block's data model — same convert-time block.json read as has_inner.py).
+    Each field's (slot, extraction-role) is DERIVED from the DB. Fields that
+    resolve to no content role (e.g. ``pending`` boolean, ``iconSvg`` companion)
+    return role=None and are skipped by the lifter.
+    """
+    block_dir = _BLOCKS_DIR / slug.split("/")[-1]
+    bj = block_dir / "block.json"
+    if not bj.exists():
+        return []
+    try:
+        data = json.loads(bj.read_text(encoding="utf-8", errors="replace"))
+    except (ValueError, OSError):
+        return []
+    attr = (data.get("attributes", {}) or {}).get(array_attr, {}) or {}
+    props = ((attr.get("items", {}) or {}).get("properties", {}) or {})
+    schema: list[tuple[str, str | None, str | None]] = []
+    for field_key in props:
+        slot = db_lookup.canonical_slot_for(field_key)
+        role = _slot_extraction_role(slot)
+        schema.append((field_key, slot, role))
+    return schema
 
 
-# ---------------------------------------------------------------------------
-# Item extractor
-# ---------------------------------------------------------------------------
+def _find_item_nodes(node: Tag) -> list[Tag]:
+    """Structural item detection (§2.4 sibling-class traversal): the LARGEST group
+    of ≥2 direct-sibling elements that share the same BEM element token, anywhere
+    in the subtree. That repeating group is the array's items (e.g. the 4
+    ``__badge`` siblings under ``__inner``). No hand-declared item selector."""
+    best: list[Tag] = []
+    for parent in node.find_all(True):
+        groups: dict[str, list[Tag]] = {}
+        for kid in parent.find_all(recursive=False):
+            if not isinstance(kid, Tag):
+                continue
+            tok = _bem_token(kid)
+            if tok:
+                groups.setdefault(tok, []).append(kid)
+        for group in groups.values():
+            if len(group) >= 2 and len(group) > len(best):
+                best = group
+    return best
 
-def _extract_item(
+
+def _lift_item(
     item_node: Tag,
-    field_rows: list[dict],
+    schema: list[tuple[str, str | None, str | None]],
     media_map: dict,
-    attr_name: str,
-    idx: int,
-) -> tuple[dict, list]:
-    """Lift all non-gap-pending fields for one item element.
-
-    Returns ``(item_dict, field_gaps)`` where:
-      - ``item_dict``   — key→value for all resolved non-gap-pending fields
-        (possibly empty when no selector matched).
-      - ``field_gaps``  — list of ``ContentGap`` for each gap-pending field
-        in this item (one gap per gap-pending field key, regardless of whether
-        the selector matched).
-
-    Returns ``(None, [])`` when ``item_node`` is not a Tag (safety guard).
-    """
-    if not isinstance(item_node, Tag):
-        return None, []  # type: ignore[return-value]
-    item_dict: dict = {}
-    field_gaps: list = []
-    for frow in field_rows:
-        field_key = frow["field_key"]
-        field_selector = frow["field_selector"]
-        role = frow["role"]
-        if role == "gap-pending":
-            reason = frow.get("gap_reason") or f"{field_key} has no lift handler"
-            field_gaps.append(
-                ContentGap(
-                    f"{attr_name}[{idx}].{field_key}",
-                    reason,
-                )
-            )
+) -> dict:
+    """Lift one item into a field dict via the 2-layer match (slot, then role)."""
+    # Pre-resolve each direct-descendant content child's (slot, role) once.
+    children: list[tuple[Tag, str | None, str | None]] = []
+    for ch in item_node.find_all(True):
+        if not isinstance(ch, Tag):
             continue
-        value = _lift_field(item_node, field_selector, role, media_map)
-        if value is not None:
-            item_dict[field_key] = value
-    return item_dict, field_gaps
+        cslot = bem_element_to_canonical_slot(ch)
+        if cslot is None:
+            continue
+        crole = _slot_extraction_role(cslot)
+        children.append((ch, cslot, crole))
 
+    item: dict = {}
+    used: set[int] = set()
+    for field_key, fslot, frole in schema:
+        if frole is None:
+            continue
+        match: Tag | None = None
+        # L1 — name/slot match
+        for ch, cslot, _crole in children:
+            if id(ch) in used:
+                continue
+            if fslot is not None and cslot == fslot:
+                match = ch
+                break
+        # L2 — role fallback (child's content role == this field's role)
+        if match is None:
+            role_candidates = [
+                ch for ch, _cs, crole in children
+                if id(ch) not in used and crole == frole
+            ]
+            if len(role_candidates) == 1:
+                match = role_candidates[0]
+        if match is not None:
+            value = extract_field_value(match, frole, media_map)
+            if value is not None:
+                item[field_key] = value
+                used.add(id(match))
+    return item
 
-# ---------------------------------------------------------------------------
-# Public entry point
-# ---------------------------------------------------------------------------
 
 def lift_array_content(
     node: Tag,
@@ -161,29 +209,12 @@ def lift_array_content(
 ) -> tuple[dict, list]:
     """Lift array / repeater attrs for a block from its draft DOM subtree.
 
-    Returns ``(attrs_dict, gaps_list)`` where:
-      - ``attrs_dict`` maps ``arrayAttr → [item_dict, ...]`` (possibly multiple
-        array attrs per block).
-      - ``gaps_list``  is a list of ``ContentGap`` items for items that produced
-        zero field lifts (loud, never silent).
-
-    Capability gate: if the block does NOT carry ``array-content-lift``, both
-    return values are empty (no-op, no exception).
-
-    Conservation invariant (STOP-27): for each array attr,
-    ``items_seen == filled_items + item_gaps``.  Gap-pending field gaps are
-    accumulated separately and appended to ``gaps_list`` AFTER the item-level
-    conservation check passes.  Violation → ``raise ContentConservationError``.
-
-    Gap-pending fields (role='gap-pending') are NOT lifted — they emit one
-    ``ContentGap`` per field×item with the ``gap_reason`` from the DB.  An
-    item with ≥1 real field resolved still counts as "filled" in conservation.
-
-    No block-slug literals — all routing is via DB accessors.
+    Returns ``(attrs_dict, gaps_list)`` — ``attrs_dict`` maps ``arrayAttr →
+    [item_dict, …]``; ``gaps_list`` holds a ``ContentGap`` per item that matched
+    the structural item pattern but produced zero fields (loud, never silent).
     """
     _media = media_map or {}
 
-    # Capability gate (MF-5 / R-31-1 opt-in pattern, mirrors scalar_content.py).
     if _ARRAY_LIFT_CAP not in db_lookup.capabilities_for(slug):
         return {}, []
 
@@ -191,72 +222,46 @@ def lift_array_content(
     if not attrs:
         return {}, []
 
+    item_nodes = _find_item_nodes(node)
+
     result_attrs: dict = {}
     all_gaps: list = []
 
     for attr_name, info in attrs.items():
-        if not isinstance(info, dict):
+        if not isinstance(info, dict) or info.get("attr_type") != "array":
             continue
-        if info.get("attr_type") != "array":
+        schema = _item_field_schema(slug, attr_name)
+        if not schema or not any(role for _k, _s, role in schema):
+            # No content-bearing item fields for this array attr — not this
+            # resolver's concern (e.g. a config array). Skip, not a gap.
             continue
-
-        # Look up the per-item field schema for this attr.
-        field_rows = db_lookup.array_item_fields(slug, attr_name)
-        if not field_rows:
-            # No schema authored for this array attr yet — skip silently.
-            # (This is a DB-data gap, not a conservation violation.)
+        if not item_nodes:
             continue
-
-        # item_selector: all field rows for the same attr share the same item_selector
-        # (seeded from the single arrayItemSchema[attr].itemSelector value).
-        item_selector = field_rows[0]["item_selector"]
-        item_class = item_selector.strip().lstrip(".")
-        if not item_class:
-            continue
-
-        item_nodes = node.find_all(class_=item_class)
-        items_seen = len(item_nodes)
 
         filled: list[dict] = []
         item_gaps: list = []
-        field_gaps: list = []
-
         for i, item_node in enumerate(item_nodes):
-            item_dict, fgaps = _extract_item(item_node, field_rows, _media, attr_name, i)
-            field_gaps.extend(fgaps)
-            if item_dict is None:
-                # Non-Tag node — conservative: count as an item gap.
-                item_gaps.append(
-                    ContentGap(
-                        f"{attr_name}[?]",
-                        "item node is not a Tag — cannot extract fields",
-                    )
-                )
-            elif len(item_dict) == 0:
-                # Zero non-gap-pending fields lifted → loud ContentGap (Rule 4 / STOP-27).
-                item_gaps.append(
-                    ContentGap(
-                        f"{attr_name}[{len(filled) + len(item_gaps)}]",
-                        "item element matched the selector but no non-gap-pending"
-                        " fields were extracted"
-                        " — check arrayItemSchema field selectors vs draft classes",
-                    )
-                )
-            else:
+            item_dict = _lift_item(item_node, schema, _media)
+            if item_dict:
                 filled.append(item_dict)
+            else:
+                item_gaps.append(
+                    ContentGap(
+                        f"{attr_name}[{i}]",
+                        "item matched the structural sibling pattern but no field"
+                        " resolved by slot-name or role-fallback",
+                    )
+                )
 
-        # Conservation invariant (STOP-27): item-level only; field_gaps are separate.
-        # raise, never assert (-O strips assert, Rule 4 hole).
-        if items_seen != len(filled) + len(item_gaps):
+        # Conservation (STOP-27): items_seen == filled + item_gaps. raise, never assert.
+        if len(item_nodes) != len(filled) + len(item_gaps):
             raise ContentConservationError(
                 f"lift_array_content: {slug}.{attr_name} — "
-                f"{items_seen} items_seen != "
-                f"{len(filled)} filled + {len(item_gaps)} item_gaps"
+                f"{len(item_nodes)} items != {len(filled)} filled + {len(item_gaps)} gaps"
             )
 
         if filled:
             result_attrs[attr_name] = filled
         all_gaps.extend(item_gaps)
-        all_gaps.extend(field_gaps)
 
     return result_attrs, all_gaps
