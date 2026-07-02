@@ -8,7 +8,7 @@ Append-only. Most-recent first.
 
 ## 2026-07-02 (LATE) — D257: DB-recognition array field-lift + role-fallback replaces the hand-declared arrayItemSchema (R-31-9 violation); items.properties data model seeded to the DB; client-copy cheats removed.
 
-**D257 — the array/repeater lift (Spec 31 §3.B4 / FR-31-2.5) rebuilt DB-driven. 8 commits on `main` (`c7fda7db`→`f892d585`), NOT pushed. 306 tests + cheat-gate + F5/F6 green; convert.py byte-identical (D-MODULAR).**
+**D257 — the array/repeater lift (Spec 31 §3.B4 / FR-31-2.5) rebuilt DB-driven. 7 commits on `main` (`c7fda7db`→`f892d585`), NOT pushed. 306 tests + cheat-gate + F5/F6 green; convert.py byte-identical (D-MODULAR).**
 
 - **Mechanism (Bean's design, `c7fda7db`):** `converter/resolvers/array_content.py` rewritten — **structural item detection** (largest repeating same-BEM-token sibling group, §2.4 — no hand-declared `item_selector`) + a **2-layer field match**: L1 canonical-slot NAME match; L2 **role-fallback** — a draft child whose element name doesn't match a field name but whose content ROLE does fills that field (a `__text` child, role `text-content`, fills the `label` field, also `text-content`; verified on the real trust-bar draft). Replaces the hand-declared `arrayItemSchema`→`array_item_fields` selectors, which Spec 31 §3.B.0.1 names an R-31-9 violation.
 - **Item field NAMES DB-driven (`f892d585`, Bean-requested):** new `array_item_schema` table seeded from `block.json attributes.<attr>.items.properties` (the block's data model) by `sgs-update-v2.py`; `db_lookup.array_item_field_names()` reads it; the resolver reads the DB, not `block.json` at convert-time. Old `array_item_fields` seeder retired → prune (`4d500bf6`).

@@ -17,9 +17,9 @@ session_date: 2026-07-02
 7. **F5 `no_slug_literal` gate caught 3 per-slot/role literal carve-outs** (`slot=='icon'`, `slot=='link'`, `role=='identity'`, `role in tuple`) — all refactored to DB-derived or moved to the un-gated shared `field_extractors` (→ STOP-41).
 
 ## Current State
-- **Branch:** `main` at `f892d585`. D-ceiling **D256** (add D257 next session for the array rebuild).
+- **Branch:** `main` at `550b4b41` (docs) / code at `f892d585`. D-ceiling **D257** (added this session for the array rebuild).
 - **Tests:** 306 pass, 1 skip, 2 xfail; cheat-gate exit 0; F5/F6 green; `convert.py` byte-identical (D-MODULAR).
-- **Push status: NOT pushed.** 8 commits `c7fda7db`→`f892d585` (+ the earlier held D254/§2 set), pending Bean sign-off + LANDED.
+- **Push status: NOT pushed.** 7 commits `c7fda7db`→`f892d585` (+ the earlier held D254/§2 set), pending Bean sign-off + LANDED.
 - **Live:** NOT yet LANDED on page 8 (Task 1 next session). New engine opt-in (`SGS_NEW_ENGINE=1`); prod default = frozen convert.py (STOP-28).
 - **Uncommitted (NOT mine):** lucide-icons.php (npm drift), the W3 plan, my design-brief/synthesis reports.
 
