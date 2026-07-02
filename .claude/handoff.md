@@ -1,9 +1,57 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-thread: cloning-pipeline / FR-31-4 container-default BUILT + LANDED + Bean-review fixes
-session_date: 2026-07-01
+thread: cloning-pipeline / §2 layer-extraction BUILT+LANDED + Layer-A + layout trigger + audit
+session_date: 2026-07-02
 ---
+
+# Session Handoff — 2026-07-02 (§2 layer-extraction BUILT + LANDED + Layer-A bare-tag lift + layout trigger + image lift + media-sideload determinism; qc-council audit CLEAN; Bean review 2/5 fixed, rest diagnosed)
+
+## Completed This Session
+1. **WS-A — Spec 31 §2.4/§2.5 layer-extraction built (`87816090`).** `converter/services/arrangement.py` (NEW: `carries_arrangement`, `lift_uniform_grid_item_css` DB-resolved via `attr_for_layer_property`); `extraction.py` `_descend_container_children` rewritten to §2.4 sole-pass-through-fold vs grid-item / slug-None-wrapper→own-container + `_route_container_child`. DELETED the D254 blind-descend. Fixed the brand `__content` flatten (2 grid items, not 4).
+2. **Layer A — bare content tags land two ways, §3.B.0 (`989565e5`).** Mechanism B atomic fallback (bare `<p>`/`<h4>` that G1+global-BEM miss → `recognise()` atomic child — lands the brand quote's 3 body paragraphs). Mechanism A bare-tag → built-in scalar element via DB chain (element token → `block_for_slot_token` → reverse `atomic_tag_map`), fallback-only + consume-once + opt-in-gated.
+3. **§2.3 layout trigger + string image-object lift (`8573c3c6`).** `arrangement.layout_attrs` emits `layout:grid`/`flex` (wrapper renders `display:grid` ONLY when `'grid'===$layout`; gridTemplateColumns inert without it) — fixed ingredients grid + social-proof flex-row. `run_mechanism_leaf` lifts `role=image-object`+`type=string` (sgs/media.imageUrl) — was skipped → empty media.
+4. **media-sideload determinism (`db501007`).** Skips already-hosted absolute URLs instead of joining them onto mockup_root (mangled path → 12 errors → 0). Answers Bean: media was never manual — a sideload path bug.
+5. **LANDED on sandybrown page 8** (2 `/sgs-clone SGS_NEW_ENGINE=1` deploys). Live: quote body renders, brand 2-col grid, ingredients grid, social-proof flex-row, images resolve, 0 invalid blocks.
+6. **qc-council audit (Bean-requested) — CLEAN + UNIVERSAL.** 2 cross-model raters re-ran gates fresh + read code file:line: all 5 fixes UNIVERSAL (no per-block/slug/section gating), cheat-free (§7a clean, cheat-gate 0 NEW), rule-compliant (R-31-1..15). PROVEN: ingredients 2-col-not-4 is a pre-existing dropped-non-device-breakpoint gap, NOT a cheat these fixes introduced.
+
+## Current State
+- **Branch:** `main` at `db501007`. D-ceiling **D255** (add D256 next).
+- **Tests:** 326 pass (17 new), 1 skip, 2 xfail; cheat-gate exit 0; `convert.py` byte-identical (D-MODULAR).
+- **Push status: NOT pushed.** 4 new commits (`87816090`→`db501007`) + earlier D254 commits, held pending Bean sign-off + remaining fixes.
+- **Live:** clone on sandybrown page 8. New engine opt-in (`SGS_NEW_ENGINE=1`); prod default = frozen convert.py (STOP-28).
+- **Uncommitted (NOT mine):** W3 plan (WIP), lucide-icons.php (npm drift).
+
+## Known Issues / Blockers (Bean re-review — 2 of 5 fixed, rest diagnosed)
+- ✅ **#1 ingredients grid** renders but 2×2, should be **4-in-a-row** (desktop `@media(min-width:600px){repeat(4,1fr)}` DROPPED — 600 not a device tier). ✅ **#5 trustpilot/social-proof** now flex-row.
+- ❌ **#3 products** + **#4 gift** stack: `layout:grid` lands but the desktop multi-col is at `min-width:768`/`640`. **ONE root cause (Bean-confirmed): `min-width:X` must emit EVERY device tier ≥ X; non-device breakpoints (600/640) need §3 F-ii passthrough instead of gapping.**
+- ❌ **#1b ingredient icon** — `__icon` emoji doesn't lift (draft `.sgs-info-box__icon` vs attr selector `.sgs-info-box__media`) + info-box is InnerBlocks (Layer-B).
+- ❌ **trust-bar spurious 1st row** — inserted first grid item concatenating all 4 columns' text in all-caps.
+- ❌ **product-card body = plain text** (typed mode) — the Layer-B rebuild Bean specced (next-session-prompt Task 1).
+
+## Next Priorities (in order)
+1. **Product-card typed-mode Layer-B rebuild** (Bean-specced, feature-parity with bound mode) — next-session-prompt Task 1.
+2. **Unified `min-width` tier fix** (#1 4-col, #3 products, #4 gift).
+3. **#1b ingredient icon + trust-bar spurious row.**
+4. **Push** held commits on sign-off.
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `plugins/sgs-blocks/scripts/converter/services/arrangement.py` | NEW — carries_arrangement / lift_uniform_grid_item_css / layout_attrs |
+| `plugins/sgs-blocks/scripts/converter/services/extraction.py` | §2.4 descent rewrite + _route_container_child + Mechanism-B atomic fallback + build_block_markup layout trigger + gridItem setdefault + run_mechanism_leaf string image-object |
+| `plugins/sgs-blocks/scripts/converter/resolvers/scalar_content.py` | bare-tag built-in-element matching (fallback-only, opt-in-gated) |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | `layer_attr_prefix` accessor |
+| `plugins/sgs-blocks/scripts/orchestrator/media-sideload.py` | skip already-hosted absolute URLs |
+| `converter/tests/test_arrangement.py` + `test_bare_tag_lift.py` | NEW — 17 tests |
+
+## Notes for Next Session
+- **Stacking (#1/#3/#4) is ONE root cause, Bean-confirmed:** `min-width:X` = "X and up" → emit every device tier ≥ X (768→Tablet+Desktop) AND preserve non-device breakpoints (600/640) via §3 F-ii passthrough. Lives in the CSS tier-mapping (`styling_helpers`/`grid.py`/`context.py`), NOT this session's files.
+- **LANDED caught what emit-green couldn't** — the layout trigger looked right in the emit; only the live page + Bean's eye showed the desktop column count wrong (R-31-13).
+- **"#1 fixed" was a false-positive I called** — saw "grid + 4 items", declared victory without checking vs the draft's actual desktop layout. Corrected (assume-nothing-positive).
+
+## Next Session Prompt
+See `.claude/next-session-prompt.md` (product-card Layer-B spec + min-width tier fix + carried-forward 7 rules / reading gate / ritual / STOP catalogue 1..39).
 
 # Session Handoff — 2026-07-01 LATE (Spec 31 → UNIVERSAL-CLONING-PIPELINE rewrite + rename + cheat-gate coverage; §2 build teed up)
 
