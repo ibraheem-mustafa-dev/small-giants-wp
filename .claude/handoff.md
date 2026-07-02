@@ -5,6 +5,51 @@ thread: cloning-pipeline / DB-recognition array field-lift + role-fallback (repl
 session_date: 2026-07-02
 ---
 
+# Session Handoff — 2026-07-02 LATER (D258 — array-item content lift COMPLETED for the 5 gap-blocks + LANDED on page 8; name-heuristic seeder trialled + REJECTED; backlog re-preserved)
+
+## Completed This Session
+1. **Array-item content lift COMPLETED (D258, commit `8375debb`).** The 5 gap-blocks (pricing-table/icon-list/social-icons/card-grid/trust-bar) now lift every content field. Mechanism: each dropping field DECLARES its extraction `role` in `block.json items.properties.<field>.role` (seeded to a new `array_item_schema.role` column by the existing Stage-1 seeder — no parallel table); the resolver prefers the declared role.
+2. **Resolver gained 3 matchers (`array_content.py`):** L1b **BEM-element-segment** (pricing-table's 5 same-role text fields each find their own element; one `<a>__cta` feeds both `ctaText`+`ctaUrl` by different roles), L1c **flat-item self-extraction** (social-icon `<a>` carries fields on itself), + a **root-inclusion fix** in `_find_item_nodes` (direct-child-of-root items — icon-list/card-grid/social-icons — were never detected; real pre-existing bug).
+3. **Name-heuristic seeder trialled + REJECTED (Bean-led).** Tried auto-deriving attr→element in `assign-canonical.py` (peel suffix + last camelCase segment). REVERTED — it mis-guesses (`titleColour`→`__heading` when real is `__name`) + over-resolves booleans. Ownership comes from the block's code/declaration (render.php applies it, edit.js groups it), never name-parsing → **Spec 31 FR-31-2.1a** (+ FR-31-2.5a array recognition signature).
+4. **LANDED on page 8 (STOP-21).** `SGS_NEW_ENGINE=1` clone deployed to sandybrown page 8 (the real homepage). Live-verified: trust-bar renders its 4 real draft badges (icon + label), no phantom row, no default cheat — the labels ARE the draft's actual captions (lifted, not defaulted).
+5. **Wiring verified:** the resolver runs on the live `extract_content` dispatch (`extraction.py:1013-1049` → `run_mechanism_array`), not just present.
+6. **Backlog re-preserved in `parking.md`** (Bean flagged tracking had narrowed to this session's cleanup) — 6 follow-ups + a D101 carry-forward reminder naming the earlier items.
+
+## Current State
+- **Branch:** `main` at `aba1d5a3` (code at `8375debb`). D-ceiling **D258**.
+- **Tests:** 311 pass (+5 array regression), 1 skip, 2 xfail; cheat-gate 0 new (73 baselined); `convert.py` byte-identical (D-MODULAR).
+- **Push status: NOT pushed.** `8375debb` (code) + `ceb4dc12`/`aba1d5a3` (parking) on `main`, held for Bean's page-8 eye sign-off.
+- **Live:** clone on sandybrown page 8. New engine opt-in (STOP-28 intact).
+
+## Known Issues / Blockers
+- **`P-MINWIDTH-CROSSDEVICE-TIER` (TOP):** trust-bar renders 2-col not 4-across — `@media(min-width:600px){repeat(4,1fr)}` dropped. `min-width:X`="X and up" must emit every device tier ≥ X + §3 F-ii passthrough for 600/640. Same root cause as products/gift/ingredients (D256). Bean: "very important".
+- **`P-RAWSVG-FILLED-VS-OUTLINE`:** the 4th-badge star should be FILLED; the block's icon CSS forces `fill:none;stroke` on every SVG uniformly → the raw star renders as outline. Fix = a **client-facing block control** (per-icon fill: outline/filled) per Bean's principle "every pipeline capability must ship as a customisable block feature for clients", then render exempts a `filled` icon from the uniform `fill:none`.
+
+## Next Priorities (in order)
+1. **`P-MINWIDTH-CROSSDEVICE-TIER`** — the highest-value fix (trust-bar 4-col + products/gift/ingredients in one).
+2. **`P-RAWSVG-FILLED-VS-OUTLINE`** — star fill as a client block control.
+3. **`P-FINGERPRINT-MIGRATION`** (62 entries in `.claude/scratch/fingerprint-migration-entries.txt`; core/* keep-skip + reseed-diff) · **`P-ARRAY-RECOGNITION-SCORING`** · **`P-SINGLE-ITEM-ARRAYS`** · push held commits.
+4. **Carry-forward (D101):** product-card typed-mode Layer-B rebuild, ingredient `__icon` emoji lift, cognitive-complexity lint on `array_content.py`, P-CLONE-FIDELITY-FULL-ALIGNMENT families.
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `plugins/sgs-blocks/scripts/converter/resolvers/array_content.py` | declared-role + L1b BEM-segment + L1c flat-item + root-inclusion fix |
+| `plugins/sgs-blocks/scripts/sgs-update-v2.py` | `array_item_schema` +`role` column, seeded from items.properties |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | `array_item_field_schema()` accessor (field + role) |
+| `plugins/sgs-blocks/src/blocks/{icon-list,social-icons,card-grid,pricing-table,trust-bar}/block.json` | per-field `role` declared |
+| `plugins/sgs-blocks/scripts/converter/tests/test_array_content.py` | +5 regression tests |
+| `.claude/specs/31-...md` · `.claude/decisions.md` · `.claude/parking.md` | FR-31-2.1a/2.5a; D258; backlog |
+
+## Notes for Next Session
+- **`assign-canonical.py` name-heuristic is a dead end** — don't retry it. Ownership = block code/declaration (FR-31-2.1a). The stale `fingerprints.json`/`tools/recogniser` builder is NOT the go-forward channel; `ATTR_CLASSIFICATION_OVERRIDES` is.
+- **Bean's principle (2026-07-02):** every pipeline capability must surface as a customisable theme/block control for clients — a converter fix without an editor control is half-done.
+- **The 5 gap-blocks are absent from page 8** — their fix is verified at resolver level (§7b); only trust-bar LANDED on the live page.
+- STOP-39 unchanged: coding subagents cascade-fail — build INLINE.
+
+## Next Session Prompt
+See `.claude/next-session-prompt.md`.
+
 # Session Handoff — 2026-07-02 LATE (DB-recognition array field-lift + role-fallback BUILT + committed; hand-declared arrayItemSchema retired; client-copy cheats removed; LANDED + slot-vocabulary pending)
 
 ## Completed This Session
