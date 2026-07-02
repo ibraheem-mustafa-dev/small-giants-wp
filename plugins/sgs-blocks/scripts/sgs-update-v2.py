@@ -512,14 +512,34 @@ def _index_sgs_block_files(
 
         scanned += 1
 
-        # --- array_item_fields RETIRED (2026-07-02) ---
-        # The hand-declared `arrayItemSchema` → `array_item_fields` mechanism is
-        # replaced by the DB-recognition array resolver, which reads the block's
-        # own block.json `items.properties` + derives each field's slot/role from
-        # the DB (Spec 31 §3.B4 / FR-31-2.5, `converter/resolvers/array_content.py`).
-        # No block declares `arrayItemSchema` any more; prune any stale rows so the
-        # retired table can never silently mis-drive a lift.
+        # --- array_item_schema seeder (2026-07-02) ---
+        # The DB-recognition array field-lift reads a block's item field NAMES from
+        # here — the block's own data model (attributes.<attr>.items.properties) —
+        # and derives each field's slot/role from the DB (Spec 31 §3.B4 / FR-31-2.5,
+        # converter/resolvers/array_content.py). This REPLACES the retired
+        # hand-declared arrayItemSchema → array_item_fields mechanism (D248): prune
+        # its stale rows so they can't mis-drive a lift, then seed the field names.
         c.execute("DELETE FROM array_item_fields WHERE block_slug = ?", (slug,))
+        c.execute(
+            """CREATE TABLE IF NOT EXISTS array_item_schema (
+                block_slug   TEXT NOT NULL,
+                array_attr   TEXT NOT NULL,
+                field_key    TEXT NOT NULL,
+                field_order  INTEGER,
+                PRIMARY KEY (block_slug, array_attr, field_key)
+            )"""
+        )
+        c.execute("DELETE FROM array_item_schema WHERE block_slug = ?", (slug,))
+        for _arr_name, _arr_def in attrs.items():
+            if not isinstance(_arr_def, dict) or _arr_def.get("type") != "array":
+                continue
+            _item_props = ((_arr_def.get("items", {}) or {}).get("properties", {}) or {})
+            for _order, _field_key in enumerate(_item_props):
+                c.execute(
+                    "INSERT OR REPLACE INTO array_item_schema "
+                    "(block_slug, array_attr, field_key, field_order) VALUES (?, ?, ?, ?)",
+                    (slug, _arr_name, _field_key, _order),
+                )
 
         # --- INSERT OR IGNORE attributes; UPDATE on drift ---
         for attr_name, attr_def in attrs.items():

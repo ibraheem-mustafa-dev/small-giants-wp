@@ -3162,6 +3162,30 @@ def array_item_slot_for(block_slug: str, attr_name: str) -> str | None:
     return canonical_slot  # May be None (Tier B fallback) or populated (Tier A)
 
 
+def array_item_field_names(block_slug: str, attr_name: str) -> tuple[str, ...]:
+    """The item field NAMES for an array attr, in declared order.
+
+    The block's own data model — seeded from block.json
+    ``attributes.<attr>.items.properties`` into ``array_item_schema`` by
+    sgs-update-v2.py (2026-07-02). The DB-recognition array field-lift
+    (``converter/resolvers/array_content.py``) reads these + derives each field's
+    slot/role from the DB. Returns () when the table/rows are absent (pre-reseed
+    safe — the resolver then no-ops for that attr, never errors).
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT field_key FROM array_item_schema "
+            "WHERE block_slug = ? AND array_attr = ? ORDER BY field_order",
+            (block_slug, attr_name),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return ()  # table not created yet (no reseed) — safe no-op
+    finally:
+        conn.close()
+    return tuple(r[0] for r in rows)
+
+
 # ============================================================================
 # Phase 1.4 Pass 1 — Universal walker helper functions
 # ============================================================================

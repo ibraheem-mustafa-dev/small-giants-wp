@@ -38,10 +38,8 @@ all resolution via ``db_lookup`` / ``recognise_helpers`` DB accessors.
 from __future__ import annotations
 
 import functools
-import json
 import re
 import sqlite3
-from pathlib import Path
 from typing import Any
 
 from bs4 import Tag
@@ -52,10 +50,6 @@ from converter.services.recognise_helpers import bem_element_to_canonical_slot
 from orchestrator.converter_v2 import db_lookup
 
 _ARRAY_LIFT_CAP = "array-content-lift"
-
-# scripts/converter/resolvers/array_content.py -> plugins/sgs-blocks/
-_PLUGIN_DIR = Path(__file__).resolve().parents[3]
-_BLOCKS_DIR = _PLUGIN_DIR / "src" / "blocks"
 
 # A BEM element class: sgs-<block>__<element>[--<modifier>]. Capture <element>.
 _BEM_ELEMENT_RE = re.compile(r"^sgs-[a-z0-9-]+__([a-z0-9-]+?)(?:--[a-z0-9-]+)*$")
@@ -112,24 +106,14 @@ def _slot_extraction_role(slot: str | None) -> str | None:
 def _item_field_schema(slug: str, array_attr: str) -> list[tuple[str, str | None, str | None]]:
     """The block's item field schema for an array attr: [(field_key, slot, role)].
 
-    Field NAMES come from the block's own block.json ``items.properties`` (the
-    block's data model — same convert-time block.json read as has_inner.py).
+    Field NAMES come from the DB (``array_item_schema``, seeded from the block's
+    block.json ``items.properties`` by sgs-update-v2.py — the block's data model).
     Each field's (slot, extraction-role) is DERIVED from the DB. Fields that
     resolve to no content role (e.g. ``pending`` boolean, ``iconSvg`` companion)
     return role=None and are skipped by the lifter.
     """
-    block_dir = _BLOCKS_DIR / slug.split("/")[-1]
-    bj = block_dir / "block.json"
-    if not bj.exists():
-        return []
-    try:
-        data = json.loads(bj.read_text(encoding="utf-8", errors="replace"))
-    except (ValueError, OSError):
-        return []
-    attr = (data.get("attributes", {}) or {}).get(array_attr, {}) or {}
-    props = ((attr.get("items", {}) or {}).get("properties", {}) or {})
     schema: list[tuple[str, str | None, str | None]] = []
-    for field_key in props:
+    for field_key in db_lookup.array_item_field_names(slug, array_attr):
         slot = db_lookup.canonical_slot_for(field_key)
         role = _slot_extraction_role(slot)
         schema.append((field_key, slot, role))
