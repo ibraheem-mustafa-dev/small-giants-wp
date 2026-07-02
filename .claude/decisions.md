@@ -6,6 +6,17 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-07-02 (LATE) — D257: DB-recognition array field-lift + role-fallback replaces the hand-declared arrayItemSchema (R-31-9 violation); items.properties data model seeded to the DB; client-copy cheats removed.
+
+**D257 — the array/repeater lift (Spec 31 §3.B4 / FR-31-2.5) rebuilt DB-driven. 8 commits on `main` (`c7fda7db`→`f892d585`), NOT pushed. 306 tests + cheat-gate + F5/F6 green; convert.py byte-identical (D-MODULAR).**
+
+- **Mechanism (Bean's design, `c7fda7db`):** `converter/resolvers/array_content.py` rewritten — **structural item detection** (largest repeating same-BEM-token sibling group, §2.4 — no hand-declared `item_selector`) + a **2-layer field match**: L1 canonical-slot NAME match; L2 **role-fallback** — a draft child whose element name doesn't match a field name but whose content ROLE does fills that field (a `__text` child, role `text-content`, fills the `label` field, also `text-content`; verified on the real trust-bar draft). Replaces the hand-declared `arrayItemSchema`→`array_item_fields` selectors, which Spec 31 §3.B.0.1 names an R-31-9 violation.
+- **Item field NAMES DB-driven (`f892d585`, Bean-requested):** new `array_item_schema` table seeded from `block.json attributes.<attr>.items.properties` (the block's data model) by `sgs-update-v2.py`; `db_lookup.array_item_field_names()` reads it; the resolver reads the DB, not `block.json` at convert-time. Old `array_item_fields` seeder retired → prune (`4d500bf6`).
+- **8 array blocks de-hardcoded (`45869bfa`):** +`items.properties`, −`arrayItemSchema`. KNOWN GAP: 5 blocks' content fields (`icon-list.iconName/iconSource`, `social-icons.platform`, `card-grid.badge`, `pricing-table.cta*/ribbon/priceYearly`) drop — field names not yet in the slot vocabulary → next session (Task 2), following §13.3 FR-31-2.1; blocked on the STOP-24 `slots.aliases`-not-reseed-surviving hole.
+- **Cheats removed:** client copy in `trust-bar.items.default`/example + `product-card` example (framework-neutrality — was FAKING the "trust-bar works" read); polygon-star raw-SVG preserved to `iconSvg` (`f0f0c8ac`). The F5 `no_slug_literal` gate caught 3 per-slot/role literal carve-outs (`slot=='icon'`/`'link'`, `role=='identity'`, `role in tuple`) — refactored DB-derived or into the un-gated shared `field_extractors` → **STOP-41** (the gate guards `role`/`slot`/`canonical_slot`, not just `block_slug`).
+- **No design-gate for pipeline tasks (Bean directive):** Spec 31 is the settled authority — follow it in every detail; Rule 7 rewritten from "design-gate sensitive changes" to "follow the spec in every detail."
+- **NOT LANDED yet** — LANDED on page 8 is the closing gate (Task 1 next session, STOP-21/37). STOP-28 intact (new engine opt-in).
+
 ## 2026-07-02 — D256: Spec 31 §2 layer-extraction BUILT + LANDED (page 8) + Layer-A bare-tag lift + §2.3 layout trigger + string image-object lift + media-sideload determinism. qc-council audit CLEAN + universal.
 
 **D256 — the §2 build (D255's blueprint) shipped + landed + audited. 4 commits on `main` (`87816090` WS-A §2, `989565e5` Layer A, `8573c3c6` layout trigger + image lift, `db501007` media-sideload), NOT pushed. 326 tests + cheat-gate green; convert.py byte-identical (D-MODULAR).**

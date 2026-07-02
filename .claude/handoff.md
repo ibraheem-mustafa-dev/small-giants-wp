@@ -1,11 +1,59 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-thread: cloning-pipeline / §2 layer-extraction BUILT+LANDED + Layer-A + layout trigger + audit
+thread: cloning-pipeline / DB-recognition array field-lift + role-fallback (replaces hand-declared arrayItemSchema)
 session_date: 2026-07-02
 ---
 
-# Session Handoff — 2026-07-02 (§2 layer-extraction BUILT + LANDED + Layer-A bare-tag lift + layout trigger + image lift + media-sideload determinism; qc-council audit CLEAN; Bean review 2/5 fixed, rest diagnosed)
+# Session Handoff — 2026-07-02 LATE (DB-recognition array field-lift + role-fallback BUILT + committed; hand-declared arrayItemSchema retired; client-copy cheats removed; LANDED + slot-vocabulary pending)
+
+## Completed This Session
+1. **DB-recognition array field-lift — Bean's design, BUILT + committed (`c7fda7db`).** `converter/resolvers/array_content.py` fully rewritten: structural item detection (largest repeating same-BEM-token sibling group, §2.4 — no hand-declared `item_selector`) + a **2-layer field match** — L1 canonical-slot NAME, L2 **role-fallback** (a draft `__text` child carries `text-content` role so it fills the `label` field which is also `text-content`). Proven on the real trust-bar draft: 4 badges, captions via role-fallback, no phantom row, no client-copy. Replaces the hand-declared `arrayItemSchema`/`array_item_fields` mechanism Spec 31 §3.B.0.1 named an R-31-9 violation.
+2. **Item field NAMES now DB-driven (`f892d585`, Bean-requested).** New `array_item_schema` DB table seeded from each block's `block.json attributes.<attr>.items.properties` by `sgs-update-v2.py`; `db_lookup.array_item_field_names()` reads it; the resolver reads the DB, not `block.json` at convert-time.
+3. **Polygon-star iconSvg fallback (`f0f0c8ac`, item 3).** An icon child that resolves to no lucide slug (filled `<polygon>` star) preserves its raw SVG into the block's `iconSvg` field (icon_resolver Rule 2), detected structurally (gate-clean).
+4. **8 array blocks de-hardcoded (`45869bfa`).** Added JSON-Schema `items.properties` (field names = the block's data model) + removed `supports.sgs.arrayItemSchema` from brand-strip/card-grid/cta-section/hero/icon-list/pricing-table/process-steps/social-icons.
+5. **Client-copy cheats removed (`25464698`).** trust-bar `items.default`/`example` (literal Mama's captions rendered on every fresh insert) → generic neutral; product-card example → generic; + trust-bar `arrayContentLift` capability.
+6. **Old seeder retired (`4d500bf6`) + tests (`4538c5d6`).** `array_item_fields` seeder → prune; tests rewritten for the DB-recognition path (dropped the stale `_lift_field` tests).
+7. **F5 `no_slug_literal` gate caught 3 per-slot/role literal carve-outs** (`slot=='icon'`, `slot=='link'`, `role=='identity'`, `role in tuple`) — all refactored to DB-derived or moved to the un-gated shared `field_extractors` (→ STOP-41).
+
+## Current State
+- **Branch:** `main` at `f892d585`. D-ceiling **D256** (add D257 next session for the array rebuild).
+- **Tests:** 306 pass, 1 skip, 2 xfail; cheat-gate exit 0; F5/F6 green; `convert.py` byte-identical (D-MODULAR).
+- **Push status: NOT pushed.** 8 commits `c7fda7db`→`f892d585` (+ the earlier held D254/§2 set), pending Bean sign-off + LANDED.
+- **Live:** NOT yet LANDED on page 8 (Task 1 next session). New engine opt-in (`SGS_NEW_ENGINE=1`); prod default = frozen convert.py (STOP-28).
+- **Uncommitted (NOT mine):** lucide-icons.php (npm drift), the W3 plan, my design-brief/synthesis reports.
+
+## Known Issues / Blockers
+- **Slot-vocabulary gap (5 blocks):** `icon-list.iconName/iconSource`, `social-icons.platform`, `card-grid.badge`, `pricing-table.ctaText/ctaUrl/ribbonText/savingsBadgeText/priceYearly` drop — their field NAMES don't resolve to a canonical slot. Net improvement (was empty), but incomplete; needs slot-alias seeding (Task 2).
+- **STOP-24 hole:** `slots.aliases` is written only by `uimax-tools/seed-slot-synonyms.py`, NOT wired to `/sgs-update` — the vocabulary additions won't survive a reseed until this is fixed.
+- **Single-item arrays** won't lift (structural detection needs ≥2 repeating siblings).
+
+## Next Priorities (in order)
+1. **LANDED-verify the array field-lift on page 8** (Task 1) — deploy `SGS_NEW_ENGINE=1` clone, confirm trust-bar renders its 4 draft badges, no phantom row.
+2. **Complete the slot vocabulary** (Task 2) — add the 5 blocks' missing field-name aliases, following Spec 31 §13.3 FR-31-2.1 exactly; fix the STOP-24 alias-reseed hole first.
+3. **Push** the held commits + add D257 on Bean sign-off.
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `plugins/sgs-blocks/scripts/converter/resolvers/array_content.py` | REWRITTEN — DB-recognition item detection + 2-layer match + role-fallback + iconSvg fallback |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | `array_item_field_names()` accessor (reads array_item_schema) |
+| `plugins/sgs-blocks/scripts/converter/services/field_extractors.py` | icon-slug branch handles the `identity` role |
+| `plugins/sgs-blocks/scripts/sgs-update-v2.py` | array_item_schema seeder (from items.properties); retired array_item_fields seeder |
+| `plugins/sgs-blocks/src/blocks/{8 array blocks}/block.json` | +items.properties, −arrayItemSchema |
+| `plugins/sgs-blocks/src/blocks/trust-bar/block.json` · `product-card/block.json` | client-copy removed; trust-bar +arrayContentLift |
+| `converter/tests/test_array_content.py` + test_extraction.py + test_field_extractors.py | DB-recognition tests; stale hand-declared tests dropped |
+
+## Notes for Next Session
+- **The role-fallback is the load-bearing idea** (Bean's): match a draft child to a field by ROLE when the element NAME doesn't match a field name. `__text` (text-content) → the `label` field (text-content). Verified on real data.
+- **Bean fact-checked the council hard** — several council findings were wrong (the `circle` alias, "8 blocks have items.properties"). STOP-15: a council finding is a hypothesis; verify before acting.
+- **No design-gate for pipeline tasks (Bean 2026-07-02)** — follow Spec 31 in every detail instead (Rule 7 rewritten).
+- **LANDED is the only closing gate** — the earlier "trust-bar works" read was FAKED by the client-copy default; nothing was lifted.
+
+## Next Session Prompt
+See `.claude/next-session-prompt.md` (7 rules incl. the follow-spec Rule 7 + reading gate + ritual + STOP catalogue 1..41 + the cheats-dealt-with record + Task 1 LANDED / Task 2 vocabulary).
+
+
 
 ## Completed This Session
 1. **WS-A — Spec 31 §2.4/§2.5 layer-extraction built (`87816090`).** `converter/services/arrangement.py` (NEW: `carries_arrangement`, `lift_uniform_grid_item_css` DB-resolved via `attr_for_layer_property`); `extraction.py` `_descend_container_children` rewritten to §2.4 sole-pass-through-fold vs grid-item / slug-None-wrapper→own-container + `_route_container_child`. DELETED the D254 blind-descend. Fixed the brand `__content` flatten (2 grid items, not 4).
