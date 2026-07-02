@@ -512,50 +512,14 @@ def _index_sgs_block_files(
 
         scanned += 1
 
-        # --- array_item_fields seeder (D248, array-resolver) ---
-        # block.json supports.sgs.arrayItemSchema → array_item_fields rows.
-        # Idempotent: DELETE-then-INSERT per (block_slug, array_attr) pair —
-        # same discipline as variant_slots above (delete-then-insert per block).
-        # Honours STOP-24: DB data changes via migration/block.json + reseed,
-        # never manual. R-31-1: seeder only; resolver reads the table, not code.
-        array_item_schema = (
-            sgs_supports.get("arrayItemSchema", {}) if isinstance(sgs_supports, dict) else {}
-        )
-        if isinstance(array_item_schema, dict) and array_item_schema:
-            # Delete current rows for this block (covers ALL its array attrs in
-            # one pass — any removed attr-key in block.json is pruned automatically)
-            c.execute(
-                "DELETE FROM array_item_fields WHERE block_slug = ?",
-                (slug,),
-            )
-            for array_attr, schema in array_item_schema.items():
-                if not isinstance(schema, dict):
-                    continue
-                item_selector = schema.get("itemSelector", "")
-                fields = schema.get("fields", {})
-                if not item_selector or not isinstance(fields, dict):
-                    continue
-                for field_key, field_def in fields.items():
-                    if not isinstance(field_def, dict):
-                        continue
-                    field_selector = field_def.get("selector", "")
-                    role = field_def.get("role", "text-content")
-                    attr_type = field_def.get("attr_type", "string")
-                    enum_vals = field_def.get("enum")
-                    enum_json = json.dumps(enum_vals) if enum_vals else None
-                    gap_reason = field_def.get("gapReason", None)
-                    if not field_selector or not role:
-                        continue
-                    c.execute(
-                        """
-                        INSERT OR REPLACE INTO array_item_fields
-                            (block_slug, array_attr, item_selector, field_key,
-                             field_selector, role, attr_type, enum_values, gap_reason)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                        """,
-                        (slug, array_attr, item_selector, field_key,
-                         field_selector, role, attr_type, enum_json, gap_reason),
-                    )
+        # --- array_item_fields RETIRED (2026-07-02) ---
+        # The hand-declared `arrayItemSchema` → `array_item_fields` mechanism is
+        # replaced by the DB-recognition array resolver, which reads the block's
+        # own block.json `items.properties` + derives each field's slot/role from
+        # the DB (Spec 31 §3.B4 / FR-31-2.5, `converter/resolvers/array_content.py`).
+        # No block declares `arrayItemSchema` any more; prune any stale rows so the
+        # retired table can never silently mis-drive a lift.
+        c.execute("DELETE FROM array_item_fields WHERE block_slug = ?", (slug,))
 
         # --- INSERT OR IGNORE attributes; UPDATE on drift ---
         for attr_name, attr_def in attrs.items():
