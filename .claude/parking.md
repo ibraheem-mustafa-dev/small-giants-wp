@@ -6,6 +6,22 @@ last_updated: 2026-06-13 (D222 — added P-CONVERTER-DE-LITERALISATION programme
 
 > **STANDARD PRACTICE (Bean-locked 2026-06-02):** this doc holds ONLY parked work — entries with `**Status:** OPEN | PARTIAL | BLOCKED | DEFERRED`. The MOMENT a task is **CLOSED / RESOLVED / DROPPED / SUPERSEDED**, MOVE it (verbatim, with completion date) to `memory/parking-archive.md` — do NOT leave it here. Enforce this every `/handoff` (Gate 4.5). Keeps parking concise + purposeful; prevents the balloon that hit 1,400+ lines.
 
+## 2026-07-02 (cloning thread) — D258 array-lift follow-ups + carried-forward backlog
+
+> **P-MINWIDTH-CROSSDEVICE-TIER** — TOP cloning fix (Bean D256+D258). `min-width:X`/`max-width:X` are inherently CROSS-DEVICE ("X and up"), so a rule like `@media(min-width:600px){.sgs-trust-bar__inner{grid-template-columns:repeat(4,1fr)}}` MUST emit EVERY device tier ≥ X (768 Tablet + 1024 Desktop), AND non-device thresholds (600/640) route via §3 F-ii passthrough — never dropped. Currently dropped → trust-bar renders 2-col not 4-across (D258 live-confirmed on page 8), same root cause as products/gift/ingredients. Lives in the CSS tier-mapping (`styling_helpers`/`grid.py`/`context.py`). **Status: OPEN** · **Bucket:** Pipeline / converter · **Trigger:** next cloning session.
+>
+> **P-PER-ITEM-CSS-DIVERGENT** (2c) — a per-item element whose CSS DIFFERS from its siblings has no per-item destination on these array blocks, so it folds to the block default. Live example (D258): the trust-bar's 4th-badge star SHAPE carried (raw-SVG fallback ✓) but its unique pink FILL folded to the uniform `--sgs-trust-badge-icon-colour` (primary-dark). Fix = add a per-item style field (e.g. per-badge icon colour) — a capability gap per FR-31-21.1, NOT a converter hack. Wire `lift_styling_content` per matched item element once a destination exists. **Status: OPEN** · **Bucket:** Framework / blocks · **Trigger:** per-item CSS pass.
+>
+> **P-FINGERPRINT-MIGRATION** — migrate `fingerprints.json` `attr_extractors[].selector` → `ATTR_CLASSIFICATION_OVERRIDES` (the live channel) + drop the fingerprints load from `assign-canonical.py` (the `tools/recogniser` builder is stale/dead). 62 built-block entries prepared at `.claude/scratch/fingerprint-migration-entries.txt`; needs a core/* keep-skip decision + a reseed-diff proving zero derived_selector regression. **Status: OPEN** · **Bucket:** Tooling / DB · **Trigger:** focused seeder session (inline — STOP-39, no coding subagents).
+>
+> **P-ARRAY-RECOGNITION-SCORING** (FR-31-2.5a) — `_find_item_nodes` picks the largest repeating group; strengthen to SCORE candidate groups against the block's declared item-field role signature (identity-based, like the other stages). Detection works today (root-inclusion fix, D258); this is robustness for ambiguous multi-group sections. **Status: OPEN** · **Bucket:** Pipeline / converter · **Trigger:** array hardening.
+>
+> **P-SINGLE-ITEM-ARRAYS** — structural item detection needs ≥2 repeating siblings; a 1-item array won't lift. Decide per spec (accept, or add a schema-signature single-item fallback). **Status: OPEN** · **Bucket:** Pipeline / converter.
+>
+> **P-PUSH-HELD-ARRAY-COMMITS** — the D257 (`c7fda7db`..`f892d585`) + D258 (`8375debb`) array commits are on `main`, NOT pushed. Push on Bean's page-8 eye sign-off. **Status: OPEN** · **Bucket:** Git.
+>
+> **Carry-forward reminder (D101):** the earlier next-session-prompt backlog (product-card typed-mode Layer-B rebuild, ingredient `__icon` emoji lift, cognitive-complexity lint on `array_content.py`, + the P-CLONE-FIDELITY-FULL-ALIGNMENT families below) remains OPEN — do NOT drop these when writing the next handoff. Bean flagged 2026-07-02 that tracking had narrowed to this session's cleanup only.
+
 ## 2026-07-01 (tooling) — memory-index maintenance (D254)
 
 > **P-MEMORY-MD-COMPACT** — `.claude/projects/.../memory/MEMORY.md` is at ~24.2KB, at the 24576-byte autoload cap (bottom entries risk silent drop). Compact: move the oldest 2026-06-03/04 behavioural stubs to `MEMORY-archive.md`, keep one line per entry. **Status: OPEN** · **Bucket:** Tooling / docs · **Trigger:** next handoff or when a memory rule silently fails to load. Surfaced 2026-07-01 (D254). (The #3-7 clone-fidelity defects are NOT parked — they are the next session's primary tasks, specified in `next-session-prompt.md` + D254; not duplicated here.)
