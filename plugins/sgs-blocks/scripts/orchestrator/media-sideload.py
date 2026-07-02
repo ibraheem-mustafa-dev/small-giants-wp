@@ -299,6 +299,16 @@ def sideload_batch(
         if not url:
             report["skipped"].append({**s, "reason": "no url"})
             continue
+        # An ABSOLUTE http(s)/protocol-relative/data URL is ALREADY HOSTED (a draft img
+        # whose src is already a live WP media URL) — no sideload needed. Skip cleanly.
+        # This is the deterministic media contract: relative/local mockup paths get
+        # uploaded, already-hosted URLs pass through untouched. Previously the code
+        # joined an absolute URL onto mockup_root -> the mangled `mockup/https:/host/...`
+        # path -> "media file not found" for every already-hosted image (the Bean-review
+        # #2 image failure). Mirrors the orchestrator's existing absolute-URL guard.
+        if url.startswith(("http://", "https://", "//", "data:")):
+            report["skipped"].append({**s, "reason": "already an absolute URL (already hosted)"})
+            continue
         # Resolve relative -> absolute file path (mockup-relative URL, e.g.
         # `../../research/photography/img.webp` resolves from mockup_root
         # into the repo's research/ tree). Enforce that the resolved path
