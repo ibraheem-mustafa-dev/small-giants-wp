@@ -638,6 +638,6 @@ python plugins/sgs-blocks/scripts/assign-canonical.py
 
 **Cross-references:**
 - Full pipeline changes: `.claude/cloning-pipeline-flow.md` 2026-05-20 section
-- Spec compliance + known gaps: `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §2-§3
+- Spec compliance + known gaps: `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` §2-§3
 - Architectural decisions: `.claude/decisions.md` D1-D6
 - Honest-path council finding: `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md`

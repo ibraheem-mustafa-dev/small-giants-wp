@@ -6,7 +6,7 @@ shipped_in: commit 1ea586b2 (sgs-clone-orchestrator.py stage-9c + plugins/sgs-bl
 absorbs: none
 absorbed_by: none
 related_specs:
-  - 22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md (canonical pipeline spec; Stage 9c preserved per §5)
+  - 31-UNIVERSAL-CLONING-PIPELINE.md (canonical pipeline spec; Stage 9c preserved per §5)
 related_docs:
   - .claude/cloning-pipeline-flow.md (stage 9c)
   - .claude/architecture.md (observability layer)

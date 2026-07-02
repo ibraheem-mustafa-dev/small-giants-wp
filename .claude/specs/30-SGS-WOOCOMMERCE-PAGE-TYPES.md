@@ -18,7 +18,7 @@ revision_history:
 related:
   - specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md
   - specs/28-SGS-SMART-BULK-PRICING.md
-  - specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md
+  - specs/31-UNIVERSAL-CLONING-PIPELINE.md
   - reports/wave2/WOOCOMMERCE-PAGE-TYPE-BRIEF-2026-06-11.md
   - specs/WOOCOMMERCE-PAGE-TYPE-SOLUTION-2026-06-11.md
   - plugins/sgs-blocks/src/blocks/option-picker/

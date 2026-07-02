@@ -1,332 +1,125 @@
 # docs-registry.yaml — authoritative list of project-tracked docs.
 # Walked by /handoff Gate 4.5 + autopilot session-init for context preload.
 # Trim history in git log (`git log --follow .claude/docs-registry.yaml`).
+#
+# LEAN + ARCHIVE-FREE (Bean-locked 2026-07-02): this registry lists ONLY LIVE,
+# actively-maintained docs. Archived / superseded / merged-stub / closed-tombstone
+# docs are NEVER listed here and NEVER referenced from a living doc — they live in
+# plans/archive/ + specs/archive/ + memory/ for git-blame only. A doc belongs here
+# ONLY if it is a project FOUNDATION altered regularly AND read at/near session start.
 
 generated: 2026-05-15
-last_trimmed: 2026-05-21
-last_updated: 2026-06-28
+last_updated: 2026-07-02
 project: small-giants-wp
 
 canonical_docs:
-  # Narrative removed 2026-05-24 (Phase 10 D'-6). Each row carries path +
-  # scope + doc_type only; update_triggers + owns moved to per-template
-  # docs at ~/.agents/skills/shared-references/doc-templates/. Comments below
-  # mark removed entries for git-blame continuity.
+  # --- Project rules + foundation (forever) ---
+  - {path: CLAUDE.md,                  scope: forever, doc_type: project-rules, note: "PROJECT-ROOT authoritative rules — first doc a session reads. Live state (D-ceiling, counts, active-focus) single-sourced to state.md + the live DB; keep only stable rules here."}
+  - {path: .claude/CLAUDE.md,          scope: forever, doc_type: project-rules, note: "working-area MANIFEST (index of .claude/) — rules live in the root CLAUDE.md"}
+  - {path: .claude/architecture.md,    scope: forever, doc_type: architecture}
+  - {path: .claude/dev-setup.md,       scope: forever, doc_type: dev-setup}
+  - {path: .claude/goals.md,           scope: forever, doc_type: goals}
 
-  - {path: CLAUDE.md,                                                  scope: forever,                          doc_type: project-rules, note: "PROJECT-ROOT authoritative rules — first doc a session reads. Volatile state (active-focus, framework counts) single-sourced to state.md + the live DB; keep only stable rules here."}
-  - {path: .claude/CLAUDE.md,                                          scope: forever,                          doc_type: project-rules, note: "working-area MANIFEST (index of .claude/) — rules live in the root CLAUDE.md"}
-  - {path: .claude/architecture.md,                                    scope: forever,                          doc_type: architecture}
-  - {path: .claude/dev-setup.md,                                       scope: forever,                          doc_type: dev-setup}
-  - {path: .claude/goals.md,                                           scope: forever,                          doc_type: goals}
-  - {path: .claude/state.md,                                           scope: forever_auto_regen,               doc_type: state}
-  - {path: .claude/handoff.md,                                         scope: forever_auto_regen,               doc_type: handoff, thread: cloning-pipeline}
-  - {path: .claude/next-session-prompt.md,                             scope: forever_auto_regen,               doc_type: next-session-prompt, thread: cloning-pipeline}
-  - {path: .claude/decisions.md,                                       scope: forever_append_only,              doc_type: decisions}
-  - {path: .claude/mistakes.md,                                        scope: forever_append_only,              doc_type: mistakes, sot_note: "blub.db /api/corrections + memory/feedback_*.md are SoT; this is keyword-stub index"}
-  - {path: .claude/parking.md,                                         scope: forever_append_only_with_status,  doc_type: parking}
-  - {path: .claude/plan.md,                                            scope: archived,                         doc_type: master-plan, status: closed, note: "CLOSED redirect/tombstone (status:closed in its own frontmatter) — the architecture programme closed 2026-05-22; live plan = plans/2026-06-09-clone-fix-build-plan.md. scope forever_master→archived corrected 2026-06-23 (doc audit)."}
-  - {path: .claude/go-live-checklist.md,                               scope: forever_ref,                      doc_type: reference, thread: sgs-theme, note: "Pre-launch WC shop gate (Spec 30 §FR-30-13). Run once per client before first live payment. ADDED to registry 2026-06-23 (doc audit — finished Spec-30 reference, was surfacing as untracked every handoff)."}
-  # LIVE canonical cloning plan (2026-06-09) — supersedes the archived re-cuts below.
-  - {path: .claude/plans/2026-06-09-clone-fix-build-plan.md,           scope: forever_until_clone_fix_shipped,  doc_type: phase-plan, canonical_spec: ".claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md", thread: cloning-pipeline, note: "LIVE canonical cloning build plan (phase-plan). Supersedes the archived container-wrapper / fidelity-triage / hybrid-migration re-cuts."}
-  - {path: .claude/plans/2026-06-09-clone-fix-sign-off-ledger.md,      scope: forever_until_clone_fix_shipped,  doc_type: phase-plan, thread: cloning-pipeline, note: "LIVE 55-issue sign-off ledger — the per-issue tracker for the clone-fix build plan."}
-  - {path: .claude/plans/archive/2026-05-24-strategic-plan.md,        scope: archived,  doc_type: strategic-plan, status: superseded, note: "ARCHIVED 2026-06-10 (plans/archive/). Phase 1 scope superseded by Spec 22; historical."}
-  - {path: .claude/plans/archive/2026-05-28-phase-2-hybrid-block-migration.md, scope: archived,  doc_type: phase-plan, status: superseded, canonical_spec: ".claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md", note: "ARCHIVED 2026-06-10 (plans/archive/) — superseded re-cut; live plan is 2026-06-09-clone-fix-build-plan.md."}
-  - {path: .claude/plans/archive/2026-05-24-phase-2-header-footer-cloner.md,   scope: archived,  doc_type: phase-plan, status: superseded, note: "ARCHIVED 2026-06-10 (plans/archive/) — header/footer cloner sibling; superseded re-cut."}
-  - {path: .claude/plans/archive/2026-05-24-phase-3-parking-sweep.md,  scope: archived,  doc_type: phase-plan, status: archived, note: "ARCHIVED path corrected 2026-06-23 (doc audit) — file lives in plans/archive/; residual work tracked by parking P-PARKING-SWEEP-CLOSEOUT."}
-  - {path: .claude/plans/archive/2026-05-24-phase-4-skill-optimisation.md, scope: archived,  doc_type: phase-plan, status: archived, note: "ARCHIVED path corrected 2026-06-23 (doc audit) — file lives in plans/archive/."}
-  - {path: .claude/reports/2026-05-25-qc-council-issue-register.md,    scope: forever_until_phase_1_shipped,    doc_type: reference, sot_note: "Canonical register for Phase 1 — ~110 items across Sections A-R; Section P = 27 binding design principles; Section Q = 20-cheat inventory; Section R = consolidated phase plan"}
-  - {path: .claude/specs/21-PIPELINE-STATE-ARTEFACTS.md,               scope: spec_version_canonical,           doc_type: spec, spec_version: 21}
-  - {path: .claude/cloning-pipeline-flow.md,                           scope: forever,                          doc_type: visual-reference}
-  - {path: .claude/cloning-pipeline-stages.md,                         scope: forever,                          doc_type: pipeline-stages-reference}
-  - {path: .claude/specs/02-SGS-BLOCKS.md,                             scope: spec_version_canonical,           doc_type: spec, spec_version: 2}
-  - {path: .claude/specs/11-SGS-BUTTON-ARCHITECTURE.md,                scope: spec_version_canonical,           doc_type: spec, spec_version: 11, note: "sgs/button architecture — SHIPPED 2026-05-04; core/button universal replacement + multi-button grouping completed by the converter 2026-06-01 (D146 / commit 270cd995). P5 theme.json-native migration still pending."}
-  - {path: .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md,  scope: merged_redirect_stub,             doc_type: spec-redirect, spec_version: 22, note: "Merged into Spec 31 §13 (D253) — redirect stub. R-22-N == R-31-N."}
-  - {path: .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md,       scope: spec_version_canonical,           doc_type: spec, spec_version: 31, note: "THE rebuild blueprint (v0.3). Read §0 (end goal) + §12 (clean-modular-rebuild direction) FIRST. Mandatory session-start read (cold_start_reading_order item 4). Foundation Phase F COMPLETE (F1–F6 + F5 gates, D232–D241). D246 content-UNIFY ACTIVE: §3 rewritten unified (content+CSS one dispatch); W1/W2 (2026-06-28) modularised the SCALAR content lift (§3.B1) + LANDED; W3 = the child-block walker port (§3.B3) + styling-lift (§3.B2) + arrays (§3.B4). Tracked gaps: A1 media-map driver + A2 content conservation-ledger (§12.2.1 captures CSS routing units only — content routing units pending), both folded into the W3 engine-wiring. ABSORBED Spec 22 IN FULL (§13, D253 2026-06-30) — binding rules R-31-1..15 + the 3-exception walker (FR-31-3) + content fork (FR-31-2) + sgs/container default (FR-31-4) + appendices; Spec 22 archived. Spec 31 is now THE single canonical pipeline spec. ADDED to registry 2026-06-23 (doc audit)."}
-  - {path: .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md,      scope: spec_version_canonical,           doc_type: spec, spec_version: 27, thread: sgs-theme, status: master, note: "MASTER spec for the SGS product + WooCommerce layer (CPT, content-collection, cart, dual-mode card, option-picker) + the variable-product configurator chapter. Phases 1+2 SHIPPED (D165/D171/D173/D176/D177); Cluster-D R4+F2 SHIPPED (D197/D202, 2026-06-10); only R5 (AI-builder) remains, gated behind a 2nd shop client. (status corrected 2026-06-23 doc audit.)"}
-  - {path: .claude/specs/28-SGS-SMART-BULK-PRICING.md,                 scope: spec_version_canonical,           doc_type: spec, spec_version: 28, thread: sgs-theme, status: complete, note: "Smart bulk pricing / comparative value-ladder. COMPLETE — P1 (D179) + Wave-2 authoring-UI + UK-consumer-law hardening (D180/D181) + P2 (D198) + P3 (D199) + P4 WC-write (D203) all SHIPPED. (status active→complete corrected 2026-06-23 doc audit.) R5 AI-builder GATED behind the cloning converter."}
-  - {path: .claude/specs/29-CONTAINER-EQUIVALENT-BLOCKS.md,            scope: spec_version_canonical,           doc_type: reference, spec_version: 29, note: "Container-equivalent blocks reference (NEW 2026-06-07) — the built-in sgs/container model, the 3-KIND map (section/layout/content), the mirror roster + shared helper/controls, and the consolidated single gap control. Cross-ref: Spec 31 §13.6 / FR-31-21."}
-  - {path: .claude/specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md,             scope: spec_version_canonical,           doc_type: spec, spec_version: 30, status: complete, thread: sgs-theme, note: "SGS WooCommerce page types — all 4 phases SHIPPED + Bean R-22-13 signed off (D220, 2026-06-12); SGS is a sellable shop. FR-30-12 product-page clone ungated (cloning thread). ADDED to registry 2026-06-23 (doc audit — complete canonical spec was untracked)."}
-  - {path: .claude/specs/WOOCOMMERCE-PAGE-TYPE-SOLUTION-2026-06-11.md, scope: forever_session_artefact,         doc_type: reference, status: superseded, thread: sgs-theme, note: "Decision NARRATIVE / research provenance for Spec 30 (8-decision rationale table). Superseded as a build spec by Spec 30 (D220). Registered 2026-06-23 (doc audit) to silence the untracked-handoff warning; kept in specs/ as historical reference."}
-  - {path: .claude/specs/WRAPPER-CSS-ROUTING-DESIGN-GATE.md,           scope: forever_until_ratified_or_superseded, doc_type: reference, note: "Wrapper-CSS-routing design-gate (D194, council-ratified D193) — name-free per-slot CSS routing key. Registered at its REAL path under specs/ (2026-06-14). canonical_spec -> Spec 31."}
-  - {path: .claude/reports/2026-06-01-product-card-option-picker-design.md, scope: forever_until_ratified_or_superseded, doc_type: reference, sot_note: "Product-card variation-sets + sgs/option-picker design (research-buddies+brainstorming); FR-24-11..17 RATIFIED 2026-06-01 via D144 — Bean's 6 decisions RESOLVED in-doc; Phase A+B SHIPPED 2026-06-02 (sgs/option-picker block + product-card Gutenberg panel + variation-sets meta). Phase C (dual-source) design D149, Phase D (clone-emit) + Phase E (collection) still pending."}
-  - {path: .claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md,             scope: spec_version_canonical,           doc_type: spec, spec_version: 17}
-  - {path: .claude/specs/18-SGS-FLOATING-UI.md,                        scope: spec_version_canonical,           doc_type: spec, spec_version: 18}
-  - {path: .claude/specs/19-SGS-CLI-COMMANDS.md,                       scope: spec_version_canonical,           doc_type: spec, spec_version: 19}
-  - {path: .claude/specs/20-STRUCTURED-PIPELINE-LOG-SURFACING.md,      scope: spec_version_canonical,           doc_type: spec, spec_version: 20}
-  - {path: .claude/specs/26-SGS-GLOBAL-STYLES-AND-THEMING.md,          scope: spec_version_canonical,           doc_type: spec, spec_version: 26, status: draft, supersedes: ".claude/specs/01-SGS-THEME.md §Per-site theme.json Model (D156 framing)", note: "Global styles + per-client theming (Candidate C: lean theme.json baseline + per-client style-variation DELTA + wp_global_styles REST sync via push-theme-snapshot.py) + pipeline style derivation (D158). BUILD DEFERRED until cloning phase closes, except FR-26-D2 (REST-write extension, urgent low-risk). FR-26-D1 RESOLVED/MOOT 2026-06-03 — canary not contaminated, do NOT clear post 7."}
-  - {path: .claude/specs/common-wp-styling-errors.md,                  scope: forever_append_only,              doc_type: errors-catalogue}
+  # --- Living docs (auto-regen / append-only) ---
+  - {path: .claude/state.md,               scope: forever_auto_regen,               doc_type: state}
+  - {path: .claude/handoff.md,             scope: forever_auto_regen,               doc_type: handoff, thread: cloning-pipeline}
+  - {path: .claude/next-session-prompt.md, scope: forever_auto_regen,               doc_type: next-session-prompt, thread: cloning-pipeline}
+  - {path: .claude/decisions.md,           scope: forever_append_only,              doc_type: decisions}
+  - {path: .claude/mistakes.md,            scope: forever_append_only,              doc_type: mistakes, sot_note: "blub.db /api/learning + memory/feedback_*.md are SoT; this is a keyword-stub index"}
+  - {path: .claude/parking.md,             scope: forever_append_only_with_status,  doc_type: parking}
 
-  # MOVED 2026-05-27: plans/2026-05-26-phase-1-spec-22-implementation.md →
-  # plans/archive/ (Phase 1.5 CLOSED per D90; new active phase plan is
-  # plans/2026-05-28-phase-2-hybrid-block-migration.md). Archived entry NOT
-  # tracked in canonical_docs — git-blame only; archive dir is scope-excluded.
+  # --- LIVE cloning-pipeline canonical set (Spec 31 is THE spec; Spec 22 merged into §13 D253, archived) ---
+  - {path: .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md, scope: spec_version_canonical, doc_type: spec, spec_version: 31, note: "THE canonical cloning-pipeline spec. Read §2 (core mechanism) FIRST, then §3 (unified content+CSS routing), §12 (clean-modular-rebuild build-state), §13 (binding rules R-31-1..15 + walker + content fork; absorbed Spec 22, D253). Mandatory session-start read IN FULL. Array-item content lift COMPLETE + LANDED (D258); FR-31-2.1a (attr->element ownership from code/declaration) + FR-31-2.5a (array recognition signature) added."}
+  - {path: .claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md, scope: forever_until_clone_fix_shipped, doc_type: phase-plan, canonical_spec: ".claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md", thread: cloning-pipeline, note: "LIVE canonical cloning build plan (W3 — interior-walker + CSS<->content unification, D250). Supersedes the archived 2026-06-09 clone-fix build-plan + sign-off-ledger."}
+  - {path: .claude/specs/21-PIPELINE-STATE-ARTEFACTS.md,   scope: spec_version_canonical, doc_type: spec, spec_version: 21, note: "Pipeline-state artefact map — read BEFORE conjecturing about pipeline failures. Canonical architecture = Spec 31."}
+  - {path: .claude/specs/29-CONTAINER-EQUIVALENT-BLOCKS.md, scope: spec_version_canonical, doc_type: reference, spec_version: 29, note: "Container-equivalent blocks reference — sgs/container model, 3-KIND map (section/layout/content), mirror roster. Cross-ref Spec 31 §13.6 / FR-31-21."}
+  - {path: .claude/specs/WRAPPER-CSS-ROUTING-DESIGN-GATE.md, scope: forever_until_ratified_or_superseded, doc_type: reference, note: "Wrapper-CSS-routing design-gate (DEC-1..5, D193/D194). Content lives in Spec 31 §13; canonical_spec -> Spec 31."}
+  - {path: .claude/cloning-pipeline-flow.md,   scope: forever, doc_type: visual-reference,          note: "Pipeline stage-index + cross-cutting principles. Canonical spec = Spec 31."}
+  - {path: .claude/cloning-pipeline-stages.md, scope: forever, doc_type: pipeline-stages-reference, note: "Per-stage detail. Canonical spec = Spec 31."}
 
-  # REMOVED 2026-05-21: tooling-map.md / skills-commands-map.md / db-tables-map.md
-  # → absorbed into cloning-pipeline-flow.md.
-  # REMOVED 2026-05-21: specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md (absorbed + retired)
-  # REMOVED 2026-05-21: plans/spec-15-master-execution-plan.md and
-  # plans/phase-7-spec-16-converter-rollout.md → shipped phases; git-blame only.
-  # RENAMED 2026-05-24 (Phase 10 D'-3): pipeline-state-debug-artefacts-inventory.md
-  # → specs/21-PIPELINE-STATE-ARTEFACTS.md.
-  # SPLIT 2026-05-24 (Phase 10 D'-2): cloning-pipeline-flow.md → overview + new
-  # cloning-pipeline-stages.md.
-  # SPLIT 2026-05-24 (Phase 10 D'-1): architecture.md → Part A (here) +
-  # plans/archive/2026-02-21-feature-audit.md + new dev-setup.md.
+  # --- SGS blocks / theme / WooCommerce (mostly complete; kept for reference) ---
+  - {path: .claude/specs/02-SGS-BLOCKS.md,               scope: spec_version_canonical, doc_type: spec, spec_version: 2}
+  - {path: .claude/specs/11-SGS-BUTTON-ARCHITECTURE.md,  scope: spec_version_canonical, doc_type: spec, spec_version: 11, note: "SHIPPED; P5 theme.json-native migration pending."}
+  - {path: .claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md, scope: spec_version_canonical, doc_type: spec, spec_version: 17}
+  - {path: .claude/specs/18-SGS-FLOATING-UI.md,          scope: spec_version_canonical, doc_type: spec, spec_version: 18}
+  - {path: .claude/specs/19-SGS-CLI-COMMANDS.md,         scope: spec_version_canonical, doc_type: spec, spec_version: 19}
+  - {path: .claude/specs/20-STRUCTURED-PIPELINE-LOG-SURFACING.md, scope: spec_version_canonical, doc_type: spec, spec_version: 20}
+  - {path: .claude/specs/26-SGS-GLOBAL-STYLES-AND-THEMING.md, scope: spec_version_canonical, doc_type: spec, spec_version: 26, status: draft, note: "Global styles + per-client theming. BUILD DEFERRED until cloning closes (except FR-26-D2)."}
+  - {path: .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md, scope: spec_version_canonical, doc_type: spec, spec_version: 27, thread: sgs-theme, status: master, note: "MASTER SGS product/WooCommerce layer. Phases 1+2 + Cluster-D SHIPPED; only R5 (AI-builder) remains, gated behind a 2nd shop client."}
+  - {path: .claude/specs/28-SGS-SMART-BULK-PRICING.md,   scope: spec_version_canonical, doc_type: spec, spec_version: 28, thread: sgs-theme, status: complete}
+  - {path: .claude/specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md, scope: spec_version_canonical, doc_type: spec, spec_version: 30, status: complete, thread: sgs-theme, note: "All 4 phases SHIPPED (D220). FR-30-12 product-page clone ungated (cloning thread)."}
+  - {path: .claude/specs/common-wp-styling-errors.md,   scope: forever_append_only, doc_type: errors-catalogue}
+  - {path: .claude/go-live-checklist.md,                scope: forever_ref, doc_type: reference, thread: sgs-theme, note: "Pre-launch WC shop gate (Spec 30 §FR-30-13). Run once per client before first live payment."}
+  - {path: .claude/reports/2026-06-01-product-card-option-picker-design.md, scope: forever_until_ratified_or_superseded, doc_type: reference, note: "Product-card variation-sets + sgs/option-picker design (D144). Phase A+B SHIPPED; Phase D (clone-emit) + E (collection) pending."}
 
 # Project credentials — discoverable so EVERY session knows they exist + can use
 # them directly, without asking Bean. Gitignored; never committed; never walked.
 project_credentials:
   - path: .claude/secrets/sandybrown.env
     what: "Staging/canary (sandybrown-nightingale-600381.hostingersite.com) logins — ALWAYS available."
-    keys: "WP_USER_SANDYBROWN + WP_PWD_SANDYBROWN (browser/admin login at wp-login.php); WP_APP_PWD_SANDYBROWN (REST + WooCommerce Store-API Basic auth, user:app_pwd); WP_URL_SANDYBROWN."
+    keys: "WP_USER_SANDYBROWN + WP_PWD_SANDYBROWN (browser/admin login); WP_APP_PWD_SANDYBROWN (REST + WC Store-API Basic auth); WP_URL_SANDYBROWN."
     use_for: "Playwright editor login; REST block-renderer / wp/v2 / wc/store verification. Read directly: grep KEY .claude/secrets/sandybrown.env"
   - path: .claude/secrets/credentials.yml
     what: "General project credentials (YAML)."
     loader: "import yaml; yaml.safe_load(open('.claude/secrets/credentials.yml'))"
   - path: A:/.openclaw/.secrets/wp-app-passwords.env
     what: "Cloning dev-site (palestine-lives.org) WP app passwords."
-  # Future client onboarding adds a new entry per site.
 
-# Doc-walk scan folders — /handoff Gate 4.5 + scripts/doc-walk-audit.py enumerate
-# *.md (+ *.yaml) DIRECTLY in each folder (NON-recursive — subfolders like
-# specs/archive/ + plans/archive/ + plans/strategy/ are excluded) and SURFACE any
-# file NOT in canonical_docs as "untracked" — INFORMATIONAL only, never blocking.
-# The registry is deliberately LEAN: a doc belongs in canonical_docs ONLY if it is
-# a project FOUNDATION that is altered on a regular basis AND needs reading at
-# session start (or frequently across sessions). Dormant feature specs (booking/
-# forms/popups/chatbot/etc.), GENERATED docs (02-SGS-BLOCKS-REFERENCE), completed/
-# superseded plans, READMEs, and one-offs CORRECTLY stay out — adding them would
-# bloat every session's context-load + the handoff in-depth walk. The scan exists
-# to surface NEW docs for a conscious in/out judgement, not to force registration.
-# Only the CANONICAL set is the blocking handoff-walk (scripts/doc-walk-audit.py
-# --gate --strict blocks on unaccounted canonical_docs, not on untracked ones).
-# This closes the 2026-06-02 gap where a handoff updated only ~4 canonical docs and
-# skipped the rest of the registry walk.
+# Doc-walk scan folders — /handoff Gate 4.5 enumerates *.md (+ *.yaml) DIRECTLY in
+# each folder (NON-recursive — archive/strategy subfolders excluded) and surfaces
+# any file NOT in canonical_docs as "untracked" — INFORMATIONAL only, never blocking.
+# Archived docs (plans/archive/, specs/archive/) are deliberately out of scope and
+# must never be re-registered (Bean 2026-07-02).
 doc_walk_scan_folders:
-  - {path: .claude/,       recursive: false, note: "base .claude files only (architecture.md, dev-setup.md, goals.md, cloning-pipeline-flow.md, etc.) — NOT subfolders"}
+  - {path: .claude/,       recursive: false, note: "base .claude files only — NOT subfolders"}
   - {path: .claude/specs/, recursive: false, note: "exclude specs/archive/"}
   - {path: .claude/plans/, recursive: false, note: "exclude plans/archive/ + plans/strategy/"}
 
-# Pipeline run artefacts — the orchestrator writes these per-run; they're the
-# diagnostic surface for converter / clone pipeline output. Captured 2026-05-15
-# after a session that lost ~6 hours conjecturing about pixel-diff causes
-# instead of reading these files. See feedback_read_leftover_buckets_*.md.
+# Pipeline run artefacts — the orchestrator writes these per-run; the diagnostic
+# surface for converter / clone output. ALWAYS read leftover-buckets.json FIRST
+# before conjecturing about pixel-diff / clone-quality causes.
 pipeline_run_artefacts:
   base_path: "pipeline-state/<client>-<page>-<YYYY-MM-DD-HHMMSS>/"
+  read_first: leftover-buckets.json
   artefacts:
+    - {filename: leftover-buckets.json, owns: "Stage 9 gap classification — every converter miss bucketed (section, slot, reason). ALWAYS read FIRST.", writer: plugins/sgs-blocks/scripts/recogniser/leftover-bucket-router.py}
+    - {filename: stage-9.json,          owns: "Stage 9 summary — coverage stats, autonomy_chain status, unmatched_sections, operator_review_html_path."}
+    - {filename: extract.json,          owns: "Stage 4 full extraction — block_markup + per-section extracted_attributes + variation_css + slot resolution."}
+    - {filename: extract.patched.json,  owns: "Stage 10 — block_markup with image URLs swapped to live WP media URLs; used by upload_and_patch.py to PATCH the target page. Spec: Spec 31 §13 (Stage 10 inline-CSS deploy).", writer: plugins/sgs-blocks/scripts/orchestrator/upload_and_patch.py}
+    - {filename: trace.jsonl,           owns: "Per-stage trace events incl. new-engine + softfails."}
+    - {filename: summary.log,           owns: "Stage 9c — one line per stage with event/error/warning counts. ALWAYS written.", writer: plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py}
+    - {filename: errors.log,            owns: "Stage 9c — trace events with passed=false. Only when >=1 error."}
+    - {filename: warnings.log,          owns: "Stage 9c — soft-fails / BEM-lint / token-lint / wp-blocks soft-fails. Only when >=1 warning."}
+    - {filename: operator-review.html,  owns: "Human-readable Stage 9 gap surface."}
+    - {filename: slot-list.json,        owns: "Stage 3 — per-boundary slot catalogue + canonical_source ratio."}
+    - {filename: voter.json,            owns: "Stage 1 — convention voter output."}
+    - {filename: match.json,            owns: "Stage 2 — confidence-matrix match + score."}
+    - {filename: media-sideload-manifest.json, owns: "Stage 4i — image-sideload manifest."}
 
-    - filename: leftover-buckets.json
-      doc_type: orchestrator-output
-      owns: "Stage 9 gap classification — every converter miss bucketed by (section, slot, reason) into 5 buckets: unrecognised_class, unrecognised_section, extraction_failed, animation_unclassified, structural_mismatch_or_orphan."
-      read_when: "Diagnosing converter quality, pixel-diff gaps, or any /sgs-clone output problem. ALWAYS read FIRST before conjecturing about causes."
-      writer: plugins/sgs-blocks/scripts/recogniser/leftover-bucket-router.py
-
-    - filename: stage-9.json
-      doc_type: orchestrator-output
-      owns: "Stage 9 summary — coverage stats, autonomy_chain status, gap_review_report path, unmatched_sections list, operator_review_html_path."
-      read_when: "After leftover-buckets.json — for the orchestration-level context around the gaps."
-
-    - filename: extract-result.json
-      doc_type: orchestrator-output
-      owns: "Stage 4 output — the actual emitted WP block markup + variation_css + extracted_attributes. The bridge between converter and visual-QA."
-      read_when: "Verifying converter emitted the expected markup before deploying or running pixel-diff."
-
-    - filename: trace.jsonl
-      doc_type: orchestrator-output
-      owns: "Per-stage trace events including stage_4_converter_v2 fires + softfails. Use to confirm cv2-eligible routing fired for each boundary."
-
-    - filename: operator-review.html
-      doc_type: orchestrator-output
-      owns: "Human-readable Stage 9 surface that points the operator at what didn't translate. Open this in a browser for visual review of gaps."
-
-    # Stage 9c sidecar logs — shipped 2026-05-19 per Spec 20. Replaces the
-    # chrome-skip-HTML-comment-leakage bug (Bug B) and consolidates trace
-    # events into operator-readable per-severity logs. summary.log always
-    # written; the other three only when their bucket has >=1 entry.
-    - filename: summary.log
-      doc_type: orchestrator-output
-      owns: "Stage 9c — one line per stage with event/error/warning counts. ALWAYS written on every pipeline run regardless of success/failure. Quick triage surface."
-      read_when: "After any pipeline run, before opening trace.jsonl. Skim for any non-zero error or warning column."
-      writer: plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py
-      spec: .claude/specs/20-STRUCTURED-PIPELINE-LOG-SURFACING.md
-
-    - filename: chrome-skipped.log
-      doc_type: orchestrator-output
-      owns: "Stage 9c — every chrome-skip event (header/footer/nav lifted out of post_content) with reason. Only written when at least one chrome-skip event fired."
-      read_when: "Investigating whether the mockup's header/footer/nav was correctly chrome-skipped vs leaked into block_markup."
-      writer: plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py
-
-    - filename: errors.log
-      doc_type: orchestrator-output
-      owns: "Stage 9c — every trace event with passed=false or error*/error_message fields. Only written when at least one error event fired."
-      read_when: "Triaging a failed or partial pipeline run. Open BEFORE diving into trace.jsonl."
-      writer: plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py
-
-    - filename: warnings.log
-      doc_type: orchestrator-output
-      owns: "Stage 9c — every soft-fail / BEM-lint violation / token-lint finding / wp-blocks-validation soft-fail. Only written when at least one warning event fired."
-      read_when: "After a passed run that 'feels off'. Warnings flag latent gaps that didn't break the pipeline but reduce output quality."
-      writer: plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py
-
-    # Stage 10 output — shipped 2026-05-19. Only present when /sgs-clone was
-    # invoked with --deploy-target page:<id> or --deploy-target post:<id>.
-    - filename: extract.patched.json
-      doc_type: orchestrator-output
-      owns: "Stage 10 — block_markup with mockup-relative image URLs swapped to live WP media library URLs. Used by upload_and_patch.py to PATCH the target page/post via REST."
-      read_when: "Verifying which images were sideloaded + what final markup landed on the live page after Stage 10."
-      writer: plugins/sgs-blocks/scripts/orchestrator/upload_and_patch.py
-      spec: .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md §5 (Stage 10 inline-CSS deploy)
-
-    # Standard per-stage artefacts written by sgs-clone-orchestrator.py for
-    # every run. Cross-reference cloning-pipeline-flow.md per-stage entries
-    # for the canonical owns/writer/read_when per file.
-    - filename: extract.json
-      doc_type: orchestrator-output
-      owns: "Stage 4 full extraction record — block_markup + per-section extracted_attributes + variation_css + slot resolution. Sibling to extract-result.json (which is the Stage 4 summary)."
-      read_when: "Need the full Stage 4 output for cross-stage debugging or to diff against extract.patched.json."
-
-    - filename: slot-list.json
-      doc_type: orchestrator-output
-      owns: "Stage 3 — per-boundary slot catalogue + canonical_source ratio (db vs auto-derived)."
-      read_when: "Diagnosing slot-resolution gaps; cross-reference with slot_synonyms DB table."
-
-    - filename: voter.json
-      doc_type: orchestrator-output
-      owns: "Stage 1 — convention voter output; per-boundary class_signature + convention classification."
-      read_when: "Stage 1 boundary detection or convention-classification questions."
-
-    - filename: match.json
-      doc_type: orchestrator-output
-      owns: "Stage 2 — confidence-matrix results; per-boundary block-type match + confidence score."
-      read_when: "Stage 2 match quality questions or to confirm wp-blocks match cross-check fired (wired 2026-05-19)."
-
-    - filename: media-sideload-manifest.json
-      doc_type: orchestrator-output
-      owns: "Stage 4i — image-sideload manifest (dry-run by default). Lists every mockup image that would be uploaded to WP media library on a real deploy."
-      read_when: "Before Stage 10 runs OR when diagnosing image-related Stage 10 failures."
-
-# deprecated_docs section purged 2026-05-14 per Bean — superseded files
-# live at their archive paths (.claude/scratch/absorbed/ for specs,
-# .claude/plans/archive/ for phase plans). Commit history is the audit
-# trail for what got deprecated and when.
-
-# Enforcement hooks moved OUT of the doc registry 2026-05-21 — hooks are
-# Python files configured in .claude/settings.json, not docs. Lifecycle is
-# managed at the hook config level. The 4 hooks still on disk:
-#   - tooling-map-drift-check.py — stale (target absorbed); see Option B fix in
-#     same-session commit + parking entry P-DRIFT-CHECK-HOOK-UPDATE
-#   - db-tables-drift-check.py — never built; was a planned future hook
-#   - cloning-pipeline-flow-status-check.py — never built; planned future hook
-#   - role-templates-vs-property-suffixes-check.py — never built; planned future hook
-
-# Architecture session artefacts — added 2026-05-21. Spec retirement chain note (2026-05-26):
-# - The 2026-05-21 architecture programme closed 2026-05-22 (all 8 phases shipped).
-# - The artefacts below are session archaeology — decisions embedded in decisions.md D1-D31 + Spec 22.
-# - Per Bean directive 2026-05-26 + Track 2 audit: section retained as reference (NOT walked by /handoff
-#   Gate 4.5; scope marker `session_archaeology` excludes from active doc-cycle). May be moved to
-#   .claude/memory/ in a follow-up cleanup; left here for git-blame continuity until then.
-architecture_session_artefacts:
-
-  - path: .claude/plans/2026-05-21-architecture-staging.md
-    scope: temporary_until_specs_absorbed
-    doc_type: architecture-staging
-    owns: "31 architectural decisions (2026-05-21 session). Canonical record until Specs 01/02/11/16/17/18/19 + common-wp-styling-errors are revised (Phase C). After Phase C ships, this file archives to .claude/plans/archive/."
-    update_triggers:
-      - spec_revision_landed
-      - phase_c_spec_revisions_complete
-
-  - path: .claude/reports/strategic-plan-2026-05-21/risk-assessment.md
-    scope: forever_session_artefact
-    doc_type: risk-pre-mortem
-    owns: "Pre-mortem risk assessment for the 8-phase architecture programme. Generated by /strategic-plan during the 2026-05-21 session."
-    update_triggers: []
-
-  - path: .claude/reports/strategic-plan-2026-05-21/effort-pert.md
-    scope: forever_session_artefact
-    doc_type: effort-estimate
-    owns: "PERT effort estimate for the 8-phase architecture programme. Generated by /strategic-plan during the 2026-05-21 session."
-    update_triggers: []
-
-  - path: .claude/reports/strategic-plan-2026-05-21/hidden-decisions.md
-    scope: forever_session_artefact
-    doc_type: hidden-decisions-review
-    owns: "Hidden-decisions review for the 8-phase architecture programme. Generated by /strategic-plan during the 2026-05-21 session."
-    update_triggers: []
-
-  - path: .claude/reports/2026-05-21-pattern-overrides-research.md
-    scope: forever_session_artefact
-    doc_type: research-finding
-    owns: "Research finding: WP 7.0 Pattern Overrides is orthogonal to converter logic (Decision 24 resolved). Keep DB-backed approach for Phase 3; Pattern Overrides is additive operator-UX layer in Phase 6."
-    update_triggers: []
-
-# SESSION-START GATE (read FIRST — single active workstream as of 2026-06-17, D229; the multi-thread split ENDED when the theme/Spec-30 work completed):
-#   0a. Run ground truth: `git log -1 --stat` + `git status` + `git branch --show-current`
-#       + `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` (the D-ceiling).
-#   0b. Follow `cold_start_reading_order` below — it is THE order. There is only one active
-#       workstream now (the cloning CSS-transfer rebuild). `cold_start_reading_order_theme`
-#       is RETAINED ONLY as an archived reference for the COMPLETE theme/Spec-30 work — use it
-#       solely if Bean explicitly starts a deferred theme task; it is not a parallel thread.
-
-cold_start_reading_order:   # THE active workstream (cloning CSS-transfer rebuild). RESTRUCTURED 2026-06-17, D229 — read these IN FULL before any build assumption.
-  - 1. .claude/state.md (read the CLONING block + the GROUND-TRUTH-FIRST block)
+# SESSION-START GATE (read FIRST): (0a) ground truth — git log -1 --stat + git status +
+# git branch --show-current + `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1`
+# (the D-ceiling). (0b) follow cold_start_reading_order — ONE active workstream (the
+# cloning CSS-transfer rebuild); the theme/Spec-30 thread is COMPLETE (D220).
+cold_start_reading_order:
+  - 1. .claude/state.md (CLONING block + GROUND-TRUTH-FIRST block)
   - 2. .claude/handoff.md (latest session)
-  - 3. .claude/next-session-prompt.md (the operative opener — MANDATORY READING gate + STOP catalogue + pre-flight ritual)
-  - 4. .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md — THE BUILD BLUEPRINT. Read the top banner + §12 FIRST (clean-modular-rebuild direction); §12.2 = Tier-1 foundation, §12.6/12.7 = build order + gap-to-stage map; then §1-§11 (architecture). READ IN FULL, do not skim — v0.3 exists BECAUSE prior sessions guessed/assumed and shipped cheats.
-  - 5. .claude/reports/pipeline-routing-map-2026-06-17.html — exhaustive 24-stage routing/logic map (every branch/DB-call/terminal + the 3 cross-stage mechanism traces M1/M2/M3 + the 22-finding gap register). THE structural map the rebuild is built against. Open it; read M1/M2/M3 + the gap table.
-  - 6. .claude/reports/2026-06-17-adversarial-council-register-and-rebuild-direction.md — convergence-weighted must-fix register + Bean's locked decisions (why clean rebuild, why draft-derived ledger, why modular files).
-  - 7. .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md §13 (absorbed pipeline architecture — the 3-exception walker FR-31-3, content fork FR-31-2, sgs/container DEFAULT FR-31-4/4.1, binding rules R-31-1..15).
-  - 8. .claude/cloning-pipeline-flow.md + .claude/cloning-pipeline-stages.md (the as-is pipeline the rebuild maps from)
-  - 9. .claude/decisions.md (last 5-10 entries; D229 = this rebuild decision; D228/D211/D152 = container/wrapper history)
-  - 10. .claude/parking.md (last 5 entries) + .claude/specs/common-wp-styling-errors.md (sections A-R catalogue)
-  - 11. .claude/reports/2026-06-17-cross-stage-reviewer-personas.md (reviewer-persona roster — for audit subagents you dispatch)
-  - 12. pipeline-state/<latest-run>/leftover-buckets.json + extract.json + trace.jsonl (MANDATORY before any converter-quality conjecture — read raw artefacts, never reason from a doc's cached status)
+  - 3. .claude/next-session-prompt.md (operative opener — MANDATORY READING gate + STOP catalogue + pre-flight ritual)
+  - 4. .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md — THE BUILD BLUEPRINT, READ IN FULL (§2 core mechanism FIRST, then §3, §12 build-state, §13 binding rules).
+  - 5. .claude/plans/2026-06-30-phase-W3-interior-walker-css-content-unification.md (LIVE build plan)
+  - 6. .claude/cloning-pipeline-flow.md + .claude/cloning-pipeline-stages.md (as-is pipeline the rebuild maps from)
+  - 7. .claude/decisions.md (head — last 5-10; D258 array lift; D229 rebuild decision)
+  - 8. .claude/parking.md (last entries) + .claude/specs/common-wp-styling-errors.md (A-R catalogue)
+  - 9. pipeline-state/<latest-run>/leftover-buckets.json + extract.json + trace.jsonl (MANDATORY before any converter-quality conjecture)
 
-cold_start_reading_order_theme:   # ARCHIVED reference — theme/Spec-30 work COMPLETE (D220), NOT a parallel thread. Use only if Bean explicitly starts a deferred theme task.
-  - 1. .claude/state.md (read the SGS-THEME block + the GROUND-TRUTH-FIRST block)
-  - 2. .claude/memory/handoff-theme-2026-06-12.md (ARCHIVED — theme thread COMPLETE D220; last theme session record)
-  - 3. (theme thread COMPLETE — a fresh /handoff regenerates the opener if a theme session runs; roadmap lives in Spec 30 Open Qs + parking.md)
-  - 4. .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md (product/WooCommerce master spec)
-  - 5. .claude/specs/28-SGS-SMART-BULK-PRICING.md (value-ladder/bulk pricing — for any pricing work)
-  - 6. .claude/decisions.md (head — last 5-10; theme D-numbers interleave with cloning)
-  - 7. .claude/parking.md (the P-SPEC27-28-* entry = the live theme backlog)
-  - 8. .claude/specs/26-SGS-GLOBAL-STYLES-AND-THEMING.md (only for global-styles/per-client-theming work; build-deferred)
-
-# Doc length caps (declared 2026-06-06, doc-council finding #8 — only parking/MEMORY had caps; the
-# highest-traffic docs ballooned). Overflow ARCHIVES to memory/<doc>-archive.md, it does not delete.
-#   state.md                  ≤ 24576 bytes (was 33KB — gutted 2026-06-06)
-#   MEMORY.md                 ≤ 24576 bytes (autoload cap — silently drops rules past it)
-#   next-session-prompt(-theme) ≤ 200 lines (the STOP catalogue carries forward; demote cold entries to a TOP-5 tier + a linked stop-catalogue.md when it exceeds)
-#   handoff(-theme)           ≤ 100 lines per session-section; older sections rotate to memory/
-#   CLAUDE.md (root)          target ≤ 120 lines (Karpathy R1-R7; link to decisions.md/specs, don't inline rule prose)
-#   decisions.md / parking.md / mistakes.md  archive-on-resolve to memory/<doc>-archive.md (the moment an entry is CLOSED/RESOLVED/SUPERSEDED)
+# Doc length caps (overflow ARCHIVES to memory/<doc>-archive.md, does not delete):
+#   state.md / MEMORY.md   <= 24576 bytes
+#   next-session-prompt.md <= 200 lines (STOP catalogue carries forward)
+#   handoff.md             <= 100 lines per session-section; older sections rotate to memory/
+#   CLAUDE.md (root)       target <= 120 lines
+#   decisions.md / parking.md / mistakes.md — archive-on-resolve to memory/<doc>-archive.md
 
 retention_rules:
-  - directory: .claude/scratch/
-    policy: age_out_after_30_days_or_promote_to_reports_if_durable
-    trigger: handoff_invokes_scratch_prune
-
-  - directory: .claude/reports/
-    policy: forever
-    note: durable QC / audit / lifecycle reports
-
-  - directory: .claude/memory/
-    policy: per_doc_type_ttl
-    note: archived handoffs + consolidation receipts; handoff rotates current INTO memory on next session
-    # Phase 7 (F4, 2026-05-24) — per-doc-type TTL for files inside .claude/memory/.
-    # Trigger: manual prune at /handoff session-close until APScheduler runner picks it up.
-    # Filename matchers below are evaluated in order; first match wins.
-    by_doc_type:
-      - matches: "next-session-prompt-*.md"
-        ttl_days: 30
-        rationale: "Next-session prompts go stale fast — the session they targeted either ran or got superseded. Keep last 30 days for git-blame back-reference; rotate older into git log."
-      - matches: "handoff-*.md"
-        ttl_days: 60
-        rationale: "Handoffs hold the only narrative continuity record across sessions. 60 days covers the typical 'what happened on this branch' lookback window."
-      - matches: "*"
-        ttl_days: null
-        rationale: "Consolidation receipts, archived specs, and other memory artefacts are forever — they're the audit trail."
-    cleanup_script: "(future) plugins/sgs-blocks/scripts/prune-memory-by-ttl.py — manual today, APScheduler-triggered post-Phase-1 migration"
-
-  - directory: .claude/scratch/absorbed/
-    policy: forever
-    note: deprecated docs preserved for commit-history continuity
+  - {directory: .claude/scratch/, policy: age_out_after_30_days_or_promote_to_reports_if_durable, trigger: handoff_invokes_scratch_prune}
+  - {directory: .claude/reports/, policy: forever, note: durable QC / audit / lifecycle reports}
+  - {directory: .claude/memory/,  policy: per_doc_type_ttl, note: "archived handoffs (60d) + next-session-prompts (30d) + forever consolidation receipts"}
+  - {directory: plans/archive/ + specs/archive/, policy: forever_git_blame_only, note: "ARCHIVED docs — never registered, never referenced from a living doc (Bean 2026-07-02)"}

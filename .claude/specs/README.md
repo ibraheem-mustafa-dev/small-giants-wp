@@ -40,7 +40,7 @@ Specs are versioned, status-tracked artifacts that document architectural commit
 | 19 | [19-SGS-CLI-COMMANDS.md](19-SGS-CLI-COMMANDS.md) | `wp sgs` command tree (includes Phase 1 DB seed) | shipped |
 | 20 | [20-STRUCTURED-PIPELINE-LOG-SURFACING.md](20-STRUCTURED-PIPELINE-LOG-SURFACING.md) | Per-severity sidecar logs | shipped |
 | 21 | [21-PIPELINE-STATE-ARTEFACTS.md](21-PIPELINE-STATE-ARTEFACTS.md) | Pipeline-state debug artefacts catalogue | active |
-| 22 | [22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md](22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) | SGS Cloning Pipeline — Universal Block-Equivalent Extraction (CANONICAL) | active |
+| 22 | [31-UNIVERSAL-CLONING-PIPELINE.md](31-UNIVERSAL-CLONING-PIPELINE.md) | SGS Cloning Pipeline — Universal Block-Equivalent Extraction (CANONICAL) | active |
 | 26 | [26-SGS-GLOBAL-STYLES-AND-THEMING.md](26-SGS-GLOBAL-STYLES-AND-THEMING.md) | Global styles + per-client theming (variation-delta + wp_global_styles REST sync) + pipeline style derivation (build deferred) | draft |
 | 27 | [27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md](27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md) | MASTER — SGS product + WooCommerce layer (CPT, collection, cart, dual-mode card, option-picker, configurator) | active |
 | 28 | [28-SGS-SMART-BULK-PRICING.md](28-SGS-SMART-BULK-PRICING.md) | Smart bulk pricing / comparative value-ladder | active |

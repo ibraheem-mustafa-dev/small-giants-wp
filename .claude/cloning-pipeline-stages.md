@@ -843,7 +843,7 @@ Plus header behaviour wrapper hook:
 
 The Phase 2A pricing-table additions (Branch E) also extend the recogniser surface: `__icon`, `__ribbon`, `__savings-badge`, `__feature--included`, `__feature--excluded`.
 
-**Next session recogniser work:** run `/sgs-update` to sync `sgs-framework.db` with the new blocks (responsive-logo, icon multi-source, timeline) + the new attributes on pricing-table. Then ensure `tools/recogniser/` matches a draft mockup carrying any of these SGS-BEM selectors directly to the corresponding SGS block.
+**Recognition (corrected 2026-07-02):** run `/sgs-update` to sync `sgs-framework.db` after block changes. Recognition + attr→element ownership come from the block's CODE/declaration (block.json / render.php / edit.js), NOT from name-parsing or the stale `tools/recogniser` / `fingerprints.json` builder — those are DEAD and NOT the go-forward channel (a name-heuristic seeder was trialled + REJECTED, FR-31-2.1a). The live engine recognises by BEM class → block via the DB (`slots`/`blocks`), name-free.
 
 ---
 
@@ -925,7 +925,7 @@ The Phase 2A pricing-table additions (Branch E) also extend the recogniser surfa
 - **G5** — Per-block DOM-shape mismatches (`<blockquote>` vs `<section>`; mockup-grid vs render-carousel).
 - **F5** — D1 media-field flow: responsive variants stored but not routed to `<attr>Mobile/Tablet/Desktop` attrs.
 
-G1+G3+G5 are manifestations of one gap: cv2 doesn't walk all classes + assign CSS ownership via the DB tables that exist. **Spec 22 is the canonical fix-shape** — single universal walker, exactly 3 permitted exceptions, DB-driven recognition. See `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §2-§3 for the structural architecture.
+G1+G3+G5 are manifestations of one gap: cv2 doesn't walk all classes + assign CSS ownership via the DB tables that exist. **Spec 22 is the canonical fix-shape** — single universal walker, exactly 3 permitted exceptions, DB-driven recognition. See `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` §2-§3 for the structural architecture.
 
 ---
 
@@ -936,7 +936,7 @@ G1+G3+G5 are manifestations of one gap: cv2 doesn't walk all classes + assign CS
 1. **Stage 0.7 CSS lift** — four-destination router active (Spec 22 §FR-31-5). D3/D2 split still evolving.
 2. **Stage 2 has no pattern-level matcher** — sections matching pattern slugs fall to normal route. Tracked: Phase 1 of strategic-plan.
 3. **5 dead DB tables** — `sections_detected`, `extraction_cache`, `block_opportunities`, `weaknesses`, `animations` — retire or remove from schema.
-4. **ARRAY_LIFT_PATTERNS hardcoded dict** — `count_stars` + multi-selector fallback not yet migrated to universal 1e-B path. Tracked: `P-ARRAY-LIFT-PATTERNS-FULL-MIGRATION`.
+4. **ARRAY_LIFT_PATTERNS** — DONE in the new engine (D258): array-item content lift is COMPLETE + LANDED for the 5 array blocks via declared `block.json items.properties.<field>.role` → `array_item_schema.role` + `converter/resolvers/array_content.py` (BEM-segment matching). The old hardcoded `ARRAY_LIFT_PATTERNS` dict remains only in FROZEN `convert.py` (D-MODULAR — replaced, not edited). Spec 31 §3.B4 / FR-31-2.5.
 
 ### Optimisation opportunities
 

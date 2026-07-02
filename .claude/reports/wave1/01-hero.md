@@ -111,7 +111,7 @@ The class `sgs-hero--split` is present, confirming `variant='split'` was correct
 
 ### 5. SPEC/DOC refs
 
-- **Spec 22 §FR-22-21** (`.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`, line near "FR-22-21"): Universal wrapper-conversion procedure — states `splitColumnRatio` / `gridTemplateColumns` / responsive variants are the canonical target attrs for grid-layout transfer. Converter-side gaps remain after WS-4 block-side complete.
+- **Spec 22 §FR-22-21** (`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`, line near "FR-22-21"): Universal wrapper-conversion procedure — states `splitColumnRatio` / `gridTemplateColumns` / responsive variants are the canonical target attrs for grid-layout transfer. Converter-side gaps remain after WS-4 block-side complete.
 - **`.claude/cloning-pipeline-flow.md` line 40**: "Fidelity = transferring the draft's CSS onto the chosen block's EDITABLE attributes ... `gridTemplateColumns`". Also line 126: "Grid + per-item — `grid-template-columns` (+responsive) → `gridTemplateColumns` (+Tablet/Mobile)".
 - **`.claude/cloning-pipeline-flow.md` line 132**: "WS-4 composite-mirror — BLOCK-SIDE COMPLETE (2026-06-04, D167)" and "SEPARATE from page-clone fidelity: the converter still routes wrapper classes to `sgs/container` (fallback, conf 0.10)".
 - **`.claude/decisions.md`**: D167 (WS-4 block-side complete), D159 (WS-1 A1+A2 SHIPPED).
@@ -242,7 +242,7 @@ The `contentPadding*` attrs are the per-column-content padding controls. The `me
 
 ### 5. SPEC/DOC refs
 
-- **Spec 22 §FR-22-21** (`.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`): Universal wrapper-conversion procedure lists `padding` as a target transfer attr. Does not distinguish between outer-section padding and inner-column padding.
+- **Spec 22 §FR-22-21** (`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`): Universal wrapper-conversion procedure lists `padding` as a target transfer attr. Does not distinguish between outer-section padding and inner-column padding.
 - **`.claude/cloning-pipeline-flow.md` line 40**: "`padding`" listed as a wrapper attr to transfer. No explicit distinction between outer/content-column/media-column padding transfer.
 - **`plugins/sgs-blocks/src/blocks/hero/render.php` comment at line 193**: `// contentPadding — padding on the .sgs-hero__content wrapper.` and line 177: `// mediaPadding — outer padding on the .sgs-hero__media wrapper.` The dedicated per-column attrs (`contentPadding*` and `mediaPadding*`) exist specifically for this pattern.
 
@@ -366,7 +366,7 @@ These 3 attrs exist in `block_attributes` for `sgs/hero` with default `""`. They
 - **DB-lookup.py line 1143** (`plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py`): `("text-align", "textAlign", None)` — maps CSS `text-align` to `textAlign` attr. This is in the `_FALLBACK` list used by the typography-lift function.
 - **heading/render.php lines 198–200**: `$text_align_raw = isset($attributes['textAlign']) ? sanitize_text_field($attributes['textAlign']) : '';` — the `sgs/heading` block DOES read and apply its own `textAlign` attr. Lines 329–331: `if ('' !== $text_align) { $wrapper_inline[] = 'text-align:' . esc_attr($text_align); }` — emits `text-align` as inline style on the wrapper div.
 - **heading/render.php lines 253–332**: the text-align emit at line 329–331 is inside the `if (!$inherit_style)` block (line 253). If `inheritStyle=true`, text-align is NOT emitted even if set.
-- **Spec 22 §FR-22-21** (`.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`): Does not contain an explicit rule about `text-align` transfer from parent element context (`.sgs-hero__content h1`) to child InnerBlock (`sgs/heading`).
+- **Spec 22 §FR-22-21** (`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`): Does not contain an explicit rule about `text-align` transfer from parent element context (`.sgs-hero__content h1`) to child InnerBlock (`sgs/heading`).
 - **`.claude/cloning-pipeline-flow.md` line 40**: Does not mention `text-align` as a wrapper attr; it is listed in db_lookup.py's fallback typography map.
 
 ### 6. PIPELINE-LOCATION refs

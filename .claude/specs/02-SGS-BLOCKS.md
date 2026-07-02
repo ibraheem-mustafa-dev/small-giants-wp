@@ -121,7 +121,7 @@ Decided 2026-05-03 — full spec at [`11-SGS-BUTTON-ARCHITECTURE.md`](11-SGS-BUT
 
 ## Pipeline / extraction
 
-Mockup HTML → SGS block markup pipeline at [`22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`](22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) (canonical cloning-pipeline spec). Key rules:
+Mockup HTML → SGS block markup pipeline at [`31-UNIVERSAL-CLONING-PIPELINE.md`](31-UNIVERSAL-CLONING-PIPELINE.md) (canonical cloning-pipeline spec). Key rules:
 
 - Fingerprints auto-derived from `block.json` — never hand-written. Adding an attribute to a block automatically grows the recogniser's coverage.
 - Pull all CSS every run, classify into block-attribute / universal-handled / one-time-custom. No silent loss.

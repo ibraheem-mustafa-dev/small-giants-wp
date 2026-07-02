@@ -7,7 +7,7 @@ last_annotated: 2026-06-13
 registry_entry: docs-registry.yaml canonical_docs (cloning-pipeline-flow.md)
 companion_docs:
   - .claude/cloning-pipeline-stages.md - per-stage annotated blocks (scripts, files, DB, skills, status)
-  - .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md - canonical pipeline spec (Spec 22)
+  - .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md - canonical pipeline spec (Spec 22)
 update_triggers:
   - Pipeline stage change (new stage, retired stage, renumbered)
   - Script wired or unwired (status flip in any stage block)
@@ -107,14 +107,14 @@ Per-stage annotated blocks (scripts, files, DB tables, skills, status) are in
 
 ## Universal-path topology (Spec 22 FR-31-3)
 
-The cloning pipeline emits via a single universal walker path with exactly 3 permitted exceptions. Canonical spec: `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`.
+The cloning pipeline emits via a single universal walker path with exactly 3 permitted exceptions. Canonical spec: `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`.
 
 - **Universal path** — every BEM-classed DOM node resolves to a block slug via Spec 00 §3.1 BEM canonical signal + `slots` (scope='element') `standalone_block` lookup. Walker recurses into children. Per-block behaviour comes from DB rows, not code branches. See Spec 22 §3 FR-31-1 + FR-31-3.
 - **Permitted exception 1** — Atomic-tag swap (Spec 22 FR-31-3 / Appendix B). Bare HTML tags with no SGS classes route via DB-driven `db.atomic_tag_map()` (`blocks.replaces` reverse-walk; `html_semantic_tag` was NOT migrated from retired `slot_synonyms` — see Spec 22 §14).
 - **Permitted exception 2** — Chrome-skip at top level (header/footer/nav tags in `SKIP_TOP_LEVEL_TAGS` constant).
 - **Permitted exception 3** — Top-level section wrap in `sgs/container` per architecture decision #4.
 
-No other branches. Adding a 4th requires spec amendment with empirical justification (R-31-3). Canonical reference: `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`.
+No other branches. Adding a 4th requires spec amendment with empirical justification (R-31-3). Canonical reference: `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`.
 
 **D108/D152 status:** `block_composition` table (197 rows post-D152; `container_kind` column added D152 — values `section|layout|content` for the 31-block container roster) is LIVE as a data layer; walker recursion code that would consume it (XS-3) was REVERTED (commit `f173b351` → `c76aa107`) pending a refined trigger. Treat `block_composition` as available for DB-driven queries but NOT yet a walker branch. Refined trigger formalised as **Spec 22 §FR-31-4.1 — Universal wrapper/container resolution** (Bean-directed, 2026-05-31, D118). §FR-31-4.1 is the canonical resolution rule for every sgs-classed wrapper below a section root: (1) block-match wins; (2) direct-descendant folds into the parent container (1-child → inner-CSS layer; grid/flex → container absorbs layout + grid-item CSS per item); (3) direct-descendant that matches a block → emitted as that block; (4) non-direct-descendant → its own sgs/container, then recurse. This supersedes `walk_passthrough` drop-and-bubble for sgs-classed wrappers, the depth-2 `_is_layout_bearing_wrapper` gate, and `_absorb_transparent_wrappers` (D52). FR-31-11 governs non-sgs-classed (transparent) wrappers — unchanged.
 
@@ -167,7 +167,7 @@ No other branches. Adding a 4th requires spec amendment with empirical justifica
 ## See also
 
 - **Per-stage detail:** `.claude/cloning-pipeline-stages.md` — stage annotated blocks, script inventory, skill dispatch chain (full), DB heat-map (full)
-- **Canonical pipeline spec:** `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`
+- **Canonical pipeline spec:** `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`
 - **State:** `.claude/state.md`
 - **Decisions log:** `.claude/decisions.md`
 - **Artefact catalogue:** `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md`

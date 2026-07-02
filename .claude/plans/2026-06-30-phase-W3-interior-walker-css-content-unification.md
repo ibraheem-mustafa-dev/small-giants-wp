@@ -4,7 +4,7 @@ project: small-giants-wp
 phase: W3
 thread: cloning-pipeline / Spec 31 §12.6 step-3
 generated: 2026-06-30
-spec: .claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md (§3, §12.6, §12.7)
+spec: .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md (§3, §12.6, §12.7)
 grounded_in: Register B (port spec) + Register A (A1/A2) + D249 fact-check (CSS↔content unification)
 ---
 
@@ -22,20 +22,34 @@ the dispatched steps are self-contained and can run Sonnet-inline if Opus is una
 **Aggregate cost estimate:** ~6 dispatched Sonnet steps (~80k tok each) + ~4 inline Opus gates;
 order-of-magnitude ~0.7M tokens across the phase (calibrate down — Register B is pre-resolved).
 
+## W3 progress (D250, 2026-06-30)
+
+**Steps 1–7 DONE** (all commits on `main`, D250 session). Remaining work:
+
+| Remaining | What |
+|-----------|------|
+| Step 10 | LANDED proof — hero `split` on canary; everything is WRITTEN-not-LANDED; new engine INERT in prod (STOP-28) |
+| Step 8 | A1 media-map loader/driver |
+| Step 9 | A2 content-conservation ledger (declare_input extension) |
+| §5 lift-path | Lift-path for properties seeded into §5 tables (20-row seed shipped; resolver wiring still pending) |
+| !important sweep | ~30 base-selector !important violations now accurately flagged by the cheat-gate (Check #3 selector-aware, baseline 118 → 75); sweep is post-LANDED work |
+
+**Build-status at session close:** 185 converter tests green; cheat-gate baseline 75; convert.py byte-identical (FROZEN, D-MODULAR). New engine behind a flag — frozen `convert.py` is still the live conductor.
+
 **Phase success criteria (done when):**
-- [ ] ONE production walk drives BOTH `process_element` (CSS resolvers) AND `extract_content`
-      (content) into ONE emitted block per node — the two inert halves are connected.
-- [ ] The full `_route_composite_interior` walker is faithfully ported into `run_mechanism_b`
-      (all 3 branches: scalar-media column, slug-None fold + cross-node CSS, recursion).
-- [ ] Responsive typography/colour lands (`_lift_styling_attrs_by_selector` consumes `_bp_decls`).
+- [x] ONE production walk drives BOTH `process_element` (CSS resolvers) AND `extract_content`
+      (content) into ONE emitted block per node — the two inert halves are connected. ✅ Step 7 (`46d93612`)
+- [x] The full `_route_composite_interior` walker is faithfully ported into `run_mechanism_b`
+      (all 3 branches: scalar-media column, slug-None fold + cross-node CSS, recursion). ✅ Step 4 (`9498f3a7`)
+- [x] Responsive typography/colour lands (`_lift_styling_attrs_by_selector` consumes `_bp_decls`). ✅ Step 3 (D247)
 - [ ] ≥1 composite (hero `split`) is **LANDED-proven** on a canary: draft-vs-clone computed-style
-      at 375/768/1440 (STOP-21), Bean signs off (R-22-13).
-- [ ] A1 (media-map loader) + A2 (content-conservation ledger) land before production-wiring.
-- [ ] Both conformance suites + the cheat gates (incl. the D249 Check #9) green; convert.py byte-identical.
-- [ ] The G1–G5 child-routing gaps each have a recorded disposition (DONE-BY-PORT / CLOSE-IN-W3 / DEFER).
+      at 375/768/1440 (STOP-21), Bean signs off (R-22-13). ⏳ Step 10 — pending
+- [ ] A1 (media-map loader) + A2 (content-conservation ledger) land before production-wiring. ⏳ Steps 8–9 — pending
+- [x] Both conformance suites + the cheat gates (incl. the D249 Check #9) green; convert.py byte-identical. ✅ 185 tests; cheat-gate baseline 75; convert.py FROZEN
+- [x] The G1–G5 child-routing gaps each have a recorded disposition (DONE-BY-PORT / CLOSE-IN-W3 / DEFER). ✅ Step 1 (G1/G2/G4/G5 DONE-BY-PORT; G3 CLOSE-IN-W3 built in Step 4)
 
 **Entry context (read before starting — WHOLE files, not greps; Bean directive):**
-- `.claude/specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md` §1 (function inventory) + §3 (unified
+- `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` §1 (function inventory) + §3 (unified
   content+CSS routing) + §3.B3 (child-routing G1–G5) + §12.6/§12.7 (stage map).
 - `.claude/specs/22-...` FR-22-2/2.1/2.2 (scalar-vs-child fork) + FR-22-3 (single recursive walker)
   + §FR-22-5.3 (the slot-keyed `slot_has_equivalent_block` predicate).
@@ -101,16 +115,24 @@ this walker. Disposition:
 
 **Verdict: GO** (with G3 built in Step 4).
 
-**Build-status check (2026-06-30) — Steps 2 + 3 were ALREADY DONE in prior sessions:**
+**Build-status check (D250, 2026-06-30) — Steps 1–7 ALL DONE this session:**
 - **Step 2 ✅ ALREADY DONE** — all 5 styling helpers present in `converter/services/styling_helpers.py`
   (`collect_css_decls_for_element`, `extract_token_or_hex`, `split_value_unit`, `css_value_to_attr`,
   `css_selector_has_class`).
 - **Step 3 ✅ ALREADY DONE (D247)** — `converter/resolvers/styling_content.py` already consumes `_bp_decls`
   and emits `{attr}{bp_suffix}` companions off `modifier_suffixes('breakpoint')` (the B2 responsive fix;
   lines 181–196). Wired via `run_mechanism_styling`.
-- **Step 4 ⏳ THE REAL WORK** — `run_mechanism_b` (extraction.py:123) is STILL the flat D245 recreation
-  (`content_children` + `extract_payload`, no scalar-media/fold/recursion branches). The faithful
-  `_route_composite_interior` port + G3 is the next build. **HIGH-risk inline-Opus** — best on fresh context.
+- **Step 4 ✅ DONE (D250, `9498f3a7`)** — full `_route_composite_interior` walker ported into `run_mechanism_b`:
+  all 3 branches (scalar-media column, slug-None FOLD + cross-node CSS, recursion via `_child_content_for_node`).
+  G3 `accepts_allowed_blocks` validation built (not-in → `ContentGap`, NULL → permissive+trace). 185 tests.
+- **Step 5 ✅ DONE (D248)** — array path ported with `# TODO FR-22-2.5` markers.
+- **Step 6 ✅ RESOLVED BY STEP 4** — B4 ambiguous-attr bare-HTML dump resolved by Step 4's proper recursion;
+  no separate bare-HTML emit path survives.
+- **Step 7 ✅ DONE (D250, `46d93612`)** — `build_block_markup._build_css_attrs` drives BOTH `process_element`
+  (CSS) AND `extract_content` (content) into ONE emit. Finding A (two disconnected inert halves) FIXED.
+- **Grid fix ✅ (`625d4ba6`)** — `grid-template-*` pre-layer routes to the grid resolver (was going to wrong branch).
+- **Fixes ✅ (`fa8418c8`, `a3608bac`)** — Fix 1: native `style.*` lift (`root_supports.py`); Fix 2: `box-shadow` → shadow preset token-snap; Fix 3: §5 seeds (20 rows); `background-*` lift; `validate.py` enum-parse bug fixed.
+- **Cheats fixed ✅ (`1b3d108c`)** — mega-menu `!important` → specificity; Check #3 selector-aware; cheat-gate baseline 118 → 75.
 
 ---
 
@@ -136,7 +158,9 @@ this walker. Disposition:
     Fail:        council finds the port-source itself diverges from §3 → re-scope before any code.
     Integration: the disposition feeds Step 4's walker port (which gaps it must close vs defer).
 
-### Step 2 — Port the 5 styling-lift helpers into the new tree
+### Step 2 — Port the 5 styling-lift helpers into the new tree  ✅ DONE (prior session)
+  ✅ DONE (prior session): all 5 helpers present in `converter/services/styling_helpers.py`.
+
   Model:       sonnet (dispatched) | Action: faithfully port `_collect_css_decls_for_element`,
                `_extract_token_or_hex`, `_split_value_unit`, `_css_value_to_attr`,
                `_css_selector_has_class` (convert.py closure of `_lift_styling_attrs_by_selector`)
@@ -157,7 +181,11 @@ this walker. Disposition:
     Fail:        a helper imports from convert.py → reject (must be self-contained).
     Integration: consumed by Step 3's styling-lift.
 
-### Step 3 — Port `_lift_styling_attrs_by_selector` + extend for `_bp_decls` + wire to dispatch (B2)
+### Step 3 — Port `_lift_styling_attrs_by_selector` + extend for `_bp_decls` + wire to dispatch (B2)  ✅ DONE (D247)
+  ✅ DONE (D247): `converter/resolvers/styling_content.py` consumes `_bp_decls`, emits `{attr}Tablet`/
+  `{attr}Mobile` keyed off the DB `modifier_suffixes('breakpoint')` table (lines 181–196). Wired via
+  `run_mechanism_styling`. B2 responsive fix shipped.
+
   Model:       sonnet (dispatched) | Action: port the styling-lift into
                `converter/resolvers/styling_content.py` (replace its stub), FIXING the base-only drop
                — consume `_bp_decls` → emit `{attr}Tablet`/`{attr}Mobile` keyed off the DB suffix
@@ -183,14 +211,22 @@ this walker. Disposition:
     Fail:        a hardcoded `{"Tablet":"Tablet"}` map → Check #9 gate fails the commit (good).
     Integration: feeds the content emit in Step 7.
 
-### QA Gate A — styling-lift + helpers green, no new cheat
+### QA Gate A — styling-lift + helpers green, no new cheat  ✅ PASSED (prior session / D247)
+  ✅ PASSED: helpers + styling-lift green in prior session (D247).
+
   Model:   sonnet | Exec: SEQUENTIAL | Deps: Steps 2–3
   Check:   `cd plugins/sgs-blocks/scripts && python -m pytest converter/tests -q --import-mode=importlib && python cheat-gate/run.py --check`
   Pass:    all converter tests pass (count ≥ prior) AND cheat-gate exit 0 (0 NEW).
   Fail:    re-open Step 2/3; if Check #9 fires, a suffix-dict crept in — DB-source it.
   Marker:  QA
 
-### Step 4 — Port the FULL `_route_composite_interior` walker into `run_mechanism_b` (B1)
+### Step 4 — Port the FULL `_route_composite_interior` walker into `run_mechanism_b` (B1)  ✅ DONE (D250, `9498f3a7`)
+  ✅ DONE (D250, `9498f3a7`): full `_route_composite_interior` walker ported into `run_mechanism_b`.
+  All 3 branches shipped: (i) scalar-media column lift (hero `split` splitImage/splitImageMobile);
+  (ii) slug-None FOLD + cross-node CSS via `_route_interior_css_to_parent_slot`; (iii) recursion via
+  `_child_content_for_node`. G3 `accepts_allowed_blocks` validation built: not-in → `ContentGap` (loud),
+  NULL → permissive+trace. Replaced the flat D245 recreation. 185 tests green.
+
   Model:       inline (Opus) — heavy, recursion + cross-node CSS, highest regression risk
   Action:      Replace the current flat `run_mechanism_b` (the D245 from-scratch recreation) with a
                faithful port of `_route_composite_interior` (convert.py:4124) — ALL THREE branches:
@@ -218,7 +254,9 @@ this walker. Disposition:
     Fail:        a thinned port (missing a branch) → hero split image evaporates (D212 shape) — caught by Step 10.
     Integration: drives child InnerBlocks; feeds the unified emit (Step 7).
 
-### Step 5 — Port the array path as-is + TODO markers (B3)
+### Step 5 — Port the array path as-is + TODO markers (B3)  ✅ DONE (D248)
+  ✅ DONE (D248): array path ported with `# TODO FR-22-2.5` markers; no slug literals.
+
   Model:       sonnet (dispatched) | Action: port the array/repeater behaviour faithful to convert.py
                with `# TODO FR-22-2.5` markers; do NOT complete FR-22-2.5 (scope-creep, own design-gate).
                Carry NO slug literals (the array slug literals live in `_atomic_attrs_for`, out of scope).
@@ -236,7 +274,11 @@ this walker. Disposition:
     Fail:        a slug literal appears → no_slug_literal gate fails (good).
     Integration: items feed the content emit.
 
-### Step 6 — B4: ambiguous-attr fallback → loud ContentGap
+### Step 6 — B4: ambiguous-attr fallback → loud ContentGap  ✅ RESOLVED BY STEP 4
+  ✅ RESOLVED BY STEP 4 (D250, `9498f3a7`): the bare-HTML dump path is eliminated by Step 4's proper
+  recursion. `build_block_markup` no longer reaches the ambiguous-attr branch via the old flat path.
+  No separate commit needed; the behaviour is covered by Step 4's walker + the 185-test suite.
+
   Model:       sonnet (dispatched) | Action: in `build_block_markup`, when `primary_content_attr` is
                None (ambiguous multi-attr), emit a tracked `ContentGap` instead of dumping bare
                inner-HTML a typed render.php may ignore (the latent silent-drop, extraction.py:~308→420).
@@ -252,14 +294,25 @@ this walker. Disposition:
     Edge:        unambiguous slug → unchanged (primary attr used).
     Fail:        — ; Integration: ContentGap visible to the F5 ledger.
 
-### QA Gate B — full content walker green + conservation intact
+### QA Gate B — full content walker green + conservation intact  ✅ PASSED (D250)
+  ✅ PASSED (D250): 185 converter tests green; cheat-gate baseline 75 (was 118; net reduction from
+  selector-aware Check #3 + mega-menu !important fix); Mechanism-B conservation holds.
+
   Model:   inline | Exec: SEQUENTIAL | Deps: Steps 4–6
   Check:   `cd plugins/sgs-blocks/scripts && python -m pytest converter/tests -q --import-mode=importlib && python cheat-gate/run.py --check`
   Pass:    converter tests green; Mechanism-B conservation (leaves == blocks + gaps) holds; 0 NEW cheats.
   Fail:    walker dropped/duplicated a node → systematic-debugging on the conservation assertion.
   Marker:  QA
 
-### Step 7 — THE UNIFICATION: top-level conductor drives BOTH halves into ONE emit (D249 Finding A)
+### Step 7 — THE UNIFICATION: top-level conductor drives BOTH halves into ONE emit (D249 Finding A)  ✅ DONE (D250, `46d93612`)
+  ✅ DONE (D250, `46d93612`): `build_block_markup._build_css_attrs` now drives BOTH `process_element`
+  (CSS resolvers → wrapper/box/grid attrs) AND `extract_content` (content → scalar/child attrs) into
+  ONE emit per node. Finding A (two disconnected inert halves) is FIXED. MF-2 decided: D1 retired,
+  conductor walks draft per-node per Spec 31 §3. Additional fixes shipped same session:
+  grid-template-* pre-layer route (`625d4ba6`); native style.* lift + box-shadow token-snap + §5 seeds +
+  background-* lift + validate.py enum-parse fix (`fa8418c8`, `a3608bac`); mega-menu !important →
+  specificity + cheat-gate Check #3 selector-aware (`1b3d108c`; baseline 118 → 75).
+
   Model:       inline (Opus) — architectural; this is the keystone the fact-check named
   Action:      Build the production walk (the missing caller): for each recognised draft node, build
                its Ctx + Decls, call BOTH `process_element` (CSS resolvers → wrapper/box/grid attrs)
@@ -420,12 +473,20 @@ this walker. Disposition:
 - **FR-22-2.5 array completion** — W3 Step 5 ports arrays as-is with `# TODO FR-22-2.5`; completing the
   array slot-wiring (`array_item_slot_for`, the `_atomic_attrs_for` slug-literal de-literalisation) is
   its own design-gated stage (STOP-18). **Status:** DEFERRED (own design-gate).
-- **css_router D1 retire vs rewire (MF-2)** — decided at Step 7 (recommend retire); if rewire is chosen
-  instead, that's a separate sub-task. **Status:** OPEN (resolved in Step 7).
+- **css_router D1 retire vs rewire (MF-2)** — RESOLVED at Step 7 (D250): D1 retired. Conductor walks
+  draft per-node per Spec 31 §3. **Status:** CLOSED (D250).
 - **Production-wiring / convert.py decommission** — swapping the new conductor in as the live engine is
   Spec 31 §8, gated on A1+A2+LANDED across the full fixture set, AFTER W3. **Status:** DEFERRED (post-W3 roadmap).
-- **CLAUDE.md "LIVE cloning plan" pointer** still names the 2026-06-09 plan — update it to this W3 plan
-  when W3 starts. **Status:** OPEN (1-line doc fix).
+- **CLAUDE.md "LIVE cloning plan" pointer** — updated to this W3 plan (D250, 2026-06-30). **Status:** CLOSED.
+- **§5 lift-path for data-only-seeded properties** — §5 seed table populated (20 rows, `fa8418c8`/`a3608bac`);
+  the resolver wiring that actually lifts those properties through the conductor is still pending. **Status:** OPEN (post-LANDED, own step).
+- **!important sweep (~30 base-selector violations)** — cheat-gate Check #3 is now selector-aware (commit
+  `1b3d108c`); baseline lowered 118 → 75. The ~30 still-flagged violations are legitimate base-selector
+  `!important` uses that need specificity fixes. Deferred until after LANDED proof. **Status:** OPEN (post-LANDED).
+- **All-routes findings (D250, 2026-06-30)** — the D250 session surfaced that every fix (grid-template-*
+  pre-layer, native style.* lift, box-shadow token-snap, background-* lift) went through the new unified
+  conductor path, confirming the single-walk architecture is sound. No divergent routing path found.
+  **Status:** INFORMATIONAL (no action needed; confirms W3 architecture is correct).
 
 ---
 

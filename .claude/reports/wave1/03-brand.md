@@ -121,7 +121,7 @@ _GRID_DESKTOP_BP = 1024  # px
 _GRID_TABLET_BP  = 600   # px
 ```
 
-**Spec 22 §FR-22-21** (`.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`, line ~643):
+**Spec 22 §FR-22-21** (`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`, line ~643):
 > `grid-template-columns (+responsive) → gridTemplateColumns (+Tablet/Mobile)`
 
 ---

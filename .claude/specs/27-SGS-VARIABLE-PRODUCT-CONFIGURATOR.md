@@ -19,7 +19,7 @@ revision_history:
   - v6 2026-06-09: FR-27-F2 research-corrected pre-build (D197, gold-standard research pack .claude/reports/2026-06-09-f2-gold-standard-research.md): (1) speakable DESCOPED (dead for e-commerce — still BETA, news/US-English/Google-Home only); (2) FAQPage value framing corrected — Google fully deprecated FAQ rich results 2026-05-07 for all sites; client-facing copy must claim AI-citation + Bing visibility, never Google rich results, enforced by a grep gate in the F2 done-when; (3) hardened feed/llms.txt clauses with the researched conventions (text/plain, anti-cloaking navigation-map rule, variant deep-links, identifier_exists=false, feed price from the SEC-1 manifest).
 supersedes_notes: "Supersedes Spec 24 FR-24-13/14 + Spec 25 §design-principle-6 + feature-map rows. D149/D151 dual-source refined: WC-present path reads WC variations, never custom meta. _sgs_sku_matrix PLANNED row and WC-native-variations DEFERRED row both superseded by the variable-product configurator chapter."
 related:
-  - specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md
+  - specs/31-UNIVERSAL-CLONING-PIPELINE.md
   - specs/26-SGS-GLOBAL-STYLES.md
   - specs/02-SGS-BLOCKS.md
   - plugins/sgs-blocks/src/blocks/product-card/

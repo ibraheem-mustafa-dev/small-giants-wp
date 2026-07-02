@@ -9,7 +9,7 @@ status: PROPOSAL — draft FRs to be ratified into Spec 22 + a conformance-gate 
 
 # Stage 0 — spec rules + conformance gate
 
-These are drafts. They get reviewed + merged into `specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` (assigning real FR numbers) before the workstreams that depend on them build. Written spec-shaped (requirement + PASS/FAIL) to match Spec 22's style.
+These are drafts. They get reviewed + merged into `specs/31-UNIVERSAL-CLONING-PIPELINE.md` (assigning real FR numbers) before the workstreams that depend on them build. Written spec-shaped (requirement + PASS/FAIL) to match Spec 22's style.
 
 ---
 
@@ -43,7 +43,7 @@ These are drafts. They get reviewed + merged into `specs/22-UNIVERSAL-BLOCK-EQUI
 
 ## FR draft 2b — Cross-node interior box-CSS → parent per-slot attr group → proposed `FR-22-5.3`
 
-**built_status: MERGED INTO SPEC 22 (2026-06-10)** — this draft is now canonical as `FR-22-5.3` in `specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` (verbatim mechanism + PASS/FAIL + the 2026-06-10 parent-scoped resolution clause). Spec 22 is the authoritative copy; this draft is retained for audit trail only. Build is Stage-1 Commit 2.
+**built_status: MERGED INTO SPEC 22 (2026-06-10)** — this draft is now canonical as `FR-22-5.3` in `specs/31-UNIVERSAL-CLONING-PIPELINE.md` (verbatim mechanism + PASS/FAIL + the 2026-06-10 parent-scoped resolution clause). Spec 22 is the authoritative copy; this draft is retained for audit trail only. Build is Stage-1 Commit 2.
 
 **Requirement.** When an interior element's CSS is not consumed by the element's own block, the converter routes its **box/layout** properties (padding, margin, max-width, gap) to the **owning composite's per-slot attr group**, resolved DB-driven:
 1. Child BEM element → `canonical_slot` (`slots` table).

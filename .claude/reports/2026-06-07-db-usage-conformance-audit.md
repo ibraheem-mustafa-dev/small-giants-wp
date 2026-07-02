@@ -7,7 +7,7 @@ created: 2026-06-07
 status: REFERENCE — audit findings; remediation items listed §6 (none fixed yet — this is the register)
 method: "9 read-only parallel auditors, each read an assigned truth doc start-to-finish (doc = standard) and verified every DB-table-usage requirement against the actual scripts + sgs-framework.db"
 docs_audited:
-  round_1: ["specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md", "cloning-pipeline-flow.md", "cloning-pipeline-stages.md", "dev-setup.md"]
+  round_1: ["specs/31-UNIVERSAL-CLONING-PIPELINE.md", "cloning-pipeline-flow.md", "cloning-pipeline-stages.md", "dev-setup.md"]
   round_2: ["specs/00", "specs/01", "specs/02", "specs/19", "specs/20", "specs/21", "specs/26", "specs/29", "decisions.md", "architecture.md", "state.md", "plans (method2/container/cloning/hybrid-block)"]
 ---
 

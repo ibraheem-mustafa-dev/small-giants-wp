@@ -17,7 +17,7 @@ The 2026-05-21 architecture programme closed 2026-05-22. Full content archived a
 
 **Cloning pixel-diff thread (archived):** [`plans/archive/2026-05-28-phase-2-hybrid-block-migration.md`](plans/archive/2026-05-28-phase-2-hybrid-block-migration.md) — Streams B/C/D deferred; Stream A continuation feeds into WS-3/WS-4 of the standardisation programme.
 
-**Canonical spec:** [`specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`](specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) (Spec 22; replaces Spec 16 retired 2026-05-26). Phase 2-4 (header/footer cloner, parking sweep, skill optimisation) remain active scope.
+**Canonical spec:** [`specs/31-UNIVERSAL-CLONING-PIPELINE.md`](specs/31-UNIVERSAL-CLONING-PIPELINE.md) (Spec 22; replaces Spec 16 retired 2026-05-26). Phase 2-4 (header/footer cloner, parking sweep, skill optimisation) remain active scope.
 
 For the doc-op programme (Phases 1-13, shipped 2026-05-24), see `decisions.md` D57-D60 + `handoff.md`.
 

@@ -8,7 +8,7 @@ status: current
 created: 2026-06-07
 authors: Claude Code / Bean
 cross_refs:
-  - .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md §FR-22-21
+  - .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md §FR-22-21
   - .claude/plans/archive/2026-06-02-container-wrapper-standardisation.md
   - plugins/sgs-blocks/includes/class-sgs-container-wrapper.php
   - plugins/sgs-blocks/src/blocks/container/components/ContainerWrapperControls.js
@@ -34,7 +34,7 @@ Every SGS composite or layout block that has a built-in outer wrapper **mirrors 
 **What "mirror" does NOT mean:**
 - It is NOT a div-by-div copy of the draft DOM. The wrapper is driven entirely by block attributes — the cloning converter reads the draft's CSS and maps it onto these attributes.
 - It is NOT a per-block reimplementation. Adding a new wrapper capability to `sgs/container` and running `/sgs-update` propagates it to all roster blocks automatically via Stage 11.
-- It does NOT fix clone fidelity by itself. The block-side mirror is COMPLETE (D167 2026-06-04). Clone fidelity also requires the converter to route to composite blocks (Method-2, pending) rather than always emitting `sgs/container`.
+- It does NOT fix clone fidelity by itself. The block-side mirror is COMPLETE (D167 2026-06-04). **Composite routing is LIVE (not pending):** the frozen engine already routes `.sgs-hero`→`sgs/hero` / `.sgs-trust-bar`→`sgs/trust-bar` with the variant (qc-council-verified 2026-06-26), and the new engine (D252/D254, `SGS_NEW_ENGINE=1`) recognises + emits those composites and defaults slug-None sections to `sgs/container` + recurse. Remaining fidelity work is per-section CSS/layer, not "does the converter route to composites".
 
 **Auto-propagation:** When `sgs/container` gains a new attr, `/sgs-update` Stage 11 (`sync-container-wrapping-blocks.py --apply`) diffs the KIND-scoped attr set and writes any missing attrs into roster block.json files. Currently report-only pending Bean sign-off; `--apply` writer is wired.
 
@@ -108,7 +108,7 @@ Or via `/sgs-db`. Do NOT hardcode the count here — query the DB. The tables be
 
 Full-bleed outer wrappers — background + spacing + width + layout.
 
-> **NOTE: the converter does NOT yet route to these composite blocks on a live clone — it emits `sgs/container` + draft CSS (Method-2 pending, see §1).** The detailed `sgs/hero` / `sgs/cta-section` entries below describe the TARGET block these sections SHOULD resolve to, not current live clone behaviour. This is the direct cause of the "2 class-section blocks not resolving spacing" report — on a live run those sections currently land as `sgs/container` with the draft section CSS carried as variation CSS, not as a mirrored composite.
+> **NOTE (corrected 2026-07-02): composite routing IS live.** The frozen engine routes `.sgs-hero`→`sgs/hero` and `.sgs-trust-bar`→`sgs/trust-bar` with the variant (qc-council-verified 2026-06-26); the new engine (`SGS_NEW_ENGINE=1`, D252/D254) recognises + emits registered composites and defaults slug-None class-sections to `sgs/container` + recurse. Sections that emit `sgs/container` do so because they have NO registered composite (the correct slug-None target), not because routing is unbuilt. Remaining fidelity gaps are per-section CSS/layer (e.g. the min-width cross-device tier drop), not composite recognition.
 
 | Block | Purpose |
 |---|---|

@@ -83,7 +83,7 @@ The string `"min-width: 640"` is **absent** from `_BREAKPOINT_RULES`. Only `"max
 
 ### SPEC-DOC refs
 
-- Spec 22 `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`: responsive lift described in `_lift_typography_to_block_attrs` comment (convert.py lines 1420–1432).
+- Spec 22 `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`: responsive lift described in `_lift_typography_to_block_attrs` comment (convert.py lines 1420–1432).
 - Spec 22 R-22-1: DB-driven breakpoint suffix vocabulary via `modifier_suffixes`.
 
 ### PIPELINE-LOCATION refs
@@ -360,7 +360,7 @@ Note: per-page CSS for `.sgs-testimonial__stars` has only `margin-bottom: 8px` �
 
 ### SPEC-DOC refs
 
-- Spec 22 §FR-22-16 content-leaf exception (`.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` line 258): "a text-only sgs-classed node... `.__trustpilot-stars` therefore route to `sgs/text`, NOT `sgs/star-rating`... whose payload is a rating."
+- Spec 22 §FR-22-16 content-leaf exception (`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` line 258): "a text-only sgs-classed node... `.__trustpilot-stars` therefore route to `sgs/text`, NOT `sgs/star-rating`... whose payload is a rating."
 - `star-rating/render.php` line 18: `$star_size = (int)($attributes['starSize'] ?? 24)` — default 24.
 
 ### PIPELINE-LOCATION refs

@@ -23,7 +23,7 @@ Framework **v1 shipped** 2026-04-29. Phases 0–5 complete.
 
 **What it does:** Converts any SGS-BEM HTML mockup into a deployable WordPress page of SGS blocks via a 12-stage pipeline (Stage 0 validation → Stage 4 Playwright responsive capture → Stage 8 converter → Stage 11 pixel-diff). Reduces a full-page build from days to minutes.
 
-**Canonical spec:** [`Spec 22 — Universal Block-Equivalent Extraction`](.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) — single-path universal walker; R-22-1 through R-22-14 binding rules.
+**Canonical spec:** [`Spec 22 — Universal Block-Equivalent Extraction`](.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md) — single-path universal walker; R-22-1 through R-22-14 binding rules.
 
 **Active plan:** the cloning CSS-transfer rebuild — blueprint [`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`](31-UNIVERSAL-CLONING-PIPELINE.md) §12; live build plan [`.claude/plans/2026-06-09-clone-fix-build-plan.md`](../plans/2026-06-09-clone-fix-build-plan.md) + sign-off ledger. Foundation (Phase F) COMPLETE; convert.py FROZEN (D-MODULAR D229); next = stage-by-stage modular rebuild. (The old 5-workstream container-wrapper programme is superseded + archived.)
 

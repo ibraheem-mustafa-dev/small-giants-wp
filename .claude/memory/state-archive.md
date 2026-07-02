@@ -30,7 +30,7 @@ working_tree: "Code + docs committed; lucide-icons.php auto-regen (never committ
 github_branches: "main (clean — no feature branches; two agent worktrees local-only)"
 spec_22_implementation:
   status: ARCHITECTURAL_CLEANUP_BATCH_SHIPPED_STREAM_A_MEASUREMENT_PENDING
-  spec: .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md
+  spec: .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md
   spec_version: "0.5+FR-22-15+FR-22-16+FR-22-19 (FR-22-19 added + SHIPPED 2026-06-01 D128-D132 — composite scalar-media routing: hero + testimonial-slider; new scalar-media role; gate has_scalar_media_attrs. FR-22-15 added 2026-05-29 D96; FR-22-2.2 amended D99; §4 data layer slots + roles tables, slot_synonyms + legacy_role_lookup retired D99)"
   phase_plan_active: .claude/plans/2026-05-28-phase-2-hybrid-block-migration.md
   phase_1_5_close_note: "Phase 1.5 CLOSED with just Fix 1 shipped (5731dc36 walker FR-22-3 #3 ordering). Diagnostic value complete."

@@ -19,7 +19,7 @@ target_wp_version: "7.0"
 target_php_version: "8.0+"
 companion_docs:
   - .claude/CLAUDE.md
-  - .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md (canonical cloning-pipeline spec)
+  - .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md (canonical cloning-pipeline spec)
 update_triggers:
   - architectural_change
   - fr_addition

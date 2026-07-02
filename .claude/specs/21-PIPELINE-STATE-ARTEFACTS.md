@@ -114,7 +114,7 @@ The pipeline grounds Stage 1/2/3 routing in `sgs-framework.db`. Read these table
 ## Reference doc cross-links
 
 - `.claude/cloning-pipeline-flow.md` — per-stage block descriptions with WHERE each artefact gets written
-- `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §2-§3 — canonical pipeline architecture
+- `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` §2-§3 — canonical pipeline architecture
 - `.claude/specs/20-STRUCTURED-PIPELINE-LOG-SURFACING.md` — Stage 9c log-surfacing spec
 - `~/.claude/skills/sgs-clone/SKILL.md` — pipeline orchestration + Hard Rules 1-14
 
