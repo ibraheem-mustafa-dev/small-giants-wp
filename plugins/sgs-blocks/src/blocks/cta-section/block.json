@@ -19,18 +19,7 @@
 		"sgs": {
 			"imageControls": false,
 			"is_section_root": true,
-			"arrayContentLift": true,
-			"arrayItemSchema": {
-				"stats": {
-					"itemSelector": ".sgs-cta-section__stat",
-					"fields": {
-						"text": {
-							"selector": ".sgs-cta-section__stat",
-							"role": "text-content"
-						}
-					}
-				}
-			}
+			"arrayContentLift": true
 		},
 		"align": [
 			"wide",
@@ -115,7 +104,7 @@
 			"type": "object",
 			"default": null
 		},
-		"_comment_backgroundMedia": "Migrated 2026-05-05 \u00e2\u20ac\u201d backgroundImage retained for deprecation. New instances should use backgroundMedia (accepts image OR video).",
+		"_comment_backgroundMedia": "Migrated 2026-05-05 â€” backgroundImage retained for deprecation. New instances should use backgroundMedia (accepts image OR video).",
 		"backgroundMedia": {
 			"type": "object",
 			"default": null
@@ -126,7 +115,15 @@
 		},
 		"stats": {
 			"type": "array",
-			"default": []
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"text": {
+						"type": "string"
+					}
+				}
+			}
 		},
 		"buttonStyle": {
 			"type": "string",

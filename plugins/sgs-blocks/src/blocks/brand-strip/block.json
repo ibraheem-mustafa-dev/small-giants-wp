@@ -20,18 +20,7 @@
 	"supports": {
 		"sgs": {
 			"imageControls": true,
-			"arrayContentLift": true,
-			"arrayItemSchema": {
-				"logos": {
-					"itemSelector": ".sgs-brand-strip__logo",
-					"fields": {
-						"media": {
-							"selector": ".sgs-brand-strip__logo",
-							"role": "image-object"
-						}
-					}
-				}
-			}
+			"arrayContentLift": true
 		},
 		"align": [
 			"wide",
@@ -55,10 +44,18 @@
 		}
 	},
 	"attributes": {
-		"_comment_logos_media": "Migrated 2026-05-05 \u00e2\u20ac\u201d each logo entry uses the unified media-slot shape { url, type: 'image', id, alt, mime } via shared MediaPicker (image-only). Legacy { image: {...} } shape retained on existing posts via deprecated.js v2 migrate. New instances write the unified shape. allowedTypes={ [ 'image' ] } enforces no video on logos.",
+		"_comment_logos_media": "Migrated 2026-05-05 â€” each logo entry uses the unified media-slot shape { url, type: 'image', id, alt, mime } via shared MediaPicker (image-only). Legacy { image: {...} } shape retained on existing posts via deprecated.js v2 migrate. New instances write the unified shape. allowedTypes={ [ 'image' ] } enforces no video on logos.",
 		"logos": {
 			"type": "array",
-			"default": []
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"media": {
+						"type": "string"
+					}
+				}
+			}
 		},
 		"scrolling": {
 			"type": "boolean",

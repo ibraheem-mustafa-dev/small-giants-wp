@@ -32,26 +32,7 @@
 			"textAlign": true
 		},
 		"sgs": {
-			"arrayContentLift": true,
-			"arrayItemSchema": {
-				"icons": {
-					"itemSelector": ".sgs-social-icons__icon",
-					"fields": {
-						"platform": {
-							"selector": ".sgs-social-icons__icon",
-							"role": "icon-slug"
-						},
-						"url": {
-							"selector": ".sgs-social-icons__icon",
-							"role": "url-href"
-						},
-						"label": {
-							"selector": ".sgs-social-icons__label",
-							"role": "text-content"
-						}
-					}
-				}
-			}
+			"arrayContentLift": true
 		}
 	},
 	"selectors": {
@@ -62,7 +43,18 @@
 			"type": "array",
 			"default": [],
 			"items": {
-				"type": "object"
+				"type": "object",
+				"properties": {
+					"platform": {
+						"type": "string"
+					},
+					"url": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					}
+				}
 			}
 		},
 		"iconSize": {

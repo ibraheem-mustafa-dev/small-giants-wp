@@ -47,30 +47,7 @@
 			"style": true
 		},
 		"sgs": {
-			"arrayContentLift": true,
-			"arrayItemSchema": {
-				"steps": {
-					"itemSelector": ".sgs-process-steps__step",
-					"fields": {
-						"icon": {
-							"selector": ".sgs-process-steps__icon",
-							"role": "icon-slug"
-						},
-						"number": {
-							"selector": ".sgs-process-steps__number",
-							"role": "plain-integer"
-						},
-						"title": {
-							"selector": ".sgs-process-steps__title",
-							"role": "text-content"
-						},
-						"description": {
-							"selector": ".sgs-process-steps__description",
-							"role": "text-content"
-						}
-					}
-				}
-			}
+			"arrayContentLift": true
 		}
 	},
 	"selectors": {
@@ -96,7 +73,24 @@
 					"title": "Third Step",
 					"description": "Description of the third step."
 				}
-			]
+			],
+			"items": {
+				"type": "object",
+				"properties": {
+					"icon": {
+						"type": "string"
+					},
+					"number": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					}
+				}
+			}
 		},
 		"connectorStyle": {
 			"type": "string",

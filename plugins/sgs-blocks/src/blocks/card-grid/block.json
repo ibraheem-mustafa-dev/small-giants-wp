@@ -50,38 +50,7 @@
 		},
 		"sgs": {
 			"imageControls": true,
-			"arrayContentLift": true,
-			"arrayItemSchema": {
-				"items": {
-					"itemSelector": ".sgs-card-grid__item",
-					"fields": {
-						"title": {
-							"selector": ".sgs-card-grid__title",
-							"role": "text-content"
-						},
-						"subtitle": {
-							"selector": ".sgs-card-grid__subtitle",
-							"role": "text-content"
-						},
-						"media": {
-							"selector": ".sgs-card-grid__image-wrap",
-							"role": "image-object"
-						},
-						"badge": {
-							"selector": ".sgs-card-grid__badge",
-							"role": "text-content"
-						},
-						"link": {
-							"selector": ".sgs-card-grid__link",
-							"role": "url-href"
-						},
-						"badgeVariant": {
-							"selector": ".sgs-card-grid__badge",
-							"role": "css-modifier"
-						}
-					}
-				}
-			}
+			"arrayContentLift": true
 		}
 	},
 	"selectors": {
@@ -93,10 +62,33 @@
 			"type": "string",
 			"default": "card"
 		},
-		"_comment_items_media": "Migrated 2026-05-05 \u00e2\u20ac\u201d each item gains a unified `media` slot (image OR video). Legacy `image` retained on items for deprecation back-compat. New instances should write `media` via MediaPicker.",
+		"_comment_items_media": "Migrated 2026-05-05 â€” each item gains a unified `media` slot (image OR video). Legacy `image` retained on items for deprecation back-compat. New instances should write `media` via MediaPicker.",
 		"items": {
 			"type": "array",
-			"default": []
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"title": {
+						"type": "string"
+					},
+					"subtitle": {
+						"type": "string"
+					},
+					"media": {
+						"type": "string"
+					},
+					"badge": {
+						"type": "string"
+					},
+					"link": {
+						"type": "string"
+					},
+					"badgeVariant": {
+						"type": "string"
+					}
+				}
+			}
 		},
 		"columns": {
 			"type": "number",
@@ -248,7 +240,7 @@
 		"productLimit": {
 			"type": "number",
 			"default": 6,
-			"description": "Maximum number of products to return (1\u00e2\u20ac\u201c24). Server-side cap enforced at 24. The on-sale filter over-fetches and refills to this limit; fewer are returned only when fewer on-sale products exist."
+			"description": "Maximum number of products to return (1â€“24). Server-side cap enforced at 24. The on-sale filter over-fetches and refills to this limit; fewer are returned only when fewer on-sale products exist."
 		},
 		"productIds": {
 			"type": "array",
@@ -261,7 +253,7 @@
 		"productShowLadder": {
 			"type": "boolean",
 			"default": false,
-			"description": "Show the per-pack price ladder on each card. Off by default \u00e2\u20ac\u201d grids are a browsing context; the ladder does its upsell work on the product page."
+			"description": "Show the per-pack price ladder on each card. Off by default â€” grids are a browsing context; the ladder does its upsell work on the product page."
 		},
 		"productEmptyMessage": {
 			"type": "string",

@@ -41,30 +41,7 @@
 			"style": true
 		},
 		"sgs": {
-			"arrayContentLift": true,
-			"arrayItemSchema": {
-				"items": {
-					"itemSelector": ".sgs-icon-list__item",
-					"fields": {
-						"text": {
-							"selector": ".sgs-icon-list__text",
-							"role": "text-content"
-						},
-						"iconSource": {
-							"selector": ".sgs-icon-list__icon-source",
-							"role": "icon-slug"
-						},
-						"iconName": {
-							"selector": ".sgs-icon-list__icon-name",
-							"role": "icon-slug"
-						},
-						"url": {
-							"selector": ".sgs-icon-list__link",
-							"role": "url-href"
-						}
-					}
-				}
-			}
+			"arrayContentLift": true
 		}
 	},
 	"selectors": {
@@ -90,7 +67,24 @@
 					"iconName": "check",
 					"text": "Third list item"
 				}
-			]
+			],
+			"items": {
+				"type": "object",
+				"properties": {
+					"text": {
+						"type": "string"
+					},
+					"iconSource": {
+						"type": "string"
+					},
+					"iconName": {
+						"type": "string"
+					},
+					"url": {
+						"type": "string"
+					}
+				}
+			}
 		},
 		"icon": {
 			"type": "string",
