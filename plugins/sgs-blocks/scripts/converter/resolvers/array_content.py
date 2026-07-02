@@ -175,6 +175,7 @@ def _lift_item(
 
     item: dict = {}
     used: set[int] = set()
+    raw_svg_fallback: str | None = None
     for field_key, fslot, frole in schema:
         if frole is None:
             continue
@@ -199,6 +200,20 @@ def _lift_item(
             if value is not None:
                 item[field_key] = value
                 used.add(id(match))
+            elif raw_svg_fallback is None and match.find("svg") is not None:
+                # An icon child that resolved to no slug (e.g. a filled <polygon>
+                # star the fingerprint index can't match) — preserve its raw SVG
+                # verbatim (icon_resolver Rule 2) into the block's raw-svg field.
+                raw_svg_fallback = str(match.find("svg"))
+                used.add(id(match))
+
+    # Paired raw-svg companion: a schema field the block declares for a raw-svg
+    # fallback (role None + a name that names an svg) receives the preserved SVG.
+    if raw_svg_fallback:
+        for field_key, _fslot, frole in schema:
+            if frole is None and field_key not in item and "svg" in field_key.lower():
+                item[field_key] = raw_svg_fallback
+                break
     return item
 
 
