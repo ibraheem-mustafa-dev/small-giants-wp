@@ -46,10 +46,12 @@
 				"type": "object",
 				"properties": {
 					"platform": {
-						"type": "string"
+						"type": "string",
+						"role": "icon-slug"
 					},
 					"url": {
-						"type": "string"
+						"type": "string",
+						"role": "url-href"
 					},
 					"label": {
 						"type": "string"

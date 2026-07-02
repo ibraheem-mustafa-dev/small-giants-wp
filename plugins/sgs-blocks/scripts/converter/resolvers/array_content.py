@@ -113,9 +113,13 @@ def _item_field_schema(slug: str, array_attr: str) -> list[tuple[str, str | None
     return role=None and are skipped by the lifter.
     """
     schema: list[tuple[str, str | None, str | None]] = []
-    for field_key in db_lookup.array_item_field_names(slug, array_attr):
+    for field_key, declared_role in db_lookup.array_item_field_schema(slug, array_attr):
         slot = db_lookup.canonical_slot_for(field_key)
-        role = _slot_extraction_role(slot)
+        # FR-31-2.1a: the block DECLARES the field's extraction role in block.json
+        # (read from array_item_schema.role); prefer it. Fall back to the DB
+        # name->slot->role derivation only when the field declares no role (so
+        # self-resolving fields — icon/label/text — are unchanged).
+        role = declared_role or _slot_extraction_role(slot)
         schema.append((field_key, slot, role))
     return schema
 
@@ -126,7 +130,10 @@ def _find_item_nodes(node: Tag) -> list[Tag]:
     in the subtree. That repeating group is the array's items (e.g. the 4
     ``__badge`` siblings under ``__inner``). No hand-declared item selector."""
     best: list[Tag] = []
-    for parent in node.find_all(True):
+    # Include `node` itself: items can be DIRECT children of the root (icon-list
+    # <ul> → <li> items, card-grid/social-icons), not only under a nested wrapper
+    # (trust-bar __inner). find_all(True) excludes the root, so probe it too.
+    for parent in [node, *node.find_all(True)]:
         groups: dict[str, list[Tag]] = {}
         for kid in parent.find_all(recursive=False):
             if not isinstance(kid, Tag):
@@ -140,56 +147,119 @@ def _find_item_nodes(node: Tag) -> list[Tag]:
     return best
 
 
+def _kebab_to_camel(token: str) -> str:
+    """'savings-badge' -> 'savingsBadge'."""
+    parts = token.split("-")
+    return parts[0] + "".join(p.capitalize() for p in parts[1:])
+
+
+def _norm(s: str) -> str:
+    return re.sub(r"[-_]", "", s).lower()
+
+
+def _field_owns_token(field_key: str, bem_token: str) -> bool:
+    """FR-31-2.1a Tier-B, per item: a field OWNS a draft child when the child's
+    BEM element token is a prefix of the field key (normalised, name-free) — the
+    element word matches, the property word (Text/Url) is the remainder that the
+    declared role then extracts. child ``__cta`` -> ``ctaText``/``ctaUrl``;
+    ``__ribbon`` -> ``ribbonText``; ``__savings-badge`` -> ``savingsBadgeText``;
+    exact match too (``__name`` -> ``name``). No global-vocab lookup, no selector."""
+    fk = _norm(field_key)
+    ct = _norm(_kebab_to_camel(bem_token))
+    return bool(ct) and (fk == ct or fk.startswith(ct))
+
+
+# Roles that read a specific attribute/descendant (safe to self-extract from a
+# flat item root); text-content is EXCLUDED (it would concatenate a structured
+# item's children).
+_FLAT_SELF_ROLES = frozenset({"icon-slug", "identity", "url-href", "link-href",
+                              "image-object", "rating"})
+
+
+def _match_child(
+    field_key: str,
+    fslot: str | None,
+    frole: str,
+    children: list[tuple[Tag, str | None, str | None, str | None]],
+    used: set[tuple[int, str]],
+    item_node: Tag,
+    is_flat: bool,
+) -> Tag | None:
+    """Match one field to one item child: L1 exact canonical-slot name ->
+    L1b BEM-element-segment (longest token wins) -> L2 unique-role fallback ->
+    L1c flat-item self-extraction. ``used`` holds ``(id(child), role)`` so one
+    element may serve TWO fields by DIFFERENT roles (an ``<a class="__cta">`` ->
+    ``ctaText`` via text-content AND ``ctaUrl`` via url-href) but never twice."""
+    # L1 — exact canonical-slot name match
+    for ch, cslot, _cr, _ct in children:
+        if (id(ch), frole) not in used and fslot is not None and cslot == fslot:
+            return ch
+    # L1b — BEM-element-segment match (disambiguates same-role fields)
+    best: Tag | None = None
+    best_len = 0
+    for ch, _cs, _cr, ctoken in children:
+        if (id(ch), frole) in used or not ctoken:
+            continue
+        if _field_owns_token(field_key, ctoken) and len(ctoken) > best_len:
+            best, best_len = ch, len(ctoken)
+    if best is not None:
+        return best
+    # L2 — role fallback (a single unused child carrying this role)
+    cand = [
+        ch for ch, _cs, crole, _ct in children
+        if (id(ch), frole) not in used and crole == frole
+    ]
+    if len(cand) == 1:
+        return cand[0]
+    # L1c — flat-item self-extraction: a single-element item (a social icon
+    # ``<a>`` carries platform via data-lucide AND url via href on ITSELF, with no
+    # content children). Only for a FLAT item (no BEM-classed content children)
+    # and an attribute/descendant-reading role (never text-content on a non-leaf).
+    if is_flat and (id(item_node), frole) not in used and frole in _FLAT_SELF_ROLES:
+        return item_node
+    return None
+
+
 def _lift_item(
     item_node: Tag,
     schema: list[tuple[str, str | None, str | None]],
     media_map: dict,
 ) -> dict:
-    """Lift one item into a field dict via the 2-layer match (slot, then role)."""
-    # Pre-resolve each direct-descendant content child's (slot, role) once.
-    children: list[tuple[Tag, str | None, str | None]] = []
+    """Lift one item into a field dict via the 3-layer match (slot, BEM-segment,
+    role). Children whose BEM class resolves to no slot are KEPT (their token
+    still drives the L1b segment match — e.g. ``__name`` has no canonical slot)."""
+    children: list[tuple[Tag, str | None, str | None, str | None]] = []
     for ch in item_node.find_all(True):
         if not isinstance(ch, Tag):
             continue
         cslot = bem_element_to_canonical_slot(ch)
-        if cslot is None:
-            continue
         crole = _slot_extraction_role(cslot)
-        children.append((ch, cslot, crole))
+        ctoken = _bem_token(ch)
+        children.append((ch, cslot, crole, ctoken))
+
+    # A FLAT item has no BEM-classed content children (a social icon <a> carries
+    # its fields on itself) — enables L1c self-extraction in _match_child.
+    is_flat = not any(ctoken for _c, _cs, _cr, ctoken in children)
 
     item: dict = {}
-    used: set[int] = set()
+    used: set[tuple[int, str]] = set()
     raw_svg_fallback: str | None = None
     for field_key, fslot, frole in schema:
         if frole is None:
             continue
-        match: Tag | None = None
-        # L1 — name/slot match
-        for ch, cslot, _crole in children:
-            if id(ch) in used:
-                continue
-            if fslot is not None and cslot == fslot:
-                match = ch
-                break
-        # L2 — role fallback (child's content role == this field's role)
+        match = _match_child(field_key, fslot, frole, children, used, item_node, is_flat)
         if match is None:
-            role_candidates = [
-                ch for ch, _cs, crole in children
-                if id(ch) not in used and crole == frole
-            ]
-            if len(role_candidates) == 1:
-                match = role_candidates[0]
-        if match is not None:
-            value = extract_field_value(match, frole, media_map)
-            if value is not None:
-                item[field_key] = value
-                used.add(id(match))
-            elif raw_svg_fallback is None and match.find("svg") is not None:
-                # An icon child that resolved to no slug (e.g. a filled <polygon>
-                # star the fingerprint index can't match) — preserve its raw SVG
-                # verbatim (icon_resolver Rule 2) into the block's raw-svg field.
-                raw_svg_fallback = str(match.find("svg"))
-                used.add(id(match))
+            continue
+        value = extract_field_value(match, frole, media_map)
+        if value is not None:
+            item[field_key] = value
+            used.add((id(match), frole))
+        elif raw_svg_fallback is None and match.find("svg") is not None:
+            # An icon child that resolved to no slug (e.g. a filled <polygon>
+            # star) — preserve its raw SVG verbatim (icon_resolver Rule 2) into
+            # the block's raw-svg field.
+            raw_svg_fallback = str(match.find("svg"))
+            used.add((id(match), frole))
 
     # Paired raw-svg companion: a schema field the block declares for a raw-svg
     # fallback (role None + a name that names an svg) receives the preserved SVG.

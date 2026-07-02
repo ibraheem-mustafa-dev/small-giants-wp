@@ -194,31 +194,39 @@
 				"type": "object",
 				"properties": {
 					"name": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					},
 					"price": {
 						"type": "string"
 					},
 					"priceYearly": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					},
 					"description": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					},
 					"ctaText": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					},
 					"ctaUrl": {
-						"type": "string"
+						"type": "string",
+						"role": "url-href"
 					},
 					"ribbonText": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					},
 					"savingsBadgeText": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					},
 					"iconName": {
-						"type": "string"
+						"type": "string",
+						"role": "icon-slug"
 					},
 					"features": {
 						"type": "string"

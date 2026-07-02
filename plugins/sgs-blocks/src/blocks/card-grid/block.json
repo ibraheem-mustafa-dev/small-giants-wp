@@ -70,10 +70,12 @@
 				"type": "object",
 				"properties": {
 					"title": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					},
 					"subtitle": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					},
 					"media": {
 						"type": "string"

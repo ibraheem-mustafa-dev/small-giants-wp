@@ -526,19 +526,29 @@ def _index_sgs_block_files(
                 array_attr   TEXT NOT NULL,
                 field_key    TEXT NOT NULL,
                 field_order  INTEGER,
+                role         TEXT,
                 PRIMARY KEY (block_slug, array_attr, field_key)
             )"""
         )
+        # Idempotent column-add for a pre-role array_item_schema (table created
+        # this session at f892d585 without the role column). FR-31-2.5/2.1a: a
+        # field's extraction role is DECLARED in block.json items.properties.<f>.role
+        # (never name-parsed) and seeded here, so the resolver reads it, not guesses.
+        _aischema_cols = {r[1] for r in c.execute("PRAGMA table_info(array_item_schema)")}
+        if "role" not in _aischema_cols:
+            c.execute("ALTER TABLE array_item_schema ADD COLUMN role TEXT")
         c.execute("DELETE FROM array_item_schema WHERE block_slug = ?", (slug,))
         for _arr_name, _arr_def in attrs.items():
             if not isinstance(_arr_def, dict) or _arr_def.get("type") != "array":
                 continue
             _item_props = ((_arr_def.get("items", {}) or {}).get("properties", {}) or {})
             for _order, _field_key in enumerate(_item_props):
+                _fdef = _item_props.get(_field_key)
+                _frole = _fdef.get("role") if isinstance(_fdef, dict) else None
                 c.execute(
                     "INSERT OR REPLACE INTO array_item_schema "
-                    "(block_slug, array_attr, field_key, field_order) VALUES (?, ?, ?, ?)",
-                    (slug, _arr_name, _field_key, _order),
+                    "(block_slug, array_attr, field_key, field_order, role) VALUES (?, ?, ?, ?, ?)",
+                    (slug, _arr_name, _field_key, _order, _frole),
                 )
 
         # --- INSERT OR IGNORE attributes; UPDATE on drift ---

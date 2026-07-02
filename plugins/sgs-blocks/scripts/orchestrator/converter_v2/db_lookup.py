@@ -3186,6 +3186,30 @@ def array_item_field_names(block_slug: str, attr_name: str) -> tuple[str, ...]:
     return tuple(r[0] for r in rows)
 
 
+def array_item_field_schema(block_slug: str, attr_name: str) -> tuple[tuple[str, "str | None"], ...]:
+    """(field_key, declared_role) pairs for an array attr, in declared order.
+
+    ``role`` is the extraction role DECLARED in ``block.json``
+    ``items.properties.<field>.role`` (FR-31-2.1a — read from the block's data
+    model, never name-parsed) and seeded into ``array_item_schema.role`` by
+    sgs-update-v2.py. It is NULL when the field declares no role — the resolver
+    then falls back to its DB name→slot→role derivation for that field. Returns
+    () when the table/column is absent (pre-reseed safe — no-op, never errors).
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT field_key, role FROM array_item_schema "
+            "WHERE block_slug = ? AND array_attr = ? ORDER BY field_order",
+            (block_slug, attr_name),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return ()  # table/column absent (no reseed) — safe no-op
+    finally:
+        conn.close()
+    return tuple((r[0], r[1]) for r in rows)
+
+
 # ============================================================================
 # Phase 1.4 Pass 1 — Universal walker helper functions
 # ============================================================================

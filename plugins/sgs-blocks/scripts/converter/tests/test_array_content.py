@@ -70,3 +70,94 @@ def test_capability_gate_blocks_uncapable():
     """A block without array-content-lift is a no-op (opt-in, R-31-1)."""
     attrs, gaps = lift_array_content(_root(_TRUST_BAR), "sgs/container", media_map={})
     assert attrs == {} and gaps == []
+
+
+# ---------------------------------------------------------------------------
+# FR-31-2.1a (D258) — declared role + BEM-segment disambiguation + flat-item
+# self-extraction. These lock the 5 gap-blocks whose content previously dropped
+# because their field NAMES didn't resolve. Roles are DECLARED in block.json
+# items.properties (seeded to array_item_schema.role); the resolver reads them,
+# never name-parses. (These 5 blocks are absent from the Mama's homepage, so
+# resolver-level regression tests are their verification floor — §7b.)
+# ---------------------------------------------------------------------------
+
+_PRICING = """
+<div class="sgs-pricing-table"><div class="sgs-pricing-table__plans">
+  <div class="sgs-pricing-table__plan">
+    <span class="sgs-pricing-table__icon" data-lucide="star"></span>
+    <h3 class="sgs-pricing-table__name">Starter</h3>
+    <p class="sgs-pricing-table__price">9</p>
+    <p class="sgs-pricing-table__price-yearly">90</p>
+    <p class="sgs-pricing-table__description">Get going.</p>
+    <span class="sgs-pricing-table__ribbon">New</span>
+    <span class="sgs-pricing-table__savings-badge">Save 20%</span>
+    <a class="sgs-pricing-table__cta" href="/buy">Choose</a></div>
+  <div class="sgs-pricing-table__plan">
+    <span class="sgs-pricing-table__icon" data-lucide="crown"></span>
+    <h3 class="sgs-pricing-table__name">Pro</h3>
+    <p class="sgs-pricing-table__price">29</p>
+    <p class="sgs-pricing-table__price-yearly">290</p>
+    <p class="sgs-pricing-table__description">Grow.</p>
+    <span class="sgs-pricing-table__ribbon">Popular</span>
+    <span class="sgs-pricing-table__savings-badge">Save 30%</span>
+    <a class="sgs-pricing-table__cta" href="/pro">Choose</a></div>
+</div></div>"""
+
+
+def test_pricing_same_role_fields_disambiguated_by_bem_segment():
+    attrs, gaps = lift_array_content(_root(_PRICING), "sgs/pricing-table")
+    plans = attrs.get("plans", [])
+    assert len(plans) == 2 and not gaps
+    p0 = plans[0]
+    # five text-content fields each resolve to their OWN element (not collided)
+    assert p0["name"] == "Starter"
+    assert p0["description"] == "Get going."
+    assert p0["ribbonText"] == "New"
+    assert p0["savingsBadgeText"] == "Save 20%"
+    assert p0["priceYearly"] == "90"          # __price-yearly, not __price
+    assert p0["price"] == "9"
+
+
+def test_pricing_cta_element_serves_text_and_url_by_role():
+    attrs, _ = lift_array_content(_root(_PRICING), "sgs/pricing-table")
+    p0 = attrs["plans"][0]
+    # ONE <a>__cta feeds ctaText (text-content) AND ctaUrl (url-href)
+    assert p0["ctaText"] == "Choose"
+    assert p0["ctaUrl"] == "/buy"
+    assert p0["iconName"] == "star"           # declared icon-slug via data-lucide
+
+
+def test_icon_list_direct_child_items_lift():
+    html = ('<ul class="sgs-icon-list">'
+            '<li class="sgs-icon-list__item"><span class="sgs-icon-list__icon" data-lucide="check"></span>'
+            '<span class="sgs-icon-list__text">Fast</span><a class="sgs-icon-list__url" href="/a">m</a></li>'
+            '<li class="sgs-icon-list__item"><span class="sgs-icon-list__icon" data-lucide="zap"></span>'
+            '<span class="sgs-icon-list__text">Cheap</span><a class="sgs-icon-list__url" href="/b">m</a></li></ul>')
+    attrs, gaps = lift_array_content(_root(html), "sgs/icon-list")
+    items = attrs.get("items", [])
+    assert len(items) == 2 and not gaps
+    assert items[0] == {"text": "Fast", "iconName": "check", "url": "/a"}
+
+
+def test_social_icons_flat_item_self_extraction():
+    html = ('<div class="sgs-social-icons">'
+            '<a class="sgs-social-icons__icon" href="https://fb.com/x" data-lucide="facebook"></a>'
+            '<a class="sgs-social-icons__icon" href="https://ig.com/x" data-lucide="instagram"></a></div>')
+    attrs, gaps = lift_array_content(_root(html), "sgs/social-icons")
+    icons = attrs.get("icons", [])
+    assert len(icons) == 2 and not gaps
+    # platform (icon-slug) + url (url-href) both read off the <a> ITSELF
+    assert icons[0] == {"platform": "facebook", "url": "https://fb.com/x"}
+
+
+def test_trust_bar_url_field_now_lifts():
+    html = ('<div class="sgs-trust-bar"><div class="sgs-trust-bar__inner">'
+            '<div class="sgs-trust-bar__badge"><span class="sgs-trust-bar__icon" data-lucide="truck"></span>'
+            '<span class="sgs-trust-bar__label">Free delivery</span>'
+            '<a class="sgs-trust-bar__url" href="/ship">d</a></div>'
+            '<div class="sgs-trust-bar__badge"><span class="sgs-trust-bar__icon" data-lucide="shield"></span>'
+            '<span class="sgs-trust-bar__label">Secure</span>'
+            '<a class="sgs-trust-bar__url" href="/sec">d</a></div></div></div>')
+    attrs, _ = lift_array_content(_root(html), "sgs/trust-bar")
+    items = attrs.get("items", [])
+    assert items[0].get("url") == "/ship"     # url-href declared role, previously dropped
