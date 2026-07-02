@@ -323,8 +323,8 @@
 	],
 	"example": {
 		"attributes": {
-			"productName": "Mama's Munches Zookies",
-			"description": "Baked fresh every week and posted the same day.",
+			"productName": "Sample Product",
+			"description": "A short product description goes here.",
 			"variantStyle": "standard",
 			"packSizes": [
 				{
@@ -347,7 +347,7 @@
 			"priceLarge": "£10.00",
 			"priceNote": "8-pack · Free delivery over £35",
 			"ctaText": "Add to Cart — £10",
-			"ctaUrl": "/product/zookies/"
+			"ctaUrl": "#"
 		}
 	}
 }

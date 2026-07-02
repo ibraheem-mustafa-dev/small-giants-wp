@@ -22,7 +22,8 @@
 		"sgs": {
 			"imageControls": true,
 			"is_section_root": true,
-			"containerKind": "section"
+			"containerKind": "section",
+			"arrayContentLift": true
 		},
 		"align": [
 			"wide",
@@ -95,23 +96,23 @@
 			},
 			"default": [
 				{
-					"icon": "home",
-					"label": "Handmade in Birmingham",
+					"icon": "truck",
+					"label": "Fast delivery",
 					"pending": false
 				},
 				{
 					"icon": "check",
-					"label": "Registered Food Business",
-					"pending": false
-				},
-				{
-					"icon": "truck",
-					"label": "Free UK Delivery Over £35",
+					"label": "Certified quality",
 					"pending": false
 				},
 				{
 					"icon": "star",
-					"label": "Loved by Breastfeeding Mums",
+					"label": "Trusted service",
+					"pending": false
+				},
+				{
+					"icon": "heart",
+					"label": "Loved by customers",
 					"pending": false
 				}
 			]
@@ -650,23 +651,23 @@
 			"badgeStyle": "icon-circle",
 			"items": [
 				{
-					"icon": "home",
-					"label": "Handmade in Birmingham",
+					"icon": "truck",
+					"label": "Fast delivery",
 					"pending": false
 				},
 				{
 					"icon": "check",
-					"label": "Registered Food Business",
-					"pending": false
-				},
-				{
-					"icon": "truck",
-					"label": "Free UK Delivery Over £35",
+					"label": "Certified quality",
 					"pending": false
 				},
 				{
 					"icon": "star",
-					"label": "Loved by Breastfeeding Mums",
+					"label": "Trusted service",
+					"pending": false
+				},
+				{
+					"icon": "heart",
+					"label": "Loved by customers",
 					"pending": false
 				}
 			]
