@@ -1,18 +1,18 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: cloning-pipeline / array field-lift LANDED + slot-vocabulary completion
+thread: cloning-pipeline / array lift DONE+LANDED → min-width cross-device tier fix + star-fill client control
 generated: 2026-07-02
 primary_goal: "D257+D258 array-item content lift is DONE + LANDED on page 8 (trust-bar 4 badges verified). NEXT (see .claude/handoff.md top entry + .claude/parking.md for the full backlog): (1) TOP — P-MINWIDTH-CROSSDEVICE-TIER: min-width:X = 'X and up' must emit EVERY device tier >= X (768 Tablet + 1024 Desktop) + non-device 600/640 via Spec 31 §3 F-ii passthrough — fixes trust-bar 4-across AND products/gift/ingredients (Bean: 'very important'); lives in styling_helpers/grid.py/context.py. (2) P-RAWSVG-FILLED-VS-OUTLINE: the star must render FILLED — expose a CLIENT-FACING per-icon fill (outline/filled) block control (Bean: every pipeline capability ships as a customisable block feature), then render exempts a filled icon from the uniform lucide fill:none. (3) P-FINGERPRINT-MIGRATION (62 entries prepared in .claude/scratch/fingerprint-migration-entries.txt) + P-ARRAY-RECOGNITION-SCORING (FR-31-2.5a) + P-SINGLE-ITEM-ARRAYS + push held commits. (4) Carry-forward (D101, do NOT drop): product-card Layer-B rebuild, ingredient __icon lift, cog-complexity lint on array_content.py. Follow Spec 31 in every detail; no design-gate. Every pipeline capability MUST be a client-facing block/theme control."
 ---
 
-# Next session — array field-lift LANDED + slot-vocabulary completion
+# Next session — min-width cross-device tier fix + star-fill client control (array lift DONE+LANDED, D258)
 
 Invoke `/autopilot` before anything else. This is a `/systematic-debugging` + spec-conformance session.
 
 **Agent identity.** You are the SGS cloning-pipeline engineer. Last session BUILT + COMMITTED the DB-recognition array field-lift (Bean's design: structural item detection + a role-fallback layer), replacing the hand-declared `arrayItemSchema`/`array_item_fields` mechanism the spec itself named an R-31-9 violation. Your job: (1) LAND it on the real page 8; (2) complete the slot-vocabulary so every array block's content fields resolve — following Spec 31 in every detail.
 
-**State recap (plain English).** The cloning pipeline converts a draft mockup into native SGS blocks. "Array blocks" (trust-bar, hero, card-grid, pricing-table, icon-list, social-icons, process-steps, brand-strip, cta-section) render a repeating list of items (badges, plans, steps…). The OLD way hand-wrote each block's item CSS selectors in `block.json` (`arrayItemSchema`) — a hardcode the spec forbids. The NEW resolver (`converter/resolvers/array_content.py`, committed this session) finds the repeating items structurally and matches each item's children to the block's fields by canonical-slot NAME, then by ROLE (the "role-fallback": a badge caption classed `__text` carries `text-content` functionality, so it fills the `label` field which is also `text-content`). Field names now live in the DB (`array_item_schema`, seeded from each block's `block.json items.properties`). It's PROVEN on the real trust-bar draft (4 badges lift, no phantom row, no client-copy). It is NOT yet LANDED on page 8, and 5 blocks have content fields that still drop because their field NAMES aren't in the slot vocabulary yet.
+**State recap (plain English).** The cloning pipeline converts a draft mockup into native SGS blocks. "Array blocks" (trust-bar, hero, card-grid, pricing-table, icon-list, social-icons, process-steps, brand-strip, cta-section) render a repeating list of items (badges, plans, steps…). The OLD way hand-wrote each block's item CSS selectors in `block.json` (`arrayItemSchema`) — a hardcode the spec forbids. The NEW resolver (`converter/resolvers/array_content.py`, committed this session) finds the repeating items structurally and matches each item's children to the block's fields by canonical-slot NAME, then by ROLE (the "role-fallback": a badge caption classed `__text` carries `text-content` functionality, so it fills the `label` field which is also `text-content`). Field names + their extraction ROLE now live in the DB (`array_item_schema`, seeded from each block's `block.json items.properties.<field>.role`). **D258 COMPLETED this + LANDED it on page 8:** all 5 gap-blocks lift their content (declared role + BEM-element-segment matching for same-role fields + flat-item self-extraction + a root-inclusion detection fix); a name-heuristic seeder was trialled + REJECTED (ownership comes from the block code/declaration, never name-parsing — FR-31-2.1a). The trust-bar renders its 4 real draft badges on page 8. **2 open trust-bar gaps remain, BOTH styling** (Tasks 1+2 below): the 4-across min-width tier drop + the star rendering outline-not-filled.
 
 ---
 
@@ -28,14 +28,14 @@ Invoke `/autopilot` before anything else. This is a `/systematic-debugging` + sp
 ## ⛔⛔ MANDATORY READING GATE (verify against ground truth, never guess; read WHOLE docs/files, not greps). Tick each in your first message:
 1. ☐ **`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — READ IT IN FULL, END TO END (Bean directive; STOP-26).** Especially §2 (core mechanism), §3.B (content branch B1-B4), §3.B.0 (universal element extraction), §13.3 (FR-31-2 family / content fork). The array field-lift is FR-31-2.5 / §3.B4.
 2. ☐ **`.claude/handoff.md` (2026-07-02 top entry)** — what LANDED-ready + the 8 commits + the known slot-vocabulary gap.
-3. ☐ **`.claude/decisions.md` head** (verify D-ceiling: `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` → D257).
+3. ☐ **`.claude/decisions.md` head** (verify D-ceiling: `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` → D258).
 4. ☐ **`converter/resolvers/array_content.py` END TO END** — the DB-recognition resolver (item detection, 2-layer match, role-fallback, iconSvg fallback). This is what you're extending.
 5. ☐ **The slot vocabulary** — `slots` table (`slot_name`, `aliases`, `standalone_block`) + how `db_lookup.canonical_slot_for` resolves a field name → slot. This is where the 5 blocks' missing field names must be added.
 6. ☐ **The live canary** — `https://sandybrown-nightingale-600381.hostingersite.com/` (page 8) — inspect the trust-bar after you deploy.
 
 ## Pre-flight self-attestation ritual (answer in your first message)
 1. Have I completed the READING GATE — Spec 31 IN FULL + handoff + decisions→D-ceiling + array_content.py + the slots vocabulary? (Quote one specific thing to prove it.)
-2. What branch + D-ceiling? (`git branch --show-current` → main; D-ceiling → D257.) The 8 array-rebuild commits (`c7fda7db`..`f892d585`) are on main, NOT pushed — confirm before adding.
+2. What branch + D-ceiling? (`git branch --show-current` → main; D-ceiling → D258.) The array commits — D257 (`c7fda7db`..`f892d585`) + D258 (`8375debb`) — are on main, NOT pushed; confirm before adding.
 3. For the fix I'm about to build: does it FOLLOW SPEC 31 exactly (§3.B4/FR-31-2.5)? Is it UNIVERSAL (fires for every qualifying block, DB-driven, no slug/slot/role literal — Rule 2/3, the `no_slug_literal` gate)?
 4. Am I gating on the REAL page (LANDED on page 8, draft-vs-clone, Bean eye) not emit-green (Rules 4/5, STOP-4/21/37/40)?
 5. For any subagent: CODING subagents CASCADE-FAIL here (STOP-39) — build INLINE. Read-only analysis/council/Explore agents work. Verify any subagent's test/gate claims from the canonical cwd (STOP-16).
@@ -76,26 +76,26 @@ This session removed, or built the DB-driven replacement for, several cheats. Do
 
 ---
 
-## ORCHESTRATION PLAN (every pipeline task FOLLOWS SPEC 31 IN FULL — no design-gate)
+## ORCHESTRATION PLAN (D257+D258 array lift DONE + LANDED — these are the NEXT tasks; every pipeline task FOLLOWS SPEC 31 IN FULL — no design-gate)
 
-### Task 1 — LANDED-verify the array field-lift on page 8 (the concrete proof)
-**What:** deploy an `SGS_NEW_ENGINE=1` clone of the Mama's homepage draft to sandybrown page 8; confirm the trust-bar renders its 4 draft badges (icons + captions) with NO phantom all-caps row and NO client-copy default.
-**Why:** the mechanism is proven in unit form; LANDED on the real page is the only closing gate (Rule 5 / STOP-21/37).
-**Estimated time:** ~20 min.
-**Orchestration:** INLINE (STOP-39). Recipe per STOP-21: `/sgs-clone` with `SGS_NEW_ENGINE=1` on the Mama's draft → overwrite page 8 (REST, creds `.claude/secrets/sandybrown.env`, grep/cut not `source`) → anonymous Playwright/chrome-devtools `getComputedStyle`/innerText at 375/768/1440 vs the draft. `/qc-council` on the built path first (STOP-23). Spec: §2.7 (trust-bar worked example) + §3.B4.
-**Acceptance:** page 8's trust-bar shows exactly the 4 draft badges (3 lucide icons + 1 raw-SVG star + 4 captions), no 5th all-caps row, no "Handmade in Birmingham" default; draft-vs-clone + Bean eye.
+### Task 1 — TOP: min-width/max-width cross-device tier fix (P-MINWIDTH-CROSSDEVICE-TIER; Bean: "very important")
+**What:** `min-width:X` / `max-width:X` are inherently CROSS-DEVICE ("X and up"). A draft rule like `@media(min-width:600px){.sgs-trust-bar__inner{grid-template-columns:repeat(4,1fr)}}` MUST emit EVERY device tier ≥ X (768 Tablet + 1024 Desktop); non-device thresholds (600/640) route via Spec 31 §3 F-ii passthrough — never dropped. Currently dropped → trust-bar renders 2-col not 4-across (D258 live-confirmed), SAME root cause as products/gift/ingredients (D256).
+**Why:** one fix lands the trust-bar 4-across AND the products/gift/ingredients desktop grids — the dominant remaining fidelity gap.
+**Orchestration:** INLINE (STOP-39). Lives in the CSS tier-mapping (`styling_helpers` / `grid.py` / `context.py`). `/qc-council` on the built path (STOP-23). LANDED verify page 8 (STOP-21/37).
+**Acceptance:** trust-bar + products + gift + ingredients hit their DRAFT desktop column counts on live page 8 at 1440 (STOP-40 — verify vs the draft, not a grid+N-items impression).
 
-### Task 2 — Complete the slot vocabulary so the 5 gap-blocks lift their content (FOLLOW SPEC 31 §13.3 FR-31-2.1/2.2 exactly)
-**What:** 5 array blocks have content fields whose NAMES don't resolve to a canonical slot, so they drop: `icon-list.iconName/iconSource`, `social-icons.platform` (the icons), `card-grid.badge`, `pricing-table.ctaText/ctaUrl/ribbonText/savingsBadgeText/priceYearly`. Add these names to the slot vocabulary (aliases) so `canonical_slot_for` resolves them (iconName/iconSource/platform → `icon`; ctaText → text/label; ctaUrl → link; ribbon/savings → label; priceYearly → the price/number slot; badge → label).
-**Why:** the de-hardcode is a net improvement but incomplete — these blocks regress on their icon/CTA content until the vocabulary covers their field names.
-**Estimated time:** design ~15 min (spec §13.3 FR-31-2.1 two-tier derivation is the authority); build ~30 min.
-**Orchestration:** INLINE. FOLLOW Spec 31 §13.3 FR-31-2.1 (Tier-A canonical_slot + role join, Tier-B BEM-element-segment) exactly. **STOP-24 blocker: `slots.aliases` is NOT reseed-surviving** — it's written only by `uimax-tools/seed-slot-synonyms.py`, unwired to `/sgs-update`. Fix that FIRST (wire the alias seeder into `sgs-update-v2.py`, or move the aliases into `block.json supports.sgs.slotAliases` seeded on reseed) so the vocabulary additions survive a fresh reseed. Then seed the missing names. Verify each of the 5 blocks lifts its content via the resolver (`_item_field_schema` coverage check). Also seed the **role uniqueness gate** the council flagged (an alias mapping to ≥2 slots is a silent mis-route — `badge-number`→both icon+number today).
-**Depends on:** none (parallel-safe with Task 1). **Acceptance:** `_item_field_schema` shows zero content fields dropping for the 5 blocks; the vocabulary additions survive a fresh `/sgs-update` reseed; a resolver run on each block's real structure lifts its content.
+### Task 2 — Star fill as a CLIENT-FACING block control (P-RAWSVG-FILLED-VS-OUTLINE)
+**What:** the trust-bar's 4th-badge star should render FILLED, but the block's icon CSS forces `fill:none; stroke:currentColor` on EVERY icon SVG uniformly, so the raw-SVG star renders as an outline. Fix = expose a per-icon "fill style: outline / filled" CONTROL in the trust-bar block editor; the converter sets it; render exempts a `filled` icon from the uniform `fill:none`.
+**Why:** Bean's principle — every pipeline capability MUST ship as a customisable block/theme control for the clients buying the sites; a converter-only fix is half-done.
+**Orchestration:** INLINE (block-dev). Add attr + inspector control + render + deprecation/version bump. `npm run build`. Live-verify.
+**Acceptance:** a client can toggle a badge icon outline↔filled in the editor; the cloned star renders filled on page 8.
 
 ### Task 3 — Residuals (fact-check each; DONE-NOW / DISMISSED / DEFERRED-with-blocker per STOP-18)
-- **Single-item arrays** — structural item detection needs ≥2 repeating siblings; a 1-item array won't lift. Decide (per spec) whether that's acceptable or needs a fallback.
-- **Push the 8 held array commits** (`c7fda7db`..`f892d585`) to main on Bean sign-off (with the D254/§2 set still held).
-- **Cognitive-complexity lint** on `array_content.py` `lift_array_content`/`_lift_item` (S3776) — refactor into helpers if touched.
+- **P-FINGERPRINT-MIGRATION** — migrate `fingerprints.json` `attr_extractors[].selector` → `ATTR_CLASSIFICATION_OVERRIDES` + drop the fingerprints load from `assign-canonical.py` (stale/dead builder). 62 built-block entries prepared at `.claude/scratch/fingerprint-migration-entries.txt`; needs a core/* keep-skip decision + a reseed-diff proving zero `derived_selector` regression. INLINE (STOP-39).
+- **P-ARRAY-RECOGNITION-SCORING** (FR-31-2.5a) — `_find_item_nodes` scores candidate repeating groups against the block's declared item-field role signature (detection works today via the root-inclusion fix; this is robustness).
+- **P-SINGLE-ITEM-ARRAYS** — structural detection needs ≥2 siblings; decide a single-item fallback per spec.
+- **Push the held commits** — D257 (`c7fda7db`..`f892d585`) + D258 (`8375debb`) on Bean's page-8 eye sign-off.
+- **Carry-forward (D101, do NOT drop):** product-card typed-mode Layer-B rebuild, ingredient `__icon` emoji lift, cognitive-complexity lint on `array_content.py` (S3776), P-CLONE-FIDELITY-FULL-ALIGNMENT families.
 
 ## Skills to Invoke
 | Skill | When |
