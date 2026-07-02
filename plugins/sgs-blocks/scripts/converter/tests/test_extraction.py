@@ -128,7 +128,10 @@ def test_hero_child_block_emits_content_attr():
 def test_third_case_loud_gap():
     """A has_inner_blocks=0 block without scalar-content-lift must produce
     exactly one loud ContentGap (third case — never a silent empty)."""
-    node = _node('<div class="sgs-trust-bar"></div>')
+    # sgs/divider: named, has_inner_blocks=0, no scalar/array content capability,
+    # no primary_content_attr → the Case-4 loud gap. (trust-bar is no longer valid
+    # here — it now carries array-content-lift, 2026-07-02.)
+    node = _node('<div class="sgs-divider"></div>')
     rec = recognise(node)
     # Verify our assumption: named, no inner blocks
     assert rec.kind == "named"

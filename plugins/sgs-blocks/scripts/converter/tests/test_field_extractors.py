@@ -304,38 +304,10 @@ def test_icon_slug_inline_svg_resolved_via_icon_resolver():
 # reach extract_field_value by monkeypatching it and asserting the mock is hit.
 # ---------------------------------------------------------------------------
 
-def test_array_content_delegates_to_extract_field_value(monkeypatch):
-    """array_content._lift_field calls extract_field_value for value dispatch.
-
-    Monkeypatching must target the NAME in the RESOLVER module (where _lift_field
-    looks it up at call time), not the name in the services module (which was
-    already bound at import).  Python name-lookup at call time uses the module's
-    own global namespace — so patch array_content.extract_field_value.
-    """
-    import converter.resolvers.array_content as ac_mod
-    from converter.resolvers.array_content import _lift_field
-
-    calls: list[tuple] = []
-
-    def _mock_extract(element, role, media_map=None):
-        calls.append((role, media_map))
-        return "mock-value"
-
-    # Patch in the resolver module's namespace (where _lift_field resolves the name).
-    monkeypatch.setattr(ac_mod, "extract_field_value", _mock_extract)
-
-    el = _el('<span class="sgs-cta-section__stat">24h Delivery</span>')
-    result = _lift_field(el, ".sgs-cta-section__stat", "text-content", {})
-
-    assert len(calls) == 1, (
-        f"extract_field_value should have been called once, got {len(calls)} calls"
-    )
-    assert calls[0][0] == "text-content", (
-        f"Expected role='text-content', got: {calls[0][0]!r}"
-    )
-    assert result == "mock-value", (
-        f"_lift_field should return whatever extract_field_value returns, got: {result!r}"
-    )
+# (Removed 2026-07-02) test_array_content_delegates_to_extract_field_value —
+# targeted the deleted hand-declared _lift_field. The DB-recognition resolver's
+# delegation to extract_field_value is now proven by test_array_content.py
+# (real labels/icons only appear if extract_field_value ran).
 
 
 def test_scalar_content_delegates_to_extract_field_value(monkeypatch):
