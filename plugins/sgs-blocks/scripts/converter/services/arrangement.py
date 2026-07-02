@@ -58,6 +58,50 @@ def carries_arrangement(node: Any, css_rules: dict | None) -> bool:
     return False
 
 
+def layout_attrs(node: Any, css_rules: dict | None) -> dict:
+    """§2.3 ARRANGEMENT -> the container's layout trigger attrs.
+
+    A container-equivalent block renders ``display:grid``/``display:flex`` ONLY when its
+    ``layout`` attr is set (class-sgs-container-wrapper.php gates on ``'grid'===$layout``
+    / ``'flex'===$layout``). ``gridTemplateColumns`` alone is INERT without it — the
+    nested-grid stacking bug (ingredients / products / gift / social-proof all stacked
+    because the grid value emitted but the container stayed display:block).
+
+    Returns ``{'layout':'grid'}`` for a grid container, ``{'layout':'flex',
+    'flexDirection':<dir>}`` for a flex container (flexDirection only when the draft
+    declares a valid one), or ``{}`` when the node is not an arrangement layer. Detected
+    by CSS signature (R-31-2), tier-aware (a grid that only appears at a breakpoint still
+    makes the container a grid). Universal (R-31-9); the caller DB-gates emission on the
+    block actually declaring a ``layout`` attr, so a non-container block never gets a dead
+    attr.
+    """
+    if not isinstance(node, Tag):
+        return {}
+
+    def _pick(decls: dict[str, str]) -> dict:
+        disp = (decls.get("display", "") or "").strip().lower()
+        if disp == "grid" or "grid-template-columns" in decls:
+            return {"layout": "grid"}
+        if disp == "flex":
+            out: dict = {"layout": "flex"}
+            fd = (decls.get("flex-direction", "") or "").strip().lower()
+            if fd in ("row", "row-reverse", "column", "column-reverse"):
+                out["flexDirection"] = fd
+            return out
+        return {}
+
+    base, bp = collect_css_decls_for_element(node, css_rules or {})
+    picked = _pick(base)
+    if picked:
+        return picked
+    for tier_decls in (bp or {}).values():
+        if isinstance(tier_decls, dict):
+            picked = _pick(tier_decls)
+            if picked:
+                return picked
+    return {}
+
+
 def lift_uniform_grid_item_css(
     grid_item_nodes: list[Any],
     css_rules: dict | None,

@@ -920,7 +920,16 @@ def run_mechanism_leaf(rec: Recognition, node: Any, media_map: dict | None = Non
             and role in ("text-content", "content")
             and attr_type == "string"
         )
-        is_image = (not image_lifted) and role == "image-object" and attr_type == "object"
+        # image-object: an image slot. attr_type='object' stores {url,id,alt}; a
+        # string-typed image-object stores the URL string ONLY (sgs/media.imageUrl is
+        # role=image-object + type=string — the brand/product image bug: the leaf lift
+        # skipped it, emitting an EMPTY sgs/media). Accept BOTH; downcast the dict to its
+        # url string for the string-typed attr. DB-driven (role+type), universal (R-31-9).
+        is_image = (
+            (not image_lifted)
+            and role == "image-object"
+            and attr_type in ("object", "string")
+        )
         is_link = (
             (not link_lifted)
             and role in ("link-href", "url-href")
@@ -929,6 +938,8 @@ def run_mechanism_leaf(rec: Recognition, node: Any, media_map: dict | None = Non
         if not (is_text or is_image or is_link):
             continue
         value = extract_field_value(node, role, media_map or {})
+        if is_image and attr_type == "string" and isinstance(value, dict):
+            value = value.get("url") or None  # string imageUrl wants the URL, not the object
         if value is None or value == "":
             continue
         results.append(ScalarLift(attr=attr_name, value=value))
@@ -1257,6 +1268,22 @@ def build_block_markup(
                 attrs.setdefault(r.attr, r.value)  # grid-item default — CSS pass wins
             else:
                 attrs[r.attr] = r.value            # content wins on collision
+
+    # step 3b: §2.3 ARRANGEMENT layout trigger. A container whose OWN CSS is
+    # display:grid / display:flex must emit the `layout` attr — the wrapper renders
+    # display:grid ONLY when 'grid'===$layout (class-sgs-container-wrapper.php:490);
+    # gridTemplateColumns alone is INERT without it. This was the missing §2.3
+    # "grid -> layoutType:grid" step (grid-item test + uniform fold were wired, this
+    # trigger was not) — the nested-grid stacking bug (ingredients / products / gift /
+    # social-proof). DB-gated on the block declaring a `layout` attr (container-
+    # equivalents only — no dead attr on a non-container block); universal (R-31-9),
+    # CSS-signature detected (R-31-2), no slug literal. setdefault: never override an
+    # explicit layout already set.
+    if rec.slug is not None and "layout" not in attrs:
+        from converter.services import arrangement as _arr
+        if "layout" in db_lookup.block_attrs(rec.slug):
+            for _lk, _lv in _arr.layout_attrs(section_root, _css_rules).items():
+                attrs.setdefault(_lk, _lv)
 
     # step 4: FR-31-20 variant detection (port of convert.py:4892-4919). Set the
     # variant-selector attr from the draft's LIFTED fingerprint (the attrs just

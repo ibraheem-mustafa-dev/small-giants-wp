@@ -49,6 +49,45 @@ def test_carries_arrangement_false_for_plain_content_box():
     assert arrangement.carries_arrangement(node, {}) is False
 
 
+# -- layout_attrs (§2.3 ARRANGEMENT -> layoutType trigger) ---------------------
+
+def test_layout_attrs_grid():
+    node = _node('<div style="display:grid;grid-template-columns:1fr 1fr"></div>')
+    assert arrangement.layout_attrs(node, {}) == {"layout": "grid"}
+
+
+def test_layout_attrs_flex_with_direction():
+    node = _node('<div style="display:flex;flex-direction:column"></div>')
+    assert arrangement.layout_attrs(node, {}) == {"layout": "flex", "flexDirection": "column"}
+
+
+def test_layout_attrs_grid_template_only_is_grid():
+    node = _node('<div style="grid-template-columns:1fr 1fr 1fr"></div>')
+    assert arrangement.layout_attrs(node, {}) == {"layout": "grid"}
+
+
+def test_layout_attrs_empty_for_plain_box():
+    assert arrangement.layout_attrs(_node('<div style="padding:10px"></div>'), {}) == {}
+
+
+def test_layout_grid_lands_on_a_nested_container_so_it_is_not_inert():
+    """Regression for the nested-grid stacking bug (gift/ingredients pattern): a grid
+    wrapper that is a SIBLING of a heading recurses to its OWN sgs/container AND emits
+    layout:'grid' — without the layout attr the wrapper renders display:block and
+    gridTemplateColumns is inert (the items stack)."""
+    html = (
+        '<section class="sgs-x">'
+        '<h2 class="sgs-x__heading">Heading</h2>'
+        '<div class="sgs-x__cards" style="display:grid;grid-template-columns:1fr 1fr">'
+        '<div class="sgs-info-box"><h4>A</h4></div>'
+        '<div class="sgs-info-box"><h4>B</h4></div></div></section>'
+    )
+    sec = _node(html)
+    markup = build_block_markup(recognise_section(sec), sec, media_map={},
+                                css_rules={}, is_root=True)
+    assert '"layout":"grid"' in markup  # the nested __cards container renders as a grid
+
+
 def test_carries_arrangement_via_css_rules_signature_not_class_name():
     """Detected by CSS signature from css_rules, never the class name (R-31-2 / D85)."""
     node = _node('<section class="sgs-brand"></section>')
