@@ -318,13 +318,18 @@ def route_area_css_to_block_attrs(
     """GRID-PER-AREA routing: route a dissolving named grid item's own CSS to the
     owning block's ``<areaName>+<suffix>`` attrs.
 
-    Tier mapping (SGS 3-tier; base attr = DESKTOP; draft is mobile-first):
-        draft base (no @media)     -> attr + 'Mobile'
-        draft @768 (Tablet)        -> attr + 'Tablet'
-        draft @1024/1280 (Desktop) -> attr (unsuffixed base)
+    Tier mapping (SGS 3-tier; base attr = DESKTOP). ``collect_css_decls_for_element``
+    now returns ``base_decls`` = the EFFECTIVE value at DESKTOP (the FR-31-5.2 device-
+    tier cascade, D259) and ``bp_decls`` = the ``Tablet``/``Mobile`` overrides that
+    differ from it (there is NO ``Desktop`` key — Desktop is collapsed into base):
+        base_decls              -> attr (unsuffixed base = desktop)
+        bp_decls['Tablet']      -> attr + 'Tablet'
+        bp_decls['Mobile']      -> attr + 'Mobile'
 
-    Ported from convert.py:2405 (behaviour-identical). ``_record_gap_candidate``
-    removed (gap still visible via the ``cross_node_gap_candidate`` trace event).
+    NOTE (D259): currently UNWIRED in the new engine — the live grid-per-area path is
+    the per-declaration ``resolvers/grid_area.py`` resolver (fed by the ``Decl`` stream
+    ``_build_css_attrs`` assembles). Kept as a port; the tier mapping below matches the
+    post-D259 cascade semantics so it is safe if wired. Ported from convert.py:2405.
     """
     base_decls, bp_decls = collect_css_decls_for_element(child_node, css_rules)
     if not base_decls and not bp_decls:
@@ -343,7 +348,6 @@ def route_area_css_to_block_attrs(
         all_props.update(tier)
 
     tab = bp_decls.get("Tablet", {})
-    desk = bp_decls.get("Desktop", {})
     mob_override = bp_decls.get("Mobile", {})
     block_attr_names = db_lookup.block_attrs(owning_block) or {}
 
@@ -397,13 +401,16 @@ def route_area_css_to_block_attrs(
 
         draft_base = base_decls.get(css_prop)
         draft_tab = tab.get(css_prop)
-        draft_desk = desk.get(css_prop)
         draft_mob = mob_override.get(css_prop)
 
+        # base_decls is already the DESKTOP-effective value (FR-31-5.2 cascade, D259);
+        # bp Tablet/Mobile are overrides that differ from it. Emit the tier override
+        # where present, else inherit base (desktop) — never fold a Tablet value onto
+        # the unsuffixed desktop attr (the pre-D259 semantics-mismatch bug).
         tier_values: list[tuple[str, str | None]] = [
             ("Mobile", draft_mob or draft_base),
             ("Tablet", draft_tab or draft_base),
-            ("", draft_desk or draft_tab or draft_base),  # base attr = desktop
+            ("", draft_base),  # base attr = desktop-effective
         ]
         _attr_meta = block_attr_names.get(attr_base) or {}
         _is_number = (_attr_meta.get("attr_type") == "number")

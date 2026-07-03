@@ -24,12 +24,42 @@ frozen tree.
 """
 from __future__ import annotations
 
+import logging
 import re
 from typing import Any
 
 from bs4 import Tag
 
 from orchestrator.converter_v2 import db_lookup
+
+_LOG = logging.getLogger("sgs.converter.styling")
+
+
+# ---------------------------------------------------------------------------
+# Media-query cascade helper (Spec 31 §3 F-fork / FR-31-5.2)
+# ---------------------------------------------------------------------------
+
+_MEDIA_MIN_RE = re.compile(r"min-width\s*:\s*(\d+)")
+_MEDIA_MAX_RE = re.compile(r"max-width\s*:\s*(\d+)")
+
+
+def _media_condition_applies_at(media_cond: str, width: int) -> bool:
+    """True if a ``width``px viewport satisfies the @media condition.
+
+    Handles the common single-constraint and ``... and ...`` cases (ALL min/max
+    constraints in a part must hold) plus a comma OR-list (any part applies).
+    A part with no width constraint (e.g. a bare ``@media screen``) is treated as
+    always-applies so its declarations are not spuriously dropped.
+
+    Spec 31 §3 F-fork / FR-31-5.2 — the cascade evaluates each device-tier sample
+    width against every matched @media rule to derive the effective per-tier value.
+    """
+    for part in media_cond.split(","):
+        if all(width >= int(m.group(1)) for m in _MEDIA_MIN_RE.finditer(part)) and all(
+            width <= int(m.group(1)) for m in _MEDIA_MAX_RE.finditer(part)
+        ):
+            return True
+    return False
 
 
 # ---------------------------------------------------------------------------
@@ -137,29 +167,37 @@ def collect_css_decls_for_element(
     node: Tag,
     css_rules: dict,
 ) -> tuple[dict[str, str], dict[str, dict[str, str]]]:
-    """Collect CSS declarations targeting this element.
+    """Collect CSS declarations targeting this element, resolved to device tiers.
 
     Returns ``(base_decls, bp_decls)`` where:
 
-    - ``base_decls`` — ``{prop: val}`` from inline style + non-media CSS rules
-    - ``bp_decls``   — ``{bp_suffix: {prop: val}}`` for @media rules keyed by
-      breakpoint suffix (e.g. ``'Desktop'``, ``'Tablet'``, ``'Mobile'`` — NOT
-      the raw media condition string)
+    - ``base_decls`` — the EFFECTIVE ``{prop: val}`` at DESKTOP (the SGS base /
+      unsuffixed tier). This is the value after cascading the element's non-media
+      rules + every @media rule that applies at the desktop sample width — NOT the
+      raw non-media rules (a mobile-first draft's base CSS is the mobile value, so
+      returning it raw would land the mobile layout on the desktop base attr).
+    - ``bp_decls``   — ``{tier: {prop: val}}`` for the ``Tablet`` / ``Mobile`` tiers,
+      containing ONLY the properties whose effective value at that tier DIFFERS from
+      ``base_decls`` (a tier that matches base inherits it — no redundant attr).
 
-    Sources (in priority order):
+    Sources for the non-media cascade (in priority order):
 
     1. Inline style attribute on the element (highest specificity)
     2. Direct class selectors (``.sgs-hero__sub``)
     3. Parent-qualified selectors (``.sgs-hero__copy h1``)
     4. Grouped selectors (``h1, h2, h3``)
 
-    Media rules are routed to ``bp_decls`` by matching the media condition against
-    ``db_lookup.breakpoint_suffix_rules()`` vocabulary
-    (e.g. ``'min-width: 1280'`` → ``'Desktop'``).
+    Responsive resolution (Spec 31 §3 F-fork / FR-31-5.2): the CSS cascade is
+    sampled at one representative interior width per device tier
+    (``db_lookup.device_tier_samples`` — Desktop 1440 / Tablet 800 / Mobile 375).
+    ``min-width:X`` = "X and up" therefore naturally populates every tier whose
+    sample ≥ X; ``max-width:X`` = "X and down" every tier whose sample ≤ X — one
+    symmetric calculation, both directions. A non-device threshold (∉ 767/768/
+    1023/1024) that falls inside a tier's range is preserved as an F-ii residual
+    (logged, never snapped, never silently dropped — D228).
 
-    Ported from convert.py:585 (behaviour-identical). Calls
-    ``db_lookup.breakpoint_suffix_rules()`` in place of the original
-    ``db.breakpoint_suffix_rules()``.
+    Ported from convert.py:585 (selector-matching behaviour-identical); the
+    breakpoint routing is REPLACED by the FR-31-5.2 device-tier cascade.
     """
     desc_classes: list[str] = node.get("class", []) or []
     desc_tag: str = node.name or ""
@@ -304,17 +342,69 @@ def collect_css_decls_for_element(
             return (1, -int(mx.group(1)))
         return (2, 0)
 
-    bp_rules = db_lookup.breakpoint_suffix_rules()
+    # ---- Device-tier cascade (Spec 31 §3 F-fork / FR-31-5.2) -------------------
+    # SGS blocks are DESKTOP-BASE (the unsuffixed attr IS the desktop value), but
+    # mockups are usually mobile-first (base CSS = mobile + `min-width` overrides).
+    # A substring marker-match either dropped a non-device threshold (min-width:600
+    # matched nothing → silently discarded) or snapped it to the wrong tier. Instead
+    # compute the EFFECTIVE value at each device tier by cascading base + every
+    # @media rule that applies at that tier's representative width (db_lookup
+    # .device_tier_samples), then map Desktop→base_decls, Tablet/Mobile→bp_decls.
+    #
+    # This INVERTS a mobile-first draft correctly (the value effective at desktop
+    # becomes the SGS base; the displaced mobile value lands on ...Mobile) and is
+    # symmetric for max-width (desktop-first) drafts — ONE calculation, both
+    # directions. `min-width:X` populates every tier whose sample ≥ X; `max-width:X`
+    # every tier whose sample ≤ X.
+    #
+    # Cascade order among applicable media rules: min-width ascending / max-width
+    # widest-first (_specificity_key) so a narrower breakpoint last-wins at a width.
     matched_media.sort(key=lambda mc: _specificity_key(mc[0]))
-    for media_part, decls in matched_media:
-        for bp_substr, bp_suffix_list in bp_rules:
-            if bp_substr in media_part:
-                for bp_suffix in bp_suffix_list:
-                    bucket = bp_decls.setdefault(bp_suffix, {})
-                    bucket.update(decls)
-                break
 
-    return base_decls, bp_decls
+    def _effective_at(width: int) -> dict[str, str]:
+        eff = dict(base_decls)
+        for media_cond, media_decls in matched_media:
+            if _media_condition_applies_at(media_cond, width):
+                eff.update(media_decls)
+        return eff
+
+    tier_effective: dict[str, dict[str, str]] = {
+        tier: _effective_at(width) for tier, width in db_lookup.device_tier_samples()
+    }
+    # Desktop is the SGS BASE (unsuffixed) tier — collapse it onto base_decls.
+    desktop_decls = tier_effective.get("Desktop", dict(base_decls))
+    out_base: dict[str, str] = dict(desktop_decls)
+    out_bp: dict[str, dict[str, str]] = {}
+    for tier, _width in db_lookup.device_tier_samples():
+        if tier == "Desktop":
+            continue
+        for prop, val in tier_effective.get(tier, {}).items():
+            # Emit a tier override only where it DIFFERS from the base — a tier that
+            # matches base inherits it (no redundant …Tablet/…Mobile attr).
+            if out_base.get(prop) != val:
+                out_bp.setdefault(tier, {})[prop] = val
+
+    # ---- F-ii residual: non-device thresholds (D228; never snap, never drop) ---
+    # A media threshold outside the canonical device set (767/768/1023/1024) falls
+    # strictly inside a tier's range → a sub-tier band the 3-tier attr model cannot
+    # represent (e.g. min-width:600's 4-col band for 600–767 of Mobile). The three
+    # device tiers above still capture the rule everywhere it aligns to a tier; the
+    # residual band is surfaced (never silently dropped) for the F-ii passthrough
+    # follow-up. Logged, not rendered — rendering the raw band is a future
+    # passthrough-CSS channel (Spec 31 §3 F-ii).
+    device_thresholds = db_lookup.device_tier_thresholds()
+    for media_cond, media_decls in matched_media:
+        thresholds = [
+            int(v) for v in re.findall(r"(?:min|max)-width\s*:\s*(\d+)", media_cond)
+        ]
+        if any(t not in device_thresholds for t in thresholds):
+            _LOG.info(
+                "F-ii residual (non-device breakpoint preserved, not snapped): "
+                "%s → %s [Spec 31 §3 F-ii passthrough follow-up]",
+                media_cond.strip(), sorted(media_decls),
+            )
+
+    return out_base, out_bp
 
 
 # ---------------------------------------------------------------------------

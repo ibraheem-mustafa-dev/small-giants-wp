@@ -1622,6 +1622,62 @@ def breakpoint_suffix_rules() -> list[tuple[str, list[str]]]:
     return _BREAKPOINT_RULES
 
 
+# ----------------------------------------------------------------------------
+# Device-tier cascade samples (Spec 31 §3 F-fork / FR-31-5.2) — the numeric
+# breakpoint model that replaces the substring-drop marker match.
+# ----------------------------------------------------------------------------
+#
+# The SGS device system is fixed at 768/1024 (Spec 31 §3, §9 Q1). To resolve a
+# draft `@media (min-width|max-width)` rule to the SGS device-tier attrs WITHOUT
+# snapping or dropping, the CSS cascade is sampled at one representative interior
+# width per tier: the EFFECTIVE value at each sample IS that tier's value.
+#
+#   Mobile  = width < 768     → sample 375
+#   Tablet  = 768 <= w < 1024 → sample 800
+#   Desktop = width >= 1024    → sample 1440  (Desktop is the SGS BASE/unsuffixed attr)
+#
+# `min-width:X` = "X and up" naturally populates every tier whose sample >= X;
+# `max-width:X` = "X and down" every tier whose sample <= X — ONE symmetric
+# calculation, both directions (FR-31-5.2). Order is Desktop -> Tablet -> Mobile
+# so the A-collapse precedence (base = Desktop) is honoured by the caller.
+#
+# R-31-1 PERMITTED-CONSTANT exception (same class as SKIP_TOP_LEVEL_TAGS and the
+# _BREAKPOINT_RULES marker table above): CSS @media boundary widths are a
+# web-platform standard, not SGS per-block data — there is no DB table of pixel
+# boundaries. The device-tier SUFFIX vocabulary (Mobile/Tablet/Desktop) remains
+# DB-owned via modifier_suffixes(kind='breakpoint').
+_DEVICE_TIER_SAMPLES: tuple[tuple[str, int], ...] = (
+    ("Desktop", 1440),
+    ("Tablet", 800),
+    ("Mobile", 375),
+)
+
+# Canonical device-tier @media threshold values. A `min-width`/`max-width`
+# threshold NOT in this set falls strictly inside a tier's range and creates a
+# sub-tier band the 3-tier attr model cannot represent (e.g. min-width:600 = a
+# 4-col band only for 600-767 of Mobile) — a D228 "arbitrary visual breakpoint"
+# that must be preserved as an F-ii passthrough, NEVER snapped, NEVER dropped.
+_DEVICE_TIER_THRESHOLDS: frozenset[int] = frozenset({767, 768, 1023, 1024})
+
+
+def device_tier_samples() -> tuple[tuple[str, int], ...]:
+    """Return the (tier_name, representative_width) samples, Desktop→Tablet→Mobile.
+
+    Used by ``collect_css_decls_for_element`` to compute the effective CSS value
+    per device tier via the cascade (Spec 31 §3 F-fork / FR-31-5.2).
+    """
+    return _DEVICE_TIER_SAMPLES
+
+
+def device_tier_thresholds() -> frozenset[int]:
+    """Return the canonical device-tier @media threshold values (767/768/1023/1024).
+
+    A threshold outside this set is a non-device "visual" breakpoint (D228) whose
+    residual sub-tier band routes to an F-ii passthrough, never a device tier.
+    """
+    return _DEVICE_TIER_THRESHOLDS
+
+
 @functools.lru_cache(maxsize=None)
 def modifier_suffixes(kind: str) -> tuple[str, ...]:
     """Return the suffix vocabulary for one ``modifier_suffixes.kind`` from the DB.
