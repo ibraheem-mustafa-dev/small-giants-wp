@@ -1008,12 +1008,12 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     # Setting role='text-content' is safe: equivalent_block_for is gated by
     # block_accepts_inner_blocks (false when has_inner_blocks=0) so the
     # sgs/heading dead-child bug cannot recur. D221 regression fix. 2026-06-13.
-    ("sgs/team-member", "name"): {"role": "text-content"},
+    ("sgs/team-member", "name"): {"role": "text-content", "derived_selector": ".sgs-team-member__name"},
     # sgs/team-member.role: person's job title. canonical_slot='role' →
     # standalone_block='sgs/label' → would emit a dead child with has_inner_blocks=1.
     # has_inner_blocks derives to 0 naturally. Force role='text-content' so the scalar text of the
     # <p class="sgs-team-member__role"> element is lifted into this string attr. 2026-06-13.
-    ("sgs/team-member", "role"): {"role": "text-content"},
+    ("sgs/team-member", "role"): {"role": "text-content", "derived_selector": ".sgs-team-member__role"},
     # sgs/team-member.photo + .memberMedia: object-typed scalar image attrs. Two
     # corrections the heuristic gets wrong:
     #   (1) derived_selector: assign-canonical derives '.sgs-team-member__media' from
@@ -1091,6 +1091,73 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     # sgs/hero.badges: render.php:621 emits class="sgs-hero__badge sgs-hero__badge--..." per item.
     # Container is .sgs-hero__badges (render.php:633). Per-item class is .sgs-hero__badge.
     ("sgs/hero", "badges"): {"derived_selector": ".sgs-hero__badge"},
+    # --- fingerprints.json migration (2026-07-03, P-FINGERPRINT-MIGRATION) ---
+    # The stale tools/recogniser/data/fingerprints.json attr_extractors[].selector
+    # overrides are folded into this live, reseed-surviving channel and the load is
+    # dropped from assign-canonical.py. Values are the CURRENT effective
+    # derived_selector for each fingerprint-covered (slug, attr) pair — so as the
+    # FINAL Stage-1 writer this reproduces the exact live state (verified: a full
+    # reseed produces a zero derived_selector diff). Any redundant-with-heuristic
+    # entries are harmless. team-member.name/.role carried their fingerprint
+    # selectors into the existing role overrides above.
+    ("core/button", "text"): {"derived_selector": "a,button"},  # migrated from fingerprints.json (db-current)
+    ("core/button", "url"): {"derived_selector": "a"},  # migrated from fingerprints.json (db-current)
+    ("core/heading", "content"): {"derived_selector": "h1,h2,h3,h4,h5,h6"},  # migrated from fingerprints.json (db-current)
+    ("core/image", "alt"): {"derived_selector": "img"},  # migrated from fingerprints.json (db-current)
+    ("core/image", "caption"): {"derived_selector": "figcaption"},  # migrated from fingerprints.json (db-current)
+    ("core/image", "url"): {"derived_selector": "img"},  # migrated from fingerprints.json (db-current)
+    ("core/list-item", "content"): {"derived_selector": "li"},  # migrated from fingerprints.json (db-current)
+    ("core/paragraph", "content"): {"derived_selector": "p"},  # migrated from fingerprints.json (db-current)
+    ("core/quote", "citation"): {"derived_selector": "cite"},  # migrated from fingerprints.json (db-current)
+    ("core/quote", "value"): {"derived_selector": "blockquote"},  # migrated from fingerprints.json (db-current)
+    ("sgs/accordion-item", "title"): {"derived_selector": ".sgs-accordion-item__title"},  # migrated from fingerprints.json (db-current)
+    ("sgs/counter", "label"): {"derived_selector": ".sgs-counter__label"},  # migrated from fingerprints.json (db-current)
+    ("sgs/cta-section", "headline"): {"derived_selector": ".sgs-cta-section__headline, h1, h2"},  # migrated from fingerprints.json (db-current)
+    ("sgs/form-field-address", "label"): {"derived_selector": ".sgs-form-field-address__label"},  # migrated from fingerprints.json (db-current)
+    ("sgs/form-field-checkbox", "label"): {"derived_selector": ".sgs-form-field-checkbox__label"},  # migrated from fingerprints.json (db-current)
+    ("sgs/form-field-consent", "label"): {"derived_selector": ".sgs-form-field-consent__label"},  # migrated from fingerprints.json (db-current)
+    ("sgs/form-field-date", "label"): {"derived_selector": ".sgs-form-field-date__label"},  # migrated from fingerprints.json (db-current)
+    ("sgs/form-field-email", "label"): {"derived_selector": ".sgs-form-field-email__label"},  # migrated from fingerprints.json (db-current)
+    ("sgs/form-field-file", "label"): {"derived_selector": ".sgs-form-field-file__label"},  # migrated from fingerprints.json (db-current)
+    ("sgs/form-field-number", "label"): {"derived_selector": ".sgs-form-field-number__label"},  # migrated from fingerprints.json (db-current)
+    ("sgs/form-field-phone", "label"): {"derived_selector": ".sgs-form-field-phone__label"},  # migrated from fingerprints.json (db-current)
+    ("sgs/form-field-radio", "label"): {"derived_selector": ".sgs-form-field-radio__label"},  # migrated from fingerprints.json (db-current)
+    ("sgs/form-field-select", "label"): {"derived_selector": ".sgs-form-field-select__label"},  # migrated from fingerprints.json (db-current)
+    ("sgs/form-field-text", "label"): {"derived_selector": ".sgs-form-field-text__label"},  # migrated from fingerprints.json (db-current)
+    ("sgs/form-field-textarea", "label"): {"derived_selector": ".sgs-form-field-textarea__label"},  # migrated from fingerprints.json (db-current)
+    ("sgs/form-field-tiles", "label"): {"derived_selector": ".sgs-form-field-tiles__label"},  # migrated from fingerprints.json (db-current)
+    ("sgs/form-review", "heading"): {"derived_selector": ".sgs-form-review__heading"},  # migrated from fingerprints.json (db-current)
+    ("sgs/form-step", "label"): {"derived_selector": ".sgs-form-step__label"},  # migrated from fingerprints.json (db-current)
+    ("sgs/hero", "ctaPrimaryText"): {"derived_selector": ".sgs-hero__cta--primary"},  # migrated from fingerprints.json (db-current)
+    ("sgs/hero", "ctaPrimaryUrl"): {"derived_selector": ".sgs-hero__cta--primary"},  # migrated from fingerprints.json (db-current)
+    ("sgs/hero", "ctaSecondaryText"): {"derived_selector": ".sgs-hero__cta--secondary"},  # migrated from fingerprints.json (db-current)
+    ("sgs/hero", "ctaSecondaryUrl"): {"derived_selector": ".sgs-hero__cta--secondary"},  # migrated from fingerprints.json (db-current)
+    ("sgs/hero", "headline"): {"derived_selector": ".sgs-hero__headline, h1, h2"},  # migrated from fingerprints.json (db-current)
+    ("sgs/hero", "subHeadline"): {"derived_selector": ".sgs-hero__sub-headline, p"},  # migrated from fingerprints.json (db-current)
+    ("sgs/icon", "ariaLabel"): {"derived_selector": ".sgs-icon, [aria-label]"},  # migrated from fingerprints.json (db-current)
+    ("sgs/icon", "emojiChar"): {"derived_selector": ".sgs-icon__emoji"},  # migrated from fingerprints.json (db-current)
+    ("sgs/icon", "iconName"): {"derived_selector": ".sgs-icon__glyph, [data-icon-name]"},  # migrated from fingerprints.json (db-current)
+    ("sgs/icon", "iconSource"): {"derived_selector": ".sgs-icon__glyph, [data-icon-source]"},  # migrated from fingerprints.json (db-current)
+    ("sgs/icon", "linkTarget"): {"derived_selector": ".sgs-icon__link, a"},  # migrated from fingerprints.json (db-current)
+    ("sgs/icon", "linkUrl"): {"derived_selector": ".sgs-icon__link, a"},  # migrated from fingerprints.json (db-current)
+    ("sgs/info-box", "description"): {"derived_selector": ".sgs-info-box__description"},  # migrated from fingerprints.json (db-current)
+    ("sgs/info-box", "heading"): {"derived_selector": ".sgs-info-box__heading"},  # migrated from fingerprints.json (db-current)
+    ("sgs/mega-menu", "label"): {"derived_selector": ".sgs-mega-menu__label"},  # migrated from fingerprints.json (db-current)
+    ("sgs/mobile-nav", "ctaText"): {"derived_selector": ".sgs-mobile-nav__cta--primary"},  # migrated from fingerprints.json (db-current)
+    ("sgs/mobile-nav", "ctaUrl"): {"derived_selector": ".sgs-mobile-nav__cta--primary"},  # migrated from fingerprints.json (db-current)
+    ("sgs/notice-banner", "text"): {"derived_selector": ".sgs-notice-banner__text"},  # migrated from fingerprints.json (db-current)
+    ("sgs/responsive-logo", "alt"): {"derived_selector": ".sgs-responsive-logo__image, img"},  # migrated from fingerprints.json (db-current)
+    ("sgs/responsive-logo", "width"): {"derived_selector": ".sgs-responsive-logo__image, img"},  # migrated from fingerprints.json (db-current)
+    ("sgs/star-rating", "label"): {"derived_selector": ".sgs-star-rating__label"},  # migrated from fingerprints.json (db-current)
+    ("sgs/tab", "label"): {"derived_selector": ".sgs-tab__label"},  # migrated from fingerprints.json (db-current)
+    ("sgs/table-of-contents", "title"): {"derived_selector": ".sgs-table-of-contents__title"},  # migrated from fingerprints.json (db-current)
+    ("sgs/testimonial", "nameColour"): {"derived_selector": ".sgs-testimonial__heading, .sgs-testimonial__author"},  # migrated from fingerprints.json (db-current)
+    ("sgs/testimonial", "quote"): {"derived_selector": ".sgs-testimonial__text, .sgs-testimonial__quote"},  # migrated from fingerprints.json (db-current)
+    ("sgs/testimonial", "quoteColour"): {"derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"},  # migrated from fingerprints.json (db-current)
+    ("sgs/testimonial", "quoteFontSize"): {"derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"},  # migrated from fingerprints.json (db-current)
+    ("sgs/testimonial", "quoteLineHeight"): {"derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"},  # migrated from fingerprints.json (db-current)
+    ("sgs/timeline", "entries"): {"derived_selector": ".sgs-timeline__item"},  # migrated from fingerprints.json (db-current)
+    ("sgs/whatsapp-cta", "label"): {"derived_selector": ".sgs-whatsapp-cta__label"},  # migrated from fingerprints.json (db-current)
 }
 
 

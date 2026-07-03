@@ -56,10 +56,9 @@ DB_PATH = Path(
         str(Path.home() / ".claude/skills/sgs-wp-engine/sgs-framework.db"),
     )
 )
-# fingerprints.json lives in the repo; resolve relative to this file.
-FINGERPRINTS_PATH = (
-    Path(__file__).resolve().parents[4] / "tools/recogniser/data/fingerprints.json"
-)
+# fingerprints.json selector overrides RETIRED 2026-07-03 (P-FINGERPRINT-MIGRATION) —
+# folded into sgs-update-v2.py ATTR_CLASSIFICATION_OVERRIDES. FINGERPRINTS_PATH +
+# load_fingerprint_overrides removed with the load.
 
 # ---------------------------------------------------------------------------
 # Vocabulary loaders
@@ -138,26 +137,6 @@ def load_modifier_suffixes(conn: sqlite3.Connection) -> dict[str, str]:
     return {suffix: kind for suffix, kind in cur.fetchall()}
 
 
-def load_fingerprint_overrides(fingerprints: dict) -> dict[str, dict[str, str]]:
-    """
-    Builds:
-        override_map[block_slug][attr_name] = selector_string
-
-    Only populates entries where an attr_extractor has an explicit selector.
-    """
-    override_map: dict[str, dict[str, str]] = {}
-    for block_slug, entry in fingerprints.items():
-        if not block_slug.startswith("sgs/"):
-            continue
-        extractors = entry.get("attr_extractors", [])
-        if not extractors:
-            continue
-        for ext in extractors:
-            attr = ext.get("attr")
-            selector = ext.get("selector")
-            if attr and selector:
-                override_map.setdefault(block_slug, {})[attr] = selector
-    return override_map
 
 
 # ---------------------------------------------------------------------------
@@ -457,10 +436,12 @@ def run() -> None:
     property_suffixes = load_property_suffixes(conn)
     modifier_map = load_modifier_suffixes(conn)
 
-    # Load fingerprint overrides
-    with open(FINGERPRINTS_PATH, "r", encoding="utf-8") as fh:
-        fingerprints_raw = json.load(fh)
-    fp_overrides = load_fingerprint_overrides(fingerprints_raw)
+    # Fingerprint selector overrides RETIRED 2026-07-03 (P-FINGERPRINT-MIGRATION):
+    # the stale tools/recogniser/data/fingerprints.json attr_extractors are folded
+    # into sgs-update-v2.py ATTR_CLASSIFICATION_OVERRIDES (the live, reseed-surviving
+    # channel that runs as Stage 1 sub-step C, the FINAL derived_selector writer).
+    # The formula-derived selector below stands on its own; the override layer
+    # corrects the ~60 fingerprint-covered pairs afterwards. No fingerprints load here.
 
     # Ensure gap candidates table exists
     ensure_gap_table(conn)
@@ -541,16 +522,9 @@ def run() -> None:
             role = None
 
         if canonical_slot is not None:
-            # Derive selector from formula
+            # Derive selector from formula. (Fingerprint selector overrides moved to
+            # ATTR_CLASSIFICATION_OVERRIDES — applied as the final Stage-1 writer.)
             derived_selector = derive_selector(block_slug, canonical_slot)
-
-            # v1 fingerprint override — use explicit selector if present
-            # for this (block_slug, attr_name) pair.
-            # The formula selector is replaced; the fingerprint selector is
-            # used as-is (may be a fallback chain like '.sgs-hero__headline, h1, h2').
-            fp_block = fp_overrides.get(block_slug, {})
-            if attr_name in fp_block:
-                derived_selector = fp_block[attr_name]
 
             # Preserve existing populated values (loosened scope, 2026-05-30).
             final_role = role if existing_role is None else existing_role
@@ -561,23 +535,9 @@ def run() -> None:
             resolved_count += 1
         else:
             # Gap candidate — canonical_slot stays NULL in block_attributes.
-            # However, if the fingerprint has an explicit selector for this attr,
-            # write derived_selector from the fingerprint even without a canonical_slot.
-            # This preserves extraction capability for known attrs pending slot vocab growth.
-            fp_block = fp_overrides.get(block_slug, {})
-            fp_selector: Optional[str] = fp_block.get(attr_name)
-
-            if fp_selector:
-                # Partial update: only derived_selector (canonical_slot and role stay NULL)
-                conn.execute(
-                    """
-                    UPDATE block_attributes
-                       SET derived_selector = ?
-                     WHERE id = ?
-                    """,
-                    (fp_selector, row_id),
-                )
-
+            # (The fingerprint derived_selector write for slot-less known attrs moved
+            # to ATTR_CLASSIFICATION_OVERRIDES, the final Stage-1 writer, so extraction
+            # capability is preserved there — P-FINGERPRINT-MIGRATION 2026-07-03.)
             gap_inserts.append((block_slug, attr_name, stem))
             gap_count += 1
 
