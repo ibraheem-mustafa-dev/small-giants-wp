@@ -38,8 +38,8 @@ Specs are versioned, status-tracked artifacts that document architectural commit
 | 17 | [17-HEADER-FOOTER-ARCHITECTURE.md](17-HEADER-FOOTER-ARCHITECTURE.md) | Header/footer infrastructure | shipped |
 | 18 | [18-SGS-FLOATING-UI.md](18-SGS-FLOATING-UI.md) | Back to Top + Reading Progress | shipped |
 | 19 | [19-SGS-CLI-COMMANDS.md](19-SGS-CLI-COMMANDS.md) | `wp sgs` command tree (includes Phase 1 DB seed) | shipped |
-| 20 | [20-STRUCTURED-PIPELINE-LOG-SURFACING.md](20-STRUCTURED-PIPELINE-LOG-SURFACING.md) | Per-severity sidecar logs | shipped |
-| 21 | [21-PIPELINE-STATE-ARTEFACTS.md](21-PIPELINE-STATE-ARTEFACTS.md) | Pipeline-state debug artefacts catalogue | active |
+| 20 | [20-CLONE-FIDELITY-MEASUREMENT.md](20-CLONE-FIDELITY-MEASUREMENT.md) | Clone fidelity measurement (computed-parity tool + Stage 11.6 + rule 4a) — the canonical rendered-fidelity signal (D259). Replaced the old Spec 20 (log surfacing) + Spec 21 (artefact inventory), archived to `../memory/specs-archive/`. | shipped |
+| 21 | _(retired — archived to `../memory/specs-archive/21-PIPELINE-STATE-ARTEFACTS.md`; superseded by Spec 20 — input-side artefacts are debug-only, not the fidelity signal)_ | — | archived |
 | 22 | [31-UNIVERSAL-CLONING-PIPELINE.md](31-UNIVERSAL-CLONING-PIPELINE.md) | SGS Cloning Pipeline — Universal Block-Equivalent Extraction (CANONICAL) | active |
 | 26 | [26-SGS-GLOBAL-STYLES-AND-THEMING.md](26-SGS-GLOBAL-STYLES-AND-THEMING.md) | Global styles + per-client theming (variation-delta + wp_global_styles REST sync) + pipeline style derivation (build deferred) | draft |
 | 27 | [27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md](27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md) | MASTER — SGS product + WooCommerce layer (CPT, collection, cart, dual-mode card, option-picker, configurator) | active |

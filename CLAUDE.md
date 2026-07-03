@@ -99,7 +99,7 @@ Each sub-project + each client site has its own CLAUDE.md. Read the relevant one
 | [`.claude/plans/2026-06-09-clone-fix-build-plan.md`](.claude/plans/2026-06-09-clone-fix-build-plan.md) | Previous canonical plan + sign-off ledger (superseded by W3 plan) |
 | [`.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md`](.claude/plans/2026-06-09-clone-fix-sign-off-ledger.md) | 55-issue sign-off ledger (archived context — superseded) |
 | [`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`](.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md) §13 | Absorbed Spec 22 (merged D253): single-recursive walker (FR-31-3), content fork (FR-31-2), sgs/container default (FR-31-4), binding rules R-31-1..15. |
-| [`.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md`](.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md) | Pipeline-state artefact map (read BEFORE conjecturing) |
+| [`.claude/specs/20-CLONE-FIDELITY-MEASUREMENT.md`](.claude/specs/20-CLONE-FIDELITY-MEASUREMENT.md) | **Canonical clone-fidelity measurement spec (computed-parity tool + Stage 11.6 + rule 4a).** Replaced Spec 20 (log surfacing) + Spec 21 (artefact inventory), both archived to `memory/specs-archive/` — the input-side logs are debug-only, NOT the fidelity signal. |
 | [`.claude/cloning-pipeline-flow.md`](.claude/cloning-pipeline-flow.md) + [`-stages.md`](.claude/cloning-pipeline-stages.md) | Stage map + per-stage detail |
 | [`.claude/dev-setup.md`](.claude/dev-setup.md) | Build / deploy / SSH / local environment / gotchas |
 | [`.claude/decisions.md`](.claude/decisions.md) | D-numbered architectural log |

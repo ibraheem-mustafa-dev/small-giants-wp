@@ -171,4 +171,4 @@ No other branches. Adding a 4th requires spec amendment with empirical justifica
 - **Canonical pipeline spec:** `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`
 - **State:** `.claude/state.md`
 - **Decisions log:** `.claude/decisions.md`
-- **Artefact catalogue:** `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md`
+- **Clone-fidelity measurement (canonical):** `.claude/specs/20-CLONE-FIDELITY-MEASUREMENT.md` (computed-parity + Stage 11.6). Old artefact catalogue (Spec 21) + log surfacing (old Spec 20) archived to `.claude/memory/specs-archive/` — debug-only, not the fidelity signal.
