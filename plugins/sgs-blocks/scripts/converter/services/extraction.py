@@ -63,7 +63,7 @@ from orchestrator.converter_v2 import db_lookup
 # Imported here so that build_block_markup lives in the same service module.
 from converter.recognition import variant_attrs, recognise, recognition_for_slug, build_ctx
 from converter.orchestrator import emit_block_markup, process_element
-from converter.services.field_extractors import extract_field_value
+from converter.services.field_extractors import extract_field_value, resolve_icon_kind
 
 # SGS DB path — used to open a read-only connection for the CSS resolver dispatch.
 # Path is relative to the user's home dir (same convention as dev-setup.md).
@@ -948,6 +948,30 @@ def run_mechanism_leaf(rec: Recognition, node: Any, media_map: dict | None = Non
         if is_link:
             link_lifted = True
 
+    # ICON arm (Spec 31 §3.B.0) — a leaf whose content is an ICON carries the
+    # 'identity' role (sgs/icon.iconName/iconSource), which the text/image/link arms
+    # above do NOT cover, so an icon leaf child (e.g. an info-box's first child) emits
+    # empty. Resolve the icon ONCE via the shared resolve_icon_kind and set the block's
+    # icon attrs by kind — a Lucide slug, a bare emoji, or a raw <svg>. DB-driven
+    # (identity role + the attrs the block declares); no slug literal; universal to
+    # every icon-bearing leaf (R-31-9). Fires alongside link (an icon may also link).
+    has_icon_identity = any(
+        isinstance(i, dict) and i.get("role") == "identity"
+        for i in catalogue.values()
+    )
+    if has_icon_identity:
+        kind, ic_val = resolve_icon_kind(node)
+        if kind == "emoji" and "emojiChar" in catalogue:
+            results.append(ScalarLift(attr="emojiChar", value=ic_val))
+            if "iconSource" in catalogue:
+                results.append(ScalarLift(attr="iconSource", value="emoji"))
+        elif kind == "lucide" and "iconName" in catalogue:
+            results.append(ScalarLift(attr="iconName", value=ic_val))
+            if "iconSource" in catalogue:
+                results.append(ScalarLift(attr="iconSource", value="lucide"))
+        elif kind == "svg" and "iconSvg" in catalogue:
+            results.append(ScalarLift(attr="iconSvg", value=ic_val))
+
     if not any(isinstance(r, ScalarLift) for r in results):
         results.append(ContentGap(
             rec.slug,
@@ -1055,11 +1079,21 @@ def extract_content(
     # sgs-button BEM root class), not kind='atomic'. Spacers/separators/decorative
     # leaves (primary_content_attr None) fall through to the Case-4 loud gap, so
     # element-self lifting never manufactures phantom content for them.
+    # An ICON-bearing leaf (a block with an 'identity'-role attr, e.g. sgs/icon) has
+    # NO primary_content_attr but DOES carry content (its icon: slug / emoji / svg).
+    # Route it through the named-leaf arm too so run_mechanism_leaf's icon arm lifts it
+    # (Spec 31 §3.B.0 — the shared role machinery covers every content role, not just
+    # text/image/link). DB signal (identity role), never a slug literal; decorative
+    # spacers (no primary + no identity) still fall through to the Case-4 loud gap.
+    icon_bearing_leaf = any(
+        isinstance(i, dict) and i.get("role") == "identity"
+        for i in db_lookup.block_attrs(rec.slug).values()
+    )
     if (
         rec.has_inner_blocks == 0
         and SCALAR_LIFT not in caps
         and ARRAY_LIFT not in caps
-        and db_lookup.primary_content_attr(rec.slug) is not None
+        and (db_lookup.primary_content_attr(rec.slug) is not None or icon_bearing_leaf)
     ):
         return run_mechanism_leaf(rec, section_root, media_map)
 

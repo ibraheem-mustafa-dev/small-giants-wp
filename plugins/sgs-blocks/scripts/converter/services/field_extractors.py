@@ -52,6 +52,68 @@ from orchestrator.converter_v2.icon_resolver import resolve_icon
 if TYPE_CHECKING:
     pass  # noqa: F401
 
+import re
+
+# Emoji code-point ranges (pictographs, dingbats, symbols, regional indicators,
+# variation selectors, ZWJ). Used to detect a BARE emoji glyph as icon content —
+# an icon element that carries an emoji rather than a Lucide slug or an <svg>.
+_EMOJI_RE = re.compile(
+    "["
+    "\U0001F000-\U0001FAFF"   # pictographs / emoji / symbols
+    "\U00002600-\U000027BF"   # misc symbols + dingbats
+    "\U0001F1E6-\U0001F1FF"   # regional-indicator flags
+    "\U00002B00-\U00002BFF"   # misc symbols & arrows
+    "\U00002190-\U000021FF"   # arrows
+    "\U0000FE00-\U0000FE0F"   # variation selectors
+    "\U0000200D"              # zero-width joiner (emoji sequences)
+    "\U000020E3"              # combining enclosing keycap
+    "]+",
+    flags=re.UNICODE,
+)
+
+
+def _is_bare_emoji(text: str) -> bool:
+    """True when ``text`` is a short glyph consisting ENTIRELY of emoji code points.
+
+    Conservative: a long or mixed string (a heading, a sentence) is never an icon,
+    so the length guard + all-emoji check rejects them. '🌾' → True; 'Oats' → False.
+    """
+    s = (text or "").strip()
+    if not s or len(s) > 8:  # emoji sequences are short; prose is not an icon
+        return False
+    return _EMOJI_RE.sub("", s) == ""
+
+
+def resolve_icon_kind(element: "Tag | None") -> tuple[str | None, str | None]:
+    """Shared icon-content resolver (Spec 31 §3.B.0) — the SINGLE place icon content
+    is recognised, reusable from EVERY extraction path (leaf lift, array item, nested
+    child). An icon element resolves to exactly one kind:
+
+        ('lucide', slug)  — a confident Lucide slug (data-*/inline-svg/BEM-modifier)
+        ('svg',    raw)   — an inline <svg> with no confident slug (preserve verbatim)
+        ('emoji',  char)  — a BARE emoji glyph (no <svg>, no slug)
+        (None,     None)  — no icon content
+
+    Emoji detection lives HERE ONCE (not per block / per path), so trust-bar badges,
+    icon-list items, info-box icons — any icon anywhere — get emoji support uniformly
+    (R-31-9). No block/slug literal; pure element inspection.
+    """
+    if element is None or not isinstance(element, Tag):
+        return (None, None)
+    # 1. Confident Lucide slug via the shared icon-slug handler (data-icon / inline
+    #    <svg> fingerprint / BEM --modifier).
+    slug = extract_field_value(element, "icon-slug", {})
+    if slug:
+        return ("lucide", slug)
+    # 2. An inline <svg> that resolved to no slug → preserve its raw markup.
+    svg_node = element if element.name == "svg" else element.find("svg")
+    if svg_node is not None and isinstance(svg_node, Tag):
+        return ("svg", str(svg_node))
+    # 3. A bare emoji glyph (no <svg>, no slug).
+    if _is_bare_emoji(element.get_text(strip=True)):
+        return ("emoji", element.get_text(strip=True))
+    return (None, None)
+
 
 def extract_field_value(element: Tag, role: str, media_map: dict | None = None) -> Any:
     """Dispatch a role to its canonical value handler for a single DOM element.

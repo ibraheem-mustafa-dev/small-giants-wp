@@ -919,3 +919,41 @@ def test_build_block_markup_is_root_false_child_no_outer_layer(monkeypatch):
     assert captured_is_root[0] is False, (
         f"Expected is_root=False for child call, got {captured_is_root[0]!r}"
     )
+
+
+# ---------------------------------------------------------------------------
+# Icon-bearing leaf lift (Spec 31 §3.B.0) — the shared resolve_icon_kind + the
+# run_mechanism_leaf icon arm. Regression for the info-box ingredient emoji, which
+# emitted an EMPTY <!-- wp:sgs/icon /--> (identity role uncovered by the leaf arm).
+# ---------------------------------------------------------------------------
+
+def test_icon_leaf_lifts_emoji_by_kind():
+    """A bare-emoji sgs/icon leaf -> emojiChar + iconSource='emoji' (universal, DB-driven)."""
+    node = BeautifulSoup('<div class="sgs-icon">\U0001F33E</div>', "html.parser").div
+    markup = build_block_markup(recognise(node), node, media_map={}, css_rules={}, is_root=False)
+    assert '"iconSource":"emoji"' in markup
+    assert "emojiChar" in markup
+
+
+def test_icon_leaf_lifts_lucide_slug():
+    """A Lucide-svg sgs/icon leaf -> iconName + iconSource='lucide' (unchanged path)."""
+    node = BeautifulSoup(
+        '<div class="sgs-icon"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>',
+        "html.parser",
+    ).div
+    markup = build_block_markup(recognise(node), node, media_map={}, css_rules={}, is_root=False)
+    assert '"iconSource":"lucide"' in markup
+    assert '"iconName":"check"' in markup
+
+
+def test_info_box_child_icon_lifts_emoji():
+    """The real ingredients info-box: the .sgs-info-box__icon emoji lands on the
+    sgs/icon child (was an empty <!-- wp:sgs/icon /-->). Heading/text still lift."""
+    node = BeautifulSoup(
+        '<div class="sgs-info-box"><div class="sgs-info-box__icon">\U0001F33E</div>'
+        "<h4>Oats</h4><p>Rich in iron.</p></div>",
+        "html.parser",
+    ).div
+    markup = build_block_markup(recognise(node), node, media_map={}, css_rules={}, is_root=False)
+    assert '"iconSource":"emoji"' in markup  # emoji lifted onto the icon child
+    assert "Oats" in markup and "Rich in iron" in markup  # siblings still lift
