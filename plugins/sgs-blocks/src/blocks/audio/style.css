@@ -1,0 +1,201 @@
+/**
+ * SGS Audio — frontend styles for all seven player styles.
+ * Colours come from theme tokens via --sgs-audio-accent / --sgs-audio-spectrum
+ * (set per-instance in render.php), so the player adopts the client's brand.
+ */
+
+.sgs-audio {
+	--sgs-audio-track: color-mix( in srgb, currentColor 14%, transparent );
+	--sgs-audio-radius: 10px;
+	font-family: inherit;
+	color: inherit;
+}
+
+/* No-JS / not-yet-enhanced: the native player is the control surface. */
+.sgs-audio__native {
+	display: block;
+	width: 100%;
+}
+
+.sgs-audio__title {
+	margin: 0 0 8px;
+	font-size: 0.95em;
+	font-weight: 600;
+}
+
+/* When JS enhances, hide the native chrome (the element still plays). */
+.sgs-audio.is-enhanced .sgs-audio__native {
+	display: none;
+}
+
+/* Hidden style — background/ambient audio: visually hidden but still operable. */
+.sgs-audio--hidden .sgs-audio__native {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect( 0 0 0 0 );
+	clip-path: inset( 50% );
+	white-space: nowrap;
+}
+
+/* ---- shared transport bits ---- */
+.sgs-audio__viz {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+
+.sgs-audio__play {
+	flex: none;
+	width: 48px;
+	height: 48px;
+	min-width: 44px;
+	min-height: 44px;
+	border-radius: 50%;
+	border: none;
+	cursor: pointer;
+	display: grid;
+	place-items: center;
+	color: var( --wp--preset--color--base, #fff );
+	background: var( --sgs-audio-accent, #c9821f );
+	transition: transform 0.12s ease;
+}
+.sgs-audio__play:hover {
+	transform: scale( 1.05 );
+}
+.sgs-audio__play:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 3px;
+}
+
+.sgs-audio__time {
+	font-variant-numeric: tabular-nums;
+	font-size: 0.82em;
+	opacity: 0.72;
+	white-space: nowrap;
+}
+
+/* ---- 1. minimal — play + seek range + time ---- */
+.sgs-audio__seek {
+	flex: 1;
+	appearance: none;
+	-webkit-appearance: none;
+	height: 6px;
+	border-radius: 999px;
+	background: linear-gradient( to right, var( --sgs-audio-accent ) var( --sgs-progress, 0% ), var( --sgs-audio-track ) var( --sgs-progress, 0% ) );
+	cursor: pointer;
+}
+.sgs-audio__seek::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	width: 15px;
+	height: 15px;
+	border-radius: 50%;
+	background: var( --sgs-audio-accent );
+	border: 2px solid var( --wp--preset--color--base, #fff );
+	cursor: pointer;
+}
+.sgs-audio__seek::-moz-range-thumb {
+	width: 15px;
+	height: 15px;
+	border: 2px solid var( --wp--preset--color--base, #fff );
+	border-radius: 50%;
+	background: var( --sgs-audio-accent );
+	cursor: pointer;
+}
+.sgs-audio__seek:focus-visible {
+	outline: 2px solid var( --sgs-audio-accent );
+	outline-offset: 3px;
+}
+
+/* ---- 2. waveform ---- */
+.sgs-audio__wave-canvas {
+	flex: 1;
+	height: 56px;
+	display: block;
+	cursor: pointer;
+}
+
+/* ---- 3 & 5. spectrum / oscilloscope — transport row above a canvas ---- */
+.sgs-audio--spectrum .sgs-audio__viz,
+.sgs-audio--oscilloscope .sgs-audio__viz {
+	flex-direction: column;
+	align-items: stretch;
+	gap: 12px;
+}
+.sgs-audio__transport {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+.sgs-audio__spectrum-canvas {
+	width: 100%;
+	height: 96px;
+	display: block;
+	background: color-mix( in srgb, currentColor 4%, transparent );
+	border-radius: 8px;
+}
+.sgs-audio__scope-canvas {
+	width: 100%;
+	height: 96px;
+	display: block;
+	background: #0c0a07;
+	border-radius: 8px;
+}
+
+/* ---- 4. radial ---- */
+.sgs-audio__viz--radial {
+	align-items: center;
+	gap: 18px;
+}
+.sgs-audio__ring {
+	position: relative;
+	width: 92px;
+	height: 92px;
+	flex: none;
+}
+.sgs-audio__ring svg {
+	width: 92px;
+	height: 92px;
+	transform: rotate( -90deg );
+}
+.sgs-audio__glow {
+	position: absolute;
+	inset: 8px;
+	border-radius: 50%;
+	background: radial-gradient( circle, color-mix( in srgb, var( --sgs-audio-accent ) 55%, transparent ), transparent 68% );
+	opacity: 0;
+	pointer-events: none;
+}
+.sgs-audio__ring .sgs-audio__play {
+	position: absolute;
+	inset: 0;
+	margin: auto;
+	width: 44px;
+	height: 44px;
+}
+.sgs-audio__radial-meta {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+/* ---- 6. gradient-pulse ---- */
+.sgs-audio__viz--pulse {
+	border-radius: var( --sgs-audio-radius );
+	padding: 20px;
+	background: color-mix( in srgb, currentColor 6%, transparent );
+	transition: background 0.06s linear;
+}
+.sgs-audio--gradient-pulse .sgs-audio__transport {
+	color: var( --wp--preset--color--base, #fff );
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-audio__play {
+		transition: none;
+	}
+	.sgs-audio__viz--pulse {
+		transition: none;
+	}
+}

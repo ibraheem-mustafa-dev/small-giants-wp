@@ -1,0 +1,51 @@
+/**
+ * SGS Audio — editor-only styles (inspector style picker + canvas preview).
+ */
+
+.sgs-audio-style-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 6px;
+}
+
+.sgs-audio-style-btn {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	text-align: left;
+	padding: 8px 10px;
+	border: 1px solid var( --wp-admin-theme-color, #3858e9 );
+	border-color: #ccc;
+	border-radius: 6px;
+	background: #fff;
+	cursor: pointer;
+	min-height: 44px;
+}
+.sgs-audio-style-btn:hover {
+	border-color: var( --wp-admin-theme-color, #3858e9 );
+}
+.sgs-audio-style-btn:focus-visible {
+	outline: 2px solid var( --wp-admin-theme-color, #3858e9 );
+	outline-offset: 1px;
+}
+.sgs-audio-style-btn.is-selected {
+	border-color: var( --wp-admin-theme-color, #3858e9 );
+	box-shadow: inset 0 0 0 1px var( --wp-admin-theme-color, #3858e9 );
+}
+.sgs-audio-style-btn__name {
+	font-weight: 600;
+	font-size: 12px;
+}
+.sgs-audio-style-btn__hint {
+	font-size: 10.5px;
+	opacity: 0.7;
+	line-height: 1.3;
+}
+
+.sgs-audio-editor-preview {
+	width: 100%;
+}
+.sgs-audio-editor-preview .sgs-audio__native {
+	width: 100%;
+	margin-bottom: 8px;
+}

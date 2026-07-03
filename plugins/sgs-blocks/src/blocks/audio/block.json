@@ -1,0 +1,91 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "sgs/audio",
+    "replaces": ["core/audio"],
+    "version": "1.0.0",
+    "title": "SGS Audio",
+    "category": "sgs-content",
+    "description": "Audio player with seven visual styles — from a quiet minimal pill to live spectrum bars, an oscilloscope, and a gradient that pulses to the sound. Reacts to the real audio via the Web Audio API; falls back to a native player with no JavaScript.",
+    "keywords": [
+        "audio",
+        "sound",
+        "player",
+        "podcast",
+        "music",
+        "visualiser"
+    ],
+    "textdomain": "sgs-blocks",
+    "icon": "format-audio",
+    "supports": {
+        "anchor": true,
+        "className": true,
+        "color": false,
+        "html": false,
+        "align": ["wide", "full"],
+        "spacing": {
+            "margin": true,
+            "padding": true
+        }
+    },
+    "attributes": {
+        "audioUrl": {
+            "type": "string",
+            "default": "",
+            "role": "content"
+        },
+        "audioSource": {
+            "type": "string",
+            "default": "external",
+            "enum": ["external", "internal"]
+        },
+        "audioId": {
+            "type": "integer",
+            "default": null
+        },
+        "audioMimeType": {
+            "type": "string",
+            "default": ""
+        },
+        "playerStyle": {
+            "type": "string",
+            "default": "minimal",
+            "enum": ["minimal", "waveform", "spectrum", "radial", "oscilloscope", "gradient-pulse", "hidden"]
+        },
+        "audioControls": {
+            "type": "boolean",
+            "default": true
+        },
+        "audioLoop": {
+            "type": "boolean",
+            "default": false
+        },
+        "audioAutoplay": {
+            "type": "boolean",
+            "default": false
+        },
+        "audioPreload": {
+            "type": "string",
+            "default": "metadata",
+            "enum": ["none", "metadata", "auto"]
+        },
+        "accentColour": {
+            "type": "string",
+            "default": ""
+        },
+        "spectrumColour": {
+            "type": "string",
+            "default": ""
+        },
+        "title": {
+            "type": "string",
+            "default": "",
+            "role": "content"
+        }
+    },
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css",
+    "style": "file:./style-index.css",
+    "render": "file:./render.php",
+    "viewScriptModule": "file:./view.js"
+}

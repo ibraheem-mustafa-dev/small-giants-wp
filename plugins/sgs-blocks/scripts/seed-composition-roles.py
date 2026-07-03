@@ -193,6 +193,16 @@ INSERTS: list[dict] = [
         "has_inner_blocks": 0,
         "accepts_allowed_blocks": None,
     },
+    {
+        # sgs/audio (2026-07-03) — standalone audio player, 7 style variants.
+        # save.js returns null (no InnerBlocks) → has_inner_blocks=0. Not a
+        # container; content-block like the standalone content blocks above.
+        "block_slug": "sgs/audio",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "has_inner_blocks": 0,
+        "accepts_allowed_blocks": None,
+    },
 ]
 
 
