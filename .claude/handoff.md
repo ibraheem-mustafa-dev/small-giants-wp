@@ -1,9 +1,53 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-thread: cloning-pipeline / DB-recognition array field-lift + role-fallback (replaces hand-declared arrayItemSchema)
-session_date: 2026-07-02
+thread: cloning-pipeline / D259 min-width cascade (LANDED) + full clone-vs-draft parity audit + reliable-parity method
+session_date: 2026-07-03
 ---
+
+# Session Handoff — 2026-07-03 (D259 min-width cross-device tier CASCADE built + LANDED; full clone-vs-draft audit → root-cause themes; reliable computed-parity method established)
+
+## Completed This Session
+1. **D259 — min-width/max-width cross-device tier CASCADE (FR-31-5.2), BUILT + LANDED + Bean-confirmed.** The live CSS-transfer `collect_css_decls_for_element` matched `@media` rules by SUBSTRING and silently dropped any non-marker threshold (`min-width:600` matched nothing) → trust-bar rendered 2-col not 4. Rebuilt as a device-tier cascade sampling the CSS cascade at interior widths (Desktop 1440 / Tablet 800 / Mobile 375; `db_lookup.device_tier_samples`), mapping Desktop→base, Tablet/Mobile→suffixed; min/max symmetric; inverts a mobile-first draft into SGS desktop-base. Non-device thresholds log a non-silent F-ii residual. **LANDED page 8: trust-bar 375=2 / 768=4 / 1440=4** (exact draft match). Bean confirmed products/gift/hero column wins by eye.
+2. **Spec 31 FR-31-5.2 DEFINED** (was referenced at §3 line 260, never specified) + §3 F-fork implementation note. **D259 added to decisions.md.** 320 tests (+9 regression) + cheat-gate green; convert.py byte-identical (D-MODULAR).
+3. **Pre-commit adversarial council on the built D259** — validated in-scope; FIXED one dead-code landmine (`fold_helpers.route_area_css_to_block_attrs` broke under the semantic change); TRACKED 2 verified-latent faithfulness gaps (not hit in-scope) with repros in parking (`P-FR3152-RESIDUAL-FAITHFULNESS`).
+4. **Full clone-vs-draft parity audit (page 8, header/footer excluded)** → root-cause THEMES (Bean asked for causes not symptoms): **content ~96% present**; the real gaps cluster into (A) **base-font typography** — draft base 16px vs clone theme base 18px → the brand quote + all no-explicit-size body text render 2px large + inherited line-heights too tight; (B) **L2 content-width universal** — `__inner`/`__card-inner` content-band `max-width` drops (trust-bar full-width; gift/ingredients/social/featured have NO `contentWidth` attr because the container-mirror sync `sync-container-wrapping-blocks.py --apply` is report-only); (C) **grid variant defaults** — feature-grid `layoutMode=auto-flex` ignores the transferred columns (3 not 4); (D) **product-card structure broken** (price 28px Fraunces bold → 18px Inter regular).
+5. **Reliable-parity METHOD established (Bean-locked, now CLAUDE.md rule 4a).** Two earlier passes gave undependable scores: source-declaration-diff is blind to INHERITED values (missed the brand quote); wrapper-class-keying misclassifies (wrapper-vs-raw noise). The dependable method: `getComputedStyle` on each rendered TEXT element, keyed by normalised TEXT CONTENT. Reliable typography parity = **62% exact** with an exact per-element mismatch list.
+6. **D259 commit BLOCKED by Gate A** (golden-fixture regression gate) — expected, the fix intentionally changes the converter emit. Code is staged/committed-pending; needs a verified REGEN re-baseline. Held from push regardless (D257/D258 also held).
+
+## Current State
+- **Branch:** `main` at `66aabe3a` (HEAD unchanged — D259 code files staged but commit blocked by Gate A). D-ceiling **D259**.
+- **Tests:** 320 pass (+9), 1 skip, 2 xfail; cheat-gate 0 new (73 baselined); convert.py byte-identical.
+- **Uncommitted/staged:** D259 code (styling_helpers.py, db_lookup.py, fold_helpers.py, test_minwidth_cross_device_tier.py) + docs (spec 31, decisions, parking, CLAUDE.md). Also the 3 Bean-made snapshot files `sites/mamas-munches/mockups/homepage/current-clone-{desktop,mobile,tablet}.html` (his, not mine).
+- **Live:** D259 clone deployed to sandybrown page 8 via `SGS_NEW_ENGINE=1`. Held from push.
+
+## Known Issues / Blockers
+- **D259 commit blocked by Gate A** — re-baseline the golden fixtures with `REGEN=1` after verifying the diff is ONLY the intended min-width tier change (not accidental drift). Then commit + (on Bean sign-off) push the held D257/D258/D259 set.
+- **Log-accuracy DOUBT (Bean, unresolved):** the pipeline's drop-logs report 2,380 `attribute_gap_candidates` rows + 227KB `leftover-buckets.json` for a clone that is visually close to the draft — Bean rightly doubts these are per-clone-real. `attribute_gap_candidates` is a CUMULATIVE ledger (accumulated across all runs, not this clone); the logs measure converter INPUT-side non-routing, NOT rendered fidelity. Do not trust the counts as a per-clone drop signal — the rendered computed-parity is the dependable signal.
+- The bigger converter fixes (L2 content-width universal, feature-grid variant, product-card structure) are NOT started — root-caused only.
+
+## Next Priorities (in order — Bean-set 2026-07-03)
+1. **FIRST: fix the Mama's Munches stylesheet/theme-snapshot to match the draft's DEFAULTS** — base font-size 16px (clone is 18px) + inherited line-heights. Theme-layer fix (`sites/mamas-munches/theme-snapshot.json` → `push-theme-snapshot.py`), fixes the brand-quote + all no-explicit-size text in one.
+2. **Icon fill for trust-bar + icon block** — render a `filled` icon (the star) instead of the uniform `fill:none` outline, AND expose a client-facing per-icon fill control (outline/filled) + a custom fill-COLOUR override (Bean: every capability ships as a block control). (This is `P-RAWSVG-FILLED-VS-OUTLINE`.)
+3. **All Task-3 residuals** — `P-FINGERPRINT-MIGRATION`, `P-ARRAY-RECOGNITION-SCORING`, `P-SINGLE-ITEM-ARRAYS`, push held commits, + the D101 carry-forward (product-card Layer-B, ingredient `__icon`, cog-complexity lint).
+4. **THEN re-run `/sgs-clone` + use the reusable parity tool** (built this thread) for reliable detailed parity scores. Also the L2 content-width universal fix + feature-grid variant fix.
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `plugins/sgs-blocks/scripts/converter/services/styling_helpers.py` | device-tier cascade replaces substring-drop (`collect_css_decls_for_element`) + `_media_condition_applies_at` + `_LOG` F-ii residual |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | `device_tier_samples()`/`device_tier_thresholds()` + 768/1024 constants |
+| `plugins/sgs-blocks/scripts/converter/services/fold_helpers.py` | dead `route_area_css_to_block_attrs` corrected to new base=desktop semantics |
+| `plugins/sgs-blocks/scripts/converter/tests/test_minwidth_cross_device_tier.py` | NEW — 9 regression tests |
+| `.claude/specs/31-...md` · `.claude/decisions.md` (D259) · `.claude/parking.md` · `CLAUDE.md` (rule 4a) | FR-31-5.2 defined; D259; parity rule |
+
+## Notes for Next Session
+- **The 3 `current-clone-*.html` snapshots are useful** — each carries 26 uid-scoped `<style>` blocks with the per-device @media rules (the DOM is viewport-independent; the CSS is in the style blocks). Good for source-level CSS diffing — BUT they do NOT contain the theme's GLOBAL base font (18px), so they can't catch inherited-value mismatches. For those, use the computed-parity method (CLAUDE.md rule 4a).
+- **Typography is ~faithful for EXPLICIT sizes** (all draft px present); the real typography gaps are the INHERITED base (16→18) + inherited line-heights + product-card. That's why priority 1 is the theme-snapshot defaults.
+- **D259 is proven** — do not re-litigate the min-width fix; just resolve the Gate A regen + push.
+
+## Next Session Prompt
+See `.claude/next-session-prompt.md`.
 
 # Session Handoff — 2026-07-02 LATER (D258 — array-item content lift COMPLETED for the 5 gap-blocks + LANDED on page 8; name-heuristic seeder trialled + REJECTED; backlog re-preserved)
 
