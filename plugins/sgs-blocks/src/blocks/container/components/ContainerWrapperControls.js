@@ -530,10 +530,17 @@ export function LayoutPanel( { attributes, setAttributes } ) {
 								<TextControl
 									value={ attributes[ attr ] || '' }
 									onChange={ ( val ) => setAttributes( { [ attr ]: val } ) }
-									help={ __(
-										"CSS grid-template-columns e.g. '5fr 3fr' or 'repeat(3,minmax(0,1fr))'. Leave empty to use the column count above.",
-										'sgs-blocks'
-									) }
+									help={
+										breakpoint === 'desktop'
+											? __(
+												"CSS grid-template-columns e.g. '5fr 3fr' or 'repeat(3,minmax(0,1fr))'. Leave empty to use the column count above.",
+												'sgs-blocks'
+											)
+											: __(
+												"CSS grid-template-columns for this breakpoint. Leave empty to inherit the desktop template above — or the column count, if no desktop template is set.",
+												'sgs-blocks'
+											)
+									}
 									__nextHasNoMarginBottom
 								/>
 							);
