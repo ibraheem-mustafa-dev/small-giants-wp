@@ -171,6 +171,10 @@ _HTML_TAG_TO_CORE_BLOCK_SEED: dict[str, tuple[str, str]] = {
     # out['ul'] = 'sgs/icon-list'. INSERT OR REPLACE propagates this to DB on load.
     "ul":  ("sgs/icon-list", "Unordered list → SGS icon-list (dynamic; core/list is static and needs save() HTML the converter cannot generate)"),
     "ol":  ("sgs/icon-list", "Ordered list → SGS icon-list (same rationale as ul; ordered flag set via _atomic_attrs_for items)"),
+    # <audio>/<details> → core block → reverse-walk to the SGS replacement (D265
+    # block features 2026-07-03: sgs/media audio mode, sgs/collapsible-text).
+    "audio":   ("core/audio", "Audio element → sgs/media (audio mode) via blocks.replaces reverse-walk"),
+    "details": ("core/details", "Native disclosure → sgs/collapsible-text via blocks.replaces reverse-walk"),
 }
 
 

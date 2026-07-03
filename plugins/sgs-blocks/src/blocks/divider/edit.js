@@ -16,6 +16,7 @@ const VARIANT_OPTIONS = [
 	{ label: __( 'Dots', 'sgs-blocks' ), value: 'dots' },
 	{ label: __( 'Wave', 'sgs-blocks' ), value: 'wave' },
 	{ label: __( 'Shape', 'sgs-blocks' ), value: 'shape' },
+	{ label: __( 'Gap (invisible spacer)', 'sgs-blocks' ), value: 'gap' },
 ];
 
 const SHAPE_OPTIONS = [
@@ -45,12 +46,23 @@ function buildWrapperStyle( attributes ) {
  * Render the divider element for the canvas preview.
  */
 function DividerPreview( { attributes } ) {
-	const { variant, colour, thickness, width, widthUnit, shape, shapeSize, dotCount } = attributes;
+	const { variant, colour, thickness, width, widthUnit, shape, shapeSize, dotCount, gapHeight, gapHeightUnit } = attributes;
 	const colourValue = colourVar( colour );
 
 	const sizeStyle = {
 		width: `${ width }${ widthUnit }`,
 	};
+
+	if ( 'gap' === variant ) {
+		// Invisible spacer — pure vertical space, no visible line (maps core/spacer).
+		return (
+			<div
+				className="wp-block-sgs-divider__gap"
+				style={ { height: `${ gapHeight }${ gapHeightUnit || 'px' }` } }
+				aria-hidden="true"
+			/>
+		);
+	}
 
 	if ( 'line' === variant ) {
 		return (
@@ -147,6 +159,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		shape,
 		shapeSize,
 		dotCount,
+		gapHeight,
+		gapHeightUnit,
 	} = attributes;
 
 	const wrapperClass = [
@@ -186,6 +200,25 @@ export default function Edit( { attributes, setAttributes } ) {
 							min={ 1 }
 							max={ 8 }
 							step={ 1 }
+							__nextHasNoMarginBottom
+						/>
+					) }
+
+					{ 'gap' === variant && (
+						<UnitControl
+							label={ __( 'Gap height', 'sgs-blocks' ) }
+							value={ `${ gapHeight }${ gapHeightUnit || 'px' }` }
+							units={ [
+								{ value: 'px',  label: 'px',  default: 48 },
+								{ value: 'em',  label: 'em',  default: 3 },
+								{ value: 'rem', label: 'rem', default: 3 },
+								{ value: 'vh',  label: 'vh',  default: 5 },
+							] }
+							onChange={ ( val ) => {
+								const unit = val?.replace( /[\d.]+/, '' ) || 'px';
+								const num  = parseFloat( val ) || 0;
+								setAttributes( { gapHeight: num, gapHeightUnit: unit } );
+							} }
 							__nextHasNoMarginBottom
 						/>
 					) }

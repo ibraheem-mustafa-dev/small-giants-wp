@@ -96,7 +96,7 @@ if ( '' === $media_type_raw ) {
 		$media_type_raw = 'image';
 	}
 }
-$media_type = in_array( $media_type_raw, array( 'image', 'video', 'svg' ), true ) ? $media_type_raw : 'image';
+$media_type = in_array( $media_type_raw, array( 'image', 'video', 'svg', 'audio' ), true ) ? $media_type_raw : 'image';
 
 // ---------------------------------------------------------------------------
 // 3. Helper: validate allowed CSS dimension units.
@@ -532,6 +532,74 @@ if ( 'video' === $media_type ) {
 }
 
 // ---------------------------------------------------------------------------
+// 12a2. AUDIO RENDER PATH — native <audio> player (maps core/audio).
+// ---------------------------------------------------------------------------
+$audio_html = '';
+if ( 'audio' === $media_type ) {
+	$audio_url      = isset( $attributes['audioUrl'] ) ? (string) $attributes['audioUrl'] : '';
+	$audio_source   = isset( $attributes['audioSource'] ) ? (string) $attributes['audioSource'] : 'external';
+	$audio_id       = isset( $attributes['audioId'] ) ? absint( $attributes['audioId'] ) : 0;
+	$audio_mime     = isset( $attributes['audioMimeType'] ) ? (string) $attributes['audioMimeType'] : '';
+	$audio_controls = isset( $attributes['audioControls'] ) ? (bool) $attributes['audioControls'] : true;
+	$audio_loop     = ! empty( $attributes['audioLoop'] );
+	$audio_autoplay = ! empty( $attributes['audioAutoplay'] );
+	$audio_preload  = isset( $attributes['audioPreload'] ) ? (string) $attributes['audioPreload'] : 'metadata';
+
+	// Resolve internal audio source from the WP media library.
+	$resolved_audio_url  = $audio_url;
+	$resolved_audio_mime = $audio_mime;
+	if ( 'internal' === $audio_source && $audio_id ) {
+		$audio_att_url = wp_get_attachment_url( $audio_id );
+		if ( $audio_att_url ) {
+			$resolved_audio_url = $audio_att_url;
+		}
+		$audio_att_mime = get_post_mime_type( $audio_id );
+		if ( $audio_att_mime && str_starts_with( $audio_att_mime, 'audio/' ) ) {
+			$resolved_audio_mime = $audio_att_mime;
+		}
+	}
+
+	if ( '' === $resolved_audio_url ) {
+		echo '<!-- sgs/media: no audio set -->';
+		return;
+	}
+
+	// Auto-detect MIME from the URL extension when not set.
+	if ( '' === $resolved_audio_mime ) {
+		$audio_ext           = strtolower( pathinfo( wp_parse_url( $resolved_audio_url, PHP_URL_PATH ), PATHINFO_EXTENSION ) );
+		$resolved_audio_mime = match ( $audio_ext ) {
+			'mp3'  => 'audio/mpeg',
+			'ogg'  => 'audio/ogg',
+			'oga'  => 'audio/ogg',
+			'wav'  => 'audio/wav',
+			'm4a'  => 'audio/mp4',
+			'aac'  => 'audio/aac',
+			'flac' => 'audio/flac',
+			default => 'audio/mpeg',
+		};
+	}
+
+	$audio_preload_val = in_array( $audio_preload, array( 'none', 'metadata', 'auto' ), true ) ? $audio_preload : 'metadata';
+	$media_style_part  = $media_style_attr ? ' style="' . esc_attr( $media_style_attr ) . '"' : '';
+	// A no-controls audio with no autoplay is unreachable — force controls unless autoplay is on.
+	$audio_show_ctrls  = ( $audio_controls || ! $audio_autoplay );
+	$audio_bool_attrs  = '';
+	$audio_bool_attrs .= $audio_show_ctrls ? ' controls' : '';
+	$audio_bool_attrs .= $audio_loop ? ' loop' : '';
+	$audio_bool_attrs .= $audio_autoplay ? ' autoplay' : '';
+	$audio_html        = sprintf(
+		'<audio class="sgs-media__audio"%s%s preload="%s" aria-label="%s"><source src="%s" type="%s" />%s</audio>',
+		$media_style_part,
+		$audio_bool_attrs,
+		esc_attr( $audio_preload_val ),
+		esc_attr( '' !== $caption ? $caption : __( 'Audio', 'sgs-blocks' ) ),
+		esc_url( $resolved_audio_url ),
+		esc_attr( $resolved_audio_mime ),
+		esc_html__( 'Your browser does not support the audio element.', 'sgs-blocks' )
+	);
+}
+
+// ---------------------------------------------------------------------------
 // 12b. SVG RENDER PATH.
 // ---------------------------------------------------------------------------
 $svg_html = '';
@@ -775,6 +843,14 @@ if ( 'image' === $media_type ) {
 		'<figure %s>%s%s</figure>',
 		$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes internally.
 		$svg_html,           // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG content processed through wp_kses() with explicit allowlist; wrapper attrs from esc_attr().
+		$caption_html        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from wp_kses_post() + esc_attr() above.
+	);
+} elseif ( 'audio' === $media_type ) {
+	// Audio emits a <figure> wrapper (caption + accessible labelling), like video.
+	printf(
+		'<figure %s>%s%s</figure>',
+		$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes internally.
+		$audio_html,         // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from esc_url() + esc_attr() above.
 		$caption_html        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from wp_kses_post() + esc_attr() above.
 	);
 } else {

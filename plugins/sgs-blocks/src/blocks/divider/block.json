@@ -3,7 +3,7 @@
     "apiVersion": 3,
     "name": "sgs/divider",
     "replaces": ["core/separator", "core/spacer"],
-    "version": "0.2.0",
+    "version": "0.3.0",
     "title": "Divider",
     "category": "sgs-layout",
     "description": "Section separator with four visual variants: simple line, dot row, SVG wave, or centred shape. Used to mark transitions between page sections.",
@@ -32,7 +32,7 @@
     "attributes": {
         "variant": {
             "type": "string",
-            "enum": [ "line", "dots", "wave", "shape" ],
+            "enum": [ "line", "dots", "wave", "shape", "gap" ],
             "default": "line"
         },
         "colour": {
@@ -42,6 +42,14 @@
         "thickness": {
             "type": "number",
             "default": 1
+        },
+        "gapHeight": {
+            "type": "number",
+            "default": 48
+        },
+        "gapHeightUnit": {
+            "type": "string",
+            "default": "px"
         },
         "width": {
             "type": "number",

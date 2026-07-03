@@ -39,6 +39,8 @@ $margin_unit   = $attributes['marginUnit'] ?? 'px';
 $shape         = $attributes['shape'] ?? 'circle';
 $shape_size    = (int) ( $attributes['shapeSize'] ?? 12 );
 $dot_count     = (int) ( $attributes['dotCount'] ?? 3 );
+$gap_height      = (int) ( $attributes['gapHeight'] ?? 48 );
+$gap_height_unit = $attributes['gapHeightUnit'] ?? 'px';
 
 // Resolve colour to CSS custom property or direct colour value.
 $colour_value = sgs_colour_value( $colour );
@@ -77,7 +79,14 @@ $size_style = $size_style_parts ? ' style="' . esc_attr( implode( ';', $size_sty
 ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<?php
-	if ( 'line' === $variant ) {
+	if ( 'gap' === $variant ) {
+		// Gap variant — invisible spacer, pure vertical space (maps core/spacer).
+		$gap_unit  = in_array( $gap_height_unit, array( 'px', 'em', 'rem', 'vh' ), true ) ? $gap_height_unit : 'px';
+		$gap_style = 'height:' . intval( $gap_height ) . $gap_unit;
+		?>
+		<div class="wp-block-sgs-divider__gap" style="<?php echo esc_attr( $gap_style ); ?>" aria-hidden="true"></div>
+		<?php
+	} elseif ( 'line' === $variant ) {
 		// Line variant — <hr> with inline border style.
 		$line_style_parts = array(
 			'border-top:' . intval( $thickness ) . 'px solid ' . esc_attr( $colour_value ),

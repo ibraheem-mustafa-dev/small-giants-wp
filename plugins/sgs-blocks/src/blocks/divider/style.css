@@ -82,6 +82,18 @@ hr.wp-block-sgs-divider__line:not([style*="border-top"]) {
     justify-content: center;
 }
 
+/* ===== Gap variant — invisible spacer (maps core/spacer) ===== */
+.wp-block-sgs-divider--gap {
+    /* No visible line; the inner __gap element supplies the vertical space. */
+    border: 0;
+}
+
+.wp-block-sgs-divider__gap {
+    display: block;
+    width: 100%;
+    /* height supplied per-instance via inline style (gapHeight attr) */
+}
+
 .wp-block-sgs-divider__shape-inner {
     display: inline-block;
     flex-shrink: 0;

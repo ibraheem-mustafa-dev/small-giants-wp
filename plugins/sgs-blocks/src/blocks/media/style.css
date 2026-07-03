@@ -163,3 +163,9 @@
 	}
 
 } /* end prefers-reduced-motion: no-preference */
+
+/* ===== Audio player (maps core/audio) ===== */
+.sgs-media__audio {
+    display: block;
+    width: 100%;
+}

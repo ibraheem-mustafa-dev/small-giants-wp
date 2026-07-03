@@ -18,10 +18,21 @@ function buildWrapperStyle( attributes ) {
  * fallbacks apply when no inline style is present.
  */
 function renderVariant( attributes ) {
-	const { variant, colour, thickness, width, widthUnit, shape, shapeSize, dotCount } = attributes;
+	const { variant, colour, thickness, width, widthUnit, shape, shapeSize, dotCount, gapHeight, gapHeightUnit } = attributes;
 	const colourValue = colourVar( colour );
 
 	const sizeStyle = { width: `${ width }${ widthUnit }` };
+
+	if ( 'gap' === variant ) {
+		// Invisible spacer — pure vertical space, no visible line (maps core/spacer).
+		return (
+			<div
+				className="wp-block-sgs-divider__gap"
+				style={ { height: `${ gapHeight }${ gapHeightUnit || 'px' }` } }
+				aria-hidden="true"
+			/>
+		);
+	}
 
 	if ( 'line' === variant ) {
 		return (
