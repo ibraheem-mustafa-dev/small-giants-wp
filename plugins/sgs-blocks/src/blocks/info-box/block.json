@@ -47,7 +47,8 @@
 			"style": true
 		},
 		"sgs": {
-			"imageControls": true
+			"imageControls": true,
+			"containerKind": "content"
 		}
 	},
 	"selectors": {

@@ -680,6 +680,20 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 
 			// ----------------------------------------------------------------
+			// Native content-alignment (typography.textAlign support). WP core does
+			// NOT reliably merge has-text-align-* into get_block_wrapper_attributes()
+			// for this dynamic composite wrapper (verified live on WP 7.0 — the class
+			// was absent), so emit it explicitly. This lands the cloned band's
+			// text-align (folded to the textAlign attr by the converter) — it cascades
+			// to the container's content and a child block that sets its own alignment
+			// still overrides it. Universal: every container-equivalent that declares
+			// supports.typography.textAlign.
+			$text_align = $attributes['textAlign'] ?? '';
+			if ( in_array( $text_align, array( 'left', 'center', 'right' ), true ) ) {
+				$classes[] = 'has-text-align-' . $text_align;
+			}
+
+			// ----------------------------------------------------------------
 			// First call to get_block_wrapper_attributes() — before shapes/uid.
 			// This mirrors the original render.php ~line 398 first-pass call.
 			// ----------------------------------------------------------------

@@ -35,6 +35,9 @@
 			"width": true,
 			"color": true,
 			"style": true
+		},
+		"sgs": {
+			"containerKind": "layout"
 		}
 	},
 	"allowedBlocks": [
