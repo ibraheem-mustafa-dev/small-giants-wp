@@ -1413,11 +1413,21 @@ def build_block_markup(
     if rec.slug is not None and rec.slug != db_lookup.container_default_slug():
         _inner = _sole_passthrough_child(section_root, _css_rules)
         if _inner is not None:
-            from converter.services.fold_helpers import route_interior_css_to_parent_slot
-            _band_attrs: dict = {}
-            route_interior_css_to_parent_slot(
-                _inner, _bem_element_of(_inner), rec.slug, _band_attrs, _css_rules,
+            from converter.services.fold_helpers import (
+                route_interior_css_to_parent_slot,
+                lift_content_band_max_width,
             )
+            _band_attrs: dict = {}
+            _inner_el = _bem_element_of(_inner)
+            if _inner_el is not None:
+                route_interior_css_to_parent_slot(
+                    _inner, _inner_el, rec.slug, _band_attrs, _css_rules,
+                )
+            else:
+                # BEM-less inner: route_interior keys on the element token and would
+                # early-return; fall back to the CSS-signature max-width lift — parity
+                # with the default-container fold (ONE behaviour, R-31-9, no carve-out).
+                lift_content_band_max_width(_inner, _css_rules, _band_attrs)
             for _bk, _bv in _band_attrs.items():
                 attrs.setdefault(_bk, _bv)
 

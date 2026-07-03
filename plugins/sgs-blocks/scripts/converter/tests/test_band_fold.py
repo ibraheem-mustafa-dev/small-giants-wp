@@ -100,6 +100,28 @@ def test_default_container_folds_text_align_to_native_textalign():
     assert attrs.get("textAlign") == "center"
 
 
+def test_composite_bem_less_inner_folds_via_css_signature_fallback():
+    """R-31-9 parity: a COMPOSITE whose sole pass-through inner has a NON-BEM class
+    (no __element token) still folds its content-band max-width — via the CSS-signature
+    fallback (lift_content_band_max_width), mirroring the default-container path. Without
+    the fallback, route_interior_css_to_parent_slot would early-return on the None token
+    and the band would drop (the composite-vs-default asymmetry, closed 2026-07-03)."""
+    node = _node(
+        '<section class="sgs-trust-bar">'
+        '  <div class="wrapper">'
+        '    <div class="sgs-trust-bar__badge">Handmade</div>'
+        '  </div>'
+        '</section>'
+    )
+    css_rules = {
+        ".wrapper": {"max-width": "1000px", "margin": "0 auto"},
+    }
+    rec = recognise_section(node)
+    attrs = _root_attrs(build_block_markup(rec, node, media_map={}, css_rules=css_rules))
+    assert rec.slug == "sgs/trust-bar"
+    assert attrs.get("contentWidth") == "1000px"
+
+
 def test_default_container_content_width_unregressed():
     """Regression lock for switching the default fold to route_interior_css_to_parent_slot:
     a plain content-band max-width (no grid, no text-align) still lands contentWidth."""
