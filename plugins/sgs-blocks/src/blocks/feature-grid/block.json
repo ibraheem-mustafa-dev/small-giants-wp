@@ -2,10 +2,10 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/feature-grid",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"title": "SGS Feature Grid",
 	"category": "sgs-layout",
-	"description": "A responsive grid container for SGS Info Boxes. Default: auto-fill flexbox wrap, 4-up on desktop, stacked on mobile.",
+	"description": "A responsive grid container for SGS Info Boxes. Default: fixed responsive columns (4-up on desktop) rendered by the shared container grid engine. Auto-flex (auto-fill wrap by min item width) is an opt-in layout mode.",
 	"keywords": [
 		"feature grid",
 		"info box grid",
@@ -46,7 +46,7 @@
 	"attributes": {
 		"layoutMode": {
 			"type": "string",
-			"default": "auto-flex"
+			"default": "fixed-columns"
 		},
 		"columnsDesktop": {
 			"type": "number",

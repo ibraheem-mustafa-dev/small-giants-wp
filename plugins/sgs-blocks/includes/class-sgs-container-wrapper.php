@@ -667,14 +667,24 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// NO explicit grid-template ratio. When an explicit ratio is set the faithful
 			// @media grid-template-columns rule (below) carries it; the hardcoded
 			// repeat(N,1fr) !important shorthand class would otherwise crush that ratio.
+			//
+			// A set BASE grid-template governs every wider tier (the base rule applies
+			// at all widths a tier @media does not override). The tablet/mobile COUNT
+			// shorthands are `!important`, so a *default* tier count (e.g. columnsTablet=2)
+			// would crush a faithful base template at that tier. Therefore, when the base
+			// template is explicit, suppress the tier count shorthands too: the base rule
+			// (or an explicit tier template via QB-2 below) governs the tier. This extends
+			// the desktop guard to all tiers — same principle as D228 ("hardcoded/default
+			// shorthands that override a faithfully-transferred template are cheats").
 			if ( ( $is_section || $is_layout ) && 'grid' === $layout ) {
-				if ( '' === trim( (string) $grid_template ) ) {
+				$has_base_template = '' !== trim( (string) $grid_template );
+				if ( ! $has_base_template ) {
 					$classes[] = 'sgs-cols-' . absint( $columns );
 				}
-				if ( $columns_tablet && '' === trim( (string) $grid_template_tablet ) ) {
+				if ( ! $has_base_template && $columns_tablet && '' === trim( (string) $grid_template_tablet ) ) {
 					$classes[] = 'sgs-cols-tablet-' . absint( $columns_tablet );
 				}
-				if ( $columns_mobile && '' === trim( (string) $grid_template_mobile ) ) {
+				if ( ! $has_base_template && $columns_mobile && '' === trim( (string) $grid_template_mobile ) ) {
 					$classes[] = 'sgs-cols-mobile-' . absint( $columns_mobile );
 				}
 			}

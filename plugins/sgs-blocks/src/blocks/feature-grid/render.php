@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
-$layout_mode     = isset( $attributes['layoutMode'] ) ? esc_attr( $attributes['layoutMode'] ) : 'auto-flex';
+$layout_mode     = isset( $attributes['layoutMode'] ) ? esc_attr( $attributes['layoutMode'] ) : 'fixed-columns';
 $columns_desktop = isset( $attributes['columnsDesktop'] ) ? absint( $attributes['columnsDesktop'] ) : 4;
 $columns_tablet  = isset( $attributes['columnsTablet'] ) ? absint( $attributes['columnsTablet'] ) : 2;
 $columns_mobile  = isset( $attributes['columnsMobile'] ) ? absint( $attributes['columnsMobile'] ) : 1;
@@ -76,12 +76,34 @@ $justify_items = isset( $attributes['justifyItems'] ) && in_array( $attributes['
 
 $uid = wp_unique_id( 'sgs-fg-' );
 
-if ( 'auto-flex' === $layout_mode ) {
+/*
+ * The shared SGS_Container_Wrapper IS the grid engine: when the container is a
+ * grid it emits `display:grid` + the base `grid-template-columns` + the correct
+ * 768/1024 device-tier responsive rules (class-sgs-container-wrapper.php). A
+ * "feature grid" is a real grid, so grid rendering is delegated ENTIRELY to that
+ * wrapper whenever an explicit grid template is present (e.g. a faithful clone
+ * transfer of `grid-template-columns`) OR the operator has not chosen auto-flex.
+ *
+ * `auto-flex` is the opt-in INTRINSIC mode (auto-fill / minmax) — a capability the
+ * wrapper does not provide — and it applies ONLY when there is no explicit template.
+ * It owns its own <style> whose `#uid.sgs-feature-grid` specificity intentionally
+ * beats the wrapper's `.uid` rules. In every other case render.php must NOT emit a
+ * competing grid rule, or it would override the wrapper's faithful template (the
+ * bug this structure fixes — the forced auto-flex 3-across on cloned grids).
+ */
+$grid_template     = isset( $attributes['gridTemplateColumns'] ) ? trim( (string) $attributes['gridTemplateColumns'] ) : '';
+$has_explicit_grid = '' !== $grid_template;
+$use_auto_flex     = ( 'auto-flex' === $layout_mode ) && ! $has_explicit_grid;
+
+$mode_class = 'sgs-feature-grid--' . $layout_mode;
+$css        = '';
+
+if ( $use_auto_flex ) {
 	/*
 	 * Auto-flex: CSS Grid with auto-fill.
 	 * Each item has a min-width; the browser wraps to a new row
 	 * whenever a full row of items at that width no longer fits.
-	 * No media queries needed — fully intrinsic.
+	 * No media queries needed — fully intrinsic. render.php owns this <style>.
 	 */
 	$css = "#$uid.sgs-feature-grid {
 	display: grid;
@@ -90,12 +112,20 @@ if ( 'auto-flex' === $layout_mode ) {
 	align-items: $align_items;
 	justify-items: $justify_items;
 }";
+} elseif ( $has_explicit_grid ) {
+	/*
+	 * Real grid with an explicit template — delegate to the shared wrapper's grid
+	 * engine. Force layout=grid so that engine runs, emit NO competing <style>,
+	 * and use the --grid modifier (NOT --auto-flex, whose style.css rule would
+	 * re-force the intrinsic minmax template over the faithful columns).
+	 */
+	$attributes['layout'] = 'grid';
+	$mode_class           = 'sgs-feature-grid--grid';
 } else {
 	/*
-	 * Fixed columns: explicit grid with breakpoint overrides.
-	 * Desktop (>1024px): $columns_desktop columns.
-	 * Tablet (769px–1024px): $columns_tablet columns.
-	 * Mobile (≤768px): $columns_mobile columns.
+	 * Fixed columns by count (no explicit template): explicit grid with breakpoint
+	 * overrides. Desktop (>1024px): $columns_desktop. Tablet (769–1024px):
+	 * $columns_tablet. Mobile (≤768px): $columns_mobile.
 	 */
 	$css = "#$uid.sgs-feature-grid {
 	display: grid;
@@ -118,7 +148,9 @@ if ( 'auto-flex' === $layout_mode ) {
 }";
 }
 
-echo '<style>' . esc_html( $css ) . '</style>';
+if ( '' !== $css ) {
+	echo '<style>' . esc_html( $css ) . '</style>';
+}
 
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() escapes all output internally; variables are pre-sanitised above.
 echo SGS_Container_Wrapper::render(
@@ -128,7 +160,7 @@ echo SGS_Container_Wrapper::render(
 	'layout',
 	array(
 		'tag'           => 'div',
-		'extra_classes' => array( 'sgs-feature-grid', 'sgs-feature-grid--' . $layout_mode ),
+		'extra_classes' => array( 'sgs-feature-grid', $mode_class ),
 		'extra_attrs'   => array( 'id' => $uid ),
 	)
 );
