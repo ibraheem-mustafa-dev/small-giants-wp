@@ -3091,9 +3091,11 @@ def child_block_for_parent_token(
 def _blocks_replaces_reverse() -> dict[str, str]:
     """Return {core_block_slug: sgs_block_slug} from blocks.replaces (status='built').
 
-    blocks.replaces stores a single plain core slug per row (e.g. 'core/paragraph').
-    When multiple sgs blocks replace the same core slug, the first slug alphabetically
-    wins (ORDER BY slug ASC) for deterministic output.
+    blocks.replaces stores a COMMA-SEPARATED list of core slugs per row — one SGS
+    block may replace several core blocks (many-core→one-sgs, e.g. sgs/media replaces
+    'core/image,core/video,core/audio'); the legacy 6 store a single slug. A core
+    block resolves to exactly one SGS block; if two SGS blocks claim the same core
+    slug the first alphabetically wins (ORDER BY slug ASC) for determinism.
     """
     conn = sqlite3.connect(SGS_DB)
     try:
@@ -3105,10 +3107,11 @@ def _blocks_replaces_reverse() -> dict[str, str]:
     finally:
         conn.close()
     out: dict[str, str] = {}
-    for core_slug, sgs_slug in rows:
-        # First writer wins (ORDER BY slug ASC gives determinism).
-        if core_slug not in out:
-            out[core_slug] = sgs_slug
+    for replaces_raw, sgs_slug in rows:
+        for core_slug in (t.strip() for t in (replaces_raw or "").split(",")):
+            # First writer wins (ORDER BY slug ASC gives determinism).
+            if core_slug and core_slug not in out:
+                out[core_slug] = sgs_slug
     return out
 
 

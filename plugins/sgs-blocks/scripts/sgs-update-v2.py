@@ -289,7 +289,17 @@ def _index_sgs_block_files(
         )
         block_type = "dynamic" if has_render else "static"
         parent = _parent_for_block(block_dir.name)
-        replaces = data.get("replaces") or None  # None if absent or empty string
+        # `replaces` may be a scalar core slug (legacy 6) OR a JSON array of core
+        # slugs (many-core→one-sgs, 2026-07-03 — e.g. sgs/media replaces
+        # image+video+audio). Normalise to the comma-separated string Stage 6 +
+        # _blocks_replaces_reverse already split on. Empty/absent → None.
+        _raw_replaces = data.get("replaces")
+        if isinstance(_raw_replaces, list):
+            replaces = ",".join(t.strip() for t in _raw_replaces if str(t).strip()) or None
+        elif isinstance(_raw_replaces, str) and _raw_replaces.strip():
+            replaces = _raw_replaces.strip()
+        else:
+            replaces = None
         attrs = data.get("attributes", {})
         supports = data.get("supports", {})
 
