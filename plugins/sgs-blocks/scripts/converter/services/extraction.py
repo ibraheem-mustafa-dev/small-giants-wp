@@ -948,29 +948,48 @@ def run_mechanism_leaf(rec: Recognition, node: Any, media_map: dict | None = Non
         if is_link:
             link_lifted = True
 
-    # ICON arm (Spec 31 §3.B.0) — a leaf whose content is an ICON carries the
-    # 'identity' role (sgs/icon.iconName/iconSource), which the text/image/link arms
-    # above do NOT cover, so an icon leaf child (e.g. an info-box's first child) emits
-    # empty. Resolve the icon ONCE via the shared resolve_icon_kind and set the block's
-    # icon attrs by kind — a Lucide slug, a bare emoji, or a raw <svg>. DB-driven
-    # (identity role + the attrs the block declares); no slug literal; universal to
-    # every icon-bearing leaf (R-31-9). Fires alongside link (an icon may also link).
-    has_icon_identity = any(
-        isinstance(i, dict) and i.get("role") == "identity"
-        for i in catalogue.values()
-    )
-    if has_icon_identity:
+    # ICON arm (Spec 31 §3.B.0) — a leaf whose content is an ICON carries an icon
+    # SOURCE attr, which the text/image/link arms above do NOT cover, so an icon leaf
+    # child (e.g. an info-box's first child) emits empty. Dispatch identically to those
+    # arms: find the target attr in the DB catalogue BY ROLE and write the DB attr_name
+    # — NEVER a hardcoded attr name (R-31-1). Each icon-source value attr carries an
+    # `icon-<kind>` role (DB, via ATTR_CLASSIFICATION_OVERRIDES), so resolve_icon_kind's
+    # kind (lucide / emoji / dashicon / wp-icon — sgs/icon's four `iconSource` sources;
+    # there is NO raw-svg source) binds to its attr through the DB. `iconSource`
+    # (role='identity') is the discriminator storing the resolved kind string. No slug
+    # literal; universal to every icon-source leaf (R-31-9). Fires alongside link.
+    icon_source_attrs = {
+        info["role"]: name
+        for name, info in catalogue.items()
+        if isinstance(info, dict)
+        and isinstance(info.get("role"), str)
+        and info["role"].startswith("icon-")
+    }
+    if icon_source_attrs:
         kind, ic_val = resolve_icon_kind(node)
-        if kind == "emoji" and "emojiChar" in catalogue:
-            results.append(ScalarLift(attr="emojiChar", value=ic_val))
-            if "iconSource" in catalogue:
-                results.append(ScalarLift(attr="iconSource", value="emoji"))
-        elif kind == "lucide" and "iconName" in catalogue:
-            results.append(ScalarLift(attr="iconName", value=ic_val))
-            if "iconSource" in catalogue:
-                results.append(ScalarLift(attr="iconSource", value="lucide"))
-        elif kind == "svg" and "iconSvg" in catalogue:
-            results.append(ScalarLift(attr="iconSvg", value=ic_val))
+        target_attr = icon_source_attrs.get("icon-" + kind) if kind else None
+        if target_attr and ic_val:
+            results.append(ScalarLift(attr=target_attr, value=ic_val))
+            # Discriminator: the block's `iconSource` (role='identity') stores the kind.
+            disc = next(
+                (n for n, i in catalogue.items()
+                 if isinstance(i, dict) and i.get("role") == "identity"),
+                None,
+            )
+            if disc:
+                results.append(ScalarLift(attr=disc, value=kind))
+        else:
+            # An icon-source leaf whose draft icon resolved to NO supported sgs/icon
+            # source (e.g. a raw <svg> the block cannot render, or an <img>). Emit a
+            # LOUD gap — never a silent default-star, even when a link on the same leaf
+            # was lifted and would otherwise suppress the conservation gap below. Gated
+            # on the block declaring an icon-source role, so non-icon 'identity' blocks
+            # (sgs/button) never reach here.
+            results.append(ContentGap(
+                rec.slug,
+                "icon-source leaf: draft icon resolved to no supported sgs/icon source"
+                " (lucide / emoji / dashicon / wp-icon) — flag to developer",
+            ))
 
     if not any(isinstance(r, ScalarLift) for r in results):
         results.append(ContentGap(
@@ -1079,15 +1098,20 @@ def extract_content(
     # sgs-button BEM root class), not kind='atomic'. Spacers/separators/decorative
     # leaves (primary_content_attr None) fall through to the Case-4 loud gap, so
     # element-self lifting never manufactures phantom content for them.
-    # An ICON-bearing leaf (a block with an 'identity'-role attr, e.g. sgs/icon) has
-    # NO primary_content_attr but DOES carry content (its icon: slug / emoji / svg).
-    # Route it through the named-leaf arm too so run_mechanism_leaf's icon arm lifts it
-    # (Spec 31 §3.B.0 — the shared role machinery covers every content role, not just
-    # text/image/link). DB signal (identity role), never a slug literal; decorative
-    # spacers (no primary + no identity) still fall through to the Case-4 loud gap.
+    # An ICON-bearing leaf (a block DECLARING an icon-source attr, e.g. sgs/icon) has
+    # NO primary_content_attr but DOES carry content (its icon: slug / emoji / dashicon
+    # / wp-icon). Route it through the named-leaf arm too so run_mechanism_leaf's icon
+    # arm lifts it (Spec 31 §3.B.0). Signal is a DB ROLE — any attr tagged `icon-<kind>`
+    # (self-sufficient schema fact; not the broader 'identity' role, which sgs/button
+    # carries WITHOUT an icon-source attr) — never a slug literal or hardcoded attr name;
+    # decorative spacers (no primary + no icon source) still fall through to the Case-4
+    # loud gap.
+    _leaf_attrs = db_lookup.block_attrs(rec.slug)
     icon_bearing_leaf = any(
-        isinstance(i, dict) and i.get("role") == "identity"
-        for i in db_lookup.block_attrs(rec.slug).values()
+        isinstance(i, dict)
+        and isinstance(i.get("role"), str)
+        and i["role"].startswith("icon-")
+        for i in _leaf_attrs.values()
     )
     if (
         rec.has_inner_blocks == 0

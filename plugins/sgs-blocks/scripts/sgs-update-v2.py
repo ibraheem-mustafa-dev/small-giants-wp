@@ -1158,6 +1158,19 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/testimonial", "quoteLineHeight"): {"derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"},  # migrated from fingerprints.json (db-current)
     ("sgs/timeline", "entries"): {"derived_selector": ".sgs-timeline__item"},  # migrated from fingerprints.json (db-current)
     ("sgs/whatsapp-cta", "label"): {"derived_selector": ".sgs-whatsapp-cta__label"},  # migrated from fingerprints.json (db-current)
+    # sgs/icon — icon-source role tags (Spec 31 §3.B.0, 2026-07-03). The named-leaf
+    # icon arm finds the target attr BY ROLE (like text/image/link) and writes the DB
+    # attr_name — never a hardcoded attr name (R-31-1). Each source value attr carries
+    # an `icon-<kind>` role so `resolve_icon_kind`'s kind binds to the attr via the DB.
+    # `iconSource` stays role='identity' (the discriminator storing the kind string);
+    # `iconName` is RETAGGED off 'identity' -> 'icon-lucide' so `iconSource` is the sole
+    # 'identity' attr the arm reads as the discriminator. Reseed-durable: assign-canonical
+    # re-derives block_attributes.role each reseed, so these MUST live here (the roles
+    # themselves are registered by migrations/2026-07-03-register-icon-source-roles.py).
+    ("sgs/icon", "iconName"): {"role": "icon-lucide"},
+    ("sgs/icon", "emojiChar"): {"role": "icon-emoji"},
+    ("sgs/icon", "dashiconName"): {"role": "icon-dashicon"},
+    ("sgs/icon", "wpIconName"): {"role": "icon-wp-icon"},
 }
 
 

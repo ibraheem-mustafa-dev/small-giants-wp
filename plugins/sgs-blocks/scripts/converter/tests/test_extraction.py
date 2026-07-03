@@ -957,3 +957,46 @@ def test_info_box_child_icon_lifts_emoji():
     markup = build_block_markup(recognise(node), node, media_map={}, css_rules={}, is_root=False)
     assert '"iconSource":"emoji"' in markup  # emoji lifted onto the icon child
     assert "Oats" in markup and "Rich in iron" in markup  # siblings still lift
+
+
+def test_icon_leaf_lifts_dashicon_by_kind():
+    """A Dashicons sgs/icon leaf -> dashiconName + iconSource='dashicon' (real
+    sgs/icon source; previously uncovered by the resolver)."""
+    node = BeautifulSoup(
+        '<div class="sgs-icon"><span class="dashicons dashicons-heart"></span></div>',
+        "html.parser",
+    ).div
+    markup = build_block_markup(recognise(node), node, media_map={}, css_rules={}, is_root=False)
+    assert '"iconSource":"dashicon"' in markup
+    assert '"dashiconName":"heart"' in markup
+
+
+def test_icon_leaf_lifts_wp_icon_by_kind():
+    """A WP-icon sgs/icon leaf (explicit data-wp-icon marker) -> wpIconName +
+    iconSource='wp-icon' (real sgs/icon source)."""
+    node = BeautifulSoup('<div class="sgs-icon" data-wp-icon="star"></div>', "html.parser").div
+    markup = build_block_markup(recognise(node), node, media_map={}, css_rules={}, is_root=False)
+    assert '"iconSource":"wp-icon"' in markup
+    assert '"wpIconName":"star"' in markup
+
+
+def test_icon_leaf_raw_svg_emits_loud_gap_not_silent_star():
+    """A raw <svg> the fingerprinter can't map to a Lucide slug is NOT a supported
+    sgs/icon source (there is no raw-svg source). It MUST emit a loud ContentGap —
+    never a silent default-star — even when a link on the same leaf was lifted
+    (the confirmed 2026-07-03 defect: the dead kind=='svg' branch let a linked
+    raw-svg icon fall through to sgs/icon's default star)."""
+    node = _node('<div class="sgs-icon"><svg viewBox="0 0 3 3"><path d="M0 0 L3 3 Z"/></svg></div>')
+    rec = recognise(node)
+    if rec.slug == "sgs/icon":  # guard: only assert when recognised as the icon leaf
+        results = extract_content(rec, node)
+        gaps = [r for r in results if isinstance(r, ContentGap)]
+        assert gaps, f"raw-svg icon leaf must emit a loud ContentGap, got: {results}"
+        assert "sgs/icon source" in gaps[0].detail, (
+            f"gap should name the unsupported icon source: {gaps[0].detail!r}"
+        )
+        # and it must NOT silently emit a lifted icon-source attr
+        lifted = {r.attr for r in results if isinstance(r, ScalarLift)}
+        assert not (lifted & {"iconName", "emojiChar", "dashiconName", "wpIconName"}), (
+            f"raw-svg leaf must not silently lift an icon source: {lifted}"
+        )

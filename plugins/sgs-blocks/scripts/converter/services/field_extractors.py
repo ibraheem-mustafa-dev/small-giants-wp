@@ -84,32 +84,58 @@ def _is_bare_emoji(text: str) -> bool:
     return _EMOJI_RE.sub("", s) == ""
 
 
+def _icon_class_name(element: "Tag", prefix: str) -> str | None:
+    """First class token (on ``element`` or any descendant) that starts with
+    ``prefix``, returned with the prefix stripped. Used to read a Dashicons
+    (``dashicons-heart``) or WP-icon (``wp-icon-star``) name off the draft markup.
+    """
+    for el in [element, *element.find_all(True)]:
+        for cls in (el.get("class") or []):
+            if isinstance(cls, str) and cls.startswith(prefix) and len(cls) > len(prefix):
+                return cls[len(prefix):]
+    return None
+
+
 def resolve_icon_kind(element: "Tag | None") -> tuple[str | None, str | None]:
     """Shared icon-content resolver (Spec 31 §3.B.0) — the SINGLE place icon content
     is recognised, reusable from EVERY extraction path (leaf lift, array item, nested
-    child). An icon element resolves to exactly one kind:
+    child). Resolves to exactly one of ``sgs/icon``'s FOUR real sources (block.json
+    ``iconSource`` enum = lucide / wp-icon / dashicon / emoji — there is NO raw-svg
+    source, so a raw ``<svg>`` the fingerprinter can't map is intentionally NOT a kind;
+    it becomes a loud content gap upstream rather than a silent default-star):
 
-        ('lucide', slug)  — a confident Lucide slug (data-*/inline-svg/BEM-modifier)
-        ('svg',    raw)   — an inline <svg> with no confident slug (preserve verbatim)
-        ('emoji',  char)  — a BARE emoji glyph (no <svg>, no slug)
-        (None,     None)  — no icon content
+        ('lucide',   slug)  — a confident Lucide slug (data-*/inline-svg fingerprint/BEM)
+        ('wp-icon',  name)  — an explicit WordPress-icon marker (data-wp-icon/wp-icon-*)
+        ('dashicon', name)  — an explicit Dashicons class (dashicons-<name>)
+        ('emoji',    char)  — a BARE emoji glyph (no <svg>, no slug)
+        (None,       None)  — no supported icon source
 
-    Emoji detection lives HERE ONCE (not per block / per path), so trust-bar badges,
-    icon-list items, info-box icons — any icon anywhere — get emoji support uniformly
-    (R-31-9). No block/slug literal; pure element inspection.
+    A wp-icon authored as an inline ``<svg>`` (from ``@wordpress/icons``) that
+    fingerprint-matches a Lucide glyph folds into ``('lucide', slug)`` — visually
+    identical — via the shared slug chain; only an EXPLICIT wp-icon marker returns
+    the ``wp-icon`` kind. Detection lives HERE ONCE (not per block / per path), so
+    trust-bar badges, icon-list items, info-box icons — any icon anywhere — get the
+    same source coverage (R-31-9). No block/slug literal; pure element inspection.
     """
     if element is None or not isinstance(element, Tag):
         return (None, None)
-    # 1. Confident Lucide slug via the shared icon-slug handler (data-icon / inline
-    #    <svg> fingerprint / BEM --modifier).
+    # 1. Dashicons — explicit `dashicons-<name>` class (Dashicons font source).
+    dash = _icon_class_name(element, "dashicons-")
+    if dash:
+        return ("dashicon", dash)
+    # 2. WordPress-icon — explicit `data-wp-icon` attr or `wp-icon-<name>` class.
+    wp_attr = element.get("data-wp-icon")
+    if isinstance(wp_attr, str) and wp_attr.strip():
+        return ("wp-icon", wp_attr.strip())
+    wp_cls = _icon_class_name(element, "wp-icon-")
+    if wp_cls:
+        return ("wp-icon", wp_cls)
+    # 3. Confident Lucide slug via the shared icon-slug handler (data-icon / inline
+    #    <svg> fingerprint / BEM --modifier). Folds fingerprinted wp-icon SVGs here.
     slug = extract_field_value(element, "icon-slug", {})
     if slug:
         return ("lucide", slug)
-    # 2. An inline <svg> that resolved to no slug → preserve its raw markup.
-    svg_node = element if element.name == "svg" else element.find("svg")
-    if svg_node is not None and isinstance(svg_node, Tag):
-        return ("svg", str(svg_node))
-    # 3. A bare emoji glyph (no <svg>, no slug).
+    # 4. A bare emoji glyph (no slug, no explicit dashicon/wp-icon marker).
     if _is_bare_emoji(element.get_text(strip=True)):
         return ("emoji", element.get_text(strip=True))
     return (None, None)
