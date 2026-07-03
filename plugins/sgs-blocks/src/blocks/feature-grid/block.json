@@ -176,7 +176,7 @@
 	"style": "file:./style-index.css",
 	"example": {
 		"attributes": {
-			"layoutMode": "auto-flex",
+			"layoutMode": "fixed-columns",
 			"columnsDesktop": 4,
 			"gap": 24
 		}

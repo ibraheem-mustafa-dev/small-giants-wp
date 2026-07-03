@@ -69,6 +69,7 @@ function buildGridStyle( attributes ) {
 		gap,
 		alignItems,
 		justifyItems,
+		gridTemplateColumns,
 	} = attributes;
 
 	// For editor preview: if gap looks like a bare slug (digits only), render
@@ -87,9 +88,17 @@ function buildGridStyle( attributes ) {
 		};
 	}
 
+	// Fixed / grid mode: mirror the frontend. An explicit gridTemplateColumns
+	// (e.g. a faithful clone transfer, including asymmetric ratios like '1fr 2fr')
+	// is delegated verbatim to the shared grid engine on the frontend, so preview
+	// it here too; otherwise fall back to the desktop column count.
+	const templateCols = gridTemplateColumns && String( gridTemplateColumns ).trim()
+		? String( gridTemplateColumns ).trim()
+		: `repeat(${ columnsDesktop }, 1fr)`;
+
 	return {
 		display: 'grid',
-		gridTemplateColumns: `repeat(${ columnsDesktop }, 1fr)`,
+		gridTemplateColumns: templateCols,
 		gap: gapCss,
 		alignItems,
 		justifyItems,
