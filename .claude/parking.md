@@ -46,7 +46,7 @@ last_updated: 2026-06-13 (D222 — added P-CONVERTER-DE-LITERALISATION programme
 
 ## 2026-07-01 (tooling) — memory-index maintenance (D254)
 
-> **P-MEMORY-MD-COMPACT** — `.claude/projects/.../memory/MEMORY.md` is at ~24.2KB, at the 24576-byte autoload cap (bottom entries risk silent drop). Compact: move the oldest 2026-06-03/04 behavioural stubs to `MEMORY-archive.md`, keep one line per entry. **Status: OPEN** · **Bucket:** Tooling / docs · **Trigger:** next handoff or when a memory rule silently fails to load. Surfaced 2026-07-01 (D254). (The #3-7 clone-fidelity defects are NOT parked — they are the next session's primary tasks, specified in `next-session-prompt.md` + D254; not duplicated here.)
+> **P-MEMORY-MD-COMPACT** — `.claude/projects/.../memory/MEMORY.md` autoload-cap maintenance (24576-byte cap; bottom entries risk silent drop). **TRIMMED 2026-07-04 (D270): moved the 2026-06-10…06-13 stubs → `MEMORY-archive.md`; now 20,038 bytes (~4.5KB headroom).** Recurs as new lessons accrue. Next trim: move the oldest still-autoloaded cluster (2026-06-16…06-18) once it approaches the cap; keep active cloning lessons. **Status: OPEN** (recurring) · **Bucket:** Tooling / docs · **Trigger:** when MEMORY.md > ~23KB or a memory rule silently fails to load.
 
 ## 2026-06-14 (cloning thread) — full clone-fidelity alignment + doc-alignment + product-page redesign (D226)
 
