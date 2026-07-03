@@ -523,6 +523,31 @@ def route_interior_css_to_parent_slot(
         if css_prop in _CROSS_NODE_EXCLUDED_PROPS:
             return False  # GAP-3: never lift display/grid-template-* cross-node.
 
+        # text-align is INHERITABLE (FR-31-5.1): a pass-through band's text-align folds
+        # to the owning container's WP-NATIVE textAlign support — it renders
+        # `has-text-align-*` on the root and CASCADES to the content, and any child block
+        # that sets its own alignment overrides it (the container's existing content-
+        # alignment capability, NOT a new attr). Gated on the block declaring native
+        # typography.textAlign (DB, universal — no slug literal). No native support →
+        # fall through to the OUTER/gap path (never silent-dropped, §3.A step 8).
+        # WP-native textAlign is BASE-tier only (no responsive textAlignTablet/Mobile),
+        # so only a base-tier text-align routes to it; a tiered band text-align has no
+        # native destination and falls through to the gap path (never a dead attr).
+        if css_prop == "text-align" and bp_suffix is None:
+            _typ = db_lookup.block_supports_for(owning_block).get("typography") or {}
+            if _typ.get("textAlign"):
+                parent_attrs.setdefault("textAlign", strip_important(value).strip())
+                trace(
+                    "cross_node_css_lifted",
+                    owning_block=owning_block,
+                    element_token=element_token,
+                    css_property=css_prop,
+                    layer="NATIVE_TEXTALIGN",
+                    dest_attr="textAlign",
+                    value=value,
+                )
+                return True
+
         layers_to_try: list[str] = []
 
         if css_prop in ("max-width", "width", "--content-width"):
@@ -550,7 +575,12 @@ def route_interior_css_to_parent_slot(
             attr_name = db_lookup.attr_for_layer_property(owning_block, layer, css_prop)
             if attr_name:
                 dest_key = f"{attr_name}{bp_suffix}" if bp_suffix else attr_name
-                parent_attrs.setdefault(dest_key, strip_important(value).strip())
+                # Resolve a co-declared var() (e.g. max-width:var(--content-width) with
+                # --content-width:1100px on the same band) so the attr lands the RESOLVED
+                # literal, not the unresolvable var() — mirrors lift_content_band_max_width
+                # (FR-31-21 step 6: flag-not-drop, never silently drop an unresolvable var).
+                resolved = _resolve_co_declared_var(strip_important(value).strip(), base_decls)
+                parent_attrs.setdefault(dest_key, resolved)
                 trace(
                     "cross_node_css_lifted",
                     owning_block=owning_block,

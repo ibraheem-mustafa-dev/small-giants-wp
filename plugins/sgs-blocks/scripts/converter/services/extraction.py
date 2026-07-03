@@ -348,6 +348,51 @@ def _route_container_child(
         ))
 
 
+def _sole_passthrough_child(parent: Any, css_rules: dict | None) -> Tag | None:
+    """§2.4 sole pass-through detection — SHARED by the default-container fold
+    (``_descend_container_children``) and the composite band-fold (``build_block_markup``
+    step 3c), so the "which inner wrapper folds" rule is single-sourced (R-31-9).
+
+    Returns the single slug-None pass-through inner wrapper when the parent does NOT
+    itself arrange its children AND has exactly ONE real child that is a bare structural
+    wrapper (no registered block identity, not a text leaf, has element children of its
+    own); else None. Name-free — recognition + CSS-signature only (R-31-2). The
+    ``not parent_arranges`` guard is the §2.4 grid-item-test-first rule: if the parent
+    itself arranges, its single child is a GRID ITEM, not a pass-through to fold.
+    """
+    from converter.services.text_leaf import node_is_text_leaf
+    from converter.services import arrangement
+
+    element_children = [c for c in parent.children if isinstance(c, Tag)]
+    loose_text = [
+        c for c in parent.children
+        if isinstance(c, NavigableString) and c.strip()
+    ]
+    if arrangement.carries_arrangement(parent, css_rules or {}):
+        return None
+    if len(element_children) != 1 or loose_text:
+        return None
+    only = element_children[0]
+    only_rec = recognise(only)
+    if (
+        (only_rec.slug is None or only_rec.kind == "unrecognised")
+        and not node_is_text_leaf(only)
+        and only.find(True) is not None
+    ):
+        return only
+    return None
+
+
+def _bem_element_of(node: Any) -> str | None:
+    """The BEM __element token of a node's first sgs- class (DB parse, name-free)."""
+    for cls in (node.get("class", []) or []):
+        if isinstance(cls, str):
+            bem = db_lookup.parse_sgs_bem(cls)
+            if bem and bem.element:
+                return bem.element
+    return None
+
+
 def _descend_container_children(
     parent: Any, results: list, css_rules: dict | None, media_map: dict | None
 ) -> None:
@@ -374,36 +419,45 @@ def _descend_container_children(
     slug-None wrapper resolves the same way and a text leaf terminates as a content
     block — termination holds on the finite DOM.
     """
-    from converter.services.text_leaf import node_is_text_leaf
     from converter.services import arrangement
-    from converter.services.fold_helpers import lift_content_band_max_width
+    from converter.services.fold_helpers import (
+        lift_content_band_max_width,
+        route_interior_css_to_parent_slot,
+    )
 
     element_children = [c for c in parent.children if isinstance(c, Tag)]
-    loose_text = [
-        c for c in parent.children
-        if isinstance(c, NavigableString) and c.strip()
-    ]
     parent_arranges = arrangement.carries_arrangement(parent, css_rules or {})
 
-    # ---- Sole pass-through fold (§2.4) --------------------------------------------
+    # ---- Sole pass-through fold (§2.4 / FR-31-5.3) --------------------------------
     # A non-arranging container with exactly ONE real child that is a slug-None
-    # pass-through wrapper: fold its band CSS up, then descend it. (Multiple real
-    # children, or a container that itself arranges its items, do NOT fold — each
-    # child keeps its own block/container.)
-    if not parent_arranges and len(element_children) == 1 and not loose_text:
-        only = element_children[0]
-        only_rec = recognise(only)
-        if (
-            (only_rec.slug is None or only_rec.kind == "unrecognised")
-            and not node_is_text_leaf(only)
-            and only.find(True) is not None
-        ):
-            _band: dict = {}
-            if lift_content_band_max_width(only, css_rules or {}, _band):
-                for _attr, _val in _band.items():
-                    results.append(ScalarLift(attr=_attr, value=_val))
-            _descend_container_children(only, results, css_rules, media_map)
-            return
+    # pass-through wrapper: fold its FULL interior band CSS up (max-width->contentWidth,
+    # padding->contentBandPadding*, gap, text-align->native textAlign, + tiers), then
+    # descend it for content. (Multiple real children, or a container that itself
+    # arranges its items, do NOT fold.) Detection single-sourced via
+    # _sole_passthrough_child; the fold uses the SAME route_interior_css_to_parent_slot
+    # router as the composite band-fold (build_block_markup step 3c) — ONE fold
+    # mechanism (R-31-9). Owning block = the DB default container (no slug literal);
+    # DB-absent -> the max-width-only lift (keeps the DB-free path working).
+    only = _sole_passthrough_child(parent, css_rules)
+    if only is not None:
+        _band: dict = {}
+        _owning = db_lookup.container_default_slug()
+        _only_el = _bem_element_of(only)
+        if _owning is not None and _only_el is not None:
+            route_interior_css_to_parent_slot(
+                only, _only_el, _owning, _band, css_rules or {},
+            )
+        else:
+            # No DB container slug, OR a BEM-less pass-through wrapper (route_interior
+            # keys on the element token and early-returns without one) -> fall back to
+            # the CSS-signature max-width lift, which catches the content-band width
+            # regardless of BEM. Behaviour parity with the pre-2026-07-03 fold on the
+            # --draft-mode/--legacy path (prod Stage 0 rejects non-BEM drafts).
+            lift_content_band_max_width(only, css_rules or {}, _band)
+        for _attr, _val in _band.items():
+            results.append(ScalarLift(attr=_attr, value=_val))
+        _descend_container_children(only, results, css_rules, media_map)
+        return
 
     # ---- Route each direct child (§2.4 grid item / sibling'd recurse) -------------
     for child in parent.children:
@@ -1342,6 +1396,30 @@ def build_block_markup(
         if "layout" in db_lookup.block_attrs(rec.slug):
             for _lk, _lv in _arr.layout_attrs(section_root, _css_rules).items():
                 attrs.setdefault(_lk, _lv)
+
+    # step 3c: §2.4 / FR-31-5.3 COMPOSITE band-fold. A composite (NOT the default
+    # container) whose section root has a SOLE pass-through inner wrapper (trust-bar's
+    # __inner, etc.) must fold that band's interior box CSS onto its OWN container attrs:
+    # max-width -> contentWidth, padding -> contentBandPadding*, gap/margin/min-height +
+    # responsive tiers (grid-template EXCLUDED per GAP-3 — arrangement is step 3b's
+    # concern). The default-container path folds this via _descend_container_children
+    # (§2.4, extraction.py); the composite CONTENT mechanisms (array / scalar / inner-
+    # blocks) do NOT, so a composite's band silently drops (proven: trust-bar dropped
+    # contentWidth:1100 + gap). route_interior_css_to_parent_slot is the universal
+    # FR-31-5.3 router (its slot_has_equivalent_block fork = the DB signal; no slug
+    # literal). Gated OUT for the default container (already folded). Uses the SAME
+    # _sole_passthrough_child detection (R-31-9). setdefault: a value the CSS/content
+    # pass already set wins.
+    if rec.slug is not None and rec.slug != db_lookup.container_default_slug():
+        _inner = _sole_passthrough_child(section_root, _css_rules)
+        if _inner is not None:
+            from converter.services.fold_helpers import route_interior_css_to_parent_slot
+            _band_attrs: dict = {}
+            route_interior_css_to_parent_slot(
+                _inner, _bem_element_of(_inner), rec.slug, _band_attrs, _css_rules,
+            )
+            for _bk, _bv in _band_attrs.items():
+                attrs.setdefault(_bk, _bv)
 
     # step 4: FR-31-20 variant detection (port of convert.py:4892-4919). Set the
     # variant-selector attr from the draft's LIFTED fingerprint (the attrs just
