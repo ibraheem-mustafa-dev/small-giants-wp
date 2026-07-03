@@ -79,6 +79,7 @@ Per-stage annotated blocks (scripts, files, DB tables, skills, status) are in
 | 10 | Per-page deploy | `orchestrator/upload_and_patch.py` | `extract.patched.json` + REST PATCH | LIVE (opt-in) |
 | 11 | Per-section pixel-diff (deployed) | `orchestrator/upload_and_patch.py` (post-Stage-10) | `stage-11-pixel-diff.json` | LIVE |
 | 11.5 | Draft-centric fidelity gate (parity2) | `parity2/` via `sgs-clone-orchestrator.py` (inline, post-Stage-10) | `parity2-report.json` (content%/layout%/css%/full% per section) | LIVE (soft-fail; D183 2026-06-07; commit `553334f3`; opt-out `--no-parity2`) |
+| 11.6 | Universal computed-parity (clone vs source draft) | `parity/computed-parity.js` (Node/Playwright) via `sgs-clone-orchestrator.py` Stage 11.6 (inline, post-Stage-10) | `computed-parity.json` (per-viewport content% + css% + mismatches + unmatched; `overall_css_pct`) | LIVE (soft-fail; D259 2026-07-03; opt-out `--no-computed-parity`). THE dependable fidelity signal — computed values matched by CONTENT (CLAUDE.md rule 4a / STOP-42), draft-agnostic (all computed props minus a documented blocklist verified vs `property_suffixes`). Replaces the class-keyed `mockup-parity-validator.js` / `clone-parity.js`. |
 | +REG | Pattern registration | `orchestrator/register_patterns.py` | `patterns/<slug>.php` + DB rows | LIVE |
 | — | Final acceptance harness | `orchestrator/critical-fix-verification.py` | `critical-fix-verification.json` | LIVE |
 

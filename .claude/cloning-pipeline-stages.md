@@ -634,6 +634,44 @@ The 5-bucket `leftover-bucket-router.py` classifier. Vocabulary update 2026-05-2
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
+### Stage 11.6 — Universal computed-parity (clone vs source draft) [LIVE — wired 2026-07-03; D259]
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ SCRIPT:  parity/computed-parity.js (Node/Playwright)                         │
+│          via sgs-clone-orchestrator.py Stage 11.6, inline post-Stage-10.     │
+│          --draft <this run's --mockup>  --clone <Stage-10 link= URL>         │
+│                                                                             │
+│ WHAT:    THE dependable fidelity signal (CLAUDE.md root-cause rule 4a /      │
+│          STOP-42). Compares EFFECTIVE (computed) values on the LIVE clone vs │
+│          the SOURCE draft, matched by CONTENT (element text / img alt) — NOT │
+│          by class (wrapper-vs-raw false positives) and NOT by source-        │
+│          declaration-diff (blind to INHERITED values, e.g. base font 16→18). │
+│                                                                             │
+│ UNIVERSAL / DRAFT-AGNOSTIC (like the converter): captures EVERY computed CSS │
+│          property minus a documented blocklist (verified to keep everything  │
+│          in property_suffixes) — so any draft's CSS is covered, no hand-     │
+│          picked allowlist. 3 tiers: CONTENT (text/img/link presence),        │
+│          typography, box/layout. Meaningful-only scoring (a prop counts only │
+│          if it DIFFERS or is non-default on the draft). Unmatched draft      │
+│          elements reported. url→presence; grid→track count.                  │
+│                                                                             │
+│ FILES (W):  pipeline-state/<run>/computed-parity.json                       │
+│             (per-viewport content.pct + css.pct + mismatches + unmatched;    │
+│              overall_css_pct)                                                │
+│                                                                             │
+│ LIMITS (documented, not silent): exact width/height px (container-dependent);│
+│          SVG internals fill/stroke (icon-fill is a block control, not a      │
+│          score item).                                                       │
+│                                                                             │
+│ VIEWPORTS: 375 / 768 / 1440.  GATE MODE: soft-fail — never blocks.          │
+│ OPT-OUT:   --no-computed-parity, or when 'node' is unavailable.             │
+│ STATUS:       LIVE — wired 2026-07-03 (D259). Replaces the unreliable        │
+│               mockup-parity-validator.js / clone-parity.js for fidelity      │
+│               scoring (they keyed by class + missed inherited values).       │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
 ### Final acceptance harness [LIVE]
 
 ```
