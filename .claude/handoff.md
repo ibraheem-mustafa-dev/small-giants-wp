@@ -5,6 +5,27 @@ thread: cloning-pipeline / Tasks 0-3 — Gate A unblock + D259 landed + theme fo
 session_date: 2026-07-03-LATER
 ---
 
+# Session Handoff — 2026-07-03 EVEN LATER (Task-4 re-clone LANDED + icon-source correction D264 + core→sgs mapping D265 + block features D266 + audio-player design)
+
+## Completed This Session
+1. **Task 4 re-clone → LANDED-verified all 4 held fixes on page 8** (the real homepage). `SGS_NEW_ENGINE=1` clone → overwrite sandybrown page 8; anonymous Playwright at 375/768/1440 confirmed: ingredients emoji 🌾🍺🌿🌱 render (0 empty icons); trust-bar star FILLED (pink `rgb(197,106,122)`, others outline); body 16px; trust-bar grid 2/4/4 (exact draft). computed-parity (rule 4a): CSS 51% / content 77% overall. Held commit `31358f84` no longer held — see D264.
+2. **D264 — icon-source lift CORRECTED + DB role-dispatch (`a22c7fcb`, pushed).** A pre-push `/qc-council` (2 read-only raters) + Bean's review found D263's resolver emitted a raw-`svg` kind to a NON-EXISTENT `iconSvg` attr (dead branch; sgs/icon's real sources = lucide/wp-icon/dashicon/emoji), and a linked raw-svg icon leaf fell to a silent default-star. Fixed: `resolve_icon_kind` returns the 4 REAL sources (dashicon via `dashicons-<name>`, wp-icon via `data-wp-icon`/`wp-icon-<name>`; raw svg → loud gap). Bean flagged the leaf arm's hardcoded kind→attr-name map as an R-31-1 smell → refactored to **DB role-dispatch**: 4 new `icon-<kind>` roles (migration `2026-07-03-register-icon-source-roles.py`) tagged reseed-durably via `ATTR_CLASSIFICATION_OVERRIDES`; the arm finds the attr BY ROLE like the sibling text/image/link arms (verified clean). LANDED-verified page 8. 370 tests, cheat-gate 0 NEW, convert.py byte-identical.
+3. **D265 — core→sgs replacement mapping completed, many-core→one-sgs (`302880d0`, pushed --no-verify [metadata-only, Bean-approved]).** Root-cause: recognition NEVER emits a core block (resolves to SGS or a loud gap), and the bare-tag path already reverse-walks `blocks.replaces` — so NO recogniser change, just DATA. `replaces` is now a JSON list in block.json (seeder normalises to comma-string; `_blocks_replaces_reverse` splits). 17 declarations added → **25 core→sgs mappings, 0 dup core claims**. Full audit + Bean's rulings: `reports/2026-07-03-core-to-sgs-replacement-audit.md`.
+4. **D266 — 2 block features activating D265 replacements (`38c27ca2`, pushed).** **sgs/divider** `variant=gap` (invisible spacer, gapHeight/gapHeightUnit; no deprecation; v0.3.0). **sgs/media** `mediaType=audio` (native `<audio>` player, full audio* attr set, MIME auto-detect; v1.4.0). Tag hooks `<audio>`→core/audio, `<details>`→core/details. **LANDED-verified live on sandybrown** (deployed build, rendered real instances). Visual-diff reports `reports/visual-diff/{divider,media}-2026-07-03.md` (satisfied the visual gate). npm build clean, WPCS 0 errors.
+5. **Audio-player design — artifact published + architecture decided (NO code yet).** 6 audio-player styles (Minimal Pill / Waveform / Live Spectrum / Radial+Glow / Oscilloscope / Gradient Pulse) as an interactive preview (studio-console identity, Web Audio-driven reactive demos). Artifact: https://claude.ai/code/artifact/625ea278-d1a9-471a-98db-8bb8d9b8cc76 (source `scratchpad/audio-player-styles.html`). **Bean decided:** build a DEDICATED `sgs/audio` block (7 variants = the 6 + a "hidden/none") + a Web Audio visualiser view-module; re-point `core/audio`→sgs/audio (remove audio mode from sgs/media, port the logic); + re-skin the generic sgs/media VIDEO player with a branded control chrome; + finish the core→sgs table judgment rows. → **specialised one-time prompt `.claude/next-session-prompt-audio-video-blocks.md`** (delete after done).
+
+## Current State
+- **Branch:** `main` at `38c27ca2`. D-ceiling **D266**. All pushed (0 ahead of origin).
+- **Tests:** 370 converter+conformance pass, cheat-gate 0 NEW (73 baselined), convert.py byte-identical. npm build clean (dead-control guard passed), WPCS 0 errors.
+- **DB:** icon-source roles (4) + core→sgs replaces (25 mappings) + audio/details tag hooks materialised + verified. A routine `/sgs-update` reseed to regenerate the block reference is a clean follow-up (durable channels — block.json / migration / overrides — already verified).
+
+## Known Issues / Follow-ups
+- **Two separate workstreams remain, split across two prompts (Bean's instruction):** (a) the CLONING pipeline continues in the MAIN `next-session-prompt.md` — L2 content-width universal, feature-grid variant, product-card structure (Task-4 re-clone + icon/core→sgs/block-features removed as DONE); (b) the AUDIO/VIDEO block build lives in the one-time `next-session-prompt-audio-video-blocks.md`.
+- **Minor polish nit (tracked):** sgs/media emits its shared `object-fit` style on the `<audio>` element too — harmless (audio ignores object-fit).
+- **core→sgs table:** the 4 STRONG + Bean-ruled judgment rows are wired; deferred/unruled rows (cover, media-text, query, form-fields, columns→container `core/column` child) remain in the audit report §C for the one-time prompt to finish.
+
+---
+
 # Session Handoff — 2026-07-03 LATER (Tasks 0-3: Gate A unblock + D259 landed-commit + theme 16px + trust-bar star control + fingerprint migration + universal icon-content lift)
 
 ## Completed This Session

@@ -1,18 +1,18 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: cloning-pipeline / Task 4 — re-clone LANDED-verify (emoji+star+theme+min-width) + push held commit → L2 content-width → feature-grid → product-card
-generated: 2026-07-03-LATER
-primary_goal: "Tasks 0-3 are DONE + committed (Task 3b/star LANDED-pending). NEXT (Bean-set order): (1) FIRST re-clone the Mama's homepage with SGS_NEW_ENGINE=1 → overwrite the REAL homepage (sandybrown page 8) → LANDED-verify the info-box emoji (D263) + trust-bar star fill (D262) + 16px theme (Task 1) + min-width grids (D259) ALL TOGETHER on the live page, and run parity/computed-parity.js for reliable per-section scores; then push the held commit 31358f84 after a /qc-council pass. (2) L2 content-width UNIVERSAL — the __inner max-width drops; apply the container-mirror sync (Spec 29) so all container-equivalents get contentWidth (ONE mirror-sync gap on a DB signal, not per-block). (3) feature-grid layoutMode/columns + product-card Layer-B structure. Follow Spec 31 in every detail; parity = computed values matched by content (CLAUDE.md rule 4a)."
+thread: cloning-pipeline / L2 content-width universal → feature-grid variant → product-card structure
+generated: 2026-07-03-EVEN-LATER
+primary_goal: "Task 4 re-clone + icon-source correction (D264) + core→sgs mapping (D265) + block features (D266) are ALL DONE + PUSHED + LANDED-verified (previous session). NEXT (the remaining CLONING-fidelity work, Bean-set order): (1) L2 content-width UNIVERSAL — the __inner/__card-inner max-width drops; apply the container-mirror sync (Spec 29 `sync-container-wrapping-blocks.py --apply`, currently report-only) so all container-equivalents get contentWidth (ONE mirror-sync gap on a DB signal, NOT per-block, STOP-38) + fix the §2.4 sole-pass-through fold → contentWidth. (2) feature-grid layoutMode=auto-flex ignores transferred columns (renders 3 not 4) — ground the variant in variant_slots + blocks.variant_attr. (3) product-card Layer-B structure (price 28px Fraunces bold → renders 18px Inter). Follow Spec 31 in every detail; parity = computed values matched by content (CLAUDE.md rule 4a). NOTE: the AUDIO/VIDEO block build + core→sgs table completion is a SEPARATE one-time prompt `next-session-prompt-audio-video-blocks.md`."
 ---
 
-# Next session — Task 4: re-clone LANDED-verify + push → L2 content-width → feature-grid → product-card
+# Next session — cloning fidelity: L2 content-width universal → feature-grid variant → product-card structure
 
 Invoke `/autopilot` before anything else. This is a `/sgs-clone` (LANDED) + `/systematic-debugging` + `/sgs-wp-engine` + spec-conformance session.
 
-**Agent identity.** You are the SGS cloning-pipeline engineer. Last session landed Tasks 0-3 (Gate A unblock + D259 commit + theme font + trust-bar star + fingerprint migration + universal icon-content lift). Your job: LANDED-verify the built-but-unproven fixes on the real page via a re-clone, push the held commit, then tackle the bigger converter fidelity fixes.
+**Agent identity.** You are the SGS cloning-pipeline engineer. The previous session (D264-D266) LANDED-verified the 4 held fixes on page 8 (emoji + star + 16px + min-width), corrected the icon-source lift to sgs/icon's 4 real sources via DB role-dispatch (D264), completed the core→sgs replacement mapping many-core→one-sgs (D265), and shipped 2 block features (D266 — divider gap variant + media audio mode). All pushed. Your job now: the remaining CLONING-fidelity converter fixes — L2 content-width, feature-grid variant, product-card structure.
 
-**State recap (plain English).** The cloning pipeline converts a draft mockup into native SGS blocks. Last session: the info-box emoji icon now lifts (universal `resolve_icon_kind` + a leaf icon arm, D263), the trust-bar star has a client fill control (D262), the theme base font is 16px (LANDED), and the stale fingerprints.json seeder was retired into `ATTR_CLASSIFICATION_OVERRIDES` (D261, zero-regression proven). The emoji + star fixes are BUILT + unit-verified but NOT yet rendered on the live page — the LANDED gate is a re-clone. Commit `31358f84` (info-box icon) is held from push until then.
+**State recap (plain English).** The cloning pipeline converts a draft mockup into native SGS blocks. The homepage (sandybrown page 8) now reflects the current converter and is LANDED-clean for emoji/star/theme/min-width. The remaining fidelity gaps (from the 2026-07-03 clone-vs-draft audit): (A) **L2 content-width** — the content-band (`__inner`/`__card-inner`) `max-width` drops because 4 composites lack the mirrored `contentWidth` attr (the container-mirror sync is report-only); (B) **feature-grid** renders 3 columns not 4 (`layoutMode=auto-flex` ignores the transferred columns); (C) **product-card** typed-mode structure (price renders 18px Inter not 28px Fraunces bold). NOTE: a SEPARATE one-time prompt (`next-session-prompt-audio-video-blocks.md`) covers the dedicated sgs/audio block + video re-skin + finishing the core→sgs table — that is a distinct workstream; this prompt is the cloning pipeline only.
 
 ---
 
@@ -28,14 +28,14 @@ Invoke `/autopilot` before anything else. This is a `/sgs-clone` (LANDED) + `/sy
 ## ⛔⛔ MANDATORY READING GATE (verify against ground truth, never guess; read WHOLE docs, not greps). Tick each in your first message:
 1. ☐ **`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — READ IT IN FULL, END TO END (Bean directive; STOP-26).** Especially §2 (core mechanism), §2.3/§2.4 (LAYER decomposition + the sole-pass-through fold → contentWidth), §3.A (CSS branch — max-width by LAYER), §3.B / §3.B.0 (content branch + the shared role-handler library + icon 3-kinds + leaf identity arm), §13.4 FR-31-5.2 (D259 device-tier cascade), §13.6 (composite-mirror).
 2. ☐ **`.claude/specs/29-CONTAINER-EQUIVALENT-BLOCKS.md`** — the UNIVERSAL L1-L4 model + the container-mirror sync (`sync-container-wrapping-blocks.py --apply`, currently report-only) — this is the L2 content-width fix's universal channel.
-3. ☐ **`.claude/handoff.md` (2026-07-03 LATER top entry)** — Tasks 0-3 + what's LANDED-pending + the held commit.
-4. ☐ **`.claude/decisions.md` head** (verify D-ceiling: `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` → D263).
+3. ☐ **`.claude/handoff.md` (2026-07-03 EVEN LATER top entry)** — D264/D265/D266 done + the remaining L2/feature-grid/product-card gaps + the audit report pointer.
+4. ☐ **`.claude/decisions.md` head** (verify D-ceiling: `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` → **D266**).
 5. ☐ **`CLAUDE.md` root-cause methodology rule 4a** (parity = computed values matched by CONTENT) + the draft `sites/mamas-munches/mockups/homepage/index.html`.
 6. ☐ **The live canary** — `https://sandybrown-nightingale-600381.hostingersite.com/` (page 8).
 
 ## Pre-flight self-attestation ritual (answer in your first message)
 1. Have I completed the READING GATE — Spec 31 IN FULL + Spec 29 + handoff + decisions→D-ceiling + CLAUDE.md rule 4a + the draft? (Quote one specific thing to prove it.)
-2. What branch + D-ceiling? (`git branch --show-current` → main; D-ceiling → D263.) `31358f84` (info-box icon) is committed local, held from push, LANDED-pending.
+2. What branch + D-ceiling? (`git branch --show-current` → main; D-ceiling → **D266**.) Nothing is held from push — D264/D265/D266 are all on origin/main. Verify the D-ceiling before any new D.
 3. For the fix I'm about to build: theme-layer or converter or block? Is it UNIVERSAL where it should be (Rule 3)? Does it FOLLOW SPEC 31 (Rule 7)?
 4. Am I gating on the REAL page (LANDED page 8, computed-parity matched by content, Bean eye) not emit-green (Rules 4/5, STOP-4/21/37/40)?
 5. For any subagent: CODING subagents CASCADE-FAIL here (STOP-39) — build INLINE. Read-only analysis/council/Explore agents work.
@@ -72,36 +72,26 @@ Invoke `/autopilot` before anything else. This is a `/sgs-clone` (LANDED) + `/sy
 
 ## ORCHESTRATION PLAN (Bean-set order; every task FOLLOWS SPEC 31; parity = computed-matched-by-content)
 
-### Task 1 — Re-clone → LANDED-verify everything + push the held commit (FIRST)
-**What:** Run the full clone with the new engine and overwrite the real homepage, then verify all of last session's built fixes render correctly on the live page.
-**Why:** The info-box emoji (D263) + trust-bar star (D262) are BUILT + unit-verified but NOT LANDED. `31358f84` is held from push until the live page proves it. This one re-clone LANDED-verifies emoji + star + 16px theme + min-width grids together.
-**Orchestration:** INLINE (`/sgs-clone`). Deploy `SGS_NEW_ENGINE=1` to sandybrown **page 8** (the homepage — overwrite, not a new page, STOP-21/D254). Then anonymous chrome-devtools/Playwright:
-- info-box (ingredients) icons render the emoji (🌾🍺🌿🌱), not empty circles.
-- trust-bar 4th badge (star) renders FILLED (needs `fillStyle='filled'` set by the converter).
-- body base font = 16px; min-width grids at 375/768/1440 match the draft.
-- Run `pwsh -Command "node plugins/sgs-blocks/scripts/parity/computed-parity.js --draft http://localhost:8899/index.html --clone <live> --viewports 375,768,1440"` (serve the mockup on 8899 first) for reliable per-section scores.
-Then **`/qc-council` on the built icon-lift code** (STOP-23) → on GO, push `31358f84` + confirm origin/main.
-**Acceptance:** page 8 shows the emoji icons + filled star + 16px body + correct grids (Bean eye + computed-parity); `31358f84` on origin/main.
+> **Context:** the previous session's re-clone already LANDED emoji + star + 16px + min-width on page 8, so page 8 reflects the CURRENT converter — the precondition for measuring these fixes. Re-clone again after each fix to LANDED-verify.
 
-### Task 2 — L2 content-width UNIVERSAL (the __inner max-width drop)
+### Task 1 — L2 content-width UNIVERSAL (the __inner max-width drop) — FIRST
 **What:** The content-band (`__inner`/`__card-inner`) `max-width` drops; 4 composites lack the mirrored `contentWidth` attr because the container-mirror sync is report-only.
 **Why:** Universal fidelity gap — ONE mirror-sync gap fired on a DB signal for ALL container-equivalents (Spec 29 §2 / Spec 31 §13.6), NOT 4 per-block fixes (Rule 3, STOP-38).
-**Orchestration:** INLINE. Read Spec 29 (the L1-L4 model + `sync-container-wrapping-blocks.py --apply`) IN FULL first. Apply the mirror sync so all container-equivalents get `contentWidth` + fix the `__inner` fold routing (§2.4 sole-pass-through → contentWidth). `/qc-council` before commit.
+**Orchestration:** INLINE. Read Spec 29 (the L1-L4 model + `sync-container-wrapping-blocks.py --apply`) IN FULL first. Apply the mirror sync so all container-equivalents get `contentWidth` + fix the `__inner` fold routing (§2.4 sole-pass-through → contentWidth). `/qc-council` before commit. Re-clone `SGS_NEW_ENGINE=1` → page 8, verify computed max-width matches the draft band.
 **Acceptance:** L2 content-width LANDS on trust-bar/gift/ingredients/social/featured on page 8 (computed max-width matches the draft band).
 
-### Task 3 — feature-grid variant + product-card structure
+### Task 2 — feature-grid variant + product-card structure
 - **feature-grid** — `layoutMode=auto-flex` ignores the transferred columns (renders 3 not 4); ground the variant in `variant_slots` + `blocks.variant_attr` (query, don't guess).
 - **product-card** — typed-mode Layer-B structure (price 28px Fraunces bold → renders 18px Inter regular). Spec 27 FP-H. Big — its own design-gate.
 **Acceptance:** feature-grid renders 4-col at 1440; product-card price/structure matches the draft.
 
 ## Dependency graph
 ```
-Task 1 (inline — re-clone LANDED-verify + qc-council + push held commit)
-  ↓  (page 8 now reflects the current converter)
-Task 2 (inline — L2 content-width universal)  →  /qc-council  →  commit + push
+Task 1 (inline — L2 content-width universal)  →  /qc-council  →  re-clone LANDED-verify  →  commit + push
   ↓
-Task 3 (feature-grid + product-card)  →  /qc-council  →  commit + push
+Task 2 (feature-grid + product-card)  →  /qc-council  →  re-clone LANDED-verify  →  commit + push
 ```
+(SEPARATE workstream — NOT in this prompt: the dedicated sgs/audio block + video re-skin + core→sgs table completion → `next-session-prompt-audio-video-blocks.md`, one-time, delete when done.)
 
 ## Skills to Invoke
 | Skill | When |

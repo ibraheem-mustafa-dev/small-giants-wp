@@ -1,0 +1,482 @@
+<title>SGS Audio Player — Style Studio</title>
+<style>
+  :root {
+    --ground: #F4F2EE;
+    --panel: #FBFAF7;
+    --panel-2: #ECE8E1;
+    --ink: #1C1813;
+    --ink-soft: #6B6357;
+    --hair: #DED8CE;
+    --signal: #C9821F;      /* amber, slightly deeper on light for contrast */
+    --signal-glow: #E9A23B;
+    --spectrum: #1C9A93;    /* cyan, deeper on light */
+    --spectrum-glow: #35C4BD;
+    --peak: #D6432C;
+    --track: #E2DCD2;
+    --shadow: 20 18 12;
+    --radius: 14px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #14110D;
+      --panel: #1D1913;
+      --panel-2: #262019;
+      --ink: #F3EEE4;
+      --ink-soft: #A79C8B;
+      --hair: #322A20;
+      --signal: #E9A23B;
+      --signal-glow: #F5B24A;
+      --spectrum: #35C4BD;
+      --spectrum-glow: #5AE0D8;
+      --peak: #E5533D;
+      --track: #2A2319;
+      --shadow: 0 0 0;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #14110D; --panel: #1D1913; --panel-2: #262019;
+    --ink: #F3EEE4; --ink-soft: #A79C8B; --hair: #322A20;
+    --signal: #E9A23B; --signal-glow: #F5B24A;
+    --spectrum: #35C4BD; --spectrum-glow: #5AE0D8;
+    --peak: #E5533D; --track: #2A2319; --shadow: 0 0 0;
+  }
+  :root[data-theme="light"] {
+    --ground: #F4F2EE; --panel: #FBFAF7; --panel-2: #ECE8E1;
+    --ink: #1C1813; --ink-soft: #6B6357; --hair: #DED8CE;
+    --signal: #C9821F; --signal-glow: #E9A23B;
+    --spectrum: #1C9A93; --spectrum-glow: #35C4BD;
+    --peak: #D6432C; --track: #E2DCD2; --shadow: 20 18 12;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, monospace; }
+
+  .wrap { max-width: 1160px; margin: 0 auto; padding: clamp(24px, 5vw, 64px) clamp(18px, 4vw, 40px) 96px; }
+
+  /* Header */
+  header { display: flex; flex-wrap: wrap; gap: 20px 32px; align-items: flex-end; justify-content: space-between; margin-bottom: 40px; }
+  .eyebrow { font-family: ui-monospace, monospace; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--signal); margin: 0 0 12px; }
+  h1 { font-size: clamp(30px, 5vw, 50px); line-height: 1.02; letter-spacing: -0.02em; margin: 0; font-weight: 680; text-wrap: balance; max-width: 16ch; }
+  .lede { color: var(--ink-soft); max-width: 46ch; margin: 16px 0 0; font-size: 16px; }
+  .controls-top { display: flex; gap: 10px; align-items: center; }
+  .btn-ghost {
+    font-family: ui-monospace, monospace; font-size: 12px; letter-spacing: 0.06em;
+    background: transparent; color: var(--ink); border: 1px solid var(--hair);
+    padding: 10px 16px; border-radius: 999px; cursor: pointer; min-height: 44px;
+    display: inline-flex; align-items: center; gap: 8px; transition: border-color .18s, background .18s;
+  }
+  .btn-ghost:hover { border-color: var(--signal); }
+  .btn-ghost:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+
+  /* Grid */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 22px; }
+
+  .card {
+    background: var(--panel); border: 1px solid var(--hair); border-radius: var(--radius);
+    padding: 22px; display: flex; flex-direction: column; gap: 18px; position: relative; overflow: hidden;
+    box-shadow: 0 1px 2px rgb(var(--shadow) / 0.04), 0 8px 24px -18px rgb(var(--shadow) / 0.5);
+  }
+  .card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .card-num { font-family: ui-monospace, monospace; font-size: 11px; color: var(--ink-soft); letter-spacing: 0.1em; }
+  .card-title { font-size: 17px; font-weight: 640; letter-spacing: -0.01em; margin: 0; }
+  .card-desc { color: var(--ink-soft); font-size: 13.5px; margin: -6px 0 0; }
+  .reactive-tag {
+    font-family: ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--spectrum); border: 1px solid color-mix(in oklab, var(--spectrum) 40%, transparent);
+    padding: 3px 8px; border-radius: 999px; white-space: nowrap;
+  }
+
+  /* Player scaffold shared */
+  .stage { position: relative; }
+  .transport { display: flex; align-items: center; gap: 14px; }
+  .play {
+    flex: none; width: 48px; height: 48px; border-radius: 50%;
+    background: var(--signal); color: #1a1206; border: none; cursor: pointer;
+    display: grid; place-items: center; transition: transform .12s ease, box-shadow .2s;
+  }
+  .play:hover { transform: scale(1.05); }
+  .play:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  .play svg { width: 20px; height: 20px; display: block; }
+  .time { font-family: ui-monospace, monospace; font-size: 12.5px; color: var(--ink-soft); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+
+  /* 1. Minimal pill */
+  .m-track { flex: 1; height: 5px; border-radius: 999px; background: var(--track); position: relative; cursor: pointer; }
+  .m-fill { position: absolute; inset: 0 auto 0 0; width: 0%; border-radius: 999px; background: linear-gradient(90deg, var(--signal), var(--signal-glow)); }
+  .m-fill::after { content:""; position:absolute; right:-5px; top:50%; width:12px; height:12px; border-radius:50%; background: var(--signal-glow); transform: translateY(-50%); box-shadow: 0 0 0 4px color-mix(in oklab, var(--signal) 22%, transparent); }
+
+  /* 2 & 3 & 5 & 6 canvases */
+  canvas { display: block; width: 100%; border-radius: 8px; }
+  .wave-wrap { display: flex; align-items: center; gap: 14px; }
+  .wave-wrap canvas { height: 56px; cursor: pointer; background: transparent; }
+
+  .spectrum-canvas { height: 96px; background: color-mix(in oklab, var(--ink) 4%, transparent); }
+  .scope-canvas { height: 96px; background: #0c0a07; border: 1px solid var(--hair); }
+  :root[data-theme="light"] .scope-canvas { background: #14110D; }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .scope-canvas { background: #14110D; } }
+
+  /* 4. radial */
+  .radial-stage { display: flex; align-items: center; gap: 18px; }
+  .radial-ring { position: relative; width: 92px; height: 92px; flex: none; }
+  .radial-ring svg { transform: rotate(-90deg); width: 92px; height: 92px; }
+  .radial-ring .glow { position: absolute; inset: 8px; border-radius: 50%; background: radial-gradient(circle, color-mix(in oklab, var(--signal) 55%, transparent), transparent 68%); opacity: 0; transition: opacity .05s; pointer-events: none; }
+  .radial-ring .play { position: absolute; inset: 0; margin: auto; width: 44px; height: 44px; }
+  .radial-meta { display: flex; flex-direction: column; gap: 4px; }
+  .radial-meta .title { font-size: 14px; font-weight: 600; }
+
+  /* 6. gradient pulse card body */
+  .pulse-body { border-radius: 10px; padding: 20px; transition: background .06s linear; background: var(--panel-2); }
+  .pulse-body .transport .time { color: var(--ink); }
+
+  /* Pick affordance */
+  .pick { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 4px; }
+  .pick-btn {
+    font-family: ui-monospace, monospace; font-size: 11.5px; letter-spacing: 0.04em;
+    background: transparent; border: 1px dashed var(--hair); color: var(--ink-soft);
+    padding: 7px 12px; border-radius: 8px; cursor: pointer; min-height: 36px; transition: all .16s;
+  }
+  .pick-btn:hover { border-color: var(--signal); color: var(--ink); border-style: solid; }
+  .pick-btn:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+  .pick-btn[aria-pressed="true"] { background: var(--signal); color: #1a1206; border-color: var(--signal); border-style: solid; }
+
+  footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--hair); color: var(--ink-soft); font-size: 13px; display:flex; flex-wrap:wrap; gap: 8px 20px; justify-content: space-between; }
+  .note { font-family: ui-monospace, monospace; font-size: 11.5px; }
+  a { color: var(--signal); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: 0.01ms !important; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <p class="eyebrow">SGS Media · Audio mode</p>
+      <h1>Six ways to play a sound.</h1>
+      <p class="lede">Press play on each — the reactive ones move to a generated melody here; in the block they'll react to the client's real audio. Tap <span class="mono">Use this</span> under the ones you like.</p>
+    </div>
+    <div class="controls-top">
+      <button class="btn-ghost" id="stopAll" type="button">◼ Stop all</button>
+      <button class="btn-ghost" id="themeToggle" type="button" aria-label="Toggle light or dark theme">◐ Theme</button>
+    </div>
+  </header>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    <span>SGS Framework · audio player concepts for <span class="mono">sgs/media</span></span>
+    <span class="note">All vanilla JS · Web Audio API · WCAG-operable · no external requests</span>
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   Shared audio engine — a short pleasant looping melody via
+   Web Audio oscillators (CSP-safe; no external file). Each
+   player taps a shared AnalyserNode for the reactive visuals.
+   ============================================================ */
+const AC = window.AudioContext || window.webkitAudioContext;
+let ctx = null, master = null, analyser = null, freqData = null, timeData = null;
+let activeId = null, seqTimer = null, startAt = 0;
+const CLIP = 12; // seconds (loops)
+
+// a gentle Dorian-ish melody (Hz) with rests(0)
+const MELODY = [293.66,0,349.23,392.00,440.00,392.00,349.23,0,329.63,293.66,0,261.63,293.66,349.23,0,392.00];
+const STEP = 0.34;
+
+function ensureCtx() {
+  if (!ctx) {
+    ctx = new AC();
+    master = ctx.createGain(); master.gain.value = 0.0001;
+    analyser = ctx.createAnalyser(); analyser.fftSize = 512; analyser.smoothingTimeConstant = 0.8;
+    freqData = new Uint8Array(analyser.frequencyBinCount);
+    timeData = new Uint8Array(analyser.fftSize);
+    master.connect(analyser); analyser.connect(ctx.destination);
+  }
+}
+function noteAt(t, hz) {
+  if (!hz) return;
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = 'triangle'; o.frequency.value = hz;
+  // a soft bell-ish partial
+  const o2 = ctx.createOscillator(), g2 = ctx.createGain();
+  o2.type = 'sine'; o2.frequency.value = hz*2; g2.gain.value = 0.18;
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.5, t+0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, t+STEP*0.95);
+  o.connect(g); o2.connect(g2); g2.connect(g); g.connect(master);
+  o.start(t); o2.start(t); o.stop(t+STEP); o2.stop(t+STEP);
+}
+function scheduleLoop() {
+  const base = ctx.currentTime + 0.06; startAt = base;
+  master.gain.cancelScheduledValues(base);
+  master.gain.setValueAtTime(0.9, base);
+  MELODY.forEach((hz,i)=> noteAt(base + i*STEP, hz));
+  // loop
+  seqTimer = setTimeout(scheduleLoop, MELODY.length*STEP*1000);
+}
+function startPlayback(id) {
+  ensureCtx();
+  if (ctx.state === 'suspended') ctx.resume();
+  if (activeId && activeId !== id) setPlaying(activeId, false);
+  activeId = id;
+  clearTimeout(seqTimer);
+  scheduleLoop();
+  setPlaying(id, true);
+  if (!rafOn) { rafOn = true; requestAnimationFrame(tick); }
+}
+function stopPlayback() {
+  if (!ctx) return;
+  clearTimeout(seqTimer);
+  master.gain.cancelScheduledValues(ctx.currentTime);
+  master.gain.setValueAtTime(0.0001, ctx.currentTime);
+  if (activeId) setPlaying(activeId, false);
+  activeId = null;
+}
+const players = {};
+function setPlaying(id, on) { if (players[id]) players[id].setPlaying(on); }
+
+/* ---- animation loop feeds all reactive visualisers ---- */
+let rafOn = false;
+function tick() {
+  if (!analyser) { rafOn = false; return; }
+  analyser.getByteFrequencyData(freqData);
+  analyser.getByteTimeDomainData(timeData);
+  let sum = 0; for (let i=0;i<freqData.length;i++) sum += freqData[i];
+  const level = sum / freqData.length / 255; // 0..1 amplitude
+  if (activeId && players[activeId] && players[activeId].draw) {
+    players[activeId].draw(freqData, timeData, level);
+  }
+  // progress for time-based fills
+  if (activeId && ctx) {
+    const elapsed = (ctx.currentTime - startAt) % CLIP;
+    const p = Math.max(0, Math.min(1, elapsed / CLIP));
+    if (players[activeId] && players[activeId].progress) players[activeId].progress(p, elapsed);
+  }
+  if (activeId) requestAnimationFrame(tick); else rafOn = false;
+}
+
+function fmt(s){ s=Math.max(0,s|0); return (s/60|0)+':'+String(s%60).padStart(2,'0'); }
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+/* ============================================================
+   Player factory — 6 styles
+   ============================================================ */
+const ICON_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>';
+const ICON_PAUSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>';
+
+const STYLES = [
+  { key:'minimal', title:'Minimal Pill', reactive:false,
+    desc:'Clean, quiet, universal. Play button, thin progress track, timecode. Never distracts from the page.' },
+  { key:'waveform', title:'Waveform', reactive:false,
+    desc:'Pre-rendered peaks fill with playback, SoundCloud-style. Feels like "real audio" and is clickable to seek.' },
+  { key:'spectrum', title:'Live Spectrum', reactive:true,
+    desc:'Frequency bars dance to the sound — cyan at the base, amber at the peaks. The obvious "it reacts" look.' },
+  { key:'radial', title:'Radial + Glow', reactive:true,
+    desc:'Circular progress ring with a centre play; the glow behind it pulses with the volume. Compact, premium.' },
+  { key:'scope', title:'Oscilloscope', reactive:true,
+    desc:'A live waveform line drawn on a dark scope — technical, hi-fi, studio-equipment energy.' },
+  { key:'pulse', title:'Gradient Pulse', reactive:true,
+    desc:'The whole player background shifts colour and brightness to the sound — the most immersive of the set.' },
+];
+
+function build() {
+  const grid = document.getElementById('grid');
+  STYLES.forEach((s, idx) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-head">
+        <div>
+          <div class="card-num">0${idx+1}</div>
+          <h3 class="card-title">${s.title}</h3>
+        </div>
+        ${s.reactive ? '<span class="reactive-tag">reacts to sound</span>' : ''}
+      </div>
+      <p class="card-desc">${s.desc}</p>
+      <div class="stage" data-stage></div>
+      <div class="pick">
+        <span class="time" data-t>0:00 / 0:12</span>
+        <button class="pick-btn" type="button" aria-pressed="false">Use this ★</button>
+      </div>`;
+    grid.appendChild(card);
+    const stage = card.querySelector('[data-stage]');
+    const timeEl = card.querySelector('[data-t]');
+    const pick = card.querySelector('.pick-btn');
+    pick.addEventListener('click', () => {
+      const on = pick.getAttribute('aria-pressed') === 'true';
+      pick.setAttribute('aria-pressed', String(!on));
+      pick.textContent = on ? 'Use this ★' : 'Picked ✓';
+    });
+    players[s.key] = FACTORY[s.key](stage, timeEl, s.key);
+  });
+}
+
+/* shared play-button element */
+function playButton(id, label) {
+  const b = document.createElement('button');
+  b.className = 'play'; b.type='button'; b.setAttribute('aria-label','Play '+label);
+  b.innerHTML = ICON_PLAY;
+  b.addEventListener('click', () => {
+    if (activeId === id) { stopPlayback(); }
+    else { startPlayback(id); }
+  });
+  return b;
+}
+function setBtnState(b, on, label){ b.innerHTML = on?ICON_PAUSE:ICON_PLAY; b.setAttribute('aria-label',(on?'Pause ':'Play ')+label); }
+
+const FACTORY = {
+  /* 1 — Minimal pill */
+  minimal(stage, timeEl, id) {
+    stage.innerHTML = `<div class="transport"></div>`;
+    const t = stage.querySelector('.transport');
+    const btn = playButton(id,'Minimal Pill'); t.appendChild(btn);
+    const track = document.createElement('div'); track.className='m-track';
+    const fill = document.createElement('div'); fill.className='m-fill'; track.appendChild(fill);
+    t.appendChild(track);
+    track.addEventListener('click', ()=> startPlayback(id));
+    return {
+      setPlaying:(on)=> setBtnState(btn,on,'Minimal Pill'),
+      progress:(p,e)=>{ fill.style.width=(p*100)+'%'; timeEl.textContent=fmt(e)+' / 0:12'; },
+    };
+  },
+
+  /* 2 — Waveform (static peaks, fill on progress) */
+  waveform(stage, timeEl, id) {
+    stage.innerHTML = `<div class="wave-wrap"></div>`;
+    const w = stage.querySelector('.wave-wrap');
+    const btn = playButton(id,'Waveform'); w.appendChild(btn);
+    const cv = document.createElement('canvas'); w.appendChild(cv);
+    cv.addEventListener('click', ()=> startPlayback(id));
+    // pre-generate stable pseudo-random peaks
+    const peaks = Array.from({length:64}, (_,i)=> 0.25 + 0.75*Math.abs(Math.sin(i*0.5)*Math.cos(i*0.17)+0.3*Math.sin(i*1.3)));
+    let prog = 0;
+    function paint(){
+      const dpr=Math.min(2,devicePixelRatio||1); const W=cv.clientWidth,H=cv.clientHeight;
+      cv.width=W*dpr; cv.height=H*dpr; const c=cv.getContext('2d'); c.scale(dpr,dpr);
+      const bw = W/peaks.length, gap = Math.max(1.5, bw*0.34);
+      peaks.forEach((pk,i)=>{
+        const h = pk*H*0.9, x=i*bw, y=(H-h)/2;
+        c.fillStyle = (i/peaks.length <= prog) ? cssVar('--signal') : cssVar('--track');
+        c.beginPath(); const r=Math.min(2,(bw-gap)/2);
+        const bx=x+gap/2, bwid=bw-gap;
+        c.roundRect(bx,y,bwid,h,r); c.fill();
+      });
+    }
+    const ro=new ResizeObserver(paint); ro.observe(cv); requestAnimationFrame(paint);
+    return {
+      setPlaying:(on)=> setBtnState(btn,on,'Waveform'),
+      progress:(p,e)=>{ prog=p; paint(); timeEl.textContent=fmt(e)+' / 0:12'; },
+    };
+  },
+
+  /* 3 — Live spectrum bars */
+  spectrum(stage, timeEl, id) {
+    stage.innerHTML = `<div class="transport" style="margin-bottom:14px"></div><canvas class="spectrum-canvas"></canvas>`;
+    const btn = playButton(id,'Live Spectrum'); stage.querySelector('.transport').appendChild(btn);
+    const badge=document.createElement('span'); badge.className='time'; badge.textContent='spectrum · 32 bands'; stage.querySelector('.transport').appendChild(badge);
+    const cv = stage.querySelector('canvas');
+    function base(){ const dpr=Math.min(2,devicePixelRatio||1); cv.width=cv.clientWidth*dpr; cv.height=cv.clientHeight*dpr; return dpr; }
+    let dpr=base(); new ResizeObserver(()=>dpr=base()).observe(cv);
+    return {
+      setPlaying:(on)=> setBtnState(btn,on,'Live Spectrum'),
+      progress:(p,e)=> timeEl.textContent=fmt(e)+' / 0:12',
+      draw:(freq)=>{
+        const c=cv.getContext('2d'); const W=cv.clientWidth,H=cv.clientHeight; c.setTransform(dpr,0,0,dpr,0,0); c.clearRect(0,0,W,H);
+        const N=32, bw=W/N, sig=cssVar('--signal-glow'), spec=cssVar('--spectrum');
+        for(let i=0;i<N;i++){
+          const v=freq[i*2]/255; const h=Math.max(2,v*H*0.94); const x=i*bw, y=H-h;
+          const grad=c.createLinearGradient(0,H,0,y); grad.addColorStop(0,spec); grad.addColorStop(1,sig);
+          c.fillStyle=grad; const r=Math.min(3,(bw*0.6)/2);
+          c.beginPath(); c.roundRect(x+bw*0.18, y, bw*0.64, h, r); c.fill();
+        }
+      }
+    };
+  },
+
+  /* 4 — Radial ring + glow */
+  radial(stage, timeEl, id) {
+    stage.innerHTML = `<div class="radial-stage">
+      <div class="radial-ring">
+        <div class="glow" data-glow></div>
+        <svg viewBox="0 0 92 92"><circle cx="46" cy="46" r="40" fill="none" stroke="var(--track)" stroke-width="5"/>
+        <circle data-arc cx="46" cy="46" r="40" fill="none" stroke="var(--signal)" stroke-width="5" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="251.3"/></svg>
+      </div>
+      <div class="radial-meta"><span class="title">Now playing</span><span class="time" data-sub>Generated melody</span></div>
+    </div>`;
+    const ring = stage.querySelector('.radial-ring');
+    const btn = playButton(id,'Radial'); ring.appendChild(btn);
+    const arc = stage.querySelector('[data-arc]'); const glow=stage.querySelector('[data-glow]');
+    const C=2*Math.PI*40;
+    arc.style.strokeDasharray=C;
+    return {
+      setPlaying:(on)=> setBtnState(btn,on,'Radial'),
+      progress:(p,e)=>{ arc.style.strokeDashoffset = C*(1-p); timeEl.textContent=fmt(e)+' / 0:12'; },
+      draw:(f,t,level)=>{ glow.style.opacity = Math.min(1, level*2.2); glow.style.transform=`scale(${1+level*0.5})`; }
+    };
+  },
+
+  /* 5 — Oscilloscope */
+  scope(stage, timeEl, id) {
+    stage.innerHTML = `<div class="transport" style="margin-bottom:14px"></div><canvas class="scope-canvas"></canvas>`;
+    const btn = playButton(id,'Oscilloscope'); stage.querySelector('.transport').appendChild(btn);
+    const badge=document.createElement('span'); badge.className='time'; badge.textContent='waveform · live'; stage.querySelector('.transport').appendChild(badge);
+    const cv = stage.querySelector('canvas');
+    function base(){ const dpr=Math.min(2,devicePixelRatio||1); cv.width=cv.clientWidth*dpr; cv.height=cv.clientHeight*dpr; return dpr; }
+    let dpr=base(); new ResizeObserver(()=>dpr=base()).observe(cv);
+    // idle flatline
+    function flat(){ const c=cv.getContext('2d'); const W=cv.clientWidth,H=cv.clientHeight; c.setTransform(dpr,0,0,dpr,0,0); c.clearRect(0,0,W,H); c.strokeStyle=cssVar('--spectrum-glow'); c.globalAlpha=0.5; c.lineWidth=2; c.beginPath(); c.moveTo(0,H/2); c.lineTo(W,H/2); c.stroke(); c.globalAlpha=1; }
+    requestAnimationFrame(flat);
+    return {
+      setPlaying:(on)=>{ setBtnState(btn,on,'Oscilloscope'); if(!on) flat(); },
+      progress:(p,e)=> timeEl.textContent=fmt(e)+' / 0:12',
+      draw:(f,time)=>{
+        const c=cv.getContext('2d'); const W=cv.clientWidth,H=cv.clientHeight; c.setTransform(dpr,0,0,dpr,0,0); c.clearRect(0,0,W,H);
+        c.lineWidth=2.2; c.strokeStyle=cssVar('--spectrum-glow'); c.shadowBlur=8; c.shadowColor=cssVar('--spectrum-glow');
+        c.beginPath();
+        const step=W/time.length;
+        for(let i=0;i<time.length;i++){ const v=time[i]/128-1; const x=i*step, y=H/2 + v*H*0.42; i===0?c.moveTo(x,y):c.lineTo(x,y); }
+        c.stroke(); c.shadowBlur=0;
+      }
+    };
+  },
+
+  /* 6 — Gradient pulse */
+  pulse(stage, timeEl, id) {
+    stage.innerHTML = `<div class="pulse-body" data-body><div class="transport"></div></div>`;
+    const body = stage.querySelector('[data-body]');
+    const btn = playButton(id,'Gradient Pulse'); body.querySelector('.transport').appendChild(btn);
+    const label=document.createElement('span'); label.className='time'; label.textContent='colour follows the sound'; body.querySelector('.transport').appendChild(label);
+    return {
+      setPlaying:(on)=>{ setBtnState(btn,on,'Gradient Pulse'); if(!on) body.style.background='var(--panel-2)'; },
+      progress:(p,e)=> timeEl.textContent=fmt(e)+' / 0:12',
+      draw:(freq,t,level)=>{
+        // low vs high energy split shifts hue amber<->cyan; level drives brightness
+        let lo=0,hi=0; for(let i=0;i<freq.length;i++){ (i<freq.length/3?lo:hi)+=freq[i]; }
+        const bias = hi/(lo+hi+1); // 0..1 high-frequency share
+        const hue = 190 - bias*150;            // cyan(190) -> amber(40)
+        const light = 22 + level*46;
+        const sat = 55 + level*20;
+        body.style.background = `linear-gradient(135deg, hsl(${hue} ${sat}% ${light}%), hsl(${hue+24} ${sat}% ${Math.max(14,light-14)}%))`;
+      }
+    };
+  },
+};
+
+/* ---- top controls ---- */
+document.getElementById('stopAll').addEventListener('click', stopPlayback);
+document.getElementById('themeToggle').addEventListener('click', ()=>{
+  const root=document.documentElement;
+  const cur = root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  root.setAttribute('data-theme', cur==='dark'?'light':'dark');
+});
+
+build();
+</script>
