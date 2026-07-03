@@ -46,13 +46,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		videoControls,
 		videoPlaysInline,
 		videoLazyLoad,
-		// Audio.
-		audioUrl,
-		audioSource,
-		audioControls,
-		audioLoop,
-		audioAutoplay,
-		audioPreload,
 		// SVG.
 		svgContent,
 		svgAnimation,
@@ -67,7 +60,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	const isImage = 'image' === mediaType || ! mediaType;
 	const isVideo = 'video' === mediaType;
 	const isSvg   = 'svg' === mediaType;
-	const isAudio = 'audio' === mediaType;
 
 	const onSelectImage = ( media ) => {
 		setAttributes( {
@@ -95,14 +87,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		} );
 	};
 
-	const onSelectAudio = ( media ) => {
-		setAttributes( {
-			audioId:       media.id   || null,
-			audioUrl:      media.url  || '',
-			audioMimeType: media.mime || '',
-			audioSource:   'internal',
-		} );
-	};
 
 	// -------------------------------------------------------------------------
 	// Inspector controls.
@@ -130,80 +114,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					>
 						{ __( 'SVG / Animation', 'sgs-blocks' ) }
 					</Button>
-					<Button
-						variant={ isAudio ? 'primary' : 'secondary' }
-						onClick={ () => setAttributes( { mediaType: 'audio' } ) }
-					>
-						{ __( 'Audio', 'sgs-blocks' ) }
-					</Button>
 				</ButtonGroup>
 			</PanelBody>
-
-			{ /* Audio controls */ }
-			{ isAudio && (
-				<PanelBody title={ __( 'Audio', 'sgs-blocks' ) } initialOpen={ true }>
-					<SelectControl
-						label={ __( 'Audio Source', 'sgs-blocks' ) }
-						value={ audioSource || 'external' }
-						options={ [
-							{ label: __( 'External URL', 'sgs-blocks' ), value: 'external' },
-							{ label: __( 'Media Library', 'sgs-blocks' ), value: 'internal' },
-						] }
-						onChange={ ( value ) => setAttributes( { audioSource: value } ) }
-						__nextHasNoMarginBottom
-					/>
-					{ 'internal' === ( audioSource || 'external' ) ? (
-						<MediaUploadCheck>
-							<MediaUpload
-								onSelect={ onSelectAudio }
-								allowedTypes={ [ 'audio' ] }
-								render={ ( { open } ) => (
-									<Button variant="secondary" onClick={ open }>
-										{ audioUrl ? __( 'Replace Audio', 'sgs-blocks' ) : __( 'Select Audio', 'sgs-blocks' ) }
-									</Button>
-								) }
-							/>
-						</MediaUploadCheck>
-					) : (
-						<TextControl
-							label={ __( 'Audio URL', 'sgs-blocks' ) }
-							value={ audioUrl || '' }
-							onChange={ ( value ) => setAttributes( { audioUrl: value } ) }
-							placeholder="https://example.com/audio.mp3"
-							__nextHasNoMarginBottom
-						/>
-					) }
-					<ToggleControl
-						label={ __( 'Show controls', 'sgs-blocks' ) }
-						checked={ audioControls ?? true }
-						onChange={ ( value ) => setAttributes( { audioControls: value } ) }
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Loop', 'sgs-blocks' ) }
-						checked={ !! audioLoop }
-						onChange={ ( value ) => setAttributes( { audioLoop: value } ) }
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Autoplay (may be blocked by browsers)', 'sgs-blocks' ) }
-						checked={ !! audioAutoplay }
-						onChange={ ( value ) => setAttributes( { audioAutoplay: value } ) }
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Preload', 'sgs-blocks' ) }
-						value={ audioPreload || 'metadata' }
-						options={ [
-							{ label: __( 'Metadata', 'sgs-blocks' ), value: 'metadata' },
-							{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-							{ label: __( 'Auto', 'sgs-blocks' ), value: 'auto' },
-						] }
-						onChange={ ( value ) => setAttributes( { audioPreload: value } ) }
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
-			) }
 
 			{ /* Image controls */ }
 			{ isImage && imageUrl && (
@@ -465,32 +377,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					aria-hidden="true"
 					dangerouslySetInnerHTML={ { __html: svgContent } }
 				/>
-			</figure>
-		);
-	}
-
-	// -------------------------------------------------------------------------
-	// Canvas — audio mode.
-	// -------------------------------------------------------------------------
-	if ( isAudio ) {
-		const hasAudio = audioUrl || attributes.audioId;
-		return (
-			<figure { ...blockProps }>
-				{ inspectorControls }
-				{ hasAudio ? (
-					<audio className="sgs-media__audio" controls src={ audioUrl } style={ { width: '100%' } }>
-						{ __( 'Your browser does not support the audio element.', 'sgs-blocks' ) }
-					</audio>
-				) : (
-					<div className="components-placeholder">
-						<div className="components-placeholder__label">
-							{ __( 'SGS Media — Audio', 'sgs-blocks' ) }
-						</div>
-						<div className="components-placeholder__instructions">
-							{ __( 'Choose Media Library or enter an audio URL in the block settings.', 'sgs-blocks' ) }
-						</div>
-					</div>
-				) }
 			</figure>
 		);
 	}

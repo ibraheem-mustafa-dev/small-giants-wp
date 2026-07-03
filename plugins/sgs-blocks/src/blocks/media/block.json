@@ -3,7 +3,7 @@
     "apiVersion": 3,
     "name": "sgs/media",
     "replaces": ["core/image", "core/video"],
-    "version": "1.4.0",
+    "version": "1.5.0",
     "title": "SGS Media",
     "category": "sgs-content",
     "description": "Content media block — image or video. Replaces core/image in the SGS clone-pipeline converter so styling attributes lift correctly to the frontend via server-side render. Use mediaType to choose image (with imageUrl) or video (with videoUrl for external embeds or videoId for WP-library uploads).",
@@ -39,8 +39,7 @@
             "enum": [
                 "image",
                 "video",
-                "svg",
-                "audio"
+                "svg"
             ]
         },
         "svgContent": {
@@ -118,41 +117,6 @@
         "videoLazyLoad": {
             "type": "boolean",
             "default": true
-        },
-        "audioUrl": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "audioSource": {
-            "type": "string",
-            "default": "external",
-            "enum": [ "external", "internal" ]
-        },
-        "audioId": {
-            "type": "integer",
-            "default": null
-        },
-        "audioMimeType": {
-            "type": "string",
-            "default": ""
-        },
-        "audioControls": {
-            "type": "boolean",
-            "default": true
-        },
-        "audioLoop": {
-            "type": "boolean",
-            "default": false
-        },
-        "audioAutoplay": {
-            "type": "boolean",
-            "default": false
-        },
-        "audioPreload": {
-            "type": "string",
-            "default": "metadata",
-            "enum": [ "none", "metadata", "auto" ]
         },
         "imageId": {
             "type": "integer",
@@ -323,6 +287,7 @@
     "editorScript": "file:./index.js",
     "editorStyle": "file:./index.css",
     "style": "file:./style-index.css",
+    "viewScriptModule": "file:./view.js",
     "example": {
         "attributes": {
             "mediaType": "image",

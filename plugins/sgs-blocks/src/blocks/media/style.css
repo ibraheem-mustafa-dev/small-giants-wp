@@ -164,8 +164,134 @@
 
 } /* end prefers-reduced-motion: no-preference */
 
-/* ===== Audio player (maps core/audio) ===== */
-.sgs-media__audio {
+/* =========================================================================
+   Branded video player chrome (view.js enhances direct <video>; iframes skip).
+   Theme-tokened: accent = theme primary. Native controls remain the no-JS path.
+   ========================================================================= */
+.sgs-video {
+    --sgs-video-accent: var( --wp--preset--color--primary, #c9821f );
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: #000;
+    line-height: 0;
+}
+.sgs-video video.sgs-media__video {
     display: block;
     width: 100%;
+    height: auto;
 }
+.sgs-video:focus-visible {
+    outline: 3px solid var( --sgs-video-accent );
+    outline-offset: 2px;
+}
+
+/* Centre play — shown when paused, hidden when playing. */
+.sgs-video__centre {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 72px;
+    height: 72px;
+    border: none;
+    border-radius: 50%;
+    background: color-mix( in srgb, var( --sgs-video-accent ) 92%, #000 );
+    color: #fff;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: opacity 0.2s, transform 0.15s;
+    box-shadow: 0 6px 24px rgba( 0, 0, 0, 0.4 );
+}
+.sgs-video__centre svg { width: 34px; height: 34px; margin-left: 3px; }
+.sgs-video__centre:hover { transform: scale( 1.06 ); }
+.sgs-video.is-playing .sgs-video__centre { opacity: 0; pointer-events: none; }
+.sgs-video__centre:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+/* Bottom bar — hover/focus reveal on desktop; always visible on touch. */
+.sgs-video__bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    line-height: 1;
+    background: linear-gradient( to top, rgba( 0, 0, 0, 0.72 ), transparent );
+    opacity: 0;
+    transform: translateY( 8px );
+    transition: opacity 0.2s, transform 0.2s;
+}
+.sgs-video:hover .sgs-video__bar,
+.sgs-video:focus-within .sgs-video__bar,
+.sgs-video.is-fullscreen .sgs-video__bar,
+.sgs-video:not(.is-playing) .sgs-video__bar {
+    opacity: 1;
+    transform: none;
+}
+@media ( hover: none ) {
+    .sgs-video__bar { opacity: 1; transform: none; }
+}
+
+.sgs-video__btn {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border: none;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    filter: drop-shadow( 0 1px 2px rgba( 0, 0, 0, 0.55 ) );
+}
+.sgs-video__btn svg { width: 22px; height: 22px; }
+.sgs-video__btn:hover { background: rgba( 255, 255, 255, 0.16 ); }
+.sgs-video__btn:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+
+.sgs-video__time {
+    color: #fff;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba( 0, 0, 0, 0.7 );
+}
+
+/* Range inputs (scrub + volume) — themed. */
+.sgs-video__scrub, .sgs-video__vol {
+    appearance: none;
+    -webkit-appearance: none;
+    height: 5px;
+    border-radius: 999px;
+    cursor: pointer;
+    background: linear-gradient( to right, var( --sgs-video-accent ) var( --sgs-progress, 0% ), rgba( 255, 255, 255, 0.3 ) var( --sgs-progress, 0% ) );
+}
+.sgs-video__scrub { flex: 1; }
+.sgs-video__vol { width: 72px; flex: none; background: rgba( 255, 255, 255, 0.3 ); }
+.sgs-video__scrub::-webkit-slider-thumb,
+.sgs-video__vol::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+}
+.sgs-video__scrub::-moz-range-thumb,
+.sgs-video__vol::-moz-range-thumb {
+    width: 13px;
+    height: 13px;
+    border: none;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+}
+.sgs-video__scrub:focus-visible,
+.sgs-video__vol:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+.sgs-video.is-reduced-motion .sgs-video__centre,
+.sgs-video.is-reduced-motion .sgs-video__bar { transition: none; }
