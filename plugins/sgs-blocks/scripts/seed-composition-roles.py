@@ -63,6 +63,23 @@ CORRECTIONS: dict[str, str] = {
     # composition_role stays content-block (not leaf) so the misresolution guard
     # (which fires for leaf + sgs-classed children) does NOT trigger.
     "sgs/option-picker": "content-block",
+    # Workstream A completion (2026-07-03) — the remaining typed-array content
+    # containers D150 missed. Each is has_inner_blocks=0 and renders from a
+    # content-role ARRAY attr (plans/items/logos/steps/entries), exactly like
+    # card-grid/post-grid/gallery/option-picker above. Left as 'leaf' they trip
+    # convert.py's is_leaf text-fallback (line 4627 → _atomic_attrs_for
+    # allow_text_fallback=True → line 3776), which dumps _rich_text_content(node)
+    # of the whole container into the FIRST content/text-content STRING attr —
+    # e.g. pricing-table's __inner tiers landing in `popularBadgeText`. Reclassifying
+    # to content-block routes them through the G3 branch (allow_text_fallback=False),
+    # a strict no-op that matches the conformance golden. tier='block' so the F6
+    # tier↔composition_role gate is unaffected; none appear in the Mama's draft
+    # (zero canary impact, same as the D150 trio).
+    "sgs/pricing-table": "content-block",
+    "sgs/icon-list": "content-block",
+    "sgs/brand-strip": "content-block",
+    "sgs/process-steps": "content-block",
+    "sgs/timeline": "content-block",
 }
 
 # ---------------------------------------------------------------------------
