@@ -37,9 +37,14 @@
 'use strict';
 const { chromium } = require('playwright');
 const fs = require('fs');
+const path = require('path');
+const { pathToFileURL } = require('url');
 
 function arg(name, def) { const i = process.argv.indexOf('--' + name); return i >= 0 && process.argv[i + 1] ? process.argv[i + 1] : def; }
-const DRAFT = arg('draft'), CLONE = arg('clone');
+// Accept either an http(s) URL or a local file path (agnostic — the orchestrator passes the
+// mockup file path; standalone Playwright loads file:// fine, unlike the MCP sandbox).
+const toURL = (s) => (!s ? s : (/^https?:\/\//i.test(s) ? s : pathToFileURL(path.resolve(s)).href));
+const DRAFT = toURL(arg('draft')), CLONE = toURL(arg('clone'));
 const VIEWPORTS = arg('viewports', '375,768,1440').split(',').map(Number);
 const OUT = arg('out', '');
 const EXCLUDE = arg('exclude', '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
@@ -149,9 +154,9 @@ function propMatches(prop, dv, cv) {
 
 // Compare one matched pair over ALL props; only MEANINGFUL props count (differs OR
 // non-default on the draft). Returns {total, match, diffs}.
-function comparePair(drec, crec, dDef, cDef) {
+function comparePair(drec, crec, dDef) {
   let total = 0, match = 0; const diffs = [];
-  const ddef = dDef[drec.tag] || {}, cdef = cDef[crec.tag] || {};
+  const ddef = dDef[drec.tag] || {};
   for (const p of Object.keys(drec.css)) {
     const dv = drec.css[p], cv = crec.css[p];
     if (cv === undefined) continue;
@@ -190,7 +195,7 @@ function comparePair(drec, crec, dDef, cDef) {
         if (excluded(key)) continue;
         const crec = findByAnchor(key, cloneMap, exact);
         if (!crec) { unmatched++; unm.push(key.slice(0, 44)); continue; }
-        const r = comparePair(drec, crec, d.defaults, c.defaults);
+        const r = comparePair(drec, crec, d.defaults);
         T += r.total; M += r.match;
         if (r.diffs.length) mis.push({ text: key.slice(0, 46), tag: drec.tag, diffs: r.diffs });
       }

@@ -2244,6 +2244,13 @@ def main():
              "opts out (e.g. when 'node' is unavailable). (default: False — parity2 runs)",
     )
     parser.add_argument(
+        "--no-computed-parity", action="store_true", default=False,
+        help="Skip Stage 11.6 (computed-parity: universal draft-agnostic clone-vs-draft "
+             "fidelity — every computed CSS property + content, matched by content, "
+             "CLAUDE.md rule 4a). On by default after a successful deploy; this opts out "
+             "(e.g. when 'node' is unavailable). (default: False — computed-parity runs)",
+    )
+    parser.add_argument(
         "--no-schema-validation", action="store_true", default=False,
         help="Skip Stage 6 block.json attribute schema validation. By default, the "
              "orchestrator halts with an actionable error if any block emits attributes "
@@ -2940,6 +2947,61 @@ def main():
             print("[stage-11.5] parity2 SKIPPED — 'node' not on PATH.", file=sys.stderr)
         except Exception as exc:  # noqa: BLE001 — observability; soft-fail
             print(f"[stage-11.5] parity2 soft-failed: {exc}", file=sys.stderr)
+
+    # Stage 11.6 — computed-parity (UNIVERSAL, draft-agnostic; D259, CLAUDE.md rule 4a).
+    # Compares the EFFECTIVE (computed) values on the LIVE clone vs the SOURCE draft
+    # (whatever --mockup + --deploy-target this run used — NOT client-specific),
+    # matched by CONTENT not class/declaration — the dependable fidelity signal
+    # (STOP-42). Universal: every computed CSS property is captured (minus a
+    # documented blocklist verified against property_suffixes), so any draft's CSS is
+    # covered. Soft-fail observability — never blocks. Writes computed-parity.json.
+    # -----------------------------------------------------------------------------
+    if not getattr(args, "no_computed_parity", False) and args.deploy_target \
+            and 'result' in locals() and result.returncode == 0:
+        try:
+            import re as _re3
+            _tail3 = [ln for ln in result.stdout.splitlines() if "link=" in ln]
+            _lm3 = _re3.search(r"link=(https?://\S+)", _tail3[-1]) if _tail3 else None
+            if not _lm3:
+                print("[stage-11.6] computed-parity SKIPPED — no link= URL from Stage 10.", file=sys.stderr)
+            else:
+                cp_url = _lm3.group(1).rstrip(".,;")
+                cp_tool = REPO / "plugins" / "sgs-blocks" / "scripts" / "parity" / "computed-parity.js"
+                cp_out = run_dir / "computed-parity.json"
+                if not cp_tool.exists():
+                    print(f"[stage-11.6] computed-parity SKIPPED — tool not found at {cp_tool}.", file=sys.stderr)
+                else:
+                    # Agnostic: the SOURCE draft is this run's --mockup; the CLONE is the
+                    # page Stage 10 just deployed. No --exclude (compares everything;
+                    # the operator can pass --exclude to computed-parity.js for a draft
+                    # whose sections are known-broken).
+                    cp_proc = subprocess.run(
+                        ["node", str(cp_tool),
+                         "--draft", str(args.mockup.resolve()),
+                         "--clone", cp_url,
+                         "--viewports", "375,768,1440",
+                         "--out", str(cp_out)],
+                        capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=420,
+                    )
+                    if not cp_out.exists():
+                        print(f"[stage-11.6] computed-parity produced no report (node rc={cp_proc.returncode}). "
+                              f"stderr: {(cp_proc.stderr or '')[-200:]}", file=sys.stderr)
+                    else:
+                        import json as _json3
+                        _cp = _json3.loads(cp_out.read_text(encoding="utf-8"))
+                        print(f"[stage-11.6] computed-parity (draft={args.mockup.name} vs live clone) — "
+                              f"OVERALL CSS {_cp.get('overall_css_pct')}% (universal, matched by content):")
+                        for _vp, _v in _cp.get("viewports", {}).items():
+                            _cc = (_v.get("content") or {})
+                            _cs = (_v.get("css") or {})
+                            _unm = len(_cs.get("unmatched_elements") or [])
+                            print(f"[stage-11.6]   [{_vp}px] content {_cc.get('pct')}% | css {_cs.get('pct')}% "
+                                  f"({_cs.get('match')}/{_cs.get('meaningful_props')} props, {_unm} draft els unmatched)")
+                        print(f"[stage-11.6] computed-parity report → {cp_out}")
+        except FileNotFoundError:
+            print("[stage-11.6] computed-parity SKIPPED — 'node' not on PATH.", file=sys.stderr)
+        except Exception as exc:  # noqa: BLE001 — observability; soft-fail
+            print(f"[stage-11.6] computed-parity soft-failed: {exc}", file=sys.stderr)
 
     if args.skip_autonomy_gate:
         print("[orchestrator] DONE (autonomy gate skipped per --skip-autonomy-gate).")
