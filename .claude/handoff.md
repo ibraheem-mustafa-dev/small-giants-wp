@@ -1,9 +1,47 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-thread: cloning-pipeline / Tasks 0-3 — Gate A unblock + D259 landed + theme font + trust-bar star + fingerprint migration + universal icon-content lift
-session_date: 2026-07-03-LATER
+thread: cloning-pipeline / D267 — universal L2 interior band-CSS fold (contentWidth + textAlign) LANDED
+session_date: 2026-07-03-EVEN-EVEN-LATER
 ---
+
+# Session Handoff — 2026-07-03 EVEN-EVEN-LATER (D267 — universal L2 interior band-CSS fold: contentWidth + textAlign LANDED; ran in PARALLEL with the D264-266 session)
+
+> Coordination: this session ran CONCURRENTLY with the D264-266 session. My D267 work COMPLETES that session's "Task 1 — L2 content-width" (the RIGHT way — its stated premise was disproved, STOP-43). Remaining = its Task 2 (feature-grid + product-card).
+
+## Completed This Session
+1. **D267 — universal L2 interior band-CSS fold. LANDED + pushed (`a438bb41`, `516a5790`).** The `__inner`/`__card-inner` content-band CSS was dropping. Proven on the REAL draft (STOP-43): the handoff premise ("4 composites lack `contentWidth` — run the container-mirror sync") was WRONG — the 4 default-container sections (featured/ingredients/gift/social) ALREADY fold contentWidth; only **trust-bar** (a composite, `has_inner_blocks=0`/array) dropped it, because NO path folds a composite's sole pass-through inner. Fix (ONE mechanism, R-31-9, Spec 31 §2.4/§13.4 FR-31-5.3): shared `_sole_passthrough_child` detector + `build_block_markup` step-3c composite fold via `route_interior_css_to_parent_slot`; default fold switched to the SAME router (BEM-less fallback on BOTH paths). `route_interior` gained co-declared `var()` resolution + inheritable base-tier `text-align` → the block's WP-native `textAlign` support.
+2. **D267 render-side — `SGS_Container_Wrapper` emits `has-text-align-*` explicitly (`5205f170`).** LANDED caught the textAlign fold was WRITTEN-not-LANDED (STOP-21): WP core does NOT merge `has-text-align-*` into `get_block_wrapper_attributes()` for this dynamic composite wrapper (WP 7.0). Wrapper now emits it → the ingredients band + all its content render centred live.
+3. **`containerKind` DECLARED in `info-box` (content) + `feature-grid` (layout) block.json** — the §13.6 declaration gap (kind previously only in DB + render.php).
+4. **LANDED on page 8 (anonymous computed-style):** trust-bar band `max-width`=1100px, featured=1040px, ingredients/gift/social=960px; ingredients heading+intro+cards+disclaimer all centred. Bean eye-confirmed (R-31-13).
+5. **Pre-commit qc-council (3 read-only raters vs file:line+DB+real draft): unanimous GO** — Rater B found the BEM-less composite-path asymmetry → mirrored the fallback (`516a5790`). 374 tests (+4 `test_band_fold.py` regression locks) + cheat-gate 0 NEW; convert.py byte-identical (D-MODULAR).
+
+## Current State
+- **Branch:** `main` at `516a5790`. D-ceiling **D267**. **Tests:** 374 pass, 1 skip, 2 xfail. **Build:** n/a (Python + PHP). All D267 pushed.
+- **Uncommitted (NOT mine — co-active session):** spec-20/21 staged deletions, `lucide-icons.php`, Bean's `current-clone-*.html` snapshots.
+
+## Known Issues / Blockers
+- **feature-grid renders 3-across, draft wants 4** — NEXT, BUT the prompt's "`layoutMode=auto-flex` ignores columns" premise is probably WRONG (Bean) → investigate the real cause + discuss the user-friendly fix with Bean BEFORE building.
+- **product-card typed-mode structure** (price 28px Fraunces bold → 18px Inter) — still open.
+
+## Next Priorities (in order)
+1. **feature-grid 4-column** — investigate the REAL premise first (not the stale prompt claim), then discuss the fix with Bean.
+2. **product-card Layer-B structure** (its own design-gate).
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `plugins/sgs-blocks/scripts/converter/services/extraction.py` | `_sole_passthrough_child` + `_bem_element_of` helpers; default fold → route_interior (BEM-less fallback); build_block_markup step-3c composite band-fold |
+| `plugins/sgs-blocks/scripts/converter/services/fold_helpers.py` | `route_interior_css_to_parent_slot` — co-declared var() resolution + text-align → native textAlign gate |
+| `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php` | emit `has-text-align-{textAlign}` explicitly (WP core doesn't for the dynamic wrapper) |
+| `plugins/sgs-blocks/src/blocks/{info-box,feature-grid}/block.json` | declare `supports.sgs.containerKind` |
+| `plugins/sgs-blocks/scripts/converter/tests/test_band_fold.py` | NEW — 4 regression locks |
+| `.claude/decisions.md` | D267 |
+
+## Notes for Next Session
+- **A schema-valid, emitted converter attr can still be a RENDER no-op** if the block's dynamic wrapper doesn't apply the WP-native support (has-text-align was NOT auto-added by `get_block_wrapper_attributes()` for the dynamic composite — WP 7.0). LANDED (live computed-style) caught it; the emit-proof + a code-reading rater did not. STOP-44 (new).
+- **Do NOT "run the container-mirror sync" for L2 content-width** — that premise was disproved this session. The fold is a converter fix (done). The sync is optional declaration hygiene only.
+- **Prove the premise on the real node (STOP-43)** paid off AGAIN — the written diagnosis was wrong twice this session (the sync premise + my own grep-based table).
 
 # Session Handoff — 2026-07-03 EVEN LATER (Task-4 re-clone LANDED + icon-source correction D264 + core→sgs mapping D265 + block features D266 + audio-player design)
 
