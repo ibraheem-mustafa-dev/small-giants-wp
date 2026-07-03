@@ -1,9 +1,46 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-thread: cloning-pipeline / D267 — universal L2 interior band-CSS fold (contentWidth + textAlign) LANDED
-session_date: 2026-07-03-EVEN-EVEN-LATER
+thread: blocks / D268-D269 — dedicated sgs/audio block + sgs/media audio-removal + branded video player
+session_date: 2026-07-04
 ---
+
+# Session Handoff — 2026-07-04 (D268-D269 — dedicated sgs/audio block [7 player styles + Web Audio visualiser] + sgs/media audio-removal + branded video player)
+
+## Completed This Session
+1. **D268 — `sgs/audio` block SHIPPED + /qc PASS (`596b9943`, pushed).** A native `<audio>` player upgraded by `view.js` (viewScriptModule) to one of 7 styles — minimal / waveform / spectrum / radial / oscilloscope / gradient-pulse / hidden. Progressive enhancement (SSR native player = no-JS fallback; save.js null → no deprecation). The 4 reactive styles share one `AudioContext` + per-instance `AnalyserNode` (`createMediaElementSource`, guarded). Client controls: source (external/media-library), style picker, playback toggles, brand accent+spectrum via `DesignTokenPicker`. AudioObject JSON-LD schema. Perf: RAF gated on play AND `IntersectionObserver` visibility + reduced-motion freeze + first-play graph + no per-frame refit. Registered in DB (blocks + block_composition via `seed-composition-roles.py`). **/qc PASS on sandybrown** — all 7 variants LANDED (enhance + real-click playback + reactive analyser reads real same-origin data [freqMax 255] + canvas paints + a11y + zero block console errors). **QC bug found+fixed:** `crossorigin="anonymous"` blocked non-CORS external playback → removed.
+2. **D269 — sgs/media audio-mode REMOVED + branded video player (`e8bebd39`, pushed).** Audio fully removed from sgs/media (moved to sgs/audio) — mediaType `audio` enum + 8 `audio*` attrs + render branch/emission/whitelist + editor UI + the `.sgs-media__audio` style; `replaces=[core/image,core/video]`, v1.5.0 (both raters confirmed zero dangling `audio` ref). Branded video player (new `view.js`) replaces the native `<video controls>` chrome for direct video — centre-play + hover-reveal bar (play/scrub/timecode/mute/volume/fullscreen), keyboard-operable, theme-tokened; YouTube/Vimeo iframes untouched; native player = no-JS fallback.
+3. **/qc-council on the media changes: GO** (2 read-only raters). Sole blocker (both raters): the wrapper `keydown` stole arrow keys from the scrub/volume range inputs → FIXED (`e.target !== wrap` guard) + verified LIVE (ArrowRight on the scrubber = native +0.005s fine-step, not a +5s seek). Polish: 44px buttons + drop-shadow/text-shadow scrim. Security clean (innerHTML all static ICON constants).
+4. **Docs:** decisions.md D268/D269; `reports/visual-diff/{audio-2026-07-03,media-2026-07-04}.md`; the one-time prompt `next-session-prompt-audio-video-blocks.md` marked Tasks 1-3 DONE.
+
+## Current State
+- **Branch:** `main` at `57d86217`. D-ceiling **D269**. All pushed (0 ahead of origin).
+- **Tests:** 374 converter+conformance pass; cheat-gate 0 NEW; npm build clean (dead-control + F5/F6 green); WPCS 0 errors; convert.py byte-identical.
+- This was a BLOCK-DEV workstream, SEPARATE from the cloning pipeline (untouched — its next work is feature-grid/product-card per the main `next-session-prompt.md`, the D267 parallel session's thread).
+
+## Known Issues / Blockers
+- **One-time prompt Task 4 remains:** finish the deferred core→sgs replacement-table judgment rows (audit report §C) + run `/sgs-update` to regenerate `specs/02-SGS-BLOCKS-REFERENCE.md` (reflect the new sgs/audio block + media v1.5.0 + divider gap). Then DELETE `next-session-prompt-audio-video-blocks.md`.
+- Minor: sgs/audio reactive visualisers idle for cross-origin external audio (analyser tainted) — playback works; same-origin (media-library) drives them. Documented, acceptable.
+
+## Next Priorities (in order)
+1. **Cloning pipeline (main thread):** feature-grid 4-col (investigate the premise — the "auto-flex" claim is probably wrong) + product-card structure. See `next-session-prompt.md`.
+2. **Audio/video follow-up (one-time):** core→sgs table Task 4 + `/sgs-update` reseed, then delete the one-time prompt. See `next-session-prompt-audio-video-blocks.md`.
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `plugins/sgs-blocks/src/blocks/audio/*` | NEW block — block.json/index.js/edit.js/save.js/render.php/view.js/style.css/editor.css |
+| `plugins/sgs-blocks/src/blocks/media/{block.json,render.php,edit.js,style.css}` | audio mode removed; block.json v1.5.0 + viewScriptModule + video chrome CSS |
+| `plugins/sgs-blocks/src/blocks/media/view.js` | NEW — branded video player |
+| `plugins/sgs-blocks/scripts/seed-composition-roles.py` | +sgs/audio block_composition row (content-block) |
+| `.claude/decisions.md` · `reports/visual-diff/*` | D268/D269 + visual-diff reports |
+
+## Notes for Next Session
+- **QC caught two smoke-test-invisible bugs** the LANDED-on-one-instance test missed: the `crossorigin` non-CORS playback break (audio) + the wrapper-keydown key-steal from range sliders (video). Only a real end-to-end + adversarial-review pass surfaces these.
+- **DB was materialised directly this session** (media replaces, sgs/audio rows) — durable channels (block.json / seed-composition-roles.py) are the source, so a `/sgs-update` reseed reproduces them.
+
+## Next Session Prompt
+Both prompts are already written: `next-session-prompt.md` (cloning: feature-grid/product-card) + `next-session-prompt-audio-video-blocks.md` (one-time: core→sgs table Task 4 + reseed).
 
 # Session Handoff — 2026-07-03 EVEN-EVEN-LATER (D267 — universal L2 interior band-CSS fold: contentWidth + textAlign LANDED; ran in PARALLEL with the D264-266 session)
 
