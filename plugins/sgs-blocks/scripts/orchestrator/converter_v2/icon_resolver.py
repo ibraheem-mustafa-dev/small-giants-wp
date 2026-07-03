@@ -150,6 +150,25 @@ def _has_polygon_star(svg_str: str) -> bool:
     return fill_active and (stroke_none or stroke_absent)
 
 
+def is_filled_glyph(svg_str: str) -> bool:
+    """True when an SVG paints a SOLID fill rather than being a stroke-only outline.
+
+    The universal fill signal (Spec 31 §3.B.0 — styling follows the recognised
+    element): a Lucide-style outline sets ``fill="none"`` on the <svg>; a filled
+    glyph (e.g. a filled polygon star) carries an active ``fill`` (currentColor /
+    a colour). Callers use this to set a block's per-icon ``fillStyle`` so a cloned
+    solid icon renders filled, not forced to the uniform outline. Conservative:
+    any ``fill="none"`` present returns False (won't over-claim filled).
+    """
+    if not svg_str:
+        return False
+    return (
+        "fill=" in svg_str
+        and 'fill="none"' not in svg_str
+        and "fill='none'" not in svg_str
+    )
+
+
 def _is_vehicle_truck(svg_str: str) -> bool:
     """
     Old Lucide 'truck' fingerprint: a <rect> body + 1 small path for the cab

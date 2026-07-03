@@ -47,7 +47,7 @@ from bs4 import Tag
 from converter.context import ContentConservationError, ContentGap
 from converter.services.field_extractors import extract_field_value
 from converter.services.recognise_helpers import bem_element_to_canonical_slot
-from orchestrator.converter_v2 import db_lookup
+from orchestrator.converter_v2 import db_lookup, icon_resolver
 
 _ARRAY_LIFT_CAP = "array-content-lift"
 
@@ -268,6 +268,14 @@ def _lift_item(
             if frole is None and field_key not in item and "svg" in field_key.lower():
                 item[field_key] = raw_svg_fallback
                 break
+        # Spec 31 §3.B.0 — styling follows the recognised element: a SOLID glyph
+        # (e.g. a filled polygon star) sets the block's per-icon ``fillStyle`` so
+        # the clone renders it filled instead of the uniform outline. Capability-
+        # gated (R-31-9): fires only when the block declares a ``fillStyle`` field.
+        if icon_resolver.is_filled_glyph(raw_svg_fallback) and any(
+            fk == "fillStyle" for fk, _s, _r in schema
+        ):
+            item["fillStyle"] = "filled"
     return item
 
 

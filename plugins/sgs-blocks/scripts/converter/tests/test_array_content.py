@@ -66,6 +66,32 @@ def test_no_client_copy_leak_only_draft_content():
     assert "Handmade in Birmingham" not in joined  # the old client-copy default
 
 
+# A filled-polygon star (fill=currentColor, stroke=none) beside an outline check.
+_TRUST_BAR_FILLED_STAR = """
+<section class="sgs-trust-bar"><div class="sgs-trust-bar__inner">
+  <div class="sgs-trust-bar__badge">
+    <span class="sgs-trust-bar__icon"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+    <span class="sgs-trust-bar__text">Certified</span></div>
+  <div class="sgs-trust-bar__badge">
+    <span class="sgs-trust-bar__icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15 8 22 9 17 14 18 21 12 17 6 21 7 14 2 9 9 8" fill="currentColor" stroke="none"/></svg></span>
+    <span class="sgs-trust-bar__text">Trusted service</span></div>
+</div></section>
+"""
+
+
+def test_filled_polygon_star_sets_fillstyle_filled():
+    """Spec 31 §3.B.0 — styling follows the recognised element: a SOLID glyph
+    (filled polygon star, preserved verbatim into iconSvg) sets the per-icon
+    fillStyle='filled' so the clone renders it filled, not the uniform outline.
+    An outline icon (the check path → slug) leaves fillStyle unset."""
+    attrs, _gaps = lift_array_content(_root(_TRUST_BAR_FILLED_STAR), "sgs/trust-bar", media_map={})
+    items = attrs["items"]
+    assert len(items) == 2
+    assert items[0].get("fillStyle") is None          # outline check — no fill
+    assert items[1].get("fillStyle") == "filled"       # filled star — fill set
+    assert "polygon" in (items[1].get("iconSvg") or "")  # raw SVG preserved
+
+
 def test_capability_gate_blocks_uncapable():
     """A block without array-content-lift is a no-op (opt-in, R-31-1)."""
     attrs, gaps = lift_array_content(_root(_TRUST_BAR), "sgs/container", media_map={})

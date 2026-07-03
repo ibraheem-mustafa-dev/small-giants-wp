@@ -85,6 +85,16 @@ a.sgs-trust-bar__badge:focus-visible {
 	display: block;
 }
 
+/* Filled-icon exemption (per-badge fillStyle="filled"). A solid glyph — e.g. a
+   filled star — must paint its area, so a filled badge overrides the outline
+   default above. Fill colour follows the icon colour by default; an operator can
+   override it per badge via --sgs-trust-badge-icon-fill (set inline in render.php
+   from item.fillColour). */
+.sgs-trust-bar__circle--filled svg {
+	fill: var(--sgs-trust-badge-icon-fill, currentColor);
+	stroke: none;
+}
+
 .sgs-trust-bar--icon-circle .sgs-trust-bar__label {
 	font-size: var(--sgs-trust-badge-label-font-size, clamp(0.75rem, 1.2vw, 0.875rem));
 	font-weight: 500;

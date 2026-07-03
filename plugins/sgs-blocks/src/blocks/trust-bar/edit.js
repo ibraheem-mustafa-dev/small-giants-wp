@@ -57,23 +57,30 @@ const AUTO_SCROLL_SPEED_OPTIONS = [
 // ─── Editor sub-components ────────────────────────────────────────────────────
 
 /** Circle wrapper with the actual selected icon for editor preview. */
-function EditorIconCircle( { size, circleBg, iconColour, iconSlug, borderRadius, boxShadow } ) {
+function EditorIconCircle( { size, circleBg, iconColour, iconSlug, borderRadius, boxShadow, filled, fillColour } ) {
+	// The filled class picks up the fill exemption from style.css (loaded in the
+	// editor iframe), so the preview matches the frontend. fillColour drives the
+	// same custom-fill var render.php sets.
+	const style = {
+		width: size,
+		height: size,
+		borderRadius: borderRadius || '50%',
+		backgroundColor: circleBg || '#ffffff',
+		display: 'inline-flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		flexShrink: 0,
+		boxShadow: boxShadow || '0 1px 2px rgba(0,0,0,0.06)',
+		color: iconColour || 'currentColor',
+	};
+	if ( filled && fillColour ) {
+		style[ '--sgs-trust-badge-icon-fill' ] = colourVar( fillColour );
+	}
 	return (
 		<span
-			className="sgs-trust-bar__circle"
+			className={ 'sgs-trust-bar__circle' + ( filled ? ' sgs-trust-bar__circle--filled' : '' ) }
 			aria-hidden="true"
-			style={ {
-				width: size,
-				height: size,
-				borderRadius: borderRadius || '50%',
-				backgroundColor: circleBg || '#ffffff',
-				display: 'inline-flex',
-				alignItems: 'center',
-				justifyContent: 'center',
-				flexShrink: 0,
-				boxShadow: boxShadow || '0 1px 2px rgba(0,0,0,0.06)',
-				color: iconColour || 'currentColor',
-			} }
+			style={ style }
 		>
 			<IconPreview
 				source="lucide"
@@ -116,6 +123,20 @@ function IconCircleItemEditor( { item, onChange, onRemove } ) {
 				placeholder={ __( 'Badge label…', 'sgs-blocks' ) }
 				__nextHasNoMarginBottom
 			/>
+			<ToggleControl
+				label={ __( 'Filled icon', 'sgs-blocks' ) }
+				help={ __( 'Render the icon as a solid filled shape (e.g. a filled star) instead of a line outline.', 'sgs-blocks' ) }
+				checked={ item.fillStyle === 'filled' }
+				onChange={ ( val ) => update( 'fillStyle', val ? 'filled' : 'outline' ) }
+				__nextHasNoMarginBottom
+			/>
+			{ item.fillStyle === 'filled' && (
+				<DesignTokenPicker
+					label={ __( 'Fill colour', 'sgs-blocks' ) }
+					value={ item.fillColour || '' }
+					onChange={ ( val ) => update( 'fillColour', val ) }
+				/>
+			) }
 			<ToggleControl
 				label={ __( 'Pending (hidden on frontend)', 'sgs-blocks' ) }
 				help={ __( 'Keep the slot in the editor but hide it from visitors until the credential is confirmed.', 'sgs-blocks' ) }
@@ -495,6 +516,8 @@ export default function Edit( { attributes, setAttributes } ) {
 											iconSlug={ item.icon || 'check' }
 											borderRadius={ iconCircleBorderRadius !== '50%' ? iconCircleBorderRadius : undefined }
 											boxShadow={ circleShadowValue }
+											filled={ item.fillStyle === 'filled' }
+											fillColour={ item.fillColour }
 										/>
 										<span className="sgs-trust-bar__label" style={ { color: textColorValue } }>
 											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }

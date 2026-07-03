@@ -197,9 +197,24 @@ foreach ( $items as $item ) {
 			$svg = sgs_get_lucide_icon( 'check' );
 		}
 
+		// Per-badge fill style: 'filled' paints a solid glyph (e.g. a filled star),
+		// exempting it from the uniform outline default in style.css. An operator
+		// can override the fill colour per badge via item.fillColour.
+		$is_filled     = isset( $item['fillStyle'] ) && 'filled' === $item['fillStyle'];
+		$circle_class  = 'sgs-trust-bar__circle' . ( $is_filled ? ' sgs-trust-bar__circle--filled' : '' );
+		$circle_style  = '';
+		if ( $is_filled && ! empty( $item['fillColour'] ) ) {
+			// sgs_colour_value() resolves a token slug → CSS var (or passes a raw
+			// colour) and already escapes the value.
+			$fill_colour  = sgs_colour_value( (string) $item['fillColour'] );
+			$circle_style = $fill_colour ? sprintf( ' style="--sgs-trust-badge-icon-fill:%s"', $fill_colour ) : '';
+		}
+
 		$items_html .= sprintf(
-			'<div class="sgs-trust-bar__badge"%s><span class="sgs-trust-bar__circle" aria-hidden="true">%s</span><span class="sgs-trust-bar__label">%s</span></div>',
+			'<div class="sgs-trust-bar__badge"%s><span class="%s" aria-hidden="true"%s>%s</span><span class="sgs-trust-bar__label">%s</span></div>',
 			$item_attrs,
+			esc_attr( $circle_class ),
+			$circle_style,
 			$svg,
 			esc_html( $item_label )
 		);

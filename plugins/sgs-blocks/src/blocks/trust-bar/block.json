@@ -82,6 +82,14 @@
 					"pending": {
 						"type": "boolean"
 					},
+					"fillStyle": {
+						"type": "string",
+						"enum": [ "outline", "filled" ],
+						"default": "outline"
+					},
+					"fillColour": {
+						"type": "string"
+					},
 					"media": {
 						"type": "object",
 						"properties": {
