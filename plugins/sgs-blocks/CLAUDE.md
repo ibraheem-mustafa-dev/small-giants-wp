@@ -114,7 +114,7 @@ rm sgs-deploy.tar
 | Trustpilot Reviews | Deployed (2026-05-11 — looping carousel, white pill header, theme-inherited typography, hover scale + theme-primary border, Schema.org JSON-LD). Sync infrastructure shipped 2026-05-11 commit `06df2807` — see Backend Integrations below. |
 | Pricing Table | Built (L14, needs build + deploy) |
 | Modal | Built (L14, needs build + deploy) |
-| Media | Deployed (video support added 2026-05-29 D97 — mediaType toggle, YouTube/Vimeo/MP4 external embeds, WP-library internal video, poster, playback controls) |
+| Media | Deployed (video support added 2026-05-29 D97 — mediaType toggle, YouTube/Vimeo/MP4 external embeds, WP-library internal video, poster, playback controls. **Audio mode added 2026-07-03 D266** — `mediaType=audio`: native `<audio>` player, audioUrl/audioSource[external\|internal]/audioId/audioMimeType/audioControls/audioLoop/audioAutoplay/audioPreload, MIME auto-detect; replaces core/image+core/video+core/audio. version 1.4.0. **NOTE: audio mode is scheduled to move to a dedicated `sgs/audio` block with 7 player-style variants — see `.claude/next-session-prompt-audio-video-blocks.md`; when that ships, remove audio from here + re-point core/audio.**) |
 | Decorative Image | Built (L14, needs build + deploy) |
 | Mega Menu | Built (L3, needs build + deploy) |
 | Content Collection | Deployed (NEW 2026-06-03 — own WP_Query, selection rules: newest/featured/most-expensive/cheapest/most-popular/handpicked/category; renders each result as a Bound sgs/product-card; designed empty state; Inspector controls only. Spec 24 FR-24-4/5/6. version 1.1.0. Deployed to sandybrown canary.) |
