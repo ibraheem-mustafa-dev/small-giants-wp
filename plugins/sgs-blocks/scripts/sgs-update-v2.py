@@ -714,6 +714,42 @@ def _run_canonical_assignment(conn: sqlite3.Connection) -> None:
         print(f"Stage 1 tail (canonical assignment): WARN {exc}")
 
 
+def _run_composition_role_seed(conn: sqlite3.Connection) -> None:
+    """Run seed-composition-roles.py as a Stage 1 tail step (2026-07-03).
+
+    ``composition_role`` has NO derive-from-code populator — it is seed data whose
+    canonical home is ``seed-composition-roles.py`` (CORRECTIONS/RENAMES/INSERTS).
+    Previously it was NOT wired into /sgs-update, so a full reseed that rebuilds
+    ``block_composition`` without a follow-up seeder run would silently revert the
+    corrections (e.g. the 5 typed-array blocks back to 'leaf', reintroducing the
+    convert.py is_leaf text-fallback bug fixed at 64b831c1). Wiring it here as an
+    explicit tail step makes the corrections durable across every reseed. Idempotent
+    (the seeder no-ops when the DB already matches). Failure prints a loud WARN — a
+    silent revert is the exact regression this exists to prevent.
+    """
+    try:
+        seed_script = REPO_ROOT / "plugins/sgs-blocks/scripts/seed-composition-roles.py"
+        if not seed_script.exists():
+            print("Stage 1 tail (composition-role seed): WARN script missing — corrections NOT applied")
+            return
+        conn.commit()  # release the write lock for the subprocess's own connection
+        result = subprocess.run(
+            ["python", str(seed_script)],
+            capture_output=True, text=True, timeout=60,
+            encoding="utf-8", errors="replace",
+        )
+        if result.returncode == 0:
+            tail = [ln for ln in (result.stdout or "").splitlines() if "done:" in ln.lower()]
+            print(f"Stage 1 tail (composition-role seed): {tail[-1] if tail else 'completed'}")
+        else:
+            print(
+                f"Stage 1 tail (composition-role seed): WARN exit={result.returncode}; "
+                f"stderr={result.stderr[:200]}"
+            )
+    except Exception as exc:  # noqa: BLE001
+        print(f"Stage 1 tail (composition-role seed): WARN {exc}")
+
+
 # ---------------------------------------------------------------------------
 # Stage 1 sub-step — scrape allowedBlocks from edit.js files
 # ---------------------------------------------------------------------------
@@ -1383,6 +1419,10 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
             f"Stage 1 (attr-overrides): applied={ov_counts['override_applied']}, "
             f"missing_row={ov_counts['override_missing_row']}."
         )
+
+        # --- Stage 1 tail: apply composition_role corrections (seed data, no
+        #     code populator) so a full reseed never silently reverts them. ---
+        _run_composition_role_seed(conn)
 
         # Update schema_metadata.indexed_blocks_count
         count_row = c.execute(
