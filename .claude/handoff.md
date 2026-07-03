@@ -1,9 +1,55 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-thread: cloning-pipeline / D259 min-width cascade (LANDED) + full clone-vs-draft parity audit + reliable-parity method
-session_date: 2026-07-03
+thread: cloning-pipeline / Tasks 0-3 — Gate A unblock + D259 landed + theme font + trust-bar star + fingerprint migration + universal icon-content lift
+session_date: 2026-07-03-LATER
 ---
+
+# Session Handoff — 2026-07-03 LATER (Tasks 0-3: Gate A unblock + D259 landed-commit + theme 16px + trust-bar star control + fingerprint migration + universal icon-content lift)
+
+## Completed This Session
+1. **Task 0 — D259 Gate A unblocked + committed.** Gate A was NOT blocked by D259 (its emit changed no golden); it was blocked by a long-standing `composition_role` misclassification — 5 typed-array blocks (pricing-table/icon-list/brand-strip/process-steps/timeline) tagged `leaf` not `content-block` (D150 fixed the analogous card-grid/gallery/post-grid, missed these). `leaf` triggers frozen convert.py's is_leaf text-fallback → dumped a pricing block's content into `popularBadgeText`. Fixed the classification in `seed-composition-roles.py` → Gate A 43/43 green, NO regen. D259 (min-width cascade) committed `b9f2ee55`. Both pushed (D260).
+2. **Durability wiring.** `seed-composition-roles.py` was never run by `/sgs-update`, so a reseed would silently revert composition_role. Wired it as a Stage-1 tail (`f5e52365`); PROVEN by planting a `leaf` revert → the tail restored `content-block`. Pushed (D260).
+3. **Task 1 — theme base font.** Clone rendered 18px body (live `wp_global_styles` set body to the `medium` preset, diverged from the snapshot); draft base = 16px. Pinned `theme-snapshot.json` fontSize 16px + line-height 1.6, deployed → body 18→16px LIVE. 18px font-size mismatches → 1 (computed-parity). `10b07b4a`, pushed.
+4. **Task 2 — trust-bar per-icon fill control.** The blanket `fill:none` forced the star badge to an outline. Added per-item `fillStyle`(outline/filled)+`fillColour` (block.json/edit.js/render.php/style.css) + converter auto-set via `is_filled_glyph`. Built + deployed to canary; `--filled` CSS rule + render exemption verified live. `017bf900`, pushed (D262). Star renders filled on the next re-clone.
+5. **qc-council (unanimous GO).** 3 cross-model raters validated the built Task-0/2 code pre-push: security clean (fillColour → `sgs_colour_value` → `esc_attr`), no regressions, convert.py byte-identical. Its one follow-up (composition_role reseed durability) → fixed by item 2.
+6. **Task 3a — fingerprint migration (P-FINGERPRINT-MIGRATION).** Migrated the fingerprints.json selector overrides → `ATTR_CLASSIFICATION_OVERRIDES` (current-DB values = behaviour-preserving) + dropped the load from `assign-canonical.py`. VERIFIED zero regression via a fresh-reseed diff on a DB copy (null the 50 sgs/* fingerprint rows → re-derive w/o fingerprints → apply overrides → all 50 reproduced exactly). `1df0a9b4`, pushed (D261).
+7. **Task 3b — universal icon-content lift (emoji/lucide/svg).** Premise verified EMPIRICALLY: the real ingredients info-box emitted an EMPTY `<!-- wp:sgs/icon /-->` — the draft emoji dropped (sgs/icon's `identity` role uncovered by `run_mechanism_leaf`; and it never reached the leaf arm → Case-4 gap). Universal fix (Spec 31 §3.B.0): shared `resolve_icon_kind` (slug/emoji/svg — emoji detection ONCE) + a leaf icon arm + route icon-bearing leaves through it on a DB `identity` signal. Real info-box now emits `sgs/icon {emojiChar,iconSource:emoji}`; a lucide leaf still emits `{iconName,iconSource:lucide}`. Spec 31 §3.B.0 updated (Rule 7). `31358f84`, committed LOCAL (LANDED-pending). (D263)
+
+## Current State
+- **Branch:** `main` at `31358f84`. D-ceiling **D263** (D260-D263 added this handoff).
+- **Tests:** 367 converter+conformance pass (+3 icon regression), 1 skip, 2 xfail; cheat-gate 0 NEW (73 baselined); F6 0 violations; convert.py byte-identical (D-MODULAR).
+- **Push status:** all pushed EXCEPT `31358f84` (info-box icon lift) — held for LANDED at the Task-4 re-clone. 1 commit ahead of origin.
+- **Uncommitted (NOT mine):** co-active session's staged spec-20/21 deletions; lucide-icons.php (npm drift); current-clone-*.html snapshots (Bean's).
+
+## Known Issues / Blockers
+- **Task 3b (emoji) + Task 2 (star) NOT LANDED** — both unit-verified; the LANDED gate (rendered on page 8) is the Task-4 re-clone. `31358f84` held from push until then.
+- Bigger Task-4 converter fixes (L2 content-width universal, feature-grid variant, product-card structure) NOT started — root-caused only.
+
+## Next Priorities (in order)
+1. **Task 4 re-clone** — `/sgs-clone SGS_NEW_ENGINE=1` → overwrite page 8 (the real homepage) → LANDED-verify info-box emoji + trust-bar star + 16px theme + min-width grids together; run `parity/computed-parity.js` for reliable scores. Then push `31358f84` after a qc-council pass.
+2. **L2 content-width UNIVERSAL** — the `__inner` max-width drops; apply the container-mirror sync (Spec 29 `sync-container-wrapping-blocks.py --apply`) so all container-equivalents get `contentWidth` — ONE mirror-sync gap on a DB signal, NOT per-block (STOP-38).
+3. **feature-grid variant** (`layoutMode=auto-flex` ignores transferred columns) + **product-card structure** (Layer-B).
+
+## Files Modified
+| File path | What changed |
+|-----------|--------------|
+| `plugins/sgs-blocks/scripts/seed-composition-roles.py` | +5 typed-array blocks leaf→content-block (completes D150) |
+| `plugins/sgs-blocks/scripts/sgs-update-v2.py` | +58 fingerprint overrides + 2 team-member merges; +`_run_composition_role_seed` Stage-1 tail |
+| `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py` | dropped fingerprints.json load + dead FINGERPRINTS_PATH/load_fingerprint_overrides |
+| `plugins/sgs-blocks/scripts/converter/services/field_extractors.py` | +`resolve_icon_kind` + emoji detection (shared §3.B.0) |
+| `plugins/sgs-blocks/scripts/converter/services/extraction.py` | `run_mechanism_leaf` icon arm + icon-bearing-leaf dispatch |
+| `plugins/sgs-blocks/src/blocks/trust-bar/{block.json,edit.js,render.php,style.css}` | per-icon fillStyle/fillColour control |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/icon_resolver.py` | +`is_filled_glyph` |
+| `sites/mamas-munches/theme-snapshot.json` | base fontSize 16px + line-height 1.6 |
+| `.claude/specs/31-...md` | §3.B.0 icon 3-kinds + leaf identity arm (Rule 7) |
+| `converter/tests/{test_array_content,test_extraction}.py` | +regression tests (filled-star, icon-leaf) |
+
+## Notes for Next Session
+- **Prove the premise on the real node (STOP-42 extension):** running the real info-box (not inferring from code) caught TWO wrong assumptions on the icon fix (identity role uncovered; Case-4 gap not the leaf arm). Always reproduce a converter fix on the real draft node BEFORE + AFTER.
+- **Fingerprint migration is behaviour-preserving BY CONSTRUCTION** (override = current DB value, final Stage-1 writer, all pairs covered) — proven by the copy-DB fresh-reseed diff. The stale staged file had 5 mismatches; do NOT use it — use current DB values.
+- **composition_role has NO code populator** — home is `seed-composition-roles.py`, now wired into `/sgs-update` (the tail). Add corrections THERE.
+- **Star + emoji LAND at the re-clone** — do that FIRST next session, then push `31358f84`.
 
 # Session Handoff — 2026-07-03 (D259 min-width cross-device tier CASCADE built + LANDED; full clone-vs-draft audit → root-cause themes; reliable computed-parity method established)
 
