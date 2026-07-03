@@ -9,7 +9,16 @@ primary_goal: "Build a dedicated sgs/audio block with 7 player variants + a Web 
 
 # ONE-TIME session — sgs/audio block + video re-skin + core→sgs table completion
 
-**This is a standalone one-time job — DELETE this file when done.** It is a SEPARATE workstream from the main cloning pipeline (`next-session-prompt.md` = L2 content-width / feature-grid / product-card). Do not conflate the two.
+**This is a standalone one-time job — DELETE this file when done.** It is a SEPARATE workstream from the main cloning pipeline (`next-session-prompt.md` = feature-grid / product-card). Do not conflate the two.
+
+## ⛅ STATUS (2026-07-04) — Tasks 1-3 DONE + pushed; only Task 4 remains
+- **Task 1 — sgs/audio block: DONE (D268, `596b9943`, pushed).** 7 player styles (minimal/waveform/spectrum/radial/oscilloscope/gradient-pulse/hidden) + Web Audio view.js visualiser + AudioObject schema + perf. /qc PASS on sandybrown (all 7 LANDED; found+fixed a `crossorigin` playback bug).
+- **Task 2 — re-point core/audio → sgs/audio + remove audio from sgs/media: DONE (D269, `e8bebd39`, pushed).** Audio mode fully removed from media; `sgs/audio.replaces=[core/audio]`, media `replaces=[core/image,core/video]`; DB registered (blocks + block_composition via seed-composition-roles.py).
+- **Task 3 — sgs/media branded video player: DONE (D269, `e8bebd39`, pushed).** Centre-play + hover control bar (scrub/time/mute/volume/fullscreen), keyboard, theme-tokened; iframes untouched; progressive enhancement. /qc-council GO (2 raters); LANDED on sandybrown.
+- **Task 4 — finish the core→sgs replacement table: STILL TODO** (the only remaining work — see below).
+- **Routine follow-up:** run `/sgs-update` to regenerate `specs/02-SGS-BLOCKS-REFERENCE.md` (reflect the new sgs/audio block + media v1.5.0 + divider gap). Durable channels (block.json / seed-composition-roles.py) already verified.
+
+**When Task 4 is done + the reseed run, DELETE this file.**
 
 Invoke `/autopilot` before anything else. This is a `/sgs-wp-engine` (SGS block development) + `/frontend-design` + `/innovative-design` + `/interactive-design` (Web Audio motion) session, closed with `/design-review` + `/visual-qa` + LANDED verification.
 
