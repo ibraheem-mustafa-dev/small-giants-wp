@@ -3,7 +3,7 @@ doc_type: next-session-prompt
 project: small-giants-wp
 thread: cloning-pipeline / feature-grid 4-column → product-card structure
 generated: 2026-07-03-EVEN-EVEN-LATER
-primary_goal: "L2 content-width UNIVERSAL is DONE + LANDED + PUSHED (D267, this session — the RIGHT way; its old 'run the mirror sync' premise was DISPROVED, STOP-43). Also done + pushed earlier: Task-4 re-clone (D264-266), icon-source correction, core→sgs mapping, block features. NEXT (remaining cloning fidelity, Bean-set order): (1) feature-grid renders 3-across but the draft wants 4 — the prompt's 'layoutMode=auto-flex ignores columns' premise is PROBABLY WRONG (Bean): INVESTIGATE the real root cause on the live page + the draft FIRST, then DISCUSS the most sensible/user-friendly fix with Bean before building. (2) product-card typed-mode Layer-B structure (price 28px Fraunces bold → renders 18px Inter). Follow Spec 31 in every detail; parity = computed values matched by content (CLAUDE.md rule 4a). NOTE: the AUDIO/VIDEO block build + core→sgs table completion is a SEPARATE one-time prompt `next-session-prompt-audio-video-blocks.md`."
+primary_goal: "feature-grid 4-col is DONE + LANDED + PUSHED (D270, this session). Bean's flag was right (STOP-43): the shared wrapper ALREADY emitted repeat(4,1fr); feature-grid's own render.php auto-flex <style> overrode it by CSS specificity. Fix = block delegates to the shared grid engine when an explicit gridTemplateColumns is present (grid=default, auto-flex opt-in) + wrapper suppresses the tablet/mobile count shorthand when a base template governs; NO converter change. LANDED 4/4/2 on page 8, all 6 grids regression-clean, review clean, 374 tests green. Also done earlier this thread: L2 content-width (D267), Task-4 re-clone (D264-266), icon-source, core→sgs mapping. NEXT (the LAST cloning-fidelity task in this prompt): product-card typed-mode Layer-B structure (price 28px Fraunces bold → renders 18px Inter) — its own design-gate. Follow Spec 31 in every detail; parity = computed values matched by content (CLAUDE.md rule 4a). NOTE: the AUDIO/VIDEO block build + core→sgs table completion is a SEPARATE one-time prompt `next-session-prompt-audio-video-blocks.md`."
 ---
 
 # Next session — cloning fidelity: feature-grid 4-column → product-card structure
@@ -75,14 +75,20 @@ Invoke `/autopilot` before anything else. This is a `/sgs-clone` (LANDED) + `/sy
 
 > **Context:** page 8 reflects the current converter (L2 content-width + text-centring LANDED this session). Re-clone after each fix to LANDED-verify.
 
-### Task 1 — feature-grid renders 4 columns (the ingredient grid) — FIRST, but PREMISE FIRST
+### Task 1 — feature-grid renders 4 columns (the ingredient grid) — ✅ DONE (D270, 2026-07-04)
+**RESOLVED.** Bean's flag was correct (STOP-43): the shared `SGS_Container_Wrapper` ALREADY emitted `.sgs-container-<uid>{grid-template-columns:repeat(4,1fr)}` + mobile `1fr 1fr` — the grid was transferred fine; feature-grid's OWN render.php printed a higher-specificity `#uid.sgs-feature-grid{repeat(auto-fill,minmax(240px,1fr))}` auto-flex override that beat it. Fix (NO converter change): render.php delegates to the shared engine when an explicit `gridTemplateColumns` is present (force `layout=grid`, no competing `<style>`, `--grid` class; grid=default, auto-flex kept opt-in) + `class-sgs-container-wrapper.php` suppresses the tablet/mobile `sgs-cols-{tier}-N !important` shorthand when a base template governs (D228 family). LANDED page 8: **4/4/2** desktop/tablet/mobile (computed + Bean-eye screenshot); all 6 page grids regression-scanned clean; independent diff review clean; 374 tests + cheat-gate green; convert.py byte-identical. Commits `9a437113`+`be8e721e`+`409a47fc`, pushed. Memory: `block-own-render-can-override-shared-wrapper`. **Historical note (do not act on):** the earlier premise below (`layoutMode=auto-flex ignoring the transferred columns`) was PARTLY right (auto-flex did override) but misframed the fix — the wrapper already had the answer.
+
+<details><summary>Original Task-1 brief (superseded — kept for context)</summary>
+
 **What:** The ingredient grid renders **3 columns across** on desktop; the draft wants **4** (`.sgs-feature-grid { grid-template-columns:1fr 1fr }` → `@media (min-width:600px){ repeat(4,1fr) }`).
 **Why:** Visible fidelity gap on the homepage.
 **⚠ Premise is probably WRONG (Bean).** The stale prompt blamed `layoutMode=auto-flex ignoring the transferred columns`. **Do NOT build to that premise.** ROOT-CAUSE it on the LIVE page + the draft first (STOP-43/40): what column count does feature-grid actually render at 375/768/1440, what attrs did the clone emit (gridTemplateColumns/columns/layoutMode + tiers), and what does the draft's per-breakpoint grid actually specify? feature-grid is `container_kind='layout'`; check `blocks.variant_attr` + `variant_slots` for feature-grid (query, don't guess — FR-31-20). NOTE: the draft's 4-col is behind `@media (min-width:600px)` — a NON-device breakpoint (600), so the D259 device-tier cascade routes it via the F-ii passthrough, not a device tier (STOP-8). **Then DISCUSS the most sensible, user-friendly fix with Bean before building** (Bean: it's a quick job once the real cause is clear).
 **Orchestration:** INLINE. `/systematic-debugging` on the live page + draft → present the root cause + a fix menu to Bean → build → `/qc-council` → re-clone `SGS_NEW_ENGINE=1` → page 8 → verify 4-col at 1440 (+ correct stacking at 375/768).
 **Acceptance:** feature-grid renders 4-across at ≥600px on page 8 (computed, matched by content vs the draft) — NOT from a "grid + N items" impression (STOP-40).
 
-### Task 2 — product-card typed-mode structure (Layer-B)
+</details>
+
+### Task 2 — product-card typed-mode structure (Layer-B) — NOW THE LEAD TASK
 **What:** product-card typed-mode price renders 18px Inter regular; the draft is 28px Fraunces bold. Broader typed-mode Layer-B structure gap (Spec 27 FP-H).
 **Orchestration:** INLINE (or `wp-sgs-developer` agent for the heavy block-dev, NOT a general-purpose coding subagent — STOP-39). Its own design-gate (big). `/qc-council` before commit; re-clone LANDED-verify.
 **Acceptance:** product-card price + structure match the draft on page 8 (computed, matched by content).

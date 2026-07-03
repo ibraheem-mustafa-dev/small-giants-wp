@@ -1,8 +1,19 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-thread: blocks / D268-D269 — dedicated sgs/audio block + sgs/media audio-removal + branded video player
+thread: cloning pipeline / D270 — feature-grid 4-col (delegate to shared grid engine); + parallel blocks thread D268-D269 (sgs/audio + sgs/media)
 session_date: 2026-07-04
+---
+
+# Session Handoff — 2026-07-04 (D270 — feature-grid renders through the shared container grid engine)
+
+## Completed This Session (CLONING PIPELINE thread — separate from the D268-D269 blocks thread below)
+1. **D270 — feature-grid 4-col FIXED + LANDED (`9a437113`/`be8e721e`/`409a47fc`, pushed).** The ingredient grid rendered 3-across; the draft wants 4. **Bean corrected my first (code-inferred) premise and was right (STOP-43):** dumping the LIVE CSS proved the shared `SGS_Container_Wrapper` ALREADY emitted `.sgs-container-<uid>{grid-template-columns:repeat(4,1fr)}` + mobile `1fr 1fr` — the grid was transferred fine — but feature-grid's OWN render.php auto-flex `<style>` (`#uid.sgs-feature-grid`, specificity 1,1,0) overrode it (`.uid` = 0,1,0). A sibling `sgs/container` on the same page already rendered 4-col via the wrapper (proof the engine works; feature-grid was the sole composite-mirror divergence).
+2. **Fix (NO converter change):** (a) `feature-grid/render.php` — when an explicit `gridTemplateColumns` is present, delegate to the wrapper (force `layout=grid`, no competing `<style>`, `--grid` class); auto-flex kept opt-in; default flipped auto-flex→fixed-columns. (b) `class-sgs-container-wrapper.php` — suppress the tablet/mobile `sgs-cols-{tier}-N !important` shorthand when a base `gridTemplateColumns` governs (a default `columnsTablet=2` was crushing the base template at tablet; D228 family). (c) editor follow-ups (review findings d/b): edit.js preview reads the explicit template; container inspector help text per-breakpoint accurate.
+3. **LANDED sandybrown page 8:** 4/4/2 desktop(222×4)/tablet(160×4)/mobile(2×2), computed + Bean-eye screenshot; auto-flex override + `sgs-cols-tablet-2` both GONE. **All 6 page grids regression-scanned at desktop+tablet — zero regression.** Independent adversarial diff review: no blocking bug (one authored edge case unreachable by both converter engines + every pattern → parked). 374 tests + cheat-gate green; convert.py byte-identical; feature-grid v0.3.0. `reports/visual-diff/feature-grid-2026-07-04.md`.
+4. **NEXT (last cloning-fidelity task in the main prompt):** product-card typed-mode Layer-B structure (price renders 18px Inter, draft is 28px Fraunces bold) — its own design-gate.
+5. **Docs:** decisions.md D270; parking.md (P-FEATURE-GRID-AUTOFLEX-COLUMNS archived as resolved; 2 review edge-cases parked); state.md + next-session-prompt.md updated (Task 1 DONE, product-card is the lead); memory `block-own-render-can-override-shared-wrapper`.
+
 ---
 
 # Session Handoff — 2026-07-04 (D268-D269 — dedicated sgs/audio block [7 player styles + Web Audio visualiser] + sgs/media audio-removal + branded video player)
