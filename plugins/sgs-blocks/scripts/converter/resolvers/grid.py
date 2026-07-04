@@ -64,9 +64,15 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     prop = decl.property
 
     if not decl.is_device_tier:
+        # F-ii (Spec 31 FR-31-5.2.3 / EXECUTION Step 13): the sub-tier band a
+        # non-device threshold creates has no 3-tier attr representation — it
+        # PAINTS via css_router's D2 passthrough (Stage 0.7 routes the whole
+        # non-device @media rule to the scoped channel). Recorded EXCLUDED,
+        # never a suspected-drop.
         return gap_writer(
-            ctx, decl, GapOrigin.NO_DESTINATION,
-            f"non-device-tier breakpoint {decl.tier!r} for {prop} (§3.A A4)",
+            ctx, decl, GapOrigin.EXCLUDED,
+            f"non-device-tier breakpoint {decl.tier!r} for {prop} — painted "
+            f"via the D2 F-ii passthrough channel (§3.A A4 / FR-31-5.2.3)",
         )
 
     # --- grid-template-columns → gridTemplateColumns* (+ columns* count) ---------

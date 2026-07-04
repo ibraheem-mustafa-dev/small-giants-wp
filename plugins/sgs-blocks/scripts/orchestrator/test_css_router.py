@@ -797,6 +797,43 @@ class TestMediaInnerBareTagNotD0:
         assert result["stats"]["d0_count"] == 1, "Top-level h1 must still go to D0"
 
 
+class TestStep13Passthrough:
+    """EXECUTION Step 13 (Spec 31 F-ii + pseudo-element passthrough, 2026-07-04)."""
+
+    def test_pseudo_element_rule_routes_whole_to_d2(self):
+        css = ".sgs-hero::before { content: ''; background: rgba(0,0,0,0.4); }"
+        r = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "t")
+        assert any("::before" in x for x in r["d2"]), r["d2"]
+        assert not r["d1"], "pseudo-element props must never D1-lift onto the block root"
+
+    def test_legacy_single_colon_pseudo_element_routes_d2(self):
+        css = ".sgs-hero:after { content: ''; }"
+        r = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "t")
+        assert any(":after" in x for x in r["d2"]) and not r["d1"]
+
+    def test_pseudo_class_hover_keeps_existing_routing(self):
+        css = ".sgs-button:hover { background-color: #123456; }"
+        r = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "t")
+        assert not any(":hover" in x for x in r["d2"]) or r["d1"] or r["d3"]  # not force-D2'd by the pseudo branch
+
+    def test_non_device_media_rule_fii_passthrough_to_d2(self):
+        css = "@media (min-width: 600px) { .sgs-feature-grid { grid-template-columns: repeat(4, 1fr); } }"
+        r = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "t")
+        assert any("600px" in x and "repeat(4, 1fr)" in x for x in r["d2"]), r["d2"]
+        assert not r["d1"], "a non-device media rule must not D1-classify (F-ii lock)"
+
+    def test_device_tier_media_rule_still_d1_classifies(self):
+        css = "@media (max-width: 767px) { .sgs-hero { padding-top: 10px; } }"
+        r = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "t")
+        assert r["d1"], "canonical device-tier media must keep its normal routing"
+        assert not any("767px" in x for x in r["d2"])
+
+    def test_no_px_media_treated_as_passthrough(self):
+        css = "@media print { .sgs-hero { display: none; } }"
+        r = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "t")
+        assert any("print" in x for x in r["d2"]) and not r["d1"]
+
+
 if __name__ == "__main__":
     import pytest as _pytest
     _pytest.main([__file__, "-v"])

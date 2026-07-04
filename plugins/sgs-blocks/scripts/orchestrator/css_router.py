@@ -76,6 +76,45 @@ _NON_TOKENISABLE_VALUES: frozenset[str] = frozenset({
     "0", "auto", "none", "inherit", "initial", "unset", "revert",
 })
 
+# ---------------------------------------------------------------------------
+# F-ii / pseudo-element passthrough helpers (EXECUTION Step 13, 2026-07-04 —
+# Spec 31 §3 F-fork + FR-31-5.2.3 + D228 device-tier-vs-visual lock).
+# ---------------------------------------------------------------------------
+
+# A PSEUDO-ELEMENT in the selector (::before/::after/... or legacy one-colon
+# :before/:after). Pseudo-CLASSES (:hover/:focus) are NOT pseudo-elements and
+# keep their existing routing.
+_PSEUDO_ELEMENT_RE = re.compile(
+    r"(::[a-z-]+|:(?:before|after|first-line|first-letter|placeholder|selection|marker)\b)",
+    re.IGNORECASE,
+)
+
+# The canonical SGS device-tier thresholds (Spec 31 FR-31-5.2 / ledger
+# declare_input._*_CANONICAL — the R-31-1 permitted-constant boundary set).
+_DEVICE_TIER_THRESHOLDS: frozenset[float] = frozenset({767.0, 767.98, 768.0, 1023.0, 1024.0})
+
+_MEDIA_PX_RE = re.compile(r"([0-9]+(?:\.[0-9]+)?)\s*px")
+
+
+def _selector_has_pseudo_element(selector: str) -> bool:
+    """True when the selector targets a pseudo-ELEMENT (paint-only surface —
+    no block-attr destination exists; the whole rule must D2-passthrough)."""
+    return bool(_PSEUDO_ELEMENT_RE.search(selector or ""))
+
+
+def _is_device_tier_media(media: str) -> bool:
+    """True when EVERY px threshold in the @media condition is a canonical SGS
+    device-tier boundary. A rule at 600/640/781 etc. is an arbitrary VISUAL
+    breakpoint (D228) whose sub-tier band the 3-tier attr model cannot express
+    — the caller F-ii-passthroughs it to D2. A media with NO px thresholds
+    (print, prefers-reduced-motion) is treated as non-device → D2 (faithful
+    preservation)."""
+    nums = [float(m) for m in _MEDIA_PX_RE.findall(media or "")]
+    if not nums:
+        return False
+    return all(n in _DEVICE_TIER_THRESHOLDS for n in nums)
+
+
 # Pseudo-selectors to strip before analysis (don't affect block routing).
 _PSEUDO_STRIP_RE = re.compile(
     r"::(before|after|placeholder|selection|marker|first-line|first-letter)"
@@ -430,6 +469,38 @@ def route_css(
         if _is_d0_global(selector) and media is None:
             result["d0"].append(_rule_text())
             result["stats"]["d0_count"] += 1
+            continue
+
+        # ----------------------------------------------------------------
+        # F-ii / pseudo-element PASSTHROUGH -> D2 (EXECUTION Step 13, Spec 31
+        # §3 F-fork + FR-31-5.2.3, 2026-07-04). Two rule classes the typed-attr
+        # model structurally CANNOT represent route to the scoped D2 channel
+        # BEFORE class-based D1 routing:
+        # (a) a PSEUDO-ELEMENT selector — previously _selector_classes stripped
+        #     the pseudo residue, so the props D1-lifted onto the block ROOT (a
+        #     mis-lift) AND the F2 exclusion kept the rule OUT of D2 — silently
+        #     unpainted. A pseudo element has no attr destination; the whole
+        #     rule paints via D2.
+        # (b) a NON-DEVICE @media rule (thresholds outside the canonical
+        #     device set — D228 arbitrary VISUAL breakpoint, e.g. min-width:600).
+        #     The D259 cascade already captures its tier-aligned effects in the
+        #     tier attrs; the SUB-TIER residual band (600-767) has NO 3-tier
+        #     representation, so the raw rule paints via D2. Inside a device
+        #     tier both sources carry the SAME faithful draft value — no
+        #     specificity fight. This is the spec's F-ii lock ("preserve, never
+        #     snap, never drop"), NOT an R-31-15c breach: no D1 destination
+        #     exists for the residual band.
+        # ----------------------------------------------------------------
+        if _selector_has_pseudo_element(selector):
+            result["d2"].append(_rule_text())
+            result["stats"]["d2_count"] += 1
+            log.info("css-router: pseudo-element passthrough -> D2: %s", selector)
+            continue
+        if media is not None and not _is_device_tier_media(media):
+            result["d2"].append(_rule_text())
+            result["stats"]["d2_count"] += 1
+            log.info("css-router: F-ii non-device-media passthrough -> D2: %s | %s",
+                        media, selector)
             continue
 
         # ----------------------------------------------------------------
