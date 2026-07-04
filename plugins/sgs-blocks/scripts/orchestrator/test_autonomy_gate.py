@@ -203,8 +203,8 @@ def test_stub_capture_returns_sentinel() -> None:
     assert result.get("diff_ratio") is None, \
         f"stub_capture must NOT return diff_ratio=0.0 (silent pass), got: {result.get('diff_ratio')}"
     assert "skip_reason" in result, "stub_capture must include a skip_reason"
-    assert "--clone-url" in result["skip_reason"], \
-        "skip_reason must mention --clone-url so operator knows how to fix it"
+    assert "/visual-qa" in result["skip_reason"], \
+        "skip_reason must point the operator at /visual-qa (no automated pixel-diff path exists)"
     print("  PASS  stub-capture-returns-sentinel: stage_8_skipped=True, diff_ratio=None")
 
 

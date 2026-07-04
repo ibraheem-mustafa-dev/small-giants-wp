@@ -2157,11 +2157,6 @@ def main():
         help="Stage 9b scaffolds but does not promote into src/blocks/ (default is promote)",
     )
     parser.add_argument(
-        "--clone-url", type=str, default=None,
-        help="URL of deployed clone for visual-qa capture. When omitted, visual-qa "
-             "uses the stub (0.0 diff). Required for the autonomy-gate pixel-parity check.",
-    )
-    parser.add_argument(
         "--skip-register", action="store_true",
         help="Skip the +REGISTER tail (do not write pattern PHP files or DB rows).",
     )
@@ -2220,28 +2215,6 @@ def main():
              "--converter-v2 explicitly is a no-op (idempotent). Non-SGS-BEM "
              "boundaries halt with a clear remediation message rather than "
              "falling through to the retired legacy extractor.",
-    )
-    parser.add_argument(
-        "--spec-22-acceptance", action="store_true", default=False,
-        help="Spec 22 Phase 1 acceptance-gate mode. Propagates --wait-fonts to "
-             "Stage 11 pixel-diff invocations so the ≤5%% per-section gate "
-             "(FR-31-7) is measured against `document.fonts.ready`-stable "
-             "screenshots, not flash-of-unstyled-text noise. OFF by default "
-             "for backward-compat with pre-Spec-22 runs.",
-    )
-    parser.add_argument(
-        "--strict-spec-22-gate", action="store_true", default=False,
-        help="When set, Stage 11 exits non-zero if ANY pixel-diff cell reports "
-             "diff.json.wait_fonts=false. Use during Phase 1 acceptance runs to "
-             "fail hard rather than soft-warn. Implied by --spec-22-acceptance "
-             "only at the warning level; this flag elevates the gate to a "
-             "hard halt. (default: False — soft warning only)",
-    )
-    parser.add_argument(
-        "--no-parity2", action="store_true", default=False,
-        help="Skip Stage 11.5 (parity2 draft-centric fidelity: content/layout/css "
-             "transfer per section). On by default after a successful deploy; this "
-             "opts out (e.g. when 'node' is unavailable). (default: False — parity2 runs)",
     )
     parser.add_argument(
         "--no-computed-parity", action="store_true", default=False,
@@ -2699,254 +2672,15 @@ def main():
             print(f"[stage-10] deploy soft-failed: {exc}", file=sys.stderr)
 
     # ------------------------------------------------------------------
-    # Stage 11 — Pixel-diff against the page Stage 10 actually patched
-    # (added 2026-05-23 per P-PIXEL-DIFF-NOT-IN-ORCHESTRATOR).
-    #
-    # Naturally skips when Stage 10 halted (no link= in stdout → no URL →
-    # warning + skip). The new exit codes 4/5/6 from Stage 10 mean any
-    # phantom-page deploy gets caught here without producing misleading
-    # pixel-diff numbers against a 404 / wrong-id page.
-    #
-    # Per-section pixel-diff across 375 / 768 / 1440 viewports.
-    # blub.db row 256: NEVER full-page; always --selector .sgs-{section}.
-    # Soft-fail design — never blocks the autonomy chain that follows.
+    # Stage 11 (pixel-diff) and Stage 11.5 (parity2) REMOVED 2026-07-04.
+    # Both had the same structural blind spot (Spec 20 problem statement):
+    # pixel-diff scored an EMPTY section as a false WIN (matches background)
+    # and a REFLOWED-to-correct section as a false LOSS; parity2 keyed
+    # elements by BEM class, comparing the draft's raw section against the
+    # clone's block WRAPPER and drowning real diffs in false positives.
+    # Stage 11.6 (computed-parity, below) is now the sole fidelity signal —
+    # effective/computed values matched by CONTENT, per CLAUDE.md rule 4a.
     # ------------------------------------------------------------------
-    if args.deploy_target and 'result' in locals() and result.returncode == 0:
-        try:
-            import re as _re
-            tail_lines_s11 = [
-                ln for ln in result.stdout.splitlines()
-                if "link=" in ln
-            ]
-            link_match = None
-            if tail_lines_s11:
-                link_match = _re.search(r"link=(https?://\S+)", tail_lines_s11[-1])
-            if not link_match:
-                print(
-                    "[stage-11] pixel-diff SKIPPED — no link= URL found in Stage 10 stdout. "
-                    "Stage 10 may have soft-failed without surfacing.",
-                    file=sys.stderr,
-                )
-            else:
-                sgs_url = link_match.group(1).rstrip(".,;")
-                pixel_diff_script = REPO / "scripts" / "pixel-diff.py"
-                if not pixel_diff_script.exists():
-                    print(
-                        f"[stage-11] pixel-diff SKIPPED — script not found at {pixel_diff_script}",
-                        file=sys.stderr,
-                    )
-                else:
-                    pd_out_root = run_dir / "pixel-diff"
-                    pd_out_root.mkdir(parents=True, exist_ok=True)
-                    mockup_uri = args.mockup.resolve().as_uri()
-                    selectors = [
-                        b.get("selector", "") for b in boundary.get("boundaries", [])
-                        if b.get("selector")
-                    ]
-                    viewports = ("375x812", "768x1024", "1440x900")
-                    # Spec 22 Phase 0.3.b — propagate --wait-fonts to pixel-diff
-                    # when the run is a Spec 22-gated acceptance run or a
-                    # debug-trace walkdown. Without this the ≤5% gate (FR-31-7)
-                    # measures against FOUT-noisy screenshots. Backward-compat:
-                    # pre-Spec-22 runs (no --spec-22-acceptance, no --debug-trace)
-                    # behave exactly as before. See P-SGS-CLONE-WAIT-FONTS-ORCHESTRATION.
-                    _wait_fonts_on = bool(
-                        getattr(args, "spec_22_acceptance", False)
-                        or getattr(args, "debug_trace", False)
-                    )
-                    results_s11: list[dict] = []
-                    for selector in selectors:
-                        # Drop any non-class component for the directory name
-                        safe_sel = _re.sub(r"[^a-zA-Z0-9_-]", "_", selector).strip("_")
-                        for vp in viewports:
-                            pd_out = pd_out_root / f"{safe_sel}-{vp.split('x')[0]}"
-                            try:
-                                _pd_cmd = [
-                                    sys.executable, str(pixel_diff_script),
-                                    "--mockup", mockup_uri,
-                                    "--sgs", sgs_url,
-                                    "--viewport", vp,
-                                    "--selector", selector,
-                                    "--out", str(pd_out),
-                                ]
-                                if _wait_fonts_on:
-                                    _pd_cmd.append("--wait-fonts")
-                                pd_proc = subprocess.run(
-                                    _pd_cmd,
-                                    capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120,
-                                )
-                                diff_json_path = pd_out / "diff.json"
-                                if diff_json_path.exists():
-                                    diff_data = json.loads(diff_json_path.read_text(encoding="utf-8"))
-                                    results_s11.append({
-                                        "selector": selector,
-                                        "viewport": vp,
-                                        "mismatch_percent": diff_data.get("mismatch_percent"),
-                                        "verdict": diff_data.get("verdict"),
-                                        "wait_fonts": diff_data.get("wait_fonts"),
-                                        "diff_json": str(diff_json_path.relative_to(REPO)),
-                                    })
-                                else:
-                                    results_s11.append({
-                                        "selector": selector,
-                                        "viewport": vp,
-                                        "error": pd_proc.stderr.strip()[:200] or "no diff.json produced",
-                                    })
-                            except subprocess.TimeoutExpired:
-                                results_s11.append({
-                                    "selector": selector, "viewport": vp,
-                                    "error": "timeout (120s) — Playwright capture stalled",
-                                })
-                            except Exception as inner_exc:  # noqa: BLE001
-                                results_s11.append({
-                                    "selector": selector, "viewport": vp,
-                                    "error": f"{type(inner_exc).__name__}: {inner_exc}"[:200],
-                                })
-                    # Spec 22 FR-31-7 wait_fonts assertion — count cells whose
-                    # diff.json reports wait_fonts=false. Soft-warn by default;
-                    # --strict-spec-22-gate elevates to hard exit.
-                    _wait_fonts_false_cells = [
-                        r for r in results_s11
-                        if "mismatch_percent" in r and r.get("wait_fonts") is False
-                    ]
-                    s11_artefact = {
-                        "stage": 11,
-                        "name": "pixel-diff",
-                        "sgs_url": sgs_url,
-                        "mockup_uri": mockup_uri,
-                        "wait_fonts_requested": _wait_fonts_on,
-                        "results": results_s11,
-                        "summary": {
-                            "captures_attempted": len(results_s11),
-                            "captures_ok": sum(1 for r in results_s11 if "mismatch_percent" in r),
-                            "captures_error": sum(1 for r in results_s11 if "error" in r),
-                            "wait_fonts_false_count": len(_wait_fonts_false_cells),
-                            "mean_mismatch_percent": (
-                                sum(r["mismatch_percent"] for r in results_s11 if "mismatch_percent" in r)
-                                / max(1, sum(1 for r in results_s11 if "mismatch_percent" in r))
-                            ) if any("mismatch_percent" in r for r in results_s11) else None,
-                        },
-                    }
-                    (run_dir / "stage-11-pixel-diff.json").write_text(
-                        json.dumps(s11_artefact, indent=2), encoding="utf-8",
-                    )
-                    s11_summary = s11_artefact["summary"]
-                    print(
-                        f"[stage-11] pixel-diff: {s11_summary['captures_ok']}/{s11_summary['captures_attempted']} "
-                        f"captures, mean_mismatch={s11_summary['mean_mismatch_percent']:.1f}%"
-                        if s11_summary['mean_mismatch_percent'] is not None
-                        else f"[stage-11] pixel-diff: {s11_summary['captures_ok']}/{s11_summary['captures_attempted']} captures, no valid measurements"
-                    )
-                    # Spec 22 FR-31-7 wait_fonts gate.
-                    if _wait_fonts_false_cells:
-                        for _cell in _wait_fonts_false_cells:
-                            print(
-                                f"[stage-11] WARNING: diff.json.wait_fonts=false on "
-                                f"section.{_cell['selector']}.{_cell['viewport']} — "
-                                f"Spec 22 acceptance gate (FR-31-7) requires "
-                                f"wait_fonts=true. Re-run with --spec-22-acceptance "
-                                f"(or --debug-trace) to propagate --wait-fonts.",
-                                file=sys.stderr,
-                            )
-                        if getattr(args, "strict_spec_22_gate", False):
-                            sys.exit(
-                                f"[stage-11] FATAL: --strict-spec-22-gate set and "
-                                f"{len(_wait_fonts_false_cells)} of "
-                                f"{s11_summary['captures_ok']} pixel-diff cells reported "
-                                f"wait_fonts=false. FR-31-7 acceptance measurement invalid."
-                            )
-                    elif _wait_fonts_on and s11_summary['captures_ok']:
-                        print(
-                            f"[stage-11] FR-31-7 wait_fonts gate PASS: all "
-                            f"{s11_summary['captures_ok']} cells report wait_fonts=true."
-                        )
-        except Exception as exc:  # noqa: BLE001 — Stage 11 is observability; soft-fail
-            print(f"[stage-11] pixel-diff soft-failed: {exc}", file=sys.stderr)
-
-    # ------------------------------------------------------------------
-    # Stage 11.5 — parity2 draft-centric fidelity (D183). The DRAFT is the
-    # 100% denominator; reports how much CONTENT + LAYOUT + CSS transferred to
-    # the clone, per section, class-AGNOSTIC (own-text anchors + LCA tree-align
-    # absorb renames + WP wrapper divs). This is Rule 4 (per-class transfer
-    # accounting) made automatic. Soft-fail observability — never blocks.
-    # Writes parity2-captures.json + parity2-report.json into the run dir.
-    # ------------------------------------------------------------------
-    if not getattr(args, "no_parity2", False) and args.deploy_target \
-            and 'result' in locals() and result.returncode == 0:
-        try:
-            import re as _re2
-            _tail = [ln for ln in result.stdout.splitlines() if "link=" in ln]
-            _lm = _re2.search(r"link=(https?://\S+)", _tail[-1]) if _tail else None
-            if not _lm:
-                print("[stage-11.5] parity2 SKIPPED — no link= URL from Stage 10.", file=sys.stderr)
-            else:
-                p2_url = _lm.group(1).rstrip(".,;")
-                cp_js = REPO / "plugins" / "sgs-blocks" / "scripts" / "clone-parity.js"
-                p2_py = REPO / "plugins" / "sgs-blocks" / "scripts" / "parity2" / "parity2.py"
-                caps = run_dir / "parity2-captures.json"
-                golden_tmp = run_dir / ".parity-golden.json"
-                if not cp_js.exists() or not p2_py.exists():
-                    print(f"[stage-11.5] parity2 SKIPPED — tool not found ({cp_js} / {p2_py}).", file=sys.stderr)
-                else:
-                    # 1) capture draft (rebuilt fresh from THIS mockup) + clone across ALL
-                    #    THREE viewports (mobile 375 / tablet 768 / desktop 1440) in one node
-                    #    run — the framework is mobile-first, so responsive fidelity matters
-                    #    most. The dump is keyed by viewport.
-                    _p2_viewports = ("375", "768", "1440")
-                    cap_cmd = [
-                        "node", str(cp_js),
-                        "--url", p2_url,
-                        "--draft", str(args.mockup.resolve()),
-                        "--golden", str(golden_tmp),
-                        "--rebuild-golden",
-                        "--dump-captures", str(caps),
-                        "--viewports", ",".join(_p2_viewports),
-                        "--out-dir", str(run_dir),
-                    ]
-                    cap_proc = subprocess.run(cap_cmd, capture_output=True, text=True,
-                                              encoding="utf-8", errors="replace", timeout=420)
-                    if not caps.exists():
-                        print(f"[stage-11.5] parity2 capture produced no dump (node rc={cap_proc.returncode}). "
-                              f"stderr: {(cap_proc.stderr or '')[-200:]}", file=sys.stderr)
-                    else:
-                        import json as _json2
-                        # 2) score transfer per viewport (mobile-first order).
-                        _vp_labels = {"375": "mobile-375", "768": "tablet-768", "1440": "desktop-1440"}
-                        for _vp in _p2_viewports:
-                            _out_base = run_dir / f"parity2-report-{_vp}"
-                            p2_proc = subprocess.run(
-                                [sys.executable, str(p2_py), "--captures", str(caps),
-                                 "--viewport", _vp, "--out", str(_out_base)],
-                                capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120,
-                            )
-                            rpt = _out_base.with_suffix(".json")
-                            if not rpt.exists():
-                                print(f"[stage-11.5] parity2 {_vp_labels[_vp]} produced no report "
-                                      f"(rc={p2_proc.returncode}). stderr: {(p2_proc.stderr or '')[-160:]}",
-                                      file=sys.stderr)
-                                continue
-                            _r = _json2.loads(rpt.read_text(encoding="utf-8"))
-                            _t = _r.get("totals", {})
-                            _secs = _r.get("by_section", {})
-                            _nonchrome = max(1, _t.get("draft_total", 0) - _t.get("chrome", 0))
-                            _content = round(100 * sum(v.get("content_ok", 0) for v in _secs.values())
-                                             / max(1, sum(v.get("non_chrome", 0) for v in _secs.values())), 1)
-                            print(f"[stage-11.5] parity2 fidelity [{_vp_labels[_vp]}px, draft=100%]: "
-                                  f"content {_content}% | full {_r.get('score_pct')}% "
-                                  f"(transferred {_t.get('transferred')}+folded {_t.get('folded')} / {_nonchrome})")
-                            for _s in sorted(_secs, key=lambda k: (_secs[k].get('layout_pct') is None,
-                                                                   _secs[k].get('layout_pct') or 0)):
-                                _c = _secs[_s]
-                                if _c.get("content_pct") is None:
-                                    continue
-                                print(f"[stage-11.5]   [{_vp}] {_s:22s} content {_c['content_pct']:5.1f}% "
-                                      f"layout {_c.get('layout_pct'):5.1f}% css {_c.get('css_pct'):5.1f}% "
-                                      f"full {_c.get('transfer_pct'):5.1f}%")
-                        print(f"[stage-11.5] parity2 reports → {run_dir}/parity2-report-{{375,768,1440}}.json")
-        except FileNotFoundError:
-            print("[stage-11.5] parity2 SKIPPED — 'node' not on PATH.", file=sys.stderr)
-        except Exception as exc:  # noqa: BLE001 — observability; soft-fail
-            print(f"[stage-11.5] parity2 soft-failed: {exc}", file=sys.stderr)
 
     # Stage 11.6 — computed-parity (UNIVERSAL, draft-agnostic; D259, CLAUDE.md rule 4a).
     # Compares the EFFECTIVE (computed) values on the LIVE clone vs the SOURCE draft
@@ -2954,8 +2688,11 @@ def main():
     # matched by CONTENT not class/declaration — the dependable fidelity signal
     # (STOP-42). Universal: every computed CSS property is captured (minus a
     # documented blocklist verified against property_suffixes), so any draft's CSS is
-    # covered. Soft-fail observability — never blocks. Writes computed-parity.json.
+    # covered. Soft-fail observability — never blocks the RUN. It IS, however, the
+    # gate on +REGISTER pattern auto-promotion (see below) — the old pixel-diff-based
+    # gate (Stage 11 / visual_qa_capture live capture) is retired 2026-07-04.
     # -----------------------------------------------------------------------------
+    computed_parity_overall_pct = None  # populated below when the tool runs successfully
     if not getattr(args, "no_computed_parity", False) and args.deploy_target \
             and 'result' in locals() and result.returncode == 0:
         try:
@@ -2989,6 +2726,7 @@ def main():
                     else:
                         import json as _json3
                         _cp = _json3.loads(cp_out.read_text(encoding="utf-8"))
+                        computed_parity_overall_pct = _cp.get("overall_css_pct")
                         print(f"[stage-11.6] computed-parity (draft={args.mockup.name} vs live clone) — "
                               f"OVERALL CSS {_cp.get('overall_css_pct')}% (universal, matched by content):")
                         for _vp, _v in _cp.get("viewports", {}).items():
@@ -3059,22 +2797,14 @@ def main():
         for stage_n, (name, _payload) in legacy_to_phase5.items()
     ]
 
-    # 3. capture_callable: live Playwright multi-viewport when --clone-url
-    #    is supplied; otherwise the stub (0.0 diff, lets autonomy pass).
-    if args.clone_url:
-        ctx = vqa_capture.CaptureContext(
-            clone_url=args.clone_url,
-            mockup_dir=args.mockup.parent.resolve(),
-            mockup_relative_path=args.mockup.name,
-            out_dir=so_run_dir / "screenshots",
-        )
-        capture_fn = vqa_capture.make_capture_callable(ctx)
-        capture_mode = "real"
-        print(f"[autonomy] visual-qa capture: live (clone-url={args.clone_url})")
-    else:
-        capture_fn = vqa_capture.stub_capture
-        capture_mode = "stub"
-        print("[autonomy] visual-qa capture: stub (no --clone-url; autonomy will pass)")
+    # 3. capture_callable: always the stub (2026-07-04 — the live Playwright +
+    #    PIL pixel-diff capture path was removed; it had the same false-win/
+    #    false-loss blind spot as Stage 11 pixel-diff, per Spec 20). Stage 8
+    #    visual QA is now always a human step (/visual-qa) or the Stage 11.6
+    #    computed-parity gate below on pattern auto-promotion.
+    capture_fn = vqa_capture.stub_capture
+    print("[autonomy] visual-qa capture: stub (no automated pixel-diff path; "
+          "operator runs /visual-qa manually)")
 
     outcome = om.run(
         run_id=so_run_id,
@@ -3089,29 +2819,37 @@ def main():
           f"decision={outcome.autonomy_decision} sgs_update_rc={outcome.sgs_update_returncode}")
     print(f"[autonomy] deliverable: {outcome.deliverable_path}")
 
-    # 4. +REGISTER — two-tier gate (added 2026-05-14 after the 5 composer-shape
-    #    residue patterns from a stub-capture 2026-05-13 run were caught polluting
-    #    theme/sgs-theme/patterns/):
-    #      a) PROMOTE to canonical theme/sgs-theme/patterns/ ONLY when
-    #         outcome.overall == "success" AND capture_mode == "real". Stub
-    #         capture always returns diff 0.0, so it can't be trusted to gate a
-    #         canonical-tree mutation.
-    #      b) Otherwise STAGE to pipeline-state/<run>/proposed-patterns/ so
-    #         operators can review and manually promote later.
+    # 4. +REGISTER — two-tier gate. REWIRED 2026-07-04: the old pixel-diff-based
+    #    gate (outcome.overall == "success" AND live-capture "real" mode) is retired
+    #    along with Stage 11 pixel-diff and the live visual_qa_capture engine (same
+    #    false-win/false-loss blind spot, Spec 20). The gate is now:
+    #      a) PROMOTE to canonical theme/sgs-theme/patterns/ ONLY when Stage 11.6
+    #         computed-parity scored a PERFECT overall_css_pct == 100 for this run
+    #         (the one dependable fidelity signal, per Spec 20 / CLAUDE.md rule 4a).
+    #         Anything less than 100% is not proven faithful enough to auto-land in
+    #         the framework's canonical pattern library.
+    #      b) Otherwise STAGE to pipeline-state/<run>/proposed-patterns/ so the
+    #         operator can review and manually promote later.
+    #    Name-collision protection (avoid duplicate patterns) is unaffected by this
+    #    rewire — it already happens inside reg_mod.register_run(): a SELECT-then-
+    #    INSERT dedup in _insert_sgs_pattern() (patterns table keyed by slug) plus
+    #    a pre-existing-PHP-file check, both independent of the promote/stage choice.
     #    --skip-register opts out of both paths.
     if args.skip_register:
         print("[+REGISTER] skipped per --skip-register")
     else:
-        promote_to_canonical = (outcome.overall == "success" and capture_mode == "real")
+        promote_to_canonical = (computed_parity_overall_pct == 100)
         if promote_to_canonical:
             target_dir = reg_mod.PATTERNS_DIR
-            print(f"[+REGISTER] promoting to canonical: {target_dir}")
+            print(f"[+REGISTER] promoting to canonical: {target_dir} "
+                  f"(computed-parity overall_css_pct=100)")
         else:
             target_dir = so_run_dir / "proposed-patterns"
             target_dir.mkdir(parents=True, exist_ok=True)
             reason = (
-                "stub capture" if capture_mode == "stub"
-                else f"autonomy outcome={outcome.overall}"
+                f"computed-parity overall_css_pct={computed_parity_overall_pct}"
+                if computed_parity_overall_pct is not None
+                else "computed-parity not available for this run"
             )
             print(f"[+REGISTER] staging to proposed-patterns (reason: {reason}): {target_dir}")
         register_result = reg_mod.register_run(

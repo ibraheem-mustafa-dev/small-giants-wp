@@ -25,8 +25,8 @@ Tests (all synthetic — NO network, NO browser, deterministic):
 9. Length tolerance: ≤ 1px → LANDED; > 1px → WRITTEN-not-LANDED; non-px → UNVERIFIED (FIX-M).
 10. Contract schema: LandedReport.as_dict() has the EXACT §6 keys.
 11. Tier vocabulary: matches F2 exactly (Base|Mobile|Tablet|Desktop|Other:<cond>).
-12. Reuse verification: _parse_px + _colour_delta imported from parity2;
-    BEM-matcher symbols NOT imported.
+12. Reuse verification: _parse_px + _colour_delta defined directly in oracle.verdict
+    (parity2 dependency removed 2026-07-04); BEM-matcher symbols NOT imported.
 13. MR-2 comparison logic: _normalised_markup_equal works on WP block markup (FIX-H).
 14. MR-2 coverage line emitted (live DB skipped if unavailable).
 15. FIX-A: colour/length classifiers do not over-match (background-image etc.).
@@ -812,28 +812,29 @@ class TestTierVocabulary:
 
 
 # ===========================================================================
-# 12. Reuse verification — _parse_px + _colour_delta from parity2
+# 12. Reuse verification — _parse_px + _colour_delta (inlined in oracle.verdict
+#    2026-07-04, previously imported from the now-deleted parity2 package)
 # ===========================================================================
 
 class TestReuseVerification:
-    def test_parse_px_imported_from_parity2(self):
-        """_parse_px must be importable from parity2.transfer_checker."""
-        from parity2.transfer_checker import _parse_px
+    def test_parse_px_defined_in_verdict_module(self):
+        """_parse_px must be defined directly on oracle.verdict (no parity2 dependency)."""
+        from oracle.verdict import _parse_px
         assert _parse_px("32px") == 32.0
         assert _parse_px("1rem") == 16.0
         assert _parse_px("0") == 0.0
         assert _parse_px("auto") is None
 
-    def test_colour_delta_imported_from_parity2(self):
-        """_colour_delta must be importable from parity2.transfer_checker."""
-        from parity2.transfer_checker import _colour_delta
+    def test_colour_delta_defined_in_verdict_module(self):
+        """_colour_delta must be defined directly on oracle.verdict (no parity2 dependency)."""
+        from oracle.verdict import _colour_delta
         # Same colour → delta 0
         assert _colour_delta("#ffffff", "#ffffff") == 0.0
         # Large delta
         assert _colour_delta("#000000", "#ffffff") > 1.0
 
-    def test_verdict_module_uses_parity2_parse_px(self):
-        """The verdict engine uses _parse_px from parity2 for length comparisons."""
+    def test_verdict_module_uses_parse_px(self):
+        """The verdict engine uses _parse_px for length comparisons."""
         # 32.5px vs 32px → delta 0.5px ≤ 1px tolerance → LANDED
         obs = _obs(
             cells=[
@@ -848,8 +849,8 @@ class TestReuseVerification:
         result = compute_section_result(obs)
         assert result.cells[0].verdict == Verdict.LANDED
 
-    def test_verdict_module_uses_parity2_colour_delta(self):
-        """The verdict engine uses _colour_delta from parity2 for colour comparisons."""
+    def test_verdict_module_uses_colour_delta(self):
+        """The verdict engine uses _colour_delta for colour comparisons."""
         # ΔE = 1 for a 1-unit RGB shift → LANDED
         obs = _obs(
             cells=[

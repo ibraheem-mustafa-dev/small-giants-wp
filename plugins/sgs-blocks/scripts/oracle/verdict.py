@@ -7,32 +7,75 @@ Precedence (§3, first match wins):
   NOT-RENDERED > GUARD-FAIL > UNVERIFIED > WRITTEN-not-LANDED > LANDED
 
 LANDED tolerances (§1):
-  - Colour properties: ΔE (Euclidean RGB) ≤ 1  — via _colour_delta from parity2
-  - Length properties: ≤ 1px                   — via _parse_px from parity2
+  - Colour properties: ΔE (Euclidean RGB) ≤ 1  — via _colour_delta below
+  - Length properties: ≤ 1px                   — via _parse_px below
   - Everything else: exact after lowercase + strip
 
-Reuse (R-22-1): imports _parse_px + _colour_delta from parity2.transfer_checker.
-  NEVER imports parity2's BEM-pairing machinery (parity-bem-class-blind-spot,
-  blub.db 2026-06-11 — native clone output does not carry draft BEM classes).
-
 Independence: no DB queries.
+
+Note (2026-07-04): _parse_px/_parse_rgb/_colour_delta were inlined here
+(previously imported from the now-deleted parity2/ package, which also held
+an unreliable BEM-pairing matcher this module never used — R-22-1 always
+scoped the reuse to these two tolerance helpers only). Inlining removes the
+oracle's only dependency on parity2 while keeping the exact same maths.
 """
 from __future__ import annotations
 
+import math
 import re
 from typing import Optional
 
-# ---------------------------------------------------------------------------
-# Reuse from parity2 — tolerance helpers ONLY (R-22-1)
-# Import these two helpers; do NOT import anything else from parity2.
-# ---------------------------------------------------------------------------
-try:
-    from parity2.transfer_checker import _parse_px, _colour_delta  # type: ignore[import]
-except ImportError:
-    import sys as _sys
-    from pathlib import Path as _Path
-    _sys.path.insert(0, str(_Path(__file__).parent.parent))
-    from parity2.transfer_checker import _parse_px, _colour_delta  # type: ignore[no-redef]
+
+def _parse_px(value: str) -> float | None:
+    """Convert a CSS length to pixels (float).
+
+    Supports: px, rem (1 rem == 16 px), unitless 0.
+    Returns None if the value is not a numeric length.
+    """
+    v = value.strip()
+    if v == "0" or v == "0px":
+        return 0.0
+    m = re.match(r"^([+-]?[\d.]+)(px|rem)$", v)
+    if not m:
+        return None
+    num = float(m.group(1))
+    unit = m.group(2)
+    if unit == "rem":
+        num *= 16.0
+    return num
+
+
+def _parse_rgb(value: str) -> tuple[int, int, int] | None:
+    """Parse a colour value into (R, G, B) integers.
+
+    Accepts: rgb(r,g,b), rgba(r,g,b,a), #rrggbb, #rgb, #rrggbbaa.
+    Returns None on failure.
+    """
+    v = value.strip().lower()
+
+    m = re.match(r"rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)", v)
+    if m:
+        return int(m.group(1)), int(m.group(2)), int(m.group(3))
+
+    v = v.lstrip("#")
+    if len(v) in (3, 4):          # short-form
+        v = v[0] * 2 + v[1] * 2 + v[2] * 2
+    if len(v) in (6, 8):          # strip optional alpha
+        try:
+            return int(v[0:2], 16), int(v[2:4], 16), int(v[4:6], 16)
+        except ValueError:
+            pass
+    return None
+
+
+def _colour_delta(a: str, b: str) -> float:
+    """Euclidean RGB distance. Returns inf if either value cannot be parsed."""
+    ca = _parse_rgb(a)
+    cb = _parse_rgb(b)
+    if ca is None or cb is None:
+        return math.inf
+    return math.sqrt(sum((x - y) ** 2 for x, y in zip(ca, cb)))
+
 
 try:
     from .models import (

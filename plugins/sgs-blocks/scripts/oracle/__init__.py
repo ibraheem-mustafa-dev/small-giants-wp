@@ -10,7 +10,9 @@ Independence contract:
   - NO DB queries inside verdict/guards/models.
   - guard-3's expected_default arrives as INPUT.
   - Tier vocabulary IDENTICAL to ledger (F2): Base|Mobile|Tablet|Desktop|Other:<cond>
-  - Reuses parity2.transfer_checker._parse_px + _colour_delta (never parity2's BEM matcher).
+  - _parse_px + _colour_delta are defined directly in oracle.verdict (parity2
+    dependency removed 2026-07-04 -- parity2 also held an unreliable BEM matcher
+    this module never used).
 """
 from .models import (
     Verdict,
