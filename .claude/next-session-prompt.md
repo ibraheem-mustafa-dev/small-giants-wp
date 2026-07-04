@@ -17,8 +17,13 @@ Last session produced a large converter-rebuild SCOPE (see `handoff.md` top entr
 - **Correct the phase-plan's Phase-5 parity backlog** to what the scripts DO, not what the docs CLAIM. Re-verify: media-map (Bean says it works), the "stub" resolvers, the `has_inner`/emit_shape claims, the `converter_v2` deletion surface.
 - This is `feedback_read_ground_truth_before_concluding` + the anti-assumption rule (sgs-wp-engine GROUND-TRUTH gate) — apply it to the WHOLE scope.
 
-## PRIORITY 2 — after fact-check, approve the phase-plan + its 4 open decisions
-`.claude/plans/2026-07-04-new-engine-to-parity-delete-converter-v2.md`: delete-last sequencing · the 6-phase shape · the new FR-31-2.7 container-vs-composite classifier (`sgs/container` is the ONLY arbitrary holder; card-grid is a TYPED composite) · the multi-session scope. Then **Phase 1** (regenerate the stale flow doc) + **Phase 2** (the modular universal walk — single walker + total registry + pure priority-ranked handlers + wire the emit_shape fork + delete Mechanism A/B; lands product-card).
+## PRIORITY 2 — VALIDATE the phase-plan against Spec 31 (it is a DRAFT, NOT agreed — do NOT build from it yet)
+`.claude/plans/2026-07-04-new-engine-to-parity-delete-converter-v2.md` carries THREE validation gates at its top; all must pass before Bean approves:
+1. **Fact-check vs the running scripts** (Priority 1 above).
+2. **Rules + cheats check** — walk the plan against Spec 31 §13.1 R-31-1..15 + the 7 rules + EVERY `cheat-gate/` description. No per-slug/slot/role literal, no mirror-emit, no hardcoded default over faithful CSS, no silent drop; the registry/handler design stays DB-driven (R-31-1) + universal (R-31-9).
+3. **Completeness vs ALL of Spec 31** — read Spec 31 END TO END; map every FR (§2 core mechanism, §3 routing, §13 binding rules/content-fork/variant/composite-mirror, §5 CSS props) to a phase. Any uncovered requirement is a plan gap to close (STOP-29: done = the spec's FULL scope, never "out of scope").
+
+The 4 open decisions (delete-last · 6-phase shape · FR-31-2.7 classifier · multi-session scope) + the phases are the PROPOSAL. Only after the 3 gates pass + Bean approves: **Phase 1** (regenerate the stale flow doc) then **Phase 2** (the modular universal walk — single walker + total registry + pure priority-ranked handlers + wire the emit_shape fork + delete Mechanism A/B; lands product-card).
 
 ## What's already built (this session; committed) — VERIFY it too
 - `emit_shape` column + `/sgs-update _populate_emit_shape` seeder + `db_lookup.emit_shape_for` + `render_emits.render_reads_attr`. Spec 31 FR-31-2.6. Additive + INERT. (product-card leaf conversion was REVERTED — Phase 2 redoes it.)

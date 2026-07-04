@@ -4,10 +4,18 @@ project: small-giants-wp
 title: New modular converter → parity → delete converter_v2 (the completion plan)
 spec: 31 (§2 core mechanism, §12.6 remaining-work, §13.3 FR-31-2.6)
 generated: 2026-07-04
-status: SCOPED — awaiting Bean approval before build
+status: DRAFT — NOT agreed. Blocked on THREE validation gates (below) before Bean approval.
 ---
 
 # Completion plan — make the new modular engine the ONLY converter, then delete `converter_v2`
+
+> ## ⛔ DRAFT — three validation gates before this plan may be approved or built from (Bean, 2026-07-04)
+> This plan is a proposal, not an agreed roadmap. It MUST pass all three before approval:
+> 1. **Fact-check vs the RUNNING SCRIPTS + a real clone.** Every parity/backlog claim here is documentation-derived (Spec 31 §12.6 + code comments + the STALE flow doc). Proven unreliable: the "media-map loader not built / images broken" claim is WRONG — the live clone loads media (Bean). Verify each claim against the code + a real `SGS_NEW_ENGINE=1` clone. See lesson `fact-check-scope-against-running-scripts-not-docs`.
+> 2. **Rules + cheats check vs Spec 31 §13.1.** Walk the plan against R-31-1..15, the 7 non-negotiable rules (CONVERT-don't-mirror / NO-CHEATS / UNIVERSAL-no-carve-outs / NO-SKIPPING / VERIFY-ON-REAL-HOMEPAGE / RESPONSIVE-IN-ATTRS / FOLLOW-SPEC), and EVERY cheat-gate description (`cheat-gate/` checks). Confirm no phase introduces a per-slug/slot/role literal, a mirror-emit, a hardcoded default over faithful CSS, or a silent drop. The registry/handler design must stay DB-driven (R-31-1) and universal (R-31-9).
+> 3. **Completeness vs ALL of Spec 31.** Read Spec 31 END TO END and confirm the plan's phases cover the FULL requirement set — not just §12.6's list. Map every FR (esp. §2 core mechanism, §3 routing, §13 binding rules + content fork + variant + composite-mirror, §5 CSS properties) to a phase. Any Spec 31 requirement not covered by a phase is a plan gap to close (STOP-29: definition-of-done = the spec's full scope, never "out of scope").
+>
+> Only after all three pass may Bean approve. The plan's STRUCTURE (delete-last, the modular walker, the phase ordering) is the proposal; its specific claims + completeness are what these gates verify.
 
 ## Context (why this exists)
 
