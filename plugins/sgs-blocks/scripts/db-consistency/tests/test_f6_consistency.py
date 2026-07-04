@@ -498,42 +498,17 @@ class TestCheck1PlantedViolation:
 
 
 class TestCheck2PlantedViolation:
-    """Check #2 must flag a stale has_inner_blocks in the DB."""
-
-    def test_check2_flags_stale_has_inner_blocks(self, tmp_path):
-        """Plant: DB has_inner_blocks=1, AND-rule derivation=0 → Violation."""
-        # Create a minimal block directory with no save.js/index.js (save_marker=False)
-        # and no render.php (render_consumes=False) → AND-rule = 0.
-        # DB says has_inner_blocks=1 → mismatch → Violation.
-        block_dir = tmp_path / "test-stale"
-        block_dir.mkdir()
-        bj = {
-            "name": "sgs/test-stale",
-            "supports": {}
-        }
-        (block_dir / "block.json").write_text(json.dumps(bj), encoding="utf-8")
-        # No save.js, no render.php — AND-rule = 0.
-
-        conn = _make_minimal_db(
-            property_suffixes=[],
-            block_attributes=[],
-            block_composition=[("sgs/test-stale", 1)],  # DB says 1
-        )
-
-        # Patch _BLOCKS_DIR to point at tmp_path so check_composition reads our fixture.
-        with patch.object(check_composition, "_BLOCKS_DIR", tmp_path):
-            violations = check_composition.run(conn)
-        conn.close()
-
-        assert len(violations) == 1, (
-            f"Expected 1 composition violation for stale has_inner_blocks, got {len(violations)}"
-        )
-        v = violations[0]
-        assert v.block == "sgs/test-stale"
-        assert v.check == "composition"
-        assert "has_inner_blocks=1" in v.detail
-        assert "derived=0" in v.detail
-        assert v.key == composition_key("sgs/test-stale")
+    """Check #2 — block.json hasInnerBlocks override sanity (G-A row-existence
+    + G-B override-vs-AND-rule). The CORE has_inner_blocks-column drift check
+    (DB stored value vs AND-rule derivation) is RETIRED (EXECUTION Step 16,
+    2026-07-05) along with the block_composition.has_inner_blocks column it
+    compared — see check_composition.py's module docstring. The retired
+    ``test_check2_flags_stale_has_inner_blocks`` test asserted exactly that
+    dead comparison and is deleted with it; G-A/G-B below never depended on
+    the column value itself (only on a block_composition ROW existing), so
+    they are unaffected and still exercise real check_composition.py
+    behaviour against a synthetic DB.
+    """
 
     def test_check2_flags_missing_block_composition_row(self, tmp_path):
         """G-A: block in src/blocks/ but absent from block_composition → Violation (fail-CLOSED)."""
@@ -616,7 +591,6 @@ class TestCheck2PlantedViolation:
         conn.close()
 
         # The G-B check passes because a reason is present.
-        # The core check: stored=1, effective_derived=1 (bj_override=1) → also passes.
         assert violations == [], (
             f"Expected 0 violations when hasInnerBlocksReason is provided, got {len(violations)}: "
             + "\n".join(v.detail for v in violations)
@@ -767,48 +741,22 @@ class TestEnumerateCandidates:
 # ===========================================================================
 
 class TestCheck4OverridesDrift:
-    """Check #4: _SUFFIX_ATTR_OVERRIDES (convert.py) == _ATTR_NAME_OVERRIDES (db_lookup.py)."""
+    """Check #4 — RETIRED (EXECUTION Step 16, 2026-07-05): the frozen
+    convert.py's _SUFFIX_ATTR_OVERRIDES no longer exists, and the new engine
+    consolidated to a single _ATTR_NAME_OVERRIDES source of truth in
+    converter/db/db_lookup.py (verified by grep — no second override dict
+    exists under converter/ to drift against). The check now always returns
+    []; these tests just pin that retirement shape.
+    """
 
-    @_skip_no_db
-    def test_check4_zero_violations_today(self, live_conn):
-        """The two override dicts are identical today → 0 violations."""
-        violations = check_overrides_drift.run(live_conn)
-        assert violations == [], (
-            f"Expected 0 drift violations, got {len(violations)}: "
-            + "\n".join(v.detail for v in violations)
-        )
+    def test_check4_always_zero_violations_now_retired(self, live_conn=None):
+        """Retired check: run() always returns [] regardless of conn."""
+        assert check_overrides_drift.run(live_conn) == []
 
-    def test_check4_extracts_suffix_attr_overrides_from_convert_py(self):
-        """The AST extractor reads the real _SUFFIX_ATTR_OVERRIDES from convert.py."""
-        extracted = check_overrides_drift._extract_suffix_attr_overrides()
-        assert extracted == {("grid-template-columns", "Columns"): "gridTemplateColumns"}, (
-            f"AST extraction of _SUFFIX_ATTR_OVERRIDES returned unexpected: {extracted}"
-        )
-
-    def test_check4_flags_drift(self, monkeypatch):
-        """Plant: monkeypatch _ATTR_NAME_OVERRIDES to differ → Violation."""
-        # Make db_lookup's dict (imported into check_overrides_drift) differ.
-        bad_dict = {("some-prop", "Some"): "someAttr"}
-        monkeypatch.setattr(check_overrides_drift, "_ATTR_NAME_OVERRIDES", bad_dict)
-
-        violations = check_overrides_drift.run(None)  # conn unused by this check
-        assert len(violations) == 1, (
-            f"Expected 1 drift violation, got {len(violations)}"
-        )
-        v = violations[0]
-        assert v.check == "overrides_drift"
-        assert "drifted" in v.detail
-        assert v.key == check_overrides_drift._DRIFT_KEY
-
-    def test_check4_passes_identical_dict(self, monkeypatch):
-        """Plant: monkeypatch _ATTR_NAME_OVERRIDES to match convert.py exactly → no Violation."""
-        good_dict = {("grid-template-columns", "Columns"): "gridTemplateColumns"}
-        monkeypatch.setattr(check_overrides_drift, "_ATTR_NAME_OVERRIDES", good_dict)
-
-        violations = check_overrides_drift.run(None)
-        assert violations == [], (
-            f"Expected 0 violations when dicts match, got {len(violations)}"
-        )
+    def test_check4_ignores_conn_argument(self):
+        """The conn argument is accepted-but-unused (uniform check signature)."""
+        assert check_overrides_drift.run(None) == []
+        assert check_overrides_drift.run("not-a-real-connection") == []
 
 
 # ===========================================================================

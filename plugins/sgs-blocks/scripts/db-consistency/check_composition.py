@@ -1,4 +1,4 @@
-"""check_composition.py — Check #2: has_inner_blocks ↔ save.js/render.php sync.
+"""check_composition.py — Check #2: block.json hasInnerBlocks override sanity.
 
 Spec ref: .claude/plans/2026-06-20-f6-db-consistency-design.md §1 (check #2)
 
@@ -9,6 +9,18 @@ then adds:
   G-B: block.json declares supports.sgs.hasInnerBlocks AND it contradicts the
        AND-rule, AND no supports.sgs.hasInnerBlocksReason is present → Violation
        (the override may be masking a stale marker)
+
+RETIRED at EXECUTION Step 16 (2026-07-05): the CORE check — "does the cached
+block_composition.has_inner_blocks column match the AND-rule derivation" —
+is gone along with the column it compared (migration
+2026-07-05-drop-has-inner-blocks-column.py). has_inner_blocks is now derived
+FRESH at convert-time (converter.services.has_inner.derive_delegates_content),
+never a cached column, so there is nothing left to drift-guard (see
+converter/tests/test_has_inner_derive.py's retirement note for the sibling
+drift-guard TEST that was deleted for the same reason). G-A and G-B above are
+KEPT — both are purely source-derived (block.json + save.js + render.php)
+and never depended on the has_inner_blocks column value itself, only on a
+block_composition ROW existing for the slug.
 
 FIX command for all violations: "run python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 1"
 """
@@ -215,11 +227,13 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
         # Derive source-truth value.
         bj_override = _has_inner_blocks_from_block_json(meta)
         and_rule_derived = _derive(block_dir)
-        effective_derived = bj_override if bj_override is not None else and_rule_derived
 
         # G-A (upgraded): block in src/blocks/ but absent from block_composition → Violation.
+        # (RETIRED Step 16: previously SELECTed has_inner_blocks itself to also
+        # feed the core drift check below; now only row EXISTENCE matters — the
+        # column that check compared against is dropped. See module docstring.)
         row = conn.execute(
-            "SELECT has_inner_blocks FROM block_composition WHERE block_slug = ?",
+            "SELECT block_slug FROM block_composition WHERE block_slug = ?",
             (slug,),
         ).fetchone()
         if row is None:
@@ -234,8 +248,6 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
                 key=composition_key(slug),
             ))
             continue
-
-        stored = row[0]
 
         # G-B: block.json override contradicts AND-rule AND no reason string provided.
         if bj_override is not None and bj_override != and_rule_derived:
@@ -259,22 +271,5 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
                     ),
                     key=composition_key(slug),
                 ))
-                continue  # don't also raise the DB mismatch — the override is the root issue
-
-        # Core check: DB value must match effective derived value.
-        if stored != effective_derived:
-            save_flag = _has_save_marker(block_dir)
-            render_flag = _render_consumes(block_dir)
-            violations.append(Violation(
-                check="composition",
-                block=slug,
-                detail=(
-                    f"{slug}: DB has_inner_blocks={stored} but derived={effective_derived} "
-                    f"(save_marker={save_flag}, render_consumes={render_flag})"
-                    + (f", bj_override={bj_override}" if bj_override is not None else "")
-                ),
-                fix=f"DB is stale for {slug}. {_FIX_CMD}",
-                key=composition_key(slug),
-            ))
 
     return violations

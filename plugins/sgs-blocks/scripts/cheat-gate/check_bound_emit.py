@@ -7,10 +7,10 @@ converter code that emits `sourceMode='bound'` (the echo-$content passthrough ch
 purged D182) without ever running a clone — nothing catches it until a clone runs.
 
 This check closes that gap with a STATIC scan of the CONVERTER source tree
-(orchestrator/converter_v2/ — where new modular converter code lives; convert.py is
-frozen and has zero sourceMode refs). It is AST-based so comments and docstrings that
-merely DESCRIBE the cheat (as this file and check_no_mirror.py do) are never matched —
-only real code that BUILDS a sourceMode value:
+(``converter/`` — the modular converter; the frozen ``orchestrator/converter_v2/``
+package was deleted at EXECUTION Step 16, 2026-07-05). It is AST-based so comments
+and docstrings that merely DESCRIBE the cheat (as this file and check_no_mirror.py
+do) are never matched — only real code that BUILDS a sourceMode value:
 
     {"sourceMode": "bound"}        ast.Dict   key 'sourceMode' → value not in legit set
     foo(sourceMode="bound")        ast.keyword sourceMode=...
@@ -34,10 +34,11 @@ from cheat_gate.models import Violation, bound_emit_key  # type: ignore[import]
 
 _HERE = Path(__file__).resolve().parent           # scripts/cheat-gate/
 _SCRIPTS_DIR = _HERE.parent                        # scripts/
-_ORCHESTRATOR = _SCRIPTS_DIR / "orchestrator"
-# Scan the converter itself, NOT the gate infrastructure in orchestrator/ root
-# (check_no_mirror.py / pipeline-stage-gate.py legitimately describe 'bound').
-_CONVERTER_DIR = _ORCHESTRATOR / "converter_v2"
+# Scan the modular converter itself, NOT the gate infrastructure in orchestrator/
+# (check_no_mirror.py / pipeline-stage-gate.py legitimately describe 'bound'). The
+# frozen orchestrator/converter_v2/ package was deleted at EXECUTION Step 16
+# (2026-07-05) — converter/ is the only converter source tree left to scan.
+_CONVERTER_DIR = _SCRIPTS_DIR / "converter"
 
 # Legitimate live-data source modes — mirrors check_no_mirror.LEGIT_SOURCE_MODES.
 _LEGIT_MODES = frozenset({"wc-product", "sgs-cpt", "typed"})
@@ -91,7 +92,7 @@ class _SourceModeVisitor(ast.NodeVisitor):
 
 def _rel(path: Path) -> str:
     try:
-        return str(path.relative_to(_ORCHESTRATOR))
+        return str(path.relative_to(_SCRIPTS_DIR))
     except ValueError:
         return str(path)
 

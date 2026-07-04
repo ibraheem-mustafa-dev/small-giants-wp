@@ -1249,36 +1249,33 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
     aggregate_warnings: list[str] = []
     per_section_results: list[dict] = []
 
-    # Reset converter_v2's pipeline-seed state at the start of every run so
-    # back-to-back orchestrator invocations in the same Python process (multi-
-    # client batch mode, test runners) don't carry stale theme_widths across
-    # clients. No-op when converter_v2 isn't importable on this run.
+    # reset_pipeline_seed() is a documented no-op since EXECUTION Step 16
+    # (2026-07-05) — the frozen convert.py consumer it used to reset
+    # (_LIFT_CONTEXT["theme_widths"]) is deleted; the new engine never reads
+    # _LIFT_CONTEXT. Call kept for signature compatibility / in case a future
+    # per-run reset need reappears.
     try:
         _conv_pkg_dir_reset = ORCHESTRATOR_DIR.parent
         if str(_conv_pkg_dir_reset) not in sys.path:
             sys.path.insert(0, str(_conv_pkg_dir_reset))
-        # Repointed to converter.entry (EXECUTION Step 10, 2026-07-04) — the
-        # canonical Stage-4 entry implementation moved there; the old
-        # orchestrator.converter_v2 package path is now a re-export shim.
         from converter.entry import reset_pipeline_seed as _reset_seed
         _reset_seed()
     except ImportError:
         pass
 
-    # Stage 4.5 — seed theme_json into converter_v2._LIFT_CONTEXT so
-    # _snap_style_dict_leaves can resolve against the palette + spacing + font-size
-    # registries during the per-section walk. Uses the same merged theme_json that
-    # was built at Stage 0 (base theme.json + variation overlay).
+    # seed_theme_json() is a documented no-op since EXECUTION Step 16
+    # (2026-07-05) — the frozen convert.py consumer it used to seed
+    # (_LIFT_CONTEXT["theme_json"], read by _snap_style_dict_leaves) is
+    # deleted. Call kept for signature compatibility.
     if theme_json and getattr(args, "converter_v2", False):
         try:
             _cv2_dir_seed = ORCHESTRATOR_DIR.parent
             if str(_cv2_dir_seed) not in sys.path:
                 sys.path.insert(0, str(_cv2_dir_seed))
-            # Repointed to converter.entry (EXECUTION Step 10, 2026-07-04).
             from converter.entry import seed_theme_json as _seed_theme_json
             _seed_theme_json(theme_json)
         except Exception:  # noqa: BLE001
-            pass  # token-snap gracefully degrades if seeding fails
+            pass  # no-op call; kept defensive in case of future re-wiring
 
     for m in matches:
         boundary_id = m["boundary_id"]
@@ -1378,10 +1375,12 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                 # Import the production converter's Stage-4 entry point. The
                 # orchestrator runs from REPO root, so the package path is
                 # discoverable via importlib if sys.path includes
-                # ORCHESTRATOR_DIR's parent. Repointed to converter.entry
-                # (EXECUTION Step 10, 2026-07-04) — the canonical Stage-4
-                # entry implementation moved there; the old
-                # orchestrator.converter_v2 package path is now a re-export shim.
+                # ORCHESTRATOR_DIR's parent. converter.entry is the canonical
+                # Stage-4 entry implementation (moved there EXECUTION Step 10,
+                # 2026-07-04); the frozen orchestrator.converter_v2 package it
+                # used to fall back to was deleted at EXECUTION Step 16
+                # (2026-07-05) — converter.entry now runs the modular engine
+                # unconditionally, no flag, no fallback.
                 _conv_pkg_dir = ORCHESTRATOR_DIR.parent  # .../scripts/
                 if str(_conv_pkg_dir) not in sys.path:
                     sys.path.insert(0, str(_conv_pkg_dir))
@@ -2278,13 +2277,12 @@ def main():
     print(f"[orchestrator] run_dir={run_dir}")
     print(f"[orchestrator] mode={args.mode}")
 
-    # Wave 3a follow-up: seed cv2's gap-candidate accumulator with this run's
-    # run_id so every attribute_gap_candidate row emitted under D3 carries
-    # traceable provenance. Soft-fail on ImportError (cv2 not importable on
-    # this Python path — same fallback shape as the existing reset_pipeline_seed
-    # at line ~976). Repointed to converter.entry (EXECUTION Step 10, 2026-07-04)
-    # — the canonical Stage-4 entry implementation moved there; the old
-    # orchestrator.converter_v2 package path is now a re-export shim.
+    # seed_gap_context() is a documented no-op since EXECUTION Step 16
+    # (2026-07-05) — the D3 attribute-gap-candidate accumulator it seeded
+    # run_id provenance for had no live downstream reader (traced during the
+    # Step-16 flip: the per-section attribute_gap_candidates field was written
+    # into per_section_results but never read back by anything) and was
+    # removed. Call kept for signature compatibility.
     try:
         from converter.entry import seed_gap_context as _seed_gap_context
         _seed_gap_context(run_id=run_id)

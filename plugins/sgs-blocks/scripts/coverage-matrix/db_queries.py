@@ -15,6 +15,10 @@ sys.stdout.reconfigure(encoding="utf-8")
 # Make sibling modules importable by bare name regardless of how this file is
 # loaded (direct run, entrypoint importlib, or pytest importlib from scripts/).
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+# scripts/ root — so `converter.services.has_inner` resolves regardless of cwd.
+_SCRIPTS_ROOT = Path(__file__).resolve().parents[1]
+if str(_SCRIPTS_ROOT) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_ROOT))
 
 from models import (
     Block,
@@ -150,9 +154,16 @@ def fetch_blocks(conn: sqlite3.Connection) -> list[Block]:
     Never hardcodes the roster — the count is derived every run.
     """
     # --- Base roster: block_composition with container_kind populated ---
+    # has_inner_blocks (the CACHED column) was dropped at EXECUTION Step 16
+    # (2026-07-05, FR-31-2.6) — it is now derived FRESH per block from the
+    # block's own save.js/render.php source via
+    # converter.services.has_inner.derive_delegates_content, never a stale
+    # cached column (Spec 31 §12.7 Stage-2 row).
+    from converter.services.has_inner import derive_delegates_content
+
     cursor = conn.execute(
         """
-        SELECT bc.block_slug, bc.container_kind, bc.has_inner_blocks
+        SELECT bc.block_slug, bc.container_kind
         FROM block_composition bc
         WHERE bc.container_kind IS NOT NULL
         ORDER BY bc.block_slug
@@ -164,13 +175,13 @@ def fetch_blocks(conn: sqlite3.Connection) -> list[Block]:
     slugs_seen: set[str] = set()
 
     for row in rows:
-        slug, kind, ihb = row
+        slug, kind = row
         slugs_seen.add(slug)
         attrs = _fetch_attr_names(conn, slug)
         blocks.append(Block(
             slug=slug,
             container_kind=kind,
-            has_inner_blocks=bool(ihb),
+            has_inner_blocks=bool(derive_delegates_content(slug)),
             is_extra=False,
             attr_names=attrs,
         ))

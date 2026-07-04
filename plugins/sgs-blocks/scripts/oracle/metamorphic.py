@@ -361,6 +361,16 @@ def _run_converter(html_content: str) -> Optional[str]:
     Returns None if the converter is unavailable or fails (MR-2 skipped — the unit
     tests exercise the comparison logic directly via synthetic markup, so the
     'semantic' guarantee is proven without a live converter/DB).
+
+    RETIRED TARGET (EXECUTION Step 16, 2026-07-05): the frozen
+    ``orchestrator/converter_v2/convert.py`` this shelled out to via its
+    module-level ``main(argv)`` CLI entry is deleted. The new engine's
+    production entry point (``converter.entry.convert_section``) has no
+    equivalent standalone CLI taking positional html/css FILE paths — building
+    one is a separate, judgment-heavy task (not a mechanical repoint), so
+    MR-2 now permanently returns None / "MR-2-SKIPPED-CONVERTER-UNAVAILABLE"
+    rather than crashing. Flagged as a follow-up: wire a small CLI shim around
+    ``convert_section`` if MR-2 live-converter coverage is wanted again.
     """
     converter_dir = Path(__file__).parents[1] / "orchestrator" / "converter_v2"
     convert_script = converter_dir / "convert.py"

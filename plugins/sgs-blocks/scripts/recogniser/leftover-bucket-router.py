@@ -305,40 +305,32 @@ _DB_LEAF_CACHE: dict[str, bool] = {}
 
 
 def _db_block_is_leaf(block_slug: str) -> bool:
-    """Return True when the block is a LEAF (has_inner_blocks=0 in block_composition).
+    """Return True when the block is a LEAF (delegates_content=0, i.e. it does
+    NOT compose child InnerBlocks).
 
-    Soft-fails to False (non-leaf) on DB miss / table-absent so we never
-    emit false positives for unknown blocks.
+    REPOINTED (EXECUTION Step 16, 2026-07-05): previously read the cached
+    ``block_composition.has_inner_blocks`` column, dropped by migration
+    2026-07-05-drop-has-inner-blocks-column.py. Now derives the fact FRESH
+    from the block's own save.js/render.php source via
+    converter.services.has_inner.derive_delegates_content — no DB dependency
+    at all for this fact any more (Spec 31 §12.7). Soft-fails to False
+    (non-leaf) on any derivation error so we never emit false positives for
+    unknown blocks.
 
-    R-22-1 compliant — DB-driven, no per-block slug literals.
-    Uses the same inline sqlite3 pattern as _db_attrs_for_block (the router
-    does not import converter_v2.db_lookup to avoid a circular-import risk).
+    R-22-1 compliant — source-derived, no per-block slug literals.
     """
     if block_slug in _DB_LEAF_CACHE:
         return _DB_LEAF_CACHE[block_slug]
     result = False
     try:
-        import sqlite3
-        import os
-        db_path = os.path.expanduser("~/.claude/skills/sgs-wp-engine/sgs-framework.db")
-        if os.path.exists(db_path):
-            conn = sqlite3.connect(db_path)
-            try:
-                row = conn.execute(
-                    "SELECT has_inner_blocks FROM block_composition WHERE block_slug = ?",
-                    (block_slug,),
-                ).fetchone()
-                # row is None  → block absent from table → soft-fail to False (non-leaf)
-                # row[0] == 0  → confirmed leaf
-                # row[0] == 1  → has InnerBlocks → non-leaf
-                if row is not None:
-                    result = (row[0] == 0)
-            except sqlite3.OperationalError:
-                # Table absent (pre-D108 state) — soft-fail to False
-                pass
-            finally:
-                conn.close()
-    except Exception:  # noqa: BLE001 — DB read is best-effort
+        import sys
+        from pathlib import Path
+        _scripts_root = Path(__file__).resolve().parent.parent
+        if str(_scripts_root) not in sys.path:
+            sys.path.insert(0, str(_scripts_root))
+        from converter.services.has_inner import derive_delegates_content
+        result = derive_delegates_content(block_slug) == 0
+    except Exception:  # noqa: BLE001 — derivation is best-effort
         pass
     _DB_LEAF_CACHE[block_slug] = result
     return result

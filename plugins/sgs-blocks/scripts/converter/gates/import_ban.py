@@ -41,36 +41,14 @@ WHAT IT REJECTS
               from converter.services import icon_resolver
               from converter.services.icon_resolver import resolve_icon
 
-ONE NARROW EXEMPTION — converter/entry.py's frozen-fallback import (Step 10,
-    2026-07-04)
-    ``convert_section`` (Stage 4 pipeline entry, moved from
-    ``orchestrator/converter_v2/__init__.py`` to ``converter/entry.py`` in
-    EXECUTION Step 10) tries the modular engine first, then falls back to the
-    still-100%-live frozen ``orchestrator.converter_v2.convert.walk()`` when a
-    section isn't recognised (STOP-28: the new engine stays inert in
-    production until Phase 6 retires the frozen tree). That fallback import is
-    the ONE legitimate reason anything under ``converter/`` may reach into
-    ``orchestrator.converter_v2`` today.
-
-    The exemption is deliberately narrow on TWO axes so it cannot become a
-    silent backdoor for some other file:
-      1. File identity — only ``entry.py`` (``_STOP28_EXEMPT_FILE``) is ever
-         considered; every other converter/ file is banned unconditionally,
-         with NO marker check performed on the import line — a copy-pasted
-         marker comment in another file does nothing.
-      2. Marker comment — even inside entry.py, only import lines carrying
-         the literal trailing comment ``# STOP-28 fallback — dies at Step 16``
-         are exempted; an unmarked frozen-tree import in entry.py still fails.
-
-    ``converter/tests/test_import_ban.py`` plant-tests both axes: (a) the gate
-    still bans an unmarked frozen-tree import elsewhere in converter/, incl.
-    inside a synthetic ``entry.py``-named file outside the real gate root
-    (i.e. file-identity is checked by real path, not by string "entry.py"
-    appearing anywhere), and (b) an unmarked frozen-tree import added to the
-    real entry.py content is still flagged.
-
-    This exemption dies at Step 16 (Phase 6 — the frozen tree is deleted and
-    the fallback branch + this exemption are removed together).
+STOP-28 EXEMPTION REMOVED (EXECUTION Step 16, Phase 6, 2026-07-05)
+    The frozen ``orchestrator.converter_v2`` package (``convert.py``,
+    ``convert_page.py``, the frozen ``__init__.py`` shim) is DELETED. The one
+    narrow exemption that used to permit ``converter/entry.py``'s
+    STOP-28-marked fallback import to ``orchestrator.converter_v2.convert`` no
+    longer exists — the ban is now unconditional for every file under
+    ``converter/``, including ``entry.py``. There is nothing left under
+    ``orchestrator.converter_v2`` to legitimately import.
 
 SCOPE
     All of converter/ recursively, EXCLUDING this gates/ dir and test files
@@ -101,37 +79,6 @@ _FROZEN_PKG_SEGMENT = "converter_v2"
 # icon_resolver moved OUT of orchestrator.converter_v2 to converter.db.db_lookup /
 # converter.services.icon_resolver. converter/ now has zero legitimate reason to
 # import anything from orchestrator.converter_v2 — the ban is unconditional.
-
-# ---------------------------------------------------------------------------
-# STOP-28 fallback exemption (EXECUTION Step 10, Phase 4, 2026-07-04) — see
-# the module docstring's "ONE NARROW EXEMPTION" section for the full rationale.
-# Narrow on two independent axes, BOTH must hold for a hit to be exempted:
-#   1. `rel` (path relative to the scanned root) is EXACTLY `_STOP28_EXEMPT_FILE`
-#      — a real, single, named file. No glob, no "any file containing the word
-#      entry", no directory-wide allowance.
-#   2. The physical source line the import AST node sits on contains the exact
-#      marker string below, verbatim, as a trailing comment. An unmarked
-#      frozen-tree import in entry.py is NOT exempted — the marker is
-#      per-import-statement, not a whole-file bypass.
-# Dies at Step 16 (Phase 6) alongside the fallback branch it exists for.
-# ---------------------------------------------------------------------------
-_STOP28_EXEMPT_FILE = "entry.py"
-_STOP28_MARKER = "STOP-28 fallback"
-
-
-def _is_stop28_exempt(rel: str, source_lines: list[str], lineno: int) -> bool:
-    """True iff this hit is the one narrow STOP-28 fallback exemption.
-
-    `rel` must be exactly `_STOP28_EXEMPT_FILE` (axis 1) AND the 1-indexed
-    `lineno`'s physical source line must carry the `_STOP28_MARKER` comment
-    (axis 2). Both axes are required — see the module docstring.
-    """
-    if rel != _STOP28_EXEMPT_FILE:
-        return False
-    if lineno < 1 or lineno > len(source_lines):
-        return False
-    return _STOP28_MARKER in source_lines[lineno - 1]
-
 
 def _module_is_frozen(module: str | None, imported_name: str | None) -> bool:
     """Decide whether an import target is the banned frozen engine.
@@ -176,7 +123,6 @@ def run(converter_dir: Path | None = None) -> list[dict]:
         except SyntaxError:
             continue
         rel = str(py.relative_to(root))
-        source_lines = text.splitlines()
         for node in ast.walk(tree):
             banned_src: str | None = None
             if isinstance(node, ast.Import):
@@ -205,8 +151,6 @@ def run(converter_dir: Path | None = None) -> list[dict]:
                     target = node.args[0].value
                     if _module_is_frozen(target, None):
                         banned_src = f"{ast.unparse(fn)}({target!r})"
-            if banned_src and _is_stop28_exempt(rel, source_lines, getattr(node, "lineno", 0)):
-                continue
             if banned_src:
                 violations.append({
                     "key": _violation_key(rel, banned_src),

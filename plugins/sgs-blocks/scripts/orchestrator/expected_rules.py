@@ -14,13 +14,14 @@ Schema per JSONL line:
         "source_media_condition": "<@media cond>" | null
     }
 
-Why parse_css from convert.py rather than cssutils:
+Why parse_css from converter.services.css_parse rather than cssutils:
     cssutils is not installed in the dev/CI environment and adding a runtime
     dep for tracing-only infrastructure is the wrong shape. The in-tree
-    parse_css() is the proven production parser (the same one that got the
-    @media regex fix yesterday, commit 20ef1d66); reusing it means the
-    baseline reflects exactly what the converter sees -- not a different
-    parser's interpretation, which would introduce its own silent-miss class.
+    parse_css() is the proven production parser (ported off the frozen
+    convert.py at EXECUTION Step 16, 2026-07-05, faithful copy -- see
+    converter/services/css_parse.py); reusing it means the baseline reflects
+    exactly what the converter sees -- not a different parser's
+    interpretation, which would introduce its own silent-miss class.
 
 Selector matching: soupsieve (already a bs4 dependency). Selectors that
 soupsieve cannot parse (e.g. some ``:not()`` forms, pseudo-states like
@@ -42,11 +43,10 @@ sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
 
 # Reuse the in-tree CSS parser.
-try:
-    from .converter_v2 import convert as _v3
-except ImportError:
-    sys.path.insert(0, str(Path(__file__).parent))
-    from converter_v2 import convert as _v3  # type: ignore[no-redef]
+_SCRIPTS_ROOT = Path(__file__).resolve().parent.parent  # .../sgs-blocks/scripts
+if str(_SCRIPTS_ROOT) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_ROOT))
+from converter.services.css_parse import parse_css as _parse_css
 
 
 # Pseudo bits we strip before handing the selector to soupsieve. Order matters
@@ -147,7 +147,7 @@ def extract_for_section(section_html: str, full_css: str) -> list[dict]:
     if root is None:
         return []
 
-    parsed = _v3.parse_css(full_css or "")
+    parsed = _parse_css(full_css or "")
     out: list[dict] = []
     for key, decls in parsed.items():
         media_cond, selector = _split_parsed_key(key)

@@ -10,9 +10,16 @@ Spec 31 §7a check 1:
     - .get(slug) with a slug-keyed dict
     - dict/frozenset/set/list literals whose keys/members match "sgs/[a-z-]+"
 
-  Allowlist: function-scoped ('iconCircleBackground' legitimate only in
-  _atomic_attrs_for of converter_v2/convert.py; check-atomic-slug-literals.py
-  covers the _atomic_attrs_for scope for convert.py).
+  Allowlist: function-scoped ('iconCircleBackground' was legitimate only in
+  _atomic_attrs_for of the now-DELETED converter_v2/convert.py;
+  check-atomic-slug-literals.py covered the _atomic_attrs_for scope for that
+  file). The _FUNC_SCOPED_ALLOWLIST entry below is now permanently dead
+  (EXECUTION Step 16, 2026-07-05 — the frozen file it named no longer
+  exists, so the scan can never hit it) but is left in place rather than
+  removed: harmless, and documents where the equivalent allowance would need
+  to be re-added if the new engine ever grows its own function-scoped
+  slug-literal need (today it doesn't — grepped, no _atomic_attrs_for
+  equivalent exists under converter/).
 
   This check supersedes check-atomic-slug-literals.py by scanning the WHOLE
   orchestrator tree, not just _atomic_attrs_for.  check-atomic-slug-literals.py
@@ -57,7 +64,7 @@ _SLUG_RE = re.compile(r'"(sgs/[a-z0-9-]+)"')
 # ---------------------------------------------------------------------------
 
 # relative to _ORCHESTRATOR
-_ATOMIC_FILE_REL = "converter_v2/convert.py"
+_ATOMIC_FILE_REL = "converter_v2/convert.py"  # DELETED Step 16 — allowlist entry is inert (kept for key-format history)
 _ATOMIC_FUNC = "_atomic_attrs_for"
 
 # The 'iconCircleBackground' note in Spec 31 refers to a slug used inside

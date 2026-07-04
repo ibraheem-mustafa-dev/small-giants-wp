@@ -159,19 +159,54 @@ def test_loose_text_under_container_is_tracked_not_dropped():
 
 # -- integration: the real Mama's homepage, all 9 sections --------------------
 
+def _find_top_level_sections(soup: BeautifulSoup) -> list:
+    """Return every top-level section-like element in the body.
+
+    PORTED (EXECUTION Step 16, 2026-07-05): faithful copy of the retired
+    ``orchestrator.converter_v2.convert_page.find_top_level_sections`` — a
+    plain bs4 helper with zero frozen-engine dependency, inlined here as the
+    one remaining caller (a test-only page-splitting utility, not production
+    logic; ``convert_page.py`` itself had no Stage-4 consumer and died with
+    the rest of the frozen package).
+    """
+    body = soup.find("body") or soup
+    candidates: list = []
+    for tag_name in ("header", "section", "footer"):
+        for el in body.find_all(tag_name):
+            classes = el.get("class", []) or []
+            sgs_classes = [c for c in classes if c.startswith("sgs-")]
+            if not sgs_classes:
+                continue
+            if "__" in sgs_classes[0]:
+                continue
+            candidates.append(el)
+    cand_ids = {id(c) for c in candidates}
+    out: list = []
+    for c in candidates:
+        if any(id(anc) in cand_ids for anc in c.parents):
+            continue
+        out.append(c)
+    return out
+
+
+def _extract_inline_css(soup: BeautifulSoup) -> str:
+    """Concatenate every <style> block in the document (ported alongside
+    ``_find_top_level_sections`` — see its docstring)."""
+    return "\n\n".join(tag.get_text() for tag in soup.find_all("style"))
+
+
 def test_real_homepage_all_nine_sections_emit():
     """STOP-34: the universality gate is the REAL draft, all 9 sections, not a
     synthetic node. Every section must emit non-empty markup (2/9 -> 9/9)."""
-    from orchestrator.converter_v2 import convert as v3
-    from orchestrator.converter_v2.convert_page import extract_inline_css, find_top_level_sections
+    from converter.services.css_parse import parse_css
 
     draft = (Path(__file__).resolve().parents[5]
              / "sites" / "mamas-munches" / "mockups" / "homepage" / "index.html")
     if not draft.exists():
         pytest.skip("Mama's homepage draft not present in this checkout")
     soup = BeautifulSoup(draft.read_text(encoding="utf-8"), "html.parser")
-    css_rules = v3.parse_css(extract_inline_css(soup))
-    sections = find_top_level_sections(soup)
+    css_rules = parse_css(_extract_inline_css(soup))
+    sections = _find_top_level_sections(soup)
     assert len(sections) == 9
     for sec in sections:
         rec = recognise_section(sec)

@@ -14,6 +14,18 @@ in the documented allow-list below.
 The allow-list can only SHRINK (as branches are replaced by DB-driven logic).
 To extend it requires a spec amendment and an entry here with a justification.
 
+RETIRED (EXECUTION Step 16, 2026-07-05): the frozen ``converter_v2/convert.py``
+and its ``_atomic_attrs_for`` per-block if/elif ladder are DELETED. The new
+engine has no equivalent single function to guard — CSS/content dispatch is
+per-property resolver modules driven by DB lookups (grepped: no
+``_atomic_attrs_for`` anywhere under ``converter/``), so FR-22-3's binding
+rule is already structurally satisfied by the new architecture's shape, not
+by a literal-set allow-list. Rather than hard-fail every run once the target
+file is gone (`sys.exit(2)` previously), this script now detects the missing
+target and PASSES with a retirement notice — kept in place as a historical
+record + in case a future single-dispatch-function pattern reappears and
+needs the same guard shape again.
+
 Usage:
     python scripts/check-atomic-slug-literals.py          # report (exit 0 unless new literals)
     python scripts/check-atomic-slug-literals.py --check  # same, exits 1 on new literals
@@ -54,8 +66,13 @@ SCRIPT_DIR = Path(__file__).parent
 CONVERT_PY = SCRIPT_DIR / "orchestrator" / "converter_v2" / "convert.py"
 
 if not CONVERT_PY.exists():
-    print(f"ERROR: cannot find {CONVERT_PY}", file=sys.stderr)
-    sys.exit(2)
+    print(
+        "RETIRED — converter_v2/convert.py was deleted (EXECUTION Step 16, "
+        "2026-07-05). _atomic_attrs_for's per-block if/elif ladder no longer "
+        "exists to guard; the new engine dispatches via DB-driven per-property "
+        "resolvers instead. This check is a historical no-op. See module docstring."
+    )
+    sys.exit(0)
 
 source = CONVERT_PY.read_text(encoding="utf-8")
 

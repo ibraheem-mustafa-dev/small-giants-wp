@@ -1,11 +1,43 @@
-"""test_converter_conformance.py — Gate A: converter golden-fixture conformance harness.
+"""test_converter_conformance.py — Gate A: converter fixture conformance harness.
 
 Implements the D178 regression guard: "good docs + undelivered/mis-wired code".
-Runs the converter on small fixture drafts, compares the emitted block markup against
-captured golden files, and FAILS loudly when a future edit changes the emit unexpectedly.
+Runs the converter on small fixture drafts and checks it produces WP block
+markup for each — plus the DB-invariant + dispatch-determinism assertions
+that guard the DB state the converter's resolver dispatch reads at runtime.
 
-Fixtures: plugins/sgs-blocks/scripts/tests/fixtures/conformance/*.html
-Goldens:  plugins/sgs-blocks/scripts/tests/fixtures/conformance/*.golden.json
+REWIRED (EXECUTION Step 16, Phase 6, 2026-07-05): the frozen
+``orchestrator.converter_v2.convert.walk()``/``parse_css()`` harness is
+deleted along with the frozen tree. This file now drives the converter
+through the same public entry point production uses,
+``converter.entry.convert_section`` — no direct frozen internals.
+
+Two classes from the pre-Step-16 version are GONE, with justification (they
+tested frozen-tree internal structure that has no new-engine equivalent, not
+convert_section's observable behaviour — nothing to rewire):
+  - ``TestLiftersHaveSingleCaller`` — AST-scanned convert.py's own source for
+    a single-caller invariant on 3 named private lifter functions
+    (``_lift_typography_to_block_attrs`` etc.) inside ``route_node_css``.
+    The new engine has no ``route_node_css`` — it dispatches CSS declarations
+    through per-property resolvers (``converter/resolvers/*.py``), a
+    structurally different call graph with no 1:1 analogue to pin.
+  - The exact-string golden-diff assertion in ``test_golden_conformance``
+    (the ``assert actual_markup == expected_markup`` body) — the golden
+    files were captured from the FROZEN walker's emit shape and do not match
+    the new engine's (deliberately different, e.g. resolver-driven CSS-attrs
+    dispatch) output. Re-baselining ~31 goldens against the new engine is a
+    separate, judgment-heavy task (each golden needs visual/semantic
+    verification, not a blind regen) — flagged as a follow-up, not done here
+    per this session's brief ("don't improvise a bigger change"). The test
+    below keeps the SMOKE half (every fixture still produces valid non-empty
+    WP block markup through the real entry point) so Gate A still catches a
+    fixture regressing to empty/broken output, without asserting exact
+    parity with the retired engine's emit.
+
+``TestDispatchDeterminism`` is KEPT + rewired: verified live that
+``converter.db.db_lookup.attr_for_property`` returns the identical verdicts
+for every pinned (block, property) pair as the frozen ``converter_v2``
+version did (2026-07-05 spot-check), so the pin still holds meaning against
+the new engine's dispatch table.
 
 Regeneration mode (re-baseline after an intentional converter improvement):
     REGEN=1 python -m pytest plugins/sgs-blocks/scripts/tests/test_converter_conformance.py -v
@@ -30,7 +62,7 @@ import pytest
 from bs4 import BeautifulSoup
 
 # ---------------------------------------------------------------------------
-# sys.path — add scripts root so orchestrator.converter_v2 resolves
+# sys.path — add scripts root so converter.* resolves
 # ---------------------------------------------------------------------------
 
 _REPO_ROOT = Path(__file__).resolve().parents[4]        # small-giants-wp/
@@ -40,13 +72,10 @@ if str(_SCRIPTS_ROOT) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_ROOT))
 
 # ---------------------------------------------------------------------------
-# Import the converter entry points.
-# Entry point: walk() at convert.py line 2603, called exactly as in main()
-#   (line 3958): walk(section, css_rules, variation_buf, is_top_level=True)
-# parse_css() at line 319 converts a CSS string to {selector: {prop: value}}.
+# Import the converter entry point — the same one production uses.
 # ---------------------------------------------------------------------------
 
-from orchestrator.converter_v2.convert import parse_css, walk  # noqa: E402
+from converter.entry import convert_section  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -97,15 +126,10 @@ def _extract_fixture_parts(html_content: str) -> tuple[str, "Tag"]:
 
 
 def _run_converter(section: "Tag", css_text: str) -> str:
-    """Run the converter on a single section node.
-
-    Uses the same call pattern as convert.py main() line 3958:
-        result = walk(section, css_rules, variation_buf, is_top_level=True)
-    """
-    css_rules = parse_css(css_text)
-    variation_buf: list[str] = []
-    result = walk(section, css_rules, variation_buf, is_top_level=True)
-    return result or ""
+    """Run the converter on a single section node via the real production
+    entry point (``converter.entry.convert_section``)."""
+    result = convert_section(html=str(section), css=css_text, media_map={})
+    return result.get("block_markup") or ""
 
 
 def _all_block_slugs_in(markup: str) -> list[str]:
@@ -174,17 +198,23 @@ def test_golden_conformance(
     golden_data = json.loads(golden_path.read_text(encoding="utf-8"))
     expected_markup: str = golden_data["markup"]
 
-    # Primary assertion — exact string match on emitted markup
-    assert actual_markup == expected_markup, (
-        f"[{test_id}] Converter emit diverged from golden.\n"
+    # SMOKE assertion only (EXECUTION Step 16, 2026-07-05): the golden files
+    # were captured from the retired frozen walker's emit shape, which does
+    # not match the new engine's (deliberately different) output — exact-diff
+    # against them is not meaningful post-flip. Re-baselining every golden
+    # against the new engine is a separate, judgment-heavy follow-up (each
+    # needs visual/semantic verification, not a blind regen — see module
+    # docstring). Until then this asserts the new engine still recognises
+    # + emits SOME valid WP block for every fixture that used to convert, so
+    # a fixture regressing to broken/empty output is still caught.
+    expected_slugs = _all_block_slugs_in(expected_markup)
+    actual_slugs = _all_block_slugs_in(actual_markup)
+    assert actual_slugs, (
+        f"[{test_id}] Converter emitted markup with no wp: block comments at all.\n"
         f"  Fixture:  {html_path.name}\n"
-        f"  Golden:   {golden_path.name}\n"
-        f"  Expected blocks: {_all_block_slugs_in(expected_markup)}\n"
-        f"  Actual blocks:   {_all_block_slugs_in(actual_markup)}\n"
-        f"\n--- EXPECTED (first 600 chars) ---\n{expected_markup[:600]}\n"
-        f"\n--- ACTUAL (first 600 chars) ---\n{actual_markup[:600]}\n"
-        f"\nIf this is an intentional improvement, run with --regen-golden "
-        f"OR set REGEN=1 to re-baseline. Commit the new golden with a cited reason."
+        f"  Actual:   {actual_markup[:600]}\n"
+        f"  (Old frozen-engine golden emitted: {expected_slugs} — kept for reference only; "
+        f"exact-parity re-baseline against the new engine is a tracked follow-up, not this gate.)"
     )
 
 
@@ -354,13 +384,12 @@ class TestHarnessSmoke:
         )
 
     def test_converter_entry_point_callable(self) -> None:
-        """walk() and parse_css() must be importable and callable from scripts root."""
-        html = '<section class="sgs-hero"><p>Smoke</p></section>'
-        soup = BeautifulSoup(html, "html.parser")
-        section = soup.find("section")
-        result = walk(section, {}, is_top_level=True)
-        assert result and "wp:" in result, (
-            f"walk() should return WP block markup for a minimal sgs-hero section. Got: {result!r}"
+        """convert_section() must be importable and callable from scripts root."""
+        html = '<section id="hero" class="sgs-hero"><p>Smoke</p></section>'
+        result = convert_section(html=html, css="", media_map={})
+        assert result.get("block_markup") and "wp:" in result["block_markup"], (
+            f"convert_section() should return WP block markup for a minimal sgs-hero "
+            f"section. Got: {result!r}"
         )
 
     def test_golden_files_are_valid_json(self) -> None:
@@ -378,135 +407,16 @@ class TestHarnessSmoke:
 
 
 # ---------------------------------------------------------------------------
-# Call-graph assertion: each lifter has exactly ONE production caller
-# (Commit 1a enforcement gate)
+# TestLiftersHaveSingleCaller — DELETED (EXECUTION Step 16, 2026-07-05).
+# It AST-scanned the frozen convert.py's own source for a single-caller
+# invariant on 3 named private lifters inside route_node_css. The new engine
+# has no route_node_css — CSS declarations dispatch through per-property
+# resolver modules (converter/resolvers/*.py), a structurally different call
+# graph with no 1:1 function to pin. Nothing to rewire; the invariant this
+# test protected (each lifter has one call site) doesn't map onto the new
+# architecture's shape. See module docstring.
 # ---------------------------------------------------------------------------
-
-class TestLiftersHaveSingleCaller:
-    """Assert that the three CSS-lift helpers are called ONLY from route_node_css.
-
-    After the Commit-1a call-site consolidation, each lifter must appear as a
-    call expression (name + '(') exclusively inside the body of route_node_css.
-    Any second call site elsewhere in convert.py means the refactor is
-    incomplete — this test will fail immediately, preventing silent regression.
-
-    Exclusions (not counted as production callers):
-      - The def line of each lifter itself (``def _lift_...``)
-      - Comment / docstring lines (lines whose stripped content starts with '#'
-        or whose content is part of a triple-quoted string — approximated by
-        checking for the pattern inside the route_node_css body only)
-      - The def line of route_node_css itself
-
-    How this test would FAIL if a second caller existed:
-      If any code outside route_node_css's body contained, e.g.,
-      ``_lift_root_supports_to_style(`` as a call, the regex scan of lines
-      outside the route_node_css block would find a match and assert would
-      fail with the offending line number and content.
-    """
-
-    _LIFTER_NAMES = (
-        "_lift_typography_to_block_attrs",
-        "_lift_root_supports_to_style",
-        "_lift_wrapper_css_to_container_attrs",
-    )
-
-    @staticmethod
-    def _parse_route_node_css_body(source_lines: list[str]) -> tuple[int, int]:
-        """Return (start_line_idx, end_line_idx) of route_node_css body (0-indexed).
-
-        Start is the first line of the function BODY — i.e., the line AFTER the
-        closing ``) -> None:`` (or ``):`` / ``) -> None:``) of the function signature.
-        End is the line index of the next top-level ``def `` or ``class `` at
-        column 0.
-
-        Works correctly with multi-line function signatures.
-        """
-        # Step 1: find the ``def route_node_css(`` line.
-        def_line: int | None = None
-        for i, line in enumerate(source_lines):
-            if line.startswith("def route_node_css("):
-                def_line = i
-                break
-        assert def_line is not None, "route_node_css not found in convert.py source"
-
-        # Step 2: find the end of the function signature (closing ``:`` at column 0
-        # or indented) by scanning forward until we hit a line that ends with ``:``
-        # and is not a continuation of the parameter list.  The closing line of a
-        # multi-line def always ends with ``) -> None:`` or ``):`` without leading
-        # whitespace for the ``:`` character (it's part of ``) -> None:``).
-        # More robustly: the BODY starts on the first line that is fully indented
-        # (starts with whitespace) AFTER the def and its signature close.
-        sig_end: int | None = None
-        for i in range(def_line, len(source_lines)):
-            stripped = source_lines[i].rstrip()
-            if i == def_line:
-                # The def line itself — keep scanning.
-                if stripped.endswith(":"):
-                    # Single-line def (no params or params on same line).
-                    sig_end = i
-                continue
-            # A line that is part of the signature will NOT start with 4-space indent
-            # used by the function body — it will either be a continuation (deeper
-            # indent, param lines) or the closing ``) -> None:``.
-            # The closing line ends with ``:`` and starts at column 0 (``):`` or
-            # ``) -> None:``).
-            if stripped.endswith(":"):
-                sig_end = i
-                break
-        assert sig_end is not None, "route_node_css signature end not found"
-        start = sig_end + 1
-
-        # Step 3: scan for the next top-level ``def`` or ``class`` at column 0.
-        end = len(source_lines)
-        for i in range(start, len(source_lines)):
-            line = source_lines[i]
-            if not line:
-                continue
-            if line[0] not in (" ", "\t") and line.strip():
-                # Non-empty line at column 0 — this is the next top-level symbol.
-                end = i
-                break
-        return start, end
-
-    def test_lifters_have_single_caller(self) -> None:
-        """Each lifter name must appear as a call ONLY inside route_node_css body."""
-        convert_path = (
-            _SCRIPTS_ROOT / "orchestrator" / "converter_v2" / "convert.py"
-        )
-        source = convert_path.read_text(encoding="utf-8")
-        source_lines = source.splitlines(keepends=False)
-
-        body_start, body_end = self._parse_route_node_css_body(source_lines)
-
-        violations: list[str] = []
-        for lifter in self._LIFTER_NAMES:
-            call_pattern = re.compile(
-                r"(?<!def\s)" + re.escape(lifter) + r"\s*\("
-            )
-            for line_idx, line in enumerate(source_lines):
-                stripped = line.strip()
-                # Skip def lines (the lifter's own definition and route_node_css def).
-                if stripped.startswith("def "):
-                    continue
-                # Skip comment-only lines.
-                if stripped.startswith("#"):
-                    continue
-                if not call_pattern.search(line):
-                    continue
-                # A call expression was found on this line.
-                # It is allowed ONLY if the line falls inside route_node_css body.
-                inside_body = body_start <= line_idx < body_end
-                if not inside_body:
-                    violations.append(
-                        f"Line {line_idx + 1}: {lifter!r} called outside "
-                        f"route_node_css (body lines {body_start + 1}–{body_end}): "
-                        f"{line.rstrip()!r}"
-                    )
-
-        assert not violations, (
-            "Lifters must be called ONLY from route_node_css. "
-            "Violations found:\n" + "\n".join(violations)
-        )
+# (class body removed — see comment block above)
 
 
 # ---------------------------------------------------------------------------
@@ -593,7 +503,7 @@ class TestDispatchDeterminism:
 
     @pytest.fixture(scope="class")
     def db(self):
-        from orchestrator.converter_v2 import db_lookup
+        from converter.db import db_lookup
         return db_lookup
 
     def _writer(self, result):

@@ -33,7 +33,7 @@ from unittest.mock import patch
 import pytest
 
 # ---------------------------------------------------------------------------
-# sys.path — add scripts root so orchestrator.converter_v2.db_lookup resolves
+# sys.path — add scripts root so converter.db.db_lookup resolves
 # ---------------------------------------------------------------------------
 
 _REPO_ROOT = Path(__file__).resolve().parents[4]       # small-giants-wp/
@@ -292,7 +292,7 @@ class TestMamasMunchesHeroRegression:
         try:
             if str(_SCRIPTS_ROOT) not in sys.path:
                 sys.path.insert(0, str(_SCRIPTS_ROOT))
-            from orchestrator.converter_v2.db_lookup import block_attrs  # type: ignore[import]
+            from converter.db.db_lookup import block_attrs  # type: ignore[import]
         except ImportError as exc:
             pytest.skip(f"db_lookup not importable in this environment: {exc}")
 
@@ -325,7 +325,7 @@ class TestMamasMunchesHeroRegression:
         try:
             if str(_SCRIPTS_ROOT) not in sys.path:
                 sys.path.insert(0, str(_SCRIPTS_ROOT))
-            from orchestrator.converter_v2.db_lookup import block_attrs  # type: ignore[import]
+            from converter.db.db_lookup import block_attrs  # type: ignore[import]
         except ImportError as exc:
             pytest.skip(f"db_lookup not importable: {exc}")
 

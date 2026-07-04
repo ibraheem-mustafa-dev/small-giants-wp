@@ -890,10 +890,21 @@ _DYNAMIC_SKIP = object()
 
 
 # ---------------------------------------------------------------------------
-# has_inner_blocks auto-derivation helpers
+# render.php $content-consumption detection.
+#
+# has_inner_blocks AUTO-DERIVATION seeder RETIRED (EXECUTION Step 16,
+# 2026-07-05): block_composition.has_inner_blocks is DROPPED (migration
+# 2026-07-05-drop-has-inner-blocks-column.py). The save-marker helpers that
+# existed only to feed that column's seeder
+# (_SAVE_INNER_BLOCKS_MARKER_RE / _strip_js_block_comments /
+# _is_js_comment_line / _has_save_inner_blocks_marker /
+# _has_inner_blocks_from_block_json / _derive_has_inner_blocks /
+# _populate_has_inner_blocks) are deleted with it — has_inner_blocks is now
+# derived FRESH at convert-time by converter.services.has_inner
+# .derive_delegates_content, never a cached/seeded column (Spec 31 §12.7).
+# _render_consumes_content below is KEPT — it also feeds the still-live
+# emit_shape stage (Stage 1 sub-step D) independently of has_inner_blocks.
 # ---------------------------------------------------------------------------
-
-_SAVE_INNER_BLOCKS_MARKER_RE = re.compile(r"<InnerBlocks\.Content")
 
 # Non-trivial $content consumption patterns in render.php.
 # Covers every real usage shape seen across the codebase:
@@ -923,52 +934,6 @@ _RENDER_CONTENT_USAGE_RE = re.compile(
 )
 
 
-def _strip_js_block_comments(src: str) -> str:
-    """Remove /* ... */ block comments from JS source."""
-    return re.sub(r"/\*.*?\*/", " ", src, flags=re.DOTALL)
-
-
-def _is_js_comment_line(line: str) -> bool:
-    """True if the stripped line is a JS single-line or block-comment line."""
-    s = line.strip()
-    return s.startswith("//") or s.startswith("*") or s.startswith("/*")
-
-
-def _has_save_inner_blocks_marker(block_dir: Path) -> bool:
-    """Return True if the block's save function emits <InnerBlocks.Content.
-
-    Check order: save.js first (preferred); if absent, check index.js for an
-    inline ``save: () => <InnerBlocks.Content`` declaration.  deprecated.js is
-    explicitly excluded — deprecated save shapes must never count.
-
-    Matches the JSX usage, not comments.
-    """
-    save_js = block_dir / "save.js"
-    if save_js.exists():
-        src = _strip_js_block_comments(
-            save_js.read_text(encoding="utf-8", errors="replace")
-        )
-        for line in src.splitlines():
-            if _is_js_comment_line(line):
-                continue
-            if _SAVE_INNER_BLOCKS_MARKER_RE.search(line):
-                return True
-        return False
-
-    index_js = block_dir / "index.js"
-    if not index_js.exists():
-        return False
-    src = _strip_js_block_comments(
-        index_js.read_text(encoding="utf-8", errors="replace")
-    )
-    for line in src.splitlines():
-        if _is_js_comment_line(line):
-            continue
-        if _SAVE_INNER_BLOCKS_MARKER_RE.search(line):
-            return True
-    return False
-
-
 def _is_php_comment_line(line: str) -> bool:
     """True if the stripped line is a PHP comment or docblock line."""
     s = line.strip()
@@ -992,29 +957,6 @@ def _render_consumes_content(block_dir: Path) -> bool:
         if _RENDER_CONTENT_USAGE_RE.search(line):
             return True
     return False
-
-
-# has_inner_blocks block-owned override (single source, 2026-06-15).
-# Previously a hardcoded Python dict duplicated in sgs-update-v2.py +
-# check-composition-sync.py that could drift. Now the override lives in each
-# block's block.json supports.sgs.hasInnerBlocks (bool). When a block declares the
-# key, that value wins over the AND-rule derivation. When absent, the AND rule fires
-# as before. Both this script and the gate read the SAME source (block.json), so
-# drift is structurally impossible. R-31-1 DB-first (block.json is the canonical
-# block metadata, not a seed-script dict). 2026-06-15.
-def _has_inner_blocks_from_block_json(bj: dict) -> "int | None":
-    """Read supports.sgs.hasInnerBlocks from a parsed block.json.
-
-    Returns the declared int (0 or 1) when the key is present, or None when
-    absent (caller should fall back to the AND-rule derivation).
-    """
-    supports = bj.get("supports", {}) if isinstance(bj, dict) else {}
-    sgs = supports.get("sgs", {}) if isinstance(supports, dict) else {}
-    if not isinstance(sgs, dict):
-        return None
-    if "hasInnerBlocks" in sgs:
-        return 0 if not sgs["hasInnerBlocks"] else 1
-    return None
 
 
 # Per-attr classification overrides — applied as Stage 1 sub-step C, AFTER
@@ -1223,117 +1165,10 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
 }
 
 
-def _derive_has_inner_blocks(block_dir: Path) -> int:
-    """Derive has_inner_blocks for one block using the AND rule.
-
-    Returns 1 IFF:
-      (a) save.js / index.js emits <InnerBlocks.Content (non-comment, not deprecated.js)
-      AND
-      (b) render.php references $content or $block->inner_blocks non-trivially.
-
-    The AND rule prevents the D212 testimonial-empty class of bug: a typed leaf
-    that still emits the save marker (pre-migration) but whose render.php ignores
-    $content correctly derives to 0.
-    """
-    return 1 if (_has_save_inner_blocks_marker(block_dir) and _render_consumes_content(block_dir)) else 0
-
-
-def _populate_has_inner_blocks(
-    blocks_dir: Path,
-    c: "sqlite3.Cursor",
-    dry_run: bool,
-) -> dict:
-    """Stage 1 sub-step: auto-derive block_composition.has_inner_blocks from source.
-
-    Iterates every sgs/* block directory, derives has_inner_blocks via the AND
-    rule (_derive_has_inner_blocks), then:
-
-      dry_run=True  — prints a line for every drift and returns counters without
-                      writing anything.
-      dry_run=False — UPDATEs only on drift (write-on-drift, idempotent).
-
-    Blocks with no block_composition row are skipped and counted as missing_row.
-    core/* rows are never touched.
-
-    Returns counters:
-        hib_scanned     — sgs/* block dirs examined
-        hib_updated     — rows actually UPDATEd (drift, dry_run=False only)
-        hib_set_1       — blocks whose derived value is 1 (post-run)
-        hib_set_0       — blocks whose derived value is 0 (post-run)
-        hib_missing_row — blocks with no block_composition row (skipped)
-    """
-    scanned = 0
-    updated = 0
-    set_1 = 0
-    set_0 = 0
-    missing_row = 0
-
-    for block_dir in sorted(blocks_dir.iterdir()):
-        if not block_dir.is_dir() or block_dir.name in EXCLUDED_DIRS:
-            continue
-
-        block_json_path = block_dir / "block.json"
-        if not block_json_path.exists():
-            continue
-
-        try:
-            with open(block_json_path, encoding="utf-8") as f:
-                bj = json.load(f)
-            slug = bj.get("name", f"sgs/{block_dir.name}")
-        except Exception:  # noqa: BLE001
-            bj = {}
-            slug = f"sgs/{block_dir.name}"
-
-        if not slug.startswith("sgs/"):
-            continue  # never touch core/* rows
-
-        scanned += 1
-        _bj_override = _has_inner_blocks_from_block_json(bj)
-        derived = _bj_override if _bj_override is not None else _derive_has_inner_blocks(block_dir)
-
-        row = c.execute(
-            "SELECT has_inner_blocks FROM block_composition WHERE block_slug = ?",
-            (slug,),
-        ).fetchone()
-
-        if row is None:
-            missing_row += 1
-            print(
-                f"[has_inner_blocks] SKIP {slug}: no block_composition row "
-                f"(derived={derived})"
-            )
-            continue
-
-        stored = row[0]
-        if derived == 1:
-            set_1 += 1
-        else:
-            set_0 += 1
-
-        if stored == derived:
-            continue  # already correct — nothing to do
-
-        if dry_run:
-            save_flag = _has_save_inner_blocks_marker(block_dir)
-            render_flag = _render_consumes_content(block_dir)
-            print(
-                f"[dry-run] {slug}: has_inner_blocks {stored} -> {derived}"
-                f"  (save={save_flag}, render_consumes={render_flag})"
-            )
-        else:
-            c.execute(
-                "UPDATE block_composition SET has_inner_blocks = ? WHERE block_slug = ?",
-                (derived, slug),
-            )
-            updated += 1
-
-    return {
-        "hib_scanned": scanned,
-        "hib_updated": updated,
-        "hib_set_1": set_1,
-        "hib_set_0": set_0,
-        "hib_missing_row": missing_row,
-    }
+# _derive_has_inner_blocks / _populate_has_inner_blocks RETIRED (EXECUTION
+# Step 16, 2026-07-05) — see the retirement banner near
+# _render_consumes_content's definition. has_inner_blocks is now derived
+# fresh at convert-time (converter.services.has_inner), never seeded here.
 
 
 def _apply_attr_classification_overrides(
@@ -1615,7 +1450,10 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
     Updates schema_metadata.indexed_blocks_count after scan.
     Sub-steps:
       - scrapes edit.js allowedBlocks into block_composition (write-on-drift).
-      - auto-derives block_composition.has_inner_blocks from source (write-on-drift).
+
+    (has_inner_blocks auto-derivation sub-step RETIRED EXECUTION Step 16,
+    2026-07-05 — the column it wrote is dropped; has_inner_blocks is now
+    derived fresh at convert-time by converter.services.has_inner.)
 
     PORTED FROM: ~/.agents/skills/sgs-wp-engine/scripts/update-db.py + populate-db.py
     """
@@ -1642,14 +1480,6 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
     ab_populated = ab_counts["allowed_blocks_populated"]
     ab_updated = ab_counts["allowed_blocks_updated"]
     ab_dynamic_skipped = ab_counts["allowed_blocks_dynamic_skipped"]
-
-    # --- Stage 1 sub-step B: auto-derive block_composition.has_inner_blocks ---
-    hib_counts = _populate_has_inner_blocks(blocks_dir, c, dry_run)
-    hib_scanned = hib_counts["hib_scanned"]
-    hib_updated = hib_counts["hib_updated"]
-    hib_set_1 = hib_counts["hib_set_1"]
-    hib_set_0 = hib_counts["hib_set_0"]
-    hib_missing_row = hib_counts["hib_missing_row"]
 
     if not dry_run:
         conn.commit()
@@ -1710,12 +1540,6 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
             f"allowed_blocks_updated={ab_updated}, "
             f"allowed_blocks_dynamic_skipped={ab_dynamic_skipped}."
         )
-        print(
-            f"Stage 1 (has_inner_blocks): hib_scanned={hib_scanned}, "
-            f"hib_updated={hib_updated}, "
-            f"hib_set_1={hib_set_1}, hib_set_0={hib_set_0}, "
-            f"hib_missing_row={hib_missing_row}."
-        )
     else:
         print(
             f"Stage 1 [dry-run]: {scanned} blocks scanned. "
@@ -1727,11 +1551,6 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
             f"allowed_blocks_populated={ab_populated} (already stored), "
             f"allowed_blocks_updated={ab_updated} (would drift), "
             f"allowed_blocks_dynamic_skipped={ab_dynamic_skipped}."
-        )
-        print(
-            f"Stage 1 (has_inner_blocks) [dry-run]: hib_scanned={hib_scanned}, "
-            f"hib_set_1={hib_set_1}, hib_set_0={hib_set_0}, "
-            f"hib_missing_row={hib_missing_row} (see drift lines above)."
         )
         _apply_attr_classification_overrides(conn, dry_run=True)
 
@@ -1750,11 +1569,6 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         "allowed_blocks_populated": ab_populated,
         "allowed_blocks_updated": ab_updated,
         "allowed_blocks_dynamic_skipped": ab_dynamic_skipped,
-        "hib_scanned": hib_scanned,
-        "hib_updated": hib_updated,
-        "hib_set_1": hib_set_1,
-        "hib_set_0": hib_set_0,
-        "hib_missing_row": hib_missing_row,
         "dry_run": dry_run,
     }
 

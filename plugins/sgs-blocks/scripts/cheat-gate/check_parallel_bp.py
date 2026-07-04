@@ -7,11 +7,18 @@ Spec 31 §7a check 4:
       db.breakpoint_suffix_rules() call context — they indicate a hardcoded
       breakpoint value instead of the DB-driven vocabulary.
 
-  Note: This check targets convert.py specifically because §7a names it as the
-  file containing _BP_SUFFIX_MAP (line 980) and the parallel breakpoint
-  literal integers.  The whole-tree scan for (b) would create too many false
-  positives from non-breakpoint numeric literals; convert.py is the known
-  offender.
+  Note: This check originally targeted the frozen convert.py specifically
+  because §7a named it as the file containing _BP_SUFFIX_MAP (line 980) and
+  the parallel breakpoint literal integers. REPOINTED (EXECUTION Step 16,
+  2026-07-05): convert.py is deleted. Part (b)'s scan target moves to the new
+  engine's tier/breakpoint surfaces — converter/services/extraction.py (where
+  db_lookup.breakpoint_suffix_rules() is consumed) and converter/db/db_lookup.py
+  (where it's defined) — rather than a whole-tree scan (still avoids the
+  false-positive risk of scanning every numeric literal tree-wide; verified
+  2026-07-05 that converter/ has ZERO _BP_SUFFIX_MAP-shaped dict anywhere —
+  the new engine already derives breakpoints from modifier_suffixes via
+  breakpoint_suffix_rules(), see fold_helpers.py's "former hardcoded
+  _BP_SUFFIX_MAP ... is removed" comment).
 
   check #5 (mirror-emit / sourceMode='bound') is DELEGATED to check_no_mirror.py
   — see the comment in run.py.
@@ -35,7 +42,22 @@ from cheat_gate.models import Violation, parallel_bp_key  # type: ignore[import]
 _HERE = Path(__file__).resolve().parent           # scripts/cheat-gate/
 _SCRIPTS_DIR = _HERE.parent                        # scripts/
 _ORCHESTRATOR = _SCRIPTS_DIR / "orchestrator"
-_CONVERT_PY = _ORCHESTRATOR / "converter_v2" / "convert.py"
+_CONVERTER = _SCRIPTS_DIR / "converter"
+# New engine's tier/breakpoint surface (repointed off the deleted frozen
+# convert.py at EXECUTION Step 16, 2026-07-05 — see module docstring).
+#
+# converter/db/db_lookup.py is DELIBERATELY EXCLUDED: it defines
+# _DEVICE_TIER_SAMPLES / _DEVICE_TIER_THRESHOLDS (375/767/768/800/1023/1024/
+# 1440), which are the fixed, DOCUMENTED web-platform device-tier breakpoint
+# STANDARD (not per-block hardcoded data) — see that file's own comment +
+# CLAUDE.md's "Responsive breakpoint discipline — device-tier vs visual"
+# rule. Scanning it produced 5 false-positive findings when trialled
+# 2026-07-05 (each a legitimate, cited constant, not the _BP_SUFFIX_MAP-class
+# violation this check exists to catch) — confirming the module docstring's
+# original whole-tree-creates-false-positives warning.
+_BP_SURFACE_FILES: tuple[Path, ...] = (
+    _CONVERTER / "services" / "extraction.py",
+)
 
 # The known symbol that must be derived from the DB, not hardcoded
 _BP_MAP_SYMBOL = "_BP_SUFFIX_MAP"
@@ -52,7 +74,7 @@ _DB_CALL_PATTERN = re.compile(r"db\.breakpoint_suffix_rules\(")
 
 def _rel(path: Path) -> str:
     try:
-        return str(path.relative_to(_ORCHESTRATOR))
+        return str(path.relative_to(_SCRIPTS_DIR))
     except ValueError:
         return str(path)
 
@@ -174,15 +196,20 @@ def run(
     """
     violations: list[Violation] = []
 
-    # --- (a) _BP_SUFFIX_MAP symbol — whole orchestrator tree ---
+    # --- (a) _BP_SUFFIX_MAP symbol — orchestrator/ + converter/ trees ---
     if orchestrator_dir is not None:
-        scan_dir = orchestrator_dir
+        scan_dirs = [orchestrator_dir]
     elif convert_py is not None:
         # Test mode: scope tree scan to the same directory as the supplied file.
-        scan_dir = convert_py.parent
+        scan_dirs = [convert_py.parent]
     else:
-        scan_dir = _ORCHESTRATOR
-    if scan_dir.exists():
+        # Production default: both the (post-deletion, converter_v2-free)
+        # orchestrator/ tree AND the modular converter/ tree — the new
+        # engine's tier/breakpoint surfaces (EXECUTION Step 16, 2026-07-05).
+        scan_dirs = [_ORCHESTRATOR, _CONVERTER]
+    for scan_dir in scan_dirs:
+        if not scan_dir.exists():
+            continue
         for py_path in sorted(scan_dir.rglob("*.py")):
             # Skip test files
             if (
@@ -215,12 +242,16 @@ def run(
                     key=key,
                 ))
 
-    # --- (b) Integer literals in breakpoint range — convert.py only ---
-    target = convert_py or _CONVERT_PY
-    if target.exists():
+    # --- (b) Integer literals in breakpoint range ---
+    # Test override: a single explicit file (test isolation, unchanged shape).
+    # Production: the new engine's tier/breakpoint surfaces (see module docstring).
+    targets = [convert_py] if convert_py is not None else list(_BP_SURFACE_FILES)
+    for target in targets:
+        if not target.exists():
+            continue
         file_rel = _rel(target)
         _has_bp_map, bp_ints = _scan_convert_py_for_parallel_bp(target)
-        # (bp_map detection above already covered convert.py; only add integers here)
+        # (bp_map detection above already covered this file; only add integers here)
         for val, line in bp_ints:
             key = parallel_bp_key(file_rel, str(val))
             detail = (
@@ -230,8 +261,7 @@ def run(
             )
             fix = (
                 f"Replace the hardcoded integer {val} in {file_rel} with a DB-driven "
-                f"breakpoint value from db.breakpoint_suffix_rules(). "
-                f"This is a LEGACY violation in the frozen convert.py — it is baselined."
+                f"breakpoint value from db.breakpoint_suffix_rules()."
             )
             violations.append(Violation(
                 check="parallel_bp",

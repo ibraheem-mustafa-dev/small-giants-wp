@@ -131,7 +131,9 @@ def derive_delegates_content(slug: str) -> int:
     return 1 if (_has_save_marker(block_dir) and _render_consumes(block_dir)) else 0
 
 
-# MIGRATION SHIM — dies Phase 6 (retired alongside block_composition.has_inner_blocks
-# column drop). Kept for external tooling (F6 db-consistency, tests) still importing
-# the old name; new production code MUST import derive_delegates_content.
-derive_has_inner_blocks = derive_delegates_content
+# MIGRATION SHIM `derive_has_inner_blocks` REMOVED (EXECUTION Step 16,
+# 2026-07-05) — block_composition.has_inner_blocks column is dropped and every
+# external reader (coverage-matrix/db_queries.py,
+# recogniser/leftover-bucket-router.py) was repointed to
+# derive_delegates_content directly in the same session; zero remaining
+# importers of the old name (verified by grep before deletion).
