@@ -66,21 +66,34 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			function findHeadings( blockList ) {
 				for ( const block of blockList ) {
+					const isSgsHeading =
+						block.name === 'sgs/heading';
 					if (
-						block.name === 'core/heading' &&
-						headingLevels.includes( block.attributes.level )
+						block.name === 'core/heading' ||
+						isSgsHeading
 					) {
-						const text = ( block.attributes.content || '' )
-							.replace( /<[^>]+>/g, '' )
-							.trim();
-						if ( text ) {
-							found.push( {
-								level: block.attributes.level,
-								text,
-								anchor:
-									block.attributes.anchor ||
-									slugify( text ),
-							} );
+						// sgs/heading stores level as 'h2'–'h6'; core/heading stores a number.
+						const level = isSgsHeading
+							? parseInt(
+									String(
+										block.attributes.level || 'h2'
+									).replace( 'h', '' ),
+									10
+							  )
+							: block.attributes.level;
+						if ( headingLevels.includes( level ) ) {
+							const text = ( block.attributes.content || '' )
+								.replace( /<[^>]+>/g, '' )
+								.trim();
+							if ( text ) {
+								found.push( {
+									level,
+									text,
+									anchor:
+										block.attributes.anchor ||
+										slugify( text ),
+								} );
+							}
 						}
 					}
 					// Recurse into inner blocks.

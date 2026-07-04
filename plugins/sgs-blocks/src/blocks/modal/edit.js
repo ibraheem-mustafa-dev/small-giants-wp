@@ -29,14 +29,14 @@ const MAX_WIDTH_OPTIONS = [
 
 const TEMPLATE = [
 	[
-		'core/heading',
+		'sgs/heading',
 		{
 			level: 2,
 			placeholder: __( 'Modal heading…', 'sgs-blocks' ),
 		},
 	],
 	[
-		'core/paragraph',
+		'sgs/text',
 		{
 			placeholder: __(
 				'Add any blocks you like inside the modal.',

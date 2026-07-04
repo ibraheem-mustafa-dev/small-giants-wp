@@ -2,7 +2,6 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/heading",
-    "replaces": "core/heading",
     "version": "0.5.1",
     "title": "Heading",
     "category": "sgs-content",

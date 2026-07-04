@@ -3,10 +3,7 @@
  * Server-side render for sgs/text.
  *
  * Single-element body-text block. Emits one configurable HTML tag with inline
- * styles derived from the flat SGS attribute set. Designed as a drop-in
- * replacement for core/paragraph in the converter pipeline so per-class
- * inline-style attrs reach the rendered DOM — core/paragraph is static and
- * its save.js output is frozen, making JSON attrs invisible to the renderer.
+ * styles derived from the flat SGS attribute set.
  *
  * Responsive per-viewport overrides are emitted as a scoped <style> block
  * using the block anchor id (or a generated unique id) so multiple instances
@@ -33,16 +30,16 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // 1. Extract attributes with safe defaults.
 // ---------------------------------------------------------------------------
 
-$text                        = isset( $attributes['text'] ) ? (string) $attributes['text'] : '';
-$tag_name                    = $attributes['tag'] ?? 'p';
-$text_colour                 = $attributes['textColour'] ?? '';
-$font_size                   = isset( $attributes['fontSize'] ) ? $attributes['fontSize'] : null;
-$font_size_unit              = $attributes['fontSizeUnit'] ?? 'px';
-$font_size_tablet            = isset( $attributes['fontSizeTablet'] ) ? $attributes['fontSizeTablet'] : null;
-$font_size_mobile            = isset( $attributes['fontSizeMobile'] ) ? $attributes['fontSizeMobile'] : null;
-$font_weight                 = $attributes['fontWeight'] ?? '';
-$line_height                 = isset( $attributes['lineHeight'] ) ? $attributes['lineHeight'] : null;
-$line_height_unit            = $attributes['lineHeightUnit'] ?? 'em';
+$text             = isset( $attributes['text'] ) ? (string) $attributes['text'] : '';
+$tag_name         = $attributes['tag'] ?? 'p';
+$text_colour      = $attributes['textColour'] ?? '';
+$font_size        = isset( $attributes['fontSize'] ) ? $attributes['fontSize'] : null;
+$font_size_unit   = $attributes['fontSizeUnit'] ?? 'px';
+$font_size_tablet = isset( $attributes['fontSizeTablet'] ) ? $attributes['fontSizeTablet'] : null;
+$font_size_mobile = isset( $attributes['fontSizeMobile'] ) ? $attributes['fontSizeMobile'] : null;
+$font_weight      = $attributes['fontWeight'] ?? '';
+$line_height      = isset( $attributes['lineHeight'] ) ? $attributes['lineHeight'] : null;
+$line_height_unit = $attributes['lineHeightUnit'] ?? 'em';
 // Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
 $line_height_unit            = ( 'unitless' === $line_height_unit ) ? '' : $line_height_unit;
 $line_height_tablet          = isset( $attributes['lineHeightTablet'] ) ? $attributes['lineHeightTablet'] : null;
@@ -186,9 +183,9 @@ if ( ! function_exists( 'sgs_text_build_inline_style' ) ) {
 
 // Early-return path for inheritStyle — emit a bare element with class only.
 if ( $inherit_style ) {
-	$anchor     = $attributes['anchor'] ?? '';
+	$anchor = $attributes['anchor'] ?? '';
 	// FIX D: hash-based id (stable across fragment-cached renders).
-	$uid        = $anchor ? esc_attr( $anchor ) : 'sgs-text-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+	$uid          = $anchor ? esc_attr( $anchor ) : 'sgs-text-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 	$wrapper_args = array( 'class' => 'wp-block-sgs-text' );
 	if ( $anchor ) {
 		$wrapper_args['id'] = $uid;

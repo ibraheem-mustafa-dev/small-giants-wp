@@ -1,0 +1,21 @@
+{
+  "__comment__": "Canonical bare-HTML-tag -> SGS-block bridge (D270, 2026-07-04). SINGLE SOURCE OF TRUTH for what SGS block an un-BEM-classed HTML tag becomes during cloning (the atomic-tag walker exception, Spec 31 §13.2 FR-31-3). Encodes universal HTML semantics (every <h2> -> sgs/heading), NOT per-block or per-case routing. Loaded once into the html_tag_to_core_block DB table by db_lookup._migrate_html_tag_to_core_block(); the runtime reads the DB, never this file. Values are [target_sgs_block_slug, note]. Keys starting with __ are ignored. Edit HERE.",
+  "h1": ["sgs/heading", "Heading level 1 — atomic walker fallback"],
+  "h2": ["sgs/heading", "Heading level 2"],
+  "h3": ["sgs/heading", "Heading level 3"],
+  "h4": ["sgs/heading", "Heading level 4"],
+  "h5": ["sgs/heading", "Heading level 5"],
+  "h6": ["sgs/heading", "Heading level 6"],
+  "p": ["sgs/text", "Paragraph text"],
+  "img": ["sgs/media", "Image — atomic media leaf"],
+  "video": ["sgs/media", "Video element → sgs/media (video mode)"],
+  "iframe": ["sgs/media", "Embedded iframe (YouTube/Vimeo) → sgs/media"],
+  "hr": ["sgs/divider", "Horizontal rule — divider"],
+  "button": ["sgs/button", "Bare button — walker auto-wraps in sgs/multi-button"],
+  "a": ["sgs/button", "Link shape — routes to the same atomic leaf as button"],
+  "blockquote": ["sgs/quote", "Quote block"],
+  "ul": ["sgs/icon-list", "Unordered list → SGS icon-list"],
+  "ol": ["sgs/icon-list", "Ordered list → SGS icon-list (ordered flag set via _atomic_attrs_for items)"],
+  "audio": ["sgs/audio", "Audio element → dedicated sgs/audio block (D268)"],
+  "details": ["sgs/collapsible-text", "Native disclosure → sgs/collapsible-text"]
+}

@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$heading_levels    = $attributes['headingLevels'] ?? [ 2, 3, 4 ];
+$heading_levels    = $attributes['headingLevels'] ?? array( 2, 3, 4 );
 $toc_title         = $attributes['title'] ?? __( 'Table of Contents', 'sgs-blocks' );
 $collapsible       = ! empty( $attributes['collapsible'] );
 $default_collapsed = ! empty( $attributes['defaultCollapsed'] );
@@ -27,9 +27,9 @@ $scroll_spy        = ! empty( $attributes['scrollSpy'] );
 $list_style        = $attributes['listStyle'] ?? 'numbered';
 $toc_style         = $attributes['style'] ?? 'card';
 // Fallbacks match block.json defaults so inline styles are always emitted.
-$title_colour      = $attributes['titleColour'] ?? 'text';
-$link_colour       = $attributes['linkColour'] ?? 'text-muted';
-$active_colour     = $attributes['activeLinkColour'] ?? 'primary';
+$title_colour  = $attributes['titleColour'] ?? 'text';
+$link_colour   = $attributes['linkColour'] ?? 'text-muted';
+$active_colour = $attributes['activeLinkColour'] ?? 'primary';
 
 // ——— Parse headings from post content ———
 $post = get_post();
@@ -43,9 +43,9 @@ if ( empty( $post_content ) ) {
 }
 
 // Use WordPress block parser for reliable heading extraction.
-$blocks   = parse_blocks( $post_content );
-$headings = [];
-$used_slugs = [];
+$blocks     = parse_blocks( $post_content );
+$headings   = array();
+$used_slugs = array();
 
 /**
  * Recursively extract headings from parsed blocks.
@@ -56,61 +56,66 @@ $used_slugs = [];
  * @param array $levels      Heading levels to include.
  */
 if ( ! function_exists( 'sgs_toc_extract_headings' ) ) :
-function sgs_toc_extract_headings( array $blocks, array &$headings, array &$used_slugs, array $levels ): void {
-	foreach ( $blocks as $block ) {
-		if ( 'core/heading' === ( $block['blockName'] ?? '' ) ) {
-			$level = (int) ( $block['attrs']['level'] ?? 2 );
+	function sgs_toc_extract_headings( array $blocks, array &$headings, array &$used_slugs, array $levels ): void {
+		foreach ( $blocks as $block ) {
+			$block_name     = $block['blockName'] ?? '';
+			$is_sgs_heading = ( 'sgs/heading' === $block_name );
+			if ( 'core/heading' === $block_name || $is_sgs_heading ) {
+				// core/heading stores a numeric level; sgs/heading stores an 'h2'–'h6' string.
+				$level = $is_sgs_heading
+				? (int) ltrim( (string) ( $block['attrs']['level'] ?? 'h2' ), 'h' )
+				: (int) ( $block['attrs']['level'] ?? 2 );
 
-			if ( ! in_array( $level, $levels, true ) ) {
-				continue;
+				if ( ! in_array( $level, $levels, true ) ) {
+					continue;
+				}
+
+				// sgs/heading is dynamic (text lives in the `content` attr); core/heading is static (innerHTML).
+				$text = wp_strip_all_tags( $is_sgs_heading ? ( $block['attrs']['content'] ?? '' ) : ( $block['innerHTML'] ?? '' ) );
+				$text = trim( $text );
+
+				if ( empty( $text ) ) {
+					continue;
+				}
+
+				// Check for sgs-toc-ignore class.
+				if ( isset( $block['attrs']['className'] ) && str_contains( $block['attrs']['className'], 'sgs-toc-ignore' ) ) {
+					continue;
+				}
+
+				// Use explicit anchor if set, otherwise generate from text.
+				if ( ! empty( $block['attrs']['anchor'] ) ) {
+					$slug = $block['attrs']['anchor'];
+				} else {
+					$slug = sanitize_title( $text );
+				}
+
+				if ( empty( $slug ) ) {
+					continue;
+				}
+
+				// Deduplicate slugs.
+				$original = $slug;
+				$counter  = 2;
+				while ( in_array( $slug, $used_slugs, true ) ) {
+					$slug = $original . '-' . $counter;
+					++$counter;
+				}
+				$used_slugs[] = $slug;
+
+				$headings[] = array(
+					'level' => $level,
+					'text'  => $text,
+					'id'    => $slug,
+				);
 			}
 
-			// Extract text from the innerHTML.
-			$text = wp_strip_all_tags( $block['innerHTML'] ?? '' );
-			$text = trim( $text );
-
-			if ( empty( $text ) ) {
-				continue;
+			// Recurse into inner blocks (headings inside groups, columns, etc.).
+			if ( ! empty( $block['innerBlocks'] ) ) {
+				sgs_toc_extract_headings( $block['innerBlocks'], $headings, $used_slugs, $levels );
 			}
-
-			// Check for sgs-toc-ignore class.
-			if ( isset( $block['attrs']['className'] ) && str_contains( $block['attrs']['className'], 'sgs-toc-ignore' ) ) {
-				continue;
-			}
-
-			// Use explicit anchor if set, otherwise generate from text.
-			if ( ! empty( $block['attrs']['anchor'] ) ) {
-				$slug = $block['attrs']['anchor'];
-			} else {
-				$slug = sanitize_title( $text );
-			}
-
-			if ( empty( $slug ) ) {
-				continue;
-			}
-
-			// Deduplicate slugs.
-			$original = $slug;
-			$counter  = 2;
-			while ( in_array( $slug, $used_slugs, true ) ) {
-				$slug = $original . '-' . $counter;
-				$counter++;
-			}
-			$used_slugs[] = $slug;
-
-			$headings[] = [
-				'level' => $level,
-				'text'  => $text,
-				'id'    => $slug,
-			];
-		}
-
-		// Recurse into inner blocks (headings inside groups, columns, etc.).
-		if ( ! empty( $block['innerBlocks'] ) ) {
-			sgs_toc_extract_headings( $block['innerBlocks'], $headings, $used_slugs, $levels );
 		}
 	}
-}
 endif;
 
 sgs_toc_extract_headings( $blocks, $headings, $used_slugs, $heading_levels );
@@ -120,19 +125,21 @@ if ( empty( $headings ) ) {
 }
 
 // ——— Build output ———
-$classes = [
+$classes = array(
 	'sgs-toc',
 	'sgs-toc--' . esc_attr( $toc_style ),
 	'sgs-toc--' . esc_attr( $list_style ),
-];
+);
 
-$wrapper = get_block_wrapper_attributes( [
-	'class'              => implode( ' ', $classes ),
-	'data-smooth-scroll' => $smooth_scroll ? 'true' : 'false',
-	'data-scroll-offset' => (string) $scroll_offset,
-	'data-scroll-spy'    => $scroll_spy ? 'true' : 'false',
-	'aria-label'         => esc_attr( $toc_title ),
-] );
+$wrapper = get_block_wrapper_attributes(
+	array(
+		'class'              => implode( ' ', $classes ),
+		'data-smooth-scroll' => $smooth_scroll ? 'true' : 'false',
+		'data-scroll-offset' => (string) $scroll_offset,
+		'data-scroll-spy'    => $scroll_spy ? 'true' : 'false',
+		'aria-label'         => esc_attr( $toc_title ),
+	)
+);
 
 // Colour helpers.
 $title_style = '';

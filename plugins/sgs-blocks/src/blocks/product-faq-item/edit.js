@@ -46,7 +46,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		{
 			template: [
 				[
-					'core/paragraph',
+					'sgs/text',
 					{
 						placeholder: __(
 							'Write a clear, factual answer…',

@@ -244,8 +244,7 @@ Use `DesignTokenPicker` component for colour selection from theme.json palette i
 
 ## Gotchas
 
-- **Deprecations required** — when changing a static block's `save.js` output, you MUST add a deprecation. Otherwise existing posts show "This block contains unexpected content" errors.
-- **Empty innerHTML → null-save deprecation** — blocks inserted via WP-CLI often have empty `innerHTML` (no serialised HTML). If `save.js` later returns actual HTML, you get "unexpected content" validation errors. Fix: add `deprecated.js` v1 with `save: () => null`. If attribute field names also changed (e.g. `heading` → `title`, `certifications[]` strings → `items[]` objects), add a `migrate()` that transforms them. See `src/blocks/process-steps/deprecated.js` for the full pattern.
+- **NO block deprecations (policy, 2026-07-04, D270).** This project does **not** use `deprecated.js`. All deprecation versions were deleted plugin-wide (the framework is pre-production — no live content to migrate, and deprecations set a precedent future agents wrongly copy). When you change a static block's `save.js` output or a stored-attribute schema, just rebuild; any existing dev/canary instances re-clone or are recovered via the Site Editor. **Do NOT add a `deprecated.js` to any block, and do NOT wire `deprecated` into a block's `registerBlockType`.** If a block shows "This block contains unexpected content", re-insert or re-clone it.
 - **Core block attribute mismatches** — when `core/heading`, `core/button`, etc. show "unexpected content", the cause is a JSON attribute that doesn't match stored HTML. Fix via the Site Editor: open the template/page, click "Attempt Block Recovery" on each invalid block, then save. NEVER fix via WP-CLI `str_replace` on `post_content` — this breaks block validation and creates cascading failures.
 - **Never use `source: html` on dynamic blocks** — if a block's `save()` returns `null` (dynamic render via render.php), attributes with `"source": "html"` can never be read from storage because there is no inner HTML. Use plain `"type": "string", "default": ""` instead. This caused the hero headline bug on 2026-03-22.
 - **Dynamic blocks with InnerBlocks slots MUST `save: () => <InnerBlocks.Content />`** — `save: () => null` causes WordPress to drop InnerBlocks from `post_content` during save. Editor shows the right structure in memory, save round-trip emits only the parent. Render.php still drives 100% of frontend output; save's only job is to emit the InnerBlocks marker. Pattern: `import { InnerBlocks } from '@wordpress/block-editor'; export default function Save() { return <InnerBlocks.Content />; }`. Caught 2026-05-04 in product-card / cta-section / info-box. Hero already had it. Full detail in `.claude/specs/common-wp-styling-errors.md` row B4.
@@ -258,26 +257,11 @@ Use `DesignTokenPicker` component for colour selection from theme.json palette i
 - **Theme CSS cache-busts off the theme `style.css` Version header, not `block.json`** — SGS theme enqueues `style.css` with `?ver=` derived from the `Version:` field in `theme/sgs-theme/style.css`. Any theme-CSS change (including token updates) requires bumping that Version header (e.g. 1.3.5 → 1.3.6) to bust the browser cache. Bumping `block.json` or plugin version has no effect on theme CSS.
 - **No dead controls — parent owns LAYOUT, child owns TYPOGRAPHY (HC2, D192).** When a composite renders its text via child InnerBlocks (`sgs/heading`/`sgs/text`/`sgs/label`), all typography/colour/font-size (every breakpoint) belongs on the CHILD, NOT the parent. A parent control duplicating a child capability is BOTH a forbidden duplicate AND usually **dead by CSS specificity** — a parent scoped rule `.{uid} .sgs-x__y{color}` (0,2,0) cannot beat the child's inline style (1,0,0,0), so it renders nothing. The `check-dead-controls.js` prebuild guard fails the build on any editor-controlled attr that nothing renders. **This scopes the "Block Customisation Standard" §2 ("custom controls per inner text element"): that applies ONLY to blocks that render their own text element — NOT to FR-22-6 InnerBlocks composites, whose text is child-owned.** Verify a control renders via the live DOM (computed style on the actual painted element), not just "the attr appears in render.php".
 
-## Adding a deprecation when a block's save output changes
+## Block deprecations — not used (policy, 2026-07-04, D270)
 
-Whenever you change a static block's `save.js` output OR a block.json attribute schema that affects what gets stored in `post_content`, existing posts will fail validation with "This block contains unexpected content". The fix is a `deprecated.js` entry covering the previous shape.
+This project does **not** use block deprecations. Every `deprecated.js` was deleted plugin-wide and all `deprecated` wiring removed from `index.js`, because the framework is pre-production (no live content to migrate) and the deprecation pattern set a precedent future agents wrongly copied on every block change.
 
-**Procedure:**
-
-1. Capture the previous save output and the previous attribute schema verbatim (use `git show <prev-sha>:path/to/block/save.js`).
-2. Create or edit `src/blocks/<block>/deprecated.js`. Each version object has `{ attributes, save, migrate? }`.
-3. For static→null conversions (block became dynamic via render.php), the new entry's `save` reproduces the old static HTML.
-4. For attribute renames or shape changes, add a `migrate(attributes)` that returns the new-shape attributes.
-5. Wire the array into `index.js`:
-   ```js
-   import deprecated from './deprecated';
-   registerBlockType( metadata.name, { edit: Edit, save: Save, deprecated } );
-   ```
-6. Order matters — newest version first: `export default [ v3, v2, v1 ];`.
-7. Run `npm run build`. Open an affected post in the editor and confirm zero "Invalid block" warnings.
-8. Add the block slug to `AFFECTED_BLOCKS` in `tests/php/BlockDeprecationsTest.php` and run `vendor/bin/phpunit tests/php/BlockDeprecationsTest.php`.
-
-**Canonical examples:** `src/blocks/process-steps/deprecated.js` (empty-innerHTML → null-save), `src/blocks/testimonial/deprecated.js` (static→null, multiple historical shapes), `src/blocks/notice-banner/deprecated.js` (emoji→SVG icon change with default-attribute backfill).
+**Do NOT** create a `deprecated.js`, wire `deprecated` into `registerBlockType`, or add block slugs to a deprecation test. When a static block's `save.js` output or a stored-attribute schema changes, just rebuild; existing dev/canary instances are re-cloned or recovered via the Site Editor's "Attempt Block Recovery". Revisit this policy only when the framework goes to production with real client content to preserve.
 
 ## Retired blocks
 

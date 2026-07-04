@@ -2,11 +2,10 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/responsive-logo",
-    "replaces": ["core/site-logo"],
     "version": "0.1.0",
     "title": "SGS Responsive Logo",
     "category": "sgs-content",
-    "description": "Three-slot logo block (desktop / tablet / mobile) with optional SVG animation. Replaces core/site-logo in SGS header patterns. Competitive moat: H/Square/Mark aspect-ratio variants per breakpoint.",
+    "description": "Three-slot logo block (desktop / tablet / mobile) with optional SVG animation. Competitive moat: H/Square/Mark aspect-ratio variants per breakpoint.",
     "keywords": [
         "logo",
         "responsive",

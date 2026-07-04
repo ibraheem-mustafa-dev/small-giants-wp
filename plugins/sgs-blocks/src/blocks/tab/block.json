@@ -2,7 +2,6 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/tab",
-	"replaces": ["core/tab"],
 	"version": "0.2.1",
 	"title": "SGS Tab",
 	"category": "sgs-interactive",

@@ -45,7 +45,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // 1. Resolve body source: InnerBlocks $content (β-path) vs legacy body[] attr.
 //
 // The deterministic converter v2 F1 universal-nesting fallback (Spec 16 §15 line
-// 990) emits sgs/quote with nested core/paragraph + sgs/text children inside its
+// 990) emits sgs/quote with nested sgs/text children inside its
 // InnerBlocks slot rather than populating $attributes['body']. When $content is
 // non-empty, we emit it as the rendered body and skip the legacy body[] + the
 // attribution-attr path (the converter already places attribution as the final
@@ -80,21 +80,21 @@ if ( ! $has_inner_blocks && empty( $body_non_empty ) && '' === trim( wp_strip_al
 // 2. Extract + validate body slot attributes.
 // ---------------------------------------------------------------------------
 
-$body_tag                  = $attributes['bodyTag'] ?? 'p';
-$body_colour               = $attributes['bodyColour'] ?? '';
-$body_font_size            = isset( $attributes['bodyFontSize'] ) ? $attributes['bodyFontSize'] : null;
-$body_font_size_tablet     = isset( $attributes['bodyFontSizeTablet'] ) ? $attributes['bodyFontSizeTablet'] : null;
-$body_font_size_mobile     = isset( $attributes['bodyFontSizeMobile'] ) ? $attributes['bodyFontSizeMobile'] : null;
-$body_font_size_unit       = $attributes['bodyFontSizeUnit'] ?? 'px';
-$body_font_weight          = $attributes['bodyFontWeight'] ?? '';
-$body_font_family          = $attributes['bodyFontFamily'] ?? '';
-$body_font_style           = $attributes['bodyFontStyle'] ?? 'italic';
-$body_text_decoration      = $attributes['bodyTextDecoration'] ?? '';
-$body_text_transform       = $attributes['bodyTextTransform'] ?? '';
-$body_line_height          = isset( $attributes['bodyLineHeight'] ) ? $attributes['bodyLineHeight'] : null;
-$body_line_height_tablet   = isset( $attributes['bodyLineHeightTablet'] ) ? $attributes['bodyLineHeightTablet'] : null;
-$body_line_height_mobile   = isset( $attributes['bodyLineHeightMobile'] ) ? $attributes['bodyLineHeightMobile'] : null;
-$body_line_height_unit     = $attributes['bodyLineHeightUnit'] ?? 'em';
+$body_tag                = $attributes['bodyTag'] ?? 'p';
+$body_colour             = $attributes['bodyColour'] ?? '';
+$body_font_size          = isset( $attributes['bodyFontSize'] ) ? $attributes['bodyFontSize'] : null;
+$body_font_size_tablet   = isset( $attributes['bodyFontSizeTablet'] ) ? $attributes['bodyFontSizeTablet'] : null;
+$body_font_size_mobile   = isset( $attributes['bodyFontSizeMobile'] ) ? $attributes['bodyFontSizeMobile'] : null;
+$body_font_size_unit     = $attributes['bodyFontSizeUnit'] ?? 'px';
+$body_font_weight        = $attributes['bodyFontWeight'] ?? '';
+$body_font_family        = $attributes['bodyFontFamily'] ?? '';
+$body_font_style         = $attributes['bodyFontStyle'] ?? 'italic';
+$body_text_decoration    = $attributes['bodyTextDecoration'] ?? '';
+$body_text_transform     = $attributes['bodyTextTransform'] ?? '';
+$body_line_height        = isset( $attributes['bodyLineHeight'] ) ? $attributes['bodyLineHeight'] : null;
+$body_line_height_tablet = isset( $attributes['bodyLineHeightTablet'] ) ? $attributes['bodyLineHeightTablet'] : null;
+$body_line_height_mobile = isset( $attributes['bodyLineHeightMobile'] ) ? $attributes['bodyLineHeightMobile'] : null;
+$body_line_height_unit   = $attributes['bodyLineHeightUnit'] ?? 'em';
 // Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
 $body_line_height_unit     = ( 'unitless' === $body_line_height_unit ) ? '' : $body_line_height_unit;
 $body_letter_spacing       = isset( $attributes['bodyLetterSpacing'] ) ? $attributes['bodyLetterSpacing'] : null;
@@ -113,19 +113,19 @@ if ( ! in_array( $body_tag, array( 'p', 'div' ), true ) ) {
 // 3. Extract + validate attribution slot attributes.
 // ---------------------------------------------------------------------------
 
-$attrib_tag               = $attributes['attributionTag'] ?? 'footer';
-$attrib_colour            = $attributes['attributionColour'] ?? '';
-$attrib_font_size         = isset( $attributes['attributionFontSize'] ) ? $attributes['attributionFontSize'] : null;
-$attrib_font_size_tablet  = isset( $attributes['attributionFontSizeTablet'] ) ? $attributes['attributionFontSizeTablet'] : null;
-$attrib_font_size_mobile  = isset( $attributes['attributionFontSizeMobile'] ) ? $attributes['attributionFontSizeMobile'] : null;
-$attrib_font_size_unit    = $attributes['attributionFontSizeUnit'] ?? 'px';
-$attrib_font_weight       = $attributes['attributionFontWeight'] ?? '';
-$attrib_font_family       = $attributes['attributionFontFamily'] ?? '';
-$attrib_font_style        = $attributes['attributionFontStyle'] ?? '';
-$attrib_text_decoration   = $attributes['attributionTextDecoration'] ?? '';
-$attrib_text_transform    = $attributes['attributionTextTransform'] ?? '';
-$attrib_line_height       = isset( $attributes['attributionLineHeight'] ) ? $attributes['attributionLineHeight'] : null;
-$attrib_line_height_unit  = $attributes['attributionLineHeightUnit'] ?? 'em';
+$attrib_tag              = $attributes['attributionTag'] ?? 'footer';
+$attrib_colour           = $attributes['attributionColour'] ?? '';
+$attrib_font_size        = isset( $attributes['attributionFontSize'] ) ? $attributes['attributionFontSize'] : null;
+$attrib_font_size_tablet = isset( $attributes['attributionFontSizeTablet'] ) ? $attributes['attributionFontSizeTablet'] : null;
+$attrib_font_size_mobile = isset( $attributes['attributionFontSizeMobile'] ) ? $attributes['attributionFontSizeMobile'] : null;
+$attrib_font_size_unit   = $attributes['attributionFontSizeUnit'] ?? 'px';
+$attrib_font_weight      = $attributes['attributionFontWeight'] ?? '';
+$attrib_font_family      = $attributes['attributionFontFamily'] ?? '';
+$attrib_font_style       = $attributes['attributionFontStyle'] ?? '';
+$attrib_text_decoration  = $attributes['attributionTextDecoration'] ?? '';
+$attrib_text_transform   = $attributes['attributionTextTransform'] ?? '';
+$attrib_line_height      = isset( $attributes['attributionLineHeight'] ) ? $attributes['attributionLineHeight'] : null;
+$attrib_line_height_unit = $attributes['attributionLineHeightUnit'] ?? 'em';
 // Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
 $attrib_line_height_unit  = ( 'unitless' === $attrib_line_height_unit ) ? '' : $attrib_line_height_unit;
 $attrib_margin_top        = isset( $attributes['attributionMarginTop'] ) ? $attributes['attributionMarginTop'] : null;

@@ -24,7 +24,7 @@ function renderVariant( attributes ) {
 	const sizeStyle = { width: `${ width }${ widthUnit }` };
 
 	if ( 'gap' === variant ) {
-		// Invisible spacer — pure vertical space, no visible line (maps core/spacer).
+		// Invisible spacer — pure vertical space, no visible line.
 		return (
 			<div
 				className="wp-block-sgs-divider__gap"

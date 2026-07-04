@@ -80,7 +80,7 @@ $size_style = $size_style_parts ? ' style="' . esc_attr( implode( ';', $size_sty
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<?php
 	if ( 'gap' === $variant ) {
-		// Gap variant — invisible spacer, pure vertical space (maps core/spacer).
+		// Gap variant — invisible spacer, pure vertical space.
 		$gap_unit  = in_array( $gap_height_unit, array( 'px', 'em', 'rem', 'vh' ), true ) ? $gap_height_unit : 'px';
 		$gap_style = 'height:' . intval( $gap_height ) . $gap_unit;
 		?>

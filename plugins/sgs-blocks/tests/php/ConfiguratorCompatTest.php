@@ -86,8 +86,8 @@ class ConfiguratorCompatTest extends TestCase {
 	 * The product-card save() emits <InnerBlocks.Content/> only — it serialises the
 	 * InnerBlocks slot, never attribute values — so adding scalar configurator
 	 * attrs (sourceMode, productId, future swatch attrs) cannot change the stored
-	 * output and is therefore deprecation-free. A deprecated.js already exists for
-	 * the block's prior shape changes.
+	 * output and is therefore deprecation-free. (This project uses no block
+	 * deprecations — see plugins/sgs-blocks/CLAUDE.md, D270.)
 	 */
 	public function test_product_card_save_serialises_innerblocks_only(): void {
 		$json = self::read_json( '/src/blocks/product-card/block.json' );
@@ -99,7 +99,6 @@ class ConfiguratorCompatTest extends TestCase {
 			$index,
 			'product-card save must emit InnerBlocks.Content only — no attr serialisation — keeping attr additions deprecation-free.'
 		);
-		$this->assertFileExists( self::plugin_dir() . '/src/blocks/product-card/deprecated.js' );
 	}
 
 	/**

@@ -315,7 +315,7 @@
 	"render": "file:./render.php",
 	"allowedBlocks": [
 		"sgs/media",
-		"core/heading",
+		"sgs/heading",
 		"sgs/text",
 		"sgs/label",
 		"sgs/multi-button",

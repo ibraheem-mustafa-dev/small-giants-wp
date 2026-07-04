@@ -2,7 +2,6 @@
  * SGS Option Picker — block registration.
  *
  * Dynamic block: save() returns null; render.php handles all frontend output.
- * No deprecated.js is needed for v1 — no existing posts carry this block.
  */
 import { registerBlockType } from '@wordpress/blocks';
 import { SVG, Path, Rect } from '@wordpress/primitives';

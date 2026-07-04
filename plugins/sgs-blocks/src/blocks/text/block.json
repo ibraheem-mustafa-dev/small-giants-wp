@@ -2,11 +2,10 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/text",
-    "replaces": "core/paragraph",
     "version": "0.1.1",
     "title": "Text",
     "category": "sgs-content",
-    "description": "Single-element body text block. Emits one configurable HTML tag with full SGS typography, spacing, colour, border, shadow, and hover controls. Replaces core/paragraph in the converter pipeline so inline-style attributes reach the rendered DOM.",
+    "description": "Single-element body text block. Emits one configurable HTML tag with full SGS typography, spacing, colour, border, shadow, and hover controls.",
     "keywords": [
         "text",
         "paragraph",

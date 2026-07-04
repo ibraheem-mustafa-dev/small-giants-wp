@@ -2,11 +2,9 @@
 /**
  * Server-side render for the SGS Media block.
  *
- * Content media block — image or video. Replaces core/image in the SGS
- * clone-pipeline converter output so styling attributes (objectFit,
+ * Content media block — image or video. Styling attributes (objectFit,
  * objectPosition, maxWidth, borderRadius, etc.) are applied on the frontend
- * via server-side render rather than the frozen static save.js HTML that
- * core/image produces.
+ * via server-side render.
  *
  * mediaType = 'image' (default): image render path with imageUrl / imageId.
  * mediaType = 'video': <video> (internal WP-library or direct MP4) or

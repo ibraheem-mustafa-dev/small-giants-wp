@@ -81,7 +81,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			templateLock: false,
 			template: [
 				[
-					'core/paragraph',
+					'sgs/text',
 					{
 						placeholder: __(
 							'Add content for this tab\u2026',

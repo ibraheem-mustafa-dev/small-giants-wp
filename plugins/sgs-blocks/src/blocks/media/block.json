@@ -2,11 +2,10 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/media",
-    "replaces": ["core/image", "core/video"],
     "version": "1.5.0",
     "title": "SGS Media",
     "category": "sgs-content",
-    "description": "Content media block — image or video. Replaces core/image in the SGS clone-pipeline converter so styling attributes lift correctly to the frontend via server-side render. Use mediaType to choose image (with imageUrl) or video (with videoUrl for external embeds or videoId for WP-library uploads).",
+    "description": "Content media block — image or video. Use mediaType to choose image (with imageUrl) or video (with videoUrl for external embeds or videoId for WP-library uploads).",
     "keywords": [
         "image",
         "video",

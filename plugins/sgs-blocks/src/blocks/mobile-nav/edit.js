@@ -32,11 +32,11 @@ import AnimationPanel from './AnimationPanel';
 
 // ── Allowed inner blocks — no forms or layout blocks that break the drawer ──
 const ALLOWED_BLOCKS = [
-	'core/paragraph',
-	'core/heading',
-	'core/image',
-	'core/buttons',
-	'core/button',
+	'sgs/text',
+	'sgs/heading',
+	'sgs/media',
+	'sgs/multi-button',
+	'sgs/button',
 	'sgs/info-box',
 	'sgs/notice-banner',
 	'sgs/whatsapp-cta',

@@ -1,7 +1,6 @@
 import { registerBlockType } from '@wordpress/blocks';
 import edit from './edit';
 import save from './save';
-import deprecated from './deprecated';
 import metadata from './block.json';
 import { accordionItemIcon } from '../../utils';
 
@@ -10,5 +9,4 @@ registerBlockType( metadata.name, {
 	icon: accordionItemIcon,
 	edit,
 	save,
-	deprecated,
 } );

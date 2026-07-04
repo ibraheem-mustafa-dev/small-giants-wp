@@ -2,7 +2,6 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/table-of-contents",
-    "replaces": ["core/table-of-contents"],
     "version": "0.1.0",
     "title": "SGS Table of Contents",
     "category": "sgs-content",

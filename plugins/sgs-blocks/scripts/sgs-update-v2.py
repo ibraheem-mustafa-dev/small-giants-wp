@@ -212,6 +212,19 @@ def _index_sgs_block_files(
     indexed_updated = 0
     indexed_skipped = 0
 
+    # --- Canonical core→SGS replacement record (D270, 2026-07-04) ---
+    # `replaces` no longer lives in individual block.json; the single
+    # version-controlled source is scripts/data/block-replacements.json
+    # (keyed sgs_slug → [core_slugs]). The DB copy (blocks.replaces) is derived
+    # from it here so /sgs-update stays the one populate path. Keys starting
+    # with __ are metadata and ignored.
+    _repl_path = Path(__file__).resolve().parent / "data" / "block-replacements.json"
+    try:
+        _repl_raw = json.loads(_repl_path.read_text(encoding="utf-8"))
+        replacements_record = {k: v for k, v in _repl_raw.items() if not k.startswith("__")}
+    except (OSError, ValueError):
+        replacements_record = {}
+
     # --- Ensure variant-detection schema (FR-31-20 D133) ---
     # Idempotent: matches db_lookup._migrate_variant_detection_schema so an
     # update run can populate blocks.variant_attr + variant_slots without
@@ -289,11 +302,12 @@ def _index_sgs_block_files(
         )
         block_type = "dynamic" if has_render else "static"
         parent = _parent_for_block(block_dir.name)
-        # `replaces` may be a scalar core slug (legacy 6) OR a JSON array of core
-        # slugs (many-core→one-sgs, 2026-07-03 — e.g. sgs/media replaces
-        # image+video+audio). Normalise to the comma-separated string Stage 6 +
-        # _blocks_replaces_reverse already split on. Empty/absent → None.
-        _raw_replaces = data.get("replaces")
+        # `replaces` is sourced from the canonical record (block-replacements.json,
+        # loaded above), NOT block.json — the mapping lives in ONE version-controlled
+        # place (D270, 2026-07-04). A record entry is a list of core slugs (many-core
+        # →one-sgs, e.g. sgs/media replaces image+video). Normalise to the comma-
+        # separated string Stage 6 + _blocks_replaces_reverse split on. Absent → None.
+        _raw_replaces = replacements_record.get(slug)
         if isinstance(_raw_replaces, list):
             replaces = ",".join(t.strip() for t in _raw_replaces if str(t).strip()) or None
         elif isinstance(_raw_replaces, str) and _raw_replaces.strip():

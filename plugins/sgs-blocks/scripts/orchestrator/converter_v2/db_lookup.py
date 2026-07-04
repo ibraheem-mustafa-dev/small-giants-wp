@@ -144,46 +144,42 @@ _migrate_roles_table()
 #     html_tag_to_core_block via the public atomic_tag_map() helper.
 #   - This mirrors the _ROLE_CLASSIFICATION_MAP precedent above: code-level
 #     dict is one-time-seed data, never runtime routing.
-_HTML_TAG_TO_CORE_BLOCK_SEED: dict[str, tuple[str, str]] = {
-    # html_tag: (core_block_slug, note)
-    "h1": ("core/heading", "Heading level 1 — atomic walker fallback"),
-    "h2": ("core/heading", "Heading level 2"),
-    "h3": ("core/heading", "Heading level 3"),
-    "h4": ("core/heading", "Heading level 4"),
-    "h5": ("core/heading", "Heading level 5"),
-    "h6": ("core/heading", "Heading level 6"),
-    "p":  ("core/paragraph", "Paragraph text"),
-    "img": ("core/image", "Image — atomic media leaf"),
-    "hr":  ("core/separator", "Horizontal rule — divider"),
-    "button": ("core/button",
-               "Bare button — Bean directive 2026-05-28: walker auto-wraps in sgs/multi-button"),
-    "a":   ("core/button", "Link shape — routes to same atomic leaf as button"),
-    "blockquote": ("core/quote", "Quote block"),
-    # core/list is a STATIC block whose save() emits <ul class="wp-block-list"> +
-    # core/list-item children. Emitting it self-closing (no innerHTML) fails WP
-    # block validation. The SGS equivalent sgs/icon-list is DYNAMIC (render.php,
-    # save=null → self-closing) and already handled by _atomic_attrs_for with the
-    # items-array extraction. Route ul/ol directly to sgs/icon-list (2026-06-02).
-    # blocks.replaces for sgs/icon-list is NOT set to core/list in the DB, so
-    # Tier A of atomic_tag_map() would not find it. Storing 'sgs/icon-list' as
-    # the core_block_slug value (column name is a misnomer — it is the TARGET slug)
-    # means Tier B returns it unchanged: replaces_reverse.get('sgs/icon-list')=None,
-    # out['ul'] = 'sgs/icon-list'. INSERT OR REPLACE propagates this to DB on load.
-    "ul":  ("sgs/icon-list", "Unordered list → SGS icon-list (dynamic; core/list is static and needs save() HTML the converter cannot generate)"),
-    "ol":  ("sgs/icon-list", "Ordered list → SGS icon-list (same rationale as ul; ordered flag set via _atomic_attrs_for items)"),
-    # <audio>/<details> → core block → reverse-walk to the SGS replacement (D265
-    # block features 2026-07-03: sgs/media audio mode, sgs/collapsible-text).
-    "audio":   ("core/audio", "Audio element → sgs/media (audio mode) via blocks.replaces reverse-walk"),
-    "details": ("core/details", "Native disclosure → sgs/collapsible-text via blocks.replaces reverse-walk"),
-}
+# The bare-HTML-tag → SGS-block bridge is a version-controlled DATA FILE
+# (scripts/data/atomic-tag-map.json), NOT a hardcoded dict (R-31-1). That file is
+# the git-tracked SEED that (re)populates the html_tag_to_core_block DB table via
+# the migration below — rebuild insurance for a from-scratch DB. The runtime path
+# (atomic_tag_map()) queries the DB table ONLY, never this file. Values route each
+# bare tag DIRECTLY to its SGS block — the converter never emits a core block
+# (D270, 2026-07-04: repointed core/* → sgs/*; column name core_block_slug is
+# retained for compat but holds the SGS target).
+_ATOMIC_TAG_MAP_FILE = Path(__file__).resolve().parents[2] / "data" / "atomic-tag-map.json"
+
+
+def _load_atomic_tag_seed() -> dict[str, tuple[str, str]]:
+    """Load {html_tag: (target_sgs_slug, note)} from atomic-tag-map.json.
+
+    Data-file source (R-31-1 — no hardcoded routing dict in code). Keys starting
+    with ``__`` are metadata. Soft-fails to ``{}`` if the file is missing or
+    unreadable, in which case the migration leaves existing DB rows untouched.
+    """
+    try:
+        raw = json.loads(_ATOMIC_TAG_MAP_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    out: dict[str, tuple[str, str]] = {}
+    for tag, val in raw.items():
+        if tag.startswith("__") or not isinstance(val, list) or not val:
+            continue
+        out[tag] = (val[0], val[1] if len(val) > 1 else "")
+    return out
 
 
 def _migrate_html_tag_to_core_block() -> None:
     """Idempotent migration: create html_tag_to_core_block table if absent
-    and populate it from _HTML_TAG_TO_CORE_BLOCK_SEED.
+    and populate it from the atomic-tag-map.json seed (_load_atomic_tag_seed).
 
-    Safe to call repeatedly. Runs at module load. Honours R-31-1: the seed
-    dict above is one-time migration data, NOT runtime lookup — atomic_tag_map()
+    Safe to call repeatedly. Runs at module load. Honours R-31-1: the seed is a
+    version-controlled DATA FILE, NOT a hardcoded runtime dict — atomic_tag_map()
     queries the DB table only.
     """
     conn = sqlite3.connect(SGS_DB)
@@ -196,15 +192,14 @@ def _migrate_html_tag_to_core_block() -> None:
             "  created_at TEXT DEFAULT CURRENT_TIMESTAMP"
             ")"
         )
-        # INSERT OR REPLACE — propagates seed-dict updates on module re-load.
-        # D99 2026-05-29 (Fix 3): changed from INSERT OR IGNORE so that when
-        # _HTML_TAG_TO_CORE_BLOCK_SEED entries are updated, the DB picks up
-        # the new values automatically without manual row edits.
-        for html_tag, (core_slug, note) in _HTML_TAG_TO_CORE_BLOCK_SEED.items():
+        # INSERT OR REPLACE — propagates atomic-tag-map.json edits on module
+        # re-load (D99 2026-05-29 Fix 3: was INSERT OR IGNORE) so an updated seed
+        # value refreshes the DB row automatically without manual edits.
+        for html_tag, (target_slug, note) in _load_atomic_tag_seed().items():
             conn.execute(
                 "INSERT OR REPLACE INTO html_tag_to_core_block "
                 "(html_tag, core_block_slug, note) VALUES (?, ?, ?)",
-                (html_tag, core_slug, note),
+                (html_tag, target_slug, note),
             )
         conn.commit()
     except sqlite3.OperationalError:
@@ -3086,9 +3081,10 @@ def child_block_for_parent_token(
 #   slot_synonyms data stays unchanged; atomic_tag_map simply does not query it.
 #
 # R-31-1 compliance (2026-05-28 hardening):
-#   No hardcoded SGS routing dict in code. The html-tag→core-block bridge data
-#   lives in the html_tag_to_core_block DB table, seeded once at module load
-#   from _HTML_TAG_TO_CORE_BLOCK_SEED. Runtime path queries DB only.
+#   No hardcoded SGS routing dict in code. The html-tag→SGS-block bridge data
+#   lives in the html_tag_to_core_block DB table, seeded at module load from the
+#   version-controlled data file scripts/data/atomic-tag-map.json. Runtime path
+#   queries the DB only.
 
 
 @functools.lru_cache(maxsize=1)

@@ -2,7 +2,6 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/gallery",
-	"replaces": ["core/gallery"],
 	"version": "0.2.0",
 	"title": "SGS Image Gallery",
 	"category": "sgs-content",
