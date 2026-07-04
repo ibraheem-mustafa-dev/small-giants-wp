@@ -188,7 +188,7 @@ def _expand_box_shorthand(decls: dict[str, str], prop: str) -> dict[str, str]:
 # detect_content_layer (convert.py:2244 — ported verbatim, renamed)
 # ---------------------------------------------------------------------------
 
-def detect_content_layer(base_decls: dict[str, str]) -> bool:
+def detect_content_layer(base_decls: dict[str, str], *, is_root: bool = False) -> bool:
     """Return True when ``base_decls`` carries a CONTENT-layer signature.
 
     CONTENT layer = a content-width inner band. Detection is deterministic-first:
@@ -199,8 +199,19 @@ def detect_content_layer(base_decls: dict[str, str]) -> bool:
 
     Any other pattern -> False (routed to gap-candidate by the caller).
 
-    Ported from convert.py:2244 (behaviour-identical).
+    MF-3 structural-position guard (Spec 31 §3 step 1 / FR-31-2.8.4, Step-3
+    2026-07-04): L2 CONTENT detection fires ONLY on a non-root inner element.
+    A section ROOT that legitimately declares ``max-width:1200px; margin:0
+    auto`` is the OUTER box (its max-width routes to ``maxWidth``/``align``,
+    never ``contentWidth``) — pass ``is_root=True`` and this returns False
+    regardless of the CSS signature. Defaulted False so every existing caller
+    (all of which pass interior child nodes) is behaviour-identical; the
+    unified Step-7 cascade passes the node's real structural position.
+
+    Ported from convert.py:2244 (behaviour-identical for non-root).
     """
+    if is_root:
+        return False
     # Priority 1: `--content-width` custom property anywhere in the declaration block.
     for prop in base_decls:
         if prop.strip() == "--content-width":

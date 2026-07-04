@@ -157,6 +157,26 @@ def process_element(ctx: Any, decls: list[Any]) -> ElementResult:
     synth = outer_box.align_finalise(decls, result.writes, ctx)
     if synth is not None:
         result.writes.append(synth)
+
+    # FR-31-2.8.4 destination-parametric write: when the Ctx carries a
+    # DESTINATION (the fold case — a band/grid-item whose declarations belong
+    # to the OWNING block), setdefault each Write into the destination dict
+    # (earlier paths win — the frozen convert.py:2888 contract; recorded
+    # Step-3 semantics). destination=None (default) = SELF: the caller merges
+    # ElementResult.attrs() exactly as before — behaviour-identical.
+    dest = getattr(ctx, "destination", None)
+    if dest is not None:
+        if dest.block_slug != ctx.block_slug:
+            raise ConservationError(
+                f"DESTINATION MISMATCH: ctx.block_slug={ctx.block_slug!r} but "
+                f"destination.block_slug={dest.block_slug!r} — the Ctx for a "
+                f"folded node must be built WITH the owning block's slug so "
+                f"resolver DB lookups target the owner (FR-31-2.8.4). A "
+                f"mismatch means a mis-built fold Ctx; failing loud, never a "
+                f"silent wrong-block write."
+            )
+        for w in result.writes:
+            dest.attrs.setdefault(w.attr, w.value)
     return result
 
 

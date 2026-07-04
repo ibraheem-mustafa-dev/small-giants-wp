@@ -2726,6 +2726,14 @@ def layer_attr_prefix(layer: str) -> str | None:
 _CONTENT_LAYER_MAX_WIDTH_EQUIV: frozenset[str] = frozenset({"max-width", "width"})
 
 
+class AmbiguousLayerAttrError(RuntimeError):
+    """MF-4 (Spec 31 §3 step 3 / FR-31-2.8.4): a (block, layer, css_property)
+    lookup matched ≥2 registered attrs. A silent rowid-first pick between them
+    is insert-order-fragile and misroutes CSS — fail loud instead (raise, never
+    assert, STOP-27). Resolution: a ``block_selectors.element`` disambiguator
+    or removing the duplicate attr registration."""
+
+
 @functools.lru_cache(maxsize=2048)
 def attr_for_layer_property(
     block_slug: str,
@@ -2853,7 +2861,10 @@ def attr_for_layer_property(
     if not block_attr_map:
         return None
 
-    # Derive candidate attr names and check membership.
+    # Derive candidate attr names and collect EVERY match (MF-4, Spec 31 §3
+    # step 3 / FR-31-2.8.4: when ≥2 candidate attrs exist for one (block,
+    # layer, property), FAIL LOUD — never silently rowid-pick the first).
+    matches: list[str] = []
     for suffix, _role in all_suffix_rows:
         # Build camelCase suffix (PascalCase suffix → camelCase).
         camel_suffix = suffix[0].lower() + suffix[1:]
@@ -2865,15 +2876,32 @@ def attr_for_layer_property(
             # OUTER layer: suffix IS the full attr name (camelCase).
             candidate = camel_suffix
 
-        if candidate in block_attr_map:
-            _trace(
-                "attr_for_layer_property_hit",
-                block_slug=block_slug,
-                layer=layer,
-                css_property=css_property,
-                attr_name=candidate,
-            )
-            return candidate
+        if candidate in block_attr_map and candidate not in matches:
+            matches.append(candidate)
+
+    if len(matches) > 1:
+        # MF-4 hard guard: an insert-order rowid-pick between two registered
+        # attrs would be a silent misroute. Empirically ZERO (block, layer,
+        # property) combos are ambiguous on the live DB (enumerated
+        # 2026-07-04), so this raise is behaviour-identical today; it fires
+        # only if a future block registers both attrs of an ambiguous pair —
+        # the fix is a block_selectors.element disambiguator, not a pick.
+        raise AmbiguousLayerAttrError(
+            f"MF-4: ({block_slug}, {layer}, {css_property}) resolves to "
+            f"{len(matches)} candidate attrs {matches} — refusing to "
+            f"rowid-pick. Add a block_selectors.element disambiguator or "
+            f"remove the duplicate attr registration."
+        )
+
+    if matches:
+        _trace(
+            "attr_for_layer_property_hit",
+            block_slug=block_slug,
+            layer=layer,
+            css_property=css_property,
+            attr_name=matches[0],
+        )
+        return matches[0]
 
     _trace(
         "attr_for_layer_property_miss",

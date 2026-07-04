@@ -32,6 +32,37 @@ class Decl:
         return self.tier in DEVICE_TIERS
 
 
+@dataclass(frozen=True, eq=False)
+class Destination:
+    """FR-31-2.8.4 — the destination-parametric dispatch target.
+
+    ``eq=False`` deliberately: ``attrs`` is intentionally-mutated shared state
+    (the owner's live assembling dict) despite ``frozen=True`` — the freeze
+    protects the two FIELD BINDINGS, not the dict's contents. Identity
+    eq/hash avoids the auto-generated ``__hash__`` over an unhashable dict
+    (a silent TypeError footgun at any future set/cache use).
+
+    Carries WHERE an element's routed Writes land when they belong to a block
+    other than the element itself (the fold case: a pass-through band or a
+    grid item whose declarations write onto the OWNING container's attrs).
+
+    ``block_slug`` names the OWNING block whose registered attrs the resolvers
+    resolve against. It MUST equal the Ctx's ``block_slug`` — the Ctx for a
+    folded node is built WITH the owner's slug (so every resolver's DB lookup
+    already targets the owner); the orchestrator raises on a mismatch
+    (fail-loud, never a silent wrong-block write).
+
+    ``attrs`` is the live attr-dict being assembled for the owner. Merge
+    semantics (recorded, Step-3 decision): ``setdefault`` — earlier paths win,
+    matching the frozen fold contract (convert.py:2888 "earlier paths win" /
+    the gridItem* setdefault) and route_interior_css_to_parent_slot's
+    behaviour. The self path (destination=None) keeps the caller-side
+    ``dict.update`` exactly as before — behaviour-identical.
+    """
+    block_slug: str
+    attrs: dict
+
+
 @dataclass
 class Ctx:
     """Per-element context, built once per node by the orchestrator.
@@ -57,6 +88,16 @@ class Ctx:
     # a non-grid-area element. Has a default so existing positional Ctx(...) callers
     # (tests, slice) are unaffected.
     area_name: str | None = None
+    # FR-31-2.8.4 destination-parametric dispatch: where this element's routed
+    # Writes land. None (the default — every existing caller/test unaffected)
+    # = SELF: the caller merges ElementResult.attrs() into the element's own
+    # dict exactly as before. Non-None = the fold case: the orchestrator
+    # setdefault-writes each Write into destination.attrs (the OWNING block's
+    # assembling dict; earlier paths win, the frozen convert.py:2888 contract).
+    # destination.block_slug MUST equal this Ctx's block_slug (the Ctx for a
+    # folded node is built with the owner's slug so resolver DB lookups target
+    # the owner) — process_element raises on mismatch.
+    destination: Destination | None = None
 
 
 @dataclass(frozen=True)
