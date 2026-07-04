@@ -429,10 +429,7 @@ def _descend_container_children(
     block — termination holds on the finite DOM.
     """
     from converter.services import arrangement
-    from converter.services.fold_helpers import (
-        lift_content_band_max_width,
-        route_interior_css_to_parent_slot,
-    )
+    from converter.services.fold_helpers import fold_band_css
 
     element_children = [c for c in parent.children if isinstance(c, Tag)]
     parent_arranges = arrangement.carries_arrangement(parent, css_rules or {})
@@ -451,18 +448,17 @@ def _descend_container_children(
     if only is not None:
         _band: dict = {}
         _owning = db_lookup.container_default_slug()
-        _only_el = _bem_element_of(only)
-        if _owning is not None and _only_el is not None:
-            route_interior_css_to_parent_slot(
-                only, _only_el, _owning, _band, css_rules or {},
-            )
-        else:
-            # No DB container slug, OR a BEM-less pass-through wrapper (route_interior
-            # keys on the element token and early-returns without one) -> fall back to
-            # the CSS-signature max-width lift, which catches the content-band width
-            # regardless of BEM. Behaviour parity with the pre-2026-07-03 fold on the
-            # --draft-mode/--legacy path (prod Stage 0 rejects non-BEM drafts).
-            lift_content_band_max_width(only, css_rules or {}, _band)
+        if _owning is not None:
+            # EXECUTION Step 7 (FR-31-2.8.4): the band's FULL declaration
+            # stream runs the SAME dispatch cascade as the root — only the
+            # destination differs. BEM-less bands fold identically (the old
+            # element-token gate + max-width-only fallback are deleted).
+            # GAP-3 exclusions come back as EXCLUDED gaps — tracked, never
+            # the old silent early-return.
+            for _g in fold_band_css(only, _owning, _band, css_rules or {}):
+                results.append(ContentGap(
+                    f"band:{_g.property}", f"[{_g.origin.value}] {_g.detail}",
+                ))
         for _attr, _val in _band.items():
             results.append(ScalarLift(attr=_attr, value=_val))
         _descend_container_children(only, results, css_rules, media_map)

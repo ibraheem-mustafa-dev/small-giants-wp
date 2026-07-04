@@ -288,29 +288,8 @@ def grid_item_areas(node: Tag, css_rules: dict) -> frozenset[str]:
 # lift_content_band_max_width (convert.py:5821 — ported verbatim, renamed)
 # ---------------------------------------------------------------------------
 
-def lift_content_band_max_width(
-    band_node: Tag,
-    css_rules: dict,
-    attrs: dict,
-    dest_attr: str | None = "contentWidth",
-) -> bool:
-    """Lift a content-band element's max-width onto a block attr.
-
-    Extracts ``max-width`` from ``band_node`` (resolving co-declared var()) and
-    stores into ``attrs[dest_attr]`` via setdefault. Returns True when a value
-    was available.
-
-    Ported from convert.py:5821 (behaviour-identical).
-    """
-    if dest_attr is None:
-        return False
-    _base, _ = collect_css_decls_for_element(band_node, css_rules)
-    _mw = _base.get("max-width")
-    if not _mw:
-        return False
-    attrs.setdefault(dest_attr, _resolve_co_declared_var(
-        strip_important(_mw).strip(), _base))
-    return True
+# (lift_content_band_max_width DELETED — EXECUTION Step 7; the BEM-less band
+# folds through the same fold_band_css cascade, no special case.)
 
 
 # ---------------------------------------------------------------------------
@@ -485,157 +464,139 @@ def route_area_css_to_block_attrs(
 
 
 # ---------------------------------------------------------------------------
-# route_interior_css_to_parent_slot (convert.py:2597 — ported verbatim, renamed)
+# fold_band_css — EXECUTION Step 7 (FR-31-2.8.4): the ONE cascade for a folded
+# band. REPLACES route_interior_css_to_parent_slot (hand-rolled prop→layer
+# ladder) + lift_content_band_max_width (max-width-only fallback) — both were
+# reduced pipelines that silently dropped every other band declaration
+# (R-31-9/Rule-4 violations, deleted this step).
 # ---------------------------------------------------------------------------
 
-def route_interior_css_to_parent_slot(
-    child_node: Tag,
-    element_token: str | None,
-    owning_block: str,
-    parent_attrs: dict,
+def fold_band_css(
+    band_node: Tag,
+    owning_slug: str,
+    band_attrs: dict,
     css_rules: dict,
     *,
     trace: Callable[..., None] = _noop_trace,
     record_gap: Callable[..., None] = _noop_record_gap,
-) -> None:
-    """FR-31-5.3 — Route an interior element's structural box CSS to the owning
-    composite's per-slot attr group when the slot has no equivalent child block.
+) -> list:
+    """Fold a sole pass-through band's FULL declaration stream onto the owner.
 
-    Fork on ``db_lookup.slot_has_equivalent_block(owning_block, slot_name)``:
-        TRUE  -> the slot IS served by a child InnerBlock; CSS stays with it (no-op).
-        FALSE -> lift the child's structural box CSS onto the parent's per-layer attrs.
+    Spec 31 FR-31-2.8.4: EVERY node's full declaration stream — root, folded
+    band, grid item — runs the SAME dispatch/resolver cascade; only the
+    DESTINATION differs. The band's declarations are dispatched through
+    ``process_element`` with a ``Ctx`` built for the OWNING block
+    (``is_root=False`` → layer_detect; the old fold ladder now lives as
+    content_band's explicit layer priorities) and a ``Destination`` targeting
+    ``band_attrs`` (setdefault — earlier paths win, the Step-3 contract).
 
-    Ported from convert.py:2597 (behaviour-identical). ``_trace``/``_record_gap_candidate``
-    -> injectable callables.
+    Callers guarantee the band is a slug-None PASS-THROUGH
+    (``_sole_passthrough_child``), so the old ``slot_has_equivalent_block``
+    fork is structurally satisfied (a pass-through owns no content-bearing
+    slot) and the old element-token gate is unnecessary — a BEM-less band
+    folds identically (the retired ``lift_content_band_max_width`` special
+    case dissolves into the same path).
+
+    GAP-3 (``_CROSS_NODE_EXCLUDED_PROPS``: display/grid-template-*) stays
+    excluded from the cross-node fold — the §2.3 arrangement pass owns those —
+    but each exclusion is now RECORDED (returned as an EXCLUDED GAP +
+    record_gap + trace), never the silent early-return the old ladder had
+    (its :522-524 skip died with it). Full ledger integration = Step 11 (A2).
+
+    FR-31-5.1a: an inheritable base-tier ``text-align`` on the band folds to
+    the owner's WP-native ``textAlign`` support (re-homed verbatim from the
+    retired router; STOP-44 — the wrapper renders the class explicitly).
+
+    Returns the list of EXCLUDED/NO-DESTINATION GAP objects for the caller's
+    tracking channel; transferred values land in ``band_attrs`` via the
+    destination. DB absent → no-op (parity with ``_build_css_attrs``).
     """
-    if not element_token or not owning_block:
-        return
+    import sqlite3
+    from converter.services.css_pass import _SGS_DB_PATH
 
-    slot_name: str | None = db_lookup.canonical_slot_for(element_token)
+    gaps: list = []
+    if not owning_slug or not _SGS_DB_PATH.exists():
+        return gaps
 
-    if slot_name and db_lookup.slot_has_equivalent_block(owning_block, slot_name):
-        trace(
-            "cross_node_content_fork",
-            owning_block=owning_block,
-            element_token=element_token,
-            slot_name=slot_name,
-            branch="content_bearing_child_block_present__skip",
-        )
-        return
-
-    base_decls, bp_decls = collect_css_decls_for_element(child_node, css_rules)
-
+    base_decls, bp_decls = collect_css_decls_for_element(band_node, css_rules)
     if not base_decls and not bp_decls:
-        return
+        return gaps
 
-    is_content = detect_content_layer(base_decls)
+    from converter.context import Ctx, Decl, Destination
+    from converter.models import GAP, GapOrigin
 
-    def _lift_decl(css_prop: str, value: str, bp_suffix: str | None = None) -> bool:
-        if css_prop in _CROSS_NODE_EXCLUDED_PROPS:
-            return False  # GAP-3: never lift display/grid-template-* cross-node.
-
-        # text-align is INHERITABLE (FR-31-5.1): a pass-through band's text-align folds
-        # to the owning container's WP-NATIVE textAlign support — it renders
-        # `has-text-align-*` on the root and CASCADES to the content, and any child block
-        # that sets its own alignment overrides it (the container's existing content-
-        # alignment capability, NOT a new attr). Gated on the block declaring native
-        # typography.textAlign (DB, universal — no slug literal). No native support →
-        # fall through to the OUTER/gap path (never silent-dropped, §3.A step 8).
-        # WP-native textAlign is BASE-tier only (no responsive textAlignTablet/Mobile),
-        # so only a base-tier text-align routes to it; a tiered band text-align has no
-        # native destination and falls through to the gap path (never a dead attr).
-        if css_prop == "text-align" and bp_suffix is None:
-            _typ = db_lookup.block_supports_for(owning_block).get("typography") or {}
-            if _typ.get("textAlign"):
-                parent_attrs.setdefault("textAlign", strip_important(value).strip())
-                trace(
-                    "cross_node_css_lifted",
-                    owning_block=owning_block,
-                    element_token=element_token,
-                    css_property=css_prop,
-                    layer="NATIVE_TEXTALIGN",
-                    dest_attr="textAlign",
-                    value=value,
-                )
-                return True
-
-        layers_to_try: list[str] = []
-
-        if css_prop in ("max-width", "width", "--content-width"):
-            layers_to_try.append("CONTENT")
-            layers_to_try.append("OUTER")
-        elif css_prop.startswith("padding"):
-            if is_content:
-                layers_to_try.append("CONTENT")
-            layers_to_try.append("GRID")
-            layers_to_try.append("OUTER")
-        elif css_prop in ("gap", "row-gap", "column-gap"):
-            layers_to_try.append("GRID")
-            layers_to_try.append("OUTER")
-        elif css_prop in ("margin", "margin-top", "margin-right", "margin-bottom", "margin-left"):
-            layers_to_try.append("GRID")
-            layers_to_try.append("OUTER")
-        elif css_prop == "min-height":
-            layers_to_try.append("GRID")
-            layers_to_try.append("OUTER")
-        else:
-            layers_to_try.append("OUTER")
-
-        placed = False
-        for layer in layers_to_try:
-            attr_name = db_lookup.attr_for_layer_property(owning_block, layer, css_prop)
-            if attr_name:
-                dest_key = f"{attr_name}{bp_suffix}" if bp_suffix else attr_name
-                # Resolve a co-declared var() (e.g. max-width:var(--content-width) with
-                # --content-width:1100px on the same band) so the attr lands the RESOLVED
-                # literal, not the unresolvable var() — mirrors lift_content_band_max_width
-                # (FR-31-21 step 6: flag-not-drop, never silently drop an unresolvable var).
-                resolved = _resolve_co_declared_var(strip_important(value).strip(), base_decls)
-                parent_attrs.setdefault(dest_key, resolved)
-                trace(
-                    "cross_node_css_lifted",
-                    owning_block=owning_block,
-                    element_token=element_token,
-                    css_property=css_prop,
-                    layer=layer,
-                    dest_attr=dest_key,
-                    value=value,
-                )
-                placed = True
-                break  # First matching layer wins (CONTENT > OUTER precedence).
-
-        if not placed:
-            source_class = next(
-                (c for c in (child_node.get("class", []) or []) if c.startswith("sgs-")),
-                element_token or "",
-            )
-            record_gap(
-                block_slug=owning_block,
-                css_property=css_prop,
-                raw_value=value,
-                source_class=source_class,
-            )
+    # ---- FR-31-5.1a native textAlign fold (base tier only; re-homed) ----
+    ta = base_decls.get("text-align")
+    if ta:
+        _typ = db_lookup.block_supports_for(owning_slug).get("typography") or {}
+        if _typ.get("textAlign"):
+            band_attrs.setdefault("textAlign", strip_important(ta).strip())
             trace(
-                "cross_node_gap_candidate",
-                owning_block=owning_block,
-                element_token=element_token,
-                css_property=css_prop,
-                reason="no_matching_layer_attr",
+                "cross_node_css_lifted", owning_block=owning_slug,
+                css_property="text-align", layer="NATIVE_TEXTALIGN",
+                dest_attr="textAlign", value=ta,
             )
+            base_decls = {k: v for k, v in base_decls.items() if k != "text-align"}
 
-        return placed
+    # ---- GAP-3 partition — EXCLUDED-with-reason, never a silent skip ----
+    def _partition(decl_map: dict, tier: str) -> list:
+        kept: list = []
+        for prop, value in decl_map.items():
+            if prop in _CROSS_NODE_EXCLUDED_PROPS:
+                reason = (
+                    "GAP-3: display/grid-template-* never lift cross-node "
+                    "(the §2.3 arrangement pass owns the band's grid; an "
+                    "inline lift beats @media and collapses grids)"
+                )
+                gaps.append(GAP(origin=GapOrigin.EXCLUDED, property=prop,
+                                tier=tier, detail=reason))
+                record_gap(block_slug=owning_slug, css_property=prop,
+                           raw_value=value, source_class="(band-fold)")
+                trace("cross_node_gap3_excluded", owning_block=owning_slug,
+                      css_property=prop, tier=tier)
+                continue
+            # Resolve a co-declared var() against the band's own base decls
+            # (max-width:var(--content-width) with the custom prop co-declared).
+            kept.append(Decl(property=prop,
+                             value=_resolve_co_declared_var(
+                                 strip_important(value).strip(), base_decls),
+                             tier=tier))
+        return kept
 
-    for css_prop, value in base_decls.items():
-        _lift_decl(css_prop, value, bp_suffix=None)
+    decls: list = _partition(base_decls, "Base")
+    for bp_key, bp_map in (bp_decls or {}).items():
+        decls.extend(_partition(bp_map or {}, bp_key))
+    if not decls:
+        return gaps
 
-    for bp_key, bp_decl_map in bp_decls.items():
-        # DB-owned breakpoint suffix vocabulary (R-31-1 / Spec 31 §4 — was _BP_SUFFIX_MAP,
-        # an identity map; the suffix IS the tier name for a valid device tier).
-        bp_sfx = bp_key if bp_key in modifier_suffixes("breakpoint") else None
-        if not bp_sfx or not bp_decl_map:
-            continue
-        for css_prop, value in bp_decl_map.items():
-            _lift_decl(css_prop, value, bp_suffix=bp_sfx)
+    # ---- The ONE cascade: process_element with a parent DESTINATION ----
+    from converter.orchestrator import process_element
+    from converter.services.recognise_helpers import get_container_kind
+    from converter.services.has_inner import derive_has_inner_blocks
+
+    conn = sqlite3.connect(str(_SGS_DB_PATH), check_same_thread=False)
+    try:
+        ctx = Ctx(
+            block_slug=owning_slug,
+            container_kind=get_container_kind(owning_slug) or "",
+            has_inner_blocks=derive_has_inner_blocks(owning_slug) or 0,
+            variant_value=None, variant_attr=None,
+            node=band_node, is_root=False, base_layer=None, conn=conn,
+            destination=Destination(block_slug=owning_slug, attrs=band_attrs),
+        )
+        result = process_element(ctx, decls)
+        gaps.extend(g for g in result.gaps)
+    finally:
+        conn.close()
+    return gaps
+
+
+# ---------------------------------------------------------------------------
+# route_interior_css_to_parent_slot (convert.py:2597 — ported verbatim, renamed)
+# RETIRED (EXECUTION Step 7) — replaced by fold_band_css above.
+# ---------------------------------------------------------------------------
+
+# (route_interior_css_to_parent_slot DELETED — EXECUTION Step 7; see fold_band_css.)
 
 
 # ---------------------------------------------------------------------------

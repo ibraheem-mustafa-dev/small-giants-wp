@@ -38,55 +38,59 @@ from converter.services.token_snap import token_snap
 from converter.services.validate import validate
 from converter.services.value_serialise import value_serialise
 
-# CONTENT-band CSS properties this resolver transfers (Spec 31 §3.A L2). Padding
-# longhands are deliberately NOT here — they route to the (honest) NO_DESTINATION
-# gap for blocks whose content padding attr name diverges from the layer prefix.
-_CONTENT_TRANSFER_PROPS = frozenset({"max-width"})
+# ---------------------------------------------------------------------------
+# EXECUTION Step 7 (FR-31-2.8.4, the 2e2 ONE-cascade): the retired hand-rolled
+# fold ladder (fold_helpers.route_interior_css_to_parent_slot:551-571) is
+# RE-EXPRESSED here as EXPLICIT per-property layer priorities — the recorded
+# Step-3 semantics decision ("layer_detect-first, the old fold ladder
+# re-expressed as explicit registry priorities"). A CONTENT-layer node's
+# declaration tries each layer's attr on the OWNING block in this order;
+# first DB hit wins (each lookup MF-4-guarded via attr_for_layer_property).
+# CSS-standard layer semantics, not block knowledge — the R-31-1
+# permitted-constant class (same as the ladder it replaces + _GRID_LAYOUT_PROPS).
+# ---------------------------------------------------------------------------
+
+_WIDTH_PROPS = frozenset({"max-width", "width", "--content-width"})
+_GAP_MARGIN_MINH = frozenset({
+    "gap", "row-gap", "column-gap", "min-height",
+    "margin", "margin-top", "margin-right", "margin-bottom", "margin-left",
+})
+
+
+def _layer_priorities(prop: str) -> tuple[str, ...]:
+    """The explicit layer fallback chain for one CONTENT-layer declaration."""
+    if prop in _WIDTH_PROPS:
+        return ("CONTENT", "OUTER")
+    if prop.startswith("padding"):
+        return ("CONTENT", "GRID", "OUTER")
+    if prop in _GAP_MARGIN_MINH:
+        return ("GRID", "OUTER")
+    return ("CONTENT", "OUTER")
 
 
 def resolve(decl: Any, ctx: Any) -> Write | GAP:
     prop = decl.property
 
-    if prop not in _CONTENT_TRANSFER_PROPS:
-        # CONTENT-layer padding/margin/etc. Check the device-tier gate FIRST (match
-        # the max-width branch + the other resolvers): a non-device-tier breakpoint
-        # gaps for the accurate reason and avoids a wasted attr_resolve DB query.
-        if not decl.is_device_tier:
-            return gap_writer(
-                ctx, decl, GapOrigin.NO_DESTINATION,
-                f"non-device-tier breakpoint {decl.tier!r} for {prop} (§3.A A4)",
-            )
-        # Resolve a destination if the block has one; else an HONEST gap (e.g.
-        # container's contentBandPadding* divergence).
-        base_attr = attr_resolve(ctx, "CONTENT", prop)
-        if base_attr is None:
-            return gap_writer(
-                ctx, decl, GapOrigin.NO_DESTINATION,
-                f"{ctx.block_slug} has no CONTENT-layer attr for {prop} "
-                f"(proposed_action: add attr or seed property_suffixes; "
-                f"e.g. container uses contentBandPadding* not contentPadding*)",
-            )
-        attr = tier_suffix(base_attr, decl.tier, ctx.conn)
-        if not validate(ctx, attr, decl.value):
-            return gap_writer(
-                ctx, decl, GapOrigin.NO_DESTINATION,
-                f"{ctx.block_slug} does not declare {attr!r} (tier {decl.tier})",
-            )
-        value = token_snap(prop, value_serialise("string", None, decl.value), ctx.conn)
-        return Write(attr=attr, value=value, property=prop, tier=decl.tier)
-
-    # max-width → contentWidth (§3.A.3 L2).
+    # Device-tier gate first (§3.A A4): a non-device-tier breakpoint gaps for
+    # the accurate reason and avoids wasted DB queries.
     if not decl.is_device_tier:
         return gap_writer(
             ctx, decl, GapOrigin.NO_DESTINATION,
             f"non-device-tier breakpoint {decl.tier!r} for {prop} (§3.A A4)",
         )
 
-    base_attr = attr_resolve(ctx, "CONTENT", prop)   # → 'contentWidth' for sgs/container
+    # Explicit layer-priority chain (the re-expressed fold ladder): first
+    # layer whose attr the OWNING block actually declares wins.
+    base_attr = None
+    for layer in _layer_priorities(prop):
+        base_attr = attr_resolve(ctx, layer, prop)
+        if base_attr is not None:
+            break
     if base_attr is None:
         return gap_writer(
             ctx, decl, GapOrigin.NO_DESTINATION,
-            f"{ctx.block_slug} has no CONTENT attr for {prop}",
+            f"{ctx.block_slug} has no CONTENT/GRID/OUTER attr for {prop} "
+            f"(proposed_action: add attr or seed property_suffixes)",
         )
 
     attr = tier_suffix(base_attr, decl.tier, ctx.conn)
@@ -96,11 +100,10 @@ def resolve(decl: Any, ctx: Any) -> Write | GAP:
             f"{ctx.block_slug} does not declare {attr!r} (tier {decl.tier})",
         )
 
-    # Resolve a co-declared var() (max-width:var(--content-width)) against the band's
-    # own decls is a node-context concern; per-decl we only have the value, so resolve
-    # against an empty map (identity unless the value is a self-contained var with a
-    # fallback). Then verbatim serialise (D230 — contentWidth is token-or-literal,
-    # token-snap is identity for a length literal, §3.A.6).
+    # Resolve a co-declared var() (max-width:var(--content-width)); identity
+    # unless the value is a self-contained var with a fallback. Then verbatim
+    # serialise (D230 — contentWidth is token-or-literal; token-snap is
+    # identity for a length literal, §3.A.6).
     resolved = _resolve_co_declared_var(strip_important(decl.value).strip(), {})
     value = token_snap(prop, value_serialise("string", None, resolved), ctx.conn)
     return Write(attr=attr, value=value, property=prop, tier=decl.tier)
