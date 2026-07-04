@@ -4065,10 +4065,19 @@ def content_attr_for_element(
         if isinstance(parsed, list):
             slot_aliases[slot_name] = {str(a) for a in parsed}
 
+    # Kebab≡camel normalisation for the attr-name tier-0 compare: a draft BEM
+    # element token is kebab-case ('price-note') while attrs are camelCase
+    # ('priceNote') — the SAME identifier in the two grammars. Normalising
+    # (lowercase, hyphens stripped) is a spelling-convention bridge, not a
+    # name-heuristic (FR-31-2.1a: no semantic parsing; both sides compared
+    # whole). Added 2026-07-04 (Gate A — the card's __price-note element).
+    _norm_el = bem_element.replace("-", "").lower()
+
     best: tuple[str, str | None, str | None, str | None] | None = None
     best_tier: int | None = None
     for attr_name, canonical_slot, emit_shape, role, attr_type in attr_rows:
-        if canonical_slot == bem_element or attr_name == bem_element:
+        if (canonical_slot == bem_element or attr_name == bem_element
+                or attr_name.replace("-", "").lower() == _norm_el):
             tier = 0
         elif bem_element in slot_aliases.get(canonical_slot or "", ()):
             tier = 1

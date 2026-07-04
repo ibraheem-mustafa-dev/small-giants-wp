@@ -1023,6 +1023,31 @@ def _has_inner_blocks_from_block_json(bj: dict) -> "int | None":
 # the heuristic mis-derives. Each entry MUST cite the reason + date.
 # Keyed (block_slug, attr_name) -> {column: value, ...} to UPDATE on block_attributes.
 ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
+    # sgs/product-card — 3 mis-seeds blocking the FR-31-2.6 per-attr walk from
+    # landing the card (QA Gate A, 2026-07-04). Every field verified against the
+    # BLOCK SOURCE (includes/product-card-builtin-render.php — the authoritative
+    # element↔attr map per FR-31-2.1a):
+    #
+    # priceLarge: mis-seeded role='select-from-enum' (it is the card's BIG price
+    #   TEXT — builtin-render.php:155 paints it inside
+    #   <span class="sgs-product-card__price">). role='text-content' admits it to
+    #   the content walk; canonical_slot='price' (already correct) gives the
+    #   draft's __price element a tier-0 match.
+    ("sgs/product-card", "priceLarge"): {"role": "text-content", "derived_selector": ".sgs-product-card__price"},
+    # priceNote: canonical_slot was 'price' — colliding tier-0 with priceLarge on
+    #   the draft's __price element (insert-order-fragile pick). Its REAL element
+    #   is __price-note (builtin-render.php:158); the normalised attr-name tier-0
+    #   match ('price-note' ≡ priceNote) resolves it without a slot row.
+    ("sgs/product-card", "priceNote"): {"canonical_slot": None, "derived_selector": ".sgs-product-card__price-note"},
+    # packSizes: the pack-size pills' owner (builtin-render.php:130-138 renders
+    #   the array as __pill buttons). canonical_slot='pill' marks the pill token
+    #   ARRAY-OWNED so the per-element walk never mis-binds a pill's text into a
+    #   scalar attr (trialTag got "8-pack", proven live 2026-07-04); the array
+    #   lift itself needs an items schema (tracked, Phase-5 backlog).
+    ("sgs/product-card", "packSizes"): {"canonical_slot": "pill", "derived_selector": ".sgs-product-card__pill"},
+    # trialTag: selector hygiene — the real element is __tag--trial
+    #   (builtin-render.php:106), not a derived guess.
+    ("sgs/product-card", "trialTag"): {"derived_selector": ".sgs-product-card__tag--trial"},
     # sgs/team-member.name: assign-canonical routes this to canonical_slot='heading'
     # → standalone_block='sgs/heading' → equivalent_block_for() returns 'sgs/heading'.
     # has_inner_blocks derives to 0 naturally (save.js returns null, render.php never
