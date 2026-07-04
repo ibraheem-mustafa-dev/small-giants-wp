@@ -1,0 +1,55 @@
+{
+  "fixture": "sgs-mobile-nav",
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0"
+  },
+  "row_count": 3,
+  "by_kind": {
+    "content-text": 3
+  },
+  "rows": [
+    {
+      "fixture": "sgs-mobile-nav",
+      "selector": "a.sgs-mobile-nav__item",
+      "property": "(content:text)",
+      "value": "Home",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-mobile-nav",
+      "selector": "a.sgs-mobile-nav__item",
+      "property": "(content:text)",
+      "value": "Shop",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-mobile-nav",
+      "selector": "a.sgs-mobile-nav__item",
+      "property": "(content:text)",
+      "value": "About",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 2,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    }
+  ]
+}

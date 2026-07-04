@@ -1,0 +1,41 @@
+{
+  "fixture": "precedence-collision",
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0"
+  },
+  "row_count": 2,
+  "by_kind": {
+    "content-text": 2
+  },
+  "rows": [
+    {
+      "fixture": "precedence-collision",
+      "selector": "h3.sgs-info-box__heading",
+      "property": "(content:text)",
+      "value": "Collision Heading",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "precedence-collision",
+      "selector": "p.sgs-info-box__text",
+      "property": "(content:text)",
+      "value": "Body text in the collision fixture.",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    }
+  ]
+}

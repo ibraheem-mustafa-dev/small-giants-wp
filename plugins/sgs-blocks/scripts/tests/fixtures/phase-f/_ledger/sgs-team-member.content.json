@@ -1,0 +1,56 @@
+{
+  "fixture": "sgs-team-member",
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0"
+  },
+  "row_count": 3,
+  "by_kind": {
+    "content-media": 1,
+    "content-text": 2
+  },
+  "rows": [
+    {
+      "fixture": "sgs-team-member",
+      "selector": "img.sgs-team-member__photo",
+      "property": "(content:media)",
+      "value": "/team/jane-smith.jpg",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "content-media",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-team-member",
+      "selector": "h3.sgs-team-member__name",
+      "property": "(content:text)",
+      "value": "Jane Smith",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-team-member",
+      "selector": "p.sgs-team-member__role",
+      "property": "(content:text)",
+      "value": "Founder & CEO",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 2,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    }
+  ]
+}

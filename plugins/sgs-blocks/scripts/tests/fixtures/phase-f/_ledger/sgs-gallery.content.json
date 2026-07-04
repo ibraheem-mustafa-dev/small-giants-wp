@@ -1,0 +1,55 @@
+{
+  "fixture": "sgs-gallery",
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0"
+  },
+  "row_count": 3,
+  "by_kind": {
+    "content-media": 3
+  },
+  "rows": [
+    {
+      "fixture": "sgs-gallery",
+      "selector": "img.sgs-gallery__item",
+      "property": "(content:media)",
+      "value": "/img/photo-1.jpg",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "content-media",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-gallery",
+      "selector": "img.sgs-gallery__item",
+      "property": "(content:media)",
+      "value": "/img/photo-2.jpg",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "content-media",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-gallery",
+      "selector": "img.sgs-gallery__item",
+      "property": "(content:media)",
+      "value": "/img/photo-3.jpg",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 2,
+      "shadowed": false,
+      "kind": "content-media",
+      "excluded_candidate": false
+    }
+  ]
+}

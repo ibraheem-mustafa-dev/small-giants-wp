@@ -1,0 +1,139 @@
+{
+  "fixture": "rt-media-600",
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0"
+  },
+  "row_count": 9,
+  "by_kind": {
+    "content-text": 9
+  },
+  "rows": [
+    {
+      "fixture": "rt-media-600",
+      "selector": "div.sgs-feature-grid__icon",
+      "property": "(content:text)",
+      "value": "🌿",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "rt-media-600",
+      "selector": "h3.sgs-feature-grid__title",
+      "property": "(content:text)",
+      "value": "Natural Ingredients",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "rt-media-600",
+      "selector": "p.sgs-feature-grid__text",
+      "property": "(content:text)",
+      "value": "No artificial flavours or preservatives.",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 2,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "rt-media-600",
+      "selector": "div.sgs-feature-grid__icon",
+      "property": "(content:text)",
+      "value": "🚚",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 3,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "rt-media-600",
+      "selector": "h3.sgs-feature-grid__title",
+      "property": "(content:text)",
+      "value": "Free UK Delivery",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 4,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "rt-media-600",
+      "selector": "p.sgs-feature-grid__text",
+      "property": "(content:text)",
+      "value": "Orders over £35 ship free, next-day.",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 5,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "rt-media-600",
+      "selector": "div.sgs-feature-grid__icon",
+      "property": "(content:text)",
+      "value": "⭐",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 6,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "rt-media-600",
+      "selector": "h3.sgs-feature-grid__title",
+      "property": "(content:text)",
+      "value": "5-Star Rated",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 7,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "rt-media-600",
+      "selector": "p.sgs-feature-grid__text",
+      "property": "(content:text)",
+      "value": "Trusted by thousands of UK families.",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 8,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    }
+  ]
+}

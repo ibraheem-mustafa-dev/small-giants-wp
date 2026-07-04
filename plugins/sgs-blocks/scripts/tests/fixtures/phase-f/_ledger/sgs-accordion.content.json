@@ -1,0 +1,69 @@
+{
+  "fixture": "sgs-accordion",
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0"
+  },
+  "row_count": 4,
+  "by_kind": {
+    "content-text": 4
+  },
+  "rows": [
+    {
+      "fixture": "sgs-accordion",
+      "selector": "h3.sgs-accordion__heading",
+      "property": "(content:text)",
+      "value": "What are the ingredients?",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-accordion",
+      "selector": "p",
+      "property": "(content:text)",
+      "value": "Our products use only natural, wholesome ingredients.",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-accordion",
+      "selector": "h3.sgs-accordion__heading",
+      "property": "(content:text)",
+      "value": "How do I store them?",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 2,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-accordion",
+      "selector": "p",
+      "property": "(content:text)",
+      "value": "Store in a cool, dry place for up to 3 months.",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 3,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    }
+  ]
+}

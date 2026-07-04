@@ -1,0 +1,41 @@
+{
+  "fixture": "rt-pseudo-before",
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0"
+  },
+  "row_count": 2,
+  "by_kind": {
+    "content-text": 2
+  },
+  "rows": [
+    {
+      "fixture": "rt-pseudo-before",
+      "selector": "h2.sgs-info-box__heading",
+      "property": "(content:text)",
+      "value": "Why Our Framework Wins",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "rt-pseudo-before",
+      "selector": "p.sgs-info-box__text",
+      "property": "(content:text)",
+      "value": "AI-native, accessible, and built for real-world clients.",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    }
+  ]
+}

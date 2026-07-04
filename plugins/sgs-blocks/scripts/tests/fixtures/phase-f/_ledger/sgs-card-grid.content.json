@@ -1,0 +1,69 @@
+{
+  "fixture": "sgs-card-grid",
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0"
+  },
+  "row_count": 4,
+  "by_kind": {
+    "content-text": 4
+  },
+  "rows": [
+    {
+      "fixture": "sgs-card-grid",
+      "selector": "h3",
+      "property": "(content:text)",
+      "value": "Card One",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-card-grid",
+      "selector": "p",
+      "property": "(content:text)",
+      "value": "First card body text.",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-card-grid",
+      "selector": "h3",
+      "property": "(content:text)",
+      "value": "Card Two",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 2,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-card-grid",
+      "selector": "p",
+      "property": "(content:text)",
+      "value": "Second card body text.",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 3,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    }
+  ]
+}

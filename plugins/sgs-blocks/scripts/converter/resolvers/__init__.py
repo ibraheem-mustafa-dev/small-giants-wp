@@ -3,16 +3,16 @@
 The orchestrator dispatches by DATA: dispatch_table names an id, REGISTRY maps it to
 a `resolve(decl, ctx) -> Write | GAP` callable. No `if slug ==` branching anywhere.
 
-Resolver status (corrected D249 — the prior "outer_box is the ONE real resolver, the
-other six are GAP-stubs" was STALE):
+Resolver status (corrected D249, then EXECUTION Step 12 / 2026-07-04):
   - REAL (CSS-side):  outer_box, content_band, grid, grid_area, typography — each
     transfers real properties to DB-resolved attrs and emits an HONEST GAP only when a
     block declares no destination attr / a property is unowned.
-  - STUB:  scalar_content.resolve + scalar_media.resolve return UNIMPLEMENTED_STUB on
-    the CSS dispatch. (NB: the REAL scalar CONTENT lift `lift_scalar_content` lives in
-    the same module but is reachable only via the content dispatch in
-    services.extraction, NOT this REGISTRY — see §3.B1. scalar_media is unbuilt; its
-    `media_signal` predicate raises by design, A11.)
+  - REMOVED (2026-07-04):  scalar_content.resolve / scalar_media.resolve (the CSS-dispatch
+    stubs) and their REGISTRY entries — proven unreachable from resolver_id's one
+    production call site (converter/dispatch_table.py; see its module docstring for the
+    reachability proof). The REAL content-side lifts `lift_scalar_content` /
+    `lift_styling_content` (a DIFFERENT dispatch entirely — services.extraction / walk.py's
+    B1/B2 mechanism) are UNTOUCHED and remain fully wired.
   - SINKS:  `excluded` is an intentional non-lift (F4); `unrouted` is a suspected
     routing bug that MUST fail loud (GAP origin=UNROUTED) — never laundered to a silent gap.
 """
@@ -26,8 +26,6 @@ from converter.resolvers import (
     grid,
     grid_area,
     outer_box,
-    scalar_content,
-    scalar_media,
     typography,
 )
 
@@ -61,8 +59,6 @@ REGISTRY: dict = {
     "grid": grid.resolve,
     "grid_area": grid_area.resolve,
     "typography": typography.resolve,
-    "scalar_content": scalar_content.resolve,
-    "scalar_media": scalar_media.resolve,
     "excluded": _excluded_sink,
     "unrouted": _unrouted_sink,
 }

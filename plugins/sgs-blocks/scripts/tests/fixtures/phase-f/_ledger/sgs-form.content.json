@@ -1,0 +1,55 @@
+{
+  "fixture": "sgs-form",
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0"
+  },
+  "row_count": 3,
+  "by_kind": {
+    "content-text": 3
+  },
+  "rows": [
+    {
+      "fixture": "sgs-form",
+      "selector": "label.sgs-form__label",
+      "property": "(content:text)",
+      "value": "Your Name",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-form",
+      "selector": "label.sgs-form__label",
+      "property": "(content:text)",
+      "value": "Email Address",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-form",
+      "selector": "a.sgs-button.sgs-button--primary",
+      "property": "(content:text)",
+      "value": "Submit",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 2,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    }
+  ]
+}

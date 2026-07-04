@@ -69,20 +69,23 @@ def test_band_padding_background_textalign_transfer(owner):
     typ = db_lookup.block_supports_for(owner).get("typography") or {}
     if typ.get("textAlign"):
         assert attrs.get("textAlign") == "center", attrs
-    # padding + background: transferred to SOME owner attr via the cascade OR
-    # an HONEST recorded gap — never silently absent from both.
-    # padding + background now run the FULL cascade: transferred when the
-    # owner declares a destination, else an HONEST RECORDED gap. Under the
-    # retired paths they were SILENTLY dropped (no record at all) — this
-    # accounting is the Step-7 Rule-4 fix. On today's container schema both
-    # land as NO_DESTINATION gaps (the contentBandPadding* naming divergence
-    # is a documented DB-data gap — the STOP-24 property_suffixes seed is
-    # EXECUTION Step 12 work, never a resolver workaround).
+    # STRENGTHENED (EXECUTION Step 12, 2026-07-04): padding-top now TRANSFERS to
+    # the owner's real 'contentBandPaddingTop' attr (migrations/
+    # 2026-07-04-property-suffixes-content-band-padding.py seeded the
+    # 'BandPaddingTop' property_suffixes row that closes the naming-divergence
+    # gap this test used to merely tolerate as NO_DESTINATION — see
+    # test_css_resolvers.py::test_content_band_padding_transfers_to_content_band_padding_attr
+    # for the resolver-level proof). background-color still runs the FULL
+    # cascade — transferred when the owner declares a destination, else an
+    # HONEST recorded gap (Step-7 Rule-4 accounting; background-color has no
+    # CONTENT/GRID/OUTER attr on sgs/container today, so it stays a
+    # NO_DESTINATION gap, never a silent drop).
+    assert attrs.get("contentBandPaddingTop") == "40px", (attrs, gaps)
+
     def _accounted(prop: str) -> bool:
-        in_attrs = any(v in ("40px", "#fff7f0") for v in attrs.values())
+        in_attrs = any(v == "#fff7f0" for v in attrs.values())
         in_gaps = any(g.property == prop for g in gaps)
         return in_attrs or in_gaps
-    assert _accounted("padding-top"), (attrs, gaps)
     assert _accounted("background-color"), (attrs, gaps)
 
 

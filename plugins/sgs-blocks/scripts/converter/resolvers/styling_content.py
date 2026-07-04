@@ -19,11 +19,8 @@ Spec refs: FR-31-2, FR-31-5 D1, R-31-1, R-31-9.
 """
 from __future__ import annotations
 
-from typing import Any
-
 from bs4 import Tag
 
-from converter.models import GAP, GapOrigin
 from converter.services.styling_helpers import (
     collect_css_decls_for_element,
     css_value_to_attr,
@@ -301,16 +298,15 @@ def _emit_value(
             if unit_attr in catalogue:
                 lifted[unit_attr] = unit
 
-
 # ---------------------------------------------------------------------------
-# Existing resolve stub — untouched so dispatch table + existing tests pass.
-# The step-3 stage gate will replace this with the real dispatch integration.
+# EXECUTION Step 12 (2026-07-04): the module-level `resolve(decl, ctx) -> GAP`
+# CSS-dispatch stub that used to live here has been DELETED — it was never
+# registered in converter/resolvers/__init__.py's REGISTRY (grepped the whole
+# repo for "styling_content.resolve" / "from converter.resolvers.styling_content
+# import resolve" / "from converter.resolvers import styling_content" as a
+# REGISTRY key — zero hits outside this file, 2026-07-04). It had no caller and
+# no dispatch_table.py resolver id pointed at it, so it was dead code, not a
+# real seam. `lift_styling_content` above (the CONTENT-side lift, wired through
+# services.extraction / walk.py's B1/B2 mechanism, a DIFFERENT dispatch entirely)
+# is untouched.
 # ---------------------------------------------------------------------------
-
-def resolve(decl: Any, ctx: Any) -> GAP:
-    return GAP(
-        origin=GapOrigin.UNIMPLEMENTED_STUB,
-        property=decl.property,
-        tier=decl.tier,
-        detail="styling_content resolver not built yet (slice stub)",
-    )

@@ -1,0 +1,41 @@
+{
+  "fixture": "sgs-testimonial",
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0"
+  },
+  "row_count": 2,
+  "by_kind": {
+    "content-text": 2
+  },
+  "rows": [
+    {
+      "fixture": "sgs-testimonial",
+      "selector": "blockquote.sgs-testimonial__quote",
+      "property": "(content:text)",
+      "value": "These lactation cookies genuinely boosted my supply — ordered three packs already!",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-testimonial",
+      "selector": "p.sgs-testimonial__author",
+      "property": "(content:text)",
+      "value": "Sarah M., Birmingham",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    }
+  ]
+}

@@ -1,0 +1,241 @@
+{
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0",
+    "generated_at": "2026-07-04T21:36:27.078913+00:00"
+  },
+  "fixture_count": 37,
+  "grand_total_rows": 112,
+  "by_kind_totals": {
+    "content-text": 101,
+    "content-media": 11
+  },
+  "fixtures": {
+    "mamas-trust-bar-real": {
+      "row_count": 4,
+      "by_kind": {
+        "content-text": 4
+      }
+    },
+    "precedence-collision": {
+      "row_count": 2,
+      "by_kind": {
+        "content-text": 2
+      }
+    },
+    "rt-background-url": {
+      "row_count": 3,
+      "by_kind": {
+        "content-text": 3
+      }
+    },
+    "rt-centred-maxwidth": {
+      "row_count": 12,
+      "by_kind": {
+        "content-media": 4,
+        "content-text": 8
+      }
+    },
+    "rt-media-600": {
+      "row_count": 9,
+      "by_kind": {
+        "content-text": 9
+      }
+    },
+    "rt-pseudo-before": {
+      "row_count": 2,
+      "by_kind": {
+        "content-text": 2
+      }
+    },
+    "rt-video-media": {
+      "row_count": 4,
+      "by_kind": {
+        "content-text": 3,
+        "content-media": 1
+      }
+    },
+    "sgs-accordion": {
+      "row_count": 4,
+      "by_kind": {
+        "content-text": 4
+      }
+    },
+    "sgs-accordion-item": {
+      "row_count": 2,
+      "by_kind": {
+        "content-text": 2
+      }
+    },
+    "sgs-card-grid": {
+      "row_count": 4,
+      "by_kind": {
+        "content-text": 4
+      }
+    },
+    "sgs-content-collection": {
+      "row_count": 1,
+      "by_kind": {
+        "content-text": 1
+      }
+    },
+    "sgs-cta-section": {
+      "row_count": 3,
+      "by_kind": {
+        "content-text": 3
+      }
+    },
+    "sgs-feature-grid": {
+      "row_count": 6,
+      "by_kind": {
+        "content-text": 6
+      }
+    },
+    "sgs-form": {
+      "row_count": 3,
+      "by_kind": {
+        "content-text": 3
+      }
+    },
+    "sgs-form-field-tiles": {
+      "row_count": 2,
+      "by_kind": {
+        "content-text": 2
+      }
+    },
+    "sgs-form-step": {
+      "row_count": 2,
+      "by_kind": {
+        "content-text": 2
+      }
+    },
+    "sgs-gallery": {
+      "row_count": 3,
+      "by_kind": {
+        "content-media": 3
+      }
+    },
+    "sgs-google-reviews": {
+      "row_count": 1,
+      "by_kind": {
+        "content-text": 1
+      }
+    },
+    "sgs-hero": {
+      "row_count": 3,
+      "by_kind": {
+        "content-text": 3
+      }
+    },
+    "sgs-info-box": {
+      "row_count": 2,
+      "by_kind": {
+        "content-text": 2
+      }
+    },
+    "sgs-media": {
+      "row_count": 1,
+      "by_kind": {
+        "content-media": 1
+      }
+    },
+    "sgs-mobile-nav": {
+      "row_count": 3,
+      "by_kind": {
+        "content-text": 3
+      }
+    },
+    "sgs-modal": {
+      "row_count": 3,
+      "by_kind": {
+        "content-text": 3
+      }
+    },
+    "sgs-multi-button": {
+      "row_count": 2,
+      "by_kind": {
+        "content-text": 2
+      }
+    },
+    "sgs-notice-banner": {
+      "row_count": 1,
+      "by_kind": {
+        "content-text": 1
+      }
+    },
+    "sgs-option-picker": {
+      "row_count": 4,
+      "by_kind": {
+        "content-text": 4
+      }
+    },
+    "sgs-post-grid": {
+      "row_count": 1,
+      "by_kind": {
+        "content-text": 1
+      }
+    },
+    "sgs-pricing-table": {
+      "row_count": 6,
+      "by_kind": {
+        "content-text": 6
+      }
+    },
+    "sgs-product-card": {
+      "row_count": 3,
+      "by_kind": {
+        "content-media": 1,
+        "content-text": 2
+      }
+    },
+    "sgs-quote": {
+      "row_count": 2,
+      "by_kind": {
+        "content-text": 2
+      }
+    },
+    "sgs-tab": {
+      "row_count": 1,
+      "by_kind": {
+        "content-text": 1
+      }
+    },
+    "sgs-tabs": {
+      "row_count": 3,
+      "by_kind": {
+        "content-text": 3
+      }
+    },
+    "sgs-team-member": {
+      "row_count": 3,
+      "by_kind": {
+        "content-media": 1,
+        "content-text": 2
+      }
+    },
+    "sgs-testimonial": {
+      "row_count": 2,
+      "by_kind": {
+        "content-text": 2
+      }
+    },
+    "sgs-testimonial-slider": {
+      "row_count": 2,
+      "by_kind": {
+        "content-text": 2
+      }
+    },
+    "sgs-trust-bar": {
+      "row_count": 2,
+      "by_kind": {
+        "content-text": 2
+      }
+    },
+    "sgs-trustpilot-reviews": {
+      "row_count": 1,
+      "by_kind": {
+        "content-text": 1
+      }
+    }
+  }
+}

@@ -50,12 +50,18 @@ def test_content_band_tier_suffix(conn):
     assert (out.attr, out.value) == ("contentWidthTablet", "720px")
 
 
-def test_content_band_padding_is_honest_gap(conn):
-    # sgs/container declares contentBandPadding* (not contentPadding*), so the layer
-    # resolver finds no destination — an honest NO_DESTINATION gap, never silent.
+def test_content_band_padding_transfers_to_content_band_padding_attr(conn):
+    # EXECUTION Step 12 (2026-07-04): sgs/container's real band-padding attr is
+    # 'contentBandPaddingTop' (not the generic 'contentPaddingTop' the pre-existing
+    # 'PaddingTop' suffix derives). A SECOND property_suffixes row (suffix=
+    # 'BandPaddingTop', migrations/2026-07-04-property-suffixes-content-band-padding.py)
+    # now resolves the CONTENT-band padding declaration to the block's ACTUAL attr —
+    # this is a REAL transfer, no longer an honest gap (was NO_DESTINATION before
+    # the seed; see test_fold_band_cascade.py::test_band_padding_background_textalign_transfer
+    # for the companion cross-node proof).
     out = content_band.resolve(Decl("padding-top", "20px", "Base"), _ctx(conn))
-    assert isinstance(out, GAP)
-    assert out.origin is GapOrigin.NO_DESTINATION
+    assert isinstance(out, Write)
+    assert (out.attr, out.value) == ("contentBandPaddingTop", "20px")
 
 
 def test_content_band_metamorphic_value_scale(conn):

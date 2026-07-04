@@ -1,0 +1,27 @@
+{
+  "fixture": "sgs-tab",
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0"
+  },
+  "row_count": 1,
+  "by_kind": {
+    "content-text": 1
+  },
+  "rows": [
+    {
+      "fixture": "sgs-tab",
+      "selector": "p.sgs-tab__content",
+      "property": "(content:text)",
+      "value": "This is the content for this individual tab panel.",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    }
+  ]
+}

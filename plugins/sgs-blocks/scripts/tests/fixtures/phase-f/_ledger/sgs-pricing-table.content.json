@@ -1,0 +1,97 @@
+{
+  "fixture": "sgs-pricing-table",
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0"
+  },
+  "row_count": 6,
+  "by_kind": {
+    "content-text": 6
+  },
+  "rows": [
+    {
+      "fixture": "sgs-pricing-table",
+      "selector": "h3.sgs-pricing-table__name",
+      "property": "(content:text)",
+      "value": "Basic",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-pricing-table",
+      "selector": "span.sgs-pricing-table__price",
+      "property": "(content:text)",
+      "value": "£9/mo",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-pricing-table",
+      "selector": "h3.sgs-pricing-table__name",
+      "property": "(content:text)",
+      "value": "Pro",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 2,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-pricing-table",
+      "selector": "span.sgs-pricing-table__price",
+      "property": "(content:text)",
+      "value": "£19/mo",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 3,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-pricing-table",
+      "selector": "h3.sgs-pricing-table__name",
+      "property": "(content:text)",
+      "value": "Enterprise",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 4,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-pricing-table",
+      "selector": "span.sgs-pricing-table__price",
+      "property": "(content:text)",
+      "value": "£49/mo",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 5,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    }
+  ]
+}

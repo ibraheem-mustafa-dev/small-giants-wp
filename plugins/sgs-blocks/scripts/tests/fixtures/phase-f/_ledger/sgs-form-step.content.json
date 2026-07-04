@@ -1,0 +1,41 @@
+{
+  "fixture": "sgs-form-step",
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0"
+  },
+  "row_count": 2,
+  "by_kind": {
+    "content-text": 2
+  },
+  "rows": [
+    {
+      "fixture": "sgs-form-step",
+      "selector": "h3.sgs-form-step__heading",
+      "property": "(content:text)",
+      "value": "Step 1: Your Details",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-form-step",
+      "selector": "p",
+      "property": "(content:text)",
+      "value": "Please fill in your contact information below.",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    }
+  ]
+}

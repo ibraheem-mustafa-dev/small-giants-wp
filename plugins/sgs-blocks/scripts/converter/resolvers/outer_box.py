@@ -24,6 +24,43 @@ Real transfers (this resolver OWNS the OUTER layer):
     slug; a raw CSS value would render nothing — no-cheats rule). Preset list is read
     from DB at call-time, never hardcoded.
 
+EXECUTION Step 12 (Phase 5, 2026-07-04) added the following to the OUTER allowlist.
+Every one of these goes through the SAME generic dispatch (attr_resolve → tier_suffix
+→ validate → numeric-or-string serialise) already built above — no per-property
+special-casing was needed, because ``attr_resolve``/``attr_for_layer_property`` is
+fully DB-driven (property_suffixes → block_attributes, name-free). The only genuine
+code change was widening ``_attr_is_number`` to recognise ``attr_type='integer'`` as
+well as ``'number'`` (order/z-index are unitless integers on some blocks, e.g.
+``sgs/media.order``) — a universal type-family generalisation, not a per-property rule.
+  - ``order`` / ``z-index``            → DB-resolved attr (e.g. ``order`` on
+    sgs/media, ``zIndex`` on sgs/decorative-image); numeric, no unit companion.
+  - ``overflow`` / ``overflow-x`` / ``overflow-y`` → DB-resolved string-enum attr
+    (e.g. ``overflow`` on sgs/decorative-image). overflow-x/-y currently have NO
+    block destination anywhere — honest NO_DESTINATION gap (property_suffixes rows
+    seeded D250; no block has declared ``overflowX``/``overflowY`` yet).
+  - ``object-fit``                     → DB-resolved string-enum attr (``objectFit``
+    on sgs/media).
+  - ``position`` / ``inset`` / ``top`` / ``right`` / ``bottom`` / ``left``  → DB-resolved
+    (property_suffixes seeded D250 under role='position'). NO block currently
+    declares a matching attr for any of these six — honest NO_DESTINATION gap on
+    every block (the suffix rows exist for when a block adds the capability).
+  - ``aspect-ratio``                   → DB-resolved string attr (``aspectRatio`` on
+    sgs/card-grid / sgs/gallery / core/image / core/gallery, etc.).
+  - ``opacity``                        → DB-resolved numeric attr (``opacity`` on
+    sgs/media / sgs/decorative-image / core/separator).
+  - ``background-image`` (GRADIENT case) → the block's ``Gradient``-suffix attr
+    (property_suffixes suffix='Gradient', role='colour-gradient') WHEN one exists.
+    No sgs/ block currently declares a bare ``gradient`` attr (sgs/container's own
+    background-image destination is ``backgroundImage``, wired through the separate
+    root-supports native-style lift — see ``root_supports.py`` — NOT this resolver);
+    core/button / core/cover / core/post-featured-image do, but those are core
+    blocks, not part of this vertical slice's fixtures. Honest NO_DESTINATION gap.
+  - ``flex-grow`` / ``flex-shrink`` / ``flex-basis`` (flex ITEM props, NOT the
+    container-level ``flex-direction``/``flex-wrap`` already lifted via
+    arrangement.py — untouched) → property_suffixes seeded 2026-07-04
+    (migrations/2026-07-04-property-suffixes-flex-item-props.py). NO block
+    currently declares flexGrow/flexShrink/flexBasis — honest NO_DESTINATION gap.
+
 ``padding`` SHORTHAND is expanded to longhands at the pre-dispatch extraction stage
 (``fold_helpers._expand_box_shorthand``); a raw ``padding`` shorthand reaching this
 resolver means that stage was not wired for this path — gapped UNIMPLEMENTED_STUB
@@ -54,6 +91,7 @@ import re
 import sqlite3
 from typing import Any
 
+from converter.db import db_lookup
 from converter.models import GAP, GapOrigin, Write
 from converter.services.attr_resolve import attr_resolve
 from converter.services.gap_writer import gap_writer
@@ -63,18 +101,21 @@ from converter.services.token_snap import token_snap
 from converter.services.validate import validate
 from converter.services.value_serialise import value_serialise
 
-# OUTER box CSS properties this resolver transfers (Spec 31 §3.A L1). A `padding`
-# shorthand is NOT here — it is expanded to longhands pre-dispatch; arriving raw is
-# a wiring gap (UNIMPLEMENTED_STUB), never a silent drop.
+# WHICH properties this L1/OUTER resolver attempts is a DB FACT, not an in-code
+# list (corrected 2026-07-04, Bean-caught): a property is liftable ⇔ it has a
+# `property_suffixes` row (Spec 31 §4 — that table IS the property→attr-suffix
+# map). The Step-12 in-code `_OUTER_TRANSFER_PROPS` frozenset duplicated the DB
+# fact and drifted the moment the migration seeded new rows — deleted; the
+# membership test is now `db_lookup.css_property_has_suffix_row(prop)` (cached).
+# The transfer itself was always DB-driven (attr_resolve → property_suffixes →
+# block_attributes, name-free); a rowless property gaps UNIMPLEMENTED_STUB and a
+# row-bearing property with no attr on THIS block gaps NO_DESTINATION — honest
+# either way (Spec 31 §3.A step 8). Layer vocabulary: this resolver is L1
+# (OUTER box) in the Spec 31 §2.9 Axis-1 model (L1=OUTER / L2=CONTENT /
+# L3=GRID+PER-ITEM / L4=GRID-PER-AREA).
 #
-# background-size/position/repeat/attachment: DB-resolved to backgroundSize* etc. attrs.
-# box-shadow: DB-resolved to the block's shadow attr; token-snapped to a preset slug.
-_OUTER_TRANSFER_PROPS = frozenset({
-    "max-width", "min-height", "gap",
-    "padding-top", "padding-right", "padding-bottom", "padding-left",
-    "background-size", "background-position", "background-repeat", "background-attachment",
-    "box-shadow",
-})
+# `padding` shorthand is expanded to longhands pre-dispatch; arriving raw is a
+# wiring gap (UNIMPLEMENTED_STUB), never a silent drop.
 
 # Length-literal properties written verbatim (D230 — no token snap, no truncation).
 _LITERAL_PROPS = frozenset({"max-width", "min-height"})
@@ -122,14 +163,22 @@ def _shadow_token_snap(raw_value: str, conn: sqlite3.Connection) -> str | None:
 
 
 def _attr_is_number(ctx: Any, attr: str) -> bool:
-    # The attr_type='number' predicate is done IN SQL (returns a presence row, not a
-    # string to compare in Python) — mirrors validate.py's `row is None` idiom so the
-    # block_slug-bearing query does not taint a local that is then string-compared
-    # (the no-slug-literal carve-out gate taints any local assigned from a
-    # block_slug-bearing expression).
+    # The attr_type IN ('number','integer') predicate is done IN SQL (returns a
+    # presence row, not a string to compare in Python) — mirrors validate.py's
+    # `row is None` idiom so the block_slug-bearing query does not taint a local
+    # that is then string-compared (the no-slug-literal carve-out gate taints any
+    # local assigned from a block_slug-bearing expression).
+    #
+    # EXECUTION Step 12 (2026-07-04): widened from 'number'-only to also match
+    # 'integer' — a UNIVERSAL type-family generalisation (order/z-index are
+    # unitless-integer attrs on some blocks, e.g. sgs/media.order, attr_type=
+    # 'integer'; opacity/z-index on other blocks use attr_type='number'). Both
+    # kinds go through the identical split_value_unit + int()-collapse path below;
+    # there is no behavioural difference between the two DB type labels for this
+    # resolver's purposes, so no per-block/per-property branch was added (R-31-9).
     row = ctx.conn.execute(
         "SELECT 1 FROM block_attributes "
-        "WHERE block_slug=? AND attr_name=? AND attr_type='number'",
+        "WHERE block_slug=? AND attr_name=? AND attr_type IN ('number', 'integer')",
         (ctx.block_slug, attr),
     ).fetchone()
     return row is not None
@@ -149,11 +198,15 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             "outer_box unexpanded — wire shorthand expansion at extraction",
         )
 
-    if prop not in _OUTER_TRANSFER_PROPS:
+    if not db_lookup.css_property_has_suffix_row(prop):
+        # Liftability is the DB fact (Spec 31 §4): no property_suffixes row ⇒
+        # no attr-suffix destination exists anywhere ⇒ honest stub gap. Seeding
+        # a row (migration / block.json channel, STOP-24) makes the property
+        # flow through the generic chain below with ZERO code change here.
         return gap_writer(
             ctx, decl, GapOrigin.UNIMPLEMENTED_STUB,
-            f"outer_box does not own OUTER property '{prop}' yet "
-            f"(transfers: {sorted(_OUTER_TRANSFER_PROPS)})",
+            f"'{prop}' has no property_suffixes row — not yet a liftable "
+            f"property (seed via the STOP-24 migration channel, Spec 31 §5)",
         )
 
     # A4: a non-device-tier breakpoint has no device bucket — gap it, never coerce.

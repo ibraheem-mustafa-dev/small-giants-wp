@@ -1,0 +1,70 @@
+{
+  "fixture": "rt-video-media",
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0"
+  },
+  "row_count": 4,
+  "by_kind": {
+    "content-text": 3,
+    "content-media": 1
+  },
+  "rows": [
+    {
+      "fixture": "rt-video-media",
+      "selector": "h1.sgs-hero--video__heading",
+      "property": "(content:text)",
+      "value": "Cook. Share. Thrive.",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "rt-video-media",
+      "selector": "p.sgs-hero--video__text",
+      "property": "(content:text)",
+      "value": "Handmade snacks delivered to your door.",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "rt-video-media",
+      "selector": "a.sgs-button.sgs-button--primary",
+      "property": "(content:text)",
+      "value": "Order Now",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 2,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "rt-video-media",
+      "selector": "video.sgs-hero--video__video",
+      "property": "(content:media)",
+      "value": "video",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 3,
+      "shadowed": false,
+      "kind": "content-media",
+      "excluded_candidate": false
+    }
+  ]
+}

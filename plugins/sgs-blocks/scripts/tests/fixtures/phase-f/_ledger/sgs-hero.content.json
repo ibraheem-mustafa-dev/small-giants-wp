@@ -1,0 +1,55 @@
+{
+  "fixture": "sgs-hero",
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0"
+  },
+  "row_count": 3,
+  "by_kind": {
+    "content-text": 3
+  },
+  "rows": [
+    {
+      "fixture": "sgs-hero",
+      "selector": "h1.sgs-hero__heading",
+      "property": "(content:text)",
+      "value": "Page Title",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-hero",
+      "selector": "p.sgs-hero__text",
+      "property": "(content:text)",
+      "value": "Hero description text for this section.",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-hero",
+      "selector": "a.sgs-button.sgs-button--primary",
+      "property": "(content:text)",
+      "value": "Shop Now",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 2,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    }
+  ]
+}

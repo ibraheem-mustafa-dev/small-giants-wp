@@ -1,0 +1,69 @@
+{
+  "fixture": "sgs-option-picker",
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0"
+  },
+  "row_count": 4,
+  "by_kind": {
+    "content-text": 4
+  },
+  "rows": [
+    {
+      "fixture": "sgs-option-picker",
+      "selector": "h3.sgs-option-picker__label",
+      "property": "(content:text)",
+      "value": "Choose Size",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-option-picker",
+      "selector": "button.sgs-option-picker__option",
+      "property": "(content:text)",
+      "value": "Small",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-option-picker",
+      "selector": "button.sgs-option-picker__option",
+      "property": "(content:text)",
+      "value": "Medium",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 2,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "sgs-option-picker",
+      "selector": "button.sgs-option-picker__option",
+      "property": "(content:text)",
+      "value": "Large",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 3,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    }
+  ]
+}

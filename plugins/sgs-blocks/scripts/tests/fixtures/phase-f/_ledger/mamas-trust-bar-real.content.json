@@ -1,0 +1,69 @@
+{
+  "fixture": "mamas-trust-bar-real",
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0"
+  },
+  "row_count": 4,
+  "by_kind": {
+    "content-text": 4
+  },
+  "rows": [
+    {
+      "fixture": "mamas-trust-bar-real",
+      "selector": "span.sgs-trust-bar__text",
+      "property": "(content:text)",
+      "value": "Handmade in Birmingham",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "mamas-trust-bar-real",
+      "selector": "span.sgs-trust-bar__text",
+      "property": "(content:text)",
+      "value": "Registered Food Business",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 1,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "mamas-trust-bar-real",
+      "selector": "span.sgs-trust-bar__text",
+      "property": "(content:text)",
+      "value": "Free UK Delivery Over £35",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 2,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    },
+    {
+      "fixture": "mamas-trust-bar-real",
+      "selector": "span.sgs-trust-bar__text",
+      "property": "(content:text)",
+      "value": "Loved by Breastfeeding Mums",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 3,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    }
+  ]
+}

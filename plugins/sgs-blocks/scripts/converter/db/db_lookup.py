@@ -1457,6 +1457,32 @@ _ATTR_NAME_OVERRIDES: dict[tuple[str, str], str] = {
 }
 
 
+@functools.lru_cache(maxsize=1024)
+def css_property_has_suffix_row(css_property: str) -> bool:
+    """True iff ``css_property`` has >=1 ``property_suffixes`` row — i.e. the DB
+    declares it LIFTABLE (some attr-suffix destination exists somewhere).
+
+    Spec 31 §4: property_suffixes IS the property->attr-suffix map, so "which CSS
+    properties may a layer resolver attempt" is a DB FACT, never an in-code
+    allowlist (R-31-1 — the Step-12 in-code `_OUTER_TRANSFER_PROPS` frozenset
+    duplicated this fact and drifted the moment new rows were seeded; replaced
+    by this accessor 2026-07-04, Bean-caught)."""
+    if not css_property:
+        return False
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT 1 FROM property_suffixes WHERE css_property = ? LIMIT 1",
+            (css_property,),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        return False
+    finally:
+        conn.close()
+    return row is not None
+
+
+
 @functools.lru_cache(maxsize=4096)
 def attr_for_property(
     block_slug: str,

@@ -1,0 +1,27 @@
+{
+  "fixture": "sgs-notice-banner",
+  "generated_by": {
+    "module": "ledger.declare_input.declare_content",
+    "module_version": "0.1.0"
+  },
+  "row_count": 1,
+  "by_kind": {
+    "content-text": 1
+  },
+  "rows": [
+    {
+      "fixture": "sgs-notice-banner",
+      "selector": "p.sgs-notice-banner__text",
+      "property": "(content:text)",
+      "value": "Free delivery on orders over £35 — order before 2pm for next-day dispatch!",
+      "important": false,
+      "media": null,
+      "media_kind": "none",
+      "tier": "Base",
+      "source_index": 0,
+      "shadowed": false,
+      "kind": "content-text",
+      "excluded_candidate": false
+    }
+  ]
+}

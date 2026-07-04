@@ -1,5 +1,5 @@
 {
-  "hash": "e02486756cdfe40ada973f87d3408e5dd6ed08413371db96777ac90a11896f11",
+  "hash": "01de6c7d35486c96e5b1491577e3a5c324248fb58027b3cb8dc9bee04cebb069",
   "keys": [
     "bp:converter_v2\\convert.py:1024",
     "bp:converter_v2\\convert.py:768",
@@ -8,8 +8,6 @@
     "hdict:_retired\\convert_pre_spec22.py:_STYLE_KEY_TO_ROLE",
     "hdict:converter_v2\\convert.py:_SUFFIX_ATTR_OVERRIDES",
     "hdict:converter_v2\\convert.py:prop_map",
-    "hdict:db\\db_lookup.py:_ATTR_NAME_OVERRIDES",
-    "hdict:db\\db_lookup.py:_TYPO_CSS_SUFFIX_SELECTION",
     "hdict:stage_attribute_promotion.py:_CSS_PROP_PHP",
     "imp:build\\blocks\\accordion\\style.css:transition-duration",
     "imp:build\\blocks\\collapsible-text\\style.css:transition-duration",
@@ -19,6 +17,7 @@
     "imp:build\\blocks\\form\\style.css:grid-template-columns",
     "imp:build\\blocks\\gallery\\style.css:opacity",
     "imp:build\\blocks\\mega-menu\\style.css:color",
+    "imp:build\\blocks\\mega-menu\\style.css:flex-basis",
     "imp:build\\blocks\\mega-menu\\style.css:text-decoration",
     "imp:build\\blocks\\mega-menu\\style.css:width",
     "imp:build\\blocks\\mobile-nav\\style.css:border-radius",
@@ -35,6 +34,7 @@
     "imp:src\\blocks\\gallery\\editor.css:display",
     "imp:src\\blocks\\gallery\\style.css:opacity",
     "imp:src\\blocks\\mega-menu\\style.css:color",
+    "imp:src\\blocks\\mega-menu\\style.css:flex-basis",
     "imp:src\\blocks\\mega-menu\\style.css:text-decoration",
     "imp:src\\blocks\\mega-menu\\style.css:width",
     "imp:src\\blocks\\mobile-nav\\style.css:border-radius",
