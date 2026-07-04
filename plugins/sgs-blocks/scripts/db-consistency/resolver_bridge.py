@@ -34,10 +34,13 @@ sys.stdout.reconfigure(encoding="utf-8")
 # so they can never drift.  FAIL LOUDLY if unavailable.
 # ---------------------------------------------------------------------------
 
+# Repointed to converter/db/db_lookup.py (EXECUTION Step 10, 2026-07-04) — the
+# canonical implementation moved there in Step 9; the old
+# orchestrator/converter_v2/db_lookup.py path is now a re-export shim.
 _DB_LOOKUP_PATH = (
     Path(__file__).resolve().parents[1]  # scripts/db-consistency/../ = scripts/
-    / "orchestrator"
-    / "converter_v2"
+    / "converter"
+    / "db"
     / "db_lookup.py"
 )
 
@@ -45,7 +48,7 @@ if not _DB_LOOKUP_PATH.exists():
     raise ImportError(
         f"[resolver_bridge] Cannot find db_lookup.py at {_DB_LOOKUP_PATH}.\n"
         "The F6 suite requires the real resolver module to import its constants.\n"
-        "Ensure plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py exists."
+        "Ensure plugins/sgs-blocks/scripts/converter/db/db_lookup.py exists."
     )
 
 _spec = importlib.util.spec_from_file_location("db_lookup_real", str(_DB_LOOKUP_PATH))

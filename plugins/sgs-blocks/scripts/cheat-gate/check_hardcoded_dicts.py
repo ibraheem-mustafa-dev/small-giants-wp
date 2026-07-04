@@ -38,16 +38,22 @@ _CONVERTER = _SCRIPTS_DIR / "converter"            # NEW modular converter tree 
 # ---------------------------------------------------------------------------
 # converter/ tree — legitimate DB-access modules allowlisted whole-file.
 #
-# Mirrors the orchestrator's db_lookup.py / icon_resolver.py exemption: these
+# Mirrors the frozen tree's db_lookup.py / icon_resolver.py exemption: these
 # modules exist SPECIFICALLY to hold DB-resolved property/attr or icon-identity
 # lookup tables, so a dict literal there that superficially resembles a
-# css-prop→attr map is expected. Both entries are forward-looking (no
-# converter/services/db_lookup.py or icon_resolver.py exist yet as of D249 —
-# the orchestrator equivalents live at orchestrator/converter_v2/db_lookup.py
-# + icon_resolver.py) so those modules are allowlisted on day one when ported.
+# css-prop→attr map is expected.
+#
+# EXECUTION Step 9 (Phase 3, 2026-07-04) moved db_lookup.py's canonical
+# implementation to converter/db/db_lookup.py (NOT converter/services/ —
+# corrected here in Step 10 after the path drifted: the allowlist said
+# "services/db_lookup.py" while the real file landed at "db/db_lookup.py",
+# so 2 of its dict literals (_ATTR_NAME_OVERRIDES, _TYPO_CSS_SUFFIX_SELECTION)
+# were silently scanned as ordinary converter/ code and baselined as
+# individual violations instead of being whole-file exempt like icon_resolver.
+# icon_resolver.py's path was already correct (converter/services/icon_resolver.py).
 # ---------------------------------------------------------------------------
 _CONVERTER_WHOLE_FILE_ALLOWLIST: frozenset[str] = frozenset({
-    "services/db_lookup.py",
+    "db/db_lookup.py",
     "services/icon_resolver.py",
 })
 

@@ -1084,7 +1084,10 @@ def _load_db_block_attrs(block_slug: str) -> dict:
         _db_dir = ORCHESTRATOR_DIR.parent
         if str(_db_dir) not in sys.path:
             sys.path.insert(0, str(_db_dir))
-        from orchestrator.converter_v2.db_lookup import block_attrs  # type: ignore[import]
+        # Repointed to converter.db.db_lookup (EXECUTION Step 10, 2026-07-04) —
+        # the canonical implementation moved there in Step 9; the old
+        # orchestrator/converter_v2/db_lookup.py path is now a re-export shim.
+        from converter.db.db_lookup import block_attrs  # type: ignore[import]
         return block_attrs(block_slug)
     except Exception:  # noqa: BLE001 — never break Stage 3 on a DB miss
         return {}
@@ -1254,7 +1257,10 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
         _conv_pkg_dir_reset = ORCHESTRATOR_DIR.parent
         if str(_conv_pkg_dir_reset) not in sys.path:
             sys.path.insert(0, str(_conv_pkg_dir_reset))
-        from orchestrator.converter_v2 import reset_pipeline_seed as _reset_seed
+        # Repointed to converter.entry (EXECUTION Step 10, 2026-07-04) — the
+        # canonical Stage-4 entry implementation moved there; the old
+        # orchestrator.converter_v2 package path is now a re-export shim.
+        from converter.entry import reset_pipeline_seed as _reset_seed
         _reset_seed()
     except ImportError:
         pass
@@ -1268,7 +1274,8 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
             _cv2_dir_seed = ORCHESTRATOR_DIR.parent
             if str(_cv2_dir_seed) not in sys.path:
                 sys.path.insert(0, str(_cv2_dir_seed))
-            from orchestrator.converter_v2 import seed_theme_json as _seed_theme_json
+            # Repointed to converter.entry (EXECUTION Step 10, 2026-07-04).
+            from converter.entry import seed_theme_json as _seed_theme_json
             _seed_theme_json(theme_json)
         except Exception:  # noqa: BLE001
             pass  # token-snap gracefully degrades if seeding fails
@@ -1368,13 +1375,17 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
         if _cv2_eligible:
             _class_sig = boundary.get("class_signature") or []
             try:
-                # Import the production converter package. The orchestrator
-                # runs from REPO root, so the package path is discoverable
-                # via importlib if sys.path includes ORCHESTRATOR_DIR's parent.
+                # Import the production converter's Stage-4 entry point. The
+                # orchestrator runs from REPO root, so the package path is
+                # discoverable via importlib if sys.path includes
+                # ORCHESTRATOR_DIR's parent. Repointed to converter.entry
+                # (EXECUTION Step 10, 2026-07-04) — the canonical Stage-4
+                # entry implementation moved there; the old
+                # orchestrator.converter_v2 package path is now a re-export shim.
                 _conv_pkg_dir = ORCHESTRATOR_DIR.parent  # .../scripts/
                 if str(_conv_pkg_dir) not in sys.path:
                     sys.path.insert(0, str(_conv_pkg_dir))
-                from orchestrator.converter_v2 import convert_section as _conv_section
+                from converter.entry import convert_section as _conv_section
                 # Read section HTML from the mockup (same source as legacy extract.py).
                 # The boundary selector identifies which top-level element to extract.
                 from bs4 import BeautifulSoup as _BS4
@@ -2271,9 +2282,11 @@ def main():
     # run_id so every attribute_gap_candidate row emitted under D3 carries
     # traceable provenance. Soft-fail on ImportError (cv2 not importable on
     # this Python path — same fallback shape as the existing reset_pipeline_seed
-    # at line ~976).
+    # at line ~976). Repointed to converter.entry (EXECUTION Step 10, 2026-07-04)
+    # — the canonical Stage-4 entry implementation moved there; the old
+    # orchestrator.converter_v2 package path is now a re-export shim.
     try:
-        from orchestrator.converter_v2 import seed_gap_context as _seed_gap_context
+        from converter.entry import seed_gap_context as _seed_gap_context
         _seed_gap_context(run_id=run_id)
     except Exception:
         pass

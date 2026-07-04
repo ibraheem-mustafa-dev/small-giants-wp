@@ -705,11 +705,14 @@ def run() -> None:
 #      authoritative derivation function (this script is the DB enrichment
 #      path; db_lookup is the runtime library).
 
-# Import the shared derivation function. db_lookup.py lives next door in
-# the orchestrator/converter_v2 path; add to sys.path so the runtime library
-# and this enrichment script share the SAME implementation.
+# Import the shared derivation function. db_lookup.py's canonical implementation
+# lives at converter/db/db_lookup.py (moved there EXECUTION Step 9, Phase 3,
+# 2026-07-04 — orchestrator/converter_v2/db_lookup.py is now a re-export shim).
+# Add to sys.path so the runtime library and this enrichment script share the
+# SAME implementation. Variable name kept as _CONVERTER_V2_DIR for call-site
+# compatibility below (line ~763's comment), though it now points at converter/db.
 _CONVERTER_V2_DIR = (
-    Path(__file__).resolve().parents[1] / "orchestrator" / "converter_v2"
+    Path(__file__).resolve().parents[1] / "converter" / "db"
 )
 if str(_CONVERTER_V2_DIR) not in sys.path:
     sys.path.insert(0, str(_CONVERTER_V2_DIR))
@@ -759,8 +762,9 @@ def _get_bem_regex():
     """
     global _TIER_B_BEM_ELEMENT_RE
     if _TIER_B_BEM_ELEMENT_RE is None:
-        # The sys.path setup for converter_v2 is done at the top of this file
-        # via _CONVERTER_V2_DIR; import is safe here.
+        # The sys.path setup for converter/db (Step 10, 2026-07-04 — was
+        # converter_v2 before Step 9) is done at the top of this file via
+        # _CONVERTER_V2_DIR; import is safe here.
         from db_lookup import _BEM_ELEMENT_RE
         _TIER_B_BEM_ELEMENT_RE = _BEM_ELEMENT_RE
     return _TIER_B_BEM_ELEMENT_RE

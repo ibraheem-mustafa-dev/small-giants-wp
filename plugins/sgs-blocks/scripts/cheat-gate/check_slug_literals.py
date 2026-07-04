@@ -76,13 +76,15 @@ _FUNC_SCOPED_ALLOWLIST: dict[str, str] = {
 # identity maps; a slug literal appearing in them is expected (mirrors the
 # orchestrator's _ATOMIC_FUNC allowance above). Paths are relative to
 # _CONVERTER, matching the shape of _FUNC_SCOPED_ALLOWLIST's file_rel keys.
-# Both entries are forward-looking (no converter/services/db_lookup.py or
-# icon_resolver.py exist yet as of D249 — the orchestrator equivalents live
-# at orchestrator/converter_v2/db_lookup.py + icon_resolver.py) so that when
-# those modules are ported into the new tree they are allowlisted on day one.
+#
+# EXECUTION Step 9 (Phase 3, 2026-07-04) ported db_lookup.py's canonical
+# implementation to converter/db/db_lookup.py — corrected here in Step 10
+# (the path had drifted to the forward-looking "services/db_lookup.py" guess
+# from D249, which no longer matches the real file). icon_resolver.py's path
+# was already correct at converter/services/icon_resolver.py.
 # ---------------------------------------------------------------------------
 _CONVERTER_WHOLE_FILE_ALLOWLIST: frozenset[str] = frozenset({
-    "services/db_lookup.py",
+    "db/db_lookup.py",
     "services/icon_resolver.py",
 })
 

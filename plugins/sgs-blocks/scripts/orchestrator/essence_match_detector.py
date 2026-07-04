@@ -39,12 +39,17 @@ sys.stdout.reconfigure(encoding="utf-8")
 # Lazy-load db_lookup (same resolve strategy as convert.py)
 # ---------------------------------------------------------------------------
 def _load_db():
-    """Return the db_lookup module, locating it relative to this file."""
+    """Return the db_lookup module, locating it relative to this file.
+
+    Repointed to converter/db/db_lookup.py (EXECUTION Step 10, 2026-07-04) —
+    the canonical implementation moved there in Step 9; the old
+    orchestrator/converter_v2/db_lookup.py path is now a re-export shim.
+    """
     import importlib.util
     from pathlib import Path
-    here = Path(__file__).resolve().parent
-    # converter_v2 sibling directory
-    db_path = here / "converter_v2" / "db_lookup.py"
+    here = Path(__file__).resolve().parent  # scripts/orchestrator/
+    # converter/db canonical implementation (Step 9, 2026-07-04)
+    db_path = here.parent / "converter" / "db" / "db_lookup.py"
     if not db_path.exists():
         # Try same directory (test harness may flatten the tree)
         db_path = here / "db_lookup.py"

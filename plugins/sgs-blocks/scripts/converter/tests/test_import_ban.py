@@ -23,6 +23,11 @@ def _scan(tmp_path: Path, source: str) -> list[dict]:
     return run(converter_dir=tmp_path)
 
 
+def _scan_named(tmp_path: Path, filename: str, source: str) -> list[dict]:
+    (tmp_path / filename).write_text(source, encoding="utf-8")
+    return run(converter_dir=tmp_path)
+
+
 # -- banned ----------------------------------------------------------------
 
 def test_bans_import_convert(tmp_path):
@@ -116,3 +121,55 @@ def test_allows_from_converter_services_icon_resolver_import_symbol(tmp_path):
 def test_allows_unrelated_import(tmp_path):
     v = _scan(tmp_path, "import json\nfrom pathlib import Path\n")
     assert v == []
+
+
+# -- STOP-28 fallback exemption (EXECUTION Step 10, 2026-07-04) ------------
+# Plant-tests for BOTH narrowing axes described in import_ban.py's module
+# docstring ("ONE NARROW EXEMPTION"): file identity (must be exactly
+# entry.py) AND a per-import marker comment (must be on the import's own
+# source line). Either axis missing must still fail the gate.
+
+def test_stop28_exempt_marked_import_in_entry_py(tmp_path):
+    """The exact shape used in converter/entry.py — file=entry.py + marker
+    comment on the import line — is exempted."""
+    src = (
+        "def f():\n"
+        "    from orchestrator.converter_v2 import convert as v3  # STOP-28 fallback — dies at Step 16\n"
+        "    return v3\n"
+    )
+    v = _scan_named(tmp_path, "entry.py", src)
+    assert v == []
+
+
+def test_stop28_unmarked_import_in_entry_py_still_banned(tmp_path):
+    """Axis 2 (marker) is enforced even inside entry.py — an unmarked
+    frozen-tree import in the exempt FILE is still a violation."""
+    src = (
+        "def f():\n"
+        "    from orchestrator.converter_v2 import convert as v3\n"
+        "    return v3\n"
+    )
+    v = _scan_named(tmp_path, "entry.py", src)
+    assert len(v) == 1
+
+
+def test_stop28_marked_import_outside_entry_py_still_banned(tmp_path):
+    """Axis 1 (file identity) is enforced even with the marker comment present
+    — the exact same marked import in a DIFFERENT file is still a violation.
+    Proves the exemption cannot be copy-pasted into another converter/ file."""
+    src = (
+        "def f():\n"
+        "    from orchestrator.converter_v2 import convert as v3  # STOP-28 fallback — dies at Step 16\n"
+        "    return v3\n"
+    )
+    v = _scan_named(tmp_path, "not_entry.py", src)
+    assert len(v) == 1
+
+
+def test_real_entry_py_has_no_unmarked_frozen_imports():
+    """The real converter/entry.py, scanned in place, is all-clear: every one
+    of its frozen-tree imports carries the STOP-28 marker."""
+    real_converter_dir = Path(__file__).resolve().parents[1]  # scripts/converter/
+    assert (real_converter_dir / "entry.py").exists()
+    violations = run(converter_dir=real_converter_dir)
+    assert violations == [], violations

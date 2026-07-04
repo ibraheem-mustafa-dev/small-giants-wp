@@ -64,11 +64,15 @@ def _load_db_lookup():
     """Lazy-load db_lookup helpers; soft-fail to (None, None) if unavailable.
 
     Returns (legacy_role_lookup_for, is_class_section_block).
+
+    Repointed to converter/db/db_lookup.py (EXECUTION Step 10, 2026-07-04) —
+    the canonical implementation moved there in Step 9; the old
+    orchestrator/converter_v2/db_lookup.py path is now a re-export shim.
     """
     import importlib.util as _ilu
     here = Path(__file__).resolve()
     for ancestor in here.parents:
-        candidate = ancestor / "orchestrator" / "converter_v2" / "db_lookup.py"
+        candidate = ancestor / "converter" / "db" / "db_lookup.py"
         if candidate.exists():
             spec = _ilu.spec_from_file_location("db_lookup", candidate)
             mod = _ilu.module_from_spec(spec)

@@ -27,9 +27,11 @@ import tinycss2
 HERE = Path(__file__).parent
 _CONVERTER_V2_DIR = HERE / "converter_v2"
 
-# Lazy-import db_lookup from the converter_v2 package.  We import lazily so
-# this module can be loaded even when the package hasn't been added to sys.path
-# yet (test isolation).
+# Lazy-import db_lookup. Repointed to converter.db.db_lookup (EXECUTION Step 10,
+# 2026-07-04) — the canonical implementation moved there in Step 9;
+# orchestrator/converter_v2/db_lookup.py is now a re-export shim. We import
+# lazily so this module can be loaded even when the package hasn't been added
+# to sys.path yet (test isolation).
 _db = None
 
 
@@ -39,7 +41,7 @@ def _get_db():
         pkg_parent = _CONVERTER_V2_DIR.parent  # .../scripts/
         if str(pkg_parent) not in sys.path:
             sys.path.insert(0, str(pkg_parent))
-        from orchestrator.converter_v2 import db_lookup
+        from converter.db import db_lookup
         _db = db_lookup
     return _db
 

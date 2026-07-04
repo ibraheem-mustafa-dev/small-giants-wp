@@ -442,8 +442,14 @@ class TestConverterTreeCoverage:
         )
 
     def test_whole_file_allowlist_exempts_db_lookup_and_icon_resolver(self, tmp_path):
-        """services/db_lookup.py and services/icon_resolver.py are exempt whole-file
+        """db/db_lookup.py and services/icon_resolver.py are exempt whole-file
         (they legitimately hold DB-resolved lookup / icon-identity tables).
+
+        db_lookup.py's real path is db/db_lookup.py (EXECUTION Step 9 moved the
+        canonical implementation there; the allowlist previously carried the
+        forward-looking "services/db_lookup.py" guess from D249, which never
+        matched reality — corrected in Step 10, 2026-07-04, see
+        check_hardcoded_dicts.py / check_slug_literals.py history).
 
         Uses an empty separate orchestrator_dir so only the converter_dir pass (which
         applies the whole-file allowlist) contributes findings — isolates the
@@ -454,7 +460,7 @@ class TestConverterTreeCoverage:
         converter_root = tmp_path / "converter_root"
         converter_root.mkdir()
 
-        db_lookup = converter_root / "services" / "db_lookup.py"
+        db_lookup = converter_root / "db" / "db_lookup.py"
         db_lookup.parent.mkdir(parents=True, exist_ok=True)
         db_lookup.write_text(
             textwrap.dedent("""\
@@ -467,6 +473,7 @@ class TestConverterTreeCoverage:
             encoding="utf-8",
         )
         icon_resolver = converter_root / "services" / "icon_resolver.py"
+        icon_resolver.parent.mkdir(parents=True, exist_ok=True)
         icon_resolver.write_text(
             "ICONS = {'sgs/hero': 'star', 'sgs/cta-section': 'megaphone'}\n",
             encoding="utf-8",
