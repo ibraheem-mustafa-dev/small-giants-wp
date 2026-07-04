@@ -1363,6 +1363,120 @@ def _apply_attr_classification_overrides(
     return {"override_applied": applied, "override_missing_row": missing}
 
 
+def _populate_emit_shape(
+    blocks_dir: Path,
+    conn: "sqlite3.Connection",
+    dry_run: bool,
+) -> dict:
+    """Stage 1 sub-step D: seed block_attributes.emit_shape (nested|child) per
+    content attr, source-derived (Spec 31 §13.3 FR-31-2.6, 2026-07-04).
+
+    For each content-role attr (roles.classification='content-bearing' — the
+    content-vs-styling filter, FR-31-2.2), the shape is 'nested' when the block's
+    OWN render.php (+ require'd helpers) EMITS the attr as its own element, else
+    'child' (the content lives in the $content InnerBlocks region). Read from block
+    SOURCE via converter.services.render_emits — the SAME signal the walk trusts,
+    so classification and runtime agree (no drift). R-31-1: this seeds a DB COLUMN
+    (read at convert-time via db_lookup) — NOT a live PHP scan at convert-time.
+
+    FAIL-LOUD (Rule 4, no silent misclassification): a block that HAS content-role
+    attrs and a render.php that does NOT consume $content (so it should render its
+    own content) but whose render-emit scan finds NOTHING is a suspected parse
+    failure — printed as a loud WARN and NOT classified, never silently marked
+    all-child. Idempotent (write-on-drift).
+    """
+    from converter.services.render_emits import render_reads_attr
+
+    c = conn.cursor()
+    # Idempotent column-add (mirrors the array_item_schema.role column-add pattern).
+    _cols = [r[1] for r in c.execute("PRAGMA table_info(block_attributes)").fetchall()]
+    if "emit_shape" not in _cols:
+        c.execute("ALTER TABLE block_attributes ADD COLUMN emit_shape TEXT")
+
+    # Content-bearing roles = the content-vs-styling filter (DB-driven, R-31-1).
+    content_roles = [
+        r[0] for r in c.execute(
+            "SELECT role_name FROM roles WHERE classification = 'content-bearing'"
+        ).fetchall()
+    ]
+    if not content_roles:  # roles table lacks classification → FR-31-2.2 allowlist
+        content_roles = ["text-content", "identity", "image-object", "content", "rating"]
+
+    scanned = updated = nested = child = suspect = 0
+    placeholders = ",".join("?" * len(content_roles))
+    for block_dir in sorted(blocks_dir.iterdir()):
+        if not block_dir.is_dir() or block_dir.name in EXCLUDED_DIRS:
+            continue
+        bj_path = block_dir / "block.json"
+        if not bj_path.exists():
+            continue
+        try:
+            with open(bj_path, encoding="utf-8") as f:
+                slug = json.load(f).get("name", f"sgs/{block_dir.name}")
+        except Exception:  # noqa: BLE001
+            slug = f"sgs/{block_dir.name}"
+        if not slug.startswith("sgs/"):
+            continue
+        scanned += 1
+
+        content_attrs = c.execute(
+            f"SELECT attr_name, emit_shape FROM block_attributes "
+            f"WHERE block_slug = ? AND role IN ({placeholders})",
+            (slug, *content_roles),
+        ).fetchall()
+        if not content_attrs:
+            continue
+
+        # nested iff the block's OWN render reads the attr (raw read-check; the type
+        # filter is deliberately NOT applied — role already established content, and a
+        # number-typed rating IS content, FR-31-2.6).
+        reads = {a: render_reads_attr(slug, a) for a, _s in content_attrs}
+
+        # FAIL-LOUD: content attrs exist + render.php doesn't echo $content, yet NONE
+        # are render-read → suspected parse failure (unreadable render / a pattern the
+        # scan misses). Do not classify; surface loudly (Rule 4, no silent drop).
+        if (
+            not any(reads.values())
+            and (block_dir / "render.php").exists()
+            and not _render_consumes_content(block_dir)
+        ):
+            suspect += 1
+            print(
+                f"[emit_shape] WARN {slug}: {len(content_attrs)} content attr(s) but the "
+                f"render read-scan found NONE and render.php does not consume $content — "
+                f"suspected parse failure; NOT classified (review render.php + helpers)."
+            )
+            continue
+
+        for attr, stored in content_attrs:
+            shape = "nested" if reads[attr] else "child"
+            if shape == "nested":
+                nested += 1
+            else:
+                child += 1
+            if stored == shape:
+                continue
+            if dry_run:
+                print(f"[dry-run emit_shape] {slug}.{attr}: {stored} -> {shape}")
+            else:
+                c.execute(
+                    "UPDATE block_attributes SET emit_shape = ? "
+                    "WHERE block_slug = ? AND attr_name = ?",
+                    (shape, slug, attr),
+                )
+                updated += 1
+
+    if not dry_run:
+        conn.commit()
+    return {
+        "emit_scanned": scanned,
+        "emit_updated": updated,
+        "emit_nested": nested,
+        "emit_child": child,
+        "emit_suspect": suspect,
+    }
+
+
 def _populate_allowed_blocks(
     blocks_dir: Path,
     c: "sqlite3.Cursor",
@@ -1522,6 +1636,16 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         print(
             f"Stage 1 (attr-overrides): applied={ov_counts['override_applied']}, "
             f"missing_row={ov_counts['override_missing_row']}."
+        )
+
+        # --- Stage 1 sub-step D: seed block_attributes.emit_shape (FR-31-2.6) ---
+        # (AFTER canonical assignment + overrides so `role` is final — emit_shape is
+        #  computed only for content-role attrs.)
+        es_counts = _populate_emit_shape(blocks_dir, conn, dry_run=False)
+        print(
+            f"Stage 1 (emit_shape): scanned={es_counts['emit_scanned']}, "
+            f"updated={es_counts['emit_updated']}, nested={es_counts['emit_nested']}, "
+            f"child={es_counts['emit_child']}, suspect={es_counts['emit_suspect']}."
         )
 
         # --- Stage 1 tail: apply composition_role corrections (seed data, no

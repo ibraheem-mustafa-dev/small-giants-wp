@@ -6,7 +6,38 @@ generated: 2026-07-03-EVEN-EVEN-LATER
 primary_goal: "feature-grid 4-col is DONE + LANDED + PUSHED (D270, this session). Bean's flag was right (STOP-43): the shared wrapper ALREADY emitted repeat(4,1fr); feature-grid's own render.php auto-flex <style> overrode it by CSS specificity. Fix = block delegates to the shared grid engine when an explicit gridTemplateColumns is present (grid=default, auto-flex opt-in) + wrapper suppresses the tablet/mobile count shorthand when a base template governs; NO converter change. LANDED 4/4/2 on page 8, all 6 grids regression-clean, review clean, 374 tests green. Also done earlier this thread: L2 content-width (D267), Task-4 re-clone (D264-266), icon-source, core→sgs mapping. NEXT (the LAST cloning-fidelity task in this prompt): product-card typed-mode Layer-B structure (price 28px Fraunces bold → renders 18px Inter) — its own design-gate. Follow Spec 31 in every detail; parity = computed values matched by content (CLAUDE.md rule 4a). NOTE: the AUDIO/VIDEO block build + core→sgs table completion is a SEPARATE one-time prompt `next-session-prompt-audio-video-blocks.md`."
 ---
 
-# Next session — cloning fidelity: feature-grid 4-column → product-card structure
+# ⚡ NEXT SESSION (2026-07-04) — FACT-CHECK the converter-rebuild scope, then approve the phase-plan
+
+Invoke `/autopilot` first. This is a `/sgs-wp-engine` + `/systematic-debugging` + spec-conformance session. **The feature-grid content BELOW is SUPERSEDED** (feature-grid + the immediate product-card typography are done/deferred); the converter REBUILD is the new thread. **The full STOP catalogue + MANDATORY READING GATE below are RETAINED (load-bearing — Gate 6.5 carry-forward; do NOT drop them).**
+
+## ⛔ PRIORITY 1 — FACT-CHECK EVERYTHING against the running scripts (Bean-directed, non-negotiable)
+Last session produced a large converter-rebuild SCOPE (see `handoff.md` top entry + `.claude/plans/2026-07-04-new-engine-to-parity-delete-converter-v2.md`) that is **DOCUMENTATION-DERIVED and must be verified before it is trusted or built from.** Bean's proof: the scope claimed *"media-map loader not started, images broken"* — **WRONG, the current clone loads media.** So:
+- **Read the SCRIPTS, follow the actual logic + routing** — do NOT trust Spec 31 §12.6, code comments, or `cloning-pipeline-flow.md` (STALE, references archived files).
+- **Run a real clone** (`SGS_NEW_ENGINE=1` on the Mama's homepage → page 8) and observe what ACTUALLY happens per section — which sections the new engine emits vs falls back to frozen `v3.walk`, whether media loads, which resolvers are genuinely stub vs live.
+- **Correct the phase-plan's Phase-5 parity backlog** to what the scripts DO, not what the docs CLAIM. Re-verify: media-map (Bean says it works), the "stub" resolvers, the `has_inner`/emit_shape claims, the `converter_v2` deletion surface.
+- This is `feedback_read_ground_truth_before_concluding` + the anti-assumption rule (sgs-wp-engine GROUND-TRUTH gate) — apply it to the WHOLE scope.
+
+## PRIORITY 2 — after fact-check, approve the phase-plan + its 4 open decisions
+`.claude/plans/2026-07-04-new-engine-to-parity-delete-converter-v2.md`: delete-last sequencing · the 6-phase shape · the new FR-31-2.7 container-vs-composite classifier (`sgs/container` is the ONLY arbitrary holder; card-grid is a TYPED composite) · the multi-session scope. Then **Phase 1** (regenerate the stale flow doc) + **Phase 2** (the modular universal walk — single walker + total registry + pure priority-ranked handlers + wire the emit_shape fork + delete Mechanism A/B; lands product-card).
+
+## What's already built (this session; committed) — VERIFY it too
+- `emit_shape` column + `/sgs-update _populate_emit_shape` seeder + `db_lookup.emit_shape_for` + `render_emits.render_reads_attr`. Spec 31 FR-31-2.6. Additive + INERT. (product-card leaf conversion was REVERTED — Phase 2 redoes it.)
+
+## Skills / tools for the fact-check
+| Skill/tool | Use |
+|---|---|
+| `/sgs-wp-engine` | FIRST — the GROUND-TRUTH gate + anti-assumption rule |
+| `/brainstorming` · `/gap-analysis` · `/lifecycle` · `/research` · `/strategic-plan` | mandatory 5 |
+| `/systematic-debugging` | root-cause the scope claims against the scripts |
+| `/sgs-clone` · `/sgs-db` · `/wp-blocks` | run the real clone + DB ground truth |
+| Playwright / chrome-devtools | LANDED observation on page 8 (creds `.claude/secrets/sandybrown.env`) |
+| `Explore` / `general-purpose` (read-only) | parallel script tracing — CODING subagents CASCADE-FAIL (STOP-39), build INLINE |
+
+Fact-check the scope against ground truth; NEVER build the walker from an unverified doc claim.
+
+---
+
+# (SUPERSEDED) Next session — cloning fidelity: feature-grid 4-column → product-card structure
 
 Invoke `/autopilot` before anything else. This is a `/sgs-clone` (LANDED) + `/systematic-debugging` + `/sgs-wp-engine` + spec-conformance session.
 

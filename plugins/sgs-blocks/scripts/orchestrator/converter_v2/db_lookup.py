@@ -2456,6 +2456,36 @@ def inherit_style_presets() -> frozenset:
 
 
 @functools.lru_cache(maxsize=2048)
+def emit_shape_for(block_slug: str, attr_name: str) -> str | None:
+    """Return the nested-vs-child shape for a CONTENT attr: 'nested' | 'child' | None.
+
+    Spec 31 §13.3 FR-31-2.6 (2026-07-04). The per-attr fork that REPLACES the
+    block-level `has_inner_blocks` dispatch:
+      - 'nested' → the block's own render emits this attr as its element → lift the
+        draft content into the parent's scalar/array attr (processed per its IDENTITY,
+        `equivalent_block_for`).
+      - 'child'  → the content lives in the `$content` region → emit a child InnerBlock
+        of the identity's standalone_block + recurse.
+      - None     → not a content attr, or `emit_shape` not seeded (a non-content role,
+        or a block the seeder flagged as a suspected parse failure). A None on a genuine
+        content unit is a tracked GAP for the caller, never a silent drop (Rule 4).
+
+    Source-of-truth: `block_attributes.emit_shape`, seeded from block SOURCE by
+    `/sgs-update` (`_populate_emit_shape`) — read here as a plain DB fact (R-31-1),
+    not a live PHP scan.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT emit_shape FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
+            (block_slug, attr_name),
+        ).fetchone()
+    finally:
+        conn.close()
+    return row[0] if row and row[0] in ("nested", "child") else None
+
+
+@functools.lru_cache(maxsize=2048)
 def equivalent_block_for(block_slug: str, attr_name: str) -> str | None:
     """Return the standalone block slug if (block_slug, attr_name) is block-equivalent,
     else None.
