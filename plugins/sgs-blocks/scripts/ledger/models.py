@@ -35,6 +35,12 @@ class DeclKind(str, enum.Enum):
     at_fontface = "at-fontface"
     at_import = "at-import"
     at_other = "at-other"
+    content_text = "content-text"
+    """A content routing unit: one HTML element's direct (non-descendant) text.
+    Spec ref: Spec 31 §12.2.1 CONTENT-stream extension (Step 11/A2)."""
+    content_media = "content-media"
+    """A content routing unit: one <img>/<video>/<audio>/<iframe> element.
+    Spec ref: Spec 31 §12.2.1 CONTENT-stream extension (Step 11/A2)."""
 
 
 @dataclass(frozen=True)

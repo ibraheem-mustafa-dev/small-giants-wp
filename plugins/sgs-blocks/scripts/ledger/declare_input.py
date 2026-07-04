@@ -146,6 +146,252 @@ class _HTMLExtractor(HTMLParser):
 
 
 # ---------------------------------------------------------------------------
+# CONTENT-stream extraction (Spec 31 §12.2.1 — Step 11/A2)
+#
+# Extends the F2 input ledger to a SECOND, independent stream: content routing
+# units (text + media), alongside the existing CSS declaration stream. Same
+# InputDecl shape, same independence contract (no DB, no converter imports).
+# Rows go to a SEPARATE artefact (<stem>.content.json) — the CSS goldens
+# (<stem>.declare-input.json) are untouched by this extension.
+# ---------------------------------------------------------------------------
+
+# Elements whose text/children must never be declared as content routing units.
+_CONTENT_SKIP_TAGS = {"script", "style", "template", "title", "meta"}
+
+# Media-bearing elements — one content_media unit per element (src/data-src or tag name).
+_CONTENT_MEDIA_TAGS = {"img", "video", "audio", "iframe"}
+
+# Void elements (HTML5 — no closing tag expected; auto-close at start-tag time).
+_CONTENT_VOID_TAGS = {
+    "area", "base", "br", "col", "embed", "hr", "img", "input",
+    "link", "meta", "param", "source", "track", "wbr",
+}
+
+# Line-break void elements — insert a word-boundary space into the enclosing
+# element's direct-text buffer so "mum<br>who" normalises to "mum who", not
+# "mumwho" (a genuine parser gap, not a coverage-check join hack: verified
+# against the real Mama's Munches draft hero heading, 2026-07-04).
+_CONTENT_LINE_BREAK_TAGS = {"br", "hr"}
+
+# Top-level chrome tags — FR-31-3 walker exception 2 (top-level chrome-skip).
+# A content unit nested under one of these is EXCLUDED-with-reason from the
+# accounting join, never silently dropped (marked via InputDecl.excluded_candidate).
+_CONTENT_CHROME_TAGS = {"header", "footer", "nav"}
+
+# Max stored length for a normalised content_text value (§ design point 1).
+_CONTENT_TEXT_MAX_LEN = 200
+
+
+def _normalise_content_text(raw: str) -> str:
+    """Collapse whitespace and trim; cap at _CONTENT_TEXT_MAX_LEN chars."""
+    collapsed = re.sub(r"\s+", " ", raw).strip()
+    if len(collapsed) > _CONTENT_TEXT_MAX_LEN:
+        return collapsed[:_CONTENT_TEXT_MAX_LEN]
+    return collapsed
+
+
+class _ContentExtractor(HTMLParser):
+    """Walks raw HTML and collects content routing units.
+
+    - One content_text unit per ELEMENT whose direct text (aggregated across
+      its direct text children only, NOT descendant text) is non-empty. This
+      falls out naturally from a stack-based parser: handle_data always
+      appends to the CURRENT top-of-stack frame, so nested elements accumulate
+      their own text independently — no double-declaration up the tree.
+    - One content_media unit per <img>/<video>/<audio>/<iframe> (value = src
+      or data-src attribute, else the tag name as a weak fallback).
+    - Skips <script>/<style>/<template>/<title>/<meta> content entirely.
+    - Marks units nested under a top-level <header>/<footer>/<nav> as
+      excluded_candidate=True (chrome-skip, FR-31-3 exception 2) rather than
+      silently dropping them.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        # Each unit: (element_path, value, order_index, is_chrome)
+        self.text_units: list[tuple[str, str, int, bool]] = []
+        self.media_units: list[tuple[str, str, int, bool]] = []
+        self._tag_stack: list[dict] = []
+        self._skip_depth = 0
+        self._chrome_depth = 0
+        self._order = 0
+
+    def _element_path(self, tag: str, attrs: list[tuple[str, str | None]]) -> str:
+        attr_dict = {k.lower(): v for k, v in attrs}
+        classes = attr_dict.get("class", "")
+        id_ = attr_dict.get("id", "")
+        parts = [tag]
+        if id_:
+            parts.append(f"#{id_}")
+        if classes:
+            for cls in classes.split():
+                parts.append(f".{cls}")
+        return "".join(parts)
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        tag_lower = tag.lower()
+        attr_dict = {k.lower(): v for k, v in attrs}
+        path = self._element_path(tag_lower, attrs)
+        is_skip = tag_lower in _CONTENT_SKIP_TAGS
+        is_chrome_root = tag_lower in _CONTENT_CHROME_TAGS
+
+        frame = {"tag": tag_lower, "path": path, "buf": [], "skip": is_skip, "chrome_root": is_chrome_root}
+        self._tag_stack.append(frame)
+
+        if is_skip:
+            self._skip_depth += 1
+        if is_chrome_root:
+            self._chrome_depth += 1
+
+        active_skip = self._skip_depth > 0
+        is_chrome = self._chrome_depth > 0
+
+        if not active_skip and tag_lower in _CONTENT_MEDIA_TAGS:
+            value = attr_dict.get("src") or attr_dict.get("data-src") or tag_lower
+            idx = self._order
+            self._order += 1
+            self.media_units.append((path, value, idx, is_chrome))
+
+        if (
+            tag_lower in _CONTENT_LINE_BREAK_TAGS
+            and not active_skip
+            and len(self._tag_stack) >= 2
+        ):
+            self._tag_stack[-2]["buf"].append(" ")
+
+        if tag_lower in _CONTENT_VOID_TAGS:
+            self._close_top()
+
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        # XHTML-style self-closing tag (e.g. <img/>): default HTMLParser behaviour
+        # calls handle_starttag then handle_endtag. _CONTENT_VOID_TAGS already
+        # closes voids eagerly in handle_starttag, so handle_endtag below is a
+        # defensive no-op (frame already popped) for those; non-void self-closed
+        # tags (rare, e.g. a custom element) get a normal close via handle_endtag.
+        self.handle_starttag(tag, attrs)
+        self.handle_endtag(tag)
+
+    def _close_top(self) -> dict | None:
+        if not self._tag_stack:
+            return None
+        frame = self._tag_stack.pop()
+        if frame["skip"]:
+            self._skip_depth = max(0, self._skip_depth - 1)
+        if frame["chrome_root"]:
+            self._chrome_depth = max(0, self._chrome_depth - 1)
+        return frame
+
+    def handle_endtag(self, tag: str) -> None:
+        tag_lower = tag.lower()
+        if not self._tag_stack:
+            return
+
+        if self._tag_stack[-1]["tag"] != tag_lower:
+            # Defensive: malformed/unbalanced HTML. Search for a matching open
+            # frame and auto-close everything above it. If none is found, the
+            # end tag is spurious (already closed as a void, or truly stray) —
+            # ignore rather than corrupt the stack.
+            match_idx = None
+            for i in range(len(self._tag_stack) - 1, -1, -1):
+                if self._tag_stack[i]["tag"] == tag_lower:
+                    match_idx = i
+                    break
+            if match_idx is None:
+                return
+            while len(self._tag_stack) > match_idx:
+                self._flush_frame(self._close_top())
+            return
+
+        self._flush_frame(self._close_top())
+
+    def _flush_frame(self, frame: dict | None) -> None:
+        if frame is None:
+            return
+        if frame["skip"] or self._skip_depth > 0:
+            return
+        text = _normalise_content_text("".join(frame["buf"]))
+        if text:
+            idx = self._order
+            self._order += 1
+            is_chrome = self._chrome_depth > 0 or frame["chrome_root"]
+            self.text_units.append((frame["path"], text, idx, is_chrome))
+
+    def handle_data(self, data: str) -> None:
+        if self._skip_depth > 0:
+            return
+        if self._tag_stack:
+            self._tag_stack[-1]["buf"].append(data)
+
+
+def declare_content(raw_html: str, fixture_stem: str) -> list[InputDecl]:
+    """Parse raw HTML and return the CONTENT-stream InputDecl rows.
+
+    Independent of declare_input()'s CSS stream — same InputDecl shape, own
+    walk. property is '(content:text)' or '(content:media)'; value is the
+    normalised (whitespace-collapsed, capped) text or the media src; selector
+    is the owning element's tag+id+classes path; media/media_kind/tier are the
+    Base defaults (content units are not responsive-tiered); excluded_candidate
+    is True for units nested under a top-level <header>/<footer>/<nav>
+    (chrome-skip, FR-31-3 exception 2 — excluded-with-reason, never silent).
+
+    Does NOT import or query css_router, convert, db_lookup, or any converter
+    DB table (independence contract, same as declare_input()).
+    """
+    extractor = _ContentExtractor()
+    extractor.feed(raw_html)
+
+    rows: list[InputDecl] = []
+
+    for path, text, idx, is_chrome in extractor.text_units:
+        rows.append(InputDecl(
+            fixture=fixture_stem,
+            selector=path,
+            property="(content:text)",
+            value=text,
+            important=False,
+            media=None,
+            media_kind=MediaKind.none,
+            tier="Base",
+            source_index=idx,
+            shadowed=False,
+            kind=DeclKind.content_text,
+            excluded_candidate=is_chrome,
+        ))
+
+    for path, value, idx, is_chrome in extractor.media_units:
+        rows.append(InputDecl(
+            fixture=fixture_stem,
+            selector=path,
+            property="(content:media)",
+            value=value,
+            important=False,
+            media=None,
+            media_kind=MediaKind.none,
+            tier="Base",
+            source_index=idx,
+            shadowed=False,
+            kind=DeclKind.content_media,
+            excluded_candidate=is_chrome,
+        ))
+
+    return sorted(rows, key=lambda r: r.source_index)
+
+
+def _build_content_artefact(fixture_stem: str, rows: list[InputDecl]) -> dict:
+    """Build the per-fixture content-stream JSON artefact (separate from CSS)."""
+    return {
+        "fixture": fixture_stem,
+        "generated_by": {
+            "module": "ledger.declare_input.declare_content",
+            "module_version": MODULE_VERSION,
+        },
+        "row_count": len(rows),
+        "by_kind": _by_kind_counts(rows),
+        "rows": [r.as_dict() for r in rows],
+    }
+
+
+# ---------------------------------------------------------------------------
 # Tier derivation (§5)
 # ---------------------------------------------------------------------------
 
@@ -830,6 +1076,7 @@ def generate_goldens(
             fixture_files.append(f)
 
     per_fixture: dict[str, dict] = {}
+    per_fixture_content: dict[str, dict] = {}
 
     for fpath in fixture_files:
         stem = fpath.stem
@@ -845,6 +1092,18 @@ def generate_goldens(
         out_path = out_dir / f"{stem}.declare-input.json"
         out_path.write_text(json.dumps(artefact, indent=2, ensure_ascii=False), encoding="utf-8")
         print(f"  wrote {out_path.name}  ({artefact['row_count']} rows)")
+
+        # CONTENT-stream — SEPARATE artefact, never merged into the CSS golden
+        # above (Spec 31 §12.2.1 Step 11/A2). Same fixture, own file/own counts.
+        content_rows = declare_content(raw_html, stem)
+        content_artefact = _build_content_artefact(stem, content_rows)
+        per_fixture_content[stem] = content_artefact
+
+        content_out_path = out_dir / f"{stem}.content.json"
+        content_out_path.write_text(
+            json.dumps(content_artefact, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+        print(f"  wrote {content_out_path.name}  ({content_artefact['row_count']} rows)")
 
     # Aggregate artefact
     aggregate = {
@@ -869,6 +1128,30 @@ def generate_goldens(
     agg_path = out_dir / "declare-input.aggregate.json"
     agg_path.write_text(json.dumps(aggregate, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"  wrote {agg_path.name}  (grand total {aggregate['grand_total_rows']} rows across {aggregate['fixture_count']} fixtures)")
+
+    # CONTENT-stream aggregate — separate file, separate count-floor lineage.
+    content_aggregate = {
+        "generated_by": {
+            "module": "ledger.declare_input.declare_content",
+            "module_version": MODULE_VERSION,
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+        },
+        "fixture_count": len(per_fixture_content),
+        "grand_total_rows": sum(a["row_count"] for a in per_fixture_content.values()),
+        "by_kind_totals": _aggregate_kind_totals(per_fixture_content),
+        "fixtures": {
+            stem: {"row_count": art["row_count"], "by_kind": art["by_kind"]}
+            for stem, art in sorted(per_fixture_content.items())
+        },
+    }
+    content_agg_path = out_dir / "declare-content.aggregate.json"
+    content_agg_path.write_text(
+        json.dumps(content_aggregate, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+    print(
+        f"  wrote {content_agg_path.name}  (grand total {content_aggregate['grand_total_rows']} "
+        f"rows across {content_aggregate['fixture_count']} fixtures)"
+    )
 
     return per_fixture
 
@@ -953,6 +1236,60 @@ def check_goldens(fixtures_dir: Path, out_dir: Path) -> bool:
                 "A shrinking ledger is the exact failure F2 exists to catch."
             )
             passed = False
+
+    # --- CONTENT-stream check (separate artefact, separate lineage) ---
+    content_agg_path = out_dir / "declare-content.aggregate.json"
+    if content_agg_path.exists():
+        content_committed = json.loads(content_agg_path.read_text(encoding="utf-8"))
+        content_committed_counts: dict[str, int] = {
+            stem: info["row_count"]
+            for stem, info in content_committed.get("fixtures", {}).items()
+        }
+        content_current_counts: dict[str, int] = {}
+
+        for fpath in fixture_files:
+            stem = fpath.stem
+            if stem.endswith(".draft"):
+                stem = stem[: -len(".draft")]
+            raw_html = fpath.read_text(encoding="utf-8")
+            content_rows = declare_content(raw_html, stem)
+            content_current_counts[stem] = len(content_rows)
+
+            content_golden_path = out_dir / f"{stem}.content.json"
+            if not content_golden_path.exists():
+                print(f"  [content] DRIFT: no golden for {stem} — run without --check to generate")
+                passed = False
+                continue
+
+            content_golden = json.loads(content_golden_path.read_text(encoding="utf-8"))
+            if content_golden["row_count"] != len(content_rows):
+                print(
+                    f"  [content] DRIFT: {stem}  row_count {content_golden['row_count']} → "
+                    f"{len(content_rows)} "
+                    f"({'DECREASE — ledger integrity FAIL' if len(content_rows) < content_golden['row_count'] else 'increase'})"
+                )
+                passed = False
+            else:
+                current_content_dicts = [r.as_dict() for r in content_rows]
+                if current_content_dicts != content_golden["rows"]:
+                    print(f"  [content] DRIFT: {stem}  row content changed (same count, different rows)")
+                    passed = False
+                else:
+                    print(f"  [content] OK: {stem}  ({len(content_rows)} rows)")
+
+        for stem, committed_count in content_committed_counts.items():
+            current = content_current_counts.get(stem, 0)
+            if current < committed_count:
+                print(
+                    f"  [content] COUNT-FLOOR FAIL: {stem} dropped from {committed_count} → {current}. "
+                    "A shrinking content ledger is the exact failure this extension exists to catch."
+                )
+                passed = False
+    else:
+        print(
+            "  [content] no declare-content.aggregate.json found — run without --check "
+            "to generate content goldens (non-fatal on a fresh checkout without the extension)."
+        )
 
     if passed:
         print("--check: all goldens match.")
