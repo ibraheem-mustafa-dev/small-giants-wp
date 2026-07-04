@@ -136,7 +136,24 @@ const CAPTURE_SRC = `() => {
     if (el.tagName === 'A') { try { let h = new URL(el.href, location.href).pathname.replace(/\\/$/,'').replace(/^\\/[A-Za-z]:\\//, '/'); if (h) links.push(h); } catch(e){} }
     let direct = ''; for (const n of el.childNodes) if (n.nodeType === 3) direct += n.textContent;
     const dkey = norm(direct);
-    if (dkey.length >= 4) { texts.push(dkey); if (!textEls[dkey]) textEls[dkey] = { tag: el.tagName.toLowerCase(), css: readAll(el) }; }
+    if (dkey.length >= 4) { texts.push(dkey);
+      // INLINE-WRAPPER HOIST (2026-07-05, Bean-caught understatement): when the
+      // direct text sits in a bare inline wrapper (the clone renders button
+      // labels inside a <span>), the STYLING lives on the parent — anchor there,
+      // or the styled <a> gets compared against its own unstyled span (~20
+      // false mismatches per button). Hoist while: parent has exactly this one
+      // element child, identical normalised text, and the CURRENT node is an
+      // inline text wrapper. Universal — no block knowledge.
+      let anchorEl = el;
+      const INLINE_WRAP = { SPAN:1, EM:1, STRONG:1, B:1, I:1 };
+      while (INLINE_WRAP[anchorEl.tagName] && anchorEl.parentElement
+             && anchorEl.parentElement.childElementCount === 1
+             && norm(anchorEl.parentElement.innerText) === dkey
+             && !inChrome(anchorEl.parentElement)
+             && anchorEl.parentElement.tagName !== 'BODY') {
+        anchorEl = anchorEl.parentElement;
+      }
+      if (!textEls[dkey]) textEls[dkey] = { tag: anchorEl.tagName.toLowerCase(), css: readAll(anchorEl) }; }
     if (el.childElementCount > 0 || el.tagName === 'IMG') {
       const anchor = el.tagName === 'IMG' ? ('img:' + norm(el.getAttribute('alt'))) : norm(el.innerText);
       if (anchor.length >= 5 && !boxEls[anchor]) boxEls[anchor] = { tag: el.tagName.toLowerCase(), css: readAll(el) };
