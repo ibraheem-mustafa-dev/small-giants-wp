@@ -313,14 +313,6 @@
 	"style": "file:./style.css",
 	"viewScriptModule": "file:./view.js",
 	"render": "file:./render.php",
-	"allowedBlocks": [
-		"sgs/media",
-		"sgs/heading",
-		"sgs/text",
-		"sgs/label",
-		"sgs/multi-button",
-		"sgs/button"
-	],
 	"example": {
 		"attributes": {
 			"productName": "Sample Product",

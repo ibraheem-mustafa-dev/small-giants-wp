@@ -897,7 +897,7 @@
  * New BEM classes for the typed built-in render path. Shared .product-card
  * shell rules (background, border-radius, flex-column, max-width, shadow)
  * already apply via the existing .product-card selector on the wrapper.
- * Rules below cover the new elements that did not exist on the InnerBlocks path.
+ * Rules below cover the typed built-in elements.
  *
  * Contrast notes (all on #ffffff card background):
  *   .sgs-product-card__title:     inherits .product-card h3 rules — unchanged.
@@ -921,8 +921,7 @@
 	display: block;
 }
 
-/* Body — matches .product-card-body layout so the built-in card is
-   visually identical to the InnerBlocks path. */
+/* Body — matches .product-card-body layout (the bound-mode body class). */
 .product-card .sgs-product-card__body {
 	padding: var( --sgs-product-card-inner-padding, 20px );
 	flex: 1;
@@ -1052,9 +1051,7 @@
  * now emit <h2>/<h3>/<h4> per the headingLevel attr; only `.product-card h3`
  * was previously styled, so h2/h4 titles would fall back to UA/theme heading
  * sizes (a dead-control-by-styling gap). Scoped to DIRECT children of
- * .product-card-body — bound markup only; legacy typed InnerBlocks headings
- * (core/heading) are not children of .product-card-body so page-144 clones
- * are untouched.
+ * .product-card-body — bound markup only.
  * Typed built-in headings are styled by .sgs-product-card__title above.
  */
 .product-card .product-card-body > h2,

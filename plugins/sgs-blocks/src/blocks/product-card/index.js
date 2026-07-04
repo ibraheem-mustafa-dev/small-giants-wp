@@ -1,15 +1,13 @@
 import { registerBlockType } from '@wordpress/blocks';
-import { InnerBlocks } from '@wordpress/block-editor';
 import metadata from './block.json';
 import Edit from './edit';
 import './style.css';
 
 /**
- * Dynamic block — render.php handles frontend output.
- * Save returns <InnerBlocks.Content /> so WordPress persists the
- * sgs/multi-button + sgs/button InnerBlocks slot to post_content.
+ * Dynamic block — render.php handles frontend output. Typed mode renders
+ * built-in elements from block attributes; there is no InnerBlocks slot.
  */
 registerBlockType( metadata.name, {
 	edit: Edit,
-	save: () => <InnerBlocks.Content />,
+	save: () => null,
 } );

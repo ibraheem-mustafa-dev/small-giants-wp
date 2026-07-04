@@ -577,7 +577,7 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 	);
 }
 
-export default function Edit( { attributes, setAttributes, clientId } ) {
+export default function Edit( { attributes, setAttributes } ) {
 	const {
 		variantStyle,
 		sourceMode,
@@ -612,22 +612,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const isFeatured = variantStyle === 'featured';
 	const isBound = sourceMode !== 'typed';
 
-	// Legacy detection (B4, 2026-06-10): a pre-D204 page-144 clone stores child
-	// InnerBlocks; a freshly-inserted card has none. Detect legacy by the
-	// presence of stored inner blocks — NOT by an empty productName. A fresh
-	// card also has an empty name and must default to the built-in template,
-	// not the legacy bridge warning (which was leaking into the default UX).
-	const hasLegacyInnerBlocks = useSelect(
-		( select ) => {
-			const block = select( 'core/block-editor' ).getBlock( clientId );
-			return !! ( block && block.innerBlocks && block.innerBlocks.length > 0 );
-		},
-		[ clientId ]
-	);
-
-	// Typed mode: built-in template by default; the legacy InnerBlocks bridge
-	// is reachable ONLY for existing content that still carries the old layout.
-	const isBuiltIn = ! isBound && ! hasLegacyInnerBlocks;
+	// Typed mode = the built-in element editor. The block has no InnerBlocks
+	// slot (legacy bridge retired 2026-07-04).
+	const isBuiltIn = ! isBound;
 
 	// FP-H final unit: SINGLE shared /wc/v3/products/{id} fetch for the
 	// connected product — reused by ProductOptionsPanel (axes), the overrides
@@ -820,18 +807,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								/>
 							) }
 						</>
-					) }
-					{ ! isBound && ! isBuiltIn && (
-						<Notice
-							status="info"
-							isDismissible={ false }
-							style={ { marginTop: 8 } }
-						>
-							{ __(
-								'Card content is managed directly in the editor. Click any inner block to edit it.',
-								'sgs-blocks'
-							) }
-						</Notice>
 					) }
 				</PanelBody>
 
@@ -1217,7 +1192,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						attributes={ attributes }
 					/>
 				</div>
-			) : isBuiltIn ? (
+			) : (
 				/* Typed built-in mode: WYSIWYG preview from block attributes */
 				<div { ...blockProps }>
 					{ /* Image */ }
@@ -1369,16 +1344,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							) }
 						</div>
 					</div>
-				</div>
-			) : (
-				/* Legacy InnerBlocks bridge path — transition until page-144 re-clones */
-				<div { ...blockProps }>
-					<Notice status="warning" isDismissible={ false }>
-						{ __(
-							'This card uses the legacy InnerBlocks layout. Set a product name above to switch to the new built-in card editor.',
-							'sgs-blocks'
-						) }
-					</Notice>
 				</div>
 			) }
 		</>

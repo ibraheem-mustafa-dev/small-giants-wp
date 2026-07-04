@@ -5,9 +5,9 @@
  * Two modes, branched on the explicit `sourceMode` attribute (R-22-14 — never
  * `empty( $content )`):
  *
- *  - 'typed' (default): renders the card wrapper shell and echoes $content
- *    (InnerBlocks). UNCHANGED FR-22-6 behaviour — preserves every existing
- *    typed post + the clone-pipeline output.
+ *  - 'typed' (default): renders the card's built-in elements directly from
+ *    block attributes (sgs_product_card_builtin_render). No InnerBlocks —
+ *    the FP-H transition bridge retired 2026-07-04.
  *
  *  - 'wc-product' / 'sgs-cpt' (Live product data): resolves a real product
  *    (WooCommerce or sgs_product CPT), seeds the Interactivity API state from
@@ -42,7 +42,7 @@
  * @since 1.7.0  WS-4 composite-mirror: SGS_Container_Wrapper delegation.
  *
  * @var array     $attributes Block attributes.
- * @var string    $content    InnerBlocks HTML (typed mode only).
+ * @var string    $content    Unused — the block has no InnerBlocks slot.
  * @var \WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
@@ -139,45 +139,23 @@ $base_opts = array(
 /* ── Typed mode ─────────────────────────────────────────────────────────────── */
 
 if ( 'typed' === $source_mode ) {
-	/*
-	 * FP-H bridge rule (TRANSITION — retires when page-144 re-clones with built-in emissions):
-	 *
-	 * When productName is a non-empty string, this card was either (a) authored
-	 * fresh in the editor after FP-H shipped, or (b) re-cloned by the converter
-	 * emitting native typed attrs.  Render the new built-in element branch.
-	 *
-	 * When productName is empty, this card is an existing InnerBlocks emission
-	 * (e.g. the current page-144 clones) that has not yet been re-cloned.
-	 * Echo $content unchanged — IDENTICAL to the pre-FP-H behaviour.
-	 *
-	 * NEVER branch on empty( $content ) — that is prohibited by R-22-14.
-	 * Branch only on the explicit typed attribute productName.
-	 */
-	$typed_name = isset( $attributes['productName'] ) ? trim( (string) $attributes['productName'] ) : '';
+	// Built-in element render — the ONLY typed path. The FP-H InnerBlocks
+	// transition bridge retired 2026-07-04 (legacy clones are re-cloned with
+	// native typed attrs; the block has no InnerBlocks slot).
+	// Prepend the scoped typography <style> (title + price).
+	$builtin_inner = $sgs_card_typo_tag . sgs_product_card_builtin_render( $attributes );
 
-	if ( '' !== $typed_name ) {
-		// New built-in element render (FP-H). Function defined in included helper above.
-		// Prepend the scoped typography <style> (title + price) — built-in mode only.
-		$builtin_inner = $sgs_card_typo_tag . sgs_product_card_builtin_render( $attributes );
-
-		// Add BEM modifier classes to the wrapper for the new typed-builtin branch.
-		$builtin_classes   = $classes;
-		$builtin_classes[] = 'sgs-product-card';
-		if ( 'standard' !== $variant_style ) {
-			$builtin_classes[] = 'sgs-product-card--' . sanitize_html_class( $variant_style );
-		}
-		$builtin_opts                  = $base_opts;
-		$builtin_opts['extra_classes'] = $builtin_classes;
-
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() returns pre-escaped HTML.
-		echo SGS_Container_Wrapper::render( $attributes, $block, (string) $builtin_inner, 'content', $builtin_opts );
-		return;
+	// BEM modifier classes on the wrapper.
+	$builtin_classes   = $classes;
+	$builtin_classes[] = 'sgs-product-card';
+	if ( 'standard' !== $variant_style ) {
+		$builtin_classes[] = 'sgs-product-card--' . sanitize_html_class( $variant_style );
 	}
+	$builtin_opts                  = $base_opts;
+	$builtin_opts['extra_classes'] = $builtin_classes;
 
-	// Transition bridge: existing InnerBlocks $content path (page-144 clones).
-	// This path retires once the converter re-clones page-144 with built-in emissions.
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() returns pre-escaped HTML.
-	echo SGS_Container_Wrapper::render( $attributes, $block, $content, 'content', $base_opts );
+	echo SGS_Container_Wrapper::render( $attributes, $block, (string) $builtin_inner, 'content', $builtin_opts );
 	return;
 }
 

@@ -3966,6 +3966,103 @@ def primary_content_attr(block_slug: str) -> str | None:
     return None
 
 
+def content_attr_for_element(
+    block_slug: str, bem_element: str
+) -> tuple[str, str | None, str | None, str | None] | None:
+    """Resolve a draft BEM __element token to `block_slug`'s content attr.
+
+    Spec 31 §13.3 FR-31-2.6: the per-attr content walk resolves each draft
+    element to the composite's own typed attr by MATCH STRENGTH, not DB row
+    order. Ranking (lower tier wins; first DB row breaks a same-tier tie):
+
+      Tier 0 (direct/exact): the attr's `canonical_slot` == element token, OR
+              the attr's own `attr_name` == element token.
+      Tier 1 (alias): the element token appears in the alias list of the
+              element-scope `slots` row named by the attr's `canonical_slot`.
+
+    Only content-bearing roles enter (FR-31-2.2 positive allowlist:
+    'text-content', 'identity', 'image-object', 'content', 'rating') — styling
+    and behaviour attrs never resolve as a content destination.
+
+    NOT lru-cached: tests (and future callers) monkeypatch `SGS_DB`; a cache
+    keyed on the args would leak rows across DB swaps.
+
+    R-31-1: DB-only read path. No hardcoded slug→attr dicts.
+
+    Args:
+        block_slug:  Fully-qualified SGS slug, e.g. 'sgs/product-card'.
+        bem_element: The draft BEM element token, e.g. 'name' from
+                     '.sgs-product-card__name'.
+
+    Returns:
+        (attr_name, emit_shape, role, attr_type) for the best match, or None.
+    """
+    if not block_slug or not bem_element:
+        return None
+
+    _CONTENT_ROLES = ("text-content", "identity", "image-object", "content", "rating")
+
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        attr_rows = conn.execute(
+            "SELECT attr_name, canonical_slot, emit_shape, role, attr_type "
+            "FROM block_attributes "
+            "WHERE block_slug = ? AND role IN (?, ?, ?, ?, ?) "
+            "ORDER BY rowid",
+            (block_slug, *_CONTENT_ROLES),
+        ).fetchall()
+        slot_rows = conn.execute(
+            "SELECT slot_name, aliases FROM slots WHERE scope = 'element'"
+        ).fetchall()
+    except sqlite3.OperationalError:
+        _trace("db_lookup_miss", lookup="content_attr_for_element",
+               block_slug=block_slug, element=bem_element,
+               reason="operational_error")
+        return None
+    finally:
+        conn.close()
+
+    if not attr_rows:
+        _trace("db_lookup_miss", lookup="content_attr_for_element",
+               block_slug=block_slug, element=bem_element, reason="no_rows")
+        return None
+
+    # slot_name → set of alias tokens (malformed alias JSON = no aliases).
+    slot_aliases: dict[str, set[str]] = {}
+    for slot_name, aliases_json in slot_rows:
+        try:
+            parsed = json.loads(aliases_json) if aliases_json else []
+        except (ValueError, TypeError):
+            parsed = []
+        if isinstance(parsed, list):
+            slot_aliases[slot_name] = {str(a) for a in parsed}
+
+    best: tuple[str, str | None, str | None, str | None] | None = None
+    best_tier: int | None = None
+    for attr_name, canonical_slot, emit_shape, role, attr_type in attr_rows:
+        if canonical_slot == bem_element or attr_name == bem_element:
+            tier = 0
+        elif bem_element in slot_aliases.get(canonical_slot or "", ()):
+            tier = 1
+        else:
+            continue
+        if best_tier is None or tier < best_tier:
+            best = (attr_name, emit_shape, role, attr_type)
+            best_tier = tier
+        if best_tier == 0:
+            break  # rows are rowid-ordered; the first tier-0 hit is final.
+
+    if best is None:
+        _trace("db_lookup_miss", lookup="content_attr_for_element",
+               block_slug=block_slug, element=bem_element, reason="no_match")
+        return None
+
+    _trace("db_lookup_hit", lookup="content_attr_for_element",
+           block_slug=block_slug, element=bem_element,
+           attr_name=best[0], tier=best_tier)
+    return best
+
+
 # ----------------------------------------------------------------------------
 # Smoke test
 # ----------------------------------------------------------------------------
