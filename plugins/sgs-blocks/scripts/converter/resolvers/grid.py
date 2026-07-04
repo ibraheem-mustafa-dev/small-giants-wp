@@ -36,7 +36,7 @@ from converter.services.tier_suffix import tier_suffix
 from converter.services.token_snap import token_snap
 from converter.services.validate import validate
 from converter.services.value_serialise import value_serialise
-from orchestrator.converter_v2.db_lookup import attr_for_property
+from converter.db.db_lookup import attr_for_property
 
 # CSS gap properties → the single grid gap attr family.
 _GAP_PROPS = frozenset({"gap", "column-gap"})

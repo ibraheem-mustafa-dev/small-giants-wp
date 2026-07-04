@@ -51,7 +51,7 @@ from converter.services.recognise_helpers import bem_element_to_canonical_slot
 from converter.resolvers.scalar_content import lift_scalar_content
 from converter.resolvers.array_content import lift_array_content
 from converter.resolvers.styling_content import lift_styling_content
-from orchestrator.converter_v2 import db_lookup
+from converter.db import db_lookup
 
 # Emit-glue imports (stage 3 §1 walk/emit — design §1).
 from converter.recognition import recognise, recognition_for_slug

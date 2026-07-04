@@ -126,9 +126,10 @@ class Recognition:
     variant_value: str | None = None
 
 
-# NOTE: AttrInfo lives in orchestrator.converter_v2.db_lookup (it is what
+# NOTE: AttrInfo lives in converter.db.db_lookup (it is what
 # content_attrs_with_selector returns); extraction imports it from there to
-# avoid a duplicate type + a reverse converter->frozen-tree import.
+# avoid a duplicate type. (Moved from orchestrator.converter_v2.db_lookup in
+# EXECUTION Step 9, Phase 3, 2026-07-04.)
 
 
 @dataclass(frozen=True)

@@ -1,5 +1,5 @@
 {
-  "hash": "81075e7f4a842b7db3322dd572502e64113f524a4333a1ae65e54c61055b7e6f",
+  "hash": "e02486756cdfe40ada973f87d3408e5dd6ed08413371db96777ac90a11896f11",
   "keys": [
     "bp:converter_v2\\convert.py:1024",
     "bp:converter_v2\\convert.py:768",
@@ -8,8 +8,8 @@
     "hdict:_retired\\convert_pre_spec22.py:_STYLE_KEY_TO_ROLE",
     "hdict:converter_v2\\convert.py:_SUFFIX_ATTR_OVERRIDES",
     "hdict:converter_v2\\convert.py:prop_map",
-    "hdict:converter_v2\\db_lookup.py:_ATTR_NAME_OVERRIDES",
-    "hdict:converter_v2\\db_lookup.py:_TYPO_CSS_SUFFIX_SELECTION",
+    "hdict:db\\db_lookup.py:_ATTR_NAME_OVERRIDES",
+    "hdict:db\\db_lookup.py:_TYPO_CSS_SUFFIX_SELECTION",
     "hdict:stage_attribute_promotion.py:_CSS_PROP_PHP",
     "imp:build\\blocks\\accordion\\style.css:transition-duration",
     "imp:build\\blocks\\collapsible-text\\style.css:transition-duration",

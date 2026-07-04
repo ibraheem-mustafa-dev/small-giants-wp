@@ -7,14 +7,15 @@ Spec 31 §12 / Spec 11 / parking P-9):
   - ``_group_loose_buttons``  (convert.py:5716) -> ``group_loose_buttons``
 
 No block-slug literals. No import from convert.py.
-``from orchestrator.converter_v2 import db_lookup`` is the only frozen-tree
-import, matching the pattern in styling_helpers.py and lift_helpers.py.
+``from converter.db import db_lookup`` (moved off the frozen tree in EXECUTION
+Step 9, Phase 3, 2026-07-04) is the only DB-accessor import, matching the
+pattern in styling_helpers.py and lift_helpers.py.
 """
 from __future__ import annotations
 
 import re
 
-from orchestrator.converter_v2 import db_lookup
+from converter.db import db_lookup
 
 
 # ---------------------------------------------------------------------------

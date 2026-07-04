@@ -31,7 +31,7 @@ import sqlite3
 # (db_lookup.py:1268). Importing the FROZENSET (not re-declaring it) avoids the
 # duplicated-calculation drift trap, matching db-consistency/resolver_bridge.py.
 # db_lookup is the ONE import the import-ban gate permits from the frozen engine.
-from orchestrator.converter_v2.db_lookup import _TYPOGRAPHY_CSS_SCOPE
+from converter.db.db_lookup import _TYPOGRAPHY_CSS_SCOPE
 
 # Resolver ids the table can return (each maps to resolvers/<id>.py).
 RESOLVER_IDS = frozenset({

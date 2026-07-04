@@ -29,7 +29,7 @@ from typing import Any
 
 from bs4 import Tag
 
-from orchestrator.converter_v2 import db_lookup
+from converter.db import db_lookup
 from converter.services.styling_helpers import (
     collect_css_decls_for_element,
     strip_important,

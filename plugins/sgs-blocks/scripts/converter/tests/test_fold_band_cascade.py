@@ -19,7 +19,7 @@ from bs4 import BeautifulSoup
 
 from converter.models import GapOrigin
 from converter.services.fold_helpers import fold_band_css
-from orchestrator.converter_v2 import db_lookup
+from converter.db import db_lookup
 
 
 def _band(html: str):

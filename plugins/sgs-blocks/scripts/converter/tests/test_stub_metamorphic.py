@@ -26,7 +26,7 @@ from converter.resolvers import (
     scalar_content,
     scalar_media,
 )
-from orchestrator.converter_v2.db_lookup import SGS_DB
+from converter.db.db_lookup import SGS_DB
 
 _STUBS = {
     "scalar_content": scalar_content.resolve,

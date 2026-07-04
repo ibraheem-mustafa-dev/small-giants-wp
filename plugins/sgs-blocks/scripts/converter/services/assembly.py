@@ -37,7 +37,7 @@ from converter.context import ChildBlock, Recognition, ScalarLift
 from converter.recognition import variant_attrs
 from converter.orchestrator import emit_block_markup
 from converter.services.styling_helpers import collect_css_decls_for_element
-from orchestrator.converter_v2 import db_lookup
+from converter.db import db_lookup
 
 
 # ---------------------------------------------------------------------------

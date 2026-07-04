@@ -45,7 +45,7 @@ from converter.services.styling_helpers import (
 )
 from converter.services.tier_suffix import tier_suffix
 from converter.services.validate import validate
-from orchestrator.converter_v2.db_lookup import typography_css_to_attrs
+from converter.db.db_lookup import typography_css_to_attrs
 
 # font-weight keyword → numeric string (faithful port of convert.py:3897).
 # R-31-1 PERMITTED named-constant exception (same class as SKIP_TOP_LEVEL_TAGS):

@@ -26,9 +26,10 @@ css-modifier     BEM --<modifier> suffix on element cls  str | None
 Design constraints (all inherited from Spec 31 §3.B.0 / R-31-1 / R-31-9):
   - No block-slug literals.
   - No hardcoded dicts.
-  - icon_resolver (orchestrator.converter_v2.icon_resolver) is imported here as a
-    PERMITTED vetted shared recognition primitive — equivalent to db_lookup (both
-    listed in import_ban.py's allowlist per D248).
+  - icon_resolver (converter.services.icon_resolver — moved off the frozen tree
+    in EXECUTION Step 9, Phase 3, 2026-07-04; formerly
+    orchestrator.converter_v2.icon_resolver, vetted per D248) is imported here
+    as a shared recognition primitive, equivalent in role to db_lookup.
   - ``rating`` is the STAR-count role.  ``plain-integer`` is for verbatim text
     numbers like "500+" or "01".  They are distinct and must not be conflated.
 
@@ -47,7 +48,7 @@ from converter.services.lift_helpers import (
     rich_text_content,
     scalar_media_from_img,
 )
-from orchestrator.converter_v2.icon_resolver import resolve_icon
+from converter.services.icon_resolver import resolve_icon
 
 if TYPE_CHECKING:
     pass  # noqa: F401

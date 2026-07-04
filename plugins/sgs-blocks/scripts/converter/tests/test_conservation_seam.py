@@ -21,7 +21,7 @@ from converter.orchestrator import (
     process_element,
 )
 from converter.resolvers import REGISTRY
-from orchestrator.converter_v2.db_lookup import SGS_DB
+from converter.db.db_lookup import SGS_DB
 
 
 @pytest.fixture

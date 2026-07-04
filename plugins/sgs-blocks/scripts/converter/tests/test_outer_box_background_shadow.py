@@ -29,7 +29,7 @@ import pytest
 from converter.context import Ctx, Decl
 from converter.models import GapOrigin, Write
 from converter.orchestrator import process_element
-from orchestrator.converter_v2.db_lookup import SGS_DB
+from converter.db.db_lookup import SGS_DB
 
 
 def _ctx(conn: sqlite3.Connection) -> Ctx:

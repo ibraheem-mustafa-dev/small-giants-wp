@@ -17,7 +17,8 @@ FLAGGED — not ported (entangled):
     into a new-engine module. Porting this function requires those two to be ported first.
 
 No block-slug string literals. No import from convert.py.
-``from orchestrator.converter_v2 import db_lookup`` is the only frozen-tree import.
+``from converter.db import db_lookup`` (moved off the frozen tree in EXECUTION
+Step 9, Phase 3, 2026-07-04) is the only DB-accessor import.
 ``_trace`` and ``_record_gap_candidate`` are injectable callables (default no-op) so this
 module carries no module-level side-effectful state.
 
@@ -34,9 +35,9 @@ from typing import Any
 
 from bs4 import Tag
 
-from orchestrator.converter_v2.db_lookup import modifier_suffixes
+from converter.db.db_lookup import modifier_suffixes
 
-from orchestrator.converter_v2 import db_lookup
+from converter.db import db_lookup
 from converter.services.styling_helpers import (
     collect_css_decls_for_element,
     split_value_unit,

@@ -11,7 +11,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from orchestrator.converter_v2 import db_lookup
+from converter.db import db_lookup
 
 # container_kind tie-break priority for a node carrying >=2 registered BEM root
 # classes (design §1 fold-L): a section outranks a layout outranks a content block.

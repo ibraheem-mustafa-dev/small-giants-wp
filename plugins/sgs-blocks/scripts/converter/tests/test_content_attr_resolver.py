@@ -18,7 +18,7 @@ import sqlite3
 
 import pytest
 
-from orchestrator.converter_v2 import db_lookup
+from converter.db import db_lookup
 
 
 def _make_db(tmp_path, rows, slot_aliases):

@@ -287,7 +287,7 @@ def test_icon_slug_inline_svg_resolved_via_icon_resolver():
     # Stronger assertion: if the lucide index is available, we should get 'check'.
     try:
         import os
-        from orchestrator.converter_v2.icon_resolver import _LUCIDE_JSON
+        from converter.services.icon_resolver import _LUCIDE_JSON
         if os.path.exists(_LUCIDE_JSON):
             assert result == "check", (
                 f"Expected slug='check' from lucide index for standard check path, "
@@ -318,7 +318,7 @@ def test_scalar_content_delegates_to_extract_field_value(monkeypatch):
     """
     import converter.resolvers.scalar_content as sc_mod
     import converter.services.field_extractors as fe_mod
-    import orchestrator.converter_v2.db_lookup as db_mod
+    import converter.db.db_lookup as db_mod
     from converter.resolvers.scalar_content import lift_scalar_content
 
     calls: list[tuple] = []

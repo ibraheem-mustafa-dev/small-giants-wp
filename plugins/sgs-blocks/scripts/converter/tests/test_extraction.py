@@ -177,7 +177,7 @@ def test_media_lifts_as_object_shape(monkeypatch):
     false-green. `lift_scalar_content` reads `block_attrs(slug)` +
     `capabilities_for(slug)`.)
     """
-    import orchestrator.converter_v2.db_lookup as db_lookup_mod
+    import converter.db.db_lookup as db_lookup_mod
 
     # Patch the two accessors the modularised lift_scalar_content actually reads.
     monkeypatch.setattr(
@@ -259,7 +259,7 @@ def test_mech_b_scalar_media_column_emits_scalar_lift(monkeypatch):
       - breakpoint_suffix_rules → [('Mobile', ['Mobile'])]  (no hardcoded dict)
       - parse_sgs_bem → real function (tested against actual BEM string)
     """
-    import orchestrator.converter_v2.db_lookup as db
+    import converter.db.db_lookup as db
 
     monkeypatch.setattr(db, "is_class_section_block", lambda s: True)
     monkeypatch.setattr(db, "scalar_media_attr_for",
@@ -299,7 +299,7 @@ def test_mech_b_scalar_media_mobile_modifier_appends_Mobile(monkeypatch):
     _mobile_suffixes() (testing the first element == 'Mobile') pass while the real
     DB (condition first) silently returned an empty set → mobile image dropped.
     """
-    import orchestrator.converter_v2.db_lookup as db
+    import converter.db.db_lookup as db
 
     monkeypatch.setattr(db, "is_class_section_block", lambda s: True)
     monkeypatch.setattr(db, "scalar_media_attr_for",
@@ -334,7 +334,7 @@ def test_mech_b_scalar_media_dual_art_direction_keeps_both(monkeypatch):
     splitImageMobile — the W3 LANDED-proof bug was both collapsing onto splitImage
     (the desktop image winning by source order) because _mobile_suffixes() was empty.
     """
-    import orchestrator.converter_v2.db_lookup as db
+    import converter.db.db_lookup as db
 
     monkeypatch.setattr(db, "is_class_section_block", lambda s: True)
     monkeypatch.setattr(db, "scalar_media_attr_for",
@@ -366,7 +366,7 @@ def test_mech_b_scalar_media_dual_art_direction_keeps_both(monkeypatch):
 def test_mech_b_scalar_media_no_img_emits_content_gap(monkeypatch):
     """Branch A no-img: a scalar-media column with no <img> must emit a ContentGap,
     never a silent skip (Rule 4)."""
-    import orchestrator.converter_v2.db_lookup as db
+    import converter.db.db_lookup as db
 
     monkeypatch.setattr(db, "is_class_section_block", lambda s: True)
     monkeypatch.setattr(db, "scalar_media_attr_for",
@@ -401,7 +401,7 @@ def test_mech_b_scalar_media_no_img_emits_content_gap(monkeypatch):
 def test_mech_b_content_block_column_emits_child_block(monkeypatch):
     """Branch B: a composite-interior child whose BEM classes resolve to a block slug
     must produce a ChildBlock with that slug."""
-    import orchestrator.converter_v2.db_lookup as db
+    import converter.db.db_lookup as db
 
     monkeypatch.setattr(db, "is_class_section_block", lambda s: True)
     monkeypatch.setattr(db, "scalar_media_attr_for", lambda slug, elem: None)
@@ -440,7 +440,7 @@ def test_mech_b_content_block_column_emits_child_block(monkeypatch):
 def test_mech_b_slug_none_wrapper_recurses_grandchildren(monkeypatch):
     """Branch C: a slug-None content wrapper column must recurse its grandchildren,
     not emit the wrapper itself as a block."""
-    import orchestrator.converter_v2.db_lookup as db
+    import converter.db.db_lookup as db
 
     monkeypatch.setattr(db, "is_class_section_block", lambda s: True)
     monkeypatch.setattr(db, "scalar_media_attr_for", lambda slug, elem: None)
@@ -483,7 +483,7 @@ def test_mech_b_slug_none_wrapper_recurses_grandchildren(monkeypatch):
 def test_mech_b_generic_g3_not_in_allowed_emits_content_gap(monkeypatch):
     """G3 validation: when accepts_allowed_blocks returns a list and the resolved
     child slug is NOT in it, run_mechanism_b must emit a loud ContentGap."""
-    import orchestrator.converter_v2.db_lookup as db
+    import converter.db.db_lookup as db
 
     monkeypatch.setattr(db, "is_class_section_block", lambda s: False)
     monkeypatch.setattr(db, "resolve_slug_from_bem", lambda classes: "sgs/info-box" if classes else None)
@@ -517,7 +517,7 @@ def test_mech_b_generic_g3_not_in_allowed_emits_content_gap(monkeypatch):
 def test_mech_b_generic_g3_null_permissive_admits_child(monkeypatch):
     """G3 NULL: when accepts_allowed_blocks returns None, the child must be admitted
     (permissive) rather than gapped — and run_mechanism_b must not raise."""
-    import orchestrator.converter_v2.db_lookup as db
+    import converter.db.db_lookup as db
 
     monkeypatch.setattr(db, "is_class_section_block", lambda s: False)
     monkeypatch.setattr(db, "resolve_slug_from_bem",
@@ -557,7 +557,7 @@ def test_mech_b_g1_parent_scoped_wins_over_global(monkeypatch):
 
     Simulates the accordion __item → sgs/accordion-item fix (not sgs/info-box from global alias).
     """
-    import orchestrator.converter_v2.db_lookup as db
+    import converter.db.db_lookup as db
 
     monkeypatch.setattr(db, "is_class_section_block", lambda s: False)
     # Global alias would say sgs/info-box (the wrong answer)

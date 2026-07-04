@@ -19,8 +19,8 @@ Internal helper re-ported here (not exposed publicly):
   - ``_CSS_NAMED_COLOURS``          (convert.py:454)  → ``_CSS_NAMED_COLOURS``
 
 No block-slug literals. No import from convert.py.
-Only ``from orchestrator.converter_v2 import db_lookup`` is used from the
-frozen tree.
+Only ``from converter.db import db_lookup`` is used (moved off the frozen
+tree in EXECUTION Step 9, Phase 3, 2026-07-04).
 """
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ from typing import Any
 
 from bs4 import Tag
 
-from orchestrator.converter_v2 import db_lookup
+from converter.db import db_lookup
 
 _LOG = logging.getLogger("sgs.converter.styling")
 

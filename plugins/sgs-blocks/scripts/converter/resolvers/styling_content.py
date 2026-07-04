@@ -31,7 +31,7 @@ from converter.services.styling_helpers import (
     split_value_unit,
     strip_important,
 )
-from orchestrator.converter_v2 import db_lookup
+from converter.db import db_lookup
 
 
 # ---------------------------------------------------------------------------

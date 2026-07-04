@@ -38,7 +38,7 @@ from converter.services.styling_helpers import split_value_unit, strip_important
 from converter.services.tier_suffix import tier_suffix
 from converter.services.validate import validate
 from converter.services.value_serialise import value_serialise
-from orchestrator.converter_v2.db_lookup import attr_for_area_property, unit_companion_attr
+from converter.db.db_lookup import attr_for_area_property, unit_companion_attr
 
 # Per-area properties NOT routed (mirrors convert.py's _area_excluded set: a grid
 # item's own sizing/positioning is consumed by the grid dissolve, not re-emitted).

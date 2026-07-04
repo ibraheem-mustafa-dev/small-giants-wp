@@ -17,7 +17,7 @@ from pathlib import Path
 import pytest
 
 from converter.services.has_inner import _BLOCKS_DIR, derive_delegates_content
-from orchestrator.converter_v2 import db_lookup
+from converter.db import db_lookup
 
 
 def test_hero_composes_inner_blocks():

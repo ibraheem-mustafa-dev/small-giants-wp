@@ -17,7 +17,7 @@ import pytest
 from converter.context import Ctx, Decl
 from converter.dispatch_table import resolver_id
 from converter.orchestrator import ConservationError, process_element
-from orchestrator.converter_v2.db_lookup import SGS_DB
+from converter.db.db_lookup import SGS_DB
 
 
 def _ctx(base_layer: str) -> Ctx:

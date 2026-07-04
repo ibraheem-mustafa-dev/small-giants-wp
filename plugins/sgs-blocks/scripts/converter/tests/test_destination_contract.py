@@ -24,8 +24,8 @@ from converter.models import Write
 from converter.orchestrator import ConservationError, process_element
 from converter.resolvers import REGISTRY
 from converter.services.fold_helpers import detect_content_layer
-from orchestrator.converter_v2 import db_lookup
-from orchestrator.converter_v2.db_lookup import (
+from converter.db import db_lookup
+from converter.db.db_lookup import (
     SGS_DB,
     AmbiguousLayerAttrError,
     attr_for_layer_property,

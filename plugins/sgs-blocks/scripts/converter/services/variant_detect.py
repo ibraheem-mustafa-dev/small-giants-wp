@@ -21,7 +21,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from orchestrator.converter_v2 import db_lookup
+from converter.db import db_lookup
 
 
 def _classes(node: Any) -> list[str]:

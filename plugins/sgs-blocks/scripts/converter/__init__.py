@@ -11,7 +11,10 @@ Architecture (design doc ``.claude/plans/2026-06-23-modular-scaffold-design.md``
     anti-cheat gates under converter/gates/ and the F2 ledger / F3 oracle.
 
 HARD CONSTRAINT (import-ban gate): nothing under converter/ may import from
-``orchestrator.converter_v2`` EXCEPT ``db_lookup`` (the vetted attr-NAME resolver).
-The frozen engine is NEVER a comparison oracle (D-B); the only correctness
-comparison is draft-vs-clone (the F3 render-oracle).
+``orchestrator.converter_v2`` AT ALL (EXECUTION Step 9, Phase 3, 2026-07-04 —
+``db_lookup`` and ``icon_resolver`` moved to ``converter.db.db_lookup`` /
+``converter.services.icon_resolver``; the old frozen-tree paths are now
+re-export shims kept only for the 4 importlib by-path loaders + the frozen
+``convert.py`` itself). The frozen engine is NEVER a comparison oracle (D-B);
+the only correctness comparison is draft-vs-clone (the F3 render-oracle).
 """

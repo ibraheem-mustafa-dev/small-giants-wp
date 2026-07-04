@@ -24,7 +24,7 @@ import dataclasses
 import sqlite3
 from typing import Any, assert_never
 
-from orchestrator.converter_v2 import db_lookup
+from converter.db import db_lookup
 
 from converter.context import Ctx, Recognition
 from converter.models import GAP, GapOrigin

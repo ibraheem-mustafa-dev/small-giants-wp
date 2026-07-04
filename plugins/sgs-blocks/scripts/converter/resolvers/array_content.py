@@ -47,7 +47,8 @@ from bs4 import Tag
 from converter.context import ContentConservationError, ContentGap
 from converter.services.field_extractors import extract_field_value
 from converter.services.recognise_helpers import bem_element_to_canonical_slot
-from orchestrator.converter_v2 import db_lookup, icon_resolver
+from converter.db import db_lookup
+from converter.services import icon_resolver
 
 _ARRAY_LIFT_CAP = "array-content-lift"
 

@@ -19,7 +19,7 @@ from bs4 import BeautifulSoup
 from converter.context import ContentConservationError
 from converter.recognition import recognise, recognise_section
 from converter.services.extraction import build_block_markup, run_container_default
-from orchestrator.converter_v2 import db_lookup
+from converter.db import db_lookup
 
 _CONTAINER = db_lookup.container_default_slug()
 

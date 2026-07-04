@@ -23,7 +23,7 @@ from bs4 import Tag
 
 from converter.models import GAP, GapOrigin
 from converter.services.field_extractors import extract_field_value
-from orchestrator.converter_v2 import db_lookup
+from converter.db import db_lookup
 
 
 # ---------------------------------------------------------------------------

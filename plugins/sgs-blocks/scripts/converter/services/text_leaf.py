@@ -19,13 +19,14 @@ whose children are all text or inline content, the ladder in
 selection and ``run_mechanism_leaf`` its content lift.)
 
 No block-slug literals. No import from convert.py.
-Only ``from orchestrator.converter_v2 import db_lookup`` from the frozen tree.
+Only ``from converter.db import db_lookup`` (moved off the frozen tree in
+EXECUTION Step 9, Phase 3, 2026-07-04).
 """
 from __future__ import annotations
 
 from bs4 import Tag
 
-from orchestrator.converter_v2 import db_lookup
+from converter.db import db_lookup
 
 
 # ---------------------------------------------------------------------------

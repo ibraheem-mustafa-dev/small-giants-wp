@@ -18,7 +18,7 @@ import pytest
 from converter.context import Ctx, Decl
 from converter.models import GAP, GapOrigin, Write
 from converter.resolvers import content_band, grid, grid_area, typography
-from orchestrator.converter_v2.db_lookup import SGS_DB
+from converter.db.db_lookup import SGS_DB
 
 
 @pytest.fixture
@@ -206,7 +206,7 @@ def test_grid_area_tier_suffix(conn):
 # ---------------------------------------------------------------------------
 
 def test_unit_companion_attr_strips_side_and_breakpoint_via_db(conn):
-    from orchestrator.converter_v2.db_lookup import unit_companion_attr
+    from converter.db.db_lookup import unit_companion_attr
 
     # base + side                → strip side, append Unit
     assert unit_companion_attr("contentPaddingTop", conn) == "contentPaddingUnit"

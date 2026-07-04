@@ -19,7 +19,7 @@ from converter.context import ScalarLift
 from converter.recognition import recognise_section
 from converter.services import arrangement
 from converter.services.extraction import build_block_markup
-from orchestrator.converter_v2 import db_lookup
+from converter.db import db_lookup
 
 _CONTAINER = db_lookup.container_default_slug()
 _CONTAINER_OPEN = "<!-- wp:sgs/container"

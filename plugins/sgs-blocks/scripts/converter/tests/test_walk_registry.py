@@ -23,8 +23,8 @@ from converter import walk
 from converter.context import ContentConservationError, ContentGap, Recognition
 from converter.gates import no_slug_literal
 from converter.services.has_inner import derive_delegates_content
-from orchestrator.converter_v2 import db_lookup
-from orchestrator.converter_v2.db_lookup import SGS_DB
+from converter.db import db_lookup
+from converter.db.db_lookup import SGS_DB
 
 
 def _all_block_slugs() -> list[str]:

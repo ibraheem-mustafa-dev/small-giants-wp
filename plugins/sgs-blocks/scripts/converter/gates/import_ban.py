@@ -3,15 +3,22 @@
 Design ref: `.claude/plans/2026-06-23-modular-scaffold-design.md` §4.1.
 
 WHAT IT REJECTS
-    Any import, anywhere under converter/, of the frozen converter_v2 engine —
-    `convert`, `convert_page`, or any `orchestrator.converter_v2.*` symbol —
-    with TWO exceptions:
-      1. `db_lookup`     — the vetted attr-NAME resolver the services legitimately wrap.
-      2. `icon_resolver` — the vetted shared icon-recognition primitive (path-data
-                           fingerprint + structural heuristics against lucide-icons.json).
-                           Permitted per D248 / Spec 31 §3.B.0; equivalent in role to
-                           db_lookup (both are shared recognition primitives, not the
-                           frozen engine logic).
+    Any import, anywhere under converter/, of ANYTHING from the frozen
+    `orchestrator.converter_v2` package — `convert`, `convert_page`, `db_lookup`,
+    `icon_resolver`, or any other symbol. NO EXCEPTIONS (EXECUTION Step 9, Phase 3,
+    2026-07-04): `db_lookup` and `icon_resolver` moved OUT of the frozen tree to
+    `converter.db.db_lookup` / `converter.services.icon_resolver`, so converter/
+    no longer has any legitimate reason to reach into orchestrator.converter_v2 at
+    all. The old frozen-tree paths are now thin re-export shims kept only for the
+    4 importlib by-path loaders + the frozen convert.py itself — converter/ must
+    import the new homes directly.
+
+    Prior to this change, `db_lookup` and (from D248) `icon_resolver` were a
+    permitted two-item allowlist (shared recognition primitives, not the frozen
+    engine logic). That allowlist is now EMPTY — importing `converter.db.db_lookup`
+    / `converter.services.icon_resolver` doesn't touch `orchestrator.converter_v2`
+    at all, so it was never a case this gate needed to permit; it only existed
+    because the modules used to physically live inside the frozen package.
 
     This closes the freeze-callback backdoor: convert_page.py:114 calls v3.walk;
     if a rebuilt resolver imported back into convert.py, "old engine is never an
@@ -23,12 +30,16 @@ WHAT IT REJECTS
               from orchestrator.converter_v2 import convert
               from orchestrator.converter_v2.convert import x
               import orchestrator.converter_v2.convert
-    Allowed:  from orchestrator.converter_v2 import db_lookup
+              from orchestrator.converter_v2 import db_lookup
               from orchestrator.converter_v2.db_lookup import x
               import orchestrator.converter_v2.db_lookup
               from orchestrator.converter_v2 import icon_resolver
               from orchestrator.converter_v2.icon_resolver import resolve_icon
               import orchestrator.converter_v2.icon_resolver
+    Allowed:  from converter.db import db_lookup
+              from converter.db.db_lookup import x
+              from converter.services import icon_resolver
+              from converter.services.icon_resolver import resolve_icon
 
 SCOPE
     All of converter/ recursively, EXCLUDING this gates/ dir and test files
@@ -55,19 +66,19 @@ _BASELINE = _HERE / "import-ban-baseline.json"
 # Bare module names that ARE the frozen engine.
 _FROZEN_BARE = frozenset({"convert", "convert_page"})
 _FROZEN_PKG_SEGMENT = "converter_v2"
-# Vetted shared primitives that MAY be imported from orchestrator.converter_v2.
-# db_lookup     — attr-name resolver / DB accessor (original allowance).
-# icon_resolver — path-data fingerprint + structural heuristic icon recogniser;
-#                 permitted per D248 / Spec 31 §3.B.0 (same class as db_lookup:
-#                 a shared recognition primitive, NOT the frozen engine logic).
-_ALLOWED_LEAVES = frozenset({"db_lookup", "icon_resolver"})
+# No permitted leaves (EXECUTION Step 9, Phase 3, 2026-07-04): db_lookup and
+# icon_resolver moved OUT of orchestrator.converter_v2 to converter.db.db_lookup /
+# converter.services.icon_resolver. converter/ now has zero legitimate reason to
+# import anything from orchestrator.converter_v2 — the ban is unconditional.
 
 
 def _module_is_frozen(module: str | None, imported_name: str | None) -> bool:
     """Decide whether an import target is the banned frozen engine.
 
     `module` is the ImportFrom module (or the Import alias name); `imported_name`
-    is the specific symbol for an ImportFrom (None for a plain Import).
+    is the specific symbol for an ImportFrom (None for a plain Import) — kept in
+    the signature for call-site compatibility though no longer consulted (there
+    is no allowlist to check it against post-Step-9).
     """
     if not module:
         return False
@@ -75,15 +86,8 @@ def _module_is_frozen(module: str | None, imported_name: str | None) -> bool:
     # Bare frozen module (`import convert`, `from convert import x`).
     if module in _FROZEN_BARE or parts[-1] in _FROZEN_BARE:
         return True
-    # Anything inside the converter_v2 package.
+    # Anything inside the converter_v2 package — banned unconditionally.
     if _FROZEN_PKG_SEGMENT in parts:
-        # Allowed when the leaf module is a permitted shared primitive …
-        if parts[-1] in _ALLOWED_LEAVES:
-            return False
-        # … or `from orchestrator.converter_v2 import <leaf>` (module ends at
-        #    the package, the imported symbol is a permitted shared primitive).
-        if parts[-1] == _FROZEN_PKG_SEGMENT and imported_name in _ALLOWED_LEAVES:
-            return False
         return True
     return False
 
@@ -147,9 +151,11 @@ def run(converter_dir: Path | None = None) -> list[dict]:
                     "src": banned_src,
                     "detail": (
                         f"converter/{rel}:{getattr(node, 'lineno', 0)} imports the "
-                        f"frozen engine — `{banned_src}`. Only `db_lookup` may be "
-                        f"imported from orchestrator.converter_v2 (D-B: the old engine "
-                        f"is never an oracle). Rebuild the logic fresh in the resolver."
+                        f"frozen engine — `{banned_src}`. Nothing may be imported from "
+                        f"orchestrator.converter_v2 (D-B: the old engine is never an "
+                        f"oracle). db_lookup/icon_resolver live at converter.db.db_lookup "
+                        f"/ converter.services.icon_resolver — import those instead. "
+                        f"Rebuild any other logic fresh in the resolver."
                     ),
                 })
     return violations
@@ -197,8 +203,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if not violations:
-        print("[import-ban] All clear — no converter/ file imports the frozen engine "
-              "(db_lookup excepted).")
+        print("[import-ban] All clear — no converter/ file imports the frozen engine.")
         return 0
     print(f"[import-ban] {len(violations)} frozen-engine import(s):")
     for v in violations:

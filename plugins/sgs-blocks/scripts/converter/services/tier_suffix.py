@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import sqlite3
 
-from orchestrator.converter_v2.db_lookup import modifier_suffixes
+from converter.db.db_lookup import modifier_suffixes
 
 # "Base" is the UNSUFFIXED device tier (SGS desktop) — a structural pipeline convention,
 # NOT a row in the DB suffix vocabulary. This single named constant is the permitted

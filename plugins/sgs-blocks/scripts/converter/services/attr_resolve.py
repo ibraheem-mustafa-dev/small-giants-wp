@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from orchestrator.converter_v2.db_lookup import attr_for_layer_property
+from converter.db.db_lookup import attr_for_layer_property
 
 
 def attr_resolve(ctx: Any, layer: str, css_property: str) -> str | None:

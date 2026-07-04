@@ -26,7 +26,7 @@ from bs4 import Tag
 
 from converter.context import ScalarLift
 from converter.services.styling_helpers import collect_css_decls_for_element, strip_important
-from orchestrator.converter_v2 import db_lookup
+from converter.db import db_lookup
 
 
 def _decls_arrange(decls: dict[str, str]) -> bool:
