@@ -222,8 +222,8 @@ def _emit_content_leaf(node: Any, css_rules: dict | None, media_map: dict | None
     """Emit a slug-None text-leaf as its ladder-target CONTENT block (FR-31-4.1 #5).
 
     A text-only sgs-classed node is CONTENT, never a `sgs/container` wrapping raw
-    text (which fails WP block validation). Target ladder (port of
-    text_leaf.route_text_leaf's target selection, DB-driven / no slug literal):
+    text (which fails WP block validation). Target ladder (port of the frozen
+    _route_text_leaf's target selection, convert.py:5620 — DB-driven / no slug literal):
       (a) the node's OWN tag via atomic_tag_map (h2->heading, p->text, …);
       (b) else a text-capable BEM-element hyphen-segment (tail-first);
       (c) else the DB default text block (`standalone_block_for('text')`).

@@ -222,8 +222,14 @@ def collect_css_decls_for_element(
 
     for sel, decls in css_rules.items():
         _src_order += 1
-        if "::" in sel:
-            media_part, sel_part = sel.split("::", 1)
+        # The @media sentinel is the SPACED ' :: ' (convert.py:431 — the port must
+        # stay behaviour-identical). Splitting on bare '::' mis-parsed any
+        # pseudo-element selector ('.x::before' → media='.x', sel='before'), which
+        # both dropped the pseudo rule as junk-media AND, for a comma rule
+        # ('.x::before, .y'), routed the plain '.y' half through the always-true
+        # junk-media path — bypassing the base cascade's specificity ordering.
+        if " :: " in sel:
+            media_part, sel_part = sel.split(" :: ", 1)
             media_part = media_part.strip()
             sel_part = sel_part.strip()
         else:

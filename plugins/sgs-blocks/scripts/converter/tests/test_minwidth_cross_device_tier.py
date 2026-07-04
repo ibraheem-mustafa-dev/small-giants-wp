@@ -48,7 +48,7 @@ _TRUST_BAR_RULES = {
         "max-width": "1100px",
         "margin": "0 auto",
     },
-    "@media (min-width: 600px)::.sgs-trust-bar__inner": {
+    "@media (min-width: 600px) :: .sgs-trust-bar__inner": {
         "grid-template-columns": "repeat(4, 1fr)",   # desktop/tablet override (4-col)
     },
 }
@@ -88,7 +88,7 @@ def test_maxwidth_desktop_first_routes_to_mobile():
     the base CSS stays the desktop base. Same calculation, opposite direction."""
     rules = {
         ".sgs-x__grid": {"grid-template-columns": "repeat(3, 1fr)"},   # desktop base
-        "@media (max-width: 767px)::.sgs-x__grid": {
+        "@media (max-width: 767px) :: .sgs-x__grid": {
             "grid-template-columns": "1fr",   # mobile override (1-col)
         },
     }
@@ -103,7 +103,7 @@ def test_maxwidth_tablet_boundary_covers_mobile_and_tablet():
     """max-width:1023 covers Mobile (375) AND Tablet (800) but not Desktop (1440)."""
     rules = {
         ".sgs-x__grid": {"grid-template-columns": "repeat(4, 1fr)"},   # desktop base
-        "@media (max-width: 1023px)::.sgs-x__grid": {
+        "@media (max-width: 1023px) :: .sgs-x__grid": {
             "grid-template-columns": "repeat(2, 1fr)",   # tablet + mobile
         },
     }
@@ -123,7 +123,7 @@ def test_device_threshold_minwidth_768():
     tablet inherits base; Mobile (375) keeps the base-CSS value."""
     rules = {
         ".sgs-x__grid": {"grid-template-columns": "1fr"},              # base CSS = mobile
-        "@media (min-width: 768px)::.sgs-x__grid": {
+        "@media (min-width: 768px) :: .sgs-x__grid": {
             "grid-template-columns": "repeat(3, 1fr)",
         },
     }
@@ -151,7 +151,7 @@ def test_device_threshold_logs_no_residual(caplog):
     """A pure device-threshold rule (max-width:767) emits NO F-ii residual log."""
     rules = {
         ".sgs-x__grid": {"grid-template-columns": "repeat(3, 1fr)"},
-        "@media (max-width: 767px)::.sgs-x__grid": {"grid-template-columns": "1fr"},
+        "@media (max-width: 767px) :: .sgs-x__grid": {"grid-template-columns": "1fr"},
     }
     node = _node('<div class="sgs-x__grid"></div>', "sgs-x__grid")
     with caplog.at_level(logging.INFO, logger="sgs.converter.styling"):
@@ -175,3 +175,62 @@ def test_media_condition_applies_at_and_band():
     assert _media_condition_applies_at(cond, 800) is True    # inside the tablet band
     assert _media_condition_applies_at(cond, 375) is False   # below the band
     assert _media_condition_applies_at(cond, 1440) is False  # above the band
+
+
+# ---------------------------------------------------------------------------
+# Pseudo-element selectors vs the ' :: ' @media sentinel (Spec 31 §12.3 gap
+# "pseudo-elements currently mis-parsed" / §12.7 "::-as-media-separator parse").
+# The sentinel is the SPACED ' :: ' (convert.py:333 builds keys as
+# f"{media_cond} :: {sel}"); a bare '::' split mis-parsed any pseudo-element
+# selector into a bogus always-true media condition.
+# ---------------------------------------------------------------------------
+
+def test_pseudo_element_rule_is_not_treated_as_media():
+    """'.x::before' must NOT be split at '::' into (media='.x', sel='before').
+
+    Regression-safety pin (the discriminating proof of the fix is the comma
+    test below): the pseudo rule simply does not class-match the node — it
+    must not leak onto it via any path, media or base."""
+    rules = {
+        ".sgs-info-box": {"background": "#1a1a2e"},
+        ".sgs-info-box::before": {"position": "absolute", "inset": "0"},
+    }
+    node = _node('<section class="sgs-info-box"></section>', "sgs-info-box")
+    base, bp = collect_css_decls_for_element(node, rules)
+    assert base == {"background": "#1a1a2e"}
+    assert bp == {}
+
+
+def test_comma_rule_with_pseudo_half_keeps_cascade_specificity():
+    """'section::before, section {x}' shares decls between a pseudo half and a
+    plain TAG half. The tag half (specificity 0,0,1) must LOSE to a more
+    specific class rule (0,1,0) in the base cascade.
+
+    Before the fix the whole key was mis-split at the first '::' into
+    (media='section', sel='before, section'); the tag half then rode the
+    always-true junk-media path, which applies AFTER the base cascade — so the
+    LESS specific rule wrongly won (9px instead of 2px)."""
+    rules = {
+        ".sgs-info-box": {"letter-spacing": "2px"},          # class — must win
+        "section::before, section": {"letter-spacing": "9px"},  # tag — must lose
+    }
+    node = _node('<section class="sgs-info-box"></section>', "sgs-info-box")
+    base, _bp = collect_css_decls_for_element(node, rules)
+    assert base["letter-spacing"] == "2px"
+
+
+def test_media_key_with_pseudo_selector_still_routes_media():
+    """A production-shaped media key whose selector part carries a pseudo-element
+    ('@media (...) :: .x::before') splits at the SENTINEL, keeping the pseudo
+    selector intact in the selector part (it then simply doesn't class-match).
+    Regression-safety pin (see the comma test above for the discriminating case)."""
+    rules = {
+        ".sgs-info-box": {"padding": "56px"},
+        "@media (max-width: 767px) :: .sgs-info-box::before": {"inset": "0"},
+        "@media (max-width: 767px) :: .sgs-info-box": {"padding": "40px"},
+    }
+    node = _node('<section class="sgs-info-box"></section>', "sgs-info-box")
+    base, bp = collect_css_decls_for_element(node, rules)
+    assert base["padding"] == "56px"
+    assert bp.get("Mobile", {}).get("padding") == "40px"
+    assert "inset" not in base and "inset" not in bp.get("Mobile", {})
