@@ -546,9 +546,8 @@ def run_mechanism_b(
       (B) Content-item block column — resolve_slug_from_bem(child_classes) non-None
             → emit ChildBlock + recurse into the child (_child_content_for_node).
       (C) slug-None content wrapper (fold case) — resolve_slug_from_bem returns None
-            → CSS routing is OUT OF SCOPE here (Step-7 conductor owns it).
-            → TODO Step-7: slug-None column CSS routing (_route_interior_css_to_parent_slot
-              + _fold_layout_into_attrs) handled by the unified conductor, NOT here.
+            → CSS routing: the unified fold cascade (fold_band_css → the content_band
+              layer priorities) owns band CSS since EXECUTION Step 7 (2026-07-04).
             → Content recursion IS in scope: iterate grandchildren and recurse each.
 
     GENERIC path (non-class-section parent, e.g. accordion/tabs/form):
@@ -672,10 +671,9 @@ def run_mechanism_b(
 
                 else:
                     # Branch C: slug-None transparent content wrapper — fold case.
-                    # convert.py:4276-4306: _fold_layout_into_attrs + _route_interior_css_to_parent_slot
-                    # handle the CSS mutation; CONTENT recursion iterates grandchildren.
-                    # TODO Step-7: slug-None column CSS routing (_route_interior_css_to_parent_slot
-                    # + _fold_layout_into_attrs) is handled by the unified conductor, NOT here.
+                    # CSS for the slug-None wrapper folds via the unified cascade
+                    # (fold_band_css / content_band priorities — EXECUTION Step 7);
+                    # CONTENT recursion iterates grandchildren here.
                     grandchild_results: list = []
                     for grandchild in child.children:
                         if not isinstance(grandchild, Tag):
