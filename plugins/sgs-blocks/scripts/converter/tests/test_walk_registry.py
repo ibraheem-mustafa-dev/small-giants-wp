@@ -88,22 +88,25 @@ def test_registry_covers_every_producible_signature():
 # 2. ADDITIVE emission with explicit priority (FR-31-2.8.3)
 # ---------------------------------------------------------------------------
 
-def test_case1_signature_composes_scalar_styling_array_in_priority_order():
+def test_case1_signature_composes_walk_styling_array_in_priority_order():
+    # Step-6 shape (FR-31-2.6): the universal per-attr walk replaced the
+    # block-level scalar/child/leaf case handlers; styling + array compose
+    # additively after it (explicit priorities 20 < 31 < 40).
     sig = walk.NodeSignature(
         kind="named", classify="composite", has_inner=0,
         scalar_lift=True, array_lift=True, content_leaf=True,
     )
     names = [h.name for h in walk.handlers_for(sig)]
-    assert names == ["scalar_content", "styling_content", "array_content"], names
+    assert names == ["universal_walk", "styling_content", "array_content"], names
 
 
-def test_case2_signature_composes_child_blocks_plus_array():
+def test_case2_signature_composes_walk_plus_array():
     sig = walk.NodeSignature(
         kind="named", classify="composite", has_inner=1,
         scalar_lift=False, array_lift=True, content_leaf=False,
     )
     names = [h.name for h in walk.handlers_for(sig)]
-    assert names == ["child_blocks", "array_content"], names
+    assert names == ["universal_walk", "styling_content", "array_content"], names
 
 
 def test_holder_signature_routes_to_container_default_only():

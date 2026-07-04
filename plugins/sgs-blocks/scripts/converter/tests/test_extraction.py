@@ -126,11 +126,24 @@ def test_hero_child_block_emits_content_attr():
 
 
 def test_third_case_loud_gap():
-    """A has_inner_blocks=0 block without scalar-content-lift must produce
-    exactly one loud ContentGap (third case — never a silent empty)."""
+    """A leaf node with no children and no content-bearing attrs must still
+    produce exactly one loud ContentGap — never a silent empty list.
+
+    UPDATED 2026-07-04 (FR-31-2.6): the retired has_inner_blocks/capability
+    Case-4 dispatch this test originally covered no longer exists — the
+    universal content route (``run_universal_content_walk``) has no capability
+    gate, so a childless leaf like sgs/divider walks its (empty) child list and
+    legitimately produces zero results. That is now caught by the
+    conservation-floor check at the END of ``extract_content`` (added
+    2026-07-04): if every arm (walk / array / styling / leaf-fallback)
+    produced nothing, one explanatory ContentGap is emitted instead of `[]`,
+    preserving the "extract_content never returns empty" invariant
+    universally (Rule 4 / R-31-9 / test_conservation_holds) without
+    reintroducing a per-capability branch.
+    """
     # sgs/divider: named, has_inner_blocks=0, no scalar/array content capability,
-    # no primary_content_attr → the Case-4 loud gap. (trust-bar is no longer valid
-    # here — it now carries array-content-lift, 2026-07-02.)
+    # no primary_content_attr, no children — nothing for the universal walk to
+    # find, so only the conservation floor produces a result.
     node = _node('<div class="sgs-divider"></div>')
     rec = recognise(node)
     # Verify our assumption: named, no inner blocks

@@ -517,7 +517,10 @@ def run_container_default(
     return results
 
 
-def run_mechanism_b(rec: Recognition, section_root: Any, css_rules: dict | None = None, media_map: dict | None = None) -> list:
+def run_mechanism_b(
+    rec: Recognition, section_root: Any, css_rules: dict | None = None,
+    media_map: dict | None = None, exclude_ids: frozenset[int] = frozenset(),
+) -> list:
     """Mechanism B: faithful port of _route_composite_interior + walk() child-resolution.
 
     FR-31-4 DEFAULT-CONTAINER arm (checked FIRST, additive): a section recognised
@@ -594,6 +597,11 @@ def run_mechanism_b(rec: Recognition, section_root: Any, css_rules: dict | None 
     if db_lookup.is_class_section_block(rec.slug):
         for child in section_root.children:
             if not isinstance(child, Tag):
+                continue
+            if id(child) in exclude_ids:
+                # FR-31-2.6 mutual exclusion: this element was consumed as a
+                # NESTED unit by the universal walk — it must not also emit as
+                # a child (the unit is conserved on the nested side).
                 continue
             columns_seen += 1
 
@@ -676,6 +684,8 @@ def run_mechanism_b(rec: Recognition, section_root: Any, css_rules: dict | None 
                     for grandchild in child.children:
                         if not isinstance(grandchild, Tag):
                             continue
+                        if id(grandchild) in exclude_ids:
+                            continue  # consumed as a NESTED unit (FR-31-2.6)
                         gc_rec = recognise(grandchild)
                         if gc_rec.slug is not None:
                             gc_content = _child_content_for_node(
@@ -723,6 +733,8 @@ def run_mechanism_b(rec: Recognition, section_root: Any, css_rules: dict | None 
     for child in section_root.children:
         if not isinstance(child, Tag):
             continue
+        if id(child) in exclude_ids:
+            continue  # consumed as a NESTED unit by the universal walk (FR-31-2.6)
         columns_seen += 1
 
         cclasses: list[str] = child.get("class", []) or []

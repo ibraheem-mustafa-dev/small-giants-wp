@@ -143,15 +143,6 @@ def _run_container_default(rec, node, media_map, css_rules) -> list:
     return _ext().run_container_default(rec, node, css_rules=css_rules, media_map=media_map)
 
 
-def _run_child_blocks(rec, node, media_map, css_rules) -> list:
-    return _ext().run_mechanism_b(rec, node, css_rules=css_rules, media_map=media_map)
-
-
-def _run_scalar_content(rec, node, media_map, css_rules) -> list:
-    ext = _ext()
-    return ext.run_mechanism_a(rec, node, media_map) + ext.expected_content_gaps(rec.slug)
-
-
 def _run_styling_content(rec, node, media_map, css_rules) -> list:
     return _ext().run_mechanism_styling(rec, node, css_rules)
 
@@ -160,20 +151,172 @@ def _run_array_content(rec, node, media_map, css_rules) -> list:
     return _ext().run_mechanism_array(rec, node, media_map)
 
 
-def _run_named_leaf(rec, node, media_map, css_rules) -> list:
-    return _ext().run_mechanism_leaf(rec, node, media_map)
+# ---------------------------------------------------------------------------
+# FR-31-2.6 — the universal per-attr content walk (EXECUTION Step 6).
+# Replaces the has_inner/capability block-level dispatch (Mechanisms A/B/leaf
+# as EXCLUSIVE cases). The lift PROCESSORS are RE-HOMED, not rewritten:
+# lift_scalar_content (B1), run_mechanism_b's child resolution (B3 + G1/G3 +
+# scalar-media art-direction), run_mechanism_leaf (element-self lift).
+# ---------------------------------------------------------------------------
 
+def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
+    """ONE walk for every typed composite, per-attr emit_shape-forked.
 
-def _run_content_gap_floor(rec, node, media_map, css_rules) -> list:
-    from converter.context import ContentGap
-    return [
-        ContentGap(
-            rec.slug,
-            "block has no content-extraction capability"
-            " (not scalar-content-lift, not array-content-lift, not InnerBlocks)"
-            " — DB-capability gap; flag to developer",
+    Spec 31 §13.3 FR-31-2.6: per content routing unit — (1) IDENTITY
+    (`equivalent_block_for` anchors the processing), (2) `emit_shape` —
+    `nested` → lift into the parent's scalar attr; `child` → child InnerBlock
+    + recurse; (3) guards re-homed, none dropped.
+
+    Legs (ADDITIVE within the walk, mutual-exclusion per unit):
+
+    NESTED leg 1 — selector-driven (B1 RE-HOMED): ``lift_scalar_content``
+        now fires for EVERY typed block (the block-level scalar-content-lift
+        capability gate dies — a per-attr fact replaces it), filtered so an
+        attr seeded ``emit_shape='child'`` is NEVER scalar-lifted (the D212
+        invariant re-homed per-attr: an attr cannot be both nested and child).
+
+    NESTED leg 2 — element-driven (the D275 brick): every descendant whose
+        BEM class belongs to THIS block's own family and carries an
+        ``__element`` token resolves via ``db_lookup.content_attr_for_element``
+        (match-strength ranked). A ``nested`` hit lifts the element's value by
+        its role through the SHARED ``field_extractors`` (§3.B.0). First value
+        per attr wins (B1's first-non-None contract); an element consumed here
+        is EXCLUDED from child routing (mutual exclusion per unit).
+        This leg is what lands product-card: `primary_content_attr` was
+        ambiguous for the card, so the leaf arm could never pick — the
+        per-element router resolves __name/__price/__cta to their attrs.
+
+    CHILD leg — a block whose SOURCE delegates a ``$content`` region
+        (``rec.has_inner_blocks``, derived fresh from the save-marker +
+        render ``$content`` read — the block-level fact that legitimately
+        survives FR-31-2.6; what died is using it to EXCLUDE the nested legs)
+        routes its unconsumed children through the retained Mechanism-B
+        resolution: scalar-media columns (``*Mobile`` art-direction), G1
+        forced-parentage, global BEM, atomic fallback, G3
+        ``accepts_allowed_blocks`` validation (NULL = permissive + trace).
+
+    LEAF fallback — a node with no lift and no children but a declared
+        primary-content or icon-source attr lifts its OWN element via
+        ``run_mechanism_leaf`` (icon-bearing-leaf gating retained verbatim —
+        the keep-list item).
+
+    ``expected_content_gaps`` fires alongside leg 1 for blocks carrying the
+    scalar-content-lift capability (parity with the retired Case-1; universal
+    content completeness is the A2 ledger, EXECUTION Step 11).
+    """
+    ext = _ext()
+    results: list = []
+    lifted_attrs: set[str] = set()
+    consumed_ids: set[int] = set()
+
+    caps = db_lookup.capabilities_for(rec.slug)
+
+    # ---- NESTED leg 1 — selector-driven B1, per-attr child-shape filtered ----
+    from converter.context import ScalarLift
+    from converter.resolvers.scalar_content import lift_scalar_content
+    for attr, value in lift_scalar_content(node, rec.slug, media_map=media_map or {}).items():
+        if db_lookup.emit_shape_for(rec.slug, attr) == "child":
+            continue  # D212 per-attr: a child-shaped attr is never scalar-lifted
+        results.append(ScalarLift(attr=attr, value=value))
+        lifted_attrs.add(attr)
+    if "scalar-content-lift" in caps:
+        results.extend(ext.expected_content_gaps(rec.slug))
+
+    # ---- NESTED leg 2 — element-driven per-attr walk (content_attr_for_element) ----
+    own_block_name = (rec.slug or "").split("/", 1)[-1]
+    from converter.services.field_extractors import extract_field_value
+
+    def _family_element(el) -> str | None:
+        for cls in (el.get("class", []) or []):
+            if isinstance(cls, str):
+                bem = db_lookup.parse_sgs_bem(cls)
+                if bem and bem.element and bem.block == own_block_name:
+                    return bem.element
+        return None
+
+    # Tokens OWNED by the block's array item schema — the array arm lifts
+    # those units (trust-bar badge labels, icon-list items…); leg 2 must not
+    # double-lift the first item's field into a top-level attr.
+    array_owned_tokens: set[str] = set()
+    for a_name, a_info in db_lookup.block_attrs(rec.slug).items():
+        if isinstance(a_info, dict) and a_info.get("attr_type") == "array":
+            slot = db_lookup.array_item_slot_for(rec.slug, a_name)
+            if slot:
+                array_owned_tokens.add(slot)
+            array_owned_tokens.update(db_lookup.array_item_field_names(rec.slug, a_name))
+
+    for el in node.find_all(True):
+        element = _family_element(el)
+        if element is None:
+            continue  # only THIS block's own elements feed its attrs
+        if element in array_owned_tokens:
+            continue  # the array arm owns this unit (§3.B4)
+        # LEAF-MOST guard: an element with same-family element DESCENDANTS is
+        # a structural wrapper (__body/__inner) — its subtree text must never
+        # be swallowed into one attr; its leaf descendants lift individually.
+        if any(_family_element(d) for d in el.find_all(True)):
+            continue
+        hit = db_lookup.content_attr_for_element(rec.slug, element)
+        if hit is None:
+            continue
+        attr_name, emit_shape, role, attr_type = hit
+        if emit_shape != "nested" or attr_name in lifted_attrs:
+            continue  # 'child' units route below; first value per attr wins
+        if role in ("text-content", "content") and attr_type == "string":
+            # attr_type guard: a boolean/date attr mis-seeded with a content
+            # role (business-info linkPhone) must never receive element text
+            # (the run_mechanism_leaf role<->type guard, applied here too).
+            value = extract_field_value(el, "text-content", media_map or {})
+        elif role == "identity" and attr_type == "string":
+            # A string identity attr (productName) is the block's identifying
+            # TEXT — lifted as rich text. (An icon-source discriminator never
+            # reaches here: an icon leaf has no family-element descendants to
+            # walk; the leaf arm owns it.)
+            value = extract_field_value(el, "text-content", media_map or {})
+        elif role in ("image-object", "rating"):
+            value = extract_field_value(el, role, media_map or {})
+            if role == "image-object" and attr_type == "string" and isinstance(value, dict):
+                value = value.get("url") or None  # string image attr wants the URL
+        else:
+            continue
+        if value is None or value == "":
+            continue  # strict no-op (B1 contract) — A2 ledger owns completeness
+        results.append(ScalarLift(attr=attr_name, value=value))
+        lifted_attrs.add(attr_name)
+        consumed_ids.add(id(el))
+
+    # ---- CHILD leg — $content-region blocks route unconsumed children (B3) ----
+    if rec.has_inner_blocks == 1:
+        results.extend(ext.run_mechanism_b(
+            rec, node, css_rules=css_rules, media_map=media_map,
+            exclude_ids=frozenset(consumed_ids),
+        ))
+
+    # ---- LEAF fallback — element-self lift (icon-bearing gating retained) ----
+    # EXACT retired-arm predicate: hi==0 ∧ no scalar-lift ∧ NO ARRAY-LIFT ∧
+    # (primary | icon). The no-array clause matters: an array block (trust-bar)
+    # emits its content via the SEPARATE array handler — the walk's own empty
+    # result must NOT trigger a whole-node primary-text lift (which would
+    # swallow every badge label into `title`, the Step-6 repro).
+    from converter.context import ChildBlock
+    if not any(isinstance(r, (ScalarLift, ChildBlock)) for r in results):
+        attrs = db_lookup.block_attrs(rec.slug)
+        icon_bearing = any(
+            isinstance(i, dict) and isinstance(i.get("role"), str)
+            and i["role"].startswith("icon-")
+            for i in attrs.values()
         )
-    ]
+        if (rec.has_inner_blocks == 0
+                and "scalar-content-lift" not in caps
+                and "array-content-lift" not in caps
+                and (db_lookup.primary_content_attr(rec.slug) is not None or icon_bearing)):
+            results.extend(ext.run_mechanism_leaf(rec, node, media_map))
+
+    return results
+
+
+def _run_universal_walk(rec, node, media_map, css_rules) -> list:
+    return run_universal_content_walk(rec, node, media_map, css_rules)
 
 
 @dataclass(frozen=True)
@@ -197,36 +340,26 @@ CONTENT_HANDLERS: list[Handler] = [
     Handler("container_default", 10,
             lambda s: s.classify == "holder",
             _run_container_default),
-    # Child-InnerBlocks composite (Mechanism B). The holder is excluded — its
-    # descent is the container_default handler (today's early-return in
-    # run_mechanism_b, expressed as a predicate).
-    Handler("child_blocks", 20,
-            lambda s: s.classify == "composite" and s.has_inner == 1,
-            _run_child_blocks),
-    # Scalar CONTENT lift (Mechanism A + the expected-gaps arm, §3.B1).
-    Handler("scalar_content", 30,
-            lambda s: s.has_inner == 0 and s.scalar_lift,
-            _run_scalar_content),
-    # CSS-on-content styling lift (§3.B2) — composes with scalar_content.
+    # FR-31-2.6 (EXECUTION Step 6): the universal per-attr emit_shape walk —
+    # fires for EVERY typed composite; the nested/child fork is per-attr
+    # (emit_shape), the $content child leg + leaf fallback live inside it.
+    # This REPLACES the block-level child_blocks / scalar_content /
+    # named_leaf / content_gap_floor case entries (the retired has_inner +
+    # capability dispatch; the floor is now walk_content's conservation floor).
+    Handler("universal_walk", 20,
+            lambda s: s.classify == "composite",
+            _run_universal_walk),
+    # CSS-on-content styling lift (§3.B2) — SELF-GATED on the
+    # scalar-styling-lift capability inside lift_styling_content, so the
+    # registry predicate no longer carries the block-level capability gate.
     Handler("styling_content", 31,
-            lambda s: s.has_inner == 0 and s.scalar_lift,
+            lambda s: s.classify == "composite",
             _run_styling_content),
     # Array/repeater lift (§3.B4) — composes with EITHER shape (D248: Case-1
     # scalar+array AND Case-2 child-blocks+array both hold).
     Handler("array_content", 40,
             lambda s: s.array_lift,
             _run_array_content),
-    # Named-leaf own-element lift (§3.B.0 — button/icon/media leaves).
-    Handler("named_leaf", 50,
-            lambda s: (s.has_inner == 0 and not s.scalar_lift
-                       and not s.array_lift and s.content_leaf),
-            _run_named_leaf),
-    # The loud capability-gap floor (the retired Case-4) — an EXPLICIT entry,
-    # so registry totality is provable (the coverage test enumerates it).
-    Handler("content_gap_floor", 90,
-            lambda s: (s.has_inner == 0 and not s.scalar_lift
-                       and not s.array_lift and not s.content_leaf),
-            _run_content_gap_floor),
 ]
 
 
@@ -287,4 +420,20 @@ def walk_content(
     results: list = []
     for h in matched:
         results.extend(h.run(rec, node, media_map, css_rules))
+
+    # CONSERVATION FLOOR (Step 6, Rule 4 / R-31-9): the universal walk has no
+    # capability gate, so a childless no-content leaf (e.g. a divider) walks
+    # its (empty) child list and legitimately produces zero results. When
+    # EVERY arm (walk / array / styling) produced nothing, emit ONE
+    # explanatory ContentGap instead of [] — preserving the "extract_content
+    # never returns empty" invariant universally without reintroducing a
+    # per-capability branch.
+    if not results:
+        results.append(ContentGap(
+            rec.slug,
+            "no content arm produced a result — the node carried no extractable"
+            " content units for this block (no nested-attr match, no $content"
+            " children, no array schema, no primary/icon leaf content); tracked,"
+            " never a silent empty",
+        ))
     return results
