@@ -85,11 +85,27 @@ const LOGICAL_RE = /(inline|block-|inset|-start|-end)/;
 // In-page capture. Returns {texts, images, links, textEls, boxEls, defaults} where each
 // el record = {tag, css:{prop->normalised computed value}} over ALL non-blocklisted props.
 const CAPTURE_SRC = `() => {
-  const inChrome = (el) => el.closest('header, footer, nav, .sgs-header, .sgs-footer, .wp-block-template-part');
+  // Chrome = header/footer/nav ancestry or an sgs-header/sgs-footer/skip-link
+  // BEM-family CLASS TOKEN on any ancestor below body (token-level, never an
+  // attribute substring: the theme puts sgs-header-* classes on <body> itself,
+  // which would otherwise filter the whole page — found live 2026-07-05).
+  const CHROME_TAGS = { HEADER:1, FOOTER:1, NAV:1 };
+  const chromeToken = (t) => t === 'sgs-header' || t === 'sgs-footer' ||
+    t.startsWith('sgs-header__') || t.startsWith('sgs-header--') ||
+    t.startsWith('sgs-footer__') || t.startsWith('sgs-footer--') ||
+    t.includes('skip-link') || t === 'wp-block-template-part';
+  const inChrome = (el) => {
+    for (let n = el; n && n.tagName !== 'BODY' && n.tagName !== 'HTML'; n = n.parentElement) {
+      if (CHROME_TAGS[n.tagName]) return true;
+      for (const t of (n.classList || [])) if (chromeToken(t)) return true;
+    }
+    return false;
+  };
   const norm = (t) => (t||'').replace(/\\s+/g,' ').trim().toLowerCase().replace(/[^a-z0-9 £]/g,'').slice(0,80);
+  const normFull = (t) => (t||'').replace(/\\s+/g,' ').trim().toLowerCase().replace(/[^a-z0-9 £]/g,'');
   const BLOCK = new Set(${JSON.stringify([...BLOCK])});
   const LOGICAL = /(inline|block-|inset|-start|-end)/;
-  const SKIP_TAGS = { STYLE:1, SCRIPT:1, NOSCRIPT:1, SVG:1, PATH:1, TEMPLATE:1, LINK:1, META:1 };
+  const SKIP_TAGS = { STYLE:1, SCRIPT:1, NOSCRIPT:1, SVG:1, PATH:1, TEMPLATE:1, LINK:1, META:1, TITLE:1, HEAD:1 };
   const normVal = (p, v) => {
     if (v == null) return v;
     if (/image|url|source/.test(p) && /url\\(/.test(v)) return /gradient/.test(v) ? 'gradient' : 'image';
@@ -117,7 +133,7 @@ const CAPTURE_SRC = `() => {
   document.querySelectorAll('*').forEach((el) => {
     if (inChrome(el) || SKIP_TAGS[el.tagName]) return;
     if (el.tagName === 'IMG') { const a = norm(el.getAttribute('alt')); if (a) images.push(a); }
-    if (el.tagName === 'A') { try { const h = new URL(el.href, location.href).pathname.replace(/\\/$/,''); if (h) links.push(h); } catch(e){} }
+    if (el.tagName === 'A') { try { let h = new URL(el.href, location.href).pathname.replace(/\\/$/,'').replace(/^\\/[A-Za-z]:\\//, '/'); if (h) links.push(h); } catch(e){} }
     let direct = ''; for (const n of el.childNodes) if (n.nodeType === 3) direct += n.textContent;
     const dkey = norm(direct);
     if (dkey.length >= 4) { texts.push(dkey); if (!textEls[dkey]) textEls[dkey] = { tag: el.tagName.toLowerCase(), css: readAll(el) }; }
@@ -126,7 +142,8 @@ const CAPTURE_SRC = `() => {
       if (anchor.length >= 5 && !boxEls[anchor]) boxEls[anchor] = { tag: el.tagName.toLowerCase(), css: readAll(el) };
     }
   });
-  return { texts: [...new Set(texts)], images: [...new Set(images)], links: [...new Set(links)], textEls, boxEls, defaults };
+  const fullText = normFull(document.body ? document.body.innerText : '').slice(0, 200000);
+  return { texts: [...new Set(texts)], images: [...new Set(images)], links: [...new Set(links)], textEls, boxEls, defaults, fullText };
 }`;
 
 async function capture(page, url, width) {
@@ -181,7 +198,8 @@ function comparePair(drec, crec, dDef) {
 
     // Tier 1: content presence
     const has = (set, v) => set.has(v) || [...set].some(x => x.length > 5 && (x.includes(v) || v.includes(x)));
-    const dropText = d.texts.filter(t => !excluded(t) && !has(cT, t));
+    const cFull = c.fullText || '';
+    const dropText = d.texts.filter(t => !excluded(t) && !has(cT, t) && !cFull.includes(t));
     const dropImg = d.images.filter(a => !cI.has(a) && ![...cI].some(x => x.includes(a) || a.includes(x)));
     const dropLink = d.links.filter(h => !cL.has(h));
     const cTot = d.texts.filter(t => !excluded(t)).length + d.images.length + d.links.length;
