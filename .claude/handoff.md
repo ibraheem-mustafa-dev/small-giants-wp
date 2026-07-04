@@ -1,8 +1,28 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-thread: cloning pipeline / D270 — feature-grid 4-col (delegate to shared grid engine); + parallel blocks thread D268-D269 (sgs/audio + sgs/media)
+thread: single thread (cloning pipeline). This D271 entry = a one-off side session (block/converter infrastructure), NOT cloning progress.
 session_date: 2026-07-04
+---
+
+# Session Handoff — 2026-07-04 (D271 — core→SGS routing consolidated to git-tracked data files + plugin-wide deprecation removal)
+
+**One-off SIDE session (not the cloning thread).** Closed out the audio/video one-time prompt's last item ("finish the core→SGS table") and Bean iteratively redirected it into a converter-infrastructure cleanup. The cloning pipeline is UNTOUCHED — its next work is still feature-grid/product-card per `next-session-prompt.md` (D270 below).
+
+## Completed This Session
+1. **Atomic-tag routing → SGS direct (git-tracked data file).** `db_lookup._HTML_TAG_TO_CORE_BLOCK_SEED` (a hardcoded Python dict Bean flagged as an R-31-1 cheat) replaced by `scripts/data/atomic-tag-map.json` loaded via `_load_atomic_tag_seed()`. Every bare tag routes DIRECTLY to its SGS block (h2→sgs/heading, img→sgs/media, audio→sgs/audio, a/button→sgs/button, …) — 18 tags, 0 core targets. Output-identical (atomic_tag_map already resolved to SGS via the reverse-walk).
+2. **`replaces` moved out of all 23 block.json → `scripts/data/block-replacements.json`** (33 core→SGS mappings). The seeder (`sgs-update-v2.py`) sources `blocks.replaces` from that file. **Architecture (Bean-locked): the DB tables are the RUNTIME source; the two data files are git-tracked SEEDS = rebuild insurance** (sgs-framework.db is not in git).
+3. **All deprecations removed plugin-wide.** 34 `deprecated.js` deleted + wiring stripped from 34 index.js + modal inline array; `BlockDeprecationsTest.php` deleted; `ConfiguratorCompat` assertion dropped; plugin CLAUDE.md gained a NO-deprecations policy (pre-production; the pattern was a precedent future agents wrongly copied).
+4. **TOC sgs/heading fix (real pre-existing bug).** `table-of-contents` render.php + edit.js only scanned `core/heading` — blind to every SGS heading. Now scan `sgs/heading` too (level 'h2'→int, text from `content` attr).
+5. **Live core-ref purge in composites + prose.** product-card/tab/accordion-item/product-faq-item/modal/mobile-nav swapped core/heading→sgs/heading, core/paragraph→sgs/text (+ mobile-nav image/buttons/button); prose "Replaces core/X" mentions stripped; WPCS auto-fixed on touched PHP.
+6. **docs-registry:** old spec 20 (log-surfacing) + 21 (artefacts) removed → new spec 20 (clone-fidelity measurement). Audio/video one-time prompt DELETED (its Task 4 is this session).
+
+## Current State (D271 side session)
+- **Branch:** `main` at `1755a21f` (pushed). D-ceiling **D271**.
+- **Tests:** 324 converter-conformance + 28 atomic-tag tests pass; `/qc` 6/6 scenarios pass; build clean (dead-control + cheat-gate 0-NEW + all gates); WPCS clean on touched PHP.
+- **Verified:** atomic_tag_map all-SGS from DB; blocks.replaces 33 mappings / 0 dupes (Stage 6 valid); seed files complete (18 tags, 33 mappings).
+- **NOT done (offered follow-up):** live editor click-through of the swapped composites (like-for-like swaps, build-validated — low risk).
+
 ---
 
 # Session Handoff — 2026-07-04 (D270 — feature-grid renders through the shared container grid engine)
