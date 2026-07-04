@@ -572,14 +572,14 @@ def fold_band_css(
     # ---- The ONE cascade: process_element with a parent DESTINATION ----
     from converter.orchestrator import process_element
     from converter.services.recognise_helpers import get_container_kind
-    from converter.services.has_inner import derive_has_inner_blocks
+    from converter.services.has_inner import derive_delegates_content
 
     conn = sqlite3.connect(str(_SGS_DB_PATH), check_same_thread=False)
     try:
         ctx = Ctx(
             block_slug=owning_slug,
             container_kind=get_container_kind(owning_slug) or "",
-            has_inner_blocks=derive_has_inner_blocks(owning_slug) or 0,
+            delegates_content=derive_delegates_content(owning_slug) or 0,
             variant_value=None, variant_attr=None,
             node=band_node, is_root=False, base_layer=None, conn=conn,
             destination=Destination(block_slug=owning_slug, attrs=band_attrs),

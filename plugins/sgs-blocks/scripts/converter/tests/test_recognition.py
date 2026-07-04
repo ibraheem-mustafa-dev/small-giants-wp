@@ -30,7 +30,7 @@ def test_named_hero_with_variant():
     assert rec.variant_attr == "variant"
     assert rec.variant_value == "split"          # BEM modifier matched variant_slots
     assert rec.container_kind == "section"
-    assert rec.has_inner_blocks == 1
+    assert rec.delegates_content == 1
     assert variant_attrs(rec) == {"variant": "split"}
 
 
@@ -47,7 +47,7 @@ def test_atomic_h1_to_heading():
     rec = recognise(_node("<h1>Hello</h1>"))
     assert rec.kind == "atomic"
     assert rec.slug == "sgs/heading"
-    assert rec.has_inner_blocks == 0       # a leaf cannot host children
+    assert rec.delegates_content == 0       # a leaf cannot host children
 
 
 # -- unrecognised (the loud RED, never a silent container) -------------------

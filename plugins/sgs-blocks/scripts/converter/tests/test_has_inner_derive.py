@@ -16,17 +16,17 @@ from pathlib import Path
 
 import pytest
 
-from converter.services.has_inner import _BLOCKS_DIR, derive_has_inner_blocks
+from converter.services.has_inner import _BLOCKS_DIR, derive_delegates_content
 from orchestrator.converter_v2 import db_lookup
 
 
 def test_hero_composes_inner_blocks():
-    assert derive_has_inner_blocks("sgs/hero") == 1
+    assert derive_delegates_content("sgs/hero") == 1
 
 
 def test_missing_source_fails_closed_to_zero():
     # A slug with no src dir -> 0 (a leaf cannot host children; safe non-dropping default).
-    assert derive_has_inner_blocks("sgs/this-block-does-not-exist") == 0
+    assert derive_delegates_content("sgs/this-block-does-not-exist") == 0
 
 
 def _blocks_with_source_and_row():
@@ -53,9 +53,9 @@ def test_drift_guard_fresh_derivation_agrees_with_f6_column():
     pairs = _blocks_with_source_and_row()
     assert pairs, "no block_composition rows with source found — check cwd / DB path"
     mismatches = [
-        (slug, col, derive_has_inner_blocks(slug))
+        (slug, col, derive_delegates_content(slug))
         for slug, col in pairs
-        if col is not None and derive_has_inner_blocks(slug) != col
+        if col is not None and derive_delegates_content(slug) != col
     ]
     assert not mismatches, (
         "fresh has_inner derivation drifted from the F6 column for: "
@@ -75,7 +75,7 @@ def test_block_json_override_wins_when_present():
         if isinstance(sgs, dict) and "hasInnerBlocks" in sgs:
             slug = meta.get("name", f"sgs/{bj.parent.name}")
             expected = 0 if not sgs["hasInnerBlocks"] else 1
-            assert derive_has_inner_blocks(slug) == expected, f"{slug} override not honoured"
+            assert derive_delegates_content(slug) == expected, f"{slug} override not honoured"
             checked += 1
     if checked == 0:
         pytest.skip("no block.json declares a hasInnerBlocks override")

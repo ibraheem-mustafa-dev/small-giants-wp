@@ -214,7 +214,7 @@ def test_uniform_grid_item_fold_does_not_overwrite_css_pass_value():
 
     # A recognised container whose CSS pass sets gridItemPadding='99px'; a fold ScalarLift
     # then tries to set gridItemPadding='10px'. setdefault => the CSS-pass '99px' wins.
-    rec = Recognition(kind="named", slug=_CONTAINER, container_kind="", has_inner_blocks=1)
+    rec = Recognition(kind="named", slug=_CONTAINER, container_kind="", delegates_content=1)
     node = _node('<section class="sgs-x"></section>')
 
     _orig_css = _ext._build_css_attrs

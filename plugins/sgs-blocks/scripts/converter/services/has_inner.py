@@ -1,14 +1,17 @@
-"""has_inner — derive has_inner_blocks at convert-time from save.js + render.php.
+"""has_inner — derive delegates_content at convert-time from save.js + render.php.
 
 Design ref: `.claude/plans/2026-06-23-stage2-recognition-design.md` §3 +
 Spec 31 §12.7 Stage-2 row: "derive at convert-time from the save.js marker, NOT a
-cached column."
+cached column." FR-31-2.6 retired `block_composition.has_inner_blocks` as the
+content-dispatch SIGNAL (the per-attr `block_attributes.emit_shape` replaced it);
+the block-level fact that legitimately survives — "this block's source delegates a
+$content region" — is renamed here to `delegates_content` to avoid the retired name.
 
 So this does NOT read `block_composition.has_inner_blocks` (a stale column mis-routes
 silently — the exact failure the spec forbids). It computes the AND-rule FRESH from the
 block's own source:
 
-    has_inner_blocks = 1  iff  (save.js emits <InnerBlocks.Content)
+    delegates_content = 1  iff  (save.js emits <InnerBlocks.Content)
                               AND (render.php consumes $content non-trivially)
 
 honouring a `block.json supports.sgs.hasInnerBlocks` override (+ hasInnerBlocksReason).
@@ -112,7 +115,7 @@ def _block_json_override(block_dir: Path) -> int | None:
     return None
 
 
-def derive_has_inner_blocks(slug: str) -> int:
+def derive_delegates_content(slug: str) -> int:
     """Return 1 if the block composes child InnerBlocks, else 0 — derived FRESH.
 
     The block.json override wins when present (it carries a hasInnerBlocksReason for
@@ -126,3 +129,9 @@ def derive_has_inner_blocks(slug: str) -> int:
     if override is not None:
         return override
     return 1 if (_has_save_marker(block_dir) and _render_consumes(block_dir)) else 0
+
+
+# MIGRATION SHIM — dies Phase 6 (retired alongside block_composition.has_inner_blocks
+# column drop). Kept for external tooling (F6 db-consistency, tests) still importing
+# the old name; new production code MUST import derive_delegates_content.
+derive_has_inner_blocks = derive_delegates_content

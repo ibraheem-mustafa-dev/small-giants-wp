@@ -134,7 +134,7 @@ def process_element(ctx: Any, decls: list[Any]) -> ElementResult:
     for decl in decls:
         rid = resolver_id(
             ctx.base_layer, decl.property,
-            has_inner_blocks=ctx.has_inner_blocks, conn=ctx.conn,
+            delegates_content=ctx.delegates_content, conn=ctx.conn,
         )
         out = REGISTRY[rid](decl, ctx)
         if isinstance(out, Write):

@@ -40,7 +40,7 @@ def test_mechanism_b_bare_paragraphs_become_text_children_not_dropped():
     """An InnerBlocks parent's bare <p> children land as sgs/text child blocks — the
     brand-quote body drop (G1 + global-BEM both miss -> was ContentGap; now atomic)."""
     q = _node(_QUOTE_HTML)
-    rec = recognise(q)  # scalar sgs/quote, has_inner=1 -> Mechanism B
+    rec = recognise(q)  # scalar sgs/quote, delegates_content=1 -> Mechanism B
     results = extract_content(rec, q, media_map={}, css_rules={})
     from converter.context import ChildBlock, ContentGap
     text_children = [r for r in results if isinstance(r, ChildBlock)]

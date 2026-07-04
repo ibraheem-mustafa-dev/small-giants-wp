@@ -35,7 +35,7 @@ def test_slug_none_section_defaults_to_container():
     rec = recognise_section(_node('<section class="sgs-brand"></section>'))
     assert rec.kind == "named"
     assert rec.slug == _CONTAINER == "sgs/container"
-    assert rec.has_inner_blocks == 1
+    assert rec.delegates_content == 1
 
 
 def test_named_section_still_wins_over_default():

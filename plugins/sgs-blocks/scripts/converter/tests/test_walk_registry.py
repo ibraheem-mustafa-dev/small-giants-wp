@@ -2,7 +2,7 @@
 
 1. COVERAGE / TOTALITY: enumerate the PRODUCIBLE signature space from the DB
    (every registered block × its producible recognition kinds × its real
-   has_inner/capability/leaf facts) MINUS the validity constraints (the D212
+   delegates_content/capability/leaf facts) MINUS the validity constraints (the D212
    forbidden combo raises, it is not a registry entry) and assert every
    signature matches ≥1 CONTENT_HANDLERS entry (FR-31-2.8.5).
 2. ADDITIVE emission: a Case-1 signature composes scalar+styling(+array)
@@ -22,7 +22,7 @@ import pytest
 from converter import walk
 from converter.context import ContentConservationError, ContentGap, Recognition
 from converter.gates import no_slug_literal
-from converter.services.has_inner import derive_has_inner_blocks
+from converter.services.has_inner import derive_delegates_content
 from orchestrator.converter_v2 import db_lookup
 from orchestrator.converter_v2.db_lookup import SGS_DB
 
@@ -64,9 +64,9 @@ def test_registry_covers_every_producible_signature():
     uncovered: list = []
     checked = 0
     for slug in _all_block_slugs():
-        hib = derive_has_inner_blocks(slug)
+        hib = derive_delegates_content(slug)
         caps = db_lookup.capabilities_for(slug)
-        # D212 validity constraint: has_inner=1 + scalar-content-lift RAISES
+        # D212 validity constraint: delegates_content=1 + scalar-content-lift RAISES
         # pre-registry — excluded from the producible space (FR-31-2.8.5).
         if hib == 1 and "scalar-content-lift" in caps:
             continue
@@ -93,7 +93,7 @@ def test_case1_signature_composes_walk_styling_array_in_priority_order():
     # block-level scalar/child/leaf case handlers; styling + array compose
     # additively after it (explicit priorities 20 < 31 < 40).
     sig = walk.NodeSignature(
-        kind="named", classify="composite", has_inner=0,
+        kind="named", classify="composite", delegates_content=0,
         scalar_lift=True, array_lift=True, content_leaf=True,
     )
     names = [h.name for h in walk.handlers_for(sig)]
@@ -102,7 +102,7 @@ def test_case1_signature_composes_walk_styling_array_in_priority_order():
 
 def test_case2_signature_composes_walk_plus_array():
     sig = walk.NodeSignature(
-        kind="named", classify="composite", has_inner=1,
+        kind="named", classify="composite", delegates_content=1,
         scalar_lift=False, array_lift=True, content_leaf=False,
     )
     names = [h.name for h in walk.handlers_for(sig)]
@@ -111,7 +111,7 @@ def test_case2_signature_composes_walk_plus_array():
 
 def test_holder_signature_routes_to_container_default_only():
     sig = walk.NodeSignature(
-        kind="named", classify="holder", has_inner=1,
+        kind="named", classify="holder", delegates_content=1,
         scalar_lift=False, array_lift=False, content_leaf=False,
     )
     names = [h.name for h in walk.handlers_for(sig)]
@@ -122,11 +122,11 @@ def test_holder_signature_routes_to_container_default_only():
 # 3. Pre-registry gates re-homed (MF5 + D212)
 # ---------------------------------------------------------------------------
 
-def test_mf5_none_has_inner_is_loud_content_gap():
+def test_mf5_none_delegates_content_is_loud_content_gap():
     rec = Recognition("named", None, None, None)
     out = walk.walk_content(rec, None)
     assert len(out) == 1 and isinstance(out[0], ContentGap)
-    assert "has_inner_blocks=None" in out[0].detail
+    assert "delegates_content=None" in out[0].detail
 
 
 def test_d212_mutual_exclusion_raises(monkeypatch):

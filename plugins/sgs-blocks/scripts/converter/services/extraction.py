@@ -934,7 +934,7 @@ def run_mechanism_leaf(rec: Recognition, node: Any, media_map: dict | None = Non
     """Lift a recognised NAMED LEAF's OWN content (e.g. sgs/button).
 
     A named leaf is a recognised block with a content slot but NO content-extraction
-    capability (``capabilities==frozenset()``) and ``has_inner_blocks==0``. Its content
+    capability (``capabilities==frozenset()``) and ``delegates_content==0``. Its content
     lives on the leaf element ITSELF — text in its own body, href on its own ``<a>``,
     variant in its own ``--modifier`` — NOT in ``.sgs-x__y`` descendants (the real draft
     ``<a class="sgs-button" href>`` has no ``.sgs-button__link`` child; council MF4).
@@ -1086,7 +1086,7 @@ def extract_content(
 
     Four exhaustive cases (design §1, capability mutual exclusion):
 
-    1. has_inner_blocks == 0 AND scalar-content-lift capability present
+    1. delegates_content == 0 AND scalar-content-lift capability present
        → Mechanism A (selector-driven scalar lifts) + Mechanism Styling
          (CSS-on-content, self-gated on scalar-styling-lift) + Mechanism Array
          (if also array-content-lift) + expected_content_gaps.
@@ -1094,15 +1094,15 @@ def extract_content(
     ``css_rules`` is the draft CSS rule-set threaded to Mechanism Styling so the
     CSS leg of the Spec 31 §3 universal stream lands. Defaults to ``{}`` (safe no-op).
 
-    2. has_inner_blocks == 1
+    2. delegates_content == 1
        → Mechanism B (slot-keyed child-block walk).
        Asserts the block does NOT also carry scalar-content-lift (D212 regression guard).
 
-    3. has_inner_blocks == 0 AND array-content-lift present (but NOT scalar-content-lift)
+    3. delegates_content == 0 AND array-content-lift present (but NOT scalar-content-lift)
        → Mechanism Array only (MF-6: explicit 4th arm before the Case-3 gap so array-only
          blocks don't fall through to the loud ContentGap). D248.
 
-    4. has_inner_blocks == 0 AND neither scalar-content-lift nor array-content-lift
+    4. delegates_content == 0 AND neither scalar-content-lift nor array-content-lift
        → loud ContentGap — DB capability gap; never a silent empty.
 
     ⚡ STEP-5 (FR-31-2.8, 2026-07-04): the if-chain that implemented the four

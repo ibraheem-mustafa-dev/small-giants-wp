@@ -44,7 +44,7 @@ def test_styling_lift_wired_into_case1():
     node = _node(html)
     rec = recognise(node)
     assert rec.slug == "sgs/testimonial"
-    assert rec.has_inner_blocks == 0  # Case 1
+    assert rec.delegates_content == 0  # Case 1
 
     css_rules = {
         ".sgs-testimonial__quote": {"color": "#ff0000", "font-size": "22px"},
@@ -69,7 +69,7 @@ def test_styling_lift_is_universal_noop_without_capability():
     """A block that has NOT declared scalar-styling-lift must produce zero styling
     keys, even with matching css_rules — the resolver self-gates on the capability
     (universal, DB-driven, no per-block carve-out)."""
-    # sgs/trust-bar is has_inner_blocks=0 but has no scalar-styling-lift capability.
+    # sgs/trust-bar is delegates_content=0 but has no scalar-styling-lift capability.
     node = _node('<div class="sgs-trust-bar"></div>')
     rec = recognise(node)
     css_rules = {".sgs-trust-bar": {"color": "#ff0000"}}

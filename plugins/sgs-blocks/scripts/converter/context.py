@@ -73,7 +73,8 @@ class Ctx:
     """
     block_slug: str
     container_kind: str          # section | layout | content (block_composition.container_kind)
-    has_inner_blocks: int        # 0 = scalar leaf; 1 = composes child InnerBlocks
+    delegates_content: int        # 0 = scalar leaf; 1 = composes child InnerBlocks (FR-31-2.6:
+                                   # derived fresh from source markers, NOT block_composition.has_inner_blocks)
     variant_value: str | None
     variant_attr: str | None
     node: Any                    # the parsed draft node (shape TBD per stage)
@@ -110,7 +111,7 @@ class Recognition:
     emit dispatcher routes `unrecognised` BEFORE its match and ends the match on the
     three emit-able kinds with `assert_never` guarding only Any-typed corruption.
 
-    `slug` / `container_kind` / `has_inner_blocks` are None ONLY when
+    `slug` / `container_kind` / `delegates_content` are None ONLY when
     kind == "unrecognised" (a BEM node that resolved to no registered block -> a loud
     RED GapOrigin.UNRECOGNISED, never a silent empty sgs/container emit).
 
@@ -120,7 +121,7 @@ class Recognition:
     kind: Literal["named", "atomic", "scalar", "unrecognised"]
     slug: str | None
     container_kind: str | None
-    has_inner_blocks: int | None
+    delegates_content: int | None
     variant_attr: str | None = None
     variant_value: str | None = None
 

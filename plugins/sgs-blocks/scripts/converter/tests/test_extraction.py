@@ -129,7 +129,7 @@ def test_third_case_loud_gap():
     """A leaf node with no children and no content-bearing attrs must still
     produce exactly one loud ContentGap — never a silent empty list.
 
-    UPDATED 2026-07-04 (FR-31-2.6): the retired has_inner_blocks/capability
+    UPDATED 2026-07-04 (FR-31-2.6): the retired delegates_content/capability
     Case-4 dispatch this test originally covered no longer exists — the
     universal content route (``run_universal_content_walk``) has no capability
     gate, so a childless leaf like sgs/divider walks its (empty) child list and
@@ -141,14 +141,14 @@ def test_third_case_loud_gap():
     universally (Rule 4 / R-31-9 / test_conservation_holds) without
     reintroducing a per-capability branch.
     """
-    # sgs/divider: named, has_inner_blocks=0, no scalar/array content capability,
+    # sgs/divider: named, delegates_content=0, no scalar/array content capability,
     # no primary_content_attr, no children — nothing for the universal walk to
     # find, so only the conservation floor produces a result.
     node = _node('<div class="sgs-divider"></div>')
     rec = recognise(node)
     # Verify our assumption: named, no inner blocks
     assert rec.kind == "named"
-    assert rec.has_inner_blocks == 0
+    assert rec.delegates_content == 0
 
     results = extract_content(rec, node)
     assert len(results) == 1, (
@@ -210,7 +210,7 @@ def test_media_lifts_as_object_shape(monkeypatch):
         kind="named",
         slug="sgs/testimonial",
         container_kind="content",
-        has_inner_blocks=0,
+        delegates_content=0,
     )
 
     results = run_mechanism_a(rec, section_root)
@@ -233,13 +233,13 @@ def test_media_lifts_as_object_shape(monkeypatch):
 # ---------------------------------------------------------------------------
 
 
-def _stub_rec(slug: str, has_inner_blocks: int = 1) -> Recognition:
+def _stub_rec(slug: str, delegates_content: int = 1) -> Recognition:
     """Build a minimal Recognition for Mechanism B testing."""
     return Recognition(
         kind="named",
         slug=slug,
         container_kind="section",
-        has_inner_blocks=has_inner_blocks,
+        delegates_content=delegates_content,
     )
 
 
@@ -783,7 +783,7 @@ def test_named_leaf_button_lifts_label_url_inheritstyle():
     council MF4) and inheritStyle from the --primary modifier (Spec 11 §4)."""
     node = _node('<a class="sgs-button sgs-button--primary" href="/shop">Shop Now</a>')
     rec = recognise(node)
-    assert rec.slug == "sgs/button" and rec.has_inner_blocks == 0
+    assert rec.slug == "sgs/button" and rec.delegates_content == 0
     markup = build_block_markup(rec, node)
     assert '"label":"Shop Now"' in markup, f"label dropped:\n{markup}"
     assert '"url":"/shop"' in markup, f"url dropped (element-self href):\n{markup}"
@@ -883,7 +883,7 @@ def test_hero_cta_multi_button_button_recursion():
         '</div>'
     )
     rec = recognise(node)
-    assert rec.slug == "sgs/multi-button" and rec.has_inner_blocks == 1
+    assert rec.slug == "sgs/multi-button" and rec.delegates_content == 1
     markup = build_block_markup(rec, node)
     # Both buttons present with their full attr sets.
     assert markup.count("wp:sgs/button") >= 2, f"both buttons not emitted:\n{markup}"
@@ -892,15 +892,15 @@ def test_hero_cta_multi_button_button_recursion():
     assert '"inheritStyle":"primary"' in markup and '"inheritStyle":"secondary"' in markup
 
 
-def test_none_has_inner_blocks_emits_loud_gap():
-    """MF5: extract_content reached with has_inner_blocks=None (corrupt/unrecognised
+def test_none_delegates_content_emits_loud_gap():
+    """MF5: extract_content reached with delegates_content=None (corrupt/unrecognised
     Recognition) must fail LOUD with a ContentGap, never a silent empty."""
     rec = Recognition(kind="named", slug="sgs/button", container_kind="content",
-                      has_inner_blocks=None)
+                      delegates_content=None)
     node = _node('<a class="sgs-button" href="/x">Go</a>')
     results = extract_content(rec, node)
     assert len(results) == 1 and isinstance(results[0], ContentGap)
-    assert "has_inner_blocks=None" in results[0].detail
+    assert "delegates_content=None" in results[0].detail
 
 
 def test_build_block_markup_is_root_false_child_no_outer_layer(monkeypatch):

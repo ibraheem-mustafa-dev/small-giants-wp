@@ -95,7 +95,7 @@ def recognition_row(label: str, rec: Any) -> str:
     if rec.kind == "unrecognised":
         return f"| `{label}` | 🔴 UNRECOGNISED | — | (block type not in the DB — flag to the developer) |"
     variant = f" · variant=`{rec.variant_value}`" if rec.variant_value else ""
-    return f"| `{label}` | ✅ {rec.kind} | `{rec.slug}`{variant} | container_kind=`{rec.container_kind}` has_inner=`{rec.has_inner_blocks}` |"
+    return f"| `{label}` | ✅ {rec.kind} | `{rec.slug}`{variant} | container_kind=`{rec.container_kind}` delegates_content=`{rec.delegates_content}` |"
 
 
 def _is_baseline_fixture(path: Path) -> bool:

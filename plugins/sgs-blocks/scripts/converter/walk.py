@@ -18,9 +18,9 @@ WHAT THIS IS
     hero.badges silent drop.
 
     This Step-5 registry expresses the PRE-emit_shape dispatch semantics
-    (``has_inner`` + capability flags) EXACTLY — a behaviour-identical
+    (``delegates_content`` + capability flags) EXACTLY — a behaviour-identical
     re-expression of the retired ``extract_content`` if-chain. EXECUTION
-    Step 6 swaps the ``has_inner`` signature axis for the per-attr
+    Step 6 swaps the ``delegates_content`` signature axis for the per-attr
     ``block_attributes.emit_shape`` walk (FR-31-2.6) inside this same
     registry; the signature dataclass carries the axis explicitly so that
     swap is a data change, not a re-architecture.
@@ -33,9 +33,9 @@ RECURSION OWNERSHIP (FR-31-2.8.1)
     (a node cloned into an attribute still has its children walked).
 
 PRE-REGISTRY GATES (loud, never signatures — FR-31-2.8.1)
-    * ``unrecognised`` / corrupt recognition (MF5 ``has_inner is None``) is
+    * ``unrecognised`` / corrupt recognition (MF5 ``delegates_content is None``) is
       routed BEFORE the registry — a loud ContentGap, never a dispatch key.
-    * The D212 mutual-exclusion (``has_inner==1`` + scalar-content-lift) is a
+    * The D212 mutual-exclusion (``delegates_content==1`` + scalar-content-lift) is a
       VALIDITY CONSTRAINT: it raises (never a registry entry), and the
       coverage test excludes it from the producible-signature space.
 
@@ -85,14 +85,14 @@ def classify_node(rec: Recognition) -> str:
 class NodeSignature:
     """Structural DB facts ONLY — never a block slug (FR-31-2.8.2).
 
-    ``has_inner`` is the Step-5 (pre-FR-31-2.6) child-shape axis; EXECUTION
-    Step 6 replaces it with the per-attr ``emit_shape`` walk. ``kind`` is the
-    Recognition kind (named | atomic | scalar — ``unrecognised`` is a
+    ``delegates_content`` is the Step-5 (pre-FR-31-2.6) child-shape axis;
+    EXECUTION Step 6 replaces it with the per-attr ``emit_shape`` walk. ``kind``
+    is the Recognition kind (named | atomic | scalar — ``unrecognised`` is a
     PRE-registry gate, never a signature).
     """
     kind: str
     classify: str        # holder | composite (FR-31-2.7)
-    has_inner: int       # 0 | 1 — Step-6 swaps this axis for per-attr emit_shape
+    delegates_content: int  # 0 | 1 — Step-6 swaps this axis for per-attr emit_shape
     scalar_lift: bool    # scalar-content-lift capability (DB)
     array_lift: bool     # array-content-lift capability (DB)
     content_leaf: bool   # primary_content_attr present OR an icon-source role attr
@@ -102,7 +102,7 @@ def signature_for(rec: Recognition) -> NodeSignature:
     """Compute the dispatch key ONCE per node (FR-31-2.8.1), from DB facts.
 
     Caller guarantees rec is recognised (kind != 'unrecognised') and
-    ``has_inner_blocks`` is not None (the MF5 pre-registry gate runs first).
+    ``delegates_content`` is not None (the MF5 pre-registry gate runs first).
     """
     caps = db_lookup.capabilities_for(rec.slug)
     attrs = db_lookup.block_attrs(rec.slug)
@@ -120,7 +120,7 @@ def signature_for(rec: Recognition) -> NodeSignature:
     return NodeSignature(
         kind=rec.kind,
         classify=classify_node(rec),
-        has_inner=int(rec.has_inner_blocks or 0),
+        delegates_content=int(rec.delegates_content or 0),
         scalar_lift="scalar-content-lift" in caps,
         array_lift="array-content-lift" in caps,
         content_leaf=content_leaf,
@@ -153,7 +153,7 @@ def _run_array_content(rec, node, media_map, css_rules) -> list:
 
 # ---------------------------------------------------------------------------
 # FR-31-2.6 — the universal per-attr content walk (EXECUTION Step 6).
-# Replaces the has_inner/capability block-level dispatch (Mechanisms A/B/leaf
+# Replaces the delegates_content/capability block-level dispatch (Mechanisms A/B/leaf
 # as EXCLUSIVE cases). The lift PROCESSORS are RE-HOMED, not rewritten:
 # lift_scalar_content (B1), run_mechanism_b's child resolution (B3 + G1/G3 +
 # scalar-media art-direction), run_mechanism_leaf (element-self lift).
@@ -187,7 +187,7 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
         per-element router resolves __name/__price/__cta to their attrs.
 
     CHILD leg — a block whose SOURCE delegates a ``$content`` region
-        (``rec.has_inner_blocks``, derived fresh from the save-marker +
+        (``rec.delegates_content``, derived fresh from the save-marker +
         render ``$content`` read — the block-level fact that legitimately
         survives FR-31-2.6; what died is using it to EXCLUDE the nested legs)
         routes its unconsumed children through the retained Mechanism-B
@@ -286,7 +286,7 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
         consumed_ids.add(id(el))
 
     # ---- CHILD leg — $content-region blocks route unconsumed children (B3) ----
-    if rec.has_inner_blocks == 1:
+    if rec.delegates_content == 1:
         results.extend(ext.run_mechanism_b(
             rec, node, css_rules=css_rules, media_map=media_map,
             exclude_ids=frozenset(consumed_ids),
@@ -306,7 +306,7 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
             and i["role"].startswith("icon-")
             for i in attrs.values()
         )
-        if (rec.has_inner_blocks == 0
+        if (rec.delegates_content == 0
                 and "scalar-content-lift" not in caps
                 and "array-content-lift" not in caps
                 and (db_lookup.primary_content_attr(rec.slug) is not None or icon_bearing)):
@@ -344,7 +344,7 @@ CONTENT_HANDLERS: list[Handler] = [
     # fires for EVERY typed composite; the nested/child fork is per-attr
     # (emit_shape), the $content child leg + leaf fallback live inside it.
     # This REPLACES the block-level child_blocks / scalar_content /
-    # named_leaf / content_gap_floor case entries (the retired has_inner +
+    # named_leaf / content_gap_floor case entries (the retired delegates_content +
     # capability dispatch; the floor is now walk_content's conservation floor).
     Handler("universal_walk", 20,
             lambda s: s.classify == "composite",
@@ -389,12 +389,12 @@ def walk_content(
     """
     from converter.context import ContentConservationError, ContentGap
 
-    # MF5 pre-registry gate: has_inner_blocks is None ONLY for an
+    # MF5 pre-registry gate: delegates_content is None ONLY for an
     # unrecognised/corrupt Recognition — loud ContentGap, never a dispatch.
-    if rec.has_inner_blocks is None:
+    if rec.delegates_content is None:
         return [ContentGap(
             rec.slug or "<unrecognised>",
-            "extract_content reached with has_inner_blocks=None — recognition is"
+            "extract_content reached with delegates_content=None — recognition is"
             " unrecognised/corrupt; route via unrecognised_gap upstream",
         )]
 
@@ -402,7 +402,7 @@ def walk_content(
     # STOP-27): a scalar-content-lift block must NEVER carry child InnerBlocks
     # dispatch — the child emission would be ignored by the typed render.
     caps = db_lookup.capabilities_for(rec.slug)
-    if rec.has_inner_blocks == 1 and "scalar-content-lift" in caps:
+    if rec.delegates_content == 1 and "scalar-content-lift" in caps:
         raise ContentConservationError(
             "scalar-content-lift block routed to Mechanism B — D212 regression guard"
         )

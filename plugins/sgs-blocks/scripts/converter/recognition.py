@@ -29,7 +29,7 @@ from orchestrator.converter_v2 import db_lookup
 from converter.context import Ctx, Recognition
 from converter.models import GAP, GapOrigin
 from converter.services import recognise_helpers, variant_detect
-from converter.services.has_inner import derive_has_inner_blocks
+from converter.services.has_inner import derive_delegates_content
 
 
 def _classes(node: Any) -> list[str]:
@@ -65,7 +65,7 @@ def recognise(node: Any, css_rules: dict | None = None) -> Recognition:
                 kind="named",
                 slug=picked,
                 container_kind=recognise_helpers.get_container_kind(picked),
-                has_inner_blocks=derive_has_inner_blocks(picked),
+                delegates_content=derive_delegates_content(picked),
                 variant_attr=variant_attr,
                 variant_value=variant_value,
             )
@@ -79,13 +79,14 @@ def recognise(node: Any, css_rules: dict | None = None) -> Recognition:
         return Recognition("atomic", atom, recognise_helpers.get_container_kind(atom), 0)
 
     # 3. SCALAR element-slot — a BEM element class (sgs-x__y) mapping to a slot's block.
-    # has_inner_blocks is DERIVED from the DB (NOT hardcoded 0): a slot can map to an
-    # InnerBlocks PARENT (e.g. .sgs-hero__ctas -> sgs/multi-button, has_inner=1), which
-    # MUST route to Mechanism B and recurse its children. Hardcoding 0 here mis-typed
-    # every element-class-recognised composite as a leaf -> Case-4 "no content" gap ->
-    # its children silently dropped (the real-hero CTA loss, found by the full-homepage
-    # run 2026-06-30; a synthetic test using the NAMED root-class path masked it). The
-    # named branch (above) already derives this; the scalar branch must match.
+    # delegates_content is DERIVED from the DB (NOT hardcoded 0): a slot can map to an
+    # InnerBlocks PARENT (e.g. .sgs-hero__ctas -> sgs/multi-button, delegates_content=1),
+    # which MUST route to Mechanism B and recurse its children. Hardcoding 0 here
+    # mis-typed every element-class-recognised composite as a leaf -> Case-4 "no
+    # content" gap -> its children silently dropped (the real-hero CTA loss, found by
+    # the full-homepage run 2026-06-30; a synthetic test using the NAMED root-class
+    # path masked it). The named branch (above) already derives this; the scalar
+    # branch must match.
     canonical_slot = recognise_helpers.bem_element_to_canonical_slot(node)
     slot_slug = db_lookup.standalone_block_for(canonical_slot) if canonical_slot else None
     if slot_slug is not None:
@@ -93,7 +94,7 @@ def recognise(node: Any, css_rules: dict | None = None) -> Recognition:
             "scalar",
             slot_slug,
             recognise_helpers.get_container_kind(slot_slug),
-            derive_has_inner_blocks(slot_slug),
+            derive_delegates_content(slot_slug),
         )
 
     # 4. UNRECOGNISED — a BEM-classed node resolving to no registered block. Loud RED.
@@ -137,7 +138,7 @@ def build_ctx(rec: Recognition, node: Any, is_root: bool, conn: sqlite3.Connecti
         return Ctx(
             block_slug=rec.slug,
             container_kind=rec.container_kind or "",
-            has_inner_blocks=rec.has_inner_blocks or 0,
+            delegates_content=rec.delegates_content or 0,
             variant_value=rec.variant_value,
             variant_attr=rec.variant_attr,
             node=node,
@@ -220,7 +221,7 @@ def recognise_section(node: Any) -> Recognition:
         kind="named",
         slug=container_slug,
         container_kind=recognise_helpers.get_container_kind(container_slug),
-        has_inner_blocks=derive_has_inner_blocks(container_slug),
+        delegates_content=derive_delegates_content(container_slug),
     )
 
 
@@ -246,7 +247,7 @@ def recognition_for_slug(slug: str, node: Any) -> Recognition:
         kind="named",
         slug=slug,
         container_kind=recognise_helpers.get_container_kind(slug),
-        has_inner_blocks=derive_has_inner_blocks(slug),
+        delegates_content=derive_delegates_content(slug),
         variant_attr=variant_attr,
         variant_value=variant_value,
     )

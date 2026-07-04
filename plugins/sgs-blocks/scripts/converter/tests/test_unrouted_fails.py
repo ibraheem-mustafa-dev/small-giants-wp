@@ -22,13 +22,13 @@ from orchestrator.converter_v2.db_lookup import SGS_DB
 
 def _ctx(base_layer: str) -> Ctx:
     # base_layer pre-set to an unknown layer so dispatch returns 'unrouted' for a
-    # composing block (has_inner_blocks=1) on a non-typography/non-excluded property.
+    # composing block (delegates_content=1) on a non-typography/non-excluded property.
     return Ctx("sgs/container", "section", 1, None, None, None, True, base_layer,
                sqlite3.connect(SGS_DB))
 
 
 def test_resolver_id_returns_unrouted_for_unknown_layer():
-    rid = resolver_id("MYSTERY_LAYER", "max-width", has_inner_blocks=1,
+    rid = resolver_id("MYSTERY_LAYER", "max-width", delegates_content=1,
                       conn=sqlite3.connect(SGS_DB))
     assert rid == "unrouted"
 

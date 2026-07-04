@@ -36,7 +36,7 @@ def _ctx(conn: sqlite3.Connection) -> Ctx:
     return Ctx(
         block_slug="sgs/container",
         container_kind="section",
-        has_inner_blocks=1,
+        delegates_content=1,
         variant_value=None,
         variant_attr=None,
         node=None,

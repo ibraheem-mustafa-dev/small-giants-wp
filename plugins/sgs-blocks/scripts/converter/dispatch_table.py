@@ -1,7 +1,7 @@
 """dispatch_table.py — the DB-sourced routing function (design §2).
 
 Given a declaration's (layer, css_property) plus the element's structural facts
-(has_inner_blocks) the table returns exactly ONE resolver id, or an explicit sink.
+(delegates_content) the table returns exactly ONE resolver id, or an explicit sink.
 It NAMES NO BLOCK (R-31-1 / R-31-9): block-specific behaviour comes from the DB
 (property_suffixes / block_attributes / excluded_properties), never an `if slug ==`.
 
@@ -14,8 +14,8 @@ Routing algorithm (design §2, with the §10 conformance corrections folded in):
         content_band   elif layer == CONTENT
         grid           elif layer == GRID
         grid_area      elif layer == GRID_AREA                               (stub-only this phase)
-        scalar_media   elif has_inner_blocks == 0 and media_signal(property) (A11 deferred — see below)
-        scalar_content elif has_inner_blocks == 0
+        scalar_media   elif delegates_content == 0 and media_signal(property) (A11 deferred — see below)
+        scalar_content elif delegates_content == 0
         unrouted       else                                                  (FAIL LOUD, never a silent gap)
 
 Tier does NOT affect the resolver choice (tier-invariance, §2.1) — routing is a
@@ -100,13 +100,15 @@ def resolver_id(
     layer: str,
     css_property: str,
     *,
-    has_inner_blocks: int,
+    delegates_content: int,
     conn: sqlite3.Connection,
 ) -> str:
     """Return exactly one resolver id (or 'unrouted') for a declaration.
 
-    Names no block — `has_inner_blocks` (a per-element DB fact precomputed on Ctx)
-    is the only structural input. See the module docstring for the full algorithm.
+    Names no block — `delegates_content` (a per-element fact precomputed on Ctx,
+    derived fresh from the block's source markers per FR-31-2.6 — NOT the retired
+    `block_composition.has_inner_blocks` column) is the only structural input. See
+    the module docstring for the full algorithm.
     """
     # Pre-layer sinks (A13): typography is layer-agnostic; excluded never lifts.
     if _writer_path(css_property) == "typography":
@@ -126,7 +128,7 @@ def resolver_id(
         return by_layer
 
     # Scalar leaf (no child InnerBlocks): media vs content.
-    if has_inner_blocks == 0:
+    if delegates_content == 0:
         if media_signal(css_property, conn):   # deferred — never reached in the slice
             return "scalar_media"
         return "scalar_content"
