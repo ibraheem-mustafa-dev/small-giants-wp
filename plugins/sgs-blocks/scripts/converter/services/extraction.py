@@ -1096,102 +1096,16 @@ def extract_content(
 
     4. has_inner_blocks == 0 AND neither scalar-content-lift nor array-content-lift
        → loud ContentGap — DB capability gap; never a silent empty.
+
+    ⚡ STEP-5 (FR-31-2.8, 2026-07-04): the if-chain that implemented the four
+    cases above is RE-EXPRESSED as the TOTAL structural-signature registry in
+    ``converter/walk.py`` (``CONTENT_HANDLERS`` — ADDITIVE emission, explicit
+    priorities, pre-registry MF5/D212 gates). This function now delegates to
+    the ONE walker entry; the docstring's case semantics are unchanged
+    (behaviour-identical re-expression — proven by the untouched suite).
+    Late import through the walk module so tests monkeypatching walk internals
+    intercept, mirroring the assembly.py idiom.
     """
-    # MF5 — None has_inner_blocks guard. Per context.py, has_inner_blocks is None
-    # ONLY when kind=='unrecognised' (slug also None); recognised blocks always carry
-    # an int (derive_has_inner_blocks). If a None reaches here the Recognition is
-    # unrecognised/corrupt — fail LOUD (Rule 4), never a misleading "no capability"
-    # gap and never a silent empty. Routed BEFORE caps (capabilities_for needs slug).
-    if rec.has_inner_blocks is None:
-        return [ContentGap(
-            rec.slug or "<unrecognised>",
-            "extract_content reached with has_inner_blocks=None — recognition is"
-            " unrecognised/corrupt; route via unrecognised_gap upstream",
-        )]
-
-    caps = db_lookup.capabilities_for(rec.slug)
-
-    # CAPABILITY TAGS queried against the DB capability set — NOT block or slot names.
-    # The no_slug_literal gate tracks block_slug/variant/slot idents, not capability strings.
-    SCALAR_LIFT = "scalar-content-lift"
-    ARRAY_LIFT = "array-content-lift"
-
-    if rec.has_inner_blocks == 0 and SCALAR_LIFT in caps:
-        results = run_mechanism_a(rec, section_root, media_map) + expected_content_gaps(rec.slug)
-        # Case 1 + styling arm (W3 step 2b): lift CSS-on-content (typography/colour)
-        # for the block's named child elements. Self-gated on scalar-styling-lift,
-        # so a no-op for blocks that have not opted in (universal, DB-driven).
-        results = results + run_mechanism_styling(rec, section_root, css_rules)
-        # Case 1 + array arm: if the block also opts into array-content-lift,
-        # merge array lifts alongside the scalar lifts (MF-6 / D248).
-        if ARRAY_LIFT in caps:
-            results = results + run_mechanism_array(rec, section_root, media_map)
-        return results
-
-    if rec.has_inner_blocks == 1:
-        # Capability mutual exclusion: a scalar-content-lift block must NEVER enter
-        # Mechanism B — guards against the D212 empty-block regression where the
-        # quote attr would be emitted as a child InnerBlock the typed render ignores.
-        # raise, NOT assert: a bare `assert` is stripped under `python -O`, which would
-        # silently disable this regression guard (a Rule-4 silent-drop hole). D247.
-        if SCALAR_LIFT in caps:
-            raise ContentConservationError(
-                "scalar-content-lift block routed to Mechanism B — D212 regression guard"
-            )
-        results = run_mechanism_b(rec, section_root, css_rules=css_rules, media_map=media_map)
-        # Case 2 + array arm (D248 fix): a has_inner_blocks=1 composite can ALSO
-        # carry array attrs (cta-section.stats, hero.badges, quote.body) alongside
-        # its child InnerBlocks. array-content-lift is independent of the D212
-        # scalar-content-lift guard, so merge array lifts into the Mechanism B
-        # results. Without this, every has_inner_blocks=1 array block (the 3 of 9)
-        # silently dropped its array attr — the dispatch routed past the resolver.
-        if ARRAY_LIFT in caps:
-            results = results + run_mechanism_array(rec, section_root, media_map)
-        return results
-
-    # Case 3: has_inner_blocks == 0, no scalar-content-lift, but array-content-lift
-    # present — run the array arm alone (MF-6 explicit 4th arm before the gap case).
-    if rec.has_inner_blocks == 0 and ARRAY_LIFT in caps:
-        return run_mechanism_array(rec, section_root, media_map)
-
-    # Named-leaf arm (W3 MF1): a recognised leaf with a content slot but NO
-    # content-lift capability (e.g. sgs/button) lifts its OWN element's content via
-    # the shared field_extractors. Trigger is a DB SIGNAL (primary_content_attr
-    # present), NOT recognition kind — sgs/button is kind='named' (resolved via its
-    # sgs-button BEM root class), not kind='atomic'. Spacers/separators/decorative
-    # leaves (primary_content_attr None) fall through to the Case-4 loud gap, so
-    # element-self lifting never manufactures phantom content for them.
-    # An ICON-bearing leaf (a block DECLARING an icon-source attr, e.g. sgs/icon) has
-    # NO primary_content_attr but DOES carry content (its icon: slug / emoji / dashicon
-    # / wp-icon). Route it through the named-leaf arm too so run_mechanism_leaf's icon
-    # arm lifts it (Spec 31 §3.B.0). Signal is a DB ROLE — any attr tagged `icon-<kind>`
-    # (self-sufficient schema fact; not the broader 'identity' role, which sgs/button
-    # carries WITHOUT an icon-source attr) — never a slug literal or hardcoded attr name;
-    # decorative spacers (no primary + no icon source) still fall through to the Case-4
-    # loud gap.
-    _leaf_attrs = db_lookup.block_attrs(rec.slug)
-    icon_bearing_leaf = any(
-        isinstance(i, dict)
-        and isinstance(i.get("role"), str)
-        and i["role"].startswith("icon-")
-        for i in _leaf_attrs.values()
-    )
-    if (
-        rec.has_inner_blocks == 0
-        and SCALAR_LIFT not in caps
-        and ARRAY_LIFT not in caps
-        and (db_lookup.primary_content_attr(rec.slug) is not None or icon_bearing_leaf)
-    ):
-        return run_mechanism_leaf(rec, section_root, media_map)
-
-    # Fourth case: has_inner_blocks == 0 AND neither capability.
-    # Loud, never silent — a DB-capability gap to surface and track.
-    return [
-        ContentGap(
-            rec.slug,
-            "block has no content-extraction capability"
-            " (not scalar-content-lift, not array-content-lift, not InnerBlocks)"
-            " — DB-capability gap; flag to developer",
-        )
-    ]
+    from converter import walk as _walk
+    return _walk.walk_content(rec, section_root, media_map, css_rules)
 
