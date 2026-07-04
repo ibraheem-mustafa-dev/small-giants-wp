@@ -126,14 +126,15 @@ def seed_theme_json(theme_json: dict) -> None:
 
 
 def ensure_root_section_class(block_markup: str, section_id: str) -> str:
-    """Public proxy to ``convert.ensure_root_section_class``.
+    """Guarantees the first WP block in *block_markup* carries
+    ``sgs-{section_id}`` in its ``className`` attribute. Idempotent.
 
-    Guarantees the first WP block in *block_markup* carries
-    ``sgs-{section_id}`` in its ``className`` attribute.  Idempotent.
-    See ``convert.ensure_root_section_class`` for full documentation.
+    PORTED (EXECUTION Step 14): the implementation now lives in
+    ``converter.services.section_passes`` (a faithful byte-copy of the frozen
+    original, equivalence-smoked) — one fewer STOP-28 borrow.
     """
-    from orchestrator.converter_v2 import convert as v3  # STOP-28 fallback — dies at Step 16
-    return v3.ensure_root_section_class(block_markup, section_id)
+    from converter.services.section_passes import ensure_root_section_class as _impl
+    return _impl(block_markup, section_id)
 
 
 def convert_section(html: str, css: str, media_map: dict,
@@ -303,7 +304,10 @@ def _convert_section_body(html: str, css: str, media_map: dict,
     # so the walker emits ONE sgs/container instead of two nested ones.
     # No-op when section root is a registered SGS composite (FR1 handles those).
     # Full rule + trace events in convert.py:_absorb_transparent_wrappers docstring.
-    v3._absorb_transparent_wrappers(root, css_rules)
+    # PORTED (EXECUTION Step 14): the absorb pre-pass now runs from
+    # converter.services.section_passes (faithful byte-copy, equivalence-smoked).
+    from converter.services.section_passes import _absorb_transparent_wrappers as _absorb
+    _absorb(root, css_rules)
 
     # NEW-ENGINE HYBRID (SGS_NEW_ENGINE=1) — wired for canary testing 2026-06-30
     # (Bean: "wire the new pipeline to /sgs-clone so we can test it in a real

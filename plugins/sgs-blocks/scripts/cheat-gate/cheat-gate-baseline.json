@@ -1,9 +1,10 @@
 {
-  "hash": "01de6c7d35486c96e5b1491577e3a5c324248fb58027b3cb8dc9bee04cebb069",
+  "hash": "09f0a93688f8959462488ffccf3fee21823785af8f93f4502a46ebf50ff52ce2",
   "keys": [
     "bp:converter_v2\\convert.py:1024",
     "bp:converter_v2\\convert.py:768",
     "bp:converter_v2\\convert.py:_BP_SUFFIX_MAP",
+    "convsrc:classname:converter\\services\\section_passes.py:className",
     "hdict:_retired\\convert_pre_spec22.py:_CORE_BLOCK_STYLE_MAP",
     "hdict:_retired\\convert_pre_spec22.py:_STYLE_KEY_TO_ROLE",
     "hdict:converter_v2\\convert.py:_SUFFIX_ATTR_OVERRIDES",

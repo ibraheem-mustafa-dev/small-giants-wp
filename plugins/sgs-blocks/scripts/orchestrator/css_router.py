@@ -542,6 +542,13 @@ def route_css(
         # that don't pass a selector (accumulates all assignments as a merged view).
         section_key = f"{block_slug}:{selector}"  # e.g. 'sgs/hero:.sgs-hero'
 
+        # MF-2 DECISION (EXECUTION Step 14, RECORDED 2026-07-04): the d1 payload
+        # is KEPT. The D274 "dead output" trace was ENGINE-scoped and wrong at
+        # pipeline scope — ledger/coverage_check.py:199 consumes result["d1"]
+        # for F5 conservation accounting (a retirement attempt was BLOCKED by
+        # that very gate at commit time — the structural gate working as
+        # designed). Consumer: the F5 ledger; the engine still re-derives its
+        # own lifts from raw css_rules.
         d1_for_section = result["d1"].setdefault(section_key, {})
 
         rule_routed = False  # Did at least one prop from this rule go D1/D3?
