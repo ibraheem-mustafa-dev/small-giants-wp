@@ -27,6 +27,7 @@ The 4 open decisions (delete-last · 6-phase shape · FR-31-2.7 classifier · mu
 
 ## What's already built (this session; committed) — VERIFY it too
 - `emit_shape` column + `/sgs-update _populate_emit_shape` seeder + `db_lookup.emit_shape_for` + `render_emits.render_reads_attr`. Spec 31 FR-31-2.6. Additive + INERT. (product-card leaf conversion was REVERTED — Phase 2 redoes it.)
+- **D275 (2026-07-04 later session; UNCOMMITTED — /qc-council then commit first):** product-card legacy InnerBlocks machinery PURGED at source (block.json `allowedBlocks` / index.js `<InnerBlocks.Content/>` save / render.php FP-H `$content` bridge / edit.js legacy UI+warning — all deleted); DB resynced (`has_inner` derived=0, `hib_updated=1`); deployed + page 8 re-cloned. **Cards now emit ZERO children but content attrs EMPTY** (`primary_content_attr → ambiguous`) — page-8 cards render bare until Phase 2 wires the walk; NOT a regression (pre-D275 emission was text-block soup). **`db_lookup.content_attr_for_element` BUILT + TDD-green** (`test_content_attr_resolver.py` 3/3, match-strength ranking per FR-31-2.6) — INERT; Phase 2 wires it as the element→attr content router. 281 converter tests green.
 
 ## Skills / tools for the fact-check
 | Skill/tool | Use |
@@ -126,6 +127,7 @@ Invoke `/autopilot` before anything else. This is a `/sgs-clone` (LANDED) + `/sy
 
 ### Task 2 — product-card typed-mode structure (Layer-B) — NOW THE LEAD TASK
 **What:** product-card typed-mode price renders 18px Inter regular; the draft is 28px Fraunces bold. Broader typed-mode Layer-B structure gap (Spec 27 FP-H).
+**UPDATE (D275):** the legacy InnerBlocks path no longer exists — typed mode is builtin-render ONLY, and clones emit the card with no children. Layer-B work now presupposes Phase 2 landing the typed content attrs (`productName`/`priceLarge`/`ctaText` currently emit EMPTY — see "What's already built"). Sequence: Phase-2 content walk → THEN Layer-B typography.
 **Orchestration:** INLINE (or `wp-sgs-developer` agent for the heavy block-dev, NOT a general-purpose coding subagent — STOP-39). Its own design-gate (big). `/qc-council` before commit; re-clone LANDED-verify.
 **Acceptance:** product-card price + structure match the draft on page 8 (computed, matched by content).
 

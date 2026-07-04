@@ -5,6 +5,18 @@ thread: single thread (cloning pipeline). This D271 entry = a one-off side sessi
 session_date: 2026-07-04
 ---
 
+# LATER SESSION ADDENDUM — 2026-07-04 (D275: product-card legacy InnerBlocks PURGE + FR-31-2.6 resolver brick)
+
+**What happened (additive to the entry below; full record = decisions.md D275):**
+1. **Root cause of Bean's bad clone run proven:** the product-card "child-block capability removal" had never landed in ANY file (git clean; `allowedBlocks`, `<InnerBlocks.Content/>` save, render.php `$content` bridge all intact) — and the converter derives has_inner FRESH from those source markers (`services/has_inner.py`), so the /wp-blocks DB edits were a no-op. Ran live: derived=1 → InnerBlocks emission → the "legacy InnerBlocks layout" editor warning.
+2. **Purged at source** (`src/blocks/product-card/`): block.json `allowedBlocks` deleted; index.js `save → null` (+ import gone); render.php typed branch = builtin render ONLY (FP-H bridge deleted per its own retirement clause); edit.js legacy UI + warning removed; style.css stale comments fixed. F6 build gate itself confirmed the flip; `sgs-update-v2.py --stage 1` resynced (`hib_updated=1`, derived=0).
+3. **Deployed to sandybrown + page 8 re-cloned:** cards emit ZERO children + render via the built-in path live. **BUT content attrs (`productName`/`priceLarge`/`ctaText`) emit EMPTY** — trace: `primary_content_attr → ambiguous`. That routing = the FR-31-2.6 per-attr walk = completion-plan Phase 2 ("lands product-card"); deliberately NOT built inline. **Page-8 cards render bare until Phase 2 — NOT a regression** (pre-purge emission was text-block soup).
+4. **First Phase-2 brick built:** `db_lookup.content_attr_for_element(block_slug, bem_element)` per the TDD contract (`test_content_attr_resolver.py` 3/3 green — match-strength ranking: exact canonical_slot/attr_name > slot-alias > first-row tie-break; FR-31-2.2 content-role allowlist). INERT until Phase 2 wires it. 281 converter tests green.
+5. **Docs updated:** decisions D275, state.md top one-liner, parking FP-P premise update, next-session-prompt additive notes (Task-2 sequencing: Phase-2 walk BEFORE Layer-B typography), CLAUDE.md ×3 (plan DRAFT→APPROVED D274 drift + plugin roster row), memory converse-lesson + index compaction.
+6. **NOTE:** `block_composition.has_inner_blocks` column still physically exists + F6 reads it (retired-as-signal only; physical drop = plan Phases 2f/6) — kept in sync.
+
+---
+
 # Session Handoff — 2026-07-04 (emit_shape foundation + converter-rebuild SCOPING)
 
 ## ⚠️ READ FIRST — the scope produced this session is DOCUMENTATION-DERIVED and MUST be fact-checked against the RUNNING SCRIPTS before it is trusted or built from.
