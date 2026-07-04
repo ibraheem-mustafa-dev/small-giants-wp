@@ -19,7 +19,17 @@
 	"icon": "products",
 	"supports": {
 		"sgs": {
-			"imageControls": true
+			"imageControls": true,
+			"variantAttr": "variantStyle",
+			"variants": {
+				"standard": [],
+				"trial": [
+					"trialTag"
+				],
+				"featured": [
+					"featuredTag"
+				]
+			}
 		},
 		"html": false,
 		"align": false,

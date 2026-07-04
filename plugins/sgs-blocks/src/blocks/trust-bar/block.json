@@ -23,7 +23,19 @@
 			"imageControls": true,
 			"is_section_root": true,
 			"containerKind": "section",
-			"arrayContentLift": true
+			"arrayContentLift": true,
+			"variantAttr": "badgeStyle",
+			"variants": {
+				"icon-circle": [
+					"iconCircleSize",
+					"iconCircleBackground",
+					"iconColour",
+					"iconCircleBorderRadius",
+					"iconCircleShadow"
+				],
+				"text-only": [],
+				"image-badge": []
+			}
 		},
 		"align": [
 			"wide",
