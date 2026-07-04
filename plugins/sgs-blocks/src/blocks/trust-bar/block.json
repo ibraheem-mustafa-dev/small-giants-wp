@@ -84,7 +84,10 @@
 					},
 					"fillStyle": {
 						"type": "string",
-						"enum": [ "outline", "filled" ],
+						"enum": [
+							"outline",
+							"filled"
+						],
 						"default": "outline"
 					},
 					"fillColour": {
@@ -647,6 +650,74 @@
 			"default": ""
 		},
 		"marginLeftMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"contentBandBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"contentBandPaddingBottom": {
+			"type": "string",
+			"default": ""
+		},
+		"contentBandPaddingBottomMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"contentBandPaddingBottomTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"contentBandPaddingLeft": {
+			"type": "string",
+			"default": ""
+		},
+		"contentBandPaddingLeftMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"contentBandPaddingLeftTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"contentBandPaddingRight": {
+			"type": "string",
+			"default": ""
+		},
+		"contentBandPaddingRightMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"contentBandPaddingRightTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"contentBandPaddingTop": {
+			"type": "string",
+			"default": ""
+		},
+		"contentBandPaddingTopMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"contentBandPaddingTopTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"contentWidthMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"contentWidthTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidthMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidthTablet": {
 			"type": "string",
 			"default": ""
 		}
