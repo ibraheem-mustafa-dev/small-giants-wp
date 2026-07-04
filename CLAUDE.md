@@ -30,7 +30,7 @@ A custom WordPress block framework built by Claude Code: theme + blocks plugin (
 > **Live status is single-sourced — do NOT track shipped-status / D-numbers / counts here (they drift; the F1/F2 doc-staleness on 2026-06-03 was exactly this).** For "what's shipped vs pending, current step, D-ceiling, blockers" read **`.claude/state.md` + `.claude/next-session-prompt.md`**. Decisions → `.claude/decisions.md`. Parked work → `.claude/parking.md`.
 
 - **Canonical spec:** [Spec 31 §13.6 / FR-31-21](.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md) — the universal wrapper-conversion procedure + 3-layer model (OUTER / CONTENT-WIDTH / PER-GRID-ITEM) + composite-mirror rule.
-- **LIVE cloning plan:** [`.claude/plans/2026-07-04-new-engine-to-parity-delete-converter-v2.md`](.claude/plans/2026-07-04-new-engine-to-parity-delete-converter-v2.md) — the converter completion plan (new engine → parity → delete converter_v2; D272/D273, fact-checked + qc-council-hardened; DRAFT pending Bean approval).
+- **LIVE cloning plan:** [`.claude/plans/2026-07-04-new-engine-to-parity-delete-converter-v2.md`](.claude/plans/2026-07-04-new-engine-to-parity-delete-converter-v2.md) — the converter completion plan (new engine → parity → delete converter_v2; D272/D273, fact-checked + qc-council-hardened; APPROVED D274, single-session scope).
 - **Previous plans (archived context):** all pre-2026-07 plan/design docs (W3 phase-plan, clone-fix build-plan + 55-issue sign-off ledger, stage designs) moved to [`.claude/plans/archive/`](.claude/plans/archive/) on 2026-07-04; open residuals captured in `parking.md` (`P-W3-ARCHIVE-RESIDUALS`).
 
 ## Binding rules (Spec 31 §13.1 R-31-1 through R-31-15; gate every commit)
@@ -43,7 +43,7 @@ Full text in Spec 31 §13.1. Headlines:
 1. **DB-first, no hardcoded dicts (R-31-1)** — All lookups via DB tables; `SKIP_TOP_LEVEL_TAGS` is the only permitted constant (3 entries: header/footer/nav). Tier C role-to-block derived from existing `slot_synonyms.role + standalone_block` data.
 2. **BEM is the only recognition signal (R-31-2 / Spec 00 §3.1)** — HTML tag is rendering-shape only.
 3. **Three permitted walker exceptions, no others (R-31-3)** — atomic-tag swap / chrome-skip at top level / top-level container wrap. Adding a 4th requires spec amendment.
-4. **Pixel-diff gates every commit (R-31-4)** — `/sgs-clone --debug-trace` Stage 11 pre/post; commit message cites predicted vs actual delta.
+4. **Aggregate scores are per-commit diagnostics, never the closing gate (R-31-4)** — Stage 11.6 computed-parity is the per-commit diagnostic (the old Stage-11 pixel-diff was PURGED 2026-07-04, `220cb28a`); fidelity closes only via §7b computed-style-vs-draft + Bean's eye (R-31-13).
 5. **Phases never ship as single commits (R-31-5)** — Phase 1 walker rewrite splits into 5 commits.
 6. **Output-only inference is a trap (R-31-6)** — verify mockup HTML + extract.json + live DOM at each milestone.
 7. **Council fix-shapes are hypotheses, not specs (R-31-7)** — multi-rater proposals require empirical pre/post measurement.
@@ -95,7 +95,7 @@ Each sub-project + each client site has its own CLAUDE.md. Read the relevant one
 | Doc | What |
 |---|---|
 | [`.claude/reports/2026-05-25-qc-council-issue-register.md`](.claude/reports/2026-05-25-qc-council-issue-register.md) | THE current cloning-pipeline register (~110 items, Sections A-R) |
-| [`.claude/plans/2026-07-04-new-engine-to-parity-delete-converter-v2.md`](.claude/plans/2026-07-04-new-engine-to-parity-delete-converter-v2.md) | **LIVE canonical cloning plan — converter completion (new engine → parity → delete converter_v2; D272/D273; DRAFT pending Bean approval)** |
+| [`.claude/plans/2026-07-04-new-engine-to-parity-delete-converter-v2.md`](.claude/plans/2026-07-04-new-engine-to-parity-delete-converter-v2.md) | **LIVE canonical cloning plan — converter completion (new engine → parity → delete converter_v2; D272/D273; APPROVED D274)** |
 | [`.claude/plans/archive/`](.claude/plans/archive/) | All superseded plans/designs (W3 phase-plan, clone-fix build-plan + sign-off ledger, stage designs — archived 2026-07-04; residuals → parking `P-W3-ARCHIVE-RESIDUALS`) |
 | [`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`](.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md) §13 | Absorbed Spec 22 (merged D253): single-recursive walker (FR-31-3), content fork (FR-31-2), sgs/container default (FR-31-4), binding rules R-31-1..15. |
 | [`.claude/specs/20-CLONE-FIDELITY-MEASUREMENT.md`](.claude/specs/20-CLONE-FIDELITY-MEASUREMENT.md) | **Canonical clone-fidelity measurement spec (computed-parity tool + Stage 11.6 + rule 4a).** Replaced Spec 20 (log surfacing) + Spec 21 (artefact inventory), both archived to `memory/specs-archive/` — the input-side logs are debug-only, NOT the fidelity signal. |
