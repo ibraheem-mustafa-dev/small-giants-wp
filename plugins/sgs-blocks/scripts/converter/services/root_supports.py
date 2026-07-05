@@ -51,6 +51,7 @@ from bs4 import Tag
 from converter.db import db_lookup
 from converter.services.styling_helpers import (
     collect_css_decls_for_element,
+    split_value_unit,
     strip_important,
     _colour_value_to_style,  # private but sibling module — internal use only
 )
@@ -163,6 +164,39 @@ def _set_in(target: dict, path: list[str], value: Any) -> bool:
         return False  # never overwrite
     cur[leaf] = value
     return True
+
+
+def _serialise_for_schema(
+    block_schema: dict[str, dict], candidate: str, v: str
+) -> tuple[int | float | str | None, tuple[str, str] | None]:
+    """Serialise a responsive-tier value per the attr's declared type.
+
+    Spec 31 §3.A.5 (CG-4 fix, 2026-07-05): a px-STRING written into a
+    number/integer attr is silently DISCARDED by WP schema validation at render
+    (proven live: sgs/text.marginBottomMobile:"24px" lost the hero-sub mobile
+    margin). Returns ``(value, unit_write)`` where ``value`` is the schema-correct
+    serialisation (or None = unparseable → caller drops with a debug log) and
+    ``unit_write`` is an optional ``({candidate}Unit, unit)`` companion, emitted
+    ONLY when the block declares that Unit attr (e.g. sgs/button
+    minHeightTabletUnit). A NON-px unit on a block with NO matching Unit attr
+    returns ``(None, None)`` — an honest logged drop, because a bare number
+    renders through the px default (1.5em → 1.5px, a WRONG value, worse than
+    the loss); px itself is the schema default everywhere so it needs no
+    companion.
+    """
+    attr_type = (block_schema.get(candidate) or {}).get("attr_type")
+    if attr_type not in ("number", "integer"):
+        return v, None
+    num, unit = split_value_unit(v)
+    if num is None:
+        return None, None
+    num_out: int | float = int(num) if float(num).is_integer() else num
+    unit_attr = f"{candidate}Unit"
+    if unit and unit != "px":
+        if unit_attr in block_schema:
+            return num_out, (unit_attr, unit)
+        return None, None  # non-px, no Unit destination — honest drop (caller logs)
+    return num_out, None
 
 
 def _preserve_unit(raw: str) -> str | None:
@@ -384,12 +418,24 @@ def lift_root_supports_to_style(
                 candidate = f"{camel_base}{bp_suffix}"
 
                 if candidate in block_schema and candidate not in result_attrs:
-                    result_attrs[candidate] = v
+                    # Spec 31 §3.A.5 (CG-4 fix): serialise per attr_type — a
+                    # px-string into a number attr is WP-discarded at render.
+                    v_out, unit_write = _serialise_for_schema(block_schema, candidate, v)
+                    if v_out is None:
+                        _LOG.debug(
+                            "[root_supports] responsive_attr_dropped slug=%s css_prop=%s "
+                            "bp_suffix=%s reason=unserialisable_for_numeric_attr raw=%r",
+                            slug, css_prop, bp_suffix, v,
+                        )
+                        continue
+                    result_attrs[candidate] = v_out
+                    if unit_write and unit_write[0] not in result_attrs:
+                        result_attrs[unit_write[0]] = unit_write[1]
                     tier_consumed.add(css_prop)
                     _LOG.debug(
                         "[root_supports] responsive_attr_lifted slug=%s css_prop=%s "
                         "bp_suffix=%s attr=%s value=%r",
-                        slug, css_prop, bp_suffix, candidate, v,
+                        slug, css_prop, bp_suffix, candidate, v_out,
                     )
                 else:
                     reason = "no_schema_attr" if candidate not in block_schema else "already_set"
@@ -412,7 +458,19 @@ def lift_root_supports_to_style(
                     # e.g. 'padding' + 'top' + 'Tablet' → 'paddingTopTablet'
                     candidate = f"{shorthand}{side.capitalize()}{bp_suffix}"
                     if candidate in block_schema and candidate not in result_attrs:
-                        result_attrs[candidate] = val
+                        # Spec 31 §3.A.5 (CG-4 fix): same attr_type serialisation
+                        # as the per-property loop above.
+                        val_out, unit_write = _serialise_for_schema(block_schema, candidate, val)
+                        if val_out is None:
+                            _LOG.debug(
+                                "[root_supports] responsive_attr_dropped slug=%s shorthand=%s(%s) "
+                                "bp_suffix=%s reason=unserialisable_for_numeric_attr raw=%r",
+                                slug, shorthand, side, bp_suffix, val,
+                            )
+                            continue
+                        result_attrs[candidate] = val_out
+                        if unit_write and unit_write[0] not in result_attrs:
+                            result_attrs[unit_write[0]] = unit_write[1]
                         # Any side landing a write consumes the shorthand for this
                         # tier — matches the pre-STOP-43 blanket-strip parity for a
                         # PARTIAL multi-side success (some sides may still miss their
@@ -421,7 +479,7 @@ def lift_root_supports_to_style(
                         _LOG.debug(
                             "[root_supports] responsive_attr_lifted slug=%s shorthand=%s(%s) "
                             "bp_suffix=%s attr=%s value=%r",
-                            slug, shorthand, side, bp_suffix, candidate, val,
+                            slug, shorthand, side, bp_suffix, candidate, val_out,
                         )
                     else:
                         reason = "no_schema_attr" if candidate not in block_schema else "already_set"

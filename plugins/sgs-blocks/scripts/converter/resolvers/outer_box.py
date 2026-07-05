@@ -98,7 +98,7 @@ from converter.services.gap_writer import gap_writer
 from converter.services.styling_helpers import split_value_unit
 from converter.services.tier_suffix import tier_suffix
 from converter.services.token_snap import token_snap
-from converter.services.validate import validate
+from converter.services.validate import attr_is_number, validate
 from converter.services.value_serialise import value_serialise
 
 # WHICH properties this L1/OUTER resolver attempts is a DB FACT, not an in-code
@@ -162,26 +162,11 @@ def _shadow_token_snap(raw_value: str, conn: sqlite3.Connection) -> str | None:
     return None
 
 
-def _attr_is_number(ctx: Any, attr: str) -> bool:
-    # The attr_type IN ('number','integer') predicate is done IN SQL (returns a
-    # presence row, not a string to compare in Python) — mirrors validate.py's
-    # `row is None` idiom so the block_slug-bearing query does not taint a local
-    # that is then string-compared (the no-slug-literal carve-out gate taints any
-    # local assigned from a block_slug-bearing expression).
-    #
-    # EXECUTION Step 12 (2026-07-04): widened from 'number'-only to also match
-    # 'integer' — a UNIVERSAL type-family generalisation (order/z-index are
-    # unitless-integer attrs on some blocks, e.g. sgs/media.order, attr_type=
-    # 'integer'; opacity/z-index on other blocks use attr_type='number'). Both
-    # kinds go through the identical split_value_unit + int()-collapse path below;
-    # there is no behavioural difference between the two DB type labels for this
-    # resolver's purposes, so no per-block/per-property branch was added (R-31-9).
-    row = ctx.conn.execute(
-        "SELECT 1 FROM block_attributes "
-        "WHERE block_slug=? AND attr_name=? AND attr_type IN ('number', 'integer')",
-        (ctx.block_slug, attr),
-    ).fetchone()
-    return row is not None
+# The attr_type predicate moved to the SHARED converter.services.validate.
+# attr_is_number (CG-4 fix, 2026-07-05) so content_band + outer_box use ONE
+# implementation (R-31-9). History it carries: SQL-side predicate (no-slug-literal
+# taint avoidance) + the Step-12 'integer' widening (order/z-index attrs).
+_attr_is_number = attr_is_number
 
 
 def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
@@ -271,11 +256,26 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             )
         num_out: int | float = int(num) if float(num).is_integer() else num
         writes: list[Write] = [Write(attr=attr, value=num_out, property=prop, tier=decl.tier)]
-        # Unit companion: derive from the BASE attr (not the tier-suffixed name) and
-        # write ONLY alongside the Base tier — matching typography.py / grid_area.py.
-        unit_attr = f"{base_attr}Unit"
-        if unit and decl.tier == "Base" and validate(ctx, unit_attr, unit):
-            writes.append(Write(attr=unit_attr, value=unit, property=prop, tier=decl.tier))
+        # Unit companion: the tier-suffixed name first (a block may declare
+        # e.g. minHeightTabletUnit — button render.php reads it), else the
+        # Base-tier base-name companion. A NON-px unit with no Unit destination
+        # is an HONEST GAP — a bare number renders through the px default
+        # (3rem → 3px, a WRONG value, worse than the loss). Mirrors
+        # content_band's branch exactly (ONE mechanism, R-31-9; CG-4 rater
+        # Finding 1, 2026-07-05).
+        tier_unit_attr = f"{attr}Unit"
+        base_unit_attr = f"{base_attr}Unit"
+        if unit and attr != base_attr and validate(ctx, tier_unit_attr, unit):
+            writes.append(Write(attr=tier_unit_attr, value=unit, property=prop, tier=decl.tier))
+        elif unit and decl.tier == "Base" and validate(ctx, base_unit_attr, unit):
+            writes.append(Write(attr=base_unit_attr, value=unit, property=prop, tier=decl.tier))
+        elif unit and unit != "px":
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{prop} value {decl.value!r} carries non-px unit {unit!r} but "
+                f"{ctx.block_slug} declares no Unit companion for {attr!r} — a bare "
+                f"number would render via the px default (wrong value)",
+            )
         return writes
 
     # String/length-literal attr: verbatim (D230 for max-width/min-height).

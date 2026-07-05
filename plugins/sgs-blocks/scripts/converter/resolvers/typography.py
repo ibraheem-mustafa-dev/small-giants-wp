@@ -44,7 +44,7 @@ from converter.services.styling_helpers import (
     strip_important,
 )
 from converter.services.tier_suffix import tier_suffix
-from converter.services.validate import validate
+from converter.services.validate import attr_is_number, validate
 from converter.db.db_lookup import typography_css_to_attrs
 
 # font-weight keyword → numeric string (faithful port of convert.py:3897).
@@ -67,16 +67,11 @@ def _typo_map() -> dict[str, tuple[str, str | None]]:
     return {css: (primary, unit) for css, primary, unit in typography_css_to_attrs()}
 
 
-def _attr_is_number(ctx: Any, attr: str) -> bool:
-    # attr_type='number' predicate done IN SQL (presence row, not a Python string
-    # compare) so the block_slug-bearing query doesn't taint a string-compared local
-    # (no-slug-literal carve-out gate). Mirrors validate.py's `row is None` idiom.
-    row = ctx.conn.execute(
-        "SELECT 1 FROM block_attributes "
-        "WHERE block_slug=? AND attr_name=? AND attr_type='number'",
-        (ctx.block_slug, attr),
-    ).fetchone()
-    return row is not None
+# The attr_type predicate moved to the SHARED converter.services.validate.
+# attr_is_number (CG-4 rater Finding 2, 2026-07-05) — this local copy was
+# number-only and MISSED the Step-12 'integer' widening; ONE implementation
+# now serves all four resolvers (R-31-9).
+_attr_is_number = attr_is_number
 
 
 def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:

@@ -40,6 +40,23 @@ def _parse_enum_values(raw: str) -> set[str]:
     return {v.strip() for v in raw.split(",") if v.strip()}
 
 
+def attr_is_number(ctx: Any, attr: str) -> bool:
+    """True iff the block declares ``attr`` with a numeric ``attr_type``.
+
+    Spec 31 §3.A.5 (serialise by ``block_attributes.attr_type``): a px-string
+    written into a number/integer attr is DISCARDED by WP's schema validation at
+    render time (the CG-4 maxWidth bug) — every resolver writing a length value
+    must branch on this. ONE shared implementation (R-31-9); ``'integer'`` is
+    included per the Step-12 widening (order/z-index attrs on some blocks).
+    """
+    row = ctx.conn.execute(
+        "SELECT 1 FROM block_attributes "
+        "WHERE block_slug=? AND attr_name=? AND attr_type IN ('number', 'integer')",
+        (ctx.block_slug, attr),
+    ).fetchone()
+    return row is not None
+
+
 def validate(ctx: Any, attr: str, value: str) -> bool:
     # 1. KIND-legality (A15): content-KIND blocks have no grid layer.
     if ctx.container_kind == "content" and attr.startswith("gridItem"):
