@@ -1,22 +1,19 @@
 /**
  * sgs/quote — frontend styles.
  *
- * Provides structural defaults for the blockquote wrapper and its two slots.
- * All visual styling (colours, typography, spacing) comes from inline styles
- * emitted by render.php — this file only supplies layout defaults that cannot
- * be expressed via inline styles, and reduced-motion safety.
+ * Provides structural defaults for the blockquote wrapper and the attribution
+ * slot. Body paragraphs are native InnerBlocks (sgs/text) and own their own
+ * spacing/typography (HC2, D192) — no body-slot CSS lives here any more
+ * (2026-07-05 ONE-content-model rebuild). All visual styling (colours,
+ * typography, spacing) for the attribution + wrapper comes from inline
+ * styles emitted by render.php — this file only supplies layout defaults
+ * that cannot be expressed via inline styles, and reduced-motion safety.
  */
 
 .wp-block-sgs-quote {
 	/* Reset browser blockquote indent so padding attrs work cleanly. */
 	margin: 0;
 	padding: 0;
-}
-
-/* Body paragraphs — reset browser paragraph spacing so bodyMarginBottom attr governs. */
-.wp-block-sgs-quote__body {
-	margin-top: 0;
-	margin-bottom: 0;
 }
 
 /* Attribution slot — display block so it sits below the body. */

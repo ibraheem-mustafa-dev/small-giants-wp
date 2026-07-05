@@ -1,23 +1,14 @@
 /**
  * sgs/quote — block editor styles.
  *
- * Keeps the editor canvas presentation consistent with the frontend.
- * Adds editor-only affordances (body-row wrapper for remove button,
- * add-paragraph button spacing).
+ * Keeps the editor canvas presentation consistent with the frontend. Body
+ * paragraphs are native InnerBlocks (sgs/text) so no bespoke body-row
+ * markup is needed here any more (2026-07-05 ONE-content-model rebuild).
  */
 
 .wp-block-sgs-quote {
 	/* Prevent collapsed height on empty canvas. */
 	min-height: 2em;
-}
-
-/* Body row wrapper — contains RichText + Remove button in the editor only. */
-.wp-block-sgs-quote__body-row {
-	position: relative;
-}
-
-.wp-block-sgs-quote__body-row + .wp-block-sgs-quote__body-row {
-	margin-top: 4px;
 }
 
 /* Shared inspector row helper — side-by-side controls (value + unit).

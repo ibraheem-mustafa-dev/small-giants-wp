@@ -724,6 +724,12 @@ def run_mechanism_b(
     # ------------------------------------------------------------------
     allowed = db_lookup.accepts_allowed_blocks(rec.slug)
 
+    # FR-31-2.6 extension (2026-07-05 quote-attribution fix): first-wins set
+    # for the NESTED-ATTR pre-empt below — mirrors the universal walk's own
+    # `lifted_attrs` bookkeeping so a second matching element never overwrites
+    # an attr this loop already filled.
+    nested_filled: set[str] = set()
+
     for child in section_root.children:
         if not isinstance(child, Tag):
             continue
@@ -747,6 +753,7 @@ def run_mechanism_b(
         child_slug: str | None = None
         if rec.slug and element:
             child_slug = db_lookup.child_block_for_parent_token(rec.slug, element)
+        via_parent_token = child_slug is not None
 
         # G-resolve: global BEM → slug fallback (convert.py:4444).
         if child_slug is None and csgs:
@@ -765,6 +772,38 @@ def run_mechanism_b(
             fb = recognise(child)
             if fb.slug is not None and fb.kind != "unrecognised":
                 child_slug = fb.slug
+
+        # NESTED-ATTR pre-empt (FR-31-2.6 completion, 2026-07-05 quote-
+        # attribution fix): a generic child resolved via slot-alias / atomic
+        # recognition (NEVER a G1 parent-scoped dedicated child-block route —
+        # that stays authoritative and is never second-guessed here) may still
+        # be THIS composite's OWN nested scalar content, keyed by an EXACT
+        # attr-name match against its BEM __element token — independent of
+        # which block-family prefix the draft author used (e.g. a draft's
+        # `sgs-brand__attribution` inside a promoted sgs/quote still carries
+        # the 'attribution' token even though its family prefix is 'brand',
+        # not 'quote'). Deliberately uses `nested_attr_named` (EXACT attr-name
+        # equality only), NEVER `content_attr_for_element`'s looser
+        # canonical_slot/alias match — the D279 QC regression guard proved
+        # alias-based cross-family resolution is unsafe (it hijacked
+        # `sgs-accordion__heading`, element token 'heading' aliasing
+        # accordion-item's `title` via canonical_slot, into a scalar lift,
+        # silently dropping the child heading BLOCK the golden fixture
+        # expects). A dedicated child block (G1 hit) is a stronger, more
+        # specific signal than this and is never overridden.
+        nested_hit = (
+            db_lookup.nested_attr_named(rec.slug, element)
+            if (not via_parent_token and element)
+            else None
+        )
+        if nested_hit is not None:
+            nested_attr, nested_role, nested_attr_type = nested_hit
+            if nested_attr not in nested_filled and nested_attr_type == "string":
+                nested_value = extract_field_value(child, nested_role, media_map or {})
+                if nested_value:
+                    results.append(ScalarLift(attr=nested_attr, value=nested_value))
+                    nested_filled.add(nested_attr)
+                    continue  # conserved on the nested side (FR-31-2.6 mutual exclusion)
 
         if child_slug is None:
             # No resolution → ContentGap (convert.py:4517-4527 emits a wrapper container;

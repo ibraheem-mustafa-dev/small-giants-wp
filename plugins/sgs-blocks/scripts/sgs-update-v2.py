@@ -1215,6 +1215,43 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/product-card", "imageAlt"): {"role": "image-alt", "alt_companion_attr": "image"},
     ("sgs/media", "imageAlt"): {"role": "image-alt", "alt_companion_attr": "imageUrl"},
     ("sgs/decorative-image", "imageAlt"): {"role": "image-alt", "alt_companion_attr": "imageUrl"},
+    # sgs/quote.attribution (2026-07-05, ONE-content-model rebuild): the block
+    # NEVER had an `equivalent_block_for` route into sgs/text for its footer
+    # string — assign-canonical mis-seeds role=NULL + emit_shape=NULL on this
+    # attr. role=NULL fails the FR-31-2.2 content-bearing allowlist in both
+    # db_lookup.equivalent_block_for() and content_attr_for_element(), so the
+    # per-attr walk could never route a draft's attribution paragraph here —
+    # it fell through Mechanism B's generic G-resolve (slot alias 'attribution'
+    # -> standalone sgs/text) and emitted as an indistinguishable 4th sgs/text
+    # child (verified live against sites/mamas-munches, brand-story section,
+    # 2026-07-05). role='text-content' admits it to the content-bearing
+    # allowlist; emit_shape='nested' marks it a scalar (not child-block) unit.
+    #
+    # canonical_slot explicitly cleared to NULL (mirrors the product-card
+    # priceNote override precedent above): assign-canonical's bare-name
+    # heuristic lands it on the shared 'text' slot, whose ALIAS LIST also
+    # contains 'body'/'author'/'caption'/'bio' etc. (generic text-slot
+    # synonyms used for IDENTITY resolution across many unrelated blocks).
+    # Once `body` stopped being its own dedicated attr (this same rebuild),
+    # a `.sgs-quote__body` element lost its Tier-0 attr-name destination and
+    # fell to Tier-1 alias matching on the SAME shared 'text' canonical_slot
+    # — silently and WRONGLY winning the 'attribution' attr ahead of the
+    # genuine `.sgs-quote__author`/`.sgs-quote__attribution` element (proven
+    # live against tests/fixtures/conformance/sgs-quote.html, whose
+    # `.sgs-quote__body` blockquote text was captured into `attribution`
+    # instead of the `.sgs-quote__author` cite text). canonical_slot=NULL
+    # closes the Tier-1 hole; `attr_name == bem_element` ('attribution' ==
+    # 'attribution') still gives content_attr_for_element() a Tier-0 direct
+    # match for a draft using the literal `attribution` token, and
+    # `derived_selector='.sgs-quote__text'` still gives equivalent_block_for()
+    # its identity resolution to sgs/text via Tier B — no identity is lost.
+    # Extraction-side wiring: run_mechanism_b's generic path
+    # (converter/services/extraction.py, `nested_attr_named` — EXACT attr-name
+    # match only, deliberately narrower than content_attr_for_element's Tier-1
+    # alias match, per the D279 QC regression guard) now checks for a 'nested'
+    # hit before falling back to a generic ChildBlock, so this attr routes
+    # without any block-slug literal and without the alias-collision risk.
+    ("sgs/quote", "attribution"): {"role": "text-content", "emit_shape": "nested", "canonical_slot": None},
 }
 
 

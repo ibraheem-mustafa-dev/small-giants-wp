@@ -4045,6 +4045,58 @@ def primary_content_attr(block_slug: str) -> str | None:
     return None
 
 
+def nested_attr_named(
+    block_slug: str, name: str
+) -> tuple[str, str | None, str | None] | None:
+    """Return (attr_name, role, attr_type) when `block_slug` has a `nested`
+    content-bearing attr whose OWN `attr_name` is LITERALLY `name` (kebab≡camel
+    normalised) — else None.
+
+    Deliberately narrower than `content_attr_for_element`'s Tier-0 (which also
+    matches on `canonical_slot == bem_element`, e.g. accordion-item's `title`
+    row has `canonical_slot='heading'`). This EXACT-NAME-ONLY lookup is the
+    site for a cross-family element match (Mechanism B's generic path, a
+    BEM __element token whose block prefix does NOT belong to `block_slug`'s
+    own family, e.g. a draft's `sgs-brand__attribution` inside a promoted
+    `sgs/quote`): the D279 QC regression guard proved that resolving a
+    cross-family element via a canonical_slot/alias identity match is UNSAFE
+    (it hijacked `sgs-accordion__heading` — element token 'heading' aliasing
+    accordion-item's `title` via canonical_slot — into a scalar lift, silently
+    dropping the child heading BLOCK the golden fixture expects). Requiring
+    the attribute's OWN name to literally equal the element token is a much
+    stronger, self-describing signal that only a genuinely-scoped attr
+    (e.g. `attribution`) can satisfy — a generically-named attr like `title`
+    can never accidentally match a differently-worded foreign element.
+
+    R-31-1: DB-only read path. No hardcoded slug→attr dicts.
+    """
+    if not block_slug or not name:
+        return None
+
+    _content_roles = tuple(sorted(_content_bearing_roles()))
+    if not _content_roles:
+        return None
+
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        _placeholders = ", ".join("?" for _ in _content_roles)
+        rows = conn.execute(
+            "SELECT attr_name, role, attr_type FROM block_attributes "
+            f"WHERE block_slug = ? AND emit_shape = 'nested' AND role IN ({_placeholders})",
+            (block_slug, *_content_roles),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return None
+    finally:
+        conn.close()
+
+    norm_name = name.replace("-", "").lower()
+    for attr_name, role, attr_type in rows:
+        if attr_name == name or attr_name.replace("-", "").lower() == norm_name:
+            return (attr_name, role, attr_type)
+    return None
+
+
 def content_attr_for_element(
     block_slug: str, bem_element: str
 ) -> tuple[str, str | None, str | None, str | None] | None:

@@ -2,35 +2,33 @@
 /**
  * Server-side render for sgs/quote.
  *
- * Emits a semantic <blockquote> wrapper containing one or more body paragraphs
- * and an optional attributed <footer> (or <cite>/<div> per attributionTag).
+ * ONE content model mirroring WordPress core/quote (Bean-agreed 2026-07-05):
+ * body = InnerBlocks children ($content — multi-paragraph, natively
+ * editable); attribution = a single typed string attr rendered as a
+ * <footer>/<cite>/<div> per attributionTag. Emits a semantic <blockquote> so
+ * converter-pipeline outputs preserve the correct HTML5 structure.
  *
- * Designed as the converter-pipeline target for HTML5 blockquote + footer
- * patterns (e.g. Mama's Munches brand section). Replaces the previous routing
- * of blockquote to sgs/container (loses the element + italic inheritance) and
- * footer to sgs/text tag="p" (loses footer semantics + primary colour rule).
- *
- * WS-4 (composite-mirror): the outer wrapper is now delegated to
+ * WS-4 (composite-mirror): the outer wrapper is delegated to
  * SGS_Container_Wrapper::render() with kind='content' so sgs/quote mirrors
  * sgs/container's width/spacing capabilities without diverging.
  * KIND='content' = align/maxWidth/contentWidth + padding/spacing only.
  * NO bg/overlay/svg/shape-divider/grid layers.
  *
- * Responsive per-viewport overrides for the body/attribution SLOTS are still
- * emitted as a scoped <style> block keyed on the block anchor id (or a
- * generated wp_unique_id fallback) so multiple instances never collide.
+ * Responsive per-viewport overrides for the attribution SLOT are emitted as
+ * a scoped <style> block keyed on the block anchor id (or a generated
+ * content-hash fallback) so multiple instances never collide.
  *
  * @since 2026-05-17  Initial — sgs/quote block
  * @since 2026-06-04  WS-4 composite-mirror: outer wrapper via SGS_Container_Wrapper (kind='content').
+ * @since 2026-07-05  ONE content model: legacy body[] array attr + dual-path
+ *                    $content/$attributes['body'] branching REMOVED. Body is
+ *                    now unconditionally the InnerBlocks $content; attribution
+ *                    is unconditionally the attribute (Spec 31, D-pending).
  *
  * @var array    $attributes Block attributes.
- * @var string   $content    Rendered InnerBlocks output. When non-empty (e.g. from
- *                           the deterministic converter v2 F1 universal-nesting
- *                           path — Spec 16 §15 line 990), this is the body source
- *                           and the legacy $attributes['body'] array + attribution
- *                           attribute rendering are skipped. When empty (legacy
- *                           operator-edited posts using the body[] array UI in
- *                           edit.js), the previous render path runs verbatim.
+ * @var string   $content    Rendered InnerBlocks output (the body paragraphs —
+ *                           sgs/text children, or any text-capable block an
+ *                           operator/converter places inside the quote).
  * @var \WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
@@ -42,75 +40,23 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 // ---------------------------------------------------------------------------
-// 1. Resolve body source: InnerBlocks $content (β-path) vs legacy body[] attr.
-//
-// The deterministic converter v2 F1 universal-nesting fallback (Spec 16 §15 line
-// 990) emits sgs/quote with nested sgs/text children inside its
-// InnerBlocks slot rather than populating $attributes['body']. When $content is
-// non-empty, we emit it as the rendered body and skip the legacy body[] + the
-// attribution-attr path (the converter already places attribution as the final
-// InnerBlock — emitting it twice would duplicate it).
-//
-// Legacy posts authored through edit.js continue to use $attributes['body'][] +
-// $attributes['attribution'] verbatim.
+// 1. Resolve content. Body is always the InnerBlocks $content; attribution is
+// always the typed string attr. Soft-fail: nothing to render if BOTH are empty.
 // ---------------------------------------------------------------------------
 
-$content_str      = is_string( $content ) ? trim( $content ) : '';
-$has_inner_blocks = '' !== $content_str;
-
-$body           = isset( $attributes['body'] ) && is_array( $attributes['body'] ) ? $attributes['body'] : array();
+$content_str    = is_string( $content ) ? trim( $content ) : '';
 $attribution    = isset( $attributes['attribution'] ) ? (string) $attributes['attribution'] : '';
 $attrib_enabled = ! empty( $attributes['attributionEnabled'] ) || ! isset( $attributes['attributionEnabled'] );
 
-// Remove blank body entries for the emptiness check (legacy path only).
-$body_non_empty = array_filter(
-	$body,
-	function ( $item ) {
-		return '' !== trim( wp_strip_all_tags( (string) $item ) );
-	}
-);
+$has_body        = '' !== trim( wp_strip_all_tags( $content_str ) );
+$has_attribution = $attrib_enabled && '' !== trim( wp_strip_all_tags( $attribution ) );
 
-// Soft-fail: nothing to render if both legacy body and attribution are empty
-// AND InnerBlocks $content is empty. Any one source being populated triggers render.
-if ( ! $has_inner_blocks && empty( $body_non_empty ) && '' === trim( wp_strip_all_tags( $attribution ) ) ) {
+if ( ! $has_body && ! $has_attribution ) {
 	return;
 }
 
 // ---------------------------------------------------------------------------
-// 2. Extract + validate body slot attributes.
-// ---------------------------------------------------------------------------
-
-$body_tag                = $attributes['bodyTag'] ?? 'p';
-$body_colour             = $attributes['bodyColour'] ?? '';
-$body_font_size          = isset( $attributes['bodyFontSize'] ) ? $attributes['bodyFontSize'] : null;
-$body_font_size_tablet   = isset( $attributes['bodyFontSizeTablet'] ) ? $attributes['bodyFontSizeTablet'] : null;
-$body_font_size_mobile   = isset( $attributes['bodyFontSizeMobile'] ) ? $attributes['bodyFontSizeMobile'] : null;
-$body_font_size_unit     = $attributes['bodyFontSizeUnit'] ?? 'px';
-$body_font_weight        = $attributes['bodyFontWeight'] ?? '';
-$body_font_family        = $attributes['bodyFontFamily'] ?? '';
-$body_font_style         = $attributes['bodyFontStyle'] ?? 'italic';
-$body_text_decoration    = $attributes['bodyTextDecoration'] ?? '';
-$body_text_transform     = $attributes['bodyTextTransform'] ?? '';
-$body_line_height        = isset( $attributes['bodyLineHeight'] ) ? $attributes['bodyLineHeight'] : null;
-$body_line_height_tablet = isset( $attributes['bodyLineHeightTablet'] ) ? $attributes['bodyLineHeightTablet'] : null;
-$body_line_height_mobile = isset( $attributes['bodyLineHeightMobile'] ) ? $attributes['bodyLineHeightMobile'] : null;
-$body_line_height_unit   = $attributes['bodyLineHeightUnit'] ?? 'em';
-// Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
-$body_line_height_unit     = ( 'unitless' === $body_line_height_unit ) ? '' : $body_line_height_unit;
-$body_letter_spacing       = isset( $attributes['bodyLetterSpacing'] ) ? $attributes['bodyLetterSpacing'] : null;
-$body_letter_spacing_unit  = $attributes['bodyLetterSpacingUnit'] ?? 'em';
-$body_margin_bottom        = isset( $attributes['bodyMarginBottom'] ) ? $attributes['bodyMarginBottom'] : null;
-$body_margin_bottom_tablet = isset( $attributes['bodyMarginBottomTablet'] ) ? $attributes['bodyMarginBottomTablet'] : null;
-$body_margin_bottom_mobile = isset( $attributes['bodyMarginBottomMobile'] ) ? $attributes['bodyMarginBottomMobile'] : null;
-$body_margin_unit          = $attributes['bodyMarginUnit'] ?? 'px';
-
-// Validate body tag.
-if ( ! in_array( $body_tag, array( 'p', 'div' ), true ) ) {
-	$body_tag = 'p';
-}
-
-// ---------------------------------------------------------------------------
-// 3. Extract + validate attribution slot attributes.
+// 2. Extract + validate attribution slot attributes.
 // ---------------------------------------------------------------------------
 
 $attrib_tag              = $attributes['attributionTag'] ?? 'footer';
@@ -139,7 +85,7 @@ if ( ! in_array( $attrib_tag, array( 'footer', 'div', 'cite' ), true ) ) {
 }
 
 // ---------------------------------------------------------------------------
-// 4. Extract wrapper-level attributes used for the block's OWN visual styling
+// 3. Extract wrapper-level attributes used for the block's OWN visual styling
 // (colour, border, shadow, hover). Width/padding/margin are delegated to
 // SGS_Container_Wrapper::render() via the $attributes pass-through.
 // ---------------------------------------------------------------------------
@@ -172,7 +118,7 @@ if ( ! in_array( $border_style, $allowed_border_styles, true ) ) {
 }
 
 // ---------------------------------------------------------------------------
-// 5. Helper: build a slot inline-style string.
+// 4. Helper: build a slot inline-style string.
 // function_exists() guard because multiple block instances may include this file.
 // ---------------------------------------------------------------------------
 
@@ -210,25 +156,17 @@ if ( ! function_exists( 'sgs_quote_build_slot_style' ) ) {
 		if ( isset( $args['letterSpacing'] ) && null !== $args['letterSpacing'] && '' !== $args['letterSpacing'] ) {
 			$parts[] = 'letter-spacing:' . floatval( $args['letterSpacing'] ) . esc_attr( $args['letterSpacingUnit'] ?? 'em' );
 		}
-		// line-height / margin-bottom / margin-top are NOT inline (Pattern A,
-		// D-migration): each has tablet/mobile tiers on this slot, so
-		// base+tablet+mobile are emitted together on the SAME selector in
-		// the scoped <style> block via sgs_responsive_css_rule().
+		// line-height / margin-top are NOT inline (Pattern A, D-migration):
+		// this slot has tablet/mobile tiers, so base+tablet+mobile are emitted
+		// together on the SAME selector in the scoped <style> block via
+		// sgs_responsive_css_rule().
 
 		return implode( ';', $parts );
 	}
 }
 
 // ---------------------------------------------------------------------------
-// 6. Helper: build responsive CSS for a slot at one breakpoint.
-// function_exists() guard for the same reason as above.
-// ---------------------------------------------------------------------------
-
-// (sgs_quote_slot_responsive_css() removed — Pattern A migration replaces it
-// with the shared sgs_responsive_css_rule() general helper; see step 11.)
-
-// ---------------------------------------------------------------------------
-// 7. Resolve anchor / scope id.
+// 5. Resolve anchor / scope id.
 // ---------------------------------------------------------------------------
 
 $anchor = $attributes['anchor'] ?? '';
@@ -241,30 +179,7 @@ if ( ! $anchor ) {
 $scope = '#' . esc_attr( $anchor );
 
 // ---------------------------------------------------------------------------
-// 8. Build body slot style.
-// ---------------------------------------------------------------------------
-
-$body_style_str = sgs_quote_build_slot_style(
-	array(
-		'colour'            => $body_colour,
-		'fontSize'          => $body_font_size,
-		'fontSizeUnit'      => $body_font_size_unit,
-		'fontWeight'        => $body_font_weight,
-		'fontFamily'        => $body_font_family,
-		'fontStyle'         => $body_font_style,
-		'textDecoration'    => $body_text_decoration,
-		'textTransform'     => $body_text_transform,
-		'lineHeight'        => $body_line_height,
-		'lineHeightUnit'    => $body_line_height_unit,
-		'letterSpacing'     => $body_letter_spacing,
-		'letterSpacingUnit' => $body_letter_spacing_unit,
-		'marginBottom'      => $body_margin_bottom,
-		'marginUnit'        => $body_margin_unit,
-	)
-);
-
-// ---------------------------------------------------------------------------
-// 9. Build attribution slot style.
+// 6. Build attribution slot style.
 // ---------------------------------------------------------------------------
 
 $attrib_style_str = sgs_quote_build_slot_style(
@@ -285,7 +200,7 @@ $attrib_style_str = sgs_quote_build_slot_style(
 );
 
 // ---------------------------------------------------------------------------
-// 10. Build the block's OWN extra_styles (colour, border, shadow, hover CSS vars).
+// 7. Build the block's OWN extra_styles (colour, border, shadow, hover CSS vars).
 // Width/padding/margin delegated to the helper via $attributes pass-through.
 // These travel via extra_styles so the helper merges them onto the wrapper.
 // ---------------------------------------------------------------------------
@@ -360,48 +275,16 @@ if ( ! $inherit_style ) {
 }
 
 // ---------------------------------------------------------------------------
-// 11. Build scoped <style> blocks for SLOT responsive overrides + hover state.
-//
-// a) Body slot responsive overrides.
-// b) Attribution slot responsive overrides.
-// c) Hover state (scale, colour, background, shadow).
+// 8. Build scoped <style> blocks for the attribution SLOT responsive overrides
+// + hover state.
 //
 // NOTE: Wrapper margin/padding responsive overrides (tablet/mobile) are
-// now handled by SGS_Container_Wrapper::render() — no separate wrapper CSS
-// needed here.
+// handled by SGS_Container_Wrapper::render() — no separate wrapper CSS
+// needed here. Body typography is CHILD-owned (each InnerBlocks sgs/text
+// carries its own responsive CSS) — no body-slot CSS here (HC2/D192).
 // ---------------------------------------------------------------------------
 
-$body_scope   = $scope . ' .wp-block-sgs-quote__body';
 $attrib_scope = $scope . ' .wp-block-sgs-quote__attribution';
-
-// Body — base + tablet + mobile on the SAME selector (Pattern A).
-$css_body_tiers = sgs_responsive_css_rule(
-	$attributes,
-	array(
-		array(
-			'attr'         => 'bodyFontSize',
-			'css'          => 'font-size',
-			'unit_default' => $body_font_size_unit,
-			'tablet_attr'  => 'bodyFontSizeTablet',
-			'mobile_attr'  => 'bodyFontSizeMobile',
-		),
-		array(
-			'attr'         => 'bodyLineHeight',
-			'css'          => 'line-height',
-			'unit_default' => $body_line_height_unit,
-			'tablet_attr'  => 'bodyLineHeightTablet',
-			'mobile_attr'  => 'bodyLineHeightMobile',
-		),
-		array(
-			'attr'         => 'bodyMarginBottom',
-			'css'          => 'margin-bottom',
-			'unit_default' => $body_margin_unit,
-			'tablet_attr'  => 'bodyMarginBottomTablet',
-			'mobile_attr'  => 'bodyMarginBottomMobile',
-		),
-	),
-	$body_scope
-);
 
 // Attribution — base + tablet + mobile on the SAME selector (Pattern A).
 $css_attrib_tiers = sgs_responsive_css_rule(
@@ -447,54 +330,27 @@ if ( $hover_scale || $hover_colour || $hover_bg || $box_shadow_hover ) {
 	$css_hover = $scope . ':hover{' . implode( ';', $hover_decls ) . '}';
 }
 
-$slot_responsive_css = trim(
-	$css_body_tiers .
-	$css_attrib_tiers .
-	$css_hover
-);
+$slot_responsive_css = trim( $css_attrib_tiers . $css_hover );
 
 // ---------------------------------------------------------------------------
-// 12. Build the blockquote's interior HTML.
+// 9. Build the blockquote's interior HTML: InnerBlocks $content (body) +
+// the attribution element (if enabled + non-empty), as flat siblings.
 //
 // FIX E audit (P-WP-AUTOP-INTERACTION 2026-05-17): no double-wrap risk —
 // <blockquote> is a block-level element; wpautop skips it.
 // ---------------------------------------------------------------------------
 
-$blockquote_inner = '';
+$blockquote_inner = $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WP core InnerBlocks output.
 
-if ( $has_inner_blocks ) {
-	// β-path: emit rendered InnerBlocks output as the body. Attribution
-	// arrives as a child block — do NOT also render the attribution attribute.
-	$blockquote_inner = $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-} else {
-	// Legacy path: iterate $attributes['body'][] array per the operator UI.
-	$body_tag_escaped = tag_escape( $body_tag );
-	foreach ( $body as $item ) {
-		$item_text = (string) $item;
-		// Skip entirely blank items.
-		if ( '' === trim( wp_strip_all_tags( $item_text ) ) ) {
-			continue;
-		}
-		$body_style_attr   = $body_style_str ? ' style="' . esc_attr( $body_style_str ) . '"' : '';
-		$blockquote_inner .= sprintf(
-			'<%1$s class="wp-block-sgs-quote__body"%2$s>%3$s</%1$s>',
-			$body_tag_escaped, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			$body_style_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			wp_kses_post( $item_text )
-		);
-	}
-
-	// Attribution — legacy path only. β-path attribution arrives via InnerBlocks.
-	if ( $attrib_enabled && '' !== trim( wp_strip_all_tags( $attribution ) ) ) {
-		$attrib_tag_escaped = tag_escape( $attrib_tag );
-		$attrib_style_attr  = $attrib_style_str ? ' style="' . esc_attr( $attrib_style_str ) . '"' : '';
-		$blockquote_inner  .= sprintf(
-			'<%1$s class="wp-block-sgs-quote__attribution"%2$s>%3$s</%1$s>',
-			$attrib_tag_escaped, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			$attrib_style_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			wp_kses_post( $attribution )
-		);
-	}
+if ( $has_attribution ) {
+	$attrib_tag_escaped = tag_escape( $attrib_tag );
+	$attrib_style_attr  = $attrib_style_str ? ' style="' . esc_attr( $attrib_style_str ) . '"' : '';
+	$blockquote_inner  .= sprintf(
+		'<%1$s class="wp-block-sgs-quote__attribution"%2$s>%3$s</%1$s>',
+		$attrib_tag_escaped, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		$attrib_style_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		wp_kses_post( $attribution )
+	);
 }
 
 // Prepend scoped slot CSS (inside inner_html so it is scoped to this instance).
@@ -506,18 +362,16 @@ if ( $slot_responsive_css ) {
 $inner_html = $slot_style_tag . $blockquote_inner;
 
 // ---------------------------------------------------------------------------
-// 13. Anchor id attr — passed via extra_attrs so the helper writes id="…"
+// 10. Anchor id attr — passed via extra_attrs so the helper writes id="…"
 // on the wrapper element. The id MUST attach for generated anchors too:
 // $scope is '#'-based, so every scoped rule (incl. the Pattern-A base
-// values) matches NOTHING unless the element carries the id. (The old
-// "rely on the scoped selector without the id" comment was the bug —
-// caught live 2026-07-05: sibling text blocks rendered theme defaults.)
+// values) matches NOTHING unless the element carries the id.
 // ---------------------------------------------------------------------------
 
 $extra_attrs = array( 'id' => esc_attr( $anchor ) );
 
 // ---------------------------------------------------------------------------
-// 14. Emit via the shared wrapper helper.
+// 11. Emit via the shared wrapper helper.
 //
 // KIND = 'content': width/spacing layers only — no bg/overlay/svg/grid.
 // The blockquote's own colour/border/shadow CSS travels via extra_styles.

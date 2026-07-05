@@ -5,7 +5,7 @@
 	"version": "0.2.0",
 	"title": "Quote",
 	"category": "sgs-content",
-	"description": "Attributed blockquote with body paragraphs and an optional footer attribution. Emits semantic <blockquote> + <footer> so converter-pipeline outputs preserve the correct HTML5 structure and inheritable italic styling.",
+	"description": "Attributed blockquote — body paragraphs are native InnerBlocks children (mirrors core/quote) and attribution is an optional footer/cite/div string. Emits semantic <blockquote> so converter-pipeline outputs preserve the correct HTML5 structure.",
 	"keywords": [
 		"quote",
 		"blockquote",
@@ -30,116 +30,9 @@
 			"width": true,
 			"color": true,
 			"style": true
-		},
-		"sgs": {
-			"arrayContentLift": true
 		}
 	},
 	"attributes": {
-		"body": {
-			"type": "array",
-			"items": {
-				"type": "string"
-			},
-			"default": [],
-			"role": "content"
-		},
-		"bodyTag": {
-			"type": "string",
-			"enum": [
-				"p",
-				"div"
-			],
-			"default": "p"
-		},
-		"bodyColour": {
-			"type": "string",
-			"default": ""
-		},
-		"bodyFontSize": {
-			"type": "number"
-		},
-		"bodyFontSizeTablet": {
-			"type": "number"
-		},
-		"bodyFontSizeMobile": {
-			"type": "number"
-		},
-		"bodyFontSizeUnit": {
-			"type": "string",
-			"default": "px"
-		},
-		"bodyFontWeight": {
-			"type": "string",
-			"default": ""
-		},
-		"bodyFontFamily": {
-			"type": "string",
-			"default": ""
-		},
-		"bodyFontStyle": {
-			"type": "string",
-			"enum": [
-				"",
-				"normal",
-				"italic"
-			],
-			"default": "italic"
-		},
-		"bodyTextDecoration": {
-			"type": "string",
-			"enum": [
-				"",
-				"none",
-				"underline",
-				"line-through"
-			],
-			"default": ""
-		},
-		"bodyTextTransform": {
-			"type": "string",
-			"enum": [
-				"",
-				"none",
-				"uppercase",
-				"lowercase",
-				"capitalize"
-			],
-			"default": ""
-		},
-		"bodyLineHeight": {
-			"type": "number"
-		},
-		"bodyLineHeightTablet": {
-			"type": "number"
-		},
-		"bodyLineHeightMobile": {
-			"type": "number"
-		},
-		"bodyLineHeightUnit": {
-			"type": "string",
-			"default": "em"
-		},
-		"bodyLetterSpacing": {
-			"type": "number"
-		},
-		"bodyLetterSpacingUnit": {
-			"type": "string",
-			"default": "em"
-		},
-		"bodyMarginBottom": {
-			"type": "number"
-		},
-		"bodyMarginBottomTablet": {
-			"type": "number"
-		},
-		"bodyMarginBottomMobile": {
-			"type": "number"
-		},
-		"bodyMarginUnit": {
-			"type": "string",
-			"default": "px"
-		},
 		"attribution": {
 			"type": "string",
 			"default": ""
@@ -457,18 +350,26 @@
 	"style": "file:./style-index.css",
 	"example": {
 		"attributes": {
-			"body": [
-				"A great quotation block lets your content speak for itself.",
-				"Place the source's words here for emphasis and credibility.",
-				"A short third line keeps the example representative."
-			],
 			"attribution": "\u00e2\u20ac\u201d Jane Smith, Customer",
 			"attributionColour": "primary",
-			"bodyFontStyle": "italic",
 			"paddingTop": 24,
 			"paddingRight": 24,
 			"paddingBottom": 24,
 			"paddingLeft": 24
-		}
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "A great quotation block lets your content speak for itself."
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Place the source's words here for emphasis and credibility."
+				}
+			}
+		]
 	}
 }

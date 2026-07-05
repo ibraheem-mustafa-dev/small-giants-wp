@@ -1,14 +1,22 @@
 /**
  * edit.js — Block editor component for sgs/quote.
  *
+ * ONE content model mirroring WordPress core/quote (Bean-agreed 2026-07-05):
+ * - Body = InnerBlocks children (multi-paragraph, natively editable — the
+ *   client types/adds/removes paragraphs the normal WP way, same as any
+ *   other InnerBlocks-bearing composite).
+ * - Attribution = ONE typed string attr (RichText, not a child block) with
+ *   its own typography controls.
+ *
+ * Body typography/colour lives on the CHILD sgs/text blocks (HC2, D192:
+ * "parent owns LAYOUT, child owns TYPOGRAPHY" for InnerBlocks composites) —
+ * this parent has no body-slot styling controls any more.
+ *
  * Provides editing surfaces for:
- * - Body paragraphs (array of RichText items + Add / Remove controls)
- * - Attribution string (single RichText + tag select)
- * - Body slot typography (colour, font size responsive, weight, style, etc.)
- * - Attribution slot typography
+ * - Body paragraphs (native InnerBlocks — sgs/text children)
+ * - Attribution string (single RichText + tag select) + its typography
  * - Wrapper (background, border, radius, shadow, padding, margin, width)
  * - Hover state (scale, colour, background, shadow)
- * - Variant style select
  * - Inherit style toggle
  *
  * Primary use case is converter-emitted; the editor just needs to register
@@ -17,6 +25,7 @@
 import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
+	useInnerBlocksProps,
 	InspectorControls,
 	RichText,
 } from '@wordpress/block-editor';
@@ -26,7 +35,6 @@ import {
 	RangeControl,
 	TextControl,
 	ToggleControl,
-	Button,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveControl } from '../../components';
@@ -38,9 +46,12 @@ import ContainerWrapperControls from '../container/components/ContainerWrapperCo
 // Constants
 // ---------------------------------------------------------------------------
 
-const BODY_TAG_OPTIONS = [
-	{ label: __( 'p (paragraph)', 'sgs-blocks' ), value: 'p' },
-	{ label: __( 'div (block)', 'sgs-blocks' ), value: 'div' },
+// Default InnerBlocks template — seeds one editable body paragraph. The slot
+// stays OPEN (no allowedBlocks lock) so an operator, or the cloning converter
+// routing a draft paragraph/heading into the quote, can add further sgs/text
+// (or other text-capable) children (mirrors sgs/notice-banner's FR-22-6 model).
+const QUOTE_BODY_TEMPLATE = [
+	[ 'sgs/text', { text: __( 'Body paragraph…', 'sgs-blocks' ), tag: 'p' } ],
 ];
 
 const ATTRIB_TAG_OPTIONS = [
@@ -94,12 +105,6 @@ const LINE_HEIGHT_UNITS = [
 	{ value: 'rem', label: 'rem', default: 1.5 },
 	{ value: 'px', label: 'px', default: 24 },
 	{ value: '', label: '—', default: 1.5 },
-];
-
-const LETTER_SPACING_UNITS = [
-	{ value: 'em', label: 'em', default: 0 },
-	{ value: 'rem', label: 'rem', default: 0 },
-	{ value: 'px', label: 'px', default: 0 },
 ];
 
 const MARGIN_UNITS = [
@@ -196,25 +201,6 @@ function buildWrapperStyle( attributes ) {
 	return style;
 }
 
-function buildBodyStyle( attributes ) {
-	const {
-		bodyColour, bodyFontSize, bodyFontSizeUnit, bodyFontWeight,
-		bodyFontStyle, bodyLineHeight, bodyLineHeightUnit,
-		bodyLetterSpacing, bodyLetterSpacingUnit, bodyMarginBottom, bodyMarginUnit,
-	} = attributes;
-	const style = {};
-	if ( bodyColour ) {
-		style.color = /^#|^rgb|^hsl/.test( bodyColour ) ? bodyColour : colourVar( bodyColour );
-	}
-	if ( bodyFontSize ) { style.fontSize = `${ bodyFontSize }${ bodyFontSizeUnit }`; }
-	if ( bodyFontWeight ) { style.fontWeight = bodyFontWeight; }
-	if ( bodyFontStyle ) { style.fontStyle = bodyFontStyle; }
-	if ( bodyLineHeight != null ) { style.lineHeight = `${ bodyLineHeight }${ bodyLineHeightUnit }`; }
-	if ( bodyLetterSpacing != null ) { style.letterSpacing = `${ bodyLetterSpacing }${ bodyLetterSpacingUnit }`; }
-	if ( bodyMarginBottom != null ) { style.marginBottom = `${ bodyMarginBottom }${ bodyMarginUnit }`; }
-	return style;
-}
-
 function buildAttribStyle( attributes ) {
 	const {
 		attributionColour, attributionFontSize, attributionFontSizeUnit,
@@ -246,28 +232,6 @@ function buildAttribStyle( attributes ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		body,
-		bodyTag,
-		bodyColour,
-		bodyFontSize,
-		bodyFontSizeTablet,
-		bodyFontSizeMobile,
-		bodyFontSizeUnit,
-		bodyFontWeight,
-		bodyFontFamily,
-		bodyFontStyle,
-		bodyTextDecoration,
-		bodyTextTransform,
-		bodyLineHeight,
-		bodyLineHeightTablet,
-		bodyLineHeightMobile,
-		bodyLineHeightUnit,
-		bodyLetterSpacing,
-		bodyLetterSpacingUnit,
-		bodyMarginBottom,
-		bodyMarginBottomTablet,
-		bodyMarginBottomMobile,
-		bodyMarginUnit,
 		attribution,
 		attributionTag,
 		attributionEnabled,
@@ -310,46 +274,17 @@ export default function Edit( { attributes, setAttributes } ) {
 		style: buildWrapperStyle( attributes ),
 	} );
 
-	const bodyItems = Array.isArray( body ) ? body : [];
+	// Body = native InnerBlocks (mirrors core/quote) — the wrapping element
+	// (blockquote) hosts the children directly, no extra body-row markup.
+	// `children` is pulled out and rendered explicitly (see canvas below) so
+	// the attribution RichText can sit alongside it as a flat sibling — a
+	// literal spread would let innerBlocksProps.children silently win over
+	// the RichText.
+	const { children: innerBlocksChildren, ...innerBlocksRest } = useInnerBlocksProps( {}, {
+		template: QUOTE_BODY_TEMPLATE,
+	} );
 
-	function updateBodyItem( index, value ) {
-		const updated = [ ...bodyItems ];
-		updated[ index ] = value;
-		setAttributes( { body: updated } );
-	}
-
-	function addBodyItem() {
-		setAttributes( { body: [ ...bodyItems, '' ] } );
-	}
-
-	function removeBodyItem( index ) {
-		const updated = bodyItems.filter( ( _, i ) => i !== index );
-		setAttributes( { body: updated } );
-	}
-
-	const bodyStyle  = buildBodyStyle( attributes );
 	const attribStyle = buildAttribStyle( attributes );
-
-	// Per-breakpoint attr keys for body font size.
-	const bodyFontSizeBreakpoints = {
-		desktop: 'bodyFontSize',
-		tablet: 'bodyFontSizeTablet',
-		mobile: 'bodyFontSizeMobile',
-	};
-
-	// Per-breakpoint attr keys for body line height.
-	const bodyLineHeightBreakpoints = {
-		desktop: 'bodyLineHeight',
-		tablet: 'bodyLineHeightTablet',
-		mobile: 'bodyLineHeightMobile',
-	};
-
-	// Per-breakpoint attr keys for body margin-bottom.
-	const bodyMarginBottomBreakpoints = {
-		desktop: 'bodyMarginBottom',
-		tablet: 'bodyMarginBottomTablet',
-		mobile: 'bodyMarginBottomMobile',
-	};
 
 	// Per-breakpoint attr keys for attribution font size.
 	const attributionFontSizeBreakpoints = {
@@ -376,179 +311,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { inheritStyle: val } ) }
 						__nextHasNoMarginBottom
 					/>
-				</PanelBody>
-
-				{ /* ---- Body slot ---- */ }
-				<PanelBody
-					title={ __( 'Body', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<SelectControl
-						label={ __( 'Paragraph tag', 'sgs-blocks' ) }
-						value={ bodyTag }
-						options={ BODY_TAG_OPTIONS }
-						onChange={ ( val ) => setAttributes( { bodyTag: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					<DesignTokenPicker
-						label={ __( 'Text colour', 'sgs-blocks' ) }
-						value={ bodyColour }
-						onChange={ ( val ) => setAttributes( { bodyColour: val ?? '' } ) }
-					/>
-					<SelectControl
-						label={ __( 'Font style', 'sgs-blocks' ) }
-						value={ bodyFontStyle }
-						options={ FONT_STYLE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { bodyFontStyle: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Font weight', 'sgs-blocks' ) }
-						value={ bodyFontWeight }
-						options={ FONT_WEIGHT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { bodyFontWeight: val } ) }
-						__nextHasNoMarginBottom
-					/>
-
-					{ /* Body font size — ResponsiveControl + UnitControl per breakpoint.
-					   The shared unit (bodyFontSizeUnit) is written once; the breakpoint
-					   UnitControl sets both the numeric attr and the shared unit. */ }
-					<ResponsiveControl label={ __( 'Font size', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrKey = bodyFontSizeBreakpoints[ breakpoint ];
-							const numVal = attributes[ attrKey ];
-							const unitVal = bodyFontSizeUnit || 'px';
-							return (
-								<UnitControl
-									label={ __( 'Font size', 'sgs-blocks' ) }
-									hideLabelFromVision
-									value={ composeUnit( numVal, unitVal ) }
-									units={ FONT_SIZE_UNITS }
-									onChange={ ( raw ) => {
-										const { num, unit } = parseUnit( raw, unitVal );
-										setAttributes( {
-											[ attrKey ]: num,
-											bodyFontSizeUnit: unit,
-										} );
-									} }
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
-
-					{ /* Body line height — ResponsiveControl + RangeControl per breakpoint.
-					   The shared unit (bodyLineHeightUnit) is set via UnitControl on desktop. */ }
-					<ResponsiveControl label={ __( 'Line height', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrKey = bodyLineHeightBreakpoints[ breakpoint ];
-							const numVal = attributes[ attrKey ];
-							const unitVal = bodyLineHeightUnit || 'em';
-							if ( breakpoint === 'desktop' ) {
-								return (
-									<UnitControl
-										label={ __( 'Line height', 'sgs-blocks' ) }
-										hideLabelFromVision
-										value={ composeUnit( numVal, unitVal ) }
-										units={ LINE_HEIGHT_UNITS }
-										onChange={ ( raw ) => {
-											const { num, unit } = parseUnit( raw, unitVal );
-											setAttributes( {
-												bodyLineHeight: num,
-												bodyLineHeightUnit: unit,
-											} );
-										} }
-										__nextHasNoMarginBottom
-									/>
-								);
-							}
-							return (
-								<RangeControl
-									label={ breakpoint === 'tablet'
-										? __( 'Line height (tablet)', 'sgs-blocks' )
-										: __( 'Line height (mobile)', 'sgs-blocks' )
-									}
-									value={ numVal ?? '' }
-									onChange={ ( val ) => setAttributes( { [ attrKey ]: val } ) }
-									min={ 0.8 } max={ 3 } step={ 0.05 } allowReset
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
-
-					{ /* Letter spacing — UnitControl (number + unit in one input) */ }
-					<UnitControl
-						label={ __( 'Letter spacing', 'sgs-blocks' ) }
-						value={ composeUnit( bodyLetterSpacing, bodyLetterSpacingUnit ) }
-						units={ LETTER_SPACING_UNITS }
-						onChange={ ( raw ) => {
-							const { num, unit } = parseUnit( raw, bodyLetterSpacingUnit || 'em' );
-							setAttributes( { bodyLetterSpacing: num, bodyLetterSpacingUnit: unit } );
-						} }
-						__nextHasNoMarginBottom
-					/>
-
-					<SelectControl
-						label={ __( 'Text decoration', 'sgs-blocks' ) }
-						value={ bodyTextDecoration }
-						options={ TEXT_DECORATION_OPTIONS }
-						onChange={ ( val ) => setAttributes( { bodyTextDecoration: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Text transform', 'sgs-blocks' ) }
-						value={ bodyTextTransform }
-						options={ TEXT_TRANSFORM_OPTIONS }
-						onChange={ ( val ) => setAttributes( { bodyTextTransform: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'Font family', 'sgs-blocks' ) }
-						value={ bodyFontFamily }
-						onChange={ ( val ) => setAttributes( { bodyFontFamily: val } ) }
-						placeholder={ __( 'Inter, sans-serif', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-					/>
-
-					{ /* Paragraph gap (margin-bottom) — ResponsiveControl + UnitControl per breakpoint */ }
-					<ResponsiveControl label={ __( 'Paragraph gap (margin-bottom)', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrKey = bodyMarginBottomBreakpoints[ breakpoint ];
-							const numVal = attributes[ attrKey ];
-							const unitVal = bodyMarginUnit || 'px';
-							if ( breakpoint === 'desktop' ) {
-								return (
-									<UnitControl
-										label={ __( 'Gap', 'sgs-blocks' ) }
-										hideLabelFromVision
-										value={ composeUnit( numVal, unitVal ) }
-										units={ MARGIN_UNITS }
-										onChange={ ( raw ) => {
-											const { num, unit } = parseUnit( raw, unitVal );
-											setAttributes( {
-												bodyMarginBottom: num,
-												bodyMarginUnit: unit,
-											} );
-										} }
-										__nextHasNoMarginBottom
-									/>
-								);
-							}
-							return (
-								<RangeControl
-									label={ breakpoint === 'tablet'
-										? __( 'Gap (tablet)', 'sgs-blocks' )
-										: __( 'Gap (mobile)', 'sgs-blocks' )
-									}
-									value={ numVal ?? '' }
-									onChange={ ( val ) => setAttributes( { [ attrKey ]: val } ) }
-									min={ 0 } max={ 80 } step={ 1 } allowReset
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
 				</PanelBody>
 
 				{ /* ---- Attribution slot ---- */ }
@@ -838,42 +600,14 @@ export default function Edit( { attributes, setAttributes } ) {
 				/>
 			</InspectorControls>
 
-			{ /* Canvas */ }
-			<blockquote { ...blockProps }>
-				{ bodyItems.map( ( item, index ) => (
-					<div
-						key={ index }
-						className="wp-block-sgs-quote__body-row"
-					>
-						<RichText
-							tagName={ bodyTag }
-							className="wp-block-sgs-quote__body"
-							style={ bodyStyle }
-							value={ item }
-							onChange={ ( val ) => updateBodyItem( index, val ) }
-							placeholder={ __( 'Body paragraph…', 'sgs-blocks' ) }
-							allowedFormats={ [ 'core/bold', 'core/italic', 'core/link' ] }
-						/>
-						{ bodyItems.length > 1 && (
-							<Button
-								isSmall
-								isDestructive
-								onClick={ () => removeBodyItem( index ) }
-								style={ { marginBottom: '4px' } }
-							>
-								{ __( 'Remove paragraph', 'sgs-blocks' ) }
-							</Button>
-						) }
-					</div>
-				) ) }
-				<Button
-					variant="secondary"
-					isSmall
-					onClick={ addBodyItem }
-					style={ { marginBottom: '8px' } }
-				>
-					{ __( '+ Add paragraph', 'sgs-blocks' ) }
-				</Button>
+			{ /* Canvas — body children (InnerBlocks) + attribution (RichText) sit as
+			     FLAT siblings directly inside <blockquote>, mirroring render.php's
+			     `$content . $attribution_html` structure. innerBlocksProps.children
+			     is destructured out and rendered explicitly alongside the RichText
+			     sibling — spreading innerBlocksProps as-is would make its internal
+			     `children` win over literal JSX children and drop the RichText. */ }
+			<blockquote { ...blockProps } { ...innerBlocksRest }>
+				{ innerBlocksChildren }
 				{ attributionEnabled && (
 					<RichText
 						tagName={ attributionTag }

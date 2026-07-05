@@ -38,15 +38,25 @@ _QUOTE_HTML = """<div class="sgs-brand__quote">
 
 def test_mechanism_b_bare_paragraphs_become_text_children_not_dropped():
     """An InnerBlocks parent's bare <p> children land as sgs/text child blocks — the
-    brand-quote body drop (G1 + global-BEM both miss -> was ContentGap; now atomic)."""
+    brand-quote body drop (G1 + global-BEM both miss -> was ContentGap; now atomic).
+
+    UPDATED 2026-07-05 (ONE-content-model rebuild, quote-attribution fix): the
+    2 BARE <p> body paragraphs still land as sgs/text ChildBlocks. The 3rd <p>
+    carries `sgs-brand__attribution` — a BEM __element token ('attribution')
+    that now resolves (FR-31-2.6 completion, extraction.py's generic-path
+    NESTED-ATTR pre-empt) to sgs/quote's own `attribution` nested scalar attr,
+    NOT a 4th indistinguishable sgs/text child block. Zero gaps either way."""
     q = _node(_QUOTE_HTML)
     rec = recognise(q)  # scalar sgs/quote, delegates_content=1 -> Mechanism B
     results = extract_content(rec, q, media_map={}, css_rules={})
-    from converter.context import ChildBlock, ContentGap
+    from converter.context import ChildBlock, ContentGap, ScalarLift
     text_children = [r for r in results if isinstance(r, ChildBlock)]
+    scalar_lifts = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
     gaps = [r for r in results if isinstance(r, ContentGap)]
-    # 3 paragraphs -> 3 content children; zero body paragraphs dropped to a gap.
-    assert len(text_children) >= 3
+    # 2 bare body paragraphs -> 2 content children; the attribution paragraph
+    # is a nested scalar attr, not a 3rd child block.
+    assert len(text_children) == 2
+    assert scalar_lifts.get("attribution") == "— Zainab"
     assert not any("no resolvable slug" in g.detail for g in gaps)
 
 
