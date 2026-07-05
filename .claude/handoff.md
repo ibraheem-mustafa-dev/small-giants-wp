@@ -33,8 +33,8 @@ Bean's mandated QC ran in full: all 16 programme steps PASS spec/rules/cheats/dr
 - ~~7 further parked QC findings~~ ALL P-QC-* CLEARED at D278 (archived with outcomes). Accepted trivial debt: the `--converter-v2` CLI flag NAME.
 
 ## Next priorities
-1. Card residuals: the FR-31-2 multi-attr-per-element lift (ctaText+ctaUrl) → packSizes schema → imageAlt (block-side, wp-sgs-developer).
-2. P-STYLESHEET-DEFAULTS (Bean "TOP next fix" 2026-07-03 — theme base 16px vs 18px; theme-snapshot, not converter).
+1. **Bean-directed diagnosis-first flow:** fresh /sgs-clone run → enumerate EVERY drop/mismatch into one register → parallel root-cause investigation (/dispatching-parallel-agents + /systematic-debugging + /sgs-wp-engine) → GROUP by cause → present to Bean for agreement BEFORE fixing.
+2. Agreed cause-groups then clear via the standard discipline; known priors: card ctaText/ctaUrl (single-winner resolver), packSizes (items schema), imageAlt (block attr), P-STYLESHEET-DEFAULTS (18px vs 16px base — likely explains many typography mismatches).
 
 ## Files modified
 | File path | What changed |
@@ -53,7 +53,7 @@ Bean's mandated QC ran in full: all 16 programme steps PASS spec/rules/cheats/dr
 - Rater false-claim rate improved this session (1 of ~30 findings vs 8 in the build session) but STOP-15 tracing still caught it — keep fact-checking every finding.
 
 ## Next Session Prompt
-The orchestration plan lives at `.claude/next-session-prompt.md` (STOP catalogue carried forward to STOP-49 + a new STOP-50). Read via the autopilot SessionStart hook as usual.
+The orchestration plan lives at `.claude/next-session-prompt.md` — REWRITTEN at close to Bean's diagnosis-first flow (clone run → full defect register → parallel root-cause → group by cause → agree before fixing). STOP catalogue carried forward (incl. STOP-50). Read via the autopilot SessionStart hook as usual.
 
 ---
 

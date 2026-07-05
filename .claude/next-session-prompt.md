@@ -1,16 +1,16 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: cloning-pipeline / POST-QC RESIDUALS BUILD (D277, 2026-07-05)
+thread: cloning-pipeline / ROOT-CAUSE DIAGNOSIS SESSION (Bean-directed at the D278 close, 2026-07-05)
 generated: 2026-07-05
-primary_goal: "Close the card residuals (ctaText/ctaUrl multi-attr-per-element lift, packSizes items schema, imageAlt block-side attr) + the theme-layer stylesheet defaults, each LANDED-gated on page 8 with the A2 baseline SHRINKING."
+primary_goal: "Bean-directed flow: fresh /sgs-clone run FIRST -> enumerate EVERY drop and mismatch (content + CSS, element+property level) into one register -> parallel root-cause investigation (/dispatching-parallel-agents + /systematic-debugging + /sgs-wp-engine) -> GROUP the register by root cause -> present the cause-groups to Bean for agreement BEFORE fixing (the D278 explain-agree-clear pattern)."
 ---
 
-# ⚡ NEXT SESSION — card residuals build + the P-QC backlog
+# ⚡ NEXT SESSION — the ROOT-CAUSE DIAGNOSIS run (Bean-directed)
 
-Invoke `/autopilot` first. The MASSIVE QC is DONE (D277): all 16 programme steps verified, 3 defect classes fixed (`4a35134a`), A2 baseline 6→5, parity 90/67-69-76. This session BUILDS: the card residuals are the last content drops on the homepage (the whole QC backlog was cleared at D278 — nothing else is parked from it). **Assume nothing; fact-check everything against ground truth (9 false agent/rater claims caught by tracing across the last two sessions).**
+Invoke `/autopilot` first. The QC arc is fully closed (D277+D278). Bean set this session's shape at the close: **run a fresh clone first, list EVERY drop and mistake, root-cause each one, and group them by cause — agree the groups with Bean before fixing anything** (the explain→agree→clear pattern that worked at D278). **Assume nothing; fact-check everything against ground truth (9 false agent/rater claims caught by tracing across the last two sessions).**
 
-**Agent identity.** You are the SGS pipeline developer closing the last tracked content residuals. Ground truths: Spec 31 (read IN FULL), the A2 baseline (`ledger/content-coverage-baseline.json`, 5 keys), the live page 8, the draft `sites/mamas-munches/mockups/homepage/index.html`, and `.claude/parking.md` (P-GATE-A-CARD-RESIDUALS + the P-QC-* register).
+**Agent identity.** You are the SGS pipeline diagnostician: you produce the definitive, cause-grouped register of every remaining draft→clone drop and mismatch, evidence-cited, for Bean to agree fixes against. Ground truths: Spec 31 (read IN FULL), the A2 baseline (`ledger/content-coverage-baseline.json`, 5 keys), the live page 8, the draft `sites/mamas-munches/mockups/homepage/index.html`, and `.claude/parking.md` (P-GATE-A-CARD-RESIDUALS + the P-QC-* register).
 
 **State recap (plain English).** The modular `converter/` engine is the only converter and is QC-verified universal + DB-rooted. Honest parity: content 90% / CSS 67-69-76. The 5 remaining A2-baselined content drops: 3 product-card pack-size pills, the card CTA text ("Add to Cart — £10"), and the skip-link (chrome, permanent). The CTA's link also drops. Root causes are known: the element→attr resolver returns ONE best match per element (a CTA needs text AND href lifted); pills are array-owned but have no `array_item_schema` items schema; string image attrs drop alt text.
 
@@ -81,33 +81,38 @@ Invoke `/autopilot` first. The MASSIVE QC is DONE (D277): all 16 programme steps
 
 ---
 
-## ORCHESTRATION PLAN
+## ORCHESTRATION PLAN (Bean-directed flow)
 
-### Task 1 — Card CTA: the multi-attr-per-element lift (ctaText + ctaUrl)
-**What:** extend the FR-31-2 element-driven lift so ONE draft element can populate MULTIPLE attrs by role — the card's `.sgs-button` CTA descendant lifts its text into `ctaText` (role text-content) AND its href into `ctaUrl` (role link-href, now admitted post-D277 drift fix). Design against `content_attr_for_element`'s single-winner ranking (walk.py:258+ leg 2) — the fix is per-ROLE winners, not one winner per element; a `link-href` role needs a href-extraction handler in the walk's role branch (currently `else: continue`).
-**Why:** closes 2 of the 5 A2 drops; the FR-31-2 identity-anchored lift is the named owner (P-GATE-A-CARD-RESIDUALS item a).
-**Orchestration:** design inline (architectural — the role-branch extension is walk-surface); /qc-council the fix-shape BEFORE building (R-31-7); solo build; STOP-43 before/after on the real card node.
-**Acceptance:** live page-8 card CTA shows the draft text + href (computed/DOM); A2 re-baseline shrinks 5→4 (CTA key out); suite + gates green.
+### Task 1 — Fresh /sgs-clone run (the ground-truth snapshot)
+**What:** run the full pipeline to page 8 (STOP-21 recipe in the catalogue above) so every artefact is FRESH: `computed-parity.json` (per-element, per-property mismatches at 375/768/1440), the A2 accounting vs the live page source (curl page 8 → `ledger/content_coverage_check.py --report --draft <draft> --markup <live source>`), `content-gaps.json`, and the run's trace/gap ledgers.
+**Why:** the register must be built from ONE current run, never stale artefacts.
+**Orchestration:** inline (one command + artefact collection). ~10 min.
+**Acceptance:** deploy green; parity report + A2 report + gap ledgers all from THIS run (baselines: content 90 / CSS 67-69-76 / A2 5 keys).
 
-### Task 2 — packSizes: the array items schema
-**What:** declare the pill fields in `src/blocks/product-card/block.json` `items.properties.<field>.role` (FR-31-2.5 channel) → `/sgs-update` reseed → the array resolver lifts the 3 pills. STOP-24 channel only.
-**Acceptance:** 3 pills render on the live card; A2 shrinks 4→1 (only the chrome skip-link remains); suite green.
+### Task 2 — Enumerate EVERY drop and mismatch into ONE register
+**What:** parse `computed-parity.json` (every mismatched property on every matched element + every unmatched draft element) + the A2 unaccounted keys + dropped images/links into a single numbered register (ID | section | element | kind: content-drop / css-mismatch / element-unmatched | draft value vs live value | viewport(s)). Expect roughly: 5 content units, ~250 mismatched props per viewport, ~15 unmatched draft elements.
+**Why:** "group by cause" needs the complete defect population first — no sampling.
+**Orchestration:** inline (a small parse script producing a markdown/JSON register). ~10 min.
+**Acceptance:** register totals reconcile with the parity report's own counts (conservation applies to the register too — nothing dropped in parsing).
 
-### Task 3 — imageAlt (block-side + lift)
-**What:** add an `imageAlt` attr to the string-image blocks that drop alt (block-side work — `wp-sgs-developer` agent) + the converter lift threads alt through `extract_field_value`'s image path. A11y-relevant.
-**Acceptance:** card/brand images carry the draft alt text on the live DOM.
+### Task 3 — Parallel root-cause investigation (/dispatching-parallel-agents)
+**What:** cluster the register mechanically first (same property family / same section / same element type), then dispatch READ-ONLY investigators in parallel — one per cluster — each running the /systematic-debugging protocol with /sgs-wp-engine + /sgs-db ground truth: trace each defect to its ROOT-cause layer (converter routing | theme default | block CSS/render | wrapper | draft convention | instrument artefact | WP core). KNOWN PRIORS to feed every investigator: P-STYLESHEET-DEFAULTS (clone theme base font 18px vs draft 16px — likely explains many typography mismatches; theme-snapshot fix, NOT converter); card ctaText/ctaUrl = the single-winner element→attr resolver (multi-attr lift needed, FR-31-2); packSizes = missing `array_item_schema` items schema; imageAlt = string image attrs drop alt (block-side attr needed).
+**Orchestration:** parallel read-only Explore/general-purpose agents (sonnet), one per cluster; NO fixes, NO writes. The main session fact-checks every claimed cause by tracing (STOP-15 — 9 false claims across the last two sessions).
+**Acceptance:** every register row carries a verified root cause with file:line / DB-row / computed-style evidence.
 
-### Task 4 (if time) — P-STYLESHEET-DEFAULTS
-Bean "TOP next fix" (2026-07-03): the clone's theme base font-size is 18px vs the draft's 16px — brand quote + all no-explicit-size text renders 2px large. Fix = `sites/mamas-munches/theme-snapshot.json` base typography → `push-theme-snapshot.py` (theme layer, NOT converter). Verify with computed-parity matched by content.
+### Task 4 — Group by cause + present to Bean (STOP before fixing)
+**What:** collapse the register into CAUSE GROUPS (one row per root cause: cause | plain-English explanation | affected register IDs | proposed fix-shape | smallest-plausible effort | expected parity gain). Present to Bean for agreement — the D278 pattern: explain → agree → clear. Do NOT build fixes before agreement; agreed groups then follow the standard discipline (qc-council on fix-shapes, solo builds, STOP-43 emit-diffs, LANDED + A2/parity gates, A2 baseline must SHRINK per content fix).
+**Acceptance:** Bean has the cause-grouped table with per-group proposals; agreed groups cleared same-session where scope allows.
 
 ### Dependency graph
 ```
-Task 1 (inline design → qc-council → solo build → LANDED + A2 shrink)
+Task 1 (inline clone run)
   ↓
-Task 2 (solo, STOP-24 channel → LANDED + A2 shrink)
+Task 2 (inline register build — conservation-checked)
   ↓
-Task 3 (wp-sgs-developer block-side + converter lift)  Task 4 theme-layer (independent, any time)
-  ↓ commit + push per fix (path-scoped), /handoff at close
+Task 3 (parallel read-only investigators → main-session fact-check of every cause)
+  ↓
+Task 4 (cause groups → Bean agreement → then fixes per the standard discipline)
 ```
 
 ## Skills to Invoke
@@ -119,7 +124,8 @@ Task 3 (wp-sgs-developer block-side + converter lift)  Task 4 theme-layer (indep
 | `/research` | ALWAYS INCLUDE — auto-routes if a defect needs external reference |
 | `/strategic-plan` | ALWAYS INCLUDE — only if Bean changes scope; the plan above is the plan |
 | `/qc-council` · `/qc-inline` | fix-shape validation BEFORE building (R-31-7) + pre-commit review (blub 255) |
-| `/systematic-debugging` | any defect found — root-cause before fixing |
+| `/dispatching-parallel-agents` | Task 3 — the parallel read-only investigator fan-out |
+| `/systematic-debugging` | THE Task-3 protocol — root-cause every register row before any fix |
 | `/sgs-clone` · `/sgs-db` · `/wp-blocks` | LANDED runs + DB ground truth (STOP-11/R-31-8) |
 | `/verify-loop` · `/handoff` · `/capture-lesson` | 2-attestation / session close |
 
@@ -141,7 +147,7 @@ Task 3 (wp-sgs-developer block-side + converter lift)  Task 4 theme-layer (indep
 
 ## First action
 
-Complete the Mandatory READING gate + the pre-flight ritual (answers in your first message), then start Task 1's design read: `converter/walk.py:210-315` + `db_lookup.content_attr_for_element`. Smallest first action: `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` (under 1 minute, zero dependencies).
+Complete the Mandatory READING gate + the pre-flight ritual (answers in your first message), then Task 1: the fresh clone run (STOP-21 recipe in the catalogue above). Smallest first action: `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` (under 1 minute, zero dependencies).
 
 ## Methodology guardrails (do not skip)
 - Tests from the CANONICAL cwd `plugins/sgs-blocks/scripts`: `python -m pytest orchestrator/test_css_router.py converter/tests cheat-gate/tests tests/test_converter_conformance.py ledger/tests -q --import-mode=importlib` (790 baseline incl. 40 byte-compare conformance goldens + real-draft metamorphic legs) + `tests/test_orchestrator_failed_status.py tests/test_orchestrator_non_bem_halt.py` (18). Gates: `python cheat-gate/run.py --check` + `converter/gates/no_slug_literal.py --check` + `converter/gates/import_ban.py --check` + `converter/gates/check_raw_sqlite.py --check` all exit 0.
