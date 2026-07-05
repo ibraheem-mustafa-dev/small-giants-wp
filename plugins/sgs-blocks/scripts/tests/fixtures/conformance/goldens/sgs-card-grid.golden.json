@@ -1,0 +1,11 @@
+{
+  "seed_note": "Seeded 2026-07-05 (D278) from the LANDED-verified engine state  -  deployed to canary page 8 that day, computed-parity content 90% / CSS 67-69-76, A2 ledger green. Never re-seed from emit alone; re-seed only WITH a fresh LANDED proof (a real deploy + computed-parity run, not just a local emit) and cite that proof in the commit message.",
+  "golden_id": "sgs-card-grid",
+  "source": "fixture:sgs-card-grid.html",
+  "status": "complete",
+  "block_name": "sgs/container",
+  "selector": "section.sgs-card-grid",
+  "failure_reason": "",
+  "primary_block_emitted": "sgs/card-grid",
+  "block_markup": "<!-- wp:sgs/card-grid {\"align\":\"full\",\"contentWidth\":\"1200px\",\"gap\":\"24px\",\"style\":{\"spacing\":{\"padding\":{\"bottom\":\"48px\",\"left\":\"24px\",\"right\":\"24px\",\"top\":\"48px\"}}}} /-->"
+}

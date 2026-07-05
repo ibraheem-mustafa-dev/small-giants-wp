@@ -1,0 +1,11 @@
+{
+  "seed_note": "Seeded 2026-07-05 (D278) from the LANDED-verified engine state  -  deployed to canary page 8 that day, computed-parity content 90% / CSS 67-69-76, A2 ledger green. Never re-seed from emit alone; re-seed only WITH a fresh LANDED proof (a real deploy + computed-parity run, not just a local emit) and cite that proof in the commit message.",
+  "golden_id": "sgs-pricing-table",
+  "source": "fixture:sgs-pricing-table.html",
+  "status": "complete",
+  "block_name": "sgs/container",
+  "selector": "section.sgs-pricing-table",
+  "failure_reason": "",
+  "primary_block_emitted": "sgs/pricing-table",
+  "block_markup": "<!-- wp:sgs/pricing-table {\"align\":\"full\",\"contentWidth\":\"1200px\",\"gap\":\"24px\",\"plans\":[{\"name\":\"Basic\",\"price\":\"\\u00a39/mo\"},{\"name\":\"Pro\",\"price\":\"\\u00a319/mo\"},{\"name\":\"Enterprise\",\"price\":\"\\u00a349/mo\"}],\"style\":{\"color\":{\"background\":\"#f8f4ef\"},\"spacing\":{\"padding\":{\"bottom\":\"64px\",\"left\":\"24px\",\"right\":\"24px\",\"top\":\"64px\"}}}} /-->"
+}

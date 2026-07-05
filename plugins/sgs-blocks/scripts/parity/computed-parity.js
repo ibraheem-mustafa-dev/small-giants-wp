@@ -93,7 +93,12 @@ const CAPTURE_SRC = `() => {
   const chromeToken = (t) => t === 'sgs-header' || t === 'sgs-footer' ||
     t.startsWith('sgs-header__') || t.startsWith('sgs-header--') ||
     t.startsWith('sgs-footer__') || t.startsWith('sgs-footer--') ||
-    t.includes('skip-link') || t === 'wp-block-template-part';
+    // ANCHORED (D278 QC): exact class tokens only — an unanchored
+    // includes('skip-link') would chrome-exclude any future class merely
+    // containing the substring, silently removing real content from BOTH
+    // sides of the score (STOP-49: the instrument is QC-able code).
+    t === 'sgs-header__skip-link' || t === 'skip-link' ||
+    t === 'wp-block-template-part';
   const inChrome = (el) => {
     for (let n = el; n && n.tagName !== 'BODY' && n.tagName !== 'HTML'; n = n.parentElement) {
       if (CHROME_TAGS[n.tagName]) return true;
@@ -216,7 +221,14 @@ function comparePair(drec, crec, dDef) {
     // Tier 1: content presence
     const has = (set, v) => set.has(v) || [...set].some(x => x.length > 5 && (x.includes(v) || v.includes(x)));
     const cFull = c.fullText || '';
-    const dropText = d.texts.filter(t => !excluded(t) && !has(cT, t) && !cFull.includes(t));
+    // Whole-page haystack fallback is FLOOR-GATED (D278 QC): it exists for
+    // draft units split across clone elements ("Reham, London"), but an
+    // unbounded substring match would let a SHORT dropped string count as
+    // present because it coincides with unrelated copy elsewhere —
+    // over-reporting fidelity (STOP-49). Units under 10 normalised chars
+    // must match a real element text (cT), never the whole-page haystack.
+    const dropText = d.texts.filter(t => !excluded(t) && !has(cT, t)
+      && !(t.length >= 10 && cFull.includes(t)));
     const dropImg = d.images.filter(a => !cI.has(a) && ![...cI].some(x => x.includes(a) || a.includes(x)));
     const dropLink = d.links.filter(h => !cL.has(h));
     const cTot = d.texts.filter(t => !excluded(t)).length + d.images.length + d.links.length;

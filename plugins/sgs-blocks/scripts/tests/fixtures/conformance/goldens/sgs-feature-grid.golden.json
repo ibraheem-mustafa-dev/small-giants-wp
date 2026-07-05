@@ -1,0 +1,11 @@
+{
+  "seed_note": "Seeded 2026-07-05 (D278) from the LANDED-verified engine state  -  deployed to canary page 8 that day, computed-parity content 90% / CSS 67-69-76, A2 ledger green. Never re-seed from emit alone; re-seed only WITH a fresh LANDED proof (a real deploy + computed-parity run, not just a local emit) and cite that proof in the commit message.",
+  "golden_id": "sgs-feature-grid",
+  "source": "fixture:sgs-feature-grid.html",
+  "status": "complete",
+  "block_name": "sgs/container",
+  "selector": "section.sgs-feature-grid",
+  "failure_reason": "",
+  "primary_block_emitted": "sgs/feature-grid",
+  "block_markup": "<!-- wp:sgs/feature-grid {\"align\":\"full\",\"contentWidth\":\"1200px\",\"gap\":\"32px\",\"style\":{\"color\":{\"background\":\"#f8f4ef\"},\"spacing\":{\"padding\":{\"bottom\":\"64px\",\"left\":\"24px\",\"right\":\"24px\",\"top\":\"64px\"}}}} /-->"
+}

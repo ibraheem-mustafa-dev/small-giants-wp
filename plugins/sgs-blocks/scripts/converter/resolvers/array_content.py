@@ -37,9 +37,7 @@ all resolution via ``db_lookup`` / ``recognise_helpers`` DB accessors.
 """
 from __future__ import annotations
 
-import functools
 import re
-import sqlite3
 from typing import Any
 
 from bs4 import Tag
@@ -54,21 +52,6 @@ _ARRAY_LIFT_CAP = "array-content-lift"
 
 # A BEM element class: sgs-<block>__<element>[--<modifier>]. Capture <element>.
 _BEM_ELEMENT_RE = re.compile(r"^sgs-[a-z0-9-]+__([a-z0-9-]+?)(?:--[a-z0-9-]+)*$")
-
-
-@functools.lru_cache(maxsize=1)
-def _content_roles() -> frozenset[str]:
-    """The content-bearing role names, DB-derived (roles.classification), used to
-    pick a slot's EXTRACTION role from its standalone block's attrs. DB-driven,
-    not a hardcoded vocabulary (R-31-1)."""
-    conn = sqlite3.connect(db_lookup.SGS_DB)
-    try:
-        rows = conn.execute(
-            "SELECT role_name FROM roles WHERE classification = 'content-bearing'"
-        ).fetchall()
-    finally:
-        conn.close()
-    return frozenset(r[0] for r in rows)
 
 
 def _bem_token(node: Tag) -> str | None:
@@ -93,7 +76,7 @@ def _slot_extraction_role(slot: str | None) -> str | None:
     block = db_lookup.standalone_block_for(slot)
     if not block:
         return None
-    content_roles = _content_roles()
+    content_roles = db_lookup._content_bearing_roles()
     for name, info in (db_lookup.block_attrs(block) or {}).items():
         role = info.get("role")
         if role in content_roles:

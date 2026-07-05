@@ -1,0 +1,11 @@
+{
+  "seed_note": "Seeded 2026-07-05 (D278) from the LANDED-verified engine state  -  deployed to canary page 8 that day, computed-parity content 90% / CSS 67-69-76, A2 ledger green. Never re-seed from emit alone; re-seed only WITH a fresh LANDED proof (a real deploy + computed-parity run, not just a local emit) and cite that proof in the commit message.",
+  "golden_id": "sgs-accordion",
+  "source": "fixture:sgs-accordion.html",
+  "status": "complete",
+  "block_name": "sgs/container",
+  "selector": "section.sgs-accordion",
+  "failure_reason": "",
+  "primary_block_emitted": "sgs/accordion",
+  "block_markup": "<!-- wp:sgs/accordion {\"align\":\"full\",\"style\":{\"spacing\":{\"padding\":{\"bottom\":\"40px\",\"left\":\"24px\",\"right\":\"24px\",\"top\":\"40px\"}}}} -->\n<!-- wp:sgs/accordion-item -->\n<!-- wp:sgs/heading {\"content\":\"What are the ingredients?\",\"fontSize\":18,\"fontSizeUnit\":\"px\",\"fontWeight\":\"600\",\"style\":{\"color\":{\"text\":\"#3a2e26\"},\"spacing\":{\"padding\":{\"bottom\":\"16px\",\"left\":\"0\",\"right\":\"0\",\"top\":\"16px\"}}}} /--><!-- wp:sgs/text {\"fontSize\":16,\"fontSizeUnit\":\"px\",\"style\":{\"spacing\":{\"padding\":{\"bottom\":\"16px\"}}},\"text\":\"Our products use only natural, wholesome ingredients.\"} /-->\n<!-- /wp:sgs/accordion-item --><!-- wp:sgs/accordion-item -->\n<!-- wp:sgs/heading {\"content\":\"How do I store them?\",\"fontSize\":18,\"fontSizeUnit\":\"px\",\"fontWeight\":\"600\",\"style\":{\"color\":{\"text\":\"#3a2e26\"},\"spacing\":{\"padding\":{\"bottom\":\"16px\",\"left\":\"0\",\"right\":\"0\",\"top\":\"16px\"}}}} /--><!-- wp:sgs/text {\"fontSize\":16,\"fontSizeUnit\":\"px\",\"style\":{\"spacing\":{\"padding\":{\"bottom\":\"16px\"}}},\"text\":\"Store in a cool, dry place for up to 3 months.\"} /-->\n<!-- /wp:sgs/accordion-item -->\n<!-- /wp:sgs/accordion -->"
+}

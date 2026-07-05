@@ -459,7 +459,6 @@ def fold_band_css(
     tracking channel; transferred values land in ``band_attrs`` via the
     destination. DB absent → no-op (parity with ``_build_css_attrs``).
     """
-    import sqlite3
     from converter.services.css_pass import _SGS_DB_PATH
 
     gaps: list = []
@@ -522,7 +521,7 @@ def fold_band_css(
     from converter.services.recognise_helpers import get_container_kind
     from converter.services.has_inner import derive_delegates_content
 
-    conn = sqlite3.connect(str(_SGS_DB_PATH), check_same_thread=False)
+    conn = db_lookup.get_connection()
     try:
         ctx = Ctx(
             block_slug=owning_slug,

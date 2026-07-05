@@ -1,0 +1,11 @@
+{
+  "seed_note": "Seeded 2026-07-05 (D278) from the LANDED-verified engine state  -  deployed to canary page 8 that day, computed-parity content 90% / CSS 67-69-76, A2 ledger green. Never re-seed from emit alone; re-seed only WITH a fresh LANDED proof (a real deploy + computed-parity run, not just a local emit) and cite that proof in the commit message.",
+  "golden_id": "sgs-accordion-item",
+  "source": "fixture:sgs-accordion-item.html",
+  "status": "complete",
+  "block_name": "sgs/container",
+  "selector": "section.sgs-accordion-item",
+  "failure_reason": "",
+  "primary_block_emitted": "sgs/accordion-item",
+  "block_markup": "<!-- wp:sgs/accordion-item {\"title\":\"Item Heading\"} -->\n<!-- wp:sgs/text {\"fontSize\":16,\"fontSizeUnit\":\"px\",\"style\":{\"spacing\":{\"padding\":{\"top\":\"8px\"}}},\"text\":\"Item body content goes here.\"} /-->\n<!-- /wp:sgs/accordion-item -->"
+}

@@ -1,0 +1,11 @@
+{
+  "seed_note": "Seeded 2026-07-05 (D278) from the LANDED-verified engine state  -  deployed to canary page 8 that day, computed-parity content 90% / CSS 67-69-76, A2 ledger green. Never re-seed from emit alone; re-seed only WITH a fresh LANDED proof (a real deploy + computed-parity run, not just a local emit) and cite that proof in the commit message.",
+  "golden_id": "sgs-cta-section",
+  "source": "fixture:sgs-cta-section.html",
+  "status": "complete",
+  "block_name": "sgs/container",
+  "selector": "section.sgs-cta-section",
+  "failure_reason": "",
+  "primary_block_emitted": "sgs/cta-section",
+  "block_markup": "<!-- wp:sgs/cta-section {\"align\":\"full\",\"contentWidth\":\"680px\",\"style\":{\"color\":{\"background\":\"#2d5016\"},\"spacing\":{\"padding\":{\"bottom\":\"64px\",\"left\":\"24px\",\"right\":\"24px\",\"top\":\"64px\"}}},\"textAlign\":\"center\"} -->\n<!-- wp:sgs/heading {\"content\":\"Get Started Today\",\"fontSize\":32,\"fontSizeUnit\":\"px\",\"fontWeight\":\"700\",\"style\":{\"color\":{\"text\":\"#ffffff\"}}} /--><!-- wp:sgs/text {\"fontSize\":18,\"fontSizeUnit\":\"px\",\"style\":{\"spacing\":{\"margin\":{\"top\":\"12px\"}}},\"text\":\"Join thousands of happy customers.\"} /--><!-- wp:sgs/button {\"inheritStyle\":\"primary\",\"label\":\"Shop Now\",\"url\":\"/shop/\"} /-->\n<!-- /wp:sgs/cta-section -->"
+}

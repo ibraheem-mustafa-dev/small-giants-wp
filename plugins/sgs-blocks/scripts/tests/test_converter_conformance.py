@@ -20,30 +20,43 @@ convert_section's observable behaviour — nothing to rewire):
     The new engine has no ``route_node_css`` — it dispatches CSS declarations
     through per-property resolvers (``converter/resolvers/*.py``), a
     structurally different call graph with no 1:1 analogue to pin.
-  - The exact-string golden-diff assertion in ``test_golden_conformance``
-    (the ``assert actual_markup == expected_markup`` body) — the golden
-    files were captured from the FROZEN walker's emit shape and do not match
-    the new engine's (deliberately different, e.g. resolver-driven CSS-attrs
-    dispatch) output. Re-baselining ~31 goldens against the new engine is a
-    separate, judgment-heavy task (each golden needs visual/semantic
-    verification, not a blind regen) — flagged as a follow-up, not done here
-    per this session's brief ("don't improvise a bigger change"). The test
-    below keeps the SMOKE half (every fixture still produces valid non-empty
-    WP block markup through the real entry point) so Gate A still catches a
-    fixture regressing to empty/broken output, without asserting exact
-    parity with the retired engine's emit.
+  - The ORIGINAL exact-string golden-diff assertion in
+    ``test_golden_conformance`` was downgraded (Step 16) to a smoke check
+    ("did the converter emit >=1 wp: block at all") because the OLD
+    top-level ``*.golden.json`` files were captured from the FROZEN walker's
+    emit shape and no longer matched the new engine's output. That left the
+    regression net effectively dead — see ``feedback_dead_output_claims_are_
+    scope_relative_and_instruments_are_qc_able``.
+
+RE-SEEDED (D278, 2026-07-05): a fresh golden corpus was captured from the
+current, LANDED-verified engine via ``tests/seed_conformance_goldens.py``
+into ``tests/fixtures/conformance/goldens/`` (a NEW directory — the old
+top-level ``*.golden.json`` files are left untouched as historical frozen-
+engine reference; ``TestHarnessSmoke`` still checks those exist/parse, but
+they are no longer the conformance signal). 40 goldens total: 31 from the
+existing fixture corpus + 9 from the real ``sites/mamas-munches/mockups/
+homepage/index.html`` draft (its 7 top-level ``<section>`` children of
+``<main>`` plus ``<header>``/``<footer>`` — the latter two golden as
+``status: "chrome-skipped"`` with empty markup, which IS correct per
+FR-31-3 exception 2). ``test_golden_conformance`` below now BYTE-COMPARES
+the live emit's ``status``/``block_name``/``selector``/``block_markup``
+against these goldens — real regression protection restored.
+
+Re-seeding is NOT done via an in-test ``--regen-golden``/``REGEN=1`` flag
+any more (removed — see ``tests/seed_conformance_goldens.py`` for why a
+single sanctioned re-seed path replaces it). To re-baseline after an
+INTENTIONAL converter change:
+    python tests/seed_conformance_goldens.py
+— but ONLY after a fresh LANDED deploy proof (real canary deploy +
+computed-parity check), cited in the commit message. Never re-seed from a
+bare local emit (see that script's module docstring for the provenance
+gate).
 
 ``TestDispatchDeterminism`` is KEPT + rewired: verified live that
 ``converter.db.db_lookup.attr_for_property`` returns the identical verdicts
 for every pinned (block, property) pair as the frozen ``converter_v2``
 version did (2026-07-05 spot-check), so the pin still holds meaning against
 the new engine's dispatch table.
-
-Regeneration mode (re-baseline after an intentional converter improvement):
-    REGEN=1 python -m pytest plugins/sgs-blocks/scripts/tests/test_converter_conformance.py -v
-
-Or via pytest flag:
-    python -m pytest ... --regen-golden
 
 UK English throughout.
 Run from repo root:
@@ -52,7 +65,6 @@ Run from repo root:
 from __future__ import annotations
 
 import json
-import os
 import re
 import sqlite3
 import sys
@@ -78,6 +90,33 @@ if str(_SCRIPTS_ROOT) not in sys.path:
 from converter.entry import convert_section  # noqa: E402
 
 # ---------------------------------------------------------------------------
+# Load tests/seed_conformance_goldens.py by FILE PATH, not package import.
+# Rationale: several sibling directories in this repo are named "tests"
+# (converter/tests, ledger/tests, and cheat-gate/tests — the latter under an
+# invalid, hyphenated parent package name). Under --import-mode=importlib a
+# combined multi-path pytest invocation can register the bare module name
+# "tests" against whichever of those directories collection reaches first,
+# so `from tests.seed_conformance_goldens import ...` is NOT reliable across
+# invocations. A direct file-path load (mirroring the
+# sgs-clone-orchestrator.py `_load_module_from_path` pattern used for the
+# same class of problem) sidesteps the collision entirely.
+# ---------------------------------------------------------------------------
+import importlib.util as _importlib_util
+
+_SEED_MODULE_PATH = Path(__file__).resolve().parent / "seed_conformance_goldens.py"
+_seed_spec = _importlib_util.spec_from_file_location(
+    "sgs_conformance_golden_seeder", _SEED_MODULE_PATH
+)
+_seed_mod = _importlib_util.module_from_spec(_seed_spec)
+_seed_spec.loader.exec_module(_seed_mod)  # type: ignore[union-attr]
+
+_GOLDEN_DIR = _seed_mod.GOLDEN_DIR
+_REAL_DRAFT_SLUG_PREFIX = _seed_mod._REAL_DRAFT_SLUG_PREFIX
+collect_real_draft_sections = _seed_mod.collect_real_draft_sections
+_seed_extract_fixture_parts = _seed_mod.extract_fixture_parts
+_seed_run_converter_full = _seed_mod.run_converter_full
+
+# ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
 
@@ -85,34 +124,10 @@ _FIXTURE_DIR = _SCRIPTS_ROOT / "tests" / "fixtures" / "conformance"
 _SGS_DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
 
-# ---------------------------------------------------------------------------
-# pytest option — --regen-golden
-# ---------------------------------------------------------------------------
-
-def pytest_addoption(parser):  # type: ignore[override]
-    """Register the --regen-golden flag."""
-    try:
-        parser.addoption(
-            "--regen-golden",
-            action="store_true",
-            default=False,
-            help="Regenerate golden files from the current converter emit. "
-                 "Only use when an intentional converter improvement is being baselined.",
-        )
-    except ValueError:
-        # Option already registered (happens when pytest collects multiple test files
-        # that each define pytest_addoption — safe to swallow).
-        pass
-
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-
-def _regen_mode() -> bool:
-    """Return True if golden regeneration is requested."""
-    return os.environ.get("REGEN", "").strip() == "1"
-
 
 def _extract_fixture_parts(html_content: str) -> tuple[str, "Tag"]:
     """Extract CSS text and <section> Tag from a fixture HTML file."""
@@ -144,91 +159,78 @@ def _all_block_slugs_in(markup: str) -> list[str]:
     return out
 
 
-def _collect_fixture_pairs() -> list[tuple[str, Path, Path]]:
-    """Return list of (test_id, html_path, golden_path) for every .html fixture
-    that has a corresponding .golden.json file.
+def _collect_golden_ids() -> list[str]:
+    """Return sorted golden_ids for every *.golden.json under GOLDEN_DIR (D278
+    re-seed) — 31 fixture-derived + 9 real-draft-section-derived."""
+    return sorted(p.name[: -len(".golden.json")] for p in _GOLDEN_DIR.glob("*.golden.json"))
 
-    Test IDs are derived from the HTML filename stem (e.g. 'sgs-hero').
-    """
-    pairs = []
-    for html_path in sorted(_FIXTURE_DIR.glob("*.html")):
-        golden_path = html_path.with_suffix(".golden.json")
-        if golden_path.exists():
-            pairs.append((html_path.stem, html_path, golden_path))
-    return pairs
+
+_REAL_DRAFT_SECTIONS_CACHE: dict[str, tuple["Tag", str]] | None = None
+
+
+def _real_draft_sections_by_id() -> dict[str, tuple["Tag", str]]:
+    """Lazily parse the real mamas-munches draft once per test session and
+    index its 9 top-level sections by golden_id."""
+    global _REAL_DRAFT_SECTIONS_CACHE
+    if _REAL_DRAFT_SECTIONS_CACHE is None:
+        _REAL_DRAFT_SECTIONS_CACHE = {
+            golden_id: (tag, css_text)
+            for golden_id, tag, css_text in collect_real_draft_sections()
+        }
+    return _REAL_DRAFT_SECTIONS_CACHE
+
+
+def _reproduce_golden_result(golden_id: str) -> dict:
+    """Re-run the engine for golden_id exactly as seed_conformance_goldens.py
+    did, returning the FULL convert_section result dict."""
+    if golden_id.startswith(_REAL_DRAFT_SLUG_PREFIX):
+        tag, css_text = _real_draft_sections_by_id()[golden_id]
+        return _seed_run_converter_full(tag, css_text)
+    html_path = _FIXTURE_DIR / f"{golden_id}.html"
+    css_text, section = _seed_extract_fixture_parts(html_path.read_text(encoding="utf-8"))
+    return _seed_run_converter_full(section, css_text)
 
 
 # ---------------------------------------------------------------------------
-# Parametrised conformance tests — one per fixture
+# Parametrised conformance tests — one per golden (D278 byte-exact re-seed)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize(
-    "test_id,html_path,golden_path",
-    _collect_fixture_pairs(),
-    ids=[p[0] for p in _collect_fixture_pairs()],
-)
-def test_golden_conformance(
-    test_id: str,
-    html_path: Path,
-    golden_path: Path,
-    request: pytest.FixtureRequest,
-) -> None:
-    """Run the converter on <fixture>.html and compare against <fixture>.golden.json.
+@pytest.mark.parametrize("golden_id", _collect_golden_ids())
+def test_golden_conformance(golden_id: str) -> None:
+    """Re-run the engine for golden_id and BYTE-COMPARE status/block_name/
+    selector/block_markup against the D278-seeded golden
+    (tests/fixtures/conformance/goldens/<golden_id>.golden.json).
 
-    Regen mode: when --regen-golden flag is set OR REGEN=1 env var, REWRITE the
-    golden file with the current emit and print a warning. The test then PASSES
-    (to allow batch regeneration). Commit the new goldens with a cited reason.
+    This replaces the Step-16 smoke-only assertion — see module docstring.
+    A mismatch means the converter's observable output for this fixture (or
+    real-draft section) changed. If that change is INTENDED, re-run
+    `python tests/seed_conformance_goldens.py` after a fresh LANDED deploy
+    proof (a real canary deploy + computed-parity check, not a bare local
+    emit — see that script's provenance gate), then commit the updated
+    golden with the proof cited in the commit message.
     """
-    regen = _regen_mode() or request.config.getoption("--regen-golden", default=False)
+    golden_path = _GOLDEN_DIR / f"{golden_id}.golden.json"
+    golden = json.loads(golden_path.read_text(encoding="utf-8"))
+    actual = _reproduce_golden_result(golden_id)
 
-    html_content = html_path.read_text(encoding="utf-8")
-    css_text, section = _extract_fixture_parts(html_content)
-    actual_markup = _run_converter(section, css_text)
+    mismatches = []
+    for key in ("status", "block_name", "selector", "block_markup"):
+        expected = golden.get(key, "")
+        got = actual.get(key, "") or ""
+        if expected != got:
+            mismatches.append(
+                "  " + key + ":\n    expected: " + repr(expected) + "\n    actual:   " + repr(got)
+            )
 
-    assert actual_markup, (
-        f"[{test_id}] Converter returned empty markup for fixture {html_path.name}. "
-        "The converter should always return at least one WP block comment for a valid section."
+    assert not mismatches, (
+        f"[{golden_id}] converter emit diverged from the D278-seeded golden "
+        f"({golden_path.name}).\n"
+        + "\n".join(mismatches)
+        + "\n\n"
+        "If this change is INTENDED, re-run `python tests/seed_conformance_goldens.py` "
+        "after a fresh LANDED deploy proof, then commit the updated golden with the "
+        "proof cited in the commit message. Never re-seed from a bare local emit."
     )
-
-    if regen:
-        _write_golden(golden_path, html_path.name, actual_markup)
-        print(f"\n  ⚠  REGEN: golden re-baselined for {test_id} — commit with cited reason")
-        return  # Pass immediately after regen
-
-    golden_data = json.loads(golden_path.read_text(encoding="utf-8"))
-    expected_markup: str = golden_data["markup"]
-
-    # SMOKE assertion only (EXECUTION Step 16, 2026-07-05): the golden files
-    # were captured from the retired frozen walker's emit shape, which does
-    # not match the new engine's (deliberately different) output — exact-diff
-    # against them is not meaningful post-flip. Re-baselining every golden
-    # against the new engine is a separate, judgment-heavy follow-up (each
-    # needs visual/semantic verification, not a blind regen — see module
-    # docstring). Until then this asserts the new engine still recognises
-    # + emits SOME valid WP block for every fixture that used to convert, so
-    # a fixture regressing to broken/empty output is still caught.
-    expected_slugs = _all_block_slugs_in(expected_markup)
-    actual_slugs = _all_block_slugs_in(actual_markup)
-    assert actual_slugs, (
-        f"[{test_id}] Converter emitted markup with no wp: block comments at all.\n"
-        f"  Fixture:  {html_path.name}\n"
-        f"  Actual:   {actual_markup[:600]}\n"
-        f"  (Old frozen-engine golden emitted: {expected_slugs} — kept for reference only; "
-        f"exact-parity re-baseline against the new engine is a tracked follow-up, not this gate.)"
-    )
-
-
-def _write_golden(golden_path: Path, fixture_name: str, markup: str) -> None:
-    """Write a golden JSON file for the given markup."""
-    m = re.search(r"wp:([a-z/][a-z0-9/-]+)", markup)
-    primary_block = m.group(1) if m else "unknown"
-    golden = {
-        "fixture": fixture_name,
-        "primary_block_emitted": primary_block,
-        "markup": markup,
-    }
-    golden_path.write_text(json.dumps(golden, indent=2, ensure_ascii=False), encoding="utf-8")
-
 
 # ---------------------------------------------------------------------------
 # DB invariant assertions (council-required — these do NOT depend on the converter;

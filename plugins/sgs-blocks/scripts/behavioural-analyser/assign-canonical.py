@@ -709,13 +709,15 @@ def run() -> None:
 # lives at converter/db/db_lookup.py (moved there EXECUTION Step 9, Phase 3,
 # 2026-07-04 — orchestrator/converter_v2/db_lookup.py is now a re-export shim).
 # Add to sys.path so the runtime library and this enrichment script share the
-# SAME implementation. Variable name kept as _CONVERTER_V2_DIR for call-site
-# compatibility below (line ~763's comment), though it now points at converter/db.
-_CONVERTER_V2_DIR = (
+# SAME implementation. Renamed from _CONVERTER_V2_DIR -> _DB_LOOKUP_DIR
+# (2026-07-05) — the old name was a holdover from when db_lookup.py lived
+# inside orchestrator/converter_v2/; it has pointed at converter/db since
+# Step 9 and the frozen converter_v2 tree no longer exists (Step 16).
+_DB_LOOKUP_DIR = (
     Path(__file__).resolve().parents[1] / "converter" / "db"
 )
-if str(_CONVERTER_V2_DIR) not in sys.path:
-    sys.path.insert(0, str(_CONVERTER_V2_DIR))
+if str(_DB_LOOKUP_DIR) not in sys.path:
+    sys.path.insert(0, str(_DB_LOOKUP_DIR))
 
 # Imported lazily inside functions to keep module-import lightweight when this
 # script is invoked headlessly via subprocess from sgs-update-v2.py.
@@ -764,7 +766,7 @@ def _get_bem_regex():
     if _TIER_B_BEM_ELEMENT_RE is None:
         # The sys.path setup for converter/db (Step 10, 2026-07-04 — was
         # converter_v2 before Step 9) is done at the top of this file via
-        # _CONVERTER_V2_DIR; import is safe here.
+        # _DB_LOOKUP_DIR; import is safe here.
         from db_lookup import _BEM_ELEMENT_RE
         _TIER_B_BEM_ELEMENT_RE = _BEM_ELEMENT_RE
     return _TIER_B_BEM_ELEMENT_RE

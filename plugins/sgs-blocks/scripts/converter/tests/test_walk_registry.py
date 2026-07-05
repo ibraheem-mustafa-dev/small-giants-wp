@@ -139,6 +139,36 @@ def test_d212_mutual_exclusion_raises(monkeypatch):
         walk.walk_content(rec, None)
 
 
+def test_null_emit_shape_content_attr_is_loud_content_gap(monkeypatch):
+    """D277 QC guard: leg 2 must record a tracked GAP — never a silent skip —
+    when a CONTENT-role attr matches an element but its emit_shape is unseeded
+    (the emit_shape_for docstring's Rule-4 promise). Unreachable on the live DB
+    (all sgs/* content rows seeded; NULLs are core/* only) — this plants it."""
+    from bs4 import BeautifulSoup
+
+    from converter.context import ScalarLift
+
+    monkeypatch.setattr(
+        db_lookup, "content_attr_for_element",
+        lambda slug, element: ("fakeAttr", None, "text-content", "string"),
+    )
+    monkeypatch.setattr(db_lookup, "capabilities_for", lambda slug: frozenset())
+    monkeypatch.setattr(db_lookup, "block_attrs", lambda slug: {})
+
+    node = BeautifulSoup(
+        '<div class="sgs-fakeblk"><span class="sgs-fakeblk__label">Hello</span></div>',
+        "html.parser",
+    ).find("div")
+    rec = Recognition("named", "sgs/fakeblk", None, 0)
+    out = walk.run_universal_content_walk(rec, node, media_map={}, css_rules={})
+
+    gaps = [r for r in out if isinstance(r, ContentGap) and "unseeded" in r.detail]
+    assert gaps, f"expected a loud unseeded-emit_shape ContentGap, got: {out!r}"
+    assert not any(isinstance(r, ScalarLift) and r.attr == "fakeAttr" for r in out), (
+        "a NULL-emit_shape attr must never be lifted"
+    )
+
+
 # ---------------------------------------------------------------------------
 # 4. FR-31-2.7 classifier — composed DB signal, the DB default is the holder
 # ---------------------------------------------------------------------------

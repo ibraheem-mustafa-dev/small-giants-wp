@@ -1,0 +1,11 @@
+{
+  "seed_note": "Seeded 2026-07-05 (D278) from the LANDED-verified engine state  -  deployed to canary page 8 that day, computed-parity content 90% / CSS 67-69-76, A2 ledger green. Never re-seed from emit alone; re-seed only WITH a fresh LANDED proof (a real deploy + computed-parity run, not just a local emit) and cite that proof in the commit message.",
+  "golden_id": "sgs-info-box",
+  "source": "fixture:sgs-info-box.html",
+  "status": "complete",
+  "block_name": "sgs/container",
+  "selector": "section.sgs-info-box",
+  "failure_reason": "",
+  "primary_block_emitted": "sgs/info-box",
+  "block_markup": "<!-- wp:sgs/info-box {\"contentWidth\":\"480px\",\"style\":{\"border\":{\"color\":\"#e5e0db\",\"radius\":\"12px\",\"style\":\"solid\",\"width\":\"1px\"},\"color\":{\"background\":\"#ffffff\"},\"spacing\":{\"padding\":{\"bottom\":\"32px\",\"left\":\"24px\",\"right\":\"24px\",\"top\":\"32px\"}}}} /-->"
+}

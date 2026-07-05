@@ -38,6 +38,26 @@ if not UIMAX_DB.exists():
     UIMAX_DB = Path.home() / ".agents" / "skills" / "ui-ux-pro-max" / "scripts" / "ui-ux-pro-max.db"
 
 
+def get_connection() -> sqlite3.Connection:
+    """Open a fresh, caller-owned connection to the SGS DB (``check_same_thread=False``).
+
+    FR-31-8 (2026-07-05): the sole legitimate accessor for call sites that need
+    an OPEN connection object to pass across the resolver dispatch call graph
+    (``Ctx.conn`` — consumed by ``build_ctx``, ``lift_root_supports_to_style``,
+    ``process_element`` and downstream resolvers), as opposed to a single
+    query answered by one of this module's other accessors.
+
+    NOT cached / NOT a singleton: every call opens a new connection and the
+    CALLER is responsible for closing it (mirrors the pre-existing
+    ``sqlite3.connect(SGS_DB, check_same_thread=False)`` call sites this
+    replaces in ``converter/services/css_pass.py`` and
+    ``converter/services/fold_helpers.py`` — both open-per-call,
+    close-in-``finally``). Caching the connection itself would break that
+    lifecycle (a cached connection closed by one caller would break the next).
+    """
+    return sqlite3.connect(SGS_DB, check_same_thread=False)
+
+
 # ----------------------------------------------------------------------------
 # Idempotent schema migration — `roles` table (D99 2026-05-29)
 # ----------------------------------------------------------------------------
@@ -709,56 +729,17 @@ def parent_block_for(child_slug: str) -> str | None:
 #   - capabilities_for(slug) — return all tags for a specific block
 #   - blocks_with_capability(cap) — return all slugs that carry a tag
 #
-# Primary current use: capability-aware tiebreaking inside
-# `_resolve_slug_from_bem_tuple` Path 1 when two or more bare-block BEM classes
-# both resolve to registered slugs on the same DOM node. Alphabetical-first was
-# the previous tiebreaker; capability-priority lets the pipeline pick the
-# semantically richer block (e.g. `sgs/testimonial-slider` over `sgs/container`
-# when both BEM classes are present on a social-proof section root).
-#
-# Capability priority order (ascending specificity — highest specificity first):
-_CAPABILITY_PRIORITY: list[str] = [
-    # Highly specific structural blocks (most specific → wins tiebreak)
-    "modal-popup",
-    "pricing",
-    "team-display",
-    "tabbed-content",
-    "expandable",
-    "faq",
-    "schema-faq",
-    "question-answer",
-    "carousel",
-    "form-input",
-    "rating",
-    "social-proof",
-    "icon-text",
-    "grid-layout",
-    "image-overlay",
-    "full-width-banner",
-    "call-to-action",
-    "cta",
-    "action-button",
-    "conversion",
-    "navigation",
-    "countdown",
-    "time-limited",
-    "notification",
-    "alert",
-    "dismissible",
-    "floating-element",
-    "process-display",
-    "steps",
-    "certification-display",
-    "logo-strip",
-    "partner-logos",
-    "horizontal-strip",
-    "trust-indicators",
-    "social-links",
-    "heritage-story",
-    "about-section",
-    "animated-numbers",
-    "decorative",
-]
+# The capability-aware TIEBREAKER is RETIRED (D278 QC, Bean-directed 2026-07-05).
+# _CAPABILITY_PRIORITY (~40 hand-ordered capability names) + _capability_rank were
+# deleted: a trace of EVERY recorded firing across all retained pipeline runs
+# showed the genuine cross-block tie NEVER occurred — all recorded "ties" were
+# the SAME slug twice (a bare class + its own --modifier class both parse to the
+# same block), i.e. a missing dedupe, not ambiguity. Path 1 of
+# `_resolve_slug_from_bem_tuple` now DEDUPES candidates; a residual tie between
+# DISTINCT blocks is a draft-authoring ambiguity that goes LOUD (trace + no
+# match → the node falls to the container-default/pass-through path, content
+# preserved by recursion) for manual review — matching the section-level
+# 2-registered-root precedent. FR-31-15 amended accordingly (Spec 31 §13.2).
 
 
 @functools.lru_cache(maxsize=256)
@@ -931,32 +912,10 @@ def array_item_fields(block_slug: str, array_attr: str) -> list[dict]:
     return result
 
 
-def _capability_rank(block_slug: str) -> int:
-    """Return a capability-priority rank for `block_slug` (lower = higher priority).
-
-    Used as a tiebreaker sort key inside `_resolve_slug_from_bem_tuple` Path 1.
-    Blocks with more semantically specific capabilities rank ahead of generic
-    primitives like `sgs/container`.
-
-    Algorithm:
-      - Compute each capability's index in _CAPABILITY_PRIORITY (first-occurrence).
-      - Return the MINIMUM index across all capabilities (most-specific tag wins).
-      - If the block has no capabilities (empty), return len(_CAPABILITY_PRIORITY) + 1
-        so it sorts AFTER all capability-bearing blocks but still deterministically.
-      - Ties in capability rank fall back to alphabetical slug order (caller sorts
-        by (rank, slug) to guarantee determinism).
-    """
-    caps = capabilities_for(block_slug)
-    if not caps:
-        return len(_CAPABILITY_PRIORITY) + 1
-    priority_index = len(_CAPABILITY_PRIORITY)  # default: treat as unknown
-    for cap in caps:
-        try:
-            idx = _CAPABILITY_PRIORITY.index(cap)
-            priority_index = min(priority_index, idx)
-        except ValueError:
-            pass  # capability not in priority list — treated as generic
-    return priority_index
+# _capability_rank DELETED (D278 QC, 2026-07-05) — see the retirement note at
+# the _CAPABILITY_PRIORITY site above. Distinct-block ties in Path 1 are now
+# LOUD (dedupe first; residual ambiguity → trace + no match), never silently
+# ranked by an in-code ordering.
 
 
 # ----------------------------------------------------------------------------
@@ -2498,7 +2457,15 @@ def emit_shape_for(block_slug: str, attr_name: str) -> str | None:
         of the identity's standalone_block + recurse.
       - None     → not a content attr, or `emit_shape` not seeded (a non-content role,
         or a block the seeder flagged as a suspected parse failure). A None on a genuine
-        content unit is a tracked GAP for the caller, never a silent drop (Rule 4).
+        content unit is a tracked GAP for the caller, never a silent drop (Rule 4) —
+        enforced at walk.py leg 2 since D277 (2026-07-05).
+
+    Seeding state (verified D277): every sgs/* content-role row is seeded
+    (139/139 — 106 nested + 33 child). The only NULL rows are core/* blocks,
+    unseeded BY DESIGN: the seeder derives from block SOURCE (render.php/
+    save.js), which core blocks don't have in this repo — and no draft element
+    can resolve to a core block through the walk (slots.standalone_block has
+    zero core/* targets), so those rows are unreachable, not a gap.
 
     Source-of-truth: `block_attributes.emit_shape`, seeded from block SOURCE by
     `/sgs-update` (`_populate_emit_shape`) — read here as a plain DB fact (R-31-1),
@@ -3384,13 +3351,15 @@ def _resolve_slug_from_bem_tuple(classes_tuple: tuple[str, ...]) -> str | None:
     Multi-class disambiguation rule (FR-31-1 + FR-31-15):
       Path 1 — bare block class (no __element suffix) present:
         Each class whose BemParse.element is None is a block-root candidate.
-        Filter to those where `sgs/<block>` is a registered built slug.
-        If exactly one → return it.
-        If multiple → capability-aware tiebreaker (FR-31-15, D96 2026-05-29):
-          Sort by (_capability_rank, slug) ascending so the most semantically
-          specific block wins. Alphabetical is the final tiebreaker when two
-          slugs share the same capability rank. Emits trace with all candidates
-          + chosen slug for diagnostic visibility.
+        Filter to those where `sgs/<block>` is a registered built slug, then
+        DEDUPE (a bare class + its own --modifier class parse to the same
+        block — not ambiguity).
+        If exactly one distinct slug → return it.
+        If multiple DISTINCT slugs → LOUD no-match (FR-31-15 as AMENDED D278):
+          trace `bem_resolve_ambiguous_loud` + return None so the node falls
+          to the container-default/pass-through path for manual review. The
+          old capability-rank silent pick is retired (never fired on distinct
+          blocks in recorded history).
       Path 2 — all classes are __element-suffixed (inner element of a parent):
         Walk each class's BemParse.block + every known slot synonym alias.
         Find the first canonical_slot whose standalone_block is non-NULL.
@@ -3424,18 +3393,24 @@ def _resolve_slug_from_bem_tuple(classes_tuple: tuple[str, ...]) -> str | None:
                 bare_block_slugs.append(candidate)
 
     if bare_block_slugs:
-        if len(bare_block_slugs) > 1:
-            # FR-31-15 (D96 2026-05-29): capability-aware tiebreaker.
-            # Sort by (_capability_rank, slug) so the block with the most
-            # semantically specific capability tag ranks first. Alphabetical
-            # slug is the final tiebreaker for equal-rank candidates.
-            bare_block_slugs.sort(key=lambda s: (_capability_rank(s), s))
-            _trace("bem_resolve_ambiguous",
+        # FR-31-15 (AMENDED D278, Bean-directed 2026-07-05): DEDUPE first —
+        # a bare class and its own --modifier class both parse to the same
+        # block, so same-slug duplicates are NOT ambiguity (every historically
+        # recorded "tie" was this shape). A residual tie between DISTINCT
+        # blocks is a draft-authoring ambiguity: go LOUD and return no match —
+        # the node falls to the container-default/pass-through path (content
+        # preserved by recursion) and the trace flags it for manual review.
+        # The capability-rank silent pick is RETIRED (never fired on distinct
+        # blocks in recorded history; silently guessing was wrong anyway).
+        distinct = list(dict.fromkeys(bare_block_slugs))  # order-preserving
+        if len(distinct) > 1:
+            _trace("bem_resolve_ambiguous_loud",
                    classes=list(classes_tuple),
-                   candidates=bare_block_slugs,
-                   chosen=bare_block_slugs[0],
-                   tiebreaker="capability_rank")
-        return bare_block_slugs[0]
+                   candidates=distinct,
+                   chosen=None,
+                   resolution="LOUD_NO_MATCH_manual_review")
+            return None
+        return distinct[0]
 
     # ---- Path 2: element-only classes — slot fallback ----
     # Walk in sorted order (deterministic) through parsed classes and try to
@@ -3524,11 +3499,11 @@ def block_for_slot_token(token: str) -> str | None:
 def resolve_slug_from_bem(sgs_classes: list[str]) -> str | None:
     """Return the canonical SGS block slug for a list of sgs-* BEM classes, or None.
 
-    Spec 22 §FR-31-1 + §FR-31-15 — multi-class disambiguation:
+    Spec 31 §FR-31-1 + §FR-31-15 (as AMENDED D278) — multi-class disambiguation:
       - Path 1: a class whose BEM block segment maps to a registered built
-        slug (no __element suffix). Multiple matches → capability-aware
-        tiebreaker (_capability_rank) + alphabetical final tiebreaker (D96).
-        Previously was alphabetical-first only.
+        slug (no __element suffix). Duplicates DEDUPED (bare + --modifier of
+        the same block); a residual DISTINCT-block tie is LOUD no-match for
+        manual review (the D96 capability-rank silent pick is retired).
       - Path 2: all classes carry __element (inner element). Walk slot_synonyms
         aliases; return the first canonical_slot whose standalone_block is set.
       - Neither → None.

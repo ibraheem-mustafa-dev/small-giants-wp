@@ -212,7 +212,7 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
     caps = db_lookup.capabilities_for(rec.slug)
 
     # ---- NESTED leg 1 — selector-driven B1, per-attr child-shape filtered ----
-    from converter.context import ScalarLift
+    from converter.context import ContentGap, ScalarLift
     from converter.resolvers.scalar_content import lift_scalar_content
     for attr, value in lift_scalar_content(node, rec.slug, media_map=media_map or {}).items():
         if db_lookup.emit_shape_for(rec.slug, attr) == "child":
@@ -260,6 +260,21 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
         if hit is None:
             continue
         attr_name, emit_shape, role, attr_type = hit
+        if emit_shape is None:
+            # A CONTENT-role attr with UNSEEDED emit_shape is a tracked GAP,
+            # never a silent skip (Rule 4 — the emit_shape_for docstring's
+            # promise, made real here per the D277 QC). Unreachable today:
+            # every sgs/* content-role row is seeded (139/139); the only NULL
+            # rows are core/* blocks, unseeded BY DESIGN (no block source in
+            # this repo) and unreachable via slots.standalone_block. This
+            # guard fires only if a future block ships with an unseeded row.
+            results.append(ContentGap(
+                where=f"{rec.slug}.{attr_name}",
+                detail=(f"content-role attr matched element '{element}' but "
+                        f"emit_shape is unseeded (role={role}) — run "
+                        f"/sgs-update to seed; unit NOT lifted"),
+            ))
+            continue
         if emit_shape != "nested" or attr_name in lifted_attrs:
             continue  # 'child' units route below; first value per attr wins
         if role in ("text-content", "content") and attr_type == "string":

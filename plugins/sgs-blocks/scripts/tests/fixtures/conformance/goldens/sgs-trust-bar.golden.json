@@ -1,0 +1,11 @@
+{
+  "seed_note": "Seeded 2026-07-05 (D278) from the LANDED-verified engine state  -  deployed to canary page 8 that day, computed-parity content 90% / CSS 67-69-76, A2 ledger green. Never re-seed from emit alone; re-seed only WITH a fresh LANDED proof (a real deploy + computed-parity run, not just a local emit) and cite that proof in the commit message.",
+  "golden_id": "sgs-trust-bar",
+  "source": "fixture:sgs-trust-bar.html",
+  "status": "complete",
+  "block_name": "sgs/container",
+  "selector": "section.sgs-trust-bar",
+  "failure_reason": "",
+  "primary_block_emitted": "sgs/trust-bar",
+  "block_markup": "<!-- wp:sgs/trust-bar {\"align\":\"full\",\"contentWidth\":\"1100px\",\"gap\":\"16px 12px\",\"items\":[{\"icon\":\"home\",\"label\":\"Handmade in Birmingham\"},{\"icon\":\"check\",\"label\":\"Free UK Delivery Over \\u00a335\"}],\"style\":{\"color\":{\"background\":\"#f5c2c8\"},\"spacing\":{\"padding\":{\"bottom\":\"22px\",\"left\":\"20px\",\"right\":\"20px\",\"top\":\"22px\"}}}} /-->"
+}

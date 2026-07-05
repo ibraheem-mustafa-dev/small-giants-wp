@@ -40,11 +40,16 @@ _GATES = [
     ("excluded-property drops (F4 §3)", "excluded-gate/run.py"),
     ("coverage / no-silent-drop (§12.2.1)", "ledger/coverage_check.py"),
     ("content-gap visibility (stage-3 §4)", "ledger/content_gap_check.py"),
-    ("content coverage / no-silent-drop (§12.2.1 CONTENT stream)", "ledger/content_coverage_check.py"),
+    # ledger/content_coverage_check.py REMOVED from this list (D277 QC, 2026-07-05):
+    # its bare `--check` has no --draft/--markup target and fail-safes GREEN, so at
+    # commit time it was a no-op green light (STOP-6 — worse than no light). The
+    # REAL content-conservation check runs on EVERY clone (draft vs the LIVE page
+    # source) and re-baselines there; that is the enforcement point.
     ("DB-as-code consistency (§12.4)", "db-consistency/run.py"),
     # Modular-rebuild scaffold anti-cheat gates (design §4.1 / A7, D242).
     ("converter carve-out (no-slug-literal §4.1)", "converter/gates/no_slug_literal.py"),
     ("converter frozen-engine import-ban (§4.1)", "converter/gates/import_ban.py"),
+    ("converter raw-sqlite accessor-layer ban (FR-31-8, D278)", "converter/gates/check_raw_sqlite.py"),
 ]
 
 

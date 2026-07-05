@@ -18,7 +18,6 @@ No block or slot string literals anywhere (scanned by gates/no_slug_literal).
 """
 from __future__ import annotations
 
-import pathlib
 import sqlite3
 from typing import Any
 
@@ -27,12 +26,13 @@ from converter.recognition import build_ctx
 from converter.orchestrator import process_element
 from converter.services.styling_helpers import collect_css_decls_for_element
 from converter.services.root_supports import lift_root_supports_to_style, _LIFT_CSS_PROPS
+from converter.db import db_lookup
 
-# SGS DB path — used to open a read-only connection for the CSS resolver dispatch.
-# Path is relative to the user's home dir (same convention as dev-setup.md).
-_SGS_DB_PATH = (
-    pathlib.Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
-)
+# SGS DB path — kept as a module attribute for the pre-existing existence
+# checks (here and in fold_helpers.py, which imports this name). The actual
+# connection is opened via db_lookup.get_connection() (FR-31-8 accessor
+# layer) — never a raw sqlite3.connect() at this call site.
+_SGS_DB_PATH = db_lookup.SGS_DB
 
 
 # ---------------------------------------------------------------------------
@@ -86,7 +86,7 @@ def _build_css_attrs(
     conn: sqlite3.Connection | None = None
     try:
         if _SGS_DB_PATH.exists():
-            conn = sqlite3.connect(str(_SGS_DB_PATH), check_same_thread=False)
+            conn = db_lookup.get_connection()
         else:
             # DB absent (CI / test environment) — CSS pass is a no-op.
             return {}
