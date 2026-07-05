@@ -208,9 +208,10 @@ $text_style_parts = array();
 if ( $text_colour ) {
 	$text_style_parts[] = 'color:' . sgs_colour_value( $text_colour );
 }
-if ( $font_size ) {
-	$text_style_parts[] = 'font-size:' . intval( $font_size ) . $font_size_unit;
-}
+// font-size is NOT inline (Pattern A, D-migration): it has tablet/mobile
+// tiers, so base+tablet+mobile are emitted together on the SAME selector
+// in the scoped <style> block below (step 5) — inline would always beat
+// the id-scoped @media overrides regardless of viewport.
 if ( $font_weight ) {
 	$text_style_parts[] = 'font-weight:' . esc_attr( $font_weight );
 }
@@ -251,29 +252,11 @@ $text_style_attr = $text_style_parts ? ' style="' . esc_attr( implode( ';', $tex
 $wrapper_inline = array();
 
 if ( ! $inherit_style ) {
-	$mt = sgs_heading_spacing_val( $margin_top, $margin_unit );
-	$mr = sgs_heading_spacing_val( $margin_right, $margin_unit );
-	$mb = sgs_heading_spacing_val( $margin_bottom, $margin_unit );
-	$ml = sgs_heading_spacing_val( $margin_left, $margin_unit );
-	if ( $mt || $mr || $mb || $ml ) {
-		$wrapper_inline[] = 'margin:'
-			. ( $mt ? $mt : '0' ) . ' '
-			. ( $mr ? $mr : '0' ) . ' '
-			. ( $mb ? $mb : '0' ) . ' '
-			. ( $ml ? $ml : '0' );
-	}
-
-	$pt = sgs_heading_spacing_val( $padding_top, $padding_unit );
-	$pr = sgs_heading_spacing_val( $padding_right, $padding_unit );
-	$pb = sgs_heading_spacing_val( $padding_bottom, $padding_unit );
-	$pl = sgs_heading_spacing_val( $padding_left, $padding_unit );
-	if ( $pt || $pr || $pb || $pl ) {
-		$wrapper_inline[] = 'padding:'
-			. ( $pt ? $pt : '0' ) . ' '
-			. ( $pr ? $pr : '0' ) . ' '
-			. ( $pb ? $pb : '0' ) . ' '
-			. ( $pl ? $pl : '0' );
-	}
+	// margin/padding are NOT inline (Pattern A, D-migration): both have
+	// tablet/mobile tiers, so base+tablet+mobile are emitted together on the
+	// SAME wrapper selector in the scoped <style> block below (step 5), via
+	// sgs_responsive_box_shorthand_rule(). Inline would always beat the
+	// id-scoped @media overrides regardless of viewport.
 
 	if ( $background_colour ) {
 		$wrapper_inline[] = 'background-color:' . sgs_colour_value( $background_colour );
@@ -363,67 +346,84 @@ if ( $hover_rules || $has_scale ) {
 	}
 }
 
-// Responsive font sizes for the text element.
-if ( $font_size_tablet ) {
-	$scoped_css[] = '@media(max-width:1024px){' . "#{$uid} .wp-block-sgs-heading__text{font-size:" . intval( $font_size_tablet ) . $font_size_unit . ';}}';
-}
-if ( $font_size_mobile ) {
-	$scoped_css[] = '@media(max-width:767px){' . "#{$uid} .wp-block-sgs-heading__text{font-size:" . intval( $font_size_mobile ) . $font_size_unit . ';}}';
-}
+// Text-element font-size — base + tablet + mobile on the SAME selector
+// (Pattern A). Replaces the old inline-base + id-scoped-tablet/mobile-only
+// emission, which the inline value always defeated regardless of viewport.
+$scoped_css[] = sgs_responsive_css_rule(
+	$attributes,
+	array(
+		array(
+			'attr'         => 'fontSize',
+			'css'          => 'font-size',
+			'unit_default' => $font_size_unit,
+			'tablet_attr'  => 'fontSizeTablet',
+			'mobile_attr'  => 'fontSizeMobile',
+			'cast'         => 'int',
+		),
+	),
+	"#{$uid} .wp-block-sgs-heading__text"
+);
 
-// Wrapper responsive margin.
+// Wrapper margin + padding — base + tablet + mobile shorthand on the SAME
+// wrapper selector (Pattern A). Same zero-fill-per-tier contract as before.
 if ( ! $inherit_style ) {
-	$mt_t = sgs_heading_spacing_val( $margin_top_tab, $margin_unit );
-	$mr_t = sgs_heading_spacing_val( $margin_right_tab, $margin_unit );
-	$mb_t = sgs_heading_spacing_val( $margin_bottom_tab, $margin_unit );
-	$ml_t = sgs_heading_spacing_val( $margin_left_tab, $margin_unit );
-	if ( $mt_t || $mr_t || $mb_t || $ml_t ) {
-		$scoped_css[] = '@media(max-width:1024px){'
-			. "#{$uid}.wp-block-sgs-heading{margin:"
-			. ( $mt_t ? $mt_t : '0' ) . ' '
-			. ( $mr_t ? $mr_t : '0' ) . ' '
-			. ( $mb_t ? $mb_t : '0' ) . ' '
-			. ( $ml_t ? $ml_t : '0' ) . ';}}';
-	}
+	$scoped_css[] = sgs_responsive_box_shorthand_rule(
+		$attributes,
+		'margin',
+		array(
+			'top'    => array(
+				'base'   => 'marginTop',
+				'tablet' => 'marginTopTablet',
+				'mobile' => 'marginTopMobile',
+			),
+			'right'  => array(
+				'base'   => 'marginRight',
+				'tablet' => 'marginRightTablet',
+				'mobile' => 'marginRightMobile',
+			),
+			'bottom' => array(
+				'base'   => 'marginBottom',
+				'tablet' => 'marginBottomTablet',
+				'mobile' => 'marginBottomMobile',
+			),
+			'left'   => array(
+				'base'   => 'marginLeft',
+				'tablet' => 'marginLeftTablet',
+				'mobile' => 'marginLeftMobile',
+			),
+		),
+		'marginUnit',
+		"#{$uid}.wp-block-sgs-heading"
+	);
 
-	$mt_m = sgs_heading_spacing_val( $margin_top_mob, $margin_unit );
-	$mr_m = sgs_heading_spacing_val( $margin_right_mob, $margin_unit );
-	$mb_m = sgs_heading_spacing_val( $margin_bottom_mob, $margin_unit );
-	$ml_m = sgs_heading_spacing_val( $margin_left_mob, $margin_unit );
-	if ( $mt_m || $mr_m || $mb_m || $ml_m ) {
-		$scoped_css[] = '@media(max-width:767px){'
-			. "#{$uid}.wp-block-sgs-heading{margin:"
-			. ( $mt_m ? $mt_m : '0' ) . ' '
-			. ( $mr_m ? $mr_m : '0' ) . ' '
-			. ( $mb_m ? $mb_m : '0' ) . ' '
-			. ( $ml_m ? $ml_m : '0' ) . ';}}';
-	}
-
-	$pt_t = sgs_heading_spacing_val( $padding_top_tab, $padding_unit );
-	$pr_t = sgs_heading_spacing_val( $padding_right_tab, $padding_unit );
-	$pb_t = sgs_heading_spacing_val( $padding_bottom_tab, $padding_unit );
-	$pl_t = sgs_heading_spacing_val( $padding_left_tab, $padding_unit );
-	if ( $pt_t || $pr_t || $pb_t || $pl_t ) {
-		$scoped_css[] = '@media(max-width:1024px){'
-			. "#{$uid}.wp-block-sgs-heading{padding:"
-			. ( $pt_t ? $pt_t : '0' ) . ' '
-			. ( $pr_t ? $pr_t : '0' ) . ' '
-			. ( $pb_t ? $pb_t : '0' ) . ' '
-			. ( $pl_t ? $pl_t : '0' ) . ';}}';
-	}
-
-	$pt_m = sgs_heading_spacing_val( $padding_top_mob, $padding_unit );
-	$pr_m = sgs_heading_spacing_val( $padding_right_mob, $padding_unit );
-	$pb_m = sgs_heading_spacing_val( $padding_bottom_mob, $padding_unit );
-	$pl_m = sgs_heading_spacing_val( $padding_left_mob, $padding_unit );
-	if ( $pt_m || $pr_m || $pb_m || $pl_m ) {
-		$scoped_css[] = '@media(max-width:767px){'
-			. "#{$uid}.wp-block-sgs-heading{padding:"
-			. ( $pt_m ? $pt_m : '0' ) . ' '
-			. ( $pr_m ? $pr_m : '0' ) . ' '
-			. ( $pb_m ? $pb_m : '0' ) . ' '
-			. ( $pl_m ? $pl_m : '0' ) . ';}}';
-	}
+	$scoped_css[] = sgs_responsive_box_shorthand_rule(
+		$attributes,
+		'padding',
+		array(
+			'top'    => array(
+				'base'   => 'paddingTop',
+				'tablet' => 'paddingTopTablet',
+				'mobile' => 'paddingTopMobile',
+			),
+			'right'  => array(
+				'base'   => 'paddingRight',
+				'tablet' => 'paddingRightTablet',
+				'mobile' => 'paddingRightMobile',
+			),
+			'bottom' => array(
+				'base'   => 'paddingBottom',
+				'tablet' => 'paddingBottomTablet',
+				'mobile' => 'paddingBottomMobile',
+			),
+			'left'   => array(
+				'base'   => 'paddingLeft',
+				'tablet' => 'paddingLeftTablet',
+				'mobile' => 'paddingLeftMobile',
+			),
+		),
+		'paddingUnit',
+		"#{$uid}.wp-block-sgs-heading"
+	);
 }
 
 // ---------------------------------------------------------------------------

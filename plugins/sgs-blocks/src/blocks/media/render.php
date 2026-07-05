@@ -130,15 +130,11 @@ if ( '' !== $aspect_ratio && preg_match( '/^[\d\s\/]+$/', $aspect_ratio ) ) {
 	$media_styles[] = 'aspect-ratio:' . esc_attr( $aspect_ratio );
 }
 
-// max-width (desktop).
-if ( '' !== $max_width && is_numeric( $max_width ) ) {
-	$media_styles[] = 'max-width:' . absint( $max_width ) . sgs_media_validate_unit( $max_width_unit );
-}
-
-// max-height (desktop).
-if ( '' !== $max_height && is_numeric( $max_height ) ) {
-	$media_styles[] = 'max-height:' . absint( $max_height ) . sgs_media_validate_unit( $max_height_unit );
-}
+// max-width / max-height are NOT inline (Pattern A, D-migration): both have
+// tablet/mobile tiers, so base+tablet+mobile are emitted together on the
+// SAME selector in the scoped <style> block below (step 7). Inline on the
+// <img>/<video> element would always beat the id-scoped @media overrides
+// (which already target this same element) regardless of viewport.
 
 // opacity.
 if ( 1.0 !== $opacity ) {
@@ -180,10 +176,9 @@ if ( 'svg' === $media_type ) {
 	$wrapper_classes[] = 'sgs-media--svg';
 }
 
-// CSS order for flex/grid placement.
-if ( null !== $css_order ) {
-	$wrapper_styles[] = 'order:' . intval( $css_order );
-}
+// order is NOT inline (Pattern A, D-migration): it has tablet/mobile tiers
+// targeting this same wrapper element (step 7), so base+tablet+mobile are
+// emitted together on that selector instead.
 
 // Display rule for alignment (figures are block-level by default).
 if ( 'center' === $alignment ) {
@@ -204,53 +199,61 @@ if ( ! $block_anchor ) {
 // ---------------------------------------------------------------------------
 // 7. Per-viewport responsive CSS (emitted as a scoped <style> tag).
 // ---------------------------------------------------------------------------
+$mw_unit = sgs_media_validate_unit( $max_width_unit );
+$mh_unit = sgs_media_validate_unit( $max_height_unit );
+// Target the inner media element (img or video) for dimension constraints.
+$id_sel  = '#' . esc_attr( $block_anchor ) . ' .sgs-media__img, #' . esc_attr( $block_anchor ) . ' .sgs-media__video';
+$id_wrap = '#' . esc_attr( $block_anchor );
+
+// max-width / max-height — base + tablet + mobile on the SAME selector
+// (Pattern A). NOTE: this block's tablet/mobile breakpoints (1023px/599px)
+// pre-date the framework's 768/1024 standard and are preserved as-is here —
+// only the inline-vs-<style> PLACEMENT bug is in scope for this migration,
+// not the breakpoint values themselves.
+$base_rules = array();
+if ( '' !== $max_width && is_numeric( $max_width ) ) {
+	$base_rules[] = 'max-width:' . absint( $max_width ) . $mw_unit;
+}
+if ( '' !== $max_height && is_numeric( $max_height ) ) {
+	$base_rules[] = 'max-height:' . absint( $max_height ) . $mh_unit;
+}
+
+$tablet_rules = array();
+if ( '' !== $max_width_tablet && is_numeric( $max_width_tablet ) ) {
+	$tablet_rules[] = 'max-width:' . absint( $max_width_tablet ) . $mw_unit;
+}
+if ( '' !== $max_height_tablet && is_numeric( $max_height_tablet ) ) {
+	$tablet_rules[] = 'max-height:' . absint( $max_height_tablet ) . $mh_unit;
+}
+
+$mobile_rules = array();
+if ( '' !== $max_width_mobile && is_numeric( $max_width_mobile ) ) {
+	$mobile_rules[] = 'max-width:' . absint( $max_width_mobile ) . $mw_unit;
+}
+if ( '' !== $max_height_mobile && is_numeric( $max_height_mobile ) ) {
+	$mobile_rules[] = 'max-height:' . absint( $max_height_mobile ) . $mh_unit;
+}
+
 $responsive_css = '';
+if ( $base_rules ) {
+	$responsive_css .= $id_sel . '{' . implode( ';', $base_rules ) . '}';
+}
+if ( $tablet_rules ) {
+	$responsive_css .= '@media(max-width:1023px){' . $id_sel . '{' . implode( ';', $tablet_rules ) . '}}';
+}
+if ( $mobile_rules ) {
+	$responsive_css .= '@media(max-width:599px){' . $id_sel . '{' . implode( ';', $mobile_rules ) . '}}';
+}
 
-$needs_responsive = (
-	( '' !== $max_width_tablet && is_numeric( $max_width_tablet ) ) ||
-	( '' !== $max_width_mobile && is_numeric( $max_width_mobile ) ) ||
-	( '' !== $max_height_tablet && is_numeric( $max_height_tablet ) ) ||
-	( '' !== $max_height_mobile && is_numeric( $max_height_mobile ) ) ||
-	null !== $css_order_tablet ||
-	null !== $css_order_mobile
-);
-
-if ( $needs_responsive ) {
-	$mw_unit = sgs_media_validate_unit( $max_width_unit );
-	$mh_unit = sgs_media_validate_unit( $max_height_unit );
-	// Target the inner media element (img or video) for dimension constraints.
-	$id_sel  = '#' . esc_attr( $block_anchor ) . ' .sgs-media__img, #' . esc_attr( $block_anchor ) . ' .sgs-media__video';
-	$id_wrap = '#' . esc_attr( $block_anchor );
-
-	// Tablet (≤1023px).
-	$tablet_rules = array();
-	if ( '' !== $max_width_tablet && is_numeric( $max_width_tablet ) ) {
-		$tablet_rules[] = 'max-width:' . absint( $max_width_tablet ) . $mw_unit;
-	}
-	if ( '' !== $max_height_tablet && is_numeric( $max_height_tablet ) ) {
-		$tablet_rules[] = 'max-height:' . absint( $max_height_tablet ) . $mh_unit;
-	}
-	if ( $tablet_rules ) {
-		$responsive_css .= '@media(max-width:1023px){' . $id_sel . '{' . implode( ';', $tablet_rules ) . '}}';
-	}
-	if ( null !== $css_order_tablet ) {
-		$responsive_css .= '@media(max-width:1023px){' . $id_wrap . '{order:' . intval( $css_order_tablet ) . '}}';
-	}
-
-	// Mobile (≤599px).
-	$mobile_rules = array();
-	if ( '' !== $max_width_mobile && is_numeric( $max_width_mobile ) ) {
-		$mobile_rules[] = 'max-width:' . absint( $max_width_mobile ) . $mw_unit;
-	}
-	if ( '' !== $max_height_mobile && is_numeric( $max_height_mobile ) ) {
-		$mobile_rules[] = 'max-height:' . absint( $max_height_mobile ) . $mh_unit;
-	}
-	if ( $mobile_rules ) {
-		$responsive_css .= '@media(max-width:599px){' . $id_sel . '{' . implode( ';', $mobile_rules ) . '}}';
-	}
-	if ( null !== $css_order_mobile ) {
-		$responsive_css .= '@media(max-width:599px){' . $id_wrap . '{order:' . intval( $css_order_mobile ) . '}}';
-	}
+// order — base + tablet + mobile on the SAME wrapper selector (Pattern A).
+if ( null !== $css_order ) {
+	$responsive_css .= $id_wrap . '{order:' . intval( $css_order ) . ';}';
+}
+if ( null !== $css_order_tablet ) {
+	$responsive_css .= '@media(max-width:1023px){' . $id_wrap . '{order:' . intval( $css_order_tablet ) . ';}}';
+}
+if ( null !== $css_order_mobile ) {
+	$responsive_css .= '@media(max-width:599px){' . $id_wrap . '{order:' . intval( $css_order_mobile ) . ';}}';
 }
 
 // ---------------------------------------------------------------------------

@@ -107,10 +107,10 @@ if ( 25 !== (int) $stagger_delay ) {
 	$css_vars[] = '--sgs-mn-stagger:' . absint( $stagger_delay ) . 'ms';
 }
 
-// Layout — slide variant dimensions.
-if ( 85 !== (int) $drawer_width ) {
-	$css_vars[] = '--sgs-mn-width:' . absint( $drawer_width ) . '%';
-}
+// Layout — slide variant dimensions. drawerWidth has tablet/mobile tiers so
+// its base var is NOT inline (Pattern A) — it moves to the scoped <style> on
+// the same #sgs-mobile-nav selector as the @media tier re-declarations.
+// drawerMaxWidth has no tiers → stays inline.
 if ( 400 !== (int) $drawer_max_width ) {
 	$css_vars[] = '--sgs-mn-max-width:' . absint( $drawer_max_width ) . 'px';
 }
@@ -128,26 +128,13 @@ if ( 60 !== (int) $backdrop_opacity ) {
 	$css_vars[]      = '--sgs-mn-backdrop-opacity:' . $opacity_decimal;
 }
 
-if ( 24 !== (int) $submenu_indent ) {
-	$css_vars[] = '--sgs-mn-indent:' . absint( $submenu_indent ) . 'px';
-}
-
-// Social icon size.
-if ( 44 !== (int) $social_icon_size ) {
-	$css_vars[] = '--sgs-mn-social-size:' . absint( $social_icon_size ) . 'px';
-}
-
-// Logo width (header panel — resolved in renderer but CSS var set here).
-$logo_max_width = $attributes['logoMaxWidth'] ?? 120;
-if ( 120 !== (int) $logo_max_width ) {
-	$css_vars[] = '--sgs-mn-logo-width:' . absint( $logo_max_width ) . 'px';
-}
-
-// Close button size.
+// submenuIndent / socialIconSize / logoMaxWidth / closeButtonSize all have
+// tablet/mobile tiers, so their base vars are NOT inline (Pattern A) — they
+// move to the scoped <style> below on the same #sgs-mobile-nav selector as
+// the @media tier re-declarations. The attrs are still read here so their
+// values/defaults are resolved for the base-rule builder.
+$logo_max_width    = $attributes['logoMaxWidth'] ?? 120;
 $close_button_size = $attributes['closeButtonSize'] ?? 48;
-if ( 48 !== (int) $close_button_size ) {
-	$css_vars[] = '--sgs-mn-close-size:' . absint( $close_button_size ) . 'px';
-}
 
 // ── Colour overrides (only emit when non-empty) ───────────────────────────────
 $colour_map = array(
@@ -259,30 +246,43 @@ $typo_css  = sgs_typography_css_rule( $attributes, 'link', $link_sel );
 $typo_css .= sgs_typography_css_rule( $attributes, 'sublink', $sublink_sel );
 
 // ── Per-device responsive overrides (non-typography numeric attrs) ─────────────
-// Only emit a <style> block when at least one override is set.
-// Mobile breakpoint : max-width 480px. Tablet breakpoint : max-width 768px.
+// Pattern A (D-migration): base + tablet + mobile vars all emitted on the SAME
+// #sgs-mobile-nav selector, base first then tablet then mobile, so cascade
+// order does the overriding (base vars were previously inline on the element,
+// which always beat the @media re-declarations; and mobile was emitted BEFORE
+// tablet, so at ≤480px the tablet rule wrongly won — both fixed here).
+// Mobile breakpoint : max-width 480px. Tablet breakpoint : max-width 768px
+// (this block's pre-existing values — placement, not breakpoints, is in scope).
+$base_vars   = array();
 $mobile_vars = array();
 $tablet_vars = array();
 
 // Shared config for numeric responsive attributes.
-// Each entry: attr-key => [ CSS custom property, unit, min allowed, max allowed ].
+// Each entry: attr-key => [ CSS custom property, unit, min allowed, max allowed, default ].
+// Base emits only when changed from the schema default (matches the old inline
+// gating so untouched instances keep falling through to style.css defaults).
 $responsive_attrs = array(
-	'drawerWidth'     => array( '--sgs-mn-width', '%', 1, 100 ),
-	'closeButtonSize' => array( '--sgs-mn-close-size', 'px', 44, 200 ),
-	'socialIconSize'  => array( '--sgs-mn-social-size', 'px', 20, 200 ),
-	'logoMaxWidth'    => array( '--sgs-mn-logo-width', 'px', 20, 600 ),
-	'submenuIndent'   => array( '--sgs-mn-indent', 'px', 0, 120 ),
+	'drawerWidth'     => array( '--sgs-mn-width', '%', 1, 100, 85 ),
+	'closeButtonSize' => array( '--sgs-mn-close-size', 'px', 44, 200, 48 ),
+	'socialIconSize'  => array( '--sgs-mn-social-size', 'px', 20, 200, 44 ),
+	'logoMaxWidth'    => array( '--sgs-mn-logo-width', 'px', 20, 600, 120 ),
+	'submenuIndent'   => array( '--sgs-mn-indent', 'px', 0, 120, 24 ),
+);
+
+$base_attr_values = array(
+	'drawerWidth'     => (int) $drawer_width,
+	'closeButtonSize' => (int) $close_button_size,
+	'socialIconSize'  => (int) $social_icon_size,
+	'logoMaxWidth'    => (int) $logo_max_width,
+	'submenuIndent'   => (int) $submenu_indent,
 );
 
 foreach ( $responsive_attrs as $base => $cfg ) {
-	[ $prop, $unit, $min, $max ] = $cfg;
+	[ $prop, $unit, $min, $max, $default ] = $cfg;
 
-	$raw_mobile = $attributes[ $base . 'Mobile' ] ?? '';
-	if ( '' !== $raw_mobile ) {
-		$val = (int) $raw_mobile;
-		if ( $val >= $min && $val <= $max ) {
-			$mobile_vars[] = $prop . ':' . $val . $unit;
-		}
+	$base_val = $base_attr_values[ $base ];
+	if ( $default !== $base_val ) {
+		$base_vars[] = $prop . ':' . absint( $base_val ) . $unit;
 	}
 
 	$raw_tablet = $attributes[ $base . 'Tablet' ] ?? '';
@@ -290,6 +290,14 @@ foreach ( $responsive_attrs as $base => $cfg ) {
 		$val = (int) $raw_tablet;
 		if ( $val >= $min && $val <= $max ) {
 			$tablet_vars[] = $prop . ':' . $val . $unit;
+		}
+	}
+
+	$raw_mobile = $attributes[ $base . 'Mobile' ] ?? '';
+	if ( '' !== $raw_mobile ) {
+		$val = (int) $raw_mobile;
+		if ( $val >= $min && $val <= $max ) {
+			$mobile_vars[] = $prop . ':' . $val . $unit;
 		}
 	}
 }
@@ -302,11 +310,14 @@ $style_parts      = array();
 if ( $typo_css ) {
 	$style_parts[] = $typo_css;
 }
-if ( $mobile_vars ) {
-	$style_parts[] = '@media (max-width:480px){#sgs-mobile-nav{' . implode( ';', $mobile_vars ) . '}}';
+if ( $base_vars ) {
+	$style_parts[] = '#sgs-mobile-nav{' . implode( ';', $base_vars ) . '}';
 }
 if ( $tablet_vars ) {
 	$style_parts[] = '@media (max-width:768px){#sgs-mobile-nav{' . implode( ';', $tablet_vars ) . '}}';
+}
+if ( $mobile_vars ) {
+	$style_parts[] = '@media (max-width:480px){#sgs-mobile-nav{' . implode( ';', $mobile_vars ) . '}}';
 }
 
 if ( $style_parts ) {

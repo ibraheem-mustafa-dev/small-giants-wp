@@ -253,20 +253,19 @@ $is_svg_animated = 'svg-animated' === $variant;
 
 // Build wrapper styles.
 $styles = array();
-if ( ! empty( $min_height ) ) {
-	$styles[] = 'min-height:' . esc_attr( $min_height );
-}
+// min-height base is NOT inline (Pattern A, D-migration): it has tablet/mobile
+// tiers, so base+tablet+mobile are emitted together on the SAME .uid selector
+// in the scoped <style> below. minHeight* stays NULLED in the container-wrapper
+// attr copy (C3 double-emit guard) — the hero's scoped style is the ONE channel.
 
 // Transition custom properties — consumed by CSS vars on the block and its children.
 $styles = array_merge( $styles, sgs_transition_vars( $attributes ) );
 
 // HC2: desktop CTA-row gap. Only emitted when the operator actually set ctaGap
 // (array_key_exists) so untouched instances fall through to style.css's legacy
-// var(--wp--preset--spacing--30) fallback and stay byte-identical. Wrapper-level
-// custom property (not an inline gap) so the @media tablet/mobile overrides win.
-if ( null !== $cta_gap ) {
-	$styles[] = '--sgs-hero-cta-gap:' . $cta_gap . esc_attr( $cta_gap_unit );
-}
+// var(--wp--preset--spacing--30) fallback. The base var is NOT inline (Pattern A):
+// it has tablet/mobile tiers, so base+tiers are emitted together on the SAME
+// .uid selector in the scoped <style> below.
 
 if ( $hover_background_colour ) {
 	$styles[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_background_colour );
@@ -294,13 +293,12 @@ if ( $cta_secondary_hover_colour ) {
 }
 
 // Split variant: replace the default flex layout with CSS Grid.
+// display:grid has no responsive tiers → stays inline. grid-template-columns
+// + gap DO have tiers, so their base values move to the scoped <style> below
+// on the same .uid selector (Pattern A) — the old inline emission forced the
+// mobile grid override to carry !important.
 if ( $is_split ) {
-	// Allowlist the ratio string: only fr, px, %, numbers, spaces, auto, calc() permitted.
-	$safe_ratio = preg_match( '/^[\d.\s%a-zA-Z()+\-*\/]+$/', $split_col_ratio ) ? $split_col_ratio : '1fr 1fr';
-	$styles[]   = 'display:grid';
-	$styles[]   = 'grid-template-columns:' . $safe_ratio;
-	$gap_val    = null !== $split_gap ? absint( $split_gap ) . esc_attr( $split_gap_unit ) : '0px';
-	$styles[]   = 'gap:' . $gap_val;
+	$styles[] = 'display:grid';
 }
 
 // Standard variant: use <img> instead of CSS background-image so the browser can
@@ -312,7 +310,12 @@ $has_standard_bg_image = ! $is_split && ! $is_video && ! $is_svg_animated
 $uid = 'sgs-hero-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 
 // ── Responsive CSS builder ──────────────────────────────────────────────────
+// Pattern A throughout: base rule first, then tablet(≤1023), then mobile(≤767),
+// all on the SAME selector — cascade order does the overriding, no !important.
 $responsive_css = '';
+if ( ! empty( $min_height ) ) {
+	$responsive_css .= '.' . $uid . '{min-height:' . esc_attr( $min_height ) . '}';
+}
 if ( $min_height_tablet ) {
 	$responsive_css .= '@media (max-width:1023px){.' . $uid . '{min-height:' . esc_attr( $min_height_tablet ) . '}}';
 }
@@ -346,8 +349,18 @@ if ( $split_image_mobile_height ) {
 	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{height:' . absint( $split_image_mobile_height ) . 'px;object-fit:cover}}';
 }
 
-// ── Split variant: tablet/mobile grid overrides ────────────────────────────
+// ── Split variant: grid-template-columns + gap (base + tablet + mobile) ────
 if ( $is_split ) {
+	// Base grid-template-columns — moved here from the old inline style="" on
+	// the section element (Pattern A). Allowlist the ratio string: only fr,
+	// px, %, numbers, spaces, auto, calc() permitted.
+	$safe_ratio = preg_match( '/^[\d.\s%a-zA-Z()+\-*\/]+$/', $split_col_ratio ) ? $split_col_ratio : '1fr 1fr';
+	$responsive_css .= '.' . $uid . '{grid-template-columns:' . $safe_ratio . '}';
+
+	// Base gap.
+	$gap_val         = null !== $split_gap ? absint( $split_gap ) . esc_attr( $split_gap_unit ) : '0px';
+	$responsive_css .= '.' . $uid . '{gap:' . $gap_val . '}';
+
 	// Tablet grid-template-columns override.
 	if ( $split_col_ratio_tablet ) {
 		$safe_ratio_tab = preg_match( '/^[\d.\s%a-zA-Z()+\-*\/]+$/', $split_col_ratio_tablet ) ? $split_col_ratio_tablet : '';
@@ -356,18 +369,16 @@ if ( $is_split ) {
 		}
 	}
 	// Mobile grid-template-columns override. When splitColumnRatioMobile is
-	// empty, default to single-column stacking (1fr) — the desktop ratio
-	// inline-style would otherwise force two-column layout at mobile widths.
+	// empty, default to single-column stacking (1fr). No !important needed —
+	// the desktop ratio now lives on this same .uid selector (base rule above)
+	// so the later-source @media rule wins by normal cascade (F4 retired).
 	$ratio_mob = $split_col_ratio_mobile;
 	if ( ! $ratio_mob ) {
 		$ratio_mob = '1fr';
 	}
 	$safe_ratio_mob = preg_match( '/^[\d.\s%a-zA-Z()+\-*\/]+$/', $ratio_mob ) ? $ratio_mob : '';
 	if ( $safe_ratio_mob ) {
-		// !important required to override the inline style="grid-template-columns:..."
-		// emitted on the section element (line ~249). Without it the desktop ratio
-		// would persist at mobile widths because inline > external CSS specificity.
-		$responsive_css .= '@media (max-width:767px){.' . $uid . '{grid-template-columns:' . $safe_ratio_mob . ' !important}}';
+		$responsive_css .= '@media (max-width:767px){.' . $uid . '{grid-template-columns:' . $safe_ratio_mob . '}}';
 	}
 	// Tablet gap override.
 	if ( null !== $split_gap_tablet ) {
@@ -386,8 +397,13 @@ if ( $is_split ) {
 	}
 }
 
-// ── imagePadding: tablet / mobile overrides (on the <img> element) ─────────
+// ── imagePadding: base + tablet + mobile (on the <img> element) ─────────────
+// Base moved here from the inline style="" on the split <img> (Pattern A) so
+// the same-selector @media tiers below win by cascade.
 $img_pad_desktop_has_value = ( $image_pad_top > 0 || $image_pad_right > 0 || $image_pad_bottom > 0 || $image_pad_left > 0 );
+if ( $img_pad_desktop_has_value ) {
+	$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{padding:' . absint( $image_pad_top ) . esc_attr( $image_pad_unit ) . ' ' . absint( $image_pad_right ) . esc_attr( $image_pad_unit ) . ' ' . absint( $image_pad_bottom ) . esc_attr( $image_pad_unit ) . ' ' . absint( $image_pad_left ) . esc_attr( $image_pad_unit ) . '}';
+}
 if ( null !== $image_pad_tab_top || null !== $image_pad_tab_right || null !== $image_pad_tab_bot || null !== $image_pad_tab_left ) {
 	$tab_pt = null !== $image_pad_tab_top ? absint( $image_pad_tab_top ) : absint( $image_pad_top );
 	$tab_pr = null !== $image_pad_tab_right ? absint( $image_pad_tab_right ) : absint( $image_pad_right );
@@ -403,7 +419,13 @@ if ( null !== $image_pad_mob_top || null !== $image_pad_mob_right || null !== $i
 	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{padding:' . $mob_pt . esc_attr( $image_pad_unit ) . ' ' . $mob_pr . esc_attr( $image_pad_unit ) . ' ' . $mob_pb . esc_attr( $image_pad_unit ) . ' ' . $mob_pl . esc_attr( $image_pad_unit ) . '}}';
 }
 
-// ── imageBorderRadius: tablet / mobile overrides ───────────────────────────
+// ── imageBorderRadius: base + tablet + mobile ──────────────────────────────
+// Base moved here from the inline style="" on the split <img> (Pattern A).
+// Gated on $is_split to match the old inline emission (which only ran inside
+// the split-image branch); the old emit was unconditional within that branch.
+if ( $is_split ) {
+	$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{border-radius:' . absint( $image_br_tl ) . esc_attr( $image_br_unit ) . ' ' . absint( $image_br_tr ) . esc_attr( $image_br_unit ) . ' ' . absint( $image_br_br ) . esc_attr( $image_br_unit ) . ' ' . absint( $image_br_bl ) . esc_attr( $image_br_unit ) . '}';
+}
 $br_tab_has = ( null !== $image_br_tab_tl || null !== $image_br_tab_tr || null !== $image_br_tab_br || null !== $image_br_tab_bl );
 if ( $br_tab_has ) {
 	$tab_tl = null !== $image_br_tab_tl ? absint( $image_br_tab_tl ) : absint( $image_br_tl );
@@ -421,8 +443,15 @@ if ( $br_mob_has ) {
 	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{border-radius:' . $mob_tl . esc_attr( $image_br_unit ) . ' ' . $mob_tr . esc_attr( $image_br_unit ) . ' ' . $mob_br . esc_attr( $image_br_unit ) . ' ' . $mob_bl . esc_attr( $image_br_unit ) . '}}';
 }
 
-// ── imageWidth / imageHeight: tablet / mobile overrides (custom fit only) ──
+// ── imageWidth / imageHeight: base + tablet + mobile (custom fit only) ─────
+// Base moved here from the inline style="" on the split <img> (Pattern A).
 if ( 'custom' === $image_object_fit ) {
+	if ( null !== $image_width ) {
+		$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{width:' . absint( $image_width ) . esc_attr( $image_width_unit ) . '}';
+	}
+	if ( null !== $image_height ) {
+		$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{height:' . absint( $image_height ) . esc_attr( $image_height_unit ) . '}';
+	}
 	if ( null !== $image_width_tablet ) {
 		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-image{width:' . absint( $image_width_tablet ) . esc_attr( $image_width_unit ) . '}}';
 	}
@@ -437,7 +466,15 @@ if ( 'custom' === $image_object_fit ) {
 	}
 }
 
-// ── mediaPadding: tablet / mobile overrides (on .sgs-hero__media) ──────────
+// ── mediaPadding: base + tablet + mobile (on .sgs-hero__media) ─────────────
+// Base moved here from the inline style="" on the media wrapper (Pattern A).
+if ( null !== $media_pad_top || null !== $media_pad_right || null !== $media_pad_bottom || null !== $media_pad_left ) {
+	$base_mpt        = null !== $media_pad_top ? absint( $media_pad_top ) : 0;
+	$base_mpr        = null !== $media_pad_right ? absint( $media_pad_right ) : 0;
+	$base_mpb        = null !== $media_pad_bottom ? absint( $media_pad_bottom ) : 0;
+	$base_mpl        = null !== $media_pad_left ? absint( $media_pad_left ) : 0;
+	$responsive_css .= '.' . $uid . ' .sgs-hero__media{padding:' . $base_mpt . esc_attr( $media_pad_unit ) . ' ' . $base_mpr . esc_attr( $media_pad_unit ) . ' ' . $base_mpb . esc_attr( $media_pad_unit ) . ' ' . $base_mpl . esc_attr( $media_pad_unit ) . '}';
+}
 if ( null !== $media_pad_tab_top || null !== $media_pad_tab_right || null !== $media_pad_tab_bot || null !== $media_pad_tab_left ) {
 	$tab_mpt = null !== $media_pad_tab_top ? absint( $media_pad_tab_top ) : ( null !== $media_pad_top ? absint( $media_pad_top ) : 0 );
 	$tab_mpr = null !== $media_pad_tab_right ? absint( $media_pad_tab_right ) : ( null !== $media_pad_right ? absint( $media_pad_right ) : 0 );
@@ -453,22 +490,29 @@ if ( null !== $media_pad_mob_top || null !== $media_pad_mob_right || null !== $m
 	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__media{padding:' . $mob_mpt . esc_attr( $media_pad_unit ) . ' ' . $mob_mpr . esc_attr( $media_pad_unit ) . ' ' . $mob_mpb . esc_attr( $media_pad_unit ) . ' ' . $mob_mpl . esc_attr( $media_pad_unit ) . '}}';
 }
 
-// ── contentPadding: tablet / mobile overrides ──────────────────────────────
+// ── contentPadding: base + tablet + mobile (on .sgs-hero__content) ─────────
+// Base moved here from the inline style="" on the content wrapper (Pattern A);
+// the tier !important workarounds (F4) are retired — same-selector cascade wins.
+if ( null !== $content_pad_top || null !== $content_pad_right || null !== $content_pad_bottom || null !== $content_pad_left ) {
+	$base_cpt        = null !== $content_pad_top ? absint( $content_pad_top ) : 0;
+	$base_cpr        = null !== $content_pad_right ? absint( $content_pad_right ) : 0;
+	$base_cpb        = null !== $content_pad_bottom ? absint( $content_pad_bottom ) : 0;
+	$base_cpl        = null !== $content_pad_left ? absint( $content_pad_left ) : 0;
+	$responsive_css .= '.' . $uid . ' .sgs-hero__content{padding:' . $base_cpt . esc_attr( $content_pad_unit ) . ' ' . $base_cpr . esc_attr( $content_pad_unit ) . ' ' . $base_cpb . esc_attr( $content_pad_unit ) . ' ' . $base_cpl . esc_attr( $content_pad_unit ) . '}';
+}
 if ( null !== $content_pad_tab_top || null !== $content_pad_tab_right || null !== $content_pad_tab_bot || null !== $content_pad_tab_left ) {
 	$tab_cpt = null !== $content_pad_tab_top ? absint( $content_pad_tab_top ) : ( null !== $content_pad_top ? absint( $content_pad_top ) : 0 );
 	$tab_cpr = null !== $content_pad_tab_right ? absint( $content_pad_tab_right ) : ( null !== $content_pad_right ? absint( $content_pad_right ) : 0 );
 	$tab_cpb = null !== $content_pad_tab_bot ? absint( $content_pad_tab_bot ) : ( null !== $content_pad_bottom ? absint( $content_pad_bottom ) : 0 );
 	$tab_cpl = null !== $content_pad_tab_left ? absint( $content_pad_tab_left ) : ( null !== $content_pad_left ? absint( $content_pad_left ) : 0 );
-	// !important required to beat the desktop inline-style on .sgs-hero__content emitted by the styles[] array (F4 fix from hero-poc-qc-2026-05-04.md).
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__content{padding:' . $tab_cpt . esc_attr( $content_pad_unit ) . ' ' . $tab_cpr . esc_attr( $content_pad_unit ) . ' ' . $tab_cpb . esc_attr( $content_pad_unit ) . ' ' . $tab_cpl . esc_attr( $content_pad_unit ) . ' !important}}';
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__content{padding:' . $tab_cpt . esc_attr( $content_pad_unit ) . ' ' . $tab_cpr . esc_attr( $content_pad_unit ) . ' ' . $tab_cpb . esc_attr( $content_pad_unit ) . ' ' . $tab_cpl . esc_attr( $content_pad_unit ) . '}}';
 }
 if ( null !== $content_pad_mob_top || null !== $content_pad_mob_right || null !== $content_pad_mob_bot || null !== $content_pad_mob_left ) {
 	$mob_cpt = null !== $content_pad_mob_top ? absint( $content_pad_mob_top ) : ( null !== $content_pad_top ? absint( $content_pad_top ) : 0 );
 	$mob_cpr = null !== $content_pad_mob_right ? absint( $content_pad_mob_right ) : ( null !== $content_pad_right ? absint( $content_pad_right ) : 0 );
 	$mob_cpb = null !== $content_pad_mob_bot ? absint( $content_pad_mob_bot ) : ( null !== $content_pad_bottom ? absint( $content_pad_bottom ) : 0 );
 	$mob_cpl = null !== $content_pad_mob_left ? absint( $content_pad_mob_left ) : ( null !== $content_pad_left ? absint( $content_pad_left ) : 0 );
-	// !important required to beat the desktop inline-style on .sgs-hero__content emitted by the styles[] array (F4 fix from hero-poc-qc-2026-05-04.md).
-	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{padding:' . $mob_cpt . esc_attr( $content_pad_unit ) . ' ' . $mob_cpr . esc_attr( $content_pad_unit ) . ' ' . $mob_cpb . esc_attr( $content_pad_unit ) . ' ' . $mob_cpl . esc_attr( $content_pad_unit ) . ' !important}}';
+	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{padding:' . $mob_cpt . esc_attr( $content_pad_unit ) . ' ' . $mob_cpr . esc_attr( $content_pad_unit ) . ' ' . $mob_cpb . esc_attr( $content_pad_unit ) . ' ' . $mob_cpl . esc_attr( $content_pad_unit ) . '}}';
 }
 
 // ── HC2: text-align on .sgs-hero__content ──────────────────────────────────
@@ -487,9 +531,11 @@ if ( in_array( $text_align_mobile, $allowed_text_align, true ) ) {
 }
 
 // ── HC2: CTA row gap (.sgs-hero__ctas) ─────────────────────────────────────
-// Desktop value → --sgs-hero-cta-gap on the wrapper (style.css falls back to
-// the legacy spacing--30 when unset). Tablet/mobile re-set the property within
-// @media so the cascade beats the desktop value — Rule 6 (no losing inline).
+// Base + tablet + mobile --sgs-hero-cta-gap all on the SAME .uid selector
+// (Pattern A; style.css falls back to the legacy spacing--30 when unset).
+if ( null !== $cta_gap ) {
+	$responsive_css .= '.' . $uid . '{--sgs-hero-cta-gap:' . $cta_gap . esc_attr( $cta_gap_unit ) . '}';
+}
 if ( null !== $cta_gap_tablet ) {
 	$responsive_css .= '@media (max-width:1023px){.' . $uid . '{--sgs-hero-cta-gap:' . $cta_gap_tablet . esc_attr( $cta_gap_unit ) . '}}';
 }
@@ -655,13 +701,9 @@ $content_styles = array(
 if ( $content_background ) {
 	$content_styles[] = 'background-color:' . sgs_colour_value( $content_background );
 }
-if ( null !== $content_pad_top || null !== $content_pad_right || null !== $content_pad_bottom || null !== $content_pad_left ) {
-	$cpt = null !== $content_pad_top ? absint( $content_pad_top ) : 0;
-	$cpr = null !== $content_pad_right ? absint( $content_pad_right ) : 0;
-	$cpb = null !== $content_pad_bottom ? absint( $content_pad_bottom ) : 0;
-	$cpl = null !== $content_pad_left ? absint( $content_pad_left ) : 0;
-	$content_styles[] = 'padding:' . $cpt . esc_attr( $content_pad_unit ) . ' ' . $cpr . esc_attr( $content_pad_unit ) . ' ' . $cpb . esc_attr( $content_pad_unit ) . ' ' . $cpl . esc_attr( $content_pad_unit );
-}
+// contentPadding base is NOT inline (Pattern A, D-migration): it has tablet/
+// mobile tiers, so base+tiers are emitted together on .sgs-hero__content in
+// the scoped <style> above — the tier !important workaround is retired.
 $content_style_attr = ' style="' . implode( ';', $content_styles ) . '"';
 
 // R-22-14: no scalar content rendering. $content = full InnerBlocks output
@@ -690,26 +732,20 @@ if ( $is_split && ! empty( $split_media ) && isset( $split_media['type'] ) && 'v
 	// ── Build <img> inline styles ────────────────────────────────────────
 	$img_styles = array();
 
-	// object-fit.
+	// object-fit (non-responsive → inline). Custom width/height are NOT inline
+	// (Pattern A): they have tablet/mobile tiers, so base+tiers live together
+	// on .sgs-hero__split-image in the scoped <style> above.
 	if ( 'custom' !== $image_object_fit ) {
 		$allowed_fits = array( 'fill', 'contain', 'cover', 'match-height', 'match-width', 'none' );
 		$safe_fit     = in_array( $image_object_fit, $allowed_fits, true ) ? $image_object_fit : 'cover';
 		$img_styles[] = 'object-fit:' . $safe_fit;
-	} else {
-		// Custom: explicit width + height control.
-		if ( null !== $image_width ) {
-			$img_styles[] = 'width:' . absint( $image_width ) . esc_attr( $image_width_unit );
-		}
-		if ( null !== $image_height ) {
-			$img_styles[] = 'height:' . absint( $image_height ) . esc_attr( $image_height_unit );
-		}
 	}
 
-	// object-position.
+	// object-position (non-responsive → inline).
 	$img_styles[] = 'object-position:' . esc_attr( $image_object_position );
 
-	// border-radius (desktop).
-	$img_styles[] = 'border-radius:' . absint( $image_br_tl ) . esc_attr( $image_br_unit ) . ' ' . absint( $image_br_tr ) . esc_attr( $image_br_unit ) . ' ' . absint( $image_br_br ) . esc_attr( $image_br_unit ) . ' ' . absint( $image_br_bl ) . esc_attr( $image_br_unit );
+	// border-radius base is NOT inline (Pattern A) — emitted with its tiers on
+	// .sgs-hero__split-image in the scoped <style> above.
 
 	// border — only emit when style is not none OR any width > 0.
 	$border_has_width = ( $image_border_width_top > 0 || $image_border_width_right > 0 || $image_border_width_bot > 0 || $image_border_width_left > 0 );
@@ -723,10 +759,8 @@ if ( $is_split && ! empty( $split_media ) && isset( $split_media['type'] ) && 'v
 		}
 	}
 
-	// imagePadding — inner padding on the <img> element.
-	if ( $image_pad_top > 0 || $image_pad_right > 0 || $image_pad_bottom > 0 || $image_pad_left > 0 ) {
-		$img_styles[] = 'padding:' . absint( $image_pad_top ) . esc_attr( $image_pad_unit ) . ' ' . absint( $image_pad_right ) . esc_attr( $image_pad_unit ) . ' ' . absint( $image_pad_bottom ) . esc_attr( $image_pad_unit ) . ' ' . absint( $image_pad_left ) . esc_attr( $image_pad_unit );
-	}
+	// imagePadding base is NOT inline (Pattern A) — emitted with its tiers on
+	// .sgs-hero__split-image in the scoped <style> above.
 
 	$img_attrs = array(
 		'class'         => 'sgs-hero__split-image',
@@ -777,14 +811,8 @@ if ( $is_split && ! empty( $split_media ) && isset( $split_media['type'] ) && 'v
 	if ( $media_bg_resolved ) {
 		$media_styles[] = 'background-color:' . sgs_colour_value( $media_bg_resolved );
 	}
-	// mediaPadding — outer padding on .sgs-hero__media wrapper (desktop).
-	if ( null !== $media_pad_top || null !== $media_pad_right || null !== $media_pad_bottom || null !== $media_pad_left ) {
-		$mpt            = null !== $media_pad_top ? absint( $media_pad_top ) : 0;
-		$mpr            = null !== $media_pad_right ? absint( $media_pad_right ) : 0;
-		$mpb            = null !== $media_pad_bottom ? absint( $media_pad_bottom ) : 0;
-		$mpl            = null !== $media_pad_left ? absint( $media_pad_left ) : 0;
-		$media_styles[] = 'padding:' . $mpt . esc_attr( $media_pad_unit ) . ' ' . $mpr . esc_attr( $media_pad_unit ) . ' ' . $mpb . esc_attr( $media_pad_unit ) . ' ' . $mpl . esc_attr( $media_pad_unit );
-	}
+	// mediaPadding base is NOT inline (Pattern A) — emitted with its tiers on
+	// .sgs-hero__media in the scoped <style> above.
 	$media_style_attr = $media_styles ? ' style="' . implode( ';', $media_styles ) . '"' : '';
 
 	$media_html = '<div class="' . esc_attr( $media_class ) . '"' . $media_style_attr . '>';

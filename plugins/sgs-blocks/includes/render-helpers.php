@@ -29,6 +29,13 @@
  *
  *   helpers-svg-kses.php            — sgs_svg_kses_allowed_tags
  *
+ *   helpers-responsive.php          — sgs_responsive_css_rule,
+ *                                     sgs_responsive_box_shorthand_rule
+ *                                     (Pattern A general responsive emitter —
+ *                                     base+tablet+mobile on ONE selector,
+ *                                     never inline. sgs_typography_css_rule
+ *                                     is implemented on top of it.)
+ *
  * A single `require_once render-helpers.php` continues to resolve every
  * function that this file has always provided. All callers are unchanged.
  *
@@ -38,6 +45,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-tokens.php';
+require_once __DIR__ . '/helpers-responsive.php';
 require_once __DIR__ . '/helpers-typography.php';
 require_once __DIR__ . '/helpers-colour-wcag.php';
 require_once __DIR__ . '/helpers-media.php';

@@ -175,7 +175,11 @@ $is_custom = 'custom' === $inherit_style;
 // 2. Unique ID for scoped CSS.
 // ---------------------------------------------------------------------------
 
-$uid = wp_unique_id( 'sgs-btn-' );
+// Content-hash uid (Pattern A pre-req, D-migration): matches heading/render.php
+// — stable across fragment-cached renders (same attrs → same id on every
+// request), and required for the base+tablet+mobile Pattern A rules below to
+// target a fixed selector rather than wp_unique_id()'s per-request counter.
+$uid = 'sgs-btn-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 
 // ---------------------------------------------------------------------------
 // 3. Build inline styles for the button element (custom mode only).
@@ -206,16 +210,11 @@ if ( $is_custom ) {
 		$inline_styles[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
 	}
 
-	// Border radius.
-	if ( null !== $border_radius_tl || null !== $border_radius_tr || null !== $border_radius_br || null !== $border_radius_bl ) {
-		$brtl            = null !== $border_radius_tl ? $border_radius_tl . $border_radius_unit : '0';
-		$brtr            = null !== $border_radius_tr ? $border_radius_tr . $border_radius_unit : '0';
-		$brbr            = null !== $border_radius_br ? $border_radius_br . $border_radius_unit : '0';
-		$brbl            = null !== $border_radius_bl ? $border_radius_bl . $border_radius_unit : '0';
-		$inline_styles[] = "border-radius:{$brtl} {$brtr} {$brbr} {$brbl}";
-	}
-
-	// Font properties.
+	// Border-radius / font-size / line-height / letter-spacing are NOT inline
+	// (Pattern A, D-migration): each has tablet/mobile tiers, so base+tablet+
+	// mobile are emitted together on the SAME selector in the scoped <style>
+	// block below (step 4) via the shared general helper. Inline would always
+	// beat the id-scoped @media overrides regardless of viewport.
 	if ( $font_weight ) {
 		$inline_styles[] = 'font-weight:' . intval( $font_weight );
 	}
@@ -227,15 +226,6 @@ if ( $is_custom ) {
 	}
 	if ( $text_decoration ) {
 		$inline_styles[] = 'text-decoration:' . $text_decoration;
-	}
-	if ( null !== $font_size ) {
-		$inline_styles[] = "font-size:{$font_size}{$font_size_unit}";
-	}
-	if ( null !== $line_height ) {
-		$inline_styles[] = "line-height:{$line_height}{$line_height_unit}";
-	}
-	if ( null !== $letter_spacing ) {
-		$inline_styles[] = "letter-spacing:{$letter_spacing}{$letter_spacing_unit}";
 	}
 
 	// Normal box shadow.
@@ -250,29 +240,20 @@ if ( $is_custom ) {
 	}
 }
 
-// Padding (all modes).
-if ( null !== $padding_top || null !== $padding_right || null !== $padding_bottom || null !== $padding_left ) {
-	$pt              = null !== $padding_top ? $padding_top . $padding_unit : '0';
-	$pr              = null !== $padding_right ? $padding_right . $padding_unit : '0';
-	$pb              = null !== $padding_bottom ? $padding_bottom . $padding_unit : '0';
-	$pl              = null !== $padding_left ? $padding_left . $padding_unit : '0';
-	$inline_styles[] = "padding:{$pt} {$pr} {$pb} {$pl}";
-}
+// Padding / min-height / icon-size-var are NOT inline (Pattern A,
+// D-migration): each has tablet/mobile tiers, so base+tablet+mobile are
+// emitted together on the SAME selector in the scoped <style> block below
+// (step 4). This also lets the tablet/mobile min-height rules drop the
+// !important that was previously required to beat this inline declaration
+// on the same element (the "F4 pattern" — retired).
 
 // Custom width inline style.
 if ( 'custom' === $width_type && $custom_width ) {
 	$inline_styles[] = "width:{$custom_width}{$custom_width_unit}";
 }
 
-// Min height (overrides default 44px if higher is set).
-if ( $min_height ) {
-	$inline_styles[] = "min-height:{$min_height}{$min_height_unit}";
-}
-
-// Icon gap as CSS custom property (consumed by style.css flexbox gap).
-if ( $icon && $icon_size ) {
-	$inline_styles[] = "--sgs-btn-icon-size:{$icon_size}px";
-}
+// Icon gap has no responsive tiers — stays inline as a CSS custom property
+// (consumed by style.css flexbox gap).
 $inline_styles[] = "--sgs-btn-icon-gap:{$icon_gap}px";
 
 // ---------------------------------------------------------------------------
@@ -325,72 +306,97 @@ if ( $is_custom ) {
 		$scoped_css_parts[] = "#{$uid} .sgs-button:hover .sgs-button__icon,#{$uid} .sgs-button:focus-visible .sgs-button__icon{color:" . sgs_colour_value( $icon_col_hov ) . ';}';
 	}
 
-	// Tablet typography.
-	$tab_rules = array();
-	if ( null !== $font_size_tab ) {
-		$tab_rules[] = "font-size:{$font_size_tab}{$font_size_unit}";
-	}
-	if ( null !== $line_height_tab ) {
-		$tab_rules[] = "line-height:{$line_height_tab}{$line_height_unit}";
-	}
-	if ( null !== $letter_spacing_tab ) {
-		$tab_rules[] = "letter-spacing:{$letter_spacing_tab}{$letter_spacing_unit}";
-	}
-	if ( $tab_rules ) {
-		$scoped_css_parts[] = '@media(max-width:1024px){' . "#{$uid} .sgs-button{" . implode( ';', $tab_rules ) . ';}}';
-	}
+	// Typography + border-radius — base + tablet + mobile on the SAME
+	// selector (Pattern A). Custom-mode only (matches the pre-existing
+	// contract — preset-mode buttons don't expose these controls).
+	$scoped_css_parts[] = sgs_responsive_css_rule(
+		$attributes,
+		array(
+			array(
+				'attr'         => 'fontSize',
+				'css'          => 'font-size',
+				'unit_default' => $font_size_unit,
+				'tablet_attr'  => 'fontSizeTablet',
+				'mobile_attr'  => 'fontSizeMobile',
+			),
+			array(
+				'attr'         => 'lineHeight',
+				'css'          => 'line-height',
+				'unit_default' => $line_height_unit,
+				'tablet_attr'  => 'lineHeightTablet',
+				'mobile_attr'  => 'lineHeightMobile',
+			),
+			array(
+				'attr'         => 'letterSpacing',
+				'css'          => 'letter-spacing',
+				'unit_default' => $letter_spacing_unit,
+				'tablet_attr'  => 'letterSpacingTablet',
+				'mobile_attr'  => 'letterSpacingMobile',
+			),
+		),
+		"#{$uid} .sgs-button"
+	);
 
-	// Tablet border radius.
-	if ( null !== $border_radius_tab_tl || null !== $border_radius_tab_tr || null !== $border_radius_tab_br || null !== $border_radius_tab_bl ) {
-		$brtl_t             = null !== $border_radius_tab_tl ? $border_radius_tab_tl . $border_radius_unit : '0';
-		$brtr_t             = null !== $border_radius_tab_tr ? $border_radius_tab_tr . $border_radius_unit : '0';
-		$brbr_t             = null !== $border_radius_tab_br ? $border_radius_tab_br . $border_radius_unit : '0';
-		$brbl_t             = null !== $border_radius_tab_bl ? $border_radius_tab_bl . $border_radius_unit : '0';
-		$scoped_css_parts[] = '@media(max-width:1024px){' . "#{$uid} .sgs-button{border-radius:{$brtl_t} {$brtr_t} {$brbr_t} {$brbl_t};}}";
-	}
-
-	// Mobile typography.
-	$mob_rules = array();
-	if ( null !== $font_size_mob ) {
-		$mob_rules[] = "font-size:{$font_size_mob}{$font_size_unit}";
-	}
-	if ( null !== $line_height_mob ) {
-		$mob_rules[] = "line-height:{$line_height_mob}{$line_height_unit}";
-	}
-	if ( null !== $letter_spacing_mob ) {
-		$mob_rules[] = "letter-spacing:{$letter_spacing_mob}{$letter_spacing_unit}";
-	}
-	if ( $mob_rules ) {
-		$scoped_css_parts[] = '@media(max-width:767px){' . "#{$uid} .sgs-button{" . implode( ';', $mob_rules ) . ';}}';
-	}
-
-	// Mobile border radius.
-	if ( null !== $border_radius_mob_tl || null !== $border_radius_mob_tr || null !== $border_radius_mob_br || null !== $border_radius_mob_bl ) {
-		$brtl_m             = null !== $border_radius_mob_tl ? $border_radius_mob_tl . $border_radius_unit : '0';
-		$brtr_m             = null !== $border_radius_mob_tr ? $border_radius_mob_tr . $border_radius_unit : '0';
-		$brbr_m             = null !== $border_radius_mob_br ? $border_radius_mob_br . $border_radius_unit : '0';
-		$brbl_m             = null !== $border_radius_mob_bl ? $border_radius_mob_bl . $border_radius_unit : '0';
-		$scoped_css_parts[] = '@media(max-width:767px){' . "#{$uid} .sgs-button{border-radius:{$brtl_m} {$brtr_m} {$brbr_m} {$brbl_m};}}";
-	}
+	$scoped_css_parts[] = sgs_responsive_box_shorthand_rule(
+		$attributes,
+		'border-radius',
+		array(
+			'top'    => array(
+				'base'   => 'borderRadiusTL',
+				'tablet' => 'borderRadiusTabletTL',
+				'mobile' => 'borderRadiusMobileTL',
+			),
+			'right'  => array(
+				'base'   => 'borderRadiusTR',
+				'tablet' => 'borderRadiusTabletTR',
+				'mobile' => 'borderRadiusMobileTR',
+			),
+			'bottom' => array(
+				'base'   => 'borderRadiusBR',
+				'tablet' => 'borderRadiusTabletBR',
+				'mobile' => 'borderRadiusMobileBR',
+			),
+			'left'   => array(
+				'base'   => 'borderRadiusBL',
+				'tablet' => 'borderRadiusTabletBL',
+				'mobile' => 'borderRadiusMobileBL',
+			),
+		),
+		'borderRadiusUnit',
+		"#{$uid} .sgs-button"
+	);
 }
 
-// Tablet padding.
-if ( null !== $padding_top_tab || null !== $padding_right_tab || null !== $padding_bottom_tab || null !== $padding_left_tab ) {
-	$pt_t               = null !== $padding_top_tab ? $padding_top_tab . $padding_unit : '0';
-	$pr_t               = null !== $padding_right_tab ? $padding_right_tab . $padding_unit : '0';
-	$pb_t               = null !== $padding_bottom_tab ? $padding_bottom_tab . $padding_unit : '0';
-	$pl_t               = null !== $padding_left_tab ? $padding_left_tab . $padding_unit : '0';
-	$scoped_css_parts[] = '@media(max-width:1024px){' . "#{$uid} .sgs-button{padding:{$pt_t} {$pr_t} {$pb_t} {$pl_t};}}";
-}
-
-// Mobile padding.
-if ( null !== $padding_top_mob || null !== $padding_right_mob || null !== $padding_bottom_mob || null !== $padding_left_mob ) {
-	$pt_m               = null !== $padding_top_mob ? $padding_top_mob . $padding_unit : '0';
-	$pr_m               = null !== $padding_right_mob ? $padding_right_mob . $padding_unit : '0';
-	$pb_m               = null !== $padding_bottom_mob ? $padding_bottom_mob . $padding_unit : '0';
-	$pl_m               = null !== $padding_left_mob ? $padding_left_mob . $padding_unit : '0';
-	$scoped_css_parts[] = '@media(max-width:767px){' . "#{$uid} .sgs-button{padding:{$pt_m} {$pr_m} {$pb_m} {$pl_m};}}";
-}
+// Padding — base + tablet + mobile shorthand on the SAME selector
+// (Pattern A). All modes (matches the pre-existing contract).
+$scoped_css_parts[] = sgs_responsive_box_shorthand_rule(
+	$attributes,
+	'padding',
+	array(
+		'top'    => array(
+			'base'   => 'paddingTop',
+			'tablet' => 'paddingTopTablet',
+			'mobile' => 'paddingTopMobile',
+		),
+		'right'  => array(
+			'base'   => 'paddingRight',
+			'tablet' => 'paddingRightTablet',
+			'mobile' => 'paddingRightMobile',
+		),
+		'bottom' => array(
+			'base'   => 'paddingBottom',
+			'tablet' => 'paddingBottomTablet',
+			'mobile' => 'paddingBottomMobile',
+		),
+		'left'   => array(
+			'base'   => 'paddingLeft',
+			'tablet' => 'paddingLeftTablet',
+			'mobile' => 'paddingLeftMobile',
+		),
+	),
+	'paddingUnit',
+	"#{$uid} .sgs-button"
+);
 
 // Tablet margin.
 if ( null !== $margin_top_tab || null !== $margin_right_tab || null !== $margin_bottom_tab || null !== $margin_left_tab ) {
@@ -410,24 +416,47 @@ if ( null !== $margin_top_mob || null !== $margin_right_mob || null !== $margin_
 	$scoped_css_parts[] = '@media(max-width:767px){' . "#{$uid} .sgs-button{margin:{$mt_m} {$mr_m} {$mb_m} {$ml_m};}}";
 }
 
-// Tablet icon size.
-if ( null !== $icon_size_tab ) {
-	$scoped_css_parts[] = "@media(max-width:1024px){#{$uid} .sgs-button{--sgs-btn-icon-size:{$icon_size_tab}px;}}";
+// Icon size CSS var — base + tablet + mobile on the SAME selector (Pattern A).
+// Only emitted when an icon is present (matches the pre-existing contract —
+// the base value is gated on $icon in the general helper via is_numeric()
+// on 'icon-size'; explicitly gate the whole rule on $icon to avoid emitting
+// tier-only vars with no icon to consume them).
+if ( $icon ) {
+	$scoped_css_parts[] = sgs_responsive_css_rule(
+		$attributes,
+		array(
+			array(
+				'attr'         => 'iconSize',
+				'css'          => '--sgs-btn-icon-size',
+				'unit_default' => 'px',
+				'tablet_attr'  => 'iconSizeTablet',
+				'mobile_attr'  => 'iconSizeMobile',
+				'cast'         => 'int',
+			),
+		),
+		"#{$uid} .sgs-button"
+	);
 }
 
-// Mobile icon size.
-if ( null !== $icon_size_mob ) {
-	$scoped_css_parts[] = "@media(max-width:767px){#{$uid} .sgs-button{--sgs-btn-icon-size:{$icon_size_mob}px;}}";
+// Min-height — base + tablet + mobile on the SAME selector (Pattern A). Each
+// tier has its OWN unit attribute (minHeightUnit / minHeightTabletUnit /
+// minHeightMobileUnit) — the general helper assumes one shared unit per
+// property family, so min-height is built by hand here rather than forced
+// through it. Because the base value now lives in this same-selector <style>
+// rule (not inline on the element), the tier overrides no longer need
+// !important to win (the "F4 pattern" !important workaround is retired).
+$min_height_decls = array();
+if ( $min_height ) {
+	$min_height_decls[] = "#{$uid} .sgs-button{min-height:{$min_height}{$min_height_unit};}";
 }
-
-// Tablet min-height — !important required to beat the desktop inline style on the same element (F4 pattern).
 if ( null !== $min_height_tab ) {
-	$scoped_css_parts[] = "@media(max-width:1023px){#{$uid} .sgs-button{min-height:{$min_height_tab}{$min_height_tab_u} !important;}}";
+	$min_height_decls[] = "@media(max-width:1023px){#{$uid} .sgs-button{min-height:{$min_height_tab}{$min_height_tab_u};}}";
 }
-
-// Mobile min-height — !important required to beat the desktop inline style on the same element (F4 pattern).
 if ( null !== $min_height_mob ) {
-	$scoped_css_parts[] = "@media(max-width:767px){#{$uid} .sgs-button{min-height:{$min_height_mob}{$min_height_mob_u} !important;}}";
+	$min_height_decls[] = "@media(max-width:767px){#{$uid} .sgs-button{min-height:{$min_height_mob}{$min_height_mob_u};}}";
+}
+if ( $min_height_decls ) {
+	$scoped_css_parts[] = implode( '', $min_height_decls );
 }
 
 // ---------------------------------------------------------------------------

@@ -203,20 +203,14 @@ if ( $background_colour ) {
 	$style_parts[] = 'background-color:' . sgs_colour_value( $background_colour );
 }
 
-if ( null !== $font_size && '' !== $font_size ) {
-	$style_parts[] = 'font-size:' . floatval( $font_size ) . esc_attr( $font_size_unit );
-}
+// font-size / line-height / letter-spacing are NOT inline (Pattern A,
+// D-migration): each has tablet/mobile tiers, so base+tablet+mobile are
+// emitted together on the SAME selector in the scoped <style> block below
+// (step 6) via sgs_responsive_css_rule(). Inline would always beat the
+// id-scoped @media overrides regardless of viewport.
 
 if ( $font_weight ) {
 	$style_parts[] = 'font-weight:' . esc_attr( $font_weight );
-}
-
-if ( null !== $line_height && '' !== $line_height ) {
-	$style_parts[] = 'line-height:' . floatval( $line_height ) . esc_attr( $line_height_unit );
-}
-
-if ( null !== $letter_spacing && '' !== $letter_spacing ) {
-	$style_parts[] = 'letter-spacing:' . floatval( $letter_spacing ) . esc_attr( $letter_spacing_unit );
 }
 
 if ( $font_style ) {
@@ -253,33 +247,9 @@ if ( '' !== $custom_width && null !== $custom_width ) {
 	$style_parts[] = 'width:' . esc_attr( $custom_width ) . $custom_width_unit;
 }
 
-// Margin — only emit each side when a non-null value is set.
-if ( null !== $margin_top ) {
-	$style_parts[] = 'margin-top:' . floatval( $margin_top ) . esc_attr( $margin_unit );
-}
-if ( null !== $margin_right ) {
-	$style_parts[] = 'margin-right:' . floatval( $margin_right ) . esc_attr( $margin_unit );
-}
-if ( null !== $margin_bottom ) {
-	$style_parts[] = 'margin-bottom:' . floatval( $margin_bottom ) . esc_attr( $margin_unit );
-}
-if ( null !== $margin_left ) {
-	$style_parts[] = 'margin-left:' . floatval( $margin_left ) . esc_attr( $margin_unit );
-}
-
-// Padding.
-if ( null !== $padding_top ) {
-	$style_parts[] = 'padding-top:' . floatval( $padding_top ) . esc_attr( $padding_unit );
-}
-if ( null !== $padding_right ) {
-	$style_parts[] = 'padding-right:' . floatval( $padding_right ) . esc_attr( $padding_unit );
-}
-if ( null !== $padding_bottom ) {
-	$style_parts[] = 'padding-bottom:' . floatval( $padding_bottom ) . esc_attr( $padding_unit );
-}
-if ( null !== $padding_left ) {
-	$style_parts[] = 'padding-left:' . floatval( $padding_left ) . esc_attr( $padding_unit );
-}
+// Margin / padding are NOT inline (Pattern A, D-migration): every side has
+// tablet/mobile tiers, so base+tablet+mobile are emitted together on the
+// SAME selector in the scoped <style> block below (step 6).
 
 // Border-radius.
 // Per-corner wins when any corner is set; falls back to uniform borderRadius.
@@ -353,136 +323,92 @@ $scope = '#' . esc_attr( $anchor );
 // instances on the same page never collide.
 // ---------------------------------------------------------------------------
 
-if ( ! function_exists( 'sgs_text_responsive_css' ) ) {
-	/**
-	 * Build a CSS declaration block for a single responsive breakpoint.
-	 *
-	 * @param string      $scope   CSS selector (e.g. '#sgs-text-1').
-	 * @param string      $media   Media query string (e.g. '@media (max-width:767px)').
-	 * @param float|null  $fs      Font size override.
-	 * @param string      $fs_unit Font size unit.
-	 * @param float|null  $lh      Line-height override.
-	 * @param string      $lh_unit Line-height unit.
-	 * @param string|null $ls      Letter-spacing override (string to preserve sign).
-	 * @param string      $ls_unit Letter-spacing unit.
-	 * @param float|null  $mt      Margin-top override.
-	 * @param float|null  $mr      Margin-right override.
-	 * @param float|null  $mb      Margin-bottom override.
-	 * @param float|null  $ml      Margin-left override.
-	 * @param string      $m_unit  Margin unit.
-	 * @param float|null  $pt      Padding-top override.
-	 * @param float|null  $pr      Padding-right override.
-	 * @param float|null  $pb      Padding-bottom override.
-	 * @param float|null  $pl      Padding-left override.
-	 * @param string      $p_unit  Padding unit.
-	 * @return string CSS string (empty when no overrides are set).
-	 */
-	function sgs_text_responsive_css(
-		string $scope,
-		string $media,
-		?float $fs,
-		string $fs_unit,
-		?float $lh,
-		string $lh_unit,
-		?string $ls,
-		string $ls_unit,
-		?float $mt,
-		?float $mr,
-		?float $mb,
-		?float $ml,
-		string $m_unit,
-		?float $pt,
-		?float $pr,
-		?float $pb,
-		?float $pl,
-		string $p_unit
-	): string {
-		$decls = array();
-
-		if ( null !== $fs ) {
-			$decls[] = 'font-size:' . $fs . $fs_unit;
-		}
-		if ( null !== $lh ) {
-			$decls[] = 'line-height:' . $lh . $lh_unit;
-		}
-		if ( null !== $ls && '' !== $ls ) {
-			$decls[] = 'letter-spacing:' . esc_attr( $ls ) . $ls_unit;
-		}
-		if ( null !== $mt ) {
-			$decls[] = 'margin-top:' . $mt . $m_unit;
-		}
-		if ( null !== $mr ) {
-			$decls[] = 'margin-right:' . $mr . $m_unit;
-		}
-		if ( null !== $mb ) {
-			$decls[] = 'margin-bottom:' . $mb . $m_unit;
-		}
-		if ( null !== $ml ) {
-			$decls[] = 'margin-left:' . $ml . $m_unit;
-		}
-		if ( null !== $pt ) {
-			$decls[] = 'padding-top:' . $pt . $p_unit;
-		}
-		if ( null !== $pr ) {
-			$decls[] = 'padding-right:' . $pr . $p_unit;
-		}
-		if ( null !== $pb ) {
-			$decls[] = 'padding-bottom:' . $pb . $p_unit;
-		}
-		if ( null !== $pl ) {
-			$decls[] = 'padding-left:' . $pl . $p_unit;
-		}
-
-		if ( empty( $decls ) ) {
-			return '';
-		}
-
-		return $media . '{' . $scope . '{' . implode( ';', $decls ) . '}}';
-	}
-}
-
-// Tablet (768px – 1023px).
-$css_tablet = sgs_text_responsive_css(
-	$scope,
-	'@media (min-width:768px) and (max-width:1023px)',
-	null !== $font_size_tablet ? floatval( $font_size_tablet ) : null,
-	$font_size_unit,
-	null !== $line_height_tablet ? floatval( $line_height_tablet ) : null,
-	$line_height_unit,
-	$letter_spacing_tablet,
-	$letter_spacing_unit,
-	null !== $margin_top_tablet ? floatval( $margin_top_tablet ) : null,
-	null !== $margin_right_tablet ? floatval( $margin_right_tablet ) : null,
-	null !== $margin_bottom_tablet ? floatval( $margin_bottom_tablet ) : null,
-	null !== $margin_left_tablet ? floatval( $margin_left_tablet ) : null,
-	$margin_unit,
-	null !== $padding_top_tablet ? floatval( $padding_top_tablet ) : null,
-	null !== $padding_right_tablet ? floatval( $padding_right_tablet ) : null,
-	null !== $padding_bottom_tablet ? floatval( $padding_bottom_tablet ) : null,
-	null !== $padding_left_tablet ? floatval( $padding_left_tablet ) : null,
-	$padding_unit
-);
-
-// Mobile (≤ 767px).
-$css_mobile = sgs_text_responsive_css(
-	$scope,
-	'@media (max-width:767px)',
-	null !== $font_size_mobile ? floatval( $font_size_mobile ) : null,
-	$font_size_unit,
-	null !== $line_height_mobile ? floatval( $line_height_mobile ) : null,
-	$line_height_unit,
-	$letter_spacing_mobile,
-	$letter_spacing_unit,
-	null !== $margin_top_mobile ? floatval( $margin_top_mobile ) : null,
-	null !== $margin_right_mobile ? floatval( $margin_right_mobile ) : null,
-	null !== $margin_bottom_mobile ? floatval( $margin_bottom_mobile ) : null,
-	null !== $margin_left_mobile ? floatval( $margin_left_mobile ) : null,
-	$margin_unit,
-	null !== $padding_top_mobile ? floatval( $padding_top_mobile ) : null,
-	null !== $padding_right_mobile ? floatval( $padding_right_mobile ) : null,
-	null !== $padding_bottom_mobile ? floatval( $padding_bottom_mobile ) : null,
-	null !== $padding_left_mobile ? floatval( $padding_left_mobile ) : null,
-	$padding_unit
+// Pattern A (D-migration): base + tablet + mobile emitted together on the
+// SAME selector ($scope) via the shared general helper — replaces the old
+// per-block sgs_text_responsive_css() hand-rolled tablet/mobile-only builder
+// (which left the desktop/base value inline, always defeating it).
+$css_base_and_tiers = sgs_responsive_css_rule(
+	$attributes,
+	array(
+		array(
+			'attr'         => 'fontSize',
+			'css'          => 'font-size',
+			'unit_default' => $font_size_unit,
+			'tablet_attr'  => 'fontSizeTablet',
+			'mobile_attr'  => 'fontSizeMobile',
+		),
+		array(
+			'attr'         => 'lineHeight',
+			'css'          => 'line-height',
+			'unit_default' => $line_height_unit,
+			'tablet_attr'  => 'lineHeightTablet',
+			'mobile_attr'  => 'lineHeightMobile',
+		),
+		array(
+			'attr'         => 'letterSpacing',
+			'css'          => 'letter-spacing',
+			'unit_default' => $letter_spacing_unit,
+			'tablet_attr'  => 'letterSpacingTablet',
+			'mobile_attr'  => 'letterSpacingMobile',
+		),
+		array(
+			'attr'         => 'marginTop',
+			'css'          => 'margin-top',
+			'unit_default' => $margin_unit,
+			'tablet_attr'  => 'marginTopTablet',
+			'mobile_attr'  => 'marginTopMobile',
+		),
+		array(
+			'attr'         => 'marginRight',
+			'css'          => 'margin-right',
+			'unit_default' => $margin_unit,
+			'tablet_attr'  => 'marginRightTablet',
+			'mobile_attr'  => 'marginRightMobile',
+		),
+		array(
+			'attr'         => 'marginBottom',
+			'css'          => 'margin-bottom',
+			'unit_default' => $margin_unit,
+			'tablet_attr'  => 'marginBottomTablet',
+			'mobile_attr'  => 'marginBottomMobile',
+		),
+		array(
+			'attr'         => 'marginLeft',
+			'css'          => 'margin-left',
+			'unit_default' => $margin_unit,
+			'tablet_attr'  => 'marginLeftTablet',
+			'mobile_attr'  => 'marginLeftMobile',
+		),
+		array(
+			'attr'         => 'paddingTop',
+			'css'          => 'padding-top',
+			'unit_default' => $padding_unit,
+			'tablet_attr'  => 'paddingTopTablet',
+			'mobile_attr'  => 'paddingTopMobile',
+		),
+		array(
+			'attr'         => 'paddingRight',
+			'css'          => 'padding-right',
+			'unit_default' => $padding_unit,
+			'tablet_attr'  => 'paddingRightTablet',
+			'mobile_attr'  => 'paddingRightMobile',
+		),
+		array(
+			'attr'         => 'paddingBottom',
+			'css'          => 'padding-bottom',
+			'unit_default' => $padding_unit,
+			'tablet_attr'  => 'paddingBottomTablet',
+			'mobile_attr'  => 'paddingBottomMobile',
+		),
+		array(
+			'attr'         => 'paddingLeft',
+			'css'          => 'padding-left',
+			'unit_default' => $padding_unit,
+			'tablet_attr'  => 'paddingLeftTablet',
+			'mobile_attr'  => 'paddingLeftMobile',
+		),
+	),
+	$scope
 );
 
 // Drop-cap ::first-letter CSS (scoped to instance id).
@@ -537,7 +463,7 @@ if ( $has_hover ) {
 	}
 }
 
-$responsive_css = trim( $css_tablet . $css_mobile . $css_drop_cap . $css_hover );
+$responsive_css = trim( $css_base_and_tiers . $css_drop_cap . $css_hover );
 
 // ---------------------------------------------------------------------------
 // 7. Assemble wrapper attributes.
@@ -551,7 +477,10 @@ if ( $inline_style ) {
 }
 // Pass anchor so get_block_wrapper_attributes() writes id="…" on the element —
 // this is the same id used to scope the responsive and hover <style> blocks.
-if ( $anchor && isset( $attributes['anchor'] ) ) {
+// The id MUST attach whenever scoped CSS exists (Pattern A: the base value now
+// lives in the #uid rule — an element without the id receives none of it), so
+// the generated hash uid attaches too, not only an operator-set anchor.
+if ( $anchor ) {
 	$wrapper_args['id'] = esc_attr( $anchor );
 }
 

@@ -189,9 +189,9 @@ if ( ! function_exists( 'sgs_quote_build_slot_style' ) ) {
 		if ( ! empty( $args['colour'] ) ) {
 			$parts[] = 'color:' . sgs_colour_value( $args['colour'] );
 		}
-		if ( isset( $args['fontSize'] ) && null !== $args['fontSize'] && '' !== $args['fontSize'] ) {
-			$parts[] = 'font-size:' . floatval( $args['fontSize'] ) . esc_attr( $args['fontSizeUnit'] ?? 'px' );
-		}
+		// font-size is NOT inline (Pattern A, D-migration): it has tablet/
+		// mobile tiers, so base+tablet+mobile are emitted together on the
+		// SAME selector in the scoped <style> block via sgs_responsive_css_rule().
 		if ( ! empty( $args['fontWeight'] ) ) {
 			$parts[] = 'font-weight:' . esc_attr( $args['fontWeight'] );
 		}
@@ -207,18 +207,13 @@ if ( ! function_exists( 'sgs_quote_build_slot_style' ) ) {
 		if ( ! empty( $args['textTransform'] ) ) {
 			$parts[] = 'text-transform:' . esc_attr( $args['textTransform'] );
 		}
-		if ( isset( $args['lineHeight'] ) && null !== $args['lineHeight'] && '' !== $args['lineHeight'] ) {
-			$parts[] = 'line-height:' . floatval( $args['lineHeight'] ) . esc_attr( $args['lineHeightUnit'] ?? 'em' );
-		}
 		if ( isset( $args['letterSpacing'] ) && null !== $args['letterSpacing'] && '' !== $args['letterSpacing'] ) {
 			$parts[] = 'letter-spacing:' . floatval( $args['letterSpacing'] ) . esc_attr( $args['letterSpacingUnit'] ?? 'em' );
 		}
-		if ( isset( $args['marginBottom'] ) && null !== $args['marginBottom'] && '' !== $args['marginBottom'] ) {
-			$parts[] = 'margin-bottom:' . floatval( $args['marginBottom'] ) . esc_attr( $args['marginUnit'] ?? 'px' );
-		}
-		if ( isset( $args['marginTop'] ) && null !== $args['marginTop'] && '' !== $args['marginTop'] ) {
-			$parts[] = 'margin-top:' . floatval( $args['marginTop'] ) . esc_attr( $args['marginUnit'] ?? 'px' );
-		}
+		// line-height / margin-bottom / margin-top are NOT inline (Pattern A,
+		// D-migration): each has tablet/mobile tiers on this slot, so
+		// base+tablet+mobile are emitted together on the SAME selector in
+		// the scoped <style> block via sgs_responsive_css_rule().
 
 		return implode( ';', $parts );
 	}
@@ -229,48 +224,8 @@ if ( ! function_exists( 'sgs_quote_build_slot_style' ) ) {
 // function_exists() guard for the same reason as above.
 // ---------------------------------------------------------------------------
 
-if ( ! function_exists( 'sgs_quote_slot_responsive_css' ) ) {
-	/**
-	 * Emit one media-query block for a slot's responsive overrides.
-	 *
-	 * @param string     $scope        CSS selector string (e.g. '#sgs-quote-1 .wp-block-sgs-quote__body').
-	 * @param string     $media        Full @media rule string.
-	 * @param float|null $fs           Font-size override.
-	 * @param string     $fs_unit      Font-size unit.
-	 * @param float|null $lh           Line-height override.
-	 * @param string     $lh_unit      Line-height unit.
-	 * @param float|null $spacing      Margin-bottom (body) or margin-top (attribution) override.
-	 * @param string     $sp_unit      Spacing unit.
-	 * @param string     $sp_prop      CSS property name for the spacing override.
-	 * @return string CSS string, or '' when no overrides are set.
-	 */
-	function sgs_quote_slot_responsive_css(
-		string $scope,
-		string $media,
-		?float $fs,
-		string $fs_unit,
-		?float $lh,
-		string $lh_unit,
-		?float $spacing,
-		string $sp_unit,
-		string $sp_prop
-	): string {
-		$decls = array();
-		if ( null !== $fs ) {
-			$decls[] = 'font-size:' . $fs . $fs_unit;
-		}
-		if ( null !== $lh ) {
-			$decls[] = 'line-height:' . $lh . $lh_unit;
-		}
-		if ( null !== $spacing ) {
-			$decls[] = $sp_prop . ':' . $spacing . $sp_unit;
-		}
-		if ( empty( $decls ) ) {
-			return '';
-		}
-		return $media . '{' . $scope . '{' . implode( ';', $decls ) . '}}';
-	}
-}
+// (sgs_quote_slot_responsive_css() removed — Pattern A migration replaces it
+// with the shared sgs_responsive_css_rule() general helper; see step 11.)
 
 // ---------------------------------------------------------------------------
 // 7. Resolve anchor / scope id.
@@ -419,56 +374,55 @@ if ( ! $inherit_style ) {
 $body_scope   = $scope . ' .wp-block-sgs-quote__body';
 $attrib_scope = $scope . ' .wp-block-sgs-quote__attribution';
 
-// Body — tablet.
-$css_body_tablet = sgs_quote_slot_responsive_css(
-	$body_scope,
-	'@media (min-width:768px) and (max-width:1023px)',
-	null !== $body_font_size_tablet ? floatval( $body_font_size_tablet ) : null,
-	$body_font_size_unit,
-	null !== $body_line_height_tablet ? floatval( $body_line_height_tablet ) : null,
-	$body_line_height_unit,
-	null !== $body_margin_bottom_tablet ? floatval( $body_margin_bottom_tablet ) : null,
-	$body_margin_unit,
-	'margin-bottom'
+// Body — base + tablet + mobile on the SAME selector (Pattern A).
+$css_body_tiers = sgs_responsive_css_rule(
+	$attributes,
+	array(
+		array(
+			'attr'         => 'bodyFontSize',
+			'css'          => 'font-size',
+			'unit_default' => $body_font_size_unit,
+			'tablet_attr'  => 'bodyFontSizeTablet',
+			'mobile_attr'  => 'bodyFontSizeMobile',
+		),
+		array(
+			'attr'         => 'bodyLineHeight',
+			'css'          => 'line-height',
+			'unit_default' => $body_line_height_unit,
+			'tablet_attr'  => 'bodyLineHeightTablet',
+			'mobile_attr'  => 'bodyLineHeightMobile',
+		),
+		array(
+			'attr'         => 'bodyMarginBottom',
+			'css'          => 'margin-bottom',
+			'unit_default' => $body_margin_unit,
+			'tablet_attr'  => 'bodyMarginBottomTablet',
+			'mobile_attr'  => 'bodyMarginBottomMobile',
+		),
+	),
+	$body_scope
 );
 
-// Body — mobile.
-$css_body_mobile = sgs_quote_slot_responsive_css(
-	$body_scope,
-	'@media (max-width:767px)',
-	null !== $body_font_size_mobile ? floatval( $body_font_size_mobile ) : null,
-	$body_font_size_unit,
-	null !== $body_line_height_mobile ? floatval( $body_line_height_mobile ) : null,
-	$body_line_height_unit,
-	null !== $body_margin_bottom_mobile ? floatval( $body_margin_bottom_mobile ) : null,
-	$body_margin_unit,
-	'margin-bottom'
-);
-
-// Attribution — tablet.
-$css_attrib_tablet = sgs_quote_slot_responsive_css(
-	$attrib_scope,
-	'@media (min-width:768px) and (max-width:1023px)',
-	null !== $attrib_font_size_tablet ? floatval( $attrib_font_size_tablet ) : null,
-	$attrib_font_size_unit,
-	null,
-	'em',
-	null !== $attrib_margin_top_tablet ? floatval( $attrib_margin_top_tablet ) : null,
-	$attrib_margin_unit,
-	'margin-top'
-);
-
-// Attribution — mobile.
-$css_attrib_mobile = sgs_quote_slot_responsive_css(
-	$attrib_scope,
-	'@media (max-width:767px)',
-	null !== $attrib_font_size_mobile ? floatval( $attrib_font_size_mobile ) : null,
-	$attrib_font_size_unit,
-	null,
-	'em',
-	null !== $attrib_margin_top_mobile ? floatval( $attrib_margin_top_mobile ) : null,
-	$attrib_margin_unit,
-	'margin-top'
+// Attribution — base + tablet + mobile on the SAME selector (Pattern A).
+$css_attrib_tiers = sgs_responsive_css_rule(
+	$attributes,
+	array(
+		array(
+			'attr'         => 'attributionFontSize',
+			'css'          => 'font-size',
+			'unit_default' => $attrib_font_size_unit,
+			'tablet_attr'  => 'attributionFontSizeTablet',
+			'mobile_attr'  => 'attributionFontSizeMobile',
+		),
+		array(
+			'attr'         => 'attributionMarginTop',
+			'css'          => 'margin-top',
+			'unit_default' => $attrib_margin_unit,
+			'tablet_attr'  => 'attributionMarginTopTablet',
+			'mobile_attr'  => 'attributionMarginTopMobile',
+		),
+	),
+	$attrib_scope
 );
 
 // Hover state.
@@ -494,10 +448,8 @@ if ( $hover_scale || $hover_colour || $hover_bg || $box_shadow_hover ) {
 }
 
 $slot_responsive_css = trim(
-	$css_body_tablet .
-	$css_body_mobile .
-	$css_attrib_tablet .
-	$css_attrib_mobile .
+	$css_body_tiers .
+	$css_attrib_tiers .
 	$css_hover
 );
 
@@ -555,15 +507,14 @@ $inner_html = $slot_style_tag . $blockquote_inner;
 
 // ---------------------------------------------------------------------------
 // 13. Anchor id attr — passed via extra_attrs so the helper writes id="…"
-// on the wrapper element. Only set when an explicit anchor is authored;
-// for auto-generated anchors we rely on the scoped $scope CSS selector
-// (see step 7) without polluting the DOM with generated ids.
+// on the wrapper element. The id MUST attach for generated anchors too:
+// $scope is '#'-based, so every scoped rule (incl. the Pattern-A base
+// values) matches NOTHING unless the element carries the id. (The old
+// "rely on the scoped selector without the id" comment was the bug —
+// caught live 2026-07-05: sibling text blocks rendered theme defaults.)
 // ---------------------------------------------------------------------------
 
-$extra_attrs = array();
-if ( isset( $attributes['anchor'] ) && $attributes['anchor'] ) {
-	$extra_attrs['id'] = esc_attr( $anchor );
-}
+$extra_attrs = array( 'id' => esc_attr( $anchor ) );
 
 // ---------------------------------------------------------------------------
 // 14. Emit via the shared wrapper helper.

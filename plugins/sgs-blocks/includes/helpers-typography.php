@@ -30,6 +30,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-tokens.php';
+require_once __DIR__ . '/helpers-responsive.php';
 
 if ( ! function_exists( 'sgs_typography_attr' ) ) {
 	/**
@@ -57,34 +58,63 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 	 * @return string CSS text (no <style> wrapper); '' when nothing is set.
 	 */
 	function sgs_typography_css_rule( array $attributes, $prefix, $selector ) {
-		$k_size      = sgs_typography_attr( $prefix, 'FontSize' );
-		$k_size_unit = sgs_typography_attr( $prefix, 'FontSizeUnit' );
-		$k_size_tab  = sgs_typography_attr( $prefix, 'FontSizeTablet' );
-		$k_size_mob  = sgs_typography_attr( $prefix, 'FontSizeMobile' );
-		$k_weight    = sgs_typography_attr( $prefix, 'FontWeight' );
-		$k_style     = sgs_typography_attr( $prefix, 'FontStyle' );
-		$k_lh        = sgs_typography_attr( $prefix, 'LineHeight' );
-		$k_lh_unit   = sgs_typography_attr( $prefix, 'LineHeightUnit' );
+		$k_size       = sgs_typography_attr( $prefix, 'FontSize' );
+		$k_size_unit  = sgs_typography_attr( $prefix, 'FontSizeUnit' );
+		$k_weight     = sgs_typography_attr( $prefix, 'FontWeight' );
+		$k_style      = sgs_typography_attr( $prefix, 'FontStyle' );
+		$k_transform  = sgs_typography_attr( $prefix, 'TextTransform' );
+		$k_decoration = sgs_typography_attr( $prefix, 'TextDecoration' );
 
-		$unit = isset( $attributes[ $k_size_unit ] ) && '' !== $attributes[ $k_size_unit ]
-			? preg_replace( '/[^a-z%]/i', '', (string) $attributes[ $k_size_unit ] )
-			: 'px';
+		// Numeric responsive families (font-size / line-height / letter-spacing)
+		// delegate to the general Pattern A emitter — base + tablet + mobile on
+		// the SAME selector, only set values emitted.
+		$size_unit_set = isset( $attributes[ $k_size_unit ] ) && '' !== $attributes[ $k_size_unit ];
 
-		// Desktop font-size: numeric (modern) first, legacy string second.
-		$size_decl = '';
-		if ( isset( $attributes[ $k_size ] ) && '' !== $attributes[ $k_size ] && is_numeric( $attributes[ $k_size ] ) ) {
-			$size_decl = 'font-size:' . floatval( $attributes[ $k_size ] ) . $unit . ';';
-		} elseif ( isset( $attributes[ $k_size ] ) && '' !== $attributes[ $k_size ] ) {
-			// Legacy string shape (token slug or raw CSS) — honour it verbatim.
+		$css = sgs_responsive_css_rule(
+			$attributes,
+			array(
+				array(
+					'attr'         => $k_size,
+					'css'          => 'font-size',
+					'unit_attr'    => $size_unit_set ? $k_size_unit : '',
+					'unit_default' => 'px',
+					'tablet_attr'  => sgs_typography_attr( $prefix, 'FontSizeTablet' ),
+					'mobile_attr'  => sgs_typography_attr( $prefix, 'FontSizeMobile' ),
+				),
+				array(
+					'attr'              => sgs_typography_attr( $prefix, 'LineHeight' ),
+					'css'               => 'line-height',
+					'unit_attr'         => sgs_typography_attr( $prefix, 'LineHeightUnit' ),
+					'unit_default'      => '',
+					'unitless_sentinel' => 'unitless',
+					'tablet_attr'       => sgs_typography_attr( $prefix, 'LineHeightTablet' ),
+					'mobile_attr'       => sgs_typography_attr( $prefix, 'LineHeightMobile' ),
+				),
+				array(
+					'attr'         => sgs_typography_attr( $prefix, 'LetterSpacing' ),
+					'css'          => 'letter-spacing',
+					'unit_attr'    => sgs_typography_attr( $prefix, 'LetterSpacingUnit' ),
+					'unit_default' => 'em',
+					'tablet_attr'  => sgs_typography_attr( $prefix, 'LetterSpacingTablet' ),
+					'mobile_attr'  => sgs_typography_attr( $prefix, 'LetterSpacingMobile' ),
+				),
+			),
+			$selector
+		);
+
+		// Base-only (non-responsive) typography props, appended as a second rule
+		// on the same selector: legacy string font-size, weight, style, transform,
+		// decoration. Blocks that lack these attrs simply don't emit them.
+		$base_decls = array();
+
+		// Legacy STRING font-size (pre-2026-06-11 token/raw-CSS shape) — honoured
+		// verbatim when the modern numeric value is absent (numeric always wins;
+		// sgs_responsive_css_rule skips non-numeric values so no double-emit).
+		if ( isset( $attributes[ $k_size ] ) && '' !== $attributes[ $k_size ] && ! is_numeric( $attributes[ $k_size ] ) ) {
 			$legacy = sgs_font_size_value( (string) $attributes[ $k_size ] );
 			if ( '' !== $legacy ) {
-				$size_decl = 'font-size:' . $legacy . ';';
+				$base_decls[] = 'font-size:' . $legacy . ';';
 			}
-		}
-
-		$base_decls = array();
-		if ( '' !== $size_decl ) {
-			$base_decls[] = $size_decl;
 		}
 		if ( ! empty( $attributes[ $k_weight ] ) ) {
 			$base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', (string) $attributes[ $k_weight ] ) . ';';
@@ -92,26 +122,19 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 		if ( ! empty( $attributes[ $k_style ] ) && in_array( $attributes[ $k_style ], array( 'normal', 'italic' ), true ) ) {
 			$base_decls[] = 'font-style:' . $attributes[ $k_style ] . ';';
 		}
-		if ( isset( $attributes[ $k_lh ] ) && '' !== $attributes[ $k_lh ] && is_numeric( $attributes[ $k_lh ] ) ) {
-			// Decode the "unitless" sentinel before the regex strip -- the regex keeps
-			// all letters so "unitless" would pass through unchanged and produce
-			// invalid CSS like `line-height:1.65unitless`. Mirror heading/render.php:222.
-			$raw_lh_unit  = isset( $attributes[ $k_lh_unit ] ) ? (string) $attributes[ $k_lh_unit ] : '';
-			$lh_unit      = ( 'unitless' === $raw_lh_unit ) ? '' : preg_replace( '/[^a-z%]/i', '', $raw_lh_unit );
-			$base_decls[] = 'line-height:' . floatval( $attributes[ $k_lh ] ) . $lh_unit . ';';
+		$allowed_transforms = array( 'none', 'uppercase', 'lowercase', 'capitalize' );
+		if ( ! empty( $attributes[ $k_transform ] ) && in_array( $attributes[ $k_transform ], $allowed_transforms, true ) ) {
+			$base_decls[] = 'text-transform:' . $attributes[ $k_transform ] . ';';
+		}
+		$allowed_decorations = array( 'none', 'underline', 'line-through', 'overline' );
+		if ( ! empty( $attributes[ $k_decoration ] ) && in_array( $attributes[ $k_decoration ], $allowed_decorations, true ) ) {
+			$base_decls[] = 'text-decoration:' . $attributes[ $k_decoration ] . ';';
 		}
 
-		$css = '';
 		if ( ! empty( $base_decls ) ) {
-			$css .= $selector . '{' . implode( '', $base_decls ) . '}';
-		}
-
-		// Responsive font-size overrides (numeric only).
-		if ( isset( $attributes[ $k_size_tab ] ) && '' !== $attributes[ $k_size_tab ] && is_numeric( $attributes[ $k_size_tab ] ) ) {
-			$css .= '@media (max-width:1023px){' . $selector . '{font-size:' . floatval( $attributes[ $k_size_tab ] ) . $unit . ';}}';
-		}
-		if ( isset( $attributes[ $k_size_mob ] ) && '' !== $attributes[ $k_size_mob ] && is_numeric( $attributes[ $k_size_mob ] ) ) {
-			$css .= '@media (max-width:767px){' . $selector . '{font-size:' . floatval( $attributes[ $k_size_mob ] ) . $unit . ';}}';
+			// Prepend so base-only props sit before the responsive rules — same
+			// computed result either way (disjoint properties, same selector).
+			$css = $selector . '{' . implode( '', $base_decls ) . '}' . $css;
 		}
 
 		return $css;
