@@ -193,10 +193,6 @@
 			"type": "string",
 			"default": "start"
 		},
-		"htmlTag": {
-			"type": "string",
-			"default": "section"
-		},
 		"shapeDividerTop": {
 			"type": "string",
 			"default": ""

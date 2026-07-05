@@ -31,15 +31,6 @@ import { colourVar } from '../../utils';
 // Constants
 // ---------------------------------------------------------------------------
 
-const TAG_OPTIONS = [
-	{ label: __( 'p (paragraph)', 'sgs-blocks' ), value: 'p' },
-	{ label: __( 'span (inline)', 'sgs-blocks' ), value: 'span' },
-	{ label: __( 'div (block)', 'sgs-blocks' ), value: 'div' },
-	{ label: __( 'blockquote', 'sgs-blocks' ), value: 'blockquote' },
-	{ label: __( 'em (italic)', 'sgs-blocks' ), value: 'em' },
-	{ label: __( 'strong (bold)', 'sgs-blocks' ), value: 'strong' },
-];
-
 const FONT_WEIGHT_OPTIONS = [
 	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Thin (100)', 'sgs-blocks' ), value: '100' },
@@ -243,7 +234,6 @@ function parseUnit( raw, currentUnit ) {
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		text,
-		tag,
 		textColour,
 		fontSize,
 		fontSizeUnit,
@@ -337,17 +327,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				{ /* ---- Tag ---- */ }
-				<PanelBody title={ __( 'Element', 'sgs-blocks' ) }>
-					<SelectControl
-						label={ __( 'HTML tag', 'sgs-blocks' ) }
-						value={ tag }
-						options={ TAG_OPTIONS }
-						onChange={ ( val ) => setAttributes( { tag: val } ) }
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
-
 				{ /* ---- Colour ---- */ }
 				<PanelBody
 					title={ __( 'Colour', 'sgs-blocks' ) }
@@ -622,7 +601,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			<RichText
 				{ ...blockProps }
-				tagName={ tag }
+				tagName="p"
 				value={ text }
 				onChange={ ( val ) => setAttributes( { text: val } ) }
 				placeholder={ __( 'Text…', 'sgs-blocks' ) }

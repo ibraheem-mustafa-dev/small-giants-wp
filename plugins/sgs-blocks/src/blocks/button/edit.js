@@ -26,11 +26,6 @@ const TARGET_OPTIONS = [
 	{ label: __( 'Full window (_top)', 'sgs-blocks' ), value: '_top' },
 ];
 
-const TAG_OPTIONS = [
-	{ label: __( 'Link (<a>)', 'sgs-blocks' ), value: 'a' },
-	{ label: __( 'Button (<button>)', 'sgs-blocks' ), value: 'button' },
-];
-
 const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Before label', 'sgs-blocks' ), value: 'before' },
 	{ label: __( 'After label', 'sgs-blocks' ), value: 'after' },
@@ -126,7 +121,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		linkTarget,
 		rel,
 		download,
-		tagName,
 		isSubmit,
 		inheritStyle,
 		ariaLabel,
@@ -290,19 +284,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { download: val } ) }
 						__nextHasNoMarginBottom
 					/>
-					<SelectControl
-						label={ __( 'HTML element', 'sgs-blocks' ) }
-						value={ tagName }
-						options={ TAG_OPTIONS }
-						onChange={ ( val ) => setAttributes( { tagName: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					{ 'button' === tagName && (
+					{ ! url && (
 						<ToggleControl
 							label={ __( 'Submit button (type="submit")', 'sgs-blocks' ) }
 							checked={ isSubmit }
 							onChange={ ( val ) => setAttributes( { isSubmit: val } ) }
 							__nextHasNoMarginBottom
+							help={ __( 'No URL set — this renders as a <button>. Enable for form-submit buttons.', 'sgs-blocks' ) }
 						/>
 					) }
 					<TextControl

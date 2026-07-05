@@ -71,7 +71,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 		 * @param string         $inner_html  The caller's already-built interior HTML (InnerBlocks content).
 		 * @param string         $kind        'section'|'layout'|'content' — gates which wrapper layers emit.
 		 * @param array          $opts        Optional overrides:
-		 *                                    'tag'           => string  HTML tag (default: from htmlTag attr or 'section').
+		 *                                    'tag'           => string  HTML tag (default: 'section').
 		 *                                    'block_class'   => string  Additional root class appended to $classes
 		 *                                                       (e.g. 'sgs-hero'). Merged before wrapper_attrs call.
 		 *                                    'extra_classes' => array   Additional classes (merged before wrapper call).
@@ -320,8 +320,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				'' !== $content_width_tablet || '' !== $content_width_mobile
 			);
 
-			// HTML tag.
-			$html_tag     = $opt_tag ? $opt_tag : ( $attributes['htmlTag'] ?? 'section' );
+			// HTML tag. No block declares a user-facing 'htmlTag' attr any more
+			// (removed 2026-07-05) — callers pass 'tag' in $opts explicitly.
+			$html_tag     = $opt_tag ? $opt_tag : 'section';
 			$allowed_tags = array( 'section', 'div', 'article', 'aside', 'main', 'details', 'fieldset' );
 			if ( ! in_array( $html_tag, $allowed_tags, true ) ) {
 				$html_tag = 'section';

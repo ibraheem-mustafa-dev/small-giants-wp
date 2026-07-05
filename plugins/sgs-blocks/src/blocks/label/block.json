@@ -40,15 +40,6 @@
             "default": "",
             "role": "content"
         },
-        "tag": {
-            "type": "string",
-            "enum": [
-                "span",
-                "p",
-                "div"
-            ],
-            "default": "span"
-        },
         "textColour": {
             "type": "string",
             "default": "primary"

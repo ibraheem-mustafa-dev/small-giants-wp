@@ -14,12 +14,6 @@ import {
 import { DesignTokenPicker, TypographyControls } from '../../components';
 import { colourVar } from '../../utils';
 
-const TAG_OPTIONS = [
-	{ label: __( 'span (inline)', 'sgs-blocks' ), value: 'span' },
-	{ label: __( 'p (paragraph)', 'sgs-blocks' ), value: 'p' },
-	{ label: __( 'div (block)', 'sgs-blocks' ), value: 'div' },
-];
-
 const TEXT_TRANSFORM_OPTIONS = [
 	{ label: __( 'Uppercase', 'sgs-blocks' ), value: 'uppercase' },
 	{ label: __( 'Lowercase', 'sgs-blocks' ), value: 'lowercase' },
@@ -158,7 +152,6 @@ function buildStyle( attributes ) {
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		text,
-		tag,
 		className,
 		textColour,
 		backgroundColour,
@@ -193,16 +186,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Label Settings', 'sgs-blocks' ) }>
-					<SelectControl
-						label={ __( 'HTML tag', 'sgs-blocks' ) }
-						value={ tag }
-						options={ TAG_OPTIONS }
-						onChange={ ( val ) => setAttributes( { tag: val } ) }
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
-
 				<PanelBody
 					title={ __( 'Colour', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -381,7 +364,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			<RichText
 				{ ...blockProps }
-				tagName={ tag }
+				tagName="span"
 				value={ text }
 				onChange={ ( val ) => setAttributes( { text: val } ) }
 				placeholder={ __(

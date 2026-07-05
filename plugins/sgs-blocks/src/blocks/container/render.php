@@ -24,7 +24,9 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // $attributes passed VERBATIM — uid is md5(wp_json_encode($attributes).anchor); any
 // mutation would change the uid → different scoped <style> selector → pixel drift.
 
-$html_tag = $attributes['htmlTag'] ?? 'section';
+// User-facing HTML-tag chooser removed (D-scope, 2026-07-05) — the converter
+// never emitted this attr; the wrapper always renders 'section' for sgs/container.
+$html_tag = 'section';
 
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() returns pre-sanitised HTML; all variables sanitised internally via esc_*/wp_kses()/get_block_wrapper_attributes().
 echo SGS_Container_Wrapper::render(

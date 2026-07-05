@@ -51,10 +51,6 @@
             "type": "boolean",
             "default": false
         },
-        "tagName": {
-            "type": "string",
-            "default": "a"
-        },
         "isSubmit": {
             "type": "boolean",
             "default": false

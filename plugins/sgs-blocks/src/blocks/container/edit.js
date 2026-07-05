@@ -45,14 +45,6 @@ function gapCssValue( gap ) {
 	return gap;
 }
 
-const TAG_OPTIONS = [
-  { label: "section", value: "section" },
-  { label: "div", value: "div" },
-  { label: "article", value: "article" },
-  { label: "aside", value: "aside" },
-  { label: "main", value: "main" },
-];
-
 const TEMPLATE_MODE_OPTIONS = [
   { label: __("Free (no restrictions)", "sgs-blocks"), value: "free" },
   { label: __("Grid section", "sgs-blocks"), value: "grid-section" },
@@ -191,14 +183,6 @@ export default function Edit({ attributes, setAttributes }) {
               );
             } }
           </ResponsiveControl>
-          {/* Container-specific: HTML tag selector. Composite blocks have fixed tags. */}
-          <SelectControl
-            label={ __( "HTML tag", "sgs-blocks" ) }
-            value={ attributes.htmlTag }
-            options={ TAG_OPTIONS }
-            onChange={ ( val ) => setAttributes( { htmlTag: val } ) }
-            __nextHasNoMarginBottom
-          />
         </PanelBody>
 
         {/* Responsive spacing overrides (tablet / mobile padding + margin).

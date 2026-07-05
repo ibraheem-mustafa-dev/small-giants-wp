@@ -20,13 +20,17 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 $inherit_style = isset( $attributes['inheritStyle'] ) ? sanitize_text_field( $attributes['inheritStyle'] ) : 'primary';
 $label         = isset( $attributes['label'] ) ? $attributes['label'] : 'Click Here';
-$url           = isset( $attributes['url'] ) && $attributes['url'] ? esc_url( $attributes['url'] ) : '#';
+$has_url       = isset( $attributes['url'] ) && '' !== trim( (string) $attributes['url'] );
+$url           = $has_url ? esc_url( $attributes['url'] ) : '#';
 $link_target   = isset( $attributes['linkTarget'] ) ? esc_attr( $attributes['linkTarget'] ) : '_self';
 $rel           = isset( $attributes['rel'] ) ? esc_attr( $attributes['rel'] ) : '';
 $download      = ! empty( $attributes['download'] );
-$tag_name      = ( isset( $attributes['tagName'] ) && 'button' === $attributes['tagName'] ) ? 'button' : 'a';
-$is_submit     = ! empty( $attributes['isSubmit'] );
-$aria_label    = isset( $attributes['ariaLabel'] ) && $attributes['ariaLabel'] ? esc_attr( $attributes['ariaLabel'] ) : esc_attr( $label );
+// User-facing HTML-element chooser removed (2026-07-05) — the converter never
+// emitted this attr. The tag is auto-derived: a non-empty URL renders <a>,
+// otherwise <button>, preserving link-vs-button semantics without a setting.
+$tag_name   = $has_url ? 'a' : 'button';
+$is_submit  = ! empty( $attributes['isSubmit'] );
+$aria_label = isset( $attributes['ariaLabel'] ) && $attributes['ariaLabel'] ? esc_attr( $attributes['ariaLabel'] ) : esc_attr( $label );
 
 // Icon.
 $icon          = isset( $attributes['icon'] ) ? sanitize_text_field( $attributes['icon'] ) : '';
@@ -94,18 +98,18 @@ $margin_bottom_mob = isset( $attributes['marginBottomMobile'] ) && null !== $att
 $margin_left_mob   = isset( $attributes['marginLeftMobile'] ) && null !== $attributes['marginLeftMobile'] ? (float) $attributes['marginLeftMobile'] : null;
 
 // Typography (custom mode only).
-$font_weight         = isset( $attributes['fontWeight'] ) ? sanitize_text_field( $attributes['fontWeight'] ) : '';
-$font_style_attr     = isset( $attributes['fontStyle'] ) ? sanitize_text_field( $attributes['fontStyle'] ) : 'normal';
-$text_transform      = isset( $attributes['textTransform'] ) ? sanitize_text_field( $attributes['textTransform'] ) : '';
-$text_decoration     = isset( $attributes['textDecoration'] ) ? sanitize_text_field( $attributes['textDecoration'] ) : '';
-$font_size           = isset( $attributes['fontSize'] ) && null !== $attributes['fontSize'] ? (float) $attributes['fontSize'] : null;
-$font_size_tab       = isset( $attributes['fontSizeTablet'] ) && null !== $attributes['fontSizeTablet'] ? (float) $attributes['fontSizeTablet'] : null;
-$font_size_mob       = isset( $attributes['fontSizeMobile'] ) && null !== $attributes['fontSizeMobile'] ? (float) $attributes['fontSizeMobile'] : null;
-$font_size_unit      = isset( $attributes['fontSizeUnit'] ) ? sanitize_text_field( $attributes['fontSizeUnit'] ) : 'px';
-$line_height         = isset( $attributes['lineHeight'] ) && null !== $attributes['lineHeight'] ? (float) $attributes['lineHeight'] : null;
-$line_height_tab     = isset( $attributes['lineHeightTablet'] ) && null !== $attributes['lineHeightTablet'] ? (float) $attributes['lineHeightTablet'] : null;
-$line_height_mob     = isset( $attributes['lineHeightMobile'] ) && null !== $attributes['lineHeightMobile'] ? (float) $attributes['lineHeightMobile'] : null;
-$line_height_unit    = isset( $attributes['lineHeightUnit'] ) ? sanitize_text_field( $attributes['lineHeightUnit'] ) : 'em';
+$font_weight      = isset( $attributes['fontWeight'] ) ? sanitize_text_field( $attributes['fontWeight'] ) : '';
+$font_style_attr  = isset( $attributes['fontStyle'] ) ? sanitize_text_field( $attributes['fontStyle'] ) : 'normal';
+$text_transform   = isset( $attributes['textTransform'] ) ? sanitize_text_field( $attributes['textTransform'] ) : '';
+$text_decoration  = isset( $attributes['textDecoration'] ) ? sanitize_text_field( $attributes['textDecoration'] ) : '';
+$font_size        = isset( $attributes['fontSize'] ) && null !== $attributes['fontSize'] ? (float) $attributes['fontSize'] : null;
+$font_size_tab    = isset( $attributes['fontSizeTablet'] ) && null !== $attributes['fontSizeTablet'] ? (float) $attributes['fontSizeTablet'] : null;
+$font_size_mob    = isset( $attributes['fontSizeMobile'] ) && null !== $attributes['fontSizeMobile'] ? (float) $attributes['fontSizeMobile'] : null;
+$font_size_unit   = isset( $attributes['fontSizeUnit'] ) ? sanitize_text_field( $attributes['fontSizeUnit'] ) : 'px';
+$line_height      = isset( $attributes['lineHeight'] ) && null !== $attributes['lineHeight'] ? (float) $attributes['lineHeight'] : null;
+$line_height_tab  = isset( $attributes['lineHeightTablet'] ) && null !== $attributes['lineHeightTablet'] ? (float) $attributes['lineHeightTablet'] : null;
+$line_height_mob  = isset( $attributes['lineHeightMobile'] ) && null !== $attributes['lineHeightMobile'] ? (float) $attributes['lineHeightMobile'] : null;
+$line_height_unit = isset( $attributes['lineHeightUnit'] ) ? sanitize_text_field( $attributes['lineHeightUnit'] ) : 'em';
 // Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
 $line_height_unit    = ( 'unitless' === $line_height_unit ) ? '' : $line_height_unit;
 $letter_spacing      = isset( $attributes['letterSpacing'] ) && null !== $attributes['letterSpacing'] ? (float) $attributes['letterSpacing'] : null;

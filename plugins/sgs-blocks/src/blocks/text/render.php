@@ -2,8 +2,8 @@
 /**
  * Server-side render for sgs/text.
  *
- * Single-element body-text block. Emits one configurable HTML tag with inline
- * styles derived from the flat SGS attribute set.
+ * Single-element body-text block. Emits a fixed <p> tag with inline styles
+ * derived from the flat SGS attribute set.
  *
  * Responsive per-viewport overrides are emitted as a scoped <style> block
  * using the block anchor id (or a generated unique id) so multiple instances
@@ -30,8 +30,10 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // 1. Extract attributes with safe defaults.
 // ---------------------------------------------------------------------------
 
-$text             = isset( $attributes['text'] ) ? (string) $attributes['text'] : '';
-$tag_name         = $attributes['tag'] ?? 'p';
+$text = isset( $attributes['text'] ) ? (string) $attributes['text'] : '';
+// User-facing HTML-tag chooser removed (2026-07-05) — the converter never
+// emitted this attr; sgs/text always renders a <p>.
+$tag_name         = 'p';
 $text_colour      = $attributes['textColour'] ?? '';
 $font_size        = isset( $attributes['fontSize'] ) ? $attributes['fontSize'] : null;
 $font_size_unit   = $attributes['fontSizeUnit'] ?? 'px';
@@ -138,15 +140,6 @@ $transition_easing       = in_array( $transition_easing_raw, $allowed_easings, t
 
 if ( '' === trim( wp_strip_all_tags( $text ) ) ) {
 	return;
-}
-
-// ---------------------------------------------------------------------------
-// 3. Validate tag against allowlist.
-// ---------------------------------------------------------------------------
-
-$allowed_tags = array( 'p', 'span', 'div', 'blockquote', 'em', 'strong' );
-if ( ! in_array( $tag_name, $allowed_tags, true ) ) {
-	$tag_name = 'p';
 }
 
 // FIX B (P-BORDER-STYLE-ENUM-PARITY 2026-05-17): full CSS border-style set.

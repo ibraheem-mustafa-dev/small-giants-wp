@@ -25,18 +25,20 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
-$text                = $attributes['text'] ?? '';
-$tag_name            = $attributes['tag'] ?? 'span';
-$text_colour         = $attributes['textColour'] ?? '';
-$background_colour   = $attributes['backgroundColour'] ?? '';
-$font_family         = $attributes['fontFamily'] ?? '';
-$font_size           = $attributes['fontSize'] ?? '';
-$font_size_unit      = $attributes['fontSizeUnit'] ?? 'px';
-$font_size_tablet    = isset( $attributes['fontSizeTablet'] ) ? $attributes['fontSizeTablet'] : null;
-$font_size_mobile    = isset( $attributes['fontSizeMobile'] ) ? $attributes['fontSizeMobile'] : null;
-$font_weight         = $attributes['fontWeight'] ?? '';
-$line_height         = $attributes['lineHeight'] ?? '';
-$line_height_unit    = $attributes['lineHeightUnit'] ?? '';
+$text = $attributes['text'] ?? '';
+// User-facing HTML-tag chooser removed (2026-07-05) — the converter never
+// emitted this attr; sgs/label always renders a <span>.
+$tag_name          = 'span';
+$text_colour       = $attributes['textColour'] ?? '';
+$background_colour = $attributes['backgroundColour'] ?? '';
+$font_family       = $attributes['fontFamily'] ?? '';
+$font_size         = $attributes['fontSize'] ?? '';
+$font_size_unit    = $attributes['fontSizeUnit'] ?? 'px';
+$font_size_tablet  = isset( $attributes['fontSizeTablet'] ) ? $attributes['fontSizeTablet'] : null;
+$font_size_mobile  = isset( $attributes['fontSizeMobile'] ) ? $attributes['fontSizeMobile'] : null;
+$font_weight       = $attributes['fontWeight'] ?? '';
+$line_height       = $attributes['lineHeight'] ?? '';
+$line_height_unit  = $attributes['lineHeightUnit'] ?? '';
 // Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
 $line_height_unit    = ( 'unitless' === $line_height_unit ) ? '' : $line_height_unit;
 $letter_spacing      = $attributes['letterSpacing'] ?? '';
@@ -57,12 +59,6 @@ $font_style          = in_array( $font_style_raw, $allowed_font_styles, true ) ?
 $text_align_raw      = isset( $attributes['textAlign'] ) ? sanitize_text_field( $attributes['textAlign'] ) : '';
 $allowed_text_aligns = array( 'left', 'center', 'right', 'justify', 'start', 'end' );
 $text_align          = in_array( $text_align_raw, $allowed_text_aligns, true ) ? $text_align_raw : '';
-
-// Whitelist HTML tag (parity with save.js + safety).
-$allowed_tags = array( 'span', 'p', 'div', 'small', 'em', 'strong' );
-if ( ! in_array( $tag_name, $allowed_tags, true ) ) {
-	$tag_name = 'span';
-}
 
 // CSS custom-property map (parity with save.js buildStyle()).
 $style_parts = array();

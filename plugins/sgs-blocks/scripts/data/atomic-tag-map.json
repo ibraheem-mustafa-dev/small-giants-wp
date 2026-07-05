@@ -10,7 +10,6 @@
   "img": ["sgs/media", "Image — atomic media leaf"],
   "video": ["sgs/media", "Video element → sgs/media (video mode)"],
   "iframe": ["sgs/media", "Embedded iframe (YouTube/Vimeo) → sgs/media"],
-  "hr": ["sgs/divider", "Horizontal rule — divider"],
   "button": ["sgs/button", "Bare button — walker auto-wraps in sgs/multi-button"],
   "a": ["sgs/button", "Link shape — routes to the same atomic leaf as button"],
   "blockquote": ["sgs/quote", "Quote block"],

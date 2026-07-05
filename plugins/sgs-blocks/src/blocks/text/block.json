@@ -5,7 +5,7 @@
     "version": "0.1.1",
     "title": "Text",
     "category": "sgs-content",
-    "description": "Single-element body text block. Emits one configurable HTML tag with full SGS typography, spacing, colour, border, shadow, and hover controls.",
+    "description": "Single-element body text block. Renders a <p> with full SGS typography, spacing, colour, border, shadow, and hover controls.",
     "keywords": [
         "text",
         "paragraph",
@@ -27,18 +27,6 @@
             "type": "string",
             "default": "",
             "role": "content"
-        },
-        "tag": {
-            "type": "string",
-            "enum": [
-                "p",
-                "span",
-                "div",
-                "blockquote",
-                "em",
-                "strong"
-            ],
-            "default": "p"
         },
         "textColour": {
             "type": "string",

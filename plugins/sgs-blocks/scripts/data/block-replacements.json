@@ -7,7 +7,6 @@
   "sgs/button": ["core/button"],
   "sgs/collapsible-text": ["core/details"],
   "sgs/container": ["core/group", "core/columns", "core/column"],
-  "sgs/divider": ["core/separator", "core/spacer"],
   "sgs/form": ["core/form", "core/form-submit-button"],
   "sgs/gallery": ["core/gallery"],
   "sgs/heading": ["core/heading"],
