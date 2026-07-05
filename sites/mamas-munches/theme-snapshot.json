@@ -7,6 +7,11 @@
     "color": {
       "palette": [
         {
+          "slug": "text",
+          "color": "#3A2E26",
+          "name": "Text (Choc-chip Charcoal)"
+        },
+        {
           "slug": "primary",
           "color": "#E68A95",
           "name": "Primary (Coral Pink)"
@@ -40,11 +45,6 @@
           "slug": "accent-text",
           "color": "#7A6500",
           "name": "Accent Text (WCAG AA on White)"
-        },
-        {
-          "slug": "text",
-          "color": "#3A2E26",
-          "name": "Text (Choc-chip Charcoal)"
         },
         {
           "slug": "text-muted",
@@ -146,7 +146,8 @@
           "slug": "px",
           "size": "px"
         }
-      ]
+      ],
+      "fluid": false
     },
     "custom": {
       "buttonPresets": {
