@@ -80,6 +80,7 @@ _check_overrides_drift_mod = _load_sibling("check_overrides_drift")
 _check_variant_reseed_mod = _load_sibling("check_variant_reseed")
 _check_orphan_roles_mod = _load_sibling("check_orphan_roles")
 _check_tier_composition_mod = _load_sibling("check_tier_composition")
+_check_css_property_reseed_mod = _load_sibling("check_css_property_reseed")
 
 Violation = _models_mod.Violation
 
@@ -218,6 +219,7 @@ def main() -> int:
         violations.extend(_check_variant_reseed_mod.run(conn))
         violations.extend(_check_orphan_roles_mod.run(conn))
         violations.extend(_check_tier_composition_mod.run(conn))
+        violations.extend(_check_css_property_reseed_mod.run(conn))
     finally:
         conn.close()
 

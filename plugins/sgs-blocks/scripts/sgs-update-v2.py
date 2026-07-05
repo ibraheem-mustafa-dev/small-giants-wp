@@ -1009,6 +1009,16 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/trust-bar", "titleFontSizeUnit"): {"derived_selector": ".sgs-trust-bar__title"},
     ("sgs/trust-bar", "titleFontSizeTablet"): {"derived_selector": ".sgs-trust-bar__title"},
     ("sgs/trust-bar", "titleFontSizeMobile"): {"derived_selector": ".sgs-trust-bar__title"},
+    # NOTE (D281): the CSS-property naming-mismatch corrections for sgs/button's
+    # colourBorder/colourBackground/colourText were TRIALLED here then REVERTED —
+    # the column-first mechanism works (border-color lifts to colourBorder, D2
+    # shrinks) but the lifted VALUE is the draft's `var(--border)`, which the theme
+    # deploys as `--border-subtle` (not bare `--border`) so it doesn't resolve →
+    # a dark ghost-button border (proven live 2026-07-05). The faithful fix is a
+    # converter feature: resolve draft `var(--X)` colours against the draft :root
+    # map before token-snap. Re-add these overrides ONLY after that lands (parking:
+    # P-DRAFT-CSSVAR-COLOUR-RESOLUTION). The column MECHANISM + the reseed guard
+    # stay; the button SEED is deferred so page 8 keeps its faithful D2 border.
     # sgs/product-card — 3 mis-seeds blocking the FR-31-2.6 per-attr walk from
     # landing the card (QA Gate A, 2026-07-04). Every field verified against the
     # BLOCK SOURCE (includes/product-card-builtin-render.php — the authoritative

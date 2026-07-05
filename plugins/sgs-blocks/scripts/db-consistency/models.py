@@ -62,3 +62,8 @@ def orphan_role_key(role: str) -> str:
 def tier_composition_key(block: str) -> str:
     """Check #7 stable dedup key."""
     return f"tiercomp:{block}"
+
+
+def css_property_reseed_key(block: str, attr: str, kind: str) -> str:
+    """Check #8 (css_property/css_layer reseed-survival) stable dedup key."""
+    return f"cssprop:{kind}:{block}:{attr}"

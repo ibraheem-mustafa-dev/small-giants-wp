@@ -251,7 +251,15 @@ function sgs_colour_value( ?string $slug_or_value ): string {
 
 	$value = trim( $slug_or_value );
 
-	if ( sgs_is_css_colour( $value ) ) {
+	// Raw CSS colour OR an already-formed CSS custom-property reference passes
+	// through untouched. The `var(` passthrough mirrors the sibling
+	// sgs_shadow_value() (D281): a cloned button carries the draft's faithful
+	// `var(--border)` / `var(--primary)` in colourBorder etc.; without this the
+	// slug-sanitiser strips it to `var--border` and emits the malformed
+	// `var(--wp--preset--color--var--border)`, which resolves to currentColor
+	// (proven live 2026-07-05 on the ghost button — a dark border where the draft
+	// wants the light `var(--border)`).
+	if ( sgs_is_css_colour( $value ) || str_starts_with( $value, 'var(' ) ) {
 		return esc_attr( $value );
 	}
 
