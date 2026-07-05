@@ -24,6 +24,7 @@
 			"is_section_root": true,
 			"containerKind": "section",
 			"arrayContentLift": true,
+			"scalarStylingLift": true,
 			"variantAttr": "badgeStyle",
 			"variants": {
 				"icon-circle": [

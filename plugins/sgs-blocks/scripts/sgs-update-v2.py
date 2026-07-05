@@ -979,6 +979,36 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     #   sgs/media but nothing set the mode — a draft <video> emitted an
     #   image-mode block (code-confirmed gap, H2 investigation 2026-07-05).
     ("sgs/media", "mediaType"): {"role": "tag-identity"},
+    # sgs/trust-bar label family — the CG-9 residual finish (2026-07-05): the
+    # block's own element vocabulary is __label/__badge-label (render.php:284-292
+    # typography rule targets both), but Bean-controlled drafts write the badge
+    # caption as __text (mockup :356/:799+). The B1/B2 selector mechanism already
+    # supports comma-separated multi-selectors, first-non-None wins — the
+    # DOCUMENTED pattern for exactly this drift class ("handles __text↔__quote
+    # drift", scalar_content.py). Extending the declared selector is the
+    # FR-31-2.1a channel; a global slots alias would corrupt the distinct 'text'
+    # slot, and a code fallback would be a carve-out.
+    ("sgs/trust-bar", "labelFontSize"): {"derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"},
+    ("sgs/trust-bar", "labelFontSizeUnit"): {"derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"},
+    ("sgs/trust-bar", "labelFontSizeTablet"): {"derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"},
+    ("sgs/trust-bar", "labelFontSizeMobile"): {"derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"},
+    ("sgs/trust-bar", "labelFontWeight"): {"derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"},
+    ("sgs/trust-bar", "labelColour"): {"derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"},
+    # bgSvgTextShadow: a BOOLEAN toggle mis-seeded role='color' with the __text
+    # selector — inert while the capability gate no-op'd the whole block, but
+    # LIVE once scalarStylingLift flipped (2026-07-05 rater catch): a draft
+    # box/text-shadow on __text would write a raw CSS string into a boolean
+    # attr. It is a behaviour toggle, not a colour value.
+    ("sgs/trust-bar", "bgSvgTextShadow"): {"role": "behaviour", "derived_selector": None},
+    # title family: stale '__heading' selectors — render.php emits __title
+    # only (2026-07-05 rater catch; harmless no-op before the capability, a
+    # live wrong-element path after).
+    ("sgs/trust-bar", "title"): {"derived_selector": ".sgs-trust-bar__title"},
+    ("sgs/trust-bar", "titleColour"): {"derived_selector": ".sgs-trust-bar__title"},
+    ("sgs/trust-bar", "titleFontSize"): {"derived_selector": ".sgs-trust-bar__title"},
+    ("sgs/trust-bar", "titleFontSizeUnit"): {"derived_selector": ".sgs-trust-bar__title"},
+    ("sgs/trust-bar", "titleFontSizeTablet"): {"derived_selector": ".sgs-trust-bar__title"},
+    ("sgs/trust-bar", "titleFontSizeMobile"): {"derived_selector": ".sgs-trust-bar__title"},
     # sgs/product-card — 3 mis-seeds blocking the FR-31-2.6 per-attr walk from
     # landing the card (QA Gate A, 2026-07-04). Every field verified against the
     # BLOCK SOURCE (includes/product-card-builtin-render.php — the authoritative
