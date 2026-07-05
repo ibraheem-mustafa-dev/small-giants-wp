@@ -5,6 +5,57 @@ thread: single thread (cloning pipeline)
 session_date: 2026-07-05
 ---
 
+# Session Handoff — 2026-07-05d (D280 — 6-residual fact-first: 5 fixes LANDED, parity 77-78-80 → 80-81-82, + point-5 CSS-column council-reshaped)
+
+## Completed This Session
+1. **6 residuals investigated fact-first** (each a HYPOTHESIS; 8 parallel read-only tracers + `/research-buddies` on breakpoints; every load-bearing claim main-session traced, STOP-15). Verdicts: H6 multi-button REFUTED, H3/H5 partially wrong in mechanism, H1/H2/H4 confirmed, H7 typography located. Full report: `.claude/reports/2026-07-05-residuals-fact-first-investigation.md`.
+2. **CG-4 maxWidth type bug** (`db116673`): stub `value_serialise` + a 2nd path (`root_supports` responsive tier) wrote px-strings into number attrs (WP discards). Shared `validate.attr_is_number` + number-branch in content_band/outer_box (+ typography/grid_area migrated onto it). LIVE: hero-sub 420 / intro 540 / disclaimer 620 caps hold at 1440.
+3. **Heading levels** (`08f52018`): recognition discarded the source tag; nothing wrote `sgs/heading.level`; render defaulted h2 (0 h1 live). New universal `role='tag-identity'` (migration + ATTR_CLASSIFICATION_OVERRIDES for heading.level + media.mediaType), written by assembly step 3a2 gated on enum membership. LIVE: exactly one h1 (hero), real h3/h4. +9 unit tests.
+4. **D2-when-D1 cheat gate** (`210e80a9`): a SILENT NO-OP since wiring (root pointed at scripts/pipeline-state; orchestrator writes repo-root) + BEM-tail slug regex + F-ii-blind. Re-pointed, tail-stripped, device-tier-only, plant-tested +7 regressions.
+5. **Trust-bar label lift** (`e707541e`): TWO blockers (capability only testimonial had + draft `__text` vs DB `__label`). scalarStylingLift declared + selector extended + 3 rater catches (bgSvgTextShadow boolean-mis-seed that would corrupt on the flip; stale __heading→__title selectors; text-only size rules :where()-wrapped). LIVE: 13px@375 / 14px@1440.
+6. **Button + quote block build** (`cbc99a35`): per-device button width (customWidth/widthType Tablet/Mobile + per-tier units) + textDecorationHover; quote wrapper `supports.typography{fontSize,lineHeight}` as an INHERITABLE DEFAULT (research-verified vs live WP core `:root :where()`). HC2 amended in plugins CLAUDE.md.
+7. **Point 5 CSS-routing rework** designed + 5-persona `/adversarial-council` (`.claude/plans/2026-07-05-css-property-column-design.md`): GO on the declarative `css_property`+`css_layer` mechanism, NO-GO on the mass-seed → RESHAPED (Bean picked path A) to seed-only-the-~50-80-corrections + column-first-else-fallback (untouched rows byte-identical by construction).
+8. **Capability-roster rollout pre-audited** (read-only): 3-wave paste-ready plan; found 4 latent boolean-mis-seeds + heavy selector drift + 3 child-owned dead lifts.
+9. **2 lessons captured** (STOP-53/54): don't mass-reverse-derive a working resolver; pre-audit a capability rollout for mis-seeds.
+
+## Current State
+- **Branch:** main at `388d5a2e` (pushed; 0 ahead — the handoff-doc commit follows).
+- **Tests:** 822 canonical pass, 1 skipped (806 baseline + 16 new this session: 9 tag-identity + 7 D2-gate) (cwd plugins/sgs-blocks/scripts).
+- **Gates:** cheat-gate 33 baselined 0 NEW · no-slug-literal · import-ban · check-raw-sqlite all green.
+- **Build/deploy:** plugin built + deployed to sandybrown; page 8 re-cloned. Parity content 96 / CSS 80-81-82.
+- **Uncommitted:** pre-existing only (reports/phase4-*.txt, mockup captures, Bean's HTML_Insert.html) + this handoff-doc set.
+
+## Known Issues / Blockers
+- **H6 multi-button** (Bean-held, investigate-first): `direction*` vs `flexDirection*` attr-vocab gap; no block declares `flexDirectionMobile`; mobile tier only stacks via a hardcoded block default. Bean-decided: KEEP the shared container, reconcile the block's duplicate + fix the mobile-tier render.
+- **Quote typography attach** — the mechanism is sound (get_block_wrapper_attributes merges inline typography; STOP-44 exception is class-only) but a full editor set-a-value confirmation is a low-risk next-session belt-and-braces.
+- **D2 not emptied** — the column fixes only the naming-mismatch slice; the shorthand/hover/native-supports router patches, the 42 genuine-gap attrs, `sgsResponsiveOverrides`, chrome exclusion, and the end-gate are the rest.
+
+## Next Priorities (in order)
+1. **Preset-as-seed button model** (Bean point 1) — inline main-session build (WP block-VARIATION pattern: preset seeds attrs then everything editable; remove the `$is_custom` render gate). LANDED proof.
+2. **Re-scoped CSS-property column** (path A) — build per the council-reshaped design: add columns, seed only the ~50-80 stranding attrs (per-block block.json declarations), resolver column-first-else-fallback, commit-per-correction. Address the 5 council must-fixes.
+3. **Capability-roster 3-wave rollout** — apply the paste-ready overrides + flag flips + LANDED.
+4. **Multi-button reconciliation** (H6) — after Bean releases the hold.
+
+## Files Modified
+| File path | What changed |
+|---|---|
+| plugins/sgs-blocks/scripts/converter/{resolvers/content_band,outer_box,typography,grid_area},services/{validate,root_supports,assembly},db/db_lookup}.py | CG-4 type-serialise + tag-identity write + tag_identity_attrs accessor |
+| plugins/sgs-blocks/scripts/{migrations/2026-07-05-register-tag-identity-role.py, sgs-update-v2.py} | tag-identity role + trust-bar/heading/media overrides |
+| plugins/sgs-blocks/scripts/cheat-gate/check_d2_when_d1.py + tests/ | gate repair + 7 regression tests |
+| plugins/sgs-blocks/src/blocks/{button,quote,trust-bar}/** | per-device width + hover + quote typography + trust-bar label |
+| plugins/sgs-blocks/CLAUDE.md | HC2 inheritable-default amendment |
+| .claude/{reports,plans}/2026-07-05-* | investigation report + CSS-column design (council-reviewed) |
+
+## Notes for Next Session
+- The 5-persona council NO-GO'd my first column design (mass-seed) — the reshape (seed-only-corrections + fallback) is in the plan doc's COUNCIL OUTCOME block. Build that, not the original.
+- The capability-roster rollout is NOT a flag flip — the roster-scan agent's per-block override entries are paste-ready in the next-session-prompt; apply them before enabling each block.
+- Deploy-before-measure held all session; every fix LANDED on page 8 before commit; every commit 2-rater or council reviewed.
+
+## Next Session Prompt
+The orchestration plan lives at `.claude/next-session-prompt.md` — REWRITTEN at close to the D2-emptying build sequence (preset-as-seed → re-scoped column → roster rollout → multi-button). STOP catalogue carried forward + extended (STOP-53/54). Read via the autopilot SessionStart hook as usual.
+
+---
+
 # Session Handoff — 2026-07-05c (D279 — the diagnosis-first register EXECUTED: 9 fix commits, parity 67/69/76 → 77/78/80 honest)
 
 ## Completed This Session

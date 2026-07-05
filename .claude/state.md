@@ -2,14 +2,14 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-last_updated: 2026-07-05-D279
+last_updated: 2026-07-05-D280
 note: "LEAN snapshot. Full history -> memory/state-archive.md. This file holds ONLY the current pointer; detail lives in handoff.md + next-session-prompt.md (the SoT). Do NOT restate D-numbers / counts / commit hashes here - they drift. <=24576 bytes."
 ---
 
 # small-giants-wp — State Snapshot (lean)
 
 ## Human Summary
-**THE DIAGNOSIS-FIRST FIX WAVE IS DONE (D279, 2026-07-05).** Bean's flow ran end to end: fresh clone -> 311-row conservation-checked register -> 8 parallel investigators (every claim traced; 1 known prior OVERTURNED) -> 12 cause groups agreed -> 9 fixes shipped + pushed, each LANDED-verified on page 8. Honest parity moved **content 90->96 / CSS 67-69-76 -> 77-78-80 / unmatched 15->7 / A2 5->4** (and the parity instrument itself was fixed - pre/post numbers not comparable). Shipped: per-tier partition (colour/gap/border), universal Pattern-A responsive emission + shared helpers, flat-16px + palette reorder, imageAlt companions, identity-anchored CTA lift, CG-9 32-item defaults sweep, quoteFontStyle compound rename, quote ONE-content-model rebuild, instrument + A2-ledger fixes, divider + all tag-choosers removed. **NEXT = the 6-RESIDUAL fact-first investigation** (heading level / maxWidth serialiser / button padding channel + presets / trust-bar label lift / multi-button responsive / the D2 inline style block under Bean's new STOP-52 doctrine) - investigate, discuss with Bean, agree, then fix. See next-session-prompt.md.
+**THE 6-RESIDUAL FACT-FIRST SESSION IS DONE (D280, 2026-07-05).** Each residual was treated as a HYPOTHESIS (8 parallel read-only tracers, every claim main-session traced): H6 multi-button was REFUTED, H3/H5 were partially wrong in mechanism, the rest confirmed. 5 fixes LANDED + pushed (`db116673`..`cbc99a35`): CG-4 maxWidth type bug (420/540/620 caps hold), heading levels (exactly one h1 restored, universal tag-identity role), the D2-when-D1 cheat gate (was a silent no-op — re-pointed + plant-tested), trust-bar label lift (13px, +3 rater catches), and the button/quote block build (per-device width, hover underline, quote inheritable wrapper typography + HC2 amendment). Parity **77-78-80 → 80-81-82**, content 96 held. **Point 5 (Bean's CSS-routing rework) was designed + 5-persona `/adversarial-council`'d → GO on the declarative-column mechanism, NO-GO on the mass-seed → RESHAPED to seed-only-the-~50-80-corrections + column-first-else-fallback (Bean picked path A).** **NEXT = build the re-scoped column + the 3-wave capability-roster rollout + preset-as-seed (button VARIATION model) + the remaining D2 workstreams.** See next-session-prompt.md.
 
 ## State Snapshot
 
@@ -19,10 +19,11 @@ note: "LEAN snapshot. Full history -> memory/state-archive.md. This file holds O
 - **Framework counts:** query `/sgs-db` or `/wp-blocks` — the DB is authoritative; counts are NOT maintained in prose.
 - **Commit discipline:** commit by EXPLICIT PATH, never `git add -A`. `main` is the source of truth.
 
-## ACTIVE WORKSTREAM — Cloning pipeline: 6-residual fact-first investigation (the ONLY active work)
-- **SoT for current status:** `.claude/handoff.md` (top entry, D279) + `.claude/next-session-prompt.md` (the investigation orchestration plan with the MANDATORY READING GATE). READ THOSE.
-- **One-line where-we-are:** the register's 12 cause groups are cleared except 6 residuals (+2 Bean-deferred design items: option-picker, preset-sync). Bean doctrine STOP-52: the page must never DEPEND on non-block-settings CSS; the D2 inline style block is next session's Task 1.
-- **Canonical spec:** `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — read §2 FIRST; §13 = binding rules/FRs.
+## ACTIVE WORKSTREAM — Cloning pipeline: empty D2 (the STOP-52 goal) via ~5 workstreams
+- **SoT for current status:** `.claude/handoff.md` (top entry, D280) + `.claude/next-session-prompt.md` (the build orchestration plan with the MANDATORY READING GATE). READ THOSE.
+- **One-line where-we-are:** 5 of the 6 residuals cleared; H6 multi-button queued (investigate-first, shared-container KEPT). D2 (129 rules: ~50 should-lift / 42 genuine-gap / 36 chrome / 1 convention) empties via ~5 workstreams — the point-5 declarative CSS-routing column (RE-SCOPED, design-gated + council-passed, path A) fixes the naming-mismatch slice; the H1 router-blindness patches (shorthand/hover/native-supports) + the 42 genuine-gap attrs + `sgsResponsiveOverrides` (approved) + chrome-exclusion + the end-gate are the rest.
+- **Queued builds:** re-scoped CSS column (`plans/2026-07-05-css-property-column-design.md`), capability-roster 3-wave rollout (paste-ready in the next-session-prompt), preset-as-seed button model (Bean point 1), multi-button reconciliation (H6).
+- **Canonical spec:** `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — read §2 FIRST; §13 = binding rules/FRs. Design gate: `plans/2026-07-05-css-property-column-design.md`.
 
 ## DONE / ARCHIVED — theme + WooCommerce layer (Spec 30, not an active thread)
 - Spec 30 COMPLETE + MERGED (D220). Deferred roadmap items live in parking.md.
