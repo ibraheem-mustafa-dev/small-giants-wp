@@ -1013,3 +1013,176 @@ def test_icon_leaf_raw_svg_emits_loud_gap_not_silent_star():
         assert not (lifted & {"iconName", "emojiChar", "dashiconName", "wpIconName"}), (
             f"raw-svg leaf must not silently lift an icon source: {lifted}"
         )
+
+
+# ---------------------------------------------------------------------------
+# CG-8 (2026-07-05) — image-alt companion lift. The image extractor
+# (scalar_media_from_img) always builds a full {"url","id","alt"} dict, but a
+# STRING-typed image-object attr (sgs/product-card.image, sgs/media.imageUrl,
+# sgs/decorative-image.imageUrl) downcasts that dict to the bare URL, silently
+# discarding the alt even though each block declares a sibling `imageAlt`
+# string attr that render.php already reads into alt="" (an a11y defect — page
+# 8 shipped 3 empty alt="" images). These tests use the REAL, LIVE DB rows
+# (sgs/product-card, sgs/media, sgs/team-member are real blocks) so they are
+# the genuine integration proof, not stubbed — mirrors the W3 named-leaf tests
+# above. Covers walk.py's NESTED-leg-2 per-attr walk (product-card, which has
+# BEM __element children, so it never reaches the leaf arm) AND
+# run_mechanism_leaf directly (the named-leaf arm, for completeness per the
+# task's "every image lift path" requirement — no live SGS block is currently
+# BOTH a named leaf AND string-image-typed, so this is exercised directly).
+# ---------------------------------------------------------------------------
+
+
+def test_walk_leg2_image_with_alt_lifts_both_url_and_alt():
+    """sgs/product-card: an <img> carrying alt text must lift BOTH the bare
+    URL (image) and the alt text onto the DB-declared companion (imageAlt) —
+    the CG-8 fix. Draft alt text matches the real mamas-munches page 8 copy."""
+    node = _node(
+        '<div class="sgs-product-card">'
+        '<img class="sgs-product-card__media" src="/cookies.jpg" '
+        'alt="Stack of Mama\'s Munches Zookies lactation cookies">'
+        '<h3 class="sgs-product-card__heading">Zookies</h3>'
+        "</div>"
+    )
+    rec = recognise(node)
+    assert rec.slug == "sgs/product-card"
+    results = extract_content(rec, node)
+    lifted = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
+    assert lifted.get("image") == "/cookies.jpg", f"image URL dropped: {results}"
+    assert lifted.get("imageAlt") == "Stack of Mama's Munches Zookies lactation cookies", (
+        f"CG-8 regression — alt text not lifted onto the companion attr: {results}"
+    )
+
+
+def test_walk_leg2_image_without_alt_emits_no_alt_key():
+    """An <img> with NO alt attribute must not emit a phantom imageAlt key —
+    strict no-op (B1 contract), not an empty-string placeholder."""
+    node = _node(
+        '<div class="sgs-product-card">'
+        '<img class="sgs-product-card__media" src="/cookies.jpg">'
+        '<h3 class="sgs-product-card__heading">Zookies</h3>'
+        "</div>"
+    )
+    rec = recognise(node)
+    assert rec.slug == "sgs/product-card"
+    results = extract_content(rec, node)
+    lifted = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
+    assert lifted.get("image") == "/cookies.jpg"
+    assert "imageAlt" not in lifted, f"phantom imageAlt emitted with no alt source: {results}"
+
+
+def test_walk_leg2_object_typed_image_attr_no_crash_no_phantom_key():
+    """A block whose image attr is OBJECT-typed (sgs/team-member.photo) never
+    reaches the string-downcast branch at all — the dict (including its own
+    'alt' key) is preserved natively. No crash, and no extra top-level
+    ScalarLift is fabricated from the companion-lookup path."""
+    node = _node(
+        '<div class="sgs-team-member">'
+        '<img class="sgs-team-member__photo" src="/jane.jpg" alt="Jane">'
+        '<h3 class="sgs-team-member__name">Jane</h3>'
+        "</div>"
+    )
+    rec = recognise(node)
+    assert rec.slug == "sgs/team-member"
+    results = extract_content(rec, node)  # must not raise
+    scalar_lifts = [r for r in results if isinstance(r, ScalarLift)]
+    photo_lift = next((r for r in scalar_lifts if r.attr == "photo"), None)
+    assert photo_lift is not None, f"photo attr not lifted: {results}"
+    assert photo_lift.value == {"url": "/jane.jpg", "id": 0, "alt": "Jane"}, (
+        f"object-typed image attr must keep its native dict shape: {photo_lift.value!r}"
+    )
+
+
+def test_mechanism_leaf_image_with_alt_lifts_companion(monkeypatch):
+    """run_mechanism_leaf directly: a named leaf recognised as a block with a
+    string-typed image-object attr must lift the alt onto the DB-declared
+    companion, exactly like the walk-leg-2 path. Stubs block_attrs so the test
+    is independent of which live block (if any) happens to be leaf-shaped —
+    proves the mechanism generalises, not just the 2 verified live instances."""
+    import converter.db.db_lookup as db_lookup_mod
+
+    monkeypatch.setattr(
+        db_lookup_mod,
+        "primary_content_attr",
+        lambda slug: None,
+    )
+    monkeypatch.setattr(
+        db_lookup_mod,
+        "block_attrs",
+        lambda slug: {
+            "shotUrl": {
+                "role": "image-object",
+                "attr_type": "string",
+                "derived_selector": ".sgs-widget",
+            },
+        },
+    )
+    monkeypatch.setattr(
+        db_lookup_mod,
+        "image_alt_companion_for",
+        lambda slug, attr: "shotAlt" if attr == "shotUrl" else None,
+    )
+
+    node = _node('<img class="sgs-widget" src="/shot.jpg" alt="A widget photo">')
+    rec = Recognition(kind="named", slug="sgs/widget", container_kind="content", delegates_content=0)
+
+    results = run_mechanism_leaf(rec, node)
+
+    lifted = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
+    assert lifted.get("shotUrl") == "/shot.jpg", f"image URL dropped: {results}"
+    assert lifted.get("shotAlt") == "A widget photo", (
+        f"CG-8 regression in run_mechanism_leaf — alt not lifted: {results}"
+    )
+
+
+def test_mechanism_leaf_image_no_companion_declared_no_crash(monkeypatch):
+    """run_mechanism_leaf: a block with a string image-object attr but NO
+    declared alt companion (db_lookup returns None) must not crash and must
+    not emit a phantom key — strict no-op."""
+    import converter.db.db_lookup as db_lookup_mod
+
+    monkeypatch.setattr(db_lookup_mod, "primary_content_attr", lambda slug: None)
+    monkeypatch.setattr(
+        db_lookup_mod,
+        "block_attrs",
+        lambda slug: {
+            "shotUrl": {
+                "role": "image-object",
+                "attr_type": "string",
+                "derived_selector": ".sgs-widget",
+            },
+        },
+    )
+    monkeypatch.setattr(db_lookup_mod, "image_alt_companion_for", lambda slug, attr: None)
+
+    node = _node('<img class="sgs-widget" src="/shot.jpg" alt="A widget photo">')
+    rec = Recognition(kind="named", slug="sgs/widget", container_kind="content", delegates_content=0)
+
+    results = run_mechanism_leaf(rec, node)  # must not raise
+
+    lifted = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
+    assert lifted.get("shotUrl") == "/shot.jpg"
+    assert len(lifted) == 1, f"no phantom companion key expected: {results}"
+
+
+def test_array_item_image_object_preserves_alt_no_collapse():
+    """Array-item image fields (array_content._lift_item) never hit the
+    string-downcast collapse at all — extract_field_value returns the full
+    {"url","id","alt"} dict and _lift_item stores it verbatim under the
+    schema's field_key. Verified: NO array_item_schema row currently declares
+    role='image-object' for any live block (checked via sgs-db.py), so this is
+    a synthetic schema proving the array path is safe BY CONSTRUCTION should a
+    future block add one — not a regression fix (nothing to fix today)."""
+    from converter.resolvers.array_content import _lift_item
+
+    html = (
+        '<div class="sgs-gallery__item">'
+        '<img class="sgs-gallery__photo" src="/g1.jpg" alt="Gallery shot one">'
+        "</div>"
+    )
+    item_node = _node(html)
+    schema = [("photo", "photo", "image-object")]
+    item = _lift_item(item_node, schema, {})
+    assert item.get("photo") == {"url": "/g1.jpg", "id": 0, "alt": "Gallery shot one"}, (
+        f"array-item image dict must keep its native {{url,id,alt}} shape: {item!r}"
+    )

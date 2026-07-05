@@ -1007,13 +1007,28 @@ def run_mechanism_leaf(rec: Recognition, node: Any, media_map: dict | None = Non
         if not (is_text or is_image or is_link):
             continue
         value = extract_field_value(node, role, media_map or {})
+        alt_value = None
         if is_image and attr_type == "string" and isinstance(value, dict):
+            # CG-8: capture the alt BEFORE downcasting to the bare URL — see the
+            # identical guard in walk.py's per-attr NESTED-leg-2 walk. The named-
+            # leaf arm hits this for a block recognised as a leaf whose whole
+            # element IS the image (e.g. a bare <img class="sgs-media">).
+            alt_value = value.get("alt") or None
             value = value.get("url") or None  # string imageUrl wants the URL, not the object
         if value is None or value == "":
             continue
         results.append(ScalarLift(attr=attr_name, value=value))
         if is_image:
             image_lifted = True
+            # Lift the discarded alt onto this block's DB-declared image-alt
+            # companion attr (never a hardcoded attr name — R-31-1). Strict
+            # no-op when the block declares no companion or there's no alt.
+            if alt_value:
+                alt_attr = db_lookup.image_alt_companion_for(rec.slug, attr_name)
+                if alt_attr and alt_attr != attr_name and not any(
+                    r.attr == alt_attr for r in results if isinstance(r, ScalarLift)
+                ):
+                    results.append(ScalarLift(attr=alt_attr, value=alt_value))
         if is_link:
             link_lifted = True
 

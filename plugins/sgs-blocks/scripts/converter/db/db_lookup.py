@@ -1695,6 +1695,41 @@ def unit_companion_attr(attr: str, conn: sqlite3.Connection) -> str | None:
     return f"{base}{unit_suffixes[0]}"
 
 
+@functools.lru_cache(maxsize=512)
+def image_alt_companion_for(block_slug: str, image_attr: str) -> str | None:
+    """Return the ``role='image-alt'`` attr that stores ``image_attr``'s alt text,
+    or ``None`` if this block declares no such companion (CG-8, 2026-07-05).
+
+    Unlike :func:`unit_companion_attr`, the alt companion CANNOT be derived by
+    suffix-stripping the base attr name: sgs/product-card's image attr is named
+    ``image`` (companion ``imageAlt``) while sgs/media's is ``imageUrl``
+    (companion ALSO ``imageAlt``, not ``imageUrlAlt``) — no consistent naming
+    rule links an image attr to its alt attr across blocks. The companion is
+    therefore a genuine per-attr DB FACT (``block_attributes.alt_companion_attr``,
+    seeded via ``ATTR_CLASSIFICATION_OVERRIDES`` — same reseed-durable channel as
+    every other source-truth correction, R-31-1), not a name-parsing heuristic.
+
+    A block may declare more than one ``image-object`` attr sharing a role/slot
+    (e.g. sgs/media's ``imageUrl`` AND ``videoPoster`` both role='image-object');
+    only the row whose ``alt_companion_attr`` names THIS image_attr is returned,
+    so an unrelated image-object attr with no declared alt companion (e.g.
+    videoPoster) correctly yields ``None`` instead of a false match.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        cols = [r[1] for r in conn.execute("PRAGMA table_info(block_attributes)").fetchall()]
+        if "alt_companion_attr" not in cols:
+            return None  # column not yet seeded in this DB (pre-migration state)
+        row = conn.execute(
+            "SELECT attr_name FROM block_attributes "
+            "WHERE block_slug = ? AND role = 'image-alt' AND alt_companion_attr = ?",
+            (block_slug, image_attr),
+        ).fetchone()
+    finally:
+        conn.close()
+    return row[0] if row else None
+
+
 # ----------------------------------------------------------------------------
 # D3 — Attribute gap candidate helpers
 # ----------------------------------------------------------------------------

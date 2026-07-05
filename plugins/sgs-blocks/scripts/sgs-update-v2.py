@@ -1163,6 +1163,30 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/icon", "emojiChar"): {"role": "icon-emoji"},
     ("sgs/icon", "dashiconName"): {"role": "icon-dashicon"},
     ("sgs/icon", "wpIconName"): {"role": "icon-wp-icon"},
+    # CG-8 (2026-07-05): the image-extractor builds a full {url,id,alt} dict, but
+    # walk.py/extraction.py DOWNCAST it to the bare URL for a string-typed image
+    # attr (sgs/product-card.image, sgs/media.imageUrl, sgs/decorative-image.
+    # imageUrl) — the alt was discarded even though all 3 blocks declare a
+    # sibling `imageAlt` string attr that render.php already reads + escapes
+    # into alt="" (product-card-builtin-render.php + media/render.php:313/691 +
+    # decorative-image/render.php:22). role=NULL on imageAlt meant nothing ever
+    # populated it (a11y defect — page 8 had 3 empty alt="" images). Found by a
+    # full-DB sweep for the SAME shape (role='image-object' + attr_type='string'
+    # + a sibling *Alt attr) — R-31-9 "no carve-outs": all 3 fixed together, not
+    # just the 2 verified live on page 8.
+    #
+    # role='image-alt' (registered by
+    # migrations/2026-07-05-register-image-alt-role.py) admits the attr to the
+    # DB-driven companion lookup (db_lookup.image_alt_companion_for); the NEW
+    # `alt_companion_attr` column names the image attr this alt belongs to — a
+    # genuine per-attr fact, NOT suffix-derivable (product-card's image attr is
+    # `image`, media's/decorative-image's is `imageUrl` — no shared naming rule,
+    # unlike the Unit-companion suffix family). Both fields MUST live here so
+    # they survive every /sgs-update reseed (assign-canonical would otherwise
+    # re-derive role=NULL + canonical_slot from the bare attr-name heuristic).
+    ("sgs/product-card", "imageAlt"): {"role": "image-alt", "alt_companion_attr": "image"},
+    ("sgs/media", "imageAlt"): {"role": "image-alt", "alt_companion_attr": "imageUrl"},
+    ("sgs/decorative-image", "imageAlt"): {"role": "image-alt", "alt_companion_attr": "imageUrl"},
 }
 
 
@@ -1188,6 +1212,15 @@ def _apply_attr_classification_overrides(
     c = conn.cursor()
     applied = 0
     missing = 0
+    # Idempotent column-add (mirrors the emit_shape column-add pattern above) —
+    # lets ATTR_CLASSIFICATION_OVERRIDES introduce a new tracked column (e.g.
+    # `alt_companion_attr`, CG-8 2026-07-05) without a separate schema migration.
+    existing_cols = {r[1] for r in c.execute("PRAGMA table_info(block_attributes)").fetchall()}
+    override_cols = {col for fields in ATTR_CLASSIFICATION_OVERRIDES.values() for col in fields}
+    for col in sorted(override_cols - existing_cols):
+        if not dry_run:
+            c.execute(f"ALTER TABLE block_attributes ADD COLUMN {col} TEXT")
+        existing_cols.add(col)
     for (slug, attr), fields in ATTR_CLASSIFICATION_OVERRIDES.items():
         if not fields:
             continue
@@ -1196,8 +1229,19 @@ def _apply_attr_classification_overrides(
         set_clause = ", ".join(f"{col} = ?" for col in fields)
         params = list(fields.values()) + [slug, attr]
         if dry_run:
+            # A dry-run never ALTERs the schema (above), so a column this override
+            # needs may not exist yet in the connected DB — select only the
+            # subset that's already present rather than raising.
+            selectable = [col for col in fields if col in existing_cols]
+            if not selectable:
+                print(
+                    f"Stage 1 (attr-override) [dry-run]: {slug}.{attr} "
+                    f"— target column(s) {list(fields.keys())} not yet in schema "
+                    f"(would be added by a non-dry-run pass)"
+                )
+                continue
             row = c.execute(
-                "SELECT " + ", ".join(fields.keys())
+                "SELECT " + ", ".join(selectable)
                 + " FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
                 (slug, attr),
             ).fetchone()

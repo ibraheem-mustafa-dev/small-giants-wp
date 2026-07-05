@@ -277,6 +277,7 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
             continue
         if emit_shape != "nested" or attr_name in lifted_attrs:
             continue  # 'child' units route below; first value per attr wins
+        alt_value: str | None = None
         if role in ("text-content", "content") and attr_type == "string":
             # attr_type guard: a boolean/date attr mis-seeded with a content
             # role (business-info linkPhone) must never receive element text
@@ -291,6 +292,11 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
         elif role in ("image-object", "rating"):
             value = extract_field_value(el, role, media_map or {})
             if role == "image-object" and attr_type == "string" and isinstance(value, dict):
+                # CG-8: capture the alt BEFORE downcasting to the bare URL — a
+                # string image attr wants the URL, but the dict's alt text must
+                # not be silently discarded (a11y). Lifted onto the block's
+                # declared image-alt companion attr below, DB-driven (R-31-1).
+                alt_value = value.get("alt") or None
                 value = value.get("url") or None  # string image attr wants the URL
         else:
             continue
@@ -299,6 +305,15 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
         results.append(ScalarLift(attr=attr_name, value=value))
         lifted_attrs.add(attr_name)
         consumed_ids.add(id(el))
+        # CG-8: lift the collapsed dict's alt text onto this image attr's DB-
+        # declared companion (block_attributes.role='image-alt' +
+        # alt_companion_attr=attr_name) — never a hardcoded attr name (R-31-1).
+        # Strict no-op: no companion declared, or the draft carried no alt.
+        if alt_value:
+            alt_attr = db_lookup.image_alt_companion_for(rec.slug, attr_name)
+            if alt_attr and alt_attr not in lifted_attrs:
+                results.append(ScalarLift(attr=alt_attr, value=alt_value))
+                lifted_attrs.add(alt_attr)
 
     # ---- CHILD leg — $content-region blocks route unconsumed children (B3) ----
     if rec.delegates_content == 1:
