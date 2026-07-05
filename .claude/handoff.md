@@ -17,7 +17,7 @@ session_date: 2026-07-06
 ## Current State
 - **Branch:** main at `45ba7fa2` (pushed). Commits this session: `256ec916` (mechanism) · `aa4e4151` (parity) · `8aa844d8` (multi-button) · `45ba7fa2` (colour-fix + guard).
 - **Tests:** 870 canonical pass, 1 skipped (up from 822 baseline: + new db-consistency tests). Gates: cheat-gate 33 baselined 0 NEW · no-slug-literal · import-ban · check-raw-sqlite · F6 (now 8 checks) all green.
-- **Live:** page 8 re-cloned + restored to the faithful pre-seed baseline — **parity content 96 / CSS 80-81-81** (375/768/1440). DB has 0 non-NULL css_property rows (seed reverted).
+- **Live:** page 8 re-cloned. **D2 IS NO LONGER DEPLOYED INTO THE PAGE (STOP-52, `6a83281c`)** — it is a debug log only (still written to pipeline-state; the ledger + gates read it there; `SGS_EMIT_D2_PAGE=1` restores page injection). So the HONEST parity is now **content 96 / CSS 69-70-70** (375/768/1440), down from the D2-MASKED 80-81-81 — the ~11pt delta is the CSS that was stranded in D2 and never lifted to a block setting. **This drop is INTENTIONAL, not a regression** — the page now shows the true gap set with no false positives, so every fix visibly moves the real number. DB has 0 non-NULL css_property rows (seed reverted).
 - **Uncommitted:** pre-existing only (reports/phase4-*, mockup captures, HTML_Insert.html, untracked sgs-framework.db, lucide-icons.php) + this doc set.
 
 ## Known Issues / Blockers
