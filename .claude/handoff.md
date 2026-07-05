@@ -17,17 +17,19 @@ session_date: 2026-07-05
 7. **Point 5 CSS-routing rework** designed + 5-persona `/adversarial-council` (`.claude/plans/2026-07-05-css-property-column-design.md`): GO on the declarative `css_property`+`css_layer` mechanism, NO-GO on the mass-seed → RESHAPED (Bean picked path A) to seed-only-the-~50-80-corrections + column-first-else-fallback (untouched rows byte-identical by construction).
 8. **Capability-roster rollout pre-audited** (read-only): 3-wave paste-ready plan; found 4 latent boolean-mis-seeds + heavy selector drift + 3 child-owned dead lifts.
 9. **2 lessons captured** (STOP-53/54): don't mass-reverse-derive a working resolver; pre-audit a capability rollout for mis-seeds.
+10. **Specs reconciled + fresh parity verified** (`f6ee876b`): Spec 31 gained **FR-31-2.9** (the tag-identity mechanism — the CG-2 gap I'd flagged); the button spec (`11-SGS-BUTTON-ARCHITECTURE.md`) got a D280 update (per-device width, textDecorationHover, preset-as-seed forward note). Then a fresh `/sgs-update` (DB current) + `/sgs-clone` (parity content 96 / CSS 79-80-81) + an **independent Playwright accuracy check** — 4/4 sampled mismatches confirmed real on the live DOM (the instrument is honest), and the remaining ~19% CSS gap was enumerated exactly (see Notes).
 
 ## Current State
-- **Branch:** main at `388d5a2e` (pushed; 0 ahead — the handoff-doc commit follows).
+- **Branch:** main at `f6ee876b` (pushed; 0 ahead — this handoff-doc commit follows).
 - **Tests:** 822 canonical pass, 1 skipped (806 baseline + 16 new this session: 9 tag-identity + 7 D2-gate) (cwd plugins/sgs-blocks/scripts).
 - **Gates:** cheat-gate 33 baselined 0 NEW · no-slug-literal · import-ban · check-raw-sqlite all green.
-- **Build/deploy:** plugin built + deployed to sandybrown; page 8 re-cloned. Parity content 96 / CSS 80-81-82.
+- **Build/deploy:** plugin + theme deployed to sandybrown; page 8 re-cloned this session. **Parity content 96 / CSS 79-80-81** (the 1440 82→81 dip is run-to-run pairing noise, not a regression).
 - **Uncommitted:** pre-existing only (reports/phase4-*.txt, mockup captures, Bean's HTML_Insert.html) + this handoff-doc set.
 
 ## Known Issues / Blockers
 - **H6 multi-button** (Bean-held, investigate-first): `direction*` vs `flexDirection*` attr-vocab gap; no block declares `flexDirectionMobile`; mobile tier only stacks via a hardcoded block default. Bean-decided: KEEP the shared container, reconcile the block's duplicate + fix the mobile-tier render.
-- **Quote typography attach** — the mechanism is sound (get_block_wrapper_attributes merges inline typography; STOP-44 exception is class-only) but a full editor set-a-value confirmation is a low-risk next-session belt-and-braces.
+- **Parity-instrument imprecision** (new, found by the Playwright cross-check): the trust-bar text at 1440 computes 14px live (CORRECT — the draft's `min-width:1024` tier), but computed-parity flagged it draft=13 vs clone=14 — i.e. it sampled the draft's BASE tier, not the measured viewport's applicable `@media` tier. A false-negative that slightly UNDERSTATES parity. Fix = sample the draft at each viewport's applicable tier. Parked `P-PARITY-DRAFT-TIER-SAMPLING`.
+- **Quote typography attach** — mechanism sound (get_block_wrapper_attributes merges inline typography; STOP-44 exception is class-only) but a full editor set-a-value confirmation is a low-risk belt-and-braces.
 - **D2 not emptied** — the column fixes only the naming-mismatch slice; the shorthand/hover/native-supports router patches, the 42 genuine-gap attrs, `sgsResponsiveOverrides`, chrome exclusion, and the end-gate are the rest.
 
 ## Next Priorities (in order)
@@ -45,10 +47,12 @@ session_date: 2026-07-05
 | plugins/sgs-blocks/src/blocks/{button,quote,trust-bar}/** | per-device width + hover + quote typography + trust-bar label |
 | plugins/sgs-blocks/CLAUDE.md | HC2 inheritable-default amendment |
 | .claude/{reports,plans}/2026-07-05-* | investigation report + CSS-column design (council-reviewed) |
+| .claude/specs/{31-UNIVERSAL-CLONING-PIPELINE,11-SGS-BUTTON-ARCHITECTURE}.md | FR-31-2.9 tag-identity + button D280 update |
 
 ## Notes for Next Session
 - The 5-persona council NO-GO'd my first column design (mass-seed) — the reshape (seed-only-corrections + fallback) is in the plan doc's COUNCIL OUTCOME block. Build that, not the original.
 - The capability-roster rollout is NOT a flag flip — the roster-scan agent's per-block override entries are paste-ready in the next-session-prompt; apply them before enabling each block.
+- **The remaining ~19% CSS gap is precisely mapped (1440: 43 elements / 159 diffs, Playwright-verified real): per-element typography not lifted (~35 diffs — labels/testimonials/headings → the capability-roster rollout); label chip radius defaults (32 → CG-6 label defaults); button padding channel (20 → H4 converter fix, confirmed: read-the-full-story `<a>` computes 14/24, draft 10/18); disclaimer white-bg+border box (26 → genuine gap, though its max-width lands = CG-4 works); multi-button flex (~5 → H6); colour partition residual (5 → CG-1); container gap mis-applied (14); button display flex/inline-flex (10) + heading margins + image max-height (minor).** Nothing new — all maps to the queued build sequence.
 - Deploy-before-measure held all session; every fix LANDED on page 8 before commit; every commit 2-rater or council reviewed.
 
 ## Next Session Prompt

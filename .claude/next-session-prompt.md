@@ -8,11 +8,11 @@ primary_goal: "Empty the D2 page-scoped CSS block (STOP-52) via the agreed build
 
 # NEXT SESSION — the D2-emptying build sequence (Bean-agreed)
 
-Invoke /autopilot first. The D280 session cleared 5 of the 6 residuals (5 fixes LANDED, parity 77-78-80 → 80-81-82) and design-gated point 5 (Bean's CSS-routing rework) through a 5-persona adversarial-council that RESHAPED it. This session BUILDS the agreed sequence.
+Invoke /autopilot first. The D280 session cleared 5 of the 6 residuals (5 fixes LANDED; parity 77-78-80 → 79-80-81 honest fresh-clone baseline) and design-gated point 5 (Bean's CSS-routing rework) through a 5-persona adversarial-council that RESHAPED it. This session BUILDS the agreed sequence.
 
 **Agent identity.** You are the SGS pipeline builder-diagnostician: you build agreed, council-passed fix-shapes with LANDED proof, and you keep fact-checking every claim against ground truth (STOP-15).
 
-**State recap (plain English).** The cloned homepage still ships a 129-rule page-scoped CSS block ("D2") the page DEPENDS on — Bean's STOP-52 doctrine says it must never. D2 empties via ~5 workstreams: the point-5 declarative CSS-routing column (naming-mismatch slice), the H1 router-blindness patches (shorthand/hover/native-supports), the 42 genuine-gap attrs, `sgsResponsiveOverrides` (breakpoints, approved), chrome exclusion, and the end-gate. This session builds preset-as-seed + the re-scoped column + the roster rollout + multi-button. Live baselines: content 96 / CSS 80-81-82 / 822 tests / cheat-gate 33 baselined 0 NEW.
+**State recap (plain English).** The cloned homepage still ships a 129-rule page-scoped CSS block ("D2") the page DEPENDS on — Bean's STOP-52 doctrine says it must never. D2 empties via ~5 workstreams: the point-5 declarative CSS-routing column (naming-mismatch slice), the H1 router-blindness patches (shorthand/hover/native-supports), the 42 genuine-gap attrs, `sgsResponsiveOverrides` (breakpoints, approved), chrome exclusion, and the end-gate. This session builds preset-as-seed + the re-scoped column + the roster rollout + multi-button. Live baselines: content 96 / CSS 79-80-81 / 822 tests / cheat-gate 33 baselined 0 NEW.
 
 ## ⛔ THE 7 NON-NEGOTIABLE RULES (Bean-set; gate every change)
 1. **CONVERT, don't mirror** — output = native SGS blocks driven by attributes; NOT a div-by-div copy of draft classes.
@@ -35,7 +35,7 @@ Invoke /autopilot first. The D280 session cleared 5 of the 6 residuals (5 fixes 
 1. Have I completed the READING GATE — Spec 31 IN FULL + handoff + D-ceiling + the council-outcome design block? (Quote one specific thing to prove it.)
 2. What branch + D-ceiling? (`git branch --show-current` → main; ceiling was D280 — verify before any new D.) Is the working tree clean?
 3. For every fix I build: premise proven on the REAL draft node BEFORE + AFTER (STOP-43), gated on the REAL page 8 (computed values matched by content + Bean eye), never on emit alone?
-4. Baselines I must not regress: content 96 / CSS 80-81-82 / A2 = 4 keys; 822 tests; cheat-gate 33 baselined 0 NEW.
+4. Baselines I must not regress: content 96 / CSS 79-80-81 / A2 = 4 keys; 822 tests; cheat-gate 33 baselined 0 NEW.
 5. Subagents: read-only raters/tracers parallel OK; FIX work = ONE solo coding subagent at a time, foreground, named files, spawn-no-agents; I verify every subagent's edits + tests myself (STOP-16/39).
 6. Shared-mechanism / DB-schema change ahead? → pre-build design-gate + Bean approval (Rule 7). The column is council-passed on the RESHAPE; the 5 must-fixes below must be answered before dispatch.
 
@@ -105,9 +105,15 @@ Invoke /autopilot first. The D280 session cleared 5 of the 6 residuals (5 fixes 
 **Orchestration:** confirm the render bug on the live element first (STOP-43); design-gate the shared-wrapper touch; ONE solo coding subagent; LANDED at 375. Bean-held — confirm release before building. ~1h.
 **Acceptance:** the hero CTAs stack to column on mobile faithfully via a client-editable attr, not a hardcoded default.
 
+### Task 5 — Parity-instrument draft-tier sampling fix (quick, high-value; do EARLY)
+**What:** `computed-parity.js` samples the DRAFT's base tier, not the `@media` tier applicable at the measured viewport — it flagged the trust-bar text draft=13 vs clone=14 at 1440, but 14 is CORRECT (the draft's `min-width:1024` tier). Fix it to read the draft's effective value at each viewport (375/768/1440) the same way the live clone is read.
+**Why:** a false-negative that understates CSS parity AND would mask a real desktop-tier drop — the measurement instrument must be trustworthy (STOP-49). Parked `P-PARITY-DRAFT-TIER-SAMPLING`.
+**Orchestration:** inline; verify by re-running parity + a Playwright spot-check that the trust-text mismatch clears. ~30min. Do this FIRST so the parity numbers you measure the other tasks against are honest.
+**Acceptance:** the trust-text font-size false mismatch clears; parity re-baseline is the honest number; no new false mismatches.
+
 ### Dependency graph
-Task 1 (inline, LANDED) → Task 2 design-gate (answer the 5 must-fixes) → Task 2 build (commit-per-correction) ∥ Task 3 (roster rollout, independent) → Task 4 (after Bean releases the hold).
-End of session if scope allows: `sgsResponsiveOverrides` (approved, the 9 F-ii breakpoint rules) + the D2 end-gate design.
+Task 5 (inline, EARLY — trustworthy measurement first) → Task 1 (inline, LANDED) → Task 2 design-gate (answer the 5 must-fixes) → Task 2 build (commit-per-correction) ∥ Task 3 (roster rollout, independent) → Task 4 (after Bean releases the hold).
+The remaining ~19% CSS gap is precisely enumerated in `.claude/handoff.md` Notes (1440: 43 elements/159 diffs) and maps to Tasks 1-4 + block-CSS-default cleanups. End of session if scope allows: `sgsResponsiveOverrides` (approved, the 9 F-ii breakpoint rules) + the D2 end-gate design.
 
 ## Skills to Invoke
 | Skill | When |
@@ -149,6 +155,6 @@ Complete the READING GATE + pre-flight ritual (answers in your first message), t
 - **/qc-council (or 2-rater) before every commit** touching converter/block/theme (blub 255) — then fact-check the council (STOP-15/45).
 - **Prove the premise on the real node (STOP-43)** before + after every converter change; emit-diff the FULL draft per fix.
 - **Visual-diff gate:** a block style.css/render visual change needs `reports/visual-diff/<block>-YYYY-MM-DD.md` (verdict: PASS + first_paint_capture_passed: true) or the commit hook blocks.
-- Every A2 re-baseline must SHRINK; parity content 96 / CSS 80-81-82 must not regress.
+- Every A2 re-baseline must SHRINK; parity content 96 / CSS 79-80-81 must not regress.
 - Branch main; verify D-ceiling (D280); commits path-scoped (PowerShell piped `git commit -F -` or explicit paths; add `[batch-ok:<reason>]` only for a verified session-doc set); push after every green fix.
 - **Design gate:** any shared-wrapper / DB-schema / converter-mechanism change = pre-build design-gate + Bean approval (Rule 7). The column is council-passed on the RESHAPE; answer its 5 must-fixes before dispatch.
