@@ -180,7 +180,8 @@
 						"type": "string"
 					},
 					"suffix": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					},
 					"label": {
 						"type": "string"

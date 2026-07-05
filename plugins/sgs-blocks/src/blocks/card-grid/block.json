@@ -81,7 +81,8 @@
 						"type": "string"
 					},
 					"badge": {
-						"type": "string"
+						"type": "string",
+						"role": "text-content"
 					},
 					"link": {
 						"type": "string"
