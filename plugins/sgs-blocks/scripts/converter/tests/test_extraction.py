@@ -132,7 +132,7 @@ def test_third_case_loud_gap():
     UPDATED 2026-07-04 (FR-31-2.6): the retired delegates_content/capability
     Case-4 dispatch this test originally covered no longer exists — the
     universal content route (``run_universal_content_walk``) has no capability
-    gate, so a childless leaf like sgs/divider walks its (empty) child list and
+    gate, so a childless leaf like sgs/breadcrumbs walks its (empty) child list and
     legitimately produces zero results. That is now caught by the
     conservation-floor check at the END of ``extract_content`` (added
     2026-07-04): if every arm (walk / array / styling / leaf-fallback)
@@ -141,10 +141,12 @@ def test_third_case_loud_gap():
     universally (Rule 4 / R-31-9 / test_conservation_holds) without
     reintroducing a per-capability branch.
     """
-    # sgs/divider: named, delegates_content=0, no scalar/array content capability,
+    # sgs/breadcrumbs: named, delegates_content=0, no content-bearing attrs,
+    # (fixture swapped from the DELETED sgs/divider, D279 - the old row was a
+    # reseed-pruned orphan and the test failed after every full /sgs-update),
     # no primary_content_attr, no children — nothing for the universal walk to
     # find, so only the conservation floor produces a result.
-    node = _node('<div class="sgs-divider"></div>')
+    node = _node('<div class="sgs-breadcrumbs"></div>')
     rec = recognise(node)
     # Verify our assumption: named, no inner blocks
     assert rec.kind == "named"

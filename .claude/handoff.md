@@ -5,6 +5,57 @@ thread: single thread (cloning pipeline)
 session_date: 2026-07-05
 ---
 
+# Session Handoff — 2026-07-05c (D279 — the diagnosis-first register EXECUTED: 9 fix commits, parity 67/69/76 → 77/78/80 honest)
+
+## Completed This Session
+1. Bean-directed diagnosis flow ran END TO END: fresh clone → 311-row conservation-checked defect register → 8 parallel read-only investigators (every claim main-session fact-checked; 2 rater claims corrected by tracing; 1 known prior OVERTURNED — the CTA drop was the BEM family gate, not the single-winner resolver) → 12 cause groups agreed with Bean → 9 fixes shipped same-session.
+2. Commits (all pushed, each LANDED-verified on page 8): 2ce558aa divider+tag-choosers removal (+button auto-derives a/button from url) · e8180d44 per-tier partition (CG-1/10 — colour/gap/border no longer silently stripped; qc-council per-tier amendment) · 43c24194 imageAlt companion lift (CG-8; 3 blocks by DB sweep; 0 empty alts live) · 33069003 identity-anchored foreign-node lift (CG-7-A + UX-Q2; card CTA text+href land; A2 baseline SHRUNK 5→4) · e1046bf4 universal Pattern-A responsive emission (CG-2; 7 blocks + shared sgs_responsive_css_rule + typography superset; research-verified vs Kadance source; id-attachment bug caught LIVE + fixed) · c283821c theme snapshot flat-16px + palette text-first (CG-3 + collision) · a1c84562 CG-9 32-item defaults sweep + CG-11 compound rename (quoteFontStyle + FontStyle suffix role + 4-attr backfill) · cd27dca8 quote ONE content model (InnerBlocks body + typed attribution, editor-empty dead) · 9b6680c4 instrument fixes (computed-parity 6 defects + A2 ledger root-only chrome + 4 tests).
+3. Final honest numbers (fixed instrument): content 96% / CSS 77-78-80 / unmatched els 7 (from 90 / 67-69-76 / 15) / A2 4 keys / 806+13 tests / all gates green. Playwright 375px verification: h2 28px, hero 34px, muted rgb(107,92,80), badges coral, body 16px, CTA + href live.
+4. /sgs-update full reseed ran (divider orphan pruned, rename landed in DB). atomic-tag-map seeder now reconciles DELETIONS (Bean-caught: stale hr→divider row lingered). ssh alias sandybrown added to ~/.ssh/config.
+5. Preset-sync design drafted for Bean gate: .claude/plans/2026-07-05-preset-sync-design.md.
+6. Full register + cause groups + resolution table: .claude/reports/2026-07-05-defect-register-cause-groups.md.
+
+## Current State
+- **Branch:** main at 9b6680c4 (pushed, 0 ahead)
+- **Tests:** 806 canonical + 13 orchestrator pass, 1 skipped (cwd plugins/sgs-blocks/scripts)
+- **Gates:** cheat-gate 33 baselined 0 NEW · no-slug-literal · import-ban · check-raw-sqlite all green
+- **Live:** page 8 content 96 / CSS 77-78-80 (honest instrument); plugin + theme snapshot deployed to sandybrown
+- **Uncommitted:** pre-existing reports/phase4-*.txt + mockup captures + Bean docs (.claude/HTML_Insert.html, Route-To-Completion.md) + this handoff set
+
+## Known Issues / Blockers (THE 6 RESIDUALS — next session per Bean: investigate TRUE causes + spec-aligned solutions, FACTS ONLY, discuss before fixing)
+1. **Zero <h1> on the page** — no converter path writes the heading level attr; every heading renders h2 (render.php:94 default). SEO/a11y.
+2. **CG-4 maxWidth serialiser** — value_serialise.py stub ignores attr_type; string "420px" into number attr → WP discards. Approved but never dispatched.
+3. **Button padding channel** — find-out-more paddings land on the wrapper (WP style channel) not the <a>; custom-mode gating; + preset build-out (outline colour-only).
+4. **Trust-bar label 13.9px vs draft 13px** — repaired clamp lands close; real finish = converter lifts the draft value into the exposed labelFontSize attr.
+5. **CG-5-D multi-button responsive** (Bean-held) — only base flexDirection emitted; gap/mobile tiers dropped; two-collection-path hypothesis (arrangement pass collects own decls vs partitioned stream) needs fact-first confirmation.
+6. **The D2 inline style block (HTML_Insert)** — Bean verdict: if the page DEPENDS on it, it is an extreme hardcoding cheat (everything it sets is settable in block settings); acceptable ONLY as a drops/debug log, with an end-gate that deletes/skips it when the page hits 100 percent content+CSS parity. Today it IS load-bearing (D2 rules: .sgs-button base look, section labels, 600px band F-ii passthrough) and its header comment lies ("not a deploy artefact"). Next session: enumerate exactly what lives in D2, map each rule to its block-setting destination (or a genuine gap), and design the spec-aligned end state.
+Also open (Bean-deferred): option-picker design discussion (pills, packSizes); preset-sync build (design gated at .claude/plans/2026-07-05-preset-sync-design.md).
+
+## Next Priorities (in order)
+1. The 6-residual fact-first investigation session (next-session-prompt.md carries the orchestration plan).
+2. Option-picker design discussion at the end of that session if scope allows.
+
+## Files Modified
+| File path | What changed |
+|---|---|
+| plugins/sgs-blocks/scripts/converter/** | partition, imageAlt, identity lift, quote attribution routing, seeder deletion-reconcile |
+| plugins/sgs-blocks/src/blocks/** | tag choosers removed, divider deleted, Pattern-A migration ×7, CG-9 sweep, quote rebuild |
+| plugins/sgs-blocks/includes/** | helpers-responsive.php (new), typography superset, wrapper htmlTag fallback |
+| plugins/sgs-blocks/scripts/{parity,ledger}/** | instrument fixes + root-only chrome + tests; A2 baseline 5→4 |
+| sites/mamas-munches/theme-snapshot.json | fluid off + palette reorder |
+| .claude/{reports,plans}/2026-07-05-* | register+cause-groups+resolution; preset-sync design |
+
+## Notes for Next Session
+- Parity numbers pre/post instrument-fix are NOT comparable (the instrument got stricter: unmatched 12→7 with MORE elements seen). 77-78-80 is the honest baseline.
+- The D278 explain-agree-clear pattern + STOP-15 tracing caught 3 false/imprecise agent claims this session — keep fact-checking every claim.
+- mamas-munches snapshot commit went to main (canary-fixture convention); the letter of the git rule says feat/<client> — flagged, not reworked.
+- Bean D2 doctrine (NEW, load-bearing): the pipeline output must never make the page DEPEND on non-block-settings CSS; D2 may exist only as a transfer-visibility log, deleted at 100 percent parity by an end-gate.
+
+## Next Session Prompt
+The orchestration plan lives at .claude/next-session-prompt.md — REWRITTEN at close to Bean's 6-residual fact-first investigation flow. STOP catalogue carried forward (extended). Read via the autopilot SessionStart hook as usual.
+
+---
+
 # Session Handoff — 2026-07-05b (D277+D278 — THE MASSIVE QC executed AND all 8 parked findings cleared same-day)
 
 ## TL;DR
