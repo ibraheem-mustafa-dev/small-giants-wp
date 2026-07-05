@@ -82,8 +82,13 @@ $css .= 'justify-content:' . $justify_content . ';';
 $css .= 'align-items:' . $align_items . ';';
 $css .= '}';
 
-// Tablet breakpoint (769px to 1024px).
-$css .= '@media(max-width:1024px) and (min-width:769px){';
+// Tablet breakpoint (768px to 1023px — device-tier standard, CLAUDE.md
+// "Responsive breakpoint discipline"). H6 fix (2026-07-05): was
+// 769-1024px, off by one vs the 767/1023 standard, so a draft rule of
+// `@media (min-width:768px)` (row at exactly 768px) fell into the OLD
+// mobile band below instead of this one — the hero CTAs rendered column
+// at 768px when the draft wants row.
+$css .= '@media(max-width:1023px) and (min-width:768px){';
 $css .= '#' . $uid . '.sgs-multi-button{';
 $css .= 'flex-direction:' . $direction_tablet . ';';
 $css .= 'flex-wrap:' . $wrap_tablet . ';';
@@ -91,8 +96,8 @@ $css .= 'gap:' . $gap_tab_css . ';';
 $css .= 'justify-content:' . $justify_content_tablet . ';';
 $css .= '}}';
 
-// Mobile breakpoint (max 768px).
-$css .= '@media(max-width:768px){';
+// Mobile breakpoint (max 767px — device-tier standard; was 768px, see above).
+$css .= '@media(max-width:767px){';
 $css .= '#' . $uid . '.sgs-multi-button{';
 $css .= 'flex-direction:' . $direction_mobile . ';';
 $css .= 'flex-wrap:' . $wrap_mobile . ';';
@@ -105,12 +110,28 @@ $css .= '}}';
 // ($content) become the interior. The mirror adds the container width capability.
 $mb_style = '<style>' . esc_html( $css ) . '</style>';
 
+// H6 fix (2026-07-05, proven live -- STOP-43): kind was 'layout', which also makes
+// SGS_Container_Wrapper emit ITS OWN display:flex / flex-wrap / align-items /
+// flex-direction (from the separate, non-responsive $attributes['flexDirection'])
+// as an INLINE style on this same wrapper element. An inline style always beats
+// the #uid.sgs-multi-button <style> rule above regardless of specificity or
+// @media, so whenever flexDirection is non-empty (e.g. set by the cloning
+// converter) it permanently pins flex-direction at every viewport, hiding this
+// block's own responsive direction/directionTablet/directionMobile system
+// entirely -- confirmed live on the hero CTAs (flex-direction:row at 375/768/
+// 1440 alike, never column). multi-button already fully owns display/flex-wrap/
+// gap/justify-content/align-items/flex-direction responsively above, so it does
+// not need the wrapper's grid/flex layer at all -- only the width/contentWidth
+// capability mirror. kind='content' keeps that (align/maxWidth/contentWidth +
+// padding/spacing -- an already-exercised pattern, e.g. sgs/quote, sgs/testimonial,
+// sgs/product-card) and drops the wrapper's flex/grid + duplicate-gap emission,
+// which multi-button never used. Zero shared-file edit.
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $mb_style is esc_html'd CSS; SGS_Container_Wrapper::render() escapes its output internally; $content is WP-rendered inner blocks.
 echo $mb_style . SGS_Container_Wrapper::render(
 	$attributes,
 	$block,
 	$content,
-	'layout',
+	'content',
 	array(
 		'tag'           => 'div',
 		'extra_classes' => array( 'sgs-multi-button' ),
