@@ -73,9 +73,16 @@ _SCAN_FILES = [
 _BASELINE = _HERE / "no-slug-literal-baseline.json"
 
 # The carve-out identifiers the gate guards.
+# WIDENED (post-programme QC, 2026-07-05): modifier-family identifiers added —
+# the assembly.py `_mod == "ghost"` branch (a self-documented Check-#9 evasion)
+# was invisible to this gate because a BEM modifier wasn't a tracked ident. A
+# literal comparison against a modifier is the same R-31-9 carve-out class as a
+# slug comparison (the synonym belongs in the slots alias→default_attrs DB
+# channel — see db_lookup.inherit_style_for_modifier). Plant-tested.
 _TARGET_IDENTS = frozenset({
     "block_slug", "variant_value", "variant_attr",
     "slot", "slot_name", "canonical_slot",
+    "mod", "_mod", "modifier",
 })
 
 

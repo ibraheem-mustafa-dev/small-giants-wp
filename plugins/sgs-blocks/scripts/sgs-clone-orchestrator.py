@@ -1475,6 +1475,47 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     # match (e.g. pattern:brand sections, external scrapes).
                     section_id=m.get("section_id") or "",
                 )
+                if result.get("status") == "failed":
+                    # Rule-4 loud path (post-programme QC fix, 2026-07-05):
+                    # converter/entry.py returns status:'failed' + failure_reason
+                    # (its loud contract, Step 16) — the orchestrator must not
+                    # degrade that back into a silent drop. Record an ERROR (the
+                    # Stage-4 artefact goes 'failed') and keep the section in
+                    # per_section_results with status 'failed' so the Stage-9
+                    # operator queue surfaces it. The page is emitted without
+                    # the section, but never silently.
+                    _failure_reason = result.get("failure_reason", "unspecified")
+                    aggregate_errors.append(
+                        f"{boundary_id}: converter returned status 'failed' "
+                        f"({_failure_reason}); section absent from emitted markup"
+                    )
+                    _emit(
+                        _trace_for(run_dir),
+                        stage="stage_4_converter_failed",
+                        boundary_id=boundary_id,
+                        section_selector=section_selector,
+                        failure_reason=_failure_reason,
+                    )
+                    per_section_results.append({
+                        "boundary_id": boundary_id,
+                        "section_id": m.get("section_id"),
+                        "selector": section_selector,
+                        "block_name": result.get("block_name", target_block),
+                        "status": "failed",
+                        "failure_reason": _failure_reason,
+                        "extract_path": "",
+                        "extracted_attributes": {},
+                        "block_markup": "",
+                        "token_resolutions": [],
+                        "new_tokens_written": [],
+                        "supports_decisions": [],
+                        "supports_emitted_attributes": {},
+                        "supports_omitted_attributes": {},
+                        "modifier_signals": {},
+                        "class_signature": _class_sig,
+                        "converter_v2": True,
+                    })
+                    continue
                 # Normalise to orchestrator per_section_results schema.
                 _cv2_markup = result.get("block_markup", "")
                 # Stage 4.5 — harvest token resolutions from the cv2 walker.
@@ -2070,9 +2111,16 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
             "selector": s.get("selector"),
             "candidate_block": s.get("block_name"),
             "class_signature": s.get("class_signature", []),
+            # A converter-failed section carries its reason to the operator
+            # queue directly (no cross-referencing the Stage-4 artefact).
+            "failure_reason": s.get("failure_reason", ""),
         }
         for s in per_section_results
-        if s.get("status") == "unmatched"
+        # Queue every section that produced no markup and needs operator review:
+        # plain 'unmatched' (matcher), 'unmatched-*' (cv2 softfail / non-BEM halt
+        # — their own comments always intended the queue to catch them), and
+        # 'failed' (the converter's loud Rule-4 contract, 2026-07-05 QC fix).
+        if str(s.get("status", "")).startswith("unmatched") or s.get("status") == "failed"
     ]
 
     output = {

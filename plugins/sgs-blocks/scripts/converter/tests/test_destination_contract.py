@@ -10,12 +10,16 @@ Also the two binding guards FR-31-2.8.4 names:
   MF-4 — attr_for_layer_property FAIL-LOUD on ≥2 candidate attrs (never a
          silent rowid-pick). Live-DB enumeration 2026-07-04: ZERO ambiguous
          combos, so the raise is behaviour-identical on real data.
-  MF-3 — detect_content_layer rejects a root node (a section root declaring
-         max-width + margin:0 auto is OUTER, never a CONTENT band).
+  MF-3 — the LIVE root-guard (layer_detect) classifies a root node OUTER (a
+         section root declaring max-width + margin:0 auto is OUTER, never a
+         CONTENT band). Re-pointed 2026-07-05 QC: the Step-3 commit put the
+         guard on fold_helpers.detect_content_layer, which had zero production
+         callers (deleted); layer_detect.py is where MF-3 actually runs.
 """
 from __future__ import annotations
 
 import sqlite3
+from types import SimpleNamespace
 
 import pytest
 
@@ -23,7 +27,7 @@ from converter.context import Ctx, Decl, Destination
 from converter.models import Write
 from converter.orchestrator import ConservationError, process_element
 from converter.resolvers import REGISTRY
-from converter.services.fold_helpers import detect_content_layer
+from converter.services.layer_detect import layer_detect
 from converter.db import db_lookup
 from converter.db.db_lookup import (
     SGS_DB,
@@ -158,10 +162,12 @@ def test_mf4_single_candidate_still_resolves(monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# MF-3 — detect_content_layer rejects a root node.
+# MF-3 — the LIVE root-guard: layer_detect classifies a root node OUTER.
 # ---------------------------------------------------------------------------
 
 def test_mf3_root_node_never_content_layer():
     band_signature = {"max-width": "1200px", "margin": "0 auto"}
-    assert detect_content_layer(band_signature) is True            # non-root: band
-    assert detect_content_layer(band_signature, is_root=True) is False  # root: OUTER
+    non_root = SimpleNamespace(is_root=False, area_name=None)
+    root = SimpleNamespace(is_root=True, area_name=None)
+    assert layer_detect(non_root, band_signature) == "CONTENT"  # non-root: band
+    assert layer_detect(root, band_signature) == "OUTER"        # root: OUTER, never CONTENT

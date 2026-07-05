@@ -119,6 +119,21 @@ def test_catches_slot_name_membership(tmp_path):
     assert len(v) >= 1
 
 
+def test_catches_modifier_literal_compare(tmp_path):
+    # _mod == "ghost" — the assembly.py Check-#9-evasion shape (QC 2026-07-05).
+    # A BEM-modifier literal comparison is the same carve-out class as a slug
+    # comparison; the synonym belongs in the slots alias→default_attrs channel.
+    v = _scan(tmp_path, "def r(_mod):\n    if _mod == 'ghost':\n        return 'outline'\n")
+    assert len(v) >= 1
+    assert any("ghost" in vi["src"] for vi in v)
+
+
+def test_catches_modifier_membership(tmp_path):
+    # modifier in ("ghost", "pill") — membership form of the same carve-out.
+    v = _scan(tmp_path, "def r(modifier):\n    return modifier in ('ghost', 'pill')\n")
+    assert len(v) >= 1
+
+
 # ---------------------------------------------------------------------------
 # Clean code the gate must NOT flag (zero false positives)
 # ---------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 
 The CONTENT band is a non-root inner element that constrains content width
 (``max-width`` + margin-centring, or a ``--content-width`` custom property —
-detected by ``layer_detect`` → ``fold_helpers.detect_content_layer``). Spec 31
+detected by ``layer_detect`` — the live MF-3 root-guard). Spec 31
 §3.A.3 routes the band's ``max-width`` to the block's CONTENT-layer attr
 (``contentWidth`` for sgs/container) via ``db.attr_for_layer_property(block,
 'CONTENT', css_property)``; the old 3-way MaxWidth/ContentSize/WideSize widthMode

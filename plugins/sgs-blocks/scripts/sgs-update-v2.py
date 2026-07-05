@@ -996,9 +996,10 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     # reads $content) so the walker never recurses children, and equivalent_block_for
     # is never consulted for child routing.
     # to lift the person's name from the <h3 class="sgs-team-member__name"> element.
-    # Setting role='text-content' is safe: equivalent_block_for is gated by
-    # block_accepts_inner_blocks (false when has_inner_blocks=0) so the
-    # sgs/heading dead-child bug cannot recur. D221 regression fix. 2026-06-13.
+    # Setting role='text-content' is safe: the per-attr emit_shape walk
+    # (FR-31-2.6; the old block_accepts_inner_blocks gate died with the
+    # has_inner_blocks column, 2026-07-05) prevents the sgs/heading
+    # dead-child bug recurring. D221 regression fix. 2026-06-13.
     ("sgs/team-member", "name"): {"role": "text-content", "derived_selector": ".sgs-team-member__name"},
     # sgs/team-member.role: person's job title. canonical_slot='role' →
     # standalone_block='sgs/label' → would emit a dead child with has_inner_blocks=1.

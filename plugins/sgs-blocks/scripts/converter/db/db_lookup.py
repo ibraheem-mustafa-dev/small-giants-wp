@@ -609,51 +609,13 @@ def container_default_slug() -> str | None:
     return None
 
 
-@functools.lru_cache(maxsize=256)
-def block_accepts_inner_blocks(block_slug: str) -> bool:
-    """Return True when the block declares InnerBlocks in its block.json.
-
-    Queries block_composition.has_inner_blocks (populated by /sgs-update Stage 1
-    from the block's block.json `innerBlocks` / usesContext / InnerBlocks usage).
-
-    Contract:
-    - Returns True  → walker SHOULD recurse into children for InnerBlocks.
-    - Returns False → block renders from its own attrs only (dynamic render.php
-                      with no $content passthrough); walker MUST NOT emit children
-                      as inner markup — WP save() contract expects self-closing
-                      (save=null) and WP block validation rejects any innerHTML.
-
-    The distinction is what prevents the WP block-validation error
-    "This block contains unexpected or invalid content" for blocks like
-    sgs/star-rating: composition_role='content-block' but has_inner_blocks=0
-    means the block consumes no InnerBlocks despite being non-leaf.
-
-    Soft-fails to True on missing table / missing row (conservative: allow
-    children, which is safer than silently dropping them for unknown blocks).
-
-    R-31-1 compliant — DB-driven, no per-block slug literals.
-    R-31-9 compliant — universal gate: fires for every resolved non-leaf block.
-    """
-    conn = sqlite3.connect(SGS_DB)
-    try:
-        row = conn.execute(
-            "SELECT has_inner_blocks FROM block_composition WHERE block_slug = ?",
-            (block_slug,),
-        ).fetchone()
-    except sqlite3.OperationalError:
-        # Table absent (pre-D108 state) — soft-fail to True (conservative)
-        return True
-    finally:
-        conn.close()
-    if row is None:
-        # Block not in block_composition — soft-fail to True (conservative)
-        _trace("db_lookup_miss", lookup="block_accepts_inner_blocks",
-               block_slug=block_slug)
-        return True
-    result = bool(row[0])
-    _trace("db_lookup_hit", lookup="block_accepts_inner_blocks",
-           block_slug=block_slug, has_inner_blocks=result)
-    return result
+# block_accepts_inner_blocks DELETED (post-programme QC, 2026-07-05): it read the
+# block_composition.has_inner_blocks column DROPPED at Step 16 (migrations/
+# 2026-07-05-drop-has-inner-blocks-column.py), so its OperationalError soft-fail
+# made it permanently return True — broken for its stated purpose with zero live
+# callers (STOP-48 consumer grep: only its own definition + one stale comment).
+# The live block-level signal is services/has_inner.py::derive_delegates_content
+# (source-derived); the per-attr signal is emit_shape_for below (FR-31-2.6).
 
 
 def attr_for_slot(block_slug: str, canonical_slot: str) -> str | None:
@@ -2287,11 +2249,12 @@ def _content_bearing_roles() -> frozenset[str]:
     D99 closes the link-href bug: the old column-based approach only set
     role_classification on slot_synonyms rows that HAD a given role; since
     no slot row had role='link-href', it was never seeded. The `roles` table
-    is seeded from _ROLE_CLASSIFICATION_MAP which explicitly lists all 5
+    is seeded from _ROLE_CLASSIFICATION_MAP which explicitly lists the
     content-bearing roles including link-href.
 
-    Returns 5 roles: text-content, image-object, content, link-href, identity.
-    Cached at module-load price; the rows are static for a pipeline run.
+    Live row count is DB-authoritative (10 as of 2026-07-05: text-content,
+    image-object, content, link-href, identity, rating + the 4 icon-* roles) —
+    never hardcode the set; this accessor IS the source (R-31-1).
     """
     conn = sqlite3.connect(SGS_DB)
     try:
@@ -2483,6 +2446,43 @@ def inherit_style_presets() -> frozenset:
         if isinstance(v, str) and v:
             vals.add(v)
     return frozenset(vals)
+
+
+def inherit_style_for_modifier(mod: str, block_slug: str | None) -> str | None:
+    """Resolve a BEM style ``--modifier`` that is NOT itself a preset value to an
+    inheritStyle preset via the slots alias→default_attrs channel (R-31-1).
+
+    Probes the DB-declared alias vocabulary with the modifier compounded with the
+    block's identity token (``'ghost'`` on ``sgs/button`` → ``ghost-button`` /
+    ``button-ghost`` / no-hyphen variants), mirroring the compound-element segment
+    convention used by ``_slot_default_attrs_for_classes``. Returns the preset
+    string or None. A new synonym is a slots ``aliases`` seed — never a code
+    branch. (QC fix 2026-07-05: replaces the assembly.py hardcoded
+    ``'ghost'→'outline'`` branch, whose own comment admitted it was shaped to
+    evade cheat-gate Check #9.)
+    """
+    if not mod:
+        return None
+    dmap = _slot_alias_to_default_attrs()
+    if not dmap:
+        return None
+    mod_l = mod.lower()
+    # COMPOUND probes ONLY (reviewer M1 hardening, 2026-07-05): the alias map is
+    # GLOBAL (not block-scoped), so a bare-modifier probe would let a future
+    # bare alias row leak across every string-inheritStyle block. Requiring the
+    # block-identity compound makes block-scoping a structural guarantee, not a
+    # DB-seeding discipline.
+    probes: list[str] = []
+    if block_slug and "/" in block_slug:
+        ident = block_slug.split("/", 1)[1].lower()
+        probes = [f"{mod_l}-{ident}", f"{ident}-{mod_l}"]
+    for probe in probes:
+        hit = dmap.get(probe) or dmap.get(probe.replace("-", ""))
+        if hit:
+            v = hit.get("inheritStyle")
+            if isinstance(v, str) and v:
+                return v
+    return None
 
 
 @functools.lru_cache(maxsize=2048)
@@ -4058,16 +4058,24 @@ def content_attr_for_element(
     if not block_slug or not bem_element:
         return None
 
-    _CONTENT_ROLES = ("text-content", "identity", "image-object", "content", "rating")
+    # FR-31-2.2 content-role allowlist — sourced from roles.classification like
+    # every other call site (equivalent_block_for, array_content). QC fix
+    # 2026-07-05: the previous in-code 5-tuple here had DRIFTED from the DB
+    # fact (missing link-href + the 4 icon-* roles) — the exact R-31-1 duplicate
+    # pattern; the roles table is the single source.
+    _content_roles = tuple(sorted(_content_bearing_roles()))
+    if not _content_roles:
+        return None  # positive allowlist closes by default (safe direction)
 
     conn = sqlite3.connect(SGS_DB)
     try:
+        _placeholders = ", ".join("?" for _ in _content_roles)
         attr_rows = conn.execute(
             "SELECT attr_name, canonical_slot, emit_shape, role, attr_type "
             "FROM block_attributes "
-            "WHERE block_slug = ? AND role IN (?, ?, ?, ?, ?) "
+            f"WHERE block_slug = ? AND role IN ({_placeholders}) "
             "ORDER BY rowid",
-            (block_slug, *_CONTENT_ROLES),
+            (block_slug, *_content_roles),
         ).fetchall()
         slot_rows = conn.execute(
             "SELECT slot_name, aliases FROM slots WHERE scope = 'element'"

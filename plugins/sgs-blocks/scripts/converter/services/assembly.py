@@ -199,10 +199,14 @@ def build_block_markup(
             if _mod in _presets:
                 attrs["inheritStyle"] = _mod
                 break
-            # 'ghost' is the draft's term for the outline preset. A bare branch (NOT a
-            # dict literal) so the cheat-gate Check #9 suffix-dict detector cannot flag it.
-            if _mod == "ghost":
-                attrs["inheritStyle"] = "outline"
+            # A modifier that is not itself a preset value resolves through the
+            # slots alias→default_attrs channel (db_lookup.inherit_style_for_modifier,
+            # R-31-1): the DB's `ghost-button`/`button-ghost` aliases carry
+            # {"inheritStyle": "outline"}, so a draft `--ghost` maps with no code
+            # literal; a future synonym is a slots-row seed, zero code change.
+            _alias_style = db_lookup.inherit_style_for_modifier(_mod, rec.slug)
+            if _alias_style:
+                attrs["inheritStyle"] = _alias_style
                 break
 
     # step 6: R6 background-strip (port convert.py:5017-5028, W3 MF2). The CSS pass

@@ -3,7 +3,7 @@
 Faithful port of the following from orchestrator/converter_v2/convert.py,
 behaviour-IDENTICAL (Spec 31 §12.4, D246):
 
-  - ``_detect_content_layer``          (convert.py:2244) -> ``detect_content_layer``
+  - ``_detect_content_layer``          (convert.py:2244) -> DELETED 2026-07-05 (zero callers; live MF-3 guard = layer_detect.py)
   - ``_resolve_co_declared_var``        (convert.py:384)  -> ``_resolve_co_declared_var`` (private)
   - ``_expand_box_shorthand``           (convert.py:2354) -> ``_expand_box_shorthand`` (private)
   - ``_lift_content_band_max_width``    (convert.py:5821) -> ``lift_content_band_max_width``
@@ -186,69 +186,16 @@ def _expand_box_shorthand(decls: dict[str, str], prop: str) -> dict[str, str]:
 
 
 # ---------------------------------------------------------------------------
-# detect_content_layer (convert.py:2244 — ported verbatim, renamed)
+# detect_content_layer DELETED (post-programme QC, 2026-07-05). The Step-3
+# commit (c85254db) added its `is_root` MF-3 guard, but the function had ZERO
+# production callers — the LIVE MF-3 guard is layer_detect.py::layer_detect
+# (`if ctx.is_root: return "OUTER"`), which pre-dates that commit, and the
+# band-signature richness this boolean once carried dissolved into the
+# per-declaration Step-7 cascade (content_band.resolve layer priorities).
+# Keeping a second, uncalled implementation of the same guard was the exact
+# duplicate-mechanism drift risk the ONE-cascade rule (FR-31-2.8.4) forbids.
+# Its MF-3 unit test was re-pointed at the live guard (test_destination_contract).
 # ---------------------------------------------------------------------------
-
-def detect_content_layer(base_decls: dict[str, str], *, is_root: bool = False) -> bool:
-    """Return True when ``base_decls`` carries a CONTENT-layer signature.
-
-    CONTENT layer = a content-width inner band. Detection is deterministic-first:
-
-    1. ``--content-width`` custom-property declared in the element's CSS -> True.
-    2. ``max-width`` present AND margin-centring present (both ``margin-left:auto``
-       AND ``margin-right:auto``, OR the ``margin:0 auto`` shorthand) -> True.
-
-    Any other pattern -> False (routed to gap-candidate by the caller).
-
-    MF-3 structural-position guard (Spec 31 §3 step 1 / FR-31-2.8.4, Step-3
-    2026-07-04): L2 CONTENT detection fires ONLY on a non-root inner element.
-    A section ROOT that legitimately declares ``max-width:1200px; margin:0
-    auto`` is the OUTER box (its max-width routes to ``maxWidth``/``align``,
-    never ``contentWidth``) — pass ``is_root=True`` and this returns False
-    regardless of the CSS signature. Defaulted False so every existing caller
-    (all of which pass interior child nodes) is behaviour-identical; the
-    unified Step-7 cascade passes the node's real structural position.
-
-    Ported from convert.py:2244 (behaviour-identical for non-root).
-    """
-    if is_root:
-        return False
-    # Priority 1: `--content-width` custom property anywhere in the declaration block.
-    for prop in base_decls:
-        if prop.strip() == "--content-width":
-            return True
-    for val in base_decls.values():
-        if "--content-width" in (val or ""):
-            return True
-
-    # Priority 2: max-width + margin-centring.
-    raw_mw = strip_important(base_decls.get("max-width", "")).strip()
-    if not raw_mw:
-        return False
-
-    # Reject width:min()/clamp() shaped values that appear in max-width slot.
-    if raw_mw.startswith(("min(", "clamp(", "max(")):
-        return False
-
-    # Reject flex-grid containers.
-    raw_display = strip_important(base_decls.get("display", "")).strip().lower()
-    if raw_display in ("flex", "grid", "inline-flex", "inline-grid"):
-        return False
-
-    # Check for margin-centring signature.
-    margin_short = strip_important(base_decls.get("margin", "")).strip().lower()
-    ml = strip_important(base_decls.get("margin-left", "")).strip().lower()
-    mr = strip_important(base_decls.get("margin-right", "")).strip().lower()
-
-    if margin_short:
-        tokens = margin_short.split()
-        if "auto" in tokens:
-            return True
-
-    if ml == "auto" and mr == "auto":
-        return True
-
-    return False
 
 
 # ---------------------------------------------------------------------------
