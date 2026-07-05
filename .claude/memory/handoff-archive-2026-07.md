@@ -502,3 +502,53 @@ See `.claude/next-session-prompt.md` (carried-forward 7 rules + reading gate + r
 
 ## Next Session Prompt
 See `.claude/next-session-prompt.md` (carried-forward 7 rules + reading gate + ritual + STOP catalogue 1..36 + the container-default + canary-LANDED orchestration).
+
+
+# Session Handoff — 2026-07-04 (emit_shape foundation + converter-rebuild SCOPING)
+
+## ⚠️ READ FIRST — the scope produced this session is DOCUMENTATION-DERIVED and MUST be fact-checked against the RUNNING SCRIPTS before it is trusted or built from.
+Bean's closing directive: *"start next session fact-checking everything — there's a lot of assumption / overly trusting documentation."* PROOF it's needed: this session's parity-gap inventory claimed **"media-map loader NOT started, images broken except hero+trust-bar"** (sourced from Spec 31 §12.6 + code comments). **Bean says that is WRONG — the current clone LOADS media.** So the parity-gap inventory (and any claim from Spec 31 §12 / code comments / the stale flow doc) is a HYPOTHESIS. Next session's FIRST job = verify every load-bearing claim by READING the scripts + running a real clone, following the walker's actual logic + routing — NOT by trusting docs.
+
+## Completed This Session
+1. **`emit_shape` foundation BUILT + verified + committed** — Spec 31 §13.3 FR-31-2.6 (per-attr nested-vs-child fork replacing block-level `has_inner`). `block_attributes.emit_shape` column + `/sgs-update _populate_emit_shape` seeder (source-derived via `render_reads_attr`, fail-loud) + `db_lookup.emit_shape_for` + `render_emits.render_reads_attr`. Verified on product-card(9 nested)/hero(content=child,badges=nested)/accordion.title/testimonial(ratingStars number-type fix). Additive + INERT (not wired into the walk).
+2. **Spec 31 → FR-31-2.6** across §13.3/§3.B/§2/§4. `equivalent_block_for` reframed as the IDENTITY resolver (not the fork); role = the content filter. Spec 22 redirect stub re-removed.
+3. **6-persona adversarial-council + fact-check** — Bean corrected several over-claims of mine (I re-surfaced his own design as flaws). Design: kill Mechanism A/B + `has_inner`, one universal per-attr walk.
+4. **research-check (architecture)** — evidence-locked: single walker owns recursion (unconditional descent) + TOTAL registry dispatch of pure per-type handlers + EXPLICIT priority + assembly as the one final pass = Babel merged-visitor = FR-31-3.
+5. **Full SCOPING** (5 read-only agent traces): the real active flow (the flow doc is STALE), the `converter_v2` deletion surface, the parity-gap inventory (UNVERIFIED — see READ FIRST), container-vs-composite, the routing-paths map.
+6. **Deliverables:** completion phase-plan `.claude/plans/2026-07-04-new-engine-to-parity-delete-converter-v2.md` (6 phases, delete-last) + a routing decision-tree Artifact.
+
+## Current State
+- **Branch:** main (post-commit — see git log).
+- **Tests:** 373 pass + cheat-gate green (product-card golden = old-composite baseline after revert).
+- **Uncommitted:** product-card WIP leaf conversion was REVERTED (needs the walk — Phase 2 redoes it). `emit_shape` column seeded in the DB; `has_inner=1` (resynced).
+
+## Known Issues / Blockers
+- **Parity-gap inventory UNVERIFIED** (media-loading claim contradicted by Bean — see READ FIRST).
+- `converter_v2`/`convert.py` is still the production default + the new engine's fallback — delete-last (only after §2.7 parity, Phase 5).
+- `emit_shape` walk NOT wired — product-card does not yet clone via the new fork.
+
+## Next Priorities (in order)
+1. **FACT-CHECK the scope against the running scripts + a real clone** — re-verify the parity backlog (media-map, the "stub" resolvers, which sections actually fall back to frozen `v3.walk`). Correct the phase-plan's Phase-5 backlog to what the scripts ACTUALLY do.
+2. **Approve the phase-plan** once fact-checked (4 open decisions: delete-last / 6-phase shape / FR-31-2.7 classifier / multi-session scope).
+3. **Phase 1** — regenerate the stale `cloning-pipeline-flow.md` from the live scripts.
+4. **Phase 2** — the modular universal walk (dissect `extraction.py`; single walker + registry + pure handlers; wire the emit_shape fork; delete Mechanism A/B). Lands product-card.
+
+## Files Modified
+| File path | What changed |
+|---|---|
+| `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` | FR-31-2.6 across §13.3/§3.B/§2/§4 |
+| `.claude/specs/22-...md` | Deleted (redirect stub re-removed) |
+| `plugins/sgs-blocks/scripts/sgs-update-v2.py` | `_populate_emit_shape` seeder (Stage-1 sub-step D) |
+| `plugins/sgs-blocks/scripts/converter/services/render_emits.py` | `render_reads_attr` |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | `emit_shape_for` accessor |
+| `.claude/plans/2026-07-04-new-engine-to-parity-delete-converter-v2.md` | NEW — the completion phase-plan |
+
+## Notes for Next Session
+- `equivalent_block_for` is the IDENTITY resolver (attr→canonical_slot→standalone_block), NOT the fork — `emit_shape` is the fork; they're complementary (Bean corrected my earlier framing).
+- `card-grid` is a TYPED composite; the ONLY true arbitrary-child container is `sgs/container` (fix in the FR-31-2.7 classifier).
+- ONE live engine path behind `SGS_NEW_ENGINE=1`: CSS branch IS wired through `REGISTRY` (D250); content is NOT (goes through `extract_content`). "Two registries" = one live + one aspirational; the "not swapped live" docstring is stale.
+- Coding subagents cascade-fail here (STOP-39) — read-only analysis/research/Explore agents work; build INLINE.
+
+---
+
+---

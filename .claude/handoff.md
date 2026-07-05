@@ -1,8 +1,59 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-thread: single thread (cloning pipeline). This D271 entry = a one-off side session (block/converter infrastructure), NOT cloning progress.
-session_date: 2026-07-04
+thread: single thread (cloning pipeline)
+session_date: 2026-07-05
+---
+
+# Session Handoff — 2026-07-04/05 (D276 — the converter completion programme EXECUTED: Steps 3-16, Gates A/B/C, frozen engine DELETED)
+
+## TL;DR
+All 16 EXECUTION steps ran in one session; the frozen engine is deleted, the modular engine is the only converter, product-card/variants/the 600px band all LAND, honest parity content 90% / CSS 67-69-76, 18 commits pushed. Next session = Bean's massive per-step + full-shape QC.
+
+## Completed this session
+1. **Phase 2 core (Steps 3-8, Gate A CLOSED):** Ctx destination contract + MF-3/MF-4 guards (`c85254db`); extraction monolith split (`0c41ef13`); single walker + total structural-signature registry + no_slug_literal widened (`b9d37816`); the FR-31-2.6 universal per-attr emit_shape walk — product-card content LANDS (`09d15d21`); the ONE cascade for folded bands, reduced fold paths deleted (`88dfb4c5`); has_inner→delegates_content reader migration (`0a3d1de9`); product-card attr-classification overrides + kebab-camel tier-0 bridge (`d02d6bf5`). LANDED: price 28px Fraunces 700 computed on page 8.
+2. **Phases 3-4 (Steps 9-10, Gate B CLOSED):** db_lookup + icon_resolver moved to converter/ homes + re-export shims (`f3ce0b33`); Stage-4 entry relocated to converter/entry.py + ALL consumers rewired + import_ban unconditional-with-marked-exemption (`3914c95e`). Both flag states cloned end-to-end.
+3. **Phase 5 (Steps 11-15):** A2 content-conservation ledger — the LAST STOP-28 gate, armed, its baseline = the named residuals (`630c8a35`); CSS resolver completeness with the Bean-caught liftability-is-a-DB-fact correction (`8b1cb017`); pseudo-element + F-ii non-device-media D2 passthrough — the 600px band renders 4-across LIVE (`a632400a`); section passes ported + css_router D1 KEEP decision recorded after the F5 gate blocked a wrong retirement (`8158c39e`); variant data + F3 render-oracle + 3 metamorphic relations + F6 — the trial badge paints live (`051b32b0`).
+4. **Parity instrument de-polluted (Bean-caught, 2 commits):** chrome/title/drive-prefix leaks + the inline-wrapper anchor artefact fixed (`3bdf4ff2`, `f5de3825`) — honest Gate-C parity: **content 90% / CSS 67-69-76** (session baseline 47/49/54).
+5. **Step 16 (Gate C signed off by Bean):** the frozen engine DELETED — orchestrator/converter_v2/ (6,386-line convert.py + shims + tests) + _retired/convert_pre_spec22.py gone; entry.py flag-free with a loud failure contract; parse_css ported; cheat-gates re-pointed; has_inner_blocks column DROPPED + ~11 external readers migrated (`c8690345`). LANDED flag-free: 7 sections, all computed checks pass.
+6. **Eight false agent/rater claims caught by tracing** this session (subagent "pre-existing via git stash" disproven — stash doesn't revert the DB; the D1 "dead output" claim wrong at pipeline scope — the F5 gate itself blocked the bad commit).
+
+## Current state
+- **Branch:** main at `c8690345` (pushed; 0 ahead).
+- **Tests:** 744 passed + 1 skipped (canonical cwd plugins/sgs-blocks/scripts; suite now spans orchestrator/test_css_router + converter/tests + cheat-gate/tests + tests/test_converter_conformance + ledger/tests).
+- **Gates:** cheat-gate 0 NEW · no-slug-literal clean · import-ban unconditional clean · F6 db-consistency 7/7 · A2 content-coverage armed.
+- **Live:** page 8 (sandybrown) cloned flag-free by the ONLY engine; parity content 90% / CSS 67-69-76 (honest instrument).
+- **Uncommitted:** the check_slug_literals inert-allowlist annotation + handoff docs (this commit).
+
+## Known Issues / Blockers
+- **Tracked residuals (A2-baselined + parked, P-GATE-A-CARD-RESIDUALS):** product-card CTA text/link (needs the FR-31-2 identity-anchored lift), packSizes pills (needs array_item_schema), 3 image ALT texts lost (string image attrs drop alt — block-side imageAlt needed; a11y-relevant).
+- The conformance golden mechanism was REWIRED to a smoke check at Step 16 (frozen-specific emit-shape goldens died with the engine) — the QC session should decide the new golden baseline.
+- assembly.py step-7 full-bleed TypeError when supports.align is boolean true (latent, found by metamorphic tests, unreached in production).
+
+## Next priorities
+1. **THE MASSIVE QC SESSION (Bean-mandated):** per-step verification of ALL 16 steps — (1) aligns with Spec 31, (2) follows the 7 rules + R-31-1..15, (3) matches no known cheats, (4) no current homepage drop is attributable to that step / no step silently dropped draft items.
+2. **Full-shape QC:** the pipeline is the universal, draft-agnostic, DB-rooted design Bean specified; the flow docs match reality.
+3. Close the card residuals (CTA identity lift / packSizes schema / imageAlt) per the QC findings.
+
+## Files modified
+| File path | What changed |
+|---|---|
+| plugins/sgs-blocks/scripts/converter/** | walk.py + entry.py + resolvers + services + db/ (the whole programme) |
+| plugins/sgs-blocks/scripts/orchestrator/converter_v2/ | DELETED (Step 16) |
+| plugins/sgs-blocks/scripts/{ledger,cheat-gate,parity,oracle,migrations}/** | A2 ledger, gate re-points, instrument fixes, oracles, 4 migrations |
+| plugins/sgs-blocks/src/blocks/{product-card,trust-bar}/block.json | supports.sgs.variants declared |
+| plugins/sgs-blocks/scripts/sgs-update-v2.py | product-card overrides; has_inner seeder stage removed |
+| .claude/{handoff,state,next-session-prompt,parking,decisions}.md | session docs (this handoff) |
+
+## Notes for Next Session
+- **The parity instrument was rebuilt twice this session** (chrome/title/drive-prefix + anchor-hoist) — treat pre-2026-07-05 parity numbers as non-comparable to the honest 90/67-76 baseline.
+- The QC session's ground truths: Spec 31 (read IN FULL), the 18 programme commits `c85254db..c8690345`, the A2 baseline (ledger/content-coverage-baseline.json names every accepted drop), pipeline-state runs from 2026-07-04, and the LIVE page 8.
+- Coding-subagent output required correction in 3 of 6 dispatches — fact-check every claim against ground truth (STOP-15/16/45 held: all catches were by tracing).
+
+## Next Session Prompt
+
+The full orchestration plan lives at `.claude/next-session-prompt.md` (the QC-session plan: per-step verification of all 16 steps + the full-shape universality QC, with the carried-forward STOP catalogue extended to STOP-49). Read it via the autopilot SessionStart hook as usual.
+
 ---
 
 # Session Handoff — 2026-07-04 (D273-D274 — scope FACT-CHECKED + plan APPROVED + EXECUTION Steps 1-2 done)
@@ -63,53 +114,6 @@ session_date: 2026-07-04
 4. **First Phase-2 brick built:** `db_lookup.content_attr_for_element(block_slug, bem_element)` per the TDD contract (`test_content_attr_resolver.py` 3/3 green — match-strength ranking: exact canonical_slot/attr_name > slot-alias > first-row tie-break; FR-31-2.2 content-role allowlist). INERT until Phase 2 wires it. 281 converter tests green.
 5. **Docs updated:** decisions D275, state.md top one-liner, parking FP-P premise update, next-session-prompt additive notes (Task-2 sequencing: Phase-2 walk BEFORE Layer-B typography), CLAUDE.md ×3 (plan DRAFT→APPROVED D274 drift + plugin roster row), memory converse-lesson + index compaction.
 6. **NOTE:** `block_composition.has_inner_blocks` column still physically exists + F6 reads it (retired-as-signal only; physical drop = plan Phases 2f/6) — kept in sync.
-
----
-
-# Session Handoff — 2026-07-04 (emit_shape foundation + converter-rebuild SCOPING)
-
-## ⚠️ READ FIRST — the scope produced this session is DOCUMENTATION-DERIVED and MUST be fact-checked against the RUNNING SCRIPTS before it is trusted or built from.
-Bean's closing directive: *"start next session fact-checking everything — there's a lot of assumption / overly trusting documentation."* PROOF it's needed: this session's parity-gap inventory claimed **"media-map loader NOT started, images broken except hero+trust-bar"** (sourced from Spec 31 §12.6 + code comments). **Bean says that is WRONG — the current clone LOADS media.** So the parity-gap inventory (and any claim from Spec 31 §12 / code comments / the stale flow doc) is a HYPOTHESIS. Next session's FIRST job = verify every load-bearing claim by READING the scripts + running a real clone, following the walker's actual logic + routing — NOT by trusting docs.
-
-## Completed This Session
-1. **`emit_shape` foundation BUILT + verified + committed** — Spec 31 §13.3 FR-31-2.6 (per-attr nested-vs-child fork replacing block-level `has_inner`). `block_attributes.emit_shape` column + `/sgs-update _populate_emit_shape` seeder (source-derived via `render_reads_attr`, fail-loud) + `db_lookup.emit_shape_for` + `render_emits.render_reads_attr`. Verified on product-card(9 nested)/hero(content=child,badges=nested)/accordion.title/testimonial(ratingStars number-type fix). Additive + INERT (not wired into the walk).
-2. **Spec 31 → FR-31-2.6** across §13.3/§3.B/§2/§4. `equivalent_block_for` reframed as the IDENTITY resolver (not the fork); role = the content filter. Spec 22 redirect stub re-removed.
-3. **6-persona adversarial-council + fact-check** — Bean corrected several over-claims of mine (I re-surfaced his own design as flaws). Design: kill Mechanism A/B + `has_inner`, one universal per-attr walk.
-4. **research-check (architecture)** — evidence-locked: single walker owns recursion (unconditional descent) + TOTAL registry dispatch of pure per-type handlers + EXPLICIT priority + assembly as the one final pass = Babel merged-visitor = FR-31-3.
-5. **Full SCOPING** (5 read-only agent traces): the real active flow (the flow doc is STALE), the `converter_v2` deletion surface, the parity-gap inventory (UNVERIFIED — see READ FIRST), container-vs-composite, the routing-paths map.
-6. **Deliverables:** completion phase-plan `.claude/plans/2026-07-04-new-engine-to-parity-delete-converter-v2.md` (6 phases, delete-last) + a routing decision-tree Artifact.
-
-## Current State
-- **Branch:** main (post-commit — see git log).
-- **Tests:** 373 pass + cheat-gate green (product-card golden = old-composite baseline after revert).
-- **Uncommitted:** product-card WIP leaf conversion was REVERTED (needs the walk — Phase 2 redoes it). `emit_shape` column seeded in the DB; `has_inner=1` (resynced).
-
-## Known Issues / Blockers
-- **Parity-gap inventory UNVERIFIED** (media-loading claim contradicted by Bean — see READ FIRST).
-- `converter_v2`/`convert.py` is still the production default + the new engine's fallback — delete-last (only after §2.7 parity, Phase 5).
-- `emit_shape` walk NOT wired — product-card does not yet clone via the new fork.
-
-## Next Priorities (in order)
-1. **FACT-CHECK the scope against the running scripts + a real clone** — re-verify the parity backlog (media-map, the "stub" resolvers, which sections actually fall back to frozen `v3.walk`). Correct the phase-plan's Phase-5 backlog to what the scripts ACTUALLY do.
-2. **Approve the phase-plan** once fact-checked (4 open decisions: delete-last / 6-phase shape / FR-31-2.7 classifier / multi-session scope).
-3. **Phase 1** — regenerate the stale `cloning-pipeline-flow.md` from the live scripts.
-4. **Phase 2** — the modular universal walk (dissect `extraction.py`; single walker + registry + pure handlers; wire the emit_shape fork; delete Mechanism A/B). Lands product-card.
-
-## Files Modified
-| File path | What changed |
-|---|---|
-| `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` | FR-31-2.6 across §13.3/§3.B/§2/§4 |
-| `.claude/specs/22-...md` | Deleted (redirect stub re-removed) |
-| `plugins/sgs-blocks/scripts/sgs-update-v2.py` | `_populate_emit_shape` seeder (Stage-1 sub-step D) |
-| `plugins/sgs-blocks/scripts/converter/services/render_emits.py` | `render_reads_attr` |
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | `emit_shape_for` accessor |
-| `.claude/plans/2026-07-04-new-engine-to-parity-delete-converter-v2.md` | NEW — the completion phase-plan |
-
-## Notes for Next Session
-- `equivalent_block_for` is the IDENTITY resolver (attr→canonical_slot→standalone_block), NOT the fork — `emit_shape` is the fork; they're complementary (Bean corrected my earlier framing).
-- `card-grid` is a TYPED composite; the ONLY true arbitrary-child container is `sgs/container` (fix in the FR-31-2.7 classifier).
-- ONE live engine path behind `SGS_NEW_ENGINE=1`: CSS branch IS wired through `REGISTRY` (D250); content is NOT (goes through `extract_content`). "Two registries" = one live + one aspirational; the "not swapped live" docstring is stale.
-- Coding subagents cascade-fail here (STOP-39) — read-only analysis/research/Explore agents work; build INLINE.
 
 ---
 
