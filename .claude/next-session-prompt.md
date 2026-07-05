@@ -1,18 +1,18 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: cloning-pipeline / D2-EMPTYING BUILD SEQUENCE (Bean-agreed at the D280 close, 2026-07-05)
-generated: 2026-07-05
-primary_goal: "Empty the D2 page-scoped CSS block (STOP-52) via the agreed build sequence: (1) preset-as-seed button model, (2) the RE-SCOPED CSS-property column (path A, council-passed), (3) the 3-wave capability-roster rollout, (4) multi-button reconciliation. Build agreed items; discuss the column's remaining must-fixes before dispatch. Every fix LANDED on page 8 before commit."
+thread: cloning-pipeline / 9-DEFECT PAGE-8 VISUAL QC BATCH (Bean-opened at the D281 close, 2026-07-06)
+generated: 2026-07-06
+primary_goal: "Run the diagnosis-first flow on Bean's 9-defect page-8 visual QC batch (parking P-PAGE8-QC-BATCH-9): parallel read-only investigators root-cause all 9 against the live DOM + draft + extract artefacts, GROUP by confirmed cause, AGREE with Bean (Problem/Effect/Solution), then fix as a batch. Do NOT fix piecemeal. Every fix LANDED on page 8 (computed-by-content at 375/768/1440 + Bean's eye) before commit. Also available to unblock: P-DRAFT-CSSVAR-COLOUR-RESOLUTION (the converter draft-var resolution that re-enables the button-colour seed + fixes QC defect #6)."
 ---
 
-# NEXT SESSION — the D2-emptying build sequence (Bean-agreed)
+# NEXT SESSION — the 9-defect page-8 visual QC batch (diagnosis-first)
 
-Invoke /autopilot first. The D280 session cleared 5 of the 6 residuals (5 fixes LANDED; parity 77-78-80 → 79-80-81 honest fresh-clone baseline) and design-gated point 5 (Bean's CSS-routing rework) through a 5-persona adversarial-council that RESHAPED it. This session BUILDS the agreed sequence.
+Invoke /autopilot first. The D281 session shipped the declarative css_property column MECHANISM (parity-neutral, `256ec916`) + Track-B multi-button/parity fixes (`8aa844d8`/`aa4e4151`) + a colour-value bug fix & reseed guard (`45ba7fa2`), and REVERTED the button-colour seed (its lifted `var(--border)` doesn't resolve on deploy — a converter draft-var-resolution prerequisite, parked). Bean then ran a visual QC pass and reported **9 defects on the live page 8**. This session runs the DIAGNOSIS-FIRST flow on them.
 
-**Agent identity.** You are the SGS pipeline builder-diagnostician: you build agreed, council-passed fix-shapes with LANDED proof, and you keep fact-checking every claim against ground truth (STOP-15).
+**Agent identity.** You are the SGS pipeline builder-diagnostician: full defect register → parallel root-cause → group-by-cause → Problem/Effect/Solution AGREEMENT before fixing → LANDED proof; fact-check every claim (yours, a rater's, a doc's) against ground truth (STOP-15). NEVER park a QC finding without diagnosing it (memory `diagnosis-first-explain-agree-clear`).
 
-**State recap (plain English).** The cloned homepage still ships a 129-rule page-scoped CSS block ("D2") the page DEPENDS on — Bean's STOP-52 doctrine says it must never. D2 empties via ~5 workstreams: the point-5 declarative CSS-routing column (naming-mismatch slice), the H1 router-blindness patches (shorthand/hover/native-supports), the 42 genuine-gap attrs, `sgsResponsiveOverrides` (breakpoints, approved), chrome exclusion, and the end-gate. This session builds preset-as-seed + the re-scoped column + the roster rollout + multi-button. Live baselines: content 96 / CSS 79-80-81 / 822 tests / cheat-gate 33 baselined 0 NEW.
+**State recap (plain English).** The cloning MECHANISM is healthy (parity content 96 / CSS 80-81-81, 870 tests, gates green, page 8 at its faithful baseline). The front is now Bean's 9 VISIBLE defects — the full register (grouped A/B/C by likely cause) is in **`parking.md` → `P-PAGE8-QC-BATCH-9`**. Group A = layer/wrapper CSS transfer (container gap #1, hero split image padding #4, brand image sizing #5, ingredients centring #7, emoji size #8); Group B = button colour/hover (ghost hover underline #2, ghost styling #6 = the draft-var resolution); Group C = composites (product-card option-pickers + equal-height #3, testimonial-slider yellow bg #9). Live baselines: content 96 / CSS 80-81-81 / 870 tests / cheat-gate 33 baselined 0 NEW.
 
 ## ⛔ THE 7 NON-NEGOTIABLE RULES (Bean-set; gate every change)
 1. **CONVERT, don't mirror** — output = native SGS blocks driven by attributes; NOT a div-by-div copy of draft classes.
@@ -80,7 +80,19 @@ Invoke /autopilot first. The D280 session cleared 5 of the 6 residuals (5 fixes 
 
 ---
 
-## ORCHESTRATION PLAN (build the agreed sequence; discuss the column must-fixes before dispatch)
+## ORCHESTRATION PLAN — the 9-defect page-8 QC batch (diagnosis-first)
+
+**The front is `P-PAGE8-QC-BATCH-9` (parking.md) — read it for the full grouped register.** Run the diagnosis-first flow:
+1. **Fresh baseline:** re-clone page 8 (recipe in STOP-21) so you diagnose the CURRENT live DOM, not a stale one.
+2. **Parallel READ-ONLY root-cause** (STOP-39: read-only agents parallelise fine): one investigator per defect (or per group A/B/C), each tracing the defect on the LIVE DOM + the draft mockup + the run's `extract.json`/`stage-4.json`/`trace.jsonl`/`variation-d0-d2.css`. Each returns a CONFIRMED root cause (file:line) — a HYPOTHESIS until you fact-check it yourself (STOP-15/43). Expect some recorded causes to be wrong (3 were disproven live this session).
+3. **Group by CONFIRMED cause** + present Problem/Effect/Solution to Bean; AGREE before fixing (never park a QC finding — `diagnosis-first-explain-agree-clear`).
+4. **Batch-fix:** ONE solo coding subagent per fix (STOP-39), /qc-council or 2-rater pre-commit, STOP-43 emit-diff, LANDED on page 8 (computed-by-content 375/768/1440 + Bean's eye), tests + gates green, commit-per-fix path-scoped.
+
+Likely lenses (from the register — VERIFY, don't assume): #7 ingredients centring = the FR-31-5.1a band `text-align` fold + explicit `has-text-align-*` render (STOP-44); #1 gap = container wrapper `gap` emission; #4 hero split padding = composite-mirror grid-item padding; #6 ghost button = `P-DRAFT-CSSVAR-COLOUR-RESOLUTION`; #2 hover underline = H1 hover-routing (stripped `:hover` never routed to `*Hover`); #3/#9 = composite-specific (product-card configurator/equal-height; testimonial wrapper bg). The `css_property` column MECHANISM is available as the declarative home for any naming-mismatch cause you confirm.
+
+---
+
+## ⬇ SUPERSEDED — the D280 5-task build sequence (HISTORICAL; the column MECHANISM shipped `256ec916`, the button seed reverted, multi-button/parity done by Track B). Kept for the must-fix record only.
 
 ### Task 1 — Preset-as-seed button styling model (Bean point 1)
 **What:** make the button's inheritStyle preset (primary/secondary/outline) a STARTING POINT, not a lock — picking a preset seeds the block's attrs from that preset's defaults, then every value stays editable; remove the `$is_custom` render gate so the block always paints from attrs.
@@ -147,7 +159,7 @@ The remaining ~19% CSS gap is precisely enumerated in `.claude/handoff.md` Notes
 | wp-sgs-developer | block-side work (preset-as-seed, block.json declarations) |
 
 ## First action
-Complete the READING GATE + pre-flight ritual (answers in your first message), then start Task 1 (preset-as-seed — inline, no design-gate needed, it's a block-side agreed build). Smallest first action: `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` (under 1 minute, verifies the D-ceiling before any new D).
+Complete the READING GATE + pre-flight ritual (answers in your first message), then read `parking.md → P-PAGE8-QC-BATCH-9` (the 9-defect register) and re-clone page 8 for a fresh diagnosis baseline, then dispatch the parallel read-only root-cause investigators. Smallest first action: `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` (under 1 minute — D-ceiling was D281 at write time; verify before any new D).
 
 ## Methodology guardrails (do not skip)
 - Tests from the CANONICAL cwd `plugins/sgs-blocks/scripts`: `python -m pytest orchestrator/test_css_router.py converter/tests cheat-gate/tests tests/test_converter_conformance.py ledger/tests -q --import-mode=importlib` (822 baseline: 806 + 16 this session) + gates `cheat-gate/run.py --check` + `converter/gates/{no_slug_literal,import_ban,check_raw_sqlite}.py` all exit 0.

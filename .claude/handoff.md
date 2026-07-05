@@ -2,7 +2,38 @@
 doc_type: handoff
 project: small-giants-wp
 thread: single thread (cloning pipeline)
-session_date: 2026-07-05
+session_date: 2026-07-06
+---
+
+# Session Handoff — 2026-07-06 (D281 — css_property column MECHANISM shipped, button-colour SEED reverted, Track-B 2 fixes; Bean opened a 9-defect page-8 QC batch)
+
+## Completed This Session
+1. **Declarative css_property/css_layer column-first resolver MECHANISM SHIPPED + PARITY-NEUTRAL** (`256ec916`, Spec 31 FR-31-5.2/5.3). Council-reshaped path A: `db_lookup.declared_attrs_for_css_property` + column-first pre-checks in all 3 consumers (loud-fail/first-wins contracts preserved) + `resolver_bridge` mirror shadow. 5 council must-fixes answered against the REAL resolver code at a Rule-7 design-gate before build. 822 tests byte-identical (no attr seeded → suffix fallback unchanged).
+2. **Reseed-survival guard** `check_css_property_reseed.py` (`45ba7fa2`, db-consistency Check #8, wired) + **`sgs_colour_value` var() passthrough bug fix** (`45ba7fa2` — the colour helper mangled `var(--border)` into a bogus token; sibling shadow helper already had the fix).
+3. **Track B (parallel solo subagent, both LANDED + main-session-verified STOP-16):** multi-button H6 (`8aa844d8`) — real cause = shared wrapper `kind='layout'` inline flex-direction collision (theory disproven live), fixed block-side (`kind='content'` + 767/1023 bands); parity instrument (`aa4e4151`) — real cause = duplicate-text first-write-wins (theory disproven live), fixed with occurrence-ordinal keys.
+4. **Button-colour SEED trialled → REVERTED (STOP-19).** border-color lifts to colourBorder (D2 shrinks) but the lifted VALUE `var(--border)` doesn't resolve on deploy (theme uses `--border-subtle`) → dark ghost border. Faithful fix = a converter feature (resolve draft var() against the draft :root map), parked `P-DRAFT-CSSVAR-COLOUR-RESOLUTION`. Page 8 restored to its faithful baseline.
+5. **Bean opened a 9-defect visual QC batch on page 8** → parked `P-PAGE8-QC-BATCH-9` (grouped A/B/C by cause) for a diagnosis-first next session.
+
+## Current State
+- **Branch:** main at `45ba7fa2` (pushed). Commits this session: `256ec916` (mechanism) · `aa4e4151` (parity) · `8aa844d8` (multi-button) · `45ba7fa2` (colour-fix + guard).
+- **Tests:** 870 canonical pass, 1 skipped (up from 822 baseline: + new db-consistency tests). Gates: cheat-gate 33 baselined 0 NEW · no-slug-literal · import-ban · check-raw-sqlite · F6 (now 8 checks) all green.
+- **Live:** page 8 re-cloned + restored to the faithful pre-seed baseline — **parity content 96 / CSS 80-81-81** (375/768/1440). DB has 0 non-NULL css_property rows (seed reverted).
+- **Uncommitted:** pre-existing only (reports/phase4-*, mockup captures, HTML_Insert.html, untracked sgs-framework.db, lucide-icons.php) + this doc set.
+
+## Known Issues / Blockers
+- **The 9-defect QC batch** (`P-PAGE8-QC-BATCH-9`) is THE next front — run diagnosis-first (parallel read-only root-cause → group → agree → batch-fix).
+- **Button-colour seed blocked on** `P-DRAFT-CSSVAR-COLOUR-RESOLUTION` (converter draft-var resolution).
+- multi-button 768 button-wrap residual (`P-MULTIBUTTON-768-WRAP`).
+
+## Next Priorities (in order)
+1. The 9-defect page-8 QC batch (diagnosis-first) — `P-PAGE8-QC-BATCH-9`.
+2. Draft var() colour resolution (unblocks the button-colour seed) — `P-DRAFT-CSSVAR-COLOUR-RESOLUTION`.
+3. The remaining D2-emptying workstreams (shorthand expansion, hover routing, sgsResponsiveOverrides, the end-gate).
+
+## Notes for Next Session
+- The css_property column MECHANISM is the durable declarative home — it works; corrections just need values that RESOLVE on deploy (the draft-var resolution prerequisite). Re-add the button seed overrides in `sgs-update-v2.py` (see the deferral note there) ONLY after that lands.
+- Every recorded HYPOTHESIS this session was fact-checked; 3 were DISPROVEN by live evidence (multi-button vocab-gap, parity draft-tier, and the D280 button-preset-only-strand assumption). Keep proving premises on the real node/DOM (STOP-43).
+
 ---
 
 # Session Handoff — 2026-07-05d (D280 — 6-residual fact-first: 5 fixes LANDED, parity 77-78-80 → 80-81-82, + point-5 CSS-column council-reshaped)
