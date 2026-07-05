@@ -1785,3 +1785,10 @@ Hard iteration-cap and rationalisation-table integration confirmed present in th
 > **P-QC-MINOR-HYGIENE** — bundled small QC findings: (a) `block_composition` orphan row `sgs/announcement-bar` (block retired D209, row never pruned); (b) `array_item_schema.role` 36/51 NULL — verify whether L1-name-match suffices for those blocks or it's a seeding gap; (c) `_absorb_transparent_wrappers`' in-code `_ABSORB_*` frozensets (legacy conservatism, ported byte-faithfully at Step 14; refusal path is covered downstream by the §2.4 fold — simplify or DB-source when next touched); (d) `_KIND_PRIORITY` in-code ranking (`recognise_helpers.py:18`, fires only on multi-root-class ties); (e) 2 commit-message accuracy defects in the programme record (Step 10 "cheat-gate 73→71" never matches the baseline history — the re-key landed at Step 9; Step 16 "33 dead keys" is actually 31); (f) `assign-canonical.py:713` variable still named `_CONVERTER_V2_DIR` (disclosed naming debt); (g) the orchestrator `--converter-v2` CLI flag name (naming debt, gates the single engine). **Status: OPEN** · **Bucket:** Tooling / docs · **Trigger:** opportunistic.
 
 
+
+
+---
+
+# ARCHIVED 2026-07-05 — P-STYLESHEET-DEFAULTS RESOLVED (base font 16px landed; zero 16/18 mismatches in the D278 parity run)
+
+> **P-STYLESHEET-DEFAULTS** (TOP next fix, Bean 2026-07-03) — the Mama's Munches clone's theme base font-size is 18px but the draft's is 16px (the draft `body` sets only `line-height:1.6`; text falls to the 16px default). So the brand quote + every no-explicit-size paragraph renders 2px large + inherited line-heights are tight. Fix = the per-client theme DEFAULTS (`sites/mamas-munches/theme-snapshot.json` base typography → `push-theme-snapshot.py`), NOT the converter. One theme-layer change fixes the brand-quote 16→18 + all no-explicit-size text. Verify with computed-parity matched by content (CLAUDE.md rule 4a). **Status: OPEN** · **Bucket:** Content / theming · **Trigger:** next session Task 1.

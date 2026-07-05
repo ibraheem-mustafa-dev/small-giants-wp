@@ -34,7 +34,7 @@ Bean's mandated QC ran in full: all 16 programme steps PASS spec/rules/cheats/dr
 
 ## Next priorities
 1. **Bean-directed diagnosis-first flow:** fresh /sgs-clone run → enumerate EVERY drop/mismatch into one register → parallel root-cause investigation (/dispatching-parallel-agents + /systematic-debugging + /sgs-wp-engine) → GROUP by cause → present to Bean for agreement BEFORE fixing.
-2. Agreed cause-groups then clear via the standard discipline; known priors: card ctaText/ctaUrl (single-winner resolver), packSizes (items schema), imageAlt (block attr), P-STYLESHEET-DEFAULTS (18px vs 16px base — likely explains many typography mismatches).
+2. Agreed cause-groups then clear via the standard discipline; known priors: card ctaText/ctaUrl (single-winner resolver), packSizes (items schema), imageAlt (block attr). The base-font issue is RESOLVED (16px landed; zero 16/18 mismatches in the D278 parity run).
 
 ## Files modified
 | File path | What changed |
