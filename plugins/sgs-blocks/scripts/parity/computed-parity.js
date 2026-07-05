@@ -60,6 +60,19 @@
  *       ordinary content elements still surface.
  *   (f) auto-vs-0px noise: ('auto','0px') on min-height/min-width are computed-representation
  *       twins when no constraint applies — now treated as matching, not a mismatch.
+ *   (g) DUPLICATE-TEXT occurrence disambiguation (P-PARITY-DRAFT-TIER-SAMPLING, proven
+ *       cause replacing a disproven '@media draft-tier sampling' theory): when the SAME
+ *       normalised text appears on TWO unrelated elements (e.g. a section-heading label
+ *       and a trust-bar badge both reading "Handmade in Birmingham"), first-write-wins used
+ *       to silently DROP the 2nd occurrence — the real trust-bar element was never compared,
+ *       and an unrelated look-alike component's CSS was reported instead under a misleading
+ *       key. Proven live 2026-07-05: a non-duplicated trust-bar text already resolved its
+ *       @media(min-width:1024px) tier correctly (13px->13px->14px at 375/768/1440) via real
+ *       browser rendering — draft-side @media sampling was never broken. Fix: the 2nd+
+ *       occurrence of a duplicate dkey (counted in document order, independently on both
+ *       draft and clone) now gets its own 'key#N' slot instead of being discarded, so
+ *       occurrence N on the draft pairs with occurrence N on the clone. Still matched by
+ *       CONTENT only (rule 4a) — no class/wrapper keying reintroduced.
  *
  * Usage:
  *   node computed-parity.js --draft <url> --clone <url> \
@@ -210,6 +223,25 @@ const CAPTURE_SRC = `() => {
   document.body.removeChild(hold);
 
   const texts = [], images = [], links = [], textEls = {};
+  // (g) DUPLICATE-TEXT occurrence disambiguation (2026-07-05, STOP-49 — proven root
+  // cause, replaces a disproven '@media draft-tier' theory): when two UNRELATED
+  // elements share the exact same normalised direct text (e.g. a section-heading
+  // label "Handmade in Birmingham" AND the trust-bar badge with the same words),
+  // first-write-wins silently DROPS the second occurrence — so the real trust-bar
+  // element is never compared at all, and a look-alike component's unrelated CSS is
+  // reported instead under a misleading key. Proven live (2026-07-05): draft AND
+  // clone both carry that literal duplicate; the non-duplicated trust-bar text
+  // ("Registered Food Business") already resolves its @media(min-width:1024px)
+  // tier correctly via real browser rendering (13px->13px->14px across 375/768/
+  // 1440) — the @media-sampling theory was FALSE, this collision was the real bug.
+  // Fix: count occurrences of each dkey in DOCUMENT ORDER; the 1st occurrence keeps
+  // the existing bare key (zero behaviour change for the ~all-unique-text case);
+  // the 2nd+ occurrence gets its own 'key#N' slot instead of being discarded, so it
+  // becomes a real, comparable element. The SAME ordinal counting runs
+  // independently on both draft and clone captures, so occurrence N on one side
+  // pairs with occurrence N on the other (both walk the DOM top-to-bottom) — still
+  // matched by CONTENT, never by class/wrapper (rule 4a).
+  const dkeyOccurrence = {};
   // (c-ii) collect with the owning DOM element attached, so a later collision with an
   // ANCESTOR's key can be resolved by "which one is deeper" (el.contains check) rather
   // than first-write-wins; the DOM-element field is stripped before this object is
@@ -240,7 +272,9 @@ const CAPTURE_SRC = `() => {
              && anchorEl.parentElement.tagName !== 'BODY') {
         anchorEl = anchorEl.parentElement;
       }
-      if (!textEls[dkey]) textEls[dkey] = { tag: anchorEl.tagName.toLowerCase(), css: readAll(anchorEl) }; }
+      const occ = (dkeyOccurrence[dkey] = (dkeyOccurrence[dkey] || 0) + 1);
+      const slot = occ === 1 ? dkey : (dkey + '#' + occ);  // (g) 2nd+ occurrence gets its own slot
+      if (!textEls[slot]) textEls[slot] = { tag: anchorEl.tagName.toLowerCase(), css: readAll(anchorEl) }; }
     if (!isHtmlOrBody && (el.childElementCount > 0 || el.tagName === 'IMG')) {
       const anchor = el.tagName === 'IMG' ? ('img:' + imgIdentity(el)) : norm(el.innerText);
       if (anchor.length >= 5) {
