@@ -189,6 +189,8 @@ def build_block_markup(
     ):
         _presets = db_lookup.inherit_style_presets()
         _node_classes = section_root.get("class", []) if hasattr(section_root, "get") else []
+        _own_block_name = (rec.slug or "").split("/", 1)[-1]
+        _matched = False
         for _cls in (_node_classes or []):
             if not isinstance(_cls, str):
                 continue
@@ -198,6 +200,7 @@ def build_block_markup(
             _mod = _bem.modifier.lower()
             if _mod in _presets:
                 attrs["inheritStyle"] = _mod
+                _matched = True
                 break
             # A modifier that is not itself a preset value resolves through the
             # slots alias→default_attrs channel (db_lookup.inherit_style_for_modifier,
@@ -207,7 +210,28 @@ def build_block_markup(
             _alias_style = db_lookup.inherit_style_for_modifier(_mod, rec.slug)
             if _alias_style:
                 attrs["inheritStyle"] = _alias_style
+                _matched = True
                 break
+        # UX-Q2 (Part 7, D279): no modifier resolved a preset/alias. When the
+        # draft element ALSO carries no BARE root class of its OWN family
+        # (e.g. a plain contextual <a> with zero sgs-button-* signal at all —
+        # the announcement-strip "Find out more" link, atomic-tag-swapped to
+        # sgs/button with no BEM class of its own), never let it silently
+        # fall through to the block's default preset look (block.json
+        # default 'primary'). Emit 'custom' so the block's OWN lifted CSS
+        # paints instead of a forced primary-button appearance. Signal is
+        # STRUCTURAL/DB-driven only (presence/absence of the recognised
+        # button-root/modifier class on the draft element) — never the
+        # link's text content, never the parent block's slug.
+        if not _matched:
+            _has_own_family_class = any(
+                isinstance(_c, str)
+                and (_b := db_lookup.parse_sgs_bem(_c)) is not None
+                and _b.block == _own_block_name
+                for _c in (_node_classes or [])
+            )
+            if not _has_own_family_class:
+                attrs["inheritStyle"] = "custom"
 
     # step 6: R6 background-strip (port convert.py:5017-5028, W3 MF2). The CSS pass
     # (_build_css_attrs -> lift_root_supports_to_style) lifts background-color into

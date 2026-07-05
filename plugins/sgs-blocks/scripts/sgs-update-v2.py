@@ -990,6 +990,20 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     # trialTag: selector hygiene — the real element is __tag--trial
     #   (builtin-render.php:106), not a derived guess.
     ("sgs/product-card", "trialTag"): {"derived_selector": ".sgs-product-card__tag--trial"},
+    # ctaUrl: mis-seeded role='content' (generic text role) instead of
+    #   'link-href' — builtin-render.php emits the CTA as
+    #   <a href="$cta_url" class="sgs-product-card__button">, i.e. this attr
+    #   is a HREF, not a text node. role='content' passed the
+    #   equivalent_block_for content-bearing gate (both are content-bearing
+    #   roles), so identity resolution to sgs/button already worked, but the
+    #   VALUE extraction dispatch (field_extractors.extract_field_value) has
+    #   no 'content' handler for hrefs — 'link-href' routes it through the
+    #   shared url-href/link-href extractor (walk.py leg-2 foreign-identity
+    #   arm, D279, 2026-07-05) so the featured-product card's CTA link
+    #   correctly lifts BOTH ctaText (role='text-content', unchanged) and
+    #   ctaUrl (now role='link-href') from the SAME <a class="sgs-button
+    #   sgs-button--primary" href="/product/zookies/">.
+    ("sgs/product-card", "ctaUrl"): {"role": "link-href"},
     # sgs/team-member.name: assign-canonical routes this to canonical_slot='heading'
     # → standalone_block='sgs/heading' → equivalent_block_for() returns 'sgs/heading'.
     # has_inner_blocks derives to 0 naturally (save.js returns null, render.php never

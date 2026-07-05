@@ -234,6 +234,50 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
                     return bem.element
         return None
 
+    def _typed_value_for_role(el, role, attr_type, media_map):
+        """Role-driven, type-guarded extraction shared by BOTH content-
+        routing arms below (family-element leg 2 + the foreign-identity
+        arm). Returns (value, alt_value) — alt_value carries the CG-8
+        image-alt companion text only, else None.
+
+        The row's REAL role is passed through to the shared
+        ``field_extractors.extract_field_value`` (§3.B.0 single-source role
+        library) — never a hardcoded literal (the D279 QC fix: this arm used
+        to always call ``extract_field_value(el, "text-content", ...)`` even
+        when the DB row's role was ``'content'``; field_extractors now
+        treats 'content' as a first-class alias of 'text-content', so the
+        real role round-trips correctly).
+
+        The STRING-attr type guard (Rule 4 / STOP-27) is preserved verbatim:
+        a string attr accepts only text/content-shaped roles. The 'identity'
+        branch is a DELIBERATE exception, NOT a hardcode bug: a string
+        identity attr (e.g. productName) is the block's identifying TEXT,
+        whereas field_extractors' role=='identity' branch means ICON-SLUG
+        resolution (an unrelated, overloaded semantic used by icon-source
+        leaves) — passing 'identity' straight through here would silently
+        break every string identity attr.
+        """
+        media_map = media_map or {}
+        if role in ("text-content", "content") and attr_type == "string":
+            return extract_field_value(el, role, media_map), None
+        if role == "identity" and attr_type == "string":
+            return extract_field_value(el, "text-content", media_map), None
+        if role in ("url-href", "link-href"):
+            return extract_field_value(el, role, media_map), None
+        if role in ("image-object", "rating"):
+            value = extract_field_value(el, role, media_map)
+            alt_value = None
+            if role == "image-object" and attr_type == "string" and isinstance(value, dict):
+                # CG-8: capture the alt BEFORE downcasting to the bare URL —
+                # a string image attr wants the URL, but the dict's alt text
+                # must not be silently discarded (a11y). Lifted onto the
+                # block's declared image-alt companion attr by the caller,
+                # DB-driven (R-31-1).
+                alt_value = value.get("alt") or None
+                value = value.get("url") or None  # string image attr wants the URL
+            return value, alt_value
+        return None, None
+
     # Tokens OWNED by the block's array item schema — the array arm lifts
     # those units (trust-bar badge labels, icon-list items…); leg 2 must not
     # double-lift the first item's field into a top-level attr.
@@ -248,7 +292,86 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
     for el in node.find_all(True):
         element = _family_element(el)
         if element is None:
-            continue  # only THIS block's own elements feed its attrs
+            # ---- FOREIGN-IDENTITY arm (D279): a child that does NOT ----
+            # ---- belong to this block's own BEM family. --------------
+            # Its OWN classes may carry a BARE BLOCK-ROOT class (BemParse
+            # with element=None — a genuine "this element IS a <foreign
+            # block>" declaration, e.g. `sgs-button`/`sgs-button--primary`)
+            # that resolves — via the SAME multi-class BEM→slug path every
+            # other child-routing call site uses (db_lookup.
+            # resolve_slug_from_bem, e.g. extraction.py's Mechanism-B child
+            # resolution) — to a DIFFERENT, DB-registered block. When that
+            # resolved identity is EXACTLY what one or more of THIS block's
+            # own content attrs declare (db_lookup.equivalent_block_for),
+            # the element is the built-in content those attrs want, not a
+            # dropped foreign node. Example: a plain <a class="sgs-button
+            # sgs-button--primary"> inside sgs/product-card resolves to
+            # sgs/button, which IS product-card's ctaText/ctaUrl identity
+            # (FR-31-2.6).
+            #
+            # GATED to bare-root candidates ONLY (never resolve_slug_from_bem's
+            # Path-2 __element slot-fallback) — an __element-suffixed class
+            # belonging to a DIFFERENT block family (e.g. a draft author
+            # reusing the PARENT's `sgs-accordion__heading` class inside an
+            # `sgs/accordion-item`) is NOT a foreign-identity declaration; it
+            # is content the CHILD leg's own slot-fallback child-routing
+            # already owns. Regression caught live (D279 QC): without this
+            # gate, `sgs-accordion__heading` (element='heading', not a bare
+            # root) resolved via Path 2 to 'sgs/heading' and hijacked the
+            # accordion-item's title into a scalar lift, silently dropping
+            # the child heading BLOCK the golden conformance fixture expects.
+            own_classes = [c for c in (el.get("class", []) or []) if isinstance(c, str)]
+            has_bare_root_candidate = any(
+                (_bem := db_lookup.parse_sgs_bem(_cls)) is not None
+                and _bem.element is None
+                and _bem.block is not None
+                for _cls in own_classes
+            )
+            if not has_bare_root_candidate:
+                continue  # no bare-root class — the CHILD leg's own routing owns this
+            identity_slug = db_lookup.resolve_slug_from_bem(own_classes)
+            if identity_slug is None:
+                continue  # no foreign registration — true no-op (Case 7)
+            # AMENDMENT 3 — array-ownership guard: an ancestor of `el`, up to
+            # (excluding) this composite's OWN root `node`, that belongs to
+            # an array-owned unit (a repeater item) owns this element. Leg 2
+            # must never reach inside a repeater to steal one of its fields
+            # into a top-level scalar attr (e.g. a button-classed link
+            # nested inside a card-grid's repeated item must not leak into
+            # the PARENT composite's ctaText/ctaUrl).
+            owned_by_array = False
+            for anc in el.parents:
+                if anc is None or anc is node:
+                    break
+                anc_element = _family_element(anc)
+                if anc_element is not None and anc_element in array_owned_tokens:
+                    owned_by_array = True
+                    break
+            if owned_by_array:
+                continue
+            for attr_name, attr_emit_shape, attr_role, attr_type in (
+                db_lookup.content_attrs_for_identity(rec.slug, identity_slug)
+            ):
+                # AMENDMENT 4 — first-wins per attr (a 2nd matching foreign
+                # element for this parent instance must never overwrite an
+                # attr leg 2 already filled).
+                if attr_emit_shape != "nested" or attr_name in lifted_attrs:
+                    continue  # 'child' units route below via the CHILD leg
+                value, alt_value = _typed_value_for_role(el, attr_role, attr_type, media_map)
+                if value is None or value == "":
+                    continue  # strict no-op (B1 contract) — A2 ledger owns completeness
+                results.append(ScalarLift(attr=attr_name, value=value))
+                lifted_attrs.add(attr_name)
+                # AMENDMENT 4 — consumed_ids: so run_mechanism_b's
+                # exclude_ids correctly protects composites with real
+                # children from double-emitting this element as a child.
+                consumed_ids.add(id(el))
+                if alt_value:
+                    alt_attr = db_lookup.image_alt_companion_for(rec.slug, attr_name)
+                    if alt_attr and alt_attr not in lifted_attrs:
+                        results.append(ScalarLift(attr=alt_attr, value=alt_value))
+                        lifted_attrs.add(alt_attr)
+            continue
         if element in array_owned_tokens:
             continue  # the array arm owns this unit (§3.B4)
         # LEAF-MOST guard: an element with same-family element DESCENDANTS is
@@ -277,29 +400,7 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
             continue
         if emit_shape != "nested" or attr_name in lifted_attrs:
             continue  # 'child' units route below; first value per attr wins
-        alt_value: str | None = None
-        if role in ("text-content", "content") and attr_type == "string":
-            # attr_type guard: a boolean/date attr mis-seeded with a content
-            # role (business-info linkPhone) must never receive element text
-            # (the run_mechanism_leaf role<->type guard, applied here too).
-            value = extract_field_value(el, "text-content", media_map or {})
-        elif role == "identity" and attr_type == "string":
-            # A string identity attr (productName) is the block's identifying
-            # TEXT — lifted as rich text. (An icon-source discriminator never
-            # reaches here: an icon leaf has no family-element descendants to
-            # walk; the leaf arm owns it.)
-            value = extract_field_value(el, "text-content", media_map or {})
-        elif role in ("image-object", "rating"):
-            value = extract_field_value(el, role, media_map or {})
-            if role == "image-object" and attr_type == "string" and isinstance(value, dict):
-                # CG-8: capture the alt BEFORE downcasting to the bare URL — a
-                # string image attr wants the URL, but the dict's alt text must
-                # not be silently discarded (a11y). Lifted onto the block's
-                # declared image-alt companion attr below, DB-driven (R-31-1).
-                alt_value = value.get("alt") or None
-                value = value.get("url") or None  # string image attr wants the URL
-        else:
-            continue
+        value, alt_value = _typed_value_for_role(el, role, attr_type, media_map)
         if value is None or value == "":
             continue  # strict no-op (B1 contract) — A2 ledger owns completeness
         results.append(ScalarLift(attr=attr_name, value=value))

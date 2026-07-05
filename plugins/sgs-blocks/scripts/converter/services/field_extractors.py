@@ -168,8 +168,18 @@ def extract_field_value(element: Tag, role: str, media_map: dict | None = None) 
 
     # ------------------------------------------------------------------
     # text-content — rich HTML extraction preserving safe inline tags
+    #
+    # 'content' is a first-class ALIAS of 'text-content' (mirroring the
+    # link-href/url-href alias pattern above) — a `block_attributes.role`
+    # value of 'content' (e.g. a scalar text attr whose canonical_slot
+    # peeled to a generic content slot) is the SAME operation as
+    # 'text-content': rich-text extraction from the matched element. Adding
+    # it here (rather than a per-caller hardcoded "text-content" literal)
+    # lets every caller pass the ROW'S REAL role straight through (Spec 31
+    # §3.B.0 single-source role library; D279 QC fix — walk.py used to
+    # hardcode "text-content" even when the DB row's role was 'content').
     # ------------------------------------------------------------------
-    if role == "text-content":
+    if role in ("text-content", "content"):
         value = rich_text_content(element)
         return value if value else None
 

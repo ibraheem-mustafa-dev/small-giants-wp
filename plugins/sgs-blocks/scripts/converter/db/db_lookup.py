@@ -4159,6 +4159,62 @@ def content_attr_for_element(
     return best
 
 
+def content_attrs_for_identity(
+    parent_slug: str, identity_slug: str
+) -> list[tuple[str, str | None, str | None, str | None]]:
+    """Return EVERY (attr_name, emit_shape, role, attr_type) row on
+    ``parent_slug`` whose ``equivalent_block_for`` resolves to ``identity_slug``.
+
+    Spec 31 §13.3 FR-31-2.6 sibling to ``content_attr_for_element`` — the
+    FOREIGN-IDENTITY leg-2 arm (D279): a child element that does NOT belong
+    to the parent's own BEM family may still resolve (via its OWN classes,
+    ``resolve_slug_from_bem``) to a DIFFERENT, DB-registered block that is
+    EXACTLY the identity one or more of the parent's own content attrs
+    declare (e.g. ``sgs/product-card``'s ``ctaText`` AND ``ctaUrl`` both
+    resolve to ``sgs/button`` via ``canonical_slot='button'``). Unlike
+    ``content_attr_for_element`` (keyed by a BEM __element token against a
+    SINGLE best-match attr — its single-winner contract is unchanged by this
+    function), this returns EVERY attr sharing the identity, so one foreign
+    element can lift into MULTIPLE attrs in one pass (amendment 1 — the
+    multi-attr loop). Return shape matches ``content_attr_for_element`` for
+    drop-in reuse by the same caller-side role/type guard.
+
+    R-31-1: DB-only read path; delegates entirely to the existing
+    ``equivalent_block_for`` join (no duplicate slug/alias logic here).
+
+    Args:
+        parent_slug:   Fully-qualified SGS slug, e.g. 'sgs/product-card'.
+        identity_slug: The resolved foreign block slug, e.g. 'sgs/button'.
+
+    Returns:
+        A list of (attr_name, emit_shape, role, attr_type) tuples, possibly
+        empty when no attr on ``parent_slug`` shares that identity.
+    """
+    if not parent_slug or not identity_slug:
+        return []
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT attr_name, emit_shape, role, attr_type "
+            "FROM block_attributes WHERE block_slug = ?",
+            (parent_slug,),
+        ).fetchall()
+    finally:
+        conn.close()
+    out: list[tuple[str, str | None, str | None, str | None]] = []
+    for attr_name, emit_shape, role, attr_type in rows:
+        if equivalent_block_for(parent_slug, attr_name) == identity_slug:
+            out.append((attr_name, emit_shape, role, attr_type))
+    if out:
+        _trace("db_lookup_hit", lookup="content_attrs_for_identity",
+               parent_slug=parent_slug, identity_slug=identity_slug,
+               attrs=[a for a, *_ in out])
+    else:
+        _trace("db_lookup_miss", lookup="content_attrs_for_identity",
+               parent_slug=parent_slug, identity_slug=identity_slug)
+    return out
+
+
 # ----------------------------------------------------------------------------
 # Smoke test
 # ----------------------------------------------------------------------------
