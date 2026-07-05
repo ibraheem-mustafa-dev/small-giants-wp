@@ -233,7 +233,18 @@ class _ContentExtractor(HTMLParser):
         attr_dict = {k.lower(): v for k, v in attrs}
         path = self._element_path(tag_lower, attrs)
         is_skip = tag_lower in _CONTENT_SKIP_TAGS
-        is_chrome_root = tag_lower in _CONTENT_CHROME_TAGS
+        # ROOT-ONLY chrome semantics (fix, 2026-07-05): a header/footer/nav is
+        # chrome ONLY when it is the document root or a direct child of <body>
+        # — mirroring converter/entry.py:222-240's SKIP_TOP_LEVEL_TAGS check,
+        # which tests the root of each top-level SECTION, never a descendant.
+        # A block-local <footer>/<header>/<nav> nested inside a section (e.g. a
+        # testimonial attribution block, an in-page mini-nav) is CONTENT — the
+        # previous chrome_depth counter incremented on ANY nesting depth, which
+        # silently mis-bucketed that content as 'chrome-excluded' (a gate
+        # blind-spot: content the walker actually clones would never surface
+        # as UNACCOUNTED even if truly dropped).
+        parent_tag = self._tag_stack[-1]["tag"] if self._tag_stack else None
+        is_chrome_root = tag_lower in _CONTENT_CHROME_TAGS and parent_tag in (None, "body", "html")
 
         frame = {"tag": tag_lower, "path": path, "buf": [], "skip": is_skip, "chrome_root": is_chrome_root}
         self._tag_stack.append(frame)

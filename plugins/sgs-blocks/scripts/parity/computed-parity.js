@@ -22,11 +22,44 @@
  * reference element). So `draft==clone==initial` boring defaults are ignored, while a
  * differing default (e.g. base font-size 16 vs 18 on inherited text) IS caught.
  *
- * Container-dependent absolutes: grid-template-columns compares TRACK COUNT; url()/gradient
- * compare PRESENCE; rendered geometry (width/height/inline-size/block-size/transform) is
- * blocklisted (container-dependent; a documented limit — the converter's fixed-height
- * transfers show via aspect-ratio/object-fit/min-height which ARE compared). SVG internals
- * (fill/stroke) are skipped (SVG element skipped) — icon-fill is a separate block control.
+ * Container-dependent absolutes: grid-template-columns AND grid-template-rows both compare
+ * TRACK COUNT (not resolved px — px rows are container-dependent noise, same reasoning as
+ * columns); url()/gradient compare PRESENCE; rendered geometry (width/height/inline-size/
+ * block-size/transform) is blocklisted (container-dependent; a documented limit — the
+ * converter's fixed-height transfers show via aspect-ratio/object-fit/min-height which ARE
+ * compared). SVG internals (fill/stroke) are skipped (SVG element skipped) — icon-fill is a
+ * separate block control.
+ *
+ * Known-limitation fixes (2026-07-05, STOP-49 — the instrument is QC-able code; these make
+ * it MORE truthful, not tuned to a target number):
+ *   (a) Image identity: an <img> with an EMPTY alt used to be invisible to both the content-
+ *       presence tier and the box-CSS tier (only alt-bearing images were collected; the
+ *       boxEls anchor was 'img:'+alt, which collapses every empty-alt image onto one key).
+ *       Every <img> now gets a stable identity — alt when non-empty, else 'img#'+the src
+ *       basename — collected on BOTH sides and paired by that identity, so an empty-alt
+ *       image still surfaces real style diffs instead of vanishing.
+ *   (b) Chrome scoping: header/footer/nav ancestry used to flag ANY nesting depth as chrome.
+ *       A block-local <footer>/<nav> INSIDE a section (testimonial attribution, an in-page
+ *       pagination nav) is CONTENT, not chrome. Chrome now requires the header/footer/nav
+ *       to be page-level — no <section>/<article>/<main> ancestor between it and <body> —
+ *       OR to carry one of the already-special-cased site-chrome class tokens.
+ *   (c) Box-tier fragility: (i) innerText-derived anchors now normalise Unicode whitespace
+ *       (NBSP/zero-width/BOM) in addition to ASCII whitespace, so a glyph-only icon child
+ *       can't inject an un-trimmed leading space that breaks exact key matching; (ii) when a
+ *       descendant's 80-char anchor key collides with an already-registered ANCESTOR's key
+ *       (a wrapper div whose only child is the real card), the DEEPEST/most-specific element
+ *       now wins instead of first-write-wins keeping the shallow ancestor; (iii) <html> and
+ *       <body> are excluded from boxEls entirely (they were never a meaningful comparison
+ *       unit and only added noise).
+ *   (d) grid-template-rows now gets the SAME track-count normalisation as
+ *       grid-template-columns (resolved-px rows are container-dependent noise otherwise).
+ *   (e) WP block-model margin artefact: the alignfull root's counter-margins
+ *       (margin-left/right = -1*root padding, purely a WordPress wrapper mechanism) used to
+ *       false-flag vs a static draft with no such mechanism. margin-left/margin-right are now
+ *       blocklisted ONLY on elements carrying the `alignfull` class — real margin diffs on
+ *       ordinary content elements still surface.
+ *   (f) auto-vs-0px noise: ('auto','0px') on min-height/min-width are computed-representation
+ *       twins when no constraint applies — now treated as matching, not a mismatch.
  *
  * Usage:
  *   node computed-parity.js --draft <url> --clone <url> \
@@ -90,6 +123,22 @@ const CAPTURE_SRC = `() => {
   // attribute substring: the theme puts sgs-header-* classes on <body> itself,
   // which would otherwise filter the whole page — found live 2026-07-05).
   const CHROME_TAGS = { HEADER:1, FOOTER:1, NAV:1 };
+  // ROOT-ONLY (fix, 2026-07-05, STOP-49): a header/footer/nav is chrome only
+  // when it is PAGE-LEVEL — no real content-sectioning ancestor between it
+  // and <body> — never merely "nested somewhere under a header/footer/nav
+  // tag at any depth". A block-local <footer>/<nav> INSIDE a <section> (a
+  // testimonial attribution, an in-page pagination nav) is CONTENT. Mirrors
+  // the ledger's (declare_input.py) root-scoped chrome fix + converter/
+  // entry.py's SKIP_TOP_LEVEL_TAGS semantics (root of the fragment, never a
+  // descendant).
+  const CONTENT_SECTIONING_TAGS = { SECTION:1, ARTICLE:1, MAIN:1 };
+  const isPageLevelChromeTag = (n) => {
+    if (!CHROME_TAGS[n.tagName]) return false;
+    for (let p = n.parentElement; p && p.tagName !== 'BODY' && p.tagName !== 'HTML'; p = p.parentElement) {
+      if (CONTENT_SECTIONING_TAGS[p.tagName]) return false;  // nested inside real content
+    }
+    return true;
+  };
   const chromeToken = (t) => t === 'sgs-header' || t === 'sgs-footer' ||
     t.startsWith('sgs-header__') || t.startsWith('sgs-header--') ||
     t.startsWith('sgs-footer__') || t.startsWith('sgs-footer--') ||
@@ -101,29 +150,55 @@ const CAPTURE_SRC = `() => {
     t === 'wp-block-template-part';
   const inChrome = (el) => {
     for (let n = el; n && n.tagName !== 'BODY' && n.tagName !== 'HTML'; n = n.parentElement) {
-      if (CHROME_TAGS[n.tagName]) return true;
+      if (isPageLevelChromeTag(n)) return true;
       for (const t of (n.classList || [])) if (chromeToken(t)) return true;
     }
     return false;
   };
-  const norm = (t) => (t||'').replace(/\\s+/g,' ').trim().toLowerCase().replace(/[^a-z0-9 £]/g,'').slice(0,80);
-  const normFull = (t) => (t||'').replace(/\\s+/g,' ').trim().toLowerCase().replace(/[^a-z0-9 £]/g,'');
+  // (c-i) normalise Unicode whitespace too (NBSP/zero-width-space/BOM), not just ASCII \s —
+  // a glyph-only icon child can inject one of these instead of a plain space, and \\s alone
+  // leaves it un-trimmed, breaking exact-key matching between draft and clone.
+  const WS_RE = /[\\s\\u00A0\\u200B\\uFEFF]+/g;
+  const norm = (t) => (t||'').replace(WS_RE,' ').trim().toLowerCase().replace(/[^a-z0-9 £]/g,'').slice(0,80);
+  const normFull = (t) => (t||'').replace(WS_RE,' ').trim().toLowerCase().replace(/[^a-z0-9 £]/g,'');
   const BLOCK = new Set(${JSON.stringify([...BLOCK])});
+  // (e) WP block-model margin artefact: an alignfull section root's counter-margins
+  // (margin-left/right = -1*root padding) are a WordPress wrapper mechanism the static
+  // draft never has — false-flags on nearly every full-bleed section. Blocklisted ONLY
+  // for elements carrying the alignfull class; ordinary content elements still compare
+  // margin-left/right normally.
+  const ALIGNFULL_EXTRA_BLOCK = new Set(['margin-left', 'margin-right']);
   const LOGICAL = /(inline|block-|inset|-start|-end)/;
   const SKIP_TAGS = { STYLE:1, SCRIPT:1, NOSCRIPT:1, SVG:1, PATH:1, TEMPLATE:1, LINK:1, META:1, TITLE:1, HEAD:1 };
   const normVal = (p, v) => {
     if (v == null) return v;
     if (/image|url|source/.test(p) && /url\\(/.test(v)) return /gradient/.test(v) ? 'gradient' : 'image';
-    if (p === 'grid-template-columns' && v !== 'none') return String(v.split(' ').filter(Boolean).length);
+    // (d) grid-template-rows gets the SAME track-count normalisation as columns —
+    // resolved-px rows are container-dependent noise, exactly like columns.
+    if ((p === 'grid-template-columns' || p === 'grid-template-rows') && v !== 'none') return String(v.split(' ').filter(Boolean).length);
     if (p === 'box-shadow') return v === 'none' ? 'none' : 'shadow';
     // round fractional px so 25.6px == 26px cross-browser/DPR
     return v.replace(/(-?\\d+\\.\\d+)px/g, (m, n) => Math.round(parseFloat(n)) + 'px');
   };
   const readAll = (el) => { const cs = getComputedStyle(el), r = {};
+    const isAlignfull = el.classList && el.classList.contains('alignfull');
     for (let i = 0; i < cs.length; i++) { const p = cs[i];
       if (p.charCodeAt(0) === 45 || BLOCK.has(p) || LOGICAL.test(p)) continue;  // vendor '-' + blocklist + logical dupes
+      if (isAlignfull && ALIGNFULL_EXTRA_BLOCK.has(p)) continue;  // (e) alignfull-scoped margin blocklist
       r[p] = normVal(p, cs.getPropertyValue(p)); }
     return r; };
+  // (a) stable image identity: alt when non-empty, else 'img#'+src-basename — so an
+  // empty-alt image doesn't vanish (old code only collected alt-bearing images) or
+  // collapse onto one shared 'img:' key (old boxEls anchor).
+  const imgIdentity = (el) => {
+    const a = norm(el.getAttribute('alt'));
+    if (a) return a;
+    const src = el.currentSrc || el.getAttribute('src') || el.getAttribute('data-src') || '';
+    let base = '';
+    try { base = new URL(src, location.href).pathname.split('/').filter(Boolean).pop() || ''; }
+    catch (e) { base = String(src).split('/').filter(Boolean).pop() || ''; }
+    return 'img#' + norm(base);
+  };
 
   // per-tag defaults from bare (unstyled) elements -> the "initial" for the meaningful filter
   const defaults = {};
@@ -134,10 +209,17 @@ const CAPTURE_SRC = `() => {
     const e = document.createElement(t); if (t === 'img') e.alt = ''; hold.appendChild(e); defaults[t] = readAll(e); });
   document.body.removeChild(hold);
 
-  const texts = [], images = [], links = [], textEls = {}, boxEls = {};
+  const texts = [], images = [], links = [], textEls = {};
+  // (c-ii) collect with the owning DOM element attached, so a later collision with an
+  // ANCESTOR's key can be resolved by "which one is deeper" (el.contains check) rather
+  // than first-write-wins; the DOM-element field is stripped before this object is
+  // returned (page.evaluate can't structured-clone a Node).
+  const boxElsRaw = {};
   document.querySelectorAll('*').forEach((el) => {
     if (inChrome(el) || SKIP_TAGS[el.tagName]) return;
-    if (el.tagName === 'IMG') { const a = norm(el.getAttribute('alt')); if (a) images.push(a); }
+    // (c-iii) <html>/<body> are never a meaningful comparison unit — exclude from boxEls.
+    const isHtmlOrBody = el.tagName === 'HTML' || el.tagName === 'BODY';
+    if (el.tagName === 'IMG') { images.push(imgIdentity(el)); }
     if (el.tagName === 'A') { try { let h = new URL(el.href, location.href).pathname.replace(/\\/$/,'').replace(/^\\/[A-Za-z]:\\//, '/'); if (h) links.push(h); } catch(e){} }
     let direct = ''; for (const n of el.childNodes) if (n.nodeType === 3) direct += n.textContent;
     const dkey = norm(direct);
@@ -159,11 +241,21 @@ const CAPTURE_SRC = `() => {
         anchorEl = anchorEl.parentElement;
       }
       if (!textEls[dkey]) textEls[dkey] = { tag: anchorEl.tagName.toLowerCase(), css: readAll(anchorEl) }; }
-    if (el.childElementCount > 0 || el.tagName === 'IMG') {
-      const anchor = el.tagName === 'IMG' ? ('img:' + norm(el.getAttribute('alt'))) : norm(el.innerText);
-      if (anchor.length >= 5 && !boxEls[anchor]) boxEls[anchor] = { tag: el.tagName.toLowerCase(), css: readAll(el) };
+    if (!isHtmlOrBody && (el.childElementCount > 0 || el.tagName === 'IMG')) {
+      const anchor = el.tagName === 'IMG' ? ('img:' + imgIdentity(el)) : norm(el.innerText);
+      if (anchor.length >= 5) {
+        const existing = boxElsRaw[anchor];
+        // (c-ii) keep the DEEPEST/most-specific element: only overwrite when nothing is
+        // registered yet, OR the currently-registered element is an ANCESTOR of this one
+        // (this el is more specific). Never overwrite for an unrelated same-key collision.
+        if (!existing || (existing.el && existing.el !== el && existing.el.contains(el))) {
+          boxElsRaw[anchor] = { tag: el.tagName.toLowerCase(), css: readAll(el), el };
+        }
+      }
     }
   });
+  const boxEls = {};
+  for (const k of Object.keys(boxElsRaw)) { boxEls[k] = { tag: boxElsRaw[k].tag, css: boxElsRaw[k].css }; }
   const fullText = normFull(document.body ? document.body.innerText : '').slice(0, 200000);
   return { texts: [...new Set(texts)], images: [...new Set(images)], links: [...new Set(links)], textEls, boxEls, defaults, fullText };
 }`;
@@ -183,6 +275,13 @@ function findByAnchor(key, map, exact) {
 const excluded = (key) => EXCLUDE.some((x) => key.includes(x));
 function propMatches(prop, dv, cv) {
   if (dv === cv) return true;
+  // (f) auto-vs-0px noise: computed-representation twins when no constraint applies —
+  // min-height/min-width report 'auto' in one browser/context and '0px' in another for
+  // the same "no minimum" state. min-width is already blocklisted at capture time; this
+  // also covers min-height (which IS compared, per the aspect-ratio/object-fit/min-height
+  // fixed-height-transfer signal documented at the top of this file).
+  if ((prop === 'min-height' || prop === 'min-width') &&
+      ((dv === 'auto' && cv === '0px') || (dv === '0px' && cv === 'auto'))) return true;
   if (prop === 'font-weight') return Math.abs((parseInt(dv) || 400) - (parseInt(cv) || 400)) < 100;
   if (/(text-align|justify-content|align-items|justify-items|align-self)/.test(prop)) {
     const canon = (x) => ({ left: 'start', right: 'end', 'flex-start': 'start', 'flex-end': 'end', normal: 'start' }[x] || x);

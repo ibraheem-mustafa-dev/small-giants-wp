@@ -1001,6 +1001,91 @@ class TestSF1BlocklessAtRule:
 
 
 # ---------------------------------------------------------------------------
+# Content-stream chrome scoping — root-only, matching converter/entry.py's
+# SKIP_TOP_LEVEL_TAGS semantics (fix, 2026-07-05). A nested <header>/<footer>/
+# <nav> INSIDE a section (e.g. a testimonial attribution block, an in-page
+# mini-nav) is CONTENT, never chrome — only a header/footer/nav that IS the
+# document root or a direct child of <body> is chrome.
+# ---------------------------------------------------------------------------
+
+class TestContentChromeRootOnly:
+    def test_top_level_footer_is_still_chrome_excluded(self):
+        """A footer that's a direct child of <body> (page-level chrome) must
+        still be excluded_candidate=True — no regression on the real case."""
+        from ledger.declare_input import declare_content
+
+        html = "<html><body><footer><p>copyright footer text</p></footer></body></html>"
+        rows = declare_content(html, "test-top-level-footer")
+        text_rows = [r for r in rows if r.value == "copyright footer text"]
+        assert text_rows, "Expected a content-text row for the footer's paragraph"
+        assert text_rows[0].excluded_candidate is True, (
+            "Top-level (body-child) footer text must remain chrome-excluded"
+        )
+
+    def test_nested_footer_inside_section_is_declared_not_excluded(self):
+        """A block-local <footer> nested inside a <section> (e.g. testimonial
+        attribution) is CONTENT — it must be DECLARED (excluded_candidate=False),
+        not silently bucketed as chrome-excluded. This is the bug: the old
+        _chrome_depth counter incremented on ANY header/footer/nav at ANY
+        nesting depth, mis-bucketing this as a gate blind-spot."""
+        from ledger.declare_input import declare_content
+
+        html = (
+            "<html><body>"
+            "<section class=\"sgs-testimonial\">"
+            "<p class=\"sgs-testimonial__quote\">Great service.</p>"
+            "<footer class=\"sgs-testimonial__attribution\">Jane Doe, London</footer>"
+            "</section>"
+            "</body></html>"
+        )
+        rows = declare_content(html, "test-nested-footer")
+        text_rows = [r for r in rows if r.value == "Jane Doe, London"]
+        assert text_rows, "Expected a content-text row for the nested footer's text"
+        assert text_rows[0].excluded_candidate is False, (
+            "A block-local <footer> nested inside a section must be DECLARED "
+            "(content), not chrome-excluded — only page-level (body-child) "
+            "header/footer/nav is chrome (converter/entry.py root-only semantics)."
+        )
+
+    def test_nested_nav_inside_section_is_declared_not_excluded(self):
+        """Same fix, for a block-local <nav> (e.g. an in-page mini pagination nav)."""
+        from ledger.declare_input import declare_content
+
+        html = (
+            "<html><body>"
+            "<section class=\"sgs-blog-list\">"
+            "<nav class=\"sgs-blog-list__pagination\">Next page</nav>"
+            "</section>"
+            "</body></html>"
+        )
+        rows = declare_content(html, "test-nested-nav")
+        text_rows = [r for r in rows if r.value == "Next page"]
+        assert text_rows, "Expected a content-text row for the nested nav's text"
+        assert text_rows[0].excluded_candidate is False, (
+            "A block-local <nav> nested inside a section must be DECLARED, not chrome-excluded"
+        )
+
+    def test_content_inside_top_level_header_still_excluded(self):
+        """Content nested inside a genuinely top-level (body-child) <header> must
+        still be chrome-excluded — the fix scopes chrome to root-only, but
+        everything nested WITHIN a real chrome root is still chrome."""
+        from ledger.declare_input import declare_content
+
+        html = (
+            "<html><body>"
+            "<header class=\"sgs-header\"><nav><a href=\"#\">Home</a></nav></header>"
+            "</body></html>"
+        )
+        rows = declare_content(html, "test-header-nested-nav-still-chrome")
+        text_rows = [r for r in rows if r.value == "Home"]
+        assert text_rows, "Expected a content-text row for the nav link text"
+        assert text_rows[0].excluded_candidate is True, (
+            "A <nav> nested inside a genuinely top-level <header> must still be "
+            "chrome-excluded (chrome_depth propagates to descendants of a real root)"
+        )
+
+
+# ---------------------------------------------------------------------------
 # SF-2: Spoofed @import host rejected
 # ---------------------------------------------------------------------------
 
