@@ -376,6 +376,8 @@ section.sgs-hero {
 	inset: auto;
 	padding: var(--wp--preset--spacing--30) var(--wp--preset--spacing--30);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	/* KEEP: a self-contained badge chip centres its own label; not a content
+	   textAlign target — hero's contentAlign controls the surrounding content. */
 	text-align: center;
 	min-width: 80px;
 	box-shadow: var(--wp--preset--shadow--md);
@@ -509,6 +511,8 @@ section.sgs-hero {
 	.sgs-hero__cta {
 		width: 100%;
 		max-width: 100%;
+		/* KEEP: a full-width mobile CTA centres its own label — button-centring
+		   rationale, not a content textAlign target. */
 		text-align: center;
 		box-sizing: border-box;
 	}

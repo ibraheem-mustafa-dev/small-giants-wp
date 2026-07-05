@@ -149,8 +149,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		sourcePlatform,
 		schemaEnabled,
 		quoteFontSize,
+		quoteMarginBottom,
 		quoteColour,
-		quoteStyle,
+		quoteFontStyle,
 		quoteLineHeight,
 		summaryFontSize,
 		summaryColour,
@@ -215,8 +216,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	const quoteInlineStyle = {
 		color: quoteColour || undefined,
 		fontSize: quoteFontSize ? fontSizeVar( quoteFontSize ) : undefined,
-		fontStyle: quoteStyle || undefined,
+		fontStyle: quoteFontStyle || undefined,
 		lineHeight: quoteLineHeight || undefined,
+		marginBottom: quoteMarginBottom || undefined,
 	};
 	const summaryStyle = {
 		color: summaryColour || undefined,
@@ -531,13 +533,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					<SelectControl
 						label={ __( 'Quote font style', 'sgs-blocks' ) }
-						value={ quoteStyle }
+						value={ quoteFontStyle }
 						options={ [
 							{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
 							{ label: __( 'Italic', 'sgs-blocks' ), value: 'italic' },
 						] }
 						onChange={ ( val ) =>
-							setAttributes( { quoteStyle: val } )
+							setAttributes( { quoteFontStyle: val } )
 						}
 						__nextHasNoMarginBottom
 					/>
@@ -550,6 +552,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ quoteLineHeight }
 						onChange={ ( val ) =>
 							setAttributes( { quoteLineHeight: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Quote spacing below', 'sgs-blocks' ) }
+						help={ __(
+							'A spacing slug (e.g. 30) or a CSS value (e.g. 16px, 1.5rem). Leave empty for the theme default.',
+							'sgs-blocks'
+						) }
+						value={ quoteMarginBottom }
+						onChange={ ( val ) =>
+							setAttributes( { quoteMarginBottom: val } )
 						}
 						__nextHasNoMarginBottom
 					/>

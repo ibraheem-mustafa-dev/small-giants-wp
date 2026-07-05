@@ -203,7 +203,7 @@
 		"ctaStyle": {
 			"type": "string",
 			"default": "primary",
-			"description": "Primary CTA visual style — maps to btn-{ctaStyle} class (matches existing btn-primary / btn-secondary vocabulary in style.css)."
+			"description": "Primary CTA visual style — maps to the sgs-button--{ctaStyle} modifier class (sgs-button--primary / sgs-button--secondary vocabulary in style.css)."
 		},
 		"cta2Text": {
 			"type": "string",
@@ -309,6 +309,71 @@
 			"type": "string",
 			"default": "",
 			"description": "Colour for the price element. Theme token slug or raw hex. Empty = theme default."
+		},
+		"descFontSize": {
+			"type": "number"
+		},
+		"descFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"descFontSizeTablet": {
+			"type": "number"
+		},
+		"descFontSizeMobile": {
+			"type": "number"
+		},
+		"pillFontSize": {
+			"type": "number"
+		},
+		"pillFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pillFontSizeTablet": {
+			"type": "number"
+		},
+		"pillFontSizeMobile": {
+			"type": "number"
+		},
+		"priceNoteFontSize": {
+			"type": "number"
+		},
+		"priceNoteFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"priceNoteFontSizeTablet": {
+			"type": "number"
+		},
+		"priceNoteFontSizeMobile": {
+			"type": "number"
+		},
+		"priceFromLabelFontSize": {
+			"type": "number"
+		},
+		"priceFromLabelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"priceFromLabelFontSizeTablet": {
+			"type": "number"
+		},
+		"priceFromLabelFontSizeMobile": {
+			"type": "number"
+		},
+		"tagFontSize": {
+			"type": "number"
+		},
+		"tagFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"tagFontSizeTablet": {
+			"type": "number"
+		},
+		"tagFontSizeMobile": {
+			"type": "number"
 		},
 		"showPickers": {
 			"type": "boolean",

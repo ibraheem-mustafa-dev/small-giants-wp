@@ -196,11 +196,20 @@ if ( empty( $items ) ) {
 }
 
 // Build class list.
-$class_names = array(
+$sgs_grid_uid = 'sgs-cg-' . wp_unique_id();
+$class_names  = array(
 	'sgs-card-grid',
 	'sgs-card-grid--' . esc_attr( $variant ),
 	'sgs-card-grid--hover-' . esc_attr( $hover_effect ),
+	$sgs_grid_uid,
 );
+
+// Title/subtitle font-size (CG-9): block-wide typography via the shared
+// TypographyControls attr shape, scoped to this grid instance's uid so
+// multiple grids on one page can differ. Only set values are emitted.
+$sgs_grid_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_grid_uid . ' .sgs-card-grid__title' );
+$sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'subtitle', '.' . $sgs_grid_uid . ' .sgs-card-grid__subtitle' );
+$sgs_grid_typo_tag  = '' !== $sgs_grid_typo_css ? '<style>' . $sgs_grid_typo_css . '</style>' : '';
 
 if ( $hover_scale ) {
 	$class_names[] = 'sgs-has-hover-scale';
@@ -325,7 +334,7 @@ foreach ( $items as $index => $item ) :
 		<?php endif; ?>
 	</<?php echo esc_attr( $item_tag ); ?>>
 <?php endforeach;
-$inner_html = ob_get_clean();
+$inner_html = $sgs_grid_typo_tag . ob_get_clean();
 
 echo SGS_Container_Wrapper::render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() escapes internally.
 	$attributes,

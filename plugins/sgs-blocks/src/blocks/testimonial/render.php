@@ -78,8 +78,9 @@ $schema_enabled = ! empty( $attributes['schemaEnabled'] );
 // ── Per-element typography (empty → CSS token default via :not([style*=...])) ─
 $quote_font_size   = sgs_font_size_value( $attributes['quoteFontSize'] ?? '' );
 $quote_colour      = sgs_colour_value( $attributes['quoteColour'] ?? '' );
-$quote_style       = in_array( $attributes['quoteStyle'] ?? '', array( 'italic', 'normal' ), true ) ? $attributes['quoteStyle'] : '';
+$quote_style       = in_array( $attributes['quoteFontStyle'] ?? '', array( 'italic', 'normal' ), true ) ? $attributes['quoteFontStyle'] : '';
 $quote_line_height = trim( (string) ( $attributes['quoteLineHeight'] ?? '' ) );
+$quote_margin_bot  = sgs_container_gap_value( $attributes['quoteMarginBottom'] ?? '' );
 $summary_font_size = sgs_font_size_value( $attributes['summaryFontSize'] ?? '' );
 $summary_colour    = sgs_colour_value( $attributes['summaryColour'] ?? '' );
 $name_colour       = sgs_colour_value( $attributes['nameColour'] ?? '' );
@@ -275,8 +276,9 @@ if ( '' !== $summary_phrase ) {
 $quote_html = '';
 if ( '' !== $quote ) {
 	$quote_extra = array(
-		'font-style'  => $quote_style,
-		'line-height' => $quote_line_height,
+		'font-style'    => $quote_style,
+		'line-height'   => $quote_line_height,
+		'margin-bottom' => $quote_margin_bot,
 	);
 	$quote_html  = '<blockquote class="sgs-testimonial__quote"' . $sgs_testimonial_style_attr( $quote_colour, $quote_font_size, $quote_extra ) . '>' . wp_kses_post( $quote ) . '</blockquote>';
 }

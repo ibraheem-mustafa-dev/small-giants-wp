@@ -95,27 +95,16 @@
 	font-size: 32px;
 }
 
-/* Heading */
-.sgs-info-box__heading {
-	font-size: var(--wp--preset--font-size--large);
-	font-weight: 700;
-	margin: 0 0 var(--wp--preset--spacing--20) 0;
-}
-
-.sgs-info-box__heading:not([style*="color"]) {
-	color: var(--wp--preset--color--text);
-}
-
-/* Description */
-.sgs-info-box__description {
-	font-size: var(--wp--preset--font-size--medium);
-	margin: 0;
-	line-height: 1.6;
-}
-
-.sgs-info-box__description:not([style*="color"]) {
-	color: var(--wp--preset--color--text-muted);
-}
+/*
+ * CG-9 audit (2026-07-05): the .sgs-info-box__heading / __description rules
+ * that lived here were DEAD CSS — the HC2 migration (2026-06-08) moved
+ * heading/subtitle/description to child InnerBlocks (sgs/heading, sgs/text),
+ * which no longer render these BEM classes. Per CLAUDE.md's "No dead
+ * controls — parent owns LAYOUT, child owns TYPOGRAPHY" rule (HC2/D192), the
+ * fix is DELETE, not expose: the child blocks already carry their own
+ * typography controls. Removed rather than re-exposed to avoid re-adding a
+ * forbidden parent/child duplicate.
+ */
 
 /* ===== Custom Hover States (editor-configurable) ===== */
 
@@ -291,17 +280,11 @@
 	}
 }
 
-/* ===== Subtitle ===== */
-
-.sgs-info-box__subtitle {
-	font-size: var(--wp--preset--font-size--medium);
-	margin: 0 0 var(--wp--preset--spacing--20) 0;
-	line-height: 1.4;
-}
-
-.sgs-info-box__subtitle:not([style*="color"]) {
-	color: var(--wp--preset--color--text-muted);
-}
+/*
+ * ===== Subtitle =====
+ * .sgs-info-box__subtitle removed 2026-07-05 (CG-9) — dead CSS, same HC2
+ * child-owned-typography reasoning as the heading/description block above.
+ */
 
 /* ===== Emoji media type ===== */
 

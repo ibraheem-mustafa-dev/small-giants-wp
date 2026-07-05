@@ -129,6 +129,32 @@
 			"type": "string",
 			"default": "text"
 		},
+		"titleFontSize": {
+			"type": "number"
+		},
+		"titleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"titleFontSizeTablet": {
+			"type": "number"
+		},
+		"titleFontSizeMobile": {
+			"type": "number"
+		},
+		"subtitleFontSize": {
+			"type": "number"
+		},
+		"subtitleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"subtitleFontSizeTablet": {
+			"type": "number"
+		},
+		"subtitleFontSizeMobile": {
+			"type": "number"
+		},
 		"hoverBackgroundColour": {
 			"type": "string"
 		},

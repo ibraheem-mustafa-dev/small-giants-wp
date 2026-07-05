@@ -56,6 +56,7 @@ $icon_size          = absint( $attributes['iconSize'] ?? 32 );
 $icon_colour        = $attributes['iconColour'] ?? 'primary';
 $bg_colour          = $attributes['backgroundColour'] ?? '';
 $bg_shape           = $attributes['backgroundShape'] ?? 'none';
+$bg_padding         = $attributes['backgroundPadding'] ?? '';
 $link_url           = $attributes['linkUrl'] ?? '';
 $link_target        = $attributes['linkTarget'] ?? '_self';
 $link_rel           = $attributes['linkRel'] ?? '';
@@ -119,6 +120,12 @@ if ( $bg_colour && 'none' !== $bg_shape ) {
 	}
 }
 $styles[] = '--sgs-icon-hover-colour:' . sgs_colour_value( $hover_icon_colour );
+if ( 'none' !== $bg_shape && '' !== $bg_padding ) {
+	$sgs_bg_padding_css = sgs_container_gap_value( $bg_padding );
+	if ( '' !== $sgs_bg_padding_css ) {
+		$styles[] = '--sgs-icon-shape-padding:' . $sgs_bg_padding_css;
+	}
+}
 if ( '' !== $hover_shape_colour ) {
 	$styles[] = '--sgs-icon-hover-shape-colour:' . sgs_colour_value( $hover_shape_colour );
 }

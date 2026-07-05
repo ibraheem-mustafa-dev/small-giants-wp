@@ -18,7 +18,7 @@ import {
 	ProductTaxonomyChecklist,
 	ProductHandpickPanel,
 } from './components/product-panels';
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, TypographyControls } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, spacingVar } from '../../utils';
 
@@ -479,12 +479,28 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { titleColour: val } )
 						}
 					/>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="title"
+						showWeight={ false }
+						showStyle={ false }
+						showLineHeight={ false }
+					/>
 					<DesignTokenPicker
 						label={ __( 'Subtitle colour', 'sgs-blocks' ) }
 						value={ subtitleColour }
 						onChange={ ( val ) =>
 							setAttributes( { subtitleColour: val } )
 						}
+					/>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="subtitle"
+						showWeight={ false }
+						showStyle={ false }
+						showLineHeight={ false }
 					/>
 				</PanelBody>
 			</InspectorControls>

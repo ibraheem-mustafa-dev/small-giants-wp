@@ -96,27 +96,27 @@
 
 .sgs-icon--bg-circle {
 	border-radius: 50%;
-	padding: 12px;
+	padding: var(--sgs-icon-shape-padding, 12px);
 }
 
 .sgs-icon--bg-pill {
 	border-radius: 999px;
-	padding: 12px;
+	padding: var(--sgs-icon-shape-padding, 12px);
 }
 
 .sgs-icon--bg-rounded {
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	padding: 12px;
+	padding: var(--sgs-icon-shape-padding, 12px);
 }
 
 .sgs-icon--bg-square {
-	padding: 12px;
+	padding: var(--sgs-icon-shape-padding, 12px);
 }
 
 /* Outline ring — transparent fill, coloured border. No background-color on root. */
 .sgs-icon--bg-outline {
 	border-radius: 50%;
-	padding: 12px;
+	padding: var(--sgs-icon-shape-padding, 12px);
 	border: 2px solid var(--sgs-icon-outline-colour, currentColor);
 	background-color: transparent;
 }

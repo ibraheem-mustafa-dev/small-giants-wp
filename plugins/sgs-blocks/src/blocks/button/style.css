@@ -5,6 +5,9 @@
  */
 
 .sgs-button {
+	/* inline-flex (not the UA default `inline` for <a>/<button>) is intentional:
+	   it centres an optional icon + label on one baseline and lets min-height
+	   apply reliably. Kept deliberately — not a hardcoded-default violation. */
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;

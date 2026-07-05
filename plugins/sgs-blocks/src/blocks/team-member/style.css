@@ -1,9 +1,15 @@
 /* ===== SGS Team Member ===== */
 
 .sgs-team-member {
-	text-align: center;
 	padding: var(--wp--preset--spacing--40);
 	transition: var(--wp--custom--transition--medium, 0.3s ease);
+}
+
+/* :where() (specificity 0) so the native textAlign support's has-text-align-*
+   class (emitted by SGS_Container_Wrapper — see class-sgs-container-wrapper.php)
+   can win when the operator sets a non-default alignment. */
+:where(.sgs-team-member) {
+	text-align: center;
 }
 
 .sgs-team-member--flat { background: transparent; }

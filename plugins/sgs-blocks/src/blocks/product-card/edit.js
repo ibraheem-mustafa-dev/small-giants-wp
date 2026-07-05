@@ -786,6 +786,24 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { titleColour: v } )
 								}
 							/>
+							<TypographyControls
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								prefix="desc"
+								showWeight={ false }
+								showStyle={ false }
+								showLineHeight={ false }
+							/>
+							{ ( isTrial || isFeatured ) && (
+								<TypographyControls
+									attributes={ attributes }
+									setAttributes={ setAttributes }
+									prefix="tag"
+									showWeight={ false }
+									showStyle={ false }
+									showLineHeight={ false }
+								/>
+							) }
 							{ isTrial && (
 								<TextControl
 									label={ __( 'Trial tag text', 'sgs-blocks' ) }
@@ -864,6 +882,22 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { priceColour: v } )
 							}
 						/>
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							prefix="priceNote"
+							showWeight={ false }
+							showStyle={ false }
+							showLineHeight={ false }
+						/>
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							prefix="pill"
+							showWeight={ false }
+							showStyle={ false }
+							showLineHeight={ false }
+						/>
 					</PanelBody>
 				) }
 				{ isBound && (
@@ -877,6 +911,14 @@ export default function Edit( { attributes, setAttributes } ) {
 								'sgs-blocks'
 							) }
 						</Notice>
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							prefix="priceFromLabel"
+							showWeight={ false }
+							showStyle={ false }
+							showLineHeight={ false }
+						/>
 					</PanelBody>
 				) }
 

@@ -123,9 +123,18 @@ if ( '' !== $sgs_price_colour ) {
 }
 $classes[] = $sgs_card_uid;
 
-// Built-in title + price typography (scoped to this instance via the uid).
-$sgs_card_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title' );
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'price', '.' . $sgs_card_uid . ' .sgs-product-card__price' );
+// Built-in title + price + description + pill + price-note + price-from-label +
+// tag typography (scoped to this instance via the uid). Each rule's selector
+// list covers EVERY render branch's markup for that visual role (typed BEM
+// classes + the read-only/live-data plain classes) so ONE control governs the
+// element everywhere it can appear — no per-branch carve-out (R-31-9 / CG-9).
+$sgs_card_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3' );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'price', '.' . $sgs_card_uid . ' .sgs-product-card__price, .' . $sgs_card_uid . ' .price, .' . $sgs_card_uid . ' .price-from-amount' );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'desc', '.' . $sgs_card_uid . ' .sgs-product-card__description, .' . $sgs_card_uid . ' .product-desc' );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'pill', '.' . $sgs_card_uid . ' .sgs-product-card__pill, .' . $sgs_card_uid . ' .pill' );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceNote', '.' . $sgs_card_uid . ' .sgs-product-card__price-note, .' . $sgs_card_uid . ' .price-note' );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceFromLabel', '.' . $sgs_card_uid . ' .price-from-label' );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'tag', '.' . $sgs_card_uid . ' .sgs-product-card__tag, .' . $sgs_card_uid . ' .trial-tag' );
 $sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . $sgs_card_typo_css . '</style>' : '';
 
 // Base opts shared across all branches (no WP Interactivity attrs).
@@ -323,11 +332,11 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 			$ro_cta_label = sgs_product_card_resolve_element( $attributes, 'cta', $attributes['ctaText'] ?? '', __( 'View product', 'sgs-blocks' ) );
 			$ro_cta_href  = esc_url( sgs_product_card_resolve_element( $attributes, 'cta', $attributes['ctaUrl'] ?? '', get_permalink( $data['wc_id'] ) ) );
 			?>
-			<a class="btn btn-primary product-card__view" href="<?php echo $ro_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $ro_cta_label ); ?></a>
+			<a class="sgs-button sgs-button--primary product-card__view" href="<?php echo $ro_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $ro_cta_label ); ?></a>
 		<?php endif; ?>
 	</div>
 	<?php
-	$inner = ob_get_clean();
+	$inner = $sgs_card_typo_tag . ob_get_clean();
 
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() returns pre-escaped HTML.
 	echo SGS_Container_Wrapper::render( $attributes, $block, $inner, 'content', $ro_opts );
@@ -931,7 +940,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 						$sgs_cta_href = esc_url( sgs_product_card_resolve_element( $attributes, 'cta', $attributes['ctaUrl'] ?? '', get_permalink( $add_to_cart_id ) ) );
 						?>
 					<a
-						class="btn btn-primary product-card__add-to-cart"
+						class="sgs-button sgs-button--primary product-card__add-to-cart"
 						href="<?php echo $sgs_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"
 					>
 						<span class="product-card__cart-label"><?php echo esc_html( $sgs_cta_label ); ?></span>
@@ -946,7 +955,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					>
 						<button
 							type="submit"
-							class="btn btn-primary product-card__add-to-cart"
+							class="sgs-button sgs-button--primary product-card__add-to-cart"
 							data-wp-bind--disabled="context.pending"
 							data-wp-bind--aria-busy="context.pending"
 						>
@@ -976,7 +985,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 						}
 						?>
 					<a
-						class="btn btn-<?php echo esc_attr( $sgs_cta2_style ); ?> product-card__cta-secondary"
+						class="sgs-button sgs-button--<?php echo esc_attr( $sgs_cta2_style ); ?> product-card__cta-secondary"
 						href="<?php echo $sgs_cta2_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- both ternary arms esc_url'd above. ?>"
 					><?php echo esc_html( $sgs_cta2_text ); ?></a>
 					<?php endif; ?>
@@ -989,7 +998,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<?php endif; ?>
 			</div>
 			<?php
-			$inner = ob_get_clean();
+			$inner = $sgs_card_typo_tag . ob_get_clean();
 
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() returns pre-escaped HTML.
 			echo SGS_Container_Wrapper::render( $attributes, $block, $inner, 'content', $var_opts );
@@ -1269,7 +1278,7 @@ ob_start();
 		<?php if ( 'learn-more' === $sgs_nonvar_behaviour ) : ?>
 			<?php $sgs_nv_cta_href = esc_url( sgs_product_card_resolve_element( $attributes, 'cta', $attributes['ctaUrl'] ?? '', get_permalink( $add_to_cart_id ) ) ); ?>
 		<a
-			class="btn btn-primary product-card__add-to-cart"
+			class="sgs-button sgs-button--primary product-card__add-to-cart"
 			href="<?php echo $sgs_nv_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"
 		>
 			<span class="product-card__cart-label"><?php echo esc_html( $sgs_nv_cta_label ); ?></span>
@@ -1284,7 +1293,7 @@ ob_start();
 		>
 			<button
 				type="submit"
-				class="btn btn-primary product-card__add-to-cart"
+				class="sgs-button sgs-button--primary product-card__add-to-cart"
 				data-wp-bind--disabled="context.pending"
 				data-wp-bind--aria-busy="context.pending"
 			>
@@ -1314,7 +1323,7 @@ ob_start();
 			}
 			?>
 		<a
-			class="btn btn-<?php echo esc_attr( $sgs_nv_cta2_style ); ?> product-card__cta-secondary"
+			class="sgs-button sgs-button--<?php echo esc_attr( $sgs_nv_cta2_style ); ?> product-card__cta-secondary"
 			href="<?php echo $sgs_nv_cta2_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- both ternary arms esc_url'd above. ?>"
 		><?php echo esc_html( $sgs_nv_cta2_text ); ?></a>
 		<?php endif; ?>
@@ -1327,7 +1336,7 @@ ob_start();
 	<?php endif; ?>
 </div>
 <?php
-$inner = ob_get_clean();
+$inner = $sgs_card_typo_tag . ob_get_clean();
 
 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() returns pre-escaped HTML.
 echo SGS_Container_Wrapper::render( $attributes, $block, $inner, 'content', $nonvar_opts );

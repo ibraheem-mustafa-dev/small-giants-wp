@@ -6,7 +6,6 @@
 
 .sgs-trust-bar {
 	box-sizing: border-box;
-	text-align: center;
 }
 
 /* ─── Optional title (text-only / image-badge variants) ─────────────────────── */
@@ -96,16 +95,10 @@ a.sgs-trust-bar__badge:focus-visible {
 }
 
 .sgs-trust-bar--icon-circle .sgs-trust-bar__label {
-	font-size: var(--sgs-trust-badge-label-font-size, clamp(0.75rem, 1.2vw, 0.875rem));
+	font-size: var(--sgs-trust-badge-label-font-size, clamp(0.8125rem, 0.8rem + 0.3vw, 0.875rem));
 	font-weight: 500;
 	line-height: 1.35;
 	color: var(--sgs-trust-badge-text-colour, var(--wp--preset--color--text, #1E1E1E));
-}
-
-@media (min-width: 1024px) {
-	.sgs-trust-bar--icon-circle .sgs-trust-bar__label {
-		font-size: var(--sgs-trust-badge-label-font-size, 0.875rem);
-	}
 }
 
 /* ─── text-only variant (pill badges) ───────────────────────────────────────── */

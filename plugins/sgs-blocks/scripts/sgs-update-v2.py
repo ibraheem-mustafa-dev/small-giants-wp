@@ -1044,21 +1044,35 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     # quoteColour: assign-canonical derives role='color' + selector
     #   '.sgs-testimonial__quote' correctly (DB confirmed). No change.
     #
-    # quoteStyle: peels suffix 'Style' (longest-match; 'FontStyle' doesn't match
-    #   'quoteStyle') → role='behaviour', css_property=NULL. Correct semantic:
-    #   it is font-style (select from ['italic','normal']), matching FontStyle's
-    #   role='select-from-enum'. Fix to 'select-from-enum' + real selector.
-    #   render.php line 277–281: $quote_style emitted as font-style inline on
+    # quoteFontStyle (CG-11, 2026-07-05; renamed from quoteStyle to match the
+    #   FontSize/FontWeight/LineHeight/FontStyle typography-suffix family —
+    #   property_suffixes.FontStyle.role corrected 'select-from-enum'->'typography'
+    #   the same day via migrations/2026-07-05-fontstyle-role-typography.py).
+    #   Pre-rename, assign-canonical peeled suffix 'Style' (longest-match;
+    #   'FontStyle' doesn't match 'quoteStyle') -> role='behaviour',
+    #   css_property=NULL. Post-rename the 'FontStyle' suffix now matches
+    #   correctly, but the override is kept explicit (belt-and-braces) with the
+    #   real selector. render.php: $quote_style emitted as font-style inline on
     #   <blockquote class="sgs-testimonial__quote">.
-    ("sgs/testimonial", "quoteStyle"): {"role": "select-from-enum", "derived_selector": ".sgs-testimonial__quote"},
+    ("sgs/testimonial", "quoteFontStyle"): {"role": "typography", "derived_selector": ".sgs-testimonial__quote"},
     #
-    # nameFontWeight: deliberately NOT overridden here (Bean, 2026-06-14). Its
-    #   selector is NOT hardcoded in any channel (no override entry, no
-    #   fingerprints.json entry, no migration). assign-canonical skips the row
-    #   (canonical_slot='quote' populated), so on a clean reseed nameFontWeight
-    #   gets no draft-matching multi-alias and the name's font-weight will not
-    #   transfer from a draft using .sgs-testimonial__author. ACCEPTED until the
-    #   proper block.json-declared auto-seed is built (separate future task).
+    # CG-11 (2026-07-05): 4 more testimonial styling attrs left role=NULL +
+    #   derived_selector=NULL by assign-canonical (the 'Media' problem's sibling
+    #   for typography/colour suffixes on attrs whose canonical_slot doesn't
+    #   route them to the CSS-lift). Verified against render.php:
+    #     nameFontWeight: <cite>/name node is class="sgs-testimonial__name"
+    #       (render.php attribution block) — font-weight typography attr.
+    #     orgColour: org text renders in class="sgs-testimonial__org" — colour attr.
+    #     summaryColour / summaryFontSize: summary phrase renders in
+    #       <p class="sgs-testimonial__summary"> (render.php:272) — colour +
+    #       typography attrs (mirrors quoteColour/quoteFontSize's own override
+    #       precedent above; summaryFontSize already flows through the same
+    #       sgs_font_size_value()/style-attr mechanism as quoteFontSize).
+    #   Must live here (not DB-only) so they survive every /sgs-update reseed.
+    ("sgs/testimonial", "nameFontWeight"): {"role": "typography", "derived_selector": ".sgs-testimonial__name"},
+    ("sgs/testimonial", "orgColour"): {"role": "color", "derived_selector": ".sgs-testimonial__org"},
+    ("sgs/testimonial", "summaryColour"): {"role": "color", "derived_selector": ".sgs-testimonial__summary"},
+    ("sgs/testimonial", "summaryFontSize"): {"role": "typography", "derived_selector": ".sgs-testimonial__summary"},
     #
     # ratingSize: stale role='content' + selector '.sgs-testimonial__text, ...'.
     #   Real element: <svg width="$rating_size" height="$rating_size"> inside

@@ -87,7 +87,7 @@
 }
 
 .product-card h3 {
-	font-size: 20px;
+	font-size: var(--sgs-card-title-font-size, 20px);
 	font-weight: 500;
 	color: var(--wp--preset--color--text, #3a2e26);
 	/* A5 (QC): reset h3 margin — gap on .product-card-body drives spacing now. */
@@ -96,7 +96,7 @@
 
 .product-card .product-desc {
 	line-height: var(--sgs-product-card-desc-line-height, 1.55);
-	font-size: 14px;
+	font-size: var(--sgs-product-card-desc-font-size, 14px);
 	/* Body content — full text colour, NOT muted (Bean: descriptions read as
 	 * real copy; muting is reserved for small necessary contextual text). */
 	color: var(--wp--preset--color--text, #3a2e26);
@@ -120,7 +120,7 @@
 	border-radius: 8px;
 	padding: 7px 13px;
 	font-family: 'Inter', sans-serif;
-	font-size: 13px;
+	font-size: var(--sgs-product-card-pill-font-size, 13px);
 	font-weight: var(--sgs-product-card-pill-font-weight, 600);
 	color: var(--wp--preset--color--text-muted, #6b5c50);
 	cursor: pointer;
@@ -157,13 +157,13 @@
 
 .product-card .price {
 	font-family: 'Fraunces', serif;
-	font-size: 28px;
+	font-size: var(--sgs-card-price-font-size, 28px);
 	font-weight: var(--sgs-card-price-font-weight, 700);
 	color: var(--sgs-card-price-colour, var(--wp--preset--color--text, #3a2e26));
 }
 
 .product-card .price-note {
-	font-size: 14px;
+	font-size: var(--sgs-product-card-price-note-font-size, 13px);
 	color: var(--wp--preset--color--text-muted, #6b5c50);
 }
 
@@ -182,7 +182,7 @@
 
 .product-card .price-from-label {
 	font-family: 'Inter', sans-serif;
-	font-size: 12px;
+	font-size: var(--sgs-product-card-price-from-label-font-size, 12px);
 	font-weight: var(--sgs-card-price-from-label-font-weight, 600);
 	letter-spacing: 0.04em;
 	text-transform: uppercase;
@@ -191,7 +191,7 @@
 
 .product-card .price-from-amount {
 	font-family: 'Fraunces', serif;
-	font-size: 28px;
+	font-size: var(--sgs-card-price-font-size, 28px);
 	font-weight: var(--sgs-card-price-font-weight, 700);
 	line-height: var(--sgs-product-card-price-line-height, 1);
 	color: var(--sgs-card-price-colour, var(--wp--preset--color--text, #3a2e26));
@@ -215,7 +215,7 @@
 	align-items: center;
 	background: var(--wp--preset--color--accent, #f5d050);
 	color: var(--wp--preset--color--text, #3a2e26);
-	font-size: 11px;
+	font-size: var(--sgs-product-card-tag-font-size, 11px);
 	font-weight: var(--sgs-product-card-trial-tag-font-weight, 700);
 	padding: 4px 10px;
 	border-radius: 6px;
@@ -225,8 +225,10 @@
 	margin: 0;
 }
 
-/* CTA buttons */
-.product-card .btn {
+/* CTA buttons — sgs-button convention (shared base class with sgs/button so the
+   framework's global .sgs-button structural rule applies uniformly; the
+   product-card-scoped rules below win on specificity for anything they set). */
+.product-card .sgs-button {
 	display: inline-block;
 	text-align: center;
 	padding: 12px 20px;
@@ -242,7 +244,7 @@
 	line-height: var(--sgs-product-card-btn-line-height, 1.4);
 }
 
-.product-card .btn-primary {
+.product-card .sgs-button--primary {
 	background: var(--wp--preset--color--primary, #1F7A7A);
 	/*
 	 * Overridable REST text — framework default white (teal primary = 5.09:1 ✓).
@@ -254,7 +256,7 @@
 	border: 2px solid var(--wp--preset--color--primary, #1F7A7A);
 }
 
-.product-card .btn-primary:hover {
+.product-card .sgs-button--primary:hover {
 	/*
 	 * WCAG A11Y (QC #9 fix): hover uses --sgs-product-card-btn-hover-bg
 	 * (defaults to primary-dark) with white text.
@@ -302,7 +304,7 @@
  * `display:contents` collapses the <form> box so the <button> stays the direct
  * flex item of .product-card-body and stretches full-width exactly as the
  * previous <a> did — no layout change. `appearance:none` strips the native
- * button chrome so .btn/.btn-primary fully control its look. Bound-scoped:
+ * button chrome so .sgs-button/.sgs-button--primary fully control its look. Bound-scoped:
  * page-144 Typed clones never render this control (scope guardrail, blub.db 304).
  */
 .product-card .product-card__cart-form {
@@ -314,7 +316,7 @@
 	-webkit-appearance: none;
 }
 
-.product-card .btn-secondary {
+.product-card .sgs-button--secondary {
 	background: transparent;
 	/* Text colour for readability (AA — primary-dark on white failed 3.67:1 live,
 	 * axe 2026-06-10); the brand identity comes from the primary border + hover. */
@@ -325,7 +327,7 @@
 	border: 2px solid var(--wp--preset--color--primary-dark, #c56a7a);
 }
 
-.product-card .btn-secondary:hover {
+.product-card .sgs-button--secondary:hover {
 	background: var(--wp--preset--color--primary, #e68a95);
 	color: var(--wp--preset--color--text, #3a2e26);
 }
@@ -599,7 +601,7 @@
 /* Reduced motion — respect user preference */
 @media (prefers-reduced-motion: reduce) {
 	.product-card .pill,
-	.product-card .btn,
+	.product-card .sgs-button,
 	.product-card .product-card__cart-icon,
 	.product-card--live {
 		transition: none;
@@ -907,7 +909,7 @@
  *   .sgs-product-card__tag--featured: primary bg + white text — client palette
  *     must supply sufficient contrast via theme token (SGS auto-contrast model).
  *   .sgs-product-card__pill: min-height 44px ✓ WCAG 2.2 §2.5.8.
- *   CTA anchors: inherit .btn .btn-primary / .btn-secondary — already audited.
+ *   CTA anchors: inherit .sgs-button .sgs-button--primary / .sgs-button--secondary — already audited.
  *
  * Scoped under .product-card so specificity matches the existing rules above
  * and the cascade is predictable.
@@ -934,7 +936,7 @@
 .product-card .sgs-product-card__tag {
 	display: inline-flex;
 	align-items: center;
-	font-size: 11px;
+	font-size: var(--sgs-product-card-tag-font-size, 11px);
 	font-weight: 700;
 	padding: 4px 10px;
 	border-radius: 6px;
@@ -968,7 +970,7 @@
 
 /* Description — same rules as .product-card .product-desc. */
 .product-card .sgs-product-card__description {
-	font-size: 14px;
+	font-size: var(--sgs-product-card-desc-font-size, 14px);
 	color: var( --wp--preset--color--text, #3a2e26 );
 	margin: 0;
 	flex: 1;
@@ -989,7 +991,7 @@
 	border: 2px solid var( --wp--preset--color--border, #e8d5c0 );
 	border-radius: 8px;
 	padding: 7px 13px;
-	font-size: 13px;
+	font-size: var(--sgs-product-card-pill-font-size, 13px);
 	font-weight: 600;
 	color: var( --wp--preset--color--text-muted, #6b5c50 );
 	min-height: 44px;
@@ -1022,7 +1024,7 @@
 
 /* Price note — matches .product-card .price-note. */
 .product-card .sgs-product-card__price-note {
-	font-size: 14px;
+	font-size: var(--sgs-product-card-price-note-font-size, 13px);
 	color: var( --wp--preset--color--text-muted, #6b5c50 );
 }
 
@@ -1038,10 +1040,10 @@
 }
 
 /*
- * CTA anchors inherit .btn / .btn-primary / .btn-secondary rules already
- * defined above. Ensure they fill available space on single-button rows.
+ * CTA anchors inherit .sgs-button / .sgs-button--primary / .sgs-button--secondary
+ * rules already defined above. Ensure they fill available space on single-button rows.
  */
-.product-card .sgs-product-card__cta-row .btn {
+.product-card .sgs-product-card__cta-row .sgs-button {
 	flex: 1 1 auto;
 	text-align: center;
 }
@@ -1064,7 +1066,7 @@
 
 /*
  * FP-H: bound-mode secondary CTA — a plain learn-more anchor rendered after
- * the cart form. Inherits .btn + .btn-{style} chrome; this rule only ensures
+ * the cart form. Inherits .sgs-button + .sgs-button--{style} chrome; this rule only ensures
  * predictable block layout inside the flex-column card body.
  */
 .product-card .product-card__cta-secondary {

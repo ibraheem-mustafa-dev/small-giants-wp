@@ -96,6 +96,12 @@
 /* Header */
 .sgs-pricing-table__header {
 	margin-bottom: var(--wp--preset--spacing--40, 2rem);
+}
+
+/* :where() (specificity 0) so a faithfully-transferred draft alignment
+   (inline style or a higher-specificity scoped rule) can win; centred header
+   text is the sensible default absent any override. */
+:where(.sgs-pricing-table__header) {
 	text-align: center;
 }
 
@@ -187,6 +193,8 @@
 	border-radius: var(--wp--custom--border-radius--small, 4px);
 	font-size: var(--wp--preset--font-size--medium, 1rem);
 	font-weight: 600;
+	/* KEEP: a CTA button centres its own label regardless of surrounding text
+	   alignment — same rationale as sgs/button's inline-flex centring. */
 	text-align: center;
 	text-decoration: none;
 	cursor: pointer;

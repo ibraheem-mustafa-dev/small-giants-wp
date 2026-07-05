@@ -15,7 +15,9 @@
 	--sgs-label-padding: 4px 12px 4px 12px;
 	--sgs-label-font-family: inherit;
 
-	display: inline-block;
+	/* Base = span default (inline). pill-fill/pill-wrap variants below opt into
+	   block/inline-block scoped to their own rule — the base must not force it. */
+	display: inline;
 	color: var(--sgs-label-colour);
 	font-family: var(--sgs-label-font-family);
 	font-size: var(--sgs-label-font-size);

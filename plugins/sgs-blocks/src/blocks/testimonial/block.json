@@ -181,7 +181,7 @@
 			"type": "string",
 			"default": ""
 		},
-		"quoteStyle": {
+		"quoteFontStyle": {
 			"type": "string",
 			"default": "",
 			"description": "Font style for the quote text. 'italic' or empty for normal."
@@ -190,6 +190,11 @@
 			"type": "string",
 			"default": "",
 			"description": "Line height for the quote text. Raw CSS value (e.g. 1.6, 2em). Empty = default."
+		},
+		"quoteMarginBottom": {
+			"type": "string",
+			"default": "",
+			"description": "Space below the quote text. Raw CSS value (e.g. 16px, 1.5rem). Empty = theme default (spacing--30)."
 		},
 		"summaryFontSize": {
 			"type": "string",

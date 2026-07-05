@@ -91,6 +91,11 @@
                 "outline"
             ]
         },
+        "backgroundPadding": {
+            "type": "string",
+            "default": "",
+            "description": "Padding inside the background shape (circle/pill/rounded/square/outline). Raw CSS length (e.g. 12px, 0.75rem). Empty = theme default (12px)."
+        },
         "linkUrl": {
             "type": "string",
             "default": "",

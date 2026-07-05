@@ -1,13 +1,6 @@
 /* ===== SGS Heading — Frontend + Editor (v0.4.0 single-element) ===== */
 /* Inline styles written by render.php ALWAYS take precedence.          */
 
-/* ----- Wrapper ----- */
-/* :where() gives specificity (0,0,0) so any explicit text-align on the       */
-/* wrapper element (inline style from render.php or converter CSS) wins.       */
-:where(.wp-block-sgs-heading) {
-	text-align: center;
-}
-
 /* ----- Text element (heading or subheading) ----- */
 .wp-block-sgs-heading__text {
 	margin-top: 0;

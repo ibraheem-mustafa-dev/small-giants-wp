@@ -91,6 +91,8 @@
 
 .sgs-business-hours__time {
 	margin: 0;
+	/* KEEP: a day/time row layout choice (day left, time right), not a content
+	   textAlign — this block has no native textAlign support to fight. */
 	text-align: right;
 }
 

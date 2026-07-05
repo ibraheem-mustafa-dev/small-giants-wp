@@ -74,6 +74,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconColour,
 		backgroundColour,
 		backgroundShape,
+		backgroundPadding,
 		linkUrl,
 		linkTarget,
 		ariaLabel,
@@ -176,13 +177,27 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 					{ backgroundShape !== 'none' && (
-						<DesignTokenPicker
-							label={ __( 'Background colour', 'sgs-blocks' ) }
-							value={ backgroundColour }
-							onChange={ ( val ) =>
-								setAttributes( { backgroundColour: val } )
-							}
-						/>
+						<>
+							<DesignTokenPicker
+								label={ __( 'Background colour', 'sgs-blocks' ) }
+								value={ backgroundColour }
+								onChange={ ( val ) =>
+									setAttributes( { backgroundColour: val } )
+								}
+							/>
+							<TextControl
+								label={ __( 'Shape padding', 'sgs-blocks' ) }
+								help={ __(
+									'A spacing slug (e.g. 30) or a CSS value (e.g. 12px, 0.75rem). Leave empty for the theme default.',
+									'sgs-blocks'
+								) }
+								value={ backgroundPadding }
+								onChange={ ( val ) =>
+									setAttributes( { backgroundPadding: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</>
 					) }
 				</PanelBody>
 
