@@ -965,6 +965,20 @@ def _render_consumes_content(block_dir: Path) -> bool:
 # the heuristic mis-derives. Each entry MUST cite the reason + date.
 # Keyed (block_slug, attr_name) -> {column: value, ...} to UPDATE on block_attributes.
 ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
+    # TAG-IDENTITY attrs (CG-2 zero-h1 fix, 2026-07-05; role registered by
+    # migrations/2026-07-05-register-tag-identity-role.py). These attrs store the
+    # source element's HTML TAG (R-31-2 shape fact); assembly step 3a2 writes
+    # them, gated on enum membership. Explicit declaration per FR-31-2.1a —
+    # NEVER derived from enum-contains (hero.variant contains "video",
+    # quote.attributionTag contains "div" — over-broad, R-31-9).
+    #
+    # heading.level: render.php:94 defaults 'h2'; without this the whole page
+    #   rendered 0×h1/15×h2 (SEO + WCAG hierarchy, proven live 2026-07-05).
+    ("sgs/heading", "level"): {"role": "tag-identity"},
+    # media.mediaType: html_tag_to_core_block routes <video>/<iframe> to
+    #   sgs/media but nothing set the mode — a draft <video> emitted an
+    #   image-mode block (code-confirmed gap, H2 investigation 2026-07-05).
+    ("sgs/media", "mediaType"): {"role": "tag-identity"},
     # sgs/product-card — 3 mis-seeds blocking the FR-31-2.6 per-attr walk from
     # landing the card (QA Gate A, 2026-07-04). Every field verified against the
     # BLOCK SOURCE (includes/product-card-builtin-render.php — the authoritative

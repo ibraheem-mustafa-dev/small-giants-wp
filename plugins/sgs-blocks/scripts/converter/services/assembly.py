@@ -114,6 +114,24 @@ def build_block_markup(
             else:
                 attrs[r.attr] = r.value            # content wins on collision
 
+    # step 3a2: R-31-2 TAG-IDENTITY write (CG-2 fix, 2026-07-05 — the zero-h1
+    # defect). Recognition uses the tag to pick the block then DISCARDED it on
+    # every path; nothing wrote sgs/heading.level, so render.php's h2 default
+    # flattened h1/h3/h4 (live page: 0×h1, 15×h2; SEO + WCAG hierarchy). For
+    # each attr the block declares with role='tag-identity' (the sanctioned
+    # ATTR_CLASSIFICATION_OVERRIDES channel — an explicit declaration, never
+    # enum-contains guessing, FR-31-2.1a/R-31-9), write the source node's tag
+    # when it is a member of the attr's enum (an <img> is outside mediaType's
+    # enum — the block default stands). setdefault: an explicit value from
+    # variant/CSS/content wins. Same precedent shape as steps 3b/5 (DB-gated
+    # attr declaration + node-structural signal, no slug literal).
+    if rec.slug is not None:
+        _node_tag = getattr(section_root, "name", None)
+        if _node_tag:
+            for _ti_attr, _ti_allowed in db_lookup.tag_identity_attrs(rec.slug).items():
+                if _node_tag in _ti_allowed:
+                    attrs.setdefault(_ti_attr, _node_tag)
+
     # step 3b: §2.3 ARRANGEMENT layout trigger. A container whose OWN CSS is
     # display:grid / display:flex must emit the `layout` attr — the wrapper renders
     # display:grid ONLY when 'grid'===$layout (class-sgs-container-wrapper.php:490);

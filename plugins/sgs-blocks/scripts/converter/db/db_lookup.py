@@ -536,6 +536,43 @@ def block_attrs(block_slug: str) -> dict[str, dict]:
 
 
 @functools.lru_cache(maxsize=256)
+def tag_identity_attrs(block_slug: str) -> dict[str, frozenset[str]]:
+    """Return {attr_name: allowed_tag_values} for the block's tag-identity attrs.
+
+    A tag-identity attr (role='tag-identity', declared via the sanctioned
+    ATTR_CLASSIFICATION_OVERRIDES channel, FR-31-2.1a) stores the source
+    element's HTML TAG as its value (sgs/heading.level h1..h6,
+    sgs/media.mediaType video/svg). R-31-2: tag is SHAPE — recognition picked
+    the block; this preserves the shape fact the tag carries (heading level,
+    media kind) instead of discarding it (the CG-2 zero-h1 defect). The
+    enum_values list is the write gate: a node tag outside the enum writes
+    nothing (an <img> is not in mediaType's enum — the block default stands).
+    Explicit role gate, NEVER bare enum-contains (hero.variant contains
+    'video', quote.attributionTag contains 'div' — R-31-9 over-broad).
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT attr_name, enum_values FROM block_attributes "
+            "WHERE block_slug = ? AND role = 'tag-identity' "
+            "AND enum_values IS NOT NULL",
+            (block_slug,),
+        ).fetchall()
+    finally:
+        conn.close()
+    out: dict[str, frozenset[str]] = {}
+    for name, raw in rows:
+        try:
+            vals = json.loads(raw) if raw and raw.strip().startswith("[") else []
+        except (ValueError, TypeError):
+            vals = []
+        allowed = frozenset(str(v) for v in vals if v is not None)
+        if allowed:
+            out[name] = allowed
+    return out
+
+
+@functools.lru_cache(maxsize=256)
 def get_block_composition_role(block_slug: str) -> str | None:
     """Return composition_role from block_composition table for a block.
 
