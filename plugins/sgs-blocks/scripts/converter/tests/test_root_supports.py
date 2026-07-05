@@ -81,7 +81,7 @@ def test_padding_top_lifts_to_style():
 
     sp, sa, sb = _patch_supports(_FULL_SUPPORTS)
     with sp, sa, sb:
-        attrs = lift_root_supports_to_style(node, "sgs/container", css_rules, conn)
+        attrs, _consumed = lift_root_supports_to_style(node, "sgs/container", css_rules, conn)
 
     assert "style" in attrs, f"Expected 'style' key in attrs, got: {attrs}"
     padding = attrs["style"].get("spacing", {}).get("padding", {})
@@ -102,7 +102,7 @@ def test_background_color_lifts_to_style():
 
     sp, sa, sb = _patch_supports(_FULL_SUPPORTS)
     with sp, sa, sb:
-        attrs = lift_root_supports_to_style(node, "sgs/container", css_rules, conn)
+        attrs, _consumed = lift_root_supports_to_style(node, "sgs/container", css_rules, conn)
 
     assert "style" in attrs, f"Expected 'style' key in attrs, got: {attrs}"
     colour = attrs["style"].get("color", {}).get("background")
@@ -123,7 +123,7 @@ def test_border_radius_lifts_to_style():
 
     sp, sa, sb = _patch_supports(_FULL_SUPPORTS)
     with sp, sa, sb:
-        attrs = lift_root_supports_to_style(node, "sgs/container", css_rules, conn)
+        attrs, _consumed = lift_root_supports_to_style(node, "sgs/container", css_rules, conn)
 
     assert "style" in attrs, f"Expected 'style' key in attrs, got: {attrs}"
     radius = attrs["style"].get("border", {}).get("radius")
@@ -156,7 +156,7 @@ def test_responsive_padding_top_tablet():
     }
     sp, sa, sb = _patch_supports(_FULL_SUPPORTS, block_schema_with_tablet)
     with sp, sa, sb:
-        attrs = lift_root_supports_to_style(node, "sgs/container", css_rules, conn)
+        attrs, _consumed = lift_root_supports_to_style(node, "sgs/container", css_rules, conn)
 
     assert "paddingTopTablet" in attrs, (
         f"Expected paddingTopTablet in attrs, got keys: {list(attrs.keys())}"
@@ -179,10 +179,13 @@ def test_no_supports_means_no_lift():
 
     sp, sa, sb = _patch_supports(_NO_SUPPORTS)
     with sp, sa, sb:
-        attrs = lift_root_supports_to_style(node, "sgs/heading", css_rules, conn)
+        attrs, consumed = lift_root_supports_to_style(node, "sgs/heading", css_rules, conn)
 
     assert attrs == {}, (
         f"Block with empty supports must produce no attrs, got: {attrs}"
+    )
+    assert consumed == {}, (
+        f"Block with empty supports must report no consumed properties, got: {consumed}"
     )
 
 
@@ -198,7 +201,7 @@ def test_block_without_padding_support_drops_padding():
     }
     sp, sa, sb = _patch_supports(color_only_supports)
     with sp, sa, sb:
-        attrs = lift_root_supports_to_style(node, "sgs/label", css_rules, conn)
+        attrs, _consumed = lift_root_supports_to_style(node, "sgs/label", css_rules, conn)
 
     # padding-top must NOT appear anywhere in the output.
     if "style" in attrs:
@@ -233,7 +236,7 @@ def test_gradient_background_is_dropped():
 
     sp, sa, sb = _patch_supports(_FULL_SUPPORTS)
     with sp, sa, sb:
-        attrs = lift_root_supports_to_style(node, "sgs/hero", css_rules, conn)
+        attrs, _consumed = lift_root_supports_to_style(node, "sgs/hero", css_rules, conn)
 
     # Must NOT have style.color.gradient.
     if "style" in attrs:
@@ -256,8 +259,9 @@ def test_non_sgs_slug_returns_empty():
     css_rules = {".wp-block-group": {"padding-top": "20px"}}
     conn = MagicMock(spec=sqlite3.Connection)
 
-    attrs = lift_root_supports_to_style(node, "core/group", css_rules, conn)
+    attrs, consumed = lift_root_supports_to_style(node, "core/group", css_rules, conn)
     assert attrs == {}, f"Non-SGS slug must return {{}}, got: {attrs}"
+    assert consumed == {}, f"Non-SGS slug must report no consumed properties, got: {consumed}"
 
 
 # ---------------------------------------------------------------------------
@@ -278,9 +282,12 @@ def test_padding_and_background_combined():
 
     sp, sa, sb = _patch_supports(_FULL_SUPPORTS)
     with sp, sa, sb:
-        attrs = lift_root_supports_to_style(node, "sgs/container", css_rules, conn)
+        attrs, consumed = lift_root_supports_to_style(node, "sgs/container", css_rules, conn)
 
     assert "style" in attrs, f"Expected 'style' in attrs, got: {attrs}"
+    assert consumed.get("Base") == frozenset({"padding-top", "background-color"}), (
+        f"Expected both padding-top and background-color consumed at Base, got: {consumed}"
+    )
     assert attrs["style"].get("spacing", {}).get("padding", {}).get("top") == "60px", (
         f"padding.top missing — style={attrs['style']}"
     )

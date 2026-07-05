@@ -219,11 +219,22 @@ def _migrate_html_tag_to_core_block() -> None:
         # INSERT OR REPLACE — propagates atomic-tag-map.json edits on module
         # re-load (D99 2026-05-29 Fix 3: was INSERT OR IGNORE) so an updated seed
         # value refreshes the DB row automatically without manual edits.
-        for html_tag, (target_slug, note) in _load_atomic_tag_seed().items():
+        seed = _load_atomic_tag_seed()
+        for html_tag, (target_slug, note) in seed.items():
             conn.execute(
                 "INSERT OR REPLACE INTO html_tag_to_core_block "
                 "(html_tag, core_block_slug, note) VALUES (?, ?, ?)",
                 (html_tag, target_slug, note),
+            )
+        # Reconcile DELETIONS too: a key removed from the seed must not linger
+        # in the DB (2026-07-05: the retired sgs/divider's hr row survived the
+        # seed edit — INSERT OR REPLACE alone never deletes). The seed file is
+        # the single source of truth for this table's key set (D271).
+        if seed:
+            placeholders = ",".join("?" for _ in seed)
+            conn.execute(
+                f"DELETE FROM html_tag_to_core_block WHERE html_tag NOT IN ({placeholders})",  # noqa: S608 — placeholders only
+                list(seed.keys()),
             )
         conn.commit()
     except sqlite3.OperationalError:

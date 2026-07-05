@@ -7,5 +7,5 @@
   "selector": "section.sgs-accordion-item",
   "failure_reason": "",
   "primary_block_emitted": "sgs/accordion-item",
-  "block_markup": "<!-- wp:sgs/accordion-item {\"title\":\"Item Heading\"} -->\n<!-- wp:sgs/text {\"fontSize\":16,\"fontSizeUnit\":\"px\",\"style\":{\"spacing\":{\"padding\":{\"top\":\"8px\"}}},\"text\":\"Item body content goes here.\"} /-->\n<!-- /wp:sgs/accordion-item -->"
+  "block_markup": "<!-- wp:sgs/accordion-item {\"title\":\"Item Heading\"} -->\n<!-- wp:sgs/text {\"fontSize\":16,\"fontSizeUnit\":\"px\",\"style\":{\"spacing\":{\"padding\":{\"top\":\"8px\"}}},\"text\":\"Item body content goes here.\",\"textColour\":\"#5c4f46\"} /-->\n<!-- /wp:sgs/accordion-item -->"
 }

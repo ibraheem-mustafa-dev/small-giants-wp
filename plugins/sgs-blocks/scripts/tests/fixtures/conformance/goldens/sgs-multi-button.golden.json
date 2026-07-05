@@ -7,5 +7,5 @@
   "selector": "section.sgs-multi-button",
   "failure_reason": "",
   "primary_block_emitted": "sgs/multi-button",
-  "block_markup": "<!-- wp:sgs/multi-button {\"flexWrap\":\"wrap\",\"layout\":\"flex\"} -->\n<!-- wp:sgs/button {\"inheritStyle\":\"primary\",\"label\":\"Primary Action\",\"url\":\"/shop/\"} /--><!-- wp:sgs/button {\"inheritStyle\":\"secondary\",\"label\":\"Secondary Action\",\"url\":\"/about/\"} /-->\n<!-- /wp:sgs/multi-button -->"
+  "block_markup": "<!-- wp:sgs/multi-button {\"flexWrap\":\"wrap\",\"gap\":\"12px\",\"layout\":\"flex\"} -->\n<!-- wp:sgs/button {\"inheritStyle\":\"primary\",\"label\":\"Primary Action\",\"url\":\"/shop/\"} /--><!-- wp:sgs/button {\"inheritStyle\":\"secondary\",\"label\":\"Secondary Action\",\"url\":\"/about/\"} /-->\n<!-- /wp:sgs/multi-button -->"
 }

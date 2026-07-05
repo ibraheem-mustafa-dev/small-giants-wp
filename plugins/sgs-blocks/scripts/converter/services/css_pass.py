@@ -25,7 +25,10 @@ from converter.context import Ctx, Decl, Recognition
 from converter.recognition import build_ctx
 from converter.orchestrator import process_element
 from converter.services.styling_helpers import collect_css_decls_for_element
-from converter.services.root_supports import lift_root_supports_to_style, _LIFT_CSS_PROPS
+from converter.services.root_supports import (
+    lift_root_supports_to_style,
+    _ALWAYS_STRIP_SHORTHANDS,
+)
 from converter.db import db_lookup
 
 # SGS DB path — kept as a module attribute for the pre-existing existence
@@ -54,12 +57,24 @@ def _build_css_attrs(
          collect_css_decls_for_element → base_decls + bp_decls.
       2a. [ROOT-SUPPORTS LIFT] Before assembling the Decl list, call
           lift_root_supports_to_style to emit padding/background-color/border-radius
-          etc. as native WP ``style.*`` attrs (and per-device custom attrs).
+          etc. as native WP ``style.*`` attrs (and per-device custom attrs). Returns
+          ``(native_attrs, consumed)`` — ``consumed`` names exactly which CSS
+          property was actually WRITTEN, per tier (STOP-43, 2026-07-05 council fix).
           PORT SOURCE: convert.py:774-956.
-      2b. [PARTITION] Remove from base_decls/bp_decls every CSS property that the
-          native lift already consumed (those in _LIFT_CSS_PROPS AND in the block's
-          supports). This prevents double-handling: the same property must not flow
-          through BOTH the native style.* path AND the process_element dispatch.
+      2b. [PARTITION] Remove from base_decls/bp_decls only the CSS properties the
+          native lift ACTUALLY consumed AT THAT TIER (``consumed["Base"]`` for
+          base_decls, ``consumed[bp_suffix]`` per bp tier) plus the two always-strip
+          composite shorthands (``background``/``border`` — normalisation sources
+          only, never independently routable). This prevents double-handling (the
+          same property must not flow through BOTH the native style.* path AND the
+          process_element dispatch) WITHOUT silently dropping a lift-eligible
+          property the supports/schema gate rejected — that must flow through to
+          process_element instead (e.g. ``color`` on a block with no native color
+          support but a typography-resolver textColour destination; ``gap`` on a
+          block with no blockGap support but a grid/outer_box destination). A
+          property consumed at the base tier but NOT at a given bp tier (the
+          per-device schema-attr gate can reject one tier and not another) still
+          flows through for that unconsumed tier only (the "per-tier trap").
           Merge order: native style.* attrs first, then process_element overwrites
           (they target different attr keys so collisions are not expected in practice).
       3. Assemble a list[Decl] from the PARTITIONED decls.
@@ -99,37 +114,33 @@ def _build_css_attrs(
         # Emits padding/background-color/border-radius etc. as WP style.* attrs
         # and per-device custom attrs (paddingTopTablet, etc.) when the block's
         # DB supports record allows them.
-        native_attrs: dict = lift_root_supports_to_style(node, rec.slug, css_rules, conn)
+        native_attrs, consumed = lift_root_supports_to_style(node, rec.slug, css_rules, conn)
 
-        # ---- Step 2b: partition — remove lift-consumed props from the Decl stream ----
-        # Any CSS property that (a) is in _LIFT_CSS_PROPS AND (b) was actually
-        # consumed by the native lift (i.e. appears as a key somewhere under
-        # native_attrs["style"] or as a responsive custom attr) must NOT also be
-        # dispatched through process_element, or the same value lands twice on
-        # different attr paths.
-        #
-        # Implementation: remove _LIFT_CSS_PROPS from both base_decls and each
-        # bp_decls tier.  _LIFT_CSS_PROPS is a frozenset of the CSS property names
-        # the lift rules handle (padding-top, background-color, border-radius, etc.
-        # plus the shorthand keys padding/margin/background/border).  Properties
-        # NOT in _LIFT_CSS_PROPS (e.g. max-width, grid-template-columns, color
-        # variants handled by process_element's own resolvers) are unaffected and
-        # continue to the Decl list unchanged.
-        #
-        # This partition is safe even when lift_root_supports_to_style returned {}
-        # (block has no matching supports): removing the props from base_decls means
-        # process_element never sees unsupported native-style props either, which
-        # is the correct behaviour (they have no custom-attr destination).
+        # ---- Step 2b: partition — remove ONLY per-tier lift-CONSUMED props ----
+        # STOP-43 (2026-07-05 council fix): a property is stripped from a tier's
+        # decl stream iff the native lift ACTUALLY WROTE a destination for it AT
+        # THAT TIER (consumed["Base"] / consumed[bp_suffix]), or it is one of the
+        # two always-strip composite shorthands (background/border — normalisation
+        # sources only, see root_supports._ALWAYS_STRIP_SHORTHANDS). The old
+        # behaviour stripped blanket membership in _LIFT_CSS_PROPS regardless of
+        # whether the lift's supports/schema gate actually accepted the property —
+        # silently dropping e.g. `color` on a block with no native color support
+        # (but a typography-resolver textColour destination) or `gap` on a block
+        # with no blockGap support (but a grid/outer_box destination). A property
+        # consumed at base but rejected for a specific bp tier (the per-device
+        # schema-attr gate is independent per tier) now flows through for THAT
+        # tier only, instead of being dropped everywhere.
+        base_strip = consumed.get("Base", frozenset()) | _ALWAYS_STRIP_SHORTHANDS
         partitioned_base = {
             prop: val
             for prop, val in base_decls.items()
-            if prop not in _LIFT_CSS_PROPS
+            if prop not in base_strip
         }
         partitioned_bp = {
             bp_suffix: {
                 prop: val
                 for prop, val in tier_decls.items()
-                if prop not in _LIFT_CSS_PROPS
+                if prop not in (consumed.get(bp_suffix, frozenset()) | _ALWAYS_STRIP_SHORTHANDS)
             }
             for bp_suffix, tier_decls in bp_decls.items()
         }

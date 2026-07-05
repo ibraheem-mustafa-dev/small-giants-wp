@@ -6,16 +6,35 @@ converter service layer.
 
 Public API
 ----------
-    lift_root_supports_to_style(node, slug, css_rules, conn) -> dict
+    lift_root_supports_to_style(node, slug, css_rules, conn) -> tuple[dict, dict]
 
-Returns a flat dict that may contain:
+Returns ``(result_attrs, consumed)``:
 
-  - ``style``            — nested WP-style object (``style.spacing.padding.top``, etc.)
-  - per-device custom attr keys (``paddingTopTablet``, ``paddingTopMobile``, etc.)
+  - ``result_attrs`` — a flat dict that may contain:
+      - ``style``            — nested WP-style object (``style.spacing.padding.top``, etc.)
+      - per-device custom attr keys (``paddingTopTablet``, ``paddingTopMobile``, etc.)
+  - ``consumed`` — ``{tier: frozenset(css_property, ...)}`` (tier keys: ``"Base"``
+    plus whatever bp_suffix strings appear in ``bp_decls``, e.g. ``"Tablet"``/
+    ``"Mobile"``). A CSS property is a member of a tier's set ONLY when this
+    function actually WROTE a destination for it at that tier (a style.* leaf
+    at base, or a per-device custom attr for that bp tier). Membership in
+    ``_root_lift_rules()``/the padding-margin shorthand list is NOT sufficient —
+    the block's DB supports gate and the per-tier schema-attr gate can both
+    cause an attempted property to go unconsumed even though it is lift-eligible.
 
-Callers MUST partition the CSS decl list before passing the result's consumed
-properties to ``process_element`` — see ``_LIFT_CSS_PROPS`` for the set of
-CSS properties this function will consume from the base decl stream.
+STOP-43 council fix (2026-07-05): callers MUST partition the CSS decl list
+using ``consumed``, NOT blanket membership in ``_LIFT_CSS_PROPS`` — the old
+blanket strip silently dropped a property whenever the native lift ATTEMPTED
+it but the supports/schema gate rejected it (e.g. ``color`` on a block with no
+native color support but its own typography-resolver-backed colour attr;
+``gap`` on a block with no ``blockGap`` support but a grid/outer_box gap
+destination via ``attr_for_property``). ``background``/``border`` (the two
+composite shorthands that only ever NORMALISE into other longhand properties —
+see the base-tier normalisation block below) remain always-stripped
+regardless of consumption — see ``_ALWAYS_STRIP_SHORTHANDS``; they were never
+independently routable properties even before this fix (a CSS gradient
+background, for example, is an intentionally-documented drop with no
+destination — see the gradient gap-note below — not a routing bug).
 
 Spec ref: Spec 31 §3.A native-style lift (root supports gate).
 Port source lines: convert.py:514-547, 774-956.
@@ -81,11 +100,24 @@ def _root_lift_rules() -> list[tuple[str, str, str, list[str], str]]:
     ]
 
 
-# The full set of CSS properties this lift will consume from the decl stream.
-# Callers use this to PARTITION decls before handing the remainder to process_element.
+# The full set of CSS properties this lift MAY consume from the decl stream
+# (lift-ELIGIBLE, not lift-GUARANTEED). Retained for documentation/back-compat;
+# callers must NOT use blanket membership in this set to partition decls — see
+# the ``consumed`` return value of ``lift_root_supports_to_style`` (STOP-43).
 _LIFT_CSS_PROPS: frozenset[str] = frozenset(
     rule[0] for rule in _root_lift_rules()
 ) | frozenset(["padding", "margin", "background", "border"])
+
+# The two composite shorthands that are NEVER independently routed — they exist
+# purely as NORMALISATION SOURCES the base-tier block below expands into other
+# longhand properties (background -> background-color; border -> border-width/
+# -style/-color), each of which IS individually consumption-tracked. A raw
+# `background`/`border` decl has no process_element destination of its own (a
+# CSS gradient, for instance, is an intentionally-documented drop — see the
+# gradient gap-note in the base-tier block), so these two remain unconditionally
+# stripped from the decl stream regardless of whether normalisation succeeded —
+# matching the pre-STOP-43 behaviour for these two shorthands only.
+_ALWAYS_STRIP_SHORTHANDS: frozenset[str] = frozenset(["background", "border"])
 
 
 # ---------------------------------------------------------------------------
@@ -109,24 +141,28 @@ def _support_allows(supports: dict, top_key: str, sub_key: str | None = None) ->
     return False
 
 
-def _set_in(target: dict, path: list[str], value: Any) -> None:
+def _set_in(target: dict, path: list[str], value: Any) -> bool:
     """Set value at nested dict path; never overwrites an existing leaf.
 
-    Faithful port of convert.py:497-511.
+    Faithful port of convert.py:497-511. Returns True iff a NEW leaf was
+    written (STOP-43 addition — callers use this to build the per-tier
+    ``consumed`` set; a no-op due to a non-dict node or an already-occupied
+    leaf must NOT be counted as consumption).
     """
     cur = target
     for key in path[:-1]:
         nxt = cur.get(key)
         if not isinstance(nxt, dict):
             if nxt is not None:
-                return  # non-dict node already occupies this slot
+                return False  # non-dict node already occupies this slot
             nxt = {}
             cur[key] = nxt
         cur = nxt
     leaf = path[-1]
     if leaf in cur:
-        return  # never overwrite
+        return False  # never overwrite
     cur[leaf] = value
+    return True
 
 
 def _preserve_unit(raw: str) -> str | None:
@@ -170,7 +206,7 @@ def lift_root_supports_to_style(
     slug: str,
     css_rules: dict,
     conn: sqlite3.Connection,
-) -> dict:
+) -> tuple[dict, dict[str, frozenset[str]]]:
     """Lift block-root CSS into WP native style.* attributes AND per-device custom attrs.
 
     PORT SOURCE:
@@ -179,16 +215,21 @@ def lift_root_supports_to_style(
 
     Steps:
       1. Reject non-SGS slugs early (guard: slug must start with 'sgs/').
-      2. Query block_supports_for(slug) — the DB gate. Empty → return {} (no-op).
+      2. Query block_supports_for(slug) — the DB gate. Empty → return ({}, {}) (no-op).
       3. collect_css_decls_for_element → (base_decls, bp_decls).
-      4. Both empty → return {} (no-op).
+      4. Both empty → return ({}, {}) (no-op).
       5. Base tier: normalise background/border shorthands, apply _root_lift_rules,
          expand padding/margin shorthands. Gradient backgrounds are DROPPED with a
          logged gap-note (no converter destination exists — see convert.py:826-844).
       6. Responsive tiers (bp_decls): for each breakpoint suffix, apply _root_lift_rules
          and build per-device attr names (e.g. 'paddingTopTablet'). Only emit when
          the attr is in the block schema (db_lookup.block_attrs).
-      7. Return the assembled attrs dict.
+      7. Return the assembled attrs dict + the per-tier consumed-property sets
+         (STOP-43) — every property/shorthand that ACTUALLY landed a write is
+         added to ``consumed["Base"]`` (base tier) or ``consumed[bp_suffix]``
+         (a responsive tier), so the caller (``css_pass._build_css_attrs``) can
+         partition the decl stream by what was truly consumed, not by lift-
+         eligibility.
 
     Args:
         node:      BeautifulSoup Tag (or compatible) for the root element.
@@ -197,28 +238,37 @@ def lift_root_supports_to_style(
         conn:      Open SQLite connection to sgs-framework.db.
 
     Returns:
-        A flat dict. May contain:
-          - ``"style"`` → nested WP-style object
-          - per-device custom attr keys (``paddingTopTablet``, etc.)
-        Returns ``{}`` when no supported properties were found.
+        ``(result_attrs, consumed)``:
+          - ``result_attrs`` — a flat dict that may contain:
+              - ``"style"`` → nested WP-style object
+              - per-device custom attr keys (``paddingTopTablet``, etc.)
+            ``{}`` when no supported properties were found.
+          - ``consumed`` — ``{"Base": frozenset(...), bp_suffix: frozenset(...)}``
+            of the CSS property/shorthand names actually written at each tier.
+            ``{}`` on every early-return path (non-SGS slug, no supports, no decls).
     """
     # Guard: only SGS blocks have block_supports rows (convert.py:801-803).
     if not slug or not slug.startswith("sgs/"):
-        return {}
+        return {}, {}
 
     # Gate 1: DB supports check — no supports → nothing to lift.
     supports = db_lookup.block_supports_for(slug)
     if not supports:
-        return {}
+        return {}, {}
 
     # Collect CSS declarations for this node (base + @media tiers).
     base_decls, bp_decls = collect_css_decls_for_element(node, css_rules)
 
     if not base_decls and not bp_decls:
-        return {}
+        return {}, {}
 
     result_attrs: dict = {}
     style: dict = {}
+
+    # STOP-43: per-tier sets of CSS properties/shorthands this call ACTUALLY
+    # wrote a destination for (never just "attempted" or "lift-eligible").
+    consumed_base: set[str] = set()
+    consumed_bp: dict[str, set[str]] = {}
 
     # -------------------------------------------------------------------------
     # BASE TIER — convert.py:813-880
@@ -277,7 +327,8 @@ def lift_root_supports_to_style(
             else:
                 v = _preserve_unit(raw)
             if v is not None:
-                _set_in(style, style_path, v)
+                if _set_in(style, style_path, v):
+                    consumed_base.add(css_prop)
 
         # Expand padding/margin shorthand to four sides — convert.py:867-876.
         for shorthand in ("padding", "margin"):
@@ -288,7 +339,8 @@ def lift_root_supports_to_style(
             parsed = _parse_padding_shorthand(strip_important(base_decls[shorthand]))
             if parsed:
                 for side, val in parsed.items():
-                    _set_in(style, ["spacing", shorthand, side], val)
+                    if _set_in(style, ["spacing", shorthand, side], val):
+                        consumed_base.add(shorthand)
 
     # Attach style dict to result (convert.py:878-880).
     # _snap_style_dict_leaves is DISABLED (convert.py:761-771) — skip.
@@ -303,6 +355,7 @@ def lift_root_supports_to_style(
         for bp_suffix, bp_decl_map in bp_decls.items():
             if not bp_decl_map:
                 continue
+            tier_consumed = consumed_bp.setdefault(bp_suffix, set())
 
             # Per-property lift for each @media tier — convert.py:899-932.
             for css_prop, sup_top, sup_sub, style_path, kind in _root_lift_rules():
@@ -332,6 +385,7 @@ def lift_root_supports_to_style(
 
                 if candidate in block_schema and candidate not in result_attrs:
                     result_attrs[candidate] = v
+                    tier_consumed.add(css_prop)
                     _LOG.debug(
                         "[root_supports] responsive_attr_lifted slug=%s css_prop=%s "
                         "bp_suffix=%s attr=%s value=%r",
@@ -359,6 +413,11 @@ def lift_root_supports_to_style(
                     candidate = f"{shorthand}{side.capitalize()}{bp_suffix}"
                     if candidate in block_schema and candidate not in result_attrs:
                         result_attrs[candidate] = val
+                        # Any side landing a write consumes the shorthand for this
+                        # tier — matches the pre-STOP-43 blanket-strip parity for a
+                        # PARTIAL multi-side success (some sides may still miss their
+                        # schema attr and are dropped, unchanged from prior behaviour).
+                        tier_consumed.add(shorthand)
                         _LOG.debug(
                             "[root_supports] responsive_attr_lifted slug=%s shorthand=%s(%s) "
                             "bp_suffix=%s attr=%s value=%r",
@@ -372,4 +431,8 @@ def lift_root_supports_to_style(
                             slug, shorthand, side, bp_suffix, reason, candidate,
                         )
 
-    return result_attrs
+    consumed: dict[str, frozenset[str]] = {"Base": frozenset(consumed_base)}
+    for bp_suffix, prop_set in consumed_bp.items():
+        consumed[bp_suffix] = frozenset(prop_set)
+
+    return result_attrs, consumed
