@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/quote",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"title": "Quote",
 	"category": "sgs-content",
 	"description": "Attributed blockquote — body paragraphs are native InnerBlocks children (mirrors core/quote) and attribution is an optional footer/cite/div string. Emits semantic <blockquote> so converter-pipeline outputs preserve the correct HTML5 structure.",
@@ -24,6 +24,10 @@
 			"background": true,
 			"gradients": true,
 			"text": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
 		},
 		"__experimentalBorder": {
 			"radius": true,

@@ -47,6 +47,16 @@ $icon_title    = isset( $attributes['iconTitle'] ) ? esc_html( $attributes['icon
 $width_type        = isset( $attributes['widthType'] ) ? sanitize_text_field( $attributes['widthType'] ) : 'fit';
 $custom_width      = isset( $attributes['customWidth'] ) && null !== $attributes['customWidth'] ? absint( $attributes['customWidth'] ) : null;
 $custom_width_unit = isset( $attributes['customWidthUnit'] ) && '%' === $attributes['customWidthUnit'] ? '%' : 'px';
+
+// Per-device width tiers ('' = inherit desktop). Each tier carries its own
+// widthType enum + custom value + custom unit so a button can be e.g. fit on
+// desktop, full on mobile (the draft's full-width-on-mobile pattern).
+$width_type_tab       = isset( $attributes['widthTypeTablet'] ) ? sanitize_text_field( $attributes['widthTypeTablet'] ) : '';
+$width_type_mob       = isset( $attributes['widthTypeMobile'] ) ? sanitize_text_field( $attributes['widthTypeMobile'] ) : '';
+$custom_width_tab     = isset( $attributes['customWidthTablet'] ) && null !== $attributes['customWidthTablet'] ? absint( $attributes['customWidthTablet'] ) : null;
+$custom_width_mob     = isset( $attributes['customWidthMobile'] ) && null !== $attributes['customWidthMobile'] ? absint( $attributes['customWidthMobile'] ) : null;
+$custom_width_tab_u   = isset( $attributes['customWidthUnitTablet'] ) && '%' === $attributes['customWidthUnitTablet'] ? '%' : 'px';
+$custom_width_mob_u   = isset( $attributes['customWidthUnitMobile'] ) && '%' === $attributes['customWidthUnitMobile'] ? '%' : 'px';
 $min_height        = isset( $attributes['minHeight'] ) && null !== $attributes['minHeight'] ? absint( $attributes['minHeight'] ) : null;
 $min_height_tab    = isset( $attributes['minHeightTablet'] ) && null !== $attributes['minHeightTablet'] ? absint( $attributes['minHeightTablet'] ) : null;
 $min_height_mob    = isset( $attributes['minHeightMobile'] ) && null !== $attributes['minHeightMobile'] ? absint( $attributes['minHeightMobile'] ) : null;
@@ -124,6 +134,11 @@ $colour_bg           = isset( $attributes['colourBackground'] ) ? $attributes['c
 $colour_bg_hover     = isset( $attributes['colourBackgroundHover'] ) ? $attributes['colourBackgroundHover'] : '';
 $colour_border       = isset( $attributes['colourBorder'] ) ? $attributes['colourBorder'] : '';
 $colour_border_hover = isset( $attributes['colourBorderHover'] ) ? $attributes['colourBorderHover'] : '';
+
+// Hover text-decoration ('none' | 'underline') — reproduces a draft link that
+// underlines on hover. Only 'underline' emits; 'none' leaves the base decoration
+// untouched on hover.
+$text_decoration_hover = isset( $attributes['textDecorationHover'] ) ? sanitize_text_field( $attributes['textDecorationHover'] ) : 'none';
 
 // Border (custom mode only).
 $border_style      = isset( $attributes['borderStyle'] ) ? sanitize_text_field( $attributes['borderStyle'] ) : 'solid';
@@ -247,10 +262,10 @@ if ( $is_custom ) {
 // !important that was previously required to beat this inline declaration
 // on the same element (the "F4 pattern" — retired).
 
-// Custom width inline style.
-if ( 'custom' === $width_type && $custom_width ) {
-	$inline_styles[] = "width:{$custom_width}{$custom_width_unit}";
-}
+// Width is NOT inline (Pattern A): it now has tablet/mobile tiers
+// (widthTypeTablet/Mobile), so base+tablet+mobile are emitted together on the
+// SAME selector in the scoped <style> block below (step 4). An inline base
+// width would always beat a same-id @media tier override regardless of viewport.
 
 // Icon gap has no responsive tiers — stays inline as a CSS custom property
 // (consumed by style.css flexbox gap).
@@ -284,6 +299,9 @@ if ( $is_custom ) {
 	}
 	if ( $colour_border_hover ) {
 		$hover_rules[] = 'border-color:' . sgs_colour_value( $colour_border_hover );
+	}
+	if ( 'underline' === $text_decoration_hover ) {
+		$hover_rules[] = 'text-decoration:underline';
 	}
 
 	// Hover box shadow.
@@ -457,6 +475,48 @@ if ( null !== $min_height_mob ) {
 }
 if ( $min_height_decls ) {
 	$scoped_css_parts[] = implode( '', $min_height_decls );
+}
+
+// Width — base + tablet + mobile on the SAME selector (Pattern A). Each tier's
+// width derives from its own widthType enum: full → 100%, custom → value+unit,
+// fit → auto, '' (tier only) → no override. Emitted via the scoped <style>
+// (not inline) so a tier override reliably beats the base regardless of
+// viewport; the base rule is declared before the @media tiers so normal
+// source-order cascade lets a matched tier win. The 'full' base ALSO keeps its
+// sgs-button--full class (harmless duplicate — the id rule and the class agree).
+$width_css_value = static function ( $type, $val, $unit ) {
+	switch ( $type ) {
+		case 'full':
+			return '100%';
+		case 'custom':
+			return null !== $val ? $val . $unit : null;
+		case 'fit':
+			return 'auto';
+		default:
+			return null; // '' = inherit desktop / unknown = no override.
+	}
+};
+
+$has_width_tier = ( '' !== $width_type_tab ) || ( '' !== $width_type_mob );
+if ( $has_width_tier || 'custom' === $width_type || 'full' === $width_type ) {
+	$width_decls = array();
+
+	$base_width = $width_css_value( $width_type, $custom_width, $custom_width_unit );
+	if ( null !== $base_width ) {
+		$width_decls[] = "#{$uid} .sgs-button{width:{$base_width};}";
+	}
+	$tab_width = $width_css_value( $width_type_tab, $custom_width_tab, $custom_width_tab_u );
+	if ( null !== $tab_width ) {
+		$width_decls[] = "@media(max-width:1023px){#{$uid} .sgs-button{width:{$tab_width};}}";
+	}
+	$mob_width = $width_css_value( $width_type_mob, $custom_width_mob, $custom_width_mob_u );
+	if ( null !== $mob_width ) {
+		$width_decls[] = "@media(max-width:767px){#{$uid} .sgs-button{width:{$mob_width};}}";
+	}
+
+	if ( $width_decls ) {
+		$scoped_css_parts[] = implode( '', $width_decls );
+	}
 }
 
 // ---------------------------------------------------------------------------

@@ -2,7 +2,7 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/button",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "title": "SGS Button",
     "category": "sgs-content",
     "description": "A highly-configurable button with preset binding, icon support, hover states, and per-breakpoint controls.",
@@ -68,6 +68,30 @@
             "default": null
         },
         "customWidthUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "widthTypeTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "widthTypeMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "customWidthTablet": {
+            "type": "number",
+            "default": null
+        },
+        "customWidthUnitTablet": {
+            "type": "string",
+            "default": "px"
+        },
+        "customWidthMobile": {
+            "type": "number",
+            "default": null
+        },
+        "customWidthUnitMobile": {
             "type": "string",
             "default": "px"
         },
@@ -218,6 +242,14 @@
         "textDecoration": {
             "type": "string",
             "default": ""
+        },
+        "textDecorationHover": {
+            "type": "string",
+            "enum": [
+                "none",
+                "underline"
+            ],
+            "default": "none"
         },
         "fontSize": {
             "type": "number",

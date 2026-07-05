@@ -38,6 +38,18 @@ const WIDTH_OPTIONS = [
 	{ label: __( 'Custom', 'sgs-blocks' ), value: 'custom' },
 ];
 
+// Tablet/mobile add an explicit "inherit desktop" option ('') so a tier can opt
+// out of overriding the base width.
+const WIDTH_OPTIONS_TIER = [
+	{ label: __( '— Same as desktop —', 'sgs-blocks' ), value: '' },
+	...WIDTH_OPTIONS,
+];
+
+const UNDERLINE_HOVER_OPTIONS = [
+	{ label: __( 'No', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'Underline', 'sgs-blocks' ), value: 'underline' },
+];
+
 const TEXT_TRANSFORM_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Uppercase', 'sgs-blocks' ), value: 'uppercase' },
@@ -114,6 +126,15 @@ const MIN_HEIGHT_BREAKPOINTS = {
 	mobile:  { value: 'minHeightMobile', unit: 'minHeightMobileUnit' },
 };
 
+// Per-breakpoint attr names for width (type + custom value + custom unit). Each
+// tier has its OWN widthType so a button can be e.g. fit on desktop, full on
+// mobile (the draft's full-width-on-mobile pattern).
+const WIDTH_BREAKPOINTS = {
+	desktop: { type: 'widthType', value: 'customWidth', unit: 'customWidthUnit', options: WIDTH_OPTIONS },
+	tablet:  { type: 'widthTypeTablet', value: 'customWidthTablet', unit: 'customWidthUnitTablet', options: WIDTH_OPTIONS_TIER },
+	mobile:  { type: 'widthTypeMobile', value: 'customWidthMobile', unit: 'customWidthUnitMobile', options: WIDTH_OPTIONS_TIER },
+};
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		label,
@@ -154,6 +175,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		colourBackgroundHover,
 		colourBorder,
 		colourBorderHover,
+		textDecorationHover,
 		borderStyle,
 		borderWidthTop,
 		borderWidthRight,
@@ -362,26 +384,42 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ /* Layout */ }
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
-						label={ __( 'Width', 'sgs-blocks' ) }
-						value={ widthType }
-						options={ WIDTH_OPTIONS }
-						onChange={ ( val ) => setAttributes( { widthType: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					{ 'custom' === widthType && (
-						<UnitControl
-							label={ __( 'Custom width', 'sgs-blocks' ) }
-							value={ composeUnit( customWidth, customWidthUnit ) }
-							units={ CUSTOM_WIDTH_UNITS }
-							onChange={ ( raw ) => {
-								const { num, unit } = parseUnit( raw, customWidthUnit || 'px' );
-								setAttributes( { customWidth: num, customWidthUnit: unit } );
-							} }
-							__nextHasNoMarginBottom
-							style={ { marginTop: '8px' } }
-						/>
-					) }
+					{ /* Width — ResponsiveControl device switcher. Each breakpoint has
+					   its own widthType (fit/full/custom, plus "inherit" on the
+					   tiers) and, for 'custom', its own value + unit attrs. */ }
+					<ResponsiveControl label={ __( 'Width', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => {
+							const bp = WIDTH_BREAKPOINTS[ breakpoint ];
+							const typeVal = attributes[ bp.type ] ?? ( breakpoint === 'desktop' ? 'fit' : '' );
+							const numVal = attributes[ bp.value ];
+							const unitVal = attributes[ bp.unit ] || 'px';
+							return (
+								<>
+									<SelectControl
+										label={ __( 'Width', 'sgs-blocks' ) }
+										hideLabelFromVision
+										value={ typeVal }
+										options={ bp.options }
+										onChange={ ( val ) => setAttributes( { [ bp.type ]: val } ) }
+										__nextHasNoMarginBottom
+									/>
+									{ 'custom' === typeVal && (
+										<UnitControl
+											label={ __( 'Custom width', 'sgs-blocks' ) }
+											value={ composeUnit( numVal, unitVal ) }
+											units={ CUSTOM_WIDTH_UNITS }
+											onChange={ ( raw ) => {
+												const { num, unit } = parseUnit( raw, unitVal );
+												setAttributes( { [ bp.value ]: num, [ bp.unit ]: unit } );
+											} }
+											__nextHasNoMarginBottom
+											style={ { marginTop: '8px' } }
+										/>
+									) }
+								</>
+							);
+						} }
+					</ResponsiveControl>
 
 					{ /* Min height — ResponsiveControl with one UnitControl per breakpoint.
 					   Each breakpoint has its own number attr AND its own unit attr. */ }
@@ -494,6 +532,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Border colour — hover', 'sgs-blocks' ) }
 							value={ colourBorderHover }
 							onChange={ ( val ) => setAttributes( { colourBorderHover: val } ) }
+							__nextHasNoMarginBottom
+						/>
+						<SelectControl
+							label={ __( 'Underline on hover', 'sgs-blocks' ) }
+							value={ textDecorationHover || 'none' }
+							options={ UNDERLINE_HOVER_OPTIONS }
+							onChange={ ( val ) => setAttributes( { textDecorationHover: val } ) }
 							__nextHasNoMarginBottom
 						/>
 					</PanelBody>
