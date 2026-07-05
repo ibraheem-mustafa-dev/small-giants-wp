@@ -33,7 +33,13 @@ from cheat_gate.models import Violation, d2_when_d1_key  # type: ignore[import]
 # ---------------------------------------------------------------------------
 _HERE = Path(__file__).resolve().parent           # scripts/cheat-gate/
 _SCRIPTS_DIR = _HERE.parent                        # scripts/
-_PIPELINE_STATE = _SCRIPTS_DIR / "pipeline-state"
+# Pipeline runs live at the REPO ROOT (sgs-clone-orchestrator.py writes
+# <repo>/pipeline-state/<run>), NOT under scripts/. The old
+# `_SCRIPTS_DIR / "pipeline-state"` root made this check a SILENT NO-OP from
+# the day it was wired — it always took the graceful-skip path and returned 0
+# violations (STOP-6 class; proven 2026-07-05 by pointing it at a real run dir,
+# which flagged genuine strandings the wrong root had hidden).
+_PIPELINE_STATE = _SCRIPTS_DIR.parents[2] / "pipeline-state"
 _DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
 # CSS rule extractor: selector { declarations }
@@ -42,8 +48,22 @@ _DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework
 # the ~18-item list.  We now pass EVERY property to the DB cross-join, which is
 # the authoritative answer to "does a D1 destination exist for this property?"
 _RULE_RE = re.compile(r"([.#][\w\s,.:>#~\[\]=*@()-]+?)\{([^{}]+)\}", re.DOTALL)
-# Block slug from .sgs- selector: e.g. .sgs-hero or .page-id-N .sgs-hero
+# Block slug from .sgs- selector: e.g. .sgs-hero or .page-id-N .sgs-hero.
+# The BEM element/modifier tail is stripped AFTER the match (the old pattern's
+# \w included underscore, so `.sgs-trust-bar__inner` captured the slug as
+# 'trust-bar__inner' — never matching any DB row, hiding every element-class
+# stranding from the gate).
 _SLUG_FROM_SELECTOR_RE = re.compile(r"\.sgs-([\w-]+)")
+
+# Non-device @media blocks (600/640/1280 visual thresholds) are the
+# spec-sanctioned F-ii passthrough channel (Spec 31 FR-31-5.2 step 3: preserve,
+# never snap, never drop) — their contents are NOT strandings until the
+# structured responsiveOverrides channel replaces them. Device-tier thresholds
+# {767,768,1023,1024} stay IN scope: a device-tier rule in D2 with a D1 tier
+# attr available IS a stranding.
+_MEDIA_BLOCK_RE = re.compile(r"@media[^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}", re.DOTALL)
+_MEDIA_THRESHOLD_RE = re.compile(r"\(\s*(?:min|max)-width\s*:\s*(\d+)px\s*\)")
+_DEVICE_TIER_PX = frozenset({767, 768, 1023, 1024})
 
 
 def _latest_run_dir() -> Path | None:
@@ -88,6 +108,16 @@ def _parse_d2_css(css_text: str) -> list[tuple[str, str]]:
     if d2_start == -1:
         d2_start = css_text.find("D2 -")
     d2_text = css_text[d2_start:] if d2_start >= 0 else css_text
+
+    # Excise non-device @media blocks (the F-ii passthrough channel — see the
+    # constant note above). A media block with NO px threshold (e.g.
+    # prefers-reduced-motion) is also excised: not a device-tier stranding.
+    def _excise(m: re.Match) -> str:
+        thresholds = {int(t) for t in _MEDIA_THRESHOLD_RE.findall(m.group(0))}
+        if thresholds and thresholds <= _DEVICE_TIER_PX:
+            return m.group(0)  # device-tier media stays in scope
+        return ""              # F-ii / non-device — spec-sanctioned, excised
+    d2_text = _MEDIA_BLOCK_RE.sub(_excise, d2_text)
 
     results: list[tuple[str, str]] = []
     for m in _RULE_RE.finditer(d2_text):
@@ -142,7 +172,9 @@ def run(
             slug_m = _SLUG_FROM_SELECTOR_RE.search(selector)
             if not slug_m:
                 continue
-            block_name = slug_m.group(1)  # e.g. "hero", "trust-bar"
+            # Strip the BEM element (__x) / modifier (--y) tail so the base
+            # block name reaches the DB ('trust-bar__inner' → 'trust-bar').
+            block_name = slug_m.group(1).split("__")[0].split("--")[0]
             block_slug = f"sgs/{block_name}"
 
             dedup = (block_slug, css_property)
