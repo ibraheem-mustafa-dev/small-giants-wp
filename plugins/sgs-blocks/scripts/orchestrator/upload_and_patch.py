@@ -24,6 +24,7 @@ import argparse
 import base64
 import json
 import mimetypes
+import os
 import re
 import sys
 import urllib.error
@@ -227,25 +228,33 @@ def main():
         new_bm = new_bm.replace(old, new)
     print(f"\nPatched block_markup: {len(bm)} -> {len(new_bm)} chars")
 
-    # Prepend variation-d0-d2.css as an inline <style> block so the page
-    # carries its own scoped CSS (Spec 16 §FR6 D2). Rules in the file are
-    # already scoped via `.page-id-N`, so no per-page leak risk. Wrapped in
-    # a `wp:html` block so Gutenberg preserves the raw <style> tag verbatim
-    # across edits without converting it to a paragraph or stripping it.
+    # D2 is a transfer-visibility DEBUG LOG, NOT a deploy artefact (STOP-52,
+    # Bean-locked 2026-07-06). The page must NEVER depend on non-block-settings
+    # CSS: a deployed D2 block PAINTS the stranded draft rules, masking them as
+    # false-COVERED and hiding the real gap set (the false-positive trap that
+    # makes progress harder). So D2 is NOT inserted into the deployed page — it
+    # stays written to pipeline-state/<run>/variation-d0-d2.css (this file), which
+    # the F5 ledger + the D2-when-D1 gate + gap analysis still read. The deployed
+    # page therefore shows the HONEST state: every rule not lifted to a block
+    # setting is visibly absent, so each fix is provably real.
+    #
+    # Legacy override for a one-off before/after comparison: SGS_EMIT_D2_PAGE=1.
     css_path = run_dir / "variation-d0-d2.css"
-    if css_path.exists():
+    emit_d2_page = os.environ.get("SGS_EMIT_D2_PAGE", "").strip().lower() in ("1", "true", "yes")
+    if emit_d2_page and css_path.exists() and css_path.read_text(encoding="utf-8").strip():
         css_text = css_path.read_text(encoding="utf-8")
-        if css_text.strip():
-            style_block = (
-                "<!-- wp:html -->\n"
-                f'<style id="sgs-cv2-page-css" data-page-id="{args.target_id}" '
-                f'data-run-id="{run_dir.name}">\n{css_text}\n</style>\n'
-                "<!-- /wp:html -->\n\n"
-            )
-            new_bm = style_block + new_bm
-            print(f"Prepended variation-d0-d2.css ({len(css_text)} chars) as inline <style> block")
+        style_block = (
+            "<!-- wp:html -->\n"
+            f'<style id="sgs-cv2-page-css" data-page-id="{args.target_id}" '
+            f'data-run-id="{run_dir.name}">\n{css_text}\n</style>\n'
+            "<!-- /wp:html -->\n\n"
+        )
+        new_bm = style_block + new_bm
+        print(f"[D2] SGS_EMIT_D2_PAGE override ON — prepended variation-d0-d2.css ({len(css_text)} chars) to the page")
+    elif css_path.exists():
+        print(f"[D2] NOT inserted into the page (STOP-52 — debug log only at {css_path}). Set SGS_EMIT_D2_PAGE=1 to restore.")
     else:
-        print(f"  (no variation-d0-d2.css found at {css_path} -- skipping inline CSS injection)")
+        print(f"  (no variation-d0-d2.css found at {css_path})")
 
     # Save patched markup
     out = run_dir / "extract.patched.json"
