@@ -155,6 +155,30 @@ def enumerate_candidates(
         key = (css_property, wp)
         result.setdefault(key, []).append(attr_name)
 
+    # COLUMN-FIRST shadow (declarative, FR-31-5.2/5.3, D281). A block that DECLARES
+    # css_property on an attr (block_attributes.css_property) resolves via that attr
+    # at runtime (db_lookup column-first-else-suffix), SHADOWING any suffix-derived
+    # candidate for the same (css_property, writer_path). Mirror it here so F6's
+    # ambiguity view + the lift surface reflect what actually resolves — else F6
+    # would enumerate a shadowed suffix attr and misreport the producer set.
+    # Two COLUMN attrs for one key stay ≥2 = a REAL ambiguity F6 must flag.
+    try:
+        col_rows = conn.execute(
+            "SELECT css_property, attr_name FROM block_attributes "
+            "WHERE block_slug = ? AND css_property IS NOT NULL",
+            (block_slug,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        col_rows = []  # css_property column absent (pre-seed DB) — nothing declared.
+    col_by_key: dict[tuple[str, str], list[str]] = {}
+    for css_property, attr_name in col_rows:
+        if attr_name not in declared:
+            continue
+        key = (css_property, _writer_path(css_property))
+        col_by_key.setdefault(key, []).append(attr_name)
+    for key, attrs in col_by_key.items():
+        result[key] = attrs  # column attrs shadow suffix-derived candidates
+
     return result
 
 

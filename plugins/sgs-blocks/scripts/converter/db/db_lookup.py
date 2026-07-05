@@ -572,6 +572,65 @@ def tag_identity_attrs(block_slug: str) -> dict[str, frozenset[str]]:
     return out
 
 
+@functools.lru_cache(maxsize=4096)
+def declared_attrs_for_css_property(
+    block_slug: str,
+    css_property: str,
+    css_layer: "str | None" = None,
+) -> "tuple[str, ...]":
+    """Column-first declarative CSS-property → attr lookup (Spec 31 FR-31-5.2/5.3).
+
+    Returns the ordered tuple of attr names the block DECLARES for ``css_property``
+    (optionally constrained to ``css_layer``) via the ``block_attributes.css_property``
+    / ``css_layer`` columns — the DECLARATIVE replacement for name-guessing that
+    strands mismatched attrs (``colourBorder`` never ``endswith`` the ``BorderColour``
+    suffix). Empty tuple when the block declares no override for this property.
+
+    Semantics (the council must-fixes, D281):
+      * ``css_property IS NULL`` on an attr means "not corrected" — it never enters
+        this path; only a non-NULL ``css_property`` declaration matches. NULL is NOT
+        overloaded with OUTER/self.
+      * ``css_layer=None`` → layer-agnostic (any layer), for ``attr_for_property`` /
+        ``_css_prop_maps_to_typed_attr`` (their contract is first-by-rowid).
+      * ``css_layer='OUTER'|'CONTENT'|'GRID'|'GRID_AREA'`` → that layer OR a NULL
+        (self/OUTER-default) layer, for ``attr_for_layer_property``.
+      * ``ORDER BY rowid`` preserves determinism, matching the suffix fallback.
+      * Callers decide the ambiguity policy on a ≥2 result (the layer resolver
+        raises ``AmbiguousLayerAttrError``; the first-wins resolvers take [0]).
+
+    Defensive: the columns are DERIVED (seeded by ``/sgs-update`` from
+    ATTR_CLASSIFICATION_OVERRIDES). On a pre-seed DB the columns may not exist —
+    an ``OperationalError`` is swallowed and treated as "no declaration", so the
+    caller falls back to today's suffix resolver UNCHANGED (parity-neutral by
+    construction: the ~650 undeclared attrs never enter this path).
+    """
+    if not block_slug or not css_property:
+        return ()
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        if css_layer is None:
+            rows = conn.execute(
+                "SELECT attr_name FROM block_attributes "
+                "WHERE block_slug = ? AND css_property = ? "
+                "ORDER BY rowid",
+                (block_slug, css_property),
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT attr_name FROM block_attributes "
+                "WHERE block_slug = ? AND css_property = ? "
+                "AND (css_layer = ? OR css_layer IS NULL) "
+                "ORDER BY rowid",
+                (block_slug, css_property, css_layer),
+            ).fetchall()
+    except sqlite3.OperationalError:
+        # css_property/css_layer column absent (pre-seed DB) → no declaration.
+        return ()
+    finally:
+        conn.close()
+    return tuple(r[0] for r in rows)
+
+
 @functools.lru_cache(maxsize=256)
 def get_block_composition_role(block_slug: str) -> str | None:
     """Return composition_role from block_composition table for a block.
@@ -1452,6 +1511,26 @@ def css_property_has_suffix_row(css_property: str) -> bool:
 
 
 
+def _kind_from_ps_row(kind_override: "str | None", ps_role: "str | None") -> str:
+    """Derive the value-conversion kind for a property_suffixes row.
+
+    kind_override is the DB-first value; else a role-based fallback. Extracted so
+    the suffix loop AND the column-first pre-check in ``attr_for_property`` derive
+    kind identically (the fallback path is behaviour-identical — the conformance
+    goldens pin it)."""
+    if kind_override:
+        return kind_override
+    if ps_role == "color":
+        return "colour"
+    if ps_role == "typography":
+        return "number_px"  # safe fallback; actual conversion in the writer
+    if ps_role == "layout":
+        return "number_px"
+    if ps_role == "visual":
+        return "string"
+    return "string"
+
+
 @functools.lru_cache(maxsize=4096)
 def attr_for_property(
     block_slug: str,
@@ -1524,6 +1603,24 @@ def attr_for_property(
     if not block_attr_map:
         return None
 
+    # Step 1a — COLUMN-FIRST (declarative, FR-31-5.2/5.3, D281). A block that
+    # DECLARES css_property on one of its attrs wins over suffix name-guessing
+    # (fixes the naming-mismatch strand: colourBorder never endswith BorderColour).
+    # First-by-rowid matches this function's first-wins contract; kind/writer_path
+    # keep the same DB semantics (from the property_suffixes rows already fetched).
+    # An undeclared property returns () → the suffix loop below runs UNCHANGED
+    # (parity-neutral: the ~650 undeclared attrs never enter this path).
+    declared = declared_attrs_for_css_property(block_slug, css_property)
+    if declared and declared[0] in block_attr_map:
+        attr_name = declared[0]
+        writer_path = "typography" if css_property in _TYPOGRAPHY_CSS_SCOPE else "wrapper_css"
+        _first_suffix, _first_role, _first_kind_override = rows[0]
+        kind = _kind_from_ps_row(_first_kind_override, _first_role)
+        _trace("attr_for_property_column",
+               block_slug=block_slug, css_property=css_property,
+               attr_name=attr_name, writer_path=writer_path, kind=kind)
+        return (writer_path, attr_name, kind)
+
     for suffix, ps_role, kind_override in rows:
         # Step 2a: derive candidate attr name.
         override_key = (css_property, suffix)
@@ -1544,19 +1641,8 @@ def attr_for_property(
         else:
             writer_path = "wrapper_css"
 
-        # Infer kind (mirrors _kind_for logic; kind_override is the DB-first value).
-        if kind_override:
-            kind = kind_override
-        elif ps_role == "color":
-            kind = "colour"
-        elif ps_role == "typography":
-            kind = "number_px"  # safe fallback; actual conversion in the writer
-        elif ps_role == "layout":
-            kind = "number_px"
-        elif ps_role == "visual":
-            kind = "string"
-        else:
-            kind = "string"
+        # Infer kind (kind_override is the DB-first value; else role-based).
+        kind = _kind_from_ps_row(kind_override, ps_role)
 
         _trace("attr_for_property_dispatch",
                block_slug=block_slug, css_property=css_property,
@@ -2900,6 +2986,27 @@ def attr_for_layer_property(
             css_property=css_property,
         )
         return None
+
+    # COLUMN-FIRST (declarative, FR-31-5.2/5.3, D281). A block that DECLARES this
+    # css_property at this layer wins over suffix name-guessing. The MF-4 loud-fail
+    # contract is PRESERVED: ≥2 declared attrs for one (block, layer, property)
+    # raise AmbiguousLayerAttrError (never a rowid-pick). An undeclared property
+    # returns () → the suffix loop below runs UNCHANGED (parity-neutral).
+    _declared = declared_attrs_for_css_property(block_slug, css_property, css_layer=layer)
+    if len(_declared) > 1:
+        raise AmbiguousLayerAttrError(
+            f"MF-4 (column): ({block_slug}, {layer}, {css_property}) DECLARES "
+            f"{len(_declared)} candidate attrs {list(_declared)} via css_property/"
+            f"css_layer — refusing to pick. Fix the ATTR_CLASSIFICATION_OVERRIDES "
+            f"declaration so only one attr owns this (layer, property)."
+        )
+    if _declared:
+        _trace(
+            "attr_for_layer_property_column",
+            block_slug=block_slug, layer=layer,
+            css_property=css_property, attr_name=_declared[0],
+        )
+        return _declared[0]
 
     # Collect property_suffixes rows for the given css_property.
     # For CONTENT layer + max-width, also include 'width' rows so that

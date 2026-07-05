@@ -327,6 +327,16 @@ def _css_prop_maps_to_typed_attr(block_slug: str, css_prop: str) -> bool:
     slot-name, and background.
     """
     db = _get_db()
+
+    # Column-first (declarative, FR-31-5.2/5.3, D281): a block that DECLARES
+    # css_prop on an attr (via block_attributes.css_property) maps to a typed
+    # attr — this is the D1-lift gate, so a declared property lifts to D1 instead
+    # of stranding in D2 (the naming-mismatch strand fix: colourBorder never
+    # endswith the BorderColour suffix). Undeclared → the endswith suffix scan
+    # below runs UNCHANGED (parity-neutral for the ~650 undeclared attrs).
+    if db.declared_attrs_for_css_property(block_slug, css_prop):
+        return True
+
     attrs = db.block_attrs(block_slug)
 
     for prop, suffix, _kind in _css_prop_suffixes():

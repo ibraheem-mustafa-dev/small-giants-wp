@@ -91,6 +91,11 @@ def _mock_block_attrs(slug: str) -> dict:
     return {}
 
 _mock_db.block_attrs.side_effect = _mock_block_attrs
+# Column-first declarative lookup (FR-31-5.2/5.3, D281): these tests exercise the
+# suffix-name-guess FALLBACK, so nothing is declared — return () (empty). Without
+# this the auto-MagicMock returns a truthy Mock, making every property falsely
+# "map to a typed attr" and stranding nothing to D2/D3.
+_mock_db.declared_attrs_for_css_property.return_value = ()
 
 # css_property_suffixes: a minimal set for routing.
 # Returns list of (css_property, suffix, kind).
