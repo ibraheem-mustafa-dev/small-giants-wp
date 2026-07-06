@@ -175,6 +175,12 @@ def convert_section(html: str, css: str, media_map: dict,
         attribute carries ``sgs-{section_id}``. Idempotent.
     """
     from converter.services.section_passes import set_trace_fn
+    from converter.services.styling_helpers import configure_colour_resolution_from_run
+
+    # Build (once per run, memoised) the draft `:root` colour map + the client's
+    # theme palette map so draft `var(--X)` colours snap to the correct theme
+    # token (P-DRAFT-CSSVAR). Inert when no client/theme-snapshot is available.
+    configure_colour_resolution_from_run(css, client_slug, repo_root)
 
     set_trace_fn(_bind_trace(trace, boundary_id))
     try:

@@ -72,6 +72,171 @@ _VAR_TOKEN_RE = re.compile(r"var\(--(?:wp--preset--color--)?([a-z0-9-]+)\)")
 
 
 # ---------------------------------------------------------------------------
+# Draft `var(--X)` colour resolution → theme-token snap (P-DRAFT-CSSVAR)
+# ---------------------------------------------------------------------------
+#
+# A draft mockup declares its colours as `var(--X)` referencing custom
+# properties in its own `:root { }` block (e.g. `--border:#E8D5C0`). Those are
+# DRAFT-scoped names, NOT WordPress theme tokens. Emitting `var:preset|color|X`
+# for a bare draft name renders `var(--wp--preset--color--X)` on the page, which
+# does not resolve when the theme has no token of that exact slug — it falls to
+# `currentColor` (the proven ghost-button dark-border bug: draft `--border`
+# maps to the theme token slug `border-subtle`, not bare `border`).
+#
+# Resolution (all runtime DATA — R-31-1, no hardcoded colour dicts):
+#   1. Build the draft `:root` colour map {slug: hex} once per run from the
+#      draft CSS.
+#   2. Build the theme palette map {hex: theme-slug} once per run from the
+#      client's `theme-snapshot.json` colours.
+#   3. For each colour value: a `var(--wp--preset--color--Y)` is left UNCHANGED
+#      (already a theme token). A bare `var(--X)` whose X is a draft `:root`
+#      colour prop is resolved to the concrete hex, then EXACT-HEX snapped to
+#      the theme palette → `var(--wp--preset--color--{theme-slug})`; if no exact
+#      palette match, the concrete hex literal is emitted (still resolves on the
+#      page). Any other `var(--X)` is left unchanged (current behaviour).
+#
+# The feature is GATED on a non-empty theme palette (its required input): with
+# no palette configured there is nothing to snap against, so resolution is inert
+# and every colour value passes through byte-identically to prior behaviour.
+
+# Module-level per-run resolution maps. Populated by
+# ``configure_colour_resolution`` / ``configure_colour_resolution_from_run``
+# (once per run — never per declaration). Empty = feature inactive.
+_DRAFT_ROOT_COLOUR_MAP: dict[str, str] = {}   # draft :root slug (lower) → hex (lower)
+_THEME_PALETTE_MAP: dict[str, str] = {}       # hex (lower) → theme palette slug
+
+# Cache key so ``configure_colour_resolution_from_run`` (called once per
+# section) rebuilds the maps only when the (client, css) inputs change.
+_RESOLUTION_CACHE_KEY: tuple | None = None
+
+_ROOT_BLOCK_RE = re.compile(r":root\s*\{([^}]*)\}", re.DOTALL)
+_CUSTOM_PROP_RE = re.compile(r"--([a-zA-Z0-9-]+)\s*:\s*([^;]+);", re.DOTALL)
+_HEX_RE = re.compile(r"^#[0-9a-fA-F]{3,8}$")
+
+
+def build_draft_root_colour_map(css: str) -> dict[str, str]:
+    """Parse `--name:#hex` pairs from every `:root { }` block in ``css``.
+
+    Returns ``{name(lower): hex(lower)}`` for custom properties whose value is a
+    literal hex colour. Non-hex values (e.g. ``var(--other)``, keywords) are
+    skipped — the snap needs a concrete hex.
+    """
+    out: dict[str, str] = {}
+    if not css:
+        return out
+    for block in _ROOT_BLOCK_RE.findall(css):
+        for m in _CUSTOM_PROP_RE.finditer(block):
+            name = m.group(1).strip().lower()
+            val = m.group(2).strip()
+            if _HEX_RE.match(val):
+                out[name] = val.lower()
+    return out
+
+
+def build_theme_palette_map(palette: list) -> dict[str, str]:
+    """Build ``{hex(lower): slug}`` from a theme-snapshot colour palette list.
+
+    Each entry is ``{"slug": ..., "color": ...}``. Only entries with a literal
+    hex ``color`` are indexed (slug-alias entries whose ``color`` is another slug
+    are skipped). First slug wins on a duplicate hex (palette order).
+    """
+    out: dict[str, str] = {}
+    for entry in palette or []:
+        if not isinstance(entry, dict):
+            continue
+        slug = entry.get("slug")
+        colour = entry.get("color") or entry.get("colour")
+        if slug and isinstance(colour, str) and _HEX_RE.match(colour.strip()):
+            out.setdefault(colour.strip().lower(), slug)
+    return out
+
+
+def configure_colour_resolution(
+    draft_root_map: dict[str, str] | None,
+    theme_palette_map: dict[str, str] | None,
+) -> None:
+    """Set the per-run draft-var resolution maps (built from runtime data)."""
+    global _DRAFT_ROOT_COLOUR_MAP, _THEME_PALETTE_MAP
+    _DRAFT_ROOT_COLOUR_MAP = dict(draft_root_map or {})
+    _THEME_PALETTE_MAP = dict(theme_palette_map or {})
+
+
+def reset_colour_resolution() -> None:
+    """Clear the resolution maps (feature inactive → pass-through)."""
+    global _DRAFT_ROOT_COLOUR_MAP, _THEME_PALETTE_MAP, _RESOLUTION_CACHE_KEY
+    _DRAFT_ROOT_COLOUR_MAP = {}
+    _THEME_PALETTE_MAP = {}
+    _RESOLUTION_CACHE_KEY = None
+
+
+def _load_theme_palette_map(client_slug: str, repo_root: Any) -> dict[str, str]:
+    """Load ``{hex: slug}`` from ``<repo_root>/sites/<client>/theme-snapshot.json``.
+
+    Best-effort: a missing/unreadable/malformed snapshot returns ``{}`` (feature
+    stays inert rather than breaking the run).
+    """
+    if not client_slug or repo_root is None:
+        return {}
+    import json
+    import pathlib
+    path = pathlib.Path(repo_root) / "sites" / client_slug / "theme-snapshot.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    palette = (
+        ((data.get("settings") or {}).get("color") or {}).get("palette")
+    ) or []
+    return build_theme_palette_map(palette)
+
+
+def configure_colour_resolution_from_run(
+    css: str,
+    client_slug: str = "",
+    repo_root: Any = None,
+) -> None:
+    """Build + install the resolution maps for a converter run (memoised).
+
+    Called once per section by ``converter.entry.convert_section``; the maps are
+    rebuilt only when the (client, css) inputs change, so a multi-section run
+    parses the draft `:root` + theme snapshot ONCE, not per declaration.
+    """
+    global _RESOLUTION_CACHE_KEY
+    key = (client_slug or "", hash(css or ""))
+    if key == _RESOLUTION_CACHE_KEY:
+        return
+    draft_map = build_draft_root_colour_map(css or "")
+    palette_map = _load_theme_palette_map(client_slug, repo_root)
+    configure_colour_resolution(draft_map, palette_map)
+    _RESOLUTION_CACHE_KEY = key
+
+
+def _resolve_draft_colour_var(raw: str) -> str:
+    """Rewrite draft `var(--X)` colours to a theme token (or concrete hex).
+
+    Inert (returns ``raw`` unchanged) unless a theme palette is configured — the
+    feature's required snap input. See the module block comment above.
+    """
+    if not raw or not _THEME_PALETTE_MAP or "var(--" not in raw:
+        return raw
+
+    def _repl(m: "re.Match[str]") -> str:
+        full = m.group(0)
+        slug = m.group(1)
+        if "wp--preset--color--" in full:
+            return full  # already a WP theme token — leave slug intact
+        hexval = _DRAFT_ROOT_COLOUR_MAP.get(slug.lower())
+        if hexval is None:
+            return full  # not a known draft :root colour prop — unchanged
+        theme_slug = _THEME_PALETTE_MAP.get(hexval.lower())
+        if theme_slug:
+            return f"var(--wp--preset--color--{theme_slug})"
+        return hexval  # no palette match → concrete hex literal (resolves on page)
+
+    return _VAR_TOKEN_RE.sub(_repl, raw)
+
+
+# ---------------------------------------------------------------------------
 # _parse_decls (convert.py:367 — ported verbatim, private)
 # ---------------------------------------------------------------------------
 
@@ -104,8 +269,12 @@ def extract_token_or_hex(value: str) -> str | None:
 
     Returns the token slug (e.g. ``'primary'`` from ``var(--wp--preset--color--primary)``),
     the raw hex (e.g. ``'#ff0000'``), or ``None`` when neither pattern matches.
+
+    A draft-scoped ``var(--X)`` (X ∈ the draft `:root` colour map) is first
+    resolved to its concrete hex + snapped to the theme palette slug — see
+    ``_resolve_draft_colour_var`` (inert unless a theme palette is configured).
     """
-    v = value.strip()
+    v = _resolve_draft_colour_var(value.strip())
     m = _VAR_TOKEN_RE.search(v)
     if m:
         return m.group(1)
