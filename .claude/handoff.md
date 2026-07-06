@@ -5,6 +5,36 @@ thread: single thread (cloning pipeline)
 session_date: 2026-07-06
 ---
 
+# Session Handoff — 2026-07-06c (D283 — BLOCK-SIDE FIXES: testimonial layer-model + infinite-loop slider + button full-width + multi-button dedupe + button preset-as-seed + product-card built-in CTA; items 4+5 deferred)
+
+## Completed This Session (6 commits, all pushed + LANDED on page 8)
+1. **Testimonial layer-model reframe + slider default-variant inheritance + true infinite-loop carousel** (`401b5bdb`). De-styled the outer `__slide` card chrome (card-in-a-card gone — inner `sgs/testimonial` owns the chrome; slide wrapper positioning-only). `cardStyle` repurposed as a slider-level DEFAULT variant via block context (`providesContext sgs/testimonialVariant` → testimonial `usesContext` + render fallback own→context→classic-card; variant default ""=inherit). view.js REWRITTEN from the clamping native-scroll model to a transform-based infinite carousel (edge-cloned seamless wrap + modular index + re-added pointer/touch swipe). LANDED: single card, cycles 0-1-2-0 infinitely incl. all-3-visible, zero JS errors. (testimonial-slider 0.3.1→0.3.4, testimonial →0.3.4.)
+2. **Button full-width fix** (`2529c9a4`). `.sgs-button-wrapper--full { flex:0 0 100% }` so a full-width button fills the line even as a flex item (multi-button row / container flex); removed the dead `.sgs-button--full` class; editor==frontend parity. LANDED: wrapper 199px→350px in a live flex-wrap row. (button 1.2.0→1.2.1.)
+3. **Multi-button dedupe** (`54abf04d`). Removed 24 dead layout-mirror attrs (grid*/columns*/templateMode/flexDirection/flexWrap) the editor exposed but render (kind='content') never emitted; editor kind layout→content; Gap control moved into the block's own panel. Frontend unchanged (LANDED). (1.1.0→1.2.0.)
+4. **Button preset-as-seed** (button `9e6d9622` + multi-button apply-to-all `95e8f432`, Bean-approved: REMOVE the old locked-preset system). render.php always paints from attrs (`$is_custom` gate + `.is-style-*` CSS removed); NEW `button/presets.js` BUTTON_PRESETS; "Style preset" dropdown + separate "Apply preset" button (no accidental reset); fresh buttons default primary; multi-button "Apply to all buttons" iterates child sgs/button blocks. LANDED: 6 real buttons render faithfully (coral primary from attrs). Existing secondary/outline presets need re-apply (D270, no deprecations). (button 1.2.1→1.3.0, multi-button 1.2.0→1.3.0.)
+5. **Product-card built-in CTA — preset-as-seed styling** (`d7039a79`, via /subagent-driven-development: implementer + spec+quality review + 2 fix-loops). NEW `includes/helpers-button-style.php` (`sgs_button_element_style_css` — reusable colour/border/radius/font-weight/font-size/padding/full-width emitter for a built-in button element, reuses BUTTON_PRESETS + sgs_colour_value); product-card gains 15 `cta*` attrs + a bound-mode "CTA Button Style" panel (preset dropdown+Apply + controls); CTA style.css defaults moved to `:where(.product-card) .sgs-button` (spec 0) so TYPED cards keep defaults + BOUND `cta*` attrs override; font-family now inherits the theme (dropped hardcoded Inter). **ZERO edits to the sgs/button block.** LANDED: typed CTAs on page 8 unchanged (no regression). (product-card 1.16.8→1.16.9.)
+6. **check-hardcoded-render-defaults.js E11 — selector-aware gate governance** (in `d7039a79`). A prefixed-helper attr (`sgs_button_element_style_css`/`sgs_typography_css_rule`) governs ONLY its call-site selectors, so `ctaBorderRadius`/`ctaPadding*`/`ctaFontSize` no longer false-flag the unrelated `.pill`/trial-tag radii. Native-attr E1/E6 behaviour UNCHANGED. Plant-tested both directions (0 net-new; planted CTA hardcode correctly flagged 3). The correct "broaden-the-gate-don't-baseline" fix.
+7. **DB rebuilt** (`/sgs-update` 11 stages): synced the item-3 block.json changes (1 block + 18 attrs), pruned 20 orphan attr rows (STOP-58 cleanup from the multi-button dedupe), regenerated 02-SGS-BLOCKS-REFERENCE.md (196 blocks).
+
+## Current State
+- **Branch:** main at `d7039a79` (pushed). This session: `401b5bdb` `2529c9a4` `54abf04d` `9e6d9622` `95e8f432` `d7039a79` (+ this doc set).
+- **Build/gates:** `npm run build` exit 0; check-dead-controls 0 net-new; check-hardcoded-render-defaults (F3) 0 net-new (17 baseline debt); the converter test suite + cheat/F6 gates untouched (no converter changes this session).
+- **Live:** plugin deployed to sandybrown; page 8 verified — testimonial slider (de-style + infinite loop) + buttons (full-width, preset-driven coral) + multi-button (unchanged) + product-card typed CTAs (unchanged) all correct.
+- **D-ceiling:** D283 (this session). **Uncommitted:** pre-existing only (reports/phase4-*, mockup captures, HTML_Insert.html, untracked sgs-framework.db, lucide-icons.php) + this doc set.
+
+## Known Issues / Deferred (→ next session, see the rewritten one-time prompt)
+- **Item 4 — CSS-property column seeding** (D281 mechanism shipped; 0 seeded rows). Seed the ~50-80 naming-mismatch corrections out of the 2,461-row `attribute_gap_candidates` ledger via the sanctioned channel, commit-per-correction, LANDED. Part blocked on `P-DRAFT-CSSVAR-COLOUR-RESOLUTION`.
+- **Item 5 — Capability-roster 3-wave rollout** (D280 pre-audited; 4 latent boolean-mis-seeds to fix first).
+- **Typed-mode option-picker in cloning** (Bean, NEW) — the typed product-card's option-picker must start working in the cloning process; fix FIRST next session, before items 4+5.
+- **Product-card bound-mode CTA — LANDED pending:** the new bound-mode `cta*` editability is code-reviewed + gate-green + plant-tested but NOT exercisable on the typed page-8 clone (no WooCommerce-bound product-card). Confirm on a real bound product next session.
+
+## Notes for Next Session
+- **The shared `includes/helpers-button-style.php` is the reuse path** for giving ANY built-in button element the preset-as-seed styling — extend it to other built-in buttons (buybox/whatsapp-cta) rather than duplicating.
+- **The E11 selector-aware F3 gate** is the pattern for any future prefixed-helper attr — it governs by the render.php call-site selector, not the attr name.
+- Block-editor Apply/apply-to-all (button + multi-button + product-card CTA) are built with standard WP editor APIs but not click-confirmed in the editor — a belt-and-braces editor pass is low-risk.
+
+---
+
 # Session Handoff — 2026-07-06b (D282 — QC batch: L3 gap-gate fix [closes #1] + #4/#9 hardcoded-default removals + hero splitGap de-dupe + dead-schema cleanup; D2 no longer deployed)
 
 ## Completed This Session

@@ -1,101 +1,82 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: BLOCK-SIDE FIXES — testimonial-slider layer-model reframe + button full-width audit
-generated: 2026-07-06
-status: ALTERNATE SESSION PROMPT (distinct from the container L1-L4 cascade deep-dive in next-session-prompt.md — pick THIS one for the two block-side fixes)
-primary_goal: "Two focused block-side fixes, root-cause-first. (1) Testimonial-slider/testimonial: remove the two-card-layer flaw — the grid-item wrapper carries the card's visual styling (shadow/bg/radius) so the shadow wraps the whole grid area, not each review. Reframe so visual card styling lives on the INNER review card; the slide wrapper is a grid-item positioning layer (gap/padding only). (2) Button: full-width (widthType='full') setting is not landing — full audit of the button width system (a lot of prior work: Spec 11 architecture, presets, per-device width, colour attrs) and fix."
+thread: DEFERRED PIPELINE/DB WORK — typed-mode option-picker cloning fix → CSS-property column seeding → capability-roster rollout
+generated: 2026-07-06 (rewritten at the D283 close; the block-side fixes this prompt originally held are DONE — see handoff.md D283)
+status: ALTERNATE SESSION PROMPT (distinct from the container L1-L4 cascade deep-dive in next-session-prompt.md). Pick THIS one for the three deferred pipeline/DB tasks below.
+primary_goal: "Three pipeline/DB tasks, IN ORDER: (0) make the TYPED-mode product-card option-picker actually work through the cloning process; (1) seed the ~50-80 naming-mismatch corrections into the css_property/css_layer column (mechanism already shipped D281, 0 rows seeded); (2) apply the capability-roster 3-wave rollout after fixing the 4 latent mis-seeds. Each LANDED + committed before the next."
 ---
 
-# ALTERNATE NEXT SESSION — block-side fixes: testimonial layer-model + button full-width audit
+# NEXT SESSION — deferred pipeline/DB work (typed option-picker cloning → CSS-column seeding → capability rollout)
 
-Invoke /autopilot first. **This is a distinct session from the container L1-L4 cascade deep-dive** (that lives in `next-session-prompt.md`). Pick THIS prompt when the goal is the two block fixes below. Root-cause-first (systematic-debugging) — prove each cause on the live DOM before fixing; LANDED on page 8 + Bean's eye before commit.
+Invoke /autopilot first. **This is high-stakes cloning-engine + DB work — do it on fresh context, root-cause-first, LANDED-before-commit.** The D283 session shipped 6 block-side fixes + the product-card built-in CTA; these three pipeline tasks were deferred here deliberately (they need clean context + a DB rebuilt). Read Spec 31 IN FULL first (STOP-26).
 
-**Agent identity.** SGS block developer-diagnostician: root-cause each defect against the live DOM + block source + DB, fix the block (render.php/style.css/edit.js/block.json) as a SYSTEM (shared components, the cascade, the spec), LANDED-verify, /qc before commit. Prove the premise on the real element (STOP-43); the LANDED live computed-style is the arbiter, never emit-green.
+**State recap (plain English).** Branch main at `d7039a79`. Block fixes done + LANDED (handoff.md D283). The `css_property`/`css_layer` declarative column MECHANISM shipped at D281 but is EMPTY (0 seeded rows); the `attribute_gap_candidates` ledger has 2,461 rows. The capability-roster rollout was pre-audited at D280 (4 latent boolean-mis-seeds found) but never applied. D2 is NOT deployed (honest page; parity content 96 / CSS 70-71-71). The DB rebuilds via `/sgs-update` (the working copies are 0-byte until then).
 
-**State recap (plain English).** D282 closed the page-8 QC batch (D2 no longer deployed → honest page; parity content 96 / CSS 70-71-71). Two block-side items surfaced that are NOT container-cascade work: (a) the D282 #9 testimonial fix (slide bg → transparent) EXPOSED a layer-model flaw Bean flagged; (b) the button full-width setting isn't landing and the block has had a lot of work (this session ungated its colour attrs + fixed `sgs_colour_value` var() passthrough) so it needs a full audit. Baselines: main; D-ceiling was D282 (verify); 872 tests; cheat-gate 33 baselined 0 NEW.
-
-## Mandatory READING (tick each; read WHOLE docs; verify vs ground truth)
-1. [ ] `.claude/specs/11-*` (button architecture — the FULL width/preset/colour model) + `.claude/specs/02-*` (blocks reference: testimonial + testimonial-slider entries).
-2. [ ] `.claude/handoff.md` top entry (D282) + `.claude/decisions.md` D-ceiling (`grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1`).
-3. [ ] `plugins/sgs-blocks/CLAUDE.md` — Block Customisation Standard + the HC2 "parent owns LAYOUT, child owns TYPOGRAPHY" rule + the shared-component mandate (TypographyControls, DesignTokenPicker, ResponsiveControl).
-4. [ ] The live page 8 (creds `.claude/secrets/sandybrown.env`) — inspect the actual testimonial + button DOM before theorising.
+## Mandatory READING (tick each; read WHOLE docs)
+1. [ ] `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — IN FULL. §3.A CSS branch + §13.4 FR-31-5.2/5.3 (the css_property column mechanism).
+2. [ ] `.claude/plans/2026-07-05-css-property-column-design.md` — the COUNCIL OUTCOME block (seed-only-the-corrections, column-first-else-fallback, the 5 must-fixes). Build THAT, not the superseded original.
+3. [ ] `.claude/handoff.md` D283 + D281 + D280 entries; verify D-ceiling (`grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` — was D283).
+4. [ ] `.claude/parking.md` — P-DRAFT-CSSVAR-COLOUR-RESOLUTION (blocks part of the css_property seed), P-PAGE8-QC-BATCH-9, P-MULTIBUTTON-768-WRAP.
+5. [ ] The typed product-card: `plugins/sgs-blocks/src/blocks/product-card/**` + `includes/product-card-builtin-render.php` + the option-picker block + the cloning converter's handling of the option-picker.
 
 ## Pre-flight ritual (answer in your first message)
-1. Branch + D-ceiling verified? Working tree clean?
-2. For each fix: root cause PROVEN on the live element (computed style + the painting selector) BEFORE the fix; LANDED (deploy → re-check live) AFTER?
-3. Shared surface? The button is used EVERYWHERE (every block's CTAs) — a button render/style change is high blast radius → design-gate + Bean approval before a structural change (Rule 7). The testimonial-slider `__slide` wrapper is shared across all testimonial variants.
-4. Bump the block version on EVERY CSS change or the CDN serves stale (STOP-57). Deploy before measure (STOP-21).
+1. Branch + D-ceiling verified? Working tree clean (pre-existing churn only)?
+2. Spec 31 read IN FULL? (Quote one specific thing.)
+3. DB rebuilt this session via `/sgs-update` before any DB-dependent work?
+4. For every fix: root cause PROVEN on the real node/DOM BEFORE (STOP-43); LANDED on page 8 AFTER (STOP-21); pre-commit /qc-council on any converter/DB change (blub 255).
 
-## ⛔ Carry-forward STOP rules (the load-bearing ones for block work)
-- **STOP-21 / STOP-4 — WRITTEN ≠ LANDED.** Deploy the genuine build to page 8 + read computed-style; emit/editor-preview is never the gate.
-- **STOP-43 — prove the premise on the real element**, not code inference (this session two "obvious" causes were disproven live).
-- **STOP-44 — a schema-valid emitted attr can be a RENDER no-op** — verify the class/style PAINTS on the live element.
-- **STOP-56 — a D228 hardcoded default can hide behind another attr's override** — when removing/moving a default, check what it was masking.
-- **STOP-57 — bump block version on CSS change** (CDN caches per `?ver`).
-- **STOP-59 — a block.json-META-only change uses `git commit --no-verify`** (visual-diff gate's own guidance); a CSS/render change needs `reports/visual-diff/<block>-YYYY-MM-DD.md` (PASS + first_paint_capture_passed:true).
-- **HC2 (blocks CLAUDE.md) — parent owns LAYOUT, child owns TYPOGRAPHY.** A parent control duplicating a child capability is a dead control by specificity. Relevant to the testimonial two-layer reframe.
+## ⛔ Carry-forward STOP catalogue (load-bearing — do NOT subtract, D101)
+Carry the FULL STOP-1..59 catalogue from `.claude/next-session-prompt.md` verbatim. The load-bearing ones here:
+- **STOP-43** — prove the premise on the real node, not code inference.
+- **STOP-21/4** — WRITTEN ≠ LANDED; deploy the genuine emit + read live.
+- **STOP-53 (D280)** — replacing a name-guess resolver with a declarative column: seed ONLY the correcting subset, column-first-else-fallback, commit-per-correction. NEVER mass-reverse-derive.
+- **STOP-54 (D280)** — enabling a capability flag wakes EVERY attr it gates; pre-audit each block for latent mis-seeds before flipping.
+- **STOP-24** — a DB change a reseed re-derives must use a reseed-surviving channel (block.json / dated migration / sgs-update seeder / ATTR_CLASSIFICATION_OVERRIDES), never a bare SQLite UPDATE.
+- **STOP-58** — Stage-1 reseed does NOT prune orphaned attr rows; use the full 10-stage `/sgs-update` or a durable prune.
 
 ---
 
-## Task 1 — Testimonial-slider layer-model reframe (Bean's insight 3)
+## Task 0 (FIRST) — Typed-mode product-card option-picker must work in cloning
+**The defect (Bean).** The TYPED-mode product-card's option-picker does not start working through the cloning process. Root-cause on the real draft + live DOM: does the converter recognise + emit the option-picker for a typed product-card? Does the typed built-in render (`includes/product-card-builtin-render.php`) wire the option-picker's Interactivity state? Trace the option-picker from draft → clone emit → live DOM. Fix so a cloned typed product-card ships a working option-picker (no-JS-safe SSR + reactive selection), LANDED on a real cloned card.
+- Ground truth: `/sgs-db` variant_slots + `/wp-blocks schema sgs/option-picker` + `sgs/product-card`; the D164 configurator (Spec 27) for how bound-mode wires it, then the typed equivalent.
+- Orchestration: inline or ONE solo coding subagent; /qc-council pre-commit (shared product-card + option-picker = high blast radius).
 
-**The defect (Bean, D282).** The testimonial slider shows shadow (and previously a cream background) around the WHOLE grid item, not around each review. Root: there are TWO card layers — the grid-item wrapper `.sgs-testimonial-slider__slide--card` (carries `box-shadow: shadow-md` + `border-radius` + `padding`, `testimonial-slider/style.css:45-55`) AND the inner review card `.sgs-testimonial` (its own bg/border/radius/padding). The wrapper's shadow wraps the whole grid area.
+## Task 0b — Product-card: match the button + un-hardcode ALL elements (Bean, D283)
+**The defect (Bean).** (a) One of the product-card MODES' button element is still hardcoded — the **TYPED-mode CTA** (`includes/product-card-builtin-render.php`, `.sgs-button--{style}`) keeps its radius/padding/font-size as `:where(.product-card) .sgs-button` DEFAULTS (added D283 to avoid a typed regression); it must be reworked to be **attr-driven like the normal `sgs/button` block** (reuse the shared `sgs_button_element_style_css` / the button's preset-as-seed model), and its hardcoding matched to the normal button (not a bespoke `:where()` default). (b) **The rest of the product-card's elements** (title, price, pill/badge, trial-tag, ratings, etc.) are still HARDCODED in `product-card/style.css` (font/padding/colour/radius). Rework them so styling is **available per-element in the product-card block settings** — matching the represented standalone block: if the block that element represents (e.g. `sgs/heading` for the title, `sgs/text`, `sgs/icon`) exposes a control and does NOT hardcode that property, the product-card element must NOT hardcode it either — expose the equivalent editable attrs/controls.
+- **Reuse, don't reinvent:** the shared `TypographyControls` component + `sgs_typography_css_rule` helper (per-element typography), `DesignTokenPicker` (colour), and `sgs_button_element_style_css` (button elements). The **E11 selector-aware F3 gate** (D283) is the pattern that lets you move a hardcoded per-element value to an attr without false-flagging siblings — every prefixed-helper attr governs only its call-site selector.
+- **Discipline:** every un-hardcoded property must round-trip to an editable control (the "every pipeline/rendered capability is a client-facing block control" memory) + pass `check-hardcoded-render-defaults` (0 net-new) + `check-dead-controls`. Do NOT baseline; use E11 governance. Orchestration: /subagent-driven-development (implementer + spec+quality review), high blast radius → /qc-council pre-commit. LANDED on page 8 (typed product-cards) + a bound product where possible. Relates to `P-PRODUCT-CARD-BOUND-CTA-LANDED`.
 
-**Bean's reframe (the target architecture).** The area OUTSIDE the review card should NOT be its own visually-styled layer that each card nests in. Each card IS a grid item. The ONLY things that legitimately style the outside-the-card (grid-item) area are **gap + padding** (positioning). Everything visual — **background, shadow, border, radius** — belongs INSIDE the card: routed by **L3** if it's parent-dictated / uniform across all items, or **L4** per grid item individually.
+## Task 1 — CSS-property column seeding (item 4)
+Seed ONLY the ~50-80 naming-mismatch corrections into `block_attributes.css_property`/`css_layer` per the council-reshaped design (plan doc). Mine the corrections from `attribute_gap_candidates` (2,461 rows — identify the NAMING-MISMATCH class: an attr EXISTS but its name doesn't match the property_suffix, so the rule strands to D2). Declare per-block in `block.json supports.sgs` (cssProperty/cssLayer per attr) → the `/sgs-update` seeder materialises to the column → resolver reads column-first-else-fallback (byte-identical for untouched rows). Commit-per-correction; each correction lifts a stranded rule out of D2 → measurable parity gain, LANDED. **Sort blocked vs unblocked:** the button-colour correction is BLOCKED on `P-DRAFT-CSSVAR-COLOUR-RESOLUTION` (draft var() doesn't resolve on deploy) — do the UNBLOCKED corrections (token-slug / literal values that resolve). Address the 5 council must-fixes (grep ≥5 consumers, the reseed diff test, loud-fail contract per call site).
 
-**What:** remove the visual card styling (shadow/bg/radius) from the `__slide--card` grid-item WRAPPER; the review card's visual styling lives on the inner `.sgs-testimonial`. The slide wrapper becomes a positioning layer (the grid gap + any grid-item padding only). Confirm the inner `.sgs-testimonial` (classic-card variant) carries the intended card look; if the "card" cardStyle was providing the visual via the wrapper, move that intent to the inner card (or make the inner card the card and drop the redundant wrapper styling).
-
-**Root-cause-first (do NOT skip):** on the LIVE page 8, walk from the review text OUTWARD — identify every element with a background/shadow/border and its painting selector. Confirm the two-layer duplication (wrapper card + inner card) before editing. Decide with Bean: is the review's card the inner `.sgs-testimonial` (so the wrapper de-styles), or should the slide wrapper BE the card (so the inner de-styles)? This is a `/brainstorming` design decision — Bean agrees the model before you change CSS.
-
-**Orchestration:** inline (main-session) — it's a shared testimonial-slider style.css change (blast radius across all testimonial variants). `/brainstorming` the layer model → agree → edit `testimonial-slider/style.css` (+ the inner `testimonial` block if the visual moves there) → bump version → build → deploy → LANDED (shadow is around each REVIEW, not the grid area, at 375/768/1440 + Bean's eye) → `reports/visual-diff/testimonial-slider-<date>.md` → commit.
-**Acceptance:** the shadow/background/border render around each individual review card, not the whole grid item; the outside-the-card area shows only gap/padding; LANDED + Bean eye.
-
-## Task 2 — Button full-width setting audit + fix
-
-**The defect (Bean).** The button full-width setting isn't working. A LOT of work has been done on the button (Spec 11 architecture, presets, per-device width, the D282 colour-attr ungate + `sgs_colour_value` var() passthrough) — so this needs a FULL audit, not a spot-fix.
-
-**What:** audit the whole button width system + fix the full-width path.
-- **Width model:** `widthType` enum (fit / custom / full) + `customWidth`/`customWidthUnit` + per-device `widthTypeTablet/Mobile` + `customWidthTablet/Mobile` (`button/render.php:47-59`; the width `<style>` emit is around render.php:490-540, gated `if ( $has_width_tier || 'custom' === $width_type || 'full' === $width_type )`). Trace why `widthType='full'` does NOT produce `width:100%` on the live `<a>` — is the attr set in the editor? emitted? does the render branch fire? does the emitted rule PAINT (specificity vs `.sgs-button` base `display:inline-flex`)? A full-width inline-flex button needs `width:100%` AND the parent to allow it (a flex/grid parent may constrain it).
-- **Editor control:** does edit.js expose the full-width option + does picking it set `widthType='full'`?
-- **Full audit scope (a lot of prior work — check for regressions):** the preset system (inheritStyle primary/secondary/outline), the D282 colour-attr ungate (colourText/Background/Border now paint whenever set — confirm no preset regressions), the per-device typography (shared TypographyControls), the border/radius/box-shadow controls, hover states. Look for dead controls (HC2), duplicate settings, and any attr the editor exposes that render.php doesn't paint (STOP-44).
-
-**Root-cause-first:** on the LIVE page (or a test button set to full-width in the editor), read the computed `width` + the painting selector + whether the width `<style>` block emitted. Prove why 'full' doesn't land BEFORE fixing. Use a test page / the editor with the sandybrown creds — set a button to full-width, save, inspect.
-
-**Orchestration:** the button is the highest-blast-radius block (every CTA everywhere). Design-gate any structural change (Rule 7). `/qc-council` (or 2-rater) pre-commit. Inline or ONE solo coding subagent. Bump version → build → deploy → LANDED (a full-width button computes `width:100%` and spans its container) → visual-diff report → commit.
-**Acceptance:** `widthType='full'` renders a full-width button on the live DOM (computed `width` = container width) at all tiers; the audit surfaces + fixes any dead/duplicate/unpainted width or related controls; no preset/colour regression from the D282 changes.
+## Task 2 — Capability-roster 3-wave rollout (item 5)
+Apply the D280 pre-audited 3-wave rollout (the paste-ready per-block overrides + capability flag flips). FIRST fix the 4 latent boolean-mis-seeds the pre-audit found (a boolean/non-CSS attr mis-classed role=color/typography would corrupt a raw string on the flip — STOP-54). Stage: Wave-1 flag-only / Wave-2 overrides-then-enable / Wave-3 exclude. LANDED per wave (the lifted per-element typography lands on the live page → parity CSS gain).
 
 ## Skills to Invoke
 | Skill | When |
 |-------|------|
 | /autopilot | FIRST |
-| /systematic-debugging | root-cause each defect on the live DOM before fixing |
-| /brainstorming | the testimonial layer-model reframe (Task 1) is a design decision — agree with Bean |
-| /sgs-wp-engine | SGS block work (GROUND-TRUTH line before edits; shared-component mandate) |
-| /wp-block-development | render.php / edit.js / block.json changes |
-| /qc-council | pre-commit on the button (shared, high blast radius) |
-| /gap-analysis | grade the fixes before delivery |
-| /sgs-db /wp-blocks | button + testimonial attr/supports ground truth |
+| /systematic-debugging | root-cause each defect on the live DOM/real node before fixing |
+| /sgs-clone /sgs-db /wp-blocks | cloning runs + DB ground truth |
+| /sgs-update | rebuild the DB (working copies are 0-byte) + reseed after column/capability changes |
+| /qc-council | pre-commit on every converter/DB/shared-block change (blub 255) |
+| /sgs-wp-engine | SGS ground truth for the option-picker + product-card |
 | /verify-loop /handoff /capture-lesson | 2-attestation / session close |
 
 ## Tool bindings
 | Tool | For |
 |------|-----|
-| Playwright / chrome-devtools | LANDED computed-style + painting-selector walk on page 8 / editor |
-| `python ~/.claude/hooks/wp-blocks.py schema sgs/button` (+ testimonial-slider) | attr/supports ground truth |
-| PowerShell `npm run build` → `build-deploy.py --target sandybrown --skip-build --allow-dirty` | deploy (bump block version — STOP-57) |
-| editor login (creds `.claude/secrets/sandybrown.env`) | set a button to full-width + inspect |
+| Playwright / chrome-devtools | LANDED computed-style + option-picker interaction on page 8 / a cloned card |
+| `python ~/.claude/hooks/wp-blocks.py schema <slug>` + `sgs-db.py sql` | attr/supports/variant_slots ground truth |
+| `node plugins/sgs-blocks/scripts/parity/computed-parity.js` | honest parity (Stage 11.6) |
+| PowerShell `npm run build` → `build-deploy.py --target sandybrown` | deploy (bump block version on CSS change — STOP-57) |
 
 ## Agents to Delegate To
 | Agent | When |
 |-------|------|
-| wp-sgs-developer | the button audit + testimonial reframe (block-side build) |
-| design-reviewer | visual QA of both fixes at 375/768/1440 |
-| Explore / general-purpose (read-only) | the button full-audit sweep (dead controls / duplicates / unpainted attrs) |
+| Explore / general-purpose (read-only, parallel OK) | ledger-mining the ~50-80 stranding attrs; option-picker cloning tracers; capability mis-seed pre-audit re-check |
+| solo general-purpose coding subagent (foreground) | agreed fixes — ONE at a time, named files, spawn-no-agents; main-session-verified (STOP-16/39) |
 
-## Methodology guardrails
-- Root cause PROVEN on the live element before any fix (STOP-43); LANDED after (STOP-21/4).
-- Bump block version on every CSS change (STOP-57); deploy before measure.
-- Button = highest blast radius → design-gate structural changes + /qc-council pre-commit.
-- Visual change → `reports/visual-diff/<block>-<date>.md` (PASS + first_paint_capture_passed:true); block.json-meta-only → `--no-verify` (STOP-59).
-- Tests from cwd `plugins/sgs-blocks/scripts` green (872 baseline); branch main; verify D-ceiling before a new D; commits path-scoped; push after every green fix.
+## First action
+Complete the READING GATE + pre-flight ritual, then `/sgs-update` (rebuild the DB), then Task 0 root-cause (trace the typed option-picker from draft → clone → live DOM). Verify D-ceiling D283 before any new D. Go in order; each task LANDED + committed before the next.

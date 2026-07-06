@@ -6,6 +6,10 @@ last_updated: 2026-06-13 (D222 — added P-CONVERTER-DE-LITERALISATION programme
 
 > **STANDARD PRACTICE (Bean-locked 2026-06-02):** this doc holds ONLY parked work — entries with `**Status:** OPEN | PARTIAL | BLOCKED | DEFERRED`. The MOMENT a task is **CLOSED / RESOLVED / DROPPED / SUPERSEDED**, MOVE it (verbatim, with completion date) to `memory/parking-archive.md` — do NOT leave it here. Enforce this every `/handoff` (Gate 4.5). Keeps parking concise + purposeful; prevents the balloon that hit 1,400+ lines.
 
+## 2026-07-06 (D283, block thread) — product-card bound-mode CTA editability LANDED-pending
+
+> **P-PRODUCT-CARD-BOUND-CTA-LANDED** — NEW D283. The built-in product-card CTA gained preset-as-seed editable styling (`d7039a79`, `cta*` attrs + the shared `includes/helpers-button-style.php`), but it only applies to BOUND-mode CTAs (`.product-card__view`/`.product-card__add-to-cart`). Page 8's product-cards are TYPED-mode, so the new bound-mode editability is **code-reviewed + gate-green + plant-tested but NOT exercised on a live bound card**. Typed CTAs verified UNCHANGED on page 8 (no regression; the `:where(.product-card) .sgs-button` defaults preserve them). **To close:** clone/set up a WooCommerce-bound product-card, set a `cta*` value + Apply a preset in the editor, LANDED-verify the CTA restyles on the live DOM. Also: extend the shared helper to the other built-in-button blocks (buybox/whatsapp-cta) per the D283 handoff note. **Status: OPEN** · **Bucket:** Block dev / fidelity · **Trigger:** next bound-product session or the built-in-button extension.
+
 ## 2026-07-06 (cloning thread) — Bean's 9-defect page-8 visual QC batch (diagnosis-first, next session)
 
 > **P-PAGE8-QC-BATCH-9** — NEW D281. Bean ran a visual QC pass on the live sandybrown page 8 and reported 9 defects. Run the DIAGNOSIS-FIRST flow next session: parallel read-only investigators root-cause all 9 against the live DOM + draft + extract artefacts, group by CONFIRMED cause, agree with Bean, then fix as a batch (do NOT fix piecemeal — memory `diagnosis-first-explain-agree-clear`). Register (grouped by likely cause):

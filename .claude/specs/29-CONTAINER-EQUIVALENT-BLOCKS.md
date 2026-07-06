@@ -131,7 +131,7 @@ Inner layout wrappers — grid/flex arrangement + width + gap; no background lay
 | `sgs/form-field-tiles` | Tile-based form field — wraps tile options in a grid row. |
 | `sgs/gallery` | Media gallery grid — responsive columns, lightbox-ready. |
 | `sgs/google-reviews` | Grid/carousel of Google Business Profile review cards. |
-| `sgs/multi-button` | Button group container — wraps `sgs/button` children in a flex/grid row. Gap is via `ContainerWrapperControls`. |
+| `sgs/multi-button` | Button group container — wraps `sgs/button` children in a flex row. **(D283, `54abf04d`) De-duped:** the dead layout-mirror schema (grid*/columns*/templateMode/flexDirection/flexWrap — exposed by the editor's `kind="layout"` panel but never emitted since render uses `kind='content'`) was removed; editor kind → `content`; the Gap control moved into the block's OWN Layout panel (the block owns its responsive flex direction/gap/wrap/justify/align + maxWidth/contentWidth via the shared wrapper). **(D283, `95e8f432`)** gained an "Apply to all buttons" preset control. |
 | `sgs/post-grid` | Blog post grid — query-driven, filterable. |
 | `sgs/pricing-table` | Pricing plan comparison grid. |
 | `sgs/tabs` | Tabbed content panels — horizontal tab bar + `sgs/tab` children. |
