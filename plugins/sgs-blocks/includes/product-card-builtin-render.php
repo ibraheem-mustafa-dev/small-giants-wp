@@ -193,8 +193,17 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 				?>
 				<div class="sgs-product-card__cta-row">
 					<?php if ( '' !== $sgs_pcard_cta ) : ?>
+						<?php
+						/*
+						 * `sgs-product-card__cta--primary` is a stable marker class (carries
+						 * NO CSS of its own) — render.php scopes the typed-mode cta* attr
+						 * override (sgs_button_element_style_css) to it, independent of the
+						 * ctaStyle modifier value, so a coincidental primary/secondary style
+						 * match never double-applies the override to the secondary CTA below.
+						 */
+						?>
 						<a
-							class="sgs-button sgs-button--<?php echo esc_attr( $sgs_pcard_cta_style ); ?>"
+							class="sgs-button sgs-button--<?php echo esc_attr( $sgs_pcard_cta_style ); ?> sgs-product-card__cta--primary"
 							href="<?php echo '' !== $sgs_pcard_cta_url ? esc_url( $sgs_pcard_cta_url ) : '#'; ?>"
 						><?php echo esc_html( $sgs_pcard_cta ); ?></a>
 					<?php endif; ?>

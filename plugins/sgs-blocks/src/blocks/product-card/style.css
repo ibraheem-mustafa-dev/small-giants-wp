@@ -993,18 +993,54 @@
 /* Description — same rules as .product-card .product-desc. */
 .product-card .sgs-product-card__description {
 	font-size: var(--sgs-product-card-desc-font-size, 14px);
-	color: var( --wp--preset--color--text, #3a2e26 );
+	color: var( --sgs-card-desc-colour, var( --wp--preset--color--text, #3a2e26 ) );
 	margin: 0;
 	flex: 1;
+}
+
+/*
+ * Line-height default — :where() keeps this at specificity 0 so the uid-scoped
+ * descLineHeight rule (sgs_typography_css_rule, emitted only when the operator
+ * sets a value) always wins. Sanctioned F3-exempt overridable-default pattern
+ * (mirrors the CTA radius/padding/font-size :where() block below).
+ */
+:where(.product-card) .sgs-product-card__description {
 	line-height: 1.55;
 }
 
-/* Pack pills group — matches .product-card .pill-group. */
+/*
+ * Pack pills group — matches .product-card .pill-group. The frontend picks
+ * render via sgs/option-picker's own radiogroup markup; this preview mirrors
+ * that structure (label wraps a hidden radio + the pill span) purely for the
+ * editor canvas — see .sgs-product-card__pill-option below.
+ */
 .product-card .sgs-product-card__pill-group {
 	display: flex;
 	gap: 7px;
 	flex-wrap: wrap;
 	margin: 0;
+}
+
+/* Editor-preview-only wrapper: hides the (non-interactive) radio, gives the
+ * label a real touch target, matching sgs/option-picker's own pill option. */
+.product-card .sgs-product-card__pill-option {
+	display: inline-flex;
+	align-items: center;
+	cursor: default;
+	min-height: 44px;
+}
+
+.product-card .sgs-product-card__pill-option input[type="radio"] {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+	appearance: none;
 }
 
 /* Individual pill — matches .product-card .pill; 44px min touch target. */
@@ -1020,12 +1056,14 @@
 	display: flex;
 	align-items: center;
 	line-height: 1;
+	transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
 .product-card .sgs-product-card__pill.active {
 	border-color: var( --wp--preset--color--primary, #e68a95 );
 	background: rgba( 230, 138, 149, 0.1 );
 	color: var( --wp--preset--color--text, #3a2e26 );
+	font-weight: 700;
 }
 
 /* Price row — matches .product-card .price-row. */
@@ -1038,7 +1076,13 @@
 
 /* Price amount — matches .product-card .price. */
 .product-card .sgs-product-card__price {
-	font-family: 'Fraunces', serif;
+	/*
+	 * FRAMEWORK-CORRECTNESS: was hardcoded to the client-only 'Fraunces' — a
+	 * client typeface has no place in a framework block (rule violation). The
+	 * theme's Display token ('DM Serif Display', Georgia, serif — theme.json)
+	 * is per-client overridable, unlike a hardcoded family name.
+	 */
+	font-family: var( --wp--preset--font-family--display );
 	font-size: var( --sgs-card-price-font-size, 28px );
 	font-weight: var( --sgs-card-price-font-weight, 700 );
 	color: var( --sgs-card-price-colour, var( --wp--preset--color--text, #3a2e26 ) );
@@ -1047,7 +1091,7 @@
 /* Price note — matches .product-card .price-note. */
 .product-card .sgs-product-card__price-note {
 	font-size: var(--sgs-product-card-price-note-font-size, 13px);
-	color: var( --wp--preset--color--text-muted, #6b5c50 );
+	color: var( --sgs-card-price-note-colour, var( --wp--preset--color--text-muted, #6b5c50 ) );
 }
 
 /*

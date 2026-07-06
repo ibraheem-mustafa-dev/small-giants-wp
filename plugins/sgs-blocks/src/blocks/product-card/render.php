@@ -112,14 +112,22 @@ if ( '' !== $inner_padding_css ) {
 // (built below). Only the COLOUR vars are emitted here (the helper does not
 // handle colour). A per-instance uid scopes the typography rules.
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
-$sgs_card_uid     = 'sgs-pc-' . wp_unique_id();
-$sgs_title_colour = sgs_colour_value( $attributes['titleColour'] ?? '' );
-$sgs_price_colour = sgs_colour_value( $attributes['priceColour'] ?? '' );
+$sgs_card_uid          = 'sgs-pc-' . wp_unique_id();
+$sgs_title_colour      = sgs_colour_value( $attributes['titleColour'] ?? '' );
+$sgs_price_colour      = sgs_colour_value( $attributes['priceColour'] ?? '' );
+$sgs_desc_colour       = sgs_colour_value( $attributes['descColour'] ?? '' );
+$sgs_price_note_colour = sgs_colour_value( $attributes['priceNoteColour'] ?? '' );
 if ( '' !== $sgs_title_colour ) {
 	$inline_styles[] = '--sgs-card-title-colour:' . $sgs_title_colour . ';';
 }
 if ( '' !== $sgs_price_colour ) {
 	$inline_styles[] = '--sgs-card-price-colour:' . $sgs_price_colour . ';';
+}
+if ( '' !== $sgs_desc_colour ) {
+	$inline_styles[] = '--sgs-card-desc-colour:' . $sgs_desc_colour . ';';
+}
+if ( '' !== $sgs_price_note_colour ) {
+	$inline_styles[] = '--sgs-card-price-note-colour:' . $sgs_price_note_colour . ';';
 }
 $classes[] = $sgs_card_uid;
 
@@ -148,10 +156,24 @@ $base_opts = array(
 /* ── Typed mode ─────────────────────────────────────────────────────────────── */
 
 if ( 'typed' === $source_mode ) {
+	// Typed-mode built-in CTA styling (cta* attrs, seeded from a BUTTON_PRESETS
+	// preset in the editor's "CTA Button Style" panel — now shown in BOTH typed
+	// and bound mode). Scoped to the typed CTA's stable marker class
+	// (.sgs-product-card__cta--primary, added in product-card-builtin-render.php)
+	// — NOT the bound `.product-card__view` / `.product-card__add-to-cart`
+	// selectors, which never render in typed markup. Folded into
+	// $sgs_card_typo_css so ONE <style> tag carries every typed-mode override.
+	$sgs_card_typo_css .= sgs_button_element_style_css(
+		$attributes,
+		'cta',
+		'.' . $sgs_card_uid . ' .sgs-product-card__cta--primary'
+	);
+	$sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . $sgs_card_typo_css . '</style>' : '';
+
 	// Built-in element render — the ONLY typed path. The FP-H InnerBlocks
 	// transition bridge retired 2026-07-04 (legacy clones are re-cloned with
 	// native typed attrs; the block has no InnerBlocks slot).
-	// Prepend the scoped typography <style> (title + price).
+	// Prepend the scoped typography + CTA <style>.
 	$builtin_inner = $sgs_card_typo_tag . sgs_product_card_builtin_render( $attributes );
 
 	// BEM modifier classes on the wrapper.

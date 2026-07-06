@@ -607,7 +607,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		pickerLabelColour,
 		titleColour,
 		priceColour,
-		// Bound-mode built-in CTA styling.
+		descColour,
+		priceNoteColour,
+		// Built-in CTA styling (typed + bound share the same cta* attrs).
 		ctaPreset,
 		ctaColourBackground,
 		ctaColourText,
@@ -803,7 +805,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								prefix="desc"
 								showWeight={ false }
 								showStyle={ false }
-								showLineHeight={ false }
+							/>
+							<DesignTokenPicker
+								label={ __( 'Description colour', 'sgs-blocks' ) }
+								value={ descColour }
+								onChange={ ( v ) =>
+									setAttributes( { descColour: v } )
+								}
 							/>
 							{ ( isTrial || isFeatured ) && (
 								<TypographyControls
@@ -901,6 +909,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							showStyle={ false }
 							showLineHeight={ false }
 						/>
+						<DesignTokenPicker
+							label={ __( 'Price note colour', 'sgs-blocks' ) }
+							value={ priceNoteColour }
+							onChange={ ( v ) =>
+								setAttributes( { priceNoteColour: v } )
+							}
+						/>
 						<TypographyControls
 							attributes={ attributes }
 							setAttributes={ setAttributes }
@@ -963,9 +978,44 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Primary button style', 'sgs-blocks' ) }
 						value={ ctaStyle || 'primary' }
 						options={ CTA_STYLE_OPTIONS }
-						onChange={ ( v ) =>
-							setAttributes( { ctaStyle: v } )
-						}
+						onChange={ ( v ) => {
+							/*
+							 * Typed mode only: the cta* colour/border/weight attrs now
+							 * ALSO style the typed CTA (change #1). Their block.json
+							 * defaults are seeded from BUTTON_PRESETS.primary, so
+							 * switching to secondary/outline without reseeding would
+							 * leave a primary-coloured button under a
+							 * .sgs-button--secondary/outline class. Reseed on every
+							 * style change — same preset-as-seed mechanism as the CTA
+							 * Button Style panel's "Apply preset" button — so the typed
+							 * CTA colours always match the chosen style. Bound mode is
+							 * untouched (its own ctaPreset + Apply-preset flow governs
+							 * cta* there; ctaStyle carries no bound-markup effect).
+							 */
+							if ( isBound ) {
+								setAttributes( { ctaStyle: v } );
+								return;
+							}
+							const preset = BUTTON_PRESETS[ v ];
+							setAttributes( {
+								ctaStyle: v,
+								...( preset
+									? {
+											ctaPreset: v,
+											ctaColourBackground: preset.colourBackground,
+											ctaColourText: preset.colourText,
+											ctaColourBorder: preset.colourBorder,
+											ctaColourBackgroundHover: preset.colourBackgroundHover,
+											ctaColourTextHover: preset.colourTextHover,
+											ctaColourBorderHover: preset.colourBorderHover,
+											ctaBorderStyle: preset.borderStyle,
+											ctaBorderWidth: preset.borderWidthTop,
+											ctaBorderRadius: preset.borderRadiusTL,
+											ctaFontWeight: preset.fontWeight,
+									  }
+									: {} ),
+							} );
+						} }
 						__nextHasNoMarginBottom
 					/>
 					{ isBound ? (
@@ -1040,20 +1090,20 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				{ /* ── CTA Button Style panel (bound mode only — the typed-mode
-				     CTA uses a different class + its own "Primary button style"
-				     preset dropdown in the Buttons panel above) ── */ }
-				{ isBound && (
-					<PanelBody
-						title={ __( 'CTA Button Style', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						<p style={ { marginTop: 0 } }>
-							{ __(
-								'Colour, border and width for the connected-product button (.product-card__view / .product-card__add-to-cart).',
-								'sgs-blocks'
-							) }
-						</p>
+				{ /* ── CTA Button Style panel (both modes — the primary button in
+				     typed mode uses .sgs-button--{style} + a stable
+				     .sgs-product-card__cta--primary marker; bound mode uses
+				     .product-card__view / .product-card__add-to-cart) ── */ }
+				<PanelBody
+					title={ __( 'CTA Button Style', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<p style={ { marginTop: 0 } }>
+						{ __(
+							'Colour, border, corner radius, and padding for the primary button.',
+							'sgs-blocks'
+						) }
+					</p>
 						<SelectControl
 							label={ __( 'Style preset', 'sgs-blocks' ) }
 							value={ ctaPreset || 'primary' }
@@ -1211,7 +1261,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 						/>
 					</PanelBody>
-				) }
 
 				{ /* ── Card layout panel ── */ }
 				<PanelBody
@@ -1518,19 +1567,41 @@ export default function Edit( { attributes, setAttributes } ) {
 							] }
 						/>
 
-						{ /* Pack pills preview */ }
+						{ /*
+						 * Pack pills preview — mirrors the frontend sgs/option-picker
+						 * radiogroup structure (label + hidden radio + pill span) so the
+						 * editor canvas looks like the live card. Non-interactive
+						 * (readOnly) — the frontend picker is the real, self-contained
+						 * sgs/option-picker block; this is a visual-only stand-in.
+						 * Keeps the existing .sgs-product-card__pill class + CSS
+						 * (still consumed here) — only the wrapper markup is new.
+						 */ }
 						{ ( packSizes || [] ).length > 0 && (
-							<div className="sgs-product-card__pill-group">
+							<div
+								className="sgs-product-card__pill-group"
+								role="radiogroup"
+								aria-label={ __( 'Pack size', 'sgs-blocks' ) }
+							>
 								{ packSizes.map( ( pill, i ) => (
-									<span
+									<label
 										key={ i }
-										className={
-											'sgs-product-card__pill' +
-											( pill.selected ? ' active' : '' )
-										}
+										className="sgs-product-card__pill-option"
 									>
-										{ pill.label }
-									</span>
+										<input
+											type="radio"
+											name="sgs-product-card-preview-pack-size"
+											checked={ !! pill.selected }
+											readOnly
+										/>
+										<span
+											className={
+												'sgs-product-card__pill' +
+												( pill.selected ? ' active' : '' )
+											}
+										>
+											{ pill.label }
+										</span>
+									</label>
 								) ) }
 							</div>
 						) }

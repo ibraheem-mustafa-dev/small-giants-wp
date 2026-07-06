@@ -81,62 +81,6 @@
    "value": "4px 10px",
    "attr": "innerPadding",
    "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-  },
-  {
-   "block": "sgs/product-card",
-   "file": "src\\blocks\\product-card\\style.css",
-   "property": "padding",
-   "value": "12px 20px",
-   "attr": "innerPadding",
-   "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-  },
-  {
-   "block": "sgs/product-card",
-   "file": "src\\blocks\\product-card\\style.css",
-   "property": "font-size",
-   "value": "14px",
-   "attr": "pickerLabelFontSize",
-   "reason": "pre-existing product-card element font-size (price / product-desc / price-from / price-note); NOT owned by pickerLabelFontSize - that attr FORWARDS to the option-picker child legend and styles no product-card CSS. Flagged only because Gate B maps any *FontSize attr to every font-size literal and E1 does not parse descendant-class selectors (.product-card .price). Per-element product-card typography controls are a separate future task."
-  },
-  {
-   "block": "sgs/product-card",
-   "file": "src\\blocks\\product-card\\style.css",
-   "property": "font-size",
-   "value": "13px",
-   "attr": "pickerLabelFontSize",
-   "reason": "pre-existing product-card element font-size (price / product-desc / price-from / price-note); NOT owned by pickerLabelFontSize - that attr FORWARDS to the option-picker child legend and styles no product-card CSS. Flagged only because Gate B maps any *FontSize attr to every font-size literal and E1 does not parse descendant-class selectors (.product-card .price). Per-element product-card typography controls are a separate future task."
-  },
-  {
-   "block": "sgs/product-card",
-   "file": "src\\blocks\\product-card\\style.css",
-   "property": "font-size",
-   "value": "28px",
-   "attr": "pickerLabelFontSize",
-   "reason": "pre-existing product-card element font-size (price / product-desc / price-from / price-note); NOT owned by pickerLabelFontSize - that attr FORWARDS to the option-picker child legend and styles no product-card CSS. Flagged only because Gate B maps any *FontSize attr to every font-size literal and E1 does not parse descendant-class selectors (.product-card .price). Per-element product-card typography controls are a separate future task."
-  },
-  {
-   "block": "sgs/product-card",
-   "file": "src\\blocks\\product-card\\style.css",
-   "property": "font-size",
-   "value": "12px",
-   "attr": "pickerLabelFontSize",
-   "reason": "pre-existing product-card element font-size (price / product-desc / price-from / price-note); NOT owned by pickerLabelFontSize - that attr FORWARDS to the option-picker child legend and styles no product-card CSS. Flagged only because Gate B maps any *FontSize attr to every font-size literal and E1 does not parse descendant-class selectors (.product-card .price). Per-element product-card typography controls are a separate future task."
-  },
-  {
-   "block": "sgs/product-card",
-   "file": "src\\blocks\\product-card\\style.css",
-   "property": "font-size",
-   "value": "11px",
-   "attr": "pickerLabelFontSize",
-   "reason": "pre-existing product-card element font-size (price / product-desc / price-from / price-note); NOT owned by pickerLabelFontSize - that attr FORWARDS to the option-picker child legend and styles no product-card CSS. Flagged only because Gate B maps any *FontSize attr to every font-size literal and E1 does not parse descendant-class selectors (.product-card .price). Per-element product-card typography controls are a separate future task."
-  },
-  {
-   "block": "sgs/product-card",
-   "file": "src\\blocks\\product-card\\style.css",
-   "property": "font-size",
-   "value": "15px",
-   "attr": "pickerLabelFontSize",
-   "reason": "pre-existing product-card element font-size (price / product-desc / price-from / price-note); NOT owned by pickerLabelFontSize - that attr FORWARDS to the option-picker child legend and styles no product-card CSS. Flagged only because Gate B maps any *FontSize attr to every font-size literal and E1 does not parse descendant-class selectors (.product-card .price). Per-element product-card typography controls are a separate future task."
   }
  ]
 }
