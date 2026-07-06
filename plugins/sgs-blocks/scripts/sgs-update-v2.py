@@ -1074,6 +1074,29 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/product-card", "titleFontWeight"): {"derived_selector": ".sgs-product-card__title"},
     ("sgs/product-card", "titleLineHeight"): {"derived_selector": ".sgs-product-card__title"},
     ("sgs/product-card", "titleLineHeightUnit"): {"derived_selector": ".sgs-product-card__title"},
+    # ---- scalar-styling-lift residual selector-drift (D285 completeness pass) ----
+    # Render-verified only (STOP-43): each corrected selector is where the block's
+    # render actually paints the attr. product-card tag*: the tag chip is __tag
+    # (includes/product-card-builtin-render.php:96/106/111), not __label. NOT
+    # touched (documented no-ops, P-SCALAR-LIFT-RESIDUAL-DRIFT): product-card
+    # pill*/pickerLabel* (the pills are now the embedded child sgs/option-picker,
+    # render_block :164 — no product-card pill element), product-card cta* (D284
+    # owns CTA styling via sgs_button_element_style_css on __cta--primary), and
+    # mobile-nav chrome colours (wrapper --sgs-mn-* CSS vars, no clean 1:1 element).
+    ("sgs/product-card", "tagFontSize"): {"derived_selector": ".sgs-product-card__tag"},
+    ("sgs/product-card", "tagFontSizeUnit"): {"derived_selector": ".sgs-product-card__tag"},
+    ("sgs/product-card", "tagFontSizeTablet"): {"derived_selector": ".sgs-product-card__tag"},
+    ("sgs/product-card", "tagFontSizeMobile"): {"derived_selector": ".sgs-product-card__tag"},
+    # option-picker pill*: render scopes pill typography/colour to __pill
+    # (render.php:255 $sel_pill), NOT __label (:254 is the group legend, correct
+    # for label*). Fix the 7 pill* attrs; leave label* untouched (already correct).
+    ("sgs/option-picker", "pillFontSize"): {"derived_selector": ".sgs-option-picker__pill"},
+    ("sgs/option-picker", "pillFontSizeUnit"): {"derived_selector": ".sgs-option-picker__pill"},
+    ("sgs/option-picker", "pillFontSizeTablet"): {"derived_selector": ".sgs-option-picker__pill"},
+    ("sgs/option-picker", "pillFontSizeMobile"): {"derived_selector": ".sgs-option-picker__pill"},
+    ("sgs/option-picker", "pillFontWeight"): {"derived_selector": ".sgs-option-picker__pill"},
+    ("sgs/option-picker", "pillTextColour"): {"derived_selector": ".sgs-option-picker__pill"},
+    ("sgs/option-picker", "pillBorderColour"): {"derived_selector": ".sgs-option-picker__pill"},
     # NOTE (D281): the CSS-property naming-mismatch corrections for sgs/button's
     # colourBorder/colourBackground/colourText were TRIALLED here then REVERTED —
     # the column-first mechanism works (border-color lifts to colourBorder, D2

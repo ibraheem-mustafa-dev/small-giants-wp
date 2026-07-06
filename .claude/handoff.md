@@ -5,6 +5,32 @@ thread: single thread (cloning pipeline)
 session_date: 2026-07-06
 ---
 
+# Session Handoff — 2026-07-06e (D285 — DEFERRED PIPELINE/DB ROLLOUT: Task 2 scalar-styling-lift enabled on 8 blocks DONE; Task 1 css_property seeding MINED + FALSIFIED)
+
+## Completed This Session (1 commit `2e702f0b`, pushed to main)
+Ran the deferred pipeline/DB prompt (`.claude/prompts/2026-07-06-block-fixes-testimonial-button.md`). Both tasks resolved.
+
+1. **Task 1 — CSS-property column seeding: MINED → FALSIFIED → SKIPPED (Bean-agreed).** Convert-only Mama's clone on the current engine; classified all 67 unique D2-stranded (block,property) pairs → **0 unblocked naming-mismatch corrections with a real owner.** The class the css_property mechanism (D281) fixes is DRAINED by the engine work since the "~50-80" estimate (D280). Remaining D2 = 43 no-composite section gaps + 19 registered-block genuine gaps (shorthand/inherit/unseeded-property/SVG) + ~5 button/product-card colours (ALL `var()`-blocked = `P-DRAFT-CSSVAR-COLOUR-RESOLUTION`, and/or `:hover`/`--active`). Seeding now = WRITTEN-not-LANDED (STOP-21/4). Scripts: `scratchpad/mine_d2_tight.py` (kept for re-run).
+2. **Task 2 — scalar-styling-lift 12-block roster: DONE + emit-proven.** STOP-54 pre-audit re-verified vs current code/DB → exactly 4 boolean mis-seeds (`accentStroke`/counter + `bgSvgTextShadow`/hero+cta-section+container); the number FontSize/LineHeight attrs are the INTENDED targets. Fixed the 4 via `ATTR_CLASSIFICATION_OVERRIDES {role:'behaviour',derived_selector:None}` (reseed-durable). Corrected render-verified DEAD selectors (card-grid __title/__subtitle, quote __attribution, product-card title* __title). Enabled `scalarStylingLift` on 8 block.json (card-grid, counter, media, mobile-nav, option-picker, product-card, quote, whatsapp-cta); trust-bar+testimonial already had it; excluded notice-banner/testimonial-slider/post-grid (Wave-3 dead lifts). Reseed applied all + 10 capability rows.
+
+## Current State
+- **Branch:** main at `2e702f0b` (pushed). D-ceiling **D285**.
+- **Gates:** F5 commit gate PASS (16 baselined unaccounted); F6 db-consistency 0 violations; 537 converter/orchestrator tests pass. **45 `test_two_axis_style_variations` failures are PRE-EXISTING + unrelated** — they assert `theme/sgs-theme/styles/*.json` exist, which are empty by Phase-5a design (never touched this session).
+- **LANDED (page 8, same session):** re-cloned + deployed page 8 (`2 commits`), isolated-Playwright confirmed live product-card `__price` = **28px / weight 700** at 375/768/1440 (draft's exact value; block has no default → not coincidental; deployed emit carries explicit `priceFontSize:28`). Also fixed + shipped residual drift product-card `tag*`→`__tag` + option-picker `pill*`→`__pill` (render-verified). `P-SCALAR-LIFT-ROLLOUT-LANDED` RESOLVED.
+- **Uncommitted (NOT mine — left alone):** `includes/lucide-icons.php` (auto-gen timestamp), reports/phase4-*, Bean's button WIP + HTML_Insert.html, untracked sgs-framework.db.
+
+## Known Issues / Deferred (→ parking)
+- **`P-SCALAR-LIFT-ROLLOUT-LANDED` — RESOLVED** (page-8 LANDED confirmed live this session; move to archive next `/handoff`).
+- **`P-SCALAR-LIFT-RESIDUAL-DRIFT` — PARTIAL.** Fixed: card-grid/quote/product-card title+tag, option-picker pill. Remaining documented no-ops (NOT guessed, STOP-43): mobile-nav chrome colours (wrapper `--sgs-mn-*` vars, no 1:1 element — needs a design call) + product-card pill/pickerLabel (legacy-dead, embedded option-picker owns pills) + cta (D284-owned).
+- Task 1 stays blocked on `P-DRAFT-CSSVAR-COLOUR-RESOLUTION` (the css_property mechanism is ready; nothing landable until draft-var resolution lands or a different draft surfaces a real naming-mismatch).
+
+## Notes for Next Session
+- **`ATTR_CLASSIFICATION_OVERRIDES` (`sgs-update-v2.py`) is the reseed-durable channel** for both attr-role/selector corrections and (future) css_property seeds — never a bare SQLite UPDATE (STOP-24).
+- **Product-card was handled LAST + minimally** (only its clear title* drift) to avoid colliding with Bean's active button/option-picker work. Its pill/cta selectors are the entangled remainder in `P-SCALAR-LIFT-RESIDUAL-DRIFT`.
+- Re-run `scratchpad/mine_d2_tight.py <run>/variation-d0-d2.css` to re-mine naming-mismatches on any future draft.
+
+---
+
 # Session Handoff — 2026-07-06d (D284 — PRODUCT-CARD FRONT: option-picker clones (universal leaf-text array lift) + typed-element un-hardcoding; prompt Tasks 1+2 remain)
 
 ## Completed This Session (2 commits, both pushed + LANDED on page 8)
