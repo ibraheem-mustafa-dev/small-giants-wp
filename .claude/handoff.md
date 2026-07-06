@@ -5,6 +5,51 @@ thread: single thread (cloning pipeline)
 session_date: 2026-07-06
 ---
 
+# Session Handoff — 2026-07-06d (D284 — PRODUCT-CARD FRONT: option-picker clones (universal leaf-text array lift) + typed-element un-hardcoding; prompt Tasks 1+2 remain)
+
+## Completed This Session (2 commits, both pushed + LANDED on page 8)
+1. **Task 0 — the option-picker now clones** (`995a02b6`). Root-caused on the real Featured node (index.html:849-853, 4 `__pill` leaf buttons): 3 gaps — no `array-content-lift` capability, no `packSizes` item-schema, AND the array lifter refused a plain-text LEAF item's own text. Fix = new universal match layer **L1d** in `converter/resolvers/array_content.py` (a true-leaf item, `item_node.find(True) is None`, lifts its own text as its text-content field; leaf-guarded so structured items untouched — helps any flat-text-chip repeater) + `supports.sgs.arrayContentLift` + `packSizes` items schema in block.json + typed render emits the self-contained `sgs/option-picker` via `render_block` (selectable-only). LANDED: real radiogroup + 4 radios, dead pills gone, **content parity 96→100%**.
+2. **Task 0b — typed-element un-hardcoding** (`5804128b`, solo Sonnet builder + main-session review). Per "match the represented block" rule: typed CTA routes existing `cta*` attrs through `sgs_button_element_style_css` (new `.sgs-product-card__cta--primary` marker; CTA panel in typed mode; defaults match old `:where()` values = no regression; style dropdown re-seeds cta* colours so a secondary/outline card never renders primary colours) + `descColour` + desc line-height + `priceNoteColour` (default muted) + **price font `'Fraunces'`→`var(--wp--preset--font-family--display)`** (a CLIENT font in a FRAMEWORK block — Bean caught it) + editor preview mirrors the frontend picker. LEFT (correctly): tag chrome = sgs/label's own constants. product-card 1.16.9→1.16.11.
+3. **Verification:** L1d isolation-tested (hero+multi-button golden failures proven pre-existing D283 debt, not L1d); 3 goldens re-seeded post-LANDED; conformance+array_content 62 pass; gates check-dead-controls + check-hardcoded-render-defaults 0 net-new (baseline trimmed 17→10 via E11); phpcs clean; 2 cross-model `/qc-council` raters GO on Task 0.
+4. **DB reseeded** (`/sgs-update` 11 stages): synced the new packSizes schema + arrayContentLift capability.
+
+## Current State
+- **Branch:** main at `5804128b` (pushed; doc commit follows). This session: `995a02b6` `5804128b`.
+- **Tests:** conformance + array_content 62 pass; full converter suite 1112 pass (48 pre-existing FileNotFoundError failures in `test_two_axis_style_variations.py` — stale theme-styles test, unrelated, `styles/` is empty by design).
+- **Build:** `npm run build` exit 0; all block gates green.
+- **Live:** page 8 (sandybrown front page) LANDED — option-picker + un-hardcoded CTA/price/colours verified in page source. Content parity 100 / CSS ~66 (honest, D2 not deployed).
+- **Uncommitted:** pre-existing churn only (lucide-icons.php, reports/phase4-*, HTML_Insert.html, 0-byte sgs-framework.db) + this doc set.
+
+## Known Issues / Blockers
+- **Visual sign-off pending (Bean's eye):** the price font visibly changed (Fraunces → theme Display font = DM Serif Display for the base theme, or Mama's snapshot override) — a deliberate de-hardcode; Bean should eyeball it. Playwright browser was lock-blocked this session, so no automated screenshot was captured (markup + parity confirm LANDED).
+- **Prompt Tasks 1+2 NOT done** (deliberately — the product-card front was the chosen scope). Task 1 (CSS-property column seeding) + Task 2 (capability-roster rollout) remain — both fully mapped, see next-session-prompt.
+- 4 items parked (D284): P-PRODUCT-CARD-NAMED-PICKERS, P-PACKSIZE-ACTIVE-DEFAULT, P-ARRAY-LIFT-LEAF-COLLISION, P-OPTIONPICKER-DUP-KEY.
+
+## Next Priorities (in order)
+1. **Task 1 — CSS-property column seeding** (mechanism shipped D281, 0 rows seeded): mine ~50-80 naming-mismatch corrections from `attribute_gap_candidates`, seed via `ATTR_CLASSIFICATION_OVERRIDES`, commit-per-correction, LANDED. Colour-valued ones blocked on P-DRAFT-CSSVAR-COLOUR-RESOLUTION.
+2. **Task 2 — capability-roster 3-wave rollout** (D280 pre-audited): fix the 4 latent boolean-mis-seeds first (paste-ready overrides), then Wave-1 flag-only / Wave-2 overrides-then-enable / Wave-3 exclude.
+3. Or return to the container L1-L4 cascade deep-dive (the OTHER thread — `.claude/next-session-prompt.md` main agenda, untouched this session).
+
+## Files Modified
+| File path | What changed |
+|---|---|
+| plugins/sgs-blocks/scripts/converter/resolvers/array_content.py | L1d leaf-text self-extraction (universal) |
+| plugins/sgs-blocks/src/blocks/product-card/{block.json,edit.js,render.php,style.css} | arrayContentLift + packSizes schema; typed CTA/desc/price-note controls; price display font; editor preview |
+| plugins/sgs-blocks/includes/product-card-builtin-render.php | render option-picker from packSizes; CTA marker class |
+| plugins/sgs-blocks/scripts/hardcoded-render-defaults-baseline.json | trimmed 7 stale product-card entries (17→10) |
+| plugins/sgs-blocks/scripts/tests/fixtures/conformance/goldens/{featured-product,hero,multi-button}.golden.json | re-seeded post-LANDED |
+| .claude/{decisions,parking,handoff,state}.md + prompts/2026-07-06-*.md | D284 + parking + session docs |
+
+## Notes for Next Session
+- **L1d is the model for flat-text-chip cloning** — any block whose array items are plain-text leaves (tag lists, size/flavour pills) now lifts via the same universal path; no per-block work.
+- The typed CTA `ctaStyle` dropdown now RE-SEEDS cta* colours from BUTTON_PRESETS on change (typed only) — intentional, so style always matches. Already-saved non-primary typed cards won't re-seed until re-edited (no-migration policy D270).
+- Two independent next-session threads exist: this one (prompt Tasks 1+2, `prompts/2026-07-06-block-fixes-testimonial-button.md`) and the container L1-L4 cascade (`next-session-prompt.md`). Bean picks.
+
+## Next Session Prompt
+The prompt for Tasks 1+2 lives at `.claude/prompts/2026-07-06-block-fixes-testimonial-button.md` (updated: Tasks 0+0b marked DONE). The container-cascade thread's prompt is the untouched `.claude/next-session-prompt.md`. STOP catalogue carried forward in both.
+
+---
+
 # Session Handoff — 2026-07-06c (D283 — BLOCK-SIDE FIXES: testimonial layer-model + infinite-loop slider + button full-width + multi-button dedupe + button preset-as-seed + product-card built-in CTA; items 4+5 deferred)
 
 ## Completed This Session (6 commits, all pushed + LANDED on page 8)

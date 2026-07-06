@@ -2,12 +2,14 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 thread: DEFERRED PIPELINE/DB WORK — typed-mode option-picker cloning fix → CSS-property column seeding → capability-roster rollout
-generated: 2026-07-06 (rewritten at the D283 close; the block-side fixes this prompt originally held are DONE — see handoff.md D283)
+generated: 2026-07-06 (rewritten at the D283 close; the block-side fixes this prompt originally held are DONE)
 status: ALTERNATE SESSION PROMPT (distinct from the container L1-L4 cascade deep-dive in next-session-prompt.md). Pick THIS one for the three deferred pipeline/DB tasks below.
-primary_goal: "Three pipeline/DB tasks, IN ORDER: (0) make the TYPED-mode product-card option-picker actually work through the cloning process; (1) seed the ~50-80 naming-mismatch corrections into the css_property/css_layer column (mechanism already shipped D281, 0 rows seeded); (2) apply the capability-roster 3-wave rollout after fixing the 4 latent mis-seeds. Each LANDED + committed before the next."
+primary_goal: "2 Pipeline/DB tasks, IN ORDER: (1) seed the ~50-80 naming-mismatch corrections into the css_property/css_layer column (mechanism already shipped D281, 0 rows seeded); (2) apply the capability-roster 3-wave rollout after fixing the 4 latent mis-seeds. Each LANDED + committed before the next."
 ---
 
-# NEXT SESSION — deferred pipeline/DB work (typed option-picker cloning → CSS-column seeding → capability rollout)
+# NEXT SESSION — deferred pipeline/DB work (CSS-column seeding → capability rollout)
+
+> **✅ DONE at D284 (2026-07-06) — Task 0 + Task 0b shipped, LANDED on page 8, pushed.** Task 0 (option-picker cloning): a new UNIVERSAL match layer **L1d** in `converter/resolvers/array_content.py` (a true-leaf array item lifts its own text; leaf-guarded) + `supports.sgs.arrayContentLift` + `packSizes` item-schema in product-card block.json + typed render emits the self-contained `sgs/option-picker` via `render_block` (`995a02b6`; content parity 96→100; 2 cross-model /qc-council raters GO). Task 0b (un-hardcoding, `5804128b`): typed CTA attr-driven via `sgs_button_element_style_css`; `descColour`/`priceNoteColour`/desc-line-height controls; price font `'Fraunces'`→`var(--wp--preset--font-family--display)` (client-font-in-framework-block bug, Bean-caught); editor preview mirrors the frontend picker. Full detail: handoff.md D284. **Deferred → parking.md:** P-PRODUCT-CARD-NAMED-PICKERS (optional picker name + multi-named-pickers), P-PACKSIZE-ACTIVE-DEFAULT, P-ARRAY-LIFT-LEAF-COLLISION, P-OPTIONPICKER-DUP-KEY. **THIS PROMPT NOW = Tasks 1 + 2 ONLY** (renumbered below; ignore any "Task 0"/"Task 0b" sections that remain).
 
 Invoke /autopilot first. **This is high-stakes cloning-engine + DB work — do it on fresh context, root-cause-first, LANDED-before-commit.** The D283 session shipped 6 block-side fixes + the product-card built-in CTA; these three pipeline tasks were deferred here deliberately (they need clean context + a DB rebuilt). Read Spec 31 IN FULL first (STOP-26).
 
@@ -17,8 +19,8 @@ Invoke /autopilot first. **This is high-stakes cloning-engine + DB work — do i
 1. [ ] `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — IN FULL. §3.A CSS branch + §13.4 FR-31-5.2/5.3 (the css_property column mechanism).
 2. [ ] `.claude/plans/2026-07-05-css-property-column-design.md` — the COUNCIL OUTCOME block (seed-only-the-corrections, column-first-else-fallback, the 5 must-fixes). Build THAT, not the superseded original.
 3. [ ] `.claude/handoff.md` D283 + D281 + D280 entries; verify D-ceiling (`grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` — was D283).
-4. [ ] `.claude/parking.md` — P-DRAFT-CSSVAR-COLOUR-RESOLUTION (blocks part of the css_property seed), P-PAGE8-QC-BATCH-9, P-MULTIBUTTON-768-WRAP.
-5. [ ] The typed product-card: `plugins/sgs-blocks/src/blocks/product-card/**` + `includes/product-card-builtin-render.php` + the option-picker block + the cloning converter's handling of the option-picker.
+4. [ ] `.claude/parking.md` — P-DRAFT-CSSVAR-COLOUR-RESOLUTION (blocks part of the css_property seed), P-PAGE8-QC-BATCH-9
+
 
 ## Pre-flight ritual (answer in your first message)
 1. Branch + D-ceiling verified? Working tree clean (pre-existing churn only)?
@@ -37,16 +39,6 @@ Carry the FULL STOP-1..59 catalogue from `.claude/next-session-prompt.md` verbat
 
 ---
 
-## Task 0 (FIRST) — Typed-mode product-card option-picker must work in cloning
-**The defect (Bean).** The TYPED-mode product-card's option-picker does not start working through the cloning process. Root-cause on the real draft + live DOM: does the converter recognise + emit the option-picker for a typed product-card? Does the typed built-in render (`includes/product-card-builtin-render.php`) wire the option-picker's Interactivity state? Trace the option-picker from draft → clone emit → live DOM. Fix so a cloned typed product-card ships a working option-picker (no-JS-safe SSR + reactive selection), LANDED on a real cloned card.
-- Ground truth: `/sgs-db` variant_slots + `/wp-blocks schema sgs/option-picker` + `sgs/product-card`; the D164 configurator (Spec 27) for how bound-mode wires it, then the typed equivalent.
-- Orchestration: inline or ONE solo coding subagent; /qc-council pre-commit (shared product-card + option-picker = high blast radius).
-
-## Task 0b — Product-card: match the button + un-hardcode ALL elements (Bean, D283)
-**The defect (Bean).** (a) One of the product-card MODES' button element is still hardcoded — the **TYPED-mode CTA** (`includes/product-card-builtin-render.php`, `.sgs-button--{style}`) keeps its radius/padding/font-size as `:where(.product-card) .sgs-button` DEFAULTS (added D283 to avoid a typed regression); it must be reworked to be **attr-driven like the normal `sgs/button` block** (reuse the shared `sgs_button_element_style_css` / the button's preset-as-seed model), and its hardcoding matched to the normal button (not a bespoke `:where()` default). (b) **The rest of the product-card's elements** (title, price, pill/badge, trial-tag, ratings, etc.) are still HARDCODED in `product-card/style.css` (font/padding/colour/radius). Rework them so styling is **available per-element in the product-card block settings** — matching the represented standalone block: if the block that element represents (e.g. `sgs/heading` for the title, `sgs/text`, `sgs/icon`) exposes a control and does NOT hardcode that property, the product-card element must NOT hardcode it either — expose the equivalent editable attrs/controls.
-- **Reuse, don't reinvent:** the shared `TypographyControls` component + `sgs_typography_css_rule` helper (per-element typography), `DesignTokenPicker` (colour), and `sgs_button_element_style_css` (button elements). The **E11 selector-aware F3 gate** (D283) is the pattern that lets you move a hardcoded per-element value to an attr without false-flagging siblings — every prefixed-helper attr governs only its call-site selector.
-- **Discipline:** every un-hardcoded property must round-trip to an editable control (the "every pipeline/rendered capability is a client-facing block control" memory) + pass `check-hardcoded-render-defaults` (0 net-new) + `check-dead-controls`. Do NOT baseline; use E11 governance. Orchestration: /subagent-driven-development (implementer + spec+quality review), high blast radius → /qc-council pre-commit. LANDED on page 8 (typed product-cards) + a bound product where possible. Relates to `P-PRODUCT-CARD-BOUND-CTA-LANDED`.
-
 ## Task 1 — CSS-property column seeding (item 4)
 Seed ONLY the ~50-80 naming-mismatch corrections into `block_attributes.css_property`/`css_layer` per the council-reshaped design (plan doc). Mine the corrections from `attribute_gap_candidates` (2,461 rows — identify the NAMING-MISMATCH class: an attr EXISTS but its name doesn't match the property_suffix, so the rule strands to D2). Declare per-block in `block.json supports.sgs` (cssProperty/cssLayer per attr) → the `/sgs-update` seeder materialises to the column → resolver reads column-first-else-fallback (byte-identical for untouched rows). Commit-per-correction; each correction lifts a stranded rule out of D2 → measurable parity gain, LANDED. **Sort blocked vs unblocked:** the button-colour correction is BLOCKED on `P-DRAFT-CSSVAR-COLOUR-RESOLUTION` (draft var() doesn't resolve on deploy) — do the UNBLOCKED corrections (token-slug / literal values that resolve). Address the 5 council must-fixes (grep ≥5 consumers, the reseed diff test, loud-fail contract per call site).
 
@@ -61,7 +53,7 @@ Apply the D280 pre-audited 3-wave rollout (the paste-ready per-block overrides +
 | /sgs-clone /sgs-db /wp-blocks | cloning runs + DB ground truth |
 | /sgs-update | rebuild the DB (working copies are 0-byte) + reseed after column/capability changes |
 | /qc-council | pre-commit on every converter/DB/shared-block change (blub 255) |
-| /sgs-wp-engine | SGS ground truth for the option-picker + product-card |
+| /sgs-wp-engine | SGS ground truth for the SGS theme and blocks |
 | /verify-loop /handoff /capture-lesson | 2-attestation / session close |
 
 ## Tool bindings
