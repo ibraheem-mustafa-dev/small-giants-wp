@@ -18,6 +18,11 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 // 1. Extract and sanitise attributes.
 // ---------------------------------------------------------------------------
 
+// inheritStyle no longer gates any styling (preset-as-seed model — every
+// button paints entirely from its own attributes). It still records which
+// preset the editor's "Style preset" dropdown last applied, surfaced as a
+// data attribute for support/debugging (e.g. "which buttons are still on
+// their original preset vs hand-tweaked").
 $inherit_style = isset( $attributes['inheritStyle'] ) ? sanitize_text_field( $attributes['inheritStyle'] ) : 'primary';
 $label         = isset( $attributes['label'] ) ? $attributes['label'] : 'Click Here';
 $has_url       = isset( $attributes['url'] ) && '' !== trim( (string) $attributes['url'] );
@@ -184,8 +189,6 @@ $transition_easing   = isset( $attributes['transitionEasing'] ) ? sanitize_text_
 $allowed_easings   = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
 $transition_easing = in_array( $transition_easing, $allowed_easings, true ) ? $transition_easing : 'ease';
 
-$is_custom = 'custom' === $inherit_style;
-
 // ---------------------------------------------------------------------------
 // 2. Unique ID for scoped CSS.
 // ---------------------------------------------------------------------------
@@ -202,57 +205,59 @@ $uid = 'sgs-btn-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 
 $inline_styles = array();
 
-if ( $is_custom ) {
-	if ( $colour_text ) {
-		$inline_styles[] = 'color:' . sgs_colour_value( $colour_text );
-	}
-	if ( $colour_bg ) {
-		$inline_styles[] = 'background-color:' . sgs_colour_value( $colour_bg );
-	}
-	if ( $colour_border ) {
-		$inline_styles[] = 'border-color:' . sgs_colour_value( $colour_border );
-	}
-	if ( $border_style && 'solid' !== $border_style ) {
-		$inline_styles[] = 'border-style:' . $border_style;
-	}
+// Preset-as-seed (2026-07-06): colour/border/typography always paint from the
+// block's OWN attributes — there is no locked "preset mode" any more. A
+// preset only ever seeds these attrs (via the editor's Apply button); render
+// never gates on inheritStyle.
+if ( $colour_text ) {
+	$inline_styles[] = 'color:' . sgs_colour_value( $colour_text );
+}
+if ( $colour_bg ) {
+	$inline_styles[] = 'background-color:' . sgs_colour_value( $colour_bg );
+}
+if ( $colour_border ) {
+	$inline_styles[] = 'border-color:' . sgs_colour_value( $colour_border );
+}
+if ( $border_style && 'solid' !== $border_style ) {
+	$inline_styles[] = 'border-style:' . $border_style;
+}
 
-	// Border widths.
-	if ( null !== $border_width_top || null !== $border_width_rgt || null !== $border_width_bot || null !== $border_width_lft ) {
-		$bwt             = null !== $border_width_top ? $border_width_top . $border_width_unit : '0';
-		$bwr             = null !== $border_width_rgt ? $border_width_rgt . $border_width_unit : '0';
-		$bwb             = null !== $border_width_bot ? $border_width_bot . $border_width_unit : '0';
-		$bwl             = null !== $border_width_lft ? $border_width_lft . $border_width_unit : '0';
-		$inline_styles[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
-	}
+// Border widths.
+if ( null !== $border_width_top || null !== $border_width_rgt || null !== $border_width_bot || null !== $border_width_lft ) {
+	$bwt             = null !== $border_width_top ? $border_width_top . $border_width_unit : '0';
+	$bwr             = null !== $border_width_rgt ? $border_width_rgt . $border_width_unit : '0';
+	$bwb             = null !== $border_width_bot ? $border_width_bot . $border_width_unit : '0';
+	$bwl             = null !== $border_width_lft ? $border_width_lft . $border_width_unit : '0';
+	$inline_styles[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
+}
 
-	// Border-radius / font-size / line-height / letter-spacing are NOT inline
-	// (Pattern A, D-migration): each has tablet/mobile tiers, so base+tablet+
-	// mobile are emitted together on the SAME selector in the scoped <style>
-	// block below (step 4) via the shared general helper. Inline would always
-	// beat the id-scoped @media overrides regardless of viewport.
-	if ( $font_weight ) {
-		$inline_styles[] = 'font-weight:' . intval( $font_weight );
-	}
-	if ( $font_style_attr && 'normal' !== $font_style_attr ) {
-		$inline_styles[] = 'font-style:' . $font_style_attr;
-	}
-	if ( $text_transform ) {
-		$inline_styles[] = 'text-transform:' . $text_transform;
-	}
-	if ( $text_decoration ) {
-		$inline_styles[] = 'text-decoration:' . $text_decoration;
-	}
+// Border-radius / font-size / line-height / letter-spacing are NOT inline
+// (Pattern A, D-migration): each has tablet/mobile tiers, so base+tablet+
+// mobile are emitted together on the SAME selector in the scoped <style>
+// block below (step 4) via the shared general helper. Inline would always
+// beat the id-scoped @media overrides regardless of viewport.
+if ( $font_weight ) {
+	$inline_styles[] = 'font-weight:' . intval( $font_weight );
+}
+if ( $font_style_attr && 'normal' !== $font_style_attr ) {
+	$inline_styles[] = 'font-style:' . $font_style_attr;
+}
+if ( $text_transform ) {
+	$inline_styles[] = 'text-transform:' . $text_transform;
+}
+if ( $text_decoration ) {
+	$inline_styles[] = 'text-decoration:' . $text_decoration;
+}
 
-	// Normal box shadow.
-	if ( $box_shadow['colour'] ) {
-		$bs_inset        = $box_shadow['inset'] ? 'inset ' : '';
-		$bs_h            = (int) $box_shadow['hOffset'];
-		$bs_v            = (int) $box_shadow['vOffset'];
-		$bs_blur         = absint( $box_shadow['blur'] );
-		$bs_spread       = (int) $box_shadow['spread'];
-		$bs_colour_val   = sgs_colour_value( $box_shadow['colour'] );
-		$inline_styles[] = "box-shadow:{$bs_inset}{$bs_h}px {$bs_v}px {$bs_blur}px {$bs_spread}px {$bs_colour_val}";
-	}
+// Normal box shadow.
+if ( $box_shadow['colour'] ) {
+	$bs_inset        = $box_shadow['inset'] ? 'inset ' : '';
+	$bs_h            = (int) $box_shadow['hOffset'];
+	$bs_v            = (int) $box_shadow['vOffset'];
+	$bs_blur         = absint( $box_shadow['blur'] );
+	$bs_spread       = (int) $box_shadow['spread'];
+	$bs_colour_val   = sgs_colour_value( $box_shadow['colour'] );
+	$inline_styles[] = "box-shadow:{$bs_inset}{$bs_h}px {$bs_v}px {$bs_blur}px {$bs_spread}px {$bs_colour_val}";
 }
 
 // Padding / min-height / icon-size-var are NOT inline (Pattern A,
@@ -287,103 +292,101 @@ if ( abs( $hover_scale - 1.0 ) > 0.001 ) {
 	$scoped_css_parts[] = "#{$uid} .sgs-button:focus-visible{transform:scale({$scale_val});}";
 }
 
-// Hover colours (custom mode).
-if ( $is_custom ) {
-	$hover_rules = array();
+// Hover colours — always painted from the button's own attrs (no preset gate).
+$hover_rules = array();
 
-	if ( $colour_text_hover ) {
-		$hover_rules[] = 'color:' . sgs_colour_value( $colour_text_hover );
-	}
-	if ( $colour_bg_hover ) {
-		$hover_rules[] = 'background-color:' . sgs_colour_value( $colour_bg_hover );
-	}
-	if ( $colour_border_hover ) {
-		$hover_rules[] = 'border-color:' . sgs_colour_value( $colour_border_hover );
-	}
-	if ( 'underline' === $text_decoration_hover ) {
-		$hover_rules[] = 'text-decoration:underline';
-	}
-
-	// Hover box shadow.
-	if ( $box_shadow_hover['colour'] ) {
-		$bsh_inset      = $box_shadow_hover['inset'] ? 'inset ' : '';
-		$bsh_h          = (int) $box_shadow_hover['hOffset'];
-		$bsh_v          = (int) $box_shadow_hover['vOffset'];
-		$bsh_blur       = absint( $box_shadow_hover['blur'] );
-		$bsh_spread     = (int) $box_shadow_hover['spread'];
-		$bsh_colour_val = sgs_colour_value( $box_shadow_hover['colour'] );
-		$hover_rules[]  = "box-shadow:{$bsh_inset}{$bsh_h}px {$bsh_v}px {$bsh_blur}px {$bsh_spread}px {$bsh_colour_val}";
-	}
-
-	if ( $hover_rules ) {
-		$scoped_css_parts[] = "#{$uid} .sgs-button:hover,#{$uid} .sgs-button:focus-visible{" . implode( ';', $hover_rules ) . ';}';
-	}
-
-	// Icon hover colour.
-	if ( $icon_col_hov ) {
-		$scoped_css_parts[] = "#{$uid} .sgs-button:hover .sgs-button__icon,#{$uid} .sgs-button:focus-visible .sgs-button__icon{color:" . sgs_colour_value( $icon_col_hov ) . ';}';
-	}
-
-	// Typography + border-radius — base + tablet + mobile on the SAME
-	// selector (Pattern A). Custom-mode only (matches the pre-existing
-	// contract — preset-mode buttons don't expose these controls).
-	$scoped_css_parts[] = sgs_responsive_css_rule(
-		$attributes,
-		array(
-			array(
-				'attr'         => 'fontSize',
-				'css'          => 'font-size',
-				'unit_default' => $font_size_unit,
-				'tablet_attr'  => 'fontSizeTablet',
-				'mobile_attr'  => 'fontSizeMobile',
-			),
-			array(
-				'attr'         => 'lineHeight',
-				'css'          => 'line-height',
-				'unit_default' => $line_height_unit,
-				'tablet_attr'  => 'lineHeightTablet',
-				'mobile_attr'  => 'lineHeightMobile',
-			),
-			array(
-				'attr'         => 'letterSpacing',
-				'css'          => 'letter-spacing',
-				'unit_default' => $letter_spacing_unit,
-				'tablet_attr'  => 'letterSpacingTablet',
-				'mobile_attr'  => 'letterSpacingMobile',
-			),
-		),
-		"#{$uid} .sgs-button"
-	);
-
-	$scoped_css_parts[] = sgs_responsive_box_shorthand_rule(
-		$attributes,
-		'border-radius',
-		array(
-			'top'    => array(
-				'base'   => 'borderRadiusTL',
-				'tablet' => 'borderRadiusTabletTL',
-				'mobile' => 'borderRadiusMobileTL',
-			),
-			'right'  => array(
-				'base'   => 'borderRadiusTR',
-				'tablet' => 'borderRadiusTabletTR',
-				'mobile' => 'borderRadiusMobileTR',
-			),
-			'bottom' => array(
-				'base'   => 'borderRadiusBR',
-				'tablet' => 'borderRadiusTabletBR',
-				'mobile' => 'borderRadiusMobileBR',
-			),
-			'left'   => array(
-				'base'   => 'borderRadiusBL',
-				'tablet' => 'borderRadiusTabletBL',
-				'mobile' => 'borderRadiusMobileBL',
-			),
-		),
-		'borderRadiusUnit',
-		"#{$uid} .sgs-button"
-	);
+if ( $colour_text_hover ) {
+	$hover_rules[] = 'color:' . sgs_colour_value( $colour_text_hover );
 }
+if ( $colour_bg_hover ) {
+	$hover_rules[] = 'background-color:' . sgs_colour_value( $colour_bg_hover );
+}
+if ( $colour_border_hover ) {
+	$hover_rules[] = 'border-color:' . sgs_colour_value( $colour_border_hover );
+}
+if ( 'underline' === $text_decoration_hover ) {
+	$hover_rules[] = 'text-decoration:underline';
+}
+
+// Hover box shadow.
+if ( $box_shadow_hover['colour'] ) {
+	$bsh_inset      = $box_shadow_hover['inset'] ? 'inset ' : '';
+	$bsh_h          = (int) $box_shadow_hover['hOffset'];
+	$bsh_v          = (int) $box_shadow_hover['vOffset'];
+	$bsh_blur       = absint( $box_shadow_hover['blur'] );
+	$bsh_spread     = (int) $box_shadow_hover['spread'];
+	$bsh_colour_val = sgs_colour_value( $box_shadow_hover['colour'] );
+	$hover_rules[]  = "box-shadow:{$bsh_inset}{$bsh_h}px {$bsh_v}px {$bsh_blur}px {$bsh_spread}px {$bsh_colour_val}";
+}
+
+if ( $hover_rules ) {
+	$scoped_css_parts[] = "#{$uid} .sgs-button:hover,#{$uid} .sgs-button:focus-visible{" . implode( ';', $hover_rules ) . ';}';
+}
+
+// Icon hover colour.
+if ( $icon_col_hov ) {
+	$scoped_css_parts[] = "#{$uid} .sgs-button:hover .sgs-button__icon,#{$uid} .sgs-button:focus-visible .sgs-button__icon{color:" . sgs_colour_value( $icon_col_hov ) . ';}';
+}
+
+// Typography + border-radius — base + tablet + mobile on the SAME
+// selector (Pattern A). Always emitted — every button is attribute-driven,
+// there is no separate preset-locked mode any more.
+$scoped_css_parts[] = sgs_responsive_css_rule(
+	$attributes,
+	array(
+		array(
+			'attr'         => 'fontSize',
+			'css'          => 'font-size',
+			'unit_default' => $font_size_unit,
+			'tablet_attr'  => 'fontSizeTablet',
+			'mobile_attr'  => 'fontSizeMobile',
+		),
+		array(
+			'attr'         => 'lineHeight',
+			'css'          => 'line-height',
+			'unit_default' => $line_height_unit,
+			'tablet_attr'  => 'lineHeightTablet',
+			'mobile_attr'  => 'lineHeightMobile',
+		),
+		array(
+			'attr'         => 'letterSpacing',
+			'css'          => 'letter-spacing',
+			'unit_default' => $letter_spacing_unit,
+			'tablet_attr'  => 'letterSpacingTablet',
+			'mobile_attr'  => 'letterSpacingMobile',
+		),
+	),
+	"#{$uid} .sgs-button"
+);
+
+$scoped_css_parts[] = sgs_responsive_box_shorthand_rule(
+	$attributes,
+	'border-radius',
+	array(
+		'top'    => array(
+			'base'   => 'borderRadiusTL',
+			'tablet' => 'borderRadiusTabletTL',
+			'mobile' => 'borderRadiusMobileTL',
+		),
+		'right'  => array(
+			'base'   => 'borderRadiusTR',
+			'tablet' => 'borderRadiusTabletTR',
+			'mobile' => 'borderRadiusMobileTR',
+		),
+		'bottom' => array(
+			'base'   => 'borderRadiusBR',
+			'tablet' => 'borderRadiusTabletBR',
+			'mobile' => 'borderRadiusMobileBR',
+		),
+		'left'   => array(
+			'base'   => 'borderRadiusBL',
+			'tablet' => 'borderRadiusTabletBL',
+			'mobile' => 'borderRadiusMobileBL',
+		),
+	),
+	'borderRadiusUnit',
+	"#{$uid} .sgs-button"
+);
 
 // Padding — base + tablet + mobile shorthand on the SAME selector
 // (Pattern A). All modes (matches the pre-existing contract).
@@ -525,16 +528,10 @@ if ( $has_width_tier || 'custom' === $width_type || 'full' === $width_type ) {
 // 5. Build CSS classes for the button element.
 // ---------------------------------------------------------------------------
 
+// Preset-as-seed: presets only seed attributes (via the editor Apply
+// button) — there's no locked style class any more. All buttons render from
+// their own attrs, so a single class covers every button.
 $btn_classes = array( 'sgs-button' );
-
-if ( $is_custom ) {
-	$btn_classes[] = 'sgs-button--custom';
-} else {
-	// Whitelist preset classes to prevent CSS injection.
-	$allowed_presets = array( 'primary', 'secondary', 'outline' );
-	$safe_preset     = in_array( $inherit_style, $allowed_presets, true ) ? $inherit_style : 'primary';
-	$btn_classes[]   = 'is-style-' . $safe_preset;
-}
 
 // Margin inline style (wrapper level — no per-element responsive needed at wrapper level).
 $wrapper_styles = array();
@@ -697,11 +694,16 @@ if ( $icon_html ) {
 $btn_style_str = $inline_styles ? implode( ';', $inline_styles ) . ';' : '';
 $btn_class_str = implode( ' ', $btn_classes );
 
+// Whitelist to prevent arbitrary attribute-value injection.
+$allowed_presets    = array( 'primary', 'secondary', 'outline' );
+$safe_inherit_style = in_array( $inherit_style, $allowed_presets, true ) ? $inherit_style : 'primary';
+
 $wrapper_attr = get_block_wrapper_attributes(
 	array(
-		'id'    => $uid,
-		'class' => 'sgs-button-wrapper' . ( 'full' === $width_type ? ' sgs-button-wrapper--full' : '' ),
-		'style' => $wrapper_styles ? implode( ';', $wrapper_styles ) . ';' : '',
+		'id'          => $uid,
+		'class'       => 'sgs-button-wrapper' . ( 'full' === $width_type ? ' sgs-button-wrapper--full' : '' ),
+		'style'       => $wrapper_styles ? implode( ';', $wrapper_styles ) . ';' : '',
+		'data-preset' => $safe_inherit_style,
 	)
 );
 

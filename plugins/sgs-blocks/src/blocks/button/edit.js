@@ -6,17 +6,17 @@ import {
 	SelectControl,
 	RangeControl,
 	ToggleControl,
-	Notice,
+	Button,
 	__experimentalHStack as HStack,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import { IconPicker, TypographyControls, ResponsiveControl } from '../../components';
+import { BUTTON_PRESETS } from './presets';
 
 const PRESET_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
 	{ label: __( 'Secondary', 'sgs-blocks' ), value: 'secondary' },
 	{ label: __( 'Outline', 'sgs-blocks' ), value: 'outline' },
-	{ label: __( 'Custom', 'sgs-blocks' ), value: 'custom' },
 ];
 
 const TARGET_OPTIONS = [
@@ -200,33 +200,33 @@ export default function Edit( { attributes, setAttributes } ) {
 		boxShadowHover,
 	} = attributes;
 
-	const isCustom = 'custom' === inheritStyle;
 	const hasIcon = !! icon;
 
-	// Build editor preview inline styles.
+	// Build editor preview inline styles. Every button is attribute-driven now
+	// (no locked preset mode) — all colour/typography/border attrs preview
+	// unconditionally, matching render.php.
 	const previewStyle = {};
-	if ( isCustom ) {
-		if ( colourText ) previewStyle.color = colourText;
-		if ( colourBackground ) previewStyle.backgroundColor = colourBackground;
-		if ( colourBorder ) previewStyle.borderColor = colourBorder;
-		if ( borderStyle ) previewStyle.borderStyle = borderStyle;
-		if ( borderRadiusTL || borderRadiusTR || borderRadiusBR || borderRadiusBL ) {
-			previewStyle.borderRadius = `${ borderRadiusTL || 0 }px ${ borderRadiusTR || 0 }px ${ borderRadiusBR || 0 }px ${ borderRadiusBL || 0 }px`;
-		}
-		if ( fontSize ) previewStyle.fontSize = `${ fontSize }${ fontSizeUnit || 'px' }`;
-		if ( fontWeight ) previewStyle.fontWeight = fontWeight;
-		if ( fontStyle ) previewStyle.fontStyle = fontStyle;
-		if ( textTransform ) previewStyle.textTransform = textTransform;
-		if ( textDecoration ) previewStyle.textDecoration = textDecoration;
-		if ( paddingTop || paddingRight || paddingBottom || paddingLeft ) {
-			previewStyle.padding = `${ paddingTop || 0 }px ${ paddingRight || 0 }px ${ paddingBottom || 0 }px ${ paddingLeft || 0 }px`;
-		}
+	if ( colourText ) previewStyle.color = colourText;
+	if ( colourBackground ) previewStyle.backgroundColor = colourBackground;
+	if ( colourBorder ) previewStyle.borderColor = colourBorder;
+	if ( borderStyle ) previewStyle.borderStyle = borderStyle;
+	if ( borderRadiusTL || borderRadiusTR || borderRadiusBR || borderRadiusBL ) {
+		previewStyle.borderRadius = `${ borderRadiusTL || 0 }px ${ borderRadiusTR || 0 }px ${ borderRadiusBR || 0 }px ${ borderRadiusBL || 0 }px`;
+	}
+	if ( fontSize ) previewStyle.fontSize = `${ fontSize }${ fontSizeUnit || 'px' }`;
+	if ( fontWeight ) previewStyle.fontWeight = fontWeight;
+	if ( fontStyle ) previewStyle.fontStyle = fontStyle;
+	if ( textTransform ) previewStyle.textTransform = textTransform;
+	if ( textDecoration ) previewStyle.textDecoration = textDecoration;
+	if ( paddingTop || paddingRight || paddingBottom || paddingLeft ) {
+		previewStyle.padding = `${ paddingTop || 0 }px ${ paddingRight || 0 }px ${ paddingBottom || 0 }px ${ paddingLeft || 0 }px`;
 	}
 	if ( widthType === 'custom' && customWidth ) previewStyle.width = `${ customWidth }${ customWidthUnit }`;
 	if ( minHeight ) previewStyle.minHeight = `${ minHeight }px`;
 
+	// No `.is-style-*` class any more — colour/border/typography are always
+	// attribute-driven inline styles (preset-as-seed model).
 	const blockClasses = [ 'sgs-button' ];
-	if ( ! isCustom ) blockClasses.push( `is-style-${ inheritStyle }` );
 
 	// Editor-frontend parity: apply the SAME wrapper class the frontend uses
 	// (see render.php step 8) rather than an inline width:100% hack on the
@@ -256,20 +256,26 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			<InspectorControls>
 
-				{ /* Style Preset */ }
+				{ /* Style Preset — preset-as-seed: picking a preset + clicking Apply
+				   COPIES that preset's values into this button's own attributes.
+				   Nothing is locked — every colour/typography/border control below
+				   stays fully editable, before and after applying. */ }
 				<PanelBody title={ __( 'Style Preset', 'sgs-blocks' ) } initialOpen={ true }>
 					<SelectControl
-						label={ __( 'Button style', 'sgs-blocks' ) }
+						label={ __( 'Style preset', 'sgs-blocks' ) }
 						value={ inheritStyle }
 						options={ PRESET_OPTIONS }
 						onChange={ ( val ) => setAttributes( { inheritStyle: val } ) }
+						help={ __( 'Pick a preset and click Apply to copy its styling into this button’s settings — then tweak anything below.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 					/>
-					{ ! isCustom && (
-						<Notice status="info" isDismissible={ false } style={ { marginTop: '8px' } }>
-							{ __( 'Colours and typography are controlled by Button Presets settings. Switch to "Custom" for per-instance overrides.', 'sgs-blocks' ) }
-						</Notice>
-					) }
+					<Button
+						variant="secondary"
+						style={ { marginTop: '8px' } }
+						onClick={ () => setAttributes( { ...BUTTON_PRESETS[ inheritStyle ] } ) }
+					>
+						{ __( 'Apply preset', 'sgs-blocks' ) }
+					</Button>
 				</PanelBody>
 
 				{ /* Content */ }
@@ -451,9 +457,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ResponsiveControl>
 				</PanelBody>
 
-				{ /* Typography — custom mode only */ }
-				{ isCustom && (
-					<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+				{ /* Typography — always editable (preset-as-seed) */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 						{ /*
 						 * Font size (responsive) + line height + font weight + font style
 						 * via shared TypographyControls.
@@ -495,11 +500,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 						/>
 					</PanelBody>
-				) }
 
-				{ /* Colours — custom mode only */ }
-				{ isCustom && (
-					<PanelBody title={ __( 'Colours', 'sgs-blocks' ) } initialOpen={ false }>
+				{ /* Colours — always editable (preset-as-seed) */ }
+				<PanelBody title={ __( 'Colours', 'sgs-blocks' ) } initialOpen={ false }>
 						<TextControl
 							label={ __( 'Text colour', 'sgs-blocks' ) }
 							value={ colourText }
@@ -545,11 +548,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 						/>
 					</PanelBody>
-				) }
 
-				{ /* Border — custom mode only */ }
-				{ isCustom && (
-					<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				{ /* Border — always editable (preset-as-seed) */ }
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 						<SelectControl
 							label={ __( 'Border style', 'sgs-blocks' ) }
 							value={ borderStyle }
@@ -566,7 +567,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						<RangeControl label={ __( 'Radius — bottom right (px)', 'sgs-blocks' ) } value={ borderRadiusBR || 0 } onChange={ ( val ) => setAttributes( { borderRadiusBR: val } ) } min={ 0 } max={ 100 } __nextHasNoMarginBottom />
 						<RangeControl label={ __( 'Radius — bottom left (px)', 'sgs-blocks' ) } value={ borderRadiusBL || 0 } onChange={ ( val ) => setAttributes( { borderRadiusBL: val } ) } min={ 0 } max={ 100 } __nextHasNoMarginBottom />
 					</PanelBody>
-				) }
 
 				{ /* Spacing */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
@@ -611,9 +611,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ /* Box shadow — custom mode only */ }
-				{ isCustom && (
-					<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
+				{ /* Box shadow — always editable (preset-as-seed) */ }
+				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
 						<p style={ { fontSize: '12px', color: '#555', marginTop: 0 } }>{ __( 'Normal state', 'sgs-blocks' ) }</p>
 						<TextControl label={ __( 'Colour', 'sgs-blocks' ) } value={ boxShadow.colour } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, colour: val } } ) } __nextHasNoMarginBottom />
 						<RangeControl label={ __( 'Horizontal offset (px)', 'sgs-blocks' ) } value={ boxShadow.hOffset } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, hOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
@@ -629,7 +628,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						<RangeControl label={ __( 'Spread (px)', 'sgs-blocks' ) } value={ boxShadowHover.spread } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, spread: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
 						<ToggleControl label={ __( 'Inset', 'sgs-blocks' ) } checked={ boxShadowHover.inset } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, inset: val } } ) } __nextHasNoMarginBottom />
 					</PanelBody>
-				) }
 
 			</InspectorControls>
 

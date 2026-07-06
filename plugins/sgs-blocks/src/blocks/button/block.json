@@ -2,10 +2,10 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/button",
-    "version": "1.2.1",
+    "version": "1.3.0",
     "title": "SGS Button",
     "category": "sgs-content",
-    "description": "A highly-configurable button with preset binding, icon support, hover states, and per-breakpoint controls.",
+    "description": "A highly-configurable button with a style-preset seed (primary/secondary/outline), icon support, hover states, and per-breakpoint controls.",
     "keywords": [
         "button",
         "cta",
@@ -57,7 +57,12 @@
         },
         "inheritStyle": {
             "type": "string",
-            "default": "primary"
+            "default": "primary",
+            "enum": [
+                "primary",
+                "secondary",
+                "outline"
+            ]
         },
         "widthType": {
             "type": "string",
@@ -229,7 +234,7 @@
         },
         "fontWeight": {
             "type": "string",
-            "default": ""
+            "default": "600"
         },
         "fontStyle": {
             "type": "string",
@@ -301,27 +306,27 @@
         },
         "colourText": {
             "type": "string",
-            "default": ""
+            "default": "text-inverse"
         },
         "colourTextHover": {
             "type": "string",
-            "default": ""
+            "default": "text-inverse"
         },
         "colourBackground": {
             "type": "string",
-            "default": ""
+            "default": "primary"
         },
         "colourBackgroundHover": {
             "type": "string",
-            "default": ""
+            "default": "text"
         },
         "colourBorder": {
             "type": "string",
-            "default": ""
+            "default": "primary"
         },
         "colourBorderHover": {
             "type": "string",
-            "default": ""
+            "default": "text"
         },
         "borderStyle": {
             "type": "string",
@@ -329,19 +334,19 @@
         },
         "borderWidthTop": {
             "type": "number",
-            "default": null
+            "default": 2
         },
         "borderWidthRight": {
             "type": "number",
-            "default": null
+            "default": 2
         },
         "borderWidthBottom": {
             "type": "number",
-            "default": null
+            "default": 2
         },
         "borderWidthLeft": {
             "type": "number",
-            "default": null
+            "default": 2
         },
         "borderWidthUnit": {
             "type": "string",
@@ -349,19 +354,19 @@
         },
         "borderRadiusTL": {
             "type": "number",
-            "default": null
+            "default": 10
         },
         "borderRadiusTR": {
             "type": "number",
-            "default": null
+            "default": 10
         },
         "borderRadiusBR": {
             "type": "number",
-            "default": null
+            "default": 10
         },
         "borderRadiusBL": {
             "type": "number",
-            "default": null
+            "default": 10
         },
         "borderRadiusTabletTL": {
             "type": "number",
