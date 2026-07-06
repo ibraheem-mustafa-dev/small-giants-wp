@@ -2,8 +2,47 @@
 doc_type: handoff
 project: small-giants-wp
 thread: single thread (cloning pipeline)
-session_date: 2026-07-06
+session_date: 2026-07-07
 ---
+
+# Session Handoff — 2026-07-07 (D288 — button/multi-button rebuild: no wrapper div, full-width mobile CTAs, linked colour picker, preset-preview fix + hero vertical-centre)
+
+## Completed This Session
+1. **Task 1 — removed the `.sgs-button-wrapper` div (LANDED).** `button/render.php` merges the block-wrapper attrs onto the `<a>`/`<button>` itself so it's the DIRECT flex child of `sgs/multi-button`; reconciled all scoped selectors `#uid .sgs-button`→`#uid.sgs-button` (specificity preserved, icon descendants kept); `sgs-button--full` modifier; `edit.js` editor parity. Verified live: all 8 page-8 buttons render div-free with correct colours/padding at 375/1440, no regression (hero/card/standalone).
+2. **Task 1B — multi-button mobile full-width stack (LANDED).** Per-tier `align-items`, mobile defaults `stretch`; new `alignItemsTablet`/`alignItemsMobile` attrs + responsive editor control. Live 375: CTAs 328px full-width (were 151px).
+3. **Task 3 — linked colour picker (LANDED editor).** `DesignTokenPicker` `linked` mode (stores palette SLUG on swatch pick → theme-linked; custom → hex) + `resolveColorToken`; replaced all 6 button colour text-boxes + icon + shadow. Live editor: 6 ColorPalette pickers; swatch pick stores the slug (`colourBackground:"text"`).
+4. **Task 2 — preset "Apply does nothing" root-caused + fixed (LANDED editor).** Bean-confirmed broken; the code was fine — the editor PREVIEW applied token slugs as invalid CSS (dropped by the browser) so it never visibly changed. Fix: `resolveColorToken` in `previewStyle`. Live editor: Primary→coral, Outline→transparent+1px border-subtle; Apply visibly restyles.
+5. **Hero point D — content vertically centred on desktop (LANDED).** `verticalAlign` default `''` + `SGS_Container_Wrapper` skips `align-items` when blank → browser/CSS default; `.sgs-hero--align-left .sgs-hero__content` `flex-start`→`stretch`. Live 1440: content topOffset 0→139 (centred).
+
+## Current State
+- **Branch:** `main` at `e5daa6f2` (pushed). D-ceiling **D288**.
+- **Tests:** build passes; dead-control + hardcoded-render-defaults gates exit 0; visual-diff gate PASS (button/multi-button/hero reports). Converter conformance goldens NOT run this session (no converter change; the 4 known-golden failures are the parallel D284/D285 thread's + the D286 brand debt — not this thread).
+- **Build:** passes. Versions button/multi-button 1.4.0, hero 0.3.4.
+- **Uncommitted:** clean except a 0-byte stray `sgs-framework.db` (deliberately not committed).
+
+## Known Issues / Blockers
+- **Hero content LEFT-padding not transferred** (clone 16px vs draft 48-64px) — the L4 per-area extraction gap, DEFERRED to next session as `P-UNIVERSAL-RESPONSIVE-ROUTING`. Not a render/style regression; the converter doesn't route the draft's responsive `.sgs-hero__content` padding.
+
+## Next Priorities (in order)
+1. **Universal responsive routing (CSS + content)** — device-tier breakpoints (768/1024) → SGS `*Tablet`/`*Mobile` attrs; non-device breakpoints (e.g. 1280) → the block's Additional-CSS field. Fixes the hero left-padding + generalises. (`P-UNIVERSAL-RESPONSIVE-ROUTING`.)
+2. **Then the container L1-L4 cascade deep-dive** (Steps 3-6 + the hero-sub nested-child max-width `P-HERO-SUB-MAXWIDTH-NESTED-CHILD`).
+3. (Track) brand golden re-seed; ghost-button colour-seed re-add (`P-DRAFT-CSSVAR-SEED-READD`).
+
+## Files Modified
+| File | What changed |
+|------|--------------|
+| `plugins/sgs-blocks/src/blocks/button/{render.php,edit.js,style.css,block.json}` | remove wrapper div, merge attrs onto element, linked pickers + preview resolver, v1.4.0 |
+| `plugins/sgs-blocks/src/blocks/multi-button/{render.php,edit.js,block.json}` | per-tier align-items, mobile stretch default, responsive control, v1.4.0 |
+| `plugins/sgs-blocks/src/blocks/hero/{style.css,block.json}` | align-left stretch + verticalAlign blank default, v0.3.4 |
+| `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php` | skip align-items emit when verticalAlign blank |
+| `plugins/sgs-blocks/src/components/{DesignTokenPicker.js,index.js}` | `linked` mode + `resolveColorToken` export |
+| `reports/visual-diff/{button,multi-button,hero}-2026-07-07.md` | new — visual-diff PASS |
+| `.claude/{decisions.md,parking.md,handoff.md,state.md,next-session-prompt.md}` | D288 + P-UNIVERSAL-RESPONSIVE-ROUTING + handoff set |
+
+## Notes for Next Session
+- **The parallel D284/D285 thread is CLOSED** (Bean confirmed) — its files were flushed in the D288 commit. No parallel-thread caveats remain.
+- **Preset UX gotcha:** the button colour attrs store token SLUGS; the editor preview + the new picker resolve them via `resolveColorToken`. render.php resolves via `sgs_colour_value()`. Keep those two paths consistent when touching button colours.
+- **Handoff streamlined for Bean's usage budget:** the optional heavy gates (independent /qc subagent, OC-sync POSTs, 3-layer /capture-lesson) were skipped this run; NEW STOP-62/63 recorded in decisions.md D288 in lieu of the full lesson capture.
 
 # Session Handoff — 2026-07-06f (D286 media converge + D287 P-DRAFT-CSSVAR; container L1-L4 probe; BUTTON findings → next session is BUTTON-ONLY)
 
