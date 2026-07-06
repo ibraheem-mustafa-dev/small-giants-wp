@@ -1,16 +1,26 @@
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
 } from '@wordpress/block-editor';
+import { useSelect, useDispatch } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (layout kind).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { ResponsiveControl, SpacingControl } from '../../components';
 import {
 	PanelBody,
 	SelectControl,
+	Button,
 } from '@wordpress/components';
+import { BUTTON_PRESETS } from '../button/presets';
+
+const CHILD_PRESET_OPTIONS = [
+	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
+	{ label: __( 'Secondary', 'sgs-blocks' ), value: 'secondary' },
+	{ label: __( 'Outline', 'sgs-blocks' ), value: 'outline' },
+];
 
 const TEMPLATE = [
 	[ 'sgs/button', { inheritStyle: 'primary', label: 'Primary Action' } ],
@@ -56,7 +66,7 @@ const ALIGN_ITEMS_OPTIONS = [
 	{ label: __( 'Stretch', 'sgs-blocks' ), value: 'stretch' },
 ];
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		direction,
 		directionTablet,
@@ -70,6 +80,24 @@ export default function Edit( { attributes, setAttributes } ) {
 		wrapMobile,
 		alignItems,
 	} = attributes;
+
+	// "Apply to all buttons" — bulk preset-as-seed for every sgs/button child.
+	const [ groupPreset, setGroupPreset ] = useState( 'primary' );
+	const childButtons = useSelect(
+		( select ) =>
+			( select( 'core/block-editor' ).getBlock( clientId )?.innerBlocks || [] ).filter(
+				( block ) => 'sgs/button' === block.name
+			),
+		[ clientId ]
+	);
+	const { updateBlockAttributes } = useDispatch( 'core/block-editor' );
+
+	const applyPresetToAllButtons = () => {
+		const presetValues = BUTTON_PRESETS[ groupPreset ];
+		childButtons.forEach( ( child ) => {
+			updateBlockAttributes( child.clientId, { ...presetValues, inheritStyle: groupPreset } );
+		} );
+	};
 
 	// Preview the desktop layout in the editor.
 	// Gap comes from the block's own Layout panel Gap control (raw CSS string).
@@ -104,6 +132,30 @@ export default function Edit( { attributes, setAttributes } ) {
 					setAttributes={ setAttributes }
 					kind="content"
 				/>
+
+				{ /* ── Bulk style preset ── */ }
+				<PanelBody
+					title={ __( 'Button styles', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<SelectControl
+						label={ __( 'Style preset', 'sgs-blocks' ) }
+						value={ groupPreset }
+						options={ CHILD_PRESET_OPTIONS }
+						onChange={ setGroupPreset }
+						help={ __( 'Apply a preset style to every button in this group at once.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+					<Button
+						variant="secondary"
+						style={ { marginTop: '8px' } }
+						onClick={ applyPresetToAllButtons }
+						disabled={ ! childButtons.length }
+					>
+						{ __( 'Apply to all buttons', 'sgs-blocks' ) }
+					</Button>
+				</PanelBody>
+
 				{ /* ── Layout panel ── */ }
 				<PanelBody
 					title={ __( 'Layout', 'sgs-blocks' ) }
