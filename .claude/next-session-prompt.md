@@ -106,11 +106,16 @@ Invoke /autopilot first. **This is a slow, understand-before-fix session.** Bean
 - **4a.** Explain exactly how the cascade works from the scripts — each layer, how CSS flows + routes — **non-technical, visual, example-based** (Bean understands FIRST, before any comparison).
 - **4b.** THEN compare to the spec + reconcile the differences (amend the spec or flag the code).
 
-### 6 — Layer-by-layer scenario testing (L1→L2→L3→L4, ONE at a time; fix + re-test + LANDED before adding the next)
+### 5 (a-d) — Layer-by-layer scenario testing (5a=L1 · 5b=L2 · 5c=L3 · 5d=L4 — ONE layer at a time; fix + re-test + LANDED before adding the next)
 Per layer, test varied draft shapes: inner layer NOT named `__inner`; NO inner layer (L2/L3 CSS on the top div, and if a grid the L4 = direct descendants); containers-in-containers (featured-product); unique CSS per layer (every container-equivalent exists BECAUSE it has settings the plain container lacks); recognising L4 grid items with CUSTOM names (hero split = `media`/`content`).
 - Resolve the **content-width vs max-width** issue + other multi-layer migration quirks here.
-- **L4 open bug (proven D282):** the composite grid-area box-CSS is never fed to the (wired) `grid_area` resolver → hero contentPadding "no value extracted". Fix the per-area extraction feed.
-- **@media (responsive):** investigate how `@media` CSS transfers universally, explain it ADHD-simple, and confirm whether it behaves differently in the container context vs all blocks (it should be universal — if not, WHY).
+- **L4 open bug (proven D282):** the composite grid-area box-CSS is never fed to the (wired) `grid_area` resolver → hero contentPadding "no value extracted". Fix the per-area extraction feed. (This is 5d.)
+
+### 6a — Responsive (@media) transfer
+Investigate the scripts by which `@media` (responsive) CSS transfers UNIVERSALLY. Explain it ADHD-simple (visual, example-based). Then confirm whether it behaves differently in the container context vs all blocks — it SHOULD be universal; if not, explain WHY.
+
+### 6b — Custom-breakpoint responsive settings check
+Check the custom-breakpoint responsive settings (the `sgsResponsiveOverrides` channel) — how a per-instance custom `@media` threshold (e.g. 600/640px, non-device-tier) is stored + rendered + whether it lands, and how it relates to the per-device (768/1024) system. Is the custom-breakpoint path complete + universal, or a gap?
 
 ### Three carry-forward INSIGHTS (Bean, D282)
 1. **Universal = ALL L3 CSS lands across DIFFERENT examples, not one rule across examples.** The gap fix worked (products/gift cards) but that's one rule. Real test: does EVERY L3 setting land on — different column counts · composites · `sgs/container` in grid mode · a container-equivalent? **Probe `sgs/multi-button` / `sgs/button-group` — its `max-width` isn't landing, a good test.**
