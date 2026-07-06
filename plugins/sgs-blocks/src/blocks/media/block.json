@@ -2,10 +2,10 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/media",
-    "version": "1.5.0",
+    "version": "1.7.0",
     "title": "SGS Media",
     "category": "sgs-content",
-    "description": "Content media block — image or video. Use mediaType to choose image (with imageUrl) or video (with videoUrl for external embeds or videoId for WP-library uploads).",
+    "description": "Content media block — image or video. Use mediaType to choose image (with imageUrl) or video (with videoUrl for external embeds or videoId for WP-library uploads). Media styling (object-fit, max-width/height + tiers, border-radius, alignment, etc.) is driven entirely by this block's own NATIVE attributes and its Media Styling panel — this block deliberately OPTS OUT of the shared universal image-controls extension (no supports.sgs.imageControls) so there is ONE source of truth the cloning converter writes and the editor edits.",
     "keywords": [
         "image",
         "video",
@@ -21,11 +21,8 @@
         "className": true,
         "color": false,
         "html": false,
-        "sgs": {
-            "imageControls": true
-        },
         "__experimentalBorder": {
-            "radius": true,
+            "radius": false,
             "width": true,
             "style": true,
             "color": true
@@ -168,6 +165,22 @@
             "default": null
         },
         "maxHeightTablet": {
+            "type": "string",
+            "default": null
+        },
+        "height": {
+            "type": "string",
+            "default": null
+        },
+        "heightUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "heightMobile": {
+            "type": "string",
+            "default": null
+        },
+        "heightTablet": {
             "type": "string",
             "default": null
         },

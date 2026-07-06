@@ -41,6 +41,14 @@ $max_height_unit   = isset( $attributes['maxHeightUnit'] ) ? (string) $attribute
 $max_height_mobile = isset( $attributes['maxHeightMobile'] ) ? (string) $attributes['maxHeightMobile'] : '';
 $max_height_tablet = isset( $attributes['maxHeightTablet'] ) ? (string) $attributes['maxHeightTablet'] : '';
 
+// Fixed CSS height (fill) — distinct from maxHeight (a cap) and imageHeight (the
+// intrinsic HTML attr). A draft `height:440px` on an image makes it FILL that
+// height with object-fit cropping. Same unit-embedded + tier format as maxHeight.
+$height        = isset( $attributes['height'] ) ? (string) $attributes['height'] : '';
+$height_unit   = isset( $attributes['heightUnit'] ) ? (string) $attributes['heightUnit'] : 'px';
+$height_mobile = isset( $attributes['heightMobile'] ) ? (string) $attributes['heightMobile'] : '';
+$height_tablet = isset( $attributes['heightTablet'] ) ? (string) $attributes['heightTablet'] : '';
+
 $aspect_ratio = isset( $attributes['aspectRatio'] ) ? (string) $attributes['aspectRatio'] : '';
 
 $allowed_object_fits = array( 'cover', 'contain', 'fill', 'none', 'scale-down' );
@@ -112,16 +120,60 @@ if ( ! function_exists( 'sgs_media_validate_unit' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_media_css_length' ) ) {
+	/**
+	 * Normalise a dimensional value to a validated CSS length string.
+	 *
+	 * Accepts unit-embedded strings ("440px", "100%", "50vh"), bare numbers
+	 * (back-compat — the legacy `*Unit` attr is appended, defaulting to px), and
+	 * a `var(--…)` custom-property reference. Every non-var value is validated
+	 * against the sgs_media_validate_unit() allowlist so no CSS injection passes.
+	 *
+	 * @param string $value         The raw dimension string from block attributes.
+	 * @param string $unit_fallback Legacy unit to append when $value is a bare number.
+	 * @return string A validated CSS length, or '' when the value is empty/invalid.
+	 */
+	function sgs_media_css_length( string $value, string $unit_fallback = 'px' ): string {
+		$value = trim( $value );
+		if ( '' === $value ) {
+			return '';
+		}
+		// Bare number → append the matching legacy unit (validated).
+		if ( is_numeric( $value ) ) {
+			return $value . sgs_media_validate_unit( $unit_fallback );
+		}
+		// var(--token) or var(--token, fallback) — no braces/semicolons allowed.
+		if ( preg_match( '/^var\(\s*--[a-zA-Z0-9-]+(?:\s*,\s*[^;{}()]+)?\)$/', $value ) ) {
+			return $value;
+		}
+		// Unit-embedded length: numeric prefix + an allowed unit.
+		if ( preg_match( '/^(-?\d*\.?\d+)([a-z%]+)$/i', $value, $mm ) ) {
+			$allowed = array( 'px', '%', 'em', 'rem', 'vw', 'vh', 'svw', 'svh', 'ch' );
+			$unit    = strtolower( $mm[2] );
+			if ( in_array( $unit, $allowed, true ) ) {
+				return $mm[1] . $unit;
+			}
+		}
+		return '';
+	}
+}
+
 // ---------------------------------------------------------------------------
 // 4. Build shared media element inline styles (applies to both <img> and <video>/<iframe>).
 // ---------------------------------------------------------------------------
 $media_styles = array();
 
-// object-fit.
-$media_styles[] = 'object-fit:' . esc_attr( $object_fit );
+// object-fit — only emit inline when explicitly set to a NON-default value
+// (D7). The default `cover` is provided as an OVERRIDABLE :where() fallback in
+// style.css, so an unset value no longer force-crops and can be overridden.
+if ( 'cover' !== $object_fit ) {
+	$media_styles[] = 'object-fit:' . esc_attr( $object_fit );
+}
 
-// object-position: allow alphanumeric, %, spaces, commas, dashes (valid CSS).
-if ( '' !== $object_position && preg_match( '/^[a-zA-Z0-9%\s.,\-]+$/', $object_position ) ) {
+// object-position — only emit when explicitly set to a non-default value (D7).
+// Allow alphanumeric, %, spaces, commas, dashes (valid CSS).
+if ( '' !== $object_position && 'center center' !== $object_position
+	&& preg_match( '/^[a-zA-Z0-9%\s.,\-]+$/', $object_position ) ) {
 	$media_styles[] = 'object-position:' . esc_attr( $object_position );
 }
 
@@ -141,20 +193,50 @@ if ( 1.0 !== $opacity ) {
 	$media_styles[] = 'opacity:' . esc_attr( $opacity );
 }
 
-// border-radius — per-corner when any corner is set; else bare radius.
-$has_corners = ( '' !== $border_radius_tl || '' !== $border_radius_tr ||
-				'' !== $border_radius_bl || '' !== $border_radius_br );
+// border-radius — SINGLE resolution order (D2): per-corner attrs → the custom
+// `borderRadius` attr → the NATIVE `style.border.radius` written by the cloning
+// converter. Every value is normalised through sgs_media_css_length() so
+// unit-embedded strings ("16px", "50%") AND bare-number+legacy-unit both work.
+// Emitted inline on the <img>/<video> in BOTH figure + naked modes (WP core does
+// not paint native border-radius on a dynamic/naked <img> — mirror the D267 fix).
+$has_corners = '' !== $border_radius_tl || '' !== $border_radius_tr ||
+				'' !== $border_radius_bl || '' !== $border_radius_br;
 
+$resolved_radius = '';
 if ( $has_corners ) {
-	$br_unit = sgs_media_validate_unit( $border_radius_unit );
-	$br_tl   = is_numeric( $border_radius_tl ) ? absint( $border_radius_tl ) . $br_unit : '0';
-	$br_tr   = is_numeric( $border_radius_tr ) ? absint( $border_radius_tr ) . $br_unit : '0';
-	$br_br   = is_numeric( $border_radius_br ) ? absint( $border_radius_br ) . $br_unit : '0';
-	$br_bl   = is_numeric( $border_radius_bl ) ? absint( $border_radius_bl ) . $br_unit : '0';
+	$br_tl = '' !== $border_radius_tl ? sgs_media_css_length( $border_radius_tl, $border_radius_unit ) : '';
+	$br_tr = '' !== $border_radius_tr ? sgs_media_css_length( $border_radius_tr, $border_radius_unit ) : '';
+	$br_br = '' !== $border_radius_br ? sgs_media_css_length( $border_radius_br, $border_radius_unit ) : '';
+	$br_bl = '' !== $border_radius_bl ? sgs_media_css_length( $border_radius_bl, $border_radius_unit ) : '';
 	// CSS shorthand order: top-left / top-right / bottom-right / bottom-left.
-	$media_styles[] = 'border-radius:' . $br_tl . ' ' . $br_tr . ' ' . $br_br . ' ' . $br_bl;
-} elseif ( '' !== $border_radius && is_numeric( $border_radius ) ) {
-	$media_styles[] = 'border-radius:' . absint( $border_radius ) . sgs_media_validate_unit( $border_radius_unit );
+	$resolved_radius = ( '' !== $br_tl ? $br_tl : '0' ) . ' ' .
+					( '' !== $br_tr ? $br_tr : '0' ) . ' ' .
+					( '' !== $br_br ? $br_br : '0' ) . ' ' .
+					( '' !== $br_bl ? $br_bl : '0' );
+} elseif ( '' !== $border_radius ) {
+	$resolved_radius = sgs_media_css_length( $border_radius, $border_radius_unit );
+} else {
+	// Native border support (converter output): style.border.radius.
+	$native_radius = $attributes['style']['border']['radius'] ?? '';
+	if ( is_string( $native_radius ) && '' !== $native_radius ) {
+		$resolved_radius = sgs_media_css_length( $native_radius, 'px' );
+	} elseif ( is_array( $native_radius ) ) {
+		// WP per-corner object: { topLeft, topRight, bottomLeft, bottomRight }.
+		$n_tl = sgs_media_css_length( (string) ( $native_radius['topLeft'] ?? '' ), 'px' );
+		$n_tr = sgs_media_css_length( (string) ( $native_radius['topRight'] ?? '' ), 'px' );
+		$n_br = sgs_media_css_length( (string) ( $native_radius['bottomRight'] ?? '' ), 'px' );
+		$n_bl = sgs_media_css_length( (string) ( $native_radius['bottomLeft'] ?? '' ), 'px' );
+		if ( '' !== $n_tl || '' !== $n_tr || '' !== $n_br || '' !== $n_bl ) {
+			$resolved_radius = ( '' !== $n_tl ? $n_tl : '0' ) . ' ' .
+							( '' !== $n_tr ? $n_tr : '0' ) . ' ' .
+							( '' !== $n_br ? $n_br : '0' ) . ' ' .
+							( '' !== $n_bl ? $n_bl : '0' );
+		}
+	}
+}
+
+if ( '' !== $resolved_radius ) {
+	$media_styles[] = 'border-radius:' . $resolved_radius;
 }
 
 // box-shadow — delegate to sgs_shadow_value() so raw CSS values pass through correctly.
@@ -199,39 +281,60 @@ if ( ! $block_anchor ) {
 // ---------------------------------------------------------------------------
 // 7. Per-viewport responsive CSS (emitted as a scoped <style> tag).
 // ---------------------------------------------------------------------------
-$mw_unit = sgs_media_validate_unit( $max_width_unit );
-$mh_unit = sgs_media_validate_unit( $max_height_unit );
 // Target the inner media element (img or video) for dimension constraints.
-$id_sel  = '#' . esc_attr( $block_anchor ) . ' .sgs-media__img, #' . esc_attr( $block_anchor ) . ' .sgs-media__video';
-$id_wrap = '#' . esc_attr( $block_anchor );
+// The FIRST selector (id + class on the SAME element, `#uid.sgs-media__img`)
+// matches the NAKED <img> (D6 — where the id and class share one element); the
+// descendant forms match figure-mode img/video. Both are emitted so the same
+// max-width/max-height rule lands in either render shape.
+$anchor_esc = esc_attr( $block_anchor );
+$id_sel     = '#' . $anchor_esc . '.sgs-media__img, #' . $anchor_esc . ' .sgs-media__img, #' . $anchor_esc . ' .sgs-media__video';
+$id_wrap    = '#' . $anchor_esc;
 
 // max-width / max-height — base + tablet + mobile on the SAME selector
-// (Pattern A). NOTE: this block's tablet/mobile breakpoints (1023px/599px)
-// pre-date the framework's 768/1024 standard and are preserved as-is here —
-// only the inline-vs-<style> PLACEMENT bug is in scope for this migration,
-// not the breakpoint values themselves.
+// (Pattern A). Values are validated through sgs_media_css_length() so
+// unit-embedded strings ("440px", "100%") pass (D1 — the old is_numeric()
+// guard silently dropped them). Breakpoints use the framework 767/1023 standard
+// (D3): mobile @media(max-width:767px), tablet @media(max-width:1023px).
 $base_rules = array();
-if ( '' !== $max_width && is_numeric( $max_width ) ) {
-	$base_rules[] = 'max-width:' . absint( $max_width ) . $mw_unit;
+$mw_base    = sgs_media_css_length( $max_width, $max_width_unit );
+$mh_base    = sgs_media_css_length( $max_height, $max_height_unit );
+$h_base     = sgs_media_css_length( $height, $height_unit );
+if ( '' !== $mw_base ) {
+	$base_rules[] = 'max-width:' . $mw_base;
 }
-if ( '' !== $max_height && is_numeric( $max_height ) ) {
-	$base_rules[] = 'max-height:' . absint( $max_height ) . $mh_unit;
+if ( '' !== $mh_base ) {
+	$base_rules[] = 'max-height:' . $mh_base;
+}
+if ( '' !== $h_base ) {
+	$base_rules[] = 'height:' . $h_base;
 }
 
 $tablet_rules = array();
-if ( '' !== $max_width_tablet && is_numeric( $max_width_tablet ) ) {
-	$tablet_rules[] = 'max-width:' . absint( $max_width_tablet ) . $mw_unit;
+$mw_tablet    = sgs_media_css_length( $max_width_tablet, $max_width_unit );
+$mh_tablet    = sgs_media_css_length( $max_height_tablet, $max_height_unit );
+$h_tablet     = sgs_media_css_length( $height_tablet, $height_unit );
+if ( '' !== $mw_tablet ) {
+	$tablet_rules[] = 'max-width:' . $mw_tablet;
 }
-if ( '' !== $max_height_tablet && is_numeric( $max_height_tablet ) ) {
-	$tablet_rules[] = 'max-height:' . absint( $max_height_tablet ) . $mh_unit;
+if ( '' !== $mh_tablet ) {
+	$tablet_rules[] = 'max-height:' . $mh_tablet;
+}
+if ( '' !== $h_tablet ) {
+	$tablet_rules[] = 'height:' . $h_tablet;
 }
 
 $mobile_rules = array();
-if ( '' !== $max_width_mobile && is_numeric( $max_width_mobile ) ) {
-	$mobile_rules[] = 'max-width:' . absint( $max_width_mobile ) . $mw_unit;
+$mw_mobile    = sgs_media_css_length( $max_width_mobile, $max_width_unit );
+$mh_mobile    = sgs_media_css_length( $max_height_mobile, $max_height_unit );
+$h_mobile     = sgs_media_css_length( $height_mobile, $height_unit );
+if ( '' !== $mw_mobile ) {
+	$mobile_rules[] = 'max-width:' . $mw_mobile;
 }
-if ( '' !== $max_height_mobile && is_numeric( $max_height_mobile ) ) {
-	$mobile_rules[] = 'max-height:' . absint( $max_height_mobile ) . $mh_unit;
+if ( '' !== $mh_mobile ) {
+	$mobile_rules[] = 'max-height:' . $mh_mobile;
+}
+if ( '' !== $h_mobile ) {
+	$mobile_rules[] = 'height:' . $h_mobile;
 }
 
 $responsive_css = '';
@@ -242,7 +345,7 @@ if ( $tablet_rules ) {
 	$responsive_css .= '@media(max-width:1023px){' . $id_sel . '{' . implode( ';', $tablet_rules ) . '}}';
 }
 if ( $mobile_rules ) {
-	$responsive_css .= '@media(max-width:599px){' . $id_sel . '{' . implode( ';', $mobile_rules ) . '}}';
+	$responsive_css .= '@media(max-width:767px){' . $id_sel . '{' . implode( ';', $mobile_rules ) . '}}';
 }
 
 // order — base + tablet + mobile on the SAME wrapper selector (Pattern A).
@@ -253,7 +356,7 @@ if ( null !== $css_order_tablet ) {
 	$responsive_css .= '@media(max-width:1023px){' . $id_wrap . '{order:' . intval( $css_order_tablet ) . ';}}';
 }
 if ( null !== $css_order_mobile ) {
-	$responsive_css .= '@media(max-width:599px){' . $id_wrap . '{order:' . intval( $css_order_mobile ) . ';}}';
+	$responsive_css .= '@media(max-width:767px){' . $id_wrap . '{order:' . intval( $css_order_mobile ) . ';}}';
 }
 
 // ---------------------------------------------------------------------------
@@ -724,7 +827,11 @@ if ( $naked_mode && '' !== $image_html ) {
 		}
 	}
 
-	$naked_style_part  = $media_style_attr ? ' style="' . esc_attr( $media_style_attr ) . '"' : '';
+	// Naked mode has no <figure>, so the alignment margin (wrapper_styles) would
+	// be lost (D6). Merge the media styles with the wrapper styles onto the img.
+	$naked_style_list  = array_filter( array_merge( $media_styles, $wrapper_styles ) );
+	$naked_style_str   = implode( ';', $naked_style_list );
+	$naked_style_part  = '' !== $naked_style_str ? ' style="' . esc_attr( $naked_style_str ) . '"' : '';
 	$naked_width_part  = $image_width_attr ? ' width="' . esc_attr( $image_width_attr ) . '"' : '';
 	$naked_height_part = $image_height_attr ? ' height="' . esc_attr( $image_height_attr ) . '"' : '';
 

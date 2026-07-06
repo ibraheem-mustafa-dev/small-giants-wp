@@ -21,6 +21,15 @@
 	height: auto;
 }
 
+/* object-fit default (D7) — supplied as an OVERRIDABLE :where() fallback (0
+   specificity) instead of being force-emitted inline by render.php. An unset
+   objectFit therefore no longer crop-forces, and any override (a non-default
+   inline value from render.php, a theme rule, or a parent) wins. Matches both
+   the figure-mode img and the naked-mode img (id + class on the same element). */
+:where( .sgs-media__img ) {
+	object-fit: cover;
+}
+
 /* Video element — mirrors image defaults so shared styling attrs apply uniformly */
 .wp-block-sgs-media video,
 .wp-block-sgs-media .sgs-media__video {
@@ -33,10 +42,14 @@
 .wp-block-sgs-media iframe.sgs-media__video {
 	display: block;
 	width: 100%;
-	/* aspect-ratio is set inline per-instance from the aspectRatio attr;
-	   fall back to 16:9 so the embed isn't collapsed when no ratio is set */
-	aspect-ratio: 16 / 9;
 	border: 0;
+}
+
+/* 16:9 fallback (D9) — supplied as an OVERRIDABLE :where() default so an
+   explicit aspectRatio (emitted inline per-instance from the attr, or any other
+   override) always wins. Prevents the embed collapsing when no ratio is set. */
+:where( .wp-block-sgs-media iframe.sgs-media__video ) {
+	aspect-ratio: 16 / 9;
 }
 
 /* Caption */

@@ -14,8 +14,48 @@ import {
 	SelectControl,
 	TextareaControl,
 	ToggleControl,
+	RangeControl,
 	Notice,
+	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
+import { ResponsiveControl } from '../../components';
+
+/**
+ * Allowed CSS length units for the media styling controls. Mirrors the
+ * server-side sgs_media_validate_unit() allowlist so the editor cannot emit a
+ * unit render.php would reject.
+ */
+const SGS_MEDIA_UNITS = [
+	{ value: 'px', label: 'px' },
+	{ value: '%', label: '%' },
+	{ value: 'em', label: 'em' },
+	{ value: 'rem', label: 'rem' },
+	{ value: 'vw', label: 'vw' },
+	{ value: 'vh', label: 'vh' },
+];
+
+/**
+ * Responsive UnitControl trio — stores a unit-embedded CSS length string per
+ * breakpoint (e.g. "440px", "100%"). attrDesktop/Tablet/Mobile are declared as
+ * JSX props so the dead-control guard sees them as controlled attrs.
+ */
+function RUnitControl( { label, attrDesktop, attrTablet, attrMobile, attributes, setAttributes } ) {
+	return (
+		<ResponsiveControl label={ label }>
+			{ ( bp ) => {
+				const key = { desktop: attrDesktop, tablet: attrTablet, mobile: attrMobile }[ bp ];
+				return (
+					<UnitControl
+						value={ attributes[ key ] || '' }
+						onChange={ ( v ) => setAttributes( { [ key ]: v || null } ) }
+						units={ SGS_MEDIA_UNITS }
+						__next40pxDefaultSize
+					/>
+				);
+			} }
+		</ResponsiveControl>
+	);
+}
 
 /**
  * SGS Media block editor component.
@@ -140,6 +180,154 @@ export default function Edit( { attributes, setAttributes } ) {
 					>
 						{ __( 'Remove Image', 'sgs-blocks' ) }
 					</Button>
+					<TextControl
+						label={ __( 'Alt text (alternative text)', 'sgs-blocks' ) }
+						help={ __( 'Describe the image for screen readers and search engines. Leave empty only if the image is purely decorative.', 'sgs-blocks' ) }
+						value={ imageAlt || '' }
+						onChange={ ( value ) => setAttributes( { imageAlt: value } ) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+			) }
+
+			{ /* Media styling — writes the block's NATIVE styling attributes
+			     (single source of truth the cloning converter also writes). */ }
+			{ ( isImage || isVideo ) && (
+				<PanelBody title={ __( 'Media Styling', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Object fit', 'sgs-blocks' ) }
+						help={ __( 'How the media fills its box when a fixed height / aspect ratio is set.', 'sgs-blocks' ) }
+						value={ attributes.objectFit || 'cover' }
+						options={ [
+							{ label: __( 'Cover (fill, crop)', 'sgs-blocks' ), value: 'cover' },
+							{ label: __( 'Contain (fit, letterbox)', 'sgs-blocks' ), value: 'contain' },
+							{ label: __( 'Fill (stretch)', 'sgs-blocks' ), value: 'fill' },
+							{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+							{ label: __( 'Scale down', 'sgs-blocks' ), value: 'scale-down' },
+						] }
+						onChange={ ( value ) => setAttributes( { objectFit: value } ) }
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Object position', 'sgs-blocks' ) }
+						help={ __( 'Which part stays visible when cropped, e.g. "center center", "top right", "center 20%".', 'sgs-blocks' ) }
+						value={ attributes.objectPosition || '' }
+						placeholder="center center"
+						onChange={ ( value ) => setAttributes( { objectPosition: value } ) }
+						__nextHasNoMarginBottom
+					/>
+					<RUnitControl
+						label={ __( 'Max width', 'sgs-blocks' ) }
+						attrDesktop="maxWidth"
+						attrTablet="maxWidthTablet"
+						attrMobile="maxWidthMobile"
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+					<RUnitControl
+						label={ __( 'Max height', 'sgs-blocks' ) }
+						attrDesktop="maxHeight"
+						attrTablet="maxHeightTablet"
+						attrMobile="maxHeightMobile"
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+					<RUnitControl
+						label={ __( 'Height (fill)', 'sgs-blocks' ) }
+						attrDesktop="height"
+						attrTablet="heightTablet"
+						attrMobile="heightMobile"
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+					<TextControl
+						label={ __( 'Aspect ratio', 'sgs-blocks' ) }
+						help={ __( 'e.g. "16 / 9", "4 / 3", "1 / 1". Leave empty for the natural ratio.', 'sgs-blocks' ) }
+						value={ attributes.aspectRatio || '' }
+						placeholder="16 / 9"
+						onChange={ ( value ) => setAttributes( { aspectRatio: value } ) }
+						__nextHasNoMarginBottom
+					/>
+					<UnitControl
+						label={ __( 'Border radius', 'sgs-blocks' ) }
+						value={ attributes.borderRadius || '' }
+						units={ SGS_MEDIA_UNITS }
+						onChange={ ( value ) => setAttributes( { borderRadius: value || '' } ) }
+						__next40pxDefaultSize
+					/>
+					<SelectControl
+						label={ __( 'Alignment', 'sgs-blocks' ) }
+						value={ attributes.alignment || 'left' }
+						options={ [
+							{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
+							{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+							{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
+						] }
+						onChange={ ( value ) => setAttributes( { alignment: value } ) }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Opacity', 'sgs-blocks' ) }
+						value={ attributes.opacity ?? 1 }
+						min={ 0 }
+						max={ 1 }
+						step={ 0.05 }
+						onChange={ ( value ) => setAttributes( { opacity: value ?? 1 } ) }
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Box shadow (CSS)', 'sgs-blocks' ) }
+						help={ __( 'A raw CSS box-shadow value, e.g. "0 6px 24px rgba(0,0,0,0.15)". Leave empty for none.', 'sgs-blocks' ) }
+						value={ attributes.boxShadow || '' }
+						onChange={ ( value ) => setAttributes( { boxShadow: value } ) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+			) }
+
+			{ /* Caption & link — caption applies to image + video; link is image-only. */ }
+			{ ( isImage || isVideo ) && (
+				<PanelBody title={ __( 'Caption & Link', 'sgs-blocks' ) } initialOpen={ false }>
+					<TextControl
+						label={ __( 'Caption', 'sgs-blocks' ) }
+						value={ attributes.caption || '' }
+						onChange={ ( value ) => setAttributes( { caption: value } ) }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Caption tag', 'sgs-blocks' ) }
+						value={ attributes.captionTag || 'figcaption' }
+						options={ [
+							{ label: __( 'Figure caption (figcaption)', 'sgs-blocks' ), value: 'figcaption' },
+							{ label: __( 'Div', 'sgs-blocks' ), value: 'div' },
+						] }
+						onChange={ ( value ) => setAttributes( { captionTag: value } ) }
+						__nextHasNoMarginBottom
+					/>
+					{ isImage && (
+						<>
+							<TextControl
+								label={ __( 'Link URL', 'sgs-blocks' ) }
+								help={ __( 'Wrap the image in a link. Leave empty for no link.', 'sgs-blocks' ) }
+								type="url"
+								value={ attributes.linkUrl || '' }
+								onChange={ ( value ) => setAttributes( { linkUrl: value } ) }
+								__nextHasNoMarginBottom
+							/>
+							<ToggleControl
+								label={ __( 'Open link in new tab', 'sgs-blocks' ) }
+								checked={ !! attributes.linkOpensNewTab }
+								onChange={ ( value ) => setAttributes( { linkOpensNewTab: value } ) }
+							/>
+							<TextControl
+								label={ __( 'Link rel', 'sgs-blocks' ) }
+								help={ __( 'Optional rel attribute, e.g. "nofollow sponsored". "noopener" is added automatically for new-tab links.', 'sgs-blocks' ) }
+								value={ attributes.linkRel || '' }
+								onChange={ ( value ) => setAttributes( { linkRel: value } ) }
+								__nextHasNoMarginBottom
+							/>
+						</>
+					) }
 				</PanelBody>
 			) }
 
