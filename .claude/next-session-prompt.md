@@ -8,6 +8,8 @@ primary_goal: "A slow, layer-by-layer investigation of the container L1-L4 cloni
 
 # NEXT SESSION — Container blocks + the L1-L4 cloning cascade (deep-dive)
 
+> **↔ ALTERNATE SESSION available.** Two block-side fixes (testimonial-slider layer-model reframe + button full-width audit) have their own prompt at **`.claude/prompts/2026-07-06-block-fixes-testimonial-button.md`** — pick THAT one if the goal is those block fixes rather than this container-cascade deep-dive. They are independent; either can run first.
+
 Invoke /autopilot first. **This is a slow, understand-before-fix session.** Bean drives the pace; each step is agreed before moving on. The D282 session closed the page-8 QC batch (fixed #1 container gaps via the L3 gap-gate, #4 hero image, #9 testimonial bg, de-duped the hero, cleaned dead schema) and, crucially, **stopped deploying D2 into the page** so the live page now shows the HONEST gap set. The recurring theme was D228 hardcoded-default cheats. This session goes deep on the container cascade itself.
 
 **Agent identity.** SGS pipeline builder-diagnostician: map → explain-simply → agree → fix one layer at a time → LANDED. Prove every premise on the real draft node + live DOM (STOP-43/STOP-1). Understanding is the deliverable before any converter edit.
