@@ -283,13 +283,13 @@ $inline_styles[] = "--sgs-btn-icon-gap:{$icon_gap}px";
 $scoped_css_parts = array();
 
 // Transition — applied on the element always (preset AND custom).
-$scoped_css_parts[] = "#{$uid} .sgs-button{transition:all {$transition_duration}ms {$transition_easing};}";
+$scoped_css_parts[] = "#{$uid}.sgs-button{transition:all {$transition_duration}ms {$transition_easing};}";
 
 // Hover scale (skip if exactly 1.0 — no-op).
 if ( abs( $hover_scale - 1.0 ) > 0.001 ) {
 	$scale_val          = round( $hover_scale, 3 );
-	$scoped_css_parts[] = "#{$uid} .sgs-button:hover{transform:scale({$scale_val});}";
-	$scoped_css_parts[] = "#{$uid} .sgs-button:focus-visible{transform:scale({$scale_val});}";
+	$scoped_css_parts[] = "#{$uid}.sgs-button:hover{transform:scale({$scale_val});}";
+	$scoped_css_parts[] = "#{$uid}.sgs-button:focus-visible{transform:scale({$scale_val});}";
 }
 
 // Hover colours — always painted from the button's own attrs (no preset gate).
@@ -320,12 +320,12 @@ if ( $box_shadow_hover['colour'] ) {
 }
 
 if ( $hover_rules ) {
-	$scoped_css_parts[] = "#{$uid} .sgs-button:hover,#{$uid} .sgs-button:focus-visible{" . implode( ';', $hover_rules ) . ';}';
+	$scoped_css_parts[] = "#{$uid}.sgs-button:hover,#{$uid}.sgs-button:focus-visible{" . implode( ';', $hover_rules ) . ';}';
 }
 
 // Icon hover colour.
 if ( $icon_col_hov ) {
-	$scoped_css_parts[] = "#{$uid} .sgs-button:hover .sgs-button__icon,#{$uid} .sgs-button:focus-visible .sgs-button__icon{color:" . sgs_colour_value( $icon_col_hov ) . ';}';
+	$scoped_css_parts[] = "#{$uid}.sgs-button:hover .sgs-button__icon,#{$uid}.sgs-button:focus-visible .sgs-button__icon{color:" . sgs_colour_value( $icon_col_hov ) . ';}';
 }
 
 // Typography + border-radius — base + tablet + mobile on the SAME
@@ -356,7 +356,7 @@ $scoped_css_parts[] = sgs_responsive_css_rule(
 			'mobile_attr'  => 'letterSpacingMobile',
 		),
 	),
-	"#{$uid} .sgs-button"
+	"#{$uid}.sgs-button"
 );
 
 $scoped_css_parts[] = sgs_responsive_box_shorthand_rule(
@@ -385,7 +385,7 @@ $scoped_css_parts[] = sgs_responsive_box_shorthand_rule(
 		),
 	),
 	'borderRadiusUnit',
-	"#{$uid} .sgs-button"
+	"#{$uid}.sgs-button"
 );
 
 // Padding — base + tablet + mobile shorthand on the SAME selector
@@ -416,7 +416,7 @@ $scoped_css_parts[] = sgs_responsive_box_shorthand_rule(
 		),
 	),
 	'paddingUnit',
-	"#{$uid} .sgs-button"
+	"#{$uid}.sgs-button"
 );
 
 // Tablet margin.
@@ -425,7 +425,7 @@ if ( null !== $margin_top_tab || null !== $margin_right_tab || null !== $margin_
 	$mr_t               = null !== $margin_right_tab ? $margin_right_tab . $margin_unit : '0';
 	$mb_t               = null !== $margin_bottom_tab ? $margin_bottom_tab . $margin_unit : '0';
 	$ml_t               = null !== $margin_left_tab ? $margin_left_tab . $margin_unit : '0';
-	$scoped_css_parts[] = '@media(max-width:1024px){' . "#{$uid} .sgs-button{margin:{$mt_t} {$mr_t} {$mb_t} {$ml_t};}}";
+	$scoped_css_parts[] = '@media(max-width:1024px){' . "#{$uid}.sgs-button{margin:{$mt_t} {$mr_t} {$mb_t} {$ml_t};}}";
 }
 
 // Mobile margin.
@@ -434,7 +434,7 @@ if ( null !== $margin_top_mob || null !== $margin_right_mob || null !== $margin_
 	$mr_m               = null !== $margin_right_mob ? $margin_right_mob . $margin_unit : '0';
 	$mb_m               = null !== $margin_bottom_mob ? $margin_bottom_mob . $margin_unit : '0';
 	$ml_m               = null !== $margin_left_mob ? $margin_left_mob . $margin_unit : '0';
-	$scoped_css_parts[] = '@media(max-width:767px){' . "#{$uid} .sgs-button{margin:{$mt_m} {$mr_m} {$mb_m} {$ml_m};}}";
+	$scoped_css_parts[] = '@media(max-width:767px){' . "#{$uid}.sgs-button{margin:{$mt_m} {$mr_m} {$mb_m} {$ml_m};}}";
 }
 
 // Icon size CSS var — base + tablet + mobile on the SAME selector (Pattern A).
@@ -455,7 +455,7 @@ if ( $icon ) {
 				'cast'         => 'int',
 			),
 		),
-		"#{$uid} .sgs-button"
+		"#{$uid}.sgs-button"
 	);
 }
 
@@ -468,13 +468,13 @@ if ( $icon ) {
 // !important to win (the "F4 pattern" !important workaround is retired).
 $min_height_decls = array();
 if ( $min_height ) {
-	$min_height_decls[] = "#{$uid} .sgs-button{min-height:{$min_height}{$min_height_unit};}";
+	$min_height_decls[] = "#{$uid}.sgs-button{min-height:{$min_height}{$min_height_unit};}";
 }
 if ( null !== $min_height_tab ) {
-	$min_height_decls[] = "@media(max-width:1023px){#{$uid} .sgs-button{min-height:{$min_height_tab}{$min_height_tab_u};}}";
+	$min_height_decls[] = "@media(max-width:1023px){#{$uid}.sgs-button{min-height:{$min_height_tab}{$min_height_tab_u};}}";
 }
 if ( null !== $min_height_mob ) {
-	$min_height_decls[] = "@media(max-width:767px){#{$uid} .sgs-button{min-height:{$min_height_mob}{$min_height_mob_u};}}";
+	$min_height_decls[] = "@media(max-width:767px){#{$uid}.sgs-button{min-height:{$min_height_mob}{$min_height_mob_u};}}";
 }
 if ( $min_height_decls ) {
 	$scoped_css_parts[] = implode( '', $min_height_decls );
@@ -508,15 +508,15 @@ if ( $has_width_tier || 'custom' === $width_type || 'full' === $width_type ) {
 
 	$base_width = $width_css_value( $width_type, $custom_width, $custom_width_unit );
 	if ( null !== $base_width ) {
-		$width_decls[] = "#{$uid} .sgs-button{width:{$base_width};}";
+		$width_decls[] = "#{$uid}.sgs-button{width:{$base_width};}";
 	}
 	$tab_width = $width_css_value( $width_type_tab, $custom_width_tab, $custom_width_tab_u );
 	if ( null !== $tab_width ) {
-		$width_decls[] = "@media(max-width:1023px){#{$uid} .sgs-button{width:{$tab_width};}}";
+		$width_decls[] = "@media(max-width:1023px){#{$uid}.sgs-button{width:{$tab_width};}}";
 	}
 	$mob_width = $width_css_value( $width_type_mob, $custom_width_mob, $custom_width_mob_u );
 	if ( null !== $mob_width ) {
-		$width_decls[] = "@media(max-width:767px){#{$uid} .sgs-button{width:{$mob_width};}}";
+		$width_decls[] = "@media(max-width:767px){#{$uid}.sgs-button{width:{$mob_width};}}";
 	}
 
 	if ( $width_decls ) {
@@ -698,11 +698,21 @@ $btn_class_str = implode( ' ', $btn_classes );
 $allowed_presets    = array( 'primary', 'secondary', 'outline' );
 $safe_inherit_style = in_array( $inherit_style, $allowed_presets, true ) ? $inherit_style : 'primary';
 
+// The <a>/<button> IS the block root (no intermediate wrapper div — D288): the
+// button's own identity class + inline styles merge into the block-wrapper attrs
+// so the element is the DIRECT flex child of sgs/multi-button. This lets a column
+// flex `align-items:stretch` stretch the button itself (full-width mobile stack)
+// instead of a dead wrapper div. Full-width is now the `sgs-button--full` modifier
+// (was `sgs-button-wrapper--full`).
+$full_modifier = ( 'full' === $width_type ) ? ' sgs-button--full' : '';
+$merged_class  = trim( $btn_class_str . $full_modifier );
+$merged_style  = trim( $btn_style_str . ( $wrapper_styles ? implode( ';', $wrapper_styles ) . ';' : '' ) );
+
 $wrapper_attr = get_block_wrapper_attributes(
 	array(
 		'id'          => $uid,
-		'class'       => 'sgs-button-wrapper' . ( 'full' === $width_type ? ' sgs-button-wrapper--full' : '' ),
-		'style'       => $wrapper_styles ? implode( ';', $wrapper_styles ) . ';' : '',
+		'class'       => $merged_class,
+		'style'       => $merged_style,
 		'data-preset' => $safe_inherit_style,
 	)
 );
@@ -781,10 +791,9 @@ if ( 'button' === $tag_name ) {
 	$type_attr = $is_submit ? 'submit' : 'button';
 	$aria_str  = 'only' === $icon_position ? ' aria-label="' . esc_attr( $aria_label ) . '"' : '';
 
-	echo '<div ' . $wrapper_attr . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() is trusted WP output
-	echo '<button type="' . esc_attr( $type_attr ) . '" class="' . esc_attr( $btn_class_str ) . '"' . $aria_str . ' style="' . esc_attr( $btn_style_str ) . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $aria_str built with esc_attr()
+	echo '<button type="' . esc_attr( $type_attr ) . '"' . $aria_str . ' ' . $wrapper_attr . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $aria_str built with esc_attr(); get_block_wrapper_attributes() is trusted WP output
 	echo wp_kses( $inner_html, $allowed_inner );
-	echo '</button></div>';
+	echo '</button>';
 } else {
 	// <a> element.
 	if ( $rel ) {
@@ -799,8 +808,7 @@ if ( 'button' === $tag_name ) {
 	$download_attr = $download ? ' download' : '';
 	$aria_str      = 'only' === $icon_position ? ' aria-label="' . esc_attr( $aria_label ) . '"' : '';
 
-	echo '<div ' . $wrapper_attr . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() is trusted WP output
-	echo '<a href="' . esc_url( $url ) . '"' . $target_attr . $rel_attr . $download_attr . ' class="' . esc_attr( $btn_class_str ) . '"' . $aria_str . ' style="' . esc_attr( $btn_style_str ) . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $target_attr/$rel_attr/$download_attr/$aria_str all built with esc_attr()
+	echo '<a href="' . esc_url( $url ) . '"' . $target_attr . $rel_attr . $download_attr . $aria_str . ' ' . $wrapper_attr . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $target_attr/$rel_attr/$download_attr/$aria_str all built with esc_attr(); get_block_wrapper_attributes() is trusted WP output
 	echo wp_kses( $inner_html, $allowed_inner );
-	echo '</a></div>';
+	echo '</a>';
 }

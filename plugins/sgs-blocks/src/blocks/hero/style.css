@@ -183,7 +183,15 @@ section.sgs-hero {
 
 .sgs-hero--align-left .sgs-hero__content {
 	text-align: left;
-	align-items: flex-start;
+	/* D288 point D: `stretch` (not flex-start) so block children — headings, text,
+	   and the CTA multi-button — fill the full content-column width. Left text
+	   alignment is handled by `text-align:left` above, so text is visually
+	   unchanged; only block children stop being shrink-wrapped to content-width.
+	   This is what lets a cloned CTA group stack FULL-WIDTH on mobile (the
+	   multi-button then spans the column, and its own align-items:stretch fills
+	   the buttons). flex-start conflated text-alignment with child cross-axis
+	   sizing and crushed the multi-button to ~150px. */
+	align-items: stretch;
 }
 
 /* ─── Hero entrance choreography ───

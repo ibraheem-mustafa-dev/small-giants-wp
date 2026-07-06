@@ -66,6 +66,11 @@ const ALIGN_ITEMS_OPTIONS = [
 	{ label: __( 'Stretch', 'sgs-blocks' ), value: 'stretch' },
 ];
 
+const ALIGN_ITEMS_OPTIONS_WITH_INHERIT = [
+	{ label: __( 'Inherit', 'sgs-blocks' ), value: '' },
+	...ALIGN_ITEMS_OPTIONS,
+];
+
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		direction,
@@ -244,12 +249,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 					<hr style={ { margin: '12px 0' } } />
 
-					<SelectControl
-						label={ __( 'Align Items (cross axis)', 'sgs-blocks' ) }
-						value={ alignItems }
-						options={ ALIGN_ITEMS_OPTIONS }
-						onChange={ ( val ) => setAttributes( { alignItems: val } ) }
-					/>
+					<ResponsiveControl label={ __( 'Align Items (cross axis)', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'alignItems',
+								tablet:  'alignItemsTablet',
+								mobile:  'alignItemsMobile',
+							};
+							return (
+								<SelectControl
+									value={ attributes[ attrMap[ breakpoint ] ] }
+									options={ breakpoint === 'desktop' ? ALIGN_ITEMS_OPTIONS : ALIGN_ITEMS_OPTIONS_WITH_INHERIT }
+									onChange={ ( val ) => setAttributes( { [ attrMap[ breakpoint ] ]: val } ) }
+									help={ breakpoint === 'mobile' ? __( 'Mobile stacks buttons full-width by default (stretch).', 'sgs-blocks' ) : undefined }
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
+					</ResponsiveControl>
 				</PanelBody>
 			</InspectorControls>
 

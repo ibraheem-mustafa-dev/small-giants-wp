@@ -1,4 +1,4 @@
-# Stage 4 Style Variation Sync — 2026-06-28 05:52:19 UTC
+# Stage 4 Style Variation Sync — 2026-07-06 21:32:21 UTC
 
 Phase 5a shipped. DB writes active.
 
@@ -60,13 +60,13 @@ Inserted: 0 | Skipped: 6 | Conflicts: 12
 
 Inserted: 0 | Skipped: 7 | Conflicts: 14
 
+- CONFLICT: color-text (framework='#1a1a1a', client='#3A2E26') → inserted as mamas-munches-color-text
 - CONFLICT: color-primary (framework='#0D1B2A', client='#E68A95') → inserted as mamas-munches-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#C56A7A') → inserted as mamas-munches-color-primary-dark
 - CONFLICT: color-surface (framework='#FFFFFF', client='#FBF3DC') → inserted as mamas-munches-color-surface
 - CONFLICT: color-surface-alt (framework='#F5F5F0', client='#FFF9F0') → inserted as mamas-munches-color-surface-alt
 - CONFLICT: color-accent (framework='#C9A84C', client='#F5D050') → inserted as mamas-munches-color-accent
 - CONFLICT: color-accent-text (framework='#7A6B00', client='#7A6500') → inserted as mamas-munches-color-accent-text
-- CONFLICT: color-text (framework='#1a1a1a', client='#3A2E26') → inserted as mamas-munches-color-text
 - CONFLICT: color-text-muted (framework='#6B6B6B', client='#6B5C50') → inserted as mamas-munches-color-text-muted
 - CONFLICT: color-text-inverse (framework='#FFFFFF', client='#FFFAF5') → inserted as mamas-munches-color-text-inverse
 - CONFLICT: color-border-subtle (framework='#C9A84C', client='#E8D5C0') → inserted as mamas-munches-color-border-subtle

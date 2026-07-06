@@ -68,6 +68,12 @@ $wrap_tablet = ! empty( $attributes['wrapTablet'] ) ? esc_attr( $attributes['wra
 $wrap_mobile = ! empty( $attributes['wrapMobile'] ) ? esc_attr( $attributes['wrapMobile'] ) : 'wrap';
 
 $align_items = isset( $attributes['alignItems'] ) ? esc_attr( $attributes['alignItems'] ) : 'center';
+// Cross-axis alignment is responsive (D288). Mobile defaults to `stretch` — mobile
+// is a flex COLUMN (directionMobile default 'column'), and `stretch` is the CSS
+// column default, so the cloned/authored buttons stack FULL-WIDTH on mobile like a
+// draft's default column flex. Tablet (a row by default) inherits the base value.
+$align_items_tablet = ! empty( $attributes['alignItemsTablet'] ) ? esc_attr( $attributes['alignItemsTablet'] ) : $align_items;
+$align_items_mobile = ! empty( $attributes['alignItemsMobile'] ) ? esc_attr( $attributes['alignItemsMobile'] ) : 'stretch';
 
 // Generate a unique ID so responsive CSS is scoped per block instance.
 $uid = wp_unique_id( 'sgs-mb-' );
@@ -94,6 +100,7 @@ $css .= 'flex-direction:' . $direction_tablet . ';';
 $css .= 'flex-wrap:' . $wrap_tablet . ';';
 $css .= 'gap:' . $gap_tab_css . ';';
 $css .= 'justify-content:' . $justify_content_tablet . ';';
+$css .= 'align-items:' . $align_items_tablet . ';';
 $css .= '}}';
 
 // Mobile breakpoint (max 767px — device-tier standard; was 768px, see above).
@@ -103,6 +110,7 @@ $css .= 'flex-direction:' . $direction_mobile . ';';
 $css .= 'flex-wrap:' . $wrap_mobile . ';';
 $css .= 'gap:' . $gap_mob_css . ';';
 $css .= 'justify-content:' . $justify_content_mobile . ';';
+$css .= 'align-items:' . $align_items_mobile . ';';
 $css .= '}}';
 
 // WS-4: the outer wrapper is now the shared sgs/container element. multi-button keeps

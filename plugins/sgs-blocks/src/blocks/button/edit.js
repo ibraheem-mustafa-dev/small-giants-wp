@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, URLInput } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, URLInput, useSettings } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	TextControl,
@@ -10,7 +10,7 @@ import {
 	__experimentalHStack as HStack,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { IconPicker, TypographyControls, ResponsiveControl } from '../../components';
+import { IconPicker, TypographyControls, ResponsiveControl, DesignTokenPicker, resolveColorToken } from '../../components';
 import { BUTTON_PRESETS } from './presets';
 
 const PRESET_OPTIONS = [
@@ -205,11 +205,20 @@ export default function Edit( { attributes, setAttributes } ) {
 	// Build editor preview inline styles. Every button is attribute-driven now
 	// (no locked preset mode) — all colour/typography/border attrs preview
 	// unconditionally, matching render.php.
+	// D288: colours are stored as theme token SLUGS (e.g. 'primary') OR a custom
+	// hex. A slug is invalid CSS, so the preview MUST resolve it to a real colour
+	// (via resolveColorToken against the live palette) — otherwise the preview
+	// shows nothing and applying a preset looks like a no-op (the "Apply does
+	// nothing" bug). render.php resolves the same slugs via sgs_colour_value().
+	const [ palette ] = useSettings( 'color.palette' );
 	const previewStyle = {};
-	if ( colourText ) previewStyle.color = colourText;
-	if ( colourBackground ) previewStyle.backgroundColor = colourBackground;
-	if ( colourBorder ) previewStyle.borderColor = colourBorder;
+	if ( colourText ) previewStyle.color = resolveColorToken( colourText, palette );
+	if ( colourBackground ) previewStyle.backgroundColor = resolveColorToken( colourBackground, palette );
+	if ( colourBorder ) previewStyle.borderColor = resolveColorToken( colourBorder, palette );
 	if ( borderStyle ) previewStyle.borderStyle = borderStyle;
+	if ( borderWidthTop != null || borderWidthRight != null || borderWidthBottom != null || borderWidthLeft != null ) {
+		previewStyle.borderWidth = `${ borderWidthTop || 0 }px ${ borderWidthRight || 0 }px ${ borderWidthBottom || 0 }px ${ borderWidthLeft || 0 }px`;
+	}
 	if ( borderRadiusTL || borderRadiusTR || borderRadiusBR || borderRadiusBL ) {
 		previewStyle.borderRadius = `${ borderRadiusTL || 0 }px ${ borderRadiusTR || 0 }px ${ borderRadiusBR || 0 }px ${ borderRadiusBL || 0 }px`;
 	}
@@ -226,15 +235,16 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	// No `.is-style-*` class any more — colour/border/typography are always
 	// attribute-driven inline styles (preset-as-seed model).
+	// Editor-frontend parity (D288): the button element IS the block root (no
+	// wrapper div), matching render.php. Full-width is the `sgs-button--full`
+	// modifier on the button itself, so a full-width button inside a flex row
+	// (e.g. sgs/multi-button) previews with the identical flex/width CSS.
 	const blockClasses = [ 'sgs-button' ];
-
-	// Editor-frontend parity: apply the SAME wrapper class the frontend uses
-	// (see render.php step 8) rather than an inline width:100% hack on the
-	// preview span. This means the editor preview exercises the identical
-	// flex/width CSS as the live page, so a full-width button inside a flex
-	// row (e.g. sgs/multi-button) previews correctly instead of masking bugs.
+	if ( widthType === 'full' ) blockClasses.push( 'sgs-button--full' );
 	const blockProps = useBlockProps( {
-		className: `sgs-button-wrapper${ widthType === 'full' ? ' sgs-button-wrapper--full' : '' }`,
+		className: blockClasses.join( ' ' ),
+		style: previewStyle,
+		role: 'presentation',
 	} );
 
 	// Icon placeholder SVG for editor preview.
@@ -367,18 +377,17 @@ export default function Edit( { attributes, setAttributes } ) {
 								step={ 1 }
 								__nextHasNoMarginBottom
 							/>
-							<TextControl
-								label={ __( 'Icon colour (CSS or token)', 'sgs-blocks' ) }
+							<DesignTokenPicker
+								linked
+								label={ __( 'Icon colour', 'sgs-blocks' ) }
 								value={ iconColour }
-								onChange={ ( val ) => setAttributes( { iconColour: val } ) }
-								help={ __( 'e.g. #ffffff or primary', 'sgs-blocks' ) }
-								__nextHasNoMarginBottom
+								onChange={ ( val ) => setAttributes( { iconColour: val ?? '' } ) }
 							/>
-							<TextControl
+							<DesignTokenPicker
+								linked
 								label={ __( 'Icon colour on hover', 'sgs-blocks' ) }
 								value={ iconColourHover }
-								onChange={ ( val ) => setAttributes( { iconColourHover: val } ) }
-								__nextHasNoMarginBottom
+								onChange={ ( val ) => setAttributes( { iconColourHover: val ?? '' } ) }
 							/>
 							<TextControl
 								label={ __( 'Icon title (SVG accessible title)', 'sgs-blocks' ) }
@@ -501,44 +510,46 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</PanelBody>
 
-				{ /* Colours — always editable (preset-as-seed) */ }
+				{ /* Colours — always editable (preset-as-seed). D288: DesignTokenPicker
+				   in `linked` mode — pick a global-palette swatch (stores the token
+				   slug so a brand/palette change recolours the button) OR a custom
+				   colour (full picker: spectrum + hex + opacity). */ }
 				<PanelBody title={ __( 'Colours', 'sgs-blocks' ) } initialOpen={ false }>
-						<TextControl
+						<DesignTokenPicker
+							linked
 							label={ __( 'Text colour', 'sgs-blocks' ) }
 							value={ colourText }
-							onChange={ ( val ) => setAttributes( { colourText: val } ) }
-							help={ __( 'CSS value or token slug (e.g. #fff or primary)', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
+							onChange={ ( val ) => setAttributes( { colourText: val ?? '' } ) }
 						/>
-						<TextControl
+						<DesignTokenPicker
+							linked
 							label={ __( 'Text colour — hover', 'sgs-blocks' ) }
 							value={ colourTextHover }
-							onChange={ ( val ) => setAttributes( { colourTextHover: val } ) }
-							__nextHasNoMarginBottom
+							onChange={ ( val ) => setAttributes( { colourTextHover: val ?? '' } ) }
 						/>
-						<TextControl
+						<DesignTokenPicker
+							linked
 							label={ __( 'Background colour', 'sgs-blocks' ) }
 							value={ colourBackground }
-							onChange={ ( val ) => setAttributes( { colourBackground: val } ) }
-							__nextHasNoMarginBottom
+							onChange={ ( val ) => setAttributes( { colourBackground: val ?? '' } ) }
 						/>
-						<TextControl
+						<DesignTokenPicker
+							linked
 							label={ __( 'Background colour — hover', 'sgs-blocks' ) }
 							value={ colourBackgroundHover }
-							onChange={ ( val ) => setAttributes( { colourBackgroundHover: val } ) }
-							__nextHasNoMarginBottom
+							onChange={ ( val ) => setAttributes( { colourBackgroundHover: val ?? '' } ) }
 						/>
-						<TextControl
+						<DesignTokenPicker
+							linked
 							label={ __( 'Border colour', 'sgs-blocks' ) }
 							value={ colourBorder }
-							onChange={ ( val ) => setAttributes( { colourBorder: val } ) }
-							__nextHasNoMarginBottom
+							onChange={ ( val ) => setAttributes( { colourBorder: val ?? '' } ) }
 						/>
-						<TextControl
+						<DesignTokenPicker
+							linked
 							label={ __( 'Border colour — hover', 'sgs-blocks' ) }
 							value={ colourBorderHover }
-							onChange={ ( val ) => setAttributes( { colourBorderHover: val } ) }
-							__nextHasNoMarginBottom
+							onChange={ ( val ) => setAttributes( { colourBorderHover: val ?? '' } ) }
 						/>
 						<SelectControl
 							label={ __( 'Underline on hover', 'sgs-blocks' ) }
@@ -614,14 +625,14 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ /* Box shadow — always editable (preset-as-seed) */ }
 				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
 						<p style={ { fontSize: '12px', color: '#555', marginTop: 0 } }>{ __( 'Normal state', 'sgs-blocks' ) }</p>
-						<TextControl label={ __( 'Colour', 'sgs-blocks' ) } value={ boxShadow.colour } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, colour: val } } ) } __nextHasNoMarginBottom />
+						<DesignTokenPicker linked label={ __( 'Shadow colour', 'sgs-blocks' ) } value={ boxShadow.colour } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, colour: val ?? '' } } ) } />
 						<RangeControl label={ __( 'Horizontal offset (px)', 'sgs-blocks' ) } value={ boxShadow.hOffset } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, hOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
 						<RangeControl label={ __( 'Vertical offset (px)', 'sgs-blocks' ) } value={ boxShadow.vOffset } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, vOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
 						<RangeControl label={ __( 'Blur (px)', 'sgs-blocks' ) } value={ boxShadow.blur } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, blur: val } } ) } min={ 0 } max={ 100 } __nextHasNoMarginBottom />
 						<RangeControl label={ __( 'Spread (px)', 'sgs-blocks' ) } value={ boxShadow.spread } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, spread: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
 						<ToggleControl label={ __( 'Inset', 'sgs-blocks' ) } checked={ boxShadow.inset } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, inset: val } } ) } __nextHasNoMarginBottom />
 						<p style={ { fontSize: '12px', color: '#555', marginTop: '16px' } }>{ __( 'Hover state', 'sgs-blocks' ) }</p>
-						<TextControl label={ __( 'Colour', 'sgs-blocks' ) } value={ boxShadowHover.colour } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, colour: val } } ) } __nextHasNoMarginBottom />
+						<DesignTokenPicker linked label={ __( 'Shadow colour', 'sgs-blocks' ) } value={ boxShadowHover.colour } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, colour: val ?? '' } } ) } />
 						<RangeControl label={ __( 'Horizontal offset (px)', 'sgs-blocks' ) } value={ boxShadowHover.hOffset } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, hOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
 						<RangeControl label={ __( 'Vertical offset (px)', 'sgs-blocks' ) } value={ boxShadowHover.vOffset } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, vOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
 						<RangeControl label={ __( 'Blur (px)', 'sgs-blocks' ) } value={ boxShadowHover.blur } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, blur: val } } ) } min={ 0 } max={ 100 } __nextHasNoMarginBottom />
@@ -631,20 +642,14 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			</InspectorControls>
 
-			{ /* Editor preview */ }
-			<div { ...blockProps }>
-				<span
-					className={ blockClasses.join( ' ' ) }
-					style={ previewStyle }
-					role="presentation"
-				>
-					{ hasIcon && iconPosition === 'before' && iconPlaceholder }
-					{ iconPosition !== 'only' && (
-						<span className="sgs-button__label">{ label || __( 'Click Here', 'sgs-blocks' ) }</span>
-					) }
-					{ hasIcon && ( iconPosition === 'after' || iconPosition === 'only' ) && iconPlaceholder }
-				</span>
-			</div>
+			{ /* Editor preview — the button element IS the block root (D288, no wrapper div) */ }
+			<span { ...blockProps }>
+				{ hasIcon && iconPosition === 'before' && iconPlaceholder }
+				{ iconPosition !== 'only' && (
+					<span className="sgs-button__label">{ label || __( 'Click Here', 'sgs-blocks' ) }</span>
+				) }
+				{ hasIcon && ( iconPosition === 'after' || iconPosition === 'only' ) && iconPlaceholder }
+			</span>
 		</>
 	);
 }

@@ -498,7 +498,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					if ( ! ( $grid_template_tablet || $grid_template_mobile ) ) {
 						$gd[] = 'grid-template-columns:' . $gtc_base;
 					}
-					$gd[] = 'align-items:' . esc_attr( $vertical_align );
+					// D288: only impose align-items when a value is set — a blank
+					// verticalAlign falls back to the browser default (stretch), so
+					// grid columns fill the row height and match an untouched draft
+					// (fixes the cloned hero content pinned to the top).
+					if ( '' !== $vertical_align ) {
+						$gd[] = 'align-items:' . esc_attr( $vertical_align );
+					}
 					if ( 'stretch' !== $justify_items ) {
 						$gd[] = 'justify-items:' . esc_attr( $justify_items );
 					}
@@ -508,7 +514,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				} elseif ( 'flex' === $layout ) {
 					$gd[] = 'display:flex';
 					$gd[] = 'flex-wrap:' . esc_attr( '' !== $flex_wrap ? $flex_wrap : 'wrap' );
-					$gd[] = 'align-items:' . esc_attr( $vertical_align );
+					// D288: blank verticalAlign → browser default (see grid branch above).
+					if ( '' !== $vertical_align ) {
+						$gd[] = 'align-items:' . esc_attr( $vertical_align );
+					}
 					if ( '' !== $flex_direction ) {
 						$gd[] = 'flex-direction:' . esc_attr( $flex_direction );
 					}
