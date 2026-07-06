@@ -353,7 +353,17 @@ def lift_root_supports_to_style(
         for css_prop, sup_top, sup_sub, style_path, kind in _root_lift_rules():
             if css_prop not in base_decls:
                 continue
-            if not _support_allows(supports, sup_top, sup_sub if sup_sub != style_path[-1] else None):
+            # Gate on the SPECIFIC sub-feature (QC #1 fix, 2026-07-06). The old
+            # `sup_sub if sup_sub != style_path[-1] else None` collapsed to None for
+            # every 2-element rule (gap→spacing.blockGap, border-radius→border.radius,
+            # background-color→color.background, …), making the gate check "does the
+            # block support ANY sub-feature of sup_top" — so a container with spacing
+            # {padding,margin} but NO blockGap WRONGLY consumed `gap` into a dead
+            # style.spacing.blockGap leaf (the wrapper reads the `gap` attr, never
+            # blockGap), starving the grid resolver of the base gap. Checking sup_sub
+            # directly rejects gap for a no-blockGap block so it falls through to the
+            # grid resolver's `gap` attr (L3). Mirrors the padding/margin gate below.
+            if not _support_allows(supports, sup_top, sup_sub):
                 continue
             raw = strip_important(base_decls[css_prop])
             if kind == "colour":
@@ -395,7 +405,7 @@ def lift_root_supports_to_style(
             for css_prop, sup_top, sup_sub, style_path, kind in _root_lift_rules():
                 if css_prop not in bp_decl_map:
                     continue
-                if not _support_allows(supports, sup_top, sup_sub if sup_sub != style_path[-1] else None):
+                if not _support_allows(supports, sup_top, sup_sub):  # specific sub-feature (QC #1, mirrors base)
                     continue
                 raw = strip_important(bp_decl_map[css_prop])
                 if kind == "colour":

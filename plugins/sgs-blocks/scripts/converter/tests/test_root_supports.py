@@ -250,6 +250,66 @@ def test_gradient_background_is_dropped():
 
 
 # ---------------------------------------------------------------------------
+# Test — L3 gap-gate bug (QC #1 container gaps, 2026-07-06)
+# ---------------------------------------------------------------------------
+# The REAL sgs/container declares spacing supports {"padding": True, "margin": True}
+# — NO "blockGap". So a draft `gap` must NOT be consumed by the native-supports lift
+# into style.spacing.blockGap (a dead leaf the wrapper never reads); it must fall
+# THROUGH to the grid resolver's `gap` string attr (L3). The bug: root_supports'
+# gate `_support_allows(supports, sup_top, sup_sub if sup_sub != style_path[-1] else
+# None)` collapses to None for the gap rule (sup_sub=='blockGap'==style_path[-1]),
+# so it checks "any spacing feature" — padding/margin being True wrongly passes it.
+
+# Mirrors the REAL sgs/container block_supports row (NO blockGap).
+_CONTAINER_SUPPORTS_NO_BLOCKGAP = {
+    "spacing": {"padding": True, "margin": True},
+    "color": {"background": True, "text": True},
+    "__experimentalBorder": {"radius": True, "width": True},
+}
+
+
+def test_gap_not_consumed_without_blockgap_support():
+    """A block that supports spacing.padding/margin but NOT spacing.blockGap must
+    NOT consume `gap` into style.spacing.blockGap — gap must fall through to the
+    grid resolver's `gap` attr (L3). This is the QC #1 container-gap root cause."""
+    node = _node('<div class="sgs-container"></div>')
+    css_rules = {".sgs-container": {"gap": "16px"}}
+    conn = MagicMock(spec=sqlite3.Connection)
+
+    sp, sa, sb = _patch_supports(_CONTAINER_SUPPORTS_NO_BLOCKGAP)
+    with sp, sa, sb:
+        attrs, consumed = lift_root_supports_to_style(node, "sgs/container", css_rules, conn)
+
+    base_consumed = consumed.get("Base", frozenset())
+    assert "gap" not in base_consumed, (
+        f"gap wrongly consumed by root_supports without blockGap support — it will "
+        f"never reach the grid resolver's `gap` attr. consumed={consumed}"
+    )
+    spacing = attrs.get("style", {}).get("spacing", {})
+    assert "blockGap" not in spacing, (
+        f"gap wrongly written to a dead style.spacing.blockGap leaf (block has no "
+        f"blockGap support; wrapper reads `gap`). spacing={spacing}"
+    )
+
+
+def test_gap_consumed_when_blockgap_supported():
+    """Guard the legitimate native path: a block that DOES support spacing.blockGap
+    consumes gap into style.spacing.blockGap. The fix must not break this."""
+    node = _node('<div class="sgs-container"></div>')
+    css_rules = {".sgs-container": {"gap": "16px"}}
+    conn = MagicMock(spec=sqlite3.Connection)
+
+    sp, sa, sb = _patch_supports(_FULL_SUPPORTS)  # includes blockGap: True
+    with sp, sa, sb:
+        attrs, consumed = lift_root_supports_to_style(node, "sgs/container", css_rules, conn)
+
+    assert attrs.get("style", {}).get("spacing", {}).get("blockGap") == "16px", (
+        f"gap must lift to style.spacing.blockGap when the block supports blockGap — "
+        f"style={attrs.get('style')}"
+    )
+
+
+# ---------------------------------------------------------------------------
 # Test 7 — non-SGS slug → early return {}
 # ---------------------------------------------------------------------------
 

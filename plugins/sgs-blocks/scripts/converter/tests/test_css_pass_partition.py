@@ -58,15 +58,20 @@ def test_text_color_flows_to_textcolour_attr_not_dropped():
 
 
 # ---------------------------------------------------------------------------
-# Test 2 — sgs/container `gap` reaches its destination (grid/outer_box via
-# attr_for_property), whether via the native style.spacing.blockGap lift or
-# (per the per-tier trap, test 3 below) the process_element dispatch.
+# Test 2 — sgs/container `gap` reaches its FUNCTIONAL destination: the `gap`
+# attr (via the grid resolver / attr_for_property), NOT a dead
+# style.spacing.blockGap leaf. UPDATED for the QC #1 fix (2026-07-06): sgs/
+# container declares spacing supports {padding, margin} — NO blockGap — so the
+# native-supports lift must NOT consume `gap` (it did, via the same-leaf gate
+# shortcut, into an inert style.spacing.blockGap the wrapper never reads —
+# proven live: container grids rendered flush). Post-fix the gap flows through
+# to the grid resolver's `gap` attr, which SGS_Container_Wrapper actually renders.
 # ---------------------------------------------------------------------------
 
 def test_container_gap_reaches_destination_attr():
-    """A `gap` decl on a nested sgs/container (display:grid) must reach a real
-    destination — never be dropped from both the native lift AND the decl
-    stream simultaneously."""
+    """A `gap` decl on a nested sgs/container (display:grid) must reach the
+    FUNCTIONAL `gap` attr — never a dead style.spacing.blockGap leaf the block
+    has no support for and the wrapper never reads (QC #1)."""
     node = _node('<div class="sgs-container"><h2 class="sgs-heading">Hi</h2></div>')
     rec = recognise(node)
     assert rec.slug == "sgs/container"
@@ -74,33 +79,32 @@ def test_container_gap_reaches_destination_attr():
     css_rules = {".sgs-container": {"display": "grid", "gap": "24px"}}
     markup = build_block_markup(rec, node, css_rules=css_rules, is_root=False)
 
-    assert '"blockGap":"24px"' in markup, (
-        f"gap must land in style.spacing.blockGap for a nested grid container, "
-        f"got: {markup}"
+    assert '"gap":"24px"' in markup, (
+        f"gap must land in the `gap` attr (the wrapper-rendered destination) for a "
+        f"container with no blockGap support, got: {markup}"
+    )
+    assert '"blockGap"' not in markup, (
+        f"gap must NOT land in a dead style.spacing.blockGap leaf (container has no "
+        f"blockGap support; wrapper reads `gap`), got: {markup}"
     )
 
 
 # ---------------------------------------------------------------------------
-# Test 3 — THE PER-TIER TRAP: a property consumed by the native lift at the
-# BASE tier must NOT suppress a DIFFERENT bp tier's decl when that tier's
-# candidate attr was rejected/unwritten by the native lift. Ground truth
-# (verified against root_supports.py:376-383): the native lift's per-device
-# candidate-name derivation for `gap` builds `blockgap{Suffix}` (capitalize()
-# lower-cases the rest of "blockGap"), which never matches the real schema
-# attr `gap{Suffix}` — so the Mobile-tier gap is NEVER written by the native
-# lift, even though the Base-tier gap succeeds (the `_support_allows` gate's
-# same-leaf shortcut passes on `spacing.margin`/`spacing.padding` alone). Pre-
-# STOP-43, the OLD blanket strip removed `gap` from bp_decls["Mobile"]
-# regardless, so the value was dropped everywhere. Post-fix, the Mobile decl
-# flows through to process_element's grid resolver (attr_for_property), which
-# derives the CORRECT `gapMobile` attr name.
+# Test 3 — gap flows through to the grid resolver at EVERY tier for a container
+# without blockGap support. UPDATED for the QC #1 fix (2026-07-06): before the
+# fix the native lift's same-leaf gate shortcut wrongly consumed the BASE gap
+# into a dead style.spacing.blockGap leaf while the Mobile tier flowed through
+# (because the per-device candidate name `blockgap{Suffix}` never matched the
+# real `gap{Suffix}` schema attr) — an inconsistent split that left base grids
+# flush live. Post-fix the native gate checks `spacing.blockGap` SPECIFICALLY,
+# rejects it for a {padding,margin}-only container at every tier, so BOTH base
+# and Mobile gaps flow through to the grid resolver's real `gap`/`gapMobile` attrs.
 # ---------------------------------------------------------------------------
 
 def test_bp_tier_not_consumed_by_native_lift_flows_through():
-    """Base-tier gap is natively consumed (style.spacing.blockGap); the Mobile
-    tier's gap — NOT written by the native lift's per-device candidate-name
-    derivation — must still reach its real destination via process_element,
-    not be dropped by a blanket per-property (rather than per-tier) strip."""
+    """A container without blockGap support: BOTH the base gap and the Mobile
+    tier's gap must flow through to the grid resolver's real attrs (`gap` /
+    `gapMobile`), not a dead style.spacing.blockGap leaf (QC #1)."""
     node = _node('<div class="sgs-container"><h2 class="sgs-heading">Hi</h2></div>')
     rec = recognise(node)
     assert rec.slug == "sgs/container"
@@ -111,16 +115,17 @@ def test_bp_tier_not_consumed_by_native_lift_flows_through():
     }
     markup = build_block_markup(rec, node, css_rules=css_rules, is_root=False)
 
-    # Base tier: natively consumed → style.spacing.blockGap.
-    assert '"blockGap":"24px"' in markup, (
-        f"base-tier gap must still land natively, got: {markup}"
+    # Base tier: NOT natively consumed (no blockGap support) → real `gap` attr.
+    assert '"gap":"24px"' in markup, (
+        f"base-tier gap must flow through to the `gap` attr, got: {markup}"
     )
-    # Mobile tier: native lift's candidate-name derivation MISSES this (proven
-    # via root_supports.lift_root_supports_to_style directly — see module
-    # docstring) → must flow through to process_element and land as gapMobile.
+    assert '"blockGap"' not in markup, (
+        f"gap must NOT land in a dead style.spacing.blockGap leaf, got: {markup}"
+    )
+    # Mobile tier → the grid resolver derives the correct `gapMobile` attr.
     assert '"gapMobile":"32px"' in markup, (
-        f"a bp tier NOT consumed by the native lift must flow through to "
-        f"process_element instead of being dropped, got: {markup}"
+        f"the Mobile-tier gap must flow through to process_element and land as "
+        f"gapMobile, got: {markup}"
     )
 
 
