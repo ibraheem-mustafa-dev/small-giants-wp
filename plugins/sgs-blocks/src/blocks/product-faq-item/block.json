@@ -50,10 +50,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"customWidth": {
-			"type": "number",
-			"default": 0
-		},
 		"maxWidth": {
 			"type": "string",
 			"default": ""

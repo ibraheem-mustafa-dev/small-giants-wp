@@ -82,14 +82,6 @@
 		"textFontSize": {
 			"type": "string"
 		},
-		"customWidth": {
-			"type": "number",
-			"default": 0
-		},
-		"customWidthUnit": {
-			"type": "string",
-			"default": "px"
-		},
 		"contentWidth": {
 			"type": "string",
 			"default": ""

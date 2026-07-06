@@ -144,14 +144,6 @@
 			"default": "",
 			"description": "Inner padding of the card body (ContainerWrapperControls content-kind Spacing panel). A numeric spacing-preset slug (e.g. \"40\") resolves to var(--wp--preset--spacing--40); a raw CSS length (e.g. \"24px\") is emitted directly. Empty = theme default (20px). Sets --sgs-product-card-inner-padding inline."
 		},
-		"customWidth": {
-			"type": "number",
-			"default": 0
-		},
-		"customWidthUnit": {
-			"type": "string",
-			"default": "px"
-		},
 		"contentWidth": {
 			"type": "string",
 			"default": ""

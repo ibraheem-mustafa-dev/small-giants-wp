@@ -89,14 +89,6 @@
 			"type": "string",
 			"default": "stretch"
 		},
-		"customWidth": {
-			"type": "number",
-			"default": 0
-		},
-		"customWidthUnit": {
-			"type": "string",
-			"default": "px"
-		},
 		"contentWidth": {
 			"type": "string",
 			"default": ""

@@ -386,14 +386,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"customWidth": {
-			"type": "number",
-			"default": 0
-		},
-		"customWidthUnit": {
-			"type": "string",
-			"default": "px"
-		},
 		"minHeight": {
 			"type": "string"
 		},

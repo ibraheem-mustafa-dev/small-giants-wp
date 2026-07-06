@@ -80,14 +80,6 @@
 			"type": "string",
 			"default": "No items to show yet. Check back soon."
 		},
-		"customWidth": {
-			"type": "number",
-			"default": 0
-		},
-		"customWidthUnit": {
-			"type": "string",
-			"default": "px"
-		},
 		"contentWidth": {
 			"type": "string",
 			"default": ""
