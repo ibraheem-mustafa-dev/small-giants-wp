@@ -219,10 +219,8 @@ if ( '' === trim( (string) $split_col_ratio ) ) {
 }
 $split_col_ratio_tablet = $attributes['gridTemplateColumnsTablet'] ?? '';
 $split_col_ratio_mobile = $attributes['gridTemplateColumnsMobile'] ?? '';
-$split_gap              = $attributes['splitGap'] ?? 0;
-$split_gap_tablet       = $attributes['splitGapTablet'] ?? null;
-$split_gap_mobile       = $attributes['splitGapMobile'] ?? null;
-$split_gap_unit         = $attributes['splitGapUnit'] ?? 'px';
+// splitGap* REMOVED (de-duped 2026-07-06) — the split grid gap now reads the
+// shared gap/gapTablet/gapMobile (see the gap emission below).
 $split_order_mobile     = $attributes['splitContentOrderMobile'] ?? 'media-first';
 
 // HC2: CTA row gap (.sgs-hero__ctas). Emitted as the --sgs-hero-cta-gap custom
@@ -357,9 +355,15 @@ if ( $is_split ) {
 	$safe_ratio = preg_match( '/^[\d.\s%a-zA-Z()+\-*\/]+$/', $split_col_ratio ) ? $split_col_ratio : '1fr 1fr';
 	$responsive_css .= '.' . $uid . '{grid-template-columns:' . $safe_ratio . '}';
 
-	// Base gap.
-	$gap_val         = null !== $split_gap ? absint( $split_gap ) . esc_attr( $split_gap_unit ) : '0px';
-	$responsive_css .= '.' . $uid . '{gap:' . $gap_val . '}';
+	// Base gap — reads the SHARED `gap` attr (de-duped from splitGap, 2026-07-06).
+	// The split 2-col grid gap IS the container gap; the bespoke splitGap* attrs +
+	// their own "Column gap" control duplicated the shared gap/gapTablet/gapMobile
+	// (ContainerWrapperControls "Gap"). One gap attr + one control now. Empty =
+	// no gap emitted (grid default 0 = flush) — no more forced `gap:0px`.
+	$hero_gap = sgs_container_gap_value( $attributes['gap'] ?? '' );
+	if ( '' !== $hero_gap ) {
+		$responsive_css .= '.' . $uid . '{gap:' . $hero_gap . '}';
+	}
 
 	// Tablet grid-template-columns override.
 	if ( $split_col_ratio_tablet ) {
@@ -380,13 +384,15 @@ if ( $is_split ) {
 	if ( $safe_ratio_mob ) {
 		$responsive_css .= '@media (max-width:767px){.' . $uid . '{grid-template-columns:' . $safe_ratio_mob . '}}';
 	}
-	// Tablet gap override.
-	if ( null !== $split_gap_tablet ) {
-		$responsive_css .= '@media (max-width:1023px){.' . $uid . '{gap:' . absint( $split_gap_tablet ) . esc_attr( $split_gap_unit ) . '}}';
+	// Tablet gap override — shared gapTablet.
+	$hero_gap_tablet = sgs_container_gap_value( $attributes['gapTablet'] ?? '' );
+	if ( '' !== $hero_gap_tablet ) {
+		$responsive_css .= '@media (max-width:1023px){.' . $uid . '{gap:' . $hero_gap_tablet . '}}';
 	}
-	// Mobile gap override.
-	if ( null !== $split_gap_mobile ) {
-		$responsive_css .= '@media (max-width:767px){.' . $uid . '{gap:' . absint( $split_gap_mobile ) . esc_attr( $split_gap_unit ) . '}}';
+	// Mobile gap override — shared gapMobile.
+	$hero_gap_mobile = sgs_container_gap_value( $attributes['gapMobile'] ?? '' );
+	if ( '' !== $hero_gap_mobile ) {
+		$responsive_css .= '@media (max-width:767px){.' . $uid . '{gap:' . $hero_gap_mobile . '}}';
 	}
 	// Mobile column order.
 	if ( 'content-first' === $split_order_mobile ) {

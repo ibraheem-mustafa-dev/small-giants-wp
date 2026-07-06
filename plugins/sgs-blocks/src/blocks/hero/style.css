@@ -58,7 +58,12 @@ section.sgs-hero {
  * provide a sensible default for blocks without those attributes set. */
 .sgs-hero--split {
 	display: grid;
-	gap: var(--wp--preset--spacing--50);
+	/* NO hardcoded gap default (D228, 2026-07-06 de-dupe). The split column gap
+	   comes from the shared `gap`/`gapTablet`/`gapMobile` attrs (ContainerWrapper
+	   "Gap" control), rendered by render.php. Empty = 0 = columns flush, which is
+	   what the draft wants (it declares no gap on .sgs-hero). The old
+	   `gap: var(--spacing--50)` was a hardcoded 24px default that only stayed
+	   invisible because the removed splitGap*=0 override forced gap:0px. */
 	/* NO padding on the outer split grid (QC #4, 2026-07-06). Padding here insets
 	   BOTH columns — including the media/image column, which the draft leaves flush
 	   to the section edge (the draft pads only .sgs-hero__content, never the section

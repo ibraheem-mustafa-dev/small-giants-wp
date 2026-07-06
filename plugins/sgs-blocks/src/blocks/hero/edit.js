@@ -269,10 +269,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		gridTemplateColumns,
 		gridTemplateColumnsTablet,
 		gridTemplateColumnsMobile,
-		splitGap,
-		splitGapTablet,
-		splitGapMobile,
-		splitGapUnit,
 		splitContentOrderMobile,
 		// Phase 1 — vertical alignment.
 		verticalAlignment,
@@ -521,20 +517,10 @@ export default function Edit( { attributes, setAttributes } ) {
 									);
 								} }
 							</ResponsiveControl>
-							<RRangeControl label={ __( 'Column gap', 'sgs-blocks' ) } attrDesktop="splitGap" attrTablet="splitGapTablet" attrMobile="splitGapMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } />
-							<UnitControl
-								label={ __( 'Gap unit', 'sgs-blocks' ) }
-								value={ `${ splitGap || 0 }${ splitGapUnit || 'px' }` }
-								units={ [
-									{ value: 'px', label: 'px', default: 0 },
-									{ value: '%',  label: '%',  default: 0 },
-								] }
-								onChange={ ( val ) => {
-									const unit = val?.replace( /[\d.]+/, '' ) || 'px';
-									setAttributes( { splitGapUnit: unit } );
-								} }
-								__nextHasNoMarginBottom
-							/>
+							{ /* Column gap de-duped 2026-07-06 — the split grid gap is
+							     the container gap, controlled by the shared "Gap" control
+							     (ContainerWrapperControls, gap/gapTablet/gapMobile). The
+							     bespoke splitGap* "Column gap" control was a duplicate. */ }
 							<SelectControl label={ __( 'Mobile column order', 'sgs-blocks' ) } value={ splitContentOrderMobile } options={ MOBILE_ORDER_OPTIONS } onChange={ ( val ) => setAttributes( { splitContentOrderMobile: val } ) } __nextHasNoMarginBottom />
 							<ToggleControl
 								label={ __( 'Image bleed to edge', 'sgs-blocks' ) }
