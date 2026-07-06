@@ -88,7 +88,7 @@ Invoke /autopilot first. Two fronts THIS session, in order: (A) **universal resp
 
 ---
 
-## ORCHESTRATION PLAN (do in ORDER; each gated by Bean's agreement on the design before build — Rule 7) Only plan 1 at a time. 
+## ORCHESTRATION PLAN (do in ORDER; each gated by Bean's agreement on the design before build — Rule 7) Only plan 1 at a time.
 
 ### Task A — Universal responsive routing (CSS + content): device-tier → attrs, non-device → Additional-CSS
 **What:** Build the converter's responsive-routing so a draft `@media` rule lands correctly by breakpoint CLASS: (1) a DEVICE-TIER breakpoint (768 / 1024, and their `max-width` 767/1023 forms) → the SGS device-tier responsive attrs (`*Tablet`/`*Mobile` families) so it's an editable block control; (2) a NON-DEVICE / arbitrary breakpoint (1280, 600, 640, 781, …) → the relevant block's Additional-CSS field (`sgsCustomCss`) verbatim (STOP-52). Applies to BOTH CSS declarations and content routing, universally (a DB/structural signal, never per-slug).
