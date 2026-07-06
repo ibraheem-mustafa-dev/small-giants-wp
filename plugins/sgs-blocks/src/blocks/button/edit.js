@@ -222,16 +222,19 @@ export default function Edit( { attributes, setAttributes } ) {
 			previewStyle.padding = `${ paddingTop || 0 }px ${ paddingRight || 0 }px ${ paddingBottom || 0 }px ${ paddingLeft || 0 }px`;
 		}
 	}
-	if ( widthType === 'full' ) previewStyle.width = '100%';
 	if ( widthType === 'custom' && customWidth ) previewStyle.width = `${ customWidth }${ customWidthUnit }`;
 	if ( minHeight ) previewStyle.minHeight = `${ minHeight }px`;
 
 	const blockClasses = [ 'sgs-button' ];
 	if ( ! isCustom ) blockClasses.push( `is-style-${ inheritStyle }` );
-	if ( widthType === 'full' ) blockClasses.push( 'sgs-button--full' );
 
+	// Editor-frontend parity: apply the SAME wrapper class the frontend uses
+	// (see render.php step 8) rather than an inline width:100% hack on the
+	// preview span. This means the editor preview exercises the identical
+	// flex/width CSS as the live page, so a full-width button inside a flex
+	// row (e.g. sgs/multi-button) previews correctly instead of masking bugs.
 	const blockProps = useBlockProps( {
-		className: 'sgs-button-wrapper',
+		className: `sgs-button-wrapper${ widthType === 'full' ? ' sgs-button-wrapper--full' : '' }`,
 	} );
 
 	// Icon placeholder SVG for editor preview.

@@ -482,8 +482,10 @@ if ( $min_height_decls ) {
 // fit → auto, '' (tier only) → no override. Emitted via the scoped <style>
 // (not inline) so a tier override reliably beats the base regardless of
 // viewport; the base rule is declared before the @media tiers so normal
-// source-order cascade lets a matched tier win. The 'full' base ALSO keeps its
-// sgs-button--full class (harmless duplicate — the id rule and the class agree).
+// source-order cascade lets a matched tier win. Full-width also relies on the
+// wrapper's sgs-button-wrapper--full class (see step 8) to hold the line
+// inside a flex-row parent (flex-basis:100%), which this id-scoped element
+// width rule alone cannot guarantee.
 $width_css_value = static function ( $type, $val, $unit ) {
 	switch ( $type ) {
 		case 'full':
@@ -532,10 +534,6 @@ if ( $is_custom ) {
 	$allowed_presets = array( 'primary', 'secondary', 'outline' );
 	$safe_preset     = in_array( $inherit_style, $allowed_presets, true ) ? $inherit_style : 'primary';
 	$btn_classes[]   = 'is-style-' . $safe_preset;
-}
-
-if ( 'full' === $width_type ) {
-	$btn_classes[] = 'sgs-button--full';
 }
 
 // Margin inline style (wrapper level — no per-element responsive needed at wrapper level).

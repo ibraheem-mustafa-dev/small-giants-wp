@@ -34,8 +34,22 @@
 	text-decoration: none;
 }
 
-/* Width modifiers */
-.sgs-button-wrapper--full,
+/* Width modifiers.
+ * flex:0 0 100% (basis 100%, no grow, no shrink) is required in addition to
+ * width:100% because a flex ITEM ignores width when the browser default
+ * flex-shrink:1 is free to shrink it below that width — this happens when the
+ * wrapper is a child of a flex row (sgs/multi-button, sgs/container flex
+ * layout). flex-basis:100% forces the item to claim the full line (wrapping
+ * siblings onto the next line), while width:100% still governs non-flex
+ * parents (block-level containers) where flex-basis is simply ignored.
+ * align-self:stretch fills the cross-axis when the parent is a flex COLUMN. */
+.sgs-button-wrapper--full {
+	width: 100%;
+	flex: 0 0 100%;
+	max-width: 100%;
+	align-self: stretch;
+}
+
 .sgs-button-wrapper--full .sgs-button {
 	width: 100%;
 }
