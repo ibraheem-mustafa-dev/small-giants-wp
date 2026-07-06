@@ -125,27 +125,55 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 				<?php
 			endif;
 
+			/*
+			 * Pack-size chooser — render the real, self-contained sgs/option-picker
+			 * block (no-JS-safe SSR + its own view.js selection state, dispatched via
+			 * the bubbling `sgs:option-selected` event; each instance gets a unique
+			 * wp_unique_id() radio-group name so multiple cards never share state).
+			 *
+			 * A typed/cloned card is SELECTABLE-ONLY: the picker highlights the chosen
+			 * size but does NOT swap price/image — a typed card has no WooCommerce
+			 * variant manifest, so the reactive price/image bridge (data-wp-context /
+			 * initPillBridge) is deliberately NOT wired here; it lives only in the
+			 * bound branches. This reuses exactly the emit the bound branch uses
+			 * (render_block('sgs/option-picker')), sourced from the typed packSizes
+			 * attr instead of a live WC axis manifest.
+			 */
 			if ( ! empty( $sgs_pcard_sizes ) ) :
-				?>
-				<div class="sgs-product-card__pill-group" aria-label="<?php esc_attr_e( 'Pack sizes', 'sgs-blocks' ); ?>">
-					<?php
-					foreach ( $sgs_pcard_sizes as $sgs_pill ) :
-						$sgs_pill_label = isset( $sgs_pill['label'] ) ? sanitize_text_field( (string) $sgs_pill['label'] ) : '';
-						if ( '' === $sgs_pill_label ) {
-							continue;
-						}
-						$sgs_pill_active = ! empty( $sgs_pill['selected'] );
-						$sgs_pill_class  = 'sgs-product-card__pill' . ( $sgs_pill_active ? ' active' : '' );
-						?>
-						<span
-							class="<?php echo esc_attr( $sgs_pill_class ); ?>"
-							<?php echo $sgs_pill_active ? 'aria-current="true"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- both ternary arms are hardcoded string literals, injection-safe. ?>
-						><?php echo esc_html( $sgs_pill_label ); ?></span>
-						<?php
-					endforeach;
-					?>
-				</div>
-				<?php
+				$sgs_pcard_picker_items   = array();
+				$sgs_pcard_picker_default = '';
+				foreach ( $sgs_pcard_sizes as $sgs_pill_i => $sgs_pill ) {
+					$sgs_pill_label = isset( $sgs_pill['label'] ) ? sanitize_text_field( (string) $sgs_pill['label'] ) : '';
+					if ( '' === $sgs_pill_label ) {
+						continue;
+					}
+					$sgs_pill_key = sanitize_title( $sgs_pill_label );
+					if ( '' === $sgs_pill_key ) {
+						$sgs_pill_key = 'size-' . (int) $sgs_pill_i;
+					}
+					$sgs_pcard_picker_items[] = array(
+						'key'   => $sgs_pill_key,
+						'label' => $sgs_pill_label,
+					);
+					if ( '' === $sgs_pcard_picker_default && ! empty( $sgs_pill['selected'] ) ) {
+						$sgs_pcard_picker_default = $sgs_pill_key;
+					}
+				}
+				if ( ! empty( $sgs_pcard_picker_items ) ) {
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
+					echo render_block(
+						array(
+							'blockName' => 'sgs/option-picker',
+							'attrs'     => array(
+								'label'           => __( 'Pack size', 'sgs-blocks' ),
+								'showLabel'       => false,
+								'optionItems'     => $sgs_pcard_picker_items,
+								'defaultSelected' => $sgs_pcard_picker_default,
+								'typeKey'         => 'pack-size',
+							),
+						)
+					);
+				}
 			endif;
 
 			if ( '' !== $sgs_pcard_price || '' !== $sgs_pcard_note ) :

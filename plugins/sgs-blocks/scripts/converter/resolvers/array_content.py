@@ -201,6 +201,19 @@ def _match_child(
     # and an attribute/descendant-reading role (never text-content on a non-leaf).
     if is_flat and (id(item_node), frole) not in used and frole in _FLAT_SELF_ROLES:
         return item_node
+    # L1d — leaf-item text self-extraction: a plain-text LEAF item (a size/flavour
+    # pill ``<button>8-pack</button>`` whose only content is its OWN text, no
+    # element descendants) carries its label as its own text-content. text-content
+    # is excluded from _FLAT_SELF_ROLES because on a STRUCTURED item it would
+    # concatenate that item's children — but a true leaf has none, so its text IS
+    # the field value (safe + correct). Universal: any block whose array items are
+    # flat text chips (size/flavour pills, tag lists), never a per-block carve-out.
+    if (
+        frole == "text-content"
+        and item_node.find(True) is None
+        and (id(item_node), frole) not in used
+    ):
+        return item_node
     return None
 
 
