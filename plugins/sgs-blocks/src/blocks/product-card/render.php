@@ -170,6 +170,31 @@ if ( 'typed' === $source_mode ) {
 
 /* ── Live-data mode — resolve a real product ───────────────────────────────── */
 
+// Bound-mode built-in CTA styling (cta* attrs, seeded from a BUTTON_PRESETS
+// preset in the editor's "CTA Button Style" panel). Computed ONLY here — after
+// the typed early-return — because it is scoped to the BOUND render branches'
+// CTA class names (the read-only WC-compat link `.product-card__view` and the
+// live add-to-cart link/button `.product-card__add-to-cart`); typed built-in
+// cards render their CTA via sgs_product_card_builtin_render() with a different
+// class (sgs-button--{style}) and those selectors don't exist there, so a typed
+// card must NOT ship this dead <style>. One rule governs the CTA across every
+// bound branch (R-31-9 / CG-9). $sgs_card_typo_tag is REBUILT to fold it in.
+$sgs_card_typo_css .= sgs_button_element_style_css(
+	$attributes,
+	'cta',
+	'.' . $sgs_card_uid . ' .product-card__view, .' . $sgs_card_uid . ' .product-card__add-to-cart'
+);
+$sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . $sgs_card_typo_css . '</style>' : '';
+
+// Which preset the editor's "Apply preset" button last seeded — surfaced as a
+// data attribute on the built-in CTA for support/debugging, mirroring the
+// sgs/button block's data-preset convention (button/render.php). The colour/
+// border/width VALUES themselves are the cta* attrs styled above; ctaPreset
+// is bookkeeping only, so its render consumption is this data attribute.
+$sgs_allowed_cta_presets = array( 'primary', 'secondary', 'outline' );
+$sgs_cta_preset          = isset( $attributes['ctaPreset'] ) ? sanitize_key( (string) $attributes['ctaPreset'] ) : 'primary';
+$sgs_cta_preset          = in_array( $sgs_cta_preset, $sgs_allowed_cta_presets, true ) ? $sgs_cta_preset : 'primary';
+
 require_once dirname( __DIR__, 3 ) . '/includes/class-product-bindings.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-product-manifest.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-configurator-compat.php';
@@ -184,7 +209,7 @@ if ( 0 === $product_id && isset( $block->context['postId'] ) ) {
 	$product_id = absint( $block->context['postId'] );
 }
 
-$data       = \SGS\Blocks\Product_Bindings::get_product_data( $product_id, $source_mode );
+$data = \SGS\Blocks\Product_Bindings::get_product_data( $product_id, $source_mode );
 
 // FP-H: bound-branch title heading tag from headingLevel, clamped 2–4 (same
 // clamp as the typed built-in helper). Integer-derived — injection-safe.
@@ -332,7 +357,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 			$ro_cta_label = sgs_product_card_resolve_element( $attributes, 'cta', $attributes['ctaText'] ?? '', __( 'View product', 'sgs-blocks' ) );
 			$ro_cta_href  = esc_url( sgs_product_card_resolve_element( $attributes, 'cta', $attributes['ctaUrl'] ?? '', get_permalink( $data['wc_id'] ) ) );
 			?>
-			<a class="sgs-button sgs-button--primary product-card__view" href="<?php echo $ro_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $ro_cta_label ); ?></a>
+			<a class="sgs-button sgs-button--primary product-card__view" href="<?php echo $ro_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" data-cta-preset="<?php echo esc_attr( $sgs_cta_preset ); ?>"><?php echo esc_html( $ro_cta_label ); ?></a>
 		<?php endif; ?>
 	</div>
 	<?php
@@ -942,6 +967,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					<a
 						class="sgs-button sgs-button--primary product-card__add-to-cart"
 						href="<?php echo $sgs_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"
+						data-cta-preset="<?php echo esc_attr( $sgs_cta_preset ); ?>"
 					>
 						<span class="product-card__cart-label"><?php echo esc_html( $sgs_cta_label ); ?></span>
 					</a>
@@ -956,6 +982,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 						<button
 							type="submit"
 							class="sgs-button sgs-button--primary product-card__add-to-cart"
+							data-cta-preset="<?php echo esc_attr( $sgs_cta_preset ); ?>"
 							data-wp-bind--disabled="context.pending"
 							data-wp-bind--aria-busy="context.pending"
 						>
@@ -1181,7 +1208,7 @@ ob_start();
 
 	$sgs_pill_type_key = null !== $pill_type ? sanitize_key( (string) ( $pill_type['type_key'] ?? '' ) ) : '';
 	// showPickers=false short-circuits before visibleAxes filtering (collection-grid browsing context).
-	$sgs_show_picker   = $sgs_show_pickers
+	$sgs_show_picker = $sgs_show_pickers
 		&& null !== $pill_type
 		&& ( empty( $sgs_visible_axes_nv ) || in_array( $sgs_pill_type_key, $sgs_visible_axes_nv, true ) );
 
@@ -1280,6 +1307,7 @@ ob_start();
 		<a
 			class="sgs-button sgs-button--primary product-card__add-to-cart"
 			href="<?php echo $sgs_nv_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"
+			data-cta-preset="<?php echo esc_attr( $sgs_cta_preset ); ?>"
 		>
 			<span class="product-card__cart-label"><?php echo esc_html( $sgs_nv_cta_label ); ?></span>
 		</a>
@@ -1294,6 +1322,7 @@ ob_start();
 			<button
 				type="submit"
 				class="sgs-button sgs-button--primary product-card__add-to-cart"
+				data-cta-preset="<?php echo esc_attr( $sgs_cta_preset ); ?>"
 				data-wp-bind--disabled="context.pending"
 				data-wp-bind--aria-busy="context.pending"
 			>

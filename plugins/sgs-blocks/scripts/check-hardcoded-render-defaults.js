@@ -123,6 +123,8 @@ const SUFFIX_MAP = [
 	{ suffix: 'columns',        props: [ 'grid-template-columns' ],    note: 'columns count → grid-template-columns' },
 	// Spacing
 	{ suffix: 'gap',            props: [ 'gap', 'column-gap', 'row-gap' ], note: 'controls gap / column-gap / row-gap' },
+	{ suffix: 'paddingy',       props: [ 'padding', 'padding-top', 'padding-bottom' ], note: 'vertical padding (top+bottom) — e.g. cta button PaddingY' },
+	{ suffix: 'paddingx',       props: [ 'padding', 'padding-left', 'padding-right' ], note: 'horizontal padding (left+right) — e.g. cta button PaddingX' },
 	{ suffix: 'padding',        props: [ 'padding', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left' ], note: 'controls padding' },
 	{ suffix: 'paddingtop',     props: [ 'padding-top' ],              note: 'padding-top' },
 	{ suffix: 'paddingright',   props: [ 'padding-right' ],            note: 'padding-right' },
@@ -349,6 +351,173 @@ function sizeAttrTokens( attrName ) {
 		tokens.add( 'img' );
 	}
 	return tokens;
+}
+
+// ---------------------------------------------------------------------------
+// E11 — PREFIXED-HELPER SELECTOR GOVERNANCE
+//
+// Some attrs are consumed by a shared "prefixed attribute set" PHP helper —
+// sgs_button_element_style_css() (built-in CTA colour/border/radius/padding/
+// font) and sgs_typography_css_rule() (per-element typography). The helper
+// builds the CSS key by string concatenation ($prefix . 'Suffix') and applies
+// it to a SPECIFIC selector passed at the call site. So the attr governs ONLY
+// those selectors — NOT every element in the block whose CSS happens to set the
+// same property.
+//
+// Without this, adding e.g. `ctaBorderRadius` makes the gate flag EVERY
+// hardcoded `border-radius` in the block (on `.pill`, a trial-tag, etc.) as if
+// the CTA attr owned it — a false association. E11 reads render.php for each
+// helper call, extracts the literal PREFIX + the SELECTOR class tokens, and
+// (for the button helper, whose styled element also carries `.sgs-button`) adds
+// the `sgs-button` token. A hardcoded value of a helper attr's property is then
+// flagged ONLY when the containing rule's selector references one of the
+// helper's governed tokens. This REPLACES the E1/E6 name-heuristic for helper
+// attrs (whose element-ownership is authoritative from the call site, not the
+// attr name); native attrs keep the existing E1/E6 behaviour unchanged.
+// ---------------------------------------------------------------------------
+
+/**
+ * Suffixes each shared prefixed-helper reads (mirrors the helper's own doc:
+ * includes/helpers-button-style.php + includes/helpers-typography.php). Only
+ * the suffixes that map to a CSS property matter here, but the full lists are
+ * kept so the governance set matches the dead-control guard's list exactly.
+ * `extraTokens` are class tokens the styled element carries beyond the ones in
+ * the selector literal (the button helper's element is always a `.sgs-button`).
+ */
+const HELPER_SELECTOR_SUFFIXES = {
+	sgs_button_element_style_css: {
+		suffixes: [
+			'ColourBackground', 'ColourText', 'ColourBorder',
+			'ColourBackgroundHover', 'ColourTextHover', 'ColourBorderHover',
+			'BorderStyle', 'BorderWidth', 'BorderRadius',
+			'FontWeight', 'FontSize', 'PaddingY', 'PaddingX', 'WidthType',
+		],
+		extraTokens: [ 'sgs-button' ],
+	},
+	sgs_typography_css_rule: {
+		suffixes: [
+			'FontSize', 'FontSizeUnit', 'FontSizeTablet', 'FontSizeMobile',
+			'FontWeight', 'FontStyle', 'TextTransform', 'TextDecoration',
+			'LineHeight', 'LineHeightUnit', 'LineHeightTablet', 'LineHeightMobile',
+			'LetterSpacing', 'LetterSpacingUnit', 'LetterSpacingTablet', 'LetterSpacingMobile',
+		],
+		extraTokens: [],
+	},
+};
+
+/**
+ * Capture the raw argument text of each call to `fnName` in `src` (balanced
+ * parens; whole-identifier match). Returns an array of arg-region strings.
+ */
+function captureCallArgRegions( src, fnName ) {
+	const regions = [];
+	const needle = fnName + '(';
+	let from = 0;
+	let idx;
+	while ( ( idx = src.indexOf( needle, from ) ) !== -1 ) {
+		// Whole-identifier guard: the char before must not be an identifier char.
+		const before = idx > 0 ? src[ idx - 1 ] : '';
+		if ( /[A-Za-z0-9_]/.test( before ) ) {
+			from = idx + needle.length;
+			continue;
+		}
+		let i = idx + needle.length;
+		let depth = 1;
+		const start = i;
+		while ( i < src.length && depth > 0 ) {
+			const ch = src[ i ];
+			if ( ch === '(' ) {
+				depth++;
+			} else if ( ch === ')' ) {
+				depth--;
+			}
+			i++;
+		}
+		regions.push( src.slice( start, i - 1 ) );
+		from = i;
+	}
+	return regions;
+}
+
+/**
+ * Build a Map<attrName, Set<token>> of prefixed-helper governance from
+ * render.php. For each helper call: the FIRST string literal in the argument
+ * list is the prefix, all SUBSEQUENT string literals are the selector fragments
+ * (a PHP concat like `'.' . $uid . ' .product-card__view'`). Class tokens are
+ * extracted from the concatenated selector fragments; the helper's extraTokens
+ * are added. Each `prefix + suffix` attr maps to that call's token set (unioned
+ * across calls). A call with a non-literal (computed) prefix is skipped.
+ */
+function collectHelperGovernance( renderPhpSrc ) {
+	const gov = new Map();
+	if ( ! renderPhpSrc ) {
+		return gov;
+	}
+	const src = renderPhpSrc
+		.replace( /\/\*[\s\S]*?\*\//g, ' ' )
+		.replace( /(^|[^:])\/\/[^\n]*/g, '$1 ' );
+
+	for ( const [ fnName, spec ] of Object.entries( HELPER_SELECTOR_SUFFIXES ) ) {
+		for ( const region of captureCallArgRegions( src, fnName ) ) {
+			const lits = [];
+			const litRe = /'([^']*)'|"([^"]*)"/g;
+			let lm;
+			while ( ( lm = litRe.exec( region ) ) !== null ) {
+				lits.push( lm[ 1 ] !== undefined ? lm[ 1 ] : lm[ 2 ] );
+			}
+			if ( lits.length < 2 ) {
+				continue; // need a literal prefix + at least one selector fragment
+			}
+			const prefix = lits[ 0 ];
+			const selectorText = lits.slice( 1 ).join( ' ' );
+			const tokens = new Set( spec.extraTokens.map( ( t ) => t.toLowerCase() ) );
+			const clsRe = /\.([a-zA-Z0-9_-]+)/g;
+			let cm;
+			while ( ( cm = clsRe.exec( selectorText ) ) !== null ) {
+				tokens.add( cm[ 1 ].toLowerCase() );
+			}
+			if ( tokens.size === 0 ) {
+				continue;
+			}
+			for ( const suffix of spec.suffixes ) {
+				const attrName = '' !== prefix
+					? prefix + suffix
+					: suffix.charAt( 0 ).toLowerCase() + suffix.slice( 1 );
+				if ( ! gov.has( attrName ) ) {
+					gov.set( attrName, new Set() );
+				}
+				for ( const t of tokens ) {
+					gov.get( attrName ).add( t );
+				}
+			}
+		}
+	}
+	return gov;
+}
+
+/**
+ * Does `selector` reference any of the governed class tokens AS A CLASS? Matches
+ * `.<token>` at a class boundary (the char after the token must not continue the
+ * class name), so token `price` matches `.price` / `.price:hover` / `.price ` but
+ * NOT `.price-from-amount` and NOT the bare word "price" inside a CSS comment
+ * that the scanner accumulates into the selector text. This precision matters:
+ * the accumulated selector can include the preceding comment (e.g. "Per-unit
+ * price …"), so a bare substring match would wrongly attribute that rule to a
+ * price-prefixed helper attr.
+ */
+function selectorReferencesGovernedToken( selector, tokens ) {
+	const lower = selector.toLowerCase();
+	for ( const t of tokens ) {
+		if ( ! t ) {
+			continue;
+		}
+		const escaped = t.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
+		const re = new RegExp( '\\.' + escaped + '(?![a-z0-9_-])', 'i' );
+		if ( re.test( lower ) ) {
+			return true;
+		}
+	}
+	return false;
 }
 
 // ---------------------------------------------------------------------------
@@ -604,8 +773,11 @@ function captureFullValue( lines, startLine, colonPos ) {
  * @param {Set}      targetProps CSS property names to watch for.
  * @param {string[]} attrNames   Block attribute names (for E1/E6 checks).
  * @param {Map}      cssToAttrs  CSS property → Set of attr names.
+ * @param {Map}      helperGov   E11: attrName → Set of governed selector tokens
+ *                               for prefixed-helper attrs (authoritative
+ *                               element-ownership, replaces E1/E6 for them).
  */
-function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs ) {
+function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov ) {
 	const findings = [];
 	const lines    = src.split( '\n' );
 
@@ -752,6 +924,17 @@ function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs ) {
 		// If at least one owning attr is NOT exempt, the finding stands.
 		const nonExemptAttrs = [];
 		for ( const attrName of owningAttrs ) {
+			// E11: prefixed-helper attr — element-ownership is authoritative from
+			// the helper's call selector(s), NOT the attr-name/element heuristic.
+			// Flag ONLY when the rule's selector references a governed token; this
+			// REPLACES E1/E6 for the attr (native attrs fall through unchanged).
+			if ( helperGov && helperGov.has( attrName ) ) {
+				if ( selectorReferencesGovernedToken( currentSelector, helperGov.get( attrName ) ) ) {
+					nonExemptAttrs.push( attrName );
+				}
+				continue;
+			}
+
 			// E1: sub-element selector mismatch — attr doesn't map to this element.
 			if ( isBemSubElementMismatch( attrName, bemElements ) ) {
 				continue; // this attr is exempt for this selector
@@ -966,6 +1149,9 @@ function checkBlock( blockDir ) {
 		return [];
 	}
 
+	// ── E11: prefixed-helper selector governance (attr → governed tokens) ────
+	const helperGov = collectHelperGovernance( renderPhpSrc );
+
 	// --- style.css ---------------------------------------------------------
 	const styleCssPath = path.join( blockDir, 'style.css' );
 	if ( fs.existsSync( styleCssPath ) ) {
@@ -973,7 +1159,8 @@ function checkBlock( blockDir ) {
 			readIfExists( styleCssPath ),
 			effectiveTargetProps,
 			attrs,
-			cssToAttrs
+			cssToAttrs,
+			helperGov
 		);
 		for ( const f of cssFindings ) {
 			const owningAttrs = f.attrs.join( ', ' );

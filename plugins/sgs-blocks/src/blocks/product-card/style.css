@@ -231,10 +231,16 @@
 .product-card .sgs-button {
 	display: inline-block;
 	text-align: center;
-	padding: 12px 20px;
-	border-radius: 10px;
-	font-family: 'Inter', sans-serif;
-	font-size: 15px;
+	/*
+	 * padding, border-radius and font-size are ATTR-DRIVEN in bound mode —
+	 * sgs_button_element_style_css() emits ctaPaddingY/ctaPaddingX,
+	 * ctaBorderRadius and ctaFontSize scoped to .product-card__view /
+	 * .product-card__add-to-cart. No competing hardcoded constants live on this
+	 * higher-specificity rule (F3). font-family is intentionally NOT set here so
+	 * the CTA INHERITS the theme font (the base .sgs-button uses
+	 * font-family: inherit) instead of being locked to a specific typeface.
+	 * The typed-mode CTA keeps its visual defaults via the :where() rule below.
+	 */
 	font-weight: var(--sgs-product-card-btn-font-weight, 600);
 	text-decoration: none;
 	cursor: pointer;
@@ -242,6 +248,22 @@
 	min-height: 44px;
 	box-sizing: border-box;
 	line-height: var(--sgs-product-card-btn-line-height, 1.4);
+}
+
+/*
+ * CTA visual defaults (radius + padding + font-size). :where() keeps these at
+ * specificity 0 so they are true overridable defaults: bound-mode cards emit
+ * ctaBorderRadius / ctaPaddingY / ctaPaddingX / ctaFontSize via
+ * sgs_button_element_style_css() scoped to .product-card__view /
+ * .product-card__add-to-cart (specificity 0,2,0) which wins, while typed-mode
+ * CTAs (.sgs-button--{style}, no cta* controls) keep these design defaults.
+ * :where() is a sanctioned F3-exempt overridable-default pattern. font-family
+ * is deliberately omitted so the CTA inherits the theme font.
+ */
+:where(.product-card) .sgs-button {
+	border-radius: 10px;
+	padding: 12px 20px;
+	font-size: 15px;
 }
 
 .product-card .sgs-button--primary {

@@ -293,6 +293,79 @@ const BREAKPOINT_SUFFIX_RE = /(Tablet|Mobile|Desktop)$/;
 // still consumed via the same responsive mechanism as its (consumed) base.
 const BREAKPOINT_TOKEN_RE = /['"`](?:Tablet|Mobile|Desktop)['"`]|@media/;
 
+// Shared "prefixed attribute set" PHP helpers (Bean R-22-13 pattern): each
+// reads $attributes[ $prefix . 'Suffix' ] via string concatenation, so the
+// literal attribute name (e.g. "ctaBorderStyle") never appears anywhere in
+// source text — only the prefix ('cta') and the suffix ('BorderStyle') do,
+// as separate tokens passed to/used inside the helper. A literal-substring
+// scan can never match this legitimately-dynamic pattern, so it is resolved
+// structurally here: find every call site `helperFn( $attributes, 'prefix',
+// ... )` in the corpus and mark `prefix + suffix` consumed for every suffix
+// the named helper is documented to read. Keep this list in sync with each
+// helper's own doc-comment (helpers-typography.php / helpers-button-style.php).
+const PREFIXED_HELPER_SUFFIXES = {
+	sgs_typography_css_rule: [
+		'FontSize',
+		'FontSizeUnit',
+		'FontSizeTablet',
+		'FontSizeMobile',
+		'FontWeight',
+		'FontStyle',
+		'TextTransform',
+		'TextDecoration',
+		'LineHeight',
+		'LineHeightUnit',
+		'LineHeightTablet',
+		'LineHeightMobile',
+		'LetterSpacing',
+		'LetterSpacingUnit',
+		'LetterSpacingTablet',
+		'LetterSpacingMobile',
+	],
+	sgs_button_element_style_css: [
+		'ColourBackground',
+		'ColourText',
+		'ColourBorder',
+		'ColourBackgroundHover',
+		'ColourTextHover',
+		'ColourBorderHover',
+		'BorderStyle',
+		'BorderWidth',
+		'BorderRadius',
+		'FontWeight',
+		'FontSize',
+		'PaddingY',
+		'PaddingX',
+		'WidthType',
+	],
+};
+
+/**
+ * Scan `corpus` for call sites of every helper in PREFIXED_HELPER_SUFFIXES,
+ * extract the literal prefix argument (2nd parameter, e.g. 'cta' / 'title'),
+ * and return the set of `prefix + suffix` attribute names each call site
+ * consumes. A helper call with a non-literal (computed) prefix is skipped —
+ * it can't be resolved statically and is not claimed as consumed.
+ *
+ * @param {string} corpus PHP source (comments already stripped).
+ * @return {Set<string>} Attribute names consumed via a prefixed helper call.
+ */
+function collectPrefixedHelperConsumed( corpus ) {
+	const consumed = new Set();
+	for ( const [ fnName, suffixes ] of Object.entries( PREFIXED_HELPER_SUFFIXES ) ) {
+		const re = new RegExp( fnName + '\\s*\\(\\s*[^,]+,\\s*[\'"]([A-Za-z0-9_]*)[\'"]', 'g' );
+		let m;
+		while ( ( m = re.exec( corpus ) ) !== null ) {
+			const prefix = m[ 1 ];
+			for ( const suffix of suffixes ) {
+				const attrName = '' !== prefix ? prefix + suffix : suffix.charAt( 0 ).toLowerCase() + suffix.slice( 1 );
+				consumed.add( attrName );
+			}
+		}
+	}
+	return consumed;
+}
+
 // ---------------------------------------------------------------------------
 // CHECK 1 — per-block dead controls
 // ---------------------------------------------------------------------------
@@ -310,6 +383,7 @@ function checkBlock( block, wrapperControlled, sharedCorpus, contextConsumed ) {
 	// controls (qc-council Rater C, rule (c) rejected). Cross-block consumption
 	// is recognised only via the declared providesContext/usesContext channel.
 	const corpus = block.ownCorpus + '\n' + sharedCorpus;
+	const prefixedHelperConsumed = collectPrefixedHelperConsumed( corpus );
 
 	for ( const attr of controlled ) {
 		// Only attributes actually DECLARED in this block.json count; a stray
@@ -331,6 +405,13 @@ function checkBlock( block, wrapperControlled, sharedCorpus, contextConsumed ) {
 		// Rule (b) — cross-block context: consumed by a child via a LIVE
 		// providesContext→usesContext→render chain (verified upstream).
 		if ( contextConsumed.has( attr ) ) {
+			continue;
+		}
+		// Prefixed-attribute-set helper (sgs_typography_css_rule / sgs_button_
+		// element_style_css): the literal call site names the prefix, so the
+		// full attr name is resolvable even though the helper builds the key
+		// via string concatenation and the literal never appears verbatim.
+		if ( prefixedHelperConsumed.has( attr ) ) {
 			continue;
 		}
 		// Rule (a) — responsive variant: a {base}Tablet/Mobile/Desktop attr is

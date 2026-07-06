@@ -8,6 +8,7 @@ import {
 } from '@wordpress/block-editor';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { SpacingControl, DesignTokenPicker, TypographyControls } from '../../components';
+import { BUTTON_PRESETS } from '../button/presets';
 import {
 	PanelBody,
 	SelectControl,
@@ -606,6 +607,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		pickerLabelColour,
 		titleColour,
 		priceColour,
+		// Bound-mode built-in CTA styling.
+		ctaPreset,
+		ctaColourBackground,
+		ctaColourText,
+		ctaColourBorder,
+		ctaBorderRadius,
+		ctaFontSize,
+		ctaPaddingY,
+		ctaPaddingX,
+		ctaWidthType,
 	} = attributes;
 
 	const isTrial = variantStyle === 'trial';
@@ -1028,6 +1039,179 @@ export default function Edit( { attributes, setAttributes } ) {
 						</>
 					) }
 				</PanelBody>
+
+				{ /* ── CTA Button Style panel (bound mode only — the typed-mode
+				     CTA uses a different class + its own "Primary button style"
+				     preset dropdown in the Buttons panel above) ── */ }
+				{ isBound && (
+					<PanelBody
+						title={ __( 'CTA Button Style', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<p style={ { marginTop: 0 } }>
+							{ __(
+								'Colour, border and width for the connected-product button (.product-card__view / .product-card__add-to-cart).',
+								'sgs-blocks'
+							) }
+						</p>
+						<SelectControl
+							label={ __( 'Style preset', 'sgs-blocks' ) }
+							value={ ctaPreset || 'primary' }
+							options={ [
+								{
+									value: 'primary',
+									label: __( 'Primary', 'sgs-blocks' ),
+								},
+								{
+									value: 'secondary',
+									label: __( 'Secondary', 'sgs-blocks' ),
+								},
+								{
+									value: 'outline',
+									label: __( 'Outline', 'sgs-blocks' ),
+								},
+							] }
+							onChange={ ( v ) =>
+								setAttributes( { ctaPreset: v } )
+							}
+							__nextHasNoMarginBottom
+						/>
+						<Button
+							variant="secondary"
+							onClick={ () => {
+								const preset =
+									BUTTON_PRESETS[ ctaPreset || 'primary' ];
+								if ( ! preset ) {
+									return;
+								}
+								setAttributes( {
+									ctaColourBackground:
+										preset.colourBackground,
+									ctaColourText: preset.colourText,
+									ctaColourBorder: preset.colourBorder,
+									ctaColourBackgroundHover:
+										preset.colourBackgroundHover,
+									ctaColourTextHover:
+										preset.colourTextHover,
+									ctaColourBorderHover:
+										preset.colourBorderHover,
+									ctaBorderStyle: preset.borderStyle,
+									ctaBorderWidth: preset.borderWidthTop,
+									ctaBorderRadius: preset.borderRadiusTL,
+									ctaFontWeight: preset.fontWeight,
+								} );
+							} }
+							style={ { marginBottom: 16 } }
+						>
+							{ __( 'Apply preset', 'sgs-blocks' ) }
+						</Button>
+						<SelectControl
+							label={ __( 'Width', 'sgs-blocks' ) }
+							value={ ctaWidthType || 'fit' }
+							options={ [
+								{
+									value: 'fit',
+									label: __( 'Fit content', 'sgs-blocks' ),
+								},
+								{
+									value: 'full',
+									label: __( 'Full width', 'sgs-blocks' ),
+								},
+							] }
+							onChange={ ( v ) =>
+								setAttributes( { ctaWidthType: v } )
+							}
+							__nextHasNoMarginBottom
+						/>
+						<NumberControl
+							label={ __( 'Corner radius (px)', 'sgs-blocks' ) }
+							value={ ctaBorderRadius ?? '' }
+							min={ 0 }
+							max={ 100 }
+							onChange={ ( v ) =>
+								setAttributes( {
+									ctaBorderRadius:
+										v === '' || v === undefined
+											? undefined
+											: Number.parseInt( v, 10 ),
+								} )
+							}
+							__nextHasNoMarginBottom
+						/>
+						<NumberControl
+							label={ __( 'Font size (px)', 'sgs-blocks' ) }
+							value={ ctaFontSize ?? '' }
+							min={ 8 }
+							max={ 48 }
+							onChange={ ( v ) =>
+								setAttributes( {
+									ctaFontSize:
+										v === '' || v === undefined
+											? undefined
+											: Number.parseInt( v, 10 ),
+								} )
+							}
+							__nextHasNoMarginBottom
+						/>
+						<NumberControl
+							label={ __(
+								'Vertical padding (px)',
+								'sgs-blocks'
+							) }
+							value={ ctaPaddingY ?? '' }
+							min={ 0 }
+							max={ 80 }
+							onChange={ ( v ) =>
+								setAttributes( {
+									ctaPaddingY:
+										v === '' || v === undefined
+											? undefined
+											: Number.parseInt( v, 10 ),
+								} )
+							}
+							__nextHasNoMarginBottom
+						/>
+						<NumberControl
+							label={ __(
+								'Horizontal padding (px)',
+								'sgs-blocks'
+							) }
+							value={ ctaPaddingX ?? '' }
+							min={ 0 }
+							max={ 120 }
+							onChange={ ( v ) =>
+								setAttributes( {
+									ctaPaddingX:
+										v === '' || v === undefined
+											? undefined
+											: Number.parseInt( v, 10 ),
+								} )
+							}
+							__nextHasNoMarginBottom
+						/>
+						<DesignTokenPicker
+							label={ __( 'Background colour', 'sgs-blocks' ) }
+							value={ ctaColourBackground }
+							onChange={ ( v ) =>
+								setAttributes( { ctaColourBackground: v } )
+							}
+						/>
+						<DesignTokenPicker
+							label={ __( 'Text colour', 'sgs-blocks' ) }
+							value={ ctaColourText }
+							onChange={ ( v ) =>
+								setAttributes( { ctaColourText: v } )
+							}
+						/>
+						<DesignTokenPicker
+							label={ __( 'Border colour', 'sgs-blocks' ) }
+							value={ ctaColourBorder }
+							onChange={ ( v ) =>
+								setAttributes( { ctaColourBorder: v } )
+							}
+						/>
+					</PanelBody>
+				) }
 
 				{ /* ── Card layout panel ── */ }
 				<PanelBody

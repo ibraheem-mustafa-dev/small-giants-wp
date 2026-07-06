@@ -29,6 +29,11 @@
  *
  *   helpers-svg-kses.php            — sgs_svg_kses_allowed_tags
  *
+ *   helpers-button-style.php        — sgs_button_element_style_css (reusable
+ *                                     colour/border/width styling for a
+ *                                     built-in, non-sgs/button CTA element,
+ *                                     reading a PREFIXED attribute set)
+ *
  *   helpers-responsive.php          — sgs_responsive_css_rule,
  *                                     sgs_responsive_box_shorthand_rule
  *                                     (Pattern A general responsive emitter —
@@ -53,3 +58,4 @@ require_once __DIR__ . '/helpers-configurator-pricing.php';
 require_once __DIR__ . '/helpers-value-ladder.php';
 require_once __DIR__ . '/helpers-container.php';
 require_once __DIR__ . '/helpers-svg-kses.php';
+require_once __DIR__ . '/helpers-button-style.php';
