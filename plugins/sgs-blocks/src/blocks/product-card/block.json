@@ -19,6 +19,7 @@
 	"icon": "products",
 	"supports": {
 		"sgs": {
+			"scalarStylingLift": true,
 			"imageControls": true,
 			"arrayContentLift": true,
 			"variantAttr": "variantStyle",

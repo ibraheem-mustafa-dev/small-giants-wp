@@ -49,6 +49,7 @@
 			"style": true
 		},
 		"sgs": {
+			"scalarStylingLift": true,
 			"imageControls": true,
 			"arrayContentLift": true
 		}

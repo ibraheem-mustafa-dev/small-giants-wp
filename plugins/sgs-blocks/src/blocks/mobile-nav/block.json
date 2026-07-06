@@ -18,6 +18,7 @@
 	"icon": "menu-alt3",
 	"supports": {
 		"sgs": {
+			"scalarStylingLift": true,
 			"containerKind": "content",
 			"containerMirror": false
 		},

@@ -1009,6 +1009,71 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/trust-bar", "titleFontSizeUnit"): {"derived_selector": ".sgs-trust-bar__title"},
     ("sgs/trust-bar", "titleFontSizeTablet"): {"derived_selector": ".sgs-trust-bar__title"},
     ("sgs/trust-bar", "titleFontSizeMobile"): {"derived_selector": ".sgs-trust-bar__title"},
+    # ---- scalar-styling-lift rollout — latent boolean mis-seed fixes (D285, 2026-07-06) ----
+    # STOP-54: enabling `scalar-styling-lift` wakes EVERY role∈{color,typography}
+    # attr whose name suffix-matches a css_property. A BOOLEAN attr mis-classed
+    # role='color' with a selector would then have a raw CSS string written into
+    # it (_compute_value fall-through `return raw` → schema-invalid boolean). A
+    # full-roster pre-audit (2026-07-06, re-verified vs current code/DB, STOP-43)
+    # confirmed exactly the D280 four (the number FontSize/LineHeight attrs are
+    # the INTENDED targets — trust-bar precedent proves the split-value+unit path).
+    # Same one-line correction as the trust-bar bgSvgTextShadow fix (line 1002):
+    # role='behaviour' (a toggle, not a colour) + derived_selector=None (nothing
+    # to lift). Reseed-durable (STOP-24). accentStroke: counter's "draw a stroke
+    # around the accent" toggle. bgSvgTextShadow: the SVG-background text-shadow
+    # toggle on the 3 section composites carrying it.
+    ("sgs/counter", "accentStroke"): {"role": "behaviour", "derived_selector": None},
+    ("sgs/hero", "bgSvgTextShadow"): {"role": "behaviour", "derived_selector": None},
+    ("sgs/cta-section", "bgSvgTextShadow"): {"role": "behaviour", "derived_selector": None},
+    ("sgs/container", "bgSvgTextShadow"): {"role": "behaviour", "derived_selector": None},
+    # ---- scalar-styling-lift rollout — selector-drift corrections (D285, 2026-07-06) ----
+    # Render-verified DEAD selectors: the lift reads these classes off the DRAFT,
+    # but the block renders a DIFFERENT class, so the draft uses the current class
+    # too and the old selector matches nothing (harmless no-op, but the per-element
+    # style never lifts). Same __heading→__title correction as the trust-bar
+    # precedent (line 1006+). Confirmed against the blocks' true render surface
+    # (src/blocks/<b>/ + includes/), STOP-43. Only the genuinely-dead typography
+    # selectors are corrected — colour attrs on wrapper/state elements that no-op
+    # harmlessly are left as-is (not corruption, not a typography lift).
+    #
+    # card-grid: render emits __title/__subtitle (NOT __heading/__subheading).
+    ("sgs/card-grid", "titleColour"): {"derived_selector": ".sgs-card-grid__title"},
+    ("sgs/card-grid", "titleFontSize"): {"derived_selector": ".sgs-card-grid__title"},
+    ("sgs/card-grid", "titleFontSizeUnit"): {"derived_selector": ".sgs-card-grid__title"},
+    ("sgs/card-grid", "titleFontSizeTablet"): {"derived_selector": ".sgs-card-grid__title"},
+    ("sgs/card-grid", "titleFontSizeMobile"): {"derived_selector": ".sgs-card-grid__title"},
+    ("sgs/card-grid", "subtitleColour"): {"derived_selector": ".sgs-card-grid__subtitle"},
+    ("sgs/card-grid", "subtitleFontSize"): {"derived_selector": ".sgs-card-grid__subtitle"},
+    ("sgs/card-grid", "subtitleFontSizeUnit"): {"derived_selector": ".sgs-card-grid__subtitle"},
+    ("sgs/card-grid", "subtitleFontSizeTablet"): {"derived_selector": ".sgs-card-grid__subtitle"},
+    ("sgs/card-grid", "subtitleFontSizeMobile"): {"derived_selector": ".sgs-card-grid__subtitle"},
+    # quote: render emits ONLY __attribution (the old __text body element is gone —
+    # the quote body is now wrapper/InnerBlocks typography, HC2 inheritable default).
+    ("sgs/quote", "attributionColour"): {"derived_selector": ".sgs-quote__attribution"},
+    ("sgs/quote", "attributionFontFamily"): {"derived_selector": ".sgs-quote__attribution"},
+    ("sgs/quote", "attributionFontSize"): {"derived_selector": ".sgs-quote__attribution"},
+    ("sgs/quote", "attributionFontSizeUnit"): {"derived_selector": ".sgs-quote__attribution"},
+    ("sgs/quote", "attributionFontSizeTablet"): {"derived_selector": ".sgs-quote__attribution"},
+    ("sgs/quote", "attributionFontSizeMobile"): {"derived_selector": ".sgs-quote__attribution"},
+    ("sgs/quote", "attributionFontWeight"): {"derived_selector": ".sgs-quote__attribution"},
+    ("sgs/quote", "attributionLineHeight"): {"derived_selector": ".sgs-quote__attribution"},
+    ("sgs/quote", "attributionLineHeightUnit"): {"derived_selector": ".sgs-quote__attribution"},
+    ("sgs/quote", "attributionTextDecoration"): {"derived_selector": ".sgs-quote__attribution"},
+    ("sgs/quote", "attributionTextTransform"): {"derived_selector": ".sgs-quote__attribution"},
+    # product-card: the card TITLE lift targets __heading, but includes/product-
+    # card-builtin-render.php emits the title as __title (verified render source,
+    # FR-31-2.1a / STOP-43). Correct the title family only — the pill*/pickerLabel*/
+    # cta* selectors are entangled with the D284 embedded-option-picker rework
+    # (the pills are now the child option-picker's __pill, not product-card's own),
+    # so those are left as harmless no-ops pending that area settling, not guessed.
+    ("sgs/product-card", "titleColour"): {"derived_selector": ".sgs-product-card__title"},
+    ("sgs/product-card", "titleFontSize"): {"derived_selector": ".sgs-product-card__title"},
+    ("sgs/product-card", "titleFontSizeUnit"): {"derived_selector": ".sgs-product-card__title"},
+    ("sgs/product-card", "titleFontSizeTablet"): {"derived_selector": ".sgs-product-card__title"},
+    ("sgs/product-card", "titleFontSizeMobile"): {"derived_selector": ".sgs-product-card__title"},
+    ("sgs/product-card", "titleFontWeight"): {"derived_selector": ".sgs-product-card__title"},
+    ("sgs/product-card", "titleLineHeight"): {"derived_selector": ".sgs-product-card__title"},
+    ("sgs/product-card", "titleLineHeightUnit"): {"derived_selector": ".sgs-product-card__title"},
     # NOTE (D281): the CSS-property naming-mismatch corrections for sgs/button's
     # colourBorder/colourBackground/colourText were TRIALLED here then REVERTED —
     # the column-first mechanism works (border-color lifts to colourBorder, D2

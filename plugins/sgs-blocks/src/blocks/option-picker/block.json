@@ -41,7 +41,9 @@
 			"color": true,
 			"style": true
 		},
-		"sgs": {}
+		"sgs": {
+			"scalarStylingLift": true
+		}
 	},
 	"selectors": {
 		"root": ".sgs-option-picker",

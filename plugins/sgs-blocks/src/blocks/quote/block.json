@@ -17,6 +17,9 @@
 	"icon": "format-quote",
 	"render": "file:./render.php",
 	"supports": {
+		"sgs": {
+			"scalarStylingLift": true
+		},
 		"anchor": true,
 		"className": true,
 		"html": false,
