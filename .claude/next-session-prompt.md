@@ -1,18 +1,18 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: cloning-pipeline / 9-DEFECT PAGE-8 VISUAL QC BATCH (Bean-opened at the D281 close, 2026-07-06)
+thread: cloning-pipeline / CONTAINER BLOCKS + L1-L4 CASCADE DEEP-DIVE (Bean-set at the D282 close, 2026-07-06)
 generated: 2026-07-06
-primary_goal: "Run the diagnosis-first flow on Bean's 9-defect page-8 visual QC batch (parking P-PAGE8-QC-BATCH-9): parallel read-only investigators root-cause all 9 against the live DOM + draft + extract artefacts, GROUP by confirmed cause, AGREE with Bean (Problem/Effect/Solution), then fix as a batch. Do NOT fix piecemeal. Every fix LANDED on page 8 (computed-by-content at 375/768/1440 + Bean's eye) before commit. Also available to unblock: P-DRAFT-CSSVAR-COLOUR-RESOLUTION (the converter draft-var resolution that re-enables the button-colour seed + fixes QC defect #6)."
+primary_goal: "A slow, layer-by-layer investigation of the container L1-L4 cloning cascade. Understand BEFORE fixing: map sgs/container + the shared wrapper's full setting/CSS surface, explain the responsive system (per-device + custom breakpoint), group all settings into L1-L4 (Bean agrees), prove whether the cascade is UNIVERSAL (class-section vs div-section; container vs container-equivalent vs composite), explain it non-technically THEN reconcile with the spec, then test varied draft shapes per layer (one layer fully fixed + LANDED before adding the next). Universal = ALL L3 CSS lands across DIFFERENT examples, not one rule working once."
 ---
 
-# NEXT SESSION — the 9-defect page-8 visual QC batch (diagnosis-first)
+# NEXT SESSION — Container blocks + the L1-L4 cloning cascade (deep-dive)
 
-Invoke /autopilot first. The D281 session shipped the declarative css_property column MECHANISM (parity-neutral, `256ec916`) + Track-B multi-button/parity fixes (`8aa844d8`/`aa4e4151`) + a colour-value bug fix & reseed guard (`45ba7fa2`), and REVERTED the button-colour seed (its lifted `var(--border)` doesn't resolve on deploy — a converter draft-var-resolution prerequisite, parked). Bean then ran a visual QC pass and reported **9 defects on the live page 8**. This session runs the DIAGNOSIS-FIRST flow on them.
+Invoke /autopilot first. **This is a slow, understand-before-fix session.** Bean drives the pace; each step is agreed before moving on. The D282 session closed the page-8 QC batch (fixed #1 container gaps via the L3 gap-gate, #4 hero image, #9 testimonial bg, de-duped the hero, cleaned dead schema) and, crucially, **stopped deploying D2 into the page** so the live page now shows the HONEST gap set. The recurring theme was D228 hardcoded-default cheats. This session goes deep on the container cascade itself.
 
-**Agent identity.** You are the SGS pipeline builder-diagnostician: full defect register → parallel root-cause → group-by-cause → Problem/Effect/Solution AGREEMENT before fixing → LANDED proof; fact-check every claim (yours, a rater's, a doc's) against ground truth (STOP-15). NEVER park a QC finding without diagnosing it (memory `diagnosis-first-explain-agree-clear`).
+**Agent identity.** SGS pipeline builder-diagnostician: map → explain-simply → agree → fix one layer at a time → LANDED. Prove every premise on the real draft node + live DOM (STOP-43/STOP-1). Understanding is the deliverable before any converter edit.
 
-**State recap (plain English).** **D2 IS NO LONGER DEPLOYED INTO THE PAGE (STOP-52, `6a83281c`, Bean-locked 2026-07-06)** — it is a debug log only (written to pipeline-state; ledger + gates read it there; `SGS_EMIT_D2_PAGE=1` restores injection). So the HONEST parity is **content 96 / CSS 69-70-70** at 375/768/1440 (was 80-81-81 with D2 MASKING ~11pt of stranded CSS). The page now shows the TRUE gap set — no false positives, every fix visibly moves the real number. 870 tests + gates green. The front is Bean's 9 VISIBLE defects (now honest — several were only visible with D2 deleted; they now show by default) — the full register (grouped A/B/C by likely cause) is in **`parking.md` → `P-PAGE8-QC-BATCH-9`**. Group A = layer/wrapper CSS transfer (container gap #1, hero split image padding #4, brand image sizing #5, ingredients centring #7, emoji size #8); Group B = button colour/hover (ghost hover underline #2, ghost styling #6 = the draft-var resolution); Group C = composites (product-card option-pickers + equal-height #3, testimonial-slider yellow bg #9). Live baselines: content 96 / CSS 80-81-81 / 870 tests / cheat-gate 33 baselined 0 NEW.
+**State recap (plain English).** **D2 IS NO LONGER DEPLOYED (STOP-52, `6a83281c`)** — the page shows honest gaps; that is why the QC batch surfaced. Honest parity is **content 96 / CSS 70-71-71** (was 80-81-81 D2-masked). This session studies the container L1-L4 CSS cascade end to end. The 3 layers of container-block: `sgs/container` (the plain block) · container-equivalents that mirror it (`card-grid`, `feature-grid`, `multi-button`) · composite container-equivalents (`hero`, `trust-bar`, `info-box`). All route through the shared `SGS_Container_Wrapper` (PHP) + `ContainerWrapperControls` (React). The open converter gaps proven at D282: **L4 per-area extraction** (a composite's grid-area box-CSS — e.g. hero `.sgs-hero__content` padding — is never fed to the wired `grid_area` resolver, so contentPadding gets "no value extracted") and the **universal reach of L3** (Bean: making one gap rule work across examples ≠ universal; universal = every L3 setting landing across different column-counts / composites / container-in-grid-mode / container-equivalents like `sgs/multi-button` whose `max-width` isn't landing).
 
 ## ⛔ THE 7 NON-NEGOTIABLE RULES (Bean-set; gate every change)
 1. **CONVERT, don't mirror** — output = native SGS blocks driven by attributes; NOT a div-by-div copy of draft classes.
@@ -24,149 +24,137 @@ Invoke /autopilot first. The D281 session shipped the declarative css_property c
 7. **FOLLOW THE SPEC IN EVERY DETAIL** — Spec 31 is the settled authority. Where silent, pin the smallest spec-consistent rule and write it INTO the spec. **Shared-mechanism / DB-schema changes need a pre-build design-gate + Bean approval.**
 
 ## Mandatory READING (tick each in your first message; verify against ground truth, read WHOLE docs)
-1. [ ] `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — READ IN FULL, END TO END (Bean directive; STOP-26). §3.A = the CSS branch the column touches.
-2. [ ] `.claude/handoff.md` top entry (D280) + `.claude/decisions.md` head (verify D-ceiling: `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` — was D280 at write time).
-3. [ ] `.claude/plans/2026-07-05-css-property-column-design.md` — the point-5 design + the ⛔ COUNCIL OUTCOME block (build the RE-SCOPE, not the original v1 mass-seed).
-4. [ ] `.claude/reports/2026-07-05-residuals-fact-first-investigation.md` — the H1-H8 evidence (the D2 disposition table, the button-channel facts, the inheritance research).
-5. [ ] `.claude/parking.md` + `ledger/content-coverage-baseline.json` (A2 = 4 keys).
-6. [ ] CLAUDE.md root-cause methodology rule 4a + the live canary page 8 (creds `.claude/secrets/sandybrown.env`).
+1. [ ] `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — READ IN FULL, END TO END (Bean directive; STOP-26). §2 = the LAYER model (L1-L4); §3.A = the CSS branch; §13.4 = CSS routing FRs.
+2. [ ] `.claude/handoff.md` top entry (D282) + `.claude/decisions.md` head (verify D-ceiling: `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` — was D282 at write time).
+3. [ ] `.claude/specs/29-*` (container-equivalent 3-KIND roster) + the WRAPPER-CSS-ROUTING-DESIGN-GATE doc (DEC-1..5, the layer-detection rules).
+4. [ ] `.claude/cloning-pipeline-flow.md` + `-stages.md` (the stage map the cascade runs through).
+5. [ ] `.claude/parking.md` (P-DRAFT-CSSVAR-COLOUR-RESOLUTION, P-MULTIBUTTON-768-WRAP, the L4 note in P-PAGE8-QC-BATCH-9).
+6. [ ] The shared wrapper: `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php` + `src/blocks/container/components/ContainerWrapperControls.js` + the live canary page 8 (creds `.claude/secrets/sandybrown.env`).
 
 ## Pre-flight self-attestation ritual (answer in your first message)
-1. Have I completed the READING GATE — Spec 31 IN FULL + handoff + D-ceiling + the council-outcome design block? (Quote one specific thing to prove it.)
-2. What branch + D-ceiling? (`git branch --show-current` → main; ceiling was D280 — verify before any new D.) Is the working tree clean?
+1. Have I completed the READING GATE — Spec 31 IN FULL (§2 layer model especially) + handoff + D-ceiling? (Quote one specific thing to prove it.)
+2. What branch + D-ceiling? (`git branch --show-current` → main; ceiling was D282 — verify before any new D.) Is the working tree clean?
 3. For every fix I build: premise proven on the REAL draft node BEFORE + AFTER (STOP-43), gated on the REAL page 8 (computed values matched by content + Bean eye), never on emit alone?
-4. Baselines I must not regress: content 96 / CSS 79-80-81 / A2 = 4 keys; 822 tests; cheat-gate 33 baselined 0 NEW.
+4. Baselines I must not regress: content 96 / CSS 70-71-71; 872 tests; cheat-gate 33 baselined 0 NEW. D2 NOT deployed (honest page).
 5. Subagents: read-only raters/tracers parallel OK; FIX work = ONE solo coding subagent at a time, foreground, named files, spawn-no-agents; I verify every subagent's edits + tests myself (STOP-16/39).
-6. Shared-mechanism / DB-schema change ahead? → pre-build design-gate + Bean approval (Rule 7). The column is council-passed on the RESHAPE; the 5 must-fixes below must be answered before dispatch.
+6. Shared-mechanism / DB-schema change ahead (the wrapper + the cascade are the highest-blast-radius surface)? → pre-build design-gate + Bean approval (Rule 7).
 
 ## ⛔ ANTI-PATTERN STOP CATALOGUE (carried forward; do NOT subtract — D101 rule)
 - **STOP-1 — READ before you conjecture.** Verify every claim (yours, a subagent's, a doc's, a metric's) against ground truth — live code (file:line), the DB, the raw artefacts.
 - **STOP-2 — Subagents RETURN data / implement assigned files; NEVER write shared files.**
 - **STOP-4 — WRITTEN ≠ LANDED.** "An attr was emitted" is a progress signal, never a gate.
-- **STOP-6 — A gate that EXISTS but isn't WIRED-TO-SOMETHING-THAT-RUNS protects nothing.** Grep the wiring + confirm it RUNS. (Live example this session: the D2-when-D1 gate was a silent no-op for the wrong pipeline-state root — STOP-6 in the flesh.)
+- **STOP-6 — A gate that EXISTS but isn't WIRED-TO-SOMETHING-THAT-RUNS protects nothing.** Grep the wiring + confirm it RUNS.
 - **STOP-8 — Device-tier ≠ arbitrary visual breakpoints** (768/1024 vs 600/640/781).
 - **STOP-10 — Empty cloned section = usually a soft-fail** — read extract.json + trace.jsonl first; gate on `innerText.length>0`.
 - **STOP-11 — SCHEMA enumeration ≠ USAGE enumeration.** Knowing an attr/column exists is necessary-not-sufficient; grep how it's WRITTEN and READ.
-- **STOP-15 — A council/analysis finding is a HYPOTHESIS.** FACT-CHECK it against ground truth before acting. When two raters DISAGREE, resolve by tracing yourself.
+- **STOP-15 — A council/analysis finding is a HYPOTHESIS.** FACT-CHECK it against ground truth before acting. When two raters DISAGREE, resolve by tracing yourself. (This session: 3 investigators, every root cause main-session-verified before acting.)
 - **STOP-16 — A subagent's "N tests pass / gate green" is a HYPOTHESIS.** Re-run the suite + gates YOURSELF from the CANONICAL cwd (`plugins/sgs-blocks/scripts`, `--import-mode=importlib`).
 - **STOP-21 — LANDED-proven only by deploying the GENUINE emit to a live page + computed-style/innerText.** Recipe: `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --auto-section --client mamas-munches --page homepage --media-map sites/mamas-munches/research/sandybrown-media-map.json --deploy-target page:8 --skip-autonomy-gate` → anonymous chrome-devtools/Playwright. Creds `.claude/secrets/sandybrown.env` (grep/cut, never `source`).
 - **STOP-23 — Run a pre-commit `/qc-council` (or 2-rater review) on BUILT converter/block code** (blub 255). Verify input-class ≠ output-class; render.php reads the attr you write AND PAINTS the element you check.
 - **STOP-24 — A DB change a reseed RE-DERIVES must use a reseed-surviving channel** (block.json / a dated migration / `sgs-update` seeder / ATTR_CLASSIFICATION_OVERRIDES), never a manual DB edit.
 - **STOP-26 — Read the WHOLE target spec section holistically before building.**
 - **STOP-27 — A conservation/regression guard is `raise`, NEVER a bare `assert`.**
-- **STOP-28 (post-Step-16 form) — entry.py's failure contract is LOUD** (`status:'failed'` + reason, loud at the orchestrator caller per D277) — never re-add a silent fallback or a silent empty 'complete'.
-- **STOP-31 — A commit-blocking static gate must be scoped to the cheat's ACTUAL syntactic context; plant-test it.** (Applied this session to the D2-when-D1 repair — plant-tested both directions.)
-- **STOP-32 — FOUR-CHANNEL CHECK before claiming a CSS property is "dropped"** (native supports→style.*, custom attrs, wrapper render, spec destination — plus the D2 passthrough channel as a FIFTH surface).
+- **STOP-28 — entry.py's failure contract is LOUD** (`status:'failed'` + reason) — never re-add a silent fallback or a silent empty 'complete'.
+- **STOP-31 — A commit-blocking static gate must be scoped to the cheat's ACTUAL syntactic context; plant-test it.**
+- **STOP-32 — FOUR-CHANNEL CHECK before claiming a CSS property is "dropped"** (native supports→style.*, custom attrs, wrapper render, spec destination — plus the D2 passthrough channel as a FIFTH surface). NOTE: D2 no longer deployed, but it is still WRITTEN to pipeline-state as the debug/transfer-visibility log.
 - **STOP-34 — SYNTHETIC-FIXTURE-GREEN ≠ REAL-DRAFT-CORRECT.** Reproduce on the FULL real draft.
 - **STOP-35 — DEFAULT-IS-CONTAINER: a slug-None class-section defaults to `sgs/container` + recurse; it does NOT fail.**
 - **STOP-37 — LANDED catches EMIT/SERIALISATION bugs unit tests structurally cannot.** Deploy + count rendered sections/items.
 - **STOP-38 — A section-outer/wrapper fix scoped to ONE slug is an R-31-9 carve-out CHEAT.** Fire on a DB signal, never a slug literal.
-- **STOP-39 — PARALLEL coding subagents interfere/revert each other; a SOLO coding subagent is optimal.** ONE implementer at a time, foreground, named files, "do the work yourself, spawn no agents"; read-only analysis/council/Explore agents may run in parallel. (Held this session: 1 coding writer + N read-only raters.)
+- **STOP-39 — PARALLEL coding subagents interfere/revert each other; a SOLO coding subagent is optimal.** ONE implementer at a time, foreground, named files, "do the work yourself, spawn no agents"; read-only analysis/Explore agents may run in parallel.
 - **STOP-40 — Don't declare a section "fixed" from seeing a grid + N items.** Check the RENDERED result vs the DRAFT's actual layout at 375/768/1440.
 - **STOP-41 — the `no_slug_literal` gate guards `role`/`slot`/`canonical_slot` AND `mod`/`_mod`/`modifier`.** Scope: dispatch_table/orchestrator/walk/recognition + resolvers/ + services/ dirs.
-- **STOP-42 — PARITY = computed values matched by CONTENT, never source-declaration-diff, never wrapper-class-keying.** Use `parity/computed-parity.js` (Stage 11.6). Input-side drop-logs are NOT rendered fidelity.
+- **STOP-42 — PARITY = computed values matched by CONTENT, never source-declaration-diff, never wrapper-class-keying.** Use `parity/computed-parity.js` (Stage 11.6).
 - **STOP-43 — PROVE THE PREMISE ON THE REAL NODE, not code inference.** Before designing OR committing a converter fix, REPRODUCE by RUNNING the engine on the real draft node BEFORE + AFTER.
-- **STOP-44 — A schema-valid, EMITTED converter attr can still be a RENDER no-op.** Verify the class/style paints on the LIVE element. (Relevant to the quote typography attach — mechanism sound via get_block_wrapper_attributes, but a set-a-value editor confirm is owed.)
-- **STOP-45 — A "regenerated-from-ground-truth" doc is still a HYPOTHESIS.** QC every regenerated/synthesised doc against the scripts; fact-check the QC's own claims.
+- **STOP-44 — A schema-valid, EMITTED converter attr can still be a RENDER no-op.** Verify the class/style paints on the LIVE element.
+- **STOP-45 — A "regenerated-from-ground-truth" doc is still a HYPOTHESIS.** QC every regenerated/synthesised doc against the scripts.
 - **STOP-46 — An in-code allowlist duplicating a DB fact is the R-31-1 drift pattern one level up.** "Which properties/attrs/blocks/ROLES are in scope" must be a (cached) DB membership query.
-- **STOP-47 — `git stash` proves NOTHING about DB-state-dependent behaviour.** A gate/tool whose vocabulary is DB-derived can only be proven "pre-existing" by isolating the DB state.
-- **STOP-48 — A "dead output" claim is SCOPE-RELATIVE.** Before retiring any output/function, grep ALL consumers (engine + gates + ledgers + tooling), not just the primary reader.
-- **STOP-49 — The MEASUREMENT INSTRUMENT is itself QC-able code.** When a number contradicts the eye or the A2 ledger, audit the instrument's element collection + pairing BEFORE trusting the number. A2's canonical `--markup` input is the LIVE PAGE SOURCE (curl page 8), never the raw emit.
-- **STOP-50 — A cheat can evade a gate by SHAPE, and a gate's identifier/scope vocabulary is a blind-spot surface.** When hunting cheats: grep code comments for gate names; audit each gate's ident set + scan scope as attack surface.
-- **STOP-51 — A #uid-scoped rule is DEAD unless the element actually carries the id.** When scoping by id/class, verify the LIVE element carries the hook attribute.
-- **STOP-52 (Bean doctrine) — The page must NEVER DEPEND on non-block-settings CSS emitted by the pipeline.** Everything a client can set in block settings must BE in block settings; a D2-scoped rule the page depends on is an extreme hardcoding cheat. D2 may exist ONLY as a transfer-visibility/debug log, deleted (or not inserted) by an end-gate when the page hits 100% content+CSS parity.
-- **STOP-53 (NEW, D280) — Replacing a working name-guess resolver with a declarative DB column: DON'T mass-reverse-derive to "freeze behaviour."** The reverse-derivation is NOT the inverse of the live forward resolver (contentWidth/borderWidthTop/box-shadow/479-tier all break). Add the column, seed ONLY the correcting subset, read column-first-else-fallback → untouched rows byte-identical BY CONSTRUCTION, commit-per-correction. Run an adversarial-council on any shared-mechanism DB refactor before building.
-- **STOP-54 (NEW, D280) — Enabling a block capability flag wakes EVERY attr it gates, not just the intended ones.** Pre-audit each block for latent mis-seeds (boolean/non-CSS attr mis-classed role=color/typography + a selector → raw string into the wrong-typed attr), selector drift, and child-owned dead lifts BEFORE flipping the flag. Stage: Wave-1 flag-only / Wave-2 overrides-then-enable / Wave-3 exclude.
+- **STOP-47 — `git stash` proves NOTHING about DB-state-dependent behaviour.** A DB-derived gate can only be proven "pre-existing" by isolating the DB state.
+- **STOP-48 — A "dead output" claim is SCOPE-RELATIVE.** Before retiring any output/function, grep ALL consumers (engine + gates + ledgers + tooling).
+- **STOP-49 — The MEASUREMENT INSTRUMENT is itself QC-able code.** When a number contradicts the eye, audit the instrument's element collection + pairing BEFORE trusting the number.
+- **STOP-50 — A cheat can evade a gate by SHAPE; a gate's identifier/scope vocabulary is a blind-spot surface.** When hunting cheats: grep code comments for gate names; audit each gate's ident set + scan scope.
+- **STOP-51 — A #uid-scoped rule is DEAD unless the element actually carries the id.** Verify the LIVE element carries the hook attribute.
+- **STOP-52 (Bean doctrine) — The page must NEVER DEPEND on non-block-settings CSS emitted by the pipeline.** D2 exists ONLY as a transfer-visibility/debug log — as of `6a83281c` it is NOT deployed into the page (env `SGS_EMIT_D2_PAGE=1` restores injection for a one-off before/after). Everything a client can set must BE in block settings.
+- **STOP-53 (D280) — Replacing a working name-guess resolver with a declarative DB column: DON'T mass-reverse-derive.** Add the column, seed ONLY the correcting subset, read column-first-else-fallback → untouched rows byte-identical BY CONSTRUCTION, commit-per-correction.
+- **STOP-54 (D280) — Enabling a block capability flag wakes EVERY attr it gates.** Pre-audit each block for latent mis-seeds + selector drift + child-owned dead lifts before flipping.
+- **STOP-55 (NEW, D282) — A test can CODIFY A BUG as intended behaviour.** The `test_css_pass_partition` gap tests asserted `gap→style.spacing.blockGap` (the exact dead-channel bug). When a correct fix (LANDED-proven) breaks such a test, UPDATE the test to the correct behaviour — do NOT revert the fix to keep the test green. The LANDED live-DOM result is the arbiter, not the pre-existing test.
+- **STOP-56 (NEW, D282) — A D228 hardcoded default can HIDE behind another attr's override.** The hero's 24px `.sgs-hero--split{gap}` default only stayed invisible because `splitGap*=0` forced `gap:0px`; removing the override exposed it. When removing an override/dedup, check what STYLE.CSS default it was masking + fix the root default too.
+- **STOP-57 (NEW, D282) — Redeploying the SAME block version with changed CSS serves STALE via the CDN.** `?ver` is the block.json version; the Hostinger CDN caches per full URL. Bump the block version on EVERY CSS change or the browser loads the old stylesheet (proven live: `?ver=0.3.2` cached with the old gap). `curl` without `?ver` can hit origin and mislead — verify with the real `?ver` the page loads.
+- **STOP-58 (NEW, D282) — Stage-1 reseed does NOT prune orphaned attr rows.** `sgs-update --stage 1` inserts/updates but does not DELETE `block_attributes` rows for attrs removed from block.json. A manual DB prune is durable (block.json is the source; a future reseed won't re-add) — or run the full 10-stage `/sgs-update` (aggressive prune-orphans).
+- **STOP-59 (NEW, D282) — The visual-diff commit gate blocks a block.json-META-only commit.** For a pure schema change (removed attrs/supports, no CSS/render change) the gate itself instructs `git commit --no-verify` — that is the sanctioned path, NOT a circumvention. Confirm the staged set is block.json-only first.
 
 ---
 
-## ORCHESTRATION PLAN — the 9-defect page-8 QC batch (diagnosis-first)
+## ORCHESTRATION PLAN — the container L1-L4 cascade deep-dive (Bean's agenda; do in ORDER, each gated by Bean's agreement)
 
-**The front is `P-PAGE8-QC-BATCH-9` (parking.md) — read it for the full grouped register.** Run the diagnosis-first flow:
-1. **Fresh baseline:** re-clone page 8 (recipe in STOP-21) so you diagnose the CURRENT live DOM, not a stale one.
-2. **Parallel READ-ONLY root-cause** (STOP-39: read-only agents parallelise fine): one investigator per defect (or per group A/B/C), each tracing the defect on the LIVE DOM + the draft mockup + the run's `extract.json`/`stage-4.json`/`trace.jsonl`/`variation-d0-d2.css`. Each returns a CONFIRMED root cause (file:line) — a HYPOTHESIS until you fact-check it yourself (STOP-15/43). Expect some recorded causes to be wrong (3 were disproven live this session).
-3. **Group by CONFIRMED cause** + present Problem/Effect/Solution to Bean; AGREE before fixing (never park a QC finding — `diagnosis-first-explain-agree-clear`).
-4. **Batch-fix:** ONE solo coding subagent per fix (STOP-39), /qc-council or 2-rater pre-commit, STOP-43 emit-diff, LANDED on page 8 (computed-by-content 375/768/1440 + Bean's eye), tests + gates green, commit-per-fix path-scoped.
+**This is a slow, understand-first session — NOT a fix-fast session. Each numbered step is agreed with Bean before the next.**
 
-Likely lenses (from the register — VERIFY, don't assume): #7 ingredients centring = the FR-31-5.1a band `text-align` fold + explicit `has-text-align-*` render (STOP-44); #1 gap = container wrapper `gap` emission; #4 hero split padding = composite-mirror grid-item padding; #6 ghost button = `P-DRAFT-CSSVAR-COLOUR-RESOLUTION`; #2 hover underline = H1 hover-routing (stripped `:hover` never routed to `*Hover`); #3/#9 = composite-specific (product-card configurator/equal-height; testimonial wrapper bg). The `css_property` column MECHANISM is available as the declarative home for any naming-mismatch cause you confirm.
+### 1 — Map the container surface (inline, read-only)
+- **1a.** Go through `sgs/container` + shared `SGS_Container_Wrapper` (PHP) + `ContainerWrapperControls` (React) — enumerate EVERY CSS rule + setting they own. (`/sgs-db block sgs/container`, `/wp-blocks schema sgs/container`, read the wrapper + controls in full.)
+- **1b.** Explain how the responsive settings work — the per-device (Mobile/Tablet/Desktop) system AND the custom-breakpoint (`sgsResponsiveOverrides`) setup — non-technical + visual.
 
----
+### 2 — Complete the settings
+- **2a.** Find missing/incomplete settings (e.g. a setting that should have responsive variants but doesn't).
+- **2b.** Add whatever is missing (design-gate any shared-wrapper/DB change first — Rule 7).
+- **2c.** Divide ALL container settings into L1/L2/L3/L4 groups + explain the groupings. **Complete only when Bean AGREES.**
 
-## ⬇ SUPERSEDED — the D280 5-task build sequence (HISTORICAL; the column MECHANISM shipped `256ec916`, the button seed reverted, multi-button/parity done by Track B). Kept for the must-fix record only.
+### 3 — Is the cascade universal?
+- **3a.** Investigate how the container CSS cascade is scripted. Answer definitively: identical for class-section vs div-section · `sgs/container` vs container-equivalent (`card-grid`/`feature-grid`/`multi-button`) vs composite container-equivalent (`hero`/`trust-bar`/`info-box`)?
+- **3b.** Fix inconsistencies/weaknesses (design-gate shared-mechanism changes).
 
-### Task 1 — Preset-as-seed button styling model (Bean point 1)
-**What:** make the button's inheritStyle preset (primary/secondary/outline) a STARTING POINT, not a lock — picking a preset seeds the block's attrs from that preset's defaults, then every value stays editable; remove the `$is_custom` render gate so the block always paints from attrs.
-**Why:** the WP block-VARIATION pattern (research-confirmed vs block-STYLE); fixes the "typography inert on preset buttons" defect; matches the overridable-default doctrine (H7).
-**Orchestration:** inline main-session build (it rewrites the button styling model — LANDED proof needed). edit.js seeds attrs on inheritStyle change from a PRESET_DEFAULTS map (sourced conceptually from the theme-snapshot preset vars); render.php ungates. /qc-inline + LANDED (set a preset in the editor, override a value, confirm frontend). ~1-1.5h.
-**Acceptance:** picking a preset seeds editable defaults; an overridden value wins; all preset buttons render from attrs; page-8 buttons unchanged. LANDED.
+### 4 — Explain + reconcile
+- **4a.** Explain exactly how the cascade works from the scripts — each layer, how CSS flows + routes — **non-technical, visual, example-based** (Bean understands FIRST, before any comparison).
+- **4b.** THEN compare to the spec + reconcile the differences (amend the spec or flag the code).
 
-### Task 2 — The RE-SCOPED CSS-property column (path A, council-passed)
-**What:** add `block_attributes.css_property` + `css_layer`; seed ONLY the ~50-80 stranding attrs (declared per-block in block.json supports.sgs); resolver reads column-first-else-fallback (today's exact resolver UNCHANGED). Each correction = one commit that empties a real D2 rule.
-**Why:** the naming-mismatch slice of the ~50 D2 should-lift rules (colourBorder etc.); the declarative D258-consistent home.
-**Orchestration:** DESIGN-GATED (Rule 7) — the 5 council must-fixes must be answered in your first design message BEFORE dispatch: (1) state the loud-fail contract per call site (attr_for_layer_property raises on ≥2, attr_for_property first-wins) — the column-first lookup must preserve each; (2) NULL means "not corrected → fallback" (no overload); (3) keep ORDER BY determinism; (4) grep-confirm the ≥5 consumers (drift-validator, fingerprint-builder) aren't broken by column-first; (5) a `check_css_property_reseed.py` diff test for the corrected subset. Then ONE solo coding subagent per correction batch; /qc-council pre-commit; STOP-43 emit-diff; LANDED. Spec 31 FR-31-5.2/5.3 + §4 amendment. ~2-3h.
-**Acceptance:** untouched attrs byte-identical (conformance goldens); the corrected attrs lift out of D2 (the repaired D2-when-D1 gate confirms); parity delta measured; the 5 must-fixes answered.
+### 6 — Layer-by-layer scenario testing (L1→L2→L3→L4, ONE at a time; fix + re-test + LANDED before adding the next)
+Per layer, test varied draft shapes: inner layer NOT named `__inner`; NO inner layer (L2/L3 CSS on the top div, and if a grid the L4 = direct descendants); containers-in-containers (featured-product); unique CSS per layer (every container-equivalent exists BECAUSE it has settings the plain container lacks); recognising L4 grid items with CUSTOM names (hero split = `media`/`content`).
+- Resolve the **content-width vs max-width** issue + other multi-layer migration quirks here.
+- **L4 open bug (proven D282):** the composite grid-area box-CSS is never fed to the (wired) `grid_area` resolver → hero contentPadding "no value extracted". Fix the per-area extraction feed.
+- **@media (responsive):** investigate how `@media` CSS transfers universally, explain it ADHD-simple, and confirm whether it behaves differently in the container context vs all blocks (it should be universal — if not, WHY).
 
-### Task 3 — Capability-roster 3-wave rollout (scalar-styling-lift)
-**What:** enable scalar-styling-lift across the 12 typography-target blocks safely, using the pre-audited plan.
-**Why:** 12 composites declare lift-able *FontSize typography attrs that never lift (the trust-bar gap, generalised).
-**Orchestration:** apply the paste-ready `ATTR_CLASSIFICATION_OVERRIDES` entries (below) + block.json flags, `/sgs-update`, deploy, LANDED. Wave 1 flag-only: **sgs/media, sgs/whatsapp-cta, sgs/mobile-nav**. Wave 2 overrides-then-enable: **counter** (fix `accentStroke` boolean mis-seed first), **card-grid** (`__heading`→`__title`, `__subheading`→`__subtitle`), **option-picker** (`__label`→`__pill` for pill*), **quote** (`__text`→`__attribution`), **product-card** (`__heading`→`__title`, pill/tag drift). Wave 3 EXCLUDE (child-owned/dynamic): **notice-banner text** (icon only), **testimonial-slider name**, **post-grid**. Also fix the 3 pre-flight boolean mis-seeds before any future full-41 rollout: container/cta-section/hero `bgSvgTextShadow` → `{role:behaviour, derived_selector:None}`. Full paste-ready override dict is in the roster-scan agent output (this session). ~45min.
-**Acceptance:** each enabled block's label/title typography lifts to its exposed attr, LANDED at 375/768; no boolean-attr corruption.
-
-### Task 4 — Multi-button reconciliation (H6, Bean-held → release then build)
-**What:** KEEP the shared container; reconcile the block's duplicate `direction*`/`wrap*` against the shared-wrapper `flexDirection*`/`flexWrap` (pick one owner, remove/alias the other); fix the mobile-tier render bug (non-standard 768/769 bands → 767/1023); the column (Task 2) then maps the draft's flex-direction onto the surviving attr.
-**Orchestration:** confirm the render bug on the live element first (STOP-43); design-gate the shared-wrapper touch; ONE solo coding subagent; LANDED at 375. Bean-held — confirm release before building. ~1h.
-**Acceptance:** the hero CTAs stack to column on mobile faithfully via a client-editable attr, not a hardcoded default.
-
-### Task 5 — Parity-instrument draft-tier sampling fix (quick, high-value; do EARLY)
-**What:** `computed-parity.js` samples the DRAFT's base tier, not the `@media` tier applicable at the measured viewport — it flagged the trust-bar text draft=13 vs clone=14 at 1440, but 14 is CORRECT (the draft's `min-width:1024` tier). Fix it to read the draft's effective value at each viewport (375/768/1440) the same way the live clone is read.
-**Why:** a false-negative that understates CSS parity AND would mask a real desktop-tier drop — the measurement instrument must be trustworthy (STOP-49). Parked `P-PARITY-DRAFT-TIER-SAMPLING`.
-**Orchestration:** inline; verify by re-running parity + a Playwright spot-check that the trust-text mismatch clears. ~30min. Do this FIRST so the parity numbers you measure the other tasks against are honest.
-**Acceptance:** the trust-text font-size false mismatch clears; parity re-baseline is the honest number; no new false mismatches.
-
-### Dependency graph
-Task 5 (inline, EARLY — trustworthy measurement first) → Task 1 (inline, LANDED) → Task 2 design-gate (answer the 5 must-fixes) → Task 2 build (commit-per-correction) ∥ Task 3 (roster rollout, independent) → Task 4 (after Bean releases the hold).
-The remaining ~19% CSS gap is precisely enumerated in `.claude/handoff.md` Notes (1440: 43 elements/159 diffs) and maps to Tasks 1-4 + block-CSS-default cleanups. End of session if scope allows: `sgsResponsiveOverrides` (approved, the 9 F-ii breakpoint rules) + the D2 end-gate design.
+### Three carry-forward INSIGHTS (Bean, D282)
+1. **Universal = ALL L3 CSS lands across DIFFERENT examples, not one rule across examples.** The gap fix worked (products/gift cards) but that's one rule. Real test: does EVERY L3 setting land on — different column counts · composites · `sgs/container` in grid mode · a container-equivalent? **Probe `sgs/multi-button` / `sgs/button-group` — its `max-width` isn't landing, a good test.**
+2. **Card height-matching is a DIAGNOSTIC, not a success condition.** Product cards aren't equal-height. A `sgs/container` default of `align-items:stretch` might be wrong for the general block — meaning the correct routing is to the `card-grid` container-equivalent, not the plain container. Use the mismatch to find the TRUE routing; don't force stretch.
+3. **Testimonial slider exposed a layer-model flaw.** The shadow is around the WHOLE grid area, not each review card. The area OUTSIDE the cards should NOT be its own nesting layer — each card is a GRID ITEM. Only gap + padding legitimately style the outside-the-card area; background/shadow belong INSIDE the cards (L3 if parent-dictated/uniform, or L4 per grid item). This reframes composite grid-item background routing.
 
 ## Skills to Invoke
 | Skill | When |
 |-------|------|
-| /autopilot | FIRST — SessionStart hook injects it; live skill routing + ADHD support |
-| /brainstorming | ALWAYS — the column must-fixes + preset-as-seed + multi-button are design decisions |
-| /gap-analysis | ALWAYS — grade outputs before delivery |
-| /lifecycle | ALWAYS — before any skill/agent/pipeline change |
-| /research | ALWAYS — auto-routes if a build needs external reference |
-| /strategic-plan | ALWAYS — order the build before writing code |
-| /adversarial-council | pre-build pre-mortem on any further shared-mechanism/DB-schema change |
-| /qc-council | fix-shape validation + pre-commit review on converter/block/theme (blub 255) |
-| /systematic-debugging | root-cause gate per issue |
-| /dispatching-parallel-agents /subagent-driven-development | read-only fan-outs (STOP-39: coding = solo) |
-| /sgs-clone /sgs-db /wp-blocks | LANDED runs + DB ground truth |
+| /autopilot | FIRST (SessionStart hook) — live routing + ADHD support |
+| /brainstorming | ALWAYS — the L1-L4 grouping (2c) + the layer-model reframe (insight 3) are design decisions |
+| /systematic-debugging | root-cause each layer's routing before any fix |
+| /gap-analysis | grade outputs before delivery |
+| /lifecycle | before any skill/agent/pipeline change |
+| /strategic-plan | order the layer-by-layer build |
+| /dispatching-parallel-agents | read-only per-layer/per-block investigators (fixes = SOLO, STOP-39) |
+| /qc-council | pre-commit on any converter/wrapper/shared change (blub 255) |
+| /sgs-db /wp-blocks /sgs-clone | DB ground truth + LANDED runs |
 | /verify-loop /handoff /capture-lesson | 2-attestation / session close |
 
-## Tool bindings (MCP servers & tools)
-| Tool | What for |
-|------|----------|
-| Playwright / chrome-devtools | LANDED proof on page 8 — computed values by CONTENT at 375/768/1440 |
-| `python ~/.claude/hooks/wp-blocks.py dump` + `sgs-db.py sql` | schema/DB ground truth BEFORE any missing-X claim |
-| `node plugins/sgs-blocks/scripts/parity/computed-parity.js` | the honest parity instrument (Stage 11.6) |
-| `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --skip-build --allow-dirty` | plugin/theme deploy (render.php changes need this BEFORE measuring — STOP-21). PowerShell for npm (bash node shim broken). |
+## Tool bindings
+| Tool | For |
+|------|-----|
+| Playwright / chrome-devtools | LANDED computed-style by CONTENT at 375/768/1440 on page 8 |
+| `python ~/.claude/hooks/wp-blocks.py schema <slug>` + `sgs-db.py sql` | container attrs/supports/roster (never hardcode counts) |
+| `node plugins/sgs-blocks/scripts/parity/computed-parity.js` | honest parity (Stage 11.6; D2 not deployed) |
+| PowerShell `npm run build` → `build-deploy.py --target sandybrown --skip-build --allow-dirty` | deploy (bump block version on CSS change — STOP-57) |
 
 ## Agents to Delegate To
 | Agent | When |
 |-------|------|
-| Explore / general-purpose (read-only, parallel OK) | tracers, pre-commit raters, roster/consumer audits |
+| Explore / general-purpose (read-only, parallel OK) | per-layer cascade tracers, per-block audits |
 | solo general-purpose coding subagent (foreground) | agreed fixes — ONE at a time, named files, spawn-no-agents |
-| wp-sgs-developer | block-side work (preset-as-seed, block.json declarations) |
+| wp-sgs-developer | block-side work (settings additions, wrapper changes) |
+| design-reviewer | visual QA of a fixed layer at breakpoints |
 
 ## First action
-Complete the READING GATE + pre-flight ritual (answers in your first message), then read `parking.md → P-PAGE8-QC-BATCH-9` (the 9-defect register) and re-clone page 8 for a fresh diagnosis baseline, then dispatch the parallel read-only root-cause investigators. Smallest first action: `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` (under 1 minute — D-ceiling was D281 at write time; verify before any new D).
+Complete the READING GATE + pre-flight ritual (answers in your first message), then start Step 1a — enumerate `sgs/container` + the shared wrapper's full setting/CSS surface (`/sgs-db block sgs/container` + read `class-sgs-container-wrapper.php` + `ContainerWrapperControls.js` in full). Smallest first action: `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` (verify D-ceiling D282 before any new D). Go SLOW — Bean agrees each step before the next.
 
 ## Methodology guardrails (do not skip)
-- Tests from the CANONICAL cwd `plugins/sgs-blocks/scripts`: `python -m pytest orchestrator/test_css_router.py converter/tests cheat-gate/tests tests/test_converter_conformance.py ledger/tests -q --import-mode=importlib` (822 baseline: 806 + 16 this session) + gates `cheat-gate/run.py --check` + `converter/gates/{no_slug_literal,import_ban,check_raw_sqlite}.py` all exit 0.
-- **Deploy before measure (STOP-21):** render.php/theme/block changes require build-deploy BEFORE any live check. Build via PowerShell (`npm run build`), deploy `build-deploy.py`.
-- **/qc-council (or 2-rater) before every commit** touching converter/block/theme (blub 255) — then fact-check the council (STOP-15/45).
-- **Prove the premise on the real node (STOP-43)** before + after every converter change; emit-diff the FULL draft per fix.
-- **Visual-diff gate:** a block style.css/render visual change needs `reports/visual-diff/<block>-YYYY-MM-DD.md` (verdict: PASS + first_paint_capture_passed: true) or the commit hook blocks.
-- Every A2 re-baseline must SHRINK; parity content 96 / CSS 79-80-81 must not regress.
-- Branch main; verify D-ceiling (D280); commits path-scoped (PowerShell piped `git commit -F -` or explicit paths; add `[batch-ok:<reason>]` only for a verified session-doc set); push after every green fix.
-- **Design gate:** any shared-wrapper / DB-schema / converter-mechanism change = pre-build design-gate + Bean approval (Rule 7). The column is council-passed on the RESHAPE; answer its 5 must-fixes before dispatch.
+- Tests from cwd `plugins/sgs-blocks/scripts`: `python -m pytest orchestrator/test_css_router.py converter/tests cheat-gate/tests tests/test_converter_conformance.py ledger/tests db-consistency/tests -q --import-mode=importlib` (872 baseline) + gates (cheat-gate/run.py --check + converter/gates/*.py) exit 0.
+- **Deploy before measure (STOP-21) + bump block version on CSS change (STOP-57).** Build via PowerShell.
+- **/qc-council (or 2-rater) before every commit** touching converter/wrapper/shared-block (blub 255) — then fact-check the council (STOP-15/45).
+- **Prove the premise on the real node (STOP-43)** before + after every converter change.
+- **Visual-diff gate:** a block style.css/render visual change needs `reports/visual-diff/<block>-YYYY-MM-DD.md` (verdict PASS + first_paint_capture_passed:true); a block.json-META-only change uses `--no-verify` (STOP-59).
+- Every fix LANDED on page 8 (computed-by-content + Bean eye); parity content 96 / CSS 70-71-71 must not regress; D2 stays NOT-deployed.
+- Branch main; verify D-ceiling (D282); commits path-scoped; push after every green fix.

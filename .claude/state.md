@@ -2,14 +2,14 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-last_updated: 2026-07-05-D280
+last_updated: 2026-07-06-D282
 note: "LEAN snapshot. Full history -> memory/state-archive.md. This file holds ONLY the current pointer; detail lives in handoff.md + next-session-prompt.md (the SoT). Do NOT restate D-numbers / counts / commit hashes here - they drift. <=24576 bytes."
 ---
 
 # small-giants-wp — State Snapshot (lean)
 
 ## Human Summary
-**THE 6-RESIDUAL FACT-FIRST SESSION IS DONE (D280, 2026-07-05).** Each residual was treated as a HYPOTHESIS (8 parallel read-only tracers, every claim main-session traced): H6 multi-button was REFUTED, H3/H5 were partially wrong in mechanism, the rest confirmed. 5 fixes LANDED + pushed (`db116673`..`cbc99a35`): CG-4 maxWidth type bug (420/540/620 caps hold), heading levels (exactly one h1 restored, universal tag-identity role), the D2-when-D1 cheat gate (was a silent no-op — re-pointed + plant-tested), trust-bar label lift (13px, +3 rater catches), and the button/quote block build (per-device width, hover underline, quote inheritable wrapper typography + HC2 amendment). Parity **77-78-80 → 79-80-81 (fresh-clone honest)**, content 96 held. **Point 5 (Bean's CSS-routing rework) was designed + 5-persona `/adversarial-council`'d → GO on the declarative-column mechanism, NO-GO on the mass-seed → RESHAPED to seed-only-the-~50-80-corrections + column-first-else-fallback (Bean picked path A).** Specs reconciled (Spec 31 FR-31-2.9 tag-identity + button spec D280 update); a fresh clone + independent Playwright check confirmed the parity instrument is honest and mapped the remaining ~19% CSS gap exactly to the queued workstreams; one instrument imprecision parked (draft-tier sampling, `P-PARITY-DRAFT-TIER-SAMPLING`). **NEXT = build the re-scoped column + the 3-wave capability-roster rollout + preset-as-seed (button VARIATION model) + the remaining D2 workstreams.** See next-session-prompt.md.
+**THE PAGE-8 QC BATCH IS DONE (D282, 2026-07-06).** D2 is NO LONGER DEPLOYED into the page (debug log only, `SGS_EMIT_D2_PAGE=1` restores) — so the live page shows the HONEST gap set (parity 80/81/81 D2-masked → 69/70/70 honest), which surfaced Bean's visible defects. Diagnosis-first (3 parallel read-only investigators, every root cause main-session-verified vs code+DB+live DOM) fixed 3: **#1 container gaps** — the L3 gap-gate (`root_supports.py`) was consuming `gap` into a dead `style.spacing.blockGap` leaf; fixed to check `blockGap` specifically, so gap reaches the wrapper-rendered `gap` attr (grids now show 16/60/14px; parity 70/71/71; Phase-4 red→green test + 2 partition tests corrected); **#4 hero image** (hardcoded split padding moved off the outer grid → image flush); **#9 testimonial** (hardcoded cream slide bg → transparent). Also **de-duped the hero** (splitGap was the ONLY true attr dupe on a 30-block audit — removed + its hardcoded 24px gap default) and **cleaned dead schema** (customWidth orphan off 27 composites +53 DB rows; dead blockGap off accordion/product-faq). Recurring cheat = D228 hardcoded defaults. Proven-open: **L4 per-area extraction** (composite grid-area box-CSS not fed to the wired area resolver → hero contentPadding "no value extracted") + **L3 universal reach** (Bean: universal = ALL L3 landing across examples, not one rule). **NEXT = the container L1-L4 cascade deep-dive (Bean's slow understand-first agenda: map → group L1-L4 → prove universal → explain simply → layer-by-layer test).** See next-session-prompt.md.
 
 ## State Snapshot
 
@@ -19,11 +19,11 @@ note: "LEAN snapshot. Full history -> memory/state-archive.md. This file holds O
 - **Framework counts:** query `/sgs-db` or `/wp-blocks` — the DB is authoritative; counts are NOT maintained in prose.
 - **Commit discipline:** commit by EXPLICIT PATH, never `git add -A`. `main` is the source of truth.
 
-## ACTIVE WORKSTREAM — Cloning pipeline: empty D2 (the STOP-52 goal) via ~5 workstreams
-- **SoT for current status:** `.claude/handoff.md` (top entry, D280) + `.claude/next-session-prompt.md` (the build orchestration plan with the MANDATORY READING GATE). READ THOSE.
-- **One-line where-we-are:** 5 of the 6 residuals cleared; H6 multi-button queued (investigate-first, shared-container KEPT). D2 (129 rules: ~50 should-lift / 42 genuine-gap / 36 chrome / 1 convention) empties via ~5 workstreams — the point-5 declarative CSS-routing column (RE-SCOPED, design-gated + council-passed, path A) fixes the naming-mismatch slice; the H1 router-blindness patches (shorthand/hover/native-supports) + the 42 genuine-gap attrs + `sgsResponsiveOverrides` (approved) + chrome-exclusion + the end-gate are the rest.
-- **Queued builds:** re-scoped CSS column (`plans/2026-07-05-css-property-column-design.md`), capability-roster 3-wave rollout (paste-ready in the next-session-prompt), preset-as-seed button model (Bean point 1), multi-button reconciliation (H6).
-- **Canonical spec:** `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — read §2 FIRST; §13 = binding rules/FRs. Design gate: `plans/2026-07-05-css-property-column-design.md`.
+## ACTIVE WORKSTREAM — Container blocks + the L1-L4 cloning cascade (deep-dive)
+- **SoT for current status:** `.claude/handoff.md` (top entry, D282) + `.claude/next-session-prompt.md` (the container L1-L4 agenda + MANDATORY READING GATE + STOP catalogue). READ THOSE.
+- **One-line where-we-are:** D2 no longer deployed (honest page, parity 70/71/71). The next front is a slow, understand-first study of the container CSS cascade: map `sgs/container` + shared wrapper's full setting/CSS surface → group all settings L1-L4 (Bean agrees) → prove whether the cascade is UNIVERSAL across class-section/div-section, container/container-equivalent/composite → explain non-technically THEN reconcile with the spec → test varied draft shapes per layer, ONE layer fully fixed + LANDED before the next.
+- **Proven-open converter gaps:** L4 per-area extraction (composite grid-area box-CSS not fed to the wired `grid_area` resolver — hero contentPadding "no value extracted"); L3 universal reach (probe `sgs/multi-button` max-width). Also parked: P-DRAFT-CSSVAR-COLOUR-RESOLUTION, P-MULTIBUTTON-768-WRAP.
+- **Canonical spec:** `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — read §2 (layer model) FIRST; §3.A + §13.4 = CSS routing. Also Spec 29 (container roster) + WRAPPER-CSS-ROUTING-DESIGN-GATE (DEC-1..5).
 
 ## DONE / ARCHIVED — theme + WooCommerce layer (Spec 30, not an active thread)
 - Spec 30 COMPLETE + MERGED (D220). Deferred roadmap items live in parking.md.

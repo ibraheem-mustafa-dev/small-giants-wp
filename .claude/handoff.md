@@ -5,6 +5,55 @@ thread: single thread (cloning pipeline)
 session_date: 2026-07-06
 ---
 
+# Session Handoff — 2026-07-06b (D282 — QC batch: L3 gap-gate fix [closes #1] + #4/#9 hardcoded-default removals + hero splitGap de-dupe + dead-schema cleanup; D2 no longer deployed)
+
+## Completed This Session
+1. **D2 NO LONGER DEPLOYED into the page** (`6a83281c`, STOP-52) — it's a debug log only (still written to pipeline-state; `SGS_EMIT_D2_PAGE=1` restores). Honest parity dropped 80/81/81 (D2-masked) → 69/70/70, exposing the true gap set — which surfaced Bean's QC defects.
+2. **Diagnosis-first QC batch** (systematic-debugging + 3 parallel read-only investigators, each fact-checked vs code+DB+live DOM). Fixed #1/#4/#9.
+3. **L3 gap-gate fix** (`82c3182a`) — `root_supports.py:356` gate collapsed to "any spacing feature" for the gap rule; `sgs/container` has no blockGap → gap consumed into a dead `style.spacing.blockGap` leaf → grids flush. Fixed to check `blockGap` specifically. **Closes QC #1** (grids now show gaps: products 16/brand 60/feature-grid 14px LANDED; parity 69/70/70 → 70/71/71). Phase-4 red→green test + 2 partition tests corrected (they'd codified the bug).
+4. **QC #4 hero image** (`bb0d1a4a`) — hardcoded `.sgs-hero--split{padding}` moved to `.sgs-hero__content`; image flush. **QC #9 testimonial** — hardcoded `__slide--card{background:surface}` (=cream) → transparent.
+5. **Hero splitGap de-dupe** (`2f4a1e4a`) — 30-block audit found splitGap the ONLY true attr dupe on the roster; removed it + its control, split grid reads shared `gap`; removed the hardcoded 24px gap default.
+6. **Dead-schema cleanup** (`aff01e19`) — customWidth orphan stripped from 27 composites (+53 DB rows pruned); dead blockGap removed from accordion/product-faq. P-CONTAINER-DEAD-SCHEMA archived.
+7. **Root causes proven (open):** L4 per-area extraction ("no value extracted" for hero contentPadding — composite grid-area box-CSS not fed to the wired area resolver); L3 universal reach (Bean: universal = all L3 landing across examples).
+
+## Current State
+- **Branch:** main at latest (7f718d90 pre-doc-commit; this doc set follows). Commits: `6a83281c` `82c3182a` `bb0d1a4a` `2f4a1e4a` `aff01e19` `47243849`.
+- **Tests:** 872 canonical pass, 1 skipped. Gates: cheat-gate 33 baselined 0 NEW · no-slug-literal · import-ban · check-raw-sqlite · F6 (8 checks) green.
+- **Live:** page 8 re-cloned; **D2 NOT deployed** (honest). Parity content 96 / CSS 70-71-71 (375/768/1440).
+- **Uncommitted:** pre-existing only + this doc set.
+
+## Known Issues / Blockers
+- **L4 per-area extraction unwired** for composite grid-areas (hero contentPadding "no value extracted") — the next-session container deep-dive owns it.
+- **L3 universal reach** — one rule working ≠ universal; test all L3 across examples (probe `sgs/multi-button` max-width).
+- Open converter gaps: P-DRAFT-CSSVAR-COLOUR-RESOLUTION (button ghost), P-MULTIBUTTON-768-WRAP.
+
+## Next Priorities (in order)
+1. The container L1-L4 cascade deep-dive (next-session-prompt.md — Bean's slow, understand-first agenda: map → group L1-L4 → prove universal → explain → layer-by-layer test).
+2. L4 per-area extraction feed (hero contentPadding + all composite grid-areas).
+3. Testimonial layer-model reframe (grid-item backgrounds, not an outside-the-card layer).
+
+## Files Modified
+| File path | What changed |
+|---|---|
+| plugins/sgs-blocks/scripts/orchestrator/upload_and_patch.py | D2 not deployed (debug log only) |
+| plugins/sgs-blocks/scripts/converter/services/root_supports.py | L3 gap-gate: check sub-feature specifically |
+| plugins/sgs-blocks/scripts/converter/tests/{test_root_supports,test_css_pass_partition}.py | L3 red→green test + 2 corrected |
+| plugins/sgs-blocks/scripts/tests/fixtures/conformance/goldens/*.json | 5 regenerated (gap→gap attr) |
+| plugins/sgs-blocks/src/blocks/hero/{style.css,render.php,edit.js,block.json} | #4 padding + splitGap de-dupe + gap-default removal |
+| plugins/sgs-blocks/src/blocks/testimonial-slider/style.css | #9 transparent slide bg |
+| plugins/sgs-blocks/src/blocks/*/block.json (27) | customWidth orphan stripped; accordion/product-faq blockGap removed |
+| .claude/{decisions,parking,handoff,next-session-prompt,state}.md + memory/parking-archive.md | doc reconciliation |
+
+## Notes for Next Session
+- D2 is a debug log now (`SGS_EMIT_D2_PAGE=1` restores it for a one-off before/after). The honest page is the point.
+- The recurring cheat this session was D228 hardcoded defaults (hero padding + gap, testimonial bg) — expect more lurking in composite style.css.
+- STOP-55..59 added (test-codifies-bug, hidden-default-behind-override, CDN-stale-same-version, Stage-1-no-prune, visual-gate-no-verify-for-meta).
+
+## Next Session Prompt
+`.claude/next-session-prompt.md` — REWRITTEN to the container L1-L4 cascade deep-dive (Bean's slow understand-first agenda) + the 3 carry-forward insights. STOP catalogue carried forward + extended (STOP-55..59). Read via the autopilot SessionStart hook.
+
+---
+
 # Session Handoff — 2026-07-06 (D281 — css_property column MECHANISM shipped, button-colour SEED reverted, Track-B 2 fixes; Bean opened a 9-defect page-8 QC batch)
 
 ## Completed This Session
