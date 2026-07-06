@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/testimonial-slider",
-	"version": "0.3.1",
+	"version": "0.3.4",
 	"title": "SGS Testimonial Slider",
 	"category": "sgs-content",
 	"description": "Carousel of testimonials with CSS scroll-snap and optional autoplay.",
@@ -51,6 +51,9 @@
 			"style": true
 		}
 	},
+	"providesContext": {
+		"sgs/testimonialVariant": "cardStyle"
+	},
 	"selectors": {
 		"root": ".wp-block-sgs-testimonial-slider",
 		"typography": ".sgs-testimonial-slider__quote"
@@ -93,7 +96,7 @@
 		},
 		"cardStyle": {
 			"type": "string",
-			"default": "card"
+			"default": ""
 		},
 		"nameFontSize": {
 			"type": "string"
@@ -254,7 +257,7 @@
 		"attributes": {
 			"showDots": true,
 			"showArrows": true,
-			"cardStyle": "card"
+			"cardStyle": ""
 		},
 		"innerBlocks": [
 			{

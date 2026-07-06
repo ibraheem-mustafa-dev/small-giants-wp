@@ -1,8 +1,12 @@
 /* ===== SGS Testimonial Slider — Editor Only ===== */
 
-/* In editor, prevent scroll-snap so all slides are visible */
+/* In editor, show all slides (no carousel clipping) so the InnerBlocks
+   appender + wrapped slide rows are never cut off. The frontend track uses
+   `overflow:hidden` (both axes) as the transform-carousel viewport; the editor
+   renders a static flex-wrap grid via useInnerBlocksProps (view.js does not run
+   in the editor), so it must fully un-clip. */
 .sgs-testimonial-slider__track {
-	overflow-x: visible;
+	overflow: visible;
 	scroll-snap-type: none;
 	flex-wrap: wrap;
 }

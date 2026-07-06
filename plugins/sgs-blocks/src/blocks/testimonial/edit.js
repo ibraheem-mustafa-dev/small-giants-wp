@@ -37,6 +37,16 @@ import ContainerWrapperControls from '../container/components/ContainerWrapperCo
  */
 const VARIANTS = [
 	{
+		value: '',
+		label: __( 'Inherit from slider', 'sgs-blocks' ),
+		thumb: (
+			<svg viewBox="0 0 48 32" aria-hidden="true">
+				<rect x="2" y="2" width="44" height="28" rx="3" fill="#fff" stroke="#cbd5d5" strokeDasharray="3 2" />
+				<text x="24" y="20" fontSize="9" textAnchor="middle" fill="#778">↑</text>
+			</svg>
+		),
+	},
+	{
 		value: 'classic-card',
 		label: __( 'Classic card', 'sgs-blocks' ),
 		thumb: (
@@ -128,7 +138,7 @@ const VARIANTS = [
 	},
 ];
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, context } ) {
 	const {
 		variant,
 		quote,
@@ -171,6 +181,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoverShadow,
 	} = attributes;
 
+	// Effective variant = this card's own explicit choice, else the parent
+	// slider's default (received via block context), else the historical
+	// fallback. Mirrors the resolution logic in render.php exactly so the
+	// editor preview matches the frontend. The raw `variant` attribute (which
+	// may be '' = "Inherit from slider") is used only for the picker's
+	// selected-radio state — everything that affects LAYOUT uses the
+	// resolved effective value.
+	const inheritedVariant = context?.[ 'sgs/testimonialVariant' ] || '';
+	const effectiveVariant = variant || inheritedVariant || 'classic-card';
+
 	// Switching variant: seed a sensible default for that variant's discriminating
 	// field only when it is still empty. Never clobber existing operator content.
 	const switchVariant = ( next ) => {
@@ -189,7 +209,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( patch );
 	};
 
-	const className = [ 'sgs-testimonial', `sgs-testimonial--${ variant }` ]
+	const className = [ 'sgs-testimonial', `sgs-testimonial--${ effectiveVariant }` ]
 		.filter( Boolean )
 		.join( ' ' );
 
@@ -230,16 +250,16 @@ export default function Edit( { attributes, setAttributes } ) {
 	const ratingStyle = { color: ratingColour || undefined };
 
 	const showSummary =
-		variant === 'pull-quote-editorial' || variant === 'case-study-media';
+		effectiveVariant === 'pull-quote-editorial' || effectiveVariant === 'case-study-media';
 	const showAvatar =
-		variant === 'classic-card' ||
-		variant === 'avatar-spotlight' ||
-		variant === 'corporate-logo';
+		effectiveVariant === 'classic-card' ||
+		effectiveVariant === 'avatar-spotlight' ||
+		effectiveVariant === 'corporate-logo';
 	const showLogo =
-		variant === 'corporate-logo' || variant === 'case-study-media';
-	const showWork = variant === 'case-study-media';
+		effectiveVariant === 'corporate-logo' || effectiveVariant === 'case-study-media';
+	const showWork = effectiveVariant === 'case-study-media';
 	const showStarsControl =
-		variant === 'classic-card' || variant === 'rating-led';
+		effectiveVariant === 'classic-card' || effectiveVariant === 'rating-led';
 
 	return (
 		<>
@@ -321,7 +341,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				{ /* ── Rating (gated by showRating) ── */ }
-				{ ( variant === 'rating-led' || variant === 'classic-card' ) && (
+				{ ( effectiveVariant === 'rating-led' || effectiveVariant === 'classic-card' ) && (
 					<PanelBody title={ __( 'Rating', 'sgs-blocks' ) }>
 						<ToggleControl
 							label={ __( 'Show a rating', 'sgs-blocks' ) }
@@ -335,7 +355,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 							__nextHasNoMarginBottom
 						/>
-						{ showRating && variant === 'rating-led' && (
+						{ showRating && effectiveVariant === 'rating-led' && (
 							<SelectControl
 								label={ __( 'Rating type', 'sgs-blocks' ) }
 								value={ ratingType }
@@ -357,7 +377,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						{ showRating &&
 							showStarsControl &&
-							( variant === 'classic-card' ||
+							( effectiveVariant === 'classic-card' ||
 								ratingType === 'stars' ) && (
 								<RangeControl
 									label={ __( 'Stars', 'sgs-blocks' ) }
@@ -372,7 +392,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								/>
 							) }
 						{ showRating &&
-							variant === 'rating-led' &&
+							effectiveVariant === 'rating-led' &&
 							ratingType === 'scale' && (
 								<>
 									<RangeControl
@@ -403,7 +423,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									/>
 								</>
 							) }
-						{ showRating && variant === 'rating-led' && (
+						{ showRating && effectiveVariant === 'rating-led' && (
 							<>
 								<ToggleControl
 									label={ __(
@@ -834,7 +854,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						className="sgs-testimonial__rating"
 						style={ ratingStyle }
 					>
-						{ variant === 'rating-led' && ratingType === 'scale'
+						{ effectiveVariant === 'rating-led' && ratingType === 'scale'
 							? `${ ratingScale || 0 } / ${ ratingScaleMax || '10' }`
 							: '★'.repeat( Math.floor( ratingStars || 0 ) ) ||
 							  __( '(set a rating)', 'sgs-blocks' ) }

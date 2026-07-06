@@ -40,11 +40,17 @@ const LAYOUT_OPTIONS = [
 	{ label: __( 'Split (image + slider)', 'sgs-blocks' ), value: 'split' },
 ];
 
+// Options mirror the 7 sgs/testimonial variants (block.json supports.sgs.variants),
+// plus a leading "no default" option so each card can pick its own variant.
 const STYLE_OPTIONS = [
-	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
-	{ label: __( 'Minimal', 'sgs-blocks' ), value: 'minimal' },
-	{ label: __( 'Featured', 'sgs-blocks' ), value: 'featured' },
-	{ label: __( 'Accent', 'sgs-blocks' ), value: 'accent' },
+	{ label: __( 'Per-card (no default)', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Classic card', 'sgs-blocks' ), value: 'classic-card' },
+	{ label: __( 'Editorial pull-quote', 'sgs-blocks' ), value: 'pull-quote-editorial' },
+	{ label: __( 'Rating-led', 'sgs-blocks' ), value: 'rating-led' },
+	{ label: __( 'Avatar spotlight', 'sgs-blocks' ), value: 'avatar-spotlight' },
+	{ label: __( 'Corporate logo', 'sgs-blocks' ), value: 'corporate-logo' },
+	{ label: __( 'Case study', 'sgs-blocks' ), value: 'case-study-media' },
+	{ label: __( 'Minimal quote', 'sgs-blocks' ), value: 'minimal-quote' },
 ];
 
 const SLIDES_VISIBLE_OPTIONS = [
@@ -81,7 +87,6 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const className = [
 		'sgs-testimonial-slider',
-		`sgs-testimonial-slider--${ cardStyle }`,
 		isSplit ? 'sgs-testimonial-slider--split' : '',
 	].filter( Boolean ).join( ' ' );
 
@@ -166,7 +171,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				<PanelBody title={ __( 'Slider Settings', 'sgs-blocks' ) }>
 					<SelectControl
-						label={ __( 'Card style', 'sgs-blocks' ) }
+						label={ __( 'Default card style', 'sgs-blocks' ) }
+						help={ __( 'Sets the layout variant every card in this slider uses unless it picks its own. Leave as "Per-card" to let each testimonial choose independently.', 'sgs-blocks' ) }
 						value={ cardStyle }
 						options={ STYLE_OPTIONS }
 						onChange={ ( val ) => setAttributes( { cardStyle: val } ) }

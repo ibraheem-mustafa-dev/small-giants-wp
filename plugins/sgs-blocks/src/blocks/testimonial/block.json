@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/testimonial",
-	"version": "0.3.3",
+	"version": "0.3.4",
 	"title": "SGS Testimonial",
 	"category": "sgs-content",
 	"description": "Single testimonial with 7 layout variants — quote, attribution, optional avatar, organisation logo, work media, and a fully optional rating.",
@@ -78,6 +78,9 @@
 			"scalarStylingLift": true
 		}
 	},
+	"usesContext": [
+		"sgs/testimonialVariant"
+	],
 	"selectors": {
 		"root": ".sgs-testimonial",
 		"typography": ".sgs-testimonial__quote"
@@ -85,8 +88,9 @@
 	"attributes": {
 		"variant": {
 			"type": "string",
-			"default": "classic-card",
+			"default": "",
 			"enum": [
+				"",
 				"classic-card",
 				"pull-quote-editorial",
 				"rating-led",

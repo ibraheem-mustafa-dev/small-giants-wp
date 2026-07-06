@@ -33,7 +33,17 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 // ── Variant + content fields (typed, all optional) ──────────────────────────
-$variant        = $attributes['variant'] ?? 'classic-card';
+// Effective variant resolution (context inheritance from sgs/testimonial-slider):
+// 1. This block's own `variant` attribute, when explicitly set (non-empty) —
+// an operator override on an individual card always wins.
+// 2. Otherwise, the parent slider's default variant, passed via block context
+// as `sgs/testimonialVariant` (declared `usesContext` above; the slider
+// declares `providesContext: { "sgs/testimonialVariant": "cardStyle" }`).
+// 3. Otherwise (no own value, no context — e.g. a standalone sgs/testimonial
+// with nothing set), fall back to the historical default 'classic-card'.
+$own_variant    = trim( (string) ( $attributes['variant'] ?? '' ) );
+$ctx_variant    = trim( (string) ( $block->context['sgs/testimonialVariant'] ?? '' ) );
+$variant        = '' !== $own_variant ? $own_variant : ( '' !== $ctx_variant ? $ctx_variant : 'classic-card' );
 $quote          = trim( (string) ( $attributes['quote'] ?? '' ) );
 $summary_phrase = trim( (string) ( $attributes['summaryPhrase'] ?? '' ) );
 $reviewer_name  = trim( (string) ( $attributes['reviewerName'] ?? '' ) );
@@ -60,8 +70,8 @@ if ( empty( $avatar_media['url'] ) && ! empty( $legacy_avatar['url'] ) ) {
 }
 
 // ── Rating fields (fully optional — gated by showRating) ────────────────────
-$show_rating      = ! empty( $attributes['showRating'] );
-$rating_type      = $attributes['ratingType'] ?? 'stars';
+$show_rating = ! empty( $attributes['showRating'] );
+$rating_type = $attributes['ratingType'] ?? 'stars';
 // Clamp the rating values to sane ranges so a tampered/garbage attr can never
 // render an out-of-range star loop or an absurd numeric score.
 $rating_stars     = isset( $attributes['ratingStars'] ) ? (float) $attributes['ratingStars'] : 0;

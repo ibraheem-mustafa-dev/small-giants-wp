@@ -30,14 +30,17 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 // ── Attribute extraction ───────────────────────────────────────────────────
-$layout              = $attributes['layout'] ?? 'full';
-$side_image          = $attributes['sideImage'] ?? null;
-$autoplay            = $attributes['autoplay'] ?? false;
-$autoplay_speed      = $attributes['autoplaySpeed'] ?? 5000;
-$show_dots           = $attributes['showDots'] ?? true;
-$show_arrows         = $attributes['showArrows'] ?? true;
-$slides_visible      = $attributes['slidesVisible'] ?? 1;
-$card_style          = $attributes['cardStyle'] ?? 'card';
+$layout         = $attributes['layout'] ?? 'full';
+$side_image     = $attributes['sideImage'] ?? null;
+$autoplay       = $attributes['autoplay'] ?? false;
+$autoplay_speed = $attributes['autoplaySpeed'] ?? 5000;
+$show_dots      = $attributes['showDots'] ?? true;
+$show_arrows    = $attributes['showArrows'] ?? true;
+$slides_visible = $attributes['slidesVisible'] ?? 1;
+// NOTE: cardStyle is no longer read here — the slide wrapper is positioning-only
+// (Bean-locked card-in-a-card de-style). It flows to child sgs/testimonial blocks
+// as `sgs/testimonialVariant` via block.json `providesContext`, resolved in
+// sgs/testimonial's own render.php ($block->context), not by this parent.
 $name_font_size      = $attributes['nameFontSize'] ?? '';
 $hover_bg_colour     = $attributes['hoverBackgroundColour'] ?? '';
 $hover_text_colour   = $attributes['hoverTextColour'] ?? '';
@@ -54,7 +57,6 @@ $total_testimonials = count( $inner_blocks );
 $is_split = 'split' === $layout;
 $classes  = array(
 	'sgs-testimonial-slider',
-	'sgs-testimonial-slider--' . esc_attr( $card_style ),
 );
 if ( $is_split ) {
 	$classes[] = 'sgs-testimonial-slider--split';
@@ -120,9 +122,8 @@ foreach ( $inner_blocks as $inner_block ) {
 	$slide_id    = esc_attr( $slider_prefix ) . '-slide-' . $slide_index;
 
 	$slides_html .= sprintf(
-		'<div id="%s" class="sgs-testimonial-slider__slide sgs-testimonial-slider__slide--%s" role="group" aria-roledescription="slide" aria-label="%s">%s</div>',
+		'<div id="%s" class="sgs-testimonial-slider__slide" role="group" aria-roledescription="slide" aria-label="%s">%s</div>',
 		$slide_id,
-		esc_attr( $card_style ),
 		$slide_label,
 		$child_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rendered by WP block API.
 	);

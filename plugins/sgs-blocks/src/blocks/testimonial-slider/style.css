@@ -4,179 +4,50 @@
 	position: relative;
 }
 
-/* ===== Track — CSS scroll-snap ===== */
+/* ===== Track — transform-based carousel viewport ===== */
 /*
  * flex:1 + min-width:0 make the track fill all space between the two arrow
  * buttons when __stage is a flex row. Without min-width:0 a flex child can
  * overflow its container when content is wider than the available space.
  *
- * The gap value MUST match the fallback used in the slide flex-basis calc
- * below. Both use --wp--preset--spacing--30 with a 16px fallback so that
- * the slide widths exactly fill the track regardless of whether the WP
- * spacing preset is defined on the site.
+ * overflow:hidden makes the track the clipping viewport for the transformed
+ * .__list below — the list is wider than the track once it holds real +
+ * cloned slides, and only the track's own box is ever visible.
+ *
+ * touch-action:pan-y lets view.js handle horizontal swipe (pointer events)
+ * while still allowing native vertical page scroll on touch devices.
  */
 .sgs-testimonial-slider__track {
 	flex: 1;
 	min-width: 0;
-	display: flex;
-	gap: var(--wp--preset--spacing--30, 16px);
-	overflow-x: auto;
-	scroll-snap-type: x mandatory;
-	scroll-behavior: smooth;
-	-webkit-overflow-scrolling: touch;
-	scrollbar-width: none; /* Firefox */
-	padding-bottom: var(--wp--preset--spacing--20);
+	overflow: hidden;
+	touch-action: pan-y;
 }
 
-.sgs-testimonial-slider__track::-webkit-scrollbar {
-	display: none; /* Chrome, Safari */
+/* ===== List — JS-built wrapper, holds real + cloned slides ===== */
+/*
+ * Built client-side by view.js (real slides moved in, clones appended/
+ * prepended for the infinite loop). Its own box defaults to the track's
+ * width (a normal block box does not shrink-to-fit), so the slide
+ * flex-basis calc below still resolves against the SAME width as before —
+ * flex-shrink:0 on slides means the overflow simply extends past the list's
+ * box, where the track's overflow:hidden clips it. transform moves this
+ * whole row; the gap value MUST match the fallback used in the slide
+ * flex-basis calc so slide widths exactly fill the track.
+ */
+.sgs-testimonial-slider__list {
+	display: flex;
+	gap: var(--wp--preset--spacing--30, 16px);
+	transition: transform var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
+	will-change: transform;
 }
 
 /* ===== Slide ===== */
 .sgs-testimonial-slider__slide {
-	scroll-snap-align: start;
 	flex: 0 0 calc( ( 100% - ( var(--sgs-slides-visible, 1) - 1 ) * var(--wp--preset--spacing--30, 16px) ) / var(--sgs-slides-visible, 1) );
 	min-width: 0;
 	margin: 0;
 	box-sizing: border-box;
-}
-
-/* Card style — hover shadow-lift added per Group J spec (duration: medium) */
-.sgs-testimonial-slider__slide--card {
-	/* Background defaults to TRANSPARENT (D228 — no hardcoded surface default).
-	   A cloned/authored slide paints its own background only when one is set;
-	   the old `var(--wp--preset--color--surface)` default painted a cream/yellow
-	   box around the (correctly white) inner testimonial card the draft never
-	   asked for (QC #9, 2026-07-06). An explicit background attr still wins. */
-	background: transparent;
-	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	box-shadow: var(--wp--preset--shadow--md);
-	padding: var(--wp--preset--spacing--40);
-	transition: box-shadow var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
-}
-
-.sgs-testimonial-slider__slide--card:hover {
-	box-shadow: var(--wp--preset--shadow--lg, 0 8px 24px rgba(0, 0, 0, 0.15));
-}
-
-/* Minimal style */
-.sgs-testimonial-slider__slide--minimal {
-	background: transparent;
-	border-left: 3px solid var(--wp--preset--color--accent, #F87A1F);
-	padding: var(--wp--preset--spacing--30) var(--wp--preset--spacing--40);
-}
-
-/* Featured style */
-.sgs-testimonial-slider__slide--featured {
-	background: var(--wp--preset--color--primary-dark, #0A5B5D);
-	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	padding: var(--wp--preset--spacing--50);
-}
-
-.sgs-testimonial-slider__slide--featured .sgs-testimonial-slider__quote:not([style*="color"]) {
-	color: var(--wp--preset--color--text-inverse, #C0D5D6);
-}
-
-/* H6: cite/name must be white on teal — yellow (#d8ca50) on teal gives 3.13:1, fail */
-.sgs-testimonial-slider__slide--featured .sgs-testimonial-slider__name:not([style*="color"]) {
-	color: var(--wp--preset--color--text-inverse, #fff);
-}
-
-.sgs-testimonial-slider__slide--featured .sgs-testimonial-slider__role:not([style*="color"]) {
-	color: var(--wp--preset--color--text-inverse, #C0D5D6);
-}
-
-.sgs-testimonial-slider__slide--featured .sgs-testimonial-slider__avatar-initials {
-	background-color: var(--wp--preset--color--accent, #F87A1F);
-	color: var(--wp--preset--color--text-inverse, #fff);
-}
-
-/* ===== Stars ===== */
-.sgs-testimonial-slider__stars {
-	display: flex;
-	gap: 2px;
-	margin-bottom: var(--wp--preset--spacing--20);
-}
-
-.sgs-testimonial-slider__stars:not([style*="color"]) {
-	color: var(--wp--preset--color--accent, #F87A1F);
-}
-
-.sgs-testimonial-slider__star {
-	font-size: 18px;
-	line-height: 1;
-}
-
-.sgs-testimonial-slider__star--empty {
-	opacity: 0.3;
-}
-
-/* ===== Quote ===== */
-.sgs-testimonial-slider__quote {
-	font-size: var(--wp--preset--font-size--medium);
-	line-height: 1.6;
-	margin: 0 0 var(--wp--preset--spacing--30) 0;
-	font-style: italic;
-}
-
-.sgs-testimonial-slider__quote:not([style*="color"]) {
-	color: var(--wp--preset--color--text, #1E1E1E);
-}
-
-/* ===== Footer ===== */
-.sgs-testimonial-slider__footer {
-	display: flex;
-	align-items: center;
-	gap: var(--wp--preset--spacing--20);
-}
-
-/* ===== Avatar ===== */
-.sgs-testimonial-slider__avatar-img {
-	width: 48px;
-	height: 48px;
-	border-radius: 50%;
-	object-fit: cover;
-	display: block;
-}
-
-/* H7: blue text on light grey = 4.2:1 — borderline fail. Use white text on primary blue = 5.0:1+ */
-.sgs-testimonial-slider__avatar-initials {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 48px;
-	height: 48px;
-	border-radius: 50%;
-	background-color: var(--wp--preset--color--primary, #0F7E80);
-	color: var(--wp--preset--color--surface, #fff);
-	font-weight: 700;
-	font-size: var(--wp--preset--font-size--small);
-	line-height: 1;
-}
-
-/* ===== Meta ===== */
-.sgs-testimonial-slider__meta {
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
-}
-
-.sgs-testimonial-slider__name {
-	font-style: normal;
-	font-weight: 700;
-	font-size: var(--wp--preset--font-size--medium);
-}
-
-.sgs-testimonial-slider__name:not([style*="color"]) {
-	color: var(--wp--preset--color--text, #1E1E1E);
-}
-
-.sgs-testimonial-slider__role {
-	font-size: var(--wp--preset--font-size--small);
-}
-
-.sgs-testimonial-slider__role:not([style*="color"]) {
-	color: var(--wp--preset--color--text-muted, #555);
 }
 
 /* ===== Stage — flex row: [prev-arrow] [track] [next-arrow] ===== */
@@ -366,35 +237,6 @@
 	line-height: 1;
 }
 
-/* ===== Gold / accent card variant — M4 ===== */
-
-/*
- * Adds a gold/accent background option for testimonial cards.
- * Applied when the block has sgs-testimonial-slider--accent class
- * (set via inspector control). Text uses dark colour for contrast.
- */
-.sgs-testimonial-slider--accent .sgs-testimonial-slider__slide--card {
-	background: var(--wp--preset--color--accent, #F87A1F);
-	border: none;
-}
-
-.sgs-testimonial-slider--accent .sgs-testimonial-slider__quote:not([style*="color"]) {
-	color: var(--wp--preset--color--text, #1e1e1e);
-}
-
-.sgs-testimonial-slider--accent .sgs-testimonial-slider__name:not([style*="color"]) {
-	color: var(--wp--preset--color--text, #1e1e1e);
-}
-
-.sgs-testimonial-slider--accent .sgs-testimonial-slider__role:not([style*="color"]) {
-	color: var(--wp--preset--color--text, #1e1e1e);
-}
-
-.sgs-testimonial-slider--accent .sgs-testimonial-slider__avatar-initials {
-	background-color: var(--wp--preset--color--text, #1e1e1e);
-	color: var(--wp--preset--color--text-inverse, #fff);
-}
-
 /* ===== Empty state (editor) ===== */
 .sgs-testimonial-slider__empty {
 	text-align: center;
@@ -521,8 +363,8 @@
 
 /* ===== Reduced motion ===== */
 @media (prefers-reduced-motion: reduce) {
-	.sgs-testimonial-slider__track {
-		scroll-behavior: auto;
+	.sgs-testimonial-slider__list {
+		transition: none;
 	}
 
 	.sgs-testimonial-slider__arrow,

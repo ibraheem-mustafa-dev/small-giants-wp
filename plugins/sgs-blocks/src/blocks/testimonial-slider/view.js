@@ -1,42 +1,59 @@
 /**
- * SGS Testimonial Slider — scroll-snap carousel with autoplay.
+ * SGS Testimonial Slider — transform-based infinite carousel.
  *
- * CSS scroll-snap handles the snap behaviour. This module adds:
- * - Prev/next arrow functionality (infinite wrapping)
- * - Dot navigation synced to scroll position
- * - Optional autoplay that loops infinitely and pauses on hover/focus
- * - WCAG 2.2.2-compliant persistent pause/play button (injected into DOM)
+ * Replaces the old native-scroll model (which clamped at the ends and could
+ * not rotate at all when every card was already visible) with a translateX
+ * track that wraps infinitely regardless of slidesVisible vs slide count.
  *
- * Infinite loop: goToSlide wraps index at both ends for both manual nav and
- * autoplay. prefers-reduced-motion: loop still advances, scroll-behavior:auto
- * (no smooth animation), per WCAG 2.3.3 animation from interactions.
+ * Mechanism:
+ * - Real slides are moved into a JS-built `.sgs-testimonial-slider__list`
+ *   flex row. The track becomes the fixed-width, `overflow:hidden` viewport.
+ * - `slidesVisible` clones of the first slides are appended and `slidesVisible`
+ *   clones of the last slides are prepended (aria-hidden + inert + no id), so
+ *   the list can always move one step further in either direction.
+ * - `currentIndex` tracks the REAL slide [0, total); `visualIndex` tracks the
+ *   position inside the padded (clone + real + clone) list. Moving lands in a
+ *   clone zone at the ends; once the transition finishes we silently snap the
+ *   transform back to the equivalent real position with no animation, so the
+ *   loop reads as continuous.
+ * - Touch/pointer drag re-implements swipe (native scroll no longer does it).
+ *
+ * prefers-reduced-motion: transform still updates (so autoplay/arrows still
+ * work) but with no transition — matches the previous scroll-behavior:auto
+ * fallback per WCAG 2.3.3.
  *
  * Loaded as a viewScriptModule (ES module, frontend only).
- * Target: < 3KB minified.
  */
 
 const sliders = document.querySelectorAll( '.sgs-testimonial-slider' );
 
 sliders.forEach( ( slider ) => {
-	const track    = slider.querySelector( '.sgs-testimonial-slider__track' );
-	const slides   = slider.querySelectorAll( '.sgs-testimonial-slider__slide' );
+	const track          = slider.querySelector( '.sgs-testimonial-slider__track' );
+	const originalSlides = Array.from(
+		slider.querySelectorAll( '.sgs-testimonial-slider__slide' )
+	);
 	const prevBtn  = slider.querySelector( '.sgs-testimonial-slider__arrow--prev' );
 	const nextBtn  = slider.querySelector( '.sgs-testimonial-slider__arrow--next' );
 	const dots     = slider.querySelectorAll( '.sgs-testimonial-slider__dot' );
 	const controls = slider.querySelector( '.sgs-testimonial-slider__controls' );
 
-	if ( ! track || slides.length === 0 ) {
+	if ( ! track || originalSlides.length === 0 ) {
 		return;
 	}
 
-	const shouldAutoplay        = slider.dataset.autoplay === 'true';
-	const speed                 = Number.parseInt( slider.dataset.speed || '5000', 10 );
-	const prefersReducedMotion  = globalThis.matchMedia(
+	const shouldAutoplay       = slider.dataset.autoplay === 'true';
+	const speed                = Number.parseInt( slider.dataset.speed || '5000', 10 );
+	const visibleRaw           = Number.parseInt( slider.dataset.slides || '1', 10 ) || 1;
+	const prefersReducedMotion = globalThis.matchMedia(
 		'(prefers-reduced-motion: reduce)'
 	).matches;
-	const total = slides.length;
+
+	const total      = originalSlides.length;
+	const cloneCount = total > 1 ? Math.min( visibleRaw, total ) : 0;
 
 	let currentIndex  = 0;
+	let visualIndex   = cloneCount; // position inside the padded list
+	let slideStep     = 0;          // px — one slide's width + gap
 	let autoplayTimer = null;
 	let isPaused      = false;
 
@@ -51,19 +68,128 @@ sliders.forEach( ( slider ) => {
 	}
 
 	/**
-	 * Scroll to a specific slide index with infinite wrapping.
+	 * Clone a slide for the loop padding — inert, unfocusable, no duplicate id.
 	 *
-	 * @param {number} index Target slide index (may wrap).
+	 * @param {HTMLElement} original Real slide to clone.
+	 * @return {HTMLElement} Cloned slide.
 	 */
-	function goToSlide( index ) {
-		currentIndex = wrapIndex( index );
+	function cloneSlide( original ) {
+		const clone = original.cloneNode( true );
+		clone.removeAttribute( 'id' );
+		clone.setAttribute( 'aria-hidden', 'true' );
+		clone.setAttribute( 'inert', '' );
+		clone.dataset.clone = 'true';
+		clone.querySelectorAll( 'a, button, input, select, textarea' ).forEach(
+			( el ) => el.setAttribute( 'tabindex', '-1' )
+		);
+		return clone;
+	}
 
-		track.scrollTo( {
-			left:     slides[ currentIndex ].offsetLeft,
-			behavior: prefersReducedMotion ? 'auto' : 'smooth',
-		} );
+	/* Build the transform track: move real slides into a new list wrapper,
+	 * pad it with clones at both ends so the loop can wrap seamlessly. */
+	const list = document.createElement( 'div' );
+	list.className = 'sgs-testimonial-slider__list';
+	originalSlides.forEach( ( slide ) => list.appendChild( slide ) );
 
+	if ( cloneCount > 0 ) {
+		originalSlides
+			.slice( -cloneCount )
+			.forEach( ( slide ) => list.insertBefore( cloneSlide( slide ), list.firstChild ) );
+		originalSlides
+			.slice( 0, cloneCount )
+			.forEach( ( slide ) => list.appendChild( cloneSlide( slide ) ) );
+	}
+
+	track.appendChild( list );
+
+	/**
+	 * Measure one real slide's rendered width + the list's gap, in px.
+	 * Re-run on resize since flex-basis is a percentage of the viewport width.
+	 */
+	function measure() {
+		const sample = list.querySelector(
+			'.sgs-testimonial-slider__slide:not([data-clone])'
+		);
+		if ( ! sample ) {
+			return;
+		}
+		const gapPx = Number.parseFloat( getComputedStyle( list ).gap ) || 0;
+		slideStep   = sample.getBoundingClientRect().width + gapPx;
+	}
+
+	/**
+	 * True when a visual position sits inside the clone padding, not the
+	 * real slide range.
+	 *
+	 * @param {number} index Visual (padded-list) index.
+	 * @return {boolean} Whether index is in a clone zone.
+	 */
+	function isInCloneZone( index ) {
+		return index < cloneCount || index >= cloneCount + total;
+	}
+
+	/**
+	 * If the current visual position landed in a clone, snap (no transition)
+	 * back to the equivalent real position so the loop reads as continuous.
+	 */
+	function resetIfInCloneZone() {
+		if ( ! isInCloneZone( visualIndex ) ) {
+			return;
+		}
+		visualIndex     = cloneCount + wrapIndex( visualIndex - cloneCount );
+		list.style.transition = 'none';
+		list.style.transform  = `translateX(${ -( visualIndex * slideStep ) }px)`;
+		void list.offsetWidth; // force reflow before re-enabling the transition
+		list.style.transition = '';
+	}
+
+	/**
+	 * Paint the track at the current visualIndex.
+	 *
+	 * @param {boolean} animate Whether to transition (false = instant snap).
+	 */
+	function render( animate ) {
+		const useTransition = animate && ! prefersReducedMotion;
+		list.style.transition = useTransition ? '' : 'none';
+		list.style.transform  = `translateX(${ -( visualIndex * slideStep ) }px)`;
 		updateDots();
+		if ( ! useTransition ) {
+			resetIfInCloneZone();
+		}
+	}
+
+	list.addEventListener( 'transitionend', ( e ) => {
+		if ( e.target === list && e.propertyName === 'transform' ) {
+			resetIfInCloneZone();
+		}
+	} );
+
+	/**
+	 * Move to a target real slide index, picking whichever equivalent
+	 * padded-list position is nearest the current one (shortest visual hop).
+	 *
+	 * @param {number} targetIndex Target slide index (may be out of range — wraps).
+	 */
+	function goToSlide( targetIndex ) {
+		currentIndex = wrapIndex( targetIndex );
+
+		if ( cloneCount > 0 ) {
+			const base = cloneCount + currentIndex;
+			let best     = base;
+			let bestDist = Math.abs( base - visualIndex );
+			[ base - total, base + total ].forEach( ( candidate ) => {
+				const dist = Math.abs( candidate - visualIndex );
+				if ( dist < bestDist ) {
+					bestDist = dist;
+					best     = candidate;
+				}
+			} );
+			visualIndex = best;
+		} else {
+			visualIndex = currentIndex;
+		}
+
+		render( true );
 	}
 
 	/**
@@ -78,33 +204,6 @@ sliders.forEach( ( slider ) => {
 			);
 			dot.setAttribute( 'aria-current', isActive ? 'true' : 'false' );
 		} );
-	}
-
-	/**
-	 * Detect current slide from scroll position (used on manual scroll).
-	 */
-	function detectCurrentSlide() {
-		if ( ! slides.length ) {
-			return;
-		}
-
-		const trackRect     = track.getBoundingClientRect();
-		let closestIndex    = 0;
-		let closestDistance = Infinity;
-
-		slides.forEach( ( slide, i ) => {
-			const slideRect = slide.getBoundingClientRect();
-			const distance  = Math.abs( slideRect.left - trackRect.left );
-			if ( distance < closestDistance ) {
-				closestDistance = distance;
-				closestIndex    = i;
-			}
-		} );
-
-		if ( closestIndex !== currentIndex ) {
-			currentIndex = closestIndex;
-			updateDots();
-		}
 	}
 
 	/* Arrow navigation — wraps at both ends */
@@ -130,16 +229,77 @@ sliders.forEach( ( slider ) => {
 		} );
 	} );
 
-	/* Scroll detection — sync dots as user scrolls */
-	let scrollTimeout;
-	track.addEventListener(
-		'scroll',
-		() => {
-			clearTimeout( scrollTimeout );
-			scrollTimeout = setTimeout( detectCurrentSlide, 100 );
-		},
-		{ passive: true }
-	);
+	/*
+	 * Keyboard navigation for the dot group (ARIA tab pattern).
+	 * Left/Right arrow keys move between dots and navigate slides.
+	 */
+	dots.forEach( ( dot, i ) => {
+		dot.addEventListener( 'keydown', ( e ) => {
+			if ( e.key === 'ArrowLeft' || e.key === 'ArrowRight' ) {
+				e.preventDefault();
+				const next = wrapIndex( e.key === 'ArrowRight' ? i + 1 : i - 1 );
+				dots[ next ].focus();
+				goToSlide( next );
+				pausePermanently();
+			}
+		} );
+	} );
+
+	/* Touch/pointer swipe — native scroll no longer provides this. */
+	let isDragging  = false;
+	let dragStartX  = 0;
+	let dragDelta   = 0;
+
+	function endDrag() {
+		if ( ! isDragging ) {
+			return;
+		}
+		isDragging = false;
+		list.style.transition = '';
+
+		const threshold = slideStep / 4;
+		if ( dragDelta > threshold ) {
+			goToSlide( currentIndex - 1 );
+		} else if ( dragDelta < -threshold ) {
+			goToSlide( currentIndex + 1 );
+		} else {
+			render( true );
+		}
+		dragDelta = 0;
+		pausePermanently();
+	}
+
+	if ( total > 1 ) {
+		track.addEventListener( 'pointerdown', ( e ) => {
+			isDragging  = true;
+			dragStartX  = e.clientX;
+			dragDelta   = 0;
+			list.style.transition = 'none';
+			track.setPointerCapture?.( e.pointerId );
+		} );
+
+		track.addEventListener( 'pointermove', ( e ) => {
+			if ( ! isDragging ) {
+				return;
+			}
+			dragDelta = e.clientX - dragStartX;
+			list.style.transform = `translateX(${ -( visualIndex * slideStep ) + dragDelta }px)`;
+		} );
+
+		track.addEventListener( 'pointerup', endDrag );
+		track.addEventListener( 'pointercancel', endDrag );
+		track.addEventListener( 'pointerleave', endDrag );
+	}
+
+	/* Recompute on resize (debounced) — flex-basis is % of viewport width */
+	let resizeTimer;
+	globalThis.addEventListener( 'resize', () => {
+		clearTimeout( resizeTimer );
+		resizeTimer = setTimeout( () => {
+			measure();
+			render( false );
+		}, 150 );
+	} );
 
 	/* Autoplay — loops infinitely */
 	function startAutoplay() {
@@ -148,10 +308,6 @@ sliders.forEach( ( slider ) => {
 		}
 		stopAutoplay();
 		autoplayTimer = setInterval( () => {
-			/*
-			 * wrapIndex handles the boundary: after the last slide it wraps
-			 * back to 0 and keeps going — no stop at the end.
-			 */
 			goToSlide( currentIndex + 1 );
 		}, speed );
 	}
@@ -211,25 +367,6 @@ sliders.forEach( ( slider ) => {
 	} );
 
 	/*
-	 * Keyboard navigation for the dot group (ARIA tab pattern).
-	 * Left/Right arrow keys move between dots and navigate slides.
-	 * Wraps at both ends to match infinite loop behaviour.
-	 */
-	dots.forEach( ( dot, i ) => {
-		dot.addEventListener( 'keydown', ( e ) => {
-			if ( e.key === 'ArrowLeft' || e.key === 'ArrowRight' ) {
-				e.preventDefault();
-				const next = wrapIndex(
-					e.key === 'ArrowRight' ? i + 1 : i - 1
-				);
-				dots[ next ].focus();
-				goToSlide( next );
-				pausePermanently();
-			}
-		} );
-	} );
-
-	/*
 	 * WCAG 2.2.2 — Pause, Stop, Hide
 	 *
 	 * Auto-playing content that lasts more than 5 seconds MUST provide a
@@ -262,11 +399,6 @@ sliders.forEach( ( slider ) => {
 			}
 		} );
 
-		/*
-		 * Insert into .sgs-testimonial-slider__controls (after the dots).
-		 * Falls back to appending directly to the slider if controls are absent
-		 * (e.g. showDots is off).
-		 */
 		if ( controls ) {
 			controls.appendChild( pauseBtn );
 		} else {
@@ -275,5 +407,7 @@ sliders.forEach( ( slider ) => {
 	}
 
 	/* Initialise */
+	measure();
+	render( false );
 	startAutoplay();
 } );
