@@ -6,11 +6,10 @@ import {
 } from '@wordpress/block-editor';
 // WS-4: shared sgs/container wrapper editor controls (layout kind).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { ResponsiveControl } from '../../components';
+import { ResponsiveControl, SpacingControl } from '../../components';
 import {
 	PanelBody,
 	SelectControl,
-	RangeControl,
 } from '@wordpress/components';
 
 const TEMPLATE = [
@@ -73,7 +72,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	} = attributes;
 
 	// Preview the desktop layout in the editor.
-	// Gap comes from the shared ContainerWrapperControls SpacingControl (raw CSS string).
+	// Gap comes from the block's own Layout panel Gap control (raw CSS string).
 	const editorStyle = {
 		display: 'flex',
 		flexDirection: direction,
@@ -93,11 +92,17 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				{ /* WS-4: mirrored sgs/container wrapper controls (layout kind). */ }
+				{ /* H6 fix (2026-07-05, STOP-43): kind='content' only (width/contentWidth +
+				    padding/spacing). The block owns its own responsive flex layout
+				    (direction/gap/wrap/justify/align, rendered via its own scoped <style>
+				    in render.php at SGS_Container_Wrapper::render(..., 'content', ...)) —
+				    kind='layout' would additionally make the shared wrapper emit its own
+				    non-responsive grid/flex + inline style, which always beats this
+				    block's @media-scoped rules. See render.php for the full note. */ }
 				<ContainerWrapperControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
-					kind="layout"
+					kind="content"
 				/>
 				{ /* ── Layout panel ── */ }
 				<PanelBody
@@ -123,7 +128,24 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ResponsiveControl>
 
 					<hr style={ { margin: '12px 0' } } />
-					{ /* Gap is provided by the shared ContainerWrapperControls panel above. */ }
+
+					<ResponsiveControl label={ __( 'Gap', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'gap',
+								tablet:  'gapTablet',
+								mobile:  'gapMobile',
+							};
+							return (
+								<SpacingControl
+									freeInput
+									value={ attributes[ attrMap[ breakpoint ] ] || '' }
+									onChange={ ( val ) => setAttributes( { [ attrMap[ breakpoint ] ]: val } ) }
+								/>
+							);
+						} }
+					</ResponsiveControl>
+
 					<hr style={ { margin: '12px 0' } } />
 
 					<ResponsiveControl label={ __( 'Wrap', 'sgs-blocks' ) }>
