@@ -5,13 +5,59 @@ thread: single thread (cloning pipeline)
 session_date: 2026-07-06
 ---
 
+# Session Handoff — 2026-07-06f (D286 media converge + D287 P-DRAFT-CSSVAR; container L1-L4 probe; BUTTON findings → next session is BUTTON-ONLY)
+
+> Ran in PARALLEL with the D284/D285 product-card/scalar-lift thread (which advanced main to D285/`e0f2486e`). This thread = media/media-CSS + colour-var resolution + container-cascade probing.
+
+## Completed This Session
+1. **D286 — sgs/media converge (`9a4f6ca1` + inline height fold-in, LANDED page 8).** Full source audit found TWO parallel styling systems (native attrs written by converter/read by render.php with NO controls; vs the shared image-controls ext writing `sgs*`). Fixed 10 defects (is_numeric drop, border-radius 3-way miss/STOP-44, no controls, naked-mode divergence, 599→767, forced object-fit, vestigial attrs) + added the dropped CSS **`height` (fill)** attr (resolver auto-routes via property_suffixes + a stage-1 reseed). Brand image LANDED at 375/768/1440: border-radius 16px + max-height 440/380 + height 440px fill (was flat + 253px). New Media Styling + Caption/Link editor panels; media opted OUT of the shared ext. Visual-diff `reports/visual-diff/media-2026-07-06.md`.
+2. **D287 — P-DRAFT-CSSVAR (`fff4c475`).** Draft `var(--X)` colours now resolve against the draft `:root` map + snap to the theme token (`var(--border)`→`border-subtle`) via exact-hex match. `styling_helpers.py` + `entry.py` (one memoised line), R-31-1, golden-inert. Proven on the real ghost-button node (STOP-43); 8 tests. Solo subagent built it; I verified + proved on node myself.
+3. **Container L1-L4 map + grouping (Steps 1+2, understand-only).** Mapped `sgs/container` + the shared `SGS_Container_Wrapper` + `ContainerWrapperControls`: 3 physical layers (L1 outer / L2 `__inner` band / L3 grid+`--sgs-gi-*`), L4 = named-area composites only (hero `gridAreas`). Responsive = fixed Tablet(≤1023)/Mobile(≤767) suffix system; NO custom-breakpoint channel (odd draft breakpoints route to the block's `sgsCustomCss` field — Bean decision). L1-L4 grouping locked with Bean.
+4. **Max-width universality probe (insight-1 answer): NOT universal.** Lands for container-equivalents (multi-button via shared wrapper, `kind='content'`) + atomic media (now); DROPS for a nested text child in a composite (hero sub → `sgs/text`, converter routing gap — attr exists, render OK, but never set); product-card buttons are a 3rd path (composite-baked built-in elements).
+5. **Full `display:grid` draft audit (all Mama's + Indus):** ZERO ad-hoc-divergent grids → a per-grid-item CSS UI is NOT warranted (divergences are variants / positional / named-slot composites).
+
+## Current State
+- **Branch:** `main` at `e0f2486e` (parallel D285 head; my commits `9a4f6ca1` + `fff4c475` are in history). D-ceiling **D287** (added this thread).
+- **Tests:** converter suite green EXCEPT 4 conformance goldens (brand = my D286 LANDED emit drift = my debt; product-card/option-picker/featured-product = the scalarStylingLift/D284 thread's, NOT mine).
+- **Build:** passes; block gates (dead-control + hardcoded-render-defaults) exit 0.
+- **Uncommitted:** media `block.json` gained `scalarStylingLift:true` (D285 thread, not me); `sgs-framework.db` reseeded (gitignored); docs (this handoff set).
+
+## Known Issues / Blockers
+- **Buttons don't stretch full-width on mobile** (Bean-found): SGS output has an extra `<div>` between the multi-button block and the `<a>`, so `align-items:stretch` hits the div not the button. Draft = wrapper→`<a>` directly. → rebuild the button block, remove the div.
+- **Editor presets broken** (Apply does nothing) + **colour controls are a plain hex/preset text box** (no colour picker, no palette quick-choices).
+- **Brand conformance golden stale** (my D286 debt) — needs a deliberate LANDED-proof re-seed (the accidental bulk re-seed was reverted).
+- **Ghost button not visibly fixed** — P-DRAFT-CSSVAR is the resolver; the visible fix needs the button-colour seed re-add (lift border-color→colourBorder), the 2nd half of `P-DRAFT-CSSVAR-COLOUR-RESOLUTION`.
+
+## Next Priorities (in order)
+1. **BUTTON WORK ONLY (next session)** — remove the pointless div (fix mobile stretch), fix broken presets, replace colour text-boxes with `DesignTokenPicker` + palette quick-choices. See `next-session-prompt.md`.
+2. **Session after:** resume the container L1-L4 cascade deep-dive (Steps 3-6) + the hero-sub nested-child max-width routing gap.
+3. (Track) brand golden re-seed; ghost-button colour-seed re-add.
+
+## Files Modified
+| File | What changed |
+|------|--------------|
+| `plugins/sgs-blocks/src/blocks/media/{render.php,edit.js,block.json,style.css}` | D286 converge + CSS height fill (version 1.7.0) |
+| `plugins/sgs-blocks/scripts/tests/test-media-render.php` | new — media render TDD test |
+| `plugins/sgs-blocks/scripts/converter/services/styling_helpers.py` + `entry.py` | D287 var-colour resolution |
+| `plugins/sgs-blocks/scripts/converter/tests/test_draft_var_colour_resolution.py` | new — 8 colour tests |
+| `reports/visual-diff/media-2026-07-06.md` | new — media visual-diff PASS |
+| `.claude/{decisions.md,handoff.md,state.md,next-session-prompt.md,parking.md}` | D286/D287 + button handoff |
+
+## Notes for Next Session
+- A PARALLEL session owns the product-card/scalarStylingLift thread (D284/D285). The 3 non-brand golden failures + the media `scalarStylingLift:true` are THEIRS — do not re-seed or "fix" them under the button thread.
+- `sgs/media` + `sgs/text` are the ONLY two blocks using the number+unit `maxWidth`/`maxHeight` pattern; media had the `is_numeric` render drop (fixed), text's render is fine (uses `floatval`).
+- The mobile full-width-on-stack is pure CSS `align-items:stretch` (flex default) — the button needs NO width attr; just remove the intermediate div so `<a>` is the direct flex child.
+
+---
+
 # Session Handoff — 2026-07-06e (D285 — DEFERRED PIPELINE/DB ROLLOUT: Task 2 scalar-styling-lift enabled on 8 blocks DONE; Task 1 css_property seeding MINED + FALSIFIED)
 
 ## Completed This Session (1 commit `2e702f0b`, pushed to main)
 Ran the deferred pipeline/DB prompt (`.claude/prompts/2026-07-06-block-fixes-testimonial-button.md`). Both tasks resolved.
 
 1. **Task 1 — CSS-property column seeding: MINED → FALSIFIED → SKIPPED (Bean-agreed).** Convert-only Mama's clone on the current engine; classified all 67 unique D2-stranded (block,property) pairs → **0 unblocked naming-mismatch corrections with a real owner.** The class the css_property mechanism (D281) fixes is DRAINED by the engine work since the "~50-80" estimate (D280). Remaining D2 = 43 no-composite section gaps + 19 registered-block genuine gaps (shorthand/inherit/unseeded-property/SVG) + ~5 button/product-card colours (ALL `var()`-blocked = `P-DRAFT-CSSVAR-COLOUR-RESOLUTION`, and/or `:hover`/`--active`). Seeding now = WRITTEN-not-LANDED (STOP-21/4). Scripts: `scratchpad/mine_d2_tight.py` (kept for re-run).
-2. **Task 2 — scalar-styling-lift 12-block roster: DONE + emit-proven.** STOP-54 pre-audit re-verified vs current code/DB → exactly 4 boolean mis-seeds (`accentStroke`/counter + `bgSvgTextShadow`/hero+cta-section+container); the number FontSize/LineHeight attrs are the INTENDED targets. Fixed the 4 via `ATTR_CLASSIFICATION_OVERRIDES {role:'behaviour',derived_selector:None}` (reseed-durable). Corrected render-verified DEAD selectors (card-grid __title/__subtitle, quote __attribution, product-card title* __title). Enabled `scalarStylingLift` on 8 block.json (card-grid, counter, media, mobile-nav, option-picker, product-card, quote, whatsapp-cta); trust-bar+testimonial already had it; excluded notice-banner/testimonial-slider/post-grid (Wave-3 dead lifts). Reseed applied all + 10 capability rows.
+2. **Task 2 — scalar-styling-lift 12-block roster: DONE + emit-proven.** STOP-54 pre-audit re-verified vs current code/DB → exactly 4 boolean mis-seeds (`accentStroke`/counter + `bgSvgTextShadow`/hero+cta-section+container); the number FontSize/LineHeight attrs are the INTENDED targets. Fixed the 4 via `ATTR_CLASSIFICATION_OVERRIDES {role:'behaviour',derived_selector:None}` (reseed-durable). Corrected render-verified DEAD selectors (card-grid __title/__subtitle, quote __attribution, product-card title* __title). Enabled `scalarStylingLift` on 8 block.json (card-grid, counter, media, mobile-nav, option-picker, product-card, quote, whatsapp-cta); trust-bar+testimonial already had it; excluded notice-banner/testimonial-slider/post-grid (Wave-3 dead lifts). Reseed applied all + 10 capability rows. Residual drift completeness pass + page-8 LANDED shipped (`e0f2486e`).
+3. **Global-styles font-family fix (Bean request) — LANDED live.** After the LANDED price was Fraunces-in-size but rendered the theme **display** token (DM Serif Display), Bean asked to match the draft's font (draft = Inter body + **Fraunces** headings/price). Root-caused the live font stack: the clone deploys the draft CSS as `styles/mamas-munches.css` (→ headings Fraunces), but the product-card price renders inline `font-family:var(--wp--preset--font-family--display)` (D284), and the `display` token was `'DM Serif Display'` in the **server** `sgs-theme/theme.json` (the live theme.json is the FRAMEWORK default; the Mama's fonts come from the deployed draft CSS + this token, NOT the snapshot/wp_global_styles). Fix: set the `display` token → `Fraunces, 'DM Serif Display', Georgia, serif` (Fraunces already loaded, proven by the title). Applied BOTH to the git source (`sites/mamas-munches/theme-snapshot.json`, added a `display` slug) AND surgically to the live server theme.json (backup `theme.json.bak-D285`, `wp cache flush`). **Verified live:** product-card price now computes **Fraunces** at 375/768/1440 (was DM Serif Display).
 
 ## Current State
 - **Branch:** main at `2e702f0b` (pushed). D-ceiling **D285**.
@@ -22,7 +68,8 @@ Ran the deferred pipeline/DB prompt (`.claude/prompts/2026-07-06-block-fixes-tes
 ## Known Issues / Deferred (→ parking)
 - **`P-SCALAR-LIFT-ROLLOUT-LANDED` — RESOLVED** (page-8 LANDED confirmed live this session; move to archive next `/handoff`).
 - **`P-SCALAR-LIFT-RESIDUAL-DRIFT` — PARTIAL.** Fixed: card-grid/quote/product-card title+tag, option-picker pill. Remaining documented no-ops (NOT guessed, STOP-43): mobile-nav chrome colours (wrapper `--sgs-mn-*` vars, no 1:1 element — needs a design call) + product-card pill/pickerLabel (legacy-dead, embedded option-picker owns pills) + cta (D284-owned).
-- Task 1 stays blocked on `P-DRAFT-CSSVAR-COLOUR-RESOLUTION` (the css_property mechanism is ready; nothing landable until draft-var resolution lands or a different draft surfaces a real naming-mismatch).
+- Task 1 was blocked on `P-DRAFT-CSSVAR-COLOUR-RESOLUTION` — **NOTE: the parallel D287 thread RESOLVED that** (`fff4c475` — draft `var()` colours now resolve + token-snap). So the button-colour css_property naming-mismatch seeds MAY now be landable; worth a re-mine (`scratchpad/mine_d2_tight.py`) next time Task 1 is revisited.
+- **Display-token server edit — deploy-mechanism divergence.** The live `display`→Fraunces fix was applied surgically to the server `sgs-theme/theme.json` (the live theme.json is the FRAMEWORK default, NOT the Mama's snapshot — the snapshot→theme.json font path isn't how sandybrown was provisioned). The git snapshot now also has `display`=Fraunces, so a proper snapshot→theme.json deploy would keep it; but a future clone that overwrites the server theme.json with the framework default would REVERT the price to DM Serif Display. Reconcile the snapshot→theme.json font deploy (or add `display`=Fraunces to the framework theme.json if it should be the default) when the theming deploy path is next touched. Backup at `theme.json.bak-D285` on the server.
 
 ## Notes for Next Session
 - **`ATTR_CLASSIFICATION_OVERRIDES` (`sgs-update-v2.py`) is the reseed-durable channel** for both attr-role/selector corrections and (future) css_property seeds — never a bare SQLite UPDATE (STOP-24).

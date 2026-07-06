@@ -125,6 +125,11 @@
           ]
         },
         {
+          "fontFamily": "Fraunces, 'DM Serif Display', Georgia, serif",
+          "slug": "display",
+          "name": "Display (Fraunces)"
+        },
+        {
           "fontFamily": "Inter, system-ui, -apple-system, sans-serif",
           "slug": "body",
           "name": "Body (Inter)",
