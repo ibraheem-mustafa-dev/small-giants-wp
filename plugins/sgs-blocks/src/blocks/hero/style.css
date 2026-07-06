@@ -59,7 +59,12 @@ section.sgs-hero {
 .sgs-hero--split {
 	display: grid;
 	gap: var(--wp--preset--spacing--50);
-	padding: var(--wp--preset--spacing--60) var(--wp--preset--spacing--40);
+	/* NO padding on the outer split grid (QC #4, 2026-07-06). Padding here insets
+	   BOTH columns — including the media/image column, which the draft leaves flush
+	   to the section edge (the draft pads only .sgs-hero__content, never the section
+	   or image). The content-column default padding moved to
+	   `.sgs-hero--split .sgs-hero__content` below; it yields to a lifted
+	   contentPadding* once the L4 per-area extraction transfers the draft value. */
 	flex-direction: unset;
 }
 
@@ -151,6 +156,11 @@ section.sgs-hero {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
+	/* Content-column padding (moved off the outer grid, QC #4) — pads only the
+	   content side so the image stays flush. The render.php contentPadding* channel
+	   is uid-scoped (higher specificity), so a lifted/authored value wins over this
+	   default once the L4 per-area extraction transfers the draft's content padding. */
+	padding: var(--wp--preset--spacing--60) var(--wp--preset--spacing--40);
 }
 
 .sgs-hero--standard .sgs-hero__content {

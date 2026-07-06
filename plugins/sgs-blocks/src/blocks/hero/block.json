@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/hero",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"title": "SGS Hero",
 	"category": "sgs-layout",
 	"description": "Page hero section with headline, sub-headline, CTAs, and background image.",

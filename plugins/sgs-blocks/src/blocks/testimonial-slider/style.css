@@ -43,7 +43,12 @@
 
 /* Card style — hover shadow-lift added per Group J spec (duration: medium) */
 .sgs-testimonial-slider__slide--card {
-	background: var(--wp--preset--color--surface, #fff);
+	/* Background defaults to TRANSPARENT (D228 — no hardcoded surface default).
+	   A cloned/authored slide paints its own background only when one is set;
+	   the old `var(--wp--preset--color--surface)` default painted a cream/yellow
+	   box around the (correctly white) inner testimonial card the draft never
+	   asked for (QC #9, 2026-07-06). An explicit background attr still wins. */
+	background: transparent;
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	box-shadow: var(--wp--preset--shadow--md);
 	padding: var(--wp--preset--spacing--40);
