@@ -176,6 +176,51 @@ def build_block_markup(
             for _bk, _bv in _band_attrs.items():
                 attrs.setdefault(_bk, _bv)
 
+    # step 3d: §2.9 L4 GRID-PER-AREA fold (FR-31-21.3 / Spec 31 §2.9 L4 row). A
+    # composite whose section root has NAMED grid-area children (hero: content/media)
+    # routes EACH area-wrapper's OWN box-CSS to the composite's per-area attrs
+    # (content -> contentPadding*, media -> mediaPadding*/mediaBackground) via the
+    # ported route_area_css_to_block_attrs (fold_helpers). db.attr_for_area_property is
+    # the natural DB gate (no per-area attr for (block, area, prop) -> no write, gap-
+    # tracked), so no gridAreas lookup is needed and the step is a no-op for every block
+    # that declares no per-area attrs (default container, leaves) -- universal (R-31-9),
+    # CSS-signature/BEM-element detected (R-31-2), no slug literal. Non-device residual
+    # bands (@1280 etc.) drain to sgsCustomCss (D289 FR-31-5.2), APPENDED after any root
+    # residual already present. setdefault: a per-area attr the CSS/content pass already
+    # set wins (contentPadding* is written ONLY here in practice, so no collision). This
+    # is the wiring the step-3c band-fold could not reach: step 3c fires only for a SOLE
+    # pass-through child; a multi-area composite (2+ named areas) has none, so its
+    # per-area box CSS was silently dropped (the hero content-padding gap).
+    if rec.slug is not None:
+        from converter.services.fold_helpers import route_area_css_to_block_attrs
+        from converter.services.styling_helpers import serialise_residual_bands
+        from converter.models import ResidualBand
+        for _area_child in section_root.children:
+            if not getattr(_area_child, "name", None):
+                continue  # skip NavigableString / non-Tag nodes
+            _area_el: str | None = None
+            for _cls in (_area_child.get("class", []) or []):
+                _bem = db_lookup.parse_sgs_bem(_cls)
+                if _bem and _bem.element:
+                    _area_el = _bem.element
+                    break
+            if _area_el is None:
+                continue
+            _area_attrs: dict = {}
+            _area_sink: list[ResidualBand] = []
+            route_area_css_to_block_attrs(
+                _area_child, _area_el, rec.slug, _area_attrs, _css_rules,
+                residual_sink=_area_sink,
+            )
+            for _ak, _av in _area_attrs.items():
+                attrs.setdefault(_ak, _av)
+            _area_residual = serialise_residual_bands(_area_sink)
+            if _area_residual:
+                _existing_css = attrs.get("sgsCustomCss", "")
+                attrs["sgsCustomCss"] = (
+                    f"{_existing_css}\n{_area_residual}" if _existing_css else _area_residual
+                )
+
     # step 4: FR-31-20 variant detection (port of convert.py:4892-4919). Set the
     # variant-selector attr from the draft's LIFTED fingerprint (the attrs just
     # assembled — content ScalarLifts like splitImage are now present) so

@@ -7,5 +7,5 @@
   "selector": "section.sgs-notice-banner",
   "failure_reason": "",
   "primary_block_emitted": "sgs/notice-banner",
-  "block_markup": "<!-- wp:sgs/notice-banner {\"align\":\"full\",\"style\":{\"color\":{\"background\":\"#2d5016\",\"text\":\"#ffffff\"},\"spacing\":{\"padding\":{\"bottom\":\"12px\",\"left\":\"24px\",\"right\":\"24px\",\"top\":\"12px\"}}}} -->\n<!-- wp:sgs/text {\"fontSize\":14,\"fontSizeUnit\":\"px\",\"fontWeight\":\"500\",\"lineHeight\":1.4,\"lineHeightUnit\":\"unitless\",\"text\":\"Free delivery on orders over \\u00a335 \\u2014 order before 2pm for next-day dispatch!\"} /-->\n<!-- /wp:sgs/notice-banner -->"
+  "block_markup": "<!-- wp:sgs/notice-banner {\"align\":\"full\",\"style\":{\"color\":{\"background\":\"#2d5016\",\"text\":\"#ffffff\"},\"spacing\":{\"padding\":{\"bottom\":\"12px\",\"left\":\"24px\",\"right\":\"24px\",\"top\":\"12px\"}}},\"textFontSize\":\"14px\"} -->\n<!-- wp:sgs/text {\"fontSize\":14,\"fontSizeUnit\":\"px\",\"fontWeight\":\"500\",\"lineHeight\":1.4,\"lineHeightUnit\":\"unitless\",\"text\":\"Free delivery on orders over \\u00a335 \\u2014 order before 2pm for next-day dispatch!\"} /-->\n<!-- /wp:sgs/notice-banner -->"
 }

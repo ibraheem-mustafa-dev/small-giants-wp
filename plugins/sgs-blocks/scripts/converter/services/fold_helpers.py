@@ -252,6 +252,7 @@ def route_area_css_to_block_attrs(
     css_rules: dict,
     *,
     trace: Callable[..., None] = _noop_trace,
+    residual_sink: list | None = None,
 ) -> None:
     """GRID-PER-AREA routing: route a dissolving named grid item's own CSS to the
     owning block's ``<areaName>+<suffix>`` attrs.
@@ -269,7 +270,9 @@ def route_area_css_to_block_attrs(
     ``_build_css_attrs`` assembles). Kept as a port; the tier mapping below matches the
     post-D259 cascade semantics so it is safe if wired. Ported from convert.py:2405.
     """
-    base_decls, bp_decls = collect_css_decls_for_element(child_node, css_rules)
+    base_decls, bp_decls = collect_css_decls_for_element(
+        child_node, css_rules, residual_sink=residual_sink
+    )
     if not base_decls and not bp_decls:
         return
 

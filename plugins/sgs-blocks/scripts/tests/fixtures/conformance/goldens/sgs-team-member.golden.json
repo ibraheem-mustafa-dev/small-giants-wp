@@ -7,5 +7,5 @@
   "selector": "section.sgs-team-member",
   "failure_reason": "",
   "primary_block_emitted": "sgs/team-member",
-  "block_markup": "<!-- wp:sgs/team-member {\"memberMedia\":{\"alt\":\"Jane Smith\",\"id\":0,\"url\":\"/team/jane-smith.jpg\"},\"name\":\"Jane Smith\",\"photo\":{\"alt\":\"Jane Smith\",\"id\":0,\"url\":\"/team/jane-smith.jpg\"},\"role\":\"Founder &amp; CEO\",\"style\":{\"border\":{\"radius\":\"12px\"},\"color\":{\"background\":\"#ffffff\"},\"spacing\":{\"padding\":{\"bottom\":\"24px\",\"left\":\"24px\",\"right\":\"24px\",\"top\":\"24px\"}}}} /-->"
+  "block_markup": "<!-- wp:sgs/team-member {\"memberMedia\":{\"alt\":\"Jane Smith\",\"id\":0,\"url\":\"/team/jane-smith.jpg\"},\"name\":\"Jane Smith\",\"nameColour\":\"#3a2e26\",\"photo\":{\"alt\":\"Jane Smith\",\"id\":0,\"url\":\"/team/jane-smith.jpg\"},\"role\":\"Founder &amp; CEO\",\"roleColour\":\"#5c4f46\",\"style\":{\"border\":{\"radius\":\"12px\"},\"color\":{\"background\":\"#ffffff\"},\"spacing\":{\"padding\":{\"bottom\":\"24px\",\"left\":\"24px\",\"right\":\"24px\",\"top\":\"24px\"}}}} /-->"
 }

@@ -3179,6 +3179,18 @@ def attr_for_area_property(
     for (suffix,) in rows:
         if not suffix:
             continue
+        # A band-mirror suffix (``Band*`` — BandPaddingTop, BandGap, …) binds to the
+        # L2 CONTAINER-BAND attr family (``contentBandPadding*``), NOT an L4 PER-AREA
+        # attr. This resolver is L4-only, so it must NEVER fall through to a band attr:
+        # when a composite registers the band alias but not the direct per-area attr
+        # (e.g. cta-section has ``contentBandPaddingTop`` but no ``contentPaddingTop``),
+        # returning the band attr routes a nested ``__content`` column's padding onto the
+        # OUTER container band — the documented content/contentBand name-collision hazard
+        # (Bean caught it 2026-06-11; see this function's docstring). Every band-mirror
+        # suffix is prefixed ``Band``; no direct per-area suffix is, so this is a precise
+        # universal filter (no per-block literal). Miss -> None -> caller gap-tracks.
+        if suffix.startswith("Band"):
+            continue
         candidate = area_prefix + suffix[0].upper() + suffix[1:]
         if candidate in block_attr_map:
             _trace(
