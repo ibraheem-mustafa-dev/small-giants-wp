@@ -247,7 +247,24 @@ def test_metamorphic_px_scale_by_k_real_draft():
         if not base_markup:
             continue  # chrome-skipped (header/footer) — nothing to scale-check
 
-        base_px_values = sorted({int(v) for v in _PX_TOKEN_RE.findall(base_markup)} - _NON_SCALING_PX_VALUES)
+        # Breakpoint thresholds that appear INSIDE an @media condition in the emit
+        # (e.g. the sgsCustomCss residual passthrough `@media (min-width:1280px)`,
+        # FR-31-5.2) are NOT scalable design values — they are viewport boundaries,
+        # the same class as the 768/1024 device constants. The test deliberately
+        # does not scale @media conditions (_scale_css_px_declarations), so such a
+        # threshold is IDENTICAL in the base and scaled emit and can never have a
+        # k× counterpart. Exclude every px inside a media condition; the declaration
+        # BODY values (e.g. the residual's font-size/padding) are still scale-checked.
+        media_cond_px = {
+            int(v)
+            for mc in _MEDIA_CONDITION_RE.finditer(base_markup)
+            for v in _PX_TOKEN_RE.findall(mc.group(0))
+        }
+        base_px_values = sorted(
+            {int(v) for v in _PX_TOKEN_RE.findall(base_markup)}
+            - _NON_SCALING_PX_VALUES
+            - media_cond_px
+        )
         if not base_px_values:
             continue  # this section transferred no px-valued attrs at all
 

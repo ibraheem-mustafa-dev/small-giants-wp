@@ -31,6 +31,7 @@ from typing import Any
 from bs4 import Tag
 
 from converter.db import db_lookup
+from converter.models import ResidualBand
 
 _LOG = logging.getLogger("sgs.converter.styling")
 
@@ -335,6 +336,7 @@ def split_value_unit(raw: Any, default_unit: str = "px") -> tuple:
 def collect_css_decls_for_element(
     node: Tag,
     css_rules: dict,
+    residual_sink: list[ResidualBand] | None = None,
 ) -> tuple[dict[str, str], dict[str, dict[str, str]]]:
     """Collect CSS declarations targeting this element, resolved to device tiers.
 
@@ -517,40 +519,43 @@ def collect_css_decls_for_element(
             return (1, -int(mx.group(1)))
         return (2, 0)
 
-    # ---- Device-tier cascade (Spec 31 §3 F-fork / FR-31-5.2) -------------------
+    # ---- Whole-tier folding (Spec 31 §3 F-fork / FR-31-5.2) -------------------
     # SGS blocks are DESKTOP-BASE (the unsuffixed attr IS the desktop value), but
     # mockups are usually mobile-first (base CSS = mobile + `min-width` overrides).
-    # A substring marker-match either dropped a non-device threshold (min-width:600
-    # matched nothing → silently discarded) or snapped it to the wrong tier. Instead
-    # compute the EFFECTIVE value at each device tier by cascading base + every
-    # @media rule that applies at that tier's representative width (db_lookup
-    # .device_tier_samples), then map Desktop→base_decls, Tablet/Mobile→bp_decls.
+    # Compute each device tier's EFFECTIVE value by folding base + every @media rule
+    # that applies across the tier's ENTIRE [lo, hi] range (tested at BOTH ends —
+    # db_lookup.device_tier_ranges), then map Desktop→base_decls, Tablet/Mobile→bp.
     #
-    # This INVERTS a mobile-first draft correctly (the value effective at desktop
-    # becomes the SGS base; the displaced mobile value lands on ...Mobile) and is
-    # symmetric for max-width (desktop-first) drafts — ONE calculation, both
-    # directions. `min-width:X` populates every tier whose sample ≥ X; `max-width:X`
-    # every tier whose sample ≤ X.
+    # WHOLE-TIER (not single-interior-width) is what keeps a non-device threshold
+    # that SPLITS a tier from being silently absorbed into that tier's value. The
+    # old single-sample cascade sampled Desktop at 1440, so a `min-width:1280` rule
+    # (active at 1440) was folded into the Desktop BASE — burying the true 1024-1279
+    # value. Folding only rules that hold across the whole [1024, ∞) range excludes
+    # min-width:1280 from base (it fails at 1024) → base is the correct 1024-1279
+    # value, and 1280 is peeled as an F-ii residual below. Direction-agnostic: a
+    # `max-width:1200` band inside Desktop (holds at 1024, fails at ∞) is peeled the
+    # same way. A rule that DOES span a whole tier (min-width:768 over Tablet; the
+    # min-width:600 over Tablet+Desktop) still folds in — inverting a mobile-first
+    # draft exactly as before.
     #
-    # Cascade order among applicable media rules: min-width ascending / max-width
-    # widest-first (_specificity_key) so a narrower breakpoint last-wins at a width.
+    # Fold order among applicable media rules: min-width ascending / max-width
+    # widest-first (_specificity_key) so a narrower breakpoint last-wins in the fold.
     matched_media.sort(key=lambda mc: _specificity_key(mc[0]))
 
-    def _effective_at(width: int) -> dict[str, str]:
+    tier_effective: dict[str, dict[str, str]] = {}
+    for tier, lo, hi in db_lookup.device_tier_ranges():
         eff = dict(base_decls)
         for media_cond, media_decls in matched_media:
-            if _media_condition_applies_at(media_cond, width):
+            if _media_condition_applies_at(
+                media_cond, lo
+            ) and _media_condition_applies_at(media_cond, hi):
                 eff.update(media_decls)
-        return eff
+        tier_effective[tier] = eff
 
-    tier_effective: dict[str, dict[str, str]] = {
-        tier: _effective_at(width) for tier, width in db_lookup.device_tier_samples()
-    }
     # Desktop is the SGS BASE (unsuffixed) tier — collapse it onto base_decls.
-    desktop_decls = tier_effective.get("Desktop", dict(base_decls))
-    out_base: dict[str, str] = dict(desktop_decls)
+    out_base: dict[str, str] = dict(tier_effective.get("Desktop", dict(base_decls)))
     out_bp: dict[str, dict[str, str]] = {}
-    for tier, _width in db_lookup.device_tier_samples():
+    for tier, _lo, _hi in db_lookup.device_tier_ranges():
         if tier == "Desktop":
             continue
         for prop, val in tier_effective.get(tier, {}).items():
@@ -562,12 +567,17 @@ def collect_css_decls_for_element(
     # ---- F-ii residual: non-device thresholds (D228; never snap, never drop) ---
     # A media threshold outside the canonical device set (767/768/1023/1024) falls
     # strictly inside a tier's range → a sub-tier band the 3-tier attr model cannot
-    # represent (e.g. min-width:600's 4-col band for 600–767 of Mobile). The three
-    # device tiers above still capture the rule everywhere it aligns to a tier; the
-    # residual band is surfaced (never silently dropped) for the F-ii passthrough
-    # follow-up. Logged, not rendered — rendering the raw band is a future
-    # passthrough-CSS channel (Spec 31 §3 F-ii).
+    # represent (e.g. min-width:1280's band above Desktop; min-width:600's 4-col
+    # band for 600–767 of Mobile). Whole-tier folding above captures the rule
+    # everywhere it spans a whole tier; the residual band is CAPTURED here (never
+    # silently dropped) and — when a ``residual_sink`` is supplied by the caller —
+    # routed to the owning block's ``sgsCustomCss`` (Additional-CSS) via a
+    # ResidualBand (FR-31-5.2 passthrough channel, now built). Still logged for
+    # observability. The band's selector is the ELEMENT'S OWN SGS-BEM class (the
+    # rendered clone preserves the draft class by construction) so no hardcoded
+    # string / DB lookup is needed (R-31-1).
     device_thresholds = db_lookup.device_tier_thresholds()
+    residual_selector = _residual_selector_for(node) if residual_sink is not None else ""
     for media_cond, media_decls in matched_media:
         thresholds = [
             int(v) for v in re.findall(r"(?:min|max)-width\s*:\s*(\d+)", media_cond)
@@ -575,11 +585,82 @@ def collect_css_decls_for_element(
         if any(t not in device_thresholds for t in thresholds):
             _LOG.info(
                 "F-ii residual (non-device breakpoint preserved, not snapped): "
-                "%s → %s [Spec 31 §3 F-ii passthrough follow-up]",
+                "%s → %s [→ sgsCustomCss per FR-31-5.2]",
                 media_cond.strip(), sorted(media_decls),
             )
+            if residual_sink is not None:
+                residual_sink.append(
+                    ResidualBand(
+                        selector=residual_selector,
+                        media_cond=media_cond.strip(),
+                        decls=dict(media_decls),
+                    )
+                )
 
     return out_base, out_bp
+
+
+# ---------------------------------------------------------------------------
+# F-ii residual passthrough → sgsCustomCss (FR-31-5.2)
+# ---------------------------------------------------------------------------
+
+# Marker comments wrapping the converter-authored residual CSS inside sgsCustomCss.
+# A re-clone finds-and-replaces ONLY the marked block (never clobbering any
+# client-authored Additional-CSS that sits outside the markers), and the block is
+# idempotent across re-clones (replace, not append-again).
+_RESIDUAL_MARKER_START = "/* SGS-CONVERTER-RESIDUAL:start */"
+_RESIDUAL_MARKER_END = "/* SGS-CONVERTER-RESIDUAL:end */"
+
+
+def _residual_selector_for(node: Tag) -> str:
+    """The element's own SGS-BEM element class as a CSS selector, or '' if the node
+    is the block ROOT (a root-level residual scopes to the block wrapper directly).
+
+    The rendered clone preserves the draft's BEM element class by construction (SGS
+    render.php emits ``.sgs-<block>__<element>``), so the draft node's OWN class IS
+    the stable render selector — no hardcoded string, no DB lookup (R-31-1). A node
+    whose class carries no SGS-BEM ELEMENT (block root, or a non-BEM node) yields ''
+    so the band targets the wrapper via a bare ``&selector``.
+    """
+    for cls in node.get("class", []) or []:
+        bem = db_lookup.parse_sgs_bem(cls)
+        if bem and bem.element:
+            return "." + cls
+    return ""
+
+
+def serialise_residual_bands(bands: list[ResidualBand]) -> str:
+    """Serialise captured ResidualBands into ONE ``sgsCustomCss`` string (FR-31-5.2).
+
+    Groups by ``media_cond`` then ``selector`` so each media query appears once with
+    all its rules, using the ``&selector`` convention consumed by
+    ``includes/custom-css.php`` (``&selector`` → the block's scoped wrapper class,
+    ``&selector .sgs-x__y`` → a descendant). Wrapped in marker comments for
+    idempotent re-clone replacement. Returns '' when there are no bands.
+    """
+    if not bands:
+        return ""
+    # Deterministic grouping: media_cond → selector → {prop: val} (last write wins,
+    # matching CSS source-order within one collected element).
+    grouped: dict[str, dict[str, dict[str, str]]] = {}
+    order: list[str] = []
+    for band in bands:
+        if band.media_cond not in grouped:
+            grouped[band.media_cond] = {}
+            order.append(band.media_cond)
+        sel_map = grouped[band.media_cond]
+        sel_map.setdefault(band.selector, {}).update(band.decls)
+
+    blocks: list[str] = []
+    for media_cond in order:
+        rules: list[str] = []
+        for selector, decls in grouped[media_cond].items():
+            target = "&selector" + (f" {selector}" if selector else "")
+            body = "".join(f"{prop}:{val};" for prop, val in decls.items())
+            rules.append(f"{target}{{{body}}}")
+        blocks.append(f"{media_cond}{{{''.join(rules)}}}")
+
+    return _RESIDUAL_MARKER_START + "\n" + "\n".join(blocks) + "\n" + _RESIDUAL_MARKER_END
 
 
 # ---------------------------------------------------------------------------

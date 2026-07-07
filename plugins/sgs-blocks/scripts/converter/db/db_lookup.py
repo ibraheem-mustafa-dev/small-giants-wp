@@ -1762,6 +1762,36 @@ def device_tier_thresholds() -> frozenset[int]:
     return _DEVICE_TIER_THRESHOLDS
 
 
+# Whole-tier (lo, hi) inclusive width ranges, derived from the SAME device
+# thresholds above (Desktop ≥1024 / Tablet 768-1023 / Mobile ≤767). Desktop is
+# unbounded above, represented by a large sentinel hi. A media rule folds into a
+# tier's effective value ONLY if it applies across the tier's ENTIRE range (tested
+# at both lo and hi) — so a non-device threshold that covers only PART of a tier
+# (e.g. min-width:1280 inside Desktop, or max-width:1200 inside Desktop) is NOT
+# absorbed into the tier's base value; it is peeled as an F-ii residual instead.
+# Same R-31-1 permitted-constant class as _DEVICE_TIER_THRESHOLDS (web-platform
+# @media boundaries, not SGS per-block data).
+_DEVICE_TIER_RANGES: tuple[tuple[str, int, int], ...] = (
+    ("Desktop", 1024, 2147483647),
+    ("Tablet", 768, 1023),
+    ("Mobile", 1, 767),
+)
+
+
+def device_tier_ranges() -> tuple[tuple[str, int, int], ...]:
+    """Return (tier_name, lo, hi) inclusive width ranges, Desktop→Tablet→Mobile.
+
+    Used by ``collect_css_decls_for_element`` for whole-tier folding (FR-31-5.2):
+    a media rule contributes to a tier's effective value only if it applies across
+    the tier's ENTIRE [lo, hi] range, so a non-device threshold that covers only
+    PART of a tier is never silently absorbed — it routes to the F-ii residual
+    passthrough (``sgsCustomCss``) instead of snapping to the tier. Replaces the
+    single-interior-width ``device_tier_samples`` sampling, which wrongly absorbed a
+    ``min-width`` rule nested inside the Desktop range into the Desktop base value.
+    """
+    return _DEVICE_TIER_RANGES
+
+
 @functools.lru_cache(maxsize=None)
 def modifier_suffixes(kind: str) -> tuple[str, ...]:
     """Return the suffix vocabulary for one ``modifier_suffixes.kind`` from the DB.

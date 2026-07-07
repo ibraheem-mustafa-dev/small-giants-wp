@@ -24,7 +24,11 @@ from typing import Any
 from converter.context import Ctx, Decl, Recognition
 from converter.recognition import build_ctx
 from converter.orchestrator import process_element
-from converter.services.styling_helpers import collect_css_decls_for_element
+from converter.services.styling_helpers import (
+    collect_css_decls_for_element,
+    serialise_residual_bands,
+)
+from converter.models import ResidualBand
 from converter.services.root_supports import (
     lift_root_supports_to_style,
     _ALWAYS_STRIP_SHORTHANDS,
@@ -108,7 +112,16 @@ def _build_css_attrs(
 
         ctx = build_ctx(rec, node, is_root=is_root, conn=conn)
 
-        base_decls, bp_decls = collect_css_decls_for_element(node, css_rules)
+        # F-ii residual sink (FR-31-5.2): non-device-tier @media bands that the
+        # 3-tier attr model cannot represent are captured here (never dropped) and
+        # serialised to this block's ``sgsCustomCss`` below. Captured ONLY at this
+        # call site — root_supports.lift_root_supports_to_style re-collects the SAME
+        # node with the SAME css_rules, so passing a sink there too would
+        # double-count the identical bands.
+        residual_sink: list[ResidualBand] = []
+        base_decls, bp_decls = collect_css_decls_for_element(
+            node, css_rules, residual_sink=residual_sink
+        )
 
         # ---- Step 2a: root-supports native style.* lift (convert.py:774-956) ----
         # Emits padding/background-color/border-radius etc. as WP style.* attrs
@@ -162,6 +175,18 @@ def _build_css_attrs(
         if decls:
             result = process_element(ctx, decls)
             merged.update(result.attrs())
+
+        # ---- F-ii residual → sgsCustomCss (FR-31-5.2 passthrough) ----
+        # Serialise any captured non-device-tier bands into the block's
+        # Additional-CSS field. APPEND (never overwrite) any pre-existing
+        # sgsCustomCss (a re-clone could carry client-authored content); the marker
+        # comments keep the converter block idempotently replaceable.
+        residual_css = serialise_residual_bands(residual_sink)
+        if residual_css:
+            existing = merged.get("sgsCustomCss", "")
+            merged["sgsCustomCss"] = (
+                f"{existing}\n{residual_css}" if existing else residual_css
+            )
 
         return merged
 

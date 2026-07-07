@@ -53,6 +53,29 @@ class Write:
     tier: str                  # Base|Mobile|Tablet|Desktop|Other:<cond>
 
 
+@dataclass
+class ResidualBand:
+    """A non-device-tier @media band peeled from an element's CSS (FR-31-5.2).
+
+    The 3-tier attr model (Mobile/Tablet/Desktop, fixed at 768/1024) cannot
+    represent a breakpoint that SPLITS a tier — a D228 "arbitrary visual
+    breakpoint" whose threshold ∉ {767,768,1023,1024} (e.g. min-width:1280 inside
+    Desktop, min-width:600 inside Mobile). Such a band is CAPTURED here — never
+    snapped to a tier, never dropped — and serialised to the owning block's
+    ``sgsCustomCss`` (Additional-CSS) field, the client-editable destination
+    (STOP-52: the page must never depend on non-block-settings pipeline CSS).
+
+    ``selector`` is the element's own SGS-BEM class as a CSS selector
+    (e.g. '.sgs-hero__content'), which the rendered clone preserves by
+    construction; an EMPTY string means the band targets the block ROOT itself
+    (serialised as a bare ``&selector`` with no descendant). Not frozen — it
+    carries a mutable ``decls`` dict and is never hashed.
+    """
+    selector: str          # e.g. '.sgs-hero__content'  ('' = block root)
+    media_cond: str        # e.g. '@media (min-width: 1280px)' (verbatim, incl. @media)
+    decls: dict            # {css_property: value}
+
+
 @dataclass(frozen=True)
 class GAP:
     """A declaration that did not transfer, with the reason."""

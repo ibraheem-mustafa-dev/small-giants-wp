@@ -46,6 +46,13 @@ function render_custom_css( string $block_content, array $block ): string {
 		. $scoped_css
 		. '</style>';
 
-	return $style . $block_content;
+	// APPEND (not prepend) so the block's Additional-CSS wins over the block's own
+	// render-time styles at equal specificity (later source order wins). This is
+	// what makes "Additional CSS" behave as an override — matching WordPress core's
+	// site-wide Additional CSS, which is emitted last. It also lets the cloning
+	// pipeline's non-device-breakpoint residual CSS (FR-31-5.2, e.g. an @media
+	// (min-width:1280px) padding band) override the block's base tier attr rule at
+	// that breakpoint. (Prepending let the block's own later <style> beat it.)
+	return $block_content . $style;
 }
 add_filter( 'render_block', __NAMESPACE__ . '\render_custom_css', 10, 2 );
