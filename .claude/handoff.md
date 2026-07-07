@@ -5,6 +5,51 @@ thread: single thread (cloning pipeline)
 session_date: 2026-07-07
 ---
 
+# Session Handoff — 2026-07-07 (D289 — universal responsive breakpoint router: whole-tier folding + non-device breakpoint → sgsCustomCss)
+
+## Completed This Session
+1. **Universal breakpoint router SHIPPED + LANDED (commit `9a22b6f2`, main).** A draft `@media` rule now routes by breakpoint CLASS for every element of every block: device-tier (768/1024) → the block's `*Tablet`/`*Mobile`/base attrs; non-device (600/640/1280/…) → the block's `sgsCustomCss` (Additional-CSS). Bean scoped this to Task A only; the L1-L4 padding is the next session.
+2. **Part 1 — whole-tier folding** (`services/styling_helpers.py` `collect_css_decls_for_element` + new `db/db_lookup.py::device_tier_ranges`). Replaced D259 single-interior-width sampling (Desktop@1440) that wrongly ABSORBED a `min-width` nested inside the Desktop range into the Desktop base. Now each tier folds only rules spanning its whole `[lo,hi]` range; direction-agnostic. Proven on the real hero node.
+3. **Part 2 — residual capture** (`models.py::ResidualBand` + `residual_sink` out-param — backward-compatible, no 3-tuple churn; `_residual_selector_for` scopes by the element's OWN SGS-BEM class, no hardcoded selector/DB lookup).
+4. **Part 3 — `sgsCustomCss` writer** (`serialise_residual_bands` drained once per block in `services/css_pass.py::_build_css_attrs`; `root_supports` re-collects the same node WITHOUT a sink → no double-capture). `includes/custom-css.php` changed prepend→APPEND (Bean-approved) so Additional-CSS overrides at equal specificity (matches WP-core Additional CSS).
+5. **LANDED page 8 (STOP-21/43):** hero h1 = **52px at 768/1024** (was 58 — over-inflated by the 1280 rule), NO regression (feature-grid 4-col etc.); ingredients `≥600 → 4-across`, gift/social-proof `≥640` non-device breakpoints now CAPTURED (were silently dropped). Same tier correction fixed the gift/ingredients/social headings.
+6. **Pre-commit `/qc-council` (3 raters): no bugs introduced.** Two findings (no-width media `@media print`/`prefers-reduced-motion` folds into base + not captured; inverted-threshold min-width source-order) are PRE-EXISTING (same in D259) + UNTRIGGERED by mockups → documented as Spec 31 follow-ups, not fixed (scope discipline).
+7. **Spec 31 §3 F-fork + §13.4 FR-31-5.2 RATIFIED** (whole-tier + sgsCustomCss). **4 goldens re-seeded per-section with LANDED proof** (STOP-60, not bulk); conformance back to the 4 pre-existing baseline failures (brand/featured-product/option-picker/product-card — other threads' debt, untouched).
+
+## Current State
+- **Branch:** `main` at `9a22b6f2` (pushed, no leaks, 0 NEW gate violations). D-ceiling **D289**.
+- **Tests:** converter suite 464 pass / 1 skip / 4 fail (the 4 pre-existing known-golden failures = baseline, NOT this thread). New `test_residual_css_passthrough.py` (9 tests) green.
+- **Build:** n/a this session (no `src/` JS/CSS change; PHP + converter scripts only). custom-css.php deployed to sandybrown; page 8 re-cloned.
+- **Uncommitted:** clean except the 0-byte stray `sgs-framework.db` (deliberately not committed).
+
+## Known Issues / Blockers
+- **Hero content PADDING still not transferred** — root cause PROVEN this session: the **L4 per-area extraction is UNWIRED for composites** (nothing in the live pipeline sets `ctx.area_name`, so `layer_detect` never returns `GRID_AREA`, the `grid_area` resolver + `attr_for_area_property` never fire, and `.sgs-hero__content`'s box-CSS is never even collected — it's a Branch-C slug-None wrapper descended for content only). This is the L4 work, deferred by Bean to next session.
+- **Residual render-precedence limitation (STOP-64):** the wrapper-class residual overrides only EQUAL-specificity CLASS-scoped block rules; an ID-scoped rule (`#uid`, the typography helper) is NOT overridden (hero h1 ≥1280 stays 52, not 58). Reconcile in the per-block render-specificity work (folds into L4).
+
+## Next Priorities (in order)
+1. **The L1-L4 container cascade — WIRE the L4 per-area extraction** so composite area-wrappers' box-CSS routes to per-area attrs (`content`→`contentPadding*`). This lands the hero padding (class-scoped `.uid .sgs-hero__content` (0,2,0) → the D289 residual WILL win at equal specificity + append). Needs L1-3 working first + must work for ALL block types.
+2. **Residual render-precedence (STOP-64)** — reconcile the ID-scoped-block-rule override, alongside #1 (same problem class).
+3. (Track) the two pre-existing robustness follow-ups (no-width media fold; inverted-threshold source-order — Spec 31 §3/§13.4 documented); the pre-existing 4 golden failures (other threads).
+
+## Files Modified
+| File | What changed |
+|------|-------------|
+| `plugins/sgs-blocks/scripts/converter/services/styling_helpers.py` | Whole-tier folding + residual capture + `_residual_selector_for` + `serialise_residual_bands` |
+| `plugins/sgs-blocks/scripts/converter/db/db_lookup.py` | New `device_tier_ranges` (+ retained `device_tier_samples`) |
+| `plugins/sgs-blocks/scripts/converter/models.py` | New `ResidualBand` dataclass |
+| `plugins/sgs-blocks/scripts/converter/services/css_pass.py` | `residual_sink` wiring → `sgsCustomCss` drain (once per block) |
+| `plugins/sgs-blocks/includes/custom-css.php` | prepend → append (Additional-CSS overrides at equal specificity) |
+| `plugins/sgs-blocks/scripts/converter/tests/test_metamorphic_real_draft.py` | Exclude media-condition px from the scale check |
+| `plugins/sgs-blocks/scripts/converter/tests/test_residual_css_passthrough.py` | NEW — 9 tests (capture / selector / serialise) |
+| `.../tests/fixtures/conformance/goldens/mamas-munches-homepage__{hero,gift-section,ingredients-section,social-proof}.golden.json` | Re-seeded (LANDED proof) |
+| `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` | §3 F-fork + §13.4 FR-31-5.2 ratified |
+| `.claude/decisions.md` | D289 added |
+
+## Notes for Next Session
+- The D289 residual mechanism is the RIGHT foundation for the padding: once L4 routes `.sgs-hero__content` padding to `contentPadding*` (class-scoped), the residual overrides correctly (equal specificity + append). The ID-specificity limitation only bites typography-helper/`#uid`-rendered properties.
+- `route_area_css_to_block_attrs` (`fold_helpers.py:247`) already EXISTS but is UNWIRED (zero callers) — the L4 wiring may reuse it. `attr_for_area_property` + `grid_area` resolver are built + unit-tested, just never dispatched (MF-5 still true).
+- Do NOT bulk-run `seed_conformance_goldens.py` (STOP-60) — re-seed per-section with a cited LANDED proof only.
+
 # Session Handoff — 2026-07-07 (D288 — button/multi-button rebuild: no wrapper div, full-width mobile CTAs, linked colour picker, preset-preview fix + hero vertical-centre)
 
 ## Completed This Session
