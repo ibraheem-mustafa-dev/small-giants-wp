@@ -2,7 +2,7 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/button",
-    "version": "1.4.0",
+    "version": "1.5.0",
     "title": "SGS Button",
     "category": "sgs-content",
     "description": "A highly-configurable button with a style-preset seed (primary/secondary/outline), icon support, hover states, and per-breakpoint controls.",
@@ -25,7 +25,12 @@
         },
         "spacing": {
             "margin": true,
-            "padding": true
+            "padding": true,
+            "__experimentalSkipSerialization": true
+        },
+        "__experimentalBorder": {
+            "radius": true,
+            "__experimentalSkipSerialization": true
         }
     },
     "attributes": {
@@ -125,109 +130,21 @@
             "type": "string",
             "default": "px"
         },
-        "paddingTop": {
-            "type": "number",
-            "default": null
+        "paddingTablet": {
+            "type": "object",
+            "default": {}
         },
-        "paddingRight": {
-            "type": "number",
-            "default": null
+        "paddingMobile": {
+            "type": "object",
+            "default": {}
         },
-        "paddingBottom": {
-            "type": "number",
-            "default": null
+        "marginTablet": {
+            "type": "object",
+            "default": {}
         },
-        "paddingLeft": {
-            "type": "number",
-            "default": null
-        },
-        "paddingTopTablet": {
-            "type": "number",
-            "default": null
-        },
-        "paddingRightTablet": {
-            "type": "number",
-            "default": null
-        },
-        "paddingBottomTablet": {
-            "type": "number",
-            "default": null
-        },
-        "paddingLeftTablet": {
-            "type": "number",
-            "default": null
-        },
-        "paddingTopMobile": {
-            "type": "number",
-            "default": null
-        },
-        "paddingRightMobile": {
-            "type": "number",
-            "default": null
-        },
-        "paddingBottomMobile": {
-            "type": "number",
-            "default": null
-        },
-        "paddingLeftMobile": {
-            "type": "number",
-            "default": null
-        },
-        "paddingUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "marginTop": {
-            "type": "number",
-            "default": null
-        },
-        "marginRight": {
-            "type": "number",
-            "default": null
-        },
-        "marginBottom": {
-            "type": "number",
-            "default": null
-        },
-        "marginLeft": {
-            "type": "number",
-            "default": null
-        },
-        "marginTopTablet": {
-            "type": "number",
-            "default": null
-        },
-        "marginRightTablet": {
-            "type": "number",
-            "default": null
-        },
-        "marginBottomTablet": {
-            "type": "number",
-            "default": null
-        },
-        "marginLeftTablet": {
-            "type": "number",
-            "default": null
-        },
-        "marginTopMobile": {
-            "type": "number",
-            "default": null
-        },
-        "marginRightMobile": {
-            "type": "number",
-            "default": null
-        },
-        "marginBottomMobile": {
-            "type": "number",
-            "default": null
-        },
-        "marginLeftMobile": {
-            "type": "number",
-            "default": null
-        },
-        "marginUnit": {
-            "type": "string",
-            "default": "px"
+        "marginMobile": {
+            "type": "object",
+            "default": {}
         },
         "fontFamily": {
             "type": "string",
@@ -333,77 +250,17 @@
             "type": "string",
             "default": "solid"
         },
-        "borderWidthTop": {
-            "type": "number",
-            "default": 2
+        "borderWidth": {
+            "type": "object",
+            "default": {}
         },
-        "borderWidthRight": {
-            "type": "number",
-            "default": 2
+        "borderRadiusTablet": {
+            "type": "object",
+            "default": {}
         },
-        "borderWidthBottom": {
-            "type": "number",
-            "default": 2
-        },
-        "borderWidthLeft": {
-            "type": "number",
-            "default": 2
-        },
-        "borderWidthUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "borderRadiusTL": {
-            "type": "number",
-            "default": 10
-        },
-        "borderRadiusTR": {
-            "type": "number",
-            "default": 10
-        },
-        "borderRadiusBR": {
-            "type": "number",
-            "default": 10
-        },
-        "borderRadiusBL": {
-            "type": "number",
-            "default": 10
-        },
-        "borderRadiusTabletTL": {
-            "type": "number",
-            "default": null
-        },
-        "borderRadiusTabletTR": {
-            "type": "number",
-            "default": null
-        },
-        "borderRadiusTabletBR": {
-            "type": "number",
-            "default": null
-        },
-        "borderRadiusTabletBL": {
-            "type": "number",
-            "default": null
-        },
-        "borderRadiusMobileTL": {
-            "type": "number",
-            "default": null
-        },
-        "borderRadiusMobileTR": {
-            "type": "number",
-            "default": null
-        },
-        "borderRadiusMobileBR": {
-            "type": "number",
-            "default": null
-        },
-        "borderRadiusMobileBL": {
-            "type": "number",
-            "default": null
-        },
-        "borderRadiusUnit": {
-            "type": "string",
-            "default": "px"
+        "borderRadiusMobile": {
+            "type": "object",
+            "default": {}
         },
         "boxShadow": {
             "type": "object",

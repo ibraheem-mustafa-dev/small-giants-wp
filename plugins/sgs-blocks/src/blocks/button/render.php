@@ -66,13 +66,24 @@ $min_height        = isset( $attributes['minHeight'] ) && null !== $attributes['
 $min_height_tab    = isset( $attributes['minHeightTablet'] ) && null !== $attributes['minHeightTablet'] ? absint( $attributes['minHeightTablet'] ) : null;
 $min_height_mob    = isset( $attributes['minHeightMobile'] ) && null !== $attributes['minHeightMobile'] ? absint( $attributes['minHeightMobile'] ) : null;
 
-// Spacing.
-$padding_unit = isset( $attributes['paddingUnit'] ) ? sanitize_text_field( $attributes['paddingUnit'] ) : 'px';
-$margin_unit  = isset( $attributes['marginUnit'] ) ? sanitize_text_field( $attributes['marginUnit'] ) : 'px';
+// Box-object interface contract (.claude/plans/2026-07-09-box-object-interface-contract.md
+// §1): a CSS-length sanitiser for object-attr side/corner values — strips
+// everything except digits, dot, %, and unit letters so a value can never
+// break out of its declaration. Mirrors sgs/container's wrapper sanitiser.
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
+// CSS keyword sanitiser — for free-text attrs concatenated into raw CSS
+// declarations (border-style / font-style / text-transform / text-decoration).
+// Strips everything except letters + hyphen, so ;{}():digits can never break out
+// of the declaration into a new CSS rule. A Contributor-authored malicious value
+// (e.g. "solid;}body{display:none") is reduced to safe keyword chars.
+$sgs_css_keyword = static function ( $value ) {
+	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
+};
 
 $allowed_units = array( 'px', 'em', 'rem', '%' );
-$padding_unit  = in_array( $padding_unit, $allowed_units, true ) ? $padding_unit : 'px';
-$margin_unit   = in_array( $margin_unit, $allowed_units, true ) ? $margin_unit : 'px';
 
 // Min-height units — validated after $allowed_units is declared.
 $min_height_unit  = isset( $attributes['minHeightUnit'] ) ? sanitize_text_field( $attributes['minHeightUnit'] ) : 'px';
@@ -82,41 +93,63 @@ $min_height_tab_u = in_array( $min_height_tab_u, $allowed_units, true ) ? $min_h
 $min_height_mob_u = isset( $attributes['minHeightMobileUnit'] ) ? sanitize_text_field( $attributes['minHeightMobileUnit'] ) : 'px';
 $min_height_mob_u = in_array( $min_height_mob_u, $allowed_units, true ) ? $min_height_mob_u : 'px';
 
-$padding_top    = isset( $attributes['paddingTop'] ) && null !== $attributes['paddingTop'] ? (float) $attributes['paddingTop'] : null;
-$padding_right  = isset( $attributes['paddingRight'] ) && null !== $attributes['paddingRight'] ? (float) $attributes['paddingRight'] : null;
-$padding_bottom = isset( $attributes['paddingBottom'] ) && null !== $attributes['paddingBottom'] ? (float) $attributes['paddingBottom'] : null;
-$padding_left   = isset( $attributes['paddingLeft'] ) && null !== $attributes['paddingLeft'] ? (float) $attributes['paddingLeft'] : null;
+// Box-object interface contract §1/§2: padding/margin BASE reads WP-native
+// style.spacing.* (skipSerialization keeps it out of the auto-inline output —
+// see the scoped-rule emission in step 4); tablet/mobile tiers are the
+// paddingTablet/paddingMobile + marginTablet/marginMobile OBJECT attrs
+// { top, right, bottom, left } (a missing key = that side unset).
+$base_spacing_padding = array();
+if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
+	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+			$base_spacing_padding[ $spacing_side ] = $spacing_value;
+		}
+	}
+}
+$base_spacing_margin = array();
+if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+			$base_spacing_margin[ $spacing_side ] = $spacing_value;
+		}
+	}
+}
 
-$padding_top_tab    = isset( $attributes['paddingTopTablet'] ) && null !== $attributes['paddingTopTablet'] ? (float) $attributes['paddingTopTablet'] : null;
-$padding_right_tab  = isset( $attributes['paddingRightTablet'] ) && null !== $attributes['paddingRightTablet'] ? (float) $attributes['paddingRightTablet'] : null;
-$padding_bottom_tab = isset( $attributes['paddingBottomTablet'] ) && null !== $attributes['paddingBottomTablet'] ? (float) $attributes['paddingBottomTablet'] : null;
-$padding_left_tab   = isset( $attributes['paddingLeftTablet'] ) && null !== $attributes['paddingLeftTablet'] ? (float) $attributes['paddingLeftTablet'] : null;
+$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
+$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
+$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
 
-$padding_top_mob    = isset( $attributes['paddingTopMobile'] ) && null !== $attributes['paddingTopMobile'] ? (float) $attributes['paddingTopMobile'] : null;
-$padding_right_mob  = isset( $attributes['paddingRightMobile'] ) && null !== $attributes['paddingRightMobile'] ? (float) $attributes['paddingRightMobile'] : null;
-$padding_bottom_mob = isset( $attributes['paddingBottomMobile'] ) && null !== $attributes['paddingBottomMobile'] ? (float) $attributes['paddingBottomMobile'] : null;
-$padding_left_mob   = isset( $attributes['paddingLeftMobile'] ) && null !== $attributes['paddingLeftMobile'] ? (float) $attributes['paddingLeftMobile'] : null;
-
-$margin_top    = isset( $attributes['marginTop'] ) && null !== $attributes['marginTop'] ? (float) $attributes['marginTop'] : null;
-$margin_right  = isset( $attributes['marginRight'] ) && null !== $attributes['marginRight'] ? (float) $attributes['marginRight'] : null;
-$margin_bottom = isset( $attributes['marginBottom'] ) && null !== $attributes['marginBottom'] ? (float) $attributes['marginBottom'] : null;
-$margin_left   = isset( $attributes['marginLeft'] ) && null !== $attributes['marginLeft'] ? (float) $attributes['marginLeft'] : null;
-
-$margin_top_tab    = isset( $attributes['marginTopTablet'] ) && null !== $attributes['marginTopTablet'] ? (float) $attributes['marginTopTablet'] : null;
-$margin_right_tab  = isset( $attributes['marginRightTablet'] ) && null !== $attributes['marginRightTablet'] ? (float) $attributes['marginRightTablet'] : null;
-$margin_bottom_tab = isset( $attributes['marginBottomTablet'] ) && null !== $attributes['marginBottomTablet'] ? (float) $attributes['marginBottomTablet'] : null;
-$margin_left_tab   = isset( $attributes['marginLeftTablet'] ) && null !== $attributes['marginLeftTablet'] ? (float) $attributes['marginLeftTablet'] : null;
-
-$margin_top_mob    = isset( $attributes['marginTopMobile'] ) && null !== $attributes['marginTopMobile'] ? (float) $attributes['marginTopMobile'] : null;
-$margin_right_mob  = isset( $attributes['marginRightMobile'] ) && null !== $attributes['marginRightMobile'] ? (float) $attributes['marginRightMobile'] : null;
-$margin_bottom_mob = isset( $attributes['marginBottomMobile'] ) && null !== $attributes['marginBottomMobile'] ? (float) $attributes['marginBottomMobile'] : null;
-$margin_left_mob   = isset( $attributes['marginLeftMobile'] ) && null !== $attributes['marginLeftMobile'] ? (float) $attributes['marginLeftMobile'] : null;
+// Base border-radius — WP-native style.border.radius (string = uniform, or an
+// object with topLeft/topRight/bottomLeft/bottomRight keys). Tiers are the
+// borderRadiusTablet/borderRadiusMobile OBJECT attrs (contract §2).
+$base_border_radius = null;
+if ( isset( $attributes['style']['border']['radius'] ) ) {
+	$radius_raw = $attributes['style']['border']['radius'];
+	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
+		$base_border_radius = $radius_raw;
+	} elseif ( is_array( $radius_raw ) ) {
+		$radius_clean  = array();
+		$has_any_corner = false;
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? $sgs_css_length( $radius_raw[ $corner ] ) : '';
+			if ( '' !== $radius_clean[ $corner ] ) {
+				$has_any_corner = true;
+			}
+		}
+		if ( $has_any_corner ) {
+			$base_border_radius = $radius_clean;
+		}
+	}
+}
+$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
+$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
 
 // Typography (custom mode only).
 $font_weight      = isset( $attributes['fontWeight'] ) ? sanitize_text_field( $attributes['fontWeight'] ) : '';
-$font_style_attr  = isset( $attributes['fontStyle'] ) ? sanitize_text_field( $attributes['fontStyle'] ) : 'normal';
-$text_transform   = isset( $attributes['textTransform'] ) ? sanitize_text_field( $attributes['textTransform'] ) : '';
-$text_decoration  = isset( $attributes['textDecoration'] ) ? sanitize_text_field( $attributes['textDecoration'] ) : '';
+$font_style_attr  = isset( $attributes['fontStyle'] ) ? $sgs_css_keyword( $attributes['fontStyle'] ) : 'normal';
+$text_transform   = isset( $attributes['textTransform'] ) ? $sgs_css_keyword( $attributes['textTransform'] ) : '';
+$text_decoration  = isset( $attributes['textDecoration'] ) ? $sgs_css_keyword( $attributes['textDecoration'] ) : '';
 $font_size        = isset( $attributes['fontSize'] ) && null !== $attributes['fontSize'] ? (float) $attributes['fontSize'] : null;
 $font_size_tab    = isset( $attributes['fontSizeTablet'] ) && null !== $attributes['fontSizeTablet'] ? (float) $attributes['fontSizeTablet'] : null;
 $font_size_mob    = isset( $attributes['fontSizeMobile'] ) && null !== $attributes['fontSizeMobile'] ? (float) $attributes['fontSizeMobile'] : null;
@@ -145,29 +178,16 @@ $colour_border_hover = isset( $attributes['colourBorderHover'] ) ? $attributes['
 // untouched on hover.
 $text_decoration_hover = isset( $attributes['textDecorationHover'] ) ? sanitize_text_field( $attributes['textDecorationHover'] ) : 'none';
 
-// Border (custom mode only).
-$border_style      = isset( $attributes['borderStyle'] ) ? sanitize_text_field( $attributes['borderStyle'] ) : 'solid';
-$border_width_top  = isset( $attributes['borderWidthTop'] ) && null !== $attributes['borderWidthTop'] ? absint( $attributes['borderWidthTop'] ) : null;
-$border_width_rgt  = isset( $attributes['borderWidthRight'] ) && null !== $attributes['borderWidthRight'] ? absint( $attributes['borderWidthRight'] ) : null;
-$border_width_bot  = isset( $attributes['borderWidthBottom'] ) && null !== $attributes['borderWidthBottom'] ? absint( $attributes['borderWidthBottom'] ) : null;
-$border_width_lft  = isset( $attributes['borderWidthLeft'] ) && null !== $attributes['borderWidthLeft'] ? absint( $attributes['borderWidthLeft'] ) : null;
-$border_width_unit = isset( $attributes['borderWidthUnit'] ) ? sanitize_text_field( $attributes['borderWidthUnit'] ) : 'px';
-
-$border_radius_tl = isset( $attributes['borderRadiusTL'] ) && null !== $attributes['borderRadiusTL'] ? absint( $attributes['borderRadiusTL'] ) : null;
-$border_radius_tr = isset( $attributes['borderRadiusTR'] ) && null !== $attributes['borderRadiusTR'] ? absint( $attributes['borderRadiusTR'] ) : null;
-$border_radius_br = isset( $attributes['borderRadiusBR'] ) && null !== $attributes['borderRadiusBR'] ? absint( $attributes['borderRadiusBR'] ) : null;
-$border_radius_bl = isset( $attributes['borderRadiusBL'] ) && null !== $attributes['borderRadiusBL'] ? absint( $attributes['borderRadiusBL'] ) : null;
-
-$border_radius_tab_tl = isset( $attributes['borderRadiusTabletTL'] ) && null !== $attributes['borderRadiusTabletTL'] ? absint( $attributes['borderRadiusTabletTL'] ) : null;
-$border_radius_tab_tr = isset( $attributes['borderRadiusTabletTR'] ) && null !== $attributes['borderRadiusTabletTR'] ? absint( $attributes['borderRadiusTabletTR'] ) : null;
-$border_radius_tab_br = isset( $attributes['borderRadiusTabletBR'] ) && null !== $attributes['borderRadiusTabletBR'] ? absint( $attributes['borderRadiusTabletBR'] ) : null;
-$border_radius_tab_bl = isset( $attributes['borderRadiusTabletBL'] ) && null !== $attributes['borderRadiusTabletBL'] ? absint( $attributes['borderRadiusTabletBL'] ) : null;
-
-$border_radius_mob_tl = isset( $attributes['borderRadiusMobileTL'] ) && null !== $attributes['borderRadiusMobileTL'] ? absint( $attributes['borderRadiusMobileTL'] ) : null;
-$border_radius_mob_tr = isset( $attributes['borderRadiusMobileTR'] ) && null !== $attributes['borderRadiusMobileTR'] ? absint( $attributes['borderRadiusMobileTR'] ) : null;
-$border_radius_mob_br = isset( $attributes['borderRadiusMobileBR'] ) && null !== $attributes['borderRadiusMobileBR'] ? absint( $attributes['borderRadiusMobileBR'] ) : null;
-$border_radius_mob_bl = isset( $attributes['borderRadiusMobileBL'] ) && null !== $attributes['borderRadiusMobileBL'] ? absint( $attributes['borderRadiusMobileBL'] ) : null;
-$border_radius_unit   = isset( $attributes['borderRadiusUnit'] ) ? sanitize_text_field( $attributes['borderRadiusUnit'] ) : 'px';
+// Border (custom mode only). Box-object interface contract §1/§2: borderWidth
+// is an SGS custom OBJECT attr { top, right, bottom, left } — no WP-native
+// border-width support, no tiers (matches the pre-existing base-only contract).
+$border_style     = isset( $attributes['borderStyle'] ) ? $sgs_css_keyword( $attributes['borderStyle'] ) : 'solid';
+$border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = $sgs_css_length( $border_width_obj['top'] ?? '' );
+$border_width_rgt    = $sgs_css_length( $border_width_obj['right'] ?? '' );
+$border_width_bot    = $sgs_css_length( $border_width_obj['bottom'] ?? '' );
+$border_width_lft    = $sgs_css_length( $border_width_obj['left'] ?? '' );
+$has_border_width     = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
 
 // Box shadow.
 $box_shadow_default = array(
@@ -241,11 +261,11 @@ $inline_styles[] = "--sgs-btn-icon-gap:{$icon_gap}px";
 // / line-height / letter-spacing / padding / min-height / width have tablet+mobile
 // tiers and are emitted on the same id-scoped selector in step 4 (Pattern A).
 $base_decls = array();
-if ( null !== $border_width_top || null !== $border_width_rgt || null !== $border_width_bot || null !== $border_width_lft ) {
-	$bwt          = null !== $border_width_top ? $border_width_top . $border_width_unit : '0';
-	$bwr          = null !== $border_width_rgt ? $border_width_rgt . $border_width_unit : '0';
-	$bwb          = null !== $border_width_bot ? $border_width_bot . $border_width_unit : '0';
-	$bwl          = null !== $border_width_lft ? $border_width_lft . $border_width_unit : '0';
+if ( $has_border_width ) {
+	$bwt          = '' !== $border_width_top ? $border_width_top : '0';
+	$bwr          = '' !== $border_width_rgt ? $border_width_rgt : '0';
+	$bwb          = '' !== $border_width_bot ? $border_width_bot : '0';
+	$bwl          = '' !== $border_width_lft ? $border_width_lft : '0';
 	$base_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
 }
 if ( $border_style && 'solid' !== $border_style ) {
@@ -355,82 +375,98 @@ $scoped_css_parts[] = sgs_responsive_css_rule(
 	"#{$uid}.sgs-button"
 );
 
-$scoped_css_parts[] = sgs_responsive_box_shorthand_rule(
-	$attributes,
-	'border-radius',
-	array(
-		'top'    => array(
-			'base'   => 'borderRadiusTL',
-			'tablet' => 'borderRadiusTabletTL',
-			'mobile' => 'borderRadiusMobileTL',
-		),
-		'right'  => array(
-			'base'   => 'borderRadiusTR',
-			'tablet' => 'borderRadiusTabletTR',
-			'mobile' => 'borderRadiusMobileTR',
-		),
-		'bottom' => array(
-			'base'   => 'borderRadiusBR',
-			'tablet' => 'borderRadiusTabletBR',
-			'mobile' => 'borderRadiusMobileBR',
-		),
-		'left'   => array(
-			'base'   => 'borderRadiusBL',
-			'tablet' => 'borderRadiusTabletBL',
-			'mobile' => 'borderRadiusMobileBL',
-		),
-	),
-	'borderRadiusUnit',
-	"#{$uid}.sgs-button"
-);
-
-// Padding — base + tablet + mobile shorthand on the SAME selector
-// (Pattern A). All modes (matches the pre-existing contract).
-$scoped_css_parts[] = sgs_responsive_box_shorthand_rule(
-	$attributes,
-	'padding',
-	array(
-		'top'    => array(
-			'base'   => 'paddingTop',
-			'tablet' => 'paddingTopTablet',
-			'mobile' => 'paddingTopMobile',
-		),
-		'right'  => array(
-			'base'   => 'paddingRight',
-			'tablet' => 'paddingRightTablet',
-			'mobile' => 'paddingRightMobile',
-		),
-		'bottom' => array(
-			'base'   => 'paddingBottom',
-			'tablet' => 'paddingBottomTablet',
-			'mobile' => 'paddingBottomMobile',
-		),
-		'left'   => array(
-			'base'   => 'paddingLeft',
-			'tablet' => 'paddingLeftTablet',
-			'mobile' => 'paddingLeftMobile',
-		),
-	),
-	'paddingUnit',
-	"#{$uid}.sgs-button"
-);
-
-// Tablet margin.
-if ( null !== $margin_top_tab || null !== $margin_right_tab || null !== $margin_bottom_tab || null !== $margin_left_tab ) {
-	$mt_t               = null !== $margin_top_tab ? $margin_top_tab . $margin_unit : '0';
-	$mr_t               = null !== $margin_right_tab ? $margin_right_tab . $margin_unit : '0';
-	$mb_t               = null !== $margin_bottom_tab ? $margin_bottom_tab . $margin_unit : '0';
-	$ml_t               = null !== $margin_left_tab ? $margin_left_tab . $margin_unit : '0';
-	$scoped_css_parts[] = '@media(max-width:1024px){' . "#{$uid}.sgs-button{margin:{$mt_t} {$mr_t} {$mb_t} {$ml_t};}}";
+// Base padding/margin/border-radius — Box-object interface contract (b): the
+// block declares __experimentalSkipSerialization on spacing + border.radius
+// supports, so WP does NOT auto-inline these; $attributes['style'] is still
+// populated, so emit as ONE scoped #uid rule via wp_style_engine_get_styles()
+// (the stable core API WP core itself uses for `layout` support) instead of
+// inline — mirrors sgs/container's wrapper pattern exactly.
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$base_style_engine_args = array();
+	if ( ! empty( $base_spacing_padding ) || ! empty( $base_spacing_margin ) ) {
+		$base_style_engine_args['spacing'] = array();
+		if ( ! empty( $base_spacing_padding ) ) {
+			$base_style_engine_args['spacing']['padding'] = $base_spacing_padding;
+		}
+		if ( ! empty( $base_spacing_margin ) ) {
+			$base_style_engine_args['spacing']['margin'] = $base_spacing_margin;
+		}
+	}
+	if ( null !== $base_border_radius ) {
+		$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
+	}
+	if ( ! empty( $base_style_engine_args ) ) {
+		$base_scoped_styles = wp_style_engine_get_styles(
+			$base_style_engine_args,
+			array( 'selector' => "#{$uid}" )
+		);
+		if ( ! empty( $base_scoped_styles['css'] ) ) {
+			$scoped_css_parts[] = $base_scoped_styles['css'];
+		}
+	}
 }
 
-// Mobile margin.
-if ( null !== $margin_top_mob || null !== $margin_right_mob || null !== $margin_bottom_mob || null !== $margin_left_mob ) {
-	$mt_m               = null !== $margin_top_mob ? $margin_top_mob . $margin_unit : '0';
-	$mr_m               = null !== $margin_right_mob ? $margin_right_mob . $margin_unit : '0';
-	$mb_m               = null !== $margin_bottom_mob ? $margin_bottom_mob . $margin_unit : '0';
-	$ml_m               = null !== $margin_left_mob ? $margin_left_mob . $margin_unit : '0';
-	$scoped_css_parts[] = '@media(max-width:767px){' . "#{$uid}.sgs-button{margin:{$mt_m} {$mr_m} {$mb_m} {$ml_m};}}";
+// Responsive padding/margin/border-radius tiers — box-object attrs, hand-built
+// shorthand (contract §2/§4). Tablet (≤1023px) then mobile (≤767px) on the
+// SAME id-scoped selector as the base rule above, so plain source-order
+// cascade (no !important needed) lets the narrower tier win.
+$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
+	$top    = $sgs_css_length( $box['top'] ?? '' );
+	$right  = $sgs_css_length( $box['right'] ?? '' );
+	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
+	$left   = $sgs_css_length( $box['left'] ?? '' );
+	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
+		return null;
+	}
+	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
+};
+
+// CSS border-radius shorthand order is top-left top-right bottom-right
+// bottom-left (NOT the box-model top/right/bottom/left order).
+$sgs_corner_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
+	$tl = $sgs_css_length( $box['topLeft'] ?? '' );
+	$tr = $sgs_css_length( $box['topRight'] ?? '' );
+	$br = $sgs_css_length( $box['bottomRight'] ?? '' );
+	$bl = $sgs_css_length( $box['bottomLeft'] ?? '' );
+	if ( '' === $tl && '' === $tr && '' === $br && '' === $bl ) {
+		return null;
+	}
+	return ( '' !== $tl ? $tl : '0' ) . ' ' . ( '' !== $tr ? $tr : '0' ) . ' ' . ( '' !== $br ? $br : '0' ) . ' ' . ( '' !== $bl ? $bl : '0' );
+};
+
+$padding_tab_val  = $sgs_box_shorthand( $padding_tablet_obj );
+$padding_mob_val  = $sgs_box_shorthand( $padding_mobile_obj );
+$margin_tab_val   = $sgs_box_shorthand( $margin_tablet_obj );
+$margin_mob_val   = $sgs_box_shorthand( $margin_mobile_obj );
+$radius_tab_val   = $sgs_corner_shorthand( $border_radius_tablet_obj );
+$radius_mob_val   = $sgs_corner_shorthand( $border_radius_mobile_obj );
+
+$tablet_box_decls = array();
+if ( null !== $padding_tab_val ) {
+	$tablet_box_decls[] = "padding:{$padding_tab_val}";
+}
+if ( null !== $margin_tab_val ) {
+	$tablet_box_decls[] = "margin:{$margin_tab_val}";
+}
+if ( null !== $radius_tab_val ) {
+	$tablet_box_decls[] = "border-radius:{$radius_tab_val}";
+}
+if ( $tablet_box_decls ) {
+	$scoped_css_parts[] = '@media(max-width:1023px){' . "#{$uid}.sgs-button{" . implode( ';', $tablet_box_decls ) . ';}}';
+}
+
+$mobile_box_decls = array();
+if ( null !== $padding_mob_val ) {
+	$mobile_box_decls[] = "padding:{$padding_mob_val}";
+}
+if ( null !== $margin_mob_val ) {
+	$mobile_box_decls[] = "margin:{$margin_mob_val}";
+}
+if ( null !== $radius_mob_val ) {
+	$mobile_box_decls[] = "border-radius:{$radius_mob_val}";
+}
+if ( $mobile_box_decls ) {
+	$scoped_css_parts[] = '@media(max-width:767px){' . "#{$uid}.sgs-button{" . implode( ';', $mobile_box_decls ) . ';}}';
 }
 
 // Icon size CSS var — base + tablet + mobile on the SAME selector (Pattern A).
@@ -534,15 +570,9 @@ if ( in_array( $inherit_style, array( 'primary', 'secondary', 'outline' ), true 
 	$btn_classes[] = 'sgs-button--' . $inherit_style;
 }
 
-// Margin inline style (wrapper level — no per-element responsive needed at wrapper level).
-$wrapper_styles = array();
-if ( null !== $margin_top || null !== $margin_right || null !== $margin_bottom || null !== $margin_left ) {
-	$mt               = null !== $margin_top ? $margin_top . $margin_unit : '0';
-	$mr               = null !== $margin_right ? $margin_right . $margin_unit : '0';
-	$mb               = null !== $margin_bottom ? $margin_bottom . $margin_unit : '0';
-	$ml               = null !== $margin_left ? $margin_left . $margin_unit : '0';
-	$wrapper_styles[] = "margin:{$mt} {$mr} {$mb} {$ml}";
-}
+// Base margin is no longer built as an inline wrapper style — Box-object
+// interface contract (b): it is WP-native style.spacing.margin, emitted
+// scoped via wp_style_engine_get_styles() in step 4 above, never inline.
 
 // ---------------------------------------------------------------------------
 // 6. Build icon output.
@@ -706,7 +736,10 @@ $safe_inherit_style = in_array( $inherit_style, $allowed_presets, true ) ? $inhe
 // (was `sgs-button-wrapper--full`).
 $full_modifier = ( 'full' === $width_type ) ? ' sgs-button--full' : '';
 $merged_class  = trim( $btn_class_str . $full_modifier );
-$merged_style  = trim( $btn_style_str . ( $wrapper_styles ? implode( ';', $wrapper_styles ) . ';' : '' ) );
+// $merged_style carries ONLY custom-property VALUES ($inline_styles from step
+// 3) — base padding/margin/border-radius/border-width are scoped <style>
+// rules (step 4), never inline (Box-object interface contract (b)).
+$merged_style  = trim( $btn_style_str );
 
 $wrapper_attr = get_block_wrapper_attributes(
 	array(
@@ -728,7 +761,12 @@ $allowed_css_tags = array(
 if ( $scoped_css_parts ) {
 	$raw_css = implode( '', $scoped_css_parts )
 		. '@media(prefers-reduced-motion:reduce){#' . $uid . ' .sgs-button{transition:none !important;transform:none !important;}}';
-	echo '<style>' . esc_html( $raw_css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_html on raw CSS is correct
+	// wp_strip_all_tags (not esc_html) matches the proven SGS_Container_Wrapper
+	// pattern: it blocks a </style> breakout while leaving CSS combinators like
+	// `>` intact (esc_html would turn `>` into &gt; and break any descendant rule).
+	// Every value reaching $raw_css is pre-sanitised ($sgs_css_length / $sgs_css_keyword
+	// / wp_style_engine_get_styles), so no un-sanitised value survives to here.
+	echo '<style>' . wp_strip_all_tags( $raw_css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style>
 }
 
 // Allowed tags for icon SVG + label output.
