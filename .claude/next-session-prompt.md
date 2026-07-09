@@ -75,6 +75,22 @@ live page before "done" (STOP-21/43/44); re-run gates + tests yourself (STOP-16)
 **Orchestration:** parallel solo Sonnet agents, one per block (disjoint dirs, FR-31-6.1), grouped ~4 at a time; I gate + LANDED-or-GATE-verify each (on-page → LANDED; off-page → audit-inline-styling.js clean + AST gate + synthetic clone). Log which tier each got (no "all LANDED" overclaim).
 **Depends on:** Task 2. **Acceptance:** every block 0 inline (`audit-inline-styling.js`), 0 F3 baseline rows, gates green.
 
+## Converter follow-up (do alongside Task 1 — small, from the D293 qc-council)
+**Finding #4 (deferred from ca8b1787):** the box-object dict-merge in `orchestrator.py`
+(`ElementResult.attrs()` + `process_element`) gates its per-key merge branch on
+`isinstance(w.value, dict)`, NOT the DB `box_family`. Harmless today (only `content_band.py`
+emits dict Writes, box_family-gated at source), but a future NON-box dict-valued resolver
+(e.g. a media/background `{url,id,alt}` object written twice to one attr) would silently
+per-key-merge instead of collision-raising. Gate the merge branch on an explicit box-family/
+shape flag before adding any such resolver. An inline code comment marks the spot. Solo Sonnet,
++ a regression test; re-run the 436-test suite.
+
+**Security sweep (folds into every block's §D):** the raw-CSS-concat injection pattern the
+button fix addressed (`border-style:` etc. concatenated after only `sanitize_text_field`, which
+doesn't strip `;{}`) exists in other blocks' render.php — each block's migration MUST apply the
+`preg_replace('/[^a-zA-Z-]/','',$v)` keyword sanitiser (contract §D). Not a separate task; part
+of every block's DONE bar.
+
 ## Task 4 — wire the gates zero-tolerance + close
 **What:** once the roster is green, wire `audit-inline-styling.js --check` + `check-box-family-guard.py --check` into `prebuild` as zero-tolerance; reconcile Spec 31/32 + CLAUDE.md to "rollout complete".
 **Acceptance:** prebuild fails on any new inline / name-based box merge.
