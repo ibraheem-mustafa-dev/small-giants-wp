@@ -240,15 +240,17 @@ export default function Edit( { attributes, setAttributes } ) {
 		typeof level === 'number' ? `h${ level }` : level;
 	const editorTag = isSubheading ? subTag : normalisedLevel;
 
+	// Contract §B3: NO wrapper <div> — the RichText h-tag/<p> IS the block root
+	// (matches render.php). It carries the block class + BOTH the box/background/
+	// border preview AND the typography preview, so the two style builders merge
+	// onto the single root element.
 	const blockProps = useBlockProps( {
 		className: [
 			'wp-block-sgs-heading',
 			isSubheading ? 'wp-block-sgs-heading--subheading' : '',
 		].filter( Boolean ).join( ' ' ),
-		style: buildWrapperStyle( attributes ),
+		style: { ...buildWrapperStyle( attributes ), ...buildTextStyle( attributes ) },
 	} );
-
-	const textStyle = buildTextStyle( attributes );
 
 	return (
 		<>
@@ -438,22 +440,20 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
-			{ /* ── Canvas ── */ }
-			<div { ...blockProps }>
-				<RichText
-					tagName={ editorTag }
-					className="wp-block-sgs-heading__text"
-					value={ content }
-					onChange={ ( val ) => setAttributes( { content: val } ) }
-					placeholder={
-						isSubheading
-							? __( 'Subheading copy…', 'sgs-blocks' )
-							: __( 'Section heading…', 'sgs-blocks' )
-					}
-					allowedFormats={ [ 'core/bold', 'core/italic', 'core/link' ] }
-					style={ textStyle }
-				/>
-			</div>
+			{ /* ── Canvas ── the RichText h-tag/<p> IS the block root (§B3, no
+			   wrapper div): useBlockProps spreads straight onto it. ── */ }
+			<RichText
+				{ ...blockProps }
+				tagName={ editorTag }
+				value={ content }
+				onChange={ ( val ) => setAttributes( { content: val } ) }
+				placeholder={
+					isSubheading
+						? __( 'Subheading copy…', 'sgs-blocks' )
+						: __( 'Section heading…', 'sgs-blocks' )
+				}
+				allowedFormats={ [ 'core/bold', 'core/italic', 'core/link' ] }
+			/>
 		</>
 	);
 }

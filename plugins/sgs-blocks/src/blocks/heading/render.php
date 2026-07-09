@@ -14,7 +14,7 @@
  * the rendered subtree carries ZERO inline CSS property declarations. Every
  * declaration — wrapper box/border/background/shadow/width/text-align, the WP
  * `color` support, AND the text element's typography — is emitted into the
- * block's OWN scoped `#{uid}` <style> tag. WP styling supports (spacing /
+ * block's OWN scoped `.{uid}` <style> tag. WP styling supports (spacing /
  * color / __experimentalBorder) all declare `__experimentalSkipSerialization`
  * in block.json so get_block_wrapper_attributes() never auto-inlines them.
  *
@@ -302,7 +302,7 @@ if ( '' !== $text_decoration && in_array( $text_decoration, $allowed_decorations
 
 // Contract §A: background / border-style / border-color / box-shadow / width /
 // text-align / border-width all move OFF the wrapper `style` attr and into the
-// scoped #{uid} rule below. Gated by !inherit_style (inheritStyle suppresses
+// scoped .{uid} rule below. Gated by !inherit_style (inheritStyle suppresses
 // block-level wrapper styling and inherits from the parent).
 $wrapper_decls = array();
 
@@ -341,10 +341,17 @@ if ( ! $inherit_style ) {
 }
 
 // ---------------------------------------------------------------------------
-// 5. Unique ID + scoped CSS assembly.
+// 5. Scoped CSS assembly.
+//
+// Contract §B3: the heading has NO wrapper <div> — the semantic <h{level}>/<p>
+// element IS the block root, carrying both the box/background/border AND the
+// typography. Because the root element also carries the anchor `id` (ToC), the
+// scoped uid is a CLASS (`.sgs-hdg-{md5}`, container-style), never an `id` —
+// so every scoped rule targets the root selector `.{uid}.wp-block-sgs-heading`.
 // ---------------------------------------------------------------------------
 
-$uid = 'sgs-hdg-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$uid      = 'sgs-hdg-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$root_sel = '.' . $uid . '.wp-block-sgs-heading';
 
 $scoped_css = array();
 
@@ -365,20 +372,20 @@ if ( $has_scale ) {
 }
 
 if ( $hover_rules || $has_scale ) {
-	$scoped_css[] = "#{$uid}.wp-block-sgs-heading{transition:all {$transition_duration}ms {$transition_easing};}";
-	$scoped_css[] = "@media(prefers-reduced-motion:reduce){#{$uid}.wp-block-sgs-heading{transition:none !important;transform:none !important;}}";
+	$scoped_css[] = "{$root_sel}{transition:all {$transition_duration}ms {$transition_easing};}";
+	$scoped_css[] = "@media(prefers-reduced-motion:reduce){{$root_sel}{transition:none !important;transform:none !important;}}";
 	if ( $hover_rules ) {
-		$scoped_css[] = "#{$uid}.wp-block-sgs-heading:hover,#{$uid}.wp-block-sgs-heading:focus-within{" . implode( ';', $hover_rules ) . ';}';
+		$scoped_css[] = "{$root_sel}:hover,{$root_sel}:focus-within{" . implode( ';', $hover_rules ) . ';}';
 	}
 }
 
-// --- Text element base typography (scoped) ---
+// --- Root typography (scoped) — the h-tag IS the text element now. ---
 if ( $text_decls ) {
-	$scoped_css[] = "#{$uid} .wp-block-sgs-heading__text{" . implode( ';', $text_decls ) . ';}';
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $text_decls ) . ';}';
 }
 
-// --- Text element font-size — base + tablet + mobile on the SAME selector
-// (Pattern A) so the narrower tier wins by cascade order, never inline. ---
+// --- Root font-size — base + tablet + mobile on the SAME selector (Pattern A)
+// so the narrower tier wins by cascade order, never inline. ---
 $scoped_css[] = sgs_responsive_css_rule(
 	$attributes,
 	array(
@@ -391,12 +398,12 @@ $scoped_css[] = sgs_responsive_css_rule(
 			'cast'         => 'int',
 		),
 	),
-	"#{$uid} .wp-block-sgs-heading__text"
+	$root_sel
 );
 
-// --- Wrapper box/visual declarations (scoped) ---
+// --- Root box/visual declarations (scoped) ---
 if ( $wrapper_decls ) {
-	$scoped_css[] = "#{$uid}.wp-block-sgs-heading{" . implode( ';', $wrapper_decls ) . ';}';
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_decls ) . ';}';
 }
 
 // --- Base spacing (padding/margin), border-radius, and WP colour support —
@@ -437,7 +444,7 @@ if ( ! $inherit_style && function_exists( 'wp_style_engine_get_styles' ) ) {
 	if ( ! empty( $base_style_engine_args ) ) {
 		$base_scoped_styles = wp_style_engine_get_styles(
 			$base_style_engine_args,
-			array( 'selector' => "#{$uid}" )
+			array( 'selector' => $root_sel )
 		);
 		if ( ! empty( $base_scoped_styles['css'] ) ) {
 			$scoped_css[] = $base_scoped_styles['css'];
@@ -473,7 +480,7 @@ if ( ! $inherit_style ) {
 		$tablet_box_decls[] = "margin:{$margin_tab_val}";
 	}
 	if ( $tablet_box_decls ) {
-		$scoped_css[] = '@media(max-width:1023px){' . "#{$uid}.wp-block-sgs-heading{" . implode( ';', $tablet_box_decls ) . ';}}';
+		$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
 	}
 
 	$mobile_box_decls = array();
@@ -484,46 +491,50 @@ if ( ! $inherit_style ) {
 		$mobile_box_decls[] = "margin:{$margin_mob_val}";
 	}
 	if ( $mobile_box_decls ) {
-		$scoped_css[] = '@media(max-width:767px){' . "#{$uid}.wp-block-sgs-heading{" . implode( ';', $mobile_box_decls ) . ';}}';
+		$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';
 	}
 }
 
 // ---------------------------------------------------------------------------
-// 6. Build wrapper CSS classes + attributes.
+// 6. Build the root element's classes + attributes.
+//
+// Contract §B3: NO wrapper <div>. The <h{level}>/<p> IS the block root. It
+// carries get_block_wrapper_attributes(), the block class `wp-block-sgs-heading`,
+// the scoped uid CLASS (`sgs-hdg-{md5}`), and the anchor `id` (ToC). There is no
+// separate `__text` child element any more.
 // ---------------------------------------------------------------------------
 
-$wrapper_classes = array( 'wp-block-sgs-heading' );
+$root_classes = array( 'wp-block-sgs-heading', $uid );
 
 if ( $is_subheading ) {
-	$wrapper_classes[] = 'wp-block-sgs-heading--subheading';
+	$root_classes[] = 'wp-block-sgs-heading--subheading';
 }
 
 // Preset colour slugs — the `color` support is skip-serialised, so re-add the
 // standard has-* classes manually (they set the colour from the theme palette).
 if ( ! $inherit_style ) {
 	if ( '' !== $preset_text_slug ) {
-		$wrapper_classes[] = 'has-text-color';
-		$wrapper_classes[] = 'has-' . $preset_text_slug . '-color';
+		$root_classes[] = 'has-text-color';
+		$root_classes[] = 'has-' . $preset_text_slug . '-color';
 	}
 	if ( '' !== $preset_bg_slug ) {
-		$wrapper_classes[] = 'has-background';
-		$wrapper_classes[] = 'has-' . $preset_bg_slug . '-background-color';
+		$root_classes[] = 'has-background';
+		$root_classes[] = 'has-' . $preset_bg_slug . '-background-color';
 	}
 }
 
-// Note: is-style-* / align* classes are merged in automatically by
-// get_block_wrapper_attributes() via the block's className attribute.
-// NO 'style' key is passed — the wrapper carries ZERO inline property
-// declarations (contract §A); everything is in the scoped <style> above.
-$wrapper_attrs = get_block_wrapper_attributes(
-	array(
-		'id'    => $uid,
-		'class' => implode( ' ', $wrapper_classes ),
-	)
+// The uid is a CLASS (§B3) so the element's single `id` is free for the anchor
+// (ToC target). is-style-* / align* classes are merged in automatically by
+// get_block_wrapper_attributes() via the block's className attribute. NO 'style'
+// key is passed — the root carries ZERO inline property declarations (contract
+// §A); everything is in the scoped <style> above.
+$root_attr_args = array(
+	'class' => implode( ' ', $root_classes ),
 );
-
-// Anchor attribute for the text element.
-$anchor_attr = $anchor ? ' id="' . esc_attr( $anchor ) . '"' : '';
+if ( $anchor ) {
+	$root_attr_args['id'] = $anchor;
+}
+$wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 
 $rendered_tag_escaped = tag_escape( $rendered_tag );
 ?>
@@ -537,8 +548,6 @@ $rendered_tag_escaped = tag_escape( $rendered_tag );
 	?>
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>
 <?php endif; ?>
-<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-	<<?php echo $rendered_tag_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> class="wp-block-sgs-heading__text"<?php echo $anchor_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-		<?php echo wp_kses_post( $content ); ?>
-	</<?php echo $rendered_tag_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-</div>
+<<?php echo $rendered_tag_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+	<?php echo wp_kses_post( $content ); ?>
+</<?php echo $rendered_tag_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>

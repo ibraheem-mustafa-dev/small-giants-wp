@@ -1,31 +1,32 @@
-/* ===== SGS Heading — Editor Only (v0.4.0 single-element) ===== */
+/* ===== SGS Heading — Editor Only (single-element, no wrapper div) ===== */
+/* Contract §B3: the RichText h-tag/<p> IS the block root — no `__text` child. */
 
-/* Give the empty text slot a minimum height so operators can click into it */
-.wp-block-sgs-heading__text:empty {
+/* Give the empty root a minimum height so operators can click into it */
+.wp-block-sgs-heading:empty {
 	min-height: 1.5em;
 }
 
 /* Subtle dashed outline so the block boundary is visible in the editor
    even when the background is white and content is sparse. */
-.block-editor-block-list__block .wp-block-sgs-heading {
+.block-editor-block-list__block.wp-block-sgs-heading {
 	outline: 1px dashed rgba(0, 0, 0, 0.1);
 	outline-offset: 4px;
 }
 
 /* Remove outline when block is selected — the selection ring takes over */
-.block-editor-block-list__block.is-selected .wp-block-sgs-heading,
-.block-editor-block-list__block.is-highlighted .wp-block-sgs-heading {
+.block-editor-block-list__block.wp-block-sgs-heading.is-selected,
+.block-editor-block-list__block.wp-block-sgs-heading.is-highlighted {
 	outline: none;
 }
 
 /* Placeholder text colour — heading role */
-.wp-block-sgs-heading:not(.wp-block-sgs-heading--subheading) .wp-block-sgs-heading__text .block-editor-rich-text__editable:empty::before {
+.wp-block-sgs-heading:not(.wp-block-sgs-heading--subheading).block-editor-rich-text__editable:empty::before {
 	color: var(--wp--preset--color--text);
 	opacity: 0.4;
 }
 
 /* Placeholder text colour — subheading role */
-.wp-block-sgs-heading--subheading .wp-block-sgs-heading__text .block-editor-rich-text__editable:empty::before {
+.wp-block-sgs-heading--subheading.block-editor-rich-text__editable:empty::before {
 	color: var(--wp--preset--color--text-muted);
 	opacity: 0.4;
 }

@@ -1,20 +1,24 @@
-/* ===== SGS Heading — Frontend + Editor (v0.4.0 single-element) ===== */
-/* Inline styles written by render.php ALWAYS take precedence.          */
+/* ===== SGS Heading — Frontend + Editor (single-element, no wrapper div) ===== */
+/* Contract §B3: the <h{level}>/<p> element IS the block root — it carries both
+   the box/background/border AND the typography. There is no `__text` child. The
+   per-instance scoped `<style>` (`.sgs-hdg-{md5}.wp-block-sgs-heading`) emitted by
+   render.php ALWAYS wins over these defaults (equal-or-higher specificity + later
+   source order), so these are the no-customisation baseline only. */
 
-/* ----- Text element (heading or subheading) ----- */
-.wp-block-sgs-heading__text {
+/* ----- Base element spacing ----- */
+.wp-block-sgs-heading {
 	margin-top: 0;
 	margin-bottom: 8px;
 }
 
-/* Default colour fallback — :not([style*="color"]) ensures the operator-
-   supplied inline colour from the inspector always wins. */
-.wp-block-sgs-heading__text:not([style*="color"]) {
+/* Default colour fallback — the scoped `.uid` colour rule (always emitted, since
+   textColour defaults to `text`) overrides this; kept as the no-style baseline. */
+.wp-block-sgs-heading:not([class*="has-text-color"]) {
 	color: var(--wp--preset--color--text);
 }
 
 /* ----- Heading role defaults ----- */
-.wp-block-sgs-heading:not(.wp-block-sgs-heading--subheading) .wp-block-sgs-heading__text {
+.wp-block-sgs-heading:not(.wp-block-sgs-heading--subheading) {
 	font-size: 28px;
 	font-weight: 700;
 	line-height: 1.2;
@@ -22,30 +26,22 @@
 
 /* Tablet — scale heading up */
 @media (min-width: 768px) {
-	.wp-block-sgs-heading:not(.wp-block-sgs-heading--subheading) .wp-block-sgs-heading__text {
+	.wp-block-sgs-heading:not(.wp-block-sgs-heading--subheading) {
 		font-size: 36px;
 	}
 }
 
 /* ----- Subheading role defaults ----- */
-/* Only applied when text colour / font-weight are not overridden inline. */
-.wp-block-sgs-heading--subheading .wp-block-sgs-heading__text {
+.wp-block-sgs-heading--subheading {
 	font-size: 16px;
-	line-height: 1.5;
-}
-
-.wp-block-sgs-heading--subheading .wp-block-sgs-heading__text:not([style*="font-weight"]) {
 	font-weight: 400;
-}
-
-.wp-block-sgs-heading--subheading .wp-block-sgs-heading__text:not([style*="color"]) {
+	line-height: 1.5;
 	color: var(--wp--preset--color--text-muted);
 }
 
 /* ===== Reduced motion ===== */
 @media (prefers-reduced-motion: reduce) {
-	.wp-block-sgs-heading,
-	.wp-block-sgs-heading * {
+	.wp-block-sgs-heading {
 		transition: none;
 		animation: none;
 	}
