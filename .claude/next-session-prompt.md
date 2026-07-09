@@ -1,117 +1,128 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: no-inline styling rollout — finish the container+button pilot, then universal rollout
+thread: no-inline styling rollout — continue the roster (quote/media/hero + block-private blocks) against the LOCKED contract
 generated: 2026-07-09
-primary_goal: "Finish the box-object no-inline PILOT: build the button half (corners/hover/editor), prove A3 (tier-object accumulator) live, run a /qc-council on the orchestrator.py dict-merge (blub-255), THEN begin the universal rollout. Container CORE is already proven live (D292); the mechanism WORKS — this session completes the pilot's coverage + the converter sign-off, then scales it."
+primary_goal: "Continue the universal no-inline + box-group rollout. The mechanism is PROVEN on button/container/heading/text (4 blocks LANDED) and the converter is hardened. Each remaining block: migrate to the DONE checklist's 11 end conditions, LANDED-verify, commit. Next up: quote, media, hero, then the ~26 block-private blocks."
 ---
 
-# NEXT SESSION — finish the box-object no-inline pilot (button + A3 live + orchestrator council), then roll out
+# NEXT SESSION — continue the no-inline rollout (quote → media → hero → the rest)
 
-Invoke `/autopilot` first. Container CORE is PROVEN LIVE (D292, `764ab2e6`): the no-inline mechanism (skipSerialization + Style-Engine-scoped + box-object attrs + box_family guard) works end-to-end on a real dynamic block. This session CLOSES the pilot's remaining coverage + signs off the converter change, then begins the universal rollout.
+Invoke `/autopilot` first. The hard, risky work is DONE and proven: the box-object no-inline
+mechanism is LANDED on **button, container, heading, text**, and the shared converter merge
+spine is hardened (3 silent-loss bugs a `/qc-council` caught, all fixed, 436 tests). What
+remains is **templated repetition** — apply the proven pattern to the rest of the roster,
+one block at a time, each verified LANDED.
 
-**Agent identity.** SGS cloning-pipeline + block engineer completing a Bean-approved, council-hardened styling re-architecture. You ORCHESTRATE (Opus) + GATE; delegate the code to Haiku (mechanical) / Sonnet (architectural) subagents against the FIXED interface contract. Prove every premise on the REAL node + LANDED on page 8 before "done" (STOP-21/43); one solo coding subagent at a time on shared files (STOP-39); shared-mechanism/schema changes gate with Bean (Rule 7).
+**Agent identity.** SGS block engineer executing a Bean-approved no-inline styling rollout.
+You ORCHESTRATE (Opus) + GATE; delegate each block to a SOLO Sonnet subagent (disjoint block
+dir → parallel-safe per FR-31-6.1) against the LOCKED contract. Prove every block LANDED on a
+live page before "done" (STOP-21/43/44); re-run gates + tests yourself (STOP-16).
 
-## ⛔ THE 7 NON-NEGOTIABLE RULES (Bean-set; gate every change)
-1. **CONVERT, don't mirror** — output = native SGS blocks driven by attributes; NOT a div-by-div copy of draft classes.
-2. **NO CHEATS** — no hardcoded `!important`/default overriding faithful draft CSS, no per-slug/per-role literal in a resolver body, no name-regex box merge (use the DB `box_family` — enforced by `check-box-family-guard.py`).
-3. **UNIVERSAL, no carve-outs** — a fix fires for every qualifying block via a DB fact, never `if slug==X`.
-4. **NO SKIPPING** — every draft CSS declaration transfers, is EXCLUDED-with-reason, or is a tracked GAP. Zero silent drops.
-5. **VERIFY ON THE REAL HOMEPAGE** — live computed-style/innerText + draft-vs-clone at 375/768/1440. Emit-green ≠ LANDED. WRITTEN ≠ LANDED. "Deploy to homepage" = overwrite page 8.
-6. **RESPONSIVE VALUES IN BLOCK ATTRIBUTES / SCOPED CSS, never inline** (the deliberate `sgsCustomCss` channel for non-device breakpoints is the only non-attr output).
-7. **FOLLOW THE SPEC + design-gate shared-mechanism/DB-schema changes with Bean before building.**
+## ⛔ READ FIRST (the authority for this rollout)
+1. **`.claude/plans/block-migration-DONE-checklist.md`** — the 11 end conditions = the definition
+   of done for EVERY block. Tick them, don't re-derive them.
+2. **`.claude/plans/2026-07-09-per-block-no-inline-migration-contract.md`** — the HOW (§A no-inline,
+   §B box-group, §B2 device-tiers-only, §B3 no-wrapper, §C Spec/no-churn, §D security, §E editor,
+   §E2 F3-drain).
+3. **`.claude/decisions.md` head (D293 + D292)** — the proven mechanism + all context. Verify the
+   D-ceiling: `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` (was D293).
+4. **Proven exemplars to copy:** `src/blocks/button/` (single-element, block-private) + `src/blocks/heading/`
+   + `src/blocks/text/` (single-element, full bar) + `src/blocks/container/` + `includes/class-sgs-container-wrapper.php` (composite, shared wrapper).
+5. **Spec 31 §3.A/§4/§13.4 (FR-31-22) + Spec 32 §6.1** — the mechanism spec (read Spec 31 in full — Bean-locked).
 
-## Mandatory READING (tick each in your first message; verify against ground truth)
-1. [ ] `.claude/handoff.md` top entry (2026-07-09, D292) + `.claude/decisions.md` head (verify D-ceiling `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` — was D292).
-2. [ ] `.claude/plans/2026-07-09-box-object-interface-contract.md` (THE FIXED CONTRACT — every subagent builds against it) + `.claude/plans/2026-07-09-no-inline-styling-design-gate.md` (mechanism + the A1–A9 Pilot Acceptance Test + rollout).
-3. [ ] `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` IN FULL (Bean-locked) — esp. §3.A step 3b (accumulator + migration-safety discriminator), §4 (box_family/box_side), §13.4 FR-31-22. + `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` §6.1 (geometry token families).
-4. [ ] The container reference impl (the proven pattern to copy for button): `src/blocks/container/{block.json,edit.js}`, `includes/class-sgs-container-wrapper.php` (base+tier object-read + skipSerialization), `src/components/ResponsiveBoxControl.js`, `scripts/converter/services/root_supports.py` + `resolvers/content_band.py` + `orchestrator.py` (the accumulator + dict-merge).
-5. [ ] `CLAUDE.md` §"Block styling contract — no inline styling" + the STOP catalogue.
-
-## ⛔ ANTI-PATTERN STOP CATALOGUE — carried forward (STOP-1 … STOP-66; do NOT subtract — D101 rule)
-The full catalogue STOP-1…STOP-64 lives in the prior `next-session-prompt.md` (git history) + is distilled across `decisions.md`. STOP-65 (D290) + STOP-66 (D292) are the newest. Most load-bearing for THIS session's work:
-- **STOP-16 — a subagent's "tests pass / it works" is a HYPOTHESIS.** Re-run the suite + gates YOURSELF (`cd plugins/sgs-blocks/scripts && python -m pytest converter/tests -q --import-mode=importlib`; `python check-box-family-guard.py --check`).
-- **STOP-21 — LANDED only by deploying the genuine emit to a live page + computed-style/innerText.** Re-clone recipe: `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --auto-section --client mamas-munches --page homepage --media-map sites/mamas-munches/research/sandybrown-media-map.json --deploy-target page:8 --skip-autonomy-gate` → OPcache reset (HTTP) → **LiteSpeed purge (Hostinger MCP `hosting_clearWebsiteCacheV1`, user `u945238940`, domain `sandybrown-nightingale-600381.hostingersite.com`)** → anonymous Playwright + cache-bust.
-- **STOP-39 — one SOLO coding subagent at a time on shared files; read-only/disjoint-file agents may run parallel.**
-- **STOP-43 — prove the premise on the REAL node BEFORE + AFTER, not code inference.**
-- **STOP-44 — a schema-valid emitted attr can be a RENDER no-op; verify it PAINTS on the LIVE element.**
-- **STOP-57 — bump the block version on every CSS/render change (CDN stale otherwise).**
-- **STOP-58 / STOP-66 (NEW, D292) — a stage-1 reseed leaves ORPHANED flat attr rows after a block.json attr-shape change; they mis-route the pipeline slot-list. Prune (manual DELETE on the REAL DB `~/.claude/skills/sgs-wp-engine/sgs-framework.db`, or full `/sgs-update`) before re-clone. `sgs-db.py sql` is READ-ONLY.**
-- **STOP-60 — do NOT re-run a golden SEED script to make the suite green; re-seed per-section with a cited LANDED proof only.**
+## ⛔ ANTI-PATTERN STOPs (most load-bearing for THIS work; full catalogue in decisions.md + git history of this prompt)
+- **STOP-16** — a subagent's "it works" is a HYPOTHESIS. Re-run yourself: `cd plugins/sgs-blocks/scripts && python -m pytest converter/tests -q --import-mode=importlib` (436 pass); `python check-box-family-guard.py --check`; `npm run build`.
+- **STOP-21 / 43 / 44** — LANDED only by deploying + re-cloning + live computed-style on a real page. Emit-green ≠ LANDED. A crafted ASYMMETRIC test instance (4 distinct sides + asymmetric corners) is the proof for box families.
+- **STOP-57 OVERRIDDEN (Bean D293)** — do NOT bump block versions, do NOT add deprecations (pre-production waste).
+- **STOP-66** — after a block.json attr-shape change, `/sgs-update` (Stage 10) prunes the orphaned flat rows; run it before re-clone. `sgs-db.py sql` is READ-ONLY.
+- **STOP-67 (NEW)** — the pre-commit visual-diff gate needs `<REPO_ROOT>/reports/visual-diff/<block>-<date>.md` (repo ROOT, NOT `plugins/…/reports/`) with frontmatter `verdict: PASS` + `first_paint_capture_passed: true`. No report = commit blocked.
+- **STOP-39** — one SOLO coding subagent per shared file; disjoint block dirs may run parallel.
 
 ## Pre-flight self-attestation (answer in your first message)
-1. Reading gate done (contract + design-gate + Spec 31 §3.A step 3b + the container reference)? Quote one specific thing.
-2. Branch (`main`) + D-ceiling (D292 — verify)? Working tree clean (ignore `lucide-icons.php` + 0-byte `.db` strays)?
-3. For every fix: proven on the REAL node BEFORE+AFTER (STOP-43), LANDED on page 8 (computed values), never emit alone?
-4. Baselines not to regress: converter suite 428 pass; AST gate exit 0; container CORE (A1/A2/A5/A6) still live; the box_family guard intact.
-5. Solo coding subagent on shared files (STOP-39); I re-run tests/gates + LANDED-verify myself (STOP-16).
+1. Read the DONE checklist + contract + D293? Quote one end condition.
+2. Branch `main`, D-ceiling verified, tree clean (ignore `lucide-icons.php`, `*.db` strays, generated `reports/phase4-*.txt` + `inline-styling-audit`)?
+3. For each block: LANDED on a live page (asymmetric computed values), all 11 conditions ticked, visual-diff report at repo-root, gates + tests re-run by me?
+
+## The LANDED verify recipe (every block)
+1. `cd plugins/sgs-blocks && npm run build` (prebuild gates must pass).
+2. `python scripts/build-deploy.py --target sandybrown --skip-build --blocks-only --allow-dirty`.
+3. `python scripts/sgs-update-v2.py` (prune orphans + apply box_family seeds).
+4. Re-clone page 8: `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --auto-section --client mamas-munches --page homepage --media-map sites/mamas-munches/research/sandybrown-media-map.json --deploy-target page:8 --skip-autonomy-gate` (confirms recognition + no `ConservationError`).
+5. OPcache reset (HTTP `<?php opcache_reset()` to webroot + curl) + **LiteSpeed purge** (Hostinger MCP `hosting_clearWebsiteCacheV1`, user `u945238940`, domain `sandybrown-nightingale-600381.hostingersite.com`).
+6. Asymmetric test instance via REST on the EXISTING page (id 1356, `/sgs-box-object-test/` — NEW pages 404 until rewrite flush; reuse 1356). Note per-block content attr names differ (heading=`content`, text=`text`). Anonymous Playwright + cache-bust → `getAttribute('style')` = no property decls on the subtree + `getComputedStyle` = the set values at 375/768/1440.
+7. Write `reports/visual-diff/<block>-<date>.md` (verdict PASS + first_paint true), commit path-scoped.
 
 ---
 
-## ORCHESTRATION PLAN (do in order; delegate the code, gate each yourself)
+## ORCHESTRATION PLAN (do in order; one solo Sonnet per block, gate each yourself)
 
-### Task 1 — Button half of the pilot (B/C/D) — corners + hover + editor
-**What:** migrate `sgs/button` to the box-object model exactly like container: block.json → object attrs (padding/margin/borderWidth 4-SIDE + border-radius 4-CORNER), edit.js wires `ResponsiveBoxControl` + the corner control, the converter already emits (box_family already seeded for button in `ATTR_CLASSIFICATION_OVERRIDES`), re-clone + verify.
-**Why:** container can't test corners (A9) or hover (A7) or the custom-border path; button covers all three — required before the universal rollout (council's pilot expansion).
-**Orchestration:** Wave B-button (solo Sonnet — button block.json + edit.js + render, following the container pattern) → prune button orphans (STOP-66) → re-clone → verify A7 (hover computed differs), A9 (4 corners incl. asymmetric render), A8 (editor BoxControl writes + preview matches), A1/A2 (no inline). Model: Sonnet (solo, foreground). /qc gate: `/qc-inline` on the built button + LANDED page 8.
-**Depends on:** none (container reference exists). **Acceptance:** button LANDED page 8 with zero inline, corners + hover render correct, editor BoxControl works.
+## Task 1 — quote + media (Wave 1b box-family blocks)
+**What:** migrate `sgs/quote` + `sgs/media` to the DONE checklist. quote = dual native+scalar border (uses `SGS_Container_Wrapper` for the outer but border is block-private); media = only border-radius migrates (currently `radius:false`, reads native `style.border.radius` as fallback — flip to native scoped + remove custom corner attrs).
+**Why:** completes the 4-side/4-corner box-family blocks; both have real wrinkles the contract §C note flags.
+**Orchestration:** 2 parallel solo Sonnet agents (disjoint dirs), each against the DONE checklist + the button/heading exemplars. box_family seeds: quote `borderWidth` already seeded; media needs none (radius→native). I prune + `/sgs-update` + build + deploy + re-clone + verify each LANDED. /qc gate: `/qc-inline` per block.
+**Depends on:** none. **Acceptance:** each ticks all 11 DONE conditions, LANDED asymmetric, visual-diff PASS.
 
-### Task 2 — A3/A3b live proof (container tier-object accumulator)
-**What:** exercise the tier-object accumulator LIVE — set a container's `paddingTablet` object via the editor BoxControl (or clone a section with responsive/asymmetric padding), verify it renders as a scoped `@media .uid{padding:…}` rule with 4 distinct sides.
-**Why:** A3 is currently UNIT-proven only (Mama's containers have base padding only). **Orchestration:** inline (Opus) — editor set + Playwright computed-style at 768/375. **Acceptance:** an asymmetric 4-value tier padding renders all 4 sides distinct + correct, scoped, no inline.
+## Task 2 — hero (the 5-family outlier)
+**What:** migrate `sgs/hero`'s 5 per-area SGS-custom families (contentPadding/mediaPadding/imagePadding/imageBorderWidth/imageBorderRadius, each with tiers + non-standard token order `imageBorderRadiusTabletTL`) + contentBandPadding to objects; flip all supports to skipSerialization; F3-drain (`align-items:center` hardcode). Hero uses `SGS_Container_Wrapper` for the section but renders per-area families block-privately.
+**Why:** hero is the biggest single block + on page 8 (LANDED-verifiable directly).
+**Orchestration:** ONE dedicated solo Sonnet agent (do NOT lump with the parallel wave — it's the outlier). Add its box_family seeds centrally first. /qc-council before commit (composite render change, blub-255).
+**Depends on:** Task 1 done (pattern re-confirmed). **Acceptance:** hero content/media/image padding + borders LANDED on page 8 at 3 breakpoints, zero inline, F3 entry drained.
 
-### Task 3 — `/qc-council` on the `orchestrator.py` dict-merge (blub-255)
-**What:** multi-model council on the high-blast-radius `orchestrator.py` collision/merge change (the shared dispatch spine) before treating the converter change as fully shipped.
-**Why:** blub-255 / STOP-23 — converter commits get a multi-rater review; this change touches every resolver's path. **Orchestration:** `/qc-council` (3 raters). **Acceptance:** council GO, or fix + re-run.
+## Task 3 — block-private roster (~26 blocks) + F3-drain
+**What:** the remaining blocks with block-private `style=` (hero overlay/bgSvg, cta-section, card-grid, info-box, testimonial, product-card, etc.) each to the full DONE bar + drain their F3 baseline entry (content-collection, form, mega-menu, mobile-nav, pricing-table, product-card).
+**Why:** delivers the "zero inline framework-wide" outcome.
+**Orchestration:** parallel solo Sonnet agents, one per block (disjoint dirs, FR-31-6.1), grouped ~4 at a time; I gate + LANDED-or-GATE-verify each (on-page → LANDED; off-page → audit-inline-styling.js clean + AST gate + synthetic clone). Log which tier each got (no "all LANDED" overclaim).
+**Depends on:** Task 2. **Acceptance:** every block 0 inline (`audit-inline-styling.js`), 0 F3 baseline rows, gates green.
 
-### Task 4 — Begin the universal rollout
-**What:** apply the proven pattern to the roster (the other ~50 blocks + the block-private render.php `style=` conversions), per the design-gate doc, one solo coding subagent at a time, each LANDED. Wire `audit-inline-styling.js --check` + `check-box-family-guard.py` into prebuild once the roster is green.
-**Why:** the pilot proved the mechanism; the rollout delivers the "zero inline framework-wide" outcome. **Orchestration:** delegated waves (Haiku/Sonnet), Opus gating; group by shared-helper vs block-private (61% is central). **Acceptance:** each block LANDED zero-inline; the two gates wired zero-tolerance.
+## Task 4 — wire the gates zero-tolerance + close
+**What:** once the roster is green, wire `audit-inline-styling.js --check` + `check-box-family-guard.py --check` into `prebuild` as zero-tolerance; reconcile Spec 31/32 + CLAUDE.md to "rollout complete".
+**Acceptance:** prebuild fails on any new inline / name-based box merge.
 
 ## Dependency graph
 ```
-Task 1 (button, Sonnet solo) → /qc-inline + LANDED
-Task 2 (A3 live, inline Opus)  } can run alongside Task 1
-Task 3 (/qc-council on orchestrator) → GO before Task 4
+Task 1 (quote + media — 2 parallel Sonnet) → /qc-inline + LANDED each
   ↓
-Task 4 (universal rollout — delegated waves, gated) → wire the 2 gates when green
+Task 2 (hero — solo Sonnet) → /qc-council + LANDED page 8
+  ↓
+Task 3 (block-private roster — parallel Sonnet waves) → LANDED-or-gate each
+  ↓
+Task 4 (wire 2 gates zero-tolerance) → /handoff
 ```
 
 ## Skills to Invoke
 | Skill | When |
 |-------|------|
-| /brainstorming | ALWAYS — design decisions in the rollout |
-| /gap-analysis | ALWAYS — grade outputs before delivery |
+| /brainstorming | ALWAYS — per-block design wrinkles |
+| /gap-analysis | ALWAYS — grade before delivery |
 | /lifecycle | ALWAYS — before any skill/agent change |
-| /research | ALWAYS — auto-routes tier (library-docs for WP APIs) |
-| /strategic-plan | ALWAYS — order the rollout waves |
-| /qc-council | Task 3 (orchestrator) + every converter/block commit (blub-255) |
+| /research + /library-docs | ALWAYS — WP BoxControl / Style Engine / skipSerialization APIs |
+| /strategic-plan | ALWAYS — order the roster waves |
+| /qc-council | hero + any converter-touching change (blub-255) |
 | /qc-inline | per-block build check |
-| /dispatching-parallel-agents /subagent-driven-development | the delegated waves |
-| /library-docs | WP BoxControl / Style Engine / skipSerialization APIs |
+| /dispatching-parallel-agents | the parallel block waves |
 | /sgs-clone /sgs-db /wp-blocks | pipeline + schema ground truth |
 | /verify-loop /handoff /capture-lesson | 2-attestation / session close |
 
 ## MCP Servers & Tools
 | Tool | For |
 |------|-----|
-| Playwright / chrome-devtools | LANDED computed-style at 375/768/1440 on page 8 |
-| Hostinger MCP `hosting_clearWebsiteCacheV1` | LiteSpeed purge before live verify (deploy/re-clone does NOT purge it) |
-| `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql` (READ) + a direct sqlite3 admin op for prune | DB queries + STOP-66 orphan prune |
-| PowerShell `npm run build` → `build-deploy.py --target sandybrown --skip-build --blocks-only` | deploy (bump version, STOP-57) |
+| Playwright / chrome-devtools | LANDED computed-style at 375/768/1440 |
+| Hostinger MCP `hosting_clearWebsiteCacheV1` | LiteSpeed purge before live verify |
+| `sgs-db.py sql` (READ) + `/sgs-update` (prune+seed) | DB queries + STOP-66 orphan prune |
+| REST app-pwd (`.claude/secrets/sandybrown.env`) | craft asymmetric test instances on page 1356 |
 
 ## Agents to Delegate To
 | Agent | When |
 |-------|------|
-| general-purpose (Sonnet, solo) | button block-side + converter architectural work |
-| general-purpose (Haiku) | DB seeds, running tests/audits/screenshots, repetitive block.json edits |
-| Explore / general-purpose (read-only, parallel) | rollout roster mapping, tracing |
-| wp-sgs-developer | heavier WP block builds in the rollout |
+| general-purpose (Sonnet, solo) | each block migration (disjoint dir) |
+| Explore / general-purpose (read-only, parallel) | map a block's current box-attr state before migrating |
+| wp-sgs-developer | heavier composites (hero) |
 
 ## Methodology guardrails (do not skip)
-- **Deploy + re-clone + purge (LiteSpeed + OPcache) before measure** (STOP-21); bump block version on CSS change (STOP-57).
-- **Prune orphaned flat attr rows after any block.json attr-shape change** (STOP-66) before re-clone.
-- **Prove the premise on the real node** (STOP-43); LANDED on page 8, never emit alone (STOP-4/44).
-- **/qc-council before every converter/block commit** (blub-255); re-run tests + gates yourself (STOP-16).
-- **One solo coding subagent at a time on shared files** (STOP-39); fixed interface contract up front (no drift).
-- Branch main; verify D-ceiling; commits path-scoped; container/button render changes need a `reports/visual-diff/<block>-YYYY-MM-DD.md` (verdict: PASS) for the commit gate.
+- **Deploy + re-clone + purge (LiteSpeed + OPcache) before measure** (STOP-21). Re-clone confirms recognition didn't break on the attr reshape.
+- **Prove the premise on the real node** (STOP-43); LANDED asymmetric, never emit alone (STOP-4/44).
+- **/qc-council before every converter/composite commit** (blub-255); re-run tests + gates yourself (STOP-16).
+- **One solo coding subagent per shared file** (STOP-39); build each block against the DONE checklist (no drift).
+- **No version bumps, no deprecations** (Bean D293). **Visual-diff report at REPO-ROOT** `reports/visual-diff/` (STOP-67).
+- Branch main; commit path-scoped (never `git add -A`); verify D-ceiling before a new D.

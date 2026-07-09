@@ -1,9 +1,55 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-thread: no-inline styling architecture — box-object merge pilot on sgs/container (core proven live)
+thread: no-inline styling rollout — pilot complete (button/heading/text LANDED), converter hardened, contract locked
 session_date: 2026-07-09
 ---
+
+# Session Handoff — 2026-07-09 (D293 — no-inline rollout: pilot COMPLETE + converter hardened + contract LOCKED)
+
+## Completed This Session
+1. **Button — full box-object no-inline LANDED + committed (`9f281337`).** 7 object attrs replace 44 flat; supports skip-serialised; all 9 acceptance tests live on the asymmetric test page (A1 zero inline, A3/A3b asymmetric tier accumulator `11/22/33/44`, A7 hover, A8 editor, A9 asymmetric corners `24/0/24/0`). + security hardening (CSS-keyword sanitiser on 4 free-text attrs, pre-existing injection vector).
+2. **Converter hardened — 3 silent-loss paths fixed + committed (`ca8b1787`).** A 3-rater `/qc-council` (blub-255) on the D292 dict-merge NO-GO'd on 3 confirmed silent-loss paths (root_supports overwrite, destination-fold dict/scalar + shared-key, aliasing); fixed to fail-loud + copy-on-write, +8 regression tests (436 pass); live re-clone confirms no false-fire.
+3. **Heading + text — full 100% no-inline + 100% box-group LANDED + committed (`3e266090`).** Both to the full bar (all styling scoped, box families incl. tiers as objects; 74 orphans pruned). LANDED asymmetric values live.
+4. **Heading wrapper-div removed (B3) + committed (`0b2199ce`).** `<h{level}>` is now the block root (button D288 pattern), class-uid preserves the anchor id; LANDED across H1/H2/H4 on page 8, typography lifts correctly, parity 68→69%.
+5. **Container tier accumulator proven LIVE** (`14/27/40/53` asymmetric at 768) — closed D292's open A3.
+6. **LOCKED the rollout: contract + DONE checklist.** `.claude/plans/2026-07-09-per-block-no-inline-migration-contract.md` (HOW) + `.claude/plans/block-migration-DONE-checklist.md` (11 end conditions), capturing Bean's full bar (100% no-inline + 100% box-group + no wrapper + F3-drain + device-tiers-only + no version churn + Spec 31/32).
+7. **Recorded D293**; captured the no-version-bump policy (overrides STOP-57) as memory + fixed a stale D291 memory (skipSerialization is the live mechanism, not "drop supports").
+
+## Current State
+- **Branch:** `main` at `0b2199ce`. D-ceiling **D293**.
+- **Tests:** converter **436 pass**, 1 skip, 0 fail (re-run). Build passes; all prebuild gates green.
+- **Uncommitted:** generated churn only (`reports/phase4-*.txt`, `inline-styling-audit-*`, `lucide-icons.php`, `*.db` strays) + the doc updates being committed now.
+- **Live:** page 8 carries the re-cloned homepage with button/heading/text migrated; asymmetric proofs on page 1356 (`/sgs-box-object-test/`).
+
+## Known Issues / Blockers
+- **Rollout is ~4/50 blocks** — the mechanism is proven + templated; quote/media/hero + ~26 block-private blocks remain (each is real LANDED-verify work). See next-session-prompt.
+- **Committed stray:** `plugins/sgs-blocks/reports/visual-diff/button-2026-07-09.md` (wrong dir — the gate reads repo-root `reports/`; button committed anyway because a repo-root copy existed). Harmless; delete for tidiness.
+- **Minor hygiene:** heading DB `block_selectors.typography` still reads `.wp-block-sgs-heading__headline` (stale pre-change) — proven not to affect the lift; re-point later.
+
+## Next Priorities (in order)
+1. **quote + media** (Wave 1b box-family blocks, 2 parallel Sonnet) to the DONE checklist.
+2. **hero** (the 5-per-area-family outlier, dedicated Sonnet) — LANDED on page 8.
+3. **~26 block-private blocks** to the full bar + F3-drain (parallel Sonnet waves).
+4. **Wire** `audit-inline-styling.js --check` + `check-box-family-guard.py` zero-tolerance in prebuild.
+
+## Files Modified
+| File path | What changed |
+|---|---|
+| `plugins/sgs-blocks/src/blocks/{button,heading,text}/{block.json,edit.js,render.php}` (+ heading style.css/editor.css) | box-object no-inline migration + heading wrapper removal |
+| `plugins/sgs-blocks/scripts/converter/{orchestrator.py,services/root_supports.py,tests/*}` | 3 silent-loss-path fixes + 8 regression tests |
+| `plugins/sgs-blocks/scripts/sgs-update-v2.py` | box_family seeds for button/heading/text/quote |
+| `.claude/plans/{2026-07-09-per-block-no-inline-migration-contract,block-migration-DONE-checklist}.md` | NEW — locked rollout contract + DONE checklist |
+| `reports/visual-diff/{button,heading,text}-2026-07-09.md` | LANDED evidence (repo-root — the gate location) |
+| `.claude/{decisions.md,state.md,handoff.md,next-session-prompt.md,parking.md}` | D293 + reconciliation |
+
+## Notes for Next Session
+- **The rollout is templated, not exploratory** — the DONE checklist's 11 conditions ARE the definition of done; each block just has a different *fix path* (block-private vs shared-wrapper vs per-area). Copy button (single-element) or container (composite).
+- **STOP-67:** visual-diff reports go at REPO-ROOT `reports/visual-diff/` (not `plugins/…/reports/`), frontmatter `verdict: PASS` + `first_paint_capture_passed: true`, or the pre-commit gate blocks.
+- **No version bumps / deprecations** (Bean, pre-production — overrides STOP-57).
+- **New pages 404 until a rewrite flush** — reuse page 1356 for asymmetric test instances; per-block content attr names differ (heading `content`, text `text`).
+
+<!-- ============ PRIOR HANDOFF BELOW ============ -->
 
 # Session Handoff — 2026-07-09 (box-object no-inline pilot — sgs/container core PROVEN LIVE)
 
