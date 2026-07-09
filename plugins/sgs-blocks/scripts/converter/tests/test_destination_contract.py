@@ -43,6 +43,22 @@ def conn():
     c.close()
 
 
+def _fixed_box_family(monkeypatch, family_map: dict[str, str]):
+    """Patch db_lookup.box_family_for used inside orchestrator to a fixed map
+    (mirrors the same-name helper in test_root_supports.py). qc-council
+    finding #4 (2026-07-09) gates the orchestrator's dict-merge sites on
+    ``box_family_for`` rather than bare ``isinstance(dict)`` — these fixture
+    attrs (e.g. plain ``'padding'``) have no real DB row for sgs/container
+    (only the tier-suffixed ``paddingTablet``/``paddingMobile`` do), so tests
+    exercising the MERGE mechanism itself must declare the attr a box family
+    explicitly, same as production resolvers do via a real DB row."""
+    import converter.orchestrator as _mod
+    monkeypatch.setattr(
+        _mod.db_lookup, "box_family_for",
+        lambda slug, attr: family_map.get(attr),
+    )
+
+
 def _ctx(conn, *, dest=None):
     # base_layer pre-set to OUTER so layer_detect (which reads node decls) is skipped.
     return Ctx(
@@ -215,6 +231,7 @@ def test_destination_fold_dict_dict_shared_key_different_value_raises(conn, monk
 def test_destination_fold_dict_dict_distinct_keys_merge_cleanly(conn, monkeypatch):
     """Two folded nodes write DIFFERENT side keys for the same dest attr —
     legitimate accumulation, must merge cleanly with no raise."""
+    _fixed_box_family(monkeypatch, {"padding": "padding"})
     calls = iter([
         Write("padding", {"top": "10px"}, "padding-top", "Base"),
         Write("padding", {"right": "20px"}, "padding-right", "Base"),
@@ -238,6 +255,7 @@ def test_destination_fold_dict_dict_distinct_keys_merge_cleanly(conn, monkeypatc
 # ---------------------------------------------------------------------------
 
 def test_destination_first_dict_write_not_aliased(conn, monkeypatch):
+    _fixed_box_family(monkeypatch, {"padding": "padding"})
     first_write = Write("padding", {"top": "10px"}, "padding-top", "Base")
     calls = iter([
         first_write,
@@ -259,10 +277,11 @@ def test_destination_first_dict_write_not_aliased(conn, monkeypatch):
     assert parent_attrs["padding"] == {"top": "10px", "right": "20px"}
 
 
-def test_element_result_attrs_first_dict_write_not_aliased():
+def test_element_result_attrs_first_dict_write_not_aliased(monkeypatch):
     """Same aliasing proof for the SELF-merge path (`ElementResult.attrs()`)."""
     from converter.orchestrator import ElementResult
 
+    _fixed_box_family(monkeypatch, {"padding": "padding"})
     first_write = Write("padding", {"top": "10px"}, "padding-top", "Base")
     second_write = Write("padding", {"right": "20px"}, "padding-right", "Base")
     result = ElementResult(block_slug="sgs/container", decl_count=2, decl_results=2)
@@ -275,3 +294,63 @@ def test_element_result_attrs_first_dict_write_not_aliased():
         f"result.writes[0].value was mutated by attrs() merging a later "
         f"write — aliasing bug, got {first_write.value!r}"
     )
+
+
+# ---------------------------------------------------------------------------
+# qc-council finding #4 (2026-07-09) — the merge branch must gate on
+# db_lookup.box_family_for, never bare isinstance(dict). A dict-valued Write
+# to a NON-box-family attr written twice to the same attr is a genuine
+# collision (raise), not a silent per-key merge; a genuine box_family attr
+# still merges exactly as before.
+# ---------------------------------------------------------------------------
+
+def test_attrs_non_box_dict_attr_written_twice_raises_collision(monkeypatch):
+    """A future resolver could legitimately emit a dict-valued NON-box attr
+    (e.g. a media/background {url,id,alt} object). box_family_for() returns
+    None for it, so two writes to the SAME attr must raise — never silently
+    per-key-merge (that would launder a real collision)."""
+    from converter.orchestrator import ConservationError, ElementResult
+
+    # box_family_for returns None for every attr (no box family registered) —
+    # exactly the "not a box-object attr" case this gate must catch.
+    _fixed_box_family(monkeypatch, {})
+    result = ElementResult(block_slug="sgs/media", decl_count=2, decl_results=2)
+    result.writes.append(Write("background", {"url": "a.jpg"}, "background-image", "Base"))
+    result.writes.append(Write("background", {"id": 42}, "background-image", "Base"))
+
+    with pytest.raises(ConservationError, match="COLLISION"):
+        result.attrs()
+
+
+def test_attrs_box_family_attr_still_merges_as_before(monkeypatch):
+    """Sanity companion: a genuine box_family attr (box_family_for returns a
+    value) still merges per-key across multiple dict Writes — the fix must
+    not regress the legitimate box-object accumulation path."""
+    from converter.orchestrator import ElementResult
+
+    _fixed_box_family(monkeypatch, {"padding": "padding"})
+    result = ElementResult(block_slug="sgs/container", decl_count=2, decl_results=2)
+    result.writes.append(Write("padding", {"top": "10px"}, "padding-top", "Base"))
+    result.writes.append(Write("padding", {"right": "20px"}, "padding-right", "Base"))
+
+    merged = result.attrs()
+    assert merged["padding"] == {"top": "10px", "right": "20px"}
+
+
+def test_destination_fold_non_box_dict_attr_written_twice_raises_collision(conn, monkeypatch):
+    """Same gate proven on the destination-fold merge site: a NON-box
+    dict-valued attr written by two folded nodes must raise, not silently
+    per-key-merge. Destination.block_slug must match _ctx()'s fixed
+    'sgs/container' Ctx slug, or the (unrelated) DESTINATION MISMATCH guard
+    would fire first."""
+    _fixed_box_family(monkeypatch, {})  # no attr is a box family
+    calls = iter([
+        Write("background", {"url": "a.jpg"}, "background-image", "Base"),
+        Write("background", {"id": 42}, "background-image", "Base"),
+    ])
+    monkeypatch.setitem(REGISTRY, "outer_box", lambda decl, ctx: next(calls))
+    dest = Destination(block_slug="sgs/container", attrs={})
+
+    process_element(_ctx(conn, dest=dest), [Decl("background-image", "a.jpg", "Base")])
+    with pytest.raises(ConservationError, match="DESTINATION COLLISION"):
+        process_element(_ctx(conn, dest=dest), [Decl("background-image", "42", "Base")])

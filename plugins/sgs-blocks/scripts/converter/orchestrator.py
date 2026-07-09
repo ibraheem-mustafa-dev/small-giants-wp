@@ -32,6 +32,7 @@ import json
 from dataclasses import dataclass, field
 from typing import Any
 
+from converter.db import db_lookup
 from converter.dispatch_table import resolver_id
 from converter.models import GAP, GapOrigin, Write
 from converter.resolvers import REGISTRY, outer_box
@@ -60,29 +61,52 @@ class ElementResult:
     def attrs(self) -> dict[str, int | float | str | dict]:
         """The native block attribute dict the Writes produce (for emit).
 
-        Box-object interface contract (2026-07-09): a dict-valued Write is a
-        PARTIAL box-object side write (`{'top': '10px'}`). Multiple dict Writes
-        for the SAME attr MERGE (first-write-per-key wins — `_check_conservation`
-        already hard-fails a real per-key collision before this runs, so a plain
-        per-key `setdefault` here is safe). A non-dict Write for an attr already
-        seen behaves exactly as before (last-write-wins dict-comprehension
-        semantics) — collision-checked separately, unreachable for duplicates.
+        Box-object interface contract (2026-07-09, qc-council finding #4
+        2026-07-09): a dict-valued Write is a per-key MERGE candidate ONLY
+        when the attr is a genuine box family — gated on
+        ``db_lookup.box_family_for(self.block_slug, w.attr)``, NEVER bare
+        ``isinstance(dict)``. A future resolver emitting a legitimately
+        dict-valued NON-box attr (e.g. a media/background ``{url,id,alt}``
+        object) must not be silently per-key-merged if written twice — that
+        would launder a real collision. For a NON-box dict-valued attr: a
+        single write stores the dict verbatim; a SECOND write to the same
+        attr is a genuine collision (raise, never a silent per-key merge).
+        A non-dict Write for an attr already seen behaves exactly as before
+        (last-write-wins dict-comprehension semantics).
         """
         out: dict[str, int | float | str | dict] = {}
         for w in self.writes:
             existing = out.get(w.attr)
-            if isinstance(w.value, dict) and isinstance(existing, dict):
+            is_box = isinstance(w.value, dict) and (
+                db_lookup.box_family_for(self.block_slug, w.attr) is not None
+            )
+            if is_box and isinstance(existing, dict):
                 for k, v in w.value.items():
                     existing.setdefault(k, v)
+            elif is_box:
+                # FIRST dict write for this box-family attr: store a COPY,
+                # never the Write's own dict object. A later dict Write for
+                # the same attr `setdefault`s INTO this merge target (branch
+                # above) — if it aliased the first Write's `.value`, that
+                # setdefault would mutate a frozen Write record's dict in
+                # place (STOP: aliasing corrupts `result.writes` history even
+                # though `Write` is a frozen dataclass — freezing blocks
+                # reassigning `.value`, not mutating the dict it points to).
+                out[w.attr] = dict(w.value)
             elif isinstance(w.value, dict):
-                # FIRST dict write for this attr: store a COPY, never the
-                # Write's own dict object. A later dict Write for the same
-                # attr `setdefault`s INTO this merge target (branch above) —
-                # if it aliased the first Write's `.value`, that setdefault
-                # would mutate a frozen Write record's dict in place (STOP:
-                # aliasing corrupts `result.writes` history even though
-                # `Write` is a frozen dataclass — freezing blocks reassigning
-                # `.value`, not mutating the dict it points to).
+                # NON-box dict-valued attr. A single write is fine (stored
+                # verbatim, copied). A SECOND write to the same attr is an
+                # unresolvable ambiguity — two declarations both claiming the
+                # whole attr — and must raise rather than silently per-key
+                # merge (the exact collision this gate exists to catch).
+                if w.attr in out:
+                    raise ConservationError(
+                        f"COLLISION: non-box-family attr {w.attr!r} for "
+                        f"{self.block_slug!r} received ≥2 dict-valued writes "
+                        f"— box_family_for() returned None, so this is NOT a "
+                        f"box-object merge candidate; a second write to the "
+                        f"same attr would silently lose the first."
+                    )
                 out[w.attr] = dict(w.value)
             else:
                 out[w.attr] = w.value
@@ -226,9 +250,37 @@ def process_element(ctx: Any, decls: list[Any]) -> ElementResult:
                 f"silent wrong-block write."
             )
         for w in result.writes:
+            write_is_dict = isinstance(w.value, dict)
+            # qc-council finding #4 (2026-07-09): the per-key box-object merge
+            # path is gated on ``db_lookup.box_family_for(dest.block_slug,
+            # w.attr)`` — the sole legitimate signal (box-object interface
+            # contract §3) — never bare ``isinstance(dict)``. dest.block_slug
+            # == ctx.block_slug is already enforced above (DESTINATION
+            # MISMATCH guard), so it is the correct owning slug to look up.
+            is_box = write_is_dict and (
+                db_lookup.box_family_for(dest.block_slug, w.attr) is not None
+            )
+            if write_is_dict and not is_box:
+                # NON-box dict-valued attr: a single write across the fold is
+                # fine (stored verbatim). A SECOND write to the same attr —
+                # from this or an earlier folded call — is an unresolvable
+                # ambiguity (two nodes both claiming the whole attr), not a
+                # legitimate per-key accumulation; raise rather than silently
+                # per-key merge.
+                if w.attr in dest.attrs:
+                    raise ConservationError(
+                        f"DESTINATION COLLISION: non-box-family attr "
+                        f"{w.attr!r} for {dest.block_slug!r} received ≥2 "
+                        f"dict-valued writes across the fold — "
+                        f"box_family_for() returned None, so this is NOT a "
+                        f"box-object merge candidate; a second write would "
+                        f"silently lose the first."
+                    )
+                dest.attrs[w.attr] = dict(w.value)
+                continue
+
             existing = dest.attrs.get(w.attr)
             existing_is_dict = isinstance(existing, dict)
-            write_is_dict = isinstance(w.value, dict)
             if w.attr in dest.attrs and existing_is_dict != write_is_dict:
                 # Cross-node SHAPE mismatch: one folded call already wrote a
                 # box-object partial (dict) for this attr, another writes a
@@ -242,7 +294,7 @@ def process_element(ctx: Any, decls: list[Any]) -> ElementResult:
                     f"(dict) and a scalar value from different folded nodes — "
                     f"ambiguous shape, one would be silently lost."
                 )
-            if write_is_dict:
+            if write_is_dict:  # is_box True here (non-box handled + continued above)
                 if existing_is_dict:
                     target = existing
                 else:
@@ -270,9 +322,7 @@ def process_element(ctx: Any, decls: list[Any]) -> ElementResult:
             else:
                 # Scalar/scalar destination semantics UNCHANGED — earlier-wins
                 # setdefault is the frozen convert.py:2888 contract; do not
-                # alter it. (Finding #4, the isinstance(dict) vs box_family
-                # gate mismatch, is a deliberately deferred tracked follow-up
-                # — not touched here.)
+                # alter it.
                 dest.attrs.setdefault(w.attr, w.value)
     return result
 
