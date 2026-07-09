@@ -122,6 +122,25 @@ if ( ! in_array( $border_style, $allowed_border_styles, true ) ) {
 // function_exists() guard because multiple block instances may include this file.
 // ---------------------------------------------------------------------------
 
+// CSS-value sanitiser for composite free-text values (box-shadow) that reach
+// this block's scoped hover <style> rule (step 8 below). Unlike the simple
+// keyword/length sanitisers, box-shadow syntax legitimately needs digits,
+// units, #hex, rgba()/commas/spaces/parens — so this strips only the
+// characters that let a value break out of its declaration into a new CSS
+// rule ( ; { } < > \ ), leaving valid shadow syntax intact. Was esc_attr()-only,
+// which does not block ;{}() breakout.
+if ( ! function_exists( 'sgs_quote_css_safe_value' ) ) {
+	/**
+	 * Strip CSS/HTML breakout characters from a composite free-text CSS value.
+	 *
+	 * @param string $value Raw attribute value.
+	 * @return string Value with ; { } < > \ removed.
+	 */
+	function sgs_quote_css_safe_value( $value ) {
+		return preg_replace( '/[;{}<>\\\\]/', '', (string) $value );
+	}
+}
+
 if ( ! function_exists( 'sgs_quote_build_slot_style' ) ) {
 	/**
 	 * Build inline style string for a single text slot.
@@ -325,7 +344,9 @@ if ( $hover_scale || $hover_colour || $hover_bg || $box_shadow_hover ) {
 		$hover_decls[] = 'background-color:' . sgs_colour_value( $hover_bg );
 	}
 	if ( $box_shadow_hover ) {
-		$hover_decls[] = 'box-shadow:' . esc_attr( $box_shadow_hover );
+		// Reaches the scoped hover <style> rule below — sanitise against CSS-rule
+		// breakout (was esc_attr()-only, which does not strip ;{}()).
+		$hover_decls[] = 'box-shadow:' . sgs_quote_css_safe_value( $box_shadow_hover );
 	}
 	$css_hover = $scope . ':hover{' . implode( ';', $hover_decls ) . '}';
 }

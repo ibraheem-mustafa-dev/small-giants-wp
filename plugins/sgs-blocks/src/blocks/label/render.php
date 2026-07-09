@@ -33,7 +33,11 @@ $text_colour       = $attributes['textColour'] ?? '';
 $background_colour = $attributes['backgroundColour'] ?? '';
 $font_family       = $attributes['fontFamily'] ?? '';
 $font_size         = $attributes['fontSize'] ?? '';
-$font_size_unit    = $attributes['fontSizeUnit'] ?? 'px';
+// fontSizeUnit reaches the scoped responsive <style> block below (tablet/mobile
+// font-size overrides) — sanitise so a free-text value cannot break out of the
+// declaration into a new CSS rule (was esc_attr()-only, which does not strip
+// ;{}()). Letters/digits/dot/% only — a legitimate unit never needs more.
+$font_size_unit    = preg_replace( '/[^A-Za-z0-9.%]/', '', (string) ( $attributes['fontSizeUnit'] ?? 'px' ) );
 $font_size_tablet  = isset( $attributes['fontSizeTablet'] ) ? $attributes['fontSizeTablet'] : null;
 $font_size_mobile  = isset( $attributes['fontSizeMobile'] ) ? $attributes['fontSizeMobile'] : null;
 $font_weight       = $attributes['fontWeight'] ?? '';

@@ -34,6 +34,16 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
+// CSS length/unit sanitiser — for free-text attrs (embedded length strings like
+// minHeight, and bare unit strings like imagePaddingUnit) concatenated into raw
+// CSS declarations inside this block's scoped <style> tag. Strips everything
+// except letters, digits, dot, and % so a Contributor-authored malicious value
+// (e.g. "600px;}body{display:none}.x{min-height:0") can never break out of the
+// declaration into a new CSS rule. Mirrors sgs/button's proven sanitiser.
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
 // ── Shell / layout attributes (still scalar — drive the wrapper + media column).
 // FR-22-6: scalar content attrs (label, headline, subHeadline, ctaPrimary*,
 // ctaSecondary*) are deliberately NOT read here. R-22-14: no fallback.
@@ -75,9 +85,12 @@ $split_image_mobile  = $attributes['splitImageMobile'] ?? null;
 $split_image_mobile_object_position = $attributes['splitImageMobileObjectPosition'] ?? 'center 20%';
 $bg_video            = $attributes['backgroundVideo'] ?? null;
 $svg_content         = $attributes['svgContent'] ?? '';
-$min_height          = $attributes['minHeight'] ?? '';
-$min_height_tablet   = $attributes['minHeightTablet'] ?? '';
-$min_height_mobile   = $attributes['minHeightMobile'] ?? '360px';
+// Free-text embedded length strings (e.g. "600px") — sanitised before reaching
+// the scoped <style> rule below (was esc_attr()-only, which does not strip
+// ;{}() and so cannot prevent CSS-rule breakout).
+$min_height          = $sgs_css_length( $attributes['minHeight'] ?? '' );
+$min_height_tablet   = $sgs_css_length( $attributes['minHeightTablet'] ?? '' );
+$min_height_mobile   = $sgs_css_length( $attributes['minHeightMobile'] ?? '360px' );
 $badges              = $attributes['badges'] ?? array();
 
 // Sub-headline / headline / label font-size are owned by the child
@@ -120,12 +133,12 @@ $image_object_position = $attributes['imageObjectPosition'] ?? 'center center';
 $image_width        = $attributes['imageWidth'] ?? null;
 $image_width_tablet = $attributes['imageWidthTablet'] ?? null;
 $image_width_mobile = $attributes['imageWidthMobile'] ?? null;
-$image_width_unit   = $attributes['imageWidthUnit'] ?? '%';
+$image_width_unit   = $sgs_css_length( $attributes['imageWidthUnit'] ?? '%' );
 
 $image_height        = $attributes['imageHeight'] ?? null;
 $image_height_tablet = $attributes['imageHeightTablet'] ?? null;
 $image_height_mobile = $attributes['imageHeightMobile'] ?? null;
-$image_height_unit   = $attributes['imageHeightUnit'] ?? 'px';
+$image_height_unit   = $sgs_css_length( $attributes['imageHeightUnit'] ?? 'px' );
 
 // Image border radius (per-corner, per-breakpoint).
 $image_br_tl        = $attributes['imageBorderRadiusTL'] ?? 0;
@@ -140,7 +153,9 @@ $image_br_mob_tl    = $attributes['imageBorderRadiusMobileTL'] ?? null;
 $image_br_mob_tr    = $attributes['imageBorderRadiusMobileTR'] ?? null;
 $image_br_mob_br    = $attributes['imageBorderRadiusMobileBR'] ?? null;
 $image_br_mob_bl    = $attributes['imageBorderRadiusMobileBL'] ?? null;
-$image_br_unit      = $attributes['imageBorderRadiusUnit'] ?? 'px';
+// Unit strings are free text (e.g. "px") reaching the scoped <style> rules
+// below — sanitised so a malicious value cannot break out of the declaration.
+$image_br_unit      = $sgs_css_length( $attributes['imageBorderRadiusUnit'] ?? 'px' );
 
 // Image border.
 $image_border_style       = $attributes['imageBorderStyle'] ?? 'none';
@@ -164,7 +179,7 @@ $image_pad_mob_top  = $attributes['imagePaddingTopMobile'] ?? null;
 $image_pad_mob_right = $attributes['imagePaddingRightMobile'] ?? null;
 $image_pad_mob_bot  = $attributes['imagePaddingBottomMobile'] ?? null;
 $image_pad_mob_left = $attributes['imagePaddingLeftMobile'] ?? null;
-$image_pad_unit     = $attributes['imagePaddingUnit'] ?? 'px';
+$image_pad_unit     = $sgs_css_length( $attributes['imagePaddingUnit'] ?? 'px' );
 
 // mediaPadding — outer padding on the .sgs-hero__media wrapper.
 $media_bg_colour    = $attributes['mediaBackgroundColour'] ?? '';
@@ -180,7 +195,7 @@ $media_pad_mob_top  = $attributes['mediaPaddingTopMobile'] ?? null;
 $media_pad_mob_right = $attributes['mediaPaddingRightMobile'] ?? null;
 $media_pad_mob_bot  = $attributes['mediaPaddingBottomMobile'] ?? null;
 $media_pad_mob_left = $attributes['mediaPaddingLeftMobile'] ?? null;
-$media_pad_unit     = $attributes['mediaPaddingUnit'] ?? 'px';
+$media_pad_unit     = $sgs_css_length( $attributes['mediaPaddingUnit'] ?? 'px' );
 
 // contentPadding — padding on the .sgs-hero__content wrapper.
 $content_pad_top      = $attributes['contentPaddingTop'] ?? null;
@@ -195,7 +210,7 @@ $content_pad_mob_top  = $attributes['contentPaddingTopMobile'] ?? null;
 $content_pad_mob_right = $attributes['contentPaddingRightMobile'] ?? null;
 $content_pad_mob_bot  = $attributes['contentPaddingBottomMobile'] ?? null;
 $content_pad_mob_left = $attributes['contentPaddingLeftMobile'] ?? null;
-$content_pad_unit     = $attributes['contentPaddingUnit'] ?? 'px';
+$content_pad_unit     = $sgs_css_length( $attributes['contentPaddingUnit'] ?? 'px' );
 
 // HC2: per-breakpoint text-align on .sgs-hero__content. Desktop = base rule
 // (no @media), tablet/mobile via the scoped <style> @media mechanism — mirrors
@@ -228,7 +243,7 @@ $split_order_mobile     = $attributes['splitContentOrderMobile'] ?? 'media-first
 // fallback — so an instance whose control was never touched is byte-unchanged.
 // ctaGap has a schema default (12), so gate desktop emit on the attr being
 // PRESENT in $attributes (operator actually set it), not on a non-null read.
-$cta_gap_unit   = $attributes['ctaGapUnit'] ?? 'px';
+$cta_gap_unit   = $sgs_css_length( $attributes['ctaGapUnit'] ?? 'px' );
 $cta_gap_set    = array_key_exists( 'ctaGap', $attributes );
 $cta_gap        = $cta_gap_set ? absint( $attributes['ctaGap'] ) : null;
 $cta_gap_tablet = array_key_exists( 'ctaGapTablet', $attributes ) && null !== $attributes['ctaGapTablet'] ? absint( $attributes['ctaGapTablet'] ) : null;
