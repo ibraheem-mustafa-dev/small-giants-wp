@@ -205,82 +205,85 @@ $uid = 'sgs-btn-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 
 $inline_styles = array();
 
-// Preset-as-seed (2026-07-06): colour/border/typography always paint from the
-// block's OWN attributes — there is no locked "preset mode" any more. A
-// preset only ever seeds these attrs (via the editor's Apply button); render
-// never gates on inheritStyle.
+// Colour is CLASS-driven (Spec 32 FR-32-2/4): the `.sgs-button--{preset}` class
+// sets the six `--sgs-btn-*` vars from the per-client tokens (WP-generated from
+// the snapshot buttonPresets). A NON-EMPTY colour attr is a per-instance
+// OVERRIDE, emitted as a CSS custom-property VALUE — never an inline property
+// declaration — so it beats the preset var yet, being a var (not `color:`),
+// still cannot break the stylesheet `:hover` rule. Empty attrs (the default) =
+// no override → the class governs.
 if ( $colour_text ) {
-	$inline_styles[] = 'color:' . sgs_colour_value( $colour_text );
+	$inline_styles[] = '--sgs-btn-color:' . sgs_colour_value( $colour_text );
 }
 if ( $colour_bg ) {
-	$inline_styles[] = 'background-color:' . sgs_colour_value( $colour_bg );
+	$inline_styles[] = '--sgs-btn-bg:' . sgs_colour_value( $colour_bg );
 }
 if ( $colour_border ) {
-	$inline_styles[] = 'border-color:' . sgs_colour_value( $colour_border );
+	$inline_styles[] = '--sgs-btn-border:' . sgs_colour_value( $colour_border );
+}
+if ( $colour_text_hover ) {
+	$inline_styles[] = '--sgs-btn-color-hover:' . sgs_colour_value( $colour_text_hover );
+}
+if ( $colour_bg_hover ) {
+	$inline_styles[] = '--sgs-btn-bg-hover:' . sgs_colour_value( $colour_bg_hover );
+}
+if ( $colour_border_hover ) {
+	$inline_styles[] = '--sgs-btn-border-hover:' . sgs_colour_value( $colour_border_hover );
+}
+
+// Icon gap — a CSS custom-property VALUE (consumed by style.css flexbox gap).
+$inline_styles[] = "--sgs-btn-icon-gap:{$icon_gap}px";
+
+// Non-responsive base declarations (border-width/style, font weight/style,
+// text-transform/decoration, box-shadow) go into the id-scoped <style> base rule
+// in step 4 — NOT inline (Spec 32: the element's `style` attr carries only
+// custom-property VALUES, never property declarations). Border-radius / font-size
+// / line-height / letter-spacing / padding / min-height / width have tablet+mobile
+// tiers and are emitted on the same id-scoped selector in step 4 (Pattern A).
+$base_decls = array();
+if ( null !== $border_width_top || null !== $border_width_rgt || null !== $border_width_bot || null !== $border_width_lft ) {
+	$bwt          = null !== $border_width_top ? $border_width_top . $border_width_unit : '0';
+	$bwr          = null !== $border_width_rgt ? $border_width_rgt . $border_width_unit : '0';
+	$bwb          = null !== $border_width_bot ? $border_width_bot . $border_width_unit : '0';
+	$bwl          = null !== $border_width_lft ? $border_width_lft . $border_width_unit : '0';
+	$base_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
 }
 if ( $border_style && 'solid' !== $border_style ) {
-	$inline_styles[] = 'border-style:' . $border_style;
+	$base_decls[] = 'border-style:' . $border_style;
 }
-
-// Border widths.
-if ( null !== $border_width_top || null !== $border_width_rgt || null !== $border_width_bot || null !== $border_width_lft ) {
-	$bwt             = null !== $border_width_top ? $border_width_top . $border_width_unit : '0';
-	$bwr             = null !== $border_width_rgt ? $border_width_rgt . $border_width_unit : '0';
-	$bwb             = null !== $border_width_bot ? $border_width_bot . $border_width_unit : '0';
-	$bwl             = null !== $border_width_lft ? $border_width_lft . $border_width_unit : '0';
-	$inline_styles[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
-}
-
-// Border-radius / font-size / line-height / letter-spacing are NOT inline
-// (Pattern A, D-migration): each has tablet/mobile tiers, so base+tablet+
-// mobile are emitted together on the SAME selector in the scoped <style>
-// block below (step 4) via the shared general helper. Inline would always
-// beat the id-scoped @media overrides regardless of viewport.
 if ( $font_weight ) {
-	$inline_styles[] = 'font-weight:' . intval( $font_weight );
+	$base_decls[] = 'font-weight:' . intval( $font_weight );
 }
 if ( $font_style_attr && 'normal' !== $font_style_attr ) {
-	$inline_styles[] = 'font-style:' . $font_style_attr;
+	$base_decls[] = 'font-style:' . $font_style_attr;
 }
 if ( $text_transform ) {
-	$inline_styles[] = 'text-transform:' . $text_transform;
+	$base_decls[] = 'text-transform:' . $text_transform;
 }
 if ( $text_decoration ) {
-	$inline_styles[] = 'text-decoration:' . $text_decoration;
+	$base_decls[] = 'text-decoration:' . $text_decoration;
 }
-
-// Normal box shadow.
 if ( $box_shadow['colour'] ) {
-	$bs_inset        = $box_shadow['inset'] ? 'inset ' : '';
-	$bs_h            = (int) $box_shadow['hOffset'];
-	$bs_v            = (int) $box_shadow['vOffset'];
-	$bs_blur         = absint( $box_shadow['blur'] );
-	$bs_spread       = (int) $box_shadow['spread'];
-	$bs_colour_val   = sgs_colour_value( $box_shadow['colour'] );
-	$inline_styles[] = "box-shadow:{$bs_inset}{$bs_h}px {$bs_v}px {$bs_blur}px {$bs_spread}px {$bs_colour_val}";
+	$bs_inset      = $box_shadow['inset'] ? 'inset ' : '';
+	$bs_h          = (int) $box_shadow['hOffset'];
+	$bs_v          = (int) $box_shadow['vOffset'];
+	$bs_blur       = absint( $box_shadow['blur'] );
+	$bs_spread     = (int) $box_shadow['spread'];
+	$bs_colour_val = sgs_colour_value( $box_shadow['colour'] );
+	$base_decls[]  = "box-shadow:{$bs_inset}{$bs_h}px {$bs_v}px {$bs_blur}px {$bs_spread}px {$bs_colour_val}";
 }
-
-// Padding / min-height / icon-size-var are NOT inline (Pattern A,
-// D-migration): each has tablet/mobile tiers, so base+tablet+mobile are
-// emitted together on the SAME selector in the scoped <style> block below
-// (step 4). This also lets the tablet/mobile min-height rules drop the
-// !important that was previously required to beat this inline declaration
-// on the same element (the "F4 pattern" — retired).
-
-// Width is NOT inline (Pattern A): it now has tablet/mobile tiers
-// (widthTypeTablet/Mobile), so base+tablet+mobile are emitted together on the
-// SAME selector in the scoped <style> block below (step 4). An inline base
-// width would always beat a same-id @media tier override regardless of viewport.
-
-// Icon gap has no responsive tiers — stays inline as a CSS custom property
-// (consumed by style.css flexbox gap).
-$inline_styles[] = "--sgs-btn-icon-gap:{$icon_gap}px";
 
 // ---------------------------------------------------------------------------
 // 4. Build scoped CSS for hover states and responsive rules.
 // ---------------------------------------------------------------------------
 
 $scoped_css_parts = array();
+
+// Base non-responsive declarations (border-width/style, font, box-shadow) —
+// id-scoped external CSS, NOT inline on the element (Spec 32 FR-32-1).
+if ( $base_decls ) {
+	$scoped_css_parts[] = "#{$uid}.sgs-button{" . implode( ';', $base_decls ) . ';}';
+}
 
 // Transition — applied on the element always (preset AND custom).
 $scoped_css_parts[] = "#{$uid}.sgs-button{transition:all {$transition_duration}ms {$transition_easing};}";
@@ -292,18 +295,11 @@ if ( abs( $hover_scale - 1.0 ) > 0.001 ) {
 	$scoped_css_parts[] = "#{$uid}.sgs-button:focus-visible{transform:scale({$scale_val});}";
 }
 
-// Hover colours — always painted from the button's own attrs (no preset gate).
+// Hover: colour hovers are CLASS-driven (Spec 32) via the --sgs-btn-*-hover vars
+// — set as overrides in step 3 when customised, else from the preset class's
+// `:hover` rule in style.css. Only the NON-colour hover effects are emitted here.
 $hover_rules = array();
 
-if ( $colour_text_hover ) {
-	$hover_rules[] = 'color:' . sgs_colour_value( $colour_text_hover );
-}
-if ( $colour_bg_hover ) {
-	$hover_rules[] = 'background-color:' . sgs_colour_value( $colour_bg_hover );
-}
-if ( $colour_border_hover ) {
-	$hover_rules[] = 'border-color:' . sgs_colour_value( $colour_border_hover );
-}
 if ( 'underline' === $text_decoration_hover ) {
 	$hover_rules[] = 'text-decoration:underline';
 }
@@ -528,10 +524,15 @@ if ( $has_width_tier || 'custom' === $width_type || 'full' === $width_type ) {
 // 5. Build CSS classes for the button element.
 // ---------------------------------------------------------------------------
 
-// Preset-as-seed: presets only seed attributes (via the editor Apply
-// button) — there's no locked style class any more. All buttons render from
-// their own attrs, so a single class covers every button.
+// Spec 32: the preset renders via a semantic BEM modifier class that consumes
+// the per-client `--wp--custom--button-presets--{preset}--*` tokens (base +
+// hover) in style.css. `inheritStyle` selects the preset; a 'custom'/unknown
+// value emits NO modifier — the neutral base `.sgs-button` + any per-instance
+// override vars govern (so a naked cloned link is NOT forced to a primary look).
 $btn_classes = array( 'sgs-button' );
+if ( in_array( $inherit_style, array( 'primary', 'secondary', 'outline' ), true ) ) {
+	$btn_classes[] = 'sgs-button--' . $inherit_style;
+}
 
 // Margin inline style (wrapper level — no per-element responsive needed at wrapper level).
 $wrapper_styles = array();
@@ -658,19 +659,18 @@ if ( $icon ) {
 // XS-9.2 (2026-05-30): label is rich-text. Tightened wp_kses allowlist deliberately
 // EXCLUDES <a> — nested anchors inside <a>/<button> wrappers are invalid HTML
 // and a phishing vector. <span class=...> is allowed for icon/styling spans.
-$label_html = sprintf(
-	'<span class="sgs-button__label">%s</span>',
-	wp_kses(
-		$label,
-		array(
-			'br'     => array(),
-			'strong' => array(),
-			'b'      => array(),
-			'em'     => array(),
-			'i'      => array(),
-			'span'   => array( 'class' => true ),
-			'code'   => array(),
-		)
+// The label text is emitted directly inside the <a>/<button> — no wrapping
+// span (clean draft-button parity: `<a class="sgs-button">Text</a>`).
+$label_html = wp_kses(
+	$label,
+	array(
+		'br'     => array(),
+		'strong' => array(),
+		'b'      => array(),
+		'em'     => array(),
+		'i'      => array(),
+		'span'   => array( 'class' => true ),
+		'code'   => array(),
 	)
 );
 

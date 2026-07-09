@@ -110,6 +110,12 @@ _THEME_PALETTE_MAP: dict[str, str] = {}       # hex (lower) → theme palette sl
 # section) rebuilds the maps only when the (client, css) inputs change.
 _RESOLUTION_CACHE_KEY: tuple | None = None
 
+# Per-run client button-preset map (snapshot ``settings.custom.buttonPresets``):
+# ``{variant: {css-key: value}}``. Populated once per run alongside the colour
+# maps (same snapshot file, same memoisation). Empty = no client snapshot preset
+# → the converter falls back to the framework block.json variation seed.
+_BUTTON_PRESETS_MAP: dict[str, dict] = {}
+
 _ROOT_BLOCK_RE = re.compile(r":root\s*\{([^}]*)\}", re.DOTALL)
 _CUSTOM_PROP_RE = re.compile(r"--([a-zA-Z0-9-]+)\s*:\s*([^;]+);", re.DOTALL)
 _HEX_RE = re.compile(r"^#[0-9a-fA-F]{3,8}$")
@@ -164,10 +170,11 @@ def configure_colour_resolution(
 
 def reset_colour_resolution() -> None:
     """Clear the resolution maps (feature inactive → pass-through)."""
-    global _DRAFT_ROOT_COLOUR_MAP, _THEME_PALETTE_MAP, _RESOLUTION_CACHE_KEY
+    global _DRAFT_ROOT_COLOUR_MAP, _THEME_PALETTE_MAP, _RESOLUTION_CACHE_KEY, _BUTTON_PRESETS_MAP
     _DRAFT_ROOT_COLOUR_MAP = {}
     _THEME_PALETTE_MAP = {}
     _RESOLUTION_CACHE_KEY = None
+    _BUTTON_PRESETS_MAP = {}
 
 
 def _load_theme_palette_map(client_slug: str, repo_root: Any) -> dict[str, str]:
@@ -209,7 +216,91 @@ def configure_colour_resolution_from_run(
     draft_map = build_draft_root_colour_map(css or "")
     palette_map = _load_theme_palette_map(client_slug, repo_root)
     configure_colour_resolution(draft_map, palette_map)
+    configure_button_presets(_load_button_presets(client_slug, repo_root))
     _RESOLUTION_CACHE_KEY = key
+
+
+# ---------------------------------------------------------------------------
+# Client button-preset colour routing (snapshot settings.custom.buttonPresets)
+# ---------------------------------------------------------------------------
+#
+# A draft's ``.sgs-button--{variant}`` encodes a style preset. The client's
+# ``theme-snapshot.json`` ``settings.custom.buttonPresets`` defines that preset's
+# colours + hover (the per-client design-system source of truth — see the
+# snapshot audit 2026-07-07). The converter routes those COLOUR values into the
+# button's own colour attrs so a clone paints the client's real button look AND
+# its hover lands (the base CSS pass deliberately skips ``:hover``). The preset's
+# GEOMETRY (radius/padding/font-size/min-height) is intentionally NOT routed
+# here — the draft's own per-instance CSS supplies it faithfully. All runtime
+# DATA (R-31-1): loaded per run from the client snapshot, never a hardcoded dict.
+
+# Structural map: snapshot buttonPreset colour keys → SGS button colour attrs.
+# A fixed schema binding between the snapshot's design-token keys and the block's
+# attr names (an inherent structural constant like SKIP_TOP_LEVEL_TAGS, not a
+# drift-prone recognition vocabulary).
+_BTN_PRESET_COLOUR_ATTR: dict[str, str] = {
+    "background": "colourBackground",
+    "text": "colourText",
+    "border": "colourBorder",
+    "hover-background": "colourBackgroundHover",
+    "hover-text": "colourTextHover",
+    "hover-border": "colourBorderHover",
+}
+
+
+def configure_button_presets(presets: dict | None) -> None:
+    """Install the per-run client button-preset map (snapshot buttonPresets)."""
+    global _BUTTON_PRESETS_MAP
+    _BUTTON_PRESETS_MAP = dict(presets or {})
+
+
+def _load_button_presets(client_slug: str, repo_root: Any) -> dict:
+    """Load ``settings.custom.buttonPresets`` from the client theme-snapshot.
+
+    Best-effort: a missing/unreadable/malformed snapshot returns ``{}`` (the
+    converter then falls back to the framework block.json variation seed).
+    """
+    if not client_slug or repo_root is None:
+        return {}
+    import json
+    import pathlib
+    path = pathlib.Path(repo_root) / "sites" / client_slug / "theme-snapshot.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    presets = (
+        ((data.get("settings") or {}).get("custom") or {}).get("buttonPresets")
+    ) or {}
+    return presets if isinstance(presets, dict) else {}
+
+
+def button_preset_colour_attrs(variant: str) -> dict[str, str]:
+    """Map the client snapshot ``buttonPresets[variant]`` COLOUR + hover values to
+    SGS button colour attrs (token-slug form).
+
+    Only the six colour roles (base + hover) are mapped — geometry keys in the
+    preset are ignored (the draft CSS supplies geometry). A ``transparent`` /
+    empty / ``none`` value maps to ``''`` (render emits no colour → transparent).
+    A ``var(--wp--preset--color--X)`` / bare ``var(--X)`` value yields the slug
+    ``X``; a raw hex passes through verbatim (render's ``sgs_colour_value``
+    honours a literal hex). Returns ``{}`` when the client has no preset for the
+    variant (caller falls back to the framework seed).
+    """
+    preset = _BUTTON_PRESETS_MAP.get(variant)
+    if not isinstance(preset, dict):
+        return {}
+    out: dict[str, str] = {}
+    for css_key, attr in _BTN_PRESET_COLOUR_ATTR.items():
+        if css_key not in preset:
+            continue
+        raw = str(preset[css_key]).strip()
+        if raw in ("", "transparent", "none"):
+            out[attr] = ""
+            continue
+        m = _VAR_TOKEN_RE.search(raw)
+        out[attr] = m.group(1) if m else raw
+    return out
 
 
 def _resolve_draft_colour_var(raw: str) -> str:

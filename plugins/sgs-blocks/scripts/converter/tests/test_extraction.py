@@ -835,14 +835,19 @@ def test_named_leaf_no_extractable_content_emits_gap():
     )
 
 
-def test_r6_strips_lifted_background_for_preset_button(monkeypatch):
-    """R6 (council MF2): once inheritStyle resolves to a PRESET, the lifted
-    style.color.background must be stripped (WP would paint it as a coloured wrapper
-    box; the face colour comes from is-style-<preset>). Background only, never text."""
+def test_r6_strips_lifted_colour_channel_for_preset_button(monkeypatch):
+    """Preset-as-seed (2026-07-07): once inheritStyle resolves to a PRESET, the
+    button's colours come SOLELY from its SGS colour attrs (colourText/
+    colourBackground/... — routed by step 5b from the client snapshot buttonPresets,
+    or the framework variation-seed fallback). The WP-native style.color.* channel
+    (both background AND text) is therefore stripped so there is no duplicate colour
+    declaration fighting on the element. (Supersedes the old is-style-<preset>
+    contract where only background was stripped and the face colour came from a
+    locked CSS class — that model no longer exists.)"""
     import converter.services.extraction as ext_mod
 
     def _fake_css_attrs(rec, node, css_rules, is_root):
-        # Simulate lift_root_supports_to_style lifting the button's background-color.
+        # Simulate lift_root_supports_to_style lifting the button's colour.
         return {"style": {"color": {"background": "#f5c2c8", "text": "#2b2b2b"}}}
 
     monkeypatch.setattr(ext_mod, "_build_css_attrs", _fake_css_attrs)
@@ -852,7 +857,10 @@ def test_r6_strips_lifted_background_for_preset_button(monkeypatch):
     markup = build_block_markup(rec, node, css_rules={"dummy": {}})
 
     assert "#f5c2c8" not in markup, f"preset button background NOT stripped:\n{markup}"
-    assert "#2b2b2b" in markup, f"R6 wrongly stripped the TEXT colour too:\n{markup}"
+    assert "#2b2b2b" not in markup, f"preset button TEXT colour NOT stripped:\n{markup}"
+    # Spec 32: colour is CLASS-driven — the converter sets NO colour attrs; the
+    # .sgs-button--{preset} class + --wp--custom--button-presets--* tokens govern.
+    assert '"colourText"' not in markup, f"preset button wrongly carries a colourText attr (Spec 32 = class-driven):\n{markup}"
     assert '"inheritStyle":"primary"' in markup
 
 

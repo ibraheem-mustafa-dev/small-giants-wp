@@ -6,18 +6,9 @@ import {
 	SelectControl,
 	RangeControl,
 	ToggleControl,
-	Button,
-	__experimentalHStack as HStack,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import { IconPicker, TypographyControls, ResponsiveControl, DesignTokenPicker, resolveColorToken } from '../../components';
-import { BUTTON_PRESETS } from './presets';
-
-const PRESET_OPTIONS = [
-	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
-	{ label: __( 'Secondary', 'sgs-blocks' ), value: 'secondary' },
-	{ label: __( 'Outline', 'sgs-blocks' ), value: 'outline' },
-];
 
 const TARGET_OPTIONS = [
 	{ label: __( 'Same tab (_self)', 'sgs-blocks' ), value: '_self' },
@@ -143,7 +134,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		rel,
 		download,
 		isSubmit,
-		inheritStyle,
 		ariaLabel,
 		widthType,
 		customWidth,
@@ -265,28 +255,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-
-				{ /* Style Preset — preset-as-seed: picking a preset + clicking Apply
-				   COPIES that preset's values into this button's own attributes.
-				   Nothing is locked — every colour/typography/border control below
-				   stays fully editable, before and after applying. */ }
-				<PanelBody title={ __( 'Style Preset', 'sgs-blocks' ) } initialOpen={ true }>
-					<SelectControl
-						label={ __( 'Style preset', 'sgs-blocks' ) }
-						value={ inheritStyle }
-						options={ PRESET_OPTIONS }
-						onChange={ ( val ) => setAttributes( { inheritStyle: val } ) }
-						help={ __( 'Pick a preset and click Apply to copy its styling into this button’s settings — then tweak anything below.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-					/>
-					<Button
-						variant="secondary"
-						style={ { marginTop: '8px' } }
-						onClick={ () => setAttributes( { ...BUTTON_PRESETS[ inheritStyle ] } ) }
-					>
-						{ __( 'Apply preset', 'sgs-blocks' ) }
-					</Button>
-				</PanelBody>
 
 				{ /* Content */ }
 				<PanelBody title={ __( 'Content', 'sgs-blocks' ) } initialOpen={ true }>
@@ -646,7 +614,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			<span { ...blockProps }>
 				{ hasIcon && iconPosition === 'before' && iconPlaceholder }
 				{ iconPosition !== 'only' && (
-					<span className="sgs-button__label">{ label || __( 'Click Here', 'sgs-blocks' ) }</span>
+					label || __( 'Click Here', 'sgs-blocks' )
 				) }
 				{ hasIcon && ( iconPosition === 'after' || iconPosition === 'only' ) && iconPlaceholder }
 			</span>

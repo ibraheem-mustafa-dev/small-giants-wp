@@ -61,7 +61,8 @@
             "enum": [
                 "primary",
                 "secondary",
-                "outline"
+                "outline",
+                "custom"
             ]
         },
         "widthType": {
@@ -306,27 +307,27 @@
         },
         "colourText": {
             "type": "string",
-            "default": "text-inverse"
+            "default": ""
         },
         "colourTextHover": {
             "type": "string",
-            "default": "text-inverse"
+            "default": ""
         },
         "colourBackground": {
             "type": "string",
-            "default": "primary"
+            "default": ""
         },
         "colourBackgroundHover": {
             "type": "string",
-            "default": "text"
+            "default": ""
         },
         "colourBorder": {
             "type": "string",
-            "default": "primary"
+            "default": ""
         },
         "colourBorderHover": {
             "type": "string",
-            "default": "text"
+            "default": ""
         },
         "borderStyle": {
             "type": "string",
@@ -498,5 +499,32 @@
             "icon": "arrow-right",
             "iconPosition": "after"
         }
-    }
+    },
+    "variations": [
+        {
+            "name": "primary",
+            "title": "Primary",
+            "description": "Solid primary-colour button.",
+            "isDefault": true,
+            "scope": [ "block", "transform" ],
+            "isActive": [ "inheritStyle" ],
+            "attributes": { "inheritStyle": "primary" }
+        },
+        {
+            "name": "secondary",
+            "title": "Secondary",
+            "description": "Outlined button with primary text.",
+            "scope": [ "block", "transform" ],
+            "isActive": [ "inheritStyle" ],
+            "attributes": { "inheritStyle": "secondary" }
+        },
+        {
+            "name": "outline",
+            "title": "Outline",
+            "description": "Subtle-bordered neutral button.",
+            "scope": [ "block", "transform" ],
+            "isActive": [ "inheritStyle" ],
+            "attributes": { "inheritStyle": "outline" }
+        }
+    ]
 }

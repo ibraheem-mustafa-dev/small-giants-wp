@@ -2606,6 +2606,42 @@ def inherit_style_presets() -> frozenset:
     return frozenset(vals)
 
 
+@functools.lru_cache(maxsize=256)
+def variation_attrs_for(block_slug: str, variation_name: str) -> dict:
+    """Return the full attribute seed for a block variation, or {} if none.
+
+    Reads the `variations` table (attributes_json) for (block_slug,
+    variation_name), preferring source='sgs'. Used by the converter to seed a
+    button's full preset attribute set (colours + hover + borders) from the DB
+    when a preset modifier is detected — R-31-1 (DB-driven, no hardcoded dict).
+    Returns a parsed dict; {} on missing row / null / malformed JSON.
+    """
+    if not block_slug or not variation_name:
+        return {}
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT attributes_json FROM variations "
+            "WHERE block_slug = ? AND variation_name = ? "
+            "ORDER BY (source = 'sgs') DESC LIMIT 1",
+            (block_slug, variation_name),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        # Table absent (pre-seed DB) — soft-fail to no seed.
+        row = None
+    finally:
+        conn.close()
+    if not row or not row[0]:
+        _trace("db_lookup_miss", lookup="variation_attrs_for",
+               block_slug=block_slug, variation_name=variation_name)
+        return {}
+    try:
+        parsed = json.loads(row[0])
+    except (ValueError, TypeError):
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
+
+
 def inherit_style_for_modifier(mod: str, block_slug: str | None) -> str | None:
     """Resolve a BEM style ``--modifier`` that is NOT itself a preset value to an
     inheritStyle preset via the slots alias→default_attrs channel (R-31-1).

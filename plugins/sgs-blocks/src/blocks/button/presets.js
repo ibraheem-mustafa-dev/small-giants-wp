@@ -1,14 +1,15 @@
 /**
- * SGS Button — style preset seed values.
+ * SGS Button — style preset seed values (framework defaults).
  *
- * These are the attribute values COPIED into a button's own attributes when
- * an operator picks a preset in the "Style preset" dropdown and clicks
- * "Apply preset". They are NOT a locked style class — once applied, every
- * value is a normal, fully-editable block attribute.
+ * NOTE (2026-07-07): the sgs/button block itself no longer uses this file — it
+ * now uses WordPress-native block VARIATIONS (declared in block.json) for its
+ * primary/secondary/outline presets, and the cloning converter routes each
+ * client's real colours from that client's theme-snapshot `buttonPresets`.
  *
- * Token slugs mirror the previous `.is-style-*` CSS custom-property
- * fallbacks in style.css (now removed) so re-applying a preset reproduces
- * the same visual result the old locked system gave by default.
+ * This module is retained ONLY as the framework-default seed for
+ * `sgs/product-card`'s built-in CTA "Apply preset" control (a sub-element that
+ * cannot be a block variation). It will be relocated/removed when the
+ * product-card CTA is migrated to the same snapshot-driven model.
  *
  * @package SGS\Blocks
  */

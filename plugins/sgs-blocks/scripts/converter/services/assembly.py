@@ -296,6 +296,27 @@ def build_block_markup(
             if not _has_own_family_class:
                 attrs["inheritStyle"] = "custom"
 
+    # step 5b: preset colour is CLASS-driven (Spec 32 FR-32-2/8). A recognised
+    # preset renders via the `.sgs-button--{preset}` class, which consumes the
+    # per-client `--wp--custom--button-presets--{preset}--{role}` tokens (base +
+    # hover) that WordPress auto-generates from the snapshot buttonPresets. So the
+    # converter sets NO colour attrs (they stay empty = override-only, FR-32-4)
+    # and STRIPS any colour the CSS pass lifted to the WP-native style.color.*
+    # channel for a preset button — otherwise that lifted colour (inline via WP
+    # supports) would fight the class + kill :hover. inheritStyle (already set in
+    # step 5) is what render.php turns into the class. Custom buttons
+    # (inheritStyle absent/'custom') keep their lifted style.color — step 5b does
+    # not fire for them (they have no preset class to govern colour).
+    if rec.slug is not None and attrs.get("inheritStyle") in db_lookup.inherit_style_presets():
+        _stl = attrs.get("style")
+        if isinstance(_stl, dict) and isinstance(_stl.get("color"), dict):
+            _stl["color"].pop("text", None)
+            _stl["color"].pop("background", None)
+            if not _stl["color"]:
+                _stl.pop("color", None)
+            if not _stl:
+                attrs.pop("style", None)
+
     # step 6: R6 background-strip (port convert.py:5017-5028, W3 MF2). The CSS pass
     # (_build_css_attrs -> lift_root_supports_to_style) lifts background-color into
     # style.color.background; for a PRESET button WP paints that onto the

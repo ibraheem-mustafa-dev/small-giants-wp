@@ -2,13 +2,16 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-last_updated: 2026-07-07-D290
+last_updated: 2026-07-09-D291
 note: "LEAN snapshot. Full history -> memory/state-archive.md. This file holds ONLY the current pointer; detail lives in handoff.md + next-session-prompt.md (the SoT). Do NOT restate D-numbers / counts / commit hashes here - they drift. <=24576 bytes."
 ---
 
 # small-giants-wp — State Snapshot (lean)
 
 ## Human Summary
+**LATEST (D291, 2026-07-09) — button styling re-architecture + the universal fix is specced & council-validated.** The button was rebuilt to **Spec 32** (Component Styling Token Contract, NEW): semantic `.sgs-button--{preset}` class consuming `--wp--custom--button-presets--*` tokens, hover in `:hover`, no inline colour — **hover/preset-colours/structure Bean-confirmed working live**. But QC caught that cloned buttons STILL carry inline `padding-*`/`margin-*` — ROOT CAUSE PROVEN: **WordPress-native block-supports serialization** (`supports.spacing/color` + converter routing to `style.*` → `get_block_wrapper_attributes()` inlines). This is the SAME Thread-2 problem as the L4 per-area routing below (route CSS → the correct canonical block attribute; Spec 31 §46/§58's designed D1 router is absent). **qc-council validated FS-A** (route base CSS → canonical typed attrs, fallback-safe/class+token/per-block); detection-script GO, auto-fix NO-GO. **Bean's reframe (verified):** container has tier attrs but no base attr; the responsive helper already does the base+tier cascade — so the fix = add the canonical base attr the tiers imply + a naming standard. **NEXT SESSION = the two-thread styling programme** (`.claude/plans/2026-07-09-styling-two-thread-programme.md` — start with its ▶ SESSION OPENING SEQUENCE). RC2 (button enum `custom` fix) staged, deploys with the Thread-2 build. This programme SUBSUMES the L4 cascade thread below — they converge.
+
+## Human Summary (prior — D290, L4 cascade; converges into D291 programme)
 **L4 per-area extraction SHIPPED + LANDED (D290, `f96bf871`, 2026-07-07) — the hero content padding is FIXED.** `.sgs-hero__content` padding lands at every tier on page 8 (28/20/40 @375, 56/48 @1024 — was cramped-left, 72/64 @1280 — class-scoped residual painted). Wired as `assembly` step 3d (universal, DB-gated, recursive), + a council-caught cta-section band-alias fix. MF-5 resolved. **Remaining fronts (all lower priority now the headline defect is fixed):** (a) D289 residual ID-precedence — an ID-scoped block rule (typography helper `#sgs-hdg`) still isn't overridden by its residual (`P-RESIDUAL-RENDER-PRECEDENCE`, STOP-64); (b) per-element extraction tidy-ups (notice-banner child-owned text; sgsCustomCss marker pairs — `P-L4-PER-ELEMENT-EXTRACTION-FOLLOWUPS`); (c) the parity tool is broken (font-family normalisation + clone-only over-count — use per-section visual diff, not the number; Bean deprioritised the fix); (d) the 4 pre-existing golden failures (other threads). SoT = handoff.md + next-session-prompt.md.
 
 <!-- prior D289/D288 front (SUPERSEDED — L4 now done) -->

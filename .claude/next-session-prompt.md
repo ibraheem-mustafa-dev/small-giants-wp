@@ -6,6 +6,11 @@ generated: 2026-07-07
 primary_goal: "The container L1-L4 cascade. HEADLINE: WIRE the L4 per-area extraction so a composite area-wrapper's box-CSS routes to its per-area attrs (content->contentPadding*) — this lands the hero content PADDING (the visible 'cramped left' defect). Root cause PROVEN D289: L4 is UNWIRED — nothing sets ctx.area_name, so grid_area resolver + attr_for_area_property never fire, and .sgs-hero__content's box-CSS is never collected. Once wired, the padding routes class-scoped and the D289 residual overrides at equal specificity. ALSO fold in: the residual render-precedence (STOP-64 — wrapper-class residual can't beat an ID-scoped block rule). Bean's agenda: understand-first (map -> group L1-L4 -> prove universal -> explain simply -> layer-by-layer test); needs L1-3 working first + must work for ALL block types."
 ---
 
+> ## ⚠ PRIORITY REDIRECT (Bean, 2026-07-09) — READ FIRST
+> The next session opens with the **two-thread styling programme**: **[`.claude/plans/2026-07-09-styling-two-thread-programme.md`](plans/2026-07-09-styling-two-thread-programme.md)** — begin with its **▶ SESSION OPENING SEQUENCE** (read setup scripts + db_lookup + DB columns → map the delta to FS-A → Spec 31/32 doc gaps → truth-docs + `sgs-wp-engine` foundational-piece).
+> **This SUBSUMES the container L1-L4 cascade below, doesn't replace it:** wiring L4 per-area extraction (routing `.sgs-hero__content` box-CSS → `contentPadding*` attrs) is the SAME Thread-2 problem as FS-A (route CSS → the correct canonical block attribute, fallback-safe). The styling programme is the universal frame; the L4 hero-padding wiring is one instance of it. Root cause of the inline defect + the qc-council verdict + the evidence-based gaps are all in the programme doc.
+> STAGED to deploy at session start (batched): RC2 fix — `button/block.json` `inheritStyle` enum gained `"custom"` (WP was coercing the converter's `custom` → `primary`, forcing naked links to primary buttons). Purge Hostinger LiteSpeed cache before live verification.
+
 # NEXT SESSION — the container L1-L4 cascade: WIRE the L4 per-area extraction (hero padding) + residual render-precedence
 
 Invoke /autopilot first. THIS session = the **container L1-L4 cascade**, headlined by **wiring the L4 per-area extraction** so the hero content padding finally lands (Bean directive at the D289 close).

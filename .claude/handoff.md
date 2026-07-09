@@ -1,6 +1,64 @@
 ---
 doc_type: handoff
 project: small-giants-wp
+thread: button styling re-architecture + universal CSS-routing (Thread 1 block token architecture / Thread 2 pipeline attr-routing)
+session_date: 2026-07-09
+---
+
+# Session Handoff — 2026-07-09
+
+## Completed This Session
+1. **Built Spec 32 (Component Styling Token Contract, NEW)** — `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` + registered in specs/README; the button rebuilt to it (semantic `.sgs-button--{preset}` class → `--sgs-btn-*` vars ← `--wp--custom--button-presets--*` tokens; hover in `:hover`; no inline colour). Hover/preset-colours/structure **Bean-confirmed working live** (hero/brand/gift).
+2. **Wrote `scripts/extract-button-presets.py`** — the pipeline extracts the draft's `.sgs-button--{variant}` + `:hover` CSS → snapshot `settings.custom.buttonPresets` (accurate, no hand-authoring); ran it for mamas-munches.
+3. **Converter (Spec 32):** `assembly.py` step 5b now emits the preset class + strips the WP colour channel for preset buttons (no colour routing to attrs); `styling_helpers.py` + `db_lookup.py` reverted the earlier snapshot-colour path; tests updated (`test_extraction.py`, NEW `test_button_preset_seed.py`); 428 converter tests pass.
+4. **RC2 fixed:** `button/block.json` `inheritStyle` enum gained `"custom"` — WP was coercing the converter's `custom` → default `primary`, forcing naked links to primary buttons.
+5. **ROOT-CAUSED the residual inline defect (evidence-first, /systematic-debugging):** cloned buttons still carry inline `padding-*`/`margin-*` = WordPress-native block-supports serialization (`supports.spacing/color` + converter → `style.*` → `get_block_wrapper_attributes()` inlines). Proven against block.json, stored page-8 content, live DOM, deployed render.php, and Spec 31 §46/§58 (the D1 CSS→attr router is absent in the modular engine).
+6. **Ran /qc-council (3 raters, high certainty):** FS-A validated (route base CSS → canonical typed attrs, fallback-safe/class+token/per-block); FS-B/FS-C rejected; detection-script GO, deterministic auto-fix NO-GO. Verified Bean's canonical-base-attr reframe against the DB + `helpers-responsive.php`.
+7. **Wrote the programme + handoff:** `.claude/plans/2026-07-09-styling-two-thread-programme.md` (Bean's opening sequence + 9 proven FS-A gaps + Spec 31/32 doc gaps + truth-doc/skill foundational-piece) + `2026-07-07-button-external-css-rearchitecture.md`; priority banner added to next-session-prompt.md; Spec 11 styling model marked superseded by Spec 32.
+
+## Current State
+- **Branch:** main at 322e2c20 (pre-commit; this session's work uncommitted)
+- **Tests:** 428 converter tests pass (1 skipped); button plugin builds clean (dead-control + hardcoded-default gates pass)
+- **Build:** passes
+- **Uncommitted changes:** button block (block.json/edit.js/render.php/style.css/presets.js), converter (db_lookup/assembly/styling_helpers/test_extraction + new test_button_preset_seed), extract-button-presets.py, Spec 32 + README + Spec 11, 2 plan docs, next-session-prompt banner, mamas theme-snapshot. NOT mine: lucide-icons.php (pre-existing), sgs-framework.db (untracked, not git-tracked by convention) — both EXCLUDED from commit.
+- **Deploy:** button reference deployed to sandybrown page 8 + live-verified; RC2 + the RC1 build NOT yet deployed.
+
+## Known Issues / Blockers
+- **RC1 (inline padding/margin) unfixed** — needs the Thread-2 canonical-base-attr routing (the programme). It's the same thread as the L4 per-area cascade (D290).
+- **Hostinger serves a LiteSpeed server-side page cache** the deploy/re-clone flow does NOT purge → stale live verification. Purge (Hostinger MCP `hosting_clearWebsiteCacheV1`) before trusting live DOM.
+- Separate/lower-priority: hero 768 stack ≠ draft; brand button not full-width; product-card CTA still cream (Phase 2); option-picker; find-out-more underline-on-hover (converter :hover-extraction gap).
+
+## Next Priorities (in order)
+1. **Run the ▶ SESSION OPENING SEQUENCE** in `.claude/plans/2026-07-09-styling-two-thread-programme.md` (read setup + db_lookup + DB columns → map delta to FS-A → Spec 31/32 doc gaps → truth-doc + skill foundational-piece).
+2. **Deploy + verify RC2** (batched; purge LiteSpeed first).
+3. **Thread-2 FS-A:** add canonical base attrs to container/composites + route base CSS to them (fallback-safe) in `root_supports.py`; kill the wrapper `!important`.
+4. **Build the detection script** (extends `check-hardcoded-render-defaults.js`); wire to prebuild once the roster is green.
+5. **Fold the model into truth docs + the `sgs-wp-engine` skill** as the foundational block-authoring contract.
+
+## Files Modified
+| File path | What changed |
+|---|---|
+| `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` | NEW — the styling token contract spec |
+| `.claude/specs/11-SGS-BUTTON-ARCHITECTURE.md` | Styling model marked superseded by Spec 32 |
+| `.claude/specs/README.md` | Registered Spec 32 |
+| `plugins/sgs-blocks/src/blocks/button/{block.json,edit.js,render.php,style.css,presets.js}` | Spec 32 reference impl + RC2 enum |
+| `plugins/sgs-blocks/scripts/converter/{db/db_lookup.py,services/assembly.py,services/styling_helpers.py,tests/test_extraction.py}` | Converter Spec-32 routing + tests |
+| `plugins/sgs-blocks/scripts/converter/tests/test_button_preset_seed.py` | NEW test |
+| `plugins/sgs-blocks/scripts/extract-button-presets.py` | NEW pipeline extractor |
+| `sites/mamas-munches/theme-snapshot.json` | buttonPresets populated from draft |
+| `.claude/plans/2026-07-09-styling-two-thread-programme.md`, `.claude/plans/2026-07-07-button-external-css-rearchitecture.md` | NEW programme + design docs |
+| `.claude/next-session-prompt.md` | Priority-redirect banner to the programme |
+
+## Notes for Next Session
+- The styling programme and the D289/D290 container L1-L4 cascade are the SAME Thread-2 problem (route CSS → the correct canonical block attribute). The programme is the universal frame; L4 hero-padding is one instance.
+- FS-A must be fallback-safe (gate on `block_attrs()` membership; never route-and-drop) — the container currently has NO base padding attr, only tiers.
+- 3 durable gotchas (enum coercion / WP-native supports = inline source / LiteSpeed cache) are in the programme doc; not yet /capture-lesson'd formally.
+- Deterministic auto-fix is NO-GO — detection script + human/agent apply, button-first.
+
+<!-- ============ PRIOR HANDOFF BELOW ============ -->
+---
+doc_type: handoff
+project: small-giants-wp
 thread: single thread (cloning pipeline)
 session_date: 2026-07-07
 ---
