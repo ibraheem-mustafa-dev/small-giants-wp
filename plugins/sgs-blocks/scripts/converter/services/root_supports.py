@@ -49,6 +49,7 @@ from typing import Any
 from bs4 import Tag
 
 from converter.db import db_lookup
+from converter.orchestrator import ConservationError
 from converter.services.styling_helpers import (
     collect_css_decls_for_element,
     split_value_unit,
@@ -246,6 +247,22 @@ def _write_responsive_attr(
             if not isinstance(box, dict):
                 box = {}
                 result_attrs[object_attr] = box
+            # Box-object interface contract (§3/§4): a real per-side collision —
+            # two DIFFERENT values both claiming the same side of the same
+            # object attr (e.g. an explicit `padding-top` decl AND a `padding`
+            # shorthand decl both resolving to side='top') — must fail loud,
+            # matching the shared-key guard `_check_conservation` already
+            # enforces for the self-merge path. A plain `box[side] = value`
+            # overwrite would silently drop the earlier declaration; a bare
+            # `setdefault` would silently keep it — neither surfaces the
+            # collision. Same value twice is a genuine no-op (idempotent
+            # re-write, not a collision).
+            if side in box and box[side] != value:
+                raise ConservationError(
+                    f"COLLISION: box-object attr {object_attr!r} for {slug!r} "
+                    f"received two DIFFERENT values for side {side!r} "
+                    f"({box[side]!r} vs {value!r}) — one would be silently lost."
+                )
             box[side] = value
             return object_attr
 

@@ -171,3 +171,107 @@ def test_mf3_root_node_never_content_layer():
     root = SimpleNamespace(is_root=True, area_name=None)
     assert layer_detect(non_root, band_signature) == "CONTENT"  # non-root: band
     assert layer_detect(root, band_signature) == "OUTER"        # root: OUTER, never CONTENT
+
+
+# ---------------------------------------------------------------------------
+# FIX 2 — cross-node destination-fold guards (council finding, box-object
+# interface contract §3/§4, 2026-07-09). `_check_conservation` only ever sees
+# ONE folded call's writes; these guards catch collisions/mismatches ACROSS
+# repeated `process_element` calls sharing the same `Destination`.
+# ---------------------------------------------------------------------------
+
+def test_destination_fold_dict_scalar_shape_mismatch_raises(conn, monkeypatch):
+    """Two folded nodes write the SAME dest attr — one a box-object partial
+    (dict), the other a plain scalar — an ambiguous shape that must raise."""
+    calls = iter([
+        Write("padding", {"top": "10px"}, "padding-top", "Base"),
+        Write("padding", "20px", "padding", "Base"),
+    ])
+    monkeypatch.setitem(REGISTRY, "outer_box", lambda decl, ctx: next(calls))
+    dest = Destination(block_slug="sgs/container", attrs={})
+
+    process_element(_ctx(conn, dest=dest), [Decl("padding-top", "10px", "Base")])
+    with pytest.raises(ConservationError, match="DESTINATION SHAPE MISMATCH"):
+        process_element(_ctx(conn, dest=dest), [Decl("padding", "20px", "Base")])
+
+
+def test_destination_fold_dict_dict_shared_key_different_value_raises(conn, monkeypatch):
+    """Two folded nodes each write a dict partial for the SAME dest attr,
+    sharing the SAME side key with a DIFFERENT value — a real cross-node
+    collision `_check_conservation` cannot see (it only sees one call's
+    writes) — must raise."""
+    calls = iter([
+        Write("padding", {"top": "10px"}, "padding-top", "Base"),
+        Write("padding", {"top": "99px"}, "padding-top", "Base"),
+    ])
+    monkeypatch.setitem(REGISTRY, "outer_box", lambda decl, ctx: next(calls))
+    dest = Destination(block_slug="sgs/container", attrs={})
+
+    process_element(_ctx(conn, dest=dest), [Decl("padding-top", "10px", "Base")])
+    with pytest.raises(ConservationError, match="DESTINATION COLLISION"):
+        process_element(_ctx(conn, dest=dest), [Decl("padding-top", "99px", "Base")])
+
+
+def test_destination_fold_dict_dict_distinct_keys_merge_cleanly(conn, monkeypatch):
+    """Two folded nodes write DIFFERENT side keys for the same dest attr —
+    legitimate accumulation, must merge cleanly with no raise."""
+    calls = iter([
+        Write("padding", {"top": "10px"}, "padding-top", "Base"),
+        Write("padding", {"right": "20px"}, "padding-right", "Base"),
+    ])
+    monkeypatch.setitem(REGISTRY, "outer_box", lambda decl, ctx: next(calls))
+    parent_attrs: dict = {}
+    dest = Destination(block_slug="sgs/container", attrs=parent_attrs)
+
+    process_element(_ctx(conn, dest=dest), [Decl("padding-top", "10px", "Base")])
+    process_element(_ctx(conn, dest=dest), [Decl("padding-right", "20px", "Base")])
+    # Both fold calls also emit the synthetic align:"full" post-pass (no
+    # max-width decl present, ctx forced OUTER) — irrelevant to this guard,
+    # asserted narrowly on the attr under test instead of full-dict equality.
+    assert parent_attrs["padding"] == {"top": "10px", "right": "20px"}
+
+
+# ---------------------------------------------------------------------------
+# FIX 3 — copy-on-first-write: the destination's merge target must NEVER
+# alias a Write's own `.value` dict (a `Write` is frozen, but freezing blocks
+# reassigning `.value`, not mutating the dict object it points to).
+# ---------------------------------------------------------------------------
+
+def test_destination_first_dict_write_not_aliased(conn, monkeypatch):
+    first_write = Write("padding", {"top": "10px"}, "padding-top", "Base")
+    calls = iter([
+        first_write,
+        Write("padding", {"right": "20px"}, "padding-right", "Base"),
+    ])
+    monkeypatch.setitem(REGISTRY, "outer_box", lambda decl, ctx: next(calls))
+    parent_attrs: dict = {}
+    dest = Destination(block_slug="sgs/container", attrs=parent_attrs)
+
+    process_element(_ctx(conn, dest=dest), [Decl("padding-top", "10px", "Base")])
+    process_element(_ctx(conn, dest=dest), [Decl("padding-right", "20px", "Base")])
+
+    # The second fold call's merge must NOT have mutated the first Write's
+    # own dict — it must still hold ONLY its own side.
+    assert first_write.value == {"top": "10px"}, (
+        f"first_write.value was mutated by a later fold's merge — aliasing "
+        f"bug, got {first_write.value!r}"
+    )
+    assert parent_attrs["padding"] == {"top": "10px", "right": "20px"}
+
+
+def test_element_result_attrs_first_dict_write_not_aliased():
+    """Same aliasing proof for the SELF-merge path (`ElementResult.attrs()`)."""
+    from converter.orchestrator import ElementResult
+
+    first_write = Write("padding", {"top": "10px"}, "padding-top", "Base")
+    second_write = Write("padding", {"right": "20px"}, "padding-right", "Base")
+    result = ElementResult(block_slug="sgs/container", decl_count=2, decl_results=2)
+    result.writes.append(first_write)
+    result.writes.append(second_write)
+
+    merged = result.attrs()
+    assert merged["padding"] == {"top": "10px", "right": "20px"}
+    assert first_write.value == {"top": "10px"}, (
+        f"result.writes[0].value was mutated by attrs() merging a later "
+        f"write — aliasing bug, got {first_write.value!r}"
+    )

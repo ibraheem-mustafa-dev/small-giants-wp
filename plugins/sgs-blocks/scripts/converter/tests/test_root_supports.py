@@ -21,7 +21,11 @@ from unittest.mock import patch, MagicMock
 import pytest
 from bs4 import BeautifulSoup
 
-from converter.services.root_supports import lift_root_supports_to_style
+from converter.orchestrator import ConservationError
+from converter.services.root_supports import (
+    _write_responsive_attr,
+    lift_root_supports_to_style,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -354,3 +358,79 @@ def test_padding_and_background_combined():
     assert attrs["style"].get("color", {}).get("background") == "#FF5733", (
         f"color.background missing — style={attrs['style']}"
     )
+
+
+# ---------------------------------------------------------------------------
+# FIX 1 regression — `_write_responsive_attr` box-object collision guard
+# (council finding, box-object interface contract §3/§4, 2026-07-09).
+# ---------------------------------------------------------------------------
+# `_write_responsive_attr` mirrors the self-merge box-object semantics that
+# `orchestrator._check_conservation` already enforces: two DIFFERENT values
+# claiming the same side of the same merged object attr is a real collision
+# and must raise, never silently overwrite (the pre-fix `box[side] = value`
+# behaviour) nor silently keep-first (a bare `setdefault`).
+
+def _fixed_box_family(monkeypatch, family_map: dict[str, str]):
+    """Patch db_lookup.box_family_for used inside root_supports to a fixed map."""
+    import converter.services.root_supports as _mod
+    monkeypatch.setattr(
+        _mod.db_lookup, "box_family_for",
+        lambda slug, object_attr: family_map.get(object_attr),
+    )
+
+
+def test_write_responsive_attr_same_tier_same_side_different_value_raises(monkeypatch):
+    """padding-top:24px AND padding-shorthand-derived top:5px for the SAME tier
+    both targeting side='top' of paddingTablet with DIFFERENT values must raise
+    ConservationError — the shared-key collision `_check_conservation` already
+    hard-fails on the self-merge path."""
+    _fixed_box_family(monkeypatch, {"paddingTablet": "padding"})
+    result_attrs: dict = {}
+    block_schema = {"paddingTablet": {}}
+
+    _write_responsive_attr(
+        result_attrs, block_schema, "sgs/container",
+        ["padding", "top"], "Tablet", "24px", "paddingTop",
+    )
+    with pytest.raises(ConservationError, match="COLLISION"):
+        _write_responsive_attr(
+            result_attrs, block_schema, "sgs/container",
+            ["padding", "top"], "Tablet", "5px", "paddingTop",
+        )
+
+
+def test_write_responsive_attr_same_tier_same_side_same_value_is_noop(monkeypatch):
+    """Re-writing the SAME value for the same side is idempotent, not a collision."""
+    _fixed_box_family(monkeypatch, {"paddingTablet": "padding"})
+    result_attrs: dict = {}
+    block_schema = {"paddingTablet": {}}
+
+    _write_responsive_attr(
+        result_attrs, block_schema, "sgs/container",
+        ["padding", "top"], "Tablet", "24px", "paddingTop",
+    )
+    # Second call, same side + same value: must NOT raise.
+    attr = _write_responsive_attr(
+        result_attrs, block_schema, "sgs/container",
+        ["padding", "top"], "Tablet", "24px", "paddingTop",
+    )
+    assert attr == "paddingTablet"
+    assert result_attrs["paddingTablet"] == {"top": "24px"}
+
+
+def test_write_responsive_attr_distinct_sides_accumulate(monkeypatch):
+    """Distinct sides of the same object attr accumulate cleanly (unchanged
+    legitimate merge behaviour)."""
+    _fixed_box_family(monkeypatch, {"paddingTablet": "padding"})
+    result_attrs: dict = {}
+    block_schema = {"paddingTablet": {}}
+
+    _write_responsive_attr(
+        result_attrs, block_schema, "sgs/container",
+        ["padding", "top"], "Tablet", "24px", "paddingTop",
+    )
+    _write_responsive_attr(
+        result_attrs, block_schema, "sgs/container",
+        ["padding", "right"], "Tablet", "16px", "paddingRight",
+    )
+    assert result_attrs["paddingTablet"] == {"top": "24px", "right": "16px"}

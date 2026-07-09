@@ -74,6 +74,16 @@ class ElementResult:
             if isinstance(w.value, dict) and isinstance(existing, dict):
                 for k, v in w.value.items():
                     existing.setdefault(k, v)
+            elif isinstance(w.value, dict):
+                # FIRST dict write for this attr: store a COPY, never the
+                # Write's own dict object. A later dict Write for the same
+                # attr `setdefault`s INTO this merge target (branch above) —
+                # if it aliased the first Write's `.value`, that setdefault
+                # would mutate a frozen Write record's dict in place (STOP:
+                # aliasing corrupts `result.writes` history even though
+                # `Write` is a frozen dataclass — freezing blocks reassigning
+                # `.value`, not mutating the dict it points to).
+                out[w.attr] = dict(w.value)
             else:
                 out[w.attr] = w.value
         return out
@@ -216,14 +226,53 @@ def process_element(ctx: Any, decls: list[Any]) -> ElementResult:
                 f"silent wrong-block write."
             )
         for w in result.writes:
-            if isinstance(w.value, dict) and isinstance(dest.attrs.get(w.attr), dict):
-                # Box-object partial side write (contract §3/§4): merge into the
-                # OWNER's already-assembling object attr, per-key setdefault
-                # (earlier paths win — same "earlier wins" contract as the
-                # scalar setdefault below).
+            existing = dest.attrs.get(w.attr)
+            existing_is_dict = isinstance(existing, dict)
+            write_is_dict = isinstance(w.value, dict)
+            if w.attr in dest.attrs and existing_is_dict != write_is_dict:
+                # Cross-node SHAPE mismatch: one folded call already wrote a
+                # box-object partial (dict) for this attr, another writes a
+                # plain scalar (or vice versa) — ambiguous, ONE would be
+                # silently dropped by a naive setdefault. _check_conservation
+                # only ever sees a SINGLE call's writes, so this cross-call
+                # collision must be caught here.
+                raise ConservationError(
+                    f"DESTINATION SHAPE MISMATCH: attr {w.attr!r} for "
+                    f"{dest.block_slug!r} received both a box-object partial "
+                    f"(dict) and a scalar value from different folded nodes — "
+                    f"ambiguous shape, one would be silently lost."
+                )
+            if write_is_dict:
+                if existing_is_dict:
+                    target = existing
+                else:
+                    # FIRST dict write for this attr across the fold: store a
+                    # COPY (never alias this Write's own `.value` dict — a
+                    # later fold call's setdefault below would otherwise
+                    # mutate a frozen Write's dict in place, box-object
+                    # interface contract §3/§4 + FIX 3).
+                    target = dict(w.value)
+                    dest.attrs[w.attr] = target
                 for k, v in w.value.items():
-                    dest.attrs[w.attr].setdefault(k, v)
+                    if k in target and target[k] != v:
+                        # Cross-node per-side COLLISION: two folded calls both
+                        # claim the SAME side key with DIFFERENT values — a
+                        # real collision `_check_conservation` cannot see
+                        # (each call only sees its own writes).
+                        raise ConservationError(
+                            f"DESTINATION COLLISION: box-object attr {w.attr!r} "
+                            f"for {dest.block_slug!r} received two DIFFERENT "
+                            f"values for side {k!r} ({target[k]!r} vs {v!r}) "
+                            f"from different folded nodes — one would be "
+                            f"silently lost."
+                        )
+                    target.setdefault(k, v)
             else:
+                # Scalar/scalar destination semantics UNCHANGED — earlier-wins
+                # setdefault is the frozen convert.py:2888 contract; do not
+                # alter it. (Finding #4, the isinstance(dict) vs box_family
+                # gate mismatch, is a deliberately deferred tracked follow-up
+                # — not touched here.)
                 dest.attrs.setdefault(w.attr, w.value)
     return result
 
