@@ -14,7 +14,9 @@ Run: python test_leftover_bucket_router.py
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
+import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).parent
@@ -91,6 +93,85 @@ def check(label: str, result: dict, expected_level: str, expected_bucket: str) -
     print(f"  PASS  {label}: gap_level={expected_level}, {len(bucket_items)} item(s)")
 
 
+def _write_run(tmp: Path, boundary_id: str, declarations: dict) -> str:
+    """Write a one-rule expected-rules-<bid>.jsonl into tmp and return the
+    run_dir path (str). The rule is section-scoped so it counts as signal.
+    """
+    safe = boundary_id
+    (tmp / f"expected-rules-{safe}.jsonl").write_text(
+        json.dumps({
+            "selector": ".sgs-x", "declarations": declarations,
+            "source_media_condition": None, "selector_scope": "section",
+        }) + "\n",
+        encoding="utf-8",
+    )
+    return str(tmp)
+
+
+def check_variant_layout_not_excluded() -> None:
+    """Finding 1: a `layout` slot (structure-derived -> `display`) must NOT be
+    silently excluded even when the draft never declared `display`. The draft
+    here declares only `color` (NO display) — the old naive check would have
+    resolved layout->display, found display absent, and dropped it.
+    """
+    with tempfile.TemporaryDirectory() as td:
+        tmp = Path(td)
+        run_dir = _write_run(tmp, "bL", {"color": "#111"})
+        result = mod.route(
+            boundary=None, match=None,
+            slot_list={"slot_lists": {"bL": {
+                "section_id": "sL", "block_name": "sgs/container",
+                "slots": [{"slot_name": "layout"}],
+            }}},
+            extract={
+                "extracted_attributes": {},
+                "extract_result_path": str(Path(run_dir) / "extract-result.json"),
+                "per_section_results": [],
+            },
+        )
+        slots = [i["slot"] for i in result["leftover_buckets"]["extraction_failed"]]
+        assert "layout" in slots, (
+            f"Finding 1 REGRESSION: `layout` silently excluded — {slots}"
+        )
+    print("  PASS  finding-1: `layout` variant/structural slot KEPT (not silent-dropped)")
+
+
+def check_border_radius_shorthand_kept_and_absent_excluded() -> None:
+    """Finding 2: a slot resolving to a border-radius CORNER longhand whose
+    ONLY draft signal is the `border-radius` SHORTHAND must be KEPT (genuine
+    gap). Conversely a genuinely-absent optional (`shadow` -> box-shadow, not
+    declared) must still be EXCLUDED — proving the discriminator still fires.
+    """
+    with tempfile.TemporaryDirectory() as td:
+        tmp = Path(td)
+        run_dir = _write_run(tmp, "bR", {"border-radius": "8px"})
+        result = mod.route(
+            boundary=None, match=None,
+            slot_list={"slot_lists": {"bR": {
+                "section_id": "sR", "block_name": "sgs/container",
+                "slots": [
+                    {"slot_name": "imageBorderTopLeftRadius"},  # -> border-top-left-radius
+                    {"slot_name": "shadow"},                    # -> box-shadow (absent)
+                ],
+            }}},
+            extract={
+                "extracted_attributes": {},
+                "extract_result_path": str(Path(run_dir) / "extract-result.json"),
+                "per_section_results": [],
+            },
+        )
+        slots = [i["slot"] for i in result["leftover_buckets"]["extraction_failed"]]
+        assert "imageBorderTopLeftRadius" in slots, (
+            f"Finding 2 REGRESSION: border-radius corner longhand silently "
+            f"excluded despite shorthand declared — {slots}"
+        )
+        assert "shadow" not in slots, (
+            f"Finding 2: absent optional `shadow` (box-shadow not declared) "
+            f"should be EXCLUDED but was kept — {slots}"
+        )
+    print("  PASS  finding-2: border-radius shorthand->longhand KEPT; absent box-shadow EXCLUDED")
+
+
 def main() -> int:
     cases = [
         ("convention",    chunk_convention(),         "convention",    "unrecognised_class"),
@@ -124,7 +205,11 @@ def main() -> int:
         assert totals[level] >= 1, f"combined: gap_level_totals missing {level} (got {totals})"
     print(f"  PASS  aggregation: gap_level_totals = {totals}")
 
-    print("\nROUTER-5A.1: PASS (4 gap levels routed + aggregation correct)")
+    # 2026-07-09 silent-drop guards (Findings 1 & 2).
+    check_variant_layout_not_excluded()
+    check_border_radius_shorthand_kept_and_absent_excluded()
+
+    print("\nROUTER-5A.1: PASS (4 gap levels routed + aggregation + silent-drop guards)")
     return 0
 
 

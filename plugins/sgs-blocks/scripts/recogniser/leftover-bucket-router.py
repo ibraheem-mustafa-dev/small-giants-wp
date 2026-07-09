@@ -298,6 +298,304 @@ def _db_attrs_for_block(block_slug: str) -> list[str]:
 _DB_ATTRS_CACHE: dict[str, list[str]] = {}
 
 # ---------------------------------------------------------------------------
+# extraction_failed noise-reduction helpers (2026-07-09)
+#
+# Problem: route_extraction_failed's XS-8 filter only exempted auto-derived
+# slots with a non-empty default. Every OTHER declared-but-empty slot
+# (db-sourced attrs, or auto-derived attrs whose legitimate "unset" default
+# is falsy — e.g. paddingTopTablet default='', shadow default=None) still
+# got flagged "no value extracted" even when the draft never carried a CSS
+# declaration for that property at all. On the 2026-07-09 mamas-munches
+# homepage run this produced 614 extraction_failed entries, ALL reason
+# "no value extracted" — noise drowning genuine gaps.
+#
+# Fix: a declared-but-empty slot is a GENUINE gap only when the draft's own
+# CSS (per-section expected-rules-<boundary>.jsonl, written by
+# orchestrator/expected_rules.py from the mockup's <style> blocks — the
+# same ground truth Spec 20's computed-parity tooling uses) actually
+# contains a declaration for the CSS property that slot maps to. When the
+# slot maps to a resolvable CSS property AND that property is absent from
+# the section's own declarations, there was never a source signal for it —
+# it's an ABSENT OPTIONAL attr, not a failure, and is excluded.
+#
+# The slot_name -> css_property mapping is DB-first (R-31-1): it reuses the
+# existing `property_suffixes` table (already the canonical suffix->property
+# map used throughout converter/db/db_lookup.py) via a longest-suffix match,
+# after stripping the established Tablet/Mobile device-tier suffix. Slot
+# names that don't resolve to a CSS property (content/text/media slots like
+# "headline", "ctaPrimaryText", "backgroundImage") are NOT covered by this
+# check and keep the prior behaviour unchanged — no regression risk there.
+# Missing expected-rules file / DB miss -> soft-fail to prior behaviour
+# (keep the slot flagged) so a genuine gap is never silently dropped.
+# ---------------------------------------------------------------------------
+
+_RESPONSIVE_TIER_SUFFIXES: tuple[str, ...] = ("Tablet", "Mobile")
+
+# Structure-derived selector properties whose presence/absence in the draft
+# CSS is NOT a reliable per-attr extraction signal (Finding 1, 2026-07-09).
+# `display` is THE layout-mode selector: an SGS layout/variant attr stores a
+# variant token (grid / flex / carousel) that the block's render.php
+# translates into `display`, so "was `display:` declared?" is unrelated to
+# "was the layout variant extracted?" — and `display` is frequently implicit,
+# giving a false has_signal=False that would silently drop a genuine `layout`
+# gap across every composite. A slot resolving to one of these is treated as
+# UNRESOLVABLE (return None -> caller KEEPs). This is a CSS-property-semantic
+# guard (a fixed CSS vocabulary), NOT a per-block attr-name list (R-31-1);
+# the sibling guard for block-declared variant selectors is DB-driven via
+# blocks.variant_attr (see _block_variant_attr).
+_NON_SIGNAL_PROPERTIES: frozenset[str] = frozenset({"display"})
+
+_PROPERTY_SUFFIX_MAP_CACHE: list[tuple[str, str, str | None]] | None = None
+
+_VARIANT_ATTR_CACHE: dict[str, str | None] = {}
+
+
+def _block_variant_attr(block_slug: str) -> str | None:
+    """Return the block's variant-selector attr name from blocks.variant_attr
+    (FR-22-20), or None. DB-driven membership (R-31-1) so the variant selector
+    (e.g. hero.variant, product-card.variantStyle, trust-bar.badgeStyle) is
+    never signal-checked as if it carried a single CSS property. Cached
+    per-process; soft-fails to None on any DB error.
+    """
+    if not block_slug:
+        return None
+    if block_slug in _VARIANT_ATTR_CACHE:
+        return _VARIANT_ATTR_CACHE[block_slug]
+    result: str | None = None
+    try:
+        import sqlite3
+        import os
+        db_path = os.path.expanduser("~/.claude/skills/sgs-wp-engine/sgs-framework.db")
+        if os.path.exists(db_path):
+            conn = sqlite3.connect(db_path)
+            row = conn.execute(
+                "SELECT variant_attr FROM blocks WHERE slug = ?", (block_slug,)
+            ).fetchone()
+            conn.close()
+            if row and row[0]:
+                result = row[0]
+    except Exception:  # noqa: BLE001 — DB read is best-effort
+        result = None
+    _VARIANT_ATTR_CACHE[block_slug] = result
+    return result
+
+
+def _load_property_suffix_map() -> list[tuple[str, str, str | None]]:
+    """Return (suffix, css_property, role) triples from property_suffixes,
+    longest suffix first, so a greedy match picks the most specific suffix
+    (e.g. 'PaddingTop' before the shorter 'Padding'). Cached per-process.
+    role is carried so the resolver can reject accidental tail collisions on
+    the short positional suffixes (Top/Right/Bottom/Left, role='position').
+    """
+    global _PROPERTY_SUFFIX_MAP_CACHE
+    if _PROPERTY_SUFFIX_MAP_CACHE is not None:
+        return _PROPERTY_SUFFIX_MAP_CACHE
+    triples: list[tuple[str, str, str | None]] = []
+    try:
+        import sqlite3
+        import os
+        db_path = os.path.expanduser("~/.claude/skills/sgs-wp-engine/sgs-framework.db")
+        if os.path.exists(db_path):
+            conn = sqlite3.connect(db_path)
+            rows = conn.execute(
+                "SELECT suffix, css_property, role FROM property_suffixes "
+                "WHERE suffix IS NOT NULL AND suffix != '' "
+                "AND css_property IS NOT NULL AND css_property != ''"
+            ).fetchall()
+            conn.close()
+            triples = [(s, p, r) for s, p, r in rows]
+    except Exception:  # noqa: BLE001 — DB read is best-effort
+        triples = []
+    triples.sort(key=lambda t: len(t[0]), reverse=True)
+    _PROPERTY_SUFFIX_MAP_CACHE = triples
+    return triples
+
+
+def _resolve_css_property(slot_name: str) -> str | None:
+    """Best-effort slot_name -> css_property via property_suffixes suffix
+    match. Returns None for slot names that don't resolve (content/text/
+    media slots) — callers must treat None as 'can't determine', not
+    'benign'.
+
+    Matching is camelCase-word-boundary-aware, NOT a plain case-insensitive
+    substring endswith: property_suffixes stores suffixes as UpperCamelCase
+    segments (e.g. "PaddingTop", "Order"), and a naive case-insensitive
+    endswith collides on accidental tail substrings (e.g. "gridItemBorder"
+    ends with the letters "order", which wrongly matched the unrelated
+    "Order" -> "order" (flex/grid order) suffix instead of correctly not
+    matching "Border" at all — caught + fixed 2026-07-09). Capitalising only
+    the slot name's own leading character (attrs are lowerCamelCase; suffix
+    rows are UpperCamelCase) and then comparing case-SENSITIVELY preserves
+    real word boundaries, since every internal word in both the attr name
+    and the suffix rows already starts with a capital letter.
+    """
+    base = slot_name
+    for tier in _RESPONSIVE_TIER_SUFFIXES:
+        if base.endswith(tier) and len(base) > len(tier):
+            base = base[: -len(tier)]
+            break
+    if not base:
+        return None
+    base_capitalised = base[0].upper() + base[1:]
+    for suffix, css_property, role in _load_property_suffix_map():
+        if not base_capitalised.endswith(suffix):
+            continue
+        # Positional-suffix collision guard (2026-07-09). The short suffixes
+        # Top/Right/Bottom/Left (role='position' -> inset longhands) have NO
+        # legitimate bare SGS attr — they only ever match as an ACCIDENTAL
+        # tail of a compound attr whose real family is elsewhere (e.g.
+        # `imageBorderWidthTop` is a border-width, but the DB stores the DB
+        # suffix side-first as `BorderTopWidth`, so nothing longer matches and
+        # `Top`->`top` wins — a WRONG resolution that, if trusted, would
+        # silently drop a genuine border-width gap). Trust a positional match
+        # ONLY when the whole base IS the positional word; otherwise skip it
+        # (fall through -> None -> caller KEEPs). Data-driven off the DB role
+        # column, not an attr-name list (R-31-1).
+        if role == "position" and base_capitalised != suffix:
+            continue
+        return css_property
+    return None
+
+
+def _property_families(css_property: str) -> list[str]:
+    """Return the CSS SHORTHAND property names that, when declared in the
+    draft, satisfy the source-signal check for this (longhand) property.
+
+    parse_css records literal declared property names WITHOUT expanding
+    shorthands (Finding 2, 2026-07-09): a section authoring ``padding:24px``,
+    ``border:1px solid #ccc``, ``border-radius:8px``, ``gap:24px``,
+    ``inset:0`` or ``flex:1 1 auto`` stores only that shorthand token, so a
+    slot resolving to a longhand (``padding-top``, ``border-top-width``,
+    ``border-top-left-radius``, ``row-gap``, ``top``, ``flex-grow``) would be
+    judged absent and wrongly excluded unless the shorthand family is
+    consulted. Returns [] when the property has no recognised shorthand — the
+    caller then relies on the direct property match only.
+
+    ANY returned family present in the declared set counts as signal (the
+    caller ORs them) — the conservative KEEP direction.
+    """
+    fams: list[str] = []
+    # Box spacing longhands -> their bare shorthand.
+    if css_property.startswith("padding-"):
+        fams.append("padding")
+    if css_property.startswith("margin-"):
+        fams.append("margin")
+    # Gap longhands (row-gap / column-gap) -> gap.
+    if css_property in ("row-gap", "column-gap"):
+        fams.append("gap")
+    # Inset longhands (top/right/bottom/left) -> inset.
+    if css_property in ("top", "right", "bottom", "left"):
+        fams.append("inset")
+    # Flex item longhands -> flex.
+    if css_property in ("flex-grow", "flex-shrink", "flex-basis"):
+        fams.append("flex")
+    # Border-radius corner longhands -> border-radius.
+    #   e.g. border-top-left-radius -> border-radius.
+    if css_property.startswith("border-") and css_property.endswith("-radius") \
+            and css_property != "border-radius":
+        fams.append("border-radius")
+    # Border side-width longhands -> border-width AND the bare `border`
+    #   shorthand. NB the DB stores these side-first (border-top-width), so
+    #   the earlier startswith("border-width-") test never fired — this is
+    #   the corrected match.
+    if css_property.startswith("border-") and css_property.endswith("-width") \
+            and css_property != "border-width":
+        fams.append("border-width")
+        fams.append("border")
+    # Bare border sub-properties -> the `border` shorthand catch-all.
+    if css_property in ("border-width", "border-color", "border-style"):
+        fams.append("border")
+    # Background longhands -> background shorthand.
+    if css_property.startswith("background-"):
+        fams.append("background")
+    # Font longhands -> font shorthand.
+    if css_property.startswith("font-"):
+        fams.append("font")
+    return fams
+
+
+_EXPECTED_RULE_PROPS_CACHE: dict[tuple[str, str], set[str] | None] = {}
+
+
+def _boundary_declared_properties(run_dir: str, boundary_id: str) -> set[str] | None:
+    """Return the set of CSS property names the DRAFT actually declared that
+    reach this boundary's subtree, read from expected-rules-<boundary>.jsonl.
+
+    Counts BOTH ``section``-scoped (.sgs-classed) rows AND ``page_wide`` bare-
+    tag rows (e.g. ``h2{font-size}``, ``p{color}``, ``a{color}``). A page-wide
+    bare-tag rule IS a legitimate source signal for an element inside the
+    section (it cascades onto it), so a font-size/colour slot backed only by
+    a page-wide rule must NOT be judged "absent" — that would silently drop a
+    genuine gap on ``--draft-mode`` / ``--legacy`` runs whose CSS leans on
+    bare-tag selectors (Finding 3, 2026-07-09). Unioning every scope is the
+    conservative direction: more properties count as "declared" -> fewer
+    exclusions -> we KEEP on any signal.
+
+    Returns None when the file can't be read (missing run_dir, missing file,
+    or bad JSON) so callers soft-fail to the prior (conservative) behaviour
+    instead of silently excluding.
+    """
+    key = (run_dir, boundary_id)
+    if key in _EXPECTED_RULE_PROPS_CACHE:
+        return _EXPECTED_RULE_PROPS_CACHE[key]
+    props: set[str] | None = None
+    try:
+        safe = re.sub(r"[^A-Za-z0-9._-]", "_", boundary_id or "unknown")
+        path = Path(run_dir) / f"expected-rules-{safe}.jsonl"
+        if path.exists():
+            props = set()
+            for line in path.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                row = json.loads(line)
+                # All scopes count — section (.sgs-scoped) AND page_wide
+                # (bare-tag rules cascade onto section elements).
+                props.update((row.get("declarations") or {}).keys())
+    except Exception:  # noqa: BLE001 — best-effort, soft-fail to None
+        props = None
+    _EXPECTED_RULE_PROPS_CACHE[key] = props
+    return props
+
+
+def _has_draft_source_signal(
+    slot_name: str,
+    run_dir: str | None,
+    boundary_id: str,
+    block_slug: str | None = None,
+) -> bool | None:
+    """True/False when we can determine whether the draft's own CSS declared
+    the property this slot maps to; None when we can't determine (unresolved
+    slot name, structural/variant selector, missing run_dir/file) — caller
+    must treat None as "keep flagged" (can't prove benign).
+    """
+    if not run_dir:
+        return None
+    # Guard 1 (Finding 1) — the block's DECLARED variant-selector attr
+    # (blocks.variant_attr) is never signal-checked: its extraction is
+    # structure/variant-derived, not keyed on a single CSS property.
+    if block_slug and slot_name == _block_variant_attr(block_slug):
+        return None
+    css_property = _resolve_css_property(slot_name)
+    if css_property is None:
+        return None
+    # Guard 2 (Finding 1) — structure-derived layout-mode selector property
+    # (e.g. `layout` -> `display`): CSS presence is not a reliable extraction
+    # signal, so treat as unresolvable (KEEP).
+    if css_property in _NON_SIGNAL_PROPERTIES:
+        return None
+    declared = _boundary_declared_properties(run_dir, boundary_id)
+    if declared is None:
+        return None
+    if css_property in declared:
+        return True
+    for family in _property_families(css_property):
+        if family in declared:
+            return True
+    return False
+
+
+# ---------------------------------------------------------------------------
 # P-PHASE8-14 helpers — leaf-block + complex-subtree guard
 # ---------------------------------------------------------------------------
 
@@ -445,9 +743,34 @@ def route_extraction_failed(slot_lists: dict, extract: dict, buckets: dict[str, 
          coverage signal for cv2-handled sections where Stage 3 declared
          zero slots. Per binding rule #1 (Bean 2026-05-15) — leftover-buckets
          must give accurate info, not silently miss coverage for cv2 output.
+
+    Chrome-skipped sections (status "chrome-skipped" in per_section_results —
+    header/footer/nav, intentionally never converted) are excluded entirely:
+    they emit zero markup and zero extraction is attempted, so their declared
+    slots being "empty" is not a failure of anything (2026-07-09 fix).
+
+    Source-signal discriminator (2026-07-09 fix, gap-router accuracy):
+    a declared-but-empty slot is only a GENUINE extraction failure when the
+    draft's own mockup CSS for that section actually declared a value for
+    the CSS property the slot maps to (checked via _has_draft_source_signal
+    against expected-rules-<boundary>.jsonl). When the slot resolves to a
+    CSS property and that property was never declared in the draft's CSS for
+    this section, there was no source signal to extract — it's excluded as
+    an ABSENT OPTIONAL attr, not routed to extraction_failed. Slot names that
+    don't resolve to a CSS property (content/media slots) are unaffected —
+    prior behaviour (subject to the XS-8 filter below) is preserved for them.
     """
     bucket = "extraction_failed"
     extracted_attrs = extract.get("extracted_attributes") or {}
+    run_dir = None
+    extract_result_path = extract.get("extract_result_path")
+    if extract_result_path:
+        run_dir = str(Path(extract_result_path).parent)
+    chrome_skipped_boundaries = {
+        psr.get("boundary_id")
+        for psr in _per_section_results(extract)
+        if psr.get("status") == "chrome-skipped"
+    }
 
     def _is_filled(name: str, section_id: str, boundary_id: str) -> bool:
         return (
@@ -467,7 +790,10 @@ def route_extraction_failed(slot_lists: dict, extract: dict, buckets: dict[str, 
     # preserved: (a) explicitly-declared slots (canonical_source != "auto-derived"),
     # (b) auto-derived slots without a meaningful default (None or empty string).
     for boundary_id, scaffold in (slot_lists or {}).items():
+        if boundary_id in chrome_skipped_boundaries:
+            continue  # chrome-skipped — never attempted, not a failure
         section_id = scaffold.get("section_id", boundary_id)
+        block_slug = scaffold.get("block_name")
         for slot in scaffold.get("slots", []):
             name = slot["slot_name"]
             if _is_filled(name, section_id, boundary_id):
@@ -480,11 +806,24 @@ def route_extraction_failed(slot_lists: dict, extract: dict, buckets: dict[str, 
             has_meaningful_default = slot.get("default") not in (None, "", [])
             if is_auto_derived and has_meaningful_default:
                 continue
+            # Source-signal discriminator — resolves to True/False when the
+            # slot maps to a real style CSS property AND we could read the
+            # draft's own declarations; None (can't determine: unresolved
+            # name, variant/structural selector, or unreadable file) falls
+            # through to the prior conservative behaviour (keep flagged).
+            has_signal = _has_draft_source_signal(name, run_dir, boundary_id, block_slug)
+            if has_signal is False:
+                continue  # ABSENT optional — no source signal in the draft
+            reason = (
+                "declared in draft CSS but not extracted"
+                if has_signal is True
+                else "no value extracted"
+            )
             buckets[bucket].append(_enrich_item({
                 "section_id": section_id,
                 "boundary_id": boundary_id,
                 "slot": name,
-                "reason": "no value extracted",
+                "reason": reason,
                 "source": "stage_3_slot_list",
             }, bucket))
 
