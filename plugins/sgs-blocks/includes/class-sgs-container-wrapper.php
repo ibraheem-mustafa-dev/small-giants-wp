@@ -241,15 +241,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// through as invalid CSS lengths; now: token-aware resolver — v0.5 tokens: normal/wide/full).
 			$content_width = $sgs_resolve_content_width( $content_width );
 			// Responsive outer max-width — literal CSS lengths (empty = not set by converter yet).
-			$max_width_tablet  = $sgs_css_length( $attributes['maxWidthTablet'] ?? '' );
-			$max_width_mobile  = $sgs_css_length( $attributes['maxWidthMobile'] ?? '' );
+			$max_width_tablet = $sgs_css_length( $attributes['maxWidthTablet'] ?? '' );
+			$max_width_mobile = $sgs_css_length( $attributes['maxWidthMobile'] ?? '' );
 			// When responsive outer max-width tiers exist, the base maxWidth must NOT be
 			// emitted inline (inline beats class-based @media). It is deferred to a .uid
 			// stylesheet rule in the responsive block so the cascade decides per viewport.
 			$has_responsive_max_width = ( '' !== $max_width_tablet || '' !== $max_width_mobile );
-			$min_height        = $sgs_css_length( $min_height );
-			$min_height_tablet = $is_section ? $sgs_css_length( $min_height_tablet ) : '';
-			$min_height_mobile = $is_section ? $sgs_css_length( $min_height_mobile ) : '';
+			$min_height               = $sgs_css_length( $min_height );
+			$min_height_tablet        = $is_section ? $sgs_css_length( $min_height_tablet ) : '';
+			$min_height_mobile        = $is_section ? $sgs_css_length( $min_height_mobile ) : '';
 			// True when a responsive variant exists → base + variants render via the
 			// per-instance uid CSS below (so @media overrides win over the cascade),
 			// rather than the inline base (which would beat any .uid{} @media rule).
@@ -260,8 +260,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Box-object interface contract (.claude/plans/2026-07-09-box-object-interface-contract.md
 			// §1/§2): paddingTablet/paddingMobile are OBJECT attrs { top, right, bottom, left } —
 			// a missing side key = that side unset, matching the prior flat-attr '' semantic.
-			$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-			$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
+			$padding_tablet_obj    = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
+			$padding_mobile_obj    = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
 			$padding_top_tablet    = $sgs_css_length( $padding_tablet_obj['top'] ?? '' );
 			$padding_right_tablet  = $sgs_css_length( $padding_tablet_obj['right'] ?? '' );
 			$padding_bottom_tablet = $sgs_css_length( $padding_tablet_obj['bottom'] ?? '' );
@@ -272,8 +272,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$padding_left_mobile   = $sgs_css_length( $padding_mobile_obj['left'] ?? '' );
 
 			// Responsive margin — all kinds. Same object-attr contract as padding above.
-			$margin_tablet_obj = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-			$margin_mobile_obj = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+			$margin_tablet_obj    = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+			$margin_mobile_obj    = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
 			$margin_top_tablet    = $sgs_css_length( $margin_tablet_obj['top'] ?? '' );
 			$margin_right_tablet  = $sgs_css_length( $margin_tablet_obj['right'] ?? '' );
 			$margin_bottom_tablet = $sgs_css_length( $margin_tablet_obj['bottom'] ?? '' );
@@ -295,7 +295,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// per-area OBJECT attrs { top, right, bottom, left } (SGS custom attrs, not
 			// WP-native style.*). Tablet/mobile stay gated to section+layout kinds — a
 			// content-kind composite has no __inner band to apply them to.
-			$band_padding_obj = is_array( $attributes['contentBandPadding'] ?? null ) ? $attributes['contentBandPadding'] : array();
+			$band_padding_obj    = is_array( $attributes['contentBandPadding'] ?? null ) ? $attributes['contentBandPadding'] : array();
 			$band_padding_top    = $sgs_css_length( $band_padding_obj['top'] ?? '' );
 			$band_padding_right  = $sgs_css_length( $band_padding_obj['right'] ?? '' );
 			$band_padding_bottom = $sgs_css_length( $band_padding_obj['bottom'] ?? '' );
@@ -621,12 +621,20 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Outer max-width — literal only (v0.4 model per spec §0d).
 			// maxWidth non-empty → exact draft value, sanitised via $sgs_css_length.
 			// maxWidth empty → full-width outer; emit nothing (no max-width constraint).
-			// Defer to a .uid stylesheet rule when responsive tiers exist, so the
-			// @media tiers can override the base (inline would beat them).
+			// No-inline contract (Spec 32, D293): the BASE (non-responsive) value is
+			// NEVER pushed to $styles (inline) — it is deferred to a scoped .uid rule
+			// below ($has_base_max_width), same as the already-responsive-tiered case.
+			// $has_base_max_width / $base_max_width_css_value / $base_max_width_margin_auto
+			// are read further down once $uid is known (see the base-max-width scoped
+			// rule beside the base-spacing rule).
+			$has_base_max_width         = false;
+			$base_max_width_css_value   = '';
+			$base_max_width_margin_auto = false;
 			if ( '' !== $max_width ) {
 				if ( ! $has_responsive_max_width ) {
-					$styles[] = 'max-width:' . $sgs_css_length( $max_width );
-					$styles[] = 'margin-inline:auto';
+					$has_base_max_width         = true;
+					$base_max_width_css_value   = $sgs_css_length( $max_width );
+					$base_max_width_margin_auto = true;
 				}
 			}
 			// No else — empty maxWidth = full-width outer; nothing emitted.
@@ -640,9 +648,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// style.dimensions.maxWidth — WP-native path. Only emit when the top-level
 			// maxWidth attr is NOT set (that wins); avoids double-emitting max-width.
+			// Same no-inline deferral as above (margin-inline:auto is NOT added here —
+			// matches the original inline behaviour, which never added it for this path).
 			$style_dim = $attributes['style']['dimensions'] ?? array();
 			if ( '' === $max_width && ! empty( $style_dim['maxWidth'] ) ) {
-				$styles[] = 'max-width:' . esc_attr( $style_dim['maxWidth'] );
+				$has_base_max_width       = true;
+				$base_max_width_css_value = esc_attr( $style_dim['maxWidth'] );
 			}
 
 			// NOTE (2026-06-16): the prior "Grid/flex + band CSS coexistence" block
@@ -867,6 +878,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 			$has_base_spacing = ! empty( $base_spacing_padding ) || ! empty( $base_spacing_margin );
 
+			// Base content-band (Layer 2: __inner) — no-inline deferral (Spec 32, D293).
+			// True whenever ANY band-level CSS exists ($has_band_props, defined ~L450)
+			// AND no responsive band tiers exist (when tiers DO exist, $has_band_responsive
+			// already routes the base rule into the scoped stylesheet via the
+			// pre-existing band-responsive branch below — untouched).
+			$has_base_band = $has_band_props && ! $has_band_responsive;
+
 			// ----------------------------------------------------------------
 			// Responsive CSS + uid — section + layout kinds with responsive attrs.
 			// ----------------------------------------------------------------
@@ -877,9 +895,16 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| ( ( $is_section || $is_layout ) && ( $grid_template_tablet || $grid_template_mobile || $grid_template_rows_tablet || $grid_template_rows_mobile ) );
 
 			// uid also needed when parallax/ken-burns is active, bg-video is responsive,
-			// or base padding/margin needs a scoped (non-inline) home.
+			// base padding/margin needs a scoped (non-inline) home, a base outer
+			// max-width needs a scoped home ($has_base_max_width), or a base content-band
+			// (contentWidth/band-padding/band-background) needs a scoped home
+			// ($has_base_band) — all three added under the no-inline contract (Spec 32,
+			// D293) so these OUTER/BAND box properties never emit inline for a block
+			// with no responsive tiers.
 			$needs_uid = $has_responsive_attr
 				|| $has_base_spacing
+				|| $has_base_max_width
+				|| $has_base_band
 				|| ( $is_section && ( $bg_parallax || $bg_ken_burns ) )
 				|| ( $is_section && $has_bg_video && ! empty( $bg_video_mobile['url'] ) );
 
@@ -908,6 +933,52 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				);
 				if ( ! empty( $base_spacing_styles['css'] ) ) {
 					$responsive_css .= $base_spacing_styles['css'];
+				}
+			}
+
+			// Base outer max-width scoped rule (Spec 32, D293 no-inline contract) —
+			// emitted whenever a base (non-responsive-tiered) max-width exists, so it
+			// never lands inline. Placed BEFORE the responsive max-width @media tiers
+			// further below so a narrower-viewport tier still wins on source order —
+			// though in practice $has_base_max_width is only ever true when NO
+			// responsive tiers exist ($has_responsive_max_width is false), so there is
+			// no @media rule for this selector+property to lose to.
+			if ( $has_base_max_width && $uid ) {
+				$responsive_css .= '.' . $uid . '{max-width:' . $base_max_width_css_value
+					. ( $base_max_width_margin_auto ? ';margin-inline:auto' : '' ) . '}';
+			}
+
+			// Base content-band scoped rule (Spec 32, D293 no-inline contract) —
+			// emitted whenever base band-level CSS exists (contentWidth / band padding /
+			// band background) with NO responsive band tiers. Mirrors exactly the
+			// existing $has_band_responsive base-band rule below (same selector, same
+			// property set, same pre-sanitised values) — the only difference is this
+			// fires when there are no @media tiers to defer to. The __inner assembly
+			// further down (the `elseif ( $do_wrap )` branch) now emits a bare <div>
+			// for these properties instead of an inline style.
+			if ( $has_base_band && $uid ) {
+				$base_band_decls = array();
+				if ( '' !== $content_width ) {
+					$base_band_decls[] = 'max-width:' . $content_width;
+					$base_band_decls[] = 'margin-inline:auto';
+				}
+				if ( '' !== $band_padding_top ) {
+					$base_band_decls[] = 'padding-top:' . $band_padding_top;
+				}
+				if ( '' !== $band_padding_right ) {
+					$base_band_decls[] = 'padding-right:' . $band_padding_right;
+				}
+				if ( '' !== $band_padding_bottom ) {
+					$base_band_decls[] = 'padding-bottom:' . $band_padding_bottom;
+				}
+				if ( '' !== $band_padding_left ) {
+					$base_band_decls[] = 'padding-left:' . $band_padding_left;
+				}
+				if ( '' !== $band_background ) {
+					$base_band_decls[] = 'background-color:' . sgs_colour_value( $band_background );
+				}
+				if ( $base_band_decls ) {
+					$responsive_css .= '.' . $uid . '>.sgs-container__inner{' . implode( ';', $base_band_decls ) . '}';
 				}
 			}
 
@@ -1327,38 +1398,17 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$inner_open  = '<div class="sgs-container__inner"' . $io_style . '>';
 				$inner_close = '</div>';
 			} elseif ( $do_wrap ) {
-				// Build inline style for the band — max-width + margin-inline:auto when
-				// contentWidth is set (guarded: __inner can now exist for band padding /
-				// background with NO content-width, so an unguarded 'max-width:' would
-				// emit a malformed empty value); base band padding + background appended
-				// when set. Responsive overrides for these are emitted via the uid @media
-				// CSS block above (band selector .uid > .sgs-container__inner).
+				// No-inline contract (Spec 32, D293): base band CSS (max-width /
+				// margin-inline / band padding / band background) is NEVER built as an
+				// inline style here any more — whenever $has_band_props is true (the
+				// only way any of those values could be non-empty), $has_base_band is
+				// also true, which already emitted the equivalent scoped
+				// ".uid>.sgs-container__inner{...}" rule above (before $has_responsive_attr).
+				// This branch now only carries the L3 grid decls (inline-safe: display:
+				// grid + base grid-template-columns + align + gap — not responsive),
+				// matching the bare-<div> convention already used by the
+				// $has_band_responsive branch above it.
 				$inner_style_parts = array();
-				if ( '' !== $content_width ) {
-					$inner_style_parts[] = 'max-width:' . esc_attr( $content_width );
-					$inner_style_parts[] = 'margin-inline:auto';
-				}
-
-				// Base band padding + background (desktop tier — ALL kinds; Bean-locked
-				// 2026-06-16: the section/layout-only carve-out dropped content-band CSS
-				// on content-kind composites. Each property keeps its own non-empty guard.
-				if ( '' !== $band_padding_top ) {
-					$inner_style_parts[] = 'padding-top:' . esc_attr( $band_padding_top );
-				}
-				if ( '' !== $band_padding_right ) {
-					$inner_style_parts[] = 'padding-right:' . esc_attr( $band_padding_right );
-				}
-				if ( '' !== $band_padding_bottom ) {
-					$inner_style_parts[] = 'padding-bottom:' . esc_attr( $band_padding_bottom );
-				}
-				if ( '' !== $band_padding_left ) {
-					$inner_style_parts[] = 'padding-left:' . esc_attr( $band_padding_left );
-				}
-				// Band background — sanitise via sgs_colour_value() (same sanitiser as
-				// gridItemBackground and overlay colour to remain consistent).
-				if ( '' !== $band_background ) {
-					$inner_style_parts[] = 'background-color:' . esc_attr( sgs_colour_value( $band_background ) );
-				}
 
 				// L3 grid decls (display:grid + base grid-template-columns + align + gap)
 				// live on the __inner band when this is a grid/flex container (FR-22-21).
@@ -1366,7 +1416,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$inner_style_parts = array_merge( $inner_style_parts, $inner_grid_decls );
 				}
 
-				$inner_open  = '<div class="sgs-container__inner" style="' . esc_attr( implode( ';', $inner_style_parts ) ) . '">';
+				// Matches the $io_style conditional pattern used by the $has_band_responsive
+				// branch above: omit the style attribute entirely when there are no grid
+				// decls, rather than emitting a vacuous style="" (band props no longer
+				// land here — they are in the scoped .uid>.sgs-container__inner rule).
+				$io_style    = $inner_style_parts ? ' style="' . esc_attr( implode( ';', $inner_style_parts ) ) . '"' : '';
+				$inner_open  = '<div class="sgs-container__inner"' . $io_style . '>';
 				$inner_close = '</div>';
 			}
 

@@ -26,17 +26,22 @@
 		"color": {
 			"background": true,
 			"gradients": true,
-			"text": true
+			"text": true,
+			"__experimentalSkipSerialization": true
 		},
 		"typography": {
 			"fontSize": true,
-			"lineHeight": true
+			"lineHeight": true,
+			"__experimentalSkipSerialization": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"__experimentalSkipSerialization": true
 		},
 		"__experimentalBorder": {
 			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true
+			"__experimentalSkipSerialization": true
 		}
 	},
 	"attributes": {
@@ -136,49 +141,9 @@
 			"type": "string",
 			"default": ""
 		},
-		"borderRadius": {
-			"type": "string",
-			"default": ""
-		},
-		"borderRadiusUnit": {
-			"type": "string",
-			"default": "px"
-		},
-		"borderRadiusTL": {
-			"type": "string",
-			"default": ""
-		},
-		"borderRadiusTR": {
-			"type": "string",
-			"default": ""
-		},
-		"borderRadiusBL": {
-			"type": "string",
-			"default": ""
-		},
-		"borderRadiusBR": {
-			"type": "string",
-			"default": ""
-		},
-		"borderWidthTop": {
-			"type": "string",
-			"default": ""
-		},
-		"borderWidthRight": {
-			"type": "string",
-			"default": ""
-		},
-		"borderWidthBottom": {
-			"type": "string",
-			"default": ""
-		},
-		"borderWidthLeft": {
-			"type": "string",
-			"default": ""
-		},
-		"borderWidthUnit": {
-			"type": "string",
-			"default": "px"
+		"borderWidth": {
+			"type": "object",
+			"default": {}
 		},
 		"borderStyle": {
 			"type": "string",
@@ -219,109 +184,21 @@
 			"type": "string",
 			"default": ""
 		},
-		"marginTop": {
-			"type": "string",
-			"default": ""
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
 		},
-		"marginRight": {
-			"type": "string",
-			"default": ""
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
 		},
-		"marginBottom": {
-			"type": "string",
-			"default": ""
+		"marginTablet": {
+			"type": "object",
+			"default": {}
 		},
-		"marginLeft": {
-			"type": "string",
-			"default": ""
-		},
-		"marginUnit": {
-			"type": "string",
-			"default": "px"
-		},
-		"marginTopTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"marginRightTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"marginBottomTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"marginLeftTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"marginTopMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"marginRightMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"marginBottomMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"marginLeftMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingTop": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingRight": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingBottom": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingLeft": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingUnit": {
-			"type": "string",
-			"default": "px"
-		},
-		"paddingTopTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingRightTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingBottomTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingLeftTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingTopMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingRightMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingBottomMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingLeftMobile": {
-			"type": "string",
-			"default": ""
+		"marginMobile": {
+			"type": "object",
+			"default": {}
 		},
 		"contentWidth": {
 			"type": "string",
@@ -357,12 +234,18 @@
 	"style": "file:./style-index.css",
 	"example": {
 		"attributes": {
-			"attribution": "\u00e2\u20ac\u201d Jane Smith, Customer",
+			"attribution": "â€” Jane Smith, Customer",
 			"attributionColour": "primary",
-			"paddingTop": 24,
-			"paddingRight": 24,
-			"paddingBottom": 24,
-			"paddingLeft": 24
+			"style": {
+				"spacing": {
+					"padding": {
+						"top": "24px",
+						"right": "24px",
+						"bottom": "24px",
+						"left": "24px"
+					}
+				}
+			}
 		},
 		"innerBlocks": [
 			{

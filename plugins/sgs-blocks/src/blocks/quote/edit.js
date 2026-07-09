@@ -12,6 +12,14 @@
  * "parent owns LAYOUT, child owns TYPOGRAPHY" for InnerBlocks composites) —
  * this parent has no body-slot styling controls any more.
  *
+ * NO-INLINE + NO-WRAPPER (LOCKED per-block no-inline migration contract
+ * §A/§B/§B3, 2026-07-09): the <blockquote> IS the block root — no wrapper
+ * <div>, no SGS_Container_Wrapper delegation. Editor canvas preview mirrors
+ * render.php's scoped-CSS output via inline style on the SAME root element
+ * (the editor canvas is allowed to use inline style for live preview — only
+ * the SAVED/RENDERED frontend output must be inline-free, and this block is
+ * dynamic (render.php), so nothing here is persisted to post_content).
+ *
  * Provides editing surfaces for:
  * - Body paragraphs (native InnerBlocks — sgs/text children)
  * - Attribution string (single RichText + tag select) + its typography
@@ -37,10 +45,13 @@ import {
 	ToggleControl,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveControl } from '../../components';
+import {
+	DesignTokenPicker,
+	ResponsiveControl,
+	ResponsiveBoxControl,
+	ResponsiveBorderRadiusControl,
+} from '../../components';
 import { colourVar } from '../../utils';
-// WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing only).
-import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -119,6 +130,17 @@ const BORDER_STYLE_OPTIONS = [
 	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
 	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
 	{ label: __( 'Double', 'sgs-blocks' ), value: 'double' },
+	{ label: __( 'Groove', 'sgs-blocks' ), value: 'groove' },
+	{ label: __( 'Ridge', 'sgs-blocks' ), value: 'ridge' },
+	{ label: __( 'Inset', 'sgs-blocks' ), value: 'inset' },
+	{ label: __( 'Outset', 'sgs-blocks' ), value: 'outset' },
+];
+
+const LENGTH_UNITS = [
+	{ value: 'px', label: 'px', default: 0 },
+	{ value: 'rem', label: 'rem', default: 0 },
+	{ value: 'em', label: 'em', default: 0 },
+	{ value: '%', label: '%', default: 0 },
 ];
 
 // ---------------------------------------------------------------------------
@@ -149,6 +171,15 @@ function parseUnit( raw, currentUnit ) {
 	return { num: undefined, unit: currentUnit || 'px' };
 }
 
+// Box-object interface contract §1: build an editor-preview shorthand from a
+// box object — mirrors render.php's box-shorthand builder so the canvas
+// preview matches the frontend (contract §5).
+function boxShorthand( box, keys ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
+}
+
 // ---------------------------------------------------------------------------
 // Editor preview style builder — desktop styles only; responsive via PHP
 // ---------------------------------------------------------------------------
@@ -157,48 +188,61 @@ function buildWrapperStyle( attributes ) {
 	const {
 		inheritStyle,
 		backgroundColour,
-		borderRadius,
-		borderRadiusUnit,
+		style,
+		borderWidth,
 		borderStyle,
 		borderColour,
-		marginTop, marginRight, marginBottom, marginLeft, marginUnit,
-		paddingTop, paddingRight, paddingBottom, paddingLeft, paddingUnit,
 		maxWidth,
+		contentWidth,
 	} = attributes;
 
 	if ( inheritStyle ) {
 		return {};
 	}
 
-	const style = {};
+	const wrapperStyle = {};
 
 	if ( backgroundColour ) {
-		style.backgroundColor = /^#|^rgb|^hsl/.test( backgroundColour )
+		wrapperStyle.backgroundColor = /^#|^rgb|^hsl/.test( backgroundColour )
 			? backgroundColour
 			: colourVar( backgroundColour );
 	}
-	if ( borderRadius != null ) {
-		style.borderRadius = `${ borderRadius }${ borderRadiusUnit }`;
+
+	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	if ( radiusPreview ) {
+		wrapperStyle.borderRadius = radiusPreview;
 	}
+
+	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( borderStyle && borderStyle !== 'none' ) {
-		style.borderStyle = borderStyle;
+		if ( borderWidthPreview ) {
+			wrapperStyle.borderWidth = borderWidthPreview;
+		}
+		wrapperStyle.borderStyle = borderStyle;
 		if ( borderColour ) {
-			style.borderColor = /^#|^rgb|^hsl/.test( borderColour )
+			wrapperStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour )
 				? borderColour
 				: colourVar( borderColour );
 		}
 	}
-	if ( marginTop != null ) { style.marginTop = `${ marginTop }${ marginUnit }`; }
-	if ( marginRight != null ) { style.marginRight = `${ marginRight }${ marginUnit }`; }
-	if ( marginBottom != null ) { style.marginBottom = `${ marginBottom }${ marginUnit }`; }
-	if ( marginLeft != null ) { style.marginLeft = `${ marginLeft }${ marginUnit }`; }
-	if ( paddingTop != null ) { style.paddingTop = `${ paddingTop }${ paddingUnit }`; }
-	if ( paddingRight != null ) { style.paddingRight = `${ paddingRight }${ paddingUnit }`; }
-	if ( paddingBottom != null ) { style.paddingBottom = `${ paddingBottom }${ paddingUnit }`; }
-	if ( paddingLeft != null ) { style.paddingLeft = `${ paddingLeft }${ paddingUnit }`; }
-	if ( maxWidth ) { style.maxWidth = maxWidth; }
 
-	return style;
+	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( paddingPreview ) {
+		wrapperStyle.padding = paddingPreview;
+	}
+	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( marginPreview ) {
+		wrapperStyle.margin = marginPreview;
+	}
+
+	if ( maxWidth ) {
+		wrapperStyle.maxWidth = maxWidth;
+	}
+	if ( contentWidth ) {
+		wrapperStyle.width = contentWidth;
+	}
+
+	return wrapperStyle;
 }
 
 function buildAttribStyle( attributes ) {
@@ -232,6 +276,7 @@ function buildAttribStyle( attributes ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
+		style,
 		attribution,
 		attributionTag,
 		attributionEnabled,
@@ -252,8 +297,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		attributionMarginTopMobile,
 		attributionMarginUnit,
 		backgroundColour,
-		borderRadius,
-		borderRadiusUnit,
+		borderWidth,
 		borderStyle,
 		borderColour,
 		boxShadow,
@@ -261,13 +305,22 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoverScale,
 		hoverColour,
 		hoverBackground,
-		marginTop, marginRight, marginBottom, marginLeft, marginUnit,
-		paddingTop, paddingRight, paddingBottom, paddingLeft, paddingUnit,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
+		contentWidth,
+		maxWidth,
+		maxWidthTablet,
+		maxWidthMobile,
 		inheritStyle,
 		transitionDuration,
 		transitionEasing,
 	} = attributes;
 
+	// Contract §B3: NO wrapper <div> — the <blockquote> IS the block root
+	// (matches render.php). It carries the block class + the wrapper preview
+	// style, so the canvas mirrors the scoped frontend output.
 	const blockProps = useBlockProps( {
 		as: 'blockquote',
 		className: 'wp-block-sgs-quote',
@@ -300,13 +353,20 @@ export default function Edit( { attributes, setAttributes } ) {
 		mobile: 'attributionMarginTopMobile',
 	};
 
+	// Per-breakpoint attr keys for max-width (kept-scalar family, contract §C).
+	const maxWidthBreakpoints = {
+		desktop: 'maxWidth',
+		tablet: 'maxWidthTablet',
+		mobile: 'maxWidthMobile',
+	};
+
 	return (
 		<>
 			<InspectorControls>
 				{ /* ---- Style ---- */ }
 				<PanelBody title={ __( 'Style', 'sgs-blocks' ) }>
 					<ToggleControl
-						label={ __( 'Inherit parent styles (suppress wrapper inline styles)', 'sgs-blocks' ) }
+						label={ __( 'Inherit parent styles (suppress wrapper styles)', 'sgs-blocks' ) }
 						checked={ inheritStyle }
 						onChange={ ( val ) => setAttributes( { inheritStyle: val } ) }
 						__nextHasNoMarginBottom
@@ -412,7 +472,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								__nextHasNoMarginBottom
 							/>
 
-							{ /* Attribution margin-top — ResponsiveControl + UnitControl per breakpoint */ }
+							{ /* Attribution margin-top — ResponsiveControl + UnitControl per breakpoint
+							   (KEPT-SCALAR single-side family, contract §C). */ }
 							<ResponsiveControl label={ __( 'Margin-top (gap above attribution)', 'sgs-blocks' ) }>
 								{ ( breakpoint ) => {
 									const attrKey = attributionMarginTopBreakpoints[ breakpoint ];
@@ -465,22 +526,86 @@ export default function Edit( { attributes, setAttributes } ) {
 							value={ backgroundColour }
 							onChange={ ( val ) => setAttributes( { backgroundColour: val ?? '' } ) }
 						/>
-						{ /* Border radius — UnitControl (number + unit in one input) */ }
-						<UnitControl
-							label={ __( 'Border radius', 'sgs-blocks' ) }
-							value={ composeUnit( borderRadius, borderRadiusUnit ) }
-							units={ [
-								{ value: 'px', label: 'px', default: 0 },
-								{ value: 'em', label: 'em', default: 0 },
-								{ value: 'rem', label: 'rem', default: 0 },
-								{ value: '%', label: '%', default: 0 },
-							] }
-							onChange={ ( raw ) => {
-								const { num, unit } = parseUnit( raw, borderRadiusUnit || 'px' );
-								setAttributes( { borderRadius: num, borderRadiusUnit: unit } );
-							} }
+
+						<TextControl
+							label={ __( 'Box shadow (desktop)', 'sgs-blocks' ) }
+							value={ boxShadow }
+							onChange={ ( val ) => setAttributes( { boxShadow: val } ) }
+							placeholder={ __( '0 4px 12px rgba(0,0,0,0.1)', 'sgs-blocks' ) }
 							__nextHasNoMarginBottom
 						/>
+
+						{ /* Box-object interface contract §B/§E: padding/margin base routes
+						   to WP-native style.spacing.* (skip-serialised → scoped, not
+						   inline); tiers are the paddingTablet/paddingMobile +
+						   marginTablet/marginMobile object attrs. */ }
+						<ResponsiveBoxControl
+							label={ __( 'Padding', 'sgs-blocks' ) }
+							values={ {
+								base: style?.spacing?.padding ?? {},
+								tablet: paddingTablet ?? {},
+								mobile: paddingMobile ?? {},
+							} }
+							onChange={ ( tier, next ) => {
+								if ( 'base' === tier ) {
+									setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+								} else {
+									setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+								}
+							} }
+						/>
+						<ResponsiveBoxControl
+							label={ __( 'Margin', 'sgs-blocks' ) }
+							values={ {
+								base: style?.spacing?.margin ?? {},
+								tablet: marginTablet ?? {},
+								mobile: marginMobile ?? {},
+							} }
+							onChange={ ( tier, next ) => {
+								if ( 'base' === tier ) {
+									setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+								} else {
+									setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+								}
+							} }
+						/>
+
+						{ /* Width — outer maxWidth (kept-scalar, responsive) + content
+						   band width (kept-scalar). Contract §C. */ }
+						<ResponsiveControl label={ __( 'Outer max-width', 'sgs-blocks' ) }>
+							{ ( breakpoint ) => {
+								const attrKey = maxWidthBreakpoints[ breakpoint ];
+								return (
+									<UnitControl
+										label={ __( 'Max-width', 'sgs-blocks' ) }
+										hideLabelFromVision
+										value={ attributes[ attrKey ] || '' }
+										units={ LENGTH_UNITS }
+										onChange={ ( val ) => setAttributes( { [ attrKey ]: val ?? '' } ) }
+										help={ breakpoint === 'desktop' ? __( 'Leave blank for no cap.', 'sgs-blocks' ) : __( 'Leave blank to inherit desktop.', 'sgs-blocks' ) }
+										__nextHasNoMarginBottom
+									/>
+								);
+							} }
+						</ResponsiveControl>
+						<UnitControl
+							label={ __( 'Content width', 'sgs-blocks' ) }
+							value={ contentWidth || '' }
+							units={ LENGTH_UNITS }
+							onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
+							help={ __( 'Exact CSS length, e.g. 900px or 60rem. Leave blank for full width.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+						/>
+					</PanelBody>
+				) }
+
+				{ /* ---- Border ---- Box-object interface contract §1/§5: borderWidth
+				   is an SGS custom object attr (base only, no tiers); border-radius
+				   routes to WP-native style.border.radius (base only — the block
+				   declares __experimentalBorder.__experimentalSkipSerialization so it
+				   serialises scoped, not inline). */ }
+				{ ! inheritStyle && (
+					<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 						<SelectControl
 							label={ __( 'Border style', 'sgs-blocks' ) }
 							value={ borderStyle }
@@ -495,49 +620,18 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
 							/>
 						) }
-						<TextControl
-							label={ __( 'Box shadow (desktop)', 'sgs-blocks' ) }
-							value={ boxShadow }
-							onChange={ ( val ) => setAttributes( { boxShadow: val } ) }
-							placeholder={ __( '0 4px 12px rgba(0,0,0,0.1)', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
+						<ResponsiveBoxControl
+							label={ __( 'Border width', 'sgs-blocks' ) }
+							values={ { base: borderWidth ?? {} } }
+							showResponsive={ false }
+							onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
 						/>
-						<p className="sgs-inspector-label">{ __( 'Padding', 'sgs-blocks' ) }</p>
-						<div className="sgs-inspector-row">
-							{ [
-								[ 'Top', paddingTop, 'paddingTop' ],
-								[ 'Right', paddingRight, 'paddingRight' ],
-								[ 'Bottom', paddingBottom, 'paddingBottom' ],
-								[ 'Left', paddingLeft, 'paddingLeft' ],
-							].map( ( [ label, val, key ] ) => (
-								<RangeControl
-									key={ key }
-									label={ __( label, 'sgs-blocks' ) }
-									value={ val ?? '' }
-									onChange={ ( v ) => setAttributes( { [ key ]: v } ) }
-									min={ 0 } max={ 200 } step={ 1 } allowReset
-									__nextHasNoMarginBottom
-								/>
-							) ) }
-						</div>
-						<p className="sgs-inspector-label">{ __( 'Margin', 'sgs-blocks' ) }</p>
-						<div className="sgs-inspector-row">
-							{ [
-								[ 'Top', marginTop, 'marginTop' ],
-								[ 'Right', marginRight, 'marginRight' ],
-								[ 'Bottom', marginBottom, 'marginBottom' ],
-								[ 'Left', marginLeft, 'marginLeft' ],
-							].map( ( [ label, val, key ] ) => (
-								<RangeControl
-									key={ key }
-									label={ __( label, 'sgs-blocks' ) }
-									value={ val ?? '' }
-									onChange={ ( v ) => setAttributes( { [ key ]: v } ) }
-									min={ -100 } max={ 200 } step={ 1 } allowReset
-									__nextHasNoMarginBottom
-								/>
-							) ) }
-						</div>
+						<ResponsiveBorderRadiusControl
+							label={ __( 'Border radius', 'sgs-blocks' ) }
+							values={ { base: style?.border?.radius ?? {} } }
+							showResponsive={ false }
+							onChange={ ( tier, next ) => setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } ) }
+						/>
 					</PanelBody>
 				) }
 
@@ -591,13 +685,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
-
-				{ /* WS-4: width/spacing mirror from sgs/container (content kind). */ }
-				<ContainerWrapperControls
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					kind="content"
-				/>
 			</InspectorControls>
 
 			{ /* Canvas — body children (InnerBlocks) + attribution (RichText) sit as
@@ -605,7 +692,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			     `$content . $attribution_html` structure. innerBlocksProps.children
 			     is destructured out and rendered explicitly alongside the RichText
 			     sibling — spreading innerBlocksProps as-is would make its internal
-			     `children` win over literal JSX children and drop the RichText. */ }
+			     `children` win over literal JSX children and drop the RichText.
+			     Contract §B3: NO wrapper div — blockProps spreads straight onto the
+			     <blockquote>, which IS the block root. */ }
 			<blockquote { ...blockProps } { ...innerBlocksRest }>
 				{ innerBlocksChildren }
 				{ attributionEnabled && (

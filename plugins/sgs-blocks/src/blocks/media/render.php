@@ -4,7 +4,9 @@
  *
  * Content media block — image or video. Styling attributes (objectFit,
  * objectPosition, maxWidth, borderRadius, etc.) are applied on the frontend
- * via server-side render.
+ * via a scoped `<style>` block — NOTHING is emitted as an inline
+ * `style="property:…"` declaration on the media element (no-inline styling
+ * contract, Spec 32 / `.claude/plans/2026-07-09-per-block-no-inline-migration-contract.md`).
  *
  * mediaType = 'image' (default): image render path with imageUrl / imageId.
  * mediaType = 'video': <video> (internal WP-library or direct MP4) or
@@ -14,6 +16,14 @@
  *             wp_kses() allowlist — identical to the one used by SGS_Container_Wrapper
  *             for bgSvgContent — before output. No <script>, no event handlers,
  *             no <foreignObject>, no external href/xlink:href.
+ *
+ * Scoping: this block declares `supports.anchor` — the internal CSS-scope
+ * token is therefore a CLASS (`.sgs-media-XXXXXXXX`), never an id, so it can
+ * never collide with a user-set anchor id (Spec 31 §B3). The block wrapper's
+ * `id` attribute is left entirely to WP core's native anchor handling
+ * (`get_block_wrapper_attributes()` applies it automatically from
+ * `$attributes['anchor']` when the operator sets one — this file never
+ * writes an `id` itself).
  *
  * @since 1.1.0
  *
@@ -56,12 +66,16 @@ $object_fit_raw      = $attributes['objectFit'] ?? 'cover';
 $object_fit          = in_array( $object_fit_raw, $allowed_object_fits, true ) ? $object_fit_raw : 'cover';
 $object_position     = isset( $attributes['objectPosition'] ) ? (string) $attributes['objectPosition'] : 'center center';
 
-$border_radius      = isset( $attributes['borderRadius'] ) ? (string) $attributes['borderRadius'] : '';
-$border_radius_unit = isset( $attributes['borderRadiusUnit'] ) ? (string) $attributes['borderRadiusUnit'] : 'px';
-$border_radius_tl   = isset( $attributes['borderRadiusTL'] ) ? (string) $attributes['borderRadiusTL'] : '';
-$border_radius_tr   = isset( $attributes['borderRadiusTR'] ) ? (string) $attributes['borderRadiusTR'] : '';
-$border_radius_bl   = isset( $attributes['borderRadiusBL'] ) ? (string) $attributes['borderRadiusBL'] : '';
-$border_radius_br   = isset( $attributes['borderRadiusBR'] ) ? (string) $attributes['borderRadiusBR'] : '';
+// Border-radius base — WP-NATIVE style.border.radius (box-object interface
+// contract: no more custom flat/per-corner attrs). Tablet/Mobile are the SGS
+// custom tier OBJECT attrs { topLeft, topRight, bottomLeft, bottomRight }.
+// The whole border group (colour/width/style/radius) is read from
+// $attributes['style']['border'] because __experimentalBorder now carries
+// __experimentalSkipSerialization (block.json) — WP still POPULATES the attr,
+// it just stops auto-inlining it onto the wrapper.
+$native_border             = ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) ? $attributes['style']['border'] : array();
+$border_radius_tablet_obj  = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
+$border_radius_mobile_obj  = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
 
 $box_shadow = isset( $attributes['boxShadow'] ) ? (string) $attributes['boxShadow'] : '';
 $opacity    = isset( $attributes['opacity'] ) ? floatval( $attributes['opacity'] ) : 1.0;
@@ -159,142 +173,109 @@ if ( ! function_exists( 'sgs_media_css_length' ) ) {
 }
 
 // ---------------------------------------------------------------------------
-// 4. Build shared media element inline styles (applies to both <img> and <video>/<iframe>).
+// 4. Anchor / internal scope token.
+//
+// `id` is left ENTIRELY to WP core's native anchor handling (only present in
+// $wrapper_attributes when the operator sets one via supports.anchor). The
+// scope token used to build every scoped CSS selector below is a CLASS —
+// deterministic from the attribute fingerprint so it survives fragment-cached
+// re-renders (same attrs → same class on every request) without ever
+// colliding with the anchor id (Spec 31 §B3).
 // ---------------------------------------------------------------------------
-$media_styles = array();
+$scope_class = 'sgs-media-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$scope_esc   = esc_attr( $scope_class );
 
-// object-fit — only emit inline when explicitly set to a NON-default value
-// (D7). The default `cover` is provided as an OVERRIDABLE :where() fallback in
+// Targets the inner media element (img or video). The FIRST selector matches
+// the NAKED <img> (D6 — where the scope class and element are the SAME node);
+// the descendant forms match figure-mode img/video.
+$id_sel  = '.' . $scope_esc . '.sgs-media__img, .' . $scope_esc . ' .sgs-media__img, .' . $scope_esc . ' .sgs-media__video';
+// Targets the element carrying the scope class itself — the <figure> wrapper
+// in figure-mode, or the <img> itself in naked-mode (same class either way).
+$id_wrap = '.' . $scope_esc;
+
+// ---------------------------------------------------------------------------
+// 5. Build scoped CSS — base (non-responsive) declarations for the media
+// element: object-fit, object-position, aspect-ratio, opacity, box-shadow,
+// and the native border group (colour/width/style/radius). NONE of these are
+// emitted inline any more (no-inline contract §A).
+// ---------------------------------------------------------------------------
+$media_base_decls = array();
+
+// object-fit — only emit when explicitly set to a NON-default value (D7). The
+// default `cover` is provided as an OVERRIDABLE :where() fallback in
 // style.css, so an unset value no longer force-crops and can be overridden.
 if ( 'cover' !== $object_fit ) {
-	$media_styles[] = 'object-fit:' . esc_attr( $object_fit );
+	$media_base_decls[] = 'object-fit:' . esc_attr( $object_fit );
 }
 
 // object-position — only emit when explicitly set to a non-default value (D7).
 // Allow alphanumeric, %, spaces, commas, dashes (valid CSS).
 if ( '' !== $object_position && 'center center' !== $object_position
 	&& preg_match( '/^[a-zA-Z0-9%\s.,\-]+$/', $object_position ) ) {
-	$media_styles[] = 'object-position:' . esc_attr( $object_position );
+	$media_base_decls[] = 'object-position:' . esc_attr( $object_position );
 }
 
 // aspect-ratio: allow digits, slash, spaces.
 if ( '' !== $aspect_ratio && preg_match( '/^[\d\s\/]+$/', $aspect_ratio ) ) {
-	$media_styles[] = 'aspect-ratio:' . esc_attr( $aspect_ratio );
+	$media_base_decls[] = 'aspect-ratio:' . esc_attr( $aspect_ratio );
 }
-
-// max-width / max-height are NOT inline (Pattern A, D-migration): both have
-// tablet/mobile tiers, so base+tablet+mobile are emitted together on the
-// SAME selector in the scoped <style> block below (step 7). Inline on the
-// <img>/<video> element would always beat the id-scoped @media overrides
-// (which already target this same element) regardless of viewport.
 
 // opacity.
 if ( 1.0 !== $opacity ) {
-	$media_styles[] = 'opacity:' . esc_attr( $opacity );
-}
-
-// border-radius — SINGLE resolution order (D2): per-corner attrs → the custom
-// `borderRadius` attr → the NATIVE `style.border.radius` written by the cloning
-// converter. Every value is normalised through sgs_media_css_length() so
-// unit-embedded strings ("16px", "50%") AND bare-number+legacy-unit both work.
-// Emitted inline on the <img>/<video> in BOTH figure + naked modes (WP core does
-// not paint native border-radius on a dynamic/naked <img> — mirror the D267 fix).
-$has_corners = '' !== $border_radius_tl || '' !== $border_radius_tr ||
-				'' !== $border_radius_bl || '' !== $border_radius_br;
-
-$resolved_radius = '';
-if ( $has_corners ) {
-	$br_tl = '' !== $border_radius_tl ? sgs_media_css_length( $border_radius_tl, $border_radius_unit ) : '';
-	$br_tr = '' !== $border_radius_tr ? sgs_media_css_length( $border_radius_tr, $border_radius_unit ) : '';
-	$br_br = '' !== $border_radius_br ? sgs_media_css_length( $border_radius_br, $border_radius_unit ) : '';
-	$br_bl = '' !== $border_radius_bl ? sgs_media_css_length( $border_radius_bl, $border_radius_unit ) : '';
-	// CSS shorthand order: top-left / top-right / bottom-right / bottom-left.
-	$resolved_radius = ( '' !== $br_tl ? $br_tl : '0' ) . ' ' .
-					( '' !== $br_tr ? $br_tr : '0' ) . ' ' .
-					( '' !== $br_br ? $br_br : '0' ) . ' ' .
-					( '' !== $br_bl ? $br_bl : '0' );
-} elseif ( '' !== $border_radius ) {
-	$resolved_radius = sgs_media_css_length( $border_radius, $border_radius_unit );
-} else {
-	// Native border support (converter output): style.border.radius.
-	$native_radius = $attributes['style']['border']['radius'] ?? '';
-	if ( is_string( $native_radius ) && '' !== $native_radius ) {
-		$resolved_radius = sgs_media_css_length( $native_radius, 'px' );
-	} elseif ( is_array( $native_radius ) ) {
-		// WP per-corner object: { topLeft, topRight, bottomLeft, bottomRight }.
-		$n_tl = sgs_media_css_length( (string) ( $native_radius['topLeft'] ?? '' ), 'px' );
-		$n_tr = sgs_media_css_length( (string) ( $native_radius['topRight'] ?? '' ), 'px' );
-		$n_br = sgs_media_css_length( (string) ( $native_radius['bottomRight'] ?? '' ), 'px' );
-		$n_bl = sgs_media_css_length( (string) ( $native_radius['bottomLeft'] ?? '' ), 'px' );
-		if ( '' !== $n_tl || '' !== $n_tr || '' !== $n_br || '' !== $n_bl ) {
-			$resolved_radius = ( '' !== $n_tl ? $n_tl : '0' ) . ' ' .
-							( '' !== $n_tr ? $n_tr : '0' ) . ' ' .
-							( '' !== $n_br ? $n_br : '0' ) . ' ' .
-							( '' !== $n_bl ? $n_bl : '0' );
-		}
-	}
-}
-
-if ( '' !== $resolved_radius ) {
-	$media_styles[] = 'border-radius:' . $resolved_radius;
+	$media_base_decls[] = 'opacity:' . esc_attr( $opacity );
 }
 
 // box-shadow — delegate to sgs_shadow_value() so raw CSS values pass through correctly.
 if ( '' !== $box_shadow ) {
 	$shadow_css = sgs_shadow_value( $box_shadow );
 	if ( '' !== $shadow_css ) {
-		$media_styles[] = 'box-shadow:' . $shadow_css;
+		$media_base_decls[] = 'box-shadow:' . $shadow_css;
 	}
 }
 
-$media_style_attr = implode( ';', $media_styles );
-
-// ---------------------------------------------------------------------------
-// 5. Build the <figure> wrapper inline styles and classes.
-// ---------------------------------------------------------------------------
-$wrapper_styles  = array();
-$wrapper_classes = array( 'sgs-media', 'sgs-media--align-' . esc_attr( $alignment ) );
-if ( 'svg' === $media_type ) {
-	$wrapper_classes[] = 'sgs-media--svg';
+$media_base_css = '';
+if ( $media_base_decls ) {
+	$media_base_css = $id_sel . '{' . implode( ';', $media_base_decls ) . '}';
 }
 
-// order is NOT inline (Pattern A, D-migration): it has tablet/mobile tiers
-// targeting this same wrapper element (step 7), so base+tablet+mobile are
-// emitted together on that selector instead.
+// Native border group (colour/width/style/radius) — base only, via the
+// stable core style-engine API (matches sgs/button + sgs/container's proven
+// pattern: WP core's own sanitisation, never hand-rolled). Applies to the
+// media element (img/video) — mirrors this block's pre-existing behaviour of
+// painting border/radius on the media element itself, not the figure.
+$border_base_css = '';
+if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $native_border ) ) {
+	$border_base_out = wp_style_engine_get_styles(
+		array( 'border' => $native_border ),
+		array( 'selector' => $id_sel )
+	);
+	if ( ! empty( $border_base_out['css'] ) ) {
+		$border_base_css = $border_base_out['css'];
+	}
+}
 
-// Display rule for alignment (figures are block-level by default).
+// ---------------------------------------------------------------------------
+// 6. Wrapper/scope-level base declarations (alignment margin).
+// ---------------------------------------------------------------------------
+$wrap_base_decls = array();
 if ( 'center' === $alignment ) {
-	$wrapper_styles[] = 'margin-left:auto;margin-right:auto';
+	$wrap_base_decls[] = 'margin-left:auto;margin-right:auto';
 } elseif ( 'right' === $alignment ) {
-	$wrapper_styles[] = 'margin-left:auto';
+	$wrap_base_decls[] = 'margin-left:auto';
 }
-
-// ---------------------------------------------------------------------------
-// 6. Anchor / unique-ID for scoped responsive CSS.
-// ---------------------------------------------------------------------------
-$block_anchor = $block->parsed_block['attrs']['anchor'] ?? '';
-if ( ! $block_anchor ) {
-	// Deterministic ID based on attribute fingerprint so it survives re-render.
-	$block_anchor = 'sgs-media-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$wrap_base_css = '';
+if ( $wrap_base_decls ) {
+	$wrap_base_css = $id_wrap . '{' . implode( ';', $wrap_base_decls ) . '}';
 }
 
 // ---------------------------------------------------------------------------
 // 7. Per-viewport responsive CSS (emitted as a scoped <style> tag).
+// Breakpoints use the framework 767/1023 standard (D3): mobile
+// @media(max-width:767px), tablet @media(max-width:1023px).
 // ---------------------------------------------------------------------------
-// Target the inner media element (img or video) for dimension constraints.
-// The FIRST selector (id + class on the SAME element, `#uid.sgs-media__img`)
-// matches the NAKED <img> (D6 — where the id and class share one element); the
-// descendant forms match figure-mode img/video. Both are emitted so the same
-// max-width/max-height rule lands in either render shape.
-$anchor_esc = esc_attr( $block_anchor );
-$id_sel     = '#' . $anchor_esc . '.sgs-media__img, #' . $anchor_esc . ' .sgs-media__img, #' . $anchor_esc . ' .sgs-media__video';
-$id_wrap    = '#' . $anchor_esc;
 
-// max-width / max-height — base + tablet + mobile on the SAME selector
-// (Pattern A). Values are validated through sgs_media_css_length() so
-// unit-embedded strings ("440px", "100%") pass (D1 — the old is_numeric()
-// guard silently dropped them). Breakpoints use the framework 767/1023 standard
-// (D3): mobile @media(max-width:767px), tablet @media(max-width:1023px).
+// max-width / max-height / height — base + tablet + mobile on the SAME
+// selector (Pattern A). Values are validated through sgs_media_css_length().
 $base_rules = array();
 $mw_base    = sgs_media_css_length( $max_width, $max_width_unit );
 $mh_base    = sgs_media_css_length( $max_height, $max_height_unit );
@@ -337,7 +318,7 @@ if ( '' !== $h_mobile ) {
 	$mobile_rules[] = 'height:' . $h_mobile;
 }
 
-$responsive_css = '';
+$responsive_css  = $media_base_css . $border_base_css . $wrap_base_css;
 if ( $base_rules ) {
 	$responsive_css .= $id_sel . '{' . implode( ';', $base_rules ) . '}';
 }
@@ -348,7 +329,31 @@ if ( $mobile_rules ) {
 	$responsive_css .= '@media(max-width:767px){' . $id_sel . '{' . implode( ';', $mobile_rules ) . '}}';
 }
 
-// order — base + tablet + mobile on the SAME wrapper selector (Pattern A).
+// Border-radius tiers — SGS custom tier OBJECT attrs (borderRadiusTablet /
+// borderRadiusMobile), routed through the same stable core style-engine API
+// as the base rule above (box-object interface contract §B).
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	if ( ! empty( $border_radius_tablet_obj ) ) {
+		$radius_tab_out = wp_style_engine_get_styles(
+			array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+			array( 'selector' => $id_sel )
+		);
+		if ( ! empty( $radius_tab_out['css'] ) ) {
+			$responsive_css .= '@media(max-width:1023px){' . $radius_tab_out['css'] . '}';
+		}
+	}
+	if ( ! empty( $border_radius_mobile_obj ) ) {
+		$radius_mob_out = wp_style_engine_get_styles(
+			array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+			array( 'selector' => $id_sel )
+		);
+		if ( ! empty( $radius_mob_out['css'] ) ) {
+			$responsive_css .= '@media(max-width:767px){' . $radius_mob_out['css'] . '}';
+		}
+	}
+}
+
+// order — base + tablet + mobile on the SAME wrapper/scope selector (Pattern A).
 if ( null !== $css_order ) {
 	$responsive_css .= $id_wrap . '{order:' . intval( $css_order ) . ';}';
 }
@@ -360,27 +365,29 @@ if ( null !== $css_order_mobile ) {
 }
 
 // ---------------------------------------------------------------------------
-// 8. Build caption styles.
+// 8. Caption colour/font-size — scoped CSS, base only (no tiers), targeting
+// the caption element nested inside the scoped wrapper.
 // ---------------------------------------------------------------------------
-$caption_styles = array();
+$caption_decls = array();
 if ( '' !== $caption_colour ) {
-	$caption_styles[] = 'color:' . sgs_colour_value( $caption_colour );
+	$caption_decls[] = 'color:' . sgs_colour_value( $caption_colour );
 }
 if ( $caption_font_size > 0 ) {
-	$caption_styles[] = 'font-size:' . $caption_font_size . sgs_media_validate_unit( $caption_font_size_unit );
+	$caption_decls[] = 'font-size:' . $caption_font_size . sgs_media_validate_unit( $caption_font_size_unit );
 }
-$caption_style_attr = $caption_styles ? ' style="' . esc_attr( implode( ';', $caption_styles ) ) . '"' : '';
+if ( $caption_decls ) {
+	$responsive_css .= $id_wrap . ' .sgs-media__caption{' . implode( ';', $caption_decls ) . '}';
+}
 
 // ---------------------------------------------------------------------------
-// 9. Build caption element.
+// 9. Build caption element (no inline style attr — see step 8 above).
 // ---------------------------------------------------------------------------
 $caption_html = '';
 if ( '' !== $caption ) {
 	$caption_tag_escaped = tag_escape( $caption_tag );
 	$caption_html        = sprintf(
-		'<%1$s class="sgs-media__caption"%2$s>%3$s</%1$s>',
+		'<%1$s class="sgs-media__caption">%2$s</%1$s>',
 		$caption_tag_escaped,
-		$caption_style_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from esc_attr() components above.
 		wp_kses_post( $caption )
 	);
 }
@@ -461,19 +468,17 @@ if ( 'image' === $media_type ) {
 		}
 	}
 
-	$media_style_part = $media_style_attr ? ' style="' . esc_attr( $media_style_attr ) . '"' : '';
-	$img_width_part   = $image_width ? ' width="' . esc_attr( $image_width ) . '"' : '';
-	$img_height_part  = $image_height ? ' height="' . esc_attr( $image_height ) . '"' : '';
+	$img_width_part  = $image_width ? ' width="' . esc_attr( $image_width ) . '"' : '';
+	$img_height_part = $image_height ? ' height="' . esc_attr( $image_height ) . '"' : '';
 
 	$image_html = sprintf(
-		'<img src="%s" alt="%s"%s%s%s%s%s class="sgs-media__img" loading="lazy" decoding="async" />',
+		'<img src="%s" alt="%s"%s%s%s%s class="sgs-media__img" loading="lazy" decoding="async" />',
 		esc_url( $resolved_url ),
 		esc_attr( $image_alt ),
 		$img_width_part,
 		$img_height_part,
 		$img_srcset,
-		$img_sizes,
-		$media_style_part
+		$img_sizes
 	);
 }
 
@@ -530,8 +535,6 @@ if ( 'video' === $media_type ) {
 	$is_youtube = (bool) preg_match( '/(?:youtube\.com\/(?:watch\?.*v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_\-]{11})/', $resolved_video_url, $yt_matches );
 	$is_vimeo   = (bool) preg_match( '/(?:vimeo\.com\/)(\d+)/', $resolved_video_url, $vm_matches );
 
-	$media_style_part = $media_style_attr ? ' style="' . esc_attr( $media_style_attr ) . '"' : '';
-
 	if ( $is_youtube ) {
 		// Convert any YouTube watch URL to embed URL.
 		$video_id_yt = $yt_matches[1];
@@ -556,9 +559,8 @@ if ( 'video' === $media_type ) {
 		$poster_attr  = '' !== $poster_url ? ' data-poster="' . esc_url( $poster_url ) . '"' : '';
 		$loading_attr = $video_lazy ? ' loading="lazy"' : '';
 		$video_html   = sprintf(
-			'<iframe class="sgs-media__video" src="%s" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen%s%s%s></iframe>',
+			'<iframe class="sgs-media__video" src="%s" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen%s%s></iframe>',
 			esc_url( $embed_url ),
-			$media_style_part,
 			$poster_attr,
 			$loading_attr
 		);
@@ -586,9 +588,8 @@ if ( 'video' === $media_type ) {
 		$poster_attr  = '' !== $poster_url ? ' data-poster="' . esc_url( $poster_url ) . '"' : '';
 		$loading_attr = $video_lazy ? ' loading="lazy"' : '';
 		$video_html   = sprintf(
-			'<iframe class="sgs-media__video" src="%s" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen%s%s%s></iframe>',
+			'<iframe class="sgs-media__video" src="%s" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen%s%s></iframe>',
 			esc_url( $embed_url ),
-			$media_style_part,
 			$poster_attr,
 			$loading_attr
 		);
@@ -617,10 +618,9 @@ if ( 'video' === $media_type ) {
 		$poster_attr   = '' !== $poster_url ? ' poster="' . esc_url( $poster_url ) . '"' : '';
 
 		$video_html = sprintf(
-			'<video class="sgs-media__video"%s%s%s%s%s%s%s%s%s>' .
+			'<video class="sgs-media__video"%s%s%s%s%s%s%s%s>' .
 			'<source src="%s" type="%s">' .
 			'</video>',
-			$media_style_part,
 			$autoplay_attr,
 			$loop_attr,
 			$muted_attr,
@@ -764,16 +764,20 @@ if ( 'svg' === $media_type ) {
 
 // ---------------------------------------------------------------------------
 // 13. Assemble wrapper attributes via get_block_wrapper_attributes().
+// No 'id' is passed — WP core applies it automatically from the anchor
+// support when the operator sets one. No 'style' is passed — nothing is
+// inline (no-inline contract §A). The scope class is always present.
 // ---------------------------------------------------------------------------
-$wrapper_attr_args = array(
-	'class' => implode( ' ', $wrapper_classes ),
-	'id'    => $block_anchor,
-);
-if ( $wrapper_styles ) {
-	$wrapper_attr_args['style'] = implode( ';', $wrapper_styles ) . ';';
+$wrapper_classes = array( 'sgs-media', 'sgs-media--align-' . esc_attr( $alignment ), $scope_class );
+if ( 'svg' === $media_type ) {
+	$wrapper_classes[] = 'sgs-media--svg';
 }
 
-$wrapper_attributes = get_block_wrapper_attributes( $wrapper_attr_args );
+$wrapper_attributes = get_block_wrapper_attributes(
+	array(
+		'class' => implode( ' ', $wrapper_classes ),
+	)
+);
 
 // ---------------------------------------------------------------------------
 // 14. Naked-mode for image: emit bare <img> with merged classes when no
@@ -786,6 +790,9 @@ $naked_mode = ( 'image' === $media_type ) && ( '' === $caption ) && empty( $link
 
 if ( $naked_mode && '' !== $image_html ) {
 	// Parse class= and id= from wrapper_attributes string; merge with sgs-media__img.
+	// The scope class is already present in $cm[1] (built into $wrapper_classes
+	// above), so alignment/order/border/etc scoped rules ($id_wrap / $id_sel)
+	// apply to this naked <img> exactly as they do to the <figure> in figure-mode.
 	preg_match( '/class="([^"]*)"/', $wrapper_attributes, $cm );
 	preg_match( '/id="([^"]*)"/', $wrapper_attributes, $im );
 	$merged_classes = trim( ( $cm[1] ?? '' ) . ' sgs-media__img' );
@@ -827,23 +834,17 @@ if ( $naked_mode && '' !== $image_html ) {
 		}
 	}
 
-	// Naked mode has no <figure>, so the alignment margin (wrapper_styles) would
-	// be lost (D6). Merge the media styles with the wrapper styles onto the img.
-	$naked_style_list  = array_filter( array_merge( $media_styles, $wrapper_styles ) );
-	$naked_style_str   = implode( ';', $naked_style_list );
-	$naked_style_part  = '' !== $naked_style_str ? ' style="' . esc_attr( $naked_style_str ) . '"' : '';
 	$naked_width_part  = $image_width_attr ? ' width="' . esc_attr( $image_width_attr ) . '"' : '';
 	$naked_height_part = $image_height_attr ? ' height="' . esc_attr( $image_height_attr ) . '"' : '';
 
 	$image_html = sprintf(
-		'<img src="%s" alt="%s"%s%s%s%s%s%s class="%s" loading="lazy" decoding="async" />',
+		'<img src="%s" alt="%s"%s%s%s%s%s class="%s" loading="lazy" decoding="async" />',
 		esc_url( $naked_resolved_url ),
 		esc_attr( $image_alt_attr ),
 		$naked_width_part,
 		$naked_height_part,
 		$naked_srcset,
 		$naked_sizes,
-		$naked_style_part,
 		$id_attr,
 		esc_attr( $merged_classes )
 	);
@@ -851,12 +852,15 @@ if ( $naked_mode && '' !== $image_html ) {
 
 // ---------------------------------------------------------------------------
 // 15. Emit the scoped responsive <style> block (before the main element).
+// wp_strip_all_tags (not esc_html) matches the proven SGS_Container_Wrapper /
+// sgs/button pattern: it blocks a </style> breakout while leaving CSS
+// combinators like `>` intact.
 // ---------------------------------------------------------------------------
 if ( $responsive_css ) {
 	printf(
 		'<style id="%s-css">%s</style>',
-		esc_attr( $block_anchor ),
-		$responsive_css // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from esc_attr() components throughout.
+		esc_attr( $scope_class ),
+		wp_strip_all_tags( $responsive_css ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from esc_attr()/sanitiser-validated components + the trusted wp_style_engine_get_styles() core API throughout; wp_strip_all_tags guards </style> breakout.
 	);
 }
 

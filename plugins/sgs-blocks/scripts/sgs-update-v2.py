@@ -1434,6 +1434,19 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/text", "marginTablet"): {"box_family": "margin"},
     ("sgs/text", "marginMobile"): {"box_family": "margin"},
     ("sgs/quote", "borderWidth"): {"box_family": "borderWidth"},
+    # quote (block-private, content-KIND → block-private per qc-council 2026-07-09):
+    # padding/margin tiers merge to SGS object attrs (base padding/margin route to
+    # WP-native style.spacing.*). border-radius base → WP-native style.border.radius.
+    ("sgs/quote", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/quote", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/quote", "marginTablet"): {"box_family": "margin"},
+    ("sgs/quote", "marginMobile"): {"box_family": "margin"},
+    # media (block-private, atomic img clone target → block-private): only border-radius
+    # migrates. Base radius → WP-native style.border.radius (no seed). Tier radius →
+    # SGS object attrs, seeded like button's radius tiers so the converter accumulator
+    # builds them from a draft's responsive corner declarations.
+    ("sgs/media", "borderRadiusTablet"): {"box_family": "borderRadius"},
+    ("sgs/media", "borderRadiusMobile"): {"box_family": "borderRadius"},
 }
 
 

@@ -25,10 +25,11 @@
         "color": false,
         "html": false,
         "__experimentalBorder": {
-            "radius": false,
+            "radius": true,
             "width": true,
             "style": true,
-            "color": true
+            "color": true,
+            "__experimentalSkipSerialization": true
         }
     },
     "attributes": {
@@ -206,29 +207,13 @@
             "type": "string",
             "default": "center center"
         },
-        "borderRadius": {
-            "type": "string",
-            "default": ""
+        "borderRadiusTablet": {
+            "type": "object",
+            "default": {}
         },
-        "borderRadiusUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "borderRadiusTL": {
-            "type": "string",
-            "default": ""
-        },
-        "borderRadiusTR": {
-            "type": "string",
-            "default": ""
-        },
-        "borderRadiusBL": {
-            "type": "string",
-            "default": ""
-        },
-        "borderRadiusBR": {
-            "type": "string",
-            "default": ""
+        "borderRadiusMobile": {
+            "type": "object",
+            "default": {}
         },
         "boxShadow": {
             "type": "string",

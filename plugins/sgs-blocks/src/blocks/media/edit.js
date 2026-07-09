@@ -18,7 +18,7 @@ import {
 	Notice,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { ResponsiveControl } from '../../components';
+import { ResponsiveControl, ResponsiveBorderRadiusControl } from '../../components';
 
 /**
  * Allowed CSS length units for the media styling controls. Mirrors the
@@ -71,6 +71,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		// Shared.
 		mediaType,
+		style,
+		borderRadiusTablet,
+		borderRadiusMobile,
 		// Image.
 		imageId,
 		imageUrl,
@@ -248,12 +251,20 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { aspectRatio: value } ) }
 						__nextHasNoMarginBottom
 					/>
-					<UnitControl
+					<ResponsiveBorderRadiusControl
 						label={ __( 'Border radius', 'sgs-blocks' ) }
-						value={ attributes.borderRadius || '' }
-						units={ SGS_MEDIA_UNITS }
-						onChange={ ( value ) => setAttributes( { borderRadius: value || '' } ) }
-						__next40pxDefaultSize
+						values={ {
+							base: style?.border?.radius ?? {},
+							tablet: borderRadiusTablet ?? {},
+							mobile: borderRadiusMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } );
+							} else {
+								setAttributes( { [ `borderRadius${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
 					/>
 					<SelectControl
 						label={ __( 'Alignment', 'sgs-blocks' ) }
