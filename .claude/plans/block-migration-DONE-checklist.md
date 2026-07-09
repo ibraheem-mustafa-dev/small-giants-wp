@@ -52,8 +52,14 @@ re-derive them.
 
 ## Proven exemplars (copy the pattern)
 - **button** (`9f281337`) — block-private, element-as-root, ID uid. Single-element reference.
-- **container** (D292) — shared wrapper, class uid, base+tier objects. Composite reference.
 - **heading + text** (`3e266090`) — block-private single-element, full bar.
+- **quote** (`13fd1634`, D294) — **content-KIND composite → BLOCK-PRIVATE** (blockquote root, no `SGS_Container_Wrapper`, class uid, all CSS + box-objects scoped). The reference for content-KIND composites (qc-council-settled: they use only box+width, so drop the wrapper — see Spec 31 FR-31-21.1).
+- **media** (`13fd1634`, D294) — block-private atomic (img/figure), radius→WP-native + tiers.
+- **container** (D292) — shared wrapper, class uid, base+tier objects. Composite (keep-wrapper) reference.
+- **hero** (`74d164c6`, D295) — **section-KIND composite → KEEPS wrapper**; 6 per-area box-object families rendered block-private-scoped + F3-drain. The reference for section/layout composites.
+- **shared wrapper** (`class-sgs-container-wrapper.php`) — fully no-inline: base spacing (D292), max-width/contentWidth/band (`13fd1634`/D294), grid/flex (`d65e7d10`/D296). Keep-wrapper composites inherit this.
+
+**Which pattern (D294):** single-element + content-KIND-box+width-only → block-private (quote/heading/text/button); section/layout composites → keep the (scoped) wrapper (hero/container).
 
 ## Reference impls / detail
 - HOW-TO + rationale: `.claude/plans/2026-07-09-per-block-no-inline-migration-contract.md`.

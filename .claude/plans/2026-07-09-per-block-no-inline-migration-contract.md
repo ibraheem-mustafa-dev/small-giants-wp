@@ -73,6 +73,17 @@ is allowed (it is a value, not a declaration); a real property declaration
 - A GENUINE COMPOSITE (wraps multiple children / is a layout box — container, hero,
   card-grid, accordion, cta-section, …) KEEPS its wrapper. Do NOT remove a load-bearing
   wrapper. If unsure whether a wrapper is useless, STOP and ask.
+- **PATTERN SELECTOR (D294, qc-council-settled 2026-07-09 — resolves the ambiguity for composites that use `SGS_Container_Wrapper`):**
+  a **content-KIND composite** (`block_composition.container_kind='content'`) that uses ONLY box+width
+  (quote, info-box, testimonial, team-member, product-faq-item…) migrates **BLOCK-PRIVATE** — DROP
+  `SGS_Container_Wrapper`, make the semantic element the root, emit ALL CSS in its own scoped `<style>`
+  (exemplar: `src/blocks/quote/`). It never used the wrapper's grid/section machinery, and the converter
+  routes CSS by `block_attributes` keyed on `block_slug` (NOT `wraps_block`/`container_kind` — zero walker
+  impact), so dropping the wrapper is safe with NO DB change. A **section/layout-KIND composite** (hero,
+  cta-section, card-grid, feature-grid…) **KEEPS the wrapper** (genuine grid/section — exemplar: `src/blocks/hero/`);
+  the wrapper is now itself fully no-inline (spacing D292 + max-width/contentWidth/band D294 + grid/flex D296
+  all scoped), so keeping it is contract-compliant. Spec 31 FR-31-21.1. (Still STOP-and-ask if a specific
+  content-KIND block's wrapper looks load-bearing for structure, not just box+width.)
 - **Not purely mechanical — VERIFY per block (recognition-critical):** these single-element
   blocks are atomic cloning targets (`p→sgs/text`, `h2→sgs/heading`). Collapsing the wrapper
   changes the rendered DOM the pipeline's `block_selectors`/`derived_selector` lift onto, so
