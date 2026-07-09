@@ -1,9 +1,56 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-thread: button styling re-architecture + universal CSS-routing (Thread 1 block token architecture / Thread 2 pipeline attr-routing)
+thread: no-inline styling architecture — box-object merge pilot on sgs/container (core proven live)
 session_date: 2026-07-09
 ---
+
+# Session Handoff — 2026-07-09 (box-object no-inline pilot — sgs/container core PROVEN LIVE)
+
+## Completed This Session
+1. **Designed + council-hardened the universal no-inline styling architecture** (`.claude/plans/2026-07-09-no-inline-styling-design-gate.md` + `-box-object-interface-contract.md`). Keep WP-native styling supports but flip to SCOPED serialisation via `__experimentalSkipSerialization` + `wp_style_engine_get_styles(...,['selector'=>'#uid'])` (not inline); per-side/corner box props merge into named OBJECT attrs via WP `BoxControl`; lands in the shared helpers. A 3-rater cross-model `/qc-council` corrected 3 overstatements (guard is convention+AST-gate not "by construction"; 61% is a static count; pilot expanded container→container+button for corners/hover).
+2. **Phase 0 (de-risk) PROVEN LIVE + committed (`96a97bb0`):** container base padding/margin serialise to a scoped `.uid{}` rule, zero inline, correct paint on 10 page-8 containers — the D267-class dynamic-block risk did NOT bite.
+3. **Built the box-object merge on sgs/container via a delegated wave model** (Haiku/Sonnet subagents, Opus orchestrating+gating): Wave A = DB `box_family`/`box_side` overrides + AST collision gate (`check-box-family-guard.py`, plant-tested) + shared `ResponsiveBoxControl`; Wave B = container block.json → 7 object attrs (24 flat removed) + edit.js BoxControl + wrapper object-read; Wave C = converter cross-declaration ACCUMULATOR (`root_supports`/`content_band` + `orchestrator.py` dict-merge) emitting object attrs gated on `box_family`.
+4. **Wave D (live integration) — CONTAINER CORE PROVEN LIVE on page 8:** A1 zero inline (10 containers), A2 base paints (56/64px scoped), A5 no regression (67%/100%), A6 guard live + AST gate green. Fixed a STOP-58 bug (stage-1 reseed left 28 orphaned flat rows mis-routing tier padding — pruned).
+5. **Reconciled all docs (delegated, parallel):** Spec 31 v0.4 (FR-31-22, box_family guard, honest closed-vocab correction), Spec 32 v1.1 (§6.1 geometry token families), CLAUDE.md + architecture.md + sgs-wp-engine skill (98%). Committed `764ab2e6`.
+6. **RC2 verified live earlier:** naked "Find out more" link renders faithful (not a primary button). Built `scripts/audit-inline-styling.js` (framework-wide inline detector: 26 blocks inline, 61% via shared helpers).
+
+## Current State
+- **Branch:** `main` at `764ab2e6` (pushed). D-ceiling **D291** (next = D292).
+- **Tests:** converter **428 pass**, 1 skip, 0 fail (my re-run). AST gate exit 0. Build passes.
+- **Uncommitted:** pre-existing churn only (`lucide-icons.php`, 0-byte `.db` strays).
+- **Live:** page 8 carries the box-object container clone (base padding scoped/no-inline).
+- **DB:** the orphan-prune is reproducible from git (block.json + overrides + full `/sgs-update` prune); `sgs-framework.db` not git-tracked.
+
+## Known Issues / Blockers
+- **A3 (tier-object accumulator) is UNIT-proven, not live-proven** — Mama's containers have base padding only, so no live tier data to exercise it.
+- **Button half not built** — corners (A9), hover (A7), custom-border, editor BoxControl (A8) remain.
+- **`orchestrator.py` dict-merge has NOT had a `/qc-council`** (high-blast-radius shared spine; I reviewed + 428 tests pass, but blub-255 wants the council).
+
+## Next Priorities (in order)
+1. **Button half (B/C/D):** migrate `sgs/button` to object attrs (padding/margin/borderWidth 4-side + border-radius CORNERS), wire BoxControl + corner control, re-clone + verify A7/A9/A8.
+2. **A3/A3b live proof:** set a container `paddingTablet` object via the editor BoxControl (or clone a section with responsive/asymmetric padding) and verify scoped render.
+3. **`/qc-council` on `orchestrator.py` dict-merge** (blub-255) before treating the converter change as shipped.
+4. **Continue the universal rollout** (the other ~50 blocks + block-private render.php `style=` conversions) per the design-gate doc.
+
+## Files Modified
+| File path | What changed |
+|---|---|
+| `plugins/sgs-blocks/src/blocks/container/{block.json,edit.js}` | 7 object attrs (24 flat removed); BoxControl wiring |
+| `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php` | base + tier object-read → scoped CSS |
+| `plugins/sgs-blocks/src/components/{ResponsiveBoxControl.js,index.js}` | new shared responsive BoxControl (4-side + corner) |
+| `plugins/sgs-blocks/scripts/{check-box-family-guard.py,box-family-guard-baseline.json,audit-inline-styling.js}` | new AST guard + inline detector |
+| `plugins/sgs-blocks/scripts/sgs-update-v2.py` | `box_family`/`box_side` overrides |
+| `plugins/sgs-blocks/scripts/converter/{db/db_lookup.py,services/root_supports.py,resolvers/content_band.py,models.py,orchestrator.py}` | box-object accumulator + accessor + dict-merge |
+| `.claude/specs/{31,32}-*.md`, `CLAUDE.md`, `.claude/architecture.md` | reconciled to proven architecture |
+| `.claude/plans/2026-07-09-{no-inline-styling-design-gate,box-object-interface-contract}.md`, `reports/visual-diff/container-2026-07-09.md` | design + contract + LANDED evidence |
+
+## Notes for Next Session
+- **Delegation model worked:** Opus orchestrates+gates; Haiku mechanical, Sonnet architectural; fixed interface contract up front = no drift. Keep for the rollout.
+- **STOP-58:** after a block.json attr change, stage-1 reseed leaves orphaned flat rows that mis-route the pipeline — prune (manual delete on `~/.claude/skills/sgs-wp-engine/sgs-framework.db` or full `/sgs-update`) before re-clone.
+- **`orchestrator.py` dict-merge:** allows box-object partial-side merges but HARD-fails a per-key collision or dict/scalar mix (`raise`, STOP-27); scalar path untouched.
+
+<!-- ============ PRIOR HANDOFF BELOW ============ -->
 
 # Session Handoff — 2026-07-09
 
