@@ -458,6 +458,14 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			$grid_on_inner    = ( ( 'grid' === $layout || 'flex' === $layout ) && $has_band_props && null === $opt_wrap_inner );
 			$inner_grid_decls = array();
+			// Base grid/flex REAL properties (display, template, align, wrap, justify,
+			// grid-template-rows, grid-auto-rows) — no-inline deferral (Spec 32, D293).
+			// These are NEVER inlined any more; they always route to the scoped .$uid
+			// stylesheet (see $has_base_grid / $grid_sel below). --sgs-gi-* custom
+			// properties ($gi, built later) stay in $inner_grid_decls/$styles and
+			// remain inline — custom properties are explicitly allowed by the
+			// no-inline contract.
+			$base_grid_real_decls = array();
 
 			// gap — section + layout kinds. When responsive gap tiers exist the base
 			// is emitted via the per-instance uid CSS instead (an inline base would
@@ -498,9 +506,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$styles[] = '--sgs-ken-burns-duration:' . absint( $bg_animation_duration ) . 's';
 			}
 
-			// Grid / flex display — section + layout kinds. When $grid_on_inner the
-			// grid/flex decls live on the __inner content band ($inner_grid_decls)
-			// instead of the full-bleed outer $styles (so the section bg spans full).
+			// Grid / flex display — section + layout kinds. No-inline contract
+			// (Spec 32, D293): these REAL properties (display/template/align/wrap/
+			// justify) never land in $styles/$inner_grid_decls any more — they
+			// accumulate into $base_grid_real_decls and are emitted as a scoped
+			// .$uid rule (routed to the __inner content band when $grid_on_inner,
+			// so the full-bleed outer stays untouched, else to the outer itself).
 			if ( $is_section || $is_layout ) {
 				$gd = array();
 				if ( 'grid' === $layout ) {
@@ -540,11 +551,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$gd[] = 'justify-content:' . esc_attr( $justify_content );
 					}
 				}
-				if ( $grid_on_inner ) {
-					$inner_grid_decls = array_merge( $inner_grid_decls, $gd );
-				} else {
-					$styles = array_merge( $styles, $gd );
-				}
+				// No-inline contract (Spec 32, D293): these are REAL properties
+				// (display/template/align/wrap/justify), never routed inline any
+				// more — always accumulated for the scoped .$uid rule below,
+				// regardless of $grid_on_inner (which only decides the SELECTOR
+				// the scoped rule targets, via $grid_sel).
+				$base_grid_real_decls = array_merge( $base_grid_real_decls, $gd );
 			}
 
 			// SVG min-height custom property — section kind only.
@@ -588,11 +600,18 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			if ( ( $is_section || $is_layout ) && 'grid' === $layout ) {
 				// Base row template deferred to the uid stylesheet when responsive
 				// row tiers exist (inline beats @media otherwise).
+				// No-inline contract (Spec 32, D293): moved from $styles (inline) to
+				// $base_grid_real_decls (scoped rule below, on the same $grid_sel
+				// selector as $gd). Unlike the pre-existing code (which always
+				// targeted the outer regardless of $grid_on_inner, leaving these
+				// inert when the grid lives on __inner), unifying into one array
+				// emitted at $grid_sel now correctly follows $grid_on_inner too —
+				// the row template lands on whichever element is actually the grid.
 				if ( '' !== trim( (string) $grid_template_rows ) && ! ( $grid_template_rows_tablet || $grid_template_rows_mobile ) ) {
-					$styles[] = 'grid-template-rows:' . esc_attr( sgs_sanitize_grid_template( $grid_template_rows ) );
+					$base_grid_real_decls[] = 'grid-template-rows:' . esc_attr( sgs_sanitize_grid_template( $grid_template_rows ) );
 				}
 				if ( '' !== trim( (string) $grid_auto_rows ) ) {
-					$styles[] = 'grid-auto-rows:' . esc_attr( sgs_sanitize_grid_template( $grid_auto_rows ) );
+					$base_grid_real_decls[] = 'grid-auto-rows:' . esc_attr( sgs_sanitize_grid_template( $grid_auto_rows ) );
 				}
 			}
 
@@ -885,6 +904,14 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// pre-existing band-responsive branch below — untouched).
 			$has_base_band = $has_band_props && ! $has_band_responsive;
 
+			// Base grid/flex real-property scoped rule predicate (Spec 32, D293
+			// no-inline contract) — true whenever any base grid/flex real decl
+			// exists (display/template/align/wrap/justify from $gd, or base
+			// grid-template-rows/grid-auto-rows). A base-only grid with NO
+			// responsive tiers (e.g. a split-hero) must still get a uid so the
+			// grid doesn't get lost by moving out of inline.
+			$has_base_grid = ! empty( $base_grid_real_decls );
+
 			// ----------------------------------------------------------------
 			// Responsive CSS + uid — section + layout kinds with responsive attrs.
 			// ----------------------------------------------------------------
@@ -896,15 +923,17 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// uid also needed when parallax/ken-burns is active, bg-video is responsive,
 			// base padding/margin needs a scoped (non-inline) home, a base outer
-			// max-width needs a scoped home ($has_base_max_width), or a base content-band
+			// max-width needs a scoped home ($has_base_max_width), a base content-band
 			// (contentWidth/band-padding/band-background) needs a scoped home
-			// ($has_base_band) — all three added under the no-inline contract (Spec 32,
-			// D293) so these OUTER/BAND box properties never emit inline for a block
-			// with no responsive tiers.
+			// ($has_base_band), or a base grid/flex real-property rule needs a scoped
+			// home ($has_base_grid) — all added under the no-inline contract (Spec 32,
+			// D293) so these OUTER/BAND/GRID box properties never emit inline for a
+			// block with no responsive tiers.
 			$needs_uid = $has_responsive_attr
 				|| $has_base_spacing
 				|| $has_base_max_width
 				|| $has_base_band
+				|| $has_base_grid
 				|| ( $is_section && ( $bg_parallax || $bg_ken_burns ) )
 				|| ( $is_section && $has_bg_video && ! empty( $bg_video_mobile['url'] ) );
 
@@ -914,6 +943,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$uid       = 'sgs-container-' . substr( md5( wp_json_encode( $attributes ) . $anchor ), 0, 8 );
 				$classes[] = $uid;
 			}
+
+			// Grid/flex scoped-CSS selector — the __inner content band when
+			// $grid_on_inner (so the outer stays full-bleed), else the outer .$uid.
+			// Computed once here (depends only on $grid_on_inner + $uid, both
+			// already resolved) and reused by both the base-grid rule immediately
+			// below and the responsive grid/gap rules further down.
+			$grid_sel = $uid ? ( $grid_on_inner ? ( '.' . $uid . '>.sgs-container__inner' ) : ( '.' . $uid ) ) : '';
 
 			// Base spacing scoped rule — emitted FIRST (before the @media tier rules
 			// below) so source order lets a narrower-viewport tier win without needing
@@ -982,11 +1018,29 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				}
 			}
 
+			// Base grid/flex real-property scoped rule (Spec 32, D293 no-inline
+			// contract) — emitted whenever base grid/flex decls exist (display,
+			// base grid-template-columns/rows when no responsive tiers override
+			// them, align-items, justify-items, align-content, flex-wrap,
+			// flex-direction, justify-content, grid-auto-rows). Routed to
+			// $grid_sel (the __inner band when $grid_on_inner, else the outer
+			// .$uid — same convention the responsive grid rules below use).
+			// Placed BEFORE the @media grid tiers further down so a narrower-
+			// viewport tier still wins on source order. The pre-existing base
+			// guards inside $gd / rows / auto-rows (e.g. only emit base
+			// grid-template-columns when no tablet/mobile template tiers exist)
+			// are unchanged — they were applied when $base_grid_real_decls was
+			// built above.
+			if ( $base_grid_real_decls && $uid ) {
+				$responsive_css .= $grid_sel . '{' . implode( ';', $base_grid_real_decls ) . '}';
+			}
+
 			if ( $has_responsive_attr ) {
 				// Grid CSS lives on the __inner band when $grid_on_inner (so the outer
-				// stays full-bleed); else on the outer (.uid). $grid_sel selects the
-				// element the responsive grid + gap rules target.
-				$grid_sel = $grid_on_inner ? ( '.' . $uid . '>.sgs-container__inner' ) : ( '.' . $uid );
+				// stays full-bleed); else on the outer (.uid). $grid_sel (computed
+				// once above, right after $uid) selects the element the responsive
+				// grid + gap rules target — same selector the base grid rule above
+				// already used.
 
 				// Base gap — deferred from inline when tiers exist (see gap above):
 				// base rule first, @media tiers after, so source order decides per viewport.
@@ -1389,9 +1443,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			if ( $do_wrap && $has_band_responsive && '' !== $uid ) {
 				// Responsive band tiers exist: the base band styles were emitted into
 				// the uid stylesheet (band base rule before the @media tiers) — an
-				// inline base here would override every @media rule. The grid decls
-				// ($inner_grid_decls — display:grid/align/gap, not responsive) are
-				// inline-safe, so add them here so the grid lands on the band element.
+				// inline base here would override every @media rule. No-inline
+				// contract (Spec 32, D293): $inner_grid_decls now only ever carries
+				// base gap + --sgs-gi-* custom properties (the real grid/flex decls —
+				// display/template/align/wrap/justify — are scoped separately via
+				// $base_grid_real_decls above), so what remains here is inline-safe.
 				$io_style    = ( $grid_on_inner && $inner_grid_decls )
 					? ' style="' . esc_attr( implode( ';', $inner_grid_decls ) ) . '"'
 					: '';
@@ -1404,14 +1460,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// only way any of those values could be non-empty), $has_base_band is
 				// also true, which already emitted the equivalent scoped
 				// ".uid>.sgs-container__inner{...}" rule above (before $has_responsive_attr).
-				// This branch now only carries the L3 grid decls (inline-safe: display:
-				// grid + base grid-template-columns + align + gap — not responsive),
-				// matching the bare-<div> convention already used by the
-				// $has_band_responsive branch above it.
+				// This branch now only carries the L3 gap + --sgs-gi-* custom-property
+				// decls (inline-safe — the real grid/flex properties are scoped via
+				// $base_grid_real_decls above), matching the bare-<div> convention
+				// already used by the $has_band_responsive branch above it.
 				$inner_style_parts = array();
 
-				// L3 grid decls (display:grid + base grid-template-columns + align + gap)
-				// live on the __inner band when this is a grid/flex container (FR-22-21).
+				// L3 gap + --sgs-gi-* decls live on the __inner band when this is a
+				// grid/flex container (FR-22-21); the real grid/flex properties
+				// (display/template/align/wrap/justify) are scoped separately.
 				if ( $grid_on_inner && $inner_grid_decls ) {
 					$inner_style_parts = array_merge( $inner_style_parts, $inner_grid_decls );
 				}
