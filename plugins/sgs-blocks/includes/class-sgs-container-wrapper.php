@@ -824,6 +824,35 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 
 			// ----------------------------------------------------------------
+			// Base spacing (padding/margin) — read WP-native style.spacing directly.
+			// container/block.json declares __experimentalSkipSerialization on
+			// supports.spacing, so WP does NOT auto-inline these into
+			// get_block_wrapper_attributes() any more; $attributes['style']['spacing']
+			// is still populated (skip-serialization only suppresses the AUTO-INLINE
+			// output), so we read it here and emit it as a scoped rule instead. This
+			// keeps base padding/margin OUT of the inline style attribute entirely —
+			// no !important needed, source order alone lets the existing @media tier
+			// rules (below) win at narrower viewports.
+			// ----------------------------------------------------------------
+			$base_spacing_padding = array();
+			if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
+				foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+					if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+						$base_spacing_padding[ $spacing_side ] = $spacing_value;
+					}
+				}
+			}
+			$base_spacing_margin = array();
+			if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+				foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+					if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+						$base_spacing_margin[ $spacing_side ] = $spacing_value;
+					}
+				}
+			}
+			$has_base_spacing = ! empty( $base_spacing_padding ) || ! empty( $base_spacing_margin );
+
+			// ----------------------------------------------------------------
 			// Responsive CSS + uid — section + layout kinds with responsive attrs.
 			// ----------------------------------------------------------------
 			$responsive_css      = '';
@@ -832,8 +861,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| $has_responsive_padding || $has_responsive_margin || $has_band_responsive || $max_width_tablet || $max_width_mobile )
 				|| ( ( $is_section || $is_layout ) && ( $grid_template_tablet || $grid_template_mobile || $grid_template_rows_tablet || $grid_template_rows_mobile ) );
 
-			// uid also needed when parallax/ken-burns is active or bg-video is responsive.
+			// uid also needed when parallax/ken-burns is active, bg-video is responsive,
+			// or base padding/margin needs a scoped (non-inline) home.
 			$needs_uid = $has_responsive_attr
+				|| $has_base_spacing
 				|| ( $is_section && ( $bg_parallax || $bg_ken_burns ) )
 				|| ( $is_section && $has_bg_video && ! empty( $bg_video_mobile['url'] ) );
 
@@ -842,6 +873,27 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$anchor    = ( $block instanceof \WP_Block ) ? ( $block->parsed_block['attrs']['anchor'] ?? '' ) : '';
 				$uid       = 'sgs-container-' . substr( md5( wp_json_encode( $attributes ) . $anchor ), 0, 8 );
 				$classes[] = $uid;
+			}
+
+			// Base spacing scoped rule — emitted FIRST (before the @media tier rules
+			// below) so source order lets a narrower-viewport tier win without needing
+			// !important. wp_style_engine_get_styles() produces the same CSS WP's own
+			// style engine would have inlined, just scoped to .$uid instead.
+			if ( $has_base_spacing && $uid && function_exists( 'wp_style_engine_get_styles' ) ) {
+				$base_spacing_style_args = array();
+				if ( ! empty( $base_spacing_padding ) ) {
+					$base_spacing_style_args['padding'] = $base_spacing_padding;
+				}
+				if ( ! empty( $base_spacing_margin ) ) {
+					$base_spacing_style_args['margin'] = $base_spacing_margin;
+				}
+				$base_spacing_styles = wp_style_engine_get_styles(
+					array( 'spacing' => $base_spacing_style_args ),
+					array( 'selector' => '.' . $uid )
+				);
+				if ( ! empty( $base_spacing_styles['css'] ) ) {
+					$responsive_css .= $base_spacing_styles['css'];
+				}
 			}
 
 			if ( $has_responsive_attr ) {
