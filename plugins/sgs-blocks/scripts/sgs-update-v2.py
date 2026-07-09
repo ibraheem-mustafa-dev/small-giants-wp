@@ -1419,6 +1419,21 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/button", "borderWidth"): {"box_family": "borderWidth"},
     ("sgs/button", "borderRadiusTablet"): {"box_family": "borderRadius"},
     ("sgs/button", "borderRadiusMobile"): {"box_family": "borderRadius"},
+    # Wave-1 box-family rollout (2026-07-09): heading/text/quote merge their flat
+    # per-side borderWidth into one SGS object attr. border-radius base routes to
+    # WP-native style.border.radius (no SGS attr → no seed); padding/margin are
+    # outside the border roster for these blocks (native or unchanged custom).
+    ("sgs/heading", "borderWidth"): {"box_family": "borderWidth"},
+    ("sgs/heading", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/heading", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/heading", "marginTablet"): {"box_family": "margin"},
+    ("sgs/heading", "marginMobile"): {"box_family": "margin"},
+    ("sgs/text", "borderWidth"): {"box_family": "borderWidth"},
+    ("sgs/text", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/text", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/text", "marginTablet"): {"box_family": "margin"},
+    ("sgs/text", "marginMobile"): {"box_family": "margin"},
+    ("sgs/quote", "borderWidth"): {"box_family": "borderWidth"},
 }
 
 

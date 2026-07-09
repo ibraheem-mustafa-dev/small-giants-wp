@@ -1,6 +1,6 @@
 <?php
 /**
- * Server-side render for sgs/heading (v0.4.0 - single-element refactor).
+ * Server-side render for sgs/heading.
  *
  * HeadingRole=heading    - emits the HTML tag from the level attr (h1-h6).
  * HeadingRole=subheading - emits the HTML tag from the subTag attr (p or div).
@@ -8,15 +8,25 @@
  * Typography, spacing, colour and wrapper-level controls apply identically
  * for both roles. The subheading role applies CSS-fallback defaults via a
  * BEM modifier class for fontWeight (400) and textColour (text-muted) when
- * the attrs are still at their schema defaults - user customisations always
- * win via inline style.
+ * the attrs are still at their schema defaults.
  *
- * Migration note: existing posts saved with the composite-block schema (v0.3.0)
- * are handled by deprecated.js v2 which routes to this renderer via migrated
- * attributes.
+ * NO-INLINE (LOCKED per-block no-inline migration contract §A, 2026-07-09):
+ * the rendered subtree carries ZERO inline CSS property declarations. Every
+ * declaration — wrapper box/border/background/shadow/width/text-align, the WP
+ * `color` support, AND the text element's typography — is emitted into the
+ * block's OWN scoped `#{uid}` <style> tag. WP styling supports (spacing /
+ * color / __experimentalBorder) all declare `__experimentalSkipSerialization`
+ * in block.json so get_block_wrapper_attributes() never auto-inlines them.
+ *
+ * BOX-GROUP (contract §B): padding / margin / border-width are box objects.
+ * Base padding/margin/border-radius = WP-native style.spacing.* /
+ * style.border.radius objects (emitted scoped via wp_style_engine_get_styles);
+ * tiers = paddingTablet/paddingMobile/marginTablet/marginMobile object attrs
+ * (scoped @media 1023/767); border-width = SGS custom object attr.
  *
  * @since 2026-05-26  v0.4.0 - single-element refactor (headingRole + content).
  * @since 2026-06-01  v0.5.0 - variantStyle replaced by WP block-styles (is-style-*).
+ * @since 2026-07-09  v0.7.0 - 100% no-inline + 100% box-group migration.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused - dynamic block).
@@ -30,20 +40,13 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
-// 1. Allowed units whitelist.
+// 1. Allowed units whitelist + numeric-length helper.
 // ---------------------------------------------------------------------------
 
-/**
- * Sanitise a CSS length unit - falls back to px if the value is not allowed.
- *
- * @param string $unit     User-supplied unit.
- * @param string $fallback Fallback unit (default 'px').
- * @return string          Sanitised unit.
- */
 if ( ! function_exists( 'sgs_heading_safe_unit' ) ) {
 	/**
-	 * Inner implementation - guarded by function_exists to allow multiple
-	 * includes in the same request (e.g. widget areas with multiple headings).
+	 * Sanitise a CSS length unit - falls back to px if the value is not allowed.
+	 * Guarded by function_exists to allow multiple includes in one request.
 	 *
 	 * @param string $unit     User-supplied unit.
 	 * @param string $fallback Fallback unit.
@@ -56,18 +59,10 @@ if ( ! function_exists( 'sgs_heading_safe_unit' ) ) {
 	}
 }
 
-/**
- * Convert a raw spacing value + unit string to a CSS length.
- *
- * Returns empty string for blank or non-numeric input.
- *
- * @param string $value Raw attribute value (may be numeric string or empty).
- * @param string $unit  Validated CSS unit.
- * @return string       e.g. "20px" or "".
- */
 if ( ! function_exists( 'sgs_heading_spacing_val' ) ) {
 	/**
-	 * Inner implementation - guarded by function_exists.
+	 * Convert a raw numeric spacing value + unit string to a CSS length.
+	 * Returns empty string for blank or non-numeric input.
 	 *
 	 * @param string $value Raw attribute value.
 	 * @param string $unit  Validated CSS unit.
@@ -117,10 +112,7 @@ $rendered_tag  = $is_subheading ? $sub_tag : $level;
 
 // Typography attrs.
 $font_family         = $attributes['fontFamily'] ?? '';
-$font_size           = $attributes['fontSize'] ?? 28;
 $font_size_unit      = $attributes['fontSizeUnit'] ?? 'px';
-$font_size_tablet    = $attributes['fontSizeTablet'] ?? null;
-$font_size_mobile    = $attributes['fontSizeMobile'] ?? null;
 $font_weight         = $attributes['fontWeight'] ?? '700';
 $line_height         = isset( $attributes['lineHeight'] ) ? $attributes['lineHeight'] : null;
 $line_height_unit    = $attributes['lineHeightUnit'] ?? 'em';
@@ -131,50 +123,14 @@ $text_colour         = $attributes['textColour'] ?? 'text';
 $font_style          = isset( $attributes['fontStyle'] ) ? sanitize_text_field( $attributes['fontStyle'] ) : '';
 $text_decoration     = isset( $attributes['textDecoration'] ) ? sanitize_text_field( $attributes['textDecoration'] ) : '';
 
-// Wrapper-level attrs.
-$margin_unit       = sgs_heading_safe_unit( $attributes['marginUnit'] ?? 'px' );
-$margin_top        = $attributes['marginTop'] ?? '';
-$margin_right      = $attributes['marginRight'] ?? '';
-$margin_bottom     = $attributes['marginBottom'] ?? '';
-$margin_left       = $attributes['marginLeft'] ?? '';
-$margin_top_tab    = $attributes['marginTopTablet'] ?? '';
-$margin_right_tab  = $attributes['marginRightTablet'] ?? '';
-$margin_bottom_tab = $attributes['marginBottomTablet'] ?? '';
-$margin_left_tab   = $attributes['marginLeftTablet'] ?? '';
-$margin_top_mob    = $attributes['marginTopMobile'] ?? '';
-$margin_right_mob  = $attributes['marginRightMobile'] ?? '';
-$margin_bottom_mob = $attributes['marginBottomMobile'] ?? '';
-$margin_left_mob   = $attributes['marginLeftMobile'] ?? '';
-
-$padding_unit       = sgs_heading_safe_unit( $attributes['paddingUnit'] ?? 'px' );
-$padding_top        = $attributes['paddingTop'] ?? '';
-$padding_right      = $attributes['paddingRight'] ?? '';
-$padding_bottom     = $attributes['paddingBottom'] ?? '';
-$padding_left       = $attributes['paddingLeft'] ?? '';
-$padding_top_tab    = $attributes['paddingTopTablet'] ?? '';
-$padding_right_tab  = $attributes['paddingRightTablet'] ?? '';
-$padding_bottom_tab = $attributes['paddingBottomTablet'] ?? '';
-$padding_left_tab   = $attributes['paddingLeftTablet'] ?? '';
-$padding_top_mob    = $attributes['paddingTopMobile'] ?? '';
-$padding_right_mob  = $attributes['paddingRightMobile'] ?? '';
-$padding_bottom_mob = $attributes['paddingBottomMobile'] ?? '';
-$padding_left_mob   = $attributes['paddingLeftMobile'] ?? '';
-
-$background_colour   = $attributes['backgroundColour'] ?? '';
-$border_radius       = $attributes['borderRadius'] ?? '';
-$border_radius_unit  = sgs_heading_safe_unit( $attributes['borderRadiusUnit'] ?? 'px' );
-$border_radius_tl    = $attributes['borderRadiusTL'] ?? '';
-$border_radius_tr    = $attributes['borderRadiusTR'] ?? '';
-$border_radius_bl    = $attributes['borderRadiusBL'] ?? '';
-$border_radius_br    = $attributes['borderRadiusBR'] ?? '';
-$border_width_top    = $attributes['borderWidthTop'] ?? '';
-$border_width_right  = $attributes['borderWidthRight'] ?? '';
-$border_width_bottom = $attributes['borderWidthBottom'] ?? '';
-$border_width_left   = $attributes['borderWidthLeft'] ?? '';
-$border_width_unit   = sgs_heading_safe_unit( $attributes['borderWidthUnit'] ?? 'px' );
-$border_colour       = $attributes['borderColour'] ?? '';
-$box_shadow          = $attributes['boxShadow'] ?? '';
-$box_shadow_hover    = $attributes['boxShadowHover'] ?? '';
+// Wrapper-level attrs. Box-object interface contract §B: padding/margin are box
+// objects — base from WP-native style.spacing.* (skip-serialised, read in step
+// 2b), tiers from the paddingTablet/paddingMobile/marginTablet/marginMobile
+// object attrs. The flat per-side + {family}Unit attrs are removed.
+$background_colour = $attributes['backgroundColour'] ?? '';
+$border_colour     = $attributes['borderColour'] ?? '';
+$box_shadow        = $attributes['boxShadow'] ?? '';
+$box_shadow_hover  = $attributes['boxShadowHover'] ?? '';
 
 $transition_duration_raw = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
 $transition_duration     = $transition_duration_raw > 0 ? $transition_duration_raw : 300;
@@ -194,135 +150,205 @@ $custom_width      = $attributes['customWidth'] ?? '';
 $custom_width_unit = sgs_heading_safe_unit( $attributes['customWidthUnit'] ?? 'px' );
 $inherit_style     = ! empty( $attributes['inheritStyle'] );
 
-// Text alignment — validated against allowlist; emitted on the wrapper.
+// Text alignment — validated against allowlist; emitted scoped on the wrapper.
 $text_align_raw      = isset( $attributes['textAlign'] ) ? sanitize_text_field( $attributes['textAlign'] ) : '';
 $allowed_text_aligns = array( 'left', 'center', 'right', 'justify', 'start', 'end' );
 $text_align          = in_array( $text_align_raw, $allowed_text_aligns, true ) ? $text_align_raw : '';
 
 // ---------------------------------------------------------------------------
-// 3. Build inline text element style.
+// 2b. Box-object interface contract §1 + security §D sanitisers, plus the box
+// objects (border-width / border-radius), base spacing objects, tier objects,
+// and the skip-serialised WP colour-support values.
 // ---------------------------------------------------------------------------
 
-$text_style_parts = array();
+// CSS-length sanitiser — strips everything except digits, dot, %, and unit
+// letters so an object-attr side/corner value can never break out of its
+// declaration. Mirrors sgs/button + sgs/container.
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
+// CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
+// (border-style / text-transform). Strips everything except letters + hyphen so
+// ;{}():digits can never break out of the declaration (contract §D).
+$sgs_css_keyword = static function ( $value ) {
+	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
+};
+
+// Border-width — SGS custom OBJECT attr { top, right, bottom, left }, base only
+// (no tiers). No WP-native border-width support; colour/style stay scalar attrs.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = $sgs_css_length( $border_width_obj['top'] ?? '' );
+$border_width_right  = $sgs_css_length( $border_width_obj['right'] ?? '' );
+$border_width_bottom = $sgs_css_length( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = $sgs_css_length( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+// Border-radius — WP-native style.border.radius (string = uniform, or an object
+// with topLeft/topRight/bottomLeft/bottomRight keys), base only. Skip-serialised
+// in block.json → emit scoped via the style engine in step 5.
+$base_border_radius = null;
+if ( isset( $attributes['style']['border']['radius'] ) ) {
+	$radius_raw = $attributes['style']['border']['radius'];
+	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
+		$base_border_radius = $radius_raw;
+	} elseif ( is_array( $radius_raw ) ) {
+		$radius_clean   = array();
+		$has_any_corner = false;
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? $sgs_css_length( $radius_raw[ $corner ] ) : '';
+			if ( '' !== $radius_clean[ $corner ] ) {
+				$has_any_corner = true;
+			}
+		}
+		if ( $has_any_corner ) {
+			$base_border_radius = $radius_clean;
+		}
+	}
+}
+
+// Base padding/margin — WP-native style.spacing.* objects (skip-serialised).
+// Kept as-is (string values incl. preset "var:preset|spacing|N" refs) and passed
+// straight to the style engine, which formats + sanitises them (contract §B / the
+// button reference does exactly this).
+$base_padding_obj = array();
+if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
+	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+			$base_padding_obj[ $spacing_side ] = $spacing_value;
+		}
+	}
+}
+$base_margin_obj = array();
+if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+			$base_margin_obj[ $spacing_side ] = $spacing_value;
+		}
+	}
+}
+
+// Responsive spacing tiers — SGS object attrs { top, right, bottom, left }.
+$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
+$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
+$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+
+// WP `color` support values (skip-serialised in block.json → NOT auto-inlined).
+// Custom hex/rgb → emitted scoped via the style engine; preset SLUGS → the
+// standard has-* classes re-added manually in step 6.
+$style_color_text     = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
+$style_color_bg       = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
+$style_color_gradient = isset( $attributes['style']['color']['gradient'] ) ? (string) $attributes['style']['color']['gradient'] : '';
+$preset_text_slug     = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$preset_bg_slug       = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+
+// ---------------------------------------------------------------------------
+// 3. Build the text element's typography declarations (scoped, NOT inline).
+// ---------------------------------------------------------------------------
+
+// font-size (has tablet/mobile tiers) is emitted separately via the responsive
+// helper in step 5. The remaining base-only typography goes here — all onto the
+// id-scoped text selector, never inline (contract §A).
+$text_decls = array();
 
 if ( $text_colour ) {
-	$text_style_parts[] = 'color:' . sgs_colour_value( $text_colour );
+	$text_decls[] = 'color:' . sgs_colour_value( $text_colour );
 }
-// font-size is NOT inline (Pattern A, D-migration): it has tablet/mobile
-// tiers, so base+tablet+mobile are emitted together on the SAME selector
-// in the scoped <style> block below (step 5) — inline would always beat
-// the id-scoped @media overrides regardless of viewport.
 if ( $font_weight ) {
-	$text_style_parts[] = 'font-weight:' . esc_attr( $font_weight );
+	$font_weight_safe = preg_replace( '/[^a-zA-Z0-9]/', '', (string) $font_weight );
+	if ( '' !== $font_weight_safe ) {
+		$text_decls[] = 'font-weight:' . $font_weight_safe;
+	}
 }
 if ( null !== $line_height && '' !== $line_height ) {
-	// When the converter lifted a unitless line-height (e.g. 1.15 from
-	// the draft CSS), it stores lineHeightUnit="unitless" so the value
-	// survives block serialisation (empty strings are stripped).
-	// Treat "unitless" as no-unit — emit the bare number ratio.
-	$lh_unit            = ( 'unitless' === $line_height_unit ) ? '' : $line_height_unit;
-	$text_style_parts[] = 'line-height:' . floatval( $line_height ) . $lh_unit;
+	// A converter-lifted unitless line-height stores lineHeightUnit="unitless"
+	// so the ratio survives serialisation — emit the bare number.
+	$lh_unit      = ( 'unitless' === $line_height_unit ) ? '' : preg_replace( '/[^a-z%]/i', '', (string) $line_height_unit );
+	$text_decls[] = 'line-height:' . floatval( $line_height ) . $lh_unit;
 }
 if ( null !== $letter_spacing && '' !== $letter_spacing ) {
-	$text_style_parts[] = 'letter-spacing:' . floatval( $letter_spacing ) . $letter_spacing_unit;
+	$ls_unit      = preg_replace( '/[^a-z%]/i', '', (string) $letter_spacing_unit );
+	$text_decls[] = 'letter-spacing:' . floatval( $letter_spacing ) . $ls_unit;
 }
 if ( '' !== $text_transform ) {
-	$text_style_parts[] = 'text-transform:' . esc_attr( $text_transform );
+	$text_transform_safe = $sgs_css_keyword( $text_transform );
+	if ( '' !== $text_transform_safe ) {
+		$text_decls[] = 'text-transform:' . $text_transform_safe;
+	}
 }
 if ( $font_family ) {
-	$text_style_parts[] = 'font-family:' . esc_attr( $font_family );
+	// Allow font-name chars (letters, digits, spaces, commas, quotes, hyphen);
+	// strip ;{}():% so a font-family value can't break out into a new rule.
+	$font_family_safe = preg_replace( '/[^a-zA-Z0-9 ,"\'\-]/', '', (string) $font_family );
+	if ( '' !== $font_family_safe ) {
+		$text_decls[] = 'font-family:' . $font_family_safe;
+	}
 }
 
 $allowed_font_styles = array( 'normal', 'italic' );
 if ( '' !== $font_style && in_array( $font_style, $allowed_font_styles, true ) ) {
-	$text_style_parts[] = 'font-style:' . $font_style;
+	$text_decls[] = 'font-style:' . $font_style;
 }
 
 $allowed_decorations = array( 'none', 'underline', 'line-through' );
 if ( '' !== $text_decoration && in_array( $text_decoration, $allowed_decorations, true ) ) {
-	$text_style_parts[] = 'text-decoration:' . $text_decoration;
+	$text_decls[] = 'text-decoration:' . $text_decoration;
 }
 
-$text_style_attr = $text_style_parts ? ' style="' . esc_attr( implode( ';', $text_style_parts ) ) . '"' : '';
-
 // ---------------------------------------------------------------------------
-// 4. Build wrapper-level inline styles.
+// 4. Build the wrapper's box/visual declarations (scoped, NOT inline).
 // ---------------------------------------------------------------------------
 
-$wrapper_inline = array();
+// Contract §A: background / border-style / border-color / box-shadow / width /
+// text-align / border-width all move OFF the wrapper `style` attr and into the
+// scoped #{uid} rule below. Gated by !inherit_style (inheritStyle suppresses
+// block-level wrapper styling and inherits from the parent).
+$wrapper_decls = array();
 
 if ( ! $inherit_style ) {
-	// margin/padding are NOT inline (Pattern A, D-migration): both have
-	// tablet/mobile tiers, so base+tablet+mobile are emitted together on the
-	// SAME wrapper selector in the scoped <style> block below (step 5), via
-	// sgs_responsive_box_shorthand_rule(). Inline would always beat the
-	// id-scoped @media overrides regardless of viewport.
-
 	if ( $background_colour ) {
-		$wrapper_inline[] = 'background-color:' . sgs_colour_value( $background_colour );
+		$wrapper_decls[] = 'background-color:' . sgs_colour_value( $background_colour );
 	}
-
-	$br_tl = sgs_heading_spacing_val( $border_radius_tl, $border_radius_unit );
-	$br_tr = sgs_heading_spacing_val( $border_radius_tr, $border_radius_unit );
-	$br_br = sgs_heading_spacing_val( $border_radius_br, $border_radius_unit );
-	$br_bl = sgs_heading_spacing_val( $border_radius_bl, $border_radius_unit );
-	if ( $br_tl || $br_tr || $br_br || $br_bl ) {
-		$wrapper_inline[] = 'border-radius:'
-			. ( $br_tl ? $br_tl : '0' ) . ' '
-			. ( $br_tr ? $br_tr : '0' ) . ' '
-			. ( $br_br ? $br_br : '0' ) . ' '
-			. ( $br_bl ? $br_bl : '0' );
-	} elseif ( '' !== $border_radius ) {
-		$br_val = sgs_heading_spacing_val( $border_radius, $border_radius_unit );
-		if ( $br_val ) {
-			$wrapper_inline[] = 'border-radius:' . $br_val;
-		}
-	}
-
-	$bwt = sgs_heading_spacing_val( $border_width_top, $border_width_unit );
-	$bwr = sgs_heading_spacing_val( $border_width_right, $border_width_unit );
-	$bwb = sgs_heading_spacing_val( $border_width_bottom, $border_width_unit );
-	$bwl = sgs_heading_spacing_val( $border_width_left, $border_width_unit );
-	if ( $bwt || $bwr || $bwb || $bwl ) {
-		$wrapper_inline[] = 'border-width:'
-			. ( $bwt ? $bwt : '0' ) . ' '
-			. ( $bwr ? $bwr : '0' ) . ' '
-			. ( $bwb ? $bwb : '0' ) . ' '
-			. ( $bwl ? $bwl : '0' );
-	}
-
+	// $border_style is allowlist-validated above (stronger than the keyword regex).
 	if ( $border_style && 'none' !== $border_style ) {
-		$wrapper_inline[] = 'border-style:' . $border_style;
+		$wrapper_decls[] = 'border-style:' . $border_style;
 	}
 	if ( $border_colour ) {
-		$wrapper_inline[] = 'border-color:' . sgs_colour_value( $border_colour );
+		$wrapper_decls[] = 'border-color:' . sgs_colour_value( $border_colour );
 	}
 	if ( $box_shadow ) {
-		$wrapper_inline[] = 'box-shadow:' . sgs_shadow_value( $box_shadow );
+		$wrapper_decls[] = 'box-shadow:' . sgs_shadow_value( $box_shadow );
 	}
 	if ( '' !== $custom_width ) {
 		$cw_val = sgs_heading_spacing_val( $custom_width, $custom_width_unit );
 		if ( $cw_val ) {
-			$wrapper_inline[] = 'width:' . $cw_val;
+			$wrapper_decls[] = 'width:' . $cw_val;
 		}
 	}
-
-	// Text alignment — explicit value overrides the CSS default (center) with
-	// zero-specificity :where() guard in style.css so this inline wins reliably.
+	// $text_align is allowlist-validated above.
 	if ( '' !== $text_align ) {
-		$wrapper_inline[] = 'text-align:' . esc_attr( $text_align );
+		$wrapper_decls[] = 'text-align:' . $text_align;
+	}
+	// Border-width — SGS custom object attr, base only, hand-built shorthand.
+	if ( $has_border_width ) {
+		$bwt             = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr             = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb             = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl             = '' !== $border_width_left ? $border_width_left : '0';
+		$wrapper_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
 	}
 }
 
 // ---------------------------------------------------------------------------
-// 5. Unique ID + scoped CSS for hover, responsive, and font-size rules.
+// 5. Unique ID + scoped CSS assembly.
 // ---------------------------------------------------------------------------
 
 $uid = 'sgs-hdg-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 
 $scoped_css = array();
 
-// Hover states.
+// --- Hover states ---
 $hover_rules = array();
 if ( $hover_colour ) {
 	$hover_rules[] = 'color:' . sgs_colour_value( $hover_colour );
@@ -346,9 +372,13 @@ if ( $hover_rules || $has_scale ) {
 	}
 }
 
-// Text-element font-size — base + tablet + mobile on the SAME selector
-// (Pattern A). Replaces the old inline-base + id-scoped-tablet/mobile-only
-// emission, which the inline value always defeated regardless of viewport.
+// --- Text element base typography (scoped) ---
+if ( $text_decls ) {
+	$scoped_css[] = "#{$uid} .wp-block-sgs-heading__text{" . implode( ';', $text_decls ) . ';}';
+}
+
+// --- Text element font-size — base + tablet + mobile on the SAME selector
+// (Pattern A) so the narrower tier wins by cascade order, never inline. ---
 $scoped_css[] = sgs_responsive_css_rule(
 	$attributes,
 	array(
@@ -364,70 +394,102 @@ $scoped_css[] = sgs_responsive_css_rule(
 	"#{$uid} .wp-block-sgs-heading__text"
 );
 
-// Wrapper margin + padding — base + tablet + mobile shorthand on the SAME
-// wrapper selector (Pattern A). Same zero-fill-per-tier contract as before.
-if ( ! $inherit_style ) {
-	$scoped_css[] = sgs_responsive_box_shorthand_rule(
-		$attributes,
-		'margin',
-		array(
-			'top'    => array(
-				'base'   => 'marginTop',
-				'tablet' => 'marginTopTablet',
-				'mobile' => 'marginTopMobile',
-			),
-			'right'  => array(
-				'base'   => 'marginRight',
-				'tablet' => 'marginRightTablet',
-				'mobile' => 'marginRightMobile',
-			),
-			'bottom' => array(
-				'base'   => 'marginBottom',
-				'tablet' => 'marginBottomTablet',
-				'mobile' => 'marginBottomMobile',
-			),
-			'left'   => array(
-				'base'   => 'marginLeft',
-				'tablet' => 'marginLeftTablet',
-				'mobile' => 'marginLeftMobile',
-			),
-		),
-		'marginUnit',
-		"#{$uid}.wp-block-sgs-heading"
-	);
+// --- Wrapper box/visual declarations (scoped) ---
+if ( $wrapper_decls ) {
+	$scoped_css[] = "#{$uid}.wp-block-sgs-heading{" . implode( ';', $wrapper_decls ) . ';}';
+}
 
-	$scoped_css[] = sgs_responsive_box_shorthand_rule(
-		$attributes,
-		'padding',
-		array(
-			'top'    => array(
-				'base'   => 'paddingTop',
-				'tablet' => 'paddingTopTablet',
-				'mobile' => 'paddingTopMobile',
-			),
-			'right'  => array(
-				'base'   => 'paddingRight',
-				'tablet' => 'paddingRightTablet',
-				'mobile' => 'paddingRightMobile',
-			),
-			'bottom' => array(
-				'base'   => 'paddingBottom',
-				'tablet' => 'paddingBottomTablet',
-				'mobile' => 'paddingBottomMobile',
-			),
-			'left'   => array(
-				'base'   => 'paddingLeft',
-				'tablet' => 'paddingLeftTablet',
-				'mobile' => 'paddingLeftMobile',
-			),
-		),
-		'paddingUnit',
-		"#{$uid}.wp-block-sgs-heading"
-	);
+// --- Base spacing (padding/margin), border-radius, and WP colour support —
+// skip-serialised in block.json, emitted scoped via the stable core style
+// engine (exactly how WP core outputs `layout` support). ---
+if ( ! $inherit_style && function_exists( 'wp_style_engine_get_styles' ) ) {
+	$base_style_engine_args = array();
+
+	$base_spacing = array();
+	if ( ! empty( $base_padding_obj ) ) {
+		$base_spacing['padding'] = $base_padding_obj;
+	}
+	if ( ! empty( $base_margin_obj ) ) {
+		$base_spacing['margin'] = $base_margin_obj;
+	}
+	if ( ! empty( $base_spacing ) ) {
+		$base_style_engine_args['spacing'] = $base_spacing;
+	}
+
+	if ( null !== $base_border_radius ) {
+		$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
+	}
+
+	$color_args = array();
+	if ( '' !== $style_color_text ) {
+		$color_args['text'] = $style_color_text;
+	}
+	if ( '' !== $style_color_bg ) {
+		$color_args['background'] = $style_color_bg;
+	}
+	if ( '' !== $style_color_gradient ) {
+		$color_args['gradient'] = $style_color_gradient;
+	}
+	if ( ! empty( $color_args ) ) {
+		$base_style_engine_args['color'] = $color_args;
+	}
+
+	if ( ! empty( $base_style_engine_args ) ) {
+		$base_scoped_styles = wp_style_engine_get_styles(
+			$base_style_engine_args,
+			array( 'selector' => "#{$uid}" )
+		);
+		if ( ! empty( $base_scoped_styles['css'] ) ) {
+			$scoped_css[] = $base_scoped_styles['css'];
+		}
+	}
+}
+
+// --- Responsive padding/margin tiers — box objects, hand-built shorthand,
+// scoped @media on the SAME wrapper selector (contract §B / §B2: tablet
+// max-width:1023px, mobile max-width:767px). ---
+$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
+	$top    = $sgs_css_length( $box['top'] ?? '' );
+	$right  = $sgs_css_length( $box['right'] ?? '' );
+	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
+	$left   = $sgs_css_length( $box['left'] ?? '' );
+	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
+		return null;
+	}
+	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
+};
+
+if ( ! $inherit_style ) {
+	$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
+	$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
+	$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
+	$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+
+	$tablet_box_decls = array();
+	if ( null !== $padding_tab_val ) {
+		$tablet_box_decls[] = "padding:{$padding_tab_val}";
+	}
+	if ( null !== $margin_tab_val ) {
+		$tablet_box_decls[] = "margin:{$margin_tab_val}";
+	}
+	if ( $tablet_box_decls ) {
+		$scoped_css[] = '@media(max-width:1023px){' . "#{$uid}.wp-block-sgs-heading{" . implode( ';', $tablet_box_decls ) . ';}}';
+	}
+
+	$mobile_box_decls = array();
+	if ( null !== $padding_mob_val ) {
+		$mobile_box_decls[] = "padding:{$padding_mob_val}";
+	}
+	if ( null !== $margin_mob_val ) {
+		$mobile_box_decls[] = "margin:{$margin_mob_val}";
+	}
+	if ( $mobile_box_decls ) {
+		$scoped_css[] = '@media(max-width:767px){' . "#{$uid}.wp-block-sgs-heading{" . implode( ';', $mobile_box_decls ) . ';}}';
+	}
 }
 
 // ---------------------------------------------------------------------------
-// 6. Build wrapper CSS classes.
+// 6. Build wrapper CSS classes + attributes.
 // ---------------------------------------------------------------------------
 
 $wrapper_classes = array( 'wp-block-sgs-heading' );
@@ -436,15 +498,27 @@ if ( $is_subheading ) {
 	$wrapper_classes[] = 'wp-block-sgs-heading--subheading';
 }
 
-// Note: variantStyle (v0.4.0) has been replaced by WP block-styles (is-style-*).
-// The active style class (e.g. is-style-hero) is merged in automatically by
-// get_block_wrapper_attributes() via the block's className attribute.
+// Preset colour slugs — the `color` support is skip-serialised, so re-add the
+// standard has-* classes manually (they set the colour from the theme palette).
+if ( ! $inherit_style ) {
+	if ( '' !== $preset_text_slug ) {
+		$wrapper_classes[] = 'has-text-color';
+		$wrapper_classes[] = 'has-' . $preset_text_slug . '-color';
+	}
+	if ( '' !== $preset_bg_slug ) {
+		$wrapper_classes[] = 'has-background';
+		$wrapper_classes[] = 'has-' . $preset_bg_slug . '-background-color';
+	}
+}
 
+// Note: is-style-* / align* classes are merged in automatically by
+// get_block_wrapper_attributes() via the block's className attribute.
+// NO 'style' key is passed — the wrapper carries ZERO inline property
+// declarations (contract §A); everything is in the scoped <style> above.
 $wrapper_attrs = get_block_wrapper_attributes(
 	array(
 		'id'    => $uid,
 		'class' => implode( ' ', $wrapper_classes ),
-		'style' => $wrapper_inline ? implode( ';', $wrapper_inline ) . ';' : '',
 	)
 );
 
@@ -454,10 +528,17 @@ $anchor_attr = $anchor ? ' id="' . esc_attr( $anchor ) . '"' : '';
 $rendered_tag_escaped = tag_escape( $rendered_tag );
 ?>
 <?php if ( $scoped_css ) : ?>
-<style><?php echo esc_html( implode( '', $scoped_css ) ); ?></style>
+	<?php
+	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
+	// CSS combinators like `>` intact (contract §D — matches SGS_Container_Wrapper).
+	// Every value reaching $scoped_css is pre-sanitised ($sgs_css_length /
+	// $sgs_css_keyword / allowlists / floatval / wp_style_engine_get_styles /
+	// sgs_colour_value / sgs_shadow_value), so no un-sanitised value survives here.
+	?>
+<style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>
 <?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-	<<?php echo $rendered_tag_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> class="wp-block-sgs-heading__text"<?php echo $anchor_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php echo $text_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+	<<?php echo $rendered_tag_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> class="wp-block-sgs-heading__text"<?php echo $anchor_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 		<?php echo wp_kses_post( $content ); ?>
 	</<?php echo $rendered_tag_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 </div>

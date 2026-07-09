@@ -20,7 +20,15 @@
         "className": true,
         "html": false,
         "color": false,
-        "spacing": { "margin": true, "padding": true }
+        "spacing": {
+            "margin": true,
+            "padding": true,
+            "__experimentalSkipSerialization": true
+        },
+        "__experimentalBorder": {
+            "radius": true,
+            "__experimentalSkipSerialization": true
+        }
     },
     "attributes": {
         "text": {
@@ -111,85 +119,21 @@
             "type": "string",
             "default": ""
         },
-        "marginTop": {
-            "type": "number"
+        "marginTablet": {
+            "type": "object",
+            "default": {}
         },
-        "marginRight": {
-            "type": "number"
+        "marginMobile": {
+            "type": "object",
+            "default": {}
         },
-        "marginBottom": {
-            "type": "number"
+        "paddingTablet": {
+            "type": "object",
+            "default": {}
         },
-        "marginLeft": {
-            "type": "number"
-        },
-        "marginUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "marginTopTablet": {
-            "type": "number"
-        },
-        "marginRightTablet": {
-            "type": "number"
-        },
-        "marginBottomTablet": {
-            "type": "number"
-        },
-        "marginLeftTablet": {
-            "type": "number"
-        },
-        "marginTopMobile": {
-            "type": "number"
-        },
-        "marginRightMobile": {
-            "type": "number"
-        },
-        "marginBottomMobile": {
-            "type": "number"
-        },
-        "marginLeftMobile": {
-            "type": "number"
-        },
-        "paddingTop": {
-            "type": "number"
-        },
-        "paddingRight": {
-            "type": "number"
-        },
-        "paddingBottom": {
-            "type": "number"
-        },
-        "paddingLeft": {
-            "type": "number"
-        },
-        "paddingUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "paddingTopTablet": {
-            "type": "number"
-        },
-        "paddingRightTablet": {
-            "type": "number"
-        },
-        "paddingBottomTablet": {
-            "type": "number"
-        },
-        "paddingLeftTablet": {
-            "type": "number"
-        },
-        "paddingTopMobile": {
-            "type": "number"
-        },
-        "paddingRightMobile": {
-            "type": "number"
-        },
-        "paddingBottomMobile": {
-            "type": "number"
-        },
-        "paddingLeftMobile": {
-            "type": "number"
+        "paddingMobile": {
+            "type": "object",
+            "default": {}
         },
         "textAlign": {
             "type": "string",
@@ -232,49 +176,9 @@
             "type": "string",
             "default": ""
         },
-        "borderRadius": {
-            "type": "string",
-            "default": ""
-        },
-        "borderRadiusUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "borderRadiusTL": {
-            "type": "string",
-            "default": ""
-        },
-        "borderRadiusTR": {
-            "type": "string",
-            "default": ""
-        },
-        "borderRadiusBL": {
-            "type": "string",
-            "default": ""
-        },
-        "borderRadiusBR": {
-            "type": "string",
-            "default": ""
-        },
-        "borderWidthTop": {
-            "type": "string",
-            "default": ""
-        },
-        "borderWidthRight": {
-            "type": "string",
-            "default": ""
-        },
-        "borderWidthBottom": {
-            "type": "string",
-            "default": ""
-        },
-        "borderWidthLeft": {
-            "type": "string",
-            "default": ""
-        },
-        "borderWidthUnit": {
-            "type": "string",
-            "default": "px"
+        "borderWidth": {
+            "type": "object",
+            "default": {}
         },
         "borderStyle": {
             "type": "string",

@@ -24,7 +24,13 @@ import {
 	ToggleControl,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, TypographyControls, ResponsiveControl } from '../../components';
+import {
+	DesignTokenPicker,
+	TypographyControls,
+	ResponsiveControl,
+	ResponsiveBoxControl,
+	ResponsiveBorderRadiusControl,
+} from '../../components';
 import { colourVar } from '../../utils';
 
 // ---------------------------------------------------------------------------
@@ -87,10 +93,16 @@ const LETTER_SPACING_UNITS = [
 	{ value: 'px', label: 'px', default: 0 },
 ];
 
-const SPACING_UNITS = [
-	{ value: 'px', label: 'px', default: 0 },
-	{ value: 'em', label: 'em', default: 0 },
-	{ value: 'rem', label: 'rem', default: 0 },
+const BORDER_STYLE_OPTIONS = [
+	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
+	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
+	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
+	{ label: __( 'Double', 'sgs-blocks' ), value: 'double' },
+	{ label: __( 'Groove', 'sgs-blocks' ), value: 'groove' },
+	{ label: __( 'Ridge', 'sgs-blocks' ), value: 'ridge' },
+	{ label: __( 'Inset', 'sgs-blocks' ), value: 'inset' },
+	{ label: __( 'Outset', 'sgs-blocks' ), value: 'outset' },
 ];
 
 const FIRST_LETTER_SIZE_UNITS = [
@@ -103,8 +115,20 @@ const FIRST_LETTER_SIZE_UNITS = [
 // Style builder — editor preview only (desktop styles; responsive handled PHP)
 // ---------------------------------------------------------------------------
 
+// Box-object interface contract §1: a 4-side/4-corner box is an object with
+// named keys, each an already-unit-bearing CSS length string or absent (unset
+// side/corner). Build an editor-preview shorthand from the object — mirrors
+// render.php's box-shorthand builder so the canvas preview matches the
+// frontend (contract §5). Mirrors sgs/button's edit.js boxShorthand helper.
+function boxShorthand( box, keys ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
+}
+
 function buildEditorStyle( attributes ) {
 	const {
+		style,
 		textColour,
 		fontSize,
 		fontSizeUnit,
@@ -120,83 +144,77 @@ function buildEditorStyle( attributes ) {
 		textAlign,
 		maxWidth,
 		maxWidthUnit,
-		marginTop,
-		marginRight,
-		marginBottom,
-		marginLeft,
-		marginUnit,
-		paddingTop,
-		paddingRight,
-		paddingBottom,
-		paddingLeft,
-		paddingUnit,
+		borderWidth,
+		borderStyle,
+		borderColour,
 	} = attributes;
 
-	const style = {};
+	const previewStyle = {};
 
 	if ( textColour ) {
 		// colourVar wraps slugs in var(--wp--preset--color--X);
 		// raw hex passes through as-is from ColorPalette.
-		style.color = /^#|^rgb|^hsl/.test( textColour )
+		previewStyle.color = /^#|^rgb|^hsl/.test( textColour )
 			? textColour
 			: colourVar( textColour );
 	}
 	if ( fontSize ) {
-		style.fontSize = `${ fontSize }${ fontSizeUnit }`;
+		previewStyle.fontSize = `${ fontSize }${ fontSizeUnit }`;
 	}
 	if ( fontWeight ) {
-		style.fontWeight = fontWeight;
+		previewStyle.fontWeight = fontWeight;
 	}
 	if ( lineHeight ) {
-		style.lineHeight = `${ lineHeight }${ lineHeightUnit }`;
+		previewStyle.lineHeight = `${ lineHeight }${ lineHeightUnit }`;
 	}
 	if ( letterSpacing != null ) {
-		style.letterSpacing = `${ letterSpacing }${ letterSpacingUnit }`;
+		previewStyle.letterSpacing = `${ letterSpacing }${ letterSpacingUnit }`;
 	}
 	if ( fontStyle ) {
-		style.fontStyle = fontStyle;
+		previewStyle.fontStyle = fontStyle;
 	}
 	if ( textDecoration ) {
-		style.textDecoration = textDecoration;
+		previewStyle.textDecoration = textDecoration;
 	}
 	if ( textTransform ) {
-		style.textTransform = textTransform;
+		previewStyle.textTransform = textTransform;
 	}
 	if ( fontFamily ) {
-		style.fontFamily = fontFamily;
+		previewStyle.fontFamily = fontFamily;
 	}
 	if ( textAlign ) {
-		style.textAlign = textAlign;
+		previewStyle.textAlign = textAlign;
 	}
 	if ( maxWidth ) {
-		style.maxWidth = `${ maxWidth }${ maxWidthUnit }`;
-	}
-	if ( marginTop != null ) {
-		style.marginTop = `${ marginTop }${ marginUnit }`;
-	}
-	if ( marginRight != null ) {
-		style.marginRight = `${ marginRight }${ marginUnit }`;
-	}
-	if ( marginBottom != null ) {
-		style.marginBottom = `${ marginBottom }${ marginUnit }`;
-	}
-	if ( marginLeft != null ) {
-		style.marginLeft = `${ marginLeft }${ marginUnit }`;
-	}
-	if ( paddingTop != null ) {
-		style.paddingTop = `${ paddingTop }${ paddingUnit }`;
-	}
-	if ( paddingRight != null ) {
-		style.paddingRight = `${ paddingRight }${ paddingUnit }`;
-	}
-	if ( paddingBottom != null ) {
-		style.paddingBottom = `${ paddingBottom }${ paddingUnit }`;
-	}
-	if ( paddingLeft != null ) {
-		style.paddingLeft = `${ paddingLeft }${ paddingUnit }`;
+		previewStyle.maxWidth = `${ maxWidth }${ maxWidthUnit }`;
 	}
 
-	return style;
+	// Box-object interface contract §5: base padding/margin/border-radius come
+	// from WP-native style.spacing.* / style.border.radius (object); border
+	// width from the SGS custom borderWidth object attr. Tablet/mobile tiers
+	// stay flat per-side attrs (contract exception for this block — not
+	// previewed here, matching the pre-existing desktop-only canvas preview).
+	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( paddingPreview ) previewStyle.padding = paddingPreview;
+	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( marginPreview ) previewStyle.margin = marginPreview;
+
+	// CSS border-radius shorthand order: top-left top-right bottom-right bottom-left.
+	const borderRadiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	if ( borderRadiusPreview ) previewStyle.borderRadius = borderRadiusPreview;
+
+	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( borderWidthPreview ) {
+		previewStyle.borderWidth = borderWidthPreview;
+		previewStyle.borderStyle = borderStyle && 'none' !== borderStyle ? borderStyle : 'solid';
+		if ( borderColour ) {
+			previewStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour )
+				? borderColour
+				: colourVar( borderColour );
+		}
+	}
+
+	return previewStyle;
 }
 
 // ---------------------------------------------------------------------------
@@ -233,6 +251,7 @@ function parseUnit( raw, currentUnit ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
+		style,
 		text,
 		textColour,
 		fontSize,
@@ -253,76 +272,24 @@ export default function Edit( { attributes, setAttributes } ) {
 		textAlign,
 		maxWidth,
 		maxWidthUnit,
-		marginTop,
-		marginRight,
-		marginBottom,
-		marginLeft,
-		marginUnit,
-		marginTopTablet,
-		marginRightTablet,
-		marginBottomTablet,
-		marginLeftTablet,
-		marginTopMobile,
-		marginRightMobile,
-		marginBottomMobile,
-		marginLeftMobile,
-		paddingTop,
-		paddingRight,
-		paddingBottom,
-		paddingLeft,
-		paddingUnit,
-		paddingTopTablet,
-		paddingRightTablet,
-		paddingBottomTablet,
-		paddingLeftTablet,
-		paddingTopMobile,
-		paddingRightMobile,
-		paddingBottomMobile,
-		paddingLeftMobile,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
 		dropCap,
 		firstLetterColour,
 		firstLetterFontSize,
 		firstLetterFontSizeUnit,
 		firstLetterFontWeight,
+		borderWidth,
+		borderStyle,
+		borderColour,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
 		className: 'wp-block-sgs-text',
 		style: buildEditorStyle( attributes ),
 	} );
-
-	// ---- Helpers for margin/padding responsive breakpoints ----
-	// Each breakpoint writes 4 side attrs; unit is shared per axis.
-
-	const marginAttrMap = {
-		desktop: {
-			Top: 'marginTop', Right: 'marginRight',
-			Bottom: 'marginBottom', Left: 'marginLeft',
-		},
-		tablet: {
-			Top: 'marginTopTablet', Right: 'marginRightTablet',
-			Bottom: 'marginBottomTablet', Left: 'marginLeftTablet',
-		},
-		mobile: {
-			Top: 'marginTopMobile', Right: 'marginRightMobile',
-			Bottom: 'marginBottomMobile', Left: 'marginLeftMobile',
-		},
-	};
-
-	const paddingAttrMap = {
-		desktop: {
-			Top: 'paddingTop', Right: 'paddingRight',
-			Bottom: 'paddingBottom', Left: 'paddingLeft',
-		},
-		tablet: {
-			Top: 'paddingTopTablet', Right: 'paddingRightTablet',
-			Bottom: 'paddingBottomTablet', Left: 'paddingLeftTablet',
-		},
-		mobile: {
-			Top: 'paddingTopMobile', Right: 'paddingRightMobile',
-			Bottom: 'paddingBottomMobile', Left: 'paddingLeftMobile',
-		},
-	};
 
 	return (
 		<>
@@ -466,83 +433,80 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					{ /* Margin — ResponsiveControl wraps all breakpoints */ }
-					<ResponsiveControl label={ __( 'Margin', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const sideMap = marginAttrMap[ breakpoint ];
-							const unit = marginUnit || 'px';
-							return (
-								<>
-									{ [ 'Top', 'Right', 'Bottom', 'Left' ].map( ( side ) => (
-										<RangeControl
-											key={ sideMap[ side ] }
-											label={ __( side, 'sgs-blocks' ) }
-											value={ attributes[ sideMap[ side ] ] ?? '' }
-											onChange={ ( v ) =>
-												setAttributes( { [ sideMap[ side ] ]: v } )
-											}
-											min={ -100 }
-											max={ 200 }
-											step={ 1 }
-											allowReset
-											__nextHasNoMarginBottom
-										/>
-									) ) }
-									{ breakpoint === 'desktop' && (
-										<UnitControl
-											label={ __( 'Margin unit', 'sgs-blocks' ) }
-											value={ composeUnit( undefined, unit ) || unit }
-											units={ SPACING_UNITS }
-											onChange={ ( raw ) => {
-												const { unit: u } = parseUnit( raw, unit );
-												setAttributes( { marginUnit: u } );
-											} }
-											__nextHasNoMarginBottom
-										/>
-									) }
-								</>
-							);
+					{ /* Box-object interface contract §B (100% box-group): base padding/
+					   margin route to WP-native style.spacing (mirrors sgs/container +
+					   sgs/button); tablet/mobile tiers are the SGS object attrs
+					   marginTablet/marginMobile + paddingTablet/paddingMobile, written
+					   via the container/button onChange( tier, next ) split. The device
+					   switcher selects base/tablet/mobile. */ }
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
 						} }
-					</ResponsiveControl>
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
 
-					{ /* Padding — ResponsiveControl wraps all breakpoints */ }
-					<ResponsiveControl label={ __( 'Padding', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const sideMap = paddingAttrMap[ breakpoint ];
-							const unit = paddingUnit || 'px';
-							return (
-								<>
-									{ [ 'Top', 'Right', 'Bottom', 'Left' ].map( ( side ) => (
-										<RangeControl
-											key={ sideMap[ side ] }
-											label={ __( side, 'sgs-blocks' ) }
-											value={ attributes[ sideMap[ side ] ] ?? '' }
-											onChange={ ( v ) =>
-												setAttributes( { [ sideMap[ side ] ]: v } )
-											}
-											min={ 0 }
-											max={ 200 }
-											step={ 1 }
-											allowReset
-											__nextHasNoMarginBottom
-										/>
-									) ) }
-									{ breakpoint === 'desktop' && (
-										<UnitControl
-											label={ __( 'Padding unit', 'sgs-blocks' ) }
-											value={ composeUnit( undefined, unit ) || unit }
-											units={ SPACING_UNITS }
-											onChange={ ( raw ) => {
-												const { unit: u } = parseUnit( raw, unit );
-												setAttributes( { paddingUnit: u } );
-											} }
-											__nextHasNoMarginBottom
-										/>
-									) }
-								</>
-							);
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
 						} }
-					</ResponsiveControl>
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+				</PanelBody>
+
+				{ /* ---- Border ----
+				   Box-object interface contract §1/§5: borderWidth is an SGS custom
+				   object attr (base only, no tiers — mirrors sgs/button); border-radius
+				   routes to WP-native style.border.radius (base only — this block has
+				   no radius tiers). */ }
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<SelectControl
+						label={ __( 'Border style', 'sgs-blocks' ) }
+						value={ borderStyle }
+						options={ BORDER_STYLE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Border width', 'sgs-blocks' ) }
+						values={ { base: borderWidth ?? {} } }
+						showResponsive={ false }
+						onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Border colour', 'sgs-blocks' ) }
+						value={ borderColour }
+						onChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+					/>
+					<ResponsiveBorderRadiusControl
+						label={ __( 'Border radius', 'sgs-blocks' ) }
+						values={ { base: style?.border?.radius ?? {} } }
+						showResponsive={ false }
+						onChange={ ( tier, next ) =>
+							setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } )
+						}
+					/>
 				</PanelBody>
 
 				{ /* ---- Drop cap ---- */ }

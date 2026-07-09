@@ -11,7 +11,12 @@ import {
 	ToggleControl,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, TypographyControls } from '../../components';
+import {
+	DesignTokenPicker,
+	TypographyControls,
+	ResponsiveBoxControl,
+	ResponsiveBorderRadiusControl,
+} from '../../components';
 import { colourVar } from '../../utils';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
@@ -61,6 +66,18 @@ const TEXT_ALIGN_OPTIONS = [
 	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
 	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
 	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
+];
+
+const BORDER_STYLE_OPTIONS = [
+	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
+	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
+	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
+	{ label: __( 'Double', 'sgs-blocks' ), value: 'double' },
+	{ label: __( 'Groove', 'sgs-blocks' ), value: 'groove' },
+	{ label: __( 'Ridge', 'sgs-blocks' ), value: 'ridge' },
+	{ label: __( 'Inset', 'sgs-blocks' ), value: 'inset' },
+	{ label: __( 'Outset', 'sgs-blocks' ), value: 'outset' },
 ];
 
 const LETTER_SPACING_UNITS = [
@@ -132,23 +149,63 @@ function buildTextStyle( attributes ) {
 	);
 }
 
+// Box-object interface contract §1: a 4-side/4-corner box is an object with
+// named keys, each an already-unit-bearing CSS length string or absent
+// (unset side/corner). Build an editor-preview shorthand from the object —
+// mirrors render.php's box-shorthand builder so the canvas preview matches
+// the frontend (contract §5).
+function boxShorthand( box, keys ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
+}
+
 /** Build wrapper-level inline style for the editor canvas (mirrors render.php $wrapper_inline). */
 function buildWrapperStyle( attributes ) {
-	const { textAlign, backgroundColour } = attributes;
-	const style = {};
+	const { textAlign, backgroundColour, borderWidth, borderStyle, borderColour, style } = attributes;
+	const wrapperStyle = {};
 	if ( textAlign ) {
-		style.textAlign = textAlign;
+		wrapperStyle.textAlign = textAlign;
 	}
 	if ( backgroundColour ) {
-		style.backgroundColor = colourVar( backgroundColour ) || undefined;
+		wrapperStyle.backgroundColor = colourVar( backgroundColour ) || undefined;
 	}
-	return style;
+	// Border-radius base preview — Box-object interface contract §1/§5: base
+	// radius is WP-native style.border.radius (CSS shorthand order top-left
+	// top-right bottom-right bottom-left).
+	const borderRadiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	if ( borderRadiusPreview ) {
+		wrapperStyle.borderRadius = borderRadiusPreview;
+	}
+	// Border-width preview — SGS custom object attr (base only, no tiers).
+	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( borderWidthPreview ) {
+		wrapperStyle.borderWidth = borderWidthPreview;
+		if ( borderStyle && 'none' !== borderStyle ) {
+			wrapperStyle.borderStyle = borderStyle;
+		}
+		if ( borderColour ) {
+			wrapperStyle.borderColor = colourVar( borderColour ) || undefined;
+		}
+	}
+	// Base padding/margin preview — WP-native style.spacing.* objects
+	// (contract §B; box-model order top/right/bottom/left).
+	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( paddingPreview ) {
+		wrapperStyle.padding = paddingPreview;
+	}
+	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( marginPreview ) {
+		wrapperStyle.margin = marginPreview;
+	}
+	return wrapperStyle;
 }
 
 // ─── Main edit component ──────────────────────────────────────────────────────
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
+		style,
 		headingRole,
 		content,
 		level,
@@ -162,6 +219,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		letterSpacing,
 		letterSpacingUnit,
 		textTransform,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
 	} = attributes;
 
 	const isSubheading = headingRole === 'subheading';
@@ -289,6 +353,77 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ TEXT_ALIGN_OPTIONS }
 						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
 						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				{ /* ── Border panel ── Box-object interface contract §1/§5: borderWidth
+				   is an SGS custom object attr (base only, no tiers); border-radius
+				   routes to WP-native style.border.radius (base only — the block
+				   declares __experimentalBorder.__experimentalSkipSerialization so it
+				   serialises scoped, not inline, matching the spacing pattern already
+				   proven on sgs/container + sgs/button). */ }
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Border style', 'sgs-blocks' ) }
+						value={ borderStyle }
+						options={ BORDER_STYLE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					<DesignTokenPicker
+						label={ __( 'Border colour', 'sgs-blocks' ) }
+						value={ borderColour }
+						onChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Border width', 'sgs-blocks' ) }
+						values={ { base: borderWidth ?? {} } }
+						showResponsive={ false }
+						onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
+					/>
+					<ResponsiveBorderRadiusControl
+						label={ __( 'Border radius', 'sgs-blocks' ) }
+						values={ { base: style?.border?.radius ?? {} } }
+						showResponsive={ false }
+						onChange={ ( tier, next ) => setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } ) }
+					/>
+				</PanelBody>
+
+				{ /* ── Spacing panel ── Box-object interface contract §B/§E:
+				   padding/margin base routes to WP-native style.spacing.* (mirrors
+				   sgs/container + sgs/button); tiers are the paddingTablet/paddingMobile
+				   + marginTablet/marginMobile object attrs. The spacing support declares
+				   __experimentalSkipSerialization so base serialises scoped, not inline. */ }
+				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
 					/>
 				</PanelBody>
 
