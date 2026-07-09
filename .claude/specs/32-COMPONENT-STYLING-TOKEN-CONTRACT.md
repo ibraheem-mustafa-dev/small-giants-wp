@@ -1,20 +1,23 @@
 ---
 doc_type: spec
 spec_id: 32
-spec_version: "1.0"
+spec_version: "1.1"
 title: Component Styling Token Contract (framework-wide)
 project: small-giants-wp
 status: active
 authors: Claude + Bean
 session_date: 2026-07-07
-last_verified: 2026-07-07
+last_verified: 2026-07-09
 status_history:
   - 2026-07-07: v1.0 — initial spec. Restores + generalises the pre-D283 token/class design (Spec 11 Decision 24) as a framework-wide contract; supersedes the D283 preset-as-seed inline-attr model for styling.
+  - 2026-07-09: v1.1 — added §6.1 Geometry token families / box-object contract (named-object `{top,right,bottom,left}`/corner shape, keep-support-serialise-scoped correction, the 10-merge/10-scalar family roster, FR-32-10). Reconciles the geometry (spacing/border) sibling to §6's colour/typography preset mechanism, per `plans/2026-07-09-no-inline-styling-design-gate.md` + `plans/2026-07-09-box-object-interface-contract.md`.
 references:
   - .claude/specs/11-SGS-BUTTON-ARCHITECTURE.md
   - .claude/specs/26-SGS-GLOBAL-STYLES-AND-THEMING.md
   - .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md
   - .claude/plans/2026-07-07-button-external-css-rearchitecture.md
+  - .claude/plans/2026-07-09-no-inline-styling-design-gate.md
+  - .claude/plans/2026-07-09-box-object-interface-contract.md
 absorbs: null
 absorbed_by: null
 lock_reason: null
@@ -116,6 +119,56 @@ Key decisions:
 - **BEM class, not `.is-style-*`.** Semantic, matches the draft, and needs no `register_block_style` registration (the pipeline sets the modifier class directly; a manual author sets it via a simple inspector control).
 - **Tokens via `settings.custom`, not a bespoke generator.** WP already emits the vars from the snapshot — zero generation code (Spec 11 D24 proven; live-verified 2026-07-07).
 - **Framework default = a theme token (`--wp--preset--color--*`), never a client hex** — so a fresh block is neutral-correct and re-skins with the palette.
+
+## 6.1 Geometry token families / box-object contract (added 2026-07-09, `no-inline-styling-design-gate` + `box-object-interface-contract`, Phase-1 pilot: `sgs/container` + `sgs/button`)
+
+Section 6 covers colour/typography preset tokens (`{component}Presets`). This section covers the SIBLING geometry mechanism — spacing/border shape — that the same no-inline drive proved out on the pilot pair. It reconciles two things Bean flagged mid-design: (1) the base layer of every block declaring a WP styling `support` inlines by default via `get_block_wrapper_attributes()` — the fix is to **keep the support** and change WHERE it serialises, never to drop it; (2) 8 four-side + 2 four-corner attr families were flat per-side/per-corner attrs, which is neither the standard WP editor shape nor mergeable/re-skinnable cleanly.
+
+### (a) The named-object shape + WP `BoxControl`
+A merged box family is ONE attribute of `"type": "object"` holding named keys — WP's own `BoxControlValue` shape (verified in Gutenberg docs, no bespoke positional-array/index-map needed):
+- **4-side families** → `{ "top": <len>, "right": <len>, "bottom": <len>, "left": <len> }`, consumed via WP's native **`BoxControl`** editor component (linked/unlinked, per-side units, native spacing-preset support).
+- **4-corner families** (border-radius) → `{ "topLeft": <len>, "topRight": <len>, "bottomLeft": <len>, "bottomRight": <len> }`, consumed via `__experimentalBorderRadiusControl` / BoxControl corner mode.
+- `<len>` = a CSS length string (`"20px"`, `"1.5rem"`, `"0"`) or an absent/empty key = that side unset (falls to CSS default / inherits). The unit is carried inline in each value, so no separate `{attr}Unit` companion attr is needed.
+- `default`: `{}` (empty object).
+
+### (b) Base serialises SCOPED, not dropped and not inline
+**Correct any "drop the support" framing to "keep the support + `__experimentalSkipSerialization` + serialise scoped."** WordPress's `get_block_wrapper_attributes()` auto-inlines any declared `supports.spacing`/`supports.__experimentalBorder` value — that inlining IS the D291 defect class, not the support's existence. The fix: flip serialisation from auto-inline to scoped, per property, via `__experimentalSkipSerialization`, then write the block's resolved `style.spacing.padding` / `style.border.radius` object to its own `#{$uid}` selector using the stable core API `wp_style_engine_get_styles($style, ['selector' => "#{$uid}"])['css']`, appended to the scoped `<style>` SGS already emits per block. This is exactly how WP core outputs `layout` support (a `.wp-container-{id}` rule, not inline) — not a bespoke SGS mechanism. `skipSerialization` suppresses only WP's *auto-inline output*; it does NOT stop the `style` attribute being populated, so render.php still reads it to emit the scoped rule. Phase-0-proven live: container base spacing now serialises scoped with zero inline declarations on the rendered element.
+
+### (c) Family roster — merge vs keep-scalar (universal scan of all 74 blocks, 2026-07-09)
+
+**MERGE to a named object (10 families, 2 destination classes):**
+
+| Class | Family | Blocks | Destination |
+|---|---|---|---|
+| WP-native root (4-side) | `padding{side}` | 9 | base → `style.spacing.padding` object (existing, D250); tiers → SGS `paddingTablet`/`paddingMobile` object |
+| WP-native root (4-side) | `margin{side}` | 8 | base → `style.spacing.margin` object; tiers → `marginTablet`/`marginMobile` object |
+| SGS custom (4-side) | `borderWidth{side}` | 4 (button/heading/quote/text) | SGS object `borderWidth:{...}` — colour/style stay single scalar attrs (no per-side colour/style family exists) |
+| SGS custom (4-side) | `contentBandPadding{side}` | 4 | SGS object + tiers + BoxControl (per-band, not root) |
+| SGS custom (4-side) | `contentPadding{side}` | 1 (hero) | SGS object + tiers + BoxControl |
+| SGS custom (4-side) | `mediaPadding{side}` | 1 (hero) | SGS object + tiers + BoxControl |
+| SGS custom (4-side) | `imagePadding{side}` | 1 (hero) | SGS object + tiers + BoxControl |
+| SGS custom (4-side) | `imageBorderWidth{side}` | 1 (hero) | SGS object + BoxControl |
+| WP-native root (4-corner) | `borderRadius{TL,TR,BL,BR}` | 5 (button/heading/media/quote/text) | base → `style.border.radius` object `{topLeft,…}`; tiers → `borderRadiusTablet`/`borderRadiusMobile` object |
+| SGS custom (4-corner) | `imageBorderRadius{TL,TR,BL,BR}` | 1 (hero) | SGS custom corner object + corner control |
+
+**KEEP scalar (10 families — not box properties, or single-side):**
+
+| Family | Blocks | Why not an object |
+|---|---|---|
+| `attributionMarginTop` | quote | Single side only — a 4-side BoxControl would show 3 dead controls |
+| `headlineMarginBottom` | hero | Single side |
+| `subHeadlineMarginBottom` | hero | Single side |
+| `labelMarginBottom` | option-picker | Single side |
+| `quoteMarginBottom` | testimonial | Single side |
+| `shapeDivider{Top,Bottom}` + `…Colour/Flip/Height/Invert` | container/cta-section/hero/trust-bar | Not a box property — two independent decorative SVG slots each with its own sub-settings; `{top,right,bottom,left}` is semantically wrong (no left/right divider). Keep the named-slot structure. |
+
+Note: `sgs/button`/`sgs/heading`/`sgs/quote`/`sgs/text` route border via **CUSTOM attrs** (`supports.__experimentalBorder` is NULL on button) — a different routing path from container's WP-native border support. The categorisation guard is keyed on the DB `box_family` value, never the routing path, so both classes merge correctly under one mechanism (Spec 31 §4/§3.A step 3b).
+
+### (d) FR-32-10 — pipeline extraction + block consumption
+**FR-32-10** — The pipeline extracts a draft's per-side/per-corner box CSS into the named-object shape: a draft `padding: 12px 18px 12px 18px` (or the equivalent 4 discrete declarations) resolves to `{ "top": "12px", "right": "18px", "bottom": "12px", "left": "18px" }` on the owning attr (Spec 31 §3.A step 3b's cross-declaration accumulator), never 4 flat attrs. The block consumes the object via the shared responsive **BoxControl** wrapper component in `edit.js` (device-tier switcher selects base/tablet/mobile; `onChange` writes the object) and reads it in `render.php`/the shared helper to emit the scoped rule per (b). *Done when:* an asymmetric draft box (4 distinct side values) round-trips to 4 distinct correct computed values live, and the editor BoxControl preview matches the frontend (Pilot Acceptance Test A3/A3b/A8/A9, `no-inline-styling-design-gate.md`).
+
+### (e) Per-instance override channel
+Consistent with FR-32-4: a per-instance override on a box-object property is a CSS custom-property **VALUE**, never an inline property declaration. The **only** non-attr styling output permitted anywhere in this contract is a genuinely non-device-tier breakpoint rule (Spec 31 FR-31-5.2's `ResidualBand`), which is the sole legitimate use of the block's `sgsCustomCss` (Additional-CSS) field — every other override flows through the object attr + scoped `<style>`, never a bespoke inline escape hatch.
 
 ## 7. Data model
 

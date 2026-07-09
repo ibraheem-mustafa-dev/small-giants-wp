@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/container",
-	"version": "0.2.2",
+	"version": "0.3.0",
 	"title": "SGS Container",
 	"category": "sgs-layout",
 	"description": "Flexible layout wrapper — the fundamental building block for all page sections. Breakout via WP-native align (wide/full toolbar); outer cap via maxWidth literal; inner band via contentWidth token (normal/wide/full) or literal.",
@@ -351,117 +351,33 @@
 			"type": "string",
 			"default": "full"
 		},
-		"paddingTopTablet": {
-			"type": "string",
-			"default": ""
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
 		},
-		"paddingRightTablet": {
-			"type": "string",
-			"default": ""
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
 		},
-		"paddingBottomTablet": {
-			"type": "string",
-			"default": ""
+		"marginTablet": {
+			"type": "object",
+			"default": {}
 		},
-		"paddingLeftTablet": {
-			"type": "string",
-			"default": ""
+		"marginMobile": {
+			"type": "object",
+			"default": {}
 		},
-		"paddingTopMobile": {
-			"type": "string",
-			"default": ""
+		"contentBandPadding": {
+			"type": "object",
+			"default": {}
 		},
-		"paddingRightMobile": {
-			"type": "string",
-			"default": ""
+		"contentBandPaddingTablet": {
+			"type": "object",
+			"default": {}
 		},
-		"paddingBottomMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingLeftMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"marginTopTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"marginRightTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"marginBottomTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"marginLeftTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"marginTopMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"marginRightMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"marginBottomMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"marginLeftMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingTop": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingRight": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingBottom": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingLeft": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingTopTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingRightTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingBottomTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingLeftTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingTopMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingRightMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingBottomMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingLeftMobile": {
-			"type": "string",
-			"default": ""
+		"contentBandPaddingMobile": {
+			"type": "object",
+			"default": {}
 		},
 		"contentBandBackground": {
 			"type": "string",

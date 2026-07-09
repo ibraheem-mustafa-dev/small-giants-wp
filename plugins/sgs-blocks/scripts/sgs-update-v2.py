@@ -1394,6 +1394,31 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     # hit before falling back to a generic ChildBlock, so this attr routes
     # without any block-slug literal and without the alias-collision risk.
     ("sgs/quote", "attribution"): {"role": "text-content", "emit_shape": "nested", "canonical_slot": None},
+    # ---- box-object interface (Phase-1 pilot: container + button, 2026-07-09) ----
+    # Merged box families classify via box_family (the family name). box_side stays
+    # absent/None — the object attr holds all sides. Contract: .claude/plans/
+    # 2026-07-09-box-object-interface-contract.md §3 DB categorisation.
+    # These entries pre-register the classification; the object attrs are added to
+    # block.json in a later wave. The override dict is applied at the next /sgs-update
+    # after block.json lands.
+    #
+    # container: 3 box families × 3 tiers (base/tablet/mobile) = 9 attrs.
+    ("sgs/container", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/container", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/container", "marginTablet"): {"box_family": "margin"},
+    ("sgs/container", "marginMobile"): {"box_family": "margin"},
+    ("sgs/container", "contentBandPadding"): {"box_family": "contentBandPadding"},
+    ("sgs/container", "contentBandPaddingTablet"): {"box_family": "contentBandPadding"},
+    ("sgs/container", "contentBandPaddingMobile"): {"box_family": "contentBandPadding"},
+    # button: 3 box families × 2–3 tiers (borderWidth/borderRadius have no base object
+    # currently, only tiers; padding/margin follow WP-native spacing base + tiers).
+    ("sgs/button", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/button", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/button", "marginTablet"): {"box_family": "margin"},
+    ("sgs/button", "marginMobile"): {"box_family": "margin"},
+    ("sgs/button", "borderWidth"): {"box_family": "borderWidth"},
+    ("sgs/button", "borderRadiusTablet"): {"box_family": "borderRadius"},
+    ("sgs/button", "borderRadiusMobile"): {"box_family": "borderRadius"},
 }
 
 

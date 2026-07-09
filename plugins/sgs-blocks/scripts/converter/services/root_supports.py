@@ -210,6 +210,62 @@ def _preserve_unit(raw: str) -> str | None:
     return v if v else None
 
 
+def _write_responsive_attr(
+    result_attrs: dict,
+    block_schema: dict[str, dict],
+    slug: str,
+    path_leaves: list[str],
+    bp_suffix: str,
+    value: Any,
+    camel_base: str,
+) -> "str | None":
+    """Write one responsive-tier attribute for the root-supports lift.
+
+    A 4-side family (``path_leaves`` is exactly ``[family, side]`` where
+    ``side`` is a side token, e.g. ``['padding', 'top']``) accumulates into
+    the merged box-object attr (``paddingTablet: {"top": ...}``) when the DB
+    ``box_family`` gate allows it (box-object interface contract §3/§4,
+    ``.claude/plans/2026-07-09-box-object-interface-contract.md`` — the gate
+    is ALWAYS ``db_lookup.box_family_for``, never an attr-name regex/suffix
+    match, per the AST gate in §6), falling back to the legacy flat per-side
+    attr when the block hasn't migrated. A single-value rule (``gap``,
+    ``border-radius``, ...) — any other ``path_leaves`` shape — writes the
+    flat ``{camel_base}{bp_suffix}`` candidate directly; no box-object family
+    ever applies to those (unchanged pre-existing behaviour).
+
+    Returns the attr name actually written, or ``None`` when no destination
+    exists in the block schema (an honest drop — caller does not mark
+    consumption).
+    """
+    if len(path_leaves) == 2 and path_leaves[1] in ("top", "right", "bottom", "left"):
+        family, side = path_leaves[0], path_leaves[1]
+        object_attr = f"{family}{bp_suffix}"
+        box_family = db_lookup.box_family_for(slug, object_attr)
+        if object_attr in block_schema and box_family == family:
+            box = result_attrs.setdefault(object_attr, {})
+            if not isinstance(box, dict):
+                box = {}
+                result_attrs[object_attr] = box
+            box[side] = value
+            return object_attr
+
+        # Fallback: legacy flat per-side attr (e.g. 'paddingTopTablet'). Kept
+        # for blocks that have not yet migrated to the merged object shape.
+        flat_attr = f"{family}{side.capitalize()}{bp_suffix}"
+        if flat_attr in block_schema and flat_attr not in result_attrs:
+            result_attrs[flat_attr] = value
+            return flat_attr
+        return None
+
+    # Single-value rule (gap, border-radius, border-width, ...) — no
+    # box-object family ever applies; unchanged flat-attr path.
+    candidate = f"{camel_base}{bp_suffix}"
+    if candidate in block_schema and candidate not in result_attrs:
+        result_attrs[candidate] = value
+        return candidate
+    return None
+
+
 def _parse_padding_shorthand(value: str) -> dict[str, str] | None:
     """Parse 'padding: 22px 16px' → {'top','right','bottom','left'}.
 
@@ -422,37 +478,43 @@ def lift_root_supports_to_style(
 
                 # Build per-device attr name — convert.py:914-922.
                 # style_path=['spacing','padding','top'] + 'Tablet' → 'paddingTopTablet'
+                # (or, for a box_family-gated block, accumulated into the merged
+                # object attr 'paddingTablet' — box-object contract §4, handled
+                # uniformly by _write_responsive_attr for both the 4-side-family
+                # and single-value-rule shapes.)
                 path_leaves = style_path[1:]  # drop the top-level bucket key
                 camel_base = "".join(p.capitalize() for p in path_leaves)
                 camel_base = camel_base[:1].lower() + camel_base[1:]  # lowercase first char
-                candidate = f"{camel_base}{bp_suffix}"
 
-                if candidate in block_schema and candidate not in result_attrs:
-                    # Spec 31 §3.A.5 (CG-4 fix): serialise per attr_type — a
-                    # px-string into a number attr is WP-discarded at render.
-                    v_out, unit_write = _serialise_for_schema(block_schema, candidate, v)
-                    if v_out is None:
-                        _LOG.debug(
-                            "[root_supports] responsive_attr_dropped slug=%s css_prop=%s "
-                            "bp_suffix=%s reason=unserialisable_for_numeric_attr raw=%r",
-                            slug, css_prop, bp_suffix, v,
-                        )
-                        continue
-                    result_attrs[candidate] = v_out
+                # Serialise BEFORE writing — same CG-4 numeric-attr rule, keyed
+                # off the flat candidate name (object attrs are always
+                # attr_type='object', so this is a passthrough for them).
+                flat_probe = f"{camel_base}{bp_suffix}"
+                v_out, unit_write = _serialise_for_schema(block_schema, flat_probe, v)
+                if v_out is None:
+                    _LOG.debug(
+                        "[root_supports] responsive_attr_dropped slug=%s css_prop=%s "
+                        "bp_suffix=%s reason=unserialisable_for_numeric_attr raw=%r",
+                        slug, css_prop, bp_suffix, v,
+                    )
+                    continue
+                written = _write_responsive_attr(
+                    result_attrs, block_schema, slug, path_leaves, bp_suffix, v_out, camel_base,
+                )
+                if written is not None:
                     if unit_write and unit_write[0] not in result_attrs:
                         result_attrs[unit_write[0]] = unit_write[1]
                     tier_consumed.add(css_prop)
                     _LOG.debug(
                         "[root_supports] responsive_attr_lifted slug=%s css_prop=%s "
                         "bp_suffix=%s attr=%s value=%r",
-                        slug, css_prop, bp_suffix, candidate, v_out,
+                        slug, css_prop, bp_suffix, written, v_out,
                     )
                 else:
-                    reason = "no_schema_attr" if candidate not in block_schema else "already_set"
                     _LOG.debug(
                         "[root_supports] responsive_attr_dropped slug=%s css_prop=%s "
-                        "bp_suffix=%s reason=%s candidate=%s",
-                        slug, css_prop, bp_suffix, reason, candidate,
+                        "bp_suffix=%s reason=no_schema_attr candidate=%s",
+                        slug, css_prop, bp_suffix, flat_probe,
                     )
 
             # Shorthand padding/margin responsive lift — convert.py:933-956.
@@ -465,20 +527,25 @@ def lift_root_supports_to_style(
                 if not parsed:
                     continue
                 for side, val in parsed.items():
-                    # e.g. 'padding' + 'top' + 'Tablet' → 'paddingTopTablet'
-                    candidate = f"{shorthand}{side.capitalize()}{bp_suffix}"
-                    if candidate in block_schema and candidate not in result_attrs:
-                        # Spec 31 §3.A.5 (CG-4 fix): same attr_type serialisation
-                        # as the per-property loop above.
-                        val_out, unit_write = _serialise_for_schema(block_schema, candidate, val)
-                        if val_out is None:
-                            _LOG.debug(
-                                "[root_supports] responsive_attr_dropped slug=%s shorthand=%s(%s) "
-                                "bp_suffix=%s reason=unserialisable_for_numeric_attr raw=%r",
-                                slug, shorthand, side, bp_suffix, val,
-                            )
-                            continue
-                        result_attrs[candidate] = val_out
+                    # e.g. 'padding' + 'top' + 'Tablet' → accumulated into the
+                    # merged object attr 'paddingTablet' (box-object contract §4),
+                    # or the legacy flat 'paddingTopTablet' as fallback.
+                    flat_probe = f"{shorthand}{side.capitalize()}{bp_suffix}"
+                    # Spec 31 §3.A.5 (CG-4 fix): same attr_type serialisation
+                    # as the per-property loop above (object attrs pass through).
+                    val_out, unit_write = _serialise_for_schema(block_schema, flat_probe, val)
+                    if val_out is None:
+                        _LOG.debug(
+                            "[root_supports] responsive_attr_dropped slug=%s shorthand=%s(%s) "
+                            "bp_suffix=%s reason=unserialisable_for_numeric_attr raw=%r",
+                            slug, shorthand, side, bp_suffix, val,
+                        )
+                        continue
+                    written = _write_responsive_attr(
+                        result_attrs, block_schema, slug, [shorthand, side], bp_suffix, val_out,
+                        f"{shorthand}{side.capitalize()}",
+                    )
+                    if written is not None:
                         if unit_write and unit_write[0] not in result_attrs:
                             result_attrs[unit_write[0]] = unit_write[1]
                         # Any side landing a write consumes the shorthand for this
@@ -489,14 +556,13 @@ def lift_root_supports_to_style(
                         _LOG.debug(
                             "[root_supports] responsive_attr_lifted slug=%s shorthand=%s(%s) "
                             "bp_suffix=%s attr=%s value=%r",
-                            slug, shorthand, side, bp_suffix, candidate, val_out,
+                            slug, shorthand, side, bp_suffix, written, val_out,
                         )
                     else:
-                        reason = "no_schema_attr" if candidate not in block_schema else "already_set"
                         _LOG.debug(
                             "[root_supports] responsive_attr_dropped slug=%s shorthand=%s(%s) "
-                            "bp_suffix=%s reason=%s candidate=%s",
-                            slug, shorthand, side, bp_suffix, reason, candidate,
+                            "bp_suffix=%s reason=no_schema_attr candidate=%s",
+                            slug, shorthand, side, bp_suffix, flat_probe,
                         )
 
     consumed: dict[str, frozenset[str]] = {"Base": frozenset(consumed_base)}

@@ -69,18 +69,18 @@ def test_band_padding_background_textalign_transfer(owner):
     typ = db_lookup.block_supports_for(owner).get("typography") or {}
     if typ.get("textAlign"):
         assert attrs.get("textAlign") == "center", attrs
-    # STRENGTHENED (EXECUTION Step 12, 2026-07-04): padding-top now TRANSFERS to
-    # the owner's real 'contentBandPaddingTop' attr (migrations/
-    # 2026-07-04-property-suffixes-content-band-padding.py seeded the
-    # 'BandPaddingTop' property_suffixes row that closes the naming-divergence
-    # gap this test used to merely tolerate as NO_DESTINATION — see
-    # test_css_resolvers.py::test_content_band_padding_transfers_to_content_band_padding_attr
-    # for the resolver-level proof). background-color still runs the FULL
-    # cascade — transferred when the owner declares a destination, else an
-    # HONEST recorded gap (Step-7 Rule-4 accounting; background-color has no
+    # STRENGTHENED (EXECUTION Step 12, 2026-07-04), then RESHAPED by the
+    # box-object interface contract (`.claude/plans/2026-07-09-box-object-
+    # interface-contract.md` §3/§4, 2026-07-09): padding-top TRANSFERS to the
+    # owner's merged 'contentBandPadding' OBJECT attr (block.json no longer
+    # declares the flat 'contentBandPaddingTop' — see test_css_resolvers.py::
+    # test_content_band_padding_transfers_to_content_band_padding_attr for the
+    # resolver-level proof). background-color still runs the FULL cascade —
+    # transferred when the owner declares a destination, else an HONEST
+    # recorded gap (Step-7 Rule-4 accounting; background-color has no
     # CONTENT/GRID/OUTER attr on sgs/container today, so it stays a
     # NO_DESTINATION gap, never a silent drop).
-    assert attrs.get("contentBandPaddingTop") == "40px", (attrs, gaps)
+    assert attrs.get("contentBandPadding") == {"top": "40px"}, (attrs, gaps)
 
     def _accounted(prop: str) -> bool:
         in_attrs = any(v == "#fff7f0" for v in attrs.values())

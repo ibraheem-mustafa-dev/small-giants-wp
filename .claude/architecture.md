@@ -117,6 +117,16 @@ The SGS framework has four primary components: the block theme (`sgs-theme`), th
 
 ---
 
+## Component styling architecture — no-inline styling contract (Spec 32, 2026-07-09)
+
+Every SGS block's styling is designed to serialise as scoped CSS, never inline `style="…"`. WP-native styling `supports` (`color`/`spacing`/`__experimentalBorder`/`typography`/`shadow`) are KEPT — they still drive the block's editor controls — but their auto-inline output is suppressed per-property via `__experimentalSkipSerialization`; the resulting `style` object is instead serialised through the stable core `wp_style_engine_get_styles($style, ['selector' => "#{$uid}"])['css']` and appended to the block's own scoped `<style>` block (the mechanism SGS already emits for other rules; this is how WP core itself outputs `layout` support as `.wp-container-{id}` rather than inline). This lives in the SHARED HELPERS, not per-block: `SGS_Container_Wrapper`, `sgs_typography_css_rule()`, `sgs_button_element_style_css()`, and `sgs_responsive_css_rule()` carry the base-layer flip centrally; only block-private render.php `style="…"` sites (object-fit, overlays, per-item colour, attribution typography, caption) need individual conversion into the same scoped-`<style>` pattern.
+
+Per-side and per-corner box properties (padding/margin/border-width/border-radius) merge into a single named **object attribute** — `{top,right,bottom,left}` for 4-side families, `{topLeft,topRight,bottomLeft,bottomRight}` for 4-corner (border-radius) families — driven by WP's native `BoxControl` (and its corner-mode equivalent) so the editor experience stays standard WP. Root padding/margin/border-radius route to the WP-native `style.spacing.*` / `style.border.radius` object (already object-shaped since Phase 0); per-area/per-element families (e.g. `contentBandPadding`, `imageBorderRadius`) are SGS custom object attrs using the same control. The collision guard is a DB column, not a name convention: `block_attributes.box_family` (+ `box_side`) is seeded ONLY for the 10 genuine box families via `ATTR_CLASSIFICATION_OVERRIDES` in `sgs-update-v2.py`; every scalar/single-side/shapeDivider family gets no `box_family` row and is excluded by construction. Because a DB column alone doesn't self-enforce, a structural AST gate (same shape as the existing cheat-gate scanner) fails the build if any per-side/per-corner grouping or migration operation runs without a `box_family` check in its call path — made structural, not convention.
+
+Pilot scope (container + button) proves both distinct mechanisms — 4-side padding/margin/tier-base top-up, and 4-corner border-radius + `:hover`-scoped state + editor `BoxControl` parity — before universal rollout across the block roster. Canonical: `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`, `.claude/plans/2026-07-09-no-inline-styling-design-gate.md` (Pilot Acceptance Test A1–A9), `.claude/plans/2026-07-09-box-object-interface-contract.md` (fixed cross-layer contract).
+
+---
+
 ## Integration Surfaces
 
 ### theme → sgs-blocks plugin

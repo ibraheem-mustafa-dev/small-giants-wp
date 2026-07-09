@@ -257,24 +257,31 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// Responsive padding — all kinds (WP spacing.padding sets base via the block-supports
 			// layer; responsive variants land as @media rules scoped to the uid selector).
-			$padding_top_tablet    = $sgs_css_length( $attributes['paddingTopTablet'] ?? '' );
-			$padding_right_tablet  = $sgs_css_length( $attributes['paddingRightTablet'] ?? '' );
-			$padding_bottom_tablet = $sgs_css_length( $attributes['paddingBottomTablet'] ?? '' );
-			$padding_left_tablet   = $sgs_css_length( $attributes['paddingLeftTablet'] ?? '' );
-			$padding_top_mobile    = $sgs_css_length( $attributes['paddingTopMobile'] ?? '' );
-			$padding_right_mobile  = $sgs_css_length( $attributes['paddingRightMobile'] ?? '' );
-			$padding_bottom_mobile = $sgs_css_length( $attributes['paddingBottomMobile'] ?? '' );
-			$padding_left_mobile   = $sgs_css_length( $attributes['paddingLeftMobile'] ?? '' );
+			// Box-object interface contract (.claude/plans/2026-07-09-box-object-interface-contract.md
+			// §1/§2): paddingTablet/paddingMobile are OBJECT attrs { top, right, bottom, left } —
+			// a missing side key = that side unset, matching the prior flat-attr '' semantic.
+			$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
+			$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
+			$padding_top_tablet    = $sgs_css_length( $padding_tablet_obj['top'] ?? '' );
+			$padding_right_tablet  = $sgs_css_length( $padding_tablet_obj['right'] ?? '' );
+			$padding_bottom_tablet = $sgs_css_length( $padding_tablet_obj['bottom'] ?? '' );
+			$padding_left_tablet   = $sgs_css_length( $padding_tablet_obj['left'] ?? '' );
+			$padding_top_mobile    = $sgs_css_length( $padding_mobile_obj['top'] ?? '' );
+			$padding_right_mobile  = $sgs_css_length( $padding_mobile_obj['right'] ?? '' );
+			$padding_bottom_mobile = $sgs_css_length( $padding_mobile_obj['bottom'] ?? '' );
+			$padding_left_mobile   = $sgs_css_length( $padding_mobile_obj['left'] ?? '' );
 
-			// Responsive margin — all kinds.
-			$margin_top_tablet    = $sgs_css_length( $attributes['marginTopTablet'] ?? '' );
-			$margin_right_tablet  = $sgs_css_length( $attributes['marginRightTablet'] ?? '' );
-			$margin_bottom_tablet = $sgs_css_length( $attributes['marginBottomTablet'] ?? '' );
-			$margin_left_tablet   = $sgs_css_length( $attributes['marginLeftTablet'] ?? '' );
-			$margin_top_mobile    = $sgs_css_length( $attributes['marginTopMobile'] ?? '' );
-			$margin_right_mobile  = $sgs_css_length( $attributes['marginRightMobile'] ?? '' );
-			$margin_bottom_mobile = $sgs_css_length( $attributes['marginBottomMobile'] ?? '' );
-			$margin_left_mobile   = $sgs_css_length( $attributes['marginLeftMobile'] ?? '' );
+			// Responsive margin — all kinds. Same object-attr contract as padding above.
+			$margin_tablet_obj = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+			$margin_mobile_obj = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+			$margin_top_tablet    = $sgs_css_length( $margin_tablet_obj['top'] ?? '' );
+			$margin_right_tablet  = $sgs_css_length( $margin_tablet_obj['right'] ?? '' );
+			$margin_bottom_tablet = $sgs_css_length( $margin_tablet_obj['bottom'] ?? '' );
+			$margin_left_tablet   = $sgs_css_length( $margin_tablet_obj['left'] ?? '' );
+			$margin_top_mobile    = $sgs_css_length( $margin_mobile_obj['top'] ?? '' );
+			$margin_right_mobile  = $sgs_css_length( $margin_mobile_obj['right'] ?? '' );
+			$margin_bottom_mobile = $sgs_css_length( $margin_mobile_obj['bottom'] ?? '' );
+			$margin_left_mobile   = $sgs_css_length( $margin_mobile_obj['left'] ?? '' );
 
 			$has_responsive_padding = ( '' !== $padding_top_tablet || '' !== $padding_right_tablet || '' !== $padding_bottom_tablet || '' !== $padding_left_tablet
 				|| '' !== $padding_top_mobile || '' !== $padding_right_mobile || '' !== $padding_bottom_mobile || '' !== $padding_left_mobile );
@@ -284,20 +291,28 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Content-band (Layer 2: __inner) attrs — section + layout kinds only, since
 			// those are the only kinds that can emit the __inner wrapper (content kind
 			// uses contentWidth/padding natively; no __inner layer is emitted).
-			$band_padding_top    = $sgs_css_length( $attributes['contentBandPaddingTop'] ?? '' );
-			$band_padding_right  = $sgs_css_length( $attributes['contentBandPaddingRight'] ?? '' );
-			$band_padding_bottom = $sgs_css_length( $attributes['contentBandPaddingBottom'] ?? '' );
-			$band_padding_left   = $sgs_css_length( $attributes['contentBandPaddingLeft'] ?? '' );
+			// Box-object interface contract §2: contentBandPadding/Tablet/Mobile are
+			// per-area OBJECT attrs { top, right, bottom, left } (SGS custom attrs, not
+			// WP-native style.*). Tablet/mobile stay gated to section+layout kinds — a
+			// content-kind composite has no __inner band to apply them to.
+			$band_padding_obj = is_array( $attributes['contentBandPadding'] ?? null ) ? $attributes['contentBandPadding'] : array();
+			$band_padding_top    = $sgs_css_length( $band_padding_obj['top'] ?? '' );
+			$band_padding_right  = $sgs_css_length( $band_padding_obj['right'] ?? '' );
+			$band_padding_bottom = $sgs_css_length( $band_padding_obj['bottom'] ?? '' );
+			$band_padding_left   = $sgs_css_length( $band_padding_obj['left'] ?? '' );
 
-			$band_padding_top_tablet    = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentBandPaddingTopTablet'] ?? '' ) : '';
-			$band_padding_right_tablet  = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentBandPaddingRightTablet'] ?? '' ) : '';
-			$band_padding_bottom_tablet = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentBandPaddingBottomTablet'] ?? '' ) : '';
-			$band_padding_left_tablet   = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentBandPaddingLeftTablet'] ?? '' ) : '';
+			$band_padding_tablet_obj = ( $is_section || $is_layout ) && is_array( $attributes['contentBandPaddingTablet'] ?? null ) ? $attributes['contentBandPaddingTablet'] : array();
+			$band_padding_mobile_obj = ( $is_section || $is_layout ) && is_array( $attributes['contentBandPaddingMobile'] ?? null ) ? $attributes['contentBandPaddingMobile'] : array();
 
-			$band_padding_top_mobile    = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentBandPaddingTopMobile'] ?? '' ) : '';
-			$band_padding_right_mobile  = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentBandPaddingRightMobile'] ?? '' ) : '';
-			$band_padding_bottom_mobile = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentBandPaddingBottomMobile'] ?? '' ) : '';
-			$band_padding_left_mobile   = ( $is_section || $is_layout ) ? $sgs_css_length( $attributes['contentBandPaddingLeftMobile'] ?? '' ) : '';
+			$band_padding_top_tablet    = $sgs_css_length( $band_padding_tablet_obj['top'] ?? '' );
+			$band_padding_right_tablet  = $sgs_css_length( $band_padding_tablet_obj['right'] ?? '' );
+			$band_padding_bottom_tablet = $sgs_css_length( $band_padding_tablet_obj['bottom'] ?? '' );
+			$band_padding_left_tablet   = $sgs_css_length( $band_padding_tablet_obj['left'] ?? '' );
+
+			$band_padding_top_mobile    = $sgs_css_length( $band_padding_mobile_obj['top'] ?? '' );
+			$band_padding_right_mobile  = $sgs_css_length( $band_padding_mobile_obj['right'] ?? '' );
+			$band_padding_bottom_mobile = $sgs_css_length( $band_padding_mobile_obj['bottom'] ?? '' );
+			$band_padding_left_mobile   = $sgs_css_length( $band_padding_mobile_obj['left'] ?? '' );
 
 			// Band background — ALL kinds (Bean-locked 2026-06-16: band-level CSS must
 			// survive cloning regardless of block kind; the content-kind carve-out

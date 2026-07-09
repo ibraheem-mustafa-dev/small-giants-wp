@@ -51,17 +51,18 @@ def test_content_band_tier_suffix(conn):
 
 
 def test_content_band_padding_transfers_to_content_band_padding_attr(conn):
-    # EXECUTION Step 12 (2026-07-04): sgs/container's real band-padding attr is
-    # 'contentBandPaddingTop' (not the generic 'contentPaddingTop' the pre-existing
-    # 'PaddingTop' suffix derives). A SECOND property_suffixes row (suffix=
-    # 'BandPaddingTop', migrations/2026-07-04-property-suffixes-content-band-padding.py)
-    # now resolves the CONTENT-band padding declaration to the block's ACTUAL attr —
-    # this is a REAL transfer, no longer an honest gap (was NO_DESTINATION before
-    # the seed; see test_fold_band_cascade.py::test_band_padding_background_textalign_transfer
-    # for the companion cross-node proof).
+    # SUPERSEDES the EXECUTION Step 12 (2026-07-04) flat-attr assertion. The
+    # box-object interface contract (`.claude/plans/2026-07-09-box-object-
+    # interface-contract.md` §3/§4, 2026-07-09) reshaped sgs/container's
+    # contentBandPadding* family into a merged OBJECT attr — block.json no
+    # longer declares the flat 'contentBandPaddingTop' (only 'contentBandPadding'
+    # / 'contentBandPaddingTablet' / 'contentBandPaddingMobile', all type=object,
+    # box_family='contentBandPadding'). A CONTENT-band padding-top declaration
+    # now accumulates into that merged Base-tier object attr — still a REAL
+    # transfer (no longer an honest gap), just object-shaped rather than flat.
     out = content_band.resolve(Decl("padding-top", "20px", "Base"), _ctx(conn))
     assert isinstance(out, Write)
-    assert (out.attr, out.value) == ("contentBandPaddingTop", "20px")
+    assert (out.attr, out.value) == ("contentBandPadding", {"top": "20px"})
 
 
 def test_content_band_metamorphic_value_scale(conn):

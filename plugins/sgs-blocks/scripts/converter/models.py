@@ -35,15 +35,26 @@ class GapOrigin(str, enum.Enum):
 class Write:
     """A declaration that transferred to a native attribute.
 
-    `value` is `int | float | str` (widened from `str` per the 2026-06-29 seam
-    decision Option A, grounded in Spec 31 §3.A.5): number attrs (fontSize,
+    `value` is `int | float | str | dict[str, str]` (widened from `str` per the
+    2026-06-29 seam decision Option A, grounded in Spec 31 §3.A.5; further widened
+    to `dict` per the box-object interface contract, `.claude/plans/2026-07-09-
+    box-object-interface-contract.md` §3/§4, 2026-07-09): number attrs (fontSize,
     columns, lineHeight-unitless) store numerics faithful to convert.py's lifters.
+    A `dict[str, str]` value is a PARTIAL box-object write — e.g.
+    `Write(attr='contentBandPaddingTablet', value={'top': '10px'}, ...)` — one
+    side of a merged box family (`{top,right,bottom,left}` or
+    `{topLeft,topRight,bottomLeft,bottomRight}`). Multiple dict-valued Writes for
+    the SAME attr are a deliberate, sanctioned exception to the ordinary
+    duplicate-attr COLLISION rule (`orchestrator._check_conservation`) — they are
+    MERGED (first-write-per-key wins, matching the fold `setdefault` contract),
+    never treated as data loss. A dict value mixed with a non-dict value for the
+    same attr, or two dict writes sharing a KEY, both remain hard collisions.
     emit_block_markup serialises via json.dumps so a numeric value renders unquoted
     in the block comment, matching the native block schema (number attrs are JSON
-    numbers).
+    numbers); a dict value renders as a nested JSON object.
     """
     attr: str                  # the (tier-suffixed) block attribute, e.g. 'maxWidth' / 'maxWidthTablet'
-    value: int | float | str   # the serialised value written (numeric for number attrs)
+    value: int | float | str | dict  # the serialised value written (numeric for number attrs; dict for a box-object partial side write)
     property: str              # source CSS property (for the ledger/coverage join).
                                # SYNTHETIC writes that have no source declaration (the
                                # element-level align_finalise post-pass) carry a

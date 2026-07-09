@@ -28,6 +28,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from converter.db import db_lookup
 from converter.models import GAP, GapOrigin, Write
 from converter.services.attr_resolve import attr_resolve
 from converter.services.fold_helpers import _resolve_co_declared_var
@@ -68,6 +69,44 @@ def _layer_priorities(prop: str) -> tuple[str, ...]:
     return ("CONTENT", "OUTER")
 
 
+def _content_band_box_write(decl: Any, ctx: Any) -> Write | None:
+    """Route a ``padding-{side}`` CONTENT-layer declaration into the merged
+    ``contentBandPadding{Tier}`` box-object attr (box-object interface contract
+    §3/§4, ``.claude/plans/2026-07-09-box-object-interface-contract.md``),
+    when the owning block declares that ``box_family`` — closing the
+    previously-HONEST content-band-padding routing gap documented in this
+    module's header (container declares ``contentBandPadding*`` as a merged
+    OBJECT attr, never the flat ``contentPadding{Side}*`` the ordinary
+    layer-priority chain derives).
+
+    Returns ``None`` (never a GAP) when the box-object path doesn't apply —
+    the caller falls through to the unchanged layer-priority chain. Gated on
+    ``db_lookup.box_family_for``, NEVER an attr-name regex (§3/§6 AST gate).
+    """
+    prop = decl.property
+    if not prop.startswith("padding-"):
+        return None
+    side = prop[len("padding-"):]
+    if side not in ("top", "right", "bottom", "left"):
+        return None
+
+    prefix = db_lookup.layer_attr_prefix("CONTENT") or ""
+    # 'BandPadding' is the universal CSS-architecture band-mirror vocabulary —
+    # the SAME family root already seeded in property_suffixes ('BandPaddingTop'
+    # etc — see attr_for_area_property's Band-prefix exclusion filter, D194).
+    # Not a per-block literal (R-31-1 permitted-constant, same class as
+    # _LAYER_PREFIXES itself).
+    family = f"{prefix}BandPadding"
+    object_attr = tier_suffix(family, decl.tier, ctx.conn)
+    box_family = db_lookup.box_family_for(ctx.block_slug, object_attr)
+    if box_family != family:
+        return None
+
+    resolved = _resolve_co_declared_var(strip_important(decl.value).strip(), {})
+    value = token_snap(prop, value_serialise("string", None, resolved), ctx.conn)
+    return Write(attr=object_attr, value={side: value}, property=prop, tier=decl.tier)
+
+
 def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     prop = decl.property
 
@@ -78,6 +117,13 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             ctx, decl, GapOrigin.NO_DESTINATION,
             f"non-device-tier breakpoint {decl.tier!r} for {prop} (§3.A A4)",
         )
+
+    # Box-object contract (§3/§4): a padding-side decl accumulates into the
+    # owner's merged contentBandPadding{Tier} object attr when box_family
+    # gates it, BEFORE the legacy flat-attr layer-priority chain runs.
+    box_write = _content_band_box_write(decl, ctx)
+    if box_write is not None:
+        return box_write
 
     # Explicit layer-priority chain (the re-expressed fold ladder): first
     # layer whose attr the OWNING block actually declares wins.

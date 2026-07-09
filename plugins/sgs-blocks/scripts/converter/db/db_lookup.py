@@ -535,6 +535,33 @@ def block_attrs(block_slug: str) -> dict[str, dict]:
     return result
 
 
+@functools.lru_cache(maxsize=1024)
+def box_family_for(block_slug: str, attr_name: str) -> "str | None":
+    """Return the ``box_family`` (e.g. ``'padding'``, ``'contentBandPadding'``)
+    for a merged box-object attr, or ``None`` when the attr has no box_family
+    (a scalar attr, or an attr that doesn't exist for this block).
+
+    Box-object interface contract (`.claude/plans/2026-07-09-box-object-
+    interface-contract.md` §3): the sole legitimate gate for whether a
+    responsive-tier CSS write should ACCUMULATE into a merged object attr
+    (``paddingTablet: {"top": ..., ...}``) rather than fall back to a flat
+    per-side attr. Callers MUST branch on this return value, never on the
+    attr NAME (regex/suffix matching) — that is exactly the collision the
+    AST gate (§6) forbids.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT box_family FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
+            (block_slug, attr_name),
+        ).fetchone()
+    finally:
+        conn.close()
+    if not row:
+        return None
+    return row[0] or None
+
+
 @functools.lru_cache(maxsize=256)
 def tag_identity_attrs(block_slug: str) -> dict[str, frozenset[str]]:
     """Return {attr_name: allowed_tag_values} for the block's tag-identity attrs.

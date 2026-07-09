@@ -9,10 +9,8 @@ import {
   SelectControl,
 } from "@wordpress/components";
 import { shadowVar } from "../../utils";
-import { ResponsiveControl } from "../../components";
+import { ResponsiveControl, ResponsiveBoxControl, DesignTokenPicker } from "../../components";
 import {
-  ResponsiveSpacingPanel,
-  ContentBandPanel,
   LayoutPanel,
   WidthPanel,
   BackgroundPanel,
@@ -185,18 +183,93 @@ export default function Edit({ attributes, setAttributes }) {
           </ResponsiveControl>
         </PanelBody>
 
-        {/* Responsive spacing overrides (tablet / mobile padding + margin).
-            Desktop base is handled by WP-native supports.spacing (Dimensions panel). */}
-        <ResponsiveSpacingPanel
-          attributes={ attributes }
-          setAttributes={ setAttributes }
-        />
+        {/* Responsive spacing (padding + margin) — box-object interface contract
+            (.claude/plans/2026-07-09-box-object-interface-contract.md §5). Base tier
+            writes to the WP-native style.spacing object (also visible in the Styles >
+            Dimensions panel); tablet/mobile write to the paddingTablet/paddingMobile
+            and marginTablet/marginMobile object attrs read by the wrapper's @media tiers. */}
+        <PanelBody title={ __( "Padding & margin", "sgs-blocks" ) } initialOpen={ false }>
+          <ResponsiveBoxControl
+            label={ __( "Padding", "sgs-blocks" ) }
+            values={ {
+              base: attributes.style?.spacing?.padding ?? {},
+              tablet: attributes.paddingTablet ?? {},
+              mobile: attributes.paddingMobile ?? {},
+            } }
+            onChange={ ( tier, next ) => {
+              if ( tier === "base" ) {
+                setAttributes( {
+                  style: {
+                    ...attributes.style,
+                    spacing: { ...attributes.style?.spacing, padding: next },
+                  },
+                } );
+              } else {
+                setAttributes( {
+                  [ tier === "tablet" ? "paddingTablet" : "paddingMobile" ]: next,
+                } );
+              }
+            } }
+          />
+          <hr style={ { margin: "16px 0" } } />
+          <ResponsiveBoxControl
+            label={ __( "Margin", "sgs-blocks" ) }
+            values={ {
+              base: attributes.style?.spacing?.margin ?? {},
+              tablet: attributes.marginTablet ?? {},
+              mobile: attributes.marginMobile ?? {},
+            } }
+            onChange={ ( tier, next ) => {
+              if ( tier === "base" ) {
+                setAttributes( {
+                  style: {
+                    ...attributes.style,
+                    spacing: { ...attributes.style?.spacing, margin: next },
+                  },
+                } );
+              } else {
+                setAttributes( {
+                  [ tier === "tablet" ? "marginTablet" : "marginMobile" ]: next,
+                } );
+              }
+            } }
+          />
+        </PanelBody>
 
-        {/* Content band (Layer 2 __inner) — background, padding, responsive width. */}
-        <ContentBandPanel
-          attributes={ attributes }
-          setAttributes={ setAttributes }
-        />
+        {/* Content band (Layer 2 __inner) padding — per-area object attr (contract §2),
+            not a WP-native attr since the band is an SGS-only inner element. Background +
+            responsive width controls stay on GridItemDefaultsPanel's neighbour BackgroundPanel
+            / WidthPanel; this panel is scoped to band padding only. */}
+        <PanelBody title={ __( "Content band", "sgs-blocks" ) } initialOpen={ false }>
+          <p className="components-base-control__help">
+            { __( "Styles the inner content band (the max-width wrapper set by Content width). Only active when Content width is set.", "sgs-blocks" ) }
+          </p>
+          <DesignTokenPicker
+            label={ __( "Band background colour", "sgs-blocks" ) }
+            value={ attributes.contentBandBackground || "" }
+            onChange={ ( val ) => setAttributes( { contentBandBackground: val } ) }
+          />
+          <ResponsiveBoxControl
+            label={ __( "Band padding", "sgs-blocks" ) }
+            values={ {
+              base: attributes.contentBandPadding ?? {},
+              tablet: attributes.contentBandPaddingTablet ?? {},
+              mobile: attributes.contentBandPaddingMobile ?? {},
+            } }
+            onChange={ ( tier, next ) => {
+              // Explicit tablet:/mobile: literal map (matches the canonical
+              // ResponsiveControl idiom used elsewhere in this file — see the
+              // Min height attrMap above) so the control-ux static gate
+              // recognises this as a compliant responsive-family write.
+              const attrMap = {
+                base: "contentBandPadding",
+                tablet: "contentBandPaddingTablet",
+                mobile: "contentBandPaddingMobile",
+              };
+              setAttributes( { [ attrMap[ tier ] ]: next } );
+            } }
+          />
+        </PanelBody>
 
         {/* Grid item defaults — only shown when layout is grid. */}
         <GridItemDefaultsPanel attributes={ attributes } setAttributes={ setAttributes } />

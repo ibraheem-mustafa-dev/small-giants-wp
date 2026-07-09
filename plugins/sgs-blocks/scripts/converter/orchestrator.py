@@ -57,9 +57,26 @@ class ElementResult:
     # columns) — convert.py's lifters setdefault multiple attrs per element.
     decl_results: int = 0
 
-    def attrs(self) -> dict[str, int | float | str]:
-        """The native block attribute dict the Writes produce (for emit)."""
-        return {w.attr: w.value for w in self.writes}
+    def attrs(self) -> dict[str, int | float | str | dict]:
+        """The native block attribute dict the Writes produce (for emit).
+
+        Box-object interface contract (2026-07-09): a dict-valued Write is a
+        PARTIAL box-object side write (`{'top': '10px'}`). Multiple dict Writes
+        for the SAME attr MERGE (first-write-per-key wins — `_check_conservation`
+        already hard-fails a real per-key collision before this runs, so a plain
+        per-key `setdefault` here is safe). A non-dict Write for an attr already
+        seen behaves exactly as before (last-write-wins dict-comprehension
+        semantics) — collision-checked separately, unreachable for duplicates.
+        """
+        out: dict[str, int | float | str | dict] = {}
+        for w in self.writes:
+            existing = out.get(w.attr)
+            if isinstance(w.value, dict) and isinstance(existing, dict):
+                for k, v in w.value.items():
+                    existing.setdefault(k, v)
+            else:
+                out[w.attr] = w.value
+        return out
 
     def unrouted(self) -> list[GAP]:
         return [g for g in self.gaps if g.origin is GapOrigin.UNROUTED]
@@ -93,13 +110,36 @@ def _check_conservation(result: ElementResult) -> None:
             f"(a resolver returned None or an empty list for some decl). "
             f"Every declaration must produce ≥1 Write or a GAP."
         )
-    # COLLISION: no two writes may target the same attr (silent last-wins data loss).
-    seen: set[str] = set()
-    dupes: list[str] = []
+    # COLLISION: no two writes may target the same attr (silent last-wins data
+    # loss) — UNLESS every write sharing that attr carries a dict value (a
+    # box-object PARTIAL side write, box-object interface contract §3/§4,
+    # 2026-07-09): those are a deliberate merge, not a collision, PROVIDED no
+    # two dict writes for the same attr also share a KEY (that IS a real
+    # collision — two declarations both claiming e.g. 'top') and no dict write
+    # is mixed with a non-dict write for the same attr (an ambiguous shape).
+    by_attr: dict[str, list] = {}
     for w in result.writes:
-        if w.attr in seen:
-            dupes.append(w.attr)
-        seen.add(w.attr)
+        by_attr.setdefault(w.attr, []).append(w)
+    dupes: list[str] = []
+    for attr, ws in by_attr.items():
+        if len(ws) < 2:
+            continue
+        if all(isinstance(w.value, dict) for w in ws):
+            seen_keys: set[str] = set()
+            key_dupes: set[str] = set()
+            for w in ws:
+                for k in w.value:
+                    if k in seen_keys:
+                        key_dupes.add(k)
+                    seen_keys.add(k)
+            if key_dupes:
+                raise ConservationError(
+                    f"COLLISION: box-object attr {attr!r} for {result.block_slug} "
+                    f"received ≥2 writes for the same side key(s) "
+                    f"{sorted(key_dupes)} — one would be silently lost."
+                )
+            continue  # merge-safe: distinct keys across dict writes
+        dupes.append(attr)
     if dupes:
         raise ConservationError(
             f"COLLISION: duplicate attr write(s) {sorted(set(dupes))} for "
@@ -176,7 +216,15 @@ def process_element(ctx: Any, decls: list[Any]) -> ElementResult:
                 f"silent wrong-block write."
             )
         for w in result.writes:
-            dest.attrs.setdefault(w.attr, w.value)
+            if isinstance(w.value, dict) and isinstance(dest.attrs.get(w.attr), dict):
+                # Box-object partial side write (contract §3/§4): merge into the
+                # OWNER's already-assembling object attr, per-key setdefault
+                # (earlier paths win — same "earlier wins" contract as the
+                # scalar setdefault below).
+                for k, v in w.value.items():
+                    dest.attrs[w.attr].setdefault(k, v)
+            else:
+                dest.attrs.setdefault(w.attr, w.value)
     return result
 
 

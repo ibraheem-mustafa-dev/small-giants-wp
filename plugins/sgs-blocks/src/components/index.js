@@ -1,4 +1,8 @@
 export { default as ResponsiveControl } from './ResponsiveControl';
+export {
+	default as ResponsiveBoxControl,
+	ResponsiveBorderRadiusControl,
+} from './ResponsiveBoxControl';
 export { default as DesignTokenPicker, resolveColorToken } from './DesignTokenPicker';
 export { default as SpacingControl } from './SpacingControl';
 export { default as AnimationControl } from './AnimationControl';
