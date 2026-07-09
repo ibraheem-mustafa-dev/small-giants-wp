@@ -25,7 +25,8 @@
 		"color": {
 			"background": true,
 			"text": true,
-			"gradients": true
+			"gradients": true,
+			"__experimentalSkipSerialization": true
 		},
 		"typography": {
 			"fontSize": true,
@@ -34,17 +35,20 @@
 			"letterSpacing": true,
 			"textTransform": true,
 			"fontWeight": true,
-			"fontStyle": true
+			"fontStyle": true,
+			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
 			"margin": true,
-			"padding": true
+			"padding": true,
+			"__experimentalSkipSerialization": true
 		},
 		"__experimentalBorder": {
 			"radius": true,
 			"width": true,
 			"color": true,
-			"style": true
+			"style": true,
+			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
 			"imageControls": true,
@@ -345,137 +349,41 @@
 			"type": "string",
 			"default": "px"
 		},
-		"imageBorderRadiusTL": {
-			"type": "number",
-			"default": 0
+		"imageBorderRadius": {
+			"type": "object",
+			"default": {}
 		},
-		"imageBorderRadiusTR": {
-			"type": "number",
-			"default": 0
+		"imageBorderRadiusTablet": {
+			"type": "object",
+			"default": {}
 		},
-		"imageBorderRadiusBR": {
-			"type": "number",
-			"default": 0
-		},
-		"imageBorderRadiusBL": {
-			"type": "number",
-			"default": 0
-		},
-		"imageBorderRadiusTabletTL": {
-			"type": "number",
-			"default": null
-		},
-		"imageBorderRadiusTabletTR": {
-			"type": "number",
-			"default": null
-		},
-		"imageBorderRadiusTabletBR": {
-			"type": "number",
-			"default": null
-		},
-		"imageBorderRadiusTabletBL": {
-			"type": "number",
-			"default": null
-		},
-		"imageBorderRadiusMobileTL": {
-			"type": "number",
-			"default": null
-		},
-		"imageBorderRadiusMobileTR": {
-			"type": "number",
-			"default": null
-		},
-		"imageBorderRadiusMobileBR": {
-			"type": "number",
-			"default": null
-		},
-		"imageBorderRadiusMobileBL": {
-			"type": "number",
-			"default": null
-		},
-		"imageBorderRadiusUnit": {
-			"type": "string",
-			"default": "px"
+		"imageBorderRadiusMobile": {
+			"type": "object",
+			"default": {}
 		},
 		"imageBorderStyle": {
 			"type": "string",
 			"default": "none"
 		},
-		"imageBorderWidthTop": {
-			"type": "number",
-			"default": 0
-		},
-		"imageBorderWidthRight": {
-			"type": "number",
-			"default": 0
-		},
-		"imageBorderWidthBottom": {
-			"type": "number",
-			"default": 0
-		},
-		"imageBorderWidthLeft": {
-			"type": "number",
-			"default": 0
-		},
-		"imageBorderWidthUnit": {
-			"type": "string",
-			"default": "px"
+		"imageBorderWidth": {
+			"type": "object",
+			"default": {}
 		},
 		"imageBorderColour": {
 			"type": "string",
 			"default": ""
 		},
-		"imagePaddingTop": {
-			"type": "number",
-			"default": 0
+		"imagePadding": {
+			"type": "object",
+			"default": {}
 		},
-		"imagePaddingRight": {
-			"type": "number",
-			"default": 0
+		"imagePaddingTablet": {
+			"type": "object",
+			"default": {}
 		},
-		"imagePaddingBottom": {
-			"type": "number",
-			"default": 0
-		},
-		"imagePaddingLeft": {
-			"type": "number",
-			"default": 0
-		},
-		"imagePaddingTopTablet": {
-			"type": "number",
-			"default": null
-		},
-		"imagePaddingRightTablet": {
-			"type": "number",
-			"default": null
-		},
-		"imagePaddingBottomTablet": {
-			"type": "number",
-			"default": null
-		},
-		"imagePaddingLeftTablet": {
-			"type": "number",
-			"default": null
-		},
-		"imagePaddingTopMobile": {
-			"type": "number",
-			"default": null
-		},
-		"imagePaddingRightMobile": {
-			"type": "number",
-			"default": null
-		},
-		"imagePaddingBottomMobile": {
-			"type": "number",
-			"default": null
-		},
-		"imagePaddingLeftMobile": {
-			"type": "number",
-			"default": null
-		},
-		"imagePaddingUnit": {
-			"type": "string",
-			"default": "px"
+		"imagePaddingMobile": {
+			"type": "object",
+			"default": {}
 		},
 		"mediaBackgroundColour": {
 			"type": "string",
@@ -485,109 +393,29 @@
 			"type": "string",
 			"default": ""
 		},
-		"contentPaddingTop": {
-			"type": "number",
-			"default": null
+		"contentPadding": {
+			"type": "object",
+			"default": {}
 		},
-		"contentPaddingRight": {
-			"type": "number",
-			"default": null
+		"contentPaddingTablet": {
+			"type": "object",
+			"default": {}
 		},
-		"contentPaddingBottom": {
-			"type": "number",
-			"default": null
+		"contentPaddingMobile": {
+			"type": "object",
+			"default": {}
 		},
-		"contentPaddingLeft": {
-			"type": "number",
-			"default": null
+		"mediaPadding": {
+			"type": "object",
+			"default": {}
 		},
-		"contentPaddingTopTablet": {
-			"type": "number",
-			"default": null
+		"mediaPaddingTablet": {
+			"type": "object",
+			"default": {}
 		},
-		"contentPaddingRightTablet": {
-			"type": "number",
-			"default": null
-		},
-		"contentPaddingBottomTablet": {
-			"type": "number",
-			"default": null
-		},
-		"contentPaddingLeftTablet": {
-			"type": "number",
-			"default": null
-		},
-		"contentPaddingTopMobile": {
-			"type": "number",
-			"default": null
-		},
-		"contentPaddingRightMobile": {
-			"type": "number",
-			"default": null
-		},
-		"contentPaddingBottomMobile": {
-			"type": "number",
-			"default": null
-		},
-		"contentPaddingLeftMobile": {
-			"type": "number",
-			"default": null
-		},
-		"contentPaddingUnit": {
-			"type": "string",
-			"default": "px"
-		},
-		"mediaPaddingTop": {
-			"type": "number",
-			"default": null
-		},
-		"mediaPaddingRight": {
-			"type": "number",
-			"default": null
-		},
-		"mediaPaddingBottom": {
-			"type": "number",
-			"default": null
-		},
-		"mediaPaddingLeft": {
-			"type": "number",
-			"default": null
-		},
-		"mediaPaddingTopTablet": {
-			"type": "number",
-			"default": null
-		},
-		"mediaPaddingRightTablet": {
-			"type": "number",
-			"default": null
-		},
-		"mediaPaddingBottomTablet": {
-			"type": "number",
-			"default": null
-		},
-		"mediaPaddingLeftTablet": {
-			"type": "number",
-			"default": null
-		},
-		"mediaPaddingTopMobile": {
-			"type": "number",
-			"default": null
-		},
-		"mediaPaddingRightMobile": {
-			"type": "number",
-			"default": null
-		},
-		"mediaPaddingBottomMobile": {
-			"type": "number",
-			"default": null
-		},
-		"mediaPaddingLeftMobile": {
-			"type": "number",
-			"default": null
-		},
-		"mediaPaddingUnit": {
-			"type": "string",
-			"default": "px"
+		"mediaPaddingMobile": {
+			"type": "object",
+			"default": {}
 		},
 		"contentBackground": {
 			"type": "string",
@@ -1005,53 +833,17 @@
 			"type": "string",
 			"default": ""
 		},
-		"contentBandPaddingBottom": {
-			"type": "string",
-			"default": ""
+		"contentBandPadding": {
+			"type": "object",
+			"default": {}
 		},
-		"contentBandPaddingBottomMobile": {
-			"type": "string",
-			"default": ""
+		"contentBandPaddingTablet": {
+			"type": "object",
+			"default": {}
 		},
-		"contentBandPaddingBottomTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingLeft": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingLeftMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingLeftTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingRight": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingRightMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingRightTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingTop": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingTopMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingTopTablet": {
-			"type": "string",
-			"default": ""
+		"contentBandPaddingMobile": {
+			"type": "object",
+			"default": {}
 		},
 		"contentWidthMobile": {
 			"type": "string",

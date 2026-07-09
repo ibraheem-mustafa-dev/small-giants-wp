@@ -3,7 +3,10 @@
 .sgs-hero {
 	position: relative;
 	display: flex;
-	align-items: center;
+	/* No hardcoded align-items default (F3 drain, D293) — driven dynamically
+	   by verticalAlignment via the block's own scoped .uid{align-items:…} rule
+	   (render.php), which always emits a value (default 'center' maps to
+	   'center', so an untouched instance stays visually identical). */
 	overflow: hidden;
 	box-sizing: border-box;
 	transition-duration: var(--sgs-transition-duration, 300ms);

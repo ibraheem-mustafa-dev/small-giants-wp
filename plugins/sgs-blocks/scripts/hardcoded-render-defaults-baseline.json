@@ -19,14 +19,6 @@
    "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
   },
   {
-   "block": "sgs/hero",
-   "file": "src\\blocks\\hero\\style.css",
-   "property": "align-items",
-   "value": "center",
-   "attr": "alignment, verticalAlignment, verticalAlign",
-   "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-  },
-  {
    "block": "sgs/mega-menu",
    "file": "src\\blocks\\mega-menu\\style.css",
    "property": "max-width",

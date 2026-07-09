@@ -6,7 +6,17 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-09 (LATEST) — D294: no-inline rollout Task 1 — quote + media LANDED block-private; content-KIND→block-private principle (qc-council); shared wrapper max-width/contentWidth de-inlined
+## 2026-07-09 (LATEST) — D295: no-inline rollout Task 2 — sgs/hero LANDED (6 per-area box-object families + F3-drain, keeps wrapper)
+
+**D295 — `sgs/hero` (the biggest block, section-KIND composite) migrated to no-inline + box-object, LANDED live on page 8.** Branch main; continues D294. Hero KEEPS `SGS_Container_Wrapper` for the section (D294 principle: section/layout composites keep the wrapper; only content-KIND go block-private) and renders its 6 per-area families block-privately.
+
+- **6 per-area families flat→object:** `contentPadding`/`mediaPadding`/`imagePadding`/`imageBorderWidth`(base-only)/`imageBorderRadius`/`contentBandPadding`, incl. Tablet/Mobile tiers. Normalised the NON-STANDARD tier-infixed `imageBorderRadiusTabletTL` → `imageBorderRadiusTablet.topLeft`. ~65 flat attrs removed; 16 box_family seeds added centrally; 69 orphans pruned (STOP-66). All 4 WP supports flipped to `__experimentalSkipSerialization`; hero emits its section color/border/typography scoped to `.wp-block-sgs-hero` (NOT via the wrapper's inlining `extra_styles`). `$is_split` gating preserved. `contentBandPadding` is wrapper-consumed (object mirror of container).
+- **F3-drain:** `align-items:center` style.css hardcode → `verticalAlignment`-driven scoped `.uid` rule (default center byte-identical); hero deleted from the F3 baseline (10→9).
+- **blub-255 2-rater pre-commit panel: SHIP + SHIP.** Rater A (no-inline/double-emit) traced that the wrapper only serialises `style.spacing` while hero emits color/border/typography on its own uid → NO property emitted twice; skipSerialization suppresses WP auto-inline. Rater B (controls/F3) confirmed the dropped `ContainerWrapperControls` aggregator's 8 sub-panels were each re-added individually → zero lost controls, zero dead controls. The automated security review + panel caught an `$overlay_colour` sibling-sanitiser asymmetry → refactored to sanitise once at the concat site (`sgs_colour_value`), matching siblings.
+- **LANDED page 8 (live, anonymous Playwright, post reclone + purge):** `contentPadding` object LANDED across tiers — 72/64 @1440 (base), 36/16 @768/375 (`contentPaddingTablet`); F3 `align-items:center` correct at all 3 breakpoints; zero inline from hero's own supports/per-area render; reclone regression clean (content 100%, parity 67/68/69 steady, no ConservationError).
+- **KNOWN RESIDUAL (tracked, NOT a hero defect):** the hero section root carries one inline `display:grid` from the shared wrapper's grid engine (pre-existing; split-hero is a grid container). Grid-CSS scoping was deliberately deferred — it affects EVERY grid composite (card-grid/feature-grid/container grids) and belongs in ONE universal grid-scoping pass (Spec 31 §3.A treats `display`/`grid-template-*` specially). The child `sgs/label` inline is unmigrated (Task 3 roster). NEW STOP-68: hero/grid composites are NOT "100% zero inline" until the universal wrapper grid-scoping lands — do not claim framework-wide zero-inline before Task 4 without scoping `display:grid`/`grid-template-*`.
+
+## 2026-07-09 — D294: no-inline rollout Task 1 — quote + media LANDED block-private; content-KIND→block-private principle (qc-council); shared wrapper max-width/contentWidth de-inlined
 
 **D294 — the no-inline rollout advances to quote + media (both LANDED block-private), a shared-wrapper inline residual is fixed, and a qc-council settles how content-KIND composites migrate.** Branch main; D-ceiling was D293. Continues the D292/D293 pilot into the roster.
 

@@ -19,9 +19,30 @@ import {
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveControl } from '../../components';
+import {
+	DesignTokenPicker,
+	ResponsiveControl,
+	ResponsiveBoxControl,
+	ResponsiveBorderRadiusControl,
+} from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+// No-inline migration (2026-07-09): hero no longer uses the default
+// <ContainerWrapperControls> aggregator — its unconditional "Content band" /
+// per-grid-area panels write to LEGACY FLAT attrs, which would become dead
+// controls once contentBandPadding / contentPadding / mediaPadding become box
+// objects. Import the individual panels still needed instead (mirrors
+// sgs/container's own edit.js, which took the same approach); hero rolls its
+// own "Content band" / "Content area" / "Media area" panels below using
+// ResponsiveBoxControl bound to the new object attrs.
+import {
+	WidthPanel,
+	LayoutPanel,
+	BackgroundPanel,
+	ShapeDividersPanel,
+	GridItemDefaultsPanel,
+	ResponsiveSpacingPanel,
+	SHADOW_OPTIONS,
+} from '../container/components/ContainerWrapperControls';
 
 // ── Phase 1 constant options ─────────────────────────────────────────────────
 
@@ -70,10 +91,6 @@ const COLUMN_RATIO_PRESETS = [
 	{ label: __( '30:70', 'sgs-blocks' ), value: '30% 70%' },
 	{ label: __( 'Custom...', 'sgs-blocks' ), value: 'custom' },
 ];
-
-// gridAreas declared in block.json supports.sgs.gridAreas — passed to the
-// shared ContainerWrapperControls so it renders per-area panels.
-const HERO_GRID_AREAS = [ 'content', 'media' ];
 
 const MOBILE_ORDER_OPTIONS = [
 	{ label: __( 'Media first (image on top)', 'sgs-blocks' ), value: 'media-first' },
@@ -248,22 +265,28 @@ export default function Edit( { attributes, setAttributes } ) {
 		imageHeightTablet,
 		imageHeightMobile,
 		imageHeightUnit,
-		imageBorderRadiusTL,
-		imageBorderRadiusTR,
-		imageBorderRadiusBR,
-		imageBorderRadiusBL,
-		imageBorderRadiusUnit,
+		// Box-object families (contract §B, 2026-07-09).
+		imageBorderRadius,
+		imageBorderRadiusTablet,
+		imageBorderRadiusMobile,
 		imageBorderStyle,
-		imageBorderWidthTop,
-		imageBorderWidthRight,
-		imageBorderWidthBottom,
-		imageBorderWidthLeft,
-		imageBorderWidthUnit,
+		imageBorderWidth,
 		imageBorderColour,
-		imagePaddingUnit,
+		imagePadding,
+		imagePaddingTablet,
+		imagePaddingMobile,
 		contentBackground,
-		contentPaddingUnit,
-		mediaPaddingUnit,
+		contentPadding,
+		contentPaddingTablet,
+		contentPaddingMobile,
+		mediaBackground,
+		mediaPadding,
+		mediaPaddingTablet,
+		mediaPaddingMobile,
+		contentBandBackground,
+		contentBandPadding,
+		contentBandPaddingTablet,
+		contentBandPaddingMobile,
 		// Phase 1 — layout grid. splitColumnRatio* retired (Step 6, 2026-06-11);
 		// render.php now reads gridTemplateColumns* for the split variant.
 		gridTemplateColumns,
@@ -462,12 +485,34 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					</ResponsiveControl>
 
-					{ /* Media background is the shared "Media area" panel's Background
-					     colour control (mediaBackground attr) — the legacy
-					     mediaBackgroundColour control was removed (one control per
-					     setting); deprecated.js v7 migrates the legacy value.
-					     Content padding is likewise in the shared "Content area" panel
-					     rendered by ContainerWrapperControls gridAreas={HERO_GRID_AREAS}. */ }
+					{ /* Media background/padding controls live in the "Image" panel's
+					     "Outer padding" section below (mediaBackground/mediaPadding*
+					     box-object attrs) — the legacy mediaBackgroundColour control
+					     was removed (one control per setting); deprecated.js v7
+					     migrates the legacy value. */ }
+
+					<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Content area', 'sgs-blocks' ) }</p>
+					<DesignTokenPicker
+						label={ __( 'Content background colour', 'sgs-blocks' ) }
+						value={ contentBackground || '' }
+						onChange={ ( val ) => setAttributes( { contentBackground: val } ) }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Content padding', 'sgs-blocks' ) }
+						values={ {
+							base: contentPadding ?? {},
+							tablet: contentPaddingTablet ?? {},
+							mobile: contentPaddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							const attrMap = {
+								base: 'contentPadding',
+								tablet: 'contentPaddingTablet',
+								mobile: 'contentPaddingMobile',
+							};
+							setAttributes( { [ attrMap[ tier ] ]: next } );
+						} }
+					/>
 
 					{ isSplit && (
 						<>
@@ -756,45 +801,32 @@ export default function Edit( { attributes, setAttributes } ) {
 							) }
 
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Border radius', 'sgs-blocks' ) }</p>
-							<RRangeControl label={ __( 'Top-left', 'sgs-blocks' ) } attrDesktop="imageBorderRadiusTL" attrTablet="imageBorderRadiusTabletTL" attrMobile="imageBorderRadiusMobileTL" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } nullOnZero={ false } />
-							<RRangeControl label={ __( 'Top-right', 'sgs-blocks' ) } attrDesktop="imageBorderRadiusTR" attrTablet="imageBorderRadiusTabletTR" attrMobile="imageBorderRadiusMobileTR" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } nullOnZero={ false } />
-							<RRangeControl label={ __( 'Bottom-right', 'sgs-blocks' ) } attrDesktop="imageBorderRadiusBR" attrTablet="imageBorderRadiusTabletBR" attrMobile="imageBorderRadiusMobileBR" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } nullOnZero={ false } />
-							<RRangeControl label={ __( 'Bottom-left', 'sgs-blocks' ) } attrDesktop="imageBorderRadiusBL" attrTablet="imageBorderRadiusTabletBL" attrMobile="imageBorderRadiusMobileBL" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } nullOnZero={ false } />
-							<UnitControl
-								label={ __( 'Border radius unit', 'sgs-blocks' ) }
-								value={ `${ imageBorderRadiusTL || 0 }${ imageBorderRadiusUnit || 'px' }` }
-								units={ [
-									{ value: 'px', label: 'px', default: 0 },
-									{ value: '%',  label: '%',  default: 0 },
-								] }
-								onChange={ ( val ) => {
-									const unit = val?.replace( /[\d.]+/, '' ) || 'px';
-									setAttributes( { imageBorderRadiusUnit: unit } );
+							<ResponsiveBorderRadiusControl
+								label={ __( 'Image border radius', 'sgs-blocks' ) }
+								values={ {
+									base: imageBorderRadius ?? {},
+									tablet: imageBorderRadiusTablet ?? {},
+									mobile: imageBorderRadiusMobile ?? {},
 								} }
-								__nextHasNoMarginBottom
+								onChange={ ( tier, next ) => {
+									const attrMap = {
+										base: 'imageBorderRadius',
+										tablet: 'imageBorderRadiusTablet',
+										mobile: 'imageBorderRadiusMobile',
+									};
+									setAttributes( { [ attrMap[ tier ] ]: next } );
+								} }
 							/>
 
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Border', 'sgs-blocks' ) }</p>
 							<SelectControl label={ __( 'Border style', 'sgs-blocks' ) } value={ imageBorderStyle } options={ BORDER_STYLE_OPTIONS } onChange={ ( val ) => setAttributes( { imageBorderStyle: val } ) } __nextHasNoMarginBottom />
 							{ imageBorderStyle !== 'none' && (
 								<>
-									<RangeControl label={ __( 'Border top', 'sgs-blocks' ) } value={ imageBorderWidthTop || 0 } onChange={ ( val ) => setAttributes( { imageBorderWidthTop: val } ) } min={ 0 } max={ 20 } step={ 1 } __nextHasNoMarginBottom />
-									<RangeControl label={ __( 'Border right', 'sgs-blocks' ) } value={ imageBorderWidthRight || 0 } onChange={ ( val ) => setAttributes( { imageBorderWidthRight: val } ) } min={ 0 } max={ 20 } step={ 1 } __nextHasNoMarginBottom />
-									<RangeControl label={ __( 'Border bottom', 'sgs-blocks' ) } value={ imageBorderWidthBottom || 0 } onChange={ ( val ) => setAttributes( { imageBorderWidthBottom: val } ) } min={ 0 } max={ 20 } step={ 1 } __nextHasNoMarginBottom />
-									<RangeControl label={ __( 'Border left', 'sgs-blocks' ) } value={ imageBorderWidthLeft || 0 } onChange={ ( val ) => setAttributes( { imageBorderWidthLeft: val } ) } min={ 0 } max={ 20 } step={ 1 } __nextHasNoMarginBottom />
-									<UnitControl
-										label={ __( 'Border width unit', 'sgs-blocks' ) }
-										value={ `${ imageBorderWidthTop || 0 }${ imageBorderWidthUnit || 'px' }` }
-										units={ [
-											{ value: 'px',  label: 'px',  default: 0 },
-											{ value: 'em',  label: 'em',  default: 0 },
-											{ value: 'rem', label: 'rem', default: 0 },
-										] }
-										onChange={ ( val ) => {
-											const unit = val?.replace( /[\d.]+/, '' ) || 'px';
-											setAttributes( { imageBorderWidthUnit: unit } );
-										} }
-										__nextHasNoMarginBottom
+									<ResponsiveBoxControl
+										label={ __( 'Border width', 'sgs-blocks' ) }
+										values={ { base: imageBorderWidth ?? {} } }
+										showResponsive={ false }
+										onChange={ ( tier, next ) => setAttributes( { imageBorderWidth: next } ) }
 									/>
 									<DesignTokenPicker label={ __( 'Border colour', 'sgs-blocks' ) } value={ imageBorderColour } onChange={ ( val ) => setAttributes( { imageBorderColour: val } ) } />
 								</>
@@ -802,42 +834,45 @@ export default function Edit( { attributes, setAttributes } ) {
 
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Inner padding (around the image element itself)', 'sgs-blocks' ) }</p>
 							<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Affects the gap between the image and the wrapper border.', 'sgs-blocks' ) }</p>
-							<RRangeControl label={ __( 'Top', 'sgs-blocks' ) } attrDesktop="imagePaddingTop" attrTablet="imagePaddingTopTablet" attrMobile="imagePaddingTopMobile" attributes={ attributes } setAttributes={ setAttributes } />
-							<RRangeControl label={ __( 'Right', 'sgs-blocks' ) } attrDesktop="imagePaddingRight" attrTablet="imagePaddingRightTablet" attrMobile="imagePaddingRightMobile" attributes={ attributes } setAttributes={ setAttributes } />
-							<RRangeControl label={ __( 'Bottom', 'sgs-blocks' ) } attrDesktop="imagePaddingBottom" attrTablet="imagePaddingBottomTablet" attrMobile="imagePaddingBottomMobile" attributes={ attributes } setAttributes={ setAttributes } />
-							<RRangeControl label={ __( 'Left', 'sgs-blocks' ) } attrDesktop="imagePaddingLeft" attrTablet="imagePaddingLeftTablet" attrMobile="imagePaddingLeftMobile" attributes={ attributes } setAttributes={ setAttributes } />
-							<UnitControl
-								label={ __( 'Inner padding unit', 'sgs-blocks' ) }
-								value={ `0${ imagePaddingUnit || 'px' }` }
-								units={ [
-									{ value: 'px', label: 'px', default: 0 },
-									{ value: '%',  label: '%',  default: 0 },
-								] }
-								onChange={ ( val ) => {
-									const unit = val?.replace( /[\d.]+/, '' ) || 'px';
-									setAttributes( { imagePaddingUnit: unit } );
+							<ResponsiveBoxControl
+								label={ __( 'Image padding', 'sgs-blocks' ) }
+								values={ {
+									base: imagePadding ?? {},
+									tablet: imagePaddingTablet ?? {},
+									mobile: imagePaddingMobile ?? {},
 								} }
-								__nextHasNoMarginBottom
+								onChange={ ( tier, next ) => {
+									const attrMap = {
+										base: 'imagePadding',
+										tablet: 'imagePaddingTablet',
+										mobile: 'imagePaddingMobile',
+									};
+									setAttributes( { [ attrMap[ tier ] ]: next } );
+								} }
 							/>
 
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Outer padding (around the whole media wrapper)', 'sgs-blocks' ) }</p>
 							<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Affects the gap between the wrapper and the surrounding section.', 'sgs-blocks' ) }</p>
-							<RRangeControl label={ __( 'Top', 'sgs-blocks' ) } attrDesktop="mediaPaddingTop" attrTablet="mediaPaddingTopTablet" attrMobile="mediaPaddingTopMobile" attributes={ attributes } setAttributes={ setAttributes } />
-							<RRangeControl label={ __( 'Right', 'sgs-blocks' ) } attrDesktop="mediaPaddingRight" attrTablet="mediaPaddingRightTablet" attrMobile="mediaPaddingRightMobile" attributes={ attributes } setAttributes={ setAttributes } />
-							<RRangeControl label={ __( 'Bottom', 'sgs-blocks' ) } attrDesktop="mediaPaddingBottom" attrTablet="mediaPaddingBottomTablet" attrMobile="mediaPaddingBottomMobile" attributes={ attributes } setAttributes={ setAttributes } />
-							<RRangeControl label={ __( 'Left', 'sgs-blocks' ) } attrDesktop="mediaPaddingLeft" attrTablet="mediaPaddingLeftTablet" attrMobile="mediaPaddingLeftMobile" attributes={ attributes } setAttributes={ setAttributes } />
-							<UnitControl
-								label={ __( 'Outer padding unit', 'sgs-blocks' ) }
-								value={ `0${ mediaPaddingUnit || 'px' }` }
-								units={ [
-									{ value: 'px', label: 'px', default: 0 },
-									{ value: '%',  label: '%',  default: 0 },
-								] }
-								onChange={ ( val ) => {
-									const unit = val?.replace( /[\d.]+/, '' ) || 'px';
-									setAttributes( { mediaPaddingUnit: unit } );
+							<DesignTokenPicker
+								label={ __( 'Media background colour', 'sgs-blocks' ) }
+								value={ mediaBackground || '' }
+								onChange={ ( val ) => setAttributes( { mediaBackground: val } ) }
+							/>
+							<ResponsiveBoxControl
+								label={ __( 'Media padding', 'sgs-blocks' ) }
+								values={ {
+									base: mediaPadding ?? {},
+									tablet: mediaPaddingTablet ?? {},
+									mobile: mediaPaddingMobile ?? {},
 								} }
-								__nextHasNoMarginBottom
+								onChange={ ( tier, next ) => {
+									const attrMap = {
+										base: 'mediaPadding',
+										tablet: 'mediaPaddingTablet',
+										mobile: 'mediaPaddingMobile',
+									};
+									setAttributes( { [ attrMap[ tier ] ]: next } );
+								} }
 							/>
 						</>
 					) }
@@ -1098,14 +1133,67 @@ export default function Edit( { attributes, setAttributes } ) {
 				   Legacy "Overlay colour" control above writes overlayColour; this
 				   panel writes backgroundOverlayColour, which render.php prefers
 				   (backgroundOverlayColour ?? overlayColour).
-				   gridAreas passes the declared areas so per-area panels (content + media)
-				   are rendered in the Grid items section. */ }
-				<ContainerWrapperControls
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					kind="section"
-					gridAreas={ HERO_GRID_AREAS }
-				/>
+				   No-inline migration (2026-07-09): the default <ContainerWrapperControls>
+				   aggregator is no longer used (see the import comment above) — its
+				   "Content band" + per-grid-area panels wrote to legacy FLAT attrs
+				   that no longer exist. Individual panels still needed are composed
+				   directly; the min-height duplicate ("Section (outer)") is dropped
+				   since hero already has its own min-height ResponsiveControl above. */ }
+				<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) } initialOpen={ false }>
+					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
+				</PanelBody>
+
+				{ /* Content band (Layer 2 __inner) — box-object family, rendered
+				   entirely by SGS_Container_Wrapper (mirrors sgs/container's own
+				   local panel; contentBandPadding/Tablet/Mobile). */ }
+				<PanelBody title={ __( 'Content band', 'sgs-blocks' ) } initialOpen={ false }>
+					<p className="components-base-control__help">
+						{ __( 'Styles the inner content band (the max-width wrapper set by Content width). Only active when Content width is set.', 'sgs-blocks' ) }
+					</p>
+					<DesignTokenPicker
+						label={ __( 'Band background colour', 'sgs-blocks' ) }
+						value={ contentBandBackground || '' }
+						onChange={ ( val ) => setAttributes( { contentBandBackground: val } ) }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Band padding', 'sgs-blocks' ) }
+						values={ {
+							base: contentBandPadding ?? {},
+							tablet: contentBandPaddingTablet ?? {},
+							mobile: contentBandPaddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							const attrMap = {
+								base: 'contentBandPadding',
+								tablet: 'contentBandPaddingTablet',
+								mobile: 'contentBandPaddingMobile',
+							};
+							setAttributes( { [ attrMap[ tier ] ]: next } );
+						} }
+					/>
+				</PanelBody>
+
+				<ResponsiveSpacingPanel attributes={ attributes } setAttributes={ setAttributes } />
+
+				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+					<LayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
+				</PanelBody>
+
+				<GridItemDefaultsPanel attributes={ attributes } setAttributes={ setAttributes } />
+
+				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
+
+				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Shadow', 'sgs-blocks' ) }
+						value={ attributes.shadow || '' }
+						options={ SHADOW_OPTIONS }
+						onChange={ ( val ) => setAttributes( { shadow: val } ) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<ShapeDividersPanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 
 			<div { ...blockProps }>

@@ -1447,6 +1447,27 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     # builds them from a draft's responsive corner declarations.
     ("sgs/media", "borderRadiusTablet"): {"box_family": "borderRadius"},
     ("sgs/media", "borderRadiusMobile"): {"box_family": "borderRadius"},
+    # hero (Task 2, section-KIND composite → KEEPS wrapper; 5 per-area SGS-custom box
+    # families rendered block-privately, migrated flat→object. Base per-area families are
+    # SGS custom objects (NOT WP-native — they target __content/__media/__split-image, not
+    # the section root). imageBorderWidth has no tiers (desktop only). contentBandPadding
+    # is consumed by SGS_Container_Wrapper (object, mirrors container).
+    ("sgs/hero", "contentPadding"): {"box_family": "contentPadding"},
+    ("sgs/hero", "contentPaddingTablet"): {"box_family": "contentPadding"},
+    ("sgs/hero", "contentPaddingMobile"): {"box_family": "contentPadding"},
+    ("sgs/hero", "mediaPadding"): {"box_family": "mediaPadding"},
+    ("sgs/hero", "mediaPaddingTablet"): {"box_family": "mediaPadding"},
+    ("sgs/hero", "mediaPaddingMobile"): {"box_family": "mediaPadding"},
+    ("sgs/hero", "imagePadding"): {"box_family": "imagePadding"},
+    ("sgs/hero", "imagePaddingTablet"): {"box_family": "imagePadding"},
+    ("sgs/hero", "imagePaddingMobile"): {"box_family": "imagePadding"},
+    ("sgs/hero", "imageBorderWidth"): {"box_family": "imageBorderWidth"},
+    ("sgs/hero", "imageBorderRadius"): {"box_family": "imageBorderRadius"},
+    ("sgs/hero", "imageBorderRadiusTablet"): {"box_family": "imageBorderRadius"},
+    ("sgs/hero", "imageBorderRadiusMobile"): {"box_family": "imageBorderRadius"},
+    ("sgs/hero", "contentBandPadding"): {"box_family": "contentBandPadding"},
+    ("sgs/hero", "contentBandPaddingTablet"): {"box_family": "contentBandPadding"},
+    ("sgs/hero", "contentBandPaddingMobile"): {"box_family": "contentBandPadding"},
 }
 
 
