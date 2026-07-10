@@ -28,6 +28,15 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
+// ---------------------------------------------------------------------------
+// Security sanitiser (contract §D) — a CSS-length sanitiser for box/side
+// values (mirrors sgs/label + sgs/heading + sgs/container).
+// ---------------------------------------------------------------------------
+
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
 $allowed_styles = array( 'minimal', 'waveform', 'spectrum', 'radial', 'oscilloscope', 'gradient-pulse', 'hidden' );
 $player_style   = $attributes['playerStyle'] ?? 'minimal';
 $player_style   = in_array( $player_style, $allowed_styles, true ) ? $player_style : 'minimal';
@@ -108,10 +117,110 @@ if ( '' !== $audio_title ) {
 }
 $schema_json = wp_json_encode( $schema, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES );
 
-// Wrapper: SGS-BEM root + style modifier + data hooks + brand CSS vars for view.js/CSS.
+// ---------------------------------------------------------------------------
+// No-inline spacing (contract §A/§B): margin/padding come from WP-native
+// style.spacing (skip-serialised in block.json so get_block_wrapper_attributes()
+// never auto-inlines them) + SGS custom tier object attrs, all emitted into a
+// scoped `.{uid}` <style> tag — never inline. uid is a CLASS (mirrors
+// sgs/label/sgs/heading/sgs/container).
+// ---------------------------------------------------------------------------
+
+$uid      = 'sgs-au-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$root_sel = '.' . $uid . '.wp-block-sgs-audio';
+
+$base_padding_obj = array();
+if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
+	foreach ( $attributes['style']['spacing']['padding'] as $padding_side => $padding_value ) {
+		if ( is_string( $padding_value ) && '' !== $padding_value ) {
+			$base_padding_obj[ $padding_side ] = $padding_value;
+		}
+	}
+}
+$base_margin_obj = array();
+if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+	foreach ( $attributes['style']['spacing']['margin'] as $margin_side => $margin_value ) {
+		if ( is_string( $margin_value ) && '' !== $margin_value ) {
+			$base_margin_obj[ $margin_side ] = $margin_value;
+		}
+	}
+}
+
+$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
+$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
+$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+
+$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
+	$top    = $sgs_css_length( $box['top'] ?? '' );
+	$right  = $sgs_css_length( $box['right'] ?? '' );
+	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
+	$left   = $sgs_css_length( $box['left'] ?? '' );
+	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
+		return null;
+	}
+	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
+};
+
+$scoped_css = array();
+
+// --- Base padding + margin (WP-native style.spacing, skip-serialised) —
+// emitted scoped via the stable core style engine. ---
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$base_spacing = array();
+	if ( ! empty( $base_padding_obj ) ) {
+		$base_spacing['padding'] = $base_padding_obj;
+	}
+	if ( ! empty( $base_margin_obj ) ) {
+		$base_spacing['margin'] = $base_margin_obj;
+	}
+	if ( ! empty( $base_spacing ) ) {
+		$base_scoped_styles = wp_style_engine_get_styles(
+			array( 'spacing' => $base_spacing ),
+			array( 'selector' => $root_sel )
+		);
+		if ( ! empty( $base_scoped_styles['css'] ) ) {
+			$scoped_css[] = $base_scoped_styles['css'];
+		}
+	}
+}
+
+// --- Responsive tiers — box objects, hand-built shorthand, scoped @media on
+// the SAME selector (contract §B2: tablet max-width:1023px, mobile max-width:767px). ---
+$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
+$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
+$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
+$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+
+$tablet_decls = array();
+if ( null !== $padding_tab_val ) {
+	$tablet_decls[] = "padding:{$padding_tab_val}";
+}
+if ( null !== $margin_tab_val ) {
+	$tablet_decls[] = "margin:{$margin_tab_val}";
+}
+if ( $tablet_decls ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_decls ) . ';}}';
+}
+
+$mobile_decls = array();
+if ( null !== $padding_mob_val ) {
+	$mobile_decls[] = "padding:{$padding_mob_val}";
+}
+if ( null !== $margin_mob_val ) {
+	$mobile_decls[] = "margin:{$margin_mob_val}";
+}
+if ( $mobile_decls ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_decls ) . ';}}';
+}
+
+// Wrapper: SGS-BEM root + uid + style modifier + data hooks + brand CSS vars
+// for view.js/CSS. The `--sgs-audio-*` custom-property-only style is ALLOWED
+// (var-only, not a raw property declaration) and stays exactly as before —
+// only padding/margin move to the scoped <style> tag (contract §A).
 $wrapper_classes = array(
 	'sgs-audio',
 	'sgs-audio--' . sanitize_html_class( $player_style ),
+	$uid,
 );
 $wrapper_style = sprintf(
 	'--sgs-audio-accent:%s;--sgs-audio-spectrum:%s',
@@ -128,6 +237,9 @@ $wrapper_attrs = get_block_wrapper_attributes(
 	)
 );
 ?>
+<?php if ( $scoped_css ) : ?>
+<style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via $sgs_css_length / wp_style_engine_get_styles; wp_strip_all_tags guards </style> breakout. ?></style>
+<?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes internally. ?>>
 	<?php if ( $schema_json ) : ?>
 		<script type="application/ld+json"><?php echo $schema_json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode with JSON_HEX_TAG|JSON_HEX_AMP is script-safe JSON-LD. ?></script>

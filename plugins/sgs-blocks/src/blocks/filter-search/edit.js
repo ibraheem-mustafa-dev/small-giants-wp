@@ -10,6 +10,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, Notice } from '@wordpress/components';
+import { ResponsiveBoxControl } from '../../components';
 
 // Guard the experimental NumberControl import — it may not exist on older WP
 // versions. Falls back to a plain text input (type=number) via TextControl.
@@ -17,7 +18,7 @@ import { PanelBody, TextControl, Notice } from '@wordpress/components';
 const { __experimentalNumberControl: NumberControl } = wp?.components ?? {};
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { attributeId, threshold, placeholder } = attributes;
+	const { attributeId, threshold, placeholder, style, marginTablet, marginMobile } = attributes;
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-filter-search sgs-filter-search--editor-preview',
@@ -101,6 +102,27 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
 				</PanelBody>
 			</InspectorControls>
 

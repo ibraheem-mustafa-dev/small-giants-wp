@@ -40,6 +40,17 @@ require_once dirname( __DIR__, 3 ) . '/includes/configurator-seed.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-configurator-pricing.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-value-ladder.php';
 
+// ---------------------------------------------------------------------------
+// NO-INLINE (Spec 32 / per-block migration contract): a CSS-length sanitiser
+// for box/side values (mirrors sgs/label + sgs/heading). Only margin has a
+// scoped no-inline treatment on this block — no other styling supports are
+// enabled (color is declared-but-disabled; padding is off).
+// ---------------------------------------------------------------------------
+
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
 /* ── 1. Resolve product ──────────────────────────────────────────────────── */
 
 // Core-blocks fallback markup (FR-30-2): simple products, WC absent, manifest
@@ -344,13 +355,77 @@ $add_to_cart_label     = '' !== sanitize_text_field( $add_to_cart_label_raw )
 	? sanitize_text_field( $add_to_cart_label_raw )
 	: __( 'Add to Cart', 'sgs-blocks' );
 
-// Wrapper attributes — includes Interactivity API bindings.
+// ---------------------------------------------------------------------------
+// NO-INLINE (Spec 32): uid is a CLASS (mirrors sgs/label/sgs/heading/
+// sgs/container). Only the WP-native `spacing.margin` support (base + the two
+// SGS custom object-attr tiers) is scoped here — color is declared-but-
+// disabled on this block and padding is off, so nothing else to route.
+// ---------------------------------------------------------------------------
+
+$uid      = 'sgs-bb-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$root_sel = '.' . $uid . '.wp-block-sgs-buybox';
+
+$scoped_css = array();
+
+// --- Base margin (WP-native style.spacing.margin, skip-serialised) emitted
+// scoped via the stable core style engine. ---
+$base_margin_obj = array();
+if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+	foreach ( $attributes['style']['spacing']['margin'] as $margin_side => $margin_value ) {
+		if ( is_string( $margin_value ) && '' !== $margin_value ) {
+			$base_margin_obj[ $margin_side ] = $margin_value;
+		}
+	}
+}
+if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $base_margin_obj ) ) {
+	$base_margin_scoped = wp_style_engine_get_styles(
+		array( 'spacing' => array( 'margin' => $base_margin_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_margin_scoped['css'] ) ) {
+		$scoped_css[] = $base_margin_scoped['css'];
+	}
+}
+
+// --- Responsive margin tiers — SGS custom object attrs, hand-built shorthand,
+// scoped @media on the SAME selector (contract §B2: tablet max-width:1023px,
+// mobile max-width:767px). ---
+$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
+	$top    = $sgs_css_length( $box['top'] ?? '' );
+	$right  = $sgs_css_length( $box['right'] ?? '' );
+	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
+	$left   = $sgs_css_length( $box['left'] ?? '' );
+	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
+		return null;
+	}
+	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
+};
+
+$margin_tablet_obj = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+$margin_mobile_obj = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+
+$margin_tab_val = $sgs_box_shorthand( $margin_tablet_obj );
+$margin_mob_val = $sgs_box_shorthand( $margin_mobile_obj );
+
+if ( null !== $margin_tab_val ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{margin:{$margin_tab_val};}}";
+}
+if ( null !== $margin_mob_val ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{margin:{$margin_mob_val};}}";
+}
+
+// Wrapper attributes — includes Interactivity API bindings. uid CLASS added
+// (no 'style' key — the root carries ZERO inline property declarations;
+// every declaration lives in the scoped <style> below).
 $wrapper_attrs = get_block_wrapper_attributes(
-	array( 'class' => 'sgs-buybox' )
+	array( 'class' => 'sgs-buybox ' . $uid )
 );
 
 ob_start();
 ?>
+<?php if ( $scoped_css ) : ?>
+<style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via $sgs_css_length / wp_style_engine_get_styles; wp_strip_all_tags guards </style> ?></style>
+<?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 	data-wp-interactive="sgs/product-card"
 	data-wp-init="callbacks.initPillBridge"

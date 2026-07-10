@@ -8,6 +8,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
+import { ResponsiveBoxControl } from '../../components';
 
 // NumberControl is experimental — fall back gracefully to TextControl if absent.
 let NumberControl;
@@ -26,7 +27,17 @@ try {
  * @return {JSX.Element} Editor UI.
  */
 export default function Edit( { attributes, setAttributes } ) {
-	const { displayMode, placeholder, buttonLabel, maxResults } = attributes;
+	const {
+		displayMode,
+		placeholder,
+		buttonLabel,
+		maxResults,
+		style,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
+	} = attributes;
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-product-search',
@@ -83,6 +94,42 @@ export default function Edit( { attributes, setAttributes } ) {
 							help={ __( 'Maximum number of product suggestions shown (1–20).', 'sgs-blocks' ) }
 						/>
 					) }
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
 				</PanelBody>
 			</InspectorControls>
 

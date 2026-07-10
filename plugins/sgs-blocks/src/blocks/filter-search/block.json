@@ -14,13 +14,16 @@
 		"html": false,
 		"reusable": false,
 		"spacing": {
-			"margin": true
+			"margin": true,
+			"__experimentalSkipSerialization": true
 		}
 	},
 	"attributes": {
 		"attributeId": { "type": "number", "default": 0 },
 		"threshold":   { "type": "integer", "default": 16, "minimum": 2 },
-		"placeholder": { "type": "string", "default": "" }
+		"placeholder": { "type": "string", "default": "" },
+		"marginTablet": { "type": "object", "default": {} },
+		"marginMobile": { "type": "object", "default": {} }
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

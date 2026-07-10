@@ -27,13 +27,22 @@
     },
     "spacing": {
       "margin": true,
-      "padding": false
+      "padding": false,
+      "__experimentalSkipSerialization": true
     }
   },
   "usesContext": [
     "postId"
   ],
   "attributes": {
+    "marginTablet": {
+      "type": "object",
+      "default": {}
+    },
+    "marginMobile": {
+      "type": "object",
+      "default": {}
+    },
     "soldOutLabel": {
       "type": "string",
       "default": "(sold out)",
