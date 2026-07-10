@@ -756,6 +756,19 @@ if ( '' !== $hero_preset_bg_slug ) {
 	$classes[] = 'has-background';
 	$classes[] = 'has-' . $hero_preset_bg_slug . '-background-color';
 }
+// A CUSTOM background-colour or gradient (style.color.background / .gradient) also needs the
+// `has-background` marker so the style.css default-gradient suppression
+// (`.sgs-hero:not(.has-background)`, style.css line ~50) fires. Before the no-inline migration
+// this was covered by the inline `[style*="background-color"]` selector; skip-serialisation moved
+// the value to a scoped #uid <style> rule, so the inline selector no longer matches — re-add the
+// class explicitly. Without this the framework's default primary-dark→primary gradient paints OVER
+// a faithfully-transferred flat background (e.g. Mama's draft surface-pink #F5C2C8 read as dark
+// pink). measurement-vs-eye recurrence (2026-05-05 hero-gradient incident); Bean-reported 2026-07-10.
+$hero_custom_bg = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
+$hero_gradient  = isset( $attributes['style']['color']['gradient'] ) ? (string) $attributes['style']['color']['gradient'] : '';
+if ( ( '' !== $hero_custom_bg || '' !== $hero_gradient ) && ! in_array( 'has-background', $classes, true ) ) {
+	$classes[] = 'has-background';
+}
 
 // WS-4: the OUTER <section> is now rendered by SGS_Container_Wrapper::render() at
 // the foot of this file (the element mirrors sgs/container). $classes + $styles
