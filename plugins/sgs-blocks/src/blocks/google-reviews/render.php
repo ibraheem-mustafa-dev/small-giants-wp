@@ -17,6 +17,18 @@ use SGS\Blocks\Google_Reviews_Settings;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
+// CSS length/unit sanitiser — for free-text attrs concatenated into raw CSS
+// declarations inside this block's scoped <style> tag. Mirrors sgs/hero's
+// proven sanitiser (strips everything except letters, digits, dot, %).
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
+// CSS-keyword sanitiser — for free-text attrs (border-style) — letters + hyphen only.
+$sgs_css_keyword = static function ( $value ) {
+	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
+};
+
 $variant            = $attributes['variant'] ?? 'grid';
 $place_id           = $attributes['placeId'] ?? Google_Reviews_Settings::get_settings()['place_id'] ?? '';
 $columns            = $attributes['columns'] ?? 3;
@@ -164,8 +176,14 @@ $reviews = array_slice( $filtered_reviews, 0, $max_reviews );
 // WP Interactivity runtime can find them on the element.
 // ───────────────────────────────────────────────────────────────────────────
 
+// Generate a unique ID for responsive CSS scoping. This is a CLASS (contract
+// §B3-style scoping — matches the hero/container/quote convention).
+$gr_uid      = 'sgs-gr-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
+$gr_root_sel = '.' . $gr_uid . '.wp-block-sgs-google-reviews';
+
 $gr_extra_classes = array(
 	'sgs-google-reviews',
+	$gr_uid,
 	'sgs-google-reviews--' . sanitize_key( $variant ),
 	'sgs-google-reviews--theme-' . sanitize_key( $theme ),
 	'sgs-google-reviews--card-' . sanitize_key( $card_style ),
@@ -181,6 +199,84 @@ $sgs_gr_star     = sgs_colour_value( $star_colour );
 $gr_extra_styles = array(
 	'--sgs-gr-star-colour:' . $sgs_gr_star,
 );
+
+// ── WP-native color / border supports — no-inline contract (§A). ──────────
+// block.json declares color/__experimentalBorder with __experimentalSkipSerialization:true,
+// so get_block_wrapper_attributes() (inside SGS_Container_Wrapper::render() below) never
+// auto-inlines them. Read the resolved values from $attributes['style'] here and emit them
+// into this block's OWN scoped <style> (do NOT pass via wrapper extra_styles — that inlines).
+$gr_responsive_css = '';
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$gr_style_engine_args = array();
+
+	$gr_color_args = array();
+	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+		$gr_color_args['text'] = (string) $attributes['style']['color']['text'];
+	}
+	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+		$gr_color_args['background'] = (string) $attributes['style']['color']['background'];
+	}
+	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+		$gr_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+	}
+	if ( ! empty( $gr_color_args ) ) {
+		$gr_style_engine_args['color'] = $gr_color_args;
+	}
+
+	$gr_border_args = array();
+	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+		$gr_border_args['color'] = (string) $attributes['style']['border']['color'];
+	}
+	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+		$gr_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+	}
+	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+		$gr_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+	}
+	if ( isset( $attributes['style']['border']['radius'] ) ) {
+		$gr_radius_raw = $attributes['style']['border']['radius'];
+		if ( is_string( $gr_radius_raw ) && '' !== $gr_radius_raw ) {
+			$gr_border_args['radius'] = $sgs_css_length( $gr_radius_raw );
+		} elseif ( is_array( $gr_radius_raw ) ) {
+			$gr_radius_clean = array();
+			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $gr_corner ) {
+				if ( ! empty( $gr_radius_raw[ $gr_corner ] ) ) {
+					$gr_radius_clean[ $gr_corner ] = $sgs_css_length( $gr_radius_raw[ $gr_corner ] );
+				}
+			}
+			if ( ! empty( $gr_radius_clean ) ) {
+				$gr_border_args['radius'] = $gr_radius_clean;
+			}
+		}
+	}
+	if ( ! empty( $gr_border_args ) ) {
+		$gr_style_engine_args['border'] = $gr_border_args;
+	}
+
+	if ( ! empty( $gr_style_engine_args ) ) {
+		$gr_scoped_styles = wp_style_engine_get_styles(
+			$gr_style_engine_args,
+			array( 'selector' => $gr_root_sel )
+		);
+		if ( ! empty( $gr_scoped_styles['css'] ) ) {
+			$gr_responsive_css .= $gr_scoped_styles['css'];
+		}
+	}
+}
+
+// Skip-serialised `color` support also stops WP auto-adding the standard
+// has-*-color / has-*-background-color classes onto the wrapper — re-add them
+// manually (mirrors sgs/hero + sgs/quote) so preset palette colours still resolve visually.
+$gr_preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$gr_preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+if ( '' !== $gr_preset_text_slug ) {
+	$gr_extra_classes[] = 'has-text-color';
+	$gr_extra_classes[] = 'has-' . $gr_preset_text_slug . '-color';
+}
+if ( '' !== $gr_preset_bg_slug ) {
+	$gr_extra_classes[] = 'has-background';
+	$gr_extra_classes[] = 'has-' . $gr_preset_bg_slug . '-background-color';
+}
 
 // WP Interactivity attrs — carried verbatim so the store binds correctly.
 $gr_extra_attrs = array(
@@ -344,7 +440,7 @@ if ( $show_breakdown && ! in_array( $variant, array( 'badge', 'floating-badge' )
 						?>
 					</span>
 					<span class="sgs-google-reviews__breakdown-bar" role="cell" aria-hidden="true">
-						<span class="sgs-google-reviews__breakdown-fill" style="width:<?php echo esc_attr( $gr_pct ); ?>%"></span>
+						<span class="sgs-google-reviews__breakdown-fill" style="--sgs-gr-pct:<?php echo esc_attr( $sgs_css_length( $gr_pct ) ); ?>%"></span>
 					</span>
 					<span class="sgs-google-reviews__breakdown-count" role="cell">
 						<?php
@@ -438,6 +534,16 @@ else :
 endif;
 
 $inner_html = ob_get_clean();
+
+// Output responsive CSS if needed. wp_strip_all_tags (NOT esc_html) blocks a
+// </style> breakout while leaving CSS combinators like `>` intact (contract
+// §D — matches SGS_Container_Wrapper + sgs/hero + sgs/quote). Every value
+// reaching $gr_responsive_css is pre-sanitised ($sgs_css_length / $sgs_css_keyword
+// / wp_style_engine_get_styles), so no un-sanitised value survives to here.
+if ( $gr_responsive_css ) {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below; $gr_responsive_css built from pre-sanitised values only.
+	printf( '<style id="%s">%s</style>', esc_attr( $gr_uid ), wp_strip_all_tags( $gr_responsive_css ) );
+}
 
 // ───────────────────────────────────────────────────────────────────────────
 // Output via shared wrapper helper.

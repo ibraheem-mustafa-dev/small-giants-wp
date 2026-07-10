@@ -199,6 +199,18 @@
 	}
 }
 
+/*
+ * Scroll-lock — applied to <body> while a modal dialog is open (view.js).
+ * Real properties live here (not inline) per the no-inline styling contract
+ * (Spec 32); view.js only writes the --sgs-modal-scroll-y VALUE.
+ */
+body.sgs-modal-scroll-locked {
+	overflow: hidden;
+	position: fixed;
+	width: 100%;
+	top: var(--sgs-modal-scroll-y, 0);
+}
+
 /* ─── REDUCED MOTION ─── */
 
 /*

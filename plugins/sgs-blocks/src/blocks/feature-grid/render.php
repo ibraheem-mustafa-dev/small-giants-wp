@@ -18,6 +18,18 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
+// CSS length/unit sanitiser — for free-text style-engine values concatenated
+// into raw CSS declarations inside this block's scoped <style> tag. Mirrors
+// sgs/hero's proven sanitiser (contract §D).
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
+// CSS-keyword sanitiser — for free-text attrs (border-style) — letters + hyphen only.
+$sgs_css_keyword = static function ( $value ) {
+	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
+};
+
 $layout_mode     = isset( $attributes['layoutMode'] ) ? esc_attr( $attributes['layoutMode'] ) : 'fixed-columns';
 $columns_desktop = isset( $attributes['columnsDesktop'] ) ? absint( $attributes['columnsDesktop'] ) : 4;
 $columns_tablet  = isset( $attributes['columnsTablet'] ) ? absint( $attributes['columnsTablet'] ) : 2;
@@ -148,8 +160,93 @@ if ( $use_auto_flex ) {
 }";
 }
 
+// ── WP-native color / border supports — no-inline contract (§A). ──────────────
+// block.json declares color/spacing/__experimentalBorder ALL with
+// __experimentalSkipSerialization:true, so get_block_wrapper_attributes() (called
+// inside SGS_Container_Wrapper::render() below) never auto-inlines them. Read the
+// resolved values from $attributes['style'] here and emit them into this block's
+// OWN scoped <style>, reusing the same ID hook the grid engine already builds
+// (#$uid.sgs-feature-grid) rather than minting a second uid. Spacing (padding/
+// margin) is a SEPARATE mechanism the shared wrapper already handles scoped
+// internally — not duplicated here.
+$root_sel = '#' . $uid . '.sgs-feature-grid';
+$classes  = array( 'sgs-feature-grid', $mode_class );
+
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$fg_style_engine_args = array();
+
+	$fg_color_args = array();
+	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+		$fg_color_args['text'] = (string) $attributes['style']['color']['text'];
+	}
+	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+		$fg_color_args['background'] = (string) $attributes['style']['color']['background'];
+	}
+	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+		$fg_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+	}
+	if ( ! empty( $fg_color_args ) ) {
+		$fg_style_engine_args['color'] = $fg_color_args;
+	}
+
+	$fg_border_args = array();
+	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+		$fg_border_args['color'] = (string) $attributes['style']['border']['color'];
+	}
+	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+		$fg_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+	}
+	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+		$fg_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+	}
+	if ( isset( $attributes['style']['border']['radius'] ) ) {
+		$fg_radius_raw = $attributes['style']['border']['radius'];
+		if ( is_string( $fg_radius_raw ) && '' !== $fg_radius_raw ) {
+			$fg_border_args['radius'] = $sgs_css_length( $fg_radius_raw );
+		} elseif ( is_array( $fg_radius_raw ) ) {
+			$fg_radius_clean = array();
+			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $fg_corner ) {
+				if ( ! empty( $fg_radius_raw[ $fg_corner ] ) ) {
+					$fg_radius_clean[ $fg_corner ] = $sgs_css_length( $fg_radius_raw[ $fg_corner ] );
+				}
+			}
+			if ( ! empty( $fg_radius_clean ) ) {
+				$fg_border_args['radius'] = $fg_radius_clean;
+			}
+		}
+	}
+	if ( ! empty( $fg_border_args ) ) {
+		$fg_style_engine_args['border'] = $fg_border_args;
+	}
+
+	if ( ! empty( $fg_style_engine_args ) ) {
+		$fg_scoped_styles = wp_style_engine_get_styles(
+			$fg_style_engine_args,
+			array( 'selector' => $root_sel )
+		);
+		if ( ! empty( $fg_scoped_styles['css'] ) ) {
+			$css .= $fg_scoped_styles['css'];
+		}
+	}
+}
+
+// Skip-serialised `color` support also stops WP auto-adding the standard
+// has-*-color / has-*-background-color classes onto the wrapper — re-add them
+// manually (mirrors sgs/hero, sgs/quote) so preset palette colours still resolve.
+$fg_preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$fg_preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+if ( '' !== $fg_preset_text_slug ) {
+	$classes[] = 'has-text-color';
+	$classes[] = 'has-' . $fg_preset_text_slug . '-color';
+}
+if ( '' !== $fg_preset_bg_slug ) {
+	$classes[] = 'has-background';
+	$classes[] = 'has-' . $fg_preset_bg_slug . '-background-color';
+}
+
 if ( '' !== $css ) {
-	echo '<style>' . esc_html( $css ) . '</style>';
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below; $css built from pre-sanitised values only (grid engine literals + wp_style_engine_get_styles()).
+	printf( '<style id="%s">%s</style>', esc_attr( $uid . '-style' ), wp_strip_all_tags( $css ) );
 }
 
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() escapes all output internally; variables are pre-sanitised above.
@@ -160,7 +257,7 @@ echo SGS_Container_Wrapper::render(
 	'layout',
 	array(
 		'tag'           => 'div',
-		'extra_classes' => array( 'sgs-feature-grid', $mode_class ),
+		'extra_classes' => $classes,
 		'extra_attrs'   => array( 'id' => $uid ),
 	)
 );

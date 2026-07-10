@@ -92,7 +92,9 @@ store( 'sgs/gallery', {
 		openLightbox() {
 			const ctx = getContext();
 			ctx.lightboxOpen   = true;
-			document.body.style.overflow = 'hidden';
+			// No-inline contract: toggle a class instead of an inline style
+			// property — style.css defines body.sgs-gallery-lightbox-open.
+			document.body.classList.add( 'sgs-gallery-lightbox-open' );
 
 			// Move focus to the lightbox close button after opening.
 			const galleryEl = document.querySelector(
@@ -109,7 +111,7 @@ store( 'sgs/gallery', {
 		closeLightbox() {
 			const ctx = getContext();
 			ctx.lightboxOpen          = false;
-			document.body.style.overflow = '';
+			document.body.classList.remove( 'sgs-gallery-lightbox-open' );
 		},
 
 		/**

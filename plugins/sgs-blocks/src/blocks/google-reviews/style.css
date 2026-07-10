@@ -118,6 +118,9 @@
 	border-radius: 999px;
 	/* Reuses the star colour variable set on the wrapper by render.php. */
 	background-color: var( --sgs-gr-star-colour, var( --wp--preset--color--accent, #f5a623 ) );
+	/* Per-row percentage — a CSS custom-property VALUE, not an inline declaration
+	   (no-inline contract §A). Set inline by render.php as --sgs-gr-pct:N%. */
+	width: var( --sgs-gr-pct, 0% );
 }
 
 .sgs-google-reviews__breakdown-count {

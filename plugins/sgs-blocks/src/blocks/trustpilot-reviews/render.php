@@ -26,6 +26,18 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
+// CSS length/unit sanitiser — for free-text attrs concatenated into raw CSS
+// declarations inside this block's scoped <style> tag. Mirrors sgs/hero.
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
+// CSS-keyword sanitiser — for free-text attrs (border-style) concatenated
+// into raw CSS declarations — letters + hyphen only. Mirrors sgs/hero.
+$sgs_css_keyword = static function ( $value ) {
+	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
+};
+
 // ───────────────────────────────────────────────────────────────────────────
 // Attribute resolution
 // ───────────────────────────────────────────────────────────────────────────
@@ -183,12 +195,101 @@ if ( '' === $trust_score_label ) {
 // Wrapper: own classes, styles, and data-* attrs for the shared helper.
 // ───────────────────────────────────────────────────────────────────────────
 
+// Unique ID for responsive/no-inline CSS scoping — mirrors sgs/hero (CLASS,
+// not the anchor id).
+$tp_uid      = 'sgs-trustpilot-reviews-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
+$tp_root_sel = '.' . $tp_uid . '.wp-block-sgs-trustpilot-reviews';
+
 $tp_extra_classes = array(
 	'sgs-trustpilot-reviews',
 	'sgs-trustpilot-reviews--' . sanitize_html_class( $variant ),
 	'sgs-trustpilot-reviews--theme-' . sanitize_html_class( $theme ),
 	'sgs-trustpilot-reviews--card-' . sanitize_html_class( $card_style ),
+	$tp_uid,
 );
+
+// Skip-serialised `color` support also stops WP auto-adding the standard
+// has-*-color / has-*-background-color classes onto the wrapper — re-add
+// them manually (mirrors sgs/hero, sgs/quote) so preset palette colours
+// still resolve visually.
+$tp_preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$tp_preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+if ( '' !== $tp_preset_text_slug ) {
+	$tp_extra_classes[] = 'has-text-color';
+	$tp_extra_classes[] = 'has-' . $tp_preset_text_slug . '-color';
+}
+if ( '' !== $tp_preset_bg_slug ) {
+	$tp_extra_classes[] = 'has-background';
+	$tp_extra_classes[] = 'has-' . $tp_preset_bg_slug . '-background-color';
+}
+
+// ── WP-native color / border supports — no-inline contract (§A). ──────────
+// block.json declares color/__experimentalBorder with
+// __experimentalSkipSerialization:true, so get_block_wrapper_attributes()
+// (called inside SGS_Container_Wrapper::render() below) never auto-inlines
+// them. Read the resolved values from $attributes['style'] here and emit
+// them into this block's OWN scoped <style> (composite caveat, per the
+// migration contract: do NOT pass these as wrapper `extra_styles` — that
+// path inlines). This block declares no spacing/typography supports, so
+// only color + border are re-emitted here.
+$tp_responsive_css = '';
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$tp_style_engine_args = array();
+
+	$tp_color_args = array();
+	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+		$tp_color_args['text'] = (string) $attributes['style']['color']['text'];
+	}
+	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+		$tp_color_args['background'] = (string) $attributes['style']['color']['background'];
+	}
+	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+		$tp_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+	}
+	if ( ! empty( $tp_color_args ) ) {
+		$tp_style_engine_args['color'] = $tp_color_args;
+	}
+
+	$tp_border_args = array();
+	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+		$tp_border_args['color'] = (string) $attributes['style']['border']['color'];
+	}
+	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+		$tp_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+	}
+	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+		$tp_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+	}
+	if ( isset( $attributes['style']['border']['radius'] ) ) {
+		$tp_radius_raw = $attributes['style']['border']['radius'];
+		if ( is_string( $tp_radius_raw ) && '' !== $tp_radius_raw ) {
+			$tp_border_args['radius'] = $sgs_css_length( $tp_radius_raw );
+		} elseif ( is_array( $tp_radius_raw ) ) {
+			$tp_radius_clean = array();
+			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $tp_corner ) {
+				if ( ! empty( $tp_radius_raw[ $tp_corner ] ) ) {
+					$tp_radius_clean[ $tp_corner ] = $sgs_css_length( $tp_radius_raw[ $tp_corner ] );
+				}
+			}
+			if ( ! empty( $tp_radius_clean ) ) {
+				$tp_border_args['radius'] = $tp_radius_clean;
+			}
+		}
+	}
+	if ( ! empty( $tp_border_args ) ) {
+		$tp_style_engine_args['border'] = $tp_border_args;
+	}
+
+	if ( ! empty( $tp_style_engine_args ) ) {
+		$tp_scoped_styles = wp_style_engine_get_styles(
+			$tp_style_engine_args,
+			array( 'selector' => $tp_root_sel )
+		);
+		if ( ! empty( $tp_scoped_styles['css'] ) ) {
+			$tp_responsive_css .= $tp_scoped_styles['css'];
+		}
+	}
+}
 
 $tp_extra_styles = array(
 	sprintf(
@@ -464,9 +565,16 @@ if ( $show_schema && ! empty( $reviews ) ) {
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// Output: schema JSON-LD first, then the outer wrapper via the shared helper.
+// Output: schema JSON-LD, then this block's own scoped <style> (no-inline
+// contract §A/§D — wp_strip_all_tags, NOT esc_html, blocks a </style>
+// breakout while leaving CSS combinators intact; every value reaching
+// $tp_responsive_css is pre-sanitised via $sgs_css_length / $sgs_css_keyword
+// / wp_style_engine_get_styles), then the outer wrapper via the shared helper.
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 // ───────────────────────────────────────────────────────────────────────────
 echo $schema_html;
+if ( $tp_responsive_css ) {
+	printf( '<style id="%s">%s</style>', esc_attr( $tp_uid ), wp_strip_all_tags( $tp_responsive_css ) );
+}
 echo SGS_Container_Wrapper::render( $attributes, $block, $inner_html, 'layout', $tp_wrapper_opts );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

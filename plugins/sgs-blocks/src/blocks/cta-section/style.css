@@ -9,7 +9,12 @@
 	transition-property: background-color, color, border-color;
 }
 
-.sgs-cta-section:not([style*="background"]) {
+/* No-inline contract (2026-07-09): background-image no longer rides on the
+   inline style="" attribute (moved to a scoped .uid rule) so the fallback can
+   no longer detect an image via [style*="background"]. A class marker
+   (sgs-cta-section--has-bg-image, added by render.php) replaces the attribute
+   sniff. */
+.sgs-cta-section:not(.sgs-cta-section--has-bg-image) {
 	background-color: var(--wp--preset--color--primary-dark);
 }
 
@@ -19,6 +24,7 @@
 	inset: 0;
 	z-index: 0;
 	background-color: var(--wp--preset--color--primary-dark, #0B3D51);
+	opacity: var(--sgs-cta-overlay-opacity, 1);
 	pointer-events: none;
 }
 
