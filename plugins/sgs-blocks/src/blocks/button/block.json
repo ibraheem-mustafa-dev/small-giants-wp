@@ -1,388 +1,428 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/button",
-    "version": "1.5.0",
-    "title": "SGS Button",
-    "category": "sgs-content",
-    "description": "A highly-configurable button with a style-preset seed (primary/secondary/outline), icon support, hover states, and per-breakpoint controls.",
-    "keywords": [
-        "button",
-        "cta",
-        "link",
-        "call to action"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "button",
-    "supports": {
-        "anchor": true,
-        "customClassName": true,
-        "html": false,
-        "color": {
-            "background": true,
-            "text": true,
-            "link": false,
-            "__experimentalSkipSerialization": true
-        },
-        "spacing": {
-            "margin": true,
-            "padding": true,
-            "__experimentalSkipSerialization": true
-        },
-        "__experimentalBorder": {
-            "radius": true,
-            "__experimentalSkipSerialization": true
-        }
-    },
-    "attributes": {
-        "label": {
-            "type": "string",
-            "default": "Click Here",
-            "role": "content"
-        },
-        "url": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "linkTarget": {
-            "type": "string",
-            "default": "_self"
-        },
-        "rel": {
-            "type": "string",
-            "default": ""
-        },
-        "download": {
-            "type": "boolean",
-            "default": false
-        },
-        "isSubmit": {
-            "type": "boolean",
-            "default": false
-        },
-        "inheritStyle": {
-            "type": "string",
-            "default": "primary",
-            "enum": [
-                "primary",
-                "secondary",
-                "outline",
-                "custom"
-            ]
-        },
-        "widthType": {
-            "type": "string",
-            "default": "fit"
-        },
-        "customWidth": {
-            "type": "number",
-            "default": null
-        },
-        "customWidthUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "widthTypeTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "widthTypeMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "customWidthTablet": {
-            "type": "number",
-            "default": null
-        },
-        "customWidthUnitTablet": {
-            "type": "string",
-            "default": "px"
-        },
-        "customWidthMobile": {
-            "type": "number",
-            "default": null
-        },
-        "customWidthUnitMobile": {
-            "type": "string",
-            "default": "px"
-        },
-        "minHeight": {
-            "type": "number",
-            "default": null
-        },
-        "minHeightUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "minHeightTablet": {
-            "type": "number",
-            "default": null
-        },
-        "minHeightTabletUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "minHeightMobile": {
-            "type": "number",
-            "default": null
-        },
-        "minHeightMobileUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "paddingTablet": {
-            "type": "object",
-            "default": {}
-        },
-        "paddingMobile": {
-            "type": "object",
-            "default": {}
-        },
-        "marginTablet": {
-            "type": "object",
-            "default": {}
-        },
-        "marginMobile": {
-            "type": "object",
-            "default": {}
-        },
-        "fontFamily": {
-            "type": "string",
-            "default": ""
-        },
-        "fontWeight": {
-            "type": "string",
-            "default": "600"
-        },
-        "fontStyle": {
-            "type": "string",
-            "default": "normal"
-        },
-        "textTransform": {
-            "type": "string",
-            "default": ""
-        },
-        "textDecoration": {
-            "type": "string",
-            "default": ""
-        },
-        "textDecorationHover": {
-            "type": "string",
-            "enum": [
-                "none",
-                "underline"
-            ],
-            "default": "none"
-        },
-        "fontSize": {
-            "type": "number",
-            "default": null
-        },
-        "fontSizeTablet": {
-            "type": "number",
-            "default": null
-        },
-        "fontSizeMobile": {
-            "type": "number",
-            "default": null
-        },
-        "fontSizeUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "lineHeight": {
-            "type": "number",
-            "default": null
-        },
-        "lineHeightTablet": {
-            "type": "number",
-            "default": null
-        },
-        "lineHeightMobile": {
-            "type": "number",
-            "default": null
-        },
-        "lineHeightUnit": {
-            "type": "string",
-            "default": "em"
-        },
-        "letterSpacing": {
-            "type": "number",
-            "default": null
-        },
-        "letterSpacingTablet": {
-            "type": "number",
-            "default": null
-        },
-        "letterSpacingMobile": {
-            "type": "number",
-            "default": null
-        },
-        "letterSpacingUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "colourText": {
-            "type": "string",
-            "default": ""
-        },
-        "colourTextHover": {
-            "type": "string",
-            "default": ""
-        },
-        "colourBackground": {
-            "type": "string",
-            "default": ""
-        },
-        "colourBackgroundHover": {
-            "type": "string",
-            "default": ""
-        },
-        "colourBorder": {
-            "type": "string",
-            "default": ""
-        },
-        "colourBorderHover": {
-            "type": "string",
-            "default": ""
-        },
-        "borderStyle": {
-            "type": "string",
-            "default": "solid"
-        },
-        "borderWidth": {
-            "type": "object",
-            "default": {}
-        },
-        "borderRadiusTablet": {
-            "type": "object",
-            "default": {}
-        },
-        "borderRadiusMobile": {
-            "type": "object",
-            "default": {}
-        },
-        "boxShadow": {
-            "type": "object",
-            "default": {
-                "colour": "",
-                "hOffset": 0,
-                "vOffset": 0,
-                "blur": 0,
-                "spread": 0,
-                "inset": false
-            }
-        },
-        "boxShadowHover": {
-            "type": "object",
-            "default": {
-                "colour": "",
-                "hOffset": 0,
-                "vOffset": 0,
-                "blur": 0,
-                "spread": 0,
-                "inset": false
-            }
-        },
-        "hoverScale": {
-            "type": "number",
-            "default": 1.0
-        },
-        "transitionDuration": {
-            "type": "number",
-            "default": 300
-        },
-        "transitionEasing": {
-            "type": "string",
-            "default": "ease"
-        },
-        "icon": {
-            "type": "string",
-            "default": ""
-        },
-        "iconPosition": {
-            "type": "string",
-            "default": "after"
-        },
-        "iconSize": {
-            "type": "number",
-            "default": null
-        },
-        "iconSizeTablet": {
-            "type": "number",
-            "default": null
-        },
-        "iconSizeMobile": {
-            "type": "number",
-            "default": null
-        },
-        "iconGap": {
-            "type": "number",
-            "default": 8
-        },
-        "iconColour": {
-            "type": "string",
-            "default": ""
-        },
-        "iconColourHover": {
-            "type": "string",
-            "default": ""
-        },
-        "iconTitle": {
-            "type": "string",
-            "default": ""
-        },
-        "ariaLabel": {
-            "type": "string",
-            "default": ""
-        },
-        "anchor": {
-            "type": "string",
-            "default": ""
-        },
-        "className": {
-            "type": "string",
-            "default": ""
-        }
-    },
-    "editorScript": "file:./index.js",
-    "style": "file:./style-index.css",
-    "editorStyle": "file:./index.css",
-    "render": "file:./render.php",
-    "example": {
-        "attributes": {
-            "label": "Get In Touch",
-            "inheritStyle": "primary",
-            "icon": "arrow-right",
-            "iconPosition": "after"
-        }
-    },
-    "variations": [
-        {
-            "name": "primary",
-            "title": "Primary",
-            "description": "Solid primary-colour button.",
-            "isDefault": true,
-            "scope": [ "block", "transform" ],
-            "isActive": [ "inheritStyle" ],
-            "attributes": { "inheritStyle": "primary" }
-        },
-        {
-            "name": "secondary",
-            "title": "Secondary",
-            "description": "Outlined button with primary text.",
-            "scope": [ "block", "transform" ],
-            "isActive": [ "inheritStyle" ],
-            "attributes": { "inheritStyle": "secondary" }
-        },
-        {
-            "name": "outline",
-            "title": "Outline",
-            "description": "Subtle-bordered neutral button.",
-            "scope": [ "block", "transform" ],
-            "isActive": [ "inheritStyle" ],
-            "attributes": { "inheritStyle": "outline" }
-        }
-    ]
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/button",
+	"version": "1.5.0",
+	"title": "SGS Button",
+	"category": "sgs-content",
+	"description": "A highly-configurable button with a style-preset seed (primary/secondary/outline), icon support, hover states, and per-breakpoint controls.",
+	"keywords": [
+		"button",
+		"cta",
+		"link",
+		"call to action"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "button",
+	"supports": {
+		"anchor": true,
+		"customClassName": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"link": false,
+			"__experimentalSkipSerialization": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"__experimentalSkipSerialization": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
+				]
+			}
+		}
+	},
+	"attributes": {
+		"label": {
+			"type": "string",
+			"default": "Click Here",
+			"role": "content"
+		},
+		"url": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"linkTarget": {
+			"type": "string",
+			"default": "_self"
+		},
+		"rel": {
+			"type": "string",
+			"default": ""
+		},
+		"download": {
+			"type": "boolean",
+			"default": false
+		},
+		"isSubmit": {
+			"type": "boolean",
+			"default": false
+		},
+		"inheritStyle": {
+			"type": "string",
+			"default": "primary",
+			"enum": [
+				"primary",
+				"secondary",
+				"outline",
+				"custom"
+			]
+		},
+		"widthType": {
+			"type": "string",
+			"default": "fit"
+		},
+		"customWidth": {
+			"type": "number",
+			"default": null
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"widthTypeTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"widthTypeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidthTablet": {
+			"type": "number",
+			"default": null
+		},
+		"customWidthUnitTablet": {
+			"type": "string",
+			"default": "px"
+		},
+		"customWidthMobile": {
+			"type": "number",
+			"default": null
+		},
+		"customWidthUnitMobile": {
+			"type": "string",
+			"default": "px"
+		},
+		"minHeight": {
+			"type": "number",
+			"default": null
+		},
+		"minHeightUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"minHeightTablet": {
+			"type": "number",
+			"default": null
+		},
+		"minHeightTabletUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"minHeightMobile": {
+			"type": "number",
+			"default": null
+		},
+		"minHeightMobileUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"fontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": "600"
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": "normal"
+		},
+		"textTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"textDecoration": {
+			"type": "string",
+			"default": ""
+		},
+		"textDecorationHover": {
+			"type": "string",
+			"enum": [
+				"none",
+				"underline"
+			],
+			"default": "none"
+		},
+		"fontSize": {
+			"type": "number",
+			"default": null
+		},
+		"fontSizeTablet": {
+			"type": "number",
+			"default": null
+		},
+		"fontSizeMobile": {
+			"type": "number",
+			"default": null
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"lineHeight": {
+			"type": "number",
+			"default": null
+		},
+		"lineHeightTablet": {
+			"type": "number",
+			"default": null
+		},
+		"lineHeightMobile": {
+			"type": "number",
+			"default": null
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"letterSpacing": {
+			"type": "number",
+			"default": null
+		},
+		"letterSpacingTablet": {
+			"type": "number",
+			"default": null
+		},
+		"letterSpacingMobile": {
+			"type": "number",
+			"default": null
+		},
+		"letterSpacingUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"colourText": {
+			"type": "string",
+			"default": ""
+		},
+		"colourTextHover": {
+			"type": "string",
+			"default": ""
+		},
+		"colourBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"colourBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"colourBorder": {
+			"type": "string",
+			"default": ""
+		},
+		"colourBorderHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderStyle": {
+			"type": "string",
+			"default": "solid"
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"boxShadow": {
+			"type": "object",
+			"default": {
+				"colour": "",
+				"hOffset": 0,
+				"vOffset": 0,
+				"blur": 0,
+				"spread": 0,
+				"inset": false
+			}
+		},
+		"boxShadowHover": {
+			"type": "object",
+			"default": {
+				"colour": "",
+				"hOffset": 0,
+				"vOffset": 0,
+				"blur": 0,
+				"spread": 0,
+				"inset": false
+			}
+		},
+		"hoverScale": {
+			"type": "number",
+			"default": 1.0
+		},
+		"transitionDuration": {
+			"type": "number",
+			"default": 300
+		},
+		"transitionEasing": {
+			"type": "string",
+			"default": "ease"
+		},
+		"icon": {
+			"type": "string",
+			"default": ""
+		},
+		"iconPosition": {
+			"type": "string",
+			"default": "after"
+		},
+		"iconSize": {
+			"type": "number",
+			"default": null
+		},
+		"iconSizeTablet": {
+			"type": "number",
+			"default": null
+		},
+		"iconSizeMobile": {
+			"type": "number",
+			"default": null
+		},
+		"iconGap": {
+			"type": "number",
+			"default": 8
+		},
+		"iconColour": {
+			"type": "string",
+			"default": ""
+		},
+		"iconColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"iconTitle": {
+			"type": "string",
+			"default": ""
+		},
+		"ariaLabel": {
+			"type": "string",
+			"default": ""
+		},
+		"anchor": {
+			"type": "string",
+			"default": ""
+		},
+		"className": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"editorStyle": "file:./index.css",
+	"render": "file:./render.php",
+	"example": {
+		"attributes": {
+			"label": "Get In Touch",
+			"inheritStyle": "primary",
+			"icon": "arrow-right",
+			"iconPosition": "after"
+		}
+	},
+	"variations": [
+		{
+			"name": "primary",
+			"title": "Primary",
+			"description": "Solid primary-colour button.",
+			"isDefault": true,
+			"scope": [
+				"block",
+				"transform"
+			],
+			"isActive": [
+				"inheritStyle"
+			],
+			"attributes": {
+				"inheritStyle": "primary"
+			}
+		},
+		{
+			"name": "secondary",
+			"title": "Secondary",
+			"description": "Outlined button with primary text.",
+			"scope": [
+				"block",
+				"transform"
+			],
+			"isActive": [
+				"inheritStyle"
+			],
+			"attributes": {
+				"inheritStyle": "secondary"
+			}
+		},
+		{
+			"name": "outline",
+			"title": "Outline",
+			"description": "Subtle-bordered neutral button.",
+			"scope": [
+				"block",
+				"transform"
+			],
+			"isActive": [
+				"inheritStyle"
+			],
+			"attributes": {
+				"inheritStyle": "outline"
+			}
+		}
+	]
 }

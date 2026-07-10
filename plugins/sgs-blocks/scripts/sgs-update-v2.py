@@ -1403,71 +1403,24 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     # after block.json lands.
     #
     # container: 3 box families × 3 tiers (base/tablet/mobile) = 9 attrs.
-    ("sgs/container", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/container", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/container", "marginTablet"): {"box_family": "margin"},
-    ("sgs/container", "marginMobile"): {"box_family": "margin"},
-    ("sgs/container", "contentBandPadding"): {"box_family": "contentBandPadding"},
-    ("sgs/container", "contentBandPaddingTablet"): {"box_family": "contentBandPadding"},
-    ("sgs/container", "contentBandPaddingMobile"): {"box_family": "contentBandPadding"},
     # button: 3 box families × 2–3 tiers (borderWidth/borderRadius have no base object
     # currently, only tiers; padding/margin follow WP-native spacing base + tiers).
-    ("sgs/button", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/button", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/button", "marginTablet"): {"box_family": "margin"},
-    ("sgs/button", "marginMobile"): {"box_family": "margin"},
-    ("sgs/button", "borderWidth"): {"box_family": "borderWidth"},
-    ("sgs/button", "borderRadiusTablet"): {"box_family": "borderRadius"},
-    ("sgs/button", "borderRadiusMobile"): {"box_family": "borderRadius"},
     # Wave-1 box-family rollout (2026-07-09): heading/text/quote merge their flat
     # per-side borderWidth into one SGS object attr. border-radius base routes to
     # WP-native style.border.radius (no SGS attr → no seed); padding/margin are
     # outside the border roster for these blocks (native or unchanged custom).
-    ("sgs/heading", "borderWidth"): {"box_family": "borderWidth"},
-    ("sgs/heading", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/heading", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/heading", "marginTablet"): {"box_family": "margin"},
-    ("sgs/heading", "marginMobile"): {"box_family": "margin"},
-    ("sgs/text", "borderWidth"): {"box_family": "borderWidth"},
-    ("sgs/text", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/text", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/text", "marginTablet"): {"box_family": "margin"},
-    ("sgs/text", "marginMobile"): {"box_family": "margin"},
-    ("sgs/quote", "borderWidth"): {"box_family": "borderWidth"},
     # quote (block-private, content-KIND → block-private per qc-council 2026-07-09):
     # padding/margin tiers merge to SGS object attrs (base padding/margin route to
     # WP-native style.spacing.*). border-radius base → WP-native style.border.radius.
-    ("sgs/quote", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/quote", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/quote", "marginTablet"): {"box_family": "margin"},
-    ("sgs/quote", "marginMobile"): {"box_family": "margin"},
     # media (block-private, atomic img clone target → block-private): only border-radius
     # migrates. Base radius → WP-native style.border.radius (no seed). Tier radius →
     # SGS object attrs, seeded like button's radius tiers so the converter accumulator
     # builds them from a draft's responsive corner declarations.
-    ("sgs/media", "borderRadiusTablet"): {"box_family": "borderRadius"},
-    ("sgs/media", "borderRadiusMobile"): {"box_family": "borderRadius"},
     # hero (Task 2, section-KIND composite → KEEPS wrapper; 5 per-area SGS-custom box
     # families rendered block-privately, migrated flat→object. Base per-area families are
     # SGS custom objects (NOT WP-native — they target __content/__media/__split-image, not
     # the section root). imageBorderWidth has no tiers (desktop only). contentBandPadding
     # is consumed by SGS_Container_Wrapper (object, mirrors container).
-    ("sgs/hero", "contentPadding"): {"box_family": "contentPadding"},
-    ("sgs/hero", "contentPaddingTablet"): {"box_family": "contentPadding"},
-    ("sgs/hero", "contentPaddingMobile"): {"box_family": "contentPadding"},
-    ("sgs/hero", "mediaPadding"): {"box_family": "mediaPadding"},
-    ("sgs/hero", "mediaPaddingTablet"): {"box_family": "mediaPadding"},
-    ("sgs/hero", "mediaPaddingMobile"): {"box_family": "mediaPadding"},
-    ("sgs/hero", "imagePadding"): {"box_family": "imagePadding"},
-    ("sgs/hero", "imagePaddingTablet"): {"box_family": "imagePadding"},
-    ("sgs/hero", "imagePaddingMobile"): {"box_family": "imagePadding"},
-    ("sgs/hero", "imageBorderWidth"): {"box_family": "imageBorderWidth"},
-    ("sgs/hero", "imageBorderRadius"): {"box_family": "imageBorderRadius"},
-    ("sgs/hero", "imageBorderRadiusTablet"): {"box_family": "imageBorderRadius"},
-    ("sgs/hero", "imageBorderRadiusMobile"): {"box_family": "imageBorderRadius"},
-    ("sgs/hero", "contentBandPadding"): {"box_family": "contentBandPadding"},
-    ("sgs/hero", "contentBandPaddingTablet"): {"box_family": "contentBandPadding"},
-    ("sgs/hero", "contentBandPaddingMobile"): {"box_family": "contentBandPadding"},
     # Wave-1 leaf blocks (2026-07-10, D297): 8 single-element/leaf blocks migrated
     # block-private to no-inline. Each adds SGS padding/margin tier objects (base
     # padding/margin route to WP-native style.spacing.*, already object-shaped, no
@@ -1475,65 +1428,12 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     # -> WP-native style.border.radius, no seed). label has NO WP padding support
     # (padding:false), so its BASE padding is a custom SGS object -> seeded here;
     # its borderRadius stays a single scalar (uniform, not a 4-corner family -> no seed).
-    ("sgs/social-icons", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/social-icons", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/social-icons", "marginTablet"): {"box_family": "margin"},
-    ("sgs/social-icons", "marginMobile"): {"box_family": "margin"},
-    ("sgs/star-rating", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/star-rating", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/star-rating", "marginTablet"): {"box_family": "margin"},
-    ("sgs/star-rating", "marginMobile"): {"box_family": "margin"},
-    ("sgs/business-info", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/business-info", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/business-info", "marginTablet"): {"box_family": "margin"},
-    ("sgs/business-info", "marginMobile"): {"box_family": "margin"},
-    ("sgs/breadcrumbs", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/breadcrumbs", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/breadcrumbs", "marginTablet"): {"box_family": "margin"},
-    ("sgs/breadcrumbs", "marginMobile"): {"box_family": "margin"},
-    ("sgs/icon", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/icon", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/icon", "marginTablet"): {"box_family": "margin"},
-    ("sgs/icon", "marginMobile"): {"box_family": "margin"},
-    ("sgs/counter", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/counter", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/counter", "marginTablet"): {"box_family": "margin"},
-    ("sgs/counter", "marginMobile"): {"box_family": "margin"},
-    ("sgs/counter", "borderRadiusTablet"): {"box_family": "borderRadius"},
-    ("sgs/counter", "borderRadiusMobile"): {"box_family": "borderRadius"},
-    ("sgs/whatsapp-cta", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/whatsapp-cta", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/whatsapp-cta", "marginTablet"): {"box_family": "margin"},
-    ("sgs/whatsapp-cta", "marginMobile"): {"box_family": "margin"},
-    ("sgs/whatsapp-cta", "borderRadiusTablet"): {"box_family": "borderRadius"},
-    ("sgs/whatsapp-cta", "borderRadiusMobile"): {"box_family": "borderRadius"},
-    ("sgs/label", "padding"): {"box_family": "padding"},
-    ("sgs/label", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/label", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/label", "marginTablet"): {"box_family": "margin"},
-    ("sgs/label", "marginMobile"): {"box_family": "margin"},
     # Wave-2 batch 1 (2026-07-10): 4 leaf/inline block-private blocks migrated
     # to no-inline. padding/margin base route to WP-native style.spacing.* (already
     # object-shaped, no seed); tier objects seeded here. table-of-contents +
     # countdown-timer add border-radius tier objects (base radius -> WP-native
     # style.border.radius, no seed). decorative-image is an absolute-position/
     # transform block with no box family -> no seed (inline-render fix only).
-    ("sgs/collapsible-text", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/collapsible-text", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/collapsible-text", "marginTablet"): {"box_family": "margin"},
-    ("sgs/collapsible-text", "marginMobile"): {"box_family": "margin"},
-    ("sgs/table-of-contents", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/table-of-contents", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/table-of-contents", "marginTablet"): {"box_family": "margin"},
-    ("sgs/table-of-contents", "marginMobile"): {"box_family": "margin"},
-    ("sgs/table-of-contents", "borderRadiusTablet"): {"box_family": "borderRadius"},
-    ("sgs/table-of-contents", "borderRadiusMobile"): {"box_family": "borderRadius"},
-    ("sgs/countdown-timer", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/countdown-timer", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/countdown-timer", "marginTablet"): {"box_family": "margin"},
-    ("sgs/countdown-timer", "marginMobile"): {"box_family": "margin"},
-    ("sgs/countdown-timer", "borderRadiusTablet"): {"box_family": "borderRadius"},
-    ("sgs/countdown-timer", "borderRadiusMobile"): {"box_family": "borderRadius"},
     # Wave-2 batch 2 (2026-07-10): 4 leaf/array/timeline block-private blocks.
     # padding/margin base -> WP-native style.spacing.* (object, no seed); tiers seeded.
     # icon-list/timeline/process-steps take the quote route for border (custom
@@ -1541,36 +1441,9 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     # native border wholesale (radius tiers only). process-steps has no responsive
     # radius (no radius tier attrs). box-shadow (timeline/process-steps) stays the
     # native shadow support, scoped -> NOT a box family, no seed.
-    ("sgs/icon-list", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/icon-list", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/icon-list", "marginTablet"): {"box_family": "margin"},
-    ("sgs/icon-list", "marginMobile"): {"box_family": "margin"},
-    ("sgs/icon-list", "borderRadiusTablet"): {"box_family": "borderRadius"},
-    ("sgs/icon-list", "borderRadiusMobile"): {"box_family": "borderRadius"},
-    ("sgs/icon-list", "borderWidth"): {"box_family": "borderWidth"},
-    ("sgs/brand-strip", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/brand-strip", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/brand-strip", "marginTablet"): {"box_family": "margin"},
-    ("sgs/brand-strip", "marginMobile"): {"box_family": "margin"},
-    ("sgs/brand-strip", "borderRadiusTablet"): {"box_family": "borderRadius"},
-    ("sgs/brand-strip", "borderRadiusMobile"): {"box_family": "borderRadius"},
-    ("sgs/timeline", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/timeline", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/timeline", "marginTablet"): {"box_family": "margin"},
-    ("sgs/timeline", "marginMobile"): {"box_family": "margin"},
-    ("sgs/timeline", "borderRadiusTablet"): {"box_family": "borderRadius"},
-    ("sgs/timeline", "borderRadiusMobile"): {"box_family": "borderRadius"},
-    ("sgs/timeline", "borderWidth"): {"box_family": "borderWidth"},
-    ("sgs/process-steps", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/process-steps", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/process-steps", "marginTablet"): {"box_family": "margin"},
-    ("sgs/process-steps", "marginMobile"): {"box_family": "margin"},
-    ("sgs/process-steps", "borderWidth"): {"box_family": "borderWidth"},
     # Wave-2 batch 3 (2026-07-10): the 2 keep-structure InnerBlocks navs.
     # mobile-nav adds padding tier objects (base padding -> WP-native style.spacing.*,
     # object, no seed). mega-menu is colour-only (no box family -> no seed).
-    ("sgs/mobile-nav", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/mobile-nav", "paddingMobile"): {"box_family": "padding"},
     # sgs/option-picker (2026-07-10, cloning-fidelity + no-inline pass): the
     # option-picker's pill states are now converter-liftable via the universal
     # styling-lift (Spec 31 §3.B B2 — the frozen __hover/__active/__focus
@@ -1613,13 +1486,6 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/option-picker", "pillSelectedBorderRadius"): {"role": "typography", "derived_selector": ".sgs-option-picker__pill--active"},
     # Root box-family migration (mirrors sgs/quote exactly — content-KIND,
     # block-private, box+width only).
-    ("sgs/option-picker", "paddingTablet"): {"box_family": "padding"},
-    ("sgs/option-picker", "paddingMobile"): {"box_family": "padding"},
-    ("sgs/option-picker", "marginTablet"): {"box_family": "margin"},
-    ("sgs/option-picker", "marginMobile"): {"box_family": "margin"},
-    ("sgs/option-picker", "borderWidth"): {"box_family": "borderWidth"},
-    ("sgs/option-picker", "borderRadiusTablet"): {"box_family": "borderRadius"},
-    ("sgs/option-picker", "borderRadiusMobile"): {"box_family": "borderRadius"},
     # pillPadding — SGS custom box family, NEW (2026-07-10): the pill is a
     # content CHILD (not the block root), so there is no WP-native spacing
     # support to route through; base + tiers are a dedicated box_family so a
@@ -1627,9 +1493,6 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     # padding onto it (currently authored-only via the editor BoxControl —
     # no converter resolver targets `pillPadding*` yet, an honest gap, see
     # the cloning report).
-    ("sgs/option-picker", "pillPadding"): {"box_family": "pillPadding"},
-    ("sgs/option-picker", "pillPaddingTablet"): {"box_family": "pillPadding"},
-    ("sgs/option-picker", "pillPaddingMobile"): {"box_family": "pillPadding"},
     # sgs/product-card — R4 forward attrs (2026-07-10): liftable so a cloned
     # card (a draft rendering its OWN `.sgs-product-card__pill` BEM elements,
     # not a live sgs/option-picker block) routes the draft's pill CSS onto the
@@ -1656,32 +1519,95 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
 # fresh at convert-time (converter.services.has_inner), never seeded here.
 
 
+def _collect_boxfamily_overrides(blocks_dir: Path) -> dict:
+    """Derive box_family overrides DECLARATIVELY from block.json (R-31-1).
+
+    box_family is the box-object merge categorisation guard (Spec 31 §4 / §3.A
+    step 3b). It is NOT a hardcoded dict in this script (Bean 2026-07-10 — "stop
+    hard-coding into sgs-update"); each block DECLARES its box families in its
+    own block.json `supports.sgs.boxFamilies` (family -> [object-attr, ...]),
+    exactly as the block already declares variants / arrayItemSchema / lift
+    capabilities in supports.sgs. This walks those declarations and returns the
+    same {(slug, attr): {"box_family": family}} shape the override applier writes,
+    so block.json is the single source of truth and the categorisation travels
+    with the block (block-files-are-ground-truth). `box_side` stays NULL on the
+    merged object attr (the object holds all sides); the migrated-away flat
+    per-side attrs are deleted, so no box_side is ever written here.
+    """
+    out: dict[tuple[str, str], dict[str, object]] = {}
+    for block_dir in sorted(blocks_dir.iterdir()):
+        bj = block_dir / "block.json"
+        if not bj.is_file():
+            continue
+        try:
+            data = json.loads(bj.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        slug = data.get("name")
+        box_families = (
+            (data.get("supports") or {}).get("sgs", {}).get("boxFamilies")
+            if isinstance(data.get("supports"), dict)
+            else None
+        )
+        if not slug or not isinstance(box_families, dict):
+            continue
+        declared_attrs = set((data.get("attributes") or {}).keys())
+        for family, attrs in box_families.items():
+            if not isinstance(attrs, list):
+                continue
+            for attr in attrs:
+                # FAIL-LOUD (Rule 4): a declared box-family attr must exist on the
+                # block, else the declaration is stale — warn, never silently seed
+                # a phantom row.
+                if attr not in declared_attrs:
+                    print(
+                        f"Stage 1 (boxFamilies): WARN {slug}.{attr} declared in "
+                        f"supports.sgs.boxFamilies['{family}'] but not in attributes"
+                    )
+                    continue
+                out[(slug, attr)] = {"box_family": family}
+    return out
+
+
 def _apply_attr_classification_overrides(
     conn: sqlite3.Connection,
+    blocks_dir: Path,
     dry_run: bool = False,
 ) -> dict:
-    """Stage 1 sub-step C: apply ATTR_CLASSIFICATION_OVERRIDES.
+    """Stage 1 sub-step C: apply ATTR_CLASSIFICATION_OVERRIDES + declarative
+    block.json box_family overrides (`supports.sgs.boxFamilies`).
 
     Runs AFTER `_run_canonical_assignment` so it is the final writer on
     block_attributes.role/canonical_slot for the listed (slug, attr) pairs —
     correcting genuine mis-derivations the assign-canonical heuristic makes.
-    Idempotent; the override re-applies on every /sgs-update.
+    box_family is NO LONGER hardcoded here — it is derived per-block from
+    block.json (`_collect_boxfamily_overrides`) and merged in, so the dict holds
+    only role/derived_selector/emit-shape corrections. Idempotent; re-applies on
+    every /sgs-update.
 
     Returns counts dict: {"override_applied": int, "override_missing_row": int}.
     """
     c = conn.cursor()
     applied = 0
     missing = 0
+    # Combine the hand-authored role/derived_selector corrections with the
+    # DECLARATIVE box_family map read from each block.json (single source of
+    # truth; a block never appears in both for the SAME field).
+    combined: dict[tuple[str, str], dict[str, object]] = {
+        k: dict(v) for k, v in ATTR_CLASSIFICATION_OVERRIDES.items()
+    }
+    for key, fields in _collect_boxfamily_overrides(blocks_dir).items():
+        combined.setdefault(key, {}).update(fields)
     # Idempotent column-add (mirrors the emit_shape column-add pattern above) —
-    # lets ATTR_CLASSIFICATION_OVERRIDES introduce a new tracked column (e.g.
-    # `alt_companion_attr`, CG-8 2026-07-05) without a separate schema migration.
+    # lets an override introduce a new tracked column (e.g. box_family, or
+    # `alt_companion_attr` CG-8 2026-07-05) without a separate schema migration.
     existing_cols = {r[1] for r in c.execute("PRAGMA table_info(block_attributes)").fetchall()}
-    override_cols = {col for fields in ATTR_CLASSIFICATION_OVERRIDES.values() for col in fields}
+    override_cols = {col for fields in combined.values() for col in fields}
     for col in sorted(override_cols - existing_cols):
         if not dry_run:
             c.execute(f"ALTER TABLE block_attributes ADD COLUMN {col} TEXT")
         existing_cols.add(col)
-    for (slug, attr), fields in ATTR_CLASSIFICATION_OVERRIDES.items():
+    for (slug, attr), fields in combined.items():
         if not fields:
             continue
         # Column names come from a code-level constant (not user input) — safe to
@@ -1992,7 +1918,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
 
         # --- Stage 1 sub-step C: apply per-attr classification overrides ---
         # (AFTER canonical assignment so overrides are the final writer.)
-        ov_counts = _apply_attr_classification_overrides(conn, dry_run=False)
+        ov_counts = _apply_attr_classification_overrides(conn, blocks_dir, dry_run=False)
         print(
             f"Stage 1 (attr-overrides): applied={ov_counts['override_applied']}, "
             f"missing_row={ov_counts['override_missing_row']}."
@@ -2057,7 +1983,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
             f"allowed_blocks_updated={ab_updated} (would drift), "
             f"allowed_blocks_dynamic_skipped={ab_dynamic_skipped}."
         )
-        _apply_attr_classification_overrides(conn, dry_run=True)
+        _apply_attr_classification_overrides(conn, blocks_dir, dry_run=True)
 
     return {
         "scanned": scanned,

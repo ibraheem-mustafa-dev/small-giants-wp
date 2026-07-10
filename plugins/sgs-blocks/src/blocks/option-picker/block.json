@@ -44,7 +44,29 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
-			"scalarStylingLift": true
+			"scalarStylingLift": true,
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
+				],
+				"pillPadding": [
+					"pillPadding",
+					"pillPaddingTablet",
+					"pillPaddingMobile"
+				]
+			}
 		}
 	},
 	"selectors": {

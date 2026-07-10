@@ -23,7 +23,21 @@
 			"padding": true,
 			"__experimentalSkipSerialization": true
 		},
-		"align": [ "wide" ]
+		"align": [
+			"wide"
+		],
+		"sgs": {
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				]
+			}
+		}
 	},
 	"attributes": {
 		"displayMode": {

@@ -1,101 +1,109 @@
 {
-  "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 3,
-  "name": "sgs/buybox",
-  "version": "1.2.2",
-  "title": "Buybox",
-  "category": "sgs-content",
-  "description": "WooCommerce single-product PDP area: renders the full product hero (gallery column + configurator column) as a responsive 2-column CSS Grid. Gallery column shows the variation-aware image gallery (main image + thumbnail strip, driven by the sgs/product-card Interactivity store). Configurator column renders per-axis option-picker pills, live price row, comparative value ladder, stock status, back-in-stock notify form, and an accessible add-to-cart form. Falls back to core WC blocks for simple products or when WooCommerce is absent.",
-  "keywords": [
-    "buybox",
-    "product",
-    "cart",
-    "add to cart",
-    "woocommerce",
-    "configurator",
-    "pdp"
-  ],
-  "textdomain": "sgs-blocks",
-  "icon": "cart",
-  "supports": {
-    "html": false,
-    "align": false,
-    "interactivity": true,
-    "color": {
-      "background": false,
-      "text": false
-    },
-    "spacing": {
-      "margin": true,
-      "padding": false,
-      "__experimentalSkipSerialization": true
-    }
-  },
-  "usesContext": [
-    "postId"
-  ],
-  "attributes": {
-    "marginTablet": {
-      "type": "object",
-      "default": {}
-    },
-    "marginMobile": {
-      "type": "object",
-      "default": {}
-    },
-    "soldOutLabel": {
-      "type": "string",
-      "default": "(sold out)",
-      "description": "Aria-label suffix appended to pill labels when a combination is sold out. Shown to screen readers only."
-    },
-    "unavailableLabel": {
-      "type": "string",
-      "default": "(unavailable)",
-      "description": "Aria-label suffix appended to pill labels when a combination does not exist for the current selections."
-    },
-    "notifyEnabled": {
-      "type": "boolean",
-      "default": true,
-      "description": "Show the 'notify me when back in stock' email-capture form on out-of-stock variations."
-    },
-    "notifyMeLabel": {
-      "type": "string",
-      "default": "Notify me",
-      "description": "Heading/label for the back-in-stock notify-me form."
-    },
-    "addToCartLabel": {
-      "type": "string",
-      "default": "",
-      "description": "Override the Add to Cart button label. Empty = use the default translated string."
-    },
-    "perUnitDenomination": {
-      "type": "string",
-      "default": "",
-      "description": "Override the per-unit denomination template. Use %s as the placeholder for the unit label (e.g. 'per bar', 'per 100g'). Empty = translated default 'per %s'."
-    },
-    "showLadder": {
-      "type": "boolean",
-      "default": true,
-      "description": "Show the comparative value-ladder table. Set false to suppress it (e.g. in narrow sidebar contexts)."
-    },
-    "framingMode": {
-      "type": "string",
-      "default": "loss-aversion",
-      "enum": [
-        "savings",
-        "loss-aversion",
-        "neutral"
-      ],
-      "description": "Saving-label framing: 'savings' (positive), 'loss-aversion' (adds 'vs buying singly' tail), or 'neutral' (no saving label)."
-    },
-    "decoyEnabled": {
-      "type": "boolean",
-      "default": false,
-      "description": "When true, the 'Best value' badge targets the 2nd-largest pack (decoy effect) instead of the largest."
-    }
-  },
-  "editorScript": "file:./index.js",
-  "style": "file:./style-index.css",
-  "render": "file:./render.php",
-  "viewScriptModule": "file:./notify-view.js"
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/buybox",
+	"version": "1.2.2",
+	"title": "Buybox",
+	"category": "sgs-content",
+	"description": "WooCommerce single-product PDP area: renders the full product hero (gallery column + configurator column) as a responsive 2-column CSS Grid. Gallery column shows the variation-aware image gallery (main image + thumbnail strip, driven by the sgs/product-card Interactivity store). Configurator column renders per-axis option-picker pills, live price row, comparative value ladder, stock status, back-in-stock notify form, and an accessible add-to-cart form. Falls back to core WC blocks for simple products or when WooCommerce is absent.",
+	"keywords": [
+		"buybox",
+		"product",
+		"cart",
+		"add to cart",
+		"woocommerce",
+		"configurator",
+		"pdp"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "cart",
+	"supports": {
+		"html": false,
+		"align": false,
+		"interactivity": true,
+		"color": {
+			"background": false,
+			"text": false
+		},
+		"spacing": {
+			"margin": true,
+			"padding": false,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"boxFamilies": {
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				]
+			}
+		}
+	},
+	"usesContext": [
+		"postId"
+	],
+	"attributes": {
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"soldOutLabel": {
+			"type": "string",
+			"default": "(sold out)",
+			"description": "Aria-label suffix appended to pill labels when a combination is sold out. Shown to screen readers only."
+		},
+		"unavailableLabel": {
+			"type": "string",
+			"default": "(unavailable)",
+			"description": "Aria-label suffix appended to pill labels when a combination does not exist for the current selections."
+		},
+		"notifyEnabled": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the 'notify me when back in stock' email-capture form on out-of-stock variations."
+		},
+		"notifyMeLabel": {
+			"type": "string",
+			"default": "Notify me",
+			"description": "Heading/label for the back-in-stock notify-me form."
+		},
+		"addToCartLabel": {
+			"type": "string",
+			"default": "",
+			"description": "Override the Add to Cart button label. Empty = use the default translated string."
+		},
+		"perUnitDenomination": {
+			"type": "string",
+			"default": "",
+			"description": "Override the per-unit denomination template. Use %s as the placeholder for the unit label (e.g. 'per bar', 'per 100g'). Empty = translated default 'per %s'."
+		},
+		"showLadder": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the comparative value-ladder table. Set false to suppress it (e.g. in narrow sidebar contexts)."
+		},
+		"framingMode": {
+			"type": "string",
+			"default": "loss-aversion",
+			"enum": [
+				"savings",
+				"loss-aversion",
+				"neutral"
+			],
+			"description": "Saving-label framing: 'savings' (positive), 'loss-aversion' (adds 'vs buying singly' tail), or 'neutral' (no saving label)."
+		},
+		"decoyEnabled": {
+			"type": "boolean",
+			"default": false,
+			"description": "When true, the 'Best value' badge targets the 2nd-largest pack (decoy effect) instead of the largest."
+		}
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php",
+	"viewScriptModule": "file:./notify-view.js"
 }

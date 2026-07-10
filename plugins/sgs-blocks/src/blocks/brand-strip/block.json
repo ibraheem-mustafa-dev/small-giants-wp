@@ -20,7 +20,21 @@
 	"supports": {
 		"sgs": {
 			"imageControls": true,
-			"arrayContentLift": true
+			"arrayContentLift": true,
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
+				]
+			}
 		},
 		"align": [
 			"wide",

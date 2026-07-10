@@ -42,7 +42,24 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
-			"arrayContentLift": true
+			"arrayContentLift": true,
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
+				],
+				"borderWidth": [
+					"borderWidth"
+				]
+			}
 		}
 	},
 	"selectors": {
@@ -151,7 +168,17 @@
 		},
 		"borderStyle": {
 			"type": "string",
-			"enum": [ "none", "solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset" ],
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
 			"default": "none"
 		}
 	},

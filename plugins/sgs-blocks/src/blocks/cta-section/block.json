@@ -19,7 +19,22 @@
 		"sgs": {
 			"imageControls": false,
 			"is_section_root": true,
-			"arrayContentLift": true
+			"arrayContentLift": true,
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				],
+				"contentBandPadding": [
+					"contentBandPadding",
+					"contentBandPaddingTablet",
+					"contentBandPaddingMobile"
+				]
+			}
 		},
 		"align": [
 			"wide",

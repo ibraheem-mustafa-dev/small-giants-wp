@@ -35,6 +35,18 @@
 			"margin": true,
 			"padding": true,
 			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				]
+			}
 		}
 	},
 	"selectors": {
@@ -65,10 +77,22 @@
 			"type": "string",
 			"default": "text"
 		},
-		"paddingTablet": { "type": "object", "default": {} },
-		"paddingMobile": { "type": "object", "default": {} },
-		"marginTablet": { "type": "object", "default": {} },
-		"marginMobile": { "type": "object", "default": {} }
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
+		}
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",

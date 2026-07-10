@@ -81,7 +81,17 @@
 				],
 				"minimal-quote": []
 			},
-			"scalarStylingLift": true
+			"scalarStylingLift": true,
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				]
+			}
 		}
 	},
 	"usesContext": [

@@ -1,102 +1,108 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/cart",
-    "version": "0.1.0",
-    "title": "SGS Cart",
-    "category": "sgs-interactive",
-    "description": "WooCommerce mini-cart badge showing live item count. Reads the WooCommerce Store API; hydrates client-side to bypass full-page cache. Phase 2 will add a slide-in drawer.",
-    "keywords": [
-        "cart",
-        "basket",
-        "woocommerce",
-        "shop",
-        "mini-cart",
-        "ecommerce"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "cart",
-    "supports": {
-        "align": [
-            "left",
-            "center",
-            "right"
-        ],
-        "anchor": true,
-        "html": false,
-        "color": {
-            "background": false,
-            "text": false
-        },
-        "spacing": {
-            "margin": true,
-            "padding": false,
-            "__experimentalSkipSerialization": true
-        },
-        "sgs": {
-            "imageControls": false
-        }
-    },
-    "selectors": {
-        "root": ".wp-block-sgs-cart"
-    },
-    "attributes": {
-        "displayMode": {
-            "type": "string",
-            "default": "link",
-            "enum": [
-                "link",
-                "drawer"
-            ]
-        },
-        "iconName": {
-            "type": "string",
-            "default": "shopping-cart"
-        },
-        "iconSize": {
-            "type": "number",
-            "default": 24
-        },
-        "iconColour": {
-            "type": "string",
-            "default": "primary"
-        },
-        "badgeColour": {
-            "type": "string",
-            "default": "accent"
-        },
-        "badgeTextColour": {
-            "type": "string",
-            "default": "accent-text"
-        },
-        "ariaLabel": {
-            "type": "string",
-            "default": "View your cart"
-        },
-        "showZero": {
-            "type": "boolean",
-            "default": false
-        },
-        "marginTablet": {
-            "type": "object",
-            "default": {}
-        },
-        "marginMobile": {
-            "type": "object",
-            "default": {}
-        }
-    },
-    "editorScript": "file:./index.js",
-    "editorStyle": "file:./index.css",
-    "style": "file:./style-index.css",
-    "render": "file:./render.php",
-    "viewScriptModule": "file:./view.js",
-    "example": {
-        "attributes": {
-            "iconName": "shopping-cart",
-            "iconSize": 24,
-            "iconColour": "primary",
-            "badgeColour": "accent"
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/cart",
+	"version": "0.1.0",
+	"title": "SGS Cart",
+	"category": "sgs-interactive",
+	"description": "WooCommerce mini-cart badge showing live item count. Reads the WooCommerce Store API; hydrates client-side to bypass full-page cache. Phase 2 will add a slide-in drawer.",
+	"keywords": [
+		"cart",
+		"basket",
+		"woocommerce",
+		"shop",
+		"mini-cart",
+		"ecommerce"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "cart",
+	"supports": {
+		"align": [
+			"left",
+			"center",
+			"right"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": false,
+			"text": false
+		},
+		"spacing": {
+			"margin": true,
+			"padding": false,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"imageControls": false,
+			"boxFamilies": {
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				]
+			}
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-cart"
+	},
+	"attributes": {
+		"displayMode": {
+			"type": "string",
+			"default": "link",
+			"enum": [
+				"link",
+				"drawer"
+			]
+		},
+		"iconName": {
+			"type": "string",
+			"default": "shopping-cart"
+		},
+		"iconSize": {
+			"type": "number",
+			"default": 24
+		},
+		"iconColour": {
+			"type": "string",
+			"default": "primary"
+		},
+		"badgeColour": {
+			"type": "string",
+			"default": "accent"
+		},
+		"badgeTextColour": {
+			"type": "string",
+			"default": "accent-text"
+		},
+		"ariaLabel": {
+			"type": "string",
+			"default": "View your cart"
+		},
+		"showZero": {
+			"type": "boolean",
+			"default": false
+		},
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"iconName": "shopping-cart",
+			"iconSize": 24,
+			"iconColour": "primary",
+			"badgeColour": "accent"
+		}
+	}
 }

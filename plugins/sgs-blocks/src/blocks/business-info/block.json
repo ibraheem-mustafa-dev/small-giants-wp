@@ -57,10 +57,22 @@
 			"type": "string",
 			"default": "text-muted"
 		},
-		"paddingTablet": { "type": "object", "default": {} },
-		"paddingMobile": { "type": "object", "default": {} },
-		"marginTablet": { "type": "object", "default": {} },
-		"marginMobile": { "type": "object", "default": {} }
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
+		}
 	},
 	"supports": {
 		"html": false,
@@ -80,6 +92,18 @@
 			"margin": true,
 			"padding": true,
 			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				]
+			}
 		}
 	},
 	"selectors": {

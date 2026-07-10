@@ -6,24 +6,57 @@
 	"title": "Filter Search",
 	"category": "sgs-interactive",
 	"description": "A type-to-find input that narrows a WooCommerce attribute filter's options. Auto-shown only when the attribute has more than 15 terms. Nest inside a Product Filter (Attribute) block, before its chips.",
-	"keywords": [ "filter", "search", "attribute", "woocommerce", "shop", "type to find" ],
+	"keywords": [
+		"filter",
+		"search",
+		"attribute",
+		"woocommerce",
+		"shop",
+		"type to find"
+	],
 	"textdomain": "sgs-blocks",
 	"icon": "search",
-	"ancestor": [ "woocommerce/product-filter-attribute" ],
+	"ancestor": [
+		"woocommerce/product-filter-attribute"
+	],
 	"supports": {
 		"html": false,
 		"reusable": false,
 		"spacing": {
 			"margin": true,
 			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"boxFamilies": {
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				]
+			}
 		}
 	},
 	"attributes": {
-		"attributeId": { "type": "number", "default": 0 },
-		"threshold":   { "type": "integer", "default": 16, "minimum": 2 },
-		"placeholder": { "type": "string", "default": "" },
-		"marginTablet": { "type": "object", "default": {} },
-		"marginMobile": { "type": "object", "default": {} }
+		"attributeId": {
+			"type": "number",
+			"default": 0
+		},
+		"threshold": {
+			"type": "integer",
+			"default": 16,
+			"minimum": 2
+		},
+		"placeholder": {
+			"type": "string",
+			"default": ""
+		},
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
+		}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

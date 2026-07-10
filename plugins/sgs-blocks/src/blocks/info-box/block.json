@@ -54,7 +54,17 @@
 		},
 		"sgs": {
 			"imageControls": true,
-			"containerKind": "content"
+			"containerKind": "content",
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				]
+			}
 		}
 	},
 	"selectors": {

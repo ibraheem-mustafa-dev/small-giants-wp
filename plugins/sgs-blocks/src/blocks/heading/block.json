@@ -1,125 +1,267 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/heading",
-    "version": "0.5.1",
-    "title": "Heading",
-    "category": "sgs-content",
-    "description": "Single-element heading block. Use headingRole to switch between a primary heading (h1–h6) and a subheading paragraph (p or div). Pair with sgs/label and a second sgs/heading{headingRole:'subheading'} via the label-heading-subheading-cluster pattern for the full three-element visual cluster.",
-    "keywords": [
-        "heading",
-        "section heading",
-        "title",
-        "subheading",
-        "subtitle"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "heading",
-    "supports": {
-        "align": true,
-        "html": false,
-        "anchor": true,
-        "color": {
-            "text": true,
-            "background": true,
-            "link": false,
-            "__experimentalSkipSerialization": true
-        },
-        "spacing": {
-            "margin": true,
-            "padding": true,
-            "__experimentalSkipSerialization": true
-        },
-        "__experimentalBorder": {
-            "radius": true,
-            "__experimentalSkipSerialization": true
-        }
-    },
-    "render": "file:./render.php",
-    "attributes": {
-        "headingRole": {
-            "type": "string",
-            "enum": [ "heading", "subheading" ],
-            "default": "heading",
-            "role": "content"
-        },
-        "content": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "level": {
-            "type": "string",
-            "enum": [ "h1", "h2", "h3", "h4", "h5", "h6" ],
-            "default": "h2"
-        },
-        "subTag": {
-            "type": "string",
-            "enum": [ "p", "div" ],
-            "default": "p"
-        },
-        "anchor": {
-            "type": "string",
-            "default": ""
-        },
-
-        "fontFamily": { "type": "string", "default": "" },
-        "fontSize": { "type": "number", "default": 28 },
-        "fontSizeUnit": { "type": "string", "default": "px" },
-        "fontSizeTablet": { "type": "number" },
-        "fontSizeMobile": { "type": "number" },
-        "fontWeight": { "type": "string", "default": "700" },
-        "lineHeight": { "type": "number" },
-        "lineHeightUnit": { "type": "string", "default": "em" },
-        "letterSpacing": { "type": "number" },
-        "letterSpacingUnit": { "type": "string", "default": "em" },
-        "textTransform": { "type": "string", "default": "" },
-        "textColour": { "type": "string", "default": "text" },
-        "fontStyle": { "type": "string", "enum": [ "normal", "italic" ], "default": "" },
-        "textDecoration": { "type": "string", "enum": [ "none", "underline", "line-through" ], "default": "" },
-
-        "paddingTablet": { "type": "object", "default": {} },
-        "paddingMobile": { "type": "object", "default": {} },
-        "marginTablet": { "type": "object", "default": {} },
-        "marginMobile": { "type": "object", "default": {} },
-
-        "backgroundColour": { "type": "string", "default": "" },
-
-        "borderWidth": { "type": "object", "default": {} },
-        "borderStyle": {
-            "type": "string",
-            "enum": [ "none", "solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset" ],
-            "default": "none"
-        },
-        "borderColour": { "type": "string", "default": "" },
-
-        "boxShadow": { "type": "string", "default": "" },
-        "boxShadowHover": { "type": "string", "default": "" },
-        "hoverScale": { "type": "number" },
-        "hoverColour": { "type": "string", "default": "" },
-        "hoverBackground": { "type": "string", "default": "" },
-
-        "customWidth": { "type": "string", "default": "" },
-        "customWidthUnit": { "type": "string", "default": "px" },
-        "textAlign": { "type": "string", "enum": [ "", "left", "center", "right", "justify", "start", "end" ], "default": "" },
-
-        "inheritStyle": { "type": "boolean", "default": false },
-
-        "transitionDuration": { "type": "number", "default": 300 },
-        "transitionEasing": {
-            "type": "string",
-            "enum": [ "ease", "ease-in", "ease-out", "ease-in-out", "linear" ],
-            "default": "ease"
-        }
-    },
-    "editorScript": "file:./index.js",
-    "editorStyle": "file:./index.css",
-    "style": "file:./style-index.css",
-    "example": {
-        "attributes": {
-            "headingRole": "heading",
-            "content": "A section heading that converts",
-            "level": "h2"
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/heading",
+	"version": "0.5.1",
+	"title": "Heading",
+	"category": "sgs-content",
+	"description": "Single-element heading block. Use headingRole to switch between a primary heading (h1–h6) and a subheading paragraph (p or div). Pair with sgs/label and a second sgs/heading{headingRole:'subheading'} via the label-heading-subheading-cluster pattern for the full three-element visual cluster.",
+	"keywords": [
+		"heading",
+		"section heading",
+		"title",
+		"subheading",
+		"subtitle"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "heading",
+	"supports": {
+		"align": true,
+		"html": false,
+		"anchor": true,
+		"color": {
+			"text": true,
+			"background": true,
+			"link": false,
+			"__experimentalSkipSerialization": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"__experimentalSkipSerialization": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"boxFamilies": {
+				"borderWidth": [
+					"borderWidth"
+				],
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				]
+			}
+		}
+	},
+	"render": "file:./render.php",
+	"attributes": {
+		"headingRole": {
+			"type": "string",
+			"enum": [
+				"heading",
+				"subheading"
+			],
+			"default": "heading",
+			"role": "content"
+		},
+		"content": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"level": {
+			"type": "string",
+			"enum": [
+				"h1",
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6"
+			],
+			"default": "h2"
+		},
+		"subTag": {
+			"type": "string",
+			"enum": [
+				"p",
+				"div"
+			],
+			"default": "p"
+		},
+		"anchor": {
+			"type": "string",
+			"default": ""
+		},
+		"fontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"fontSize": {
+			"type": "number",
+			"default": 28
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontSizeTablet": {
+			"type": "number"
+		},
+		"fontSizeMobile": {
+			"type": "number"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": "700"
+		},
+		"lineHeight": {
+			"type": "number"
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"letterSpacing": {
+			"type": "number"
+		},
+		"letterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"textTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": "text"
+		},
+		"fontStyle": {
+			"type": "string",
+			"enum": [
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"textDecoration": {
+			"type": "string",
+			"enum": [
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "none"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"boxShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"boxShadowHover": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverScale": {
+			"type": "number"
+		},
+		"hoverColour": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"textAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify",
+				"start",
+				"end"
+			],
+			"default": ""
+		},
+		"inheritStyle": {
+			"type": "boolean",
+			"default": false
+		},
+		"transitionDuration": {
+			"type": "number",
+			"default": 300
+		},
+		"transitionEasing": {
+			"type": "string",
+			"enum": [
+				"ease",
+				"ease-in",
+				"ease-out",
+				"ease-in-out",
+				"linear"
+			],
+			"default": "ease"
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"example": {
+		"attributes": {
+			"headingRole": "heading",
+			"content": "A section heading that converts",
+			"level": "h2"
+		}
+	}
 }

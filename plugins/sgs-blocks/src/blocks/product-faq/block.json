@@ -47,7 +47,17 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
-			"containerKind": "content"
+			"containerKind": "content",
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				]
+			}
 		}
 	},
 	"selectors": {

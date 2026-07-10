@@ -1,162 +1,183 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/icon",
-    "version": "0.3.0",
-    "title": "SGS Icon",
-    "category": "sgs-content",
-    "description": "Icon from multiple sources — Lucide SVG, WordPress icons, Dashicons, or emoji — with size, colour, optional background shape, and optional link.",
-    "keywords": [
-        "icon",
-        "svg",
-        "lucide",
-        "dashicon",
-        "emoji",
-        "symbol",
-        "graphic"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "heart",
-    "supports": {
-        "align": [
-            "left",
-            "center",
-            "right"
-        ],
-        "anchor": true,
-        "html": false,
-        "color": {
-            "background": true,
-            "text": true,
-            "__experimentalSkipSerialization": true
-        },
-        "spacing": {
-            "margin": true,
-            "padding": true,
-            "__experimentalSkipSerialization": true
-        },
-        "sgs": {
-            "imageControls": false
-        }
-    },
-    "selectors": {
-        "root": ".wp-block-sgs-icon"
-    },
-    "attributes": {
-        "iconSource": {
-            "type": "string",
-            "default": "lucide",
-            "enum": [
-                "lucide",
-                "wp-icon",
-                "dashicon",
-                "emoji"
-            ]
-        },
-        "iconName": {
-            "type": "string",
-            "default": "star"
-        },
-        "emojiChar": {
-            "type": "string",
-            "default": ""
-        },
-        "dashiconName": {
-            "type": "string",
-            "default": ""
-        },
-        "wpIconName": {
-            "type": "string",
-            "default": ""
-        },
-        "iconSize": {
-            "type": "number",
-            "default": 32
-        },
-        "iconColour": {
-            "type": "string",
-            "default": "primary"
-        },
-        "backgroundColour": {
-            "type": "string",
-            "default": "surface-alt"
-        },
-        "backgroundShape": {
-            "type": "string",
-            "default": "none",
-            "enum": [
-                "none",
-                "circle",
-                "pill",
-                "square",
-                "rounded",
-                "outline"
-            ]
-        },
-        "backgroundPadding": {
-            "type": "string",
-            "default": "",
-            "description": "Padding inside the background shape (circle/pill/rounded/square/outline). Raw CSS length (e.g. 12px, 0.75rem). Empty = theme default (12px). Single uniform value — NOT a 4-side box family (Spec 32 6.1c) — emitted scoped, not inline."
-        },
-
-        "paddingTablet": { "type": "object", "default": {} },
-        "paddingMobile": { "type": "object", "default": {} },
-        "marginTablet": { "type": "object", "default": {} },
-        "marginMobile": { "type": "object", "default": {} },
-        "linkUrl": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "linkTarget": {
-            "type": "string",
-            "default": "_self",
-            "enum": [
-                "_self",
-                "_blank"
-            ]
-        },
-        "linkRel": {
-            "type": "string",
-            "default": ""
-        },
-        "ariaLabel": {
-            "type": "string",
-            "default": ""
-        },
-        "hoverIconColour": {
-            "type": "string",
-            "default": "accent-text"
-        },
-        "hoverShapeColour": {
-            "type": "string",
-            "default": ""
-        },
-        "hoverScale": {
-            "type": "number",
-            "default": 1.1
-        },
-        "iconAlign": {
-            "type": "string",
-            "default": "left",
-            "enum": [
-                "left",
-                "center",
-                "right"
-            ]
-        }
-    },
-    "editorScript": "file:./index.js",
-    "editorStyle": "file:./index.css",
-    "style": "file:./style-index.css",
-    "render": "file:./render.php",
-    "example": {
-        "attributes": {
-            "iconName": "star",
-            "iconSize": 48,
-            "iconColour": "primary",
-            "backgroundShape": "circle",
-            "backgroundColour": "surface-alt"
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/icon",
+	"version": "0.3.0",
+	"title": "SGS Icon",
+	"category": "sgs-content",
+	"description": "Icon from multiple sources — Lucide SVG, WordPress icons, Dashicons, or emoji — with size, colour, optional background shape, and optional link.",
+	"keywords": [
+		"icon",
+		"svg",
+		"lucide",
+		"dashicon",
+		"emoji",
+		"symbol",
+		"graphic"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "heart",
+	"supports": {
+		"align": [
+			"left",
+			"center",
+			"right"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"__experimentalSkipSerialization": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"imageControls": false,
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				]
+			}
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-icon"
+	},
+	"attributes": {
+		"iconSource": {
+			"type": "string",
+			"default": "lucide",
+			"enum": [
+				"lucide",
+				"wp-icon",
+				"dashicon",
+				"emoji"
+			]
+		},
+		"iconName": {
+			"type": "string",
+			"default": "star"
+		},
+		"emojiChar": {
+			"type": "string",
+			"default": ""
+		},
+		"dashiconName": {
+			"type": "string",
+			"default": ""
+		},
+		"wpIconName": {
+			"type": "string",
+			"default": ""
+		},
+		"iconSize": {
+			"type": "number",
+			"default": 32
+		},
+		"iconColour": {
+			"type": "string",
+			"default": "primary"
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": "surface-alt"
+		},
+		"backgroundShape": {
+			"type": "string",
+			"default": "none",
+			"enum": [
+				"none",
+				"circle",
+				"pill",
+				"square",
+				"rounded",
+				"outline"
+			]
+		},
+		"backgroundPadding": {
+			"type": "string",
+			"default": "",
+			"description": "Padding inside the background shape (circle/pill/rounded/square/outline). Raw CSS length (e.g. 12px, 0.75rem). Empty = theme default (12px). Single uniform value — NOT a 4-side box family (Spec 32 6.1c) — emitted scoped, not inline."
+		},
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"linkUrl": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"linkTarget": {
+			"type": "string",
+			"default": "_self",
+			"enum": [
+				"_self",
+				"_blank"
+			]
+		},
+		"linkRel": {
+			"type": "string",
+			"default": ""
+		},
+		"ariaLabel": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverIconColour": {
+			"type": "string",
+			"default": "accent-text"
+		},
+		"hoverShapeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverScale": {
+			"type": "number",
+			"default": 1.1
+		},
+		"iconAlign": {
+			"type": "string",
+			"default": "left",
+			"enum": [
+				"left",
+				"center",
+				"right"
+			]
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php",
+	"example": {
+		"attributes": {
+			"iconName": "star",
+			"iconSize": 48,
+			"iconColour": "primary",
+			"backgroundShape": "circle",
+			"backgroundColour": "surface-alt"
+		}
+	}
 }

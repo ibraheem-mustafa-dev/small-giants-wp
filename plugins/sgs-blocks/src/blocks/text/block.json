@@ -1,259 +1,274 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/text",
-    "version": "0.1.1",
-    "title": "Text",
-    "category": "sgs-content",
-    "description": "Single-element body text block. Renders a <p> with full SGS typography, spacing, colour, border, shadow, and hover controls.",
-    "keywords": [
-        "text",
-        "paragraph",
-        "body",
-        "copy"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "editor-paragraph",
-    "render": "file:./render.php",
-    "supports": {
-        "anchor": true,
-        "className": true,
-        "html": false,
-        "color": false,
-        "spacing": {
-            "margin": true,
-            "padding": true,
-            "__experimentalSkipSerialization": true
-        },
-        "__experimentalBorder": {
-            "radius": true,
-            "__experimentalSkipSerialization": true
-        }
-    },
-    "attributes": {
-        "text": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "textColour": {
-            "type": "string",
-            "default": ""
-        },
-        "fontSize": {
-            "type": "number"
-        },
-        "fontSizeUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "fontSizeTablet": {
-            "type": "number"
-        },
-        "fontSizeMobile": {
-            "type": "number"
-        },
-        "fontWeight": {
-            "type": "string",
-            "default": ""
-        },
-        "lineHeight": {
-            "type": "number"
-        },
-        "lineHeightUnit": {
-            "type": "string",
-            "default": "em"
-        },
-        "lineHeightTablet": {
-            "type": "number"
-        },
-        "lineHeightMobile": {
-            "type": "number"
-        },
-        "letterSpacing": {
-            "type": "number"
-        },
-        "letterSpacingUnit": {
-            "type": "string",
-            "default": "em"
-        },
-        "letterSpacingTablet": {
-            "type": "string",
-            "default": ""
-        },
-        "letterSpacingMobile": {
-            "type": "string",
-            "default": ""
-        },
-        "fontStyle": {
-            "type": "string",
-            "enum": [
-                "",
-                "normal",
-                "italic"
-            ],
-            "default": ""
-        },
-        "textDecoration": {
-            "type": "string",
-            "enum": [
-                "",
-                "none",
-                "underline",
-                "line-through"
-            ],
-            "default": ""
-        },
-        "textTransform": {
-            "type": "string",
-            "enum": [
-                "",
-                "none",
-                "uppercase",
-                "lowercase",
-                "capitalize"
-            ],
-            "default": ""
-        },
-        "fontFamily": {
-            "type": "string",
-            "default": ""
-        },
-        "marginTablet": {
-            "type": "object",
-            "default": {}
-        },
-        "marginMobile": {
-            "type": "object",
-            "default": {}
-        },
-        "paddingTablet": {
-            "type": "object",
-            "default": {}
-        },
-        "paddingMobile": {
-            "type": "object",
-            "default": {}
-        },
-        "textAlign": {
-            "type": "string",
-            "enum": [
-                "",
-                "left",
-                "center",
-                "right",
-                "justify"
-            ],
-            "default": ""
-        },
-        "maxWidth": {
-            "type": "number"
-        },
-        "maxWidthUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "dropCap": {
-            "type": "boolean",
-            "default": false
-        },
-        "firstLetterColour": {
-            "type": "string",
-            "default": ""
-        },
-        "firstLetterFontSize": {
-            "type": "number"
-        },
-        "firstLetterFontSizeUnit": {
-            "type": "string",
-            "default": "em"
-        },
-        "firstLetterFontWeight": {
-            "type": "string",
-            "default": ""
-        },
-        "backgroundColour": {
-            "type": "string",
-            "default": ""
-        },
-        "borderWidth": {
-            "type": "object",
-            "default": {}
-        },
-        "borderStyle": {
-            "type": "string",
-            "enum": [
-                "none",
-                "solid",
-                "dashed",
-                "dotted",
-                "double",
-                "groove",
-                "ridge",
-                "inset",
-                "outset"
-            ],
-            "default": "none"
-        },
-        "borderColour": {
-            "type": "string",
-            "default": ""
-        },
-        "boxShadow": {
-            "type": "string",
-            "default": ""
-        },
-        "boxShadowHover": {
-            "type": "string",
-            "default": ""
-        },
-        "hoverScale": {
-            "type": "number"
-        },
-        "hoverColour": {
-            "type": "string",
-            "default": ""
-        },
-        "hoverBackground": {
-            "type": "string",
-            "default": ""
-        },
-        "customWidth": {
-            "type": "string",
-            "default": ""
-        },
-        "customWidthUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "inheritStyle": {
-            "type": "boolean",
-            "default": false
-        },
-        "transitionDuration": {
-            "type": "number",
-            "default": 300
-        },
-        "transitionEasing": {
-            "type": "string",
-            "enum": [
-                "ease",
-                "ease-in",
-                "ease-out",
-                "ease-in-out",
-                "linear"
-            ],
-            "default": "ease"
-        }
-    },
-    "editorScript": "file:./index.js",
-    "editorStyle": "file:./index.css",
-    "style": "file:./style-index.css",
-    "example": {
-        "attributes": {
-            "text": "This is a sample paragraph demonstrating the SGS Text block with full typography controls.",
-            "fontSize": 16,
-            "textColour": "text"
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/text",
+	"version": "0.1.1",
+	"title": "Text",
+	"category": "sgs-content",
+	"description": "Single-element body text block. Renders a <p> with full SGS typography, spacing, colour, border, shadow, and hover controls.",
+	"keywords": [
+		"text",
+		"paragraph",
+		"body",
+		"copy"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "editor-paragraph",
+	"render": "file:./render.php",
+	"supports": {
+		"anchor": true,
+		"className": true,
+		"html": false,
+		"color": false,
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"__experimentalSkipSerialization": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"boxFamilies": {
+				"borderWidth": [
+					"borderWidth"
+				],
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				]
+			}
+		}
+	},
+	"attributes": {
+		"text": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"fontSize": {
+			"type": "number"
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontSizeTablet": {
+			"type": "number"
+		},
+		"fontSizeMobile": {
+			"type": "number"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "number"
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"lineHeightTablet": {
+			"type": "number"
+		},
+		"lineHeightMobile": {
+			"type": "number"
+		},
+		"letterSpacing": {
+			"type": "number"
+		},
+		"letterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"letterSpacingTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"letterSpacingMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"textDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"textTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"fontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"textAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "number"
+		},
+		"maxWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"dropCap": {
+			"type": "boolean",
+			"default": false
+		},
+		"firstLetterColour": {
+			"type": "string",
+			"default": ""
+		},
+		"firstLetterFontSize": {
+			"type": "number"
+		},
+		"firstLetterFontSizeUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"firstLetterFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "none"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"boxShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"boxShadowHover": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverScale": {
+			"type": "number"
+		},
+		"hoverColour": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"customWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"inheritStyle": {
+			"type": "boolean",
+			"default": false
+		},
+		"transitionDuration": {
+			"type": "number",
+			"default": 300
+		},
+		"transitionEasing": {
+			"type": "string",
+			"enum": [
+				"ease",
+				"ease-in",
+				"ease-out",
+				"ease-in-out",
+				"linear"
+			],
+			"default": "ease"
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"example": {
+		"attributes": {
+			"text": "This is a sample paragraph demonstrating the SGS Text block with full typography controls.",
+			"fontSize": 16,
+			"textColour": "text"
+		}
+	}
 }

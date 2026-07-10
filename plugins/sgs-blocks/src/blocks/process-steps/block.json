@@ -50,7 +50,20 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
-			"arrayContentLift": true
+			"arrayContentLift": true,
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				],
+				"borderWidth": [
+					"borderWidth"
+				]
+			}
 		}
 	},
 	"selectors": {

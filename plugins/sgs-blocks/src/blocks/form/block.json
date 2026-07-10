@@ -47,7 +47,17 @@
 		},
 		"interactivity": true,
 		"sgs": {
-			"containerKind": "layout"
+			"containerKind": "layout",
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				]
+			}
 		}
 	},
 	"attributes": {

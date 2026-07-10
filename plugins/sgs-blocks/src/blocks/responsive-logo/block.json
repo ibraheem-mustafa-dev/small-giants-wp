@@ -1,108 +1,118 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/responsive-logo",
-    "version": "0.1.0",
-    "title": "SGS Responsive Logo",
-    "category": "sgs-content",
-    "description": "Three-slot logo block (desktop / tablet / mobile) with optional SVG animation. Competitive moat: H/Square/Mark aspect-ratio variants per breakpoint.",
-    "keywords": [
-        "logo",
-        "responsive",
-        "branding",
-        "header",
-        "svg",
-        "animation"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "format-image",
-    "supports": {
-        "align": [
-            "left",
-            "center",
-            "right",
-            "wide"
-        ],
-        "anchor": true,
-        "html": false,
-        "spacing": {
-            "margin": true,
-            "padding": true,
-            "__experimentalSkipSerialization": true
-        },
-        "sgs": {
-            "imageControls": true
-        },
-        "_comment_parallax": "Parallax deliberately excluded — not appropriate for a header logo."
-    },
-    "selectors": {
-        "root": ".wp-block-sgs-responsive-logo"
-    },
-    "attributes": {
-        "desktopLogoId": {
-            "type": "number"
-        },
-        "tabletLogoId": {
-            "type": "number"
-        },
-        "mobileLogoId": {
-            "type": "number"
-        },
-        "svgAnimationSource": {
-            "type": "number",
-            "_comment": "Media library ID of a .svg file. NEVER accept inline SVG paste — XSS risk. Force upload via media library only."
-        },
-        "animationStyle": {
-            "type": "string",
-            "default": "none",
-            "enum": [
-                "none",
-                "draw-on-load",
-                "hover-redraw",
-                "scroll-trigger"
-            ]
-        },
-        "width": {
-            "type": "number",
-            "default": 240
-        },
-        "linkToHome": {
-            "type": "boolean",
-            "default": true
-        },
-        "alt": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "paddingTablet": {
-            "type": "object",
-            "default": {}
-        },
-        "paddingMobile": {
-            "type": "object",
-            "default": {}
-        },
-        "marginTablet": {
-            "type": "object",
-            "default": {}
-        },
-        "marginMobile": {
-            "type": "object",
-            "default": {}
-        }
-    },
-    "render": "file:./render.php",
-    "editorScript": "file:./index.js",
-    "editorStyle": "file:./index.css",
-    "style": "file:./style-index.css",
-    "viewScriptModule": "file:./view.js",
-    "example": {
-        "attributes": {
-            "width": 240,
-            "linkToHome": true,
-            "alt": "Company logo",
-            "animationStyle": "none"
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/responsive-logo",
+	"version": "0.1.0",
+	"title": "SGS Responsive Logo",
+	"category": "sgs-content",
+	"description": "Three-slot logo block (desktop / tablet / mobile) with optional SVG animation. Competitive moat: H/Square/Mark aspect-ratio variants per breakpoint.",
+	"keywords": [
+		"logo",
+		"responsive",
+		"branding",
+		"header",
+		"svg",
+		"animation"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "format-image",
+	"supports": {
+		"align": [
+			"left",
+			"center",
+			"right",
+			"wide"
+		],
+		"anchor": true,
+		"html": false,
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"imageControls": true,
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				]
+			}
+		},
+		"_comment_parallax": "Parallax deliberately excluded — not appropriate for a header logo."
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-responsive-logo"
+	},
+	"attributes": {
+		"desktopLogoId": {
+			"type": "number"
+		},
+		"tabletLogoId": {
+			"type": "number"
+		},
+		"mobileLogoId": {
+			"type": "number"
+		},
+		"svgAnimationSource": {
+			"type": "number",
+			"_comment": "Media library ID of a .svg file. NEVER accept inline SVG paste — XSS risk. Force upload via media library only."
+		},
+		"animationStyle": {
+			"type": "string",
+			"default": "none",
+			"enum": [
+				"none",
+				"draw-on-load",
+				"hover-redraw",
+				"scroll-trigger"
+			]
+		},
+		"width": {
+			"type": "number",
+			"default": 240
+		},
+		"linkToHome": {
+			"type": "boolean",
+			"default": true
+		},
+		"alt": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"width": 240,
+			"linkToHome": true,
+			"alt": "Company logo",
+			"animationStyle": "none"
+		}
+	}
 }

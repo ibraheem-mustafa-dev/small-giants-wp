@@ -36,6 +36,21 @@
 				],
 				"text-only": [],
 				"image-badge": []
+			},
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				],
+				"contentBandPadding": [
+					"contentBandPadding",
+					"contentBandPaddingTablet",
+					"contentBandPaddingMobile"
+				]
 			}
 		},
 		"align": [

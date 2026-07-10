@@ -1,302 +1,308 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/media",
-    "version": "1.7.0",
-    "title": "SGS Media",
-    "category": "sgs-content",
-    "description": "Content media block — image or video. Use mediaType to choose image (with imageUrl) or video (with videoUrl for external embeds or videoId for WP-library uploads). Media styling (object-fit, max-width/height + tiers, border-radius, alignment, etc.) is driven entirely by this block's own NATIVE attributes and its Media Styling panel — this block deliberately OPTS OUT of the shared universal image-controls extension (no supports.sgs.imageControls) so there is ONE source of truth the cloning converter writes and the editor edits.",
-    "keywords": [
-        "image",
-        "video",
-        "media",
-        "photo",
-        "picture",
-        "figure"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "format-image",
-    "supports": {
-        "sgs": {
-            "scalarStylingLift": true
-        },
-        "anchor": true,
-        "className": true,
-        "color": false,
-        "html": false,
-        "__experimentalBorder": {
-            "radius": true,
-            "width": true,
-            "style": true,
-            "color": true,
-            "__experimentalSkipSerialization": true
-        }
-    },
-    "attributes": {
-        "mediaType": {
-            "type": "string",
-            "default": "image",
-            "enum": [
-                "image",
-                "video",
-                "svg"
-            ]
-        },
-        "svgContent": {
-            "type": "string",
-            "default": ""
-        },
-        "svgAnimation": {
-            "type": "string",
-            "default": "none",
-            "enum": [
-                "none",
-                "pulse",
-                "float",
-                "wave"
-            ]
-        },
-        "svgAnimationSpeed": {
-            "type": "string",
-            "default": "medium",
-            "enum": [
-                "slow",
-                "medium",
-                "fast"
-            ]
-        },
-        "videoUrl": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "videoSource": {
-            "type": "string",
-            "default": "external",
-            "enum": [
-                "external",
-                "internal"
-            ]
-        },
-        "videoId": {
-            "type": "integer",
-            "default": null
-        },
-        "videoMimeType": {
-            "type": "string",
-            "default": ""
-        },
-        "videoPoster": {
-            "type": "string",
-            "default": ""
-        },
-        "videoPosterId": {
-            "type": "integer",
-            "default": null
-        },
-        "videoAutoplay": {
-            "type": "boolean",
-            "default": false
-        },
-        "videoLoop": {
-            "type": "boolean",
-            "default": false
-        },
-        "videoMuted": {
-            "type": "boolean",
-            "default": true
-        },
-        "videoControls": {
-            "type": "boolean",
-            "default": true
-        },
-        "videoPlaysInline": {
-            "type": "boolean",
-            "default": true
-        },
-        "videoLazyLoad": {
-            "type": "boolean",
-            "default": true
-        },
-        "imageId": {
-            "type": "integer",
-            "default": null
-        },
-        "imageUrl": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "imageAlt": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "imageWidth": {
-            "type": "integer",
-            "default": null
-        },
-        "imageHeight": {
-            "type": "integer",
-            "default": null
-        },
-        "maxWidth": {
-            "type": "string",
-            "default": null
-        },
-        "maxWidthUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "maxWidthMobile": {
-            "type": "string",
-            "default": null
-        },
-        "maxWidthTablet": {
-            "type": "string",
-            "default": null
-        },
-        "maxHeight": {
-            "type": "string",
-            "default": null
-        },
-        "maxHeightUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "maxHeightMobile": {
-            "type": "string",
-            "default": null
-        },
-        "maxHeightTablet": {
-            "type": "string",
-            "default": null
-        },
-        "height": {
-            "type": "string",
-            "default": null
-        },
-        "heightUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "heightMobile": {
-            "type": "string",
-            "default": null
-        },
-        "heightTablet": {
-            "type": "string",
-            "default": null
-        },
-        "aspectRatio": {
-            "type": "string",
-            "default": ""
-        },
-        "objectFit": {
-            "type": "string",
-            "default": "cover",
-            "enum": [
-                "cover",
-                "contain",
-                "fill",
-                "none",
-                "scale-down"
-            ]
-        },
-        "objectPosition": {
-            "type": "string",
-            "default": "center center"
-        },
-        "borderRadiusTablet": {
-            "type": "object",
-            "default": {}
-        },
-        "borderRadiusMobile": {
-            "type": "object",
-            "default": {}
-        },
-        "boxShadow": {
-            "type": "string",
-            "default": ""
-        },
-        "opacity": {
-            "type": "number",
-            "default": 1
-        },
-        "alignment": {
-            "type": "string",
-            "default": "left",
-            "enum": [
-                "left",
-                "center",
-                "right"
-            ]
-        },
-        "order": {
-            "type": "integer",
-            "default": null
-        },
-        "orderMobile": {
-            "type": "integer",
-            "default": null
-        },
-        "orderTablet": {
-            "type": "integer",
-            "default": null
-        },
-        "caption": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "captionTag": {
-            "type": "string",
-            "default": "figcaption",
-            "enum": [
-                "figcaption",
-                "div"
-            ]
-        },
-        "captionColour": {
-            "type": "string",
-            "default": ""
-        },
-        "captionFontSize": {
-            "type": "integer",
-            "default": null
-        },
-        "captionFontSizeUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "linkUrl": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "linkOpensNewTab": {
-            "type": "boolean",
-            "default": false
-        },
-        "linkRel": {
-            "type": "string",
-            "default": ""
-        }
-    },
-    "render": "file:./render.php",
-    "editorScript": "file:./index.js",
-    "editorStyle": "file:./index.css",
-    "style": "file:./style-index.css",
-    "viewScriptModule": "file:./view.js",
-    "example": {
-        "attributes": {
-            "mediaType": "image",
-            "imageUrl": "https://via.placeholder.com/800x600",
-            "imageAlt": "Example image",
-            "imageWidth": 800,
-            "imageHeight": 600,
-            "objectFit": "cover",
-            "alignment": "center"
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/media",
+	"version": "1.7.0",
+	"title": "SGS Media",
+	"category": "sgs-content",
+	"description": "Content media block — image or video. Use mediaType to choose image (with imageUrl) or video (with videoUrl for external embeds or videoId for WP-library uploads). Media styling (object-fit, max-width/height + tiers, border-radius, alignment, etc.) is driven entirely by this block's own NATIVE attributes and its Media Styling panel — this block deliberately OPTS OUT of the shared universal image-controls extension (no supports.sgs.imageControls) so there is ONE source of truth the cloning converter writes and the editor edits.",
+	"keywords": [
+		"image",
+		"video",
+		"media",
+		"photo",
+		"picture",
+		"figure"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "format-image",
+	"supports": {
+		"sgs": {
+			"scalarStylingLift": true,
+			"boxFamilies": {
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
+				]
+			}
+		},
+		"anchor": true,
+		"className": true,
+		"color": false,
+		"html": false,
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"style": true,
+			"color": true,
+			"__experimentalSkipSerialization": true
+		}
+	},
+	"attributes": {
+		"mediaType": {
+			"type": "string",
+			"default": "image",
+			"enum": [
+				"image",
+				"video",
+				"svg"
+			]
+		},
+		"svgContent": {
+			"type": "string",
+			"default": ""
+		},
+		"svgAnimation": {
+			"type": "string",
+			"default": "none",
+			"enum": [
+				"none",
+				"pulse",
+				"float",
+				"wave"
+			]
+		},
+		"svgAnimationSpeed": {
+			"type": "string",
+			"default": "medium",
+			"enum": [
+				"slow",
+				"medium",
+				"fast"
+			]
+		},
+		"videoUrl": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"videoSource": {
+			"type": "string",
+			"default": "external",
+			"enum": [
+				"external",
+				"internal"
+			]
+		},
+		"videoId": {
+			"type": "integer",
+			"default": null
+		},
+		"videoMimeType": {
+			"type": "string",
+			"default": ""
+		},
+		"videoPoster": {
+			"type": "string",
+			"default": ""
+		},
+		"videoPosterId": {
+			"type": "integer",
+			"default": null
+		},
+		"videoAutoplay": {
+			"type": "boolean",
+			"default": false
+		},
+		"videoLoop": {
+			"type": "boolean",
+			"default": false
+		},
+		"videoMuted": {
+			"type": "boolean",
+			"default": true
+		},
+		"videoControls": {
+			"type": "boolean",
+			"default": true
+		},
+		"videoPlaysInline": {
+			"type": "boolean",
+			"default": true
+		},
+		"videoLazyLoad": {
+			"type": "boolean",
+			"default": true
+		},
+		"imageId": {
+			"type": "integer",
+			"default": null
+		},
+		"imageUrl": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"imageAlt": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"imageWidth": {
+			"type": "integer",
+			"default": null
+		},
+		"imageHeight": {
+			"type": "integer",
+			"default": null
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": null
+		},
+		"maxWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"maxWidthMobile": {
+			"type": "string",
+			"default": null
+		},
+		"maxWidthTablet": {
+			"type": "string",
+			"default": null
+		},
+		"maxHeight": {
+			"type": "string",
+			"default": null
+		},
+		"maxHeightUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"maxHeightMobile": {
+			"type": "string",
+			"default": null
+		},
+		"maxHeightTablet": {
+			"type": "string",
+			"default": null
+		},
+		"height": {
+			"type": "string",
+			"default": null
+		},
+		"heightUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"heightMobile": {
+			"type": "string",
+			"default": null
+		},
+		"heightTablet": {
+			"type": "string",
+			"default": null
+		},
+		"aspectRatio": {
+			"type": "string",
+			"default": ""
+		},
+		"objectFit": {
+			"type": "string",
+			"default": "cover",
+			"enum": [
+				"cover",
+				"contain",
+				"fill",
+				"none",
+				"scale-down"
+			]
+		},
+		"objectPosition": {
+			"type": "string",
+			"default": "center center"
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"boxShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"opacity": {
+			"type": "number",
+			"default": 1
+		},
+		"alignment": {
+			"type": "string",
+			"default": "left",
+			"enum": [
+				"left",
+				"center",
+				"right"
+			]
+		},
+		"order": {
+			"type": "integer",
+			"default": null
+		},
+		"orderMobile": {
+			"type": "integer",
+			"default": null
+		},
+		"orderTablet": {
+			"type": "integer",
+			"default": null
+		},
+		"caption": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"captionTag": {
+			"type": "string",
+			"default": "figcaption",
+			"enum": [
+				"figcaption",
+				"div"
+			]
+		},
+		"captionColour": {
+			"type": "string",
+			"default": ""
+		},
+		"captionFontSize": {
+			"type": "integer",
+			"default": null
+		},
+		"captionFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"linkUrl": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"linkOpensNewTab": {
+			"type": "boolean",
+			"default": false
+		},
+		"linkRel": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"mediaType": "image",
+			"imageUrl": "https://via.placeholder.com/800x600",
+			"imageAlt": "Example image",
+			"imageWidth": 800,
+			"imageHeight": 600,
+			"objectFit": "cover",
+			"alignment": "center"
+		}
+	}
 }

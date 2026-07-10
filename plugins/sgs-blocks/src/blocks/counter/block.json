@@ -1,147 +1,179 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/counter",
-    "version": "0.2.1",
-    "title": "SGS Counter",
-    "category": "sgs-content",
-    "description": "Animated number counter with prefix, suffix, and label.",
-    "keywords": [
-        "counter",
-        "number",
-        "stat",
-        "animated",
-        "count"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "chart-bar",
-    "supports": {
-        "sgs": {
-            "scalarStylingLift": true
-        },
-        "align": false,
-        "anchor": true,
-        "html": false,
-        "color": {
-            "background": true,
-            "text": true,
-            "link": true,
-            "__experimentalSkipSerialization": true
-        },
-        "typography": {
-            "fontSize": true,
-            "lineHeight": true,
-            "textAlign": true,
-            "__experimentalSkipSerialization": true
-        },
-        "spacing": {
-            "margin": true,
-            "padding": true,
-            "__experimentalSkipSerialization": true
-        },
-        "__experimentalBorder": {
-            "radius": true,
-            "width": true,
-            "color": true,
-            "style": true,
-            "__experimentalSkipSerialization": true
-        },
-        "interactivity": true
-    },
-    "selectors": {
-        "root": ".sgs-counter",
-        "typography": ".sgs-counter__number"
-    },
-    "attributes": {
-        "number": {
-            "type": "number",
-            "default": 0
-        },
-        "prefix": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "suffix": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "label": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "duration": {
-            "type": "number",
-            "default": 2000
-        },
-        "separator": {
-            "type": "boolean",
-            "default": true
-        },
-        "numberColour": {
-            "type": "string",
-            "default": "primary"
-        },
-        "labelColour": {
-            "type": "string",
-            "default": "text-muted"
-        },
-        "labelFontSize": {
-            "type": "number"
-        },
-        "labelFontSizeUnit": {
-            "type": "string",
-            "default": "px"
-        },
-        "labelFontSizeTablet": {
-            "type": "number"
-        },
-        "labelFontSizeMobile": {
-            "type": "number"
-        },
-        "labelFontWeight": {
-            "type": "string",
-            "default": ""
-        },
-        "labelFontStyle": {
-            "type": "string",
-            "default": ""
-        },
-        "labelLineHeight": {
-            "type": "number"
-        },
-        "labelLineHeightUnit": {
-            "type": "string",
-            "default": ""
-        },
-        "icon": {
-            "type": "string",
-            "default": ""
-        },
-        "accentStroke": {
-            "type": "boolean",
-            "default": false
-        },
-        "paddingTablet": { "type": "object", "default": {} },
-        "paddingMobile": { "type": "object", "default": {} },
-        "marginTablet": { "type": "object", "default": {} },
-        "marginMobile": { "type": "object", "default": {} },
-        "borderRadiusTablet": { "type": "object", "default": {} },
-        "borderRadiusMobile": { "type": "object", "default": {} }
-    },
-    "editorScript": "file:./index.js",
-    "editorStyle": "file:./index.css",
-    "style": "file:./style-index.css",
-    "render": "file:./render.php",
-    "viewScriptModule": "file:./view.js",
-    "example": {
-        "attributes": {
-            "number": 5000,
-            "prefix": "",
-            "suffix": "+",
-            "label": "Happy Customers"
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/counter",
+	"version": "0.2.1",
+	"title": "SGS Counter",
+	"category": "sgs-content",
+	"description": "Animated number counter with prefix, suffix, and label.",
+	"keywords": [
+		"counter",
+		"number",
+		"stat",
+		"animated",
+		"count"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "chart-bar",
+	"supports": {
+		"sgs": {
+			"scalarStylingLift": true,
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
+				]
+			}
+		},
+		"align": false,
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"link": true,
+			"__experimentalSkipSerialization": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"textAlign": true,
+			"__experimentalSkipSerialization": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"__experimentalSkipSerialization": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true,
+			"__experimentalSkipSerialization": true
+		},
+		"interactivity": true
+	},
+	"selectors": {
+		"root": ".sgs-counter",
+		"typography": ".sgs-counter__number"
+	},
+	"attributes": {
+		"number": {
+			"type": "number",
+			"default": 0
+		},
+		"prefix": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"suffix": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"label": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"duration": {
+			"type": "number",
+			"default": 2000
+		},
+		"separator": {
+			"type": "boolean",
+			"default": true
+		},
+		"numberColour": {
+			"type": "string",
+			"default": "primary"
+		},
+		"labelColour": {
+			"type": "string",
+			"default": "text-muted"
+		},
+		"labelFontSize": {
+			"type": "number"
+		},
+		"labelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"labelFontSizeTablet": {
+			"type": "number"
+		},
+		"labelFontSizeMobile": {
+			"type": "number"
+		},
+		"labelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"labelFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"labelLineHeight": {
+			"type": "number"
+		},
+		"labelLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"icon": {
+			"type": "string",
+			"default": ""
+		},
+		"accentStroke": {
+			"type": "boolean",
+			"default": false
+		},
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"number": 5000,
+			"prefix": "",
+			"suffix": "+",
+			"label": "Happy Customers"
+		}
+	}
 }

@@ -75,7 +75,37 @@
 					"svgContent"
 				]
 			},
-			"arrayContentLift": true
+			"arrayContentLift": true,
+			"boxFamilies": {
+				"contentPadding": [
+					"contentPadding",
+					"contentPaddingTablet",
+					"contentPaddingMobile"
+				],
+				"mediaPadding": [
+					"mediaPadding",
+					"mediaPaddingTablet",
+					"mediaPaddingMobile"
+				],
+				"imagePadding": [
+					"imagePadding",
+					"imagePaddingTablet",
+					"imagePaddingMobile"
+				],
+				"imageBorderWidth": [
+					"imageBorderWidth"
+				],
+				"imageBorderRadius": [
+					"imageBorderRadius",
+					"imageBorderRadiusTablet",
+					"imageBorderRadiusMobile"
+				],
+				"contentBandPadding": [
+					"contentBandPadding",
+					"contentBandPaddingTablet",
+					"contentBandPaddingMobile"
+				]
+			}
 		}
 	},
 	"selectors": {

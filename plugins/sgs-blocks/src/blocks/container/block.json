@@ -52,6 +52,23 @@
 			"color": true,
 			"style": true,
 			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				],
+				"contentBandPadding": [
+					"contentBandPadding",
+					"contentBandPaddingTablet",
+					"contentBandPaddingMobile"
+				]
+			}
 		}
 	},
 	"selectors": {
@@ -110,7 +127,11 @@
 		"backgroundSize": {
 			"type": "string",
 			"default": "cover",
-			"enum": ["cover", "contain", "auto"]
+			"enum": [
+				"cover",
+				"contain",
+				"auto"
+			]
 		},
 		"backgroundPosition": {
 			"type": "string",
@@ -119,12 +140,20 @@
 		"backgroundRepeat": {
 			"type": "string",
 			"default": "no-repeat",
-			"enum": ["no-repeat", "repeat", "repeat-x", "repeat-y"]
+			"enum": [
+				"no-repeat",
+				"repeat",
+				"repeat-x",
+				"repeat-y"
+			]
 		},
 		"backgroundAttachment": {
 			"type": "string",
 			"default": "scroll",
-			"enum": ["scroll", "fixed"]
+			"enum": [
+				"scroll",
+				"fixed"
+			]
 		},
 		"backgroundOverlayColour": {
 			"type": "string"
@@ -323,32 +352,68 @@
 		"justifyItems": {
 			"type": "string",
 			"default": "stretch",
-			"enum": ["stretch", "start", "center", "end"]
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end"
+			]
 		},
 		"alignContent": {
 			"type": "string",
 			"default": "stretch",
-			"enum": ["stretch", "start", "center", "end", "space-between", "space-around", "space-evenly"]
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end",
+				"space-between",
+				"space-around",
+				"space-evenly"
+			]
 		},
 		"justifyContent": {
 			"type": "string",
 			"default": "",
-			"enum": ["", "flex-start", "center", "flex-end", "space-between", "space-around", "space-evenly"]
+			"enum": [
+				"",
+				"flex-start",
+				"center",
+				"flex-end",
+				"space-between",
+				"space-around",
+				"space-evenly"
+			]
 		},
 		"flexDirection": {
 			"type": "string",
 			"default": "",
-			"enum": ["", "row", "row-reverse", "column", "column-reverse"]
+			"enum": [
+				"",
+				"row",
+				"row-reverse",
+				"column",
+				"column-reverse"
+			]
 		},
 		"flexWrap": {
 			"type": "string",
 			"default": "",
-			"enum": ["", "wrap", "nowrap", "wrap-reverse"]
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"wrap-reverse"
+			]
 		},
 		"templateMode": {
 			"type": "string",
 			"default": "free",
-			"enum": ["free", "grid-section", "card-grid"]
+			"enum": [
+				"free",
+				"grid-section",
+				"card-grid"
+			]
 		},
 		"contentWidth": {
 			"type": "string",

@@ -18,7 +18,20 @@
 	"render": "file:./render.php",
 	"supports": {
 		"sgs": {
-			"scalarStylingLift": true
+			"scalarStylingLift": true,
+			"boxFamilies": {
+				"borderWidth": [
+					"borderWidth"
+				],
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				]
+			}
 		},
 		"anchor": true,
 		"className": true,

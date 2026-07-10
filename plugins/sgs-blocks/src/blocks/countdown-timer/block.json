@@ -44,7 +44,23 @@
 			"style": true,
 			"__experimentalSkipSerialization": true
 		},
-		"interactivity": true
+		"interactivity": true,
+		"sgs": {
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
+				]
+			}
+		}
 	},
 	"selectors": {
 		"root": ".wp-block-sgs-countdown-timer"

@@ -20,7 +20,13 @@
 		"sgs": {
 			"scalarStylingLift": true,
 			"containerKind": "content",
-			"containerMirror": false
+			"containerMirror": false,
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				]
+			}
 		},
 		"html": false,
 		"anchor": true,
